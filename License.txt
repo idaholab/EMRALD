@@ -1,0 +1,115 @@
+
+                                 MIT License
+                 URL: https://opensource.org/licenses/MIT
+                         
+
+Copyright 2021 Battelle Energy Alliance, LLC
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+
+
+
+
+
+ZTree 
+/* 
+ * JQuery zTree core v3.5.17
+ * http://zTree.me/
+ *
+ * Copyright (c) 2010 Hunter.z
+ *
+ * Licensed same as jquery - MIT License
+ * http://www.opensource.org/licenses/mit-license.php
+ *
+ * email: hunter.z@263.net
+ * Date: 2015-02-15
+ */
+
+JGraph or mxGraph - BSD 
+
+Jquery
+/*! 
+ * jQuery JavaScript Library v2.1.4
+ * http://jquery.com/
+ *
+ * Includes Sizzle.js
+ * http://sizzlejs.com/
+ *
+ * Copyright 2005, 2014 jQuery Foundation, Inc. and other contributors
+ * Released under the MIT license
+ * http://jquery.org/license
+ *
+ * Date: 2015-04-28T16:01Z
+ */
+
+Angular.js 
+/** 
+ * @license AngularJS v1.2.26
+ * (c) 2010-2014 Google, Inc. http://angularjs.org
+ * License: MIT
+ */
+
+ng-grid
+/*********************************************** 
+* ng-grid JavaScript Library
+* Authors: https://github.com/angular-ui/ng-grid/blob/master/README.md 
+* License: MIT (http://www.opensource.org/licenses/mit-license.php)
+* Compiled At: 09/02/2014 10:22
+***********************************************/
+
+
+BitArray 
+
+// Authors: 
+// Ben Maurer (bmaurer@users.sourceforge.net)
+// Marek Safar (marek.safar@gmail.com)
+//
+// (C) 2003 Ben Maurer
+//
+
+//
+// Copyright (C) 2004 Novell, Inc (http://www.novell.com)
+//
+// Permission is hereby granted, free of charge, to any person obtaining
+// a copy of this software and associated documentation files (the
+// "Software"), to deal in the Software without restriction, including
+// without limitation the rights to use, copy, modify, merge, publish,
+// distribute, sublicense, and/or sell copies of the Software, and to
+// permit persons to whom the Software is furnished to do so, subject to
+// the following conditions:
+//
+// The above copyright notice and this permission notice shall be
+// included in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+// NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+// LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+// OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+// WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+//
+
+
+BTree
+/* 
+ * Copyright(c) 2002 Gerardo Recinto/4A Technologies (http://www.4atech.net)
+ * MIT License https://www.codeproject.com/Articles/96397/B-Tree-Sorted-Dictionary
+ */
+
+MultiKeyDictionary
+// ************************************************* 
+// Created by Aron Weiler
+// Feel free to use this code in any way you like, 
+// just don't blame me when your coworkers think you're awesome.
+// Comments?  Email aronweiler@gmail.com
+// Revision 1.6
+// Revised locking strategy based on the some bugs found with the existing lock objects. 
+// Possible deadlock and race conditions resolved by swapping out the two lock objects for a ReaderWriterLockSlim. 
+// Performance takes a very small hit, but correctness is guaranteed.
+// *************************************************
