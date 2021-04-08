@@ -113,3 +113,39 @@ MultiKeyDictionary
 // Possible deadlock and race conditions resolved by swapping out the two lock objects for a ReaderWriterLockSlim. 
 // Performance takes a very small hit, but correctness is guaranteed.
 // *************************************************
+
+
+Angular Treeview
+/*
+ * 	@license Angular Treeview version 0.1.6
+ *	ⓒ 2013 AHN JAE-HA http://github.com/eu81273/angular.treeview
+ *	License: MIT
+ */
+ 
+ Blob.js
+ /* Blob.js
+* A Blob implementation.
+* 2014-05-31
+* 
+* By Eli Grey, http://eligrey.com
+* By Devin Samarin, https://github.com/eboyjr
+* License: X11/MIT
+*   See https://github.com/eligrey/Blob.js/blob/master/LICENSE.md
+*/
+
+FileSaver.js
+/* FileSaver.js
+*  A saveAs() FileSaver implementation.
+*  2014-05-27
+*
+*  By Eli Grey, http://eligrey.com
+*  License: X11/MIT
+*    See https://github.com/eligrey/FileSaver.js/blob/master/LICENSE.md
+*/
+
+Bootstrap
+/*!
+ * Bootstrap v3.1.1 (http://getbootstrap.com)
+ * Copyright 2011-2014 Twitter, Inc.
+ * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
+ */
