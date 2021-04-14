@@ -1,0 +1,81 @@
+﻿
+EditForms - This is where all of the pop-up editors are located 
+
+	ActionEditor.html/ActionEditor.js for pop-up dialog boxes for action to edit and to create a new one
+	BEEditor.html - this editor is outdated and is not used anywhere
+	CompAdder.html/ CompAdder.js - within the logic tree editor, when you add a component diagram, this is the editor to select the component.
+	DiagramEditor.html / DiagramEditor.js
+	EventEditor.html / EventEditor.js
+	ExtSimEditor.html / ExtSimEditor.js
+
+	GateAdder.html / GateAdder.js - prompt for a new gate
+	GateEditor.html / GateEditor.js - prompt for editing existing gate
+
+	GateFields_Test.html - this is outdated and is not used anywhere
+	LinkEditor.html / LinkEditor.js - self explanatory 
+	NewProjectPrompt.html - self explanatory 
+	ngGrid.html - I never used
+	SaveTemplatePrompt.html- self explanatory 
+	select.html - I never used
+	StateEditor.html / StateEditor.js- self explanatory 
+	StateLookup.html  - I never used
+	TemplateEditor.html / TemplateEditor.js- self explanatory
+	VariableEditor.html / VariableEditor.js- self explanatory
+
+images - 
+
+resources
+	customUILabels.json - this is where the user can specify diagram labels (it will be loaded in on start) and later can be adapted for otherr custom UI 							labels, note that right now it can only be edited manually 
+	diagramTemplates.json - this is where the user can input diagram templates that will be preloaded into the project
+	menu.json - this is the JSON structure for the upper menu bars (new, save, open, ext....)
+	sidebar.json - this is the JSON structure for the sidebar is located, dynamic catigories refers to the ones that have global, local and all tabs
+	userCreatedDiagramTemplates.json - this is where all the templates created from EMRALD (using the web app) will be saved
+
+scripts
+	ftEditScripts (note that FTViewer10.html and ftMain are also a part of logic tree code)
+		ftConstruction.js - this will construct any logic tree, it is called to both create trees intially and to update them, it will add only the graphics 					... most of the actual interactions with the user are handled by ftMain.js
+		ftExport.js - I never used...  
+		ftParseFiles.js - I never used...
+		ftStyle.js - sets the style constants for logic tree asthetics
+		Globals.js - sets global constants for logic tree nodes like height, width, ext...
+
+
+	UI
+		Blob.js - I never used, but it is used by simApp.js
+		Common.js - this is a library of common helper functions
+		CustomEvent.js - this has to do with events (i.e. when someone clicks, moves mouse, ext..). It sets the correct properties and handles information and 					firing events and listeners for that event
+		CustomWindowHander.js - this handles window functionality such as handling events and closing the window, this is used for pop-ups and other windows
+		FileSaver.js - I never used, but I assume it is used to save JSON file
+		ftMain.js - this is where the logic tree is initallized and handles all of the functionality such as adding new gates and editing gates. If there is			some functionallity that can not be found here, it will be in ftConstruction.js
+		menu.js - builds the upper menu bar structure from the menu.json file
+		Sidebar.js - this is where both the graphics and logic for the sidebar is located. This does all the sidebar functinallity and save the underlying 				 data strucutre. 
+		simApp.js - this is where the functions for upper menu are defined (open, new, save, ext..)
+		State.js - I never used this and I am not sure if it is used in code, but it handles keeping states info current and handles edits
+		StateApp.js - Similar to sidebar.js but it handles the diagrams editors, this is the file that maintains inforamtion and updates display as you edit it
+		StateHandler.js - this is where all of the edges (lines between states) are defined, it will calcuate where to place edges and this is where many of 				the mxgraph functions are overwriten so that the edges behave correctly
+		StateOvermxGraph.js - I never used but this is a layer between graph and all of the objects (states and edges) placed on the graph
+		StateShape.js - this is the code defining the state boxes in the diagram editor (the code for events and actions placed inside is in tableshape)
+		TableShape.js - this is the code defining the event boxes and action boxes within state boxes in the diagram editor
+		Toolbar.js - this is the code for the toolbar that hovers in the logic tree editor
+		wcfService.js - i never used
+		Window.js - defines the different types of windows (dialog boxes and editors)
+		WindowFrame.js - overides default window to add functinoality like minimize and size of window
+	styles  these are all the css files for everything, this defines how the web pages look (i.e. color, size, font, ext..)
+		black_menu.css
+		bootstrap.css - i think this file is never used
+		Editors.css
+		help.css
+		menu.css
+		ng-grid.css
+		prettify-style.css
+		Sidebar.css
+		State.css
+		TreeView.css
+About.html - this code is never used (it is old about page before it was linked to website)
+EMRALD.json -  this is where the data for the sample project is loaded from
+FTViewer10.html  - this is the logic tree html code, it calls all of the related js files
+Help.html - this is all of the help documentation for the users
+Help.js - this is useless
+index.html - initial start page, it is the page that is loaded on start
+Readme.txt - readme doc created before I added to code
+State.html - I never used this and I am not sure if it is used in code

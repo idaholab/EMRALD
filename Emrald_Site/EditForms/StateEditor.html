@@ -1,0 +1,62 @@
+﻿<!--Copyright 2021 Battelle Energy Alliance-->
+
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>State Properties</title>
+    <script src="../scripts/angular/angular.js"></script>
+    <script src="../scripts/UI/Common.js"></script>
+    <script src="StateEditor.js"></script>
+    <script src="../scripts/jquery/jquery-2.1.4.min.js"></script>
+
+</head>
+<body ng-app="stateModule">
+    <div ng-controller="stateController" id="stateControllerPanel">
+        <form novalidate>
+            <div style="display:table-row">
+                <span style="display:table-cell;">Name:</span> <input style="display:table-cell;" ng-model="name" tabindex="1">
+            </div>
+            <div style="display:table-row">
+                <span style="display:table-cell;">Desc:</span> <input style="display:table-cell;" ng-model="desc" size="40" tabindex="2">
+            </div>
+            <div style="display:table-row">
+                <span style="display:table-cell;">Type:</span>
+                <select style="display:table-cell;width: 140px;" id="TypeOption" ng-model="stateType" ng-options="st.name for st in stateTypes" name="Type"></select>
+            </div>
+            <fieldset id="statusValue_FieldSet" style="visibility:collapse">
+                <legend>Status Value</legend>
+                <div style="display:table-row">
+                    <input type="radio" id="rbnUnknownStatus" ng-model="StatusValue" value="Unknown" />
+                    <label for="rbnUnknownStatus">Unknown</label>
+                </div>
+                <div style="display:table-row">
+                    <input type="radio" id="rbnTrueStatus" ng-model="StatusValue" value="True" />
+                    <label for="rbnTrueStatus">True</label>
+                </div>
+                <div style="display:table-row">
+                    <input type="radio" id="rbnFalseStatus" ng-model="StatusValue" value="False" />
+                    <label for="rbnFalseStatus">False</label>
+                </div>
+            </fieldset>
+            <div style="float:left;">
+                <br />
+                Remain or exit this state when event is triggered.
+                <table id="tblEvents" style="text-align: left; width: 295px;" border="1" cellspacing="2">
+                    <tr>
+                        <td class="tabHeader">
+                            Exit
+                        </td>
+                        <td class="tabHeader">
+                            Event Name
+                        </td>
+                    </tr>
+                    <tr ng-repeat="row in eventsMap">
+                        <td sstyle="border: none;height:20px;"><input type="checkbox" onchange="eventChecked(this, event);" ng-true-value="true" ng-false-value="false" ng-checked={{row.check}} value={{row.value}} /></td>
+                        <td sstyle="border: none;height:20px;">{{row.value}}</td>
+                    </tr>
+                </table>
+            </div>
+        </form>
+    </div>
+</body>
+</html>

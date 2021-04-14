@@ -1,0 +1,211 @@
+﻿<!--Copyright 2021 Battelle Energy Alliance-->
+
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>testing</title>
+    <script src="../scripts/jquery/jquery-2.1.4.js"></script>
+    <!--uses for split panel sizing-->
+    <link href="../scripts/jquery/jquery-ui/jquery-ui.css" rel="stylesheet" />
+    <script src="../scripts/jquery/jquery-ui/jquery-ui.js"></script>
+
+    <!-- uses for data model-->
+    <script src="../scripts/angular/angular.js"></script>
+    <link href="../scripts/angular/angular.treeview/css/angular.treeview.css" rel="stylesheet" />
+    <script src="../scripts/angular/angular.treeview/angular.treeview.js"></script>
+</head>
+<body ng-app="BEApp">
+    <div ng-controller="BEController">
+        <div id="SidePanel" style="position: absolute; top: 0px; width:250px; bottom: 2px; background-color: #fff; left: 2px; margin: 2px; float: left;border:thin dotted green; ">
+
+            <div style="margin:0 0 10px 0; padding:5px; background-color:#EEEEEE; border-radius:5px; font:12px Tahoma; overflow: hidden; white-space:nowrap;">
+                <span><b>Failure Models</b> </span>
+            </div>
+
+            <!--
+              [TREE attribute]
+              angular-treeview: the treeview directive
+              tree-id : each tree's unique id.
+              tree-model : the tree model on $scope.
+              node-id : each node's id
+              node-label : each node's label
+              checked: each node's check state
+              node-children: each node's children
+            -->
+            <div data-angular-treeview="true"
+                 data-tree-id="modelTree"
+                 data-tree-model="failureModels"
+                 data-node-id="modelId"
+                 data-node-label="modelName"
+                 data-node-checked="checked"
+                 data-node-children="children">
+            </div>
+        </div>  <!-- SidePanel -->
+        <div id="ContentPanel" style="position: absolute; left: 260px; top: 0px; bottom: 2px; right: 0px; margin: 2px;white-space:nowrap; border: thin dotted green;">
+            <div id="ContentHeaderPanel" style="padding: 10px">
+                <div style="display:table-row;">
+                    <label style="display:table-cell">Name:</label>
+                    <input ng-model="BEName" />
+                </div>
+                <div style="display:table-row">
+                    <label style="display:table-cell">Description:</label>
+                    <input ng-model="BEDescription" style="width:100%" />
+                </div>
+            </div>
+            <div id="StaticContentPanel" style="padding:10px; border-top: thin ridge green; ">
+                <div style="display:table-row;">
+                    <label style="display:table-cell; vertical-align: middle;">Program Flag:</label>
+                    <select ng-model="programFlag" ng-options="flag.name for flag in programFlags" style="width: 200px;">
+                        <option>-- Choose Flag --</option>
+                    </select>
+                </div>
+                <div style="display:table-row;">
+                    <label style="display:table-cell;vertical-align:middle;">Data Source:</label>
+                    <select ng-model="dataSource" ng-options="dsrc.name for dsrc in dataSources" style="width:200px;">
+                        <option>-- Choose Source --</option>
+                    </select>
+                </div>
+                <div style="display:table-row;">
+                    <label style="display:table-cell; vertical-align:middle;">Name:</label>
+                    <select ng-model="modelName" ng-options="mName.name for mName in modelNames" style="width:200px;">
+                        <option>-- Choose Name --</option>
+                    </select>
+                    <input type="button" value="New" />
+                    <label style="display:table-cell; padding-left:25px; vertical-align:middle">More Stuff</label>
+                    <input type="number" value="0.01" style="margin-left:10px; width:100px;" />
+                </div>
+                <div style="display:table-row;">
+                    <label style="display:table-cell">Applicable:</label>
+                    <input type="checkbox" ng-checked="modelTree.currentNode.checked" />
+                </div>
+            </div>
+            <div>
+                <div id="DynamicContentPanel1" ng-model="BEController" style="border-top: thin solid green;overflow: hidden;">{{programFlag}}</div>
+                <div id="DynamicContentPanel1" ng-model="BEController" style="border-top: thin dotted green;overflow: hidden;">{{dataSource}}</div>
+                <div id="DynamicContentPanel1" ng-model="BEController" style="border-top: thin dotted green;overflow: hidden;">{{modelName}}</div>
+                <div id="DynamicContentPanel2" ng-model="BEController" style="border-top: thin dotted green;overflow: hidden;">{{modelTree.currentNode}}</div>
+            </div>
+        </div>
+
+    </div>
+
+
+    <script type="text/javascript">
+
+        //this makes the sidebar panel resizable.
+        var sideBar = document.getElementById('SidePanel');
+        var contentPanel = document.getElementById('ContentPanel');
+
+        $(sideBar).resizable({
+            handle: 'w',
+            resize: function (evt, ui) {
+                $('#ContentPanel').css({
+                    left: sideBar.clientWidth +
+                        $('.ui-resizable-handle.ui-resizable-e').width() + parseInt(sideBar.style.marginLeft) + parseInt(sideBar.style.marginRight)
+                    //,"border-style": "solid", "border-color": "red", "border-width": "1px"
+                });
+            }
+        });
+
+        //Data models
+        (function () {
+
+            //angular module: angularTreeview
+            var BEApp = angular.module('BEApp', ['angularTreeview']);
+
+            //tree controller
+            BEApp.controller('BEController', function ($scope) {
+                $scope.BEName = 'Mov-CC-IA';
+                $scope.BEDescription = "Example of a failure model."
+                $scope.programFlags = [
+                    { "name": "Red", "funct": "SysLogic_red" },
+                    { "name": "Blue", "funct": "SysLogic_blue" },
+                    { "name": "Green", "funct": "SysLogic_greed" },
+                    { "name": "Yellow", "funct": "SysLogic_yellow" },
+                    { "name": "Orange", "funct": "SysLogic_orange" },
+                    { "name": "Purple", "funct": "SysLogic_purple" }
+                ];
+                $scope.programFlag = $scope.programFlags[0];
+
+                $scope.dataSources = [
+                    { "name": "Local", "uri": "Local source" },
+                    { "name": "Global", "uri": "Global source" },
+                    { "name": "Remote", "uri": "Remote source" },
+                    { "name": "Distribute", "uri": "Distribute source" },
+                    { "name": "Static", "uri": "Static source" },
+                    { "name": "Constant", "uri": "Constant source" }
+                ];
+                $scope.dataSource = $scope.dataSources[1];
+
+                $scope.modelNames = [
+                    { "name": "testing1", "varlue": "value1" },
+                    { "name": "testing2", "varlue": "value2" },
+                    { "name": "testing3", "varlue": "value3" },
+                    { "name": "testing4", "varlue": "value4" },
+                    { "name": "testing5", "varlue": "value5" },
+                    { "name": "testing6", "varlue": "value6" },
+                    { "name": "testing7", "varlue": "value7" }
+                ];
+
+                $scope.modelName = $scope.modelNames[0];
+
+                $scope.checkable = true;
+                $scope.failureModels = [
+                    {
+                        "modelName": "Random", "modelId": "random1", "children": [
+                            { "modelName": "Phase 1", "modelId": "PH1", "collapsed": true, "children": [] },
+                            {
+                                "modelName": "Phase 1.1", "modelId": "PH1.1", "collapsed": true, "children": [
+                                    {
+                                        "modelName": "Phase 1.1-1", "modelId": "PH1.1-1", "children": [
+                                            { "modelName": "Phase 1.1-1.1", "modelId": "PH1.1-1.1", "children": [] },
+                                            { "modelName": "Phase 1.1-1.2", "modelId": "PH1.1-1.2", "children": [] }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+
+                    {
+                        "modelName": "Fire", "modelId": "FIRE", "children": [
+                            { "modelName": "Fire 1", "modelId": "FIRE1", "collapsed": true, "children": [] },
+                            {
+                                "modelName": "Fire 1.1", "modelId": "FIRE1.1", "children": [
+                                    {
+                                        "modelName": "Fire 1.1-1", "modelId": "FIRE1.1-1", "children": [
+                                            { "modelName": "Fire 1.1-1.1", "modelId": "FIRE1.1-1.1", "children": [] },
+                                            { "modelName": "Fire 1.1-1.2", "modelId": "FIRE1.1-1.2", "children": [] }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+
+                    {
+                        "modelName": "Action", "modelId": "ACT", "children": [
+                            { "modelName": "Action 1", "modelId": "ACT1", "children": [] },
+                            {
+                                "modelName": "Action 1.1", "modelId": "ACT1.1", "collapsed": true, "checked": true, "children": [
+                                    {
+                                        "modelName": "Action 1.1-1", "modelId": "ACT1.1-1", "children": [
+                                            { "modelName": "Action 1.1-1.1", "modelId": "ACT1.1-1.1", "children": [] },
+                                            { "modelName": "Action 1.1-1.2", "modelId": "ACT1.1-1.2", "children": [] }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ];
+
+            });
+
+        })();
+
+    </script>
+
+
+</body>
+</html>

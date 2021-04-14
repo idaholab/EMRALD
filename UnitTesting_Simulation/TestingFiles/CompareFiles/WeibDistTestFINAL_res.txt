@@ -1,0 +1,5 @@
+Simulation = NormDistTest
+Runtime = 00:00:03.7513385
+Runs = 100000 of 100000
+AboveMean Occurred 50202 times, Rate =0.50202
+UnderFifth Occurred 4985 times, Rate =0.04985

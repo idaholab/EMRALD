@@ -1,0 +1,224 @@
+﻿<!--Copyright 2021 Battelle Energy Alliance-->
+
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Event Editor</title>
+    <!--<link href="../styles/Editors.css" rel="stylesheet" />-->
+    <script src="../config.js"></script>
+    <script src="../scripts/angular/angular.js"></script>
+    <script src="../scripts/UI/Common.js"></script>
+    <script src="../scripts/UI/wcfService.js"></script>
+
+    <style type="text/css">
+        table {
+            font-family: arial, sans-serif;
+            border-collapse: collapse;
+            width: 100%;
+            font-size: 12px;
+        }
+
+        td, th {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 0px;
+        }
+
+        tr:nth-child(even) {
+            background-color: #dddddd;
+        }
+    </style>
+    <script src="EventEditor.js"></script>
+
+</head>
+<body>
+
+    <div ng-app="EventEditor">
+        <div ng-controller="EEController" id="EEControllerPanel">
+            <div style="display:table-row">
+                <span style="display:table-cell;vertical-align:middle;">Name:</span>
+                <input ng-model="name" tabindex="1" name="NameValue" />
+                <input type="checkbox" name="AsNewItem" id="AsNewItem" value="false" ng-model="saveAsNew" onchange="setAsNewChecked()" />
+                <label for="AsNewItem" id="AsNewItemText"> Save As New</label><br>
+            </div>
+            <div style="display:table-row;">
+                <span style="display: table-cell;vertical-align:middle;">Desc:</span>
+                <input size="40" tabindex="2" name="DescValue" ng-model="desc" />
+            </div>
+            <div style="display:table-row;">
+                <span style="display:table-cell;vertical-align:middle;">Type:</span>
+                <select id="typeOptionSelector" ng-model="typeOption" ng-options="to.name for to in typeOptions" style="width: 140px;" onchange="handleSelection(); return false;">
+                    <option>-- Choose Type --</option>
+                </select>
+            </div>
+
+            <div id="movePanel"
+                 style="display:table-row;position:absolute;visibility:collapse;height:60%;width:96%;overflow-x:hidden;overflow-y:visible;">
+                <br />
+                <div style="display:table-row;">
+                    <input type="checkbox" onchange="moveFromCurrentHandler(this);" ng-true-value=true ng-false-value=false ng-checked=moveFromCurrent />
+                    <span style="display: table-cell;vertical-align:middle;">Exit Parent state when event is Triggered</span>
+                </div>
+                <br />
+            </div>
+            <br />
+
+            <br />
+            <hr />
+            <!-- Dynamic content    -->
+            <div id="DetailContentPanel" style="height:auto;">
+                <div id="VarConditionPanel" style="display:table-row;position:absolute;visibility:collapse;height:100%;width:96%;overflow-x:hidden; overflow-y:visible;">
+                    Evaluate Code (c#) - Must return a boolean value! <br>
+                    <textarea cols="60" rows="8" name="NewValueCode" ng-model="conditionCode"></textarea><br>
+                    <div id="VarList" style="display:table-row;position:absolute;width:96%;overflow-x:hidden;overflow-y:visible;">
+
+                        <table id="tblVariables" style="text-align: left; width: 200px;" border="1" cellspacing="0">
+                            <tr><td></td><td><b>Variables used in code</b></td></tr>
+                            <tr ng-repeat="row in varMap">
+                                <td sstyle="border: none;height:15px;"><input type="checkbox" onchange="variableChecked(this);" ng-true-value=true ng-false-value=false ng-checked={{row.check}} value={{row.value}} /></td>
+                                <td sstyle="border: none;height:15px;">{{row.value.name}}</td>
+                            </tr>
+                        </table>
+                    </div>
+                    <br>
+                </div>
+                <div id="3DSimPanel" style="display:table-row;position:absolute;visibility:collapse;height:70%;width:96%;overflow-x:hidden;overflow-y:scroll">
+                    <label style="display:table-cell;vertical-align:middle; white-space:nowrap;">External Sim Variable:</label>
+                    <select name="Variables" ng-model="variable" ng-options="v.name for v in variables" style="width: 130px;">
+                        <option>-- Choose Variable --</option>
+                    </select><br>
+                    <label style="display:table-cell;vertical-align:middle; white-space:nowrap;">Evaluate Code (c#)</label><br>
+                    <textarea cols="50" rows="20" name="NewValueCode" ng-model="var3DCode"></textarea><br />
+                    <div id="VarList" style="display:table-row;position:absolute;width:96%;overflow-x:hidden;overflow-y:visible;">
+
+                        <table id="tblVariables" style="text-align: left; width: 200px;" border="1" cellspacing="0">
+                            <tr><td></td><td><b>Variables used in code</b></td></tr>
+                            <tr ng-repeat="row in varMap">
+                                <td sstyle="border: none;height:15px;"><input type="checkbox" onchange="variableChecked(this);" ng-true-value=true ng-false-value=false ng-checked={{row.check}} value={{row.value}} /></td>
+                                <td sstyle="border: none;height:15px;">{{row.value.name}}</td>
+                            </tr>
+                        </table>
+                    </div>
+                    <br>
+                    <br>
+                </div>
+                <div id="NormDistributionPanel" style="display:table-row;position:absolute;visibility:collapse;height:70%;width:96%;overflow-x:hidden;overflow-y:scroll;">
+                    <div style="display:table-row">
+                        <span style="display:table-cell;vertical-align:middle;">Mean:</span>
+                        <input name="ngMean" ng-model="ndMean" onfocusout="validateNumber(this);" />
+                        <select ng-model="meanTimeRate" ng-options="t.name for t in timeOptions"></select>
+                    </div>
+                    <div style="display:table-row">
+                        <span class="item_caption" style="display:table-cell;vertical-align:middle; white-space:nowrap;">Standard Deviation:</span>
+                        <input name="ndStdDev" ng-model="ndStdDev" onfocusout="validateNumber(this);" />
+                        <select ng-model="stdTimeRate" ng-options="t.name for t in timeOptions"></select>
+                    </div>
+                    <div style="display:table-row">
+                        <span class="item_caption" style="display:table-cell;vertical-align:middle; white-space:nowrap;">Minimum:</span>
+                        <input name="ndMin" ng-model="ndMin" onfocusout="validateNumber(this);" />
+                        <select ng-model="minTimeRate" ng-options="t.name for t in timeOptions"></select>
+                    </div>
+                    <div style="display:table-row">
+                        <span class="item_caption" style="display:table-cell;vertical-align:middle; white-space:nowrap;">Maximum:</span>
+                        <input name="ndMax" ng-model="ndMax" onfocusout="validateNumber(this);" />
+                        <select ng-model="maxTimeRate" ng-options="t.name for t in timeOptions"></select>
+                    </div>
+                </div>
+                <div id="ExpDistributionPanel" style="display:table-row;position:absolute;visibility:collapse;height:70%;width:96%;overflow-x:hidden;overflow-y:scroll;">
+                    <div style="display:table-row">
+                        <span style="display:table-cell;vertical-align:middle;">Rate:</span>
+                        <input name="edRate" ng-model="edRate" onfocusout="validateNumber(this);" />
+                        <select ng-model="edTimeRate" ng-options="t.name for t in timeOptions"></select>
+                    </div>
+                </div>
+                <div id="WeibullDistributionPanel" style="display:table-row;position:absolute;visibility:collapse;height:70%;width:96%;overflow-x:hidden;overflow-y:scroll;">
+                    <div style="display:table-row">
+                        <span style="display:table-cell;vertical-align:middle;">Shape:</span>
+                        <input name="wdShape" ng-model="wdShape" onfocusout="validateNumber(this);" />
+                    </div>
+                    <div style="display:table-row">
+                        <span style="display:table-cell;vertical-align:middle;">Scale:</span>
+                        <input name="wdScale" ng-model="wdScale" onfocusout="validateNumber(this);" />
+                    </div>
+                    <div style="display:table-row">
+                        <span style="display:table-cell;vertical-align:middle;">Time Scale:</span>
+                        <select ng-model="wdTimeRate" ng-options="t.name for t in timeOptions"></select>
+                    </div>
+                </div>
+                <div id="StateChangePanel" style="display:table-row;position:absolute;visibility:collapse;height:70%;width:96%;overflow-x:hidden;overflow-y:scroll;">
+
+                    <form name="inState">
+                        <label>
+                            <input type="radio" ng-model="isInState" value=true>
+                            Enter state
+                        </label>
+                        <label>
+                            <input type="radio" ng-model="isInState" value=false>
+                            Exit state
+                        </label>
+                    </form>
+                    <input name="AllItems" type="checkbox" ng-model="isAllItems">All Items<br><br />
+
+                    <table id="tblStates" style="text-align: left; width: 295px;" border="1" cellspacing="2">
+                        <tr>
+                            <td class="tabHeader">
+                                <b>States</b><br>
+                            </td>
+                        </tr>
+                        <tr ng-repeat="row in states">
+                            <td style="border: thin dotted green;height:20px;">{{row}}</td>
+                            <td style="width:12px;height:10px;text-align:center; ">
+                                <img id="{{row}}" src="../images/delete2.png"
+                                     style="height:16px;width:10px;cursor:pointer;" title="Delete"
+                                     onclick="handleStateDelete(this);" />
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <div id="ComponentLogicPanel" style="display:table-row;position:absolute;visibility:collapse;height:70%;width:96%;overflow-x:hidden;overflow-y:scroll">
+                    <input name="OnSuccess" type="checkbox" ng-model="onSuccess" />On Success <br />
+                    <label style="display:table-cell;vertical-align:middle; white-space:nowrap;">Logic Top:</label>
+                    <select name="LogicTop" ng-model="logicTop" ng-options="lt.name for lt in logicTops" style="width:130px;">
+                        <option>-- Choose logic top --</option>
+                    </select>
+                </div>
+                <div id="TimerPanel" style="display:table-row;position:absolute;visibility:collapse;height:70%;width:96%;overflow-x:hidden;overflow-y:scroll;">
+                    <label style="display:table-cell;vertical-align:middle; white-space:nowrap;">Time Span:</label>
+                    <input name="timespandays" ng-model="time.days" size="4" />
+                    <input name="timespanhours" ng-model="time.hours" size="4" />
+                    <input name="timespanminutes" ng-model="time.minutes" size="4" />
+                    <input name="timespanseconds" ng-model="time.seconds" size="4" />
+                    <br />
+                    <span class="item_caption" style="white-space:nowrap;">(days,hours,minutes,seconds):</span>
+                    <br />
+                </div>
+
+                <div id="FailProbabilityPanel"
+                     style="display:table-row;position:absolute;visibility:collapse;height:70%;width:96%;overflow-x:hidden;overflow-y:scroll;">
+                    <span class="item_caption" style="display:table-cell;vertical-align:middle; white-space:nowrap;">Lambda/Freq:</span>
+                    <input name="LambdaFrequency" ng-model="lambda" onfocusout="validateNumber(this);" /><span ng-style="lambdaError" style="color:red"> Invalid number </span>
+                    <!--<input name="LambdaFrequency" ng-model="lambda" onkeypress="return validateNumber(this, event);" /><br />-->
+                    <span class="item_caption" style="display:table-cell;vertical-align:middle; white-space:nowrap;">Time Rate:</span>
+                    <input name="failtimespandays" ng-model="lambdaTimeRate.days" size="4" />
+                    <input name="failtimespanhours" ng-model="lambdaTimeRate.hours" size="4" />
+                    <input name="failtimespanminutes" ng-model="lambdaTimeRate.minutes" size="4" />
+                    <input name="failtimespanseconds" ng-model="lambdaTimeRate.seconds" size="4" />
+                    <br />
+                    <!--<span class="item_caption" style="display:table-cell;vertical-align:middle; white-space:nowrap;">Mission Time:</span>
+                    <input name="missiontimespandays" ng-model="missionTime.days" size="4" />
+                    <input name="missiontimespanhours" ng-model="missionTime.hours" size="4" />
+                    <input name="missiontimespanminutes" ng-model="missionTime.minutes" size="4" />
+                    <input name="missiontimespanseconds" ng-model="missionTime.seconds" size="4" />
+                    <br />-->
+                    <span class="item_caption" style="white-space:nowrap;">(days, hours, minutes, seconds)</span>
+                    <br />
+                </div>
+
+            </div>
+
+
+        </div>
+    </div>
+
+</body>
+</html>

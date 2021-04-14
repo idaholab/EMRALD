@@ -1,0 +1,14 @@
+{
+  "Event": {
+	"id": 2,
+	"name": "C-CKV-A_Demand",
+	"desc": "",
+	"mainItem": "False",
+	"evType": "etStateCng",
+	"ifInState": "true",
+	"allItems": "false",
+	"triggerStates": [
+	  "Start_Systems"
+	]
+  }
+}

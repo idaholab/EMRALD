@@ -1,0 +1,91 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<root>
+	<xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+		<xsd:element name="root" msdata:IsDataSet="true">
+			<xsd:complexType>
+				<xsd:choice maxOccurs="unbounded">
+					<xsd:element name="data">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+								<xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+							</xsd:sequence>
+							<xsd:attribute name="name" type="xsd:string" />
+							<xsd:attribute name="type" type="xsd:string" />
+							<xsd:attribute name="mimetype" type="xsd:string" />
+						</xsd:complexType>
+					</xsd:element>
+					<xsd:element name="resheader">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+							</xsd:sequence>
+							<xsd:attribute name="name" type="xsd:string" use="required" />
+						</xsd:complexType>
+					</xsd:element>
+				</xsd:choice>
+			</xsd:complexType>
+		</xsd:element>
+	</xsd:schema>
+	<data name="ResetError">
+		<value>Can't get current object as MoveNext hasn't been called after Reset.</value>
+		<comment>Reset Error</comment>
+	</data>
+	<resheader name="ResMimeType">
+		<value>text/microsoft-resx</value>
+	</resheader>
+	<resheader name="Version">
+		<value>1.0.0.0</value>
+	</resheader>
+	<resheader name="Reader">
+		<value>System.Resources.ResXResourceReader</value>
+	</resheader>
+	<resheader name="Writer">
+		<value>System.Resources.ResXResourceWriter</value>
+	</resheader>
+	<data name="InvalidOperationError">
+		<value>There is no current entry. Either BTree had been modified by Add, Remove or Clear methods or MoveFirst or Search methods haven't been executed to make a valid Current entry.</value>
+	</data>
+	<data name="MemAllocError">
+		<value>Possible cause of exception is out of memory.</value>
+	</data>
+	<data name="NoComparerError">
+		<value>No comparer object was assigned to this BTree instance and no default comparer is suited to the collectible items.</value>
+	</data>
+	<data name="KeysAndValuesDifferInSizeError">
+		<value>Number of Keys are not the same as number of Values.</value>
+	</data>
+	<data name="SlotLengthDeSerializeError">
+		<value>"SlotLength" DeSerialization error. Invalid SlotLength was detected.</value>
+	</data>
+	<data name="CurrentSortOrderDeSerializeError">
+		<value>"CurrentSortOrder" DeSerialization error. Invalid Sort Order was detected.</value>
+	</data>
+	<data name="ComparerDeSerializeError">
+		<value>"Comparer" DeSerialization error. Invalid Comparer object was detected.</value>
+	</data>
+	<data name="KeysDeSerializeError">
+		<value>"Keys" DeSerialization error.</value>
+	</data>
+	<data name="ValuesDeSerializeError">
+		<value>"Values" DeSerialization error.</value>
+	</data>
+	<data name="DestArray">
+		<value>DestArray</value>
+	</data>
+	<data name="DestArrayIsNull">
+		<value>Destination array is null.</value>
+	</data>
+	<data name="StartIndexIsNegative">
+		<value>StartIndex can't be negative.</value>
+	</data>
+	<data name="DestArrayIsMulti">
+		<value>Destination array is multi-dimensional.</value>
+	</data>
+	<data name="StartIndexIsGreaterThanLength">
+		<value>StartIndex is equal to or greater than the length of the destination array.</value>
+	</data>
+	<data name="BTreeHasMoreElems">
+		<value>Number of items in the btree has exceeded number of elements in destination array starting from StartIndex.</value>
+	</data>
+</root>

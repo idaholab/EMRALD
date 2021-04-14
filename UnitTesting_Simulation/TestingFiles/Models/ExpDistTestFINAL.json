@@ -1,0 +1,239 @@
+{
+  "id": 0,
+  "name": "ExpDistTest8",
+  "desc": "",
+  "DiagramList": [
+    {
+      "Diagram": {
+        "id": 1,
+        "name": "Main",
+        "desc": "",
+        "diagramType": "dtPlant",
+        "diagramTemplate": "",
+        "diagramLabel": "Plant",
+        "states": [
+          "Start",
+          "Eval",
+          "UnderFifth",
+          "OverMean",
+          "End"
+        ]
+      }
+    }
+  ],
+  "StateList": [
+    {
+      "State": {
+        "id": 1,
+        "name": "Start",
+        "desc": "",
+        "stateType": "stStart",
+        "diagramName": "Main",
+        "immediateActions": [],
+        "events": [
+          "ExpEvent"
+        ],
+        "eventActions": [
+          {
+            "actions": [
+              "Goto_Eval"
+            ],
+            "moveFromCurrent": true
+          }
+        ],
+        "geometry": "{ x: 161.3773193359375, y: 90.37037658691406, width: 200, height: 120}"
+      }
+    },
+    {
+      "State": {
+        "id": 2,
+        "name": "Eval",
+        "desc": "",
+        "stateType": "stStandard",
+        "diagramName": "Main",
+        "immediateActions": [],
+        "events": [
+          "UnderFifth",
+          "OverMean"
+        ],
+        "eventActions": [
+          {
+            "actions": [
+              "Goto_UnderFifth"
+            ],
+            "moveFromCurrent": false
+          },
+          {
+            "actions": [
+              "Goto_OverMean"
+            ],
+            "moveFromCurrent": false
+          }
+        ],
+        "geometry": "{ x: 170.0069580078125, y: 260.07408142089844, width: 200, height: 170}"
+      }
+    },
+    {
+      "State": {
+        "id": 3,
+        "name": "UnderFifth",
+        "desc": "",
+        "stateType": "stKeyState",
+        "diagramName": "Main",
+        "immediateActions": [
+          "Goto_Done"
+        ],
+        "events": [],
+        "eventActions": [],
+        "geometry": "{ x: 602.1181030273438, y: 124.44447326660156, width: 200, height: 100}"
+      }
+    },
+    {
+      "State": {
+        "id": 4,
+        "name": "OverMean",
+        "desc": "",
+        "stateType": "stKeyState",
+        "diagramName": "Main",
+        "immediateActions": [
+          "Goto_Done"
+        ],
+        "events": [],
+        "eventActions": [],
+        "geometry": "{ x: 661.3773193359375, y: 294.0740966796875, width: 200, height: 100}"
+      }
+    },
+    {
+      "State": {
+        "id": 5,
+        "name": "End",
+        "desc": "",
+        "stateType": "stTerminal",
+        "diagramName": "Main",
+        "immediateActions": [],
+        "events": [],
+        "eventActions": [],
+        "geometry": "{ x: 953.2291870117188, y: 235.5555877685547, width: 200, height: 80}"
+      }
+    }
+  ],
+  "ActionList": [
+    {
+      "Action": {
+        "id": 1,
+        "name": "Goto_Eval",
+        "desc": "",
+        "actType": "atTransition",
+        "mainItem": "False",
+        "mutExcl": "True",
+        "newStates": [
+          {
+            "toState": "Eval",
+            "prob": -1,
+            "failDesc": ""
+          }
+        ],
+        "itemId": 2,
+        "moveFromCurrent": true
+      }
+    },
+    {
+      "Action": {
+        "id": 2,
+        "name": "Goto_UnderFifth",
+        "desc": "",
+        "actType": "atTransition",
+        "mainItem": "False",
+        "mutExcl": "True",
+        "newStates": [
+          {
+            "toState": "UnderFifth",
+            "prob": 1,
+            "failDesc": ""
+          }
+        ]
+      }
+    },
+    {
+      "Action": {
+        "id": 3,
+        "name": "Goto_OverMean",
+        "desc": "",
+        "actType": "atTransition",
+        "mainItem": "False",
+        "mutExcl": "True",
+        "newStates": [
+          {
+            "toState": "OverMean",
+            "prob": 1,
+            "failDesc": ""
+          }
+        ]
+      }
+    },
+    {
+      "Action": {
+        "id": 4,
+        "name": "Goto_Done",
+        "desc": "",
+        "actType": "atTransition",
+        "mainItem": "False",
+        "mutExcl": "True",
+        "newStates": [
+          {
+            "toState": "End",
+            "prob": 1,
+            "failDesc": ""
+          }
+        ]
+      }
+    }
+  ],
+  "EventList": [
+    {
+      "Event": {
+        "id": 1,
+        "name": "ExpEvent",
+        "desc": "",
+        "mainItem": "False",
+        "evType": "etExponentialDist",
+        "allItems": true,
+        "triggerStates": [],
+        "moveFromCurrent": true,
+        "varNames": [],
+        "rate": 10,
+        "timeRate": "trHours"
+      }
+    },
+    {
+      "Event": {
+        "id": 2,
+        "name": "UnderFifth",
+        "desc": "",
+        "mainItem": "False",
+        "evType": "etVarCond",
+        "allItems": true,
+        "triggerStates": [],
+        "moveFromCurrent": false,
+        "varNames": [],
+        "code": "return CurTime < 0.00513;"
+      }
+    },
+    {
+      "Event": {
+        "id": 3,
+        "name": "OverMean",
+        "desc": "",
+        "mainItem": "False",
+        "evType": "etVarCond",
+        "allItems": true,
+        "triggerStates": [],
+        "moveFromCurrent": false,
+        "varNames": [],
+        "code": "return CurTime > 0.06931;"
+      }
+    }
+  ],
+  "LogicNodeList": [],
+  "VariableList": []
+}

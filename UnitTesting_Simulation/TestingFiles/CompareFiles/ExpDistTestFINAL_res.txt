@@ -1,0 +1,5 @@
+Simulation = ExpDistTest8
+Runtime = 00:00:03.4730917
+Runs = 100000 of 100000
+OverMean Occurred 50119 times, Rate =0.50119
+UnderFifth Occurred 4989 times, Rate =0.04989

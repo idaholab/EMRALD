@@ -1,0 +1,51 @@
+﻿<!--Copyright 2021 Battelle Energy Alliance-->
+
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Diagram Properties</title>
+    <link href="../styles/Editors.css" rel="stylesheet" />
+    <script src="../scripts/angular/angular.js"></script>
+    <script src="../scripts/UI/Common.js"></script>
+    <script src="DiagramEditor.js"></script>
+
+</head>
+<body ng-app="diagramModule">
+    <div ng-controller="diagramController" id="diagramControllerPanel">
+        <form novalidate>
+            <div style="display:table-row">
+                <span style="display:table-cell">Name:</span> <input style="display:table-cell" id="Diagram_Name_Input" ng-model="name" tabindex="1">
+            </div>
+            <div style="display:table-row">
+                <span style="display:table-cell">Desc:</span> <input style="display:table-cell" ng-model="desc" size="40" tabindex="2">
+            </div>
+            <div style="display:table-row">
+                <div style="display:table-cell">Type:</div>
+                <select style="display:table-cell;width: 130px;float:left" id="TypeOption" ng-model="diagramType" ng-options="dt.name for dt in diagramTypes" name="Type"></select>
+                <div style="display:table-cell;float:left;" id="TemplateOptionLabel">Template:</div>
+                <select style="display:table-cell;width: 130px;" id="TemplateOption" ng-model="diagramTemplate" ng-options="dtemp for dtemp in diagramTemplates" name="Type"></select>
+            </div>
+            <hr />
+            <div id="singleStatePanel" style="display:none;">
+                <hr />
+                <span class="item_caption" style="white-space:nowrap;margin-right: 25px;">Single Value Groups</span><br />
+                <table ng-table="singleStates" style="text-align: left; width: 295px;" border="1" cellpadding="2" cellspacing="2">
+                    <tbody>
+                        <tr class="tabHeader">
+                            <th ng-repeat="head in singleStatesHeader"><span>{{head.column}}</span></th>
+                        </tr>
+                        <tr ng-repeat="row in singleStates">
+                            <td style="vertical-align: top;" ng-scope>
+                                {{row.stateName}}
+                            </td>
+                            <td style="vertical-align: top;" ng-scope>
+                                <input type="checkbox" ng-model="row.inSingleStateGroup" style="border: none; background-color: transparent;" />
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </form>
+    </div>
+</body>
+</html>

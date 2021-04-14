@@ -1,0 +1,238 @@
+﻿<!--Copyright 2021 Battelle Energy Alliance-->
+
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Variable Editor</title>
+    <link href="../styles/Editors.css" rel="stylesheet" />
+    <script src="../scripts/angular/angular.js"></script>
+    <script src="../scripts/UI/Common.js"></script>
+    <script src="VariableEditor.js"></script>
+
+</head>
+<body ng-app="variableModule">
+
+
+    <div ng-controller="variableController" id="variableControllerPanel">
+        <form novalidate>
+            <div style="display: table; border-collapse: collapse;">
+
+                <!-- All Variable Scopes -->
+                <div style="display: table-row;">
+                    <label style="display: table-cell;">Name:</label>
+                    <input tabindex="1" ng-model="name" style="display: table-cell;" onfocusout="validateName(this);">
+                    <input type="checkbox" name="AsNewItem" id="AsNewItem" value="false" ng-model="saveAsNew" onchange="setAsNewChecked()" />
+                    <label for="AsNewItem" id="AsNewItemText"> Save As New</label><br>
+                </div>
+                <div style="display: table-row;">
+                    <label style="display: table-cell;">Desc:</label>
+                    <input size="40" tabindex="2" ng-model="desc" style="display: table-cell;">
+                </div>
+                <div style="display: table-row;">
+                    <label style="display: table-cell;">Scope:</label>
+                    <select name="ScopeValue" ng-model="varScope" ng-options="opt.name for opt in varScopes" style="display: table-cell; width: 130px;">
+                        <option>-- select Scope --</option>
+                    </select><br>
+                </div>
+                <div style="display: table-row;">
+                    <label style="display: table-cell;">Var Type:</label>
+                    <select id="typeVal" name="TypeValue" ng-model="varType" ng-options="type for type in varTypes" onchange="typeSelection();" style="display: table-cell; width: 130px;" ng-disabled="!varTypeSelectionEnabled">
+                        <option>-- select Type --</option>
+                    </select><br>
+                </div>
+                <!-- End All Variable Scopes -->
+                <!-- Document Link Variable Scopes -->
+                <div ng-if="documentLinkScopeSelected" style="display: table-row-group">
+                    <div id="VarDocTypePanel" style="display: table-row;">
+                        <label style="display: table-cell;">Doc Type:</label>
+                        <select id="docTypeVal" name="DocTypeValue" ng-model="data.docType" ng-options="opt.name for opt in docTypes" style="display: table-cell; width: 130px;">
+                            <option>-- select Type --</option>
+                        </select>
+                    </div>
+                    <div id="VarDocPathPanel" style="display: table-row;">
+                        <label style="display: table-cell;">Doc Path:</label>
+                        <input size="40" ng-model="data.docPath" style="display: table-cell;">
+                    </div>
+
+
+                    <div style="display: table-row;">
+                        <span style="display: table-cell"></span>
+                        <span ng-if="data.docType.value == 'dtXML'">
+                            <small>Use XPath Syntax for the Var Link.</small>
+                            <a href="https://www.freeformatter.com/xpath-tester.html#ad-output" target="_blank">Tester</a>
+                        </span>
+                        <span ng-if="data.docType.value == 'dtJSON'">
+                            <small>Use JSONPath Syntax for the Var Link.</small>
+                            <a href="https://jsonpath.com/" target="_blank">Tester</a>
+                        </span>
+                        <span ng-if="data.docType.value == 'dtTextRegEx'">
+                            <small>Use Regular Expression Syntax for the Var Link.</small>
+                            <a href="https://regexr.com/" target="_blank">Tester</a>
+                        </span>
+                        <span ng-if="data.docType.value == 'default'">
+                            <small></small>
+                            <a id="DocLinkTester" href="http://EMRALD.inl.gov" target="_blank">Tester</a>
+                        </span>
+                    </div>
+
+                    <div style="display: table-row;">
+                        <label style="display: table-cell; vertical-align: top;">Var Link:</label>
+                        <textarea rows="4" cols="40" ng-model="data.varLink"></textarea>
+                    </div>
+
+
+
+                    <div ng-if="data.docType.value == 'dtTextRegEx'" style="display: contents;">
+                        <div id="ExistOnStartupPanel" style="white-space: nowrap; display: table-row;">
+                            <div style="display: table-cell"></div>
+                            <div style="display: table-cell">
+                                <input type="checkbox" name="ResetOnRuns" id="ExistOnStartup" value="false" ng-model="data.resetOnRuns" />
+                                <label for="ExistOnStartup">Doc Path and Var Link must exist on startup.</label>
+                            </div>
+                        </div>
+                        <div id="RegExLinePanel" style="display: table-row;">
+                            <div style="display: table-cell; white-space: nowrap;">
+                                <input type="checkbox" id="RegExLineChk" name="RegExLineChk" ng-model="data.useRegExLine">
+                                <label for="RegExLineChk">Line #:</label>
+                            </div>
+                            <div style="display: table-cell; white-space: nowrap;">
+                                <input id="RegExLineInp" name="regExLine" size="4" ng-model="data.regExLine" ng-if="data.useRegExLine">
+                                <small> <i>(Use if a line after the RegExp match is desired.)</i></small>
+                            </div>
+                        </div>
+                        <div id="RegExBegPosPanel" style="display: table-row;" ng-if="data.useRegExLine">
+                            <div style="display: table-cell; white-space: nowrap;">
+                                <label for="RegExLineChk">Beg Pos:</label>
+                            </div>
+                            <div style="display: table-cell; white-space: nowrap;">
+                                <input size="4" ng-model="data.regExBegPos">
+                                <small> <i>(Line start position, use 0 is the first character.)</i></small>
+                            </div>
+                        </div>
+                        <div id="RegExNumCharsPanel" style="display: table-row;" ng-if="data.useRegExLine">
+                            <div style="display: table-cell; white-space: nowrap;">
+                                <input type="checkbox" id="RegExNumCharsChk" name="RegExNumCharsChk" ng-model="data.useRegExNumChars">
+                                <label for="RegExNumCharsChk">Num Chars:</label>
+                            </div>
+                            <div style="display: table-cell; white-space: nowrap;">
+                                <input id="RegExNumCharsInp" size="4" ng-model="data.regExNumChars" ng-if="data.useRegExNumChars">
+                                <small> <i>(Use for a specific # of characters, set to 0 for until next space, uncheck for end of line.)</i></small>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <br />
+                    <div style="display: table-row;">
+                        <label style="display: table-cell; vertical-align: top;">Default:</label>
+                        <div style="display: table-cell" title="The value to be returned if no match is found">
+                            <span>The value to be returned if no match is found</span>
+                            <br />
+                            <textarea rows="4" cols="40" ng-model="data.value" ng-if="stringTypeSelected" style="display: table-cell;"></textarea>
+                            <input type="number" ng-model="data.value" step="1" ng-if="intTypeSelected" style="display: table-cell;" />
+                            <input type="number" ng-model="data.value" ng-if="doubleTypeSelected" style="display: table-cell;" />
+                            <select ng-model="data.value" ng-options="val for val in varBoolVal" ng-if="boolTypeSelected" style="display: table-cell; width: 130px;"></select>
+                        </div>
+                    </div>
+                </div>
+                <!-- End Document Link Variable Scopes -->
+                <!-- Value Box Used for Global and Ext Sim Variable Scopes-->
+                <div style="display: table-row;" ng-if="extSimVariableScopeSelected || globalScopeSelected">
+                    <label id="ValueLabel" style="display: table-cell; vertical-align: top;">Value:</label>
+                    <textarea id="valInput" rows="4" cols="40" ng-model="data.value" ng-if="stringTypeSelected" style="display: table-cell;"></textarea>
+                    <input type="number" ng-model="data.value" step="1" ng-if="intTypeSelected" style="display: table-cell;" />
+                    <input type="number" ng-model="data.value" ng-if="doubleTypeSelected" style="display: table-cell;" />
+                    <select id="selectBool" ng-model="data.value" ng-options="val for val in varBoolVal" ng-if="boolTypeSelected" style="display: table-cell; width: 130px;"></select>
+                    <br />
+                    <div id="ResetValuePanel" style="white-space:nowrap;">
+                        <input type="checkbox" name="ResetOnRuns" id="SelectReset" value="false" ng-model="data.resetOnRuns" />
+                        <label for="SelectReset" id="ResetOnRunsText">Reset to initial value for every simulation run.</label>
+                    </div>
+                </div>
+                <!-- End Value Box Used for Global and Ext Sim Variable Scopes-->
+                <!-- Ext Sim Variable Scopes -->
+                <div ng-if="extSimVariableScopeSelected" style="display: table-row-group">
+                    <div id="Scope3DSimIDPanel" style="display: table-row;">
+                        <label style="display: table-cell; white-space: nowrap;">3DSim ID:</label>
+                        <input size="5" name="externalName" ng-model="data.sim3DId" style="display: table-cell; width: 125px;" />
+                        <small> <i><br />(Name or ID of variable in the external simulation)</i></small>
+                    </div>
+                </div>
+                <!-- End Ext Sim Variable Scopes -->
+
+            </div>
+
+            <!-- Accrual Variable Scopes -->
+            <div id="accrualStates">
+                <br />
+                <div style="width:100%" ng-if="accrualScopeSelected">
+                    State Accrual Variables:
+                    <table id="tblAccrualStates" style="text-align: left" border="1" cellspacing="2">
+                        <tr>
+                            <td class="tabHeader">
+                                Name
+                            </td>
+                            <td class="tabHeader">
+                                Type
+                            </td>
+                            <td class="tabHeader">
+                                Accrual Rate
+                            </td>
+                        </tr>
+                        <tr ng-if="accrualStatesData.length < 1">
+                            <td colspan="3">
+                                Drag States Here
+                            </td>
+                        </tr>
+                        <tr ng-repeat="accrualState in accrualStatesData">
+
+                            <td style="border: none;border-bottom:2px solid black;height:20px;">
+                                {{accrualState.stateName}}
+                                <br />
+                                <input type="button" value="Remove This State" ng-click="accrualStatesData.splice($index,1)" />
+                            </td>
+                            <td style="border: none;border-bottom:2px solid black;height:20px;">
+                                <label ng-repeat="type in accrualRateTypes">
+                                    <input type="radio" name="{{accrualState.stateName}}" ng-model="$parent.accrualState.type" ng-checked="type.default" ng-value="type.value" />{{type.name}}<br />
+                                </label>
+                            </td>
+                            <td style="border: none;border-bottom:2px solid black;">
+                                <div ng-if="accrualState.type == 'ctMultiplier'">
+                                    <input type="number" ng-model="accrualState.accrualMult" style="width:80px" /> per
+                                    <select ng-model="accrualState.multRate" ng-options="unit.value as unit.name for unit in accrualUnits"></select>
+                                </div>
+                                <div ng-if="accrualState.type == 'ctTable'">
+                                    <table style="text-align: left" border="1" cellspacing="2">
+                                        <tr>
+                                            <td class="tabHeader">
+                                                Simulation Time (
+                                                <select ng-model="accrualState.multRate" ng-options="unit.value as unit.abbr for unit in accrualUnits"></select>)
+                                            </td>
+                                            <td class="tabHeader">
+                                                Accrual Rate (Units per
+                                                <select ng-model="accrualState.multRate" ng-options="unit.value as unit.abbr for unit in accrualUnits"></select>)
+                                            </td>
+                                        </tr>
+                                        <tr ng-repeat="row in accrualState.accrualTable track by $index" ng-if="!accrualState.minimizeTable">
+                                            <td style="border: none; height:20px;"><input type="number" ng-model="row[0]" /></td>
+                                            <td style="border: none; height:20px;"><input type="number" ng-model="row[1]" /> | <input type="button" title="Add Row Here (Below)" ng-click="accrualState.accrualTable.splice($index+1,0,[0,0])" value="+" /> | <input type="button" title="Remove This Row" ng-click="accrualState.accrualTable.splice($index,1)" value="X" /></td>
+                                        </tr>
+                                        <tr>
+                                            <input type="button" value="Expand Table" ng-if="accrualState.minimizeTable" ng-click="accrualState.minimizeTable = false" />
+                                            <input type="button" value="Minimize Table" ng-if="!accrualState.minimizeTable" ng-click="accrualState.minimizeTable = true" />
+                                            <input type="button" value="Add Row" ng-if="!accrualState.minimizeTable" ng-click="accrualState.accrualTable.push([0,0])" />
+                                        </tr>
+                                    </table>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            <!-- End Accrual Variable Scopes -->
+        </form>
+        <label style="display:table-cell;color: red" ng-if="data.showErrorMessage">{{data.errorMessage}}</label>
+
+    </div>
+</body>
+</html>

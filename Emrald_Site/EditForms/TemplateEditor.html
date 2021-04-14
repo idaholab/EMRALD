@@ -1,0 +1,117 @@
+﻿<!--Copyright 2021 Battelle Energy Alliance-->
+
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>New Template</title>
+    <link href="../styles/Editors.css" rel="stylesheet" />
+    <script src="../config.js"></script>
+    <script src="../scripts/jquery/jquery-2.1.4.js"></script>
+    <script src="../scripts/angular/angular.js"></script>
+    <script src="../scripts/UI/Common.js"></script>
+    <script src="../scripts/UI/wcfService.js"></script>
+    <script src="TemplateEditor.js"></script>
+
+    <style type="text/css">
+        mainStyle {
+            height: 95%;
+            position: fixed;
+            z-index: 1;
+            top: 0;
+            overflow-x: hidden;
+            padding-top: 20px;
+            overflow-y: hidden;
+        }
+
+
+        table {
+            font-family: arial, sans-serif;
+            border-collapse: collapse;
+            width: 100%;
+            font-size: 14px;
+        }
+
+        .inputName {
+            font-size: 16px;
+        }
+
+        .elementHeader {
+            background-color: #8a8a8a;
+            font-size: 16px;
+            color: white;
+            text-align: center;
+        }
+
+        td, th {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 0px;
+            width: 50%
+        }
+
+        tr:nth-child(even) {
+            background-color: #dddddd;
+        }
+    </style>
+</head>
+<body ng-app="templateModule" style="overflow-y:hidden;">
+    <div ng-controller="templateController" id="templateControllerPanel" style="overflow-y:hidden;">
+        <div class="mainStyle">
+            <div id="elementList" style="display:table-row;position:absolute;height:95%;width:98%;overflow-x:hidden;overflow-y:scroll;">
+                <br>
+                <div style="display:table-row">
+                    <span style="display:table-cell">New Template Name: </span>
+                    <input ng-model="name" tabindex="1">
+                </div>
+                <br>
+                <table id="tblState" style="text-align: left; width: 90%;" border="1" cellspacing="0">
+                    <tr>
+                        <td class="elementHeader">States</td>
+                    </tr>
+                    <tr ng-repeat="row in stateElements">
+                        <td style="text-align: left; width: 45%; color: green;"> <img src='../images/check.png' style='width:12px;margin-right:5px;' />{{row.State.name}}</td>
+                    </tr>
+                    <tr style="color: red;" ng-repeat="row in stateExcludeElements">
+                        <td style="color: red;"><img src='../images/delete2.png' style='width:12px;margin-right:5px;' />{{row.State.name}}</td>
+                    </tr>
+                </table>
+                <br>
+                <table id="tblEvent" style="text-align: left; width: 90%;" border="1" cellspacing="0">
+                    <tr>
+                        <td class="elementHeader">Events</td>
+
+                    </tr>
+                    <tr ng-repeat="row in eventElements">
+                        <td style="text-align: left; width: 45%; color: green;"><img src='../images/check.png' style='width:12px;margin-right:5px;' />{{row.Event.name}}</td>
+                    </tr>
+                    <tr style="color: black;" ng-repeat="row in eventIncludeElements">
+                        <td style="color: black;"><img src='../images/star.png' style='width:12px;margin-right:5px;' />{{row.Event.name}}</td>
+                    </tr>
+                    <tr style="color: red;" ng-repeat="row in eventExcludeElements">
+                        <td style="color: red;"><img src='../images/delete2.png' style='width:12px;margin-right:5px;' />{{row.Event.name}}</td>
+                    </tr>
+                </table>
+                <br>
+                <table id="tblAction" style="text-align: left; width: 90%;" border="1" cellspacing="0">
+                    <tr>
+                        <td class="elementHeader">Actions</td>
+
+                    </tr>
+                    <tr ng-repeat="row in actionElements">
+                        <td style="text-align: left; width: 45%; color: green;"><img src='../images/check.png' style='width:12px;margin-right:5px;' />{{row.Action.name}}</td>
+                    </tr>
+                    <tr style="color: black;" ng-repeat="row in actionIncludeElements">
+                        <td style="color: black;"><img src='../images/star.png' style='width:12px;margin-right:5px;' />{{row.Action.name}}</td>
+                    </tr>
+                    <tr style="color: red;" ng-repeat="row in actionExcludeElements">
+                        <td style="color: red;"> <img src='../images/delete2.png' style='width:12px;margin-right:5px;' /> {{row.Action.name}}</td>
+                    </tr>
+                </table>
+            </div>
+            <br>
+        </div>
+
+    </div>
+
+</body>
+</html>

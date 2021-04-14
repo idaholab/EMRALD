@@ -1,0 +1,89 @@
+﻿<!--Copyright 2021 Battelle Energy Alliance-->
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Export Template</title>
+    <meta charset="utf-8" />
+    <script src="../scripts/angular/angular.js"></script>
+    <script type="text/javascript">
+
+        //these are function implementation required for the framewindow.
+        var isDirty = false;
+        function isModified() {
+            return isDirty;
+        }
+
+        function ValidateData() {
+            return "";
+        }
+
+        function setModified(state) {
+            isDirty = state;
+        }
+
+        var inputData = null;
+        function OnLoad(dataObj) {
+            inputData = dataObj;
+            var scope = angular.element(document.querySelector("#saveTemplatePanel")).scope();
+            scope.$apply(function () {
+                scope.userCheck = inputData.userCheck;
+                scope.globalCheck = inputData.globalCheck;
+
+            });
+        }
+        function GetDataObject() {
+            inputData = inputData || {};
+            var scope = angular.element(document.querySelector('#saveTemplatePanel')).scope();
+            scope.$apply(function () {
+                inputData.userCheck = scope.userCheck;
+                inputData.globalCheck = scope.globalCheck;
+
+            });
+            return inputData;
+        }
+
+        function OnSave() {
+            isDirty = false;
+        }
+
+        //a new data package is sent from the parent window frame.
+        function DataChanged(dataObj) {
+            OnLoad(dataObj);
+        }
+
+        function boxChecked(el) {
+            var scope = angular.element(document.querySelector('#saveTemplatePanel')).scope();
+            if (el) {
+                if ("user" == el.value)
+                    scope.userCheck = el.checked;
+                else if ("global" == el.value)
+                    scope.globalCheck = el.checked;
+            }
+
+        }
+        var stateModule = angular.module('saveTempModule', []);
+        stateModule.controller('saveTemplateController', function ($scope) {
+            $scope.userCheck = false;
+            $scope.globalCheck = false;
+
+
+        });
+
+    </script>
+</head>
+<body ng-app="saveTempModule">
+
+    <div ng-controller="saveTemplateController" id="saveTemplatePanel" style="width: 100%">
+        <span><i>Check which templates you would like to export.</i> <br><br></span>
+        <div style="display:table-row;">
+            <td><input type="checkbox" onchange="boxChecked(this);" ng-true-value=true ng-false-value=false ng-checked=false value="user" /></td>
+            <td>User created templates</td>
+        </div>
+        <div style="display:table-row;">
+            <td><input type="checkbox" onchange="boxChecked(this);" ng-true-value=true ng-false-value=false ng-checked=false value="global" /></td>
+            <td>Global templates</td>
+        </div>
+    </div>
+</body>
+</html>

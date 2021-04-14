@@ -1,0 +1,167 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ProjectType>Local</ProjectType>
+    <ProductVersion>8.0.50727</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{C50EE054-872E-4004-B544-E9E1977BC6A4}</ProjectGuid>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ApplicationIcon>
+    </ApplicationIcon>
+    <AssemblyKeyContainerName>
+    </AssemblyKeyContainerName>
+    <AssemblyName>Sop.Collections.OnDisk</AssemblyName>
+    <AssemblyOriginatorKeyFile>
+    </AssemblyOriginatorKeyFile>
+    <DefaultClientScript>JScript</DefaultClientScript>
+    <DefaultHTMLPageLayout>Grid</DefaultHTMLPageLayout>
+    <DefaultTargetSchema>IE50</DefaultTargetSchema>
+    <DelaySign>false</DelaySign>
+    <OutputType>Library</OutputType>
+    <RootNamespace>Sop.Collections.OnDisk</RootNamespace>
+    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
+    <StartupObject>
+    </StartupObject>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <SignAssembly>true</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <OutputPath>bin\Debug\</OutputPath>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <BaseAddress>285212672</BaseAddress>
+    <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
+    <ConfigurationOverrideFile>
+    </ConfigurationOverrideFile>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DocumentationFile>
+    </DocumentationFile>
+    <DebugSymbols>true</DebugSymbols>
+    <FileAlignment>4096</FileAlignment>
+    <NoStdLib>false</NoStdLib>
+    <NoWarn>
+    </NoWarn>
+    <Optimize>false</Optimize>
+    <RegisterForComInterop>false</RegisterForComInterop>
+    <RemoveIntegerChecks>false</RemoveIntegerChecks>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <WarningLevel>4</WarningLevel>
+    <DebugType>full</DebugType>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <OutputPath>bin\Release\</OutputPath>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <BaseAddress>285212672</BaseAddress>
+    <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
+    <ConfigurationOverrideFile>
+    </ConfigurationOverrideFile>
+    <DefineConstants>TRACE</DefineConstants>
+    <DocumentationFile>
+    </DocumentationFile>
+    <DebugSymbols>false</DebugSymbols>
+    <FileAlignment>4096</FileAlignment>
+    <NoStdLib>false</NoStdLib>
+    <NoWarn>
+    </NoWarn>
+    <Optimize>true</Optimize>
+    <RegisterForComInterop>false</RegisterForComInterop>
+    <RemoveIntegerChecks>false</RemoveIntegerChecks>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <WarningLevel>4</WarningLevel>
+    <DebugType>none</DebugType>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>..\..\..\..\SopBin\Sop\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <BaseAddress>285212672</BaseAddress>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <BaseAddress>285212672</BaseAddress>
+    <Optimize>true</Optimize>
+    <DebugType>
+    </DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="BTree\BTree.cs" />
+    <Compile Include="BTree\BTreeBase.cs" />
+    <Compile Include="BTree\Collection.cs" />
+    <Compile Include="BTree\Common\BTreeEnums.cs" />
+    <Compile Include="BTree\Common\IBTree.cs" />
+    <Compile Include="OnDisk\Logger.cs" />
+    <Compile Include="BTree\Common\SingleThreadAccess.cs" />
+    <Compile Include="BTree\Common\Synchronizer.cs" />
+    <Compile Include="BTree\ThreadSafeBTree.cs" />
+    <Compile Include="OnDisk\Algorithm\BTreeAlgorithm.cs" />
+    <Compile Include="OnDisk\Algorithm\BTreeNodeOnDisk.cs" />
+    <Compile Include="OnDisk\Algorithm\BTreeNodeOnDisk2.cs" />
+    <Compile Include="OnDisk\Algorithm\MruSegmentsOnDisk.cs" />
+    <Compile Include="OnDisk\ArrayListOnDisk.cs" />
+    <Compile Include="OnDisk\ArrayListOnDisk.IndexEntry.cs" />
+    <Compile Include="OnDisk\AssemblyInfo.cs" />
+    <Compile Include="OnDisk\BTreeOnDisk\BTreeComparer.cs" />
+    <Compile Include="OnDisk\BTreeOnDisk\BTreeItemOnDisk.cs" />
+    <Compile Include="OnDisk\BTreeOnDisk\BTreeOnDisk.cs" />
+    <Compile Include="OnDisk\BTreeOnDisk\IBTreeOnDisk.cs" />
+    <Compile Include="OnDisk\BuiltinTypes.cs" />
+    <Compile Include="OnDisk\CollectionOnDisk.cs" />
+    <Compile Include="OnDisk\Core\DataBlock.cs" />
+    <Compile Include="OnDisk\Core\DataBlockDriver.cs" />
+    <Compile Include="OnDisk\Core\DataReference.cs" />
+    <Compile Include="OnDisk\Core\DeletedBlockInfo.cs" />
+    <Compile Include="OnDisk\Core\HeaderData.cs" />
+    <Compile Include="OnDisk\Core\ItemOnDisk.cs" />
+    <Compile Include="OnDisk\Core\OnDiskBinaryReader.cs" />
+    <Compile Include="OnDisk\Core\OnDiskBinaryWriter.cs" />
+    <Compile Include="OnDisk\Persistent.cs" />
+    <Compile Include="OnDisk\Core\SharedBlockOnDisk.cs" />
+    <Compile Include="OnDisk\Core\Win32.cs" />
+    <Compile Include="OnDisk\DiskRegion.cs" />
+    <Compile Include="OnDisk\File.cs" />
+    <Compile Include="OnDisk\FileSet.cs" />
+    <Compile Include="OnDisk\ICollectionOnDisk.cs" />
+    <Compile Include="OnDisk\IListOnDisk.cs" />
+    <Compile Include="OnDisk\InMemoryMruCache.cs" />
+    <Compile Include="OnDisk\ITransactionLog.cs" />
+    <Compile Include="OnDisk\LinkedListOnDisk.cs" />
+    <Compile Include="OnDisk\Memory.cs" />
+    <Compile Include="OnDisk\Mru\DataBlocksPool.cs" />
+    <Compile Include="OnDisk\Mru\InternalMruManager.cs" />
+    <Compile Include="OnDisk\Mru\MruManager.cs" />
+    <Compile Include="OnDisk\ObjectServer.cs" />
+    <Compile Include="OnDisk\Profile.cs" />
+    <Compile Include="OnDisk\TypeStore.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="OnDisk\Doc\B-Tree Gold version 3.pdf" />
+    <None Include="OnDisk\Doc\B-Tree Gold version 4.doc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="BTree\BTreeResources.resx">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PreBuildEvent>
+    </PreBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
+  </PropertyGroup>
+</Project>

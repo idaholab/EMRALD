@@ -1,0 +1,95 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29519.87
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimulationDAL", "SimulationDAL\SimulationDAL.csproj", "{536E2AE0-B2F3-4DEE-8E35-5E2AD2D74F7F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MessageDefLib", "MessageDefLib\MessageDefLib.csproj", "{A3E8023A-5CE3-4A59-BB43-E1431D865167}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "XmppServerController", "XmppServer\XmppServerController.csproj", "{5C2228FC-B166-4E6D-861C-7340CEBE02EA}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimulationEngine", "SimulationEngine\SimulationEngine.csproj", "{30018F30-1B1B-46CB-9252-1D29288A0825}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EMRALD_Sim", "EMRALD_Sim\EMRALD_Sim.csproj", "{B6F47973-B227-4825-BB2D-B995F5FE2E9C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Testing", "UnitTesting_Simulation\Testing.csproj", "{43990779-63AB-4896-8AEE-7B06F7BC6B0B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "XmppClient", "XmppClient\XmppClient.csproj", "{8846DEF8-E1EB-408E-9316-D85E273E7E09}"
+EndProject
+Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "Emrald_Site", "Emrald_Site\", "{6A02BDBB-CBDA-4ADF-81DA-4499666F7C2B}"
+	ProjectSection(WebsiteProperties) = preProject
+		SccProjectName = "SAK"
+		SccAuxPath = "SAK"
+		SccLocalPath = "SAK"
+		SccProvider = "SAK"
+		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.5.2"
+		Debug.AspNetCompiler.VirtualPath = "/localhost_56455"
+		Debug.AspNetCompiler.PhysicalPath = "Emrald_Site\"
+		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_56455\"
+		Debug.AspNetCompiler.Updateable = "true"
+		Debug.AspNetCompiler.ForceOverwrite = "true"
+		Debug.AspNetCompiler.FixedNames = "false"
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.VirtualPath = "/localhost_56455"
+		Release.AspNetCompiler.PhysicalPath = "Emrald_Site\"
+		Release.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_56455\"
+		Release.AspNetCompiler.Updateable = "true"
+		Release.AspNetCompiler.ForceOverwrite = "true"
+		Release.AspNetCompiler.FixedNames = "false"
+		Release.AspNetCompiler.Debug = "False"
+		VWDPort = "56455"
+		SlnRelativePath = "Emrald_Site\"
+	EndProjectSection
+EndProject
+Project("{9092AA53-FB77-4645-B42D-1CCCA6BD08BD}") = "emrald-docs", "emrald-docs\emrald-docs.njsproj", "{2FBBA795-DFFE-4908-9FB2-99478460FFA9}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{536E2AE0-B2F3-4DEE-8E35-5E2AD2D74F7F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{536E2AE0-B2F3-4DEE-8E35-5E2AD2D74F7F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{536E2AE0-B2F3-4DEE-8E35-5E2AD2D74F7F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{536E2AE0-B2F3-4DEE-8E35-5E2AD2D74F7F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A3E8023A-5CE3-4A59-BB43-E1431D865167}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A3E8023A-5CE3-4A59-BB43-E1431D865167}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A3E8023A-5CE3-4A59-BB43-E1431D865167}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A3E8023A-5CE3-4A59-BB43-E1431D865167}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5C2228FC-B166-4E6D-861C-7340CEBE02EA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5C2228FC-B166-4E6D-861C-7340CEBE02EA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5C2228FC-B166-4E6D-861C-7340CEBE02EA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5C2228FC-B166-4E6D-861C-7340CEBE02EA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{30018F30-1B1B-46CB-9252-1D29288A0825}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{30018F30-1B1B-46CB-9252-1D29288A0825}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{30018F30-1B1B-46CB-9252-1D29288A0825}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{30018F30-1B1B-46CB-9252-1D29288A0825}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B6F47973-B227-4825-BB2D-B995F5FE2E9C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B6F47973-B227-4825-BB2D-B995F5FE2E9C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B6F47973-B227-4825-BB2D-B995F5FE2E9C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B6F47973-B227-4825-BB2D-B995F5FE2E9C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{43990779-63AB-4896-8AEE-7B06F7BC6B0B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{43990779-63AB-4896-8AEE-7B06F7BC6B0B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{43990779-63AB-4896-8AEE-7B06F7BC6B0B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{43990779-63AB-4896-8AEE-7B06F7BC6B0B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8846DEF8-E1EB-408E-9316-D85E273E7E09}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8846DEF8-E1EB-408E-9316-D85E273E7E09}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8846DEF8-E1EB-408E-9316-D85E273E7E09}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8846DEF8-E1EB-408E-9316-D85E273E7E09}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6A02BDBB-CBDA-4ADF-81DA-4499666F7C2B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6A02BDBB-CBDA-4ADF-81DA-4499666F7C2B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6A02BDBB-CBDA-4ADF-81DA-4499666F7C2B}.Release|Any CPU.ActiveCfg = Debug|Any CPU
+		{6A02BDBB-CBDA-4ADF-81DA-4499666F7C2B}.Release|Any CPU.Build.0 = Debug|Any CPU
+		{2FBBA795-DFFE-4908-9FB2-99478460FFA9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2FBBA795-DFFE-4908-9FB2-99478460FFA9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2FBBA795-DFFE-4908-9FB2-99478460FFA9}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {C202044C-060B-4F4F-BA8F-EE9F2C196037}
+	EndGlobalSection
+EndGlobal

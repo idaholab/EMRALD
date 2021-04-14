@@ -1,0 +1,11 @@
+{
+	"id": 0,
+	"name": "Default",
+	"desc": "New Model",
+	"ActionList": [],
+	"DiagramList": [],
+	"EventList": [],
+	"LogicNodeList": [],
+  "StateList": [],
+	"VariableList": []
+}

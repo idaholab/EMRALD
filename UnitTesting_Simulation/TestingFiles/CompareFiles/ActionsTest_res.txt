@@ -1,0 +1,5 @@
+Simulation = UnitTestActions
+Runtime = 00:00:53.9077457
+Runs = 10 of 10
+OK Occurred 5 times, Rate =0.5
+Fail Occurred 5 times, Rate =0.5

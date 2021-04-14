@@ -1,0 +1,316 @@
+{
+  "id": 0,
+  "name": "UnitTestActions",
+  "desc": "",
+  "DiagramList": [
+    {
+      "Diagram": {
+        "id": 1,
+        "name": "Main",
+        "desc": "",
+        "diagramType": "dtPlant",
+        "diagramTemplate": "",
+        "diagramLabel": "Plant",
+        "states": [
+          "Start",
+          "S2",
+          "S3",
+          "Fail",
+          "OK",
+          "Terminate"
+        ]
+      }
+    }
+  ],
+  "StateList": [
+    {
+      "State": {
+        "id": 1,
+        "name": "Start",
+        "desc": "",
+        "stateType": "stStart",
+        "diagramName": "Main",
+        "immediateActions": [],
+        "events": [
+          "FiveSec"
+        ],
+        "eventActions": [
+          {
+            "actions": [
+              "Goto_S2"
+            ],
+            "moveFromCurrent": true
+          }
+        ],
+        "geometry": "{ x: 92, y: 97, width: 200, height: 130}"
+      }
+    },
+    {
+      "State": {
+        "id": 2,
+        "name": "S2",
+        "desc": "",
+        "stateType": "stStandard",
+        "diagramName": "Main",
+        "immediateActions": [
+          "Set_V1",
+          "SetV2",
+          "SetV4_String"
+        ],
+        "events": [
+          "FiveSec"
+        ],
+        "eventActions": [
+          {
+            "moveFromCurrent": true,
+            "actions": [
+              "Goto_S3"
+            ]
+          }
+        ],
+        "geometry": "{ x: 400, y: 100, width: 200, height: 180}"
+      }
+    },
+    {
+      "State": {
+        "id": 3,
+        "name": "S3",
+        "desc": "",
+        "stateType": "stStandard",
+        "diagramName": "Main",
+        "immediateActions": [
+          "RunV2_DBLGreaterThan"
+        ],
+        "events": [],
+        "eventActions": [],
+        "geometry": "{ x: 670, y: 110, width: 200, height: 100}"
+      }
+    },
+    {
+      "State": {
+        "id": 4,
+        "name": "Fail",
+        "desc": "",
+        "stateType": "stKeyState",
+        "diagramName": "Main",
+        "immediateActions": [
+          "Goto_Terminate"
+        ],
+        "events": [],
+        "eventActions": [],
+        "geometry": "{ x: 220, y: 330, width: 200, height: 100}"
+      }
+    },
+    {
+      "State": {
+        "id": 5,
+        "name": "OK",
+        "desc": "",
+        "stateType": "stKeyState",
+        "diagramName": "Main",
+        "immediateActions": [
+          "Goto_Terminate"
+        ],
+        "events": [],
+        "eventActions": [],
+        "geometry": "{ x: 690, y: 340, width: 200, height: 100}"
+      }
+    },
+    {
+      "State": {
+        "id": 6,
+        "name": "Terminate",
+        "desc": "",
+        "stateType": "stStandard",
+        "diagramName": "Main",
+        "immediateActions": [],
+        "events": [],
+        "eventActions": [],
+        "geometry": "{ x: 390, y: 500, width: 200, height: 80}"
+      }
+    }
+  ],
+  "ActionList": [
+    {
+      "Action": {
+        "id": 1,
+        "name": "Goto_S2",
+        "desc": "",
+        "actType": "atTransition",
+        "mainItem": "False",
+        "mutExcl": "True",
+        "newStates": [
+          {
+            "toState": "S2",
+            "prob": -1,
+            "failDesc": ""
+          }
+        ],
+        "itemId": 2
+      }
+    },
+    {
+      "Action": {
+        "id": 2,
+        "name": "Set_V1",
+        "desc": "",
+        "actType": "atCngVarVal",
+        "mainItem": "False",
+        "mutExcl": true,
+        "newStates": [],
+        "scriptCode": "if((V4_String == \"Hello\") && (V3_Bool == true))\n  return V1_Int * 2;\nelse\n  return 100;",
+        "variableName": "V1_Int",
+        "codeVariables": [
+          "V2_Dbl",
+          "V3_Bool",
+          "V4_String"
+        ]
+      }
+    },
+    {
+      "Action": {
+        "id": 3,
+        "name": "Goto_S3",
+        "desc": "",
+        "actType": "atTransition",
+        "mainItem": "False",
+        "mutExcl": "True",
+        "newStates": [
+          {
+            "toState": "S3",
+            "prob": -1,
+            "failDesc": ""
+          }
+        ],
+        "itemId": 0
+      }
+    },
+    {
+      "Action": {
+        "id": 4,
+        "name": "RunV2_DBLGreaterThan",
+        "desc": "",
+        "actType": "atRunExtApp",
+        "mainItem": "False",
+        "mutExcl": true,
+        "newStates": [],
+        "makeInputFileCode": "return @\"..\\..\\..\\UnitTesting_Simulation\\TestingFiles\\EMRALDTests\\ActionsTest\\GreaterThanResults.txt \" + V2_Dbl.ToString() + \" 110.0\";",
+        "exePath": "..\\..\\..\\..\\UnitTesting_Simulation\\TestingFiles\\Other\\GreaterThan.exe",
+        "processOutputFileCode": "StreamReader reader = File.OpenText(@\"..\\..\\..\\..\\UnitTesting_Simulation\\TestingFiles\\EMRALDTests\\ActionsTest\\GreaterThanResults.txt\");\nvar s = reader.ReadLine();\nreader.Dispose();\nList<String> retStates = new List<String>();\nif (s == \"True\")\n{\n    retStates.Add(\"+OK\");\n}\nelse\n{\n    retStates.Add(\"+Fail\");\n}\n\nretStates.Add(\"-S3\");\n\nreturn retStates;",
+        "codeVariables": [
+          "V2_Dbl"
+        ]
+      }
+    },
+    {
+      "Action": {
+        "id": 5,
+        "name": "SetV2",
+        "desc": "",
+        "actType": "atCngVarVal",
+        "mainItem": "False",
+        "mutExcl": true,
+        "newStates": [],
+        "scriptCode": "if(V4_String == \"Reset\")\n  return 0.555;\nelse\n  return V2_Dbl * V1_Int;",
+        "variableName": "V2_Dbl",
+        "codeVariables": [
+          "V1_Int",
+          "V4_String"
+        ]
+      }
+    },
+    {
+      "Action": {
+        "id": 6,
+        "name": "Goto_Terminate",
+        "desc": "",
+        "actType": "atTransition",
+        "mainItem": "False",
+        "mutExcl": "True",
+        "newStates": [
+          {
+            "toState": "Terminate",
+            "prob": -1,
+            "failDesc": ""
+          }
+        ],
+        "itemId": 0
+      }
+    },
+    {
+      "Action": {
+        "id": 7,
+        "name": "SetV4_String",
+        "desc": "",
+        "actType": "atCngVarVal",
+        "mainItem": "False",
+        "mutExcl": true,
+        "newStates": [],
+        "scriptCode": "if(V2_Dbl > .555)\n  return \"Reset\";\nelse\n  return \"Hello\";",
+        "variableName": "V4_String",
+        "codeVariables": [
+          "V2_Dbl"
+        ]
+      }
+    }
+  ],
+  "EventList": [
+    {
+      "Event": {
+        "id": 1,
+        "name": "FiveSec",
+        "desc": "",
+        "mainItem": "False",
+        "evType": "etTimer",
+        "allItems": true,
+        "triggerStates": [],
+        "moveFromCurrent": true,
+        "varNames": [],
+        "time": "PT5S"
+      }
+    }
+  ],
+  "LogicNodeList": [],
+  "VariableList": [
+    {
+      "Variable": {
+        "id": 1,
+        "name": "V1_Int",
+        "desc": "",
+        "varScope": "gtGlobal",
+        "value": "100",
+        "type": "int"
+      }
+    },
+    {
+      "Variable": {
+        "id": 2,
+        "name": "V2_Dbl",
+        "desc": "",
+        "varScope": "gtGlobal",
+        "value": "0.555",
+        "type": "double"
+      }
+    },
+    {
+      "Variable": {
+        "id": 3,
+        "name": "V3_Bool",
+        "desc": "",
+        "varScope": "gtGlobal",
+        "value": true,
+        "type": "bool"
+      }
+    },
+    {
+      "Variable": {
+        "id": 4,
+        "name": "V4_String",
+        "desc": "",
+        "varScope": "gtGlobal",
+        "value": "Hello",
+        "type": "string"
+      }
+    }
+  ]
+}

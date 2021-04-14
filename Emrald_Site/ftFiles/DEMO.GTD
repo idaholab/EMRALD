@@ -1,0 +1,13 @@
+DEMO=
+C-MOV-1-FAILS           , C-MOV-1 Fails to Open                                                                                                   
+CCS                     , CCS Fails to Spray Water into the Containment                                                                           
+CCS-SUPPLY              , No Water to the Pump Trains                                                                                             
+CCS-TRAIN-A             , CCS Train A Fails to Supply Flow                                                                                        
+CCS-TRAIN-B             , CCS Train B Fails to Supply Flow                                                                                        
+CCS-TRAINS              , Both Pump Trains Fail to Inject                                                                                         
+E-MOV-1-FAILS           , E-MOV-1 FAILS TO OPEN                                                                                                   
+ECS                     , ECS Fails to Inject Water into the Reactor Vessel                                                                       
+ECS-SUPPLY              , No Water to the Pump Trains                                                                                             
+ECS-TRAIN-A             , ECS Train A Fails to Inject                                                                                             
+ECS-TRAIN-B             , ECS Train B Fails to Inject                                                                                             
+ECS-TRAINS              , Both Pump Trains Fail to Inject                                                                                         

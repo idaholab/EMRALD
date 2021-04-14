@@ -1,0 +1,391 @@
+﻿/// <reference path="types/common.d.ts" />
+/// <reference path="types/wcfservice.d.ts" />
+/// <reference path="promise/promise.d.ts" />
+/// <reference path="types/websql.d.ts" />
+/// <reference path="types/node-webkit.d.ts" />
+/// <reference path="types/node.d.ts" />
+
+'use strict';
+
+
+module ClientModule {
+  //------------- local sqlite service class -------------
+  export class SqliteService {
+    constructor(public transaction: SqlTransaction) { }
+
+    public getRequest(method: string, url: string, data: any): Promise {
+      url = url || '';
+      if (url[0] == '/') url = url.substr(1, url.length);
+      var idx = url.indexOf('?', 0);
+      var proc = "Unspecified";
+      var key = null;
+      if (idx > 0) {
+        var proc = url.substr(0, idx);
+        if (url.indexOf('id') >= 0) {
+          idx = url.indexOf('=');
+          if (idx > 0) {
+            key = parseInt(url.substr(idx + 1, url.length));
+          }
+        }
+      } else if (url != "") {
+        proc = url;
+        url = "";
+      }
+
+      var dataObj = {};
+
+      switch (method) {
+        case "GET":
+          switch (proc.toUpperCase()) {
+            case 'GETFTNODES':
+              return this.getFTNodes(key);
+              break;
+            case 'GETFTTREE':
+              return this.getFTTree(key);
+              break;
+            case 'GETMODELTYPES':
+              return this.getModelTypes();
+              break;
+            case 'GETPHASES':
+              return this.getPhases();
+              break;
+            case 'GETFMINSTANCES':
+              return this.getFMInstances(key);
+              break;
+            case 'GETFIELDOPTIONS':
+              return this.getFieldOptions(key);
+              break;
+            case 'GETFAILUREMODELS':
+              return this.getFailureModels(key);
+              break;
+            default:
+              return null;
+          }
+          break;
+      }
+
+    }
+
+    // ----------------------------------------
+    // "public" section
+    // ----------------------------------------
+    public post(url: string, data: any) {
+      return this.getRequest("POST", url, data);
+    }
+    public get(url: string, data: any) {
+      return this.getRequest("GET", url, data);
+    }
+    public update(url: string, data: any) {
+      return this.getRequest("PUT", url, data);
+    }
+    public delete(url: string, data: any) {
+      return this.getRequest("DELETE", url, data);
+    }
+
+
+    public executeStatement(statement): Promise {
+      return new Promise(
+        function resolver(onSuccess: ICallback, onReject: ICallback) {
+          this.transaction.executeSql(statement, [],
+            function suceeded(tx: SqlTransaction, results: SqlResultSet) {
+              onSuccess(results);
+            },
+            function failed(tx: SqlTransaction, err: SqlError) {
+              onReject(err);
+            })
+        }.bind(this)
+        );
+    }
+
+    public getModelTypes(): Promise {
+      var sql = 'SELECT * FROM dModelTypes';
+      return this.executeStatement(sql);
+    }
+
+    public getPhases(): Promise {
+      var sql = 'SELECT * FROM dPhases';
+      return this.executeStatement(sql);
+    }
+
+    public getFieldOptions(id: number): Promise {
+      if (!id) {
+        console.log("Error: querying 'FieldOptions' without category_id.");
+        return null;
+      }
+      var idStr = '' + id;
+      var sql =
+        'SELECT id, name, value, "desc" as description, dfltFlag as defaultFlag ' +
+        'FROM rFieldOptions ' +
+        'WHERE category_id = ' + idStr +
+        'ORDER BY category_id, id ';
+      return this.executeStatement(sql);
+    }
+
+    public getFailureModels(id?: number): Promise {
+      var sql = 'SELECT * FROM dFailureModels';
+      if (id) {
+        sql += ' WHERE id = ' + id;
+      }
+      return this.executeStatement(sql);
+    }
+
+    public getFMInstances(id: number): Promise {
+      var sql =
+        'SELECT i.*, fo.name as ProcessFlag, ' +
+        'fm.id AS FM_id, fm.name, fm."desc", ' +
+        'fm."source" AS FM_Source, fm.editDataPage, fm.calcFunc, fm.jsCode, ' +
+        'bi.* FROM brFTNode_FMInstance bi ' +
+        'JOIN dFMInstance i ON i.id = bi.fmInstance_ID ' +
+        'JOIN dFailureModels fm ON fm.id = i.failModel_ID ' +
+        'JOIN rFieldOptions fo on fo.id = i.processFlag_FID ';
+      if (id) {
+        sql = sql + 'WHERE bi.ftNode_ID = ' + id;
+      }
+
+      return this.executeStatement(sql);
+    }
+
+
+    public getFTTree(id: any): Promise {
+      if (!id) id = 1;
+      var idStr = '' + id;
+
+      var sqlStm =
+        'WITH FT_CTE AS ( ' +
+        '  SELECT pID, cID FROM brFTNode_Children WHERE pID = ' + idStr + ' UNION ALL ' +
+        '  SELECT e.pID, e.cID FROM brFTNode_Children e JOIN FT_CTE ftCTE ON ftCTE.cID = e.pID) ' +
+        'SELECT * FROM FT_CTE ' +
+        'ORDER BY pid';
+
+      return this.executeStatement(sqlStm);
+    }
+
+
+    public getFTNodes(id: any, withRoot: boolean = true): Promise {
+      if (!id) id = 1;
+      var idStr = '' + id;
+      var sqlStm =
+        'WITH FT_CTE AS( ' +
+        '  SELECT pID, cID FROM brFTNode_Children WHERE pID = ' + idStr + ' UNION ALL ' +
+        '  SELECT e.pID, e.cID FROM brFTNode_Children e JOIN FT_CTE ftCTE ON (ftCTE.cID = e.pID)) ' +
+        'SELECT DISTINCT n.* FROM FT_CTE f ' +
+        'JOIN dFTNodes n ON n.id = f.cid ' + (withRoot ? ' OR n.id = f.pid ' : '') +
+        'ORDER BY n.id ';
+
+      return this.executeStatement(sqlStm);
+    }
+  }
+  
+  //-------------------------- Client class ------------------------
+  export class Client {
+
+    public createSqliteTables(tx: any) {
+      if (typeof tx == 'undefined') return;
+      tx.executeSql('CREATE TABLE IF NOT EXISTS rFieldCategory( ' +
+        'id integer PRIMARY KEY, ' +
+        'name varchar(32) NOT NULL UNIQUE, ' +
+        '"desc" varchar(250), ' +
+        'dataType varchar(50) ' +
+        ');');
+
+      tx.executeSql('CREATE TABLE IF NOT EXISTS rFieldOptions( ' +
+        'id integer PRIMARY KEY, ' +
+        'category_ID integer, ' +
+        'name varchar(60) NOT NULL, ' +
+        'value varchar(250), ' +
+        '"desc" varchar(250), ' +
+        'dfltFlag bit,  ' +
+        'FOREIGN KEY(category_ID) REFERENCES rFieldCategory(id)  ' +
+        ');');
+
+      tx.executeSql('CREATE TABLE IF NOT EXISTS dFTNodes (  ' +
+        'id integer PRIMARY KEY, ' +
+        'name varchar(32) NOT NULL UNIQUE, ' +
+        '"desc" varchar(255) NOT NULL, ' +
+        'altName varchar(32) NOT NULL UNIQUE, ' +
+        '"altDesc" varchar(255) NOT NULL, ' +
+        '"type" varchar(32) NOT NULL, ' +
+        'val1 real NOT NULL, ' +
+        'val2 real NOT NULL, ' +
+        'indep bit NOT NULL, ' +
+        'compl bit NOT NULL ' +
+        ');');
+
+
+      tx.executeSql('CREATE TABLE IF NOT EXISTS dModelTypes ( ' +
+        'id integer PRIMARY KEY, ' +
+        'name varchar(32) NOT NULL UNIQUE, ' +
+        '"desc" varchar(255) NOT NULL, ' +
+        'suffix varchar(3) NOT NULL UNIQUE, ' +
+        'altName varchar(32) UNIQUE, ' +
+        '"altDesc" varchar(255) NOT NULL, ' +
+        'color integer NOT NULL ' +
+        ');');
+
+      tx.executeSql('CREATE TABLE IF NOT EXISTS dPhases ( ' +
+        'id integer PRIMARY KEY, ' +
+        'name varchar(32) UNIQUE, ' +
+        '"desc" varchar(255) NOT NULL, ' +
+        'suffix varchar(3) NOT NULL UNIQUE, ' +
+        'altName varchar(32) UNIQUE, ' +
+        '"altDesc" varchar(255) NOT NULL, ' +
+        'color integer NOT NULL, ' +
+        '"order" integer NOT NULL UNIQUE ' +
+        '); ');
+
+      tx.executeSql('CREATE TABLE IF NOT EXISTS dFailureModels ( ' +
+        'id integer PRIMARY KEY, ' +
+        'name varchar(32) UNIQUE, ' +
+        '"desc" varchar(255) NOT NULL, ' +
+        '"source" CLOB NOT NULL, ' +
+        'editDataPage CLOB NOT NULL, ' + // --web page to modify or show the failure model data
+        'defaultData CLOB NOT NULL, ' + // -- default JSON values for the editDataPage
+        'jsCode CLOB, ' + // --web page to modify or show the failure model data
+        'calcFunc CLOB NOT NULL ' + //-- Some sort of link to calculate the calcProb from FMInstance data
+        ');');
+
+      tx.executeSql('CREATE TABLE IF NOT EXISTS dFMInstance ( ' +
+        'id integer PRIMARY KEY, ' +
+        '"source" CLOB NOT NULL, ' +
+        'data clob NOT NULL, ' + //--JSON or XML for inputs to Failure Model Calculation
+        'calcProb real NOT NULL, ' +
+        'failModel_ID integer NOT NULL, ' +
+        'processFlag_FID int, ' + //--only needed if it is a gate.
+        'FOREIGN KEY(failModel_ID) REFERENCES dFailureModels(id), ' +
+        'FOREIGN KEY(processFlag_FID) REFERENCES rFieldOptions(id) ' +
+        ');');
+
+      tx.executeSql('CREATE TABLE IF NOT EXISTS brFTNode_Children ( ' +
+        'pID integer NOT NULL, ' +
+        'cID integer NOT NULL, ' +
+        'primary key(pID, cID), ' +
+        'FOREIGN KEY(pID) REFERENCES dFTNodes(id), ' +
+        'FOREIGN KEY(cID) REFERENCES dFTNodes(id) ' +
+        ');');
+
+      tx.executeSql('CREATE TABLE IF NOT EXISTS brFTNode_FMInstance ( ' +
+        'ftNode_ID integer, ' + //--FOREIGN KEY REFERENCES dFTNodes(id), 
+        'modelType_ID integer, ' + // --FOREIGN KEY REFERENCES dModelTypes(id), 
+        'phase_ID integer, ' + // --FOREIGN KEY REFERENCES dModelTypes(id), 
+        'fmInstance_ID integer NOT NULL, ' +
+        'primary key(ftNode_ID, modelType_ID, phase_ID), ' +
+        'FOREIGN KEY(ftNode_ID) REFERENCES dFTNodes(id), ' +
+        'FOREIGN KEY(modelType_ID) REFERENCES dModelTypes(id), ' +
+        'FOREIGN KEY(phase_ID) REFERENCES dPhases(id), ' +
+        'FOREIGN KEY(fmInstance_ID) REFERENCES dFMInstance(id) ' +
+        ');');
+
+      tx.executeSql('CREATE TABLE IF NOT EXISTS dResults ( ' +
+        'id integer IDENTITY(1, 1) unique, ' +
+        'itemID integer, ' +// --key of the item solved,
+        'mtPhaseMatrix blob(31), ' +// --matrix of what model type and phase were used for the solve,
+        'itemType char, ' +
+        'cutSets blob, ' +
+        'primary key (itemID, mtPhaseMatrix, itemType) ' +
+        ');');
+
+      tx.executeSql('CREATE TABLE IF NOT EXISTS dResultsFMsUsed ( ' +
+        'result_ID integer, ' +
+        'fm_ID integer, ' +
+        'PRIMARY KEY(result_ID, fm_ID), ' +
+        'FOREIGN KEY(result_ID) REFERENCES dResults(id), ' +
+        'FOREIGN KEY(fm_ID) REFERENCES dFMInstance(id) ' +
+        ');');
+    }
+
+
+    public invoke(url, callbackFn: ICallback) {
+      var isNode = (typeof process !== "undefined" && typeof require !== "undefined");
+      var isNodeWebkit = false;
+
+      //Is this Node.js?
+      if (isNode) {
+        //If so, test for Node-Webkit
+        try {
+          isNodeWebkit = (typeof require('nw.gui') !== "undefined");
+        } catch (e) {
+          isNodeWebkit = false;
+        }
+      }
+
+
+      //running under client/server mode.
+      var onSuccess = function (data: any) {
+        var jsonStr: string = data;
+        //document.body.textContent = data;
+        if (callbackFn)
+          callbackFn(data);
+      }
+
+      var onReject = function (err: Error) { console.log("Error getting ModelTypes, cause: " + err.message); }
+
+      if (isNodeWebkit) {
+        //running under client-only mode.
+        try {
+          var db = window.openDatabase('FaultTreeDB', '1.0', 'Fault Tree Database', 2 * 1024 * 1024);  //10 Gig worth of storage space requested.
+          db.transaction(function (txn) {
+            this.createSqliteTables(txn);
+          }.bind(this));
+          db.transaction(function (txn) {
+            var localSql: SqliteService = new SqliteService(txn);
+            localSql.get(url, null).then(onSuccess, onReject);
+          });
+        }
+        catch (ex) {
+          console.log('openDatabase error, cause: ' + ex.message);
+        }
+      }
+      else {
+//        var wcf: WcfService = new WcfService("http://localhost:1337");
+        var wcf: WcfService = new WcfService("http://ndmasdev:1337");
+        wcf.debugConsoleOn = false;
+        wcf.get(url).then(onSuccess, onReject);
+      }
+    }
+
+    public getFTTree(id: number, cbFn: ICallback) {
+      if (!id) id = 1;
+      if (typeof cbFn == 'function') {
+        this.invoke("getFTTree?id=" + id, cbFn);
+      }
+    }
+
+    public getFTNodes(id: number, cbFn: ICallback) {
+      if (!id) id = 1;
+      if (typeof cbFn == 'function') {
+        this.invoke('getFTNodes?id=' + id, cbFn);
+      }
+    }
+
+    public getModelTypes(cbFn: ICallback) {
+      if (typeof cbFn == 'function') {
+        this.invoke('getModelTypes', cbFn);
+      }
+    }
+
+    public getPhases(cbFn: ICallback) {
+      if (typeof cbFn == 'function') {
+        this.invoke('getPhases', cbFn);
+      }
+    }
+
+    public getFMInstances(id: number, cbFn: ICallback) {
+      if (typeof cbFn == 'function') {
+        this.invoke('getFMInstances?id=' + id, cbFn);
+      }
+    }
+
+    public getFieldOptions(id: number, cbFn: ICallback) {
+      if (typeof cbFn == 'function') {
+        this.invoke('getFieldOptions?id=' + id, cbFn);
+      }
+    }
+
+    public getFailureModels(cbFn: ICallback) {
+      if (typeof cbFn == 'function') {
+        this.invoke('getFailureModels', cbFn);
+      }
+    }
+  }
+}
+

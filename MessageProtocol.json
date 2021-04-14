@@ -1,0 +1,189 @@
+{
+    "description": "schema for open messaging for System Analysis Simulation Coupling with EMRALD, and participating simulation codes",
+    "type": "object",
+    "required": [ "version", "pID", "msgType", "globalRunTime", "desc"],
+	"properties": {
+        "version": {
+			"description": "[major.minor.revision] Server and Client must operate on the same “Major” number for compatability",
+            "type": "string"
+        },
+		"pID": {
+			"description": "packet ID must be a GUID",
+            "type": "string"
+        },
+		"msgType": {
+			"description": "type of message in the oneOf. (ie - only must have an item named the same as the enum assigned minus the 'mt')",
+            "enum": ["mtOther", "mtRegister", "mtCompEv", "mtCompModify", "mtSimAction", "mtResponse"]
+        },
+		"globalRunTime": {
+			"description": "Time since beginning of main simulation.  If sub simulation and unknown or can't calculate use '00:00:00'.",
+            "type": "string"
+        },
+		"desc": {
+			"description": "User readable info for message. Mainly for debug of model run.",
+            "type": "string"
+        },
+		"time": {
+			"description": "Optional - time of event or for action. For example when an event occured or future time when to execute an action.",
+            "type": "string"
+        }
+	},
+	"oneOf": [
+	    { "$ref": "#/definitions/mtRegister" },
+		{ "$ref": "#/definitions/mtOther" },
+		{ "$ref": "#/definitions/mtCompEv" },
+		{ "$ref": "#/definitions/mtCompModify" },
+		{ "$ref": "#/definitions/mtSimAction" },
+		{ "$ref": "#/definitions/mtResponse" }
+	],
+	"definitions": {
+		"compEvBase": {
+            "properties": {
+				"compID": {
+					"description": "The common identification id of the component between codes",
+					"type": "integer"
+				},
+				"info": {
+					"description": "string of data probably JSON, specific for external code data transfer and use by user defined scripts or custom code in EMRALD to drive decisions",
+					"type": "string"
+				}
+            }
+        },
+		"mtRegister": {
+            "properties": {
+				"register": {
+					"description": "pass this message affter connecting to XMPP server to register a simulation to be used by others",
+                    "type": "object",
+                    "required": ["clientName", "appName"],
+                    "properties": {
+						"clientName": {
+							"description": "clent connection name should be the username for the XMPP connect. ClientName with appName must be unique for all connected to the server.",
+							"type": "string"
+						},
+						"appName": {
+							"description": "name of the application running. Multiple instances of an application can be connected, but each must generate a unique clientName",
+							"type": "string"
+						}
+					}					
+                }
+            },
+            "required": [ "otherMsg" ]
+        },
+		"mtOther": {
+            "properties": {
+				"otherMsg": {
+					"description": "Other string being passed that both sided know what to do with",
+                    "type": "object",
+                    "required": ["evID"],
+                    "allof" : [
+					{"$ref":"#definitions/compEvBase"},
+					{
+						"properties": {
+							"evID": {
+								"description": "id defined by the user or exteral code, unique by (XMPP client connection ID and evID)",
+								"type": "string"
+							}
+						}
+					}]						
+                }
+            },
+            "required": [ "otherMsg" ]
+        },
+        "mtCompEv": {
+			"properties": {
+                "compEv": {
+					"description": "An event that occured to a component.",
+                    "type": "object",
+                    "required": ["compID", "evID"],
+                    "allof" : [
+					{"$ref":"#definitions/compEvBase"},
+					{
+						"properties": {
+							"evID": {
+								"description": "id defined by the user or exteral code, unique by (XMPP client connection ID and evID)",
+								"type": "string"
+							}
+						}
+					}]
+						
+                }
+            },
+            "required": [ "compEv" ]
+        },
+        "mtCompModify": {
+            "properties": {
+                "compModify": {
+					"description": "Modify the value of a component, use either field value pair or custom format (like JSON) in info",
+                    "type": "object",
+					"oneOf":[
+						{"required": ["compID", "info"]}, 
+						{"required": ["compID", "field", "value"]}
+					],
+					"allof" : [
+					{"$ref":"#definitions/mtBase"},
+					{
+						"properties": {
+							"field": {
+								"description": "field to have the value changed",
+								"type": "string"
+							},
+							"value": {
+								"description": "new value for the field",
+								"type": "string"
+							}
+						}
+					}]                    
+                }
+            },
+             "required": ["compModify"]
+        },
+        "mtSimAction": {
+            "properties": {
+                "simAction": {
+					"description": "An action to be taken by child simulation",
+                    "type": "object",
+                    "required": ["actType", "reqResponse"],
+                    "properties": {
+						"actType": {
+							"description": "type of action to be taken by child simulation",
+							"enum": ["atStartSim", "atCancelSim", "atContinue", "atTimer", "atReset", "atBackup", "atPing", "atStatus"]
+						},
+						"reqResponse": {
+							"description": "Is a response from reciver required",
+							"type": "boolean"
+						}
+					}
+						
+                }
+            },
+            "required": [ "simAction" ]
+        },
+        "mtResponse": {
+            "properties": {
+                "resonse": {
+					"description": "A response message to one recieved",
+                    "type": "object",
+                    "required": ["parentMsgID", "responseType"],
+                    "properties": {
+						"parentMsgID": {
+							"description": "pID of the message this is responding to",
+							"type": "string"
+						},
+						"responseType": {
+							"description": "response type",
+							"enum": ["rtReturnPing", "rtStatus"]
+						},
+						"info": {
+							"description": "custom data if needed preferably a JSON string",
+							"type": "string"
+						}						
+					}						
+                }
+            },
+            "required": [ "response" ]
+        }
+    }
+}
+
+
+

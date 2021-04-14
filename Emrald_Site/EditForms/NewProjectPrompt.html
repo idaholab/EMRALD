@@ -1,0 +1,81 @@
+﻿<!--Copyright 2021 Battelle Energy Alliance-->
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>New Project</title>
+    <meta charset="utf-8" />
+    <script type="text/javascript">
+        //these are function implementation required for the framewindow.
+        var isDirty = false;
+        function isModified() {
+            return isDirty;
+        }
+
+        function ValidateData() {
+            return "";
+        }
+
+        function setModified(state) {
+            isDirty = state;
+        }
+
+        var promptData = null;
+        function OnLoad(dataObj) {
+            promptData = dataObj || {};
+            var el = document.getElementById("NewProjectName");
+            if (el) {
+                el.value = promptData.projectName;
+            }
+            el = document.getElementById("NewProjectDescription");
+            if (el) {
+                el.value = promptData.projectDescription;
+            }
+        }
+        function GetDataObject() {
+            return promptData;
+        }
+
+        function OnSave() {
+            isDirty = false;
+        }
+
+        //a new data package is sent from the parent window frame.
+        function DataChanged(dataObj) {
+            OnLoad(dataObj);
+        }
+
+        function somethingChanged() {
+            isDirty = true;
+            var el = document.getElementById("NewProjectName");
+            if (el) {
+                promptData.projectName = el.value;
+            }
+            el = document.getElementById("NewProjectDescription");
+            if (el) {
+                promptData.projectDescription = el.value;
+            }
+            if (typeof UpdateBttns === "function")
+                UpdateBttns();
+        }
+
+        //window.onload = function () {
+        //  OnLoad({ projectName: "Sim1", projectDescription: "Project description here." });
+        //}
+
+    </script>
+</head>
+<body>
+    New simulation project name and description. <br />
+    <div style="width:450px;">
+        <div style="display:table-row;">
+            <label style="display:table-cell;">Name:</label>
+            <input id="NewProjectName" style="display:table-cell;width:150px;" type="text" value="" onkeyup="somethingChanged();" />
+        </div>
+        <div style="display:table-row;">
+            <label style="display:table-cell;">Description:</label>
+            <input id="NewProjectDescription" style="display:table-cell;width:300px;" type="text" value="" onkeyup="somethingChanged();" />
+        </div>
+    </div>
+</body>
+</html>

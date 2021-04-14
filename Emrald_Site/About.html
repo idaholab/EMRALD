@@ -1,0 +1,166 @@
+﻿<!--Copyright 2021 Battelle Energy Alliance-->
+
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title>About...</title>
+  <style type="text/css">
+    @-webkit-keyframes spincube {
+  from,to {
+    -webkit-transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg);
+  }
+
+  16% {
+    -webkit-transform: rotateY(90deg) rotate(-90deg);
+  }
+
+  33% {
+    -webkit-transform: rotateX(90deg) rotateY(-90) rotateZ(90deg);
+  }
+
+  50% {
+    -webkit-transform: rotateY(-180deg) rotateZ(-90deg);
+  }
+
+  66% {
+    -webkit-transform: rotateY(-270deg) rotateX(90deg);
+  }
+
+  83% {
+    -webkit-transform: rotateY(-90deg);
+  }
+}
+
+@keyframes spincube {
+  from,to {
+    -moz-transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg);
+    -ms-transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg);
+    transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg);
+  }
+
+  16% {
+    -moz-transform: rotateY(-90deg);
+    -ms-transform: rotateY(-90deg);
+    transform: rotateY(-90deg);
+  }
+
+  33% {
+    -moz-transform: rotateY(-90deg) rotateZ(90deg);
+    -ms-transform: rotateY(-90deg) rotateZ(90deg);
+    transform: rotateY(-90deg) rotateZ(90deg);
+  }
+
+  50% {
+    -moz-transform: rotateY(-180deg) rotateZ(90deg);
+    -ms-transform: rotateY(-180deg) rotateZ(90deg);
+    transform: rotateY(-180deg) rotateZ(90deg);
+  }
+
+  66% {
+    -moz-transform: rotateY(-270deg) rotateX(90deg);
+    -ms-transform: rotateY(-270deg) rotateX(90deg);
+    transform: rotateY(-270deg) rotateX(90deg);
+  }
+
+  83% {
+    -moz-transform: rotateX(90deg);
+    -ms-transform: rotateX(90deg);
+    transform: rotateX(90deg);
+  }
+}
+
+.cubespinner {
+  -webkit-animation-name: spincube;
+  -webkit-animation-timing-function: ease-in-out;
+  -webkit-animation-iteration-count: infinite;
+  -webkit-animation-duration: 12s;
+  animation-name: spincube;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+  animation-duration: 12s;
+  -webkit-transform-style: preserve-3d;
+  -moz-transform-style: preserve-3d;
+  -ms-transform-style: preserve-3d;
+  transform-style: preserve-3d;
+  -webkit-transform-origin: 100px 100px 0;
+  -moz-transform-origin: 100px 100px 0;
+  -ms-transform-origin: 100px 100px 0;
+  transform-origin: 100px 100px 0;
+}
+
+  .cubespinner div {
+    position: absolute;
+    width: 200px;
+    height: 200px;
+    border: 1px solid #ccc;
+    background: rgba(255,255,255,.8);
+    box-shadow: inset 0 0 20px rgba(0,0,0,.2);
+    text-align: center;
+    font-size: 100px;
+  }
+
+  .cubespinner .face1 {
+    -webkit-transform: translateZ(100px);
+    -moz-transform: translateZ(100px);
+    -ms-transform: translateZ(100px);
+    transform: translateZ(100px);
+  }
+
+  .cubespinner .face2 {
+    -webkit-transform: rotateY(90deg) translateZ(100px);
+    -moz-transform: rotateY(90deg) translateZ(100px);
+    -ms-transform: rotateY(90deg) translateZ(100px);
+    transform: rotateY(90deg) translateZ(100px);
+  }
+
+  .cubespinner .face3 {
+    -webkit-transform: rotateY(90deg) rotateX(90deg) translateZ(100px);
+    -moz-transform: rotateY(90deg) rotateX(90deg) translateZ(100px);
+    -ms-transform: rotateY(90deg) rotateX(90deg) translateZ(100px);
+    transform: rotateY(90deg) rotateX(90deg) translateZ(100px);
+  }
+
+  .cubespinner .face4 {
+    -webkit-transform: rotateY(180deg) rotateZ(90deg) translateZ(100px);
+    -moz-transform: rotateY(180deg) rotateZ(90deg) translateZ(100px);
+    -ms-transform: rotateY(180deg) rotateZ(90deg) translateZ(100px);
+    transform: rotateY(180deg) rotateZ(90deg) translateZ(100px);
+  }
+
+  .cubespinner .face5 {
+    -webkit-transform: rotateY(-90deg) rotateZ(90deg) translateZ(100px);
+    -moz-transform: rotateY(-90deg) rotateZ(90deg) translateZ(100px);
+    -ms-transform: rotateY(-90deg) rotateZ(90deg) translateZ(100px);
+    transform: rotateY(-90deg) rotateZ(90deg) translateZ(100px);
+  }
+
+  .cubespinner .face6 {
+    -webkit-transform: rotateX(-90deg) translateZ(100px);
+    -moz-transform: rotateX(-90deg) translateZ(100px);
+    -ms-transform: rotateX(-90deg) translateZ(100px);
+    transform: rotateX(-90deg) translateZ(100px);
+  }
+  </style>
+</head>
+<body style="margin:5em;">
+  <div>
+    <div class="stage" style="width: 200px; height: 200px; float:left;">
+      <div class="cubespinner">
+        <div class="face1"><img src="images/emerald.png" style="width:100px; height: 100px; margin:50px;" /></div>
+        <div class="face2"><img src="images/OrGate.png" style="width:100px; height: 100px; margin:50px;" /></div>
+        <div class="face3"><img src="images/AndGate.png" style="width:100px; height: 100px; margin:50px;" /></div>
+        <div class="face4"><img src="images/BE.png" style="width:100px; height: 100px; margin:50px;" /></div>
+        <div class="face5"><img src="images/icons48/earth.png" style="width:100px; height: 100px; margin:50px;" /></div>
+        <div class="face6"><img src="images/icons48/server.png" style="width:100px; height: 100px; margin:50px;" /></div>
+      </div>
+    </div>
+    <div style="margin-left: 220px;">
+        <h2><u>EMRALD Model Editor</u></h2>
+        <p>Version: 0.0.1.1 Concept</p>
+        <p><i>Copyright 2021, Battelle Energy Alliance, LLC <br />
+               All rights reserved. All trademarks and service marks are the properties of their respective owners.
+</i></p>
+    </div>
+  </div>
+</body>
+</html>
