@@ -1,0 +1,37 @@
+﻿{
+  "sidebar":
+  {
+    "categories": [
+      {
+        "title": "Diagrams",
+        "id": "DiagramsPanel_id"
+      },
+      {
+        "title": "Logic Tree",
+        "id": "LogicTreesPanel_id"
+      },
+      {
+        "title": "External Sims",
+        "id": "ExtSimPanel_id"
+      }
+    ],
+    "dynamCategories": [
+      {
+        "title": "Actions",
+        "id": "ActionsPanel_id"
+      },
+      {
+        "title": "Events",
+        "id": "EventsPanel_id"
+      },
+      {
+        "title": "Variables",
+        "id": "VariablesPanel_id"
+      },
+      {
+        "title": "States",
+        "id": "StatesPanel_id"
+      }
+    ]
+  }
+}

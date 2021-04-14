@@ -1,0 +1,21 @@
+﻿{
+  "LabelList": [
+    {
+      "diagramLabel": "Component",
+      "diagramType": "dtComponent"
+    },
+    {
+      "diagramLabel": "Plant",
+      "diagramType": "dtPlant"
+    },
+    {
+      "diagramLabel": "System",
+      "diagramType": "dtComponent"
+    },
+    {
+      "diagramLabel": "Other",
+      "diagramType": "dtOther"
+    }
+  ]
+}
+

@@ -1,0 +1,67 @@
+﻿{
+  "menu": [
+    {
+      "title": "Project",
+      "fnc": "",
+      "submenu": [
+        {
+          "title": "New",
+          "fnc": "newProject",
+          "submenu": null
+        },
+        {
+          "title": "Open",
+          "fnc": "openProject",
+          "submenu": null
+        },
+        {
+          "title": "Save",
+          "fnc": "saveProject",
+          "submenu": null
+        },
+        {
+          "title": "Export Templates",
+          "fnc": "saveTemplate",
+          "submenu": null
+        },
+        {
+          "title": "Load Demo",
+          "fnc": "createDemo",
+          "submenu": null
+        }
+
+      ]
+    },
+    {
+      "title": "Download",
+      "fnc": "",
+      "submenu": [
+        {
+          "title": "Solver Engine",
+          "fnc": "downloadSolver",
+          "submenu": null
+        },
+        {
+          "title": "Client Tester",
+          "fnc": "downloadClientTester",
+          "submenu": null
+        },
+        {
+          "title": "Client Tester Source",
+          "fnc": "downloadClientTesterSource",
+          "submenu": null
+        }
+      ]
+    },
+    {
+      "title": "Help",
+      "fnc": "openHelp",
+      "submenu": null
+    },
+    {
+      "title": "About",
+      "fnc": "openAbout",
+      "submenu": null
+    }
+      ]
+    }
