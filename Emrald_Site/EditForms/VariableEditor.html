@@ -78,18 +78,15 @@
                     <div style="display: table-row;">
                         <label style="display: table-cell; vertical-align: top;">Var Link:</label>
                         <textarea rows="4" cols="40" ng-model="data.varLink"></textarea>
+                        <div id="ExistOnStartupPanel" style="white-space: nowrap;">
+                            <input type="checkbox" name="ResetOnRuns" id="ExistOnStartup" value="false" ng-model="data.resetOnRuns" />
+                            <label for="ExistOnStartup">Doc Path and Var Link must exist on startup.</label>
+                        </div>
                     </div>
 
 
 
                     <div ng-if="data.docType.value == 'dtTextRegEx'" style="display: contents;">
-                        <div id="ExistOnStartupPanel" style="white-space: nowrap; display: table-row;">
-                            <div style="display: table-cell"></div>
-                            <div style="display: table-cell">
-                                <input type="checkbox" name="ResetOnRuns" id="ExistOnStartup" value="false" ng-model="data.resetOnRuns" />
-                                <label for="ExistOnStartup">Doc Path and Var Link must exist on startup.</label>
-                            </div>
-                        </div>
                         <div id="RegExLinePanel" style="display: table-row;">
                             <div style="display: table-cell; white-space: nowrap;">
                                 <input type="checkbox" id="RegExLineChk" name="RegExLineChk" ng-model="data.useRegExLine">
