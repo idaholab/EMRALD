@@ -317,7 +317,7 @@ function OnLoad(dataObj) {
                     opTypeEl.selectedIndex = 3;
                     scope.data.timer.useVariable = eventData.useVariable;
                     if (eventData.useVariable) {
-                        scope.data.timer.variableName = eventData.time;
+                        scope.data.timer.variableName = scope.data.timer.allowedVariables.find(x => { return x.name === eventData.time });
                         scope.data.timer.variableUnit = eventData.timeVariableUnit;
                     } else {
                         scope.time = fromTimespan(eventData.time);
@@ -332,7 +332,7 @@ function OnLoad(dataObj) {
                         scope.data.failureRate.lambda.lambda = eventData.lambda;
                     }
                     else {
-                        scope.data.failureRate.lambda.variableName = eventData.lambda;
+                        scope.data.failureRate.lambda.variableName = scope.data.failureRate.lambda.allowedVariables.find(x => { return x.name === eventData.lambda });
                     }
 
                     scope.data.failureRate.lambda.useVariable = eventData.useVariable;
@@ -420,7 +420,7 @@ function GetDataObject() {
         case "etTimer":
             dataObj.useVariable = scope.data.timer.useVariable;
             if (scope.data.timer.useVariable) {
-                dataObj.time = scope.data.timer.variableName;
+                dataObj.time = scope.data.timer.variableName.name;
                 dataObj.timeVariableUnit = scope.data.timer.variableUnit;
             } else {
                 dataObj.time = toTimespan(scope.time);
@@ -429,7 +429,7 @@ function GetDataObject() {
             break;
         case "etFailRate":
             if (scope.data.failureRate.lambda.useVariable) {
-                dataObj.lambda = scope.data.failureRate.lambda.variableName;
+                dataObj.lambda = scope.data.failureRate.lambda.variableName.name;
             } else {
                 dataObj.lambda = parseFloat(scope.data.failureRate.lambda.lambda);
             }
