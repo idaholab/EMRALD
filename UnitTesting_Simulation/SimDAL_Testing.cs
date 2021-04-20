@@ -302,9 +302,6 @@ namespace UnitTesting_Simulation
       else
         throw new Exception("Failed to find create json file for " + testName);
 
-=======
-      
->>>>>>> cbe5142 (Added framework and example for unit test of an StateCng Event)
       dynamic jsonObj = JsonConvert.DeserializeObject(jsonModel);
       EmraldModel mainModel = new EmraldModel(); //for some items, if the item JSON references other items they will need to be added to the main model
       ev.DeserializeDerived(jsonObj, true, mainModel, false);
@@ -316,16 +313,12 @@ namespace UnitTesting_Simulation
       //Assert.False(ev.EventTriggered());
 
       //Reference any regression tests in SimEngineTests that covers this.  
-<<<<<<< HEAD
-      //...\UnitTesting\Models\ExpDistTestFINAL.json
-=======
->>>>>>> cbe5142 (Added framework and example for unit test of an StateCng Event)
 
       //make sure the JSON returned for the item is good 
       string retJsonStr = ev.GetJSON(true, mainModel);
       Assert.True(CompareJSON(retJsonStr, jsonModel));
     }
-<<<<<<< HEAD
+
 
     [Fact]
     public void NormDistEventTest()
@@ -429,8 +422,7 @@ namespace UnitTesting_Simulation
     /// //////////////
     // Action Tests
     //////////////////
-=======
->>>>>>> cbe5142 (Added framework and example for unit test of an StateCng Event)
+
   }
 }
 
