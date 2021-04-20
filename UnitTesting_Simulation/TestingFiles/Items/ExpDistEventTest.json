@@ -1,0 +1,15 @@
+    {
+      "Event": {
+        "id": 1,
+        "name": "ExpEvent",
+        "desc": "",
+        "mainItem": "False",
+        "evType": "etExponentialDist",
+        "allItems": true,
+        "triggerStates": [],
+        "moveFromCurrent": true,
+        "varNames": [],
+        "rate": 10,
+        "timeRate": "trHours"
+      }
+    }

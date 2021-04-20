@@ -1,0 +1,21 @@
+    {
+      "Event": {
+        "id": 1,
+        "name": "NormEvent",
+        "desc": "",
+        "mainItem": "False",
+        "evType": "etNormalDist",
+        "allItems": true,
+        "triggerStates": [],
+        "moveFromCurrent": true,
+        "varNames": [],
+        "mean": 24,
+        "std": 10,
+        "min": 0,
+        "max": 1,
+        "meanTimeRate": "trHours",
+        "stdTimeRate": "trMinutes",
+        "minTimeRate": "trHours",
+        "maxTimeRate": "trYears"
+      }
+    }

@@ -1,0 +1,12 @@
+    {
+      "Event": {
+        "id": 47,
+        "name": "LOSP",
+        "desc": "",
+        "mainItem": false,
+        "evType": "etFailRate",
+        "lambda": 2.3,
+        "lambdaTimeRate": "P365D",
+        "missionTime": "P365D"
+      }
+    }

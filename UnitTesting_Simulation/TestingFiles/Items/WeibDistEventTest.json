@@ -1,0 +1,15 @@
+    {
+      "Event": {
+        "id": 4,
+        "name": "WeibullEvent",
+        "desc": "",
+        "mainItem": "False",
+        "evType": "etWeibullDist",
+        "allItems": true,
+        "triggerStates": [],
+        "moveFromCurrent": true,
+        "varNames": [],
+        "shape": 24,
+        "scale": 4,
+        "timeRate": "trHours"
+      }

@@ -1,0 +1,15 @@
+    {
+      "Event": {
+        "id": 2,
+        "name": "ExtSim",
+        "desc": "",
+        "mainItem": false,
+        "evType": "et3dSimEv",
+        "allItems": true,
+        "triggerStates": [],
+        "moveFromCurrent": false,
+        "varNames": [],
+        "variable": "ExtSimVar",
+        "code": "return ExtSimVar < 1;"
+      }
+    }

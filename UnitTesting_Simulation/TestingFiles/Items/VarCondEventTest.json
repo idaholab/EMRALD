@@ -1,0 +1,16 @@
+    {
+      "Event": {
+        "id": 1,
+        "name": "VarCond",
+        "desc": "",
+        "mainItem": false,
+        "evType": "etVarCond",
+        "allItems": true,
+        "triggerStates": [],
+        "moveFromCurrent": false,
+        "varNames": [
+          "Var1"
+        ],
+        "code": "return Var1 < 1;"
+      }
+    }

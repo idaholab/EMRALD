@@ -1,0 +1,12 @@
+
+    {
+      "Event": {
+        "id": 43,
+        "name": "ECS_Sys_Eval",
+        "desc": "",
+        "mainItem": false,
+        "evType": "etComponentLogic",
+        "onSuccess": "false",
+        "logicTop": "ECS_TOP"
+      }
+    }
