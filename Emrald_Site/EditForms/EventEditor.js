@@ -46,11 +46,11 @@ function toTimespan(ts) {
         return "P0DT0H0M0S";
     }
     var duration = 'P'
-        + ((!isNaN(ts.days) && (ts.days != "")) ? ts.days + 'D' : '')
-        + (((!isNaN(ts.hours) && (ts.hours != "")) || (!isNaN(ts.minutes) && (ts.minutes != "")) || (!isNaN(ts.seconds) && (ts.days != ""))) ? 'T' : '')
-        + ((!isNaN(ts.hours) && (ts.hours != "")) ? ts.hours + 'H' : '')
-        + ((!isNaN(ts.minutes) && (ts.minutes != "")) ? ts.minutes + 'M' : '')
-        + ((!isNaN(ts.seconds) && (ts.seconds != "")) ? ts.seconds + 'S' : '');
+        + ((isNumeric(ts.days) && (ts.days != "")) ? ts.days + 'D' : '')
+        + (((isNumeric(ts.hours) && (ts.hours != "")) || (isNumeric(ts.minutes) && (ts.minutes != "")) || (isNumeric(ts.seconds) && (ts.days != ""))) ? 'T' : '')
+        + ((isNumeric(ts.hours) && (ts.hours != "")) ? ts.hours + 'H' : '')
+        + ((isNumeric(ts.minutes) && (ts.minutes != "")) ? ts.minutes + 'M' : '')
+        + ((isNumeric(ts.seconds) && (ts.seconds != "")) ? ts.seconds + 'S' : '');
 
     return duration;
 }
@@ -329,7 +329,7 @@ function OnLoad(dataObj) {
                     scope.lambdaTimeRate = fromTimespan(eventData.lambdaTimeRate);
 
                     if (isNumeric(eventData.lambda)) {
-                        scope.lambda = eventData.lambda;
+                        scope.data.failureRate.lambda.lambda = eventData.lambda;
                     }
                     else {
                         scope.data.failureRate.lambda.variableName = eventData.lambda;
@@ -431,7 +431,7 @@ function GetDataObject() {
             if (scope.data.failureRate.lambda.useVariable) {
                 dataObj.lambda = scope.data.failureRate.lambda.variableName;
             } else {
-                dataObj.lambda = parseFloat(scope.lambda);
+                dataObj.lambda = parseFloat(scope.data.failureRate.lambda.lambda);
             }
             dataObj.lambdaTimeRate = toTimespan(scope.lambdaTimeRate);
             dataObj.useVariable = scope.data.failureRate.lambda.useVariable;
@@ -542,6 +542,7 @@ EEApp.controller("EEController", function ($scope) {
         },
         failureRate: {
             lambda: {
+                lambda: 0,
                 useVariable: false,
                 variableName: "",
                 allowedVariables: []
@@ -570,9 +571,13 @@ EEApp.controller("EEController", function ($scope) {
     $scope.logicTops = [];
     $scope.logicTop = null;
     //timer
-    $scope.time = "";
+    $scope.time = {
+        days: null,
+        hours: null,
+        minutes: null,
+        seconds: null
+    };
     //Fail Probability
-    $scope.lambda = 0;
     $scope.lambdaTimeRates = [];
     $scope.lambdaTimeRate = {
         days: null,

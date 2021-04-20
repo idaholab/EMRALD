@@ -232,7 +232,7 @@
                     <div style="display: table-row">
                         <span class="item_caption" style="display:table-cell;vertical-align:middle; white-space:nowrap;">Lambda/Freq:</span>
                         <div style="display: table-cell" ng-if="!data.failureRate.lambda.useVariable">
-                            <input name="LambdaFrequency" ng-model="lambda" onfocusout="validateNumber(this);" /><span ng-style="lambdaError" style="color:red"> Invalid number </span>
+                            <input name="LambdaFrequency" ng-model="data.failureRate.lambda.lambda" onfocusout="validateNumber(this);" /><span ng-style="lambdaError" style="color:red"> Invalid number </span>
                         </div>
                         <div style="display: table-cell" ng-if="data.failureRate.lambda.useVariable">
                             <select style="display: table-cell;" ng-model="data.failureRate.lambda.variableName" ng-options="x.name for x in data.failureRate.lambda.allowedVariables">
