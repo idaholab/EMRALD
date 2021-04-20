@@ -1325,12 +1325,10 @@ namespace SimulationDAL
             throw new Exception("Failed to find variable named " + varName);
 
           makeInputFileCompEval.SetVariable(curVar.name, curVar.dType, curVar.value);
-          processOutputFileCompEval.SetVariable(curVar.name, curVar.dType, curVar.value);
         }
 
         makeInputFileCompEval.SetVariable("CurTime", typeof(double), curTime.TotalHours);
-        makeInputFileCompEval.SetVariable("ExePath", typeof(string), Path.GetDirectoryName(exePath));
-        
+        makeInputFileCompEval.SetVariable("ExePath", typeof(string), Path.GetDirectoryName(exePath));        
       }
 
       //add if in states
@@ -1404,6 +1402,18 @@ namespace SimulationDAL
       processOutputFileCompEval.SetVariable("CurTime", typeof(double), curTime.TotalHours);
       processOutputFileCompEval.SetVariable("ExeExitCode", typeof(int), exitCode);
       processOutputFileCompEval.SetVariable("outputFile", typeof(string), exeOutputPath + "\\_out.txt");
+      //Set all the variable values
+      if (codeVariables != null)
+      {
+        foreach (string varName in codeVariables)
+        {
+          SimVariable curVar = lists.allVariables.FindByName(varName);
+          if (curVar == null)
+            throw new Exception("Failed to find variable named " + varName);
+
+          processOutputFileCompEval.SetVariable(curVar.name, curVar.dType, curVar.value);
+        }
+      }
 
       List<String> retStates = processOutputFileCompEval.EvaluateStrList();
       System.Threading.Thread.Sleep(10);

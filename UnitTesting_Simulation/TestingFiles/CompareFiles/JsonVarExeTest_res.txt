@@ -1,0 +1,4 @@
+Simulation = JsonVarExeTest
+Runtime = 00:00:02.8421011
+Runs = 10 of 10
+LT Occurred 10 times, Rate =1
