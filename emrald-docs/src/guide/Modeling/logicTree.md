@@ -1,16 +1,14 @@
 # Logic Trees
    Once components are modeled, a logic tree similar to a Fault Tree from traditional modeling can be constructed. Logic trees allow for complex behavior to be easily 
-   modeled. An equivalent model using only Markov type of modeling would require exponential growing and complex models.
+   modeled. An equivalent model using only Markov type modeling would require exponential growing and complex models.
    A standard use of Logic trees would be in System diagram models with just two states and a special event used to evaluate Boolean logic. 
    The two states are "Active" and "Failed", with a "Component Logic" event in the active state evaluating the assigned logic whenever a component diagram 
    state changes. If the logic ever evaluates to false, then the current state shifts from "Active" to "Failed". As shown in the System Diagram example in the [Types of Diagrams: System](./diagrams.md#system) section.
-<!--TODO Courtney add reference to the Diagrams/system section
-Completed -Courtney -12/9/2020--> 
    
    The following will give introductions to all the elements seen in the Fault Tree Editor and how to use them to construct a logic tree.
 
    The Fault Tree editor consists of the <span style="color:blue">Tools Window</span>, <span style="color:green">Navigation Window</span>, and the <span style="color:red">Editing Area</span>. 
-   <!--Editing Area can be changed. Best name I could come up with without using Modeling Area again. -Courtney -->
+
    ![Fault Tree Editor](/images/Modeling/logicTree/FaultTreeEditor.PNG) Each section will be explained in detail below.
 
 ## Tools Window
@@ -51,7 +49,7 @@ Completed -Courtney -12/9/2020-->
   <ins>Option 2:</ins> In the Editing Area, click on the green circle with the white plus sign in the bottom left corner of the gate you would like to add a new gate under.<br> 
   <div style="width:500px">![Add Gate Option 2 Step 1](/images/Modeling/logicTree/AddGateOpt2.PNG)</div>
    
-  A Edit Forms/Gate Adder window will appear. Fill it out and click "OK."<br>
+  A Edit Forms/Gate Adder window will appear. Fill it out and click "OK." A description is optional.<br>
   <div style="width:500px">![Add Gate Option 2 Step 2](/images/Modeling/logicTree/AddGateOpt2_2.PNG)</div>
   
   The gate will appear in the Editing Area under the branch you added it to.<br> 
@@ -72,11 +70,8 @@ Completed -Courtney -12/9/2020-->
   <div style="width:500px">![Delete Gate Step 2](/images/Modeling/logicTree/DeleteGate2.PNG)</div>
 
 ## Basic Events
-<!--TODO Courtney - image below is not showing up.
-Completed -Courtney -12/9/2020-->
+
   <img src="/images/Modeling/logicTree/BasicEventElement.PNG" alt="Basic Event" width="300"/>
-  <!--TODO Courtney, Highlight items in the toolbar item or new items added in pictures
-  Completed -Courtney -12/9/2020-->
 
   **Adding a Basic Event**<br>
   <ins>Option 1:</ins> From the Tools Window, click and hold on to the Basic Event icon and drag it to the bottom of the desired gate in the Modeling Area until a plus symbol appears then release your mouse.<br>
@@ -118,5 +113,3 @@ Completed -Courtney -12/9/2020-->
   |<div style="width:50px">![Delete](/images/Modeling/logicTree/delete.PNG)</div>|Click to delete the element|
   |<div style="width:25px">![Collapse and Expand](/images/Modeling/logicTree/CollapseIcon.PNG)</div>|Click to collapse the branches below the gate|
   |<div style="width:25px">![Expand](/images/Modeling/logicTree/ExpandIcon.PNG)</div>|Click to expand the branches below the gate|
-
-<!--Copyright 2021 Battelle Energy Alliance-->

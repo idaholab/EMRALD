@@ -52,7 +52,7 @@ Diagram elements are tabulated by States, Events, Actions, and Arrows in the fol
   |![Green Arrow](/images/Modeling/icons/GreenArrow.PNG)|Indicates movement from one state to another|
   |![Black Arrow](/images/Modeling/icons/BlackArrow.PNG)|Indicates forced exit from one state to another|
 
-  See [Diagrams](/guide/Modeling/diagrams.md) for more information.
+  See [Arrows](./diagrams.md#arrows) on the Diagrams page for more information.
 
 ## Logic Trees
    ![Fault Tree Editor](/images/Modeling/logicTree/FaultTreeEditor.PNG) <br>

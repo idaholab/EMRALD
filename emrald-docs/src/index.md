@@ -13,4 +13,3 @@ features:
   details: Providing the sequence and timing of events that lead to the specified outcomes when calculating results
 footer: Made and maintained with ❤️ by the EMRALD Team @INL
 ---
-<!--Copyright 2021 Battelle Energy Alliance-->
