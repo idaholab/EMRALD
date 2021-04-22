@@ -1,6 +1,6 @@
     {
       "Event": {
-        "id": 3,
+        "id": 1,
         "name": "LogNorm",
         "desc": "",
         "mainItem": false,
@@ -18,3 +18,4 @@
         "minTimeRate": "trHours",
         "maxTimeRate": "trYears"
       }
+	}

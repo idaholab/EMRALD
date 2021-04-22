@@ -141,39 +141,7 @@ namespace UnitTesting_Simulation
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
       SetupTheTest(testName);
 
-      FailRateEvent ev = new FailRateEvent();
-      //use a sample JSON piece to set the values
-      string fileLoc = MainTestDir() + itemFolder + testName + ".json";
-      string jsonModel = "";
-      if (File.Exists(fileLoc))
-        jsonModel = File.ReadAllText(fileLoc);
-      else
-        throw new Exception("Failed to find create json file for " + testName);
-
-      dynamic jsonObj = JsonConvert.DeserializeObject(jsonModel);
-      EmraldModel mainModel = new EmraldModel(); //for some items, if the item JSON references other items they will need to be added to the main model
-      ev.DeserializeDerived(jsonObj, true, mainModel, false);
-
-      //Is there a way to easily test the triggering of the event 
-      //test for true
-      //Assert.True(ev.EventTriggered());
-      //test for false
-      //Assert.False(ev.EventTriggered());
-
-      //Reference any regression tests in SimEngineTests that covers this.  
-
-      //make sure the JSON returned for the item is good 
-      string retJsonStr = ev.GetJSON(true, mainModel);
-      Assert.True(CompareJSON(retJsonStr, jsonModel));
-    }
-
-    [Fact]
-    public void TimerEventTest()
-    {
-      string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
-      SetupTheTest(testName);
-
-      TimerEvent ev = new TimerEvent();
+      FailProbEvent ev = new FailProbEvent();
       //use a sample JSON piece to set the values
       string fileLoc = MainTestDir() + itemFolder + testName + ".json";
       string jsonModel = "";
@@ -237,7 +205,7 @@ namespace UnitTesting_Simulation
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
       SetupTheTest(testName);
 
-      VarCondEvent ev = new VarCondEvent();
+      EvalVarEvent ev = new EvalVarEvent();
       //use a sample JSON piece to set the values
       string fileLoc = MainTestDir() + itemFolder + testName + ".json";
       string jsonModel = "";
@@ -269,7 +237,7 @@ namespace UnitTesting_Simulation
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
       SetupTheTest(testName);
 
-      ExtSimEvent ev = new ExtSimEvent();
+      ExtSimEvent ev = new ExtSimEvent("TestExtSimEvent");
       //use a sample JSON piece to set the values
       string fileLoc = MainTestDir() + itemFolder + testName + ".json";
       string jsonModel = "";
@@ -301,7 +269,7 @@ namespace UnitTesting_Simulation
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
       SetupTheTest(testName);
 
-      ExpDistEvent ev = new ExpDistEvent();
+      ExponentialDistEvent ev = new ExponentialDistEvent();
       //use a sample JSON piece to set the values
       string fileLoc = MainTestDir() + itemFolder + testName + ".json";
       string jsonModel = "";
@@ -334,7 +302,7 @@ namespace UnitTesting_Simulation
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
       SetupTheTest(testName);
 
-      NormDistEvent ev = new NormDistEvent();
+      NormalDistEvent ev = new NormalDistEvent();
       //use a sample JSON piece to set the values
       string fileLoc = MainTestDir() + itemFolder + testName + ".json";
       string jsonModel = "";
@@ -367,7 +335,7 @@ namespace UnitTesting_Simulation
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
       SetupTheTest(testName);
 
-      WeibDistEvent ev = new WeibDistEvent();
+      WeibullDistEvent ev = new WeibullDistEvent();
       //use a sample JSON piece to set the values
       string fileLoc = MainTestDir() + itemFolder + testName + ".json";
       string jsonModel = "";
@@ -401,7 +369,7 @@ namespace UnitTesting_Simulation
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
       SetupTheTest(testName);
 
-      LogNormDistEvent ev = new LogNormDistEvent();
+      LogNormalDistEvent ev = new LogNormalDistEvent();
       //use a sample JSON piece to set the values
       string fileLoc = MainTestDir() + itemFolder + testName + ".json";
       string jsonModel = "";

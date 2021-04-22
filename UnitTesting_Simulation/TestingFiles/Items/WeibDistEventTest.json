@@ -1,6 +1,6 @@
     {
       "Event": {
-        "id": 4,
+        "id": 1,
         "name": "WeibullEvent",
         "desc": "",
         "mainItem": "False",
@@ -13,3 +13,4 @@
         "scale": 4,
         "timeRate": "trHours"
       }
+	}

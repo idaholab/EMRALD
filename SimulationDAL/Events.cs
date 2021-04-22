@@ -1048,6 +1048,9 @@ namespace SimulationDAL
     {
 
       string retStr = "\"evType\": \"" + EnEventType.etFailRate.ToString() + "\"," + Environment.NewLine +
+                     // "\"allItems\":" + this._Mean.ToString() + "," + Environment.NewLine +
+                     // "\"triggerStates\": [" + Environment.NewLine +
+                     // "\"moveFromCurrent\":" + this._Mean.ToString() + "," + Environment.NewLine +
                       "\"mean\":" + this._Mean.ToString() + "," + Environment.NewLine +
                       "\"std\":\"" + this._Std.ToString() + "," + Environment.NewLine +
                       "\"min\":\"" + this._Min.ToString() + "," + Environment.NewLine +
