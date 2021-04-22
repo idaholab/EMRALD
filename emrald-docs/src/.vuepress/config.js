@@ -1,6 +1,6 @@
 // Copyright 2021 Battelle Energy Alliance
 
-const { description } = require('../../package');
+const { description } = require('../../package')
 
 module.exports = {
   /**
@@ -55,7 +55,7 @@ module.exports = {
           collapsable: false,
           children: [
             '',
-            'using-emrald',
+            'Modeling/webUIOverview',
             'Modeling/diagrams',
             'Modeling/states',
             'Modeling/events',
@@ -64,13 +64,13 @@ module.exports = {
             'Modeling/logicTree',
             'Modeling/externalSims',
             'Modeling/xmppProtocol',
-            'Modeling/webUIOverview',
             'Modeling/icons', 
             'Modeling/solver',
-            'Modeling/backendInfo'
+            'Modeling/backendInfo',   
+            'Modeling/cmdLineOptions',        
           ]
         }
-      ]
+      ],
     }
   },
 
@@ -79,6 +79,6 @@ module.exports = {
    */
   plugins: [
     '@vuepress/plugin-back-to-top',
-    '@vuepress/plugin-medium-zoom'
+    '@vuepress/plugin-medium-zoom',
   ]
 }
