@@ -1,3 +1,5 @@
+// Copyright 2021 Battelle Energy Alliance
+
 /**
  * Client app enhancement file.
  *
