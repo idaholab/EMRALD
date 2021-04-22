@@ -102,3 +102,5 @@ whenever the local time reaches the next specified callback time. Whenever it re
 - After receiving a "Cancel Sim" message the software must reset the model and be ready for another "Open Sim" message.
 
 See [XMPP communication protocol](/guide/Modeling/xmppProtocol.md) for details on coupling code to EMRALD.
+
+<!--Copyright 2021 Battelle Energy Alliance-->

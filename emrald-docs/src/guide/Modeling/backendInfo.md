@@ -22,3 +22,5 @@ EMRALD runs user defined scripts to perform evaluations and post process data. T
 Users can define scripts in the following locations:
 - **Action "Run Application":** Fields "Preprocess Code" and "Postprocess Code." See Run Application under [Types of Actions](./actions.md#types-of-actions) for more information.
 - **Event "Var Condition":** Field "Evaluate Code." See Variable Condition under [Conditional Events](./events.md#conditional-events) for more information.
+
+<!--Copyright 2021 Battelle Energy Alliance-->

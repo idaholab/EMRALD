@@ -149,3 +149,5 @@ To add an action to an event, you can either...<br>
 See [Creating a New Action](./actions.md#creating-a-new-action) for detailed instructions for Option 1. See [Adding an Existing Action](./actions.md#adding-an-existing-action) for detailed instructions for Option 2.
 
 See [Actions](/guide/Modeling/actions.md) for more information on Actions.
+
+<!--Copyright 2021 Battelle Energy Alliance-->

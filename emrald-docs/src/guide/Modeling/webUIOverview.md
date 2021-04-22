@@ -118,3 +118,5 @@ See [Variables](/guide/Modeling/variables.md) for more information.
   States are a logical representation for a current condition in a diagram. <br>
 
   See [States](/guide/Modeling/states.md) for more information.
+
+<!--Copyright 2021 Battelle Energy Alliance-->

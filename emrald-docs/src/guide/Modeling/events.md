@@ -196,3 +196,5 @@
   - **Standard Deviation:** Enter the value of the standard deviation.
   - **Minimum:** Enter the minimum value of the function, if a sampling returns a value less than this, then this time will be used. (Typically zero as you can't take no time to do something.)
   - **Maximum:** Enter the maximum value of the function, if a sampling returns a value greater than this, then this time will be used. 
+
+<!--Copyright 2021 Battelle Energy Alliance-->

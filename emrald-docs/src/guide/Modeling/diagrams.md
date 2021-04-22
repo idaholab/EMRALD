@@ -99,3 +99,4 @@
 ### Other
   If the type "Other" is chosen when creating a diagram,  a general "Multiple State" capable diagram is created. This means that you can be in multiple states at the same time.<br>
   
+<!--Copyright 2021 Battelle Energy Alliance-->

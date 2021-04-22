@@ -150,3 +150,4 @@ To input a value of a string, a value should be typed into the text field next t
 If you type in a value that is not of the variable type selected, it will display an error. This error will also display if no value is put. <br/>
 <div style="width:500px">![Variable Type Error](/images/Modeling/variables/VarTypeError.PNG)</div>
 
+<!--Copyright 2021 Battelle Energy Alliance-->

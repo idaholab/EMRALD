@@ -201,3 +201,5 @@ The detailed file contains all state movement, events triggered, and actions tak
     DoEvent: [The event that was triggered]
     DoTransitionAction: [The transition action triggered from the event that causes a state to be exited]
     ExitState: [Name of the state exited]
+
+<!--Copyright 2021 Battelle Energy Alliance-->

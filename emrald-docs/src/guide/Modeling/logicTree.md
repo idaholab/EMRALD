@@ -113,3 +113,5 @@
   |<div style="width:50px">![Delete](/images/Modeling/logicTree/delete.PNG)</div>|Click to delete the element|
   |<div style="width:25px">![Collapse and Expand](/images/Modeling/logicTree/CollapseIcon.PNG)</div>|Click to collapse the branches below the gate|
   |<div style="width:25px">![Expand](/images/Modeling/logicTree/ExpandIcon.PNG)</div>|Click to expand the branches below the gate|
+
+<!--Copyright 2021 Battelle Energy Alliance-->

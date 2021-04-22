@@ -143,3 +143,5 @@ Below is a table of icons that either identify the type of action (left hand sid
 |<div style="width:20px">![Missing Information Action Icon](/images/Modeling/actions/questionOrange.PNG)</div>|This icon appears when the action is not fully defined|
 |![Red X Icon](/images/Modeling/actions/delete2.PNG)|This icon appears when there is an error with the item. Hover over name (not the X) to see a description of the error.|
 |![Link Icon](/images/Modeling/actions/link.PNG)|This icon appears instead of an arrow, when the transition goes to a state not in the current diagram.|
+
+<!--Copyright 2021 Battelle Energy Alliance-->
