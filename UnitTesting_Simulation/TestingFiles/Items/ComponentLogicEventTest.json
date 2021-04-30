@@ -5,6 +5,7 @@
         "desc": "",
         "mainItem": false,
         "evType": "etComponentLogic",
+        "varNames": [],
         "onSuccess": false,
         "logicTop": "Input Processor"
       }

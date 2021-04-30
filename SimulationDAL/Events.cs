@@ -909,6 +909,7 @@ namespace SimulationDAL
           "\"lambda\":" + this._lambda.ToString() + Environment.NewLine;          
       }
 
+
       return retStr;
     }
 
@@ -1062,14 +1063,18 @@ namespace SimulationDAL
     public override string GetDerivedJSON(EmraldModel lists)
     {
 
-      string retStr = "\"mean\": " + this._Mean.ToString() + "," + Environment.NewLine +
-                      "\"std\": " + this._Std.ToString() + "," + Environment.NewLine +
-                      "\"min\": " + this._Min.ToString() + "," + Environment.NewLine +
-                      "\"max\": " + this._Max.ToString() + "," + Environment.NewLine +
-                      "\"meanTimeRate\": \"" + this._MeanTimeRate.ToString() + "\"," + Environment.NewLine +
-                      "\"stdTimeRate\": \"" + this._StdTimeRate.ToString() + "\"," + Environment.NewLine +
-                      "\"minTimeRate\": \"" + this._MinTimeRate.ToString() + "\"," + Environment.NewLine +
-                      "\"maxTimeRate\": \"" + this._MaxTimeRate.ToString() + "\"";
+      string retStr = "\"evType\": \"" + EnEventType.etFailRate.ToString() + "\"," + Environment.NewLine +
+                     // "\"allItems\":" + this._Mean.ToString() + "," + Environment.NewLine +
+                     // "\"triggerStates\": [" + Environment.NewLine +
+                     // "\"moveFromCurrent\":" + this._Mean.ToString() + "," + Environment.NewLine +
+                      "\"mean\":" + this._Mean.ToString() + "," + Environment.NewLine +
+                      "\"std\":\"" + this._Std.ToString() + "," + Environment.NewLine +
+                      "\"min\":\"" + this._Min.ToString() + "," + Environment.NewLine +
+                      "\"max\":\"" + this._Max.ToString() + "," + Environment.NewLine +
+                      "\"meanTimeRate\":\"" + this._MeanTimeRate.ToString() + "," + Environment.NewLine +
+                      "\"stdTimeRate\":\"" + this._StdTimeRate.ToString() + "," + Environment.NewLine +
+                      "\"mintimeRate\":\"" + this._MinTimeRate.ToString() + "," + Environment.NewLine +
+                      "\"maxtimeRate\":\"" + this._MaxTimeRate.ToString() + "," + Environment.NewLine + "\"";
 
       return retStr;
     }
@@ -1155,7 +1160,7 @@ namespace SimulationDAL
     protected LogNormal mathFuncs = null;
 
     protected override EnEventType GetEvType() { return EnEventType.etLogNormalDist; }
-
+    
     public override TimeSpan NextTime()
     {
       if (mathFuncs == null)
@@ -1206,9 +1211,10 @@ namespace SimulationDAL
 
     public override string GetDerivedJSON(EmraldModel lists)
     {
-      string retStr = "\"shape\":" + this._Shape.ToString() + "," + Environment.NewLine +
-                      "\"scale\":" + this._Scale.ToString() + "," + Environment.NewLine +
-                      "\"timeRate\":\"" + this._TimeRate.ToString() + "\"";
+      string retStr = "\"evType\": \"" + EnEventType.etFailRate.ToString() + "\"," + Environment.NewLine +
+                      "\"shape\":" + this._Shape.ToString() + "," + Environment.NewLine +
+                      "\"scale\":\"" + this._Scale.ToString() + "," + Environment.NewLine +
+                      "\"timeRate\":\"" + this._TimeRate.ToString() + "," + Environment.NewLine + "\"";
 
       return retStr;
     }
@@ -1277,11 +1283,21 @@ namespace SimulationDAL
 
     public override string GetDerivedJSON(EmraldModel lists)
     {
-
       string codeHasVars = varList == null ? "False" : "True";
       string varNames = "";
-      string retStr = "\"rate\":" + this._Rate.ToString() + "," + Environment.NewLine +
-                      "\"timeRate\":\"" + this._TimeRate.ToString() + "\"";
+
+      if (varList != null)
+      {
+        foreach (var i in varList.Values)
+        {
+          varNames += ", \"" + i.name + "\"";
+        }
+        varNames = varNames.TrimStart(',');
+      }
+
+      string retStr = "\"evType\": \"" + EnEventType.etFailRate.ToString() + "\"," + Environment.NewLine +
+                      "\"rate\":" + this._Rate.ToString() + "," + Environment.NewLine +
+                      "\"timeRate\":\"" + this._TimeRate.ToString() + "," + Environment.NewLine + "\"";
 
       return retStr;
     }

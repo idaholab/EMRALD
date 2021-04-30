@@ -145,7 +145,7 @@ namespace UnitTesting_Simulation
 
       dynamic jsonObj = JsonConvert.DeserializeObject(jsonModel);//for the component logic event
       dynamic jsonObj2 = JsonConvert.DeserializeObject(jsonModel2);//for the logic top
-      //for some items, if the item JSON references other items they will need to be added to the main model
+      EmraldModel mainModel = new EmraldModel(); //for some items, if the item JSON references other items they will need to be added to the main model
       LogicNode logicTop = new LogicNode();
       logicTop.DeserializeDerived(jsonObj2, true, mainModel, false);
       ev.DeserializeDerived(jsonObj, true, mainModel, false);
