@@ -5,7 +5,6 @@
         "desc": "",
         "mainItem": true,
         "evType": "et3dSimEv",
-        "varNames": [],
         "variable": "ExtSimVar1",
         "code": "return 10;"
       }

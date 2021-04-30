@@ -901,6 +901,7 @@ namespace SimulationDAL
           "\"lambda\":" + this._lambda.ToString() + Environment.NewLine;          
       }
 
+
       return retStr;
     }
 
@@ -1148,6 +1149,7 @@ namespace SimulationDAL
 
     protected override EnEventType GetEvType() { return EnEventType.etLogNormalDist; }
 
+
     public override TimeSpan NextTime()
     {
       if (mathFuncs == null)
@@ -1269,7 +1271,8 @@ namespace SimulationDAL
 
     public override string GetDerivedJSON(EmraldModel lists)
     {
-
+      string codeHasVars = varList == null ? "False" : "True";
+      string varNames = "";
       string retStr = "\"rate\":" + this._Rate.ToString() + "," + Environment.NewLine +
                       "\"timeRate\":\"" + this._TimeRate.ToString() + "\"";
 
