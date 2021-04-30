@@ -1,10 +1,10 @@
     {
       "Event": {
         "id": 1,
-        "name": "24H_Mission_Time",
+        "name": "Timer",
         "desc": "",
-        "mainItem": false,
+        "mainItem": true,
         "evType": "etTimer",
-        "time": "P1D"
+        "time": "PT1M"
       }
     }

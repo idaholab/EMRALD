@@ -1,12 +1,11 @@
     {
       "Event": {
         "id": 1,
-        "name": "LOSP",
+        "name": "FailureRate",
         "desc": "",
-        "mainItem": false,
+        "mainItem": true,
         "evType": "etFailRate",
-        "lambda": 2.3,
-        "lambdaTimeRate": "P365D",
-        "missionTime": "P365D"
+        "lambda": 1,
+        "lambdaTimeRate": "PT1M"
       }
     }

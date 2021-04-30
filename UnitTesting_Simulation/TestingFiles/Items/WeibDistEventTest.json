@@ -1,16 +1,12 @@
     {
       "Event": {
         "id": 1,
-        "name": "WeibullEvent",
+        "name": "WeibDist",
         "desc": "",
-        "mainItem": "False",
+        "mainItem": true,
         "evType": "etWeibullDist",
-        "allItems": true,
-        "triggerStates": [],
-        "moveFromCurrent": true,
-        "varNames": [],
-        "shape": 24,
-        "scale": 4,
+        "shape": 1,
+        "scale": 1,
         "timeRate": "trHours"
       }
-	}
+    }

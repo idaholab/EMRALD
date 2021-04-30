@@ -1,11 +1,12 @@
     {
       "Event": {
-        "id": 1,
-        "name": "ECS_Sys_Eval",
+        "id": 2,
+        "name": "Input_Eval_Fail",
         "desc": "",
         "mainItem": false,
         "evType": "etComponentLogic",
-        "onSuccess": "false",
-        "logicTop": "ECS_TOP"
+        "varNames": [],
+        "onSuccess": false,
+        "logicTop": "Input Processor"
       }
     }

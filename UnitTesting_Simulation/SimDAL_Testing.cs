@@ -111,15 +111,24 @@ namespace UnitTesting_Simulation
 
       ComponentLogicEvent ev = new ComponentLogicEvent();
       //use a sample JSON piece to set the values
-      string fileLoc = MainTestDir() + itemFolder + testName + ".json";
-      string jsonModel = "";
+      string fileLoc = MainTestDir() + itemFolder + testName + ".json";//for the component logic event
+      string fileLoc2 = MainTestDir() + itemFolder + testName + "2.json";//for the logic top
+      string jsonModel = "";//for the component logic event
       if (File.Exists(fileLoc))
         jsonModel = File.ReadAllText(fileLoc);
       else
         throw new Exception("Failed to find create json file for " + testName);
+      string jsonModel2 = "";//for the logic top
+      if (File.Exists(fileLoc2))
+        jsonModel2 = File.ReadAllText(fileLoc2);
+      else
+        throw new Exception("Failed to find create json file for " + testName);
 
-      dynamic jsonObj = JsonConvert.DeserializeObject(jsonModel);
+      dynamic jsonObj = JsonConvert.DeserializeObject(jsonModel);//for the component logic event
+      dynamic jsonObj2 = JsonConvert.DeserializeObject(jsonModel2);//for the logic top
       EmraldModel mainModel = new EmraldModel(); //for some items, if the item JSON references other items they will need to be added to the main model
+      LogicNode logicTop = new LogicNode();
+      logicTop.DeserializeDerived(jsonObj2, true, mainModel, false);
       ev.DeserializeDerived(jsonObj, true, mainModel, false);
 
       //Is there a way to easily test the triggering of the event or other fcns of event

@@ -881,6 +881,7 @@ namespace SimulationDAL
     public override string GetDerivedJSON(EmraldModel lists)
     {
       string retStr = "\"evType\": \"" + EnEventType.etFailRate.ToString() + "\"," + Environment.NewLine +
+
                       "\"lambdaTimeRate\":\"" + XmlConvert.ToString(this.timeRate) + "\"," + Environment.NewLine +
                       "\"missionTime\":\"" + XmlConvert.ToString(this.compMissionTime) + "\",";
       if (lambdaVariable != null)
@@ -895,6 +896,7 @@ namespace SimulationDAL
           "\"useVariable\": false, " + Environment.NewLine +
           "\"lambda\":" + this._lambda.ToString() + Environment.NewLine;          
       }
+
 
       return retStr;
     }
@@ -1028,6 +1030,7 @@ namespace SimulationDAL
     protected EnTimeRate _StdTimeRate = EnTimeRate.trHours;
     protected EnTimeRate _MinTimeRate = EnTimeRate.trHours;
     protected EnTimeRate _MaxTimeRate = EnTimeRate.trHours;
+    public bool allItems = false;
 
     protected Normal mathFuncs = null;
 
@@ -1035,22 +1038,20 @@ namespace SimulationDAL
 
     public NormalDistEvent() : base("") { }
 
-    public NormalDistEvent(string inName, double mean, double std, double min, double max)
+    public NormalDistEvent(string inName, double mean, double std, double min, double max, bool inAllItems = true)
       : base(inName)
     {
       this._Mean = mean;
       this._Std = std;
       this._Min = min;
       this._Max = max;
+      this.allItems = inAllItems;
     }
 
     public override string GetDerivedJSON(EmraldModel lists)
     {
 
-      string retStr = "\"evType\": \"" + EnEventType.etFailRate.ToString() + "\"," + Environment.NewLine +
-                     // "\"allItems\":" + this._Mean.ToString() + "," + Environment.NewLine +
-                     // "\"triggerStates\": [" + Environment.NewLine +
-                     // "\"moveFromCurrent\":" + this._Mean.ToString() + "," + Environment.NewLine +
+      string retStr = "\"evType\": \"" + EnEventType.etNormalDist.ToString() + "\"," + Environment.NewLine +
                       "\"mean\":" + this._Mean.ToString() + "," + Environment.NewLine +
                       "\"std\":\"" + this._Std.ToString() + "," + Environment.NewLine +
                       "\"min\":\"" + this._Min.ToString() + "," + Environment.NewLine +
@@ -1058,7 +1059,7 @@ namespace SimulationDAL
                       "\"meanTimeRate\":\"" + this._MeanTimeRate.ToString() + "," + Environment.NewLine +
                       "\"stdTimeRate\":\"" + this._StdTimeRate.ToString() + "," + Environment.NewLine +
                       "\"mintimeRate\":\"" + this._MinTimeRate.ToString() + "," + Environment.NewLine +
-                      "\"maxtimeRate\":\"" + this._MaxTimeRate.ToString() + "," + Environment.NewLine + "\"";
+                      "\"maxtimeRate\":\"" + this._MaxTimeRate.ToString() + "\""; //+ "," + Environment.NewLine 
 
       return retStr;
     }
@@ -1075,6 +1076,23 @@ namespace SimulationDAL
 
           dynObj = ((dynamic)obj).Event;
         }
+
+        //  //load the Trigger States.
+        //  if (dynObj.triggerStates != null)
+        //  {
+        //    this.relatedIDs.Clear();
+        //    foreach (dynamic stateName in dynObj.triggerStates)
+        //    {
+        //      State trigState = lists.allStates.FindByName(stateName);
+        //      if (trigState == null)
+        //      {
+        //        throw new Exception("Could not find State - " + stateName + ", to add as a trigger state");
+        //      }
+
+        //      this.relatedIDs.Add(trigState.id);
+        //    }
+        //  }
+        //}
 
         if (!base.DeserializeDerived((object)dynObj, false, lists, useGivenIDs))
           return false;
@@ -1093,6 +1111,7 @@ namespace SimulationDAL
         this._StdTimeRate = (dynObj.stdTimeRate != null) ? (EnTimeRate)Enum.Parse(typeof(EnTimeRate), (string)dynObj.stdTimeRate, true) : this._StdTimeRate;
         this._MinTimeRate = (dynObj.minTimeRate != null) ? (EnTimeRate)Enum.Parse(typeof(EnTimeRate), (string)dynObj.minTimeRate, true) : this._MinTimeRate;
         this._MaxTimeRate = (dynObj.maxTimeRate != null) ? (EnTimeRate)Enum.Parse(typeof(EnTimeRate), (string)dynObj.maxTimeRate, true) : this._MaxTimeRate;
+        this.allItems = Convert.ToBoolean(dynObj.allItems);
       }
       catch
       {
@@ -1100,7 +1119,7 @@ namespace SimulationDAL
       }
       processed = true;
       return true;
-    }
+      }
 
     public override TimeSpan NextTime()
     {
@@ -1126,7 +1145,16 @@ namespace SimulationDAL
     protected LogNormal mathFuncs = null;
 
     protected override EnEventType GetEvType() { return EnEventType.etLogNormalDist; }
-    
+
+    //public override string GetDerivedJSON(EmraldModel lists)
+    //{
+
+    //  string retStr = EnEventType.Replace("etNormalDist", EnEventType.etLogNormalDist.ToString())
+    //  //string retStr = "\"evType\": \"" + EnEventType.etLogNormalDist.ToString() + "\"," + Environment.NewLine;
+
+    //  return retStr;
+    //}
+
     public override TimeSpan NextTime()
     {
       if (mathFuncs == null)
@@ -1177,10 +1205,10 @@ namespace SimulationDAL
 
     public override string GetDerivedJSON(EmraldModel lists)
     {
-      string retStr = "\"evType\": \"" + EnEventType.etFailRate.ToString() + "\"," + Environment.NewLine +
+      string retStr = "\"evType\": \"" + EnEventType.etWeibullDist.ToString() + "\"," + Environment.NewLine +
                       "\"shape\":" + this._Shape.ToString() + "," + Environment.NewLine +
                       "\"scale\":\"" + this._Scale.ToString() + "," + Environment.NewLine +
-                      "\"timeRate\":\"" + this._TimeRate.ToString() + "," + Environment.NewLine + "\"";
+                      "\"timeRate\":\"" + this._TimeRate.ToString() + "\""; //+ "," + Environment.NewLine 
 
       return retStr;
     }
@@ -1229,6 +1257,7 @@ namespace SimulationDAL
   }
   public class ExponentialDistEvent : TimeBasedEvent
   {
+    protected VariableList varList = null;
     protected double _Rate = 0.0;
     protected EnTimeRate _TimeRate = EnTimeRate.trHours;
 
@@ -1238,20 +1267,32 @@ namespace SimulationDAL
 
     public ExponentialDistEvent() : base("") { }
 
-    public ExponentialDistEvent(string inName, double rate) 
+    public ExponentialDistEvent(string inName, VariableList inVarList, double rate) 
       : base(inName)
     {
       this._Rate = rate;
-
+      this.varList = inVarList;
 
     }
 
     public override string GetDerivedJSON(EmraldModel lists)
     {
+      string codeHasVars = varList == null ? "False" : "True";
+      string varNames = "";
 
-      string retStr = "\"evType\": \"" + EnEventType.etFailRate.ToString() + "\"," + Environment.NewLine +
+      if (varList != null)
+      {
+        foreach (var i in varList.Values)
+        {
+          varNames += ", \"" + i.name + "\"";
+        }
+        varNames = varNames.TrimStart(',');
+      }
+
+      string retStr = "\"evType\": \"" + EnEventType.etExponentialDist.ToString() + "\"," + Environment.NewLine +
+                      //"\"varNames\": [" + varNames + "]," + Environment.NewLine +
                       "\"rate\":" + this._Rate.ToString() + "," + Environment.NewLine +
-                      "\"timeRate\":\"" + this._TimeRate.ToString() + "," + Environment.NewLine + "\"";
+                      "\"timeRate\":\"" + this._TimeRate.ToString() + "\"";// + Environment.NewLine ;
 
       return retStr;
     }
