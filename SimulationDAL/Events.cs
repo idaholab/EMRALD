@@ -1150,6 +1150,13 @@ namespace SimulationDAL
     protected override EnEventType GetEvType() { return EnEventType.etLogNormalDist; }
 
 
+    //public override string GetDerivedJSON(EmraldModel lists)
+    //{
+    //  string retStr = retStr.Replace(EnEventType.etNormalDist.ToString(), EnEventType.etLogNormalDist.ToString());
+
+    //  return retStr;
+    //}
+
     public override TimeSpan NextTime()
     {
       if (mathFuncs == null)
