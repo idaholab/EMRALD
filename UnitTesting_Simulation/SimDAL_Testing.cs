@@ -130,7 +130,7 @@ namespace UnitTesting_Simulation
       LogicNode logicTop = new LogicNode();
       logicTop.DeserializeDerived(jsonObj2, true, mainModel, false);
       ev.DeserializeDerived(jsonObj, true, mainModel, false);
-
+      ev.LoadObjLinks(jsonObj, true, mainModel);
       //Is there a way to easily test the triggering of the event or other fcns of event
       //test for true
       //Assert.True(ev.EventTriggered());
@@ -246,7 +246,7 @@ namespace UnitTesting_Simulation
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
       SetupTheTest(testName);
 
-      ExtSimEvent ev = new ExtSimEvent("TestExtSimEvent");
+      EvalVarEvent ev = new EvalVarEvent();
       //use a sample JSON piece to set the values
       string fileLoc = MainTestDir() + itemFolder + testName + ".json";
       string jsonModel = "";

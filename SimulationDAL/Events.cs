@@ -57,7 +57,7 @@ namespace SimulationDAL
       retStr = retStr + "\"Event\": {" + Environment.NewLine + base.GetJSON(false, lists);
 
       retStr = retStr + "," + Environment.NewLine;
-      retStr = retStr + "\"mainItem\": \"" + this.mainItem.ToString() + "\"," + Environment.NewLine;
+      retStr = retStr + "\"mainItem\": " + this.mainItem.ToString().ToLower() + "," + Environment.NewLine;
       retStr += GetDerivedJSON(lists);
 
       retStr = retStr + Environment.NewLine + "}";
@@ -421,7 +421,7 @@ namespace SimulationDAL
       compiledComp = new ScriptEngine("EvalVar_" + this.name, ScriptEngine.Languages.CSharp);
     }
 
-    public EvalVarEvent(string inName, string inCompCode, VariableList inVarList, Sim3DVariable sim3dVar = null)
+    public EvalVarEvent(string inName, string inCompCode, VariableList inVarList, Sim3DVariable sim3dVar)// = null)
       : base(inName)
     {
       this.compCode = inCompCode;
@@ -458,17 +458,25 @@ namespace SimulationDAL
         }
         varNames = varNames.TrimStart(',');
       }
-        //varNames = string.Join(",", varList.Values);
-
-      string retStr = "\"evType\": \"" + EnEventType.etVarCond.ToString() + "\"," + Environment.NewLine +
-                      "\"varNames\": [" + varNames + "]," + Environment.NewLine +
-                      "\"code\":\"" + compCodeStr + "\"";
+      //varNames = string.Join(",", varList.Values);
+      string retStr = null;
 
       if (sim3dID != null)
+        retStr = retStr + "\"evType\": \"" + EnEventType.et3dSimEv.ToString() + "\"," + Environment.NewLine;
+      else
+        retStr = retStr + "\"evType\": \"" + EnEventType.etVarCond.ToString() + "\"," + Environment.NewLine;
+
+
+      retStr = retStr + "\"varNames\": [" + varNames + "]," + Environment.NewLine;// +
+      //                "\"code\":\"" + compCodeStr + "\"";
+
+      if (sim3dID != null)// re-ordered list to match actual where the External Sim variable comes before code
         retStr = retStr + "," + Environment.NewLine + "\"sim3dID\":" + this.sim3dID;
 
       retStr = retStr + Environment.NewLine;
 
+      retStr = retStr + "\"code\":\"" + compCodeStr + "\"";
+      
       return retStr;
     }
 
@@ -1052,14 +1060,14 @@ namespace SimulationDAL
     {
 
       string retStr = "\"evType\": \"" + EnEventType.etNormalDist.ToString() + "\"," + Environment.NewLine +
-                      "\"mean\":" + this._Mean.ToString() + "," + Environment.NewLine +
-                      "\"std\":\"" + this._Std.ToString() + "," + Environment.NewLine +
-                      "\"min\":\"" + this._Min.ToString() + "," + Environment.NewLine +
-                      "\"max\":\"" + this._Max.ToString() + "," + Environment.NewLine +
-                      "\"meanTimeRate\":\"" + this._MeanTimeRate.ToString() + "," + Environment.NewLine +
-                      "\"stdTimeRate\":\"" + this._StdTimeRate.ToString() + "," + Environment.NewLine +
-                      "\"mintimeRate\":\"" + this._MinTimeRate.ToString() + "," + Environment.NewLine +
-                      "\"maxtimeRate\":\"" + this._MaxTimeRate.ToString() + "\""; //+ "," + Environment.NewLine 
+                      "\"mean\": " + this._Mean.ToString() + "," + Environment.NewLine +
+                      "\"std\": " + this._Std.ToString() + "," + Environment.NewLine +
+                      "\"min\": " + this._Min.ToString() + "," + Environment.NewLine +
+                      "\"max\": " + this._Max.ToString() + "," + Environment.NewLine +
+                      "\"meanTimeRate\": \"" + this._MeanTimeRate.ToString() + "\"," + Environment.NewLine +
+                      "\"stdTimeRate\": \"" + this._StdTimeRate.ToString() + "\"," + Environment.NewLine +
+                      "\"minTimeRate\": \"" + this._MinTimeRate.ToString() + "\"," + Environment.NewLine +
+                      "\"maxTimeRate\": \"" + this._MaxTimeRate.ToString() + "\""; //+ "," + Environment.NewLine 
 
       return retStr;
     }
@@ -1155,6 +1163,13 @@ namespace SimulationDAL
     //  return retStr;
     //}
 
+    //public override string GetDerivedJSON(EmraldModel lists)
+    //{
+    //  string retStr = retStr.Replace(EnEventType.etNormalDist.ToString(), EnEventType.etLogNormalDist.ToString());
+
+    //  return retStr;
+    //}
+
     public override TimeSpan NextTime()
     {
       if (mathFuncs == null)
@@ -1207,7 +1222,7 @@ namespace SimulationDAL
     {
       string retStr = "\"evType\": \"" + EnEventType.etWeibullDist.ToString() + "\"," + Environment.NewLine +
                       "\"shape\":" + this._Shape.ToString() + "," + Environment.NewLine +
-                      "\"scale\":\"" + this._Scale.ToString() + "," + Environment.NewLine +
+                      "\"scale\":" + this._Scale.ToString() + "," + Environment.NewLine +
                       "\"timeRate\":\"" + this._TimeRate.ToString() + "\""; //+ "," + Environment.NewLine 
 
       return retStr;

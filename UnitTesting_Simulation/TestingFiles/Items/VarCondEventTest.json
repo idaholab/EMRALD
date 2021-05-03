@@ -1,9 +1,11 @@
-    {
-      "Event": {
-        "id": 1,
-        "name": "VarCond",
-        "desc": "",
-        "mainItem": true,
-        "evType": "etVarCond",
-        "code": ""
-      }
+{
+  "Event": {
+    "id": 1,
+    "name": "VarCond",
+    "desc": "",
+    "mainItem": true,
+    "evType": "etVarCond",
+    "varNames": [],
+    "code": ""
+  }
+}
