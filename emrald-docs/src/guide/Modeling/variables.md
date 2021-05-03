@@ -2,7 +2,7 @@
 Variables define a value that can be evaluated or modified by user defied scripts in some events and actions. External variables are linked to an external code and can be modified or evaluated by either.
 
 ## Creating a New Variable
-On the Left Navigation Frame, right-click on the variable label and click "New Variable".<br> 
+On the Left Navigation Frame, right-click on the variable label and click "New Variable". This can be done from either the All tab or the Global tab.<br> 
 <div style="width:300px">![New Variable Step 1](/images/Modeling/variables/NewVar1.PNG)</div>
 
 Fill out the dialogue box and press "OK". Each field is described in detail below.<br>

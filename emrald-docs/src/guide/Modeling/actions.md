@@ -8,14 +8,33 @@ Actions that are triggered immediately are listed in the **Immediate Actions** s
 
 ## Creating a New Action
 
+**Option 1:** <br>
 Open the Diagram you would like your action to be in. Locate the State you would like to add the action to and either right-click on the immediate action label or on the event you would like to add it to. Click "New Action". <br>
-![New Action 1](/images/Modeling/actions/NewAction1.PNG)
+![New Action 1_1](/images/Modeling/actions/NewAction1.PNG)
 
 Fill out the dialogue box and press "OK". A description is optional.
 ![New Action 2](/images/Modeling/actions/NewAction2.PNG) See [Types of Actions](#types-of-actions) for detailed description of dialogue box options for each type of action.
 
 This name cannot be the same as any existing action in the model. If it is, a window will pop up to notify you to choose another name.<br>
 ![New Action 3](/images/Modeling/actions/NewAction3.PNG)<br>
+
+The action will appear in the Immediate Actions list or Event that you initially clicked in. <br>
+![New Action 4_1](/images/Modeling/actions/NewAction4_1.PNG)<br>
+
+**Option 2:** <br>
+Click on the Global tab in the Left Navigation Frame Modeling Pieces Tabs. The descriptor for each section under the tab should have changed to Global.<br>
+![New Action 1_2](/images/Modeling/webUIOverview/GlobalTabs.PNG)
+
+Then right click on Global Actions. A dropdown menu will appear, click on "New Action". <br>
+![New Action 2_2](/images/Modeling/actions/NewAction2_2.PNG)
+
+Fill out the dialogue box and press "OK". A description is optional.
+![New Action 3_2](/images/Modeling/actions/NewAction3_2.PNG) 
+
+See [Types of Actions](#types-of-actions) for detailed description of dialogue box options for each type of action.
+
+The action will appear in the Global Actions list. <br> <!-- Showed up in All tab, not Global -->
+![New Action 4_2](/images/Modeling/actions/NewAction4_2.PNG)<br>
 
 ## Adding an Existing Action
 
