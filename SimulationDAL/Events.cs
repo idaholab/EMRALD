@@ -465,13 +465,15 @@ namespace SimulationDAL
       //varNames = string.Join(",", varList.Values);
       string retStr = null;
 
-      retStr = retStr + "\"varNames\": [" + varNames + "]," + Environment.NewLine;// +
-      if (variable != "")
-      {
-        retStr = retStr + "\"variable\": \"" + variable + "\"," + Environment.NewLine;
-      }
-      retStr = retStr + "\"code\":\"" + compCodeStr + "\"";
-      
+      string retStr = "\"evType\": \"" + EnEventType.etVarCond.ToString() + "\"," + Environment.NewLine +
+                      "\"varNames\": [" + varNames + "]," + Environment.NewLine +
+                      "\"code\":\"" + compCodeStr + "\"";
+
+      if (sim3dID != null)
+        retStr = retStr + "," + Environment.NewLine + "\"sim3dID\":" + this.sim3dID;
+
+      retStr = retStr + Environment.NewLine;
+
       return retStr;
     }
 
@@ -1063,10 +1065,7 @@ namespace SimulationDAL
     public override string GetDerivedJSON(EmraldModel lists)
     {
 
-      string retStr = "\"evType\": \"" + EnEventType.etFailRate.ToString() + "\"," + Environment.NewLine +
-                     // "\"allItems\":" + this._Mean.ToString() + "," + Environment.NewLine +
-                     // "\"triggerStates\": [" + Environment.NewLine +
-                     // "\"moveFromCurrent\":" + this._Mean.ToString() + "," + Environment.NewLine +
+      string retStr = "\"evType\": \"" + EnEventType.etNormalDist.ToString() + "\"," + Environment.NewLine +
                       "\"mean\":" + this._Mean.ToString() + "," + Environment.NewLine +
                       "\"std\":\"" + this._Std.ToString() + "," + Environment.NewLine +
                       "\"min\":\"" + this._Min.ToString() + "," + Environment.NewLine +
@@ -1074,7 +1073,7 @@ namespace SimulationDAL
                       "\"meanTimeRate\":\"" + this._MeanTimeRate.ToString() + "," + Environment.NewLine +
                       "\"stdTimeRate\":\"" + this._StdTimeRate.ToString() + "," + Environment.NewLine +
                       "\"mintimeRate\":\"" + this._MinTimeRate.ToString() + "," + Environment.NewLine +
-                      "\"maxtimeRate\":\"" + this._MaxTimeRate.ToString() + "," + Environment.NewLine + "\"";
+                      "\"maxtimeRate\":\"" + this._MaxTimeRate.ToString() + "\""; //+ "," + Environment.NewLine 
 
       return retStr;
     }
@@ -1160,7 +1159,16 @@ namespace SimulationDAL
     protected LogNormal mathFuncs = null;
 
     protected override EnEventType GetEvType() { return EnEventType.etLogNormalDist; }
-    
+
+    //public override string GetDerivedJSON(EmraldModel lists)
+    //{
+
+    //  string retStr = EnEventType.Replace("etNormalDist", EnEventType.etLogNormalDist.ToString())
+    //  //string retStr = "\"evType\": \"" + EnEventType.etLogNormalDist.ToString() + "\"," + Environment.NewLine;
+
+    //  return retStr;
+    //}
+
     public override TimeSpan NextTime()
     {
       if (mathFuncs == null)
@@ -1214,7 +1222,7 @@ namespace SimulationDAL
       string retStr = "\"evType\": \"" + EnEventType.etFailRate.ToString() + "\"," + Environment.NewLine +
                       "\"shape\":" + this._Shape.ToString() + "," + Environment.NewLine +
                       "\"scale\":\"" + this._Scale.ToString() + "," + Environment.NewLine +
-                      "\"timeRate\":\"" + this._TimeRate.ToString() + "," + Environment.NewLine + "\"";
+                      "\"timeRate\":\"" + this._TimeRate.ToString() + "\""; //+ "," + Environment.NewLine 
 
       return retStr;
     }

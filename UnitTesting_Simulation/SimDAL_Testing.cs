@@ -317,7 +317,7 @@ namespace UnitTesting_Simulation
       EmraldModel mainModel = new EmraldModel();
       SetupTheTest(testName, mainModel);
 
-      ExtSimEvent ev = new ExtSimEvent();
+      ExtSimEvent ev = new ExtSimEvent("TestExtSimEvent");
       //use a sample JSON piece to set the values
       string fileLoc = MainTestDir() + itemFolder + testName + ".json";
       string fileLoc2 = MainTestDir() + itemFolder + "Var3DSimTest.json";//for the 3dsim variable
