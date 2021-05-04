@@ -1394,8 +1394,8 @@ namespace SimulationDAL
           // Retrieve the app's exit code
           exitCode = proc.ExitCode;
           proc.Close();
-          if (exitCode > 0)
-            throw new Exception("Failed to run external code - " + exePath + ".   exit code - " + exitCode.ToString());
+          //if (exitCode > 0) //don't quit on bad exit code, add it as a variable and allow the user to define what to do
+          //  throw new Exception("Failed to run external code - " + exePath + ".   exit code - " + exitCode.ToString());
         }
       }
       else 
@@ -1404,6 +1404,7 @@ namespace SimulationDAL
       processOutputFileCompEval.SetVariable("CurTime", typeof(double), curTime.TotalHours);
       processOutputFileCompEval.SetVariable("ExeExitCode", typeof(int), exitCode);
       processOutputFileCompEval.SetVariable("outputFile", typeof(string), exeOutputPath + "\\_out.txt");
+
 
       List<String> retStates = processOutputFileCompEval.EvaluateStrList();
       System.Threading.Thread.Sleep(10);
