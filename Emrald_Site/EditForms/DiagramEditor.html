@@ -14,16 +14,16 @@
     <div ng-controller="diagramController" id="diagramControllerPanel">
         <form novalidate>
             <div style="display:table-row">
-                <span style="display:table-cell">Name:</span> <input style="display:table-cell" id="Diagram_Name_Input" ng-model="name" tabindex="1">
-            </div>
-            <div style="display:table-row">
-                <span style="display:table-cell">Desc:</span> <input style="display:table-cell" ng-model="desc" size="40" tabindex="2">
-            </div>
-            <div style="display:table-row">
                 <div style="display:table-cell">Type:</div>
                 <select style="display:table-cell;width: 130px;float:left" id="TypeOption" ng-model="diagramType" ng-options="dt.name for dt in diagramTypes" name="Type"></select>
                 <div style="display:table-cell;float:left;" id="TemplateOptionLabel">Template:</div>
                 <select style="display:table-cell;width: 130px;" id="TemplateOption" ng-model="diagramTemplate" ng-options="dtemp for dtemp in diagramTemplates" name="Type"></select>
+            </div>
+            <div style="display:table-row">
+                <span style="display:table-cell">Name:</span> <input style="display:table-cell" id="Diagram_Name_Input" ng-model="name" tabindex="1">
+            </div>
+            <div style="display:table-row">
+                <span style="display:table-cell">Desc:</span> <input style="display:table-cell" ng-model="desc" size="40" tabindex="2">
             </div>
             <hr />
             <div id="singleStatePanel" style="display:none;">
