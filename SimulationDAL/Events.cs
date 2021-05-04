@@ -809,7 +809,7 @@ namespace SimulationDAL
         dynObj = ((dynamic)obj).Event;
       }
 
-      if (dynObj.useVariable != null)
+      if ((dynObj.useVariable != null) && (bool)dynObj.useVariable)
       {
         try
         {
@@ -950,11 +950,11 @@ namespace SimulationDAL
         dynObj = ((dynamic)obj).Event;
       }
 
-      if (dynObj.useVariable != null)
+      if ((dynObj.useVariable != null) && (bool)dynObj.useVariable)
       {
         try
         {
-          this.lambdaVariable = lists.allVariables.FindByName((string)dynObj.time);
+          this.lambdaVariable = lists.allVariables.FindByName((string)dynObj.lambda);
           //this.AddRelatedItem(curVar.id); //don't need to add to relatedItems, because it doesn't trigger the event and time is fixed once started 
         }
         catch
@@ -1496,7 +1496,7 @@ namespace SimulationDAL
 
         if ((evType == EnEventType.etStateCng) || (evType == EnEventType.etComponentLogic) || 
             (evType == EnEventType.etVarCond) || (evType == EnEventType.et3dSimEv) ||
-            (evType == EnEventType.etTimer))
+            (evType == EnEventType.etTimer) || (evType == EnEventType.etFailRate))
         {
           Event curItem = this.FindByName((string)item.name, false);
           try
