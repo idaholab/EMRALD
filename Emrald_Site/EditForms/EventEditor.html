@@ -35,6 +35,12 @@
 
     <div ng-app="EventEditor">
         <div ng-controller="EEController" id="EEControllerPanel">
+            <div style="display:table-row;">
+                <span style="display:table-cell;vertical-align:middle;">Type:</span>
+                <select id="typeOptionSelector" ng-model="typeOption" ng-options="to.name for to in typeOptions" style="width: 140px;" onchange="handleSelection(); return false;">
+                    <option>-- Choose Type --</option>
+                </select>
+            </div>
             <div style="display:table-row">
                 <span style="display:table-cell;vertical-align:middle;">Name:</span>
                 <input ng-model="name" tabindex="1" name="NameValue" />
@@ -44,12 +50,6 @@
             <div style="display:table-row;">
                 <span style="display: table-cell;vertical-align:middle;">Desc:</span>
                 <input size="40" tabindex="2" name="DescValue" ng-model="desc" />
-            </div>
-            <div style="display:table-row;">
-                <span style="display:table-cell;vertical-align:middle;">Type:</span>
-                <select id="typeOptionSelector" ng-model="typeOption" ng-options="to.name for to in typeOptions" style="width: 140px;" onchange="handleSelection(); return false;">
-                    <option>-- Choose Type --</option>
-                </select>
             </div>
 
             <div id="movePanel"

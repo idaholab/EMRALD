@@ -17,16 +17,16 @@
     <div ng-controller="gateController" id="gateControllerPanel">
         <form novalidate style="font-size:0.7em;">
             <div style="display:table-row">
+                <span style="display:table-cell">Gate type:</span>
+                <select style="width: 140px;" id="ScopeOption" ng-model="type" ng-options="typ.name for typ in types" name="Type" onchange="handleSelection(); return false;"></select>
+            </div>
+            <div style="display:table-row">
                 <span style="display:table-cell">Name:</span>
                 <input ng-model="name" tabindex="1">
             </div>
             <div style="display:table-row">
                 <span style="display:table-cell">Desc:</span>
                 <input ng-model="desc" size="40" tabindex="2">
-            </div>
-            <div style="display:table-row">
-                <span style="display:table-cell">Gate type:</span>
-                <select style="width: 140px;" id="ScopeOption" ng-model="type" ng-options="typ.name for typ in types" name="Type" onchange="handleSelection(); return false;"></select>
             </div>
         </form>
     </div>
