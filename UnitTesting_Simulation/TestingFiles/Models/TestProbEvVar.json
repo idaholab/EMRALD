@@ -1,0 +1,201 @@
+{
+  "id": 0,
+  "name": "Sim1",
+  "desc": "",
+  "version": 1.1,
+  "DiagramList": [
+    {
+      "Diagram": {
+        "id": 1,
+        "name": "Main",
+        "desc": "",
+        "diagramType": "dtPlant",
+        "diagramTemplate": "",
+        "diagramLabel": "Plant",
+        "states": [
+          "Start",
+          "End",
+          "Occured"
+        ]
+      }
+    }
+  ],
+  "StateList": [
+    {
+      "State": {
+        "id": 1,
+        "name": "Start",
+        "desc": "",
+        "stateType": "stStart",
+        "diagramName": "Main",
+        "immediateActions": [
+          "SetFailRateVar"
+        ],
+        "events": [
+          "FailProbFromVar"
+        ],
+        "eventActions": [
+          {
+            "actions": [
+              "Goto_Occured"
+            ],
+            "moveFromCurrent": true
+          }
+        ],
+        "geometry": "{ x: 128.1818084716797, y: 66.27840423583984, width: 200, height: 150}"
+      }
+    },
+    {
+      "State": {
+        "id": 2,
+        "name": "End",
+        "desc": "",
+        "stateType": "stTerminal",
+        "diagramName": "Main",
+        "immediateActions": [],
+        "events": [],
+        "eventActions": [],
+        "geometry": "{ x: 449.7272644042969, y: 280.18748474121094, width: 200, height: 80}"
+      }
+    },
+    {
+      "State": {
+        "id": 3,
+        "name": "Occured",
+        "desc": "",
+        "stateType": "stKeyState",
+        "diagramName": "Main",
+        "immediateActions": [
+          "Goto_End"
+        ],
+        "events": [],
+        "eventActions": [],
+        "geometry": "{ x: 439.81817626953125, y: 79.73295593261719, width: 200, height: 100}"
+      }
+    }
+  ],
+  "ActionList": [
+    {
+      "Action": {
+        "id": 1,
+        "name": "SetFailRateVar",
+        "desc": "",
+        "actType": "atCngVarVal",
+        "mainItem": false,
+        "mutExcl": true,
+        "newStates": [],
+        "scriptCode": "return 0.5;",
+        "variableName": "FailProb",
+        "codeVariables": []
+      }
+    },
+    {
+      "Action": {
+        "id": 2,
+        "name": "Goto_Occured",
+        "desc": "",
+        "actType": "atTransition",
+        "mainItem": false,
+        "mutExcl": true,
+        "newStates": [
+          {
+            "toState": "Occured",
+            "prob": -1,
+            "failDesc": ""
+          }
+        ],
+        "itemId": 3
+      }
+    },
+    {
+      "Action": {
+        "id": 3,
+        "name": "Goto_End",
+        "desc": "",
+        "actType": "atTransition",
+        "mainItem": false,
+        "mutExcl": true,
+        "newStates": [
+          {
+            "toState": "End",
+            "prob": -1,
+            "failDesc": ""
+          }
+        ],
+        "itemId": 0
+      }
+    }
+  ],
+  "EventList": [
+    {
+      "Event": {
+        "id": 1,
+        "name": "timer1",
+        "desc": "",
+        "mainItem": true,
+        "evType": "etTimer",
+        "varNames": [],
+        "Code": "return 1.0;",
+        "sim3dID": 1,
+        "useVariable": true,
+        "time": "t1",
+        "timeVariableUnit": "trHours"
+      }
+    },
+    {
+      "Event": {
+        "id": 2,
+        "name": "TimerStd",
+        "desc": "",
+        "mainItem": true,
+        "evType": "etTimer",
+        "varNames": [],
+        "Code": "return 1.0;",
+        "sim3dID": 1,
+        "useVariable": false,
+        "time": "P1DT2H3M4S",
+        "timeVariableUnit": ""
+      }
+    },
+    {
+      "Event": {
+        "id": 3,
+        "name": "FailProbFromVar",
+        "desc": "",
+        "mainItem": true,
+        "evType": "etFailRate",
+        "varNames": [],
+        "Code": "return 1.0;",
+        "sim3dID": 1,
+        "lambda": "FailProb",
+        "lambdaTimeRate": "P365D",
+        "useVariable": true
+      }
+    }
+  ],
+  "LogicNodeList": [],
+  "VariableList": [
+    {
+      "Variable": {
+        "id": 1,
+        "name": "t1",
+        "desc": "",
+        "varScope": "gtGlobal",
+        "value": 3.5,
+        "resetOnRuns": true,
+        "type": "double"
+      }
+    },
+    {
+      "Variable": {
+        "id": 2,
+        "name": "FailProb",
+        "desc": "",
+        "varScope": "gtGlobal",
+        "value": 0.003,
+        "resetOnRuns": true,
+        "type": "double"
+      }
+    }
+  ]
+}

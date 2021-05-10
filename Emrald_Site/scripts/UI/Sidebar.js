@@ -2760,6 +2760,15 @@ if (typeof Navigation === 'undefined')
               if (cur.code && replaceName) { 
                 cur.code = this.replaceNamesInText(cur.code, name, replaceName);
               }
+              // Timers and Failure Rate Events
+              if (cur.useVariable) {
+                  if (cur.lambda === name) {
+                      cur.lambda = del ? null : (replaceName !== null ? replaceName : name);
+                  }
+                  if (cur.time === name) {
+                      cur.time = del ? null : (replaceName !== null ? replaceName : name);
+                  }
+              }
               break;
             case "State":
               //etStateCng
