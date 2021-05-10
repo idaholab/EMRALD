@@ -7,12 +7,10 @@ actions to start, modify and stop the other simulation from the EMRALD model. An
 trigger any events that use that variable. So, for each component that can have a failure from the 3D simulation, the modeler must add a variable and an event
 in the component's state diagram evaluating that variable to determine failure. The following describes the pieces required to make a model that couples to
 an external simulation, the video [Two Way Coupling](https://www.youtube.com/watch?v=IgduGTaZGR8&list=PLX2nBoWRisnXWhC2LD9j4jV0iFzQbRcFX&index=7) also shows how test a model or the external simulation.
-<!--TODO - turn video name into link to the video
-Completed -Courtney -12/10/2020-->
 
 ## Creating a New External Simulation
 For any model connecting to an external simulation the first step is to create a reference for the connection. This is done
-on the Left Navigation Frame, right click External Sims. A dropdown menu will appear and click "New External Sim."<br>
+on the Left Navigation Frame, right-click External Sims. A dropdown menu will appear and click "New External Sim."<br>
 <div style="width:300px">![New External Simulation Step 1](/images/Modeling/externalSims/NewExtSim.PNG)</div>
 
 The External Simulation Editor window will open in the Modeling Area. Fill it out and press "OK."<br>
@@ -23,14 +21,14 @@ On the Left Navigation Frame, expand the External Sims section. Either...
 
 **Option 1:** Double click on the External Simulation that you want to edit or
 
-**Option 2:** Right click on the External Simulation that you want to edit. A dropdown menu will appear and click "Edit Properties...".<br>
+**Option 2:** Right-click on the External Simulation that you want to edit. A dropdown menu will appear and click "Edit Properties...".<br>
 <div style="width:300px">![Edit External Simulation Step 1](/images/Modeling/externalSims/EditExtSim.PNG)</div>
 
 The External Simulation Editor window will open in the Modeling Area. Edit the fields as needed and press "OK."<br>
 <div style="width:450px">![Edit External Simulation Step 2](/images/Modeling/externalSims/NewExtSim2.PNG)</div>
 
 ## Deleting an External Simulation Link
-On the Left Navigation Frame, right click on the individual external simulation and click on "Delete" in the menu that appears.<br>
+On the Left Navigation Frame, right-click on the individual external simulation and click on "Delete" in the menu that appears.<br>
 <div style="width:300px">![Delete External Sim Step 1](/images/Modeling/externalSims/DeleteExtSim.PNG)</div>
 
 A confirmation window will appear in the Modeling Area. Click "Yes."<br>
@@ -46,7 +44,7 @@ when the simulation is to start up.
 
 First make sure that the External Simulation Link is created first by following the steps in [Creating a New External Simulation](#creating-a-new-external-simulation). 
 
-Open the Diagram you would like to incorporate an external simulation in. Locate the State you would like to add the action to and either right click on the 
+Open the Diagram you would like to incorporate an external simulation in. Locate the State you would like to add the action to and either right-click on the 
 immediate action label or on the event you would like to add it to. Click "New Action". <br>
 ![New External Sim Action Step 1](/images/Modeling/externalSims/ExtSimAction.PNG)
 
@@ -83,8 +81,6 @@ The External Simulation Message Action type can also perform other actions relat
 ### Comp Modify
 This message sends the current value of the specified variable to the simulation. 
 ![Comp Modify Options](/images/Modeling/externalSims/CompModifyOptions.PNG)
-<!--TODO Courtney, update the image, there was a bug in code and was displayed wrong 
-Completed -Courtney -12/8/2020-->
 
 ### Cancel Sim
 This message tells the simulation to stop running and should be sent when no more information from the external simulation is needed.
@@ -106,8 +102,5 @@ whenever the local time reaches the next specified callback time. Whenever it re
 - After receiving a "Cancel Sim" message the software must reset the model and be ready for another "Open Sim" message.
 
 See [XMPP communication protocol](/guide/Modeling/xmppProtocol.md) for details on coupling code to EMRALD.
-<!--TODO Courtney - stub out a .md file for the section stated above and link to it
-Completed -Courtney -12/8/2020-->
-
 
 <!--Copyright 2021 Battelle Energy Alliance-->

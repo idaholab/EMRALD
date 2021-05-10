@@ -1,3 +1,4 @@
+
 # Web User Interface
 
 ## Initial Screen
@@ -15,16 +16,16 @@
   <div style="width:500px">![New Project Window](/images/Modeling/webUIOverview/NewProject.PNG)</div><br>
 
       After hitting the "Ok" button, your project name will populate the right corner of the header.<br>![New Project Window](/images/Modeling/webUIOverview/NewProjectHeader.PNG)
-  * Open: Browse to open an existing project.
-  * Save: Operates like a standard "Save As" to save the current project.
-  * Export Templates: Allows you to save any project template items for use in other projects. When clicked from the dropdown menu, the following window appears in the Modeling Area.<br><div style="width:400px">![Export Template Window](/images/Modeling/webUIOverview/ExportTemplate.PNG)</div>
-  * Load Demo: Exist the current project and loads the demo project as with any changing of projects, unsaved changes in the current project would be lost.
+  - **Open:** Browse to open an existing project.
+  - **Save:** Operates like a standard "Save As" to save the current project.
+  - **Export Templates:** Allows you to save any project template items for use in other projects. When clicked from the dropdown menu, the following window appears in the Modeling Area.<br><div style="width:400px">![Export Template Window](/images/Modeling/webUIOverview/ExportTemplate.PNG)</div>
+  - **Load Demo:** Exist the current project and loads the demo project as with any changing of projects, unsaved changes in the current project would be lost.
 
 **Download** <br>
   <div style="width:500px">![Download Menu](/images/Modeling/webUIOverview/TopMenuDownload.PNG)</div> <br>
-  * Solver Engine: Downloads the EMRALD model solver which is a separate executable.
-  * Client Tester: Downloads an example test client that couples with EMRALD through message protocal. For use in testing and developing custom software coupling.
-  * Client Tester Source: Downloads the source for the Client Tester.
+  - **Solver Engine:** Downloads the EMRALD model solver which is a separate executable.
+  - **Client Tester:** Downloads an example test client that couples with EMRALD through message protocal. For use in testing and developing custom software coupling.
+  - **Client Tester Source:** Downloads the source code for the Client Tester.
 
 **Help** <br>
   <div style="width:500px">![Help Menu](/images/Modeling/webUIOverview/TopMenuHelp.PNG)</div> <br>
@@ -50,12 +51,13 @@
 
   Additionally, some diagrams (Component and State) can also be evaluated to a Boolean depending on which stat they are currently in. This is a main feature that when combined with a Component Logic Event, can greatly simplify a model. Unlike the more general plant response diagrams, these diagrams are restricted to only be in one state at a time, in order to execute the evaluation process. 
 
+  Breif descriptions of each diagram type will be explained below but for more information, see [Diagrams](/guide/Modeling/diagrams.md).
+
 * Plant<br>
 
   ![Diagrams Plant Expanded](/images/Modeling/webUIOverview/PlantDiagram.PNG) <br>
   These diagrams are the main scenarios to be evaluated, similar to Event Trees in traditional PRA.  This diagram has a starting state called Normal Operation.  Other states do general evaluation and movement or be a key end state.  Here the user defines the various states and events that drive the simulation from an initial start state and events to a desired key state. <br>
     
-  See [Diagrams](/guide/Modeling/diagrams.md) for more information.
 * Component<br>
     
   ![Diagrams Component Expanded](/images/Modeling/webUIOverview/ComponentDiagram.PNG) <br>
@@ -80,22 +82,22 @@
   See [Logic Tree](/guide/Modeling/logicTree.md) for more information.
 
 **External Sims** <br>
-  All of your external simulations will be available in this section. <br> 
+  All of your external simulation links will be available in this section. <br> 
   <div style="width:300px">![External Sims Expanded](/images/Modeling/webUIOverview/ExternalSimsExpanded.PNG)</div><br>
-  The External simulations are defined coupled links to an external code, such as physics models that inform the EMRALD model. This is used for special coupling cases to simply run an executable and process the results, use a "Run Application" described in [Actions](/guide/Modeling/Actions.md)<br>
+  The External simulations are defined coupled links to an external code, such as physics models that inform the EMRALD model. This is used for special coupling cases to simply run an executable and process the results, use a "Run Application" action as described in the Run Application section of [Types of Actions](./actions.md#types-of-actions).<br>
 
   See [External Simulations](/guide/Modeling/externalSims.md) for more information.
 
 ### Modeling Pieces Tabs 
-  The bottom half of the Left Navigation Frame allows you to access your Actions, Events, Variables, and States which are organized by tabs. Actions, events, variables, or states can be dragged from this Navigation Frame into applicable Modeling Areas for use in a diagram.
+  The bottom half of the Left Navigation Frame allows you to access your Actions, Events, Variables, and States which are organized by tabs. Actions, events, or states can be dragged from this Navigation Frame into applicable Modeling Areas for use in a diagram.
 
 **Tabs**<br>
-  <!--TODO-Jordan Make this look nice. 
+  <!--TODO-If have time, make this look nice. 
   I tried but the only way I can unstack the two images in the Global column is to make the column too wide for the text area-Courtney -->
   |<div style="width:150px">All</div>|<div style="width:400px">Global</div>|<div style="width:150px">Local</div>|
   |---|---|---|
   |![All Tab](/images/Modeling/webUIOverview/AllTabs.PNG)|![Global Tab](/images/Modeling/webUIOverview/GlobalTabs.PNG)![Global Tab](/images/Modeling/webUIOverview/GlobalTabOptions.PNG)|![Local Tab](/images/Modeling/webUIOverview/LocalTabs.PNG)|
-  |Items from every diagram in the project. |Shows items can be used in any diagram. New Global items must be created through the right click option of the selected type. Items created in a specific diagram are local to that diagram|Items present in the diagram currently open and being worked on.|
+  |Items from every diagram in the project. |Shows items can be used in any diagram. New Global items must be created through the right-click option of the selected type. Items created in a specific diagram are local to that diagram|Items present in the diagram currently open and being worked on.|
 
 **Actions**<br>
   Actions change the properties or cause movement though a model during a simulation run. <br>
@@ -116,5 +118,5 @@ See [Variables](/guide/Modeling/variables.md) for more information.
   States are a logical representation for a current condition in a diagram. <br>
 
   See [States](/guide/Modeling/states.md) for more information.
-  
+
 <!--Copyright 2021 Battelle Energy Alliance-->

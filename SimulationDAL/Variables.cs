@@ -722,6 +722,10 @@ namespace SimulationDAL
 
     public override object GetValue()
     {
+      if (!File.Exists(this._docPath) && !_pathMustExist)
+      {
+        return this._dfltValue;
+      }
       XmlDocument xDoc = new XmlDocument();
       xDoc.Load(_docPath);
       XmlElement pRoot = xDoc.DocumentElement;
@@ -809,6 +813,11 @@ namespace SimulationDAL
     public override object GetValue()
     {
       _linkStr = _linkStr.Replace("\"", "'");
+      if (!File.Exists(this._docPath) && !_pathMustExist)
+      {
+        return this._dfltValue;
+      }
+      
       string fileStr = File.ReadAllText(this._docPath);
       JObject fullObj = JObject.Parse(fileStr);
       JToken modItem = fullObj.SelectToken(_linkStr);
@@ -963,6 +972,10 @@ namespace SimulationDAL
     public override object GetValue()
     {
       Regex rx = new Regex(_linkStr, RegexOptions.Compiled | RegexOptions.IgnoreCase);
+      if (!File.Exists(this._docPath) && !_pathMustExist)
+      {
+        return this._dfltValue;
+      }
       string docTxt = File.ReadAllText(this._docPath);
       // Find matches.
       MatchCollection matches = rx.Matches(docTxt);
