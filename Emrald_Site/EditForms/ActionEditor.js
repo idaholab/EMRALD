@@ -15,18 +15,19 @@ function loadNamePatterns() {
     var scope = angular.element(document.querySelector('#actionControllerPanel')).scope();
     fetch('../resources/DefaultNamingPatterns.json')
         .then(res => res.json())
-        .then(json => scope.namingPatterns = json.ActionTypes);
+        .then(json => {
+            scope.namingPatterns = json.ActionTypes;
+            updateName();
+            scope.$apply();
+        });
 }
 
 function updateName() {
     var scope = angular.element(document.querySelector('#actionControllerPanel')).scope();
-    console.log(scope.action)
     if (!nameIsDefaultValue()) {
         return;
     }
     scope.name = scope.namingPatterns.find(x => x.Type === scope.action.name).NamePattern;
-    
-    console.log(scope.name)
 }
 
 function nameIsDefaultValue() {
@@ -390,7 +391,6 @@ function OnLoad(dataObj) {
         if (actionData.id > 0) {
             actTypeEL.disabled = true;
         }
-        updateName();
     });
 
     var pdiv = document.getElementById("TransitionPanel");
