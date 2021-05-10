@@ -1,0 +1,20 @@
+﻿{
+    "ActionTypes": [
+        {
+            "Type": "Transition",
+            "NamePattern": "GOTO_"
+        },
+        {
+            "Type": "Change Var Value",
+            "NamePattern": "ChangeVar_"
+        },
+        {
+            "Type": "Ext. Sim Message",
+            "NamePattern": "ExtSimMsg_"
+        },
+        {
+            "Type": "Run Application",
+            "NamePattern": "RunApp_"
+        }
+    ]
+}
