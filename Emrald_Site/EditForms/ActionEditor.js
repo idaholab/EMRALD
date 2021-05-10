@@ -30,6 +30,13 @@ function updateName() {
     scope.name = scope.namingPatterns.find(x => x.Type === scope.action.name).NamePattern;
 }
 
+function addStateToName(stateName) {
+    var scope = angular.element(document.querySelector('#actionControllerPanel')).scope();
+    if (nameIsDefaultValue()) {
+        scope.name += stateName;
+    }
+}
+
 function nameIsDefaultValue() {
     var scope = angular.element(document.querySelector('#actionControllerPanel')).scope();
     if (scope.name === '') {
@@ -424,6 +431,7 @@ function OnLoad(dataObj) {
             if (!found) {
                 if (scope.transitions.length == 0) {
                     scope.transitions.push({ checked: false, To_State: state.name, Probability: "1.0", failDesc: "" });
+                    addStateToName(state.name);
                 }
                 //TODO ASK ABOUT THIS LINE
                 //else if (scope.transitions[scope.transitions.length - 1].toUpperCase() == "REMAINING") {
