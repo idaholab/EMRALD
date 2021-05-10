@@ -693,7 +693,6 @@ if (typeof Navigation === 'undefined')
       }
       return dia;
     }
-
     //---------------------------------------------------
     Sidebar.prototype.getDiagramByStateName = function (sName) {
       var dia = null;
@@ -1058,6 +1057,18 @@ if (typeof Navigation === 'undefined')
 
 
       return diagram;
+    }
+
+    Sidebar.prototype.mergeDiagram = function (addDiagram) {
+      //see if the items already exist
+        //for items that exist, prompt user on what to do “Overwrite”, “Ignore”, “Rename”
+
+      //for each rename change the names in the addDiagram
+
+      //for each Overwrite replace the existing in the model
+
+      //add all the rest of the items to the correct sections
+
     }
 
     //begin-----------------Rename functions for different items-------------------------------
