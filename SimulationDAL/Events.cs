@@ -525,6 +525,10 @@ namespace SimulationDAL
 
       if (dynObj.varNames != null)
       {
+
+        //if (varList == null)
+        //  varList = new VariableList(); moved this into else statement because wasn't creating it when needed it for 3D sim var.
+
         foreach (var varName in dynObj.varNames)
         {
           SimVariable curVar = lists.allVariables.FindByName((string)varName);
@@ -901,7 +905,6 @@ namespace SimulationDAL
           "\"lambda\":" + this._lambda.ToString() + Environment.NewLine;          
       }
 
-
       return retStr;
     }
 
@@ -1149,14 +1152,6 @@ namespace SimulationDAL
 
     protected override EnEventType GetEvType() { return EnEventType.etLogNormalDist; }
 
-
-    //public override string GetDerivedJSON(EmraldModel lists)
-    //{
-    //  string retStr = retStr.Replace(EnEventType.etNormalDist.ToString(), EnEventType.etLogNormalDist.ToString());
-
-    //  return retStr;
-    //}
-
     public override TimeSpan NextTime()
     {
       if (mathFuncs == null)
@@ -1278,6 +1273,7 @@ namespace SimulationDAL
 
     public override string GetDerivedJSON(EmraldModel lists)
     {
+
       string codeHasVars = varList == null ? "False" : "True";
       string varNames = "";
       string retStr = "\"rate\":" + this._Rate.ToString() + "," + Environment.NewLine +
