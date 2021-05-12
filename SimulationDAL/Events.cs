@@ -465,15 +465,22 @@ namespace SimulationDAL
       //varNames = string.Join(",", varList.Values);
       string retStr = null;
 
-      string retStr = "\"evType\": \"" + EnEventType.etVarCond.ToString() + "\"," + Environment.NewLine +
-                      "\"varNames\": [" + varNames + "]," + Environment.NewLine +
-                      "\"code\":\"" + compCodeStr + "\"";
-
       if (sim3dID != null)
+        retStr = retStr + "\"evType\": \"" + EnEventType.et3dSimEv.ToString() + "\"," + Environment.NewLine;
+      else
+        retStr = retStr + "\"evType\": \"" + EnEventType.etVarCond.ToString() + "\"," + Environment.NewLine;
+
+
+      retStr = retStr + "\"varNames\": [" + varNames + "]," + Environment.NewLine;// +
+      //                "\"code\":\"" + compCodeStr + "\"";
+
+      if (sim3dID != null)// re-ordered list to match actual where the External Sim variable comes before code
         retStr = retStr + "," + Environment.NewLine + "\"sim3dID\":" + this.sim3dID;
 
       retStr = retStr + Environment.NewLine;
 
+      retStr = retStr + "\"code\":\"" + compCodeStr + "\"";
+      
       return retStr;
     }
 
@@ -528,8 +535,10 @@ namespace SimulationDAL
         dynObj = ((dynamic)obj).Event;
       }
 
-      if (varList == null)
-        varList = new VariableList();
+      if (dynObj.varNames != null)
+      {
+        if (varList == null)
+          varList = new VariableList();
 
      
       if (dynObj.varNames != null)
@@ -544,7 +553,6 @@ namespace SimulationDAL
           this.AddRelatedItem(curVar.id);
         }
       }
-
       //3D simulation var condition has a variable link
       if (dynObj.variable != null)
       {
@@ -552,12 +560,7 @@ namespace SimulationDAL
         SimVariable curVar = lists.allVariables.FindByName((string)dynObj.variable);
         if (curVar == null)
           throw new Exception("Failed to find variable - " + dynObj.variable);
-        if (varList == null)
-        {
-          varList = new VariableList();
-        }
-        //this.varList.Add(curVar); Don't want the 3d Sim variable added to the list
-        this.variable = curVar.name;//need to add variable in as variable
+        this.varList.Add(curVar);
         this.AddRelatedItem(curVar.id);
       }
       return true;
@@ -911,7 +914,6 @@ namespace SimulationDAL
           "\"lambda\":" + this._lambda.ToString() + Environment.NewLine;          
       }
 
-
       return retStr;
     }
 
@@ -1066,14 +1068,14 @@ namespace SimulationDAL
     {
 
       string retStr = "\"evType\": \"" + EnEventType.etNormalDist.ToString() + "\"," + Environment.NewLine +
-                      "\"mean\":" + this._Mean.ToString() + "," + Environment.NewLine +
-                      "\"std\":\"" + this._Std.ToString() + "," + Environment.NewLine +
-                      "\"min\":\"" + this._Min.ToString() + "," + Environment.NewLine +
-                      "\"max\":\"" + this._Max.ToString() + "," + Environment.NewLine +
-                      "\"meanTimeRate\":\"" + this._MeanTimeRate.ToString() + "," + Environment.NewLine +
-                      "\"stdTimeRate\":\"" + this._StdTimeRate.ToString() + "," + Environment.NewLine +
-                      "\"mintimeRate\":\"" + this._MinTimeRate.ToString() + "," + Environment.NewLine +
-                      "\"maxtimeRate\":\"" + this._MaxTimeRate.ToString() + "\""; //+ "," + Environment.NewLine 
+                      "\"mean\": " + this._Mean.ToString() + "," + Environment.NewLine +
+                      "\"std\": " + this._Std.ToString() + "," + Environment.NewLine +
+                      "\"min\": " + this._Min.ToString() + "," + Environment.NewLine +
+                      "\"max\": " + this._Max.ToString() + "," + Environment.NewLine +
+                      "\"meanTimeRate\": \"" + this._MeanTimeRate.ToString() + "\"," + Environment.NewLine +
+                      "\"stdTimeRate\": \"" + this._StdTimeRate.ToString() + "\"," + Environment.NewLine +
+                      "\"minTimeRate\": \"" + this._MinTimeRate.ToString() + "\"," + Environment.NewLine +
+                      "\"maxTimeRate\": \"" + this._MaxTimeRate.ToString() + "\""; //+ "," + Environment.NewLine 
 
       return retStr;
     }
@@ -1169,6 +1171,13 @@ namespace SimulationDAL
     //  return retStr;
     //}
 
+    //public override string GetDerivedJSON(EmraldModel lists)
+    //{
+    //  string retStr = retStr.Replace(EnEventType.etNormalDist.ToString(), EnEventType.etLogNormalDist.ToString());
+
+    //  return retStr;
+    //}
+
     public override TimeSpan NextTime()
     {
       if (mathFuncs == null)
@@ -1219,9 +1228,9 @@ namespace SimulationDAL
 
     public override string GetDerivedJSON(EmraldModel lists)
     {
-      string retStr = "\"evType\": \"" + EnEventType.etFailRate.ToString() + "\"," + Environment.NewLine +
+      string retStr = "\"evType\": \"" + EnEventType.etWeibullDist.ToString() + "\"," + Environment.NewLine +
                       "\"shape\":" + this._Shape.ToString() + "," + Environment.NewLine +
-                      "\"scale\":\"" + this._Scale.ToString() + "," + Environment.NewLine +
+                      "\"scale\":" + this._Scale.ToString() + "," + Environment.NewLine +
                       "\"timeRate\":\"" + this._TimeRate.ToString() + "\""; //+ "," + Environment.NewLine 
 
       return retStr;
@@ -1291,21 +1300,11 @@ namespace SimulationDAL
 
     public override string GetDerivedJSON(EmraldModel lists)
     {
-      string codeHasVars = varList == null ? "False" : "True";
-      string varNames = "";
 
-      if (varList != null)
-      {
-        foreach (var i in varList.Values)
-        {
-          varNames += ", \"" + i.name + "\"";
-        }
-        varNames = varNames.TrimStart(',');
-      }
-
-      string retStr = "\"evType\": \"" + EnEventType.etFailRate.ToString() + "\"," + Environment.NewLine +
+      string retStr = "\"evType\": \"" + EnEventType.etExponentialDist.ToString() + "\"," + Environment.NewLine +
+                      //"\"varNames\": [" + varNames + "]," + Environment.NewLine +
                       "\"rate\":" + this._Rate.ToString() + "," + Environment.NewLine +
-                      "\"timeRate\":\"" + this._TimeRate.ToString() + "," + Environment.NewLine + "\"";
+                      "\"timeRate\":\"" + this._TimeRate.ToString() + "\"";// + Environment.NewLine ;
 
       return retStr;
     }
