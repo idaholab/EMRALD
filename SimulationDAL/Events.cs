@@ -58,6 +58,7 @@ namespace SimulationDAL
 
       retStr = retStr + "," + Environment.NewLine;
       retStr = retStr + "\"mainItem\": " + this.mainItem.ToString().ToLower() + "," + Environment.NewLine;
+      retStr = retStr + "\"evType\": \"" + this.evType.ToString() + "\"," + Environment.NewLine;
       retStr += GetDerivedJSON(lists);
 
       retStr = retStr + Environment.NewLine + "}";
@@ -139,8 +140,7 @@ namespace SimulationDAL
     public override string GetDerivedJSON(EmraldModel lists)
     {
 
-      string retStr = "\"evType\": \"" + EnEventType.etStateCng.ToString() + "\"," + Environment.NewLine +
-                      "\"ifInState\":\"" + this.ifInState.ToString().ToLower() + "\"," + Environment.NewLine +
+      string retStr = "\"ifInState\":\"" + this.ifInState.ToString().ToLower() + "\"," + Environment.NewLine +
                       "\"allItems\":\"" + this.allItems.ToString().ToLower() + "\"";
 
       retStr = retStr + "," + Environment.NewLine + "\"triggerStates\": [";
@@ -317,8 +317,7 @@ namespace SimulationDAL
     public override string GetDerivedJSON(EmraldModel lists)
     {
 
-      string retStr = "\"evType\": \"" + EnEventType.etComponentLogic.ToString() + "\"," + Environment.NewLine +
-                      "\"onSuccess\":\"" + this.successSpace.ToString().ToLower() + "\"," + Environment.NewLine +
+      string retStr = "\"onSuccess\":\"" + this.successSpace.ToString().ToLower() + "\"," + Environment.NewLine +
                       "\"logicTop\":" + "\"" + this.logicTop.name + "\"";
       return retStr;
     }
@@ -413,8 +412,9 @@ namespace SimulationDAL
     protected bool compiled;
     protected ScriptEngine compiledComp;
     protected VariableList varList = null;
+    protected string variable = "";
     //protected override EnModifiableTypes GetModType() { return EnModifiableTypes.mtVar; }
-    protected override EnEventType GetEvType() { return (sim3dID == null) ? EnEventType.etVarCond : EnEventType.et3dSimEv; }
+    protected override EnEventType GetEvType() { return (variable == "") ? EnEventType.etVarCond : EnEventType.et3dSimEv; }
 
     public EvalVarEvent() : base("")
     {
@@ -454,6 +454,7 @@ namespace SimulationDAL
       {
         foreach(var i in varList.Values)
         {
+          if(i.name!=variable)
           varNames += ", \"" + i.name + "\"";
         }
         varNames = varNames.TrimStart(',');
@@ -461,20 +462,8 @@ namespace SimulationDAL
       //varNames = string.Join(",", varList.Values);
       string retStr = null;
 
-      if (sim3dID != null)
-        retStr = retStr + "\"evType\": \"" + EnEventType.et3dSimEv.ToString() + "\"," + Environment.NewLine;
-      else
-        retStr = retStr + "\"evType\": \"" + EnEventType.etVarCond.ToString() + "\"," + Environment.NewLine;
-
-
       retStr = retStr + "\"varNames\": [" + varNames + "]," + Environment.NewLine;// +
-      //                "\"code\":\"" + compCodeStr + "\"";
-
-      if (sim3dID != null)// re-ordered list to match actual where the External Sim variable comes before code
-        retStr = retStr + "," + Environment.NewLine + "\"sim3dID\":" + this.sim3dID;
-
-      retStr = retStr + Environment.NewLine;
-
+      retStr = retStr + "\"variable\": \"" + variable + "\"," + Environment.NewLine;
       retStr = retStr + "\"code\":\"" + compCodeStr + "\"";
       
       return retStr;
@@ -500,6 +489,7 @@ namespace SimulationDAL
          (EnEventType.et3dSimEv != (EnEventType)Enum.Parse(typeof(EnEventType), (string)dynObj.evType, true)))
         throw new Exception("event types do not match, cannot change the type once an item is created!");
 
+    //  this.evType = (EnEventType)Enum.Parse(typeof(EnEventType), (string)dynObj.evType, true);
       if (dynObj.sim3dID != null)
       {
         this.sim3dID = Convert.ToString(dynObj.sim3DId);
@@ -532,8 +522,8 @@ namespace SimulationDAL
 
       if (dynObj.varNames != null)
       {
-        if (varList == null)
-          varList = new VariableList();
+        //if (varList == null)
+        //  varList = new VariableList(); moved this into else statement because wasn't creating it when needed it for 3D sim var.
 
         foreach (var varName in dynObj.varNames)
         {
@@ -545,12 +535,22 @@ namespace SimulationDAL
           this.AddRelatedItem(curVar.id);
         }
       }
+      else
+      {
+        varList = new VariableList();
+      }
+
       //3D simulation var condition has a variable link
       if (dynObj.variable != null)
       {
+        variable = (string)dynObj.variable;
         SimVariable curVar = lists.allVariables.FindByName((string)dynObj.variable);
         if (curVar == null)
           throw new Exception("Failed to find variable - " + dynObj.variable);
+        if(varList == null)
+        {
+          varList = new VariableList();
+        }
         this.varList.Add(curVar);
         this.AddRelatedItem(curVar.id);
       }
@@ -905,7 +905,6 @@ namespace SimulationDAL
           "\"lambda\":" + this._lambda.ToString() + Environment.NewLine;          
       }
 
-
       return retStr;
     }
 
@@ -1059,15 +1058,14 @@ namespace SimulationDAL
     public override string GetDerivedJSON(EmraldModel lists)
     {
 
-      string retStr = "\"evType\": \"" + EnEventType.etNormalDist.ToString() + "\"," + Environment.NewLine +
-                      "\"mean\": " + this._Mean.ToString() + "," + Environment.NewLine +
+      string retStr = "\"mean\": " + this._Mean.ToString() + "," + Environment.NewLine +
                       "\"std\": " + this._Std.ToString() + "," + Environment.NewLine +
                       "\"min\": " + this._Min.ToString() + "," + Environment.NewLine +
                       "\"max\": " + this._Max.ToString() + "," + Environment.NewLine +
                       "\"meanTimeRate\": \"" + this._MeanTimeRate.ToString() + "\"," + Environment.NewLine +
                       "\"stdTimeRate\": \"" + this._StdTimeRate.ToString() + "\"," + Environment.NewLine +
                       "\"minTimeRate\": \"" + this._MinTimeRate.ToString() + "\"," + Environment.NewLine +
-                      "\"maxTimeRate\": \"" + this._MaxTimeRate.ToString() + "\""; //+ "," + Environment.NewLine 
+                      "\"maxTimeRate\": \"" + this._MaxTimeRate.ToString() + "\"";
 
       return retStr;
     }
@@ -1154,22 +1152,6 @@ namespace SimulationDAL
 
     protected override EnEventType GetEvType() { return EnEventType.etLogNormalDist; }
 
-    //public override string GetDerivedJSON(EmraldModel lists)
-    //{
-
-    //  string retStr = EnEventType.Replace("etNormalDist", EnEventType.etLogNormalDist.ToString())
-    //  //string retStr = "\"evType\": \"" + EnEventType.etLogNormalDist.ToString() + "\"," + Environment.NewLine;
-
-    //  return retStr;
-    //}
-
-    //public override string GetDerivedJSON(EmraldModel lists)
-    //{
-    //  string retStr = retStr.Replace(EnEventType.etNormalDist.ToString(), EnEventType.etLogNormalDist.ToString());
-
-    //  return retStr;
-    //}
-
     public override TimeSpan NextTime()
     {
       if (mathFuncs == null)
@@ -1220,10 +1202,9 @@ namespace SimulationDAL
 
     public override string GetDerivedJSON(EmraldModel lists)
     {
-      string retStr = "\"evType\": \"" + EnEventType.etWeibullDist.ToString() + "\"," + Environment.NewLine +
-                      "\"shape\":" + this._Shape.ToString() + "," + Environment.NewLine +
+      string retStr = "\"shape\":" + this._Shape.ToString() + "," + Environment.NewLine +
                       "\"scale\":" + this._Scale.ToString() + "," + Environment.NewLine +
-                      "\"timeRate\":\"" + this._TimeRate.ToString() + "\""; //+ "," + Environment.NewLine 
+                      "\"timeRate\":\"" + this._TimeRate.ToString() + "\"";
 
       return retStr;
     }
@@ -1292,22 +1273,9 @@ namespace SimulationDAL
 
     public override string GetDerivedJSON(EmraldModel lists)
     {
-      string codeHasVars = varList == null ? "False" : "True";
-      string varNames = "";
 
-      if (varList != null)
-      {
-        foreach (var i in varList.Values)
-        {
-          varNames += ", \"" + i.name + "\"";
-        }
-        varNames = varNames.TrimStart(',');
-      }
-
-      string retStr = "\"evType\": \"" + EnEventType.etExponentialDist.ToString() + "\"," + Environment.NewLine +
-                      //"\"varNames\": [" + varNames + "]," + Environment.NewLine +
-                      "\"rate\":" + this._Rate.ToString() + "," + Environment.NewLine +
-                      "\"timeRate\":\"" + this._TimeRate.ToString() + "\"";// + Environment.NewLine ;
+      string retStr = "\"rate\":" + this._Rate.ToString() + "," + Environment.NewLine +
+                      "\"timeRate\":\"" + this._TimeRate.ToString() + "\"";
 
       return retStr;
     }

@@ -71,6 +71,9 @@ namespace UnitTesting_Simulation
     }
 
 
+    /// //////////////
+    // Event Tests
+    //////////////////
     [Fact]
     public void StateCngEventTest()
     {
@@ -249,15 +252,26 @@ namespace UnitTesting_Simulation
       EvalVarEvent ev = new EvalVarEvent();
       //use a sample JSON piece to set the values
       string fileLoc = MainTestDir() + itemFolder + testName + ".json";
-      string jsonModel = "";
+      string fileLoc2 = MainTestDir() + itemFolder + testName + "2.json";//for the 3dsim variable
+      string jsonModel = "";//for the Ext Sim event
       if (File.Exists(fileLoc))
         jsonModel = File.ReadAllText(fileLoc);
       else
         throw new Exception("Failed to find create json file for " + testName);
+      
+      string jsonModel2 = "";//for the 3dsim variable
+      if (File.Exists(fileLoc2))
+        jsonModel2 = File.ReadAllText(fileLoc2);
+      else
+        throw new Exception("Failed to find create json file for " + testName);
 
-      dynamic jsonObj = JsonConvert.DeserializeObject(jsonModel);
+      dynamic jsonObj = JsonConvert.DeserializeObject(jsonModel);//for the Ext Sim event
+      dynamic jsonObj2 = JsonConvert.DeserializeObject(jsonModel2);//for the 3dsim variable
       EmraldModel mainModel = new EmraldModel(); //for some items, if the item JSON references other items they will need to be added to the main model
+      Sim3DVariable sim3DVariable = new Sim3DVariable();
+      sim3DVariable.DeserializeDerived(jsonObj2, true, mainModel, false);
       ev.DeserializeDerived(jsonObj, true, mainModel, false);
+      ev.LoadObjLinks(jsonObj, true, mainModel);
 
       //Is there a way to easily test the triggering of the event 
       //test for true
@@ -403,6 +417,10 @@ namespace UnitTesting_Simulation
       string retJsonStr = ev.GetJSON(true, mainModel);
       Assert.True(CompareJSON(retJsonStr, jsonModel));
     }
+
+    /// //////////////
+    // Action Tests
+    //////////////////
   }
 }
 
