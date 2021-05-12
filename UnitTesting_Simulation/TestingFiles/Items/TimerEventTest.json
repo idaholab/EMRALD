@@ -1,0 +1,10 @@
+    {
+      "Event": {
+        "id": 1,
+        "name": "Timer",
+        "desc": "",
+        "mainItem": true,
+        "evType": "etTimer",
+        "time": "PT1M"
+      }
+    }
