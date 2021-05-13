@@ -1,0 +1,12 @@
+   {
+      "Variable": {
+        "id": 1,
+        "name": "ExtSimVar",
+        "desc": "",
+        "varScope": "gt3DSim",
+        "value": 0,
+        "resetOnRuns": true,
+        "type": "int",
+        "sim3DId": "ExtSimVar"
+      }
+    }

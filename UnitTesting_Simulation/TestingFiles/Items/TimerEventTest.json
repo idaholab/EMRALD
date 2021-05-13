@@ -6,6 +6,7 @@
         "mainItem": true,
         "evType": "etTimer",
         "useVariable": false,
-        "time": "PT1M"
+        "time": "PT1M",
+        "timeVariableUnit": ""
       }
     }
