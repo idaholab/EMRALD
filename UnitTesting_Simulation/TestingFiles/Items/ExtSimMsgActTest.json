@@ -1,0 +1,14 @@
+    {
+      "Action": {
+        "id": 1,
+        "name": "ExtSimMsg",
+        "desc": "",
+        "actType": "at3DSimMsg",
+        "mainItem": true,
+        "mutExcl": true,
+        "newStates": [],
+        "sim3DMessage": "atCompModify",
+        "extSim": "ExtSim",
+        "sim3DVariable": "ExtSimVar"
+      }
+    }

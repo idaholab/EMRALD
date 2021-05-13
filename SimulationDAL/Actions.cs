@@ -52,7 +52,7 @@ namespace SimulationDAL
 
       //add derived items
       retStr = retStr + "\"actType\": \"" + this.actType.ToString() + "\"," + Environment.NewLine;
-      retStr = retStr + "\"mainItem\": \"" + this.mainItem.ToString() + "\"," + Environment.NewLine;
+      retStr = retStr + "\"mainItem\": \"" + this.mainItem.ToString().ToLower() + "\"," + Environment.NewLine;
 
       retStr = retStr + GetDerivedJSON(lists);
 
@@ -542,7 +542,7 @@ namespace SimulationDAL
     protected List<String> codeVariables = new List<String>();
     protected bool compiled = false;
     protected Type _retType = typeof(double);
-
+    protected string variable = "";
     public string scriptCode = "";
    
     public ScriptAct(EnActionType actType)

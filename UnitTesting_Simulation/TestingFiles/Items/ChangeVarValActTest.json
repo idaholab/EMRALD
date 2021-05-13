@@ -1,0 +1,14 @@
+    {
+      "Action": {
+        "id": 1,
+        "name": "ChangeVarVal",
+        "desc": "",
+        "actType": "atCngVarVal",
+        "mainItem": true,
+        "mutExcl": true,
+        "newStates": [],
+        "scriptCode": "return 1;",
+        "variableName": "Var1",
+        "codeVariables": []
+      }
+    }

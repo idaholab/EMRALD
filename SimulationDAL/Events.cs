@@ -463,7 +463,10 @@ namespace SimulationDAL
       string retStr = null;
 
       retStr = retStr + "\"varNames\": [" + varNames + "]," + Environment.NewLine;// +
-      retStr = retStr + "\"variable\": \"" + variable + "\"," + Environment.NewLine;
+      if (variable != "")
+      {
+        retStr = retStr + "\"variable\": \"" + variable + "\"," + Environment.NewLine;
+      }
       retStr = retStr + "\"code\":\"" + compCodeStr + "\"";
       
       return retStr;
@@ -746,7 +749,7 @@ namespace SimulationDAL
 
     public override string GetDerivedJSON(EmraldModel lists)
     {
-      string retStr = "\"evType\": \"" + EnEventType.etTimer.ToString() + "\"," + Environment.NewLine;
+      string retStr = "";// "\"evType\": \"" + EnEventType.etTimer.ToString() + "\"," + Environment.NewLine;
       if (timeVariable == null)
       {
         retStr = retStr +

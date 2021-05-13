@@ -1,0 +1,15 @@
+    {
+      "Action": {
+        "id": 1,
+        "name": "RunApp",
+        "desc": "",
+        "actType": "atRunExtApp",
+        "mainItem": true,
+        "mutExcl": true,
+        "newStates": [],
+        "makeInputFileCode": "",
+        "exePath": "",
+        "processOutputFileCode": "",
+        "codeVariables": []
+      }
+    }
