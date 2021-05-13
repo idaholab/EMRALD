@@ -141,18 +141,29 @@
 ## Time Based Events
   
   <h3>Timer <img src="/images/Modeling/events/alarm.PNG" alt="Timer" width="25"/></h3>
-  Monitors the time after entering the parent state against the user specified or sampled time.<br>
+  Monitors the time after entering the parent state against the user specified or sampled time. This can be set to a static value or to a variable value. The fields will change form depending on what type of value you are setting it to. Leave the checkbox next to "Use Variable?" blank to set a static value or check it to use a variable value.<br>
   
-  <img src="/images/Modeling/events/TimerOptions.PNG" alt="Timer Options" width="500"/>
+  #### Static Value Timer
+  <img src="/images/Modeling/events/TimerStaticOptions.PNG" alt="Timer Static Options" width="500"/>
 
   - **Time Span:** Enter the amount of model time to pass after entering this state before the event actions are triggered. The first box is the number of days, the second is the number of hours, the third is the number of minutes, and the fourth is the number of seconds. Values can only be integers.
 
-<h3>Failure Rate <img src="/images/Modeling/events/dice.PNG" alt="Failure Rate" width="25"/></h3>
-  Samples a given probability of failure to determine the time of this event.<br>
-  
-  <img src="/images/Modeling/events/FailureRateOptions.PNG" alt="Failure Rate Options" width="500"/>
+  #### Variable Value Timer
+  <img src="/images/Modeling/events/TimerVarOptions1.PNG" alt="Timer Variable Options 1" width="500"/>
+  <img src="/images/Modeling/events/TimerVarOptions2.PNG" alt="Timer Variable Options 2" width="500"/>
 
-  - **Lambda/Freq:** The frequency (instances) of this event occurring per the time rate defined. Likely a decimal value like 0.0003.
+  - **Time Span:** Enter the amount of model time to pass after entering this state before the event actions are triggered. The first field is the variable value you would like to use. The second field is the time unit you would like to use. Click the field to reveal the dropdown menu of options then click your desired selection to set it.
+
+<h3>Failure Rate <img src="/images/Modeling/events/dice.PNG" alt="Failure Rate" width="25"/></h3>
+  Samples a given probability of failure to determine the time of this event. The lambda or frequency value can be set to a static value or to a variable value. The lambda/frequency field will change form slightly depending on what type of value you are setting it to. Leave the checkbox next to "Use Variable Lambda/Frequency?" blank to set a static value or check it to use a variable value.<br>
+  
+  #### Static Failure Rate
+  <img src="/images/Modeling/events/FailureRateOptions1.PNG" alt="Failure Rate Options" width="500"/>
+
+  #### Variable Failure Rate
+  <img src="/images/Modeling/events/FailureRateOptions2.PNG" alt="Failure Rate Options" width="500"/>
+
+  - **Lambda/Freq:** The frequency (instances) of this event occurring per the time rate defined. Likely a decimal value like 0.0003. If you choose to have it as a static value, checkbox unchecked, type in the value into the field. If you choose to have it as a variable value, checkbox checked, click the field to reveal the dropdown menu of variables available in your model and click the variable to set it.
   - **Time Rate:** Enter the time rate that the frequency is sampled over. The first box is the number of days, the second is the number of hours, the third is the number of minutes, and the fourth is the number of seconds. Values can only be integers.
 
 
