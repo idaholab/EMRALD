@@ -148,7 +148,8 @@ if (typeof Navigation === 'undefined')
         name: "",
         desc: "",
         diagramType: "",
-        diagramTemplate: ""
+        diagramTemplate: "",
+        changeDiagramType: function () { return true; }
       };
 
       var diagramList = simApp.allTemplates.DiagramList;
@@ -1706,6 +1707,7 @@ if (typeof Navigation === 'undefined')
     Sidebar.prototype.editDiagramProperties = function (dataObj, el) {
       var originalLabel = dataObj.diagramLabel;
       var url = 'EditForms/DiagramEditor.html';
+      dataObj.changeDiagramType = this.editDiagramType;
 
       var wnd = mxWindow.createFrameWindow(
         url,
@@ -1734,6 +1736,12 @@ if (typeof Navigation === 'undefined')
       var contentPanel = document.getElementById("ContentPanel");
       adjustWindowPos(contentPanel, wnd.div);
       contentPanel.appendChild(wnd.div);
+      }
+    //-------------------------------------------
+    Sidebar.prototype.editDiagramType = function (diagramName, oldType, newType) {
+      let successful = false;
+      console.log('Changing Diagram Type');
+      return successful;
     }
 
     //------------------

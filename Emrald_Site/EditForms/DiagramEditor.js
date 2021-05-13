@@ -50,6 +50,17 @@ function updateDiagramTypeSelection(diagramType, diagramLabel) {
     }
 }
 
+function tryChangeDiagramType(oldType, newType) {
+    var scope = angular.element(document.querySelector("#diagramControllerPanel")).scope();
+    console.log("Old Type: " + oldType);
+    console.log("New Type: " + newType);
+    if (!scope.changeDiagramTypeSidebarCallbackFunction(scope.name, oldType, newType)) {
+        alert("Cannot Change Diagram Type.");
+        return false;
+    }
+    return true;
+}
+
 var diagramData = null;
 function OnLoad(dataObj) {
     diagramData = dataObj;
@@ -90,15 +101,10 @@ function OnLoad(dataObj) {
             templateElement.style.visibility = "hidden";
             templateLabelElement.style.visibility = "hidden";
         }
+        if (dataObj.changeDiagramType) {
+            scope.changeDiagramTypeSidebarCallbackFunction = dataObj.changeDiagramType;
+        }
     });
-
-
-
-    var opEl = document.getElementById("TypeOption");
-    if (dataObj.dbID >= 0)
-        opEl.disabled = true;
-    else
-        opEl.disabled = false;
 }
 
 function GetDataObject() {
@@ -139,7 +145,7 @@ function somethingChanged() {
 
 //Default diagram editor values
 var diagramModule = angular.module('diagramModule', []);
-diagramModule.controller('diagramController', function ($scope) {
+diagramModule.controller('diagramController', function ($scope, $timeout) {
     $scope.name = "diagram1";
     $scope.desc = "new diagram";
     $scope.diagramTypes = [
@@ -153,6 +159,8 @@ diagramModule.controller('diagramController', function ($scope) {
     $scope.diagramTemplate = "";
     $scope.singleStatesHeader = [{ column: "Name" }, { column: "Success State" }];
     $scope.singleStates = [];
+    $scope.changeDiagramTypeSidebarCallbackFunction = null;
+    $scope.loading = true;
 
 
     $scope.$watch('name', function () {
@@ -161,9 +169,21 @@ diagramModule.controller('diagramController', function ($scope) {
     $scope.$watch('desc', function () {
         somethingChanged();
     }, true);
-    $scope.$watch('diagramType', function () {
-        $scope.onTypeChanged();
-        somethingChanged();
+    $scope.$watch('diagramType', function (newValue, oldValue) {
+        if (newValue === oldValue) {
+            return;
+        }
+        if ($scope.loading) {
+            $timeout(() => $scope.loading = false);
+        }
+        else if (tryChangeDiagramType(oldValue.value, newValue.value)) {
+            $scope.onTypeChanged();
+            somethingChanged();
+        }
+        else {
+            updateDiagramTypeSelection(oldValue.value, oldValue.name);
+            $scope.loading = true;
+        }
     }, true);
     $scope.$watch('diagramTemplate', function (newV, oldV) { if (newV !== oldV) somethingChanged(); }, true);
 

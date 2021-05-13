@@ -896,6 +896,8 @@ var StateApp = (function (global, _super) {
     var parent = graph.getDefaultParent();
     var dModel = parent.value.DiagramList[0].Diagram;
     var diagramName = dModel.name;
+    var sb = mainApp.graph.getDefaultParent().value.sidebar;
+    dModel.changeDiagramType = sb.editDiagramType;
     mxWindow.createFrameWindow(
       url,
       'OK, Cancel',  //command buttons
@@ -903,7 +905,6 @@ var StateApp = (function (global, _super) {
       function (btn, retObj) {
         if (btn === 'OK') {
           graph.getDefaultParent().value.modelChanged = true;
-          var sb = mainApp.graph.getDefaultParent().value.sidebar;
           if (sb) {
             if (diagramName !== retObj.name) {
               sb.replaceDiagramName(diagramName, retObj.name);
