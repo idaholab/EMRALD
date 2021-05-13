@@ -150,14 +150,7 @@ if (typeof Navigation === 'undefined')
         diagramType: "",
         diagramTemplate: ""
       };
-      var diagramLabels = [];
-      getServerFile("resources/customUILabels.json", function onSuccess(jsonStr) {
-        var labObj = JSON.parse(jsonStr);
-        labObj.LabelList.forEach(function (item) {
-          diagramLabels.add({ name: item.diagramLabel, value: item.diagramType });
-        }.bind(this));
-      }.bind(this));
-      dataObj.diagramLabels = diagramLabels;
+
       var diagramList = simApp.allTemplates.DiagramList;
       var diagramTemplates = [];
       if (diagramList.length > 0) {
@@ -1713,14 +1706,6 @@ if (typeof Navigation === 'undefined')
     Sidebar.prototype.editDiagramProperties = function (dataObj, el) {
       var originalLabel = dataObj.diagramLabel;
       var url = 'EditForms/DiagramEditor.html';
-      var diagramLabels = [];
-      getServerFile("resources/customUILabels.json", function onSuccess(jsonStr) {
-        var labObj = JSON.parse(jsonStr);
-        labObj.LabelList.forEach(function (item) {
-          diagramLabels.add({ name: item.diagramLabel, value: item.diagramType });
-        }.bind(this));
-      }.bind(this));
-      dataObj.diagramLabels = diagramLabels;
 
       var wnd = mxWindow.createFrameWindow(
         url,
