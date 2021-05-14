@@ -288,7 +288,8 @@ if (typeof Navigation === 'undefined')
             taphold: true,
             menu: [
               { title: "New " + titleForNew, cmd: "New" },
-              { title: "Refresh", cmd: "Refresh" }
+              { title: "Refresh", cmd: "Refresh" },
+              { title: "Merge", cmd: "Merge" } //TODO remove this is for testing only
             ],
             select: function (evt, ui) {
               //var $target = ui.target;
@@ -322,6 +323,12 @@ if (typeof Navigation === 'undefined')
                   }
                   break;
                 case "Refresh":
+                  break;
+                case "Merge":
+                  getServerFile("resources/TestMergeModel.json", function onSuccess(jsonStr) {
+                    var dataObj = JSON.parse(jsonStr);
+                    this.mergeModel(dataObj);
+                  }.bind(this));                  
                   break;
               }
             }.bind(this)
@@ -629,8 +636,42 @@ if (typeof Navigation === 'undefined')
         return jsonValue;
       }
     }
+
     //---------------------------------------------------
-    var getActionByName = function (aList, aName) {
+    Sidebar.prototype.getByName = function (itemType, model, aName) {
+      switch (itemType) {
+        case "Action":
+          return this.getActionByName(model, aName);
+          break;
+        case "Event":
+          return this.getEventByName(model, aName);
+          break;
+        case "Variable":
+          return this.getVariableByName(model, aName);
+          break;
+        case "ExtSim":
+          return this.getExtSimByName(model, aName);
+          break;
+        case "LogicNode":
+          return this.getLogicNodeByName(model, aName);
+          break;
+        case "Diagram":
+          return this.getDiagramByName(model, aName);
+          break;
+        case "State":
+          return this.getStateByName(model, aName);
+          break;
+      }
+      return null;
+    }
+    //---------------------------------------------------
+    Sidebar.prototype.getActionByName = function (model, aName) {
+      var aList
+      if (model == null)
+        aList = simApp.allDataModel.ActionList;
+      else
+        aList = model.ActionList; 
+
       var actObj = null;
 
       for (var i = 0; i < aList.length; i++) {
@@ -643,7 +684,13 @@ if (typeof Navigation === 'undefined')
       return actObj;
     }
     //---------------------------------------------------
-    var getEventByName = function (aList, aName) {
+    Sidebar.prototype.getEventByName = function (model, aName) {
+      var aList
+      if (model == null)
+        aList = simApp.allDataModel.EventList;
+      else
+        aList = model.EventList;
+
       var evtObj = null;
 
       for (var i = 0; i < aList.length; i++) {
@@ -656,7 +703,13 @@ if (typeof Navigation === 'undefined')
       return evtObj;
     }
     //---------------------------------------------------
-    var getVariableByName = function (aList, aName) {
+    Sidebar.prototype.getVariableByName = function (model, aName) {
+      var aList
+      if (model == null)
+        aList = simApp.allDataModel.VariableList;
+      else
+        aList = model.VariableList;
+
       var varObj = null;
 
       for (var i = 0; i < aList.length; i++) {
@@ -668,7 +721,13 @@ if (typeof Navigation === 'undefined')
       return varObj;
     }
     //---------------------------------------------------
-    var getExtSimByName = function (aList, aName) {
+    Sidebar.prototype.getExtSimByName = function (model, aName) {
+      var aList
+      if (model == null)
+        aList = simApp.allDataModel.ExtSimList;
+      else
+        aList = model.ExtSimList;
+
       var simObj = null;
 
       for (var i = 0; i < aList.length; i++) {
@@ -679,7 +738,24 @@ if (typeof Navigation === 'undefined')
       }
       return simObj;
     }
+    //---------------------------------------------------
+    Sidebar.prototype.getLogicNodeByName = function (model, aName) {
+      var aList
+      if (model == null)
+        aList = simApp.allDataModel.LogicNodeList;
+      else
+        aList = model.LogicNodeList;
 
+      var simObj = null;
+
+      for (var i = 0; i < aList.length; i++) {
+        if (aList[i].LogicNode.name && aList[i].LogicNode.name.toUpperCase() == aName.toUpperCase()) {
+          simObj = aList[i];
+          break;
+        }
+      }
+      return simObj;
+    }
     //---------------------------------------------------
     Sidebar.prototype.getDiagramByName = function (model, aName) {
       var dia = null;
@@ -833,7 +909,7 @@ if (typeof Navigation === 'undefined')
           //look for action name within the ImmediateAction list.
           if (state.immediateActions && state.immediateActions.length > 0) {
             state.immediateActions.forEach(function (actionName) {
-              var actionObj = getActionByName(simApp.allDataModel.ActionList, actionName);
+              var actionObj = this.getActionByName(simApp.allDataModel, actionName);
               if (actionObj)
                 actionList.push(actionObj);
             });
@@ -843,7 +919,7 @@ if (typeof Navigation === 'undefined')
             state.eventActions.forEach(function (eaObj) {
               if (eaObj.actions && eaObj.actions.length > 0) {
                 eaObj.actions.forEach(function (actionName) {
-                  var actionObj = getActionByName(simApp.allDataModel.ActionList, actionName);
+                  var actionObj = this.getActionByName(simApp.allDataModel, actionName);
                   if (actionObj)
                     actionList.push(actionObj);
                 });
@@ -862,7 +938,7 @@ if (typeof Navigation === 'undefined')
         states.forEach(function (state) {
           if (state.immediateActions && state.immediateActions.length > 0) {
             state.immediateActions.forEach(function (actionName) {
-              var actionObj = getActionByName(simApp.allDataModel.ActionList, actionName);
+              var actionObj = this.getActionByName(simApp.allDataModel, actionName);
               if (actionObj && (actionNames.indexOf(actionName) < 0)) {
                 actionList.push(actionObj);
                 actionNames.push(actionName);
@@ -873,7 +949,7 @@ if (typeof Navigation === 'undefined')
             state.eventActions.forEach(function (eaObj) {
               if (eaObj.actions && eaObj.actions.length > 0) {
                 eaObj.actions.forEach(function (actionName) {
-                  var actionObj = getActionByName(simApp.allDataModel.ActionList, actionName);
+                  var actionObj = this.getActionByName(simApp.allDataModel, actionName);
                   if (actionObj && (actionNames.indexOf(actionName) < 0)) {
                     actionList.push(actionObj);
                     actionNames.push(actionName);
@@ -894,7 +970,7 @@ if (typeof Navigation === 'undefined')
         states.forEach(function (state) {
           if (state.events && state.events.length > 0) {
             state.events.forEach(function (eventName) {
-              var eventObj = getEventByName(simApp.allDataModel.EventList, eventName);
+              var eventObj = this.getEventByName(simApp.allDataModel, eventName);
               if (eventObj) {
                 eventList.push(eventObj);
                 eventNames.push(eventName);
@@ -913,7 +989,7 @@ if (typeof Navigation === 'undefined')
         states.forEach(function (state) {
           if (state.events && state.events.length > 0) {
             state.events.forEach(function (eventName) {
-              var eventObj = getEventByName(simApp.allDataModel.EventList, eventName);
+              var eventObj = this.getEventByName(simApp.allDataModel, eventName);
               if (eventObj && (eventNames.indexOf(eventName) < 0)) {
                 eventList.push(eventObj);
                 eventNames.push(eventName);
@@ -1059,35 +1135,170 @@ if (typeof Navigation === 'undefined')
       return diagram;
     }
 
-    Sidebar.prototype.mergeDiagram = function (addDiagram) {
-      //see if the items already exist
-        //for items that exist, prompt user on what to do “Overwrite”, “Ignore”, “Rename”
+    //loop through each item in the model for the given item types and call the callback function.
+    Sidebar.prototype.forEachItemDo = function (model, itemTypes, doFunc)
+    {
+      if (model.DiagramList && itemTypes.includes("Diagram")) {
+        for (var i = 0; i < model.DiagramList.length; i++) {
+          doFunc(this, model, model.DiagramList[i].Diagram, "Diagram");
+        }
+      }
+      if (model.StateList && itemTypes.includes("State")) {
+        for (var i = 0; i < model.StateList.length; i++) {
+          doFunc(this, model, model.StateList[i].State, "State");
+        }
+      }
+      if (model.ActionList && itemTypes.includes("Action")) {
+        for (var i = 0; i < model.ActionList.length; i++) {
+          doFunc(this, model, model.ActionList[i].Action, "Action");
+        }
+      }
+      if (model.EventList && itemTypes.includes("Event")) {
+        for (var i = 0; i < model.EventList.length; i++) {
+          doFunc(this, model, model.EventList[i].Event, "Event");
+        }
+      }
+      if (model.LogicNodeList && itemTypes.includes("LogicNode")) {
+        for (var i = 0; i < model.LogicNodeList.length; i++) {
+          doFunc(this, model, model.LogicNodeList[i].LogicNode, "LogicNode");
+        }
+      }
+      if (model.VariableList && itemTypes.includes("Variable")) {
+        for (var i = 0; i < model.VariableList.length; i++) {
+          doFunc(this, model, model.VariableList[i].Variable, "Variable");
+        }
+      }
+    }
 
+    //this function assumes that all items in the "addModel" are to be merged into the existing model.
+    Sidebar.prototype.mergeModel = function (addModel) {
+      var model = simApp.allDataModel;
+      //see if the items already exist
+      var overwriteList = {};
+      overwriteList["Diagram"] = [];
+      overwriteList["State"] = [];
+      overwriteList["Action"] = [];
+      overwriteList["Event"] = [];
+      overwriteList["LogicNode"] = [];
+      overwriteList["Variable"] = [];      
+      var ignoreList = {};
+      ignoreList["Diagram"] = [];
+      ignoreList["State"] = [];
+      ignoreList["Action"] = [];
+      ignoreList["Event"] = [];
+      ignoreList["LogicNode"] = [];
+      ignoreList["Variable"] = [];
+      var renameList = {};
+      renameList["Diagram"] = [];
+      renameList["State"] = [];
+      renameList["Action"] = [];
+      renameList["Event"] = [];
+      renameList["LogicNode"] = [];
+      renameList["Variable"] = [];
+
+      //Go through the merge model and find any already existing items and ask user what to do
+      this.forEachItemDo(addModel, ["Diagram", "State", "Event", "Action", "LogicNode", "Variable"], function (self, curModel, item, itemType) {
+        //for items that exist, prompt user on what to do “Overwrite”, “Ignore”, “Rename”
+        if (self.getByName(itemType, model, item.name)) {
+          //todo prompt user for “Overwrite”, “Ignore”, “Rename”
+          var prompt = true;
+          while (prompt) {
+            //todo if overwrite
+            //overwriteList[itemType].push(item.name);
+            //todo if rename
+            var newName = item.name + "2"; //TODO new name from user
+            if (!self.getByName(itemType, model, newName) && !self.getByName(itemType, curModel, newName)) {
+              prompt = false;
+              renameList[itemType].push({ "oldName": item.name, "newName": newName });
+            }
+            //todo if Ignore
+            ignoreList[itemType].push(item.name);
+          }
+        }        
+      });      
+      
       //for each rename change the names in the addDiagram
+      for (var type in renameList) {
+        for (var i = 0; i < renameList[type].length; i++) {
+          this.replaceNames(renameList[type][i].oldName, renameList[type][i].newName, type, addModel) //name:newName pair
+        }
+      }
 
       //for each Overwrite replace the existing in the model
+      for (var type in overwriteList) {
+        for (var i = 0; i < overwriteList[type].lengh; i++) {
+          var target = this.getByName(type, model, overwriteList[type][ii]);
+          var source = this.getByName(type, addModel, overwriteList[type][idx]);
+          if ((target != null) && (source != null)) {
+            Object.assign(target, source); 
+          }
+        }
+      }
 
       //add all the rest of the items to the correct sections
+      this.forEachItemDo(addModel, ["Diagram", "State", "Event", "Action", "LogicNode", "Variable"], function (self, curModel, item, itemType) {
+        var model = simApp.allDataModel
+        if (ignoreList[itemType].includes(item.name) ||
+          overwriteList[itemType].includes(item.name)) {
+          return;
+        }
+        else { //item is unique or has been renamed
+          //add to the existing model
+          var addWrapper = {};
+          addWrapper[itemType] = item;
+          switch (itemType){
+            case "Diagram":
+              self.addNewDiagram(addWrapper);
+              break;
+            case "State":
+              self.addNewState(addWrapper);
+              break;
+            case "Action":
+              if (item.mainItem)
+                self.addNewAction(addWrapper);
+              else
+                self.addNewLocalAction(addWrapper);
+              break;
+            case "Event":
+              if (item.mainItem)
+                self.addNewEvent(addWrapper);
+              else
+                self.addNewLocalEvent(addWrapper);
+              break;
+            case "LogicNode":
+              simApp.allDataModel.LogicNodeList.add(addWrapper);
+              var container = document.getElementById("LogicTreesPanel_id");
+              self.addSectionItem(container, "Logic Tree", item.name, item);
+              break;
+            case "Variable":
+              self.addNewVariable(addWrapper);
+              break;
+          };
+        }
+      });
 
+      //this.alterSideBarListsItem(dataObj.name, null, new Set(["All", "Global", "Local"]), "Event");
     }
 
     //begin-----------------Rename functions for different items-------------------------------
     //Replace a state name through out the entire model and update the effected state view's textContent.
-    Sidebar.prototype.replaceNames = function (oldName, newName, type)
+    Sidebar.prototype.replaceNames = function (oldName, newName, type, model)
     {
+      if (model == null)
+        model = simApp.allDataModel;
       //try and replace for all object referencing calls
-      this.statesReferencing(simApp.allDataModel, oldName, type, false, false, false, newName);
-      this.variableReferencing(simApp.allDataModel, oldName, type, false, newName);
-      this.eventsReferencing(simApp.allDataModel, oldName, type, false, newName);
-      this.actionsReferencing(simApp.allDataModel, oldName, type, false, newName);
-      this.diagramsReferencing(simApp.allDataModel, oldName, type, false, newName);
-      this.logicNodesReferencing(simApp.allDataModel, oldName, type, false, newName);
+      this.statesReferencing(model, oldName, type, false, false, false, newName);
+      this.variableReferencing(model, oldName, type, false, newName);
+      this.eventsReferencing(model, oldName, type, false, newName);
+      this.actionsReferencing(model, oldName, type, false, newName);
+      this.diagramsReferencing(model, oldName, type, false, newName);
+      this.logicNodesReferencing(model, oldName, type, false, newName);
 
       //update the names in the left side bar view
       this.alterSideBarListsItem(oldName, newName, new Set(["All", "Global", "Local"]), type);
     }
     Sidebar.prototype.replaceEventName = function (oldName, newName) {
-      this.replaceNames(oldName, newName, "Event");
+        this.replaceNames(oldName, newName, "Event");
     }
     Sidebar.prototype.replaceActionName = function (oldName, newName) {
       this.replaceNames(oldName, newName, "Action");
@@ -1259,7 +1470,7 @@ if (typeof Navigation === 'undefined')
                       event.Event.name = "" + start + diagramInsert + end; //insert diagram name into the *****
                     }
                     event.Event.id = this.getDefaultEventID();
-                    if (!getEventByName(mainModel, event.Event.name)) {
+                    if (!this.getEventByName(mainModel, event.Event.name)) {
 
                       mainModel.EventList.push(event);
                     }
@@ -1318,7 +1529,7 @@ if (typeof Navigation === 'undefined')
                     }
 
                     action.Action.id = this.getDefaultActionID();
-                    if (!getActionByName(mainModel, action.Action.name)) {
+                    if (!this.getActionByName(mainModel, action.Action.name)) {
                       mainModel.ActionList.push(action);
                     }
 
@@ -1421,7 +1632,7 @@ if (typeof Navigation === 'undefined')
     Sidebar.prototype.addNewAction = function (newAction, parent, isImmediate) {
       var mainModel = simApp.allDataModel;
       if (mainModel.ActionList) {
-        var act = getActionByName(mainModel.ActionList, newAction.Action.name);
+        var act = this.getActionByName(mainModel, newAction.Action.name);
         if (!act) {
           var idx = mainModel.ActionList.push(newAction);
           newAction.Action.id = idx;
@@ -1455,7 +1666,7 @@ if (typeof Navigation === 'undefined')
     Sidebar.prototype.addNewLocalAction = function (newAction, parent, isImmediate) {
       var mainModel = simApp.allDataModel;
       if (mainModel.ActionList) {
-        var act = getActionByName(mainModel.ActionList, newAction.Action.name);
+        var act = this.getActionByName(mainModel, newAction.Action.name);
         //if the action does not exist
         if (!act) {
           var idx = mainModel.ActionList.push(newAction);
@@ -1486,7 +1697,7 @@ if (typeof Navigation === 'undefined')
     Sidebar.prototype.addNewEvent = function (newEvent, parent) {
       var mainModel = simApp.allDataModel;
       if (mainModel.EventList) {
-        var evt = getEventByName(mainModel.EventList, newEvent.Event.name);
+        var evt = this.getEventByName(mainModel, newEvent.Event.name);
         if (!evt) {
           var idx = mainModel.EventList.push(newEvent);
           newEvent.Event.id = idx;
@@ -1513,7 +1724,7 @@ if (typeof Navigation === 'undefined')
     Sidebar.prototype.addNewLocalEvent = function (newEvent, parent, existingAsNew) {
       var mainModel = simApp.allDataModel;
       if (mainModel.EventList) {
-        var evt = getEventByName(mainModel.EventList, newEvent.Event.name);
+        var evt = this.getEventByName(mainModel, newEvent.Event.name);
         if (!evt) {
           var idx = mainModel.EventList.push(newEvent);
           newEvent.Event.id = idx;
@@ -1550,7 +1761,7 @@ if (typeof Navigation === 'undefined')
     Sidebar.prototype.addNewVariable = function (newVariable, parent) {
       var mainModel = simApp.allDataModel;
       if (mainModel.VariableList) {
-        var varr = getVariableByName(mainModel.VariableList, newVariable.Variable.name);
+        var varr = this.getVariableByName(mainModel, newVariable.Variable.name);
         if (!varr) {
           var idx = mainModel.VariableList.push(newVariable);
           newVariable.Variable.id = idx;
@@ -1579,7 +1790,7 @@ if (typeof Navigation === 'undefined')
 
       if (!mainModel.ExtSimList) mainModel.ExtSimList = [];
 
-      var sim = getExtSimByName(mainModel.ExtSimList, newExtSim.ExtSim.name);
+      var sim = this.getExtSimByName(mainModel, newExtSim.ExtSim.name);
       if (!sim) {
         //We only care about a new ExtSim, as any existing will be updated by the editor.
         var idx = mainModel.ExtSimList.push(newExtSim);
