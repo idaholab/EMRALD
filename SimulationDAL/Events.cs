@@ -891,10 +891,8 @@ namespace SimulationDAL
 
     public override string GetDerivedJSON(EmraldModel lists)
     {
-      string retStr = "\"evType\": \"" + EnEventType.etFailRate.ToString() + "\"," + Environment.NewLine +
-
-                      "\"lambdaTimeRate\":\"" + XmlConvert.ToString(this.timeRate) + "\"," + Environment.NewLine +
-                      "\"missionTime\":\"" + XmlConvert.ToString(this.compMissionTime) + "\",";
+      string retStr = "\"lambdaTimeRate\":\"" + XmlConvert.ToString(this.timeRate) + "\"," + Environment.NewLine;// +
+                      //"\"missionTime\":\"" + XmlConvert.ToString(this.compMissionTime) + "\",";
       if (lambdaVariable != null)
       {
         retStr = retStr +
