@@ -1,15 +1,19 @@
 {
-  "Action": {
-    "id": 1,
-    "name": "RunExe",
-    "desc": "",
-    "actType": "atRunExtApp",
-    "mainItem": false,
-    "makeInputFileCode": "return FailProb.ToString();",
-    "exePath": "c:\\temp\\THmodel.exe",
-    "processOutputFileCode": "List<String> retStates = new List<String>();\nreturn retStates;",
-    "codeVariables": [
-      "FailProb"
-    ]
-  }
+      "Action": {
+        "id": 1,
+        "name": "RunExe",
+        "desc": "",
+        "actType": "atRunExtApp",
+        "mainItem": false,
+        "mutExcl": true,
+        "newStates": [],
+        "makeInputFileCode": "return ((int)pumpFailTime).ToString() + \" \" + failureMode.ToString() + \" \" + ((int)flexFixTime).ToString();",
+        "exePath": "c:\\temp\\THmodel.exe",
+        "processOutputFileCode": "List<String> retStates = new List<String>();\nreturn retStates;",
+        "codeVariables": [
+          "failureMode",
+          "flexFixTime",
+          "pumpFailTime"
+        ]
+      }
 }

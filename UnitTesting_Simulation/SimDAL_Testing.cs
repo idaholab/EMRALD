@@ -523,7 +523,7 @@ namespace UnitTesting_Simulation
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
       SetupTheTest(testName);
 
-      TransitionAct act = new TransitionAct();
+      RunExtAppAct act = new RunExtAppAct();
       //use a sample JSON piece to set the values
       string fileLoc = MainTestDir() + itemFolder + testName + ".json";
       string jsonModel = "";
