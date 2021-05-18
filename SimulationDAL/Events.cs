@@ -761,7 +761,7 @@ namespace SimulationDAL
         retStr = retStr +
           "\"time\":\"" + timeVariable.name + "\"," + Environment.NewLine +
           "\"useVariable\": true, " + Environment.NewLine +
-          "\"timerVariableUnit\":\"" + this.timerVariableUnit.ToString() + "\"," + Environment.NewLine;
+          "\"timeVariableUnit\":\"" + this.timerVariableUnit.ToString() + "\"," + Environment.NewLine;
       }
 
       return retStr;

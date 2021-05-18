@@ -1045,28 +1045,11 @@ namespace SimulationDAL
       string code1Str = makeInputFileCode.Replace("\\", "\\\\").Replace("\n", "\\n").Replace("\r", "\\r").Replace("\"", "\\\""); //
       string code2Str = processOutputFileCode.Replace("\\", "\\\\").Replace("\"", "\\\"").Replace("\n", "\\n").Replace("\r", "\\r");
       string exePathStr = exePath.Replace("\\", "\\\\").Replace("\"", "\\\"");
-      //JObject codeJson1 = new JObject();
-      //codeJson1.Add("code", code1Str);
-      //JObject codeJson2 = new JObject();
-      //codeJson2.Add("code", code2Str);
-      //code1Str = codeJson1.ToString();
-      //code2Str = codeJson2.ToString();
-      //code1Str = code1Str.Substring(14, code1Str.Length - 18);
-      //code2Str = code2Str.Substring(14, code2Str.Length - 18);
-
-
-
+      
       string retStr = Environment.NewLine + "\"makeInputFileCode\":" + "\"" + code1Str + "\"";
       retStr = retStr + "," + Environment.NewLine + "\"processOutputFileCode\":" + "\"" + code2Str + "\"";
       retStr = retStr + "," + Environment.NewLine + "\"exePath\":" + "\"" + exePathStr + "\"";
-      retStr = retStr + "," + Environment.NewLine + "\"exeOutputPath\":" + "\"" + exeOutputPath + "\"";
-
-      //string codeStr = "{\"processOutputFileCode\":" + "\"" + code2Str + "\"}";
-
-      //JObject retJO = new JObject();
-      //retJO.Add("code", code2Str);
-      //string jStr = retJO.ToString();
-      //var dynamicObj = Json.Decode(jStr);
+      //retStr = retStr + "," + Environment.NewLine + "\"exeOutputPath\":" + "\"" + exeOutputPath.Replace("\\", "\\\\") + "\"";
 
 
       if (codeVariables != null)
@@ -1516,15 +1499,10 @@ namespace SimulationDAL
     public override string GetDerivedJSON(EmraldModel lists)
     {
 
-      string retStr = "," + Environment.NewLine + "\"sim3DMessageID\":" + "\"" + sim3DMessage.ToString() + "\"";
+      string retStr = Environment.NewLine + "\"sim3DMessage\":" + "\"" + sim3DMessage.ToString() + "\"";
       retStr = retStr + "," + Environment.NewLine + "\"extSim\":" + "\"" + _extSim.name + "\"";
       if (this.simVar != null)
         retStr = retStr + "," + Environment.NewLine + "\"sim3DVariable\":" + "\"" + simVar.name + "\"";
-      if (this._extSim != null)
-        retStr = retStr + "," + Environment.NewLine + "\"sim3DModelRef\":" + "\"" + _extSim.modelRef + "\"";
-      if (this._extSim != null)
-        retStr = retStr + "," + Environment.NewLine + "\"sim3DConfigData\":" + "\"" + _extSim.configData + "\"";
-      retStr = retStr + "," + Environment.NewLine + "\"openSimVarParams\":" + openSimVarParams.ToString();
       return retStr;
     }
 
