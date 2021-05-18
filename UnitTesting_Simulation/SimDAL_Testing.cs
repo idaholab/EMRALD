@@ -260,7 +260,6 @@ namespace UnitTesting_Simulation
 
       TimerEvent ev = new TimerEvent();
       ev.DeserializeDerived(jsonObj, true, mainModel, false);
-      ev.LoadObjLinks(jsonObj, true, mainModel);
 
       //Is there a way to easily test the triggering of the event 
       //test for true
@@ -320,7 +319,8 @@ namespace UnitTesting_Simulation
       ExtSimEvent ev = new ExtSimEvent("TestExtSimEvent");
       //use a sample JSON piece to set the values
       string fileLoc = MainTestDir() + itemFolder + testName + ".json";
-      string jsonModel = "";
+      string fileLoc2 = MainTestDir() + itemFolder + testName + "2.json";//for the 3dsim variable
+      string jsonModel = "";//for the Ext Sim event
       if (File.Exists(fileLoc))
         jsonModel = File.ReadAllText(fileLoc);
       else
@@ -523,20 +523,38 @@ namespace UnitTesting_Simulation
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
       SetupTheTest(testName);
 
-      RunExtAppAct act = new RunExtAppAct();
+      
       //use a sample JSON piece to set the values
       string fileLoc = MainTestDir() + itemFolder + testName + ".json";
+      string varFileLoc = MainTestDir() + itemFolder + "VarDoubleTest.json";
       string jsonModel = "";
+      string varJsonModel = "";
       if (File.Exists(fileLoc))
+      {
         jsonModel = File.ReadAllText(fileLoc);
+        varJsonModel = File.ReadAllText(varFileLoc);
+      }
       else
         throw new Exception("Failed to find create json file for " + testName);
 
-      dynamic jsonObj = JsonConvert.DeserializeObject(jsonModel);
+      
       EmraldModel mainModel = new EmraldModel(); //for some items, if the item JSON references other items they will need to be added to the main model
-      act.DeserializeDerived(jsonObj, true, mainModel, false);
 
-      //Is there a way to easily test the triggering of the event 
+      //add the variable used in the code
+      dynamic varJsonObj = JsonConvert.DeserializeObject(varJsonModel);//for the logic top
+      SimGlobVariable testVar = new SimGlobVariable();
+      testVar.DeserializeDerived(varJsonObj, true, mainModel, false);
+
+      //add the action
+      RunExtAppAct act = new RunExtAppAct();
+      dynamic jsonObj = JsonConvert.DeserializeObject(jsonModel);
+      act.DeserializeDerived(jsonObj, true, mainModel, false);
+      act.LoadObjLinks(jsonObj, true, mainModel);
+
+      Assert.True(act.CompileMakeInputFileCode(mainModel));
+      Assert.True(act.CompileProcessOutputFileCode(mainModel));
+
+      //Is there a way to easily test functions of the action
       //test for true
       //Assert.True(ev.EventTriggered());
       //test for false
@@ -558,36 +576,36 @@ namespace UnitTesting_Simulation
       Sim3DAction act = new Sim3DAction();
       //use a sample JSON piece to set the values
       string fileLoc = MainTestDir() + itemFolder + testName + ".json";
-      string fileLoc2 = MainTestDir() + itemFolder + testName + "2.json";//for the 3dsim link
-      string fileLoc3 = MainTestDir() + itemFolder + testName + "3.json";//for the 3dsim var
+      string fileLoc2 = MainTestDir() + itemFolder + "ExtSimObjTest.json";//for the 3dsim link
+      string fileLoc3 = MainTestDir() + itemFolder + "Var3DSimTest.json";//for the 3dsim var
       string jsonModel = "";//for the Ext Sim Msg action
       if (File.Exists(fileLoc))
         jsonModel = File.ReadAllText(fileLoc);
       else
         throw new Exception("Failed to find create json file for " + testName);
 
-      string jsonModel2 = "";//for the 3dsim link
+      string extSimModel = "";//for the 3dsim link
       if (File.Exists(fileLoc2))
-        jsonModel2 = File.ReadAllText(fileLoc2);
+        extSimModel = File.ReadAllText(fileLoc2);
       else
         throw new Exception("Failed to find create json file for " + testName);
 
-      string jsonModel3 = "";//for the 3dsim variable
+      string varSimModel = "";//for the 3dsim variable
       if (File.Exists(fileLoc3))
-        jsonModel3 = File.ReadAllText(fileLoc3);
+        varSimModel = File.ReadAllText(fileLoc3);
       else
         throw new Exception("Failed to find create json file for " + testName);
 
       dynamic jsonObj = JsonConvert.DeserializeObject(jsonModel);//for the Ext Sim event
-      dynamic jsonObj2 = JsonConvert.DeserializeObject(jsonModel2);//for the 3dsim link
-      dynamic jsonObj3 = JsonConvert.DeserializeObject(jsonModel3);//for the 3dsim variable
+      dynamic extSimJsonObj = JsonConvert.DeserializeObject(extSimModel);//for the 3dsim link
+      dynamic varJsonObj = JsonConvert.DeserializeObject(varSimModel);//for the 3dsim variable
 
       EmraldModel mainModel = new EmraldModel(); //for some items, if the item JSON references other items they will need to be added to the main model
       ExternalSim externalSimLink = new ExternalSim();//for the 3dsim link
       Sim3DVariable sim3DVariable = new Sim3DVariable();//for the 3dsim variable
       
-      sim3DVariable.DeserializeDerived(jsonObj3, true, mainModel, false);
-      externalSimLink.DeserializeDerived(jsonObj2, true, mainModel, false);
+      sim3DVariable.DeserializeDerived(varJsonObj, true, mainModel, false);
+      externalSimLink.DeserializeDerived(extSimJsonObj, true, mainModel, false);
       act.DeserializeDerived(jsonObj, true, mainModel, false);
       act.LoadObjLinks(jsonObj, true, mainModel);
 
