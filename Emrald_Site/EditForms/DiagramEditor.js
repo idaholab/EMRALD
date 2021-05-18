@@ -48,6 +48,8 @@ function updateDiagramTypeSelection(diagramType, diagramLabel) {
             scope.diagramType = scope.diagramTypes[0];
         }
     }
+    scope.initialChange = false;
+    scope.timeout(() => scope.loading = false);
 }
 
 function tryChangeDiagramType(oldType, newType) {
@@ -154,13 +156,15 @@ diagramModule.controller('diagramController', function ($scope, $timeout) {
         { name: "Plant Response", value: "dtPlant" },
         { name: "Other", value: "dtOther" }
     ];
-    $scope.diagramType = $scope.diagramTypes[0];
     $scope.diagramTemplates = [];
     $scope.diagramTemplate = "";
     $scope.singleStatesHeader = [{ column: "Name" }, { column: "Success State" }];
     $scope.singleStates = [];
     $scope.changeDiagramTypeSidebarCallbackFunction = null;
     $scope.loading = true;
+    $scope.initialChange = true;
+    $scope.diagramType = $scope.diagramTypes[0];
+    $scope.timeout = $timeout;
 
 
     $scope.$watch('name', function () {
@@ -170,7 +174,7 @@ diagramModule.controller('diagramController', function ($scope, $timeout) {
         somethingChanged();
     }, true);
     $scope.$watch('diagramType', function (newValue, oldValue) {
-        if (newValue === oldValue) {
+        if ($scope.initialChange) {
             return;
         }
         if ($scope.loading) {

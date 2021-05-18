@@ -6,15 +6,15 @@
         },
         {
             "Type": "Change Var Value",
-            "NamePattern": "ChangeVar_"
+            "NamePattern": "CngVar_"
         },
         {
             "Type": "Ext. Sim Message",
-            "NamePattern": "ExtSimMsg_"
+            "NamePattern": "Msg_"
         },
         {
             "Type": "Run Application",
-            "NamePattern": "RunApp_"
+            "NamePattern": "Run_"
         }
     ]
 }
