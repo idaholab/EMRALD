@@ -470,7 +470,7 @@ namespace UnitTesting_Simulation
 
       //Is there a way to easily test the triggering of the event 
       //test for true
-      //Assert.True(ev.EventTriggered());
+      Assert.True(ev.NextTime().TotalMilliseconds == 29869832.9832);
       //test for false
       //Assert.False(ev.EventTriggered());
 
