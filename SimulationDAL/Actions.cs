@@ -132,7 +132,7 @@ namespace SimulationDAL
     public override string GetDerivedJSON(EmraldModel lists)
     {
       string retStr = "";
-      retStr = retStr + "\"mutExcl\": \"" + this.mutExcl.ToString() + "\"";
+      retStr = retStr + "\"mutExcl\": \"" + this.mutExcl.ToString().ToLower() + "\"";
       retStr = retStr + "," + Environment.NewLine + "\"newStates\": [";
       string varProbStr;
       for (int i = 0; i < this._newStateIDs.Count; ++i)
