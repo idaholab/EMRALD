@@ -10,11 +10,13 @@
           {
             "toState": "State1",
             "prob": 0.6,
+            "varProb": null,
             "failDesc": ""
           },
           {
             "toState": "State2",
             "prob": -1,
+            "varProb":  null,
             "failDesc": ""
           }
         ]

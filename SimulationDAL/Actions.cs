@@ -137,11 +137,14 @@ namespace SimulationDAL
       string varProbStr;
       for (int i = 0; i < this._newStateIDs.Count; ++i)
       {
-        varProbStr = this._toStateVarProb[i] == null ? "null" : this._toStateVarProb[i].name;
+        varProbStr = this._toStateVarProb[i] == null ? null : this._toStateVarProb[i].name;
         //retStr = retStr + Environment.NewLine + "{" + this._newStateIDs[i].GetJSON(false, false) + ",";
         retStr = retStr + Environment.NewLine + "{\"toState\": \"" + this._newStateIDs[i].name + "\",";
         retStr = retStr + Environment.NewLine + "\"prob\":" + this._toStateProb[i].ToString() + ",";
-        retStr = retStr + Environment.NewLine + "\"varProb\": \"" + varProbStr + "\",";
+        if(this._toStateVarProb[i] != null)
+          retStr = retStr + Environment.NewLine + "\"varProb\": \"" + this._toStateVarProb[i].name + "\",";
+        else
+          retStr = retStr + Environment.NewLine + "\"varProb\": null,";
         retStr = retStr + Environment.NewLine + "\"failDesc\":\"" + this._failDesc[i] + "\"}";
         if (i < this._newStateIDs.Count - 1)
         {

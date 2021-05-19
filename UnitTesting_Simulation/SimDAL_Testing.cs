@@ -483,8 +483,7 @@ namespace UnitTesting_Simulation
     // Action Tests
     //////////////////
 
-<<<<<<< HEAD
-=======
+
     [Fact]
     public void TransitionActTest()
     {
@@ -526,9 +525,9 @@ namespace UnitTesting_Simulation
       TransitionAct act = new TransitionAct();
       //use a sample JSON piece to set the values
       string fileLoc = MainTestDir() + itemFolder + testName + ".json";//Transition Action
-      string fileLoc1 = MainTestDir() + itemFolder + testName + "1.json";//State1
-      string fileLoc2 = MainTestDir() + itemFolder + testName + "2.json";//State2
-      string fileLoc3 = MainTestDir() + itemFolder + testName + "3.json";//Diagram
+      string fileLoc1 = MainTestDir() + itemFolder + "StateTest1.json";//State1
+      string fileLoc2 = MainTestDir() + itemFolder + "StateTest2.json";//State2
+      string fileLoc3 = MainTestDir() + itemFolder + "DiagramTest.json";//Diagram
       string jsonModel = "";
       if (File.Exists(fileLoc))
         jsonModel = File.ReadAllText(fileLoc);
@@ -720,10 +719,9 @@ namespace UnitTesting_Simulation
       act.LoadObjLinks(jsonObj, true, mainModel);
 
       Assert.True(act.CompileCode(mainModel.allVariables));
-      
+     
       //Is there a way to easily test the triggering of the event 
       //test for true
-      //Assert.True(ev.EventTriggered());
       //test for false
       //Assert.False(ev.EventTriggered());
 
@@ -733,7 +731,6 @@ namespace UnitTesting_Simulation
       string retJsonStr = act.GetJSON(true, mainModel);
       Assert.True(CompareJSON(retJsonStr, jsonModel));
     }
->>>>>>> 260a766 (Fix on VarCondEventTest. Started Actions tests.)
   }
 }
 
