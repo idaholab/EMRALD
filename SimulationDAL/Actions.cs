@@ -754,11 +754,11 @@ namespace SimulationDAL
       }
 
       base.LoadObjLinks(obj, wrapped, lists);
-      //Took this out because don't want the simVar in the variables list
-      //if (!codeVariables.Contains(simVar.name))
-      //{
-      //  this.codeVariables.Add(simVar.name);
-      //}
+
+      if (!codeVariables.Contains(simVar.name))
+      {
+        this.codeVariables.Add(simVar.name);
+      }
 
       return true;
     }

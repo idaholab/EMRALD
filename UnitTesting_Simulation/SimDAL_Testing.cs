@@ -319,7 +319,7 @@ namespace UnitTesting_Simulation
       ExtSimEvent ev = new ExtSimEvent("TestExtSimEvent");
       //use a sample JSON piece to set the values
       string fileLoc = MainTestDir() + itemFolder + testName + ".json";
-      string fileLoc2 = MainTestDir() + itemFolder + testName + "2.json";//for the 3dsim variable
+      string fileLoc2 = MainTestDir() + itemFolder + "Var3DSimTest.json";//for the 3dsim variable
       string jsonModel = "";//for the Ext Sim event
       if (File.Exists(fileLoc))
         jsonModel = File.ReadAllText(fileLoc);
