@@ -559,35 +559,7 @@ namespace SimulationDAL
         this.codeVariables = new List<String>(inCodeVars);
       this.scriptCode = inScriptCode;
     }
-
-    public override string GetDerivedJSON(EmraldModel lists)
-    {
-      string newScriptStr = scriptCode.Replace("\n", "\\n").Replace("\r", "\\r");
-      
-      string retStr = Environment.NewLine + "\"scriptCode\":" + "\"" + newScriptStr + "\"";
-
-      if (codeVariables != null)
-      {
-        bool first = true;
-        retStr = retStr + "," + Environment.NewLine + "\"codeVariables\":[";
-        foreach (string varName in codeVariables)
-        {
-          if (first)
-          {
-            retStr = retStr + "\"" + varName + "\"";
-            first = false;
-          }
-          else
-          {
-            retStr = retStr + ", \"" + varName + "\"";
-          }
-        }
-        retStr = retStr + "]" + Environment.NewLine;
-      }
-      
-      return retStr;
-    }
-
+    
     public override bool DeserializeDerived(object obj, bool wrapped, EmraldModel lists, bool useGivenIDs)
     {
       dynamic dynObj = (dynamic)obj;
@@ -713,9 +685,24 @@ namespace SimulationDAL
 
     public override string GetDerivedJSON(EmraldModel lists)
     {
-      string newValStr = scriptCode.Replace("\n", "\\n").Replace("\r", "\\r");
       
-      string retStr = base.GetDerivedJSON(lists);
+      string newScriptStr = scriptCode.Replace("\n", "\\n").Replace("\r", "\\r");
+
+      string retStr = Environment.NewLine + "\"scriptCode\":" + "\"" + newScriptStr + "\"";
+
+      if (codeVariables != null)
+      {
+        retStr = retStr + "," + Environment.NewLine + "\"codeVariables\":[";
+        foreach (string varName in codeVariables)
+        {
+          if (varName != simVar.name)
+          {
+            retStr = retStr + ", \"" + varName + "\"";
+          }
+        }
+        retStr = retStr + "]" + Environment.NewLine;
+      }
+            
       if (simVar != null)
         retStr = retStr + "," + Environment.NewLine + "\"variableName\":" + "\"" + simVar.name + "\"";
 
@@ -764,11 +751,11 @@ namespace SimulationDAL
       }
 
       base.LoadObjLinks(obj, wrapped, lists);
-      //Took this out because don't want the simVar in the variables list
-      //if (!codeVariables.Contains(simVar.name))
-      //{
-      //  this.codeVariables.Add(simVar.name);
-      //}
+
+      if (!codeVariables.Contains(simVar.name))
+      {
+        this.codeVariables.Add(simVar.name);
+      }
 
       return true;
     }
@@ -891,115 +878,6 @@ namespace SimulationDAL
     }
   }
 
-  public class CustomStateShiftAct : ScriptAct //atCustomStateShift
-  {
-
-    public CustomStateShiftAct()
-      : base(EnActionType.atCustomStateShift) { }
-
-    public CustomStateShiftAct(string inName, SimVariable inSimVar, string inScriptCode, List<String> inCodeVars)
-      : base(inName, inScriptCode, inCodeVars, EnActionType.atCngVarVal) {}
-
-
-    public bool CompileCode(EmraldModel lists)
-    {
-      if (scriptCode == "")
-      {
-        return false;
-      }
-
-      this.compiled = false;
-      scriptRunner = new ScriptEngine("JumpAct_" + this.name, ScriptEngine.Languages.CSharp);
-      scriptRunner.Code = scriptCode; // "Result = var1+3;";
-
-      //add the Time and 3D Frame variables
-      scriptRunner.AddVariable("CurTime", typeof(Double));
-      scriptRunner.AddVariable("ExeExitCode", typeof(int));
-
-      //add all the variables needed
-      if (codeVariables != null)
-      {
-        foreach (string varName in codeVariables)
-        {
-          if ((varName != "CurTime") &&
-              (varName != "ExeExitCode"))
-          {
-            scriptRunner.AddVariable(varName, typeof(double));
-          }
-        }
-      }
-
-      scriptRunner.AddVariable("outputFile", typeof(string));
-
-      //add all the states
-      foreach (KeyValuePair<int, State> state in lists.allStates)
-      {
-        //todo see if there are any variables with the name of the state
-        scriptRunner.AddVariable(state.Value.name, typeof(bool));
-        scriptRunner.AddVariable(state.Value.name + "_Time", typeof(TimeSpan));
-      }
-
-
-      if (!scriptRunner.Compile(typeof(List<string>)))
-      {
-        throw new Exception("failed to compile code - " + String.Join(Environment.NewLine, scriptRunner.messages.ToArray()) + Environment.NewLine + scriptCode);
-      }
-      else
-      {
-        this.compiled = true;
-      }
-
-      return this.compiled;
-    }
-
-    public void GetNewStateShifts(EmraldModel lists, ref List<int> addStates, ref List<int> removeStates)
-    {
-      if (!this.compiled)
-      {
-        if (!CompileCode(lists))
-          throw new Exception("Code for - " + this.name + " failed to compile, can not evaluate");
-      }
-
-      //Set all the variable values
-      if (codeVariables != null)
-      {
-        foreach (string varName in codeVariables)
-        {
-          SimVariable curVar = lists.allVariables.FindByName(varName);
-          if (curVar == null)
-            throw new Exception("Failed to find variable named " + varName);
-
-          scriptRunner.SetVariable(curVar.name, typeof(double), curVar.value);
-        }
-      }
-
-
-      List<String> retStates = scriptRunner.EvaluateStrList();
-
-      //make sure all the IDs returned are valid state IDs.
-      foreach (string listItem in retStates)
-      {
-        if ((listItem[0] != '+') && (listItem[0] != '-'))
-          throw new Exception("States must be tagged with '+' or '-' for adding or removing");
-
-        bool add = listItem[0] == '+';
-        string stateName = listItem.Substring(1);
-        State retState = lists.allStates.FindByName(stateName);
-        if (retState == null)
-        {
-          throw new Exception("processOutputFile code did not generate valid state IDs.");
-        }
-        else
-        {
-          if (add)
-            addStates.Add(retState.id);
-          else
-            removeStates.Add(retState.id);
-        }
-      }
-    }
-
-  }
 
   public class RunExtAppAct : Action //atRunExtApp
   {
@@ -1808,7 +1686,6 @@ namespace SimulationDAL
         case EnActionType.atCngVarVal: retAct = new VarValueAct(); break;
         case EnActionType.atTransition: retAct = new TransitionAct(); break;
         case EnActionType.atRunExtApp: retAct = new RunExtAppAct(); break;
-        case EnActionType.atCustomStateShift: retAct = new CustomStateShiftAct(); break;
         default: break;
       }
 
