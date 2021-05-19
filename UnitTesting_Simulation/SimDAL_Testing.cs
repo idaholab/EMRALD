@@ -719,7 +719,7 @@ namespace UnitTesting_Simulation
       act.DeserializeDerived(jsonObj, true, mainModel, false);
       act.LoadObjLinks(jsonObj, true, mainModel);
 
-      //Assert.True(act.CompileCode());
+      Assert.True(act.CompileCode(mainModel.allVariables));
       
       //Is there a way to easily test the triggering of the event 
       //test for true
