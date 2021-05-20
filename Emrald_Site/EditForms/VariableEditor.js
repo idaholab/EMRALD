@@ -160,10 +160,8 @@ function validateValue() {
 function displayErrorMessage(display, message) {
   var scope = angular.element(document.querySelector("#variableControllerPanel")).scope();
     if (scope.data.showErrorMessage !== display) {
-
         scope.data.showErrorMessage = display;
         scope.data.errorMessage = message;
-       // scope.$apply(() => { });
         var btn = parent.document.getElementById("btn_OK");
         btn.disabled = display;
     }
