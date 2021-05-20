@@ -1,0 +1,13 @@
+    {
+      "Variable": {
+        "id": 1,
+        "name": "A",
+        "desc": "",
+        "varScope": "gtDocLink",
+        "value": 65,
+        "docLink": "$.A",
+        "docType": "dtJSON",
+        "docPath": "C:\\Temp\\VarDocJsonTestDoc.json",
+        "type": "int"
+      }
+    }

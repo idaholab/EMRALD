@@ -96,10 +96,21 @@ namespace SimulationDAL
 
       //add derived items
       retStr = retStr + "\"varScope\": \"" + this.varScope.ToString() + "\"," + Environment.NewLine;
-      retStr = retStr + "\"value\": " + this._value.ToString() + "," + Environment.NewLine;
-      retStr = retStr + "\"monitorInSim\": \"" + this._monitor.ToString() +"\"," + Environment.NewLine;
-      retStr = retStr + "\"resetOnRuns\": \"" + this.resetOnRuns.ToString() + "\"," + Environment.NewLine;
-      retStr = retStr + "\"type\": \"" + this.dType.Name + "\"";
+      if (this.dType.Name.ToString() == "String")//need quotes around the string and string should be as is, no quotes around other variable types
+      {
+        retStr = retStr + "\"value\": \"" + this._value.ToString() + "\"," + Environment.NewLine;
+      }
+      //else if (this._dfltValue != null)
+      //{
+      //  retStr = retStr + "\"value\": \"" + this._dfltValue.ToString() + "\"," + Environment.NewLine;
+      //}
+      else
+      {
+        retStr = retStr + "\"value\": " + this._value.ToString().ToLower() + "," + Environment.NewLine;
+      }
+      //retStr = retStr + "\"monitorInSim\": \"" + this._monitor.ToString() +"\"," + Environment.NewLine; //Defined in simulation GUI, not in model editor
+      retStr = retStr + "\"resetOnRuns\": " + this.resetOnRuns.ToString().ToLower() + "," + Environment.NewLine;//removed quotes
+      retStr = retStr + "\"type\": \"" + this.dType.Name + "\",";
       retStr = retStr + GetDerivedJSON();
 
       retStr = retStr + Environment.NewLine + "}";
@@ -126,6 +137,7 @@ namespace SimulationDAL
 
       try
       {
+        //string dType = ((String)dynObj.type);
         string t = ((String)dynObj.type).ToUpper().Substring(0, 3);
         switch (t)
         {
@@ -236,7 +248,7 @@ namespace SimulationDAL
       string retStr = "";
 
       //add derived items
-      retStr = retStr + "," + Environment.NewLine + "\"sim3DId\": " + this.sim3DNameId.ToString();
+      retStr = retStr + "," + Environment.NewLine + "\"sim3DId\": \"" + this.sim3DNameId.ToString() +"\"";
 
       return retStr;
     }
@@ -608,9 +620,10 @@ namespace SimulationDAL
     {
       string retStr = "";
 
-      retStr = retStr + "\"docType \": \"" + _docType.ToString() + "\"," + Environment.NewLine;
-      retStr = retStr + "," + Environment.NewLine + "\"docPath \": \"" + _docType.ToString();
-      retStr = retStr + "," + Environment.NewLine + "\"linkStr \": \"" + _docType.ToString() + "\"";
+      retStr = retStr + Environment.NewLine + "\"docLink\": \"" + _linkStr.ToString() + "\"" ;
+      retStr = retStr + "," + Environment.NewLine + "\"docType\": \"" + _docType.ToString() + "\"";
+      retStr = retStr + "," + Environment.NewLine + "\"docPath\": \"" + _docPath.ToString() + "\"";
+      retStr = retStr + "," + Environment.NewLine + "\"pathMustExist\": " + _pathMustExist.ToString().ToLower();
 
       return retStr;
     }

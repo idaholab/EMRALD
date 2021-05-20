@@ -1,0 +1,11 @@
+    {
+      "Variable": {
+        "id": 1,
+        "name": "GlobBool",
+        "desc": "",
+        "varScope": "gtGlobal",
+        "value": true,
+        "resetOnRuns": true,
+        "type": "bool"
+      }
+    }
