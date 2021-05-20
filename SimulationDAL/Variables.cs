@@ -272,7 +272,7 @@ namespace SimulationDAL
       string retStr = "";
 
       //add derived items
-      retStr = retStr + Environment.NewLine + "\"sim3DId\": \"" + this.sim3DNameId.ToString() +"\"";
+      retStr = retStr + "," + Environment.NewLine + "\"sim3DId\": " + this.sim3DNameId.ToString();
 
       return retStr;
     }
@@ -650,18 +650,9 @@ namespace SimulationDAL
     {
       string retStr = "";
 
-      if (this.dType.Name.ToString() == "String")//need quotes around the string and string should be as is (not all lower case), no quotes around other variable types
-      {
-        retStr = retStr + Environment.NewLine + "\"value\": \"" + this._dfltValue.ToString() + "\",";
-      }
-      else
-      {
-        retStr = retStr + Environment.NewLine + "\"value\": " + this._dfltValue.ToString().ToLower() + ",";
-      }
-      retStr = retStr + Environment.NewLine + "\"docLink\": \"" + _linkStr.ToString() + "\"" ;
-      retStr = retStr + "," + Environment.NewLine + "\"docType\": \"" + _docType.ToString() + "\"";
-      retStr = retStr + "," + Environment.NewLine + "\"docPath\": \"" + _docPath.ToString().Replace("\\", "\\\\").Replace("\"", "\\\"") + "\"";//adding escape characters
-      retStr = retStr + "," + Environment.NewLine + "\"pathMustExist\": " + _pathMustExist.ToString().ToLower();//TODO- isn't printed to JSON file when save from editor for JSONDocVariable and XmlDocVariable
+      retStr = retStr + "\"docType \": \"" + _docType.ToString() + "\"," + Environment.NewLine;
+      retStr = retStr + "," + Environment.NewLine + "\"docPath \": \"" + _docType.ToString();
+      retStr = retStr + "," + Environment.NewLine + "\"linkStr \": \"" + _docType.ToString() + "\"";
 
       return retStr;
     }

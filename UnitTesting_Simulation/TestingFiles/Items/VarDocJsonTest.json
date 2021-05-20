@@ -7,7 +7,7 @@
         "value": 65,
         "docLink": "$.A",
         "docType": "dtJSON",
-        "docPath": "./VarDocJsonTestDocInput.json",
+        "docPath": "C:\\Temp\\VarDocJsonTestDoc.json",
         "type": "int"
       }
     }
