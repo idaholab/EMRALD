@@ -34,6 +34,10 @@
     <div ng-controller="actionController" id="actionControllerPanel">
         <form novalidate style="font-size:0.7em;">
             <div style="display:table-row">
+                <span style="display:table-cell">Type:</span>
+                <select style="width: 140px;" id="ScopeOption" ng-model="action" ng-options="act.name for act in actions" name="Type" onchange="handleSelection(); return false;"></select>
+            </div>
+            <div style="display:table-row">
                 <span style="display:table-cell">Name:</span>
                 <input ng-model="name" tabindex="1">
                 <input type="checkbox" name="AsNewItem" id="AsNewItem" value="false" ng-model="saveAsNew" onchange="setAsNewChecked()" />
@@ -42,10 +46,6 @@
             <div style="display:table-row">
                 <span style="display:table-cell">Desc:</span>
                 <input ng-model="desc" size="40" tabindex="2">
-            </div>
-            <div style="display:table-row">
-                <span style="display:table-cell">type:</span>
-                <select style="width: 140px;" id="ScopeOption" ng-model="action" ng-options="act.name for act in actions" name="Type" onchange="handleSelection(); return false;"></select>
             </div>
             <div id="moveTruePanel"
                  style="display:table-row;position:absolute;visibility:collapse;height:60%;width:96%;overflow-x:hidden;overflow-y:scroll;">

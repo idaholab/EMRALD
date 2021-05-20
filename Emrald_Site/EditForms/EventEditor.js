@@ -19,6 +19,40 @@ function SetOf(arr) {
     return obj;
 }
 
+function loadNamePatterns() {
+    var scope = angular.element(document.querySelector('#EEControllerPanel')).scope();
+    fetch('../resources/DefaultNamingPatterns.json')
+        .then(res => res.json())
+        .then(json => {
+            scope.namingPatterns = json.EventTypes;
+            updateName();
+            scope.$apply();
+        });
+}
+
+function updateName() {
+    var scope = angular.element(document.querySelector('#EEControllerPanel')).scope();
+    if (!nameIsDefaultValue()) {
+        return;
+    }
+    scope.name = scope.namingPatterns.find(x => x.Type === scope.typeOption.name).NamePattern;
+}
+
+function nameIsDefaultValue() {
+    var scope = angular.element(document.querySelector('#EEControllerPanel')).scope();
+    if (scope.name === '') {
+        return true;
+    }
+    result = false;
+    scope.namingPatterns.forEach(defaultName => {
+        if (scope.name === defaultName.NamePattern) {
+            result = true;
+            return;
+        }
+    })
+    return result;
+}
+
 //inline filter for number entry.  support scientific notation as well.
 function validateNumber(elt) {
     var numStr = elt.value;//.value.substring(0, elt.selectionStart) + evt.key + elt.value.substring(elt.selectionStart, elt.value.length);
@@ -210,6 +244,7 @@ var eventData = null;
 //which is the data for the form.
 function OnLoad(dataObj) {
 
+    loadNamePatterns();
     if (!dataObj) return;
     eventData = dataObj;
     var scope = angular.element(document.querySelector("#EEControllerPanel")).scope();
@@ -500,6 +535,7 @@ function GetVariableList(varTypes) {
 var EEApp = angular.module("EventEditor", []);
 EEApp.controller("EEController", function ($scope) {
     $scope.name = "";
+    $scope.namingPatterns = [];
     $scope.desc = "";
     $scope.moveFromCurrent;
     $scope.typeOptions = [
@@ -601,6 +637,7 @@ EEApp.controller("EEController", function ($scope) {
 
     $scope.$watch("name", function (newVal, oldVal) { if (newVal !== oldVal) somethingChanged(); });
     $scope.$watch("desc", function (newVal, oldVal) { if (newVal !== oldVal) somethingChanged(); });
+    $scope.$watch("typeOption", function (newV, oldV) { if (newV !== oldV) { somethingChanged(); updateName(); } });
     $scope.$watch("moveFromCurrent", function (newVal, oldVal) { if (newVal !== oldVal) somethingChanged(); });
     $scope.$watch("conditionCode", function (newVal, oldVal) { if (newVal !== oldVal) somethingChanged(); });
     $scope.$watch("typeOption", function (newVal, oldVal) { if (newVal !== oldVal) somethingChanged(); });
