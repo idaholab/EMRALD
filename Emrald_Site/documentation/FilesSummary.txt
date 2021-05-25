@@ -25,7 +25,7 @@ EditForms - This is where all of the pop-up editors are located
 images - 
 
 resources
-	customUILabels.json - this is where the user can specify diagram labels (it will be loaded in on start) and later can be adapted for otherr custom UI 							labels, note that right now it can only be edited manually 
+	CustomDiagramLabels.json - this is where the user can specify diagram labels (it will be loaded in on start) and later can be adapted for otherr custom UI 							labels, note that right now it can only be edited manually 
 	diagramTemplates.json - this is where the user can input diagram templates that will be preloaded into the project
 	menu.json - this is the JSON structure for the upper menu bars (new, save, open, ext....)
 	sidebar.json - this is the JSON structure for the sidebar is located, dynamic catigories refers to the ones that have global, local and all tabs
