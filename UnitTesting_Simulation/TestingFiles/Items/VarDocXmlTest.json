@@ -1,0 +1,13 @@
+    {
+      "Variable": {
+        "id": 1,
+        "name": "A",
+        "desc": "value of element A",
+        "varScope": "gtDocLink",
+        "value": "0",
+        "docLink": "/set/A/number()",
+        "docType": "dtXML",
+        "docPath": "C:\\Temp\\VarDocXmlTestDoc.xml",
+        "type": "double"
+      }
+    }
