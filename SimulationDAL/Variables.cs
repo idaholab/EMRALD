@@ -845,7 +845,7 @@ namespace SimulationDAL
 
   public class TextRegExVariable : DocVariable
   {
-    private int _regExpLine = 0;
+    private int _regExpLine = -1;//-1 means just the regular expression
     private int _begPosition = 0;
     private int _numChars = -1; //-1 goes until the next white space
 
@@ -990,14 +990,14 @@ namespace SimulationDAL
       string foundTxt = matches[0].Value;
       try
       {
-        if (this._regExpLine > 0)
+        if (this._regExpLine >= 0)
         {
 
           //Split text blob by that match.
           string[] matchSplit = rx.Split(docTxt);
           //Then count the number of line brakes before the match.
-          int lineMatch = new Regex(@"(\n|\r\n?)").Matches(matchSplit[0]).Count;
-          string[] docLines = docTxt.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
+          int lineMatch = new Regex(@"(\n|\r|\r\n?)").Matches(matchSplit[0]).Count;
+          string[] docLines = docTxt.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
           foundTxt = docLines[lineMatch + _regExpLine];
 
           if (_begPosition >= 0)
