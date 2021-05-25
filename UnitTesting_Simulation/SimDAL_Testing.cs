@@ -325,8 +325,15 @@ namespace UnitTesting_Simulation
         jsonModel = File.ReadAllText(fileLoc);
       else
         throw new Exception("Failed to find create json file for " + testName);
+      
+      string jsonModel2 = "";//for the 3dsim variable
+      if (File.Exists(fileLoc2))
+        jsonModel2 = File.ReadAllText(fileLoc2);
+      else
+        throw new Exception("Failed to find create json file for " + testName);
 
-      dynamic jsonObj = JsonConvert.DeserializeObject(jsonModel);
+      dynamic jsonObj = JsonConvert.DeserializeObject(jsonModel);//for the Ext Sim event
+      dynamic jsonObj2 = JsonConvert.DeserializeObject(jsonModel2);//for the 3dsim variable
       EmraldModel mainModel = new EmraldModel(); //for some items, if the item JSON references other items they will need to be added to the main model
       ev.DeserializeDerived(jsonObj, true, mainModel, false);
       ev.LoadObjLinks(jsonObj, true, mainModel);
@@ -562,7 +569,7 @@ namespace UnitTesting_Simulation
       State state1 = new State();//State1
       State state2 = new State();//State2
       Diagram diagram = new Diagram();//Diagram
-      
+
       act.DeserializeDerived(jsonObj, true, mainModel, false);
       diagram.DeserializeDerived(jsonObj3, true, mainModel, false);//Diagram
       state1.DeserializeDerived(jsonObj1, true, mainModel, false);//State1
@@ -588,7 +595,7 @@ namespace UnitTesting_Simulation
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
       SetupTheTest(testName);
 
-      
+
       //use a sample JSON piece to set the values
       string fileLoc = MainTestDir() + itemFolder + testName + ".json";
       string varFileLoc = MainTestDir() + itemFolder + "VarDoubleTest.json";
@@ -602,7 +609,7 @@ namespace UnitTesting_Simulation
       else
         throw new Exception("Failed to find create json file for " + testName);
 
-      
+
       EmraldModel mainModel = new EmraldModel(); //for some items, if the item JSON references other items they will need to be added to the main model
 
       //add the variable used in the code
@@ -668,7 +675,7 @@ namespace UnitTesting_Simulation
       EmraldModel mainModel = new EmraldModel(); //for some items, if the item JSON references other items they will need to be added to the main model
       ExternalSim externalSimLink = new ExternalSim();//for the 3dsim link
       Sim3DVariable sim3DVariable = new Sim3DVariable();//for the 3dsim variable
-      
+
       sim3DVariable.DeserializeDerived(varJsonObj, true, mainModel, false);
       externalSimLink.DeserializeDerived(extSimJsonObj, true, mainModel, false);
       act.DeserializeDerived(jsonObj, true, mainModel, false);
@@ -935,6 +942,38 @@ namespace UnitTesting_Simulation
       SetupTheTest(testName);
 
       JSONDocVariable var = new JSONDocVariable();
+      //use a sample JSON piece to set the values
+      string fileLoc = MainTestDir() + itemFolder + testName + ".json";
+      string jsonModel = "";
+      if (File.Exists(fileLoc))
+        jsonModel = File.ReadAllText(fileLoc);
+      else
+        throw new Exception("Failed to find create json file for " + testName);
+
+      dynamic jsonObj = JsonConvert.DeserializeObject(jsonModel);
+      EmraldModel mainModel = new EmraldModel(); //for some items, if the item JSON references other items they will need to be added to the main model
+      var.DeserializeDerived(jsonObj, true, mainModel, false);
+
+      //Is there a way to easily test the triggering of the event 
+      //test for true
+      //Assert.True(ev.EventTriggered());
+      //test for false
+      //Assert.False(ev.EventTriggered());
+
+      //Reference any regression tests in SimEngineTests that covers this.  
+
+      //make sure the JSON returned for the item is good 
+      string retJsonStr = var.GetJSON(true, mainModel);
+      Assert.True(CompareJSON(retJsonStr, jsonModel));
+    }
+
+    [Fact]
+    public void VarDocXmlTest()
+    {
+      string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
+      SetupTheTest(testName);
+
+      XmlDocVariable var = new XmlDocVariable();
       //use a sample JSON piece to set the values
       string fileLoc = MainTestDir() + itemFolder + testName + ".json";
       string jsonModel = "";

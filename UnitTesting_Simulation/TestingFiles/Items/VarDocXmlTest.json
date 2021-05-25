@@ -4,10 +4,10 @@
         "name": "A",
         "desc": "value of element A",
         "varScope": "gtDocLink",
-        "value": 65,
-        "docLink": "/set/A/text()",
+        "value": "0",
+        "docLink": "/set/A/number()",
         "docType": "dtXML",
-        "docPath": "./VarDocXmlTestDocInput.xml",
-        "type": "int"
+        "docPath": "C:\\Temp\\VarDocXmlTestDoc.xml",
+        "type": "double"
       }
     }
