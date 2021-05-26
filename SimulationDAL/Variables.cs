@@ -1067,8 +1067,8 @@ namespace SimulationDAL
           //Split text blob by that match.
           string[] matchSplit = rx.Split(docTxt);
           //Then count the number of line brakes before the match.
-          int lineMatch = new Regex(@"(\n(?!\r)|\r(?!\n)|\r\n?)").Matches(matchSplit[0]).Count;
-          string[] docLines = docTxt.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
+          int lineMatch = new Regex(@"(\n|\r\n?)").Matches(matchSplit[0]).Count;
+          string[] docLines = docTxt.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
           foundTxt = docLines[lineMatch + _regExpLine];
 
           if (_begPosition >= 0)
