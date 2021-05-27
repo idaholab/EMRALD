@@ -272,7 +272,7 @@ namespace SimulationDAL
       string retStr = "";
 
       //add derived items
-      retStr = retStr + "," + Environment.NewLine + "\"sim3DId\": " + this.sim3DNameId.ToString();
+      retStr = retStr + "," + Environment.NewLine + "\"sim3DId\": \"" + this.sim3DNameId.ToString() +"\"";
 
       return retStr;
     }
@@ -650,9 +650,10 @@ namespace SimulationDAL
     {
       string retStr = "";
 
-      retStr = retStr + "\"docType \": \"" + _docType.ToString() + "\"," + Environment.NewLine;
-      retStr = retStr + "," + Environment.NewLine + "\"docPath \": \"" + _docType.ToString();
-      retStr = retStr + "," + Environment.NewLine + "\"linkStr \": \"" + _docType.ToString() + "\"";
+      retStr = retStr + Environment.NewLine + "\"docLink\": \"" + _linkStr.ToString() + "\"" ;
+      retStr = retStr + "," + Environment.NewLine + "\"docType\": \"" + _docType.ToString() + "\"";
+      retStr = retStr + "," + Environment.NewLine + "\"docPath\": \"" + _docPath.ToString() + "\"";
+      retStr = retStr + "," + Environment.NewLine + "\"pathMustExist\": " + _pathMustExist.ToString().ToLower();
 
       return retStr;
     }
@@ -925,10 +926,9 @@ namespace SimulationDAL
     public override string GetDerivedJSON()
     {
       string retStr = base.GetDerivedJSON();
-      retStr = retStr + "," + Environment.NewLine + "\"regExpLine\": \"" + _regExpLine.ToString() + "\"";
-      retStr = retStr + "," + Environment.NewLine + "\"begPosition\": " + _begPosition;
-      retStr = retStr + "," + Environment.NewLine + "\"numChars\": " + _numChars;
-      //TODO- Currently the UI/Model Editor does print JSON with " " around the value for _regExpLine
+      retStr = retStr + "," + Environment.NewLine + "\"regExpLine \": \"" + _regExpLine.ToString() + "\"";
+      retStr = retStr + "," + Environment.NewLine + "\"begPos \": \"" + _begPosition + "\"";
+      retStr = retStr + "," + Environment.NewLine + "\"numChars \": \"" + _numChars + "\"";
       return retStr;
     }
 

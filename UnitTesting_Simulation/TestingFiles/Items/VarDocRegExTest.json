@@ -4,7 +4,7 @@
         "name": "A",
         "desc": "value below A",
         "varScope": "gtDocLink",
-        "value": 0,
+        "value": 65,
         "docLink": "A",
         "docType": "dtTextRegEx",
         "docPath": "C:\\Temp\\VarDocRegExTest.txt",
@@ -13,6 +13,5 @@
         "numChars": -1,
         "pathMustExist": true,
         "type": "int",
-        "$$hashKey": "00J"
       }
     }
