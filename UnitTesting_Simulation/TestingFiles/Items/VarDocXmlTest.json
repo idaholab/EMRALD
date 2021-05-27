@@ -7,7 +7,7 @@
         "value": "65",
         "docLink": "/set/A/text()",
         "docType": "dtXML",
-        "docPath": "C:\\Temp\\VarDocXmlTestDoc.xml",
+        "docPath": "./VarDocXmlTestDocInput.xml",
         "type": "integer"
       }
     }

@@ -46,10 +46,12 @@ namespace UnitTesting_Simulation
     const string testFolder = "EMRALDTests\\";
     const string itemFolder = "Items\\";
 
-    private void SetupTheTest(string testName)
+    private void SetupTheTest(string testName, EmraldModel model = null)
     {
       // set up the random number generator so it starts with the same key each time.
       ConfigData.seed = 0;
+      if (model != null)
+        model.rootPath = MainTestDir() + itemFolder;
     }
     public string GetCurrentMethodName()
     {
@@ -90,7 +92,8 @@ namespace UnitTesting_Simulation
     public void StateCngEventTest()
     {
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
-      SetupTheTest(testName);
+      EmraldModel mainModel = new EmraldModel();
+      SetupTheTest(testName, mainModel);
 
       StateCngEvent ev = new StateCngEvent();
       //use a sample JSON piece to set the values
@@ -102,7 +105,7 @@ namespace UnitTesting_Simulation
         throw new Exception("Failed to find create json file for " + testName);
 
       dynamic jsonObj = JsonConvert.DeserializeObject(jsonModel);
-      EmraldModel mainModel = new EmraldModel(); //for some items, if the item JSON references other items they will need to be added to the main model
+      //for some items, if the item JSON references other items they will need to be added to the main model
       ev.DeserializeDerived(jsonObj, true, mainModel, false);
 
       //Is there a way to easily test the triggering of the event 
@@ -122,7 +125,8 @@ namespace UnitTesting_Simulation
     public void ComponentLogicEventTest()
     {
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
-      SetupTheTest(testName);
+      EmraldModel mainModel = new EmraldModel();
+      SetupTheTest(testName, mainModel);
 
       ComponentLogicEvent ev = new ComponentLogicEvent();
       //use a sample JSON piece to set the values
@@ -141,7 +145,7 @@ namespace UnitTesting_Simulation
 
       dynamic jsonObj = JsonConvert.DeserializeObject(jsonModel);//for the component logic event
       dynamic jsonObj2 = JsonConvert.DeserializeObject(jsonModel2);//for the logic top
-      EmraldModel mainModel = new EmraldModel(); //for some items, if the item JSON references other items they will need to be added to the main model
+      //for some items, if the item JSON references other items they will need to be added to the main model
       LogicNode logicTop = new LogicNode();
       logicTop.DeserializeDerived(jsonObj2, true, mainModel, false);
       ev.DeserializeDerived(jsonObj, true, mainModel, false);
@@ -164,7 +168,8 @@ namespace UnitTesting_Simulation
     public void FailRateEventTest()
     {
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
-      SetupTheTest(testName);
+      EmraldModel mainModel = new EmraldModel();
+      SetupTheTest(testName, mainModel);
 
       FailProbEvent ev = new FailProbEvent();
       //use a sample JSON piece to set the values
@@ -176,7 +181,7 @@ namespace UnitTesting_Simulation
         throw new Exception("Failed to find create json file for " + testName);
 
       dynamic jsonObj = JsonConvert.DeserializeObject(jsonModel);
-      EmraldModel mainModel = new EmraldModel(); //for some items, if the item JSON references other items they will need to be added to the main model
+      //for some items, if the item JSON references other items they will need to be added to the main model
       ev.DeserializeDerived(jsonObj, true, mainModel, false);
 
       //Is there a way to easily test the triggering of the event 
@@ -197,7 +202,8 @@ namespace UnitTesting_Simulation
     public void TimerEventTest()
     {
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
-      SetupTheTest(testName);
+      EmraldModel mainModel = new EmraldModel();
+      SetupTheTest(testName, mainModel);
 
       TimerEvent ev = new TimerEvent();
       //use a sample JSON piece to set the values
@@ -209,7 +215,7 @@ namespace UnitTesting_Simulation
         throw new Exception("Failed to find create json file for " + testName);
 
       dynamic jsonObj = JsonConvert.DeserializeObject(jsonModel);
-      EmraldModel mainModel = new EmraldModel(); //for some items, if the item JSON references other items they will need to be added to the main model
+      //for some items, if the item JSON references other items they will need to be added to the main model
       ev.DeserializeDerived(jsonObj, true, mainModel, false);
 
       //Is there a way to easily test the triggering of the event 
@@ -229,7 +235,8 @@ namespace UnitTesting_Simulation
     public void VarTimerEventTest()
     {
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
-      SetupTheTest(testName);
+      EmraldModel mainModel = new EmraldModel();
+      SetupTheTest(testName, mainModel);
 
       //use a sample JSON piece to set the values
       string fileLoc = MainTestDir() + itemFolder + testName + ".json";
@@ -245,7 +252,7 @@ namespace UnitTesting_Simulation
         throw new Exception("Failed to find create json file for " + testName);
 
       dynamic jsonObj = JsonConvert.DeserializeObject(jsonModel);
-      EmraldModel mainModel = new EmraldModel(); //for some items, if the item JSON references other items they will need to be added to the main model
+      //for some items, if the item JSON references other items they will need to be added to the main model
 
       dynamic varJsonObj = JsonConvert.DeserializeObject(varJsonModel);//for the logic top
       SimGlobVariable testVar = new SimGlobVariable();
@@ -274,7 +281,8 @@ namespace UnitTesting_Simulation
     public void VarCondEventTest()
     {
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
-      SetupTheTest(testName);
+      EmraldModel mainModel = new EmraldModel();
+      SetupTheTest(testName, mainModel);
 
       EvalVarEvent ev = new EvalVarEvent();
       //use a sample JSON piece to set the values
@@ -286,7 +294,7 @@ namespace UnitTesting_Simulation
         throw new Exception("Failed to find create json file for " + testName);
 
       dynamic jsonObj = JsonConvert.DeserializeObject(jsonModel);
-      EmraldModel mainModel = new EmraldModel(); //for some items, if the item JSON references other items they will need to be added to the main model
+      //for some items, if the item JSON references other items they will need to be added to the main model
       ev.DeserializeDerived(jsonObj, true, mainModel, false);
 
       //Is there a way to easily test the triggering of the event 
@@ -306,7 +314,8 @@ namespace UnitTesting_Simulation
     public void ExtSimEventTest()
     {
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
-      SetupTheTest(testName);
+      EmraldModel mainModel = new EmraldModel();
+      SetupTheTest(testName, mainModel);
 
       EvalVarEvent ev = new EvalVarEvent();
       //use a sample JSON piece to set the values
@@ -326,7 +335,7 @@ namespace UnitTesting_Simulation
 
       dynamic jsonObj = JsonConvert.DeserializeObject(jsonModel);//for the Ext Sim event
       dynamic jsonObj2 = JsonConvert.DeserializeObject(jsonModel2);//for the 3dsim variable
-      EmraldModel mainModel = new EmraldModel(); //for some items, if the item JSON references other items they will need to be added to the main model
+      //for some items, if the item JSON references other items they will need to be added to the main model
       Sim3DVariable sim3DVariable = new Sim3DVariable();
       sim3DVariable.DeserializeDerived(jsonObj2, true, mainModel, false);
       ev.DeserializeDerived(jsonObj, true, mainModel, false);
@@ -349,7 +358,8 @@ namespace UnitTesting_Simulation
     public void ExpDistEventTest()
     {
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
-      SetupTheTest(testName);
+      EmraldModel mainModel = new EmraldModel();
+      SetupTheTest(testName, mainModel);
 
       ExponentialDistEvent ev = new ExponentialDistEvent();
       //use a sample JSON piece to set the values
@@ -361,7 +371,7 @@ namespace UnitTesting_Simulation
         throw new Exception("Failed to find create json file for " + testName);
 
       dynamic jsonObj = JsonConvert.DeserializeObject(jsonModel);
-      EmraldModel mainModel = new EmraldModel(); //for some items, if the item JSON references other items they will need to be added to the main model
+      //for some items, if the item JSON references other items they will need to be added to the main model
       ev.DeserializeDerived(jsonObj, true, mainModel, false);
 
       //Is there a way to easily test the triggering of the event 
@@ -383,7 +393,8 @@ namespace UnitTesting_Simulation
     public void NormDistEventTest()
     {
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
-      SetupTheTest(testName);
+      EmraldModel mainModel = new EmraldModel();
+      SetupTheTest(testName, mainModel);
 
       NormalDistEvent ev = new NormalDistEvent();
       //use a sample JSON piece to set the values
@@ -395,7 +406,7 @@ namespace UnitTesting_Simulation
         throw new Exception("Failed to find create json file for " + testName);
 
       dynamic jsonObj = JsonConvert.DeserializeObject(jsonModel);
-      EmraldModel mainModel = new EmraldModel(); //for some items, if the item JSON references other items they will need to be added to the main model
+      //for some items, if the item JSON references other items they will need to be added to the main model
       ev.DeserializeDerived(jsonObj, true, mainModel, false);
 
       //Is there a way to easily test the triggering of the event 
@@ -416,7 +427,8 @@ namespace UnitTesting_Simulation
     public void WeibDistEventTest()
     {
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
-      SetupTheTest(testName);
+      EmraldModel mainModel = new EmraldModel();
+      SetupTheTest(testName, mainModel);
 
       WeibullDistEvent ev = new WeibullDistEvent();
       //use a sample JSON piece to set the values
@@ -428,7 +440,7 @@ namespace UnitTesting_Simulation
         throw new Exception("Failed to find create json file for " + testName);
 
       dynamic jsonObj = JsonConvert.DeserializeObject(jsonModel);
-      EmraldModel mainModel = new EmraldModel(); //for some items, if the item JSON references other items they will need to be added to the main model
+      //for some items, if the item JSON references other items they will need to be added to the main model
       ev.DeserializeDerived(jsonObj, true, mainModel, false);
 
       //Is there a way to easily test the triggering of the event 
@@ -451,7 +463,8 @@ namespace UnitTesting_Simulation
     public void LogNormDistEventTest()
     {
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
-      SetupTheTest(testName);
+      EmraldModel mainModel = new EmraldModel();
+      SetupTheTest(testName, mainModel);
 
       LogNormalDistEvent ev = new LogNormalDistEvent();
       //use a sample JSON piece to set the values
@@ -463,7 +476,7 @@ namespace UnitTesting_Simulation
         throw new Exception("Failed to find create json file for " + testName);
 
       dynamic jsonObj = JsonConvert.DeserializeObject(jsonModel);
-      EmraldModel mainModel = new EmraldModel(); //for some items, if the item JSON references other items they will need to be added to the main model
+      //for some items, if the item JSON references other items they will need to be added to the main model
       ev.DeserializeDerived(jsonObj, true, mainModel, false);
 
       //Is there a way to easily test the triggering of the event 
@@ -488,7 +501,8 @@ namespace UnitTesting_Simulation
     public void TransitionActTest()
     {
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
-      SetupTheTest(testName);
+      EmraldModel mainModel = new EmraldModel();
+      SetupTheTest(testName, mainModel);
 
       TransitionAct act = new TransitionAct();
       //use a sample JSON piece to set the values
@@ -500,7 +514,7 @@ namespace UnitTesting_Simulation
         throw new Exception("Failed to find create json file for " + testName);
 
       dynamic jsonObj = JsonConvert.DeserializeObject(jsonModel);
-      EmraldModel mainModel = new EmraldModel(); //for some items, if the item JSON references other items they will need to be added to the main model
+      //for some items, if the item JSON references other items they will need to be added to the main model
       act.DeserializeDerived(jsonObj, true, mainModel, false);
 
       //Is there a way to easily test the triggering of the event 
@@ -520,7 +534,8 @@ namespace UnitTesting_Simulation
     public void TransitionActTest2() //test WhichToState, different probabilities for each test
     {
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
-      SetupTheTest(testName);
+      EmraldModel mainModel = new EmraldModel();
+      SetupTheTest(testName, mainModel);
 
       TransitionAct act = new TransitionAct();
       //use a sample JSON piece to set the values
@@ -557,7 +572,7 @@ namespace UnitTesting_Simulation
       dynamic jsonObj2 = JsonConvert.DeserializeObject(jsonModel2);//State2
       dynamic jsonObj3 = JsonConvert.DeserializeObject(jsonModel3);//Diagram
 
-      EmraldModel mainModel = new EmraldModel(); //for some items, if the item JSON references other items they will need to be added to the main model
+      //for some items, if the item JSON references other items they will need to be added to the main model
       State state1 = new State();//State1
       State state2 = new State();//State2
       Diagram diagram = new Diagram();//Diagram
@@ -585,7 +600,8 @@ namespace UnitTesting_Simulation
     public void RunAppActTest()
     {
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
-      SetupTheTest(testName);
+      EmraldModel mainModel = new EmraldModel();
+      SetupTheTest(testName, mainModel);
 
 
       //use a sample JSON piece to set the values
@@ -602,7 +618,7 @@ namespace UnitTesting_Simulation
         throw new Exception("Failed to find create json file for " + testName);
 
 
-      EmraldModel mainModel = new EmraldModel(); //for some items, if the item JSON references other items they will need to be added to the main model
+      //for some items, if the item JSON references other items they will need to be added to the main model
 
       //add the variable used in the code
       dynamic varJsonObj = JsonConvert.DeserializeObject(varJsonModel);//for the logic top
@@ -635,7 +651,8 @@ namespace UnitTesting_Simulation
     public void ExtSimMsgActTest()
     {
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
-      SetupTheTest(testName);
+      EmraldModel mainModel = new EmraldModel();
+      SetupTheTest(testName, mainModel);
 
       Sim3DAction act = new Sim3DAction();
       //use a sample JSON piece to set the values
@@ -664,7 +681,7 @@ namespace UnitTesting_Simulation
       dynamic extSimJsonObj = JsonConvert.DeserializeObject(extSimModel);//for the 3dsim link
       dynamic varJsonObj = JsonConvert.DeserializeObject(varSimModel);//for the 3dsim variable
 
-      EmraldModel mainModel = new EmraldModel(); //for some items, if the item JSON references other items they will need to be added to the main model
+      //for some items, if the item JSON references other items they will need to be added to the main model
       ExternalSim externalSimLink = new ExternalSim();//for the 3dsim link
       Sim3DVariable sim3DVariable = new Sim3DVariable();//for the 3dsim variable
 
@@ -690,7 +707,8 @@ namespace UnitTesting_Simulation
     public void ChangeVarValActTest()
     {
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
-      SetupTheTest(testName);
+      EmraldModel mainModel = new EmraldModel();
+      SetupTheTest(testName, mainModel);
 
       VarValueAct act = new VarValueAct();
       //use a sample JSON piece to set the values
@@ -711,7 +729,7 @@ namespace UnitTesting_Simulation
       dynamic jsonObj = JsonConvert.DeserializeObject(jsonModel);//for the Ext Sim event
       dynamic jsonObj2 = JsonConvert.DeserializeObject(jsonModel2);//for the variable
 
-      EmraldModel mainModel = new EmraldModel(); //for some items, if the item JSON references other items they will need to be added to the main model
+      //for some items, if the item JSON references other items they will need to be added to the main model
       SimGlobVariable simGlobVariable = new SimGlobVariable();//for the variable
 
       simGlobVariable.DeserializeDerived(jsonObj2, true, mainModel, false);
@@ -740,7 +758,8 @@ namespace UnitTesting_Simulation
     public void VarIntTest()
     {
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
-      SetupTheTest(testName);
+      EmraldModel mainModel = new EmraldModel();
+      SetupTheTest(testName, mainModel);
 
       SimGlobVariable var = new SimGlobVariable();
       //use a sample JSON piece to set the values
@@ -752,7 +771,7 @@ namespace UnitTesting_Simulation
         throw new Exception("Failed to find create json file for " + testName);
 
       dynamic jsonObj = JsonConvert.DeserializeObject(jsonModel);
-      EmraldModel mainModel = new EmraldModel(); //for some items, if the item JSON references other items they will need to be added to the main model
+      //for some items, if the item JSON references other items they will need to be added to the main model
       var.DeserializeDerived(jsonObj, true, mainModel, false);
 
       //Is there a way to easily test the triggering of the event 
@@ -772,7 +791,8 @@ namespace UnitTesting_Simulation
     public void VarDoubleTest()
     {
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
-      SetupTheTest(testName);
+      EmraldModel mainModel = new EmraldModel();
+      SetupTheTest(testName, mainModel);
 
       SimGlobVariable var = new SimGlobVariable();
       //use a sample JSON piece to set the values
@@ -784,7 +804,7 @@ namespace UnitTesting_Simulation
         throw new Exception("Failed to find create json file for " + testName);
 
       dynamic jsonObj = JsonConvert.DeserializeObject(jsonModel);
-      EmraldModel mainModel = new EmraldModel(); //for some items, if the item JSON references other items they will need to be added to the main model
+      //for some items, if the item JSON references other items they will need to be added to the main model
       var.DeserializeDerived(jsonObj, true, mainModel, false);
 
       //Is there a way to easily test the triggering of the event 
@@ -804,7 +824,8 @@ namespace UnitTesting_Simulation
     public void VarBoolTest()
     {
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
-      SetupTheTest(testName);
+      EmraldModel mainModel = new EmraldModel();
+      SetupTheTest(testName, mainModel);
 
       SimGlobVariable var = new SimGlobVariable();
       //use a sample JSON piece to set the values
@@ -816,7 +837,7 @@ namespace UnitTesting_Simulation
         throw new Exception("Failed to find create json file for " + testName);
 
       dynamic jsonObj = JsonConvert.DeserializeObject(jsonModel);
-      EmraldModel mainModel = new EmraldModel(); //for some items, if the item JSON references other items they will need to be added to the main model
+      //for some items, if the item JSON references other items they will need to be added to the main model
       var.DeserializeDerived(jsonObj, true, mainModel, false);
 
       //Is there a way to easily test the triggering of the event 
@@ -836,7 +857,8 @@ namespace UnitTesting_Simulation
     public void VarStringTest()
     {
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
-      SetupTheTest(testName);
+      EmraldModel mainModel = new EmraldModel();
+      SetupTheTest(testName, mainModel);
 
       SimGlobVariable var = new SimGlobVariable();
       //use a sample JSON piece to set the values
@@ -848,7 +870,7 @@ namespace UnitTesting_Simulation
         throw new Exception("Failed to find create json file for " + testName);
 
       dynamic jsonObj = JsonConvert.DeserializeObject(jsonModel);
-      EmraldModel mainModel = new EmraldModel(); //for some items, if the item JSON references other items they will need to be added to the main model
+      //for some items, if the item JSON references other items they will need to be added to the main model
       var.DeserializeDerived(jsonObj, true, mainModel, false);
 
       //Is there a way to easily test the triggering of the event 
@@ -868,7 +890,8 @@ namespace UnitTesting_Simulation
     public void Var3DSimTest()
     {
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
-      SetupTheTest(testName);
+      EmraldModel mainModel = new EmraldModel();
+      SetupTheTest(testName, mainModel);
 
       Sim3DVariable var = new Sim3DVariable();
       //use a sample JSON piece to set the values
@@ -880,7 +903,7 @@ namespace UnitTesting_Simulation
         throw new Exception("Failed to find create json file for " + testName);
 
       dynamic jsonObj = JsonConvert.DeserializeObject(jsonModel);
-      EmraldModel mainModel = new EmraldModel(); //for some items, if the item JSON references other items they will need to be added to the main model
+      //for some items, if the item JSON references other items they will need to be added to the main model
       var.DeserializeDerived(jsonObj, true, mainModel, false);
 
       //Is there a way to easily test the triggering of the event 
@@ -900,7 +923,8 @@ namespace UnitTesting_Simulation
     public void VarDocRegExTest()
     {
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
-      SetupTheTest(testName);
+      EmraldModel mainModel = new EmraldModel(); 
+      SetupTheTest(testName, mainModel);
 
       TextRegExVariable var = new TextRegExVariable();
       //use a sample JSON piece to set the values
@@ -912,7 +936,7 @@ namespace UnitTesting_Simulation
         throw new Exception("Failed to find create json file for " + testName);
 
       dynamic jsonObj = JsonConvert.DeserializeObject(jsonModel);
-      EmraldModel mainModel = new EmraldModel(); //for some items, if the item JSON references other items they will need to be added to the main model
+      //for some items, if the item JSON references other items they will need to be added to the main model
       var.DeserializeDerived(jsonObj, true, mainModel, false);
 
       //Is there a way to easily test the triggering of the event 
@@ -932,7 +956,8 @@ namespace UnitTesting_Simulation
     public void VarDocJsonTest()
     {
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
-      SetupTheTest(testName);
+      EmraldModel mainModel = new EmraldModel();
+      SetupTheTest(testName, mainModel);
 
       JSONDocVariable var = new JSONDocVariable();
       //use a sample JSON piece to set the values
@@ -944,7 +969,7 @@ namespace UnitTesting_Simulation
         throw new Exception("Failed to find create json file for " + testName);
 
       dynamic jsonObj = JsonConvert.DeserializeObject(jsonModel);
-      EmraldModel mainModel = new EmraldModel(); //for some items, if the item JSON references other items they will need to be added to the main model
+      //for some items, if the item JSON references other items they will need to be added to the main model
       var.DeserializeDerived(jsonObj, true, mainModel, false);
 
       //Is there a way to easily test the triggering of the event 
@@ -964,7 +989,8 @@ namespace UnitTesting_Simulation
     public void VarDocXmlTest()
     {
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
-      SetupTheTest(testName);
+      EmraldModel mainModel = new EmraldModel();
+      SetupTheTest(testName, mainModel);
 
       XmlDocVariable var = new XmlDocVariable();
       //use a sample JSON piece to set the values
@@ -976,7 +1002,7 @@ namespace UnitTesting_Simulation
         throw new Exception("Failed to find create json file for " + testName);
 
       dynamic jsonObj = JsonConvert.DeserializeObject(jsonModel);
-      EmraldModel mainModel = new EmraldModel(); //for some items, if the item JSON references other items they will need to be added to the main model
+      //for some items, if the item JSON references other items they will need to be added to the main model
       var.DeserializeDerived(jsonObj, true, mainModel, false);
 
       //Is there a way to easily test the triggering of the event 
@@ -996,7 +1022,8 @@ namespace UnitTesting_Simulation
     public void VarAccrTest()
     {
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
-      SetupTheTest(testName);
+      EmraldModel mainModel = new EmraldModel();
+      SetupTheTest(testName, mainModel);
 
       AccrualVariable var = new AccrualVariable();
       //use a sample JSON piece to set the values
@@ -1033,7 +1060,7 @@ namespace UnitTesting_Simulation
       dynamic jsonObj2 = JsonConvert.DeserializeObject(jsonModel2);//State2
       dynamic jsonObj3 = JsonConvert.DeserializeObject(jsonModel3);//Diagram
 
-      EmraldModel mainModel = new EmraldModel(); //for some items, if the item JSON references other items they will need to be added to the main model
+      //for some items, if the item JSON references other items they will need to be added to the main model
       State state1 = new State();//State1
       State state2 = new State();//State2
       Diagram diagram = new Diagram();//Diagram

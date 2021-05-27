@@ -526,14 +526,9 @@ namespace SimulationDAL
       if (varList == null)
         varList = new VariableList();
 
+     
       if (dynObj.varNames != null)
       {
-
-        //if (varList == null)
-        //  varList = new VariableList(); moved this into else statement because wasn't creating it when needed it for 3D sim var.
-
-      if (dynObj.varNames != null)
-      {     
         foreach (var varName in dynObj.varNames)
         {
           SimVariable curVar = lists.allVariables.FindByName((string)varName);
@@ -552,7 +547,7 @@ namespace SimulationDAL
         SimVariable curVar = lists.allVariables.FindByName((string)dynObj.variable);
         if (curVar == null)
           throw new Exception("Failed to find variable - " + dynObj.variable);
-        if(varList == null)
+        if (varList == null)
         {
           varList = new VariableList();
         }
@@ -561,6 +556,8 @@ namespace SimulationDAL
       }
       return true;
     }
+
+
 
     public virtual bool CompileCompCode()
     {
