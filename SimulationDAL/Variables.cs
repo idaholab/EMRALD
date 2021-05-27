@@ -114,7 +114,27 @@ namespace SimulationDAL
         retStr = retStr + "\"resetOnRuns\": " + this.resetOnRuns.ToString().ToLower() + "," + Environment.NewLine;//removed quotes
       }
 
-      retStr = retStr + "\"type\": \"" + this.dType.Name + "\",";//TODO- type is not matching, retStr/from Editor: Int32/int, Boolean/bool, Double/double, String/string
+      string t = "";
+      switch (this.dType.Name.ToLower())
+      {
+        case "int32":
+          t = "int";
+          break;
+        case "boolean":
+          t = "bool";
+          break;
+        case "string":
+          t = "string";
+          break;
+        case "double":
+          t = "double";
+          break;
+        default:
+          t = "string";
+          break;
+      }
+
+      retStr = retStr + "\"type\": \"" + t + "\",";
       retStr = retStr + GetDerivedJSON();
 
       retStr = retStr + Environment.NewLine + "}";
@@ -446,7 +466,13 @@ namespace SimulationDAL
       {
         throw new Exception("Missing accrualStatesData for accrualVariable variable");
       }
-      
+
+      if (dynObj.varRate == null)
+        throw new Exception("Missing simRate for accrualVariable variable");
+
+      this.varRate = (EnTimeRate)dynObj.varRate;
+
+      //dynObj = dynObj.accrualStatesData;
       //must load everything in LoadObjLinks because the states must be loaded first so we have the IDs.     
 
       processed = true;
