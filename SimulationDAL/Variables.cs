@@ -96,21 +96,25 @@ namespace SimulationDAL
 
       //add derived items
       retStr = retStr + "\"varScope\": \"" + this.varScope.ToString() + "\"," + Environment.NewLine;
-      if (this.dType.Name.ToString() == "String")//need quotes around the string and string should be as is, no quotes around other variable types
+      
+      if (this.varScope == EnVarScope.gtDocLink)//wait until GetDerivedJSON for doc variables to put in default value since default value not read until then
+      {}
+      else if (this.dType.Name.ToString() == "String")//need quotes around the string and string should be as is (not all lower case), no quotes around other variable types
       {
         retStr = retStr + "\"value\": \"" + this._value.ToString() + "\"," + Environment.NewLine;
       }
-      //else if (this._dfltValue != null)
-      //{
-      //  retStr = retStr + "\"value\": \"" + this._dfltValue.ToString() + "\"," + Environment.NewLine;
-      //}
       else
       {
         retStr = retStr + "\"value\": " + this._value.ToString().ToLower() + "," + Environment.NewLine;
       }
+
       //retStr = retStr + "\"monitorInSim\": \"" + this._monitor.ToString() +"\"," + Environment.NewLine; //Defined in simulation GUI, not in model editor
-      retStr = retStr + "\"resetOnRuns\": " + this.resetOnRuns.ToString().ToLower() + "," + Environment.NewLine;//removed quotes
-      retStr = retStr + "\"type\": \"" + this.dType.Name + "\",";
+      if (this.varScope != EnVarScope.gtDocLink)//should not have resetOnRuns for doc variables
+      {
+        retStr = retStr + "\"resetOnRuns\": " + this.resetOnRuns.ToString().ToLower() + "," + Environment.NewLine;//removed quotes
+      }
+
+      retStr = retStr + "\"type\": \"" + this.dType.Name + "\",";//TODO- type is not matching, retStr/from Editor: Int32/int, Boolean/bool, Double/double, String/string
       retStr = retStr + GetDerivedJSON();
 
       retStr = retStr + Environment.NewLine + "}";
@@ -248,7 +252,7 @@ namespace SimulationDAL
       string retStr = "";
 
       //add derived items
-      retStr = retStr + "," + Environment.NewLine + "\"sim3DId\": \"" + this.sim3DNameId.ToString() +"\"";
+      retStr = retStr + Environment.NewLine + "\"sim3DId\": \"" + this.sim3DNameId.ToString() +"\"";
 
       return retStr;
     }
@@ -620,10 +624,18 @@ namespace SimulationDAL
     {
       string retStr = "";
 
+      if (this.dType.Name.ToString() == "String")//need quotes around the string and string should be as is (not all lower case), no quotes around other variable types
+      {
+        retStr = retStr + Environment.NewLine + "\"value\": \"" + this._dfltValue.ToString() + "\",";
+      }
+      else
+      {
+        retStr = retStr + Environment.NewLine + "\"value\": " + this._dfltValue.ToString().ToLower() + ",";
+      }
       retStr = retStr + Environment.NewLine + "\"docLink\": \"" + _linkStr.ToString() + "\"" ;
       retStr = retStr + "," + Environment.NewLine + "\"docType\": \"" + _docType.ToString() + "\"";
-      retStr = retStr + "," + Environment.NewLine + "\"docPath\": \"" + _docPath.ToString() + "\"";
-      retStr = retStr + "," + Environment.NewLine + "\"pathMustExist\": " + _pathMustExist.ToString().ToLower();
+      retStr = retStr + "," + Environment.NewLine + "\"docPath\": \"" + _docPath.ToString().Replace("\\", "\\\\").Replace("\"", "\\\"") + "\"";//adding escape characters
+      retStr = retStr + "," + Environment.NewLine + "\"pathMustExist\": " + _pathMustExist.ToString().ToLower();//TODO- isn't printed to JSON file when save from editor for JSONDocVariable and XmlDocVariable
 
       return retStr;
     }
@@ -896,9 +908,10 @@ namespace SimulationDAL
     public override string GetDerivedJSON()
     {
       string retStr = base.GetDerivedJSON();
-      retStr = retStr + "," + Environment.NewLine + "\"regExpLine \": \"" + _regExpLine.ToString() + "\"";
-      retStr = retStr + "," + Environment.NewLine + "\"begPos \": \"" + _begPosition + "\"";
-      retStr = retStr + "," + Environment.NewLine + "\"numChars \": \"" + _numChars + "\"";
+      retStr = retStr + "," + Environment.NewLine + "\"regExpLine\": \"" + _regExpLine.ToString() + "\"";
+      retStr = retStr + "," + Environment.NewLine + "\"begPosition\": \"" + _begPosition + "\"";
+      retStr = retStr + "," + Environment.NewLine + "\"numChars\": \"" + _numChars + "\"";
+      //TODO- File from Model Editor doesn't print JSON with " " around the value for _numChars, but this does. Should it have the " "? Should the other fields have " " around the value? Currently the Model Editor does print JSON with " " around the value for _regExpLine and _begPosition
       return retStr;
     }
 
