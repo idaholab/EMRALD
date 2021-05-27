@@ -36,12 +36,12 @@ namespace EMRALD_Sim
     }
 
 
-    public static string ValidateModel(ref EmraldModel sim, string modelText)
+    public static string ValidateModel(ref EmraldModel sim, string modelText, string modelDir)
     {
       try
       {
         sim = new EmraldModel();
-        sim.DeserializeJSON(modelText); //throws and exception of failed
+        sim.DeserializeJSON(modelText, modelDir); //throws and exception of failed
         return "";
       }
       catch (Exception error)

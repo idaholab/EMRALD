@@ -349,7 +349,7 @@ namespace SimulationEngine
         // Create a new EmraldModel object called sim
         _model = new EmraldModel();
         // Deserialize the json string into sim
-        _model.DeserializeJSON(_modelJsonStr);
+        _model.DeserializeJSON(_modelJsonStr, Path.GetDirectoryName(_options.inpfile));
       }
       // If there is an error in deserialization, create an error message
       catch (Exception error)

@@ -586,6 +586,7 @@ namespace SimulationDAL
     protected string _linkStr = ""; //xpath for xml, JSONPath for JSON, and regExp string for TextRegExp
     protected bool _pathMustExist = true;
     protected object _dfltValue = null;
+    protected string _docFullPath = "";
 
     public DocVariable(DocType subType)
       : base()
@@ -630,9 +631,24 @@ namespace SimulationDAL
 
       this._docType = (DocType)dynObj.docType;
       this._docPath = Convert.ToString(dynObj.docPath);
+      
+      if (!Path.IsPathRooted(_docPath))
+      {
+        _docFullPath = lists.rootPath;
+        if (!_docFullPath.EndsWith(@"\"))
+          _docFullPath += @"\";
 
-      if (_pathMustExist && !File.Exists(_docPath))
-        throw new Exception("No file located at - " + _docPath + " for Document variable ");
+        _docFullPath = Path.GetFullPath(Path.Combine(_docFullPath + this._docPath));
+      }
+      else
+      {
+        _docFullPath = this._docPath;
+      }
+
+      if (_pathMustExist && !File.Exists(_docFullPath))
+      {
+        throw new Exception("No file located at - " + _docFullPath + " for Document variable ");
+      }
 
       if (dynObj.docLink == null)
         throw new Exception("Missing docLink for document variable");
@@ -688,7 +704,7 @@ namespace SimulationDAL
       _value = newValue;
       //update the document
       XmlDocument xDoc = new XmlDocument();
-      xDoc.Load(_docPath);
+      xDoc.Load(_docFullPath);
       XmlElement pRoot = xDoc.DocumentElement;
       XmlNodeList nodes = pRoot.SelectNodes(_linkStr);
       XmlNode replNode = null;
@@ -717,17 +733,17 @@ namespace SimulationDAL
         }
       }
 
-      xDoc.Save(_docPath);
+      xDoc.Save(_docFullPath);
     }
 
     public override object GetValue()
     {
-      if (!File.Exists(this._docPath) && !_pathMustExist)
+      if (!File.Exists(_docFullPath) && !_pathMustExist)
       {
         return this._dfltValue;
       }
       XmlDocument xDoc = new XmlDocument();
-      xDoc.Load(_docPath);
+      xDoc.Load(_docFullPath);
       XmlElement pRoot = xDoc.DocumentElement;
       XmlNodeList nodes = pRoot.SelectNodes(_linkStr);
       if ((nodes == null) || (nodes.Count == 0))
@@ -796,14 +812,14 @@ namespace SimulationDAL
     {
       _value = newValue;
       //update the document
-      JObject fullObj = JObject.Parse(File.ReadAllText(this._docPath));
+      JObject fullObj = JObject.Parse(_docFullPath);
       var modItems = fullObj.SelectTokens(_linkStr);
       if (modItems == null)
         throw new Exception("Failed to locate document reference - " + _linkStr);
       modItems = JsonExtensions.ReplacePath(fullObj, _linkStr, newValue);
 
       //update the json file with the change
-      using (StreamWriter file = File.CreateText(_docPath))
+      using (StreamWriter file = File.CreateText(_docFullPath))
       using (JsonTextWriter writer = new JsonTextWriter(file))
       {
         fullObj.WriteTo(writer);
@@ -813,12 +829,12 @@ namespace SimulationDAL
     public override object GetValue()
     {
       _linkStr = _linkStr.Replace("\"", "'");
-      if (!File.Exists(this._docPath) && !_pathMustExist)
+      if (!File.Exists(_docFullPath) && !_pathMustExist)
       {
         return this._dfltValue;
       }
       
-      string fileStr = File.ReadAllText(this._docPath);
+      string fileStr = File.ReadAllText(_docFullPath);
       JObject fullObj = JObject.Parse(fileStr);
       JToken modItem = fullObj.SelectToken(_linkStr);
       if(modItem == null)
@@ -905,13 +921,13 @@ namespace SimulationDAL
     {
       _value = newValue;
       Regex rx = new Regex(_linkStr, RegexOptions.Compiled | RegexOptions.IgnoreCase);
-      string docTxt = File.ReadAllText(this._docPath);
+      string docTxt = File.ReadAllText(_docFullPath);
       // Find matches.
       MatchCollection matches = rx.Matches(docTxt);
 
       if (matches.Count < 0)
       {
-        throw new Exception("Failed to find RegEx - " + _linkStr + " in file - " + _docPath);
+        throw new Exception("Failed to find RegEx - " + _linkStr + " in file - " + _docFullPath);
       }
 
       try
@@ -919,7 +935,7 @@ namespace SimulationDAL
         if (this._regExpLine == 0)
         {
           docTxt = rx.Replace(docTxt, newValue.ToString(), 1);
-          File.WriteAllText(_docPath, docTxt);
+          File.WriteAllText(_docFullPath, docTxt);
         }
         else
         {
@@ -958,32 +974,32 @@ namespace SimulationDAL
           {
             docLines[lineMatch] = newValue.ToString();
           }
-          File.WriteAllLines(_docPath, docLines);
+          File.WriteAllLines(_docFullPath, docLines);
         }
 
 
       }
       catch
       {
-        throw new Exception("Failed to write new value in document - " + _docPath);
+        throw new Exception("Failed to write new value in document - " + _docFullPath);
       }
     }
 
     public override object GetValue()
     {
       Regex rx = new Regex(_linkStr, RegexOptions.Compiled | RegexOptions.IgnoreCase);
-      if (!File.Exists(this._docPath) && !_pathMustExist)
+      if (!File.Exists(_docFullPath) && !_pathMustExist)
       {
         return this._dfltValue;
       }
-      string docTxt = File.ReadAllText(this._docPath);
+      string docTxt = File.ReadAllText(_docFullPath);
       // Find matches.
       MatchCollection matches = rx.Matches(docTxt);
 
       if (matches.Count <= 0)
       {
         if (_dfltValue == null)
-          throw new Exception("Failed to find RegEx - " + _linkStr + " in file - " + _docPath);
+          throw new Exception("Failed to find RegEx - " + _linkStr + " in file - " + _docFullPath);
         else
           return Convert.ChangeType(_dfltValue, dType);
       }
