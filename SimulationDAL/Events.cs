@@ -463,14 +463,8 @@ namespace SimulationDAL
         varNames = varNames.TrimStart(',');
       }
       //varNames = string.Join(",", varList.Values);
+
       string retStr = null;
-
-      if (sim3dID != null)
-        retStr = retStr + "\"evType\": \"" + EnEventType.et3dSimEv.ToString() + "\"," + Environment.NewLine;
-      else
-        retStr = retStr + "\"evType\": \"" + EnEventType.etVarCond.ToString() + "\"," + Environment.NewLine;
-
-
       retStr = retStr + "\"varNames\": [" + varNames + "]," + Environment.NewLine;// +
       //                "\"code\":\"" + compCodeStr + "\"";
 
