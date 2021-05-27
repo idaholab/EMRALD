@@ -19,6 +19,12 @@
 
                 <!-- All Variable Scopes -->
                 <div style="display: table-row;">
+                    <label style="display: table-cell;">Var Type:</label>
+                    <select id="typeVal" name="TypeValue" ng-model="varType" ng-options="type for type in varTypes" onchange="typeSelection();" style="display: table-cell; width: 130px;" ng-disabled="!varTypeSelectionEnabled">
+                        <option>-- select Type --</option>
+                    </select><br>
+                </div>
+                <div style="display: table-row;">
                     <label style="display: table-cell;">Name:</label>
                     <input tabindex="1" ng-model="name" style="display: table-cell;" onfocusout="validateName(this);">
                     <input type="checkbox" name="AsNewItem" id="AsNewItem" value="false" ng-model="saveAsNew" onchange="setAsNewChecked()" />
@@ -32,12 +38,6 @@
                     <label style="display: table-cell;">Scope:</label>
                     <select name="ScopeValue" ng-model="varScope" ng-options="opt.name for opt in varScopes" style="display: table-cell; width: 130px;">
                         <option>-- select Scope --</option>
-                    </select><br>
-                </div>
-                <div style="display: table-row;">
-                    <label style="display: table-cell;">Var Type:</label>
-                    <select id="typeVal" name="TypeValue" ng-model="varType" ng-options="type for type in varTypes" onchange="typeSelection();" style="display: table-cell; width: 130px;" ng-disabled="!varTypeSelectionEnabled">
-                        <option>-- select Type --</option>
                     </select><br>
                 </div>
                 <!-- End All Variable Scopes -->
@@ -59,7 +59,7 @@
                         <span style="display: table-cell"></span>
                         <span ng-if="data.docType.value == 'dtXML'">
                             <small>Use XPath Syntax for the Var Link.</small>
-                            <a href="https://www.freeformatter.com/xpath-tester.html#ad-output" target="_blank">Tester</a>
+                            <a href="https://www.site24x7.com/tools/xpath-evaluator.html" target="_blank">Tester</a> <!--Old link with XML 3.0 https://www.freeformatter.com/xpath-tester.html#ad-output-->
                         </span>
                         <span ng-if="data.docType.value == 'dtJSON'">
                             <small>Use JSONPath Syntax for the Var Link.</small>

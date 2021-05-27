@@ -148,16 +148,10 @@ if (typeof Navigation === 'undefined')
         name: "",
         desc: "",
         diagramType: "",
-        diagramTemplate: ""
+        diagramTemplate: "",
+        changeDiagramType: function () { return true; }
       };
-      var diagramLabels = [];
-      getServerFile("resources/customUILabels.json", function onSuccess(jsonStr) {
-        var labObj = JSON.parse(jsonStr);
-        labObj.LabelList.forEach(function (item) {
-          diagramLabels.add({ name: item.diagramLabel, value: item.diagramType });
-        }.bind(this));
-      }.bind(this));
-      dataObj.diagramLabels = diagramLabels;
+
       var diagramList = simApp.allTemplates.DiagramList;
       var diagramTemplates = [];
       if (diagramList.length > 0) {
@@ -1713,14 +1707,7 @@ if (typeof Navigation === 'undefined')
     Sidebar.prototype.editDiagramProperties = function (dataObj, el) {
       var originalLabel = dataObj.diagramLabel;
       var url = 'EditForms/DiagramEditor.html';
-      var diagramLabels = [];
-      getServerFile("resources/customUILabels.json", function onSuccess(jsonStr) {
-        var labObj = JSON.parse(jsonStr);
-        labObj.LabelList.forEach(function (item) {
-          diagramLabels.add({ name: item.diagramLabel, value: item.diagramType });
-        }.bind(this));
-      }.bind(this));
-      dataObj.diagramLabels = diagramLabels;
+      dataObj.changeDiagramType = this.editDiagramType;
 
       var wnd = mxWindow.createFrameWindow(
         url,
@@ -1749,6 +1736,12 @@ if (typeof Navigation === 'undefined')
       var contentPanel = document.getElementById("ContentPanel");
       adjustWindowPos(contentPanel, wnd.div);
       contentPanel.appendChild(wnd.div);
+      }
+    //-------------------------------------------
+    Sidebar.prototype.editDiagramType = function (diagramName, oldType, newType) {
+      let successful = false;
+      console.log('Changing Diagram Type');
+      return successful;
     }
 
     //------------------
@@ -2759,6 +2752,15 @@ if (typeof Navigation === 'undefined')
               //any user defined code references
               if (cur.code && replaceName) { 
                 cur.code = this.replaceNamesInText(cur.code, name, replaceName);
+              }
+              // Timers and Failure Rate Events
+              if (cur.useVariable) {
+                  if (cur.lambda === name) {
+                      cur.lambda = del ? null : (replaceName !== null ? replaceName : name);
+                  }
+                  if (cur.time === name) {
+                      cur.time = del ? null : (replaceName !== null ? replaceName : name);
+                  }
               }
               break;
             case "State":
