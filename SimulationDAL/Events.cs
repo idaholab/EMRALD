@@ -551,6 +551,10 @@ namespace SimulationDAL
         SimVariable curVar = lists.allVariables.FindByName((string)dynObj.variable);
         if (curVar == null)
           throw new Exception("Failed to find variable - " + dynObj.variable);
+        if(varList == null)
+        {
+          varList = new VariableList();
+        }
         this.varList.Add(curVar);
         this.AddRelatedItem(curVar.id);
       }
