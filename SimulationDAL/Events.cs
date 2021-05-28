@@ -414,7 +414,8 @@ namespace SimulationDAL
     protected VariableList varList = null;
     protected string variable = "";
     //protected override EnModifiableTypes GetModType() { return EnModifiableTypes.mtVar; }
-    protected override EnEventType GetEvType() { return (variable == "") ? EnEventType.etVarCond : EnEventType.et3dSimEv; }
+
+    //protected override EnEventType GetEvType() { return (variable == "") ? EnEventType.etVarCond : EnEventType.et3dSimEv; }
 
     public EvalVarEvent() : base("")
     {
@@ -443,6 +444,8 @@ namespace SimulationDAL
 
       compiledComp = new ScriptEngine("EvarVal_" + this.name, ScriptEngine.Languages.CSharp);
     }
+
+    protected override EnEventType GetEvType() { return (variable == "") ? EnEventType.etVarCond : EnEventType.et3dSimEv; }
 
     public override string GetDerivedJSON(EmraldModel lists)
     {
@@ -551,7 +554,8 @@ namespace SimulationDAL
         {
           varList = new VariableList();
         }
-        this.varList.Add(curVar);
+        //this.varList.Add(curVar); Don't want the 3d Sim variable added to the list
+        this.variable = curVar.name;//need to add variable in as variable
         this.AddRelatedItem(curVar.id);
       }
       return true;
