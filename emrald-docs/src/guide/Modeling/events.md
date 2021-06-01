@@ -155,7 +155,7 @@
   - **Time Span:** Enter the amount of model time to pass after entering this state before the event actions are triggered. The first field is the variable value you would like to use. The second field is the time unit you would like to use. Click the field to reveal the dropdown menu of options then click your desired selection to set it.
 
 <h3>Failure Rate <img src="/images/Modeling/events/dice.PNG" alt="Failure Rate" width="25"/></h3>
-  Samples a given probability of failure to determine the time of this event. The lambda or frequency value can be set to a static value or to a variable value. The lambda/frequency field will change form slightly depending on what type of value you are setting it to. Leave the checkbox next to "Use Variable Lambda/Frequency?" blank to set a static value or check it to use a variable value.<br>
+  Samples a given probability of failure (P(t) = e^(-lambda*t)) to determine the time (t) of this event. The lambda or frequency value can be set to a static value or to a variable value. The lambda/frequency field will change form slightly depending on what type of value you are setting it to. Leave the checkbox next to "Use Variable Lambda/Frequency?" blank to set a static value or check it to use a variable value.<br>
   
   #### Static Failure Rate
   <img src="/images/Modeling/events/FailureRateOptions1.PNG" alt="Failure Rate Options" width="500"/>
@@ -180,7 +180,7 @@
   - **Maximum:** Enter the maximum value of the function, if a sampling returns a value greater than this, then this time will be used. 
 
 <h3>Exponential Distribution <img src="/images/Modeling/events/dist.PNG" alt="Exponential Distribution" width="25"/></h3>
-  Samples an exponential distribution according to user specified parameters for when this event will occur from the time entering the state.<br>
+  Samples an exponential distribution according to user specified parameters to generate a value for when this event will occur from the time entering the state.<br>
   
   <img src="/images/Modeling/events/ExponentialDistributionOptions.PNG" alt="Exponential Distribution Options" width="500"/>
 <br>
@@ -188,7 +188,7 @@
   - **Rate:** Enter the value of the rate. To the right of the value is a dropdown menu which includes various time units. Click the dropdown menu to expand it and click the unit you would like to use for that value.
 
 <h3>Weibull Distribution <img src="/images/Modeling/events/dist.PNG" alt="Weibull Distribution" width="25"/></h3>
-  Samples a Weibull distribution according to user specified parameters for when this event will occur from the time entering the state.<br>
+  Samples a Weibull distribution according to user specified parameters to generate a value for when this event will occur from the time entering the state.<br>
 
 <img src="/images/Modeling/events/WeibullDistributionOptions.PNG" alt="Weibull Distribution Options" width="500"/>
 
@@ -198,7 +198,7 @@
 
 
 <h3> Log Normal Distribution <img src="/images/Modeling/events/dist.PNG" alt="Normal Distribution" width="25"/></h3>
-  Listed as LogNorm. Distribution in the dropdown menu. Samples a log-normal distribution according to user specified parameters for when this event will occur from the time entering the state.<br>
+  Listed as LogNorm. Distribution in the dropdown menu. Samples a log-normal distribution according to user specified parameters to generate a value for when this event will occur from the time entering the state.<br>
   
   <img src="/images/Modeling/events/LogNormalDistributionOptions.PNG" alt="Normal Distribution Options" width="500"/>
 <br>
