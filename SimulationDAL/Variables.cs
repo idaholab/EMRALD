@@ -810,9 +810,13 @@ namespace SimulationDAL
 
     public override void SetValue(object newValue)
     {
-      _value = newValue;
       //update the document
-      JObject fullObj = JObject.Parse(_docFullPath);
+      _value = newValue;
+      StreamReader sr = new StreamReader(_docFullPath);
+      string test = sr.ReadToEnd();
+      sr.Close();
+      //update the document
+      JObject fullObj = JObject.Parse(test);
       var modItems = fullObj.SelectTokens(_linkStr);
       if (modItems == null)
         throw new Exception("Failed to locate document reference - " + _linkStr);

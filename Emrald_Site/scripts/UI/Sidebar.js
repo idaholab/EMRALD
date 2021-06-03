@@ -3189,17 +3189,19 @@ if (typeof Navigation === 'undefined')
               //Not applicable
               break;
             case "State":
-              for (var j = 0; j < cur.accrualStatesData.length; j++) {
-                if (cur.accrualStatesData[j].stateName === name) {
-                  if (replaceName !== null) {
-                    cur.accrualStatesData[j].stateName = replaceName;
-									}
-                  if (del) {
-                    cur.accrualStatesData.splice(j, 1);
+              if (cur.accrualStatesData) {
+                for (var j = 0; j < cur.accrualStatesData.length; j++) {
+                  if (cur.accrualStatesData[j].stateName === name) {
+                    if (replaceName !== null) {
+                      cur.accrualStatesData[j].stateName = replaceName;
+                    }
+                    if (del) {
+                      cur.accrualStatesData.splice(j, 1);
+                    }
+                    refs.push(cur);
                   }
-                  refs.push(cur);
-								}
-							}
+                }
+              }
               break;
             default:
           }
