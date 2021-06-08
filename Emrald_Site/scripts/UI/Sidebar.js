@@ -168,41 +168,45 @@ if (typeof Navigation === 'undefined')
         'minimize, maximize, close', //top buttons
         function (btn, outDataObj) {
           if (btn === 'OK') {
-            if (this.existsDiagramName(outDataObj.name)) {
-              MessageBox.alert("New Diagram", "A diagram with the name '" + outDataObj.name + "' exists, please try a different name.");
-              return false;
-            }
-            if (outDataObj.name.length <= 0) {
-              MessageBox.alert("New Diagram", "Please fill in a name");
-              return false;
+            if (outDataObj.importedContent) {
+              Sidebar.prototype.beginMergeModel(outDataObj.importedContent);
+              delete outDataObj.importedContent;
+              return true;
             }
             else {
-              outDataObj.states = [];
-              if (outDataObj.diagramType == 'dtComponent' || outDataObj.diagramType == 'dtSystem')
-                outDataObj.singleStates = [];
-              if (!outDataObj.diagramLabel)
-                outDataObj.diagramLabel = outDataObj.diagramType.substring(2, outDataObj.diagramType.length);
-              var container = document.getElementById("DiagramsPanel_id");
-              delete outDataObj.diagramLabels;
-              delete outDataObj.diagramTemplates;
-              var diagram = { Diagram: outDataObj };
-              //If you choose template, populate diagram with appropriate items
-              if (outDataObj.diagramTemplate && outDataObj.diagramTemplate.length > 0) {
-                this.addNewTemplateDiagram(diagram, outDataObj.diagramTemplate);
-                this.openDiagram(diagram.Diagram);
-                this.onLoadLocal(diagram.Diagram);
+              if (this.existsDiagramName(outDataObj.name)) {
+                MessageBox.alert("New Diagram", "A diagram with the name '" + outDataObj.name + "' exists, please try a different name.");
+                return false;
               }
-              else {
-                this.addNewDiagram(diagram, outDataObj.diagramTemplate);
-                this.openDiagram(diagram.Diagram);
+              if (outDataObj.name.length <= 0) {
+                MessageBox.alert("New Diagram", "Please fill in a name");
+                return false;
               }
-
+            }
+            outDataObj.states = [];
+            if (outDataObj.diagramType == 'dtComponent' || outDataObj.diagramType == 'dtSystem')
+              outDataObj.singleStates = [];
+            if (!outDataObj.diagramLabel)
+              outDataObj.diagramLabel = outDataObj.diagramType.substring(2, outDataObj.diagramType.length);
+            var container = document.getElementById("DiagramsPanel_id");
+            delete outDataObj.diagramLabels;
+            delete outDataObj.diagramTemplates;
+            var diagram = { Diagram: outDataObj };
+            //If you choose template, populate diagram with appropriate items
+            if (outDataObj.diagramTemplate && outDataObj.diagramTemplate.length > 0) {
+              this.addNewTemplateDiagram(diagram, outDataObj.diagramTemplate);
+              this.openDiagram(diagram.Diagram);
+              this.onLoadLocal(diagram.Diagram);
+            }
+            else {
+              this.addNewDiagram(diagram, outDataObj.diagramTemplate);
+              this.openDiagram(diagram.Diagram);
             }
           }
           return true;
         }.bind(this),
-        dataObj,
-        true, //ismodal
+      dataObj,
+      true, //ismodal
         null,
         null,
         450, //width
@@ -1170,7 +1174,7 @@ if (typeof Navigation === 'undefined')
       let conflictNumber = 0;
 
       let elem = document.createElement('div');
-      elem.style.cssText = "background: #fb8b3b; width: 500px; position: sticky; align-items: center; margin: auto; padding: 5em;";
+      elem.style.cssText = "background: #fb8b3b; width: 500px; position: sticky; align-items: center; margin: auto; padding: 5em; z-index: 1000";
       elem.innerHTML = 'There is a naming conflict with the following objects. Please choose an option to resolve: <br>';
 
       let conflictTable = document.createElement('table');
