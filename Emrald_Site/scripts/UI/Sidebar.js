@@ -321,7 +321,7 @@ if (typeof Navigation === 'undefined')
                 case "Merge":
                   getServerFile("resources/TestMergeModel.json", function onSuccess(jsonStr) {
                     var dataObj = JSON.parse(jsonStr);
-                    this.mergeModel(dataObj);
+                    this.beginMergeModel(dataObj);
                   }.bind(this));                  
                   break;
               }
@@ -1162,55 +1162,170 @@ if (typeof Navigation === 'undefined')
           doFunc(this, model, model.VariableList[i].Variable, "Variable");
         }
       }
+      }
+
+    Sidebar.prototype.resolveConflicts = function (addModel, conflictList) {
+      let conflictNumber = 0;
+      let elem = document.createElement('div');
+      elem.style.cssText = "background: #fb8b3b; width: 500px; position: sticky; align-items: center; margin: auto; padding: 5em;";
+      elem.innerHTML = 'There is a naming conflict with the following objects. Please choose an option to resolve: <br>';
+      let conflictTable = document.createElement('table');
+      conflictTable.innerHTML = "<tr><th>Conflicting Name</th><th>Overwrite</th><th>Ignore</th><th>Rename</th></tr>";
+      conflictList.forEach(conflictItem => {
+        conflictNumber = conflictNumber + 1;
+        let conflictName = "conflict" + conflictNumber;
+        conflictItem.RadioName = conflictName;
+        let conflictElemRow = document.createElement('tr');
+        //conflictElemRow.innerHTML = '<td>' + conflictItem.Name + '</td><td><input type="radio" name="' + conflictName + '" value="Overwrite"></td><td><input type="radio" name="' + conflictName + '" value="Ignore"></td><td><input type="radio" name="' + conflictName + '" value="Rename"><input type="text" name="' + conflictName + 'New" value="' + conflictItem.Name + '2"></td>';
+
+        let conflictElemRowName = document.createElement('td');
+        conflictElemRowName.innerText = conflictItem.Name;
+        conflictElemRow.appendChild(conflictElemRowName);
+
+        let conflictElemRowOverwrite = document.createElement('td');
+        conflictElemRowOverwrite.innerHTML = '<input type="radio" name="' + conflictName + '" value="Overwrite">';
+        conflictElemRow.appendChild(conflictElemRowOverwrite);
+
+        let conflictElemRowIgnore = document.createElement('td');
+        conflictElemRowIgnore.innerHTML = '<input type="radio" name="' + conflictName + '" value="Ignore" checked>';
+        conflictElemRow.appendChild(conflictElemRowIgnore);
+
+        let conflictElemRowRename = document.createElement('td');
+        conflictElemRowRename.innerHTML = '<input type="radio" name="' + conflictName + '" value="Rename">';
+        conflictElemRow.appendChild(conflictElemRowRename);
+
+        let conflictElemRowRenameTextBox = document.createElement('span');
+        conflictElemRowRenameTextBox.style.display = 'none';
+        conflictElemRowRenameTextBox.innerHTML = '<input type="text" name="' + conflictName + 'New" value="' + conflictItem.Name + '2">';
+        conflictElemRowRename.appendChild(conflictElemRowRenameTextBox);
+
+        conflictElemRowOverwrite.addEventListener('click', () => { conflictElemRowRenameTextBox.style.display = 'none'; conflictElemRowOverwrite.childNodes[0].checked = true; });
+        conflictElemRowIgnore.addEventListener('click', () => { conflictElemRowRenameTextBox.style.display = 'none'; conflictElemRowIgnore.childNodes[0].checked = true; });
+        conflictElemRowRename.addEventListener('click', () => { conflictElemRowRenameTextBox.style.display = 'inline'; conflictElemRowRename.childNodes[0].checked = true; });
+
+
+        conflictTable.appendChild(conflictElemRow);
+
+      });
+
+      let submitButton = document.createElement('input');
+      submitButton.style = "width: 100%;"
+      submitButton.type = "button";
+      submitButton.value = "Submit"
+
+      submitButton.addEventListener('click', () => {
+        var model = simApp.allDataModel;
+        var overwriteList = this.initializeConflictList();
+        var ignoreList = this.initializeConflictList();
+        var renameList = this.initializeConflictList();
+        for (let k = 1; k <= conflictNumber; k++) {
+          let conflictName = "conflict" + k;
+          let resolution = document.querySelector('input[name="' + conflictName + '"]:checked').value;
+          let item = conflictList.filter(x => x.RadioName === conflictName)[0];
+          if (resolution === "Rename") {
+            let newName = document.querySelector('input[name = "' + conflictName + 'New"]').value;
+            if (!this.getByName(item.ItemType, model, newName) && !this.getByName(item.ItemType, addModel, newName)) {
+              renameList[item.ItemType].push({ "oldName": item.Name, "newName": newName });
+            }
+            else {
+              alert('An object with the name "' + newName + '" already exists.  Please choose a different name.');
+              return;
+            }
+          }
+          else if (resolution === "Overwrite") {
+            overwriteList[item.ItemType].push(item.Name);
+          }
+          else {
+            ignoreList[item.ItemType].push(item.Name);
+          }
+        }
+        elem.remove();
+        this.finishMergeModel(addModel, overwriteList, ignoreList, renameList);
+      })
+
+      /*
+      let overwriteButton = document.createElement('input');
+      overwriteButton.type = "button";
+      overwriteButton.value = "Overwrite";
+      let ignoreButton = document.createElement('input');
+      ignoreButton.type = "button";
+      ignoreButton.value = "Ignore";
+      let renameButton = document.createElement('input');
+      renameButton.type = "button";
+      renameButton.value = "Rename";
+
+      overwriteButton.addEventListener('click', () => { resolution = 'overwrite'; elem.remove(); });
+      ignoreButton.addEventListener('click', () => { resolution = 'ignore'; elem.remove(); });
+      renameButton.addEventListener('click', () => { resolution = 'rename'; elem.remove(); });
+
+      elem.appendChild(overwriteButton);
+      elem.appendChild(ignoreButton);
+      elem.appendChild(renameButton);
+      */
+
+      elem.appendChild(conflictTable);
+      elem.appendChild(submitButton);
+      document.body.appendChild(elem);
+
+      return;
+    }
+
+    Sidebar.prototype.initializeConflictList = function () {
+      let list = {};
+      list["Diagram"] = [];
+      list["State"] = [];
+      list["Action"] = [];
+      list["Event"] = [];
+      list["LogicNode"] = [];
+      list["Variable"] = [];
+      return list;
     }
 
     //this function assumes that all items in the "addModel" are to be merged into the existing model.
-    Sidebar.prototype.mergeModel = function (addModel) {
+    Sidebar.prototype.beginMergeModel = function (addModel) {
       var model = simApp.allDataModel;
       //see if the items already exist
-      var overwriteList = {};
-      overwriteList["Diagram"] = [];
-      overwriteList["State"] = [];
-      overwriteList["Action"] = [];
-      overwriteList["Event"] = [];
-      overwriteList["LogicNode"] = [];
-      overwriteList["Variable"] = [];      
-      var ignoreList = {};
-      ignoreList["Diagram"] = [];
-      ignoreList["State"] = [];
-      ignoreList["Action"] = [];
-      ignoreList["Event"] = [];
-      ignoreList["LogicNode"] = [];
-      ignoreList["Variable"] = [];
-      var renameList = {};
-      renameList["Diagram"] = [];
-      renameList["State"] = [];
-      renameList["Action"] = [];
-      renameList["Event"] = [];
-      renameList["LogicNode"] = [];
-      renameList["Variable"] = [];
+      let conflictList = [];
+      var overwriteList = this.initializeConflictList();
+      var ignoreList = this.initializeConflictList();
+      var renameList = this.initializeConflictList();
 
       //Go through the merge model and find any already existing items and ask user what to do
       this.forEachItemDo(addModel, ["Diagram", "State", "Event", "Action", "LogicNode", "Variable"], function (self, curModel, item, itemType) {
         //for items that exist, prompt user on what to do “Overwrite”, “Ignore”, “Rename”
         if (self.getByName(itemType, model, item.name)) {
-          //todo prompt user for “Overwrite”, “Ignore”, “Rename”
-          var prompt = true;
-          while (prompt) {
-            //todo if overwrite
-            //overwriteList[itemType].push(item.name);
-            //todo if rename
-            var newName = item.name + "2"; //TODO new name from user
-            if (!self.getByName(itemType, model, newName) && !self.getByName(itemType, curModel, newName)) {
-              prompt = false;
-              renameList[itemType].push({ "oldName": item.name, "newName": newName });
-            }
-            //todo if Ignore
-            ignoreList[itemType].push(item.name);
+          conflictList.push({ "ItemType": itemType, "Model": model, "Name": item.name });
+          /*
+        //todo prompt user for “Overwrite”, “Ignore”, “Rename”
+        var prompt = true;
+        while (prompt) {
+            let resolution = self.getNamingConflictResolution(item.name);
+            console.log("Resolution Is: " + resolution);
+          //todo if overwrite
+          //overwriteList[itemType].push(item.name);
+          //todo if rename
+          var newName = item.name + "2"; //TODO new name from user
+          if (!self.getByName(itemType, model, newName) && !self.getByName(itemType, curModel, newName)) {
+            prompt = false;
+            renameList[itemType].push({ "oldName": item.name, "newName": newName });
           }
-        }        
-      });      
-      
+          //todo if Ignore
+          ignoreList[itemType].push(item.name);
+        }*/
+        }
+      });
+
+      if (conflictList.length > 0) {
+        this.resolveConflicts(addModel, conflictList);
+      }
+      else {
+        this.finishMergeModel(addModel, overwriteList, ignoreList, renameList);
+      }
+    }
+
+    Sidebar.prototype.finishMergeModel = function (addModel, overwriteList, ignoreList, renameList) {
+
+
       //for each rename change the names in the addDiagram
       for (var type in renameList) {
         for (var i = 0; i < renameList[type].length; i++) {
@@ -1224,7 +1339,7 @@ if (typeof Navigation === 'undefined')
           var target = this.getByName(type, model, overwriteList[type][ii]);
           var source = this.getByName(type, addModel, overwriteList[type][idx]);
           if ((target != null) && (source != null)) {
-            Object.assign(target, source); 
+            Object.assign(target, source);
           }
         }
       }
@@ -1240,7 +1355,7 @@ if (typeof Navigation === 'undefined')
           //add to the existing model
           var addWrapper = {};
           addWrapper[itemType] = item;
-          switch (itemType){
+          switch (itemType) {
             case "Diagram":
               self.addNewDiagram(addWrapper);
               break;
