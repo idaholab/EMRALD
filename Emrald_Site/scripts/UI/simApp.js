@@ -188,6 +188,44 @@ function openProject() {
 }
 
 //------------------
+function mergeIntoCurrentProject() {
+  let el = document.getElementById("MergeIntoCurrentProjectDialogInput");
+  if (el) el.remove();
+
+  let dialog = document.createElement('input');
+  dialog.id = "MergeIntoCurrentProjectDialogInput";
+  dialog.value = "";
+  dialog.type = 'file';
+  dialog.style.display = 'none';
+  dialog.accept = "application/json"; //only support in chrome and IE.  FF doesn't work with hint.
+  dialog.filetype = "json";
+
+  let handleFileSelected = function (evt) {
+    if (!evt.target.files || !evt.target.files[0]) return;
+    var afile = evt.target.files[0];
+    var aname = afile.name.substring(0, afile.name.indexOf('.'));
+    if (aname == "") name = afile.name;
+    var ext = /\.[0-9a-z]+$/.exec(afile.name);
+    ext = ext.length > 0 ? ext[0] : "";
+    switch (ext) {
+      case '.json':
+        var reader = new FileReader();
+        reader.onload = function (evt) {
+          var content = evt.target.result;
+          Navigation.Sidebar.prototype.beginMergeModel(JSON.parse(content));
+        }.bind(this);
+        reader.readAsText(afile);
+        break;
+    }
+
+  }.bind(this);
+
+  dialog.addEventListener("change", handleFileSelected, false);
+  document.body.appendChild(dialog);
+  dialog.click();
+}
+
+//------------------
 function testMakeCompDiagram() {
   var diagramData = simApp.mainApp.getCleanDataModel();
 

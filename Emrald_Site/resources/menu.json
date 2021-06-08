@@ -15,6 +15,11 @@
           "submenu": null
         },
         {
+          "title": "Merge...",
+          "fnc": "mergeIntoCurrentProject",
+          "submenu": null
+        },
+        {
           "title": "Save",
           "fnc": "saveProject",
           "submenu": null
