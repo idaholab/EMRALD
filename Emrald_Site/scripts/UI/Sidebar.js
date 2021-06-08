@@ -1164,19 +1164,23 @@ if (typeof Navigation === 'undefined')
       }
       }
 
+
+    // Builds a modal asking the user how to resolve merge conflicts (overwrite, ignore, or rename)
     Sidebar.prototype.resolveConflicts = function (addModel, conflictList) {
       let conflictNumber = 0;
+
       let elem = document.createElement('div');
       elem.style.cssText = "background: #fb8b3b; width: 500px; position: sticky; align-items: center; margin: auto; padding: 5em;";
       elem.innerHTML = 'There is a naming conflict with the following objects. Please choose an option to resolve: <br>';
+
       let conflictTable = document.createElement('table');
       conflictTable.innerHTML = "<tr><th>Conflicting Name</th><th>Overwrite</th><th>Ignore</th><th>Rename</th></tr>";
+
       conflictList.forEach(conflictItem => {
         conflictNumber = conflictNumber + 1;
         let conflictName = "conflict" + conflictNumber;
         conflictItem.RadioName = conflictName;
         let conflictElemRow = document.createElement('tr');
-        //conflictElemRow.innerHTML = '<td>' + conflictItem.Name + '</td><td><input type="radio" name="' + conflictName + '" value="Overwrite"></td><td><input type="radio" name="' + conflictName + '" value="Ignore"></td><td><input type="radio" name="' + conflictName + '" value="Rename"><input type="text" name="' + conflictName + 'New" value="' + conflictItem.Name + '2"></td>';
 
         let conflictElemRowName = document.createElement('td');
         conflictElemRowName.innerText = conflictItem.Name;
@@ -1203,9 +1207,7 @@ if (typeof Navigation === 'undefined')
         conflictElemRowIgnore.addEventListener('click', () => { conflictElemRowRenameTextBox.style.display = 'none'; conflictElemRowIgnore.childNodes[0].checked = true; });
         conflictElemRowRename.addEventListener('click', () => { conflictElemRowRenameTextBox.style.display = 'inline'; conflictElemRowRename.childNodes[0].checked = true; });
 
-
         conflictTable.appendChild(conflictElemRow);
-
       });
 
       let submitButton = document.createElement('input');
@@ -1218,6 +1220,7 @@ if (typeof Navigation === 'undefined')
         var overwriteList = this.initializeConflictList();
         var ignoreList = this.initializeConflictList();
         var renameList = this.initializeConflictList();
+
         for (let k = 1; k <= conflictNumber; k++) {
           let conflictName = "conflict" + k;
           let resolution = document.querySelector('input[name="' + conflictName + '"]:checked').value;
@@ -1241,27 +1244,7 @@ if (typeof Navigation === 'undefined')
         }
         elem.remove();
         this.finishMergeModel(addModel, overwriteList, ignoreList, renameList);
-      })
-
-      /*
-      let overwriteButton = document.createElement('input');
-      overwriteButton.type = "button";
-      overwriteButton.value = "Overwrite";
-      let ignoreButton = document.createElement('input');
-      ignoreButton.type = "button";
-      ignoreButton.value = "Ignore";
-      let renameButton = document.createElement('input');
-      renameButton.type = "button";
-      renameButton.value = "Rename";
-
-      overwriteButton.addEventListener('click', () => { resolution = 'overwrite'; elem.remove(); });
-      ignoreButton.addEventListener('click', () => { resolution = 'ignore'; elem.remove(); });
-      renameButton.addEventListener('click', () => { resolution = 'rename'; elem.remove(); });
-
-      elem.appendChild(overwriteButton);
-      elem.appendChild(ignoreButton);
-      elem.appendChild(renameButton);
-      */
+      });
 
       elem.appendChild(conflictTable);
       elem.appendChild(submitButton);
@@ -1281,6 +1264,7 @@ if (typeof Navigation === 'undefined')
       return list;
     }
 
+    // Prep the model for merging (discover any conflicts)
     //this function assumes that all items in the "addModel" are to be merged into the existing model.
     Sidebar.prototype.beginMergeModel = function (addModel) {
       var model = simApp.allDataModel;
@@ -1292,26 +1276,8 @@ if (typeof Navigation === 'undefined')
 
       //Go through the merge model and find any already existing items and ask user what to do
       this.forEachItemDo(addModel, ["Diagram", "State", "Event", "Action", "LogicNode", "Variable"], function (self, curModel, item, itemType) {
-        //for items that exist, prompt user on what to do “Overwrite”, “Ignore”, “Rename”
         if (self.getByName(itemType, model, item.name)) {
           conflictList.push({ "ItemType": itemType, "Model": model, "Name": item.name });
-          /*
-        //todo prompt user for “Overwrite”, “Ignore”, “Rename”
-        var prompt = true;
-        while (prompt) {
-            let resolution = self.getNamingConflictResolution(item.name);
-            console.log("Resolution Is: " + resolution);
-          //todo if overwrite
-          //overwriteList[itemType].push(item.name);
-          //todo if rename
-          var newName = item.name + "2"; //TODO new name from user
-          if (!self.getByName(itemType, model, newName) && !self.getByName(itemType, curModel, newName)) {
-            prompt = false;
-            renameList[itemType].push({ "oldName": item.name, "newName": newName });
-          }
-          //todo if Ignore
-          ignoreList[itemType].push(item.name);
-        }*/
         }
       });
 
@@ -1323,9 +1289,8 @@ if (typeof Navigation === 'undefined')
       }
     }
 
+    // Actually Do The Merging
     Sidebar.prototype.finishMergeModel = function (addModel, overwriteList, ignoreList, renameList) {
-
-
       //for each rename change the names in the addDiagram
       for (var type in renameList) {
         for (var i = 0; i < renameList[type].length; i++) {
@@ -1346,7 +1311,6 @@ if (typeof Navigation === 'undefined')
 
       //add all the rest of the items to the correct sections
       this.forEachItemDo(addModel, ["Diagram", "State", "Event", "Action", "LogicNode", "Variable"], function (self, curModel, item, itemType) {
-        var model = simApp.allDataModel
         if (ignoreList[itemType].includes(item.name) ||
           overwriteList[itemType].includes(item.name)) {
           return;
