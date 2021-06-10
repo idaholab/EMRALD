@@ -926,9 +926,10 @@ namespace SimulationDAL
     public override string GetDerivedJSON()
     {
       string retStr = base.GetDerivedJSON();
-      retStr = retStr + "," + Environment.NewLine + "\"regExpLine \": \"" + _regExpLine.ToString() + "\"";
-      retStr = retStr + "," + Environment.NewLine + "\"begPos \": \"" + _begPosition + "\"";
-      retStr = retStr + "," + Environment.NewLine + "\"numChars \": \"" + _numChars + "\"";
+      retStr = retStr + "," + Environment.NewLine + "\"regExpLine\": \"" + _regExpLine.ToString() + "\"";
+      retStr = retStr + "," + Environment.NewLine + "\"begPosition\": \"" + _begPosition + "\"";
+      retStr = retStr + "," + Environment.NewLine + "\"numChars\": \"" + _numChars + "\"";
+      //TODO- File from Model Editor doesn't print JSON with " " around the value for _numChars, but this does. Should it have the " "? Should the other fields have " " around the value? Currently the Model Editor does print JSON with " " around the value for _regExpLine and _begPosition
       return retStr;
     }
 

@@ -1081,6 +1081,63 @@ namespace UnitTesting_Simulation
       string retJsonStr = var.GetJSON(true, mainModel);
       Assert.True(CompareJSON(retJsonStr, jsonModel));
     }
+
+    [Fact]
+    public void VarAccrStaticTest()
+    {
+      string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
+      EmraldModel mainModel = new EmraldModel();
+      SetupTheTest(testName, mainModel);
+
+      AccrualVariable var = new AccrualVariable();
+      //use a sample JSON piece to set the values
+      string fileLoc = MainTestDir() + itemFolder + testName + ".json";
+      string fileLoc1 = MainTestDir() + itemFolder + "StateTest1.json";//State1
+      string fileLoc3 = MainTestDir() + itemFolder + "DiagramTest.json";//Diagram
+      string jsonModel = "";
+      if (File.Exists(fileLoc))
+        jsonModel = File.ReadAllText(fileLoc);
+      else
+        throw new Exception("Failed to find create json file for " + testName);
+
+      string jsonModel1 = "";
+      if (File.Exists(fileLoc1))
+        jsonModel1 = File.ReadAllText(fileLoc1);
+      else
+        throw new Exception("Failed to find create json file for " + testName);
+
+      string jsonModel3 = "";
+      if (File.Exists(fileLoc3))
+        jsonModel3 = File.ReadAllText(fileLoc3);
+      else
+        throw new Exception("Failed to find create json file for " + testName);
+
+      dynamic jsonObj = JsonConvert.DeserializeObject(jsonModel);
+      dynamic jsonObj1 = JsonConvert.DeserializeObject(jsonModel1);//State1
+      dynamic jsonObj3 = JsonConvert.DeserializeObject(jsonModel3);//Diagram
+
+      //for some items, if the item JSON references other items they will need to be added to the main model
+      State state1 = new State();//State1
+      Diagram diagram = new Diagram();//Diagram
+
+      diagram.DeserializeDerived(jsonObj3, true, mainModel, false);//Diagram
+      state1.DeserializeDerived(jsonObj1, true, mainModel, false);//State1
+      var.DeserializeDerived(jsonObj, true, mainModel, false);
+      var.LoadObjLinks(jsonObj, true, mainModel);
+
+      //Is there a way to easily test the triggering of the event 
+      //test for true
+      //Assert.True(ev.EventTriggered());
+      //test for false
+      //Assert.False(ev.EventTriggered());
+
+      //Reference any regression tests in SimEngineTests that covers this.  
+
+      //make sure the JSON returned for the item is good 
+      string retJsonStr = var.GetJSON(true, mainModel);
+      Assert.True(CompareJSON(retJsonStr, jsonModel));
+    }
+
   }
 }
 
