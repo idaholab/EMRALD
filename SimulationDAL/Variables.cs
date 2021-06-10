@@ -924,7 +924,7 @@ namespace SimulationDAL
 
   public class TextRegExVariable : DocVariable
   {
-    private int _regExpLine = -1;//-1 means just the regular expression
+    private int _regExpLine = -1;//-1 means just the regular expression, box unchecked
     private int _begPosition = 0;
     private int _numChars = -1; //-1 goes until the next white space
 
@@ -935,9 +935,9 @@ namespace SimulationDAL
     {
       string retStr = base.GetDerivedJSON();
       retStr = retStr + "," + Environment.NewLine + "\"regExpLine\": \"" + _regExpLine.ToString() + "\"";
-      retStr = retStr + "," + Environment.NewLine + "\"begPosition\": \"" + _begPosition + "\"";
-      retStr = retStr + "," + Environment.NewLine + "\"numChars\": \"" + _numChars + "\"";
-      //TODO- File from Model Editor doesn't print JSON with " " around the value for _numChars, but this does. Should it have the " "? Should the other fields have " " around the value? Currently the Model Editor does print JSON with " " around the value for _regExpLine and _begPosition
+      retStr = retStr + "," + Environment.NewLine + "\"begPosition\": " + _begPosition;
+      retStr = retStr + "," + Environment.NewLine + "\"numChars\": " + _numChars;
+      //TODO- Currently the UI/Model Editor does print JSON with " " around the value for _regExpLine
       return retStr;
     }
 
