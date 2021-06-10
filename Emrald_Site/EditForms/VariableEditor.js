@@ -306,12 +306,12 @@ function GetDataObject() {
     dataObj.docLink = scope.data.varLink;
     dataObj.docType = scope.data.docType.value;
     dataObj.docPath = scope.data.docPath;
+    dataObj.pathMustExist = scope.data.resetOnRuns;
     if (scope.data.docType.value == "dtTextRegEx") {
       //set the extra regExp options to not used unless checked
       dataObj.regExpLine = 0;
       dataObj.begPosition = 0;
       dataObj.numChars = -1;
-      dataObj.pathMustExist = scope.data.resetOnRuns;
 
       //Assign if checked 
       if (scope.data.useRegExLine) {
