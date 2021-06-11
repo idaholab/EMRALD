@@ -1298,15 +1298,15 @@ if (typeof Navigation === 'undefined')
       //for each rename change the names in the addDiagram
       for (var type in renameList) {
         for (var i = 0; i < renameList[type].length; i++) {
-          this.replaceNames(renameList[type][i].oldName, renameList[type][i].newName, type, addModel) //name:newName pair
+          this.replaceNames(renameList[type][i].oldName, renameList[type][i].newName, type, addModel, false) //name:newName pair
         }
       }
 
       //for each Overwrite replace the existing in the model
       for (var type in overwriteList) {
-        for (var i = 0; i < overwriteList[type].lengh; i++) {
-          var target = this.getByName(type, model, overwriteList[type][ii]);
-          var source = this.getByName(type, addModel, overwriteList[type][idx]);
+        for (var i = 0; i < overwriteList[type].length; i++) {
+          var target = this.getByName(type, simApp.allDataModel, overwriteList[type][i]);
+          var source = this.getByName(type, addModel, overwriteList[type][i]);
           if ((target != null) && (source != null)) {
             Object.assign(target, source);
           }
@@ -1359,7 +1359,7 @@ if (typeof Navigation === 'undefined')
 
     //begin-----------------Rename functions for different items-------------------------------
     //Replace a state name through out the entire model and update the effected state view's textContent.
-    Sidebar.prototype.replaceNames = function (oldName, newName, type, model)
+    Sidebar.prototype.replaceNames = function (oldName, newName, type, model, updateSidebar = true)
     {
       if (model == null)
         model = simApp.allDataModel;
@@ -1372,7 +1372,9 @@ if (typeof Navigation === 'undefined')
       this.logicNodesReferencing(model, oldName, type, false, newName);
 
       //update the names in the left side bar view
-      this.alterSideBarListsItem(oldName, newName, new Set(["All", "Global", "Local"]), type);
+      if (updateSidebar) {
+        this.alterSideBarListsItem(oldName, newName, new Set(["All", "Global", "Local"]), type);
+      }
     }
     Sidebar.prototype.replaceEventName = function (oldName, newName) {
         this.replaceNames(oldName, newName, "Event");
@@ -2982,6 +2984,8 @@ if (typeof Navigation === 'undefined')
       //}
     }
 
+    //------------------------------------------
+    //Replace the name in text such as user defined code
     Sidebar.prototype.replaceNamesInText = function (text, name, newName) {
       var letters = /^[0-9a-zA-Z-_]+$/;
       var j = -1;
@@ -3202,7 +3206,7 @@ if (typeof Navigation === 'undefined')
               if (cur.name == name) {
                 if (replaceName != null) {
                   cur.name = replaceName;
-                  if (model.StateList[i].ui_el) {
+                  if (model.ActionList[i].ui_el) {
                     model.ActionList[i].ui_el.innerText = replaceName;
                     model.ActionList[i].ui_el.innerHTML = replaceName;
                   }
