@@ -221,7 +221,14 @@ namespace ScriptEngineNS
       }
       catch (Exception e)
       {
-        throw new Exception("Failed to execute code for - " + this.assemblyName + ". code - " + this.code);
+        string errorStr = " Failed to execute code for -" + this.assemblyName + ".code - " + this.code;
+        if (e.InnerException != null)
+        {
+          errorStr = e.InnerException.Message + errorStr;
+        }
+        NLog.Logger logger = NLog.LogManager.GetLogger("logfile");
+        logger.Info(errorStr);
+        throw new Exception(errorStr);
       }
     }
 
