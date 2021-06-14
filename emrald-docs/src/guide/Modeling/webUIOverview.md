@@ -11,11 +11,21 @@
 
 ## Top Menu Bar
 **Project** <br>
-  <div style="width:500px">![Project Menu](/images/Modeling/webUIOverview/TopMenuProject.PNG)</div> <br>
-  * New: Creates a new project. The following window appears in the Modeling Area.<br>
+  <div style="width:600px">![Project Menu](/images/Modeling/webUIOverview/TopMenuProject.PNG)</div> <br>
+  * **New**: Creates a new project. The following window appears in the Modeling Area.<br>
   <div style="width:500px">![New Project Window](/images/Modeling/webUIOverview/NewProject.PNG)</div><br>
 
       After hitting the "Ok" button, your project name will populate the right corner of the header.<br>![New Project Window](/images/Modeling/webUIOverview/NewProjectHeader.PNG)
+  - **Merge:** Merge one project into another project. This will pull in all diagrams, states, events, actions, variables, and logic trees into the project. First it will bring up a File Explorer, browse for the file you want to merge in and click "Open". <br>
+  <div style="width:500px">![Open File to Merge Window](/images/Modeling/webUIOverview/Merge_1.PNG)</div><br>
+  If there are diagrams or components with identical names in the models being merged, a conflict window will appear with a list of all of the identically named items. There are three options of how to resolve the conflict.
+    - Overwrite: The item being merged in will replace the item in the base project.
+    - Ignore: The item being merged in will be disregarded and the item in the base project will remain unchanged.
+    - Rename: The item being merged in can be renamed and made a new and separate item. A text box will appear in an adjacent column where you can edit the new name of the item being merged in. <br>
+
+    ![Open File to Merge Window](/images/Modeling/webUIOverview/Merge_3.PNG)<br>
+
+  Once you complete your conflict resolution choices, click ""Submit"" and the model will merge into the base model accordingly.
   - **Open:** Browse to open an existing project.
   - **Save:** Operates like a standard "Save As" to save the current project.
   - **Export Templates:** Allows you to save any project template items for use in other projects. When clicked from the dropdown menu, the following window appears in the Modeling Area.<br><div style="width:400px">![Export Template Window](/images/Modeling/webUIOverview/ExportTemplate.PNG)</div>

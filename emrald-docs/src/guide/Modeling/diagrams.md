@@ -7,7 +7,13 @@
   On the Left Navigation Frame, right-click on "Diagrams" and click "New Diagram". <br>
   <div style="width:300px">![Right Click for New Diagram](/images/Modeling/diagrams/NewDiagram1.PNG)</div>
 
-  Fill out the dialogue box. A description is optional. Ensure the correct type of diagram is selected as switching between diagram types can sometimes cause errors due to the differing modeling options. Once you have completed filling the fields, press "OK". <br>
+  There are two options, both seen in the properties window.
+
+  **Option 1: Top Half**
+  Fill out the dialogue box. A description is optional. Click the dropdown menu next to Type to select the type of diagram you would like to create. The different types are Plant, Component, System, and Other. More information on these types are in the [Types of Diagrams](#types-of-diagrams) section. Ensure the correct type of diagram is selected as switching between diagram types can sometimes cause errors due to the differing modeling options. Once you have completed filling the fields, press "OK". <br>
+
+  **Option 2: Bottom Half**
+  Click "Choose File" to import an existing diagram from another project. See the Merge section of the [Top Menu Bar](/guide/Modeling/webUIOverview.md #top-menu-bar) for instructions on how to resolve conflicts if there are any.
   <div style="width:500px">![New Diagram Dialogue Box](/images/Modeling/diagrams/NewDiagram2.PNG)</div>
 
   It will then open an empty diagram form in the Modeling Area. The diagram name should also appear in the Left Navigation Frame. <br>
