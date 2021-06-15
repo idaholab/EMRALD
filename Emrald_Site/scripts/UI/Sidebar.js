@@ -286,8 +286,7 @@ if (typeof Navigation === 'undefined')
             taphold: true,
             menu: [
               { title: "New " + titleForNew, cmd: "New" },
-              { title: "Refresh", cmd: "Refresh" },
-              { title: "Merge", cmd: "Merge" } //TODO remove this is for testing only
+              { title: "Refresh", cmd: "Refresh" }
             ],
             select: function (evt, ui) {
               //var $target = ui.target;
@@ -1286,9 +1285,11 @@ if (typeof Navigation === 'undefined')
       });
 
       if (conflictList.length > 0) {
+        // Ask User to resolve conflicts
         this.resolveConflicts(addModel, conflictList);
       }
       else {
+        // No conflicts to resolve, so just continue with the merge
         this.finishMergeModel(addModel, overwriteList, ignoreList, renameList);
       }
     }
@@ -1309,6 +1310,7 @@ if (typeof Navigation === 'undefined')
           var source = this.getByName(type, addModel, overwriteList[type][i]);
           if ((target != null) && (source != null)) {
             Object.assign(target, source);
+            Object.assign(target.ui_el.dataObject, source[Object.keys(source)[0]]);
           }
         }
       }
@@ -1353,6 +1355,9 @@ if (typeof Navigation === 'undefined')
           };
         }
       });
+
+
+      this.notifyDataChanged(true);
 
       //this.alterSideBarListsItem(dataObj.name, null, new Set(["All", "Global", "Local"]), "Event");
     }
@@ -2560,7 +2565,7 @@ if (typeof Navigation === 'undefined')
         if (btn in SetOf(['OK', 'Save As New'])) {
           var asNew = btn === 'Save As New';
           simApp.modelChanged = true;
-          if (el && !asNew) { // el is not null during editor existing action.
+          if (el && !asNew) { // el is not null when editing an existing action.
             var original = el.innerText;
             el.innerText = dataObj.name;
             //change references to this obj elsewhere too
