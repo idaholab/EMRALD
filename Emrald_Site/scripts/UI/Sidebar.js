@@ -909,7 +909,7 @@ if (typeof Navigation === 'undefined')
               var actionObj = this.getActionByName(simApp.allDataModel, actionName);
               if (actionObj)
                 actionList.push(actionObj);
-            });
+            }.bind(this));
           }
           //look for action name within the eventAction list.
           if (state.eventActions && state.eventActions.length > 0) {
@@ -919,11 +919,11 @@ if (typeof Navigation === 'undefined')
                   var actionObj = this.getActionByName(simApp.allDataModel, actionName);
                   if (actionObj)
                     actionList.push(actionObj);
-                });
+                }.bind(this));
               }
-            });
+            }.bind(this));
           }
-        });
+        }.bind(this));
       }
       return actionList;
     }
@@ -940,7 +940,7 @@ if (typeof Navigation === 'undefined')
                 actionList.push(actionObj);
                 actionNames.push(actionName);
               }
-            });
+            }.bind(this));
           }
           if (state.eventActions && state.eventActions.length > 0) {
             state.eventActions.forEach(function (eaObj) {
@@ -951,11 +951,11 @@ if (typeof Navigation === 'undefined')
                     actionList.push(actionObj);
                     actionNames.push(actionName);
                   }
-                });
+                }.bind(this));
               }
-            });
+            }.bind(this));
           }
-        });
+        }.bind(this));
       }
       return actionList;
     }
@@ -972,9 +972,9 @@ if (typeof Navigation === 'undefined')
                 eventList.push(eventObj);
                 eventNames.push(eventName);
               }
-            });
+            }.bind(this));
           }
-        });
+        }.bind(this));
       }
       return eventList;
     }
@@ -991,9 +991,9 @@ if (typeof Navigation === 'undefined')
                 eventList.push(eventObj);
                 eventNames.push(eventName);
               }
-            });
+            }.bind(this));
           }
-        });
+        }.bind(this));
       }
       return eventList;
     }
@@ -1165,7 +1165,14 @@ if (typeof Navigation === 'undefined')
           doFunc(this, model, model.VariableList[i].Variable, "Variable");
         }
       }
+      if (model.VariableList && itemTypes.includes("ExtSim")) {
+        if (model.ExtSimList) {
+          for (var i = 0; i < model.ExtSimList.length; i++) {
+            doFunc(this, model, model.ExtSimList[i].ExtSim, "ExtSim");
+          }
+        }
       }
+    }
 
 
     // Builds a modal asking the user how to resolve merge conflicts (overwrite, ignore, or rename)
@@ -1264,6 +1271,7 @@ if (typeof Navigation === 'undefined')
       list["Event"] = [];
       list["LogicNode"] = [];
       list["Variable"] = [];
+      list["ExtSim"] = [];
       return list;
     }
 
@@ -1278,7 +1286,7 @@ if (typeof Navigation === 'undefined')
       var renameList = this.initializeConflictList();
 
       //Go through the merge model and find any already existing items and ask user what to do
-      simApp.mainApp.sidebar.forEachItemDo(addModel, ["Diagram", "State", "Event", "Action", "LogicNode", "Variable"], function (self, curModel, item, itemType) {
+      simApp.mainApp.sidebar.forEachItemDo(addModel, ["Diagram", "State", "Event", "Action", "LogicNode", "Variable", "ExtSim"], function (self, curModel, item, itemType) {
         if (self.getByName(itemType, model, item.name)) {
           conflictList.push({ "ItemType": itemType, "Model": model, "Name": item.name });
         }
@@ -1299,7 +1307,16 @@ if (typeof Navigation === 'undefined')
       //for each rename change the names in the addDiagram
       for (var type in renameList) {
         for (var i = 0; i < renameList[type].length; i++) {
-          simApp.mainApp.sidebar.replaceNames(renameList[type][i].oldName, renameList[type][i].newName, type, addModel, false) //name:newName pair
+          var updateList = false; //for most types the side list is updated somewhere else
+          switch (type) {
+            case "LogicNode":
+              updateList = true;
+              break;
+            case "ExtSim":
+              updateList = true;
+              break;
+          }
+          simApp.mainApp.sidebar.replaceNames(renameList[type][i].oldName, renameList[type][i].newName, type, addModel, updateList) //name:newName pair
         }
       }
 
@@ -1317,7 +1334,7 @@ if (typeof Navigation === 'undefined')
       }
 
       //add all the rest of the items to the correct sections
-      simApp.mainApp.sidebar.forEachItemDo(addModel, ["Diagram", "State", "Event", "Action", "LogicNode", "Variable"], function (self, curModel, item, itemType) {
+      simApp.mainApp.sidebar.forEachItemDo(addModel, ["Diagram", "State", "Event", "Action", "LogicNode", "Variable", "ExtSim"], function (self, curModel, item, itemType) {
         if (ignoreList[itemType].includes(item.name) ||
           overwriteList[itemType].includes(item.name)) {
           return;
@@ -1354,6 +1371,8 @@ if (typeof Navigation === 'undefined')
             case "Variable":
               self.addNewVariable(addWrapper);
               break;
+            case "ExtSim":
+              self.addNewExtSim(addWrapper);
           };
         }
       });
@@ -1377,6 +1396,7 @@ if (typeof Navigation === 'undefined')
       this.actionsReferencing(model, oldName, type, false, newName);
       this.diagramsReferencing(model, oldName, type, false, newName);
       this.logicNodesReferencing(model, oldName, type, false, newName);
+      this.extSimsReferencing(model, oldName, type, false, newName);
 
       //update the names in the left side bar view
       if (updateSidebar) {
@@ -1406,14 +1426,9 @@ if (typeof Navigation === 'undefined')
       this.replaceNames(oldName, newName, "Variable");
     }
     Sidebar.prototype.replaceExtSimName = function (oldName, newName) {
-      this.replaceNames(oldName, newName, "ExtSim");
+      this.replaceNames(oldName, newName, "ExtSim");   
       //update the html for the item, the name has already changed
-      for (var i = 0; i < mainModel.ExtSimList.length; i++) {
-        var cur = mainModel.ExtSimList[i];
-        if (cur.Diagram.name == newName) {
-          if (cur.ui_el) cur.ui_el.innerText = newName;
-        }
-      }      
+      this.extSimsReferencing(simApp.allDataModel, newName, "ExtSim", false, newName);
     }
     //end-------------------Rename functions for different items-------------------------------
 
@@ -2680,6 +2695,20 @@ if (typeof Navigation === 'undefined')
     //For Delete set newName = null 
     Sidebar.prototype.alterSideBarListsItem = function (itemName, newName, tabs, type) { 
       var container = null;
+      if (type == "LogicNode") {
+        container = document.getElementById("LogicTreesPanel_id");
+        var index = this.indexOfSideBarNode(container.childNodes, itemName);
+        if (index != null) {
+          var id = container.childNodes[index].id;
+          var element = document.getElementById(id);
+          if (newName == null)
+            element.parentNode.removeChild(element);
+          else
+            element.innerHTML = newName;
+        }
+        return;
+      }
+
       if (tabs.has("All")) {
         switch (type) {
           case "State" :
@@ -3502,7 +3531,14 @@ if (typeof Navigation === 'undefined')
               //Not applicable
               break;
             case "Variable":
-              //Not applicable
+              //only reference is itself, so replace name if given
+              if ((cur.name == name) && (replaceName != null)) {
+                cur.name = replaceName;
+                if (model.VariableList[i].ui_el) {
+                  model.VariableList[i].ui_el.innerText = replaceName;
+                  model.VariableList[i].ui_el.innerHTML = replaceName;
+                }
+              }
               break;
             case "State":
               if (cur.accrualStatesData) {
@@ -3526,6 +3562,54 @@ if (typeof Navigation === 'undefined')
 
       return refs;
     }
+    Sidebar.prototype.extSimsReferencing = function (model, name, type, del = false, replaceName = null) {
+      var refs = [];
+      if (model === null) //use the entire model not just what was given
+        model = simApp.allDataModel;
+
+      //find variable references to it the items
+      if (model.VariableList) {
+        for (var i = 0; i < model.ExtSimList.length; i++) {
+          var cur = model.ExtSimList[i].ExtSim;
+          //don't worry about the action type just see if the property exists in the JSON.
+          switch (type) {
+            case "Diagram":
+              //not applicable
+              break;
+            case "LogicNode":
+              //not applicable
+              break;
+            case "Action":
+              //not applicable
+              break;
+            case "Event":
+              //Not applicable
+              break;
+            case "Variable":
+              //Not applicable
+              break;
+            case "ExtSim":
+              //only reference is itself, so replace name if given
+              if ((cur.name == name) && (replaceName != null)) {
+                cur.name = replaceName;
+                if (model.ExtSimList[i].ui_el) {
+                  model.ExtSimList[i].ui_el.innerText = replaceName;
+                  model.ExtSimList[i].ui_el.innerHTML = replaceName;
+                }
+              }
+              break;
+            case "State":
+              //Not Applicable 
+              //update the html for the item, the name has already changed
+              break;
+            default:
+          }
+        }
+      }
+
+      return refs;
+    }
+    
     //--------------End Reference Functions-------------------------
 
     //------------------------------------------
