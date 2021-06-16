@@ -1279,17 +1279,17 @@ if (typeof Navigation === 'undefined')
       var renameList = this.initializeConflictList();
 
       //Go through the merge model and find any already existing items and ask user what to do
-      this.forEachItemDo(addModel, ["Diagram", "State", "Event", "Action", "LogicNode", "Variable"], function (self, curModel, item, itemType) {
+      simApp.mainApp.sidebar.forEachItemDo(addModel, ["Diagram", "State", "Event", "Action", "LogicNode", "Variable"], function (self, curModel, item, itemType) {
         if (self.getByName(itemType, model, item.name)) {
           conflictList.push({ "ItemType": itemType, "Model": model, "Name": item.name });
         }
       });
 
       if (conflictList.length > 0) {
-        this.resolveConflicts(addModel, conflictList);
+        simApp.mainApp.sidebar.resolveConflicts(addModel, conflictList);
       }
       else {
-        this.finishMergeModel(addModel, overwriteList, ignoreList, renameList);
+        simApp.mainApp.sidebar.finishMergeModel(addModel, overwriteList, ignoreList, renameList);
       }
     }
 
@@ -1298,7 +1298,7 @@ if (typeof Navigation === 'undefined')
       //for each rename change the names in the addDiagram
       for (var type in renameList) {
         for (var i = 0; i < renameList[type].length; i++) {
-          this.replaceNames(renameList[type][i].oldName, renameList[type][i].newName, type, addModel, false) //name:newName pair
+          simApp.mainApp.sidebar.replaceNames(renameList[type][i].oldName, renameList[type][i].newName, type, addModel, false) //name:newName pair
         }
       }
 
@@ -1308,13 +1308,15 @@ if (typeof Navigation === 'undefined')
           var target = this.getByName(type, simApp.allDataModel, overwriteList[type][i]);
           var source = this.getByName(type, addModel, overwriteList[type][i]);
           if ((target != null) && (source != null)) {
-            Object.assign(target, source);
+            //This does not work, it breakes the link to the ui element. Object.assign(target[type], source[type]);
+            var assignString = "Object.assign(target." + type + ", source." + type + " )";
+            eval(assignString);
           }
         }
       }
 
       //add all the rest of the items to the correct sections
-      this.forEachItemDo(addModel, ["Diagram", "State", "Event", "Action", "LogicNode", "Variable"], function (self, curModel, item, itemType) {
+      simApp.mainApp.sidebar.forEachItemDo(addModel, ["Diagram", "State", "Event", "Action", "LogicNode", "Variable"], function (self, curModel, item, itemType) {
         if (ignoreList[itemType].includes(item.name) ||
           overwriteList[itemType].includes(item.name)) {
           return;
@@ -1345,7 +1347,8 @@ if (typeof Navigation === 'undefined')
             case "LogicNode":
               simApp.allDataModel.LogicNodeList.add(addWrapper);
               var container = document.getElementById("LogicTreesPanel_id");
-              self.addSectionItem(container, "Logic Tree", item.name, item);
+              if(item.name == item.rootName)
+                self.addSectionItem(container, "Logic Tree", item.name, item);
               break;
             case "Variable":
               self.addNewVariable(addWrapper);
