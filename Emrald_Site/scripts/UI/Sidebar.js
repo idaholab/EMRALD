@@ -1180,17 +1180,22 @@ if (typeof Navigation === 'undefined')
       let conflictNumber = 0;
 
       let elem = document.createElement('div');
-      elem.style.cssText = "background: #fb8b3b; width: 500px; position: sticky; align-items: center; margin: auto; padding: 5em; z-index: 1000";
+      elem.style.cssText = "background: #fb8b3b; width: 550px; position: sticky; align-items: center; margin: auto; padding: 5em; z-index: 1000";
       elem.innerHTML = 'There is a naming conflict with the following objects. Please choose an option to resolve: <br>';
 
       let conflictTable = document.createElement('table');
-      conflictTable.innerHTML = "<tr><th>Conflicting Name</th><th>Overwrite</th><th>Ignore</th><th>Rename</th></tr>";
+      conflictTable.innerHTML = "<tr><th>Type</th><th>Conflicting Name</th><th>Overwrite</th><th>Ignore</th><th>Rename</th></tr>";
 
       conflictList.forEach(conflictItem => {
         conflictNumber = conflictNumber + 1;
         let conflictName = "conflict" + conflictNumber;
         conflictItem.RadioName = conflictName;
         let conflictElemRow = document.createElement('tr');
+
+        let conflictElemRowType = document.createElement('td');
+        conflictElemRowType.innerText = conflictItem.ItemType;
+        conflictElemRowType.style.fontStyle = "italic";
+        conflictElemRow.appendChild(conflictElemRowType);
 
         let conflictElemRowName = document.createElement('td');
         conflictElemRowName.innerText = conflictItem.Name;
