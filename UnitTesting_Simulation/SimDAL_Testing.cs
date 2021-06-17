@@ -496,6 +496,7 @@ namespace UnitTesting_Simulation
     // Action Tests
     //////////////////
 
+
     [Fact]
     public void TransitionActTest()
     {
@@ -735,9 +736,10 @@ namespace UnitTesting_Simulation
       act.DeserializeDerived(jsonObj, true, mainModel, false);
       act.LoadObjLinks(jsonObj, true, mainModel);
 
+      Assert.True(act.CompileCode(mainModel.allVariables));
+     
       //Is there a way to easily test the triggering of the event 
       //test for true
-      Assert.True(act.CompileCode(mainModel.allVariables));
       //test for false
       //Assert.False(ev.EventTriggered());
 
