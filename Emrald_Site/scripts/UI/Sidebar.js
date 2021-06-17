@@ -1360,7 +1360,10 @@ if (typeof Navigation === 'undefined')
                 self.addNewLocalEvent(addWrapper);
               break;
             case "LogicNode":
-              self.addNewLogicTree(addWrapper, null);
+              if (addWrapper.LogicNode.name == addWrapper.LogicNode.rootName)
+                self.addNewLogicTree(addWrapper, null);
+              else
+                self.LogicNodeList.push(addWrapper);
               break;
             case "Variable":
               self.addNewVariable(addWrapper);
