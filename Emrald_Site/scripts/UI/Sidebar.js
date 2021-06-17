@@ -1312,16 +1312,8 @@ if (typeof Navigation === 'undefined')
       //for each rename change the names in the addDiagram
       for (var type in renameList) {
         for (var i = 0; i < renameList[type].length; i++) {
-          var updateList = false; //for most types the side list is updated somewhere else
-          switch (type) {
-            case "LogicNode":
-              updateList = true;
-              break;
-            case "ExtSim":
-              updateList = true;
-              break;
-          }
-          simApp.mainApp.sidebar.replaceNames(renameList[type][i].oldName, renameList[type][i].newName, type, addModel, updateList) //name:newName pair
+          //replace the names in the importing model, no need to redo side list here, as they will be added later.
+          simApp.mainApp.sidebar.replaceNames(renameList[type][i].oldName, renameList[type][i].newName, type, addModel, false) //name:newName pair
         }
       }
 
@@ -1368,10 +1360,7 @@ if (typeof Navigation === 'undefined')
                 self.addNewLocalEvent(addWrapper);
               break;
             case "LogicNode":
-              simApp.allDataModel.LogicNodeList.add(addWrapper);
-              var container = document.getElementById("LogicTreesPanel_id");
-              if(item.name == item.rootName)
-                self.addSectionItem(container, "Logic Tree", item.name, item);
+              self.addNewLogicTree(addWrapper, null);
               break;
             case "Variable":
               self.addNewVariable(addWrapper);
@@ -1884,6 +1873,28 @@ if (typeof Navigation === 'undefined')
           if (globalContainer && newVariable.Variable.varScope == "gtGlobal") {
             newVariable.ui_el = this.addSectionItem(globalContainer, "Variables", newVariable.Variable.name, newVariable.Variable);
             sortDOMList(globalContainer);
+          }
+          return true;
+        }
+      }
+      return false;
+    }
+    //---------------------------------------------------
+    Sidebar.prototype.addNewLogicTree = function (newLogicNode, parent) {
+      var mainModel = simApp.allDataModel;
+      if (mainModel.LogicNodeList) {
+        var existing = this.getLogicNodeByName(mainModel, newLogicNode.LogicNode.name);
+        if (!existing) {
+          var idx = mainModel.LogicNodeList.push(newLogicNode);
+          newLogicNode.LogicNode.id = idx;
+          if (parent) {
+            parent.push(newLogicNode.LogicNode.name);
+          }
+
+          var container = document.getElementById("LogicTreesPanel_id");
+          if (container) {
+            newLogicNode.ui_el = this.addSectionItem(container, "Logic Tree", newLogicNode.LogicNode.name, newLogicNode.LogicNode);
+            sortDOMList(container);
           }
           return true;
         }
@@ -2523,9 +2534,7 @@ if (typeof Navigation === 'undefined')
                 if (outDataObj.name.length > 0) {
                   outDataObj.rootName = outDataObj.name;
                   var logicNode = { LogicNode: outDataObj };
-                  simApp.allDataModel.LogicNodeList.add(logicNode);
-                  var container = document.getElementById("LogicTreesPanel_id");
-                  this.addSectionItem(container, "Logic Tree", outDataObj.name, outDataObj);
+                  this.addNewLogicTree(logicNode, null);
                   this.openLogicTree(outDataObj);
                 }
               }
@@ -3573,7 +3582,7 @@ if (typeof Navigation === 'undefined')
         model = simApp.allDataModel;
 
       //find variable references to it the items
-      if (model.VariableList) {
+      if (model.ExtSimList) {
         for (var i = 0; i < model.ExtSimList.length; i++) {
           var cur = model.ExtSimList[i].ExtSim;
           //don't worry about the action type just see if the property exists in the JSON.
