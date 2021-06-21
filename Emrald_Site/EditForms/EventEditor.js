@@ -80,11 +80,11 @@ function toTimespan(ts) {
         return "P0DT0H0M0S";
     }
     var duration = 'P'
-        + ((isNumeric(ts.days) && (ts.days != "")) ? ts.days + 'D' : '')
-        + (((isNumeric(ts.hours) && (ts.hours != "")) || (isNumeric(ts.minutes) && (ts.minutes != "")) || (isNumeric(ts.seconds) && (ts.days != ""))) ? 'T' : '')
-        + ((isNumeric(ts.hours) && (ts.hours != "")) ? ts.hours + 'H' : '')
-        + ((isNumeric(ts.minutes) && (ts.minutes != "")) ? ts.minutes + 'M' : '')
-        + ((isNumeric(ts.seconds) && (ts.seconds != "")) ? ts.seconds + 'S' : '');
+        + ((isNumeric(ts.days) && (ts.days !== "")) ? ts.days + 'D' : '')
+        + (((isNumeric(ts.hours) && (ts.hours !== "")) || (isNumeric(ts.minutes) && (ts.minutes !== "")) || (isNumeric(ts.seconds) && (ts.days !== ""))) ? 'T' : '')
+        + ((isNumeric(ts.hours) && (ts.hours !== "")) ? ts.hours + 'H' : '')
+        + ((isNumeric(ts.minutes) && (ts.minutes !== "")) ? ts.minutes + 'M' : '')
+        + ((isNumeric(ts.seconds) && (ts.seconds !== "")) ? ts.seconds + 'S' : '');
 
     return duration;
 }
@@ -235,7 +235,7 @@ function variableChecked(el) {
 }
 
 function isNumeric(stringOrNumber) {
-    return isNaN(stringOrNumber) ? false : (parseFloat(stringOrNumber) ? true : false)
+  return isNaN(stringOrNumber) ? false : (parseFloat(stringOrNumber) ? true : (parseFloat(stringOrNumber) === 0 ? true : false))
 }
 
 //Holding the data model for the form.
