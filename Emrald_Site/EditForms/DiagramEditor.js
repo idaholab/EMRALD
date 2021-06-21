@@ -63,12 +63,73 @@ function tryChangeDiagramType(oldType, newType) {
     return true;
 }
 
+function mergeIntoCurrentProject() {
+    var scope = angular.element(document.querySelector("#diagramControllerPanel")).scope();
+
+    let dialog = document.createElement('input');
+    dialog.id = "MergeIntoCurrentProjectDialogInput";
+    dialog.value = "";
+    dialog.type = 'file';
+    dialog.style.display = 'none';
+    dialog.accept = "application/json"; //only support in chrome and IE.  FF doesn't work with hint.
+    dialog.filetype = "json";
+
+    let handleFileSelected = function (evt) {
+        if (!evt.target.files || !evt.target.files[0]) return;
+        var afile = evt.target.files[0];
+        var aname = afile.name.substring(0, afile.name.indexOf('.'));
+        if (aname === "") name = afile.name;
+        var ext = /\.[0-9a-z]+$/.exec(afile.name);
+        ext = ext.length > 0 ? ext[0] : "";
+        switch (ext) {
+            case '.json':
+                var reader = new FileReader();
+                reader.onload = function (evt) {
+                    var content = evt.target.result;
+                    scope.data.importedContent = JSON.parse(content);
+                    if (scope.data.importedContent.DiagramList.length > 1) {
+                        alert("More than one diagram in file.  Please choose a file with only one diagram or use the Merge option from the Project menu to import the whole file.");
+                        scope.data.importedContent = null;
+                        scope.data.fileName = null;
+                        scope.$apply();
+                        return;
+                    }
+                    scope.data.fileName = afile.name;
+                    scope.diagramType = scope.diagramTypes.filter(x => x.value === scope.data.importedContent.DiagramList[0].Diagram.diagramType)[0];
+                    scope.name = scope.data.importedContent.DiagramList[0].Diagram.name;
+                    scope.desc = scope.data.importedContent.DiagramList[0].Diagram.desc;
+                    scope.$apply();
+                }.bind(this);
+                reader.readAsText(afile);
+                break;
+        }
+
+    }.bind(this);
+
+    dialog.addEventListener("change", handleFileSelected, false);
+    document.body.appendChild(dialog);
+    dialog.click();
+}
+
+function removeFile() {
+    var scope = angular.element(document.querySelector("#diagramControllerPanel")).scope();
+    scope.name = '';
+    scope.desc = '';
+    scope.data.importedContent = null;
+    scope.data.fileName = null;
+    scope.$apply();
+}
+
 var diagramData = null;
 function OnLoad(dataObj) {
     diagramData = dataObj;
     var scope = angular.element(document.querySelector("#diagramControllerPanel")).scope();
 
     scope.$apply(function () {
+        if (diagramData.id < 0) {
+            scope.createDiagram = true;
+        }
+
         scope.id = diagramData.id;
         //scope.dbID = diagramData.dbID;
         scope.name = diagramData.name;
@@ -124,7 +185,9 @@ function GetDataObject() {
                     delete state.inSingleStateGroup;
                 });
     }
-
+    if (scope.data.importedContent) {
+        diagramData.importedContent = scope.data.importedContent;
+    }
     diagramData.diagramTemplate = scope.diagramTemplate;
     return diagramData;
 }
@@ -165,6 +228,12 @@ diagramModule.controller('diagramController', function ($scope, $timeout) {
     $scope.initialChange = true;
     $scope.diagramType = $scope.diagramTypes[0];
     $scope.timeout = $timeout;
+    $scope.createDiagram = false;
+    $scope.data = {
+        fileName: "",
+        importedContent: null,
+        usingImportedContent: false
+    }
 
 
     $scope.$watch('name', function () {
