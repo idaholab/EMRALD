@@ -32,159 +32,198 @@
 </head>
 <body ng-app="actionModule">
     <div ng-controller="actionController" id="actionControllerPanel">
-        <form novalidate style="font-size:0.7em;">
-            <div style="display:table-row">
-                <span style="display:table-cell">Type:</span>
-                <select style="width: 140px;" id="ScopeOption" ng-model="action" ng-options="act.name for act in actions" name="Type" onchange="handleSelection(); return false;"></select>
-            </div>
-            <div style="display:table-row">
-                <span style="display:table-cell">Name:</span>
-                <input ng-model="name" tabindex="1">
-                <input type="checkbox" name="AsNewItem" id="AsNewItem" value="false" ng-model="saveAsNew" onchange="setAsNewChecked()" />
-                <label for="AsNewItem" id="AsNewItemText"> Save As New</label><br>
-            </div>
-            <div style="display:table-row">
-                <span style="display:table-cell">Desc:</span>
-                <input ng-model="desc" size="40" tabindex="2">
-            </div>
-            <div id="moveTruePanel"
-                 style="display:table-row;position:absolute;visibility:collapse;height:60%;width:96%;overflow-x:hidden;overflow-y:scroll;">
-                <br />
-                <div style="display:table-row;">
-                    <span style="display: table-cell;vertical-align:central;font-size:1.2em;color:green;">Exits parent state when event is Triggered</span>
+        <form novalidate>
+            <div style="display: table; border-collapse: collapse;">
+                <div style="display:table-row">
+                    <span style="display:table-cell;">Type:</span>
+                    <select style="width: 140px; display: table-cell;" id="ScopeOption" ng-model="data.action" ng-options="act.name for act in data.actions" name="Type"></select>
                 </div>
-                <br />
-            </div>
-            <div id="moveFalsePanel"
-                 style="display:table-row;position:absolute;visibility:collapse;height:60%;width:96%;overflow-x:hidden;overflow-y:scroll;">
-                <br />
-                <div style="display:table-row;">
-                    <span style="display: table-cell;vertical-align:middle;font-size:1.2em;color:green;">Stays in a parent state but adds new state as a current state</span>
+                <div style="display:table-row">
+                    <span style="display:table-cell">Name:</span>
+                    <input style="display:table-cell;" ng-model="name" tabindex="1">
+                    <span style="display:table-cell;">
+                        <input type="checkbox" name="AsNewItem" id="AsNewItem" value="false" ng-model="saveAsNew" onchange="setAsNewChecked()" />
+                        <label for="AsNewItem" id="AsNewItemText"> Save As New</label>
+                    </span>
                 </div>
-                <br />
+                <div style="display:table-row">
+                    <span style="display:table-cell">Desc:</span>
+                    <input style="display:table-cell;" ng-model="desc" size="40" tabindex="2">
+                </div>
             </div>
-            <br />
-            <br />
+            <div style="display: table; border-collapse: collapse;">
+                <div id="moveTruePanel" ng-if="data.actionData.moveFromCurrentTrue" style="display:table-row;">
+                    <span style="display: table-cell; vertical-align: middle; font-size: 1.2em; color: green; padding-top: 0.5em;">Exits parent state when event is Triggered</span>
+                </div>
+                <div id="moveFalsePanel" ng-if="data.actionData.moveFromCurrentFalse" style="display:table-row;">
+                    <span style="display: table-cell; vertical-align: middle; font-size: 1.2em; color: green; padding-top: 0.5em;">Stays in a parent state but adds new state as a current state</span>
+                </div>
+            </div>
             <hr />
             <div id="detailTable">
-                <div id="TransitionPanel" style="position: absolute; visibility: hidden;">
-                    <div style="float:left;">
-                        <p>
-                            <b>Instructions:</b> To add a new destination state, drag and drop a State from the sidebar into the To State box and then fill in the probability.
-                            <br />
-                        </p>
+                <!-- Begin Transition Type -->
+                <div id="TransitionPanel" ng-if="data.action.value=='atTransition'">
+                    <div style="display: table;">
+                        <div style="display: table-row;">
+                            <b style="display: table-cell;">Instructions:</b>
+                            <p style="display: table-cell; padding: 0.5em">To add a new destination state, drag and drop a State from the sidebar into the To State box and then fill in the probability.</p>
+                        </div>
                         <div style="display:table-row;">
-                            <input type="checkbox" onchange="mutallyExclusiveHandler(this);" ng-true-value=true ng-false-value=false ng-checked=mutExcl />
-                            <span style="display: table-cell;vertical-align:middle;">Mutually Exclusive (will transition to one and only one of the states in the list)</span>
+                            <input id="mutuallyExclusive" style="display: table-cell; margin: 0 3em 0 3em;" type="checkbox" onchange="mutallyExclusiveHandler(this);" ng-true-value=true ng-false-value=false ng-checked=mutExcl />
+                            <label for="mutuallyExclusive" style="display: table-cell; padding: 0.5em">Mutually Exclusive (will transition to one and only one of the states in the list)</label>
+                        </div>
+                    </div>
+                    <br />
+                    <table ng-table="data.transitions" style="text-align: left;" border="1" cellpadding="2" cellspacing="2">
+                        <tbody>
+                            <tr class="tabHeader">
+                                <th ng-repeat="head in data.transHeader" width="{{head.width}}"><span>{{head.column}}</span></th>
+                            </tr>
+                            <tr ng-repeat="row in data.transitions">
+                                <!--<td style="display:none;"><input type="checkbox" value="{{row.To_State}}" onchange="toStateChecked(this, event); return false;" /></td>-->
+                                <td style="vertical-align: top;" ng-scope>
+                                    {{row.To_State}}
+                                </td>
+                                <td style="vertical-align: top;" ng-scope>
+                                    <!--<input type="text" ng-model="row.Probability" style="border: none; background-color: transparent;" onkeypress="return validateNumber(this, event);" />-->
+                                    <input type="text" ng-model="row.Probability" style="border: none; background-color: transparent;" onfocusout="validateNumber(this);" />
+                                </td>
+                                <td style="vertical-align: top;" ng-scope>
+                                    <select style="width: 120px;" ng-model="row.varProb">
+                                        <option ng-repeat="cvVar in data.cvVariables" [value]="{{cvVar.name}}">{{cvVar.name}}</option>
+                                    </select>
+                                </td>
+                                <td style="vertical-align: top;" ng-scope>
+                                    <img src="../images/delete.png" rowValue="{{row.To_State}}" title="Remove" style="width:25px;height:25px;" onclick="toStateChecked(this, event); deleteTransition(); return false;" />
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <!--  <p>*If there is already a destination state, you must first delete the state (using the delete button in the command column) before adding a new one.</p> />-->
+                <!-- End Transition Type -->
+                <!-- Begin Change Var Value Type -->
+                <div id="ChangeVarPanel" ng-if="data.action.value=='atCngVarVal'">
+                    <div style="display: table;">
+                        <div style="display:table-row">
+                            <div style="display:table-cell">
+                                <span>Variable: </span>
+                                <select id="SelectionCvVariable" name="Variable" ng-model="data.cvVariable" ng-options="opt.name for opt in data.cvVariables" style="width: 130px;"></select>
+                            </div>
+                        </div>
+                        <div style="display:table-row">
+                            <span style="display:table-cell; padding: 1em 0 1em 0">New Value Code (c#) - Must return same type as the specified variable!</span>
+                        </div>
+                    </div>
+                    <div style="display: flex; flex-direction: row; align-items: stretch; height: calc(100vh - 12em); width: 98vw;">
+                        <textarea style="flex: 1" name="NewValueCode" ng-model="data.cvCode" placeholder="Your code goes here"></textarea>
+                        <table id="tblVariables" style="text-align: left;" border="1" cellspacing="0">
+                            <tr>
+                                <th colspan="2">Variables used in code</th>
+                            </tr>
+                            <tr ng-repeat="row in data.varMap">
+                                <td style="border: 1px solid #dddddd; text-align: left; padding: 0px;"><input id="{{'varId_' + row.value.Variable.name}}" type="checkbox" onchange="variableChecked(this);" ng-true-value=true ng-false-value=false ng-checked={{row.check}} value={{row.value}} /></td>
+                                <td style="border: 1px solid #dddddd; text-align: left; padding: 0px;"><label for="{{'varId_' + row.value.Variable.name}}" style="display:block">{{row.value.Variable.name}}</label></td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                <!-- End Change Var Value Type -->
+                <!-- Begin Ext. Sim Message Type -->
+
+                <div id="SimMessagePanel" ng-if="data.action.value=='at3DSimMsg'">
+                    <div style="display: table;">
+                        <div style="display: table-row">
+                            <span style="display:table-cell;">Sim Action:</span>
+                            <select style="display: table-cell; width: 130px;" name="3DMessage" id="simMessageOptions" ng-model="data.simMessage" ng-options="sm.name for sm in data.simMessages"></select>
+                        </div>
+                        <div id="simExtPanel" style="display: table-row">
+                            <span style="display:table-cell;">External Sim:</span>
+                            <select style="display: table-cell; width: 130px;" id="extSimSelction" ng-model="data.extSim" value="{{data.extSim}}" ng-options="es.name for es in data.extSimList"></select>
+                        </div>
+                        <div id="simVariablePanel" style="display: table-row" ng-if="data.simMessage.value == 'atCompModify'">
+                            <span style="display:table-cell;">Var Value:</span>
+                            <select style="display: table-cell; width: 130px;" name="3DMessage" ng-model="data.simVariable" ng-options="sv.name for sv in data.simVariables"></select>
+                        </div>
+                    </div>
+                    <div style="display: table; margin-top:1em;" ng-if="data.simMessage.value == 'atOpenSim'">
+                        <div id="simEndTimePanel" style="display:table-row">
+                            <label style="display:table-cell;vertical-align:middle; white-space:nowrap;">Max Simulation Runtime:</label>
+                            <div style="display:table-cell">
+                                <div style="display: table-cell;">
+                                    <input name="timespandays" placeholder="Days" ng-model="data.simEndTime.days" size="4" />
+                                    <br />
+                                    <span>Days</span>
+                                </div>
+                                <div style="display: table-cell;">
+                                    <input name="timespanhours" placeholder="Hours" ng-model="data.simEndTime.hours" size="4" />
+                                    <br />
+                                    <span>Hours</span>
+                                </div>
+                                <div style="display: table-cell;">
+                                    <input name="timespanminutes" placeholder="Minutes" ng-model="data.simEndTime.minutes" size="4" />
+                                    <br />
+                                    <span>Minutes</span>
+                                </div>
+                                <div style="display: table-cell;">
+                                    <input name="timespanseconds" placeholder="Seconds" ng-model="data.simEndTime.seconds" size="4" />
+                                    <br />
+                                    <span>Seconds</span>
+                                </div>
+                            </div>
                         </div>
                         <br />
-                        <table ng-table="transitions" style="text-align: left;" border="1" cellpadding="2" cellspacing="2">
-                            <tbody>
-                                <tr class="tabHeader">
-                                    <th ng-repeat="head in transHeader" width="{{head.width}}"><span>{{head.column}}</span></th>
-                                </tr>
-                                <tr ng-repeat="row in transitions">
-                                    <!--<td style="display:none;"><input type="checkbox" value="{{row.To_State}}" onchange="toStateChecked(this, event); return false;" /></td>-->
-                                    <td style="vertical-align: top;" ng-scope>
-                                        {{row.To_State}}
-                                    </td>
-                                    <td style="vertical-align: top;" ng-scope>
-                                        <!--<input type="text" ng-model="row.Probability" style="border: none; background-color: transparent;" onkeypress="return validateNumber(this, event);" />-->
-                                        <input type="text" ng-model="row.Probability" style="border: none; background-color: transparent;" onfocusout="validateNumber(this);" />
-                                    </td>
-                                    <td style="vertical-align: top;" ng-scope>
-                                        <select style="width: 120px;"
-                                                ng-model="row.varProb">
-                                            <option ng-repeat="var in cvVariables" [value]="{{var.name}}">{{var.name}}</option>
-                                        </select>
-                                    </td>
-                                    <td style="vertical-align: top;" ng-scope>
-                                        <img src="../images/delete.png" rowValue="{{row.To_State}}" title="Remove" style="width:25px;height:25px;" onclick="toStateChecked(this, event); deleteTransition(); return false;" />
-                                    </td>
-                                </tr>
-                            </tbody>
+                        <div id="simOpenSimVarParamsPanel" style="display:table-row">
+                            <input type="checkbox" name="openSimVarParams" id="openSimVarParams" value="false" ng-model="data.openSimVarParams" onchange="handleOpenSimVarParamsChk()" />
+                            <label for="openSimVarParams" id="openSimVarParamsText"> Use Variables for items below</label><br>
+                        </div>
+                        <!--TODO add selection boxes to load with variables. normally hidden if openSimVarParams is checked unhide and hide simModelRefPanel and simConfigDataPanel  -->
+                        <div id="simModelRefPanel" style="display:table-row">
+                            <span style="display:table-cell;">Model Reference (optional):</span>
+                            <input ng-model="data.simModelRef" tabindex="1" ng-if="!data.openSimVarParams">
+                            <select id="simModelRefVar" name="Variable" ng-if="data.openSimVarParams" ng-model="data.simModelRef" ng-options="opt.name for opt in data.cvVariables" style="width: 130px;"></select>
+                        </div>
+                        <div id="simConfigDataPanel" style="display:table-row">
+                            <span style="display:table-cell;">Config Data (optional):</span>
+                            <input ng-model="data.simConfigData" tabindex="1" ng-if="!data.openSimVarParams">
+                            <select id="simConfigDataVar" name="Variable" ng-if="data.openSimVarParams" ng-model="data.simConfigData" ng-options="opt.name for opt in data.cvVariables" style="width: 130px;"></select>
+                        </div>
+
+
+                    </div>
+                </div>
+                <!-- End Ext. Sim Message Type -->
+                <!-- Begin Run Application Type-->
+
+                <div id="RunAppPanel" ng-if="data.action.value=='atRunExtApp'">
+                    <div style="display: flex; flex-direction: row; align-items: stretch; height: calc(100vh - 8em); width: 98vw;">
+                        <div style="display: flex; flex-direction: column; flex: 1">
+                            <p>Preprocess Code(c#)</p>
+                            <div style="display: flex; flex-direction:row; flex: 1">
+                                <textarea style="flex: 1; min-height: 5em;" name="PreprocCode" ng-model="data.raPreCode"></textarea>
+                            </div>
+                            <div style="display: flex; flex-direction: row">
+                                <span>Executable Location:</span>
+                                <input ng-model="data.raLocation" tabindex="1">
+                            </div>
+                            <p>Postprocess Code(c#)</p>
+                            <div style="display: flex; flex-direction:row; flex: 1">
+                                <textarea style="flex: 1; min-height: 5em;" name="PostprocCode" ng-model="data.raPostCode"></textarea>
+                            </div>
+                        </div>
+
+                        <table id="tblVariables" style="text-align: left;" border="1" cellspacing="0">
+                            <tr>
+                                <th colspan="2">Variables used in code</th>
+                            </tr>
+                            <tr ng-repeat="row in data.varMap">
+                                <td style="border: 1px solid #dddddd; text-align: left; padding: 0px;"><input id="{{'varId_' + row.value.Variable.name}}" type="checkbox" onchange="variableChecked(this);" ng-true-value=true ng-false-value=false ng-checked={{row.check}} value={{row.value}} /></td>
+                                <td style="border: 1px solid #dddddd; text-align: left; padding: 0px;"><label for="{{'varId_' + row.value.Variable.name}}" style="display:block">{{row.value.Variable.name}}</label></td>
+                            </tr>
                         </table>
-                        <!--  <p>*If there is already a destination state, you must first delete the state (using the delete button in the command column) before adding a new one.</p> />-->
                     </div>
                 </div>
-                <div id="ChangeVarPanel" style="position: absolute;  visibility: hidden;">
-                    <div style="display:table-row">
-                        <span style="display:table-cell;">Variable:</span>
-                        <!-- ng-model="cvVariable"  ng-options="opt.name for opt in cvVariables" -->
-                        <select id="SelectionCvVariable" name="Variable" ng-model="cvVariable" ng-options="opt.name for opt in cvVariables" style="width: 130px;"></select>
-                    </div>
-                    <br>
-                    New Value Code (c#) - Must return same type as the specified variable!<br>
-                    <textarea cols="60" rows="8" name="NewValueCode" ng-model="cvCode"></textarea>
-
-                    <table id="tblVariables" style="text-align: left; width: 200px;" border="1" cellspacing="0">
-                        <tr><td2></td2><td2><b>Variables used in code</b></td2></tr>
-                        <tr ng-repeat="row in varMap">
-                            <td style="border: 1px solid #dddddd; text-align: left; padding: 0px;"><input type="checkbox" onchange="variableChecked(this);" ng-true-value=true ng-false-value=false ng-checked={{row.check}} value={{row.value}} /></td>
-                            <td style="border: 1px solid #dddddd; text-align: left; padding: 0px;">{{row.value.Variable.name}}</td>
-                        </tr>
-                    </table>
-
-                </div>
-                <div id="SimMessagePanel" style="position: absolute; visibility: hidden;">
-                    <div style="display: table-row">
-                        <span style="float:left;display:table-cell;white-space:nowrap;">Sim Action:</span>
-                        <select name="3DMessage" id="simMessageOptions" ng-model="simMessage" ng-options="sm.name for sm in simMessages" onchange="handleSimMessageSelection();" style="width: 130px;"></select>
-                    </div>
-                    <div id="simExtPanel" style="display: table-row">
-                        <span style="clear:both;float:left;display:table-cell; white-space:nowrap;">External Sim:</span>
-                        <select id="extSimSelction" ng-model="extSim" value="{{extSim}}" ng-options="es.name for es in extSimList" style="width: 130px;"></select>
-                    </div>
-                    <div id="simVariablePanel" style="display: table-row">
-                        <span style="clear:both;float:left;display:table-cell; white-space:nowrap;">Var Value:</span>
-                        <select name="3DMessage" ng-model="simVariable" ng-options="sv.name for sv in simVariables" style="width: 130px;"></select>
-                    </div>
-                    <div id="simEndTimePanel" style="display:table-row">
-                        <label style="display:table-cell;vertical-align:middle; white-space:nowrap;">Max Simulation Runtime:</label>
-                        <input name="timespandays" ng-model="simEndTime.days" size="4" />
-                        <input name="timespanhours" ng-model="simEndTime.hours" size="4" />
-                        <input name="timespanminutes" ng-model="simEndTime.minutes" size="4" />
-                        <input name="timespanseconds" ng-model="simEndTime.seconds" size="4" />
-                        <br />
-                        <span class="item_caption" style="white-space:nowrap;">(days,hours,minutes,seconds):</span>
-                        <br />
-                    </div>
-                    <div id="simOpenSimVarParamsPanel" style="display:table-row">
-                        <input type="checkbox" name="openSimVarParams" id="openSimVarParams" value="false" ng-model="openSimVarParams" onchange="handleOpenSimVarParamsChk()" />
-                        <label for="openSimVarParams" id="openSimVarParamsText"> Use Variables for items below</label><br>
-                    </div>
-                    <!--TODO add selection boxes to load with variables. normally hidden if openSimVarParams is checked unhide and hide simModelRefPanel and simConfigDataPanel  -->
-                    <div id="simModelRefPanel" style="display:table-row">
-                        <span style="display:table-cell;">Model Reference (optional):</span>
-                        <input ng-model="simModelRef" tabindex="1">
-                    </div>
-                    <div id="simConfigDataPanel" style="display:table-row">
-                        <span style="display:table-cell;">Config Data (optional):</span>
-                        <input ng-model="simConfigData" tabindex="1">
-                    </div>
-
-
-                </div>
-                <div id="RunAppPanel" style="position: absolute;  visibility: hidden;">
-                    Preprocess Code(c#)<br>
-                    <textarea cols="60" rows="8" name="PreprocCode" ng-model="raPreCode"></textarea>
-                    <div style="display:table-row">
-                        <span style="display:table-cell;">Executable Location:</span>
-                        <input ng-model="raLocation" tabindex="1">
-                    </div>
-                    <br>
-                    Postprocess Code(c#)<br>
-                    <textarea cols="60" rows="8" name="PostprocCode" ng-model="raPostCode"></textarea>s
-
-                    <table id="tblVariables" style="text-align: left; width: 200px;" border="1" cellspacing="0">
-                        <tr><td2></td2><td2><b>Variables used in code</b></td2></tr>
-                        <tr ng-repeat="row in varMap">
-                            <td style="border: 1px solid #dddddd; text-align: left; padding: 0px;"><input type="checkbox" onchange="variableChecked(this);" ng-true-value=true ng-false-value=false ng-checked={{row.check}} value={{row.value}} /></td>
-                            <td style="border: 1px solid #dddddd; text-align: left; padding: 0px;">{{row.value.Variable.name}}</td>
-                        </tr>
-                    </table>
-
-                </div>
+                <!-- End Run Application Type-->
             </div>
             <br>
         </form>

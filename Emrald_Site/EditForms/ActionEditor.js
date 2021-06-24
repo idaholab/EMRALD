@@ -27,7 +27,11 @@ function updateName() {
     if (!nameIsDefaultValue()) {
         return;
     }
-    scope.name = scope.namingPatterns.find(x => x.Type === scope.action.name).NamePattern;
+    try {
+        scope.name = scope.namingPatterns.find(x => x.Type === scope.data.action.name).NamePattern;
+    } catch {
+        scope.name = ""
+    }
 }
 
 function addStateToName(stateName) {
@@ -161,39 +165,6 @@ function variableChecked(el) {
         }
     }
 }
-function handleSimMessageSelection() {
-    var msgTypeEL = document.getElementById("simMessageOptions");
-    var simVarEL = document.getElementById("simVariablePanel");
-    var varParamsEL = document.getElementById("simOpenSimVarParamsPanel");
-    var modelRefEL = document.getElementById("simModelRefPanel");
-    var configDataEL = document.getElementById("simConfigDataPanel");
-    var simTimerEL = document.getElementById("simEndTimePanel");
-
-
-    switch (msgTypeEL.selectedIndex) {
-        case 0: //Comp Modify
-            simVarEL.style.visibility = "visible";
-            modelRefEL.style.visibility = "hidden";
-            configDataEL.style.visibility = "hidden";
-            simTimerEL.style.visibility = "hidden";
-            varParamsEL.style.visibility = "hidden";
-            break;
-        case 1: //Open Sim
-            simVarEL.style.visibility = "hidden";
-            modelRefEL.style.visibility = "visible";
-            configDataEL.style.visibility = "visible";
-            simTimerEL.style.visibility = "visible";
-            varParamsEL.style.visibility = "visible";
-            break;
-        default:
-            simVarEL.style.visibility = "hidden";
-            modelRefEL.style.visibility = "hidden";
-            configDataEL.style.visibility = "hidden";
-            simTimerEL.style.visibility = "hidden";
-            varParamsEL.style.visibility = "hidden";
-            break;
-    }
-}
 
 function handleOpenSimVarParamsChk() {
     //todo hide the text boxes and use selection boxes full of the variable options
@@ -209,37 +180,7 @@ function handleExtSimSelection() {
     var extSimOpt = document.getElementById("extSimSelction");
     var indx = extSimOpt.selectedIndex;
     var scope = angular.element(document.querySelector("#actionControllerPanel")).scope();
-    scope.extSim = scope.extSimList[indx].name;
-}
-
-//switch between detail panels.
-function handleSelection() {
-    var actType = document.getElementById("ScopeOption");
-    var transition = document.getElementById("TransitionPanel");
-    var changeVar = document.getElementById("ChangeVarPanel");
-    var simMsg = document.getElementById("SimMessagePanel");
-    var runApp = document.getElementById("RunAppPanel");
-
-    transition.style.visibility = "hidden";
-    changeVar.style.visibility = "hidden";
-    simMsg.style.visibility = "hidden";
-    runApp.style.visibility = "hidden";
-
-    switch (actType.selectedIndex) {
-        case 0: //transition
-            transition.style.visibility = "visible";
-            break;
-        case 1: //change var value
-            changeVar.style.visibility = "visible";
-            break;
-        case 2: //external sim msg
-            simMsg.style.visibility = "visible";
-            handleSimMessageSelection();
-            break;
-        case 3: //run application
-            runApp.style.visibility = "visible";
-            break;
-    }
+    scope.data.extSim = scope.data.extSimList[indx].name;
 }
 
 var actionData = null;
@@ -254,17 +195,15 @@ function OnLoad(dataObj) {
         scope.name = actionData.name;
         scope.desc = actionData.desc;
         if (actionData.moveFromCurrent == true) {
-            var moveFromCurrent = document.getElementById("moveTruePanel");
-            moveFromCurrent.style.visibility = "visible";
+            scope.data.actionData.moveFromCurrentTrue = true;
         }
         if (actionData.moveFromCurrent == false) {
-            var moveFromCurrent = document.getElementById("moveFalsePanel");
-            moveFromCurrent.style.visibility = "visible";
+            scope.data.actionData.moveFromCurrentFalse = true;
         }
-        scope.extSimList = [];
+        scope.data.extSimList = [];
         if (actionData.tempExtSimList) {
             for (var j = 0; j < actionData.tempExtSimList.length; j++) {
-                scope.extSimList.push(actionData.tempExtSimList[j].ExtSim);
+                scope.data.extSimList.push(actionData.tempExtSimList[j].ExtSim);
             }
         }
 
@@ -284,8 +223,8 @@ function OnLoad(dataObj) {
             if (variableList.length > 0) {
                 for (var i = 0; i < variableList.length; i++) {
                     if (variableList[i].Variable.varScope == "gt3DSim")
-                        scope.simVariables.push(variableList[i].Variable);
-                    scope.cvVariables.push(variableList[i].Variable);
+                        scope.data.simVariables.push(variableList[i].Variable);
+                    scope.data.cvVariables.push(variableList[i].Variable);
                 }
                 scope.varsLoaded = true;
             }
@@ -293,7 +232,7 @@ function OnLoad(dataObj) {
         if (actionData.codeVariables)
             scope.varNames = actionData.codeVariables;
         if (scope.varNames) {
-            scope.varMap = actionData.tempVariableList.map(function (value, index) {
+            scope.data.varMap = actionData.tempVariableList.map(function (value, index) {
                 var checkValue = false;
                 if (scope.varNames.indexOf(value.Variable.name) > -1) {
                     checkValue = true;
@@ -304,27 +243,18 @@ function OnLoad(dataObj) {
                 }
             });
         }
-        var transitionEl = document.getElementById("TransitionPanel");
-        var changeVarEl = document.getElementById("ChangeVarPanel");
-        var simMsgEl = document.getElementById("SimMessagePanel");
-        var runAppEl = document.getElementById("RunAppPanel");
         var actTypeEL = document.getElementById("ScopeOption");
-        transitionEl.style.visibility = "hidden";
-        changeVarEl.style.visibility = "hidden";
-        simMsgEl.style.visibility = "hidden";
-        runAppEl.style.visibility = "hidden";
         switch (actionData.actType) {
             case "atTransition":
                 actTypeEL.selectedIndex = 0;
-                transitionEl.style.visibility = "visible";
                 if (actionData.newStates) {
                     actionData.newStates.forEach(function (aState) {
                         //todo if aState.prob = "remaining" then set to -1
                         if (aState.prob >= 0) {
-                            scope.transitions.push({ checked: false, To_State: aState.toState, Probability: aState.prob.toString(), varProb: aState.varProb, failDesc: aState.failDesc });
+                            scope.data.transitions.push({ checked: false, To_State: aState.toState, Probability: aState.prob.toString(), varProb: aState.varProb, failDesc: aState.failDesc });
                         }
                         else {
-                            scope.transitions.push({ checked: false, To_State: aState.toState, Probability: "Remaining", varProb: aState.varProb, failDesc: aState.failDesc });
+                            scope.data.transitions.push({ checked: false, To_State: aState.toState, Probability: "Remaining", varProb: aState.varProb, failDesc: aState.failDesc });
                         }
                     });
                 }
@@ -332,68 +262,63 @@ function OnLoad(dataObj) {
                 break;
             case "atCngVarVal":
                 actTypeEL.selectedIndex = 1;
-                changeVarEl.style.visibility = "visible";
-                scope.cvCode = actionData.scriptCode;
-                for (var i = 0; i < scope.cvVariables.length; i++) {
-                    if (scope.cvVariables[i].name == actionData.variableName) {
-                        scope.cvVariable = scope.cvVariables[i];
+                scope.data.cvCode = actionData.scriptCode;
+                for (var i = 0; i < scope.data.cvVariables.length; i++) {
+                    if (scope.data.cvVariables[i].name == actionData.variableName) {
+                        scope.data.cvVariable = scope.data.cvVariables[i];
                         break;
                     }
                 }
                 break;
             case "at3DSimMsg":
                 actTypeEL.selectedIndex = 2;
-                simMsgEl.style.visibility = "visible";
-                for (var i = 0; i < scope.simVariables.length; i++) {
-                    if (scope.simVariables[i].name == actionData.sim3DVariable) {
-                        scope.simVariable = scope.simVariables[i];
+                for (var i = 0; i < scope.data.simVariables.length; i++) {
+                    if (scope.data.simVariables[i].name == actionData.sim3DVariable) {
+                        scope.data.simVariable = scope.data.simVariables[i];
                         break;
                     }
                 }
-                for (var i = 0; i < scope.extSimList.length; i++) {
-                    if (scope.extSimList[i].name == actionData.extSim) {
+                for (var i = 0; i < scope.data.extSimList.length; i++) {
+                    if (scope.data.extSimList[i].name == actionData.extSim) {
                         var extSimEL = document.getElementById("extSimSelction");
                         extSimEL.selectedIndex = i;
-                        scope.extSim = scope.extSimList[i];
+                        scope.data.extSim = scope.data.extSimList[i];
                         break;
                     }
                 }
-                for (var i = 0; i < scope.simMessages.length; i++) {
-                    if (scope.simMessages[i].value == actionData.sim3DMessage) {
-                        scope.simMessage = scope.simMessages[i];
+                for (var i = 0; i < scope.data.simMessages.length; i++) {
+                    if (scope.data.simMessages[i].value == actionData.sim3DMessage) {
+                        scope.data.simMessage = scope.data.simMessages[i];
                         var msgType = document.getElementById("simMessageOptions");
                         msgType.selectedIndex = i;
                         break;
                     }
                 }
-                scope.simEndTime = fromTimespan(actionData.simEndTime);
-                scope.simModelRef = actionData.sim3DModelRef;
-                scope.simConfigData = actionData.sim3DConfigData;
+                scope.data.simEndTime = fromTimespan(actionData.simEndTime);
+                scope.data.simModelRef = actionData.sim3DModelRef;
+                scope.data.simConfigData = actionData.sim3DConfigData;
                 if ((typeof actionData.openSimVarParams !== 'undefined') && actionData.openSimVarParams) {
-                    scope.openSimVarParams = actionData.openSimVarParams;
+                    scope.data.openSimVarParams = actionData.openSimVarParams;
                     handleOpenSimVarParams();
                 }
-                handleSimMessageSelection();
                 break;
             case "atRunExtApp":
                 actTypeEL.selectedIndex = 3;
-                runAppEl.style.visibility = "visible";
-                scope.raPreCode = actionData.makeInputFileCode;
-                scope.raLocation = actionData.exePath;
-                scope.raPostCode = actionData.processOutputFileCode;
+                scope.data.raPreCode = actionData.makeInputFileCode;
+                scope.data.raLocation = actionData.exePath;
+                scope.data.raPostCode = actionData.processOutputFileCode;
                 break;
         }
 
-        if (scope.actions && scope.actions.length > 0) {
-            var aInst = scope.actions.find(function (act) {
+        if (scope.data.actions && scope.data.actions.length > 0) {
+            var aInst = scope.data.actions.find(function (act) {
                 return (act.value == actionData.actType);
             });
             if (aInst) {
-                scope.action = aInst;
+                scope.data.action = aInst;
             }
         }
 
-        handleSelection();
         // Do not allow change type if not new.
         if (actionData.id > 0) {
             actTypeEL.disabled = true;
@@ -422,23 +347,23 @@ function OnLoad(dataObj) {
         var scope = angular.element(document.querySelector('#actionControllerPanel')).scope();
         scope.$apply(function () {
             var found = false;
-            for (var i = 0; i < scope.transitions.length; i++) {
-                if (scope.transitions[i].To_State == state.name) {
+            for (var i = 0; i < scope.data.transitions.length; i++) {
+                if (scope.data.transitions[i].To_State == state.name) {
                     found = true;
                     break;
                 }
             }
             if (!found) {
-                if (scope.transitions.length == 0) {
-                    scope.transitions.push({ checked: false, To_State: state.name, Probability: "1.0", failDesc: "" });
+                if (scope.data.transitions.length == 0) {
+                    scope.data.transitions.push({ checked: false, To_State: state.name, Probability: "1.0", failDesc: "" });
                     addStateToName(state.name);
                 }
                 //TODO ASK ABOUT THIS LINE
-                //else if (scope.transitions[scope.transitions.length - 1].toUpperCase() == "REMAINING") {
-                //scope.transitions.push({ checked: false, To_State: state.name, Probability: "0.0", failDesc: "" });
+                //else if (scope.data.transitions[scope.data.transitions.length - 1].toUpperCase() == "REMAINING") {
+                //scope.data.transitions.push({ checked: false, To_State: state.name, Probability: "0.0", failDesc: "" });
                 //}
                 else {
-                    scope.transitions.push({ checked: false, To_State: state.name, Probability: "Remaining", failDesc: "" });
+                    scope.data.transitions.push({ checked: false, To_State: state.name, Probability: "Remaining", failDesc: "" });
                 }
             }
         });
@@ -453,13 +378,13 @@ function GetDataObject() {
     }
     dataObj.name = scope.name;
     dataObj.desc = scope.desc;
-    dataObj.actType = scope.action.value;
+    dataObj.actType = scope.data.action.value;
 
     switch (dataObj.actType) {
         case "atTransition":
-            if (scope.transitions && scope.transitions.length > 0) {
+            if (scope.data.transitions && scope.data.transitions.length > 0) {
                 dataObj.newStates = [];
-                scope.transitions.forEach(function (tr) {
+                scope.data.transitions.forEach(function (tr) {
                     if (tr.Probability.toUpperCase() === "REMAINING") {
                         dataObj.newStates.push({ toState: tr.To_State, prob: -1, varProb: tr.varProb, failDesc: tr.failDesc });
                     }
@@ -475,34 +400,34 @@ function GetDataObject() {
             dataObj.mutExcl = scope.mutExcl;
             break;
         case "atCngVarVal":
-            dataObj.scriptCode = scope.cvCode;
-            if (scope.cvVariable) {
-                dataObj.variableName = scope.cvVariable.name;
+            dataObj.scriptCode = scope.data.cvCode;
+            if (scope.data.cvVariable) {
+                dataObj.variableName = scope.data.cvVariable.name;
             }
             dataObj.codeVariables = scope.varNames;
             break;
         case "at3DSimMsg":
-            dataObj.sim3DMessage = scope.simMessage.value;
-            if (scope.extSim && scope.extSim.name.length > 0) {
-                dataObj.extSim = scope.extSim.name;
+            dataObj.sim3DMessage = scope.data.simMessage.value;
+            if (scope.data.extSim && scope.data.extSim.name.length > 0) {
+                dataObj.extSim = scope.data.extSim.name;
             }
             if (dataObj.sim3DMessage == "atCompModify") {
-                if (scope.simVariable && scope.simVariable.name) {
-                    dataObj.sim3DVariable = scope.simVariable.name;
+                if (scope.data.simVariable && scope.data.simVariable.name) {
+                    dataObj.sim3DVariable = scope.data.simVariable.name;
                 }
             }
             else if (dataObj.sim3DMessage == "atOpenSim") {
-                dataObj.openSimVarParams = scope.openSimVarParams;
-                if (scope.openSimVarParams) {
+                dataObj.openSimVarParams = scope.data.openSimVarParams;
+                if (scope.data.openSimVarParams) {
                     //todo once variable selection boxes are done get the text from there instead of the text boxes.
-                    dataObj.sim3DModelRef = scope.simModelRef;
-                    dataObj.sim3DConfigData = scope.simConfigData;
-                    dataObj.simEndTime = toTimespan(scope.simEndTime);
+                    dataObj.sim3DModelRef = scope.data.simModelRef;
+                    dataObj.sim3DConfigData = scope.data.simConfigData;
+                    dataObj.simEndTime = toTimespan(scope.data.simEndTime);
                 }
                 else {
-                    dataObj.sim3DModelRef = scope.simModelRef;
-                    dataObj.sim3DConfigData = scope.simConfigData;
-                    dataObj.simEndTime = toTimespan(scope.simEndTime);
+                    dataObj.sim3DModelRef = scope.data.simModelRef;
+                    dataObj.sim3DConfigData = scope.data.simConfigData;
+                    dataObj.simEndTime = toTimespan(scope.data.simEndTime);
                 }
             }
             else {
@@ -510,9 +435,9 @@ function GetDataObject() {
             }
             break;
         case "atRunExtApp":
-            dataObj.makeInputFileCode = scope.raPreCode;
-            dataObj.exePath = scope.raLocation;
-            dataObj.processOutputFileCode = scope.raPostCode;
+            dataObj.makeInputFileCode = scope.data.raPreCode;
+            dataObj.exePath = scope.data.raLocation;
+            dataObj.processOutputFileCode = scope.data.raPostCode;
             dataObj.codeVariables = scope.varNames;
             break;
     }
@@ -540,13 +465,13 @@ function deleteTransition() {
     var scope = angular.element(document.querySelector('#actionControllerPanel')).scope();
     scope.$apply(function () {
         var checkedList = [];
-        for (var i = 0; i < scope.transitions.length; i++) {
-            if (scope.transitions[i].checked)
+        for (var i = 0; i < scope.data.transitions.length; i++) {
+            if (scope.data.transitions[i].checked)
                 checkedList.push(i);
         }
 
         for (var i = 0; i < checkedList.length; i++) {
-            scope.transitions.splice(checkedList[i], 1);
+            scope.data.transitions.splice(checkedList[i], 1);
         }
         if (checkedList.length > 0) somethingChanged();
 
@@ -557,12 +482,12 @@ function deleteTransition() {
 function toStateChecked(el, evt) {
     var scope = angular.element(document.querySelector('#actionControllerPanel')).scope();
     var cnt = 0;
-    for (var i = 0; i < scope.transitions.length; i++) {
+    for (var i = 0; i < scope.data.transitions.length; i++) {
         if (el) {
-            if (scope.transitions[i].To_State == el.getAttribute('rowValue'))
-                scope.transitions[i].checked = true;
+            if (scope.data.transitions[i].To_State == el.getAttribute('rowValue'))
+                scope.data.transitions[i].checked = true;
         }
-        if (scope.transitions[i].checked)
+        if (scope.data.transitions[i].checked)
             ++cnt;
     }
     var delEl = document.getElementById("delBtn-" + scope.name);
@@ -574,66 +499,80 @@ var actionModule = angular.module('actionModule', []);
 actionModule.controller('actionController', ['$scope', function ($scope) {
     $scope.name = "";
     $scope.desc = "";
-    $scope.actions = [
-        { name: "Transition", value: "atTransition" },
-        { name: "Change Var Value", value: "atCngVarVal" },
-        { name: "Ext. Sim Message", value: "at3DSimMsg" },
-        { name: "Run Application", value: "atRunExtApp" }],
-        $scope.action = $scope.actions[0];
+    $scope.data = {
+        actions: [
+            { name: "Transition", value: "atTransition" },
+            { name: "Change Var Value", value: "atCngVarVal" },
+            { name: "Ext. Sim Message", value: "at3DSimMsg" },
+            { name: "Run Application", value: "atRunExtApp" }
+        ],
+        action: { name: "Transition", value: "atTransition" },
+        actionData: {
+            moveFromCurrentTrue: false,
+            moveFromCurrentFalse: false
+        },
+        transitions: [],
+        transHeader: [
+            { column: "To State", width: 250 },
+            { column: "Prob 0.0-1.0", width: 30 },
+            { column: "variable Prob", width: 30 },
+            { column: "Command", width: 40 }
+        ],
+        cvVariables: [],
+        cvVariable: null,
+        cvCode: "",
+        varMap: new Map(),
 
-    $scope.transHeader = [{ column: "To State", width: 250 }, { column: "Prob 0.0-1.0", width: 30 }, { column: "variable Prob", width: 30 }, { column: "Command", width: 40 },];
-    $scope.transitions = [];
-    $scope.cvVariables = [];
-    $scope.cvVariable = null;
-    $scope.cvCode = "";
-    $scope.simMessages = [
-        { name: "Comp Modify", value: "atCompModify" },
-        { name: "Open Sim", value: "atOpenSim" },
-        { name: "Cancel Sim", value: "atCancelSim" },
-        //{ name: "Pause Sim", value: "atPauseSim" },
-        //{ name: "Continue", value: "atContinue" },
-        //{ name: "Reset", value: "atReset" },
-        //{ name: "Restart At Time", value: "atRestartAtTime" },
-        { name: "Ping", value: "atPing" },
-        //{ name: "Status", value: "atStatus" },
-    ];
+        simMessages: [
+            { name: "Comp Modify", value: "atCompModify" },
+            { name: "Open Sim", value: "atOpenSim" },
+            { name: "Cancel Sim", value: "atCancelSim" },
+            //{ name: "Pause Sim", value: "atPauseSim" },
+            //{ name: "Continue", value: "atContinue" },
+            //{ name: "Reset", value: "atReset" },
+            //{ name: "Restart At Time", value: "atRestartAtTime" },
+            { name: "Ping", value: "atPing" },
+            //{ name: "Status", value: "atStatus" },
+        ],
+        simMessage: { name: "Comp Modify", value: "atCompModify" },
+        extSimList: [],
+        extSim: "",
+        simVariables: [],
+        simVariable: null,
+        simEndTime: {
+            days: '',
+            hours: '',
+            minutes: '',
+            seconds: ''
+        },
+        openSimVarParams: false,
+        simModelRef: "",
+        simConfigData: "",
+        raPreCode: "",
+        raLocation: "",
+        raPostCode: ""
+    };
 
-    $scope.simMessage = $scope.simMessages[0];
-    $scope.simVariables = [];
-    $scope.simVariable = null;
-    $scope.simEndTime = "";
-    $scope.row = [];
-    //$scope.row.Probability = 0.5;
-    $scope.extSimList = [];
-    $scope.extSim = "";
-    $scope.simModelRef = "";
-    $scope.simConfigData = "";
-
-    $scope.raPreCode = "";
-    $scope.raLocation = "";
-    $scope.raPostCode = "";
-    $scope.varMap = new Map();
     $scope.varNames = [];
     $scope.mutExcl = true;
     $scope.saveAsNew = false;
-    $scope.openSimVarParams = false;
 
     $scope.namingPatterns = [];
 
 
     $scope.$watch('name', function (newV, oldV) { if (newV !== oldV) somethingChanged(); });
     $scope.$watch('desc', function (newV, oldV) { if (newV !== oldV) somethingChanged(); });
-    $scope.$watch('action', function (newV, oldV) { if (newV !== oldV) { somethingChanged(); updateName(); }});
-    $scope.$watch('transitions', function (newV, oldV) { if (newV !== oldV) somethingChanged(); });
-    $scope.$watch('cvCode', function (newV, oldV) { if (newV !== oldV) somethingChanged(); });
-    $scope.$watch('cvVariable', function (newV, oldV) { if (newV !== oldV) somethingChanged(); });
+    $scope.$watch('data.action', function (newV, oldV) { if (newV !== oldV) { somethingChanged(); updateName(); } });
+    $scope.$watch('data.transitions', function (newV, oldV) { if (newV !== oldV) somethingChanged(); });
+    $scope.$watch('data.cvCode', function (newV, oldV) { if (newV !== oldV) somethingChanged(); });
+    $scope.$watch('data.cvVariable', function (newV, oldV) { if (newV !== oldV) somethingChanged(); });
 
-    $scope.$watch('simVariable', function (newV, oldV) { if (newV !== oldV) somethingChanged(); });
-    $scope.$watch('simMessage', function (newV, oldV) { if (newV !== oldV) somethingChanged(); });
+    $scope.$watch('data.simVariable', function (newV, oldV) { if (newV !== oldV) somethingChanged(); });
+    $scope.$watch('data.simMessage', function (newV, oldV) { if (newV !== oldV) somethingChanged(); });
 
-    $scope.$watch('raPreCode', function (newV, oldV) { if (newV !== oldV) somethingChanged(); });
-    $scope.$watch('raLocation', function (newV, oldV) { if (newV !== oldV) somethingChanged(); });
-    $scope.$watch('raPostCode', function (newV, oldV) { if (newV !== oldV) somethingChanged(); });
+    $scope.$watch('data.raPreCode', function (newV, oldV) { if (newV !== oldV) somethingChanged(); });
+    $scope.$watch('data.raLocation', function (newV, oldV) { if (newV !== oldV) somethingChanged(); });
+    $scope.$watch('data.raPostCode', function (newV, oldV) { if (newV !== oldV) somethingChanged(); });
     $scope.$watch("varNames", function (newVal, oldVal) { if (newVal !== oldVal) somethingChanged(); });
     //$scope.$watch('row.Probability', function (newV, oldV) { if (newV !== oldV) somethingChanged(); });
 
