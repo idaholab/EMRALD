@@ -29,7 +29,7 @@
   - **Open:** Browse to open an existing project.
   - **Save:** Operates like a standard "Save As" to save the current project.
   - **Export Templates:** Allows you to save any project template items for use in other projects. When clicked from the dropdown menu, the following window appears in the Modeling Area.<br><div style="width:400px">![Export Template Window](/images/Modeling/webUIOverview/ExportTemplate.PNG)</div>
-  - **Load Demo:** Exist the current project and loads the demo project as with any changing of projects, unsaved changes in the current project would be lost.
+  - **Load Demo:** Exits the current project and loads the demo project as with any changing of projects, unsaved changes in the current project would be lost.
 
 **Download** <br>
   <div style="width:500px">![Download Menu](/images/Modeling/webUIOverview/TopMenuDownload.PNG)</div> <br>
