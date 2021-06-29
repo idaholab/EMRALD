@@ -81,7 +81,7 @@ function toTimespan(ts) {
     }
     var duration = 'P'
         + ((isNumeric(ts.days) && (ts.days !== "")) ? ts.days + 'D' : '')
-        + (((isNumeric(ts.hours) && (ts.hours !== "")) || (isNumeric(ts.minutes) && (ts.minutes !== "")) || (isNumeric(ts.seconds) && (ts.days !== ""))) ? 'T' : '')
+        + (((isNumeric(ts.hours) && (ts.hours !== "")) || (isNumeric(ts.minutes) && (ts.minutes !== "")) || (isNumeric(ts.seconds) && (ts.seconds !== ""))) ? 'T' : '')
         + ((isNumeric(ts.hours) && (ts.hours !== "")) ? ts.hours + 'H' : '')
         + ((isNumeric(ts.minutes) && (ts.minutes !== "")) ? ts.minutes + 'M' : '')
         + ((isNumeric(ts.seconds) && (ts.seconds !== "")) ? ts.seconds + 'S' : '');
