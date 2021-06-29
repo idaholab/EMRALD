@@ -114,7 +114,7 @@
                         </div>
                     </div>
                     <div style="display: flex; flex-direction: row; align-items: stretch; height: calc(100vh - 12em); width: 98vw;">
-                        <textarea style="flex: 1" name="NewValueCode" ng-model="data.cvCode" placeholder="Your code goes here"></textarea>
+                        <textarea style="flex: 1; white-space: nowrap; overflow: auto;" name="NewValueCode" ng-model="data.cvCode" placeholder="Your code goes here" wrap="soft"></textarea>
                         <table id="tblVariables" style="text-align: left;" border="1" cellspacing="0">
                             <tr>
                                 <th colspan="2">Variables used in code</th>
@@ -198,7 +198,7 @@
                         <div style="display: flex; flex-direction: column; flex: 1">
                             <p style="margin-bottom:0">Preprocess Code(c#)</p>
                             <div style="display: flex; flex-direction:row; flex: 1">
-                                <textarea style="flex: 1; min-height: 5em;" name="PreprocCode" ng-model="data.raPreCode" placeholder="Your Preprocess code goes here"></textarea>
+                                <textarea style="flex: 1; min-height: 5em; white-space: nowrap; overflow: auto;" name="PreprocCode" ng-model="data.raPreCode" placeholder="Your Preprocess code goes here"></textarea>
                             </div>
                             <div style="display: flex; flex-direction: row">
                                 <span>Executable Location:</span>
@@ -206,7 +206,7 @@
                             </div>
                             <p style="margin-bottom:0">Postprocess Code(c#)</p>
                             <div style="display: flex; flex-direction:row; flex: 1">
-                                <textarea style="flex: 1; min-height: 5em;" name="PostprocCode" ng-model="data.raPostCode" placeholder="Your Postprocess code goes here"></textarea>
+                                <textarea style="flex: 1; min-height: 5em; white-space: nowrap; overflow: auto;" name="PostprocCode" ng-model="data.raPostCode" placeholder="Your Postprocess code goes here"></textarea>
                             </div>
                         </div>
 
