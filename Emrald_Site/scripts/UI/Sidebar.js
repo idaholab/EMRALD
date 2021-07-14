@@ -168,41 +168,45 @@ if (typeof Navigation === 'undefined')
         'minimize, maximize, close', //top buttons
         function (btn, outDataObj) {
           if (btn === 'OK') {
-            if (this.existsDiagramName(outDataObj.name)) {
-              MessageBox.alert("New Diagram", "A diagram with the name '" + outDataObj.name + "' exists, please try a different name.");
-              return false;
-            }
-            if (outDataObj.name.length <= 0) {
-              MessageBox.alert("New Diagram", "Please fill in a name");
-              return false;
+            if (outDataObj.importedContent) {
+              Sidebar.prototype.beginMergeModel(outDataObj.importedContent);
+              delete outDataObj.importedContent;
+              return true;
             }
             else {
-              outDataObj.states = [];
-              if (outDataObj.diagramType == 'dtComponent' || outDataObj.diagramType == 'dtSystem')
-                outDataObj.singleStates = [];
-              if (!outDataObj.diagramLabel)
-                outDataObj.diagramLabel = outDataObj.diagramType.substring(2, outDataObj.diagramType.length);
-              var container = document.getElementById("DiagramsPanel_id");
-              delete outDataObj.diagramLabels;
-              delete outDataObj.diagramTemplates;
-              var diagram = { Diagram: outDataObj };
-              //If you choose template, populate diagram with appropriate items
-              if (outDataObj.diagramTemplate && outDataObj.diagramTemplate.length > 0) {
-                this.addNewTemplateDiagram(diagram, outDataObj.diagramTemplate);
-                this.openDiagram(diagram.Diagram);
-                this.onLoadLocal(diagram.Diagram);
+              if (this.existsDiagramName(outDataObj.name)) {
+                MessageBox.alert("New Diagram", "A diagram with the name '" + outDataObj.name + "' exists, please try a different name.");
+                return false;
               }
-              else {
-                this.addNewDiagram(diagram, outDataObj.diagramTemplate);
-                this.openDiagram(diagram.Diagram);
+              if (outDataObj.name.length <= 0) {
+                MessageBox.alert("New Diagram", "Please fill in a name");
+                return false;
               }
-
+            }
+            outDataObj.states = [];
+            if (outDataObj.diagramType == 'dtComponent' || outDataObj.diagramType == 'dtSystem')
+              outDataObj.singleStates = [];
+            if (!outDataObj.diagramLabel)
+              outDataObj.diagramLabel = outDataObj.diagramType.substring(2, outDataObj.diagramType.length);
+            var container = document.getElementById("DiagramsPanel_id");
+            delete outDataObj.diagramLabels;
+            delete outDataObj.diagramTemplates;
+            var diagram = { Diagram: outDataObj };
+            //If you choose template, populate diagram with appropriate items
+            if (outDataObj.diagramTemplate && outDataObj.diagramTemplate.length > 0) {
+              this.addNewTemplateDiagram(diagram, outDataObj.diagramTemplate);
+              this.openDiagram(diagram.Diagram);
+              this.onLoadLocal(diagram.Diagram);
+            }
+            else {
+              this.addNewDiagram(diagram, outDataObj.diagramTemplate);
+              this.openDiagram(diagram.Diagram);
             }
           }
           return true;
         }.bind(this),
-        dataObj,
-        true, //ismodal
+      dataObj,
+      true, //ismodal
         null,
         null,
         450, //width
@@ -316,6 +320,12 @@ if (typeof Navigation === 'undefined')
                   }
                   break;
                 case "Refresh":
+                  break;
+                case "Merge":
+                  getServerFile("resources/TestMergeModel.json", function onSuccess(jsonStr) {
+                    var dataObj = JSON.parse(jsonStr);
+                    this.beginMergeModel(dataObj);
+                  }.bind(this));                  
                   break;
               }
             }.bind(this)
@@ -623,8 +633,42 @@ if (typeof Navigation === 'undefined')
         return jsonValue;
       }
     }
+
     //---------------------------------------------------
-    var getActionByName = function (aList, aName) {
+    Sidebar.prototype.getByName = function (itemType, model, aName) {
+      switch (itemType) {
+        case "Action":
+          return this.getActionByName(model, aName);
+          break;
+        case "Event":
+          return this.getEventByName(model, aName);
+          break;
+        case "Variable":
+          return this.getVariableByName(model, aName);
+          break;
+        case "ExtSim":
+          return this.getExtSimByName(model, aName);
+          break;
+        case "LogicNode":
+          return this.getLogicNodeByName(model, aName);
+          break;
+        case "Diagram":
+          return this.getDiagramByName(model, aName);
+          break;
+        case "State":
+          return this.getStateByName(model, aName);
+          break;
+      }
+      return null;
+    }
+    //---------------------------------------------------
+    Sidebar.prototype.getActionByName = function (model, aName) {
+      var aList
+      if (model == null)
+        aList = simApp.allDataModel.ActionList;
+      else
+        aList = model.ActionList; 
+
       var actObj = null;
 
       for (var i = 0; i < aList.length; i++) {
@@ -637,7 +681,13 @@ if (typeof Navigation === 'undefined')
       return actObj;
     }
     //---------------------------------------------------
-    var getEventByName = function (aList, aName) {
+    Sidebar.prototype.getEventByName = function (model, aName) {
+      var aList
+      if (model == null)
+        aList = simApp.allDataModel.EventList;
+      else
+        aList = model.EventList;
+
       var evtObj = null;
 
       for (var i = 0; i < aList.length; i++) {
@@ -650,7 +700,13 @@ if (typeof Navigation === 'undefined')
       return evtObj;
     }
     //---------------------------------------------------
-    var getVariableByName = function (aList, aName) {
+    Sidebar.prototype.getVariableByName = function (model, aName) {
+      var aList
+      if (model == null)
+        aList = simApp.allDataModel.VariableList;
+      else
+        aList = model.VariableList;
+
       var varObj = null;
 
       for (var i = 0; i < aList.length; i++) {
@@ -662,7 +718,13 @@ if (typeof Navigation === 'undefined')
       return varObj;
     }
     //---------------------------------------------------
-    var getExtSimByName = function (aList, aName) {
+    Sidebar.prototype.getExtSimByName = function (model, aName) {
+      var aList
+      if (model == null)
+        aList = simApp.allDataModel.ExtSimList;
+      else
+        aList = model.ExtSimList;
+
       var simObj = null;
 
       for (var i = 0; i < aList.length; i++) {
@@ -673,7 +735,24 @@ if (typeof Navigation === 'undefined')
       }
       return simObj;
     }
+    //---------------------------------------------------
+    Sidebar.prototype.getLogicNodeByName = function (model, aName) {
+      var aList
+      if (model == null)
+        aList = simApp.allDataModel.LogicNodeList;
+      else
+        aList = model.LogicNodeList;
 
+      var simObj = null;
+
+      for (var i = 0; i < aList.length; i++) {
+        if (aList[i].LogicNode.name && aList[i].LogicNode.name.toUpperCase() == aName.toUpperCase()) {
+          simObj = aList[i];
+          break;
+        }
+      }
+      return simObj;
+    }
     //---------------------------------------------------
     Sidebar.prototype.getDiagramByName = function (model, aName) {
       var dia = null;
@@ -687,7 +766,6 @@ if (typeof Navigation === 'undefined')
       }
       return dia;
     }
-
     //---------------------------------------------------
     Sidebar.prototype.getDiagramByStateName = function (sName) {
       var dia = null;
@@ -828,24 +906,24 @@ if (typeof Navigation === 'undefined')
           //look for action name within the ImmediateAction list.
           if (state.immediateActions && state.immediateActions.length > 0) {
             state.immediateActions.forEach(function (actionName) {
-              var actionObj = getActionByName(simApp.allDataModel.ActionList, actionName);
+              var actionObj = this.getActionByName(simApp.allDataModel, actionName);
               if (actionObj)
                 actionList.push(actionObj);
-            });
+            }.bind(this));
           }
           //look for action name within the eventAction list.
           if (state.eventActions && state.eventActions.length > 0) {
             state.eventActions.forEach(function (eaObj) {
               if (eaObj.actions && eaObj.actions.length > 0) {
                 eaObj.actions.forEach(function (actionName) {
-                  var actionObj = getActionByName(simApp.allDataModel.ActionList, actionName);
+                  var actionObj = this.getActionByName(simApp.allDataModel, actionName);
                   if (actionObj)
                     actionList.push(actionObj);
-                });
+                }.bind(this));
               }
-            });
+            }.bind(this));
           }
-        });
+        }.bind(this));
       }
       return actionList;
     }
@@ -857,27 +935,27 @@ if (typeof Navigation === 'undefined')
         states.forEach(function (state) {
           if (state.immediateActions && state.immediateActions.length > 0) {
             state.immediateActions.forEach(function (actionName) {
-              var actionObj = getActionByName(simApp.allDataModel.ActionList, actionName);
+              var actionObj = this.getActionByName(simApp.allDataModel, actionName);
               if (actionObj && (actionNames.indexOf(actionName) < 0)) {
                 actionList.push(actionObj);
                 actionNames.push(actionName);
               }
-            });
+            }.bind(this));
           }
           if (state.eventActions && state.eventActions.length > 0) {
             state.eventActions.forEach(function (eaObj) {
               if (eaObj.actions && eaObj.actions.length > 0) {
                 eaObj.actions.forEach(function (actionName) {
-                  var actionObj = getActionByName(simApp.allDataModel.ActionList, actionName);
+                  var actionObj = this.getActionByName(simApp.allDataModel, actionName);
                   if (actionObj && (actionNames.indexOf(actionName) < 0)) {
                     actionList.push(actionObj);
                     actionNames.push(actionName);
                   }
-                });
+                }.bind(this));
               }
-            });
+            }.bind(this));
           }
-        });
+        }.bind(this));
       }
       return actionList;
     }
@@ -889,14 +967,14 @@ if (typeof Navigation === 'undefined')
         states.forEach(function (state) {
           if (state.events && state.events.length > 0) {
             state.events.forEach(function (eventName) {
-              var eventObj = getEventByName(simApp.allDataModel.EventList, eventName);
+              var eventObj = this.getEventByName(simApp.allDataModel, eventName);
               if (eventObj) {
                 eventList.push(eventObj);
                 eventNames.push(eventName);
               }
-            });
+            }.bind(this));
           }
-        });
+        }.bind(this));
       }
       return eventList;
     }
@@ -908,14 +986,14 @@ if (typeof Navigation === 'undefined')
         states.forEach(function (state) {
           if (state.events && state.events.length > 0) {
             state.events.forEach(function (eventName) {
-              var eventObj = getEventByName(simApp.allDataModel.EventList, eventName);
+              var eventObj = this.getEventByName(simApp.allDataModel, eventName);
               if (eventObj && (eventNames.indexOf(eventName) < 0)) {
                 eventList.push(eventObj);
                 eventNames.push(eventName);
               }
-            });
+            }.bind(this));
           }
-        });
+        }.bind(this));
       }
       return eventList;
     }
@@ -1054,23 +1132,276 @@ if (typeof Navigation === 'undefined')
       return diagram;
     }
 
+    //loop through each item in the model for the given item types and call the callback function.
+    Sidebar.prototype.forEachItemDo = function (model, itemTypes, doFunc)
+    {
+      if (model.DiagramList && itemTypes.includes("Diagram")) {
+        for (var i = 0; i < model.DiagramList.length; i++) {
+          doFunc(this, model, model.DiagramList[i].Diagram, "Diagram");
+        }
+      }
+      if (model.StateList && itemTypes.includes("State")) {
+        for (var i = 0; i < model.StateList.length; i++) {
+          doFunc(this, model, model.StateList[i].State, "State");
+        }
+      }
+      if (model.ActionList && itemTypes.includes("Action")) {
+        for (var i = 0; i < model.ActionList.length; i++) {
+          doFunc(this, model, model.ActionList[i].Action, "Action");
+        }
+      }
+      if (model.EventList && itemTypes.includes("Event")) {
+        for (var i = 0; i < model.EventList.length; i++) {
+          doFunc(this, model, model.EventList[i].Event, "Event");
+        }
+      }
+      if (model.LogicNodeList && itemTypes.includes("LogicNode")) {
+        for (var i = 0; i < model.LogicNodeList.length; i++) {
+          doFunc(this, model, model.LogicNodeList[i].LogicNode, "LogicNode");
+        }
+      }
+      if (model.VariableList && itemTypes.includes("Variable")) {
+        for (var i = 0; i < model.VariableList.length; i++) {
+          doFunc(this, model, model.VariableList[i].Variable, "Variable");
+        }
+      }
+      if (model.VariableList && itemTypes.includes("ExtSim")) {
+        if (model.ExtSimList) {
+          for (var i = 0; i < model.ExtSimList.length; i++) {
+            doFunc(this, model, model.ExtSimList[i].ExtSim, "ExtSim");
+          }
+        }
+      }
+    }
+
+
+    // Builds a modal asking the user how to resolve merge conflicts (overwrite, ignore, or rename)
+    Sidebar.prototype.resolveConflicts = function (addModel, conflictList) {
+      let conflictNumber = 0;
+
+      let elem = document.createElement('div');
+      elem.style.cssText = "background: #fb8b3b; width: 550px; position: sticky; align-items: center; margin: auto; padding: 5em; z-index: 1000";
+      elem.innerHTML = 'There is a naming conflict with the following objects. Please choose an option to resolve: <br>';
+
+      let conflictTable = document.createElement('table');
+      conflictTable.innerHTML = "<tr><th>Type</th><th>Conflicting Name</th><th>Overwrite</th><th>Ignore</th><th>Rename</th></tr>";
+
+      conflictList.forEach(conflictItem => {
+        conflictNumber = conflictNumber + 1;
+        let conflictName = "conflict" + conflictNumber;
+        conflictItem.RadioName = conflictName;
+        let conflictElemRow = document.createElement('tr');
+
+        let conflictElemRowType = document.createElement('td');
+        conflictElemRowType.innerText = conflictItem.ItemType;
+        conflictElemRowType.style.fontStyle = "italic";
+        conflictElemRow.appendChild(conflictElemRowType);
+
+        let conflictElemRowName = document.createElement('td');
+        conflictElemRowName.innerText = conflictItem.Name;
+        conflictElemRow.appendChild(conflictElemRowName);
+
+        let conflictElemRowOverwrite = document.createElement('td');
+        conflictElemRowOverwrite.innerHTML = '<input type="radio" name="' + conflictName + '" value="Overwrite">';
+        conflictElemRow.appendChild(conflictElemRowOverwrite);
+
+        let conflictElemRowIgnore = document.createElement('td');
+        conflictElemRowIgnore.innerHTML = '<input type="radio" name="' + conflictName + '" value="Ignore" checked>';
+        conflictElemRow.appendChild(conflictElemRowIgnore);
+
+        let conflictElemRowRename = document.createElement('td');
+        conflictElemRowRename.innerHTML = '<input type="radio" name="' + conflictName + '" value="Rename">';
+        conflictElemRow.appendChild(conflictElemRowRename);
+
+        let conflictElemRowRenameTextBox = document.createElement('span');
+        conflictElemRowRenameTextBox.style.display = 'none';
+        conflictElemRowRenameTextBox.innerHTML = '<input type="text" name="' + conflictName + 'New" value="' + conflictItem.Name + '2">';
+        conflictElemRowRename.appendChild(conflictElemRowRenameTextBox);
+
+        conflictElemRowOverwrite.addEventListener('click', () => { conflictElemRowRenameTextBox.style.display = 'none'; conflictElemRowOverwrite.childNodes[0].checked = true; });
+        conflictElemRowIgnore.addEventListener('click', () => { conflictElemRowRenameTextBox.style.display = 'none'; conflictElemRowIgnore.childNodes[0].checked = true; });
+        conflictElemRowRename.addEventListener('click', () => { conflictElemRowRenameTextBox.style.display = 'inline'; conflictElemRowRename.childNodes[0].checked = true; });
+
+        conflictTable.appendChild(conflictElemRow);
+      });
+
+      let submitButton = document.createElement('input');
+      submitButton.style = "width: 100%;"
+      submitButton.type = "button";
+      submitButton.value = "Submit"
+
+      submitButton.addEventListener('click', () => {
+        var model = simApp.allDataModel;
+        var overwriteList = this.initializeConflictList();
+        var ignoreList = this.initializeConflictList();
+        var renameList = this.initializeConflictList();
+
+        for (let k = 1; k <= conflictNumber; k++) {
+          let conflictName = "conflict" + k;
+          let resolution = document.querySelector('input[name="' + conflictName + '"]:checked').value;
+          let item = conflictList.filter(x => x.RadioName === conflictName)[0];
+          if (resolution === "Rename") {
+            let newName = document.querySelector('input[name = "' + conflictName + 'New"]').value;
+            if (!this.getByName(item.ItemType, model, newName) && !this.getByName(item.ItemType, addModel, newName)) {
+              renameList[item.ItemType].push({ "oldName": item.Name, "newName": newName });
+            }
+            else {
+              alert('An object with the name "' + newName + '" already exists.  Please choose a different name.');
+              return;
+            }
+          }
+          else if (resolution === "Overwrite") {
+            overwriteList[item.ItemType].push(item.Name);
+          }
+          else {
+            ignoreList[item.ItemType].push(item.Name);
+          }
+        }
+        elem.remove();
+        this.finishMergeModel(addModel, overwriteList, ignoreList, renameList);
+      });
+
+      elem.appendChild(conflictTable);
+      elem.appendChild(submitButton);
+      document.body.appendChild(elem);
+
+      return;
+    }
+
+    Sidebar.prototype.initializeConflictList = function () {
+      let list = {};
+      list["Diagram"] = [];
+      list["State"] = [];
+      list["Action"] = [];
+      list["Event"] = [];
+      list["LogicNode"] = [];
+      list["Variable"] = [];
+      list["ExtSim"] = [];
+      return list;
+    }
+
+    // Prep the model for merging (discover any conflicts)
+    //this function assumes that all items in the "addModel" are to be merged into the existing model.
+    Sidebar.prototype.beginMergeModel = function (addModel) {
+      var model = simApp.allDataModel;
+      //see if the items already exist
+      let conflictList = [];
+      var overwriteList = this.initializeConflictList();
+      var ignoreList = this.initializeConflictList();
+      var renameList = this.initializeConflictList();
+
+      //Go through the merge model and find any already existing items and ask user what to do
+      simApp.mainApp.sidebar.forEachItemDo(addModel, ["Diagram", "State", "Event", "Action", "LogicNode", "Variable", "ExtSim"], function (self, curModel, item, itemType) {
+        if (self.getByName(itemType, model, item.name)) {
+          conflictList.push({ "ItemType": itemType, "Model": model, "Name": item.name });
+        }
+      });
+
+      if (conflictList.length > 0) {
+        // Ask User to resolve conflicts
+        this.resolveConflicts(addModel, conflictList);
+      }
+      else {
+        // No conflicts to resolve, so just continue with the merge
+        this.finishMergeModel(addModel, overwriteList, ignoreList, renameList);
+      }
+    }
+
+    // Actually Do The Merging
+    Sidebar.prototype.finishMergeModel = function (addModel, overwriteList, ignoreList, renameList) {
+      //for each rename change the names in the addDiagram
+      for (var type in renameList) {
+        for (var i = 0; i < renameList[type].length; i++) {
+          //replace the names in the importing model, no need to redo side list here, as they will be added later.
+          simApp.mainApp.sidebar.replaceNames(renameList[type][i].oldName, renameList[type][i].newName, type, addModel, false) //name:newName pair
+        }
+      }
+
+      //for each Overwrite replace the existing in the model
+      for (var type in overwriteList) {
+        for (var i = 0; i < overwriteList[type].length; i++) {
+          var target = this.getByName(type, simApp.allDataModel, overwriteList[type][i]);
+          var source = this.getByName(type, addModel, overwriteList[type][i]);
+          if ((target != null) && (source != null)) {
+            //This does not work, it breakes the link to the ui element. Object.assign(target[type], source[type]);
+            var assignString = "Object.assign(target." + type + ", source." + type + " )";
+            eval(assignString);
+          }
+        }
+      }
+
+      //add all the rest of the items to the correct sections
+      simApp.mainApp.sidebar.forEachItemDo(addModel, ["Diagram", "State", "Event", "Action", "LogicNode", "Variable", "ExtSim"], function (self, curModel, item, itemType) {
+        if (ignoreList[itemType].includes(item.name) ||
+          overwriteList[itemType].includes(item.name)) {
+          return;
+        }
+        else { //item is unique or has been renamed
+          //add to the existing model
+          var addWrapper = {};
+          addWrapper[itemType] = item;
+          switch (itemType) {
+            case "Diagram":
+              self.addNewDiagram(addWrapper);
+              break;
+            case "State":
+              self.addNewState(addWrapper);
+              break;
+            case "Action":
+              if (item.mainItem)
+                self.addNewAction(addWrapper);
+              else
+                self.addNewLocalAction(addWrapper);
+              break;
+            case "Event":
+              if (item.mainItem)
+                self.addNewEvent(addWrapper);
+              else
+                self.addNewLocalEvent(addWrapper);
+              break;
+            case "LogicNode":
+              if (addWrapper.LogicNode.name == addWrapper.LogicNode.rootName)
+                self.addNewLogicTree(addWrapper, null);
+              else
+                self.LogicNodeList.push(addWrapper);
+              break;
+            case "Variable":
+              self.addNewVariable(addWrapper);
+              break;
+            case "ExtSim":
+              self.addNewExtSim(addWrapper);
+          };
+        }
+      });
+
+
+      this.notifyDataChanged(true);
+
+      //this.alterSideBarListsItem(dataObj.name, null, new Set(["All", "Global", "Local"]), "Event");
+    }
+
     //begin-----------------Rename functions for different items-------------------------------
     //Replace a state name through out the entire model and update the effected state view's textContent.
-    Sidebar.prototype.replaceNames = function (oldName, newName, type)
+    Sidebar.prototype.replaceNames = function (oldName, newName, type, model, updateSidebar = true)
     {
+      if (model == null)
+        model = simApp.allDataModel;
       //try and replace for all object referencing calls
-      this.statesReferencing(simApp.allDataModel, oldName, type, false, false, false, newName);
-      this.variableReferencing(simApp.allDataModel, oldName, type, false, newName);
-      this.eventsReferencing(simApp.allDataModel, oldName, type, false, newName);
-      this.actionsReferencing(simApp.allDataModel, oldName, type, false, newName);
-      this.diagramsReferencing(simApp.allDataModel, oldName, type, false, newName);
-      this.logicNodesReferencing(simApp.allDataModel, oldName, type, false, newName);
+      this.statesReferencing(model, oldName, type, false, false, false, newName);
+      this.variableReferencing(model, oldName, type, false, newName);
+      this.eventsReferencing(model, oldName, type, false, newName);
+      this.actionsReferencing(model, oldName, type, false, newName);
+      this.diagramsReferencing(model, oldName, type, false, newName);
+      this.logicNodesReferencing(model, oldName, type, false, newName);
+      this.extSimsReferencing(model, oldName, type, false, newName);
 
       //update the names in the left side bar view
-      this.alterSideBarListsItem(oldName, newName, new Set(["All", "Global", "Local"]), type);
+      if (updateSidebar) {
+        this.alterSideBarListsItem(oldName, newName, new Set(["All", "Global", "Local"]), type);
+      }
     }
     Sidebar.prototype.replaceEventName = function (oldName, newName) {
-      this.replaceNames(oldName, newName, "Event");
+        this.replaceNames(oldName, newName, "Event");
     }
     Sidebar.prototype.replaceActionName = function (oldName, newName) {
       this.replaceNames(oldName, newName, "Action");
@@ -1092,14 +1423,9 @@ if (typeof Navigation === 'undefined')
       this.replaceNames(oldName, newName, "Variable");
     }
     Sidebar.prototype.replaceExtSimName = function (oldName, newName) {
-      this.replaceNames(oldName, newName, "ExtSim");
+      this.replaceNames(oldName, newName, "ExtSim");   
       //update the html for the item, the name has already changed
-      for (var i = 0; i < mainModel.ExtSimList.length; i++) {
-        var cur = mainModel.ExtSimList[i];
-        if (cur.Diagram.name == newName) {
-          if (cur.ui_el) cur.ui_el.innerText = newName;
-        }
-      }      
+      this.extSimsReferencing(simApp.allDataModel, newName, "ExtSim", false, newName);
     }
     //end-------------------Rename functions for different items-------------------------------
 
@@ -1242,7 +1568,7 @@ if (typeof Navigation === 'undefined')
                       event.Event.name = "" + start + diagramInsert + end; //insert diagram name into the *****
                     }
                     event.Event.id = this.getDefaultEventID();
-                    if (!getEventByName(mainModel, event.Event.name)) {
+                    if (!this.getEventByName(mainModel, event.Event.name)) {
 
                       mainModel.EventList.push(event);
                     }
@@ -1301,7 +1627,7 @@ if (typeof Navigation === 'undefined')
                     }
 
                     action.Action.id = this.getDefaultActionID();
-                    if (!getActionByName(mainModel, action.Action.name)) {
+                    if (!this.getActionByName(mainModel, action.Action.name)) {
                       mainModel.ActionList.push(action);
                     }
 
@@ -1404,7 +1730,7 @@ if (typeof Navigation === 'undefined')
     Sidebar.prototype.addNewAction = function (newAction, parent, isImmediate) {
       var mainModel = simApp.allDataModel;
       if (mainModel.ActionList) {
-        var act = getActionByName(mainModel.ActionList, newAction.Action.name);
+        var act = this.getActionByName(mainModel, newAction.Action.name);
         if (!act) {
           var idx = mainModel.ActionList.push(newAction);
           newAction.Action.id = idx;
@@ -1438,7 +1764,7 @@ if (typeof Navigation === 'undefined')
     Sidebar.prototype.addNewLocalAction = function (newAction, parent, isImmediate) {
       var mainModel = simApp.allDataModel;
       if (mainModel.ActionList) {
-        var act = getActionByName(mainModel.ActionList, newAction.Action.name);
+        var act = this.getActionByName(mainModel, newAction.Action.name);
         //if the action does not exist
         if (!act) {
           var idx = mainModel.ActionList.push(newAction);
@@ -1469,7 +1795,7 @@ if (typeof Navigation === 'undefined')
     Sidebar.prototype.addNewEvent = function (newEvent, parent) {
       var mainModel = simApp.allDataModel;
       if (mainModel.EventList) {
-        var evt = getEventByName(mainModel.EventList, newEvent.Event.name);
+        var evt = this.getEventByName(mainModel, newEvent.Event.name);
         if (!evt) {
           var idx = mainModel.EventList.push(newEvent);
           newEvent.Event.id = idx;
@@ -1496,7 +1822,7 @@ if (typeof Navigation === 'undefined')
     Sidebar.prototype.addNewLocalEvent = function (newEvent, parent, existingAsNew) {
       var mainModel = simApp.allDataModel;
       if (mainModel.EventList) {
-        var evt = getEventByName(mainModel.EventList, newEvent.Event.name);
+        var evt = this.getEventByName(mainModel, newEvent.Event.name);
         if (!evt) {
           var idx = mainModel.EventList.push(newEvent);
           newEvent.Event.id = idx;
@@ -1533,7 +1859,7 @@ if (typeof Navigation === 'undefined')
     Sidebar.prototype.addNewVariable = function (newVariable, parent) {
       var mainModel = simApp.allDataModel;
       if (mainModel.VariableList) {
-        var varr = getVariableByName(mainModel.VariableList, newVariable.Variable.name);
+        var varr = this.getVariableByName(mainModel, newVariable.Variable.name);
         if (!varr) {
           var idx = mainModel.VariableList.push(newVariable);
           newVariable.Variable.id = idx;
@@ -1557,12 +1883,34 @@ if (typeof Navigation === 'undefined')
       return false;
     }
     //---------------------------------------------------
+    Sidebar.prototype.addNewLogicTree = function (newLogicNode, parent) {
+      var mainModel = simApp.allDataModel;
+      if (mainModel.LogicNodeList) {
+        var existing = this.getLogicNodeByName(mainModel, newLogicNode.LogicNode.name);
+        if (!existing) {
+          var idx = mainModel.LogicNodeList.push(newLogicNode);
+          newLogicNode.LogicNode.id = idx;
+          if (parent) {
+            parent.push(newLogicNode.LogicNode.name);
+          }
+
+          var container = document.getElementById("LogicTreesPanel_id");
+          if (container) {
+            newLogicNode.ui_el = this.addSectionItem(container, "Logic Tree", newLogicNode.LogicNode.name, newLogicNode.LogicNode);
+            sortDOMList(container);
+          }
+          return true;
+        }
+      }
+      return false;
+    }
+    //---------------------------------------------------
     Sidebar.prototype.addNewExtSim = function (newExtSim, parent) {
       var mainModel = simApp.allDataModel;
 
       if (!mainModel.ExtSimList) mainModel.ExtSimList = [];
 
-      var sim = getExtSimByName(mainModel.ExtSimList, newExtSim.ExtSim.name);
+      var sim = this.getExtSimByName(mainModel, newExtSim.ExtSim.name);
       if (!sim) {
         //We only care about a new ExtSim, as any existing will be updated by the editor.
         var idx = mainModel.ExtSimList.push(newExtSim);
@@ -2189,9 +2537,7 @@ if (typeof Navigation === 'undefined')
                 if (outDataObj.name.length > 0) {
                   outDataObj.rootName = outDataObj.name;
                   var logicNode = { LogicNode: outDataObj };
-                  simApp.allDataModel.LogicNodeList.add(logicNode);
-                  var container = document.getElementById("LogicTreesPanel_id");
-                  this.addSectionItem(container, "Logic Tree", outDataObj.name, outDataObj);
+                  this.addNewLogicTree(logicNode, null);
                   this.openLogicTree(outDataObj);
                 }
               }
@@ -2253,7 +2599,7 @@ if (typeof Navigation === 'undefined')
         if (btn in SetOf(['OK', 'Save As New'])) {
           var asNew = btn === 'Save As New';
           simApp.modelChanged = true;
-          if (el && !asNew) { // el is not null during editor existing action.
+          if (el && !asNew) { // el is not null when editing an existing action.
             var original = el.innerText;
             el.innerText = dataObj.name;
             //change references to this obj elsewhere too
@@ -2366,6 +2712,20 @@ if (typeof Navigation === 'undefined')
     //For Delete set newName = null 
     Sidebar.prototype.alterSideBarListsItem = function (itemName, newName, tabs, type) { 
       var container = null;
+      if (type == "LogicNode") {
+        container = document.getElementById("LogicTreesPanel_id");
+        var index = this.indexOfSideBarNode(container.childNodes, itemName);
+        if (index != null) {
+          var id = container.childNodes[index].id;
+          var element = document.getElementById(id);
+          if (newName == null)
+            element.parentNode.removeChild(element);
+          else
+            element.innerHTML = newName;
+        }
+        return;
+      }
+
       if (tabs.has("All")) {
         switch (type) {
           case "State" :
@@ -2677,6 +3037,8 @@ if (typeof Navigation === 'undefined')
       //}
     }
 
+    //------------------------------------------
+    //Replace the name in text such as user defined code
     Sidebar.prototype.replaceNamesInText = function (text, name, newName) {
       var letters = /^[0-9a-zA-Z-_]+$/;
       var j = -1;
@@ -2897,7 +3259,7 @@ if (typeof Navigation === 'undefined')
               if (cur.name == name) {
                 if (replaceName != null) {
                   cur.name = replaceName;
-                  if (model.StateList[i].ui_el) {
+                  if (model.ActionList[i].ui_el) {
                     model.ActionList[i].ui_el.innerText = replaceName;
                     model.ActionList[i].ui_el.innerHTML = replaceName;
                   }
@@ -3186,7 +3548,14 @@ if (typeof Navigation === 'undefined')
               //Not applicable
               break;
             case "Variable":
-              //Not applicable
+              //only reference is itself, so replace name if given
+              if ((cur.name == name) && (replaceName != null)) {
+                cur.name = replaceName;
+                if (model.VariableList[i].ui_el) {
+                  model.VariableList[i].ui_el.innerText = replaceName;
+                  model.VariableList[i].ui_el.innerHTML = replaceName;
+                }
+              }
               break;
             case "State":
               if (cur.accrualStatesData) {
@@ -3210,6 +3579,54 @@ if (typeof Navigation === 'undefined')
 
       return refs;
     }
+    Sidebar.prototype.extSimsReferencing = function (model, name, type, del = false, replaceName = null) {
+      var refs = [];
+      if (model === null) //use the entire model not just what was given
+        model = simApp.allDataModel;
+
+      //find variable references to it the items
+      if (model.ExtSimList) {
+        for (var i = 0; i < model.ExtSimList.length; i++) {
+          var cur = model.ExtSimList[i].ExtSim;
+          //don't worry about the action type just see if the property exists in the JSON.
+          switch (type) {
+            case "Diagram":
+              //not applicable
+              break;
+            case "LogicNode":
+              //not applicable
+              break;
+            case "Action":
+              //not applicable
+              break;
+            case "Event":
+              //Not applicable
+              break;
+            case "Variable":
+              //Not applicable
+              break;
+            case "ExtSim":
+              //only reference is itself, so replace name if given
+              if ((cur.name == name) && (replaceName != null)) {
+                cur.name = replaceName;
+                if (model.ExtSimList[i].ui_el) {
+                  model.ExtSimList[i].ui_el.innerText = replaceName;
+                  model.ExtSimList[i].ui_el.innerHTML = replaceName;
+                }
+              }
+              break;
+            case "State":
+              //Not Applicable 
+              //update the html for the item, the name has already changed
+              break;
+            default:
+          }
+        }
+      }
+
+      return refs;
+    }
+    
     //--------------End Reference Functions-------------------------
 
     //------------------------------------------
