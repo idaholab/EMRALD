@@ -171,7 +171,8 @@ namespace SimulationDAL
 
       try
       {
-        resetOnRuns = Convert.ToBoolean(dynObj.resetOnRuns);
+        if(dynObj.resetOnRuns != null)
+          resetOnRuns = Convert.ToBoolean(dynObj.resetOnRuns);
       }
       catch
       {
@@ -355,7 +356,6 @@ namespace SimulationDAL
   {
     [JsonConverter(typeof(StringEnumConverter))]
     public enum EnCumultiveType { ctTime, ctMultiplier, ctTable };//, ctCustScript};
-    public EnTimeRate varRate = EnTimeRate.trHours; //rate of time for the variable 
     public class AccrualVarData
     {
 
@@ -375,7 +375,12 @@ namespace SimulationDAL
     protected Dictionary<int, AccrualVarData> _CumulativeParams = new Dictionary<int, AccrualVarData>();
 
     public AccrualVariable()
-      : base() { this.varScope = EnVarScope.gtAccrual; this.dType = typeof(double); }
+      : base() 
+    { 
+      this.varScope = EnVarScope.gtAccrual; 
+      this.dType = typeof(double);
+      this.resetOnRuns = true;
+    }
 
     public override string GetDerivedJSON()
     {
@@ -383,7 +388,7 @@ namespace SimulationDAL
 
       //add derived items
 
-      retStr = retStr + "," + Environment.NewLine + "\"AccrualStatesData \": [" + Environment.NewLine;
+      retStr = retStr + "," + Environment.NewLine + "\"accrualStatesData \": [" + Environment.NewLine;
       foreach (var state in _StateList)
       {
         //TODO
@@ -421,17 +426,11 @@ namespace SimulationDAL
 
       bool retVal = base.DeserializeDerived((object)dynObj, false, lists, useGivenIDs);
 
-      if (dynObj.AccrualStatesData == null)
+      if (dynObj.accrualStatesData == null)
       {
-        throw new Exception("Missing AccrualStatesData for accrualVariable variable");
+        throw new Exception("Missing accrualStatesData for accrualVariable variable");
       }
-
-      if (dynObj.varRate == null)
-        throw new Exception("Missing simRate for accrualVariable variable");
-
-      this.varRate = (EnTimeRate)dynObj.varRate;
-
-      //dynObj = dynObj.AccrualStatesData;
+      
       //must load everything in LoadObjLinks because the states must be loaded first so we have the IDs.     
 
       processed = true;
@@ -447,15 +446,19 @@ namespace SimulationDAL
         {
           if (dynObj.Variable == null)
             return false;
-
-          dynObj = ((dynamic)obj).Variable.AccrualStatesData;
+          if (((dynamic)obj).Variable != null)
+            dynObj = ((dynamic)obj).Variable;
+          else
+            return false;
         }
+
+        dynamic accrData = dynObj.accrualStatesData;
         int i = 0;
-        foreach (dynamic toStateItem in dynObj.AccrualStatesData)
+        foreach (dynamic toStateItem in dynObj.accrualStatesData)
         {
           string error = VerifyDataObj(toStateItem);
           if (error != "")
-            throw new Exception("\"AccrualStatesData\"[" + i.ToString() + "], " + error);
+            throw new Exception("\"accrualStatesData\"[" + i.ToString() + "], " + error);
           State curState = (State)lists.allStates.FindByName((string)toStateItem.stateName);
           _StateList.Add(curState.id, curState);
           string s = JsonConvert.SerializeObject(toStateItem);
@@ -476,7 +479,7 @@ namespace SimulationDAL
       }
       catch (Exception e)
       {
-        throw new Exception("Missing AccrualStatesData for accrualVariable named - " + this.name + " error - " + e.Message);
+        throw new Exception("Missing accrualStatesData for accrualVariable named - " + this.name + " error - " + e.Message);
       }
 
       return true;
@@ -541,7 +544,8 @@ namespace SimulationDAL
       switch(aData.type)
       {
         case EnCumultiveType.ctTime:
-          _value = (double)_value + Globals.ConvertToNewTimeSpan(EnTimeRate.trHours, tInState.TotalHours, this.varRate);
+          throw new Exception("not implemented time type placeholder");
+          //_value = (double)_value + Globals.ConvertToNewTimeSpan(EnTimeRate.trHours, tInState.TotalHours, this.varRate);
           break;
 
         case EnCumultiveType.ctMultiplier:
@@ -550,25 +554,29 @@ namespace SimulationDAL
           break;
 
         case EnCumultiveType.ctTable:
-          double compTime = Globals.ConvertToNewTimeSpan(EnTimeRate.trHours, tInState.TotalHours, this.varRate);
-          
-          double prevTime = 0;
+          //double compTime = Globals.ConvertToNewTimeSpan(EnTimeRate.trHours, tInState.TotalHours, EnTimeRate.);
+
+          //double prevTime = 0;
           //tblMult = Globals.ConvertToNewTimeSpan(aData.multRate, aData.accrualTable[0][1], aData.simRate);
           //add all the full table sections
           int i;
+          double totalTblTime = 0;
           for (i = 1; i < aData.accrualTable.Count; i++)
-          {            
-            double tblTimeConverted = Globals.ConvertToNewTimeSpan(this.varRate, (aData.accrualTable[i][0] - aData.accrualTable[i - 1][0]), aData.multRate);
-            _value = (double)_value + tblTimeConverted * aData.accrualTable[i-1][1];
-            if (compTime <= aData.accrualTable[i][0])
+          {
+
+            double tblTimeConverted = Globals.ConvertToNewTimeSpan(EnTimeRate.trHours, (aData.accrualTable[i][0] - aData.accrualTable[i - 1][0]), aData.multRate);
+            totalTblTime += tblTimeConverted;
+            if (tInState.TotalHours > totalTblTime) //full time used
             {
+              _value = (double)_value + tblTimeConverted * aData.accrualTable[i - 1][1];
+            }
+            else //partial time used
+            {
+              double remainTime = tblTimeConverted - (totalTblTime - tInState.TotalHours);
+              totalTblTime += tblTimeConverted;
               break;
             }
-          }
-
-          double remainTime = compTime - aData.accrualTable[i - 1][0];
-          _value = (double)_value + aData.accrualTable[i][1] * Globals.ConvertToNewTimeSpan(this.varRate, (remainTime), aData.multRate);
-
+          }          
           break;
 
         default:
