@@ -521,12 +521,12 @@ if (typeof Navigation === 'undefined')
         label.className = "modelLabel";
         label.textContent = "Modeling Items";
 
-        var spacer2 = document.createElement('hr');
-        spacer.className = "sidebarSpace";
+          var spacer2 = document.createElement('hr');
+          spacer.className = "sidebarSpace";
 
-        buttonLocal.onclick = function () { sidebar.showDynamicSidebar("local", container); }
-        buttonAll.onclick = function () { sidebar.showDynamicSidebar("all", container); }
-        buttonGlobal.onclick = function () { sidebar.showDynamicSidebar("global", container); }
+        buttonLocal.onclick = function () { sidebar.showDynamicSidebar("local"); }
+        buttonAll.onclick = function () { sidebar.showDynamicSidebar("all"); }
+        buttonGlobal.onclick = function () { sidebar.showDynamicSidebar("global"); }
 
         container.appendChild(div);
         this.ApplyJqueryUi(div.id);
@@ -547,7 +547,7 @@ if (typeof Navigation === 'undefined')
     }
 
     //---------------------------------------------------  
-    Sidebar.prototype.showDynamicSidebar = function (type, container) {
+    Sidebar.prototype.showDynamicSidebar = function (type) {
       var localElement = document.getElementById("Sidebar_Dynamic_Local");
       var globalElement = document.getElementById("Sidebar_Dynamic_Global");
       var allElement = document.getElementById("Sidebar_Dynamic_All");
@@ -639,25 +639,18 @@ if (typeof Navigation === 'undefined')
       switch (itemType) {
         case "Action":
           return this.getActionByName(model, aName);
-          break;
         case "Event":
           return this.getEventByName(model, aName);
-          break;
         case "Variable":
           return this.getVariableByName(model, aName);
-          break;
         case "ExtSim":
           return this.getExtSimByName(model, aName);
-          break;
         case "LogicNode":
           return this.getLogicNodeByName(model, aName);
-          break;
         case "Diagram":
           return this.getDiagramByName(model, aName);
-          break;
         case "State":
           return this.getStateByName(model, aName);
-          break;
       }
       return null;
     }
@@ -1226,7 +1219,7 @@ if (typeof Navigation === 'undefined')
       });
 
       let submitButton = document.createElement('input');
-      submitButton.style = "width: 100%;"
+      submitButton.style.width = '100%';
       submitButton.type = "button";
       submitButton.value = "Submit"
 
@@ -1532,7 +1525,7 @@ if (typeof Navigation === 'undefined')
           diagram.Diagram.states = template.states;
           var setUpDiagram = function () {	//go through saved templates
             //TODO - Bug currently gets all template items not just one one selected how do determine what is just from the one selected.
-            var templateStateList = JSON.parse(JSON.stringify(templateOb.StateList));
+            var templateStateList = JSON.parse(JSON.stringify(templateObj.StateList));
             var templateEventList = JSON.parse(JSON.stringify(templateObj.EventList));
             var templateActionList = JSON.parse(JSON.stringify(templateObj.ActionList));
             var eventList = [];
@@ -2924,7 +2917,7 @@ if (typeof Navigation === 'undefined')
 
       var global = dataObj.mainItem;
 
-      var fullDelete = (fullDelete || ((refCnt == 0) && !global));
+      fullDelete = (fullDelete || ((refCnt == 0) && !global));
       if (fullDelete) {
         //remove from the main action list
         if (mainModel.ActionList) {
@@ -2952,7 +2945,7 @@ if (typeof Navigation === 'undefined')
       var refCnt = this.statesReferencing(mainModel, dataObj.name, "Event", fullDelete, state).length;      
 
       var global = dataObj.mainItem;
-      var fullDelete = (fullDelete || ((refCnt == 0) && !global));
+      fullDelete = (fullDelete || ((refCnt == 0) && !global));
       if (fullDelete) {
         var mainModel = simApp.allDataModel;
         //remove event from main event list
@@ -3020,7 +3013,7 @@ if (typeof Navigation === 'undefined')
           this.notifyDataChanged(true);
         }
       }
-      this.alterSideBarListsItem(objName, null, new Set(["All", "Global", "Local"]), "Variable");
+      this.alterSideBarListsItem(dataObj.name, null, new Set(["All", "Global", "Local"]), "Variable");
       //var allContainer = document.getElementById("VariablesPanel_id");
       //var index = this.indexOfSideBarNode(allContainer.childNodes, dataObj.name);
       //if (index != null) {
@@ -3236,7 +3229,7 @@ if (typeof Navigation === 'undefined')
                   cur.sim3DVariable = "";
                 } else {
                   if (replaceName != null)
-                    cur.sim3Dvariable = replaceName;
+                    cur.sim3DVariable = replaceName;
                   refs.push(cur);
                 }
               }
@@ -3690,8 +3683,7 @@ if (typeof Navigation === 'undefined')
       //the new parent node.
 
       var ls = ol.querySelectorAll('label');
-      //Note: "Spread Operator" expansion is an ECMAScript 6 feature.
-      var l = [...ls].filter(el => el.innerText == item.Diagram.diagramLabel)[0]; //search for parent node.
+      var l = Array.from(ls).filter(el => el.innerText == item.Diagram.diagramLabel)[0]; //search for parent node.
       if (l && l.parentElement) {
         //sol is the diagram section element
         sol = l.parentElement.querySelector('ul');
@@ -3743,6 +3735,7 @@ if (typeof Navigation === 'undefined')
       ///////////////////////////
 
       //using jquery-ui-contextmenu to do right-click menu.
+      // TODO: jquery contextmenu is deprecated
       $(sli).contextmenu({
         delegate: sli,
         preventContextMenuForPopup: true,
@@ -3777,7 +3770,7 @@ if (typeof Navigation === 'undefined')
             case "Template":
               if (ui.target.context.dataObject) {
                 var copyDataObj = ui.target.context.dataObject;
-                this.editTemplateProperties(copyDataObj, null);
+                this.editTemplateProperties(copyDataObj);
               }
               break;
 
@@ -3797,7 +3790,7 @@ if (typeof Navigation === 'undefined')
     Sidebar.prototype.addStatesToDiagram = function (ol, item) {
       //First Search for diagram section element
       var ls = ol.querySelectorAll('label');
-      var l = [...ls].filter(el => el.innerText == item.Diagram.diagramLabel)[0]; //search for parent node.
+      var l = Array.from(ls).filter(el => el.innerText == item.Diagram.diagramLabel)[0]; //search for parent node.
       //sol is the diagram section element
       var sol = l.parentElement.querySelector('ul');
 
@@ -3874,7 +3867,7 @@ if (typeof Navigation === 'undefined')
           if ((u.nodeName == 'LI') && (u.className == "ItemSelected")) {
             u.className = "ItemCleared";
           }
-        };
+        }
         target.className = "ItemSelected";
       }
       if (this.checkSideBarNodes(container.childNodes, title))
@@ -4184,19 +4177,14 @@ if (typeof Navigation === 'undefined')
       switch (id) {
         case "Local_EventsPanel_id":
           return true;
-          break;
         case "Local_StatesPanel_id":
           return true;
-          break;
         case "Local_ActionsPanel_id":
           return true;
-          break;
         case "Local_VariablesPanel_id":
           return true;
-          break;
         default:
           return false;
-          break;
       }
     }
 

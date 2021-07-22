@@ -96,7 +96,7 @@ var saveAs = saveAs
           , fs_error = function () {
             // don't create more object URLs than needed
             if (blob_changed || !object_url) {
-              object_url = get_object_url(blob);
+              object_url = get_object_url();
             }
             if (target_view) {
               target_view.location.href = object_url;
@@ -140,7 +140,8 @@ var saveAs = saveAs
         // Since I can't be sure that the guessed media type will trigger a download
         // in WebKit, I append .download to the filename.
         // https://bugs.webkit.org/show_bug.cgi?id=65440
-        if (webkit_req_fs && name !== "download") {
+        // TODO: requestFileSystem is deprecated in almost every browser
+        if (name !== "download") {
           name += ".download";
         }
         if (type === force_saveable_type || webkit_req_fs) {
@@ -160,7 +161,7 @@ var saveAs = saveAs
                     target_view.location.href = file.toURL();
                     deletion_queue.push(file);
                     filesaver.readyState = filesaver.DONE;
-                    dispatch(filesaver, "writeend", event);
+                    dispatch(filesaver, ["writeend"], event);
                   };
                   writer.onerror = function () {
                     var error = writer.error;
@@ -182,8 +183,10 @@ var saveAs = saveAs
             };
             dir.getFile(name, { create: false }, abortable(function (file) {
               // delete file if it already exists
-              file.remove();
-              save();
+              file.remove(() => {
+                  // TODO: error callback
+                  save();
+              });
             }), abortable(function (ex) {
               if (ex.code === ex.NOT_FOUND_ERR) {
                 save();
@@ -202,7 +205,7 @@ var saveAs = saveAs
     FS_proto.abort = function () {
       var filesaver = this;
       filesaver.readyState = filesaver.DONE;
-      dispatch(filesaver, "abort");
+      dispatch(filesaver, ["abort"]);
     };
     FS_proto.readyState = FS_proto.INIT = 0;
     FS_proto.WRITING = 1;
@@ -218,13 +221,13 @@ var saveAs = saveAs
       null;
 
     view.addEventListener("unload", process_deletion_queue, false);
-    saveAs.unload = function () {
+    saveAs.prototype.unload = function () {
       process_deletion_queue();
       view.removeEventListener("unload", process_deletion_queue, false);
     };
     return saveAs;
   }(
-	   typeof self !== "undefined" && self
+    typeof self !== "undefined" && self
 	|| typeof window !== "undefined" && window
 	|| this.content
 ));

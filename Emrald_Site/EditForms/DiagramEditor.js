@@ -78,7 +78,7 @@ function mergeIntoCurrentProject() {
         if (!evt.target.files || !evt.target.files[0]) return;
         var afile = evt.target.files[0];
         var aname = afile.name.substring(0, afile.name.indexOf('.'));
-        if (aname === "") name = afile.name;
+        if (aname === "") aname = afile.name;
         var ext = /\.[0-9a-z]+$/.exec(afile.name);
         ext = ext.length > 0 ? ext[0] : "";
         switch (ext) {

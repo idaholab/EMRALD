@@ -42,7 +42,7 @@ function downloadClientTesterSource() {
 /// <reference path="WindowFrame.js" />
 //opens logic tree
 function openFaultTree() {
-  var wf = mxWindow.createFrameWindow(
+  var wnd = mxWindow.createFrameWindow(
     'FTViewer10.html',
     '',  //command buttons
     'minimize, maximize, close', //top buttons
@@ -80,7 +80,7 @@ function deleteSimulation(apiUrl, simId) {
     function onSuccess(data) {
       var retData = JSON.parse(data);
       if (retData.error == 0) {
-        deleteSimulationDone = true;
+        // deleteSimulationDone = true;
       }
       else {
         console.log("Error : " + retData.error + " - " + retData.errorStr);
@@ -156,19 +156,18 @@ function openProject() {
   dialog.value = "";
   dialog.type = 'file';
   dialog.style.display = 'none';
-  dialog.accept = "application/json"; //only support in chrome and IE.  FF doesn't work with hint.
-  dialog.filetype = "json";
+  dialog.accept = "application/json,.json"; //only support in chrome and IE.  FF doesn't work with hint.
 
   var handleFileSelected = function (evt) {
     if (!evt.target.files || !evt.target.files[0]) return;
     var afile = evt.target.files[0];
     var el = document.getElementById("project_name");
     var aname = afile.name.substring(0, afile.name.indexOf('.'));
-    if (aname == "") name = afile.name;
+    if (aname == "") aname = afile.name;
     if (el)
       el.innerText = aname;
     var ext = /\.[0-9a-z]+$/.exec(afile.name);
-    ext = ext.length > 0 ? ext[0] : "";
+    ext = ext && ext.length > 0 ? ext[0] : "";
     switch (ext) {
       case '.json':
         var reader = new FileReader();
@@ -197,16 +196,15 @@ function mergeIntoCurrentProject() {
   dialog.value = "";
   dialog.type = 'file';
   dialog.style.display = 'none';
-  dialog.accept = "application/json"; //only support in chrome and IE.  FF doesn't work with hint.
-  dialog.filetype = "json";
+  dialog.accept = "application/json,.json"; //only support in chrome and IE.  FF doesn't work with hint.
 
   let handleFileSelected = function (evt) {
     if (!evt.target.files || !evt.target.files[0]) return;
     var afile = evt.target.files[0];
     var aname = afile.name.substring(0, afile.name.indexOf('.'));
-    if (aname == "") name = afile.name;
+    if (aname == "") aname = afile.name;
     var ext = /\.[0-9a-z]+$/.exec(afile.name);
-    ext = ext.length > 0 ? ext[0] : "";
+    ext = ext && ext.length > 0 ? ext[0] : "";
     switch (ext) {
       case '.json':
         var reader = new FileReader();
@@ -300,9 +298,14 @@ function noSpaces(text) {
 function setCookie(cname, cvalue, exdays) {
   if (!cname) return;
   cname = noSpaces(cname); //spaces are not allowed in cookie variable name
-  var d = new Date();
-  d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
-  var expires = "expires=" + d.toUTCString();
+  let expires = "expires=";
+  if (exdays === undefined) {
+      expires += new Date(2147483647 * 1000).toUTCString();
+  } else {
+      const d = new Date();
+      d.setTime(d.getTime() + exdays * 24 * 60 * 60 * 1000);
+      expires += d.toUTCString();
+  }
   document.cookie = cname + "=" + cvalue + "; " + expires;
 }
 
@@ -503,11 +506,11 @@ var simApp;
 
       if (typeof result == "undefined") {
         if (Object.prototype.toString.call(item) === "[object Array]") {
-          result = [];
-          var prop;
-          item.forEach(function (child, index, array) {
-            if (child.nodeType || (typeof child == mxCell)) { /* not interested in node element*/ }
-            else if (i in SetOf(["dataType", "itemId", "actionId", "sourceRow", "targetRow", "actionCell", "eventCell", "iActions", "iEvents", "ownerCell", "ownerID", "ui_el", "wnd", "tempVariableList"]))
+            result = [];
+            var prop;
+          item.forEach(function (child, index) {
+            if (child.nodeType || (child instanceof mxCell)) { /* not interested in node element*/ }
+            else if (child in SetOf(["dataType", "itemId", "actionId", "sourceRow", "targetRow", "actionCell", "eventCell", "iActions", "iEvents", "ownerCell", "ownerID", "ui_el", "wnd", "tempVariableList"]))
             { /* not copy these */ }
             else {
               //child is an object, store array of object
@@ -526,7 +529,7 @@ var simApp;
               result = {};
               for (var i in item) {
                 if (i in SetOf(["dataType", "itemID", "actionId", "sourceRow", "targetRow", "actionCell", "eventCell", "iActions", "iEvents", "ownerCell", "ownerID", "ui_el", "wnd"])
-                  || (typeof item[i] == mxCell)) { /*Do not copy these properties*/ }
+                  || (item[i] instanceof mxCell)) { /*Do not copy these properties*/ }
                 else
                   result[i] = this.cloneDataModel(item[i]);
               }
