@@ -190,9 +190,9 @@ var RiskSim;
       okbtn.style.cssFloat = 'none';
       okbtn.textContent = 'OK';
       okbtn.onclick = function (evt) {
-        if (okbtn.owner) {
-          okbtn.owner.closeStatus = okbtn.textContent; //Ok clicked
-          okbtn.owner.close();
+        if (this.owner) {
+          this.owner.closeStatus = okbtn.textContent; //Ok clicked
+          this.owner.close();
         }
       }
 
@@ -283,7 +283,7 @@ var RiskSim;
         btn.style.margin = '5px 15px 5px 15px';
         btn.textContent = btnArray[i];
         btn.onclick = function (evt) {
-          dialog.closeStatus = btn.textContent;
+          dialog.closeStatus = this.textContent;
           dialog.close();
         }
         cmdcontent.appendChild(btn);
@@ -335,9 +335,9 @@ var RiskSim;
       okbtn.style.margin = '5px 15px 5px 15px';
       okbtn.textContent = 'OK';
       okbtn.onclick = function (evt) {
-        if (okbtn.owner) {
-          okbtn.owner.closeStatus = okbtn.textContent; //Ok clicked
-          okbtn.owner.close();
+        if (this.owner) {
+          this.owner.closeStatus = okbtn.textContent; //Ok clicked
+          this.owner.close();
         }
       }
 
@@ -347,9 +347,9 @@ var RiskSim;
       cancelbtn.style.margin = '5px 15px 5px 15px';
       cancelbtn.style.cssFloat = 'none';
       cancelbtn.onclick = function (evt) {
-        if (cancelbtn.owner) {
-            cancelbtn.owner.closeStatus = cancelbtn.textContent;
-            cancelbtn.owner.close();
+        if (this.owner) {
+          this.owner.closeStatus = cancelbtn.textContent;
+          this.owner.close();
         }
       }
 
