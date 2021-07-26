@@ -102,7 +102,7 @@ var RiskSim;
 
       ////Okay or Cancel button clicked and it is okay to close, simulate a mousedown click event to the close image listener. The X  on the upper right corner.
       this.close = function () {
-        // triggerEvent(this.closeImg, 'click');
+        triggerEvent(this.closeImg, 'click');
       }
 
       //Override to not changing the zIndex of active window.
