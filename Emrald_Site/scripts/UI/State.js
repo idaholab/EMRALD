@@ -131,7 +131,7 @@ function DataChanged(dataObj) {
 				mainApp.createTreeStructure(stateData);
 				mainApp.LoadData(graph, parent, stateData.StateList);
 				graph.updateOwnership();
-				if (typeof UpdateFrameTitle == "function") {
+				if (typeof UpdateFrameTitle == "function" && dataObj.id === stateData.id) {
 						UpdateFrameTitle("Diagram: " + dataObj.name);
 				}
 			
