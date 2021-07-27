@@ -1125,13 +1125,11 @@ StateApp.prototype.Initialize = function (graph) {
 
       if (target != null) {
         var dRect = target.getClientRects()[0];
-
-        //TODO: we need to compensate the Y for content scroll, i.e. when the view port is smaller
-        //than the actual canvas.  The Connection icon appears incorrect if the canvas is scrolled.
+        var graphContainer = target.ownerDocument.getElementById('graphContainer');
 
         icons[0].node.style.visibility = 'visible';
         icons[0].bounds.x = state.x + state.width - this.icons[0].bounds.width;
-        icons[0].bounds.y = dRect.top + dRect.height / 2 - this.icons[0].bounds.height / 2;
+        icons[0].bounds.y = dRect.top + dRect.height / 2 - this.icons[0].bounds.height / 2 + graphContainer.scrollTop;
         icons[0].redraw();
 
         this.currentRowNode = target;
