@@ -89,11 +89,11 @@
                     <div ng-if="data.docType.value == 'dtTextRegEx'" style="display: contents;">
                         <div id="RegExLinePanel" style="display: table-row;">
                             <div style="display: table-cell; white-space: nowrap;">
-                                <input type="checkbox" id="RegExLineChk" name="RegExLineChk" ng-model="data.useRegExLine">
+                                <input type="checkbox" id="RegExLineChk" name="RegExLineChk" ng-model="data.useRegExLine" ng-change="initializeRegExLine()">
                                 <label for="RegExLineChk">Line #:</label>
                             </div>
                             <div style="display: table-cell; white-space: nowrap;">
-                                <input id="RegExLineInp" name="regExLine" size="4" ng-model="data.regExLine" ng-if="data.useRegExLine">
+                                <input id="RegExLineInp" name="regExLine" size="4" ng-model="data.regExLine" ng-if="data.useRegExLine" type="number" min="0">
                                 <small> <i>(Use if a line after the RegExp match is desired.)</i></small>
                             </div>
                         </div>
@@ -102,17 +102,17 @@
                                 <label for="RegExLineChk">Beg Pos:</label>
                             </div>
                             <div style="display: table-cell; white-space: nowrap;">
-                                <input size="4" ng-model="data.regExBegPos">
+                                <input size="4" ng-model="data.regExBegPos" type="number" min="0">
                                 <small> <i>(Line start position, use 0 is the first character.)</i></small>
                             </div>
                         </div>
                         <div id="RegExNumCharsPanel" style="display: table-row;" ng-if="data.useRegExLine">
                             <div style="display: table-cell; white-space: nowrap;">
-                                <input type="checkbox" id="RegExNumCharsChk" name="RegExNumCharsChk" ng-model="data.useRegExNumChars">
+                                <input type="checkbox" id="RegExNumCharsChk" name="RegExNumCharsChk" ng-model="data.useRegExNumChars" ng-change="initializeRegExNumChars()">
                                 <label for="RegExNumCharsChk">Num Chars:</label>
                             </div>
                             <div style="display: table-cell; white-space: nowrap;">
-                                <input id="RegExNumCharsInp" size="4" ng-model="data.regExNumChars" ng-if="data.useRegExNumChars">
+                                <input id="RegExNumCharsInp" size="4" ng-model="data.regExNumChars" ng-if="data.useRegExNumChars" type="number" min="0">
                                 <small> <i>(Use for a specific # of characters, set to 0 for until next space, uncheck for end of line.)</i></small>
                             </div>
                         </div>
