@@ -310,7 +310,7 @@ function GetDataObject() {
     if (scope.data.docType.value == "dtTextRegEx") {
       //set the extra regExp options to not used unless checked
       dataObj.regExpLine = null;
-      dataObj.begPosition = 0;
+      dataObj.begPosition = null;
       dataObj.numChars = null;
 
       //Assign if checked 
@@ -462,7 +462,7 @@ variableModule.controller("variableController", ["$scope", function ($scope) {
     
     useRegExLine: false,
     regExLine: null,
-    regExBegPos: 0,
+    regExBegPos: null,
     useRegExNumChars: false,
     regExNumChars: null,
 
@@ -525,7 +525,9 @@ variableModule.controller("variableController", ["$scope", function ($scope) {
   $scope.initializeRegExLine = function () {
     if ($scope.data.regExLine === null) {
       $scope.data.regExLine = 0;
+      $scope.data.regExBegPos = 0;
     }
+    $scope.data.useRegExNumChars = $scope.data.useRegExLine && ($scope.data.regExNumChars !== null);
   }
 
   /**
