@@ -415,7 +415,7 @@ mxWindow.createFrame = function (bottomButtons, headButtons, dataObj, isModal, x
   wf.setResizable(true);
 
   $(wf.div).draggable({
-
+    containment: "#ContentPanel",
     handle: wf.title,
 
     start: function () {
@@ -621,6 +621,27 @@ mxWindow.prototype.installCloseHandler = function () {
   //With 'click' it works for all IE, Chrome and SF.
   this.closeImg.addEventListener('click', mxUtils.bind(this, onCloseForm), true);
 };
+
+/**
+ * Overrides mxWindow's resize function to rely use jQuery UI
+ * 
+ * @param {boolean} resizable The resizeable state.
+ */
+mxWindow.prototype.setResizable = function(resizable = false) {
+  const w = this;
+  $(this.div)
+    .resizable()
+    .on('resizestart', (evt) => {
+      w.fireEvent(new mxEventObject(mxEvent.RESIZE_START, 'event', evt));
+    })
+    .on('resize', (evt, ui) => {
+      w.setSize(ui.size.width, ui.size.height);
+      w.fireEvent(new mxEventObject(mxEvent.RESIZE, 'event', evt));
+    })
+    .on('resizestop', (evt) => {
+      w.fireEvent(new mxEventObject(mxEvent.RESIZE_END, 'event', evt));
+    });
+}
 
 // --- these code is for future use: for adding menu.
 //function getServerFile(url, callbackFn) {
