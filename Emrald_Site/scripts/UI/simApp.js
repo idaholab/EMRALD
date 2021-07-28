@@ -454,16 +454,17 @@ var simApp;
     }
     //------------------
     SimApp.prototype.loadSidebar = function (modelStr) {
+      var sideBarContainer = document.getElementById('SidePanelContainer');
       var sideBar = document.getElementById('SidePanel');
       var contentPanel = document.getElementById('ContentPanel');
       sideBar.innerHTML = "";
       contentPanel.innerHTML = "";
-      $(sideBar).resizable({
+      $(sideBarContainer).resizable({
         handle: 'w',
         resize: function (evt, ui) {
           $('#ContentPanel').css({
             left: sideBar.clientWidth +
-              $('.ui-resizable-handle.ui-resizable-e').width() + parseInt(sideBar.style.marginLeft) + parseInt(sideBar.style.marginRight)
+              $('.ui-resizable-handle.ui-resizable-e').width() + parseInt(sideBarContainer.style.marginLeft) + parseInt(sideBarContainer.style.marginRight)
             //,"border-style": "solid", "border-color": "red", "border-width": "1px"
           });
         }
