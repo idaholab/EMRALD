@@ -91,14 +91,14 @@ function OnLoad(dataObj) {
 function GetDataObject() {
   stateData = stateData || {};
   var scope = angular.element(document.querySelector('#stateControllerPanel')).scope();
+  var oldName = stateData.name;
   scope.$apply(function () {
     stateData.name = scope.name;
     stateData.desc = scope.desc;
 
     //----------------NEW CODE ---------------------
     //This update is to the diagram's singleState that this State belongs to.
-
-    var diagram = stateData.sidebar.getDiagramByStateName(stateData.name).Diagram;
+    var diagram = stateData.sidebar.getDiagramByStateName(oldName).Diagram;
     //if (!diagram) return stateData;
     if (diagram.diagramType != "dtPlant") {
       if (scope.StatusValue == "Unknown") {
