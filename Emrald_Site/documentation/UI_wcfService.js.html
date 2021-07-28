@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: UI/wcfService.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: UI/wcfService.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>﻿/**
+ * @file Service for performing HTTP requests.
+ * @copyright 2021 Battelle Energy Alliance
+ */
+
+'use strict';
+var WcfService = (function (_super) {
+  __extends(WcfService, _super);
+
+  /**
+   * Constructs WcfService.
+   * 
+   * @class WcfService
+   * @classdesc Service for performing HTTP requests.
+   * @constructs
+   * @param {string} aUrl The URL to send requests to.
+   * @param {string} sType The sent data encoding.
+   * @param {string} rType The expected type of returned data.
+   */
+  function WcfService(aUrl, sType, rType) {
+    _super.apply(this, arguments);
+    var _urlServiceLocation = aUrl || (aUrl = document.location.protocol + "//" + document.location.host + "/");
+    var _sendType = sType || (sType = 'application/json; charset=utf-8');
+    var _receiveType = rType || (rType = 'json');
+    var _async = true;
+    var _processData = false;
+
+    /**
+     * The current status message.
+     * 
+     * @name WcfService#statusMessage
+     * @type {string}
+     */
+    this.statusMessage = null;
+
+    /**
+     * Controls the debug console.
+     * 
+     * @name WcfService#debugConsoleOn
+     * @type {boolean}
+     */
+    this.debugConsoleOn = false;
+    // ----------------------------------------
+    // "Private" section
+    // ----------------------------------------
+
+    var _getNowAsString = function () {
+      var currentdate = new Date();
+      var now = currentdate.getDate() + "/"
+              + (currentdate.getMonth() + 1) + "/"
+              + currentdate.getFullYear() + "@"
+              + currentdate.getHours() + ":"
+              + currentdate.getMinutes() + ":"
+              + currentdate.getSeconds()
+      ;
+      return now;
+    }
+
+    var _showDebugMessage = function (msg) {
+      msg = _getNowAsString() + ", wcfService.js: " + msg;
+      if (this.debugConsoleOn)
+        console.log(msg);
+      this.statusMessage = msg;
+    }.bind(this);
+
+
+    // Unwrap (.NET ".d") and deserialize result.
+    var _unwrapResult = function (result) {
+        var unwrappedResult = result;
+        if (Object.prototype.hasOwnProperty.call(result, "d")) {
+        if (typeof require == 'undefined')  //if run under node-webkit
+          unwrappedResult = eval('(' + result.d + ')');
+        else
+          unwrappedResult = JSON.parse(result.d);//$.parseJSON(result.d);
+      }
+      this.resultObject = unwrappedResult;
+      return unwrappedResult;
+    }.bind(this);
+
+    //
+    // Method to call a WCF service
+    //
+    // Arguments:
+    //  string method        - GET, POST, PUT or DELETE verb
+    //  string url         - Location of the service, i.e.: "Service.svc/GetUser";
+    //  string data        - Data sent to server, i.e.: '{"Id": "' + userid + '"}'
+    //  string sendType    - content type sent to server
+    //  string receiveType  - Expected data format from server
+
+    // jQueryCall make use of JQuery library which return a jqxhrPromise.  Data to be processed by caller.
+    var _jQueryCall = function (method, url, data, sendType, receiveType) {
+
+      sendType = sendType || _sendType;
+      receiveType = receiveType || _receiveType;
+      _showDebugMessage("_jQueryCall(" + method + ": " + _urlServiceLocation + url + ") -- [sendType: " + sendType + ", Data: '" + data + "', ReceiveType: " + receiveType + "]");
+      var onSuccessFn = onSuccessFn || _succeededHandler;
+      var onErrorFn = onErrorFn || _failedHandler;
+
+      url = _urlServiceLocation + '/' + url;
+      //if (method == "GET" &amp;&amp; data)
+      //  data = "id=" + data;
+      return new Promise(function (resolveFn, rejectFn) {
+        //$.ajax is already async call, but we want to provide a promises mechanism to allow for caller to process the data.
+        var jqxhrPromise = $.ajax({
+          cache: false,
+          async: _async,
+          type: method,
+          url: url,
+          data: data,
+          crossDomain: true,
+          contentType: 'application/json', //sendType, 
+          dataType: 'text', //receiveType,
+          processData: _processData,
+          xhrFields: {
+            withCredentials: false
+          },
+          headers: {
+            
+          },
+          success: function (result) {
+            _showDebugMessage("result [" + result + "]");
+            if (_processData) {
+              result = _unwrapResult(result);
+            }
+            setTimeout(function () {
+              // Delay execution of success handler.
+              // Mainly done to see any visual feedback in the browser.
+              resolveFn(result);
+            }, 1000);
+          }.bind(this),
+          error: function (xhr, statusCodeText, statusText) {
+              _showDebugMessage("error [" + xhr + "] [" + statusCodeText + "] [" + statusText + "]");
+              // TODO: too many arguments
+            rejectFn(xhr, statusCodeText, statusText);
+          }
+        }); //end of jquery.ajax() call
+      });  //promise
+    }.bind(this);
+
+
+    //jsCall make use of Promise asynchronization which data handler are delegate to caller with .then() function.
+    var _jsCall = function (method, url, data, sendType, receiveType) {
+      sendType = sendType || _sendType;
+      receiveType = receiveType || _receiveType;
+      
+      url = _urlServiceLocation + '/'+ url;
+      _showDebugMessage(
+          "_jsCall( '" + method + "', '" + url + "', '" + data + "', '" + sendType + "', '" + receiveType + " )" +
+          "\n\n" +
+          "async [" + _async + "]"
+      );
+
+      return new Promise(function (resolveFn, rejectFn) {
+        var xhr = new XMLHttpRequest();
+
+        if (method == "GET" &amp;&amp; data) {
+          data = "id=" + data;
+        }
+        //Support CORS protocol -- cross domain invoker.
+        if ("withCredentials" in xhr) {
+          _async = true;
+        }
+        else if (typeof XDomainRequest != "undefined") {
+          xhr = XDomainRequest();
+          _async = undefined;
+        }
+        else {
+          throw new Error("CORS not supported.")
+        }
+        xhr.onreadystatechange = function onChanged() {
+          if ((this.readyState == this.DONE) &amp;&amp; (this.status == 200)) {
+            var result = this.response;
+            if (_processData) {
+              _showDebugMessage("result [" + result + "]");
+              result = _unwrapResult(result);
+            }
+            setTimeout(function () {
+              // Delay execution of success handler.
+              // Mainly done to see any visual feedback in the browser.
+              //resolveFn is a callback function call by Promise.
+              resolveFn(result);
+            }.bind(this), 1000);
+          }
+        };
+        xhr.onerror = function () {
+          _showDebugMessage("error [" + xhr + "] [" + xhr.statusText + "]");
+          rejectFn(new Error('Service request failed, cause: ' + xhr.statusText));
+        };
+        xhr.open(method, url, _async);
+        xhr.responseType = 'text'; // receiveType;   //default: "json"
+        xhr.setRequestHeader("Access-Control-Allow-Headers", "*");
+        xhr.setRequestHeader("Access-Control-Allow-Methods", "*");
+        xhr.setRequestHeader('Cache-Control', 'no-cache');
+        xhr.setRequestHeader('content-type','text/plain');// sendType);//default: "application/json"
+        xhr.send(data);
+      }.bind(this));
+    }.bind(this);
+    //----------------------------------
+    var _failedHandler = function (xhr, statusCodeText, statusText) {
+
+      var msg = "Service call failed: ";
+
+      if (xhr) {
+        msg = msg
+            + statusText + " (" + statusCodeText + " [" + xhr.status + "])"
+            + "\n\n"
+            + xhr.responseText
+        ;
+      }
+      else {
+        msg = msg + "reason unknown";
+      }
+
+      msg = _getNowAsString() + ", wcfService.js: " + msg;
+      console.log(msg);
+
+      this.statusMessage = msg;
+    }.bind(this);
+
+
+    var _succeededHandler = function (result) {
+      var msg =
+          _getNowAsString() + ", wcfService.js: " +
+          "Service call succeeded [" + result + "]"
+      ;
+      console.log(msg);
+      this.statusMessage = msg;
+    }.bind(this);
+
+    // ----------------------------------------
+    // "public" section
+    // ----------------------------------------
+
+    /**
+     * Sends a POST request.
+     * 
+     * @name WcfService#post
+     * @function
+     * @param {string} url The destination URL.
+     * @param {*} data The data to send.
+     * @param {string} sendType The encoding of the data being sent.
+     * @param {string} receiveType The expected format of the data retrieved.
+     * @returns {Promise&lt;string>} The response data.
+     */
+    this.post = function (url, data, sendType, receiveType) {
+      //if jquery is present, use it.  Otherwise use the Javascript version.
+      if (typeof $ == 'undefined') {
+        return _jsCall("POST", url, data, sendType, receiveType);
+      }
+      else {
+        return _jQueryCall("POST", url, data, sendType, receiveType);
+      }
+    }
+
+    /**
+     * Sends a GET request.
+     * 
+     * @name WcfService#get
+     * @function
+     * @param {string} url The destination URL.
+     * @param {*} data The data to send.
+     * @param {string} sendType The encoding of the data being sent.
+     * @param {string} receiveType The expected format of the data retrieved.
+     * @returns {Promise&lt;string>} The response data.
+     */
+    this.get = function (url, data, sendType, receiveType) {
+      if (typeof $ == 'undefined') {  //jquery is not used
+        return _jsCall("GET", url, data, sendType, receiveType);
+      }
+      else {
+        return _jQueryCall("GET", url, data, sendType, receiveType);
+      }
+    }
+
+    /**
+     * Sends an UPDATE request.
+     * 
+     * @name WcfService#update
+     * @function
+     * @param {string} url The destination URL.
+     * @param {*} data The data to send.
+     * @param {string} sendType The encoding of the data being sent.
+     * @param {string} receiveType The expected format of the data retrieved.
+     * @returns {Promise&lt;string>} The response data.
+     */
+    this.update = function (url, data, sendType, receiveType) {
+      if (typeof $ == 'undefined') {  //jquery is not used
+        return _jQueryCall("PUT", url, data, sendType, receiveType);
+      }
+      else {
+        return _jsCall("PUT", url, data, sendType, receiveType);
+      }
+    }
+
+    /**
+     * Sends a DELETE request.
+     * 
+     * @name WcfService#delete
+     * @function
+     * @param {string} url The destination URL.
+     * @param {*} data The data to send.
+     * @param {string} sendType The encoding of the data being sent.
+     * @param {string} receiveType The expected format of the data retrieved.
+     * @returns {Promise&lt;string>} The response data.
+     */
+    this.delete = function (url, data, sendType, receiveType) {
+      if (typeof $ == 'undefined') {
+        return _jQueryCall("DELETE", url, data, sendType, receiveType);
+      } else {
+        return _jsCall("DELETE", url, data, sendType, receiveType);
+      }
+    }
+  }
+  return WcfService;
+})(Object);
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Namespaces</h3><ul><li><a href="FaultTree.html">FaultTree</a></li><li><a href="ftEditor.html">ftEditor</a></li><li><a href="Navigation.html">Navigation</a></li><li><a href="RiskSim.html">RiskSim</a></li><li><a href="simApp.html">simApp</a></li></ul><h3>Classes</h3><ul><li><a href="Enum.html">Enum</a></li><li><a href="FaultTree_Toolbar.html">Toolbar</a></li><li><a href="ftEditor_FTItem.html">FTItem</a></li><li><a href="ftEditor_FTItemArray.html">FTItemArray</a></li><li><a href="Navigation_Menu.html">Menu</a></li><li><a href="Navigation_Sidebar.html">Sidebar</a></li><li><a href="RiskSim_CommonDialog.html">CommonDialog</a></li><li><a href="RiskSim_Window.html">Window</a></li><li><a href="simApp_SimApp.html">SimApp</a></li><li><a href="StateApp.html">StateApp</a></li><li><a href="StateShape.html">StateShape</a></li><li><a href="TableShape.html">TableShape</a></li><li><a href="WcfService.html">WcfService</a></li><li><a href="WindowFrame.html">WindowFrame</a></li></ul><h3>Interfaces</h3><ul><li><a href="Action.html">Action</a></li><li><a href="Diagram.html">Diagram</a></li><li><a href="Event.html">Event</a></li><li><a href="ExtSim.html">ExtSim</a></li><li><a href="ftEditor_Globals.html">Globals</a></li><li><a href="ftEditor_Globals_ftNodeSettings.html">ftNodeSettings</a></li><li><a href="LogicNode.html">LogicNode</a></li><li><a href="MenuItem.html">MenuItem</a></li><li><a href="Model.html">Model</a></li><li><a href="State.html">State</a></li><li><a href="Variable.html">Variable</a></li></ul><h3>Global</h3><ul><li><a href="global.html#addBE">addBE</a></li><li><a href="global.html#addNode">addNode</a></li><li><a href="global.html#addOverlays">addOverlays</a></li><li><a href="global.html#adjustWindowPos">adjustWindowPos</a></li><li><a href="global.html#BuildTreeRec">BuildTreeRec</a></li><li><a href="global.html#classNameOf">classNameOf</a></li><li><a href="global.html#clearAllCookies">clearAllCookies</a></li><li><a href="global.html#createDemo">createDemo</a></li><li><a href="global.html#createPopupMenu">createPopupMenu</a></li><li><a href="global.html#createTestProject">createTestProject</a></li><li><a href="global.html#createTestProject2">createTestProject2</a></li><li><a href="global.html#DataChanged">DataChanged</a></li><li><a href="global.html#DataType">DataType</a></li><li><a href="global.html#deepClone">deepClone</a></li><li><a href="global.html#deleteSimulation">deleteSimulation</a></li><li><a href="global.html#downloadClientTester">downloadClientTester</a></li><li><a href="global.html#downloadClientTesterSource">downloadClientTesterSource</a></li><li><a href="global.html#downloadSolver">downloadSolver</a></li><li><a href="global.html#editDiagramNode">editDiagramNode</a></li><li><a href="global.html#editNode">editNode</a></li><li><a href="global.html#ErrorMessage">ErrorMessage</a></li><li><a href="global.html#extractSubStr">extractSubStr</a></li><li><a href="global.html#GetDataObject">GetDataObject</a></li><li><a href="global.html#getDefaultGateID">getDefaultGateID</a></li><li><a href="global.html#getMainApp">getMainApp</a></li><li><a href="global.html#getRowY">getRowY</a></li><li><a href="global.html#getServerFile">getServerFile</a></li><li><a href="global.html#getSidebar">getSidebar</a></li><li><a href="global.html#isIENavigator">isIENavigator</a></li><li><a href="global.html#isModified">isModified</a></li><li><a href="global.html#main">main</a></li><li><a href="global.html#makeTransparent">makeTransparent</a></li><li><a href="global.html#mergeFTData">mergeFTData</a></li><li><a href="global.html#mergeIntoCurrentProject">mergeIntoCurrentProject</a></li><li><a href="global.html#MessageBox">MessageBox</a></li><li><a href="global.html#newProject">newProject</a></li><li><a href="global.html#newSimulation">newSimulation</a></li><li><a href="global.html#noSpaces">noSpaces</a></li><li><a href="global.html#OnLoad">OnLoad</a></li><li><a href="global.html#OnSave">OnSave</a></li><li><a href="global.html#openAbout">openAbout</a></li><li><a href="global.html#openCSharpTool">openCSharpTool</a></li><li><a href="global.html#openFaultTree">openFaultTree</a></li><li><a href="global.html#openHelp">openHelp</a></li><li><a href="global.html#openProject">openProject</a></li><li><a href="global.html#openPythonTool">openPythonTool</a></li><li><a href="global.html#rgba">rgba</a></li><li><a href="global.html#route">route</a></li><li><a href="global.html#saveDiagramProperties">saveDiagramProperties</a></li><li><a href="global.html#saveProject">saveProject</a></li><li><a href="global.html#saveTemplate">saveTemplate</a></li><li><a href="global.html#sequence">sequence</a></li><li><a href="global.html#setCookie">setCookie</a></li><li><a href="global.html#setModified">setModified</a></li><li><a href="global.html#SetOf">SetOf</a></li><li><a href="global.html#somethingChanged">somethingChanged</a></li><li><a href="global.html#sortDOMList">sortDOMList</a></li><li><a href="global.html#testMakeCompDiagram">testMakeCompDiagram</a></li><li><a href="global.html#triggerEvent">triggerEvent</a></li><li><a href="global.html#updateCell">updateCell</a></li><li><a href="global.html#ValidateData">ValidateData</a></li><li><a href="global.html#waitToSync">waitToSync</a></li><li><a href="global.html#windowClosing">windowClosing</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.7</a> on Wed Jul 28 2021 16:54:48 GMT-0400 (Eastern Daylight Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
