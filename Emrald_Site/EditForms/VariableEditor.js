@@ -48,7 +48,7 @@ function nameIsDefaultValue() {
     if (scope.name === '') {
         return true;
     }
-    result = false;
+    var result = false;
     scope.namingPatterns.forEach(defaultName => {
         if (scope.name === defaultName.NamePattern) {
             result = true;

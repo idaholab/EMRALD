@@ -46,7 +46,7 @@ function ParseBED(filename, ftNodes)
 
     for (i; i < lines.length; i++)
     {
-      parsedLine = lines[i].trim().replace(/\s+/g, ' '); //remove all excess white space
+      var parsedLine = lines[i].trim().replace(/\s+/g, ' '); //remove all excess white space
       parsedLine = parsedLine.split(",");
 
       if (parsedLine[0] != "" &&
@@ -101,7 +101,7 @@ function ParseGTD(filename, ftNodes)
 
     for (i; i < lines.length; i++)
     {
-      parsedLine = lines[i].trim().replace(/\s+/g, ' '); //remove all excess white space
+      var parsedLine = lines[i].trim().replace(/\s+/g, ' '); //remove all excess white space
       parsedLine = parsedLine.split(",");
 
       if (parsedLine[0] != "" &&
@@ -157,7 +157,7 @@ function ParseBEI(filename, ftNodes)
 
     for (i; i < lines.length; i++)
     {
-      parsedLine = lines[i].trim().replace(/\s+/g, ' '); //remove all excess white space
+      var parsedLine = lines[i].trim().replace(/\s+/g, ' '); //remove all excess white space
       parsedLine = parsedLine.split(",");
 
       if (parsedLine[0] != "" &&
@@ -212,7 +212,7 @@ function ParseFTL(graph, filename, ftNodes)
     var curLine = lines[i].trim();
 
     //remove comments and get to project line
-    while (curLine.length = 0 ||
+    while (curLine.length == 0 ||
             curLine.substring(0, 1) == "*")
     {
       i = i + 1;
@@ -226,9 +226,9 @@ function ParseFTL(graph, filename, ftNodes)
       return;
     }
 
-    projName = parsedLine[0].replace(",", "");
+    var projName = parsedLine[0].replace(",", "");
     //projName = projName;
-    ftName = parsedLine[1];
+    var ftName = parsedLine[1];
     i = i + 1;
 
 
