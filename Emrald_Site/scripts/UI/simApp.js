@@ -478,15 +478,34 @@ var simApp;
         titleEl.innerText = atitle;
       }
     }
+    SimApp.prototype.makeProjectNameEditable = function() {
+      var titleEl = document.getElementById("project_name");
+      if (titleEl) {
+        titleEl.style.cursor = 'Pointer';
+        titleEl.onclick = function() {
+          var newName = prompt('Enter New Name');
+          if (newName && newName.trim()) {
+            newName = newName.trim();
+            simApp.mainApp.updateProjectTitle(newName);
+            simApp.allDataModel.name = newName;
+          }
+        }
+      }         
+    }
     SimApp.prototype.start = function () {
       //var img = document.getElementById('logo');
       //makeTransparent(img);
       new Navigation.Menu("resources/menu.json");
 
       getServerFile(this.modelFileName, function (retData) {
-        var model = JSON.parse(retData);
-        this.updateProjectTitle(model.name);
         simApp.mainApp.loadSidebar(retData);
+        var model = JSON.parse(retData);
+        if (model.name.isNullOrUndefined || model.name === '') {
+          model.name = 'Click Here to Name Project';
+          simApp.allDataModel.name = 'Untitled_EMRALD_Project';
+        }
+        this.updateProjectTitle(model.name);
+        this.makeProjectNameEditable();
       }.bind(this));
       //this.loadSidebar();
     }
