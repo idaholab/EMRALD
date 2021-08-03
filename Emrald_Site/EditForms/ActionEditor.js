@@ -550,7 +550,8 @@ actionModule.controller('actionController', ['$scope', function ($scope) {
         simConfigData: '',
         raPreCode: '',
         raLocation: '',
-        raPostCode: ''
+        raPostCode: '',
+        raType: 'template',
     };
     $scope.data.action = $scope.data.actions[0];
     $scope.data.simMessage = $scope.data.simMessages[0];
@@ -575,6 +576,7 @@ actionModule.controller('actionController', ['$scope', function ($scope) {
     $scope.$watch('data.raPreCode', function (newV, oldV) { if (newV !== oldV) somethingChanged(); });
     $scope.$watch('data.raLocation', function (newV, oldV) { if (newV !== oldV) somethingChanged(); });
     $scope.$watch('data.raPostCode', function (newV, oldV) { if (newV !== oldV) somethingChanged(); });
+    $scope.$watch('data.raType', function (newVal, oldVal) { if (newVal !== oldVal) somethingChanged(); });
     $scope.$watch('varNames', function (newVal, oldVal) { if (newVal !== oldVal) somethingChanged(); });
     //$scope.$watch('row.Probability', function (newV, oldV) { if (newV !== oldV) somethingChanged(); });
 

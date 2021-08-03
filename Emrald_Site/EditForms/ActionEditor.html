@@ -28,6 +28,13 @@
         tr:nth-child(even) {
             background-color: #dddddd;
         }
+        .tab {
+            display: flex;
+            flex-direction: row;
+            align-items: stretch;
+            height: calc(100vh - 8em);
+            width: 98vw;
+        }
     </style>
 </head>
 <body ng-app="actionModule">
@@ -194,7 +201,9 @@
                 <!-- Begin Run Application Type-->
 
                 <div id="RunAppPanel" ng-if="data.action.value=='atRunExtApp'">
-                    <div style="display: flex; flex-direction: row; align-items: stretch; height: calc(100vh - 8em); width: 98vw;">
+                    <input type="radio" name="tabControl" value="code" ng-model="data.raType"> Use Code
+                    <input type="radio" name="tabControl" value="template" ng-model="data.raType"> Use Templates
+                    <div class="tab" ng-if="data.raType == 'code'">
                         <div style="display: flex; flex-direction: column; flex: 1">
                             <p style="margin-bottom:0">Preprocess Code(c#)</p>
                             <div style="display: flex; flex-direction:row; flex: 1">
@@ -217,6 +226,21 @@
                             <tr ng-repeat="row in data.varMap">
                                 <td style="border: 1px solid #dddddd; text-align: left; padding: 0px;"><input id="{{'varId_' + row.value.Variable.name}}" type="checkbox" onchange="variableChecked(this);" ng-true-value=true ng-false-value=false ng-checked={{row.check}} value={{row.value}} /></td>
                                 <td style="border: 1px solid #dddddd; text-align: left; padding: 0px;"><label for="{{'varId_' + row.value.Variable.name}}" style="display:block">{{row.value.Variable.name}}</label></td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="tab" ng-if="data.raType == 'template'">
+                        <table style="text-align: left;" border="1" cellspacing="0">
+                            <tr>
+                                <th colspan="2">Export Variables:</th>
+                            </tr>
+                            <tr ng-repeat="row in data.varMap">
+                                <td style="border: 1px solid #dddddd; text-align: left; padding: 0px;">
+                                    <input id="{{'varId_' + row.value.Variable.name}}" type="checkbox" onchange="variableChecked(this);" ng-true-value=true ng-false-value=false ng-checked={{row.check}} value={{row.value}} />
+                                </td>
+                                <td style="border: 1px solid #dddddd; text-align: left; padding: 0px;">
+                                    <label for="{{'varId_' + row.value.Variable.name}}" style="display:block">{{row.value.Variable.name}}</label>
+                                </td>
                             </tr>
                         </table>
                     </div>
