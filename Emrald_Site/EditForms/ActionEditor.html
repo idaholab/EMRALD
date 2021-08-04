@@ -28,13 +28,6 @@
         tr:nth-child(even) {
             background-color: #dddddd;
         }
-        .tab {
-            display: flex;
-            flex-direction: row;
-            align-items: stretch;
-            height: calc(100vh - 8em);
-            width: 98vw;
-        }
     </style>
 </head>
 <body ng-app="actionModule">
@@ -203,7 +196,8 @@
                 <div id="RunAppPanel" ng-if="data.action.value=='atRunExtApp'">
                     <input type="radio" name="tabControl" value="code" ng-model="data.raType"> Use Code
                     <input type="radio" name="tabControl" value="template" ng-model="data.raType"> Use Templates
-                    <div class="tab" ng-if="data.raType == 'code'">
+                    <!-- Code Tab -->
+                    <div style="display: flex; flex-direction: row; align-items: stretch; height: calc(100vh - 8em); width: 98vw;" ng-if="data.raType == 'code'">
                         <div style="display: flex; flex-direction: column; flex: 1">
                             <p style="margin-bottom:0">Preprocess Code(c#)</p>
                             <div style="display: flex; flex-direction:row; flex: 1">
@@ -229,17 +223,30 @@
                             </tr>
                         </table>
                     </div>
-                    <div class="tab" ng-if="data.raType == 'template'">
-                        <table style="text-align: left;" border="1" cellspacing="0">
+                    <!-- Template Tab -->
+                    <div ng-if="data.raType == 'template'">
+                        <div>
+                            <span>Select template:</span>
+                            <select ng-model="data.raTemplate" ng-options="opt.name for opt in raTemplates"></select>
+                        </div>
+                        <table border="1" cellspacing="0" ng-repeat="opt in data.raTemplate.options">
                             <tr>
-                                <th colspan="2">Export Variables:</th>
+                                <th colspan="2">{{opt.label}}</th>
                             </tr>
-                            <tr ng-repeat="row in data.varMap">
-                                <td style="border: 1px solid #dddddd; text-align: left; padding: 0px;">
-                                    <input id="{{'varId_' + row.value.Variable.name}}" type="checkbox" onchange="variableChecked(this);" ng-true-value=true ng-false-value=false ng-checked={{row.check}} value={{row.value}} />
+                            <tr ng-repeat="row in data[opt.rowVar]" ng-if="opt.type == 'checklist'">
+                                <td style="border: 1px solid #dddddd; padding: 0px;">
+                                    <input
+                                        id="{{opt.getRowId(row)}}"
+                                        type="checkbox"
+                                        ng-true-value=true
+                                        ng-false-value=false
+                                        ng-checked="{{row.check}}"
+                                        ng-model="row.check"
+                                        value="{{row.value}}"
+                                    />
                                 </td>
-                                <td style="border: 1px solid #dddddd; text-align: left; padding: 0px;">
-                                    <label for="{{'varId_' + row.value.Variable.name}}" style="display:block">{{row.value.Variable.name}}</label>
+                                <td style="border: 1px solid #dddddd; padding: 0px;">
+                                    <label for="{{opt.getRowId(row)}}" style="display:block">{{opt.getRowLabel(row)}}</label>
                                 </td>
                             </tr>
                         </table>
