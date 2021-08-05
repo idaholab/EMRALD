@@ -45,6 +45,7 @@
             content: 'Open Template';
             color: black;
             appearance: auto;
+            writing-mode: horizontal-tb !important;
             -webkit-writing-mode: horizontal-tb !important;
             text-rendering: auto;
             letter-spacing: normal;
@@ -294,8 +295,35 @@
                         </table>
                     </div>
                     <!-- New Template Tab -->
+                    <!-- TODO: move this to its own window -->
                     <div ng-if="data.raType == 'newTemplate'">
                         <b>New Template</b>
+                        <br />
+                        <label for="template-name">Template Name:</label>
+                        <p>{{newTemplate.toJSON()}}</p>
+                        <input id="template-name" ng-model="newTemplate.name" />
+                        <hr />
+                        <label for="option-label">Option label:</label>
+                        <input id="option-label" ng-model="raNewOption.label" placeholder="Option Label" />
+                        <br />
+                        <label for="option-type">Option type:</label>
+                        <select id="option-type" ng-model="raNewOption.type" ng-options="optType for optType in raTemplateOptionTypes"></select>
+                        <br />
+                        <div ng-if="raNewOption.type == 'Checklist'">
+                            <label for="option-var">Rows data source:</label>
+                            <select id="option-var" ng-model="raNewOption.rowVar" ng-options="optVar.name for optVar in raTemplateOptionVars"></select>
+                            <p>
+                                <i>Preview:</i>
+                                {{data[raNewOption.rowVar.value][0]}}[]
+                            </p>
+                            <label for="option-var-label">Row label: (<a href="https://jsonpath.com/" target="_blank">JSON path</a>)</label>
+                            <!-- TODO: validate path -->
+                            <input id="option-var-label" ng-model="raNewOption.rowLabel" />
+                        </div>
+                        <br />
+                        <button ng-click="addNewOption()">Add Option</button>
+                        <hr />
+                        <button ng-click="addNewTemplate()">Add Template</button>
                     </div>
                 </div>
                 <!-- End Run Application Type-->

@@ -1,5 +1,43 @@
 ﻿// Copyright 2021 Battelle Energy Alliance
 
+class RAChecklist {
+    constructor(label, rowVar, row) {
+        this.label = label;
+        this.type = 'checklist';
+        this.rowVar = rowVar;
+        this.row = row;
+    }
+    
+    toJSON() {
+        return {
+            label: this.label,
+            type: this.type,
+            rowVar: this.rowVar,
+            row: this.row,
+        };
+    }
+}
+
+class RATemplate {
+    constructor(name) {
+        this.name = name;
+        this.options = [];
+    }
+
+    addOption(option) {
+        this.options.push(option);
+        return this;
+    }
+
+    toJSON() {
+        return {
+            type: 'raTemplate',
+            name: this.name,
+            options: this.options.map((option) => option.toJSON()),
+        };
+    }
+}
+
 function setAsNewChecked() {
     var scope = angular.element(document.querySelector('#actionControllerPanel')).scope();
     var btn = parent.document.getElementById('btn_OK');
@@ -555,21 +593,54 @@ actionModule.controller('actionController', ['$scope', function ($scope) {
         raTemplate: '',
     };
     $scope.raTemplates = [
+        new RATemplate('THModel')
+            .addOption(
+                new RAChecklist('Export Variables', 'varMap', {
+                    label: 'value.Variable.name',
+                }),
+            ),
+    ];
+    $scope.raTemplateOptionTypes = ['Checklist'];
+
+    function emptyNewOption() {
+        return {
+            label: 'New Option',
+            type: '',
+            rowVar: '',
+            rowLabel: '',
+        };
+    }
+
+    $scope.raNewOption = emptyNewOption();
+    $scope.raTemplateOptionVars = [
         {
-            type: 'raTemplate',
-            name: 'THModel',
-            options: [
-                {
-                    label: 'Export Variables:',
-                    type: 'checklist',
-                    rowVar: 'varMap',
-                    row: {
-                        label: 'value.Variable.name',
-                    },
-                },
-            ],
+            name: 'Variables',
+            value: 'varMap',
         },
     ];
+    $scope.newTemplate = new RATemplate('New Template');
+    $scope.addNewOption = function () {
+        var { raNewOption } = $scope;
+        switch (raNewOption.type) {
+            case 'Checklist':
+                $scope.newTemplate.addOption(
+                    new RAChecklist(raNewOption.label, raNewOption.rowVar, {
+                        label: raNewOption.rowLabel,
+                    }),
+                );
+                break;
+            default:
+        }
+        $scope.raNewOption = emptyNewOption();
+    };
+    $scope.addNewTemplate = function () {
+        var { newTemplate } = $scope;
+        $scope.data.raTemplate = newTemplate;
+        $scope.raTemplates.push(newTemplate);
+        $scope.newTemplate = new RATemplate('New Template');
+        // TODO: prompt save
+    };
+
     $scope.data.action = $scope.data.actions[0];
     $scope.data.simMessage = $scope.data.simMessages[0];
 
