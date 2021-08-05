@@ -611,6 +611,7 @@ actionModule.controller('actionController', ['$scope', function ($scope) {
         };
     }
 
+    $scope.raTemplateTab = 'useTemplate';
     $scope.raNewOption = emptyNewOption();
     $scope.raTemplateOptionVars = [
         {
@@ -618,12 +619,12 @@ actionModule.controller('actionController', ['$scope', function ($scope) {
             value: 'varMap',
         },
     ];
-    $scope.newTemplate = new RATemplate('New Template');
+    $scope.raNewTemplate = new RATemplate('New Template');
     $scope.addNewOption = function () {
         var { raNewOption } = $scope;
         switch (raNewOption.type) {
             case 'Checklist':
-                $scope.newTemplate.addOption(
+                $scope.raNewTemplate.addOption(
                     new RAChecklist(raNewOption.label, raNewOption.rowVar, {
                         label: raNewOption.rowLabel,
                     }),
@@ -634,10 +635,11 @@ actionModule.controller('actionController', ['$scope', function ($scope) {
         $scope.raNewOption = emptyNewOption();
     };
     $scope.addNewTemplate = function () {
-        var { newTemplate } = $scope;
+        var newTemplate = $scope.raNewTemplate;
         $scope.data.raTemplate = newTemplate;
         $scope.raTemplates.push(newTemplate);
-        $scope.newTemplate = new RATemplate('New Template');
+        $scope.raNewTemplate = new RATemplate('New Template');
+        $scope.raTemplateTab = 'useTemplate';
         // TODO: prompt save
     };
 
@@ -650,22 +652,25 @@ actionModule.controller('actionController', ['$scope', function ($scope) {
 
     $scope.namingPatterns = [];
 
+    // Template controls
     $scope.templateFile = '';
     $scope.saveTemplate = function () {
-        var cleanedTemplate = {
-            ...$scope.data.raTemplate,
-            options: $scope.data.raTemplate.options.map((option) => {
-                delete option.$$hashKey;
-                return option;
-            }),
-        };
         saveAs(
-            new Blob([JSON.stringify(cleanedTemplate)]),
+            new Blob([JSON.stringify($scope.data.raTemplate.toJSON())]),
             `${$scope.data.raTemplate.name}.json`,
             {
                 type: 'text/plain;charset=utf-8',
             },
         );
+    }
+    $scope.editTemplate = function () {
+        $scope.raNewTemplate = $scope.data.raTemplate;
+        $scope.raTemplateTab = 'newTemplate';
+    }
+    $scope.newTemplate = function () {
+        $scope.raNewTemplate = new RATemplate('New Template');
+        $scope.raNewOption = emptyNewOption();
+        $scope.raTemplateTab = 'newTemplate';
     }
 
     $scope.readPath = function (row, path) {
