@@ -556,17 +556,15 @@ actionModule.controller('actionController', ['$scope', function ($scope) {
     };
     $scope.raTemplates = [
         {
+            type: 'raTemplate',
             name: 'THModel',
             options: [
                 {
                     label: 'Export Variables:',
                     type: 'checklist',
                     rowVar: 'varMap',
-                    getRowId(row) {
-                        return `varId_${row.value.Variable.name}`;
-                    },
-                    getRowLabel(row) {
-                        return row.value.Variable.name;
+                    row: {
+                        label: 'value.Variable.name',
                     },
                 },
             ],
@@ -582,6 +580,26 @@ actionModule.controller('actionController', ['$scope', function ($scope) {
     $scope.namingPatterns = [];
 
     $scope.templateFile = '';
+    $scope.saveTemplate = function () {
+        var cleanedTemplate = {
+            ...$scope.data.raTemplate,
+            options: $scope.data.raTemplate.options.map((option) => {
+                delete option.$$hashKey;
+                return option;
+            }),
+        };
+        saveAs(
+            new Blob([JSON.stringify(cleanedTemplate)]),
+            `${$scope.data.raTemplate.name}.json`,
+            {
+                type: 'text/plain;charset=utf-8',
+            },
+        );
+    }
+
+    $scope.readPath = function (row, path) {
+        return jsonPath(row, path);
+    }
 
     $scope.$watch('name', function (newV, oldV) { if (newV !== oldV) somethingChanged(); });
     $scope.$watch('desc', function (newV, oldV) { if (newV !== oldV) somethingChanged(); });
@@ -624,9 +642,14 @@ actionModule.directive('fileModel', ['$parse', function ($parse) {
                             // TODO
                             alert('Could not parse template file.');
                         }
-                        scope.$apply(() => {
-                            model.assign(scope, json);
-                        });
+                        if (json.type !== 'raTemplate') {
+                            // TODO
+                            alert('File is not a template.');
+                        } else {
+                            scope.$apply(() => {
+                                model.assign(scope, json);
+                            });
+                        }
                         return;
                     }
                     content += new TextDecoder().decode(value);

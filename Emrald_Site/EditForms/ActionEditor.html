@@ -5,10 +5,13 @@
 <head>
     <title>Action Properties</title>
     <link href="../styles/Editors.css" rel="stylesheet" />
+    <script src="./lib/jsonpath-0.8.0.js"></script>
     <script src="../config.js"></script>
     <script src="../scripts/jquery/jquery-2.1.4.js"></script>
     <script src="../scripts/angular/angular.js"></script>
+    <script src="../scripts/UI/Blob.js"></script>
     <script src="../scripts/UI/Common.js"></script>
+    <script src="../scripts/UI/FileSaver.js"></script>
     <script src="../scripts/UI/wcfService.js"></script>
     <script src="ActionEditor.js"></script>
     <style type="text/css">
@@ -262,8 +265,8 @@
                     <div ng-if="data.raType == 'template'">
                         <div>
                             <input type="file" class="openTemplate" file-model="templateFile" />
-                            <button>Save Template</button>
-                            <button>New Template</button>
+                            <button ng-click="saveTemplate()">Save Template</button>
+                            <button ng-click="data.raType = 'newTemplate'">New Template</button>
                             <br />
                             <span>Select template:</span>
                             <select ng-model="data.raTemplate" ng-options="opt.name for opt in raTemplates"></select>
@@ -276,7 +279,6 @@
                             <tr ng-repeat="row in data[opt.rowVar]" ng-if="opt.type == 'checklist'">
                                 <td style="border: 1px solid #dddddd; padding: 0px;">
                                     <input
-                                        id="{{opt.getRowId(row)}}"
                                         type="checkbox"
                                         ng-true-value=true
                                         ng-false-value=false
@@ -286,10 +288,14 @@
                                     />
                                 </td>
                                 <td style="border: 1px solid #dddddd; padding: 0px;">
-                                    <label for="{{opt.getRowId(row)}}" style="display:block">{{opt.getRowLabel(row)}}</label>
+                                    <label style="display:block">{{readPath(row, opt.row.label)[0]}}</label>
                                 </td>
                             </tr>
                         </table>
+                    </div>
+                    <!-- New Template Tab -->
+                    <div ng-if="data.raType == 'newTemplate'">
+                        <b>New Template</b>
                     </div>
                 </div>
                 <!-- End Run Application Type-->
