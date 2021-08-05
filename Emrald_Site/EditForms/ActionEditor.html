@@ -305,25 +305,45 @@
                             <p>{{raNewTemplate.toJSON()}}</p>
                             <input id="template-name" ng-model="raNewTemplate.name" />
                             <hr />
-                            <label for="option-label">Option label:</label>
-                            <input id="option-label" ng-model="raNewOption.label" placeholder="Option Label" />
-                            <br />
-                            <label for="option-type">Option type:</label>
-                            <select id="option-type" ng-model="raNewOption.type" ng-options="optType for optType in raTemplateOptionTypes"></select>
-                            <br />
-                            <div ng-if="raNewOption.type == 'Checklist'">
-                                <label for="option-var">Rows data source:</label>
-                                <select id="option-var" ng-model="raNewOption.rowVar" ng-options="optVar.name for optVar in raTemplateOptionVars"></select>
-                                <p>
-                                    <i>Preview:</i>
-                                    {{data[raNewOption.rowVar.value][0]}}[]
-                                </p>
-                                <label for="option-var-label">Row label: (<a href="https://jsonpath.com/" target="_blank">JSON path</a>)</label>
-                                <!-- TODO: validate path -->
-                                <input id="option-var-label" ng-model="raNewOption.rowLabel" />
+                            <div style="display: flex;">
+                                <div style="flex: 1;">
+                                    <label for="option-label">Option label:</label>
+                                    <input id="option-label" ng-model="raNewOption.label" placeholder="Option Label" />
+                                    <br />
+                                    <label for="option-type">Option type:</label>
+                                    <select id="option-type" ng-model="raNewOption.type" ng-options="optType for optType in raTemplateOptionTypes"></select>
+                                    <br />
+                                    <div ng-if="raNewOption.type == 'Checklist'">
+                                        <label for="option-var">Rows data source:</label>
+                                        <select id="option-var" ng-model="raNewOption.rowVar" ng-options="optVar.name for optVar in raTemplateOptionVars"></select>
+                                        <br />
+                                        <label for="option-var-label">Row label: (<a href="https://jsonpath.com/" target="_blank">JSON path</a>)</label>
+                                        <!-- TODO: validate path -->
+                                        <input id="option-var-label" ng-model="raNewOption.rowLabel" />
+                                    </div>
+                                    <br />
+                                    <button ng-click="addNewOption()">Add Option</button>
+                                </div>
+                                <div style="flex: 1;">
+                                    <div>Options:</div>
+                                    <table border="1" cellspacing="0" ng-repeat="(i, opt) in raNewTemplate.options">
+                                        <tr>
+                                            <th colspan="2">
+                                                {{opt.label}}
+                                                (<u><i style="cursor: pointer;" ng-click="deleteOption(i)">Delete</i></u>)
+                                            </th>
+                                        </tr>
+                                        <tr ng-repeat="row in data[opt.rowVar.value]" ng-if="opt.type == 'checklist'">
+                                            <td style="border: 1px solid #dddddd; padding: 0px;">
+                                                <input type="checkbox" disabled />
+                                            </td>
+                                            <td style="border: 1px solid #dddddd; padding: 0px;">
+                                                <label style="display:block">{{readPath(row, opt.row.label)[0]}}</label>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
                             </div>
-                            <br />
-                            <button ng-click="addNewOption()">Add Option</button>
                             <hr />
                             <button ng-click="addNewTemplate()">Add Template</button>
                         </div>

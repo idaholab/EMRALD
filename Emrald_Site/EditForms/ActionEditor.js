@@ -634,6 +634,9 @@ actionModule.controller('actionController', ['$scope', function ($scope) {
         }
         $scope.raNewOption = emptyNewOption();
     };
+    $scope.deleteOption = function (index) {
+        $scope.raNewTemplate.options.splice(index, 1);
+    };
     $scope.addNewTemplate = function () {
         var newTemplate = $scope.raNewTemplate;
         $scope.data.raTemplate = newTemplate;
