@@ -28,6 +28,41 @@
         tr:nth-child(even) {
             background-color: #dddddd;
         }
+
+        .openTemplate {
+            color: transparent;
+            width: 116px;
+        }
+
+        .openTemplate::-webkit-file-upload-button {
+            visibility: hidden;
+        }
+
+        .openTemplate::before {
+            content: 'Open Template';
+            color: black;
+            appearance: auto;
+            -webkit-writing-mode: horizontal-tb !important;
+            text-rendering: auto;
+            letter-spacing: normal;
+            word-spacing: normal;
+            text-transform: none;
+            text-indent: 0px;
+            text-shadow: none;
+            display: inline-block;
+            text-align: center;
+            align-items: flex-start;
+            cursor: default;
+            background-color: rgb(239, 239, 239);
+            box-sizing: border-box;
+            margin: 0em;
+            font: 400 13.3333px Arial;
+            padding: 1px 6px;
+            border-width: 1px;
+            border-style: outset;
+            border-color: rgb(118, 118, 118);
+            border-image: initial;
+        }
     </style>
 </head>
 <body ng-app="actionModule">
@@ -226,8 +261,13 @@
                     <!-- Template Tab -->
                     <div ng-if="data.raType == 'template'">
                         <div>
+                            <input type="file" class="openTemplate" file-model="templateFile" />
+                            <button>Save Template</button>
+                            <button>New Template</button>
+                            <br />
                             <span>Select template:</span>
                             <select ng-model="data.raTemplate" ng-options="opt.name for opt in raTemplates"></select>
+                            <hr />
                         </div>
                         <table border="1" cellspacing="0" ng-repeat="opt in data.raTemplate.options">
                             <tr>

@@ -581,6 +581,7 @@ actionModule.controller('actionController', ['$scope', function ($scope) {
 
     $scope.namingPatterns = [];
 
+    $scope.templateFile = '';
 
     $scope.$watch('name', function (newV, oldV) { if (newV !== oldV) somethingChanged(); });
     $scope.$watch('desc', function (newV, oldV) { if (newV !== oldV) somethingChanged(); });
@@ -601,4 +602,38 @@ actionModule.controller('actionController', ['$scope', function ($scope) {
     //$scope.$watch('row.Probability', function (newV, oldV) { if (newV !== oldV) somethingChanged(); });
 
     $scope.varsLoaded = false;
+}]);
+
+/**
+ * Angular directive that allows file inputs to automatically read & parse uploaded files.
+ */
+actionModule.directive('fileModel', ['$parse', function ($parse) {
+    return {
+        restrict: 'A',
+        link(scope, element, attrs) {
+            var model = $parse(attrs.fileModel);
+            element.bind('change', () => {
+                var content = '';
+                var reader = element[0].files[0].stream().getReader();
+                var processBits = ({ done, value }) => {
+                    if (done) {
+                        var json = {};
+                        try {
+                            json = JSON.parse(content);
+                        } catch (err) {
+                            // TODO
+                            alert('Could not parse template file.');
+                        }
+                        scope.$apply(() => {
+                            model.assign(scope, json);
+                        });
+                        return;
+                    }
+                    content += new TextDecoder().decode(value);
+                    return reader.read().then(processBits);
+                };
+                reader.read().then(processBits);
+            });
+        },
+    };
 }]);
