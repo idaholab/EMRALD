@@ -656,7 +656,6 @@ actionModule.controller('actionController', ['$scope', function ($scope) {
     $scope.namingPatterns = [];
 
     // Template controls
-    $scope.templateFile = '';
     $scope.saveTemplate = function () {
         saveAs(
             new Blob([JSON.stringify($scope.data.raTemplate.toJSON())]),
@@ -678,6 +677,18 @@ actionModule.controller('actionController', ['$scope', function ($scope) {
 
     $scope.readPath = function (row, path) {
         return jsonPath(row, path);
+    }
+
+    $scope.templateUploaded = function (templateFile) {
+        $scope.data.raTemplate = new RATemplate(templateFile.name);
+        templateFile.options.forEach((opt) => {
+            if (opt.type === 'checklist') {
+                $scope.data.raTemplate.addOption(new RAChecklist(opt.label, opt.rowVar, opt.row));
+            }
+        });
+        $scope.raTemplates.push($scope.data.raTemplate);
+        // Force the UI to update
+        $scope.$digest();
     }
 
     $scope.$watch('name', function (newV, oldV) { if (newV !== oldV) somethingChanged(); });
@@ -725,9 +736,7 @@ actionModule.directive('fileModel', ['$parse', function ($parse) {
                             // TODO
                             alert('File is not a template.');
                         } else {
-                            scope.$apply(() => {
-                                model.assign(scope, json);
-                            });
+                            scope.templateUploaded(json);
                         }
                         return;
                     }

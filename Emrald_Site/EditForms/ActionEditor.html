@@ -302,7 +302,6 @@
                             <b>New Template</b>
                             <br />
                             <label for="template-name">Template Name:</label>
-                            <p>{{raNewTemplate.toJSON()}}</p>
                             <input id="template-name" ng-model="raNewTemplate.name" />
                             <hr />
                             <div style="display: flex;">
@@ -315,7 +314,7 @@
                                     <br />
                                     <div ng-if="raNewOption.type == 'Checklist'">
                                         <label for="option-var">Rows data source:</label>
-                                        <select id="option-var" ng-model="raNewOption.rowVar" ng-options="optVar.name for optVar in raTemplateOptionVars"></select>
+                                        <select id="option-var" ng-model="raNewOption.rowVar" ng-options="optVar.value as optVar.name for optVar in raTemplateOptionVars"></select>
                                         <br />
                                         <label for="option-var-label">Row label: (<a href="https://jsonpath.com/" target="_blank">JSON path</a>)</label>
                                         <!-- TODO: validate path -->
@@ -333,7 +332,7 @@
                                                 (<u><i style="cursor: pointer;" ng-click="deleteOption(i)">Delete</i></u>)
                                             </th>
                                         </tr>
-                                        <tr ng-repeat="row in data[opt.rowVar.value]" ng-if="opt.type == 'checklist'">
+                                        <tr ng-repeat="row in data[opt.rowVar]" ng-if="opt.type == 'checklist'">
                                             <td style="border: 1px solid #dddddd; padding: 0px;">
                                                 <input type="checkbox" disabled />
                                             </td>
