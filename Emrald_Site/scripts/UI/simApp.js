@@ -464,7 +464,7 @@ var simApp;
         resize: function (evt, ui) {
           $('#ContentPanel').css({
             left: sideBar.clientWidth +
-              $('.ui-resizable-handle.ui-resizable-e').width() + parseInt(sideBarContainer.style.marginLeft) + parseInt(sideBarContainer.style.marginRight)
+              $('.ui-resizable-handle.ui-resizable-e').width() + parseInt(sideBarContainer.style.marginLeft) + parseInt(sideBarContainer.style.marginRight) + 24
             //,"border-style": "solid", "border-color": "red", "border-width": "1px"
           });
         }
