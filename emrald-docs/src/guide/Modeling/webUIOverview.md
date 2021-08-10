@@ -57,7 +57,7 @@
 
 ## Left Navigation Frame
 
-### Modeling Pieces
+### Modeling Structures
   <img src="/images/Modeling/webUIOverview/ModelingPieces.PNG" alt="Modeling Pieces" width="300"/><br>
   This top half of the Left Navigation Frame allows you to access your Diagrams, Logic Trees, and External Simulations.
 
