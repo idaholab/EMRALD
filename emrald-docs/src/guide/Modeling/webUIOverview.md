@@ -4,10 +4,10 @@
 ## Initial Screen
 ![Initial Screen](/images/Modeling/webUIOverview/InitialScreenSectionHighlights.PNG) <br>
   This is the screen you will see when you first open the EMRALD model editor. It contains the 
-  <span style="color:red">Modeling Area</span>, 
+  <span style="color:red">Modeling Area</span> which is the main workspace, 
   <span style="color:green">Top Menu Bar</span>, and
   <span style="color:blue">Left Navigation Frame</span>
-   which will be explained in the following sections.
+   which are editing and navigation panes that will be explained in the following sections.
 
 ## Top Menu Bar
 **Project** <br>
@@ -15,7 +15,7 @@
   * **New**: Creates a new project. The following window appears in the Modeling Area.<br>
   <div style="width:500px">![New Project Window](/images/Modeling/webUIOverview/NewProject.PNG)</div><br>
 
-      After hitting the "Ok" button, your project name will populate the right corner of the header.<br>![New Project Window](/images/Modeling/webUIOverview/NewProjectHeader.PNG)
+      After hitting the "Ok" button, your project name will populate the right corner of the header. See the following subsection, "Click Here to Name Project," to see another method for naming or renaming your project. <br>![New Project Window](/images/Modeling/webUIOverview/NewProjectHeader.PNG)
   - **Merge:** Merge one project into another project. This will pull in all diagrams, states, events, actions, variables, and logic trees into the project. First it will bring up a File Explorer, browse for the file you want to merge in and click "Open". <br>
   <div style="width:500px">![Open File to Merge Window](/images/Modeling/webUIOverview/Merge_1.PNG)</div><br>
   If there are diagrams or components with identical names in the models being merged, a conflict window will appear with a list of all of the identically named items. There are three options of how to resolve the conflict.
@@ -46,6 +46,14 @@
   <div style="width:500px">![About Menu](/images/Modeling/webUIOverview/TopMenuAbout.PNG)</div> <br>
   This redirects you to the INL [EMRALD Website](https://google.com) as shown below.<br>
   ![About Menu](/images/Modeling/webUIOverview/AboutRedirect.PNG) <br>
+
+**Click Here to Name Project** <br>
+  Click this to rename the project. A pop up window will appear that will allow you to change the name of the current project. Type the new name in.<div style="width:400px">![Rename Pop Up](/images/Modeling/webUIOverview/EnterNewName.PNG)</div>
+
+  The new name will replace "Click Here to Name Project" in the top right hand corner.  
+  <br>![New Project Window](/images/Modeling/webUIOverview/NewProjectHeader.PNG)
+
+  This will not change the name of the file or save a new version of the file. This will only change the name of the model as would be seen in the model's file.
 
 ## Left Navigation Frame
 
@@ -128,5 +136,6 @@ See [Variables](/guide/Modeling/variables.md) for more information.
   States are a logical representation for a current condition in a diagram. <br>
 
   See [States](/guide/Modeling/states.md) for more information.
+
 
 <!--Copyright 2021 Battelle Energy Alliance-->
