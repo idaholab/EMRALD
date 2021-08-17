@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Open Error Pro Form</title>
+    <link href="../../styles/Editors.css" rel="stylesheet" />
+    <script src="../../scripts/angular/angular.js"></script>
+    <script src="./fileModel.js"></script>
+    <script src="./openerror.js"></script>
+    <script src="./prism-parser.js"></script>
+    <style>
+      .epcs {
+        display: flex;
+        flex-direction: column;
+        flex: 12;
+      }
+      .epc {
+        display: flex;
+        border-bottom: 1px solid;
+      }
+      .epc:last-child {
+        border-bottom: none;
+      }
+      .element {
+        display: flex;
+        border: 1px solid;
+      }
+      .element > :first-child {
+        flex: 1;
+      }
+      .conditions {
+        display: flex;
+        flex-direction: column;
+        flex: 2;
+      }
+      .probabilities {
+        display: flex;
+        flex-direction: column;
+        flex: 6;
+      }
+      .probability {
+        display: flex;
+      }
+      .probability input {
+        width: 82px;
+      }
+      .probability > :first-child,
+      .probabilty > :nth-child(2) {
+        flex: 1;
+      }
+      .outcomes {
+        display: flex;
+        flex-direction: column;
+        flex: 6;
+        margin-left: 8px;
+      }
+    </style>
+  </head>
+  <body ng-app="openErrorForm">
+    <div ng-controller="openErrorController">
+      <form novalidate>
+        <label for="exePath">Executable path:</label>
+        <input id="exePath" ng-model="exePath" />
+        <br />
+        <label for="fileBtn">Load model:</label>
+        <input type="file" id="fileBtn" file-model="modelFile" />
+        <br />
+        <label for="destinationFile">Destination file path:</label>
+        <input id="destinationFile" ng-model="destinationFile" />
+        <div>
+          <div class="element">
+            <b>Element</b>
+            <div class="epcs">
+              <div class="epc" style="border: none">
+                <div class="conditions">
+                  <b class="condition">Conditions</b>
+                </div>
+                <div class="probabilities">
+                  <div class="probability">
+                    <b style="width: 82px">Use Variable</b>
+                    <b style="width: 82px">Probability</b>
+                    <div class="outcomes">
+                      <b class="outcome">Outcomes</b>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="element" ng-repeat="element in elements">
+            <p>{{element.name}}</p>
+            <div class="epcs">
+              <div class="epc" ng-repeat="epc in element.epcs">
+                <div class="conditions">
+                  <div
+                    class="condition"
+                    ng-if="epc.hasConditions"
+                    ng-repeat="condition in epc.conditions"
+                  >
+                    <span ng-if="condition.hasOp">{{condition.opName}}</span>
+                    <span>
+                      {{condition.name}} {{condition.comparison}}
+                      {{condition.value}}
+                    </span>
+                    <!--
+                    <select ng-if="condition.hasOp" ng-model="condition.opName">
+                        <option>AND</option>
+                        <option>OR</option>
+                    </select>
+                    <select ng-model="condition.name" ng-options="opt.name as opt.name for opt in dataNodes"></select>
+                    <select ng-model="condition.comparison">
+                        <option>=</option>
+                        <option>&lt;</option>
+                        <option>&gt;</option>
+                        <option>&lt;=</option>
+                        <option>&gt;=</option>
+                        <option>!=</option>
+                    </select>
+                    <select ng-model="condition.value" ng-options="opt for opt in getDataValues(condition.name)"></select>
+                    -->
+                  </div>
+                  <div class="condition" ng-if="!epc.hasConditions">true</div>
+                </div>
+                <div class="probabilities">
+                  <div class="probability" ng-repeat="then in epc.then">
+                    <input type="checkbox" ng-model="then.useVariable" />
+                    <input
+                      ng-model="then.probability"
+                      ng-if="!then.useVariable"
+                    />
+                    <select
+                      ng-if="then.useVariable"
+                      ng-options="opt.name for opt in cvVariables"
+                      ng-model="then.variable"
+                      ng-change="updateVarNames(then.variable)"
+                    ></select>
+                    <div class="outcomes">
+                      <div class="outcome" ng-repeat="outcome in then.then">
+                        {{outcome.name}} = {{outcome.value}}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <button ng-click="save()">Save</button>
+      </form>
+    </div>
+  </body>
+</html>

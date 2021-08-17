@@ -13,8 +13,12 @@
     <script src="../scripts/UI/Common.js"></script>
     <script src="../scripts/UI/FileSaver.js"></script>
     <script src="../scripts/UI/wcfService.js"></script>
+    <script src="./fileModel.js"></script>
     <script src="ActionEditor.js"></script>
     <style type="text/css">
+        html, .fill-height {
+            height: 100%;
+        }
         table2 {
             font-family: arial, sans-serif;
             border-collapse: collapse;
@@ -31,47 +35,11 @@
         tr:nth-child(even) {
             background-color: #dddddd;
         }
-
-        .openTemplate {
-            color: transparent;
-            width: 116px;
-        }
-
-        .openTemplate::-webkit-file-upload-button {
-            visibility: hidden;
-        }
-
-        .openTemplate::before {
-            content: 'Open Template';
-            color: black;
-            appearance: auto;
-            writing-mode: horizontal-tb !important;
-            -webkit-writing-mode: horizontal-tb !important;
-            text-rendering: auto;
-            letter-spacing: normal;
-            word-spacing: normal;
-            text-transform: none;
-            text-indent: 0px;
-            text-shadow: none;
-            display: inline-block;
-            text-align: center;
-            align-items: flex-start;
-            cursor: default;
-            background-color: rgb(239, 239, 239);
-            box-sizing: border-box;
-            margin: 0em;
-            font: 400 13.3333px Arial;
-            padding: 1px 6px;
-            border-width: 1px;
-            border-style: outset;
-            border-color: rgb(118, 118, 118);
-            border-image: initial;
-        }
     </style>
 </head>
-<body ng-app="actionModule">
-    <div ng-controller="actionController" id="actionControllerPanel">
-        <form novalidate>
+<body ng-app="actionModule" class="fill-height">
+    <div ng-controller="actionController" id="actionControllerPanel" class="fill-height">
+        <form novalidate class="fill-height">
             <div style="display: table; border-collapse: collapse;">
                 <div style="display:table-row">
                     <span style="display:table-cell;">Type:</span>
@@ -99,7 +67,7 @@
                 </div>
             </div>
             <hr />
-            <div id="detailTable">
+            <div id="detailTable" class="fill-height">
                 <!-- Begin Transition Type -->
                 <div id="TransitionPanel" ng-if="data.action.value=='atTransition'">
                     <div style="display: table;">
@@ -232,9 +200,9 @@
                 <!-- End Ext. Sim Message Type -->
                 <!-- Begin Run Application Type-->
 
-                <div id="RunAppPanel" ng-if="data.action.value=='atRunExtApp'">
+                <div id="RunAppPanel" ng-if="data.action.value=='atRunExtApp'" class="fill-height">
                     <input type="radio" name="tabControl" value="code" ng-model="data.raType"> Use Code
-                    <input type="radio" name="tabControl" value="template" ng-model="data.raType"> Use Templates
+                    <input type="radio" name="tabControl" value="template" ng-model="data.raType"> Use Custom Application
                     <!-- Code Tab -->
                     <div style="display: flex; flex-direction: row; align-items: stretch; height: calc(100vh - 8em); width: 98vw;" ng-if="data.raType == 'code'">
                         <div style="display: flex; flex-direction: column; flex: 1">
@@ -263,89 +231,9 @@
                         </table>
                     </div>
                     <!-- Template Tab -->
-                    <div ng-if="data.raType == 'template'">
-                        <!-- Use template tab -->
-                        <div ng-if="raTemplateTab == 'useTemplate'">
-                            <div>
-                                <input type="file" class="openTemplate" file-model="templateFile" />
-                                <button ng-click="saveTemplate()">Save Template</button>
-                                <button ng-click="newTemplate()">New Template</button>
-                                <button ng-click="editTemplate()">Edit Template</button>
-                                <br />
-                                <span>Select template:</span>
-                                <select ng-model="data.raTemplate" ng-options="opt.name for opt in raTemplates"></select>
-                                <hr />
-                            </div>
-                            <table border="1" cellspacing="0" ng-repeat="opt in data.raTemplate.options">
-                                <tr>
-                                    <th colspan="2">{{opt.label}}</th>
-                                </tr>
-                                <tr ng-repeat="row in data[opt.rowVar]" ng-if="opt.type == 'checklist'">
-                                    <td style="border: 1px solid #dddddd; padding: 0px;">
-                                        <input
-                                            type="checkbox"
-                                            ng-true-value=true
-                                            ng-false-value=false
-                                            ng-checked="{{row.check}}"
-                                            ng-model="row.check"
-                                            value="{{row.value}}"
-                                        />
-                                    </td>
-                                    <td style="border: 1px solid #dddddd; padding: 0px;">
-                                        <label style="display:block">{{readPath(row, opt.row.label)[0]}}</label>
-                                    </td>
-                                </tr>
-                            </table>
-                        </div>
-                        <!-- New Template Tab -->
-                        <div ng-if="raTemplateTab == 'newTemplate'">
-                            <b>New Template</b>
-                            <br />
-                            <label for="template-name">Template Name:</label>
-                            <input id="template-name" ng-model="raNewTemplate.name" />
-                            <hr />
-                            <div style="display: flex;">
-                                <div style="flex: 1;">
-                                    <label for="option-label">Option label:</label>
-                                    <input id="option-label" ng-model="raNewOption.label" placeholder="Option Label" />
-                                    <br />
-                                    <label for="option-type">Option type:</label>
-                                    <select id="option-type" ng-model="raNewOption.type" ng-options="optType for optType in raTemplateOptionTypes"></select>
-                                    <br />
-                                    <div ng-if="raNewOption.type == 'Checklist'">
-                                        <label for="option-var">Rows data source:</label>
-                                        <select id="option-var" ng-model="raNewOption.rowVar" ng-options="optVar.value as optVar.name for optVar in raTemplateOptionVars"></select>
-                                        <br />
-                                        <label for="option-var-label">Row label: (<a href="https://jsonpath.com/" target="_blank">JSON path</a>)</label>
-                                        <!-- TODO: validate path -->
-                                        <input id="option-var-label" ng-model="raNewOption.rowLabel" />
-                                    </div>
-                                    <br />
-                                    <button ng-click="addNewOption()">Add Option</button>
-                                </div>
-                                <div style="flex: 1;">
-                                    <div>Options:</div>
-                                    <table border="1" cellspacing="0" ng-repeat="(i, opt) in raNewTemplate.options">
-                                        <tr>
-                                            <th colspan="2">
-                                                {{opt.label}}
-                                                (<u><i style="cursor: pointer;" ng-click="deleteOption(i)">Delete</i></u>)
-                                            </th>
-                                        </tr>
-                                        <tr ng-repeat="row in data[opt.rowVar]" ng-if="opt.type == 'checklist'">
-                                            <td style="border: 1px solid #dddddd; padding: 0px;">
-                                                <input type="checkbox" disabled />
-                                            </td>
-                                            <td style="border: 1px solid #dddddd; padding: 0px;">
-                                                <label style="display:block">{{readPath(row, opt.row.label)[0]}}</label>
-                                            </td>
-                                        </tr>
-                                    </table>
-                                </div>
-                            </div>
-                            <hr />
-                            <button ng-click="addNewTemplate()">Add Template</button>
-                        </div>
+                    <div ng-if="data.raType == 'template'" class="fill-height">
+                        <select ng-options="opt as opt.name for opt in raTemplates" ng-model="data.raTemplate"></select>
+                        <iframe name="customForm" src="{{data.raTemplate.path}}" style="display: block; height: 100%; width: 100%; border: none;"></iframe>
                     </div>
                 </div>
                 <!-- End Run Application Type-->

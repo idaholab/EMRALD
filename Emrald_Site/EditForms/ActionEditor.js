@@ -1,43 +1,5 @@
 ﻿// Copyright 2021 Battelle Energy Alliance
 
-class RAChecklist {
-    constructor(label, rowVar, row) {
-        this.label = label;
-        this.type = 'checklist';
-        this.rowVar = rowVar;
-        this.row = row;
-    }
-    
-    toJSON() {
-        return {
-            label: this.label,
-            type: this.type,
-            rowVar: this.rowVar,
-            row: this.row,
-        };
-    }
-}
-
-class RATemplate {
-    constructor(name) {
-        this.name = name;
-        this.options = [];
-    }
-
-    addOption(option) {
-        this.options.push(option);
-        return this;
-    }
-
-    toJSON() {
-        return {
-            type: 'raTemplate',
-            name: this.name,
-            options: this.options.map((option) => option.toJSON()),
-        };
-    }
-}
-
 function setAsNewChecked() {
     var scope = angular.element(document.querySelector('#actionControllerPanel')).scope();
     var btn = parent.document.getElementById('btn_OK');
@@ -590,61 +552,15 @@ actionModule.controller('actionController', ['$scope', function ($scope) {
         raLocation: '',
         raPostCode: '',
         raType: 'template',
-        raTemplate: '',
+        raTemplate: {},
     };
+
     $scope.raTemplates = [
-        new RATemplate('THModel')
-            .addOption(
-                new RAChecklist('Export Variables', 'varMap', {
-                    label: 'value.Variable.name',
-                }),
-            ),
-    ];
-    $scope.raTemplateOptionTypes = ['Checklist'];
-
-    function emptyNewOption() {
-        return {
-            label: 'New Option',
-            type: '',
-            rowVar: '',
-            rowLabel: '',
-        };
-    }
-
-    $scope.raTemplateTab = 'useTemplate';
-    $scope.raNewOption = emptyNewOption();
-    $scope.raTemplateOptionVars = [
         {
-            name: 'Variables',
-            value: 'varMap',
-        },
-    ];
-    $scope.raNewTemplate = new RATemplate('New Template');
-    $scope.addNewOption = function () {
-        var { raNewOption } = $scope;
-        switch (raNewOption.type) {
-            case 'Checklist':
-                $scope.raNewTemplate.addOption(
-                    new RAChecklist(raNewOption.label, raNewOption.rowVar, {
-                        label: raNewOption.rowLabel,
-                    }),
-                );
-                break;
-            default:
+            name: 'Open Error Pro',
+            path: './ExecuteCustomForms/openerror.html',
         }
-        $scope.raNewOption = emptyNewOption();
-    };
-    $scope.deleteOption = function (index) {
-        $scope.raNewTemplate.options.splice(index, 1);
-    };
-    $scope.addNewTemplate = function () {
-        var newTemplate = $scope.raNewTemplate;
-        $scope.data.raTemplate = newTemplate;
-        $scope.raTemplates.push(newTemplate);
-        $scope.raNewTemplate = new RATemplate('New Template');
-        $scope.raTemplateTab = 'useTemplate';
-        // TODO: prompt save
-    };
+    ];
 
     $scope.data.action = $scope.data.actions[0];
     $scope.data.simMessage = $scope.data.simMessages[0];
@@ -655,40 +571,8 @@ actionModule.controller('actionController', ['$scope', function ($scope) {
 
     $scope.namingPatterns = [];
 
-    // Template controls
-    $scope.saveTemplate = function () {
-        saveAs(
-            new Blob([JSON.stringify($scope.data.raTemplate.toJSON())]),
-            `${$scope.data.raTemplate.name}.json`,
-            {
-                type: 'text/plain;charset=utf-8',
-            },
-        );
-    }
-    $scope.editTemplate = function () {
-        $scope.raNewTemplate = $scope.data.raTemplate;
-        $scope.raTemplateTab = 'newTemplate';
-    }
-    $scope.newTemplate = function () {
-        $scope.raNewTemplate = new RATemplate('New Template');
-        $scope.raNewOption = emptyNewOption();
-        $scope.raTemplateTab = 'newTemplate';
-    }
-
     $scope.readPath = function (row, path) {
         return jsonPath(row, path);
-    }
-
-    $scope.templateUploaded = function (templateFile) {
-        $scope.data.raTemplate = new RATemplate(templateFile.name);
-        templateFile.options.forEach((opt) => {
-            if (opt.type === 'checklist') {
-                $scope.data.raTemplate.addOption(new RAChecklist(opt.label, opt.rowVar, opt.row));
-            }
-        });
-        $scope.raTemplates.push($scope.data.raTemplate);
-        // Force the UI to update
-        $scope.$digest();
     }
 
     $scope.$watch('name', function (newV, oldV) { if (newV !== oldV) somethingChanged(); });
@@ -710,41 +594,28 @@ actionModule.controller('actionController', ['$scope', function ($scope) {
     //$scope.$watch('row.Probability', function (newV, oldV) { if (newV !== oldV) somethingChanged(); });
 
     $scope.varsLoaded = false;
-}]);
 
-/**
- * Angular directive that allows file inputs to automatically read & parse uploaded files.
- */
-actionModule.directive('fileModel', ['$parse', function ($parse) {
-    return {
-        restrict: 'A',
-        link(scope, element, attrs) {
-            var model = $parse(attrs.fileModel);
-            element.bind('change', () => {
-                var content = '';
-                var reader = element[0].files[0].stream().getReader();
-                var processBits = ({ done, value }) => {
-                    if (done) {
-                        var json = {};
-                        try {
-                            json = JSON.parse(content);
-                        } catch (err) {
-                            // TODO
-                            alert('Could not parse template file.');
-                        }
-                        if (json.type !== 'raTemplate') {
-                            // TODO
-                            alert('File is not a template.');
-                        } else {
-                            scope.templateUploaded(json);
-                        }
-                        return;
-                    }
-                    content += new TextDecoder().decode(value);
-                    return reader.read().then(processBits);
-                };
-                reader.read().then(processBits);
-            });
-        },
+    window.getScope = function () {
+        return $scope;
     };
+
+    // TODO: create undefinied objects
+    function applyToScope(obj, parent) {
+        Object.entries(obj).forEach((entry) => {
+            if (typeof entry[1] === 'object') {
+                applyToScope(entry[1], parent[entry[0]]);
+            } else {
+                parent[entry[0]] = entry[1];
+            }
+        });
+    }
+
+    window.addEventListener('message', (ev) => {
+        switch (ev.data.type) {
+            case 'saveTemplate':
+                applyToScope(ev.data.payload, $scope);
+                break;
+            default:
+        }
+    });
 }]);
