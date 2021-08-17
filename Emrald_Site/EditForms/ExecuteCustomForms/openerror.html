@@ -126,12 +126,13 @@
                     <input
                       ng-model="then.probability"
                       ng-if="!then.useVariable"
+                      ng-change="save()"
                     />
                     <select
                       ng-if="then.useVariable"
                       ng-options="opt.name for opt in cvVariables"
                       ng-model="then.variable"
-                      ng-change="updateVarNames(then.variable)"
+                      ng-change="save()"
                     ></select>
                     <div class="outcomes">
                       <div class="outcome" ng-repeat="outcome in then.then">
@@ -144,7 +145,6 @@
             </div>
           </div>
         </div>
-        <button ng-click="save()">Save</button>
       </form>
     </div>
   </body>

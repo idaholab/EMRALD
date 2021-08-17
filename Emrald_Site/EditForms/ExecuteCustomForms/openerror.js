@@ -165,6 +165,9 @@ openErrorForm.controller("openErrorController", [
         payload: GetDataObject($scope),
       });
     };
+
+    $scope.$watch('exePath', $scope.save);
+    $scope.$watch('destinationFile', $scope.save);
   },
 ]);
 
