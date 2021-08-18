@@ -19,9 +19,9 @@ class Condition {
   }
 
   toString() {
-    var re = '';
+    var re = "";
     if (this.hasOp) {
-      re += `${this.op}`
+      re += `${this.op}`;
     }
     re += `(${this.name}${this.comparison}${this.value})`;
     return re;
@@ -38,14 +38,17 @@ class Then {
   toString() {
     var outcomes = this.then
       .map((then) => {
-        if (typeof then.value === 'object') {
+        if (typeof then.value === "object") {
           if (then.value.op !== undefined) {
             return `(${then.name}'=${then.value.name}${then.value.op}${then.value.value})`;
           }
         }
         return `(${then.name}'=${then.value})`;
       })
-      .join('&');
+      .join("&");
+    if (this.useVariable) {
+      return `"+${this.variable.name}+":${outcomes}`;
+    }
     return `${this.probability}:${outcomes}`;
   }
 }
@@ -68,8 +71,10 @@ class EPC {
   }
 
   toString() {
-    var conditions = this.conditions.map((condition) => condition.toString()).join('');
-    var outcomes = this.then.map((then) => then.toString()).join('+');
+    var conditions = this.conditions
+      .map((condition) => condition.toString())
+      .join("");
+    var outcomes = this.then.map((then) => then.toString()).join("+");
     return `${conditions}->${outcomes};`;
   }
 }
@@ -103,12 +108,15 @@ function GetDataObject($scope) {
     data: {},
   };
   dataObj.data.raLocation = $scope.exePath;
-  
+
   dataObj.varNames = [];
   $scope.elements.forEach((element) => {
     element.epcs.forEach((epc) => {
       epc.then.forEach((outcome) => {
-        if (outcome.useVariable && dataObj.varNames.indexOf(outcome.variable.name) < 0) {
+        if (
+          outcome.useVariable &&
+          dataObj.varNames.indexOf(outcome.variable.name) < 0
+        ) {
           dataObj.varNames.push(outcome.variable.name);
         }
       });
@@ -118,14 +126,29 @@ function GetDataObject($scope) {
   var model = $scope.model;
   $scope.elements.forEach((element) => {
     element.epcs.forEach((epc) => {
-      epc.node.innerHTML = '';
+      epc.node.innerHTML = "";
       var text = model.createTextNode(epc.toString());
       epc.node.appendChild(text);
     });
   });
-  var xml = new XMLSerializer().serializeToString(model).replace(/[\n\t]/g, '').replace(/([\"\\])/g, '\\$1');
-  dataObj.data.raPreCode = `System.IO.File.WriteAllText("${$scope.destinationFile.replace(/([\"\\])/g, '\\$1')}", "${xml}");return ((int)pumpFailTime).ToString() + \" \" + failureMode.ToString() + \" \" + ((int)flexFixTime).ToString();`;
-  dataObj.data.raPostCode = 'List<String> retStates = new List<String>();\nreturn retStates;';
+  function escape(str) {
+    return str.replace(/([\"\\])/g, "\\$1");
+  }
+  var xml = escape(
+    new XMLSerializer().serializeToString(model).replace(/[\n\t]/g, "")
+  );
+  dataObj.data.raPreCode = `System.IO.File.WriteAllText("${escape(
+    $scope.destinationFile
+  )}", "${xml}");`;
+  dataObj.data.raPreCode += `\nreturn "-m \\"${escape(
+    $scope.destinationFile
+  )}\\" -f ${$scope.prismMethod.name}`;
+  if (typeof $scope.prismMethod.parameter === "string") {
+    dataObj.data.raPreCode += ` -p \\"${$scope.prismMethod.paramValue}\\"`;
+  }
+  dataObj.data.raPreCode += '";';
+  dataObj.data.raPostCode =
+    "List<String> retStates = new List<String>();\nreturn retStates;";
 
   return dataObj;
 }
@@ -140,15 +163,55 @@ openErrorForm.controller("openErrorController", [
     $scope.rows = [];
     $scope.destinationFile = "";
     $scope.exePath = "";
+    $scope.prismMethod = null;
+    $scope.prismMethods = [
+      {
+        name: "compute_execution_time",
+      },
+      {
+        name: "compute_P_single",
+        parameter: "f_name",
+      },
+      {
+        name: "compute_MTTF",
+        parameter: "f_name",
+      },
+      {
+        name: "compute_P",
+        parameter: "f_name",
+      },
+      {
+        name: "compute_N_failures",
+        parameter: "f_name",
+      },
+      {
+        name: "compute_downtime",
+        parameter: "f_name",
+      },
+      {
+        name: "compute_repetitions",
+        parameter: "el_name",
+      },
+      {
+        name: "compute_sub_models_and_repetitions_for_element",
+        parameter: "el_name",
+      },
+      {
+        name: "compute_sub_models_and_repetitions",
+      },
+    ];
 
     $scope.$watch("modelFile", function () {
-      $scope.model = new DOMParser().parseFromString($scope.modelFile, "text/xml");
-      $scope.dataNodes = Array.from($scope.model.getElementsByTagName("data")).map(
-        (node) => new DataNode(node)
+      $scope.model = new DOMParser().parseFromString(
+        $scope.modelFile,
+        "text/xml"
       );
-      $scope.elements = Array.from($scope.model.getElementsByTagName("element")).map(
-        (node) => new Element(node)
-      );
+      $scope.dataNodes = Array.from(
+        $scope.model.getElementsByTagName("data")
+      ).map((node) => new DataNode(node));
+      $scope.elements = Array.from(
+        $scope.model.getElementsByTagName("element")
+      ).map((node) => new Element(node));
     });
 
     $scope.getDataValues = function (name) {
@@ -166,8 +229,9 @@ openErrorForm.controller("openErrorController", [
       });
     };
 
-    $scope.$watch('exePath', $scope.save);
-    $scope.$watch('destinationFile', $scope.save);
+    $scope.$watch("exePath", $scope.save);
+    $scope.$watch("destinationFile", $scope.save);
+    $scope.$watch("prismMethod", $scope.save);
   },
 ]);
 

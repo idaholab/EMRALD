@@ -145,6 +145,13 @@
             </div>
           </div>
         </div>
+        <hr />
+        <label for="prism-method">PRISM method:</label>
+        <select id="prism-method" ng-model="prismMethod" ng-options="opt.name for opt in prismMethods"></select>
+        <div ng-if="prismMethod.parameter !== undefined">
+          <label for="prism-param">{{prismMethod.parameter}}:</label>
+          <input id="prism-param" ng-model="prismMethod.paramValue" ng-change="save()" />
+        </div>
       </form>
     </div>
   </body>

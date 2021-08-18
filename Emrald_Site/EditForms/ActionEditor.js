@@ -613,7 +613,6 @@ actionModule.controller('actionController', ['$scope', function ($scope) {
     window.addEventListener('message', (ev) => {
         switch (ev.data.type) {
             case 'saveTemplate':
-                console.log(ev.data.payload);
                 applyToScope(ev.data.payload, $scope);
                 break;
             default:
