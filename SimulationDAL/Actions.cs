@@ -1361,7 +1361,7 @@ namespace SimulationDAL
 
       string runParams = makeInputFileCompEval.EvaluateString();
       string fullExePath = exePath;
-      if (!Path.IsPathRooted(exePath))
+      if ((exePath[0] == '.') && (!Path.IsPathRooted(exePath)))
       {
         fullExePath = lists.rootPath;
         if (!fullExePath.EndsWith(@"\"))
