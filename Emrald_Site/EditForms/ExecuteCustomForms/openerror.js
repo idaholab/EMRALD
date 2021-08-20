@@ -159,6 +159,7 @@ openErrorForm.controller("openErrorController", [
     $scope.model = null;
     $scope.modelFile = "";
     $scope.elements = [];
+    $scope.failures = [];
     $scope.dataNodes = [];
     $scope.rows = [];
     $scope.destinationFile = "";
@@ -212,6 +213,9 @@ openErrorForm.controller("openErrorController", [
       $scope.elements = Array.from(
         $scope.model.getElementsByTagName("element")
       ).map((node) => new Element(node));
+      $scope.failures = Array.from(
+        $scope.model.getElementsByTagName("failure")
+      ).map((node) => node.getAttribute("name"));
     });
 
     $scope.getDataValues = function (name) {

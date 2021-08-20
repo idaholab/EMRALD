@@ -147,10 +147,19 @@
         </div>
         <hr />
         <label for="prism-method">PRISM method:</label>
-        <select id="prism-method" ng-model="prismMethod" ng-options="opt.name for opt in prismMethods"></select>
+        <select
+          id="prism-method"
+          ng-model="prismMethod"
+          ng-options="opt.name for opt in prismMethods"
+        ></select>
         <div ng-if="prismMethod.parameter !== undefined">
           <label for="prism-param">{{prismMethod.parameter}}:</label>
-          <input id="prism-param" ng-model="prismMethod.paramValue" ng-change="save()" />
+          <select
+            id="prism-param"
+            ng-model="prismMethod.paramValue"
+            ng-options="failure for failure in failures"
+            ng-change="save()"
+          ></select>
         </div>
       </form>
     </div>
