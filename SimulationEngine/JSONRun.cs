@@ -193,7 +193,7 @@ namespace SimulationEngine
         if (_options.inpfile != null) //can be null then must be passed into the run command
         {
           //see if it is a relative path.
-          if (!Path.IsPathRooted(_options.inpfile))
+          if (!Path.IsPathRooted(_options.inpfile) && (_options.inpfile[0] == '.'))
           {
             _options.inpfile = System.IO.Directory.GetCurrentDirectory() + _options.inpfile;
           }
@@ -221,7 +221,7 @@ namespace SimulationEngine
         if (_options.resout != "")
         {
           //see if it is a relative path.
-          if (!Path.IsPathRooted(_options.resout))
+          if (!Path.IsPathRooted(_options.resout) && (_options.resout[0] == '.'))
           {
             _options.resout = System.IO.Directory.GetCurrentDirectory() + _options.resout;
           }
@@ -250,7 +250,7 @@ namespace SimulationEngine
         {
 
           //see if it is a relative path.
-          if (!Path.IsPathRooted(_options.jsonRes))
+          if (!Path.IsPathRooted(_options.jsonRes) && (_options.jsonRes[0] == '.'))
           {
             _options.jsonRes = System.IO.Directory.GetCurrentDirectory() + _options.jsonRes;
           }
@@ -283,7 +283,7 @@ namespace SimulationEngine
         if (_options.pathout != "")
         {
           //see if it is a relative path.
-          if (!Path.IsPathRooted(_options.pathout))
+          if (!Path.IsPathRooted(_options.pathout) && (_options.pathout[0] == '.'))
           {
             _options.pathout = System.IO.Directory.GetCurrentDirectory() + _options.pathout;
           }

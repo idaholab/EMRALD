@@ -640,7 +640,7 @@ namespace SimulationDAL
       this._docType = (DocType)dynObj.docType;
       this._docPath = Convert.ToString(dynObj.docPath);
       
-      if (!Path.IsPathRooted(_docPath))
+      if (!Path.IsPathRooted(_docPath) && (_docPath[0] == '.'))
       {
         _docFullPath = lists.rootPath;
         if (!_docFullPath.EndsWith(@"\"))
