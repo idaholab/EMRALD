@@ -11,7 +11,7 @@ Fill out the dialogue box and press "OK". Each field is described in detail belo
 - **Description (Desc):** Optional description of the variable.
 - **Scope:** Click the field to define the variable as a Global variable or an External Simulation variable.
 - **Variable Type (Var Type):** Click the field to define the variable as an integer, double, boolean, or string.
-- **Value:** The initial value of the variable.
+- **Value:** The initial value of the variable. It can also accept values in the form: 0E+/-00.
 - **Reset to initial value for every simulation run:** Check the box to have the variable reset to the initial value at the beginning of every simulation run.
 
 It will be listed in the Left Navigation Frame.<br>
