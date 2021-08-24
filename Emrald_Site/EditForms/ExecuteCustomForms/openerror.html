@@ -64,8 +64,8 @@
         <label for="fileBtn">Load model:</label>
         <input type="file" id="fileBtn" file-model="modelFile" />
         <br />
-        <label for="destinationFile">Destination file path:</label>
-        <input id="destinationFile" ng-model="destinationFile" />
+        <label for="prismPath">PRISM executable location:</label>
+        <input id="prismPath" ng-model="prismPath" />
         <div>
           <div class="element">
             <b>Element</b>
@@ -150,17 +150,16 @@
         <select
           id="prism-method"
           ng-model="prismMethod"
-          ng-options="opt.name for opt in prismMethods"
+          ng-options="opt for opt in prismMethods"
         ></select>
-        <div ng-if="prismMethod.parameter !== undefined">
-          <label for="prism-param">{{prismMethod.parameter}}:</label>
-          <select
-            id="prism-param"
-            ng-model="prismMethod.paramValue"
-            ng-options="failure for failure in failures"
-            ng-change="save()"
-          ></select>
-        </div>
+        <br />
+        <label for="prism-param">Target:</label>
+        <select
+          id="prism-param"
+          ng-model="methodParam"
+          ng-options="failure for failure in failures"
+          ng-change="save()"
+        ></select>
       </form>
     </div>
   </body>

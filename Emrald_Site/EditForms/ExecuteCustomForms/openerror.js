@@ -137,15 +137,12 @@ function GetDataObject($scope) {
   var xml = escape(
     new XMLSerializer().serializeToString(model).replace(/[\n\t]/g, "")
   );
-  dataObj.data.raPreCode = `System.IO.File.WriteAllText("${escape(
-    $scope.destinationFile
-  )}", "${xml}");`;
-  dataObj.data.raPreCode += `\nreturn "-m \\"${escape(
-    $scope.destinationFile
-  )}\\" -f ${$scope.prismMethod.name}`;
-  if (typeof $scope.prismMethod.parameter === "string") {
-    dataObj.data.raPreCode += ` -p \\"${$scope.prismMethod.paramValue}\\"`;
-  }
+  dataObj.data.raPreCode = `System.IO.File.WriteAllText("./model_temp.xml", "${xml}");`;
+  dataObj.data.raPreCode += `\nreturn "--model \\"./model_temp.xml\\" --method ${
+    $scope.prismMethod
+  } --target \\"${$scope.methodParam}\\" --prism \\"${escape(
+    $scope.prismPath
+  )}\\"`;
   dataObj.data.raPreCode += '";';
   dataObj.data.raPostCode =
     "List<String> retStates = new List<String>();\nreturn retStates;";
@@ -162,44 +159,20 @@ openErrorForm.controller("openErrorController", [
     $scope.failures = [];
     $scope.dataNodes = [];
     $scope.rows = [];
-    $scope.destinationFile = "";
+    $scope.prismPath = "";
     $scope.exePath = "";
+    $scope.methodParam = "";
     $scope.prismMethod = null;
     $scope.prismMethods = [
-      {
-        name: "compute_execution_time",
-      },
-      {
-        name: "compute_P_single",
-        parameter: "f_name",
-      },
-      {
-        name: "compute_MTTF",
-        parameter: "f_name",
-      },
-      {
-        name: "compute_P",
-        parameter: "f_name",
-      },
-      {
-        name: "compute_N_failures",
-        parameter: "f_name",
-      },
-      {
-        name: "compute_downtime",
-        parameter: "f_name",
-      },
-      {
-        name: "compute_repetitions",
-        parameter: "el_name",
-      },
-      {
-        name: "compute_sub_models_and_repetitions_for_element",
-        parameter: "el_name",
-      },
-      {
-        name: "compute_sub_models_and_repetitions",
-      },
+      "compute_execution_time",
+      "compute_P_single",
+      "compute_MTTF",
+      "compute_P",
+      "compute_N_failures",
+      "compute_downtime",
+      "compute_repetitions",
+      "compute_sub_models_and_repetitions_for_element",
+      "compute_sub_models_and_repetitions",
     ];
 
     $scope.$watch("modelFile", function () {
@@ -233,8 +206,16 @@ openErrorForm.controller("openErrorController", [
       });
     };
 
-    $scope.$watch("exePath", $scope.save);
-    $scope.$watch("destinationFile", $scope.save);
+    $scope.$watch("exePath", () => {
+      var re = /[\/\\]/g;
+      let lastIndex = 0;
+      while (re.test($scope.exePath) == true) {
+        lastIndex = re.lastIndex;
+      }
+      $scope.configFile = `${$scope.exePath.substring(0, lastIndex)}config.txt`;
+      $scope.save();
+    });
+    $scope.$watch("configFile", $scope.save);
     $scope.$watch("prismMethod", $scope.save);
   },
 ]);
