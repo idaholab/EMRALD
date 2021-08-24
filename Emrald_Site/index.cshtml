@@ -3,7 +3,7 @@
 @{
   bool runningLocal = Request.ServerVariables["HTTP_HOST"].Contains("localhost");
   string basehref = "/emrald/";
-  bool isAuthenticated = Request.IsAuthenticated;
+    bool isAuthenticated = true; //Request.IsAuthenticated;
   if (runningLocal)
   {
     basehref = "/";
