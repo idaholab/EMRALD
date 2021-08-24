@@ -138,7 +138,7 @@
                     <label id="ValueLabel" style="display: table-cell; vertical-align: top;">Value:</label>
                     <textarea id="valInput" rows="4" cols="40" ng-model="data.value" ng-if="stringTypeSelected" style="display: table-cell;"></textarea>
                     <input type="number" ng-model="data.value" step="1" ng-if="intTypeSelected" style="display: table-cell;" />
-                    <input type="number" ng-model="data.value" ng-if="doubleTypeSelected" style="display: table-cell;" />
+                    <input ng-model="data.value" ng-if="doubleTypeSelected" style="display: table-cell;" />
                     <select id="selectBool" ng-model="data.value" ng-options="val for val in varBoolVal" ng-if="boolTypeSelected" style="display: table-cell; width: 130px;"></select>
                     <br />
                     <div id="ResetValuePanel" style="white-space:nowrap;">
