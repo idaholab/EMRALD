@@ -2,7 +2,9 @@
 Variables define a value that can be evaluated or modified by user defied scripts in some events and actions. External variables are linked to an external code and can be modified or evaluated by either.
 
 ## Creating a New Variable
-On the Left Navigation Frame, right-click on the variable label and click "New Variable".<br> 
+
+On the Left Navigation Frame, right-click on the variable label and click "New Variable". This can be done from either the All tab or the Global tab.<br> 
+
 <div style="width:300px">![New Variable Step 1](/images/Modeling/variables/NewVar1.PNG)</div>
 
 Fill out the dialogue box and press "OK". Each field is described in detail below.<br>
@@ -11,7 +13,9 @@ Fill out the dialogue box and press "OK". Each field is described in detail belo
 - **Description (Desc):** Optional description of the variable.
 - **Scope:** Click the field to define the variable as a Global variable or an External Simulation variable.
 - **Variable Type (Var Type):** Click the field to define the variable as an integer, double, boolean, or string.
-- **Value:** The initial value of the variable.
+
+- **Value:** The initial value of the variable. It can also accept values in the form: 0E+/-00.
+
 - **Reset to initial value for every simulation run:** Check the box to have the variable reset to the initial value at the beginning of every simulation run.
 
 It will be listed in the Left Navigation Frame.<br>
@@ -97,7 +101,8 @@ To add a state to the tabulated list, click and drag the state of interest from 
 The state should also appear in the table. You will have the option to make it either a Static or Dynamic response. The default is Static which means that the Accrual Rate is constant. The Accrual Rate is the rate at which the variable increases based on the time spent in the state. The value input is the amount the variable will accrue per the time unit on the right. The unit can be changed as seen in the dropdown menu between days, hours, minute, and seconds. </br>
 <div style="width:400px">![Accrual Variable Editor Window Static](/images/Modeling/variables/Accrual_Static.PNG)</div>
 
-To switch to the Dynamic type, select the radio button for "Dynamic." The Dynamic type means that the accrual rate will vary with respect to the simulation time passed. For example, if you want the accrual rate to change after the first ten hours of simulation time, you can define the rate for the first ten hours then the rate for the remaining time. The simulation time is the time at which the accrual rate changes to the value input. This rate will carry out for the rest of the simulation time unless otherwise specified. Like in the Static type, the units can be changed for both the simulation time and accrual rate. </br>
+To switch to the Dynamic type, select the radio button for "Dynamic." The Dynamic type means that the accrual rate will vary with respect to the simulation time passed. For example, if you want the accrual rate to change after the first ten hours of simulation time, you can define the rate for the first ten hours then the rate for the remaining time. The simulation time is the time at which the accrual rate changes to the value input. This rate will carry out for the rest of the simulation time unless otherwise specified. Like in the Static type, the unit can be changed for both the simulation time and accrual rate. When the unit is changed for one, it will change it for both. They must be the same unit. </br>
+
 <div style="width:600px">![Accrual Variable Editor Window Dynamic Units](/images/Modeling/variables/Accrual_Dyn_Unit.PNG)</div>
 
 As you can see, there is no area immediately present to add values in for the rate. Click the button "Add Row" to add a row for entering the rate. </br>
