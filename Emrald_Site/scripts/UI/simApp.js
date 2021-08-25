@@ -42,7 +42,7 @@ function downloadClientTesterSource() {
 /// <reference path="WindowFrame.js" />
 //opens logic tree
 function openFaultTree() {
-  var wf = mxWindow.createFrameWindow(
+  var wnd = mxWindow.createFrameWindow(
     'FTViewer10.html',
     '',  //command buttons
     'minimize, maximize, close', //top buttons
@@ -80,7 +80,7 @@ function deleteSimulation(apiUrl, simId) {
     function onSuccess(data) {
       var retData = JSON.parse(data);
       if (retData.error == 0) {
-        deleteSimulationDone = true;
+        // deleteSimulationDone = true;
       }
       else {
         console.log("Error : " + retData.error + " - " + retData.errorStr);
@@ -156,25 +156,61 @@ function openProject() {
   dialog.value = "";
   dialog.type = 'file';
   dialog.style.display = 'none';
-  dialog.accept = "application/json"; //only support in chrome and IE.  FF doesn't work with hint.
-  dialog.filetype = "json";
+  dialog.accept = "application/json,.json"; //only support in chrome and IE.  FF doesn't work with hint.
 
   var handleFileSelected = function (evt) {
     if (!evt.target.files || !evt.target.files[0]) return;
     var afile = evt.target.files[0];
     var el = document.getElementById("project_name");
     var aname = afile.name.substring(0, afile.name.indexOf('.'));
-    if (aname == "") name = afile.name;
+    if (aname == "") aname = afile.name;
     if (el)
       el.innerText = aname;
     var ext = /\.[0-9a-z]+$/.exec(afile.name);
-    ext = ext.length > 0 ? ext[0] : "";
+    ext = ext && ext.length > 0 ? ext[0] : "";
     switch (ext) {
       case '.json':
         var reader = new FileReader();
         reader.onload = function (evt) {
           var content = evt.target.result;
           simApp.mainApp.loadSidebar(content);
+        }.bind(this);
+        reader.readAsText(afile);
+        break;
+    }
+
+  }.bind(this);
+
+  dialog.addEventListener("change", handleFileSelected, false);
+  document.body.appendChild(dialog);
+  dialog.click();
+}
+
+//------------------
+function mergeIntoCurrentProject() {
+  let el = document.getElementById("MergeIntoCurrentProjectDialogInput");
+  if (el) el.remove();
+
+  let dialog = document.createElement('input');
+  dialog.id = "MergeIntoCurrentProjectDialogInput";
+  dialog.value = "";
+  dialog.type = 'file';
+  dialog.style.display = 'none';
+  dialog.accept = "application/json,.json"; //only support in chrome and IE.  FF doesn't work with hint.
+
+  let handleFileSelected = function (evt) {
+    if (!evt.target.files || !evt.target.files[0]) return;
+    var afile = evt.target.files[0];
+    var aname = afile.name.substring(0, afile.name.indexOf('.'));
+    if (aname == "") aname = afile.name;
+    var ext = /\.[0-9a-z]+$/.exec(afile.name);
+    ext = ext && ext.length > 0 ? ext[0] : "";
+    switch (ext) {
+      case '.json':
+        var reader = new FileReader();
+        reader.onload = function (evt) {
+          var content = evt.target.result;
+          Navigation.Sidebar.prototype.beginMergeModel(JSON.parse(content));
         }.bind(this);
         reader.readAsText(afile);
         break;
@@ -262,9 +298,14 @@ function noSpaces(text) {
 function setCookie(cname, cvalue, exdays) {
   if (!cname) return;
   cname = noSpaces(cname); //spaces are not allowed in cookie variable name
-  var d = new Date();
-  d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
-  var expires = "expires=" + d.toUTCString();
+  let expires = "expires=";
+  if (exdays === undefined) {
+      expires += new Date(2147483647 * 1000).toUTCString();
+  } else {
+      const d = new Date();
+      d.setTime(d.getTime() + exdays * 24 * 60 * 60 * 1000);
+      expires += d.toUTCString();
+  }
   document.cookie = cname + "=" + cvalue + "; " + expires;
 }
 
@@ -413,16 +454,17 @@ var simApp;
     }
     //------------------
     SimApp.prototype.loadSidebar = function (modelStr) {
+      var sideBarContainer = document.getElementById('SidePanelContainer');
       var sideBar = document.getElementById('SidePanel');
       var contentPanel = document.getElementById('ContentPanel');
       sideBar.innerHTML = "";
       contentPanel.innerHTML = "";
-      $(sideBar).resizable({
+      $(sideBarContainer).resizable({
         handle: 'w',
         resize: function (evt, ui) {
           $('#ContentPanel').css({
             left: sideBar.clientWidth +
-              $('.ui-resizable-handle.ui-resizable-e').width() + parseInt(sideBar.style.marginLeft) + parseInt(sideBar.style.marginRight)
+              $('.ui-resizable-handle.ui-resizable-e').width() + parseInt(sideBarContainer.style.marginLeft) + parseInt(sideBarContainer.style.marginRight) + 24
             //,"border-style": "solid", "border-color": "red", "border-width": "1px"
           });
         }
@@ -437,15 +479,34 @@ var simApp;
         titleEl.innerText = atitle;
       }
     }
+    SimApp.prototype.makeProjectNameEditable = function() {
+      var titleEl = document.getElementById("project_name");
+      if (titleEl) {
+        titleEl.style.cursor = 'Pointer';
+        titleEl.onclick = function() {
+          var newName = prompt('Enter New Name');
+          if (newName && newName.trim()) {
+            newName = newName.trim();
+            simApp.mainApp.updateProjectTitle(newName);
+            simApp.allDataModel.name = newName;
+          }
+        }
+      }         
+    }
     SimApp.prototype.start = function () {
       //var img = document.getElementById('logo');
       //makeTransparent(img);
       new Navigation.Menu("resources/menu.json");
 
       getServerFile(this.modelFileName, function (retData) {
-        var model = JSON.parse(retData);
-        this.updateProjectTitle(model.name);
         simApp.mainApp.loadSidebar(retData);
+        var model = JSON.parse(retData);
+        if (model.name.isNullOrUndefined || model.name === '') {
+          model.name = 'Click Here to Name Project';
+          simApp.allDataModel.name = 'Untitled_EMRALD_Project';
+        }
+        this.updateProjectTitle(model.name);
+        this.makeProjectNameEditable();
       }.bind(this));
       //this.loadSidebar();
     }
@@ -465,11 +526,11 @@ var simApp;
 
       if (typeof result == "undefined") {
         if (Object.prototype.toString.call(item) === "[object Array]") {
-          result = [];
-          var prop;
-          item.forEach(function (child, index, array) {
-            if (child.nodeType || (typeof child == mxCell)) { /* not interested in node element*/ }
-            else if (i in SetOf(["dataType", "itemId", "actionId", "sourceRow", "targetRow", "actionCell", "eventCell", "iActions", "iEvents", "ownerCell", "ownerID", "ui_el", "wnd", "tempVariableList"]))
+            result = [];
+            var prop;
+          item.forEach(function (child, index) {
+            if (child.nodeType || (child instanceof mxCell)) { /* not interested in node element*/ }
+            else if (child in SetOf(["dataType", "itemId", "actionId", "sourceRow", "targetRow", "actionCell", "eventCell", "iActions", "iEvents", "ownerCell", "ownerID", "ui_el", "wnd", "tempVariableList"]))
             { /* not copy these */ }
             else {
               //child is an object, store array of object
@@ -488,7 +549,7 @@ var simApp;
               result = {};
               for (var i in item) {
                 if (i in SetOf(["dataType", "itemID", "actionId", "sourceRow", "targetRow", "actionCell", "eventCell", "iActions", "iEvents", "ownerCell", "ownerID", "ui_el", "wnd"])
-                  || (typeof item[i] == mxCell)) { /*Do not copy these properties*/ }
+                  || (item[i] instanceof mxCell)) { /*Do not copy these properties*/ }
                 else
                   result[i] = this.cloneDataModel(item[i]);
               }

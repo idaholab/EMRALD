@@ -27,13 +27,13 @@ var RiskSim;
 
         var div = this.div;
         if (ismodal) {
-          div.style.zIndex = z_index+1;
+          div.style.zIndex = `${z_index + 1}`;
           if (this.div.style.boxShadow == '') {
             this.div.style.boxShadow = '5px 5px 7px #888888';
           }
 
           this.modaldiv = document.createElement('div');
-          this.modaldiv.style.zIndex = z_index;
+          this.modaldiv.style.zIndex = `${z_index}`;
           this.modaldiv.className = 'OverlayEffect';
           document.body.appendChild(this.modaldiv);
         }
@@ -181,7 +181,7 @@ var RiskSim;
       wincontent.appendChild(content);
 
       var cmdcontent = document.createElement('div');
-      mxUtils.br(cmdcontent);
+      mxUtils.br(cmdcontent, 1);
 
       var okbtn = document.createElement('button');
       okbtn.style.width = '70px';
@@ -197,7 +197,7 @@ var RiskSim;
       }
 
       cmdcontent.appendChild(okbtn);
-      mxUtils.br(cmdcontent);
+      mxUtils.br(cmdcontent, 1);
 
       wincontent.appendChild(cmdcontent);
 
@@ -206,7 +206,7 @@ var RiskSim;
       msgbox.style.marginRight = '20px';
       msgbox.style.display = 'block';
       msgbox.textContent = message;
-      mxUtils.br(content);
+      mxUtils.br(content, 1);
       content.appendChild(msgbox);
 
       var x = (window.innerWidth || document.body.clientWidth) / 2 - 200;
@@ -217,7 +217,7 @@ var RiskSim;
       var _this = this;
       var zindex = null;
       if (mxWindow.activeWindow && mxWindow.activeWindow.div) {
-        var zindex = parseInt(mxWindow.activeWindow.div.style.zIndex) + 1;
+        zindex = parseInt(mxWindow.activeWindow.div.style.zIndex) + 1;
       }
       var dialog = new RiskSim.Window(title, wincontent, x, y, null, null, false, true, null, null, true, zindex);
 
@@ -229,7 +229,7 @@ var RiskSim;
       okbtn.owner = dialog;
       dialog.setClosable(true);
       dialog.setVisible(true);
-      dialog.destoryOnClose = true;
+      dialog.destroyOnClose = true;
     }
     //#endregion
     //#region Confirm---------------------------------------------------------------------------
@@ -246,7 +246,7 @@ var RiskSim;
       cmdcontent.style.margin = '1em';
       cmdcontent.style.height = '4em';
       cmdcontent.style.textAlign = 'center';
-      mxUtils.br(cmdcontent);
+      mxUtils.br(cmdcontent, 1);
       wincontent.appendChild(cmdcontent);
 
       var msgbox = document.createElement('text');
@@ -254,7 +254,7 @@ var RiskSim;
       msgbox.style.marginRight = '20px';
       msgbox.style.display = 'block';
       msgbox.innerHTML = message;
-      mxUtils.br(content);
+      mxUtils.br(content, 1);
       content.appendChild(msgbox);
 
       var x = (window.innerWidth || document.body.clientWidth) / 2 - 200;
@@ -265,7 +265,7 @@ var RiskSim;
       var _this = this;
       var zindex = null;
       if (mxWindow.activeWindow && mxWindow.activeWindow.div) {
-        var zindex = parseInt(mxWindow.activeWindow.div.style.zIndex) + 1;
+        zindex = parseInt(mxWindow.activeWindow.div.style.zIndex) + 1;
       }
       var dialog = new RiskSim.Window(title, wincontent, x, y, null, null, false, true, null, null, true, zindex);
       dialog.onClosing = function (evt) {
@@ -295,10 +295,10 @@ var RiskSim;
         firstBtn.focus();
       });
 
-      mxUtils.br(cmdcontent);
+      mxUtils.br(cmdcontent, 1);
       dialog.setClosable(true);
       dialog.setVisible(true);
-      dialog.destoryOnClose = true;
+      dialog.destroyOnClose = true;
     }
     //#endregion
     //#region Prompt-----------------------------------------------------------------------------
@@ -310,9 +310,9 @@ var RiskSim;
     CommonDialog.prototype.prompt = function (title, message, defaultValue, callbackFn) {
       if (!callbackFn) return; //Can't do anything without confirmation function.
 
-      if (!title) var title = "Input";
-      if (!message) var message = "Please enter a new value";
-      if (!defaultValue) var defaultValue = "";
+      if (!title) title = "Input";
+      if (!message) message = "Please enter a new value";
+      if (!defaultValue) defaultValue = "";
 
       var wincontent = document.createElement('div');
       var content = document.createElement('div');
@@ -366,7 +366,7 @@ var RiskSim;
       msgbox.innerHTML = message;
       //mxUtils.br(content);
       content.appendChild(msgbox);
-      mxUtils.br(content);
+      mxUtils.br(content, 1);
 
       var input = document.createElement('input');
       input.style.width = '120px';
@@ -385,7 +385,7 @@ var RiskSim;
       input.onkeyup = applyHandler;
 
       if (mxClient.IS_IE) {
-        input.onfocusout = applyHandler;
+        input.addEventListener('focusout', applyHandler);
       }
       else {
         // Note: Known problem is the blurring of fields in
@@ -405,7 +405,7 @@ var RiskSim;
 
       var zindex = null;
       if (mxWindow.activeWindow && mxWindow.activeWindow.div) {
-        var zindex = parseInt(mxWindow.activeWindow.div.style.zIndex) + 1;
+        zindex = parseInt(mxWindow.activeWindow.div.style.zIndex) + 1;
       }
       var dialog = new RiskSim.Window(title, wincontent, x, y, null, null, false, true, null, null, true, zindex);
       dialog.onClosing = function (evt) {
@@ -423,7 +423,7 @@ var RiskSim;
       cancelbtn.owner = dialog;
       dialog.setClosable(true);
       dialog.setVisible(true);
-      dialog.destoryOnClose = true;
+      dialog.destroyOnClose = true;
 
     }
     //#endregion

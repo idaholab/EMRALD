@@ -15,6 +15,7 @@
   * **New**: Creates a new project. The following window appears in the Modeling Area.<br>
   <div style="width:500px">![New Project Window](/images/Modeling/webUIOverview/NewProject.PNG)</div><br>
 
+
       After hitting the "Ok" button, your project name will populate the right corner of the header. See the following subsection, "Click Here to Name Project," to see another method for naming or renaming your project. <br>![New Project Window](/images/Modeling/webUIOverview/NewProjectHeader.PNG)
   - **Merge:** Merge one project into another project. This will pull in all diagrams, states, events, actions, variables, and logic trees into the project. First it will bring up a File Explorer, browse for the file you want to merge in and click "Open". <br>
   <div style="width:500px">![Open File to Merge Window](/images/Modeling/webUIOverview/Merge_1.PNG)</div><br>
@@ -30,6 +31,7 @@
   - **Save:** Operates like a standard "Save As" to save the current project.
   - **Export Templates:** Allows you to save any project template items for use in other projects. When clicked from the dropdown menu, the following window appears in the Modeling Area.<br><div style="width:400px">![Export Template Window](/images/Modeling/webUIOverview/ExportTemplate.PNG)</div>
   - **Load Demo:** Exits the current project and loads the demo project as with any changing of projects, unsaved changes in the current project would be lost.
+
 
 **Download** <br>
   <div style="width:500px">![Download Menu](/images/Modeling/webUIOverview/TopMenuDownload.PNG)</div> <br>
@@ -136,6 +138,5 @@ See [Variables](/guide/Modeling/variables.md) for more information.
   States are a logical representation for a current condition in a diagram. <br>
 
   See [States](/guide/Modeling/states.md) for more information.
-
 
 <!--Copyright 2021 Battelle Energy Alliance-->

@@ -175,9 +175,9 @@ function AddChildGate(graph, cell, ftNode) {
   finally {
     model.endUpdate();
 		}
-	
 
-  return vertex;
+
+    return vertex;
 };
 
 function AddChildComp(graph, cell, comp)
@@ -208,8 +208,8 @@ function AddChildComp(graph, cell, comp)
     var shapeStr = '';
     var styleMod = '';
 
-    imgName = 'BE.png';
-    styleType = 'ftBasicEvent;';
+    var imgName = 'BE.png';
+    var styleType = 'ftBasicEvent;';
 
     
 

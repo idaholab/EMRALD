@@ -329,7 +329,7 @@ namespace SimulationTracking
               initialCondEvalDone.Remove(item); 
             }
 
-            else if (changedItems.HasApplicableItems(curIDType, item.relatedIDs) &&
+            else if ((item.relatedIDs != null) &&(changedItems.HasApplicableItems(curIDType, item.relatedIDs)) &&
                ((item.eventData as CondBasedEvent).EventTriggered(curStatesBS, otherData, curTime, start3DTime, nextEvTime)))
             {
               retList.Add(item);

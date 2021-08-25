@@ -198,6 +198,7 @@
 
 
 <h3> Log Normal Distribution <img src="/images/Modeling/events/dist.PNG" alt="Normal Distribution" width="25"/></h3>
+
   Listed as LogNorm. Distribution in the dropdown menu. Samples a log-normal distribution according to user specified parameters to generate a value for when this event will occur from the time entering the state.<br>
   
   <img src="/images/Modeling/events/LogNormalDistributionOptions.PNG" alt="Normal Distribution Options" width="500"/>

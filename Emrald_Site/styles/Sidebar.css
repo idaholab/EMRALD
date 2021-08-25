@@ -2,7 +2,8 @@
 
 #SidePanel {
     overflow-y: scroll;
-    width: 200px;
+    height: calc(100% - 20px);
+    width: 100%;
 }
 
 .CategorySection {

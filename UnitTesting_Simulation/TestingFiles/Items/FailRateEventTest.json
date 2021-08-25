@@ -1,0 +1,11 @@
+    {
+      "Event": {
+        "id": 1,
+        "name": "FailureRate",
+        "desc": "",
+        "mainItem": true,
+        "evType": "etFailRate",
+        "lambda": 1,
+        "lambdaTimeRate": "PT1M"
+      }
+    }

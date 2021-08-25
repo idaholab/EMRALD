@@ -171,7 +171,8 @@ namespace SimulationDAL
 
       try
       {
-        resetOnRuns = Convert.ToBoolean(dynObj.resetOnRuns);
+        if(dynObj.resetOnRuns != null)
+          resetOnRuns = Convert.ToBoolean(dynObj.resetOnRuns);
       }
       catch
       {
@@ -355,7 +356,6 @@ namespace SimulationDAL
   {
     [JsonConverter(typeof(StringEnumConverter))]
     public enum EnCumultiveType { ctTime, ctMultiplier, ctTable };//, ctCustScript};
-    public EnTimeRate varRate = EnTimeRate.trHours; //rate of time for the variable 
     public class AccrualVarData
     {
 
@@ -375,7 +375,12 @@ namespace SimulationDAL
     protected Dictionary<int, AccrualVarData> _CumulativeParams = new Dictionary<int, AccrualVarData>();
 
     public AccrualVariable()
-      : base() { this.varScope = EnVarScope.gtAccrual; this.dType = typeof(double); }
+      : base() 
+    { 
+      this.varScope = EnVarScope.gtAccrual; 
+      this.dType = typeof(double);
+      this.resetOnRuns = true;
+    }
 
     public override string GetDerivedJSON()
     {
@@ -383,7 +388,7 @@ namespace SimulationDAL
 
       //add derived items
 
-      retStr = retStr + "," + Environment.NewLine + "\"AccrualStatesData \": [" + Environment.NewLine;
+      retStr = retStr + "," + Environment.NewLine + "\"accrualStatesData \": [" + Environment.NewLine;
       foreach (var state in _StateList)
       {
         //TODO
@@ -421,17 +426,11 @@ namespace SimulationDAL
 
       bool retVal = base.DeserializeDerived((object)dynObj, false, lists, useGivenIDs);
 
-      if (dynObj.AccrualStatesData == null)
+      if (dynObj.accrualStatesData == null)
       {
-        throw new Exception("Missing AccrualStatesData for accrualVariable variable");
+        throw new Exception("Missing accrualStatesData for accrualVariable variable");
       }
-
-      if (dynObj.varRate == null)
-        throw new Exception("Missing simRate for accrualVariable variable");
-
-      this.varRate = (EnTimeRate)dynObj.varRate;
-
-      //dynObj = dynObj.AccrualStatesData;
+      
       //must load everything in LoadObjLinks because the states must be loaded first so we have the IDs.     
 
       processed = true;
@@ -447,15 +446,19 @@ namespace SimulationDAL
         {
           if (dynObj.Variable == null)
             return false;
-
-          dynObj = ((dynamic)obj).Variable.AccrualStatesData;
+          if (((dynamic)obj).Variable != null)
+            dynObj = ((dynamic)obj).Variable;
+          else
+            return false;
         }
+
+        dynamic accrData = dynObj.accrualStatesData;
         int i = 0;
-        foreach (dynamic toStateItem in dynObj.AccrualStatesData)
+        foreach (dynamic toStateItem in dynObj.accrualStatesData)
         {
           string error = VerifyDataObj(toStateItem);
           if (error != "")
-            throw new Exception("\"AccrualStatesData\"[" + i.ToString() + "], " + error);
+            throw new Exception("\"accrualStatesData\"[" + i.ToString() + "], " + error);
           State curState = (State)lists.allStates.FindByName((string)toStateItem.stateName);
           _StateList.Add(curState.id, curState);
           string s = JsonConvert.SerializeObject(toStateItem);
@@ -476,7 +479,7 @@ namespace SimulationDAL
       }
       catch (Exception e)
       {
-        throw new Exception("Missing AccrualStatesData for accrualVariable named - " + this.name + " error - " + e.Message);
+        throw new Exception("Missing accrualStatesData for accrualVariable named - " + this.name + " error - " + e.Message);
       }
 
       return true;
@@ -541,7 +544,8 @@ namespace SimulationDAL
       switch(aData.type)
       {
         case EnCumultiveType.ctTime:
-          _value = (double)_value + Globals.ConvertToNewTimeSpan(EnTimeRate.trHours, tInState.TotalHours, this.varRate);
+          throw new Exception("not implemented time type placeholder");
+          //_value = (double)_value + Globals.ConvertToNewTimeSpan(EnTimeRate.trHours, tInState.TotalHours, this.varRate);
           break;
 
         case EnCumultiveType.ctMultiplier:
@@ -550,25 +554,29 @@ namespace SimulationDAL
           break;
 
         case EnCumultiveType.ctTable:
-          double compTime = Globals.ConvertToNewTimeSpan(EnTimeRate.trHours, tInState.TotalHours, this.varRate);
-          
-          double prevTime = 0;
+          //double compTime = Globals.ConvertToNewTimeSpan(EnTimeRate.trHours, tInState.TotalHours, EnTimeRate.);
+
+          //double prevTime = 0;
           //tblMult = Globals.ConvertToNewTimeSpan(aData.multRate, aData.accrualTable[0][1], aData.simRate);
           //add all the full table sections
           int i;
+          double totalTblTime = 0;
           for (i = 1; i < aData.accrualTable.Count; i++)
-          {            
-            double tblTimeConverted = Globals.ConvertToNewTimeSpan(this.varRate, (aData.accrualTable[i][0] - aData.accrualTable[i - 1][0]), aData.multRate);
-            _value = (double)_value + tblTimeConverted * aData.accrualTable[i-1][1];
-            if (compTime <= aData.accrualTable[i][0])
+          {
+
+            double tblTimeConverted = Globals.ConvertToNewTimeSpan(EnTimeRate.trHours, (aData.accrualTable[i][0] - aData.accrualTable[i - 1][0]), aData.multRate);
+            totalTblTime += tblTimeConverted;
+            if (tInState.TotalHours > totalTblTime) //full time used
             {
+              _value = (double)_value + tblTimeConverted * aData.accrualTable[i - 1][1];
+            }
+            else //partial time used
+            {
+              double remainTime = tblTimeConverted - (totalTblTime - tInState.TotalHours);
+              totalTblTime += tblTimeConverted;
               break;
             }
-          }
-
-          double remainTime = compTime - aData.accrualTable[i - 1][0];
-          _value = (double)_value + aData.accrualTable[i][1] * Globals.ConvertToNewTimeSpan(this.varRate, (remainTime), aData.multRate);
-
+          }          
           break;
 
         default:
@@ -586,6 +594,7 @@ namespace SimulationDAL
     protected string _linkStr = ""; //xpath for xml, JSONPath for JSON, and regExp string for TextRegExp
     protected bool _pathMustExist = true;
     protected object _dfltValue = null;
+    protected string _docFullPath = "";
 
     public DocVariable(DocType subType)
       : base()
@@ -630,9 +639,24 @@ namespace SimulationDAL
 
       this._docType = (DocType)dynObj.docType;
       this._docPath = Convert.ToString(dynObj.docPath);
+      
+      if (!Path.IsPathRooted(_docPath))
+      {
+        _docFullPath = lists.rootPath;
+        if (!_docFullPath.EndsWith(@"\"))
+          _docFullPath += @"\";
 
-      if (_pathMustExist && !File.Exists(_docPath))
-        throw new Exception("No file located at - " + _docPath + " for Document variable ");
+        _docFullPath = Path.GetFullPath(Path.Combine(_docFullPath + this._docPath));
+      }
+      else
+      {
+        _docFullPath = this._docPath;
+      }
+
+      if (_pathMustExist && !File.Exists(_docFullPath))
+      {
+        throw new Exception("No file located at - " + _docFullPath + " for Document variable ");
+      }
 
       if (dynObj.docLink == null)
         throw new Exception("Missing docLink for document variable");
@@ -688,7 +712,7 @@ namespace SimulationDAL
       _value = newValue;
       //update the document
       XmlDocument xDoc = new XmlDocument();
-      xDoc.Load(_docPath);
+      xDoc.Load(_docFullPath);
       XmlElement pRoot = xDoc.DocumentElement;
       XmlNodeList nodes = pRoot.SelectNodes(_linkStr);
       XmlNode replNode = null;
@@ -717,13 +741,17 @@ namespace SimulationDAL
         }
       }
 
-      xDoc.Save(_docPath);
+      xDoc.Save(_docFullPath);
     }
 
     public override object GetValue()
     {
+      if (!File.Exists(_docFullPath) && !_pathMustExist)
+      {
+        return this._dfltValue;
+      }
       XmlDocument xDoc = new XmlDocument();
-      xDoc.Load(_docPath);
+      xDoc.Load(_docFullPath);
       XmlElement pRoot = xDoc.DocumentElement;
       XmlNodeList nodes = pRoot.SelectNodes(_linkStr);
       if ((nodes == null) || (nodes.Count == 0))
@@ -790,16 +818,20 @@ namespace SimulationDAL
 
     public override void SetValue(object newValue)
     {
-      _value = newValue;
       //update the document
-      JObject fullObj = JObject.Parse(File.ReadAllText(this._docPath));
+      _value = newValue;
+      StreamReader sr = new StreamReader(_docFullPath);
+      string test = sr.ReadToEnd();
+      sr.Close();
+      //update the document
+      JObject fullObj = JObject.Parse(test);
       var modItems = fullObj.SelectTokens(_linkStr);
       if (modItems == null)
         throw new Exception("Failed to locate document reference - " + _linkStr);
       modItems = JsonExtensions.ReplacePath(fullObj, _linkStr, newValue);
 
       //update the json file with the change
-      using (StreamWriter file = File.CreateText(_docPath))
+      using (StreamWriter file = File.CreateText(_docFullPath))
       using (JsonTextWriter writer = new JsonTextWriter(file))
       {
         fullObj.WriteTo(writer);
@@ -809,7 +841,12 @@ namespace SimulationDAL
     public override object GetValue()
     {
       _linkStr = _linkStr.Replace("\"", "'");
-      string fileStr = File.ReadAllText(this._docPath);
+      if (!File.Exists(_docFullPath) && !_pathMustExist)
+      {
+        return this._dfltValue;
+      }
+      
+      string fileStr = File.ReadAllText(_docFullPath);
       JObject fullObj = JObject.Parse(fileStr);
       JToken modItem = fullObj.SelectToken(_linkStr);
       if(modItem == null)
@@ -836,7 +873,7 @@ namespace SimulationDAL
 
   public class TextRegExVariable : DocVariable
   {
-    private int _regExpLine = 0;
+    private int _regExpLine = -1;//-1 means just the regular expression
     private int _begPosition = 0;
     private int _numChars = -1; //-1 goes until the next white space
 
@@ -896,21 +933,21 @@ namespace SimulationDAL
     {
       _value = newValue;
       Regex rx = new Regex(_linkStr, RegexOptions.Compiled | RegexOptions.IgnoreCase);
-      string docTxt = File.ReadAllText(this._docPath);
+      string docTxt = File.ReadAllText(_docFullPath);
       // Find matches.
       MatchCollection matches = rx.Matches(docTxt);
 
       if (matches.Count < 0)
       {
-        throw new Exception("Failed to find RegEx - " + _linkStr + " in file - " + _docPath);
+        throw new Exception("Failed to find RegEx - " + _linkStr + " in file - " + _docFullPath);
       }
 
       try
       {
-        if (this._regExpLine == 0)
+        if (this._regExpLine == -1)//change functionality, unchecked, want to use RegEx itself as variable value and variable value to be changed
         {
           docTxt = rx.Replace(docTxt, newValue.ToString(), 1);
-          File.WriteAllText(_docPath, docTxt);
+          File.WriteAllText(_docFullPath, docTxt);
         }
         else
         {
@@ -918,10 +955,10 @@ namespace SimulationDAL
           //Split text blob by that match.
           string[] matchSplit = rx.Split(docTxt);
           //Then count the number of line brakes before the match.
-          int lineMatch = new Regex(@"(\n|\r\n?)").Matches(matchSplit[0]).Count;
+          int lineMatch = new Regex(@"(\n(?!\r)|\r(?!\n)|\r\n?)").Matches(matchSplit[0]).Count;
           string[] docLines = docTxt.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
 
-          if (_regExpLine > 0)
+          if (_regExpLine >= 0)
             lineMatch = lineMatch + _regExpLine;
           string line = docLines[lineMatch];
 
@@ -949,42 +986,46 @@ namespace SimulationDAL
           {
             docLines[lineMatch] = newValue.ToString();
           }
-          File.WriteAllLines(_docPath, docLines);
+          File.WriteAllLines(_docFullPath, docLines);
         }
 
 
       }
       catch
       {
-        throw new Exception("Failed to write new value in document - " + _docPath);
+        throw new Exception("Failed to write new value in document - " + _docFullPath);
       }
     }
 
     public override object GetValue()
     {
       Regex rx = new Regex(_linkStr, RegexOptions.Compiled | RegexOptions.IgnoreCase);
-      string docTxt = File.ReadAllText(this._docPath);
+      if (!File.Exists(_docFullPath) && !_pathMustExist)
+      {
+        return this._dfltValue;
+      }
+      string docTxt = File.ReadAllText(_docFullPath);
       // Find matches.
       MatchCollection matches = rx.Matches(docTxt);
 
       if (matches.Count <= 0)
       {
         if (_dfltValue == null)
-          throw new Exception("Failed to find RegEx - " + _linkStr + " in file - " + _docPath);
+          throw new Exception("Failed to find RegEx - " + _linkStr + " in file - " + _docFullPath);
         else
           return Convert.ChangeType(_dfltValue, dType);
       }
       string foundTxt = matches[0].Value;
       try
       {
-        if (this._regExpLine > 0)
+        if (this._regExpLine >= 0)
         {
 
           //Split text blob by that match.
           string[] matchSplit = rx.Split(docTxt);
           //Then count the number of line brakes before the match.
-          int lineMatch = new Regex(@"(\n|\r\n?)").Matches(matchSplit[0]).Count;
-          string[] docLines = docTxt.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
+          int lineMatch = new Regex(@"(\n(?!\r)|\r(?!\n)|\r\n?)").Matches(matchSplit[0]).Count;
+          string[] docLines = docTxt.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
           foundTxt = docLines[lineMatch + _regExpLine];
 
           if (_begPosition >= 0)

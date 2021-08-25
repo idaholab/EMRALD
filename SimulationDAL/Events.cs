@@ -57,7 +57,8 @@ namespace SimulationDAL
       retStr = retStr + "\"Event\": {" + Environment.NewLine + base.GetJSON(false, lists);
 
       retStr = retStr + "," + Environment.NewLine;
-      retStr = retStr + "\"mainItem\": \"" + this.mainItem.ToString() + "\"," + Environment.NewLine;
+      retStr = retStr + "\"mainItem\": " + this.mainItem.ToString().ToLower() + "," + Environment.NewLine;
+      retStr = retStr + "\"evType\": \"" + this.evType.ToString() + "\"," + Environment.NewLine;
       retStr += GetDerivedJSON(lists);
 
       retStr = retStr + Environment.NewLine + "}";
@@ -139,8 +140,7 @@ namespace SimulationDAL
     public override string GetDerivedJSON(EmraldModel lists)
     {
 
-      string retStr = "\"evType\": \"" + EnEventType.etStateCng.ToString() + "\"," + Environment.NewLine +
-                      "\"ifInState\":\"" + this.ifInState.ToString().ToLower() + "\"," + Environment.NewLine +
+      string retStr = "\"ifInState\":\"" + this.ifInState.ToString().ToLower() + "\"," + Environment.NewLine +
                       "\"allItems\":\"" + this.allItems.ToString().ToLower() + "\"";
 
       retStr = retStr + "," + Environment.NewLine + "\"triggerStates\": [";
@@ -317,8 +317,7 @@ namespace SimulationDAL
     public override string GetDerivedJSON(EmraldModel lists)
     {
 
-      string retStr = "\"evType\": \"" + EnEventType.etComponentLogic.ToString() + "\"," + Environment.NewLine +
-                      "\"onSuccess\":\"" + this.successSpace.ToString().ToLower() + "\"," + Environment.NewLine +
+      string retStr = "\"onSuccess\":\"" + this.successSpace.ToString().ToLower() + "\"," + Environment.NewLine +
                       "\"logicTop\":" + "\"" + this.logicTop.name + "\"";
       return retStr;
     }
@@ -413,15 +412,16 @@ namespace SimulationDAL
     protected bool compiled;
     protected ScriptEngine compiledComp;
     protected VariableList varList = null;
+    protected string variable = "";
     //protected override EnModifiableTypes GetModType() { return EnModifiableTypes.mtVar; }
-    protected override EnEventType GetEvType() { return (sim3dID == null) ? EnEventType.etVarCond : EnEventType.et3dSimEv; }
+    protected override EnEventType GetEvType() { return (variable == "") ? EnEventType.etVarCond : EnEventType.et3dSimEv; }
 
     public EvalVarEvent() : base("")
     {
       compiledComp = new ScriptEngine("EvalVar_" + this.name, ScriptEngine.Languages.CSharp);
     }
 
-    public EvalVarEvent(string inName, string inCompCode, VariableList inVarList, Sim3DVariable sim3dVar = null)
+    public EvalVarEvent(string inName, string inCompCode, VariableList inVarList, Sim3DVariable sim3dVar)// = null)
       : base(inName)
     {
       this.compCode = inCompCode;
@@ -454,21 +454,18 @@ namespace SimulationDAL
       {
         foreach(var i in varList.Values)
         {
+          if(i.name!=variable)
           varNames += ", \"" + i.name + "\"";
         }
         varNames = varNames.TrimStart(',');
       }
-        //varNames = string.Join(",", varList.Values);
+      //varNames = string.Join(",", varList.Values);
+      string retStr = null;
 
-      string retStr = "\"evType\": \"" + EnEventType.etVarCond.ToString() + "\"," + Environment.NewLine +
-                      "\"varNames\": [" + varNames + "]," + Environment.NewLine +
-                      "\"code\":\"" + compCodeStr + "\"";
-
-      if (sim3dID != null)
-        retStr = retStr + "," + Environment.NewLine + "\"sim3dID\":" + this.sim3dID;
-
-      retStr = retStr + Environment.NewLine;
-
+      retStr = retStr + "\"varNames\": [" + varNames + "]," + Environment.NewLine;// +
+      retStr = retStr + "\"variable\": \"" + variable + "\"," + Environment.NewLine;
+      retStr = retStr + "\"code\":\"" + compCodeStr + "\"";
+      
       return retStr;
     }
 
@@ -492,6 +489,7 @@ namespace SimulationDAL
          (EnEventType.et3dSimEv != (EnEventType)Enum.Parse(typeof(EnEventType), (string)dynObj.evType, true)))
         throw new Exception("event types do not match, cannot change the type once an item is created!");
 
+    //  this.evType = (EnEventType)Enum.Parse(typeof(EnEventType), (string)dynObj.evType, true);
       if (dynObj.sim3dID != null)
       {
         this.sim3dID = Convert.ToString(dynObj.sim3DId);
@@ -522,11 +520,11 @@ namespace SimulationDAL
         dynObj = ((dynamic)obj).Event;
       }
 
+      if (varList == null)
+        varList = new VariableList();
+
       if (dynObj.varNames != null)
       {
-        if (varList == null)
-          varList = new VariableList();
-
         foreach (var varName in dynObj.varNames)
         {
           SimVariable curVar = lists.allVariables.FindByName((string)varName);
@@ -537,12 +535,18 @@ namespace SimulationDAL
           this.AddRelatedItem(curVar.id);
         }
       }
+
       //3D simulation var condition has a variable link
       if (dynObj.variable != null)
       {
+        variable = (string)dynObj.variable;
         SimVariable curVar = lists.allVariables.FindByName((string)dynObj.variable);
         if (curVar == null)
           throw new Exception("Failed to find variable - " + dynObj.variable);
+        if(varList == null)
+        {
+          varList = new VariableList();
+        }
         this.varList.Add(curVar);
         this.AddRelatedItem(curVar.id);
       }
@@ -724,8 +728,9 @@ namespace SimulationDAL
 
   public class TimerEvent : TimeBasedEvent //etTimer
   {
+    public EnTimeRate timerVariableUnit = EnTimeRate.trHours;
+    protected SimVariable timeVariable = null;
     public TimeSpan time = TimeSpan.FromTicks(0);
-    //public TimeSpan? time;
 
     public TimerEvent() : base("") { }
 
@@ -737,8 +742,20 @@ namespace SimulationDAL
 
     public override string GetDerivedJSON(EmraldModel lists)
     {
-      string retStr = "\"evType\": \"" + EnEventType.etTimer.ToString() + "\"," + Environment.NewLine +
-                      "\"time\":\"" + XmlConvert.ToString(this.time) + "\"";
+      string retStr = "\"evType\": \"" + EnEventType.etTimer.ToString() + "\"," + Environment.NewLine;
+      if (timeVariable == null)
+      {
+        retStr = retStr +
+          "\"time\":\"" + XmlConvert.ToString(this.time) + "\"," + Environment.NewLine +
+          "\"useVariable\": false";
+      }
+      else
+      {
+        retStr = retStr +
+          "\"time\":\"" + timeVariable.name + "\"," + Environment.NewLine +
+          "\"useVariable\": true, " + Environment.NewLine +
+          "\"timerVariableUnit\":\"" + this.timerVariableUnit.ToString() + "\"," + Environment.NewLine;
+      }
 
       return retStr;
     }
@@ -760,15 +777,67 @@ namespace SimulationDAL
       lists.allEvents.Add(this, false);
 
       if (EnEventType.etTimer != (EnEventType)Enum.Parse(typeof(EnEventType), (string)dynObj.evType, true))
-        throw new Exception("event types do not match, cannot change the type once an item is created!");
-      this.time = XmlConvert.ToTimeSpan((string)dynObj.time);
+        throw new Exception("event types do not match, cannot change the type once an item is created!");      
+
+      if ((dynObj.useVariable != null) && (bool)dynObj.useVariable)
+      {
+        if(dynObj.timeVariableUnit == null)
+          throw new Exception("No Time Unit 'timeVariable' defined for timer event using a variable.");
+        try
+        {
+          this.timerVariableUnit = (EnTimeRate)Enum.Parse(typeof(EnTimeRate), (string)dynObj.timeVariableUnit, true);
+        }
+        catch
+        {
+          throw new Exception("Invalid Time Unit 'timeVariableUnit' defined use trDays, trHours, trMinutes, trSeconds.");
+        }
+
+      }   
+      else
+      {
+        this.time = XmlConvert.ToTimeSpan((string)dynObj.time);
+      }
 
       processed = true;
       return true;
     }
 
+    public override bool LoadObjLinks(object obj, bool wrapped, EmraldModel lists)
+    {
+      dynamic dynObj = (dynamic)obj;
+      if (wrapped)
+      {
+        if (dynObj.Event == null)
+          return false;
+
+        dynObj = ((dynamic)obj).Event;
+      }
+
+      if ((dynObj.useVariable != null) && (bool)dynObj.useVariable)
+      {
+        try
+        {
+          this.timeVariable = lists.allVariables.FindByName((string)dynObj.time); 
+           
+          //this.AddRelatedItem(curVar.id); //don't need to add to relatedItems, because it doesn't trigger the event and time is fixed once started 
+        }
+        catch
+        {
+          throw new Exception("Failed to find variable - " + (string)dynObj.time);
+        }
+      }
+     
+      return true;
+    }
+
     public override TimeSpan NextTime()
     {
+      if (this.timeVariable != null)
+      {
+
+        time = Globals.NumberToTimeSpan(timeVariable.dblValue, timerVariableUnit);
+      }
+
       return (TimeSpan)time;
     }
   }
@@ -799,6 +868,7 @@ namespace SimulationDAL
     //public int FailureFuncID { get { return _FailureFuncID; } set { this.linksModified = true; _FailureFuncID = value; } }
     public TimeSpan timeRate = TimeSpan.FromDays(365.25);
     public TimeSpan compMissionTime = TimeSpan.FromHours(24);
+    protected SimVariable lambdaVariable = null;
 
     protected override EnEventType GetEvType() { return EnEventType.etFailRate; }
 
@@ -814,11 +884,22 @@ namespace SimulationDAL
 
     public override string GetDerivedJSON(EmraldModel lists)
     {
-
       string retStr = "\"evType\": \"" + EnEventType.etFailRate.ToString() + "\"," + Environment.NewLine +
-                      "\"lambda\":" + this._lambda.ToString() + "," + Environment.NewLine +
+
                       "\"lambdaTimeRate\":\"" + XmlConvert.ToString(this.timeRate) + "\"," + Environment.NewLine +
-                      "\"missionTime\":\"" + XmlConvert.ToString(this.compMissionTime) + "\"";
+                      "\"missionTime\":\"" + XmlConvert.ToString(this.compMissionTime) + "\",";
+      if (lambdaVariable != null)
+      {
+        retStr = retStr +
+          "\"useVariable\": true, " + Environment.NewLine +
+          "\"lambda\":\"" + this.lambdaVariable.name + "\"," + Environment.NewLine;          
+      }
+      else
+      {
+        retStr = retStr +
+          "\"useVariable\": false, " + Environment.NewLine +
+          "\"lambda\":" + this._lambda.ToString() + Environment.NewLine;          
+      }
 
       return retStr;
     }
@@ -842,7 +923,7 @@ namespace SimulationDAL
       if (EnEventType.etFailRate != (EnEventType)Enum.Parse(typeof(EnEventType), (string)dynObj.evType, true))
         throw new Exception("event types do not match, cannot change the type once an item is created!");
 
-      this._lambda = (double)dynObj.lambda;
+      
       this.timeRate = XmlConvert.ToTimeSpan((string)dynObj.lambdaTimeRate);
       if (dynObj.missionTime == null)
         compMissionTime = TimeSpan.FromDays(365.3);
@@ -853,16 +934,56 @@ namespace SimulationDAL
           compMissionTime = TimeSpan.FromDays(365.3);
       }
 
+      if ((dynObj.useVariable == null) || !(bool)dynObj.useVariable)
+      {
+        //use normal assigned lambda if not a variable
+        this._lambda = (double)dynObj.lambda;
+      }
+
       processed = true;
+      return true;
+    }
+
+    public override bool LoadObjLinks(object obj, bool wrapped, EmraldModel lists)
+    {
+      dynamic dynObj = (dynamic)obj;
+      if (wrapped)
+      {
+        if (dynObj.Event == null)
+          return false;
+
+        dynObj = ((dynamic)obj).Event;
+      }
+
+      if ((dynObj.useVariable != null) && (bool)dynObj.useVariable)
+      {
+        try
+        {
+          this.lambdaVariable = lists.allVariables.FindByName((string)dynObj.lambda);
+          //this.AddRelatedItem(curVar.id); //don't need to add to relatedItems, because it doesn't trigger the event and time is fixed once started 
+        }
+        catch
+        {
+          throw new Exception("Failed to find variable - " + (string)dynObj.time);
+        }
+      }
+
       return true;
     }
 
     public override TimeSpan NextTime()
     {
       TimeSpan retVal = TimeSpan.MaxValue;
-      if (_lambda == 0.0)
+      if (lambdaVariable != null)
       {
-        return TimeSpan.MaxValue;
+        _lambda = lambdaVariable.dblValue;
+      }
+      else
+      {
+        if (_lambda == 0.0)
+        {
+          return TimeSpan.MaxValue;
+        }
       }
 
       //Random rand = new Random();
@@ -912,6 +1033,7 @@ namespace SimulationDAL
     protected EnTimeRate _StdTimeRate = EnTimeRate.trHours;
     protected EnTimeRate _MinTimeRate = EnTimeRate.trHours;
     protected EnTimeRate _MaxTimeRate = EnTimeRate.trHours;
+    public bool allItems = false;
 
     protected Normal mathFuncs = null;
 
@@ -919,27 +1041,27 @@ namespace SimulationDAL
 
     public NormalDistEvent() : base("") { }
 
-    public NormalDistEvent(string inName, double mean, double std, double min, double max)
+    public NormalDistEvent(string inName, double mean, double std, double min, double max, bool inAllItems = true)
       : base(inName)
     {
       this._Mean = mean;
       this._Std = std;
       this._Min = min;
       this._Max = max;
+      this.allItems = inAllItems;
     }
 
     public override string GetDerivedJSON(EmraldModel lists)
     {
 
-      string retStr = "\"evType\": \"" + EnEventType.etFailRate.ToString() + "\"," + Environment.NewLine +
-                      "\"mean\":" + this._Mean.ToString() + "," + Environment.NewLine +
-                      "\"std\":\"" + this._Std.ToString() + "," + Environment.NewLine +
-                      "\"min\":\"" + this._Min.ToString() + "," + Environment.NewLine +
-                      "\"max\":\"" + this._Max.ToString() + "," + Environment.NewLine +
-                      "\"meanTimeRate\":\"" + this._MeanTimeRate.ToString() + "," + Environment.NewLine +
-                      "\"stdTimeRate\":\"" + this._StdTimeRate.ToString() + "," + Environment.NewLine +
-                      "\"mintimeRate\":\"" + this._MinTimeRate.ToString() + "," + Environment.NewLine +
-                      "\"maxtimeRate\":\"" + this._MaxTimeRate.ToString() + "," + Environment.NewLine + "\"";
+      string retStr = "\"mean\": " + this._Mean.ToString() + "," + Environment.NewLine +
+                      "\"std\": " + this._Std.ToString() + "," + Environment.NewLine +
+                      "\"min\": " + this._Min.ToString() + "," + Environment.NewLine +
+                      "\"max\": " + this._Max.ToString() + "," + Environment.NewLine +
+                      "\"meanTimeRate\": \"" + this._MeanTimeRate.ToString() + "\"," + Environment.NewLine +
+                      "\"stdTimeRate\": \"" + this._StdTimeRate.ToString() + "\"," + Environment.NewLine +
+                      "\"minTimeRate\": \"" + this._MinTimeRate.ToString() + "\"," + Environment.NewLine +
+                      "\"maxTimeRate\": \"" + this._MaxTimeRate.ToString() + "\"";
 
       return retStr;
     }
@@ -956,6 +1078,23 @@ namespace SimulationDAL
 
           dynObj = ((dynamic)obj).Event;
         }
+
+        //  //load the Trigger States.
+        //  if (dynObj.triggerStates != null)
+        //  {
+        //    this.relatedIDs.Clear();
+        //    foreach (dynamic stateName in dynObj.triggerStates)
+        //    {
+        //      State trigState = lists.allStates.FindByName(stateName);
+        //      if (trigState == null)
+        //      {
+        //        throw new Exception("Could not find State - " + stateName + ", to add as a trigger state");
+        //      }
+
+        //      this.relatedIDs.Add(trigState.id);
+        //    }
+        //  }
+        //}
 
         if (!base.DeserializeDerived((object)dynObj, false, lists, useGivenIDs))
           return false;
@@ -974,6 +1113,7 @@ namespace SimulationDAL
         this._StdTimeRate = (dynObj.stdTimeRate != null) ? (EnTimeRate)Enum.Parse(typeof(EnTimeRate), (string)dynObj.stdTimeRate, true) : this._StdTimeRate;
         this._MinTimeRate = (dynObj.minTimeRate != null) ? (EnTimeRate)Enum.Parse(typeof(EnTimeRate), (string)dynObj.minTimeRate, true) : this._MinTimeRate;
         this._MaxTimeRate = (dynObj.maxTimeRate != null) ? (EnTimeRate)Enum.Parse(typeof(EnTimeRate), (string)dynObj.maxTimeRate, true) : this._MaxTimeRate;
+        this.allItems = Convert.ToBoolean(dynObj.allItems);
       }
       catch
       {
@@ -981,7 +1121,7 @@ namespace SimulationDAL
       }
       processed = true;
       return true;
-    }
+      }
 
     public override TimeSpan NextTime()
     {
@@ -1007,7 +1147,7 @@ namespace SimulationDAL
     protected LogNormal mathFuncs = null;
 
     protected override EnEventType GetEvType() { return EnEventType.etLogNormalDist; }
-    
+
     public override TimeSpan NextTime()
     {
       if (mathFuncs == null)
@@ -1058,10 +1198,9 @@ namespace SimulationDAL
 
     public override string GetDerivedJSON(EmraldModel lists)
     {
-      string retStr = "\"evType\": \"" + EnEventType.etFailRate.ToString() + "\"," + Environment.NewLine +
-                      "\"shape\":" + this._Shape.ToString() + "," + Environment.NewLine +
-                      "\"scale\":\"" + this._Scale.ToString() + "," + Environment.NewLine +
-                      "\"timeRate\":\"" + this._TimeRate.ToString() + "," + Environment.NewLine + "\"";
+      string retStr = "\"shape\":" + this._Shape.ToString() + "," + Environment.NewLine +
+                      "\"scale\":" + this._Scale.ToString() + "," + Environment.NewLine +
+                      "\"timeRate\":\"" + this._TimeRate.ToString() + "\"";
 
       return retStr;
     }
@@ -1110,6 +1249,7 @@ namespace SimulationDAL
   }
   public class ExponentialDistEvent : TimeBasedEvent
   {
+    protected VariableList varList = null;
     protected double _Rate = 0.0;
     protected EnTimeRate _TimeRate = EnTimeRate.trHours;
 
@@ -1119,20 +1259,19 @@ namespace SimulationDAL
 
     public ExponentialDistEvent() : base("") { }
 
-    public ExponentialDistEvent(string inName, double rate) 
+    public ExponentialDistEvent(string inName, VariableList inVarList, double rate) 
       : base(inName)
     {
       this._Rate = rate;
-
+      this.varList = inVarList;
 
     }
 
     public override string GetDerivedJSON(EmraldModel lists)
     {
 
-      string retStr = "\"evType\": \"" + EnEventType.etFailRate.ToString() + "\"," + Environment.NewLine +
-                      "\"rate\":" + this._Rate.ToString() + "," + Environment.NewLine +
-                      "\"timeRate\":\"" + this._TimeRate.ToString() + "," + Environment.NewLine + "\"";
+      string retStr = "\"rate\":" + this._Rate.ToString() + "," + Environment.NewLine +
+                      "\"timeRate\":\"" + this._TimeRate.ToString() + "\"";
 
       return retStr;
     }
@@ -1379,7 +1518,8 @@ namespace SimulationDAL
         EnEventType evType = (EnEventType)Enum.Parse(typeof(EnEventType), (string)item.evType, true);
 
         if ((evType == EnEventType.etStateCng) || (evType == EnEventType.etComponentLogic) || 
-            (evType == EnEventType.etVarCond) || (evType == EnEventType.et3dSimEv))
+            (evType == EnEventType.etVarCond) || (evType == EnEventType.et3dSimEv) ||
+            (evType == EnEventType.etTimer) || (evType == EnEventType.etFailRate))
         {
           Event curItem = this.FindByName((string)item.name, false);
           try

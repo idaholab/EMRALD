@@ -35,6 +35,12 @@
 
     <div ng-app="EventEditor">
         <div ng-controller="EEController" id="EEControllerPanel">
+            <div style="display:table-row;">
+                <span style="display:table-cell;vertical-align:middle;">Type:</span>
+                <select id="typeOptionSelector" ng-model="typeOption" ng-options="to.name for to in typeOptions" style="width: 140px;" onchange="handleSelection(); return false;">
+                    <option>-- Choose Type --</option>
+                </select>
+            </div>
             <div style="display:table-row">
                 <span style="display:table-cell;vertical-align:middle;">Name:</span>
                 <input ng-model="name" tabindex="1" name="NameValue" />
@@ -44,12 +50,6 @@
             <div style="display:table-row;">
                 <span style="display: table-cell;vertical-align:middle;">Desc:</span>
                 <input size="40" tabindex="2" name="DescValue" ng-model="desc" />
-            </div>
-            <div style="display:table-row;">
-                <span style="display:table-cell;vertical-align:middle;">Type:</span>
-                <select id="typeOptionSelector" ng-model="typeOption" ng-options="to.name for to in typeOptions" style="width: 140px;" onchange="handleSelection(); return false;">
-                    <option>-- Choose Type --</option>
-                </select>
             </div>
 
             <div id="movePanel"
@@ -183,35 +183,99 @@
                     </select>
                 </div>
                 <div id="TimerPanel" style="display:table-row;position:absolute;visibility:collapse;height:70%;width:96%;overflow-x:hidden;overflow-y:scroll;">
-                    <label style="display:table-cell;vertical-align:middle; white-space:nowrap;">Time Span:</label>
-                    <input name="timespandays" ng-model="time.days" size="4" />
-                    <input name="timespanhours" ng-model="time.hours" size="4" />
-                    <input name="timespanminutes" ng-model="time.minutes" size="4" />
-                    <input name="timespanseconds" ng-model="time.seconds" size="4" />
+                    <div style="display: table-row">
+                        <label style="display: table-cell; vertical-align: top; white-space: nowrap;">Time Span:</label>
+                        <div style="display: table-cell" ng-if="!data.timer.useVariable">
+                            <div style="display: table-cell;">
+                                <input name="timespandays" placeholder="Days" ng-model="time.days" size="4" />
+                                <br />
+                                <span>Days</span>
+                            </div>
+                            <div style="display: table-cell;">
+                                <input name="timespanhours" placeholder="Hours" ng-model="time.hours" size="4" />
+                                <br />
+                                <span>Hours</span>
+                            </div>
+                            <div style="display: table-cell;">
+                                <input name="timespanminutes" placeholder="Minutes" ng-model="time.minutes" size="4" />
+                                <br />
+                                <span>Minutes</span>
+                            </div>
+                            <div style="display: table-cell;">
+                                <input name="timespanseconds" placeholder="Seconds" ng-model="time.seconds" size="4" />
+                                <br />
+                                <span>Seconds</span>
+                            </div>
+                        </div>
+                        <div style="display: table-cell" ng-if="data.timer.useVariable">
+                            <select style="display: table-cell;" ng-model="data.timer.variableName" ng-options="x.name for x in data.timer.allowedVariables">
+                                <option>-- Choose Variable --</option>
+                            </select>
+                            <select style="display: table-cell;" ng-model="data.timer.variableUnit" ng-options="x.value as x.name for x in data.timer.allowedVariableUnits">
+                                <option>-- Choose Unit --</option>
+                            </select>
+                        </div>
+                    </div>
                     <br />
-                    <span class="item_caption" style="white-space:nowrap;">(days,hours,minutes,seconds):</span>
-                    <br />
+                    <div style="display: table-row">
+                        <label style="display: table-cell" for="useTimerVariableCheckbox">Use Variable? </label>
+                        <input id="useTimerVariableCheckbox" type="checkbox" ng-model="data.timer.useVariable" />
+                    </div>
                 </div>
 
-                <div id="FailProbabilityPanel"
-                     style="display:table-row;position:absolute;visibility:collapse;height:70%;width:96%;overflow-x:hidden;overflow-y:scroll;">
-                    <span class="item_caption" style="display:table-cell;vertical-align:middle; white-space:nowrap;">Lambda/Freq:</span>
-                    <input name="LambdaFrequency" ng-model="lambda" onfocusout="validateNumber(this);" /><span ng-style="lambdaError" style="color:red"> Invalid number </span>
+                <div id="FailProbabilityPanel" style="display:table-row;position:absolute;visibility:collapse;height:70%;width:96%;overflow-x:hidden;overflow-y:scroll;">
+                    <div style="display: table-row">
+                        <label style="display: table-cell" for="useFailureRateTimeRateVariableCheckbox">Use Variable Lambda/Frequency? </label>
+                        <input id="useFailureRateTimeRateVariableCheckbox" type="checkbox" ng-model="data.failureRate.lambda.useVariable" />
+                    </div>
+                    <br />
+                    <div style="display: table-row">
+                        <span class="item_caption" style="display:table-cell;vertical-align:middle; white-space:nowrap;">Lambda/Freq:</span>
+                        <div style="display: table-cell" ng-if="!data.failureRate.lambda.useVariable">
+                            <input name="LambdaFrequency" ng-model="data.failureRate.lambda.lambda" onfocusout="validateNumber(this);" /><span ng-style="lambdaError" style="color:red"> Invalid number </span>
+                        </div>
+                        <div style="display: table-cell" ng-if="data.failureRate.lambda.useVariable">
+                            <select style="display: table-cell;" ng-model="data.failureRate.lambda.variableName" ng-options="x.name for x in data.failureRate.lambda.allowedVariables">
+                                <option>-- Choose Variable --</option>
+                            </select>
+                        </div>
+                    </div>
+
+
                     <!--<input name="LambdaFrequency" ng-model="lambda" onkeypress="return validateNumber(this, event);" /><br />-->
-                    <span class="item_caption" style="display:table-cell;vertical-align:middle; white-space:nowrap;">Time Rate:</span>
-                    <input name="failtimespandays" ng-model="lambdaTimeRate.days" size="4" />
-                    <input name="failtimespanhours" ng-model="lambdaTimeRate.hours" size="4" />
-                    <input name="failtimespanminutes" ng-model="lambdaTimeRate.minutes" size="4" />
-                    <input name="failtimespanseconds" ng-model="lambdaTimeRate.seconds" size="4" />
+                    <div style="display: table-row">
+                        <label style="display: table-cell; vertical-align: top; white-space: nowrap;">Time Rate:</label>
+                        <div style="display: table-cell">
+                            <div style="display: table-cell;">
+                                <input name="failtimespandays" placeholder="Days" ng-model="lambdaTimeRate.days" size="4" />
+                                <br />
+                                <span>Days</span>
+                            </div>
+                            <div style="display: table-cell;">
+                                <input name="failtimespanhours" placeholder="Hours" ng-model="lambdaTimeRate.hours" size="4" />
+                                <br />
+                                <span>Hours</span>
+                            </div>
+                            <div style="display: table-cell;">
+                                <input name="failtimespanminutes" placeholder="Minutes" ng-model="lambdaTimeRate.minutes" size="4" />
+                                <br />
+                                <span>Minutes</span>
+                            </div>
+                            <div style="display: table-cell;">
+                                <input name="failtimespanseconds" placeholder="Seconds" ng-model="lambdaTimeRate.seconds" size="4" />
+                                <br />
+                                <span>Seconds</span>
+                            </div>
+                        </div>
+
+                    </div>
                     <br />
                     <!--<span class="item_caption" style="display:table-cell;vertical-align:middle; white-space:nowrap;">Mission Time:</span>
-                    <input name="missiontimespandays" ng-model="missionTime.days" size="4" />
-                    <input name="missiontimespanhours" ng-model="missionTime.hours" size="4" />
-                    <input name="missiontimespanminutes" ng-model="missionTime.minutes" size="4" />
-                    <input name="missiontimespanseconds" ng-model="missionTime.seconds" size="4" />
-                    <br />-->
-                    <span class="item_caption" style="white-space:nowrap;">(days, hours, minutes, seconds)</span>
-                    <br />
+    <input name="missiontimespandays" ng-model="missionTime.days" size="4" />
+    <input name="missiontimespanhours" ng-model="missionTime.hours" size="4" />
+    <input name="missiontimespanminutes" ng-model="missionTime.minutes" size="4" />
+    <input name="missiontimespanseconds" ng-model="missionTime.seconds" size="4" />
+    <br />-->
                 </div>
 
             </div>

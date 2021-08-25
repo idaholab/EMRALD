@@ -105,7 +105,7 @@ function OnLoad(dataObj) {
 				//var diagramInput = document.getElementById("newDiagramInput");
 				//diagramInput.value = dtcomp.name;
 		}*/
-		var scope = angular.element(document.querySelector('#gateControllerPanel')).scope();
+		scope = angular.element(document.querySelector('#gateControllerPanel')).scope();
 		for (var i = 0; i < gateData.length; i++) {
 				var option = { name: gateData[i].name, value: gateData[i] };
 						scope.newDiagramOptions.add(option);

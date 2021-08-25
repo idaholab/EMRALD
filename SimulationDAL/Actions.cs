@@ -1002,8 +1002,7 @@ namespace SimulationDAL
 
   public class RunExtAppAct : Action //atRunExtApp
   {
-    private string exePath = "";
-    
+    private string exePath = "";    
     private ScriptEngine makeInputFileCompEval = null;
     private ScriptEngine processOutputFileCompEval = null;
     private List<String> codeVariables = new List<String>();
@@ -1119,8 +1118,17 @@ namespace SimulationDAL
       }
       else
       {
-        if (!exePath.StartsWith("cmd.exe") && !File.Exists(System.IO.Directory.GetCurrentDirectory() + "\\" + exePath))
-          throw new Exception("Executable path for the \"RunApplication\" action does not exist ! - " + exePath);
+        if (!exePath.StartsWith("cmd.exe"))
+        {
+          string fullExePath = exePath;
+          fullExePath = lists.rootPath;
+          if (!fullExePath.EndsWith(@"\"))
+            fullExePath += @"\";
+
+          fullExePath = Path.GetFullPath(Path.Combine(fullExePath + exePath));
+          if (!File.Exists(fullExePath))
+            throw new Exception("Executable path for the \"RunApplication\" action does not exist ! - " + exePath);
+        }
       }
 
       if (dynObj.exeOutputPath == null)
@@ -1325,12 +1333,10 @@ namespace SimulationDAL
             throw new Exception("Failed to find variable named " + varName);
 
           makeInputFileCompEval.SetVariable(curVar.name, curVar.dType, curVar.value);
-          processOutputFileCompEval.SetVariable(curVar.name, curVar.dType, curVar.value);
         }
 
         makeInputFileCompEval.SetVariable("CurTime", typeof(double), curTime.TotalHours);
-        makeInputFileCompEval.SetVariable("ExePath", typeof(string), Path.GetDirectoryName(exePath));
-        
+        makeInputFileCompEval.SetVariable("ExePath", typeof(string), Path.GetDirectoryName(exePath));        
       }
 
       //add if in states
@@ -1354,14 +1360,23 @@ namespace SimulationDAL
       }
 
       string runParams = makeInputFileCompEval.EvaluateString();
+      string fullExePath = exePath;
+      if ((exePath[0] == '.')&&(!Path.IsPathRooted(exePath)))
+      {
+        fullExePath = lists.rootPath;
+        if (!fullExePath.EndsWith(@"\"))
+          fullExePath += @"\";
+
+        fullExePath = Path.GetFullPath(Path.Combine(fullExePath + exePath));
+      }
 
       NLog.Logger logger = NLog.LogManager.GetLogger("logfile");
-      logger.Info("Executing - " + exePath + " " + runParams);
+      logger.Info("Executing - " + fullExePath + " " + runParams);
 
       int exitCode;
       if (runParams != null)
       {
-        if (!File.Exists(exePath) && !exePath.Contains("cmd.exe"))
+        if (!File.Exists(fullExePath) && !exePath.Contains("cmd.exe"))
           throw new Exception("No executable specified for RunExtApp - " + this.name);
 
         if (exePath.Contains("cmd.exe"))
@@ -1370,8 +1385,8 @@ namespace SimulationDAL
         //Start the executable
         extApp = new ProcessStartInfo();
         extApp.Arguments = runParams;
-        extApp.FileName = exePath; // Path.GetFileName(exePath);
-        extApp.WorkingDirectory = Path.GetDirectoryName(exePath);
+        extApp.FileName = fullExePath; // Path.GetFileName(exePath);
+        extApp.WorkingDirectory = Path.GetDirectoryName(fullExePath);
         extApp.UseShellExecute = false;
         extApp.RedirectStandardOutput = false;
         extApp.RedirectStandardError = false;
@@ -1394,8 +1409,8 @@ namespace SimulationDAL
           // Retrieve the app's exit code
           exitCode = proc.ExitCode;
           proc.Close();
-          if (exitCode > 0)
-            throw new Exception("Failed to run external code - " + exePath + ".   exit code - " + exitCode.ToString());
+          //if (exitCode > 0) //don't quit on bad exit code, add it as a variable and allow the user to define what to do
+          //  throw new Exception("Failed to run external code - " + exePath + ".   exit code - " + exitCode.ToString());
         }
       }
       else 
@@ -1404,6 +1419,19 @@ namespace SimulationDAL
       processOutputFileCompEval.SetVariable("CurTime", typeof(double), curTime.TotalHours);
       processOutputFileCompEval.SetVariable("ExeExitCode", typeof(int), exitCode);
       processOutputFileCompEval.SetVariable("outputFile", typeof(string), exeOutputPath + "\\_out.txt");
+      //Set all the variable values
+      if (codeVariables != null)
+      {
+        foreach (string varName in codeVariables)
+        {
+          SimVariable curVar = lists.allVariables.FindByName(varName);
+          if (curVar == null)
+            throw new Exception("Failed to find variable named " + varName);
+
+          processOutputFileCompEval.SetVariable(curVar.name, curVar.dType, curVar.value);
+        }
+      }
+
 
       List<String> retStates = processOutputFileCompEval.EvaluateStrList();
       System.Threading.Thread.Sleep(10);

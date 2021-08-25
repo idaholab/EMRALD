@@ -19,4 +19,10 @@
     <ProjectReference Include="..\MessageDefLib\MessageDefLib.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="BTree\obj\Debug\" />
+    <Folder Include="BTree\obj\Release\" />
+    <Folder Include="BTree\obj\x86\Debug\" />
+  </ItemGroup>
+
 </Project>

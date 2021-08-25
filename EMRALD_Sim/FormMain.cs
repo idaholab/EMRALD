@@ -29,6 +29,7 @@ namespace EMRALD_Sim
       private EMRALDMsgServer _server = null;
     private EmraldModel _sim = null; 
     private bool _validSim = false;
+    private string _modelPath = "";
     //private bool _cancel = false;
     private string _statsFile = "";
     private ProcessSimBatch simRuns = null;
@@ -740,7 +741,8 @@ namespace EMRALD_Sim
 
       string errorStr = "";
       txtModel.Text = LoadLib.LoadModel(path, ref errorStr);
-      if(errorStr != "")
+      _modelPath = path;
+      if (errorStr != "")
       {
         txtMStatus.ForeColor = Color.Maroon;
         txtMStatus.Text = errorStr;
@@ -757,7 +759,7 @@ namespace EMRALD_Sim
       Cursor saveCurs = Cursor.Current;
       Cursor.Current = Cursors.WaitCursor;
 
-      txtMStatus.Text = LoadLib.ValidateModel(ref _sim, txtModel.Text);
+      txtMStatus.Text = LoadLib.ValidateModel(ref _sim, txtModel.Text, Path.GetDirectoryName(_modelPath));
       _validSim = txtMStatus.Text == "";
       if (txtMStatus.Text != "")
       {

@@ -1,0 +1,11 @@
+    {
+      "Event": {
+        "id": 1,
+        "name": "ExpDist",
+        "desc": "",
+        "mainItem": true,
+        "evType": "etExponentialDist",
+        "rate": 1,
+        "timeRate": "trHours"
+      }
+    }
