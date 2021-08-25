@@ -9,6 +9,15 @@ class Condition {
     this.op = data.op;
   }
 
+  get text() {
+    var re = "";
+    if (this.hasOp) {
+      re += `${this.opName} `;
+    }
+    re += `${this.name} ${this.comparison} ${this.value}`;
+    return re;
+  }
+
   get opName() {
     if (this.op === "&") {
       return "AND";
@@ -134,19 +143,23 @@ function GetDataObject($scope) {
   function escape(str) {
     return str.replace(/([\"\\])/g, "\\$1");
   }
-  var xml = escape(
-    new XMLSerializer().serializeToString(model).replace(/[\n\t]/g, "")
-  );
-  dataObj.data.raPreCode = `System.IO.File.WriteAllText("./model_temp.xml", "${xml}");`;
-  dataObj.data.raPreCode += `\nreturn "--model \\"./model_temp.xml\\" --method ${
-    $scope.prismMethod
-  } --target \\"${$scope.methodParam}\\" --prism \\"${escape(
-    $scope.prismPath
-  )}\\"`;
-  dataObj.data.raPreCode += '";';
-  dataObj.data.raPostCode =
-    "List<String> retStates = new List<String>();\nreturn retStates;";
-
+  if (model) {
+    var xml = escape(
+      new XMLSerializer().serializeToString(model).replace(/[\n\t]/g, "")
+    );
+    dataObj.data.raFormData = {
+      model: xml,
+    };
+    dataObj.data.raPreCode = `System.IO.File.WriteAllText("./model_temp.xml", "${xml}");`;
+    dataObj.data.raPreCode += `\nreturn "--model \\"./model_temp.xml\\" --method ${
+      $scope.prismMethod
+    } --target \\"${$scope.methodParam}\\" --prism \\"${escape(
+      $scope.prismPath
+    )}\\"`;
+    dataObj.data.raPreCode += '";';
+    dataObj.data.raPostCode =
+      "List<String> retStates = new List<String>();\nreturn retStates;";
+  }
   return dataObj;
 }
 
@@ -174,12 +187,10 @@ openErrorForm.controller("openErrorController", [
       "compute_sub_models_and_repetitions_for_element",
       "compute_sub_models_and_repetitions",
     ];
+    $scope.addElement = null;
 
-    $scope.$watch("modelFile", function () {
-      $scope.model = new DOMParser().parseFromString(
-        $scope.modelFile,
-        "text/xml"
-      );
+    function parseModel(xml) {
+      $scope.model = new DOMParser().parseFromString(xml.replace(/\\"/g, '"'), "text/xml");
       $scope.dataNodes = Array.from(
         $scope.model.getElementsByTagName("data")
       ).map((node) => new DataNode(node));
@@ -189,6 +200,13 @@ openErrorForm.controller("openErrorController", [
       $scope.failures = Array.from(
         $scope.model.getElementsByTagName("failure")
       ).map((node) => node.getAttribute("name"));
+    }
+
+    $scope.$watch("modelFile", function () {
+      if ($scope.modelFile.length > 0) {
+        parseModel($scope.modelFile);
+        $scope.save();
+      }
     });
 
     $scope.getDataValues = function (name) {
@@ -198,6 +216,11 @@ openErrorForm.controller("openErrorController", [
     var parentScope = parentWindow.getScope();
     $scope.cvVariables = parentScope.data.cvVariables;
     $scope.exePath = parentScope.data.raLocation;
+    if (parentScope.data.raFormData) {
+      if (parentScope.data.raFormData.model) {
+        parseModel(parentScope.data.raFormData.model);
+      }
+    }
 
     $scope.save = function () {
       parentWindow.postMessage({
@@ -215,6 +238,7 @@ openErrorForm.controller("openErrorController", [
       $scope.configFile = `${$scope.exePath.substring(0, lastIndex)}config.txt`;
       $scope.save();
     });
+    $scope.$watch("prismPath", $scope.save);
     $scope.$watch("configFile", $scope.save);
     $scope.$watch("prismMethod", $scope.save);
   },

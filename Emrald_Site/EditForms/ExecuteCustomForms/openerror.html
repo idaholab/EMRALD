@@ -86,10 +86,13 @@
               </div>
             </div>
           </div>
-          <div class="element" ng-repeat="element in elements">
-            <p>{{element.name}}</p>
+          <div class="element">
+            <div>
+              <select ng-options="element as element.name for element in elements" ng-model="addElement"></select>
+              <p>{{addElement.conditions}}</p>
+            </div>
             <div class="epcs">
-              <div class="epc" ng-repeat="epc in element.epcs">
+              <div class="epc" ng-repeat="epc in addElement.epcs">
                 <div class="conditions">
                   <div
                     class="condition"

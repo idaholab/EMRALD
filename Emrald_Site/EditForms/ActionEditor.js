@@ -305,6 +305,7 @@ function OnLoad(dataObj) {
                 scope.data.raPreCode = actionData.makeInputFileCode;
                 scope.data.raLocation = actionData.exePath;
                 scope.data.raPostCode = actionData.processOutputFileCode;
+                scope.data.raFormData = actionData.formData;
                 break;
         }
 
@@ -439,6 +440,7 @@ function GetDataObject() {
             dataObj.exePath = scope.data.raLocation;
             dataObj.processOutputFileCode = scope.data.raPostCode;
             dataObj.codeVariables = scope.varNames;
+            dataObj.formData = scope.data.raFormData;
             break;
     }
     return dataObj;
@@ -553,6 +555,7 @@ actionModule.controller('actionController', ['$scope', function ($scope) {
         raPostCode: '',
         raType: 'template',
         raTemplate: {},
+        raFormData: {},
     };
 
     $scope.raTemplates = [
@@ -590,6 +593,7 @@ actionModule.controller('actionController', ['$scope', function ($scope) {
     $scope.$watch('data.raPostCode', function (newV, oldV) { if (newV !== oldV) somethingChanged(); });
     $scope.$watch('data.raType', function (newVal, oldVal) { if (newVal !== oldVal) somethingChanged(); });
     $scope.$watch('data.raTemplate', function (newVal, oldVal) { if (newVal !== oldVal) somethingChanged(); });
+    $scope.$watch('data.raFormData', function (newVal, oldVal) { if (newVal !== oldVal) somethingChanged(); });
     $scope.$watch('varNames', function (newVal, oldVal) { if (newVal !== oldVal) somethingChanged(); });
     //$scope.$watch('row.Probability', function (newV, oldV) { if (newV !== oldV) somethingChanged(); });
 
@@ -599,21 +603,14 @@ actionModule.controller('actionController', ['$scope', function ($scope) {
         return $scope;
     };
 
-    // TODO: create undefinied objects
-    function applyToScope(obj, parent) {
-        Object.entries(obj).forEach((entry) => {
-            if (typeof entry[1] === 'object') {
-                applyToScope(entry[1], parent[entry[0]]);
-            } else {
-                parent[entry[0]] = entry[1];
-            }
-        });
-    }
-
     window.addEventListener('message', (ev) => {
+        var { payload } = ev.data;
         switch (ev.data.type) {
             case 'saveTemplate':
-                applyToScope(ev.data.payload, $scope);
+                $scope.data.raFormData = payload.data.raFormData;
+                $scope.data.raPreCode = payload.data.raPreCode;
+                $scope.data.raPostCode = payload.data.raPostCode;
+                $scope.varNames = payload.varNames;
                 break;
             default:
         }
