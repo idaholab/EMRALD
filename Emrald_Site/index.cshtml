@@ -1,7 +1,7 @@
 ﻿<!--Copyright 2021 Battelle Energy Alliance-->
 
 @{
-  bool runningLocal = Request.ServerVariables["HTTP_HOST"].Contains("localhost");
+    bool runningLocal = true; // Request.ServerVariables["HTTP_HOST"].Contains("localhost");
   string basehref = "/emrald/";
     bool isAuthenticated = true; //Request.IsAuthenticated;
   if (runningLocal)
