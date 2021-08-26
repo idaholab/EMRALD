@@ -149,6 +149,9 @@ function GetDataObject($scope) {
     );
     dataObj.data.raFormData = {
       model: xml,
+      prismPath: $scope.prismPath,
+      prismMethod: $scope.prismMethod,
+      prismParam: $scope.methodParam,
     };
     dataObj.data.raPreCode = `System.IO.File.WriteAllText("./model_temp.xml", "${xml}");`;
     dataObj.data.raPreCode += `\nreturn "--model \\"./model_temp.xml\\" --method ${
@@ -219,6 +222,9 @@ openErrorForm.controller("openErrorController", [
     if (parentScope.data.raFormData) {
       if (parentScope.data.raFormData.model) {
         parseModel(parentScope.data.raFormData.model);
+        $scope.prismPath = parentScope.data.raFormData.prismPath;
+        $scope.prismMethod = parentScope.data.raFormData.prismMethod;
+        $scope.methodParam = parentScope.data.raFormData.prismParam;
       }
     }
 
