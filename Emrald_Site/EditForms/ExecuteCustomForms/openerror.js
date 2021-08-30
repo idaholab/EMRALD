@@ -38,9 +38,15 @@ class Condition {
 }
 
 class Then {
-  constructor(data) {
+  constructor(data, cvVariables) {
     this.probability = data.probability;
     this.useVariable = false;
+    if (typeof data.probability === "object" && data.probability.variable) {
+      this.useVariable = true;
+      this.variable = cvVariables.find(
+        (variable) => variable.name === data.probability.variable
+      );
+    }
     this.then = data.then;
     this.remaining = false;
   }
@@ -60,13 +66,15 @@ class Then {
       return `"+${this.variable.name}+":${outcomes}`;
     }
     if (this.remaining) {
-      var peerProbabilities = peers.map((then) => {
-        if (then.useVariable) {
-          return `-"+${then.variable.name}+"`;
-        } else if (!then.remaining) {
-          return `-${then.probability}`;
-        }
-      }).join('');
+      var peerProbabilities = peers
+        .map((then) => {
+          if (then.useVariable) {
+            return `-"+${then.variable.name}+"`;
+          } else if (!then.remaining) {
+            return `-${then.probability}`;
+          }
+        })
+        .join("");
       return `1${peerProbabilities}:${outcomes}`;
     }
     return `${this.probability}:${outcomes}`;
@@ -74,7 +82,7 @@ class Then {
 }
 
 class EPC {
-  constructor(node) {
+  constructor(node, cvVariables) {
     this.node = node;
     this.raw = node.innerHTML;
     const parsed = PrismParser.parse(this.raw);
@@ -87,7 +95,7 @@ class EPC {
       );
       this.hasConditions = true;
     }
-    this.then = parsed.then.map((then) => new Then(then));
+    this.then = parsed.then.map((then) => new Then(then, cvVariables));
     this.then[this.then.length - 1].remaining = true;
   }
 
@@ -101,11 +109,11 @@ class EPC {
 }
 
 class Element {
-  constructor(node) {
+  constructor(node, cvVariables) {
     this.node = node;
     this.name = node.getAttribute("name");
     this.epcs = Array.from(node.getElementsByTagName("epc")).map(
-      (epc) => new EPC(epc)
+      (epc) => new EPC(epc, cvVariables)
     );
   }
 }
@@ -205,14 +213,16 @@ openErrorForm.controller("openErrorController", [
     $scope.addElement = null;
 
     function parseModel(xml) {
-      // TODO: parser fails when variables are used
-      $scope.model = new DOMParser().parseFromString(xml.replace(/\\"/g, '"'), "text/xml");
+      $scope.model = new DOMParser().parseFromString(
+        xml.replace(/\\"/g, '"'),
+        "text/xml"
+      );
       $scope.dataNodes = Array.from(
         $scope.model.getElementsByTagName("data")
       ).map((node) => new DataNode(node));
       $scope.elements = Array.from(
         $scope.model.getElementsByTagName("element")
-      ).map((node) => new Element(node));
+      ).map((node) => new Element(node, $scope.cvVariables));
       $scope.failures = Array.from(
         $scope.model.getElementsByTagName("failure")
       ).map((node) => node.getAttribute("name"));
@@ -233,7 +243,10 @@ openErrorForm.controller("openErrorController", [
     $scope.cvVariables = parentScope.data.cvVariables;
     $scope.exePath = parentScope.data.raLocation;
     if (parentScope.data.raFormData) {
-      if (parentScope.data.raFormData.model && parentScope.data.raFormData.model.length > 0) {
+      if (
+        parentScope.data.raFormData.model &&
+        parentScope.data.raFormData.model.length > 0
+      ) {
         parseModel(parentScope.data.raFormData.model);
         $scope.prismPath = parentScope.data.raFormData.prismPath;
         $scope.prismMethod = parentScope.data.raFormData.prismMethod;
