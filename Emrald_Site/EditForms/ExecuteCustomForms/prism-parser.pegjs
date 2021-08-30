@@ -37,6 +37,14 @@ boolean = v:("true" / "false") {
 }
 arg = computed / term / number
 
+math = left:number op:operator right:(math / number) {
+	return {
+    	left,
+        op,
+        right,
+    }
+}
+
 fn = fn:term "(" ws arg0:arg args:("," ws arg)* ws ")" {
 	return {
     	fn,
@@ -90,7 +98,7 @@ rawStatementGroup = first:statementWrapper rest:(ws and ws statementWrapper)* {
 	return first.concat(rest.map((s) => { return s[3][0] }))
 }
 
-statementsWithProb = probability:number ws ":" ws then:(rawStatementGroup / statement) {
+statementsWithProb = probability:(math / number) ws ":" ws then:(rawStatementGroup / statement) {
 	return {
     	probability,
         then,

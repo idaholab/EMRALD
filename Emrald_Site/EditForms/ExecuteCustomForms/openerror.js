@@ -42,9 +42,10 @@ class Then {
     this.probability = data.probability;
     this.useVariable = false;
     this.then = data.then;
+    this.remaining = false;
   }
 
-  toString() {
+  toString(peers) {
     var outcomes = this.then
       .map((then) => {
         if (typeof then.value === "object") {
@@ -57,6 +58,16 @@ class Then {
       .join("&");
     if (this.useVariable) {
       return `"+${this.variable.name}+":${outcomes}`;
+    }
+    if (this.remaining) {
+      var peerProbabilities = peers.map((then) => {
+        if (then.useVariable) {
+          return `-"+${then.variable.name}+"`;
+        } else if (!then.remaining) {
+          return `-${then.probability}`;
+        }
+      }).join('');
+      return `1${peerProbabilities}:${outcomes}`;
     }
     return `${this.probability}:${outcomes}`;
   }
@@ -77,13 +88,14 @@ class EPC {
       this.hasConditions = true;
     }
     this.then = parsed.then.map((then) => new Then(then));
+    this.then[this.then.length - 1].remaining = true;
   }
 
   toString() {
     var conditions = this.conditions
       .map((condition) => condition.toString())
       .join("");
-    var outcomes = this.then.map((then) => then.toString()).join("+");
+    var outcomes = this.then.map((then) => then.toString(this.then)).join("+");
     return `${conditions}->${outcomes};`;
   }
 }
@@ -193,6 +205,7 @@ openErrorForm.controller("openErrorController", [
     $scope.addElement = null;
 
     function parseModel(xml) {
+      // TODO: parser fails when variables are used
       $scope.model = new DOMParser().parseFromString(xml.replace(/\\"/g, '"'), "text/xml");
       $scope.dataNodes = Array.from(
         $scope.model.getElementsByTagName("data")
@@ -220,7 +233,7 @@ openErrorForm.controller("openErrorController", [
     $scope.cvVariables = parentScope.data.cvVariables;
     $scope.exePath = parentScope.data.raLocation;
     if (parentScope.data.raFormData) {
-      if (parentScope.data.raFormData.model) {
+      if (parentScope.data.raFormData.model && parentScope.data.raFormData.model.length > 0) {
         parseModel(parentScope.data.raFormData.model);
         $scope.prismPath = parentScope.data.raFormData.prismPath;
         $scope.prismMethod = parentScope.data.raFormData.prismMethod;
