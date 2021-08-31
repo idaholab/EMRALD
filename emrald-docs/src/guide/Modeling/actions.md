@@ -33,7 +33,7 @@ Fill out the dialogue box and press "OK". A description is optional.
 
 See [Types of Actions](#types-of-actions) for detailed description of dialogue box options for each type of action.
 
-The action will appear in the Global Actions list. <br> <!-- Showed up in All tab, not Global -->
+The action will appear in the Global Actions list. <br>
 ![New Action 4_2](/images/Modeling/actions/NewAction4_2.png)<br>
 
 ## Adding an Existing Action
