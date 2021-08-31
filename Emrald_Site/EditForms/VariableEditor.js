@@ -527,7 +527,6 @@ variableModule.controller("variableController", ["$scope", function ($scope) {
       $scope.data.regExLine = 0;
       $scope.data.regExBegPos = 0;
     }
-    $scope.data.useRegExNumChars = $scope.data.useRegExLine && ($scope.data.regExNumChars !== null);
   }
 
   /**
