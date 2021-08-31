@@ -222,8 +222,8 @@ function OnLoad(dataObj) {
 
           //for regular expression items
           if (scope.data.docType.value == "dtTextRegEx") {
-            scope.data.useRegExLine = (variableData.regExpLine !== null); // checked if a line is specified
-            scope.data.useRegExNumChars = (variableData.numChars !== null); //checked if not null
+            scope.data.useRegExLine = (variableData.regExpLine >= 0); // checked if a line is specified
+            scope.data.useRegExNumChars = (variableData.numChars >= 0); //checked if not null
             scope.data.regExLine = variableData.regExpLine;
             scope.data.regExBegPos = variableData.begPosition;
             scope.data.regExNumChars = variableData.numChars;
@@ -309,16 +309,16 @@ function GetDataObject() {
     dataObj.pathMustExist = scope.data.resetOnRuns;
     if (scope.data.docType.value == "dtTextRegEx") {
       //set the extra regExp options to not used unless checked
-      dataObj.regExpLine = null;
-      dataObj.begPosition = null;
-      dataObj.numChars = null;
+      dataObj.regExpLine = -1;
+      dataObj.begPosition = 0;
+      dataObj.numChars = -1;
 
       //Assign if checked 
       if (scope.data.useRegExLine) {
         dataObj.regExpLine = scope.data.regExLine;
         dataObj.begPosition = scope.data.regExBegPos;
       }
-      if (scope.data.useRegExNumChars) {
+      if (scope.data.useRegExLine && scope.data.useRegExNumChars) {
         dataObj.numChars = scope.data.regExNumChars;
       }
     }
@@ -461,10 +461,10 @@ variableModule.controller("variableController", ["$scope", function ($scope) {
     varLink: "",
     
     useRegExLine: false,
-    regExLine: null,
-    regExBegPos: null,
+    regExLine: -1,
+    regExBegPos: 0,
     useRegExNumChars: false,
-    regExNumChars: null,
+    regExNumChars: -1,
 
     sim3DId: "",
 
@@ -523,7 +523,7 @@ variableModule.controller("variableController", ["$scope", function ($scope) {
    * When the line # checkbox is clicked, this will initialize the value to 0 if it's not already set.
    */
   $scope.initializeRegExLine = function () {
-    if ($scope.data.regExLine === null) {
+    if ($scope.data.regExLine === -1) {
       $scope.data.regExLine = 0;
       $scope.data.regExBegPos = 0;
     }
@@ -534,7 +534,7 @@ variableModule.controller("variableController", ["$scope", function ($scope) {
    * When the num chars checkbox is clicked, this will initialize the value to 0 if it's not already set.
    */
   $scope.initializeRegExNumChars = function () {
-    if ($scope.data.regExNumChars === null) {
+    if ($scope.data.regExNumChars === -1) {
       $scope.data.regExNumChars = 0;
     }
   }
