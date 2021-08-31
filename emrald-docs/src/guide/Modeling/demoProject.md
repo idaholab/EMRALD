@@ -1,7 +1,7 @@
 # Demo Project
 
 A demonstration project is loaded immediately upon opening EMRALD. </br>
-![SamplePlantDiagram](/images/Modeling/diagrams/SamplePlantDiagram.PNG)
+![SamplePlantDiagram](/images/Modeling/diagrams/SamplePlantDiagram.png)
 
 This project evaluates time it takes for a small or large radiological release due to a loss of offsite power (LOSP) of a nuclear plant to occur. The model starts in "Normal_Operations," stops any safety systems, then samples a failure rate for a LSOP. When in "LOSP," the safety systems start up again then three more events are evaluated: the Emergency Cooling System (ECS) can fail, the Containment Cooling System (CCS) and ECS can fail, or 24 hours can pass. The safety systems starting up are indicated by the moving to Start Systems state which also moves the model into the ECS Active state and the CCS Active state. Those evaluate logic trees made up of components represented by component diagrams to determine if the overall safety systems failed or not.
 
