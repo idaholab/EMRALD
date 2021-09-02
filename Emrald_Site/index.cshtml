@@ -1,127 +1,84 @@
 ﻿<!--Copyright 2021 Battelle Energy Alliance-->
 
-@{
-  bool runningLocal = Request.ServerVariables["HTTP_HOST"].Contains("localhost");
-  string basehref = "/emrald/";
-  bool isAuthenticated = Request.IsAuthenticated;
-  if (runningLocal)
-  {
-    basehref = "/";
-    isAuthenticated = true;
-  }
-}
-
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en-us">
 
 <head>
-  <title>EMRALD Web</title>
-  <base href="@basehref" />
+    <title>EMRALD Web</title>
+    <base href="/"/>
 
-  <link rel="shortcut icon" type="image/x-icon" href="favicon.png" />
-  <link href="styles/menu.css" rel="stylesheet" />
-  <link href="styles/help.css" rel="stylesheet" />
-  <link href="scripts/jquery/jquery-ui/jquery-ui.css" rel="stylesheet" />
-  <!-- this need to come after the jquery-ui's -->
-  <link href="styles/Sidebar.css" rel="stylesheet" />
-  <link href="styles/TreeView.css" rel="stylesheet" />
+    <link rel="shortcut icon" type="image/x-icon" href="favicon.png"/>
+    <link href="styles/menu.css" rel="stylesheet"/>
+    <link href="styles/help.css" rel="stylesheet"/>
+    <link href="scripts/jquery/jquery-ui/jquery-ui.css" rel="stylesheet"/>
+    <!-- this need to come after the jquery-ui's -->
+    <link href="styles/Sidebar.css" rel="stylesheet"/>
+    <link href="styles/TreeView.css" rel="stylesheet"/>
 
-  <script type="text/javascript">
-    mxBasePath = 'scripts/mxGraph';
-  </script>
+    <script type="text/javascript">
+        mxBasePath = 'scripts/mxGraph';
+    </script>
 
-  @{
-    string version = "1.0.1"; }
-
-  <script src="scripts/jquery/jquery-2.1.4.min.js?v=@version"></script>
-  <script src="scripts/jquery/jquery-ui/jquery-ui.min.js?v=@version"></script>
-  <script src="scripts/jquery/jquery-ui/jquery.ui-contextmenu.min.js?v=@version"></script>
-  <script src="scripts/mxGraph/js/mxClient.js?v=@version"></script>
-  <script src="scripts/Promise/promise-0.1.1.js?v=@version"></script>
-  <script src="scripts/UI/Common.js?v=@version"></script>
-  <script src="scripts/UI/Blob.js?v=@version"></script>
-  <script src="scripts/UI/FileSaver.js?v=@version"></script>
-  <script src="config.js?v=@version"></script>
-  <script src="scripts/UI/wcfService.js?v=@version"></script>
-  <script src="scripts/UI/CustomEvent.js?v=@version"></script>
-  <script src="scripts/UI/CustomWindowHandler.js?v=@version"></script>
-  <script src="scripts/UI/Window.js?v=@version"></script>
-  <script src="scripts/UI/WindowFrame.js?v=@version"></script>
-  <script src="scripts/UI/menu.js?v=@version"></script>
-  <script src="scripts/UI/Sidebar.js?v=@version"></script>
-  @if (isAuthenticated)
-  {
-    <script src="scripts/UI/simApp.js"></script>
-  }
-  <style>
-    .footer {
-      position: fixed;
-      left: 0;
-      bottom: 0;
-      width: 100%;
-      background-color: teal;
-      color: white;
-      text-align: center;
-      z-index: 10;
+    @{
+        string version = "1.0.1";
     }
-  </style>
+
+    <script src="scripts/jquery/jquery-2.1.4.min.js?v=@version"></script>
+    <script src="scripts/jquery/jquery-ui/jquery-ui.min.js?v=@version"></script>
+    <script src="scripts/jquery/jquery-ui/jquery.ui-contextmenu.min.js?v=@version"></script>
+    <script src="scripts/mxGraph/js/mxClient.js?v=@version"></script>
+    <script src="scripts/Promise/promise-0.1.1.js?v=@version"></script>
+    <script src="scripts/UI/Common.js?v=@version"></script>
+    <script src="scripts/UI/Blob.js?v=@version"></script>
+    <script src="scripts/UI/FileSaver.js?v=@version"></script>
+    <script src="config.js?v=@version"></script>
+    <script src="scripts/UI/wcfService.js?v=@version"></script>
+    <script src="scripts/UI/CustomEvent.js?v=@version"></script>
+    <script src="scripts/UI/CustomWindowHandler.js?v=@version"></script>
+    <script src="scripts/UI/Window.js?v=@version"></script>
+    <script src="scripts/UI/WindowFrame.js?v=@version"></script>
+    <script src="scripts/UI/menu.js?v=@version"></script>
+    <script src="scripts/UI/Sidebar.js?v=@version"></script>
+    <script src="scripts/UI/simApp.js"></script>
+    <style>
+        .footer {
+            position: fixed;
+            left: 0;
+            bottom: 0;
+            width: 100%;
+            background-color: teal;
+            color: white;
+            text-align: center;
+            z-index: 10;
+        }
+    </style>
 </head>
 
 <body>
 
+<div id="titlebar" style="height: 34px; background-color: white;">
+    <img id="logo" alt="logo" src="images/EMRALD-logo.png" style="margin: 0 5px 0 30px; width: 65px; height: 65px; float: left;"/>
+    <h1 id="title_Text" style="float: left; color: teal; margin: 20px 0 0 0; font-family: 'Arial', 'sans-serif'">
+        Model Editor
+    </h1>
+    <h1 id="project_name" style="float: right; color: teal; margin: 20px 0 0 0; padding-right: 30px; font-family: 'Arial', 'sans-serif'"></h1>
 
-
-  @if (!isAuthenticated)
-  {
-    //string loginUrl = Config.PortalLoginUrl;
-    string serverLoginUrl = "/account/login?returnurl=/emrald/index.cshtml";
-
-    <h2>Please <a href="@serverLoginUrl" target="_blank">login</a> to Safety Portal!</h2>
-  }
-  else
-  {
-
-    <div id="titlebar" style="height:34px; background-color: white;">
-      <img id="logo" alt="logo" src="images/EMRALD-logo.png"
-        style="margin:0 5px 0 30px; width:65px;height:65px; float:left;" />
-      <h1 id="title_Text" style="float:left; color:teal; margin: 20px 0 0 0; font-family:  'Arial', 'sans-serif'">Model
-        Editor</h1>
-      <h1 id="project_name"
-        style="float:right; color:teal; margin: 20px 0 0 0; padding-right:30px; font-family:  'Arial', 'sans-serif'"></h1>
-      <h3 style="float:right; color:teal; margin: 26px 0 0 0;  padding-right:20px; font-family:  'Arial', 'sans-serif'">
-
-        @if (runningLocal)
-        {
-          <text>
-            Running Local
-          </text>
-        }
-        else
-        {
-          <text>
-            Hello @User.Identity.Name
-          </text>
-        }
-
-      </h3>
-    </div>
-    <nav id="menu-wrap" style="background-color: white;">
-      <div id="menu-trigger">Menu</div>
-    </nav>
-    <div style="height:2px; background-color:teal;"></div>
-    <div id="mainContent" style="border: solid #ddd; background-color: #fff;">
-      <div id="SidePanelContainer" style="position: absolute; top: 76px; bottom: 2px; background-color: teal; margin: 2px; float: left;">
+</div>
+<nav id="menu-wrap" style="background-color: white;">
+    <div id="menu-trigger">Menu</div>
+</nav>
+<div style="height: 2px; background-color: teal;"></div>
+<div id="mainContent" style="border: solid #ddd; background-color: #fff;">
+    <div id="SidePanelContainer" style="position: absolute; top: 76px; bottom: 2px; background-color: teal; margin: 2px; float: left;">
         <div id="SidePanel"></div>
-      </div>
-      <div id="ContentPanel" style="position: absolute; left: 180px; top: 76px; bottom: 0px; right: 0px; margin: 2px;
-           clip: rect(auto, auto, auto, auto);">
-      </div>
     </div>
-  }
+    <div id="ContentPanel" style="position: absolute; left: 180px; top: 76px; bottom: 0px; right: 0px; margin: 2px; clip: rect(auto, auto, auto, auto);">
+    </div>
+</div>
 
-  <div class="footer">
+<div class="footer">
     EMRALD version @version
-  </div>
+</div>
 </body>
 
 </html>

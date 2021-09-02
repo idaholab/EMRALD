@@ -114,10 +114,10 @@
   - **States:** The list of states that you would like to monitor. To populate the list, drag existing states from the Left Navigation Frame to this list.
 
   In the Left Navigation Frame, locate the state you would like to monitor. Click and hold on to the event and drag it to the States list title until a plus symbol shows and release your mouse.<br> 
-  ![Add a State to the list Step 1](/images/Modeling/events/StatetoStateChangeEvent1.png)
+  ![Add a State to the list Step 1](/images/Modeling/events/StateToStateChangeEvent1.png)
 
   The event will appear in the States list.<br>
-  ![Add a State to the list Step 1](/images/Modeling/events/StatetoStateChangeEvent2.png)
+  ![Add a State to the list Step 1](/images/Modeling/events/StateToStateChangeEvent2.png)
 
 <h3>Component Logic <img src="/images/Modeling/events/compLogic.png" alt="Component Logic" width="25"/></h3>
   Evaluates a logic model of component diagrams to determine event execution.<br>
