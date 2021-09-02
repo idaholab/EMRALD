@@ -8,58 +8,21 @@
     <script src="./openerror.js"></script>
     <script src="./prism-parser.js"></script>
     <style>
-      .epcs {
-        display: flex;
-        flex-direction: column;
-        flex: 12;
+      table {
+        font-family: arial, sans-serif;
+        border-collapse: collapse;
+        font-size: 12px;
       }
-      .epc {
-        display: flex;
-        border-bottom: 1px solid;
+
+      td,
+      th {
+        border: 1px solid #dddddd;
+        text-align: left;
+        padding: 0px;
       }
-      .epc:last-child {
-        border-bottom: none;
-      }
-      .element {
-        display: flex;
-        border: 1px solid;
-      }
-      .element > :first-child {
-        flex: 1;
-      }
-      .conditions {
-        display: flex;
-        flex-direction: column;
-        flex: 2;
-      }
-      .probabilities {
-        display: flex;
-        flex-direction: column;
-        flex: 6;
-      }
-      .probability {
-        display: flex;
-      }
-      .probability input {
-        width: 82px;
-      }
-      .probability > div > :first-child,
-      .probabilty > div > :nth-child(2) {
-        flex: 1;
-      }
-      .outcomes {
-        display: flex;
-        flex-direction: column;
-        flex: 6;
-        margin-left: 8px;
-      }
-      .checkbox-spacer {
-        display: inline-block;
-        width: 90px;
-      }
-      .remaining {
-        display: inline-block;
-        width: 89px;
+
+      tr:nth-child(even) {
+        background-color: #dddddd;
       }
     </style>
   </head>
@@ -74,111 +37,86 @@
         <br />
         <label for="prismPath">PRISM executable location:</label>
         <input id="prismPath" ng-model="prismPath" />
-        <div>
-          <div class="element">
-            <b>Element</b>
-            <div class="epcs">
-              <div class="epc" style="border: none">
-                <div class="conditions">
-                  <b class="condition">Conditions</b>
+        <div ng-if="hasModel">
+          <h1>Modify items:</h1>
+          <label for="select-element">Element:</label>
+          <select
+            id="select-element"
+            ng-options="element as element.name for element in elements"
+            ng-model="addElement"
+          ></select>
+          <label for="select-condition">Condition:</label>
+          <select
+            id="select-condition"
+            ng-options="epc as epc.label for epc in addElement.epcs"
+            ng-model="addCondition"
+          ></select>
+          <table>
+            <tr>
+              <th>Use Variable</th>
+              <th>Probability</th>
+              <th>Outcome</th>
+            </tr>
+            <tr ng-repeat="then in addCondition.then">
+              <td>
+                <input
+                  type="checkbox"
+                  ng-model="then.useVariable"
+                  ng-if="!then.remaining"
+                />
+              </td>
+              <td>
+                <span ng-if="then.remaining">Remaining</span>
+                <div ng-if="!then.remaining">
+                  <input
+                    ng-model="then.probability"
+                    ng-if="!then.useVariable"
+                    ng-change="save()"
+                  />
+                  <select
+                    ng-if="then.useVariable"
+                    ng-options="opt.name for opt in cvVariables"
+                    ng-model="then.variable"
+                    ng-change="save()"
+                  ></select>
                 </div>
-                <div class="probabilities">
-                  <div class="probability">
-                    <b style="width: 82px">Use Variable</b>
-                    <b style="width: 82px">Probability</b>
-                    <div class="outcomes">
-                      <b class="outcome">Outcomes</b>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="element">
-            <div>
-              <select
-                ng-options="element as element.name for element in elements"
-                ng-model="addElement"
-              ></select>
-            </div>
-            <div class="epcs">
-              <div class="epc" ng-repeat="epc in addElement.epcs">
-                <div class="conditions">
-                  <div
-                    class="condition"
-                    ng-if="epc.hasConditions"
-                    ng-repeat="condition in epc.conditions"
-                  >
-                    <span ng-if="condition.hasOp">{{condition.opName}}</span>
-                    <span>
-                      {{condition.name}} {{condition.comparison}}
-                      {{condition.value}}
-                    </span>
-                    <!--
-                    <select ng-if="condition.hasOp" ng-model="condition.opName">
-                        <option>AND</option>
-                        <option>OR</option>
-                    </select>
-                    <select ng-model="condition.name" ng-options="opt.name as opt.name for opt in dataNodes"></select>
-                    <select ng-model="condition.comparison">
-                        <option>=</option>
-                        <option>&lt;</option>
-                        <option>&gt;</option>
-                        <option>&lt;=</option>
-                        <option>&gt;=</option>
-                        <option>!=</option>
-                    </select>
-                    <select ng-model="condition.value" ng-options="opt for opt in getDataValues(condition.name)"></select>
-                    -->
-                  </div>
-                  <div class="condition" ng-if="!epc.hasConditions">true</div>
-                </div>
-                <div class="probabilities">
-                  <div class="probability" ng-repeat="then in epc.then">
-                    <div ng-if="then.remaining">
-                      <div class="checkbox-spacer"></div>
-                      <p class="remaining">Remaining</p>
-                    </div>
-                    <div ng-if="!then.remaining">
-                      <input type="checkbox" ng-model="then.useVariable" />
-                      <input
-                        ng-model="then.probability"
-                        ng-if="!then.useVariable"
-                        ng-change="save()"
-                      />
-                      <select
-                        ng-if="then.useVariable"
-                        ng-options="opt.name for opt in cvVariables"
-                        ng-model="then.variable"
-                        ng-change="save()"
-                      ></select>
-                    </div>
-                    <div class="outcomes">
-                      <div class="outcome" ng-repeat="outcome in then.then">
-                        {{outcome.name}} = {{outcome.value}}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+              </td>
+              <td>{{then.outcomes}}</td>
+            </tr>
+          </table>
+          <hr />
+          <h1>Outputs:</h1>
+          <table>
+            <tr>
+              <th>Doc Link Variable</th>
+              <th>PRISM Method</th>
+              <th>Target Failure State</th>
+            </tr>
+            <tr ng-repeat="varLink in varLinks">
+              <td>
+                <select
+                  ng-options="variable as variable.name for variable in docVars"
+                  ng-model="varLink.variable"
+                ></select>
+              </td>
+              <td>
+                <select
+                  ng-model="varLink.prismMethod"
+                  ng-options="opt for opt in prismMethods"
+                  ng-change="save()"
+                ></select>
+              </td>
+              <td>
+                <!-- TODO: fix select not working the first time -->
+                <select
+                  ng-model="varLink.target"
+                  ng-options="failure for failure in failures"
+                  ng-change="save()"
+                ></select>
+              </td>
+            </tr>
+          </table>
         </div>
-        <hr />
-        <label for="prism-method">PRISM method:</label>
-        <select
-          id="prism-method"
-          ng-model="prismMethod"
-          ng-options="opt for opt in prismMethods"
-        ></select>
-        <br />
-        <label for="prism-param">Target:</label>
-        <select
-          id="prism-param"
-          ng-model="methodParam"
-          ng-options="failure for failure in failures"
-          ng-change="save()"
-        ></select>
       </form>
     </div>
   </body>

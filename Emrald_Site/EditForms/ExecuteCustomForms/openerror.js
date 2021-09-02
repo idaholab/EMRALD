@@ -51,6 +51,14 @@ class Then {
     this.remaining = false;
   }
 
+  get outcomes() {
+    return this.then
+      .map((outcome) => {
+        return JSON.stringify(outcome);
+      })
+      .join("\n");
+  }
+
   toString(peers) {
     var outcomes = this.then
       .map((then) => {
@@ -99,6 +107,10 @@ class EPC {
     this.then[this.then.length - 1].remaining = true;
   }
 
+  get label() {
+    return this.conditions.map((condition) => condition.text).join(" ");
+  }
+
   toString() {
     var conditions = this.conditions
       .map((condition) => condition.toString())
@@ -128,6 +140,10 @@ class DataNode {
       this.values = [];
     }
   }
+}
+
+class VarLink {
+  constructor() {}
 }
 
 var parentWindow = window.frameElement.ownerDocument.defaultView;
@@ -189,6 +205,7 @@ function GetDataObject($scope) {
 openErrorForm.controller("openErrorController", [
   "$scope",
   function ($scope) {
+    $scope.hasModel = false;
     $scope.model = null;
     $scope.modelFile = "";
     $scope.elements = [];
@@ -211,6 +228,9 @@ openErrorForm.controller("openErrorController", [
       "compute_sub_models_and_repetitions",
     ];
     $scope.addElement = null;
+    $scope.addCondition = null;
+    $scope.varLinks = [new VarLink()];
+    $scope.docVars = [];
 
     function parseModel(xml) {
       $scope.model = new DOMParser().parseFromString(
@@ -226,6 +246,7 @@ openErrorForm.controller("openErrorController", [
       $scope.failures = Array.from(
         $scope.model.getElementsByTagName("failure")
       ).map((node) => node.getAttribute("name"));
+      $scope.hasModel = true;
     }
 
     $scope.$watch("modelFile", function () {
@@ -241,6 +262,9 @@ openErrorForm.controller("openErrorController", [
 
     var parentScope = parentWindow.getScope();
     $scope.cvVariables = parentScope.data.cvVariables;
+    $scope.docVars = parentScope.data.cvVariables.filter(
+      (cvVariable) => cvVariable.varScope === "gtDocLink"
+    );
     $scope.exePath = parentScope.data.raLocation;
     if (parentScope.data.raFormData) {
       if (
@@ -274,6 +298,8 @@ openErrorForm.controller("openErrorController", [
     $scope.$watch("configFile", $scope.save);
     $scope.$watch("prismMethod", $scope.save);
   },
+
+  // Remember to add doc variables to variables used in code
 ]);
 
 openErrorForm.directive("fileModel", ["$parse", fileModel]);
