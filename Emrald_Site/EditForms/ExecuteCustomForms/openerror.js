@@ -49,18 +49,7 @@ class Then {
     }
     this.then = data.then;
     this.remaining = false;
-  }
-
-  get outcomes() {
-    return this.then
-      .map((outcome) => {
-        return JSON.stringify(outcome);
-      })
-      .join("\n");
-  }
-
-  toString(peers) {
-    var outcomes = this.then
+    this.outcomes = this.then
       .map((then) => {
         if (typeof then.value === "object") {
           if (then.value.op !== undefined) {
@@ -70,8 +59,11 @@ class Then {
         return `(${then.name}'=${then.value})`;
       })
       .join("&");
+  }
+
+  toString(peers) {
     if (this.useVariable) {
-      return `"+${this.variable.name}+":${outcomes}`;
+      return `"+${this.variable.name}+":${this.outcomes}`;
     }
     if (this.remaining) {
       var peerProbabilities = peers
@@ -83,9 +75,9 @@ class Then {
           }
         })
         .join("");
-      return `1${peerProbabilities}:${outcomes}`;
+      return `1${peerProbabilities}:${this.outcomes}`;
     }
-    return `${this.probability}:${outcomes}`;
+    return `${this.probability}:${this.outcomes}`;
   }
 }
 
@@ -283,6 +275,34 @@ openErrorForm.controller("openErrorController", [
         type: "saveTemplate",
         payload: GetDataObject($scope),
       });
+    };
+
+    // TODO: validate inputs
+    $scope.addOutput = function () {
+      $scope.varLinks.push(new VarLink());
+    };
+
+    $scope.removeOutput = function (index) {
+      $scope.varLinks.splice(index, 1);
+    };
+
+    $scope.addOutcome = function () {
+      $scope.addCondition.then.splice(
+        $scope.addCondition.then.length - 1,
+        0,
+        new Then({
+          probability: 1,
+          then: [],
+        })
+      );
+    };
+
+    $scope.removeOutcome = function (index) {
+      $scope.addCondition.then.splice(index, 1);
+    };
+
+    $scope.getValuesByNodeName = function (name) {
+      return $scope.dataNodes.find((node) => node.name === name).values;
     };
 
     $scope.$watch("exePath", () => {
