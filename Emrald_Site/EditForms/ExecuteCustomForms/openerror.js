@@ -135,7 +135,22 @@ class DataNode {
 }
 
 class VarLink {
-  constructor() {}
+  constructor(prismMethod, target, variable) {
+    this.prismMethod = prismMethod;
+    this.target = target;
+    this.variable = variable;
+  }
+
+  toJSON() {
+    return {
+      prismMethod: this.prismMethod,
+      target: this.target,
+      variable: {
+        id: this.variable.id,
+        name: this.variable.name,
+      },
+    };
+  }
 }
 
 var parentWindow = window.frameElement.ownerDocument.defaultView;
@@ -159,6 +174,13 @@ function GetDataObject($scope) {
       });
     });
   });
+  $scope.varLinks.forEach((varLink) => {
+    if (varLink.variable) {
+      if (dataObj.varNames.indexOf(varLink.variable.name) < 0) {
+        dataObj.varNames.push(varLink.variable.name);
+      }
+    }
+  });
 
   var model = $scope.model;
   $scope.elements.forEach((element) => {
@@ -178,18 +200,28 @@ function GetDataObject($scope) {
     dataObj.data.raFormData = {
       model: xml,
       prismPath: $scope.prismPath,
-      prismMethod: $scope.prismMethod,
+      varLinks: $scope.varLinks.map((varLink) => varLink.toJSON()),
       prismParam: $scope.methodParam,
     };
     dataObj.data.raPreCode = `System.IO.File.WriteAllText("./model_temp.xml", "${xml}");`;
-    dataObj.data.raPreCode += `\nreturn "--model \\"./model_temp.xml\\" --method ${
-      $scope.prismMethod
-    } --target \\"${$scope.methodParam}\\" --prism \\"${escape(
-      $scope.prismPath
-    )}\\"`;
+    dataObj.data.raPreCode += `\nreturn "--model \\"./model_temp.xml\\" --method ${$scope.varLinks
+      .map((varLink) => varLink.prismMethod)
+      .join(" ")} --target ${$scope.varLinks
+      .map((varLink) => `\\"${varLink.target}\\"`)
+      .join(" ")} --prism \\"${escape($scope.prismPath)}\\"`;
     dataObj.data.raPreCode += '";';
-    dataObj.data.raPostCode =
-      "List<String> retStates = new List<String>();\nreturn retStates;";
+    dataObj.data.raPostCode = "";
+    dataObj.returnType = "rtNone";
+    dataObj.variables = [];
+    for (var i = 0; i < $scope.varLinks.length; i += 1) {
+      dataObj.variables.push({
+        ...$scope.varLinks[i].variable,
+        docType: 'dtJSON',
+        docLink: `$.output[${i}].result`,
+        docPath: './results.json',
+        type: 'double'
+      });
+    }
   }
   return dataObj;
 }
@@ -206,8 +238,6 @@ openErrorForm.controller("openErrorController", [
     $scope.rows = [];
     $scope.prismPath = "";
     $scope.exePath = "";
-    $scope.methodParam = "";
-    $scope.prismMethod = null;
     $scope.prismMethods = [
       "compute_execution_time",
       "compute_P_single",
@@ -265,8 +295,19 @@ openErrorForm.controller("openErrorController", [
       ) {
         parseModel(parentScope.data.raFormData.model);
         $scope.prismPath = parentScope.data.raFormData.prismPath;
-        $scope.prismMethod = parentScope.data.raFormData.prismMethod;
-        $scope.methodParam = parentScope.data.raFormData.prismParam;
+        $scope.varLinks = parentScope.data.raFormData.varLinks.map(
+          (data) =>
+            new VarLink(
+              data.prismMethod,
+              data.target,
+              $scope.docVars.find((docVar) => {
+                return (
+                  docVar.id === data.variable.id &&
+                  docVar.name === data.variable.name
+                );
+              })
+            )
+        );
       }
     }
 
@@ -318,8 +359,6 @@ openErrorForm.controller("openErrorController", [
     $scope.$watch("configFile", $scope.save);
     $scope.$watch("prismMethod", $scope.save);
   },
-
-  // Remember to add doc variables to variables used in code
 ]);
 
 openErrorForm.directive("fileModel", ["$parse", fileModel]);
