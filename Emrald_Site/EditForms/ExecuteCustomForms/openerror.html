@@ -24,6 +24,10 @@
       tr:nth-child(even) {
         background-color: #dddddd;
       }
+
+      .conditions:nth-child(2) {
+        border-bottom: 2px solid #c7c7c7;
+      }
     </style>
   </head>
   <body ng-app="openErrorForm">
@@ -51,18 +55,21 @@
           ng-options="epc as epc.label for epc in addElement.epcs"
           ng-model="addCondition"
         ></select>
-        <table>
+        <table class="conditions">
           <tr>
+            <th>Condition</th>
             <th>Use Variable</th>
             <th>Probability</th>
             <th>Outcome</th>
           </tr>
-          <tr ng-repeat="then in addCondition.then track by $index">
+          <tr ng-repeat="then in getConditionDisplay() track by $index">
+            <td>{{then.epc.label}}</td>
             <td>
               <input
                 type="checkbox"
                 ng-model="then.useVariable"
                 ng-if="!then.remaining"
+                ng-change="setModified(then.epc)"
               />
             </td>
             <td>
@@ -71,18 +78,18 @@
                 <input
                   ng-model="then.probability"
                   ng-if="!then.useVariable"
-                  ng-change="save()"
+                  ng-change="setModified(then.epc)"
                 />
                 <select
                   ng-if="then.useVariable"
                   ng-options="opt.name for opt in cvVariables"
                   ng-model="then.variable"
-                  ng-change="save()"
+                  ng-change="setModified(then.epc)"
                 ></select>
               </div>
             </td>
             <td>
-              <textarea ng-model="then.outcomes"></textarea>
+              <textarea ng-model="then.outcomes" ng-change="setModified(then.epc)"></textarea>
             </td>
             <td>
               <button ng-if="!then.remaining" ng-click="removeOutcome($index)">Remove</button>

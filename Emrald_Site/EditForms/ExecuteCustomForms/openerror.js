@@ -38,9 +38,10 @@ class Condition {
 }
 
 class Then {
-  constructor(data, cvVariables) {
+  constructor(data, cvVariables, epc) {
     this.probability = data.probability;
     this.useVariable = false;
+    this.epc = epc;
     if (typeof data.probability === "object" && data.probability.variable) {
       this.useVariable = true;
       this.variable = cvVariables.find(
@@ -95,8 +96,9 @@ class EPC {
       );
       this.hasConditions = true;
     }
-    this.then = parsed.then.map((then) => new Then(then, cvVariables));
+    this.then = parsed.then.map((then) => new Then(then, cvVariables, this));
     this.then[this.then.length - 1].remaining = true;
+    this.modified = false;
   }
 
   get label() {
@@ -120,6 +122,10 @@ class Element {
       (epc) => new EPC(epc, cvVariables)
     );
   }
+
+  getModified() {
+    return this.epcs.filter((epc) => epc.modified === true);
+  }
 }
 
 class DataNode {
@@ -142,14 +148,16 @@ class VarLink {
   }
 
   toJSON() {
-    return {
+    var json = {
       prismMethod: this.prismMethod,
       target: this.target,
-      variable: {
-        id: this.variable.id,
-        name: this.variable.name,
-      },
+      variable: {},
     };
+    if (this.variable) {
+      json.variable.id = this.variable.id;
+      json.variable.name = this.variable.name;
+    }
+    return json;
   }
 }
 
@@ -216,10 +224,10 @@ function GetDataObject($scope) {
     for (var i = 0; i < $scope.varLinks.length; i += 1) {
       dataObj.variables.push({
         ...$scope.varLinks[i].variable,
-        docType: 'dtJSON',
+        docType: "dtJSON",
         docLink: `$.output[${i}].result`,
-        docPath: './results.json',
-        type: 'double'
+        docPath: "./results.json",
+        type: "double",
       });
     }
   }
@@ -331,19 +339,45 @@ openErrorForm.controller("openErrorController", [
       $scope.addCondition.then.splice(
         $scope.addCondition.then.length - 1,
         0,
-        new Then({
-          probability: 1,
-          then: [],
-        })
+        new Then(
+          {
+            probability: 1,
+            then: [],
+          },
+          $scope.cvVariables,
+          $scope.addCondition
+        )
       );
     };
 
     $scope.removeOutcome = function (index) {
       $scope.addCondition.then.splice(index, 1);
+      $scope.setModified($scope.addCondition);
     };
 
     $scope.getValuesByNodeName = function (name) {
       return $scope.dataNodes.find((node) => node.name === name).values;
+    };
+
+    $scope.getConditionDisplay = function () {
+      var re = [];
+      if ($scope.addCondition !== null) {
+        re = re.concat($scope.addCondition.then);
+      }
+      $scope.elements.forEach((element) => {
+        re = re.concat(
+          element
+            .getModified()
+            .map((epc) => epc.then[0])
+            .filter((then) => then !== re[0])
+        );
+      });
+      return re;
+    };
+
+    $scope.setModified = function (epc) {
+      epc.modified = true;
+      $scope.save();
     };
 
     $scope.$watch("exePath", () => {
