@@ -510,6 +510,41 @@ namespace SimulationTracking
       AddIDLookups(addEvent.eventStateActions, addEvent.time);     
     }
 
+    public void ChangeEventTime(TimeSpan newTime, int evID)
+    {
+      //change the time for the event and move in que
+
+      List<TimeSpan> refs;
+      if (eventRefLookup.TryGetValue(evID, out refs))
+      {
+        TimeMoveEvent cngItem = null;
+        foreach (TimeSpan refTime in refs)
+        {
+          //find the item in timedEvQue with the key of refTime and value that has the correct evID   
+          if (timedEvQue.Search(refTime, true))
+          {
+            do
+            {
+              if (timedEvQue.CurrentValue.eventStateActions.eventID == evID)
+              {
+                //remove the event, it has a bad key/time
+                cngItem = (TimeMoveEvent)timedEvQue.CurrentValue;
+                timedEvQue.Remove();
+                break;
+              }
+            }
+            while (timedEvQue.MoveNext() && timedEvQue.CurrentKey == refTime);
+          }
+        }
+
+        //put the event back with the new time
+        if (cngItem != null)
+        {
+          timedEvQue.Add(newTime, cngItem);
+        }
+      }
+    }
+
     public void AddEventStateActions(int evID, int stateID, ActionList actions)
     {
       //see if this event is an event already in there from another state if so don't create a new one use the previous sampled event and time.
@@ -1623,6 +1658,17 @@ namespace SimulationTracking
             try
             {
               varItem = this.allLists.allVariables[curVarAct.varID];
+              //see if there are any events that use this if so we need to update
+              foreach(var ev in timeEvList.timedEvQue)
+              {
+                TimeBasedEvent curTimeEv = (TimeBasedEvent)ev.Value.eventData;
+                if (curTimeEv.relatedIDs.Contains(varItem.id) && curTimeEv.CanRedoNextTime())
+                {
+                  //get a new time for the event.
+                  TimeSpan regotTime = curTimeEv.RedoNextTime(ev.Value.whenCreated, curTime, curTime + ev.Key);
+                  timeEvList.ChangeEventTime(regotTime, ev.Value.id);
+                }
+              }
             }
             catch (Exception e)
             {

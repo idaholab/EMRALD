@@ -1701,7 +1701,10 @@ namespace SimulationDAL
 
       this.Clear();
 
-      this.moveFromCurrent = (bool)dynObj.moveFromCurrent;
+      if (dynObj.moveFromCurrent != null)
+        this.moveFromCurrent = (bool)dynObj.moveFromCurrent;
+      else
+        this.moveFromCurrent = true;
 
       if (dynObj.actions != null)
       {

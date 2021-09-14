@@ -724,6 +724,14 @@ namespace SimulationDAL
       : base(inName) { }
 
     public abstract TimeSpan NextTime();
+    public virtual bool CanRedoNextTime()
+    {
+      return false;
+    }
+    public virtual TimeSpan RedoNextTime(TimeSpan sampledTime, TimeSpan curTime, TimeSpan oldOccurTime)
+    {
+      return oldOccurTime;
+    }
   }
 
   public class TimerEvent : TimeBasedEvent //etTimer
