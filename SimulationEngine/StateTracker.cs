@@ -540,6 +540,7 @@ namespace SimulationTracking
         //put the event back with the new time
         if (cngItem != null)
         {
+          cngItem.time = newTime;
           timedEvQue.Add(newTime, cngItem);
         }
       }

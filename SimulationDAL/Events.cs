@@ -968,7 +968,7 @@ namespace SimulationDAL
         try
         {
           this.lambdaVariable = lists.allVariables.FindByName((string)dynObj.lambda);
-          //this.AddRelatedItem(curVar.id); //don't need to add to relatedItems, because it doesn't trigger the event and time is fixed once started 
+          this.AddRelatedItem(lambdaVariable.id);  
         }
         catch
         {
@@ -1028,6 +1028,15 @@ namespace SimulationDAL
       }
 
       return retVal;
+    }
+
+    public override bool CanRedoNextTime()
+    {
+      return true;
+    }
+    public override TimeSpan RedoNextTime(TimeSpan sampledTime, TimeSpan curTime, TimeSpan oldOccurTime)
+    {
+      return NextTime();
     }
   }
 
