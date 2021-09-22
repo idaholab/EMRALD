@@ -45,7 +45,7 @@ module.exports = {
       },
       {
         text: 'EMRALD',
-        link: 'https://emraldapp.azureacc.inl.gov/'
+        link: 'https://emraldapp.inl.gov/'
       }
     ],
     sidebar: {
