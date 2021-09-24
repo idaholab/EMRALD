@@ -608,6 +608,7 @@ actionModule.controller('actionController', ['$scope', function ($scope) {
         var { payload } = ev.data;
         switch (ev.data.type) {
             case 'saveTemplate':
+                $scope.data.raLocation = payload.data.raLocation;
                 $scope.data.raFormData = payload.data.raFormData;
                 $scope.data.raPreCode = payload.data.raPreCode;
                 $scope.data.raPostCode = payload.data.raPostCode;

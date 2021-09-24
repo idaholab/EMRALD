@@ -218,7 +218,7 @@ function GetDataObject($scope) {
       .map((varLink) => `\\"${varLink.target}\\"`)
       .join(" ")} --prism \\"${escape($scope.prismPath)}\\"`;
     dataObj.data.raPreCode += '";';
-    dataObj.data.raPostCode = "";
+    dataObj.data.raPostCode = "List<String> retStates = new List<String>();\nreturn retStates;";
     dataObj.returnType = "rtNone";
     dataObj.variables = [];
     for (var i = 0; i < $scope.varLinks.length; i += 1) {
@@ -380,15 +380,7 @@ openErrorForm.controller("openErrorController", [
       $scope.save();
     };
 
-    $scope.$watch("exePath", () => {
-      var re = /[\/\\]/g;
-      let lastIndex = 0;
-      while (re.test($scope.exePath) == true) {
-        lastIndex = re.lastIndex;
-      }
-      $scope.configFile = `${$scope.exePath.substring(0, lastIndex)}config.txt`;
-      $scope.save();
-    });
+    $scope.$watch("exePath", $scope.save);
     $scope.$watch("prismPath", $scope.save);
     $scope.$watch("configFile", $scope.save);
     $scope.$watch("prismMethod", $scope.save);
