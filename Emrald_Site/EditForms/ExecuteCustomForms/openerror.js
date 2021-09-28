@@ -190,14 +190,21 @@ function GetDataObject($scope) {
     }
   });
 
+  var modified = [];
   var model = $scope.model;
+  var i = 0;
   $scope.elements.forEach((element) => {
     element.epcs.forEach((epc) => {
       epc.node.innerHTML = "";
       var text = model.createTextNode(epc.toString());
       epc.node.appendChild(text);
+      if (epc.modified) {
+        modified.push(i);
+      }
+      i += 1;
     });
   });
+  console.log(modified);
   function escape(str) {
     return str.replace(/([\"\\])/g, "\\$1");
   }
@@ -210,6 +217,7 @@ function GetDataObject($scope) {
       prismPath: $scope.prismPath,
       varLinks: $scope.varLinks.map((varLink) => varLink.toJSON()),
       prismParam: $scope.methodParam,
+      modified,
     };
     dataObj.data.raPreCode = `System.IO.File.WriteAllText("./model_temp.xml", "${xml}");`;
     dataObj.data.raPreCode += `\nreturn "--model \\"./model_temp.xml\\" --method ${$scope.varLinks
@@ -261,6 +269,7 @@ openErrorForm.controller("openErrorController", [
     $scope.addCondition = null;
     $scope.varLinks = [new VarLink()];
     $scope.docVars = [];
+    $scope.modified = [];
 
     function parseModel(xml) {
       $scope.model = new DOMParser().parseFromString(
@@ -291,6 +300,7 @@ openErrorForm.controller("openErrorController", [
     };
 
     var parentScope = parentWindow.getScope();
+    // $scope.modified = 
     $scope.cvVariables = parentScope.data.cvVariables;
     $scope.docVars = parentScope.data.cvVariables.filter(
       (cvVariable) => cvVariable.varScope === "gtDocLink"
