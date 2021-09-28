@@ -559,12 +559,9 @@ actionModule.controller('actionController', ['$scope', function ($scope) {
         raFormData: {},
     };
 
-    $scope.raTemplates = [
-        {
-            name: 'Open Error Pro',
-            path: './ExecuteCustomForms/openerror.html',
-        }
-    ];
+    $.getJSON('./customForms.json', (data) => {
+        $scope.raTemplates = data;
+    });
 
     $scope.data.action = $scope.data.actions[0];
     $scope.data.simMessage = $scope.data.simMessages[0];
@@ -608,10 +605,10 @@ actionModule.controller('actionController', ['$scope', function ($scope) {
         var { payload } = ev.data;
         switch (ev.data.type) {
             case 'saveTemplate':
-                $scope.data.raLocation = payload.data.raLocation;
-                $scope.data.raFormData = payload.data.raFormData;
-                $scope.data.raPreCode = payload.data.raPreCode;
-                $scope.data.raPostCode = payload.data.raPostCode;
+                $scope.data.raLocation = payload.raLocation;
+                $scope.data.raFormData = payload.raFormData;
+                $scope.data.raPreCode = payload.raPreCode;
+                $scope.data.raPostCode = payload.raPostCode;
                 $scope.varNames = payload.varNames;
                 $scope.returnType = payload.returnType;
                 break;

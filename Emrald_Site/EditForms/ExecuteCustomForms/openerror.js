@@ -163,83 +163,85 @@ class VarLink {
 
 var parentWindow = window.frameElement.ownerDocument.defaultView;
 
-function GetDataObject($scope) {
-  var dataObj = {
-    data: {},
-  };
-  dataObj.data.raLocation = $scope.exePath;
-
-  dataObj.varNames = [];
-  $scope.elements.forEach((element) => {
-    element.epcs.forEach((epc) => {
-      epc.then.forEach((outcome) => {
-        if (
-          outcome.useVariable &&
-          dataObj.varNames.indexOf(outcome.variable.name) < 0
-        ) {
-          dataObj.varNames.push(outcome.variable.name);
-        }
-      });
-    });
-  });
-  $scope.varLinks.forEach((varLink) => {
-    if (varLink.variable) {
-      if (dataObj.varNames.indexOf(varLink.variable.name) < 0) {
-        dataObj.varNames.push(varLink.variable.name);
-      }
-    }
-  });
-
-  var modified = [];
-  var model = $scope.model;
-  var i = 0;
-  $scope.elements.forEach((element) => {
-    element.epcs.forEach((epc) => {
-      epc.node.innerHTML = "";
-      var text = model.createTextNode(epc.toString());
-      epc.node.appendChild(text);
-      if (epc.modified) {
-        modified.push(i);
-      }
-      i += 1;
-    });
-  });
-  console.log(modified);
-  function escape(str) {
-    return str.replace(/([\"\\])/g, "\\$1");
-  }
-  if (model) {
-    var xml = escape(
-      new XMLSerializer().serializeToString(model).replace(/[\n\t]/g, "")
-    );
-    dataObj.data.raFormData = {
-      model: xml,
-      prismPath: $scope.prismPath,
-      varLinks: $scope.varLinks.map((varLink) => varLink.toJSON()),
-      prismParam: $scope.methodParam,
-      modified,
+class OpenErrorForm extends ExternalExeForm {
+  getDataObject() {
+    var dataObj = {
+      data: {},
     };
-    dataObj.data.raPreCode = `System.IO.File.WriteAllText("./model_temp.xml", "${xml}");`;
-    dataObj.data.raPreCode += `\nreturn "--model \\"./model_temp.xml\\" --method ${$scope.varLinks
-      .map((varLink) => varLink.prismMethod)
-      .join(" ")} --target ${$scope.varLinks
-      .map((varLink) => `\\"${varLink.target}\\"`)
-      .join(" ")} --prism \\"${escape($scope.prismPath)}\\"`;
-    dataObj.data.raPreCode += '";';
-    dataObj.data.raPostCode = "List<String> retStates = new List<String>();\nreturn retStates;";
-    dataObj.returnType = "rtNone";
-    dataObj.variables = [];
-    for (var i = 0; i < $scope.varLinks.length; i += 1) {
-      dataObj.variables.push({
-        ...$scope.varLinks[i].variable,
-        docType: "dtJSON",
-        docLink: `$.output[${i}].result`,
-        docPath: "./results.json",
-        type: "double",
+    dataObj.data.raLocation = this.$scope.exePath;
+
+    dataObj.varNames = [];
+    this.$scope.elements.forEach((element) => {
+      element.epcs.forEach((epc) => {
+        epc.then.forEach((outcome) => {
+          if (
+            outcome.useVariable &&
+            dataObj.varNames.indexOf(outcome.variable.name) < 0
+          ) {
+            dataObj.varNames.push(outcome.variable.name);
+          }
+        });
       });
+    });
+    this.$scope.varLinks.forEach((varLink) => {
+      if (varLink.variable) {
+        if (dataObj.varNames.indexOf(varLink.variable.name) < 0) {
+          dataObj.varNames.push(varLink.variable.name);
+        }
+      }
+    });
+
+    var modified = [];
+    var model = this.$scope.model;
+    var i = 0;
+    this.$scope.elements.forEach((element) => {
+      element.epcs.forEach((epc) => {
+        epc.node.innerHTML = "";
+        var text = model.createTextNode(epc.toString());
+        epc.node.appendChild(text);
+        if (epc.modified) {
+          modified.push(i);
+        }
+        i += 1;
+      });
+    });
+    function escape(str) {
+      return str.replace(/([\"\\])/g, "\\$1");
     }
+    if (model) {
+      var xml = escape(
+        new XMLSerializer().serializeToString(model).replace(/[\n\t]/g, "")
+      );
+      dataObj.data.raFormData = {
+        model: xml,
+        prismPath: this.$scope.prismPath,
+        varLinks: this.$scope.varLinks.map((varLink) => varLink.toJSON()),
+        prismParam: this.$scope.methodParam,
+        modified,
+      };
+      dataObj.data.raPreCode = `System.IO.File.WriteAllText("./model_temp.xml", "${xml}");`;
+      dataObj.data.raPreCode += `\nreturn "--model \\"./model_temp.xml\\" --method ${this.$scope.varLinks
+        .map((varLink) => varLink.prismMethod)
+        .join(" ")} --target ${this.$scope.varLinks
+        .map((varLink) => `\\"${varLink.target}\\"`)
+        .join(" ")} --prism \\"${escape(this.$scope.prismPath)}\\"`;
+      dataObj.data.raPreCode += '";';
+      dataObj.data.raPostCode =
+        "List<String> retStates = new List<String>();\nreturn retStates;";
+      dataObj.returnType = "rtNone";
+      dataObj.variables = [];
+      for (var i = 0; i < $scope.varLinks.length; i += 1) {
+        dataObj.variables.push({
+          ...$scope.varLinks[i].variable,
+          docType: "dtJSON",
+          docLink: `$.output[${i}].result`,
+          docPath: "./results.json",
+          type: "double",
+        });
+      }
+    }
+    return dataObj;
   }
-  return dataObj;
 }
 
 openErrorForm.controller("openErrorController", [
@@ -291,7 +293,6 @@ openErrorForm.controller("openErrorController", [
     $scope.$watch("modelFile", function () {
       if ($scope.modelFile.length > 0) {
         parseModel($scope.modelFile);
-        $scope.save();
       }
     });
 
@@ -300,7 +301,7 @@ openErrorForm.controller("openErrorController", [
     };
 
     var parentScope = parentWindow.getScope();
-    // $scope.modified = 
+    // $scope.modified =
     $scope.cvVariables = parentScope.data.cvVariables;
     $scope.docVars = parentScope.data.cvVariables.filter(
       (cvVariable) => cvVariable.varScope === "gtDocLink"
@@ -387,13 +388,8 @@ openErrorForm.controller("openErrorController", [
 
     $scope.setModified = function (epc) {
       epc.modified = true;
-      $scope.save();
+      form.save();
     };
-
-    $scope.$watch("exePath", $scope.save);
-    $scope.$watch("prismPath", $scope.save);
-    $scope.$watch("configFile", $scope.save);
-    $scope.$watch("prismMethod", $scope.save);
   },
 ]);
 
