@@ -1036,7 +1036,7 @@ namespace SimulationDAL
     }
     public override TimeSpan RedoNextTime(TimeSpan sampledTime, TimeSpan curTime, TimeSpan oldOccurTime)
     {
-      return NextTime();
+      return NextTime() - (curTime - sampledTime);
     }
   }
 
