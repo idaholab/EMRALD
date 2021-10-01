@@ -96,10 +96,45 @@ namespace SimulationDAL
 
       //add derived items
       retStr = retStr + "\"varScope\": \"" + this.varScope.ToString() + "\"," + Environment.NewLine;
-      retStr = retStr + "\"value\": " + this._value.ToString() + "," + Environment.NewLine;
-      retStr = retStr + "\"monitorInSim\": \"" + this._monitor.ToString() +"\"," + Environment.NewLine;
-      retStr = retStr + "\"resetOnRuns\": \"" + this.resetOnRuns.ToString() + "\"," + Environment.NewLine;
-      retStr = retStr + "\"type\": \"" + this.dType.Name + "\"";
+      
+      if (this.varScope == EnVarScope.gtDocLink)//wait until GetDerivedJSON for doc variables to put in default value since default value not read until then
+      {}
+      else if (this.dType.Name.ToString() == "String")//need quotes around the string and string should be as is (not all lower case), no quotes around other variable types
+      {
+        retStr = retStr + "\"value\": \"" + this._value.ToString() + "\"," + Environment.NewLine;
+      }
+      else
+      {
+        retStr = retStr + "\"value\": " + this._value.ToString().ToLower() + "," + Environment.NewLine;
+      }
+
+      //retStr = retStr + "\"monitorInSim\": \"" + this._monitor.ToString() +"\"," + Environment.NewLine; //Defined in simulation GUI, not in model editor
+      if (this.varScope != EnVarScope.gtDocLink)//should not have resetOnRuns for doc variables
+      {
+        retStr = retStr + "\"resetOnRuns\": " + this.resetOnRuns.ToString().ToLower() + "," + Environment.NewLine;//removed quotes
+      }
+
+      string t = "";
+      switch (this.dType.Name.ToLower())
+      {
+        case "int32":
+          t = "int";
+          break;
+        case "boolean":
+          t = "bool";
+          break;
+        case "string":
+          t = "string";
+          break;
+        case "double":
+          t = "double";
+          break;
+        default:
+          t = "string";
+          break;
+      }
+
+      retStr = retStr + "\"type\": \"" + t + "\",";
       retStr = retStr + GetDerivedJSON();
 
       retStr = retStr + Environment.NewLine + "}";
@@ -126,6 +161,7 @@ namespace SimulationDAL
 
       try
       {
+        //string dType = ((String)dynObj.type);
         string t = ((String)dynObj.type).ToUpper().Substring(0, 3);
         switch (t)
         {
@@ -236,7 +272,7 @@ namespace SimulationDAL
       string retStr = "";
 
       //add derived items
-      retStr = retStr + "," + Environment.NewLine + "\"sim3DId\": " + this.sim3DNameId.ToString();
+      retStr = retStr + "," + Environment.NewLine + "\"sim3DId\": \"" + this.sim3DNameId.ToString() +"\"";
 
       return retStr;
     }
@@ -430,7 +466,13 @@ namespace SimulationDAL
       {
         throw new Exception("Missing accrualStatesData for accrualVariable variable");
       }
-      
+
+      if (dynObj.varRate == null)
+        throw new Exception("Missing simRate for accrualVariable variable");
+
+      this.varRate = (EnTimeRate)dynObj.varRate;
+
+      //dynObj = dynObj.accrualStatesData;
       //must load everything in LoadObjLinks because the states must be loaded first so we have the IDs.     
 
       processed = true;
@@ -608,9 +650,10 @@ namespace SimulationDAL
     {
       string retStr = "";
 
-      retStr = retStr + "\"docType \": \"" + _docType.ToString() + "\"," + Environment.NewLine;
-      retStr = retStr + "," + Environment.NewLine + "\"docPath \": \"" + _docType.ToString();
-      retStr = retStr + "," + Environment.NewLine + "\"linkStr \": \"" + _docType.ToString() + "\"";
+      retStr = retStr + Environment.NewLine + "\"docLink\": \"" + _linkStr.ToString() + "\"" ;
+      retStr = retStr + "," + Environment.NewLine + "\"docType\": \"" + _docType.ToString() + "\"";
+      retStr = retStr + "," + Environment.NewLine + "\"docPath\": \"" + _docPath.ToString() + "\"";
+      retStr = retStr + "," + Environment.NewLine + "\"pathMustExist\": " + _pathMustExist.ToString().ToLower();
 
       return retStr;
     }
@@ -873,7 +916,7 @@ namespace SimulationDAL
 
   public class TextRegExVariable : DocVariable
   {
-    private int _regExpLine = -1;//-1 means just the regular expression
+    private int _regExpLine = -1;//-1 means just the regular expression, box unchecked
     private int _begPosition = 0;
     private int _numChars = -1; //-1 goes until the next white space
 
@@ -883,9 +926,10 @@ namespace SimulationDAL
     public override string GetDerivedJSON()
     {
       string retStr = base.GetDerivedJSON();
-      retStr = retStr + "," + Environment.NewLine + "\"regExpLine \": \"" + _regExpLine.ToString() + "\"";
-      retStr = retStr + "," + Environment.NewLine + "\"begPos \": \"" + _begPosition + "\"";
-      retStr = retStr + "," + Environment.NewLine + "\"numChars \": \"" + _numChars + "\"";
+      retStr = retStr + "," + Environment.NewLine + "\"regExpLine\": \"" + _regExpLine.ToString() + "\"";
+      retStr = retStr + "," + Environment.NewLine + "\"begPosition\": \"" + _begPosition + "\"";
+      retStr = retStr + "," + Environment.NewLine + "\"numChars\": \"" + _numChars + "\"";
+      //TODO- File from Model Editor doesn't print JSON with " " around the value for _numChars, but this does. Should it have the " "? Should the other fields have " " around the value? Currently the Model Editor does print JSON with " " around the value for _regExpLine and _begPosition
       return retStr;
     }
 
@@ -1024,8 +1068,8 @@ namespace SimulationDAL
           //Split text blob by that match.
           string[] matchSplit = rx.Split(docTxt);
           //Then count the number of line brakes before the match.
-          int lineMatch = new Regex(@"(\n(?!\r)|\r(?!\n)|\r\n?)").Matches(matchSplit[0]).Count;
-          string[] docLines = docTxt.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
+          int lineMatch = new Regex(@"(\n|\r\n?)").Matches(matchSplit[0]).Count;
+          string[] docLines = docTxt.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
           foundTxt = docLines[lineMatch + _regExpLine];
 
           if (_begPosition >= 0)
