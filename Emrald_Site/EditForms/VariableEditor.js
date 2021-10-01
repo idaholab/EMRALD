@@ -136,7 +136,7 @@ function validateValue() {
     }
   }
   else if (scope.doubleTypeSelected) {
-    if (typeof (scope.data.value) === "number" && scope.data.value.toString().match(/^-?[0-9]*.[0-9]*$/)) {
+    if (scope.data.value.toString().match(/^-?[0-9.]+([eE][-+]?[0-9.]+)?$/)) {
       valid = true;
     }
   }
@@ -329,7 +329,12 @@ function GetDataObject() {
     dataObj.accrualStatesData = SortAccrualTables(scope.accrualStatesData);
 	}
   else {
-    dataObj.value = scope.data.value;
+    if (scope.doubleTypeSelected) {
+      // Angular doesn't convert scientific notation to numbers automatically
+      dataObj.value = Number(scope.data.value);
+    } else {
+      dataObj.value = scope.data.value;
+    }
     dataObj.resetOnRuns = scope.data.resetOnRuns;
   }
 
