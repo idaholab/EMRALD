@@ -115,6 +115,7 @@
               <select
                 ng-options="variable as variable.name for variable in docVars"
                 ng-model="varLink.variable"
+                ng-change="save()"
               ></select>
             </td>
             <td>

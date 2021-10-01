@@ -161,14 +161,10 @@ class VarLink {
   }
 }
 
-var parentWindow = window.frameElement.ownerDocument.defaultView;
-
 class OpenErrorForm extends ExternalExeForm {
   getDataObject() {
-    var dataObj = {
-      data: {},
-    };
-    dataObj.data.raLocation = this.$scope.exePath;
+    var dataObj = {};
+    dataObj.raLocation = this.$scope.exePath;
 
     dataObj.varNames = [];
     this.$scope.elements.forEach((element) => {
@@ -212,27 +208,26 @@ class OpenErrorForm extends ExternalExeForm {
       var xml = escape(
         new XMLSerializer().serializeToString(model).replace(/[\n\t]/g, "")
       );
-      dataObj.data.raFormData = {
+      dataObj.raFormData = {
         model: xml,
         prismPath: this.$scope.prismPath,
         varLinks: this.$scope.varLinks.map((varLink) => varLink.toJSON()),
         prismParam: this.$scope.methodParam,
         modified,
       };
-      dataObj.data.raPreCode = `System.IO.File.WriteAllText("./model_temp.xml", "${xml}");`;
-      dataObj.data.raPreCode += `\nreturn "--model \\"./model_temp.xml\\" --method ${this.$scope.varLinks
+      dataObj.raPreCode = `System.IO.File.WriteAllText("./model_temp.xml", "${xml}");`;
+      dataObj.raPreCode += `\nreturn "--model \\"./model_temp.xml\\" --method ${this.$scope.varLinks
         .map((varLink) => varLink.prismMethod)
         .join(" ")} --target ${this.$scope.varLinks
         .map((varLink) => `\\"${varLink.target}\\"`)
         .join(" ")} --prism \\"${escape(this.$scope.prismPath)}\\"`;
-      dataObj.data.raPreCode += '";';
-      dataObj.data.raPostCode =
-        "List<String> retStates = new List<String>();\nreturn retStates;";
+      dataObj.raPreCode += '";';
+      dataObj.raPostCode = "";
       dataObj.returnType = "rtNone";
       dataObj.variables = [];
-      for (var i = 0; i < $scope.varLinks.length; i += 1) {
+      for (var i = 0; i < this.$scope.varLinks.length; i += 1) {
         dataObj.variables.push({
-          ...$scope.varLinks[i].variable,
+          ...this.$scope.varLinks[i].variable,
           docType: "dtJSON",
           docLink: `$.output[${i}].result`,
           docPath: "./results.json",
@@ -243,6 +238,8 @@ class OpenErrorForm extends ExternalExeForm {
     return dataObj;
   }
 }
+
+var form = new OpenErrorForm();
 
 openErrorForm.controller("openErrorController", [
   "$scope",
@@ -300,7 +297,7 @@ openErrorForm.controller("openErrorController", [
       return $scope.dataNodes.find((node) => node.name === name).values;
     };
 
-    var parentScope = parentWindow.getScope();
+    var { parentScope } = form;
     // $scope.modified =
     $scope.cvVariables = parentScope.data.cvVariables;
     $scope.docVars = parentScope.data.cvVariables.filter(
@@ -319,22 +316,14 @@ openErrorForm.controller("openErrorController", [
             new VarLink(
               data.prismMethod,
               data.target,
-              $scope.docVars.find((docVar) => {
-                return (
-                  docVar.id === data.variable.id &&
-                  docVar.name === data.variable.name
-                );
-              })
+              form.findVariable(data.variable)
             )
         );
       }
     }
 
     $scope.save = function () {
-      parentWindow.postMessage({
-        type: "saveTemplate",
-        payload: GetDataObject($scope),
-      });
+      form.save();
     };
 
     // TODO: validate inputs
@@ -390,6 +379,8 @@ openErrorForm.controller("openErrorController", [
       epc.modified = true;
       form.save();
     };
+
+    form.bindScope($scope);
   },
 ]);
 
