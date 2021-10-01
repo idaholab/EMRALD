@@ -334,9 +334,6 @@ namespace UnitTesting_Simulation
 
       dynamic jsonObj = JsonConvert.DeserializeObject(jsonModel);//for the Ext Sim event
       dynamic jsonObj2 = JsonConvert.DeserializeObject(jsonModel2);//for the 3dsim variable
-      //for some items, if the item JSON references other items they will need to be added to the main model
-      Sim3DVariable sim3DVariable = new Sim3DVariable();
-      sim3DVariable.DeserializeDerived(jsonObj2, true, mainModel, false);
       EmraldModel mainModel = new EmraldModel(); //for some items, if the item JSON references other items they will need to be added to the main model
       ev.DeserializeDerived(jsonObj, true, mainModel, false);
       ev.LoadObjLinks(jsonObj, true, mainModel);
