@@ -223,7 +223,7 @@ class OpenErrorForm extends ExternalExeForm {
         .join(" ")} --prism \\"${escape(this.$scope.prismPath)}\\"`;
       dataObj.raPreCode += '";';
       dataObj.raPostCode = "";
-      dataObj.returnType = "rtNone";
+      dataObj.returnProcess = "rtNone";
       dataObj.variables = [];
       for (var i = 0; i < this.$scope.varLinks.length; i += 1) {
         dataObj.variables.push({

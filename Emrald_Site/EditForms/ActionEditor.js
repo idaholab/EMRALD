@@ -441,7 +441,7 @@ function GetDataObject() {
             dataObj.processOutputFileCode = scope.data.raPostCode;
             dataObj.codeVariables = scope.varNames;
             dataObj.formData = scope.data.raFormData;
-            dataObj.returnType = scope.returnType;
+            dataObj.returnProcess = scope.returnProcess;
             break;
     }
     return dataObj;
@@ -610,7 +610,7 @@ actionModule.controller('actionController', ['$scope', function ($scope) {
                 $scope.data.raPreCode = payload.raPreCode;
                 $scope.data.raPostCode = payload.raPostCode;
                 $scope.varNames = payload.varNames;
-                $scope.returnType = payload.returnType;
+                $scope.returnProcess = payload.returnProcess;
                 break;
             default:
         }
