@@ -55,5 +55,16 @@ class ExternalExeForm {
        }
      });
    }
+
+   /**
+    * Finds the matching variable object in the parent scope.
+    * 
+    * @name ExternalExeForm#findVariable
+    * @param {*} variable1 The variable to find.
+    * @returns {*} The matching variable, if any.
+    */
+   findVariable(variable1) {
+     return this.parentScope.data.cvVariables.find((variable2) => variable1.id === variable2.id);
+   }
  }
  
