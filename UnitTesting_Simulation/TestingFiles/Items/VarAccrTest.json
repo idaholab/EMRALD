@@ -1,31 +1,32 @@
 {
-      "Variable": {
-        "id": 1,
-        "name": "AccrVar",
-        "desc": "",
-        "varScope": "gtAccrual",
-        "value": 0,
-        "accrualStatesData": [
-          {
-            "stateName": "State1",
-            "type": "ctMultiplier",
-            "accrualMult": 1,
-            "multRate": "trHours",
-            "accrualTable": [],
-          },
-          {
-            "stateName": "State2",
-            "type": "ctTable",
-            "accrualMult": 1,
-            "multRate": "trMinutes",
-            "accrualTable": [
-              [
-                10,
-                1
-              ]
-            ],
-          }
-        ],
-        "type": "double"
+  "Variable": {
+    "id": 1,
+    "name": "AccrVar",
+    "desc": "",
+    "varScope": "gtAccrual",
+    "value": 0,
+    "resetOnRuns": true,
+    "accrualStatesData": [
+      {
+        "stateName": "State1",
+        "type": "ctMultiplier",
+        "accrualMult": 1.0,
+        "multRate": "trHours",
+        "accrualTable": []
+      },
+      {
+        "stateName": "State2",
+        "type": "ctTable",
+        "accrualMult": 1.0,
+        "multRate": "trMinutes",
+        "accrualTable": [
+          [
+            0.0,
+            1.0
+          ]
+        ]
       }
+    ],
+    "type": "double"
+  }
     }

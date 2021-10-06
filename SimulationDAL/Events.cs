@@ -1296,9 +1296,8 @@ namespace SimulationDAL
     {
 
       string retStr = "\"evType\": \"" + EnEventType.etExponentialDist.ToString() + "\"," + Environment.NewLine +
-                      //"\"varNames\": [" + varNames + "]," + Environment.NewLine +
                       "\"rate\":" + this._Rate.ToString() + "," + Environment.NewLine +
-                      "\"timeRate\":\"" + this._TimeRate.ToString() + "\"";// + Environment.NewLine ;
+                      "\"timeRate\":\"" + this._TimeRate.ToString() + "\"";
 
       return retStr;
     }
