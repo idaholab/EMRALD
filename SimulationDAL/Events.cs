@@ -8,6 +8,7 @@ using System.Xml;
 using System.Collections.ObjectModel;
 using MathNet.Numerics.Distributions;
 using MessageDefLib;
+using Newtonsoft.Json;
 
 namespace SimulationDAL
 {
@@ -1040,6 +1041,180 @@ namespace SimulationDAL
     }
   }
 
+  public class DistEvent : TimeBasedEvent //etDistribution
+  {
+    public class DistribParams
+    {
+      public string name { get; set; }
+      public string? variable { get; set; }
+      public double? value { get; set; }
+      public EnTimeRate timeRate { get; set; }
+
+    }
+    protected List<DistribParams> _dParams = new List<DistribParams>();
+    protected EnDistType _distType = EnDistType.dtNormalDist;
+    protected EnTimeRate dfltTimeRate = EnTimeRate.trHours;
+    //protected Object _mathFuncs = null;
+    protected VariableList vars = null;
+
+    protected override EnEventType GetEvType() { return EnEventType.etDistribution; }
+
+    public DistEvent() : base("") { }
+
+    public override string GetDerivedJSON(EmraldModel lists)
+    {
+
+      string retStr = "\"distType\": " + this._distType.ToString();
+      retStr += "," + Environment.NewLine + "\"dfltTimeRate\": " + dfltTimeRate.ToString();
+      retStr += "," + Environment.NewLine + JsonConvert.SerializeObject(_dParams);
+      
+      return retStr;
+    }
+
+    public override bool DeserializeDerived(object obj, bool wrapped, EmraldModel lists, bool useGivenIDs)
+    {
+      vars = lists.allVariables;
+      dynamic dynObj = null;
+      try
+      {
+        dynObj = (dynamic)obj;
+        if (wrapped)
+        {
+          if (dynObj.Event == null)
+            return false;
+
+          dynObj = ((dynamic)obj).Event;
+        }
+
+        if (!base.DeserializeDerived((object)dynObj, false, lists, useGivenIDs))
+          return false;
+
+        lists.allEvents.Add(this, false);
+        EnEventType evType = (EnEventType)Enum.Parse(typeof(EnEventType), (string)dynObj.evType, true);
+      }
+      catch
+      {
+        throw new Exception("Failed to convert Normal Distribution Event from JSON could be missing a required field");
+      }
+      
+      try
+      {
+        dfltTimeRate = (EnTimeRate)Enum.Parse(typeof(EnTimeRate), (string)dynObj.dfltTimeRate, true);
+      }
+      catch
+      {
+        throw new Exception("No \"dfltTimeRate\" defined ");
+      }
+
+      try
+      {
+        string paramsStr = Convert.ToString(dynObj.parameters);
+        _dParams = JsonConvert.DeserializeObject<List<DistribParams>>(paramsStr);
+      }
+      catch
+      {
+        throw new Exception("parameters data missing or formatted incorrectly");
+      }
+      
+      processed = true;
+      return true;
+    }
+
+    public override bool LoadObjLinks(object obj, bool wrapped, EmraldModel lists)
+    {
+      //make sure all the variables referenced are in the variable list
+      foreach (var p in this._dParams)
+      {
+        if (p.variable != null)
+        {
+          SimVariable v = this.vars.FindByName(p.variable);
+          if (v == null)
+            throw new Exception("Failed to find variable - " + p.variable);
+          else
+            this.AddRelatedItem(v.id);
+        }
+      }
+
+      return true;
+    }
+
+    public override TimeSpan NextTime()
+    {
+      double sampled = 0.0;
+      List<double?> valuePs = new List<double?>();
+      try
+      {
+        foreach (DistribParams p in this._dParams)
+        {
+          if (p.variable != null)
+            valuePs.Add((double)vars.FindByName(p.variable).value);
+          else if (p.value != null)
+            valuePs.Add((double)p.value);
+          else
+            valuePs.Add(null);
+        }
+      }
+      catch
+      {
+        throw new Exception("Failed to load parameter values for event " + this.name);
+      }
+
+      try
+      {
+
+        switch (this._distType)
+        {
+          case EnDistType.dtExponentialDist:
+            sampled = (new Exponential((double)valuePs[0], SingleRandom.Instance)).Sample();
+            break;
+          case EnDistType.dtNormalDist: //mean and standard deviation
+            sampled = (new Normal((double)valuePs[0],
+                                    Globals.ConvertToNewTimeSpan(_dParams[1].timeRate, (double)valuePs[1], _dParams[0].timeRate),
+                                    SingleRandom.Instance)).Sample();
+            break;
+          case EnDistType.dtWeibullDist:
+            sampled = (new Weibull((double)valuePs[0], (double)valuePs[1], SingleRandom.Instance)).Sample();
+            break;
+          case EnDistType.etLogNormal:
+            sampled = (new LogNormal((double)valuePs[0],
+                                    Globals.ConvertToNewTimeSpan(_dParams[1].timeRate, (double)valuePs[1], _dParams[0].timeRate),
+                                    SingleRandom.Instance)).Sample();
+            break;
+          default:
+            throw new Exception("Distribution type not implemented for " + this._distType.ToString());
+            break;
+        }
+      }
+      catch
+      {
+        throw new Exception("Invalid parameters for distribution.");
+      }
+
+
+
+      TimeSpan sampledTime = Globals.NumberToTimeSpan(sampled, dfltTimeRate);
+      try
+      {
+        TimeSpan minTime = TimeSpan.Zero;
+        if (valuePs[valuePs.Count - 1]  != null)
+          minTime = Globals.NumberToTimeSpan((double)valuePs[valuePs.Count - 2], _dParams[valuePs.Count - 2].timeRate);
+        if (sampledTime < minTime)
+          return minTime;
+
+        TimeSpan maxTime = TimeSpan.MaxValue;
+        if (valuePs[valuePs.Count - 1] != null)
+          maxTime = Globals.NumberToTimeSpan((double)valuePs[valuePs.Count - 1], _dParams[valuePs.Count - 1].timeRate);
+        if (sampledTime > maxTime)
+          return maxTime;
+      }
+      catch
+      {
+        throw new Exception("Failed to get Min or Max time for the distribution");
+      }      
+
+      return sampledTime;
+    }
+  }
   public class NormalDistEvent : TimeBasedEvent //etNormalDist  
   {
     protected double _Mean = 0.0;
@@ -1443,6 +1618,7 @@ namespace SimulationDAL
         case EnEventType.etWeibullDist: retEv = new WeibullDistEvent(); break;
         case EnEventType.etExponentialDist: retEv = new ExponentialDistEvent(); break;
         case EnEventType.etLogNormalDist: retEv = new LogNormalDistEvent(); break;
+        case EnEventType.etDistribution: retEv = new DistEvent(); break;
 
         default: break;
       }
@@ -1536,7 +1712,8 @@ namespace SimulationDAL
 
         if ((evType == EnEventType.etStateCng) || (evType == EnEventType.etComponentLogic) || 
             (evType == EnEventType.etVarCond) || (evType == EnEventType.et3dSimEv) ||
-            (evType == EnEventType.etTimer) || (evType == EnEventType.etFailRate))
+            (evType == EnEventType.etTimer) || (evType == EnEventType.etFailRate) ||
+            (evType == EnEventType.etDistribution))
         {
           Event curItem = this.FindByName((string)item.name, false);
           try

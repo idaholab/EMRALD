@@ -1,0 +1,35 @@
+﻿{
+  "Event": {
+  "id": 4,
+  "name": "Dist_test",
+  "desc": "",
+  "mainItem": false,
+  "evType": "etDistribution", 
+  "distType": "dtLogNormal",
+  "dfltTimeRate": "trHours",
+  "parameters": [
+    {
+      "name": "Mean", 
+      "value":3.3,
+      "timeRate": "trHours" 
+    },
+    {
+      "name": "Standard Dev", 
+      "variable": "varNameStd", 
+      "timeRate": "trHours" 
+    },
+    //Last two items will always be the min and max time.
+    {
+      "name": "Min Time", 
+      "value": 0.0,
+      "timeRate": "trHours" //or null if not applicable
+    },
+    {
+      "name": "Max Time", //not required just for readabaility
+      "value": null,
+      "timeRate": "trHours" //or null if not applicable
+    }
+  ]
+
+  }
+}

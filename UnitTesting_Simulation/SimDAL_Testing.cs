@@ -353,6 +353,40 @@ namespace UnitTesting_Simulation
     }
 
     [Fact]
+    public void DistEventTest()
+    {
+      string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
+      SetupTheTest(testName);
+
+      DistEvent ev = new DistEvent();
+      //use a sample JSON piece to set the values
+      string fileLoc = MainTestDir() + itemFolder + testName + ".json";
+      string jsonModel = "";
+      if (File.Exists(fileLoc))
+        jsonModel = File.ReadAllText(fileLoc);
+      else
+        throw new Exception("Failed to find create json file for " + testName);
+
+      dynamic jsonObj = JsonConvert.DeserializeObject(jsonModel);
+      EmraldModel mainModel = new EmraldModel(); //for some items, if the item JSON references other items they will need to be added to the main model
+      ev.DeserializeDerived(jsonObj, true, mainModel, false);
+      ev.
+
+      //Is there a way to easily test the triggering of the event 
+      //test for true
+      //Assert.True(ev.EventTriggered());
+      //test for false
+      //Assert.False(ev.EventTriggered());
+
+      //Reference any regression tests in SimEngineTests that covers this.  
+      //...\UnitTesting\Models\NormDistTestFINAL.json
+
+      //make sure the JSON returned for the item is good 
+      string retJsonStr = ev.GetJSON(true, mainModel);
+      Assert.True(CompareJSON(retJsonStr, jsonModel));
+    }
+
+    [Fact]
     public void WeibDistEventTest()
     {
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
