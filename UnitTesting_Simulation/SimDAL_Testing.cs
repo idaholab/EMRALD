@@ -334,7 +334,6 @@ namespace UnitTesting_Simulation
 
       dynamic jsonObj = JsonConvert.DeserializeObject(jsonModel);//for the Ext Sim event
       dynamic jsonObj2 = JsonConvert.DeserializeObject(jsonModel2);//for the 3dsim variable
-      EmraldModel mainModel = new EmraldModel(); //for some items, if the item JSON references other items they will need to be added to the main model
       ev.DeserializeDerived(jsonObj, true, mainModel, false);
       ev.LoadObjLinks(jsonObj, true, mainModel);
 
@@ -463,7 +462,7 @@ namespace UnitTesting_Simulation
       EmraldModel mainModel = new EmraldModel();
       SetupTheTest(testName, mainModel);
 
-      LogNormDistEvent ev = new LogNormDistEvent();
+      LogNormalDistEvent ev = new LogNormalDistEvent();
       //use a sample JSON piece to set the values
       string fileLoc = MainTestDir() + itemFolder + testName + ".json";
       string jsonModel = "";

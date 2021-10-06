@@ -8,6 +8,7 @@
         "docLink": "/set/A/text()",
         "docType": "dtXML",
         "docPath": "./VarDocXmlTestDocInput.xml",
+        "pathMustExist": true,
         "type": "int"
       }
     }

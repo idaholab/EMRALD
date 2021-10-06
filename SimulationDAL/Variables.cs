@@ -134,7 +134,7 @@ namespace SimulationDAL
           break;
       }
 
-      retStr = retStr + "\"type\": \"" + t + "\",";
+      retStr = retStr + "\"type\": \"" + t + "\"";
       retStr = retStr + GetDerivedJSON();
 
       retStr = retStr + Environment.NewLine + "}";
@@ -395,6 +395,7 @@ namespace SimulationDAL
     public class AccrualVarData
     {
 
+      public string stateName = "";
       public EnCumultiveType type = EnCumultiveType.ctTime;
       public double accrualMult = 0.0;      
       public EnTimeRate multRate = EnTimeRate.trHours; //for ctTable or ctMultiplier type, rate of accrual in table
@@ -424,26 +425,17 @@ namespace SimulationDAL
 
       //add derived items
 
-      retStr = retStr + "," + Environment.NewLine + "\"accrualStatesData \": [" + Environment.NewLine;
+      retStr = retStr + "," + Environment.NewLine + "\"accrualStatesData\": [" + Environment.NewLine;
       foreach (var state in _StateList)
       {
-        //TODO
-        //retStr = retStr + "[\"stateName\": \"" + state.Value.name + "\"," + Environment.NewLine;
-        //AccrualVarData varData = _CumulativeParams[state.Key];
-        //string varDataStr = JsonConvert.SerializeObject(varData);
-        //varDataStr = varDataStr.Trim(new Char[] { ' ', '{' }).TrimEnd(new Char[] { ' ', '{' });
-        //retStr = retStr + varDataStr + "]," + Environment.NewLine;
 
-        //retStr = retStr + "\"stateName\": \"" + state.Value.name + "\"," + Environment.NewLine;
-        //retStr = retStr + "\"type \": \"" + varData.type.ToString() + "\"" + Environment.NewLine;
-        //retStr = retStr + "\"type \": \"" + varData.type.ToString() + "\"" + Environment.NewLine;
-        //retStr = retStr + "\"type \": \"" + varData.type.ToString() + "\"" + Environment.NewLine;
-        //retStr = retStr + "\"type \": \"" + varData.type.ToString() + "\"" + Environment.NewLine;
-        //retStr = retStr + "\"type \": \"" + varData.type.ToString() + "\"" + Environment.NewLine;
-
+        AccrualVarData varData = _CumulativeParams[state.Key];
+        retStr += JsonConvert.SerializeObject(varData, Newtonsoft.Json.Formatting.Indented) + ",";
 
       }
       retStr = retStr.TrimEnd(new Char[] { ',' });
+      retStr += "]" + Environment.NewLine;
+      
 
       return retStr;
     }
@@ -467,12 +459,7 @@ namespace SimulationDAL
         throw new Exception("Missing accrualStatesData for accrualVariable variable");
       }
 
-      if (dynObj.varRate == null)
-        throw new Exception("Missing simRate for accrualVariable variable");
-
-      this.varRate = (EnTimeRate)dynObj.varRate;
-
-      //dynObj = dynObj.accrualStatesData;
+     
       //must load everything in LoadObjLinks because the states must be loaded first so we have the IDs.     
 
       processed = true;
@@ -650,7 +637,8 @@ namespace SimulationDAL
     {
       string retStr = "";
 
-      retStr = retStr + Environment.NewLine + "\"docLink\": \"" + _linkStr.ToString() + "\"" ;
+      retStr +=  "," + Environment.NewLine + "\"value\": " + _dfltValue;
+      retStr = retStr + "," + Environment.NewLine + "\"docLink\": \"" + _linkStr.ToString() + "\"" ;
       retStr = retStr + "," + Environment.NewLine + "\"docType\": \"" + _docType.ToString() + "\"";
       retStr = retStr + "," + Environment.NewLine + "\"docPath\": \"" + _docPath.ToString() + "\"";
       retStr = retStr + "," + Environment.NewLine + "\"pathMustExist\": " + _pathMustExist.ToString().ToLower();
@@ -927,8 +915,8 @@ namespace SimulationDAL
     {
       string retStr = base.GetDerivedJSON();
       retStr = retStr + "," + Environment.NewLine + "\"regExpLine\": \"" + _regExpLine.ToString() + "\"";
-      retStr = retStr + "," + Environment.NewLine + "\"begPosition\": \"" + _begPosition + "\"";
-      retStr = retStr + "," + Environment.NewLine + "\"numChars\": \"" + _numChars + "\"";
+      retStr = retStr + "," + Environment.NewLine + "\"begPosition\": " + _begPosition;
+      retStr = retStr + "," + Environment.NewLine + "\"numChars\": " + _numChars;
       //TODO- File from Model Editor doesn't print JSON with " " around the value for _numChars, but this does. Should it have the " "? Should the other fields have " " around the value? Currently the Model Editor does print JSON with " " around the value for _regExpLine and _begPosition
       return retStr;
     }

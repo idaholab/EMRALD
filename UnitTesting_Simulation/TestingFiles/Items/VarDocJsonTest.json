@@ -8,6 +8,7 @@
         "docLink": "$.A",
         "docType": "dtJSON",
         "docPath": "./VarDocJsonTestDocInput.json",
+        "pathMustExist": true,
         "type": "int"
       }
     }

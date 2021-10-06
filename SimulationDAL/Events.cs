@@ -1062,15 +1062,14 @@ namespace SimulationDAL
     public override string GetDerivedJSON(EmraldModel lists)
     {
 
-      string retStr = "\"evType\": \"" + EnEventType.etNormalDist.ToString() + "\"," + Environment.NewLine +
-                      "\"mean\": " + this._Mean.ToString() + "," + Environment.NewLine +
+      string retStr = "\"mean\": " + this._Mean.ToString() + "," + Environment.NewLine +
                       "\"std\": " + this._Std.ToString() + "," + Environment.NewLine +
                       "\"min\": " + this._Min.ToString() + "," + Environment.NewLine +
                       "\"max\": " + this._Max.ToString() + "," + Environment.NewLine +
                       "\"meanTimeRate\": \"" + this._MeanTimeRate.ToString() + "\"," + Environment.NewLine +
                       "\"stdTimeRate\": \"" + this._StdTimeRate.ToString() + "\"," + Environment.NewLine +
                       "\"minTimeRate\": \"" + this._MinTimeRate.ToString() + "\"," + Environment.NewLine +
-                      "\"maxTimeRate\": \"" + this._MaxTimeRate.ToString() + "\""; //+ "," + Environment.NewLine 
+                      "\"maxTimeRate\": \"" + this._MaxTimeRate.ToString() + "\""; 
 
       return retStr;
     }

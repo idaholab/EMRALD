@@ -5,13 +5,14 @@
         "desc": "",
         "varScope": "gtAccrual",
         "value": 0,
+        "resetOnRuns":  true,
         "accrualStatesData": [
           {
             "stateName": "State1",
             "type": "ctMultiplier",
-            "accrualMult": 1,
+            "accrualMult": 1.0,
             "multRate": "trHours",
-            "accrualTable": [],
+            "accrualTable": []
           }
         ],
         "type": "double"
