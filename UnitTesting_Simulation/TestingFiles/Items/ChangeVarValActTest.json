@@ -7,6 +7,6 @@
         "mainItem": true,
         "scriptCode": "return 1;",
         "variableName": "Var1",
-        "codeVariables": []
+        "codeVariables": [ "Var1" ]
       }
     }
