@@ -90,14 +90,14 @@ function toTimespan(ts) {
 }
 
 function fromTimespan(tpStr) {
-    var regex = /P((([0-9]*\.?[0-9]*)Y)?(([0-9]*\.?[0-9]*)M)?(([0-9]*\.?[0-9]*)W)?(([0-9]*\.?[0-9]*)D)?)?(T(([0-9]*\.?[0-9]*)H)?(([0-9]*\.?[0-9]*)M)?(([0-9]*\.?[0-9]*)S)?)?/
+    var regex = /P((([0-9.]+([eE][-+]?[0-9.]+)?)Y)?(([0-9.]+([eE][-+]?[0-9.]+)?)M)?(([0-9.]+([eE][-+]?[0-9.]+)?)W)?(([0-9.]+([eE][-+]?[0-9.]+)?)D)?)?(T(([0-9.]+([eE][-+]?[0-9.]+)?)H)?(([0-9.]+([eE][-+]?[0-9.]+)?)M)?(([0-9.]+([eE][-+]?[0-9.]+)?)S)?)?/
     var newTpStr = tpStr;
     if (!tpStr) {
         newTpStr = "P0DT0H0M0S";
     }
     var matches = newTpStr.match(regex);
     return {
-        days: +parseFloat(matches[9]), hours: +parseFloat(matches[12]), minutes: +parseFloat(matches[14]), seconds: +parseFloat(matches[16])
+        days: +parseFloat(matches[12]), hours: +parseFloat(matches[16]), minutes: +parseFloat(matches[19]), seconds: +parseFloat(matches[22])
     };
 }
 

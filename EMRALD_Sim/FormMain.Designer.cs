@@ -1456,13 +1456,13 @@ namespace EMRALD_Sim
       // saveFileDialog1
       // 
       this.saveFileDialog1.DefaultExt = "txt";
-      this.saveFileDialog1.Filter = "\"Text Files (*/txt)|*.txt,*.*";
+      this.saveFileDialog1.Filter = "Text Files (*/txt)|*.txt,*.*";
       this.saveFileDialog1.FileOk += new System.ComponentModel.CancelEventHandler(this.saveFileDialog1_FileOk);
       // 
       // saveFileDialog2
       // 
       this.saveFileDialog2.DefaultExt = "txt";
-      this.saveFileDialog2.Filter = "\"Text Files (*/txt)|*.txt,*.*";
+      this.saveFileDialog2.Filter = "Text Files (*/txt)|*.txt,*.*";
       this.saveFileDialog2.FileOk += new System.ComponentModel.CancelEventHandler(this.saveFileDialog2_FileOk);
       // 
       // FormMain
