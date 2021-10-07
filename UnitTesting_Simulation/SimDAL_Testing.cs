@@ -221,7 +221,7 @@ namespace UnitTesting_Simulation
       //Is there a way to easily test the triggering of the event 
       //test for true
       TimeSpan s = ev.NextTime();
-      Assert.True(s.TotalMilliseconds == 60000);
+      Assert.True((s.TotalMilliseconds - 60000) < 1);
       //test for false
       //Assert.False(ev.EventTriggered());
 
@@ -295,47 +295,6 @@ namespace UnitTesting_Simulation
       dynamic jsonObj = JsonConvert.DeserializeObject(jsonModel);
       //for some items, if the item JSON references other items they will need to be added to the main model
       ev.DeserializeDerived(jsonObj, true, mainModel, false);
-
-      //Is there a way to easily test the triggering of the event 
-      //test for true
-      //Assert.True(ev.EventTriggered());
-      //test for false
-      //Assert.False(ev.EventTriggered());
-
-      //Reference any regression tests in SimEngineTests that covers this.  
-
-      //make sure the JSON returned for the item is good 
-      string retJsonStr = ev.GetJSON(true, mainModel);
-      Assert.True(CompareJSON(retJsonStr, jsonModel));
-    }
-
-    [Fact]
-    public void ExtSimEventTest()
-    {
-      string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
-      EmraldModel mainModel = new EmraldModel();
-      SetupTheTest(testName, mainModel);
-
-      ExtSimEvent ev = new ExtSimEvent("TestExtSimEvent");
-      //use a sample JSON piece to set the values
-      string fileLoc = MainTestDir() + itemFolder + testName + ".json";
-      //string fileLoc2 = MainTestDir() + itemFolder + "Var3DSimTest.json";//for the 3dsim variable
-      string jsonModel = "";//for the Ext Sim event
-      if (File.Exists(fileLoc))
-        jsonModel = File.ReadAllText(fileLoc);
-      else
-        throw new Exception("Failed to find create json file for " + testName);
-      
-      //string jsonModel2 = "";//for the 3dsim variable
-      //if (File.Exists(fileLoc2))
-      //  jsonModel2 = File.ReadAllText(fileLoc2);
-      //else
-      //  throw new Exception("Failed to find create json file for " + testName);
-
-      dynamic jsonObj = JsonConvert.DeserializeObject(jsonModel);//for the Ext Sim event
-      //dynamic jsonObj2 = JsonConvert.DeserializeObject(jsonModel2);//for the 3dsim variable
-      ev.DeserializeDerived(jsonObj, true, mainModel, false);
-      ev.LoadObjLinks(jsonObj, true, mainModel);
 
       //Is there a way to easily test the triggering of the event 
       //test for true
