@@ -395,8 +395,13 @@ namespace UnitTesting_Simulation
 
       dynamic jsonObj = JsonConvert.DeserializeObject(jsonModel);
       EmraldModel mainModel = new EmraldModel(); //for some items, if the item JSON references other items they will need to be added to the main model
+      SimGlobVariable var = new SimGlobVariable();
+      string fileLoc2 = MainTestDir() + itemFolder + "VarDoubleTest.json";//for the logic top
+      string jsonModel2 = File.ReadAllText(fileLoc2);
+      dynamic jsonObj2 = JsonConvert.DeserializeObject(jsonModel2);//for the logic top
+      var.DeserializeDerived(jsonObj2, true, mainModel, false);
       ev.DeserializeDerived(jsonObj, true, mainModel, false);
-      ev.
+      ev.LoadObjLinks(jsonObj, true, mainModel);
 
       //Is there a way to easily test the triggering of the event 
       //test for true

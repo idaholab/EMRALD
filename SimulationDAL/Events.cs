@@ -1072,9 +1072,9 @@ namespace SimulationDAL
     public override string GetDerivedJSON(EmraldModel lists)
     {
 
-      string retStr = "\"distType\": " + this._distType.ToString();
-      retStr += "," + Environment.NewLine + "\"dfltTimeRate\": " + dfltTimeRate.ToString();
-      retStr += "," + Environment.NewLine + JsonConvert.SerializeObject(_dParams);
+      string retStr = "\"distType\": \"" + this._distType.ToString() + "\"";
+      retStr += "," + Environment.NewLine + "\"dfltTimeRate\": \"" + dfltTimeRate.ToString() + "\"";
+      retStr += "," + Environment.NewLine + "\"parameters\":" + JsonConvert.SerializeObject(_dParams);
       
       return retStr;
     }
@@ -1098,13 +1098,15 @@ namespace SimulationDAL
           return false;
 
         lists.allEvents.Add(this, false);
-        EnEventType evType = (EnEventType)Enum.Parse(typeof(EnEventType), (string)dynObj.evType, true);
+
+        _distType = (EnDistType)Enum.Parse(typeof(EnDistType), (string)dynObj.distType, true);
+               
       }
       catch
       {
-        throw new Exception("Failed to convert Normal Distribution Event from JSON could be missing a required field");
+        throw new Exception("Failed to convert Distribution Event from JSON could be missing a required field");
       }
-      
+
       try
       {
         dfltTimeRate = (EnTimeRate)Enum.Parse(typeof(EnTimeRate), (string)dynObj.dfltTimeRate, true);
@@ -1183,7 +1185,7 @@ namespace SimulationDAL
           case EnDistType.dtWeibullDist:
             sampled = (new Weibull((double)valuePs[0], (double)valuePs[1], SingleRandom.Instance)).Sample();
             break;
-          case EnDistType.etLogNormal:
+          case EnDistType.dtLogNormal:
             sampled = (new LogNormal((double)valuePs[0],
                                     Globals.ConvertToNewTimeSpan(_dParams[1].timeRate, (double)valuePs[1], _dParams[0].timeRate),
                                     SingleRandom.Instance)).Sample();
@@ -1222,7 +1224,67 @@ namespace SimulationDAL
 
       return sampledTime;
     }
+
+    /// <summary>
+    /// Can this event be adjusted if a variable used in the sampling changes.
+    /// </summary>
+    /// <returns>true or false</returns>
+    public override bool CanRedoNextTime()
+    {
+      switch (this._distType)
+      {
+        case EnDistType.dtExponentialDist:
+          return true;
+          break;
+        case EnDistType.dtNormalDist: //mean and standard deviation
+          return true;
+          break;
+        case EnDistType.dtWeibullDist:
+          return true;
+          break;
+        case EnDistType.dtLogNormal:
+          return true;
+          break;
+        default:
+          throw new Exception("Distribution type not implemented for " + this._distType.ToString());
+          break;
+      }
+    }
+
+    /// <summary>
+    /// If a variable is used and that variable changes, adjust the next occur time accordingly.
+    /// </summary>
+    /// <param name="sampledTime">Simulation time it was originally sampled.</param>
+    /// <param name="curTime">Current simulation time</param>
+    /// <param name="oldOccurTime">Original time for the event to occur before variable change</param>
+    /// <returns>returns the new time for the event</returns>
+    public override TimeSpan RedoNextTime(TimeSpan sampledTime, TimeSpan curTime, TimeSpan oldOccurTime)
+    {
+      switch (this._distType)
+      {
+        case EnDistType.dtExponentialDist:
+          //todo: not correct
+          return NextTime() - (curTime - sampledTime);
+          break;
+        case EnDistType.dtNormalDist: //mean and standard deviation
+          //todo: not correct
+          return NextTime() - (curTime - sampledTime);
+          break;
+        case EnDistType.dtWeibullDist:
+          //todo: not correct
+          return NextTime() - (curTime - sampledTime);
+          break;
+        case EnDistType.dtLogNormal:
+          //todo: not correct
+          return NextTime() - (curTime - sampledTime);
+          break;
+        default:
+          throw new Exception("Distribution type not implemented for " + this._distType.ToString());
+          break;
+      }
+    }
   }
+
   public class NormalDistEvent : TimeBasedEvent //etNormalDist  
   {
     protected double _Mean = 0.0;

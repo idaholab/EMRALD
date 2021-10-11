@@ -51,7 +51,7 @@ namespace SimulationDAL
   public enum EnTimeRate { trYears, trDays, trHours, trMinutes, trSeconds}
 
   public enum EnIDTypes { itVar = 0, itComp, itState, itEvent, itAction, itTreeNode, itTimer, itPacket, itDiagram, itExtSim };
-  public enum EnDistType { dtNormalDist, dtWeibullDist, dtExponentialDist, etLogNormal}
+  public enum EnDistType { dtNormalDist, dtWeibullDist, dtExponentialDist, dtLogNormal}
   //public class ModelTypesInfo
   //{
   //  //private static readonly string[] EnDiagramTypeName = { "Component", "System", "Plant Response", "Other" };
