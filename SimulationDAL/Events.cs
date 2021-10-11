@@ -415,7 +415,8 @@ namespace SimulationDAL
     protected VariableList varList = null;
     protected string variable = "";
     //protected override EnModifiableTypes GetModType() { return EnModifiableTypes.mtVar; }
-    protected override EnEventType GetEvType() { return (variable == "") ? EnEventType.etVarCond : EnEventType.et3dSimEv; }
+
+    //protected override EnEventType GetEvType() { return (variable == "") ? EnEventType.etVarCond : EnEventType.et3dSimEv; }
 
     public EvalVarEvent() : base("")
     {
@@ -445,6 +446,8 @@ namespace SimulationDAL
       compiledComp = new ScriptEngine("EvarVal_" + this.name, ScriptEngine.Languages.CSharp);
     }
 
+    protected override EnEventType GetEvType() { return (variable == "") ? EnEventType.etVarCond : EnEventType.et3dSimEv; }
+
     public override string GetDerivedJSON(EmraldModel lists)
     {
       string compCodeStr = compCode.Replace("\n", "\\n").Replace("\r", "\\r");
@@ -461,10 +464,16 @@ namespace SimulationDAL
         varNames = varNames.TrimStart(',');
       }
       //varNames = string.Join(",", varList.Values);
-      string retStr = null;
 
+      string retStr = null;
       retStr = retStr + "\"varNames\": [" + varNames + "]," + Environment.NewLine;// +
-      retStr = retStr + "\"variable\": \"" + variable + "\"," + Environment.NewLine;
+      //                "\"code\":\"" + compCodeStr + "\"";
+
+      if (sim3dID != null)// re-ordered list to match actual where the External Sim variable comes before code
+        retStr = retStr + "," + Environment.NewLine + "\"sim3dID\":" + this.sim3dID;
+
+      retStr = retStr + Environment.NewLine;
+
       retStr = retStr + "\"code\":\"" + compCodeStr + "\"";
       
       return retStr;
@@ -522,10 +531,10 @@ namespace SimulationDAL
       }
 
       if (varList == null)
-        varList = new VariableList();
+        varList = new VariableList(); 
 
       if (dynObj.varNames != null)
-      {
+      {     
         foreach (var varName in dynObj.varNames)
         {
           SimVariable curVar = lists.allVariables.FindByName((string)varName);
@@ -536,7 +545,6 @@ namespace SimulationDAL
           this.AddRelatedItem(curVar.id);
         }
       }
-
       //3D simulation var condition has a variable link
       if (dynObj.variable != null)
       {
@@ -553,6 +561,8 @@ namespace SimulationDAL
       }
       return true;
     }
+
+
 
     public virtual bool CompileCompCode()
     {
@@ -751,7 +761,7 @@ namespace SimulationDAL
 
     public override string GetDerivedJSON(EmraldModel lists)
     {
-      string retStr = "\"evType\": \"" + EnEventType.etTimer.ToString() + "\"," + Environment.NewLine;
+      string retStr = "";// "\"evType\": \"" + EnEventType.etTimer.ToString() + "\"," + Environment.NewLine;
       if (timeVariable == null)
       {
         retStr = retStr +
@@ -763,7 +773,7 @@ namespace SimulationDAL
         retStr = retStr +
           "\"time\":\"" + timeVariable.name + "\"," + Environment.NewLine +
           "\"useVariable\": true, " + Environment.NewLine +
-          "\"timerVariableUnit\":\"" + this.timerVariableUnit.ToString() + "\"," + Environment.NewLine;
+          "\"timeVariableUnit\":\"" + this.timerVariableUnit.ToString() + "\"," + Environment.NewLine;
       }
 
       return retStr;
@@ -893,10 +903,8 @@ namespace SimulationDAL
 
     public override string GetDerivedJSON(EmraldModel lists)
     {
-      string retStr = "\"evType\": \"" + EnEventType.etFailRate.ToString() + "\"," + Environment.NewLine +
-
-                      "\"lambdaTimeRate\":\"" + XmlConvert.ToString(this.timeRate) + "\"," + Environment.NewLine +
-                      "\"missionTime\":\"" + XmlConvert.ToString(this.compMissionTime) + "\",";
+      string retStr = "\"lambdaTimeRate\":\"" + XmlConvert.ToString(this.timeRate) + "\"," + Environment.NewLine;// +
+                      //"\"missionTime\":\"" + XmlConvert.ToString(this.compMissionTime) + "\",";
       if (lambdaVariable != null)
       {
         retStr = retStr +
@@ -1253,7 +1261,7 @@ namespace SimulationDAL
                       "\"meanTimeRate\": \"" + this._MeanTimeRate.ToString() + "\"," + Environment.NewLine +
                       "\"stdTimeRate\": \"" + this._StdTimeRate.ToString() + "\"," + Environment.NewLine +
                       "\"minTimeRate\": \"" + this._MinTimeRate.ToString() + "\"," + Environment.NewLine +
-                      "\"maxTimeRate\": \"" + this._MaxTimeRate.ToString() + "\"";
+                      "\"maxTimeRate\": \"" + this._MaxTimeRate.ToString() + "\""; 
 
       return retStr;
     }
@@ -1340,6 +1348,22 @@ namespace SimulationDAL
 
     protected override EnEventType GetEvType() { return EnEventType.etLogNormalDist; }
 
+    //public override string GetDerivedJSON(EmraldModel lists)
+    //{
+
+    //  string retStr = EnEventType.Replace("etNormalDist", EnEventType.etLogNormalDist.ToString())
+    //  //string retStr = "\"evType\": \"" + EnEventType.etLogNormalDist.ToString() + "\"," + Environment.NewLine;
+
+    //  return retStr;
+    //}
+
+    //public override string GetDerivedJSON(EmraldModel lists)
+    //{
+    //  string retStr = retStr.Replace(EnEventType.etNormalDist.ToString(), EnEventType.etLogNormalDist.ToString());
+
+    //  return retStr;
+    //}
+
     public override TimeSpan NextTime()
     {
       if (mathFuncs == null)
@@ -1390,9 +1414,10 @@ namespace SimulationDAL
 
     public override string GetDerivedJSON(EmraldModel lists)
     {
-      string retStr = "\"shape\":" + this._Shape.ToString() + "," + Environment.NewLine +
+      string retStr = "\"evType\": \"" + EnEventType.etWeibullDist.ToString() + "\"," + Environment.NewLine +
+                      "\"shape\":" + this._Shape.ToString() + "," + Environment.NewLine +
                       "\"scale\":" + this._Scale.ToString() + "," + Environment.NewLine +
-                      "\"timeRate\":\"" + this._TimeRate.ToString() + "\"";
+                      "\"timeRate\":\"" + this._TimeRate.ToString() + "\""; //+ "," + Environment.NewLine 
 
       return retStr;
     }
@@ -1462,7 +1487,8 @@ namespace SimulationDAL
     public override string GetDerivedJSON(EmraldModel lists)
     {
 
-      string retStr = "\"rate\":" + this._Rate.ToString() + "," + Environment.NewLine +
+      string retStr = "\"evType\": \"" + EnEventType.etExponentialDist.ToString() + "\"," + Environment.NewLine +
+                      "\"rate\":" + this._Rate.ToString() + "," + Environment.NewLine +
                       "\"timeRate\":\"" + this._TimeRate.ToString() + "\"";
 
       return retStr;

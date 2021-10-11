@@ -5,7 +5,7 @@
         "desc": "",
         "mainItem": true,
         "evType": "etExponentialDist",
-        "rate": 1,
+        "rate": 0.5,
         "timeRate": "trHours"
       }
     }

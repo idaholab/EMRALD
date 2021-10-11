@@ -27,7 +27,7 @@ namespace SimulationDAL
   [JsonConverter(typeof(StringEnumConverter))]
   public enum EnEventType
   {
-    et3dSimEv = 0, //event from a 3D simulation
+    et3dSimEv,// = 0, //event from a 3D simulation
     etFailRate, //probabilistic failure rate - fails after a sampled time
     etVarCond, //executes when the value of a variable meets a condition 
     etStateCng, //executes when a different desired state\s are executed
