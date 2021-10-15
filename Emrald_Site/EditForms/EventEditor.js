@@ -164,6 +164,7 @@ function handleSelection() {
     var componentLogic = document.getElementById("ComponentLogicPanel");
     var timerPanel = document.getElementById("TimerPanel");
     var failProbPanel = document.getElementById("FailProbabilityPanel");
+    var distPanel = document.getElementById("DistributionPanel");
     var normDistPanel = document.getElementById("NormDistributionPanel");
     var expDistPanel = document.getElementById("ExpDistributionPanel");
     var weibullDistPanel = document.getElementById("WeibullDistributionPanel");
@@ -176,6 +177,7 @@ function handleSelection() {
     normDistPanel.style.visibility = "collapse";
     expDistPanel.style.visibility = "collapse";
     weibullDistPanel.style.visibility = "collapse";
+    distPanel.style.visibility = "collapse";
 
     switch (typeOption.selectedIndex) {
         case 0:
@@ -193,20 +195,86 @@ function handleSelection() {
         case 4:
             failProbPanel.style.visibility = "visible";
             break;
-        case 5: //normal
-        case 9: //log normal same params
-            normDistPanel.style.visibility = "visible";
-            break;
-        case 6:
-            expDistPanel.style.visibility = "visible";
-            break;
-        case 7:
-            weibullDistPanel.style.visibility = "visible";
-            break;
-        case 8:
+        case 5:
             sim3DPanel.style.visibility = "visible";
             break;
+        case 6:
+            distPanel.style.visibility = "visible";
+            handleDistSelection();
+            break;
+    }
+}
 
+// Handle distribution type selection
+function handleDistSelection() {
+    var scope = angular.element(document.getElementById("EEControllerPanel")).scope();
+    var typeOption = document.getElementById("distTypeSelector");
+    var normDistPanel = document.getElementById("NormDistributionPanel");
+    var expDistPanel = document.getElementById("ExpDistributionPanel");
+    var wbDistPanel = document.getElementById("WeibullDistributionPanel");
+    normDistPanel.style.visibility = "collapse";
+    expDistPanel.style.visibility = "collapse";
+    wbDistPanel.style.visibility = "collapse";
+
+    switch (typeOption.selectedIndex) {
+        case 0:
+        case 3:
+            normDistPanel.style.visibility = "visible";
+            if (!scope.distParameters || scope.distParameters.length !== 4) {
+                scope.distParameters = [
+                    {
+                        name: "Mean",
+                        value: 24,
+                        timeRate: "trHours",
+                        useVariable: false,
+                    }, {
+                        name: "Standard Deviation",
+                        value: 1,
+                        timeRate: "trHours",
+                        useVariable: false,
+                    }, {
+                        name: "Minimum",
+                        value: 0,
+                        timeRate: "trHours",
+                        useVariable: false,
+                    }, {
+                        name: "Maximum",
+                        value: 24,
+                        timeRate: "trHours",
+                        useVariable: false,
+                    },
+                ];
+            }
+            break;
+        case 1:
+            expDistPanel.style.visibility = "visible";
+            if (!scope.distParameters || scope.distParameters.length !== 1) {
+                scope.distParameters = [
+                    {
+                        name: "Rate",
+                        value: 0,
+                        timeRate: "trHours",
+                        useVariable: false,
+                    },
+                ];
+            }
+            break;
+        case 2:
+            wbDistPanel.style.visibility = "visible";
+            if (!scope.distParameters || scope.distParameters.length !== 2) {
+                scope.distParameters = [
+                    {
+                        name: "Shape",
+                        value: 1,
+                        useVariable: false,
+                    }, {
+                        name: "Scale",
+                        value: 1,
+                        useVariable: false,
+                    },
+                ];
+            }
+            break;
     }
 }
 
@@ -374,31 +442,10 @@ function OnLoad(dataObj) {
                     //scope.missionTime = fromTimespan(eventData.missionTime);
                     opTypeEl.selectedIndex = 4;
                     break;
-                case "etNormalDist":
-                case "etLogNormalDist":
-                    scope.ndMean = eventData.mean;
-                    scope.ndStdDev = eventData.std;
-                    scope.ndMin = eventData.min;
-                    scope.ndMax = eventData.max;
-
-                    scope.meanTimeRate = GetTimeOptionIdx(eventData.meanTimeRate, scope);
-                    scope.stdTimeRate = GetTimeOptionIdx(eventData.stdTimeRate, scope);
-                    scope.minTimeRate = GetTimeOptionIdx(eventData.minTimeRate, scope);
-                    scope.maxTimeRate = GetTimeOptionIdx(eventData.maxTimeRate, scope);
-
-                    opTypeEl.selectedIndex = 5;
-                    break;
-                case "etExponentialDist":
-                    scope.edRate = eventData.rate;
-                    scope.edTimeRate = GetTimeOptionIdx(eventData.timeRate, scope);
-                    opTypeEl.selectedIndex = 6;
-                    break;
-                case "etWeibullDist":
-                    scope.wdShape = eventData.shape;
-                    scope.wdScale = eventData.scale;
-                    scope.wdTimeRate = GetTimeOptionIdx(eventData.timeRate, scope);
-                    opTypeEl.selectedIndex = 7;
-                    break;
+                case "etDistribution":
+                    scope.distParameters = eventData.parameters;
+                    scope.dfltTimeRate = eventData.dfltTimeRate;
+                    scope.distType = scope.distTypes.find((type) => type.value === eventData.distType);
                 case "et3dSimEv":
                     var vb = scope.variables.find((v) => v.name == eventData.variable);
                     if (vb)
@@ -472,26 +519,10 @@ function GetDataObject() {
             dataObj.useVariable = scope.data.failureRate.lambda.useVariable;
             //dataObj.missionTime = toTimespan(scope.missionTime);
             break;
-        case "etNormalDist":
-        case "etLogNormalDist":
-            dataObj.mean = parseFloat(scope.ndMean);
-            dataObj.std = parseFloat(scope.ndStdDev);
-            dataObj.min = parseFloat(scope.ndMin);
-            dataObj.max = parseFloat(scope.ndMax);
-            dataObj.meanTimeRate = scope.meanTimeRate.value;
-            dataObj.stdTimeRate = scope.stdTimeRate.value;
-            dataObj.minTimeRate = scope.minTimeRate.value;
-            dataObj.maxTimeRate = scope.maxTimeRate.value;
-            break;
-        case "etExponentialDist":
-            dataObj.rate = parseFloat(scope.edRate);
-            dataObj.timeRate = scope.edTimeRate.value;
-            break;
-        case "etWeibullDist":
-            dataObj.shape = parseFloat(scope.wdShape);
-            dataObj.scale = parseFloat(scope.wdScale);
-            dataObj.timeRate = scope.wdTimeRate.value;
-            break;
+        case "etDistribution":
+            dataObj.distType = scope.distType.value;
+            dataObj.parameters = scope.distParameters;
+            dataObj.dfltTimeRate = scope.dfltTimeRate;
     }
     return dataObj;
 }
@@ -544,15 +575,21 @@ EEApp.controller("EEController", function ($scope) {
         { "name": "Component Logic", value: "etComponentLogic" },
         { "name": "Timer", value: "etTimer" },
         { "name": "Failure Rate", value: "etFailRate" },
-        { "name": "Norm. Distribution", value: "etNormalDist" },
-        { "name": "Exp. Distribution", value: "etExponentialDist" },
-        { "name": "Weibull. Distribution", value: "etWeibullDist" },
         { "name": "Ext Simulation", value: "et3dSimEv" },
-        { "name": "LogNorm. Distribution", value: "etLogNormalDist" }
-
+        { "name": "Distribution", value: "etDistribution" },
     ];
     $scope.typeOption = $scope.typeOptions[0];
     $scope.lambdaError = { "display": "none" };
+
+    $scope.distTypes = [
+        { "name": "Norm. Distribution", value: "dtNormal" },
+        { "name": "Exp. Distribution", value: "dtExponential" },
+        { "name": "Weibull. Distribution", value: "dtWeibull" },
+        { "name": "LogNorm. Distribution", value: "dtLogNormal" },
+    ];
+    $scope.distType = $scope.distTypes[0];
+    $scope.distParameters = [];
+    $scope.dfltTimeRate = 'trHours';
 
     $scope.timeOptions = [
         { "name": "Years", value: "trYears" },
