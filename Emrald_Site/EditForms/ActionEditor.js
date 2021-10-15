@@ -445,7 +445,6 @@ function GetDataObject() {
             dataObj.codeVariables = scope.varNames;
             break;
     }
-    console.log(dataObj);
     return dataObj;
 }
 
