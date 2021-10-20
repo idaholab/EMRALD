@@ -727,21 +727,41 @@ namespace SimulationDAL
   //  }
   //}
 
+  public enum EnOnChangeTask { ocIgnore, ocResample, ocAdjust}
+
   public abstract class TimeBasedEvent : Event
   {
+    protected EnOnChangeTask onVarChange = EnOnChangeTask.ocIgnore;
     protected override EnEventType GetEvType() { return EnEventType.etTimer; }
 
     public TimeBasedEvent(string inName)
       : base(inName) { }
 
     public abstract TimeSpan NextTime();
-    public virtual bool CanRedoNextTime()
-    {
-      return false;
-    }
+
+    /// <summary>
+    /// RedoNextTime called if a variable is used and that variable has changed. Implement in derived class if ocAdjust is allowed for that type of event.
+    /// </summary>
+    /// <param name="sampledTime">Simulation time it was originally sampled.</param>
+    /// <param name="curTime">Current simulation time</param>
+    /// <param name="oldOccurTime">Original time for the event to occur before variable change</param>
+    /// <returns>returns the new time for the event</returns>
     public virtual TimeSpan RedoNextTime(TimeSpan sampledTime, TimeSpan curTime, TimeSpan oldOccurTime)
     {
-      return oldOccurTime;
+      switch (onVarChange)
+      {
+        case EnOnChangeTask.ocIgnore:
+          return oldOccurTime;
+          break;
+        case EnOnChangeTask.ocResample:
+          return NextTime() - (curTime - sampledTime);
+          break;
+        case EnOnChangeTask.ocAdjust:
+          throw new Exception("RedoNextTime function not implemented for " + this.evType.ToString());
+          break;
+        default:
+          throw new Exception("RedoNextTime not implemented for " + onVarChange.ToString());
+      }
     }
   }
 
@@ -773,7 +793,9 @@ namespace SimulationDAL
         retStr = retStr +
           "\"time\":\"" + timeVariable.name + "\"," + Environment.NewLine +
           "\"useVariable\": true, " + Environment.NewLine +
-          "\"timeVariableUnit\":\"" + this.timerVariableUnit.ToString() + "\"," + Environment.NewLine;
+          "\"timeVariableUnit\":\"" + this.timerVariableUnit.ToString() + "\"," + Environment.NewLine +
+          "\"onVarChange\":\"" + this.onVarChange.ToString() + "\"," + Environment.NewLine;
+        
       }
 
       return retStr;
@@ -811,6 +833,14 @@ namespace SimulationDAL
           throw new Exception("Invalid Time Unit 'timeVariableUnit' defined use trDays, trHours, trMinutes, trSeconds.");
         }
 
+        try //may not exist in earlier versions so use a default
+        {
+          onVarChange = (EnOnChangeTask)Enum.Parse(typeof(EnOnChangeTask), (string)dynObj.onVarChange, true);
+        }
+        catch
+        {
+          onVarChange = EnOnChangeTask.ocIgnore;
+        }
       }   
       else
       {
@@ -858,6 +888,22 @@ namespace SimulationDAL
       }
 
       return (TimeSpan)time;
+    }
+
+    public override TimeSpan RedoNextTime(TimeSpan sampledTime, TimeSpan curTime, TimeSpan oldOccurTime)
+    {
+      //A timer doesn't sample, but if a variable is used and we are to adjust then it is just the new variable time - what has already past
+      if (onVarChange == EnOnChangeTask.ocAdjust)
+      {
+        TimeSpan time = NextTime() - (curTime - sampledTime);
+        if (time < curTime)
+          return curTime;
+        else
+          return time;
+      }
+
+      //if not "ocAdjust" call parent as they are all the same.
+      return base.RedoNextTime(sampledTime, curTime, oldOccurTime);
     }
   }
 
@@ -909,7 +955,8 @@ namespace SimulationDAL
       {
         retStr = retStr +
           "\"useVariable\": true, " + Environment.NewLine +
-          "\"lambda\":\"" + this.lambdaVariable.name + "\"," + Environment.NewLine;          
+          "\"lambda\":\"" + this.lambdaVariable.name + "\"," + Environment.NewLine +
+          "\"onVarChange\":\"" + this.onVarChange.ToString() + "\"," + Environment.NewLine;
       }
       else
       {
@@ -955,6 +1002,15 @@ namespace SimulationDAL
       {
         //use normal assigned lambda if not a variable
         this._lambda = (double)dynObj.lambda;
+
+        try //may not exist in earlier versions so use a default
+        {
+          onVarChange = (EnOnChangeTask)Enum.Parse(typeof(EnOnChangeTask), (string)dynObj.onVarChange, true);
+        }
+        catch
+        {
+          onVarChange = EnOnChangeTask.ocIgnore;
+        }
       }
 
       processed = true;
@@ -1039,13 +1095,16 @@ namespace SimulationDAL
       return retVal;
     }
 
-    public override bool CanRedoNextTime()
-    {
-      return true;
-    }
     public override TimeSpan RedoNextTime(TimeSpan sampledTime, TimeSpan curTime, TimeSpan oldOccurTime)
     {
-      return NextTime() - (curTime - sampledTime);
+      if(onVarChange == EnOnChangeTask.ocAdjust)
+      {
+        //todo: how to adjust 
+        return NextTime() - (curTime - sampledTime);
+      }
+      
+      //if not "ocAdjust" call parent as they are all the same.
+      return base.RedoNextTime(sampledTime, curTime, oldOccurTime);
     }
   }
 
@@ -1074,8 +1133,10 @@ namespace SimulationDAL
 
       string retStr = "\"distType\": \"" + this._distType.ToString() + "\"";
       retStr += "," + Environment.NewLine + "\"dfltTimeRate\": \"" + dfltTimeRate.ToString() + "\"";
+      retStr += "," + Environment.NewLine + "\"onVarChange\": \"" + onVarChange.ToString() + "\"";
       retStr += "," + Environment.NewLine + "\"parameters\":" + JsonConvert.SerializeObject(_dParams);
-      
+
+
       return retStr;
     }
 
@@ -1142,6 +1203,20 @@ namespace SimulationDAL
             throw new Exception("Failed to find variable - " + p.variable);
           else
             this.AddRelatedItem(v.id);
+        }
+
+        if (_relatedIDs.Count > 0)
+        {
+          try
+          {
+            dynamic dynObj = (dynamic)obj;
+            dynObj = ((dynamic)obj).Event;
+            onVarChange = (EnOnChangeTask)Enum.Parse(typeof(EnOnChangeTask), (string)dynObj.onVarChange, true);
+          }
+          catch
+          {
+            throw new Exception("parameter onVarChange missing and variables are used.");
+          }
         }
       }
 
@@ -1226,32 +1301,6 @@ namespace SimulationDAL
     }
 
     /// <summary>
-    /// Can this event be adjusted if a variable used in the sampling changes.
-    /// </summary>
-    /// <returns>true or false</returns>
-    public override bool CanRedoNextTime()
-    {
-      switch (this._distType)
-      {
-        case EnDistType.dtExponentialDist:
-          return true;
-          break;
-        case EnDistType.dtNormalDist: //mean and standard deviation
-          return true;
-          break;
-        case EnDistType.dtWeibullDist:
-          return true;
-          break;
-        case EnDistType.dtLogNormal:
-          return true;
-          break;
-        default:
-          throw new Exception("Distribution type not implemented for " + this._distType.ToString());
-          break;
-      }
-    }
-
-    /// <summary>
     /// If a variable is used and that variable changes, adjust the next occur time accordingly.
     /// </summary>
     /// <param name="sampledTime">Simulation time it was originally sampled.</param>
@@ -1260,28 +1309,35 @@ namespace SimulationDAL
     /// <returns>returns the new time for the event</returns>
     public override TimeSpan RedoNextTime(TimeSpan sampledTime, TimeSpan curTime, TimeSpan oldOccurTime)
     {
-      switch (this._distType)
+      if (onVarChange == EnOnChangeTask.ocAdjust)
       {
-        case EnDistType.dtExponentialDist:
-          //todo: not correct
-          return NextTime() - (curTime - sampledTime);
-          break;
-        case EnDistType.dtNormalDist: //mean and standard deviation
-          //todo: not correct
-          return NextTime() - (curTime - sampledTime);
-          break;
-        case EnDistType.dtWeibullDist:
-          //todo: not correct
-          return NextTime() - (curTime - sampledTime);
-          break;
-        case EnDistType.dtLogNormal:
-          //todo: not correct
-          return NextTime() - (curTime - sampledTime);
-          break;
-        default:
-          throw new Exception("Distribution type not implemented for " + this._distType.ToString());
-          break;
+
+        switch (this._distType)
+        {
+          case EnDistType.dtExponentialDist:
+            //todo: not correct
+            return NextTime() - (curTime - sampledTime);
+            break;
+          case EnDistType.dtNormalDist: //mean and standard deviation
+            //todo: not correct
+            return NextTime() - (curTime - sampledTime);
+            break;
+          case EnDistType.dtWeibullDist:
+            //todo: not correct
+            return NextTime() - (curTime - sampledTime);
+            break;
+          case EnDistType.dtLogNormal:
+            //todo: not correct
+            return NextTime() - (curTime - sampledTime);
+            break;
+          default:
+            throw new Exception("Distribution type not implemented for " + this._distType.ToString());
+            break;
+        }
       }
+
+      //if not "ocAdjust" call parent as they are all the same.
+      return base.RedoNextTime(sampledTime, curTime, oldOccurTime);
     }
   }
 

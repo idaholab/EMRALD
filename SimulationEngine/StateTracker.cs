@@ -1670,7 +1670,7 @@ namespace SimulationTracking
               foreach (var ev in timeEvList.timedEvQue)
               {
                 TimeBasedEvent curTimeEv = (TimeBasedEvent)ev.Value.eventData;
-                if (curTimeEv.relatedIDs.Contains(varItem.id) && curTimeEv.CanRedoNextTime())
+                if (curTimeEv.relatedIDs.Contains(varItem.id))
                 {
                   //get a new time for the event.
 
@@ -1681,8 +1681,8 @@ namespace SimulationTracking
                   }
 
                   TimeSpan regotTime = curTimeEv.RedoNextTime(ev.Value.whenCreated, curTime, lastSampledTime);
-                  if (regotTime < TimeSpan.Zero) ;
-                  regotTime = TimeSpan.Zero;
+                  if (regotTime < TimeSpan.Zero) 
+                    regotTime = TimeSpan.Zero;
 
                   timeEvList.ChangeEventTime(regotTime, ev.Value.id);
                 }
