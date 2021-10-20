@@ -475,7 +475,7 @@ function windowClosing(btnStatus, callHomeFn, evt) {
   if (btnStatus in SetOf(['Save', 'OK', 'Ok', 'Save As New'])) {
     if (evt.frame.contentWindow.ValidateData) {
       var msg = evt.frame.contentWindow.ValidateData();
-      if (typeof msg === 'string' && msg) {
+      if (typeof msg === 'string' && msg.length > 0) {
         alert('Validation failed, cause: ' + msg);
         return false;
       }
@@ -502,7 +502,12 @@ function windowClosing(btnStatus, callHomeFn, evt) {
       }
     }
     if (status) {
-      if (evt.frame.contentWindow.GetDataObject && btnStatus == "Close")
+      var useDataObj = true;
+      if (evt.frame.contentWindow.ValidateData) {
+        var msg = evt.frame.contentWindow.ValidateData();
+        useDataObj = !(typeof msg === 'string' && msg.length > 0);
+      }
+      if (evt.frame.contentWindow.GetDataObject && btnStatus == "Close" && useDataObj)
         dataObj = evt.frame.contentWindow.GetDataObject();
       if (callHomeFn) status = callHomeFn(btnStatus, dataObj);
     }
