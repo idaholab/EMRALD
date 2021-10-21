@@ -1119,7 +1119,7 @@ namespace SimulationDAL
 
     }
     protected List<DistribParams> _dParams = new List<DistribParams>();
-    protected EnDistType _distType = EnDistType.dtNormalDist;
+    protected EnDistType _distType = EnDistType.dtNormal;
     protected EnTimeRate dfltTimeRate = EnTimeRate.trHours;
     //protected Object _mathFuncs = null;
     protected VariableList vars = null;
@@ -1249,15 +1249,15 @@ namespace SimulationDAL
 
         switch (this._distType)
         {
-          case EnDistType.dtExponentialDist:
+          case EnDistType.dtExponential:
             sampled = (new Exponential((double)valuePs[0], SingleRandom.Instance)).Sample();
             break;
-          case EnDistType.dtNormalDist: //mean and standard deviation
+          case EnDistType.dtNormal: //mean and standard deviation
             sampled = (new Normal((double)valuePs[0],
                                     Globals.ConvertToNewTimeSpan(_dParams[1].timeRate, (double)valuePs[1], _dParams[0].timeRate),
                                     SingleRandom.Instance)).Sample();
             break;
-          case EnDistType.dtWeibullDist:
+          case EnDistType.dtWeibull:
             sampled = (new Weibull((double)valuePs[0], (double)valuePs[1], SingleRandom.Instance)).Sample();
             break;
           case EnDistType.dtLogNormal:
@@ -1314,15 +1314,15 @@ namespace SimulationDAL
 
         switch (this._distType)
         {
-          case EnDistType.dtExponentialDist:
+          case EnDistType.dtExponential:
             //todo: not correct
             return NextTime() - (curTime - sampledTime);
             break;
-          case EnDistType.dtNormalDist: //mean and standard deviation
+          case EnDistType.dtNormal: //mean and standard deviation
             //todo: not correct
             return NextTime() - (curTime - sampledTime);
             break;
-          case EnDistType.dtWeibullDist:
+          case EnDistType.dtWeibull:
             //todo: not correct
             return NextTime() - (curTime - sampledTime);
             break;

@@ -973,7 +973,7 @@ namespace SimulationTracking
 
             for (int i = curStatePath.path.Count - 1; i >= 0; i--)
             {
-              curState.times.Add(curStatePath.times[i]);
+              curState.AddTime(curStatePath.times[i]);
 
               if (i > 0)
               {
@@ -998,7 +998,7 @@ namespace SimulationTracking
                 }
 
                 curState = curCause.fromState;
-              }
+              }              
             }
           }
 
