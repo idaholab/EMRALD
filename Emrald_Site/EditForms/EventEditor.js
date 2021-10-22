@@ -446,6 +446,9 @@ function OnLoad(dataObj) {
                     scope.distParameters = eventData.parameters;
                     scope.dfltTimeRate = eventData.dfltTimeRate;
                     scope.distType = scope.distTypes.find((type) => type.value === eventData.distType);
+                    if (eventData.onVarChange) {
+                        scope.distOnChange = scope.distChangeTypes.find((type) => type.value === eventData.onVarChange);
+                    }
                 case "et3dSimEv":
                     var vb = scope.variables.find((v) => v.name == eventData.variable);
                     if (vb)
@@ -523,6 +526,9 @@ function GetDataObject() {
             dataObj.distType = scope.distType.value;
             dataObj.parameters = scope.distParameters;
             dataObj.dfltTimeRate = scope.dfltTimeRate;
+            if (scope.distOnChange) {
+                dataObj.onVarChange = scope.distOnChange.value;
+            }
     }
     return dataObj;
 }
@@ -587,9 +593,22 @@ EEApp.controller("EEController", function ($scope) {
         { "name": "Weibull. Distribution", value: "dtWeibull" },
         { "name": "LogNorm. Distribution", value: "dtLogNormal" },
     ];
+    $scope.distChangeTypes = [
+        { "name": "Ignore", value: "ocIgnore", desc: "Keep the same sampled event time." },
+        { "name": "Resample", value: "ocResample", desc: "Same a new event time." },
+        { "name": "Adjust", value: "ocAdjust", desc: "Use new variable value to adjust the event time without resampling, if possible." },
+    ];
     $scope.distType = $scope.distTypes[0];
     $scope.distParameters = [];
+    $scope.distOnChange = null;
     $scope.dfltTimeRate = 'trHours';
+    $scope.distUsesVariable = function () {
+        var re = false;
+        $scope.distParameters.forEach((param) => {
+            re = re || param.useVariable;
+        });
+        return re;
+    };
 
     $scope.timeOptions = [
         { "name": "Years", value: "trYears" },
