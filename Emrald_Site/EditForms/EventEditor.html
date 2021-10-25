@@ -104,57 +104,57 @@
                 </div>
                 <div id="DistributionPanel" style="display:table-row;position:absolute;visibility:collapse;height:70%;width:96%;overflow-x:hidden;overflow-y:scroll;">
                     <div style="display:table-row">
-                        <span style="display:table-cell;vertical-align:middle;">Distribution type:</span>
+                        <span>Distribution type:</span>
                         <select name="distType" id="distTypeSelector" ng-model="distType" ng-options="type.name for type in distTypes" onchange="handleDistSelection()"></select>
-                        <div id="NormDistributionPanel" style="display:table-row;position:absolute;visibility:collapse;height:70%;width:96%;overflow-x:hidden;overflow-y:scroll;">
+                        <div id="NormDistributionPanel">
                             <div style="display:table-row">
                                 <span style="display:table-cell;vertical-align:middle;">Mean:</span>
-                                <select ng-if="distParameters[0].useVariable" ng-options="v.name for v in variables" ng-model="distParameters[0].variable"></select>
+                                <select ng-if="distParameters[0].useVariable" ng-options="v.name as v.name for v in variables" ng-model="distParameters[0].variable"></select>
                                 <input name="ngMean" ng-model="distParameters[0].value" onfocusout="validateNumber(this);" ng-if="!distParameters[0].useVariable" />
                                 <select ng-model="distParameters[0].timeRate" ng-options="t.value as t.name for t in timeOptions"></select>
                                 <input type="checkbox" ng-model="distParameters[0].useVariable" /> Use Variable
                             </div>
                             <div style="display:table-row">
                                 <span class="item_caption" style="display:table-cell;vertical-align:middle; white-space:nowrap;">Standard Deviation:</span>
-                                <select ng-if="distParameters[1].useVariable" ng-options="v.name for v in variables" ng-model="distParameters[1].variable"></select>
+                                <select ng-if="distParameters[1].useVariable" ng-options="v.name as v.name for v in variables" ng-model="distParameters[1].variable"></select>
                                 <input name="ndStdDev" ng-model="distParameters[1].value" onfocusout="validateNumber(this);" ng-if="!distParameters[1].useVariable" />
                                 <select ng-model="distParameters[1].timeRate" ng-options="t.value as t.name for t in timeOptions"></select>
                                 <input type="checkbox" ng-model="distParameters[1].useVariable" /> Use Variable
                             </div>
                             <div style="display:table-row">
                                 <span class="item_caption" style="display:table-cell;vertical-align:middle; white-space:nowrap;">Minimum:</span>
-                                <select ng-if="distParameters[2].useVariable" ng-options="v.name for v in variables" ng-model="distParameters[2].variable"></select>
+                                <select ng-if="distParameters[2].useVariable" ng-options="v.name as v.name for v in variables" ng-model="distParameters[2].variable"></select>
                                 <input name="ndMin" ng-model="distParameters[2].value" onfocusout="validateNumber(this);" ng-if="!distParameters[2].useVariable" />
                                 <select ng-model="distParameters[2].timeRate" ng-options="t.value as t.name for t in timeOptions"></select>
                                 <input type="checkbox" ng-model="distParameters[2].useVariable" /> Use Variable
                             </div>
                             <div style="display:table-row">
                                 <span class="item_caption" style="display:table-cell;vertical-align:middle; white-space:nowrap;">Maximum:</span>
-                                <select ng-if="distParameters[3].useVariable" ng-options="v.name for v in variables" ng-model="distParameters[3].variable"></select>
+                                <select ng-if="distParameters[3].useVariable" ng-options="v.name as v.name for v in variables" ng-model="distParameters[3].variable"></select>
                                 <input name="ndMax" ng-model="distParameters[3].value" onfocusout="validateNumber(this);" ng-if="!distParameters[3].useVariable" />
                                 <select ng-model="distParameters[3].timeRate" ng-options="t.value as t.name for t in timeOptions"></select>
                                 <input type="checkbox" ng-model="distParameters[3].useVariable" /> Use Variable
                             </div>
                         </div>
-                        <div id="ExpDistributionPanel" style="display:table-row;position:absolute;visibility:collapse;height:70%;width:96%;overflow-x:hidden;overflow-y:scroll;">
+                        <div id="ExpDistributionPanel">
                             <div style="display:table-row">
                                 <span style="display:table-cell;vertical-align:middle;">Rate:</span>
-                                <select ng-if="distParameters[0].useVariable" ng-options="v.name for v in variables" ng-model="distParameters[0].variable"></select>
+                                <select ng-if="distParameters[0].useVariable" ng-options="v.name as v.name for v in variables" ng-model="distParameters[0].variable"></select>
                                 <input name="edRate" ng-model="distParameters[0].value" onfocusout="validateNumber(this);" ng-if="!distParameters[0].useVariable" />
                                 <select ng-model="distParameters[0].timeRate" ng-options="t.value as t.name for t in timeOptions"></select>
                                 <input type="checkbox" ng-model="distParameters[0].useVariable" /> Use Variable
                             </div>
                         </div>
-                        <div id="WeibullDistributionPanel" style="display:table-row;position:absolute;visibility:collapse;height:70%;width:96%;overflow-x:hidden;overflow-y:scroll;">
+                        <div id="WeibullDistributionPanel">
                             <div style="display:table-row">
                                 <span style="display:table-cell;vertical-align:middle;">Shape:</span>
-                                <select ng-if="distParameters[0].useVariable" ng-options="v.name for v in variables" ng-model="distParameters[0].variable"></select>
+                                <select ng-if="distParameters[0].useVariable" ng-options="v.name as v.name for v in variables" ng-model="distParameters[0].variable"></select>
                                 <input name="wdShape" ng-model="distParameters[0].value" onfocusout="validateNumber(this);" ng-if="!distParameters[0].useVariable" />
                                 <input type="checkbox" ng-model="distParameters[0].useVariable" /> Use Variable
                             </div>
                             <div style="display:table-row">
                                 <span style="display:table-cell;vertical-align:middle;">Scale:</span>
-                                <select ng-if="distParameters[1].useVariable" ng-options="v.name for v in variables" ng-model="distParameters[1].variable"></select>
+                                <select ng-if="distParameters[1].useVariable" ng-options="v.name as v.name for v in variables" ng-model="distParameters[1].variable"></select>
                                 <input name="wdScale" ng-model="distParameters[1].value" onfocusout="validateNumber(this);" ng-if="!distParameters[1].useVariable" />
                                 <input type="checkbox" ng-model="distParameters[1].useVariable" /> Use Variable
                             </div>
@@ -162,6 +162,14 @@
                                 <span style="display:table-cell;vertical-align:middle;">Time Scale:</span>
                                 <select ng-model="dfltTimeRate" ng-options="t.value as t.name for t in timeOptions"></select>
                             </div>
+                        </div>
+                        <hr />
+                        <div ng-show="distUsesVariable()">
+                            If Variable Changes:
+                            <select ng-model="distOnChange" ng-options="t as t.name for t in distChangeTypes" ng-change="updateChangeDesc()">
+                                <option></option>
+                            </select>
+                            {{distOnChange.desc}}
                         </div>
                     </div>
                 </div>
