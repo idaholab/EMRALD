@@ -1204,21 +1204,21 @@ namespace SimulationDAL
           else
             this.AddRelatedItem(v.id);
         }
+      }
 
-        if (_relatedIDs.Count > 0)
+      if (_relatedIDs.Count > 0)
+      {
+        try
         {
-          try
-          {
-            dynamic dynObj = (dynamic)obj;
-            dynObj = ((dynamic)obj).Event;
-            onVarChange = (EnOnChangeTask)Enum.Parse(typeof(EnOnChangeTask), (string)dynObj.onVarChange, true);
-          }
-          catch
-          {
-            throw new Exception("parameter onVarChange missing and variables are used.");
-          }
+          dynamic dynObj = (dynamic)obj;
+          onVarChange = (EnOnChangeTask)Enum.Parse(typeof(EnOnChangeTask), (string)dynObj.onVarChange, true);
+        }
+        catch
+        {
+          throw new Exception("parameter onVarChange missing and variables are used.");
         }
       }
+      
 
       return true;
     }

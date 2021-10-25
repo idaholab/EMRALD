@@ -151,7 +151,8 @@
             "useVariable": false
           }
         ],
-        "dfltTimeRate": "trHours"
+        "dfltTimeRate": "trHours",
+        "onVarChange": "ocResample"
       }
     }
   ],
