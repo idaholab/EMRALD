@@ -4,9 +4,10 @@
   "keyStates": [
     {
       "name": "Occured",
-      "rate": 1.0,
-      "rate5th": 1.0,
-      "rate95th": 1.0,
+      "watchVariables": {},
+      "rate": 0.0,
+      "rate5th": 0.0,
+      "rate95th": 0.0,
       "count": 10,
       "times": [
         "1.06:00:00",
@@ -22,16 +23,16 @@
       ],
       "timeMean": "1.06:00:00",
       "timeStdDeviation": "00:00:00",
-      "watchVariables": {},
       "causes": [
         {
           "desc": "Start, timer1, Goto_Occured",
           "name": "timer1 -> Goto_Occured",
           "fromState": {
             "name": "Start",
-            "rate": 1.0,
-            "rate5th": 1.0,
-            "rate95th": 1.0,
+            "watchVariables": {},
+            "rate": 0.0,
+            "rate5th": 0.0,
+            "rate95th": 0.0,
             "count": 10,
             "times": [
               "00:00:00",
@@ -47,7 +48,6 @@
             ],
             "timeMean": "00:00:00",
             "timeStdDeviation": "00:00:00",
-            "watchVariables": {},
             "causes": []
           }
         }

@@ -231,51 +231,7 @@ namespace UnitTesting_Simulation
       string retJsonStr = ev.GetJSON(true, mainModel);
       Assert.True(CompareJSON(retJsonStr, jsonModel));
     }
-    [Fact]
-    public void VarTimerEventTest()
-    {
-      string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
-      EmraldModel mainModel = new EmraldModel();
-      SetupTheTest(testName, mainModel);
-
-      //use a sample JSON piece to set the values
-      string fileLoc = MainTestDir() + itemFolder + testName + ".json";
-      string varFileLoc = MainTestDir() + itemFolder + "VarDoubleTest.json";
-      string jsonModel = "";
-      string varJsonModel = "";
-      if (File.Exists(fileLoc))
-      {
-        jsonModel = File.ReadAllText(fileLoc);
-        varJsonModel = File.ReadAllText(varFileLoc);
-      }
-      else
-        throw new Exception("Failed to find create json file for " + testName);
-
-      dynamic jsonObj = JsonConvert.DeserializeObject(jsonModel);
-      //for some items, if the item JSON references other items they will need to be added to the main model
-
-      dynamic varJsonObj = JsonConvert.DeserializeObject(varJsonModel);//for the logic top
-      SimGlobVariable testVar = new SimGlobVariable();
-      testVar.DeserializeDerived(varJsonObj, true, mainModel, false);
-
-      TimerEvent ev = new TimerEvent();
-      ev.DeserializeDerived(jsonObj, true, mainModel, false);
-
-      //Is there a way to easily test the triggering of the event 
-      //test for true
-      TimeSpan s = ev.NextTime();
-      Assert.True(s.TotalMilliseconds == 10800);
-      //test for false
-      //Assert.False(ev.EventTriggered());
-
-      //Reference any regression tests in SimEngineTests that covers this.  
-
-      //make sure the JSON returned for the item is good 
-      string retJsonStr = ev.GetJSON(true, mainModel);
-      Assert.True(CompareJSON(retJsonStr, jsonModel));
-    }
-
-
+    
     [Fact]
     public void VarCondEventTest()
     {

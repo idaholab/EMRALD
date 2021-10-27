@@ -614,9 +614,9 @@ EEApp.controller("EEController", function ($scope) {
         { "name": "LogNorm. Distribution", value: "dtLogNormal" },
     ];
     $scope.distChangeTypes = [
-        { "name": "Ignore", value: "ocIgnore", desc: "Keep the same sampled event time." },
-        { "name": "Resample", value: "ocResample", desc: "Same a new event time." },
-        { "name": "Adjust", value: "ocAdjust", desc: "Use new variable value to adjust the event time without resampling, if possible." },
+        { "name": "Ignore", value: "ocIgnore", desc: ", keeping the same sampled event time." },
+        { "name": "Resample", value: "ocResample", desc: " a new event time." },
+        { "name": "Adjust", value: "ocAdjust", desc: ", use the new variable values to adjust the event time without resampling, if possible." },
     ];
     $scope.distType = $scope.distTypes[0];
     $scope.distParameters = [];
