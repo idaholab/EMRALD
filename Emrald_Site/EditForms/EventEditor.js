@@ -220,7 +220,7 @@ function handleDistSelection() {
         case 0:
         case 3:
             normDistPanel.style.visibility = "visible";
-            if (!scope.distParameters || scope.distParameters.length !== 4) {
+            if (!scope.distParameters || scope.distParameters[0].name !== "Mean") {
                 scope.distParameters = [
                     {
                         name: "Mean",
@@ -248,11 +248,21 @@ function handleDistSelection() {
             break;
         case 1:
             expDistPanel.style.visibility = "visible";
-            if (!scope.distParameters || scope.distParameters.length !== 1) {
+            if (!scope.distParameters || scope.distParameters[0].name !== "Rate") {
                 scope.distParameters = [
                     {
                         name: "Rate",
                         value: 0,
+                        timeRate: "trHours",
+                        useVariable: false,
+                    }, {
+                        name: "Minimum",
+                        value: 0,
+                        timeRate: "trHours",
+                        useVariable: false,
+                    }, {
+                        name: "Maximum",
+                        value: 24,
                         timeRate: "trHours",
                         useVariable: false,
                     },
@@ -261,7 +271,7 @@ function handleDistSelection() {
             break;
         case 2:
             wbDistPanel.style.visibility = "visible";
-            if (!scope.distParameters || scope.distParameters.length !== 2) {
+            if (!scope.distParameters || scope.distParameters[0].name !== "Shape") {
                 scope.distParameters = [
                     {
                         name: "Shape",
@@ -270,6 +280,16 @@ function handleDistSelection() {
                     }, {
                         name: "Scale",
                         value: 1,
+                        useVariable: false,
+                    }, {
+                        name: "Minimum",
+                        value: 0,
+                        timeRate: "trHours",
+                        useVariable: false,
+                    }, {
+                        name: "Maximum",
+                        value: 24,
+                        timeRate: "trHours",
                         useVariable: false,
                     },
                 ];

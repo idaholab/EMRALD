@@ -89,10 +89,24 @@ window.upgrade = function (model) {
                 timeRate: event.Event.edTimeRate,
                 useVariable: false,
               },
+              {
+                name: "Minimum",
+                value: event.Event.edMin,
+                timeRate: event.Event.minTimeRate,
+                useVariable: false,
+              },
+              {
+                name: "Maximum",
+                value: event.Event.edMax,
+                timeRate: event.Event.maxTimeRate,
+                useVariable: false,
+              },
             ];
             event.Event.dfltTimeRate = 'trHours';
             delete event.Event.edRate;
             delete event.Event.edTimeRate;
+            delete event.Event.edMin;
+            delete event.Event.edMax;
             break;
           case "etWeibullDist":
             event.Event.distType = "dtWeibull";
@@ -107,10 +121,24 @@ window.upgrade = function (model) {
                 value: event.Event.wdScale,
                 useVariable: false,
               },
+              {
+                name: "Minimum",
+                value: event.Event.wdMin,
+                timeRate: event.Event.minTimeRate,
+                useVariable: false,
+              },
+              {
+                name: "Maximum",
+                value: event.Event.wdMax,
+                timeRate: event.Event.maxTimeRate,
+                useVariable: false,
+              },
             ];
             event.Event.dfltTimeRate = event.Event.wdTimeRate;
             delete event.Event.wdShape;
             delete event.Event.wdScale;
+            delete event.Event.wdMin;
+            delete event.Event.wdMax;
             break;
         }
         event.Event.evType = "etDistribution";
