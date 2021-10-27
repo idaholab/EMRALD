@@ -102,7 +102,7 @@
                     <br>
                     <br>
                 </div>
-                <div id="DistributionPanel" style="display:table-row;position:absolute;visibility:collapse;height:70%;width:96%;overflow-x:hidden;overflow-y:scroll;">
+                <div id="DistributionPanel" style="display:table-row;position:absolute;visibility:collapse;height:70%;min-width:500px;">
                     <div style="display:table-row">
                         <span>Distribution type:</span>
                         <select name="distType" id="distTypeSelector" ng-model="distType" ng-options="type.name for type in distTypes" onchange="handleDistSelection()"></select>
