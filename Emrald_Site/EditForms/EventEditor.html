@@ -170,6 +170,7 @@
                                 <span style="display:table-cell;vertical-align:middle;">Scale:</span>
                                 <select ng-if="distParameters[1].useVariable" ng-options="v.name as v.name for v in variables" ng-model="distParameters[1].variable"></select>
                                 <input name="wdScale" ng-model="distParameters[1].value" onfocusout="validateNumber(this);" ng-if="!distParameters[1].useVariable" />
+                                <select ng-model="distParameters[1].timeRate" ng-options="t.value as t.name for t in timeOptions"></select>
                                 <input type="checkbox" ng-model="distParameters[1].useVariable" /> Use Variable
                             </div>
                             <div style="display:table-row">
@@ -185,10 +186,6 @@
                                 <input name="ndMax" ng-model="distParameters[3].value" onfocusout="validateNumber(this);" ng-if="!distParameters[3].useVariable" />
                                 <select ng-model="distParameters[3].timeRate" ng-options="t.value as t.name for t in timeOptions"></select>
                                 <input type="checkbox" ng-model="distParameters[3].useVariable" /> Use Variable
-                            </div>
-                            <div style="display:table-row">
-                                <span style="display:table-cell;vertical-align:middle;">Time Scale:</span>
-                                <select ng-model="dfltTimeRate" ng-options="t.value as t.name for t in timeOptions"></select>
                             </div>
                         </div>
                         <hr />
