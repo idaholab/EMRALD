@@ -130,6 +130,14 @@
             "timeRate": "trDays",
             "useVariable": true,
             "variable": "Dbl_Rate"
+          },
+          {
+            "value": "0",
+            "timeRate": "trDays"
+          },
+          {
+            "value": "5000",
+            "timeRate": "trDays"
           }
         ],
         "dfltTimeRate": "trHours",

@@ -133,6 +133,14 @@
             "name": "Scale",
             "value": 1,
             "useVariable": false
+          },
+          {
+            "value": "0",
+            "timeRate": "trHours"
+          },
+          {
+            "value": "5000",
+            "timeRate": "trHours"
           }
         ],
         "dfltTimeRate": "trHours",
