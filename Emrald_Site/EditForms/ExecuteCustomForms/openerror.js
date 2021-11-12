@@ -271,20 +271,24 @@ openErrorForm.controller("openErrorController", [
     $scope.modified = [];
 
     function parseModel(xml) {
-      $scope.model = new DOMParser().parseFromString(
-        xml.replace(/\\"/g, '"'),
-        "text/xml"
-      );
-      $scope.dataNodes = Array.from(
-        $scope.model.getElementsByTagName("data")
-      ).map((node) => new DataNode(node));
-      $scope.elements = Array.from(
-        $scope.model.getElementsByTagName("element")
-      ).map((node) => new Element(node, $scope.cvVariables));
-      $scope.failures = Array.from(
-        $scope.model.getElementsByTagName("failure")
-      ).map((node) => node.getAttribute("name"));
-      $scope.hasModel = true;
+      try {
+        $scope.model = new DOMParser().parseFromString(
+          xml.replace(/\\"/g, '"'),
+          "text/xml"
+        );
+        $scope.dataNodes = Array.from(
+          $scope.model.getElementsByTagName("data")
+        ).map((node) => new DataNode(node));
+        $scope.elements = Array.from(
+          $scope.model.getElementsByTagName("element")
+        ).map((node) => new Element(node, $scope.cvVariables));
+        $scope.failures = Array.from(
+          $scope.model.getElementsByTagName("failure")
+        ).map((node) => node.getAttribute("name"));
+        $scope.hasModel = true;
+      } catch (err) {
+        alert('Could not parse model file!');
+      }
     }
 
     $scope.$watch("modelFile", function () {
