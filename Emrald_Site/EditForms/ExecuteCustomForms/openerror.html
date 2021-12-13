@@ -38,7 +38,8 @@
         <input id="exePath" ng-model="exePath" />
         <br />
         <label for="fileBtn">Load model:</label>
-        <input type="file" id="fileBtn" file-model="modelFile" accept="application/xml, .xml" />
+        <input type="file" id="fileBtn" file-model="modelFile" accept="application/xml, .xml" style="color:rgba(0,0,0,0);width:90px;" />
+        <div style="display:inline">{{fileName}}</div>
         <br />
         <label for="prismPath">PRISM executable location:</label>
         <input id="prismPath" ng-model="prismPath" />

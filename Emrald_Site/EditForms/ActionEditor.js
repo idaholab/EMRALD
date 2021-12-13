@@ -306,6 +306,10 @@ function OnLoad(dataObj) {
                 scope.data.raLocation = actionData.exePath;
                 scope.data.raPostCode = actionData.processOutputFileCode;
                 scope.data.raFormData = actionData.formData;
+                scope.data.raTemplateTemp = actionData.template;
+                if (scope.raTemplates.length > 0) {
+                    scope.data.raTemplate = scope.raTemplates.find((template) => template.name === actionData.template.name);
+                }
                 break;
         }
 
@@ -442,6 +446,8 @@ function GetDataObject() {
             dataObj.codeVariables = scope.varNames;
             dataObj.formData = scope.data.raFormData;
             dataObj.returnProcess = scope.returnProcess;
+            dataObj.template = scope.data.raTemplate;
+            dataObj.updateVariables = scope.updateVariables;
             break;
     }
     return dataObj;
@@ -556,11 +562,13 @@ actionModule.controller('actionController', ['$scope', function ($scope) {
         raPostCode: '',
         raType: 'template',
         raTemplate: {},
+        raTemplateTemp: {},
         raFormData: {},
     };
 
     $.getJSON('./customForms.json', (data) => {
         $scope.raTemplates = data;
+        $scope.raTemplate = $scope.raTemplates.find((template) => template.name === $scope.data.raTemplateTemp.name);
     });
 
     $scope.data.action = $scope.data.actions[0];
@@ -611,6 +619,7 @@ actionModule.controller('actionController', ['$scope', function ($scope) {
                 $scope.data.raPostCode = payload.raPostCode;
                 $scope.varNames = payload.varNames;
                 $scope.returnProcess = payload.returnProcess;
+                $scope.updateVariables = payload.variables;
                 break;
             default:
         }

@@ -210,6 +210,7 @@ class OpenErrorForm extends ExternalExeForm {
       );
       dataObj.raFormData = {
         model: xml,
+        modelName: this.$scope.fileName,
         prismPath: this.$scope.prismPath,
         varLinks: this.$scope.varLinks.map((varLink) => varLink.toJSON()),
         prismParam: this.$scope.methodParam,
@@ -314,6 +315,7 @@ openErrorForm.controller("openErrorController", [
         parentScope.data.raFormData.model.length > 0
       ) {
         parseModel(parentScope.data.raFormData.model);
+        $scope.fileName = parentScope.data.raFormData.modelName;
         $scope.prismPath = parentScope.data.raFormData.prismPath;
         $scope.varLinks = parentScope.data.raFormData.varLinks.map(
           (data) =>

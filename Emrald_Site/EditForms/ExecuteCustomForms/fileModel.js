@@ -5,6 +5,7 @@ fileModel = function ($parse) {
             var model = $parse(attrs.fileModel);
             element.bind('change', () => {
                 var content = '';
+                scope.fileName = element[0].files[0].name;
                 var reader = element[0].files[0].stream().getReader();
                 var processBits = ({ done, value }) => {
                     if (done) {

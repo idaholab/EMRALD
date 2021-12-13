@@ -487,6 +487,16 @@ var StateApp = (function (global, _super) {
 
               }
             }
+            // update variables
+            if (retObj.updateVariables) {
+              retObj.updateVariables.forEach((variable) => {
+                var target = root.VariableList.find((rootVar) => rootVar.id === variable.id && rootVar.name === variable.name);
+                target = {
+                  ...target,
+                  variable,
+                };
+              });
+            }
             //TODO make this if statement cleaner (i.e. w/ function)
             if (actionName !== retObj.name && (retObj.name != "Goto_Action" && retObj.name.trim() != "")) {
               //if parent is passed in, it means add new action.
