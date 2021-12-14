@@ -307,7 +307,7 @@ function OnLoad(dataObj) {
                 scope.data.raPostCode = actionData.processOutputFileCode;
                 scope.data.raFormData = actionData.formData;
                 scope.data.raTemplateTemp = actionData.template;
-                if (scope.raTemplates.length > 0) {
+                if (scope.raTemplates && scope.raTemplates.length > 0) {
                     scope.data.raTemplate = scope.raTemplates.find((template) => template.name === actionData.template.name);
                 }
                 break;

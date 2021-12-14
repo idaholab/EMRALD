@@ -490,11 +490,15 @@ var StateApp = (function (global, _super) {
             // update variables
             if (retObj.updateVariables) {
               retObj.updateVariables.forEach((variable) => {
-                var target = root.VariableList.find((rootVar) => rootVar.id === variable.id && rootVar.name === variable.name);
-                target = {
-                  ...target,
-                  variable,
-                };
+                for (var i = 0; i < root.VariableList.length; i += 1) {
+                  var v = root.VariableList[i].Variable;
+                  if (v.id === variable.id && v.name === variable.name) {
+                    root.VariableList[i].Variable = {
+                      ...root.VariableList[i].Variable,
+                      ...variable,
+                    };
+                  }
+                }
               });
             }
             //TODO make this if statement cleaner (i.e. w/ function)

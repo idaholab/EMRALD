@@ -216,12 +216,13 @@ class OpenErrorForm extends ExternalExeForm {
         prismParam: this.$scope.methodParam,
         modified,
       };
+      var resultsPath = this.$scope.exePath.replace(/[^\/\\]*\.exe$/, 'results.json');
       dataObj.raPreCode = `System.IO.File.WriteAllText("./model_temp.xml", "${xml}");`;
       dataObj.raPreCode += `\nreturn "--model \\"./model_temp.xml\\" --method ${this.$scope.varLinks
         .map((varLink) => varLink.prismMethod)
         .join(" ")} --target ${this.$scope.varLinks
         .map((varLink) => `\\"${varLink.target}\\"`)
-        .join(" ")} --prism \\"${escape(this.$scope.prismPath)}\\"`;
+        .join(" ")} --prism \\"${escape(this.$scope.prismPath)}\\" --results \\"${escape(resultsPath)}\\"`;
       dataObj.raPreCode += '";';
       dataObj.raPostCode = "";
       dataObj.returnProcess = "rtNone";
@@ -231,7 +232,7 @@ class OpenErrorForm extends ExternalExeForm {
           ...this.$scope.varLinks[i].variable,
           docType: "dtJSON",
           docLink: `$.output[${i}].result`,
-          docPath: "./results.json",
+          docPath: resultsPath,
           type: "double",
         });
       }
