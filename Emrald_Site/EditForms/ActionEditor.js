@@ -306,10 +306,7 @@ function OnLoad(dataObj) {
                 scope.data.raLocation = actionData.exePath;
                 scope.data.raPostCode = actionData.processOutputFileCode;
                 scope.data.raFormData = actionData.formData;
-                scope.data.raTemplateTemp = actionData.template;
-                if (scope.raTemplates && scope.raTemplates.length > 0) {
-                    scope.data.raTemplate = scope.raTemplates.find((template) => template.name === actionData.template.name);
-                }
+                scope.data.raTemplate = scope.raTemplates.find((template) => template.name === actionData.template.name);
                 break;
         }
 
@@ -448,6 +445,18 @@ function GetDataObject() {
             dataObj.returnProcess = scope.returnProcess;
             dataObj.template = scope.data.raTemplate;
             dataObj.updateVariables = scope.updateVariables;
+            // update variables
+            var root = window.top.simApp.allDataModel;
+            scope.updateVariables.forEach((variable) => {
+                for (var i = 0; i < root.VariableList.length; i += 1) {
+                    var v = root.VariableList[i].Variable;
+                    if (v.id === variable.id && v.name === variable.name) {
+                        Object.keys(variable).forEach((key) => {
+                            root.VariableList[i].Variable[key] = variable[key];
+                        });
+                    }
+                }
+            });
             break;
     }
     return dataObj;
@@ -566,12 +575,7 @@ actionModule.controller('actionController', ['$scope', function ($scope) {
         raFormData: {},
     };
 
-    $.getJSON('./customForms.json', (data) => {
-        $scope.raTemplates = data;
-        if ($scope.data.raTemplateTemp) {
-            $scope.raTemplate = $scope.raTemplates.find((template) => template.name === $scope.data.raTemplateTemp.name);
-        }
-    });
+    $scope.raTemplates = window.customForms;
 
     $scope.data.action = $scope.data.actions[0];
     $scope.data.simMessage = $scope.data.simMessages[0];
