@@ -568,7 +568,9 @@ actionModule.controller('actionController', ['$scope', function ($scope) {
 
     $.getJSON('./customForms.json', (data) => {
         $scope.raTemplates = data;
-        $scope.raTemplate = $scope.raTemplates.find((template) => template.name === $scope.data.raTemplateTemp.name);
+        if ($scope.data.raTemplateTemp) {
+            $scope.raTemplate = $scope.raTemplates.find((template) => template.name === $scope.data.raTemplateTemp.name);
+        }
     });
 
     $scope.data.action = $scope.data.actions[0];
