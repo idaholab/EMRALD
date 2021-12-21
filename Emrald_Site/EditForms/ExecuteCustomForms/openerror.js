@@ -233,6 +233,7 @@ class OpenErrorForm extends ExternalExeForm {
           docType: "dtJSON",
           docLink: `$.output[${i}].result`,
           docPath: resultsPath,
+          pathMustExist: false,
           type: "double",
         });
       }
