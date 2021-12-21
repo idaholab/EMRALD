@@ -64,13 +64,13 @@ class Then {
 
   toString(peers) {
     if (this.useVariable) {
-      return `"+${this.variable.name}+":${this.outcomes}`;
+      return `%%${this.variable.name}:${this.outcomes}`;
     }
     if (this.remaining) {
       var peerProbabilities = peers
         .map((then) => {
           if (then.useVariable) {
-            return `-"+${then.variable.name}+"`;
+            return `-%%${then.variable.name}`;
           } else if (!then.remaining) {
             return `-${then.probability}`;
           }
@@ -208,6 +208,9 @@ class OpenErrorForm extends ExternalExeForm {
       var xml = escape(
         new XMLSerializer().serializeToString(model).replace(/[\n\t]/g, "")
       );
+      dataObj.varNames.forEach((varName) => {
+        xml = xml.replace(new RegExp(`%%${varName}`, 'g'), `"+${varName}+"`);
+      });
       dataObj.raFormData = {
         model: xml,
         modelName: this.$scope.fileName,
@@ -216,9 +219,11 @@ class OpenErrorForm extends ExternalExeForm {
         prismParam: this.$scope.methodParam,
         modified,
       };
-      var resultsPath = this.$scope.exePath.replace(/[^\/\\]*\.exe$/, 'results.json');
-      dataObj.raPreCode = `System.IO.File.WriteAllText("./model_temp.xml", "${xml}");`;
-      dataObj.raPreCode += `\nreturn "--model \\"./model_temp.xml\\" --method ${this.$scope.varLinks
+      var exeRootPath = this.$scope.exePath.replace(/[^\/\\]*\.exe$/, '');
+      var resultsPath = `${exeRootPath}results.json`;
+      var modelPath = `${exeRootPath}model.xml`;
+      dataObj.raPreCode = `System.IO.File.WriteAllText("${escape(modelPath)}", "${xml}");`;
+      dataObj.raPreCode += `\nreturn "--model \\"${escape(modelPath)}\\" --method ${this.$scope.varLinks
         .map((varLink) => varLink.prismMethod)
         .join(" ")} --target ${this.$scope.varLinks
         .map((varLink) => `\\"${varLink.target}\\"`)
