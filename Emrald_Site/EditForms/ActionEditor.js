@@ -306,7 +306,9 @@ function OnLoad(dataObj) {
                 scope.data.raLocation = actionData.exePath;
                 scope.data.raPostCode = actionData.processOutputFileCode;
                 scope.data.raFormData = actionData.formData;
-                scope.data.raTemplate = scope.raTemplates.find((template) => template.name === actionData.template.name);
+                if (actionData.template) {
+                    scope.data.raTemplate = scope.raTemplates.find((template) => template.name === actionData.template.name);
+                }
                 break;
         }
 
@@ -447,16 +449,18 @@ function GetDataObject() {
             dataObj.updateVariables = scope.updateVariables;
             // update variables
             var root = window.top.simApp.allDataModel;
-            scope.updateVariables.forEach((variable) => {
-                for (var i = 0; i < root.VariableList.length; i += 1) {
-                    var v = root.VariableList[i].Variable;
-                    if (v.id === variable.id && v.name === variable.name) {
-                        Object.keys(variable).forEach((key) => {
-                            root.VariableList[i].Variable[key] = variable[key];
-                        });
+            if (scope.updateVariables) {
+                scope.updateVariables.forEach((variable) => {
+                    for (var i = 0; i < root.VariableList.length; i += 1) {
+                        var v = root.VariableList[i].Variable;
+                        if (v.id === variable.id && v.name === variable.name) {
+                            Object.keys(variable).forEach((key) => {
+                                root.VariableList[i].Variable[key] = variable[key];
+                            });
+                        }
                     }
-                }
-            });
+                });
+            }
             break;
     }
     return dataObj;
