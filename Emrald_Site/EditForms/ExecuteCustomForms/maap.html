@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>MAAP Form</title>
+    <link href="../../styles/Editors.css" rel="stylesheet" />
+    <link rel="stylesheet" href="../lib/ExternalExeForm.css" />
+    <script src="../../scripts/angular/angular.js"></script>
+    <script src="../lib/ExternalExeForm.js"></script>
+    <script src="./fileModel.js"></script>
+    <script src="./maap-inp-parser.js"></script>
+    <script src="./maap-par-parser.js"></script>
+    <script src="./maap.js"></script>
+  </head>
+  <body ng-app="maapForm">
+    <form ng-controller="maapFormController">
+      <label for="parameterBtn">Parameter file:</label>
+      <input type="file" id="parameterBtn" file-model="parameterFile" />
+      <br />
+      <label for="inpBtn">Input file:</label>
+      <input type="file" id="inpBtn" file-model="inputFile" />
+      <hr />
+      <table>
+        <tr>
+          <th>Parameter</th>
+          <th>Value</th>
+          <th>Use Variable</th>
+          <th>Units</th>
+        </tr>
+        <tr ng-repeat="parameter in parameters">
+          <td>{{parameter.name}}</td>
+          <td>
+            <select
+              ng-if="parameter.useVariable"
+              ng-options="opt.name for opt in variables"
+              ng-model="parameter.variable"
+            ></select>
+            <span ng-if="!parameter.useVariable">{{parameter.value}}</span>
+          </td>
+          <td>
+            <input type="checkbox" ng-model="parameter.useVariable" />
+          </td>
+          <td>{{parameter.units}}</td>
+        </tr>
+      </table>
+    </form>
+  </body>
+</html>
