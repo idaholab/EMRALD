@@ -80,7 +80,7 @@
           </td>
         </tr>
       </table>
-      <h1>Outputs:</h1>
+      <h3>Outputs:</h3>
       <table>
         <tr>
           <th>Doc Link Variable</th>
@@ -90,7 +90,6 @@
             <select
               ng-options="variable as variable.name for variable in docVars"
               ng-model="varLink.variable"
-              ng-change="save()"
             ></select>
           </td>
           <td>

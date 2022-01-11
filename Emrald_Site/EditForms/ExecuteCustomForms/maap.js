@@ -52,6 +52,25 @@ class Initiator {
   }
 }
 
+class VarLink {
+  constructor(prismMethod, target, variable) {
+    this.prismMethod = prismMethod;
+    this.target = target;
+    this.variable = variable;
+  }
+
+  toJSON() {
+    var json = {
+      variable: {},
+    };
+    if (this.variable) {
+      json.variable.id = this.variable.id;
+      json.variable.name = this.variable.name;
+    }
+    return json;
+  }
+}
+
 module.controller("maapFormController", [
   "$scope",
   function ($scope) {
@@ -62,6 +81,7 @@ module.controller("maapFormController", [
     $scope.initiatorQuery = "";
     $scope.initiatorOptions = [];
     $scope.exePath = "";
+    $scope.varLinks = [new VarLink()];
 
     const parameterInfo = {};
     const possibleInitiators = {};
@@ -73,6 +93,9 @@ module.controller("maapFormController", [
     const { parentScope } = form;
     $scope.variables = parentScope.data.cvVariables;
     $scope.exePath = parentScope.data.raLocation;
+    $scope.docVars = parentScope.data.cvVariables.filter(
+      (cvVariable) => cvVariable.varScope === "gtDocLink"
+    );
 
     $scope.removeInitiator = function (index) {
       $scope.initiators.splice(index, 1);
@@ -93,6 +116,14 @@ module.controller("maapFormController", [
 
     $scope.addInitiator = function (data) {
       $scope.initiators.push(data);
+    };
+
+    $scope.addOutput = function () {
+      $scope.varLinks.push(new VarLink());
+    };
+
+    $scope.removeOutput = function (index) {
+      $scope.varLinks.splice(index, 1);
     };
 
     $scope.$watch("parameterFile", function () {
