@@ -10,15 +10,25 @@
     <script src="./maap-inp-parser.js"></script>
     <script src="./maap-par-parser.js"></script>
     <script src="./maap.js"></script>
+    <style>
+      td,
+      th {
+        padding: 4px;
+      }
+    </style>
   </head>
   <body ng-app="maapForm">
     <form ng-controller="maapFormController">
+      <label for="exePath">Executable location:</label>
+      <input id="exePath" ng-model="exePath" />
+      <br />
       <label for="parameterBtn">Parameter file:</label>
       <input type="file" id="parameterBtn" file-model="parameterFile" />
       <br />
       <label for="inpBtn">Input file:</label>
       <input type="file" id="inpBtn" file-model="inputFile" />
       <hr />
+      <h3>Parameters:</h3>
       <table>
         <tr>
           <th>Parameter</th>
@@ -40,6 +50,57 @@
             <input type="checkbox" ng-model="parameter.useVariable" />
           </td>
           <td>{{parameter.units}}</td>
+        </tr>
+      </table>
+      <h3>Initiators:</h3>
+      <label for="addInitiator">Add initiator:</label>
+      <input
+        list="initiatorList"
+        id="addInitiator"
+        ng-model="initiatorQuery"
+        ng-change="findInitiators($event)"
+      />
+      <table>
+        <tr ng-repeat="opt in initiatorOptions">
+          <td>{{opt.label}}</td>
+          <td>
+            <button ng-click="addInitiator(opt)">Add</button>
+          </td>
+        </tr>
+      </table>
+      <table>
+        <tr>
+          <th>Name</th>
+          <th>Remove</th>
+        </tr>
+        <tr ng-repeat="(i, initiator) in initiators">
+          <td>{{initiator.label}}</td>
+          <td>
+            <button ng-click="removeInitiator(i)">X</button>
+          </td>
+        </tr>
+      </table>
+      <h1>Outputs:</h1>
+      <table>
+        <tr>
+          <th>Doc Link Variable</th>
+        </tr>
+        <tr ng-repeat="varLink in varLinks track by $index">
+          <td>
+            <select
+              ng-options="variable as variable.name for variable in docVars"
+              ng-model="varLink.variable"
+              ng-change="save()"
+            ></select>
+          </td>
+          <td>
+            <button ng-click="removeOutput($index)">Remove</button>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <button ng-click="addOutput()">Add Output</button>
+          </td>
         </tr>
       </table>
     </form>

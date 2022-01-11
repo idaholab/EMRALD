@@ -1,6 +1,21 @@
 class MAAPForm extends ExternalExeForm {
   getDataObject() {
-    return {};
+    const dataObj = {};
+    dataObj.raLocation = this.$scope.exePath;
+    dataObj.varNames = [];
+    this.$scope.parameters.forEach((parameter) => {
+      if (
+        parameter.useVariable &&
+        dataObj.varNames.indexOf(parameter.variable.name) < 0
+      ) {
+        dataObj.varNames.push(parameter.variable.name);
+      }
+    });
+    dataObj.raFormData = {};
+    dataObj.raPreCode = "";
+    dataObj.raPostCode = "";
+    dataObj.returnProcess = "rtNone";
+    dataObj.variables = [];
   }
 }
 
@@ -25,14 +40,31 @@ class Parameter {
   }
 }
 
+class Initiator {
+  constructor(data) {
+    this.desc = data.desc;
+    this.index = data.index;
+    this.value = data.value;
+  }
+
+  get label() {
+    return `${this.index} ${this.value} ${this.desc}`;
+  }
+}
+
 module.controller("maapFormController", [
   "$scope",
   function ($scope) {
     $scope.parameterFile = "";
     $scope.inputFile = "";
     $scope.parameters = [];
+    $scope.initiators = [];
+    $scope.initiatorQuery = "";
+    $scope.initiatorOptions = [];
+    $scope.exePath = "";
 
     const parameterInfo = {};
+    const possibleInitiators = {};
 
     function trim(line) {
       return line.replace(/^\W*/, "").replace(/\W*$/, "");
@@ -40,22 +72,44 @@ module.controller("maapFormController", [
 
     const { parentScope } = form;
     $scope.variables = parentScope.data.cvVariables;
+    $scope.exePath = parentScope.data.raLocation;
+
+    $scope.removeInitiator = function (index) {
+      $scope.initiators.splice(index, 1);
+    };
+
+    $scope.findInitiators = function () {
+      if ($scope.initiatorQuery.length > 0) {
+        $scope.initiatorOptions = [];
+        Object.keys(possibleInitiators).forEach((key) => {
+          if (
+            key.toUpperCase().indexOf($scope.initiatorQuery.toUpperCase()) > -1
+          ) {
+            $scope.initiatorOptions.push(possibleInitiators[key]);
+          }
+        });
+      }
+    };
+
+    $scope.addInitiator = function (data) {
+      $scope.initiators.push(data);
+    };
 
     $scope.$watch("parameterFile", function () {
       if ($scope.parameterFile.length > 0) {
-        $scope.parameterFile
-          .split(/\n/)
-          .forEach((line) => {
-            if (/^[0-9]{3}/.test(line)) {
-              try {
-                const data = window.maapParParser.parse(line);
-                parameterInfo[data.desc] = data;
-              } catch (err) {
-                // Do something or just ignore it? It seems like all the lines failing are out of bounds anyway
+        $scope.parameterFile.split(/\n/).forEach((line) => {
+          if (/^[0-9]{3}/.test(line)) {
+            try {
+              const data = window.maapParParser.parse(line);
+              parameterInfo[data.desc] = new Initiator(data);
+              if (data.value === "T") {
+                possibleInitiators[data.desc] = new Initiator(data);
               }
+            } catch (err) {
+              // Do something or just ignore it? It seems like all the lines failing are out of bounds anyway
             }
-          });
-        console.log(parameterInfo);
+          }
+        });
       }
     });
 
@@ -94,8 +148,7 @@ module.controller("maapFormController", [
                 expects = 0;
                 initiatorsDone = true;
               } else {
-                console.log(line);
-                console.log(parameterInfo[line]);
+                $scope.initiators.push(new Initiator(parameterInfo[line]));
               }
               break;
             default:
