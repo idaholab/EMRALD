@@ -123,7 +123,6 @@
             <th>Target Failure State</th>
           </tr>
           <tr ng-repeat="varLink in varLinks track by $index">
-            <td>{{varLink}}</td>
             <td>
               <select
                 ng-options="variable as variable.name for variable in docVars"
