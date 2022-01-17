@@ -1422,8 +1422,8 @@ namespace SimulationDAL
         extApp.RedirectStandardError = false;
 
         // Do you want to show a console window?
-        //extApp.WindowStyle = Hidden.ProcessWindowStyle;
-        //extApp.CreateNoWindow = true;
+        // extApp.WindowStyle = Hidden.ProcessWindowStyle;
+        extApp.CreateNoWindow = true;
 
         // Run the external process & wait for it to finish
         using (proc = Process.Start(extApp))
