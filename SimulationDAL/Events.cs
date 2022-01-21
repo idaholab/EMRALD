@@ -1211,6 +1211,13 @@ namespace SimulationDAL
         try
         {
           dynamic dynObj = (dynamic)obj;
+          if (wrapped)
+          {
+            if (dynObj.Event == null)
+              return false;
+
+            dynObj = ((dynamic)obj).Event;
+          }
           onVarChange = (EnOnChangeTask)Enum.Parse(typeof(EnOnChangeTask), (string)dynObj.onVarChange, true);
         }
         catch
