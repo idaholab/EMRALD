@@ -14,7 +14,7 @@ using MessageDefLib;
 
 namespace SimulationTracking
 {
-  
+
   public class EventListData
   {
     public EventStatesAndActions eventStateActions;
@@ -45,16 +45,16 @@ namespace SimulationTracking
     public TimeSpan time; //time for the event to occur
     public TimeSpan whenCreated; //time the item was created
     public TimeMoveEvent(String name, EventStatesAndActions inStEvID, Event inEventData, TimeSpan inTime, TimeSpan curTime)
-      : base(name, inStEvID, inEventData) 
+      : base(name, inStEvID, inEventData)
     {
       this.time = inTime;
       this.whenCreated = curTime;
     }
     public TimeMoveEvent(TimeMoveEvent copyEv)
       : this(copyEv.name, copyEv.eventStateActions, copyEv.eventData, copyEv.time, copyEv.whenCreated)
-    {}
+    { }
   }
-  
+
   public class ConditionMoveEvent : EventListData
   {
     public ConditionMoveEvent(String name, EventStatesAndActions inStEvID, Event inEventData)
@@ -75,13 +75,13 @@ namespace SimulationTracking
       }
     }
 
-    public MyBitArray relatedIDs; 
+    public MyBitArray relatedIDs;
   }
 
   /// <summary>
   /// maintains lists of item IDs that have changed of different types [variables, 3DComps, states]
   /// </summary>
-  public class ChangedIDs 
+  public class ChangedIDs
   {
     private MyBitArray variableIDs;
     private MyBitArray compIDs;
@@ -155,17 +155,17 @@ namespace SimulationTracking
       //  default :
       //    return false;        
       //}
-      if(idType == EnModifiableTypes.mtVar)
-          return variableIDs.HasCommonBits(ids);
+      if (idType == EnModifiableTypes.mtVar)
+        return variableIDs.HasCommonBits(ids);
 
-      else if(idType ==  EnModifiableTypes.mtComp)
-          return compIDs.HasCommonBits(ids);
+      else if (idType == EnModifiableTypes.mtComp)
+        return compIDs.HasCommonBits(ids);
 
-      else if(idType ==  EnModifiableTypes.mtState)
-          return stateIDs.HasCommonBits(ids);
+      else if (idType == EnModifiableTypes.mtState)
+        return stateIDs.HasCommonBits(ids);
 
       else
-          return false;
+        return false;
     }
 
     public void Clear()
@@ -182,23 +182,23 @@ namespace SimulationTracking
   public class ConditionEventLists
   {
     private CurrentStates curStates;
-    private Dictionary<EventStatesAndActions, ConditionMoveEvent> [] evLists; //lists to hold the different kind of condition, array by eventtype
+    private Dictionary<EventStatesAndActions, ConditionMoveEvent>[] evLists; //lists to hold the different kind of condition, array by eventtype
     private Dictionary<int, List<EventStatesAndActions>>[] stateRefLookups; //lookup keys for all condition events from the same state.
     private Dictionary<ConditionMoveEvent, bool> initialCondEvalDone; //make sure all events are returned at least after fist added even if no related items have changed.
 
-   
-            
+
+
 
     public ConditionEventLists(CurrentStates curStates)
     {
       this.curStates = curStates;
-      int cnt = (int)Enum.GetValues(typeof(EnEventType)).Cast<EnEventType>().Last() +1;
-      evLists = new Dictionary<EventStatesAndActions, ConditionMoveEvent> [cnt];
-      stateRefLookups = new Dictionary<int, List<EventStatesAndActions>> [cnt];
+      int cnt = (int)Enum.GetValues(typeof(EnEventType)).Cast<EnEventType>().Last() + 1;
+      evLists = new Dictionary<EventStatesAndActions, ConditionMoveEvent>[cnt];
+      stateRefLookups = new Dictionary<int, List<EventStatesAndActions>>[cnt];
       initialCondEvalDone = new Dictionary<ConditionMoveEvent, bool>();
       foreach (EnEventType itemType in Enum.GetValues(typeof(EnEventType)))
       {
-        
+
         if (Constants.CondEventTypes.Contains(itemType))
         {
           evLists[(int)itemType] = new Dictionary<EventStatesAndActions, ConditionMoveEvent>();
@@ -209,7 +209,7 @@ namespace SimulationTracking
           evLists[(int)itemType] = null;
           stateRefLookups[(int)itemType] = null;
         }
-      }      
+      }
     }
 
     public void Clear()
@@ -243,14 +243,14 @@ namespace SimulationTracking
       }
     }
 
-    
+
     public bool RemoveMatchingStateItems(int stateID)
     {
       bool retBool = false;
       List<EventStatesAndActions> refs;
       //Go through all the lists for the enum types
       foreach (EnEventType itemType in Enum.GetValues(typeof(EnEventType)))
-      { 
+      {
         //if the enum type is a Condition we need to see if there are items to remove
         if (Constants.CondEventTypes.Contains(itemType))
         {
@@ -302,11 +302,11 @@ namespace SimulationTracking
                 break;
 
               case EnEventType.etStateCng:
-                curIDType =EnModifiableTypes.mtState;
+                curIDType = EnModifiableTypes.mtState;
                 break;
 
               case EnEventType.etComponentLogic:
-                curIDType =EnModifiableTypes.mtState;
+                curIDType = EnModifiableTypes.mtState;
                 break;
 
               default:
@@ -326,10 +326,10 @@ namespace SimulationTracking
               {
                 retList.Add(item);
               }
-              initialCondEvalDone.Remove(item); 
+              initialCondEvalDone.Remove(item);
             }
 
-            else if ((item.relatedIDs != null) &&(changedItems.HasApplicableItems(curIDType, item.relatedIDs)) &&
+            else if ((item.relatedIDs != null) && (changedItems.HasApplicableItems(curIDType, item.relatedIDs)) &&
                ((item.eventData as CondBasedEvent).EventTriggered(curStatesBS, otherData, curTime, start3DTime, nextEvTime)))
             {
               retList.Add(item);
@@ -387,7 +387,7 @@ namespace SimulationTracking
           if (timedEvQue.Search(refTime, true))
           {
             do
-            { 
+            {
               if (timedEvQue.CurrentValue.eventStateActions.statesAndActions.ContainsKey(stateID))
               {
                 if (timedEvQue.CurrentValue.eventStateActions.statesAndActions.Count == 1)
@@ -422,7 +422,7 @@ namespace SimulationTracking
           timedEvQue.Remove();
           timedEvQue.MoveFirst();
         }
-        
+
         //shift the time for all the other items
         ShiftEvTimes(firstKey);
       }
@@ -445,7 +445,7 @@ namespace SimulationTracking
 
       TimeMoveEvent extEv = new TimeMoveEvent(evDispName, key, nowEv, curTime - simExtStartTime, simExtStartTime); //FromMilliseconds just in case the curTime is the same as the RevetToTime
       poppedList.Add(extEv);
-      
+
     }
 
     public void ShiftEvTimes(TimeSpan adjTime)
@@ -468,7 +468,7 @@ namespace SimulationTracking
         }
         while (timedEvQue.MoveNext());
       }
-      
+
 
       timedEvQue.Clear();
       timedEvQue = newList;
@@ -487,7 +487,7 @@ namespace SimulationTracking
       //see if this event is an event already in there from another state if so don't create a new one use the previous sampled event and time.
       List<TimeSpan> refs;
       if (eventRefLookup.TryGetValue(addEvent.eventStateActions.eventID, out refs))
-      { 
+      {
         foreach (TimeSpan refTime in refs)
         {
           //find the item in timedEvQue with the key of refTime and value that has the correct stateID   
@@ -507,7 +507,43 @@ namespace SimulationTracking
 
       //if here did not find an event with the same event ID
       timedEvQue.Add(addEvent.time, addEvent);
-      AddIDLookups(addEvent.eventStateActions, addEvent.time);     
+      AddIDLookups(addEvent.eventStateActions, addEvent.time);
+    }
+
+    public void ChangeEventTime(TimeSpan newTime, int evID)
+    {
+      //change the time for the event and move in que
+
+      List<TimeSpan> refs;
+      if (eventRefLookup.TryGetValue(evID, out refs))
+      {
+        TimeMoveEvent cngItem = null;
+        foreach (TimeSpan refTime in refs)
+        {
+          //find the item in timedEvQue with the key of refTime and value that has the correct evID   
+          if (timedEvQue.Search(refTime, true))
+          {
+            do
+            {
+              if (timedEvQue.CurrentValue.eventStateActions.eventID == evID)
+              {
+                //remove the event, it has a bad key/time
+                cngItem = (TimeMoveEvent)timedEvQue.CurrentValue;
+                timedEvQue.Remove();
+                break;
+              }
+            }
+            while (timedEvQue.MoveNext() && timedEvQue.CurrentKey == refTime);
+          }
+        }
+
+        //put the event back with the new time
+        if (cngItem != null)
+        {
+          cngItem.time = newTime;
+          timedEvQue.Add(newTime, cngItem);
+        }
+      }
     }
 
     public void AddEventStateActions(int evID, int stateID, ActionList actions)
@@ -595,25 +631,25 @@ namespace SimulationTracking
       timedEvQue = newList;
 
       //put back time events that have passed in this block of time.
-      if(poppedList.Count > 0)
+      if (poppedList.Count > 0)
       {
-        int idx = poppedList.Count-1;
+        int idx = poppedList.Count - 1;
         TimeMoveEvent emEv = poppedList[idx];
-        
-        while((emEv.whenCreated + emEv.time) > revertTo) //event will happen after the revert to time
+
+        while ((emEv.whenCreated + emEv.time) > revertTo) //event will happen after the revert to time
         {
-          if(emEv.whenCreated <= revertTo) //event was created when or before the revert to time.
+          if (emEv.whenCreated <= revertTo) //event was created when or before the revert to time.
           {
             //adjust the time of the event by the current time
             emEv.time = emEv.time - (revertTo - emEv.whenCreated);
             newList.Add(emEv.time, emEv);
-            
+
           }
 
           poppedList.Remove(emEv);
           --idx;
           emEv = poppedList[idx];
-        }        
+        }
       }
     }
 
@@ -695,14 +731,14 @@ namespace SimulationTracking
     public RemovedStateInfo(RemovedStateInfo toCopy, bool fullCopy = false)
     {
       this.time = toCopy.time;
-      if(fullCopy)
+      if (fullCopy)
         this.statePath = new StatePath(toCopy.statePath);
       else
         this.statePath = toCopy.statePath;
     }
 
   }
-  
+
   /// <summary>
   /// Dictionary of current states at any given point in the simulation
   /// </summary>
@@ -710,7 +746,7 @@ namespace SimulationTracking
   {
     private NLog.Logger logger = NLog.LogManager.GetLogger("logfile");
     private Dictionary<int, RemovedStateInfo> removedItems = new Dictionary<int, RemovedStateInfo>();
-    
+
     private MyBitArray _bitMap = new MyBitArray(100, false);
     public MyBitArray bitMap { get { return _bitMap; } }
     //public bool trackStateMovement = true;
@@ -729,7 +765,7 @@ namespace SimulationTracking
         }
 
         removedItems.Add(stateID, new RemovedStateInfo(curTime, curStatePath));
-        timeInIt = curTime - this[stateID].times.Last() ;
+        timeInIt = curTime - this[stateID].times.Last();
         this.Remove(stateID);
       }
 
@@ -775,7 +811,7 @@ namespace SimulationTracking
     public void RevertToGivenTime(TimeSpan forTime, ConditionEventLists condEvs) //returns states put back in CurrentState list
     {
       List<int> remList = new List<int>();
-      foreach(var curState in this.Values)
+      foreach (var curState in this.Values)
       {
         int idx = curState.times.Count - 1;
         if (curState.times[idx] > forTime)
@@ -786,19 +822,19 @@ namespace SimulationTracking
       }
 
       //remove all the items from the list
-      foreach(var id in remList)
+      foreach (var id in remList)
       {
         this.Remove(id);
         _bitMap.Set(id, false);
       }
 
       List<RemovedStateInfo> timeSorted = new List<RemovedStateInfo>();
-      timeSorted = removedItems.Values.ToList(); 
+      timeSorted = removedItems.Values.ToList();
       timeSorted.Sort((ts1, ts2) => TimeSpan.Compare(ts1.time, ts2.time));
 
       remList.Clear();
       int i = timeSorted.Count - 1;
-      while ((i>= 0) && (timeSorted[i].time > forTime)) //added time is greater than 
+      while ((i >= 0) && (timeSorted[i].time > forTime)) //added time is greater than 
       {
         var remState = timeSorted[i];
         if (remState.statePath.times[remState.statePath.times.Count - 1] <= forTime)//state was added after the time we are moving back to.
@@ -826,8 +862,8 @@ namespace SimulationTracking
         }
         --i;
       }
-      
-      foreach(int id in remList)
+
+      foreach (int id in remList)
       {
         removedItems.Remove(id);
         _bitMap.Set(id, true);
@@ -850,7 +886,7 @@ namespace SimulationTracking
         if (inState != null)
 #if DEBUG
           throw new Exception("Already in a state for the diagram " + toState.diagram.name + " can't add go into another one.");
-          //return;
+        //return;
 #else
           return;
 #endif
@@ -933,11 +969,11 @@ namespace SimulationTracking
               curState = new SimulationEngine.ResultState(curStatePath.state.name);
               resMap.Add(curStatePath.state.name, curState);
             }
-            
 
-            for (int i = curStatePath.path.Count-1; i >= 0; i--)
+
+            for (int i = curStatePath.path.Count - 1; i >= 0; i--)
             {
-              curState.times.Add(curStatePath.times[i]);
+              curState.AddTime(curStatePath.times[i]);
 
               if (i > 0)
               {
@@ -945,7 +981,7 @@ namespace SimulationTracking
                 string evName = curStatePath.eventNames[i];
                 string actName = curStatePath.actionNames[i];
                 string causeKey = curFromState.name + ", " + evName + ", " + actName;
-                
+
                 if (curState.causeDict.ContainsKey(causeKey))
                 {
                   curCause = curState.causeDict[causeKey];
@@ -962,7 +998,7 @@ namespace SimulationTracking
                 }
 
                 curState = curCause.fromState;
-              }
+              }              
             }
           }
 
@@ -1013,7 +1049,7 @@ namespace SimulationTracking
     /// <summary>
     /// ids of states to process and add to current state list, second int is the ID of the from state, string is the name of the action that brought us to that state
     /// </summary>
-    private List<Tuple<int, int, string, string>> nextStateQue = new List<Tuple<int,int, string, string>>(); 
+    private List<Tuple<int, int, string, string>> nextStateQue = new List<Tuple<int, int, string, string>>();
     /// <summary>
     /// bitsets tracking items that have changed, used to determine what events need to be reevaluated.
     /// </summary>
@@ -1062,7 +1098,7 @@ namespace SimulationTracking
     private EmraldModel allLists;
 
     public int keyStateCnt { get { return (from cs in curStates where cs.Value.state.stateType == EnStateType.stKeyState select cs).Count(); } }
-    
+
 
     public StateTracker(
       EmraldModel inLists,
@@ -1111,7 +1147,7 @@ namespace SimulationTracking
       //{
       //  tempVar.value = 0.0;
       //}
-      
+
 
       //set up the compOKList bitset to hold a bit for all components 
       //compOKList = new MyBitArray(inCompData.Keys.Max() + 1);
@@ -1133,7 +1169,7 @@ namespace SimulationTracking
       this.inProcessingLoop = false;
       this.terminated = false;
     }
-       
+
 
     public List<int> StartTracker()
     {
@@ -1153,7 +1189,7 @@ namespace SimulationTracking
       {
         //hit terminal state upon initialization. Possible but strange
         return curStates.GetFinalStateList();
-      }  
+      }
 
 
       //in case a 3d simulations starts up in the beginning
@@ -1162,14 +1198,14 @@ namespace SimulationTracking
         //Application.DoEvents();
         System.Threading.Thread.Sleep(10);
       }
-      
+
       //do the process while there are still time events in the que and a terminal state is not met
       while (timeEvList.cnt > 0)
       {
         PopNextTimeEvent();
 
         //run through all the stuff until it needs a new timed event or it hits a terminal state
-        if (! ProcessActiveLoop())
+        if (!ProcessActiveLoop())
         {
           return curStates.GetFinalStateList();
         }
@@ -1183,7 +1219,7 @@ namespace SimulationTracking
       //MessageBox.Show("end sim");
       //logFunc("end sim" + Environment.NewLine);
       List<int> finalStates = curStates.GetFinalStateList();
-      foreach(var sID in finalStates)
+      foreach (var sID in finalStates)
       {
         //update any accrual variables
 
@@ -1206,7 +1242,7 @@ namespace SimulationTracking
     /// <param name="evData">the message packet</param>
     void Sim3DEventOccurred(string fromClient, TMsgWrapper evData)
     {
-      
+
       TimeSpan shiftTimeTo = new TimeSpan();
       bool sendTimers = false;
       int i = 0;
@@ -1254,7 +1290,7 @@ namespace SimulationTracking
             {
               return;
             }
-            
+
             shiftTimeTo = (TimeSpan)ev.time; //If checked and passed with schema, this will not be null.
             if (shiftTimeTo == Globals.NowTimeSpan)
               shiftTimeTo = TimeSpan.FromMilliseconds(1) + sim3DStartTime;
@@ -1271,7 +1307,7 @@ namespace SimulationTracking
               this.allLists.allVariables[curVar.id].SetValue(ev.itemData.value);
               this.changedItems.AddChangedID(EnModifiableTypes.mtVar, curVar.id);
             }
-            
+
             break;
 
           default: //items are 3D variables that were affected
@@ -1281,7 +1317,7 @@ namespace SimulationTracking
 
         ++i;
       }
-            
+
 
       //wait for state processing to be done.
       while (inProcessingLoop)
@@ -1297,10 +1333,10 @@ namespace SimulationTracking
 
         this.curTime = shiftTimeTo;
         allLists.allVariables.FindByName("CurTime").SetValue(curTime.TotalHours);
-        
+
       }
-     
-            
+
+
       //Look for events that now meet conditions
       ScanCondEvList();
       //start a new round of processing
@@ -1371,7 +1407,7 @@ namespace SimulationTracking
       //  }
       //}
 
-      processEventList.AddRange(timeEvList.PopTimedEvent(curTime));      
+      processEventList.AddRange(timeEvList.PopTimedEvent(curTime));
     }
 
     /// <summary>
@@ -1383,7 +1419,7 @@ namespace SimulationTracking
       inProcessingLoop = true;
 
       //loop through processing event or states while any are still in the queues, processing one can add to the other.
-      while((!terminated) && ((processEventList.Count > 0) || (nextStateQue.Count > 0)))
+      while ((!terminated) && ((processEventList.Count > 0) || (nextStateQue.Count > 0)))
       {
         //process all the events in the list before processing the next state
         while ((!terminated) && (processEventList.Count > 0))
@@ -1393,9 +1429,9 @@ namespace SimulationTracking
         }
 
         //while there are items in the Next State Queue, process them.
-        while ((!terminated) &&(nextStateQue.Count > 0))
+        while ((!terminated) && (nextStateQue.Count > 0))
         {
-          if (! ProcessState(nextStateQue[0])) //was a terminal state so quit;
+          if (!ProcessState(nextStateQue[0])) //was a terminal state so quit;
           {
             inProcessingLoop = false;
             return false;
@@ -1433,11 +1469,11 @@ namespace SimulationTracking
         if (curState.stateType == EnStateType.stStart)
         {
           hadStartState = true;
-          if (! ProcessState(Tuple.Create(curState.id, -1, "", "")))
+          if (!ProcessState(Tuple.Create(curState.id, -1, "", "")))
           {
             return false;
           }
-          
+
         }
       }
 
@@ -1461,9 +1497,9 @@ namespace SimulationTracking
       {
         if (!ProcessActions((ActionList)stID.Value, stID.Key, curEv.eventData))
           return; //return of false means a time jump was done so we can stop processing
-        
+
         if (((ActionList)stID.Value).moveFromCurrent) //leaving this state to go to a different one so remove any other events that also leave this state
-        {          
+        {
           timeEvList.RemoveMatchingStateItems(stID.Key);
           condEvList.RemoveMatchingStateItems(stID.Key);
 
@@ -1473,9 +1509,9 @@ namespace SimulationTracking
           List<AccrualVariable> aVars = null;
           if (allLists.AccrualVars.TryGetValue(stID.Key, out aVars))
           {
-            foreach(var v in aVars)
+            foreach (var v in aVars)
             {
-              if(v.Accrue(inTime, stID.Key))
+              if (v.Accrue(inTime, stID.Key))
                 changedItems.AddChangedID(EnModifiableTypes.mtVar, v.id);
             }
           }
@@ -1484,7 +1520,7 @@ namespace SimulationTracking
           logger.Info("ExitState: " + stateName);
 
           //add the moved from state to the changed list since we moved from it
-          changedItems.AddChangedID(EnModifiableTypes.mtState, stID.Key);          
+          changedItems.AddChangedID(EnModifiableTypes.mtState, stID.Key);
         }
       }
     }
@@ -1502,7 +1538,7 @@ namespace SimulationTracking
       {
         curState = allLists.allStates[stateID.Item1];
       }
-      catch(Exception)
+      catch (Exception)
       {
         return false;
       }
@@ -1542,8 +1578,8 @@ namespace SimulationTracking
             {
               TimeMoveEvent addTimeEv = new TimeMoveEvent(curEv.name, new EventStatesAndActions(curEv.id, curState.id, curState.GetEvActionsIdx(idx)), curEv, evTime, curTime);
               if ((evTime == Globals.NowTimeSpan) && !this.sim3DStopping)// || //add the event to be processed immediately
-                                                //todo : how to handle if next event is before the first timestep of a simulation 
-                                                //if only one simulation you just process the event as an immediate ((this.sim3DRunning || this.sim3DStarting) && ((evTime.TotalSeconds * sim3DFameRate) < 1)))
+                                                                         //todo : how to handle if next event is before the first timestep of a simulation 
+                                                                         //if only one simulation you just process the event as an immediate ((this.sim3DRunning || this.sim3DStarting) && ((evTime.TotalSeconds * sim3DFameRate) < 1)))
               {
                 processEventList.Add(addTimeEv);
               }
@@ -1571,7 +1607,7 @@ namespace SimulationTracking
       List<ConditionMoveEvent> matchedEvs = null;
       //Look for events that now meet conditions and add them to the processEventList
       TimeMoveEvent nextItem = timeEvList.LookNextTimedEvent();
-      if(nextItem != null)
+      if (nextItem != null)
         //matchedEvs = condEvList.GetMatchedCondMoveEvents(this.changedItems, this.last3DVarEvType, curTime, sim3DStartTime, nextItem.time);
         matchedEvs = condEvList.GetMatchedCondMoveEvents(this.changedItems, curTime, sim3DStartTime, nextItem.time);
       else
@@ -1596,21 +1632,21 @@ namespace SimulationTracking
     /// <returns></returns>
     private bool ProcessActions(ActionList curActions, int ownerStateID, Event causeEvent)
     {
-      foreach(SimulationDAL.Action curAct in curActions)
+      foreach (SimulationDAL.Action curAct in curActions)
       {
         switch (curAct.actType)
         {
           case EnActionType.atTransition:
             logger.Debug("DoTransitionAction: " + curAct.name);
             TransitionAct tCurAct = (curAct as TransitionAct);
-                        
+
             //ProcessTransition((Transition)curAct);
             //add the new state to the NextStateQue
             List<IdxAndStr> toStates = tCurAct.WhichToState();
-            foreach(IdxAndStr cur in toStates )
+            foreach (IdxAndStr cur in toStates)
             {
               //only add it if we are currently not going to that state from another action
-              if(nextStateQue.Where(t=>t.Item1 == cur.idx).FirstOrDefault() == null)
+              if (nextStateQue.Where(t => t.Item1 == cur.idx).FirstOrDefault() == null)
                 nextStateQue.Add(Tuple.Create(cur.idx, ownerStateID, causeEvent == null ? "immediate action" : causeEvent.name, curAct.name));
             }
             break;
@@ -1626,7 +1662,35 @@ namespace SimulationTracking
             }
             catch (Exception e)
             {
-              throw new Exception("Failed to find " + curVarAct.name + " in variable list.", e);
+              throw new Exception("Failed to find variable for" + curVarAct.name + " in variable list.", e);
+            }
+            try
+            {
+              //see if there are any events that use this if so we need to update
+              foreach (var ev in timeEvList.timedEvQue)
+              {
+                TimeBasedEvent curTimeEv = (TimeBasedEvent)ev.Value.eventData;
+                if (curTimeEv.relatedIDs.Contains(varItem.id))
+                {
+                  //get a new time for the event.
+
+                  TimeSpan lastSampledTime = ev.Key;
+                  if (lastSampledTime < (TimeSpan.MaxValue - curTime))
+                  {
+                    lastSampledTime = lastSampledTime + curTime;
+                  }
+
+                  TimeSpan regotTime = curTimeEv.RedoNextTime(ev.Value.whenCreated, curTime, lastSampledTime);
+                  if (regotTime < TimeSpan.Zero) 
+                    regotTime = TimeSpan.Zero;
+
+                  timeEvList.ChangeEventTime(regotTime, ev.Value.id);
+                }
+              }
+            }
+            catch (Exception e)
+            {
+              throw new Exception("Failed to adjust event time for changes to " + curVarAct.name, e);
             }
 
 
@@ -1635,7 +1699,7 @@ namespace SimulationTracking
             //  toSave = (TimeStateVariable)varItem;
             //}
             //else
-              curVarAct.SetVal(varItem, this.allLists, curTime, sim3DStartTime);
+            curVarAct.SetVal(varItem, this.allLists, curTime, sim3DStartTime);
             //TODO : if this is a 3D var item and we are running a 3D simulation notify the 3D simulator of the change.
 
 
@@ -1658,31 +1722,31 @@ namespace SimulationTracking
             //  //make sure the processEventList and processStateQue is empty
             //  processEventList.RemoveRange(1, processEventList.Count - 1);
             //  nextStateQue.RemoveRange(0, nextStateQue.Count);
-              
+
             //  maxTime = maxTime + (curTime - newTime);
             //  this.curTime = newTime;
             //}
             //else
             //{
-              double temp = 0.0;
-              timeJumpAct.SetVal(ref temp, this.allLists, curTime, sim3DStartTime);
-              TimeSpan newTime = TimeSpan.FromHours(temp);
+            double temp = 0.0;
+            timeJumpAct.SetVal(ref temp, this.allLists, curTime, sim3DStartTime);
+            TimeSpan newTime = TimeSpan.FromHours(temp);
 
-              if (newTime > curTime)
-                throw new Exception("Attempted to jump forward in time, this not allowed. CurTime - " + curTime + " NewTime - " + newTime);
+            if (newTime > curTime)
+              throw new Exception("Attempted to jump forward in time, this not allowed. CurTime - " + curTime + " NewTime - " + newTime);
 
-              this.timeEvList.RevertToTime(curTime, newTime);
-              this.curStates.RevertToGivenTime(newTime, this.condEvList);
+            this.timeEvList.RevertToTime(curTime, newTime);
+            this.curStates.RevertToGivenTime(newTime, this.condEvList);
 
-              //make sure the processEventList and processStateQue is empty
-              processEventList.RemoveRange(1, processEventList.Count - 1);
-              nextStateQue.RemoveRange(0, nextStateQue.Count);
+            //make sure the processEventList and processStateQue is empty
+            processEventList.RemoveRange(1, processEventList.Count - 1);
+            nextStateQue.RemoveRange(0, nextStateQue.Count);
 
-              maxTime = maxTime + (curTime - newTime);
-              this.curTime = newTime;
+            maxTime = maxTime + (curTime - newTime);
+            this.curTime = newTime;
             //}
 
-                        
+
             return false;
 
           case EnActionType.atRunExtApp:
@@ -1726,7 +1790,7 @@ namespace SimulationTracking
             {
               var toAdd = Tuple.Create(id, ownerStateID, curAct.name);
               if (nextStateQue.Where(t => t.Item1 == id).FirstOrDefault() == null)
-                nextStateQue.Add(Tuple.Create(id, ownerStateID, causeEvent==null ? "immediate action" : causeEvent.name, curAct.name));
+                nextStateQue.Add(Tuple.Create(id, ownerStateID, causeEvent == null ? "immediate action" : causeEvent.name, curAct.name));
             }
 
             break;
@@ -1752,7 +1816,7 @@ namespace SimulationTracking
                 if (sim3DServer == null)
                   throw new Exception("External Simulation not assigned.");
 
-                if(!sim3DServer.GetResources().Contains(cur3DAct.resourceName))
+                if (!sim3DServer.GetResources().Contains(cur3DAct.resourceName))
                 {
                   throw new Exception("No external client code named - " + cur3DAct.resourceName);
                 }
@@ -1766,7 +1830,7 @@ namespace SimulationTracking
                 //if (sim3DServer.SendAction(new TActionPacketData(startup)))  //initialize it
                 if (sim3DServer.SendMessage(msg, cur3DAct.resourceName))
                 {
-                  sim3DStarting = true;  
+                  sim3DStarting = true;
                   sim3DStopping = false;
                   while (!this.sim3DRunning)
                   {
@@ -1781,7 +1845,7 @@ namespace SimulationTracking
                   this.sim3DRunning = true;
                   this.sim3DStopping = false;
                 }
-          
+
                 break;
 
               case SimActionType.atCompModify:
@@ -1799,10 +1863,10 @@ namespace SimulationTracking
                 }
 
                 Sim3DVariable curVar = cur3DAct.simVar;
-                                  
+
                 if (curVar == null)
                   throw new Exception("No value to send to the 3D simulation.");
-                  
+
                 string itemName = curVar.name;
 
                 string setValue;
@@ -1813,13 +1877,13 @@ namespace SimulationTracking
                   case "DOUB":
                   case "BOOL":
                   case "TIME":
-                    setValue = curVar.dblValue.ToString();   
+                    setValue = curVar.dblValue.ToString();
                     break;
                   case "STRI":
-                    setValue =curVar.strValue;
+                    setValue = curVar.strValue;
                     break;
                   default:
-                    throw new Exception("Invalid Variable type");                    
+                    throw new Exception("Invalid Variable type");
                 }
 
                 msg = new TMsgWrapper(MessageType.mtSimAction, "SetSimValue", curTime, "Adjust External Sim");
@@ -1830,7 +1894,7 @@ namespace SimulationTracking
 
                 break;
 
-              default :
+              default:
                 msg = new TMsgWrapper(MessageType.mtSimAction, cur3DAct.sim3DMessage.ToString(), curTime, "Stop/Continue/ping/status the Simulation");
                 msg.simAction = new SimAction(cur3DAct.sim3DMessage);
 
@@ -1841,8 +1905,8 @@ namespace SimulationTracking
                   if ((this.sim3DRunning) && (!this.sim3DStopping))
                   {
                     this.sim3DStopping = true;
-                    sim3DServer.SendMessage(msg, cur3DAct.resourceName); 
-                    
+                    sim3DServer.SendMessage(msg, cur3DAct.resourceName);
+
                     //while (this.sim3DRunning)
                     //{
                     //  Application.DoEvents();
@@ -1866,7 +1930,7 @@ namespace SimulationTracking
       }
       return true;
     }
-    
+
     /// <summary>
     /// Send next event/s to coupled external simulations
     /// </summary>
@@ -1876,9 +1940,9 @@ namespace SimulationTracking
       if (timeEvList.cnt > 0)
       {
         TimeMoveEvent nextTimeItem = timeEvList.LookNextTimedEvent();
-        
+
         //int nextItemTime = Convert.ToInt32(((nextTimeItem.time + this.curTime) - this.sim3DStartTime).TotalSeconds * sim3DFameRate);
-        TimeSpan nextItemTime =(nextTimeItem.time + this.curTime);
+        TimeSpan nextItemTime = (nextTimeItem.time + this.curTime);
 
         var msg = new TMsgWrapper(MessageType.mtSimAction, "SetCallbackTimer", curTime, "Check back with the EMRALD Simulation");
         msg.simAction = new SimAction(SimActionType.atTimer, nextItemTime, new ItemData(nextTimeItem.name, nextTimeItem.id.ToString()));
@@ -1894,7 +1958,7 @@ namespace SimulationTracking
         sim3DServer.SendMessage(msg, toClient);
       }
     }
-    
+
     /// <summary>
     /// Get the paths of movement from start states to the key states for the simulation run
     /// </summary>
@@ -1908,9 +1972,9 @@ namespace SimulationTracking
         List<string> curList = new List<string>();
         foreach (int id in stPath)
         {
-          if(id > 0)
+          if (id > 0)
           {
-            
+
             curList.Add(allLists.allStates[id].name);
           }
         }

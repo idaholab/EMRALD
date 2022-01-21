@@ -149,7 +149,7 @@
         "mutExcl": true,
         "newStates": [],
         "makeInputFileCode": "return @\"..\\..\\..\\UnitTesting_Simulation\\TestingFiles\\Other\\TestVar1.json ..\\..\\..\\UnitTesting_Simulation\\TestingFiles\\Other\\TestVar2.json ..\\..\\..\\UnitTesting_Simulation\\TestingFiles\\CompareFiles\\VarCompRes.json\";",
-        "exePath": "..\\..\\..\\..\\UnitTesting_Simulation\\TestingFiles\\Other\\JSON_GreaterThan.exe",
+        "exePath": "..\\..\\..\\UnitTesting_Simulation\\TestingFiles\\Other\\JSON_GreaterThan.exe",
         "processOutputFileCode": "List<String> retStates = new List<String>();\nreturn retStates;",
         "codeVariables": [
           "CompRes"
@@ -270,7 +270,7 @@
         "value": true,
         "docLink": "$.['Result']",
         "docType": "dtJSON",
-        "docPath": "..\\..\\..\\..\\UnitTesting_Simulation\\TestingFiles\\CompareFiles\\VarCompRes.json",
+        "docPath": "..\\..\\..\\UnitTesting_Simulation\\TestingFiles\\CompareFiles\\VarCompRes.json",
         "type": "bool",
         "pathMustExist": false
       }

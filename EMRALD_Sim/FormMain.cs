@@ -42,8 +42,10 @@ namespace EMRALD_Sim
 
     public FormMain(string[] args, IAppSettingsService appSettingsService)
     {
-        _appSettingsService = appSettingsService;
-        InitializeComponent();
+      _appSettingsService = appSettingsService;
+      InitializeComponent();
+      lvResults.Columns[3].Text = "Mean Time or Failed Components";
+      lvResults.Columns[1].Text = "Count";
 
       //System.IO.File.Wri
       curDir = System.IO.Path.GetDirectoryName(Application.ExecutablePath);
@@ -817,35 +819,57 @@ namespace EMRALD_Sim
         lbl_ResultHeader.Text = _sim.name + " " + runCnt.ToString() + " of " + tbRunCnt.Text + " runs.";// Time - " + runTime.ToString();
         lblRunTime.Text = runTime.ToString("g");
         lvResults.Items.Clear();
-
-        foreach (var item in simRuns.keyFailures)
+        
+        foreach (var item in simRuns.keyPaths)
         {
           string[] lvCols = new string[4];
           lvCols[0] = item.Key;
-          lvCols[1] = item.Value.failCnt.ToString();
-          lvCols[2] = (item.Value.failCnt / (double)runCnt).ToString();
-          lvCols[3] = "";
+          lvCols[1] = item.Value.count.ToString();
+          lvCols[2] = (item.Value.count / (double)runCnt).ToString();
+          lvCols[3] = item.Value.timeMean.ToString(@"dd\.hh\:mm\:ss") + " +/- " + item.Value.timeStdDeviation.ToString(@"dd\.hh\:mm\:ss");
           lvResults.Items.Add(new ListViewItem(lvCols));
 
-          //todo write the failed components and times.
-          foreach (var cs in item.Value.compFailSets)
+          //write the failed components and times.
+          if (simRuns.keyFailedItems.ContainsKey(item.Key))
           {
-            string[] lvCols2 = new string[4];
-
-            int[] ids = cs.Key.Get1sIndexArray();
-            List<string> names = new List<String>();
-            foreach (int id in ids)
+            foreach (var cs in simRuns.keyFailedItems[item.Key].compFailSets)
             {
-              names.Add(_sim.allStates[id].name);
-            }
-            names.Sort();
+              string[] lvCols2 = new string[4];
 
-            lvCols[0] = "";
-            lvCols[1] = ((Double)cs.Value).ToString();
-            lvCols[2] = String.Format("{0:0.00}", (((double)cs.Value / item.Value.failCnt) * 100)) + "%";
-            lvCols[3] = string.Join(", ", names);
-            lvResults.Items.Add(new ListViewItem(lvCols));
+              int[] ids = cs.Key.Get1sIndexArray();
+              List<string> names = new List<String>();
+              foreach (int id in ids)
+              {
+                names.Add(_sim.allStates[id].name);
+              }
+              names.Sort();
+
+              lvCols[0] = "";
+              lvCols[1] = ((Double)cs.Value).ToString();
+              lvCols[2] = String.Format("{0:0.00}", (((double)cs.Value / item.Value.count) * 100)) + "%";
+              lvCols[3] = string.Join(", ", names);
+
+            }
           }
+
+          //foreach (var cs in item.Value.compFailSets)
+          //{
+          //  string[] lvCols2 = new string[4];
+
+          //  int[] ids = cs.Key.Get1sIndexArray();
+          //  List<string> names = new List<String>();
+          //  foreach (int id in ids)
+          //  {
+          //    names.Add(_sim.allStates[id].name);
+          //  }
+          //  names.Sort();
+
+          //  lvCols[0] = "";
+          //  lvCols[1] = ((Double)cs.Value).ToString();
+          //  lvCols[2] = String.Format("{0:0.00}", (((double)cs.Value / item.Value.failCnt) * 100)) + "%";
+          //  lvCols[3] = string.Join(", ", names);
+          //  lvResults.Items.Add(new ListViewItem(lvCols));
+          //}
         }
 
         lvVarValues.Items.Clear();
