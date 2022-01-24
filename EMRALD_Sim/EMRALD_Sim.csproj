@@ -34,6 +34,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="obj\**" />
+    <EmbeddedResource Remove="obj\**" />
+    <None Remove="obj\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\MessageDefLib\MessageDefLib.csproj" />
     <ProjectReference Include="..\SimulationDAL\SimulationDAL.csproj" />
     <ProjectReference Include="..\SimulationEngine\SimulationEngine.csproj" />
