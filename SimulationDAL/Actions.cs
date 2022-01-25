@@ -926,7 +926,14 @@ namespace SimulationDAL
       string code1Str = makeInputFileCode.Replace("\\", "\\\\").Replace("\n", "\\n").Replace("\r", "\\r").Replace("\"", "\\\""); //
       string code2Str = processOutputFileCode.Replace("\\", "\\\\").Replace("\"", "\\\"").Replace("\n", "\\n").Replace("\r", "\\r");
       string exePathStr = exePath.Replace("\\", "\\\\").Replace("\"", "\\\"");
-      
+
+      if(Environment.OSVersion.Platform == PlatformID.Unix)
+      {
+        code1Str = makeInputFileCode.Replace("\\", "/").Replace("\n", "\\n").Replace("\r", "\\r").Replace("\"", "\\\""); //
+        code2Str = processOutputFileCode.Replace("\\", "/").Replace("\"", "\\\"").Replace("\n", "\\n").Replace("\r", "\\r");
+        exePathStr = exePath.Replace("\\", "/").Replace("\"", "\\\"");
+      }
+
       string retStr = Environment.NewLine + "\"makeInputFileCode\":" + "\"" + code1Str + "\"";
       retStr = retStr + "," + Environment.NewLine + "\"processOutputFileCode\":" + "\"" + code2Str + "\"";
       retStr = retStr + "," + Environment.NewLine + "\"exePath\":" + "\"" + exePathStr + "\"";
@@ -1149,7 +1156,7 @@ namespace SimulationDAL
 
     private void WriteStandardOutput()
     {
-      using (StreamWriter writer = File.CreateText(exeOutputPath + "\\_out.txt"))
+      using (StreamWriter writer = File.CreateText(exeOutputPath + Path.DirectorySeparatorChar + "_out.txt"))
       using (StreamReader reader = proc.StandardOutput)
       {
         writer.AutoFlush = true;
@@ -1166,9 +1173,9 @@ namespace SimulationDAL
         }
       }
 
-      if (File.Exists(exeOutputPath + "\\_out.txt"))
+      if (File.Exists(exeOutputPath + Path.DirectorySeparatorChar + "_out.txt"))
       {
-        FileInfo info = new FileInfo(exeOutputPath + "\\_out.txt");
+        FileInfo info = new FileInfo(exeOutputPath + Path.DirectorySeparatorChar + "_out.txt");
 
         // if the error info is empty or just contains eof etc.
 
@@ -1283,7 +1290,7 @@ namespace SimulationDAL
 
       processOutputFileCompEval.SetVariable("CurTime", typeof(double), curTime.TotalHours);
       processOutputFileCompEval.SetVariable("ExeExitCode", typeof(int), exitCode);
-      processOutputFileCompEval.SetVariable("outputFile", typeof(string), exeOutputPath + "\\_out.txt");
+      processOutputFileCompEval.SetVariable("outputFile", typeof(string), exeOutputPath + Path.DirectorySeparatorChar + "_out.txt");
       //Set all the variable values
       if (codeVariables != null)
       {
@@ -1301,11 +1308,11 @@ namespace SimulationDAL
       List<String> retStates = processOutputFileCompEval.EvaluateStrList();
       System.Threading.Thread.Sleep(10);
 
-      while (File.Exists(Path.GetDirectoryName(exePath) + "\\_out.txt"))
+      while (File.Exists(Path.GetDirectoryName(exePath) + Path.DirectorySeparatorChar + "_out.txt"))
       {
         try
         {
-          System.IO.File.Delete(Path.GetDirectoryName(exePath) + "\\_out.txt");
+          System.IO.File.Delete(Path.GetDirectoryName(exePath) + Path.DirectorySeparatorChar + "_out.txt");
         }
         catch
         {
@@ -1561,7 +1568,10 @@ namespace SimulationDAL
 
       this.Clear();
 
-      this.moveFromCurrent = (bool)dynObj.moveFromCurrent;
+      if (dynObj.moveFromCurrent != null)
+        this.moveFromCurrent = (bool)dynObj.moveFromCurrent;
+      else
+        this.moveFromCurrent = true;
 
       if (dynObj.actions != null)
       {

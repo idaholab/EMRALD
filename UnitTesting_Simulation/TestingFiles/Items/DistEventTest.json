@@ -1,0 +1,38 @@
+﻿{
+    "Event": {
+        "desc": "",
+        "dfltTimeRate": "trHours",
+        "distType": "dtLogNormal",
+        "evType": "etDistribution",
+        "id": 1,
+        "mainItem": false,
+        "name": "Dist_test",
+		    "onVarChange": "ocAdjust",
+        "parameters": [
+            {
+                "name": "Mean",
+                "timeRate": "trHours",
+                "value": 3.3,
+                "variable": null
+            },
+            {
+                "name": "Standard Dev",
+                "timeRate": "trHours",
+                "value": null,
+                "variable": "FailProb"
+            },
+            {
+                "name": "Min Time",
+                "timeRate": "trHours",
+                "value": 0.0,
+                "variable": null
+            },
+            {
+                "name": "Max Time",
+                "timeRate": "trHours",
+                "value": null,
+                "variable": null
+            }
+        ]
+    }
+}

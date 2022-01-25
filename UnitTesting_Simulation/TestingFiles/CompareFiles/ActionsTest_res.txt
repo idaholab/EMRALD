@@ -1,5 +1,5 @@
 Simulation = UnitTestActions
-Runtime = 00:00:53.9077457
+Runtime = 00.00:00:01
 Runs = 10 of 10
-OK Occurred 5 times, Rate =0.5
-Fail Occurred 5 times, Rate =0.5
+OK Occurred 5 times, Rate =0.5, MeanTime = 00.00:00:10 +/- 00.00:00:00.00
+Fail Occurred 5 times, Rate =0.5, MeanTime = 00.00:00:10 +/- 00.00:00:00.00

@@ -18,17 +18,24 @@ using MathNet.Numerics.Statistics;
 
 namespace SimulationEngine
 {
-  public delegate void TProgressCallBack(TimeSpan runTime, int runCnt, bool finalValOnly);
-
-  public class FailedCnt 
+  public class Progress
   {
-    public int failCnt {get; set;}
+    public int percentDone = 0;
+    public TimeSpan runTime = TimeSpan.Zero;
+    public int curRun = 0;
+    public bool done = false;
+  }
+
+  public delegate void TProgressCallBack(TimeSpan runTime, int runCnt, bool finalValOnly);
+    
+  public class FailedItems 
+  {
     public Dictionary<MyBitArray, int> compFailSets = new Dictionary<MyBitArray, int>();
+    public List<TimeSpan> failTimes = new List<TimeSpan>();
 
 
-    public FailedCnt()
+    public FailedItems()
     {
-      this.failCnt = 1;
     }
 
     public void AddCompFailSet(int[] compList)
@@ -79,9 +86,11 @@ namespace SimulationEngine
     private bool _logFailedComps = false;
     private string _keyPathsOutput = "";
     public bool batchSuccess = false;
+    private Progress _progress = null;
 
     //public Dictionary<string, double> variableVals { get { return _variableVals; } }
-    public Dictionary<string, FailedCnt> keyFailures = new Dictionary<string, FailedCnt>(); //key = StateName, value = cut sets
+    public Dictionary<string, FailedItems> keyFailedItems = new Dictionary<string, FailedItems>(); //key = StateName, value = cut sets
+    public Dictionary<string, ResultState> keyPaths = new Dictionary<string, ResultState>();
     private Dictionary<string, Dictionary<string, List<string>>> _variableVals = new Dictionary<string, Dictionary<string, List<string>>>();
     public TProgressCallBack progressCallback;
     public List<string> logVarVals = new List<string>();
@@ -153,12 +162,17 @@ namespace SimulationEngine
       _keyPathsOutput = keyPathsOutput;
     }
 
+    public void AssignProgress(Progress progress)
+    {
+      _progress = progress;
+    }
+
     public void StopSims()
     {
       _stop = true;
     }
 
-    public void RunBatch()// int numRuns, ref bool cancel, bool logFailedComps = false, string keyPathsOutput = "")
+    public void RunBatch()
     {
       batchSuccess = false;
       _stop = false;
@@ -170,7 +184,7 @@ namespace SimulationEngine
       int curI = 0;
 
       StreamWriter pathOutputFile = null;
-      if (_keyPathsOutput != "") 
+      if (!string.IsNullOrEmpty(_keyPathsOutput)) 
         pathOutputFile = new StreamWriter(_keyPathsOutput, append: false);
 
       //if user defined the seed then reset random so that seed is used.
@@ -179,10 +193,8 @@ namespace SimulationEngine
 
       //make a list of result items for each key state.
       //ResultState[] keyStates = _lists.allStates.Where(i => i.Value.stateType == EnStateType.stKeyState).Select(i => new ResultState(i.Value.name)).ToArray();
-      Dictionary<string, ResultState> keyStateResMap = null;
-      if(_jsonResultPaths != "")
-        keyStateResMap = new Dictionary<string, ResultState>();
-      
+      //Dictionary<string, ResultState> keyStateResMap = null;
+     
       //progressCallback(stopWatch.Elapsed, 0);
       try
       {
@@ -225,9 +237,11 @@ namespace SimulationEngine
               pathOutputFile.WriteLine("Run - " + i.ToString());
             }
 
-            foreach (List<string> path in trackSim.GetKeyPaths(keyStateResMap))
+            trackSim.GetKeyPaths(keyPaths);
+            
+            foreach (SimulationEngine.ResultState path in keyPaths.Values)
             {
-              string keyStateName = path.Last();
+              string keyStateName = path.name;
 
               if (logVarVals.Count > 0)
               {
@@ -256,25 +270,13 @@ namespace SimulationEngine
                 }
               }
 
-
-              if (keyFailures.ContainsKey(keyStateName))
-              {
-                ++(keyFailures[keyStateName].failCnt);
-              }
-              else
-              {
-                keyFailures.Add(keyStateName, new FailedCnt());
-              }
-
               if (_logFailedComps && (failedComps.Length > 0))
               {
                 int[] idArray = failedComps.Select(j => j.state.id).ToArray();
-                keyFailures[keyStateName].AddCompFailSet(idArray);
-              }
+                if (!keyFailedItems.ContainsKey(keyStateName))
+                  keyFailedItems.Add(keyStateName, new FailedItems());
 
-              if (pathOutputFile != null)
-              {
-                pathOutputFile.WriteLine(string.Join(",", path));
+                keyFailedItems[keyStateName].AddCompFailSet(idArray);
               }
             }
           }
@@ -318,7 +320,7 @@ namespace SimulationEngine
       { 
         OverallResults resultObj = new OverallResults();
         resultObj.name = this._lists.name;
-        resultObj.keyStates = keyStateResMap.Values.ToList();
+        resultObj.keyStates = keyPaths.Values.ToList();
         resultObj.numRuns = curI;
         Dictionary<string, int> inStateCnts = new Dictionary<string, int>();
         //foreach (var keyS in resultObj.keyStates)
@@ -329,7 +331,7 @@ namespace SimulationEngine
         foreach (var keyS in resultObj.keyStates)
         {
           // Dictionary<string, int> depth = new Dictionary<string, int>();
-          SetResultStats(keyS, inStateCnts, curI);//, depth);
+          SetResultStatsRec(keyS, inStateCnts, curI);//, depth);
 
           if(_variableVals.Count > 0) //if there are any being tracked, they should have a value for each key state.
             keyS.watchVariables = _variableVals[keyS.name];
@@ -385,40 +387,12 @@ namespace SimulationEngine
     /// <param name="curRes"></param>
     /// <param name="inStateCnts"></param>
     /// <param name="totCnt"></param>
-    private void SetResultStats(ResultState curRes, Dictionary<string, int> inStateCnts, int totCnt)//, Dictionary<string, int> depths)
-    {
-      //if (depths.ContainsKey(curRes.name))
-      //{
-      //  //inc depth for recursive calls
-      //  depths[curRes.name] += 1;
-      //}
-      //else
-      //{
-      //  //add depth for recursive function
-      //  depths[curRes.name] = 1;
-      //}
-
-      string nameKey = curRes.name;
-      //int depth = depths[curRes.name];
-      //if (depth > 1)
-      //  nameKey = nameKey + "_" + depth.ToString();
-
-      curRes.rate = (double)curRes.times.Count() / totCnt;
-      curRes.count = curRes.times.Count(); //inStateCnts[nameKey];
-      double range = 1.96 * Math.Sqrt((curRes.rate * (1 - curRes.rate))/totCnt);
-      curRes.rate5th = Math.Round(curRes.rate - range, 8);
-      curRes.rate95th = Math.Round(curRes.rate + range, 8);
-      curRes.timeMean = new TimeSpan(curRes.times.Sum(r => r.Ticks) / curRes.times.Count());
-      double[] times = curRes.times.Select(r => r.TotalMinutes).ToArray();
-      if (times.Count() > 1)
-        curRes.timeStdDeviation = TimeSpan.FromMinutes(ArrayStatistics.StandardDeviation(times));
-      else
-        curRes.timeStdDeviation = TimeSpan.FromMinutes(0.0);
-
+    private void SetResultStatsRec(ResultState curRes, Dictionary<string, int> inStateCnts, int totCnt)//, Dictionary<string, int> depths)
+    { 
       foreach (var i in curRes.causeDict.Values)
       {
         if (i.fromState != null)
-          SetResultStats(i.fromState, inStateCnts, curRes.count);//, depths); //key states use total runs for count, other states use total times in the state.
+          SetResultStatsRec(i.fromState, inStateCnts, curRes.count);//, depths); //key states use total runs for count, other states use total times in the state.
       }
 
       //decrement depth for recursive call
@@ -427,37 +401,48 @@ namespace SimulationEngine
 
     public void LogResults(TimeSpan runTime, int runCnt, bool finalValOnly)
     {
+      if (_progress != null)
+      { 
+        _progress.runTime = runTime;
+        _progress.percentDone = (runCnt * 100) / this._numRuns;
+        _progress.curRun = runCnt;
+      }
+
       if (_resultFile == null)
         return;
 
       System.IO.File.WriteAllText(_resultFile, "Simulation = " + this._lists.name + Environment.NewLine);
-      File.AppendAllText(_resultFile, "Runtime = " + runTime.ToString() + Environment.NewLine + "Runs = " + runCnt.ToString() + " of " + _numRuns.ToString()  + Environment.NewLine);
+      File.AppendAllText(_resultFile, "Runtime = " + runTime.ToString(@"dd\.hh\:mm\:ss") + Environment.NewLine + "Runs = " + runCnt.ToString() + " of " + _numRuns.ToString()  + Environment.NewLine);
 
-      if (keyFailures.Count > 0)
+      if (keyPaths.Count > 0)
       {
-        var lastItem = keyFailures.Last();
-        foreach (var item in keyFailures)
+        var lastItem = keyPaths.Last();
+        foreach (var item in keyPaths)
         {
-          File.AppendAllText(_resultFile, item.Key + " Occurred " + item.Value.failCnt.ToString() + " times, Rate =" + (item.Value.failCnt / (double)runCnt).ToString() + Environment.NewLine, Encoding.UTF8);
+          File.AppendAllText(_resultFile, item.Key + " Occurred " + item.Value.count.ToString() + " times, Rate =" + (item.Value.count / (double)runCnt).ToString() + 
+            ", MeanTime = " + item.Value.timeMean.ToString(@"dd\.hh\:mm\:ss") + " +/- " + item.Value.timeStdDeviation.ToString(@"dd\.hh\:mm\:ss\.ff") + Environment.NewLine, Encoding.UTF8);
           //todo write the failed components and times.
-          foreach (var cs in item.Value.compFailSets)
+          if (keyFailedItems.ContainsKey(item.Key))
           {
-            int[] ids = cs.Key.Get1sIndexArray();
-            List<string> names = new List<String>();
-            foreach (int id in ids)
+            foreach (var cs in keyFailedItems[item.Key].compFailSets)
             {
-              //if(ids.Length > 3)
-              //  names.Add(lists.allStates[id].name + "[" + id.ToString() + "]");
-              //else
-              names.Add(_lists.allStates[id].name);
+              int[] ids = cs.Key.Get1sIndexArray();
+              List<string> names = new List<String>();
+              foreach (int id in ids)
+              {
+                //if(ids.Length > 3)
+                //  names.Add(lists.allStates[id].name + "[" + id.ToString() + "]");
+                //else
+                names.Add(_lists.allStates[id].name);
+              }
+              names.Sort();
+              double csPercent = ((double)cs.Value / item.Value.count) * 100;
+
+              string csLine = "(" + cs.Value.ToString() + ")[" + csPercent.ToString() + "]" + string.Join(", ", names);
+
+              File.AppendAllText(_resultFile, csLine + Environment.NewLine, Encoding.UTF8);
+
             }
-            names.Sort();
-            double csPercent = ((double)cs.Value / item.Value.failCnt) * 100;
-
-            string csLine = "(" + cs.Value.ToString() + ")[" + csPercent.ToString() + "]" + string.Join(", ", names);
-
-            File.AppendAllText(_resultFile, csLine + Environment.NewLine, Encoding.UTF8);
-
           }
 
           Dictionary<string, List<string>> varDict;
