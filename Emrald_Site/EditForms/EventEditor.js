@@ -108,6 +108,10 @@ function isModified() {
 }
 
 function ValidateData() {
+    var scope = angular.element(document.querySelector('#EEControllerPanel')).scope();
+    if (!scope.variable) {
+        return "Please specify an External Sim Variable before saving the event.";
+    }
     return "";
 }
 
