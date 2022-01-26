@@ -2,33 +2,39 @@ class MAAPForm extends ExternalExeForm {
   getDataObject() {
     const dataObj = {};
     dataObj.raLocation = this.$scope.exePath;
-    dataObj.varNames = [];
-    this.$scope.parameters.forEach((parameter) => {
-      if (
-        parameter.useVariable &&
-        dataObj.varNames.indexOf(parameter.variable.name) < 0
-      ) {
-        dataObj.varNames.push(parameter.variable.name);
-      }
-    });
-    dataObj.raFormData = {};
-    dataObj.raPreCode = "";
+    dataObj.varNames = this.getVarNames(this.$scope.parameters);
+    dataObj.raFormData = {
+      inputFile: this.$scope.inputFile,
+      parameterFile: this.$scope.parameterFile,
+    };
+    const exeRootPath = this.$scope.exePath.replace(/[^\/\\]*\.exe$/, "");
+    const inputFilePath = `${exeRootPath}input.INP`;
+    const paramFilePath = `${exeRootPath}parameters.PAR`;
+    dataObj.raPreCode = this.code.writeFile(
+      paramFilePath,
+      this.$scope.parameterFile
+    );
+    dataObj.raPreCode += this.code.writeFile(
+      inputFilePath,
+      this.code.insertVariables(dataObj.varNames, this.$scope.inputFile),
+    );
     dataObj.raPostCode = "";
     dataObj.returnProcess = "rtNone";
     dataObj.variables = [];
+    return dataObj;
   }
 }
 
 const form = new MAAPForm();
 const module = angular.module("maapForm", []);
 
-class Parameter {
+class Parameter extends FormData {
   constructor(data) {
+    super(data);
     this.name = data.name;
     this.units = data.units;
     this.value = data.value;
     this.index = data.index;
-    this.useVariable = false;
   }
 
   get label() {
@@ -82,6 +88,7 @@ module.controller("maapFormController", [
     $scope.initiatorOptions = [];
     $scope.exePath = "";
     $scope.varLinks = [new VarLink()];
+    $scope.inputBlocks = ["", "", ""];
 
     const parameterInfo = {};
     const possibleInitiators = {};
@@ -96,6 +103,15 @@ module.controller("maapFormController", [
     $scope.docVars = parentScope.data.cvVariables.filter(
       (cvVariable) => cvVariable.varScope === "gtDocLink"
     );
+    const { raFormData } = parentScope.data;
+    if (raFormData) {
+      if (typeof raFormData.parameterFile === "string") {
+        $scope.parameterFile = raFormData.parameterFile;
+      }
+      if (typeof raFormData.inputFile === "string") {
+        $scope.inputFile = raFormData.inputFile;
+      }
+    }
 
     $scope.removeInitiator = function (index) {
       $scope.initiators.splice(index, 1);
@@ -151,8 +167,15 @@ module.controller("maapFormController", [
         let initiatorsDone = false;
         let parameterChangeDone = false;
         let i = 0;
+        let preParamChange = "";
+        let postParamChange = "";
         while (!initiatorsDone || !parameterChangeDone) {
           const line = lines[i];
+          if (!parameterChangeDone && (expects < 1 || expects > 2)) {
+            preParamChange += `${line}\n`;
+          } else if (parameterChangeDone && !initiatorsDone && expects !== 3) {
+            postParamChange += `${line}\n`;
+          }
           switch (expects) {
             case 0:
               if (line === "PARAMETER CHANGE") {
@@ -186,8 +209,17 @@ module.controller("maapFormController", [
           }
           i += 1;
         }
+        let postInitiators = lines.slice(i, lines.length - 1).join("\n");
+        $scope.inputBlocks = [
+          preParamChange,
+          postParamChange,
+          postInitiators,
+        ];
+        form.save();
       }
     });
+
+    form.bindScope($scope);
   },
 ]);
 
