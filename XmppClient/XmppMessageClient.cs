@@ -236,8 +236,12 @@ namespace XmppMessageClient
         }
       }
        */
-      //string lic = _appSettingsService.XmppLicense;  //the other option is to place your license code here, but do not distribute
-      //Matrix.License.LicenseManager.SetLicense(lic);
+      try
+      {
+        string lic = _appSettingsService.XmppLicense;  //the other option is to place your license code here, but do not distribute
+        Matrix.License.LicenseManager.SetLicense(lic);
+      }
+      catch { } //failed to do license just continue with trial
       
 
       // when something is wrong with your license you can find the error here
