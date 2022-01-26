@@ -1,0 +1,60 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29519.87
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimulationDAL", "SimulationDAL\SimulationDAL.csproj", "{536E2AE0-B2F3-4DEE-8E35-5E2AD2D74F7F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MessageDefLib", "MessageDefLib\MessageDefLib.csproj", "{A3E8023A-5CE3-4A59-BB43-E1431D865167}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "XmppServerController", "XmppServer\XmppServerController.csproj", "{5C2228FC-B166-4E6D-861C-7340CEBE02EA}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimulationEngine", "SimulationEngine\SimulationEngine.csproj", "{30018F30-1B1B-46CB-9252-1D29288A0825}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Testing", "UnitTesting_Simulation\Testing.csproj", "{43990779-63AB-4896-8AEE-7B06F7BC6B0B}"
+EndProject
+Project("{9092AA53-FB77-4645-B42D-1CCCA6BD08BD}") = "emrald-docs", "emrald-docs\emrald-docs.njsproj", "{2FBBA795-DFFE-4908-9FB2-99478460FFA9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommandLineCP", "CommandLineCP\CommandLineCP.csproj", "{A0A45F59-8044-4187-B1DD-70C65B33908B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{536E2AE0-B2F3-4DEE-8E35-5E2AD2D74F7F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{536E2AE0-B2F3-4DEE-8E35-5E2AD2D74F7F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{536E2AE0-B2F3-4DEE-8E35-5E2AD2D74F7F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{536E2AE0-B2F3-4DEE-8E35-5E2AD2D74F7F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A3E8023A-5CE3-4A59-BB43-E1431D865167}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A3E8023A-5CE3-4A59-BB43-E1431D865167}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A3E8023A-5CE3-4A59-BB43-E1431D865167}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A3E8023A-5CE3-4A59-BB43-E1431D865167}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5C2228FC-B166-4E6D-861C-7340CEBE02EA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5C2228FC-B166-4E6D-861C-7340CEBE02EA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5C2228FC-B166-4E6D-861C-7340CEBE02EA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5C2228FC-B166-4E6D-861C-7340CEBE02EA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{30018F30-1B1B-46CB-9252-1D29288A0825}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{30018F30-1B1B-46CB-9252-1D29288A0825}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{30018F30-1B1B-46CB-9252-1D29288A0825}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{30018F30-1B1B-46CB-9252-1D29288A0825}.Release|Any CPU.Build.0 = Release|Any CPU
+		{43990779-63AB-4896-8AEE-7B06F7BC6B0B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{43990779-63AB-4896-8AEE-7B06F7BC6B0B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{43990779-63AB-4896-8AEE-7B06F7BC6B0B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{43990779-63AB-4896-8AEE-7B06F7BC6B0B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2FBBA795-DFFE-4908-9FB2-99478460FFA9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2FBBA795-DFFE-4908-9FB2-99478460FFA9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2FBBA795-DFFE-4908-9FB2-99478460FFA9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A0A45F59-8044-4187-B1DD-70C65B33908B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A0A45F59-8044-4187-B1DD-70C65B33908B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A0A45F59-8044-4187-B1DD-70C65B33908B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A0A45F59-8044-4187-B1DD-70C65B33908B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {C202044C-060B-4F4F-BA8F-EE9F2C196037}
+	EndGlobalSection
+EndGlobal

@@ -18,8 +18,16 @@ using MathNet.Numerics.Statistics;
 
 namespace SimulationEngine
 {
-  public delegate void TProgressCallBack(TimeSpan runTime, int runCnt, bool finalValOnly);
+  public class Progress
+  {
+    public int percentDone = 0;
+    public TimeSpan runTime = TimeSpan.Zero;
+    public int curRun = 0;
+    public bool done = false;
+  }
 
+  public delegate void TProgressCallBack(TimeSpan runTime, int runCnt, bool finalValOnly);
+    
   public class FailedItems 
   {
     public Dictionary<MyBitArray, int> compFailSets = new Dictionary<MyBitArray, int>();
@@ -78,6 +86,7 @@ namespace SimulationEngine
     private bool _logFailedComps = false;
     private string _keyPathsOutput = "";
     public bool batchSuccess = false;
+    private Progress _progress = null;
 
     //public Dictionary<string, double> variableVals { get { return _variableVals; } }
     public Dictionary<string, FailedItems> keyFailedItems = new Dictionary<string, FailedItems>(); //key = StateName, value = cut sets
@@ -153,12 +162,17 @@ namespace SimulationEngine
       _keyPathsOutput = keyPathsOutput;
     }
 
+    public void AssignProgress(Progress progress)
+    {
+      _progress = progress;
+    }
+
     public void StopSims()
     {
       _stop = true;
     }
 
-    public void RunBatch()// int numRuns, ref bool cancel, bool logFailedComps = false, string keyPathsOutput = "")
+    public void RunBatch()
     {
       batchSuccess = false;
       _stop = false;
@@ -170,7 +184,7 @@ namespace SimulationEngine
       int curI = 0;
 
       StreamWriter pathOutputFile = null;
-      if (_keyPathsOutput != "") 
+      if (!string.IsNullOrEmpty(_keyPathsOutput)) 
         pathOutputFile = new StreamWriter(_keyPathsOutput, append: false);
 
       //if user defined the seed then reset random so that seed is used.
@@ -387,6 +401,13 @@ namespace SimulationEngine
 
     public void LogResults(TimeSpan runTime, int runCnt, bool finalValOnly)
     {
+      if (_progress != null)
+      { 
+        _progress.runTime = runTime;
+        _progress.percentDone = (runCnt * 100) / this._numRuns;
+        _progress.curRun = runCnt;
+      }
+
       if (_resultFile == null)
         return;
 

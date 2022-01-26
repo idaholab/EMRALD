@@ -34,24 +34,27 @@ namespace UnitTesting_Simulation
     }
     private string MainTestDir()
     {
-      return RootDir() + "\\TestingFiles\\";
+      return RootDir() + Path.DirectorySeparatorChar + "TestingFiles" + Path.DirectorySeparatorChar;
     }
 
     private string CompareFilesDir()
     {
-      return MainTestDir() + "CompareFiles\\";
+      return MainTestDir() + "CompareFiles" + Path.DirectorySeparatorChar;
+    }
+
+    private string ItemFolder()
+    {
+      return "Items" + Path.DirectorySeparatorChar;
     }
 
 
-    const string testFolder = "EMRALDTests\\";
-    const string itemFolder = "Items\\";
 
     private void SetupTheTest(string testName, EmraldModel model = null)
     {
       // set up the random number generator so it starts with the same key each time.
       ConfigData.seed = 0;
       if (model != null)
-        model.rootPath = MainTestDir() + itemFolder;
+        model.rootPath = MainTestDir() + ItemFolder();
     }
     public string GetCurrentMethodName()
     {
@@ -97,7 +100,7 @@ namespace UnitTesting_Simulation
 
       StateCngEvent ev = new StateCngEvent();
       //use a sample JSON piece to set the values
-      string fileLoc = MainTestDir() + itemFolder + testName + ".json";
+      string fileLoc = MainTestDir() + ItemFolder() + testName + ".json";
       string jsonModel = "";
       if (File.Exists(fileLoc))
         jsonModel = File.ReadAllText(fileLoc);
@@ -130,8 +133,8 @@ namespace UnitTesting_Simulation
 
       ComponentLogicEvent ev = new ComponentLogicEvent();
       //use a sample JSON piece to set the values
-      string fileLoc = MainTestDir() + itemFolder + testName + ".json";//for the component logic event
-      string fileLoc2 = MainTestDir() + itemFolder + testName + "2.json";//for the logic top
+      string fileLoc = MainTestDir() + ItemFolder() + testName + ".json";//for the component logic event
+      string fileLoc2 = MainTestDir() + ItemFolder() + testName + "2.json";//for the logic top
       string jsonModel = "";//for the component logic event
       if (File.Exists(fileLoc))
         jsonModel = File.ReadAllText(fileLoc);
@@ -173,7 +176,7 @@ namespace UnitTesting_Simulation
 
       FailProbEvent ev = new FailProbEvent();
       //use a sample JSON piece to set the values
-      string fileLoc = MainTestDir() + itemFolder + testName + ".json";
+      string fileLoc = MainTestDir() + ItemFolder() + testName + ".json";
       string jsonModel = "";
       if (File.Exists(fileLoc))
         jsonModel = File.ReadAllText(fileLoc);
@@ -207,7 +210,7 @@ namespace UnitTesting_Simulation
 
       TimerEvent ev = new TimerEvent();
       //use a sample JSON piece to set the values
-      string fileLoc = MainTestDir() + itemFolder + testName + ".json";
+      string fileLoc = MainTestDir() + ItemFolder() + testName + ".json";
       string jsonModel = "";
       if (File.Exists(fileLoc))
         jsonModel = File.ReadAllText(fileLoc);
@@ -241,7 +244,7 @@ namespace UnitTesting_Simulation
 
       EvalVarEvent ev = new EvalVarEvent();
       //use a sample JSON piece to set the values
-      string fileLoc = MainTestDir() + itemFolder + testName + ".json";
+      string fileLoc = MainTestDir() + ItemFolder() + testName + ".json";
       string jsonModel = "";
       if (File.Exists(fileLoc))
         jsonModel = File.ReadAllText(fileLoc);
@@ -274,7 +277,7 @@ namespace UnitTesting_Simulation
 
       ExponentialDistEvent ev = new ExponentialDistEvent();
       //use a sample JSON piece to set the values
-      string fileLoc = MainTestDir() + itemFolder + testName + ".json";
+      string fileLoc = MainTestDir() + ItemFolder() + testName + ".json";
       string jsonModel = "";
       if (File.Exists(fileLoc))
         jsonModel = File.ReadAllText(fileLoc);
@@ -309,7 +312,7 @@ namespace UnitTesting_Simulation
 
       NormalDistEvent ev = new NormalDistEvent();
       //use a sample JSON piece to set the values
-      string fileLoc = MainTestDir() + itemFolder + testName + ".json";
+      string fileLoc = MainTestDir() + ItemFolder() + testName + ".json";
       string jsonModel = "";
       if (File.Exists(fileLoc))
         jsonModel = File.ReadAllText(fileLoc);
@@ -342,7 +345,7 @@ namespace UnitTesting_Simulation
 
       DistEvent ev = new DistEvent();
       //use a sample JSON piece to set the values
-      string fileLoc = MainTestDir() + itemFolder + testName + ".json";
+      string fileLoc = MainTestDir() + ItemFolder() + testName + ".json";
       string jsonModel = "";
       if (File.Exists(fileLoc))
         jsonModel = File.ReadAllText(fileLoc);
@@ -352,7 +355,7 @@ namespace UnitTesting_Simulation
       dynamic jsonObj = JsonConvert.DeserializeObject(jsonModel);
       EmraldModel mainModel = new EmraldModel(); //for some items, if the item JSON references other items they will need to be added to the main model
       SimGlobVariable var = new SimGlobVariable();
-      string fileLoc2 = MainTestDir() + itemFolder + "VarDoubleTest.json";//for the logic top
+      string fileLoc2 = MainTestDir() + ItemFolder() + "VarDoubleTest.json";//for the logic top
       string jsonModel2 = File.ReadAllText(fileLoc2);
       dynamic jsonObj2 = JsonConvert.DeserializeObject(jsonModel2);//for the logic top
       var.DeserializeDerived(jsonObj2, true, mainModel, false);
@@ -382,7 +385,7 @@ namespace UnitTesting_Simulation
 
       WeibullDistEvent ev = new WeibullDistEvent();
       //use a sample JSON piece to set the values
-      string fileLoc = MainTestDir() + itemFolder + testName + ".json";
+      string fileLoc = MainTestDir() + ItemFolder() + testName + ".json";
       string jsonModel = "";
       if (File.Exists(fileLoc))
         jsonModel = File.ReadAllText(fileLoc);
@@ -418,7 +421,7 @@ namespace UnitTesting_Simulation
 
       LogNormalDistEvent ev = new LogNormalDistEvent();
       //use a sample JSON piece to set the values
-      string fileLoc = MainTestDir() + itemFolder + testName + ".json";
+      string fileLoc = MainTestDir() + ItemFolder() + testName + ".json";
       string jsonModel = "";
       if (File.Exists(fileLoc))
         jsonModel = File.ReadAllText(fileLoc);
@@ -456,7 +459,7 @@ namespace UnitTesting_Simulation
 
       TransitionAct act = new TransitionAct();
       //use a sample JSON piece to set the values
-      string fileLoc = MainTestDir() + itemFolder + testName + ".json";
+      string fileLoc = MainTestDir() + ItemFolder() + testName + ".json";
       string jsonModel = "";
       if (File.Exists(fileLoc))
         jsonModel = File.ReadAllText(fileLoc);
@@ -489,10 +492,10 @@ namespace UnitTesting_Simulation
 
       TransitionAct act = new TransitionAct();
       //use a sample JSON piece to set the values
-      string fileLoc = MainTestDir() + itemFolder + testName + ".json";//Transition Action
-      string fileLoc1 = MainTestDir() + itemFolder + "StateTest1.json";//State1
-      string fileLoc2 = MainTestDir() + itemFolder + "StateTest2.json";//State2
-      string fileLoc3 = MainTestDir() + itemFolder + "DiagramTest.json";//Diagram
+      string fileLoc = MainTestDir() + ItemFolder() + testName + ".json";//Transition Action
+      string fileLoc1 = MainTestDir() + ItemFolder() + "StateTest1.json";//State1
+      string fileLoc2 = MainTestDir() + ItemFolder() + "StateTest2.json";//State2
+      string fileLoc3 = MainTestDir() + ItemFolder() + "DiagramTest.json";//Diagram
       string jsonModel = "";
       if (File.Exists(fileLoc))
         jsonModel = File.ReadAllText(fileLoc);
@@ -555,8 +558,8 @@ namespace UnitTesting_Simulation
 
 
       //use a sample JSON piece to set the values
-      string fileLoc = MainTestDir() + itemFolder + testName + ".json";
-      string varFileLoc = MainTestDir() + itemFolder + "VarDoubleTest.json";
+      string fileLoc = MainTestDir() + ItemFolder() + testName + ".json";
+      string varFileLoc = MainTestDir() + ItemFolder() + "VarDoubleTest.json";
       string jsonModel = "";
       string varJsonModel = "";
       if (File.Exists(fileLoc))
@@ -606,9 +609,9 @@ namespace UnitTesting_Simulation
 
       Sim3DAction act = new Sim3DAction();
       //use a sample JSON piece to set the values
-      string fileLoc = MainTestDir() + itemFolder + testName + ".json";
-      string fileLoc2 = MainTestDir() + itemFolder + "ExtSimObjTest.json";//for the 3dsim link
-      string fileLoc3 = MainTestDir() + itemFolder + "Var3DSimTest.json";//for the 3dsim var
+      string fileLoc = MainTestDir() + ItemFolder() + testName + ".json";
+      string fileLoc2 = MainTestDir() + ItemFolder() + "ExtSimObjTest.json";//for the 3dsim link
+      string fileLoc3 = MainTestDir() + ItemFolder() + "Var3DSimTest.json";//for the 3dsim var
       string jsonModel = "";//for the Ext Sim Msg action
       if (File.Exists(fileLoc))
         jsonModel = File.ReadAllText(fileLoc);
@@ -662,8 +665,8 @@ namespace UnitTesting_Simulation
 
       VarValueAct act = new VarValueAct();
       //use a sample JSON piece to set the values
-      string fileLoc = MainTestDir() + itemFolder + testName + ".json";
-      string fileLoc2 = MainTestDir() + itemFolder + testName + "2.json";//for the variable
+      string fileLoc = MainTestDir() + ItemFolder() + testName + ".json";
+      string fileLoc2 = MainTestDir() + ItemFolder() + testName + "2.json";//for the variable
       string jsonModel = "";//for the Ext Sim Msg action
       if (File.Exists(fileLoc))
         jsonModel = File.ReadAllText(fileLoc);
@@ -713,7 +716,7 @@ namespace UnitTesting_Simulation
 
       SimGlobVariable var = new SimGlobVariable();
       //use a sample JSON piece to set the values
-      string fileLoc = MainTestDir() + itemFolder + testName + ".json";
+      string fileLoc = MainTestDir() + ItemFolder() + testName + ".json";
       string jsonModel = "";
       if (File.Exists(fileLoc))
         jsonModel = File.ReadAllText(fileLoc);
@@ -746,7 +749,7 @@ namespace UnitTesting_Simulation
 
       SimGlobVariable var = new SimGlobVariable();
       //use a sample JSON piece to set the values
-      string fileLoc = MainTestDir() + itemFolder + testName + ".json";
+      string fileLoc = MainTestDir() + ItemFolder() + testName + ".json";
       string jsonModel = "";
       if (File.Exists(fileLoc))
         jsonModel = File.ReadAllText(fileLoc);
@@ -779,7 +782,7 @@ namespace UnitTesting_Simulation
 
       SimGlobVariable var = new SimGlobVariable();
       //use a sample JSON piece to set the values
-      string fileLoc = MainTestDir() + itemFolder + testName + ".json";
+      string fileLoc = MainTestDir() + ItemFolder() + testName + ".json";
       string jsonModel = "";
       if (File.Exists(fileLoc))
         jsonModel = File.ReadAllText(fileLoc);
@@ -812,7 +815,7 @@ namespace UnitTesting_Simulation
 
       SimGlobVariable var = new SimGlobVariable();
       //use a sample JSON piece to set the values
-      string fileLoc = MainTestDir() + itemFolder + testName + ".json";
+      string fileLoc = MainTestDir() + ItemFolder() + testName + ".json";
       string jsonModel = "";
       if (File.Exists(fileLoc))
         jsonModel = File.ReadAllText(fileLoc);
@@ -845,7 +848,7 @@ namespace UnitTesting_Simulation
 
       Sim3DVariable var = new Sim3DVariable();
       //use a sample JSON piece to set the values
-      string fileLoc = MainTestDir() + itemFolder + testName + ".json";
+      string fileLoc = MainTestDir() + ItemFolder() + testName + ".json";
       string jsonModel = "";
       if (File.Exists(fileLoc))
         jsonModel = File.ReadAllText(fileLoc);
@@ -878,7 +881,7 @@ namespace UnitTesting_Simulation
 
       TextRegExVariable var = new TextRegExVariable();
       //use a sample JSON piece to set the values
-      string fileLoc = MainTestDir() + itemFolder + testName + ".json";
+      string fileLoc = MainTestDir() + ItemFolder() + testName + ".json";
       string jsonModel = "";
       if (File.Exists(fileLoc))
         jsonModel = File.ReadAllText(fileLoc);
@@ -911,7 +914,7 @@ namespace UnitTesting_Simulation
 
       JSONDocVariable var = new JSONDocVariable();
       //use a sample JSON piece to set the values
-      string fileLoc = MainTestDir() + itemFolder + testName + ".json";
+      string fileLoc = MainTestDir() + ItemFolder() + testName + ".json";
       string jsonModel = "";
       if (File.Exists(fileLoc))
         jsonModel = File.ReadAllText(fileLoc);
@@ -944,7 +947,7 @@ namespace UnitTesting_Simulation
 
       XmlDocVariable var = new XmlDocVariable();
       //use a sample JSON piece to set the values
-      string fileLoc = MainTestDir() + itemFolder + testName + ".json";
+      string fileLoc = MainTestDir() + ItemFolder() + testName + ".json";
       string jsonModel = "";
       if (File.Exists(fileLoc))
         jsonModel = File.ReadAllText(fileLoc);
@@ -977,10 +980,10 @@ namespace UnitTesting_Simulation
 
       AccrualVariable var = new AccrualVariable();
       //use a sample JSON piece to set the values
-      string fileLoc = MainTestDir() + itemFolder + testName + ".json";
-      string fileLoc1 = MainTestDir() + itemFolder + "StateTest1.json";//State1
-      string fileLoc2 = MainTestDir() + itemFolder + "StateTest2.json";//State2
-      string fileLoc3 = MainTestDir() + itemFolder + "DiagramTest.json";//Diagram
+      string fileLoc = MainTestDir() + ItemFolder() + testName + ".json";
+      string fileLoc1 = MainTestDir() + ItemFolder() + "StateTest1.json";//State1
+      string fileLoc2 = MainTestDir() + ItemFolder() + "StateTest2.json";//State2
+      string fileLoc3 = MainTestDir() + ItemFolder() + "DiagramTest.json";//Diagram
       string jsonModel = "";
       if (File.Exists(fileLoc))
         jsonModel = File.ReadAllText(fileLoc);
@@ -1043,9 +1046,9 @@ namespace UnitTesting_Simulation
 
       AccrualVariable var = new AccrualVariable();
       //use a sample JSON piece to set the values
-      string fileLoc = MainTestDir() + itemFolder + testName + ".json";
-      string fileLoc1 = MainTestDir() + itemFolder + "StateTest1.json";//State1
-      string fileLoc3 = MainTestDir() + itemFolder + "DiagramTest.json";//Diagram
+      string fileLoc = MainTestDir() + ItemFolder() + testName + ".json";
+      string fileLoc1 = MainTestDir() + ItemFolder() + "StateTest1.json";//State1
+      string fileLoc3 = MainTestDir() + ItemFolder() + "DiagramTest.json";//Diagram
       string jsonModel = "";
       if (File.Exists(fileLoc))
         jsonModel = File.ReadAllText(fileLoc);
@@ -1092,4 +1095,3 @@ namespace UnitTesting_Simulation
 
   }
 }
-
