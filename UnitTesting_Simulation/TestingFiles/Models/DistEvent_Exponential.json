@@ -129,6 +129,14 @@
             "value": "0.1",
             "timeRate": "trDays",
             "useVariable": false
+          },
+          {
+            "value": "0",
+            "timeRate": "trDays"
+          },
+          {
+            "value": "5000",
+            "timeRate": "trDays"
           }
         ],
         "dfltTimeRate": "trHours",

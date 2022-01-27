@@ -47,34 +47,34 @@ window.upgrade = function (model) {
             event.Event.parameters = [
               {
                 name: "Mean",
-                value: event.Event.ndMean,
+                value: event.Event.mean,
                 timeRate: event.Event.meanTimeRate,
                 useVariable: false,
               },
               {
                 name: "Standard Deviation",
-                value: event.Event.ndStdDev,
+                value: event.Event.std,
                 timeRate: event.Event.stdTimeRate,
                 useVariable: false,
               },
               {
                 name: "Minimum",
-                value: event.Event.ndMin,
+                value: event.Event.min,
                 timeRate: event.Event.minTimeRate,
                 useVariable: false,
               },
               {
                 name: "Maximum",
-                value: event.Event.ndMax,
+                value: event.Event.max,
                 timeRate: event.Event.maxTimeRate,
                 useVariable: false,
               },
             ];
             event.Event.dfltTimeRate = 'trHours';
-            delete event.Event.ndMean;
-            delete event.Event.ndStdDev;
-            delete event.Event.ndMin;
-            delete event.Event.ndMax;
+            delete event.Event.mean;
+            delete event.Event.std;
+            delete event.Event.min;
+            delete event.Event.max;
             delete event.Event.meanTimeRate;
             delete event.Event.stdTimeRate;
             delete event.Event.minTimeRate;
@@ -85,32 +85,58 @@ window.upgrade = function (model) {
             event.Event.parameters = [
               {
                 name: "Rate",
-                value: event.Event.edRate,
-                timeRate: event.Event.edTimeRate,
+                value: event.Event.rate,
+                timeRate: event.Event.timeRate,
+                useVariable: false,
+              },
+              {
+                name: "Minimum",
+                value: 0,
+                timeRate: 'trHours',
+                useVariable: false,
+              },
+              {
+                name: "Maximum",
+                value: 1000,
+                timeRate: 'trYears',
                 useVariable: false,
               },
             ];
             event.Event.dfltTimeRate = 'trHours';
-            delete event.Event.edRate;
-            delete event.Event.edTimeRate;
+            delete event.Event.rate;
+            delete event.Event.timeRate;
             break;
           case "etWeibullDist":
             event.Event.distType = "dtWeibull";
             event.Event.parameters = [
               {
                 name: "Shape",
-                value: event.Event.wdShape,
+                value: event.Event.shape,
                 useVariable: false,
               },
               {
                 name: "Scale",
-                value: event.Event.wdScale,
+                value: event.Event.scale,
+                timeRate: event.Event.timeRate,
+                useVariable: false,
+              },
+              {
+                name: "Minimum",
+                value: 0,
+                timeRate: 'trHours',
+                useVariable: false,
+              },
+              {
+                name: "Maximum",
+                value: 1000,
+                timeRate: 'trYears',
                 useVariable: false,
               },
             ];
-            event.Event.dfltTimeRate = event.Event.wdTimeRate;
-            delete event.Event.wdShape;
-            delete event.Event.wdScale;
+            event.Event.dfltTimeRate = event.Event.timeRate;
+            delete event.Event.shape;
+            delete event.Event.scale;
+            delete event.Event.timeRate;
             break;
         }
         event.Event.evType = "etDistribution";
