@@ -25,9 +25,9 @@ namespace EMRALD_Sim
 {
   public partial class FormMain : Form, IMessageForm //XmppMessageServer.MessageForm
   {
-      private readonly IAppSettingsService _appSettingsService;
-      private EMRALDMsgServer _server = null;
-    private EmraldModel _sim = null; 
+    private readonly IAppSettingsService _appSettingsService;
+    private EMRALDMsgServer _server = null;
+    private EmraldModel _sim = null;
     private bool _validSim = false;
     private string _modelPath = "";
     //private bool _cancel = false;
@@ -35,6 +35,8 @@ namespace EMRALD_Sim
     private ProcessSimBatch simRuns = null;
     private string curDir = "c:\\temp";
     private List<string> monitor = new List<string>();
+    private List<Tuple<string, string, string>> _xmppLink = new List<Tuple<string, string, string>>();
+    private string _XMPP_Password = "secret";
 
     [DllImport("kernel32.dll")]
     static extern bool AttachConsole(int dwProcessId);
@@ -53,7 +55,7 @@ namespace EMRALD_Sim
       //System.IO.File.WriteAllLines(curDir + "\\simRunLog.txt", args);
       //System.IO.File.AppendAllText(curDir + "\\simRunLog.txt", "Cur Dir = " + Directory.GetCurrentDirectory() + Environment.NewLine);
 
-      if(args.Length > 0)
+      if (args.Length > 0)
       {
         if (args[0] == "//")
           return;
@@ -78,7 +80,7 @@ namespace EMRALD_Sim
           case "-i": //path to input file
             {
               string filePath = args[i + 1];
-              if(!File.Exists(filePath))
+              if (!File.Exists(filePath))
               {
                 Console.Write("invalid input file path - " + filePath);
                 return;
@@ -91,7 +93,7 @@ namespace EMRALD_Sim
               break;
             }
 
-          
+
           //case "-c": //code load of project
           //  {
           //    sim = new LookupLists("Test", "Desc");
@@ -131,17 +133,18 @@ namespace EMRALD_Sim
 
           case "-m": //monitor
             {
-              try { 
+              try
+              {
                 string arg = args[i + 1];
                 if (arg[0] == '[')
                 {
                   arg = arg.TrimStart('[');
-                  while (arg[arg.Length - 1] != ']') 
+                  while (arg[arg.Length - 1] != ']')
                   {
                     monitor.Add(arg);
                     ++i;
                     arg = args[i + 1];
-                  } 
+                  }
 
                   arg = arg.TrimEnd(']');
                   monitor.Add(arg);
@@ -155,9 +158,54 @@ namespace EMRALD_Sim
               }
               catch
               {
-                Console.Write("invalid data for monitor parameters, must be a single string or muliple encased in \"[]\", example - [x y z] ");
+                Console.Write("invalid data for monitor parameters, must be a single string or multiple encased in \"[]\", example - [x y z] ");
               }
-             
+
+              break;
+            }
+
+          case "-c": //coupled XMPP application
+            {
+              try
+              {
+                //read the password
+                _XMPP_Password = args[i + 1];
+                string arg = args[i + 1];
+                if (arg[0] == '[')
+                {
+                  arg = arg.TrimStart('[');
+                  while (arg[arg.Length - 1] != ']')
+                  {
+                    string linkName = arg;
+                    ++i;
+                    string xmppResouce = args[i + 1];
+                    ++i;
+                    string xmppUser = args[i + 1].TrimEnd(']');
+
+                    _xmppLink.Add(new Tuple<string, string, string>(linkName, xmppResouce, xmppUser));
+                  }
+
+                  arg = args[i + 1];
+                  ++i;
+                }
+                else
+                {
+                  string linkName = arg;
+                  ++i;
+                  string xmppResouce = args[i + 1];
+                  ++i;
+                  string xmppUser = args[i + 1];
+
+                  _xmppLink.Add(new Tuple<string, string, string>(linkName, xmppResouce, xmppUser));
+                  ++i;
+                }
+              }
+              catch
+              {
+                Console.Write("invalid data for coupling external simulation, specify the password and the external sim name, XMPP connection resource, XMPP user name for multiple, encase in \"[]\"" + Environment.NewLine +
+                                "Example: -d xmppServerPassword [LinkedProgram MyApp User1] [LinkedProgram2 MyApp2 User2]");
+              }
+
               break;
             }
 
@@ -180,7 +228,7 @@ namespace EMRALD_Sim
 
               switch (strLev)
               {
-                case "basic": 
+                case "basic":
                 case "Basic":
                   chkLog.Checked = true;
                   ConfigData.debugLev = LogLevel.Info;
@@ -229,11 +277,11 @@ namespace EMRALD_Sim
                 {
                   Console.Write("invalid option for debug range. Use [startIndex endIndex]");
                 }
-               
+
                 ++i;
               }
 
-              
+
               break;
             }
 
@@ -246,9 +294,11 @@ namespace EMRALD_Sim
               Console.WriteLine("-jsonStats \"write path statistics to json output file at specified directory\"");
               Console.WriteLine("-t \"max run time\"");
               Console.WriteLine("-e \"execute\"");
+              Console.WriteLine("-c \"coupled external simulation using XMPP, specify the password and the external sim name, XMPP connection resource, XMPP user name. If there is more than one put each in brackets\"" + Environment.NewLine +
+                                "    Example: -d xmppServerPassword [LinkedProgram MyApp User1] [LinkedProgram2 MyApp2 User2]");
               Console.WriteLine("-m \"parameter to monitor, use []'s to do multiples, example - [x y z] \"");
               Console.WriteLine("-s \"initial random number seed\"");
-              Console.WriteLine("-d \"debug level \"basic\" or \"detailed\", (optional) range [start end]. " + Environment.NewLine + 
+              Console.WriteLine("-d \"debug level \"basic\" or \"detailed\", (optional) range [start end]. " + Environment.NewLine +
                                 "    Basic - state movement only. Detailed - state movement, actions and events. " + Environment.NewLine +
                                 "    Example: -d basic [10 20]");
               break;
@@ -280,7 +330,7 @@ namespace EMRALD_Sim
       if (model != null)
       {
         OpenModel(model);
-       
+
         tcMain.SelectedTab = tabSimulate;
 
 
@@ -296,7 +346,7 @@ namespace EMRALD_Sim
         {
           btnStartSims_Click(this, null);
         }
-      }      
+      }
     }
 
     public void Clear()
@@ -318,7 +368,7 @@ namespace EMRALD_Sim
         methodInvokerDelegate();
       }
     }
-    
+
     public void IncomingEMRALDMsg(string sender, TMsgWrapper msg)
     {
       MethodInvoker methodInvokerDelegate = delegate ()
@@ -710,7 +760,7 @@ namespace EMRALD_Sim
         Thread simThread = new Thread(tStarter);
         simThread.Start();
       }
-      catch(Exception err)
+      catch (Exception err)
       {
         throw (err);
       }
@@ -752,7 +802,7 @@ namespace EMRALD_Sim
       }
 
       btnValidateModel_Click(null, null);
-      
+
       Cursor.Current = saveCurs;
     }
 
@@ -819,7 +869,7 @@ namespace EMRALD_Sim
         lbl_ResultHeader.Text = _sim.name + " " + runCnt.ToString() + " of " + tbRunCnt.Text + " runs.";// Time - " + runTime.ToString();
         lblRunTime.Text = runTime.ToString("g");
         lvResults.Items.Clear();
-        
+
         foreach (var item in simRuns.keyPaths)
         {
           string[] lvCols = new string[4];
@@ -894,7 +944,7 @@ namespace EMRALD_Sim
 
       };
 
-      InvokeUIUpdate(methodInvokerDelegate);      
+      InvokeUIUpdate(methodInvokerDelegate);
     }
 
     private void btn_Stop_Click(object sender, EventArgs e)
@@ -914,9 +964,9 @@ namespace EMRALD_Sim
           var extSimLink = _sim.allExtSims.FindByName(lbExtSimLinks.SelectedItem.ToString());
           //  f.resourceName);
           extSimLink.resourceName = f.resourceName;
-         ck = CheckState.Checked;
-        }        
-      }     
+          ck = CheckState.Checked;
+        }
+      }
 
       lbExtSimLinks.SetItemCheckState(lbExtSimLinks.SelectedIndex, ck);
     }
@@ -974,18 +1024,18 @@ namespace EMRALD_Sim
       }
     }
 
-  private void rbDebug_CheckedChanged(object sender, EventArgs e)
+    private void rbDebug_CheckedChanged(object sender, EventArgs e)
     {
       if (rbDebugBasic.Checked)
         ConfigData.debugLev = LogLevel.Info;
       if (rbDebugDetailed.Checked)
         ConfigData.debugLev = LogLevel.Debug;
-     
+
     }
 
     private void chkLog_CheckedChanged(object sender, EventArgs e)
     {
-      
+
       if (chkLog.Checked)
       {
         rbDebugBasic.Checked = true;
@@ -1022,7 +1072,7 @@ namespace EMRALD_Sim
         return;
       }
 
-      if(parsedValue < 1)
+      if (parsedValue < 1)
         tbLogRunStart.Text = "1";
 
       ConfigData.debugRunStart = int.Parse(tbLogRunStart.Text);
@@ -1057,7 +1107,7 @@ namespace EMRALD_Sim
 
     private void rbSimplePath_CheckedChanged(object sender, EventArgs e)
     {
-      if(rbSimplePath.Checked)
+      if (rbSimplePath.Checked)
         tbSavePath2.Text = Path.GetDirectoryName(tbSavePath2.Text) + "\\" + Path.GetFileNameWithoutExtension(tbSavePath2.Text) + ".text";
       else
         tbSavePath2.Text = Path.GetDirectoryName(tbSavePath2.Text) + "\\" + Path.GetFileNameWithoutExtension(tbSavePath2.Text) + ".json";
