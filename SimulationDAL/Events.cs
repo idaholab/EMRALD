@@ -121,16 +121,18 @@ namespace SimulationDAL
     //protected override EnModifiableTypes GetModType() { return EnModifiableTypes.mtState; }
     public bool ifInState = true;
     public bool allItems = false;
+    public bool evalCurOnInitial = true; //triggered if "Enter States" are in the current state list on first evaluation
 
     protected override EnEventType GetEvType() { return EnEventType.etStateCng; }
 
     public StateCngEvent() : base("") { }
 
-    public StateCngEvent(string inName, bool inIfInState, bool inAllItems = true, List<int> inStates = null)
+    public StateCngEvent(string inName, bool inIfInState, bool inAllItems = true, List<int> inStates = null, bool evalCurOnInitial = true)
       : base(inName)
     {
       this.ifInState = inIfInState;
       this.allItems = inAllItems;
+      this.evalCurOnInitial = evalCurOnInitial;
 
       if (inStates != null)
       {
@@ -142,7 +144,8 @@ namespace SimulationDAL
     {
 
       string retStr = "\"ifInState\":\"" + this.ifInState.ToString().ToLower() + "\"," + Environment.NewLine +
-                      "\"allItems\":\"" + this.allItems.ToString().ToLower() + "\"";
+                      "\"allItems\":\"" + this.allItems.ToString().ToLower() + "\"," + Environment.NewLine +
+                      "\"evalCurOnInitial\":\"" + evalCurOnInitial.ToString() + "\"";
 
       retStr = retStr + "," + Environment.NewLine + "\"triggerStates\": [";
 
@@ -181,6 +184,10 @@ namespace SimulationDAL
 
       this.ifInState = Convert.ToBoolean(dynObj.ifInState);
       this.allItems = Convert.ToBoolean(dynObj.allItems);
+      if (dynObj.evalCurOnInitial != null)
+      {
+        evalCurOnInitial = Convert.ToBoolean(dynObj.evalCurOnInitial);
+      }
 
       //Now Done in LoadOBjLinks()
       ////load the Trigger States.
