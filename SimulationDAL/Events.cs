@@ -121,6 +121,7 @@ namespace SimulationDAL
     //protected override EnModifiableTypes GetModType() { return EnModifiableTypes.mtState; }
     public bool ifInState = true;
     public bool allItems = false;
+    public bool inclInitial = true; //triggered if "Enter States" are in the current state list on first evaluation
 
     protected override EnEventType GetEvType() { return EnEventType.etStateCng; }
 
