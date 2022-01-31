@@ -389,11 +389,15 @@ function GetDataObject() {
             if (scope.data.transitions && scope.data.transitions.length > 0) {
                 dataObj.newStates = [];
                 scope.data.transitions.forEach(function (tr) {
+                    var { varProb } = tr;
+                    if (varProb === null) {
+                        varProb = "null";
+                    }
                     if (tr.Probability.toUpperCase() === 'REMAINING') {
-                        dataObj.newStates.push({ toState: tr.To_State, prob: -1, varProb: tr.varProb, failDesc: tr.failDesc });
+                        dataObj.newStates.push({ toState: tr.To_State, prob: -1, varProb, failDesc: tr.failDesc });
                     }
                     else {
-                        dataObj.newStates.push({ toState: tr.To_State, prob: Number(tr.Probability), varProb: tr.varProb, failDesc: tr.failDesc });
+                        dataObj.newStates.push({ toState: tr.To_State, prob: Number(tr.Probability), varProb, failDesc: tr.failDesc });
                     }
                 });
             }

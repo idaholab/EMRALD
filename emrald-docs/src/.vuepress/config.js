@@ -45,7 +45,7 @@ module.exports = {
       },
       {
         text: 'EMRALD',
-        link: 'https://safety.inl.gov/emrald'
+        link: 'https://emraldapp.inl.gov/'
       }
     ],
     sidebar: {
@@ -56,6 +56,7 @@ module.exports = {
           children: [
             '',
             'Modeling/webUIOverview',
+            'Modeling/demoProject',
             'Modeling/diagrams',
             'Modeling/states',
             'Modeling/events',
@@ -63,9 +64,9 @@ module.exports = {
             'Modeling/variables',
             'Modeling/logicTree',
             'Modeling/externalSims',
-            'Modeling/xmppProtocol',
             'Modeling/icons', 
             'Modeling/solver',
+            'Modeling/xmppProtocol',
             'Modeling/backendInfo',   
             'Modeling/cmdLineOptions',        
           ]

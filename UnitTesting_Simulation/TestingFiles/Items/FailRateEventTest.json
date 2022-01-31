@@ -6,6 +6,7 @@
         "mainItem": true,
         "evType": "etFailRate",
         "lambda": 1,
-        "lambdaTimeRate": "PT1M"
+        "lambdaTimeRate": "PT1M",
+        "useVariable": false
       }
     }

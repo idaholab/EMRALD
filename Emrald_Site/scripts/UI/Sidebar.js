@@ -96,30 +96,7 @@ if (typeof Navigation === 'undefined')
         }
       }
     }
-    Sidebar.prototype.upgrade = function (model) {
-      var curVersion = 1.1;
-      if (!model.version) {
-        model.version = 0.0;
-      }
-
-      if (model.version < 1.1) { //update all the string Booleans to real Booleans 
-        for (let curE of model.EventList) {
-          if (curE.Event.mainItem && ((typeof curE.Event.mainItem) == "string")) {
-            curE.Event.mainItem = curE.Event.mainItem.toUpperCase() == "TRUE" ? true : false;
-          }
-        }
-        for (let curA of model.ActionList) {
-          if (curA.Action.mainItem && ((typeof curA.Action.mainItem) == "string")) {
-            curA.Action.mainItem = curA.Action.mainItem.toUpperCase() == "TRUE" ? true : false;
-          }
-          if (curA.Action.mutExcl && ((typeof curA.Action.mutExclm) == "string")) {
-            curA.Action.mutExcl = curA.Action.mutExcl.toUpperCase() == "TRUE" ? true : false;
-          }
-        }
-      }
-      
-      model.version = curVersion;
-    }
+    Sidebar.prototype.upgrade = window.upgrade;
     //this will make the sidebar sections have the accordion function 
     Sidebar.prototype.ApplyJqueryUi = function (id) {
 

@@ -1,4 +1,4 @@
 Simulation = JsonVarExeTest
-Runtime = 00:00:02.8421011
+Runtime = 00.00:00:02
 Runs = 10 of 10
-LT Occurred 10 times, Rate =1
+LT Occurred 10 times, Rate =1, MeanTime = 00.00:01:00 +/- 00.00:00:00.00

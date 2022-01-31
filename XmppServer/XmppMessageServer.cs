@@ -123,8 +123,18 @@ namespace XmppMessageServer
     /// Sets the license and activate the evaluation.
     /// </summary>
     private void SetLicense()
-    { 
-      string lic = _appSettingsService.XmppLicense;
+    {
+      //If you are compiling this on your own, you need to have an MatriX license for 2 way coupling
+      //Get a license and use project "Manage User Secrets" to set the license if you want to use this MatriX package 
+      //example 
+      /*
+      {
+        "Secrets": {
+          "XmppLicense": "YourLicenseCodeHere"
+        }
+      }
+       */
+      string lic = _appSettingsService.XmppLicense;  //the other option is to place your license code here, but do not distribute
       Matrix.License.LicenseManager.SetLicense(lic);
 
       // when something is wrong with your license you can find the error here

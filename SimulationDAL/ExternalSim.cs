@@ -74,7 +74,7 @@ namespace SimulationDAL
       dynamic dynObj = (dynamic)obj;
       if (wrapped)
       {
-        if (dynObj.Diagram == null)
+        if (dynObj.ExtSim == null)
           return false;
 
         dynObj = ((dynamic)obj).ExtSim;
