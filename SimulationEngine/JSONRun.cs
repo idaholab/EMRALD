@@ -38,7 +38,9 @@ namespace SimulationEngine
     public int? debugStartIdx { get; set; } = null;
     // start index for debug if null then to end
     public int? debugEndIdx { get; set; } = null;
-    
+    // external application XMPP connection
+    public string xmppPassword { get; set; } = "secret";
+    public List<List<string>> xmppLinks = new List<List<string>>();
   }
 
   public class JSONRun

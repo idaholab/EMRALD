@@ -202,8 +202,8 @@ namespace EMRALD_Sim
               }
               catch
               {
-                Console.Write("invalid data for coupling external simulation, specify the password and the external sim name, XMPP connection resource, XMPP user name for multiple, encase in \"[]\"" + Environment.NewLine +
-                                "Example: -d xmppServerPassword [LinkedProgram MyApp User1] [LinkedProgram2 MyApp2 User2]");
+                Console.Write("invalid data for coupling external simulation, specify the password and the external sim name, XMPP connection resource, XMPP user name, and timeout in seconds. For multiple, encase in \"[]\"" + Environment.NewLine +
+                                "Example: -d xmppServerPassword [LinkedProgram MyApp User1 60] [LinkedProgram2 MyApp2 User2 60]");
               }
 
               break;
@@ -294,8 +294,8 @@ namespace EMRALD_Sim
               Console.WriteLine("-jsonStats \"write path statistics to json output file at specified directory\"");
               Console.WriteLine("-t \"max run time\"");
               Console.WriteLine("-e \"execute\"");
-              Console.WriteLine("-c \"coupled external simulation using XMPP, specify the password and the external sim name, XMPP connection resource, XMPP user name. If there is more than one put each in brackets\"" + Environment.NewLine +
-                                "    Example: -d xmppServerPassword [LinkedProgram MyApp User1] [LinkedProgram2 MyApp2 User2]");
+              Console.WriteLine("-c \"coupled external simulation using XMPP, specify the password and the external sim name, XMPP connection resource, XMPP user name and timeout in seconds. If there is more than one put each in brackets\"" + Environment.NewLine +
+                                "    Example: -d xmppServerPassword [LinkedProgram MyApp User1 60] [LinkedProgram2 MyApp2 User2 60]");
               Console.WriteLine("-m \"parameter to monitor, use []'s to do multiples, example - [x y z] \"");
               Console.WriteLine("-s \"initial random number seed\"");
               Console.WriteLine("-d \"debug level \"basic\" or \"detailed\", (optional) range [start end]. " + Environment.NewLine +
@@ -705,7 +705,7 @@ namespace EMRALD_Sim
         {
           if (!lbExtSimLinks.CheckedItems.Contains(extSimLink))
           {
-            MessageBox.Show("You must assing all the Links to External Simulations");
+            MessageBox.Show("You must assign all the Links to External Simulations");
             btnStartSims.Enabled = true;
             return;
           }
