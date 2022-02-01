@@ -432,6 +432,9 @@ function OnLoad(dataObj) {
                     scope.isInState = eventData.ifInState;
                     scope.isAllItems = eventData.allItems;
                     scope.evalCurOnInitial = eventData.evalCurOnInitial;
+                    if (typeof eventData.evalCurOnInitial !== 'boolean') {
+                        scope.evalCurOnInitial = true;
+                    }
                     scope.states = deepClone(eventData.triggerStates);
                     opTypeEl.selectedIndex = 1;
                     break;
