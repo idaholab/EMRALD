@@ -1314,7 +1314,7 @@ namespace SimulationDAL
         exitCode = -1;
 
       //Set all the variable values
-      if (codeVariables != null)
+      if (processOutputFileCompEval != null)
       {
         processOutputFileCompEval.SetVariable("CurTime", typeof(double), curTime.TotalHours);
         processOutputFileCompEval.SetVariable("ExeExitCode", typeof(int), exitCode);
