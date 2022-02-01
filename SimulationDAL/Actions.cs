@@ -1313,9 +1313,6 @@ namespace SimulationDAL
       else 
         exitCode = -1;
 
-      processOutputFileCompEval.SetVariable("CurTime", typeof(double), curTime.TotalHours);
-      processOutputFileCompEval.SetVariable("ExeExitCode", typeof(int), exitCode);
-      processOutputFileCompEval.SetVariable("outputFile", typeof(string), exeOutputPath + Path.DirectorySeparatorChar + "_out.txt");
       //Set all the variable values
       if (codeVariables != null)
       {
