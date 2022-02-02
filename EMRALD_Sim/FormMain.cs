@@ -35,7 +35,7 @@ namespace EMRALD_Sim
     private ProcessSimBatch simRuns = null;
     private string curDir = "c:\\temp";
     private List<string> monitor = new List<string>();
-    private List<Tuple<string, string, string>> _xmppLink = new List<Tuple<string, string, string>>();
+    private List<List<string>> _xmppLink = new List<List<string>>();
     private string _XMPP_Password = "secret";
 
     [DllImport("kernel32.dll")]
@@ -170,6 +170,7 @@ namespace EMRALD_Sim
               {
                 //read the password
                 _XMPP_Password = args[i + 1];
+                ++i;
                 string arg = args[i + 1];
                 if (arg[0] == '[')
                 {
@@ -180,9 +181,11 @@ namespace EMRALD_Sim
                     ++i;
                     string xmppResouce = args[i + 1];
                     ++i;
-                    string xmppUser = args[i + 1].TrimEnd(']');
+                    string xmppUser = args[i + 1];
+                    ++i;
+                    int timeout = int.Parse(args[i + 1].TrimEnd(']')); //verify it is a number
 
-                    _xmppLink.Add(new Tuple<string, string, string>(linkName, xmppResouce, xmppUser));
+                    _xmppLink.Add(new List<string>() { linkName, xmppResouce, xmppUser, timeout.ToString()});
                   }
 
                   arg = args[i + 1];
@@ -195,8 +198,10 @@ namespace EMRALD_Sim
                   string xmppResouce = args[i + 1];
                   ++i;
                   string xmppUser = args[i + 1];
+                  ++i;
+                  int timeout = int.Parse(args[i + 1]); //verify it is a number
 
-                  _xmppLink.Add(new Tuple<string, string, string>(linkName, xmppResouce, xmppUser));
+                  _xmppLink.Add(new List<string>() { linkName, xmppResouce, xmppUser, timeout.ToString()});
                   ++i;
                 }
               }
@@ -333,7 +338,7 @@ namespace EMRALD_Sim
 
         tcMain.SelectedTab = tabSimulate;
 
-
+        //check the monitor values
         for (int idx = 0; idx < lbMonitorVars.Items.Count; idx++)
         {
           if (monitor.Contains(lbMonitorVars.Items[idx].ToString()))
@@ -341,6 +346,27 @@ namespace EMRALD_Sim
             lbMonitorVars.SetItemChecked(idx, true);
           }
         }
+
+        //assign the xmpp connections if any
+        for (int idx = 0; idx < _xmppLink.Count; idx++)
+        {
+          AssignServer(); //make sure it has been assigned
+          var extSimLink = _sim.allExtSims.FindByName(_xmppLink[idx][0], false);
+          if(extSimLink == null)
+          {
+            Console.Write("Bad -c first input. No external link in model named - " + _xmppLink[idx][0]);
+          }
+          else
+          {
+            extSimLink.resourceName = _xmppLink[idx][1] + " - " + _xmppLink[idx][2].ToLower();
+            extSimLink.verified = false;
+            extSimLink.timeout = int.Parse(_xmppLink[idx][3]);
+            //check the UI
+            var itemIdx = lbExtSimLinks.FindStringExact(_xmppLink[idx][0]);
+            lbExtSimLinks.SetItemChecked(itemIdx, true);
+          }                
+        }
+
 
         if (execute)
         {
@@ -737,7 +763,9 @@ namespace EMRALD_Sim
 
         simRuns.progressCallback = DispResults;
         if (_server != null)
-          simRuns.AddExtSimulationData(_server, 100, "");
+        {
+          simRuns.AddExtSimulationData(_server, 100, "", _XMPP_Password);
+        }
 
         foreach (var varItem in lbMonitorVars.CheckedItems)
         {
@@ -964,6 +992,7 @@ namespace EMRALD_Sim
           var extSimLink = _sim.allExtSims.FindByName(lbExtSimLinks.SelectedItem.ToString());
           //  f.resourceName);
           extSimLink.resourceName = f.resourceName;
+          extSimLink.verified = true;
           ck = CheckState.Checked;
         }
       }
@@ -1019,7 +1048,7 @@ namespace EMRALD_Sim
     {
       if (_server == null)
       {
-        _server = new EMRALDMsgServer(_appSettingsService);
+        _server = new EMRALDMsgServer(_XMPP_Password, _appSettingsService);
         _server.SetForm(this);
       }
     }
