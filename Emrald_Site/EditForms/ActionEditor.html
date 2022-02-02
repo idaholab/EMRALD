@@ -5,13 +5,20 @@
 <head>
     <title>Action Properties</title>
     <link href="../styles/Editors.css" rel="stylesheet" />
+    <script src="./lib/jsonpath-0.8.0.js"></script>
     <script src="../config.js"></script>
     <script src="../scripts/jquery/jquery-2.1.4.js"></script>
     <script src="../scripts/angular/angular.js"></script>
+    <script src="../scripts/UI/Blob.js"></script>
     <script src="../scripts/UI/Common.js"></script>
+    <script src="../scripts/UI/FileSaver.js"></script>
     <script src="../scripts/UI/wcfService.js"></script>
+    <script src="./customForms.js"></script>
     <script src="ActionEditor.js"></script>
     <style type="text/css">
+        html, .fill-height {
+            height: 100%;
+        }
         table2 {
             font-family: arial, sans-serif;
             border-collapse: collapse;
@@ -30,9 +37,9 @@
         }
     </style>
 </head>
-<body ng-app="actionModule">
-    <div ng-controller="actionController" id="actionControllerPanel">
-        <form novalidate>
+<body ng-app="actionModule" class="fill-height">
+    <div ng-controller="actionController" id="actionControllerPanel" class="fill-height">
+        <form novalidate class="fill-height">
             <div style="display: table; border-collapse: collapse;">
                 <div style="display:table-row">
                     <span style="display:table-cell;">Type:</span>
@@ -60,7 +67,7 @@
                 </div>
             </div>
             <hr />
-            <div id="detailTable">
+            <div id="detailTable" class="fill-height">
                 <!-- Begin Transition Type -->
                 <div id="TransitionPanel" ng-if="data.action.value=='atTransition'">
                     <div style="display: table;">
@@ -195,8 +202,11 @@
                 <!-- End Ext. Sim Message Type -->
                 <!-- Begin Run Application Type-->
 
-                <div id="RunAppPanel" ng-if="data.action.value=='atRunExtApp'">
-                    <div style="display: flex; flex-direction: row; align-items: stretch; height: calc(100vh - 8em); width: 98vw;">
+                <div id="RunAppPanel" ng-if="data.action.value=='atRunExtApp'" class="fill-height">
+                    <input type="radio" name="tabControl" value="code" ng-model="data.raType"> Use Code
+                    <input type="radio" name="tabControl" value="template" ng-model="data.raType"> Use Custom Application
+                    <!-- Code Tab -->
+                    <div style="display: flex; flex-direction: row; align-items: stretch; height: calc(100vh - 8em); width: 98vw;" ng-if="data.raType == 'code'">
                         <div style="display: flex; flex-direction: column; flex: 1">
                             <p style="margin-bottom:0">Preprocess Code(c#)</p>
                             <div style="display: flex; flex-direction:row; flex: 1">
@@ -221,6 +231,11 @@
                                 <td style="border: 1px solid #dddddd; text-align: left; padding: 0px;"><label for="{{'varId_' + row.value.Variable.name}}" style="display:block">{{row.value.Variable.name}}</label></td>
                             </tr>
                         </table>
+                    </div>
+                    <!-- Template Tab -->
+                    <div ng-if="data.raType == 'template'" class="fill-height">
+                        <select ng-options="opt as opt.name for opt in raTemplates" ng-model="data.raTemplate"></select>
+                        <iframe name="customForm" src="{{data.raTemplate.path}}" style="display: block; height: 100%; width: 100%; border: none;"></iframe>
                     </div>
                 </div>
                 <!-- End Run Application Type-->

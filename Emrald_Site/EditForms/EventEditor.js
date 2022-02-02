@@ -109,7 +109,7 @@ function isModified() {
 
 function ValidateData() {
     var scope = angular.element(document.querySelector('#EEControllerPanel')).scope();
-    if (!scope.variable) {
+    if (scope.typeOption.value === 'et3dSimEv' && !scope.variable) {
         return "Please specify an External Sim Variable before saving the event.";
     }
     return "";
@@ -431,6 +431,10 @@ function OnLoad(dataObj) {
                 case "etStateCng":
                     scope.isInState = eventData.ifInState;
                     scope.isAllItems = eventData.allItems;
+                    scope.evalCurOnInitial = eventData.evalCurOnInitial;
+                    if (typeof eventData.evalCurOnInitial !== 'boolean') {
+                        scope.evalCurOnInitial = true;
+                    }
                     scope.states = deepClone(eventData.triggerStates);
                     opTypeEl.selectedIndex = 1;
                     break;
@@ -521,6 +525,7 @@ function GetDataObject() {
         case "etStateCng":
             dataObj.ifInState = scope.isInState;
             dataObj.allItems = scope.isAllItems;
+            dataObj.evalCurOnInitial = scope.evalCurOnInitial;
             dataObj.triggerStates = scope.states;
             break;
         case "etComponentLogic":
@@ -681,6 +686,7 @@ EEApp.controller("EEController", function ($scope) {
     //State Change
     $scope.isInState = "true";
     $scope.isAllItems = true;
+    $scope.evalCurOnInitial = true;
     $scope.states = []
     //Component logic
     $scope.logicTopsLoaded = false;
@@ -726,6 +732,7 @@ EEApp.controller("EEController", function ($scope) {
     $scope.$watch("varNames", function (newVal, oldVal) { if (newVal !== oldVal) somethingChanged(); });
     $scope.$watch("isInState", function (newVal, oldVal) { if (newVal !== oldVal) somethingChanged(); });
     $scope.$watch("isAllItems", function (newVal, oldVal) { if (newVal !== oldVal) somethingChanged(); });
+    $scope.$watch("evalCurOnInitial", function (newVal, oldVal) { if (newVal !== oldVal) somethingChanged(); });
     $scope.$watch("var3DCode", function (newVal, oldVal) { if (newVal !== oldVal) somethingChanged(); });
     $scope.$watch("onSuccess", function (newVal, oldVal) { if (newVal !== oldVal) somethingChanged(); });
     $scope.$watch("logicTop", function (newVal, oldVal) { if (newVal !== oldVal) somethingChanged(); });

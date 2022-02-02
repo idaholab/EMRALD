@@ -487,6 +487,12 @@ var StateApp = (function (global, _super) {
 
               }
             }
+            // update variables
+            if (retObj.updateVariables) {
+              retObj.updateVariables.forEach((variable) => {
+                sb.replaceNames(variable.name, variable.name, "Variable", null, true);
+              });
+            }
             //TODO make this if statement cleaner (i.e. w/ function)
             if (actionName !== retObj.name && (retObj.name != "Goto_Action" && retObj.name.trim() != "")) {
               //if parent is passed in, it means add new action.
