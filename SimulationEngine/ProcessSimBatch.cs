@@ -120,6 +120,9 @@ namespace SimulationEngine
 
     public bool AutoConnectExtSim()
     {
+      if (_lists.allExtSims.Count < 1)
+        return true;
+
       DateTime timer = DateTime.Now;
       bool allConnected = false;
       while (!allConnected)
