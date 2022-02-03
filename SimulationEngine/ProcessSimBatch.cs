@@ -110,12 +110,39 @@ namespace SimulationEngine
     }
 
     //public void Add3DSimulationData(HoudiniSimClient sim3DHandler, double frameRate, string sim3DPath)//, HoudiniSimClient.TLogEvCallBack viewNotifications)
-    public void AddExtSimulationData(EMRALDMsgServer msgServer, double frameRate, string sim3DPath)//, HoudiniSimClient.TLogEvCallBack viewNotifications)
+    public void AddExtSimulationData(EMRALDMsgServer msgServer, double frameRate, string sim3DPath, string password)//, HoudiniSimClient.TLogEvCallBack viewNotifications)
     {
       _msgServer = msgServer;
       _frameRate = frameRate;
       _sim3DPath = sim3DPath;
       //_viewNotifications = viewNotifications;
+    }
+
+    public bool AutoConnectExtSim()
+    {
+      if (_lists.allExtSims.Count < 1)
+        return true;
+
+      DateTime timer = DateTime.Now;
+      bool allConnected = false;
+      while (!allConnected)
+      {
+        var extConnections = _msgServer.GetResources();
+        allConnected = true;
+        foreach (var extSim in _lists.allExtSims.Values)
+        {
+          extSim.verified = extConnections.Contains(extSim.resourceName);
+
+          if (!extSim.verified)
+          {
+            allConnected = false;
+            if (extSim.timeout < (DateTime.Now - timer).TotalSeconds)
+              return false;   
+          }
+        }
+      }
+
+      return true;
     }
 
     private void SetLog(int runIdx)
@@ -174,6 +201,14 @@ namespace SimulationEngine
 
     public void RunBatch()
     {
+      //if there were any xmpp connections specified in the perams not set by the user, connect here
+      if (!AutoConnectExtSim())
+      {
+        this._error = "Failed to connect to external simulation.";
+        logger.Error(this.error); 
+      }
+
+
       batchSuccess = false;
       _stop = false;
       bool retVal = true;
@@ -258,7 +293,10 @@ namespace SimulationEngine
                 {
                   SimVariable curVar = _lists.allVariables.FindByName(varName);
                   if (curVar == null)
-                    throw new Exception("No variable found named - " + varName);
+                  {
+                    this._error = "No variable found named - " + varName;
+                    logger.Error(this.error);
+                  }
 
                   if (!varDict.TryGetValue(varName, out varVals))
                   {
