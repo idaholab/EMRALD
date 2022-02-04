@@ -332,7 +332,7 @@ namespace UnitTesting_Simulation
 
     [Fact]
     //Test the JSON variable 
-    public void JsonVarExeTest2()
+    public void JsonVarExeTest()
     {
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
 
