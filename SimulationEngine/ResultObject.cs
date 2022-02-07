@@ -208,6 +208,7 @@ namespace SimulationEngine
 
   public class EnterExitCause
   {
+    [JsonIgnore]
     public string desc = ""; //Enter key of -  prevState.name + ", " + eventName + ", " + actionName;
                              //Enter key of -  eventName + ", " + actionName + ", " + nextState.name;
     public string name = ""; //eventName + " -> " + actionName
