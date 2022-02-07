@@ -275,7 +275,7 @@ namespace SimulationEngine
 
             trackSim.GetKeyPaths(keyPaths, otherPaths);
             
-            foreach (SimulationEngine.ResultState path in keyPaths.Values)
+            foreach (SimulationEngine.ResultStateBase path in keyPaths.Values)
             {
               string keyStateName = path.name;
 
@@ -360,7 +360,9 @@ namespace SimulationEngine
         OverallResults resultObj = new OverallResults();
         resultObj.name = this._lists.name;
         resultObj.keyStates = keyPaths.Values.ToList();
+        resultObj.otherStatePaths = otherPaths.Values.ToList();
         resultObj.numRuns = curI;
+        resultObj.CalcStats();
         Dictionary<string, int> inStateCnts = new Dictionary<string, int>();
         //foreach (var keyS in resultObj.keyStates)
         //{

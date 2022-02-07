@@ -953,6 +953,8 @@ namespace SimulationTracking
     {
       foreach (StatePath curStatePath in this.Values)
       {
+        bool isKeyPath = (curStatePath.state.stateType == EnStateType.stKeyState);
+
         //get the paths for both key states and standard states
         if (((curStatePath.state.stateType == EnStateType.stKeyState) && (keyResMap != null)) ||
            ((curStatePath.state.stateType == EnStateType.stStandard) && (otherResMap != null)))
@@ -963,7 +965,7 @@ namespace SimulationTracking
           State curState = null;
           State prevState = null;
           State nextState = null;
-          
+
           //bellow items declared here for efficiency
           SimulationEngine.ResultState curResState = null;
           SimulationEngine.EnterExitCause curCause = null;
@@ -991,7 +993,7 @@ namespace SimulationTracking
             //see if the item is already in the current result dictionary
             if (!curResDict.TryGetValue(curState.name, out curResState))
             {
-              curResState = new SimulationEngine.ResultState(curState.name);
+              curResState = new SimulationEngine.ResultState(curState.name, isKeyPath);
               curResDict.Add(curResState.name, curResState);
             }
 
@@ -1019,7 +1021,7 @@ namespace SimulationTracking
               causeKey = evName + ", " + actName + ", " + nextState.name;
               if (!curResState.exitDict.TryGetValue(causeKey, out curCause))
               {
-                curCause = new SimulationEngine.EnterExitCause(curState.name, evName + " -> " + actName, causeKey);
+                curCause = new SimulationEngine.EnterExitCause(nextState.name, evName + " -> " + actName, causeKey);
                 curResState.exitDict.Add(curCause.desc, curCause);
               }
 

@@ -13,37 +13,85 @@ namespace SimulationEngine
 {
   public class OverallResults
   {
+    [JsonProperty(Order = 1)]
     public string name;
+    [JsonProperty(Order = 2)]
     public int numRuns = 0;
+    [JsonProperty(Order = 3)]
     public List<KeyStateResult> keyStates = null;
+    [JsonProperty(Order = 4)]
     public List<ResultState> otherStatePaths = null;
+    public void CalcStats()
+    {
+      foreach(var i in keyStates)
+      {
+        i.CalcAllStats(numRuns);
+      }
+    }
   }
 
-  public class KeyStateResult : ResultState
+  public class KeyStateResult : ResultStateBase
   {
     [JsonIgnore]
     public Dictionary<string, ResultState> pathsLookup = new Dictionary<string, ResultState>();
-    
+
+    [JsonProperty(Order = 9999)] //last
     public List<ResultState> paths { get { return pathsLookup.Values.ToList(); } }
 
-    public KeyStateResult(string name) : base(name) { }
+    public KeyStateResult(string name) : base(name, true) { }
+    public void CalcAllStats(int keyStateCnt)
+    {
+      foreach(var i in this.paths)
+      {
+        i.CalcStats(this.count);
+
+        if(i.name == this.name)
+        {
+          this._contributionCnt = i.contributionCnt;
+        }
+      }
+
+      this.CalcStats(keyStateCnt);
+    }
 
   }
 
-  public class ResultState
+  public class ResultState : ResultStateBase
   {
+    [JsonProperty(Order = 9998)] //on the end
+    public EnterExitCause[] entries { get { return enterDict.Values.ToArray(); } }
+    [JsonProperty(Order = 9999)] //on the end
+    public EnterExitCause[] exits { get { return exitDict.Values.ToArray(); } }
+
+    public ResultState(string name, bool inKeyPath) : base(name, inKeyPath) { }
+  }
+
+  public class ResultStateBase
+  {
+    [JsonProperty(Order = 1)]
     public string name = "";
-    public double rate { get { return _rate; } }
-    public double rate5th { get { return _rate5th; } }
-    public double rate95th { get { return _rate95th; } }
+    [JsonProperty(Order = 2)]
+    public double contributionRate { get { return _rate; } }
+    [JsonProperty(Order = 3)]
+    public double cRate5th { get { return _rate5th; } }
+    [JsonProperty(Order = 4)]
+    public double cRate95th { get { return _rate95th; } }
+    [JsonProperty(Order = 5)]
     public int count { get { return _count; } }
+    [JsonIgnore]
+    public int contributionCnt { get { return _contributionCnt; } }
 
     [JsonIgnore]
     public List<TimeSpan> times { get { return _times; } }
+    [JsonProperty(Order = 6)]
     public TimeSpan timeMean { get { return _totalTime / count; } }
+    [JsonProperty(Order = 7)]
     public TimeSpan timeStdDeviation { get {return GetTimeStdDev(); } }
+    [JsonProperty(Order = 8)]
     public TimeSpan timeMin { get {return _timeMin; } }
+    [JsonProperty(Order = 9)]
     public TimeSpan timeMax { get {return _timeMax; } }
+    [JsonProperty(Order = 10)]
 
     public Dictionary<string, List<string>> watchVariables = new Dictionary<string, List<string>>();
     [JsonIgnore]
@@ -52,18 +100,22 @@ namespace SimulationEngine
     public Dictionary<string, EnterExitCause> exitDict { get; set; } = new Dictionary<string, EnterExitCause>(); //key will be from state, event, and action
     public EnterExitCause[] entries { get { return enterDict.Values.ToArray(); } }
     public EnterExitCause[] exits { get { return exitDict.Values.ToArray(); } }
-    private TimeSpan _totalTime = TimeSpan.Zero;
-    private List<TimeSpan> _times = new List<TimeSpan>();
-    private int _count = 0;
-    private double _rate = 0;
-    private double _rate5th = 0;
-    private double _rate95th = 0;
-    private TimeSpan _timeMin = TimeSpan.FromSeconds(0);
-    private TimeSpan _timeMax = TimeSpan.FromSeconds(0);
+    protected TimeSpan _totalTime = TimeSpan.Zero;
+    protected List<TimeSpan> _times = new List<TimeSpan>();
+    protected int _count = 0;
+    protected int _contributionCnt = 0;
+    protected double _rate = 0;
+    protected double _rate5th = 0;
+    protected double _rate95th = 0;
+    protected TimeSpan _timeMin = TimeSpan.FromSeconds(0);
+    protected TimeSpan _timeMax = TimeSpan.FromSeconds(0);
+    private bool statsDone = false;
 
-    public ResultState(string name)
+    public ResultStateBase(string name, bool inKeyPath)
     {
       this.name = name;
+      if (inKeyPath)
+        _contributionCnt = 1;
     }
 
     public TimeSpan GetTimeStdDev()
@@ -100,7 +152,7 @@ namespace SimulationEngine
 
     public void CalcStats(int totCnt)
     {
-      _rate = (double)this._count / totCnt;
+      _rate = (double)this.contributionCnt / totCnt;
       double range = 1.96 * Math.Sqrt((_rate * (1 - _rate)) / totCnt);
       _rate5th = Math.Round(_rate - range, 8);
       _rate95th = Math.Round(_rate + range, 8);
@@ -132,12 +184,13 @@ namespace SimulationEngine
     {
       this.AddTime(include.timeMean);
       EnterExitCause curCause = null;
+      this._contributionCnt += include.contributionCnt;
            
       foreach (var item in include.enterDict.Values)
       {
         if (!this.enterDict.TryGetValue(item.desc, out curCause))
           this.enterDict.Add(item.desc, item);
-        else 
+        else
           curCause.cnt += item.cnt;
       }
 
@@ -146,7 +199,9 @@ namespace SimulationEngine
         if (!this.exitDict.TryGetValue(item.desc, out curCause))
           this.exitDict.Add(item.desc, item);
         else
+        {
           curCause.cnt += item.cnt;
+        }
       }
     }
   }
