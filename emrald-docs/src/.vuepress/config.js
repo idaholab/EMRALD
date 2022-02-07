@@ -1,7 +1,6 @@
 // Copyright 2021 Battelle Energy Alliance
 
 const { description } = require('../../package');
-var baseUrl = document.baseURI;
 
 module.exports = {
   /**
@@ -23,6 +22,8 @@ module.exports = {
     ['meta', { name: 'apple-mobile-web-app-capable', content: 'yes' }],
     ['meta', { name: 'apple-mobile-web-app-status-bar-style', content: 'black' }]
   ],
+
+  publicPath: '.',
 
   /**
    * Theme configuration, here is the default theme configuration for VuePress.
@@ -46,7 +47,7 @@ module.exports = {
       },
       {
         text: 'EMRALD',
-        link: baseUrl
+        link: this.publicPath
       }
     ],
     sidebar: {
