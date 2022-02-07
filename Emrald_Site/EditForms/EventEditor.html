@@ -191,10 +191,10 @@
                         <hr />
                         <div ng-show="distUsesVariable()">
                             If Variable Changes:
-                            <select ng-model="distOnChange" ng-options="t as t.name for t in distChangeTypes" ng-change="updateChangeDesc()">
+                            <select ng-model="onVarChange" ng-options="t as t.name for t in distChangeTypes" ng-change="updateChangeDesc()">
                                 <option></option>
                             </select>
-                            {{distOnChange.desc}}
+                            {{onVarChange.desc}}
                         </div>
                     </div>
                 </div>
@@ -276,6 +276,13 @@
                         <label style="display: table-cell" for="useTimerVariableCheckbox">Use Variable? </label>
                         <input id="useTimerVariableCheckbox" type="checkbox" ng-model="data.timer.useVariable" />
                     </div>
+                    <div ng-show="data.timer.useVariable">
+                        If Variable Changes:
+                        <select ng-model="onVarChange" ng-options="t as t.name for t in distChangeTypes" ng-change="updateChangeDesc()">
+                            <option></option>
+                        </select>
+                        {{onVarChange.desc}}
+                    </div>
                 </div>
 
                 <div id="FailProbabilityPanel" style="display:table-row;position:absolute;visibility:collapse;height:70%;width:96%;overflow-x:hidden;overflow-y:scroll;">
@@ -322,9 +329,15 @@
                                 <span>Seconds</span>
                             </div>
                         </div>
-
                     </div>
                     <br />
+                    <div ng-show="data.failureRate.lambda.useVariable">
+                        If Variable Changes:
+                        <select ng-model="onVarChange" ng-options="t as t.name for t in distChangeTypes" ng-change="updateChangeDesc()">
+                            <option></option>
+                        </select>
+                        {{onVarChange.desc}}
+                    </div>
                     <!--<span class="item_caption" style="display:table-cell;vertical-align:middle; white-space:nowrap;">Mission Time:</span>
     <input name="missiontimespandays" ng-model="missionTime.days" size="4" />
     <input name="missiontimespanhours" ng-model="missionTime.hours" size="4" />
