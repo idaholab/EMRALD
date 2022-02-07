@@ -321,8 +321,9 @@ namespace SimulationTracking
                 retList.Add(item);
               }
               else if ((curIDType == EnModifiableTypes.mtState) &&
+                       ((!(item.eventData is StateCngEvent)) ||
                        (((StateCngEvent)item.eventData).evalCurOnInitial) &&
-                       (curStatesBS.HasCommonBits(item.relatedIDs)) &&
+                       (curStatesBS.HasCommonBits(item.relatedIDs))) &&
                        (item.eventData as CondBasedEvent).EventTriggered(curStatesBS, otherData, curTime, start3DTime, nextEvTime))
               {
                 retList.Add(item);
