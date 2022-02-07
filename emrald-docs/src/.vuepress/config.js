@@ -23,8 +23,6 @@ module.exports = {
     ['meta', { name: 'apple-mobile-web-app-status-bar-style', content: 'black' }]
   ],
 
-  publicPath: '.',
-
   /**
    * Theme configuration, here is the default theme configuration for VuePress.
    *
@@ -47,7 +45,7 @@ module.exports = {
       },
       {
         text: 'EMRALD',
-        link: this.publicPath
+        link: 'https://emraldapp.inl.gov/'
       }
     ],
     sidebar: {
