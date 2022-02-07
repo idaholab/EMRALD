@@ -18,22 +18,19 @@ function adjustWindowPos(container, el) {
 
 function downloadSolver() {
   var link = document.createElement("a");
-  link.setAttribute("download", "Solver.zip");  //the save name after downloaded.
-  link.href = document.baseURI + "/resources/EMRALD_SimEngine.zip";  //The file to download.
+  link.href = "https://github.com/idaholab/EMRALD/releases/latest/download/EMRALD_SimEngine.zip";  //The file to download.
   link.click();
 }
 
 function downloadClientTester() {
   var link = document.createElement("a");
-  link.setAttribute("download", "ClientTester.zip");  //the save name after downloaded.
-  link.href = document.baseURI + "/resources/XMPPClientTester.zip";  //The file to download.
+  link.href = "https://github.com/idaholab/EMRALD/releases/latest/download/XMPPClientTester.zip";  //The file to download.
   link.click();
 }
 
 function downloadClientTesterSource() {
   var link = document.createElement("a");
-  link.setAttribute("download", "ClientTesterSource.zip");  //the save name after downloaded.
-  link.href = document.baseURI + "/resources/xmppClientTesterSource.zip";  //The file to download.
+  link.href = "https://github.com/idaholab/EMRALD/tree/main/XmppClient";  //The file to download.
   link.click();
 }
 
@@ -365,26 +362,27 @@ function openAbout() {
 }
 //------------------
 function openHelp() {
-  var wnd = mxWindow.createFrameWindow(
-      'Help.html',
-      'Close',  //command buttons
-      'Close', //top buttons
-      function (btn, dataObj) {
-        if (btn === 'Close') {
-        }
-        return true;
-      },
-      null,
-      true, //ismodal
-      null,
-      null,
-      700, //width
-      800 //height
-  );
-  document.body.removeChild(wnd.div);
-  var contentPanel = document.getElementById("ContentPanel");
-  adjustWindowPos(contentPanel, wnd.div);
-  contentPanel.appendChild(wnd.div);
+  window.open("../docs");
+  //var wnd = mxWindow.createFrameWindow(
+  //    'Help.html',
+  //    'Close',  //command buttons
+  //    'Close', //top buttons
+  //    function (btn, dataObj) {
+  //      if (btn === 'Close') {
+  //      }
+  //      return true;
+  //    },
+  //    null,
+  //    true, //ismodal
+  //    null,
+  //    null,
+  //    700, //width
+  //    800 //height
+  //);
+  //document.body.removeChild(wnd.div);
+  //var contentPanel = document.getElementById("ContentPanel");
+  //adjustWindowPos(contentPanel, wnd.div);
+  //contentPanel.appendChild(wnd.div);
 }
 //------------------
 function isIENavigator() {

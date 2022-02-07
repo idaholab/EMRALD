@@ -1,6 +1,7 @@
 // Copyright 2021 Battelle Energy Alliance
 
-const { description } = require('../../package')
+const { description } = require('../../package');
+var baseUrl = document.baseURI;
 
 module.exports = {
   /**
@@ -45,7 +46,7 @@ module.exports = {
       },
       {
         text: 'EMRALD',
-        link: 'https://emraldapp.inl.gov/'
+        link: baseUrl
       }
     ],
     sidebar: {
