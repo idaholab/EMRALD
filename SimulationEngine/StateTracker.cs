@@ -949,79 +949,117 @@ namespace SimulationTracking
       return finalStates;
     }
 
-    public List<List<int>> GetKeyStatePaths(AllStates allStates = null, Dictionary<string, SimulationEngine.ResultState> resMap = null)
+    public void GetKeyStatePaths(AllStates allStates = null, Dictionary<string, SimulationEngine.KeyStateResult> keyResMap = null, Dictionary<string, SimulationEngine.ResultState> otherResMap = null)
     {
-      List<List<int>> finalStates = new List<List<int>>();
-
       foreach (StatePath curStatePath in this.Values)
       {
-        if (curStatePath.state.stateType == EnStateType.stKeyState)
+        bool isKeyPath = (curStatePath.state.stateType == EnStateType.stKeyState);
+
+        //get the paths for both key states and standard states
+        if (((curStatePath.state.stateType == EnStateType.stKeyState) && (keyResMap != null)) ||
+           ((curStatePath.state.stateType == EnStateType.stStandard) && (otherResMap != null)))
         {
-          if (resMap != null)
+          //make a new results item which will capture any looping items.
+          Dictionary<string, SimulationEngine.ResultState> curResDict = new Dictionary<string, SimulationEngine.ResultState>();
+
+          State curState = null;
+          State prevState = null;
+          State nextState = null;
+
+          //bellow items declared here for efficiency
+          SimulationEngine.ResultState curResState = null;
+          SimulationEngine.EnterExitCause curCause = null;
+          SimulationEngine.ResultState updateItem = null;
+          string causeKey = "";
+          string evName = "";
+          string actName = "";
+
+          //this runs from the first to last item
+          for (int i = 0; i <= curStatePath.path.Count - 1; i++)
           {
-            State curFromState = null;
-            SimulationEngine.ResultState curState;
-            SimulationEngine.Cause curCause;
-            if (resMap.ContainsKey(curStatePath.state.name))
-            {
-              curState = resMap[curStatePath.state.name];
-            }
+            if (nextState != null)
+              curState = nextState;
             else
+              curState = allStates[curStatePath.path[i+1]];
+
+            if (i < (curStatePath.path.Count - 2))
+              nextState = allStates[curStatePath.path[i + 2]];
+            else if (i == (curStatePath.path.Count - 2))
+              nextState = curStatePath.state;
+            else
+              nextState = null;
+
+
+            //see if the item is already in the current result dictionary
+            if (!curResDict.TryGetValue(curState.name, out curResState))
             {
-              curState = new SimulationEngine.ResultState(curStatePath.state.name);
-              resMap.Add(curStatePath.state.name, curState);
+              curResState = new SimulationEngine.ResultState(curState.name, isKeyPath);
+              curResDict.Add(curResState.name, curResState);
             }
 
-
-            for (int i = curStatePath.path.Count - 1; i >= 0; i--)
+            curResState.AddTime(curStatePath.times[i]);
+            //add where came from. if not at the beginning
+            if (prevState != null)
             {
-              curState.AddTime(curStatePath.times[i]);
-
-              if (i > 0)
+              evName = curStatePath.eventNames[i];
+              actName = curStatePath.actionNames[i];
+              causeKey = prevState.name + ", " + evName + ", " + actName;
+              if (!curResState.enterDict.TryGetValue(causeKey, out curCause))
               {
-                curFromState = allStates[curStatePath.path[i]];
-                string evName = curStatePath.eventNames[i];
-                string actName = curStatePath.actionNames[i];
-                string causeKey = curFromState.name + ", " + evName + ", " + actName;
+                curCause = new SimulationEngine.EnterExitCause(prevState.name, evName + " -> " + actName, causeKey);
+                curResState.enterDict.Add(curCause.desc, curCause);
+              }
 
-                if (curState.causeDict.ContainsKey(causeKey))
-                {
-                  curCause = curState.causeDict[causeKey];
-                }
-                else
-                {
-                  curCause = new SimulationEngine.Cause(evName + " -> " + actName, causeKey);
-                  curState.causeDict.Add(causeKey, curCause);
-                }
-
-                if (curCause.fromState == null)
-                {
-                  curCause.fromState = new SimulationEngine.ResultState(curFromState.name);
-                }
-
-                curState = curCause.fromState;
-              }              
+              curCause.cnt++;
             }
+
+            //add where going to, if not at the end
+            if (nextState != null)
+            {
+              evName = curStatePath.eventNames[i+1];
+              actName = curStatePath.actionNames[i+1];
+              causeKey = evName + ", " + actName + ", " + nextState.name;
+              if (!curResState.exitDict.TryGetValue(causeKey, out curCause))
+              {
+                curCause = new SimulationEngine.EnterExitCause(nextState.name, evName + " -> " + actName, causeKey);
+                curResState.exitDict.Add(curCause.desc, curCause);
+              }
+
+              curCause.cnt++;
+            }
+
+            //prep for the next round
+            prevState = curState;
+
           }
 
-          curStatePath.path.Add(curStatePath.state.id);
-          finalStates.Add(curStatePath.path);
+          //collapse all the stats for this path 
+          foreach (var item in curResDict.Values)
+            item.Collapse();
+
+          //add cur run to either other results map or the key state results map
+          Dictionary<string, SimulationEngine.ResultState> addToRes = otherResMap;
+          if (curStatePath.state.stateType == EnStateType.stKeyState)
+          {
+            if (!keyResMap.ContainsKey(curStatePath.state.name))
+              keyResMap.Add(curStatePath.state.name, new SimulationEngine.KeyStateResult(curStatePath.state.name));
+
+            addToRes = keyResMap[curStatePath.state.name].pathsLookup;
+            //add the time for the key state overall result
+            keyResMap[curStatePath.state.name].AddTime(curStatePath.times[curStatePath.times.Count-1]);
+          }
+
+          foreach(var item in curResDict.Values)
+          {
+            if (!addToRes.TryGetValue(item.name, out updateItem))
+              addToRes.Add(item.name, item);
+            else
+              updateItem.Combine(item);
+
+          }
         }
       }
-
-      return finalStates;
     }
-
-    //public MyBitArray ToBitArray()
-    //{
-    //  MyBitArray retArray = new MyBitArray(this.Keys.Max() + 1);
-    //  foreach (int curKey in this.Keys.ToArray())
-    //  {
-    //    retArray[curKey] = true;
-    //  }
-
-    //  return retArray;
-    //}
   }
 
 
@@ -1982,26 +2020,9 @@ namespace SimulationTracking
     /// Get the paths of movement from start states to the key states for the simulation run
     /// </summary>
     /// <returns></returns>
-    public List<List<string>> GetKeyPaths(Dictionary<string, SimulationEngine.ResultState> resMap)
+    public void GetKeyPaths(Dictionary<string, SimulationEngine.KeyStateResult> resMap, Dictionary<string, SimulationEngine.ResultState> otherResMap)
     {
-      List<List<string>> retList = new List<List<string>>();
-
-      foreach (List<int> stPath in curStates.GetKeyStatePaths(allLists.allStates, resMap))
-      {
-        List<string> curList = new List<string>();
-        foreach (int id in stPath)
-        {
-          if (id > 0)
-          {
-
-            curList.Add(allLists.allStates[id].name);
-          }
-        }
-
-        retList.Add(curList);
-      }
-
-      return retList;
+      curStates.GetKeyStatePaths(allLists.allStates, resMap, otherResMap);
     }
 
     /// <summary>
