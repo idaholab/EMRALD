@@ -87,8 +87,11 @@ module.controller("maapFormController", [
     $scope.initiatorQuery = "";
     $scope.initiatorOptions = [];
     $scope.exePath = "";
+    $scope.parameterPath = "";
+    $scope.inputPath = "";
     $scope.varLinks = [new VarLink()];
     $scope.inputBlocks = ["", "", ""];
+    $scope.parametersLoaded = false;
 
     const parameterInfo = {};
     const possibleInitiators = {};
@@ -144,6 +147,7 @@ module.controller("maapFormController", [
 
     $scope.$watch("parameterFile", function () {
       if ($scope.parameterFile.length > 0) {
+        $scope.parametersLoaded = true;
         $scope.parameterFile.split(/\n/).forEach((line) => {
           if (/^[0-9]{3}/.test(line)) {
             try {

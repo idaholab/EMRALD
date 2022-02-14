@@ -15,18 +15,34 @@
       th {
         padding: 4px;
       }
+
+      #newInitiatorSection {
+        border: 2px solid;
+      }
+
+      .pathInput {
+        width: 350px;
+      }
     </style>
   </head>
   <body ng-app="maapForm">
     <form ng-controller="maapFormController">
       <label for="exePath">Executable location:</label>
-      <input id="exePath" ng-model="exePath" />
+      <input id="exePath" ng-model="exePath" class="pathInput" />
       <br />
       <label for="parameterBtn">Parameter file:</label>
       <input type="file" id="parameterBtn" file-model="parameterFile" />
       <br />
-      <label for="inpBtn">Input file:</label>
-      <input type="file" id="inpBtn" file-model="inputFile" />
+      <label for="parameterPath">Parameter file path:</label>
+      <input id="parameterPath" ng-model="parameterPath" class="pathInput" />
+      <br />
+      <div ng-if="parametersLoaded">
+        <label for="inpBtn">Input file:</label>
+        <input type="file" id="inpBtn" file-model="inputFile" />
+        <br />
+        <label for="inpPath">Input file path:</label>
+        <input id="inpPath" ng-model="inputPath" class="pathInput" />
+      </div>
       <hr />
       <h3>Parameters:</h3>
       <table>
@@ -53,21 +69,26 @@
         </tr>
       </table>
       <h3>Initiators:</h3>
-      <label for="addInitiator">Add initiator:</label>
-      <input
-        list="initiatorList"
-        id="addInitiator"
-        ng-model="initiatorQuery"
-        ng-change="findInitiators($event)"
-      />
-      <table>
-        <tr ng-repeat="opt in initiatorOptions">
-          <td>{{opt.label}}</td>
-          <td>
-            <button ng-click="addInitiator(opt)">Add</button>
-          </td>
-        </tr>
-      </table>
+      <div id="newInitiatorSection">
+        <label for="addInitiator">Add initiator:</label>
+        <input
+          list="initiatorList"
+          id="addInitiator"
+          ng-model="initiatorQuery"
+          ng-change="findInitiators($event)"
+          placeholder="Search for initiator"
+        />
+        <br />
+        <b>Results:</b>
+        <table>
+          <tr ng-repeat="opt in initiatorOptions">
+            <td>{{opt.label}}</td>
+            <td>
+              <button ng-click="addInitiator(opt)">Add</button>
+            </td>
+          </tr>
+        </table>
+      </div>
       <table>
         <tr>
           <th>Name</th>
@@ -84,6 +105,7 @@
       <table>
         <tr>
           <th>Doc Link Variable</th>
+          <th>Output</th>
         </tr>
         <tr ng-repeat="varLink in varLinks track by $index">
           <td>
@@ -91,6 +113,13 @@
               ng-options="variable as variable.name for variable in docVars"
               ng-model="varLink.variable"
             ></select>
+          </td>
+          <td>
+            <select>
+              <option>CORE UNCOVERY</option>
+              <option>VESSEL FAILURE</option>
+              <option>CONTAINMENT FAILURE</option>
+            </select>
           </td>
           <td>
             <button ng-click="removeOutput($index)">Remove</button>
