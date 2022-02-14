@@ -27,9 +27,9 @@ namespace XmppMessageClient
 
     public Dictionary<string, Matrix.Xmpp.Roster.RosterItem> rosterItems { get { return m_RosterItems; } }
 
-    public SampleClientController()
+    public SampleClientController(IAppSettingsService appSettingsService)
     {
-      m_xmppNsgClient = new XmppMessageClient(m_passwd);
+      m_xmppNsgClient = new XmppMessageClient(m_passwd, appSettingsService);
       m_xmppNsgClient.SetMessageClient(this);
     }
 

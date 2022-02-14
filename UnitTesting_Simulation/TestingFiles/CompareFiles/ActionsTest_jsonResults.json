@@ -4,9 +4,10 @@
   "keyStates": [
     {
       "name": "OK",
-      "rate": 0.5,
-      "rate5th": 0.19009679,
-      "rate95th": 0.80990321,
+      "watchVariables": {},
+      "rate": 0.0,
+      "rate5th": 0.0,
+      "rate95th": 0.0,
       "count": 5,
       "times": [
         "00:00:10",
@@ -17,16 +18,16 @@
       ],
       "timeMean": "00:00:10",
       "timeStdDeviation": "00:00:00",
-      "watchVariables": {},
       "causes": [
         {
           "desc": "S3, immediate action, RunV2_DBLGreaterThan",
           "name": "immediate action -> RunV2_DBLGreaterThan",
           "fromState": {
             "name": "S3",
-            "rate": 1.0,
-            "rate5th": 1.0,
-            "rate95th": 1.0,
+            "watchVariables": {},
+            "rate": 0.0,
+            "rate5th": 0.0,
+            "rate95th": 0.0,
             "count": 5,
             "times": [
               "00:00:10",
@@ -37,16 +38,16 @@
             ],
             "timeMean": "00:00:10",
             "timeStdDeviation": "00:00:00",
-            "watchVariables": {},
             "causes": [
               {
                 "desc": "S2, FiveSec, Goto_S3",
                 "name": "FiveSec -> Goto_S3",
                 "fromState": {
                   "name": "S2",
-                  "rate": 1.0,
-                  "rate5th": 1.0,
-                  "rate95th": 1.0,
+                  "watchVariables": {},
+                  "rate": 0.0,
+                  "rate5th": 0.0,
+                  "rate95th": 0.0,
                   "count": 5,
                   "times": [
                     "00:00:05",
@@ -57,16 +58,16 @@
                   ],
                   "timeMean": "00:00:05",
                   "timeStdDeviation": "00:00:00",
-                  "watchVariables": {},
                   "causes": [
                     {
                       "desc": "Start, FiveSec, Goto_S2",
                       "name": "FiveSec -> Goto_S2",
                       "fromState": {
                         "name": "Start",
-                        "rate": 1.0,
-                        "rate5th": 1.0,
-                        "rate95th": 1.0,
+                        "watchVariables": {},
+                        "rate": 0.0,
+                        "rate5th": 0.0,
+                        "rate95th": 0.0,
                         "count": 5,
                         "times": [
                           "00:00:00",
@@ -77,7 +78,6 @@
                         ],
                         "timeMean": "00:00:00",
                         "timeStdDeviation": "00:00:00",
-                        "watchVariables": {},
                         "causes": []
                       }
                     }
@@ -91,9 +91,10 @@
     },
     {
       "name": "Fail",
-      "rate": 0.5,
-      "rate5th": 0.19009679,
-      "rate95th": 0.80990321,
+      "watchVariables": {},
+      "rate": 0.0,
+      "rate5th": 0.0,
+      "rate95th": 0.0,
       "count": 5,
       "times": [
         "00:00:10",
@@ -104,16 +105,16 @@
       ],
       "timeMean": "00:00:10",
       "timeStdDeviation": "00:00:00",
-      "watchVariables": {},
       "causes": [
         {
           "desc": "S3, immediate action, RunV2_DBLGreaterThan",
           "name": "immediate action -> RunV2_DBLGreaterThan",
           "fromState": {
             "name": "S3",
-            "rate": 1.0,
-            "rate5th": 1.0,
-            "rate95th": 1.0,
+            "watchVariables": {},
+            "rate": 0.0,
+            "rate5th": 0.0,
+            "rate95th": 0.0,
             "count": 5,
             "times": [
               "00:00:10",
@@ -124,16 +125,16 @@
             ],
             "timeMean": "00:00:10",
             "timeStdDeviation": "00:00:00",
-            "watchVariables": {},
             "causes": [
               {
                 "desc": "S2, FiveSec, Goto_S3",
                 "name": "FiveSec -> Goto_S3",
                 "fromState": {
                   "name": "S2",
-                  "rate": 1.0,
-                  "rate5th": 1.0,
-                  "rate95th": 1.0,
+                  "watchVariables": {},
+                  "rate": 0.0,
+                  "rate5th": 0.0,
+                  "rate95th": 0.0,
                   "count": 5,
                   "times": [
                     "00:00:05",
@@ -144,16 +145,16 @@
                   ],
                   "timeMean": "00:00:05",
                   "timeStdDeviation": "00:00:00",
-                  "watchVariables": {},
                   "causes": [
                     {
                       "desc": "Start, FiveSec, Goto_S2",
                       "name": "FiveSec -> Goto_S2",
                       "fromState": {
                         "name": "Start",
-                        "rate": 1.0,
-                        "rate5th": 1.0,
-                        "rate95th": 1.0,
+                        "watchVariables": {},
+                        "rate": 0.0,
+                        "rate5th": 0.0,
+                        "rate95th": 0.0,
                         "count": 5,
                         "times": [
                           "00:00:00",
@@ -164,7 +165,6 @@
                         ],
                         "timeMean": "00:00:00",
                         "timeStdDeviation": "00:00:00",
-                        "watchVariables": {},
                         "causes": []
                       }
                     }

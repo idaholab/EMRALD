@@ -1,0 +1,20 @@
+{
+      "Variable": {
+        "id": 1,
+        "name": "AccrVar",
+        "desc": "",
+        "varScope": "gtAccrual",
+        "value": 0,
+        "resetOnRuns":  true,
+        "accrualStatesData": [
+          {
+            "stateName": "State1",
+            "type": "ctMultiplier",
+            "accrualMult": 1.0,
+            "multRate": "trHours",
+            "accrualTable": []
+          }
+        ],
+        "type": "double"
+      }
+    }

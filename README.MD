@@ -5,9 +5,10 @@ Event Modeling Risk Assessment using Linked Diagrams (EMRALD) is a software tool
 
 ## SETUP
 1. Clone this repository to your machine using `git clone https://github.com/inl-labtrack/EMRALD.git`
+	- To avoid unexpected problems during setup, it is strongly recommended to NOT use Visual Studio to clone the repository
 2. When the cloning is complete, open "EMRALD.sln" in Visual Studio
 3. In Visual Studio's Solution Explorer, there will be several projects listed.  These are detailed in [EMRALD Projects](#emrald-projects) section below.  The three primary projects are the website used for building models, the desktop application used for running simulations, and the documentation project for getting started with EMRALD and learning how to use it.
-	- To debug the Website project:
+	- To run (debug) the Website project:
 		1. After loading the solution in Visual Studio and all packages have been restored, run the `RunFirst.bat` file in the `Emrald_Site` folder. (This step should only need to be done once.)
 			1. To run this file from Visual Studio, right-click on the `Emrald_Site` project and select `Open in Terminal`.  
 			2. In the terminal window that appears, type `.\RunFirst.bat` and hit enter.
@@ -15,7 +16,7 @@ Event Modeling Risk Assessment using Linked Diagrams (EMRALD) is a software tool
 			4. Upon completion, a success message should appear.
 		2. Right-click on "Emrald_Site" in the Solution Explorer
 		3. Select "View in Browser"
-	- To debug the Simulator Project: 
+	- To run (debug) the Simulator Project: 
 		1. Right-click on "EMRALD_Sim" in the Solution Explorer
 		2. Under "Debug," select "Start New Instance"
     - To run the Documentation Project:

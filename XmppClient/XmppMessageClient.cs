@@ -13,6 +13,7 @@ using Subscription = Matrix.Xmpp.Roster.Subscription;
 using Matrix.Xmpp;
 using System.Threading;
 
+
 namespace XmppMessageClient
 {
   class XmppMessageClient
@@ -25,10 +26,11 @@ namespace XmppMessageClient
     private IMessageClient m_msgClient;
     private string m_passwd;
     #endregion
+    private readonly IAppSettingsService _appSettingsService;
 
-
-    public XmppMessageClient(string passwd)
+    public XmppMessageClient(string passwd, IAppSettingsService appSettingsService)
     {
+      _appSettingsService = appSettingsService;
       m_passwd = passwd;
       SetLicense();
       InitializeXmppClient();
@@ -222,15 +224,28 @@ namespace XmppMessageClient
     /// <summary>
     /// Sets the license and activate the evaluation.
     /// </summary>
-    private static void SetLicense()
+    private void SetLicense()
     {
+      //To use this as a base for your project, you need to have an MatriX license
+      //Get a license and use project "Manage User Secrets" to set the license if you want to use this MatriX package 
+      //example 
+      /*
+      {
+        "Secrets": {
+          "XmppLicense": "YourLicenseCodeHere"
+        }
+      }
+       */
+      try
+      {
+        string lic = _appSettingsService.XmppLicense;  //the other option is to place your license code here, but do not distribute
+        Matrix.License.LicenseManager.SetLicense(lic);
+      }
+      catch { } //failed to do license just continue with trial
       
-      //String lic = "YourKey";
-     // Matrix.License.LicenseManager.SetLicense(lic);
-
 
       // when something is wrong with your license you can find the error here
-     // Console.WriteLine("License errors: {0}", Matrix.License.LicenseManager.LicenseError);
+      // Console.WriteLine("License errors: {0}", Matrix.License.LicenseManager.LicenseError);
     }
 
     #region << Public Methods >>

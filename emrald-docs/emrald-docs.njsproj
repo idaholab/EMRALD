@@ -221,6 +221,7 @@
     <Content Include="src\guide\Modeling\actions.md">
       <SubType>Code</SubType>
     </Content>
+    <Content Include="src\guide\Modeling\demoProject.md" />
     <Content Include="src\guide\Modeling\backendInfo.md" />
     <Content Include="src\guide\Modeling\diagrams.md">
       <SubType>Code</SubType>

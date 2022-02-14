@@ -141,14 +141,16 @@ class DataNode {
 }
 
 class VarLink {
-  constructor(prismMethod, target, variable) {
+  constructor(prismMethod, target, variable, initialTime) {
     this.prismMethod = prismMethod;
     this.target = target;
     this.variable = variable;
+    this.initialTime = initialTime;
   }
 
   toJSON() {
     var json = {
+      initialTime: this.initialTime,
       prismMethod: this.prismMethod,
       target: this.target,
       variable: {},
@@ -185,6 +187,11 @@ class OpenErrorForm extends ExternalExeForm {
           dataObj.varNames.push(varLink.variable.name);
         }
       }
+      if (varLink.initialTime) {
+        if (dataObj.varNames.indexOf(varLink.initialTime.name) < 0) {
+          dataObj.varNames.push(varLink.initialTime.name);
+        }
+      }
     });
 
     var modified = [];
@@ -209,7 +216,7 @@ class OpenErrorForm extends ExternalExeForm {
         new XMLSerializer().serializeToString(model).replace(/[\n\t]/g, "")
       );
       dataObj.varNames.forEach((varName) => {
-        xml = xml.replace(new RegExp(`%%${varName}`, 'g'), `"+${varName}+"`);
+        xml = xml.replace(new RegExp(`%%${varName}`, "g"), `"+${varName}+"`);
       });
       dataObj.raFormData = {
         model: xml,
@@ -219,16 +226,28 @@ class OpenErrorForm extends ExternalExeForm {
         prismParam: this.$scope.methodParam,
         modified,
       };
-      var exeRootPath = this.$scope.exePath.replace(/[^\/\\]*\.exe$/, '');
+      var exeRootPath = this.$scope.exePath.replace(/[^\/\\]*\.exe$/, "");
       var resultsPath = `${exeRootPath}results.json`;
       var modelPath = `${exeRootPath}model.xml`;
-      dataObj.raPreCode = `System.IO.File.WriteAllText("${escape(modelPath)}", "${xml}");`;
-      dataObj.raPreCode += `\nreturn "--model \\"${escape(modelPath)}\\" --method ${this.$scope.varLinks
+      dataObj.raPreCode = `System.IO.File.WriteAllText("${escape(
+        modelPath
+      )}", "${xml}");return "--model \\"${escape(
+        modelPath
+      )}\\" --method ${this.$scope.varLinks
         .map((varLink) => varLink.prismMethod)
         .join(" ")} --target ${this.$scope.varLinks
         .map((varLink) => `\\"${varLink.target}\\"`)
-        .join(" ")} --prism \\"${escape(this.$scope.prismPath)}\\" --results \\"${escape(resultsPath)}\\"`;
-      dataObj.raPreCode += '";';
+        .join(" ")} --step-range ${this.$scope.varLinks
+        .map((varLink) => {
+          let stepRange = "0:10:100";
+          if (varLink.initialTime) {
+            stepRange = `\"+${varLink.initialTime.name}+\":\"+CurTime+\"`;
+          }
+          return `\\"${stepRange}\\"`;
+        })
+        .join(" ")} --prism \\"${escape(
+        this.$scope.prismPath
+      )}\\" --results \\"${escape(resultsPath)}\\"";`;
       dataObj.raPostCode = "";
       dataObj.returnProcess = "rtNone";
       dataObj.variables = [];
@@ -295,7 +314,7 @@ openErrorForm.controller("openErrorController", [
         ).map((node) => node.getAttribute("name"));
         $scope.hasModel = true;
       } catch (err) {
-        alert('Could not parse model file!');
+        alert("Could not parse model file!");
       }
     }
 
@@ -329,7 +348,8 @@ openErrorForm.controller("openErrorController", [
             new VarLink(
               data.prismMethod,
               data.target,
-              form.findVariable(data.variable)
+              form.findVariable(data.variable),
+              form.findVariable(data.initialTime || {})
             )
         );
       }

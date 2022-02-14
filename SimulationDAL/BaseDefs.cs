@@ -27,7 +27,7 @@ namespace SimulationDAL
   [JsonConverter(typeof(StringEnumConverter))]
   public enum EnEventType
   {
-    et3dSimEv = 0, //event from a 3D simulation
+    et3dSimEv,// = 0, //event from a 3D simulation
     etFailRate, //probabilistic failure rate - fails after a sampled time
     etVarCond, //executes when the value of a variable meets a condition 
     etStateCng, //executes when a different desired state\s are executed
@@ -36,7 +36,8 @@ namespace SimulationDAL
     etNormalDist, //time event following a normal distribution.
     etWeibullDist,
     etExponentialDist,
-    etLogNormalDist
+    etLogNormalDist,
+    etDistribution
     };
 
   public enum EnDiagramType { dtComponent = 0, dtSystem, dtPlant, dtOther }; 
@@ -50,7 +51,7 @@ namespace SimulationDAL
   public enum EnTimeRate { trYears, trDays, trHours, trMinutes, trSeconds}
 
   public enum EnIDTypes { itVar = 0, itComp, itState, itEvent, itAction, itTreeNode, itTimer, itPacket, itDiagram, itExtSim };
-
+  public enum EnDistType { dtNormal, dtWeibull, dtExponential, dtLogNormal}
   //public class ModelTypesInfo
   //{
   //  //private static readonly string[] EnDiagramTypeName = { "Component", "System", "Plant Response", "Other" };
