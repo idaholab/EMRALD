@@ -1,7 +1,6 @@
 # External Couping using XMPP
 
-![Logo](/images/Modeling/xmppProtocol/XMPP_logo.png) <!--//todo make this smaller-->
-
+!<div style="width:300px">![logo](/images/Modeling/xmppProtocol/XMPP_logo.png)</div><br>
 # Overview
 The XMPP message passing protocol in EMRALD makes it possible to do two-way coupling where the events in another simulation affect what happens in the EMRALD model and the events in the EMRALD model can change the other simulation, all in real time. To do this, you must either have access to the source of the coupling simulation or write a wrapper for an API of the other application. This section covers the message structure and minimum requirements. 
 Notice - This is feature is still in beta development and subject to change.
@@ -65,18 +64,24 @@ The following messages are what can come from the coupled application. The type 
 ## Status States
 Status message return types to be sent to EMRALD whenever an atStatus message is received. These should also be used to maintain the current state of the connected application, see the next section.
 - **stWaiting** - coupled simulation is waiting for what to do next from EMRALD.
-- **stLoading** - loading time after an atOpenSim.
+- **stLoaded** - loaded time after an atOpenSim.
 - **stRunning** - executing the coupled simulation code, should also have info on what it is doing to help debug.
 - **stDone** - initial startup condition or after done running a simulation.
 - **stError** - an error on the coupled side, that makes it unable to continue. Should contain additional detail on the cause of the error.
 
 ## Suggested Execution Flow
 The coupled application needs to maintain a few variables:
+
 **SimTime** - The current time of its simulation with a start time when EMRALD specifies to begin.
+
 **CallbackTime** - is the EMRALD global time at which the coupled application must pause and return control to EMRALD if no significant event happens sooner.
+
 **CallbackName** - the name of the callback timer.
+
 **EndTime** - the maximum local time, to guard against runaway simulations, at which AVERT must terminate its simulation. This is specified by the user and passed in on open.
+
 **StartTimeDiff** - is the difference between EMRALD global time and AVERT's SimTime. 
+
 **Status** - indicates the state of coupled interaction with EMRALD.
 
 It is suggested to use the following flow method for processing and replying to messages. The coupled application should shift through a the status states depending on what messages it receives and what happens in its simulation. This outlines the messages that the application will get given the different states it is in, what it should do and the response messages that should be sent. It is recommended that a status message be sent to EMRALD for each change in status state, to assist in debugging. 
@@ -99,13 +104,13 @@ Initial startup condition or after done running a simulation.
 * Set EndTime to endTime property of the message
 * Set StartTimeDiff to the EMRALD global time in the message.
 * Clear any temporary data/results
-* Shift Status state to stLoading.  
+* Shift Status state to stLoaded.  
 
 **atTerminate** 
 * Clear any temporary data/results
 * Shut down application and any associated threads.
 
-### stLoading
+### stLoaded
 Coupled application is loading after an atSimOpen status state.
 * Load the specified model. (For efficiency, application must determine if it is the same model and if it can simply reset the model back to the beginning, reinitializing the data)
 * Discard any temporary or previous result information.  
@@ -114,7 +119,7 @@ Coupled application is loading after an atSimOpen status state.
 * If the model loaded correctly, shift to stWaiting.
 
 ### stWaiting
-In this status state the coupled application is poised to simulate, but is waiting to allow EMRALD to alter the conditions that affect its simulation. This status state is entered from stLoading, or stRunning once complete.
+In this status state the coupled application is poised to simulate, but is waiting to allow EMRALD to alter the conditions that affect its simulation. This status state is entered from stLoaded, or stRunning once complete.
 
 **atCompModify**
 * Make or save the change in the model to the parameter and global time specified in the message.
@@ -174,35 +179,39 @@ To couple with an external application first load a model. If it loads with no e
 The external simulation or client application must then be opened and connected. Next the user clicks on the items in "Links to External Simulations" in the upper left. 
 <div style="width:500px">![External Links](/images/Modeling/xmppProtocol/SolveEngineExtLink.png)</div><br>
 This pops up a list of all clients currently connected to EMRALD. The user selects the correct linked application for the EMRALD item. 
-<div style="width:300px">![External Links](/images/Modeling/xmppProtocol/SolveEngineSelLink.png)</div><br>
+<div style="width:300px">![Select Link](/images/Modeling/xmppProtocol/SolveEngineSelLink.png)</div><br>
 
 ### Manually send EMRALD messages
 The 'XMPP Messaging' tab allows the user to manually construct and send messages and see messages sent from a coupled application.
 
 The left side shows the connected clients and the messages received.
-<div style="width:300px">![External Links](/images/Modeling/xmppProtocol/SolveEngineMsgLog.png)</div><br>
+<div style="width:500px">![EMRALD message log](/images/Modeling/xmppProtocol/SolveEngineMsgLog.png)</div><br>
 
 The right side allows the user to manually construct a message to send to the coupled application.
-<div style="width:300px">![External Links](/images/Modeling/xmppProtocol/SolveEngineMsgBuilder.png)</div><br>
+<div style="width:500px">![EMRALD message builder](/images/Modeling/xmppProtocol/SolveEngineMsgBuilder.png)</div><br>
 
+If the user knows or has the JSON message to be sent they can type or paste it in the bottom right section.
+<div style="width:500px">![EMRALD message area](/images/Modeling/xmppProtocol/SolveEngineMsgBuilderBtm.png)</div><br>
 
-
+By selecting and filling out the top options, a message can be automatically constructed. The options depend on the type of message selected by the user. Clicking the "Generate Message" button auto generates the JSON message in the box below. 
+<div style="width:500px">![EMRALD auto build message](/images/Modeling/xmppProtocol/SolveEngineMsgBuilderAuto.png)</div><br>
 
 
 ## Client Demo
 The source code contains demo code for a client in c# using the MatriX package. (The XmppClient project in the EMRALD code repository [EMRALD Source](https://github.com/idaholab/EMRALD))
 This project allows you to see the messages coming from the EMRALD simulation and respond to them manually. This allows you to independently test and verify the EMRALD model before connecting to the external application.
-<div style="width:300px">![Client Tester](/images/Modeling/xmppProtocol/ClentTesterMain.png)</div><br>
-
 
 **Connections/Send Tab**<br>
 After EMRALD is running define the user, domain and resource. (See above section Message Requirements -> Connecting) Then click connect.
+<div style="width:300px">![Client Tester](/images/Modeling/xmppProtocol/ClentTesterMain.png)</div><br>
 
 After connecting this tab allows you to manually send messages to the connected EMRALD simulation or other clients connected. This can be done by pasting the message in the bottom text area and selecting the client in the bottom dropdown, and clicking "Send".
 For assistance in constructing a message options can be selected in the center area. The items DispName, Occur time and Event Msg Type need to be assigned for every message. When selecting the Event Msg Type, the sub options will very as needed. Refer to Messaging requirements above to determine what values to set for each message. After assigning the values click the "Generate Message" button and correctly syntax-ed JSON will be generated in the text area below. Then click send.
+<div style="width:300px">![Client Tester](/images/Modeling/xmppProtocol/ClentTesterMsgArea.png)</div><br>
 
 **Received Messages**<br>
 Each message received is posted in this tabs list.
+<div style="width:300px">![Client message log](/images/Modeling/xmppProtocol/ClientMsglog.png)</div><br>
 
 
 
