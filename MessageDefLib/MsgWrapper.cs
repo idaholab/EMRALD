@@ -13,11 +13,11 @@ namespace MessageDefLib
   [JsonConverter(typeof(StringEnumConverter))]
   public enum MessageType { mtSimEvent = 0, mtSimAction, mtOther };
   [JsonConverter(typeof(StringEnumConverter))]
-  public enum SimActionType { atCompModify = 0, atTimer, atOpenSim, atCancelSim, atPauseSim, atContinue, atReset, atRestartAtTime, atPing, atStatus };
+  public enum SimActionType { atCompModify = 0, atTimer, atOpenSim, atCancelSim, atPauseSim, atContinue, atRestartAtTime, atPing, atStatus, atTerminate }; 
   [JsonConverter(typeof(StringEnumConverter))]
-  public enum SimEventType { etCompEv = 0, etTimer, etSimStarted, etEndSim, etPing, etStatus };
+  public enum SimEventType { etCompEv = 0, etTimer, etSimLoaded, etEndSim, etPing, etStatus };
   [JsonConverter(typeof(StringEnumConverter))]
-  public enum StatusType { stWaiting = 0, stLoading, stRunning, stDone, stError };
+  public enum StatusType { stWaiting = 0, stLoading, stRunning, stIdle, stDone, stError };
 
   //public class TOtherMsgData
   //{

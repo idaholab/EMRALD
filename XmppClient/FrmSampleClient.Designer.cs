@@ -109,9 +109,9 @@ namespace XmppMessageClient
       // 
       // statusBarClient
       // 
-      this.statusBarClient.Location = new System.Drawing.Point(0, 751);
+      this.statusBarClient.Location = new System.Drawing.Point(0, 764);
       this.statusBarClient.Name = "statusBarClient";
-      this.statusBarClient.Size = new System.Drawing.Size(722, 35);
+      this.statusBarClient.Size = new System.Drawing.Size(722, 22);
       this.statusBarClient.TabIndex = 5;
       // 
       // cmdDisconnect
@@ -139,7 +139,7 @@ namespace XmppMessageClient
       // 
       this.textBoxHost.Location = new System.Drawing.Point(184, 38);
       this.textBoxHost.Name = "textBoxHost";
-      this.textBoxHost.Size = new System.Drawing.Size(167, 20);
+      this.textBoxHost.Size = new System.Drawing.Size(167, 23);
       this.textBoxHost.TabIndex = 18;
       this.textBoxHost.Text = "localhost";
       this.textBoxHost.Visible = false;
@@ -149,7 +149,7 @@ namespace XmppMessageClient
       this.label4.AutoSize = true;
       this.label4.Location = new System.Drawing.Point(123, 38);
       this.label4.Name = "label4";
-      this.label4.Size = new System.Drawing.Size(32, 13);
+      this.label4.Size = new System.Drawing.Size(35, 15);
       this.label4.TabIndex = 17;
       this.label4.Text = "Host:";
       this.label4.Visible = false;
@@ -158,7 +158,7 @@ namespace XmppMessageClient
       // 
       this.textBoxUser.Location = new System.Drawing.Point(184, 8);
       this.textBoxUser.Name = "textBoxUser";
-      this.textBoxUser.Size = new System.Drawing.Size(167, 20);
+      this.textBoxUser.Size = new System.Drawing.Size(167, 23);
       this.textBoxUser.TabIndex = 16;
       this.textBoxUser.Text = "User1";
       // 
@@ -167,7 +167,7 @@ namespace XmppMessageClient
       this.label2.AutoSize = true;
       this.label2.Location = new System.Drawing.Point(123, 9);
       this.label2.Name = "label2";
-      this.label2.Size = new System.Drawing.Size(32, 13);
+      this.label2.Size = new System.Drawing.Size(33, 15);
       this.label2.TabIndex = 15;
       this.label2.Text = "User:";
       // 
@@ -175,7 +175,7 @@ namespace XmppMessageClient
       // 
       this.textboxResource.Location = new System.Drawing.Point(431, 38);
       this.textboxResource.Name = "textboxResource";
-      this.textboxResource.Size = new System.Drawing.Size(167, 20);
+      this.textboxResource.Size = new System.Drawing.Size(167, 23);
       this.textboxResource.TabIndex = 14;
       this.textboxResource.Text = "MyApp";
       // 
@@ -184,7 +184,7 @@ namespace XmppMessageClient
       this.label1.AutoSize = true;
       this.label1.Location = new System.Drawing.Point(370, 41);
       this.label1.Name = "label1";
-      this.label1.Size = new System.Drawing.Size(56, 13);
+      this.label1.Size = new System.Drawing.Size(58, 15);
       this.label1.TabIndex = 13;
       this.label1.Text = "Resource:";
       // 
@@ -197,17 +197,17 @@ namespace XmppMessageClient
       this.tabControl1.Location = new System.Drawing.Point(0, 0);
       this.tabControl1.Name = "tabControl1";
       this.tabControl1.SelectedIndex = 0;
-      this.tabControl1.Size = new System.Drawing.Size(722, 751);
+      this.tabControl1.Size = new System.Drawing.Size(722, 764);
       this.tabControl1.TabIndex = 19;
       // 
       // tabConnection
       // 
       this.tabConnection.Controls.Add(this.pnlSendMsg);
       this.tabConnection.Controls.Add(this.panelConnection);
-      this.tabConnection.Location = new System.Drawing.Point(4, 22);
+      this.tabConnection.Location = new System.Drawing.Point(4, 24);
       this.tabConnection.Name = "tabConnection";
       this.tabConnection.Padding = new System.Windows.Forms.Padding(3);
-      this.tabConnection.Size = new System.Drawing.Size(714, 725);
+      this.tabConnection.Size = new System.Drawing.Size(714, 736);
       this.tabConnection.TabIndex = 0;
       this.tabConnection.Text = "Connections/Send";
       this.tabConnection.UseVisualStyleBackColor = true;
@@ -221,7 +221,7 @@ namespace XmppMessageClient
       this.pnlSendMsg.Dock = System.Windows.Forms.DockStyle.Fill;
       this.pnlSendMsg.Location = new System.Drawing.Point(3, 73);
       this.pnlSendMsg.Name = "pnlSendMsg";
-      this.pnlSendMsg.Size = new System.Drawing.Size(708, 649);
+      this.pnlSendMsg.Size = new System.Drawing.Size(708, 660);
       this.pnlSendMsg.TabIndex = 27;
       // 
       // panel4
@@ -235,13 +235,13 @@ namespace XmppMessageClient
       this.panel4.Dock = System.Windows.Forms.DockStyle.Fill;
       this.panel4.Location = new System.Drawing.Point(0, 93);
       this.panel4.Name = "panel4";
-      this.panel4.Size = new System.Drawing.Size(704, 504);
+      this.panel4.Size = new System.Drawing.Size(704, 515);
       this.panel4.TabIndex = 28;
       // 
       // splitter3
       // 
       this.splitter3.Dock = System.Windows.Forms.DockStyle.Bottom;
-      this.splitter3.Location = new System.Drawing.Point(0, 399);
+      this.splitter3.Location = new System.Drawing.Point(0, 410);
       this.splitter3.Name = "splitter3";
       this.splitter3.Size = new System.Drawing.Size(702, 3);
       this.splitter3.TabIndex = 6;
@@ -251,7 +251,7 @@ namespace XmppMessageClient
       // 
       this.rtbJSONErrors.BackColor = System.Drawing.SystemColors.Control;
       this.rtbJSONErrors.Dock = System.Windows.Forms.DockStyle.Bottom;
-      this.rtbJSONErrors.Location = new System.Drawing.Point(0, 402);
+      this.rtbJSONErrors.Location = new System.Drawing.Point(0, 413);
       this.rtbJSONErrors.Name = "rtbJSONErrors";
       this.rtbJSONErrors.Size = new System.Drawing.Size(702, 100);
       this.rtbJSONErrors.TabIndex = 5;
@@ -264,7 +264,7 @@ namespace XmppMessageClient
       this.rtbJSONMsg.Dock = System.Windows.Forms.DockStyle.Fill;
       this.rtbJSONMsg.Location = new System.Drawing.Point(0, 229);
       this.rtbJSONMsg.Name = "rtbJSONMsg";
-      this.rtbJSONMsg.Size = new System.Drawing.Size(702, 273);
+      this.rtbJSONMsg.Size = new System.Drawing.Size(702, 284);
       this.rtbJSONMsg.TabIndex = 3;
       this.rtbJSONMsg.Text = "";
       // 
@@ -320,7 +320,7 @@ namespace XmppMessageClient
       // 
       this.tbItemDataValue.Location = new System.Drawing.Point(71, 35);
       this.tbItemDataValue.Name = "tbItemDataValue";
-      this.tbItemDataValue.Size = new System.Drawing.Size(146, 20);
+      this.tbItemDataValue.Size = new System.Drawing.Size(146, 23);
       this.tbItemDataValue.TabIndex = 8;
       this.tbItemDataValue.Text = "1";
       // 
@@ -329,7 +329,7 @@ namespace XmppMessageClient
       this.label5.AutoSize = true;
       this.label5.Location = new System.Drawing.Point(10, 38);
       this.label5.Name = "label5";
-      this.label5.Size = new System.Drawing.Size(40, 13);
+      this.label5.Size = new System.Drawing.Size(41, 15);
       this.label5.TabIndex = 7;
       this.label5.Text = "Value :";
       // 
@@ -337,7 +337,7 @@ namespace XmppMessageClient
       // 
       this.tbItemDataName.Location = new System.Drawing.Point(71, 10);
       this.tbItemDataName.Name = "tbItemDataName";
-      this.tbItemDataName.Size = new System.Drawing.Size(146, 20);
+      this.tbItemDataName.Size = new System.Drawing.Size(146, 23);
       this.tbItemDataName.TabIndex = 6;
       this.tbItemDataName.Text = "CompName";
       // 
@@ -346,7 +346,7 @@ namespace XmppMessageClient
       this.compID.AutoSize = true;
       this.compID.Location = new System.Drawing.Point(10, 13);
       this.compID.Name = "compID";
-      this.compID.Size = new System.Drawing.Size(55, 13);
+      this.compID.Size = new System.Drawing.Size(59, 15);
       this.compID.TabIndex = 5;
       this.compID.Text = "Name ID :";
       // 
@@ -372,7 +372,7 @@ namespace XmppMessageClient
             "Error"});
       this.cbStatusMsgType.Location = new System.Drawing.Point(7, 3);
       this.cbStatusMsgType.Name = "cbStatusMsgType";
-      this.cbStatusMsgType.Size = new System.Drawing.Size(123, 21);
+      this.cbStatusMsgType.Size = new System.Drawing.Size(123, 23);
       this.cbStatusMsgType.TabIndex = 14;
       // 
       // panel1
@@ -391,7 +391,7 @@ namespace XmppMessageClient
       this.label11.AutoSize = true;
       this.label11.Location = new System.Drawing.Point(182, 7);
       this.label11.Name = "label11";
-      this.label11.Size = new System.Drawing.Size(88, 13);
+      this.label11.Size = new System.Drawing.Size(92, 15);
       this.label11.TabIndex = 1;
       this.label11.Text = "Event Msg Type:";
       // 
@@ -407,7 +407,7 @@ namespace XmppMessageClient
             "Status"});
       this.cbMsgType.Location = new System.Drawing.Point(276, 4);
       this.cbMsgType.Name = "cbMsgType";
-      this.cbMsgType.Size = new System.Drawing.Size(121, 21);
+      this.cbMsgType.Size = new System.Drawing.Size(121, 23);
       this.cbMsgType.TabIndex = 0;
       this.cbMsgType.SelectedIndexChanged += new System.EventHandler(this.cbMsgType_SelectedIndexChanged);
       // 
@@ -438,9 +438,9 @@ namespace XmppMessageClient
       // rtbMsgInfo
       // 
       this.rtbMsgInfo.Dock = System.Windows.Forms.DockStyle.Fill;
-      this.rtbMsgInfo.Location = new System.Drawing.Point(3, 16);
+      this.rtbMsgInfo.Location = new System.Drawing.Point(3, 19);
       this.rtbMsgInfo.Name = "rtbMsgInfo";
-      this.rtbMsgInfo.Size = new System.Drawing.Size(676, 49);
+      this.rtbMsgInfo.Size = new System.Drawing.Size(676, 46);
       this.rtbMsgInfo.TabIndex = 0;
       this.rtbMsgInfo.Text = "";
       // 
@@ -461,7 +461,7 @@ namespace XmppMessageClient
       this.panel3.Controls.Add(this.btnSendMsg);
       this.panel3.Controls.Add(this.cbResources);
       this.panel3.Dock = System.Windows.Forms.DockStyle.Bottom;
-      this.panel3.Location = new System.Drawing.Point(0, 597);
+      this.panel3.Location = new System.Drawing.Point(0, 608);
       this.panel3.Name = "panel3";
       this.panel3.Size = new System.Drawing.Size(704, 48);
       this.panel3.TabIndex = 27;
@@ -471,7 +471,7 @@ namespace XmppMessageClient
       this.lblClientMsg.AutoSize = true;
       this.lblClientMsg.Location = new System.Drawing.Point(47, 18);
       this.lblClientMsg.Name = "lblClientMsg";
-      this.lblClientMsg.Size = new System.Drawing.Size(50, 13);
+      this.lblClientMsg.Size = new System.Drawing.Size(53, 15);
       this.lblClientMsg.TabIndex = 7;
       this.lblClientMsg.Text = "Send to :";
       // 
@@ -494,7 +494,7 @@ namespace XmppMessageClient
             "EMRALD"});
       this.cbResources.Location = new System.Drawing.Point(103, 15);
       this.cbResources.Name = "cbResources";
-      this.cbResources.Size = new System.Drawing.Size(188, 21);
+      this.cbResources.Size = new System.Drawing.Size(188, 23);
       this.cbResources.TabIndex = 0;
       // 
       // panel5
@@ -518,7 +518,7 @@ namespace XmppMessageClient
       // 
       this.tbDispName.Location = new System.Drawing.Point(89, 17);
       this.tbDispName.Name = "tbDispName";
-      this.tbDispName.Size = new System.Drawing.Size(146, 20);
+      this.tbDispName.Size = new System.Drawing.Size(146, 23);
       this.tbDispName.TabIndex = 8;
       this.tbDispName.Text = "EventName";
       // 
@@ -527,7 +527,7 @@ namespace XmppMessageClient
       this.label10.AutoSize = true;
       this.label10.Location = new System.Drawing.Point(10, 17);
       this.label10.Name = "label10";
-      this.label10.Size = new System.Drawing.Size(62, 13);
+      this.label10.Size = new System.Drawing.Size(68, 15);
       this.label10.TabIndex = 7;
       this.label10.Text = "DispName :";
       // 
@@ -536,7 +536,7 @@ namespace XmppMessageClient
       this.label3.AutoSize = true;
       this.label3.Location = new System.Drawing.Point(241, 68);
       this.label3.Name = "label3";
-      this.label3.Size = new System.Drawing.Size(244, 13);
+      this.label3.Size = new System.Drawing.Size(288, 15);
       this.label3.TabIndex = 6;
       this.label3.Text = "Time [hh:mm:ss.ms] from current run time (optional)";
       // 
@@ -544,7 +544,7 @@ namespace XmppMessageClient
       // 
       this.tbTimeSpan.Location = new System.Drawing.Point(89, 61);
       this.tbTimeSpan.Name = "tbTimeSpan";
-      this.tbTimeSpan.Size = new System.Drawing.Size(146, 20);
+      this.tbTimeSpan.Size = new System.Drawing.Size(146, 23);
       this.tbTimeSpan.TabIndex = 5;
       this.tbTimeSpan.Text = "00:00:00";
       // 
@@ -552,7 +552,7 @@ namespace XmppMessageClient
       // 
       this.tbMsgDesc.Location = new System.Drawing.Point(89, 38);
       this.tbMsgDesc.Name = "tbMsgDesc";
-      this.tbMsgDesc.Size = new System.Drawing.Size(469, 20);
+      this.tbMsgDesc.Size = new System.Drawing.Size(469, 23);
       this.tbMsgDesc.TabIndex = 3;
       this.tbMsgDesc.Text = "Some Event";
       // 
@@ -561,16 +561,16 @@ namespace XmppMessageClient
       this.lblMsgTime.AutoSize = true;
       this.lblMsgTime.Location = new System.Drawing.Point(10, 64);
       this.lblMsgTime.Name = "lblMsgTime";
-      this.lblMsgTime.Size = new System.Drawing.Size(74, 13);
+      this.lblMsgTime.Size = new System.Drawing.Size(74, 15);
       this.lblMsgTime.TabIndex = 2;
-      this.lblMsgTime.Text = "Occure Time :";
+      this.lblMsgTime.Text = "Occur Time :";
       // 
       // lblManMsgDesc
       // 
       this.lblManMsgDesc.AutoSize = true;
       this.lblManMsgDesc.Location = new System.Drawing.Point(10, 38);
       this.lblManMsgDesc.Name = "lblManMsgDesc";
-      this.lblManMsgDesc.Size = new System.Drawing.Size(66, 13);
+      this.lblManMsgDesc.Size = new System.Drawing.Size(73, 15);
       this.lblManMsgDesc.TabIndex = 1;
       this.lblManMsgDesc.Text = "Description :";
       // 
@@ -579,10 +579,10 @@ namespace XmppMessageClient
       this.lblSendManualMsg.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
       this.lblSendManualMsg.AutoSize = true;
-      this.lblSendManualMsg.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.lblSendManualMsg.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
       this.lblSendManualMsg.Location = new System.Drawing.Point(232, 1);
       this.lblSendManualMsg.Name = "lblSendManualMsg";
-      this.lblSendManualMsg.Size = new System.Drawing.Size(209, 16);
+      this.lblSendManualMsg.Size = new System.Drawing.Size(208, 16);
       this.lblSendManualMsg.TabIndex = 1;
       this.lblSendManualMsg.Text = "Send Manual Event Message";
       this.lblSendManualMsg.TextAlign = System.Drawing.ContentAlignment.TopCenter;
@@ -611,7 +611,7 @@ namespace XmppMessageClient
       this.label9.AutoSize = true;
       this.label9.Location = new System.Drawing.Point(370, 9);
       this.label9.Name = "label9";
-      this.label9.Size = new System.Drawing.Size(46, 13);
+      this.label9.Size = new System.Drawing.Size(52, 15);
       this.label9.TabIndex = 21;
       this.label9.Text = "Domain:";
       // 
@@ -619,7 +619,7 @@ namespace XmppMessageClient
       // 
       this.textBoxDomain.Location = new System.Drawing.Point(431, 6);
       this.textBoxDomain.Name = "textBoxDomain";
-      this.textBoxDomain.Size = new System.Drawing.Size(167, 20);
+      this.textBoxDomain.Size = new System.Drawing.Size(167, 23);
       this.textBoxDomain.TabIndex = 22;
       this.textBoxDomain.Text = "localhost";
       // 
@@ -627,10 +627,10 @@ namespace XmppMessageClient
       // 
       this.tabMessages.Controls.Add(this.groupBoxReceived);
       this.tabMessages.Controls.Add(this.groupBoxClients);
-      this.tabMessages.Location = new System.Drawing.Point(4, 22);
+      this.tabMessages.Location = new System.Drawing.Point(4, 24);
       this.tabMessages.Name = "tabMessages";
       this.tabMessages.Padding = new System.Windows.Forms.Padding(3);
-      this.tabMessages.Size = new System.Drawing.Size(714, 725);
+      this.tabMessages.Size = new System.Drawing.Size(714, 723);
       this.tabMessages.TabIndex = 1;
       this.tabMessages.Text = "Recieved Messages";
       this.tabMessages.UseVisualStyleBackColor = true;
@@ -643,7 +643,7 @@ namespace XmppMessageClient
       this.groupBoxReceived.Margin = new System.Windows.Forms.Padding(2);
       this.groupBoxReceived.Name = "groupBoxReceived";
       this.groupBoxReceived.Padding = new System.Windows.Forms.Padding(2);
-      this.groupBoxReceived.Size = new System.Drawing.Size(708, 614);
+      this.groupBoxReceived.Size = new System.Drawing.Size(708, 612);
       this.groupBoxReceived.TabIndex = 24;
       this.groupBoxReceived.TabStop = false;
       this.groupBoxReceived.Text = "Messages";
@@ -651,11 +651,11 @@ namespace XmppMessageClient
       // rtfReceived
       // 
       this.rtfReceived.Dock = System.Windows.Forms.DockStyle.Fill;
-      this.rtfReceived.Location = new System.Drawing.Point(2, 15);
+      this.rtfReceived.Location = new System.Drawing.Point(2, 18);
       this.rtfReceived.Margin = new System.Windows.Forms.Padding(2);
       this.rtfReceived.Name = "rtfReceived";
       this.rtfReceived.ReadOnly = true;
-      this.rtfReceived.Size = new System.Drawing.Size(704, 597);
+      this.rtfReceived.Size = new System.Drawing.Size(704, 592);
       this.rtfReceived.TabIndex = 0;
       this.rtfReceived.Text = "";
       // 
@@ -676,19 +676,20 @@ namespace XmppMessageClient
       // 
       this.listBoxClients.Dock = System.Windows.Forms.DockStyle.Fill;
       this.listBoxClients.FormattingEnabled = true;
-      this.listBoxClients.Location = new System.Drawing.Point(2, 15);
+      this.listBoxClients.ItemHeight = 15;
+      this.listBoxClients.Location = new System.Drawing.Point(2, 18);
       this.listBoxClients.Margin = new System.Windows.Forms.Padding(2);
       this.listBoxClients.Name = "listBoxClients";
-      this.listBoxClients.Size = new System.Drawing.Size(704, 88);
+      this.listBoxClients.Size = new System.Drawing.Size(704, 85);
       this.listBoxClients.TabIndex = 0;
       // 
       // tabLog
       // 
       this.tabLog.Controls.Add(this.rtbLog);
-      this.tabLog.Location = new System.Drawing.Point(4, 22);
+      this.tabLog.Location = new System.Drawing.Point(4, 24);
       this.tabLog.Name = "tabLog";
       this.tabLog.Padding = new System.Windows.Forms.Padding(3);
-      this.tabLog.Size = new System.Drawing.Size(714, 725);
+      this.tabLog.Size = new System.Drawing.Size(714, 723);
       this.tabLog.TabIndex = 2;
       this.tabLog.Text = "Log/Errors";
       this.tabLog.UseVisualStyleBackColor = true;
@@ -700,7 +701,7 @@ namespace XmppMessageClient
       this.rtbLog.Margin = new System.Windows.Forms.Padding(2);
       this.rtbLog.Name = "rtbLog";
       this.rtbLog.ReadOnly = true;
-      this.rtbLog.Size = new System.Drawing.Size(708, 719);
+      this.rtbLog.Size = new System.Drawing.Size(708, 717);
       this.rtbLog.TabIndex = 1;
       this.rtbLog.Text = "";
       // 
@@ -738,6 +739,7 @@ namespace XmppMessageClient
       this.groupBoxClients.ResumeLayout(false);
       this.tabLog.ResumeLayout(false);
       this.ResumeLayout(false);
+      this.PerformLayout();
 
         }
         #endregion
