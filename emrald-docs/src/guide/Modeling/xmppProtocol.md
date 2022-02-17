@@ -76,7 +76,7 @@ The coupled application needs to maintain a few variables:
 
 **CallbackTime** - is the EMRALD global time at which the coupled application must pause and return control to EMRALD if no significant event happens sooner.
 
-**CallbackName** - the name of the callback timer.
+**CallbackItem** - save the itemData (name, value) given when an atTimer message is sent. Must provide the name and value when sending a etTimer message at the callback time.
 
 **EndTime** - the maximum local time, to guard against runaway simulations, at which AVERT must terminate its simulation. This is specified by the user and passed in on open.
 
@@ -84,7 +84,7 @@ The coupled application needs to maintain a few variables:
 
 **Status** - indicates the state of coupled interaction with EMRALD.
 
-It is suggested to use the following flow method for processing and replying to messages. The coupled application should shift through a the status states depending on what messages it receives and what happens in its simulation. This outlines the messages that the application will get given the different states it is in, what it should do and the response messages that should be sent. It is recommended that a status message be sent to EMRALD for each change in status state, to assist in debugging. 
+It is suggested to use the following flow method for processing and replying to messages. The coupled application should shift through a the status states depending on what messages it receives and what happens in its simulation. This outlines the messages that the application will get given the different states it is in, what it should do and the response messages that should be sent. It is recommended that a status message be sent to EMRALD for each change in status state, to assist in debugging. Also any message received that is not in line with what was expected should also be sent as an error when in a debug version of the code. 
 
 ### [In any Status state]
 Note - A stStatus message can be sent from the coupled application at any time. If an Error message is sent EMRALD will stop operations as soon as it can.
@@ -126,7 +126,7 @@ In this status state the coupled application is poised to simulate, but is waiti
 
 **atTimer** 
 * Set CallBackTime to the time parameter in the atTimer() message.
-* Save the callback time nameID in CallbackName in order to pass back when timer is reached.
+* Save the CallbackItem data, name and value, to pass back when timer is reached
 
 **atContinue**
 * Shift to status state of stRunning.
