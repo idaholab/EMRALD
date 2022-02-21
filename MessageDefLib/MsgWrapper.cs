@@ -17,7 +17,7 @@ namespace MessageDefLib
   [JsonConverter(typeof(StringEnumConverter))]
   public enum SimEventType { etCompEv = 0, etTimer, etSimLoaded, etEndSim, etPing, etStatus };
   [JsonConverter(typeof(StringEnumConverter))]
-  public enum StatusType { stWaiting = 0, stLoaded, stRunning, stIdle, stDone, stError };
+  public enum StatusType { stWaiting = 0, stLoading, stRunning, stIdle, stDone, stError };
 
   //public class TOtherMsgData
   //{

@@ -76,13 +76,13 @@
             "type": "object",
             "properties": {
               "evType": {
-                "enum": [ "etCompEv", "etTimer", "etLoaded", "etEndSim", "etPing", "etStatus" ]
+                "enum": [ "etCompEv", "etTimer", "etSimLoaded", "etEndSim", "etPing", "etStatus" ]
               },
               "time": {
                 "type": "string"
               },
               "status": {
-                "enum": [ "stWaiting", "stLoaded", "stRunning", "stDone", "stError", "stIdle" ]
+                "enum": [ "stWaiting", "stLoading", "stRunning", "stDone", "stError", "stIdle" ]
               }
             },
             "oneOf": [
@@ -105,7 +105,7 @@
               {
                 "properties": {
                   "evType": {
-                    "enum": [ "etLoaded", "etEndSim", "etPing", "etError" ]
+                    "enum": [ "etSimLoaded", "etEndSim", "etPing", "etError" ]
                   }
                 },
                 "required": [ "time" ]

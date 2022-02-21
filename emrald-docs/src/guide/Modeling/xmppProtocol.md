@@ -64,9 +64,9 @@ The following messages are what can come from the coupled application. The type 
 ## Status States
 Status message return types to be sent to EMRALD whenever an atStatus message is received. These should also be used to maintain the current state of the connected application, see the next section.
 - **stWaiting** - coupled simulation is waiting for what to do next from EMRALD.
-- **stLoaded** - loaded time after an atOpenSim.
+- **stLoading** - loading after an atOpenSim.
 - **stRunning** - executing the coupled simulation code, should also have info on what it is doing to help debug.
-- **stDone** - initial startup condition or after done running a simulation.
+- **stIdle** - initial startup condition or after done running a simulation.
 - **stError** - an error on the coupled side, that makes it unable to continue. Should contain additional detail on the cause of the error.
 
 ## Suggested Execution Flow
@@ -110,12 +110,11 @@ Initial startup condition or after done running a simulation.
 * Clear any temporary data/results
 * Shut down application and any associated threads.
 
-### stLoaded
+### stLoading
 Coupled application is loading after an atSimOpen status state.
 * Load the specified model. (For efficiency, application must determine if it is the same model and if it can simply reset the model back to the beginning, reinitializing the data)
-* Discard any temporary or previous result information.  
 * If the model is not found or if loading fails, send atStatus with type atError to EMRALD, including a description of the problem, and shift to stError state. 
-* If the model loaded correctly, send atSimLoaded message to EMRALD.
+* If the model loaded correctly, send etSimLoaded message to EMRALD.
 * If the model loaded correctly, shift to stWaiting.
 
 ### stWaiting
@@ -135,21 +134,11 @@ In this status state the coupled application is poised to simulate, but is waiti
 * Save current results
 * Stop simulation
 * Send etEndSim message with time of (SimTime + StartTimeDiff).
-* Shift to status state of stDone.
-
-### stDone
-Coupled simulation is done and results have been saved. Got there from an atCancelSim in stWaiting or from stRunning after either sending an etEndSim message.
-
-**atContinue**
-* Shift to the stIdle status state.
-
-**atTerminate** 
-* Clear any temporary data/results
-* Shut down application and any associated threads.
+* Shift to status state of stIdle.
 
 ### stRunning
 This is the active execution state for the coupled simulation, advancing time on its side. No events should affect the simulation when in the running state, it only stops on the following conditions:
-If SimTime + StartTimeDiff >= EndTIme or if the simulation naturally terminates due to internal settings/conditions.
+If SimTime + StartTimeDiff >= EndTime or if the simulation naturally terminates due to internal settings/conditions.
 * Stop the coupled simulation.
 * Save current results
 * Send etEndSim message
@@ -160,11 +149,24 @@ If SimTime >= CallbackTime
 * Send etTimer message with the name of CallbackName and the time of (SimTime + StartTimeDiff);
 * Shift to stWaiting status state.
 
+### stDone 
+Coupled simulation is done and results have been saved just waiting for EMRALD to be done with the results and this run. Got there from an atCancelSim in stWaiting or from stRunning after application sends an etEndSim message. 
+**atContinue**
+* Shift to stIdle state
+
+**atTerminate**
+* Discard any temporary data/results
+* Shut down application and any associated threads.
+
 ### stError
 In this condition there was an error somewhere in the simulation or communication that coupled simulation could not continue. 
 
 **atTerminate** 
 * Shut down simulation and all associated threads.
+
+### Sequence Diagram
+![Messaging State Digram](/images/Modeling/xmppProtocol/XMPP_Msg_StateDiagram.png)<br>
+This state diagram shows the recommended design flow for reacting to EMRALD messages outlined in the above section. Immediate actions are what should be done when entering the status state. The events are either messages from EMRALD or conditions that happen inside the simulation. The sub items under the Events are Actions to be taken if the Event occurs. Both atPing and atStatus are ignored in this diagram because they should be responded to in every state.
 
 ### Sequence Diagram
 ![Messaging Sequence Digram](/images/Modeling/xmppProtocol/SequenceDiagram.png)<br>
