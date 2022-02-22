@@ -244,44 +244,45 @@ namespace SimulationDAL
 
     public override bool EventTriggered(MyBitArray curStates, object otherData, TimeSpan curSimTime, TimeSpan start3DTime, TimeSpan nextEvTime)
     {
-      bool found = false;
+      ChangedIDs changedItems = (ChangedIDs)otherData;
+      int matchCnt = 0;
 
       foreach (int i in _relatedIDs)
       {
-        if ((curStates.Count > i) && (curStates[i])) //desired state is in current list
+        if ((changedItems.HasItem(EnModifiableTypes.mtState, i)))
         {
-          found = true;
+          if ((curStates.Count > i) && (curStates[i])) //desired state is in current list
+          {
+            if (ifInState) //We are looking for an item in the list to trigger us       
+            {
+              ++matchCnt;
+            }
+            else //don't want the item in order to trigger us but we found it
+            {
+              if (allItems) //only one item needed to not trigger.
+                return false;
+            }
+          }
+          else //desired state is not in current list
+          {
+            if (ifInState) //We are looking for an item in the list to trigger us       
+            {
+              if (allItems) //must have all items for a trigger needed.
+                return false;
+            }
+            else //don't want the item in order to trigger and we didn't find it
+            {
+              ++matchCnt;
+            }
+          }
+        }
 
-          if (ifInState) //We are looking for an item in the list to trigger us       
-          {
-            if (!allItems) //only one item true needed.
-              return true;
-          }
-          else //don't want the item in order to trigger us but we found it
-          {
-            if (allItems) //only one item needed to not trigger.
-              return false;
-          }
-        }
-        else //desired state is not in current list
-        {
-          if (ifInState) //We are looking for an item in the list to trigger us       
-          {
-            if (allItems) //must have all items for a trigger needed.
-              return false;
-          }
-          else //don't want the item in order to trigger and we didn't find it
-          {
-            if (!allItems) //only one item needed trigger.
-              return true;
-          }
-        }
+        if (!allItems && (matchCnt > 0)) //only need one so return
+          return true;
       }
 
-      if (ifInState)
-        return found; //if we didn't kick out early then we went through all the items, as long we found is true then we got a match.
-      else
-        return !found; //if we didn't kick out early then we went through all the items, as long we found is false then we got a match.
+      //if we didn't kick out early then we went through all the items and we need to have found all of them in order to return true..
+      return matchCnt == _relatedIDs.Count;
     }
 
     public override void LookupRelatedItems(EmraldModel all, EmraldModel addToList)
