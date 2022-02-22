@@ -300,7 +300,7 @@ namespace EMRALD_Sim
               Console.WriteLine("-t \"max run time\"");
               Console.WriteLine("-e \"execute\"");
               Console.WriteLine("-c \"coupled external simulation using XMPP, specify the password and the external sim name, XMPP connection resource, XMPP user name and timeout in seconds. If there is more than one put each in brackets\"" + Environment.NewLine +
-                                "    Example: -d xmppServerPassword [LinkedProgram MyApp User1 60] [LinkedProgram2 MyApp2 User2 60]");
+                                "    Example: -c xmppServerPassword [LinkedProgram MyApp User1 60] [LinkedProgram2 MyApp2 User2 60]");
               Console.WriteLine("-m \"parameter to monitor, use []'s to do multiples, example - [x y z] \"");
               Console.WriteLine("-s \"initial random number seed\"");
               Console.WriteLine("-d \"debug level \"basic\" or \"detailed\", (optional) range [start end]. " + Environment.NewLine +
