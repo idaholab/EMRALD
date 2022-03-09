@@ -466,7 +466,7 @@ namespace EMRALD_Sim
       if (cbRegisteredClients.SelectedIndex >= 0)
       {
         //see if json is valid
-        string schemaStr = System.IO.File.ReadAllText("MessageProtocol.JSON");
+        string schemaStr = System.IO.File.ReadAllText(System.Reflection.Assembly.GetEntryAssembly().Location + "\\MessageProtocol.JSON");
         JSchema schemaChk = JSchema.Parse(schemaStr);
         try
         {
