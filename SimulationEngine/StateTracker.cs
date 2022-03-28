@@ -1271,7 +1271,7 @@ namespace SimulationTracking
             sendTimers = true;
             break;
 
-          case SimEventType.etSimStarted:
+          case SimEventType.etSimLoaded:
             this.sim3DStartTime = this.curTime;
             sendTimers = true;
             this.sim3DRunning = true;
@@ -1346,7 +1346,7 @@ namespace SimulationTracking
       {
         //sim3DServer.SendAction(new TActionPacketData(new TActionData(T3DActionType.atReset))); //let the simulation run.
         TMsgWrapper msg = new TMsgWrapper(MessageType.mtSimAction, "Reset", curTime, "Reset External Sim");
-        msg.simAction = new SimAction(SimActionType.atReset);
+        msg.simAction = new SimAction(SimActionType.atCancelSim);
         sim3DServer.SendMessage(msg, fromClient);
         this.sim3DStopping = true;
       }
@@ -1917,8 +1917,7 @@ namespace SimulationTracking
                 msg = new TMsgWrapper(MessageType.mtSimAction, cur3DAct.sim3DMessage.ToString(), curTime, "Stop/Continue/ping/status the Simulation");
                 msg.simAction = new SimAction(cur3DAct.sim3DMessage);
 
-                if ((cur3DAct.sim3DMessage == SimActionType.atReset) ||
-                    (cur3DAct.sim3DMessage == SimActionType.atCancelSim))
+                if (cur3DAct.sim3DMessage == SimActionType.atCancelSim)
                 {
                   //debugLog = true; //todo remove
                   if ((this.sim3DRunning) && (!this.sim3DStopping))
