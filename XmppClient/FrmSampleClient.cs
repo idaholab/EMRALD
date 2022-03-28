@@ -68,6 +68,8 @@ namespace XmppMessageClient
           _validMessages.Add(sender, msgList);
           msgList.Add(msg);
         }
+
+
       };
 
       InvokeUIUpdate(methodInvokerDelegate);
@@ -227,11 +229,17 @@ namespace XmppMessageClient
         }
         else
         {
-          AutoMessageLoop();
+          if(btnSendMsg.Text == "Start")
+            AutoMessageLoop();
+          else if (btnSendMsg.Text == "Stop")
+          {
+            //todo stop the message sending.
+
+          }
         }
       }
       else
-        MessageBox.Show("You must select a client to send it to. Left of the Send Bttn.");
+        MessageBox.Show("You must select a client to send it to. Left of the Send Button.");
     }
 
     /// <summary>
@@ -341,7 +349,20 @@ namespace XmppMessageClient
 
     private void AutoMessageLoop()
     {
+      //Loop through the messages in the testMsg text.
+      btnSendMsg.Text = "Stop";
 
+      simRuns.SetupBatch(int.Parse(tbRunCnt.Text), true, simplePathRes);
+      ThreadStart tStarter = new ThreadStart(simRuns.RunBatch);
+      //run this when the thread is done.
+      tStarter += () =>
+      {
+        simRuns.GetVarValues(simRuns.logVarVals, true);
+        InvokeUIUpdate(ButtonEnableDelegate);
+      };
+
+      Thread simThread = new Thread(tStarter);
+      simThread.Start();
     }
   } 
 
