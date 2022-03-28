@@ -13,6 +13,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Schema;
 using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
+using System.IO;
 
 
 
@@ -174,52 +175,59 @@ namespace XmppMessageClient
     {
       if (cbResources.SelectedIndex >= 0)
       {
-        //see if json is valid
-        string schemaStr = System.IO.File.ReadAllText("MessageProtocol.JSON");
-        JSchema schemaChk = JSchema.Parse(schemaStr);
-        try
+        if (tabMsgSending.SelectedIndex == 0)
         {
-          JToken json = JToken.Parse(rtbJSONMsg.Text);
-          IList<ValidationError> errors;
-          bool valid = json.IsValid(schemaChk, out errors);
-          if (!valid)
+          //see if json is valid
+          string schemaStr = System.IO.File.ReadAllText("MessageProtocol.JSON");
+          JSchema schemaChk = JSchema.Parse(schemaStr);
+          try
           {
-            rtbJSONErrors.Visible = true;
-            rtbJSONErrors.Clear();
-            foreach (var error in errors)
+            JToken json = JToken.Parse(rtbJSONMsg.Text);
+            IList<ValidationError> errors;
+            bool valid = json.IsValid(schemaChk, out errors);
+            if (!valid)
             {
-              rtbJSONErrors.AppendText(error.Message + Environment.NewLine);
-              foreach (var child in error.ChildErrors)
+              rtbJSONErrors.Visible = true;
+              rtbJSONErrors.Clear();
+              foreach (var error in errors)
               {
-                rtbJSONErrors.AppendText("Error - Line : " + child.LineNumber + " Pos : " + child.LinePosition + " - " + child.Message + Environment.NewLine);
+                rtbJSONErrors.AppendText(error.Message + Environment.NewLine);
+                foreach (var child in error.ChildErrors)
+                {
+                  rtbJSONErrors.AppendText("Error - Line : " + child.LineNumber + " Pos : " + child.LinePosition + " - " + child.Message + Environment.NewLine);
+                }
               }
-            }
-          }
-          else
-          {
-            TMsgWrapper msg = JsonConvert.DeserializeObject<TMsgWrapper>(rtbJSONMsg.Text);
-            if (msg != null)
-            {
-              rtbJSONErrors.Visible = false;
-              if (cbResources.SelectedIndex >= 0)
-                
-              m_clientController.SendMessage(msg);
             }
             else
             {
-              rtbJSONErrors.Visible = true;
-              rtbJSONErrors.Text = "Error creating message from JSON text.";
+              TMsgWrapper msg = JsonConvert.DeserializeObject<TMsgWrapper>(rtbJSONMsg.Text);
+              if (msg != null)
+              {
+                rtbJSONErrors.Visible = false;
+                if (cbResources.SelectedIndex >= 0)
+
+                  m_clientController.SendMessage(msg);
+              }
+              else
+              {
+                rtbJSONErrors.Visible = true;
+                rtbJSONErrors.Text = "Error creating message from JSON text.";
+              }
             }
           }
+          catch (Exception er)
+          {
+            rtbJSONErrors.Visible = true;
+            if (er is JsonReaderException)
+              rtbJSONErrors.Text = "Error - Line : " + ((JsonReaderException)er).LineNumber + " Pos : " + ((JsonReaderException)er).LinePosition + Environment.NewLine;
+            else
+              rtbJSONErrors.Text = "Text is not a valid JSON Message Object :" + Environment.NewLine;
+            rtbJSONErrors.AppendText(er.Message);
+          }
         }
-        catch (Exception er)
+        else
         {
-          rtbJSONErrors.Visible = true;
-          if (er is JsonReaderException)
-            rtbJSONErrors.Text = "Error - Line : " + ((JsonReaderException)er).LineNumber + " Pos : " + ((JsonReaderException)er).LinePosition + Environment.NewLine;
-          else
-            rtbJSONErrors.Text = "Text is not a valid JSON Message Object :" + Environment.NewLine;
-          rtbJSONErrors.AppendText(er.Message);
+          AutoMessageLoop();
         }
       }
       else
@@ -292,6 +300,48 @@ namespace XmppMessageClient
     private void tabStatus_Enter(object sender, EventArgs e)
     {
       cbStatusMsgType.SelectedIndex = (int)StatusType.stRunning;
+    }
+
+    private void btnOpenTestMsgFile_Click(object sender, EventArgs e)
+    {
+        dlgOpenTestMsgFile.ShowDialog();
+    }
+
+    private void dlgOpenTestMsgFile_FileOk(object sender, System.ComponentModel.CancelEventArgs e)
+    {
+      tbTestMsgFile.Text = dlgOpenTestMsgFile.FileName;
+      
+    }
+    private void LoadMsgTestFile()
+    {
+      if(File.Exists(tbTestMsgFile.Text))
+      {
+        string msgText = File.ReadAllText(tbTestMsgFile.Text);
+        try
+        {
+          JToken modelJson = JToken.Parse(msgText);
+          rtbTestMsg.Text = modelJson.ToString(Formatting.Indented);
+        }
+        catch (Exception ex)
+        {
+          rtbTestMsg.Text = "Error loading file, verify the JSON format";
+        };
+      }
+    }
+
+    private void tabPage1_Enter(object sender, EventArgs e)
+    {
+      btnSendMsg.Text = "Send";
+    }
+
+    private void tabPage2_Enter(object sender, EventArgs e)
+    {
+      btnSendMsg.Text = "Start";
+    }
+
+    private void AutoMessageLoop()
+    {
+
     }
   } 
 
