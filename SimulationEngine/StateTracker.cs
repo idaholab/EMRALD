@@ -1666,6 +1666,11 @@ namespace SimulationTracking
             {
               throw new Exception("Failed to find variable for" + curVarAct.name + " in variable list.", e);
             }
+
+            curVarAct.SetVal(varItem, this.allLists, curTime, sim3DStartTime);
+            //TODO : if this is a 3D var item and we are running a 3D simulation notify the 3D simulator of the change.
+
+
             try
             {
               //see if there are any events that use this if so we need to update
@@ -1686,7 +1691,7 @@ namespace SimulationTracking
                   if (regotTime < TimeSpan.Zero) 
                     regotTime = TimeSpan.Zero;
 
-                  timeEvList.ChangeEventTime(regotTime, ev.Value.id);
+                  timeEvList.ChangeEventTime(regotTime, ev.Value.eventStateActions.eventID);
                 }
               }
             }
@@ -1695,15 +1700,7 @@ namespace SimulationTracking
               throw new Exception("Failed to adjust event time for changes to " + curVarAct.name, e);
             }
 
-
-            //if (curVarAct.isTimeStateVar)
-            //{
-            //  toSave = (TimeStateVariable)varItem;
-            //}
-            //else
-            curVarAct.SetVal(varItem, this.allLists, curTime, sim3DStartTime);
-            //TODO : if this is a 3D var item and we are running a 3D simulation notify the 3D simulator of the change.
-
+            
 
             //add the ID to the changed list
             changedItems.AddChangedID(EnModifiableTypes.mtVar, curVarAct.varID);
