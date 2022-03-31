@@ -1682,10 +1682,10 @@ namespace SimulationTracking
                   //get a new time for the event.
 
                   TimeSpan lastSampledTime = ev.Key;
-                  if (lastSampledTime < (TimeSpan.MaxValue - curTime))
-                  {
-                    lastSampledTime = lastSampledTime + curTime;
-                  }
+                  //if (lastSampledTime < (TimeSpan.MaxValue - curTime))
+                  //{
+                  //  lastSampledTime = lastSampledTime + curTime;
+                  //}
 
                   TimeSpan regotTime = curTimeEv.RedoNextTime(ev.Value.whenCreated, curTime, lastSampledTime);
                   if (regotTime < TimeSpan.Zero) 

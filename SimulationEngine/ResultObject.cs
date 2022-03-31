@@ -27,13 +27,14 @@ namespace SimulationEngine
     public int count { get { return _count; } }
     
     public List<TimeSpan> times { get { return _times; } }
-    public TimeSpan timeMean { get { return _totalTime / count; } }
+    public TimeSpan timeMean { get { return (_totalTime / count) + TimeSpan.FromDays(_extraDays / count); } }
     public TimeSpan timeStdDeviation { get {return GetTimeStdDev(); } } 
     public Dictionary<string, List<string>> watchVariables = new Dictionary<string, List<string>>();
     [JsonIgnore]
     public Dictionary<string, Cause> causeDict { get; set; } = new Dictionary<string, Cause>(); //key will be from state, event, and action 
     public Cause[] causes { get { return causeDict.Values.ToArray(); } }
     private TimeSpan _totalTime = TimeSpan.Zero;
+    private double _extraDays = 0.0;
     private List<TimeSpan> _times = new List<TimeSpan>();
     private int _count = 0;
     private double _rate = 0;
@@ -68,7 +69,20 @@ namespace SimulationEngine
     public void AddTime(TimeSpan newTime)
     {
       this._times.Add(newTime);
-      this._totalTime += newTime;
+      try
+      {
+        if ((TimeSpan.MaxValue - this._totalTime) < newTime)
+        {
+          _extraDays += this._totalTime.Days;
+          this._totalTime -= TimeSpan.FromDays(this._totalTime.Days);
+        }
+
+        this._totalTime += newTime;
+      }
+      catch
+      {
+        this._totalTime = TimeSpan.MaxValue;
+      }
       ++_count;
     }  
 
