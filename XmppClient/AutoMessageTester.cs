@@ -17,7 +17,7 @@ namespace XmppMessageClient
     private string _error;
     public string error { get { return _error; } }
     private bool _stop = false;
-    private int _idx = 0;
+    //private int _idx = 0;
     private bool _hasStatusMsgs = false;
     private StatusType _curStatus = StatusType.stIdle;
 
@@ -57,6 +57,9 @@ namespace XmppMessageClient
     {
       try
       {
+        //_idx = 0;
+        _curStatus = StatusType.stIdle;
+
         foreach (var jItem in _msgList)
         {
           if(_stop)
@@ -65,8 +68,8 @@ namespace XmppMessageClient
             return;
           }
 
-          _clientController.
-
+          TMsgWrapper nextEvMsg = jItem.ToObject<TMsgWrapper>();
+          NextMsg(nextEvMsg);
         }
       }
       catch(Exception e)
@@ -83,50 +86,55 @@ namespace XmppMessageClient
         return;
       }
 
-      SimActionType curActType = msgObj.simAction.actType;
-      var jItem = _msgList[_idx];
-      TMsgWrapper nextEvMsg = jItem.ToObject<TMsgWrapper>();// JsonConvert.DeserializeObject<TMsgWrapper>(jItem);
-      SimEventType nextEvType = nextEvMsg.simEvents[0].evType;
-      if (_idx < _msgList.Count)
-      {
-        if (msgObj.msgType == MessageType.mtSimAction)
+      //SimActionType curActType = msgObj.simEvents.actType;
+      //var jItem = _msgList[_idx];
+      //TMsgWrapper nextEvMsg = jItem.ToObject<TMsgWrapper>();// JsonConvert.DeserializeObject<TMsgWrapper>(jItem);
+      //SimEventType nextEvType = nextEvMsg.simEvents[0].evType;
+      //if (_idx < _msgList.Count)
+      //{
+        if (msgObj.msgType == MessageType.mtSimEvent)
         {
-          switch (_curStatus)
-          {
-            case StatusType.stIdle:
-              break;
-            case StatusType.stLoading:
-              break;
-            case StatusType.stWaiting:
-              break;
-            case StatusType.stRunning:
-              break;
-            case StatusType.stDone:
-              break;
-            case StatusType.stError:
-              if (curActType != SimActionType.atTerminate)
-              {
-                _error = "received message after an error";
-                _stop = true;
-              }
-              break;         
-          }
+          //bool valid = true;
 
-          if (_hasStatusMsgs && (nextEvType == ))
-          {
+          ////TODO validate the proper messages are being sent for the status part.
+          //switch (_curStatus)
+          //{
+          //  case StatusType.stIdle:
+          //    break;
+          //  case StatusType.stLoading:
+          //    break;
+          //  case StatusType.stWaiting:
+          //    break;
+          //  case StatusType.stRunning:
+          //    break;
+          //  case StatusType.stDone:
+          //    break;
+          //  case StatusType.stError:
+          //    if (curActType != SimActionType.atTerminate)
+          //    {
+          //      _error = "received message after an error";
+          //      _stop = true;
+          //    }
+          //    break;         
+          //}
 
-          }
 
-          //only respond to the following messages.
-          if ((msgObj.simAction.actType == SimActionType.atOpenSim) ||
-             (msgObj.simAction.actType == SimActionType.atContinue) ||
-             (msgObj.simAction.actType == SimActionType.atCancelSim) )
-          {
-            
-          }
+          //if (_hasStatusMsgs && (nextEvType == SimEventType.etStatus))
+          //{
+          //  _clientController.SendMessage(msgObj);
+          //}
+          ////only respond to the following messages.
+          //else if(
+          //       (msgObj.simAction.actType == SimActionType.atOpenSim) ||
+          //       (msgObj.simAction.actType == SimActionType.atContinue) ||
+          //       (msgObj.simAction.actType == SimActionType.atCancelSim) )
+          //{
+
+          //}
+          _clientController.SendMessage(msgObj);
         }
 
-      }
+      //}
     }
   }
 }

@@ -14,8 +14,7 @@ using Newtonsoft.Json.Schema;
 using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 using System.IO;
-
-
+using System.Threading;
 
 namespace XmppMessageClient
 {
@@ -26,7 +25,7 @@ namespace XmppMessageClient
   {
     private SampleClientController m_clientController;
     private Dictionary<string, List<TMsgWrapper>> _validMessages = new Dictionary<string, List<TMsgWrapper>>();
-
+    private AutoMessageTester _autoTester = null;
 
     public FrmSampleClient(SampleClientController clientController)
     {
@@ -229,12 +228,15 @@ namespace XmppMessageClient
         }
         else
         {
-          if(btnSendMsg.Text == "Start")
+          if (btnSendMsg.Text == "Start")
+          {
+            _autoTester = new AutoMessageTester(this.m_clientController, this.rtbTestMsg.Text, false);
             AutoMessageLoop();
+          }
           else if (btnSendMsg.Text == "Stop")
           {
             //todo stop the message sending.
-
+            _autoTester.Stop();
           }
         }
       }
@@ -318,7 +320,7 @@ namespace XmppMessageClient
     private void dlgOpenTestMsgFile_FileOk(object sender, System.ComponentModel.CancelEventArgs e)
     {
       tbTestMsgFile.Text = dlgOpenTestMsgFile.FileName;
-      
+      LoadMsgTestFile();
     }
     private void LoadMsgTestFile()
     {
@@ -351,16 +353,8 @@ namespace XmppMessageClient
     {
       //Loop through the messages in the testMsg text.
       btnSendMsg.Text = "Stop";
-
-      simRuns.SetupBatch(int.Parse(tbRunCnt.Text), true, simplePathRes);
-      ThreadStart tStarter = new ThreadStart(simRuns.RunBatch);
-      //run this when the thread is done.
-      tStarter += () =>
-      {
-        simRuns.GetVarValues(simRuns.logVarVals, true);
-        InvokeUIUpdate(ButtonEnableDelegate);
-      };
-
+      
+      ThreadStart tStarter = new ThreadStart(_autoTester.Start);
       Thread simThread = new Thread(tStarter);
       simThread.Start();
     }
