@@ -16,7 +16,7 @@ class MAAPForm extends ExternalExeForm {
     );
     dataObj.raPreCode += this.code.writeFile(
       inputFilePath,
-      this.code.insertVariables(dataObj.varNames, this.$scope.inputFile),
+      this.code.insertVariables(dataObj.varNames, this.$scope.inputFile)
     );
     dataObj.raPostCode = "";
     dataObj.returnProcess = "rtNone";
@@ -32,15 +32,29 @@ class Parameter extends FormData {
   constructor(data) {
     super(data);
     this.name = data.name;
-    this.units = data.units;
     this.value = data.value;
-    this.index = data.index;
   }
 
   get label() {
-    let label = `${this.name}`;
-    if (this.index) {
-      label += `(${this.index})`;
+    let label = `${this.name.name}`;
+    if (this.name.index) {
+      label += `(${this.name.index})`;
+    }
+    return label;
+  }
+
+  get valueLabel() {
+    let label;
+    if (this.value.type === "variable") {
+      label = `${this.value.name}`;
+      if (this.value.index) {
+        label += `(${this.name.index})`;
+      }
+    } else {
+      label = `${this.value.value}`;
+      if (this.value.units) {
+        label += ` ${this.value.units}`;
+      }
     }
     return label;
   }
@@ -77,6 +91,20 @@ class VarLink {
   }
 }
 
+class BlockData {
+  constructor(value) {
+    this.value = value;
+    this.useVariable = false;
+  }
+}
+
+class Block {
+  constructor(type, ...data) {
+    this.type = type;
+    this.data = data;
+  }
+}
+
 module.controller("maapFormController", [
   "$scope",
   function ($scope) {
@@ -92,12 +120,14 @@ module.controller("maapFormController", [
     $scope.varLinks = [new VarLink()];
     $scope.inputBlocks = ["", "", ""];
     $scope.parametersLoaded = false;
+    $scope.blocks = [];
+    $scope.operators = [">", "<", "IS"];
 
     const parameterInfo = {};
     const possibleInitiators = {};
 
     function trim(line) {
-      return line.replace(/^\W*/, "").replace(/\W*$/, "");
+      return line.replace(/^\s*/, "").replace(/\s*$/, "");
     }
 
     const { parentScope } = form;
@@ -173,6 +203,8 @@ module.controller("maapFormController", [
         let i = 0;
         let preParamChange = "";
         let postParamChange = "";
+        // TODO: process files with sections in a different order
+        // TODO: use line numbers for the preprocessing code
         while (!initiatorsDone || !parameterChangeDone) {
           const line = lines[i];
           if (!parameterChangeDone && (expects < 1 || expects > 2)) {
@@ -213,12 +245,104 @@ module.controller("maapFormController", [
           }
           i += 1;
         }
-        let postInitiators = lines.slice(i, lines.length - 1).join("\n");
+        let postInitiators = lines.slice(i, lines.length - 1);
         $scope.inputBlocks = [
           preParamChange,
           postParamChange,
-          postInitiators,
+          postInitiators.join("\n"),
         ];
+        expects = 0;
+        let conditions = [];
+        let parameters = [];
+        // TODO: make more efficient
+        postInitiators.forEach((line) => {
+          switch (expects) {
+            case 0:
+              if (/^IF/.test(line)) {
+                let nextJoiner = null;
+                line
+                  .replace(/^IF\s+/, "")
+                  .split(/(AND|OR)/)
+                  .forEach((condition) => {
+                    if (condition !== "AND" && condition !== "OR") {
+                      // TODO: >=
+                      let opIndex = condition.search(/[\<\>]/);
+                      const opIndex2 = condition.indexOf("IS");
+                      let t = 1;
+                      if (opIndex2 > -1) {
+                        opIndex = opIndex2;
+                        t = 2;
+                      }
+                      const lhs = trim(condition.substring(0, opIndex));
+                      const op = trim(
+                        condition.substring(opIndex, opIndex + t)
+                      );
+                      const rhs = trim(
+                        condition.substring(opIndex + t, condition.length)
+                      );
+                      conditions.push({
+                        joiner: nextJoiner,
+                        lhs: new BlockData(lhs),
+                        op,
+                        rhs: new BlockData(rhs),
+                      });
+                      nextJoiner = null;
+                    } else {
+                      nextJoiner = condition;
+                    }
+                  });
+                expects = 1;
+              } else if (/^WHEN/.test(line)) {
+                const l = line.replace(/^WHEN\s+/, "");
+                let opIndex = l.search(/[\<\>]/);
+                const lhs = trim(l.substring(0, opIndex));
+                const op = trim(l.substring(opIndex, opIndex + 1));
+                const rhs = trim(l.substring(opIndex + 1, l.length));
+                conditions.push({
+                  lhs: new BlockData(lhs),
+                  op,
+                  rhs: new BlockData(rhs),
+                });
+                expects = 2;
+              }
+              break;
+            case 1:
+              if (line === "END") {
+                expects = 0;
+                $scope.blocks.push(new Block("IF", conditions, parameters));
+                conditions = [];
+                parameters = [];
+              } else {
+                try {
+                  parameters.push(
+                    new Parameter(window.maapInpParser.parse(line))
+                  );
+                } catch (e) {
+                  console.error(e);
+                }
+              }
+              break;
+            case 2:
+              if (line === "END") {
+                expects = 0;
+                $scope.blocks.push(new Block("WHEN", conditions, parameters));
+                console.log($scope.blocks);
+                conditions = [];
+                parameters = [];
+              } else {
+                try {
+                  // TODO: display SET TIMER #1
+                  parameters.push(
+                    new Parameter(window.maapInpParser.parse(line))
+                  );
+                } catch (e) {
+                  console.error(e);
+                }
+              }
+              break;
+            default:
+          }
+        });
         form.save();
       }
     });

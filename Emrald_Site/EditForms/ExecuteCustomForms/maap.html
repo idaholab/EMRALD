@@ -18,6 +18,7 @@
 
       #newInitiatorSection {
         border: 2px solid;
+        padding: 8px;
       }
 
       .pathInput {
@@ -48,22 +49,20 @@
           <th>Parameter</th>
           <th>Value</th>
           <th>Use Variable</th>
-          <th>Units</th>
         </tr>
         <tr ng-repeat="parameter in parameters">
-          <td>{{parameter.name}}</td>
+          <td>{{parameter.label}}</td>
           <td>
             <select
               ng-if="parameter.useVariable"
               ng-options="opt.name for opt in variables"
               ng-model="parameter.variable"
             ></select>
-            <span ng-if="!parameter.useVariable">{{parameter.value}}</span>
+            <span ng-if="!parameter.useVariable">{{parameter.valueLabel}}</span>
           </td>
           <td>
             <input type="checkbox" ng-model="parameter.useVariable" />
           </td>
-          <td>{{parameter.units}}</td>
         </tr>
       </table>
       <h3>Initiators:</h3>
@@ -99,6 +98,77 @@
           </td>
         </tr>
       </table>
+      <h3>Input Blocks:</h3>
+      <div>
+        <div ng-repeat="block in blocks">
+          <h4>{{block.type}}</h4>
+          Conditions:
+          <table>
+            <tr>
+              <th></th>
+              <th></th>
+              <th>Operator</th>
+              <th></th>
+              <th>Use Variable</th>
+            </tr>
+            <tr ng-repeat="d in block.data[0]">
+              <td>
+                <select ng-if="d.joiner" ng-model="d.joiner">
+                  <option>AND</option>
+                  <option>OR</option>
+                </select>
+              </td>
+              <td>
+                <select
+                  ng-if="d.lhs.useVariable"
+                  ng-options="opt.name for opt in variables"
+                  ng-model="d.lhs.variable"
+                ></select>
+                <input ng-if="!d.lhs.useVariable" ng-model="d.lhs.value" />
+              </td>
+              <td>
+                <select
+                  ng-options="op as op for op in operators"
+                  ng-model="d.op"
+                ></select>
+              </td>
+              <td>
+                <select
+                  ng-if="d.rhs.useVariable"
+                  ng-options="opt.name for opt in variables"
+                  ng-model="d.rhs.variable"
+                ></select>
+                <input ng-if="!d.rhs.useVariable" ng-model="d.rhs.value" />
+              </td>
+              <td>
+                <input type="checkbox" ng-model="d.rhs.useVariable" />
+              </td>
+            </tr>
+          </table>
+          Outcomes:
+          <table>
+            <tr>
+              <th>Variable</th>
+              <th>Value</th>
+              <th>Use Variable</th>
+            </tr>
+            <tr ng-repeat="parameter in block.data[1]">
+              <td>{{parameter.label}}</td>
+              <td>
+                <select
+                  ng-if="parameter.useVariable"
+                  ng-options="opt.name for opt in variables"
+                  ng-model="parameter.variable"
+                ></select>
+                <span ng-if="!parameter.useVariable">{{parameter.valueLabel}}</span>
+              </td>
+              <td>
+                <input type="checkbox" ng-model="parameter.useVariable" />
+              </td>
+            </tr>
+          </table>
+        </div>
+      </div>
       <h3>Outputs:</h3>
       <table>
         <tr>

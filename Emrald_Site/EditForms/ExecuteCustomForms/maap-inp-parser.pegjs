@@ -1,18 +1,28 @@
-start = name:varname index:index? " "* "=" " "* value:value units:units? " "* .* {
+start = name:variable " "* "=" " "* value:(number / variable) " "* .* {
 	return {
-    	index,
     	name,
-        units,
         value,
     }
 }
 
-varname = name:[a-zA-Z]+ {
-	return name.join('')
+variable = name:[a-zA-Z]+ index:index? {
+	return {
+    	index,
+    	name: name.join(''),
+        type: "variable",
+    }
 }
 
 index = "(" index:[0-9]+ ")" {
 	return Number(index.join(''))
+}
+
+number = value:value units:units? {
+	return {
+    	type: "number",
+    	units,
+        value,
+    }
 }
 
 value = start:[0-9]+ rest:("." [0-9]+)? {
