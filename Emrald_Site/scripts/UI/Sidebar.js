@@ -3722,7 +3722,8 @@ if (typeof Navigation === 'undefined')
           { title: "Open...", cmd: "Open" },
           { title: "Edit properties...", cmd: "Edit" },
 					{ title: "Delete", cmd: "Delete" },
-					{ title: "Make Template", cmd: "Template" }
+					{ title: "Make Template", cmd: "Template" },
+          { title: "Export", cmd: "Export" },
         ],
         select: function (evt, ui) {
           switch (ui.cmd) {
@@ -3750,7 +3751,11 @@ if (typeof Navigation === 'undefined')
                 this.editTemplateProperties(copyDataObj);
               }
               break;
-
+            case "Export":
+              if (ui.target.context.dataObject) {
+                this.exportDiagram(ui.target.context.dataObject);
+              }
+              break;
           }
         }.bind(this)
       });
@@ -3760,6 +3765,13 @@ if (typeof Navigation === 'undefined')
 
       sortDOMList(sol);
       return sol;
+    }
+
+    Sidebar.prototype.exportDiagram = function (dataObject) {
+      const a = document.createElement('a');
+      a.setAttribute('href', `data:text/plain;charset=utf-8,${encodeURIComponent(JSON.stringify(dataObject))}`);
+      a.setAttribute('download', `${dataObject.name}.json`);
+      a.click();
     }
 
     //------------------------------------------
