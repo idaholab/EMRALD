@@ -145,6 +145,18 @@ class ExternalExeForm {
     },
 
     /**
+     * Generates code for reading a file.
+     * 
+     * @name ExternalExeForm#code#readFile
+     * @function
+     * @param {string} path The path to the file.
+     * @returns {string} The C# code for reading the file.
+     */
+    readFile(path) {
+      return `System.IO.File.ReadAllText("${this.escape(path)}")`;
+    },
+
+    /**
      * Properly formats EMRALD variable names within a file.
      * 
      * @name ExternalExeForm#code#insertVariables

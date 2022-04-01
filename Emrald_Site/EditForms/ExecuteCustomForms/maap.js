@@ -6,17 +6,26 @@ class MAAPForm extends ExternalExeForm {
     dataObj.raFormData = {
       inputFile: this.$scope.inputFile,
       parameterFile: this.$scope.parameterFile,
+      inpSplits: this.$scope.inpSplits,
     };
     const exeRootPath = this.$scope.exePath.replace(/[^\/\\]*\.exe$/, "");
     const inputFilePath = `${exeRootPath}input.INP`;
     const paramFilePath = `${exeRootPath}parameters.PAR`;
-    dataObj.raPreCode = this.code.writeFile(
-      paramFilePath,
-      this.$scope.parameterFile
-    );
+    /**
+     * p1
+     * Parameters
+     * p2
+     * Initiators
+     * p3
+     * Input Blocks
+     */
+    dataObj.raPreCode = `string p = ${this.code.readFile(this.$scope.inputPath)};`;
+    dataObj.raPreCode += `string p1 = p.Substring(0, ${this.$scope.inpSplits[0]});`;
+    dataObj.raPreCode += `string p2 = p.Substring(${this.$scope.inpSplits[1]}, ${this.$scope.inpSplits[2]});`;
+    dataObj.raPreCode += `string p3 = p.Substring(${this.$scope.inpSplits[3]}, ${this.$scope.inpSplits[4]});`;
     dataObj.raPreCode += this.code.writeFile(
       inputFilePath,
-      this.code.insertVariables(dataObj.varNames, this.$scope.inputFile)
+      "p1 + p2 + p3",
     );
     dataObj.raPostCode = "";
     dataObj.returnProcess = "rtNone";
@@ -118,10 +127,10 @@ module.controller("maapFormController", [
     $scope.parameterPath = "";
     $scope.inputPath = "";
     $scope.varLinks = [new VarLink()];
-    $scope.inputBlocks = ["", "", ""];
     $scope.parametersLoaded = false;
     $scope.blocks = [];
     $scope.operators = [">", "<", "IS"];
+    $scope.inpSplits = [];
 
     const parameterInfo = {};
     const possibleInitiators = {};
@@ -143,6 +152,9 @@ module.controller("maapFormController", [
       }
       if (typeof raFormData.inputFile === "string") {
         $scope.inputFile = raFormData.inputFile;
+      }
+      if (typeof raFormData.inpSplits === "object") {
+        $scope.inpSplits = raFormData.inpSplits;
       }
     }
 
@@ -197,25 +209,30 @@ module.controller("maapFormController", [
     $scope.$watch("inputFile", function () {
       if ($scope.inputFile.length > 0) {
         let expects = 0;
-        const lines = $scope.inputFile.split(/\n/).map((line) => trim(line));
+        const lines = $scope.inputFile.split(/\n/);
         let initiatorsDone = false;
         let parameterChangeDone = false;
         let i = 0;
         let preParamChange = "";
+        let paramChange = "";
         let postParamChange = "";
+        let initiators = "";
+        let postInitiators = "";
         // TODO: process files with sections in a different order
         // TODO: use line numbers for the preprocessing code
-        while (!initiatorsDone || !parameterChangeDone) {
-          const line = lines[i];
+        lines.forEach((fullLine) => {
+          const line = trim(fullLine);
           if (!parameterChangeDone && (expects < 1 || expects > 2)) {
-            preParamChange += `${line}\n`;
+            preParamChange += `${fullLine}\n`;
           } else if (parameterChangeDone && !initiatorsDone && expects !== 3) {
-            postParamChange += `${line}\n`;
+            postParamChange += `${fullLine}\n`;
+          } else if (initiatorsDone) {
+            postInitiators += `${fullLine}\n`;
           }
           switch (expects) {
             case 0:
               if (line === "PARAMETER CHANGE") {
-                expects = 1;
+                expects = 2;
               } else if (line === "INITIATORS") {
                 expects = 3;
               }
@@ -228,9 +245,12 @@ module.controller("maapFormController", [
                 expects = 0;
                 parameterChangeDone = true;
               } else {
-                $scope.parameters.push(
-                  new Parameter(window.maapInpParser.parse(line))
-                );
+                paramChange += `${fullLine}\n`;
+                if (!/^C/.test(line)) {
+                  $scope.parameters.push(
+                    new Parameter(window.maapInpParser.parse(line))
+                  );
+                }
               }
               break;
             case 3:
@@ -238,24 +258,24 @@ module.controller("maapFormController", [
                 expects = 0;
                 initiatorsDone = true;
               } else {
+                initiators += `${fullLine}\n`;
                 $scope.initiators.push(new Initiator(parameterInfo[line]));
               }
               break;
             default:
           }
           i += 1;
-        }
-        let postInitiators = lines.slice(i, lines.length - 1);
-        $scope.inputBlocks = [
-          preParamChange,
-          postParamChange,
-          postInitiators.join("\n"),
-        ];
+        });
+        $scope.inpSplits[0] = preParamChange.length;
+        $scope.inpSplits[1] = $scope.inpSplits[0] + paramChange.length;
+        $scope.inpSplits[2] = $scope.inpSplits[1] + postParamChange.length;
+        $scope.inpSplits[3] = $scope.inpSplits[2] + initiators.length;
+        $scope.inpSplits[4] = $scope.inpSplits[3] + postInitiators.length;
         expects = 0;
         let conditions = [];
         let parameters = [];
         // TODO: make more efficient
-        postInitiators.forEach((line) => {
+        postInitiators.split(/\n/).forEach((line) => {
           switch (expects) {
             case 0:
               if (/^IF/.test(line)) {
@@ -326,7 +346,6 @@ module.controller("maapFormController", [
               if (line === "END") {
                 expects = 0;
                 $scope.blocks.push(new Block("WHEN", conditions, parameters));
-                console.log($scope.blocks);
                 conditions = [];
                 parameters = [];
               } else {
