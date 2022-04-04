@@ -26,6 +26,8 @@ namespace XmppMessageClient
     private SampleClientController m_clientController;
     private Dictionary<string, List<TMsgWrapper>> _validMessages = new Dictionary<string, List<TMsgWrapper>>();
     private AutoMessageTester _autoTester = null;
+    private int _testMsgCnt = 0;
+    private bool testerStarted = false;
 
     public FrmSampleClient(SampleClientController clientController)
     {
@@ -172,8 +174,34 @@ namespace XmppMessageClient
       cbMsgType.SelectedIndex = (int)SimEventType.etCompEv;
     }
 
+    private void UI_Update()
+    {
+      //todo show next msg to run if any
+      //btnSendMsg.Text = "Run";
+      int cnt = int.Parse(tbHowMany.Text);
+      if (cnt > 1)
+      {
+        btnSendMsg.Text = "Run";
+      }
+      else
+      {
+        btnSendMsg.Text = "Send Next";
+      }
+      if (testerStarted && (_autoTester.idx == _testMsgCnt))
+      {
+        btnSendMsg.Text = "ReRun";
+      }
+    }
+
     private void btnSendMsg_Click(object sender, EventArgs e)
     {
+      //MethodInvoker NextUpdateDelegate = delegate ()
+      //{
+      //  //todo show next msg to run if any
+
+      //  btnSendMsg.Text = "Stop";
+      //};
+
       if (cbResources.SelectedIndex >= 0)
       {
         if (tabMsgSending.SelectedIndex == 0)
@@ -228,16 +256,29 @@ namespace XmppMessageClient
         }
         else
         {
-          if (btnSendMsg.Text == "Start")
-          {
-            _autoTester = new AutoMessageTester(this.m_clientController, this.rtbTestMsg.Text, false);
-            AutoMessageLoop();
-          }
-          else if (btnSendMsg.Text == "Stop")
+          if (btnSendMsg.Text == "Stop")
           {
             //todo stop the message sending.
             _autoTester.Stop();
           }
+          else
+          {
+            if (_autoTester == null)
+            {
+              _autoTester = new AutoMessageTester(this.m_clientController, this.rtbTestMsg.Text, UI_Update, false);
+            }
+
+            if (btnSendMsg.Text == "ReRun")
+            {
+              _autoTester.Stop();
+            }            
+            
+            if (!testerStarted)
+              AutoMessageLoop();
+
+            _autoTester.SetRunTo(_autoTester.idx + int.Parse(tbHowMany.Text));            
+          }
+          
         }
       }
       else
@@ -327,36 +368,89 @@ namespace XmppMessageClient
       if(File.Exists(tbTestMsgFile.Text))
       {
         string msgText = File.ReadAllText(tbTestMsgFile.Text);
-        try
-        {
-          JToken modelJson = JToken.Parse(msgText);
-          rtbTestMsg.Text = modelJson.ToString(Formatting.Indented);
-        }
-        catch (Exception ex)
-        {
-          rtbTestMsg.Text = "Error loading file, verify the JSON format";
-        };
+        rtbTestMsg.Text = msgText;
       }
-    }
-
-    private void tabPage1_Enter(object sender, EventArgs e)
-    {
-      btnSendMsg.Text = "Send";
-    }
-
-    private void tabPage2_Enter(object sender, EventArgs e)
-    {
-      btnSendMsg.Text = "Start";
     }
 
     private void AutoMessageLoop()
     {
       //Loop through the messages in the testMsg text.
-      btnSendMsg.Text = "Stop";
-      
+      if (btnSendMsg.Text != "Send Next")
+        btnSendMsg.Text = "Stop";
+
+      testerStarted = true;
       ThreadStart tStarter = new ThreadStart(_autoTester.Start);
+      //run this when the thread is done.
+      tStarter += () =>
+      {
+        testerStarted = false;
+      };
+
       Thread simThread = new Thread(tStarter);
       simThread.Start();
+      
+    }
+
+    private void tabPage1_Enter(object sender, EventArgs e)
+    {
+    }
+
+    private void tabPage2_Enter(object sender, EventArgs e)
+    {
+    }
+
+    private void rtbTestMsg_TextChanged(object sender, EventArgs e)
+    {
+      JArray modelJson = null;
+      try
+      {
+        modelJson = JArray.Parse(rtbTestMsg.Text);
+        rtbTestMsg.Text = modelJson.ToString(Formatting.Indented);
+      }
+      catch (Exception ex)
+      {
+        rtbTestMsg.Text = "Error loading file, verify the JSON format and an array of messages";
+        return;
+      };
+
+      //update how many messages there are.
+      _testMsgCnt = modelJson.Count;
+      btnSendMsg.Enabled = true;
+    }
+
+    private void tabMsgSending_SelectedIndexChanged(object sender, EventArgs e)
+    {
+      if(tabMsgSending.SelectedTab == tabPgTestFile)
+      {
+        tbHowMany.Visible = true;
+        lblHowMany.Visible = true;
+        btnSendMsg.Text = "Send Next";
+        if(rtbTestMsg.Text == "")
+        {
+          btnSendMsg.Enabled = false;
+        }
+      }
+      else
+      {
+        tbHowMany.Visible = false;
+        lblHowMany.Visible = false;
+        btnSendMsg.Text = "Send";
+      }
+    }
+
+    private void tbHowMany_TextChanged(object sender, EventArgs e)
+    {
+      try
+      {
+        int cnt = int.Parse(tbHowMany.Text);
+        if (cnt > _testMsgCnt)
+            tbHowMany.Text = _testMsgCnt.ToString();
+        UI_Update();
+      }
+      catch
+      {
+        tbHowMany.Text = "1";
+      }
     }
   } 
 

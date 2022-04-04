@@ -47,7 +47,7 @@ namespace XmppMessageClient
       this.btnSendMsg = new System.Windows.Forms.Button();
       this.cbResources = new System.Windows.Forms.ComboBox();
       this.tabMsgSending = new System.Windows.Forms.TabControl();
-      this.tabPage1 = new System.Windows.Forms.TabPage();
+      this.tabPgManual = new System.Windows.Forms.TabPage();
       this.pnlSendMsg = new System.Windows.Forms.Panel();
       this.panel4 = new System.Windows.Forms.Panel();
       this.splitter3 = new System.Windows.Forms.Splitter();
@@ -79,7 +79,11 @@ namespace XmppMessageClient
       this.lblMsgTime = new System.Windows.Forms.Label();
       this.lblManMsgDesc = new System.Windows.Forms.Label();
       this.lblSendManualMsg = new System.Windows.Forms.Label();
-      this.tabPage2 = new System.Windows.Forms.TabPage();
+      this.tabPgTestFile = new System.Windows.Forms.TabPage();
+      this.rtbTestMsg = new System.Windows.Forms.RichTextBox();
+      this.btnOpenTestMsgFile = new System.Windows.Forms.Button();
+      this.label6 = new System.Windows.Forms.Label();
+      this.tbTestMsgFile = new System.Windows.Forms.TextBox();
       this.panelConnection = new System.Windows.Forms.Panel();
       this.label9 = new System.Windows.Forms.Label();
       this.textBoxDomain = new System.Windows.Forms.TextBox();
@@ -90,16 +94,14 @@ namespace XmppMessageClient
       this.listBoxClients = new System.Windows.Forms.ListBox();
       this.tabLog = new System.Windows.Forms.TabPage();
       this.rtbLog = new System.Windows.Forms.RichTextBox();
-      this.label6 = new System.Windows.Forms.Label();
-      this.tbTestMsgFile = new System.Windows.Forms.TextBox();
       this.dlgOpenTestMsgFile = new System.Windows.Forms.OpenFileDialog();
-      this.btnOpenTestMsgFile = new System.Windows.Forms.Button();
-      this.rtbTestMsg = new System.Windows.Forms.RichTextBox();
+      this.tbHowMany = new System.Windows.Forms.TextBox();
+      this.lblHowMany = new System.Windows.Forms.Label();
       this.tabControl1.SuspendLayout();
       this.tabConnection.SuspendLayout();
       this.panel3.SuspendLayout();
       this.tabMsgSending.SuspendLayout();
-      this.tabPage1.SuspendLayout();
+      this.tabPgManual.SuspendLayout();
       this.pnlSendMsg.SuspendLayout();
       this.panel4.SuspendLayout();
       this.pnlJSONGen.SuspendLayout();
@@ -110,7 +112,7 @@ namespace XmppMessageClient
       this.panel2.SuspendLayout();
       this.groupBox1.SuspendLayout();
       this.panel5.SuspendLayout();
-      this.tabPage2.SuspendLayout();
+      this.tabPgTestFile.SuspendLayout();
       this.panelConnection.SuspendLayout();
       this.tabMessages.SuspendLayout();
       this.groupBoxReceived.SuspendLayout();
@@ -226,6 +228,8 @@ namespace XmppMessageClient
       // 
       // panel3
       // 
+      this.panel3.Controls.Add(this.lblHowMany);
+      this.panel3.Controls.Add(this.tbHowMany);
       this.panel3.Controls.Add(this.lblClientMsg);
       this.panel3.Controls.Add(this.btnSendMsg);
       this.panel3.Controls.Add(this.cbResources);
@@ -238,7 +242,7 @@ namespace XmppMessageClient
       // lblClientMsg
       // 
       this.lblClientMsg.AutoSize = true;
-      this.lblClientMsg.Location = new System.Drawing.Point(44, 12);
+      this.lblClientMsg.Location = new System.Drawing.Point(3, 14);
       this.lblClientMsg.Name = "lblClientMsg";
       this.lblClientMsg.Size = new System.Drawing.Size(53, 15);
       this.lblClientMsg.TabIndex = 7;
@@ -248,9 +252,9 @@ namespace XmppMessageClient
       // 
       this.btnSendMsg.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-      this.btnSendMsg.Location = new System.Drawing.Point(297, 4);
+      this.btnSendMsg.Location = new System.Drawing.Point(394, 7);
       this.btnSendMsg.Name = "btnSendMsg";
-      this.btnSendMsg.Size = new System.Drawing.Size(247, 23);
+      this.btnSendMsg.Size = new System.Drawing.Size(121, 23);
       this.btnSendMsg.TabIndex = 0;
       this.btnSendMsg.Text = "Send";
       this.btnSendMsg.UseVisualStyleBackColor = true;
@@ -261,33 +265,34 @@ namespace XmppMessageClient
       this.cbResources.FormattingEnabled = true;
       this.cbResources.Items.AddRange(new object[] {
             "EMRALD"});
-      this.cbResources.Location = new System.Drawing.Point(103, 5);
+      this.cbResources.Location = new System.Drawing.Point(62, 7);
       this.cbResources.Name = "cbResources";
       this.cbResources.Size = new System.Drawing.Size(188, 23);
       this.cbResources.TabIndex = 0;
       // 
       // tabMsgSending
       // 
-      this.tabMsgSending.Controls.Add(this.tabPage1);
-      this.tabMsgSending.Controls.Add(this.tabPage2);
+      this.tabMsgSending.Controls.Add(this.tabPgManual);
+      this.tabMsgSending.Controls.Add(this.tabPgTestFile);
       this.tabMsgSending.Dock = System.Windows.Forms.DockStyle.Fill;
       this.tabMsgSending.Location = new System.Drawing.Point(3, 73);
       this.tabMsgSending.Name = "tabMsgSending";
       this.tabMsgSending.SelectedIndex = 0;
       this.tabMsgSending.Size = new System.Drawing.Size(708, 660);
       this.tabMsgSending.TabIndex = 9;
+      this.tabMsgSending.SelectedIndexChanged += new System.EventHandler(this.tabMsgSending_SelectedIndexChanged);
       // 
-      // tabPage1
+      // tabPgManual
       // 
-      this.tabPage1.Controls.Add(this.pnlSendMsg);
-      this.tabPage1.Location = new System.Drawing.Point(4, 24);
-      this.tabPage1.Name = "tabPage1";
-      this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-      this.tabPage1.Size = new System.Drawing.Size(700, 632);
-      this.tabPage1.TabIndex = 0;
-      this.tabPage1.Text = "Manual";
-      this.tabPage1.UseVisualStyleBackColor = true;
-      this.tabPage1.Enter += new System.EventHandler(this.tabPage1_Enter);
+      this.tabPgManual.Controls.Add(this.pnlSendMsg);
+      this.tabPgManual.Location = new System.Drawing.Point(4, 24);
+      this.tabPgManual.Name = "tabPgManual";
+      this.tabPgManual.Padding = new System.Windows.Forms.Padding(3);
+      this.tabPgManual.Size = new System.Drawing.Size(700, 632);
+      this.tabPgManual.TabIndex = 0;
+      this.tabPgManual.Text = "Manual";
+      this.tabPgManual.UseVisualStyleBackColor = true;
+      this.tabPgManual.Enter += new System.EventHandler(this.tabPage1_Enter);
       // 
       // pnlSendMsg
       // 
@@ -621,20 +626,57 @@ namespace XmppMessageClient
       this.lblSendManualMsg.Text = "Send Manual Event Message";
       this.lblSendManualMsg.TextAlign = System.Drawing.ContentAlignment.TopCenter;
       // 
-      // tabPage2
+      // tabPgTestFile
       // 
-      this.tabPage2.Controls.Add(this.rtbTestMsg);
-      this.tabPage2.Controls.Add(this.btnOpenTestMsgFile);
-      this.tabPage2.Controls.Add(this.label6);
-      this.tabPage2.Controls.Add(this.tbTestMsgFile);
-      this.tabPage2.Location = new System.Drawing.Point(4, 24);
-      this.tabPage2.Name = "tabPage2";
-      this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-      this.tabPage2.Size = new System.Drawing.Size(700, 632);
-      this.tabPage2.TabIndex = 1;
-      this.tabPage2.Text = "Test File";
-      this.tabPage2.UseVisualStyleBackColor = true;
-      this.tabPage2.Enter += new System.EventHandler(this.tabPage2_Enter);
+      this.tabPgTestFile.Controls.Add(this.rtbTestMsg);
+      this.tabPgTestFile.Controls.Add(this.btnOpenTestMsgFile);
+      this.tabPgTestFile.Controls.Add(this.label6);
+      this.tabPgTestFile.Controls.Add(this.tbTestMsgFile);
+      this.tabPgTestFile.Location = new System.Drawing.Point(4, 24);
+      this.tabPgTestFile.Name = "tabPgTestFile";
+      this.tabPgTestFile.Padding = new System.Windows.Forms.Padding(3);
+      this.tabPgTestFile.Size = new System.Drawing.Size(700, 632);
+      this.tabPgTestFile.TabIndex = 1;
+      this.tabPgTestFile.Text = "Test File";
+      this.tabPgTestFile.UseVisualStyleBackColor = true;
+      this.tabPgTestFile.Enter += new System.EventHandler(this.tabPage2_Enter);
+      // 
+      // rtbTestMsg
+      // 
+      this.rtbTestMsg.BackColor = System.Drawing.SystemColors.Control;
+      this.rtbTestMsg.Dock = System.Windows.Forms.DockStyle.Bottom;
+      this.rtbTestMsg.Location = new System.Drawing.Point(3, 35);
+      this.rtbTestMsg.Name = "rtbTestMsg";
+      this.rtbTestMsg.Size = new System.Drawing.Size(694, 594);
+      this.rtbTestMsg.TabIndex = 20;
+      this.rtbTestMsg.Text = "";
+      this.rtbTestMsg.TextChanged += new System.EventHandler(this.rtbTestMsg_TextChanged);
+      // 
+      // btnOpenTestMsgFile
+      // 
+      this.btnOpenTestMsgFile.Location = new System.Drawing.Point(337, 6);
+      this.btnOpenTestMsgFile.Name = "btnOpenTestMsgFile";
+      this.btnOpenTestMsgFile.Size = new System.Drawing.Size(47, 23);
+      this.btnOpenTestMsgFile.TabIndex = 19;
+      this.btnOpenTestMsgFile.Text = "...";
+      this.btnOpenTestMsgFile.UseVisualStyleBackColor = true;
+      this.btnOpenTestMsgFile.Click += new System.EventHandler(this.btnOpenTestMsgFile_Click);
+      // 
+      // label6
+      // 
+      this.label6.AutoSize = true;
+      this.label6.Location = new System.Drawing.Point(15, 9);
+      this.label6.Name = "label6";
+      this.label6.Size = new System.Drawing.Size(25, 15);
+      this.label6.TabIndex = 17;
+      this.label6.Text = "File";
+      // 
+      // tbTestMsgFile
+      // 
+      this.tbTestMsgFile.Location = new System.Drawing.Point(46, 6);
+      this.tbTestMsgFile.Name = "tbTestMsgFile";
+      this.tbTestMsgFile.Size = new System.Drawing.Size(285, 23);
+      this.tbTestMsgFile.TabIndex = 18;
       // 
       // panelConnection
       // 
@@ -754,46 +796,30 @@ namespace XmppMessageClient
       this.rtbLog.TabIndex = 1;
       this.rtbLog.Text = "";
       // 
-      // label6
-      // 
-      this.label6.AutoSize = true;
-      this.label6.Location = new System.Drawing.Point(15, 9);
-      this.label6.Name = "label6";
-      this.label6.Size = new System.Drawing.Size(25, 15);
-      this.label6.TabIndex = 17;
-      this.label6.Text = "File";
-      // 
-      // tbTestMsgFile
-      // 
-      this.tbTestMsgFile.Location = new System.Drawing.Point(46, 6);
-      this.tbTestMsgFile.Name = "tbTestMsgFile";
-      this.tbTestMsgFile.Size = new System.Drawing.Size(285, 23);
-      this.tbTestMsgFile.TabIndex = 18;
-      // 
       // dlgOpenTestMsgFile
       // 
       this.dlgOpenTestMsgFile.FileName = "openFileDialog1";
       this.dlgOpenTestMsgFile.FileOk += new System.ComponentModel.CancelEventHandler(this.dlgOpenTestMsgFile_FileOk);
       // 
-      // btnOpenTestMsgFile
+      // tbHowMany
       // 
-      this.btnOpenTestMsgFile.Location = new System.Drawing.Point(337, 6);
-      this.btnOpenTestMsgFile.Name = "btnOpenTestMsgFile";
-      this.btnOpenTestMsgFile.Size = new System.Drawing.Size(47, 23);
-      this.btnOpenTestMsgFile.TabIndex = 19;
-      this.btnOpenTestMsgFile.Text = "...";
-      this.btnOpenTestMsgFile.UseVisualStyleBackColor = true;
-      this.btnOpenTestMsgFile.Click += new System.EventHandler(this.btnOpenTestMsgFile_Click);
+      this.tbHowMany.Location = new System.Drawing.Point(335, 7);
+      this.tbHowMany.Name = "tbHowMany";
+      this.tbHowMany.Size = new System.Drawing.Size(36, 23);
+      this.tbHowMany.TabIndex = 21;
+      this.tbHowMany.Text = "1";
+      this.tbHowMany.Visible = false;
+      this.tbHowMany.TextChanged += new System.EventHandler(this.tbHowMany_TextChanged);
       // 
-      // rtbTestMsg
+      // lblHowMany
       // 
-      this.rtbTestMsg.BackColor = System.Drawing.SystemColors.Control;
-      this.rtbTestMsg.Dock = System.Windows.Forms.DockStyle.Bottom;
-      this.rtbTestMsg.Location = new System.Drawing.Point(3, 35);
-      this.rtbTestMsg.Name = "rtbTestMsg";
-      this.rtbTestMsg.Size = new System.Drawing.Size(694, 594);
-      this.rtbTestMsg.TabIndex = 20;
-      this.rtbTestMsg.Text = "";
+      this.lblHowMany.AutoSize = true;
+      this.lblHowMany.Location = new System.Drawing.Point(270, 15);
+      this.lblHowMany.Name = "lblHowMany";
+      this.lblHowMany.Size = new System.Drawing.Size(65, 15);
+      this.lblHowMany.TabIndex = 22;
+      this.lblHowMany.Text = "How Many";
+      this.lblHowMany.Visible = false;
       // 
       // FrmSampleClient
       // 
@@ -810,7 +836,7 @@ namespace XmppMessageClient
       this.panel3.ResumeLayout(false);
       this.panel3.PerformLayout();
       this.tabMsgSending.ResumeLayout(false);
-      this.tabPage1.ResumeLayout(false);
+      this.tabPgManual.ResumeLayout(false);
       this.pnlSendMsg.ResumeLayout(false);
       this.panel4.ResumeLayout(false);
       this.pnlJSONGen.ResumeLayout(false);
@@ -824,8 +850,8 @@ namespace XmppMessageClient
       this.groupBox1.ResumeLayout(false);
       this.panel5.ResumeLayout(false);
       this.panel5.PerformLayout();
-      this.tabPage2.ResumeLayout(false);
-      this.tabPage2.PerformLayout();
+      this.tabPgTestFile.ResumeLayout(false);
+      this.tabPgTestFile.PerformLayout();
       this.panelConnection.ResumeLayout(false);
       this.panelConnection.PerformLayout();
       this.tabMessages.ResumeLayout(false);
@@ -895,12 +921,14 @@ namespace XmppMessageClient
     private System.Windows.Forms.Label label11;
     private System.Windows.Forms.ComboBox cbMsgType;
     private System.Windows.Forms.TabControl tabMsgSending;
-    private System.Windows.Forms.TabPage tabPage1;
-    private System.Windows.Forms.TabPage tabPage2;
+    private System.Windows.Forms.TabPage tabPgManual;
+    private System.Windows.Forms.TabPage tabPgTestFile;
     private System.Windows.Forms.Button btnOpenTestMsgFile;
     private System.Windows.Forms.Label label6;
     private System.Windows.Forms.TextBox tbTestMsgFile;
     private System.Windows.Forms.OpenFileDialog dlgOpenTestMsgFile;
     private System.Windows.Forms.RichTextBox rtbTestMsg;
+    private System.Windows.Forms.Label lblHowMany;
+    private System.Windows.Forms.TextBox tbHowMany;
   }
 }

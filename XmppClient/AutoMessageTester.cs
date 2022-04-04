@@ -10,21 +10,28 @@ using Newtonsoft.Json.Schema;
 
 namespace XmppMessageClient
 {
+  public delegate void UpdateDelegate();
+
   class AutoMessageTester
-  {
+  {   
+
     private SampleClientController _clientController;
     private JArray _msgList;
     private string _error;
     public string error { get { return _error; } }
+    public int idx { get { return _idx; } }
     private bool _stop = false;
-    //private int _idx = 0;
+    private int _idx = 0;
+    public int _runToIdx = 0;
     private bool _hasStatusMsgs = false;
     private StatusType _curStatus = StatusType.stIdle;
+    private UpdateDelegate _updateCallback;
 
 
-    public AutoMessageTester(SampleClientController clientController, string messageList, bool hasStatusMsgs)
+    public AutoMessageTester(SampleClientController clientController, string messageList, UpdateDelegate callback, bool hasStatusMsgs)
     {
       _clientController = clientController;
+      _updateCallback = callback;
       try
       {
         string schemaStr = System.IO.File.ReadAllText("MessageProtocol.JSON");
@@ -51,26 +58,53 @@ namespace XmppMessageClient
     public void Stop()
     {
       _stop = true;
+      _idx = 0;
+      _runToIdx = 0;
+    }
+
+    public void SetRunTo(int idx)
+    {
+      _stop = false;
+      _runToIdx = idx;
     }
 
     public void Start()
     {
       try
       {
-        //_idx = 0;
         _curStatus = StatusType.stIdle;
 
-        foreach (var jItem in _msgList)
+        while (_idx < _msgList.Count)
         {
-          if(_stop)
+          if (_stop)
           {
             _error = "Stopped early.";
             return;
           }
 
-          TMsgWrapper nextEvMsg = jItem.ToObject<TMsgWrapper>();
-          NextMsg(nextEvMsg);
+          if (_idx < _runToIdx)
+          {
+            var jItem = _msgList[_idx];
+            TMsgWrapper nextEvMsg = jItem.ToObject<TMsgWrapper>();
+            NextMsg(nextEvMsg);
+            _idx++;
+          }
+          _updateCallback();
         }
+
+        
+
+        //foreach (var jItem in _msgList)
+        //{
+        //  if(_stop)
+        //  {
+        //    _error = "Stopped early.";
+        //    return;
+        //  }
+
+        //  TMsgWrapper nextEvMsg = jItem.ToObject<TMsgWrapper>();
+        //  NextMsg(nextEvMsg);
+        //}
       }
       catch(Exception e)
       {
