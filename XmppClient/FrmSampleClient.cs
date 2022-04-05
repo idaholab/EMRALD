@@ -110,8 +110,15 @@ namespace XmppMessageClient
 
     private void cmdConnect_Click(object sender, EventArgs e)
     {
+      string x = "[\r\n{\r\n\"dispName\":\"EventName\",\r\n\"version\":\"0.1.0\",\r\n\"pID\":\"00000000-0000-0000-0000-000000000674\",\r\n\"msgType\":\"mtSimEvent\",\r\n\"globalRunTime\":\"00:00:00\",\r\n\"desc\":\"SomeEvent\",\r\n\"simEvents\":[\r\n{\r\n\"evType\":\"etPing\",\r\n\"time\":\"00:00:00\"\r\n}\r\n]\r\n},\r\n{\r\n\"dispName\":\"EventName\",\r\n\"version\":\"0.1.0\",\r\n\"pID\":\"00000000-0000-0000-0000-000000001010\",\r\n\"msgType\":\"mtSimEvent\",\r\n\"globalRunTime\":\"00:00:00\",\r\n\"desc\":\"Juststarted.\",\r\n\"simEvents\":[\r\n{\r\n\"evType\":\"etStatus\",\r\n\"status\":\"stIdle\",\r\n\"time\":\"00:00:00\"\r\n}\r\n]\r\n},\r\n{\r\n\"dispName\":\"EventName\",\r\n\"version\":\"0.1.0\",\r\n\"pID\":\"00000000-0000-0000-0000-000000002012\",\r\n\"msgType\":\"mtSimEvent\",\r\n\"globalRunTime\":\"00:00:00\",\r\n\"desc\":\"SomeEvent\",\r\n\"simEvents\":[\r\n{\r\n\"evType\":\"etSimLoaded\",\r\n\"time\":\"00:00:00\"\r\n}\r\n]\r\n}\r\n]";
+      string find = "{\r\n\"dispName\":\"EventName\",\r\n\"version\":\"0.1.0\",\r\n\"pID\":\"00000000-0000-0000-0000-000000001010\",\r\n\"msgType\":\"mtSimEvent\",\r\n\"globalRunTime\":\"00:00:00\",\r\n\"desc\":\"Juststarted.\",\r\n\"simEvents\":[\r\n{\r\n\"evType\":\"etStatus\",\r\n\"status\":\"stIdle\",\r\n\"time\":\"00:00:00\"\r\n}\r\n]\r\n}";
+      //string find = "\"version\":\"0.1.0\",\r\n\"pID\":\"00000000-0000-0000-0000-000000000674\",";
+      //string x = "[Line1\r\nID=5\r\nName=test\r\nlastLine\r\n";
+      //string find = "ID=5\r\nName=test";
+      int i = x.IndexOf(find);
+
+
       m_clientController.Connect(textBoxUser.Text, textBoxDomain.Text, textboxResource.Text, textBoxHost.Text);
-      // TODO return a connection status
       UpdateConnectedStatus(true);
     }
 
@@ -176,20 +183,68 @@ namespace XmppMessageClient
 
     private void UI_Update()
     {
-      //todo show next msg to run if any
-      //btnSendMsg.Text = "Run";
-      int cnt = int.Parse(tbHowMany.Text);
-      if (cnt > 1)
+      if (btnSendMsg.InvokeRequired)
       {
-        btnSendMsg.Text = "Run";
+        // Call this same method but append THREAD2 to the text
+        Action safeWrite = delegate { UI_Update(); };
+        btnSendMsg.Invoke(safeWrite);
       }
-      else
+      else 
       {
-        btnSendMsg.Text = "Send Next";
-      }
-      if (testerStarted && (_autoTester.idx == _testMsgCnt))
-      {
-        btnSendMsg.Text = "ReRun";
+        int cnt = int.Parse(tbHowMany.Text);
+        if(_autoTester != null)
+        {
+          int newCnt = Math.Min(cnt, (_testMsgCnt - _autoTester.idx));
+          if(cnt != newCnt)
+          {
+            tbHowMany.Text = newCnt.ToString();
+            return;
+          }
+        }
+        
+        string newTxt = btnSendMsg.Text;
+        if (cnt > 1)
+        {
+          newTxt = "Run";
+        }
+        else
+        {
+          newTxt = "Send Next";
+        }
+        if (testerStarted && (_autoTester.idx == _testMsgCnt))
+        {
+          newTxt = "ReRun";
+          tbHowMany.Text = "1";
+        }
+        btnSendMsg.Text = newTxt;
+
+        //string x = "[\r\n{\r\n\"dispName\":\"EventName\",\r\n\"version\":\"0.1.0\",\r\n\"pID\":\"00000000-0000-0000-0000-000000000674\",\r\n\"msgType\":\"mtSimEvent\",\r\n\"globalRunTime\":\"00:00:00\",\r\n\"desc\":\"SomeEvent\",\r\n\"simEvents\":[\r\n{\r\n\"evType\":\"etPing\",\r\n\"time\":\"00:00:00\"\r\n}\r\n]\r\n},\r\n{\r\n\"dispName\":\"EventName\",\r\n\"version\":\"0.1.0\",\r\n\"pID\":\"00000000-0000-0000-0000-000000001010\",\r\n\"msgType\":\"mtSimEvent\",\r\n\"globalRunTime\":\"00:00:00\",\r\n\"desc\":\"Juststarted.\",\r\n\"simEvents\":[\r\n{\r\n\"evType\":\"etStatus\",\r\n\"status\":\"stIdle\",\r\n\"time\":\"00:00:00\"\r\n}\r\n]\r\n},\r\n{\r\n\"dispName\":\"EventName\",\r\n\"version\":\"0.1.0\",\r\n\"pID\":\"00000000-0000-0000-0000-000000002012\",\r\n\"msgType\":\"mtSimEvent\",\r\n\"globalRunTime\":\"00:00:00\",\r\n\"desc\":\"SomeEvent\",\r\n\"simEvents\":[\r\n{\r\n\"evType\":\"etSimLoaded\",\r\n\"time\":\"00:00:00\"\r\n}\r\n]\r\n}\r\n]";
+        //string find = \"version\":\"0.1.0\",\r\n\"pID\":\"00000000-0000-0000-0000-000000000674\",";
+        //int i = x.IndexOf(find);
+
+
+        //todo show next msg to run if any
+        if ((_autoTester != null) && (_autoTester.idx < _testMsgCnt))
+        {
+          JToken curJ = _autoTester.msgList[_autoTester.idx];
+          string findI = curJ.ToString(Formatting.Indented).Replace("\t", "").Replace(" ", "");
+          string full = tbTestMsg.Text.Replace("\t", "").Replace(" ", "");
+          int idx = full.IndexOf(findI, 0);
+          if (idx >= 0)
+          {
+            int begLine = full.Substring(0, idx).Split('\n').Length;
+            int lines = findI.Split('\n').Length;
+            idx = tbTestMsg.GetFirstCharIndexFromLine(lines);
+            int endLoc = tbTestMsg.GetFirstCharIndexFromLine(begLine + (lines-1));
+            if (endLoc < idx)
+              endLoc = tbTestMsg.Text.Length;
+            tbTestMsg.Select(idx, (endLoc-idx));
+            tbTestMsg.Focus();
+            //tbTestMsg.SelectionBackColor = System.Drawing.Color.Brown;
+            //rtbTestMsg.Refresh();
+          }
+            
+        }
       }
     }
 
@@ -265,7 +320,7 @@ namespace XmppMessageClient
           {
             if (_autoTester == null)
             {
-              _autoTester = new AutoMessageTester(this.m_clientController, this.rtbTestMsg.Text, UI_Update, false);
+              _autoTester = new AutoMessageTester(this.m_clientController, this.tbTestMsg.Text, UI_Update, false);
             }
 
             if (btnSendMsg.Text == "ReRun")
@@ -361,6 +416,7 @@ namespace XmppMessageClient
     private void dlgOpenTestMsgFile_FileOk(object sender, System.ComponentModel.CancelEventArgs e)
     {
       tbTestMsgFile.Text = dlgOpenTestMsgFile.FileName;
+      
       LoadMsgTestFile();
     }
     private void LoadMsgTestFile()
@@ -368,7 +424,8 @@ namespace XmppMessageClient
       if(File.Exists(tbTestMsgFile.Text))
       {
         string msgText = File.ReadAllText(tbTestMsgFile.Text);
-        rtbTestMsg.Text = msgText;
+        tbTestMsg.Text = msgText;
+        tbTestMsg.Text = msgText;
       }
     }
 
@@ -401,21 +458,7 @@ namespace XmppMessageClient
 
     private void rtbTestMsg_TextChanged(object sender, EventArgs e)
     {
-      JArray modelJson = null;
-      try
-      {
-        modelJson = JArray.Parse(rtbTestMsg.Text);
-        rtbTestMsg.Text = modelJson.ToString(Formatting.Indented);
-      }
-      catch (Exception ex)
-      {
-        rtbTestMsg.Text = "Error loading file, verify the JSON format and an array of messages";
-        return;
-      };
-
-      //update how many messages there are.
-      _testMsgCnt = modelJson.Count;
-      btnSendMsg.Enabled = true;
+      
     }
 
     private void tabMsgSending_SelectedIndexChanged(object sender, EventArgs e)
@@ -425,7 +468,7 @@ namespace XmppMessageClient
         tbHowMany.Visible = true;
         lblHowMany.Visible = true;
         btnSendMsg.Text = "Send Next";
-        if(rtbTestMsg.Text == "")
+        if(tbTestMsg.Text == "")
         {
           btnSendMsg.Enabled = false;
         }
@@ -449,8 +492,47 @@ namespace XmppMessageClient
       }
       catch
       {
-        tbHowMany.Text = "1";
+        if(tbHowMany.Text != "1")
+          tbHowMany.Text = "1";
       }
+    }
+
+    private void button1_Click(object sender, EventArgs e)
+    {
+      //int s = rtbTestMsg.GetFirstCharIndexFromLine(5);
+      //int en = rtbTestMsg.GetFirstCharIndexFromLine(10);
+      //rtbTestMsg.Select(50, 500);
+     // rtbTestMsg.SelectAll();
+      //rtbTestMsg.SelectionColor = System.Drawing.Color.Aqua;
+      //rtbTestMsg.SelectionBackColor = System.Drawing.Color.Brown;
+      //rtbTestMsg.SelectionFont = new Font(rtbTestMsg.Font, FontStyle.Bold);
+      //rtbTestMsg.Refresh();
+      //rtbTestMsg.Focus();
+      //rtbTestMsg.AutoWordSelection = true;
+      //rtbTestMsg.SelectedText = "\"pID\": \"00000000 - 0000 - 0000 - 0000 - 000000001010\",\"";
+
+      tbTestMsg.Select(50, 500);
+      tbTestMsg.Focus();
+
+    }
+
+    private void tbTest_TextChanged(object sender, EventArgs e)
+    {
+      JArray modelJson = null;
+      try
+      {
+        modelJson = JArray.Parse(tbTestMsg.Text);
+        tbTestMsg.Text = modelJson.ToString(Formatting.Indented);
+      }
+      catch (Exception ex)
+      {
+        tbTestMsg.Text = "Error loading file, verify the JSON format and an array of messages";
+        return;
+      };
+
+      //update how many messages there are.
+      _testMsgCnt = modelJson.Count;
+      btnSendMsg.Enabled = true;
     }
   } 
 

@@ -19,6 +19,7 @@ namespace XmppMessageClient
     private JArray _msgList;
     private string _error;
     public string error { get { return _error; } }
+    public JArray msgList { get { return _msgList; } }
     public int idx { get { return _idx; } }
     private bool _stop = false;
     private int _idx = 0;
@@ -88,8 +89,9 @@ namespace XmppMessageClient
             TMsgWrapper nextEvMsg = jItem.ToObject<TMsgWrapper>();
             NextMsg(nextEvMsg);
             _idx++;
+            _updateCallback();
           }
-          _updateCallback();
+          
         }
 
         

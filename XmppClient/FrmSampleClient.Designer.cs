@@ -43,6 +43,8 @@ namespace XmppMessageClient
       this.tabControl1 = new System.Windows.Forms.TabControl();
       this.tabConnection = new System.Windows.Forms.TabPage();
       this.panel3 = new System.Windows.Forms.Panel();
+      this.lblHowMany = new System.Windows.Forms.Label();
+      this.tbHowMany = new System.Windows.Forms.TextBox();
       this.lblClientMsg = new System.Windows.Forms.Label();
       this.btnSendMsg = new System.Windows.Forms.Button();
       this.cbResources = new System.Windows.Forms.ComboBox();
@@ -80,7 +82,8 @@ namespace XmppMessageClient
       this.lblManMsgDesc = new System.Windows.Forms.Label();
       this.lblSendManualMsg = new System.Windows.Forms.Label();
       this.tabPgTestFile = new System.Windows.Forms.TabPage();
-      this.rtbTestMsg = new System.Windows.Forms.RichTextBox();
+      this.tbTestMsg = new System.Windows.Forms.TextBox();
+      this.button1 = new System.Windows.Forms.Button();
       this.btnOpenTestMsgFile = new System.Windows.Forms.Button();
       this.label6 = new System.Windows.Forms.Label();
       this.tbTestMsgFile = new System.Windows.Forms.TextBox();
@@ -95,8 +98,6 @@ namespace XmppMessageClient
       this.tabLog = new System.Windows.Forms.TabPage();
       this.rtbLog = new System.Windows.Forms.RichTextBox();
       this.dlgOpenTestMsgFile = new System.Windows.Forms.OpenFileDialog();
-      this.tbHowMany = new System.Windows.Forms.TextBox();
-      this.lblHowMany = new System.Windows.Forms.Label();
       this.tabControl1.SuspendLayout();
       this.tabConnection.SuspendLayout();
       this.panel3.SuspendLayout();
@@ -239,6 +240,26 @@ namespace XmppMessageClient
       this.panel3.Size = new System.Drawing.Size(708, 34);
       this.panel3.TabIndex = 27;
       // 
+      // lblHowMany
+      // 
+      this.lblHowMany.AutoSize = true;
+      this.lblHowMany.Location = new System.Drawing.Point(270, 15);
+      this.lblHowMany.Name = "lblHowMany";
+      this.lblHowMany.Size = new System.Drawing.Size(65, 15);
+      this.lblHowMany.TabIndex = 22;
+      this.lblHowMany.Text = "How Many";
+      this.lblHowMany.Visible = false;
+      // 
+      // tbHowMany
+      // 
+      this.tbHowMany.Location = new System.Drawing.Point(335, 7);
+      this.tbHowMany.Name = "tbHowMany";
+      this.tbHowMany.Size = new System.Drawing.Size(36, 23);
+      this.tbHowMany.TabIndex = 21;
+      this.tbHowMany.Text = "1";
+      this.tbHowMany.Visible = false;
+      this.tbHowMany.TextChanged += new System.EventHandler(this.tbHowMany_TextChanged);
+      // 
       // lblClientMsg
       // 
       this.lblClientMsg.AutoSize = true;
@@ -272,13 +293,15 @@ namespace XmppMessageClient
       // 
       // tabMsgSending
       // 
+      this.tabMsgSending.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
       this.tabMsgSending.Controls.Add(this.tabPgManual);
       this.tabMsgSending.Controls.Add(this.tabPgTestFile);
-      this.tabMsgSending.Dock = System.Windows.Forms.DockStyle.Fill;
       this.tabMsgSending.Location = new System.Drawing.Point(3, 73);
       this.tabMsgSending.Name = "tabMsgSending";
       this.tabMsgSending.SelectedIndex = 0;
-      this.tabMsgSending.Size = new System.Drawing.Size(708, 660);
+      this.tabMsgSending.Size = new System.Drawing.Size(708, 627);
       this.tabMsgSending.TabIndex = 9;
       this.tabMsgSending.SelectedIndexChanged += new System.EventHandler(this.tabMsgSending_SelectedIndexChanged);
       // 
@@ -288,7 +311,7 @@ namespace XmppMessageClient
       this.tabPgManual.Location = new System.Drawing.Point(4, 24);
       this.tabPgManual.Name = "tabPgManual";
       this.tabPgManual.Padding = new System.Windows.Forms.Padding(3);
-      this.tabPgManual.Size = new System.Drawing.Size(700, 632);
+      this.tabPgManual.Size = new System.Drawing.Size(700, 599);
       this.tabPgManual.TabIndex = 0;
       this.tabPgManual.Text = "Manual";
       this.tabPgManual.UseVisualStyleBackColor = true;
@@ -302,7 +325,7 @@ namespace XmppMessageClient
       this.pnlSendMsg.Dock = System.Windows.Forms.DockStyle.Fill;
       this.pnlSendMsg.Location = new System.Drawing.Point(3, 3);
       this.pnlSendMsg.Name = "pnlSendMsg";
-      this.pnlSendMsg.Size = new System.Drawing.Size(694, 626);
+      this.pnlSendMsg.Size = new System.Drawing.Size(694, 593);
       this.pnlSendMsg.TabIndex = 27;
       // 
       // panel4
@@ -316,13 +339,13 @@ namespace XmppMessageClient
       this.panel4.Dock = System.Windows.Forms.DockStyle.Fill;
       this.panel4.Location = new System.Drawing.Point(0, 93);
       this.panel4.Name = "panel4";
-      this.panel4.Size = new System.Drawing.Size(690, 529);
+      this.panel4.Size = new System.Drawing.Size(690, 496);
       this.panel4.TabIndex = 28;
       // 
       // splitter3
       // 
       this.splitter3.Dock = System.Windows.Forms.DockStyle.Bottom;
-      this.splitter3.Location = new System.Drawing.Point(0, 424);
+      this.splitter3.Location = new System.Drawing.Point(0, 391);
       this.splitter3.Name = "splitter3";
       this.splitter3.Size = new System.Drawing.Size(688, 3);
       this.splitter3.TabIndex = 6;
@@ -332,7 +355,7 @@ namespace XmppMessageClient
       // 
       this.rtbJSONErrors.BackColor = System.Drawing.SystemColors.Control;
       this.rtbJSONErrors.Dock = System.Windows.Forms.DockStyle.Bottom;
-      this.rtbJSONErrors.Location = new System.Drawing.Point(0, 427);
+      this.rtbJSONErrors.Location = new System.Drawing.Point(0, 394);
       this.rtbJSONErrors.Name = "rtbJSONErrors";
       this.rtbJSONErrors.Size = new System.Drawing.Size(688, 100);
       this.rtbJSONErrors.TabIndex = 5;
@@ -345,7 +368,7 @@ namespace XmppMessageClient
       this.rtbJSONMsg.Dock = System.Windows.Forms.DockStyle.Fill;
       this.rtbJSONMsg.Location = new System.Drawing.Point(0, 229);
       this.rtbJSONMsg.Name = "rtbJSONMsg";
-      this.rtbJSONMsg.Size = new System.Drawing.Size(688, 298);
+      this.rtbJSONMsg.Size = new System.Drawing.Size(688, 265);
       this.rtbJSONMsg.TabIndex = 3;
       this.rtbJSONMsg.Text = "";
       // 
@@ -628,29 +651,42 @@ namespace XmppMessageClient
       // 
       // tabPgTestFile
       // 
-      this.tabPgTestFile.Controls.Add(this.rtbTestMsg);
+      this.tabPgTestFile.Controls.Add(this.tbTestMsg);
+      this.tabPgTestFile.Controls.Add(this.button1);
       this.tabPgTestFile.Controls.Add(this.btnOpenTestMsgFile);
       this.tabPgTestFile.Controls.Add(this.label6);
       this.tabPgTestFile.Controls.Add(this.tbTestMsgFile);
       this.tabPgTestFile.Location = new System.Drawing.Point(4, 24);
       this.tabPgTestFile.Name = "tabPgTestFile";
       this.tabPgTestFile.Padding = new System.Windows.Forms.Padding(3);
-      this.tabPgTestFile.Size = new System.Drawing.Size(700, 632);
+      this.tabPgTestFile.Size = new System.Drawing.Size(700, 599);
       this.tabPgTestFile.TabIndex = 1;
       this.tabPgTestFile.Text = "Test File";
       this.tabPgTestFile.UseVisualStyleBackColor = true;
       this.tabPgTestFile.Enter += new System.EventHandler(this.tabPage2_Enter);
       // 
-      // rtbTestMsg
+      // tbTestMsg
       // 
-      this.rtbTestMsg.BackColor = System.Drawing.SystemColors.Control;
-      this.rtbTestMsg.Dock = System.Windows.Forms.DockStyle.Bottom;
-      this.rtbTestMsg.Location = new System.Drawing.Point(3, 35);
-      this.rtbTestMsg.Name = "rtbTestMsg";
-      this.rtbTestMsg.Size = new System.Drawing.Size(694, 594);
-      this.rtbTestMsg.TabIndex = 20;
-      this.rtbTestMsg.Text = "";
-      this.rtbTestMsg.TextChanged += new System.EventHandler(this.rtbTestMsg_TextChanged);
+      this.tbTestMsg.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+      this.tbTestMsg.Location = new System.Drawing.Point(3, 38);
+      this.tbTestMsg.Multiline = true;
+      this.tbTestMsg.Name = "tbTestMsg";
+      this.tbTestMsg.ScrollBars = System.Windows.Forms.ScrollBars.Both;
+      this.tbTestMsg.Size = new System.Drawing.Size(697, 555);
+      this.tbTestMsg.TabIndex = 22;
+      this.tbTestMsg.TextChanged += new System.EventHandler(this.tbTest_TextChanged);
+      // 
+      // button1
+      // 
+      this.button1.Location = new System.Drawing.Point(427, 6);
+      this.button1.Name = "button1";
+      this.button1.Size = new System.Drawing.Size(47, 23);
+      this.button1.TabIndex = 21;
+      this.button1.Text = "...";
+      this.button1.UseVisualStyleBackColor = true;
+      this.button1.Click += new System.EventHandler(this.button1_Click);
       // 
       // btnOpenTestMsgFile
       // 
@@ -694,7 +730,7 @@ namespace XmppMessageClient
       this.panelConnection.Dock = System.Windows.Forms.DockStyle.Top;
       this.panelConnection.Location = new System.Drawing.Point(3, 3);
       this.panelConnection.Name = "panelConnection";
-      this.panelConnection.Size = new System.Drawing.Size(708, 70);
+      this.panelConnection.Size = new System.Drawing.Size(708, 64);
       this.panelConnection.TabIndex = 16;
       // 
       // label9
@@ -800,26 +836,6 @@ namespace XmppMessageClient
       // 
       this.dlgOpenTestMsgFile.FileName = "openFileDialog1";
       this.dlgOpenTestMsgFile.FileOk += new System.ComponentModel.CancelEventHandler(this.dlgOpenTestMsgFile_FileOk);
-      // 
-      // tbHowMany
-      // 
-      this.tbHowMany.Location = new System.Drawing.Point(335, 7);
-      this.tbHowMany.Name = "tbHowMany";
-      this.tbHowMany.Size = new System.Drawing.Size(36, 23);
-      this.tbHowMany.TabIndex = 21;
-      this.tbHowMany.Text = "1";
-      this.tbHowMany.Visible = false;
-      this.tbHowMany.TextChanged += new System.EventHandler(this.tbHowMany_TextChanged);
-      // 
-      // lblHowMany
-      // 
-      this.lblHowMany.AutoSize = true;
-      this.lblHowMany.Location = new System.Drawing.Point(270, 15);
-      this.lblHowMany.Name = "lblHowMany";
-      this.lblHowMany.Size = new System.Drawing.Size(65, 15);
-      this.lblHowMany.TabIndex = 22;
-      this.lblHowMany.Text = "How Many";
-      this.lblHowMany.Visible = false;
       // 
       // FrmSampleClient
       // 
@@ -927,8 +943,9 @@ namespace XmppMessageClient
     private System.Windows.Forms.Label label6;
     private System.Windows.Forms.TextBox tbTestMsgFile;
     private System.Windows.Forms.OpenFileDialog dlgOpenTestMsgFile;
-    private System.Windows.Forms.RichTextBox rtbTestMsg;
     private System.Windows.Forms.Label lblHowMany;
     private System.Windows.Forms.TextBox tbHowMany;
+    private System.Windows.Forms.Button button1;
+    private System.Windows.Forms.TextBox tbTestMsg;
   }
 }
