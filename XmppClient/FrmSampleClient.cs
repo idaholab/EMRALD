@@ -28,6 +28,7 @@ namespace XmppMessageClient
     private AutoMessageTester _autoTester = null;
     private int _testMsgCnt = 0;
     private bool testerStarted = false;
+    private bool internalTxtMod = false;
 
     public FrmSampleClient(SampleClientController clientController)
     {
@@ -448,19 +449,6 @@ namespace XmppMessageClient
       
     }
 
-    private void tabPage1_Enter(object sender, EventArgs e)
-    {
-    }
-
-    private void tabPage2_Enter(object sender, EventArgs e)
-    {
-    }
-
-    private void rtbTestMsg_TextChanged(object sender, EventArgs e)
-    {
-      
-    }
-
     private void tabMsgSending_SelectedIndexChanged(object sender, EventArgs e)
     {
       if(tabMsgSending.SelectedTab == tabPgTestFile)
@@ -497,31 +485,22 @@ namespace XmppMessageClient
       }
     }
 
-    private void button1_Click(object sender, EventArgs e)
-    {
-      //int s = rtbTestMsg.GetFirstCharIndexFromLine(5);
-      //int en = rtbTestMsg.GetFirstCharIndexFromLine(10);
-      //rtbTestMsg.Select(50, 500);
-     // rtbTestMsg.SelectAll();
-      //rtbTestMsg.SelectionColor = System.Drawing.Color.Aqua;
-      //rtbTestMsg.SelectionBackColor = System.Drawing.Color.Brown;
-      //rtbTestMsg.SelectionFont = new Font(rtbTestMsg.Font, FontStyle.Bold);
-      //rtbTestMsg.Refresh();
-      //rtbTestMsg.Focus();
-      //rtbTestMsg.AutoWordSelection = true;
-      //rtbTestMsg.SelectedText = "\"pID\": \"00000000 - 0000 - 0000 - 0000 - 000000001010\",\"";
 
-      tbTestMsg.Select(50, 500);
-      tbTestMsg.Focus();
-
-    }
 
     private void tbTest_TextChanged(object sender, EventArgs e)
     {
+      //only update if not from auto formatting
+      if(internalTxtMod)
+      {
+        internalTxtMod = false;
+        return;
+      }
+
       JArray modelJson = null;
       try
       {
         modelJson = JArray.Parse(tbTestMsg.Text);
+        internalTxtMod = true;
         tbTestMsg.Text = modelJson.ToString(Formatting.Indented);
       }
       catch (Exception ex)

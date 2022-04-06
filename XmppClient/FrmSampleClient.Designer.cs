@@ -314,7 +314,6 @@ namespace XmppMessageClient
       this.tabPgManual.TabIndex = 0;
       this.tabPgManual.Text = "Manual";
       this.tabPgManual.UseVisualStyleBackColor = true;
-      this.tabPgManual.Enter += new System.EventHandler(this.tabPage1_Enter);
       // 
       // pnlSendMsg
       // 
@@ -661,7 +660,6 @@ namespace XmppMessageClient
       this.tabPgTestFile.TabIndex = 1;
       this.tabPgTestFile.Text = "Test File";
       this.tabPgTestFile.UseVisualStyleBackColor = true;
-      this.tabPgTestFile.Enter += new System.EventHandler(this.tabPage2_Enter);
       // 
       // tbTestMsg
       // 
