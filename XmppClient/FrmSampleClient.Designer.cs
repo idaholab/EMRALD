@@ -83,7 +83,6 @@ namespace XmppMessageClient
       this.lblSendManualMsg = new System.Windows.Forms.Label();
       this.tabPgTestFile = new System.Windows.Forms.TabPage();
       this.tbTestMsg = new System.Windows.Forms.TextBox();
-      this.button1 = new System.Windows.Forms.Button();
       this.btnOpenTestMsgFile = new System.Windows.Forms.Button();
       this.label6 = new System.Windows.Forms.Label();
       this.tbTestMsgFile = new System.Windows.Forms.TextBox();
@@ -652,7 +651,6 @@ namespace XmppMessageClient
       // tabPgTestFile
       // 
       this.tabPgTestFile.Controls.Add(this.tbTestMsg);
-      this.tabPgTestFile.Controls.Add(this.button1);
       this.tabPgTestFile.Controls.Add(this.btnOpenTestMsgFile);
       this.tabPgTestFile.Controls.Add(this.label6);
       this.tabPgTestFile.Controls.Add(this.tbTestMsgFile);
@@ -677,16 +675,6 @@ namespace XmppMessageClient
       this.tbTestMsg.Size = new System.Drawing.Size(697, 555);
       this.tbTestMsg.TabIndex = 22;
       this.tbTestMsg.TextChanged += new System.EventHandler(this.tbTest_TextChanged);
-      // 
-      // button1
-      // 
-      this.button1.Location = new System.Drawing.Point(427, 6);
-      this.button1.Name = "button1";
-      this.button1.Size = new System.Drawing.Size(47, 23);
-      this.button1.TabIndex = 21;
-      this.button1.Text = "...";
-      this.button1.UseVisualStyleBackColor = true;
-      this.button1.Click += new System.EventHandler(this.button1_Click);
       // 
       // btnOpenTestMsgFile
       // 
@@ -945,7 +933,6 @@ namespace XmppMessageClient
     private System.Windows.Forms.OpenFileDialog dlgOpenTestMsgFile;
     private System.Windows.Forms.Label lblHowMany;
     private System.Windows.Forms.TextBox tbHowMany;
-    private System.Windows.Forms.Button button1;
     private System.Windows.Forms.TextBox tbTestMsg;
   }
 }

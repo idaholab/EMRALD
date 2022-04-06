@@ -526,7 +526,8 @@ namespace XmppMessageClient
       }
       catch (Exception ex)
       {
-        tbTestMsg.Text = "Error loading file, verify the JSON format and an array of messages";
+        if (!tbTestMsg.Text.StartsWith("Error"))
+          tbTestMsg.Text = "Error loading file, verify the JSON format and an array of messages. " + ex.Message;
         return;
       };
 
