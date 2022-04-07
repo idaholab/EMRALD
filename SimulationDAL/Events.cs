@@ -1271,6 +1271,7 @@ namespace SimulationDAL
         throw new Exception("Failed to load parameter values for event " + this.name);
       }
 
+      EnTimeRate distTimeRate = dfltTimeRate;
       try
       {
 
@@ -1278,19 +1279,23 @@ namespace SimulationDAL
         {
           case EnDistType.dtExponential:
             sampled = (new Exponential((double)valuePs[0], SingleRandom.Instance)).Sample();
+            distTimeRate = _dParams[0].timeRate;
             break;
           case EnDistType.dtNormal: //mean and standard deviation
             sampled = (new Normal((double)valuePs[0],
                                     Globals.ConvertToNewTimeSpan(_dParams[1].timeRate, (double)valuePs[1], _dParams[0].timeRate),
                                     SingleRandom.Instance)).Sample();
+            distTimeRate = _dParams[0].timeRate;
             break;
           case EnDistType.dtWeibull:
             sampled = (new Weibull((double)valuePs[0], (double)valuePs[1], SingleRandom.Instance)).Sample();
+            distTimeRate = _dParams[0].timeRate;
             break;
           case EnDistType.dtLogNormal:
             sampled = (new LogNormal((double)valuePs[0],
                                     Globals.ConvertToNewTimeSpan(_dParams[1].timeRate, (double)valuePs[1], _dParams[0].timeRate),
                                     SingleRandom.Instance)).Sample();
+            distTimeRate = _dParams[0].timeRate;
             break;
           default:
             throw new Exception("Distribution type not implemented for " + this._distType.ToString());
@@ -1304,7 +1309,8 @@ namespace SimulationDAL
 
 
 
-      TimeSpan sampledTime = Globals.NumberToTimeSpan(sampled, dfltTimeRate);
+      TimeSpan sampledTime = Globals.NumberToTimeSpan(sampled, distTimeRate);
+      //Globals.ConvertToNewTimeSpan(_dParams[1].timeRate, (double)valuePs[1], _dParams[0].timeRate)
       try
       {
         TimeSpan minTime = TimeSpan.Zero;
