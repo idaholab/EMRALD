@@ -131,6 +131,7 @@ module.controller("maapFormController", [
     $scope.blocks = [];
     $scope.operators = [">", "<", "IS"];
     $scope.inpSplits = [];
+    $scope.tab = "parameters";
 
     const parameterInfo = {};
     const possibleInitiators = {};
@@ -275,7 +276,8 @@ module.controller("maapFormController", [
         let conditions = [];
         let parameters = [];
         // TODO: make more efficient
-        postInitiators.split(/\n/).forEach((line) => {
+        postInitiators.split(/\n/).forEach((l) => {
+          const line = trim(l);
           switch (expects) {
             case 0:
               if (/^IF/.test(line)) {
@@ -355,6 +357,7 @@ module.controller("maapFormController", [
                     new Parameter(window.maapInpParser.parse(line))
                   );
                 } catch (e) {
+                  console.log(`Line failed to parse: ` + line);
                   console.error(e);
                 }
               }
