@@ -4,13 +4,16 @@ class MAAPForm extends ExternalExeForm {
     dataObj.raLocation = this.$scope.exePath;
     dataObj.varNames = this.getVarNames(this.$scope.parameters);
     dataObj.raFormData = {
-      inputFile: this.$scope.inputFile,
-      parameterFile: this.$scope.parameterFile,
       inpSplits: this.$scope.inpSplits,
+      parameterPath: this.$scope.parameterPath,
+      inputPath: this.$scope.inputPath,
+      parameters: this.$scope.parameters.map((parameter) => parameter.toJSON()),
+      initiators: this.$scope.initiators.map((initiator) => initiator.toJSON()),
     };
     const exeRootPath = this.$scope.exePath.replace(/[^\/\\]*\.exe$/, "");
     const inputFilePath = `${exeRootPath}input.INP`;
     const paramFilePath = `${exeRootPath}parameters.PAR`;
+    const resultsPath = `${exeRootPath}input.LOG`;
     let paramCode = '"';
     this.$scope.parameters.forEach((parameter) => {
       paramCode += `${parameter.toString()}\\n`;
@@ -40,10 +43,20 @@ class MAAPForm extends ExternalExeForm {
       inputFilePath,
       `p1 + ${paramCode} + p2 + ${initiatorCode} + p3`
     );
-    console.log(dataObj.raPreCode);
+    dataObj.raPreCode += `${this.$scope.exePath} ${inputFilePath}`;
     dataObj.raPostCode = "";
     dataObj.returnProcess = "rtNone";
     dataObj.variables = [];
+    for (var i = 0; i < this.$scope.varLinks.length; i += 1) {
+      dataObj.variables.push({
+        ...this.$scope.varLinks[i].variable,
+        docType: "dtTextRegEx",
+        docLink: `[0-9\.]+`,
+        docPath: resultsPath,
+        pathMustExist: false,
+        type: "double",
+      });
+    }
     return dataObj;
   }
 }
@@ -108,10 +121,20 @@ class Parameter extends FormData {
     }
     return str;
   }
+
+  toJSON() {
+    return {
+      data: this.data,
+      parsed: this.parsed,
+      useVariable: this.useVariable,
+      variable: this.variable,
+    };
+  }
 }
 
-class Initiator {
+class Initiator extends FormData {
   constructor(data) {
+    super(data);
     this.desc = data.desc;
     this.index = data.index;
     this.value = data.value;
@@ -123,6 +146,12 @@ class Initiator {
 
   toString() {
     return this.desc;
+  }
+
+  toJSON() {
+    return {
+      data: this.data,
+    };
   }
 }
 
@@ -193,19 +222,37 @@ module.controller("maapFormController", [
     );
     const { raFormData } = parentScope.data;
     if (raFormData) {
-      if (typeof raFormData.parameterFile === "string") {
-        $scope.parameterFile = raFormData.parameterFile;
-      }
-      if (typeof raFormData.inputFile === "string") {
-        $scope.inputFile = raFormData.inputFile;
-      }
       if (typeof raFormData.inpSplits === "object") {
         $scope.inpSplits = raFormData.inpSplits;
+      }
+      if (typeof raFormData.parameterPath === "string") {
+        $scope.parameterPath = raFormData.parameterPath;
+      }
+      if (typeof raFormData.inputPath === "string") {
+        $scope.inputPath = raFormData.inputPath;
+      }
+      if (raFormData.parameters) {
+        $scope.parameters = raFormData.parameters.map(
+          (parameter) => {
+            const param = new Parameter(parameter.data, parameter.parsed);
+            param.useVariable = parameter.useVariable;
+            if (parameter.useVariable) {
+              param.variable = form.findVariable(parameter.variable);
+            }
+            return param;
+          }
+        );
+      }
+      if (raFormData.initiators) {
+        $scope.initiators = raFormData.initiators.map(
+          (initiator) => new Initiator(initiator.data)
+        );
       }
     }
 
     $scope.removeInitiator = function (index) {
       $scope.initiators.splice(index, 1);
+      form.save();
     };
 
     $scope.findInitiators = function () {
@@ -223,14 +270,17 @@ module.controller("maapFormController", [
 
     $scope.addInitiator = function (data) {
       $scope.initiators.push(data);
+      form.save();
     };
 
     $scope.addOutput = function () {
       $scope.varLinks.push(new VarLink());
+      form.save();
     };
 
     $scope.removeOutput = function (index) {
       $scope.varLinks.splice(index, 1);
+      form.save();
     };
 
     $scope.$watch("parameterFile", function () {
@@ -415,6 +465,10 @@ module.controller("maapFormController", [
         form.save();
       }
     });
+
+    $scope.save = function () {
+      form.save();
+    };
 
     form.bindScope($scope);
   },
