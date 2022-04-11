@@ -1285,6 +1285,8 @@ namespace SimulationTracking
           case SimEventType.etStatus:
             if (ev.status == StatusType.stError)
               throw new Exception("Unhandled client simulation error - " + evData.desc);
+            if (!this.sim3DRunning)
+              return;
             break;
 
           case SimEventType.etCompEv:
@@ -1324,7 +1326,7 @@ namespace SimulationTracking
       //wait for state processing to be done.
       while (inProcessingLoop)
       {
-        //Application.DoEvents();
+        //Application.DoEvents(); //this is required for the main processing of the simulation while 
         System.Threading.Thread.Sleep(10);
       }
 
@@ -1955,26 +1957,31 @@ namespace SimulationTracking
     /// <param name="toClient"></param>
     private void Send3DNextEvTimers(string toClient)
     {
+      var msg = new TMsgWrapper(MessageType.mtSimAction, "SetCallbackTimer", curTime, "Check back with the EMRALD Simulation");
+
       if (timeEvList.cnt > 0)
       {
         TimeMoveEvent nextTimeItem = timeEvList.LookNextTimedEvent();
 
         //int nextItemTime = Convert.ToInt32(((nextTimeItem.time + this.curTime) - this.sim3DStartTime).TotalSeconds * sim3DFameRate);
-        TimeSpan nextItemTime = (nextTimeItem.time + this.curTime);
-
-        var msg = new TMsgWrapper(MessageType.mtSimAction, "SetCallbackTimer", curTime, "Check back with the EMRALD Simulation");
+        TimeSpan nextItemTime = (nextTimeItem.time + this.curTime);        
         msg.simAction = new SimAction(SimActionType.atTimer, nextItemTime, new ItemData(nextTimeItem.name, nextTimeItem.id.ToString()));
-
-        //make sure the 3DSim is fully started before the message is sent.
-        while (!this.sim3DRunning)
-        {
-          //Application.DoEvents();
-          System.Threading.Thread.Sleep(500);
-        }
-
-        //sim3DServer.SendAction(new TActionPacketData(new TActionData(T3DActionType.atTimer, nextTimeItem.name, nextTimeItem.id, nextItemTime)));
-        sim3DServer.SendMessage(msg, toClient);
       }
+      else
+      {
+        msg.simAction = new SimAction(SimActionType.atTimer, maxTime, new ItemData("MaxSimTime", "0"));
+      }        
+
+      //make sure the 3DSim is fully started before the message is sent.
+      while (!this.sim3DRunning)
+      {
+        //Application.DoEvents();
+        System.Threading.Thread.Sleep(500);
+      }
+
+      //sim3DServer.SendAction(new TActionPacketData(new TActionData(T3DActionType.atTimer, nextTimeItem.name, nextTimeItem.id, nextItemTime)));
+      sim3DServer.SendMessage(msg, toClient);
+      
     }
 
     /// <summary>
