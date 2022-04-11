@@ -141,7 +141,7 @@ class ExternalExeForm {
     writeFile(path, contents) {
       return `System.IO.File.WriteAllText("${this.escape(
         path
-      )}", "${this.escape(contents)}");`;
+      )}", ${contents});`;
     },
 
     /**

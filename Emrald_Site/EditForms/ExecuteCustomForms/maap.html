@@ -194,8 +194,8 @@
                     <th>Use Variable</th>
                   </tr>
                   <tr ng-repeat="parameter in block.data[1]">
-                    <td>{{parameter.label}}</td>
-                    <td>
+                    <td ng-if="parameter.parsed">{{parameter.label}}</td>
+                    <td ng-if="parameter.parsed">
                       <select
                         ng-if="parameter.useVariable"
                         ng-options="opt.name for opt in variables"
@@ -205,8 +205,11 @@
                         >{{parameter.valueLabel}}</span
                       >
                     </td>
-                    <td>
+                    <td ng-if="parameter.parsed">
                       <input type="checkbox" ng-model="parameter.useVariable" />
+                    </td>
+                    <td ng-if="!parameter.parsed">
+                      <input ng-model="parameter.text" />
                     </td>
                   </tr>
                 </table>

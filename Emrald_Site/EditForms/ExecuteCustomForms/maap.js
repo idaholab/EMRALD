@@ -11,6 +11,17 @@ class MAAPForm extends ExternalExeForm {
     const exeRootPath = this.$scope.exePath.replace(/[^\/\\]*\.exe$/, "");
     const inputFilePath = `${exeRootPath}input.INP`;
     const paramFilePath = `${exeRootPath}parameters.PAR`;
+    let paramCode = '"';
+    this.$scope.parameters.forEach((parameter) => {
+      paramCode += `${parameter.toString()}\\n`;
+    });
+    paramCode += '"';
+    let initiatorCode = '"';
+    this.$scope.initiators.forEach((initiator) => {
+      initiatorCode += `${initiator.toString()}\\n`;
+    });
+    initiatorCode += '"';
+    let blocksCode = '"';
     /**
      * p1
      * Parameters
@@ -19,14 +30,17 @@ class MAAPForm extends ExternalExeForm {
      * p3
      * Input Blocks
      */
-    dataObj.raPreCode = `string p = ${this.code.readFile(this.$scope.inputPath)};`;
+    dataObj.raPreCode = `string p = ${this.code.readFile(
+      this.$scope.inputPath
+    )};`;
     dataObj.raPreCode += `string p1 = p.Substring(0, ${this.$scope.inpSplits[0]});`;
     dataObj.raPreCode += `string p2 = p.Substring(${this.$scope.inpSplits[1]}, ${this.$scope.inpSplits[2]});`;
     dataObj.raPreCode += `string p3 = p.Substring(${this.$scope.inpSplits[3]}, ${this.$scope.inpSplits[4]});`;
     dataObj.raPreCode += this.code.writeFile(
       inputFilePath,
-      "p1 + p2 + p3",
+      `p1 + ${paramCode} + p2 + ${initiatorCode} + p3`
     );
+    console.log(dataObj.raPreCode);
     dataObj.raPostCode = "";
     dataObj.returnProcess = "rtNone";
     dataObj.variables = [];
@@ -38,10 +52,15 @@ const form = new MAAPForm();
 const module = angular.module("maapForm", []);
 
 class Parameter extends FormData {
-  constructor(data) {
+  constructor(data, parsed = true) {
     super(data);
-    this.name = data.name;
-    this.value = data.value;
+    if (parsed) {
+      this.name = data.name;
+      this.value = data.value;
+    } else {
+      this.text = data;
+    }
+    this.parsed = parsed;
   }
 
   get label() {
@@ -67,6 +86,28 @@ class Parameter extends FormData {
     }
     return label;
   }
+
+  toString() {
+    let str;
+    if (this.parsed) {
+      str = `${this.name.name}`;
+      if (this.name.index) {
+        str += `(${this.name.index})`;
+      }
+      str += "=";
+      if (this.useVariable) {
+        str += `"+${this.variable.name}+"`;
+      } else {
+        str += `${this.value.value}`;
+        if (this.value.units) {
+          str += ` ${this.value.units}`;
+        }
+      }
+    } else {
+      str = this.text;
+    }
+    return str;
+  }
 }
 
 class Initiator {
@@ -78,6 +119,10 @@ class Initiator {
 
   get label() {
     return `${this.index} ${this.value} ${this.desc}`;
+  }
+
+  toString() {
+    return this.desc;
   }
 }
 
@@ -269,9 +314,9 @@ module.controller("maapFormController", [
         });
         $scope.inpSplits[0] = preParamChange.length;
         $scope.inpSplits[1] = $scope.inpSplits[0] + paramChange.length;
-        $scope.inpSplits[2] = $scope.inpSplits[1] + postParamChange.length;
+        $scope.inpSplits[2] = $scope.inpSplits[1] + postParamChange.length + 3;
         $scope.inpSplits[3] = $scope.inpSplits[2] + initiators.length;
-        $scope.inpSplits[4] = $scope.inpSplits[3] + postInitiators.length;
+        $scope.inpSplits[4] = $scope.inpSplits[3] + postInitiators.length + 4;
         expects = 0;
         let conditions = [];
         let parameters = [];
@@ -340,6 +385,7 @@ module.controller("maapFormController", [
                     new Parameter(window.maapInpParser.parse(line))
                   );
                 } catch (e) {
+                  parameters.push(new Parameter(line, false));
                   console.error(e);
                 }
               }
@@ -357,6 +403,7 @@ module.controller("maapFormController", [
                     new Parameter(window.maapInpParser.parse(line))
                   );
                 } catch (e) {
+                  parameters.push(new Parameter(line, false));
                   console.log(`Line failed to parse: ` + line);
                   console.error(e);
                 }
