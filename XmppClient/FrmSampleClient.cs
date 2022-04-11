@@ -466,6 +466,7 @@ namespace XmppMessageClient
         tbHowMany.Visible = false;
         lblHowMany.Visible = false;
         btnSendMsg.Text = "Send";
+        btnSendMsg.Enabled = true;
       }
     }
 
