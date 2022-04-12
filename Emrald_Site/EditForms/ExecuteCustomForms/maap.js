@@ -41,9 +41,9 @@ class MAAPForm extends ExternalExeForm {
     dataObj.raPreCode += `string p3 = p.Substring(${this.$scope.inpSplits[3]}, ${this.$scope.inpSplits[4]});`;
     dataObj.raPreCode += this.code.writeFile(
       inputFilePath,
-      `p1 + ${paramCode} + p2 + ${initiatorCode} + p3`
+      `p1 + ${paramCode} + p2 + ${initiatorCode} + p3;`
     );
-    dataObj.raPreCode += `${this.$scope.exePath} ${inputFilePath}`;
+    dataObj.raPreCode += `return "${inputFilePath}";`;
     dataObj.raPostCode = "";
     dataObj.returnProcess = "rtNone";
     dataObj.variables = [];
