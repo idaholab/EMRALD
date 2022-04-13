@@ -11,6 +11,7 @@ class MAAPForm extends ExternalExeForm {
       initiators: this.$scope.initiators.map((initiator) => initiator.toJSON()),
     };
     const exeRootPath = this.$scope.exePath.replace(/[^\/\\]*\.exe$/, "");
+    const tempFilePath = `${this.$scope.inputPath.replace(/[^\/\\]*\.INP$/, "")}`;
     const inputFilePath = `${exeRootPath}input.INP`;
     let paramCode = '"';
     this.$scope.parameters.forEach((parameter) => {
@@ -23,12 +24,18 @@ class MAAPForm extends ExternalExeForm {
     });
     initiatorCode += '"';
     let blocksCode = '"';
-    dataObj.raPreCode = `string PreMAAP()
-    {
-      string exeLoc = @"${this.escape(this.$scope.exePath)}";
+    dataObj.raPreCode = `string exeLoc = @"${this.escape(this.$scope.exePath)}";
       string paramLoc = @"${this.escape(this.$scope.parameterPath)}";
       string inpLoc = @"${this.escape(inputFilePath)}";
       string tempLoc = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\EMRALD_MAAP\";
+      string p = ${this.code.readFile(
+        this.$scope.inputPath
+      )};
+      string p1 = p.Substring(0, ${this.$scope.inpSplits[0]});
+      string p2 = p.Substring(${this.$scope.inpSplits[1]}, ${this.$scope.inpSplits[2]});
+      string p3 = p.Substring(${this.$scope.inpSplits[3]}, ${this.$scope.inpSplits[4]});
+      string newInp = p1 + ${paramCode} + p2 + ${initiatorCode} + p3;
+      ${this.code.writeFile(inputFilePath, 'newInp')}
       //Copy the files to a temp working directory
       if (Directory.Exists(tempLoc))
         Directory.Delete(tempLoc, true);
@@ -47,38 +54,12 @@ class MAAPForm extends ExternalExeForm {
       //modify the .inp file in the "solveLoc" directory
       //TODO - if there is a .dat file then remove any .inp file reference
       //return the run parameters
-      return Path.GetFileName(inpLoc) + " " + Path.GetFileName(paramLoc);
-    }
-    void PostMAAP()
-    {
-      string inpLoc = @"${this.escape(this.$scope.inputPath)}";
-      string docVarPath = @"${this.escape(exeRootPath)}"; //whatever you assigned the results variables to
-      string resLoc = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\EMRALD_MAAP\" + Path.GetFileNameWithoutExtension(inpLoc) + ".log";
-      File.Copy(resLoc, docVarPath);
-    }
-`;
-    /**
-     * p1
-     * Parameters
-     * p2
-     * Initiators
-     * p3
-     * Input Blocks
-     */
-    dataObj.raPreCode += `string p = ${this.code.readFile(
-      this.$scope.inputPath
-    )};\n`;
-    dataObj.raPreCode += `string p1 = p.Substring(0, ${this.$scope.inpSplits[0]});\n`;
-    dataObj.raPreCode += `string p2 = p.Substring(${this.$scope.inpSplits[1]}, ${this.$scope.inpSplits[2]});\n`;
-    dataObj.raPreCode += `string p3 = p.Substring(${this.$scope.inpSplits[3]}, ${this.$scope.inpSplits[4]});\n`;
-    dataObj.raPreCode += `string newInp = p1 + ${paramCode} + p2 + ${initiatorCode} + p3;\n`;
-    dataObj.raPreCode += this.code.writeFile(
-      inputFilePath,
-      'newInp'
-    );
-    dataObj.raPreCode += `\nstring runParameters = PreMAAP();\nPostMAAP();\nreturn runParameters;`;
+      return Path.GetFileName(inpLoc) + " " + Path.GetFileName(paramLoc);`;
     console.log(dataObj.raPreCode);
-    dataObj.raPostCode = "";
+    dataObj.raPostCode = `string inpLoc = @"${this.escape(this.$scope.inputPath)}";
+    string docVarPath = @"${tempFilePath}"; //whatever you assigned the results variables to
+    string resLoc = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\EMRALD_MAAP\" + Path.GetFileNameWithoutExtension(inpLoc) + ".log";
+    File.Copy(resLoc, docVarPath);`;
     dataObj.returnProcess = "rtNone";
     dataObj.variables = [];
     for (var i = 0; i < this.$scope.varLinks.length; i += 1) {
@@ -86,7 +67,7 @@ class MAAPForm extends ExternalExeForm {
         ...this.$scope.varLinks[i].variable,
         docType: "dtTextRegEx",
         docLink: `[0-9\.]+`,
-        docPath: exeRootPath,
+        docPath: tempFilePath,
         pathMustExist: false,
         type: "double",
         regExpLine: 0,
@@ -399,9 +380,10 @@ module.controller("maapFormController", [
         });
         $scope.inpSplits[0] = preParamChange.length;
         $scope.inpSplits[1] = paramChange.length;
-        $scope.inpSplits[2] = $scope.inpSplits[0] + paramChange.length + $scope.inpSplits[1] + postParamChange.length + 3;
-        $scope.inpSplits[3] = initiators.length;
-        $scope.inpSplits[4] = $scope.inpSplits[2] + initiators.length + $scope.inpSplits[3] + postInitiators.length + 4;
+        $scope.inpSplits[2] = preParamChange.length + paramChange.length + 3;
+        $scope.inpSplits[3] = postParamChange.length;
+        $scope.inpSplits[4] = $scope.inpSplits[2] + postParamChange.length + 4;
+        console.log($scope.inpSplits);
         expects = 0;
         let conditions = [];
         let parameters = [];
