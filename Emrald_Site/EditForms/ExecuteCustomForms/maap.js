@@ -54,7 +54,7 @@ class MAAPForm extends ExternalExeForm {
       string p2 = p.Substring(${this.$scope.inpSplits[1]}, ${this.$scope.inpSplits[2]});
       string p3 = p.Substring(${this.$scope.inpSplits[3]}, ${this.$scope.inpSplits[4]});
       string newInp = p1 + ${paramCode} + p2 + ${initiatorCode} + p3;
-      ${this.code.writeFile("Path.GetFileName(inpLoc)", 'newInp')}
+      System.IO.File.WriteAllText(tempLoc + Path.GetFileName(inpLoc), newInp);
       //TODO - if there is a .dat file then remove any .inp file reference
       return Path.GetFileName(inpLoc) + " " + Path.GetFileName(paramLoc);`;
     dataObj.raPostCode = `string inpLoc = @"${this.escape(this.$scope.inputPath)}";
