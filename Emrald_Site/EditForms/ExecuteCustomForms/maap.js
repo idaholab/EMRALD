@@ -27,21 +27,26 @@ class MAAPForm extends ExternalExeForm {
     dataObj.raPreCode = `string exeLoc = @"${this.escape(this.$scope.exePath)}";
       string paramLoc = @"${this.escape(this.$scope.parameterPath)}";
       string inpLoc = @"${this.escape(this.$scope.inputPath)}";
-      string tempLoc = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\EMRALD_MAAP\";
-      if (Directory.Exists(tempLoc))
+      string tempLoc = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\\EMRALD_MAAP\\";
+      if (Directory.Exists(tempLoc)) {
         Directory.Delete(tempLoc, true);
+      }
       Directory.CreateDirectory(tempLoc);
-      if (File.Exists(paramLoc))
+      if (File.Exists(paramLoc)) {
         File.Copy(paramLoc, tempLoc + Path.GetFileName(paramLoc));
-      if (File.Exists(inpLoc))
+      }
+      if (File.Exists(inpLoc)) {
         File.Copy(inpLoc, tempLoc + Path.GetFileName(inpLoc));
+      }
       //TODO - if there is a .dat file specified in the .inp copy that here as well.
       string exeName = Path.GetFileName(exeLoc);
-      if(File.Exists(exeLoc))
+      if(File.Exists(exeLoc)) {
         File.Copy(exeLoc, tempLoc + exeName);
-      string dllPath = Path.GetDirectoryName(exeLoc)+ @"\" + exeName.Substring(0, exeName.Length - 7) + ".dll";
-      if (File.Exists(dllPath))
+      }
+      string dllPath = Path.GetDirectoryName(exeLoc)+ @"\\" + exeName.Substring(0, exeName.Length - 7) + ".dll";
+      if (File.Exists(dllPath)) {
         File.Copy(dllPath, tempLoc + Path.GetFileName(dllPath));
+      }
       string p = ${this.code.readFile(
         this.$scope.inputPath
       )};
@@ -49,12 +54,12 @@ class MAAPForm extends ExternalExeForm {
       string p2 = p.Substring(${this.$scope.inpSplits[1]}, ${this.$scope.inpSplits[2]});
       string p3 = p.Substring(${this.$scope.inpSplits[3]}, ${this.$scope.inpSplits[4]});
       string newInp = p1 + ${paramCode} + p2 + ${initiatorCode} + p3;
-      ${this.code.writeFile(tempFilePath, 'newInp')}
+      ${this.code.writeFile("Path.GetFileName(inpLoc)", 'newInp')}
       //TODO - if there is a .dat file then remove any .inp file reference
       return Path.GetFileName(inpLoc) + " " + Path.GetFileName(paramLoc);`;
     dataObj.raPostCode = `string inpLoc = @"${this.escape(this.$scope.inputPath)}";
     string docVarPath = @"${tempFilePath}"; //whatever you assigned the results variables to
-    string resLoc = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\EMRALD_MAAP\" + Path.GetFileNameWithoutExtension(inpLoc) + ".log";
+    string resLoc = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\\EMRALD_MAAP\\" + Path.GetFileNameWithoutExtension(inpLoc) + ".log";
     File.Copy(resLoc, docVarPath);`;
     dataObj.returnProcess = "rtNone";
     dataObj.variables = [];
