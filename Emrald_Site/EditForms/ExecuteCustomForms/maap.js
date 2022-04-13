@@ -26,17 +26,8 @@ class MAAPForm extends ExternalExeForm {
     let blocksCode = '"';
     dataObj.raPreCode = `string exeLoc = @"${this.escape(this.$scope.exePath)}";
       string paramLoc = @"${this.escape(this.$scope.parameterPath)}";
-      string inpLoc = @"${this.escape(inputFilePath)}";
+      string inpLoc = @"${this.escape(this.$scope.inputFilePath)}";
       string tempLoc = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\EMRALD_MAAP\";
-      string p = ${this.code.readFile(
-        this.$scope.inputPath
-      )};
-      string p1 = p.Substring(0, ${this.$scope.inpSplits[0]});
-      string p2 = p.Substring(${this.$scope.inpSplits[1]}, ${this.$scope.inpSplits[2]});
-      string p3 = p.Substring(${this.$scope.inpSplits[3]}, ${this.$scope.inpSplits[4]});
-      string newInp = p1 + ${paramCode} + p2 + ${initiatorCode} + p3;
-      ${this.code.writeFile(inputFilePath, 'newInp')}
-      //Copy the files to a temp working directory
       if (Directory.Exists(tempLoc))
         Directory.Delete(tempLoc, true);
       Directory.CreateDirectory(tempLoc);
@@ -51,11 +42,16 @@ class MAAPForm extends ExternalExeForm {
       string dllPath = Path.GetDirectoryName(exeLoc)+ @"\" + exeName.Substring(0, exeName.Length - 7) + ".dll";
       if (File.Exists(dllPath))
         File.Copy(dllPath, tempLoc + Path.GetFileName(dllPath));
-      //modify the .inp file in the "solveLoc" directory
+      string p = ${this.code.readFile(
+        this.$scope.inputPath
+      )};
+      string p1 = p.Substring(0, ${this.$scope.inpSplits[0]});
+      string p2 = p.Substring(${this.$scope.inpSplits[1]}, ${this.$scope.inpSplits[2]});
+      string p3 = p.Substring(${this.$scope.inpSplits[3]}, ${this.$scope.inpSplits[4]});
+      string newInp = p1 + ${paramCode} + p2 + ${initiatorCode} + p3;
+      ${this.code.writeFile(inputFilePath, 'newInp')}
       //TODO - if there is a .dat file then remove any .inp file reference
-      //return the run parameters
       return Path.GetFileName(inpLoc) + " " + Path.GetFileName(paramLoc);`;
-    console.log(dataObj.raPreCode);
     dataObj.raPostCode = `string inpLoc = @"${this.escape(this.$scope.inputPath)}";
     string docVarPath = @"${tempFilePath}"; //whatever you assigned the results variables to
     string resLoc = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\EMRALD_MAAP\" + Path.GetFileNameWithoutExtension(inpLoc) + ".log";
@@ -379,11 +375,10 @@ module.controller("maapFormController", [
           i += 1;
         });
         $scope.inpSplits[0] = preParamChange.length;
-        $scope.inpSplits[1] = paramChange.length;
-        $scope.inpSplits[2] = preParamChange.length + paramChange.length + 3;
-        $scope.inpSplits[3] = postParamChange.length;
-        $scope.inpSplits[4] = $scope.inpSplits[2] + postParamChange.length + 4;
-        console.log($scope.inpSplits);
+        $scope.inpSplits[1] = preParamChange.length + paramChange.length;
+        $scope.inpSplits[2] = postParamChange.length + 3;
+        $scope.inpSplits[3] = $scope.inpSplits[1] + $scope.inpSplits[2] + initiators.length;
+        $scope.inpSplits[4] = postInitiators.length + 4;
         expects = 0;
         let conditions = [];
         let parameters = [];
