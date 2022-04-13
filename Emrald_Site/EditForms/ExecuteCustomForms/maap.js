@@ -23,7 +23,7 @@ class MAAPForm extends ExternalExeForm {
     });
     initiatorCode += '"';
     let blocksCode = '"';
-    dataObj.raPreCode = `public static string PreMAAP()
+    dataObj.raPreCode = `string PreMAAP()
     {
       string exeLoc = @"${this.escape(this.$scope.exePath)}";
       string paramLoc = @"${this.escape(this.$scope.parameterPath)}";
@@ -49,7 +49,7 @@ class MAAPForm extends ExternalExeForm {
       //return the run parameters
       return Path.GetFileName(inpLoc) + " " + Path.GetFileName(paramLoc);
     }
-    public static void PostMAAP()
+    void PostMAAP()
     {
       string inpLoc = @"${this.escape(this.$scope.inputPath)}";
       string docVarPath = @"${this.escape(exeRootPath)}"; //whatever you assigned the results variables to
@@ -74,7 +74,7 @@ class MAAPForm extends ExternalExeForm {
     dataObj.raPreCode += `string newInp = p1 + ${paramCode} + p2 + ${initiatorCode} + p3;\n`;
     dataObj.raPreCode += this.code.writeFile(
       inputFilePath,
-      'Regex.Replace(newInp, @"PARAMETER FILE .*", @"")'
+      'newInp'
     );
     dataObj.raPreCode += `\nstring runParameters = PreMAAP();\nPostMAAP();\nreturn runParameters;`;
     console.log(dataObj.raPreCode);
@@ -89,6 +89,9 @@ class MAAPForm extends ExternalExeForm {
         docPath: exeRootPath,
         pathMustExist: false,
         type: "double",
+        regExpLine: 0,
+        begPosition: 0,
+        numChars: -1,
       });
     }
     return dataObj;
@@ -395,10 +398,10 @@ module.controller("maapFormController", [
           i += 1;
         });
         $scope.inpSplits[0] = preParamChange.length;
-        $scope.inpSplits[1] = $scope.inpSplits[0] + paramChange.length;
-        $scope.inpSplits[2] = $scope.inpSplits[1] + postParamChange.length + 3;
-        $scope.inpSplits[3] = $scope.inpSplits[2] + initiators.length;
-        $scope.inpSplits[4] = $scope.inpSplits[3] + postInitiators.length + 4;
+        $scope.inpSplits[1] = paramChange.length;
+        $scope.inpSplits[2] = $scope.inpSplits[0] + paramChange.length + $scope.inpSplits[1] + postParamChange.length + 3;
+        $scope.inpSplits[3] = initiators.length;
+        $scope.inpSplits[4] = $scope.inpSplits[2] + initiators.length + $scope.inpSplits[3] + postInitiators.length + 4;
         expects = 0;
         let conditions = [];
         let parameters = [];
