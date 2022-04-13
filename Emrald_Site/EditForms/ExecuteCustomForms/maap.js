@@ -11,7 +11,7 @@ class MAAPForm extends ExternalExeForm {
       initiators: this.$scope.initiators.map((initiator) => initiator.toJSON()),
     };
     const exeRootPath = this.$scope.exePath.replace(/[^\/\\]*\.exe$/, "");
-    const tempFilePath = `${this.$scope.inputPath.replace(/[^\/\\]*\.INP$/, "")}`;
+    const tempFilePath = `${this.$scope.inputPath.replace(/[^\/\\]*\.INP$/, "temp.INP")}`;
     const inputFilePath = `${exeRootPath}input.INP`;
     let paramCode = '"';
     this.$scope.parameters.forEach((parameter) => {
@@ -26,7 +26,7 @@ class MAAPForm extends ExternalExeForm {
     let blocksCode = '"';
     dataObj.raPreCode = `string exeLoc = @"${this.escape(this.$scope.exePath)}";
       string paramLoc = @"${this.escape(this.$scope.parameterPath)}";
-      string inpLoc = @"${this.escape(this.$scope.inputFilePath)}";
+      string inpLoc = @"${this.escape(this.$scope.inputPath)}";
       string tempLoc = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\EMRALD_MAAP\";
       if (Directory.Exists(tempLoc))
         Directory.Delete(tempLoc, true);
@@ -49,7 +49,7 @@ class MAAPForm extends ExternalExeForm {
       string p2 = p.Substring(${this.$scope.inpSplits[1]}, ${this.$scope.inpSplits[2]});
       string p3 = p.Substring(${this.$scope.inpSplits[3]}, ${this.$scope.inpSplits[4]});
       string newInp = p1 + ${paramCode} + p2 + ${initiatorCode} + p3;
-      ${this.code.writeFile(inputFilePath, 'newInp')}
+      ${this.code.writeFile(tempFilePath, 'newInp')}
       //TODO - if there is a .dat file then remove any .inp file reference
       return Path.GetFileName(inpLoc) + " " + Path.GetFileName(paramLoc);`;
     dataObj.raPostCode = `string inpLoc = @"${this.escape(this.$scope.inputPath)}";
