@@ -1,9 +1,10 @@
 class MAAPForm extends ExternalExeForm {
   getDataObject() {
     const dataObj = {};
-    dataObj.raLocation = this.$scope.exePath;
+    dataObj.raLocation = 'cmd.exe';
     dataObj.varNames = this.getVarNames(this.$scope.parameters);
     dataObj.raFormData = {
+      exePath: this.$scope.exePath,
       inpSplits: this.$scope.inpSplits,
       parameterPath: this.$scope.parameterPath,
       inputPath: this.$scope.inputPath,
@@ -56,7 +57,7 @@ class MAAPForm extends ExternalExeForm {
       string newInp = p1 + ${paramCode} + p2 + ${initiatorCode} + p3;
       System.IO.File.WriteAllText(tempLoc + Path.GetFileName(inpLoc), newInp);
       //TODO - if there is a .dat file then remove any .inp file reference
-      return Path.GetFileName(inpLoc) + " " + Path.GetFileName(paramLoc);`;
+      return tempLoc + exeName + " " + Path.GetFileName(inpLoc) + " " + Path.GetFileName(paramLoc);`;
     dataObj.raPostCode = `string inpLoc = @"${this.escape(this.$scope.inputPath)}";
     string docVarPath = @"${tempFilePath}"; //whatever you assigned the results variables to
     string resLoc = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\\EMRALD_MAAP\\" + Path.GetFileNameWithoutExtension(inpLoc) + ".log";
@@ -249,6 +250,9 @@ module.controller("maapFormController", [
       }
       if (typeof raFormData.inputPath === "string") {
         $scope.inputPath = raFormData.inputPath;
+      }
+      if (typeof raFormData.exePath === "string") {
+        $scope.exePath = raFormData.exePath;
       }
       if (raFormData.parameters) {
         $scope.parameters = raFormData.parameters.map((parameter) => {
