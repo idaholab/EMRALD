@@ -65,10 +65,34 @@
       <hr />
       <div id="tabs">
         <div id="tabs-header">
-          <div class="tab-header" ng-click="tab = 'parameters'" ng-class="{ 'tab-active': tab == 'parameters' }">Parameters</div>
-          <div class="tab-header" ng-click="tab = 'initiators'" ng-class="{ 'tab-active': tab == 'initiators' }">Initiators</div>
-          <div class="tab-header" ng-click="tab = 'input-blocks'" ng-class="{ 'tab-active': tab == 'input-blocks' }">Input Blocks</div>
-          <div class="tab-header" ng-click="tab = 'outputs'" ng-class="{ 'tab-active': tab == 'outputs' }">Outputs</div>
+          <div
+            class="tab-header"
+            ng-click="tab = 'parameters'"
+            ng-class="{ 'tab-active': tab == 'parameters' }"
+          >
+            Parameters
+          </div>
+          <div
+            class="tab-header"
+            ng-click="tab = 'initiators'"
+            ng-class="{ 'tab-active': tab == 'initiators' }"
+          >
+            Initiators
+          </div>
+          <div
+            class="tab-header"
+            ng-click="tab = 'input-blocks'"
+            ng-class="{ 'tab-active': tab == 'input-blocks' }"
+          >
+            Input Blocks
+          </div>
+          <div
+            class="tab-header"
+            ng-click="tab = 'outputs'"
+            ng-class="{ 'tab-active': tab == 'outputs' }"
+          >
+            Outputs
+          </div>
         </div>
         <div id="active-tab">
           <div ng-if="tab == 'parameters'">
@@ -239,7 +263,7 @@
                   ></select>
                 </td>
                 <td>
-                  <select>
+                  <select ng-model="varLink.target" ng-change="save()">
                     <option>CORE UNCOVERY</option>
                     <option>VESSEL FAILURE</option>
                     <option>CONTAINMENT FAILURE</option>

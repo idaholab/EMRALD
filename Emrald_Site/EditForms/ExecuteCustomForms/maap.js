@@ -1,7 +1,7 @@
 class MAAPForm extends ExternalExeForm {
   getDataObject() {
     const dataObj = {};
-    dataObj.raLocation = '';
+    dataObj.raLocation = "";
     dataObj.varNames = this.getVarNames(this.$scope.parameters);
     dataObj.raFormData = {
       exePath: this.$scope.exePath,
@@ -10,10 +10,13 @@ class MAAPForm extends ExternalExeForm {
       inputPath: this.$scope.inputPath,
       parameters: this.$scope.parameters.map((parameter) => parameter.toJSON()),
       initiators: this.$scope.initiators.map((initiator) => initiator.toJSON()),
+      varLinks: this.$scope.varLinks.map((varLink) => varLink.toJSON()),
     };
     const exeRootPath = this.$scope.exePath.replace(/[^\/\\]*\.exe$/, "");
-    const tempFilePath = `${this.$scope.inputPath.replace(/[^\/\\]*\.INP$/, "temp.INP")}`;
-    const inputFilePath = `${exeRootPath}input.INP`;
+    const tempFilePath = `${this.$scope.inputPath.replace(
+      /[^\/\\]*\.INP$/,
+      "temp.INP"
+    )}`;
     let paramCode = '"';
     this.$scope.parameters.forEach((parameter) => {
       paramCode += `${parameter.toString()}\\n`;
@@ -24,7 +27,6 @@ class MAAPForm extends ExternalExeForm {
       initiatorCode += `${initiator.toString()}\\n`;
     });
     initiatorCode += '"';
-    let blocksCode = '"';
     dataObj.raPreCode = `string exeLoc = @"${this.escape(this.$scope.exePath)}";
       string paramLoc = @"${this.escape(this.$scope.parameterPath)}";
       string inpLoc = @"${this.escape(this.$scope.inputPath)}";
@@ -50,36 +52,42 @@ class MAAPForm extends ExternalExeForm {
       if (File.Exists(dllPath)) {
         File.Copy(dllPath, tempLoc + Path.GetFileName(dllPath));
       }
-      string p = ${this.code.readFile(
-        this.$scope.inputPath
-      )};
+      string p = ${this.code.readFile(this.$scope.inputPath)};
       string p1 = p.Substring(0, ${this.$scope.inpSplits[0]});
-      string p2 = p.Substring(${this.$scope.inpSplits[1]}, ${this.$scope.inpSplits[2]});
-      string p3 = p.Substring(${this.$scope.inpSplits[3]}, ${this.$scope.inpSplits[4]});
+      string p2 = p.Substring(${this.$scope.inpSplits[1]}, ${
+      this.$scope.inpSplits[2]
+    });
+      string p3 = p.Substring(${this.$scope.inpSplits[3]}, ${
+      this.$scope.inpSplits[4]
+    });
       string newInp = p1 + ${paramCode} + p2 + ${initiatorCode} + p3;
       System.IO.File.WriteAllText(tempLoc + Path.GetFileName(inpLoc), newInp);
       //TODO - if there is a .dat file then remove any .inp file reference
       return tempLoc + exeName + " " + Path.GetFileName(inpLoc) + " " + Path.GetFileName(paramLoc);`;
-    dataObj.raPostCode = `string inpLoc = @"${this.escape(this.$scope.inputPath)}";
+    dataObj.raPostCode = `string inpLoc = @"${this.escape(
+      this.$scope.inputPath
+    )}";
     string docVarPath = @"${tempFilePath}"; //whatever you assigned the results variables to
     string resLoc = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\\EMRALD_MAAP\\" + Path.GetFileNameWithoutExtension(inpLoc) + ".log";
-    File.Copy(resLoc, docVarPath);`;
+    File.Copy(resLoc, docVarPath, true);`;
     dataObj.returnProcess = "rtNone";
     dataObj.variables = [];
     for (var i = 0; i < this.$scope.varLinks.length; i += 1) {
+      const varLink = this.$scope.varLinks[i];
       dataObj.variables.push({
-        ...this.$scope.varLinks[i].variable,
+        ...varLink.variable,
         docType: "dtTextRegEx",
-        docLink: `[0-9\.]+`,
+        docLink: varLink.target,
         docPath: tempFilePath,
         pathMustExist: false,
         type: "double",
         regExpLine: 0,
-        begPosition: 0,
-        numChars: -1,
+        begPosition: 28,
+        numChars: 11,
       });
-      dataObj.varNames.push(this.$scope.varLinks[i].variable.name);
+      dataObj.varNames.push(varLink.variable.name);
     }
+    console.log(dataObj);
     return dataObj;
   }
 }
@@ -179,14 +187,14 @@ class Initiator extends FormData {
 }
 
 class VarLink {
-  constructor(prismMethod, target, variable) {
-    this.prismMethod = prismMethod;
+  constructor(target, variable) {
     this.target = target;
     this.variable = variable;
   }
 
   toJSON() {
     var json = {
+      target: this.target,
       variable: {},
     };
     if (this.variable) {
@@ -270,6 +278,12 @@ module.controller("maapFormController", [
       if (raFormData.initiators) {
         $scope.initiators = raFormData.initiators.map(
           (initiator) => new Initiator(initiator.data)
+        );
+      }
+      if (typeof raFormData.varLinks === "object") {
+        $scope.varLinks = raFormData.varLinks.map(
+          (varLink) =>
+            new VarLink(varLink.target, form.findVariable(varLink.variable))
         );
       }
     }
@@ -389,7 +403,8 @@ module.controller("maapFormController", [
         $scope.inpSplits[0] = preParamChange.length;
         $scope.inpSplits[1] = preParamChange.length + paramChange.length;
         $scope.inpSplits[2] = postParamChange.length + 3;
-        $scope.inpSplits[3] = $scope.inpSplits[1] + $scope.inpSplits[2] + initiators.length;
+        $scope.inpSplits[3] =
+          $scope.inpSplits[1] + $scope.inpSplits[2] + initiators.length;
         $scope.inpSplits[4] = postInitiators.length + 4;
         expects = 0;
         let conditions = [];
