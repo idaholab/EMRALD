@@ -112,9 +112,7 @@
                     ng-model="parameter.variable"
                     ng-change="save()"
                   ></select>
-                  <span ng-if="!parameter.useVariable"
-                    >{{parameter.valueLabel}}</span
-                  >
+                  <input ng-if="!parameter.useVariable" ng-model="parameter.tempText" ng-change="changeText(parameter)" />
                 </td>
                 <td>
                   <input type="checkbox" ng-model="parameter.useVariable" />

@@ -12,7 +12,6 @@ class MAAPForm extends ExternalExeForm {
       initiators: this.$scope.initiators.map((initiator) => initiator.toJSON()),
       varLinks: this.$scope.varLinks.map((varLink) => varLink.toJSON()),
     };
-    const exeRootPath = this.$scope.exePath.replace(/[^\/\\]*\.exe$/, "");
     const tempFilePath = `${this.$scope.inputPath.replace(
       /[^\/\\]*\.INP$/,
       "temp.INP"
@@ -70,24 +69,26 @@ class MAAPForm extends ExternalExeForm {
     string docVarPath = @"${tempFilePath}"; //whatever you assigned the results variables to
     string resLoc = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\\EMRALD_MAAP\\" + Path.GetFileNameWithoutExtension(inpLoc) + ".log";
     File.Copy(resLoc, docVarPath, true);`;
+    console.log(dataObj.raPreCode);
     dataObj.returnProcess = "rtNone";
     dataObj.variables = [];
     for (var i = 0; i < this.$scope.varLinks.length; i += 1) {
       const varLink = this.$scope.varLinks[i];
-      dataObj.variables.push({
-        ...varLink.variable,
-        docType: "dtTextRegEx",
-        docLink: varLink.target,
-        docPath: tempFilePath,
-        pathMustExist: false,
-        type: "double",
-        regExpLine: 0,
-        begPosition: 28,
-        numChars: 11,
-      });
-      dataObj.varNames.push(varLink.variable.name);
+      if (varLink.variable) {
+        dataObj.variables.push({
+          ...varLink.variable,
+          docType: "dtTextRegEx",
+          docLink: varLink.target,
+          docPath: tempFilePath,
+          pathMustExist: false,
+          type: "double",
+          regExpLine: 0,
+          begPosition: 28,
+          numChars: 11,
+        });
+        dataObj.varNames.push(varLink.variable.name);
+      }
     }
-    console.log(dataObj);
     return dataObj;
   }
 }
@@ -105,6 +106,7 @@ class Parameter extends FormData {
       this.text = data;
     }
     this.parsed = parsed;
+    this.tempText = this.valueLabel;
   }
 
   get label() {
@@ -160,6 +162,14 @@ class Parameter extends FormData {
       useVariable: this.useVariable,
       variable: this.variable,
     };
+  }
+
+  changeText() {
+    const s = this.tempText.split(" ");
+    this.value.value = s[0];
+    this.value.units = s[1];
+    this.data.value.value = s[0];
+    this.data.value.units = s[1];
   }
 }
 
@@ -506,6 +516,11 @@ module.controller("maapFormController", [
     });
 
     $scope.save = function () {
+      form.save();
+    };
+
+    $scope.changeText = function (parameter) {
+      parameter.changeText();
       form.save();
     };
 
