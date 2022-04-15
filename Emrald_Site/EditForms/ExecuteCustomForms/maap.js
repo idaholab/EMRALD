@@ -1,7 +1,7 @@
 class MAAPForm extends ExternalExeForm {
   getDataObject() {
     const dataObj = {};
-    dataObj.raLocation = 'cmd.exe';
+    dataObj.raLocation = '';
     dataObj.varNames = this.getVarNames(this.$scope.parameters);
     dataObj.raFormData = {
       exePath: this.$scope.exePath,
@@ -29,10 +29,12 @@ class MAAPForm extends ExternalExeForm {
       string paramLoc = @"${this.escape(this.$scope.parameterPath)}";
       string inpLoc = @"${this.escape(this.$scope.inputPath)}";
       string tempLoc = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\\EMRALD_MAAP\\";
-      if (Directory.Exists(tempLoc)) {
-        Directory.Delete(tempLoc, true);
-      }
-      Directory.CreateDirectory(tempLoc);
+      try {
+        if (Directory.Exists(tempLoc)) {
+          Directory.Delete(tempLoc, true);
+        }
+        Directory.CreateDirectory(tempLoc);
+      } catch {}
       if (File.Exists(paramLoc)) {
         File.Copy(paramLoc, tempLoc + Path.GetFileName(paramLoc));
       }
@@ -76,6 +78,7 @@ class MAAPForm extends ExternalExeForm {
         begPosition: 0,
         numChars: -1,
       });
+      dataObj.varNames.push(this.$scope.varLinks[i].variable.name);
     }
     return dataObj;
   }
