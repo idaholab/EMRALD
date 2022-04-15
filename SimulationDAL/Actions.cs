@@ -884,8 +884,6 @@ namespace SimulationDAL
 
   public enum ReturnType { rtNone, rtStateList, rtVar };
 
-  public enum ReturnType { rtNone, rtStateList, rtVar };
-
   public class RunExtAppAct : Action //atRunExtApp
   {
     private string exePath = "";    
@@ -998,14 +996,14 @@ namespace SimulationDAL
         throw new Exception("missing variable definition  " + exePath);
       }
 
-      if (Path.IsPathRooted(exePath))
+      if ((exePath != "") && Path.IsPathRooted(exePath))
       {
         if (!exePath.StartsWith("cmd.exe") && !File.Exists(exePath))
           throw new Exception("Executable path for the \"RunApplication\" action does not exist ! - " + exePath);
       }
       else
       {
-        if (!exePath.StartsWith("cmd.exe"))
+        if ((exePath != "") && !exePath.StartsWith("cmd.exe"))
         {
           string fullExePath = exePath;
           fullExePath = lists.rootPath;
@@ -1159,8 +1157,21 @@ namespace SimulationDAL
         processOutputFileCompEval.AddVariable(state.Value.name + "_Time", typeof(TimeSpan));
       }
 
+      Type retType = typeof(object);
+      switch (returnProcess)
+      {
+        case ReturnType.rtNone:
+          retType = typeof(void);
+          break;
+        case ReturnType.rtStateList:
+          retType = typeof(List<string>);
+          break;
+        case ReturnType.rtVar:
+          retType = typeof(object);
+          break;
+      }
 
-      if (!processOutputFileCompEval.Compile(typeof(List<string>)))
+      if (!processOutputFileCompEval.Compile(retType))
       {
         throw new Exception("failed to compile code - " + String.Join(Environment.NewLine, processOutputFileCompEval.messages.ToArray()) + Environment.NewLine + processOutputFileCode);
       }
@@ -1168,6 +1179,7 @@ namespace SimulationDAL
       {
         this.compiled = true;
       }
+      
 
       return this.compiled;
     }
@@ -1258,7 +1270,14 @@ namespace SimulationDAL
         }
       }
 
-      string runParams = makeInputFileCompEval.EvaluateString();
+      string runParams = makeInputFileCompEval.EvaluateString();      
+      if(exePath == "")
+      {
+        int idx = runParams.IndexOf(' ');
+        exePath = runParams.Substring(0, idx);
+        runParams = runParams.Substring(idx, runParams.Length - idx);
+      }
+
       string fullExePath = exePath;
       if ((exePath[0] == '.')&&(!Path.IsPathRooted(exePath)))
       {
@@ -1277,9 +1296,12 @@ namespace SimulationDAL
       {
         if (!File.Exists(fullExePath) && !exePath.Contains("cmd.exe"))
           throw new Exception("No executable specified for RunExtApp - " + this.name);
-
+        bool setWKDir = true;
         if (exePath.Contains("cmd.exe"))
-          runParams = "/K " + runParams;
+        {
+          runParams = "/C " + runParams;
+          setWKDir = false;
+        }
 
         //Start the executable
         extApp = new ProcessStartInfo();
@@ -1337,22 +1359,26 @@ namespace SimulationDAL
 
 
       switch (this.returnProcess)
-      { 
+      {
+        case ReturnType.rtNone:
+          processOutputFileCompEval.EvaluateGeneric();
+          break;
+
         case ReturnType.rtStateList:        
           List<String> retStates = processOutputFileCompEval.EvaluateStrList();
           System.Threading.Thread.Sleep(10);
 
-      while (File.Exists(Path.GetDirectoryName(exePath) + Path.DirectorySeparatorChar + "_out.txt"))
-      {
-        try
-        {
-          System.IO.File.Delete(Path.GetDirectoryName(exePath) + Path.DirectorySeparatorChar + "_out.txt");
-        }
-        catch
-        {
-          //do nothing;
-        }
-      }
+          while (File.Exists(Path.GetDirectoryName(exePath) + Path.DirectorySeparatorChar + "_out.txt"))
+          {
+            try
+            {
+              System.IO.File.Delete(Path.GetDirectoryName(exePath) + Path.DirectorySeparatorChar + "_out.txt");
+            }
+            catch
+            {
+              //do nothing;
+            }
+          }
 
           //make sure all the IDs returned are valid state IDs.
           foreach (string listItem in retStates)

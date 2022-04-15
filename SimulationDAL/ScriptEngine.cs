@@ -118,6 +118,10 @@ namespace ScriptEngineNS
       {
         typeStr = "List<string>";
       }
+      if (typeStr.Substring(0, 4) == "Void")
+      {
+        typeStr = "void";
+      }
       //Add using statements here
       source = "namespace UserScript\r\n{\r\nusing System;\r\n" +
                "using System.IO;\r\n" +

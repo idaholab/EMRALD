@@ -1849,24 +1849,6 @@ namespace SimulationTracking
             {
               changedItems.AddChangedID(EnModifiableTypes.mtVar, curRunExeAct.assignVariable.id);
             }
-
-
-            //update any doc variables that were marked as used now that code is executed.
-            foreach (string varName in curRunExeAct.codeVariables)
-            {
-              SimVariable curVar = allLists.allVariables.FindByName(varName);
-              if ((curVar != null) && (curVar.varScope == EnVarScope.gtDocLink))
-              {
-                changedItems.AddChangedID(EnModifiableTypes.mtVar, curVar.id);
-              }
-            }
-
-            //if it is modifying a variable then mark that as changed
-            if (curRunExeAct.assignVariable != null)
-            {
-              changedItems.AddChangedID(EnModifiableTypes.mtVar, curRunExeAct.assignVariable.id);
-            }
-
             break;
 
           case EnActionType.at3DSimMsg:
