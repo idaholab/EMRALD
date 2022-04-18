@@ -69,7 +69,6 @@ class MAAPForm extends ExternalExeForm {
     string docVarPath = @"${tempFilePath}"; //whatever you assigned the results variables to
     string resLoc = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\\EMRALD_MAAP\\" + Path.GetFileNameWithoutExtension(inpLoc) + ".log";
     File.Copy(resLoc, docVarPath, true);`;
-    console.log(dataObj.raPreCode);
     dataObj.returnProcess = "rtNone";
     dataObj.variables = [];
     for (var i = 0; i < this.$scope.varLinks.length; i += 1) {
@@ -119,6 +118,9 @@ class Parameter extends FormData {
 
   get valueLabel() {
     let label;
+    if (!this.parsed) {
+      return this.text;
+    }
     if (this.value.type === "variable") {
       label = `${this.value.name}`;
       if (this.value.index) {
