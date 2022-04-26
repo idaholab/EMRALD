@@ -1,6 +1,6 @@
 // Copyright 2021 Battelle Energy Alliance
 
-const { description } = require('../../package')
+const { description } = require('../../package');
 
 module.exports = {
   /**
