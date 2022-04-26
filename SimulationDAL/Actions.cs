@@ -1270,22 +1270,23 @@ namespace SimulationDAL
         }
       }
 
-      string runParams = makeInputFileCompEval.EvaluateString();      
-      if(exePath == "")
+      string runParams = makeInputFileCompEval.EvaluateString();
+      var locExePath = exePath;
+      if(locExePath == "")
       {
         int idx = runParams.IndexOf(' ');
-        exePath = runParams.Substring(0, idx);
+        locExePath = runParams.Substring(0, idx);
         runParams = runParams.Substring(idx, runParams.Length - idx);
       }
 
-      string fullExePath = exePath;
-      if ((exePath[0] == '.')&&(!Path.IsPathRooted(exePath)))
+      string fullExePath = locExePath;
+      if ((locExePath[0] == '.')&&(!Path.IsPathRooted(locExePath)))
       {
         fullExePath = lists.rootPath;
         if (!fullExePath.EndsWith(@"\"))
           fullExePath += @"\";
 
-        fullExePath = Path.GetFullPath(Path.Combine(fullExePath + exePath));
+        fullExePath = Path.GetFullPath(Path.Combine(fullExePath + locExePath));
       }
 
       NLog.Logger logger = NLog.LogManager.GetLogger("logfile");
@@ -1294,10 +1295,10 @@ namespace SimulationDAL
       int exitCode;
       if (runParams != null)
       {
-        if (!File.Exists(fullExePath) && !exePath.Contains("cmd.exe"))
+        if (!File.Exists(fullExePath) && !locExePath.Contains("cmd.exe"))
           throw new Exception("No executable specified for RunExtApp - " + this.name);
         bool setWKDir = true;
-        if (exePath.Contains("cmd.exe"))
+        if (locExePath.Contains("cmd.exe"))
         {
           runParams = "/C " + runParams;
           setWKDir = false;
