@@ -951,7 +951,6 @@ namespace SimulationDAL
     {
       this._lambda = lambdaOrFreq; // (lambdaOrFreq / lambdaTimeRate.TotalHours);
       this.timeRate = lambdaTimeRate;
-      this.compMissionTime = compMissionTime;
     }
 
     public override string GetDerivedJSON(EmraldModel lists)
@@ -996,15 +995,7 @@ namespace SimulationDAL
 
       
       this.timeRate = XmlConvert.ToTimeSpan((string)dynObj.lambdaTimeRate);
-      if (dynObj.missionTime == null)
-        compMissionTime = TimeSpan.FromDays(365.3);
-      else
-      {
-        this.compMissionTime = XmlConvert.ToTimeSpan((string)dynObj.missionTime);
-        if (compMissionTime < TimeSpan.FromSeconds(1))
-          compMissionTime = TimeSpan.FromDays(365.3);
-      }
-
+      
       if ((dynObj.useVariable == null) || !(bool)dynObj.useVariable)
       {
         //use normal assigned lambda if not a variable
@@ -1080,7 +1071,7 @@ namespace SimulationDAL
       //debugging to keep track of probabilities of items
       if (Stats.Instance.logStats)
       {
-        if ((retVal < compMissionTime) && (timeRate == Globals.HourTimeSpan))
+        if (timeRate == Globals.HourTimeSpan)
         {
           if (Stats.Instance.comp_fails.ContainsKey(name))
           {
@@ -1097,7 +1088,7 @@ namespace SimulationDAL
         }
       }
 
-      if ((retVal > compMissionTime) || (retVal < Globals.NowTimeSpan)) //time surpasses the allotted time span or is negative (to small to calculate) so return back that it does not fail.
+      if (retVal < Globals.NowTimeSpan) //time surpasses the allotted time span or is negative (to small to calculate) so return back that it does not fail.
       {
         return TimeSpan.MaxValue;
       }
