@@ -1072,6 +1072,7 @@ namespace SimulationTracking
     private bool sim3DRunning = false;
     private bool sim3DStopping = false;
     private bool sim3DStarting = false;
+    private List<string> stopped3DSims = new List<string>();
     private bool inProcessingLoop = false;
     private TimeSpan sim3DStartTime;
     //private double sim3DFameRate;
@@ -1193,13 +1194,26 @@ namespace SimulationTracking
         return curStates.GetFinalStateList();
       }
 
-
+      bool ranXMPPSim = false;
       //in case a 3d simulations starts up in the beginning
       while ((this.sim3DStopping || this.sim3DRunning || this.sim3DStarting) && (this.sim3DServer.ResourceCnt() > 0))
       {
         //Application.DoEvents();
+        ranXMPPSim = true;
         System.Threading.Thread.Sleep(10);
       }
+
+      if (ranXMPPSim) //for all the XMPP simulations that ran send a final continue now that all other processing is done
+      {
+        TMsgWrapper msg = new TMsgWrapper(MessageType.mtSimAction, "Continue", curTime, "Continue External Sim");
+        msg.simAction = new SimAction(SimActionType.atContinue);
+        foreach (var name in stopped3DSims)
+        {
+          sim3DServer.SendMessage(msg, name);
+        }
+
+      }
+
 
       //do the process while there are still time events in the que and a terminal state is not met
       while (timeEvList.cnt > 0)
@@ -1212,12 +1226,28 @@ namespace SimulationTracking
           return curStates.GetFinalStateList();
         }
 
+        ranXMPPSim = false;
         while (this.sim3DStopping || this.sim3DStarting || this.sim3DRunning || inProcessingLoop)
         {
           //Application.DoEvents();
+          ranXMPPSim = true;
           System.Threading.Thread.Sleep(10);
         }
+
+        if (ranXMPPSim) //for all the XMPP simulations that ran send a final continue now that all other processing is done
+        {
+          TMsgWrapper msg = new TMsgWrapper(MessageType.mtSimAction, "Continue", curTime, "Continue External Sim");
+          msg.simAction = new SimAction(SimActionType.atContinue);
+          foreach (var name in stopped3DSims)
+          {
+            sim3DServer.SendMessage(msg, name);
+          }
+
+        }
       }
+
+      
+
       //MessageBox.Show("end sim");
       //logFunc("end sim" + Environment.NewLine);
       List<int> finalStates = curStates.GetFinalStateList();
@@ -1255,9 +1285,11 @@ namespace SimulationTracking
         switch (ev.evType)
         {
           case SimEventType.etEndSim:  //stop the simulation
+            stopped3DSims.Add(fromClient);
             this.sim3DStarting = false;
             this.sim3DStopping = false;
             this.sim3DRunning = false;
+            
             return;
 
           case SimEventType.etTimer: // if the event is a timer then just pop the next time event and let state tracker continue.
