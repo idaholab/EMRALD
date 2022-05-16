@@ -1067,7 +1067,7 @@ var StateApp = (function (global, _super) {
       return;
 
     var selState = selCell.value.State;
-    var states = sidebar.getStateDataObjecsForDiagram(null, selState.diagramName);
+    var states = sidebar.getStateDataObjectsForDiagram(null, selState.diagramName);
     for (var sIdx = 0; sIdx < states.length; sIdx++) {
       var curState = states[sIdx];
       if (fullDelete || ((selState.name == curState.State.name))) {
@@ -1146,7 +1146,7 @@ var StateApp = (function (global, _super) {
       return;
 
     var selState = selCell.value.State;
-    var states = sidebar.getStateDataObjecsForDiagram(null, selState.diagramName);
+    var states = sidebar.getStateDataObjectsForDiagram(null, selState.diagramName);
     for (var sIdx = 0; sIdx < states.length; sIdx++) {
       var curState = states[sIdx];
 

@@ -304,9 +304,25 @@ if (typeof Navigation === 'undefined')
                     this.beginMergeModel(dataObj);
                   }.bind(this));                  
                   break;
+                case "Paste Diagram":
+                  navigator.clipboard.readText()
+                    .then((clipped) => {
+                      const importedContent = JSON.parse(clipped);
+                      if (importedContent.DiagramList.length > 1) {
+                        alert("More than one diagram in file.");
+                        return;
+                      }
+                      importedContent.DiagramList[0].Diagram.name += '_Paste';
+                      this.addNewDiagram(importedContent.DiagramList[0], "");
+                      this.openDiagram(importedContent.DiagramList[0].Diagram);
+                    })
+                    .catch((err) => { throw err });
               }
             }.bind(this)
 
+          }
+          if (titleForNew === 'Diagram') {
+            cmenu.menu.push({ title: "Paste", cmd: "Paste Diagram" });
           }
         }
         return cmenu;
@@ -853,7 +869,7 @@ if (typeof Navigation === 'undefined')
       return stateNames;
     }
     //---------------------------------------------------
-    Sidebar.prototype.getStateDataObjecsForDiagram = function (model, dName) {
+    Sidebar.prototype.getStateDataObjectsForDiagram = function (model, dName) {
       if (!model)
         model = this;
       var names = this.getStateNamesForDiagram(model, dName);
@@ -3722,8 +3738,9 @@ if (typeof Navigation === 'undefined')
           { title: "Open...", cmd: "Open" },
           { title: "Edit properties...", cmd: "Edit" },
 					{ title: "Delete", cmd: "Delete" },
-					{ title: "Make Template", cmd: "Template" },
+					// { title: "Make Template", cmd: "Template" },
           { title: "Export", cmd: "Export" },
+          { title: "Copy", cmd: "Copy"},
         ],
         select: function (evt, ui) {
           switch (ui.cmd) {
@@ -3753,7 +3770,18 @@ if (typeof Navigation === 'undefined')
               break;
             case "Export":
               if (ui.target.context.dataObject) {
-                this.exportDiagram(ui.target.context.dataObject);
+                const a = document.createElement('a');
+                const dataObject = this.exportDiagram(ui.target.context.dataObject);
+                a.setAttribute('href', `data:text/plain;charset=utf-8,${encodeURIComponent(JSON.stringify(dataObject))}`);
+                a.setAttribute('download', `${dataObject.name}.json`);
+                a.click();
+              }
+              break;
+            case "Copy":
+              if (ui.target.context.dataObject) {
+                navigator.clipboard.writeText(JSON.stringify(this.exportDiagram(ui.target.context.dataObject)))
+                  .then(() => console.log('Copied!'))
+                  .catch((err) => { throw err });
               }
               break;
           }
@@ -3768,10 +3796,24 @@ if (typeof Navigation === 'undefined')
     }
 
     Sidebar.prototype.exportDiagram = function (dataObject) {
-      const a = document.createElement('a');
-      a.setAttribute('href', `data:text/plain;charset=utf-8,${encodeURIComponent(JSON.stringify(dataObject))}`);
-      a.setAttribute('download', `${dataObject.name}.json`);
-      a.click();
+      const StateList = this.getStateDataObjectsForDiagram(false, dataObject.name).map((state) => state.State);
+      const exportObject = {
+        id: dataObject.id,
+        name: dataObject.name,
+        desc: dataObject.desc,
+        DiagramList: [
+          {
+            Diagram: dataObject,
+          },
+        ],
+        ExtSimList: this.getExtSimList(),
+        StateList,
+        ActionList: this.getActionList(StateList),
+        EventList: this.getEventList(StateList),
+        LogicNodeList: simApp.allDataModel.LogicNodeList,
+        VariableList: simApp.allDataModel.VariableList,
+      };
+      return exportObject;
     }
 
     //------------------------------------------
