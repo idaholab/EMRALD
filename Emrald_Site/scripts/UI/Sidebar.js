@@ -1,4 +1,7 @@
 ﻿// Copyright 2021 Battelle Energy Alliance
+// @ts-check
+/// <reference path="../jsdoc-types.js" />
+/// <reference path="../../EditForms/ImportEditor.js" />
 
 "use strict";
 
@@ -307,14 +310,9 @@ if (typeof Navigation === 'undefined')
                 case "Paste Diagram":
                   navigator.clipboard.readText()
                     .then((clipped) => {
-                      const importedContent = JSON.parse(clipped);
-                      if (importedContent.DiagramList.length > 1) {
-                        alert("More than one diagram in file.");
-                        return;
-                      }
-                      importedContent.DiagramList[0].Diagram.name += '_Paste';
-                      this.addNewDiagram(importedContent.DiagramList[0], "");
-                      this.openDiagram(importedContent.DiagramList[0].Diagram);
+                      const importedContent = this.importDiagram(JSON.parse(clipped));
+                      // this.addNewDiagram(importedContent.DiagramList[0], "");
+                      // this.openDiagram(importedContent.DiagramList[0].Diagram);
                     })
                     .catch((err) => { throw err });
               }
@@ -583,9 +581,17 @@ if (typeof Navigation === 'undefined')
         allButton.style.backgroundColor = '';
       }
     }
-  //---------------------------------------------------
+    //---------------------------------------------------
     Sidebar.prototype.getExtSimList = function () {
       return simApp.allDataModel.ExtSimList;
+    }
+    //---------------------------------------------------
+    Sidebar.prototype.getLogicNodeList = function () {
+      return simApp.allDataModel.LogicNodeList;
+    }
+    //---------------------------------------------------
+    Sidebar.prototype.getVariableList = function () {
+      return simApp.allDataModel.VariableList;
     }
     //---------------------------------------------------
     Sidebar.prototype.deleteDynamicSidebar = function () {
@@ -3796,7 +3802,8 @@ if (typeof Navigation === 'undefined')
     }
 
     Sidebar.prototype.exportDiagram = function (dataObject) {
-      const StateList = this.getStateDataObjectsForDiagram(false, dataObject.name).map((state) => state.State);
+      const StateList = this.getStateDataObjectsForDiagram(false, dataObject.name);
+      const strippedStateList = StateList.map((state) => state.State);
       const exportObject = {
         id: dataObject.id,
         name: dataObject.name,
@@ -3808,13 +3815,105 @@ if (typeof Navigation === 'undefined')
         ],
         ExtSimList: this.getExtSimList(),
         StateList,
-        ActionList: this.getActionList(StateList),
-        EventList: this.getEventList(StateList),
-        LogicNodeList: simApp.allDataModel.LogicNodeList,
-        VariableList: simApp.allDataModel.VariableList,
+        ActionList: this.getActionList(strippedStateList),
+        EventList: this.getEventList(strippedStateList),
+        LogicNodeList: this.getLogicNodeList(),
+        VariableList: this.getVariableList(),
       };
       return exportObject;
     }
+
+    Sidebar.prototype.ActionExists = function (actionName) {
+      return this.getActionByName(simApp.allDataModel, actionName) !== null;
+    };
+
+    Sidebar.prototype.DiagramExists = function (diagramName) {
+      return this.getDiagramByName(simApp.allDataModel, diagramName) !== null;
+    };
+
+    Sidebar.prototype.EventExists = function (eventName) {
+      return this.getEventByName(simApp.allDataModel, eventName) !== null;
+    };
+
+    Sidebar.prototype.ExtSimExists = function (extSimName) {
+      return this.getExtSimByName(simApp.allDataModel, extSimName) !== null;
+    };
+
+    Sidebar.prototype.LogicNodeExists = function (logicNodeName) {
+      return this.getLogicNodeByName(simApp.allDataModel, logicNodeName) !== null;
+    };
+
+    Sidebar.prototype.StateExists = function (stateName) {
+      return this.getStateByName(simApp.allDataModel, stateName) !== null;
+    };
+
+    Sidebar.prototype.VariableExists = function (variableName) {
+      return this.getVariableByName(simApp.allDataModel, variableName) !== null;
+    };
+
+    /**
+     * Imports a diagram and opens the UI for conflict resolution.
+     * 
+     * @param {EMRALD.Model} importedContent - The diagram to import.
+     */
+    Sidebar.prototype.importDiagram = function (importedContent) {
+      if (importedContent.DiagramList.length > 1) {
+        alert('More than one diagram in file.');
+        return;
+      }
+      // Find conflicts
+      let hasConflict = true;
+      const conflicts = [];
+      const sidebar = simApp.mainApp.sidebar;
+      /*
+      importedContent.ActionList.forEach((action, i) => {
+        conflicts.actionConflicts[i] = false;
+        if (sidebar.actionExists(action.Action.name)) {
+          conflicts.actionConflicts[i] = true;
+          hasConflict = true;
+        }
+      });
+      importedContent.DiagramList.forEach((diagram) => {
+        if (sidebar.diagramExists(diagram.Diagram.name)) {
+          conflicts.diagramNameConflict = true;
+          hasConflict = true;
+        }
+      });
+      importedContent.EventList.forEach((event, i) => {
+        if (sidebar.eventExists(event.Event.name)) {
+          conflicts.eventConflicts
+        }
+      });
+      importedContent.StateList.forEach((state, i) => {
+        conflicts.stateConflicts[i] = false;
+        if (sidebar.stateExists(state.State.name)) {
+          conflicts.stateConflicts[i] = true;
+          hasConflict = true;
+        }
+      });
+      */
+      if (hasConflict) {
+        const wnd = mxWindow.createFrameWindow(
+          'EditForms/ImportEditor.html',
+          'OK, Cancel',
+          'minimize, maximize, close',
+          (btn, outDataObj) => {
+            if (btn === 'OK') {
+            }
+            return true;
+          },
+          {
+            conflicts,
+            model: importedContent,
+          },
+          true,
+          null,
+          null,
+          450,
+          300
+        );
+      }
+    };
 
     //------------------------------------------
     //Not currently being used
