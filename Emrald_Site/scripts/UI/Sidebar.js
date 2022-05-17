@@ -1967,6 +1967,7 @@ if (typeof Navigation === 'undefined')
         }
 
       if (diagram.sidebar) delete diagram.sidebar;
+      return diagram;
     }
     //---------------------------------------------------
     Sidebar.prototype.openDiagramWindow = function (diagram) {
@@ -3785,7 +3786,8 @@ if (typeof Navigation === 'undefined')
               break;
             case "Copy":
               if (ui.target.context.dataObject) {
-                navigator.clipboard.writeText(JSON.stringify(this.exportDiagram(ui.target.context.dataObject)))
+                const diagram = this.exportDiagram(ui.target.context.dataObject);
+                navigator.clipboard.writeText(JSON.stringify(this.cleanDataModel(diagram)))
                   .then(() => console.log('Copied!'))
                   .catch((err) => { throw err });
               }
@@ -3906,12 +3908,16 @@ if (typeof Navigation === 'undefined')
             conflicts,
             model: importedContent,
           },
-          true,
+          false,
           null,
           null,
           450,
           300
         );
+        document.body.removeChild(wnd.div);
+        var contentPanel = document.getElementById("ContentPanel");
+        adjustWindowPos(contentPanel, wnd.div);
+        contentPanel.appendChild(wnd.div);
       }
     };
 
