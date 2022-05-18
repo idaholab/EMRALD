@@ -310,9 +310,9 @@ if (typeof Navigation === 'undefined')
                 case "Paste Diagram":
                   navigator.clipboard.readText()
                     .then((clipped) => {
-                      const importedContent = this.importDiagram(JSON.parse(clipped));
-                      // this.addNewDiagram(importedContent.DiagramList[0], "");
-                      // this.openDiagram(importedContent.DiagramList[0].Diagram);
+                      this.importDiagram(JSON.parse(clipped)).then((importedContent) => {
+                        console.log(importedContent);
+                      });
                     })
                     .catch((err) => { throw err });
               }
@@ -3859,66 +3859,74 @@ if (typeof Navigation === 'undefined')
      * @param {EMRALD.Model} importedContent - The diagram to import.
      */
     Sidebar.prototype.importDiagram = function (importedContent) {
-      if (importedContent.DiagramList.length > 1) {
-        alert('More than one diagram in file.');
-        return;
-      }
-      // Find conflicts
-      let hasConflict = true;
-      const conflicts = [];
-      const sidebar = simApp.mainApp.sidebar;
-      /*
-      importedContent.ActionList.forEach((action, i) => {
-        conflicts.actionConflicts[i] = false;
-        if (sidebar.actionExists(action.Action.name)) {
-          conflicts.actionConflicts[i] = true;
-          hasConflict = true;
+      return new Promise((resolve, reject) => {
+        if (importedContent.DiagramList.length > 1) {
+          reject('More than one diagram in file.');
+        }
+        // Find conflicts
+        let hasConflict = false;
+        const conflicts = [];
+        Object.values(importedContent).forEach((value, i) => {
+          if (typeof value === 'object' && typeof value.length === 'number') {
+            value.forEach((item) => {
+              const [type] = Object.keys(item);
+              const name = item[type].name;
+              const conflict = this[`${type}Exists`](name);
+              hasConflict = hasConflict || conflict;
+              conflicts[i] = conflict;
+            });
+          }
+        });
+        const sidebar = simApp.mainApp.sidebar;
+        if (hasConflict) {
+          const wnd = mxWindow.createFrameWindow(
+            'EditForms/ImportEditor.html',
+            'OK, Cancel',
+            'minimize, maximize, close',
+            /**
+             * Handles the window closing.
+             * 
+             * @param {string} btn - The button that was clicked.
+             * @param {ImportEditor.OutputData} outDataObj The dialog output.
+             * @returns {boolean} If the window closed.
+             */
+            (btn, outDataObj) => {
+              if (btn === 'OK') {
+                console.log(outDataObj);
+                outDataObj.entries.forEach((entry) => {
+                  switch (entry.action) {
+                    case 'rename':
+                      this[`addNew${entry.type}`]({ [entry.type]: entry.data });
+                      break;
+                    case 'replace':
+                      const target = this.getByName(entry.type, simApp.allDataModel, entry.data.name);
+                      Object.keys(entry.data).forEach((key) => {
+                        target[entry.type][key] = entry.data[key];
+                      });
+                      break;
+                    default:
+                      // ignore (literally)
+                  }
+                });
+              }
+              return true;
+            },
+            {
+              conflicts,
+              model: importedContent,
+            },
+            false,
+            null,
+            null,
+            450,
+            300,
+          );
+          document.body.removeChild(wnd.div);
+          var contentPanel = document.getElementById('ContentPanel');
+          adjustWindowPos(contentPanel, wnd.div);
+          contentPanel.appendChild(wnd.div);
         }
       });
-      importedContent.DiagramList.forEach((diagram) => {
-        if (sidebar.diagramExists(diagram.Diagram.name)) {
-          conflicts.diagramNameConflict = true;
-          hasConflict = true;
-        }
-      });
-      importedContent.EventList.forEach((event, i) => {
-        if (sidebar.eventExists(event.Event.name)) {
-          conflicts.eventConflicts
-        }
-      });
-      importedContent.StateList.forEach((state, i) => {
-        conflicts.stateConflicts[i] = false;
-        if (sidebar.stateExists(state.State.name)) {
-          conflicts.stateConflicts[i] = true;
-          hasConflict = true;
-        }
-      });
-      */
-      if (hasConflict) {
-        const wnd = mxWindow.createFrameWindow(
-          'EditForms/ImportEditor.html',
-          'OK, Cancel',
-          'minimize, maximize, close',
-          (btn, outDataObj) => {
-            if (btn === 'OK') {
-            }
-            return true;
-          },
-          {
-            conflicts,
-            model: importedContent,
-          },
-          false,
-          null,
-          null,
-          450,
-          300
-        );
-        document.body.removeChild(wnd.div);
-        var contentPanel = document.getElementById("ContentPanel");
-        adjustWindowPos(contentPanel, wnd.div);
-        contentPanel.appendChild(wnd.div);
-      }
     };
 
     //------------------------------------------

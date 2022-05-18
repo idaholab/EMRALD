@@ -26,7 +26,7 @@
       }
 
       input[type=checkbox] + label {
-        background: url(lock_open2.png);
+        background: url(lock_open.png);
         background-size: var(--lock-icon-size);
         width: var(--lock-icon-size);
         height: var(--lock-icon-size);
@@ -58,6 +58,10 @@
         <br />
         <button ng-click="toggleLocks(true)">Lock All</button>
         <button ng-click="toggleLocks(false)">Unlock All</button>
+        <br />
+        <button ng-click="toggleAction('ignore')">Ignore Unlocked</button>
+        <button ng-click="toggleAction('replace')">Replace Unlocked</button>
+        <button ng-click="toggleAction('rename')">Rename Unlocked</button>
       </div>
       <table>
         <thead>

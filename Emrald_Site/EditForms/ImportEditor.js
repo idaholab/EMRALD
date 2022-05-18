@@ -18,7 +18,8 @@
 
 /**
  * @typedef ImportEditor.OutputData
- * @property {string} name - The name of the diagram.
+ * @property {EMRALD.Model} model - The modified model.
+ * @property {Entry[]} entries - The entries.
  */
 
 /**
@@ -34,6 +35,7 @@
  * @property {(entry: Entry) => void} checkEntryAction - Checks if the conflict message should be displayed for the given entry.
  * @property {(index: number) => void} nameChanged - Handles manually changing names.
  * @property {(state: boolean) => void} toggleLocks - Toggles all locks on/off.
+ * @property {(state: string) => void} toggleAction - Sets all unlocked entries's actions.
  */
 
 /**
@@ -41,7 +43,14 @@
  * @property {import('angular')} angular - AngularJS.
  * @property {(dataObj: ImportEditor.InputData) => void} OnLoad - Function to load data from the parent window.
  * @property {() => ImportEditor.OutputData} GetDataObject - Function to construct the returned data object.
+ * @property {() => string} ValidateData - Function to validate the form data.
  * @property {SimApp.SimApp} simApp - The SimApp instance.
+ */
+
+/**
+ * @typedef ImportEditor.ActionObj
+ * @property {string} name - The name of the entry.
+ * @property {string} type - The type of the entry.
  */
 
 /** @type {ImportEditor.Window} */
@@ -70,6 +79,7 @@ class Entry {
     this.action = 'rename';
     this.isLocked = false;
     this.hasConflict = hasConflict;
+    this.oldName = this.data.name;
   }
 
   /**
@@ -106,9 +116,40 @@ window.cast(window, w).GetDataObject = () => {
     'importEditorControllerPanel',
     importEditorScope,
   );
-  return {
+  /** @type {EMRALD.Model} */ const model = {
+    ActionList: [],
+    desc: scope.model.desc,
+    DiagramList: [],
+    EventList: [],
+    ExtSimList: [],
+    id: scope.model.id,
+    LogicNodeList: [],
     name: scope.model.name,
+    StateList: [],
+    VariableList: [],
   };
+  scope.entries.forEach((entry) => {
+    model[`${entry.type}List`].push(entry.data);
+  });
+  return {
+    entries: scope.entries,
+    model,
+  };
+};
+
+window.cast(window, w).ValidateData = () => {
+  let conflictExists = false;
+  const scope = window.getScope(
+    'importEditorControllerPanel',
+    importEditorScope,
+  );
+  scope.entries.forEach((entry) => {
+    conflictExists = conflictExists || entry.isConflicting;
+  });
+  if (conflictExists) {
+    return 'Please resolve conflicting names.';
+  }
+  return '';
 };
 
 const importEditorModule = window.angular.module('importEditor', []);
@@ -155,10 +196,14 @@ const importEditorController = ($scope) => {
   $scope.apply = () => {
     const entries = $scope.getUnlockedEntries();
     entries.forEach((entry, i) => {
+      const original = entries[i].data.name;
       entries[i].data.name = entry.data.name.replace(
         $scope.find,
         $scope.replace,
       );
+      if (original !== entries[i].data.name) {
+        entries[i].isLocked = true;
+      }
     });
     $scope.find = '';
     $scope.replace = '';
@@ -173,6 +218,13 @@ const importEditorController = ($scope) => {
   $scope.toggleLocks = (state) => {
     $scope.entries.forEach((entry, i) => {
       $scope.entries[i].isLocked = state;
+    });
+  };
+
+  $scope.toggleAction = (state) => {
+    const entries = $scope.getUnlockedEntries();
+    entries.forEach((entry, i) => {
+      entries[i].action = state;
     });
   };
 };
