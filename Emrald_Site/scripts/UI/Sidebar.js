@@ -149,7 +149,7 @@ if (typeof Navigation === 'undefined')
         function (btn, outDataObj) {
           if (btn === 'OK') {
             if (outDataObj.importedContent) {
-              Sidebar.prototype.beginMergeModel(outDataObj.importedContent);
+              Sidebar.prototype.importDiagram(outDataObj.importedContent);
               delete outDataObj.importedContent;
               return true;
             }
@@ -3745,7 +3745,7 @@ if (typeof Navigation === 'undefined')
           { title: "Open...", cmd: "Open" },
           { title: "Edit properties...", cmd: "Edit" },
 					{ title: "Delete", cmd: "Delete" },
-					// { title: "Make Template", cmd: "Template" },
+					{ title: "Make Template", cmd: "Template" },
           { title: "Export", cmd: "Export" },
           { title: "Copy", cmd: "Copy"},
         ],
@@ -3885,27 +3885,48 @@ if (typeof Navigation === 'undefined')
             'minimize, maximize, close',
             /**
              * Handles the window closing.
-             * 
+             *
              * @param {string} btn - The button that was clicked.
              * @param {ImportEditor.OutputData} outDataObj The dialog output.
              * @returns {boolean} If the window closed.
              */
             (btn, outDataObj) => {
               if (btn === 'OK') {
-                console.log(outDataObj);
+                // Replace names in the local model
+                outDataObj.entries.forEach((entry) => {
+                  this.replaceNames(
+                    entry.oldName,
+                    entry.data.name,
+                    entry.type,
+                    outDataObj.model,
+                    false,
+                  );
+                });
+                // Apply changes to the global model
                 outDataObj.entries.forEach((entry) => {
                   switch (entry.action) {
                     case 'rename':
-                      this[`addNew${entry.type}`]({ [entry.type]: entry.data });
+                      const obj = outDataObj.model[`${entry.type}List`].find(
+                        (item) => item[entry.type].name === entry.data.name,
+                      );
+                      if (entry.type === 'LogicNode') {
+                        this.addNewLogicTree(obj);
+                      } else {
+                        this[`addNew${entry.type}`](obj);
+                      }
                       break;
                     case 'replace':
-                      const target = this.getByName(entry.type, simApp.allDataModel, entry.data.name);
+                      const target = this.getByName(
+                        entry.type,
+                        simApp.allDataModel,
+                        entry.data.name,
+                      );
                       Object.keys(entry.data).forEach((key) => {
                         target[entry.type][key] = entry.data[key];
                       });
                       break;
                     default:
-                      // ignore (literally)
+                    // ignore (literally)
                   }
                 });
               }

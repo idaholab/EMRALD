@@ -116,24 +116,9 @@ window.cast(window, w).GetDataObject = () => {
     'importEditorControllerPanel',
     importEditorScope,
   );
-  /** @type {EMRALD.Model} */ const model = {
-    ActionList: [],
-    desc: scope.model.desc,
-    DiagramList: [],
-    EventList: [],
-    ExtSimList: [],
-    id: scope.model.id,
-    LogicNodeList: [],
-    name: scope.model.name,
-    StateList: [],
-    VariableList: [],
-  };
-  scope.entries.forEach((entry) => {
-    model[`${entry.type}List`].push(entry.data);
-  });
   return {
     entries: scope.entries,
-    model,
+    model: scope.model,
   };
 };
 
