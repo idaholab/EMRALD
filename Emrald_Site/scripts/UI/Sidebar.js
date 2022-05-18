@@ -3395,7 +3395,7 @@ if (typeof Navigation === 'undefined')
                     }
                     else {
                       if (replaceName != null)
-                        cur.singleStates[j] = replaceName;
+                        cur.singleStates[j].stateName = replaceName;
                       refs.push(cur);
                     }
                   }

@@ -1009,6 +1009,9 @@ namespace SimulationDAL
       {
         //use normal assigned lambda if not a variable
         this._lambda = (double)dynObj.lambda;
+      }
+      else
+      {
 
         try //may not exist in earlier versions so use a default
         {
@@ -1104,12 +1107,22 @@ namespace SimulationDAL
 
     public override TimeSpan RedoNextTime(TimeSpan sampledTime, TimeSpan curTime, TimeSpan oldOccurTime)
     {
-      if(onVarChange == EnOnChangeTask.ocAdjust)
+      if (onVarChange == EnOnChangeTask.ocAdjust)
       {
-        //todo: how to adjust 
-        return NextTime() - (curTime - sampledTime);
+        //todo: how to adjust
+        //Random rnd = new Random();
+        double rnd = SingleRandom.Instance.NextDouble();
+
+
+
+        //double var1 = (Math.Log(Dbl_Treshold) + (Dbl_C4Lambda1 * CurTime)) / (-Dbl_C4Lambda2);
+        double var1 = (Math.Log(rnd) + (_lambda * curTime.TotalHours)) / (-lambdaVariable.dblValue);
+        _lambda = lambdaVariable.dblValue;
+        //what will happen if we have more than 2 loops (example: cooling system is repaired)
+        return (TimeSpan.FromHours(var1) + curTime);
+        //return NextTime() - (curTime - sampledTime);
       }
-      
+
       //if not "ocAdjust" call parent as they are all the same.
       return base.RedoNextTime(sampledTime, curTime, oldOccurTime);
     }
@@ -1258,6 +1271,7 @@ namespace SimulationDAL
         throw new Exception("Failed to load parameter values for event " + this.name);
       }
 
+      EnTimeRate distTimeRate = dfltTimeRate;
       try
       {
 
@@ -1265,19 +1279,23 @@ namespace SimulationDAL
         {
           case EnDistType.dtExponential:
             sampled = (new Exponential((double)valuePs[0], SingleRandom.Instance)).Sample();
+            distTimeRate = _dParams[0].timeRate;
             break;
           case EnDistType.dtNormal: //mean and standard deviation
             sampled = (new Normal((double)valuePs[0],
                                     Globals.ConvertToNewTimeSpan(_dParams[1].timeRate, (double)valuePs[1], _dParams[0].timeRate),
                                     SingleRandom.Instance)).Sample();
+            distTimeRate = _dParams[0].timeRate;
             break;
           case EnDistType.dtWeibull:
             sampled = (new Weibull((double)valuePs[0], (double)valuePs[1], SingleRandom.Instance)).Sample();
+            distTimeRate = _dParams[0].timeRate;
             break;
           case EnDistType.dtLogNormal:
             sampled = (new LogNormal((double)valuePs[0],
                                     Globals.ConvertToNewTimeSpan(_dParams[1].timeRate, (double)valuePs[1], _dParams[0].timeRate),
                                     SingleRandom.Instance)).Sample();
+            distTimeRate = _dParams[0].timeRate;
             break;
           default:
             throw new Exception("Distribution type not implemented for " + this._distType.ToString());
@@ -1291,7 +1309,8 @@ namespace SimulationDAL
 
 
 
-      TimeSpan sampledTime = Globals.NumberToTimeSpan(sampled, dfltTimeRate);
+      TimeSpan sampledTime = Globals.NumberToTimeSpan(sampled, distTimeRate);
+      //Globals.ConvertToNewTimeSpan(_dParams[1].timeRate, (double)valuePs[1], _dParams[0].timeRate)
       try
       {
         TimeSpan minTime = TimeSpan.Zero;
