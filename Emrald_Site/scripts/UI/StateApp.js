@@ -1360,7 +1360,13 @@ var StateApp = (function (global, _super) {
     }
   }
 
-
+  StateApp.prototype.pasteDiagram = function () {
+    const rootModel = this.graph.getDefaultParent().value;
+    const sb = rootModel.sidebar;
+    if (sb) {
+      console.log('Pasting diagram');
+    }
+  }
 
 
   //------------------------------------
@@ -1610,6 +1616,9 @@ var StateApp = (function (global, _super) {
             function (evt) {
               this.reloadDiagram();
             }.bind(this));
+            menu.addItem("Paste diagram", null, (evt) => {
+              this.pasteDiagram();
+            });
         }
         menu.addItem(mName + "Properties...", null,
           function () {
