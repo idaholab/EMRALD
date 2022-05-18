@@ -32,6 +32,8 @@
  * @property {() => void} checkAllNames - Checks all names for conflicts.
  * @property {() => Entry[]} getUnlockedEntries - Gets only unlocked entries.
  * @property {(entry: Entry) => void} checkEntryAction - Checks if the conflict message should be displayed for the given entry.
+ * @property {(index: number) => void} nameChanged - Handles manually changing names.
+ * @property {(state: boolean) => void} toggleLocks - Toggles all locks on/off.
  */
 
 /**
@@ -161,6 +163,17 @@ const importEditorController = ($scope) => {
     $scope.find = '';
     $scope.replace = '';
     $scope.checkAllNames();
+  };
+
+  $scope.nameChanged = (index) => {
+    $scope.checkName(index);
+    $scope.entries[index].isLocked = true;
+  };
+
+  $scope.toggleLocks = (state) => {
+    $scope.entries.forEach((entry, i) => {
+      $scope.entries[i].isLocked = state;
+    });
   };
 };
 

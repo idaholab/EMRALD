@@ -9,8 +9,38 @@
     <script src="./lib/EditFormUtil.js"></script>
     <script src="ImportEditor.js"></script>
     <style>
+      :root {
+        --lock-icon-size: 30px;
+      }
+
       .conflict {
         color: #eb5834;
+      }
+
+      .locked {
+        background-color: #e0e0e0;
+      }
+
+      input[type=checkbox] {
+        display: none;
+      }
+
+      input[type=checkbox] + label {
+        background: url(lock_open2.png);
+        background-size: var(--lock-icon-size);
+        width: var(--lock-icon-size);
+        height: var(--lock-icon-size);
+        padding: 0;
+        display: inline-block;
+      }
+
+      input[type=checkbox]:checked + label {
+        background: url(lock_closed.png);
+        background-size: var(--lock-icon-size);
+        width: var(--lock-icon-size);
+        height: var(--lock-icon-size);
+        padding: 0;
+        display: inline-block;
       }
     </style>
   </head>
@@ -25,10 +55,14 @@
         <label for="replace">Replace with:</label>
         <input id="replace" ng-model="replace" />
         <button ng-click="apply()">Apply</button>
+        <br />
+        <button ng-click="toggleLocks(true)">Lock All</button>
+        <button ng-click="toggleLocks(false)">Unlock All</button>
       </div>
       <table>
         <thead>
           <tr>
+            <th>Type</th>
             <th>Lock</th>
             <th>Name</th>
             <th>Conflict</th>
@@ -36,15 +70,17 @@
           </tr>
         </thead>
         <tbody>
-          <tr ng-repeat="entry in entries track by $index">
+          <tr ng-repeat="entry in entries track by $index" ng-class="{ locked: entry.isLocked }">
+            <td>{{entry.type}}</td>
             <td>
-              <input type="checkbox" ng-model="entry.isLocked" />
+              <input type="checkbox" ng-model="entry.isLocked" id="{{'checkbox-' + $index}}" />
+              <label for="{{'checkbox-' + $index}}"></label>
             </td>
             <td>
               <input
                 placeholder="Name"
                 ng-model="entry.data.name"
-                ng-change="checkName($index)"
+                ng-change="nameChanged($index)"
               />
             </td>
             <td>
