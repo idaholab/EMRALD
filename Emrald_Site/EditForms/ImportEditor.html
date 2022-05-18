@@ -8,21 +8,74 @@
     <script src="../scripts/angular/angular.js"></script>
     <script src="./lib/EditFormUtil.js"></script>
     <script src="ImportEditor.js"></script>
+    <style>
+      .conflict {
+        color: #eb5834;
+      }
+    </style>
   </head>
   <body ng-app="importEditor">
     <div
       ng-controller="importEditorController"
       id="importEditorControllerPanel"
     >
-      <div class="inputGroup" ng-repeat="entry in entries track by $index">
-        <label for="{{'entry-' + $index}}">Name:</label>
-        <input
-          id="{{'entry-' + $index}}"
-          ng-model="entry.data.name"
-          ng-change="checkName($index)"
-        />
-        <div ng-if="conflicts[$index]">Conflicts!</div>
+      <div>
+        <label for="find">Find:</label>
+        <input id="find" ng-model="find" />
+        <label for="replace">Replace with:</label>
+        <input id="replace" ng-model="replace" />
+        <button ng-click="apply()">Apply</button>
       </div>
+      <table>
+        <thead>
+          <tr>
+            <th>Lock</th>
+            <th>Name</th>
+            <th>Conflict</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr ng-repeat="entry in entries track by $index">
+            <td>
+              <input type="checkbox" ng-model="entry.isLocked" />
+            </td>
+            <td>
+              <input
+                placeholder="Name"
+                ng-model="entry.data.name"
+                ng-change="checkName($index)"
+              />
+            </td>
+            <td>
+              <div ng-if="entry.isConflicting" class="conflict">Conflicts!</div>
+            </td>
+            <td>
+              <input
+                type="radio"
+                ng-model="entry.action"
+                value="ignore"
+                ng-change="checkEntryAction(entry)"
+              />
+              Ignore
+              <input
+                type="radio"
+                ng-model="entry.action"
+                value="replace"
+                ng-change="checkEntryAction(entry)"
+              />
+              Replace
+              <input
+                type="radio"
+                ng-model="entry.action"
+                value="rename"
+                ng-change="checkEntryAction(entry)"
+              />
+              Rename
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   </body>
 </html>

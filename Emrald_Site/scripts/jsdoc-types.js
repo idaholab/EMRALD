@@ -123,3 +123,21 @@
  * @property {number} id - The model id.
  * @property {string} name - The model name.
  */
+
+/**
+ * @namespace Navigation
+ */
+
+/**
+ * @typedef Navigation.Sidebar
+ */
+
+/**
+ * @namespace SimApp
+ */
+
+/**
+ * @typedef SimApp.SimApp
+ * @property {SimApp.SimApp} mainApp - The main application instance.
+ * @property {Navigation.Sidebar} sidebar - The global sidebar.
+ */
