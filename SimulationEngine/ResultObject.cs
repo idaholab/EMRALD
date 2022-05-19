@@ -84,13 +84,14 @@ namespace SimulationEngine
     [JsonIgnore]
     public List<TimeSpan> times { get { return _times; } }
     [JsonProperty(Order = 6)]
-    public TimeSpan timeMean { get { return _totalTime / count; } }
+    public TimeSpan timeMean { get { return (_totalTime / count) + TimeSpan.FromDays(_extraDays / count); } }
     [JsonProperty(Order = 7)]
     public TimeSpan timeStdDeviation { get {return GetTimeStdDev(); } }
     [JsonProperty(Order = 8)]
     public TimeSpan timeMin { get {return _timeMin; } }
     [JsonProperty(Order = 9)]
     public TimeSpan timeMax { get {return _timeMax; } }
+    
     [JsonProperty(Order = 10)]
 
     public Dictionary<string, List<string>> watchVariables = new Dictionary<string, List<string>>();
@@ -101,6 +102,7 @@ namespace SimulationEngine
     public EnterExitCause[] entries { get { return enterDict.Values.ToArray(); } }
     public EnterExitCause[] exits { get { return exitDict.Values.ToArray(); } }
     protected TimeSpan _totalTime = TimeSpan.Zero;
+    private double _extraDays = 0.0;
     protected List<TimeSpan> _times = new List<TimeSpan>();
     protected int _count = 0;
     protected int _contributionCnt = 0;
@@ -146,7 +148,20 @@ namespace SimulationEngine
         _timeMax = newTime;
 
       this._times.Add(newTime);
-      this._totalTime += newTime;      
+      try
+      {
+        if ((TimeSpan.MaxValue - this._totalTime) < newTime)
+        {
+          _extraDays += this._totalTime.Days;
+          this._totalTime -= TimeSpan.FromDays(this._totalTime.Days);
+        }
+
+        this._totalTime += newTime;
+      }
+      catch
+      {
+        this._totalTime = TimeSpan.MaxValue;
+      }
       ++_count;
     }  
 

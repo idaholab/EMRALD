@@ -1067,7 +1067,7 @@ var StateApp = (function (global, _super) {
       return;
 
     var selState = selCell.value.State;
-    var states = sidebar.getStateDataObjecsForDiagram(null, selState.diagramName);
+    var states = sidebar.getStateDataObjectsForDiagram(null, selState.diagramName);
     for (var sIdx = 0; sIdx < states.length; sIdx++) {
       var curState = states[sIdx];
       if (fullDelete || ((selState.name == curState.State.name))) {
@@ -1146,7 +1146,7 @@ var StateApp = (function (global, _super) {
       return;
 
     var selState = selCell.value.State;
-    var states = sidebar.getStateDataObjecsForDiagram(null, selState.diagramName);
+    var states = sidebar.getStateDataObjectsForDiagram(null, selState.diagramName);
     for (var sIdx = 0; sIdx < states.length; sIdx++) {
       var curState = states[sIdx];
 
@@ -1360,7 +1360,13 @@ var StateApp = (function (global, _super) {
     }
   }
 
-
+  StateApp.prototype.pasteDiagram = function () {
+    const rootModel = this.graph.getDefaultParent().value;
+    const sb = rootModel.sidebar;
+    if (sb) {
+      console.log('Pasting diagram');
+    }
+  }
 
 
   //------------------------------------
@@ -1610,6 +1616,9 @@ var StateApp = (function (global, _super) {
             function (evt) {
               this.reloadDiagram();
             }.bind(this));
+            menu.addItem("Paste diagram", null, (evt) => {
+              this.pasteDiagram();
+            });
         }
         menu.addItem(mName + "Properties...", null,
           function () {

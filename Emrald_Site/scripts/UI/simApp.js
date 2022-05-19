@@ -1,4 +1,6 @@
 ﻿// Copyright 2021 Battelle Energy Alliance
+// @ts-check
+/// <reference path="../jsdoc-types.js" />
 
 /* this file is code for all functions having to do with upper menu bar (save, open, new project ... ext)
 		Also, please note that demo function is empty as of July 27*/
@@ -216,6 +218,56 @@ function mergeIntoCurrentProject() {
   }.bind(this);
 
   dialog.addEventListener("change", handleFileSelected, false);
+  document.body.appendChild(dialog);
+  dialog.click();
+}
+
+function loadTemplate() {
+  const el = document.getElementById('OpenFileDialogInput');
+  if (el) {
+    el.remove();
+  }
+  const dialog = document.createElement('input');
+  dialog.id = 'OpenFileDialogInput';
+  dialog.value = '';
+  dialog.type = 'file';
+  dialog.style.display = 'none';
+  dialog.accept = 'application/json,.json';
+  const handleFileSelected = (evt) => {
+    if (!evt.target.files || !evt.target.files[0]) {
+      return;
+    }
+    const afile = evt.target.files[0];
+    const el = document.getElementById('project_name');
+    let aname = afile.name.substring(0, afile.name.indexOf('.'));
+    if (aname === '') {
+      aname = afile.name;
+    }
+    if (el) {
+      el.innerText = aname;
+    }
+    let ext = /\.[0-9a-z]+$/.exec(afile.name);
+    ext = ext && ext.length > 0 ? ext[0] : '';
+    switch (ext) {
+      case '.json':
+        const reader = new FileReader();
+        reader.onload = (evt) => {
+          const content = JSON.parse(evt.target.result);
+          if (Array.isArray(content)) {
+            // Load template list
+            content.forEach((template) => {
+              simApp.mainApp.loadTemplate(template);
+            });
+          } else {
+            // Load single template
+            simApp.mainApp.loadTemplate(content);
+          }
+        };
+        reader.readAsText(afile);
+        break;
+    }
+  };
+  dialog.addEventListener('change', handleFileSelected, false);
   document.body.appendChild(dialog);
   dialog.click();
 }
@@ -580,6 +632,10 @@ var simApp;
       diagramData.LogicNodeList = this.cloneDataModel(model.LogicNodeList);
       diagramData.VariableList = this.cloneDataModel(model.VariableList);
 
+      if (model.templates) {
+        diagramData.templates = model.templates.map((template) => this.cloneDataModel(template));
+      }
+
       return diagramData;
     }
     //-------------------------
@@ -615,43 +671,29 @@ var simApp;
 
       return diagramData;
     }
-    //-------------------------
+    
+    /**
+     * Saves the user's templates to a file.
+     */
     SimApp.prototype.saveTemplate = function () {
-      var url = 'EditForms/SaveTemplatePrompt.html';
-      var dataObj = { userCheck: false, globalCheck: false };
-      var wnd = mxWindow.createFrameWindow(
-          url,
-          'OK, Cancel',  //command buttons
-          'close', //top buttons
-          function (btn, retObj) {
-            if (btn === 'OK') {
-              var diagram = this.getCleanAllTemplateModel();
-              if (!retObj.userCheck && !retObj.globalCheck) {
-                return true;
-              }
-              else if (retObj.userCheck && !retObj.globalCheck) {
-                diagram = this.getCleanUserTemplateModel();
-              }
-              else if (!retObj.userCheck && retObj.globalCheck) {
-                diagram = this.getCleanGlobalTemplateModel();
-              }
-              var jsonStr = JSON.stringify(diagram, null, 2);
-              var blob = new Blob([jsonStr], { type: "data:text/plain" });
-              saveAs(blob, "Template_" + simApp.mainApp.modelFileName);
-            }
-            return true;
-          }.bind(this),
-          dataObj,
-          true, //ismodal
-          null,
-          null,
-          300, //width
-          220 //height
-      );
-      document.body.removeChild(wnd.div);
-      var contentPanel = document.getElementById("ContentPanel");
-      adjustWindowPos(contentPanel, wnd.div);
-      contentPanel.appendChild(wnd.div);
+      if (localStorage.getItem('templates')) {
+        const blob = new Blob([localStorage.getItem('templates')], {
+          type: 'data:text/plain',
+        });
+        saveAs(blob, `Templates_${simApp.mainApp.modelFileName}`);
+      }
+    }
+
+    /**
+     * Loads a template into the project.
+     *
+     * @param {EMRALD.Model} dataObj - The template to load.
+     */
+    SimApp.prototype.loadTemplate = function (dataObj) {
+      // Import the diagram
+      simApp.mainApp.sidebar.importDiagram(dataObj).then((importedContent) => {
+        simApp.mainApp.sidebar.addLocalTemplate(importedContent);
+      });
     }
 
 

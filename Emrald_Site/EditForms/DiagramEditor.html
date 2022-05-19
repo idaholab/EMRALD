@@ -29,6 +29,10 @@
         .separator:not(:empty)::after {
             margin-left: .25em;
         }
+
+        .template-choice {
+            cursor: pointer;
+        }
     </style>
 
 </head>
@@ -53,6 +57,12 @@
                 <div class="separator">OR</div><br /><b>Import Diagram: </b>
                 <input type="button" value="Choose File" onclick="mergeIntoCurrentProject()" />
                 <span><i>{{data.fileName}}</i><input ng-if="data.fileName" type="button" value="X" title="Remove File" onclick="removeFile()"/></span>
+                <div class="separator">OR</div>
+                <br />
+                <b>Select a template: </b>
+                <div ng-repeat="template in diagramTemplates" ng-click="chooseTemplate(template)" class="template-choice">
+                    {{template}}
+                </div>
             </div>
             <div id="singleStatePanel" style="display:none;">
                 <hr />

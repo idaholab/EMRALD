@@ -1,4 +1,7 @@
 ﻿// Copyright 2021 Battelle Energy Alliance
+// @ts-check
+/// <reference path="../jsdoc-types.js" />
+/// <reference path="../../EditForms/ImportEditor.js" />
 
 "use strict";
 
@@ -129,13 +132,10 @@ if (typeof Navigation === 'undefined')
         changeDiagramType: function () { return true; }
       };
 
-      var diagramList = simApp.allTemplates.DiagramList;
+      var diagramList = JSON.parse(localStorage.getItem('templates')) || [];
       var diagramTemplates = [];
-      if (diagramList.length > 0) {
-        diagramTemplates.add("");
-      }
       for (var i = 0; i < diagramList.length; i++) {
-        diagramTemplates.add(diagramList[i].Diagram.name);
+        diagramTemplates.push(diagramList[i].name);
       }
       dataObj.diagramTemplates = diagramTemplates;
 
@@ -146,7 +146,7 @@ if (typeof Navigation === 'undefined')
         function (btn, outDataObj) {
           if (btn === 'OK') {
             if (outDataObj.importedContent) {
-              Sidebar.prototype.beginMergeModel(outDataObj.importedContent);
+              Sidebar.prototype.importDiagram(outDataObj.importedContent);
               delete outDataObj.importedContent;
               return true;
             }
@@ -304,9 +304,20 @@ if (typeof Navigation === 'undefined')
                     this.beginMergeModel(dataObj);
                   }.bind(this));                  
                   break;
+                case "Paste Diagram":
+                  navigator.clipboard.readText()
+                    .then((clipped) => {
+                      this.importDiagram(JSON.parse(clipped)).then((importedContent) => {
+                        this.openDiagramWindow(importedContent.DiagramList[0].Diagram)
+                      });
+                    })
+                    .catch((err) => { throw err });
               }
             }.bind(this)
 
+          }
+          if (titleForNew === 'Diagram') {
+            cmenu.menu.push({ title: "Paste", cmd: "Paste Diagram" });
           }
         }
         return cmenu;
@@ -567,9 +578,17 @@ if (typeof Navigation === 'undefined')
         allButton.style.backgroundColor = '';
       }
     }
-  //---------------------------------------------------
+    //---------------------------------------------------
     Sidebar.prototype.getExtSimList = function () {
       return simApp.allDataModel.ExtSimList;
+    }
+    //---------------------------------------------------
+    Sidebar.prototype.getLogicNodeList = function () {
+      return simApp.allDataModel.LogicNodeList;
+    }
+    //---------------------------------------------------
+    Sidebar.prototype.getVariableList = function () {
+      return simApp.allDataModel.VariableList;
     }
     //---------------------------------------------------
     Sidebar.prototype.deleteDynamicSidebar = function () {
@@ -853,7 +872,7 @@ if (typeof Navigation === 'undefined')
       return stateNames;
     }
     //---------------------------------------------------
-    Sidebar.prototype.getStateDataObjecsForDiagram = function (model, dName) {
+    Sidebar.prototype.getStateDataObjectsForDiagram = function (model, dName) {
       if (!model)
         model = this;
       var names = this.getStateNamesForDiagram(model, dName);
@@ -1945,6 +1964,7 @@ if (typeof Navigation === 'undefined')
         }
 
       if (diagram.sidebar) delete diagram.sidebar;
+      return diagram;
     }
     //---------------------------------------------------
     Sidebar.prototype.openDiagramWindow = function (diagram) {
@@ -3372,7 +3392,7 @@ if (typeof Navigation === 'undefined')
                     }
                     else {
                       if (replaceName != null)
-                        cur.singleStates[j] = replaceName;
+                        cur.singleStates[j].stateName = replaceName;
                       refs.push(cur);
                     }
                   }
@@ -3647,6 +3667,16 @@ if (typeof Navigation === 'undefined')
       return -1;
     }
     //------------------------------------------
+    Sidebar.prototype.addLocalTemplate = function (templateObj) {
+      let localTemplates = [];
+      if (localStorage.getItem('templates')) {
+        localTemplates = JSON.parse(localStorage.getItem('templates'));
+      }
+      // Overwrite duplicates
+      localTemplates = localTemplates.filter((template) => template.name !== templateObj.name);
+      localTemplates.push(templateObj);
+      localStorage.setItem('templates', JSON.stringify(localTemplates));
+    }
 
     Sidebar.prototype.addDiagramToSection = function (ol, item) {
       var sol = null;
@@ -3722,7 +3752,9 @@ if (typeof Navigation === 'undefined')
           { title: "Open...", cmd: "Open" },
           { title: "Edit properties...", cmd: "Edit" },
 					{ title: "Delete", cmd: "Delete" },
-					{ title: "Make Template", cmd: "Template" }
+					{ title: "Make Template", cmd: "Template" },
+          { title: "Export", cmd: "Export" },
+          { title: "Copy", cmd: "Copy"},
         ],
         select: function (evt, ui) {
           switch (ui.cmd) {
@@ -3746,11 +3778,26 @@ if (typeof Navigation === 'undefined')
               break;
             case "Template":
               if (ui.target.context.dataObject) {
-                var copyDataObj = ui.target.context.dataObject;
-                this.editTemplateProperties(copyDataObj);
+                const dataObj = this.exportDiagram(ui.target.context.dataObject);
+                this.addLocalTemplate(dataObj);
               }
               break;
-
+            case "Export":
+              if (ui.target.context.dataObject) {
+                const a = document.createElement('a');
+                const dataObject = this.exportDiagram(ui.target.context.dataObject);
+                a.setAttribute('href', `data:text/plain;charset=utf-8,${encodeURIComponent(JSON.stringify(dataObject))}`);
+                a.setAttribute('download', `${dataObject.name}.json`);
+                a.click();
+              }
+              break;
+            case "Copy":
+              if (ui.target.context.dataObject) {
+                const diagram = this.exportDiagram(ui.target.context.dataObject);
+                navigator.clipboard.writeText(JSON.stringify(this.cleanDataModel(diagram)))
+                  .catch((err) => { throw err });
+              }
+              break;
           }
         }.bind(this)
       });
@@ -3761,6 +3808,154 @@ if (typeof Navigation === 'undefined')
       sortDOMList(sol);
       return sol;
     }
+
+    Sidebar.prototype.exportDiagram = function (dataObject) {
+      const StateList = this.getStateDataObjectsForDiagram(false, dataObject.name);
+      const strippedStateList = StateList.map((state) => state.State);
+      const exportObject = {
+        id: dataObject.id,
+        name: dataObject.name,
+        desc: dataObject.desc,
+        DiagramList: [
+          {
+            Diagram: dataObject,
+          },
+        ],
+        ExtSimList: this.getExtSimList(),
+        StateList,
+        ActionList: this.getActionList(strippedStateList),
+        EventList: this.getEventList(strippedStateList),
+        LogicNodeList: this.getLogicNodeList(),
+        VariableList: this.getVariableList(),
+      };
+      return this.cleanDataModel(exportObject);
+    }
+
+    Sidebar.prototype.ActionExists = function (actionName) {
+      return this.getActionByName(simApp.allDataModel, actionName) !== null;
+    };
+
+    Sidebar.prototype.DiagramExists = function (diagramName) {
+      return this.getDiagramByName(simApp.allDataModel, diagramName) !== null;
+    };
+
+    Sidebar.prototype.EventExists = function (eventName) {
+      return this.getEventByName(simApp.allDataModel, eventName) !== null;
+    };
+
+    Sidebar.prototype.ExtSimExists = function (extSimName) {
+      return this.getExtSimByName(simApp.allDataModel, extSimName) !== null;
+    };
+
+    Sidebar.prototype.LogicNodeExists = function (logicNodeName) {
+      return this.getLogicNodeByName(simApp.allDataModel, logicNodeName) !== null;
+    };
+
+    Sidebar.prototype.StateExists = function (stateName) {
+      return this.getStateByName(simApp.allDataModel, stateName) !== null;
+    };
+
+    Sidebar.prototype.VariableExists = function (variableName) {
+      return this.getVariableByName(simApp.allDataModel, variableName) !== null;
+    };
+
+    /**
+     * Imports a diagram and opens the UI for conflict resolution.
+     * 
+     * @param {EMRALD.Model} importedContent - The diagram to import.
+     */
+    Sidebar.prototype.importDiagram = function (importedContent) {
+      return new Promise((resolve, reject) => {
+        if (importedContent.DiagramList.length > 1) {
+          reject('More than one diagram in file.');
+        }
+        // Find conflicts
+        let hasConflict = false;
+        const conflicts = [];
+        Object.values(importedContent).forEach((value, i) => {
+          if (typeof value === 'object' && typeof value.length === 'number') {
+            value.forEach((item) => {
+              const [type] = Object.keys(item);
+              const name = item[type].name;
+              const conflict = this[`${type}Exists`](name);
+              hasConflict = hasConflict || conflict;
+              conflicts[i] = conflict;
+            });
+          }
+        });
+        const sidebar = simApp.mainApp.sidebar;
+        if (hasConflict) {
+          const wnd = mxWindow.createFrameWindow(
+            'EditForms/ImportEditor.html',
+            'OK, Cancel',
+            'minimize, maximize, close',
+            /**
+             * Handles the window closing.
+             *
+             * @param {string} btn - The button that was clicked.
+             * @param {ImportEditor.OutputData} outDataObj The dialog output.
+             * @returns {boolean} If the window closed.
+             */
+            (btn, outDataObj) => {
+              if (btn === 'OK') {
+                // Replace names in the local model
+                outDataObj.entries.forEach((entry) => {
+                  this.replaceNames(
+                    entry.oldName,
+                    entry.data.name,
+                    entry.type,
+                    outDataObj.model,
+                    false,
+                  );
+                });
+                // Apply changes to the global model
+                outDataObj.entries.forEach((entry) => {
+                  switch (entry.action) {
+                    case 'rename':
+                      const obj = outDataObj.model[`${entry.type}List`].find(
+                        (item) => item[entry.type].name === entry.data.name,
+                      );
+                      if (entry.type === 'LogicNode') {
+                        this.addNewLogicTree(obj);
+                      } else {
+                        this[`addNew${entry.type}`](obj);
+                      }
+                      break;
+                    case 'replace':
+                      const target = this.getByName(
+                        entry.type,
+                        simApp.allDataModel,
+                        entry.data.name,
+                      );
+                      Object.keys(entry.data).forEach((key) => {
+                        target[entry.type][key] = entry.data[key];
+                      });
+                      break;
+                    default:
+                    // ignore (literally)
+                  }
+                });
+                resolve(outDataObj.model);
+              }
+              return true;
+            },
+            {
+              conflicts,
+              model: importedContent,
+            },
+            false,
+            null,
+            null,
+            450,
+            300,
+          );
+          document.body.removeChild(wnd.div);
+          var contentPanel = document.getElementById('ContentPanel');
+          adjustWindowPos(contentPanel, wnd.div);
+          contentPanel.appendChild(wnd.div);
+        }
+      });
+    };
 
     //------------------------------------------
     //Not currently being used

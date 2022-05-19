@@ -276,4 +276,8 @@ diagramModule.controller('diagramController', function ($scope, $timeout) {
         }
     }
 
+    $scope.chooseTemplate = function (template) {
+        console.log(template);
+    };
+
 });

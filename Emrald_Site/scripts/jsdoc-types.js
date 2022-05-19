@@ -173,4 +173,23 @@
 /**
  * @typedef ActionEditor.Window
  * @property {() => import('angular').IScope} getScope - Gets the Angular scope of the action editor window.
+ * @property {EMRALD.Model[]} [templates] - Templates loaded into the project.
+ */
+
+/**
+ * @namespace Navigation
+ */
+
+/**
+ * @typedef Navigation.Sidebar
+ */
+
+/**
+ * @namespace SimApp
+ */
+
+/**
+ * @typedef SimApp.SimApp
+ * @property {SimApp.SimApp} mainApp - The main application instance.
+ * @property {Navigation.Sidebar} sidebar - The global sidebar.
  */
