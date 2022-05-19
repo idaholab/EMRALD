@@ -151,6 +151,7 @@
  * @property {string} [docType] - The document type for document link variables.
  * @property {number} [numChars] - The number of characters to read for document link variables.
  * @property {boolean} [pathMustExist] - If the path must exist for document link variables.
+ * @property {number} [regExpLine] - RegExp line for document link variables.
  */
 
 /**

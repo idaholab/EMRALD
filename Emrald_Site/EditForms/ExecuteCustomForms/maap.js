@@ -5,7 +5,7 @@
 /// <reference path="./fileModel.js" />
 /// <reference path="../lib/EditFormUtil.js" />
 /// <reference path="../lib/ExternalExeForm.js" />
-/* global ExternalExeForm, ExeFormItem, cast */
+/* global ExternalExeForm, ExeFormItem, cast, fileModel, maapParParser, maapInpParser */
 
 /**
  * @namespace MAAPForm
@@ -484,10 +484,8 @@ module.controller('maapFormController', [
       }
       if (typeof raFormData.varLinks === 'object') {
         $scope.varLinks = raFormData.varLinks.map(
-          (varLink) => new VarLink(
-            varLink.target,
-            form.findVariable(varLink.variable),
-          ),
+          (varLink) =>
+            new VarLink(varLink.target, form.findVariable(varLink.variable)),
         );
       }
     }
@@ -510,17 +508,17 @@ module.controller('maapFormController', [
       }
     };
 
-    $scope.addInitiator = function (data) {
+    $scope.addInitiator = function addInitiator(data) {
       $scope.initiators.push(data);
       form.save();
     };
 
-    $scope.addOutput = function () {
+    $scope.addOutput = function addOutput() {
       $scope.varLinks.push(new VarLink());
       form.save();
     };
 
-    $scope.removeOutput = function (index) {
+    $scope.removeOutput = function removeoutput(index) {
       $scope.varLinks.splice(index, 1);
       form.save();
     };
@@ -531,7 +529,7 @@ module.controller('maapFormController', [
         $scope.parameterFile.split(/\n/).forEach((line) => {
           if (/^[0-9]{3}/.test(line)) {
             try {
-              const data = window.maapParParser.parse(line);
+              const data = maapParParser.parse(line);
               parameterInfo[data.desc] = new Initiator(data);
               if (data.value === 'T') {
                 possibleInitiators[data.desc] = new Initiator(data);
@@ -585,7 +583,7 @@ module.controller('maapFormController', [
                 paramChange += `${fullLine}\n`;
                 if (!/^C/.test(line)) {
                   $scope.parameters.push(
-                    new Parameter(window.maapInpParser.parse(line)),
+                    new Parameter(maapInpParser.parse(line)),
                   );
                 }
               }
@@ -672,9 +670,7 @@ module.controller('maapFormController', [
                 parameters = [];
               } else {
                 try {
-                  parameters.push(
-                    new Parameter(window.maapInpParser.parse(line)),
-                  );
+                  parameters.push(new Parameter(maapInpParser.parse(line)));
                 } catch (e) {
                   parameters.push(new Parameter(line, false));
                   console.error(e);
@@ -690,9 +686,7 @@ module.controller('maapFormController', [
               } else {
                 try {
                   // TODO: display SET TIMER #1
-                  parameters.push(
-                    new Parameter(window.maapInpParser.parse(line)),
-                  );
+                  parameters.push(new Parameter(maapInpParser.parse(line)));
                 } catch (e) {
                   parameters.push(new Parameter(line, false));
                   console.log(`Line failed to parse: ${line}`);
@@ -721,4 +715,4 @@ module.controller('maapFormController', [
 ]);
 
 // Don't read entire file into memory
-module.directive('fileModel', ['$parse', window.fileModel]);
+module.directive('fileModel', ['$parse', fileModel]);
