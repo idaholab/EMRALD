@@ -76,8 +76,7 @@ class ExternalExeForm {
   /**
    * Binds the angular scope to the form.
    *
-   * @template T - The form scope.
-   * @param {T & import('angular').IScope} $scope The angular scope.
+   * @param {import('angular').IScope} $scope The angular scope.
    */
   bindScope($scope) {
     this.$scope = $scope;

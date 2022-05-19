@@ -3,7 +3,9 @@
  */
 // @ts-check
 /// <reference path="./fileModel.js" />
+/// <reference path="../lib/EditFormUtil.js" />
 /// <reference path="../lib/ExternalExeForm.js" />
+/* global ExternalExeForm, ExeFormItem, cast */
 
 /**
  * @namespace MAAPForm
@@ -12,6 +14,29 @@
 /**
  * @typedef MAAPForm.Scope
  * @property {string} exePath - Path to the MAAP executeable.
+ * @property {string} inputFile - Full contents of the input file.
+ * @property {string} parameterFile - Full contents of the parameter file.
+ * @property {string} inputPath - Path to the INP file.
+ * @property {string} parameterPath - Path to the PAR file.
+ * @property {Parameter[]} parameters - Parameter items.
+ * @property {Initiator[]} initiators - Initiators.
+ * @property {VarLink[]} varLinks - Var links.
+ * @property {Block[]} blocks - Input blocks.
+ * @property {number[]} inpSplits - Split locations for the INP file.
+ * @property {string} initiatorQuery - Initiator search text.
+ * @property {Initiator[]} initiatorOptions - Initiator options.
+ * @property {boolean} parametersLoaded - If the parameters file has been loaded & parsed.
+ * @property {string[]} operators - Possible operator choices.
+ * @property {string} tab - The current tab.
+ * @property {EMRALD.Variable[]} variables - Variables in the EMRALD project.
+ * @property {EMRALD.Variable[]} docVars - Document link variables from the EMRALD project.
+ * @property {(index: number) => void} removeInitiator - Removes the initiator at the given index.
+ * @property {() => void} findInitiators - Finds initiators given the current initiatorQuery.
+ * @property {(data: Initiator) => void} addInitiator - Adds the given initiator to initiators.
+ * @property {() => void} addOutput - Adds an empty var link.
+ * @property {(index: number) => void} removeOutput - Removes the var link at the given index.
+ * @property {() => void} save - Saves the form data.
+ * @property {(target: Parameter) => void} changeText - Changes the text of a parameter directly.
  */
 
 /**
@@ -23,34 +48,37 @@ class MAAPForm extends ExternalExeForm {
    */
   getDataObject() {
     /** @type {ExternalExeForm.DataObject} */ const dataObj = {};
+    /** @type {MAAPForm.Scope} */ let s;
+    const scope = cast(this.$scope, s);
     dataObj.raLocation = '';
-    dataObj.varNames = this.getVarNames(this.$scope.parameters);
+    dataObj.varNames = this.getVarNames(scope.parameters);
     dataObj.raFormData = {
-      exePath: this.$scope.exePath,
-      initiators: this.$scope.initiators.map((initiator) => initiator.toJSON()),
-      inpSplits: this.$scope.inpSplits,
-      inputPath: this.$scope.inputPath,
-      parameterPath: this.$scope.parameterPath,
-      parameters: this.$scope.parameters.map((parameter) => parameter.toJSON()),
-      varLinks: this.$scope.varLinks.map((varLink) => varLink.toJSON()),
+      exePath: scope.exePath,
+      initiators: scope.initiators.map((initiator) => initiator.toJSON()),
+      inpSplits: scope.inpSplits,
+      inputPath: scope.inputPath,
+      parameterPath: scope.parameterPath,
+      parameters: scope.parameters.map((parameter) => parameter.toJSON()),
+      varLinks: scope.varLinks.map((varLink) => varLink.toJSON()),
     };
-    const tempFilePath = `${this.$scope.inputPath.replace(
+    const tempFilePath = `${scope.inputPath.replace(
       /[^/\\]*\.INP$/,
       'temp.INP',
     )}`;
     let paramCode = '"';
-    this.$scope.parameters.forEach((parameter) => {
+    scope.parameters.forEach((parameter) => {
       paramCode += `${parameter.toString()}\\n`;
     });
     paramCode += '"';
     let initiatorCode = '"';
-    this.$scope.initiators.forEach((initiator) => {
+    scope.initiators.forEach((initiator) => {
       initiatorCode += `${initiator.toString()}\\n`;
     });
     initiatorCode += '"';
-    dataObj.raPreCode = `string exeLoc = @"${this.escape(this.$scope.exePath)}";
-      string paramLoc = @"${this.escape(this.$scope.parameterPath)}";
-      string inpLoc = @"${this.escape(this.$scope.inputPath)}";
+    /* eslint-disable max-len */
+    dataObj.raPreCode = `string exeLoc = @"${this.escape(scope.exePath)}";
+      string paramLoc = @"${this.escape(scope.parameterPath)}";
+      string inpLoc = @"${this.escape(scope.inputPath)}";
       string tempLoc = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\\EMRALD_MAAP\\";
       try {
         if (Directory.Exists(tempLoc)) {
@@ -73,28 +101,23 @@ class MAAPForm extends ExternalExeForm {
       if (File.Exists(dllPath)) {
         File.Copy(dllPath, tempLoc + Path.GetFileName(dllPath));
       }
-      string p = ${this.code.readFile(this.$scope.inputPath)};
-      string p1 = p.Substring(0, ${this.$scope.inpSplits[0]});
-      string p2 = p.Substring(${this.$scope.inpSplits[1]}, ${
-      this.$scope.inpSplits[2]
-    });
-      string p3 = p.Substring(${this.$scope.inpSplits[3]}, ${
-      this.$scope.inpSplits[4]
-    });
+      string p = ${this.code.readFile(scope.inputPath)};
+      string p1 = p.Substring(0, ${scope.inpSplits[0]});
+      string p2 = p.Substring(${scope.inpSplits[1]}, ${scope.inpSplits[2]});
+      string p3 = p.Substring(${scope.inpSplits[3]}, ${scope.inpSplits[4]});
       string newInp = p1 + ${paramCode} + p2 + ${initiatorCode} + p3;
       System.IO.File.WriteAllText(tempLoc + Path.GetFileName(inpLoc), newInp);
       //TODO - if there is a .dat file then remove any .inp file reference
       return tempLoc + exeName + " " + Path.GetFileName(inpLoc) + " " + Path.GetFileName(paramLoc);`;
-    dataObj.raPostCode = `string inpLoc = @"${this.escape(
-      this.$scope.inputPath,
-    )}";
+    dataObj.raPostCode = `string inpLoc = @"${this.escape(scope.inputPath)}";
     string docVarPath = @"${tempFilePath}"; //whatever you assigned the results variables to
     string resLoc = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\\EMRALD_MAAP\\" + Path.GetFileNameWithoutExtension(inpLoc) + ".log";
     File.Copy(resLoc, docVarPath, true);`;
+    /* eslint-enable max-len */
     dataObj.returnProcess = 'rtNone';
     dataObj.variables = [];
-    for (let i = 0; i < this.$scope.varLinks.length; i += 1) {
-      const varLink = this.$scope.varLinks[i];
+    for (let i = 0; i < scope.varLinks.length; i += 1) {
+      const varLink = scope.varLinks[i];
       if (varLink.variable) {
         dataObj.variables.push({
           ...varLink.variable,
@@ -257,9 +280,26 @@ class Parameter extends ExeFormItem {
 }
 
 /**
- * 
+ * @typedef MAAPForm.InitiatorData
+ * @property {string} desc - The initiator description.
+ * @property {number} index - The initiator index.
+ * @property {string} value - The initator value.
+ */
+
+/**
+ * @typedef MAAPForm.InitiatorJSON
+ * @property {MAAPForm.InitiatorData} data - The initiator data.
+ */
+
+/**
+ * Initiator section item.
  */
 class Initiator extends ExeFormItem {
+  /**
+   * Constructs Initiator.
+   *
+   * @param {MAAPForm.InitiatorData} data - The initiator data.
+   */
   constructor(data) {
     super(data);
     this.desc = data.desc;
@@ -267,14 +307,29 @@ class Initiator extends ExeFormItem {
     this.value = data.value;
   }
 
+  /**
+   * Gets the initiator label text.
+   *
+   * @returns {string} The initiator label.
+   */
   get label() {
     return `${this.index} ${this.value} ${this.desc}`;
   }
 
+  /**
+   * Creates a string representation of the initiator.
+   *
+   * @returns {string} The string representation of the initiator.
+   */
   toString() {
     return this.desc;
   }
 
+  /**
+   * Creates a JSON representation of the initiator.
+   *
+   * @returns {MAAPForm.InitiatorJSON} - The initiator JSON.
+   */
   toJSON() {
     return {
       data: this.data,
@@ -282,16 +337,39 @@ class Initiator extends ExeFormItem {
   }
 }
 
+/**
+ * @typedef MAAPForm.VarLinkJSON
+ * @property {string} target - The target MAAP output.
+ * @property {{ id: number, name: string }} variable - The document link variable to bind.
+ */
+
+/**
+ * Document var link option.
+ */
 class VarLink {
+  /**
+   * Constructs VarLink.
+   *
+   * @param {string} [target] - The target MAAP output.
+   * @param {EMRALD.Variable['Variable']} [variable] - The document link variable to bind.
+   */
   constructor(target, variable) {
     this.target = target;
     this.variable = variable;
   }
 
+  /**
+   * Creates a JSON representation of the var link.
+   *
+   * @returns {MAAPForm.VarLinkJSON} The var link json.
+   */
   toJSON() {
-    const json = {
+    /** @type {MAAPForm.VarLinkJSON} */ const json = {
       target: this.target,
-      variable: {},
+      variable: {
+        id: -1,
+        name: '',
+      },
     };
     if (this.variable) {
       json.variable.id = this.variable.id;
@@ -301,14 +379,31 @@ class VarLink {
   }
 }
 
+/**
+ * Generic input block data.
+ */
 class BlockData {
+  /**
+   * Constructs BlockData.
+   *
+   * @param {*} value - The data value.
+   */
   constructor(value) {
     this.value = value;
     this.useVariable = false;
   }
 }
 
+/**
+ * An input block.
+ */
 class Block {
+  /**
+   * Constructs Block.
+   *
+   * @param {string} type - The input block type.
+   * @param {...any} data - Any data to store with the block.
+   */
   constructor(type, ...data) {
     this.type = type;
     this.data = data;
@@ -343,8 +438,10 @@ module.controller('maapFormController', [
     const possibleInitiators = {};
 
     /**
+     * Trims whitepsace from the beginning and end of lines.
      *
-     * @param line
+     * @param {string} line - The line to trim.
+     * @returns {string} The trimmed line.
      */
     function trim(line) {
       return line.replace(/^\s*/, '').replace(/\s*$/, '');
@@ -387,18 +484,20 @@ module.controller('maapFormController', [
       }
       if (typeof raFormData.varLinks === 'object') {
         $scope.varLinks = raFormData.varLinks.map(
-          (varLink) =>
-            new VarLink(varLink.target, form.findVariable(varLink.variable)),
+          (varLink) => new VarLink(
+            varLink.target,
+            form.findVariable(varLink.variable),
+          ),
         );
       }
     }
 
-    $scope.removeInitiator = function (index) {
+    $scope.removeInitiator = function removeInitiator(index) {
       $scope.initiators.splice(index, 1);
       form.save();
     };
 
-    $scope.findInitiators = function () {
+    $scope.findInitiators = function findInitiators() {
       if ($scope.initiatorQuery.length > 0) {
         $scope.initiatorOptions = [];
         Object.keys(possibleInitiators).forEach((key) => {
@@ -451,7 +550,6 @@ module.controller('maapFormController', [
         const lines = $scope.inputFile.split(/\n/);
         let initiatorsDone = false;
         let parameterChangeDone = false;
-        let i = 0;
         let preParamChange = '';
         let paramChange = '';
         let postParamChange = '';
@@ -503,13 +601,12 @@ module.controller('maapFormController', [
               break;
             default:
           }
-          i += 1;
         });
         $scope.inpSplits[0] = preParamChange.length;
         $scope.inpSplits[1] = preParamChange.length + paramChange.length;
         $scope.inpSplits[2] = postParamChange.length + 3;
-        $scope.inpSplits[3] =
-          $scope.inpSplits[1] + $scope.inpSplits[2] + initiators.length;
+        $scope.inpSplits[3] = $scope.inpSplits[1]
+          + $scope.inpSplits[2] + initiators.length;
         $scope.inpSplits[4] = postInitiators.length + 4;
         expects = 0;
         let conditions = [];
@@ -527,7 +624,7 @@ module.controller('maapFormController', [
                   .forEach((condition) => {
                     if (condition !== 'AND' && condition !== 'OR') {
                       // TODO: >=
-                      let opIndex = condition.search(/[\<\>]/);
+                      let opIndex = condition.search(/[<>]/);
                       const opIndex2 = condition.indexOf('IS');
                       let t = 1;
                       if (opIndex2 > -1) {
@@ -554,11 +651,11 @@ module.controller('maapFormController', [
                   });
                 expects = 1;
               } else if (/^WHEN/.test(line)) {
-                const l = line.replace(/^WHEN\s+/, '');
-                const opIndex = l.search(/[\<\>]/);
-                const lhs = trim(l.substring(0, opIndex));
-                const op = trim(l.substring(opIndex, opIndex + 1));
-                const rhs = trim(l.substring(opIndex + 1, l.length));
+                const m = line.replace(/^WHEN\s+/, '');
+                const opIndex = m.search(/[<>]/);
+                const lhs = trim(m.substring(0, opIndex));
+                const op = trim(m.substring(opIndex, opIndex + 1));
+                const rhs = trim(m.substring(opIndex + 1, m.length));
                 conditions.push({
                   lhs: new BlockData(lhs),
                   op,
@@ -610,11 +707,11 @@ module.controller('maapFormController', [
       }
     });
 
-    $scope.save = function () {
+    $scope.save = function save() {
       form.save();
     };
 
-    $scope.changeText = function (parameter) {
+    $scope.changeText = function changeText(parameter) {
       parameter.changeText();
       form.save();
     };
@@ -624,4 +721,4 @@ module.controller('maapFormController', [
 ]);
 
 // Don't read entire file into memory
-module.directive('fileModel', ['$parse', fileModel]);
+module.directive('fileModel', ['$parse', window.fileModel]);

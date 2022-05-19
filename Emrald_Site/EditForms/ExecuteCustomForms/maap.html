@@ -1,10 +1,13 @@
 <!DOCTYPE html>
-<html>
+<html lang="en-US">
   <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
     <title>MAAP Form</title>
     <link href="../../styles/Editors.css" rel="stylesheet" />
     <link rel="stylesheet" href="../lib/ExternalExeForm.css" />
     <script src="../../scripts/angular/angular.js"></script>
+    <script src="../lib/EditFormUtil.js"></script>
     <script src="../lib/ExternalExeForm.js"></script>
     <script src="./fileModel.js"></script>
     <script src="./maap-inp-parser.js"></script>
@@ -107,15 +110,25 @@
                 <td>{{parameter.label}}</td>
                 <td>
                   <select
+                    title="Select a variable"
                     ng-if="parameter.useVariable"
                     ng-options="opt.name for opt in variables"
                     ng-model="parameter.variable"
                     ng-change="save()"
                   ></select>
-                  <input ng-if="!parameter.useVariable" ng-model="parameter.tempText" ng-change="changeText(parameter)" />
+                  <input
+                    title="Parameter value"
+                    ng-if="!parameter.useVariable"
+                    ng-model="parameter.tempText"
+                    ng-change="changeText(parameter)"
+                  />
                 </td>
                 <td>
-                  <input type="checkbox" ng-model="parameter.useVariable" />
+                  <input
+                    title="Use variable"
+                    type="checkbox"
+                    ng-model="parameter.useVariable"
+                  />
                 </td>
               </tr>
             </table>
@@ -137,7 +150,9 @@
                 <tr ng-repeat="opt in initiatorOptions">
                   <td>{{opt.label}}</td>
                   <td>
-                    <button ng-click="addInitiator(opt)">Add</button>
+                    <button type="button" ng-click="addInitiator(opt)">
+                      Add
+                    </button>
                   </td>
                 </tr>
               </table>
@@ -150,7 +165,7 @@
               <tr ng-repeat="(i, initiator) in initiators">
                 <td>{{initiator.label}}</td>
                 <td>
-                  <button ng-click="removeInitiator(i)">X</button>
+                  <button type="button" ng-click="removeInitiator(i)">X</button>
                 </td>
               </tr>
             </table>
@@ -171,19 +186,25 @@
                   </tr>
                   <tr ng-repeat="d in block.data[0]">
                     <td>
-                      <select ng-if="d.joiner" ng-model="d.joiner">
+                      <select
+                        title="Select operator"
+                        ng-if="d.joiner"
+                        ng-model="d.joiner"
+                      >
                         <option>AND</option>
                         <option>OR</option>
                       </select>
                     </td>
                     <td>
                       <select
+                        title="Select variable"
                         ng-if="d.lhs.useVariable"
                         ng-options="opt.name for opt in variables"
                         ng-model="d.lhs.variable"
                         ng-change="save()"
                       ></select>
                       <input
+                        title="Use variable"
                         ng-if="!d.lhs.useVariable"
                         ng-model="d.lhs.value"
                         ng-change="save()"
@@ -191,6 +212,7 @@
                     </td>
                     <td>
                       <select
+                        title="Select operator"
                         ng-options="op as op for op in operators"
                         ng-model="d.op"
                         ng-change="save()"
@@ -198,19 +220,25 @@
                     </td>
                     <td>
                       <select
+                        title="Use variable"
                         ng-if="d.rhs.useVariable"
                         ng-options="opt.name for opt in variables"
                         ng-model="d.rhs.variable"
                         ng-change="save()"
                       ></select>
                       <input
+                        title="Set value"
                         ng-if="!d.rhs.useVariable"
                         ng-model="d.rhs.value"
                         ng-change="save()"
                       />
                     </td>
                     <td>
-                      <input type="checkbox" ng-model="d.rhs.useVariable" />
+                      <input
+                        title="Use variable"
+                        type="checkbox"
+                        ng-model="d.rhs.useVariable"
+                      />
                     </td>
                   </tr>
                 </table>
@@ -225,6 +253,7 @@
                     <td ng-if="parameter.parsed">{{parameter.label}}</td>
                     <td ng-if="parameter.parsed">
                       <select
+                        title="Select variable"
                         ng-if="parameter.useVariable"
                         ng-options="opt.name for opt in variables"
                         ng-model="parameter.variable"
@@ -235,10 +264,18 @@
                       >
                     </td>
                     <td ng-if="parameter.parsed">
-                      <input type="checkbox" ng-model="parameter.useVariable" />
+                      <input
+                        title="Use variable"
+                        type="checkbox"
+                        ng-model="parameter.useVariable"
+                      />
                     </td>
                     <td ng-if="!parameter.parsed">
-                      <input ng-model="parameter.text" ng-change="save()" />
+                      <input
+                        title="Set value"
+                        ng-model="parameter.text"
+                        ng-change="save()"
+                      />
                     </td>
                   </tr>
                 </table>
@@ -255,25 +292,34 @@
               <tr ng-repeat="varLink in varLinks track by $index">
                 <td>
                   <select
+                    title="Select variable"
                     ng-options="variable as variable.name for variable in docVars"
                     ng-model="varLink.variable"
                     ng-change="save()"
                   ></select>
                 </td>
                 <td>
-                  <select ng-model="varLink.target" ng-change="save()">
+                  <select
+                    title="Target output"
+                    ng-model="varLink.target"
+                    ng-change="save()"
+                  >
                     <option>CORE UNCOVERY</option>
                     <option>VESSEL FAILURE</option>
                     <option>CONTAINMENT FAILURE</option>
                   </select>
                 </td>
                 <td>
-                  <button ng-click="removeOutput($index)">Remove</button>
+                  <button type="button" ng-click="removeOutput($index)">
+                    Remove
+                  </button>
                 </td>
               </tr>
               <tr>
                 <td>
-                  <button ng-click="addOutput()">Add Output</button>
+                  <button type="button" ng-click="addOutput()">
+                    Add Output
+                  </button>
                 </td>
               </tr>
             </table>

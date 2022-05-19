@@ -145,6 +145,12 @@
  * @property {boolean} resetOnRuns - If the variable should be reset each run.
  * @property {AccrualStateData[]} accrualStatesData - Accrual states data.
  * @property {string} type - The C# type of the variable value.
+ * @property {number} [begPosition] - Begin position for document link variables.
+ * @property {string} [docLink] - The document to link to for document link variables.
+ * @property {string} [docPath] - The path to the target document for document link variables.
+ * @property {string} [docType] - The document type for document link variables.
+ * @property {number} [numChars] - The number of characters to read for document link variables.
+ * @property {boolean} [pathMustExist] - If the path must exist for document link variables.
  */
 
 /**
