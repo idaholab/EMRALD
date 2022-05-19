@@ -158,6 +158,25 @@ if (typeof Navigation === 'undefined')
                 ...template.DiagramList[0],
                 ...outDataObj,
               };
+              // Automatically replace names
+              Object.keys(template).forEach((key) => {
+                const type = key.replace('List', '');
+                if (Array.isArray(template[key])) {
+                  template[key].forEach((item) => {
+                    const oldName = item[type].name;
+                    const newName = item[type].name.replace(outDataObj.diagramTemplate, outDataObj.name);
+                    if (newName !== oldName) {
+                      this.replaceNames(
+                        oldName,
+                        newName,
+                        type,
+                        template,
+                        false,
+                      );
+                    }
+                  });
+                }
+              });
               template.name = outDataObj.name;
               template.id = outDataObj.id;
               template.desc = outDataObj.desc;
@@ -3137,7 +3156,7 @@ if (typeof Navigation === 'undefined')
               if (cur.name == name) {
                 if (replaceName != null) {
                   cur.name = replaceName;
-                  if (model.StateList[i].ui_el) {
+                  if (model.EventList[i].ui_el) {
                     model.EventList[i].ui_el.innerText = replaceName;
                     model.EventList[i].ui_el.innerHTML = replaceName;
                   }
