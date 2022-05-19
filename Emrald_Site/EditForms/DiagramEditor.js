@@ -1,4 +1,8 @@
-﻿// Copyright 2021 Battelle Energy Alliance
+﻿/**
+ * @file Diagram Editor logic.
+ * @copyright 2021 Battelle Energy Alliance
+ */
+// @ts-check
 
 var isDirty = false;
 
@@ -188,7 +192,9 @@ function GetDataObject() {
     if (scope.data.importedContent) {
         diagramData.importedContent = scope.data.importedContent;
     }
-    diagramData.diagramTemplate = scope.diagramTemplate;
+    if (scope.selectedTemplate !== null) {
+        diagramData.diagramTemplate = scope.diagramTemplates[scope.selectedTemplate];
+    }
     return diagramData;
 }
 
@@ -276,8 +282,13 @@ diagramModule.controller('diagramController', function ($scope, $timeout) {
         }
     }
 
-    $scope.chooseTemplate = function (template) {
-        console.log(template);
+    $scope.selectedTemplate = null;
+    $scope.chooseTemplate = function (index) {
+        if ($scope.selectedTemplate === index) {
+            $scope.selectedTemplate = null;
+        } else {
+            $scope.selectedTemplate = index;
+        }
     };
 
 });

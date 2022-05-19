@@ -132,7 +132,7 @@ if (typeof Navigation === 'undefined')
         changeDiagramType: function () { return true; }
       };
 
-      var diagramList = JSON.parse(localStorage.getItem('templates')) || [];
+      var diagramList = this.getLocalTemplates();
       var diagramTemplates = [];
       for (var i = 0; i < diagramList.length; i++) {
         diagramTemplates.push(diagramList[i].name);
@@ -171,9 +171,18 @@ if (typeof Navigation === 'undefined')
             var diagram = { Diagram: outDataObj };
             //If you choose template, populate diagram with appropriate items
             if (outDataObj.diagramTemplate && outDataObj.diagramTemplate.length > 0) {
-              this.addNewTemplateDiagram(diagram, outDataObj.diagramTemplate);
-              this.openDiagram(diagram.Diagram);
-              this.onLoadLocal(diagram.Diagram);
+              const template = this.getTemplateByName(outDataObj.diagramTemplate);
+              template.DiagramList[0] = {
+                ...template.DiagramList[0],
+                ...outDataObj,
+              };
+              template.name = outDataObj.name;
+              template.id = outDataObj.id;
+              template.desc = outDataObj.desc;
+              this.importDiagram(template).then((importedContent) => {
+                this.openDiagram(importedContent.DiagramList[0].Diagram);
+                this.onLoadLocal(diagram.Diagram);
+              });
             }
             else {
               this.addNewDiagram(diagram, outDataObj.diagramTemplate);
@@ -3667,15 +3676,40 @@ if (typeof Navigation === 'undefined')
       return -1;
     }
     //------------------------------------------
-    Sidebar.prototype.addLocalTemplate = function (templateObj) {
+    /**
+     * Safely gets the saved local templates, if any.
+     * 
+     * @returns {EMRALD.Model[]} The local templates.
+     */
+    Sidebar.prototype.getLocalTemplates = function () {
       let localTemplates = [];
       if (localStorage.getItem('templates')) {
         localTemplates = JSON.parse(localStorage.getItem('templates'));
       }
+      return localTemplates;
+    }
+
+    /**
+     * Safely adds a template to the local storage list.
+     * 
+     * @param {EMRALD.Model} templateObj - The template to add.
+     */
+    Sidebar.prototype.addLocalTemplate = function (templateObj) {
+      let localTemplates = this.getLocalTemplates();
       // Overwrite duplicates
       localTemplates = localTemplates.filter((template) => template.name !== templateObj.name);
       localTemplates.push(templateObj);
       localStorage.setItem('templates', JSON.stringify(localTemplates));
+    }
+
+    /**
+     * Gets the template with the given name.
+     * 
+     * @param {string} templateName - The name of the template to find.
+     * @returns {EMRALD.Model} The template, if any.
+     */
+    Sidebar.prototype.getTemplateByName = function (templateName) {
+      return this.getLocalTemplates().find((template) => template.name === templateName);
     }
 
     Sidebar.prototype.addDiagramToSection = function (ol, item) {

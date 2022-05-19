@@ -32,6 +32,11 @@
 
         .template-choice {
             cursor: pointer;
+            padding: 8px;
+        }
+
+        .template-choice.selected {
+            background: rgb(211, 211, 211);
         }
     </style>
 
@@ -43,8 +48,6 @@
             <div style="display:table-row">
                 <div style="display:table-cell">Type:</div>
                 <select style="display:table-cell;width: 130px;float:left" id="TypeOption" ng-model="diagramType" ng-options="dt.name for dt in diagramTypes" name="Type" ng-disabled="data.importedContent"></select>
-                <div style="display:table-cell;float:left;" id="TemplateOptionLabel">Template:</div>
-                <select style="display:table-cell;width: 130px;" id="TemplateOption" ng-model="diagramTemplate" ng-options="dtemp for dtemp in diagramTemplates" name="Type"></select>
             </div>
             <div style="display:table-row">
                 <span style="display:table-cell">Name:</span> <input style="display:table-cell" id="Diagram_Name_Input" ng-model="name" tabindex="1" ng-disabled="data.importedContent">
@@ -60,7 +63,11 @@
                 <div class="separator">OR</div>
                 <br />
                 <b>Select a template: </b>
-                <div ng-repeat="template in diagramTemplates" ng-click="chooseTemplate(template)" class="template-choice">
+                <div
+                    ng-repeat="template in diagramTemplates track by $index"
+                    ng-click="chooseTemplate($index)"
+                    class="template-choice"
+                    ng-class="{ selected: selectedTemplate === $index }">
                     {{template}}
                 </div>
             </div>

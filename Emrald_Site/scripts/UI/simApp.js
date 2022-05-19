@@ -690,10 +690,7 @@ var simApp;
      * @param {EMRALD.Model} dataObj - The template to load.
      */
     SimApp.prototype.loadTemplate = function (dataObj) {
-      // Import the diagram
-      simApp.mainApp.sidebar.importDiagram(dataObj).then((importedContent) => {
-        simApp.mainApp.sidebar.addLocalTemplate(importedContent);
-      });
+      simApp.mainApp.sidebar.addLocalTemplate(dataObj);
     }
 
 
