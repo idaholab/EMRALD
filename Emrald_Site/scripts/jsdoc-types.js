@@ -122,6 +122,7 @@
  * @property {string} desc - The model description.
  * @property {number} id - The model id.
  * @property {string} name - The model name.
+ * @property {EMRALD.Model[]} [templates] - Templates loaded into the project.
  */
 
 /**

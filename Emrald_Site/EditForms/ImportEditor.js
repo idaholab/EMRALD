@@ -108,6 +108,11 @@ window.cast(window, w).OnLoad = (dataObj) => {
       }
     });
     scope.checkAllNames();
+    scope.entries.forEach((entry, i) => {
+      if (!entry.isConflicting) {
+        scope.entries[i].isLocked = true;
+      }
+    });
   });
 };
 
@@ -186,13 +191,13 @@ const importEditorController = ($scope) => {
         $scope.find,
         $scope.replace,
       );
-      if (original !== entries[i].data.name) {
+      $scope.checkName(i);
+      if (original !== entries[i].data.name && !entries[i].isConflicting) {
         entries[i].isLocked = true;
       }
     });
     $scope.find = '';
     $scope.replace = '';
-    $scope.checkAllNames();
   };
 
   $scope.nameChanged = (index) => {

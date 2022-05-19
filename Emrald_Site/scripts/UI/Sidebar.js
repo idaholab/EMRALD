@@ -132,13 +132,10 @@ if (typeof Navigation === 'undefined')
         changeDiagramType: function () { return true; }
       };
 
-      var diagramList = simApp.allTemplates.DiagramList;
+      var diagramList = JSON.parse(localStorage.getItem('templates')) || [];
       var diagramTemplates = [];
-      if (diagramList.length > 0) {
-        diagramTemplates.add("");
-      }
       for (var i = 0; i < diagramList.length; i++) {
-        diagramTemplates.add(diagramList[i].Diagram.name);
+        diagramTemplates.push(diagramList[i].name);
       }
       dataObj.diagramTemplates = diagramTemplates;
 
@@ -311,7 +308,7 @@ if (typeof Navigation === 'undefined')
                   navigator.clipboard.readText()
                     .then((clipped) => {
                       this.importDiagram(JSON.parse(clipped)).then((importedContent) => {
-                        console.log(importedContent);
+                        this.openDiagramWindow(importedContent.DiagramList[0].Diagram)
                       });
                     })
                     .catch((err) => { throw err });
@@ -3670,6 +3667,16 @@ if (typeof Navigation === 'undefined')
       return -1;
     }
     //------------------------------------------
+    Sidebar.prototype.addLocalTemplate = function (templateObj) {
+      let localTemplates = [];
+      if (localStorage.getItem('templates')) {
+        localTemplates = JSON.parse(localStorage.getItem('templates'));
+      }
+      // Overwrite duplicates
+      localTemplates = localTemplates.filter((template) => template.name !== templateObj.name);
+      localTemplates.push(templateObj);
+      localStorage.setItem('templates', JSON.stringify(localTemplates));
+    }
 
     Sidebar.prototype.addDiagramToSection = function (ol, item) {
       var sol = null;
@@ -3771,8 +3778,8 @@ if (typeof Navigation === 'undefined')
               break;
             case "Template":
               if (ui.target.context.dataObject) {
-                var copyDataObj = ui.target.context.dataObject;
-                this.editTemplateProperties(copyDataObj);
+                const dataObj = this.exportDiagram(ui.target.context.dataObject);
+                this.addLocalTemplate(dataObj);
               }
               break;
             case "Export":
@@ -3788,7 +3795,6 @@ if (typeof Navigation === 'undefined')
               if (ui.target.context.dataObject) {
                 const diagram = this.exportDiagram(ui.target.context.dataObject);
                 navigator.clipboard.writeText(JSON.stringify(this.cleanDataModel(diagram)))
-                  .then(() => console.log('Copied!'))
                   .catch((err) => { throw err });
               }
               break;
@@ -3822,7 +3828,7 @@ if (typeof Navigation === 'undefined')
         LogicNodeList: this.getLogicNodeList(),
         VariableList: this.getVariableList(),
       };
-      return exportObject;
+      return this.cleanDataModel(exportObject);
     }
 
     Sidebar.prototype.ActionExists = function (actionName) {
@@ -3929,6 +3935,7 @@ if (typeof Navigation === 'undefined')
                     // ignore (literally)
                   }
                 });
+                resolve(outDataObj.model);
               }
               return true;
             },
