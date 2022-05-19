@@ -35,6 +35,11 @@
           "submenu": null
         },
         {
+          "title": "Clear Templates",
+          "fnc": "clearTemplates",
+          "submenu": null
+        },
+        {
           "title": "Load Demo",
           "fnc": "createDemo",
           "submenu": null

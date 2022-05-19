@@ -70,6 +70,9 @@ function saveProject() {
 function saveTemplate() {
   simApp.mainApp.saveTemplate();
 }
+function clearTemplates() {
+  localStorage.removeItem('templates');
+}
 
 //------------------
 //var deleteSimulationDone = false;
