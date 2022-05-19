@@ -209,7 +209,7 @@ function mergeIntoCurrentProject() {
         var reader = new FileReader();
         reader.onload = function (evt) {
           var content = evt.target.result;
-          Navigation.Sidebar.prototype.beginMergeModel(JSON.parse(content));
+          Navigation.Sidebar.prototype.importDiagram(JSON.parse(content));
         }.bind(this);
         reader.readAsText(afile);
         break;
