@@ -3969,6 +3969,20 @@ if (typeof Navigation === 'undefined')
           var contentPanel = document.getElementById('ContentPanel');
           adjustWindowPos(contentPanel, wnd.div);
           contentPanel.appendChild(wnd.div);
+        } else {
+          Object.keys(importedContent).forEach((key) => {
+            if (Array.isArray(importedContent[key])) {
+              importedContent[key].forEach((entry) => {
+                const type = key.replace('List', '');
+                if (type === 'LogicNode') {
+                  this.addNewLogicTree(entry);
+                } else {
+                  this[`addNew${type}`](entry);
+                }
+              })
+            }
+          });
+          resolve(importedContent);
         }
       });
     };
