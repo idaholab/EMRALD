@@ -59,38 +59,20 @@ if (typeof Navigation === 'undefined')
         this.upgrade(simApp.allDataModel);
         this.assignList(jobj);
         //load templates
-        this.loadTemplates();
+        this.loadTemplates(jobj.templates);
         this.createSidebar(container, url || "resources/sidebar.json");
       }
     }
 
     //this will load all diagram templates when the project is first opened and save it within simApp
-    Sidebar.prototype.loadTemplates = function () {
-      getServerFile("resources/userCreatedDiagramTemplates.json", function onSuccess(jsonStr) {
-        var templateObj = JSON.parse(jsonStr);
-        simApp.userTemplates = templateObj;
-        getServerFile("resources/diagramTemplates.json", function onSuccess(jsonStr) {
-          var templateObj = JSON.parse(jsonStr);
-          simApp.globalTemplates = templateObj;
-          simApp.allTemplates = templateObj;
-          //add the local templates to allTemplates
-          var localTemplates = simApp.userTemplates;
-          localTemplates.DiagramList.forEach(function (di) {
-            simApp.allTemplates.DiagramList.add(di);
-          }.bind(this));
-          localTemplates.StateList.forEach(function (st) {
-            simApp.allTemplates.StateList.add(st);
-          }.bind(this));
-          localTemplates.ActionList.forEach(function (a) {
-            simApp.allTemplates.ActionList.add(a);
-          }.bind(this));
-          localTemplates.EventList.forEach(function (e) {
-            simApp.allTemplates.EventList.add(e);
-          }.bind(this));
-        }.bind(this));
-      }.bind(this));
-
+    Sidebar.prototype.loadTemplates = function (templates) {
+      if (templates) {
+        templates.forEach((template) => {
+          this.addLocalTemplate(template);
+        });
+      }
     }
+    
     Sidebar.prototype.assignList = function (objList) {
       for (var propName in objList) {
         var item = objList[propName];
