@@ -49,6 +49,16 @@
                 <div style="display:table-cell">Type:</div>
                 <select style="display:table-cell;width: 130px;float:left" id="TypeOption" ng-model="diagramType" ng-options="dt.name for dt in diagramTypes" name="Type" ng-disabled="data.importedContent"></select>
             </div>
+            <div ng-if="showNewTypeEditor">
+                <div style="display:table-row">
+                    <label for="new-type-name">New type name:</label>
+                    <input id="new-type-name" ng-model="newType.label" />
+                </div>
+                <div style="display:table-row">
+                    <label for="new-type-category">New type category:</label>
+                    <select id="new-type-category" ng-model="newType.type" ng-options="category.value as category.label for category in typeCategories"></select>
+                </div>
+            </div>
             <div style="display:table-row">
                 <span style="display:table-cell">Name:</span> <input style="display:table-cell" id="Diagram_Name_Input" ng-model="name" tabindex="1" ng-disabled="data.importedContent">
             </div>

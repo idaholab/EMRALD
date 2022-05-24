@@ -3713,6 +3713,26 @@ if (typeof Navigation === 'undefined')
       return this.getLocalTemplates().find((template) => template.name === templateName);
     }
 
+    /**
+     * Collects a list of custom diagram types used in the project.
+     *
+     * @returns {EMRALD.DiagramType[]} The types used in the project.
+     */
+    Sidebar.prototype.getCustomDiagramTypes = function () {
+      const customTypes = [];
+      const customTypeLabels = ['Plant', 'Component', 'System'];
+      simApp.allDataModel.DiagramList.forEach((diagram) => {
+        if (customTypeLabels.indexOf(diagram.Diagram.diagramLabel) < 0) {
+          customTypes.push({
+            label: diagram.Diagram.diagramLabel,
+            type: diagram.Diagram.diagramType,
+          });
+          customTypeLabels.push(diagram.Diagram.diagramLabel);
+        }
+      });
+      return customTypes;
+    }
+
     Sidebar.prototype.addDiagramToSection = function (ol, item) {
       var sol = null;
 
