@@ -70,6 +70,9 @@ function saveProject() {
 function saveTemplate() {
   simApp.mainApp.saveTemplate();
 }
+function clearTemplates() {
+  localStorage.removeItem('templates');
+}
 
 //------------------
 //var deleteSimulationDone = false;
@@ -209,7 +212,7 @@ function mergeIntoCurrentProject() {
         var reader = new FileReader();
         reader.onload = function (evt) {
           var content = evt.target.result;
-          Navigation.Sidebar.prototype.beginMergeModel(JSON.parse(content));
+          Navigation.Sidebar.prototype.importDiagram(JSON.parse(content));
         }.bind(this);
         reader.readAsText(afile);
         break;
@@ -632,12 +635,26 @@ var simApp;
       diagramData.LogicNodeList = this.cloneDataModel(model.LogicNodeList);
       diagramData.VariableList = this.cloneDataModel(model.VariableList);
 
-      if (model.templates) {
-        diagramData.templates = model.templates.map((template) => this.cloneDataModel(template));
-      }
+      diagramData.templates = this.getTemplatesUsedInProject();
 
       return diagramData;
     }
+
+    /**
+     * Gets a list of the templates used in the project.
+     * 
+     * @returns {EMRALD.Model[]} - The templates used in the project.
+     */
+    SimApp.prototype.getTemplatesUsedInProject = function () {
+      const templateNames = [];
+      simApp.allDataModel.DiagramList.forEach((diagram) => {
+        if (diagram.diagramTemplate && diagram.diagramTemplate.length > 0) {
+          templateNames.push(diagram.diagramTemplate);
+        }
+      });
+      return templateNames.map((name) => simApp.mainApp.sidebar.getTemplateByName(name));
+    }
+
     //-------------------------
     SimApp.prototype.getCleanAllTemplateModel = function () {
       var model = simApp.allTemplates; //NOTE: 'this' <> simApp.
@@ -690,10 +707,7 @@ var simApp;
      * @param {EMRALD.Model} dataObj - The template to load.
      */
     SimApp.prototype.loadTemplate = function (dataObj) {
-      // Import the diagram
-      simApp.mainApp.sidebar.importDiagram(dataObj).then((importedContent) => {
-        simApp.mainApp.sidebar.addLocalTemplate(importedContent);
-      });
+      simApp.mainApp.sidebar.addLocalTemplate(dataObj);
     }
 
 

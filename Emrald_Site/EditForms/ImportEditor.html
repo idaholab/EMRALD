@@ -68,9 +68,10 @@
           <tr>
             <th>Type</th>
             <th>Lock</th>
+            <th>Old Name</th>
+            <th>Action</th>
             <th>Name</th>
             <th>Conflict</th>
-            <th>Action</th>
           </tr>
         </thead>
         <tbody>
@@ -79,6 +80,33 @@
             <td>
               <input type="checkbox" ng-model="entry.isLocked" id="{{'checkbox-' + $index}}" />
               <label for="{{'checkbox-' + $index}}"></label>
+            </td>
+            <td>{{entry.oldName}}</td>
+            <td>
+              <input
+                title="Ignore"
+                type="radio"
+                ng-model="entry.action"
+                value="ignore"
+                ng-change="checkEntryAction(entry)"
+              />
+              Ignore
+              <input
+                title="Replace"
+                type="radio"
+                ng-model="entry.action"
+                value="replace"
+                ng-change="checkEntryAction(entry)"
+              />
+              Replace
+              <input
+                title="Rename"
+                type="radio"
+                ng-model="entry.action"
+                value="rename"
+                ng-change="checkEntryAction(entry)"
+              />
+              Rename
             </td>
             <td>
               <input
@@ -89,29 +117,6 @@
             </td>
             <td>
               <div ng-if="entry.isConflicting" class="conflict">Conflicts!</div>
-            </td>
-            <td>
-              <input
-                type="radio"
-                ng-model="entry.action"
-                value="ignore"
-                ng-change="checkEntryAction(entry)"
-              />
-              Ignore
-              <input
-                type="radio"
-                ng-model="entry.action"
-                value="replace"
-                ng-change="checkEntryAction(entry)"
-              />
-              Replace
-              <input
-                type="radio"
-                ng-model="entry.action"
-                value="rename"
-                ng-change="checkEntryAction(entry)"
-              />
-              Rename
             </td>
           </tr>
         </tbody>

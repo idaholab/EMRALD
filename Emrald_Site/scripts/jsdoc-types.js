@@ -184,6 +184,12 @@
  */
 
 /**
+ * @typedef EMRALD.DiagramType
+ * @property {string} label - The diagram type label.
+ * @property {string} type - The diagram type category.
+ */
+
+/**
  * @namespace Navigation
  */
 

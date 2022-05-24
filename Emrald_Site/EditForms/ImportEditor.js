@@ -101,7 +101,7 @@ window.cast(window, w).OnLoad = (dataObj) => {
     scope.model = dataObj.model;
     scope.entries = [];
     Object.values(scope.model).forEach((value, i) => {
-      if (typeof value === 'object' && typeof value.length === 'number') {
+      if (Array.isArray(value)) {
         scope.entries = scope.entries.concat(
           value.map((v) => new Entry(v, dataObj.conflicts[i])),
         );
