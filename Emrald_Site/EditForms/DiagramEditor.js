@@ -232,11 +232,11 @@ diagramModule.controller('diagramController', function ($scope, $timeout) {
     $scope.name = "diagram1";
     $scope.desc = "new diagram";
     $scope.diagramTypes = [
-        { name: "Component", value: "dtComponent" },
-        { name: "System", value: "dtSystem" },
-        { name: "Plant Response", value: "dtPlant" },
-        { name: "Other", value: "dtOther" },
         { name: "Create new...", value: "newType" },
+        { name: "Plant Response", value: "dtPlant" },
+        { name: "System", value: "dtSystem" },
+        { name: "Component", value: "dtComponent" },
+        { name: "Other", value: "dtOther" },
     ];
     $scope.diagramTemplates = [];
     $scope.diagramTemplate = "";
@@ -245,7 +245,7 @@ diagramModule.controller('diagramController', function ($scope, $timeout) {
     $scope.changeDiagramTypeSidebarCallbackFunction = () => true;
     $scope.loading = true;
     $scope.initialChange = true;
-    $scope.diagramType = $scope.diagramTypes[0];
+    $scope.diagramType = $scope.diagramTypes[1];
     $scope.timeout = $timeout;
     $scope.createDiagram = false;
     $scope.data = {
