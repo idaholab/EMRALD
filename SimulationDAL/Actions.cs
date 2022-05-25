@@ -603,7 +603,7 @@ namespace SimulationDAL
         {
           if (!codeVariables.Contains((string)varName))
           {
-            if ((string)varName != "CurTime")
+            if (((string)varName != "CurTime") && ((string)varName != "RunIdx"))
             {
               SimVariable curVar = lists.allVariables.FindByName((string)varName, false);
               if (curVar == null)
@@ -630,6 +630,7 @@ namespace SimulationDAL
 
       //add the Time and 3D Frame variables
       scriptRunner.AddVariable("CurTime", typeof(double));
+      scriptRunner.AddVariable("RunIdx", typeof(double));
       scriptRunner.AddVariable("ExtSimStartTime", typeof(double));
 
       //add all the variables needed
@@ -643,7 +644,8 @@ namespace SimulationDAL
             throw new Exception("failed to compile " + this.name + " no variable named " + varName + " defined in the diagram.");
 
           if ((varName != "CurTime") &&
-              (varName != "ExtSimStartTime"))
+              (varName != "ExtSimStartTime") &&
+              (varName != "RunIdx"))
           {
             scriptRunner.AddVariable(varName, var.dType);
           }
@@ -763,7 +765,7 @@ namespace SimulationDAL
       return true;
     }
 
-    public void SetVal(SimVariable toSetVar, EmraldModel lists, TimeSpan curSimTime, TimeSpan start3DTime)
+    public void SetVal(SimVariable toSetVar, EmraldModel lists, TimeSpan curSimTime, TimeSpan start3DTime, int runIdx)
     {
       //if(this.simVar is TimeStateVariable)
       //{
@@ -782,6 +784,7 @@ namespace SimulationDAL
       }
 
       scriptRunner.SetVariable("CurTime", typeof(double), curSimTime.TotalHours);
+      scriptRunner.SetVariable("RunIdx", typeof(int), runIdx);
       scriptRunner.SetVariable("ExtSimStartTime", typeof(double), start3DTime.TotalHours);
 
       if (codeVariables != null)
@@ -850,7 +853,7 @@ namespace SimulationDAL
 
     //public TimeStateVariable SavedSlot() { return savedTime; }
 
-    public void SetVal(ref double toSet, EmraldModel lists, TimeSpan curSimTime, TimeSpan start3DTime)
+    public void SetVal(ref double toSet, EmraldModel lists, TimeSpan curSimTime, TimeSpan start3DTime, int runIdx)
     {
       if (!this.compiled)
       {
@@ -864,6 +867,7 @@ namespace SimulationDAL
       }
 
       scriptRunner.SetVariable("CurTime", typeof(double), curSimTime.TotalHours);
+      scriptRunner.SetVariable("RunIdx", typeof(int), runIdx);
       scriptRunner.SetVariable("ExtSimStartTime", typeof(double), start3DTime.TotalHours);
 
       if (codeVariables != null)
@@ -1070,6 +1074,7 @@ namespace SimulationDAL
 
       //add the Time and 3D Frame variables
       makeInputFileCompEval.AddVariable("CurTime", typeof(double));
+      makeInputFileCompEval.AddVariable("RunIdx", typeof(int));
       makeInputFileCompEval.AddVariable("ExePath", typeof(string));
 
       //add all the variables needed
@@ -1084,6 +1089,7 @@ namespace SimulationDAL
             throw new Exception("failed to compile " + this.name + " no variable named " + varName + " defined in the diagram.");
 
           if ((varName != "CurTime") &&
+              (varName != "RunIdx") &&
               (varName != "ExtSimStartTime"))
           {
             makeInputFileCompEval.AddVariable(varName, var.dType);
@@ -1127,6 +1133,7 @@ namespace SimulationDAL
 
       //add the Time and 3D Frame variables
       processOutputFileCompEval.AddVariable("CurTime", typeof(Double));
+      processOutputFileCompEval.AddVariable("RunIdx", typeof(int));
       processOutputFileCompEval.AddVariable("ExeExitCode", typeof(int));
 
       //add all the variables needed
@@ -1140,6 +1147,7 @@ namespace SimulationDAL
             throw new Exception("failed to compile " + this.name + " no variable named " + varName + " defined in the diagram.");
 
           if ((varName != "CurTime") &&
+              (varName != "RunIdx") &&
               (varName != "ExeExitCode"))
           {
             processOutputFileCompEval.AddVariable(varName, var.dType);
@@ -1227,6 +1235,7 @@ namespace SimulationDAL
         }
 
         makeInputFileCompEval.SetVariable("CurTime", typeof(double), curTime.TotalHours);
+        makeInputFileCompEval.SetVariable("RunIdx", typeof(int), lists.curRunIdx);
         makeInputFileCompEval.SetVariable("ExePath", typeof(string), Path.GetDirectoryName(exePath));        
       }
 
@@ -1317,6 +1326,7 @@ namespace SimulationDAL
       if (processOutputFileCompEval != null)
       {
         processOutputFileCompEval.SetVariable("CurTime", typeof(double), curTime.TotalHours);
+        processOutputFileCompEval.SetVariable("RunIdx", typeof(int), lists.curRunIdx);
         processOutputFileCompEval.SetVariable("ExeExitCode", typeof(int), exitCode);
         processOutputFileCompEval.SetVariable("outputFile", typeof(string), exeOutputPath + "\\_out.txt");
         //Set all the variable values

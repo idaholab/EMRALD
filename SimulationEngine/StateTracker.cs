@@ -272,7 +272,7 @@ namespace SimulationTracking
       return retBool;
     }
 
-    public List<ConditionMoveEvent> GetMatchedCondMoveEvents(ChangedIDs changedItems, /*Dictionary<int, SimEventType> lastEvTypes,*/ TimeSpan curTime, TimeSpan start3DTime, TimeSpan nextEvTime)
+    public List<ConditionMoveEvent> GetMatchedCondMoveEvents(ChangedIDs changedItems, /*Dictionary<int, SimEventType> lastEvTypes,*/ TimeSpan curTime, TimeSpan start3DTime, TimeSpan nextEvTime, int runIdx)
     {
       List<ConditionMoveEvent> retList = new List<ConditionMoveEvent>();
       if (curStates.Count == 0)
@@ -316,7 +316,7 @@ namespace SimulationTracking
             if (initialCondEvalDone.ContainsKey(item)) //initialCondEvalDone[item] == false) //make sure each event is evaluated to start off with, then only if the related items change.
             {
               if ((curIDType == EnModifiableTypes.mtVar) &&
-                  (item.eventData as CondBasedEvent).EventTriggered(curStatesBS, otherData, curTime, start3DTime, nextEvTime)) //see if the code is triggered
+                  (item.eventData as CondBasedEvent).EventTriggered(curStatesBS, otherData, curTime, start3DTime, nextEvTime, runIdx)) //see if the code is triggered
               {
                 retList.Add(item);
               }
@@ -324,7 +324,7 @@ namespace SimulationTracking
                        ((!(item.eventData is StateCngEvent)) ||
                        (((StateCngEvent)item.eventData).evalCurOnInitial) &&
                        (curStatesBS.HasCommonBits(item.relatedIDs))) &&
-                       (item.eventData as CondBasedEvent).EventTriggered(curStatesBS, otherData, curTime, start3DTime, nextEvTime))
+                       (item.eventData as CondBasedEvent).EventTriggered(curStatesBS, otherData, curTime, start3DTime, nextEvTime, runIdx))
               {
                 retList.Add(item);
               }
@@ -332,7 +332,7 @@ namespace SimulationTracking
             }
 
             else if ((item.relatedIDs != null) && (changedItems.HasApplicableItems(curIDType, item.relatedIDs)) &&
-               ((item.eventData as CondBasedEvent).EventTriggered(curStatesBS, otherData, curTime, start3DTime, nextEvTime)))
+               ((item.eventData as CondBasedEvent).EventTriggered(curStatesBS, otherData, curTime, start3DTime, nextEvTime, runIdx)))
             {
               retList.Add(item);
             }
@@ -1160,7 +1160,6 @@ namespace SimulationTracking
       tempVar = allLists.allVariables.FindByName("CurTime", false);
       if (tempVar == null)
       {
-
         allLists.allVariables.Add(new SimGlobVariable("CurTime", typeof(double), 0.0));
       }
       else
@@ -1214,6 +1213,7 @@ namespace SimulationTracking
     public List<int> StartTracker()
     {
       terminated = false;
+      this.allLists.curRunIdx++;
 
       //reset variables that are marked that way
       foreach (var v in this.allLists.allVariables)
@@ -1649,10 +1649,10 @@ namespace SimulationTracking
       TimeMoveEvent nextItem = timeEvList.LookNextTimedEvent();
       if (nextItem != null)
         //matchedEvs = condEvList.GetMatchedCondMoveEvents(this.changedItems, this.last3DVarEvType, curTime, sim3DStartTime, nextItem.time);
-        matchedEvs = condEvList.GetMatchedCondMoveEvents(this.changedItems, curTime, sim3DStartTime, nextItem.time);
+        matchedEvs = condEvList.GetMatchedCondMoveEvents(this.changedItems, curTime, sim3DStartTime, nextItem.time, this.allLists.curRunIdx);
       else
         //matchedEvs = condEvList.GetMatchedCondMoveEvents(this.changedItems, this.last3DVarEvType, curTime, sim3DStartTime, TimeSpan.FromHours(0));
-        matchedEvs = condEvList.GetMatchedCondMoveEvents(this.changedItems, curTime, sim3DStartTime, TimeSpan.FromHours(0));
+        matchedEvs = condEvList.GetMatchedCondMoveEvents(this.changedItems, curTime, sim3DStartTime, TimeSpan.FromHours(0), this.allLists.curRunIdx);
       this.processEventList.AddRange(matchedEvs);
       changedItems.Clear();
     }
@@ -1705,7 +1705,7 @@ namespace SimulationTracking
               throw new Exception("Failed to find variable for" + curVarAct.name + " in variable list.", e);
             }
 
-            curVarAct.SetVal(varItem, this.allLists, curTime, sim3DStartTime);
+            curVarAct.SetVal(varItem, this.allLists, curTime, sim3DStartTime, this.allLists.curRunIdx);
             //TODO : if this is a 3D var item and we are running a 3D simulation notify the 3D simulator of the change.
 
 
@@ -1766,7 +1766,7 @@ namespace SimulationTracking
             //else
             //{
             double temp = 0.0;
-            timeJumpAct.SetVal(ref temp, this.allLists, curTime, sim3DStartTime);
+            timeJumpAct.SetVal(ref temp, this.allLists, curTime, sim3DStartTime, this.allLists.curRunIdx);
             TimeSpan newTime = TimeSpan.FromHours(temp);
 
             if (newTime > curTime)
