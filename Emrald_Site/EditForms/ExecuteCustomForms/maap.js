@@ -484,8 +484,7 @@ module.controller('maapFormController', [
       }
       if (typeof raFormData.varLinks === 'object') {
         $scope.varLinks = raFormData.varLinks.map(
-          (varLink) =>
-            new VarLink(varLink.target, form.findVariable(varLink.variable)),
+          (varLink) => new VarLink(varLink.target, form.findVariable(varLink.variable)),
         );
       }
     }
@@ -553,6 +552,13 @@ module.controller('maapFormController', [
         let postParamChange = '';
         let initiators = '';
         let postInitiators = '';
+        /**
+         * Returns if a line is commented out.
+         *
+         * @param {string} line - The line to check.
+         * @returns {boolean} If the line is commented out.
+         */
+        const isCommented = (line) => /^C/.test(line) || /^\/\//.test(line);
         // TODO: process files with sections in a different order
         // TODO: use line numbers for the preprocessing code
         lines.forEach((fullLine) => {
@@ -581,10 +587,14 @@ module.controller('maapFormController', [
                 parameterChangeDone = true;
               } else {
                 paramChange += `${fullLine}\n`;
-                if (!/^C/.test(line)) {
-                  $scope.parameters.push(
-                    new Parameter(maapInpParser.parse(line)),
-                  );
+                if (!isCommented(line)) {
+                  try {
+                    $scope.parameters.push(
+                      new Parameter(maapInpParser.parse(line)),
+                    );
+                  } catch (err) {
+                    console.error(`Failed to parse ${line}`);
+                  }
                 }
               }
               break;
