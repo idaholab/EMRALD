@@ -624,6 +624,12 @@ namespace SimulationDAL
     protected bool _pathMustExist = true;
     protected object _dfltValue = null;
     protected string _docFullPath = "";
+    private VariableList _vars = null;
+
+    protected string linkStr()
+    {
+      return _linkStr;
+    }
 
     public DocVariable(DocType subType)
       : base()
@@ -695,7 +701,7 @@ namespace SimulationDAL
       this._linkStr = Convert.ToString(dynObj.docLink);
 
       bool retVal = base.DeserializeDerived((object)dynObj, false, lists, useGivenIDs);
-
+      this._vars = lists.allVariables;
       
       //must load everything in LoadObjLinks because the states must be loaded first so we have the IDs. 
       processed = true;
