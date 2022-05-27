@@ -559,10 +559,17 @@ module.controller('maapFormController', [
          * @returns {boolean} If the line is commented out.
          */
         const isCommented = (line) => /^C/.test(line) || /^\/\//.test(line);
+        /**
+         * Strips an inline comment from the end of the line.
+         *
+         * @param {string} line - The line to strip.
+         * @returns {string} The stripped line.
+         */
+        const stripInlineComment = (line) => line.replace(/\/\/.*/, '');
         // TODO: process files with sections in a different order
         // TODO: use line numbers for the preprocessing code
         lines.forEach((fullLine) => {
-          const line = trim(fullLine);
+          const line = trim(stripInlineComment(fullLine));
           if (!parameterChangeDone && (expects < 1 || expects > 2)) {
             preParamChange += `${fullLine}\n`;
           } else if (parameterChangeDone && !initiatorsDone && expects !== 3) {
@@ -604,6 +611,8 @@ module.controller('maapFormController', [
                 initiatorsDone = true;
               } else {
                 initiators += `${fullLine}\n`;
+                console.log(line);
+                console.log(parameterInfo);
                 $scope.initiators.push(new Initiator(parameterInfo[line]));
               }
               break;
@@ -621,7 +630,7 @@ module.controller('maapFormController', [
         let parameters = [];
         // TODO: make more efficient
         postInitiators.split(/\n/).forEach((l) => {
-          const line = trim(l);
+          const line = trim(stripInlineComment(l));
           switch (expects) {
             case 0:
               if (/^IF/.test(line)) {

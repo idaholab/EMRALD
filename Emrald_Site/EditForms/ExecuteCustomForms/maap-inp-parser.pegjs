@@ -5,10 +5,10 @@ start = name:variable " "* "=" " "* value:(number / variable) " "* .* {
     }
 }
 
-variable = name:[a-zA-Z]+ index:index? {
+variable = firstChar:[a-zA-Z] rest:[a-zA-Z0-9]+ index:index? {
 	return {
     	index,
-    	name: name.join(''),
+    	name: firstChar + rest.join(''),
         type: "variable",
     }
 }
