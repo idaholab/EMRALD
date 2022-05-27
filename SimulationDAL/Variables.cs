@@ -628,7 +628,36 @@ namespace SimulationDAL
 
     protected string linkStr()
     {
-      return _linkStr;
+      if (_vars == null)
+        return _linkStr;
+
+      //replace any variables in the string
+      string newStr = "";
+      //string remaining = _linkStr;
+      int lastIdx = 0;
+      for (int index = 0; ; index += 1)
+      {
+        index = _linkStr.IndexOf('%', index);
+        if (index == -1)
+        {
+          newStr += _linkStr.Substring(lastIdx, (_linkStr.Length - lastIdx));
+          break;
+        }
+        int end = 1;
+        while (Char.IsDigit(_linkStr[end + index]) || Char.IsLetter(_linkStr[end + index]) || (_linkStr[end + index] == '_'))
+          end++;
+        string varName = _linkStr.Substring(index, end).Trim('%');
+        SimVariable replVar = _vars.FindByName(varName, false);
+        if (replVar == null)
+          throw new Exception("Failed to find variable " + varName + " for document variable in " + this.name);
+
+        newStr += _linkStr.Substring(lastIdx, (index - lastIdx));
+        newStr += replVar.value.ToString();
+        index = index + end;
+        lastIdx = index;        
+      }
+
+      return newStr;
     }
 
     public DocVariable(DocType subType)
@@ -751,7 +780,7 @@ namespace SimulationDAL
       XmlDocument xDoc = new XmlDocument();
       xDoc.Load(_docFullPath);
       XmlElement pRoot = xDoc.DocumentElement;
-      XmlNodeList nodes = pRoot.SelectNodes(_linkStr);
+      XmlNodeList nodes = pRoot.SelectNodes(linkStr());
       XmlNode replNode = null;
       if ((nodes == null) || (nodes.Count == 0))
         throw new Exception("Path string found no items.");
@@ -790,7 +819,7 @@ namespace SimulationDAL
       XmlDocument xDoc = new XmlDocument();
       xDoc.Load(_docFullPath);
       XmlElement pRoot = xDoc.DocumentElement;
-      XmlNodeList nodes = pRoot.SelectNodes(_linkStr);
+      XmlNodeList nodes = pRoot.SelectNodes(linkStr());
       if ((nodes == null) || (nodes.Count == 0))
       {
         if(_dfltValue == null)
@@ -862,10 +891,10 @@ namespace SimulationDAL
       sr.Close();
       //update the document
       JObject fullObj = JObject.Parse(test);
-      var modItems = fullObj.SelectTokens(_linkStr);
+      var modItems = fullObj.SelectTokens(linkStr());
       if (modItems == null)
-        throw new Exception("Failed to locate document reference - " + _linkStr);
-      modItems = JsonExtensions.ReplacePath(fullObj, _linkStr, newValue);
+        throw new Exception("Failed to locate document reference - " + linkStr());
+      modItems = JsonExtensions.ReplacePath(fullObj, linkStr(), newValue);
 
       //update the json file with the change
       using (StreamWriter file = File.CreateText(_docFullPath))
@@ -885,7 +914,7 @@ namespace SimulationDAL
       
       string fileStr = File.ReadAllText(_docFullPath);
       JObject fullObj = JObject.Parse(fileStr);
-      JToken modItem = fullObj.SelectToken(_linkStr);
+      JToken modItem = fullObj.SelectToken(linkStr());
       if(modItem == null)
       {
         if (_dfltValue == null)
@@ -970,14 +999,14 @@ namespace SimulationDAL
     public override void SetValue(object newValue)
     {
       _value = newValue;
-      Regex rx = new Regex(_linkStr, RegexOptions.Compiled | RegexOptions.IgnoreCase);
+      Regex rx = new Regex(linkStr(), RegexOptions.Compiled | RegexOptions.IgnoreCase);
       string docTxt = File.ReadAllText(_docFullPath);
       // Find matches.
       MatchCollection matches = rx.Matches(docTxt);
 
       if (matches.Count < 0)
       {
-        throw new Exception("Failed to find RegEx - " + _linkStr + " in file - " + _docFullPath);
+        throw new Exception("Failed to find RegEx - " + linkStr() + " in file - " + _docFullPath);
       }
 
       try
@@ -1037,7 +1066,7 @@ namespace SimulationDAL
 
     public override object GetValue()
     {
-      Regex rx = new Regex(_linkStr, RegexOptions.Compiled | RegexOptions.IgnoreCase);
+      Regex rx = new Regex(linkStr(), RegexOptions.Compiled | RegexOptions.IgnoreCase);
       if (!File.Exists(_docFullPath) && !_pathMustExist)
       {
         return this._dfltValue;
@@ -1049,7 +1078,7 @@ namespace SimulationDAL
       if (matches.Count <= 0)
       {
         if (_dfltValue == null)
-          throw new Exception("Failed to find RegEx - " + _linkStr + " in file - " + _docFullPath);
+          throw new Exception("Failed to find RegEx - " + linkStr() + " in file - " + _docFullPath);
         else
           return Convert.ChangeType(_dfltValue, dType);
       }
