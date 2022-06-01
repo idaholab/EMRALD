@@ -735,7 +735,6 @@ EEApp.controller("EEController", function ($scope) {
     const sidebar = parentWindow.simApp.mainApp.sidebar;
     $scope.getVarMap = function () {
       const varMap = [...$scope.varMap];
-      console.log($scope.varNames);
       if (
         $scope.typeOption.value === 'etVarCond' ||
         $scope.typeOption.value === 'et3dSimEv'
