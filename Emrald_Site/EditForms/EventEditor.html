@@ -74,7 +74,7 @@
 
                         <table id="tblVariables" style="text-align: left; width: 200px;" border="1" cellspacing="0">
                             <tr><td></td><td><b>Variables used in code</b></td></tr>
-                            <tr ng-repeat="row in varMap">
+                            <tr ng-repeat="row in varMapNew">
                                 <td sstyle="border: none;height:15px;"><input type="checkbox" onchange="variableChecked(this);" ng-true-value=true ng-false-value=false ng-checked={{row.check}} value={{row.value}} /></td>
                                 <td sstyle="border: none;height:15px;">{{row.value.name}}</td>
                             </tr>
@@ -93,7 +93,7 @@
 
                         <table id="tblVariables" style="text-align: left; width: 200px;" border="1" cellspacing="0">
                             <tr><td></td><td><b>Variables used in code</b></td></tr>
-                            <tr ng-repeat="row in varMap">
+                            <tr ng-repeat="row in varMapNew">
                                 <td sstyle="border: none;height:15px;"><input type="checkbox" onchange="variableChecked(this);" ng-true-value=true ng-false-value=false ng-checked={{row.check}} value={{row.value}} /></td>
                                 <td sstyle="border: none;height:15px;">{{row.value.name}}</td>
                             </tr>

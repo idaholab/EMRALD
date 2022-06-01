@@ -1,4 +1,8 @@
-﻿// Copyright 2021 Battelle Energy Alliance
+﻿/**
+ * @file Action Editor logic.
+ * @copyright 2021 Battelle Energy Alliance
+ */
+// @ts-check
 
 function setAsNewChecked() {
     var scope = angular.element(document.querySelector('#actionControllerPanel')).scope();
@@ -325,6 +329,7 @@ function OnLoad(dataObj) {
         if (actionData.id > 0) {
             actTypeEl.disabled = true;
         }
+        scope.getVarMap();
     });
 
     var transitionPanel = document.getElementById('TransitionPanel');
@@ -547,7 +552,7 @@ actionModule.controller('actionController', ['$scope', function ($scope) {
         cvVariables: [],
         cvVariable: null,
         cvCode: '',
-        varMap: new Map(),
+        varMap: [],
 
         simMessages: [
             { name: 'Comp Modify', value: 'atCompModify' },
@@ -591,6 +596,7 @@ actionModule.controller('actionController', ['$scope', function ($scope) {
     $scope.varNames = [];
     $scope.mutExcl = true;
     $scope.saveAsNew = false;
+    $scope.varMap = [];
 
     $scope.namingPatterns = [];
 
@@ -598,9 +604,45 @@ actionModule.controller('actionController', ['$scope', function ($scope) {
         return jsonPath(row, path);
     }
 
+    const parentWindow = window.frameElement.ownerDocument.defaultView;
+    const sidebar = parentWindow.simApp.mainApp.sidebar;
+    $scope.getVarMap = function () {
+      const varMap = [...$scope.data.varMap];
+      if (
+        $scope.data.action.value === 'atRunExtApp' ||
+        $scope.data.action.value === 'atCngVarVal'
+      ) {
+        varMap.push({
+          check: $scope.varNames.indexOf('CurTime') > -1,
+          value: sidebar.persistentVariables.CurTime,
+        });
+        varMap.push({
+          check: $scope.varNames.indexOf('RunIdx') > -1,
+          value: sidebar.persistentVariables.RunIdx,
+        });
+        if ($scope.data.action.value === 'atRunExtApp') {
+          varMap.push({
+            check: $scope.varNames.indexOf('ExePath') > -1,
+            value: sidebar.persistentVariables.ExePath,
+          });
+          varMap.push({
+            check: $scope.varNames.indexOf('ExeExitCode') > -1,
+            value: sidebar.persistentVariables.ExeExitCode,
+          });
+        }
+      }
+      $scope.varMap = varMap;
+    };
+
     $scope.$watch('name', function (newV, oldV) { if (newV !== oldV) somethingChanged(); });
     $scope.$watch('desc', function (newV, oldV) { if (newV !== oldV) somethingChanged(); });
-    $scope.$watch('data.action', function (newV, oldV) { if (newV !== oldV) { somethingChanged(); updateName(); } });
+    $scope.$watch('data.action', function (newV, oldV) {
+      if (newV !== oldV) {
+        somethingChanged();
+        updateName();
+        $scope.getVarMap();
+      }
+    });
     $scope.$watch('data.transitions', function (newV, oldV) { if (newV !== oldV) somethingChanged(); });
     $scope.$watch('data.cvCode', function (newV, oldV) { if (newV !== oldV) somethingChanged(); });
     $scope.$watch('data.cvVariable', function (newV, oldV) { if (newV !== oldV) somethingChanged(); });

@@ -1,4 +1,5 @@
 ﻿// Copyright 2021 Battelle Energy Alliance
+// @ts-check
 
 function setAsNewChecked() {
     var scope = angular.element(document.querySelector('#EEControllerPanel')).scope();
@@ -488,6 +489,7 @@ function OnLoad(dataObj) {
                     break;
             }
         }
+        scope.getVarMap();
     });
     handleSelection();
 
@@ -681,7 +683,8 @@ EEApp.controller("EEController", function ($scope) {
     //var Condition
     $scope.conditionCode = "";
     $scope.var3DCode = "";
-    $scope.varMap = new Map();
+    $scope.varMap = [];
+    $scope.varMapNew = [];
     $scope.varNames = [];
 
     //3D Sim
@@ -728,9 +731,36 @@ EEApp.controller("EEController", function ($scope) {
     $scope.wdScale = 0.0;
     $scope.saveAsNew = false;
 
+    const parentWindow = window.frameElement.ownerDocument.defaultView;
+    const sidebar = parentWindow.simApp.mainApp.sidebar;
+    $scope.getVarMap = function () {
+      const varMap = [...$scope.varMap];
+      console.log($scope.varNames);
+      if (
+        $scope.typeOption.value === 'etVarCond' ||
+        $scope.typeOption.value === 'et3dSimEv'
+      ) {
+        varMap.push({
+          check: $scope.varNames.indexOf('CurTime') > -1,
+          value: sidebar.persistentVariables.CurTime.Variable,
+        });
+        varMap.push({
+          check: $scope.varNames.indexOf('RunIdx') > -1,
+          value: sidebar.persistentVariables.RunIdx.Variable,
+        });
+      }
+      $scope.varMapNew = varMap;
+    };
+
     $scope.$watch("name", function (newVal, oldVal) { if (newVal !== oldVal) somethingChanged(); });
     $scope.$watch("desc", function (newVal, oldVal) { if (newVal !== oldVal) somethingChanged(); });
-    $scope.$watch("typeOption", function (newV, oldV) { if (newV !== oldV) { somethingChanged(); updateName(); } });
+    $scope.$watch('typeOption', function (newV, oldV) {
+      if (newV !== oldV) {
+        somethingChanged();
+        updateName();
+        $scope.getVarMap();
+      }
+    });
     $scope.$watch("moveFromCurrent", function (newVal, oldVal) { if (newVal !== oldVal) somethingChanged(); });
     $scope.$watch("conditionCode", function (newVal, oldVal) { if (newVal !== oldVal) somethingChanged(); });
     $scope.$watch("typeOption", function (newVal, oldVal) { if (newVal !== oldVal) somethingChanged(); });

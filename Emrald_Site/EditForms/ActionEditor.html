@@ -128,7 +128,7 @@
                             <tr>
                                 <th colspan="2">Variables used in code</th>
                             </tr>
-                            <tr ng-repeat="row in data.varMap">
+                            <tr ng-repeat="row in varMap">
                                 <td style="border: 1px solid #dddddd; text-align: left; padding: 0px;"><input id="{{'varId_' + row.value.Variable.name}}" type="checkbox" onchange="variableChecked(this);" ng-true-value=true ng-false-value=false ng-checked={{row.check}} value={{row.value}} /></td>
                                 <td style="border: 1px solid #dddddd; text-align: left; padding: 0px;"><label for="{{'varId_' + row.value.Variable.name}}" style="display:block">{{row.value.Variable.name}}</label></td>
                             </tr>
@@ -226,7 +226,7 @@
                             <tr>
                                 <th colspan="2">Variables used in code</th>
                             </tr>
-                            <tr ng-repeat="row in data.varMap">
+                            <tr ng-repeat="row in varMap">
                                 <td style="border: 1px solid #dddddd; text-align: left; padding: 0px;"><input id="{{'varId_' + row.value.Variable.name}}" type="checkbox" onchange="variableChecked(this);" ng-true-value=true ng-false-value=false ng-checked={{row.check}} value={{row.value}} /></td>
                                 <td style="border: 1px solid #dddddd; text-align: left; padding: 0px;"><label for="{{'varId_' + row.value.Variable.name}}" style="display:block">{{row.value.Variable.name}}</label></td>
                             </tr>
