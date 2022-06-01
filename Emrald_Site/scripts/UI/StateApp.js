@@ -1616,9 +1616,11 @@ var StateApp = (function (global, _super) {
             function (evt) {
               this.reloadDiagram();
             }.bind(this));
+            /*
             menu.addItem("Paste diagram", null, (evt) => {
               this.pasteDiagram();
             });
+            */
         }
         menu.addItem(mName + "Properties...", null,
           function () {
