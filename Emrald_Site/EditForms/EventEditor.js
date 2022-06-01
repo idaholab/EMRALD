@@ -565,7 +565,14 @@ function GetDataObject() {
             break;
         case "etDistribution":
             dataObj.distType = scope.distType.value;
-            dataObj.parameters = scope.distParameters;
+            // Remove variable property from parameters not using variables.
+            const distParameters = scope.distParameters;
+            distParameters.forEach((p, i) => {
+                if (!p.useVariable) {
+                    delete distParameters[i].variable;
+                }
+            });
+            dataObj.parameters = distParameters;
             dataObj.dfltTimeRate = scope.dfltTimeRate;
             if (scope.onVarChange) {
                 dataObj.onVarChange = scope.onVarChange.value;

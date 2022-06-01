@@ -3094,6 +3094,14 @@ if (typeof Navigation === 'undefined')
                       cur.time = del ? null : (replaceName !== null ? replaceName : name);
                   }
               }
+              // Distribution events
+              if (cur.parameters && Array.isArray(cur.parameters)) {
+                cur.parameters.forEach((parameter, i) => {
+                  if (parameter.useVariable && parameter.variable === name) {
+                    cur.parameters[i].variable = replaceName;
+                  }
+                });
+              }
               break;
             case "State":
               //etStateCng
