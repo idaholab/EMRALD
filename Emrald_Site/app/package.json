@@ -1,0 +1,8 @@
+{
+  "name": "emrald-ui",
+  "version": "1.0.0",
+  "description": "A standalone instance of the EMRALD site UI.",
+  "main": "index.js",
+  "author": "",
+  "license": "MIT"
+}
