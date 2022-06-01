@@ -630,7 +630,7 @@ namespace SimulationDAL
 
       //add the Time and 3D Frame variables
       scriptRunner.AddVariable("CurTime", typeof(double));
-      scriptRunner.AddVariable("RunIdx", typeof(double));
+      scriptRunner.AddVariable("RunIdx", typeof(int));
       scriptRunner.AddVariable("ExtSimStartTime", typeof(double));
 
       //add all the variables needed

@@ -660,6 +660,10 @@ namespace SimulationDAL
       return newStr;
     }
 
+    //params to see if we need to update the value or not on reading data
+    protected DateTime _timestamp = DateTime.MinValue; //timestamp of doc file
+    protected string _oldLinkStr = ""; //To see if link string has changed 
+
     public DocVariable(DocType subType)
       : base()
     {
@@ -816,31 +820,54 @@ namespace SimulationDAL
       {
         return this._dfltValue;
       }
+
+      //if not changed return the previous value
+      DateTime curTimestamp = File.GetCreationTime(_docFullPath);
+      string curLinkStr = linkStr();
+      if ((curTimestamp == _timestamp) && (_oldLinkStr == curLinkStr))
+        return this._value;
+
+
+      //value new so save timestamp and lookup new value
+      _timestamp = File.GetCreationTime(_docFullPath);
+      _oldLinkStr = curLinkStr;
       XmlDocument xDoc = new XmlDocument();
       xDoc.Load(_docFullPath);
       XmlElement pRoot = xDoc.DocumentElement;
-      XmlNodeList nodes = pRoot.SelectNodes(linkStr());
+      XmlNodeList nodes = pRoot.SelectNodes(curLinkStr);
       if ((nodes == null) || (nodes.Count == 0))
       {
-        if(_dfltValue == null)
+        if (_dfltValue == null)
           throw new Exception("Path string found no items.");
         else
-          return Convert.ChangeType(_dfltValue, dType);
+        {
+          _value = Convert.ChangeType(_dfltValue, dType);
+          return _value;
+        }
+          
       }
       if (nodes.Count == 1)
       {
         switch (nodes[0].NodeType)
         {
           case XmlNodeType.Attribute:
-            return Convert.ChangeType(nodes[0].Value, dType);
+            {
+              _value = Convert.ChangeType(nodes[0].Value, dType);
+              return _value;
+            } 
           case XmlNodeType.Text:
-            return Convert.ChangeType(nodes[0].InnerText, dType);
+            {
+              _value = Convert.ChangeType(nodes[0].InnerText, dType);
+              return _value;
+            }
           default:
             if (this.dType != typeof(string))
             {
               throw new Exception("Variable type to match to a XML object must be a String");
             }
-            return nodes[0].OuterXml;
+
+            _value = nodes[0].OuterXml;
+            return _value;
         }
       }
       else //more than one, only allow text
@@ -876,7 +903,6 @@ namespace SimulationDAL
     }
   }
 
-
   public class JSONDocVariable : DocVariable
   {
     public JSONDocVariable()
@@ -911,16 +937,29 @@ namespace SimulationDAL
       {
         return this._dfltValue;
       }
-      
+
+      //if not changed return the previous value
+      DateTime curTimestamp = File.GetCreationTime(_docFullPath);
+      string curLinkStr = linkStr();
+      if ((curTimestamp == _timestamp) && (_oldLinkStr == curLinkStr))
+        return this._value;
+
+
+      //value new so save timestamp and lookup new value
+      _timestamp = File.GetCreationTime(_docFullPath);
+      _oldLinkStr = curLinkStr;
       string fileStr = File.ReadAllText(_docFullPath);
       JObject fullObj = JObject.Parse(fileStr);
-      JToken modItem = fullObj.SelectToken(linkStr());
+      JToken modItem = fullObj.SelectToken(curLinkStr);
       if(modItem == null)
       {
         if (_dfltValue == null)
           throw new Exception("Path string found no items.");
         else
-          return Convert.ChangeType(_dfltValue, dType);
+        {
+          _value = Convert.ChangeType(_dfltValue, dType);
+          return _value;
+        }
       }
       else if (modItem.Type == JTokenType.Object)
       {
@@ -928,11 +967,14 @@ namespace SimulationDAL
         {
           throw new Exception("Variable type to match to a JSON object must be a String");
         }
-        return modItem.ToString();
+        
+        _value = modItem.ToString();
+        return _value; 
       }
       else
       {
-        return modItem.ToObject(dType);
+        _value = modItem.ToObject(dType);
+        return _value;
       }
     }
   }
@@ -1071,6 +1113,17 @@ namespace SimulationDAL
       {
         return this._dfltValue;
       }
+
+      //if not changed return the previous value
+      DateTime curTimestamp = File.GetCreationTime(_docFullPath);
+      string curLinkStr = linkStr();
+      if ((curTimestamp == _timestamp) && (_oldLinkStr == curLinkStr))
+        return this._value;
+
+
+      //value new so save timestamp and lookup new value
+      _timestamp = File.GetCreationTime(_docFullPath);
+      _oldLinkStr = curLinkStr;
       string docTxt = File.ReadAllText(_docFullPath);
       // Find matches.
       MatchCollection matches = rx.Matches(docTxt);
@@ -1078,9 +1131,12 @@ namespace SimulationDAL
       if (matches.Count <= 0)
       {
         if (_dfltValue == null)
-          throw new Exception("Failed to find RegEx - " + linkStr() + " in file - " + _docFullPath);
+          throw new Exception("Failed to find RegEx - " + curLinkStr + " in file - " + _docFullPath);
         else
-          return Convert.ChangeType(_dfltValue, dType);
+        {
+          _value = Convert.ChangeType(_dfltValue, dType);
+          return _value;
+        }
       }
       string foundTxt = matches[0].Value;
       try
@@ -1106,8 +1162,9 @@ namespace SimulationDAL
             foundTxt = foundTxt.Substring(_begPosition, cnt);
           }
         }
-
-        return Convert.ChangeType(foundTxt, dType);
+        
+        _value = Convert.ChangeType(foundTxt, dType);
+        return _value;
       }
       catch
       {
