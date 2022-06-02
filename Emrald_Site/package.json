@@ -1,0 +1,27 @@
+{
+  "name": "emrald_site",
+  "version": "1.0.0",
+  "description": "The EMRALD HTML UI.",
+  "main": "Help.js",
+  "private": true,
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "npx jest"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "jest": "^28.1.0",
+    "jest-extended": "^2.0.0"
+  },
+  "devDependencies": {
+    "@types/jest": "^28.1.0",
+    "@types/node": "^17.0.38"
+  },
+  "jest": {
+    "setupFilesAfterEnv": [
+      "./tests/setup.js"
+    ]
+  }
+}
