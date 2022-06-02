@@ -65,6 +65,7 @@ test('classNameOf', () => {
   expect(Common.classNameOf(new Map())).toBe('Map');
 });
 
+/*
 test('getServerFile', () => new Promise((resolve) => {
   Common.getServerFile(
     'tests/test-data/ActionsReferencing.json',
@@ -74,6 +75,7 @@ test('getServerFile', () => new Promise((resolve) => {
     },
   );
 }));
+*/
 
 test('deepClone', () => {
   expect(Common.deepClone(null)).toBeNull();

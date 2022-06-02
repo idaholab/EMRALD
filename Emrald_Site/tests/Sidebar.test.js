@@ -33,7 +33,7 @@ const { Sidebar } = Navigation;
 const sidebar = new Sidebar();
 
 test('eventsReferencing', async () => {
-  const model = await readTestData('EventsReferencing');
+  const model = await readTestData('TestProject');
 
   expect(
     names(sidebar.eventsReferencing(model, 'State1', 'State')),
@@ -52,10 +52,18 @@ test('eventsReferencing', async () => {
   expect(
     names(sidebar.eventsReferencing(model, 'Str_', 'Variable')),
   ).toIncludeAllMembers(['TestExtSim']);
+  expect(
+    names(sidebar.eventsReferencing(model, 'TestComponentLogic', 'Event')),
+  ).toIncludeAllMembers(['TestComponentLogic']);
+  /*
+  expect(
+    names(sidebar.eventsReferencing(model, 'ExtSim1', 'ExtSim')),
+  ).toIncludeAllMembers(['TestExtSim']);
+  */
 });
 
 test('actionsReferencing', async () => {
-  const model = await readTestData('ActionsReferencing');
+  const model = await readTestData('TestProject');
 
   // Getting references
   expect(
@@ -66,9 +74,9 @@ test('actionsReferencing', async () => {
   ).toIncludeAllMembers(['TestTransition', 'TestCngVar', 'TestOpenErrorPro']);
   expect(
     names(sidebar.actionsReferencing(model, 'Bool_', 'Variable')),
-  ).toIncludeAllMembers(['TestCngVar', 'TestRunApp1']);
+  ).toIncludeAllMembers(['TestCngVar', 'TestRunApp']);
   expect(
-    names(sidebar.actionsReferencing(model, 'Str_', 'Variable')),
+    names(sidebar.actionsReferencing(model, 'Str_3', 'Variable')),
   ).toIncludeAllMembers(['TestExtSim']);
   expect(
     names(sidebar.actionsReferencing(model, 'Str_2', 'Variable')),
@@ -79,18 +87,56 @@ test('actionsReferencing', async () => {
 });
 
 test('statesReferencing', async () => {
-  const model = await readTestData('StatesReferencing');
+  const model = await readTestData('TestProject');
 
   expect(
-    names(sidebar.statesReferencing(model, 'Event1', 'Event')),
+    names(sidebar.statesReferencing(model, 'TestStateChange', 'Event')),
+  ).toIncludeAllMembers(['State2']);
+  expect(
+    names(sidebar.statesReferencing(model, 'TestTransition', 'Action')),
   ).toIncludeAllMembers(['State1']);
   expect(
-    names(sidebar.statesReferencing(model, 'Action1', 'Action')),
-  ).toIncludeAllMembers(['State1']);
-  expect(
-    names(sidebar.statesReferencing(model, 'Action2', 'Action')),
-  ).toIncludeAllMembers(['State1']);
+    names(sidebar.statesReferencing(model, 'Goto_Action2', 'Action')),
+  ).toIncludeAllMembers(['State2']);
   expect(
     names(sidebar.statesReferencing(model, 'Main', 'Diagram')),
   ).toIncludeAllMembers(['State1', 'State2']);
+});
+
+test('diagramsReferencing', async () => {
+  const model = await readTestData('TestProject');
+
+  expect(
+    names(sidebar.diagramsReferencing(model, 'State1', 'State')),
+  ).toIncludeAllMembers(['Main']);
+  expect(
+    names(sidebar.diagramsReferencing(model, 'State2', 'State')),
+  ).toIncludeAllMembers(['Main']);
+});
+
+test('logicNodesReferencing', async () => {
+  const model = await readTestData('TestProject');
+
+  expect(
+    names(sidebar.logicNodesReferencing(model, 'Component', 'Diagram')),
+  ).toIncludeAllMembers(['LogicTree1']);
+  expect(
+    names(sidebar.logicNodesReferencing(model, 'LogicTree1', 'LogicTree')),
+  ).toIncludeAllMembers(['gate_2']);
+});
+
+test('variableReferencing', async () => {
+  const model = await readTestData('TestProject');
+
+  expect(
+    names(sidebar.variableReferencing(model, 'State3', 'State')),
+  ).toIncludeAllMembers(['TestAccrual']);
+});
+
+test('extSimsReferencing', async () => {
+  const model = await readTestData('TestProject');
+
+  expect(
+    names(sidebar.extSimsReferencing(model, 'ExtSim1', 'ExtSim')),
+  ).toIncludeAllMembers(['ExtSim1']);
 });
