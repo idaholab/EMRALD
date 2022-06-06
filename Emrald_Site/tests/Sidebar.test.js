@@ -675,3 +675,26 @@ describe('extSimsReferencing', () => {
     expect(sidebar.getExtSimByName(model, 'ExtSim1_')).not.toBeNull();
   });
 });
+
+test('exportDiagramTest', async () => {
+  const model = await readTestData('ExportDiagramTest');
+
+  const exported = sidebar.exportDiagram(
+    model.DiagramList.find((d) => d.Diagram.name === 'TemplateDiagram').Diagram,
+    model,
+  );
+
+  expect(exported.StateList.length).toBe(1);
+  expect(exported.StateList[0].State.name).toBe('State3');
+  expect(exported.EventList.length).toBe(1);
+  expect(exported.EventList[0].Event.name).toBe('new event');
+  expect(exported.LogicNodeList.length).toBe(1);
+  expect(exported.LogicNodeList[0].LogicNode.name).toBe('LogicTree1');
+  expect(exported.DiagramList.length).toBe(2);
+  expect(exported.DiagramList.map((d) => d.Diagram.name)).toIncludeAllMembers([
+    'LogicComponent',
+    'TemplateDiagram',
+  ]);
+});
+
+// TODO: Test uses of functions I changed
