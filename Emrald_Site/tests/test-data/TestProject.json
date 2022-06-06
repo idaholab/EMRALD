@@ -157,6 +157,100 @@
             "varProb": "Int_",
             "failDesc": ""
           }
+        ],
+        "tempVariableList": [
+          {
+            "Variable": {
+              "id": 1,
+              "name": "Int_",
+              "desc": "",
+              "varScope": "gtGlobal",
+              "value": 0,
+              "resetOnRuns": true,
+              "type": "int"
+            }
+          },
+          {
+            "Variable": {
+              "id": 2,
+              "name": "Str_",
+              "desc": "",
+              "varScope": "gtGlobal",
+              "value": "",
+              "resetOnRuns": true,
+              "type": "string"
+            }
+          },
+          {
+            "Variable": {
+              "id": 3,
+              "name": "Bool_",
+              "desc": "",
+              "varScope": "gtGlobal",
+              "value": true,
+              "resetOnRuns": true,
+              "type": "bool"
+            }
+          },
+          {
+            "Variable": {
+              "id": 4,
+              "name": "Str_2",
+              "desc": "",
+              "varScope": "gtDocLink",
+              "value": "",
+              "docLink": "$.output[0].result",
+              "docType": "dtJSON",
+              "docPath": "results.json",
+              "pathMustExist": false,
+              "type": "double"
+            }
+          },
+          {
+            "Variable": {
+              "id": 5,
+              "name": "Str_3",
+              "desc": "",
+              "varScope": "gt3DSim",
+              "value": "",
+              "resetOnRuns": true,
+              "type": "string",
+              "sim3DId": "Str_3"
+            }
+          },
+          {
+            "Variable": {
+              "id": 6,
+              "name": "TestAccrual",
+              "desc": "",
+              "varScope": "gtAccrual",
+              "value": 0,
+              "accrualStatesData": [
+                {
+                  "stateName": "State3",
+                  "type": "ctMultiplier",
+                  "accrualMult": 1,
+                  "multRate": "trHours",
+                  "accrualTable": [],
+                  "$$hashKey": "008"
+                }
+              ],
+              "type": "double"
+            }
+          }
+        ],
+        "tempExtSimList": [
+          {
+            "ExtSim": {
+              "id": 1,
+              "name": "ExtSim1",
+              "resourceName": "Google Chrome",
+              "modelRef": "",
+              "states": [],
+              "configData": "",
+              "simMaxTime": ""
+            }
+          }
         ]
       }
     },
@@ -169,10 +263,104 @@
         "mainItem": false,
         "mutExcl": true,
         "newStates": [],
-        "scriptCode": "",
+        "scriptCode": "Bool_",
         "variableName": "Int_",
         "codeVariables": [
           "Bool_"
+        ],
+        "tempVariableList": [
+          {
+            "Variable": {
+              "id": 1,
+              "name": "Int_",
+              "desc": "",
+              "varScope": "gtGlobal",
+              "value": 0,
+              "resetOnRuns": true,
+              "type": "int"
+            }
+          },
+          {
+            "Variable": {
+              "id": 2,
+              "name": "Str_",
+              "desc": "",
+              "varScope": "gtGlobal",
+              "value": "",
+              "resetOnRuns": true,
+              "type": "string"
+            }
+          },
+          {
+            "Variable": {
+              "id": 3,
+              "name": "Bool_",
+              "desc": "",
+              "varScope": "gtGlobal",
+              "value": true,
+              "resetOnRuns": true,
+              "type": "bool"
+            }
+          },
+          {
+            "Variable": {
+              "id": 4,
+              "name": "Str_2",
+              "desc": "",
+              "varScope": "gtDocLink",
+              "value": "",
+              "docLink": "$.output[0].result",
+              "docType": "dtJSON",
+              "docPath": "results.json",
+              "pathMustExist": false,
+              "type": "double"
+            }
+          },
+          {
+            "Variable": {
+              "id": 5,
+              "name": "Str_3",
+              "desc": "",
+              "varScope": "gt3DSim",
+              "value": "",
+              "resetOnRuns": true,
+              "type": "string",
+              "sim3DId": "Str_3"
+            }
+          },
+          {
+            "Variable": {
+              "id": 6,
+              "name": "TestAccrual",
+              "desc": "",
+              "varScope": "gtAccrual",
+              "value": 0,
+              "accrualStatesData": [
+                {
+                  "stateName": "State3",
+                  "type": "ctMultiplier",
+                  "accrualMult": 1,
+                  "multRate": "trHours",
+                  "accrualTable": [],
+                  "$$hashKey": "008"
+                }
+              ],
+              "type": "double"
+            }
+          }
+        ],
+        "tempExtSimList": [
+          {
+            "ExtSim": {
+              "id": 1,
+              "name": "ExtSim1",
+              "resourceName": "Google Chrome",
+              "modelRef": "",
+              "states": [],
+              "configData": "",
+              "simMaxTime": ""
+            }
+          }
         ]
       }
     },
@@ -226,6 +414,100 @@
             "pathMustExist": false,
             "type": "double"
           }
+        ],
+        "tempVariableList": [
+          {
+            "Variable": {
+              "id": 1,
+              "name": "Int_",
+              "desc": "",
+              "varScope": "gtGlobal",
+              "value": 0,
+              "resetOnRuns": true,
+              "type": "int"
+            }
+          },
+          {
+            "Variable": {
+              "id": 2,
+              "name": "Str_",
+              "desc": "",
+              "varScope": "gtGlobal",
+              "value": "",
+              "resetOnRuns": true,
+              "type": "string"
+            }
+          },
+          {
+            "Variable": {
+              "id": 3,
+              "name": "Bool_",
+              "desc": "",
+              "varScope": "gtGlobal",
+              "value": true,
+              "resetOnRuns": true,
+              "type": "bool"
+            }
+          },
+          {
+            "Variable": {
+              "id": 4,
+              "name": "Str_2",
+              "desc": "",
+              "varScope": "gtDocLink",
+              "value": "",
+              "docLink": "$.output[0].result",
+              "docType": "dtJSON",
+              "docPath": "results.json",
+              "pathMustExist": false,
+              "type": "double"
+            }
+          },
+          {
+            "Variable": {
+              "id": 5,
+              "name": "Str_3",
+              "desc": "",
+              "varScope": "gt3DSim",
+              "value": "",
+              "resetOnRuns": true,
+              "type": "string",
+              "sim3DId": "Str_3"
+            }
+          },
+          {
+            "Variable": {
+              "id": 6,
+              "name": "TestAccrual",
+              "desc": "",
+              "varScope": "gtAccrual",
+              "value": 0,
+              "accrualStatesData": [
+                {
+                  "stateName": "State3",
+                  "type": "ctMultiplier",
+                  "accrualMult": 1,
+                  "multRate": "trHours",
+                  "accrualTable": [],
+                  "$$hashKey": "008"
+                }
+              ],
+              "type": "double"
+            }
+          }
+        ],
+        "tempExtSimList": [
+          {
+            "ExtSim": {
+              "id": 1,
+              "name": "ExtSim1",
+              "resourceName": "Google Chrome",
+              "modelRef": "",
+              "states": [],
+              "configData": "",
+              "simMaxTime": ""
+            }
+          }
         ]
       }
     },
@@ -238,14 +520,107 @@
         "mainItem": false,
         "mutExcl": true,
         "newStates": [],
-        "makeInputFileCode": "",
+        "makeInputFileCode": "Bool_",
         "exePath": "",
-        "processOutputFileCode": "",
+        "processOutputFileCode": "Bool_",
         "codeVariables": [
           "Bool_"
         ],
         "formData": {},
-        "template": {}
+        "tempVariableList": [
+          {
+            "Variable": {
+              "id": 1,
+              "name": "Int_",
+              "desc": "",
+              "varScope": "gtGlobal",
+              "value": 0,
+              "resetOnRuns": true,
+              "type": "int"
+            }
+          },
+          {
+            "Variable": {
+              "id": 2,
+              "name": "Str_",
+              "desc": "",
+              "varScope": "gtGlobal",
+              "value": "",
+              "resetOnRuns": true,
+              "type": "string"
+            }
+          },
+          {
+            "Variable": {
+              "id": 3,
+              "name": "Bool_",
+              "desc": "",
+              "varScope": "gtGlobal",
+              "value": true,
+              "resetOnRuns": true,
+              "type": "bool"
+            }
+          },
+          {
+            "Variable": {
+              "id": 4,
+              "name": "Str_2",
+              "desc": "",
+              "varScope": "gtDocLink",
+              "value": "",
+              "docLink": "$.output[0].result",
+              "docType": "dtJSON",
+              "docPath": "results.json",
+              "pathMustExist": false,
+              "type": "double"
+            }
+          },
+          {
+            "Variable": {
+              "id": 5,
+              "name": "Str_3",
+              "desc": "",
+              "varScope": "gt3DSim",
+              "value": "",
+              "resetOnRuns": true,
+              "type": "string",
+              "sim3DId": "Str_3"
+            }
+          },
+          {
+            "Variable": {
+              "id": 6,
+              "name": "TestAccrual",
+              "desc": "",
+              "varScope": "gtAccrual",
+              "value": 0,
+              "accrualStatesData": [
+                {
+                  "stateName": "State3",
+                  "type": "ctMultiplier",
+                  "accrualMult": 1,
+                  "multRate": "trHours",
+                  "accrualTable": [],
+                  "$$hashKey": "008"
+                }
+              ],
+              "type": "double"
+            }
+          }
+        ],
+        "tempExtSimList": [
+          {
+            "ExtSim": {
+              "id": 1,
+              "name": "ExtSim1",
+              "resourceName": "Google Chrome",
+              "modelRef": "",
+              "states": [],
+              "configData": "",
+              "simMaxTime": ""
+            }
+          }
+        ]
       }
     },
     {
@@ -259,7 +634,101 @@
         "newStates": [],
         "sim3DMessage": "atCompModify",
         "extSim": "ExtSim1",
-        "sim3DVariable": "Str_3"
+        "sim3DVariable": "Str_3",
+        "tempVariableList": [
+          {
+            "Variable": {
+              "id": 1,
+              "name": "Int_",
+              "desc": "",
+              "varScope": "gtGlobal",
+              "value": 0,
+              "resetOnRuns": true,
+              "type": "int"
+            }
+          },
+          {
+            "Variable": {
+              "id": 2,
+              "name": "Str_",
+              "desc": "",
+              "varScope": "gtGlobal",
+              "value": "",
+              "resetOnRuns": true,
+              "type": "string"
+            }
+          },
+          {
+            "Variable": {
+              "id": 3,
+              "name": "Bool_",
+              "desc": "",
+              "varScope": "gtGlobal",
+              "value": true,
+              "resetOnRuns": true,
+              "type": "bool"
+            }
+          },
+          {
+            "Variable": {
+              "id": 4,
+              "name": "Str_2",
+              "desc": "",
+              "varScope": "gtDocLink",
+              "value": "",
+              "docLink": "$.output[0].result",
+              "docType": "dtJSON",
+              "docPath": "results.json",
+              "pathMustExist": false,
+              "type": "double"
+            }
+          },
+          {
+            "Variable": {
+              "id": 5,
+              "name": "Str_3",
+              "desc": "",
+              "varScope": "gt3DSim",
+              "value": "",
+              "resetOnRuns": true,
+              "type": "string",
+              "sim3DId": "Str_3"
+            }
+          },
+          {
+            "Variable": {
+              "id": 6,
+              "name": "TestAccrual",
+              "desc": "",
+              "varScope": "gtAccrual",
+              "value": 0,
+              "accrualStatesData": [
+                {
+                  "stateName": "State3",
+                  "type": "ctMultiplier",
+                  "accrualMult": 1,
+                  "multRate": "trHours",
+                  "accrualTable": [],
+                  "$$hashKey": "008"
+                }
+              ],
+              "type": "double"
+            }
+          }
+        ],
+        "tempExtSimList": [
+          {
+            "ExtSim": {
+              "id": 1,
+              "name": "ExtSim1",
+              "resourceName": "Google Chrome",
+              "modelRef": "",
+              "states": [],
+              "configData": "",
+              "simMaxTime": ""
+            }
+          }
+        ]
       }
     },
     {
@@ -270,7 +739,8 @@
         "actType": "atTransition",
         "mainItem": false,
         "mutExcl": true,
-        "newStates": []
+        "newStates": [],
+        "moveFromCurrent": false
       }
     }
   ],

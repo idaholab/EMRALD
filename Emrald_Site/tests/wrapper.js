@@ -63,18 +63,4 @@ module.exports = function wrapper(filename, exports, imports = {}) {
   }
   fs.writeFileSync(tempPath, wrapped);
   return require(tempPath);
-  /*
-  const context = {};
-  let globalsStr = '';
-  if (globals) {
-    Object.keys(globals).forEach((g) => {
-      globalsStr += `var ${g} = globals['${g}'];`;
-    });
-  }
-  eval(`${globalsStr}window=context;${fs.readFileSync(filename).toString()}`);
-  exports.forEach((e) => {
-    eval(`context['${e}'] = ${e};`);
-  });
-  return context;
-  */
 };
