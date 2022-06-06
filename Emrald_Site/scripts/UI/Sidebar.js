@@ -651,16 +651,6 @@ if (typeof Navigation === 'undefined')
               },
             );
           });
-          this.logicNodesReferencing(
-            model,
-            logicNode.LogicNode.name,
-            'LogicNode',
-          ).forEach((logicNode) => {
-            if (logicNodeNames.indexOf(logicNode.name) < 0) {
-              logicNodeList.push(logicNode);
-              logicNodeNames.push(logicNode.name);
-            }
-          });
         });
       }
       return logicNodeList;
@@ -3543,9 +3533,6 @@ if (typeof Navigation === 'undefined')
      */
     Sidebar.prototype.importDiagram = function (importedContent) {
       return new Promise((resolve, reject) => {
-        if (importedContent.DiagramList.length > 1) {
-          reject('More than one diagram in file.');
-        }
         // Find conflicts
         let hasConflict = false;
         const conflicts = [];
