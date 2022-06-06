@@ -32,6 +32,98 @@ const { Navigation } = wrapper(
 const { Sidebar } = Navigation;
 const sidebar = new Sidebar();
 
+test('getExtSimList', async () => {
+  const model = await readTestData('TestProject');
+
+  expect(
+    names(
+      sidebar.getExtSimList(
+        model.StateList.map((s) => s.State),
+        model,
+      ),
+    ),
+  ).toIncludeAllMembers(['ExtSim1']);
+});
+
+test('getLogicNodeList', async () => {
+  const model = await readTestData('TestProject');
+
+  expect(
+    names(
+      sidebar.getLogicNodeList(
+        model.StateList.map((s) => s.State),
+        model,
+      ),
+    ),
+  ).toIncludeAllMembers(['LogicTree1', 'gate_2']);
+});
+
+test('getVariableList', async () => {
+  const model = await readTestData('TestProject');
+
+  expect(
+    names(
+      sidebar.getVariableList(
+        model.StateList.map((s) => s.State),
+        model,
+      ),
+    ),
+  ).toIncludeAllMembers(['Bool_', 'Int_', 'Str_2', 'Str_3']);
+});
+
+test('getDiagramList', async () => {
+  const model = await readTestData('TestProject');
+
+  expect(
+    names(
+      sidebar.getDiagramList(
+        model.StateList.map((s) => s.State),
+        model,
+      ),
+    ),
+  ).toIncludeAllMembers(['Main', 'Component']);
+});
+
+test('getActionList', async () => {
+  const model = await readTestData('TestProject');
+
+  expect(
+    names(
+      sidebar.getActionList(
+        model.StateList.map((s) => s.State),
+        model,
+      ),
+    ),
+  ).toIncludeAllMembers([
+    'TestTransition',
+    'TestCngVar',
+    'TestOpenErrorPro',
+    'TestRunApp',
+    'TestExtSim',
+    'Goto_Action2',
+  ]);
+});
+
+test('getEventList', async () => {
+  const model = await readTestData('TestProject');
+
+  expect(
+    names(
+      sidebar.getEventList(
+        model.StateList.map((s) => s.State),
+        model,
+      ),
+    ),
+  ).toIncludeAllMembers([
+    'TestStateChange',
+    'TestComponentLogic',
+    'TestTimer',
+    'TestFailureRate',
+    'TestExtSim',
+    'TestDistribution',
+  ]);
+});
+
 describe('eventsReferencing', () => {
   test('gettings refs', async () => {
     const model = await readTestData('TestProject');

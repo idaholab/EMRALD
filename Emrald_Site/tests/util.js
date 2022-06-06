@@ -37,5 +37,10 @@ module.exports.readTestData = async function readTestData(filename) {
  * @returns {string[]} The names of the objects.
  */
 module.exports.names = function getNames(data) {
-  return data.map((d) => d.name);
+  return data.map((d) => {
+    if (Object.keys(d).length === 1 && !d.name) {
+      return d[Object.keys(d)[0]].name;
+    }
+    return d.name;
+  });
 };
