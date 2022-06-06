@@ -7,9 +7,13 @@ const fs = require('fs');
 const path = require('path');
 
 /**
+ * @typedef {object | string} ExportParam
+ */
+
+/**
  * Helper function for resolving export definitions to a common format.
  *
- * @param {object | string} exp The export definition.
+ * @param {ExportParam} exp The export definition.
  * @returns {object} The export name / value.
  */
 function handleExport(exp) {
@@ -30,12 +34,12 @@ function handleExport(exp) {
  * Converts a IIFE module into CJS modules that can be required by tests.
  *
  * @param {string} filename - The path to the file to wrap.
- * @param {string[]} exports - The names of global variables to export.
+ * @param {ExportParam[]} exports - The names of global variables to export.
  * @param {object} imports - File dependencies.
  * @returns {object} An object containing the values of the variables listed in exports.
  */
 module.exports = function wrapper(filename, exports, imports = {}) {
-  let wrapped = 'var context = {};\nwindow = context;\n';
+  let wrapped = '/* eslint-disable */\nvar context = {};\nwindow = context;\n';
   Object.keys(imports).forEach(async (i) => {
     wrapper(i, imports[i].exports, imports[i].imports);
     const importVarName = i.replace(/[^a-zA-Z]/g, '');

@@ -32,34 +32,120 @@ const { Navigation } = wrapper(
 const { Sidebar } = Navigation;
 const sidebar = new Sidebar();
 
-test('eventsReferencing', async () => {
-  const model = await readTestData('TestProject');
+describe('eventsReferencing', () => {
+  test('getting refs', async () => {
+    const model = await readTestData('TestProject');
+    expect(
+      names(sidebar.eventsReferencing(model, 'State1', 'State')),
+    ).toIncludeAllMembers(['TestStateChange']);
+    expect(
+      names(sidebar.eventsReferencing(model, 'LogicTree1', 'LogicTree')),
+    ).toIncludeAllMembers(['TestComponentLogic']);
+    expect(
+      names(sidebar.eventsReferencing(model, 'Int_', 'Variable')),
+    ).toIncludeAllMembers([
+      'TestTimer',
+      'TestFailureRate',
+      'TestExtSim',
+      'TestDistribution',
+    ]);
+    expect(
+      names(sidebar.eventsReferencing(model, 'Str_3', 'Variable')),
+    ).toIncludeAllMembers(['TestExtSim']);
+    expect(
+      names(sidebar.eventsReferencing(model, 'TestComponentLogic', 'Event')),
+    ).toIncludeAllMembers(['TestComponentLogic']);
+    expect(sidebar.eventsReferencing(model, 'ExtSim1', 'ExtSim').length).toBe(
+      0,
+    );
+    expect(
+      sidebar.eventsReferencing(model, 'Goto_Action2', 'Action').length,
+    ).toBe(0);
+  });
 
-  expect(
-    names(sidebar.eventsReferencing(model, 'State1', 'State')),
-  ).toIncludeAllMembers(['TestStateChange']);
-  expect(
-    names(sidebar.eventsReferencing(model, 'LogicTree1', 'LogicTree')),
-  ).toIncludeAllMembers(['TestComponentLogic']);
-  expect(
-    names(sidebar.eventsReferencing(model, 'Int_', 'Variable')),
-  ).toIncludeAllMembers([
-    'TestTimer',
-    'TestFailureRate',
-    'TestExtSim',
-    'TestDistribution',
-  ]);
-  expect(
-    names(sidebar.eventsReferencing(model, 'Str_', 'Variable')),
-  ).toIncludeAllMembers(['TestExtSim']);
-  expect(
-    names(sidebar.eventsReferencing(model, 'TestComponentLogic', 'Event')),
-  ).toIncludeAllMembers(['TestComponentLogic']);
-  /*
-  expect(
-    names(sidebar.eventsReferencing(model, 'ExtSim1', 'ExtSim')),
-  ).toIncludeAllMembers(['TestExtSim']);
-  */
+  test('renaming refs', async () => {
+    const model = await readTestData('TestProject');
+    sidebar.eventsReferencing(model, 'State1', 'State', false, 'State1_');
+    expect(
+      sidebar.getEventByName(model, 'TestStateChange').Event.triggerStates,
+    ).toIncludeAllMembers(['State1_']);
+    sidebar.eventsReferencing(
+      model,
+      'LogicTree1',
+      'LogicTree',
+      false,
+      'LogicTree1_',
+    );
+    expect(
+      sidebar.getEventByName(model, 'TestComponentLogic').Event.logicTop,
+    ).toBe('LogicTree1_');
+    sidebar.eventsReferencing(model, 'Int_', 'Variable', false, 'Int__');
+    expect(sidebar.getEventByName(model, 'TestTimer').Event.time).toBe('Int__');
+    expect(sidebar.getEventByName(model, 'TestFailureRate').Event.lambda).toBe(
+      'Int__',
+    );
+    expect(
+      sidebar.getEventByName(model, 'TestExtSim').Event.varNames,
+    ).toIncludeAllMembers(['Int__']);
+    expect(
+      sidebar
+        .getEventByName(model, 'TestDistribution')
+        .Event.parameters.find((p) => p.useVariable).variable,
+    ).toBe('Int__');
+    expect(sidebar.getEventByName(model, 'TestExtSim').Event.code).toBe(
+      'Int__',
+    );
+    sidebar.eventsReferencing(model, 'Str_3', 'Variable', false, 'Str__3');
+    expect(sidebar.getEventByName(model, 'TestExtSim').Event.variable).toBe(
+      'Str__3',
+    );
+    sidebar.eventsReferencing(
+      model,
+      'TestComponentLogic',
+      'Event',
+      false,
+      'TestLogicTree',
+    );
+    expect(sidebar.getEventByName(model, 'TestComponentLogic')).toBeNull();
+    expect(sidebar.getEventByName(model, 'TestLogicTree')).not.toBeNull();
+  });
+
+  test('deleting refs', async () => {
+    const model = await readTestData('TestProject');
+    sidebar.eventsReferencing(model, 'Int_', 'Variable', true);
+    expect(sidebar.getEventByName(model, 'TestTimer').Event.time).toBeNull();
+    expect(
+      sidebar.getEventByName(model, 'TestFailureRate').Event.lambda,
+    ).toBeNull();
+    expect(
+      sidebar.getEventByName(model, 'TestExtSim').Event.varNames.length,
+    ).toBe(0);
+    expect(
+      sidebar
+        .getEventByName(model, 'TestDistribution')
+        .Event.parameters.find((p) => p.useVariable).variable,
+    ).toBeNull();
+    expect(
+      sidebar.getEventByName(model, 'TestVarCond').Event.varNames.length,
+    ).toBe(0);
+    sidebar.eventsReferencing(model, 'Str_', 'Variable', true);
+    expect(
+      sidebar.getEventByName(model, 'TestExtSim').Event.varaible,
+    ).toBeUndefined();
+    sidebar.eventsReferencing(model, 'Str_3', 'Variable', true);
+    expect(
+      sidebar.getEventByName(model, 'TestExtSim').Event.variable,
+    ).toBeNull();
+    sidebar.eventsReferencing(model, 'State1', 'State', true);
+    expect(
+      sidebar.getEventByName(model, 'TestStateChange').Event.triggerStates
+        .length,
+    ).toBe(0);
+    sidebar.eventsReferencing(model, 'LogicTree1', 'LogicTree', true);
+    expect(
+      sidebar.getEventByName(model, 'TestComponentLogic').Event.logicTop,
+    ).toBe('');
+  });
 });
 
 test('actionsReferencing', async () => {
