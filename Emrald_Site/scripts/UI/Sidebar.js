@@ -582,18 +582,183 @@ if (typeof Navigation === 'undefined')
         allButton.style.backgroundColor = '';
       }
     }
-    //---------------------------------------------------
-    Sidebar.prototype.getExtSimList = function () {
+
+    /**
+     * Gets a list of ExtSims that are required by the given state list.
+     * 
+     * @param {EMRALD.State['State'][]} states - The states to process.
+     * @param {EMRALD.Model} [model] - The model to use (defaults to allDataModel). 
+     * @returns {EMRALD.ExtSim[]} The list of ExtSims.
+     */
+    Sidebar.prototype.getExtSimList = function (states, model = simApp.allDataModel) {
+      if (states) {
+        /** @type {EMRALD.ExtSim[]} */ const extSimList = [];
+        /** @type {string[]} */ const extSimNames = [];
+        const stateNames = states.map((state) => state.name);
+        if (model.ExtSimList) {
+          model.ExtSimList.forEach((extSim) => {
+            this.actionsReferencing(
+              model,
+              extSim.ExtSim.name,
+              'ExtSim',
+            ).forEach((action) => {
+              this.statesReferencing(model, action.name, 'Action').forEach(
+                (state) => {
+                  if (
+                    stateNames.indexOf(state.name) >= 0 &&
+                    extSimNames.indexOf(extSim.ExtSim.name) < 0
+                  ) {
+                    extSimList.push(extSim);
+                    extSimNames.push(extSim.ExtSim.name);
+                  }
+                },
+              );
+            });
+          });
+        }
+        return extSimList;
+      }
       return simApp.allDataModel.ExtSimList;
     }
-    //---------------------------------------------------
-    Sidebar.prototype.getLogicNodeList = function () {
-      return simApp.allDataModel.LogicNodeList;
+    
+    /**
+     * Gets a list of logic nodes required by the given state list.
+     * 
+     * @param {EMRALD.State['State'][]} states - The states to process.
+     * @param {EMRALD.Model} [model] - The data model to use (defaults to allDataModel).
+     * @returns {EMRALD.LogicNode[]} The list of logic nodes.
+     */
+    Sidebar.prototype.getLogicNodeList = function (states, model = simApp.allDataModel) {
+      /** @type {EMRALD.LogicNode[]} */ let logicNodeList = [];
+      /** @type {string[]} */ const logicNodeNames = [];
+      const stateNames = states.map((state) => state.name);
+      if (model.LogicNodeList) {
+        model.LogicNodeList.forEach((logicNode) => {
+          this.eventsReferencing(
+            model,
+            logicNode.LogicNode.name,
+            'LogicNode',
+          ).forEach((event) => {
+            this.statesReferencing(model, event.name, 'Event').forEach(
+              (state) => {
+                if (
+                  stateNames.indexOf(state.name) >= 0 &&
+                  logicNodeNames.indexOf(logicNode.LogicNode.name) < 0
+                ) {
+                  logicNodeList.push(logicNode);
+                  logicNodeNames.push(logicNode.LogicNode.name);
+                }
+              },
+            );
+          });
+          this.logicNodesReferencing(
+            model,
+            logicNode.LogicNode.name,
+            'LogicNode',
+          ).forEach((logicNode) => {
+            if (logicNodeNames.indexOf(logicNode.name) < 0) {
+              logicNodeList.push(logicNode);
+              logicNodeNames.push(logicNode.name);
+            }
+          });
+        });
+      }
+      return logicNodeList;
     }
-    //---------------------------------------------------
-    Sidebar.prototype.getVariableList = function () {
-      return simApp.allDataModel.VariableList;
+    
+    /**
+     * Gets a list of variables required by the given states.
+     *
+     * @param {EMRALD.State['State'][]} states - The states to process.
+     * @param {EMRALD.Model} [model] - The data model to use (default to allDataModel).
+     * @returns {EMRALD.Variable[]} The variables.
+     */
+    Sidebar.prototype.getVariableList = function (states, model = simApp.allDataModel) {
+      /** @type {EMRALD.Variable[]} */ let variableList = [];
+      /** @type {string[]} */ const variableNames = [];
+      const stateNames = states.map((state) => state.name);
+      if (model.VariableList) {
+        model.VariableList.forEach((variable) => {
+          /** @type {EMRALD.State['State'][]} */ let states = [];
+          this.eventsReferencing(
+            model,
+            variable.Variable.name,
+            'Variable',
+          ).forEach((event) => {
+            states = states.concat(
+              this.statesReferencing(model, event.name, 'Event'),
+            );
+          });
+          this.actionsReferencing(
+            model,
+            variable.Variable.name,
+            'Variable',
+          ).forEach((action) => {
+            states = states.concat(
+              this.statesReferencing(model, action.name, 'Action'),
+            );
+          });
+          states.forEach((state) => {
+            if (
+              stateNames.indexOf(state.name) >= 0 &&
+              variableNames.indexOf(variable.Variable.name) < 0
+            ) {
+              variableList.push(variable);
+              variableNames.push(variable.Variable.name);
+            }
+          });
+        });
+      }
+      return variableList;
     }
+    
+    /**
+     * Gets a list of diagrams required by the given states.
+     *
+     * @param {EMRALD.State['State'][]} states - The states to process.
+     * @param {EMRALD.Model} [model] - The data model to use (defaults to allDataModel).
+     * @returns {EMRALD.Diagram[]} The list of diagrams.
+     */
+    Sidebar.prototype.getDiagramList = function (states, model = simApp.allDataModel) {
+      /** @type {EMRALD.Diagram[]} */ let diagramList = [];
+      /** @type {string[]} */ const diagramNames = [];
+      const stateNames = states.map((state) => state.name);
+      if (model.DiagramList) {
+        model.DiagramList.forEach((diagram) => {
+          let states = this.statesReferencing(
+            model,
+            diagram.Diagram.name,
+            'Diagram',
+          );
+          this.logicNodesReferencing(
+            model,
+            diagram.Diagram.name,
+            'Diagram',
+          ).forEach((logicNode) => {
+            this.eventsReferencing(
+              model,
+              logicNode.name,
+              'LogicNode',
+            ).forEach((event) => {
+              states = states.concat(
+                this.statesReferencing(model, event.name, 'Event'),
+              );
+            });
+          });
+          states.forEach((state) => {
+            if (
+              stateNames.indexOf(state.name) >= 0 &&
+              diagramNames.indexOf(diagram.Diagram.name) < 0
+            ) {
+              diagramList.push(diagram);
+              diagramNames.push(diagram.Diagram.name);
+            }
+          });
+        });
+      }
+      return diagramList;
+    }
+
     //---------------------------------------------------
     Sidebar.prototype.deleteDynamicSidebar = function () {
       var localElement = document.getElementById("Sidebar_Dynamic_Local");
@@ -890,33 +1055,32 @@ if (typeof Navigation === 'undefined')
 
       return stateList;
     }
-    //---------------------------------------------------
-    Sidebar.prototype.getActionList = function (states) {
-      var actionList = [];
-      if (states instanceof Array) {
-        //get all action object match actionName for all states objects.
-        states.forEach(function (state) {
-          //look for action name within the ImmediateAction list.
-          if (state.immediateActions && state.immediateActions.length > 0) {
-            state.immediateActions.forEach(function (actionName) {
-              var actionObj = this.getActionByName(simApp.allDataModel, actionName);
-              if (actionObj)
-                actionList.push(actionObj);
-            }.bind(this));
-          }
-          //look for action name within the eventAction list.
-          if (state.eventActions && state.eventActions.length > 0) {
-            state.eventActions.forEach(function (eaObj) {
-              if (eaObj.actions && eaObj.actions.length > 0) {
-                eaObj.actions.forEach(function (actionName) {
-                  var actionObj = this.getActionByName(simApp.allDataModel, actionName);
-                  if (actionObj)
-                    actionList.push(actionObj);
-                }.bind(this));
+    
+    /**
+     * Gets a list of actions required by the given states.
+     * 
+     * @param {EMRALD.State['State'][]} states - The states to process.
+     * @param {EMRALD.Model} model - The data model to use (defaults to allDataModel).
+     * @returns {EMRALD.Action[]} The list of actions.
+     */
+    Sidebar.prototype.getActionList = function (states, model = simApp.allDataModel) {
+      /** @type {EMRALD.Action[]} */ let actionList = [];
+      /** @type {string[]} */ const actionNames = [];
+      const stateNames = states.map((state) => state.name);
+      if (model.ActionList) {
+        model.ActionList.forEach((action) => {
+          this.statesReferencing(model, action.Action.name, 'Action').forEach(
+            (state) => {
+              if (
+                stateNames.indexOf(state.name) >= 0 &&
+                actionNames.indexOf(action.Action.name) < 0
+              ) {
+                actionList.push(action);
+                actionNames.push(action.Action.name);
               }
-            }.bind(this));
-          }
-        }.bind(this));
+            },
+          );
+        });
       }
       return actionList;
     }
@@ -952,22 +1116,32 @@ if (typeof Navigation === 'undefined')
       }
       return actionList;
     }
-    //---------------------------------------------------
-    Sidebar.prototype.getEventList = function (states) {
-      var eventList = [];
-      var eventNames = [];
-      if (states instanceof Array) {
-        states.forEach(function (state) {
-          if (state.events && state.events.length > 0) {
-            state.events.forEach(function (eventName) {
-              var eventObj = this.getEventByName(simApp.allDataModel, eventName);
-              if (eventObj) {
-                eventList.push(eventObj);
-                eventNames.push(eventName);
+    
+    /**
+     * Gets events required by the given states.
+     * 
+     * @param {EMRALD.State['State'][]} states - The states to process.
+     * @param {EMRALD.Model} model - The data model to use (defaults to allDataModel).
+     * @returns {EMRALD.Event[]} The list of events.
+     */
+    Sidebar.prototype.getEventList = function (states, model = simApp.allDataModel) {
+      /** @type {EMRALD.Event[]} */ let eventList = [];
+      /** @type {string[]} */ const eventNames = [];
+      const stateNames = states.map((state) => state.name);
+      if (model.EventList) {
+        model.EventList.forEach((event) => {
+          this.statesReferencing(model, event.Event.name, 'Event').forEach(
+            (state) => {
+              if (
+                stateNames.indexOf(state.name) >= 0 &&
+                eventNames.indexOf(event.Event.name) < 0
+              ) {
+                eventList.push(event);
+                eventNames.push(event.Event.name);
               }
-            }.bind(this));
-          }
-        }.bind(this));
+            },
+          );
+        });
       }
       return eventList;
     }
@@ -2424,16 +2598,7 @@ if (typeof Navigation === 'undefined')
           //don't worry about the event type just see if the applicable properties exists in the JSON.
           switch (type) {
             case "ExtSim":
-              //et3dSimEv
-              if (cur.Variable && cur.Variable == name) {
-                if (del) {
-                  cur.Variable = "";
-                } else {
-                  if (replaceName != null)
-                    cur.Variable = replaceName;
-                  refs.push(cur);
-                }
-              }
+              // nothing to do
               break;
             case "Variable":
               //etVarCond
@@ -2457,19 +2622,37 @@ if (typeof Navigation === 'undefined')
               // Timers and Failure Rate Events
               if (cur.useVariable) {
                   if (cur.lambda === name) {
-                      cur.lambda = del ? null : (replaceName !== null ? replaceName : name);
+                      refs.push(cur);
+                      cur.lambda = del ? '' : (replaceName !== null ? replaceName : name);
                   }
                   if (cur.time === name) {
-                      cur.time = del ? null : (replaceName !== null ? replaceName : name);
+                      refs.push(cur);
+                      cur.time = del ? '' : (replaceName !== null ? replaceName : name);
                   }
               }
               // Distribution events
               if (cur.parameters && Array.isArray(cur.parameters)) {
                 cur.parameters.forEach((parameter, i) => {
                   if (parameter.useVariable && parameter.variable === name) {
-                    cur.parameters[i].variable = replaceName;
+                    refs.push(cur);
+                    if (replaceName) {
+                      cur.parameters[i].variable = replaceName;
+                    }
+                    if (del) {
+                      cur.parameters[i].variable = '';
+                    }
                   }
                 });
+              }
+              // Ext sim events
+              if (cur.variable && cur.variable === name) {
+                refs.push(cur);
+                if (replaceName) {
+                  cur.variable = replaceName;
+                }
+                if (del) {
+                  cur.variable = '';
+                }
               }
               break;
             case "State":
@@ -2487,6 +2670,7 @@ if (typeof Navigation === 'undefined')
                 }
               }
               break;
+            case "LogicNode":
             case "LogicTree":
               //etComponentLogic
               if (cur.logicTop && cur.logicTop == name) {
@@ -2564,6 +2748,17 @@ if (typeof Navigation === 'undefined')
               }
               break;
             case "Variable":
+              //atTransition
+              if (cur.newStates) {
+                cur.newStates.forEach((newState, i) => {
+                  if (typeof newState.varProb === 'string' && newState.varProb === name) {
+                    refs.push(cur);
+                    if (replaceName) {
+                      cur.newStates[i].varProb = replaceName;
+                    }
+                  }
+                });
+              }
               //atCngVarVal
               if (cur.variableName && cur.variableName == name) {
                 if (del) {
@@ -2601,6 +2796,35 @@ if (typeof Navigation === 'undefined')
 
                 }
               }
+              //atRunExtApp
+              if (cur.makeInputFileCode && replaceName) {
+                cur.makeInputFileCode = this.replaceNamesInText(cur.makeInputFileCode, name, replaceName);                
+              }
+              if (cur.processOutputFileCode && replaceName) {
+                cur.processOutputFileCode = this.replaceNamesInText(cur.processOutputFileCode, name, replaceName);
+              }
+              //OpenErrorPro form
+              if (cur.template && cur.template.name === 'Open Error Pro') {
+                // Ref collection is already handled above using the codeVariables property
+                if (replaceName) {
+                  cur.formData.model = cur.formData.model.replace(
+                    new RegExp(`\\+${name}\\+`, 'g'),
+                    replaceName,
+                  );
+                  cur.formData.varLinks.forEach((varLink) => {
+                    if (varLink.variable.name === name) {
+                      varLink.variable.name = replaceName;
+                    }
+                  });
+                }
+                if (del) {
+                  cur.formData.varLinks.forEach((varLink) => {
+                    if (varLink.variable.name === name) {
+                      varLink.variable.name = '';
+                    }
+                  });
+                }
+              }
               break;
             case "Action": //only action reference to an action is itself
               if (cur.name == name) {
@@ -2618,6 +2842,7 @@ if (typeof Navigation === 'undefined')
             case "Event":
               //not applicable
               break;
+            case "LogicNode":
             case "LogicTree":
               //not applicable
               break;
@@ -2694,8 +2919,12 @@ if (typeof Navigation === 'undefined')
             case "Diagram":
               //Event Actions
               if (cur.diagramName && (cur.diagramName === name)) {
-                if (replaceName != null)
+                if (replaceName != null) {
                   cur.diagramName = replaceName;
+                }
+                if (delAll) {
+                  cur.diagramName = '';
+                }
                 refs.push(cur);
               }
               break;
@@ -2718,6 +2947,7 @@ if (typeof Navigation === 'undefined')
             case "Variable":
               //Not applicable
               break;
+            case "LogicNode":
             case "LogicTree":
               //not applicable
               break;
@@ -2795,6 +3025,7 @@ if (typeof Navigation === 'undefined')
             case "Variable":
               //Not applicable
               break;
+            case "LogicNode":
             case "LogicTree":
               //not applicable
               break;
@@ -2821,18 +3052,20 @@ if (typeof Navigation === 'undefined')
               if (cur.compChildren) {
                 var j = cur.compChildren.indexOf(name);
                 if (j > -1) {
+                  refs.push(cur);
                   if (del) {
                     cur.compChildren.splice(j, 1);
                   } else {
                     if (replaceName != null)
                       cur.compChildren[j] = replaceName;
-                    refs.push(cur);
                   }
 
                 }
               }
               break;
-            case "LogicNode": //only LogicNode reference to a logicNode is itself
+            case "LogicNode":
+            case "LogicTree":
+              // Reference to itself
               if (cur.name == name) {
                 if (replaceName != null) {
                   cur.name = replaceName;
@@ -2842,14 +3075,32 @@ if (typeof Navigation === 'undefined')
                   }
                 }
                 refs.push(cur);
-                return refs; //only one ref if it is itself, so return
+              }
+              // Gate children
+              if (cur.gateChildren) {
+                cur.gateChildren.forEach((gate, i) => {
+                  if (gate == name) {
+                    refs.push(cur);
+                    if (replaceName) {
+                      cur.gateChildren[i] = replaceName;
+                    }
+                    if (del) {
+                      cur.gateChildren.splice(i, 1);
+                    }
+                  }
+                });
+              }
+              // All nodes
+              if (cur.rootName === name) {
+                if (replaceName !== null) {
+                  cur.rootName = replaceName;
+                }
+                if (del) {
+                  cur.rootName = '';
+                }
+                refs.push(cur);
               }
               break;
-            case 'LogicTree':
-              // Replace rootNames
-              if (cur.rootName === name && replaceName !== null) {
-                cur.rootName = replaceName;
-              }
             case "Action":
               //not applicable
               break;
@@ -2887,6 +3138,7 @@ if (typeof Navigation === 'undefined')
               //not applicable
               break;
             case "LogicNode":
+            case "LogicTree":
               //not applicable
               break;
             case "Action":
@@ -2900,11 +3152,14 @@ if (typeof Navigation === 'undefined')
               break;
             case "Variable":
               //only reference is itself, so replace name if given
-              if ((cur.name == name) && (replaceName != null)) {
-                cur.name = replaceName;
-                if (model.VariableList[i].ui_el) {
-                  model.VariableList[i].ui_el.innerText = replaceName;
-                  model.VariableList[i].ui_el.innerHTML = replaceName;
+              if (cur.name === name) {
+                refs.push(cur);
+                if (replaceName != null) {
+                  cur.name = replaceName;
+                  if (model.VariableList[i].ui_el) {
+                    model.VariableList[i].ui_el.innerText = replaceName;
+                    model.VariableList[i].ui_el.innerHTML = replaceName;
+                  }
                 }
               }
               break;
@@ -2945,6 +3200,7 @@ if (typeof Navigation === 'undefined')
               //not applicable
               break;
             case "LogicNode":
+            case "LogicTree":
               //not applicable
               break;
             case "Action":
@@ -2958,11 +3214,14 @@ if (typeof Navigation === 'undefined')
               break;
             case "ExtSim":
               //only reference is itself, so replace name if given
-              if ((cur.name == name) && (replaceName != null)) {
-                cur.name = replaceName;
-                if (model.ExtSimList[i].ui_el) {
-                  model.ExtSimList[i].ui_el.innerText = replaceName;
-                  model.ExtSimList[i].ui_el.innerHTML = replaceName;
+              if (cur.name == name) {
+                refs.push(cur);
+                if (replaceName != null) {
+                  cur.name = replaceName;
+                  if (model.ExtSimList[i].ui_el) {
+                    model.ExtSimList[i].ui_el.innerText = replaceName;
+                    model.ExtSimList[i].ui_el.innerHTML = replaceName;
+                  }
                 }
               }
               break;
@@ -3215,24 +3474,23 @@ if (typeof Navigation === 'undefined')
       return sol;
     }
 
-    Sidebar.prototype.exportDiagram = function (dataObject) {
-      const StateList = this.getStateDataObjectsForDiagram(false, dataObject.name);
-      const strippedStateList = StateList.map((state) => state.State);
+    Sidebar.prototype.exportDiagram = function (dataObject, model) {
+      const StateList = this.statesReferencing(model, dataObject.name, 'Diagram');
       const exportObject = {
         id: dataObject.id,
         name: dataObject.name,
         desc: dataObject.desc,
-        DiagramList: [
-          {
-            Diagram: dataObject,
-          },
-        ],
-        ExtSimList: this.getExtSimList(),
-        StateList,
-        ActionList: this.getActionList(strippedStateList),
-        EventList: this.getEventList(strippedStateList),
-        LogicNodeList: this.getLogicNodeList(),
-        VariableList: this.getVariableList(),
+        DiagramList: this.getDiagramList(StateList, model),
+        ExtSimList: this.getExtSimList(StateList, model),
+        StateList: StateList.map((State) => {
+          return {
+            State,
+          };
+        }),
+        ActionList: this.getActionList(StateList, model),
+        EventList: this.getEventList(StateList, model),
+        LogicNodeList: this.getLogicNodeList(StateList, model),
+        VariableList: this.getVariableList(StateList, model),
       };
       return this.cleanDataModel(exportObject);
     }
