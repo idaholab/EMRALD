@@ -3458,9 +3458,15 @@ if (typeof Navigation === 'undefined')
               break;
             case "Copy":
               if (ui.target.context.dataObject) {
-                const diagram = this.exportDiagram(ui.target.context.dataObject);
-                navigator.clipboard.writeText(JSON.stringify(this.cleanDataModel(diagram)))
-                  .catch((err) => { throw err });
+                navigator.clipboard
+                  .writeText(
+                    JSON.stringify(
+                      this.exportDiagram(ui.target.context.dataObject),
+                    ),
+                  )
+                  .catch((err) => {
+                    throw err;
+                  });
               }
               break;
           }
@@ -3492,7 +3498,14 @@ if (typeof Navigation === 'undefined')
         LogicNodeList: this.getLogicNodeList(StateList, model),
         VariableList: this.getVariableList(StateList, model),
       };
-      return this.cleanDataModel(exportObject);
+      exportObject.DiagramList = simApp.mainApp.cloneDataModel(exportObject.DiagramList);
+      exportObject.ExtSimList = simApp.mainApp.cloneDataModel(exportObject.ExtSimList);
+      exportObject.StateList = simApp.mainApp.cloneDataModel(exportObject.StateList);
+      exportObject.ActionList = simApp.mainApp.cloneDataModel(exportObject.ActionList);
+      exportObject.EventList = simApp.mainApp.cloneDataModel(exportObject.EventList);
+      exportObject.LogicNodeList = simApp.mainApp.cloneDataModel(exportObject.LogicNodeList);
+      exportObject.VariableList = simApp.mainApp.cloneDataModel(exportObject.VariableList);
+      return exportObject;
     }
 
     Sidebar.prototype.ActionExists = function (actionName) {
