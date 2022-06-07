@@ -1,0 +1,22 @@
+{
+  "name": "emrald_site",
+  "version": "1.0.0",
+  "description": "The EMRALD HTML UI.",
+  "author": "idaholab",
+  "main": "app.js",
+  "private": true,
+  "homepage": "https://github.com/idaholab/EMRALD",
+  "scripts": {
+    "tauri": "tauri",
+    "test": "npx jest"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "@tauri-apps/cli": "^1.0.0-rc.13",
+    "@types/jest": "^28.1.0",
+    "jest": "^28.1.0",
+    "jest-environment-jsdom": "^28.1.0",
+    "jest-extended": "^2.0.0",
+    "jsdom": "^19.0.0"
+  }
+}
