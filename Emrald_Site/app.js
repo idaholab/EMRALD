@@ -1,35 +1,17 @@
 /**
- * @file Launches a self-contained instance of EMRALD in an Electron window.
+ * @file Creates a local HTTP server to serve the app.
  */
-/* eslint-disable import/no-unresolved */
-/* eslint-disable import/no-extraneous-dependencies */
-const { app, BrowserWindow } = require('electron');
-const electronSquirrelStartup = require('electron-squirrel-startup');
+import getPort from 'get-port';
+import http from 'http';
+import path from 'path';
+import serve from 'serve-handler';
 
-if (electronSquirrelStartup) {
-  app.quit();
-}
+const server = http.createServer((req, res) => serve(req, res, {
+  public: path.resolve('.', 'EMRALD_Site'),
+}));
 
-/**
- * Creates the main browser window.
- */
-function createWindow() {
-  const window = new BrowserWindow();
-  window.loadFile('index.html');
-}
-
-app.whenReady().then(() => {
-  createWindow();
-
-  app.on('activate', () => {
-    if (BrowserWindow.getAllWindows().length === 0) {
-      createWindow();
-    }
+getPort({ port: 3000 }).then((port) => {
+  server.listen(port, () => {
+    console.log(`Running local server on port ${port}.`);
   });
-});
-
-app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') {
-    app.quit();
-  }
 });
