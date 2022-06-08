@@ -207,6 +207,7 @@ function GetDataObject() {
     if (scope.selectedTemplate !== null) {
         diagramData.diagramTemplate = scope.diagramTemplates[scope.selectedTemplate];
     }
+    diagramData.forceMerge = scope.data.forceMerge;
     return diagramData;
 }
 
@@ -250,6 +251,7 @@ diagramModule.controller('diagramController', function ($scope, $timeout) {
     $scope.createDiagram = false;
     $scope.data = {
         fileName: "",
+        forceMerge: false,
         importedContent: null,
         usingImportedContent: false
     }

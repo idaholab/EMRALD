@@ -180,7 +180,7 @@ if (typeof Navigation === 'undefined')
               template.name = outDataObj.name;
               template.id = outDataObj.id;
               template.desc = outDataObj.desc;
-              this.importDiagram(template).then((importedContent) => {
+              this.importDiagram(template, outDataObj.forceMerge).then((importedContent) => {
                 this.openDiagram(importedContent.DiagramList[0].Diagram);
                 this.onLoadLocal(diagram.Diagram);
               });
@@ -3531,7 +3531,7 @@ if (typeof Navigation === 'undefined')
      * 
      * @param {EMRALD.Model} importedContent - The diagram to import.
      */
-    Sidebar.prototype.importDiagram = function (importedContent) {
+    Sidebar.prototype.importDiagram = function (importedContent, forceMerge = false) {
       return new Promise((resolve, reject) => {
         // Find conflicts
         let hasConflict = false;
@@ -3548,7 +3548,7 @@ if (typeof Navigation === 'undefined')
           }
         });
         const sidebar = simApp.mainApp.sidebar;
-        if (hasConflict) {
+        if (forceMerge || hasConflict) {
           const wnd = mxWindow.createFrameWindow(
             'EditForms/ImportEditor.html',
             'OK, Cancel',
