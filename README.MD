@@ -26,6 +26,13 @@ Event Modeling Risk Assessment using Linked Diagrams (EMRALD) is a software tool
         4. Start the local dev server by running the command `npm run dev`
         5. Once the server is running, this message should appear: `VuePress dev server listening at http://localhost:8080/`
         6. Navigate to [http://localhost:8080/](http://localhost:8080/) to view the EMRALD Documentation.
+	- To build the offline executable:
+		1. Install C++ Build Tools, from within Visual Studio or from [https://visualstudio.microsoft.com/visual-cpp-build-tools/](https://visualstudio.microsoft.com/visual-cpp-build-tools/)
+		2. Install WebView2 by downloading the Evergreen Standalone Installer from [https://developer.microsoft.com/en-us/microsoft-edge/webview2/#download-section](https://developer.microsoft.com/en-us/microsoft-edge/webview2/#download-section)
+		3. Install Rust from [https://www.rust-lang.org/tools/install](https://www.rust-lang.org/tools/install)
+		4. Install Node.js & NPM from [https://nodejs.org/en/](https://nodejs.org/en/)
+		5. Build dependencies by running `npm install` in the root directory
+		6. Build the executable by running `npm build` in the root directory
 
 
 
@@ -36,6 +43,7 @@ Event Modeling Risk Assessment using Linked Diagrams (EMRALD) is a software tool
  - MessageDefLib
  - SimulationDAL
  - SimulationEngine
+ - src-tauri
  - Testing
  - XmppClient
  - XmppServerController

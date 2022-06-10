@@ -112,6 +112,9 @@ function ValidateData() {
     if (scope.typeOption.value === 'et3dSimEv' && !scope.variable) {
         return "Please specify an External Sim Variable before saving the event.";
     }
+    if (scope.typeOption.value === 'etComponentLogic' && !scope.logicTop) {
+        return "Please specify a top logic gate before saving the event.";
+    }
     return "";
 }
 
@@ -423,6 +426,9 @@ function OnLoad(dataObj) {
         if (eventData.id >= 0) {
             var opTypeEl = document.getElementById("typeOptionSelector");
             opTypeEl.disabled = true;  // Do not allow change type if not new.
+            if (eventData.onVarChange) {
+                scope.onVarChange = scope.distChangeTypes.find((type) => type.value === eventData.onVarChange);
+            }
             switch (eventData.evType) {
                 case "etVarCond":
                     scope.conditionCode = eventData.code;
@@ -432,6 +438,9 @@ function OnLoad(dataObj) {
                     scope.isInState = eventData.ifInState;
                     scope.isAllItems = eventData.allItems;
                     scope.evalCurOnInitial = eventData.evalCurOnInitial;
+                    if (typeof eventData.evalCurOnInitial !== 'boolean') {
+                        scope.evalCurOnInitial = true;
+                    }
                     scope.states = deepClone(eventData.triggerStates);
                     opTypeEl.selectedIndex = 1;
                     break;
@@ -472,9 +481,6 @@ function OnLoad(dataObj) {
                     scope.distParameters = eventData.parameters;
                     scope.dfltTimeRate = eventData.dfltTimeRate;
                     scope.distType = scope.distTypes.find((type) => type.value === eventData.distType);
-                    if (eventData.onVarChange) {
-                        scope.distOnChange = scope.distChangeTypes.find((type) => type.value === eventData.onVarChange);
-                    }
                 case "et3dSimEv":
                     var vb = scope.variables.find((v) => v.name == eventData.variable);
                     if (vb)
@@ -527,7 +533,9 @@ function GetDataObject() {
             break;
         case "etComponentLogic":
             dataObj.onSuccess = scope.onSuccess;
-            dataObj.logicTop = scope.logicTop.name;
+            if (scope.logicTop) {
+                dataObj.logicTop = scope.logicTop.name;
+            }
             break;
         case "etTimer":
             dataObj.useVariable = scope.data.timer.useVariable;
@@ -537,6 +545,9 @@ function GetDataObject() {
             } else {
                 dataObj.time = toTimespan(scope.time);
                 dataObj.timeVariableUnit = "";
+            }
+            if (scope.onVarChange) {
+                dataObj.onVarChange = scope.onVarChange.value;
             }
             break;
         case "etFailRate":
@@ -548,13 +559,23 @@ function GetDataObject() {
             dataObj.lambdaTimeRate = toTimespan(scope.lambdaTimeRate);
             dataObj.useVariable = scope.data.failureRate.lambda.useVariable;
             //dataObj.missionTime = toTimespan(scope.missionTime);
+            if (scope.onVarChange) {
+                dataObj.onVarChange = scope.onVarChange.value;
+            }
             break;
         case "etDistribution":
             dataObj.distType = scope.distType.value;
-            dataObj.parameters = scope.distParameters;
+            // Remove variable property from parameters not using variables.
+            const distParameters = scope.distParameters;
+            distParameters.forEach((p, i) => {
+                if (!p.useVariable) {
+                    delete distParameters[i].variable;
+                }
+            });
+            dataObj.parameters = distParameters;
             dataObj.dfltTimeRate = scope.dfltTimeRate;
-            if (scope.distOnChange) {
-                dataObj.onVarChange = scope.distOnChange.value;
+            if (scope.onVarChange) {
+                dataObj.onVarChange = scope.onVarChange.value;
             }
     }
     return dataObj;
@@ -622,12 +643,12 @@ EEApp.controller("EEController", function ($scope) {
     ];
     $scope.distChangeTypes = [
         { "name": "Ignore", value: "ocIgnore", desc: ", keeping the same sampled event time." },
-        { "name": "Resample", value: "ocResample", desc: " a new event time." },
+        { "name": "Resample", value: "ocResample", desc: ", a new event time." },
         { "name": "Adjust", value: "ocAdjust", desc: ", use the new variable values to adjust the event time without resampling, if possible." },
     ];
     $scope.distType = $scope.distTypes[0];
     $scope.distParameters = [];
-    $scope.distOnChange = null;
+    $scope.onVarChange = null;
     $scope.dfltTimeRate = 'trHours';
     $scope.distUsesVariable = function () {
         var re = false;

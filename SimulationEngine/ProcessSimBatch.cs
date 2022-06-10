@@ -90,7 +90,8 @@ namespace SimulationEngine
 
     //public Dictionary<string, double> variableVals { get { return _variableVals; } }
     public Dictionary<string, FailedItems> keyFailedItems = new Dictionary<string, FailedItems>(); //key = StateName, value = cut sets
-    public Dictionary<string, ResultState> keyPaths = new Dictionary<string, ResultState>();
+    public Dictionary<string, KeyStateResult> keyPaths = new Dictionary<string, KeyStateResult>();
+    public Dictionary<string, ResultState> otherPaths = new Dictionary<string, ResultState>();
     private Dictionary<string, Dictionary<string, List<string>>> _variableVals = new Dictionary<string, Dictionary<string, List<string>>>();
     public TProgressCallBack progressCallback;
     public List<string> logVarVals = new List<string>();
@@ -110,12 +111,39 @@ namespace SimulationEngine
     }
 
     //public void Add3DSimulationData(HoudiniSimClient sim3DHandler, double frameRate, string sim3DPath)//, HoudiniSimClient.TLogEvCallBack viewNotifications)
-    public void AddExtSimulationData(EMRALDMsgServer msgServer, double frameRate, string sim3DPath)//, HoudiniSimClient.TLogEvCallBack viewNotifications)
+    public void AddExtSimulationData(EMRALDMsgServer msgServer, double frameRate, string sim3DPath, string password)//, HoudiniSimClient.TLogEvCallBack viewNotifications)
     {
       _msgServer = msgServer;
       _frameRate = frameRate;
       _sim3DPath = sim3DPath;
       //_viewNotifications = viewNotifications;
+    }
+
+    public bool AutoConnectExtSim()
+    {
+      if (_lists.allExtSims.Count < 1)
+        return true;
+
+      DateTime timer = DateTime.Now;
+      bool allConnected = false;
+      while (!allConnected)
+      {
+        var extConnections = _msgServer.GetResources();
+        allConnected = true;
+        foreach (var extSim in _lists.allExtSims.Values)
+        {
+          extSim.verified = extConnections.Contains(extSim.resourceName);
+
+          if (!extSim.verified)
+          {
+            allConnected = false;
+            if (extSim.timeout < (DateTime.Now - timer).TotalSeconds)
+              return false;   
+          }
+        }
+      }
+
+      return true;
     }
 
     private void SetLog(int runIdx)
@@ -174,6 +202,14 @@ namespace SimulationEngine
 
     public void RunBatch()
     {
+      //if there were any xmpp connections specified in the perams not set by the user, connect here
+      if (!AutoConnectExtSim())
+      {
+        this._error = "Failed to connect to external simulation.";
+        logger.Error(this.error); 
+      }
+
+
       batchSuccess = false;
       _stop = false;
       bool retVal = true;
@@ -237,9 +273,9 @@ namespace SimulationEngine
               pathOutputFile.WriteLine("Run - " + i.ToString());
             }
 
-            trackSim.GetKeyPaths(keyPaths);
+            trackSim.GetKeyPaths(keyPaths, otherPaths);
             
-            foreach (SimulationEngine.ResultState path in keyPaths.Values)
+            foreach (SimulationEngine.ResultStateBase path in keyPaths.Values)
             {
               string keyStateName = path.name;
 
@@ -258,7 +294,10 @@ namespace SimulationEngine
                 {
                   SimVariable curVar = _lists.allVariables.FindByName(varName);
                   if (curVar == null)
-                    throw new Exception("No variable found named - " + varName);
+                  {
+                    this._error = "No variable found named - " + varName;
+                    logger.Error(this.error);
+                  }
 
                   if (!varDict.TryGetValue(varName, out varVals))
                   {
@@ -321,7 +360,9 @@ namespace SimulationEngine
         OverallResults resultObj = new OverallResults();
         resultObj.name = this._lists.name;
         resultObj.keyStates = keyPaths.Values.ToList();
+        resultObj.otherStatePaths = otherPaths.Values.ToList();
         resultObj.numRuns = curI;
+        resultObj.CalcStats();
         Dictionary<string, int> inStateCnts = new Dictionary<string, int>();
         //foreach (var keyS in resultObj.keyStates)
         //{
@@ -331,7 +372,7 @@ namespace SimulationEngine
         foreach (var keyS in resultObj.keyStates)
         {
           // Dictionary<string, int> depth = new Dictionary<string, int>();
-          SetResultStatsRec(keyS, inStateCnts, curI);//, depth);
+          //SetResultStatsRec(keyS, inStateCnts, curI);//, depth);
 
           if(_variableVals.Count > 0) //if there are any being tracked, they should have a value for each key state.
             keyS.watchVariables = _variableVals[keyS.name];
@@ -387,17 +428,17 @@ namespace SimulationEngine
     /// <param name="curRes"></param>
     /// <param name="inStateCnts"></param>
     /// <param name="totCnt"></param>
-    private void SetResultStatsRec(ResultState curRes, Dictionary<string, int> inStateCnts, int totCnt)//, Dictionary<string, int> depths)
-    { 
-      foreach (var i in curRes.causeDict.Values)
-      {
-        if (i.fromState != null)
-          SetResultStatsRec(i.fromState, inStateCnts, curRes.count);//, depths); //key states use total runs for count, other states use total times in the state.
-      }
+    //private void SetResultStatsRec(ResultState curRes, Dictionary<string, int> inStateCnts, int totCnt)//, Dictionary<string, int> depths)
+    //{ 
+    //  foreach (var i in curRes.enterDict.Values)
+    //  {
+    //    if (i.otherState != null)
+    //      SetResultStatsRec(i.otherState, inStateCnts, curRes.count);//, depths); //key states use total runs for count, other states use total times in the state.
+    //  }
 
-      //decrement depth for recursive call
-      //depths[curRes.name] -= 1;
-    }
+    //  //decrement depth for recursive call
+    //  //depths[curRes.name] -= 1;
+    //}
 
     public void LogResults(TimeSpan runTime, int runCnt, bool finalValOnly)
     {
