@@ -2,23 +2,30 @@
 /**
  * @file Tests Common.js.
  */
-/// <reference path='../node_modules/@types/jest/index.d.ts' />
-/// <reference path='../node_modules/jest-extended/types/index.d.ts' />
+/// <reference path='../../node_modules/@types/jest/index.d.ts' />
+/// <reference path='../../node_modules/jest-extended/types/index.d.ts' />
 // @ts-check
-const path = require('path');
-const wrapper = require('./wrapper');
+import path from 'path';
+import wrapper from './wrapper';
 
-const Common = wrapper(path.resolve('scripts', 'UI', 'Common.js'), [
-  '__extends',
-  'waitToSync',
-  { extend: 'Object.extend' },
-  { add: 'Array.prototype.add' },
-  'SetOf',
-  'classNameOf',
-  'getServerFile',
-  'deepClone',
-  'sortDOMList',
-]);
+let Common;
+beforeAll(async () => {
+  Common = await wrapper(
+    'Common',
+    path.resolve('Emrald_Site', 'scripts', 'UI', 'Common.js'),
+    [
+      '__extends',
+      'waitToSync',
+      { extend: 'Object.extend' },
+      { add: 'Array.prototype.add' },
+      'SetOf',
+      'classNameOf',
+      'getServerFile',
+      'deepClone',
+      'sortDOMList',
+    ],
+  );
+});
 
 test('waitToSync', async () => new Promise((resolve) => {
   const start = Date.now();
@@ -87,10 +94,10 @@ test('deepClone', () => {
   expect(a2[2][0]).toBe('c');
 
   const a3 = {
-      a: document.createElement('a'),
-      b: {
-          c: 'd',
-      },
+    a: document.createElement('a'),
+    b: {
+      c: 'd',
+    },
   };
   const a4 = Common.deepClone(a3);
   a3.a.setAttribute('href', 'google.com');

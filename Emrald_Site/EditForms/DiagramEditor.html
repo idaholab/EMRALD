@@ -70,6 +70,8 @@
                 <div class="separator">OR</div><br /><b>Import Diagram: </b>
                 <input type="button" value="Choose File" onclick="mergeIntoCurrentProject()" />
                 <span><i>{{data.fileName}}</i><input ng-if="data.fileName" type="button" value="X" title="Remove File" onclick="removeFile()"/></span>
+                <br />
+                <input type="checkbox" ng-model="data.forceMerge" /> Force conflict resolution
                 <div class="separator">OR</div>
                 <br />
                 <b>Select a template: </b>

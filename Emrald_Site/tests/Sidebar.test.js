@@ -1,36 +1,38 @@
 /**
  * @file Tests the Sidebar.
  */
-/// <reference path='../node_modules/@types/jest/index.d.ts' />
-/// <reference path='../node_modules/jest-extended/types/index.d.ts' />
+/// <reference path='../../node_modules/@types/jest/index.d.ts' />
+/// <reference path='../../node_modules/jest-extended/types/index.d.ts' />
 // @ts-check
-const path = require('path');
-const { names, readTestData } = require('./util');
-const wrapper = require('./wrapper');
+import path from 'path';
+import { names, readTestData } from './util';
+import wrapper from './wrapper';
 
-const { Navigation } = wrapper(
-  path.resolve('scripts', 'UI', 'Sidebar.js'),
-  ['Navigation'],
-  {
-    [`${path.resolve('scripts', 'UI', 'Common.js')}`]: {
-      exports: ['__extends', 'waitToSync'],
-    },
-    [`${path.resolve('config.js')}`]: {
-      exports: [{ appConfig: 'window.appConfig' }],
-    },
-    [`${path.resolve('scripts', 'UI', 'wcfService.js')}`]: {
-      exports: ['WcfService'],
-      imports: {
-        [`${path.resolve('scripts', 'UI', 'Common.js')}`]: {
-          exports: ['__extends', 'waitToSync'],
+let sidebar;
+beforeAll(async () => {
+  const { Navigation } = await wrapper(
+    'Sidebar',
+    path.resolve('Emrald_Site', 'scripts', 'UI', 'Sidebar.js'),
+    ['Navigation'],
+    {
+      [`${path.resolve('Emrald_Site', 'scripts', 'UI', 'Common.js')}`]: {
+        exports: ['__extends', 'waitToSync'],
+      },
+      [`${path.resolve('Emrald_Site', 'config.js')}`]: {
+        exports: [{ appConfig: 'window.appConfig' }],
+      },
+      [`${path.resolve('Emrald_site', 'scripts', 'UI', 'wcfService.js')}`]: {
+        exports: ['WcfService'],
+        imports: {
+          [`${path.resolve('Emrald_site', 'scripts', 'UI', 'Common.js')}`]: {
+            exports: ['__extends', 'waitToSync'],
+          },
         },
       },
     },
-  },
-);
-
-const { Sidebar } = Navigation;
-const sidebar = new Sidebar();
+  );
+  sidebar = new Navigation.Sidebar();
+});
 
 test('getExtSimList', async () => {
   const model = await readTestData('TestProject');

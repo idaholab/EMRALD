@@ -13,7 +13,10 @@ if (!this.__extends) {
     function __() { this.constructor = d; }
     //instantiate the parent's prototype with the new class.
     __.prototype = b.prototype;
-    d.prototype = new __();
+    var p = new __();
+    Object.keys(p).forEach((key) => {
+      d.prototype[key] = p[key];
+    });
   };
 }
 

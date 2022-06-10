@@ -6,7 +6,7 @@
   "private": true,
   "scripts": {
     "tauri": "tauri",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
     "build": "npm run tauri build",
     "build:dev": "npm run tauri dev"
   },
@@ -40,8 +40,9 @@
   },
   "jest": {
     "setupFilesAfterEnv": [
-      "./tests/setup.js"
+      "./Emrald_Site/tests/setup.js"
     ],
-    "testEnvironment": "jsdom"
+    "testEnvironment": "./Emrald_Site/tests/environment.js",
+    "transform": {}
   }
 }
