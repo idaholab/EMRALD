@@ -1,0 +1,12 @@
+    {
+      "Event": {
+        "id": 1,
+        "name": "WeibDist",
+        "desc": "",
+        "mainItem": true,
+        "evType": "etWeibullDist",
+        "shape": 1,
+        "scale": 1,
+        "timeRate": "trHours"
+      }
+    }

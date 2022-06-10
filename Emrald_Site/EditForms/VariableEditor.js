@@ -24,6 +24,40 @@ function setModified(state) {
   isDirty = state;
 }
 
+function loadNamePatterns() {
+    var scope = angular.element(document.querySelector('#variableControllerPanel')).scope();
+    fetch('../resources/DefaultNamingPatterns.json')
+        .then(res => res.json())
+        .then(json => {
+            scope.namingPatterns = json.VariableTypes;
+            updateName();
+            scope.$apply();
+        });
+}
+
+function updateName() {
+    var scope = angular.element(document.querySelector('#variableControllerPanel')).scope();
+    if (!nameIsDefaultValue()) {
+        return;
+    }
+    scope.name = scope.namingPatterns.find(x => x.Type === scope.varType).NamePattern;
+}
+
+function nameIsDefaultValue() {
+    var scope = angular.element(document.querySelector('#variableControllerPanel')).scope();
+    if (scope.name === '') {
+        return true;
+    }
+    var result = false;
+    scope.namingPatterns.forEach(defaultName => {
+        if (scope.name === defaultName.NamePattern) {
+            result = true;
+            return;
+        }
+    })
+    return result;
+}
+
 function typeSelection(useDefaultValue = true) {
   var typeVal = document.getElementById("typeVal");
   var scope = angular.element(document.querySelector("#variableControllerPanel")).scope();
@@ -102,7 +136,7 @@ function validateValue() {
     }
   }
   else if (scope.doubleTypeSelected) {
-    if (typeof (scope.data.value) === "number" && scope.data.value.toString().match(/^-?[0-9]*.[0-9]*$/)) {
+    if (scope.data.value.toString().match(/^-?[0-9.]+([eE][-+]?[0-9.]+)?$/)) {
       valid = true;
     }
   }
@@ -125,16 +159,18 @@ function validateValue() {
 
 function displayErrorMessage(display, message) {
   var scope = angular.element(document.querySelector("#variableControllerPanel")).scope();
-  scope.data.showErrorMessage = display;
-  scope.data.errorMessage = message;
-  scope.$apply(() => {});
-  var btn = parent.document.getElementById("btn_OK");
-  btn.disabled = display;
+    if (scope.data.showErrorMessage !== display) {
+        scope.data.showErrorMessage = display;
+        scope.data.errorMessage = message;
+        var btn = parent.document.getElementById("btn_OK");
+        btn.disabled = display;
+    }
 }
 
 
 var variableData = null;
 function OnLoad(dataObj) {
+  loadNamePatterns();
   variableData = dataObj || {};
   var scope = angular.element(document.querySelector("#variableControllerPanel")).scope();
 
@@ -186,8 +222,8 @@ function OnLoad(dataObj) {
 
           //for regular expression items
           if (scope.data.docType.value == "dtTextRegEx") {
-            scope.data.useRegExLine = (variableData.regExpLine > 0); // checked if a line is specified
-            scope.data.useRegExNumChars = (variableData.numChars >= 0); //checked if not -1
+            scope.data.useRegExLine = (variableData.regExpLine >= 0); // checked if a line is specified
+            scope.data.useRegExNumChars = (variableData.numChars >= 0); //checked if not null
             scope.data.regExLine = variableData.regExpLine;
             scope.data.regExBegPos = variableData.begPosition;
             scope.data.regExNumChars = variableData.numChars;
@@ -270,19 +306,19 @@ function GetDataObject() {
     dataObj.docLink = scope.data.varLink;
     dataObj.docType = scope.data.docType.value;
     dataObj.docPath = scope.data.docPath;
+    dataObj.pathMustExist = scope.data.resetOnRuns;
     if (scope.data.docType.value == "dtTextRegEx") {
       //set the extra regExp options to not used unless checked
-      dataObj.regExpLine = 0;
+      dataObj.regExpLine = -1;
       dataObj.begPosition = 0;
       dataObj.numChars = -1;
-      dataObj.pathMustExist = scope.data.resetOnRuns;
 
       //Assign if checked 
       if (scope.data.useRegExLine) {
         dataObj.regExpLine = scope.data.regExLine;
         dataObj.begPosition = scope.data.regExBegPos;
       }
-      if (scope.data.useRegExNumChars) {
+      if (scope.data.useRegExLine && scope.data.useRegExNumChars) {
         dataObj.numChars = scope.data.regExNumChars;
       }
     }
@@ -293,7 +329,12 @@ function GetDataObject() {
     dataObj.accrualStatesData = SortAccrualTables(scope.accrualStatesData);
 	}
   else {
-    dataObj.value = scope.data.value;
+    if (scope.doubleTypeSelected) {
+      // Angular doesn't convert scientific notation to numbers automatically
+      dataObj.value = Number(scope.data.value);
+    } else {
+      dataObj.value = scope.data.value;
+    }
     dataObj.resetOnRuns = scope.data.resetOnRuns;
   }
 
@@ -402,13 +443,13 @@ function handleVarScopeChanged(newV, oldV) {
       break;
   }
  
-  
   somethingChanged();
 }
 
 var variableModule = angular.module("variableModule", []);
 variableModule.controller("variableController", ["$scope", function ($scope) {
   $scope.name = "";
+  $scope.namingPatterns = [];
   $scope.desc = "";
 
   $scope.docTypes = [
@@ -425,9 +466,9 @@ variableModule.controller("variableController", ["$scope", function ($scope) {
     varLink: "",
     
     useRegExLine: false,
-    regExLine: 0,
+    regExLine: -1,
     regExBegPos: 0,
-    useRegExNumChars: true,
+    useRegExNumChars: false,
     regExNumChars: -1,
 
     sim3DId: "",
@@ -450,6 +491,7 @@ variableModule.controller("variableController", ["$scope", function ($scope) {
 
   $scope.$watch("name", function (newV, oldV) { if (newV !== oldV) somethingChanged(); });
   $scope.$watch("desc", function (newV, oldV) { if (newV !== oldV) somethingChanged(); });
+  $scope.$watch("varType", function (newV, oldV) { if (newV !== oldV) { somethingChanged(); updateName(); } });
   $scope.$watch("varScope", function (newV, oldV) { if (newV !== oldV) handleVarScopeChanged(newV, oldV); });
   $scope.$watch("data.value", function (newV, oldV) { if (newV !== oldV) validateValue(); });
   $scope.$watch("data.sim3DId", function (newV, oldV) { if (newV !== oldV) somethingChanged(); });
@@ -481,6 +523,25 @@ variableModule.controller("variableController", ["$scope", function ($scope) {
     { name: "Second", value: "trSeconds", abbr: "Sec" }
   ];
   $scope.accrualUnit = $scope.accrualUnits[1]; // Default to Hours
+
+  /**
+   * When the line # checkbox is clicked, this will initialize the value to 0 if it's not already set.
+   */
+  $scope.initializeRegExLine = function () {
+    if ($scope.data.regExLine === -1) {
+      $scope.data.regExLine = 0;
+      $scope.data.regExBegPos = 0;
+    }
+  }
+
+  /**
+   * When the num chars checkbox is clicked, this will initialize the value to 0 if it's not already set.
+   */
+  $scope.initializeRegExNumChars = function () {
+    if ($scope.data.regExNumChars === -1) {
+      $scope.data.regExNumChars = 0;
+    }
+  }
 
 }]);
 

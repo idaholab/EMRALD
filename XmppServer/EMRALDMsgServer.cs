@@ -28,7 +28,7 @@ namespace XmppMessageServer
     private XmppMessageServer _xmppMsgServer;
     private IMessageForm _form;
     private int _nextMsgId = 0;
-    private string _passwd = "secret";
+    //private string _passwd = "secret";
     private TEventCallBack _evCallBackFunc = null;
 
     //private List<string> _connections = new List<string>();
@@ -44,9 +44,9 @@ namespace XmppMessageServer
 
     public TEventCallBack evCallBackFunc { set { _evCallBackFunc = value; } }
 
-    public EMRALDMsgServer(IAppSettingsService appSettingsService)
+    public EMRALDMsgServer(string passwd, IAppSettingsService appSettingsService)
     {
-      _xmppMsgServer = new XmppMessageServer(m_port, _passwd, appSettingsService);
+      _xmppMsgServer = new XmppMessageServer(m_port, passwd, appSettingsService);
       _xmppMsgServer.SetMessageClient(this);
     }
 

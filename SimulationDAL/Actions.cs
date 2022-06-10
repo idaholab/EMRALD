@@ -52,7 +52,7 @@ namespace SimulationDAL
 
       //add derived items
       retStr = retStr + "\"actType\": \"" + this.actType.ToString() + "\"," + Environment.NewLine;
-      retStr = retStr + "\"mainItem\": \"" + this.mainItem.ToString() + "\"," + Environment.NewLine;
+      retStr = retStr + "\"mainItem\": \"" + this.mainItem.ToString().ToLower() + "\"," + Environment.NewLine;
 
       retStr = retStr + GetDerivedJSON(lists);
 
@@ -132,16 +132,19 @@ namespace SimulationDAL
     public override string GetDerivedJSON(EmraldModel lists)
     {
       string retStr = "";
-      retStr = retStr + "\"mutExcl\": \"" + this.mutExcl.ToString() + "\"";
+      retStr = retStr + "\"mutExcl\": \"" + this.mutExcl.ToString().ToLower() + "\"";
       retStr = retStr + "," + Environment.NewLine + "\"newStates\": [";
       string varProbStr;
       for (int i = 0; i < this._newStateIDs.Count; ++i)
       {
-        varProbStr = this._toStateVarProb[i] == null ? "null" : this._toStateVarProb[i].name;
+        varProbStr = this._toStateVarProb[i] == null ? null : this._toStateVarProb[i].name;
         //retStr = retStr + Environment.NewLine + "{" + this._newStateIDs[i].GetJSON(false, false) + ",";
         retStr = retStr + Environment.NewLine + "{\"toState\": \"" + this._newStateIDs[i].name + "\",";
         retStr = retStr + Environment.NewLine + "\"prob\":" + this._toStateProb[i].ToString() + ",";
-        retStr = retStr + Environment.NewLine + "\"varProb\": \"" + varProbStr + "\",";
+        if(this._toStateVarProb[i] != null)
+          retStr = retStr + Environment.NewLine + "\"varProb\": \"" + this._toStateVarProb[i].name + "\",";
+        else
+          retStr = retStr + Environment.NewLine + "\"varProb\": null,";
         retStr = retStr + Environment.NewLine + "\"failDesc\":\"" + this._failDesc[i] + "\"}";
         if (i < this._newStateIDs.Count - 1)
         {
@@ -542,7 +545,7 @@ namespace SimulationDAL
     protected List<String> codeVariables = new List<String>();
     protected bool compiled = false;
     protected Type _retType = typeof(double);
-
+    protected string variable = "";
     public string scriptCode = "";
    
     public ScriptAct(EnActionType actType)
@@ -559,35 +562,7 @@ namespace SimulationDAL
         this.codeVariables = new List<String>(inCodeVars);
       this.scriptCode = inScriptCode;
     }
-
-    public override string GetDerivedJSON(EmraldModel lists)
-    {
-      string newScriptStr = scriptCode.Replace("\n", "\\n").Replace("\r", "\\r");
-      
-      string retStr = Environment.NewLine + "\"scriptCode\":" + "\"" + newScriptStr + "\"";
-
-      if (codeVariables != null)
-      {
-        bool first = true;
-        retStr = retStr + "," + Environment.NewLine + "\"codeVariables\":[";
-        foreach (string varName in codeVariables)
-        {
-          if (first)
-          {
-            retStr = retStr + "\"" + varName + "\"";
-            first = false;
-          }
-          else
-          {
-            retStr = retStr + ", \"" + varName + "\"";
-          }
-        }
-        retStr = retStr + "]" + Environment.NewLine;
-      }
-      
-      return retStr;
-    }
-
+    
     public override bool DeserializeDerived(object obj, bool wrapped, EmraldModel lists, bool useGivenIDs)
     {
       dynamic dynObj = (dynamic)obj;
@@ -713,9 +688,24 @@ namespace SimulationDAL
 
     public override string GetDerivedJSON(EmraldModel lists)
     {
-      string newValStr = scriptCode.Replace("\n", "\\n").Replace("\r", "\\r");
       
-      string retStr = base.GetDerivedJSON(lists);
+      string newScriptStr = scriptCode.Replace("\n", "\\n").Replace("\r", "\\r");
+
+      string retStr = Environment.NewLine + "\"scriptCode\":" + "\"" + newScriptStr + "\"";
+
+      if (codeVariables != null)
+      {
+        retStr = retStr + "," + Environment.NewLine + "\"codeVariables\":[";
+        foreach (string varName in codeVariables)
+        {
+          if (varName != simVar.name)
+          {
+            retStr = retStr + ", \"" + varName + "\"";
+          }
+        }
+        retStr = retStr + "]" + Environment.NewLine;
+      }
+            
       if (simVar != null)
         retStr = retStr + "," + Environment.NewLine + "\"variableName\":" + "\"" + simVar.name + "\"";
 
@@ -764,6 +754,7 @@ namespace SimulationDAL
       }
 
       base.LoadObjLinks(obj, wrapped, lists);
+
       if (!codeVariables.Contains(simVar.name))
       {
         this.codeVariables.Add(simVar.name);
@@ -890,131 +881,24 @@ namespace SimulationDAL
     }
   }
 
-  public class CustomStateShiftAct : ScriptAct //atCustomStateShift
-  {
 
-    public CustomStateShiftAct()
-      : base(EnActionType.atCustomStateShift) { }
-
-    public CustomStateShiftAct(string inName, SimVariable inSimVar, string inScriptCode, List<String> inCodeVars)
-      : base(inName, inScriptCode, inCodeVars, EnActionType.atCngVarVal) {}
-
-
-    public bool CompileCode(EmraldModel lists)
-    {
-      if (scriptCode == "")
-      {
-        return false;
-      }
-
-      this.compiled = false;
-      scriptRunner = new ScriptEngine("JumpAct_" + this.name, ScriptEngine.Languages.CSharp);
-      scriptRunner.Code = scriptCode; // "Result = var1+3;";
-
-      //add the Time and 3D Frame variables
-      scriptRunner.AddVariable("CurTime", typeof(Double));
-      scriptRunner.AddVariable("ExeExitCode", typeof(int));
-
-      //add all the variables needed
-      if (codeVariables != null)
-      {
-        foreach (string varName in codeVariables)
-        {
-          if ((varName != "CurTime") &&
-              (varName != "ExeExitCode"))
-          {
-            scriptRunner.AddVariable(varName, typeof(double));
-          }
-        }
-      }
-
-      scriptRunner.AddVariable("outputFile", typeof(string));
-
-      //add all the states
-      foreach (KeyValuePair<int, State> state in lists.allStates)
-      {
-        //todo see if there are any variables with the name of the state
-        scriptRunner.AddVariable(state.Value.name, typeof(bool));
-        scriptRunner.AddVariable(state.Value.name + "_Time", typeof(TimeSpan));
-      }
-
-
-      if (!scriptRunner.Compile(typeof(List<string>)))
-      {
-        throw new Exception("failed to compile code - " + String.Join(Environment.NewLine, scriptRunner.messages.ToArray()) + Environment.NewLine + scriptCode);
-      }
-      else
-      {
-        this.compiled = true;
-      }
-
-      return this.compiled;
-    }
-
-    public void GetNewStateShifts(EmraldModel lists, ref List<int> addStates, ref List<int> removeStates)
-    {
-      if (!this.compiled)
-      {
-        if (!CompileCode(lists))
-          throw new Exception("Code for - " + this.name + " failed to compile, can not evaluate");
-      }
-
-      //Set all the variable values
-      if (codeVariables != null)
-      {
-        foreach (string varName in codeVariables)
-        {
-          SimVariable curVar = lists.allVariables.FindByName(varName);
-          if (curVar == null)
-            throw new Exception("Failed to find variable named " + varName);
-
-          scriptRunner.SetVariable(curVar.name, typeof(double), curVar.value);
-        }
-      }
-
-
-      List<String> retStates = scriptRunner.EvaluateStrList();
-
-      //make sure all the IDs returned are valid state IDs.
-      foreach (string listItem in retStates)
-      {
-        if ((listItem[0] != '+') && (listItem[0] != '-'))
-          throw new Exception("States must be tagged with '+' or '-' for adding or removing");
-
-        bool add = listItem[0] == '+';
-        string stateName = listItem.Substring(1);
-        State retState = lists.allStates.FindByName(stateName);
-        if (retState == null)
-        {
-          throw new Exception("processOutputFile code did not generate valid state IDs.");
-        }
-        else
-        {
-          if (add)
-            addStates.Add(retState.id);
-          else
-            removeStates.Add(retState.id);
-        }
-      }
-    }
-
-  }
+  public enum ReturnType { rtNone, rtStateList, rtVar };
 
   public class RunExtAppAct : Action //atRunExtApp
   {
-    private string exePath = "";
-    
+    private string exePath = "";    
     private ScriptEngine makeInputFileCompEval = null;
     private ScriptEngine processOutputFileCompEval = null;
-    private List<String> codeVariables = new List<String>();
+    public List<String> codeVariables = new List<String>();
     private bool compiled;
     private ProcessStartInfo extApp = null;
     private Process proc = null;
     private string exeOutputPath = "";
-
     public string makeInputFileCode = "";
     public string processOutputFileCode = "";
-    
+    public ReturnType returnProcess = ReturnType.rtStateList;
+    public SimVariable assignVariable = null;
+
     public RunExtAppAct()
       : base("", EnActionType.atRunExtApp)
     {
@@ -1045,28 +929,18 @@ namespace SimulationDAL
       string code1Str = makeInputFileCode.Replace("\\", "\\\\").Replace("\n", "\\n").Replace("\r", "\\r").Replace("\"", "\\\""); //
       string code2Str = processOutputFileCode.Replace("\\", "\\\\").Replace("\"", "\\\"").Replace("\n", "\\n").Replace("\r", "\\r");
       string exePathStr = exePath.Replace("\\", "\\\\").Replace("\"", "\\\"");
-      //JObject codeJson1 = new JObject();
-      //codeJson1.Add("code", code1Str);
-      //JObject codeJson2 = new JObject();
-      //codeJson2.Add("code", code2Str);
-      //code1Str = codeJson1.ToString();
-      //code2Str = codeJson2.ToString();
-      //code1Str = code1Str.Substring(14, code1Str.Length - 18);
-      //code2Str = code2Str.Substring(14, code2Str.Length - 18);
 
-
+      if(Environment.OSVersion.Platform == PlatformID.Unix)
+      {
+        code1Str = makeInputFileCode.Replace("\\", "/").Replace("\n", "\\n").Replace("\r", "\\r").Replace("\"", "\\\""); //
+        code2Str = processOutputFileCode.Replace("\\", "/").Replace("\"", "\\\"").Replace("\n", "\\n").Replace("\r", "\\r");
+        exePathStr = exePath.Replace("\\", "/").Replace("\"", "\\\"");
+      }
 
       string retStr = Environment.NewLine + "\"makeInputFileCode\":" + "\"" + code1Str + "\"";
       retStr = retStr + "," + Environment.NewLine + "\"processOutputFileCode\":" + "\"" + code2Str + "\"";
       retStr = retStr + "," + Environment.NewLine + "\"exePath\":" + "\"" + exePathStr + "\"";
-      retStr = retStr + "," + Environment.NewLine + "\"exeOutputPath\":" + "\"" + exeOutputPath + "\"";
-
-      //string codeStr = "{\"processOutputFileCode\":" + "\"" + code2Str + "\"}";
-
-      //JObject retJO = new JObject();
-      //retJO.Add("code", code2Str);
-      //string jStr = retJO.ToString();
-      //var dynamicObj = Json.Decode(jStr);
+      //retStr = retStr + "," + Environment.NewLine + "\"exeOutputPath\":" + "\"" + exeOutputPath.Replace("\\", "\\\\") + "\"";
 
 
       if (codeVariables != null)
@@ -1112,6 +986,16 @@ namespace SimulationDAL
       processOutputFileCode = (string)dynObj.processOutputFileCode;
       exePath = (string)dynObj.exePath;
 
+      if(dynObj.returnProcess != null)
+      {
+        returnProcess = (ReturnType)Enum.Parse(typeof(ReturnType), (string)dynObj.returnProcess, true);
+      }
+
+      if((returnProcess == ReturnType.rtVar) && (dynObj.variableName == null))
+      {
+        throw new Exception("missing variable definition  " + exePath);
+      }
+
       if (Path.IsPathRooted(exePath))
       {
         if (!exePath.StartsWith("cmd.exe") && !File.Exists(exePath))
@@ -1119,8 +1003,17 @@ namespace SimulationDAL
       }
       else
       {
-        if (!exePath.StartsWith("cmd.exe") && !File.Exists(System.IO.Directory.GetCurrentDirectory() + "\\" + exePath))
-          throw new Exception("Executable path for the \"RunApplication\" action does not exist ! - " + exePath);
+        if (!exePath.StartsWith("cmd.exe"))
+        {
+          string fullExePath = exePath;
+          fullExePath = lists.rootPath;
+          if (!fullExePath.EndsWith(@"\"))
+            fullExePath += @"\";
+
+          fullExePath = Path.GetFullPath(Path.Combine(fullExePath + exePath));
+          if (!File.Exists(fullExePath))
+            throw new Exception("Executable path for the \"RunApplication\" action does not exist ! - " + exePath);
+        }
       }
 
       if (dynObj.exeOutputPath == null)
@@ -1155,7 +1048,11 @@ namespace SimulationDAL
           this.codeVariables.Add((string)varName);
         }
       }
-      
+
+      if (dynObj.variableName != null)
+      {
+        assignVariable = lists.allVariables.FindByName((string)dynObj.variableName);
+      }
 
       return true;
     }
@@ -1276,7 +1173,7 @@ namespace SimulationDAL
 
     private void WriteStandardOutput()
     {
-      using (StreamWriter writer = File.CreateText(exeOutputPath + "\\_out.txt"))
+      using (StreamWriter writer = File.CreateText(exeOutputPath + Path.DirectorySeparatorChar + "_out.txt"))
       using (StreamReader reader = proc.StandardOutput)
       {
         writer.AutoFlush = true;
@@ -1293,9 +1190,9 @@ namespace SimulationDAL
         }
       }
 
-      if (File.Exists(exeOutputPath + "\\_out.txt"))
+      if (File.Exists(exeOutputPath + Path.DirectorySeparatorChar + "_out.txt"))
       {
-        FileInfo info = new FileInfo(exeOutputPath + "\\_out.txt");
+        FileInfo info = new FileInfo(exeOutputPath + Path.DirectorySeparatorChar + "_out.txt");
 
         // if the error info is empty or just contains eof etc.
 
@@ -1310,9 +1207,11 @@ namespace SimulationDAL
       {
         if (!CompileMakeInputFileCode(lists))
           throw new Exception("MakeInputFile Code failed to compile, can not evaluate");
-
-        if (!CompileProcessOutputFileCode(lists))
-          throw new Exception("ProcessOutputFile Code failed compile, can not evaluate");
+        if ((processOutputFileCode != null) && (processOutputFileCode != ""))
+        {
+          if (!CompileProcessOutputFileCode(lists))
+            throw new Exception("ProcessOutputFile Code failed compile, can not evaluate");
+        }
       }
 
       //Set all the variable values
@@ -1325,12 +1224,10 @@ namespace SimulationDAL
             throw new Exception("Failed to find variable named " + varName);
 
           makeInputFileCompEval.SetVariable(curVar.name, curVar.dType, curVar.value);
-          processOutputFileCompEval.SetVariable(curVar.name, curVar.dType, curVar.value);
         }
 
         makeInputFileCompEval.SetVariable("CurTime", typeof(double), curTime.TotalHours);
-        makeInputFileCompEval.SetVariable("ExePath", typeof(string), Path.GetDirectoryName(exePath));
-        
+        makeInputFileCompEval.SetVariable("ExePath", typeof(string), Path.GetDirectoryName(exePath));        
       }
 
       //add if in states
@@ -1341,27 +1238,42 @@ namespace SimulationDAL
         {
           makeInputFileCompEval.SetVariable(state.Value.name, typeof(bool), true);
           makeInputFileCompEval.SetVariable(state.Value.name + "_Time", typeof(TimeSpan), stateTime);
-          processOutputFileCompEval.SetVariable(state.Value.name, typeof(bool), true);
-          processOutputFileCompEval.SetVariable(state.Value.name + "_Time", typeof(TimeSpan), stateTime);
+          if (processOutputFileCompEval != null)
+          {
+            processOutputFileCompEval.SetVariable(state.Value.name, typeof(bool), true);
+            processOutputFileCompEval.SetVariable(state.Value.name + "_Time", typeof(TimeSpan), stateTime);
+          }
         }
         else
         {
           makeInputFileCompEval.SetVariable(state.Value.name, typeof(bool), false);
           makeInputFileCompEval.SetVariable(state.Value.name + "_Time", typeof(TimeSpan), TimeSpan.FromMilliseconds(0));
-          processOutputFileCompEval.SetVariable(state.Value.name, typeof(bool), false);
-          processOutputFileCompEval.SetVariable(state.Value.name + "_Time", typeof(TimeSpan), TimeSpan.FromMilliseconds(0));
+          if (processOutputFileCompEval != null)
+          {
+            processOutputFileCompEval.SetVariable(state.Value.name, typeof(bool), false);
+            processOutputFileCompEval.SetVariable(state.Value.name + "_Time", typeof(TimeSpan), TimeSpan.FromMilliseconds(0));
+          }
         }
       }
 
       string runParams = makeInputFileCompEval.EvaluateString();
+      string fullExePath = exePath;
+      if ((exePath[0] == '.')&&(!Path.IsPathRooted(exePath)))
+      {
+        fullExePath = lists.rootPath;
+        if (!fullExePath.EndsWith(@"\"))
+          fullExePath += @"\";
+
+        fullExePath = Path.GetFullPath(Path.Combine(fullExePath + exePath));
+      }
 
       NLog.Logger logger = NLog.LogManager.GetLogger("logfile");
-      logger.Info("Executing - " + exePath + " " + runParams);
+      logger.Info("Executing - " + fullExePath + " " + runParams);
 
       int exitCode;
       if (runParams != null)
       {
-        if (!File.Exists(exePath) && !exePath.Contains("cmd.exe"))
+        if (!File.Exists(fullExePath) && !exePath.Contains("cmd.exe"))
           throw new Exception("No executable specified for RunExtApp - " + this.name);
 
         if (exePath.Contains("cmd.exe"))
@@ -1370,15 +1282,15 @@ namespace SimulationDAL
         //Start the executable
         extApp = new ProcessStartInfo();
         extApp.Arguments = runParams;
-        extApp.FileName = exePath; // Path.GetFileName(exePath);
-        extApp.WorkingDirectory = Path.GetDirectoryName(exePath);
+        extApp.FileName = fullExePath; // Path.GetFileName(exePath);
+        extApp.WorkingDirectory = Path.GetDirectoryName(fullExePath);
         extApp.UseShellExecute = false;
         extApp.RedirectStandardOutput = false;
         extApp.RedirectStandardError = false;
 
         // Do you want to show a console window?
-        //extApp.WindowStyle = Hidden.ProcessWindowStyle;
-        //extApp.CreateNoWindow = true;
+        // extApp.WindowStyle = Hidden.ProcessWindowStyle;
+        extApp.CreateNoWindow = true;
 
         // Run the external process & wait for it to finish
         using (proc = Process.Start(extApp))
@@ -1394,25 +1306,45 @@ namespace SimulationDAL
           // Retrieve the app's exit code
           exitCode = proc.ExitCode;
           proc.Close();
-          if (exitCode > 0)
-            throw new Exception("Failed to run external code - " + exePath + ".   exit code - " + exitCode.ToString());
+          //if (exitCode > 0) //don't quit on bad exit code, add it as a variable and allow the user to define what to do
+          //  throw new Exception("Failed to run external code - " + exePath + ".   exit code - " + exitCode.ToString());
         }
       }
       else 
         exitCode = -1;
 
-      processOutputFileCompEval.SetVariable("CurTime", typeof(double), curTime.TotalHours);
-      processOutputFileCompEval.SetVariable("ExeExitCode", typeof(int), exitCode);
-      processOutputFileCompEval.SetVariable("outputFile", typeof(string), exeOutputPath + "\\_out.txt");
+      //Set all the variable values
+      if (processOutputFileCompEval != null)
+      {
+        processOutputFileCompEval.SetVariable("CurTime", typeof(double), curTime.TotalHours);
+        processOutputFileCompEval.SetVariable("ExeExitCode", typeof(int), exitCode);
+        processOutputFileCompEval.SetVariable("outputFile", typeof(string), exeOutputPath + "\\_out.txt");
+        //Set all the variable values
+        if (codeVariables != null)
+        {
+          foreach (string varName in codeVariables)
+          {
+            SimVariable curVar = lists.allVariables.FindByName(varName);
+            if (curVar == null)
+              throw new Exception("Failed to find variable named " + varName);
 
-      List<String> retStates = processOutputFileCompEval.EvaluateStrList();
-      System.Threading.Thread.Sleep(10);
+            processOutputFileCompEval.SetVariable(curVar.name, curVar.dType, curVar.value);
+          }
+        }
+      }
 
-      while (File.Exists(Path.GetDirectoryName(exePath) + "\\_out.txt"))
+
+      switch (this.returnProcess)
+      { 
+        case ReturnType.rtStateList:        
+          List<String> retStates = processOutputFileCompEval.EvaluateStrList();
+          System.Threading.Thread.Sleep(10);
+
+      while (File.Exists(Path.GetDirectoryName(exePath) + Path.DirectorySeparatorChar + "_out.txt"))
       {
         try
         {
-          System.IO.File.Delete(Path.GetDirectoryName(exePath) + "\\_out.txt");
+          System.IO.File.Delete(Path.GetDirectoryName(exePath) + Path.DirectorySeparatorChar + "_out.txt");
         }
         catch
         {
@@ -1420,29 +1352,36 @@ namespace SimulationDAL
         }
       }
 
-      //make sure all the IDs returned are valid state IDs.
-      foreach (string listItem in retStates)
-      {
-        if ((listItem[0] != '+') && (listItem[0] != '-'))
-          throw new Exception("States must be tagged with '+' or '-' for adding or removing");
+          //make sure all the IDs returned are valid state IDs.
+          foreach (string listItem in retStates)
+          {
+            if ((listItem[0] != '+') && (listItem[0] != '-'))
+              throw new Exception("States must be tagged with '+' or '-' for adding or removing");
 
-        bool add = listItem[0] == '+';
-        string stateName = listItem.Substring(1);
-        State retState = lists.allStates.FindByName(stateName);
-        if (retState == null)
-        {
-          throw new Exception("processOuputFile code did not generate vaild state IDs.");
-        }
-        else
-        {
-          if (add)
-            addStates.Add(retState.id);
-          else
-            removeStates.Add(retState.id);
-        }
+            bool add = listItem[0] == '+';
+            string stateName = listItem.Substring(1);
+            State retState = lists.allStates.FindByName(stateName);
+            if (retState == null)
+            {
+              throw new Exception("processOuputFile code did not generate vaild state IDs.");
+            }
+            else
+            {
+              if (add)
+                addStates.Add(retState.id);
+              else
+                removeStates.Add(retState.id);
+            }
+          }
+          break;
+        case ReturnType.rtVar:
+          assignVariable.SetValue(processOutputFileCompEval.EvaluateGeneric()); 
+          break;
+
+        default: //do nothing
+          break;
       }
     }
-
   }
 
   public class Sim3DAction : Action //at3DSim
@@ -1487,15 +1426,10 @@ namespace SimulationDAL
     public override string GetDerivedJSON(EmraldModel lists)
     {
 
-      string retStr = "," + Environment.NewLine + "\"sim3DMessageID\":" + "\"" + sim3DMessage.ToString() + "\"";
+      string retStr = Environment.NewLine + "\"sim3DMessage\":" + "\"" + sim3DMessage.ToString() + "\"";
       retStr = retStr + "," + Environment.NewLine + "\"extSim\":" + "\"" + _extSim.name + "\"";
       if (this.simVar != null)
         retStr = retStr + "," + Environment.NewLine + "\"sim3DVariable\":" + "\"" + simVar.name + "\"";
-      if (this._extSim != null)
-        retStr = retStr + "," + Environment.NewLine + "\"sim3DModelRef\":" + "\"" + _extSim.modelRef + "\"";
-      if (this._extSim != null)
-        retStr = retStr + "," + Environment.NewLine + "\"sim3DConfigData\":" + "\"" + _extSim.configData + "\"";
-      retStr = retStr + "," + Environment.NewLine + "\"openSimVarParams\":" + openSimVarParams.ToString();
       return retStr;
     }
 
@@ -1673,7 +1607,10 @@ namespace SimulationDAL
 
       this.Clear();
 
-      this.moveFromCurrent = (bool)dynObj.moveFromCurrent;
+      if (dynObj.moveFromCurrent != null)
+        this.moveFromCurrent = (bool)dynObj.moveFromCurrent;
+      else
+        this.moveFromCurrent = true;
 
       if (dynObj.actions != null)
       {
@@ -1801,7 +1738,6 @@ namespace SimulationDAL
         case EnActionType.atCngVarVal: retAct = new VarValueAct(); break;
         case EnActionType.atTransition: retAct = new TransitionAct(); break;
         case EnActionType.atRunExtApp: retAct = new RunExtAppAct(); break;
-        case EnActionType.atCustomStateShift: retAct = new CustomStateShiftAct(); break;
         default: break;
       }
 
@@ -1936,14 +1872,16 @@ namespace SimulationDAL
           {
             throw new Exception("Action \"" + item.Value.name + " \"  preprocessor code - " + e.Message);
           }
-
-          try
+          if ((((RunExtAppAct)item.Value).processOutputFileCode != null) && (((RunExtAppAct)item.Value).processOutputFileCode != ""))
           {
-            ((RunExtAppAct)item.Value).CompileProcessOutputFileCode(lists);
-          }
-          catch (Exception e)
-          {
-            throw new Exception("Action \"" + item.Value.name + " \" postprocessing code -" + e.Message);
+            try
+            {
+              ((RunExtAppAct)item.Value).CompileProcessOutputFileCode(lists);
+            }
+            catch (Exception e)
+            {
+              throw new Exception("Action \"" + item.Value.name + " \" postprocessing code -" + e.Message);
+            }
           }
         }
       }

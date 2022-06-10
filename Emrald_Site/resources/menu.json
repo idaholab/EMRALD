@@ -15,14 +15,35 @@
           "submenu": null
         },
         {
+          "title": "Merge...",
+          "fnc": "mergeIntoCurrentProject",
+          "submenu": null
+        },
+        {
           "title": "Save",
           "fnc": "saveProject",
           "submenu": null
         },
         {
-          "title": "Export Templates",
-          "fnc": "saveTemplate",
-          "submenu": null
+          "title": "Templates",
+          "fnc": "",
+          "submenu": [
+            {
+              "title": "Import Templates",
+              "fnc": "loadTemplate",
+              "submenu": null
+            },
+            {
+              "title": "Export Templates",
+              "fnc": "saveTemplate",
+              "submenu": null
+            },
+            {
+              "title": "Clear Templates",
+              "fnc": "clearTemplates",
+              "submenu": null
+            }
+          ]
         },
         {
           "title": "Load Demo",

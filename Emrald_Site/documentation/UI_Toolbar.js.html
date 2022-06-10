@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: UI/Toolbar.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: UI/Toolbar.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>﻿/**
+ * @file The logic tree editor toolbar.
+ * @copyright 2021 Battelle Energy Alliance
+ */
+
+/// &lt;reference path="Common.js" />
+/// &lt;reference path="../mxGraph/js/util/mxToolbar.js" />
+/// &lt;reference path="../mxGraph/js/util/mxDragSource.js" />
+'use strict';
+
+/**
+ * @namespace FaultTree
+ */
+var FaultTree;
+(function (FaultTree) {
+  var Toolbar = (function (_super) {
+    __extends(Toolbar, _super);
+    
+    /**
+     * Constructs Toolbar.
+     * 
+     * @class FaultTree#Toolbar
+     * @classdesc The logic tree editor toolbar.
+     * @augments mxToolbar
+     * @constructs
+     * @param {HTMLElement} content The toolbar content.
+     * @param {mxGraph} graph The main mxGraph.
+     */
+    function Toolbar(content, graph) {
+      _super.apply(this, arguments);
+
+      /**
+       * The graph the toolbar belongs to.
+       * 
+       * @name FaultTree#Toolbar#graph
+       * @type {mxGraph}
+       */
+      this.graph = graph;
+
+      var dragOverFnc = function (graph, x, y) {
+        var cell = graph.getCellAt(x, y, graph.getDefaultParent(), true, false); // x,y,parent,vertices,edges
+        if (cell) {
+          if (cell.value instanceof FTItem &amp;&amp; cell.value.getgType() in SetOf(["OR", "AND"]))
+            return cell;
+          else if (cell.parent.value instanceof FTItem &amp;&amp; cell.parent.value.getgType() in SetOf(["OR", "AND"]))
+            return cell.parent;
+        }
+        return null;
+      }
+
+      var superAddItem = this.addItem;
+
+      /**
+       * Adds an item to the toolbar.
+       * 
+       * @name FaultTree#Toolbar#addItem
+       * @function
+       * @param {string} title The item title.
+       * @param {string} icon Path to the item icon.
+       * @param {Function} funct Function to call when the item is clicked.
+       * @param {string} pressedIcon Path to the item pressed icon.
+       * @param {string} style CSS class name to apply to the toolbar.
+       * @returns {HTMLButtonElement} The item element.
+       */
+      this.addItem = function (title, icon, funct, pressedIcon, style) {
+        var elt = superAddItem.apply(this, arguments);
+        elt.style.width = "32px";
+        elt.style.height = "32px";
+        return elt;
+				}
+
+        /**
+         * Creates &amp; adds a draggable item to the toolbar.
+         * 
+         * @name FaultTree#Toolbar#addNewDraggableItem
+         * @function
+         * @param {string} title The item title.
+         * @param {string} icon Path to the item icon.
+         * @param {string} style CSS class name to apply to the item.
+         * @param {boolean} [isDraggable] If the item is draggable
+         * @returns {HTMLButtonElement} The item element.
+         */
+				this.addNewDraggableItem = function (title, icon, style, isDraggable) {
+						var elt = this.addItem(title, icon, function (evt) { }, icon, null, null);
+						var cloneElt = elt.cloneNode(true);
+						cloneElt.style.width = '32px';
+						cloneElt.style.height = '32px';
+						if (isDraggable) {
+								elt.draggable = true;
+								elt.ondragstart = function (evt) {
+										evt.dataTransfer.effectAllowed = 'copy';
+										evt.dataTransfer.setData("gate", title);
+								}.bind(elt);
+
+								elt.onmouseup = function (evt) {
+										var target = evt.currentTarget;
+										var sibs = target.parentElement.children;
+										for (var i = 0; i &lt; sibs.length; i++) {
+												var u = sibs[i];
+												if ((u.nodeName == 'LI') &amp;&amp; (u.className == "ItemSelected")) {
+														u.className = "ItemCleared";
+												}
+										};
+										target.className = "ItemSelected";
+								}
+						}
+						return elt;
+				}
+
+      var superAddSeparator = this.addSeparator;
+
+      /**
+       * Adds a separator to the toolbar.
+       * 
+       * @name FaultTree#Toolbar#addSeparator
+       * @function
+       * @param {string} icon The separator icon.
+       * @returns {HTMLButtonElement} The separator element.
+       */
+      this.addSeparator = function (icon) {
+        var elt = document.createElement('img');
+        elt.src = icon;
+        elt.style.width = "15px";
+        elt.style.height = "38px";
+        this.container.appendChild(elt);
+        return elt;
+      }
+
+      //this.addItem(title, icon, funct, pressedIcon, style, factoryMethod) =>elt
+      /**
+       * Adds an existing draggable item to the toolbar.
+       * 
+       * @name FaultTree#Toolbar#addDraggableItem
+       * @function
+       * @param {string} title The item title.
+       * @param {string} icon Path to the item icon.
+       * @param {string} style CSS class name to apply to the item.
+       * @param {boolean} isDraggable If the item is draggable.
+       * @param {Function} dropHandler Function to call when the user releases dragging the item.
+       * @returns {HTMLButtonElement} The item element.
+       */
+      this.addDraggableItem = function (title, icon, style, isDraggable, dropHandler) {
+        var elt = this.addItem(title, icon, function (evt) { }, icon, null, null);
+        if (isDraggable &amp;&amp; dropHandler &amp;&amp; (typeof dropHandler === 'function')) {
+          var cloneElt = elt.cloneNode(true);
+          cloneElt.style.width = '32px';
+          cloneElt.style.height = '32px';
+          // makeDraggable: function(element, graphF, funct, dragElement, dx, dy, autoscroll,	scalePreview, highlightDropTargets, getDropTarget)
+          var ds = mxUtils.makeDraggable(elt, this.graph, dropHandler, cloneElt, 0, 0, false, false, true, this.dragOver);
+        }
+        return elt;
+      }
+      
+      Object.defineProperty(this, "dragOver", { get: function () { return dragOverFnc; }, set: function (value) { dragOverFnc = value; }, enumerable: true, configurable: true });
+    }
+
+    return Toolbar;
+  })(mxToolbar);
+  FaultTree.Toolbar = Toolbar;
+})(FaultTree || (FaultTree = {}));</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Namespaces</h3><ul><li><a href="FaultTree.html">FaultTree</a></li><li><a href="ftEditor.html">ftEditor</a></li><li><a href="Navigation.html">Navigation</a></li><li><a href="RiskSim.html">RiskSim</a></li><li><a href="simApp.html">simApp</a></li></ul><h3>Classes</h3><ul><li><a href="Enum.html">Enum</a></li><li><a href="FaultTree_Toolbar.html">Toolbar</a></li><li><a href="ftEditor_FTItem.html">FTItem</a></li><li><a href="ftEditor_FTItemArray.html">FTItemArray</a></li><li><a href="Navigation_Menu.html">Menu</a></li><li><a href="Navigation_Sidebar.html">Sidebar</a></li><li><a href="RiskSim_CommonDialog.html">CommonDialog</a></li><li><a href="RiskSim_Window.html">Window</a></li><li><a href="simApp_SimApp.html">SimApp</a></li><li><a href="StateApp.html">StateApp</a></li><li><a href="StateShape.html">StateShape</a></li><li><a href="TableShape.html">TableShape</a></li><li><a href="WcfService.html">WcfService</a></li><li><a href="WindowFrame.html">WindowFrame</a></li></ul><h3>Interfaces</h3><ul><li><a href="Action.html">Action</a></li><li><a href="Diagram.html">Diagram</a></li><li><a href="Event.html">Event</a></li><li><a href="ExtSim.html">ExtSim</a></li><li><a href="ftEditor_Globals.html">Globals</a></li><li><a href="ftEditor_Globals_ftNodeSettings.html">ftNodeSettings</a></li><li><a href="LogicNode.html">LogicNode</a></li><li><a href="MenuItem.html">MenuItem</a></li><li><a href="Model.html">Model</a></li><li><a href="State.html">State</a></li><li><a href="Variable.html">Variable</a></li></ul><h3>Global</h3><ul><li><a href="global.html#addBE">addBE</a></li><li><a href="global.html#addNode">addNode</a></li><li><a href="global.html#addOverlays">addOverlays</a></li><li><a href="global.html#adjustWindowPos">adjustWindowPos</a></li><li><a href="global.html#BuildTreeRec">BuildTreeRec</a></li><li><a href="global.html#classNameOf">classNameOf</a></li><li><a href="global.html#clearAllCookies">clearAllCookies</a></li><li><a href="global.html#createDemo">createDemo</a></li><li><a href="global.html#createPopupMenu">createPopupMenu</a></li><li><a href="global.html#createTestProject">createTestProject</a></li><li><a href="global.html#createTestProject2">createTestProject2</a></li><li><a href="global.html#DataChanged">DataChanged</a></li><li><a href="global.html#DataType">DataType</a></li><li><a href="global.html#deepClone">deepClone</a></li><li><a href="global.html#deleteSimulation">deleteSimulation</a></li><li><a href="global.html#downloadClientTester">downloadClientTester</a></li><li><a href="global.html#downloadClientTesterSource">downloadClientTesterSource</a></li><li><a href="global.html#downloadSolver">downloadSolver</a></li><li><a href="global.html#editDiagramNode">editDiagramNode</a></li><li><a href="global.html#editNode">editNode</a></li><li><a href="global.html#ErrorMessage">ErrorMessage</a></li><li><a href="global.html#extractSubStr">extractSubStr</a></li><li><a href="global.html#GetDataObject">GetDataObject</a></li><li><a href="global.html#getDefaultGateID">getDefaultGateID</a></li><li><a href="global.html#getMainApp">getMainApp</a></li><li><a href="global.html#getRowY">getRowY</a></li><li><a href="global.html#getServerFile">getServerFile</a></li><li><a href="global.html#getSidebar">getSidebar</a></li><li><a href="global.html#isIENavigator">isIENavigator</a></li><li><a href="global.html#isModified">isModified</a></li><li><a href="global.html#main">main</a></li><li><a href="global.html#makeTransparent">makeTransparent</a></li><li><a href="global.html#mergeFTData">mergeFTData</a></li><li><a href="global.html#mergeIntoCurrentProject">mergeIntoCurrentProject</a></li><li><a href="global.html#MessageBox">MessageBox</a></li><li><a href="global.html#newProject">newProject</a></li><li><a href="global.html#newSimulation">newSimulation</a></li><li><a href="global.html#noSpaces">noSpaces</a></li><li><a href="global.html#OnLoad">OnLoad</a></li><li><a href="global.html#OnSave">OnSave</a></li><li><a href="global.html#openAbout">openAbout</a></li><li><a href="global.html#openCSharpTool">openCSharpTool</a></li><li><a href="global.html#openFaultTree">openFaultTree</a></li><li><a href="global.html#openHelp">openHelp</a></li><li><a href="global.html#openProject">openProject</a></li><li><a href="global.html#openPythonTool">openPythonTool</a></li><li><a href="global.html#rgba">rgba</a></li><li><a href="global.html#route">route</a></li><li><a href="global.html#saveDiagramProperties">saveDiagramProperties</a></li><li><a href="global.html#saveProject">saveProject</a></li><li><a href="global.html#saveTemplate">saveTemplate</a></li><li><a href="global.html#sequence">sequence</a></li><li><a href="global.html#setCookie">setCookie</a></li><li><a href="global.html#setModified">setModified</a></li><li><a href="global.html#SetOf">SetOf</a></li><li><a href="global.html#somethingChanged">somethingChanged</a></li><li><a href="global.html#sortDOMList">sortDOMList</a></li><li><a href="global.html#testMakeCompDiagram">testMakeCompDiagram</a></li><li><a href="global.html#triggerEvent">triggerEvent</a></li><li><a href="global.html#updateCell">updateCell</a></li><li><a href="global.html#ValidateData">ValidateData</a></li><li><a href="global.html#waitToSync">waitToSync</a></li><li><a href="global.html#windowClosing">windowClosing</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.7</a> on Mon Aug 02 2021 17:12:21 GMT-0400 (Eastern Daylight Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

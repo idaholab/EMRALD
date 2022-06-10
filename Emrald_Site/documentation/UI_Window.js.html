@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: UI/Window.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: UI/Window.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>﻿/**
+ * @file Custom window functionality.
+ * @copyright 2021 Battelle Energy Alliance
+ */
+
+/// &lt;reference path="CustomWindowHandler.js" />
+"use strict";
+
+/**
+ * @namespace RiskSim
+ */
+var RiskSim;
+(function (RiskSim) {
+  //===================================================================================
+  //#region Window
+  var Window = (function (_super) {
+    __extends(Window, _super);
+
+    /**
+     * Constructs Window.
+     * 
+     * @class RiskSim#Window
+     * @classdesc Custom window functionality.
+     * @augments mxWindow
+     * @constructs
+     * @param {string} title The title of the window.
+     * @param {HTMLElement} content The window content.
+     * @param {number} x The x coordinate to place the window at.
+     * @param {number} y The y coordinate to place the window at.
+     * @param {number} width The width of the window.
+     * @param {number} height The height of the window.
+     * @param {boolean} minimizable If the window can be minimized.
+     * @param {boolean} movable If the window can be moved.
+     * @param {HTMLHRElement} [replaceNode] If specified, the window will replace this node.
+     * @param {string} style CSS class name to apply to the window.
+     * @param {boolean} ismodal If the window is a modal.
+     * @param {number} z_index The z-index of the window.
+     */
+    function Window(title, content, x, y, width, height, minimizable, movable, replaceNode, style, ismodal, z_index) {
+      _super.apply(this, arguments);
+
+      z_index = (z_index) || 1001;
+
+      /**
+       * If the window is a modal.
+       * 
+       * @name RiskSim#Window#modal
+       * @type {boolean}
+       */
+      this.modal = false;
+
+      /**
+       * Function to call when the window is closing.
+       * The function should return true if the window is allowed to close, or false otherwise.
+       * 
+       * @name RiskSim#Window#onClosing
+       * @type {Function}
+       */
+      this.onClosing = null;
+
+      //override init function to add ismodal parameter.
+      var baseWindowInit = this.init;
+
+      /**
+       * Initializes the window.
+       * 
+       * @name RiskSim#Window#init
+       * @function
+       * @param {number} x The x coordinate to place the window at.
+       * @param {number} y The y coordinate to place the window at.
+       * @param {number} width The width of the window.
+       * @param {number} height The height of the window.
+       * @param {string} style CSS class name to apply to the window.
+       * @param {boolean} ismodal If the window is a modal.
+       */
+      this.init = function (x, y, width, height, style, ismodal) {
+        baseWindowInit.apply(this, arguments);
+
+        var div = this.div;
+        if (ismodal) {
+          div.style.zIndex = `${z_index + 1}`;
+          if (this.div.style.boxShadow == '') {
+            this.div.style.boxShadow = '5px 5px 7px #888888';
+          }
+
+          this.modaldiv = document.createElement('div');
+          this.modaldiv.style.zIndex = `${z_index}`;
+          this.modaldiv.className = 'OverlayEffect';
+          document.body.appendChild(this.modaldiv);
+        }
+      }
+
+      //override to remove modal effects.
+      var baseWindowDestroy = this.destroy;
+
+      /**
+       * Destroys the window.
+       * 
+       * @name RiskSim#Window#destroy
+       * @function
+       */
+      this.destroy = function () {
+        baseWindowDestroy.apply(this, arguments);
+        if (typeof (this.modaldiv) !== 'undefined' &amp;&amp; (this.modaldiv != null)) {
+          this.modaldiv.parentNode.removeChild(this.modaldiv);
+          this.modaldiv = null;
+        }
+      }
+
+      if (content != null) {
+        minimizable = (minimizable != null) ? minimizable : true;
+        this.content = content;
+        this.init(x, y, width, height, style, ismodal);
+
+        this.installMaximizeHandler();
+        this.installMinimizeHandler();
+        this.installCloseHandler();
+        this.setMinimizable(minimizable);
+        this.setTitle(title);
+
+        if (movable == null || movable) {
+          this.installMoveHandler();
+        }
+
+        if (replaceNode != null &amp;&amp; replaceNode.parentNode != null) {
+          replaceNode.parentNode.replaceChild(this.div, replaceNode);
+        }
+        else {
+          document.body.appendChild(this.div);
+        }
+      }
+
+      /**
+       * If the window is closing now.
+       * 
+       * @name RiskSim#Window#closeNow
+       * @type {boolean}
+       */
+      this.closeNow = false;
+
+      /**
+       * Forces the window to close.
+       * 
+       * @name RiskSim#Window#forceClose
+       * @function
+       */
+      this.forceClose = function () {
+        this.closeNow = true;
+        this.close();
+      }
+
+
+      //function triggerEvent(el, eventName) {
+      //  var evt;
+      //  if (document.createEvent) {
+      //    evt = document.createEvent('HTMLEvents');
+      //    evt.initEvent(eventName, true, true);
+      //  } else if (document.createEventObject) {// IE &lt; 9
+      //    evt = document.createEventObject();
+      //    evt.eventType = eventName;
+      //  }
+      //  evt.eventName = eventName;
+      //  if (el.dispatchEvent) {
+      //    el.dispatchEvent(evt);
+      //  } else if (el.fireEvent &amp;&amp; htmlEvents['on' + eventName]) {// IE &lt; 9
+      //    el.fireEvent('on' + evt.eventType, evt);// can trigger only real event (e.g. 'click')
+      //  } else if (el[eventName]) {
+      //    el[eventName]();
+      //  } else if (el['on' + eventName]) {
+      //    el['on' + eventName]();
+      //  }
+      //}
+
+      ////Okay or Cancel button clicked and it is okay to close, simulate a mousedown click event to the close image listener. The X  on the upper right corner.
+      /**
+       * Closes the window.
+       * 
+       * @name RiskSim#Window#close
+       * @function
+       */
+      this.close = function () {
+        triggerEvent(this.closeImg, 'click');
+      }
+
+      /**
+       * Activates the window.
+       * 
+       * @name RiskSim#Window#activate
+       * @function
+       */
+      this.activate = function () {
+        if (mxWindow.activeWindow != this) {
+          var previousWindow = mxWindow.activeWindow;
+          mxWindow.activeWindow = this;
+
+          this.fireEvent(new mxEventObject(mxEvent.ACTIVATE, 'previousWindow', previousWindow));
+        }
+      };
+
+    };
+
+    //overwritten to prompt user on close for okay to close.
+    //mxWindow.prototype.installCloseHandler = function () {
+    //  this.closeImg = document.createElement('img');
+
+    //  this.closeImg.setAttribute('src', this.closeImage);
+    //  this.closeImg.setAttribute('align', 'right');
+    //  this.closeImg.setAttribute('title', 'Close');
+    //  this.closeImg.style.marginLeft = '2px';
+    //  this.closeImg.style.cursor = 'pointer';
+    //  this.closeImg.style.display = 'none';
+
+    //  this.title.insertBefore(this.closeImg, this.title.firstChild);
+
+
+    //  var onCloseForm = function (evt) {
+    //    //add to query caller for it is okay to close the window.
+    //    var okToClose = true;
+    //    if (this.onClosing != null) {
+    //      okToClose = this.onClosing(evt);
+    //    }
+    //    if (!okToClose) {
+    //      mxEvent.consume(evt);
+    //      return;
+    //    }
+
+    //    this.fireEvent(new mxEventObject(mxEvent.CLOSE, 'event', evt));
+
+    //    if (this.destroyOnClose) {
+    //      this.destroy();
+    //    }
+    //    else {
+    //      this.setVisible(false);
+    //    }
+
+    //    mxEvent.consume(evt);
+    //  }
+
+    //  //IE doesn't like just the 'mousedown' event on an image.
+    //  mxEvent.addGestureListeners(this.closeImg, mxUtils.bind(this, onCloseForm));
+    //  //With 'click' it works for all IE, Chrome and SF.
+    //  this.closeImg.addEventListener('click', mxUtils.bind(this, onCloseForm), true);
+    //};
+
+    return Window;
+  })(mxWindow);
+  RiskSim.Window = Window;
+  //#endregion Window
+  //===================================================================================
+  //#region CommonDialog
+  var CommonDialog = (function () {
+    /**
+     * Constructs CommonDialog.
+     * 
+     * @class RiskSim#CommonDialog
+     * @classdesc Common dialog window functions.
+     * @constructs
+     */
+    function CommonDialog() {
+    }
+    
+    /**
+     * Shows an alert message.
+     * 
+     * @name RiskSim#CommonDialog#alert
+     * @function
+     * @param {string} title The title of the alert.
+     * @param {string} message The alert message.
+     */
+    CommonDialog.prototype.alert = function (title, message) {
+      this.show(title, message);
+    }
+    
+    /**
+     * Shows a generic message.
+     * 
+     * @name RiskSim#CommonDialog#show
+     * @function
+     * @param {string} title The message title.
+     * @param {string} message The message content.
+     */
+    CommonDialog.prototype.show = function (title, message) {
+      var wincontent = document.createElement('div');
+      var content = document.createElement('div');
+      content.style.margin = '5px';
+      wincontent.appendChild(content);
+
+      var cmdcontent = document.createElement('div');
+      mxUtils.br(cmdcontent, 1);
+
+      var okbtn = document.createElement('button');
+      okbtn.style.width = '70px';
+      okbtn.style.display = 'block';
+      okbtn.style.margin = '0 auto 0 auto';
+      okbtn.style.cssFloat = 'none';
+      okbtn.textContent = 'OK';
+      okbtn.onclick = function (evt) {
+        if (this.owner) {
+          this.owner.closeStatus = okbtn.textContent; //Ok clicked
+          this.owner.close();
+        }
+      }
+
+      cmdcontent.appendChild(okbtn);
+      mxUtils.br(cmdcontent, 1);
+
+      wincontent.appendChild(cmdcontent);
+
+      var msgbox = document.createElement('text');
+      msgbox.style.marginLeft = '20px';
+      msgbox.style.marginRight = '20px';
+      msgbox.style.display = 'block';
+      msgbox.textContent = message;
+      mxUtils.br(content, 1);
+      content.appendChild(msgbox);
+
+      var x = (window.innerWidth || document.body.clientWidth) / 2 - 200;
+      var y = (window.innerHeight || document.body.clientHeight) / 2 - 150;
+      x = x &lt; 0 ? 0 : x;
+      y = y &lt; 0 ? 0 : y;
+
+      var _this = this;
+      var zindex = null;
+      if (mxWindow.activeWindow &amp;&amp; mxWindow.activeWindow.div) {
+        zindex = parseInt(mxWindow.activeWindow.div.style.zIndex) + 1;
+      }
+      var dialog = new RiskSim.Window(title, wincontent, x, y, null, null, false, true, null, null, true, zindex);
+
+      dialog.addListener(mxEvent.SHOW, function () {
+        okbtn.focus();
+      });
+
+
+      okbtn.owner = dialog;
+      dialog.setClosable(true);
+      dialog.setVisible(true);
+      dialog.destroyOnClose = true;
+    }
+    
+    /**
+     * Shows a prompt waiting for user confirmation.
+     * 
+     * @name RiskSim#CommonDialog#confirm
+     * @function
+     * @param {string} title The title of the prompt.
+     * @param {string} message The prompt message.
+     * @param {string[]} btnArray Buttons to show on the prompt.
+     * @param {Function} callbackFn Function to call when the user confirms the prompt.
+     */
+    CommonDialog.prototype.confirm = function (title, message, btnArray, callbackFn) {
+      if (!callbackFn) return;
+      btnArray = btnArray || ['Yes', 'No', 'Cancel'];
+
+      var wincontent = document.createElement('div');
+      var content = document.createElement('div');
+      content.style.margin = '5px';
+      wincontent.appendChild(content);
+
+      var cmdcontent = document.createElement('div');
+      cmdcontent.style.margin = '1em';
+      cmdcontent.style.height = '4em';
+      cmdcontent.style.textAlign = 'center';
+      mxUtils.br(cmdcontent, 1);
+      wincontent.appendChild(cmdcontent);
+
+      var msgbox = document.createElement('text');
+      msgbox.style.marginLeft = '20px';
+      msgbox.style.marginRight = '20px';
+      msgbox.style.display = 'block';
+      msgbox.innerHTML = message;
+      mxUtils.br(content, 1);
+      content.appendChild(msgbox);
+
+      var x = (window.innerWidth || document.body.clientWidth) / 2 - 200;
+      var y = (window.innerHeight || document.body.clientHeight) / 2 - 150;
+      x = x &lt; 0 ? 0 : x;
+      y = y &lt; 0 ? 0 : y;
+
+      var _this = this;
+      var zindex = null;
+      if (mxWindow.activeWindow &amp;&amp; mxWindow.activeWindow.div) {
+        zindex = parseInt(mxWindow.activeWindow.div.style.zIndex) + 1;
+      }
+      var dialog = new RiskSim.Window(title, wincontent, x, y, null, null, false, true, null, null, true, zindex);
+      dialog.onClosing = function (evt) {
+        if (dialog.closeNow) return true;  //just kill the window, unconditionally.
+        callbackFn(this.closeStatus, evt);
+        return true;
+      }
+
+      var firstBtn = null;
+
+      for (var i = 0; i &lt; btnArray.length; i++) {
+        var btn = document.createElement('button');
+        btn.style.width = '7em';
+        btn.style.cssFloat = 'none';
+        btn.style.margin = '5px 15px 5px 15px';
+        btn.textContent = btnArray[i];
+        btn.onclick = function (evt) {
+          dialog.closeStatus = this.textContent;
+          dialog.close();
+        }
+        cmdcontent.appendChild(btn);
+        if (i == 0) {
+          firstBtn = btn;
+        }
+      }
+      dialog.addListener(mxEvent.SHOW, function () {
+        firstBtn.focus();
+      });
+
+      mxUtils.br(cmdcontent, 1);
+      dialog.setClosable(true);
+      dialog.setVisible(true);
+      dialog.destroyOnClose = true;
+    }
+    
+    /**
+     * Shows a prompt waiting for user input.
+     * 
+     * @name RiskSim#CommonDialog#prompt
+     * @function
+     * @param {string} title The prompt title.
+     * @param {string} message The prompt message.
+     * @param {string} defaultValue Default value for the prompt input.
+     * @param {Function} callbackFn Function to call when the user inputs the prompt.
+     */
+    CommonDialog.prototype.prompt = function (title, message, defaultValue, callbackFn) {
+      if (!callbackFn) return; //Can't do anything without confirmation function.
+
+      if (!title) title = "Input";
+      if (!message) message = "Please enter a new value";
+      if (!defaultValue) defaultValue = "";
+
+      var wincontent = document.createElement('div');
+      var content = document.createElement('div');
+      content.style.margin = '10px';
+      content.style.maxWidth = '300px';
+      wincontent.appendChild(content);
+
+      var cmdcontent = document.createElement('div');
+      //cmdcontent.style.textAlign = 'center';
+      var grpcontent = document.createElement('div');
+      grpcontent.style.margin = '1em';
+      grpcontent.style.height = '3em';
+      grpcontent.style.textAlign = 'center';
+      cmdcontent.appendChild(grpcontent);
+
+
+      var okbtn = document.createElement('button');
+      okbtn.style.width = '7em';
+      okbtn.style.cssFloat = 'none';
+      okbtn.style.margin = '5px 15px 5px 15px';
+      okbtn.textContent = 'OK';
+      okbtn.onclick = function (evt) {
+        if (this.owner) {
+          this.owner.closeStatus = okbtn.textContent; //Ok clicked
+          this.owner.close();
+        }
+      }
+
+      var cancelbtn = document.createElement('button');
+      cancelbtn.textContent = 'Cancel';
+      cancelbtn.style.width = '7em';
+      cancelbtn.style.margin = '5px 15px 5px 15px';
+      cancelbtn.style.cssFloat = 'none';
+      cancelbtn.onclick = function (evt) {
+        if (this.owner) {
+          this.owner.closeStatus = cancelbtn.textContent;
+          this.owner.close();
+        }
+      }
+
+      grpcontent.appendChild(okbtn);
+      grpcontent.appendChild(cancelbtn);
+
+      wincontent.appendChild(cmdcontent);
+
+      //var img = document.createElement('img');
+      //img.src = 'info.jpg';
+      //content.appendChild(img);
+
+      var msgbox = document.createElement('text');
+      msgbox.innerHTML = message;
+      //mxUtils.br(content);
+      content.appendChild(msgbox);
+      mxUtils.br(content, 1);
+
+      var input = document.createElement('input');
+      input.style.width = '120px';
+      input.value = defaultValue;
+
+      var oldValue = defaultValue;
+      var applyHandler = function () {
+        var newValue = input.value || '';
+        okbtn.disabled = newValue.length == 0;
+      }
+      input.onkeypress = function (evt) {
+        if (evt.keyCode == 13 &amp;&amp; !evt.shiftKey) {
+          okbtn.click();
+        }
+      }
+      input.onkeyup = applyHandler;
+
+      if (mxClient.IS_IE) {
+        input.addEventListener('focusout', applyHandler);
+      }
+      else {
+        // Note: Known problem is the blurring of fields in
+        // Firefox by changing the selection, in which case
+        // no event is fired in FF and the change is lost.
+        // As a workaround use a local variable
+        // that stores the focused field and invoke blur
+        // explicitly where we do the graph.focus above.
+        input.blur = applyHandler;
+      }
+      content.appendChild(input);
+
+      var x = (window.innerWidth || document.body.clientWidth) / 2 - 200;
+      var y = (window.innerHeight || document.body.clientHeight) / 2 - 150;
+      x = x &lt; 0 ? 0 : x;
+      y = y &lt; 0 ? 0 : y;
+
+      var zindex = null;
+      if (mxWindow.activeWindow &amp;&amp; mxWindow.activeWindow.div) {
+        zindex = parseInt(mxWindow.activeWindow.div.style.zIndex) + 1;
+      }
+      var dialog = new RiskSim.Window(title, wincontent, x, y, null, null, false, true, null, null, true, zindex);
+      dialog.onClosing = function (evt) {
+        if (dialog.closeNow) return true;
+        var rs = callbackFn(dialog, input.value, this.closeStatus, evt);
+        return rs;
+      }
+
+      dialog.addListener(mxEvent.SHOW, function () {
+        input.focus();
+        input.select();
+      });
+
+      okbtn.owner = dialog;
+      cancelbtn.owner = dialog;
+      dialog.setClosable(true);
+      dialog.setVisible(true);
+      dialog.destroyOnClose = true;
+
+    }
+    //#endregion
+    return CommonDialog;
+  })();
+  RiskSim.CommonDialog = CommonDialog;
+  //#endregion CommonDialog
+})(RiskSim || (RiskSim = {}));
+
+/**
+ * The global message box.
+ * 
+ * @type {RiskSim#CommonDialog}
+ */
+var MessageBox = new RiskSim.CommonDialog();
+
+//overwritten framework (DOM's) alert function.
+mxUtils.alert = function (msg) {
+  MessageBox.alert("Alert", msg);
+}
+
+Window.prototype.alert = function (msg) {
+  MessageBox.alert("Alert", msg);
+}
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Namespaces</h3><ul><li><a href="FaultTree.html">FaultTree</a></li><li><a href="ftEditor.html">ftEditor</a></li><li><a href="Navigation.html">Navigation</a></li><li><a href="RiskSim.html">RiskSim</a></li><li><a href="simApp.html">simApp</a></li></ul><h3>Classes</h3><ul><li><a href="Enum.html">Enum</a></li><li><a href="FaultTree_Toolbar.html">Toolbar</a></li><li><a href="ftEditor_FTItem.html">FTItem</a></li><li><a href="ftEditor_FTItemArray.html">FTItemArray</a></li><li><a href="Navigation_Menu.html">Menu</a></li><li><a href="Navigation_Sidebar.html">Sidebar</a></li><li><a href="RiskSim_CommonDialog.html">CommonDialog</a></li><li><a href="RiskSim_Window.html">Window</a></li><li><a href="simApp_SimApp.html">SimApp</a></li><li><a href="StateApp.html">StateApp</a></li><li><a href="StateShape.html">StateShape</a></li><li><a href="TableShape.html">TableShape</a></li><li><a href="WcfService.html">WcfService</a></li><li><a href="WindowFrame.html">WindowFrame</a></li></ul><h3>Interfaces</h3><ul><li><a href="Action.html">Action</a></li><li><a href="Diagram.html">Diagram</a></li><li><a href="Event.html">Event</a></li><li><a href="ExtSim.html">ExtSim</a></li><li><a href="ftEditor_Globals.html">Globals</a></li><li><a href="ftEditor_Globals_ftNodeSettings.html">ftNodeSettings</a></li><li><a href="LogicNode.html">LogicNode</a></li><li><a href="MenuItem.html">MenuItem</a></li><li><a href="Model.html">Model</a></li><li><a href="State.html">State</a></li><li><a href="Variable.html">Variable</a></li></ul><h3>Global</h3><ul><li><a href="global.html#addBE">addBE</a></li><li><a href="global.html#addNode">addNode</a></li><li><a href="global.html#addOverlays">addOverlays</a></li><li><a href="global.html#adjustWindowPos">adjustWindowPos</a></li><li><a href="global.html#BuildTreeRec">BuildTreeRec</a></li><li><a href="global.html#classNameOf">classNameOf</a></li><li><a href="global.html#clearAllCookies">clearAllCookies</a></li><li><a href="global.html#createDemo">createDemo</a></li><li><a href="global.html#createPopupMenu">createPopupMenu</a></li><li><a href="global.html#createTestProject">createTestProject</a></li><li><a href="global.html#createTestProject2">createTestProject2</a></li><li><a href="global.html#DataChanged">DataChanged</a></li><li><a href="global.html#DataType">DataType</a></li><li><a href="global.html#deepClone">deepClone</a></li><li><a href="global.html#deleteSimulation">deleteSimulation</a></li><li><a href="global.html#downloadClientTester">downloadClientTester</a></li><li><a href="global.html#downloadClientTesterSource">downloadClientTesterSource</a></li><li><a href="global.html#downloadSolver">downloadSolver</a></li><li><a href="global.html#editDiagramNode">editDiagramNode</a></li><li><a href="global.html#editNode">editNode</a></li><li><a href="global.html#ErrorMessage">ErrorMessage</a></li><li><a href="global.html#extractSubStr">extractSubStr</a></li><li><a href="global.html#GetDataObject">GetDataObject</a></li><li><a href="global.html#getDefaultGateID">getDefaultGateID</a></li><li><a href="global.html#getMainApp">getMainApp</a></li><li><a href="global.html#getRowY">getRowY</a></li><li><a href="global.html#getServerFile">getServerFile</a></li><li><a href="global.html#getSidebar">getSidebar</a></li><li><a href="global.html#isIENavigator">isIENavigator</a></li><li><a href="global.html#isModified">isModified</a></li><li><a href="global.html#main">main</a></li><li><a href="global.html#makeTransparent">makeTransparent</a></li><li><a href="global.html#mergeFTData">mergeFTData</a></li><li><a href="global.html#mergeIntoCurrentProject">mergeIntoCurrentProject</a></li><li><a href="global.html#MessageBox">MessageBox</a></li><li><a href="global.html#newProject">newProject</a></li><li><a href="global.html#newSimulation">newSimulation</a></li><li><a href="global.html#noSpaces">noSpaces</a></li><li><a href="global.html#OnLoad">OnLoad</a></li><li><a href="global.html#OnSave">OnSave</a></li><li><a href="global.html#openAbout">openAbout</a></li><li><a href="global.html#openCSharpTool">openCSharpTool</a></li><li><a href="global.html#openFaultTree">openFaultTree</a></li><li><a href="global.html#openHelp">openHelp</a></li><li><a href="global.html#openProject">openProject</a></li><li><a href="global.html#openPythonTool">openPythonTool</a></li><li><a href="global.html#rgba">rgba</a></li><li><a href="global.html#route">route</a></li><li><a href="global.html#saveDiagramProperties">saveDiagramProperties</a></li><li><a href="global.html#saveProject">saveProject</a></li><li><a href="global.html#saveTemplate">saveTemplate</a></li><li><a href="global.html#sequence">sequence</a></li><li><a href="global.html#setCookie">setCookie</a></li><li><a href="global.html#setModified">setModified</a></li><li><a href="global.html#SetOf">SetOf</a></li><li><a href="global.html#somethingChanged">somethingChanged</a></li><li><a href="global.html#sortDOMList">sortDOMList</a></li><li><a href="global.html#testMakeCompDiagram">testMakeCompDiagram</a></li><li><a href="global.html#triggerEvent">triggerEvent</a></li><li><a href="global.html#updateCell">updateCell</a></li><li><a href="global.html#ValidateData">ValidateData</a></li><li><a href="global.html#waitToSync">waitToSync</a></li><li><a href="global.html#windowClosing">windowClosing</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.7</a> on Mon Aug 02 2021 17:12:21 GMT-0400 (Eastern Daylight Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

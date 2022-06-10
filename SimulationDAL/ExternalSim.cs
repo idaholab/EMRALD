@@ -16,6 +16,8 @@ namespace SimulationDAL
     public string modelRef; 
     public string configData = "";
     public TimeSpan simMaxTime;
+    public bool verified = false; //verified there is a link to a external sim client
+    public int timeout = 10; //time before timeout in trying to connect to external sim
 
     public string msgServerClient { get; set; } //
 
@@ -74,7 +76,7 @@ namespace SimulationDAL
       dynamic dynObj = (dynamic)obj;
       if (wrapped)
       {
-        if (dynObj.Diagram == null)
+        if (dynObj.ExtSim == null)
           return false;
 
         dynObj = ((dynamic)obj).ExtSim;

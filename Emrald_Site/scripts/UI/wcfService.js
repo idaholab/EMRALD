@@ -47,8 +47,8 @@ var WcfService = (function (_super) {
 
     // Unwrap (.NET ".d") and deserialize result.
     var _unwrapResult = function (result) {
-      var unwrappedResult = result;
-      if (result.hasOwnProperty("d")) {
+        var unwrappedResult = result;
+        if (Object.prototype.hasOwnProperty.call(result, "d")) {
         if (typeof require == 'undefined')  //if run under node-webkit
           unwrappedResult = eval('(' + result.d + ')');
         else
@@ -91,7 +91,7 @@ var WcfService = (function (_super) {
           crossDomain: true,
           contentType: 'application/json', //sendType, 
           dataType: 'text', //receiveType,
-          processdata: _processData,
+          processData: _processData,
           xhrFields: {
             withCredentials: false
           },
@@ -110,7 +110,8 @@ var WcfService = (function (_super) {
             }, 1000);
           }.bind(this),
           error: function (xhr, statusCodeText, statusText) {
-            _showDebugMessage("error [" + xhr + "] [" + statusCodeText + "] [" + statusText + "]");
+              _showDebugMessage("error [" + xhr + "] [" + statusCodeText + "] [" + statusText + "]");
+              // TODO: too many arguments
             rejectFn(xhr, statusCodeText, statusText);
           }
         }); //end of jquery.ajax() call
@@ -216,7 +217,7 @@ var WcfService = (function (_super) {
         return _jsCall("POST", url, data, sendType, receiveType);
       }
       else {
-        return _jQueryCall("POST", url, data, sendType, receiveType, false);
+        return _jQueryCall("POST", url, data, sendType, receiveType);
       }
     }
 
@@ -225,13 +226,13 @@ var WcfService = (function (_super) {
         return _jsCall("GET", url, data, sendType, receiveType);
       }
       else {
-        return _jQueryCall("GET", url, data, sendType, receiveType, false);
+        return _jQueryCall("GET", url, data, sendType, receiveType);
       }
     }
 
     this.update = function (url, data, sendType, receiveType) {
       if (typeof $ == 'undefined') {  //jquery is not used
-        return _jQueryCall("PUT", url, data, sendType, receiveType, false);
+        return _jQueryCall("PUT", url, data, sendType, receiveType);
       }
       else {
         return _jsCall("PUT", url, data, sendType, receiveType);
@@ -239,7 +240,7 @@ var WcfService = (function (_super) {
     }
     this.delete = function (url, data, sendType, receiveType) {
       if (typeof $ == 'undefined') {
-        return _jQueryCall("DELETE", url, data, sendType, receiveType, false);
+        return _jQueryCall("DELETE", url, data, sendType, receiveType);
       } else {
         return _jsCall("DELETE", url, data, sendType, receiveType);
       }

@@ -45,6 +45,7 @@ namespace SimulationDAL
     //public ComponentsList allComponents = new ComponentsList();
     public LogicNodeList allLogicNodes = new LogicNodeList();
     public Dictionary<int, List<AccrualVariable>> AccrualVars = new Dictionary<int, List<AccrualVariable>>();
+    public string rootPath = "";
 
     public int dbID = 0;
     
@@ -118,8 +119,9 @@ namespace SimulationDAL
       return retStr;
     }
 
-    public bool DeserializeJSON(string jsonModel) 
+    public bool DeserializeJSON(string jsonModel, string modelPath) 
     {
+      this.rootPath = modelPath;
       dynamic jsonObj = JsonConvert.DeserializeObject(jsonModel); 
       return DeserializeDerived(jsonObj, true, this, false);
     }

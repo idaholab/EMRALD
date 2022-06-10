@@ -8,24 +8,81 @@
     <script src="../scripts/angular/angular.js"></script>
     <script src="../scripts/UI/Common.js"></script>
     <script src="DiagramEditor.js"></script>
+    <style>
+        .separator {
+            display: flex;
+            align-items: center;
+            text-align: center;
+        }
+
+        .separator::before,
+        .separator::after {
+            content: '';
+            flex: 1;
+            border-bottom: 1px solid #000;
+        }
+
+        .separator:not(:empty)::before {
+            margin-right: .25em;
+        }
+
+        .separator:not(:empty)::after {
+            margin-left: .25em;
+        }
+
+        .template-choice {
+            cursor: pointer;
+            padding: 8px;
+        }
+
+        .template-choice.selected {
+            background: rgb(211, 211, 211);
+        }
+    </style>
 
 </head>
 <body ng-app="diagramModule">
     <div ng-controller="diagramController" id="diagramControllerPanel">
         <form novalidate>
-            <div style="display:table-row">
-                <span style="display:table-cell">Name:</span> <input style="display:table-cell" id="Diagram_Name_Input" ng-model="name" tabindex="1">
-            </div>
-            <div style="display:table-row">
-                <span style="display:table-cell">Desc:</span> <input style="display:table-cell" ng-model="desc" size="40" tabindex="2">
-            </div>
+            <div ng-if="createDiagram"><b>Create New Diagram<br /></b><br /></div>
             <div style="display:table-row">
                 <div style="display:table-cell">Type:</div>
-                <select style="display:table-cell;width: 130px;float:left" id="TypeOption" ng-model="diagramType" ng-options="dt.name for dt in diagramTypes" name="Type"></select>
-                <div style="display:table-cell;float:left;" id="TemplateOptionLabel">Template:</div>
-                <select style="display:table-cell;width: 130px;" id="TemplateOption" ng-model="diagramTemplate" ng-options="dtemp for dtemp in diagramTemplates" name="Type"></select>
+                <select style="display:table-cell;width: 130px;float:left" id="TypeOption" ng-model="diagramType" ng-options="dt.name for dt in diagramTypes" name="Type" ng-disabled="data.importedContent"></select>
             </div>
-            <hr />
+            <div ng-if="showNewTypeEditor">
+                <div style="display:table-row">
+                    <label for="new-type-name">New type name:</label>
+                    <input id="new-type-name" ng-model="newType.label" />
+                </div>
+                <div style="display:table-row">
+                    <label for="new-type-category">New type category:</label>
+                    <select id="new-type-category" ng-model="newType.type" ng-options="category.value as category.label for category in typeCategories"></select>
+                </div>
+            </div>
+            <div style="display:table-row">
+                <span style="display:table-cell">Name:</span> <input style="display:table-cell" id="Diagram_Name_Input" ng-model="name" tabindex="1" ng-disabled="data.importedContent">
+            </div>
+            <div style="display:table-row">
+                <span style="display:table-cell">Desc:</span> <input style="display:table-cell" ng-model="desc" size="40" tabindex="2" ng-disabled="data.importedContent" />
+            </div>
+
+            <div ng-if="createDiagram"><br />
+                <div class="separator">OR</div><br /><b>Import Diagram: </b>
+                <input type="button" value="Choose File" onclick="mergeIntoCurrentProject()" />
+                <span><i>{{data.fileName}}</i><input ng-if="data.fileName" type="button" value="X" title="Remove File" onclick="removeFile()"/></span>
+                <br />
+                <input type="checkbox" ng-model="data.forceMerge" /> Force conflict resolution
+                <div class="separator">OR</div>
+                <br />
+                <b>Select a template: </b>
+                <div
+                    ng-repeat="template in diagramTemplates track by $index"
+                    ng-click="chooseTemplate($index)"
+                    class="template-choice"
+                    ng-class="{ selected: selectedTemplate === $index }">
+                    {{template}}
+                </div>
+            </div>
             <div id="singleStatePanel" style="display:none;">
                 <hr />
                 <span class="item_caption" style="white-space:nowrap;margin-right: 25px;">Single Value Groups</span><br />

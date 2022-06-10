@@ -45,7 +45,7 @@ module.exports = {
       },
       {
         text: 'EMRALD',
-        link: 'https://safety.inl.gov/emrald'
+        link: 'https://emraldapp.inl.gov/'
       }
     ],
     sidebar: {
@@ -55,7 +55,8 @@ module.exports = {
           collapsable: false,
           children: [
             '',
-            'using-emrald',
+            'Modeling/webUIOverview',
+            'Modeling/demoProject',
             'Modeling/diagrams',
             'Modeling/states',
             'Modeling/events',
@@ -63,14 +64,14 @@ module.exports = {
             'Modeling/variables',
             'Modeling/logicTree',
             'Modeling/externalSims',
-            'Modeling/xmppProtocol',
-            'Modeling/webUIOverview',
             'Modeling/icons', 
             'Modeling/solver',
-            'Modeling/backendInfo'
+            'Modeling/xmppProtocol',
+            'Modeling/backendInfo',   
+            'Modeling/cmdLineOptions',        
           ]
         }
-      ]
+      ],
     }
   },
 
@@ -79,6 +80,6 @@ module.exports = {
    */
   plugins: [
     '@vuepress/plugin-back-to-top',
-    '@vuepress/plugin-medium-zoom'
+    '@vuepress/plugin-medium-zoom',
   ]
 }

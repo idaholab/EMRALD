@@ -34,7 +34,8 @@ var StateShape = (function (_super) {
           var state = graph.getView().getState(cell);
           if (graph.isCellCollapsed(cell)) {
             cell.geometry.height = this.titleOffset;
-            cell.geometry.alternateBounds = new mxRectangle(cell.geometry.x, cell.geometry.y, cell.geometry.width, this.titleOffset);
+            cell.geometry.width = cell.forceWidth;
+            cell.geometry.alternateBounds = new mxRectangle(cell.geometry.x, cell.geometry.y, cell.forceWidth, this.titleOffset);
           }
           else if (state) {
             var actionCell = cell.value.actionCell;
@@ -43,6 +44,7 @@ var StateShape = (function (_super) {
 
             graph.updateCellSize(actionCell);
             graph.updateCellSize(eventCell);
+            cell.forceWidth = cell.geometry.width;
             var width = Math.max(Math.max(cell.geometry.width, actionCell.geometry.width), eventCell.geometry.width);
             cell.geometry.width = width;
             var clientHeight = actionCell.geometry.height + eventCell.geometry.height + this.titleOffset;

@@ -1,0 +1,80 @@
+﻿{
+    "ActionTypes": [
+        {
+            "Type": "Transition",
+            "NamePattern": "GOTO_"
+        },
+        {
+            "Type": "Change Var Value",
+            "NamePattern": "CngVar_"
+        },
+        {
+            "Type": "Ext. Sim Message",
+            "NamePattern": "Msg_"
+        },
+        {
+            "Type": "Run Application",
+            "NamePattern": "Run_"
+        }
+    ],
+    "VariableTypes": [
+        {
+            "Type": "int",
+            "NamePattern": "Int_"
+        },
+        {
+            "Type": "double",
+            "NamePattern": "Dbl_"
+        },
+        {
+            "Type": "bool",
+            "NamePattern": "Bool_"
+        },
+        {
+            "Type": "string",
+            "NamePattern": "Str_"
+        }
+    ],
+    "EventTypes": [
+        {
+            "Type": "Var Condition",
+            "NamePattern": "VarCond_"
+        },
+        {
+            "Type": "State Change",
+            "NamePattern": "StateCng_"
+        },
+        {
+            "Type": "Component Logic",
+            "NamePattern": "CompLog_"
+        },
+        {
+            "Type": "Timer",
+            "NamePattern": "Timer_"
+        },
+        {
+            "Type": "Failure Rate",
+            "NamePattern": "FailRt_"
+        },
+        {
+            "Type": "Norm. Distribution",
+            "NamePattern": "NormDist_"
+        },
+        {
+            "Type": "Exp. Distribution",
+            "NamePattern": "ExpDist_"
+        },
+        {
+            "Type": "Weibull. Distribution",
+            "NamePattern": "WblDist_"
+        },
+        {
+            "Type": "Ext Simulation",
+            "NamePattern": "ExtSim_"
+        },
+        {
+            "Type": "LogNorm. Distribution",
+            "NamePattern": "LogNormDist_"
+        }
+    ]
+}

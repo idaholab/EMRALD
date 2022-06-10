@@ -1,4 +1,6 @@
 ﻿// Copyright 2021 Battelle Energy Alliance
+// @ts-check
+/// <reference path="../jsdoc-types.js" />
 
 /* this file is code for all functions having to do with upper menu bar (save, open, new project ... ext)
 		Also, please note that demo function is empty as of July 27*/
@@ -18,22 +20,19 @@ function adjustWindowPos(container, el) {
 
 function downloadSolver() {
   var link = document.createElement("a");
-  link.setAttribute("download", "Solver.zip");  //the save name after downloaded.
-  link.href = document.baseURI + "/resources/EMRALD_SimEngine.zip";  //The file to download.
+  link.href = "https://github.com/idaholab/EMRALD/releases/latest/download/EMRALD_SimEngine.zip";  //The file to download.
   link.click();
 }
 
 function downloadClientTester() {
   var link = document.createElement("a");
-  link.setAttribute("download", "ClientTester.zip");  //the save name after downloaded.
-  link.href = document.baseURI + "/resources/XMPPClientTester.zip";  //The file to download.
+  link.href = "https://github.com/idaholab/EMRALD/releases/latest/download/XMPPClientTester.zip";  //The file to download.
   link.click();
 }
 
 function downloadClientTesterSource() {
   var link = document.createElement("a");
-  link.setAttribute("download", "ClientTesterSource.zip");  //the save name after downloaded.
-  link.href = document.baseURI + "/resources/xmppClientTesterSource.zip";  //The file to download.
+  link.href = "https://github.com/idaholab/EMRALD/tree/main/XmppClient";  //The file to download.
   link.click();
 }
 
@@ -42,7 +41,7 @@ function downloadClientTesterSource() {
 /// <reference path="WindowFrame.js" />
 //opens logic tree
 function openFaultTree() {
-  var wf = mxWindow.createFrameWindow(
+  var wnd = mxWindow.createFrameWindow(
     'FTViewer10.html',
     '',  //command buttons
     'minimize, maximize, close', //top buttons
@@ -71,6 +70,9 @@ function saveProject() {
 function saveTemplate() {
   simApp.mainApp.saveTemplate();
 }
+function clearTemplates() {
+  localStorage.removeItem('templates');
+}
 
 //------------------
 //var deleteSimulationDone = false;
@@ -80,7 +82,7 @@ function deleteSimulation(apiUrl, simId) {
     function onSuccess(data) {
       var retData = JSON.parse(data);
       if (retData.error == 0) {
-        deleteSimulationDone = true;
+        // deleteSimulationDone = true;
       }
       else {
         console.log("Error : " + retData.error + " - " + retData.errorStr);
@@ -156,19 +158,18 @@ function openProject() {
   dialog.value = "";
   dialog.type = 'file';
   dialog.style.display = 'none';
-  dialog.accept = "application/json"; //only support in chrome and IE.  FF doesn't work with hint.
-  dialog.filetype = "json";
+  dialog.accept = "application/json,.json"; //only support in chrome and IE.  FF doesn't work with hint.
 
   var handleFileSelected = function (evt) {
     if (!evt.target.files || !evt.target.files[0]) return;
     var afile = evt.target.files[0];
     var el = document.getElementById("project_name");
     var aname = afile.name.substring(0, afile.name.indexOf('.'));
-    if (aname == "") name = afile.name;
+    if (aname == "") aname = afile.name;
     if (el)
       el.innerText = aname;
     var ext = /\.[0-9a-z]+$/.exec(afile.name);
-    ext = ext.length > 0 ? ext[0] : "";
+    ext = ext && ext.length > 0 ? ext[0] : "";
     switch (ext) {
       case '.json':
         var reader = new FileReader();
@@ -183,6 +184,93 @@ function openProject() {
   }.bind(this);
 
   dialog.addEventListener("change", handleFileSelected, false);
+  document.body.appendChild(dialog);
+  dialog.click();
+}
+
+//------------------
+function mergeIntoCurrentProject() {
+  let el = document.getElementById("MergeIntoCurrentProjectDialogInput");
+  if (el) el.remove();
+
+  let dialog = document.createElement('input');
+  dialog.id = "MergeIntoCurrentProjectDialogInput";
+  dialog.value = "";
+  dialog.type = 'file';
+  dialog.style.display = 'none';
+  dialog.accept = "application/json,.json"; //only support in chrome and IE.  FF doesn't work with hint.
+
+  let handleFileSelected = function (evt) {
+    if (!evt.target.files || !evt.target.files[0]) return;
+    var afile = evt.target.files[0];
+    var aname = afile.name.substring(0, afile.name.indexOf('.'));
+    if (aname == "") aname = afile.name;
+    var ext = /\.[0-9a-z]+$/.exec(afile.name);
+    ext = ext && ext.length > 0 ? ext[0] : "";
+    switch (ext) {
+      case '.json':
+        var reader = new FileReader();
+        reader.onload = function (evt) {
+          var content = evt.target.result;
+          Navigation.Sidebar.prototype.importDiagram(JSON.parse(content));
+        }.bind(this);
+        reader.readAsText(afile);
+        break;
+    }
+
+  }.bind(this);
+
+  dialog.addEventListener("change", handleFileSelected, false);
+  document.body.appendChild(dialog);
+  dialog.click();
+}
+
+function loadTemplate() {
+  const el = document.getElementById('OpenFileDialogInput');
+  if (el) {
+    el.remove();
+  }
+  const dialog = document.createElement('input');
+  dialog.id = 'OpenFileDialogInput';
+  dialog.value = '';
+  dialog.type = 'file';
+  dialog.style.display = 'none';
+  dialog.accept = 'application/json,.json';
+  const handleFileSelected = (evt) => {
+    if (!evt.target.files || !evt.target.files[0]) {
+      return;
+    }
+    const afile = evt.target.files[0];
+    const el = document.getElementById('project_name');
+    let aname = afile.name.substring(0, afile.name.indexOf('.'));
+    if (aname === '') {
+      aname = afile.name;
+    }
+    if (el) {
+      el.innerText = aname;
+    }
+    let ext = /\.[0-9a-z]+$/.exec(afile.name);
+    ext = ext && ext.length > 0 ? ext[0] : '';
+    switch (ext) {
+      case '.json':
+        const reader = new FileReader();
+        reader.onload = (evt) => {
+          const content = JSON.parse(evt.target.result);
+          if (Array.isArray(content)) {
+            // Load template list
+            content.forEach((template) => {
+              simApp.mainApp.loadTemplate(template);
+            });
+          } else {
+            // Load single template
+            simApp.mainApp.loadTemplate(content);
+          }
+        };
+        reader.readAsText(afile);
+        break;
+    }
+  };
+  dialog.addEventListener('change', handleFileSelected, false);
   document.body.appendChild(dialog);
   dialog.click();
 }
@@ -262,9 +350,14 @@ function noSpaces(text) {
 function setCookie(cname, cvalue, exdays) {
   if (!cname) return;
   cname = noSpaces(cname); //spaces are not allowed in cookie variable name
-  var d = new Date();
-  d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
-  var expires = "expires=" + d.toUTCString();
+  let expires = "expires=";
+  if (exdays === undefined) {
+      expires += new Date(2147483647 * 1000).toUTCString();
+  } else {
+      const d = new Date();
+      d.setTime(d.getTime() + exdays * 24 * 60 * 60 * 1000);
+      expires += d.toUTCString();
+  }
   document.cookie = cname + "=" + cvalue + "; " + expires;
 }
 
@@ -324,26 +417,27 @@ function openAbout() {
 }
 //------------------
 function openHelp() {
-  var wnd = mxWindow.createFrameWindow(
-      'Help.html',
-      'Close',  //command buttons
-      'Close', //top buttons
-      function (btn, dataObj) {
-        if (btn === 'Close') {
-        }
-        return true;
-      },
-      null,
-      true, //ismodal
-      null,
-      null,
-      700, //width
-      800 //height
-  );
-  document.body.removeChild(wnd.div);
-  var contentPanel = document.getElementById("ContentPanel");
-  adjustWindowPos(contentPanel, wnd.div);
-  contentPanel.appendChild(wnd.div);
+  window.open("../docs");
+  //var wnd = mxWindow.createFrameWindow(
+  //    'Help.html',
+  //    'Close',  //command buttons
+  //    'Close', //top buttons
+  //    function (btn, dataObj) {
+  //      if (btn === 'Close') {
+  //      }
+  //      return true;
+  //    },
+  //    null,
+  //    true, //ismodal
+  //    null,
+  //    null,
+  //    700, //width
+  //    800 //height
+  //);
+  //document.body.removeChild(wnd.div);
+  //var contentPanel = document.getElementById("ContentPanel");
+  //adjustWindowPos(contentPanel, wnd.div);
+  //contentPanel.appendChild(wnd.div);
 }
 //------------------
 function isIENavigator() {
@@ -413,16 +507,17 @@ var simApp;
     }
     //------------------
     SimApp.prototype.loadSidebar = function (modelStr) {
+      var sideBarContainer = document.getElementById('SidePanelContainer');
       var sideBar = document.getElementById('SidePanel');
       var contentPanel = document.getElementById('ContentPanel');
       sideBar.innerHTML = "";
       contentPanel.innerHTML = "";
-      $(sideBar).resizable({
+      $(sideBarContainer).resizable({
         handle: 'w',
         resize: function (evt, ui) {
           $('#ContentPanel').css({
             left: sideBar.clientWidth +
-              $('.ui-resizable-handle.ui-resizable-e').width() + parseInt(sideBar.style.marginLeft) + parseInt(sideBar.style.marginRight)
+              $('.ui-resizable-handle.ui-resizable-e').width() + parseInt(sideBarContainer.style.marginLeft) + parseInt(sideBarContainer.style.marginRight) + 24
             //,"border-style": "solid", "border-color": "red", "border-width": "1px"
           });
         }
@@ -437,15 +532,34 @@ var simApp;
         titleEl.innerText = atitle;
       }
     }
+    SimApp.prototype.makeProjectNameEditable = function() {
+      var titleEl = document.getElementById("project_name");
+      if (titleEl) {
+        titleEl.style.cursor = 'Pointer';
+        titleEl.onclick = function() {
+          var newName = prompt('Enter New Name');
+          if (newName && newName.trim()) {
+            newName = newName.trim();
+            simApp.mainApp.updateProjectTitle(newName);
+            simApp.allDataModel.name = newName;
+          }
+        }
+      }         
+    }
     SimApp.prototype.start = function () {
       //var img = document.getElementById('logo');
       //makeTransparent(img);
       new Navigation.Menu("resources/menu.json");
 
       getServerFile(this.modelFileName, function (retData) {
-        var model = JSON.parse(retData);
-        this.updateProjectTitle(model.name);
         simApp.mainApp.loadSidebar(retData);
+        var model = JSON.parse(retData);
+        if (model.name.isNullOrUndefined || model.name === '') {
+          model.name = 'Click Here to Name Project';
+          simApp.allDataModel.name = 'Untitled_EMRALD_Project';
+        }
+        this.updateProjectTitle(model.name);
+        this.makeProjectNameEditable();
       }.bind(this));
       //this.loadSidebar();
     }
@@ -465,11 +579,11 @@ var simApp;
 
       if (typeof result == "undefined") {
         if (Object.prototype.toString.call(item) === "[object Array]") {
-          result = [];
-          var prop;
-          item.forEach(function (child, index, array) {
-            if (child.nodeType || (typeof child == mxCell)) { /* not interested in node element*/ }
-            else if (i in SetOf(["dataType", "itemId", "actionId", "sourceRow", "targetRow", "actionCell", "eventCell", "iActions", "iEvents", "ownerCell", "ownerID", "ui_el", "wnd", "tempVariableList"]))
+            result = [];
+            var prop;
+          item.forEach(function (child, index) {
+            if (child.nodeType || (child instanceof mxCell)) { /* not interested in node element*/ }
+            else if (child in SetOf(["dataType", "itemId", "actionId", "sourceRow", "targetRow", "actionCell", "eventCell", "iActions", "iEvents", "ownerCell", "ownerID", "ui_el", "wnd", "tempVariableList"]))
             { /* not copy these */ }
             else {
               //child is an object, store array of object
@@ -488,7 +602,7 @@ var simApp;
               result = {};
               for (var i in item) {
                 if (i in SetOf(["dataType", "itemID", "actionId", "sourceRow", "targetRow", "actionCell", "eventCell", "iActions", "iEvents", "ownerCell", "ownerID", "ui_el", "wnd"])
-                  || (typeof item[i] == mxCell)) { /*Do not copy these properties*/ }
+                  || (item[i] instanceof mxCell)) { /*Do not copy these properties*/ }
                 else
                   result[i] = this.cloneDataModel(item[i]);
               }
@@ -521,8 +635,26 @@ var simApp;
       diagramData.LogicNodeList = this.cloneDataModel(model.LogicNodeList);
       diagramData.VariableList = this.cloneDataModel(model.VariableList);
 
+      diagramData.templates = this.getTemplatesUsedInProject();
+
       return diagramData;
     }
+
+    /**
+     * Gets a list of the templates used in the project.
+     * 
+     * @returns {EMRALD.Model[]} - The templates used in the project.
+     */
+    SimApp.prototype.getTemplatesUsedInProject = function () {
+      const templateNames = [];
+      simApp.allDataModel.DiagramList.forEach((diagram) => {
+        if (diagram.diagramTemplate && diagram.diagramTemplate.length > 0) {
+          templateNames.push(diagram.diagramTemplate);
+        }
+      });
+      return templateNames.map((name) => simApp.mainApp.sidebar.getTemplateByName(name));
+    }
+
     //-------------------------
     SimApp.prototype.getCleanAllTemplateModel = function () {
       var model = simApp.allTemplates; //NOTE: 'this' <> simApp.
@@ -556,43 +688,26 @@ var simApp;
 
       return diagramData;
     }
-    //-------------------------
+    
+    /**
+     * Saves the user's templates to a file.
+     */
     SimApp.prototype.saveTemplate = function () {
-      var url = 'EditForms/SaveTemplatePrompt.html';
-      var dataObj = { userCheck: false, globalCheck: false };
-      var wnd = mxWindow.createFrameWindow(
-          url,
-          'OK, Cancel',  //command buttons
-          'close', //top buttons
-          function (btn, retObj) {
-            if (btn === 'OK') {
-              var diagram = this.getCleanAllTemplateModel();
-              if (!retObj.userCheck && !retObj.globalCheck) {
-                return true;
-              }
-              else if (retObj.userCheck && !retObj.globalCheck) {
-                diagram = this.getCleanUserTemplateModel();
-              }
-              else if (!retObj.userCheck && retObj.globalCheck) {
-                diagram = this.getCleanGlobalTemplateModel();
-              }
-              var jsonStr = JSON.stringify(diagram, null, 2);
-              var blob = new Blob([jsonStr], { type: "data:text/plain" });
-              saveAs(blob, "Template_" + simApp.mainApp.modelFileName);
-            }
-            return true;
-          }.bind(this),
-          dataObj,
-          true, //ismodal
-          null,
-          null,
-          300, //width
-          220 //height
-      );
-      document.body.removeChild(wnd.div);
-      var contentPanel = document.getElementById("ContentPanel");
-      adjustWindowPos(contentPanel, wnd.div);
-      contentPanel.appendChild(wnd.div);
+      if (localStorage.getItem('templates')) {
+        const blob = new Blob([localStorage.getItem('templates')], {
+          type: 'data:text/plain',
+        });
+        saveAs(blob, `Templates_${simApp.mainApp.modelFileName}`);
+      }
+    }
+
+    /**
+     * Loads a template into the project.
+     *
+     * @param {EMRALD.Model} dataObj - The template to load.
+     */
+    SimApp.prototype.loadTemplate = function (dataObj) {
+      simApp.mainApp.sidebar.addLocalTemplate(dataObj);
     }
 
 

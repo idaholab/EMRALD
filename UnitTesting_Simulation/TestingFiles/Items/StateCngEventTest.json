@@ -1,0 +1,13 @@
+    {
+      "Event": {
+        "id": 1,
+        "name": "StateChange",
+        "desc": "",
+        "mainItem": true,
+        "evType": "etStateCng",
+        "ifInState": "true",
+        "allItems": true,
+        "evalCurOnInitial": "True",
+        "triggerStates": []
+      }
+	}

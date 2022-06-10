@@ -7,7 +7,7 @@ if (!this.__extends) {
   var __extends = this.__extends || function (d, b) {
     //copy all properties from parent object.
     for (var p in b)
-      if (b.hasOwnProperty(p))
+      if (Object.prototype.hasOwnProperty.call(b, p))
         d[p] = b[p];
     //set the constructor to child object
     function __() { this.constructor = d; }
@@ -356,7 +356,7 @@ function SetOf(arr) {
 //Build a pseudo enumerable object.
 var Enum = (function () {
   function Enum(obj) {
-    for (a in obj) {
+    for (var a in obj) {
       this[a] = obj[a];// { name: a, value: obj[a] };
     }
   };
@@ -372,7 +372,8 @@ var Enum = (function () {
 
 //Similar to "instanceof" but return the name of the class as string.
 function classNameOf(anObj) {
-  var fn = /(\w+)\(/.exec(anObj.constructor)[1];
+  var exec = /(\w+)\(/.exec(anObj.constructor);
+  var fn = exec ? exec[1] : null;
   return fn;
 }
 
@@ -450,7 +451,7 @@ function deepClone(item) {
     } else if (typeof item == "object") {
       // testing that this is DOM
       if (item.nodeType && typeof item.cloneNode == "function") {
-        var result = item.cloneNode(true);
+        result = item.cloneNode(true);
       } else if (!item.prototype) { // check that this is a literal
         if (item instanceof Date) {
           result = new Date(item);

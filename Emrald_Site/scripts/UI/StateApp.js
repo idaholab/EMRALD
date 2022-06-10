@@ -157,15 +157,15 @@ var StateApp = (function (global, _super) {
       if (this.getModel().isEdge(cell)) {
         var srcCell = this.getModel().getTerminal(cell, true);
         var trgCell = this.getModel().getTerminal(cell, false);
-        if (srcCell) {
-          var src = this.getLabel(srcCell);
-          var type = classNameOf(srcCell.value);
-        }
-        else {
-          var src = "";
-          var type = "";
-        }
-        if (trg)
+          if (srcCell) {
+              var src = this.getLabel(srcCell);
+              var type = classNameOf(srcCell.value);
+          }
+          else {
+              var src = "";
+              var type = "";
+          }
+        if (trgCell)
           var trg = this.getLabel(trgCell);
         else
           var trg = "";
@@ -486,6 +486,12 @@ var StateApp = (function (global, _super) {
                 }
 
               }
+            }
+            // update variables
+            if (retObj.updateVariables) {
+              retObj.updateVariables.forEach((variable) => {
+                sb.replaceNames(variable.name, variable.name, "Variable", null, true);
+              });
             }
             //TODO make this if statement cleaner (i.e. w/ function)
             if (actionName !== retObj.name && (retObj.name != "Goto_Action" && retObj.name.trim() != "")) {
@@ -896,6 +902,8 @@ var StateApp = (function (global, _super) {
     var parent = graph.getDefaultParent();
     var dModel = parent.value.DiagramList[0].Diagram;
     var diagramName = dModel.name;
+    var sb = mainApp.graph.getDefaultParent().value.sidebar;
+    dModel.changeDiagramType = sb.editDiagramType;
     mxWindow.createFrameWindow(
       url,
       'OK, Cancel',  //command buttons
@@ -903,7 +911,6 @@ var StateApp = (function (global, _super) {
       function (btn, retObj) {
         if (btn === 'OK') {
           graph.getDefaultParent().value.modelChanged = true;
-          var sb = mainApp.graph.getDefaultParent().value.sidebar;
           if (sb) {
             if (diagramName !== retObj.name) {
               sb.replaceDiagramName(diagramName, retObj.name);
@@ -1060,7 +1067,7 @@ var StateApp = (function (global, _super) {
       return;
 
     var selState = selCell.value.State;
-    var states = sidebar.getStateDataObjecsForDiagram(null, selState.diagramName);
+    var states = sidebar.getStateDataObjectsForDiagram(null, selState.diagramName);
     for (var sIdx = 0; sIdx < states.length; sIdx++) {
       var curState = states[sIdx];
       if (fullDelete || ((selState.name == curState.State.name))) {
@@ -1127,7 +1134,7 @@ var StateApp = (function (global, _super) {
   }
   //------------------------------------
   StateApp.prototype.removeAction = function (selCell, actionName, eventName, graph, fullDelete) {
-    var graph = this.graph;
+    graph = this.graph;
     var dataObj;
     var el;
     //Remove all the visual stuff only!
@@ -1139,7 +1146,7 @@ var StateApp = (function (global, _super) {
       return;
 
     var selState = selCell.value.State;
-    var states = sidebar.getStateDataObjecsForDiagram(null, selState.diagramName);
+    var states = sidebar.getStateDataObjectsForDiagram(null, selState.diagramName);
     for (var sIdx = 0; sIdx < states.length; sIdx++) {
       var curState = states[sIdx];
 
@@ -1231,7 +1238,7 @@ var StateApp = (function (global, _super) {
   }
   //------------------------------------
   StateApp.prototype.moveAction = function (selCell, actionName, eventName, graph, moveCnt) {
-    var graph = this.graph;
+    graph = this.graph;
     var changed = false;
     var state = selCell.value;
     var dataObj;
@@ -1353,7 +1360,13 @@ var StateApp = (function (global, _super) {
     }
   }
 
-
+  StateApp.prototype.pasteDiagram = function () {
+    const rootModel = this.graph.getDefaultParent().value;
+    const sb = rootModel.sidebar;
+    if (sb) {
+      console.log('Pasting diagram');
+    }
+  }
 
 
   //------------------------------------
@@ -1378,7 +1391,6 @@ var StateApp = (function (global, _super) {
 
 
     graph.popupMenuHandler.factoryMethod = function (menu, cell, evt) {
-      var isToState = false;
       var isActionHeader = false, isEventHeader = false;
       var isAction = false, isEvent = false;
       var actionName = null, eventName = null;
@@ -1604,6 +1616,11 @@ var StateApp = (function (global, _super) {
             function (evt) {
               this.reloadDiagram();
             }.bind(this));
+            /*
+            menu.addItem("Paste diagram", null, (evt) => {
+              this.pasteDiagram();
+            });
+            */
         }
         menu.addItem(mName + "Properties...", null,
           function () {

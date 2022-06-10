@@ -19,6 +19,12 @@
 
                 <!-- All Variable Scopes -->
                 <div style="display: table-row;">
+                    <label style="display: table-cell;">Var Type:</label>
+                    <select id="typeVal" name="TypeValue" ng-model="varType" ng-options="type for type in varTypes" onchange="typeSelection();" style="display: table-cell; width: 130px;" ng-disabled="!varTypeSelectionEnabled">
+                        <option>-- select Type --</option>
+                    </select><br>
+                </div>
+                <div style="display: table-row;">
                     <label style="display: table-cell;">Name:</label>
                     <input tabindex="1" ng-model="name" style="display: table-cell;" onfocusout="validateName(this);">
                     <input type="checkbox" name="AsNewItem" id="AsNewItem" value="false" ng-model="saveAsNew" onchange="setAsNewChecked()" />
@@ -32,12 +38,6 @@
                     <label style="display: table-cell;">Scope:</label>
                     <select name="ScopeValue" ng-model="varScope" ng-options="opt.name for opt in varScopes" style="display: table-cell; width: 130px;">
                         <option>-- select Scope --</option>
-                    </select><br>
-                </div>
-                <div style="display: table-row;">
-                    <label style="display: table-cell;">Var Type:</label>
-                    <select id="typeVal" name="TypeValue" ng-model="varType" ng-options="type for type in varTypes" onchange="typeSelection();" style="display: table-cell; width: 130px;" ng-disabled="!varTypeSelectionEnabled">
-                        <option>-- select Type --</option>
                     </select><br>
                 </div>
                 <!-- End All Variable Scopes -->
@@ -59,7 +59,7 @@
                         <span style="display: table-cell"></span>
                         <span ng-if="data.docType.value == 'dtXML'">
                             <small>Use XPath Syntax for the Var Link.</small>
-                            <a href="https://www.freeformatter.com/xpath-tester.html#ad-output" target="_blank">Tester</a>
+                            <a href="https://www.site24x7.com/tools/xpath-evaluator.html" target="_blank">Tester</a> <!--Old link with XML 3.0 https://www.freeformatter.com/xpath-tester.html#ad-output-->
                         </span>
                         <span ng-if="data.docType.value == 'dtJSON'">
                             <small>Use JSONPath Syntax for the Var Link.</small>
@@ -78,26 +78,23 @@
                     <div style="display: table-row;">
                         <label style="display: table-cell; vertical-align: top;">Var Link:</label>
                         <textarea rows="4" cols="40" ng-model="data.varLink"></textarea>
+                        <div id="ExistOnStartupPanel" style="white-space: nowrap;">
+                            <input type="checkbox" name="ResetOnRuns" id="ExistOnStartup" value="false" ng-model="data.resetOnRuns" />
+                            <label for="ExistOnStartup">Doc Path and Var Link must exist on startup.</label>
+                        </div>
                     </div>
 
 
 
                     <div ng-if="data.docType.value == 'dtTextRegEx'" style="display: contents;">
-                        <div id="ExistOnStartupPanel" style="white-space: nowrap; display: table-row;">
-                            <div style="display: table-cell"></div>
-                            <div style="display: table-cell">
-                                <input type="checkbox" name="ResetOnRuns" id="ExistOnStartup" value="false" ng-model="data.resetOnRuns" />
-                                <label for="ExistOnStartup">Doc Path and Var Link must exist on startup.</label>
-                            </div>
-                        </div>
                         <div id="RegExLinePanel" style="display: table-row;">
                             <div style="display: table-cell; white-space: nowrap;">
-                                <input type="checkbox" id="RegExLineChk" name="RegExLineChk" ng-model="data.useRegExLine">
+                                <input type="checkbox" id="RegExLineChk" name="RegExLineChk" ng-model="data.useRegExLine" ng-change="initializeRegExLine()">
                                 <label for="RegExLineChk">Line #:</label>
                             </div>
                             <div style="display: table-cell; white-space: nowrap;">
-                                <input id="RegExLineInp" name="regExLine" size="4" ng-model="data.regExLine" ng-if="data.useRegExLine">
-                                <small> <i>(Use if a line after the RegExp match is desired.)</i></small>
+                                <input id="RegExLineInp" name="regExLine" size="4" ng-model="data.regExLine" ng-if="data.useRegExLine" type="number" min="0">
+                                <small> <i>(Use if exact Regular Expression match is not desired.)</i></small>
                             </div>
                         </div>
                         <div id="RegExBegPosPanel" style="display: table-row;" ng-if="data.useRegExLine">
@@ -105,17 +102,17 @@
                                 <label for="RegExLineChk">Beg Pos:</label>
                             </div>
                             <div style="display: table-cell; white-space: nowrap;">
-                                <input size="4" ng-model="data.regExBegPos">
+                                <input size="4" ng-model="data.regExBegPos" type="number" min="0">
                                 <small> <i>(Line start position, use 0 is the first character.)</i></small>
                             </div>
                         </div>
                         <div id="RegExNumCharsPanel" style="display: table-row;" ng-if="data.useRegExLine">
                             <div style="display: table-cell; white-space: nowrap;">
-                                <input type="checkbox" id="RegExNumCharsChk" name="RegExNumCharsChk" ng-model="data.useRegExNumChars">
+                                <input type="checkbox" id="RegExNumCharsChk" name="RegExNumCharsChk" ng-model="data.useRegExNumChars" ng-change="initializeRegExNumChars()">
                                 <label for="RegExNumCharsChk">Num Chars:</label>
                             </div>
                             <div style="display: table-cell; white-space: nowrap;">
-                                <input id="RegExNumCharsInp" size="4" ng-model="data.regExNumChars" ng-if="data.useRegExNumChars">
+                                <input id="RegExNumCharsInp" size="4" ng-model="data.regExNumChars" ng-if="data.useRegExNumChars" type="number" min="0">
                                 <small> <i>(Use for a specific # of characters, set to 0 for until next space, uncheck for end of line.)</i></small>
                             </div>
                         </div>
@@ -141,7 +138,7 @@
                     <label id="ValueLabel" style="display: table-cell; vertical-align: top;">Value:</label>
                     <textarea id="valInput" rows="4" cols="40" ng-model="data.value" ng-if="stringTypeSelected" style="display: table-cell;"></textarea>
                     <input type="number" ng-model="data.value" step="1" ng-if="intTypeSelected" style="display: table-cell;" />
-                    <input type="number" ng-model="data.value" ng-if="doubleTypeSelected" style="display: table-cell;" />
+                    <input ng-model="data.value" ng-if="doubleTypeSelected" style="display: table-cell;" />
                     <select id="selectBool" ng-model="data.value" ng-options="val for val in varBoolVal" ng-if="boolTypeSelected" style="display: table-cell; width: 130px;"></select>
                     <br />
                     <div id="ResetValuePanel" style="white-space:nowrap;">

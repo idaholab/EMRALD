@@ -1,0 +1,57 @@
+{
+  "name": "Sim1",
+  "numRuns": 10,
+  "keyStates": [
+    {
+      "name": "Occured",
+      "watchVariables": {},
+      "rate": 0.0,
+      "rate5th": 0.0,
+      "rate95th": 0.0,
+      "count": 10,
+      "times": [
+        "1.06:00:00",
+        "1.06:00:00",
+        "1.06:00:00",
+        "1.06:00:00",
+        "1.06:00:00",
+        "1.06:00:00",
+        "1.06:00:00",
+        "1.06:00:00",
+        "1.06:00:00",
+        "1.06:00:00"
+      ],
+      "timeMean": "1.06:00:00",
+      "timeStdDeviation": "00:00:00",
+      "causes": [
+        {
+          "desc": "Start, timer1, Goto_Occured",
+          "name": "timer1 -> Goto_Occured",
+          "fromState": {
+            "name": "Start",
+            "watchVariables": {},
+            "rate": 0.0,
+            "rate5th": 0.0,
+            "rate95th": 0.0,
+            "count": 10,
+            "times": [
+              "00:00:00",
+              "00:00:00",
+              "00:00:00",
+              "00:00:00",
+              "00:00:00",
+              "00:00:00",
+              "00:00:00",
+              "00:00:00",
+              "00:00:00",
+              "00:00:00"
+            ],
+            "timeMean": "00:00:00",
+            "timeStdDeviation": "00:00:00",
+            "causes": []
+          }
+        }
+      ]
+    }
+  ]
+}

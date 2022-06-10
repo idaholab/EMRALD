@@ -31,17 +31,26 @@ namespace UnitTesting_Simulation
     }
     private string MainTestDir()
     {
-      return RootDir() + "\\TestingFiles\\";
+      return RootDir() + Path.DirectorySeparatorChar + "TestingFiles" + Path.DirectorySeparatorChar;
     }
 
     private string CompareFilesDir()
     {
-      return MainTestDir() + "CompareFiles\\";
+      return MainTestDir() + "CompareFiles" + Path.DirectorySeparatorChar;
     }
 
+    private string TestFolder()
+    {
+      return "EMRALDTests" + Path.DirectorySeparatorChar;
+    }
 
-    const string testFolder = "EMRALDTests\\";
-    const string modelFolder = "Models\\";
+    private string ModelFolder()
+    {
+      return "Models" + Path.DirectorySeparatorChar;
+    }
+
+    //const string TestFolder() = "EMRALDTests" + Path.DirectorySeparatorChar;
+    //const string ModelFolder() = "Models" + Path.DirectorySeparatorChar;
     const string pathsName = "_paths.txt";
     const string resName = "_res.txt";
     const string jsonResultsName = "_jsonResults.json";
@@ -50,7 +59,7 @@ namespace UnitTesting_Simulation
     private string SetupTestDir(string testName)
     {
       //Setup directory for unit test 
-      string dir = MainTestDir() + testFolder + testName + "\\";
+      string dir = MainTestDir() + TestFolder() + testName + Path.DirectorySeparatorChar;
       if (Directory.Exists(dir))
       {
         var d = new DirectoryInfo(dir);
@@ -62,11 +71,11 @@ namespace UnitTesting_Simulation
       var rootDir = RootDir();
 
       //var s = System.IO.GGetCurrentDirectory()
-      LogManager.Configuration = new XmlLoggingConfiguration(rootDir + "\\NLog.config");
+      LogManager.Configuration = new XmlLoggingConfiguration(rootDir + Path.DirectorySeparatorChar + "NLog.config");
       var config = LogManager.Configuration;
       var logfile = new NLog.Targets.FileTarget(debugLogger)
       {
-        FileName = MainTestDir() + testFolder + debugLogger + ".txt",
+        FileName = MainTestDir() + TestFolder() + debugLogger + ".txt",
         Layout = "${message}",
         //DeleteOldFileOnStartup = true,
         KeepFileOpen = true,
@@ -87,12 +96,13 @@ namespace UnitTesting_Simulation
       return sf.GetMethod().Name;
     }
 
-    private JObject SetupJSON(string loc, string testName, bool pathResults = false, bool jsonResults = false)
+    private JObject SetupJSON(string loc, string testName, bool jsonResults = false)
     {
       Options ops = new Options();
       ops.resout = loc + testName + resName;
-      if (pathResults)
-        ops.pathout = loc + testName + pathsName;
+      //path results depricated, all info in json results
+      //if (pathResults)
+      //  ops.pathout = loc + testName + pathsName;
       if (jsonResults)
         ops.jsonRes = loc + testName + jsonResultsName;
 
@@ -140,7 +150,8 @@ namespace UnitTesting_Simulation
         SingleComp((string)jsonSettings["pathout"], CompareFilesDir() + testName + pathsName);
       //Json Results file
       if ((string)jsonSettings["jsonRes"] != null)
-        SingleComp((string)jsonSettings["jsonRes"], CompareFilesDir() + testName + jsonResultsName);
+        if(Directory.Exists((string)jsonSettings["jsonRes"]))
+          SingleComp((string)jsonSettings["jsonRes"], CompareFilesDir() + testName + jsonResultsName);
     }
 
     private void CopyToValidated(string loc, string testName, JObject jsonSettings)
@@ -154,7 +165,8 @@ namespace UnitTesting_Simulation
 
       if ((string)jsonSettings["jsonRes"] != null)
       {
-        File.Copy((string)jsonSettings["jsonRes"], CompareFilesDir() + testName + jsonResultsName, true);
+        if (Directory.Exists((string)jsonSettings["jsonRes"]))
+          File.Copy((string)jsonSettings["jsonRes"], CompareFilesDir() + testName + jsonResultsName, true);
       }
     }
 
@@ -182,10 +194,10 @@ namespace UnitTesting_Simulation
       //Setup directory for unit test 
       string dir = SetupTestDir(testName);
       //initial options, and optional results to save/test
-      JObject optionsJ = SetupJSON(dir, testName, true, true); 
-
+      JObject optionsJ = SetupJSON(dir, testName, true); 
+      
       //Change the default settings as needed for the test seed default set to 0 for testing.
-      optionsJ["inpfile"] = MainTestDir() + modelFolder + testName + ".json";
+      optionsJ["inpfile"] = MainTestDir() + ModelFolder() + testName + ".json";
       optionsJ["runct"] = 10;
       optionsJ["debug"] = "basic";
       JSONRun testRun = new JSONRun(optionsJ.ToString());
@@ -209,7 +221,7 @@ namespace UnitTesting_Simulation
       JObject optionsJ = SetupJSON(dir, testName);
 
       //Change the default settings as needed for the test seed default set to 0 for testing.
-      optionsJ["inpfile"] = MainTestDir() + modelFolder + testName + ".json";
+      optionsJ["inpfile"] = MainTestDir() + ModelFolder() + testName + ".json";
       optionsJ["runct"] = 100;
       JSONRun testRun = new JSONRun(optionsJ.ToString());
       Assert.True(TestRunSim(testRun));
@@ -232,7 +244,7 @@ namespace UnitTesting_Simulation
       JObject optionsJ = SetupJSON(dir, testName);
 
       //Change the default settings as needed for the test seed default set to 0 for testing.
-      optionsJ["inpfile"] = MainTestDir() + modelFolder + testName + ".json";
+      optionsJ["inpfile"] = MainTestDir() + ModelFolder() + testName + ".json";
       optionsJ["runct"] = 100000;
       optionsJ["debug"] = "basic";
       JSONRun testRun = new JSONRun(optionsJ.ToString());
@@ -256,7 +268,7 @@ namespace UnitTesting_Simulation
       JObject optionsJ = SetupJSON(dir, testName);
 
       //Change the default settings as needed for the test seed default set to 0 for testing.
-      optionsJ["inpfile"] = MainTestDir() + modelFolder + testName + ".json";
+      optionsJ["inpfile"] = MainTestDir() + ModelFolder() + testName + ".json";
       optionsJ["runct"] = 100000;
       optionsJ["debug"] = "basic";
       JSONRun testRun = new JSONRun(optionsJ.ToString());
@@ -280,7 +292,7 @@ namespace UnitTesting_Simulation
       JObject optionsJ = SetupJSON(dir, testName);
 
       //Change the default settings as needed for the test seed default set to 0 for testing.
-      optionsJ["inpfile"] = MainTestDir() + modelFolder + testName + ".json";
+      optionsJ["inpfile"] = MainTestDir() + ModelFolder() + testName + ".json";
       optionsJ["runct"] = 100000;
       optionsJ["debug"] = "basic";
       JSONRun testRun = new JSONRun(optionsJ.ToString());
@@ -292,5 +304,227 @@ namespace UnitTesting_Simulation
       //compare the test result and optionally the paths and json if assigned
       Compare(dir, testName, optionsJ);
     }
+
+    [Fact]
+    //Test the timer event using a variable
+    public void TestTimerEvVar()
+    {
+      string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
+
+      //Setup directory for unit test 
+      string dir = SetupTestDir(testName);
+      //initial options, and optional results to save/test
+      JObject optionsJ = SetupJSON(dir, testName, true);
+
+      //Change the default settings as needed for the test seed default set to 0 for testing.
+      optionsJ["inpfile"] = MainTestDir() + ModelFolder() + testName + ".json";
+      optionsJ["runct"] = 10;
+      optionsJ["debug"] = "basic";
+      JSONRun testRun = new JSONRun(optionsJ.ToString());
+      Assert.True(TestRunSim(testRun));
+
+      //Uncomment to update the validation files after they verified correct
+      //CopyToValidated(dir, testName, optionsJ);
+
+      //compare the test result and optionally the paths and json if assigned
+      Compare(dir, testName, optionsJ);
+    }
+
+    [Fact]
+    //Test the JSON variable 
+    public void JsonVarExeTest()
+    {
+      string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
+
+      //Setup directory for unit test 
+      string dir = SetupTestDir(testName);
+      //initial options, and optional results to save/test
+      JObject optionsJ = SetupJSON(dir, testName);
+
+      //Change the default settings as needed for the test seed default set to 0 for testing.
+      optionsJ["inpfile"] = MainTestDir() + ModelFolder() + testName + ".json";
+      
+      optionsJ["runct"] = 10;
+      optionsJ["debug"] = "basic";
+      JSONRun testRun = new JSONRun(optionsJ.ToString());
+      Assert.True(TestRunSim(testRun));
+
+      //Uncomment to update the validation files after they verified correct
+      //CopyToValidated(dir, testName, optionsJ);
+
+      //compare the test result and optionally the paths and json if assigned
+      Compare(dir, testName, optionsJ);
+    }
+    
+    [Fact]
+    //Test the failure rate event using a variable
+    public void TestProbEvVar()
+    {
+      string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
+
+      //Setup directory for unit test 
+      string dir = SetupTestDir(testName);
+      //initial options, and optional results to save/test
+      JObject optionsJ = SetupJSON(dir, testName);
+
+      //Change the default settings as needed for the test seed default set to 0 for testing.
+      optionsJ["inpfile"] = MainTestDir() + ModelFolder() + testName + ".json";
+      optionsJ["runct"] = 1000;
+      optionsJ["debug"] = "basic";
+      JSONRun testRun = new JSONRun(optionsJ.ToString());
+      Assert.True(TestRunSim(testRun));
+
+      //Uncomment to update the validation files after they verified correct
+      //CopyToValidated(dir, testName, optionsJ);
+
+      //compare the test result and optionally the paths and json if assigned
+      Compare(dir, testName, optionsJ);
+    }
+
+    [Fact]
+    public void DistEvent_Normal()
+    {
+      string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
+
+      //Setup directory for unit test 
+      string dir = SetupTestDir(testName);
+      //initial options, and optional results to save/test
+      JObject optionsJ = SetupJSON(dir, testName, true);
+
+      //Change the default settings as needed for the test seed default set to 0 for testing.
+      optionsJ["inpfile"] = MainTestDir() + ModelFolder() + testName + ".json";
+      optionsJ["runct"] = 100000;
+      optionsJ["debug"] = "basic";
+      JSONRun testRun = new JSONRun(optionsJ.ToString());
+      Assert.True(TestRunSim(testRun));
+
+      //Uncomment to update the validation files after they verified correct
+      //CopyToValidated(dir, testName, optionsJ);
+
+      //compare the test result and optionally the paths and json if assigned
+      Compare(dir, testName, optionsJ);
+    }
+
+    [Fact]
+    public void DistEvent_Normal_Vars()
+    {
+      string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
+
+      //Setup directory for unit test 
+      string dir = SetupTestDir(testName);
+      //initial options, and optional results to save/test
+      JObject optionsJ = SetupJSON(dir, testName, true);
+
+      //Change the default settings as needed for the test seed default set to 0 for testing.
+      optionsJ["inpfile"] = MainTestDir() + ModelFolder() + testName + ".json";
+      optionsJ["runct"] = 100000;
+      optionsJ["debug"] = "basic";
+      JSONRun testRun = new JSONRun(optionsJ.ToString());
+      Assert.True(TestRunSim(testRun));
+
+      //Uncomment to update the validation files after they verified correct
+      //CopyToValidated(dir, testName, optionsJ);
+
+      //compare the test result and optionally the paths and json if assigned
+      Compare(dir, testName, optionsJ);
+    }
+
+    [Fact]
+    public void DistEvent_LogNormal()
+    {
+      string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
+
+      //Setup directory for unit test 
+      string dir = SetupTestDir(testName);
+      //initial options, and optional results to save/test
+      JObject optionsJ = SetupJSON(dir, testName, true);
+
+      //Change the default settings as needed for the test seed default set to 0 for testing.
+      optionsJ["inpfile"] = MainTestDir() + ModelFolder() + testName + ".json";
+      optionsJ["runct"] = 100000;
+      optionsJ["debug"] = "basic";
+      JSONRun testRun = new JSONRun(optionsJ.ToString());
+      Assert.True(TestRunSim(testRun));
+
+      //Uncomment to update the validation files after they verified correct
+      //CopyToValidated(dir, testName, optionsJ);
+
+      //compare the test result and optionally the paths and json if assigned
+      Compare(dir, testName, optionsJ);
+    }
+
+    [Fact]
+    public void DistEvent_LogNormal_Vars()
+    {
+      string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
+
+      //Setup directory for unit test 
+      string dir = SetupTestDir(testName);
+      //initial options, and optional results to save/test
+      JObject optionsJ = SetupJSON(dir, testName, true);
+
+      //Change the default settings as needed for the test seed default set to 0 for testing.
+      optionsJ["inpfile"] = MainTestDir() + ModelFolder() + testName + ".json";
+      optionsJ["runct"] = 100000;
+      optionsJ["debug"] = "basic";
+      JSONRun testRun = new JSONRun(optionsJ.ToString());
+      Assert.True(TestRunSim(testRun));
+
+      //Uncomment to update the validation files after they verified correct
+      //CopyToValidated(dir, testName, optionsJ);
+
+      //compare the test result and optionally the paths and json if assigned
+      Compare(dir, testName, optionsJ);
+    }
+
+
+    //[Fact]
+    //public void DistEvent_Exponential()
+    //{
+    //  string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
+
+    //  //Setup directory for unit test 
+    //  string dir = SetupTestDir(testName);
+    //  //initial options, and optional results to save/test
+    //  JObject optionsJ = SetupJSON(dir, testName, true);
+
+    //  //Change the default settings as needed for the test seed default set to 0 for testing.
+    //  optionsJ["inpfile"] = MainTestDir() + ModelFolder() + testName + ".json";
+    //  optionsJ["runct"] = 100000;
+    //  optionsJ["debug"] = "basic";
+    //  JSONRun testRun = new JSONRun(optionsJ.ToString());
+    //  Assert.True(TestRunSim(testRun));
+
+    //  //Uncomment to update the validation files after they verified correct
+    //  //CopyToValidated(dir, testName, optionsJ);
+
+    //  //compare the test result and optionally the paths and json if assigned
+    //  Compare(dir, testName, optionsJ);
+    //}
+
+    //[Fact]
+    //public void DistEvent_Exponential_Vars()
+    //{
+    //  string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
+
+    //  //Setup directory for unit test 
+    //  string dir = SetupTestDir(testName);
+    //  //initial options, and optional results to save/test
+    //  JObject optionsJ = SetupJSON(dir, testName, true);
+
+    //  //Change the default settings as needed for the test seed default set to 0 for testing.
+    //  optionsJ["inpfile"] = MainTestDir() + ModelFolder() + testName + ".json";
+    //  optionsJ["runct"] = 100000;
+    //  optionsJ["debug"] = "basic";
+    //  JSONRun testRun = new JSONRun(optionsJ.ToString());
+    //  Assert.True(TestRunSim(testRun));
+
+    //  //Uncomment to update the validation files after they verified correct
+    //  //CopyToValidated(dir, testName, optionsJ);
+
+    //  //compare the test result and optionally the paths and json if assigned
+    //  Compare(dir, testName, optionsJ);
+    //}
+
   }
 }

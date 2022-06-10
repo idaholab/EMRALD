@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>Import Diagram</title>
+    <link href="../styles/Editors.css" rel="stylesheet" />
+    <script src="../scripts/angular/angular.js"></script>
+    <script src="./lib/EditFormUtil.js"></script>
+    <script src="ImportEditor.js"></script>
+    <style>
+      :root {
+        --lock-icon-size: 30px;
+      }
+
+      .conflict {
+        color: #eb5834;
+      }
+
+      .locked {
+        background-color: #e0e0e0;
+      }
+
+      input[type=checkbox] {
+        display: none;
+      }
+
+      input[type=checkbox] + label {
+        background: url(lock_open.png);
+        background-size: var(--lock-icon-size);
+        width: var(--lock-icon-size);
+        height: var(--lock-icon-size);
+        padding: 0;
+        display: inline-block;
+      }
+
+      input[type=checkbox]:checked + label {
+        background: url(lock_closed.png);
+        background-size: var(--lock-icon-size);
+        width: var(--lock-icon-size);
+        height: var(--lock-icon-size);
+        padding: 0;
+        display: inline-block;
+      }
+    </style>
+  </head>
+  <body ng-app="importEditor">
+    <div
+      ng-controller="importEditorController"
+      id="importEditorControllerPanel"
+    >
+      <div>
+        <label for="find">Find:</label>
+        <input id="find" ng-model="find" />
+        <label for="replace">Replace with:</label>
+        <input id="replace" ng-model="replace" />
+        <button ng-click="apply()">Apply</button>
+        <br />
+        <button ng-click="toggleLocks(true)">Lock All</button>
+        <button ng-click="toggleLocks(false)">Unlock All</button>
+        <br />
+        <button ng-click="toggleAction('ignore')">Ignore Unlocked</button>
+        <button ng-click="toggleAction('replace')">Replace Unlocked</button>
+        <button ng-click="toggleAction('rename')">Rename Unlocked</button>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>Type</th>
+            <th>Lock</th>
+            <th>Old Name</th>
+            <th>Action</th>
+            <th>Name</th>
+            <th>Conflict</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr ng-repeat="entry in entries track by $index" ng-class="{ locked: entry.isLocked }">
+            <td>{{entry.type}}</td>
+            <td>
+              <input type="checkbox" ng-model="entry.isLocked" id="{{'checkbox-' + $index}}" />
+              <label for="{{'checkbox-' + $index}}"></label>
+            </td>
+            <td>{{entry.oldName}}</td>
+            <td>
+              <input
+                title="Ignore"
+                type="radio"
+                ng-model="entry.action"
+                value="ignore"
+                ng-change="checkEntryAction(entry)"
+              />
+              Ignore
+              <input
+                title="Replace"
+                type="radio"
+                ng-model="entry.action"
+                value="replace"
+                ng-change="checkEntryAction(entry)"
+              />
+              Replace
+              <input
+                title="Rename"
+                type="radio"
+                ng-model="entry.action"
+                value="rename"
+                ng-change="checkEntryAction(entry)"
+              />
+              Rename
+            </td>
+            <td>
+              <input
+                placeholder="Name"
+                ng-model="entry.data.name"
+                ng-change="nameChanged($index)"
+              />
+            </td>
+            <td>
+              <div ng-if="entry.isConflicting" class="conflict">Conflicts!</div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </body>
+</html>

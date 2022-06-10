@@ -1,22 +1,28 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Ewk.Math.Numerics" Version="1.0.4807.29504" />
-    <PackageReference Include="MathNet.Numerics" Version="4.12.0" />
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="3.8.0" />
+    <PackageReference Include="MathNet.Numerics" Version="4.15.0" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="3.11.0" />
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
-    <PackageReference Include="Newtonsoft.Json.Schema" Version="3.0.13" />
-    <PackageReference Include="NLog" Version="4.7.6" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="Newtonsoft.Json.Schema" Version="3.0.14" />
+    <PackageReference Include="NLog" Version="4.7.11" />
     <PackageReference Include="System.Xml.XPath" Version="4.3.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\MessageDefLib\MessageDefLib.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="BTree\obj\Debug\" />
+    <Folder Include="BTree\obj\Release\" />
+    <Folder Include="BTree\obj\x86\Debug\" />
   </ItemGroup>
 
 </Project>
