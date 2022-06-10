@@ -1863,9 +1863,12 @@ if (typeof Navigation === 'undefined')
           function (btn, outDataObj) {
             if (btn === 'OK') {
               simApp.modelChanged = true;
-              if (el)
+              if (el) {
                 el.innerText = dataObj.name;
-              else {
+                const oldName = outDataObj.rootName;
+                outDataObj.rootName = outDataObj.name;
+                simApp.mainApp.sidebar.replaceNames(oldName, dataObj.name, 'LogicTree', simApp.allDataModel, false);
+              } else {
                 if (this.existsLogicName(outDataObj.name)) {
                   MessageBox.alert("New Logic Tree", "A logic tree with the '" + outDataObj.name + "' exists, please try a different name.");
                   return false;
@@ -2460,6 +2463,14 @@ if (typeof Navigation === 'undefined')
                       cur.time = del ? null : (replaceName !== null ? replaceName : name);
                   }
               }
+              // Distribution events
+              if (cur.parameters && Array.isArray(cur.parameters)) {
+                cur.parameters.forEach((parameter, i) => {
+                  if (parameter.useVariable && parameter.variable === name) {
+                    cur.parameters[i].variable = replaceName;
+                  }
+                });
+              }
               break;
             case "State":
               //etStateCng
@@ -2834,7 +2845,11 @@ if (typeof Navigation === 'undefined')
                 return refs; //only one ref if it is itself, so return
               }
               break;
-
+            case 'LogicTree':
+              // Replace rootNames
+              if (cur.rootName === name && replaceName !== null) {
+                cur.rootName = replaceName;
+              }
             case "Action":
               //not applicable
               break;

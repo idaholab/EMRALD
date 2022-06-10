@@ -233,7 +233,7 @@ diagramModule.controller('diagramController', function ($scope, $timeout) {
     $scope.desc = "new diagram";
     $scope.diagramTypes = [
         { name: "Create new...", value: "newType" },
-        { name: "Plant Response", value: "dtPlant" },
+        { name: "Plant", value: "dtPlant" },
         { name: "System", value: "dtSystem" },
         { name: "Component", value: "dtComponent" },
         { name: "Other", value: "dtOther" },

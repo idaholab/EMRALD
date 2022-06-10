@@ -112,6 +112,9 @@ function ValidateData() {
     if (scope.typeOption.value === 'et3dSimEv' && !scope.variable) {
         return "Please specify an External Sim Variable before saving the event.";
     }
+    if (scope.typeOption.value === 'etComponentLogic' && !scope.logicTop) {
+        return "Please specify a top logic gate before saving the event.";
+    }
     return "";
 }
 
@@ -530,7 +533,9 @@ function GetDataObject() {
             break;
         case "etComponentLogic":
             dataObj.onSuccess = scope.onSuccess;
-            dataObj.logicTop = scope.logicTop.name;
+            if (scope.logicTop) {
+                dataObj.logicTop = scope.logicTop.name;
+            }
             break;
         case "etTimer":
             dataObj.useVariable = scope.data.timer.useVariable;
@@ -560,7 +565,14 @@ function GetDataObject() {
             break;
         case "etDistribution":
             dataObj.distType = scope.distType.value;
-            dataObj.parameters = scope.distParameters;
+            // Remove variable property from parameters not using variables.
+            const distParameters = scope.distParameters;
+            distParameters.forEach((p, i) => {
+                if (!p.useVariable) {
+                    delete distParameters[i].variable;
+                }
+            });
+            dataObj.parameters = distParameters;
             dataObj.dfltTimeRate = scope.dfltTimeRate;
             if (scope.onVarChange) {
                 dataObj.onVarChange = scope.onVarChange.value;
