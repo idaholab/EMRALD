@@ -285,3 +285,6 @@ _Pvt_Extensions
 # JavaScript unit test artifacts
 EMRALD_Site/coverage
 EMRALD_Site/tests/temp
+
+src-tauri/target
+src-tauri/WixTools

@@ -3,8 +3,8 @@
  * @file Tests wrapper function.
  */
 // @ts-check
-const fs = require('fs');
-const path = require('path');
+import fs from 'fs';
+import path from 'path';
 
 /**
  * @typedef {object | string} ExportParam
@@ -33,34 +33,46 @@ function handleExport(exp) {
 /**
  * Converts a IIFE module into CJS modules that can be required by tests.
  *
+ * @param {string} testSuite - The name of the test suite to prevent dependency issues.
  * @param {string} filename - The path to the file to wrap.
  * @param {ExportParam[]} exports - The names of global variables to export.
  * @param {object} imports - File dependencies.
- * @returns {object} An object containing the values of the variables listed in exports.
+ * @returns {Promise<object>} An object containing the values of the variables listed in exports.
  */
-module.exports = function wrapper(filename, exports, imports = {}) {
-  let wrapped = '/* eslint-disable */\nvar context = {};\nwindow = context;\n';
+export default async function wrapper(testSuite, filename, exports, imports = {}) {
+  let wrapped = '/* eslint-disable */\nimport { JSDOM } from \'jsdom\';\nvar context = {};\nvar { window } = new JSDOM(\'...\');\n';
   Object.keys(imports).forEach(async (i) => {
-    wrapper(i, imports[i].exports, imports[i].imports);
+    wrapper(testSuite, i, imports[i].exports, imports[i].imports);
     const importVarName = i.replace(/[^a-zA-Z]/g, '');
-    wrapped += `var ${importVarName} = require('${path
-      .resolve('tests', 'temp', path.parse(i).base)
-      .replace(/\\/g, '\\\\')}');\n`;
+    wrapped += `import ${importVarName} from 'file://${path
+      .resolve('Emrald_Site', 'tests', 'temp', testSuite, path.parse(i).base)
+      .replace(/\\/g, '\\\\')}'\n`;
     imports[i].exports.forEach((k) => {
       const exp = handleExport(k);
       wrapped += `var {${exp.name}} = ${importVarName};\n`;
     });
   });
+  wrapped += 'var m = (function() {\n';
   wrapped += fs.readFileSync(filename).toString();
   exports.forEach((e) => {
     const exp = handleExport(e);
     wrapped += `context['${exp.name}'] = ${exp.value};\n`;
   });
-  wrapped += 'module.exports = context;\n';
-  const tempPath = path.resolve('tests', 'temp', path.parse(filename).base);
-  if (!fs.existsSync(path.resolve('tests', 'temp'))) {
-    fs.mkdirSync(path.resolve('tests', 'temp'));
+  wrapped += '}).bind(window);\nm();\n';
+  wrapped += 'export default context;\n';
+  const tempPath = path.resolve(
+    'Emrald_Site',
+    'tests',
+    'temp',
+    testSuite,
+    path.parse(filename).base,
+  );
+  if (!fs.existsSync(path.resolve('Emrald_Site', 'tests', 'temp'))) {
+    fs.mkdirSync(path.resolve('Emrald_Site', 'tests', 'temp'));
+  }
+  if (!fs.existsSync(path.resolve('Emrald_Site', 'tests', 'temp', testSuite))) {
+    fs.mkdirSync(path.resolve('Emrald_Site', 'tests', 'temp', testSuite));
   }
   fs.writeFileSync(tempPath, wrapped);
-  return require(tempPath);
-};
+  return (await import(`file://${tempPath}`)).default;
+}

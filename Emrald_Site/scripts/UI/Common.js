@@ -13,50 +13,14 @@ if (!this.__extends) {
     function __() { this.constructor = d; }
     //instantiate the parent's prototype with the new class.
     __.prototype = b.prototype;
-    d.prototype = new __();
+    var p = new __();
+    Object.keys(p).forEach((key) => {
+      d.prototype[key] = p[key];
+    });
   };
 }
 
-"use strict";  
-//===================================================
-//Remap the default 'this' to a specified 'scope'.
-//Call function 'funct' within 'scope' scope.
-if (!Function.prototype.bind) {  //only if not natively supported, < IE9. < FF 4.0, < Chrome 7, < Opera 11.60 < Safari 5.1.4
-  Function.prototype.bind = function (oThis) {
-    if (typeof this !== "function") {
-      // closest thing possible to the ECMAScript 5 internal IsCallable function
-      throw new TypeError("Function.prototype.bind - what is trying to be bound is not callable");
-    }
-
-    var aArgs = Array.prototype.slice.call(arguments, 1),
-        fToBind = this,
-        fNOP = function () { },
-        fBound = function () {
-          return fToBind.apply(this instanceof fNOP && oThis
-                                 ? this
-                                 : oThis,
-                               aArgs.concat(Array.prototype.slice.call(arguments)));
-        };
-
-    fNOP.prototype = this.prototype;
-    fBound.prototype = new fNOP();
-
-    return fBound;
-  };
-}
-
-//===================================================
-// add a repeat function to String if it is not already present.
-if (typeof String.prototype.repeat !== 'function') {
-  String.prototype.repeat = function (cnt) {
-    var aVal = "";
-    for (var i = 0; i < cnt; i++) {
-      aVal += this;
-    }
-    return aVal;
-  }
-}
-
+"use strict";
 //A function to wait until either times up, or until a pass in "funct" returns "true", which ever occured first.
 //funct - callback function, to be returned true or false.
 //done - an optional callback function for notify when waiting is over.
@@ -69,13 +33,14 @@ function waitToSync(funct, done, timeout, caller) {
   function waiting() {
     if (!funct()) {
       var dt = new Date();
-      console.log(caller + " waiting: " + dt.toLocaleTimeString());
-      if ((timeout - 1000) > 0)
+      if (timeout > 0)
         setTimeout(waiting, 1000); //1 second.
       else {
 
-        console.log(caller + ': waitToSync timed out!!!');
         document.body.style.cursor = 'default';
+        if (done !== undefined && (typeof done === 'function')) {
+          done();
+        }
       }
       timeout -= 1000;
     }
@@ -153,189 +118,9 @@ if (!Object.extend) {
   };
 }
 
-//create an character array from start to end, or a distinct arguments of character.
-// this is useful for matching up value in a set.
-// for example:  if ('P' in sequence('A','Z')) == true;  or var d='D'; var b = d in sequence('A','C','D','C') == true.
-// -- very similar the SetOf() below.
-function sequence(start, end) {
-  var seq = {};
-  if ((arguments.length === 2) && start && end) {
-    seq[start] = start;
-    while (start < end) {
-      start = String.fromCharCode(start.charCodeAt(0) + 1);
-      seq[start] = start;
-    }
-  }
-  else {
-    //case where arguments is a list.
-    for (var i = 0; i < arguments.length; i++) {
-      seq[arguments[i]] = arguments[i];
-    }
-  }
-  return seq;
-}
-
-//================================================
-// add more function capability to Array.
-if (!Array.prototype.removeItem) {
-  Array.prototype.removeItem = function (item) {
-    if (item) {
-      if (typeof (item) === 'number') {
-        var obj = this[item];
-        this.splice(item, 1);
-        return obj;
-      }
-      else {
-        //object
-        var ix = this.indexOf(item);
-        if (ix >= 0)
-          this.splice(ix, 1);
-        return item;
-      }
-    }
-  }
-}
-
-if (!Array.prototype.getItemAt) {
-  Array.prototype.getItemAt = function (idx) {
-    if ((idx >= 0) && (idx < this.length)) {
-      return this[idx];
-    }
-    return null;
-  }
-}
-if (!Array.prototype.find) {
-  Array.prototype.find = function (fn) {
-    if (fn) {
-      for (var i = 0; i < this.length; i++) {
-        if (fn(this[i]))
-          return this[i];
-      }
-    }
-    return undefined;
-  }
-}
 if (!Array.prototype.add) {
   Array.prototype.add = function (obj) {
     this.push(obj);
-  }
-}
-
-//make Array support List structure.
-if (!Array.prototype.currentIndex)
-  Array.prototype.currentIndex = -1;
-if (!Array.prototype.isCircular)
-  Array.prototype.isCircular = false;
-
-if (!Array.prototype.get) {
-  Array.prototype.get = function (idx) {
-    if (idx == null) {
-      if (this.length > 0)
-        this.currentIndex = 0;
-      else
-        this.currentIndex = -1;
-    }
-    else {
-      this.currentIndex = idx;
-    }
-
-    if ((this.currentIndex >= 0) && (this.currentIndex < this.length))
-      return this[this.currentIndex];
-    else
-      return null;
-  }
-}
-
-if (!Array.prototype.next) {
-  Array.prototype.next = function () {
-    if (this.currentIndex < this.length - 1) {
-      ++this.currentIndex;
-      return this[this.currentIndex];
-    }
-    else if (this.isCircular) {
-      return this.first();
-    }
-    return null;
-  }
-}
-
-if (!Array.prototype.prev) {
-  Array.prototype.prev = function () {
-    if (this.currentIndex > 0) {
-      --this.currentIndex;
-      return this[this.currentIndex];
-    }
-    else if (this.isCircular) {
-      return this.last();
-    }
-    return null;
-  }
-}
-
-if (!Array.prototype.first) {
-  Array.prototype.first = function () {
-    if (this.length === 0) {
-      this.currentIndex = -1;
-      return null;
-    }
-
-    this.currentIndex = 0;
-    return this[0];
-  }
-}
-
-if (!Array.prototype.last) {
-  Array.prototype.last = function () {
-    if (this.length > 0) {
-      this.currentIndex = this.length - 1;
-      return this[this.currentIndex];
-    }
-    return null;
-  }
-}
-
-if (!Array.prototype.delete) {
-  Array.prototype.delete = function (idx) {
-    var val = null;
-    if (idx === undefined) {
-      //nothing provided, delete the current object with currentIndex.
-      if (this.currentIndex != -1) {
-        val = this.splice(this.currentIndex, 1)[0];
-        (this.currentIndex > -1) ? --this.currentIndex : (this.length > 0) ? this.currentIndex = 0 : this.currentIndex = -1
-      }
-    }
-    else {
-      if (typeof (idx) === "number") {
-        if (idx < 0) return null;
-        if (idx >= this.length) return null;
-        val = this.splice(idx, 1)[0];
-        if (idx == this.currentIndex)
-          (this.currentIndex > -1) ? --this.currentIndex : (this.length > 0) ? this.currentIndex = 0 : this.currentIndex = -1
-      }
-      else {
-        //delete object from the array.  idx is the object value.
-        var i = this.indexOf(idx);
-        if (i >= 0) {
-          val = this[i];
-          this.splice(i, 1);
-        }
-      }
-    }
-    return val;
-  }
-}
-
-if (!Array.prototype.insert) {
-  Array.prototype.insert = function (idx, val) {
-    if (!idx) {
-      this.currentIndex = this.push(val);
-      return this.currentIndex;
-    }
-    if (idx < 0) idx = 0;
-    if (idx >= this.length) idx = this.length;
-    this.splice(idx, 0, val);
-    this.currentIndex = idx;
-    return idx;
   }
 }
 
@@ -352,34 +137,12 @@ function SetOf(arr) {
 }
 //i.e. 'c' in SetOf(['a','b','c','d']) == true.  Old Pascal tricks.
 
-//===========================================
-//Build a pseudo enumerable object.
-var Enum = (function () {
-  function Enum(obj) {
-    for (var a in obj) {
-      this[a] = obj[a];// { name: a, value: obj[a] };
-    }
-  };
-
-  Enum.prototype.has = function (prop) {
-    if (prop in this)
-      return true;
-    else
-      return false;
-  }
-  return Enum;
-})();
-
 //Similar to "instanceof" but return the name of the class as string.
 function classNameOf(anObj) {
   var exec = /(\w+)\(/.exec(anObj.constructor);
   var fn = exec ? exec[1] : null;
   return fn;
 }
-
-var DataType = new Enum({ number: 1, string: 2, boolean: 3, object: 4, nops: 5 });
-//example: var n=DataType.number; var b = n.name in DataType; b is true.
-
 
 //=================CUSTOMIZE mxDragSource========================
 //overriden this to not allow container refocus, it disrupt the window editor's auto focus.
@@ -478,18 +241,6 @@ function deepClone(item) {
   }
 
   return result;
-}
-
-function extractSubStr(origStr, delimiter, inclDel) {
-  var copyStr = "";
-  var i = origStr.indexOf(delimiter);
-  if (i >= 0) {
-    if (inclDel)
-      i += delimiter.length;
-    copyStr = origStr.substr(0, i);
-  }
-  return copyStr;
-
 }
 
 //------------------------------------------

@@ -1,0 +1,49 @@
+{
+  "name": "emrald",
+  "version": "1.0.0",
+  "description": "Event-Modeled Risk Assessment using Linked Diagrams (EMRALD)",
+  "main": "EMRALD_Site/app.js",
+  "private": true,
+  "scripts": {
+    "tauri": "tauri",
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
+    "build": "npm run tauri build",
+    "build:dev": "npm run tauri dev"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/idaholab/EMRALD.git"
+  },
+  "author": "idaholab",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/idaholab/EMRALD/issues"
+  },
+  "homepage": "https://github.com/idaholab/EMRALD#readme",
+  "type": "module",
+  "dependencies": {
+    "get-port": "^6.1.2",
+    "nexe": "^4.0.0-rc.1",
+    "serve-handler": "^6.1.3"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^1.0.0-rc.13",
+    "@types/jest": "^28.1.1",
+    "babel-jest": "^28.1.1",
+    "eslint": "^8.15.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-plugin-import": "^2.26.0",
+    "eslint-plugin-jsdoc": "^39.2.9",
+    "eslint-plugin-sort-class-members": "^1.14.1",
+    "jest": "^28.1.1",
+    "jest-environment-jsdom": "^28.1.1",
+    "jest-extended": "^2.0.0"
+  },
+  "jest": {
+    "setupFilesAfterEnv": [
+      "./Emrald_Site/tests/setup.js"
+    ],
+    "testEnvironment": "./Emrald_Site/tests/environment.js",
+    "transform": {}
+  }
+}
