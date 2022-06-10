@@ -1,4 +1,3 @@
-/* eslint-disable no-eval */
 /**
  * @file Tests wrapper function.
  */
@@ -11,10 +10,7 @@ import path from 'path';
  */
 
 /**
- * Helper function for resolving export definitions to a common format.
- *
- * @param {ExportParam} exp The export definition.
- * @returns {object} The export name / value.
+ * @typedef {Record<string, ExportParam[]>} Dependencies
  */
 function handleExport(exp) {
   if (typeof exp === 'object') {
@@ -31,48 +27,73 @@ function handleExport(exp) {
 }
 
 /**
+ * Helper function to extract the exports of all other dependencies.
+ * 
+ * @param {string} currentModule - The module to generate context vars for.
+ * @param {Dependencies} dependencies - The complete dependency list.
+ * @returns {string[]} The list of context var names.
+ */
+function getContextVars(currentModule, dependencies) {
+  const contextVars = [];
+  Object.keys(dependencies).forEach((key) => {
+    if (key !== currentModule) {
+      dependencies[key].forEach((exportObj) => {
+        const e = handleExport(exportObj);
+        if (contextVars.indexOf(e.name) < 0) {
+          contextVars.push(e.name);
+        }
+      });
+    }
+  });
+  return contextVars;
+}
+
+/**
  * Converts a IIFE module into CJS modules that can be required by tests.
  *
  * @param {string} testSuite - The name of the test suite to prevent dependency issues.
- * @param {string} filename - The path to the file to wrap.
- * @param {ExportParam[]} exports - The names of global variables to export.
- * @param {object} imports - File dependencies.
- * @returns {Promise<object>} An object containing the values of the variables listed in exports.
+ * @param {Dependencies} dependencies - The paths to all the files to wrap and their export options.
+ * @param {boolean} [useCache] - If true, the generated files will not be overwritten.
+ * @returns {Promise<object>} An object containing the window and exported objects.
  */
-export default async function wrapper(testSuite, filename, exports, imports = {}) {
-  let wrapped = '/* eslint-disable */\nimport { JSDOM } from \'jsdom\';\nvar context = {};\nvar { window } = new JSDOM(\'...\');\n';
-  Object.keys(imports).forEach(async (i) => {
-    wrapper(testSuite, i, imports[i].exports, imports[i].imports);
-    const importVarName = i.replace(/[^a-zA-Z]/g, '');
-    wrapped += `import ${importVarName} from 'file://${path
-      .resolve('Emrald_Site', 'tests', 'temp', testSuite, path.parse(i).base)
-      .replace(/\\/g, '\\\\')}'\n`;
-    imports[i].exports.forEach((k) => {
-      const exp = handleExport(k);
-      wrapped += `var {${exp.name}} = ${importVarName};\n`;
+export default async function wrapper(testSuite, dependencies, overrides = {}, useCache = false,) {
+  let wrapped = '/* eslint-disable */\nimport fs from \'fs\';\nimport { JSDOM } from \'jsdom\';\nvar { window } = new JSDOM(\'...\');\nvar { document } = window;\n';
+  const overrideNames = Object.keys(overrides);
+  Object.keys(dependencies).forEach(async (key, i) => {
+    const fullPath = path.join('Emrald_Site', key);
+    const moduleVar = `module${i}`;
+    wrapped += `/* ${fullPath} */\nvar ${moduleVar} = (function () {\n`;
+    getContextVars(key, dependencies).forEach((contextVar) => {
+      if (overrideNames.indexOf(contextVar) < 0) {
+        wrapped += `var ${contextVar} = window['${contextVar}'];\n`;
+      }
     });
+    Object.keys(overrides).forEach((contextVar) => {
+      wrapped += `var ${contextVar} = ${overrides[contextVar]}\n`;
+    });
+    wrapped += `${fs.readFileSync(fullPath).toString()}\n`;
+    dependencies[key].forEach((exportObj) => {
+      const e = handleExport(exportObj);
+      if (typeof e.value === 'object') {
+        wrapped += `${e.value.pre}\nwindow['${e.name}'] = ${e.value.value};\n`;
+      } else {
+        wrapped += `window['${e.name}'] = ${e.value};\n`;
+      }
+    });
+    wrapped += `}).bind(window);\n${moduleVar}();\n`;
   });
-  wrapped += 'var m = (function() {\n';
-  wrapped += fs.readFileSync(filename).toString();
-  exports.forEach((e) => {
-    const exp = handleExport(e);
-    wrapped += `context['${exp.name}'] = ${exp.value};\n`;
-  });
-  wrapped += '}).bind(window);\nm();\n';
-  wrapped += 'export default context;\n';
+  wrapped += 'export default window;';
   const tempPath = path.resolve(
     'Emrald_Site',
     'tests',
     'temp',
-    testSuite,
-    path.parse(filename).base,
+    `${testSuite}.js`,
   );
   if (!fs.existsSync(path.resolve('Emrald_Site', 'tests', 'temp'))) {
     fs.mkdirSync(path.resolve('Emrald_Site', 'tests', 'temp'));
   }
-  if (!fs.existsSync(path.resolve('Emrald_Site', 'tests', 'temp', testSuite))) {
-    fs.mkdirSync(path.resolve('Emrald_Site', 'tests', 'temp', testSuite));
+  if (!useCache) {
+    fs.writeFileSync(tempPath, wrapped);
   }
-  fs.writeFileSync(tempPath, wrapped);
   return (await import(`file://${tempPath}`)).default;
 }
