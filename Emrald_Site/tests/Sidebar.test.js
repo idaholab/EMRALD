@@ -4,34 +4,40 @@
 /// <reference path='../../node_modules/@types/jest/index.d.ts' />
 /// <reference path='../../node_modules/jest-extended/types/index.d.ts' />
 // @ts-check
-import path from 'path';
 import { names, readTestData } from './util';
 import wrapper from './wrapper';
 
 let sidebar;
 beforeAll(async () => {
-  const { Navigation } = await wrapper(
+  const context = await wrapper(
     'Sidebar',
-    path.resolve('Emrald_Site', 'scripts', 'UI', 'Sidebar.js'),
-    ['Navigation'],
     {
-      [`${path.resolve('Emrald_Site', 'scripts', 'UI', 'Common.js')}`]: {
-        exports: ['__extends', 'waitToSync'],
-      },
-      [`${path.resolve('Emrald_Site', 'config.js')}`]: {
-        exports: [{ appConfig: 'window.appConfig' }],
-      },
-      [`${path.resolve('Emrald_site', 'scripts', 'UI', 'wcfService.js')}`]: {
-        exports: ['WcfService'],
-        imports: {
-          [`${path.resolve('Emrald_site', 'scripts', 'UI', 'Common.js')}`]: {
-            exports: ['__extends', 'waitToSync'],
+      'scripts/UI/Common.js': ['__extends', 'waitToSync', 'SetOf'],
+      'config.js': [{ appConfig: 'window.appConfig' }],
+      'scripts/UI/wcfService.js': ['WcfService'],
+      'scripts/UI/menu.js': ['Navigation'],
+      'scripts/UI/simApp.js': [
+        {
+          simApp: {
+            pre: 'new simApp.SimApp();',
+            value: 'simApp',
           },
         },
-      },
+      ],
+      'scripts/UI/Sidebar.js': [],
+    },
+    {
+      getServerFile: `function getServerFile(url, callbackFn) {
+      fs.readFileSync(url, 'utf-8', function (error, contents) {
+        if (contents) {
+          callbackFn(contents);
+        }
+      });
+    }`,
+      mxCell: 'function mxCell() {}',
     },
   );
-  sidebar = new Navigation.Sidebar();
+  sidebar = new context.Navigation.Sidebar();
 });
 
 test('getExtSimList', async () => {
@@ -57,7 +63,7 @@ test('getLogicNodeList', async () => {
         model,
       ),
     ),
-  ).toIncludeAllMembers(['LogicTree1', 'gate_2']);
+  ).toIncludeAllMembers(['LogicTree1']);
 });
 
 test('getVariableList', async () => {
@@ -698,5 +704,3 @@ test('exportDiagramTest', async () => {
     'TemplateDiagram',
   ]);
 });
-
-// TODO: Test uses of functions I changed

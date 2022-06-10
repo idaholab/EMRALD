@@ -5,31 +5,39 @@
 /// <reference path='../../node_modules/@types/jest/index.d.ts' />
 /// <reference path='../../node_modules/jest-extended/types/index.d.ts' />
 // @ts-check
-import path from 'path';
 import wrapper from './wrapper';
 
-let Common;
+let waitToSync;
+let SetOf;
+let classNameOf;
+let deepClone;
 beforeAll(async () => {
-  Common = await wrapper(
+  const context = await wrapper(
     'Common',
-    path.resolve('Emrald_Site', 'scripts', 'UI', 'Common.js'),
-    [
-      '__extends',
-      'waitToSync',
-      { extend: 'Object.extend' },
-      { add: 'Array.prototype.add' },
-      'SetOf',
-      'classNameOf',
-      'getServerFile',
-      'deepClone',
-      'sortDOMList',
-    ],
+    {
+      'scripts/UI/Common.js': [
+        '__extends',
+        'waitToSync',
+        { extend: 'Object.extend' },
+        { add: 'Array.prototype.add' },
+        'SetOf',
+        'classNameOf',
+        'getServerFile',
+        'deepClone',
+        'sortDOMList',
+      ],
+    },
   );
+  waitToSync = context.waitToSync;
+  Array.prototype.add = context.add;
+  SetOf = context.SetOf;
+  classNameOf = context.classNameOf;
+  deepClone = context.deepClone;
 });
 
 test('waitToSync', async () => new Promise((resolve) => {
   const start = Date.now();
-  Common.waitToSync(
+  waitToSync(
     () => false,
     () => {
       const end = Date.now();
@@ -41,7 +49,7 @@ test('waitToSync', async () => new Promise((resolve) => {
   );
 
   let i = 0;
-  Common.waitToSync(
+  waitToSync(
     () => {
       i += 1;
       return i > 1;
@@ -57,19 +65,17 @@ test('waitToSync', async () => new Promise((resolve) => {
 test('Object.extend', () => {});
 
 test('Array.prototype.add', () => {
-  Array.prototype.add = Common.add;
-
   const a1 = [];
   a1.add('a');
   expect(a1).toIncludeAllMembers(['a']);
 });
 
 test('SetOf', () => {
-  expect('c' in Common.SetOf(['a', 'b', 'c', 'd'])).toBeTrue();
+  expect('c' in SetOf(['a', 'b', 'c', 'd'])).toBeTrue();
 });
 
 test('classNameOf', () => {
-  expect(Common.classNameOf(new Map())).toBe('Map');
+  expect(classNameOf(new Map())).toBe('Map');
 });
 
 /*
@@ -85,9 +91,9 @@ test('getServerFile', () => new Promise((resolve) => {
 */
 
 test('deepClone', () => {
-  expect(Common.deepClone(null)).toBeNull();
+  expect(deepClone(null)).toBeNull();
   const a1 = ['a', 'b', [new String('c'), 'd']];
-  const a2 = Common.deepClone(a1);
+  const a2 = deepClone(a1);
   a2[0] = 'e';
   expect(a1[0]).toBe('a');
   expect(a2[0]).toBe('e');
@@ -99,7 +105,7 @@ test('deepClone', () => {
       c: 'd',
     },
   };
-  const a4 = Common.deepClone(a3);
+  const a4 = deepClone(a3);
   a3.a.setAttribute('href', 'google.com');
   a3.b.c = 'e';
   expect(a4.a.getAttribute('href')).toBeNull();
