@@ -56,7 +56,7 @@ Identifier = v:(!Reserved [a-zA-Z]+) {
     }
 }
 ParameterName = first:Identifier rest:(_ ParameterName)? {
-	let name = first;
+	let name = first.value;
 	if (rest) {
     	name += ' ' + rest[1].value;
     }

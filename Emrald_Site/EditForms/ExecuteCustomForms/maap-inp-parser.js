@@ -1796,7 +1796,7 @@ function peg$parse(input, options) {
   }
 }
 
-module.exports = {
+window.maapInpParser = {
   SyntaxError: peg$SyntaxError,
   parse:       peg$parse
 };
