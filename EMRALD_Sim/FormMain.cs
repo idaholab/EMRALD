@@ -997,7 +997,9 @@ namespace EMRALD_Sim
         }
       }
 
-      lbExtSimLinks.SetItemCheckState(lbExtSimLinks.SelectedIndex, ck);
+      if (lbExtSimLinks.SelectedIndex > -1) {
+        lbExtSimLinks.SetItemCheckState(lbExtSimLinks.SelectedIndex, ck);
+      }
     }
 
     private void defaultLoadToolStripMenuItem_Click(object sender, EventArgs e)
