@@ -9,18 +9,27 @@ import path from 'path';
  * Helper function for reading test data files.
  *
  * @param {string} filename - The name of the file to read (no path or extension).
+ * @param {boolean} [json] - If the file is JSON.
  * @returns {Promise<object>} The data JSON object.
  */
-export async function readTestData(filename) {
+export async function readTestData(filename, json = true) {
+  let f = filename;
+  if (json) {
+    f += '.json';
+  }
   return new Promise((resolve, reject) => {
     fs.readFile(
-      path.resolve('Emrald_Site', 'tests', 'test-data', `${filename}.json`),
+      path.resolve('Emrald_Site', 'tests', 'test-data', f),
       (err, data) => {
         if (err) {
           reject(err);
         } else {
           try {
-            resolve(JSON.parse(data.toString()));
+            if (json) {
+              resolve(JSON.parse(data.toString()));
+            } else {
+              resolve(data.toString());
+            }
           } catch (e) {
             reject(e);
           }
