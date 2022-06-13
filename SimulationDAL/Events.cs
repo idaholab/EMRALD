@@ -858,9 +858,9 @@ namespace SimulationDAL
         this.time = XmlConvert.ToTimeSpan((string)dynObj.time);
       }
 
-      if (dynObj.useVariable != fromSimStart)
+      if (dynObj.fromSimStart != null)
       {
-        this.fromSimStart = (bool)dynObj.onVafromSimStartrChange;
+        this.fromSimStart = (bool)dynObj.fromSimStart;
       }
 
       processed = true;
