@@ -48,15 +48,18 @@ NonZeroDigit = [1-9]
 ExponentPart = ExponentIndicator SignedInteger
 ExponentIndicator = "e"i
 SignedInteger = [+-]? DecimalDigit+
-Reserved = END
-Identifier = v:(!Reserved [a-zA-Z]+) {
+Reserved = END / IS
+Identifier = first:[a-zA-Z] rest:(!Reserved [a-zA-Z0-9]+) {
 	return {
     	type: "identifier",
-        value: v[1].join(''),
+        value: first + rest[1].join(''),
     }
 }
-ParameterName = first:Identifier rest:(_ ParameterName)? {
+ParameterName = !Reserved first:Identifier index:("(" [0-9]+ ")")? rest:(_ ParameterName)? {
 	let name = first.value;
+    if (index) {
+    	name += index.join('');
+    }
 	if (rest) {
     	name += ' ' + rest[1].value;
     }
@@ -74,15 +77,19 @@ Lu = [\u0041-\u005A\u00C0-\u00D6\u00D8-\u00DE\u0100\u0102\u0104\u0106\u0108\u010
 Nl = [\u16EE-\u16F0\u2160-\u2182\u2185-\u2188\u3007\u3021-\u3029\u3038-\u303A\uA6E6-\uA6EF]
 Zs = [\u0020\u00A0\u1680\u2000-\u200A\u202F\u205F\u3000]
 
+ALIAS = "ALIAS"i
+AS = "AS"i
 END = "END"i
 END_TIME = "END TIME"i
 INCLUDE = "INCLUDE"i
 INITIATORS = "INITIATORS"i
+IF = "IF"i
 IS = "IS"i
 OFF = "OFF"i
 ON = "ON"i
 PARAMETER_CHANGE = "PARAMETER CHANGE"i
 PARAMETER_FILE = "PARAMETER FILE"i
+PLOTFIL = "PLOTFIL"i
 PRINT_INTERVAL = "PRINT INTERVAL"i
 SENSITIVITY = "SENSITIVITY"i
 SI = "SI"i
@@ -94,23 +101,37 @@ __ = (WhiteSpace / LineTerminatorSequence / Comment)*
 _ = WhiteSpace*
 
 /* Expressions */
-ExpressionMember = base:(Literal / Identifier) index:ArrayIndex? {
+ExpressionMember = value:(Literal / Identifier) {
 	return {
     	type: "expression_member",
+        value,
+    }
+}
+Arguments = value:ExpressionType rest:(_ "," _ Arguments)? {
+	let args = [value];
+    if (rest) {
+    	args = args.concat(rest[3]);
+    }
+	return args;
+}
+CallExpression = name:Identifier _ "(" args:Arguments ")" {
+	return {
+    	type: "call_expression",
         value: {
-        	base,
-            index,
+        	name,
+            arguments: args,
         },
     }
 }
 ExpressionOperator = "**" / "*" / "/" / ">" / "<" / ">=" / "<="
-Expression = left:(ExpressionBlock / ExpressionMember) _? op:ExpressionOperator _? right:(Expression / ExpressionBlock / ExpressionMember) {
+Expression = left:ExpressionType _? op:ExpressionOperator _? right:(Expression / ExpressionType) _? units:Units? {
 	return {
     	type: "expression",
         value: {
         	left,
             op,
         	right,
+            units,
         }
     }
 }
@@ -120,10 +141,8 @@ ExpressionBlock = "(" value:Expression ")" {
         value,
     }
 }
-ArrayIndex = "(" index:[0-9]+ ")" {
-	return Number(index.join(''));
-}
-Assignment = target:ExpressionMember _ "=" _ value:(ExpressionBlock / ExpressionMember) units:(_ Units)? {
+ExpressionType = CallExpression / ExpressionBlock / ExpressionMember
+Assignment = target:(CallExpression / Identifier) _ "=" _ value:ExpressionType units:(_ Units)? {
 	return {
     	type: "assignment",
         value: {
@@ -131,6 +150,21 @@ Assignment = target:ExpressionMember _ "=" _ value:(ExpressionBlock / Expression
             value,
             units: (units || [])[1],
         }
+    }
+}
+IsExpression = target:(ParameterName / CallExpression / Identifier) _ IS _ value:ExpressionType {
+	return {
+    	type: "is_expression",
+        value: {
+        	target,
+            value,
+        },
+    }
+}
+AsExpression = target:(CallExpression / Identifier) _ AS _ value:ParameterName {
+	return {
+    	type: "as_expression",
+        value,
     }
 }
 
@@ -150,6 +184,9 @@ Statement = SensitivityStatement
     / PrintIntervalStatement
     / InitiatorsStatement
     / WhenStatement
+    / IfStatement
+    / AliasStatement
+    / PlotFilStatement
 SensitivityStatement = SENSITIVITY __ value:(ON / OFF) {
 	return {
     	type: "sensitivity",
@@ -202,14 +239,11 @@ PrintIntervalStatement = PRINT_INTERVAL _ IS _ value:NumericLiteral _? "."? {
         value,
     }
 }
-InitiatorsStatement = INITIATORS __ value:InitiatorsBody? __ END {
+InitiatorsStatement = INITIATORS __ value:SourceElements? __ END {
 	return {
     	type: "initiators",
         value,
     }
-}
-InitiatorsBody = first:ParameterName __ rest:InitiatorsBody? {
-	return [first].concat(rest || []);
 }
 WhenStatement = WHEN _ test:Expression __ value:SourceElements? __ END {
 	return {
@@ -219,6 +253,30 @@ WhenStatement = WHEN _ test:Expression __ value:SourceElements? __ END {
             value,
        	},
     }
+}
+IfStatement = IF _ test:(IsExpression / ExpressionType) __ value:SourceElements? __ END {
+	return {
+    	type: "if",
+        value: {
+        	test,
+            value,
+        },
+    }
+}
+AliasStatement = ALIAS __ value:SourceElements? __ END {
+	return {
+    	type: "alias",
+        value,
+    }
+}
+PlotFilStatement = PLOTFIL _ n:[0-9]+ __ value:PlotFilBody? __ END {
+	return {
+    	type: "plotfil",
+        value,
+    }
+}
+PlotFilBody = head:CallExpression tail:(__ PlotFilBody)* {
+	return [head].concat(extractList(tail, 1));
 }
 
 /* The Program */
@@ -231,4 +289,4 @@ Program = value:SourceElements? {
 SourceElements = head:SourceElement tail:(__ SourceElement)* {
 	return [head].concat(extractList(tail, 1));
 }
-SourceElement = Statement / Assignment / ParameterName
+SourceElement = Statement / Assignment / Expression / IsExpression / AsExpression
