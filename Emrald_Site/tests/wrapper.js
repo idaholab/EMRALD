@@ -57,7 +57,7 @@ function getContextVars(currentModule, dependencies) {
  * @returns {Promise<object>} An object containing the window and exported objects.
  */
 export default async function wrapper(testSuite, dependencies, overrides = {}, useCache = false,) {
-  let wrapped = '/* eslint-disable */\nimport fs from \'fs\';\nimport { JSDOM } from \'jsdom\';\nvar { window } = new JSDOM(\'...\');\nvar { document } = window;\n';
+  let wrapped = '/* eslint-disable */\nimport fs from \'fs\';\nimport path from \'path\';\nimport { JSDOM } from \'jsdom\';\nvar { window } = new JSDOM(\'...\');\nvar { document } = window;\n';
   const overrideNames = Object.keys(overrides);
   Object.keys(dependencies).forEach(async (key, i) => {
     const fullPath = path.join('Emrald_Site', key);

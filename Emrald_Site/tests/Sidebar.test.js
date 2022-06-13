@@ -28,7 +28,7 @@ beforeAll(async () => {
     },
     {
       getServerFile: `function getServerFile(url, callbackFn) {
-      fs.readFileSync(url, 'utf-8', function (error, contents) {
+      fs.readFileSync(path.resolve('./Emrald_Site', url), 'utf-8', function (error, contents) {
         if (contents) {
           callbackFn(contents);
         }
