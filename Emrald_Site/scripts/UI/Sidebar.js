@@ -274,7 +274,6 @@ if (typeof Navigation === 'undefined')
             menu: [
               { title: "New " + titleForNew, cmd: "New" },
               { title: "Refresh", cmd: "Refresh" },
-              { title: "Merge", cmd: "Merge" } //TODO remove this is for testing only
             ],
             select: function (evt, ui) {
               //var $target = ui.target;
