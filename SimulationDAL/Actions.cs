@@ -1004,8 +1004,6 @@ namespace SimulationDAL
 
   public enum ReturnType { rtNone, rtStateList, rtVar };
 
-  public enum ReturnType { rtNone, rtStateList, rtVar };
-
   public class RunExtAppAct : Action //atRunExtApp
   {
     private string exePath = "";
