@@ -305,6 +305,10 @@ function OnLoad(dataObj) {
                 scope.data.raPreCode = actionData.makeInputFileCode;
                 scope.data.raLocation = actionData.exePath;
                 scope.data.raPostCode = actionData.processOutputFileCode;
+                scope.data.raFormData = actionData.formData;
+                if (actionData.template) {
+                    scope.data.raTemplate = scope.raTemplates.find((template) => template.name === actionData.template.name);
+                }
                 break;
         }
 
@@ -385,11 +389,15 @@ function GetDataObject() {
             if (scope.data.transitions && scope.data.transitions.length > 0) {
                 dataObj.newStates = [];
                 scope.data.transitions.forEach(function (tr) {
+                    var { varProb } = tr;
+                    if (varProb === null) {
+                        varProb = "null";
+                    }
                     if (tr.Probability.toUpperCase() === 'REMAINING') {
-                        dataObj.newStates.push({ toState: tr.To_State, prob: -1, varProb: tr.varProb, failDesc: tr.failDesc });
+                        dataObj.newStates.push({ toState: tr.To_State, prob: -1, varProb, failDesc: tr.failDesc });
                     }
                     else {
-                        dataObj.newStates.push({ toState: tr.To_State, prob: Number(tr.Probability), varProb: tr.varProb, failDesc: tr.failDesc });
+                        dataObj.newStates.push({ toState: tr.To_State, prob: Number(tr.Probability), varProb, failDesc: tr.failDesc });
                     }
                 });
             }
@@ -439,6 +447,24 @@ function GetDataObject() {
             dataObj.exePath = scope.data.raLocation;
             dataObj.processOutputFileCode = scope.data.raPostCode;
             dataObj.codeVariables = scope.varNames;
+            dataObj.formData = scope.data.raFormData;
+            dataObj.returnProcess = scope.returnProcess;
+            dataObj.template = scope.data.raTemplate;
+            dataObj.updateVariables = scope.updateVariables;
+            // update variables
+            var root = window.top.simApp.allDataModel;
+            if (scope.updateVariables) {
+                scope.updateVariables.forEach((variable) => {
+                    for (var i = 0; i < root.VariableList.length; i += 1) {
+                        var v = root.VariableList[i].Variable;
+                        if (v.id === variable.id && v.name === variable.name) {
+                            Object.keys(variable).forEach((key) => {
+                                root.VariableList[i].Variable[key] = variable[key];
+                            });
+                        }
+                    }
+                });
+            }
             break;
     }
     return dataObj;
@@ -550,8 +576,15 @@ actionModule.controller('actionController', ['$scope', function ($scope) {
         simConfigData: '',
         raPreCode: '',
         raLocation: '',
-        raPostCode: ''
+        raPostCode: '',
+        raType: 'template',
+        raTemplate: {},
+        raTemplateTemp: {},
+        raFormData: {},
     };
+
+    $scope.raTemplates = window.customForms;
+
     $scope.data.action = $scope.data.actions[0];
     $scope.data.simMessage = $scope.data.simMessages[0];
 
@@ -561,6 +594,9 @@ actionModule.controller('actionController', ['$scope', function ($scope) {
 
     $scope.namingPatterns = [];
 
+    $scope.readPath = function (row, path) {
+        return jsonPath(row, path);
+    }
 
     $scope.$watch('name', function (newV, oldV) { if (newV !== oldV) somethingChanged(); });
     $scope.$watch('desc', function (newV, oldV) { if (newV !== oldV) somethingChanged(); });
@@ -575,8 +611,31 @@ actionModule.controller('actionController', ['$scope', function ($scope) {
     $scope.$watch('data.raPreCode', function (newV, oldV) { if (newV !== oldV) somethingChanged(); });
     $scope.$watch('data.raLocation', function (newV, oldV) { if (newV !== oldV) somethingChanged(); });
     $scope.$watch('data.raPostCode', function (newV, oldV) { if (newV !== oldV) somethingChanged(); });
+    $scope.$watch('data.raType', function (newVal, oldVal) { if (newVal !== oldVal) somethingChanged(); });
+    $scope.$watch('data.raTemplate', function (newVal, oldVal) { if (newVal !== oldVal) somethingChanged(); });
+    $scope.$watch('data.raFormData', function (newVal, oldVal) { if (newVal !== oldVal) somethingChanged(); });
     $scope.$watch('varNames', function (newVal, oldVal) { if (newVal !== oldVal) somethingChanged(); });
     //$scope.$watch('row.Probability', function (newV, oldV) { if (newV !== oldV) somethingChanged(); });
 
     $scope.varsLoaded = false;
+
+    window.getScope = function () {
+        return $scope;
+    };
+
+    window.addEventListener('message', (ev) => {
+        var { payload } = ev.data;
+        switch (ev.data.type) {
+            case 'saveTemplate':
+                $scope.data.raLocation = payload.raLocation;
+                $scope.data.raFormData = payload.raFormData;
+                $scope.data.raPreCode = payload.raPreCode;
+                $scope.data.raPostCode = payload.raPostCode;
+                $scope.varNames = payload.varNames;
+                $scope.returnProcess = payload.returnProcess;
+                $scope.updateVariables = payload.variables;
+                break;
+            default:
+        }
+    });
 }]);

@@ -128,7 +128,7 @@ mxGraphHandler.prototype.mouseDown = function (sender, me) {
   var state = this.graph.getView().getState(me.getCell());
   if (state && state.shape) {
     if (state.shape instanceof TableShape) {
-      this.graph.setSelectionCell(me.getCell().parent);
+      // this.graph.setSelectionCell(me.getCell().parent);
     }
     else if (state && state.shape instanceof mxConnector) {
       this.graph.setSelectionCell(me.getCell());

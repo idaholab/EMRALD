@@ -487,6 +487,12 @@ var StateApp = (function (global, _super) {
 
               }
             }
+            // update variables
+            if (retObj.updateVariables) {
+              retObj.updateVariables.forEach((variable) => {
+                sb.replaceNames(variable.name, variable.name, "Variable", null, true);
+              });
+            }
             //TODO make this if statement cleaner (i.e. w/ function)
             if (actionName !== retObj.name && (retObj.name != "Goto_Action" && retObj.name.trim() != "")) {
               //if parent is passed in, it means add new action.
@@ -1061,7 +1067,7 @@ var StateApp = (function (global, _super) {
       return;
 
     var selState = selCell.value.State;
-    var states = sidebar.getStateDataObjecsForDiagram(null, selState.diagramName);
+    var states = sidebar.getStateDataObjectsForDiagram(null, selState.diagramName);
     for (var sIdx = 0; sIdx < states.length; sIdx++) {
       var curState = states[sIdx];
       if (fullDelete || ((selState.name == curState.State.name))) {
@@ -1140,7 +1146,7 @@ var StateApp = (function (global, _super) {
       return;
 
     var selState = selCell.value.State;
-    var states = sidebar.getStateDataObjecsForDiagram(null, selState.diagramName);
+    var states = sidebar.getStateDataObjectsForDiagram(null, selState.diagramName);
     for (var sIdx = 0; sIdx < states.length; sIdx++) {
       var curState = states[sIdx];
 
@@ -1354,7 +1360,13 @@ var StateApp = (function (global, _super) {
     }
   }
 
-
+  StateApp.prototype.pasteDiagram = function () {
+    const rootModel = this.graph.getDefaultParent().value;
+    const sb = rootModel.sidebar;
+    if (sb) {
+      console.log('Pasting diagram');
+    }
+  }
 
 
   //------------------------------------
@@ -1604,6 +1616,11 @@ var StateApp = (function (global, _super) {
             function (evt) {
               this.reloadDiagram();
             }.bind(this));
+            /*
+            menu.addItem("Paste diagram", null, (evt) => {
+              this.pasteDiagram();
+            });
+            */
         }
         menu.addItem(mName + "Properties...", null,
           function () {

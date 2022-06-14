@@ -31,7 +31,7 @@ namespace XmppMessageClient
 
         private void InitializeComponent()
         {
-      this.statusBarClient = new System.Windows.Forms.StatusBar();
+      this.statusBarClient = new System.Windows.Forms.StatusStrip();
       this.cmdDisconnect = new System.Windows.Forms.Button();
       this.cmdConnect = new System.Windows.Forms.Button();
       this.textBoxHost = new System.Windows.Forms.TextBox();
@@ -742,7 +742,7 @@ namespace XmppMessageClient
         }
         #endregion
 
-        private System.Windows.Forms.StatusBar statusBarClient;
+        private System.Windows.Forms.StatusStrip statusBarClient;
         private System.Windows.Forms.TextBox textBoxHost;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.TextBox textBoxUser;

@@ -1004,6 +1004,8 @@ namespace SimulationDAL
 
   public enum ReturnType { rtNone, rtStateList, rtVar };
 
+  public enum ReturnType { rtNone, rtStateList, rtVar };
+
   public class RunExtAppAct : Action //atRunExtApp
   {
     private string exePath = "";
@@ -1049,6 +1051,13 @@ namespace SimulationDAL
       string code1Str = makeInputFileCode.Replace("\\", "\\\\").Replace("\n", "\\n").Replace("\r", "\\r").Replace("\"", "\\\""); //
       string code2Str = processOutputFileCode.Replace("\\", "\\\\").Replace("\"", "\\\"").Replace("\n", "\\n").Replace("\r", "\\r");
       string exePathStr = exePath.Replace("\\", "\\\\").Replace("\"", "\\\"");
+
+      if(Environment.OSVersion.Platform == PlatformID.Unix)
+      {
+        code1Str = makeInputFileCode.Replace("\\", "/").Replace("\n", "\\n").Replace("\r", "\\r").Replace("\"", "\\\""); //
+        code2Str = processOutputFileCode.Replace("\\", "/").Replace("\"", "\\\"").Replace("\n", "\\n").Replace("\r", "\\r");
+        exePathStr = exePath.Replace("\\", "/").Replace("\"", "\\\"");
+      }
 
       string retStr = Environment.NewLine + "\"makeInputFileCode\":" + "\"" + code1Str + "\"";
       retStr = retStr + "," + Environment.NewLine + "\"processOutputFileCode\":" + "\"" + code2Str + "\"";
@@ -1290,7 +1299,7 @@ namespace SimulationDAL
 
     private void WriteStandardOutput()
     {
-      using (StreamWriter writer = File.CreateText(exeOutputPath + "\\_out.txt"))
+      using (StreamWriter writer = File.CreateText(exeOutputPath + Path.DirectorySeparatorChar + "_out.txt"))
       using (StreamReader reader = proc.StandardOutput)
       {
         writer.AutoFlush = true;
@@ -1307,9 +1316,9 @@ namespace SimulationDAL
         }
       }
 
-      if (File.Exists(exeOutputPath + "\\_out.txt"))
+      if (File.Exists(exeOutputPath + Path.DirectorySeparatorChar + "_out.txt"))
       {
-        FileInfo info = new FileInfo(exeOutputPath + "\\_out.txt");
+        FileInfo info = new FileInfo(exeOutputPath + Path.DirectorySeparatorChar + "_out.txt");
 
         // if the error info is empty or just contains eof etc.
 
@@ -1406,8 +1415,8 @@ namespace SimulationDAL
         extApp.RedirectStandardError = false;
 
         // Do you want to show a console window?
-        //extApp.WindowStyle = Hidden.ProcessWindowStyle;
-        //extApp.CreateNoWindow = true;
+        // extApp.WindowStyle = Hidden.ProcessWindowStyle;
+        extApp.CreateNoWindow = true;
 
         // Run the external process & wait for it to finish
         using (proc = Process.Start(extApp))
@@ -1430,6 +1439,7 @@ namespace SimulationDAL
       else
         exitCode = -1;
 
+      //Set all the variable values
       if (processOutputFileCompEval != null)
       {
         processOutputFileCompEval.SetVariable("CurTime", typeof(double), curTime.TotalHours);
@@ -1723,7 +1733,10 @@ namespace SimulationDAL
 
       this.Clear();
 
-      this.moveFromCurrent = (bool)dynObj.moveFromCurrent;
+      if (dynObj.moveFromCurrent != null)
+        this.moveFromCurrent = (bool)dynObj.moveFromCurrent;
+      else
+        this.moveFromCurrent = true;
 
       if (dynObj.actions != null)
       {

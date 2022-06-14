@@ -168,26 +168,12 @@ function TableShape(bounds, fill, stroke, strokewidth) {
                       '" cellId="' + cell.getId() +
                       '" src="images/compLogic.png"/>';
                     break;
-                  case "etNormalDist":
-                  case "etLogNormalDist":
+                  case "etDistribution":
                     content +=
                       '<img style="width:18px;height:18px;" dataType="' + item.dataType +
                       '" cellId="' + cell.getId() +
                       '" src="images/dist.png"/>';
                     break;
-                  case "etWeibullDist":
-                    content +=
-                      '<img style="width:18px;height:18px;" dataType="' + item.dataType +
-                      '" cellId="' + cell.getId() +
-                      '" src="images/dist.png"/>';
-                    break;
-                  case "etExponentialDist":
-                    content +=
-                      '<img style="width:18px;height:18px;" dataType="' + item.dataType +
-                      '" cellId="' + cell.getId() +
-                      '" src="images/dist.png"/>';
-                    break;
-
                 }
 
 

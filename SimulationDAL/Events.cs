@@ -8,6 +8,7 @@ using System.Xml;
 using System.Collections.ObjectModel;
 using MathNet.Numerics.Distributions;
 using MessageDefLib;
+using Newtonsoft.Json;
 
 namespace SimulationDAL
 {
@@ -120,16 +121,18 @@ namespace SimulationDAL
     //protected override EnModifiableTypes GetModType() { return EnModifiableTypes.mtState; }
     public bool ifInState = true;
     public bool allItems = false;
+    public bool evalCurOnInitial = true; //triggered if "Enter States" are in the current state list on first evaluation
 
     protected override EnEventType GetEvType() { return EnEventType.etStateCng; }
 
     public StateCngEvent() : base("") { }
 
-    public StateCngEvent(string inName, bool inIfInState, bool inAllItems = true, List<int> inStates = null)
+    public StateCngEvent(string inName, bool inIfInState, bool inAllItems = true, List<int> inStates = null, bool evalCurOnInitial = true)
       : base(inName)
     {
       this.ifInState = inIfInState;
       this.allItems = inAllItems;
+      this.evalCurOnInitial = evalCurOnInitial;
 
       if (inStates != null)
       {
@@ -141,7 +144,8 @@ namespace SimulationDAL
     {
 
       string retStr = "\"ifInState\":\"" + this.ifInState.ToString().ToLower() + "\"," + Environment.NewLine +
-                      "\"allItems\":\"" + this.allItems.ToString().ToLower() + "\"";
+                      "\"allItems\":\"" + this.allItems.ToString().ToLower() + "\"," + Environment.NewLine +
+                      "\"evalCurOnInitial\":\"" + evalCurOnInitial.ToString() + "\"";
 
       retStr = retStr + "," + Environment.NewLine + "\"triggerStates\": [";
 
@@ -180,6 +184,10 @@ namespace SimulationDAL
 
       this.ifInState = Convert.ToBoolean(dynObj.ifInState);
       this.allItems = Convert.ToBoolean(dynObj.allItems);
+      if (dynObj.evalCurOnInitial != null)
+      {
+        evalCurOnInitial = Convert.ToBoolean(dynObj.evalCurOnInitial);
+      }
 
       //Now Done in LoadOBjLinks()
       ////load the Trigger States.
@@ -726,14 +734,42 @@ namespace SimulationDAL
   //  }
   //}
 
+  public enum EnOnChangeTask { ocIgnore, ocResample, ocAdjust}
+
   public abstract class TimeBasedEvent : Event
   {
+    protected EnOnChangeTask onVarChange = EnOnChangeTask.ocIgnore;
     protected override EnEventType GetEvType() { return EnEventType.etTimer; }
 
     public TimeBasedEvent(string inName)
       : base(inName) { }
 
     public abstract TimeSpan NextTime();
+
+    /// <summary>
+    /// RedoNextTime called if a variable is used and that variable has changed. Implement in derived class if ocAdjust is allowed for that type of event.
+    /// </summary>
+    /// <param name="sampledTime">Simulation time it was originally sampled.</param>
+    /// <param name="curTime">Current simulation time</param>
+    /// <param name="oldOccurTime">Original time for the event to occur before variable change</param>
+    /// <returns>returns the new time for the event</returns>
+    public virtual TimeSpan RedoNextTime(TimeSpan sampledTime, TimeSpan curTime, TimeSpan oldOccurTime)
+    {
+      switch (onVarChange)
+      {
+        case EnOnChangeTask.ocIgnore:
+          return oldOccurTime;
+          break;
+        case EnOnChangeTask.ocResample:
+          return NextTime() - (curTime - sampledTime);
+          break;
+        case EnOnChangeTask.ocAdjust:
+          throw new Exception("RedoNextTime function not implemented for " + this.evType.ToString());
+          break;
+        default:
+          throw new Exception("RedoNextTime not implemented for " + onVarChange.ToString());
+      }
+    }
   }
 
   public class TimerEvent : TimeBasedEvent //etTimer
@@ -764,7 +800,9 @@ namespace SimulationDAL
         retStr = retStr +
           "\"time\":\"" + timeVariable.name + "\"," + Environment.NewLine +
           "\"useVariable\": true, " + Environment.NewLine +
-          "\"timeVariableUnit\":\"" + this.timerVariableUnit.ToString() + "\"," + Environment.NewLine;
+          "\"timeVariableUnit\":\"" + this.timerVariableUnit.ToString() + "\"," + Environment.NewLine +
+          "\"onVarChange\":\"" + this.onVarChange.ToString() + "\"," + Environment.NewLine;
+        
       }
 
       return retStr;
@@ -802,6 +840,14 @@ namespace SimulationDAL
           throw new Exception("Invalid Time Unit 'timeVariableUnit' defined use trDays, trHours, trMinutes, trSeconds.");
         }
 
+        try //may not exist in earlier versions so use a default
+        {
+          onVarChange = (EnOnChangeTask)Enum.Parse(typeof(EnOnChangeTask), (string)dynObj.onVarChange, true);
+        }
+        catch
+        {
+          onVarChange = EnOnChangeTask.ocIgnore;
+        }
       }   
       else
       {
@@ -849,6 +895,22 @@ namespace SimulationDAL
       }
 
       return (TimeSpan)time;
+    }
+
+    public override TimeSpan RedoNextTime(TimeSpan sampledTime, TimeSpan curTime, TimeSpan oldOccurTime)
+    {
+      //A timer doesn't sample, but if a variable is used and we are to adjust then it is just the new variable time - what has already past
+      if (onVarChange == EnOnChangeTask.ocAdjust)
+      {
+        TimeSpan time = NextTime() - (curTime - sampledTime);
+        if (time < curTime)
+          return curTime;
+        else
+          return time;
+      }
+
+      //if not "ocAdjust" call parent as they are all the same.
+      return base.RedoNextTime(sampledTime, curTime, oldOccurTime);
     }
   }
 
@@ -900,7 +962,8 @@ namespace SimulationDAL
       {
         retStr = retStr +
           "\"useVariable\": true, " + Environment.NewLine +
-          "\"lambda\":\"" + this.lambdaVariable.name + "\"," + Environment.NewLine;          
+          "\"lambda\":\"" + this.lambdaVariable.name + "\"," + Environment.NewLine +
+          "\"onVarChange\":\"" + this.onVarChange.ToString() + "\"," + Environment.NewLine;
       }
       else
       {
@@ -947,6 +1010,18 @@ namespace SimulationDAL
         //use normal assigned lambda if not a variable
         this._lambda = (double)dynObj.lambda;
       }
+      else
+      {
+
+        try //may not exist in earlier versions so use a default
+        {
+          onVarChange = (EnOnChangeTask)Enum.Parse(typeof(EnOnChangeTask), (string)dynObj.onVarChange, true);
+        }
+        catch
+        {
+          onVarChange = EnOnChangeTask.ocIgnore;
+        }
+      }
 
       processed = true;
       return true;
@@ -968,7 +1043,7 @@ namespace SimulationDAL
         try
         {
           this.lambdaVariable = lists.allVariables.FindByName((string)dynObj.lambda);
-          //this.AddRelatedItem(curVar.id); //don't need to add to relatedItems, because it doesn't trigger the event and time is fixed once started 
+          this.AddRelatedItem(lambdaVariable.id);  
         }
         catch
         {
@@ -1028,6 +1103,274 @@ namespace SimulationDAL
       }
 
       return retVal;
+    }
+
+    public override TimeSpan RedoNextTime(TimeSpan sampledTime, TimeSpan curTime, TimeSpan oldOccurTime)
+    {
+      if (onVarChange == EnOnChangeTask.ocAdjust)
+      {
+        //todo: how to adjust
+        //Random rnd = new Random();
+        double rnd = SingleRandom.Instance.NextDouble();
+
+
+
+        //double var1 = (Math.Log(Dbl_Treshold) + (Dbl_C4Lambda1 * CurTime)) / (-Dbl_C4Lambda2);
+        double var1 = (Math.Log(rnd) + (_lambda * curTime.TotalHours)) / (-lambdaVariable.dblValue);
+        _lambda = lambdaVariable.dblValue;
+        //what will happen if we have more than 2 loops (example: cooling system is repaired)
+        return (TimeSpan.FromHours(var1) + curTime);
+        //return NextTime() - (curTime - sampledTime);
+      }
+
+      //if not "ocAdjust" call parent as they are all the same.
+      return base.RedoNextTime(sampledTime, curTime, oldOccurTime);
+    }
+  }
+
+  public class DistEvent : TimeBasedEvent //etDistribution
+  {
+    public class DistribParams
+    {
+      public string name { get; set; }
+      public string? variable { get; set; }
+      public double? value { get; set; }
+      public EnTimeRate timeRate { get; set; }
+
+    }
+    protected List<DistribParams> _dParams = new List<DistribParams>();
+    protected EnDistType _distType = EnDistType.dtNormal;
+    protected EnTimeRate dfltTimeRate = EnTimeRate.trHours;
+    //protected Object _mathFuncs = null;
+    protected VariableList vars = null;
+
+    protected override EnEventType GetEvType() { return EnEventType.etDistribution; }
+
+    public DistEvent() : base("") { }
+
+    public override string GetDerivedJSON(EmraldModel lists)
+    {
+
+      string retStr = "\"distType\": \"" + this._distType.ToString() + "\"";
+      retStr += "," + Environment.NewLine + "\"dfltTimeRate\": \"" + dfltTimeRate.ToString() + "\"";
+      retStr += "," + Environment.NewLine + "\"onVarChange\": \"" + onVarChange.ToString() + "\"";
+      retStr += "," + Environment.NewLine + "\"parameters\":" + JsonConvert.SerializeObject(_dParams);
+
+
+      return retStr;
+    }
+
+    public override bool DeserializeDerived(object obj, bool wrapped, EmraldModel lists, bool useGivenIDs)
+    {
+      vars = lists.allVariables;
+      dynamic dynObj = null;
+      try
+      {
+        dynObj = (dynamic)obj;
+        if (wrapped)
+        {
+          if (dynObj.Event == null)
+            return false;
+
+          dynObj = ((dynamic)obj).Event;
+        }
+
+        if (!base.DeserializeDerived((object)dynObj, false, lists, useGivenIDs))
+          return false;
+
+        lists.allEvents.Add(this, false);
+
+        _distType = (EnDistType)Enum.Parse(typeof(EnDistType), (string)dynObj.distType, true);
+               
+      }
+      catch
+      {
+        throw new Exception("Failed to convert Distribution Event from JSON could be missing a required field");
+      }
+
+      try
+      {
+        dfltTimeRate = (EnTimeRate)Enum.Parse(typeof(EnTimeRate), (string)dynObj.dfltTimeRate, true);
+      }
+      catch
+      {
+        throw new Exception("No \"dfltTimeRate\" defined ");
+      }
+
+      try
+      {
+        string paramsStr = Convert.ToString(dynObj.parameters);
+        _dParams = JsonConvert.DeserializeObject<List<DistribParams>>(paramsStr);
+      }
+      catch
+      {
+        throw new Exception("parameters data missing or formatted incorrectly");
+      }
+      
+      processed = true;
+      return true;
+    }
+
+    public override bool LoadObjLinks(object obj, bool wrapped, EmraldModel lists)
+    {
+      //make sure all the variables referenced are in the variable list
+      foreach (var p in this._dParams)
+      {
+        if (p.variable != null)
+        {
+          SimVariable v = this.vars.FindByName(p.variable);
+          if (v == null)
+            throw new Exception("Failed to find variable - " + p.variable);
+          else
+            this.AddRelatedItem(v.id);
+        }
+      }
+
+      if (_relatedIDs.Count > 0)
+      {
+        try
+        {
+          dynamic dynObj = (dynamic)obj;
+          if (wrapped)
+          {
+            if (dynObj.Event == null)
+              return false;
+
+            dynObj = ((dynamic)obj).Event;
+          }
+          onVarChange = (EnOnChangeTask)Enum.Parse(typeof(EnOnChangeTask), (string)dynObj.onVarChange, true);
+        }
+        catch
+        {
+          throw new Exception("parameter onVarChange missing and variables are used.");
+        }
+      }
+      
+
+      return true;
+    }
+
+    public override TimeSpan NextTime()
+    {
+      double sampled = 0.0;
+      List<double?> valuePs = new List<double?>();
+      try
+      {
+        foreach (DistribParams p in this._dParams)
+        {
+          if (p.variable != null)
+            valuePs.Add((double)vars.FindByName(p.variable).value);
+          else if (p.value != null)
+            valuePs.Add((double)p.value);
+          else
+            valuePs.Add(null);
+        }
+      }
+      catch
+      {
+        throw new Exception("Failed to load parameter values for event " + this.name);
+      }
+
+      EnTimeRate distTimeRate = dfltTimeRate;
+      try
+      {
+
+        switch (this._distType)
+        {
+          case EnDistType.dtExponential:
+            sampled = (new Exponential((double)valuePs[0], SingleRandom.Instance)).Sample();
+            distTimeRate = _dParams[0].timeRate;
+            break;
+          case EnDistType.dtNormal: //mean and standard deviation
+            sampled = (new Normal((double)valuePs[0],
+                                    Globals.ConvertToNewTimeSpan(_dParams[1].timeRate, (double)valuePs[1], _dParams[0].timeRate),
+                                    SingleRandom.Instance)).Sample();
+            distTimeRate = _dParams[0].timeRate;
+            break;
+          case EnDistType.dtWeibull:
+            sampled = (new Weibull((double)valuePs[0], (double)valuePs[1], SingleRandom.Instance)).Sample();
+            distTimeRate = _dParams[0].timeRate;
+            break;
+          case EnDistType.dtLogNormal:
+            sampled = (new LogNormal((double)valuePs[0],
+                                    Globals.ConvertToNewTimeSpan(_dParams[1].timeRate, (double)valuePs[1], _dParams[0].timeRate),
+                                    SingleRandom.Instance)).Sample();
+            distTimeRate = _dParams[0].timeRate;
+            break;
+          default:
+            throw new Exception("Distribution type not implemented for " + this._distType.ToString());
+            break;
+        }
+      }
+      catch
+      {
+        throw new Exception("Invalid parameters for distribution.");
+      }
+
+
+
+      TimeSpan sampledTime = Globals.NumberToTimeSpan(sampled, distTimeRate);
+      //Globals.ConvertToNewTimeSpan(_dParams[1].timeRate, (double)valuePs[1], _dParams[0].timeRate)
+      try
+      {
+        TimeSpan minTime = TimeSpan.Zero;
+        if (valuePs[valuePs.Count - 1]  != null)
+          minTime = Globals.NumberToTimeSpan((double)valuePs[valuePs.Count - 2], _dParams[valuePs.Count - 2].timeRate);
+        if (sampledTime < minTime)
+          return minTime;
+
+        TimeSpan maxTime = TimeSpan.MaxValue;
+        if (valuePs[valuePs.Count - 1] != null)
+          maxTime = Globals.NumberToTimeSpan((double)valuePs[valuePs.Count - 1], _dParams[valuePs.Count - 1].timeRate);
+        if (sampledTime > maxTime)
+          return maxTime;
+      }
+      catch
+      {
+        throw new Exception("Failed to get Min or Max time for the distribution");
+      }      
+
+      return sampledTime;
+    }
+
+    /// <summary>
+    /// If a variable is used and that variable changes, adjust the next occur time accordingly.
+    /// </summary>
+    /// <param name="sampledTime">Simulation time it was originally sampled.</param>
+    /// <param name="curTime">Current simulation time</param>
+    /// <param name="oldOccurTime">Original time for the event to occur before variable change</param>
+    /// <returns>returns the new time for the event</returns>
+    public override TimeSpan RedoNextTime(TimeSpan sampledTime, TimeSpan curTime, TimeSpan oldOccurTime)
+    {
+      if (onVarChange == EnOnChangeTask.ocAdjust)
+      {
+
+        switch (this._distType)
+        {
+          case EnDistType.dtExponential:
+            //todo: not correct
+            return NextTime() - (curTime - sampledTime);
+            break;
+          case EnDistType.dtNormal: //mean and standard deviation
+            //todo: not correct
+            return NextTime() - (curTime - sampledTime);
+            break;
+          case EnDistType.dtWeibull:
+            //todo: not correct
+            return NextTime() - (curTime - sampledTime);
+            break;
+          case EnDistType.dtLogNormal:
+            //todo: not correct
+            return NextTime() - (curTime - sampledTime);
+            break;
+          default:
+            throw new Exception("Distribution type not implemented for " + this._distType.ToString());
+            break;
+        }
+      }
+
+      //if not "ocAdjust" call parent as they are all the same.
+      return base.RedoNextTime(sampledTime, curTime, oldOccurTime);
     }
   }
 
@@ -1452,6 +1795,7 @@ namespace SimulationDAL
         case EnEventType.etWeibullDist: retEv = new WeibullDistEvent(); break;
         case EnEventType.etExponentialDist: retEv = new ExponentialDistEvent(); break;
         case EnEventType.etLogNormalDist: retEv = new LogNormalDistEvent(); break;
+        case EnEventType.etDistribution: retEv = new DistEvent(); break;
 
         default: break;
       }
@@ -1545,7 +1889,8 @@ namespace SimulationDAL
 
         if ((evType == EnEventType.etStateCng) || (evType == EnEventType.etComponentLogic) || 
             (evType == EnEventType.etVarCond) || (evType == EnEventType.et3dSimEv) ||
-            (evType == EnEventType.etTimer) || (evType == EnEventType.etFailRate))
+            (evType == EnEventType.etTimer) || (evType == EnEventType.etFailRate) ||
+            (evType == EnEventType.etDistribution))
         {
           Event curItem = this.FindByName((string)item.name, false);
           try
