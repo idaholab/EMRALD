@@ -15,8 +15,29 @@ function readTestData(filename, json = true) {
   if (json) {
     f += '.json';
   }
-  fixture.setBase('tests/test-data');
-  return fixture.load(f);
+  return new Promise((resolve, reject) => {
+    const request = new XMLHttpRequest();
+    request.open('GET', `base/tests/test-data/${f}`, true);
+    request.onload = () => {
+      if (this.status >= 200 && this.status < 400) {
+        if (json) {
+          try {
+            resolve(JSON.parse(this.response));
+          } catch (err) {
+            reject(err);
+          }
+        } else {
+          resolve(this.response);
+        }
+      } else {
+        reject(this.status);
+      }
+    };
+    request.onerror = () => {
+      reject('Request error!');
+    };
+    request.send();
+  });
 }
 
 /**

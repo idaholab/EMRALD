@@ -52,7 +52,7 @@ module.exports = function karmaConfig(config) {
       },
       'tests/*.test.js',
     ],
-    frameworks: ['jasmine', 'jasmine-matchers', 'fixture'],
+    frameworks: ['jasmine', 'jasmine-matchers'],
     jsonFixturesPreprocessor: {
       variableName: '__json__',
     },
@@ -61,12 +61,9 @@ module.exports = function karmaConfig(config) {
       'karma-chrome-launcher',
       'karma-coverage',
       'karma-jasmine-matchers',
-      'karma-fixture',
-      'karma-json-fixtures-preprocessor',
     ],
     port: 5000,
     preprocessors: {
-      '**/*.json': ['json_fixtures'],
       '../**.js': ['coverage'],
     },
     reporters: ['progress', 'coverage'],

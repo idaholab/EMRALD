@@ -33,9 +33,7 @@
     "karma-chrome-launcher": "^3.1.1",
     "karma-cli": "^2.0.0",
     "karma-coverage": "^2.2.0",
-    "karma-fixture": "^0.2.6",
     "karma-jasmine": "^5.0.1",
-    "karma-jasmine-matchers": "^5.0.0",
-    "karma-json-fixtures-preprocessor": "^0.0.6"
+    "karma-jasmine-matchers": "^5.0.0"
   }
 }
