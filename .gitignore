@@ -284,4 +284,5 @@ _Pvt_Extensions
 
 # JavaScript unit test artifacts
 EMRALD_Site/coverage
+coverage
 EMRALD_Site/tests/temp

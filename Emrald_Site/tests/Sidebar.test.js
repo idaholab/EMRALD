@@ -1,139 +1,115 @@
 /**
  * @file Tests the Sidebar.
  */
-/// <reference path='../../node_modules/@types/jest/index.d.ts' />
-/// <reference path='../../node_modules/jest-extended/types/index.d.ts' />
+/// <reference path="./util.js" />
 // @ts-check
-import { names, readTestData } from './util';
-import wrapper from './wrapper';
 
-let sidebar;
-beforeAll(async () => {
-  const context = await wrapper(
-    'Sidebar',
-    {
-      'scripts/UI/Common.js': ['__extends', 'waitToSync', 'SetOf'],
-      'config.js': [{ appConfig: 'window.appConfig' }],
-      'scripts/UI/wcfService.js': ['WcfService'],
-      'scripts/UI/menu.js': ['Navigation'],
-      'scripts/UI/simApp.js': [
-        {
-          simApp: {
-            pre: 'new simApp.SimApp();',
-            value: 'simApp',
-          },
-        },
-      ],
-      'scripts/UI/Sidebar.js': [],
-    },
-    {
-      getServerFile: `function getServerFile(url, callbackFn) {
-      fs.readFileSync(path.resolve('./Emrald_Site', url), 'utf-8', function (error, contents) {
-        if (contents) {
-          callbackFn(contents);
-        }
-      });
-    }`,
-      mxCell: 'function mxCell() {}',
-    },
-  );
-  sidebar = new context.Navigation.Sidebar();
+describe('getExtSimList', () => {
+  it('lists all ext sims', async () => {
+    const model = await readTestData('TestProject');
+
+    expect(
+      names(
+        sidebar.getExtSimList(
+          model.StateList.map((s) => s.State),
+          model,
+        ),
+      ),
+    ).toIncludeAllMembers(['ExtSim1']);
+  });
 });
 
-test('getExtSimList', async () => {
-  const model = await readTestData('TestProject');
+describe('getLogicNodeList', () => {
+  it('lists all logic nodes', async () => {
+    const model = await readTestData('TestProject');
 
-  expect(
-    names(
-      sidebar.getExtSimList(
-        model.StateList.map((s) => s.State),
-        model,
+    expect(
+      names(
+        sidebar.getLogicNodeList(
+          model.StateList.map((s) => s.State),
+          model,
+        ),
       ),
-    ),
-  ).toIncludeAllMembers(['ExtSim1']);
+    ).toIncludeAllMembers(['LogicTree1']);
+  });
 });
 
-test('getLogicNodeList', async () => {
-  const model = await readTestData('TestProject');
+describe('getVariableList', () => {
+  it('lists all variables', async () => {
+    const model = await readTestData('TestProject');
 
-  expect(
-    names(
-      sidebar.getLogicNodeList(
-        model.StateList.map((s) => s.State),
-        model,
+    expect(
+      names(
+        sidebar.getVariableList(
+          model.StateList.map((s) => s.State),
+          model,
+        ),
       ),
-    ),
-  ).toIncludeAllMembers(['LogicTree1']);
+    ).toIncludeAllMembers(['Bool_', 'Int_', 'Str_2', 'Str_3']);
+  });
 });
 
-test('getVariableList', async () => {
-  const model = await readTestData('TestProject');
+describe('getDiagramList', () => {
+  it('lists all diagrams', async () => {
+    const model = await readTestData('TestProject');
 
-  expect(
-    names(
-      sidebar.getVariableList(
-        model.StateList.map((s) => s.State),
-        model,
+    expect(
+      names(
+        sidebar.getDiagramList(
+          model.StateList.map((s) => s.State),
+          model,
+        ),
       ),
-    ),
-  ).toIncludeAllMembers(['Bool_', 'Int_', 'Str_2', 'Str_3']);
+    ).toIncludeAllMembers(['Main', 'Component']);
+  });
 });
 
-test('getDiagramList', async () => {
-  const model = await readTestData('TestProject');
+describe('getActionList', () => {
+  it('lists all actions', async () => {
+    const model = await readTestData('TestProject');
 
-  expect(
-    names(
-      sidebar.getDiagramList(
-        model.StateList.map((s) => s.State),
-        model,
+    expect(
+      names(
+        sidebar.getActionList(
+          model.StateList.map((s) => s.State),
+          model,
+        ),
       ),
-    ),
-  ).toIncludeAllMembers(['Main', 'Component']);
+    ).toIncludeAllMembers([
+      'TestTransition',
+      'TestCngVar',
+      'TestOpenErrorPro',
+      'TestRunApp',
+      'TestExtSim',
+      'Goto_Action2',
+    ]);
+  });
 });
 
-test('getActionList', async () => {
-  const model = await readTestData('TestProject');
+describe('getEventList', () => {
+  it('lists all events', async () => {
+    const model = await readTestData('TestProject');
 
-  expect(
-    names(
-      sidebar.getActionList(
-        model.StateList.map((s) => s.State),
-        model,
+    expect(
+      names(
+        sidebar.getEventList(
+          model.StateList.map((s) => s.State),
+          model,
+        ),
       ),
-    ),
-  ).toIncludeAllMembers([
-    'TestTransition',
-    'TestCngVar',
-    'TestOpenErrorPro',
-    'TestRunApp',
-    'TestExtSim',
-    'Goto_Action2',
-  ]);
-});
-
-test('getEventList', async () => {
-  const model = await readTestData('TestProject');
-
-  expect(
-    names(
-      sidebar.getEventList(
-        model.StateList.map((s) => s.State),
-        model,
-      ),
-    ),
-  ).toIncludeAllMembers([
-    'TestStateChange',
-    'TestComponentLogic',
-    'TestTimer',
-    'TestFailureRate',
-    'TestExtSim',
-    'TestDistribution',
-  ]);
+    ).toIncludeAllMembers([
+      'TestStateChange',
+      'TestComponentLogic',
+      'TestTimer',
+      'TestFailureRate',
+      'TestExtSim',
+      'TestDistribution',
+    ]);
+  });
 });
 
 describe('eventsReferencing', () => {
-  test('gettings refs', async () => {
+  it('gettings refs', async () => {
     const model = await readTestData('TestProject');
 
     expect(sidebar.eventsReferencing(model, 'ExtSim1', 'ExtSim').length).toBe(
@@ -165,7 +141,7 @@ describe('eventsReferencing', () => {
     ).toBe(0);
   });
 
-  test('renaming refs', async () => {
+  it('renaming refs', async () => {
     const model = await readTestData('TestProject');
 
     sidebar.eventsReferencing(model, 'Int_', 'Variable', false, 'Int__');
@@ -214,7 +190,7 @@ describe('eventsReferencing', () => {
     expect(testComponentLogic.Event.logicTop).toBe('LogicTree1_');
   });
 
-  test('deleting refs', async () => {
+  it('deleting refs', async () => {
     const model = await readTestData('TestProject');
 
     sidebar.eventsReferencing(model, 'Int_', 'Variable', true);
@@ -247,7 +223,7 @@ describe('eventsReferencing', () => {
 });
 
 describe('actionsReferencing', () => {
-  test('getting refs', async () => {
+  it('getting refs', async () => {
     const model = await readTestData('TestProject');
 
     expect(
@@ -279,7 +255,7 @@ describe('actionsReferencing', () => {
     ).toBe(0);
   });
 
-  test('renaming refs', async () => {
+  it('renaming refs', async () => {
     const model = await readTestData('TestProject');
 
     sidebar.actionsReferencing(model, 'State2', 'State', false, 'State2_');
@@ -320,7 +296,7 @@ describe('actionsReferencing', () => {
     expect(testTransition.Action.newStates[0].varProb).toBe('Int__');
   });
 
-  test('deleting refs', async () => {
+  it('deleting refs', async () => {
     const model = await readTestData('TestProject');
 
     sidebar.actionsReferencing(model, 'State2', 'State', true);
@@ -348,7 +324,7 @@ describe('actionsReferencing', () => {
 });
 
 describe('statesReferencing', () => {
-  test('getting refs', async () => {
+  it('getting refs', async () => {
     const model = await readTestData('TestProject');
 
     expect(
@@ -375,7 +351,7 @@ describe('statesReferencing', () => {
     ).toBe(0);
   });
 
-  test('renaming refs', async () => {
+  it('renaming refs', async () => {
     const model = await readTestData('TestProject');
 
     sidebar.statesReferencing(
@@ -440,7 +416,7 @@ describe('statesReferencing', () => {
     expect(state1.State.diagramName).toBe('Main_');
   });
 
-  test('deleting refs', async () => {
+  it('deleting refs', async () => {
     const model = await readTestData('TestProject');
 
     sidebar.statesReferencing(model, 'TestStateChange', 'Event', true);
@@ -460,7 +436,7 @@ describe('statesReferencing', () => {
 });
 
 describe('diagramsReferencing', () => {
-  test('getting refs', async () => {
+  it('getting refs', async () => {
     const model = await readTestData('TestProject');
 
     expect(
@@ -486,7 +462,7 @@ describe('diagramsReferencing', () => {
     ).toBe(0);
   });
 
-  test('renaming refs', async () => {
+  it('renaming refs', async () => {
     const model = await readTestData('TestProject');
 
     sidebar.diagramsReferencing(model, 'State1', 'State', false, 'State1_');
@@ -499,7 +475,7 @@ describe('diagramsReferencing', () => {
     expect(main.Diagram.states.indexOf('State1_')).toBeGreaterThanOrEqual(0);
   });
 
-  test('deleting refs', async () => {
+  it('deleting refs', async () => {
     const model = await readTestData('TestProject');
 
     sidebar.diagramsReferencing(model, 'State1', 'State', true);
@@ -511,7 +487,7 @@ describe('diagramsReferencing', () => {
 });
 
 describe('logicNodesReferencing', () => {
-  test('getting refs', async () => {
+  it('getting refs', async () => {
     const model = await readTestData('TestProject');
 
     expect(
@@ -540,7 +516,7 @@ describe('logicNodesReferencing', () => {
     );
   });
 
-  test('renaming refs', async () => {
+  it('renaming refs', async () => {
     const model = await readTestData('TestProject');
 
     sidebar.logicNodesReferencing(
@@ -574,7 +550,7 @@ describe('logicNodesReferencing', () => {
     expect(logicTree1.LogicNode.gateChildren).toIncludeAllMembers(['gate__2']);
   });
 
-  test('deleting refs', async () => {
+  it('deleting refs', async () => {
     const model = await readTestData('TestProject');
 
     sidebar.logicNodesReferencing(model, 'Component', 'Diagram', true);
@@ -596,7 +572,7 @@ describe('logicNodesReferencing', () => {
 });
 
 describe('variableReferencing', () => {
-  test('gettings refs', async () => {
+  it('gettings refs', async () => {
     const model = await readTestData('TestProject');
 
     expect(sidebar.variableReferencing(model, 'Main', 'Diagram').length).toBe(
@@ -622,7 +598,7 @@ describe('variableReferencing', () => {
     ).toIncludeAllMembers(['TestAccrual']);
   });
 
-  test('renaming refs', async () => {
+  it('renaming refs', async () => {
     const model = await readTestData('TestProject');
 
     sidebar.variableReferencing(
@@ -640,7 +616,7 @@ describe('variableReferencing', () => {
     expect(testAccrual.Variable.accrualStatesData[0].stateName).toBe('State3_');
   });
 
-  test('deleting refs', async () => {
+  it('deleting refs', async () => {
     const model = await readTestData('TestProject');
 
     sidebar.variableReferencing(model, 'State3', 'State', true);
@@ -652,7 +628,7 @@ describe('variableReferencing', () => {
 });
 
 describe('extSimsReferencing', () => {
-  test('getting refs', async () => {
+  it('getting refs', async () => {
     const model = await readTestData('TestProject');
 
     expect(sidebar.extSimsReferencing(model, 'Main', 'Diagram').length).toBe(0);
@@ -674,7 +650,7 @@ describe('extSimsReferencing', () => {
     expect(sidebar.extSimsReferencing(model, 'State1', 'State').length).toBe(0);
   });
 
-  test('renaming refs', async () => {
+  it('renaming refs', async () => {
     const model = await readTestData('TestProject');
 
     sidebar.extSimsReferencing(model, 'ExtSim1', 'ExtSim', false, 'ExtSim1_');
@@ -684,23 +660,25 @@ describe('extSimsReferencing', () => {
   });
 });
 
-test('exportDiagramTest', async () => {
-  const model = await readTestData('ExportDiagramTest');
+describe('exportDiagramTest', () => {
+  it('exports the diagram', async () => {
+    const model = await readTestData('ExportDiagramTest');
 
-  const exported = sidebar.exportDiagram(
-    model.DiagramList.find((d) => d.Diagram.name === 'TemplateDiagram').Diagram,
-    model,
-  );
+    const exported = sidebar.exportDiagram(
+      model.DiagramList.find((d) => d.Diagram.name === 'TemplateDiagram')
+        .Diagram,
+      model,
+    );
 
-  expect(exported.StateList.length).toBe(1);
-  expect(exported.StateList[0].State.name).toBe('State3');
-  expect(exported.EventList.length).toBe(1);
-  expect(exported.EventList[0].Event.name).toBe('new event');
-  expect(exported.LogicNodeList.length).toBe(1);
-  expect(exported.LogicNodeList[0].LogicNode.name).toBe('LogicTree1');
-  expect(exported.DiagramList.length).toBe(2);
-  expect(exported.DiagramList.map((d) => d.Diagram.name)).toIncludeAllMembers([
-    'LogicComponent',
-    'TemplateDiagram',
-  ]);
+    expect(exported.StateList.length).toBe(1);
+    expect(exported.StateList[0].State.name).toBe('State3');
+    expect(exported.EventList.length).toBe(1);
+    expect(exported.EventList[0].Event.name).toBe('new event');
+    expect(exported.LogicNodeList.length).toBe(1);
+    expect(exported.LogicNodeList[0].LogicNode.name).toBe('LogicTree1');
+    expect(exported.DiagramList.length).toBe(2);
+    expect(exported.DiagramList.map((d) => d.Diagram.name)).toIncludeAllMembers(
+      ['LogicComponent', 'TemplateDiagram'],
+    );
+  });
 });
