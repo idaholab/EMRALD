@@ -648,7 +648,11 @@ var simApp;
     SimApp.prototype.getTemplatesUsedInProject = function () {
       const templateNames = [];
       simApp.allDataModel.DiagramList.forEach((diagram) => {
-        if (diagram.diagramTemplate && diagram.diagramTemplate.length > 0) {
+        if (
+          diagram.diagramTemplate &&
+          diagram.diagramTemplate.length > 0 &&
+          templateNames.indexOf(diagram.diagramTemplate) < 0
+        ) {
           templateNames.push(diagram.diagramTemplate);
         }
       });
