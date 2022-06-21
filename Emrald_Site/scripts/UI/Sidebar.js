@@ -273,7 +273,7 @@ if (typeof Navigation === 'undefined')
             taphold: true,
             menu: [
               { title: "New " + titleForNew, cmd: "New" },
-              { title: "Refresh", cmd: "Refresh" }
+              { title: "Refresh", cmd: "Refresh" },
             ],
             select: function (evt, ui) {
               //var $target = ui.target;
