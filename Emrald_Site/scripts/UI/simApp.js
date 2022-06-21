@@ -20,18 +20,21 @@ function adjustWindowPos(container, el) {
 
 function downloadSolver() {
   var link = document.createElement("a");
+  link.target = "_blank";
   link.href = "https://github.com/idaholab/EMRALD/releases/latest/download/EMRALD_SimEngine.zip";  //The file to download.
   link.click();
 }
 
 function downloadClientTester() {
   var link = document.createElement("a");
+  link.target = "_blank";
   link.href = "https://github.com/idaholab/EMRALD/releases/latest/download/XMPPClientTester.zip";  //The file to download.
   link.click();
 }
 
 function downloadClientTesterSource() {
   var link = document.createElement("a");
+  link.target = "_blank";
   link.href = "https://github.com/idaholab/EMRALD/tree/main/XmppClient";  //The file to download.
   link.click();
 }
