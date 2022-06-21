@@ -283,5 +283,8 @@ _Pvt_Extensions
 /EMRALD_Sim/Properties/launchSettings.json
 
 # JavaScript unit test artifacts
-EMRALD_Site/coverage
+coverage
 EMRALD_Site/tests/temp
+
+# TODO - Maap files used for development
+Emrald_Site/tests/test-data/maap

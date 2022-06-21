@@ -49,13 +49,13 @@ NonZeroDigit = [1-9]
 ExponentPart = ExponentIndicator SignedInteger
 ExponentIndicator = "e"i
 SignedInteger = [+-]? DecimalDigit+
-BooleanLiteral = value:("T" / "F") {
+BooleanLiteral = value:("T" / "F") ![a-zA-Z] {
 	return {
     	type: "boolean",
         value,
     }
 }
-Reserved = END / IS
+Reserved = (END / IS) ![a-zA-Z]
 Identifier = !Reserved value:[a-zA-Z0-9]+ {
 	return {
     	type: "identifier",
@@ -145,14 +145,14 @@ ExpressionBlock = "(" value:Expression ")" {
     }
 }
 ExpressionType = CallExpression / ExpressionBlock / ExpressionMember
-Assignment = target:(CallExpression / Identifier) _ "=" _ value:ExpressionType {
+Assignment = target:(CallExpression / Identifier) _ "=" _ value:(Expression / ExpressionType) {
 	return {
     	type: "assignment",
         target,
         value,
     }
 }
-IsExpression = target:(ParameterName / CallExpression / Identifier) _ IS _ value:ExpressionType {
+IsExpression = target:(ParameterName / CallExpression / Identifier) _ IS _ value:(Expression / ExpressionType) {
 	return {
     	type: "is_expression",
         value: {
@@ -266,10 +266,11 @@ AliasStatement = ALIAS __ value:SourceElements? __ END {
 PlotFilStatement = PLOTFIL _ n:[0-9]+ __ value:PlotFilBody? __ END {
 	return {
     	type: "plotfil",
+        n: Number(n.join('')),
         value,
     }
 }
-PlotFilBody = head:CallExpression tail:(__ PlotFilBody)* {
+PlotFilBody = head:(CallExpression / ExpressionMember) tail:(__ PlotFilBody)* {
 	return [head].concat(extractList(tail, 1));
 }
 
