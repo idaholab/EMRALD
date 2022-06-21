@@ -3610,8 +3610,8 @@ if (typeof Navigation === 'undefined')
             false,
             null,
             null,
-            450,
-            300,
+            800,
+            500,
           );
           document.body.removeChild(wnd.div);
           var contentPanel = document.getElementById('ContentPanel');
