@@ -78,103 +78,6 @@ namespace SimulationTracking
     public MyBitArray relatedIDs;
   }
 
-  /// <summary>
-  /// maintains lists of item IDs that have changed of different types [variables, 3DComps, states]
-  /// </summary>
-  public class ChangedIDs
-  {
-    private MyBitArray variableIDs;
-    private MyBitArray compIDs;
-    private MyBitArray stateIDs;
-
-    public ChangedIDs(int varIDMax, int compIDMax, int stateIDMax)
-    {
-      this.variableIDs = new MyBitArray(varIDMax + 1);
-      this.compIDs = new MyBitArray(compIDMax + 1);
-      this.stateIDs = new MyBitArray(stateIDMax + 1);
-    }
-
-    public void AddChangedID(EnModifiableTypes idType, int id)
-    {
-      int max;
-      switch (idType)
-      {
-        case EnModifiableTypes.mtVar:
-          max = variableIDs.Count;
-          break;
-
-        case EnModifiableTypes.mtComp:
-          max = compIDs.Count;
-          break;
-
-        case EnModifiableTypes.mtState:
-          max = stateIDs.Count;
-          break;
-
-        default:
-          return;
-      }
-
-      if (id > max)
-      {
-        throw new ArgumentOutOfRangeException();
-      }
-
-      switch (idType)
-      {
-        case EnModifiableTypes.mtVar:
-          variableIDs[id] = true;
-          break;
-
-        case EnModifiableTypes.mtComp:
-          compIDs[id] = true;
-          break;
-
-        case EnModifiableTypes.mtState:
-          stateIDs[id] = true;
-          break;
-
-        default:
-          return;
-      }
-    }
-
-    public bool HasApplicableItems(EnModifiableTypes idType, MyBitArray ids)
-    {
-      //switch (idType)
-      //{
-      //  case EnModifiableTypes.mtVar:
-      //    return variableIDs.HasCommonBits(ids);
-
-      //  case EnModifiableTypes.mtComp:
-      //    return compIDs.HasCommonBits(ids);
-
-      //  case EnModifiableTypes.mtState:
-      //    return stateIDs.HasCommonBits(ids);
-
-      //  default :
-      //    return false;        
-      //}
-      if (idType == EnModifiableTypes.mtVar)
-        return variableIDs.HasCommonBits(ids);
-
-      else if (idType == EnModifiableTypes.mtComp)
-        return compIDs.HasCommonBits(ids);
-
-      else if (idType == EnModifiableTypes.mtState)
-        return stateIDs.HasCommonBits(ids);
-
-      else
-        return false;
-    }
-
-    public void Clear()
-    {
-      variableIDs.SetAll(false);
-      compIDs.SetAll(false);
-      stateIDs.SetAll(false);
-    }
-  }
 
   /// <summary>
   /// Conditional events list and method to evaluate if events are triggered
@@ -303,6 +206,7 @@ namespace SimulationTracking
 
               case EnEventType.etStateCng:
                 curIDType = EnModifiableTypes.mtState;
+                otherData = changedItems;
                 break;
 
               case EnEventType.etComponentLogic:
@@ -874,7 +778,7 @@ namespace SimulationTracking
 
     public void Add(State toState, int fromState, TimeSpan curTime, string actName, string evName)
     {
-      logger.Info("EnterState: " + toState.name + ", time: " + curTime.ToString() + ", Cause Event: " + evName + ", fromState-Action: " + actName);
+      logger.Info("EnterState: " + toState.name + ", time: " + curTime.ToString(@"d\.hh\:mm\:ss\.f") + ", Cause Event: " + evName + ", fromState-Action: " + actName);
 
       if (this.ContainsKey(toState.id)) //already in the state so don't add, can't be in it twice
       {
@@ -1531,7 +1435,7 @@ namespace SimulationTracking
     /// <param name="curEv">list of an events actions to perform </param>
     private void ProcessEvent(EventListData curEv)
     {
-      logger.Debug("DoEvent: " + curEv.name);
+      logger.Debug("DoEvent: " + curEv.name + ", time: " + curTime.ToString(@"d\.hh\:mm\:ss\.f"));
 
       foreach (var stID in curEv.eventStateActions.statesAndActions)
       {
