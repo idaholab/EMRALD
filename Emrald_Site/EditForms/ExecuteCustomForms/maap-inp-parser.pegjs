@@ -19,7 +19,7 @@ CommentIndicator = "//" / "!" / "C" / "**"
 SingleLineComment = CommentIndicator v:FreeCharacter*
 IdentifierStart = UnicodeLetter / "$" / "_" / "\\"
 UnicodeLetter = Lu / Ll / Lt / Lm / Lo / Nl
-Literal = NumericLiteral
+Literal = BooleanLiteral / NumericLiteral
 Units = first:[a-zA-Z0-9]+ rest:(("**" / "/") Units)? {
 	let units = first.join('');
     if (rest) {
@@ -27,10 +27,11 @@ Units = first:[a-zA-Z0-9]+ rest:(("**" / "/") Units)? {
     }
     return units;
 }
-NumericLiteral = literal:DecimalLiteral !(IdentifierStart / DecimalDigit) {
+NumericLiteral = literal:DecimalLiteral !(IdentifierStart / DecimalDigit) units:(_ Units)? {
 	return {
     	type: "number",
         value: literal,
+        units: (units || [])[1],
     }
 }
 DecimalLiteral = DecimalIntegerLiteral "." DecimalDigit* ExponentPart? {
@@ -48,11 +49,17 @@ NonZeroDigit = [1-9]
 ExponentPart = ExponentIndicator SignedInteger
 ExponentIndicator = "e"i
 SignedInteger = [+-]? DecimalDigit+
+BooleanLiteral = value:("T" / "F") {
+	return {
+    	type: "boolean",
+        value,
+    }
+}
 Reserved = END / IS
-Identifier = first:[a-zA-Z] rest:(!Reserved [a-zA-Z0-9]+) {
+Identifier = !Reserved value:[a-zA-Z0-9]+ {
 	return {
     	type: "identifier",
-        value: first + rest[1].join(''),
+        value: value.join(''),
     }
 }
 ParameterName = !Reserved first:Identifier index:("(" [0-9]+ ")")? rest:(_ ParameterName)? {
@@ -102,10 +109,7 @@ _ = WhiteSpace*
 
 /* Expressions */
 ExpressionMember = value:(Literal / Identifier) {
-	return {
-    	type: "expression_member",
-        value,
-    }
+	return value;
 }
 Arguments = value:ExpressionType rest:(_ "," _ Arguments)? {
 	let args = [value];
@@ -123,16 +127,15 @@ CallExpression = name:Identifier _ "(" args:Arguments ")" {
         },
     }
 }
-ExpressionOperator = "**" / "*" / "/" / ">" / "<" / ">=" / "<="
-Expression = left:ExpressionType _? op:ExpressionOperator _? right:(Expression / ExpressionType) _? units:Units? {
+ExpressionOperator = "**" / "*" / "/" / ">=" / "<=" / ">" / "<"
+Expression = left:ExpressionType _ op:ExpressionOperator _ right:(Expression / ExpressionType) {
 	return {
     	type: "expression",
         value: {
         	left,
             op,
         	right,
-            units,
-        }
+        },
     }
 }
 ExpressionBlock = "(" value:Expression ")" {
@@ -142,14 +145,11 @@ ExpressionBlock = "(" value:Expression ")" {
     }
 }
 ExpressionType = CallExpression / ExpressionBlock / ExpressionMember
-Assignment = target:(CallExpression / Identifier) _ "=" _ value:ExpressionType units:(_ Units)? {
+Assignment = target:(CallExpression / Identifier) _ "=" _ value:ExpressionType {
 	return {
     	type: "assignment",
-        value: {
-        	target,
-            value,
-            units: (units || [])[1],
-        }
+        target,
+        value,
     }
 }
 IsExpression = target:(ParameterName / CallExpression / Identifier) _ IS _ value:ExpressionType {
@@ -218,19 +218,17 @@ IncludeStatement = INCLUDE _ v:FreeCharacter+ {
         value: extractList(v, 1).join(''),
     }
 }
-ParameterChangeStatement = PARAMETER_CHANGE __ value:SourceElements? __ END {
+ParameterChangeStatement = PARAMETER_CHANGE __ value:StatementElements? __ END {
 	return {
     	type: "parameter_change",
-        value,
+        value: value || [],
     }
 }
 TimeStatement = time:(START_TIME / END_TIME) _ IS _ value:NumericLiteral _? "."? {
 	return {
     	type: "time",
-        value: {
-        	time,
-            value,
-        },
+        time,
+        value,
     }
 }
 PrintIntervalStatement = PRINT_INTERVAL _ IS _ value:NumericLiteral _? "."? {
@@ -239,28 +237,24 @@ PrintIntervalStatement = PRINT_INTERVAL _ IS _ value:NumericLiteral _? "."? {
         value,
     }
 }
-InitiatorsStatement = INITIATORS __ value:SourceElements? __ END {
+InitiatorsStatement = INITIATORS __ value:StatementElements? __ END {
 	return {
     	type: "initiators",
-        value,
+        value: value || [],
     }
 }
-WhenStatement = WHEN _ test:Expression __ value:SourceElements? __ END {
+WhenStatement = WHEN _ test:Expression __ value:StatementElements? __ END {
 	return {
     	type: "when",
-        value: {
-        	test,
-            value,
-       	},
+        test,
+        value: value || [],
     }
 }
-IfStatement = IF _ test:(IsExpression / ExpressionType) __ value:SourceElements? __ END {
+IfStatement = IF _ test:(IsExpression / ExpressionType) __ value:StatementElements? __ END {
 	return {
     	type: "if",
-        value: {
-        	test,
-            value,
-        },
+        test,
+        value: value || [],
     }
 }
 AliasStatement = ALIAS __ value:SourceElements? __ END {
@@ -290,3 +284,7 @@ SourceElements = head:SourceElement tail:(__ SourceElement)* {
 	return [head].concat(extractList(tail, 1));
 }
 SourceElement = Statement / Assignment / Expression / IsExpression / AsExpression
+StatementElements = head:StatementElement tail:(__ StatementElement)* {
+	return [head].concat(extractList(tail, 1));
+}
+StatementElement = SourceElement / ParameterName
