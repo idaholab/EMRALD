@@ -42,9 +42,58 @@ describe('maapInpParser', () => {
     expect(value).toBeDefined();
   });
 
+  test('b4_0000', async () => {
+    const { value } = maapInpParser.parse(
+      await readTestData('maap/b4_0000.inp', false),
+    );
+    expect(value).toBeDefined();
+  });
+
+  test('p1_0000', async () => {
+    const { value } = maapInpParser.parse(
+      await readTestData('maap/p1_0000.inp', false),
+    );
+    expect(value).toBeDefined();
+  });
+
+  test('p2_0000', async () => {
+    const { value } = maapInpParser.parse(
+      await readTestData('maap/p2_0000.inp', false),
+    );
+    expect(value).toBeDefined();
+  });
+
+  test('p3_0000', async () => {
+    const { value } = maapInpParser.parse(
+      await readTestData('maap/p3_0000.inp', false),
+    );
+    expect(value).toBeDefined();
+  });
+
+  test('p4_0000', async () => {
+    const { value } = maapInpParser.parse(
+      await readTestData('maap/p4_0000.inp', false),
+    );
+    expect(value).toBeDefined();
+  });
+
   test('SG_TIMD', async () => {
     const { value } = maapInpParser.parse(
       await readTestData('maap/SG_TIMD.inp', false),
+    );
+    expect(value).toBeDefined();
+  });
+
+  test('pzr1a.INP', async () => {
+    const { value } = maapInpParser.parse(
+      await readTestData('maap/pzr1a.inp', false),
+    );
+    expect(value).toBeDefined();
+  });
+
+  test('CRA1AI', async () => {
+    const { value } = maapInpParser.parse(
+      await readTestData('maap/CRA1AI.inp', false),
     );
     expect(value).toBeDefined();
   });
