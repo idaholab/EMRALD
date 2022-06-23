@@ -118,7 +118,7 @@ function AddChildGate(graph, cell, ftNode) {
 					ftNode.compChildren = [];
 			}
 
-    vertex = graph.insertVertex(parent, ftNode.name + '~Name', ftNode, 0, 0, itemWidth, itemHeight, styleType );
+    vertex = graph.insertVertex(parent, ftNode.name + '~Name', ftNode.name, 0, 0, itemWidth, itemHeight, styleType );
    // vertex.geometry.alternateBounds = new mxRectangle(0, 0, 200, 50);
     vertex.geometry.offset = new mxPoint(0,0);
 
@@ -223,7 +223,7 @@ function AddChildComp(graph, cell, comp)
     gate.geometry.offset = new mxPoint(-12, -1);
 
     vertex.gate = gate;
-    var nameItem = graph.insertVertex(vertex, comp.name + '~Name', comp, 0, 0, itemWidth - 20 - valSpace, 18, 'ftName;', true);
+    var nameItem = graph.insertVertex(vertex, comp.name + '~Name', comp.name, 0, 0, itemWidth - 20 - valSpace, 18, 'ftName;', true);
     nameItem.geometry.offset = new mxPoint(0, 0);
     vertex.nameItem = nameItem;
 
