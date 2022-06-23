@@ -837,20 +837,7 @@ function editNode (graph, stateCell) {
         function (btn, retObj) {
             if (btn === 'OK') {
 								var logicNodeList = graph.sidebar.LogicNodeList;
-								for (var i = 0; i < logicNodeList.length; i++) {
-										if (logicNodeList[i].LogicNode.name == oldName) {
-                      graph.sidebar.LogicNodeList[i].LogicNode.desc = retObj.desc;
-                      graph.sidebar.LogicNodeList[i].LogicNode.gateType = retObj.gateType;
-										}
-										var gateChildren = logicNodeList[i].LogicNode.gateChildren;
-										if (gateChildren) {
-												for (var j = 0; j < gateChildren.length; j++) {
-														if (gateChildren[j] == oldName) {
-																graph.sidebar.LogicNodeList[i].LogicNode.gateChildren[j] = retObj.name;
-														}
-												}
-										}
-								}
+								graph.sidebar.replaceNames(oldName, retObj.name, 'LogicTree', null, true);
 								mergeFTData(sModel, retObj);
                 stateCell.value = retObj.name;
 								updateCell(graph, stateCell);

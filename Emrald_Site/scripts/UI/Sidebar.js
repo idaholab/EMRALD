@@ -2215,7 +2215,7 @@ if (typeof Navigation === 'undefined')
     //For Delete set newName = null 
     Sidebar.prototype.alterSideBarListsItem = function (itemName, newName, tabs, type) { 
       var container = null;
-      if (type == "LogicNode") {
+      if (type == "LogicNode" || type == "LogicTree") {
         container = document.getElementById("LogicTreesPanel_id");
         var index = this.indexOfSideBarNode(container.childNodes, itemName);
         if (index != null) {
