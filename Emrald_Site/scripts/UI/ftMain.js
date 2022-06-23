@@ -717,7 +717,7 @@ function addOverlays(graph, cell, isEditable) {
           else if (cell.value.gateType)
               editNode(graph, cell);
       }
-      else if (cell.nameItem && cell.nameItem.value.diagramType)
+      else if (cell.nameItem)
         editDiagramNode(graph, cell.nameItem);
     });
 
@@ -787,7 +787,7 @@ function editDiagramNode(graph, cell) {
   var sb = graph.sidebar;
   //var ds = graph.DiagramList;
 
-  var diagram = cell.value;
+  var diagram = sb.getDiagramByName(sb, cell.value);
   //for (var i = 0; i < ds.length; i++) {
   //  if (ds[i].Diagram.name == cell.id) {
   //    diagram = ds[i].Diagram;
@@ -796,7 +796,7 @@ function editDiagramNode(graph, cell) {
   //}
 
   if (diagram)
-    sb.openDiagramWindow(diagram);
+    sb.openDiagramWindow(diagram.Diagram);
 
 }
 
