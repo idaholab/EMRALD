@@ -234,7 +234,7 @@ namespace UnitTesting_Simulation
       string retJsonStr = ev.GetJSON(true, mainModel);
       Assert.True(CompareJSON(retJsonStr, jsonModel));
     }
-    
+
     [Fact]
     public void VarCondEventTest()
     {
@@ -1092,6 +1092,8 @@ namespace UnitTesting_Simulation
       string retJsonStr = var.GetJSON(true, mainModel);
       Assert.True(CompareJSON(retJsonStr, jsonModel));
     }
+
+
 
   }
 }
