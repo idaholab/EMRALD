@@ -211,6 +211,8 @@ function main(container, outline) {
         }
         else if (cell.value.diagramType) { //DiagramType
           tmp = cell.value.name;
+        } else if (typeof cell.value === 'string') {
+          tmp = cell.value;
         }
       }
       else tmp = mxGraph.prototype.getLabel.apply(this, arguments); // "supercall"
