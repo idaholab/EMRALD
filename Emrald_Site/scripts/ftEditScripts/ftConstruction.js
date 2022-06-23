@@ -362,7 +362,10 @@ function deleteSubtree(graph, cell)
 			//Delete it from sidebar
 			var name;
 			if (vertex.value) {
+        if (vertex.value.name) {
 					name = vertex.value.name;
+        }
+        name = vertex.value;
 			}
 			else if (vertex.id) {
 					name = vertex.id;
@@ -372,7 +375,7 @@ function deleteSubtree(graph, cell)
 							var source = vertex.edges[0].source;
 							var sName;
 							if (source.value) {
-									sName = source.value.name;
+									sName = source.value;
 							}
 							else if (source.id) {
 									sName = source.id;

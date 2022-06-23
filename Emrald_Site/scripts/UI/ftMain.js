@@ -855,7 +855,6 @@ function editNode (graph, stateCell) {
 										}
 								}
 								mergeFTData(sModel, retObj);
-								var state = graph.getView().getState(stateCell);
                 stateCell.value = retObj.name;
 								updateCell(graph, stateCell);
             }
