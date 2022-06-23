@@ -709,7 +709,10 @@ function addOverlays(graph, cell, isEditable) {
     overlay.verticalAlign = mxConstants.ALIGN_BOTTOM;
     overlay.addListener(mxEvent.CLICK, function (sender, evt) {
       if (cell.value) {
-          if (cell.value.diagramType)
+          if (typeof cell.value === 'string') {
+            editNode(graph, cell);
+          }
+          else if (cell.value.diagramType)
               editDiagramNode(graph, cell);
           else if (cell.value.gateType)
               editNode(graph, cell);
@@ -745,40 +748,15 @@ function mergeFTData(obj1, obj2) {
 //When a state is edited and data were written back to the underlying user object, we need to update the 
 //overlay cells manually.
 function updateCell(graph, cell) {
-
-   
-
-		graph.labelChanged(cell, cell.value, this);
-//Not sure what the intention was of this??
-/*
-    //Rebuild the graph - not the most efficient way but it works
-    deleteSubtree(graph, cell);
-    var GetFTItem = function (cell) {
-        if (cell instanceof mxCell) {
-            if (cell.children == null) {
-                return null;
-            }
-
-            for (var i = 0; i < cell.children.length; i++) {
-                var cellVal = cell.children[i].value;
-                if ((cellVal != null) && (cellVal instanceof FTItem)) {
-                    return cellVal;
-                }
-            }
-        }
-
-        return null;
-    }
-    graph.gateChanged(cell, cell.value, this);
-    //aState = graph.view.getState(cell.descItem);
-    //if (aState) graph.cellRenderer.redraw(aState);
-			//	AddChildGate(graph, parent, GetFTItem)
-    //BuildTree(graph, parent, tree);
-   
-*/
-
- 
- 
+  graph.labelChanged(cell, cell.value, this);
+  // Force the child cells to sync up with the changes
+  // There is probably a better way to do this
+  graph.labelChanged(cell.children[1], cell.children[0].value.desc, this);
+  let imgName = 'ORGate.png';
+  if (cell.children[0].value.gateType === 'gtAnd') {
+    imgName = 'ANDGate.png';
+  }
+  graph.model.setStyle(cell.children[2], `ftGateShape;image=images/${imgName};`);
 }
 
 
@@ -853,8 +831,8 @@ function editNode(graph, cell) {
 
 function editNode (graph, stateCell) {
     var url = "EditForms/GateEditor.html";
-		var sModel = stateCell.value;
-		var oldName = stateCell.value.name;
+		var sModel = stateCell.children.find((cell) => cell.style === 'ftValue').value;
+		var oldName = stateCell.value;
     mxWindow.createFrameWindow(
         url,
         'OK, Cancel',  //command buttons
@@ -876,8 +854,9 @@ function editNode (graph, stateCell) {
 												}
 										}
 								}
-								mergeFTData(stateCell.value, retObj);
+								mergeFTData(sModel, retObj);
 								var state = graph.getView().getState(stateCell);
+                stateCell.value = retObj.name;
 								updateCell(graph, stateCell);
             }
             return true;

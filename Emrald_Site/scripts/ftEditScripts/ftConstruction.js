@@ -122,7 +122,12 @@ function AddChildGate(graph, cell, ftNode) {
    // vertex.geometry.alternateBounds = new mxRectangle(0, 0, 200, 50);
     vertex.geometry.offset = new mxPoint(0,0);
 
-    var descItem = graph.insertVertex(vertex, ftNode.name + '~Desc', ftNode.desc, 0, 0, 200, 22, 'ftDesc;whiteSpace=wrap;', true);
+    // This stores the gate JSON in a way that's easily retrievable while still using a string as the actual label
+    var valueItem = graph.insertVertex(vertex, ftNode.name + '~Value', ftNode, 0, 0, 0, 0, 'ftValue');
+    valueItem.parentCell = vertex;
+    valueItem.setVisible(false);
+
+    var descItem = graph.insertVertex(vertex, ftNode.name + '~Desc', ftNode.desc, 0, 0, 0, 0, 'ftDesc;whiteSpace=wrap;', true);
     descItem.geometry.offset = new mxPoint(0, 22);
     descItem.parentCell = vertex;
  
