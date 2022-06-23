@@ -730,10 +730,7 @@ function addOverlays(graph, cell, isEditable) {
 			overlay.align = mxConstants.ALIGN_LEFT;
 			overlay.verticalAlign = mxConstants.ALIGN_BOTTOM;
 			overlay.addListener(mxEvent.CLICK, function (sender, evt) {
-					if (cell.value) {
-							if (cell.value.gateType)
-									addNode(graph, cell);
-					}
+					addNode(graph, cell);
 			});
 
 			graph.addCellOverlay(cell, overlay);
@@ -896,7 +893,7 @@ function addNode(graph, stateCell) {
 										var compChildren;
 										var index = -1;
 										for (var i = 0; i < graph.sidebar.LogicNodeList.length; i++) {
-												if (graph.sidebar.LogicNodeList[i].LogicNode.name == cell.value.name) {
+												if (graph.sidebar.LogicNodeList[i].LogicNode.name == cell.value) {
 														compChildren = graph.sidebar.LogicNodeList[i].LogicNode.compChildren;
 														index = i;
 												}
@@ -939,9 +936,9 @@ function addNode(graph, stateCell) {
 
 												graph.setSelectionCell(vertex);
 												for (var i = 0; i < graph.sidebar.LogicNodeList.length; i++) {
-														if (graph.sidebar.LogicNodeList[i].LogicNode.name == cell.value.name) {
+														if (graph.sidebar.LogicNodeList[i].LogicNode.name == cell.value) {
 																if (graph.sidebar.LogicNodeList[i].LogicNode.gateChildren.indexOf(retObj.newName) < 0)
-																		graph.sidebar.LogicNodeList[i].LogicNode.gateChildren.add(retObj.newName);
+																		graph.sidebar.LogicNodeList[i].LogicNode.gateChildren.push(retObj.newName);
 														}
 												}
 
