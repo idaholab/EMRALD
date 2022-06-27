@@ -2031,7 +2031,7 @@ if (typeof Navigation === 'undefined')
                 el.innerText = dataObj.name;
                 const oldName = outDataObj.rootName;
                 outDataObj.rootName = outDataObj.name;
-                simApp.mainApp.sidebar.replaceNames(oldName, dataObj.name, 'LogicTree', simApp.allDataModel, false);
+                simApp.mainApp.sidebar.replaceNames(oldName, dataObj.name, 'LogicNode', simApp.allDataModel, false);
               } else {
                 if (this.existsLogicName(outDataObj.name)) {
                   MessageBox.alert("New Logic Tree", "A logic tree with the '" + outDataObj.name + "' exists, please try a different name.");
@@ -2215,7 +2215,7 @@ if (typeof Navigation === 'undefined')
     //For Delete set newName = null 
     Sidebar.prototype.alterSideBarListsItem = function (itemName, newName, tabs, type) { 
       var container = null;
-      if (type == "LogicNode" || type == "LogicTree") {
+      if (type == "LogicNode") {
         container = document.getElementById("LogicTreesPanel_id");
         var index = this.indexOfSideBarNode(container.childNodes, itemName);
         if (index != null) {
@@ -2661,7 +2661,6 @@ if (typeof Navigation === 'undefined')
               }
               break;
             case "LogicNode":
-            case "LogicTree":
               //etComponentLogic
               if (cur.logicTop && cur.logicTop == name) {
                 if (del) {
@@ -2833,7 +2832,6 @@ if (typeof Navigation === 'undefined')
               //not applicable
               break;
             case "LogicNode":
-            case "LogicTree":
               //not applicable
               break;
             default:
@@ -2938,7 +2936,6 @@ if (typeof Navigation === 'undefined')
               //Not applicable
               break;
             case "LogicNode":
-            case "LogicTree":
               //not applicable
               break;
             default:
@@ -3016,7 +3013,6 @@ if (typeof Navigation === 'undefined')
               //Not applicable
               break;
             case "LogicNode":
-            case "LogicTree":
               //not applicable
               break;
             default:
@@ -3054,7 +3050,6 @@ if (typeof Navigation === 'undefined')
               }
               break;
             case "LogicNode":
-            case "LogicTree":
               // Reference to itself
               if (cur.name == name) {
                 if (replaceName != null) {
@@ -3128,7 +3123,6 @@ if (typeof Navigation === 'undefined')
               //not applicable
               break;
             case "LogicNode":
-            case "LogicTree":
               //not applicable
               break;
             case "Action":
@@ -3190,7 +3184,6 @@ if (typeof Navigation === 'undefined')
               //not applicable
               break;
             case "LogicNode":
-            case "LogicTree":
               //not applicable
               break;
             case "Action":
