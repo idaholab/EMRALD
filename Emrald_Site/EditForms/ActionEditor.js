@@ -521,8 +521,7 @@ function toStateChecked(el, evt) {
         delEl.disabled = cnt === 0;
 }
 
-var actionModule = angular.module('actionModule', []);
-addCodeEditor(actionModule, 'components/code-editor.html');
+var actionModule = angular.module('actionModule', ['codeEditor']);
 actionModule.controller('actionController', ['$scope', function ($scope) {
     $scope.name = '';
     $scope.desc = '';

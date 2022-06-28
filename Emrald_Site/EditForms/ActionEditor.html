@@ -45,7 +45,7 @@
             background-color: #dddddd;
         }
 
-        code-editor {
+        .editor {
             flex: 1;
             margin-right: 12px;
         }
@@ -137,7 +137,7 @@
                         </div>
                     </div>
                     <div style="display: flex; flex-direction: row; align-items: stretch; height: calc(100vh - 12em); width: 98vw;">
-                        <code-editor code="data.cvCode"></code-editor>
+                        <div code-editor class="editor" code="data.cvCode"></div>
                         <table id="tblVariables" style="text-align: left;" border="1" cellspacing="0">
                             <tr>
                                 <th colspan="2">Variables used in code</th>
@@ -224,7 +224,7 @@
                         <div style="display: flex; flex-direction: column; flex: 1">
                             <p style="margin-bottom:0">Preprocess Code(c#)</p>
                             <div style="display: flex; flex-direction:row; flex: 1">
-                                <code-editor code="data.raPreCode"></code-editor>
+                                <div code-editor class="editor" code="data.raPreCode"></div>
                             </div>
                             <div style="display: flex; flex-direction: row">
                                 <span>Executable Location:</span>
@@ -232,7 +232,7 @@
                             </div>
                             <p style="margin-bottom:0">Postprocess Code(c#)</p>
                             <div style="display: flex; flex-direction:row; flex: 1">
-                                <code-editor code="data.raPostCode"></code-editor>
+                                <div code-editor class="editor" code="data.raPostCode"></div>
                             </div>
                         </div>
 
