@@ -945,6 +945,9 @@ StateApp.prototype.Initialize = function (graph) {
                       var model = graph.getModel();
                       model.beginUpdate();
                       try {
+                        if (!item.eActions) {
+                          item.eActions = [];
+                        }
                         item.eActions.push(act);
                       }
                       finally {
