@@ -92,8 +92,7 @@
                                     {{row.To_State}}
                                 </td>
                                 <td style="vertical-align: top;" ng-scope>
-                                    <!--<input type="text" ng-model="row.Probability" style="border: none; background-color: transparent;" onkeypress="return validateNumber(this, event);" />-->
-                                    <input type="text" ng-model="row.Probability" style="border: none; background-color: transparent;" onfocusout="validateNumber(this);" />
+                                    <input type="text" ng-model="row.Probability" onfocusout="validateNumber(this);" ng-disabled="usingVariable(row)" />
                                 </td>
                                 <td style="vertical-align: top;" ng-scope>
                                     <select style="width: 120px;" ng-model="row.varProb" ng-options="opt.name as opt.name for opt in data.cvVariables">

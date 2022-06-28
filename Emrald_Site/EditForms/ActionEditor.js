@@ -596,7 +596,11 @@ actionModule.controller('actionController', ['$scope', function ($scope) {
 
     $scope.readPath = function (row, path) {
         return jsonPath(row, path);
-    }
+    };
+
+    $scope.usingVariable = function (row) {
+        return !!row.varProb;
+    };
 
     $scope.$watch('name', function (newV, oldV) { if (newV !== oldV) somethingChanged(); });
     $scope.$watch('desc', function (newV, oldV) { if (newV !== oldV) somethingChanged(); });
