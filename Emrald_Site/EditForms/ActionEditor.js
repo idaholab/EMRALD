@@ -522,6 +522,7 @@ function toStateChecked(el, evt) {
 }
 
 var actionModule = angular.module('actionModule', []);
+addCodeEditor(actionModule, 'components/code-editor.html');
 actionModule.controller('actionController', ['$scope', function ($scope) {
     $scope.name = '';
     $scope.desc = '';

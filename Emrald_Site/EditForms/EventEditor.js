@@ -618,6 +618,7 @@ function GetVariableList(varTypes) {
 
 
 var EEApp = angular.module("EventEditor", []);
+addCodeEditor(EEApp, 'components/code-editor.html');
 EEApp.controller("EEController", function ($scope) {
     $scope.name = "";
     $scope.namingPatterns = [];

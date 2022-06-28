@@ -6,6 +6,14 @@
     <title>Action Properties</title>
     <link href="../styles/Editors.css" rel="stylesheet" />
     <script src="./lib/jsonpath-0.8.0.js"></script>
+    <script type="module">
+        import { CodeJar } from "./lib/codejar.js";
+        import { withLineNumbers } from "./lib/linenumbers.js";
+    
+        window.CodeJar = CodeJar;
+        window.withLineNumbers = withLineNumbers;
+    </script>
+    <script src="./lib/prism.js"></script>
     <script src="../config.js"></script>
     <script src="../scripts/jquery/jquery-2.1.4.js"></script>
     <script src="../scripts/angular/angular.js"></script>
@@ -14,6 +22,7 @@
     <script src="../scripts/UI/FileSaver.js"></script>
     <script src="../scripts/UI/wcfService.js"></script>
     <script src="./customForms.js"></script>
+    <script src="./components/code-editor.js"></script>
     <script src="ActionEditor.js"></script>
     <style type="text/css">
         html, .fill-height {
@@ -34,6 +43,11 @@
 
         tr:nth-child(even) {
             background-color: #dddddd;
+        }
+
+        code-editor {
+            flex: 1;
+            margin-right: 12px;
         }
     </style>
 </head>
@@ -123,7 +137,7 @@
                         </div>
                     </div>
                     <div style="display: flex; flex-direction: row; align-items: stretch; height: calc(100vh - 12em); width: 98vw;">
-                        <textarea style="flex: 1; white-space: nowrap; overflow: auto;" name="NewValueCode" ng-model="data.cvCode" placeholder="Your code goes here" wrap="soft"></textarea>
+                        <code-editor code="data.cvCode"></code-editor>
                         <table id="tblVariables" style="text-align: left;" border="1" cellspacing="0">
                             <tr>
                                 <th colspan="2">Variables used in code</th>
@@ -210,7 +224,7 @@
                         <div style="display: flex; flex-direction: column; flex: 1">
                             <p style="margin-bottom:0">Preprocess Code(c#)</p>
                             <div style="display: flex; flex-direction:row; flex: 1">
-                                <textarea style="flex: 1; min-height: 5em; white-space: nowrap; overflow: auto;" name="PreprocCode" ng-model="data.raPreCode" placeholder="Your Preprocess code goes here"></textarea>
+                                <code-editor code="data.raPreCode"></code-editor>
                             </div>
                             <div style="display: flex; flex-direction: row">
                                 <span>Executable Location:</span>
@@ -218,7 +232,7 @@
                             </div>
                             <p style="margin-bottom:0">Postprocess Code(c#)</p>
                             <div style="display: flex; flex-direction:row; flex: 1">
-                                <textarea style="flex: 1; min-height: 5em; white-space: nowrap; overflow: auto;" name="PostprocCode" ng-model="data.raPostCode" placeholder="Your Postprocess code goes here"></textarea>
+                                <code-editor code="data.raPostCode"></code-editor>
                             </div>
                         </div>
 
