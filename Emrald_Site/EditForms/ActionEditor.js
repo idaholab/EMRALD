@@ -251,7 +251,6 @@ function OnLoad(dataObj) {
                 actTypeEl.selectedIndex = 0;
                 if (actionData.newStates) {
                     actionData.newStates.forEach(function (aState) {
-                        //todo if aState.prob == "remaining" then set to -1
                         if (aState.prob >= 0) {
                             scope.data.transitions.push({ checked: false, To_State: aState.toState, Probability: aState.prob.toString(), varProb: aState.varProb, failDesc: aState.failDesc });
                         }
@@ -366,7 +365,7 @@ function OnLoad(dataObj) {
                     //scope.data.transitions.push({ checked: false, To_State: state.name, Probability: "0.0", failDesc: "" });
                     //}
                     else {
-                        scope.data.transitions.push({ checked: false, To_State: state.name, Probability: 'Remaining', failDesc: '' });
+                        scope.data.transitions.push({ checked: false, To_State: state.name, Probability: '0', failDesc: '' });
                     }
                 }
             });
@@ -388,12 +387,12 @@ function GetDataObject() {
         case 'atTransition':
             if (scope.data.transitions && scope.data.transitions.length > 0) {
                 dataObj.newStates = [];
-                scope.data.transitions.forEach(function (tr) {
+                scope.data.transitions.forEach(function (tr, r) {
                     var { varProb } = tr;
                     if (varProb === null) {
                         varProb = "null";
                     }
-                    if (tr.Probability.toUpperCase() === 'REMAINING') {
+                    if (r === scope.data.transitions.length - 1) { // Remaining
                         dataObj.newStates.push({ toState: tr.To_State, prob: -1, varProb, failDesc: tr.failDesc });
                     }
                     else {

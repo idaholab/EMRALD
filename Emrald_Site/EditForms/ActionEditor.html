@@ -86,13 +86,14 @@
                             <tr class="tabHeader">
                                 <th ng-repeat="head in data.transHeader" width="{{head.width}}"><span>{{head.column}}</span></th>
                             </tr>
-                            <tr ng-repeat="row in data.transitions">
+                            <tr ng-repeat="row in data.transitions track by $index">
                                 <!--<td style="display:none;"><input type="checkbox" value="{{row.To_State}}" onchange="toStateChecked(this, event); return false;" /></td>-->
                                 <td style="vertical-align: top;" ng-scope>
                                     {{row.To_State}}
                                 </td>
                                 <td style="vertical-align: top;" ng-scope>
-                                    <input type="text" ng-model="row.Probability" onfocusout="validateNumber(this);" ng-disabled="usingVariable(row)" />
+                                    <span ng-if="$index === data.transitions.length - 1">Remaining</span>
+                                    <input ng-if="$index < data.transitions.length - 1" type="text" ng-model="row.Probability" onfocusout="validateNumber(this);" ng-disabled="usingVariable(row)" />
                                 </td>
                                 <td style="vertical-align: top;" ng-scope>
                                     <select style="width: 120px;" ng-model="row.varProb" ng-options="opt.name as opt.name for opt in data.cvVariables">
