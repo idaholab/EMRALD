@@ -1206,8 +1206,9 @@ StateApp.prototype.Initialize = function (graph) {
 
       }
       else if (state.shape instanceof mxConnector) {
-        if (cell.value)
-          content = cell.value.prob == -1 ? "" : cell.value.prob * 100 + '%';
+        if (cell.value) {
+          content = cell.value.prob < 0 ? "" : cell.value.prob * 100 + '%';
+        }
       }
       return content;
     };
