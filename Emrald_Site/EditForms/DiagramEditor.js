@@ -310,11 +310,14 @@ diagramModule.controller('diagramController', function ($scope, $timeout) {
     }
 
     $scope.selectedTemplate = null;
+    $scope.data.templateIsSelected = false;
     $scope.chooseTemplate = function (index) {
         if ($scope.selectedTemplate === index) {
             $scope.selectedTemplate = null;
+            $scope.data.templateIsSelected = false;
         } else {
             $scope.selectedTemplate = index;
+            $scope.data.templateIsSelected = true;
         }
     };
 
