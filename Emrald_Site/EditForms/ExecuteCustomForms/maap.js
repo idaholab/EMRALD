@@ -5,7 +5,7 @@
 /// <reference path="./fileModel.js" />
 /// <reference path="../lib/EditFormUtil.js" />
 /// <reference path="../lib/ExternalExeForm.js" />
-/* global ExternalExeForm, ExeFormItem, cast, fileModel, maapParParser, maapInpParser */
+/* global ExternalExeForm, ExeFormItem, cast, fileModel, maapParParser, maapInpParser, angular */
 
 /**
  * @namespace MAAPForm
@@ -138,7 +138,7 @@ class MAAPForm extends ExternalExeForm {
 }
 
 const form = new MAAPForm();
-const module = window.angular.module('maapForm', []);
+const maapForm = angular.module('maapForm', []);
 
 /**
  * @typedef MAAPForm.ParameterName
@@ -197,9 +197,14 @@ class Parameter extends ExeFormItem {
    * @returns {string} The parameter label.
    */
   get label() {
-    let label = `${this.name.name}`;
-    if (this.name.index) {
-      label += `(${this.name.index})`;
+    let label = '';
+    if (this.name) {
+      label = `${this.name.name}`;
+      if (this.name.index) {
+        label += `(${this.name.index})`;
+      }
+    } else if (this.text) {
+      label = this.text;
     }
     return label;
   }
@@ -210,19 +215,21 @@ class Parameter extends ExeFormItem {
    * @returns {string} - The parameter value label.
    */
   get valueLabel() {
-    let label;
-    if (!this.parsed) {
+    let label = '';
+    if (!this.parsed && this.text) {
       return this.text;
     }
-    if (this.value.type === 'variable') {
-      label = `${this.value.name}`;
-      if (this.value.index) {
-        label += `(${this.name.index})`;
-      }
-    } else {
-      label = `${this.value.value}`;
-      if (this.value.units) {
-        label += ` ${this.value.units}`;
+    if (this.value && this.name) {
+      if (this.value.type === 'variable') {
+        label = `${this.value.name}`;
+        if (this.value.index) {
+          label += `(${this.name.index})`;
+        }
+      } else {
+        label = `${this.value.value}`;
+        if (this.value.units) {
+          label += ` ${this.value.units}`;
+        }
       }
     }
     return label;
@@ -234,8 +241,8 @@ class Parameter extends ExeFormItem {
    * @returns {string} The parameter as a string.
    */
   toString() {
-    let str;
-    if (this.parsed) {
+    let str = '';
+    if (this.parsed && this.name && this.value) {
       str = `${this.name.name}`;
       if (this.name.index) {
         str += `(${this.name.index})`;
@@ -249,7 +256,7 @@ class Parameter extends ExeFormItem {
           str += ` ${this.value.units}`;
         }
       }
-    } else {
+    } else if (this.text) {
       str = this.text;
     }
     return str;
@@ -274,7 +281,9 @@ class Parameter extends ExeFormItem {
    */
   changeText() {
     const s = this.tempText.split(' ');
-    [this.value.value, this.value.units] = s;
+    if (this.value) {
+      [this.value.value, this.value.units] = s;
+    }
     [this.data.value.value, this.data.value.units] = s;
   }
 }
@@ -365,7 +374,7 @@ class VarLink {
    */
   toJSON() {
     /** @type {MAAPForm.VarLinkJSON} */ const json = {
-      target: this.target,
+      target: this.target || '',
       variable: {
         id: -1,
         name: '',
@@ -410,7 +419,7 @@ class Block {
   }
 }
 
-module.controller('maapFormController', [
+maapForm.controller('maapFormController', [
   '$scope',
   /**
    * The MAAP form controller.
@@ -484,7 +493,10 @@ module.controller('maapFormController', [
       }
       if (typeof raFormData.varLinks === 'object') {
         $scope.varLinks = raFormData.varLinks.map(
-          (varLink) => new VarLink(varLink.target, form.findVariable(varLink.variable)),
+          (varLink) => new VarLink(
+            varLink.target,
+            form.findVariable(varLink.variable),
+          ),
         );
       }
     }
@@ -543,7 +555,7 @@ module.controller('maapFormController', [
 
     $scope.$watch('inputFile', () => {
       if ($scope.inputFile.length > 0) {
-        const parser = window.maapInpParser.default;
+        const parser = maapInpParser.default;
         // Turning safeMode on will allow the file to fully parse even if there are syntax errors
         parser.options.safeMode = true;
         const parsed = parser.parse($scope.inputFile);
@@ -569,4 +581,4 @@ module.controller('maapFormController', [
 ]);
 
 // Don't read entire file into memory
-module.directive('fileModel', ['$parse', fileModel]);
+maapForm.directive('fileModel', ['$parse', fileModel]);
