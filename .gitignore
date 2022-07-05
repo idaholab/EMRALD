@@ -285,6 +285,3 @@ _Pvt_Extensions
 # JavaScript unit test artifacts
 coverage
 EMRALD_Site/tests/temp
-
-# TODO - Maap files used for development
-Emrald_Site/tests/test-data/maap
