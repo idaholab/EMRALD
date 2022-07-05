@@ -12,6 +12,11 @@
  */
 
 /**
+ * @typedef MAAPForm.ScopeData
+ * @property {string} initiatorQuery - Initiator query text.
+ */
+
+/**
  * @typedef MAAPForm.Scope
  * @property {string} exePath - Path to the MAAP executeable.
  * @property {string} inputFile - Full contents of the input file.
@@ -23,7 +28,6 @@
  * @property {VarLink[]} varLinks - Var links.
  * @property {Block[]} blocks - Input blocks.
  * @property {number[]} inpSplits - Split locations for the INP file.
- * @property {string} initiatorQuery - Initiator search text.
  * @property {Initiator[]} initiatorOptions - Initiator options.
  * @property {boolean} parametersLoaded - If the parameters file has been loaded & parsed.
  * @property {string[]} operators - Possible operator choices.
@@ -37,6 +41,7 @@
  * @property {(index: number) => void} removeOutput - Removes the var link at the given index.
  * @property {() => void} save - Saves the form data.
  * @property {(target: Parameter) => void} changeText - Changes the text of a parameter directly.
+ * @property {MAAPForm.ScopeData} data - Globally scoped form data.
  */
 
 /**
@@ -92,7 +97,6 @@ class MAAPForm extends ExternalExeForm {
       if (File.Exists(inpLoc)) {
         File.Copy(inpLoc, tempLoc + Path.GetFileName(inpLoc));
       }
-      //TODO - if there is a .dat file specified in the .inp copy that here as well.
       string exeName = Path.GetFileName(exeLoc);
       if(File.Exists(exeLoc)) {
         File.Copy(exeLoc, tempLoc + exeName);
@@ -107,7 +111,6 @@ class MAAPForm extends ExternalExeForm {
       string p3 = p.Substring(${scope.inpSplits[3]}, ${scope.inpSplits[4]});
       string newInp = p1 + ${paramCode} + p2 + ${initiatorCode} + p3;
       System.IO.File.WriteAllText(tempLoc + Path.GetFileName(inpLoc), newInp);
-      //TODO - if there is a .dat file then remove any .inp file reference
       return tempLoc + exeName + " " + Path.GetFileName(inpLoc) + " " + Path.GetFileName(paramLoc);`;
     dataObj.raPostCode = `string inpLoc = @"${this.escape(scope.inputPath)}";
     string docVarPath = @"${tempFilePath}"; //whatever you assigned the results variables to
@@ -156,15 +159,8 @@ const maapForm = angular.module('maapForm', []);
  */
 
 /**
- * @typedef MAAPForm.ParameterData
- * @property {MAAPForm.ParameterName} name - The parameter name.
- * @property {MAAPForm.ParameterValue} value - The parameter value.
- */
-
-/**
  * @typedef MAAPForm.ParameterJSON
- * @property {MAAPForm.ParameterData} data - The raw parameter data.
- * @property {boolean} parsed - If the data was succesfully parsed.
+ * @property {import('maap-inp-parser').Assignment} data - The raw parameter data.
  * @property {boolean} useVariable - If the parameter is using a variable.
  * @property {EMRALD.Variable['Variable']} variable - The variable being used, if any.
  */
@@ -176,18 +172,14 @@ class Parameter extends ExeFormItem {
   /**
    * Constructs Parameter.
    *
-   * @param {MAAPForm.ParameterData | string} data - The parameter data.
-   * @param {boolean} parsed If the parameter data was succesfully parsed.
+   * @param {import('maap-inp-parser').Assignment} data - The parameter data.
    */
-  constructor(data, parsed = true) {
+  constructor(data) {
+    // TODO: for this class and all other classes, make sure to handle any case the parser can handle.
     super(data);
-    if (parsed && typeof data !== 'string') {
-      this.name = data.name;
-      this.value = data.value;
-    } else {
-      this.text = /** @type {string} */ (data);
-    }
-    this.parsed = parsed;
+    this.target = data.target;
+    this.value = data.value;
+    this.data = data;
     this.tempText = this.valueLabel;
   }
 
@@ -198,13 +190,8 @@ class Parameter extends ExeFormItem {
    */
   get label() {
     let label = '';
-    if (this.name) {
-      label = `${this.name.name}`;
-      if (this.name.index) {
-        label += `(${this.name.index})`;
-      }
-    } else if (this.text) {
-      label = this.text;
+    if (this.target) {
+      label = maapInpParser.default.toString(this.target);
     }
     return label;
   }
@@ -216,21 +203,8 @@ class Parameter extends ExeFormItem {
    */
   get valueLabel() {
     let label = '';
-    if (!this.parsed && this.text) {
-      return this.text;
-    }
-    if (this.value && this.name) {
-      if (this.value.type === 'variable') {
-        label = `${this.value.name}`;
-        if (this.value.index) {
-          label += `(${this.name.index})`;
-        }
-      } else {
-        label = `${this.value.value}`;
-        if (this.value.units) {
-          label += ` ${this.value.units}`;
-        }
-      }
+    if (this.value) {
+      label = maapInpParser.default.toString(this.value);
     }
     return label;
   }
@@ -241,25 +215,14 @@ class Parameter extends ExeFormItem {
    * @returns {string} The parameter as a string.
    */
   toString() {
-    let str = '';
-    if (this.parsed && this.name && this.value) {
-      str = `${this.name.name}`;
-      if (this.name.index) {
-        str += `(${this.name.index})`;
-      }
-      str += '=';
-      if (this.useVariable) {
-        str += `"+${this.variable.name}+"`;
-      } else {
-        str += `${this.value.value}`;
-        if (this.value.units) {
-          str += ` ${this.value.units}`;
-        }
-      }
-    } else if (this.text) {
-      str = this.text;
+    const d = this.data;
+    if (this.useVariable) {
+      d.value = {
+        type: 'identifier',
+        value: `"+${this.variable.name}+"`,
+      };
     }
-    return str;
+    return maapInpParser.default.toString(d);
   }
 
   /**
@@ -270,7 +233,6 @@ class Parameter extends ExeFormItem {
   toJSON() {
     return {
       data: this.data,
-      parsed: this.parsed,
       useVariable: this.useVariable,
       variable: this.variable,
     };
@@ -431,7 +393,6 @@ maapForm.controller('maapFormController', [
     $scope.inputFile = '';
     $scope.parameters = [];
     $scope.initiators = [];
-    $scope.initiatorQuery = '';
     $scope.initiatorOptions = [];
     $scope.exePath = '';
     $scope.parameterPath = '';
@@ -442,19 +403,12 @@ maapForm.controller('maapFormController', [
     $scope.operators = ['>', '<', 'IS'];
     $scope.inpSplits = [];
     $scope.tab = 'parameters';
+    $scope.data = {
+      initiatorQuery: '',
+    };
 
     const parameterInfo = {};
     const possibleInitiators = {};
-
-    /**
-     * Trims whitepsace from the beginning and end of lines.
-     *
-     * @param {string} line - The line to trim.
-     * @returns {string} The trimmed line.
-     */
-    function trim(line) {
-      return line.replace(/^\s*/, '').replace(/\s*$/, '');
-    }
 
     const { parentScope } = form;
     $scope.variables = parentScope.data.cvVariables;
@@ -478,7 +432,7 @@ maapForm.controller('maapFormController', [
       }
       if (raFormData.parameters) {
         $scope.parameters = raFormData.parameters.map((parameter) => {
-          const param = new Parameter(parameter.data, parameter.parsed);
+          const param = new Parameter(parameter.data);
           param.useVariable = parameter.useVariable;
           if (parameter.useVariable) {
             param.variable = form.findVariable(parameter.variable);
@@ -493,10 +447,7 @@ maapForm.controller('maapFormController', [
       }
       if (typeof raFormData.varLinks === 'object') {
         $scope.varLinks = raFormData.varLinks.map(
-          (varLink) => new VarLink(
-            varLink.target,
-            form.findVariable(varLink.variable),
-          ),
+          (varLink) => new VarLink(varLink.target, form.findVariable(varLink.variable)),
         );
       }
     }
@@ -507,11 +458,13 @@ maapForm.controller('maapFormController', [
     };
 
     $scope.findInitiators = function findInitiators() {
-      if ($scope.initiatorQuery.length > 0) {
+      if ($scope.data.initiatorQuery.length > 0) {
         $scope.initiatorOptions = [];
         Object.keys(possibleInitiators).forEach((key) => {
           if (
-            key.toUpperCase().indexOf($scope.initiatorQuery.toUpperCase()) > -1
+            key
+              .toUpperCase()
+              .indexOf($scope.data.initiatorQuery.toUpperCase()) > -1
           ) {
             $scope.initiatorOptions.push(possibleInitiators[key]);
           }
@@ -555,6 +508,7 @@ maapForm.controller('maapFormController', [
 
     $scope.$watch('inputFile', () => {
       if ($scope.inputFile.length > 0) {
+        /** @type {import('maap-inp-parser').MAAPInpParser} */
         const parser = maapInpParser.default;
         // Turning safeMode on will allow the file to fully parse even if there are syntax errors
         parser.options.safeMode = true;
@@ -562,7 +516,31 @@ maapForm.controller('maapFormController', [
         if (parsed.errors.length > 0) {
           // TODO: Notify of parsing errors
         }
-        console.log(parsed);
+        parsed.output.value.forEach((sourceElement) => {
+          switch (sourceElement.type) {
+            case 'block':
+              if (sourceElement.blockType === 'PARAMETER CHANGE') {
+                sourceElement.value.forEach((innerElement) => {
+                  $scope.parameters.push(new Parameter(innerElement));
+                });
+              } else if (sourceElement.blockType === 'INITIATORS') {
+                sourceElement.value.forEach((innerElement) => {
+                  const initiator = parser.toString(
+                    innerElement,
+                  );
+                  if (parameterInfo[initiator]) {
+                    $scope.initiators.push(
+                      new Initiator(parameterInfo[initiator]),
+                    );
+                  } else {
+                    // TODO
+                  }
+                });
+              }
+              break;
+            default:
+          }
+        });
         form.save();
       }
     });
@@ -580,5 +558,4 @@ maapForm.controller('maapFormController', [
   },
 ]);
 
-// Don't read entire file into memory
 maapForm.directive('fileModel', ['$parse', fileModel]);

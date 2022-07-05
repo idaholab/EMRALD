@@ -96,8 +96,14 @@ class ExternalExeForm {
    * @returns {EMRALD.Variable['Variable']} The matching variable, if any.
    */
   findVariable(variable1) {
+    let id;
+    if (variable1.Variable) {
+      id = variable1.Variable.id;
+    } else {
+      id = variable1.id;
+    }
     return this.parentScope.data.cvVariables.find(
-      (variable2) => variable1.Variable.id === variable2.Variable.id,
+      (variable2) => id === variable2.id,
     );
   }
 
@@ -111,7 +117,7 @@ class ExternalExeForm {
     return this.removeDuplicates(
       objs
         .filter((obj) => obj.useVariable)
-        .map((obj) => obj.variable.Variable.name),
+        .map((obj) => obj.variable.name),
     );
   }
 
