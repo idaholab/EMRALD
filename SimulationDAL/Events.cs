@@ -883,8 +883,7 @@ namespace SimulationDAL
         try
         {
           this.timeVariable = lists.allVariables.FindByName((string)dynObj.time); 
-           
-          //this.AddRelatedItem(curVar.id); //don't need to add to relatedItems, because it doesn't trigger the event and time is fixed once started 
+          this.AddRelatedItem(this.timeVariable.id);  
         }
         catch
         {

@@ -124,7 +124,7 @@
         "mainItem": false,
         "mutExcl": true,
         "newStates": [],
-        "scriptCode": "return 2;",
+        "scriptCode": "return 7;",
         "variableName": "VarTime",
         "codeVariables": []
       }
