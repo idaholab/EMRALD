@@ -342,7 +342,7 @@ namespace UnitTesting_Simulation
 
       //Change the default settings as needed for the test seed default set to 0 for testing.
       optionsJ["inpfile"] = MainTestDir() + ModelFolder() + testName + ".json";
-      optionsJ["runct"] = 10;
+      optionsJ["runct"] = 1;
       optionsJ["debug"] = "basic";
       JSONRun testRun = new JSONRun(optionsJ.ToString());
       Assert.True(TestRunSim(testRun));
