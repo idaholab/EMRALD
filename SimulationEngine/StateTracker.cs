@@ -1517,7 +1517,7 @@ namespace SimulationTracking
           else
           {
 
-            TimeSpan evTime = timeEv.NextTime();
+            TimeSpan evTime = timeEv.NextTime(curTime);
             if (evTime < maxTime)
             {
               TimeMoveEvent addTimeEv = new TimeMoveEvent(curEv.name, new EventStatesAndActions(curEv.id, curState.id, curState.GetEvActionsIdx(idx)), curEv, evTime, curTime);
