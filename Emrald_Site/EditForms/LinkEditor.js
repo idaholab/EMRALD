@@ -78,6 +78,9 @@ function OnLoad(dataObj) {
     scope.toState = linkData.toState;
     scope.prob = linkData.prob;
     scope.failDesc = linkData.failDesc;
+    if (scope.prob < 0) {
+      scope.remaining = true;
+    }
   });
 }
 
@@ -87,6 +90,9 @@ function GetDataObject() {
   dataObj.toState = scope.toState;
   dataObj.failDesc = scope.failDesc;
   dataObj.prob = scope.prob;
+  if (scope.remaining) {
+    dataObj.prob = -1;
+  }
   //NOTE: attributes here must match the FTItem class.
   return dataObj;
 }
@@ -114,6 +120,7 @@ actionModule.controller('linkController', ['$scope', function ($scope) {
   $scope.toState = "";
   $scope.prob = -1;
   $scope.failDesc = "";
+  $scope.remaining = false;
 
   $scope.$watch('prob', function (newVal, oldVal) {
     if (newVal !== oldVal) {

@@ -1355,6 +1355,7 @@ var StateApp = (function (global, _super) {
       sb.cleanDataModel(diagram);
       diagram.sidebar = sb;
       this.graph.view.clear();
+      this.graph.model.clear();
       OnLoad(diagram);
 
     }
