@@ -7,6 +7,14 @@
     <!--<link href="../styles/Editors.css" rel="stylesheet" />-->
     <script src="../config.js"></script>
     <script src="../scripts/angular/angular.js"></script>
+    <script type="module">
+        import { CodeJar } from "./lib/codejar.js";
+        import { withLineNumbers } from "./lib/linenumbers.js";
+    
+        window.CodeJar = CodeJar;
+        window.withLineNumbers = withLineNumbers;
+    </script>
+    <script src="./lib/prism.js"></script>
     <script src="../scripts/UI/Common.js"></script>
     <script src="../scripts/UI/wcfService.js"></script>
 
@@ -28,6 +36,7 @@
             background-color: #dddddd;
         }
     </style>
+    <script src="./components/code-editor.js"></script>
     <script src="EventEditor.js"></script>
 
 </head>
@@ -69,7 +78,9 @@
             <div id="DetailContentPanel" style="height:auto;">
                 <div id="VarConditionPanel" style="display:table-row;position:absolute;visibility:collapse;height:100%;width:96%;overflow-x:hidden; overflow-y:visible;">
                     Evaluate Code (c#) - Must return a boolean value! <br>
-                    <textarea cols="60" rows="8" name="NewValueCode" ng-model="conditionCode"></textarea><br>
+                    <div style="height: 300px;">
+                        <div code-editor style="height: 300px;" code="conditionCode"></div>
+                    </div>
                     <div id="VarList" style="display:table-row;position:absolute;width:96%;overflow-x:hidden;overflow-y:visible;">
 
                         <table id="tblVariables" style="text-align: left; width: 200px;" border="1" cellspacing="0">
@@ -88,7 +99,9 @@
                         <option>-- Choose Variable --</option>
                     </select><br>
                     <label style="display:table-cell;vertical-align:middle; white-space:nowrap;">Evaluate Code (c#)</label><br>
-                    <textarea cols="50" rows="20" name="NewValueCode" ng-model="var3DCode"></textarea><br />
+                    <div style="height: 300px;">
+                        <div code-editor style="height: 300px;" code="var3DCode"></div>
+                    </div>
                     <div id="VarList" style="display:table-row;position:absolute;width:96%;overflow-x:hidden;overflow-y:visible;">
 
                         <table id="tblVariables" style="text-align: left; width: 200px;" border="1" cellspacing="0">
