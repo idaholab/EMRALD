@@ -27,7 +27,6 @@
  * @property {Initiator[]} initiators - Initiators.
  * @property {VarLink[]} varLinks - Var links.
  * @property {Block[]} blocks - Input blocks.
- * @property {number[]} inpSplits - Split locations for the INP file.
  * @property {Initiator[]} initiatorOptions - Initiator options.
  * @property {boolean} parametersLoaded - If the parameters file has been loaded & parsed.
  * @property {string[]} operators - Possible operator choices.
@@ -42,6 +41,7 @@
  * @property {() => void} save - Saves the form data.
  * @property {(target: Parameter) => void} changeText - Changes the text of a parameter directly.
  * @property {MAAPForm.ScopeData} data - Globally scoped form data.
+ * @property {(import('maap-inp-parser').Program)}  program - The parsed INP file program.
  */
 
 /**
@@ -60,10 +60,10 @@ class MAAPForm extends ExternalExeForm {
     dataObj.raFormData = {
       exePath: scope.exePath,
       initiators: scope.initiators.map((initiator) => initiator.toJSON()),
-      inpSplits: scope.inpSplits,
       inputPath: scope.inputPath,
       parameterPath: scope.parameterPath,
       parameters: scope.parameters.map((parameter) => parameter.toJSON()),
+      program: scope.program,
       varLinks: scope.varLinks.map((varLink) => varLink.toJSON()),
     };
     const tempFilePath = `${scope.inputPath.replace(
@@ -401,10 +401,13 @@ maapForm.controller('maapFormController', [
     $scope.parametersLoaded = false;
     $scope.blocks = [];
     $scope.operators = ['>', '<', 'IS'];
-    $scope.inpSplits = [];
     $scope.tab = 'parameters';
     $scope.data = {
       initiatorQuery: '',
+    };
+    $scope.program = {
+      type: 'program',
+      value: [],
     };
 
     const parameterInfo = {};
@@ -418,9 +421,6 @@ maapForm.controller('maapFormController', [
     );
     const { raFormData } = parentScope.data;
     if (raFormData) {
-      if (typeof raFormData.inpSplits === 'object') {
-        $scope.inpSplits = raFormData.inpSplits;
-      }
       if (typeof raFormData.parameterPath === 'string') {
         $scope.parameterPath = raFormData.parameterPath;
       }
@@ -449,6 +449,9 @@ maapForm.controller('maapFormController', [
         $scope.varLinks = raFormData.varLinks.map(
           (varLink) => new VarLink(varLink.target, form.findVariable(varLink.variable)),
         );
+      }
+      if (raFormData.program) {
+        $scope.program = raFormData.program;
       }
     }
 
@@ -516,12 +519,18 @@ maapForm.controller('maapFormController', [
         if (parsed.errors.length > 0) {
           // TODO: Notify of parsing errors
         }
-        parsed.output.value.forEach((sourceElement) => {
+        $scope.program = parsed.output;
+        parsed.output.value.forEach((sourceElement, s) => {
           switch (sourceElement.type) {
             case 'block':
               if (sourceElement.blockType === 'PARAMETER CHANGE') {
-                sourceElement.value.forEach((innerElement) => {
-                  $scope.parameters.push(new Parameter(innerElement));
+                sourceElement.value.forEach((innerElement, i) => {
+                  if (innerElement.type === 'assignment') {
+                    $scope.parameters.push(new Parameter(innerElement));
+                    $scope.program
+                  } else {
+                    // TODO
+                  }
                 });
               } else if (sourceElement.blockType === 'INITIATORS') {
                 sourceElement.value.forEach((innerElement) => {
