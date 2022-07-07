@@ -275,7 +275,7 @@ function main(container, outline) {
 										var compChildren;
 										var index = -1;
 										for (var i = 0; i < graph.sidebar.LogicNodeList.length; i++) {
-												if (graph.sidebar.LogicNodeList[i].LogicNode.name == cell.value.name) {
+												if (graph.sidebar.LogicNodeList[i].LogicNode.name == cell.value) {
 														compChildren = graph.sidebar.LogicNodeList[i].LogicNode.compChildren;
 														index = i;
 												}
@@ -364,8 +364,7 @@ function main(container, outline) {
       //var s = graph.view.scale;
      
       if (graph.getModel().isVertex(state.cell) && state.text != null) {
-        if (((state.shape instanceof mxLabel) || (state.shape instanceof mxImageShape))
-          && (typeof (state.cell.value) !== 'string')) {
+        if (((state.shape instanceof mxLabel) || (state.shape instanceof mxImageShape))) {
           if (!state.cell.value) return;
           if (state.cell.value.diagramType) return;  //don't need to drop on leave node.
 
@@ -988,7 +987,7 @@ function addBE(graph, cell) {
 								var newDiagram = retObj.element;
 								var index = -1;
 								for (var i = 0; i < graph.sidebar.LogicNodeList.length; i++) {
-										if (graph.sidebar.LogicNodeList[i].LogicNode.name == cell.value.name) {
+										if (graph.sidebar.LogicNodeList[i].LogicNode.name == cell.value) {
 												compChildren = graph.sidebar.LogicNodeList[i].LogicNode.compChildren;
 												index = i;
 										}
