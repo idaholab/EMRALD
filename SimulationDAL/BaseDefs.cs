@@ -503,6 +503,14 @@ namespace SimulationDAL
     {
       curMaxID[(int)EnIDTypes.itTimer] = 1;
     }
+
+    public void ResetAllIDs()
+    {
+      foreach (var idType in Enum.GetValues(typeof(EnIDTypes)))
+      {
+        curMaxID[(int)idType] = 1;
+      }
+    }
   }
 
 

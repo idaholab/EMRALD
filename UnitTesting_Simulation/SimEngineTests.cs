@@ -21,7 +21,8 @@ using NLog.Config;
 
 namespace UnitTesting_Simulation
 {
-
+  // Do not run multiple test classes in parallel, as it can cause some tests to fail: https://tsuyoshiushio.medium.com/controlling-the-serial-and-parallel-test-on-xunit-6174326da196
+  [Collection("Serial")]
   //construct each of the types of model objects from JSON and then get the JSON back and compare.
   public class SimEngineTests
   {
