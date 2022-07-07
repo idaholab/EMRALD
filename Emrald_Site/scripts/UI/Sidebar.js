@@ -3075,6 +3075,20 @@ if (typeof Navigation === 'undefined')
                   }
                 });
               }
+              // Comp children
+              if (cur.compChildren) {
+                cur.compChildren.forEach((gate, i) => {
+                  if (gate == name) {
+                    refs.push(cur);
+                    if (replaceName) {
+                      cur.compChildren[i] = replaceName;
+                    }
+                    if (del) {
+                      cur.compChildren.splice(i, 1);
+                    }
+                  }
+                });
+              }
               // All nodes
               if (cur.rootName === name) {
                 if (replaceName !== null) {
