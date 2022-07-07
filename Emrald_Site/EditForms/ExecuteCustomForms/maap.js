@@ -17,6 +17,12 @@
  */
 
 /**
+ * @typedef MAAPForm.Override
+ * @property {number[]} bounds - The substring bounds.
+ * @property {string} data - The **key** of the scope property to stringify. Must be an array of objects with a toString method.
+ */
+
+/**
  * @typedef MAAPForm.Scope
  * @property {string} exePath - Path to the MAAP executeable.
  * @property {string} inputFile - Full contents of the input file.
@@ -41,7 +47,7 @@
  * @property {() => void} save - Saves the form data.
  * @property {(target: Parameter) => void} changeText - Changes the text of a parameter directly.
  * @property {MAAPForm.ScopeData} data - Globally scoped form data.
- * @property {(import('maap-inp-parser').Program)}  program - The parsed INP file program.
+ * @property {MAAPForm.Override[]} overrideSections - Sections of the INP file to override.
  */
 
 /**
@@ -61,26 +67,26 @@ class MAAPForm extends ExternalExeForm {
       exePath: scope.exePath,
       initiators: scope.initiators.map((initiator) => initiator.toJSON()),
       inputPath: scope.inputPath,
+      overrideSections: scope.overrideSections,
       parameterPath: scope.parameterPath,
       parameters: scope.parameters.map((parameter) => parameter.toJSON()),
-      program: scope.program,
       varLinks: scope.varLinks.map((varLink) => varLink.toJSON()),
     };
     const tempFilePath = `${scope.inputPath.replace(
       /[^/\\]*\.INP$/,
       'temp.INP',
     )}`;
-    let paramCode = '"';
-    scope.parameters.forEach((parameter) => {
-      paramCode += `${parameter.toString()}\\n`;
-    });
-    paramCode += '"';
-    let initiatorCode = '"';
-    scope.initiators.forEach((initiator) => {
-      initiatorCode += `${initiator.toString()}\\n`;
-    });
-    initiatorCode += '"';
     /* eslint-disable max-len */
+    let overrideCode = '';
+    let pointer = 0;
+    scope.overrideSections
+      .sort((a, b) => b.bounds[0] - a.bounds[0])
+      .forEach((override) => {
+        overrideCode += `newInp += originalInp.Substring(${pointer}, ${override.bounds[0]});\n`;
+        overrideCode += `newInp += "${scope[override.data].map((value) => value.toString()).join('\\n')}";\n`;
+        [, pointer] = override.bounds;
+      });
+    overrideCode += `newInp += originalInp.Substring(${pointer});\n`;
     dataObj.raPreCode = `string exeLoc = @"${this.escape(scope.exePath)}";
       string paramLoc = @"${this.escape(scope.parameterPath)}";
       string inpLoc = @"${this.escape(scope.inputPath)}";
@@ -105,11 +111,9 @@ class MAAPForm extends ExternalExeForm {
       if (File.Exists(dllPath)) {
         File.Copy(dllPath, tempLoc + Path.GetFileName(dllPath));
       }
-      string p = ${this.code.readFile(scope.inputPath)};
-      string p1 = p.Substring(0, ${scope.inpSplits[0]});
-      string p2 = p.Substring(${scope.inpSplits[1]}, ${scope.inpSplits[2]});
-      string p3 = p.Substring(${scope.inpSplits[3]}, ${scope.inpSplits[4]});
-      string newInp = p1 + ${paramCode} + p2 + ${initiatorCode} + p3;
+      string originalInp = ${this.code.readFile(scope.inputPath)};
+      string newInp = "";
+      ${overrideCode}
       System.IO.File.WriteAllText(tempLoc + Path.GetFileName(inpLoc), newInp);
       return tempLoc + exeName + " " + Path.GetFileName(inpLoc) + " " + Path.GetFileName(paramLoc);`;
     dataObj.raPostCode = `string inpLoc = @"${this.escape(scope.inputPath)}";
@@ -405,10 +409,7 @@ maapForm.controller('maapFormController', [
     $scope.data = {
       initiatorQuery: '',
     };
-    $scope.program = {
-      type: 'program',
-      value: [],
-    };
+    $scope.overrideSections = [];
 
     const parameterInfo = {};
     const possibleInitiators = {};
@@ -450,8 +451,8 @@ maapForm.controller('maapFormController', [
           (varLink) => new VarLink(varLink.target, form.findVariable(varLink.variable)),
         );
       }
-      if (raFormData.program) {
-        $scope.program = raFormData.program;
+      if (raFormData.overrideSections) {
+        $scope.overrideSections = raFormData.overrideSections;
       }
     }
 
@@ -511,6 +512,9 @@ maapForm.controller('maapFormController', [
 
     $scope.$watch('inputFile', () => {
       if ($scope.inputFile.length > 0) {
+        $scope.overrideSections = [];
+        $scope.parameters = [];
+        $scope.initiators = [];
         /** @type {import('maap-inp-parser').MAAPInpParser} */
         const parser = maapInpParser.default;
         // Turning safeMode on will allow the file to fully parse even if there are syntax errors
@@ -519,24 +523,36 @@ maapForm.controller('maapFormController', [
         if (parsed.errors.length > 0) {
           // TODO: Notify of parsing errors
         }
-        $scope.program = parsed.output;
-        parsed.output.value.forEach((sourceElement, s) => {
+        parsed.output.value.forEach((sourceElement) => {
           switch (sourceElement.type) {
             case 'block':
               if (sourceElement.blockType === 'PARAMETER CHANGE') {
-                sourceElement.value.forEach((innerElement, i) => {
+                $scope.overrideSections.push({
+                  bounds: [
+                    sourceElement.location.start.offset,
+                    sourceElement.location.end.offset,
+                  ],
+                  data: 'parameters',
+                });
+                sourceElement.value.forEach((innerElement) => {
                   if (innerElement.type === 'assignment') {
                     $scope.parameters.push(new Parameter(innerElement));
-                    $scope.program
                   } else {
                     // TODO
                   }
                 });
               } else if (sourceElement.blockType === 'INITIATORS') {
+                $scope.overrideSections.push({
+                  bounds: [
+                    sourceElement.location.start.offset,
+                    sourceElement.location.end.offset,
+                  ],
+                  // TODO: This will result in duplication for files with multiple initiators sections
+                  // Same issue is present for parameter change too
+                  data: 'initiators',
+                });
                 sourceElement.value.forEach((innerElement) => {
-                  const initiator = parser.toString(
-                    innerElement,
-                  );
+                  const initiator = parser.toString(innerElement);
                   if (parameterInfo[initiator]) {
                     $scope.initiators.push(
                       new Initiator(parameterInfo[initiator]),

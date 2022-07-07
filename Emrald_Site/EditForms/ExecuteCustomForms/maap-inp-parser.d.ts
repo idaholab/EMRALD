@@ -1,43 +1,52 @@
 declare module 'maap-inp-parser' {
-  export type WrapperOptions = {
+  import type { LocationRange, ParserOptions } from 'peggy';
+
+  type Location = {
+    location?: LocationRange;
+  };
+
+  export type WrapperOptions = ParserOptions & {
     safeMode?: boolean;
   };
 
   export type Literal = BooleanLiteral | NumericLiteral | TimerLiteral;
 
-  export type NumericLiteral = {
+  export type NumericLiteral = Location & {
     type: 'number';
     units?: string;
     value: number;
   };
 
-  export type BooleanLiteral = {
+  export type BooleanLiteral = Location & {
     type: 'boolean';
     value: boolean;
   };
 
-  export type Identifier = {
+  export type Identifier = Location & {
     type: 'identifier';
     value: string;
   };
 
-  export type Parameter = {
-    flag?: BooleanLiteral;
-    index: number;
-    type: 'parameter';
+  export type ParameterName = Location & {
+    type: 'parameter_name';
     value: string;
   };
 
-  export type TimerLiteral = {
+  export type Parameter = Location & {
+    flag?: BooleanLiteral;
+    index: number;
+    type: 'parameter';
+    value: Expression | ParameterName;
+  };
+
+  export type TimerLiteral = Location & {
     type: 'timer';
     value: number;
   };
 
-  export type ExpressionMember = Literal | Identifier;
-
   export type Arguments = ExpressionType[];
 
-  export type CallExpression = {
+  export type CallExpression = Location & {
     arguments: Arguments;
     type: 'call_expression';
     value: Identifier;
@@ -54,7 +63,7 @@ declare module 'maap-inp-parser' {
     | '+'
     | '-';
 
-  export type PureExpression = {
+  export type PureExpression = Location & {
     type: 'expression';
     value: {
       left: ExpressionType;
@@ -63,37 +72,34 @@ declare module 'maap-inp-parser' {
     };
   };
 
-  export type ExpressionBlock = {
+  export type ExpressionBlock = Location & {
     type: 'expression_block';
     value: PureExpression;
   };
 
-  export type ExpressionType =
-    | CallExpression
-    | ExpressionBlock
-    | ExpressionMember;
+  export type ExpressionType = CallExpression | ExpressionBlock | Variable;
 
-  export type Assignment = {
+  export type Assignment = Location & {
     target: CallExpression | Identifier;
     type: 'assignment';
     value: Expression;
   };
 
-  export type IsExpression = {
-    target: CallExpression | Identifier;
+  export type IsExpression = Location & {
+    target: Variable;
     type: 'is_expression';
     value: Expression;
   };
 
-  export type AsExpression = {
-    target: CallExpression | Identifier;
+  export type AsExpression = Location & {
+    target: Variable;
     type: 'as_expression';
     value: Identifier;
   };
 
   export type Expression = IsExpression | PureExpression | ExpressionType;
 
-  export type Variable = CallExpression | ExpressionMember;
+  export type Variable = CallExpression | Literal | ParameterName | Identifier;
 
   export type Statement =
     | SensitivityStatement
@@ -108,71 +114,71 @@ declare module 'maap-inp-parser' {
     | TimerStatement
     | LookupStatement;
 
-  export type SensitivityStatement = {
+  export type SensitivityStatement = Location & {
     type: 'sensitivity';
     value: 'ON' | 'OFF';
   };
 
-  export type TitleStatement = {
+  export type TitleStatement = Location & {
     type: 'title';
-    value: string;
+    value?: string;
   };
 
-  export type FileStatement = {
+  export type FileStatement = Location & {
     fileType: 'PARAMETER FILE' | 'INCLUDE';
     type: 'file';
     value: string;
   };
 
-  export type BlockStatement = {
+  export type BlockStatement = Location & {
     blockType: 'PARAMETER CHANGE' | 'INITIATORS';
     type: 'block';
     value: SourceElement[];
   };
 
-  export type ConditionalBlockStatement = {
+  export type ConditionalBlockStatement = Location & {
     blockType: 'WHEN' | 'IF';
     test: Expression;
     type: 'conditional_block';
     value: SourceElement[];
   };
 
-  export type AliasStatement = {
+  export type AliasStatement = Location & {
     type: 'alias';
     value: AsExpression[];
   };
 
-  export type PlotFilStatement = {
+  export type PlotFilStatement = Location & {
     n: number;
     type: 'plotfil';
-    value: (CallExpression | ExpressionMember)[][];
+    value: Variable[][];
   };
 
-  export type UserEvtStatement = {
+  export type UserEvtStatement = Location & {
     type: 'user_evt';
     value: UserEvtElement[];
   };
 
   export type UserEvtElement = Parameter | ActionStatement | SourceElement;
 
-  export type ActionStatement = {
+  export type ActionStatement = Location & {
     index: number;
     type: 'action';
     value: UserEvtElement[];
   };
 
-  export type FunctionStatement = {
+  export type FunctionStatement = Location & {
     name: Identifier;
     type: 'function';
     value: Expression;
   };
 
-  export type TimerStatement = {
+  export type TimerStatement = Location & {
     type: 'set_timer';
     value: TimerLiteral;
   };
 
-  export type LookupStatement = {
+  export type LookupStatement = Location & {
     name: Variable;
     type: 'lookup_variable';
     value: string[];
@@ -183,7 +189,17 @@ declare module 'maap-inp-parser' {
     value: SourceElement[];
   };
 
-  export type SourceElement = Statement | Assignment | AsExpression | Expression;
+  export type SourceElement =
+    | Statement
+    | Assignment
+    | AsExpression
+    | IsExpression
+    | Expression
+    | CallExpression
+    | ExpressionBlock
+    | ParameterName
+    | Literal
+    | Identifier;
 
   export type MAAPInpParserOutput = {
     errors: PEG.parser.SyntaxError[];
@@ -194,6 +210,6 @@ declare module 'maap-inp-parser' {
   export type MAAPInpParser = {
     options: WrapperOptions;
     parse(input: string, options?: WrapperOptions): MAAPInpParserOutput;
-    toString(input: Program): string;
+    toString(input: any): string;
   };
 }
