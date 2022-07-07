@@ -836,8 +836,7 @@ function editNode (graph, stateCell) {
         'minimize, maximize, close', //top buttons
         function (btn, retObj) {
             if (btn === 'OK') {
-								var logicNodeList = graph.sidebar.LogicNodeList;
-								graph.sidebar.replaceNames(oldName, retObj.name, 'LogicTree', null, true);
+								graph.sidebar.replaceNames(oldName, retObj.name, 'LogicNode', null, true);
 								mergeFTData(sModel, retObj);
                 stateCell.value = retObj.name;
 								updateCell(graph, stateCell);
