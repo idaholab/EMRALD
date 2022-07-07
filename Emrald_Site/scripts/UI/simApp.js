@@ -40,32 +40,6 @@ function downloadClientTesterSource() {
 }
 
 //------------------
-/// <reference path="../../About.html" />
-/// <reference path="WindowFrame.js" />
-//opens logic tree
-function openFaultTree() {
-  var wnd = mxWindow.createFrameWindow(
-    'FTViewer10.html',
-    '',  //command buttons
-    'minimize, maximize, close', //top buttons
-    function (btn, dataObj) {
-      if (btn === 'close') {
-      }
-      return true;
-    },
-    null,
-    false, //ismodal
-    null,
-    null,
-    600, //width
-    400 //height
-  );
-  document.body.removeChild(wnd.div);
-  var contentPanel = document.getElementById("ContentPanel");
-  adjustWindowPos(contentPanel, wnd.div);
-  contentPanel.appendChild(wnd.div);
-}
-//------------------
 //a proxy function responding to menu.
 function saveProject() {
   simApp.mainApp.saveProject();
