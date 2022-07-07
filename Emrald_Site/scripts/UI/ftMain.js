@@ -330,8 +330,9 @@ function main(container, outline) {
 										}
 
 										graph.setSelectionCell(vertex);
-										if (cell.value.gateChildren.indexOf("gate_" + newID) < 0)
-												cell.value.gateChildren.add("gate_" + newID);
+										if (cell.children[0].value.gateChildren.indexOf("gate_" + newID) < 0) {
+												cell.children[0].value.gateChildren.push("gate_" + newID);
+                    }
 										var newLogicNode = {
 												LogicNode: {
 														id: newID,
