@@ -372,19 +372,29 @@ function main(container, outline) {
           // Scrollbars are on the div
           //state.text.node.style.overflow = 'hidden';
           //get the main TableShape panel and should be only one.
-          var el = state.text.node.getElementsByTagName('div');
+          var el = state.text.node.querySelectorAll('div :not(.drop-target)');
           if (el) {
             if (el.length > 1) el = el[1];
             else if (el.length > 0) el = el[0];
           }
           else el = null;
 
-          if (el != null) {
-            el.style.width = '200px';
-            el.style.height = '40px';
-            //el.style.border = '1px solid red';
-           
-            installDropHandler(el);
+          if (
+            el != null &&
+            !state.cell.parent.geometry
+          ) {
+            Array.from(el.getElementsByClassName('drop-target')).forEach(
+              (oldTarget) => oldTarget.parentNode.removeChild(oldTarget),
+            );
+            const dropTarget = document.createElement('div');
+            dropTarget.classList.add('drop-target');
+            dropTarget.style.height = `${state.cell.geometry.height}px`;
+            dropTarget.style.width = `${state.cell.geometry.width}px`;
+            dropTarget.style.position = 'absolute';
+            dropTarget.style.top = '0';
+            dropTarget.style.left = `-${state.cell.geometry.width / 3}px`;
+            el.appendChild(dropTarget);
+            installDropHandler(dropTarget);
           }
         }
       }
