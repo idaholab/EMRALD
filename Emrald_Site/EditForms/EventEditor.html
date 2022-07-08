@@ -159,7 +159,7 @@
                         </table>
                     </div>
                 </div>
-                <div id="DistributionPanel" ng-if="typeOption.value === 'etDistribution'" style="display:table-row;position:absolute;height:70%;width:96%;overflow-x:hidden;overflow-y:scroll;">
+                <div id="DistributionPanel" ng-if="typeOption.value === 'etDistribution'" style="display:table-row;position:absolute;height:70%;width:96%;overflow-x:hidden;">
                     <div style="display:table-row">
                         <span>Distribution type:</span>
                         <select name="distType" id="distTypeSelector" ng-model="distType" ng-options="type.name for type in distTypes" ng-change="handleDistSelection()"></select>
@@ -255,7 +255,7 @@
                         </div>
                     </div>
                 </div>
-                <div id="StateChangePanel" ng-if="typeOption.value === 'etStateCng'" style="display:table-row;position:absolute;height:70%;width:96%;overflow-x:hidden;overflow-y:scroll;">
+                <div id="StateChangePanel" ng-if="typeOption.value === 'etStateCng'" style="display:table-row;position:absolute;height:70%;width:96%;overflow-x:hidden;">
 
                     <form name="inState">
                         <label>
@@ -294,7 +294,7 @@
                         <option>-- Choose logic top --</option>
                     </select>
                 </div>
-                <div id="TimerPanel" ng-if="typeOption.value === 'etTimer'" style="display:table-row;position:absolute;height:70%;width:96%;overflow-x:hidden;overflow-y:scroll;">
+                <div id="TimerPanel" ng-if="typeOption.value === 'etTimer'" style="display:table-row;position:absolute;height:70%;width:96%;overflow-x:hidden;">
                     <div style="display: table-row">
                         <label style="display: table-cell; vertical-align: top; white-space: nowrap;">Time Span:</label>
                         <div style="display: table-cell" ng-if="!data.timer.useVariable">
@@ -343,7 +343,7 @@
                     <input type="checkbox" ng-model="fromSimStart" /> From sim start
                 </div>
 
-                <div id="FailProbabilityPanel" ng-if="typeOption.value === 'etFailRate'" style="display:table-row;position:absolute;height:70%;width:96%;overflow-x:hidden;overflow-y:scroll;">
+                <div id="FailProbabilityPanel" ng-if="typeOption.value === 'etFailRate'" style="display:table-row;position:absolute;height:70%;width:96%;overflow-x:hidden;">
                     <div style="display: table-row">
                         <label style="display: table-cell" for="useFailureRateTimeRateVariableCheckbox">Use Variable Lambda/Frequency? </label>
                         <input id="useFailureRateTimeRateVariableCheckbox" type="checkbox" ng-model="data.failureRate.lambda.useVariable" />
