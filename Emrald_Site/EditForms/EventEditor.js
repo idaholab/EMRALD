@@ -746,10 +746,9 @@ EEApp.controller("EEController", function ($scope) {
 
     $scope.$watch("name", function (newVal, oldVal) { if (newVal !== oldVal) somethingChanged(); });
     $scope.$watch("desc", function (newVal, oldVal) { if (newVal !== oldVal) somethingChanged(); });
-    $scope.$watch('typeOption', function (newV, oldV) { if (newV !== oldV) { somethingChanged(); updateName(); } });
+    $scope.$watch("typeOption", function (newV, oldV) { if (newV !== oldV) { somethingChanged(); updateName(); } });
     $scope.$watch("moveFromCurrent", function (newVal, oldVal) { if (newVal !== oldVal) somethingChanged(); });
     $scope.$watch("conditionCode", function (newVal, oldVal) { if (newVal !== oldVal) somethingChanged(); });
-    $scope.$watch("typeOption", function (newVal, oldVal) { if (newVal !== oldVal) somethingChanged(); });
     $scope.$watch("variable", function (newVal, oldVal) { if (newVal !== oldVal) somethingChanged(); });
     $scope.$watch("varNames", function (newVal, oldVal) { if (newVal !== oldVal) somethingChanged(); });
     $scope.$watch("isInState", function (newVal, oldVal) { if (newVal !== oldVal) somethingChanged(); });
