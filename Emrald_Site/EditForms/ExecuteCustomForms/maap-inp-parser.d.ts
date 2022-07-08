@@ -1,3 +1,7 @@
+/**
+ * Copied from https://github.com/nmde/maap-input-parser/blob/main/src/types.ts.
+ */
+
 declare module 'maap-inp-parser' {
   import type { LocationRange, ParserOptions } from 'peggy';
 
