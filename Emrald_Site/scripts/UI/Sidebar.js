@@ -4282,29 +4282,6 @@ if (typeof Navigation === 'undefined')
       simApp.mainApp.saveProject();
     }
 
-    Sidebar.prototype.persistentVariables = {
-      CurTime: {
-        Variable: {
-          name: 'CurTime',
-        },
-      },
-      ExeExitCode: {
-        Variable: {
-          name: 'ExeExitCode',
-        },
-      },
-      ExePath: {
-        Variable: {
-          name: 'ExePath',
-        }
-      },
-      RunIdx: {
-        Variable: {
-          name: 'RunIdx',
-        },
-      },
-    };
-
     return Sidebar;
   })(Object);
   Navigation.Sidebar = Sidebar;
