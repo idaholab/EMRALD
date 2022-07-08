@@ -6,7 +6,7 @@
     "actType": "atRunExtApp",
     "mainItem": false,
     "makeInputFileCode": "return FailProb.ToString();",
-    "exePath": "c:\\temp\\THmodel.exe",
+    "exePath": ".\\THmodel.exe",
     "processOutputFileCode": "List<String> retStates = new List<String>();\nreturn retStates;",
     "codeVariables": [
       "FailProb"
