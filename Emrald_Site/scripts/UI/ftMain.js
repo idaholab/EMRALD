@@ -686,6 +686,7 @@ function getDefaultGateID(graph) {
 }
 
 function addOverlays(graph, cell, isEditable) {
+  const isRoot = graph.tree.LogicNode.LogicNode.rootName === cell.value;
   var overlay = new mxCellOverlay(new mxImage('images/delete.png', 16, 16), 'delete');
   overlay.cursor = 'hand';
   overlay.offset = new mxPoint(-6, 4);//(-4, 8);
@@ -695,13 +696,18 @@ function addOverlays(graph, cell, isEditable) {
     deleteSubtree(graph, cell);
   }.bind(this));
 
-  graph.addCellOverlay(cell, overlay);
+  if (!isRoot) {
+    graph.addCellOverlay(cell, overlay);
+  }
 
 
   if (isEditable) {
     overlay = new mxCellOverlay(new mxImage('images/edit.png', 16, 16), 'Edit');
     overlay.cursor = 'hand';
     overlay.offset = new mxPoint(-26, 4);//(-4, 8);
+    if (isRoot) {
+      overlay.offset.x = -6;
+    }
     overlay.align = mxConstants.ALIGN_RIGHT;
     overlay.verticalAlign = mxConstants.ALIGN_BOTTOM;
     overlay.addListener(mxEvent.CLICK, function (sender, evt) {
