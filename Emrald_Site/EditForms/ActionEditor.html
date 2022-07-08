@@ -142,6 +142,14 @@
                             <tr>
                                 <th colspan="2">Variables used in code</th>
                             </tr>
+                            <tr>
+                                <td style="border: 1px solid #dddddd; text-align: left; padding: 0px;"><input id="varId_CurTime" type="checkbox" checked disabled /></td>
+                                <td style="border: 1px solid #dddddd; text-align: left; padding: 0px;"><label for="varId_CurTime" style="display:block">CurTime</label></td>
+                            </tr>
+                            <tr>
+                                <td style="border: 1px solid #dddddd; text-align: left; padding: 0px;"><input id="varId_RunIdx" type="checkbox" checked disabled /></td>
+                                <td style="border: 1px solid #dddddd; text-align: left; padding: 0px;"><label for="varId_RunIdx" style="display:block">RunIdx</label></td>
+                            </tr>
                             <tr ng-repeat="row in data.varMap">
                                 <td style="border: 1px solid #dddddd; text-align: left; padding: 0px;"><input id="{{'varId_' + row.value.Variable.name}}" type="checkbox" onchange="variableChecked(this);" ng-true-value=true ng-false-value=false ng-checked={{row.check}} value={{row.value}} /></td>
                                 <td style="border: 1px solid #dddddd; text-align: left; padding: 0px;"><label for="{{'varId_' + row.value.Variable.name}}" style="display:block">{{row.value.Variable.name}}</label></td>
@@ -239,6 +247,22 @@
                         <table id="tblVariables" style="text-align: left;" border="1" cellspacing="0">
                             <tr>
                                 <th colspan="2">Variables used in code</th>
+                            </tr>
+                            <tr>
+                                <td style="border: 1px solid #dddddd; text-align: left; padding: 0px;"><input id="varId_CurTime" type="checkbox" checked disabled /></td>
+                                <td style="border: 1px solid #dddddd; text-align: left; padding: 0px;"><label for="varId_CurTime" style="display:block">CurTime</label></td>
+                            </tr>
+                            <tr>
+                                <td style="border: 1px solid #dddddd; text-align: left; padding: 0px;"><input id="varId_RunIdx" type="checkbox" checked disabled /></td>
+                                <td style="border: 1px solid #dddddd; text-align: left; padding: 0px;"><label for="varId_RunIdx" style="display:block">RunIdx</label></td>
+                            </tr>
+                            <tr>
+                                <td style="border: 1px solid #dddddd; text-align: left; padding: 0px;"><input id="varId_ExePath" type="checkbox" checked disabled /></td>
+                                <td style="border: 1px solid #dddddd; text-align: left; padding: 0px;"><label for="varId_ExePath" style="display:block">ExePath</label></td>
+                            </tr>
+                            <tr>
+                                <td style="border: 1px solid #dddddd; text-align: left; padding: 0px;"><input id="varId_ExeExitCode" type="checkbox" checked disabled /></td>
+                                <td style="border: 1px solid #dddddd; text-align: left; padding: 0px;"><label for="varId_ExeExitCode" style="display:block">ExeExitCode</label></td>
                             </tr>
                             <tr ng-repeat="row in data.varMap">
                                 <td style="border: 1px solid #dddddd; text-align: left; padding: 0px;"><input id="{{'varId_' + row.value.Variable.name}}" type="checkbox" onchange="variableChecked(this);" ng-true-value=true ng-false-value=false ng-checked={{row.check}} value={{row.value}} /></td>
