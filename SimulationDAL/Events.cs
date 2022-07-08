@@ -1314,6 +1314,31 @@ namespace SimulationDAL
                                     SingleRandom.Instance)).Sample();
             distTimeRate = _dParams[0].timeRate;
             break;
+          case EnDistType.dtUniform:
+            sampled = (new ContinuousUniform((double)valuePs[0],
+                                    Globals.ConvertToNewTimeSpan(_dParams[1].timeRate, (double)valuePs[1], _dParams[0].timeRate),
+                                    SingleRandom.Instance)).Sample();
+            distTimeRate = _dParams[0].timeRate;
+            break;
+          case EnDistType.dtTriangular:
+            sampled = (new Triangular(Globals.ConvertToNewTimeSpan(_dParams[2].timeRate, (double)valuePs[2], _dParams[0].timeRate), //min
+                                    Globals.ConvertToNewTimeSpan(_dParams[3].timeRate, (double)valuePs[3], _dParams[0].timeRate),   //max
+                                    (double)valuePs[2], //mode or peak
+                                    SingleRandom.Instance)).Sample();
+            distTimeRate = _dParams[0].timeRate;
+            break;
+          case EnDistType.dtGama:
+            sampled = (new Gamma((double)valuePs[0],
+                                    Globals.ConvertToNewTimeSpan(_dParams[1].timeRate, (double)valuePs[1], _dParams[0].timeRate), //shape
+                                    SingleRandom.Instance)).Sample(); //rate
+            distTimeRate = _dParams[0].timeRate;
+            break;
+          case EnDistType.dtBeta:
+            sampled = (new Beta((double)valuePs[0],//alpha
+                                    Globals.ConvertToNewTimeSpan(_dParams[1].timeRate, (double)valuePs[1], _dParams[0].timeRate), //beta
+                                    SingleRandom.Instance)).Sample();
+            distTimeRate = _dParams[0].timeRate;
+            break;
           default:
             throw new Exception("Distribution type not implemented for " + this._distType.ToString());
             break;
@@ -1391,6 +1416,7 @@ namespace SimulationDAL
     }
   }
 
+  //Depricated use Dist Event
   public class NormalDistEvent : TimeBasedEvent //etNormalDist  
   {
     protected double _Mean = 0.0;
@@ -1510,6 +1536,7 @@ namespace SimulationDAL
     }
   }
 
+  //Depricated use Dist Event
   public class LogNormalDistEvent : NormalDistEvent //etNormalDist  
   {
     protected LogNormal mathFuncs = null;
@@ -1561,6 +1588,7 @@ namespace SimulationDAL
     }
   }
 
+  //Depricated use Dist Event
   public class WeibullDistEvent : TimeBasedEvent  //etWeibullDist  
   {
     protected double _Shape = 0.0;
@@ -1632,6 +1660,7 @@ namespace SimulationDAL
       return Globals.NumberToTimeSpan(sampled, this._TimeRate);
     }
   }
+  //Depricated use Dist Event
   public class ExponentialDistEvent : TimeBasedEvent
   {
     protected VariableList varList = null;
