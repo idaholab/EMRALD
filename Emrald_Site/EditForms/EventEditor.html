@@ -117,12 +117,12 @@
                         </tr>
                     </table>
                 </div>
-                <div id="3DSimPanel" ng-if="typeOption.value === 'et3dSimEv'" style="display:table-row;position:absolute;height:80%;width:96%;overflow-x:hidden;">
+                <div id="3DSimPanel" ng-if="typeOption.value === 'et3dSimEv'" style="display:table-row;position:absolute;width:96%;overflow-x:hidden;">
                     <label style="display:table-cell;vertical-align:middle; white-space:nowrap;">External Sim Variable:</label>
                     <select name="Variables" ng-model="variable" ng-options="v.name for v in variables" style="width: 130px;">
                         <option>-- Choose Variable --</option>
                     </select><br>
-                    <div style="display: flex; flex-direction: row; align-items: stretch; height: 95%; width: 94vw;">
+                    <div style="display: flex; flex-direction: row; align-items: stretch; height: calc(100vh - 10em); width: 94vw;">
                         <div style="display: flex; flex-direction: column; flex: 1">
                             <label style="display:table-cell;vertical-align:middle; white-space:nowrap;">Evaluate Code (c#)</label>
                             <br>

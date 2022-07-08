@@ -51,9 +51,9 @@
         }
     </style>
 </head>
-<body ng-app="actionModule" class="fill-height">
-    <div ng-controller="actionController" id="actionControllerPanel" class="fill-height">
-        <form novalidate class="fill-height">
+<body ng-app="actionModule">
+    <div ng-controller="actionController" id="actionControllerPanel">
+        <form novalidate>
             <div style="display: table; border-collapse: collapse;">
                 <div style="display:table-row">
                     <span style="display:table-cell;">Type:</span>
@@ -81,7 +81,7 @@
                 </div>
             </div>
             <hr />
-            <div id="detailTable" class="fill-height">
+            <div id="detailTable">
                 <!-- Begin Transition Type -->
                 <div id="TransitionPanel" ng-if="data.action.value=='atTransition'">
                     <div style="display: table;">
@@ -136,7 +136,7 @@
                             <span style="display:table-cell; padding: 1em 0 1em 0">New Value Code (c#) - Must return same type as the specified variable!</span>
                         </div>
                     </div>
-                    <div style="display: flex; flex-direction: row; align-items: stretch; height: calc(100vh - 12em); width: 98vw;">
+                    <div style="display: flex; flex-direction: row; align-items: stretch; height: calc(100vh - 12em); width: 97vw;">
                         <div code-editor class="editor" code="data.cvCode"></div>
                         <table id="tblVariables" style="text-align: left;" border="1" cellspacing="0">
                             <tr>
@@ -228,7 +228,7 @@
                     <input type="radio" name="tabControl" value="code" ng-model="data.raType"> Use Code
                     <input type="radio" name="tabControl" value="template" ng-model="data.raType"> Use Custom Application
                     <!-- Code Tab -->
-                    <div style="display: flex; flex-direction: row; align-items: stretch; height: calc(100vh - 8em); width: 94vw;" ng-if="data.raType == 'code'">
+                    <div style="display: flex; flex-direction: row; align-items: stretch; height: calc(100vh - 9em); width: 94vw;" ng-if="data.raType == 'code'">
                         <div style="display: flex; flex-direction: column; flex: 1">
                             <p style="margin-bottom:0">Preprocess Code(c#)</p>
                             <div style="display: flex; flex-direction:row; flex: 1">
@@ -271,7 +271,7 @@
                         </table>
                     </div>
                     <!-- Template Tab -->
-                    <div ng-if="data.raType == 'template'" class="fill-height">
+                    <div ng-if="data.raType == 'template'" style="height: calc(100vh - 9em);">
                         <select ng-options="opt as opt.name for opt in raTemplates" ng-model="data.raTemplate"></select>
                         <iframe name="customForm" src="{{data.raTemplate.path}}" style="display: block; height: 100%; width: 100%; border: none;"></iframe>
                     </div>
