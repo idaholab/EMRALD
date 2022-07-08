@@ -31,7 +31,6 @@
  * @property {(index: number) => void} checkName - Checks if the name of the object of the given type at the given index conflicts.
  * @property {() => void} apply - Applies the search/replace.
  * @property {() => void} checkAllNames - Checks all names for conflicts.
- * @property {() => Entry[]} getUnlockedEntries - Gets only unlocked entries.
  * @property {(entry: Entry) => void} checkEntryAction - Checks if the conflict message should be displayed for the given entry.
  * @property {(index: number) => void} nameChanged - Handles manually changing names.
  * @property {(state: boolean) => void} toggleLocks - Toggles all locks on/off.
@@ -166,10 +165,6 @@ const importEditorController = ($scope) => {
   $scope.find = '';
   $scope.replace = '';
 
-  $scope.getUnlockedEntries = () => $scope.entries.filter(
-    (entry) => !entry.isLocked,
-  );
-
   $scope.checkName = (index) => {
     const entry = $scope.entries[index];
     if (entry) {
@@ -184,16 +179,20 @@ const importEditorController = ($scope) => {
   };
 
   $scope.apply = () => {
-    const entries = $scope.getUnlockedEntries();
-    entries.forEach((entry, i) => {
-      const original = entries[i].data.name;
-      entries[i].data.name = entry.data.name.replace(
-        $scope.find,
-        $scope.replace,
-      );
-      $scope.checkName(i);
-      if (original !== entries[i].data.name && !entries[i].isConflicting) {
-        entries[i].isLocked = true;
+    $scope.entries.forEach((entry, i) => {
+      if (!entry.isLocked) {
+        const original = $scope.entries[i].data.name;
+        $scope.entries[i].data.name = entry.data.name.replace(
+          $scope.find,
+          $scope.replace,
+        );
+        $scope.checkName(i);
+        if (
+          original !== $scope.entries[i].data.name
+          && !$scope.entries[i].isConflicting
+        ) {
+          $scope.entries[i].isLocked = true;
+        }
       }
     });
     $scope.find = '';
@@ -212,9 +211,10 @@ const importEditorController = ($scope) => {
   };
 
   $scope.toggleAction = (state) => {
-    const entries = $scope.getUnlockedEntries();
-    entries.forEach((entry, i) => {
-      entries[i].action = state;
+    $scope.entries.forEach((entry, i) => {
+      if (!entry.isLocked) {
+        $scope.entries[i].action = state;
+      }
     });
   };
 };

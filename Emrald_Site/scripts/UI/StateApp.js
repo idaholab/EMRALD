@@ -1095,28 +1095,28 @@ var StateApp = (function (global, _super) {
             }
           }
         }
-      }
 
-      //remove the action in the event action list from the View's model.
-      if (curState.iEvents) {
-        for (var i = 0; i < curState.iEvents.length; i++) {
-          if (curState.iEvents[i].name == eventName) {
-            for (var j = 0; j < curState.iEvents[i].eActions.length; j++) {
-              dataObj = curState.iEvents[i].eActions[j];
-              curState.iEvents[i].eActions.splice(j, 1);
-              changed = true;
-              curState.ui_el.remove();
+        //remove the action in the event action list from the View's model.
+        if (curState.iEvents) {
+          for (var i = 0; i < curState.iEvents.length; i++) {
+            if (curState.iEvents[i].name == eventName) {
+              for (var j = 0; j < curState.iEvents[i].eActions.length; j++) {
+                dataObj = curState.iEvents[i].eActions[j];
+                curState.iEvents[i].eActions.splice(j, 1);
+                changed = true;
+                curState.ui_el.remove();
+              }
             }
           }
-        }
-        //remove the event from the View's model.
-        for (var i = 0; i < curState.iEvents.length; i++) {
-          if (curState.iEvents[i].name == eventName) {
-            dataObj = curState.iEvents[i];
-            curState.iEvents.splice(i, 1);
-            changed = true;
-            curState.ui_el.remove();
-            break;
+          //remove the event from the View's model.
+          for (var i = 0; i < curState.iEvents.length; i++) {
+            if (curState.iEvents[i].name == eventName) {
+              dataObj = curState.iEvents[i];
+              curState.iEvents.splice(i, 1);
+              changed = true;
+              curState.ui_el.remove();
+              break;
+            }
           }
         }
       }
@@ -1355,6 +1355,7 @@ var StateApp = (function (global, _super) {
       sb.cleanDataModel(diagram);
       diagram.sidebar = sb;
       this.graph.view.clear();
+      this.graph.model.clear();
       OnLoad(diagram);
 
     }
