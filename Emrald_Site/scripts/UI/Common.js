@@ -398,37 +398,6 @@ if (typeof mxDragSource !== 'undefined') {
   }
 }
 //---------------------------------------------------------------------
-// load a file from server.
-function getServerFile(url, callbackFn) {
-  if (typeof require !== 'undefined') {
-    var fs = require('fs');
-    if (fs) {
-      // return;
-      fs.readFile(url, 'utf-8', function (error, contents) {
-        if (contents) {
-          callbackFn(contents);
-        }
-      });
-    }
-  }
-  else {
-    var xmlhttp;
-    if (window.XMLHttpRequest) { // code for IE7+, Firefox, Chrome, Opera, Safari
-      xmlhttp = new XMLHttpRequest();
-    }
-    else { // code for IE6, IE5
-      xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
-    }
-    xmlhttp.onreadystatechange = function () {
-      if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
-        callbackFn(xmlhttp.responseText);
-      }
-    }
-    xmlhttp.open("GET", document.baseURI + url, true);
-    xmlhttp.send();
-  }
-}
-//---------------------------------------------------------------------
 function deepClone(item) {
   if (!item) { return item; } // null, undefined values check
 
