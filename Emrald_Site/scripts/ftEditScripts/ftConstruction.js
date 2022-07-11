@@ -156,10 +156,10 @@ function AddChildGate(graph, cell, ftNode) {
 			var name;
 			if (cell.value) {
 					name = cell.value.name;
-					for (var i = 0; i < window.dataObj.LogicNodeList.length; i++) {
-							if (window.dataObj.LogicNodeList[i].LogicNode) {
-									if (window.dataObj.LogicNodeList[i].LogicNode.name == name) {
-											var gateChildren = window.dataObj.LogicNodeList[i].LogicNode.gateChildren;
+					for (var i = 0; i < graph.sidebar.LogicNodeList.length; i++) {
+							if (graph.sidebar.LogicNodeList[i].LogicNode) {
+									if (graph.sidebar.LogicNodeList[i].LogicNode.name == name) {
+											var gateChildren = graph.sidebar.LogicNodeList[i].LogicNode.gateChildren;
 											var alreadyAdded = false;
 											for (var k = 0; k < gateChildren.length; k++) {
 													if (gateChildren[k] == ftNode.name) {
@@ -167,7 +167,7 @@ function AddChildGate(graph, cell, ftNode) {
 													}
 											}
 											if (!alreadyAdded) {
-													window.dataObj.LogicNodeList[i].LogicNode.gateChildren.push(ftNode.name);
+                        graph.sidebar.LogicNodeList[i].LogicNode.gateChildren.push(ftNode.name);
 											}
 
 									}
@@ -289,15 +289,15 @@ function deleteSubtree(graph, cell)
 							else if (source.id) {
 									sName = source.id;
 							}
-              for (let i = 0; i < window.dataObj.LogicNodeList.length; i += 1) {
-                if (window.dataObj.LogicNodeList[i].LogicNode) {
-                  if (window.dataObj.LogicNodeList[i].LogicNode.name === sName) {
+              for (let i = 0; i < graph.sidebar.LogicNodeList.length; i += 1) {
+                if (graph.sidebar.LogicNodeList[i].LogicNode) {
+                  if (graph.sidebar.LogicNodeList[i].LogicNode.name === sName) {
                     const compChildren =
-                      window.dataObj.LogicNodeList[i].LogicNode.compChildren;
+                    graph.sidebar.LogicNodeList[i].LogicNode.compChildren;
                     if (compChildren) {
                       for (let k = 0; k < compChildren.length; k += 1) {
                         if (compChildren[k] === name) {
-                          window.dataObj.LogicNodeList[
+                          graph.sidebar.LogicNodeList[
                             i
                           ].LogicNode.compChildren.splice(k, 1);
                           break;
@@ -309,22 +309,22 @@ function deleteSubtree(graph, cell)
               }
 					}
 			} else {
-        for (let i = 0; i < window.dataObj.LogicNodeList.length; i += 1) {
-          if (window.dataObj.LogicNodeList[i].LogicNode) {
+        for (let i = 0; i < graph.sidebar.LogicNodeList.length; i += 1) {
+          if (graph.sidebar.LogicNodeList[i].LogicNode) {
             const gateChildren =
-              window.dataObj.LogicNodeList[i].LogicNode.gateChildren;
+            graph.sidebar.LogicNodeList[i].LogicNode.gateChildren;
             if (gateChildren) {
               for (let k = 0; k < gateChildren.length; k += 1) {
                 if (gateChildren[k] === name) {
-                  window.dataObj.LogicNodeList[i].LogicNode.gateChildren.splice(
+                  graph.sidebar.LogicNodeList[i].LogicNode.gateChildren.splice(
                     k,
                     1,
                   );
                 }
               }
             }
-            if (window.dataObj.LogicNodeList[i].LogicNode.name === name) {
-              window.dataObj.LogicNodeList.splice(i, 1);
+            if (graph.sidebar.LogicNodeList[i].LogicNode.name === name) {
+              graph.sidebar.LogicNodeList.splice(i, 1);
             }
           }
         }
@@ -333,7 +333,3 @@ function deleteSubtree(graph, cell)
   }));
   graph.removeCells(cells);
 };
-
-
-
-

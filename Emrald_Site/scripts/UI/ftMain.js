@@ -274,14 +274,14 @@ function main(container, outline) {
 										var alreadyExist = false;
 										var compChildren;
 										var index = -1;
-										for (var i = 0; i < window.dataObj.LogicNodeList.length; i++) {
-												if (window.dataObj.LogicNodeList[i].LogicNode.name == cell.value) {
-														compChildren = window.dataObj.LogicNodeList[i].LogicNode.compChildren;
+										for (var i = 0; i < graph.sidebar.LogicNodeList.length; i++) {
+												if (graph.sidebar.LogicNodeList[i].LogicNode.name == cell.value) {
+														compChildren = graph.sidebar.LogicNodeList[i].LogicNode.compChildren;
 														index = i;
 												}
 										}
 										if (!compChildren) {
-												window.dataObj.LogicNodeList[index].LogicNode.compChildren = [];
+                      graph.sidebar.LogicNodeList[index].LogicNode.compChildren = [];
 										}
 										for (var i = 0; i < compChildren.length; i++) {
 												if (compChildren[i] == newDiagram.name) {
@@ -290,7 +290,7 @@ function main(container, outline) {
 										}
 										if (!alreadyExist) {
 												AddChildComp(graph, cell, newDiagram);
-												window.dataObj.LogicNodeList[index].LogicNode.compChildren.push(newDiagram.name);
+												graph.sidebar.LogicNodeList[index].LogicNode.compChildren.push(newDiagram.name);
 										}
 										else {
 												alert(newDiagram.name + " is already added to that cell");
@@ -344,7 +344,7 @@ function main(container, outline) {
 														gateChildren: []
 												}
 										};
-										window.dataObj.LogicNodeList.push(newLogicNode);
+										graph.sidebar.LogicNodeList.push(newLogicNode);
 										graph.zoomOut();
 										graph.zoomActual();
 										graph.zoomOut();
@@ -475,12 +475,6 @@ function main(container, outline) {
 
 			var handleTree = function (tree) {
 			graph.tree = tree;
-      window.dataObj.LogicNodeList = [];
-      tree.sidebar.LogicNodeList.forEach((logicNode) => {
-        window.dataObj.LogicNodeList.push({
-          ...logicNode,
-        });
-      });
       graph.sidebar = tree.sidebar;
       graph.DiagramList = tree.DiagramList;
       BuildTree(graph, parent, tree);
@@ -676,7 +670,7 @@ var createPopupMenu = function (graph, menu, cell, evt) {
 
 function getDefaultGateID(graph) {
 		var maxID = 0;
-		var logicNodeList = window.dataObj.LogicNodeList;
+		var logicNodeList = graph.sidebar.LogicNodeList;
 		for (var i = 0; i < logicNodeList.length; i++) {
 				if (logicNodeList[i].LogicNode.id > maxID) {
 						maxID = logicNodeList[i].LogicNode.id;
@@ -829,7 +823,7 @@ function editNode (graph, stateCell) {
         'minimize, maximize, close', //top buttons
         function (btn, retObj) {
             if (btn === 'OK') {
-								graph.sidebar.replaceNames(oldName, retObj.name, 'LogicNode', window.dataObj, true);
+								graph.sidebar.replaceNames(oldName, retObj.name, 'LogicNode', null, true);
 								mergeFTData(sModel, retObj);
                 stateCell.value = retObj.name;
 								updateCell(graph, stateCell);
@@ -871,9 +865,9 @@ function addNode(graph, stateCell) {
 										var alreadyExist = false;
 										var compChildren;
 										var index = -1;
-										for (var i = 0; i < window.dataObj.LogicNodeList.length; i++) {
-												if (window.dataObj.LogicNodeList[i].LogicNode.name == cell.value) {
-														compChildren = window.dataObj.LogicNodeList[i].LogicNode.compChildren;
+										for (var i = 0; i < graph.sidebar.LogicNodeList.length; i++) {
+												if (graph.sidebar.LogicNodeList[i].LogicNode.name == cell.value) {
+														compChildren = graph.sidebar.LogicNodeList[i].LogicNode.compChildren;
 														index = i;
 												}
 										}
@@ -884,7 +878,7 @@ function addNode(graph, stateCell) {
 										}
 										if (!alreadyExist) {
 												AddChildComp(graph, cell, retObj.newDiagram);
-												window.dataObj.LogicNodeList[index].LogicNode.compChildren.push(retObj.newDiagram.name);
+												graph.sidebar.LogicNodeList[index].LogicNode.compChildren.push(retObj.newDiagram.name);
 										}
 										else {
 												alert(retObj.newDiagram.name + " is already added to that cell");
@@ -897,8 +891,8 @@ function addNode(graph, stateCell) {
 										var state = graph.getView().getState(stateCell);
 										var cell = state.cell;
 										var newID = getDefaultGateID(graph);
-										for (var i = 0; i < window.dataObj.LogicNodeList.length; i++) {
-												if (window.dataObj.LogicNodeList[i].LogicNode.name == retObj.newName) {
+										for (var i = 0; i < graph.sidebar.LogicNodeList.length; i++) {
+												if (graph.sidebar.LogicNodeList[i].LogicNode.name == retObj.newName) {
 														alreadyExist = true;
 												}
 										}
@@ -914,10 +908,10 @@ function addNode(graph, stateCell) {
 												}
 
 												graph.setSelectionCell(vertex);
-												for (var i = 0; i < window.dataObj.LogicNodeList.length; i++) {
-														if (window.dataObj.LogicNodeList[i].LogicNode.name == cell.value) {
-																if (window.dataObj.LogicNodeList[i].LogicNode.gateChildren.indexOf(retObj.newName) < 0) {
-																		window.dataObj.LogicNodeList[i].LogicNode.gateChildren.push(retObj.newName);
+												for (var i = 0; i < graph.sidebar.LogicNodeList.length; i++) {
+														if (graph.sidebar.LogicNodeList[i].LogicNode.name == cell.value) {
+																if (graph.sidebar.LogicNodeList[i].LogicNode.gateChildren.indexOf(retObj.newName) < 0) {
+                                  graph.sidebar.LogicNodeList[i].LogicNode.gateChildren.push(retObj.newName);
                                 }
 														}
 												}
@@ -933,7 +927,7 @@ function addNode(graph, stateCell) {
 																"gateChildren": []
 														}
 												};
-												window.dataObj.LogicNodeList.push(newLogicNode);
+												graph.sidebar.LogicNodeList.push(newLogicNode);
 												graph.zoomActual();
 												graph.zoomOut();
 
@@ -980,14 +974,14 @@ function addBE(graph, cell) {
 								var compChildren;
 								var newDiagram = retObj.element;
 								var index = -1;
-								for (var i = 0; i < window.dataObj.LogicNodeList.length; i++) {
-										if (window.dataObj.LogicNodeList[i].LogicNode.name == cell.value) {
-												compChildren = window.dataObj.LogicNodeList[i].LogicNode.compChildren;
+								for (var i = 0; i < graph.sidebar.LogicNodeList.length; i++) {
+										if (graph.sidebar.LogicNodeList[i].LogicNode.name == cell.value) {
+												compChildren = graph.sidebar.LogicNodeList[i].LogicNode.compChildren;
 												index = i;
 										}
 								}
 								if (!compChildren) {
-										window.dataObj.LogicNodeList[index].LogicNode.compChildren = [];
+                  graph.sidebar.LogicNodeList[index].LogicNode.compChildren = [];
 								}
 								for (var i = 0; i < compChildren.length; i++) {
 										if (compChildren[i] == newDiagram.name) {
@@ -996,7 +990,7 @@ function addBE(graph, cell) {
 								}
 								if (!alreadyExist) {
 										AddChildComp(graph, cell, newDiagram);
-										window.dataObj.LogicNodeList[index].LogicNode.compChildren.push(newDiagram.name);
+										graph.sidebar.LogicNodeList[index].LogicNode.compChildren.push(newDiagram.name);
 								}
 								else {
 										alert(newDiagram.name + " is already added to that cell");

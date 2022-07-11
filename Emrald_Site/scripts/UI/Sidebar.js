@@ -2071,7 +2071,7 @@ if (typeof Navigation === 'undefined')
           'minimize, maximize, close', //top buttons
           function (btn, retObj) {
             if (btn === 'OK') {
-              simApp.allDataModel.LogicNodeList = deepClone(retObj.LogicNodeList);
+              // TODO: Only save fault tree changes when the OK button is clicked.
             }
             return true;
           }.bind(this),
