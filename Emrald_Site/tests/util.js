@@ -16,27 +16,19 @@ function readTestData(filename, json = true) {
     f += '.json';
   }
   return new Promise((resolve, reject) => {
-    const request = new XMLHttpRequest();
-    request.open('GET', `base/tests/test-data/${f}`, true);
-    request.onload = () => {
-      if (this.status >= 200 && this.status < 400) {
+    fetch(`tests/test-data/${f}`)
+      .then((response) => response.text())
+      .then((value) => {
         if (json) {
           try {
-            resolve(JSON.parse(this.response));
+            resolve(JSON.parse(value));
           } catch (err) {
             reject(err);
           }
         } else {
-          resolve(this.response);
+          resolve(value);
         }
-      } else {
-        reject(this.status);
-      }
-    };
-    request.onerror = () => {
-      reject('Request error!');
-    };
-    request.send();
+      });
   });
 }
 
