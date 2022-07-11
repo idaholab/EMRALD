@@ -401,19 +401,17 @@ function OnLoad(dataObj) {
 
         scope.variables = eventData.tempVariableList;
         PopulateAllowedVariablesArrays();
-        scope.varNames = eventData.varNames;
-        if (scope.varNames) {
-            scope.varMap = eventData.tempVariableList.map(function (value, index) {
-                var checkValue = false;
-                if (scope.varNames.indexOf(value.name) > -1) {
-                    checkValue = true;
-                }
-                return {
-                    value: value,
-                    check: checkValue
-                }
-            });
-        }
+        scope.varNames = eventData.varNames || [];
+        scope.varMap = eventData.tempVariableList.map(function (value, index) {
+            var checkValue = false;
+            if (scope.varNames.indexOf(value.name) > -1) {
+                checkValue = true;
+            }
+            return {
+                value: value,
+                check: checkValue
+            }
+        });
 
         scope.logicTops = eventData.tempLogicTopList;
 

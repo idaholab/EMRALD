@@ -293,7 +293,7 @@ if (typeof Navigation === 'undefined')
                       this.editActionProperties(dataObj);
                       break;
                     case "Events":
-                      var eventObj = { id: -1, name: "", desc: "", mainItem: true, evType: "etVarCode", varNames: [], Code: "return 1.0;", sim3dID: 1 };
+                      var eventObj = { id: -1, name: "", desc: "", mainItem: true, evType: "etVarCode", };
                       this.editEventProperties(eventObj);
                       break;
                     case "Diagrams":
