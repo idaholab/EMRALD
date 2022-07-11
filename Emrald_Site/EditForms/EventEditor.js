@@ -1,4 +1,5 @@
 ﻿// Copyright 2021 Battelle Energy Alliance
+// @ts-check
 
 function setAsNewChecked() {
     var scope = angular.element(document.querySelector('#EEControllerPanel')).scope();
@@ -160,152 +161,6 @@ function HighLightTR(el, backColor, textColor) {
     document.getElementById("btnRemoveTransition").disabled = false;
 }
 
-//switch between detail panels.
-function handleSelection() {
-
-    var scope = angular.element(document.getElementById("EEControllerPanel")).scope();
-    var typeOption = document.getElementById("typeOptionSelector");
-    var varCondition = document.getElementById("VarConditionPanel");
-    var sim3DPanel = document.getElementById("3DSimPanel");
-    var stateChange = document.getElementById("StateChangePanel");
-    var componentLogic = document.getElementById("ComponentLogicPanel");
-    var timerPanel = document.getElementById("TimerPanel");
-    var failProbPanel = document.getElementById("FailProbabilityPanel");
-    var distPanel = document.getElementById("DistributionPanel");
-    var normDistPanel = document.getElementById("NormDistributionPanel");
-    var expDistPanel = document.getElementById("ExpDistributionPanel");
-    var weibullDistPanel = document.getElementById("WeibullDistributionPanel");
-    varCondition.style.visibility = "collapse";
-    sim3DPanel.style.visibility = "collapse";
-    stateChange.style.visibility = "collapse";
-    componentLogic.style.visibility = "collapse";
-    timerPanel.style.visibility = "collapse";
-    failProbPanel.style.visibility = "collapse";
-    normDistPanel.style.visibility = "collapse";
-    expDistPanel.style.visibility = "collapse";
-    weibullDistPanel.style.visibility = "collapse";
-    distPanel.style.visibility = "collapse";
-
-    switch (typeOption.selectedIndex) {
-        case 0:
-            varCondition.style.visibility = "visible";
-            break;
-        case 1:
-            stateChange.style.visibility = "visible";
-            break;
-        case 2:
-            componentLogic.style.visibility = "visible";
-            break;
-        case 3:
-            timerPanel.style.visibility = "visible";
-            break;
-        case 4:
-            failProbPanel.style.visibility = "visible";
-            break;
-        case 5:
-            sim3DPanel.style.visibility = "visible";
-            break;
-        case 6:
-            distPanel.style.visibility = "visible";
-            handleDistSelection();
-            break;
-    }
-}
-
-// Handle distribution type selection
-function handleDistSelection() {
-    var scope = angular.element(document.getElementById("EEControllerPanel")).scope();
-    var typeOption = document.getElementById("distTypeSelector");
-    var normDistPanel = document.getElementById("NormDistributionPanel");
-    var expDistPanel = document.getElementById("ExpDistributionPanel");
-    var wbDistPanel = document.getElementById("WeibullDistributionPanel");
-    normDistPanel.style.visibility = "collapse";
-    expDistPanel.style.visibility = "collapse";
-    wbDistPanel.style.visibility = "collapse";
-
-    switch (typeOption.selectedIndex) {
-        case 0:
-        case 3:
-            normDistPanel.style.visibility = "visible";
-            if (scope.distParameters.length === 0 || scope.distParameters[0].name !== "Mean") {
-                scope.distParameters = [
-                    {
-                        name: "Mean",
-                        value: 24,
-                        timeRate: "trHours",
-                        useVariable: false,
-                    }, {
-                        name: "Standard Deviation",
-                        value: 1,
-                        timeRate: "trHours",
-                        useVariable: false,
-                    }, {
-                        name: "Minimum",
-                        value: 0,
-                        timeRate: "trHours",
-                        useVariable: false,
-                    }, {
-                        name: "Maximum",
-                        value: 1000,
-                        timeRate: "trYears",
-                        useVariable: false,
-                    },
-                ];
-            }
-            break;
-        case 1:
-            expDistPanel.style.visibility = "visible";
-            if (scope.distParameters.length === 0 || scope.distParameters[0].name !== "Rate") {
-                scope.distParameters = [
-                    {
-                        name: "Rate",
-                        value: 0,
-                        timeRate: "trHours",
-                        useVariable: false,
-                    }, {
-                        name: "Minimum",
-                        value: 0,
-                        timeRate: "trHours",
-                        useVariable: false,
-                    }, {
-                        name: "Maximum",
-                        value: 1000,
-                        timeRate: "trYears",
-                        useVariable: false,
-                    },
-                ];
-            }
-            break;
-        case 2:
-            wbDistPanel.style.visibility = "visible";
-            if (scope.distParameters.length === 0 || scope.distParameters[0].name !== "Shape") {
-                scope.distParameters = [
-                    {
-                        name: "Shape",
-                        value: 1,
-                        useVariable: false,
-                    }, {
-                        name: "Scale",
-                        value: 1,
-                        timeRate: 'trHours',
-                        useVariable: false,
-                    }, {
-                        name: "Minimum",
-                        value: 0,
-                        timeRate: "trHours",
-                        useVariable: false,
-                    }, {
-                        name: "Maximum",
-                        value: 1000,
-                        timeRate: "trYears",
-                        useVariable: false,
-                    },
-                ];
-            }
-            break;
-    }
-}
-
 function moveFromCurrentHandler(el) {
     var scope = angular.element(document.querySelector('#movePanel')).scope();
     if (el) {
@@ -334,6 +189,37 @@ function isNumeric(stringOrNumber) {
   return isNaN(stringOrNumber) ? false : (parseFloat(stringOrNumber) ? true : (parseFloat(stringOrNumber) === 0 ? true : false))
 }
 
+/**
+ * Installs the drag/drop handler on the states table.
+ */
+function installDragHandler() {
+    const tblStates = document.getElementById('tblStates');
+    if (tblStates) {
+      tblStates.ondragover = (evt) => {
+        if (evt.dataTransfer.types.indexOf('states') >= 0) {
+          //call preventDefault() to allow drop.
+          evt.preventDefault();
+        }
+      };
+
+      tblStates.ondrop = (evt) => {
+        evt.preventDefault();
+        if (evt.dataTransfer.types.indexOf('states') >= 0) {
+          var state = JSON.parse(evt.dataTransfer.getData('states'));
+          if (this.states.indexOf(state.name) < 0) {
+            this.$apply(
+              function () {
+                this.states.push(state.name);
+              }.bind(this),
+            );
+            somethingChanged();
+          } else
+            alert("The state '" + state.name + "' already exists in the list.");
+        }
+      };
+    }
+}
+
 //Holding the data model for the form.
 var eventData = null;
 //When the form first created, it calls this function to pass along the dataObj
@@ -345,28 +231,7 @@ function OnLoad(dataObj) {
     eventData = dataObj;
     var scope = angular.element(document.querySelector("#EEControllerPanel")).scope();
 
-    var tblStates = document.getElementById("tblStates");
-
-    tblStates.ondragover = function (evt) {
-        if (evt.dataTransfer.types.indexOf('states') >= 0) {
-            //call preventDefault() to allow drop.
-            evt.preventDefault();
-        }
-    }.bind(scope);
-
-    tblStates.ondrop = function (evt) {
-        evt.preventDefault();
-        if (evt.dataTransfer.types.indexOf('states') >= 0) {
-            var state = JSON.parse(evt.dataTransfer.getData('states'));
-            if (this.states.indexOf(state.name) < 0) {
-                this.$apply(function () {
-                    this.states.push(state.name);
-                }.bind(this));
-                somethingChanged();
-            }
-            else alert("The state '" + state.name + "' already exists in the list.");
-        }
-    }.bind(scope);
+    installDragHandler();
 
     if (eventData.moveFromCurrent == true || eventData.moveFromCurrent == false) {
         var moveFromCurrent = document.getElementById("movePanel");
@@ -490,8 +355,8 @@ function OnLoad(dataObj) {
                     break;
             }
         }
+        scope.handleSelection();
     });
-    handleSelection();
 
 }
 
@@ -693,7 +558,7 @@ EEApp.controller("EEController", function ($scope) {
     //var Condition
     $scope.conditionCode = "";
     $scope.var3DCode = "";
-    $scope.varMap = new Map();
+    $scope.varMap = [];
     $scope.varNames = [];
 
     //3D Sim
@@ -741,12 +606,123 @@ EEApp.controller("EEController", function ($scope) {
     $scope.wdScale = 0.0;
     $scope.saveAsNew = false;
 
+    /**
+     * Handles switching between distribution type panels.
+     */
+    $scope.handleDistSelection = () => {
+      switch ($scope.distType.value) {
+        case 'dtNormal':
+        case 'dtLogNormal':
+          if (
+            $scope.distParameters.length === 0 ||
+            $scope.distParameters[0].name !== 'Mean'
+          ) {
+            $scope.distParameters = [
+              {
+                name: 'Mean',
+                value: 24,
+                timeRate: 'trHours',
+                useVariable: false,
+              },
+              {
+                name: 'Standard Deviation',
+                value: 1,
+                timeRate: 'trHours',
+                useVariable: false,
+              },
+              {
+                name: 'Minimum',
+                value: 0,
+                timeRate: 'trHours',
+                useVariable: false,
+              },
+              {
+                name: 'Maximum',
+                value: 1000,
+                timeRate: 'trYears',
+                useVariable: false,
+              },
+            ];
+          }
+          break;
+        case 'dtExponential':
+          if (
+            $scope.distParameters.length === 0 ||
+            $scope.distParameters[0].name !== 'Rate'
+          ) {
+            $scope.distParameters = [
+              {
+                name: 'Rate',
+                value: 0,
+                timeRate: 'trHours',
+                useVariable: false,
+              },
+              {
+                name: 'Minimum',
+                value: 0,
+                timeRate: 'trHours',
+                useVariable: false,
+              },
+              {
+                name: 'Maximum',
+                value: 1000,
+                timeRate: 'trYears',
+                useVariable: false,
+              },
+            ];
+          }
+          break;
+        case 'dtWeibull':
+          if (
+            $scope.distParameters.length === 0 ||
+            $scope.distParameters[0].name !== 'Shape'
+          ) {
+            $scope.distParameters = [
+              {
+                name: 'Shape',
+                value: 1,
+                useVariable: false,
+              },
+              {
+                name: 'Scale',
+                value: 1,
+                timeRate: 'trHours',
+                useVariable: false,
+              },
+              {
+                name: 'Minimum',
+                value: 0,
+                timeRate: 'trHours',
+                useVariable: false,
+              },
+              {
+                name: 'Maximum',
+                value: 1000,
+                timeRate: 'trYears',
+                useVariable: false,
+              },
+            ];
+          }
+          break;
+      }
+    };
+
+    /**
+     * Handles switching between detail panels.
+     */
+    $scope.handleSelection = () => {
+        if ($scope.typeOption.value === 'etDistribution') {
+            $scope.handleDistSelection();
+        } else if ($scope.typeOption.value === 'etStateCng') {
+            installDragHandler();
+        }
+    };
+
     $scope.$watch("name", function (newVal, oldVal) { if (newVal !== oldVal) somethingChanged(); });
     $scope.$watch("desc", function (newVal, oldVal) { if (newVal !== oldVal) somethingChanged(); });
     $scope.$watch("typeOption", function (newV, oldV) { if (newV !== oldV) { somethingChanged(); updateName(); } });
     $scope.$watch("moveFromCurrent", function (newVal, oldVal) { if (newVal !== oldVal) somethingChanged(); });
     $scope.$watch("conditionCode", function (newVal, oldVal) { if (newVal !== oldVal) somethingChanged(); });
-    $scope.$watch("typeOption", function (newVal, oldVal) { if (newVal !== oldVal) somethingChanged(); });
     $scope.$watch("variable", function (newVal, oldVal) { if (newVal !== oldVal) somethingChanged(); });
     $scope.$watch("varNames", function (newVal, oldVal) { if (newVal !== oldVal) somethingChanged(); });
     $scope.$watch("isInState", function (newVal, oldVal) { if (newVal !== oldVal) somethingChanged(); });

@@ -4290,7 +4290,6 @@ if (typeof Navigation === 'undefined')
       simApp.mainApp.saveProject();
     }
 
-
     return Sidebar;
   })(Object);
   Navigation.Sidebar = Sidebar;

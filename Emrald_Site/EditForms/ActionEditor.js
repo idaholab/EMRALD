@@ -1,4 +1,8 @@
-﻿// Copyright 2021 Battelle Energy Alliance
+﻿/**
+ * @file Action Editor logic.
+ * @copyright 2021 Battelle Energy Alliance
+ */
+// @ts-check
 
 function setAsNewChecked() {
     var scope = angular.element(document.querySelector('#actionControllerPanel')).scope();
@@ -549,7 +553,7 @@ actionModule.controller('actionController', ['$scope', function ($scope) {
         cvVariables: [],
         cvVariable: null,
         cvCode: '',
-        varMap: new Map(),
+        varMap: [],
 
         simMessages: [
             { name: 'Comp Modify', value: 'atCompModify' },

@@ -57,24 +57,12 @@
             "NamePattern": "FailRt_"
         },
         {
-            "Type": "Norm. Distribution",
-            "NamePattern": "NormDist_"
-        },
-        {
-            "Type": "Exp. Distribution",
-            "NamePattern": "ExpDist_"
-        },
-        {
-            "Type": "Weibull. Distribution",
-            "NamePattern": "WblDist_"
-        },
-        {
             "Type": "Ext Simulation",
             "NamePattern": "ExtSim_"
         },
         {
-            "Type": "LogNorm. Distribution",
-            "NamePattern": "LogNormDist_"
+            "Type": "Distribution",
+            "NamePattern": "Dist_"
         }
     ]
 }
