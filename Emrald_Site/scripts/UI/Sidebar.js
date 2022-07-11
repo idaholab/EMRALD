@@ -542,7 +542,7 @@ if (typeof Navigation === 'undefined')
         $('#ContentPanel').css({
           left: sideBar.clientWidth + $('.ui-resizable-handle.ui-resizable-e').width() + parseInt(sideBarContainer.style.marginLeft) + parseInt(sideBarContainer.style.marginRight) + 24
         });
-      }.bind(this));
+      }));
 
     }
 
