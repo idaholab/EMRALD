@@ -477,9 +477,7 @@ function main(container, outline) {
 			graph.tree = tree;
       window.dataObj.LogicNodeList = [];
       tree.sidebar.LogicNodeList.forEach((logicNode) => {
-        window.dataObj.LogicNodeList.push({
-          ...logicNode,
-        });
+        window.dataObj.LogicNodeList.push(deepClone(logicNode));
       });
       graph.sidebar = tree.sidebar;
       graph.DiagramList = tree.DiagramList;
