@@ -18,7 +18,8 @@
             </div>
             <div style="display:table-row">
                 <span style="display:table-cell;white-space:nowrap;">Probability:</span>
-                <input ng-model="prob" size="10" tabindex="2" style="white-space:nowrap;" title="Value between 0 and 1, -1 = n/a." onkeypress="return validateNumber(this, event);">
+                <input type="checkbox" ng-model="remaining" /> Remaining
+                <input ng-model="prob" size="10" tabindex="2" style="white-space:nowrap;" title="Value between 0 and 1, -1 = n/a." onkeypress="return validateNumber(this, event);" ng-disabled="remaining">
             </div>
             <div style="display:table-row">
                 <span style="display:table-cell;white-space:nowrap;">Fail Desc:</span>

@@ -460,6 +460,7 @@ function OnLoad(dataObj) {
                     } else {
                         scope.time = fromTimespan(eventData.time);
                     }
+                    scope.fromSimStart = eventData.fromSimStart || false;
 
 
                     break;
@@ -549,6 +550,7 @@ function GetDataObject() {
             if (scope.onVarChange) {
                 dataObj.onVarChange = scope.onVarChange.value;
             }
+            dataObj.fromSimStart = scope.fromSimStart;
             break;
         case "etFailRate":
             if (scope.data.failureRate.lambda.useVariable) {
@@ -617,7 +619,7 @@ function GetVariableList(varTypes) {
 }
 
 
-var EEApp = angular.module("EventEditor", []);
+var EEApp = angular.module("EventEditor", ['codeEditor']);
 EEApp.controller("EEController", function ($scope) {
     $scope.name = "";
     $scope.namingPatterns = [];
@@ -718,6 +720,7 @@ EEApp.controller("EEController", function ($scope) {
         minutes: null,
         seconds: null
     };
+    $scope.fromSimStart = false;
     //Fail Probability
     $scope.lambdaTimeRates = [];
     $scope.lambdaTimeRate = {
