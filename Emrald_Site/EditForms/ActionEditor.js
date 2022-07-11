@@ -172,12 +172,6 @@ function variableChecked(el) {
     }
 }
 
-function mutuallyExclusiveHandler(el) {
-    var scope = angular.element(document.querySelector('#actionControllerPanel')).scope();
-    if (el) {
-        scope.mutExcl = el.checked;
-    }
-}
 function handleExtSimSelection() {
     var extSimOpt = document.getElementById('extSimSelection');
     var index = extSimOpt.selectedIndex;
@@ -252,14 +246,18 @@ function OnLoad(dataObj) {
                 if (actionData.newStates) {
                     actionData.newStates.forEach(function (aState) {
                         if (aState.prob >= 0) {
-                            scope.data.transitions.push({ checked: false, To_State: aState.toState, Probability: aState.prob.toString(), varProb: aState.varProb, failDesc: aState.failDesc });
+                            scope.data.transitions.push({ checked: false, To_State: aState.toState, Probability: aState.prob.toString(), varProb: aState.varProb, failDesc: aState.failDesc, remaining: false, });
                         }
                         else {
-                            scope.data.transitions.push({ checked: false, To_State: aState.toState, Probability: 'Remaining', varProb: aState.varProb, failDesc: aState.failDesc });
+                            scope.data.transitions.push({ checked: false, To_State: aState.toState, Probability: '0', varProb: aState.varProb, failDesc: aState.failDesc, remaining: true, });
                         }
                     });
                 }
-                scope.mutExcl = actionData.mutExcl;
+                if (typeof actionData.mutExcl === 'string') {
+                    actionData.mutExcl = actionData.mutExcl === 'True';
+                } else {
+                    scope.data.mutExcl = actionData.mutExcl;
+                }
                 break;
             case 'atCngVarVal':
                 actTypeEl.selectedIndex = 1;
@@ -357,7 +355,7 @@ function OnLoad(dataObj) {
                 }
                 if (!found) {
                     if (scope.data.transitions.length === 0) {
-                        scope.data.transitions.push({ checked: false, To_State: state.name, Probability: '1.0', failDesc: '' });
+                        scope.data.transitions.push({ checked: false, To_State: state.name, Probability: '1.0', failDesc: '', remaining: false, });
                         addStateToName(state.name);
                     }
                     //TODO ASK ABOUT THIS LINE
@@ -365,7 +363,7 @@ function OnLoad(dataObj) {
                     //scope.data.transitions.push({ checked: false, To_State: state.name, Probability: "0.0", failDesc: "" });
                     //}
                     else {
-                        scope.data.transitions.push({ checked: false, To_State: state.name, Probability: '0', failDesc: '' });
+                        scope.data.transitions.push({ checked: false, To_State: state.name, Probability: '0', failDesc: '', remaining: true, });
                     }
                 }
             });
@@ -387,12 +385,12 @@ function GetDataObject() {
         case 'atTransition':
             if (scope.data.transitions && scope.data.transitions.length > 0) {
                 dataObj.newStates = [];
-                scope.data.transitions.forEach(function (tr, r) {
+                scope.data.transitions.forEach(function (tr) {
                     var { varProb } = tr;
                     if (varProb === null) {
                         varProb = "null";
                     }
-                    if (r === scope.data.transitions.length - 1) { // Remaining
+                    if (tr.remaining) { // Remaining
                         dataObj.newStates.push({ toState: tr.To_State, prob: -1, varProb, failDesc: tr.failDesc });
                     }
                     else {
@@ -404,7 +402,7 @@ function GetDataObject() {
                 dataObj.newStates = [];
             }
 
-            dataObj.mutExcl = scope.mutExcl;
+            dataObj.mutExcl = scope.data.mutExcl;
             break;
         case 'atCngVarVal':
             dataObj.scriptCode = scope.data.cvCode;
@@ -580,6 +578,7 @@ actionModule.controller('actionController', ['$scope', function ($scope) {
         raTemplate: {},
         raTemplateTemp: {},
         raFormData: {},
+        mutExcl: true,
     };
 
     $scope.raTemplates = window.customForms;
@@ -588,7 +587,6 @@ actionModule.controller('actionController', ['$scope', function ($scope) {
     $scope.data.simMessage = $scope.data.simMessages[0];
 
     $scope.varNames = [];
-    $scope.mutExcl = true;
     $scope.saveAsNew = false;
 
     $scope.namingPatterns = [];
@@ -597,8 +595,34 @@ actionModule.controller('actionController', ['$scope', function ($scope) {
         return jsonPath(row, path);
     };
 
-    $scope.usingVariable = function (row) {
-        return !!row.varProb;
+    $scope.rowInputDisabled = function (row) {
+      return (
+        (row.varProb !== 'null' && row.varProb !== null) ||
+        ($scope.data.mutExcl && row.remaining)
+      );
+    };
+
+    $scope.rowCheckboxDisabled = function (row, r) {
+      let isOnlyRemaining = true;
+      for (let i = 0; i < $scope.data.transitions.length; i += 1) {
+        if (i !== r && $scope.data.transitions[i].remaining) {
+          isOnlyRemaining = false;
+          break;
+        }
+      }
+      if ($scope.data.mutExcl) {
+        if (row.remaining && row.varProb !== 'null' && row.varProb !== null) {
+          return false;
+        }
+        return (
+          !isOnlyRemaining || (row.varProb !== 'null' && row.varProb !== null)
+        );
+      }
+      return true;
+    };
+
+    $scope.rowDropdownDisabled = function (row) {
+      return $scope.data.mutExcl && row.remaining;
     };
 
     $scope.$watch('name', function (newV, oldV) { if (newV !== oldV) somethingChanged(); });
