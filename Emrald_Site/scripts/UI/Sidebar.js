@@ -327,7 +327,7 @@ if (typeof Navigation === 'undefined')
         return cmenu;
       }.bind(this);
 
-      getServerFile(url, function onSuccess(jsonStr) {
+      fetch(url).then((response) => response.text().then((jsonStr) => {
         var sbObj = JSON.parse(jsonStr);
         var div = document.createElement('div');
         div.id = "Sidebar_Accordion";

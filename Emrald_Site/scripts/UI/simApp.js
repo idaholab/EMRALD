@@ -127,7 +127,7 @@ function newProject() {
   function (btn, retObj) {
     if (btn === 'OK') {
       simApp.newProjectCreated = false;
-      getServerFile('defaultModel.json', function (data) {
+      fetch('defaultModel.json').then((response) => response.text().then((data) => {
         var model = JSON.parse(data);
         appConfig.simInfo = { name: retObj.projectName, desc: retObj.projectDescription };
         model.name = retObj.projectName;
@@ -135,7 +135,7 @@ function newProject() {
         var modelStr = JSON.stringify(model);
         simApp.mainApp.loadSidebar(modelStr);
         simApp.mainApp.updateProjectTitle(model.name);
-      });
+      }));
     }
     return true;
   }.bind(this),
@@ -554,7 +554,7 @@ var simApp;
       //makeTransparent(img);
       new Navigation.Menu("resources/menu.json");
 
-      getServerFile(this.modelFileName, function (retData) {
+      fetch(this.modelFileName).then((response) => response.text().then((retData) => {
         simApp.mainApp.loadSidebar(retData);
         var model = JSON.parse(retData);
         if (model.name.isNullOrUndefined || model.name === '') {
@@ -563,7 +563,7 @@ var simApp;
         }
         this.updateProjectTitle(model.name);
         this.makeProjectNameEditable();
-      }.bind(this));
+      }));
       //this.loadSidebar();
     }
     //------------------
