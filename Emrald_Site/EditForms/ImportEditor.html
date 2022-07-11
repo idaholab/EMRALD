@@ -10,7 +10,7 @@
     <script src="ImportEditor.js"></script>
     <style>
       :root {
-        --lock-icon-size: 30px;
+        --lock-icon-size: 20px;
       }
 
       .conflict {
@@ -26,8 +26,10 @@
       }
 
       input[type=checkbox] + label {
-        background: url(lock_open.png);
-        background-size: var(--lock-icon-size);
+        background: url(../images/lock_open.webp);
+        background-size: 19px;
+        margin-left: 12px;
+        background-repeat: no-repeat;
         width: var(--lock-icon-size);
         height: var(--lock-icon-size);
         padding: 0;
@@ -35,8 +37,10 @@
       }
 
       input[type=checkbox]:checked + label {
-        background: url(lock_closed.png);
-        background-size: var(--lock-icon-size);
+        background: url(../images/lock_closed.webp);
+        background-size: 12px;
+        background-repeat: no-repeat;
+        margin-left: 12px;
         width: var(--lock-icon-size);
         height: var(--lock-icon-size);
         padding: 0;

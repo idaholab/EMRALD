@@ -17,8 +17,9 @@ Event Modeling Risk Assessment using Linked Diagrams (EMRALD) is a software tool
 		2. Right-click on "Emrald_Site" in the Solution Explorer
 		3. Select "View in Browser"
 	- To run (debug) the Simulator Project: 
-		1. Right-click on "EMRALD_Sim" in the Solution Explorer
-		2. Under "Debug," select "Start New Instance"
+		1. Install .NET 5.0 from [https://dotnet.microsoft.com/en-us/download/dotnet/5.0](https://dotnet.microsoft.com/en-us/download/dotnet/5.0)
+		2. Right-click on "EMRALD_Sim" in the Solution Explorer
+		3. Under "Debug," select "Start New Instance"
     - To run the Documentation Project:
         1. Download and install Node.js from [https://nodejs.org/en/](https://nodejs.org/en/) (This will also install npm)
         2. Once Node.js is installed, navigate to the "emrald-docs" directory (i.e. \EMRALD\emrald-docs) in a terminal window (such as Command Prompt)

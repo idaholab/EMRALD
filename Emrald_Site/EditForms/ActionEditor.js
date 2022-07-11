@@ -302,6 +302,7 @@ function OnLoad(dataObj) {
                 break;
             case 'atRunExtApp':
                 actTypeEl.selectedIndex = 3;
+                scope.data.raType = actionData.raType || 'template';
                 scope.data.raPreCode = actionData.makeInputFileCode;
                 scope.data.raLocation = actionData.exePath;
                 scope.data.raPostCode = actionData.processOutputFileCode;
@@ -443,6 +444,7 @@ function GetDataObject() {
             }
             break;
         case 'atRunExtApp':
+            dataObj.raType = scope.data.raType;
             dataObj.makeInputFileCode = scope.data.raPreCode;
             dataObj.exePath = scope.data.raLocation;
             dataObj.processOutputFileCode = scope.data.raPostCode;
@@ -521,7 +523,7 @@ function toStateChecked(el, evt) {
         delEl.disabled = cnt === 0;
 }
 
-var actionModule = angular.module('actionModule', []);
+var actionModule = angular.module('actionModule', ['codeEditor']);
 actionModule.controller('actionController', ['$scope', function ($scope) {
     $scope.name = '';
     $scope.desc = '';
