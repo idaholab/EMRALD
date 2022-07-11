@@ -6,7 +6,7 @@
   "private": true,
   "scripts": {
     "tauri": "tauri",
-    "test": "npx karma start Emrald_Site/tests/setup.js",
+    "test": "node ./Emrald_Site/tests/index.js",
     "build": "npm run tauri build",
     "build:dev": "npm run tauri dev"
   },
@@ -22,12 +22,11 @@
   "homepage": "https://github.com/idaholab/EMRALD#readme",
   "devDependencies": {
     "@tauri-apps/cli": "^1.0.0-rc.13",
+    "@types/mocha": "^9.1.1",
     "eslint": "^8.15.0",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-jsdoc": "^39.2.9",
-    "eslint-plugin-sort-class-members": "^1.14.1",
-    "jasmine-core": "^4.2.0",
-    "jasmine-expect": "^5.0.0"
+    "eslint-plugin-sort-class-members": "^1.14.1"
   }
 }

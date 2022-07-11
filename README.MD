@@ -37,7 +37,8 @@ Event Modeling Risk Assessment using Linked Diagrams (EMRALD) is a software tool
     - To run JavaScript unit tests:
 		1. Install Node.js & NPM from [https://nodejs.org/en/](https://nodejs.org/en/)
 		2. Build dependencies by running `npm install` in the root directory
-		3. Run tests by running `npm test` in the root directory
+		3. Start the testing app by running `npm test` in the root directory
+		4. Visit [https://localhost:8080/](http://localhost:8080) to view the test results
 
 
 
