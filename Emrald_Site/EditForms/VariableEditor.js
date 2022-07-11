@@ -23,7 +23,7 @@ function ValidateData() {
   if (['CURTIME', 'RUNIDX', 'EXEPATH', 'EXEEXITCODE'].indexOf(scope.name.toUpperCase()) >= 0) {
     return "The entered name is reserved. Please choose a new name.";
   }
-  if (/^[a-zA-Z_][0-9a-zA-Z_]*$/.test(scope.name)) {
+  if (!/^[a-zA-Z_][0-9a-zA-Z_]*$/.test(scope.name)) {
     return "Variable names must be valid C# variable names.";
   }
   return "";
