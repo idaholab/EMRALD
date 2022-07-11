@@ -153,27 +153,25 @@ function AddChildGate(graph, cell, ftNode) {
 
     // add the edit and delete button at bottom right corner.
     addOverlays(graph, vertex, true);
-			var name;
-			if (cell.value) {
-					name = cell.value.name;
-					for (var i = 0; i < graph.sidebar.LogicNodeList.length; i++) {
-							if (graph.sidebar.LogicNodeList[i].LogicNode) {
-									if (graph.sidebar.LogicNodeList[i].LogicNode.name == name) {
-											var gateChildren = graph.sidebar.LogicNodeList[i].LogicNode.gateChildren;
-											var alreadyAdded = false;
-											for (var k = 0; k < gateChildren.length; k++) {
-													if (gateChildren[k] == ftNode.name) {
-															alreadyAdded = true;
-													}
-											}
-											if (!alreadyAdded) {
-                        graph.sidebar.LogicNodeList[i].LogicNode.gateChildren.push(ftNode.name);
-											}
+    if (cell.value) {
+        for (var i = 0; i < graph.sidebar.LogicNodeList.length; i++) {
+            if (graph.sidebar.LogicNodeList[i].LogicNode) {
+                if (graph.sidebar.LogicNodeList[i].LogicNode.name == cell.value) {
+                    var gateChildren = graph.sidebar.LogicNodeList[i].LogicNode.gateChildren;
+                    var alreadyAdded = false;
+                    for (var k = 0; k < gateChildren.length; k++) {
+                        if (gateChildren[k] == ftNode.name) {
+                            alreadyAdded = true;
+                        }
+                    }
+                    if (!alreadyAdded) {
+                      graph.sidebar.LogicNodeList[i].LogicNode.gateChildren.push(ftNode.name);
+                    }
 
-									}
-							}
-					}
-			}
+                }
+            }
+        }
+    }
     return vertex;
   }
 

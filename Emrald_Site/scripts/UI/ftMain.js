@@ -339,7 +339,7 @@ function main(container, outline) {
 														name: "gate_" + newID,
 														desc: "",
 														gateType: gateType,
-														rootName: cell.value.rootName,
+														rootName: graph.tree.LogicNode.LogicNode.name,
 														compChildren: [],
 														gateChildren: []
 												}
