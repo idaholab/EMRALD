@@ -387,12 +387,23 @@ function main(container, outline) {
               (oldTarget) => oldTarget.parentNode.removeChild(oldTarget),
             );
             const dropTarget = document.createElement('div');
+            console.log(state);
             dropTarget.classList.add('drop-target');
-            dropTarget.style.height = `${state.cell.geometry.height}px`;
-            dropTarget.style.width = `${state.cell.geometry.width}px`;
+            const cellHeight = state.cell.geometry.height;
+            const cellWidth = state.cell.geometry.width;
+            let height = state.height;
+            let width = state.width;
+            if (cellHeight > height) {
+              height = cellHeight;
+            }
+            if (cellWidth > width) {
+              width = cellWidth;
+            }
+            dropTarget.style.height = `${height}px`;
+            dropTarget.style.width = `${width}px`;
             dropTarget.style.position = 'absolute';
             dropTarget.style.top = '0';
-            dropTarget.style.left = `-${state.cell.geometry.width / 3}px`;
+            dropTarget.style.left = `-${width / 3}px`;
             el.appendChild(dropTarget);
             installDropHandler(dropTarget);
           }
