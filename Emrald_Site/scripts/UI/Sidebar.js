@@ -538,7 +538,6 @@ if (typeof Navigation === 'undefined')
         // Initialize ContentPanel position
         const sideBarContainer = document.getElementById('SidePanelContainer');
         const sideBar = document.getElementById('SidePanel');
-        console.log(`${sideBar.clientWidth} + ${$('.ui-resizable-handle.ui-resizable-e').width()} + ${parseInt(sideBarContainer.style.marginLeft)} + ${parseInt(sideBarContainer.style.marginRight)} + ${24}`);
         $('#ContentPanel').css({
           left: sideBar.clientWidth + $('.ui-resizable-handle.ui-resizable-e').width() + parseInt(sideBarContainer.style.marginLeft) + parseInt(sideBarContainer.style.marginRight) + 24
         });
