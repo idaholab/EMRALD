@@ -257,11 +257,7 @@ function OnLoad(dataObj) {
                         }
                     });
                 }
-                if (typeof actionData.mutExcl === 'string') {
-                    actionData.mutExcl = actionData.mutExcl === 'True';
-                } else {
-                    scope.data.mutExcl = actionData.mutExcl;
-                }
+                scope.data.mutExcl = actionData.mutExcl;
                 break;
             case 'atCngVarVal':
                 actTypeEl.selectedIndex = 1;
@@ -603,7 +599,7 @@ actionModule.controller('actionController', ['$scope', function ($scope) {
 
     $scope.rowInputDisabled = function (row) {
       return (
-        (row.varProb !== 'null' && row.varProb !== null) ||
+        (row.varProb !== 'null' && row.varProb !== null && row.varProb !== undefined) ||
         ($scope.data.mutExcl && row.remaining)
       );
     };
@@ -617,11 +613,11 @@ actionModule.controller('actionController', ['$scope', function ($scope) {
         }
       }
       if ($scope.data.mutExcl) {
-        if (row.remaining && row.varProb !== 'null' && row.varProb !== null) {
+        if (row.remaining && row.varProb !== 'null' && row.varProb !== null && row.varProb !== undefined) {
           return false;
         }
         return (
-          !isOnlyRemaining || (row.varProb !== 'null' && row.varProb !== null)
+          !isOnlyRemaining || (row.varProb !== 'null' && row.varProb !== null && row.varProb !== undefined)
         );
       }
       return true;
