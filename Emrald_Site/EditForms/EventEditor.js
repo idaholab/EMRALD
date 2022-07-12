@@ -344,7 +344,7 @@ function OnLoad(dataObj) {
                 case "etDistribution":
                     scope.distParameters = eventData.parameters;
                     scope.dfltTimeRate = eventData.dfltTimeRate;
-                    scope.distType = scope.distTypes.find((type) => type.value === eventData.distType);
+                    scope.data.distType = scope.distTypes.find((type) => type.value === eventData.distType);
                 case "et3dSimEv":
                     var vb = scope.variables.find((v) => v.name == eventData.variable);
                     if (vb)
@@ -429,7 +429,7 @@ function GetDataObject() {
             }
             break;
         case "etDistribution":
-            dataObj.distType = scope.distType.value;
+            dataObj.distType = scope.data.distType.value;
             // Remove variable property from parameters not using variables.
             const distParameters = scope.distParameters;
             distParameters.forEach((p, i) => {
@@ -505,13 +505,16 @@ EEApp.controller("EEController", function ($scope) {
         { "name": "Exp. Distribution", value: "dtExponential" },
         { "name": "Weibull. Distribution", value: "dtWeibull" },
         { "name": "LogNorm. Distribution", value: "dtLogNormal" },
+        { "name": "Uniform Distribution", value: "dtUniform" },
+        { "name": "Triangular Distribution", value: "dtTriangular" },
+        { "name": "Gamma Distribution", value: "dtGamma" },
+        { "name": "Beta Distribution", value: "dtBeta" },
     ];
     $scope.distChangeTypes = [
         { "name": "Ignore", value: "ocIgnore", desc: ", keeping the same sampled event time." },
         { "name": "Resample", value: "ocResample", desc: ", a new event time." },
         { "name": "Adjust", value: "ocAdjust", desc: ", use the new variable values to adjust the event time without resampling, if possible." },
     ];
-    $scope.distType = $scope.distTypes[0];
     $scope.distParameters = [];
     $scope.onVarChange = null;
     $scope.dfltTimeRate = 'trHours';
@@ -552,7 +555,8 @@ EEApp.controller("EEController", function ($scope) {
                 variableName: "",
                 allowedVariables: []
             }
-        }
+        },
+        distType: $scope.distTypes[0],
     };
 
     //var Condition
@@ -610,7 +614,7 @@ EEApp.controller("EEController", function ($scope) {
      * Handles switching between distribution type panels.
      */
     $scope.handleDistSelection = () => {
-      switch ($scope.distType.value) {
+      switch ($scope.data.distType.value) {
         case 'dtNormal':
         case 'dtLogNormal':
           if (
@@ -685,6 +689,119 @@ EEApp.controller("EEController", function ($scope) {
               },
               {
                 name: 'Scale',
+                value: 1,
+                timeRate: 'trHours',
+                useVariable: false,
+              },
+              {
+                name: 'Minimum',
+                value: 0,
+                timeRate: 'trHours',
+                useVariable: false,
+              },
+              {
+                name: 'Maximum',
+                value: 1000,
+                timeRate: 'trYears',
+                useVariable: false,
+              },
+            ];
+          }
+          break;
+        case 'dtUniform':
+          if (
+            $scope.distParameters[0].length === 0 ||
+            $scope.distParameters[0].name !== 'Minimum'
+          ) {
+            $scope.distParameters = [
+              {
+                name: 'Minimum',
+                value: 0,
+                timeRate: 'trHours',
+                useVariable: false,
+              },
+              {
+                name: 'Maximum',
+                value: 1000,
+                timeRate: 'trYears',
+                useVariable: false,
+              },
+            ];
+          }
+          break;
+        case 'dtTriangular':
+          if (
+            $scope.distParameters[0].length === 0 ||
+            $scope.distParameters[0].name !== 'Peak'
+          ) {
+            $scope.distParameters = [
+              {
+                name: 'Peak',
+                value: 1,
+                timeRate: 'trHours',
+                useVariable: false,
+              },
+              {
+                name: 'Minimum',
+                value: 0,
+                timeRate: 'trHours',
+                useVariable: false,
+              },
+              {
+                name: 'Maximum',
+                value: 1000,
+                timeRate: 'trYears',
+                useVariable: false,
+              },
+            ];
+          }
+          break;
+        case 'dtGamma':
+          if (
+            $scope.distParameters[0].length === 0 ||
+            $scope.distParameters[0].name !== 'Shape'
+          ) {
+            $scope.distParameters = [
+              {
+                name: 'Shape',
+                value: 24,
+                useVariable: false,
+              },
+              {
+                name: 'Alpha',
+                value: 1,
+                timeRate: 'trHours',
+                useVariable: false,
+              },
+              {
+                name: 'Minimum',
+                value: 0,
+                timeRate: 'trHours',
+                useVariable: false,
+              },
+              {
+                name: 'Maximum',
+                value: 1000,
+                timeRate: 'trYears',
+                useVariable: false,
+              },
+            ];
+          }
+          break;
+        case 'dtBeta':
+          if (
+            $scope.distParameters[0].length === 0 ||
+            $scope.distParameters[0].name !== 'Alpha'
+          ) {
+            $scope.distParameters = [
+              {
+                name: 'Alpha',
+                value: 1,
+                timeRate: 'trHours',
+                useVariable: false,
+              },
+              {
+                name: 'Beta',
                 value: 1,
                 timeRate: 'trHours',
                 useVariable: false,

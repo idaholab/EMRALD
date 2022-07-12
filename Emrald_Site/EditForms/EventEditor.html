@@ -162,8 +162,8 @@
                 <div id="DistributionPanel" ng-if="typeOption.value === 'etDistribution'" style="display:table-row;position:absolute;height:70%;width:96%;overflow-x:hidden;">
                     <div style="display:table-row">
                         <span>Distribution type:</span>
-                        <select name="distType" id="distTypeSelector" ng-model="distType" ng-options="type.name for type in distTypes" ng-change="handleDistSelection()"></select>
-                        <div id="NormDistributionPanel" ng-if="distType.value === 'dtNormal' || distType.value === 'dtLogNormal'">
+                        <select name="distType" id="distTypeSelector" ng-model="data.distType" ng-options="type.name for type in distTypes" ng-change="handleDistSelection()"></select>
+                        <div id="NormDistributionPanel" ng-if="data.distType.value === 'dtNormal' || data.distType.value === 'dtLogNormal'">
                             <div style="display:table-row">
                                 <span style="display:table-cell;vertical-align:middle;">Mean:</span>
                                 <select ng-if="distParameters[0].useVariable" ng-options="v.name as v.name for v in variables" ng-model="distParameters[0].variable"></select>
@@ -193,7 +193,7 @@
                                 <input type="checkbox" ng-model="distParameters[3].useVariable" /> Use Variable
                             </div>
                         </div>
-                        <div id="ExpDistributionPanel" ng-if="distType.value === 'dtExponential'">
+                        <div id="ExpDistributionPanel" ng-if="data.distType.value === 'dtExponential'">
                             <div style="display:table-row">
                                 <span style="display:table-cell;vertical-align:middle;">Rate:</span>
                                 <select ng-if="distParameters[0].useVariable" ng-options="v.name as v.name for v in variables" ng-model="distParameters[0].variable"></select>
@@ -216,7 +216,7 @@
                                 <input type="checkbox" ng-model="distParameters[2].useVariable" /> Use Variable
                             </div>
                         </div>
-                        <div id="WeibullDistributionPanel" ng-if="distType.value === 'dtWeibull'">
+                        <div id="WeibullDistributionPanel" ng-if="data.distType.value === 'dtWeibull'">
                             <div style="display:table-row">
                                 <span style="display:table-cell;vertical-align:middle;">Shape:</span>
                                 <select ng-if="distParameters[0].useVariable" ng-options="v.name as v.name for v in variables" ng-model="distParameters[0].variable"></select>
@@ -241,6 +241,104 @@
                                 <span class="item_caption" style="display:table-cell;vertical-align:middle; white-space:nowrap;">Maximum:</span>
                                 <select ng-if="distParameters[3].useVariable" ng-options="v.name as v.name for v in variables" ng-model="distParameters[3].variable"></select>
                                 <input name="ndMax" ng-model="distParameters[3].value" ng-if="!distParameters[3].useVariable" />
+                                <select ng-model="distParameters[3].timeRate" ng-options="t.value as t.name for t in timeOptions"></select>
+                                <input type="checkbox" ng-model="distParameters[3].useVariable" /> Use Variable
+                            </div>
+                        </div>
+                        <div ng-if="data.distType.value === 'dtUniform'">
+                            <div style="display:table-row">
+                                <span style="display:table-cell;vertical-align:middle;">Minimum:</span>
+                                <select ng-if="distParameters[0].useVariable" ng-options="v.name as v.name for v in variables" ng-model="distParameters[0].variable"></select>
+                                <input name="uniMin" ng-model="distParameters[0].value" ng-if="!distParameters[0].useVariable" />
+                                <select ng-model="distParameters[0].timeRate" ng-options="t.value as t.name for t in timeOptions"></select>
+                                <input type="checkbox" ng-model="distParameters[0].useVariable" /> Use Variable
+                            </div>
+                            <div style="display:table-row">
+                                <span style="display:table-cell;vertical-align:middle;">Maximum:</span>
+                                <select ng-if="distParameters[1].useVariable" ng-options="v.name as v.name for v in variables" ng-model="distParameters[1].variable"></select>
+                                <input name="uniMax" ng-model="distParameters[1].value" ng-if="!distParameters[1].useVariable" />
+                                <select ng-model="distParameters[1].timeRate" ng-options="t.value as t.name for t in timeOptions"></select>
+                                <input type="checkbox" ng-model="distParameters[1].useVariable" /> Use Variable
+                            </div>
+                        </div>
+                        <div ng-if="data.distType.value === 'dtTriangular'">
+                            <div style="display:table-row">
+                                <span style="display:table-cell;vertical-align:middle;">Peak:</span>
+                                <select ng-if="distParameters[0].useVariable" ng-options="v.name as v.name for v in variables" ng-model="distParameters[0].variable"></select>
+                                <input name="triPeak" ng-model="distParameters[0].value" ng-if="!distParameters[0].useVariable" />
+                                <select ng-model="distParameters[0].timeRate" ng-options="t.value as t.name for t in timeOptions"></select>
+                                <input type="checkbox" ng-model="distParameters[0].useVariable" /> Use Variable
+                            </div>
+                            <div style="display:table-row">
+                                <span style="display:table-cell;vertical-align:middle;">Minimum:</span>
+                                <select ng-if="distParameters[1].useVariable" ng-options="v.name as v.name for v in variables" ng-model="distParameters[1].variable"></select>
+                                <input name="triMin" ng-model="distParameters[1].value" ng-if="!distParameters[1].useVariable" />
+                                <select ng-model="distParameters[1].timeRate" ng-options="t.value as t.name for t in timeOptions"></select>
+                                <input type="checkbox" ng-model="distParameters[1].useVariable" /> Use Variable
+                            </div>
+                            <div style="display:table-row">
+                                <span style="display:table-cell;vertical-align:middle;">Maximum:</span>
+                                <select ng-if="distParameters[2].useVariable" ng-options="v.name as v.name for v in variables" ng-model="distParameters[2].variable"></select>
+                                <input name="triMax" ng-model="distParameters[2].value" ng-if="!distParameters[2].useVariable" />
+                                <select ng-model="distParameters[2].timeRate" ng-options="t.value as t.name for t in timeOptions"></select>
+                                <input type="checkbox" ng-model="distParameters[2].useVariable" /> Use Variable
+                            </div>
+                        </div>
+                        <div ng-if="data.distType.value === 'dtGamma'">
+                            <div style="display:table-row">
+                                <span style="display:table-cell;vertical-align:middle;">Shape:</span>
+                                <select ng-if="distParameters[0].useVariable" ng-options="v.name as v.name for v in variables" ng-model="distParameters[0].variable"></select>
+                                <input name="triPeak" ng-model="distParameters[0].value" ng-if="!distParameters[0].useVariable" />
+                                <input type="checkbox" ng-model="distParameters[0].useVariable" /> Use Variable
+                            </div>
+                            <div style="display:table-row">
+                                <span style="display:table-cell;vertical-align:middle;">Alpha/rate:</span>
+                                <select ng-if="distParameters[1].useVariable" ng-options="v.name as v.name for v in variables" ng-model="distParameters[1].variable"></select>
+                                <input name="triPeak" ng-model="distParameters[1].value" ng-if="!distParameters[1].useVariable" />
+                                <select ng-model="distParameters[1].timeRate" ng-options="t.value as t.name for t in timeOptions"></select>
+                                <input type="checkbox" ng-model="distParameters[1].useVariable" /> Use Variable
+                            </div>
+                            <div style="display:table-row">
+                                <span style="display:table-cell;vertical-align:middle;">Minimum:</span>
+                                <select ng-if="distParameters[2].useVariable" ng-options="v.name as v.name for v in variables" ng-model="distParameters[2].variable"></select>
+                                <input name="triMin" ng-model="distParameters[2].value" ng-if="!distParameters[2].useVariable" />
+                                <select ng-model="distParameters[2].timeRate" ng-options="t.value as t.name for t in timeOptions"></select>
+                                <input type="checkbox" ng-model="distParameters[2].useVariable" /> Use Variable
+                            </div>
+                            <div style="display:table-row">
+                                <span style="display:table-cell;vertical-align:middle;">Maximum:</span>
+                                <select ng-if="distParameters[3].useVariable" ng-options="v.name as v.name for v in variables" ng-model="distParameters[3].variable"></select>
+                                <input name="triMax" ng-model="distParameters[3].value" ng-if="!distParameters[3].useVariable" />
+                                <select ng-model="distParameters[3].timeRate" ng-options="t.value as t.name for t in timeOptions"></select>
+                                <input type="checkbox" ng-model="distParameters[3].useVariable" /> Use Variable
+                            </div>
+                        </div>
+                        <div ng-if="data.distType.value === 'dtBeta'">
+                            <div style="display:table-row">
+                                <span style="display:table-cell;vertical-align:middle;">Alpha:</span>
+                                <select ng-if="distParameters[0].useVariable" ng-options="v.name as v.name for v in variables" ng-model="distParameters[0].variable"></select>
+                                <input name="triPeak" ng-model="distParameters[0].value" ng-if="!distParameters[0].useVariable" />
+                                <select ng-model="distParameters[0].timeRate" ng-options="t.value as t.name for t in timeOptions"></select>
+                                <input type="checkbox" ng-model="distParameters[0].useVariable" /> Use Variable
+                            </div>
+                            <div style="display:table-row">
+                                <span style="display:table-cell;vertical-align:middle;">Beta:</span>
+                                <select ng-if="distParameters[1].useVariable" ng-options="v.name as v.name for v in variables" ng-model="distParameters[1].variable"></select>
+                                <input name="triPeak" ng-model="distParameters[1].value" ng-if="!distParameters[1].useVariable" />
+                                <select ng-model="distParameters[1].timeRate" ng-options="t.value as t.name for t in timeOptions"></select>
+                                <input type="checkbox" ng-model="distParameters[1].useVariable" /> Use Variable
+                            </div>
+                            <div style="display:table-row">
+                                <span style="display:table-cell;vertical-align:middle;">Minimum:</span>
+                                <select ng-if="distParameters[2].useVariable" ng-options="v.name as v.name for v in variables" ng-model="distParameters[2].variable"></select>
+                                <input name="triMin" ng-model="distParameters[2].value" ng-if="!distParameters[2].useVariable" />
+                                <select ng-model="distParameters[2].timeRate" ng-options="t.value as t.name for t in timeOptions"></select>
+                                <input type="checkbox" ng-model="distParameters[2].useVariable" /> Use Variable
+                            </div>
+                            <div style="display:table-row">
+                                <span style="display:table-cell;vertical-align:middle;">Maximum:</span>
+                                <select ng-if="distParameters[3].useVariable" ng-options="v.name as v.name for v in variables" ng-model="distParameters[3].variable"></select>
+                                <input name="triMax" ng-model="distParameters[3].value" ng-if="!distParameters[3].useVariable" />
                                 <select ng-model="distParameters[3].timeRate" ng-options="t.value as t.name for t in timeOptions"></select>
                                 <input type="checkbox" ng-model="distParameters[3].useVariable" /> Use Variable
                             </div>
