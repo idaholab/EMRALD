@@ -142,7 +142,7 @@ if (typeof Navigation === 'undefined')
 
     //load a menu file and generate the menu.
     Menu.prototype.loadMenuFile = function () {
-      getServerFile(this.menuUrl, function (jsonStr) {
+      fetch(this.menuUrl).then((response) => response.text().then((jsonStr) => {
         try {
           if (typeof required === 'undefined')
             var menu = eval('(' + jsonStr + ')');  //node-webkit doesn't work with JSON.parse.  So eval() the json object directly.
@@ -155,7 +155,7 @@ if (typeof Navigation === 'undefined')
         if (menu) {
           this.createMenu(menu);
         }
-      }.bind(this));
+      }));
     }
 
     return Menu;

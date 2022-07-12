@@ -293,7 +293,7 @@ if (typeof Navigation === 'undefined')
                       this.editActionProperties(dataObj);
                       break;
                     case "Events":
-                      var eventObj = { id: -1, name: "", desc: "", mainItem: true, evType: "etVarCode", varNames: [], Code: "return 1.0;", sim3dID: 1 };
+                      var eventObj = { id: -1, name: "", desc: "", mainItem: true, evType: "etVarCode", };
                       this.editEventProperties(eventObj);
                       break;
                     case "Diagrams":
@@ -327,7 +327,7 @@ if (typeof Navigation === 'undefined')
         return cmenu;
       }.bind(this);
 
-      getServerFile(url, function onSuccess(jsonStr) {
+      fetch(url).then((response) => response.text().then((jsonStr) => {
         var sbObj = JSON.parse(jsonStr);
         var div = document.createElement('div');
         div.id = "Sidebar_Accordion";
@@ -534,7 +534,15 @@ if (typeof Navigation === 'undefined')
         setUpAll();
         setUpGlobal();
         this.showDynamicSidebar("all");
-      }.bind(this));
+
+        // Initialize ContentPanel position
+        const sideBarContainer = document.getElementById('SidePanelContainer');
+        const sideBar = document.getElementById('SidePanel');
+        console.log(`${sideBar.clientWidth} + ${$('.ui-resizable-handle.ui-resizable-e').width()} + ${parseInt(sideBarContainer.style.marginLeft)} + ${parseInt(sideBarContainer.style.marginRight)} + ${24}`);
+        $('#ContentPanel').css({
+          left: sideBar.clientWidth + $('.ui-resizable-handle.ui-resizable-e').width() + parseInt(sideBarContainer.style.marginLeft) + parseInt(sideBarContainer.style.marginRight) + 24
+        });
+      }));
 
     }
 
@@ -4281,7 +4289,6 @@ if (typeof Navigation === 'undefined')
     Sidebar.prototype.saveProject = function () {
       simApp.mainApp.saveProject();
     }
-
 
     return Sidebar;
   })(Object);
