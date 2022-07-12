@@ -80,10 +80,10 @@ class MAAPForm extends ExternalExeForm {
     let overrideCode = '';
     let pointer = 0;
     scope.overrideSections
-      .sort((a, b) => b.bounds[0] - a.bounds[0])
+      .sort((a, b) => a.bounds[0] - b.bounds[0])
       .forEach((override) => {
         overrideCode += `newInp += originalInp.Substring(${pointer}, ${override.bounds[0]});\n`;
-        overrideCode += `newInp += "${scope[override.data].map((value) => value.toString()).join('\\n')}";\n`;
+        overrideCode += `newInp += "\\n${scope[override.data].map((value) => value.toString()).join('\\n')}\\n";\n`;
         [, pointer] = override.bounds;
       });
     overrideCode += `newInp += originalInp.Substring(${pointer});\n`;
@@ -145,7 +145,7 @@ class MAAPForm extends ExternalExeForm {
 }
 
 const form = new MAAPForm();
-const maapForm = angular.module('maapForm', []);
+const maapForm = angular.module('maapForm', ['sourceElement']);
 
 /**
  * @typedef MAAPForm.ParameterName
@@ -529,8 +529,8 @@ maapForm.controller('maapFormController', [
               if (sourceElement.blockType === 'PARAMETER CHANGE') {
                 $scope.overrideSections.push({
                   bounds: [
-                    sourceElement.location.start.offset,
-                    sourceElement.location.end.offset,
+                    sourceElement.location.start.offset + 16,
+                    sourceElement.location.end.offset - 3,
                   ],
                   data: 'parameters',
                 });
@@ -544,8 +544,9 @@ maapForm.controller('maapFormController', [
               } else if (sourceElement.blockType === 'INITIATORS') {
                 $scope.overrideSections.push({
                   bounds: [
-                    sourceElement.location.start.offset,
-                    sourceElement.location.end.offset,
+                    // TODO: this offset will be off if the block is specified with just INITIATOR
+                    sourceElement.location.start.offset + 10,
+                    sourceElement.location.end.offset - 3,
                   ],
                   // TODO: This will result in duplication for files with multiple initiators sections
                   // Same issue is present for parameter change too
@@ -566,6 +567,7 @@ maapForm.controller('maapFormController', [
             default:
           }
         });
+        console.log($scope.overrideSections);
         form.save();
       }
     });
