@@ -1327,7 +1327,7 @@ namespace SimulationDAL
                                     SingleRandom.Instance)).Sample();
             distTimeRate = _dParams[0].timeRate;
             break;
-          case EnDistType.dtGama:
+          case EnDistType.dtGamma:
             sampled = (new Gamma((double)valuePs[0],
                                     Globals.ConvertToNewTimeSpan(_dParams[1].timeRate, (double)valuePs[1], _dParams[0].timeRate), //shape
                                     SingleRandom.Instance)).Sample(); //rate
