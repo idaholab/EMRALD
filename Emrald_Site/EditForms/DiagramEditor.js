@@ -38,7 +38,7 @@ function updateDiagramTypeSelection(diagramType, diagramLabel) {
     var scope = angular.element(document.querySelector("#diagramControllerPanel")).scope();
     if (scope.diagramTypes && scope.diagramTypes.length > 0) {
         if (diagramType === null && diagramLabel === null) {
-            scope.diagramType = scope.diagramTypes[0];
+            scope.data.diagramType = scope.diagramTypes[0];
         }
 
         var dInst = scope.diagramTypes.find(function (dt) {
@@ -51,10 +51,10 @@ function updateDiagramTypeSelection(diagramType, diagramLabel) {
         });
 
         if (dInst) {
-            scope.diagramType = dInst;
+            scope.data.diagramType = dInst;
         }
         else {
-            scope.diagramType = scope.diagramTypes[0];
+            scope.data.diagramType = scope.diagramTypes[0];
         }
     }
     scope.initialChange = false;
@@ -104,7 +104,7 @@ function mergeIntoCurrentProject() {
                         return;
                     }
                     scope.data.fileName = afile.name;
-                    scope.diagramType = scope.diagramTypes.filter(x => x.value === scope.data.importedContent.DiagramList[0].Diagram.diagramType)[0];
+                    scope.data.diagramType = scope.diagramTypes.filter(x => x.value === scope.data.importedContent.DiagramList[0].Diagram.diagramType)[0];
                     scope.name = scope.data.importedContent.DiagramList[0].Diagram.name;
                     scope.desc = scope.data.importedContent.DiagramList[0].Diagram.desc;
                     scope.$apply();
@@ -186,12 +186,12 @@ function GetDataObject() {
     var scope = angular.element(document.querySelector('#diagramControllerPanel')).scope();
     diagramData.name = scope.name;
     diagramData.desc = scope.desc;
-    if (scope.diagramType.value === 'newType') {
+    if (scope.data.diagramType.value === 'newType') {
         diagramData.diagramLabel = scope.newType.label;
         diagramData.diagramType = scope.newType.type;
     } else {
-        diagramData.diagramLabel = scope.diagramType.name;
-        diagramData.diagramType = scope.diagramType.value;
+        diagramData.diagramLabel = scope.data.diagramType.name;
+        diagramData.diagramType = scope.data.diagramType.value;
     }
     if (diagramData.diagramType == 'dtComponent' || diagramData.diagramType == 'dtSystem') {
         if (diagramData.singleStates)
@@ -246,10 +246,10 @@ diagramModule.controller('diagramController', function ($scope, $timeout) {
     $scope.changeDiagramTypeSidebarCallbackFunction = () => true;
     $scope.loading = true;
     $scope.initialChange = true;
-    $scope.diagramType = $scope.diagramTypes[1];
     $scope.timeout = $timeout;
     $scope.createDiagram = false;
     $scope.data = {
+        diagramType: $scope.diagramTypes[1],
         fileName: "",
         forceMerge: false,
         importedContent: null,
@@ -277,7 +277,7 @@ diagramModule.controller('diagramController', function ($scope, $timeout) {
     $scope.$watch('desc', function () {
         somethingChanged();
     }, true);
-    $scope.$watch('diagramType', function (newValue, oldValue) {
+    $scope.$watch('data.diagramType', function (newValue, oldValue) {
         if ($scope.loading) {
             $timeout(() => $scope.loading = false);
         }
@@ -299,14 +299,14 @@ diagramModule.controller('diagramController', function ($scope, $timeout) {
     $scope.onTypeChanged = function () {
         var el = document.getElementById("singleStatePanel");
         if (el) {
-            if ($scope.diagramType.value <= 1) {
+            if ($scope.data.diagramType.value <= 1) {
                 el.style.display = 'block';
             }
             else {
                 el.style.display = 'none';
             }
         }
-        $scope.showNewTypeEditor = $scope.diagramType.value === 'newType';
+        $scope.showNewTypeEditor = $scope.data.diagramType.value === 'newType';
     }
 
     $scope.selectedTemplate = null;
