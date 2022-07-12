@@ -1321,8 +1321,8 @@ namespace SimulationDAL
             distTimeRate = _dParams[0].timeRate;
             break;
           case EnDistType.dtTriangular:
-            sampled = (new Triangular(Globals.ConvertToNewTimeSpan(_dParams[2].timeRate, (double)valuePs[2], _dParams[0].timeRate), //min
-                                    Globals.ConvertToNewTimeSpan(_dParams[3].timeRate, (double)valuePs[3], _dParams[0].timeRate),   //max
+            sampled = (new Triangular(Globals.ConvertToNewTimeSpan(_dParams[1].timeRate, (double)valuePs[1], _dParams[0].timeRate), //min
+                                    Globals.ConvertToNewTimeSpan(_dParams[2].timeRate, (double)valuePs[2], _dParams[0].timeRate),   //max
                                     (double)valuePs[2], //mode or peak
                                     SingleRandom.Instance)).Sample();
             distTimeRate = _dParams[0].timeRate;
