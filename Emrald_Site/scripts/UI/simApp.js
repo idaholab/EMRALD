@@ -20,18 +20,21 @@ function adjustWindowPos(container, el) {
 
 function downloadSolver() {
   var link = document.createElement("a");
+  link.target = "_blank";
   link.href = "https://github.com/idaholab/EMRALD/releases/latest/download/EMRALD_SimEngine.zip";  //The file to download.
   link.click();
 }
 
 function downloadClientTester() {
   var link = document.createElement("a");
+  link.target = "_blank";
   link.href = "https://github.com/idaholab/EMRALD/releases/latest/download/XMPPClientTester.zip";  //The file to download.
   link.click();
 }
 
 function downloadClientTesterSource() {
   var link = document.createElement("a");
+  link.target = "_blank";
   link.href = "https://github.com/idaholab/EMRALD/tree/main/XmppClient";  //The file to download.
   link.click();
 }
@@ -124,7 +127,7 @@ function newProject() {
   function (btn, retObj) {
     if (btn === 'OK') {
       simApp.newProjectCreated = false;
-      getServerFile('defaultModel.json', function (data) {
+      fetch('defaultModel.json').then((response) => response.text().then((data) => {
         var model = JSON.parse(data);
         appConfig.simInfo = { name: retObj.projectName, desc: retObj.projectDescription };
         model.name = retObj.projectName;
@@ -132,7 +135,7 @@ function newProject() {
         var modelStr = JSON.stringify(model);
         simApp.mainApp.loadSidebar(modelStr);
         simApp.mainApp.updateProjectTitle(model.name);
-      });
+      }));
     }
     return true;
   }.bind(this),
@@ -551,7 +554,7 @@ var simApp;
       //makeTransparent(img);
       new Navigation.Menu("resources/menu.json");
 
-      getServerFile(this.modelFileName, function (retData) {
+      fetch(this.modelFileName).then((response) => response.text().then((retData) => {
         simApp.mainApp.loadSidebar(retData);
         var model = JSON.parse(retData);
         if (model.name.isNullOrUndefined || model.name === '') {
@@ -560,7 +563,7 @@ var simApp;
         }
         this.updateProjectTitle(model.name);
         this.makeProjectNameEditable();
-      }.bind(this));
+      }));
       //this.loadSidebar();
     }
     //------------------
@@ -648,7 +651,11 @@ var simApp;
     SimApp.prototype.getTemplatesUsedInProject = function () {
       const templateNames = [];
       simApp.allDataModel.DiagramList.forEach((diagram) => {
-        if (diagram.diagramTemplate && diagram.diagramTemplate.length > 0) {
+        if (
+          diagram.diagramTemplate &&
+          diagram.diagramTemplate.length > 0 &&
+          templateNames.indexOf(diagram.diagramTemplate) < 0
+        ) {
           templateNames.push(diagram.diagramTemplate);
         }
       });

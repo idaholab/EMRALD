@@ -47,7 +47,14 @@
             <div ng-if="createDiagram"><b>Create New Diagram<br /></b><br /></div>
             <div style="display:table-row">
                 <div style="display:table-cell">Type:</div>
-                <select style="display:table-cell;width: 130px;float:left" id="TypeOption" ng-model="diagramType" ng-options="dt.name for dt in diagramTypes" name="Type" ng-disabled="data.importedContent"></select>
+                <div ng-if="data.templateIsSelected">
+                    <select style="display:table-cell;width: 130px;float:left" disabled>
+                        <option>Set by template</option>
+                    </select>
+                </div>
+                <div ng-if="!data.templateIsSelected">
+                    <select style="display:table-cell;width: 130px;float:left" id="TypeOption" ng-model="diagramType" ng-options="dt.name for dt in diagramTypes" name="Type" ng-disabled="data.importedContent"></select>
+                </div>
             </div>
             <div ng-if="showNewTypeEditor">
                 <div style="display:table-row">
@@ -68,7 +75,7 @@
 
             <div ng-if="createDiagram"><br />
                 <div class="separator">OR</div><br /><b>Import Diagram: </b>
-                <input type="button" value="Choose File" onclick="mergeIntoCurrentProject()" />
+                <input type="button" value="Choose File" onclick="mergeIntoCurrentProject()" ng-disabled="data.templateIsSelected" />
                 <span><i>{{data.fileName}}</i><input ng-if="data.fileName" type="button" value="X" title="Remove File" onclick="removeFile()"/></span>
                 <br />
                 <input type="checkbox" ng-model="data.forceMerge" /> Force conflict resolution
