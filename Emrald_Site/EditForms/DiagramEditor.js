@@ -1,4 +1,8 @@
-﻿// Copyright 2021 Battelle Energy Alliance
+﻿/**
+ * @file Diagram Editor logic.
+ * @copyright 2021 Battelle Energy Alliance
+ */
+// @ts-check
 
 var isDirty = false;
 
@@ -14,15 +18,20 @@ function setModified(state) {
     isDirty = state;
 }
 
-function loadCustomDiagramLabels(diagramType, diagramLabel) {
-    var scope = angular.element(document.querySelector('#diagramControllerPanel')).scope();
-    fetch('../resources/CustomDiagramLabels.json')
-        .then(res => res.json())
-        .then(json => {
-            scope.diagramTypes = json.LabelList;
-            updateDiagramTypeSelection(diagramType, diagramLabel);
-            scope.$apply();
-        });
+function loadCustomDiagramLabels() {
+    const parentWindow = window.frameElement.ownerDocument.defaultView;
+    const sidebar = parentWindow.simApp.mainApp.sidebar;
+    const scope = angular
+      .element(document.querySelector('#diagramControllerPanel'))
+      .scope();
+    scope.diagramTypes = scope.diagramTypes.concat(
+      sidebar.getCustomDiagramTypes().map((dt) => {
+        return {
+          name: dt.label,
+          value: dt.type,
+        };
+      }),
+    );
 }
 
 function updateDiagramTypeSelection(diagramType, diagramLabel) {
@@ -134,7 +143,7 @@ function OnLoad(dataObj) {
         //scope.dbID = diagramData.dbID;
         scope.name = diagramData.name;
         scope.desc = diagramData.desc;
-        loadCustomDiagramLabels(dataObj.diagramType ?? null, dataObj.diagramLabel ?? null);
+        loadCustomDiagramLabels();
         scope.states = diagramData.states;
 
         if (dataObj.diagramType == "dtComponent" || dataObj.diagramType == "dtSystem") {
@@ -161,8 +170,10 @@ function OnLoad(dataObj) {
         else {
             var templateElement = document.getElementById("TemplateOption");
             var templateLabelElement = document.getElementById("TemplateOptionLabel");
-            templateElement.style.visibility = "hidden";
-            templateLabelElement.style.visibility = "hidden";
+            if (templateElement) {
+                templateElement.style.visibility = "hidden";
+                templateLabelElement.style.visibility = "hidden";
+            }
         }
         if (dataObj.changeDiagramType) {
             scope.changeDiagramTypeSidebarCallbackFunction = dataObj.changeDiagramType;
@@ -175,8 +186,13 @@ function GetDataObject() {
     var scope = angular.element(document.querySelector('#diagramControllerPanel')).scope();
     diagramData.name = scope.name;
     diagramData.desc = scope.desc;
-    diagramData.diagramLabel = scope.diagramType.name;
-    diagramData.diagramType = scope.diagramType.value;
+    if (scope.diagramType.value === 'newType') {
+        diagramData.diagramLabel = scope.newType.label;
+        diagramData.diagramType = scope.newType.type;
+    } else {
+        diagramData.diagramLabel = scope.diagramType.name;
+        diagramData.diagramType = scope.diagramType.value;
+    }
     if (diagramData.diagramType == 'dtComponent' || diagramData.diagramType == 'dtSystem') {
         if (diagramData.singleStates)
             diagramData.singleStates.forEach(
@@ -188,7 +204,10 @@ function GetDataObject() {
     if (scope.data.importedContent) {
         diagramData.importedContent = scope.data.importedContent;
     }
-    diagramData.diagramTemplate = scope.diagramTemplate;
+    if (scope.selectedTemplate !== null) {
+        diagramData.diagramTemplate = scope.diagramTemplates[scope.selectedTemplate];
+    }
+    diagramData.forceMerge = scope.data.forceMerge;
     return diagramData;
 }
 
@@ -214,26 +233,42 @@ diagramModule.controller('diagramController', function ($scope, $timeout) {
     $scope.name = "diagram1";
     $scope.desc = "new diagram";
     $scope.diagramTypes = [
-        { name: "Component", value: "dtComponent" },
+        { name: "Create new...", value: "newType" },
+        { name: "Plant", value: "dtPlant" },
         { name: "System", value: "dtSystem" },
-        { name: "Plant Response", value: "dtPlant" },
-        { name: "Other", value: "dtOther" }
+        { name: "Component", value: "dtComponent" },
+        { name: "Other", value: "dtOther" },
     ];
     $scope.diagramTemplates = [];
     $scope.diagramTemplate = "";
     $scope.singleStatesHeader = [{ column: "Name" }, { column: "Success State" }];
     $scope.singleStates = [];
-    $scope.changeDiagramTypeSidebarCallbackFunction = null;
+    $scope.changeDiagramTypeSidebarCallbackFunction = () => true;
     $scope.loading = true;
     $scope.initialChange = true;
-    $scope.diagramType = $scope.diagramTypes[0];
+    $scope.diagramType = $scope.diagramTypes[1];
     $scope.timeout = $timeout;
     $scope.createDiagram = false;
     $scope.data = {
         fileName: "",
+        forceMerge: false,
         importedContent: null,
         usingImportedContent: false
     }
+    $scope.showNewTypeEditor = false;
+    $scope.typeCategories = [
+        {
+            label: 'Single State',
+            value: 'dtComponent'
+        }, {
+            label: 'Multi State',
+            value: 'dtOther',
+        },
+    ];
+    $scope.newType = {
+        label: '',
+        type: $scope.typeCategories[0],
+    };
 
 
     $scope.$watch('name', function () {
@@ -243,9 +278,6 @@ diagramModule.controller('diagramController', function ($scope, $timeout) {
         somethingChanged();
     }, true);
     $scope.$watch('diagramType', function (newValue, oldValue) {
-        if ($scope.initialChange) {
-            return;
-        }
         if ($scope.loading) {
             $timeout(() => $scope.loading = false);
         }
@@ -274,6 +306,19 @@ diagramModule.controller('diagramController', function ($scope, $timeout) {
                 el.style.display = 'none';
             }
         }
+        $scope.showNewTypeEditor = $scope.diagramType.value === 'newType';
     }
+
+    $scope.selectedTemplate = null;
+    $scope.data.templateIsSelected = false;
+    $scope.chooseTemplate = function (index) {
+        if ($scope.selectedTemplate === index) {
+            $scope.selectedTemplate = null;
+            $scope.data.templateIsSelected = false;
+        } else {
+            $scope.selectedTemplate = index;
+            $scope.data.templateIsSelected = true;
+        }
+    };
 
 });

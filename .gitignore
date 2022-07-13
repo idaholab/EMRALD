@@ -281,3 +281,8 @@ _Pvt_Extensions
 /Emrald_Site/resources/TestMergeModel.json
 /CommandLineCP/Properties/launchSettings.json
 /EMRALD_Sim/Properties/launchSettings.json
+
+# JavaScript unit test artifacts
+EMRALD_Site/coverage
+coverage
+EMRALD_Site/tests/temp

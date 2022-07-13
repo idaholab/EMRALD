@@ -244,44 +244,45 @@ namespace SimulationDAL
 
     public override bool EventTriggered(MyBitArray curStates, object otherData, TimeSpan curSimTime, TimeSpan start3DTime, TimeSpan nextEvTime)
     {
-      bool found = false;
+      ChangedIDs changedItems = (ChangedIDs)otherData;
+      int matchCnt = 0;
 
       foreach (int i in _relatedIDs)
       {
-        if ((curStates.Count > i) && (curStates[i])) //desired state is in current list
+        if ((changedItems.HasItem(EnModifiableTypes.mtState, i)))
         {
-          found = true;
+          if ((curStates.Count > i) && (curStates[i])) //desired state is in current list
+          {
+            if (ifInState) //We are looking for an item in the list to trigger us       
+            {
+              ++matchCnt;
+            }
+            else //don't want the item in order to trigger us but we found it
+            {
+              if (allItems) //only one item needed to not trigger.
+                return false;
+            }
+          }
+          else //desired state is not in current list
+          {
+            if (ifInState) //We are looking for an item in the list to trigger us       
+            {
+              if (allItems) //must have all items for a trigger needed.
+                return false;
+            }
+            else //don't want the item in order to trigger and we didn't find it
+            {
+              ++matchCnt;
+            }
+          }
+        }
 
-          if (ifInState) //We are looking for an item in the list to trigger us       
-          {
-            if (!allItems) //only one item true needed.
-              return true;
-          }
-          else //don't want the item in order to trigger us but we found it
-          {
-            if (allItems) //only one item needed to not trigger.
-              return false;
-          }
-        }
-        else //desired state is not in current list
-        {
-          if (ifInState) //We are looking for an item in the list to trigger us       
-          {
-            if (allItems) //must have all items for a trigger needed.
-              return false;
-          }
-          else //don't want the item in order to trigger and we didn't find it
-          {
-            if (!allItems) //only one item needed trigger.
-              return true;
-          }
-        }
+        if (!allItems && (matchCnt > 0)) //only need one so return
+          return true;
       }
 
-      if (ifInState)
-        return found; //if we didn't kick out early then we went through all the items, as long we found is true then we got a match.
-      else
-        return !found; //if we didn't kick out early then we went through all the items, as long we found is false then we got a match.
+      //if we didn't kick out early then we went through all the items and we need to have found all of them in order to return true..
+      return matchCnt == _relatedIDs.Count;
     }
 
     public override void LookupRelatedItems(EmraldModel all, EmraldModel addToList)
@@ -744,7 +745,7 @@ namespace SimulationDAL
     public TimeBasedEvent(string inName)
       : base(inName) { }
 
-    public abstract TimeSpan NextTime();
+    public abstract TimeSpan NextTime(TimeSpan curTime);
 
     /// <summary>
     /// RedoNextTime called if a variable is used and that variable has changed. Implement in derived class if ocAdjust is allowed for that type of event.
@@ -761,7 +762,7 @@ namespace SimulationDAL
           return oldOccurTime;
           break;
         case EnOnChangeTask.ocResample:
-          return NextTime() - (curTime - sampledTime);
+          return NextTime(curTime) - (curTime - sampledTime);
           break;
         case EnOnChangeTask.ocAdjust:
           throw new Exception("RedoNextTime function not implemented for " + this.evType.ToString());
@@ -776,6 +777,7 @@ namespace SimulationDAL
   {
     public EnTimeRate timerVariableUnit = EnTimeRate.trHours;
     protected SimVariable timeVariable = null;
+    protected bool fromSimStart = false;
     public TimeSpan time = TimeSpan.FromTicks(0);
 
     public TimerEvent() : base("") { }
@@ -793,7 +795,8 @@ namespace SimulationDAL
       {
         retStr = retStr +
           "\"time\":\"" + XmlConvert.ToString(this.time) + "\"," + Environment.NewLine +
-          "\"useVariable\": false";
+          "\"useVariable\": false," + Environment.NewLine; 
+          
       }
       else
       {
@@ -801,9 +804,11 @@ namespace SimulationDAL
           "\"time\":\"" + timeVariable.name + "\"," + Environment.NewLine +
           "\"useVariable\": true, " + Environment.NewLine +
           "\"timeVariableUnit\":\"" + this.timerVariableUnit.ToString() + "\"," + Environment.NewLine +
-          "\"onVarChange\":\"" + this.onVarChange.ToString() + "\"," + Environment.NewLine;
-        
+          "\"onVarChange\":\"" + this.onVarChange.ToString() + "\"," + Environment.NewLine ;
+
       }
+
+      retStr = retStr + "\"fromSimStart\":\"" + this.fromSimStart.ToString() + "\"" + Environment.NewLine;
 
       return retStr;
     }
@@ -854,6 +859,11 @@ namespace SimulationDAL
         this.time = XmlConvert.ToTimeSpan((string)dynObj.time);
       }
 
+      if (dynObj.fromSimStart != null)
+      {
+        this.fromSimStart = (bool)dynObj.fromSimStart;
+      }
+
       processed = true;
       return true;
     }
@@ -874,8 +884,7 @@ namespace SimulationDAL
         try
         {
           this.timeVariable = lists.allVariables.FindByName((string)dynObj.time); 
-           
-          //this.AddRelatedItem(curVar.id); //don't need to add to relatedItems, because it doesn't trigger the event and time is fixed once started 
+          this.AddRelatedItem(this.timeVariable.id);  
         }
         catch
         {
@@ -886,15 +895,23 @@ namespace SimulationDAL
       return true;
     }
 
-    public override TimeSpan NextTime()
+    public override TimeSpan NextTime(TimeSpan curTime)
     {
+      TimeSpan retTime = time;
       if (this.timeVariable != null)
       {
-
-        time = Globals.NumberToTimeSpan(timeVariable.dblValue, timerVariableUnit);
+        retTime = Globals.NumberToTimeSpan(timeVariable.dblValue, timerVariableUnit);
       }
 
-      return (TimeSpan)time;
+      if(fromSimStart)
+      {
+        if (retTime > curTime)
+          return (TimeSpan)retTime - curTime;
+        else
+          return TimeSpan.FromMilliseconds(0);
+      }
+
+      return (TimeSpan)retTime;
     }
 
     public override TimeSpan RedoNextTime(TimeSpan sampledTime, TimeSpan curTime, TimeSpan oldOccurTime)
@@ -902,7 +919,7 @@ namespace SimulationDAL
       //A timer doesn't sample, but if a variable is used and we are to adjust then it is just the new variable time - what has already past
       if (onVarChange == EnOnChangeTask.ocAdjust)
       {
-        TimeSpan time = NextTime() - (curTime - sampledTime);
+        TimeSpan time = NextTime(curTime) - (curTime - sampledTime);
         if (time < curTime)
           return curTime;
         else
@@ -1009,6 +1026,9 @@ namespace SimulationDAL
       {
         //use normal assigned lambda if not a variable
         this._lambda = (double)dynObj.lambda;
+      }
+      else
+      {
 
         try //may not exist in earlier versions so use a default
         {
@@ -1051,7 +1071,7 @@ namespace SimulationDAL
       return true;
     }
 
-    public override TimeSpan NextTime()
+    public override TimeSpan NextTime(TimeSpan curTime)
     {
       TimeSpan retVal = TimeSpan.MaxValue;
       if (lambdaVariable != null)
@@ -1104,12 +1124,22 @@ namespace SimulationDAL
 
     public override TimeSpan RedoNextTime(TimeSpan sampledTime, TimeSpan curTime, TimeSpan oldOccurTime)
     {
-      if(onVarChange == EnOnChangeTask.ocAdjust)
+      if (onVarChange == EnOnChangeTask.ocAdjust)
       {
-        //todo: how to adjust 
-        return NextTime() - (curTime - sampledTime);
+        //todo: how to adjust
+        //Random rnd = new Random();
+        double rnd = SingleRandom.Instance.NextDouble();
+
+
+
+        //double var1 = (Math.Log(Dbl_Treshold) + (Dbl_C4Lambda1 * CurTime)) / (-Dbl_C4Lambda2);
+        double var1 = (Math.Log(rnd) + (_lambda * curTime.TotalHours)) / (-lambdaVariable.dblValue);
+        _lambda = lambdaVariable.dblValue;
+        //what will happen if we have more than 2 loops (example: cooling system is repaired)
+        return (TimeSpan.FromHours(var1) + curTime);
+        //return NextTime() - (curTime - sampledTime);
       }
-      
+
       //if not "ocAdjust" call parent as they are all the same.
       return base.RedoNextTime(sampledTime, curTime, oldOccurTime);
     }
@@ -1237,7 +1267,7 @@ namespace SimulationDAL
       return true;
     }
 
-    public override TimeSpan NextTime()
+    public override TimeSpan NextTime(TimeSpan curTime)
     {
       double sampled = 0.0;
       List<double?> valuePs = new List<double?>();
@@ -1258,6 +1288,7 @@ namespace SimulationDAL
         throw new Exception("Failed to load parameter values for event " + this.name);
       }
 
+      EnTimeRate distTimeRate = dfltTimeRate;
       try
       {
 
@@ -1265,19 +1296,23 @@ namespace SimulationDAL
         {
           case EnDistType.dtExponential:
             sampled = (new Exponential((double)valuePs[0], SingleRandom.Instance)).Sample();
+            distTimeRate = _dParams[0].timeRate;
             break;
           case EnDistType.dtNormal: //mean and standard deviation
             sampled = (new Normal((double)valuePs[0],
                                     Globals.ConvertToNewTimeSpan(_dParams[1].timeRate, (double)valuePs[1], _dParams[0].timeRate),
                                     SingleRandom.Instance)).Sample();
+            distTimeRate = _dParams[0].timeRate;
             break;
           case EnDistType.dtWeibull:
             sampled = (new Weibull((double)valuePs[0], (double)valuePs[1], SingleRandom.Instance)).Sample();
+            distTimeRate = _dParams[0].timeRate;
             break;
           case EnDistType.dtLogNormal:
             sampled = (new LogNormal((double)valuePs[0],
                                     Globals.ConvertToNewTimeSpan(_dParams[1].timeRate, (double)valuePs[1], _dParams[0].timeRate),
                                     SingleRandom.Instance)).Sample();
+            distTimeRate = _dParams[0].timeRate;
             break;
           default:
             throw new Exception("Distribution type not implemented for " + this._distType.ToString());
@@ -1291,7 +1326,8 @@ namespace SimulationDAL
 
 
 
-      TimeSpan sampledTime = Globals.NumberToTimeSpan(sampled, dfltTimeRate);
+      TimeSpan sampledTime = Globals.NumberToTimeSpan(sampled, distTimeRate);
+      //Globals.ConvertToNewTimeSpan(_dParams[1].timeRate, (double)valuePs[1], _dParams[0].timeRate)
       try
       {
         TimeSpan minTime = TimeSpan.Zero;
@@ -1330,19 +1366,19 @@ namespace SimulationDAL
         {
           case EnDistType.dtExponential:
             //todo: not correct
-            return NextTime() - (curTime - sampledTime);
+            return NextTime(curTime) - (curTime - sampledTime);
             break;
           case EnDistType.dtNormal: //mean and standard deviation
             //todo: not correct
-            return NextTime() - (curTime - sampledTime);
+            return NextTime(curTime) - (curTime - sampledTime);
             break;
           case EnDistType.dtWeibull:
             //todo: not correct
-            return NextTime() - (curTime - sampledTime);
+            return NextTime(curTime) - (curTime - sampledTime);
             break;
           case EnDistType.dtLogNormal:
             //todo: not correct
-            return NextTime() - (curTime - sampledTime);
+            return NextTime(curTime) - (curTime - sampledTime);
             break;
           default:
             throw new Exception("Distribution type not implemented for " + this._distType.ToString());
@@ -1455,7 +1491,7 @@ namespace SimulationDAL
       return true;
       }
 
-    public override TimeSpan NextTime()
+    public override TimeSpan NextTime(TimeSpan curTime)
     {
       if (mathFuncs == null)
         mathFuncs = new Normal(_Mean, Globals.ConvertToNewTimeSpan(_StdTimeRate, _Std, _MeanTimeRate), SingleRandom.Instance);
@@ -1496,7 +1532,7 @@ namespace SimulationDAL
     //  return retStr;
     //}
 
-    public override TimeSpan NextTime()
+    public override TimeSpan NextTime(TimeSpan curTime)
     {
       if (mathFuncs == null)
         mathFuncs = new LogNormal(_Mean, _Std, SingleRandom.Instance);
@@ -1588,7 +1624,7 @@ namespace SimulationDAL
       return true;
     }
 
-    public override TimeSpan NextTime()
+    public override TimeSpan NextTime(TimeSpan curTime)
     {
       if (mathFuncs == null)
         mathFuncs = new Weibull(_Shape, _Scale, SingleRandom.Instance);
@@ -1658,7 +1694,7 @@ namespace SimulationDAL
       return true;
     }
 
-    public override TimeSpan NextTime()
+    public override TimeSpan NextTime(TimeSpan curTime)
     {
       if (mathFuncs == null)
         mathFuncs = new Exponential(_Rate, SingleRandom.Instance);

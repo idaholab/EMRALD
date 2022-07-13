@@ -1,10 +1,29 @@
+/* eslint-disable class-methods-use-this */
 /**
  * @file ExternalExeForm class.
  */
+// @ts-nocheck
+/// <reference path="../../scripts/jsdoc-types.js" />
 
 /**
- * @class ExternalExeForm
- * @classdesc Utilities for custom run application forms.
+ * @namespace ExternalExeForm
+ */
+
+/**
+ * @typedef ExternalExeForm.DataObject
+ * @property {string} raLocation - The location of the executeable to run.
+ * @property {object} raFormData - Custom form data.
+ * @property {string} raPreCode - The C# preprocessing code.
+ * @property {string} raPostCode - The C# postprocessing code.
+ * @property {string[]} varNames - Names of variables used in C# code.
+ * @property {string} returnProcess - The return process type.
+ * @property {EMRALD.Variable['Variable'][]} variables - Variables in the project to override.
+ */
+
+/**
+ * Provides utilities for custom run application forms.
+ *
+ * @global
  */
 class ExternalExeForm {
   /**
@@ -13,42 +32,56 @@ class ExternalExeForm {
    * @constructs
    */
   constructor() {
-    const parentWindow = window.frameElement?.ownerDocument.defaultView;
+    const parentWindow = /** @type {ActionEditor.Window & Window} */ (
+      /** @type {unknown} */ (window.frameElement.ownerDocument.defaultView)
+    );
     if (parentWindow === null || parentWindow === undefined) {
-      throw new Error("Custom forms must be embedded in an action editor.");
+      throw new Error('Custom forms must be embedded in an action editor.');
     }
-    this.parentWindow = parentWindow;
-    this.parentScope = parentWindow.getScope();
+    // eslint-disable-next-line max-len
+    /** @type {ActionEditor.Window & Window} */ this.parentWindow = parentWindow;
+    // eslint-disable-next-line max-len
+    /** @type {ActionEditor.Scope & angular.IScope} */ this.parentScope = parentWindow.getScope();
   }
 
+  /**
+   * Constructs the data object to be passed to the parent window.
+   * Must be overriden by custom forms.
+   *
+   * @abstract
+   * @returns {ExternalExeForm.DataObject} The constructed data object.
+   */
   getDataObject() {
-    return {};
+    return {
+      raFormData: {},
+      raLocation: '',
+      raPostCode: '',
+      raPreCode: '',
+      returnProcess: 'rtNone',
+      variables: [],
+      varNames: [],
+    };
   }
 
   /**
    * Saves the data object in the parent frame.
-   *
-   * @name ExternalExeForm#save
-   * @function
    */
   save() {
     this.parentWindow.postMessage({
       payload: this.getDataObject(),
-      type: "saveTemplate",
+      type: 'saveTemplate',
     });
   }
 
   /**
    * Binds the angular scope to the form.
    *
-   * @name ExternalExeForm#bindScope
-   * @function
-   * @param {angular.IScope} $scope The angular scope.
+   * @param {import('angular').IScope} $scope The angular scope.
    */
   bindScope($scope) {
     this.$scope = $scope;
     Object.keys($scope).forEach((key) => {
-      if (key !== "this" && !/^\$/.test(key)) {
+      if (key !== 'this' && !/^\$/.test(key)) {
         $scope.$watch(key, () => {
           this.save();
         });
@@ -59,43 +92,41 @@ class ExternalExeForm {
   /**
    * Finds the matching variable object in the parent scope.
    *
-   * @name ExternalExeForm#findVariable
-   * @function
-   * @param {*} variable1 The variable to find.
-   * @returns {*} The matching variable, if any.
+   * @param {EMRALD.Variable['Variable']} variable1 The variable to find.
+   * @returns {EMRALD.Variable['Variable']} The matching variable, if any.
    */
   findVariable(variable1) {
+    let id;
+    if (variable1.Variable) {
+      id = variable1.Variable.id;
+    } else {
+      id = variable1.id;
+    }
     return this.parentScope.data.cvVariables.find(
-      (variable2) => variable1.id === variable2.id
+      (variable2) => id === variable2.id,
     );
   }
 
   /**
    * Generates varNames for the form data object.
    *
-   * @name ExternalExeForm#getVarNames
-   * @function
-   * @param {*} objs Arrays of FormData objects to gather variables from.
+   * @param {ExeFormItem[]} objs Arrays of ExeFormItem objects to gather variables from.
    * @returns {string[]} The varNames.
    */
   getVarNames(objs) {
     return this.removeDuplicates(
       objs
-        .filter((obj) => {
-          return obj.useVariable;
-        })
-        .map((obj) => {
-          return obj.variable.name;
-        })
+        .filter((obj) => obj.useVariable)
+        .map((obj) => obj.variable.name),
     );
   }
 
   /**
    * Removes duplicate elements from an array.
    *
-   * @name ExternalExeForm#removeDuplicates
-   * @function
-   * @param {*} arr The array to modify.
+   * @template T - The type of elements in the array.
+   * @param {T[]} arr The array to modify.
+   * @returns {T[]} The modified array.
    */
   removeDuplicates(arr) {
     const newArr = [];
@@ -110,73 +141,87 @@ class ExternalExeForm {
   /**
    * Escapes quotes in a string.
    *
-   * @name ExternalExeForm#escape
-   * @function
    * @param {string} str The string to escape.
    * @returns {string} The escaped string.
    */
   escape(str) {
-    return str.replace(/([\"\\])/g, "\\$1");
+    return str.replace(/(["\\])/g, '\\$1');
   }
-
-  /**
-   * Helper functions for generating pre/post code fragments.
-   *
-   * @name ExternalExeForm#code
-   */
-  code = {
-    escape(str) {
-      return str.replace(/([\"\\])/g, "\\$1");
-    },
-
-    /**
-     * Generates code for writing to a file.
-     *
-     * @name ExternalExeForm#code#writeFile
-     * @function
-     * @param {string} path The path to the file.
-     * @param {string} contents The file contents.
-     * @returns {string} The C# code for writing the file.
-     */
-    writeFile(path, contents) {
-      return `System.IO.File.WriteAllText("${this.escape(
-        path
-      )}", ${contents});`;
-    },
-
-    /**
-     * Generates code for reading a file.
-     * 
-     * @name ExternalExeForm#code#readFile
-     * @function
-     * @param {string} path The path to the file.
-     * @returns {string} The C# code for reading the file.
-     */
-    readFile(path) {
-      return `System.IO.File.ReadAllText("${this.escape(path)}")`;
-    },
-
-    /**
-     * Properly formats EMRALD variable names within a file.
-     * 
-     * @name ExternalExeForm#code#insertVariables
-     * @function
-     * @param {string[]} varNames Variable names to find.
-     * @param {string} str The file contents to modify.
-     * @returns {string} The formatted file.
-     */
-    insertVariables(varNames, str) {
-      varNames.forEach((varName) => {
-        str = str.replace(new RegExp(`%%${varName}`, 'g'), `"+${varName}+"`);
-      });
-      return str;
-    }
-  };
 }
 
-class FormData {
+/**
+ * Helper functions for generating pre/post code fragments.
+ */
+ExternalExeForm.prototype.code = {
+  /**
+   * Escapes quotes in a string.
+   *
+   * @param {string} str The string to escape.
+   * @returns {string} The escaped string.
+   */
+  escape(str) {
+    return str.replace(/(["\\])/g, '\\$1');
+  },
+
+  /**
+   * Properly formats EMRALD variable names within a file.
+   *
+   * @name ExternalExeForm#code#insertVariables
+   * @function
+   * @param {string[]} varNames Variable names to find.
+   * @param {string} str The file contents to modify.
+   * @returns {string} The formatted file.
+   */
+  insertVariables(varNames, str) {
+    let contents = str;
+    varNames.forEach((varName) => {
+      contents = contents.replace(
+        new RegExp(`%%${varName}`, 'g'),
+        `"+${varName}+"`,
+      );
+    });
+    return contents;
+  },
+
+  /**
+   * Generates code for reading a file.
+   *
+   * @name ExternalExeForm#code#readFile
+   * @function
+   * @param {string} path The path to the file.
+   * @returns {string} The C# code for reading the file.
+   */
+  readFile(path) {
+    return `System.IO.File.ReadAllText("${this.escape(path)}")`;
+  },
+
+  /**
+   * Generates code for writing to a file.
+   *
+   * @param {string} path The path to the file.
+   * @param {string} contents The file contents.
+   * @returns {string} The C# code for writing the file.
+   */
+  writeFile(path, contents) {
+    return `System.IO.File.WriteAllText("${this.escape(path)}", ${contents});`;
+  },
+};
+
+/**
+ * Stores form data with some useful properties and methods.
+ *
+ * @global
+ * @template T - The type of data stored in the item.
+ */
+class ExeFormItem {
+  /**
+   * Constructs ExeFormItem.
+   *
+   * @param {T} data - The stored data.
+   */
   constructor(data) {
-    this.data = data;
-    this.useVariable = false;
+    /** @type {T} */ this.data = data;
+    /** @type {boolean} */ this.useVariable = false;
+    /** @type {EMRALD.Variable['Variable']} */ this.variable = null;
   }
 }

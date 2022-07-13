@@ -1,16 +1,49 @@
-var openErrorForm = angular.module("openErrorForm", []);
+/**
+ * @file OpenErrorPro form.
+ */
+// @ts-check
+/* global PrismParser, ExternalExeForm, cast, fileModel */
+/// <reference path="../lib/EditFormUtil.js" />
+/// <reference path="../lib/ExternalExeForm.js" />
 
+const openErrorForm = window.angular.module('openErrorForm', []);
+
+/**
+ * @namespace OpenErrorForm
+ */
+
+/**
+ * @typedef OpenErrorForm.ConditionData
+ * @property {string} name - The condition name.
+ * @property {string} comparison - The condition comparison.
+ * @property {string} value - The condition value.
+ * @property {string} op - The condition prefix operator.
+ */
+
+/**
+ * Represents a PRISM condition.
+ */
 class Condition {
+  /**
+   * Constructs Condition.
+   *
+   * @param {OpenErrorForm.ConditionData} data - The condition data.
+   */
   constructor(data) {
     this.name = data.name;
     this.comparison = data.comparison;
     this.value = data.value;
-    this.hasOp = typeof data.op !== "undefined";
+    this.hasOp = typeof data.op !== 'undefined';
     this.op = data.op;
   }
 
+  /**
+   * Gets a text representation of the condition.
+   *
+   * @returns {string} The condition text.
+   */
   get text() {
-    var re = "";
+    let re = '';
     if (this.hasOp) {
       re += `${this.opName} `;
     }
@@ -18,17 +51,28 @@ class Condition {
     return re;
   }
 
+  /**
+   * Gets the condition operator as a word.
+   *
+   * @returns {string} The operator.
+   */
   get opName() {
-    if (this.op === "&") {
-      return "AND";
+    if (this.op === '&') {
+      return 'AND';
     }
-    if (this.op === "|") {
-      return "OR";
+    if (this.op === '|') {
+      return 'OR';
     }
+    return '';
   }
 
+  /**
+   * Creates a string representation of the condition.
+   *
+   * @returns {string} The string representation of the condition.
+   */
   toString() {
-    var re = "";
+    let re = '';
     if (this.hasOp) {
       re += `${this.op}`;
     }
@@ -37,62 +81,103 @@ class Condition {
   }
 }
 
+/**
+ * @typedef OpenErrorForm.ThenObj
+ * @property {{ op: string, name: string, value: string }} value - The parsed value.
+ * @property {string} name - The name of the target.
+ */
+
+/**
+ * @typedef OpenErrorForm.ThenData
+ * @property {number | { variable: string }} probability - The probability of the outcome.
+ * @property {OpenErrorForm.ThenObj[]} then - The outcome data.
+ */
+
+/**
+ * Represents a PRISM outcome.
+ */
 class Then {
+  /**
+   * Constructs Then.
+   *
+   * @param {OpenErrorForm.ThenData} data - The outcome data.
+   * @param {EMRALD.Variable['Variable'][]} cvVariables - EMRALD variables.
+   * @param {EPC} epc - The containing EPC.
+   */
   constructor(data, cvVariables, epc) {
     this.probability = data.probability;
     this.useVariable = false;
     this.epc = epc;
-    if (typeof data.probability === "object" && data.probability.variable) {
+    const p = data.probability;
+    if (typeof p === 'object' && p.variable) {
       this.useVariable = true;
       this.variable = cvVariables.find(
-        (variable) => variable.name === data.probability.variable
+        (variable) => variable.name === p.variable,
       );
     }
     this.then = data.then;
     this.remaining = false;
     this.outcomes = this.then
       .map((then) => {
-        if (typeof then.value === "object") {
+        if (typeof then.value === 'object') {
           if (then.value.op !== undefined) {
+            // eslint-disable-next-line max-len
             return `(${then.name}'=${then.value.name}${then.value.op}${then.value.value})`;
           }
         }
         return `(${then.name}'=${then.value})`;
       })
-      .join("&");
+      .join('&');
   }
 
+  /**
+   * Creates a string representation of the outcome.
+   *
+   * @param {Then[]} peers - Peer outcomes.
+   * @returns {string} The string representation of the outcome.
+   */
   toString(peers) {
     if (this.useVariable) {
       return `%%${this.variable.name}:${this.outcomes}`;
     }
     if (this.remaining) {
-      var peerProbabilities = peers
+      const peerProbabilities = peers
         .map((then) => {
           if (then.useVariable) {
             return `-%%${then.variable.name}`;
-          } else if (!then.remaining) {
+          }
+          if (!then.remaining) {
             return `-${then.probability}`;
           }
+          return '';
         })
-        .join("");
+        .join('');
       return `1${peerProbabilities}:${this.outcomes}`;
     }
     return `${this.probability}:${this.outcomes}`;
   }
 }
 
+/**
+ * PRISM EPC.
+ */
 class EPC {
+  /**
+   * Constructs an EPC.
+   *
+   * @param {Element} node - The XML node.
+   * @param {EMRALD.Variable['Variable'][]} cvVariables - EMRALD project variables.
+   */
   constructor(node, cvVariables) {
     this.node = node;
     this.raw = node.innerHTML;
     const parsed = PrismParser.parse(this.raw);
-    if (typeof parsed.conditions === "string") {
-      this.conditions = [parsed.conditions === "true"];
+    if (typeof parsed.conditions === 'string') {
+      this.conditions = [parsed.conditions === 'true'];
       this.hasConditions = false;
     } else {
       this.conditions = parsed.conditions.map(
-        (condition) => new Condition(condition)
+        (condition) => new Condition(condition),
       );
       this.hasConditions = true;
     }
@@ -101,46 +186,99 @@ class EPC {
     this.modified = false;
   }
 
+  /**
+   * Gets the EPC label.
+   *
+   * @returns {string} The EPC label.
+   */
   get label() {
-    return this.conditions.map((condition) => condition.text).join(" ");
+    return this.conditions.map((condition) => condition.text).join(' ');
   }
 
+  /**
+   * Creates a string representation of the EPC.
+   *
+   * @returns {string} The string representation of the EPC.
+   */
   toString() {
-    var conditions = this.conditions
+    const conditions = this.conditions
       .map((condition) => condition.toString())
-      .join("");
-    var outcomes = this.then.map((then) => then.toString(this.then)).join("+");
+      .join('');
+    const outcomes = this.then
+      .map((then) => then.toString(this.then))
+      .join('+');
     return `${conditions}->${outcomes};`;
   }
 }
 
-class Element {
+/**
+ * A model element.
+ */
+class ModelElement {
+  /**
+   * Constructs ModelElement.
+   *
+   * @param {Element} node - The XML node.
+   * @param {EMRALD.Variable['Variable'][]} cvVariables - EMRALD project variables.
+   */
   constructor(node, cvVariables) {
     this.node = node;
-    this.name = node.getAttribute("name");
-    this.epcs = Array.from(node.getElementsByTagName("epc")).map(
-      (epc) => new EPC(epc, cvVariables)
+    this.name = node.getAttribute('name');
+    this.epcs = Array.from(node.getElementsByTagName('epc')).map(
+      (epc) => new EPC(epc, cvVariables),
     );
   }
 
+  /**
+   * Gets EPCs that have been modified.
+   *
+   * @returns {EPC[]} The modified EPCs.
+   */
   getModified() {
     return this.epcs.filter((epc) => epc.modified === true);
   }
 }
 
+/**
+ * A model data node.
+ */
 class DataNode {
+  /**
+   * Constructs DataNode.
+   *
+   * @param {Element} node - The XML node.
+   */
   constructor(node) {
-    this.name = node.getAttribute("name");
-    var values = node.getAttribute("values");
+    this.name = node.getAttribute('name');
+    const values = node.getAttribute('values');
     if (values !== null) {
-      this.values = node.getAttribute("values").split(/,\s?/);
+      this.values = node.getAttribute('values').split(/,\s?/);
     } else {
       this.values = [];
     }
   }
 }
 
+/**
+ * @typedef OpenErrorForm.VarLinkJSON
+ * @property {EMRALD.Variable['Variable']} initialTime - The initial sim time.
+ * @property {string} prismMethod - The target PRISM method.
+ * @property {string} target - The target failure state.
+ * @property {{ id: number, name: string }} variable The bound variable.
+ */
+
+/**
+ * A project var link.
+ */
 class VarLink {
+  /**
+   * Constructs VarLink.
+   *
+   * @param {string} [prismMethod] - The name of the PRISM method to target.
+   * @param {string} [target] - The name of the failure state to target.
+   * @param {EMRALD.Variable['Variable']} [variable] - The document link variable to bind to.
+   * @param {EMRALD.Variable['Variable']} [initialTime] - The initial sim time.
+   */
   constructor(prismMethod, target, variable, initialTime) {
     this.prismMethod = prismMethod;
     this.target = target;
@@ -148,12 +286,20 @@ class VarLink {
     this.initialTime = initialTime;
   }
 
+  /**
+   * Creates a JSON representation of the var link.
+   *
+   * @returns {OpenErrorForm.VarLinkJSON} The JSON object.
+   */
   toJSON() {
-    var json = {
+    const json = {
       initialTime: this.initialTime,
       prismMethod: this.prismMethod,
       target: this.target,
-      variable: {},
+      variable: {
+        id: -1,
+        name: '',
+      },
     };
     if (this.variable) {
       json.variable.id = this.variable.id;
@@ -163,25 +309,62 @@ class VarLink {
   }
 }
 
+/**
+ * @typedef OpenErrorForm.Scope
+ * @property {string} exePath - The path to the OpenError executeable.
+ * @property {ModelElement[]} elements - The model elements.
+ * @property {VarLink[]} varLinks - The var links.
+ * @property {string} fileName - The name of the model file.
+ * @property {string} prismPath - Path to the PRISM installation.
+ * @property {boolean} hasModel - If a model has been loaded.
+ * @property {string} modelFile - Contents of the uploaded model file.
+ * @property {XMLDocument} model - Parsed model file.
+ * @property {string[]} failures - Possible failure modes.
+ * @property {DataNode[]} dataNodes - Data nodes.
+ * @property {string[]} prismMethods - PRISM method options.
+ * @property {ModelElement} addElement - The element being added.
+ * @property {EPC} addCondition - The condition being added.
+ * @property {EMRALD.Variable['Variable'][]} cvVariables - EMRALD project variables.
+ * @property {EMRALD.Variable['Variable'][]} docVars - Document link variables.
+ * @property {EPC[]} modified - Modified EPCs.
+ * @property {() => void} save - Saves the form data.
+ * @property {() => void} addOutput - Adds a doc link variable output.
+ * @property {(index: number) => void} removeOutput - Removes the doc link output at the specified index.
+ * @property {() => void} addOutcome - Adds an outcome.
+ * @property {(index: number) => void} removeOutcome - Removes the given outcome.
+ * @property {() => any[]} getDataValues - Gets the values out of the data nodes.
+ * @property {(target: EPC) => void} setModified - Sets the given EPC as modified.
+ * @property {(name: string) => any[]} getValuesByNodeName - Gets the data values of the given node name.
+ * @property {() => Condition[]} getConditionDisplay - Gets the conditions that should be displayed.
+ */
+
+/**
+ * The OpenError custom form.
+ */
 class OpenErrorForm extends ExternalExeForm {
+  /**
+   * @inheritdoc
+   */
   getDataObject() {
-    var dataObj = {};
-    dataObj.raLocation = this.$scope.exePath;
+    /** @type {ExternalExeForm.DataObject} */ const dataObj = {};
+    /** @type {OpenErrorForm.Scope} */ let s;
+    const scope = cast(this.$scope, s);
+    dataObj.raLocation = scope.exePath;
 
     dataObj.varNames = [];
-    this.$scope.elements.forEach((element) => {
+    scope.elements.forEach((element) => {
       element.epcs.forEach((epc) => {
         epc.then.forEach((outcome) => {
           if (
-            outcome.useVariable &&
-            dataObj.varNames.indexOf(outcome.variable.name) < 0
+            outcome.useVariable
+            && dataObj.varNames.indexOf(outcome.variable.name) < 0
           ) {
             dataObj.varNames.push(outcome.variable.name);
           }
         });
       });
     });
-    this.$scope.varLinks.forEach((varLink) => {
+    scope.varLinks.forEach((varLink) => {
       if (varLink.variable) {
         if (dataObj.varNames.indexOf(varLink.variable.name) < 0) {
           dataObj.varNames.push(varLink.variable.name);
@@ -194,13 +377,13 @@ class OpenErrorForm extends ExternalExeForm {
       }
     });
 
-    var modified = [];
-    var model = this.$scope.model;
-    var i = 0;
-    this.$scope.elements.forEach((element) => {
-      element.epcs.forEach((epc) => {
-        epc.node.innerHTML = "";
-        var text = model.createTextNode(epc.toString());
+    const modified = [];
+    const { model } = scope;
+    let i = 0;
+    scope.elements.forEach((element, x) => {
+      element.epcs.forEach((epc, y) => {
+        scope.elements[x].epcs[y].node.innerHTML = '';
+        const text = model.createTextNode(epc.toString());
         epc.node.appendChild(text);
         if (epc.modified) {
           modified.push(i);
@@ -208,57 +391,63 @@ class OpenErrorForm extends ExternalExeForm {
         i += 1;
       });
     });
+    /**
+     * Escpaes quotes in a string.
+     *
+     * @param {string} str - The string to escape.
+     * @returns {string} The escaped string.
+     */
     function escape(str) {
-      return str.replace(/([\"\\])/g, "\\$1");
+      return str.replace(/(["\\])/g, '\\$1');
     }
     if (model) {
-      var xml = escape(
-        new XMLSerializer().serializeToString(model).replace(/[\n\t]/g, "")
+      let xml = escape(
+        new XMLSerializer().serializeToString(model).replace(/[\n\t]/g, ''),
       );
       dataObj.varNames.forEach((varName) => {
-        xml = xml.replace(new RegExp(`%%${varName}`, "g"), `"+${varName}+"`);
+        xml = xml.replace(new RegExp(`%%${varName}`, 'g'), `"+${varName}+"`);
       });
       dataObj.raFormData = {
         model: xml,
-        modelName: this.$scope.fileName,
-        prismPath: this.$scope.prismPath,
-        varLinks: this.$scope.varLinks.map((varLink) => varLink.toJSON()),
-        prismParam: this.$scope.methodParam,
+        modelName: scope.fileName,
         modified,
+        // prismParam: scope.methodParam,
+        prismPath: scope.prismPath,
+        varLinks: scope.varLinks.map((varLink) => varLink.toJSON()),
       };
-      var exeRootPath = this.$scope.exePath.replace(/[^\/\\]*\.exe$/, "");
-      var resultsPath = `${exeRootPath}results.json`;
-      var modelPath = `${exeRootPath}model.xml`;
+      const exeRootPath = scope.exePath.replace(/[^/\\]*\.exe$/, '');
+      const resultsPath = `${exeRootPath}results.json`;
+      const modelPath = `${exeRootPath}model.xml`;
       dataObj.raPreCode = `System.IO.File.WriteAllText("${escape(
-        modelPath
+        modelPath,
       )}", "${xml}");return "--model \\"${escape(
-        modelPath
-      )}\\" --method ${this.$scope.varLinks
+        modelPath,
+      )}\\" --method ${scope.varLinks
         .map((varLink) => varLink.prismMethod)
-        .join(" ")} --target ${this.$scope.varLinks
+        .join(' ')} --target ${scope.varLinks
         .map((varLink) => `\\"${varLink.target}\\"`)
-        .join(" ")} --step-range ${this.$scope.varLinks
+        .join(' ')} --step-range ${scope.varLinks
         .map((varLink) => {
-          let stepRange = "0:10:100";
+          let stepRange = '0:10:100';
           if (varLink.initialTime) {
-            stepRange = `\"+${varLink.initialTime.name}+\":\"+CurTime+\"`;
+            stepRange = `"+${varLink.initialTime.name}+":"+CurTime+"`;
           }
           return `\\"${stepRange}\\"`;
         })
-        .join(" ")} --prism \\"${escape(
-        this.$scope.prismPath
+        .join(' ')} --prism \\"${escape(
+        scope.prismPath,
       )}\\" --results \\"${escape(resultsPath)}\\"";`;
-      dataObj.raPostCode = "";
-      dataObj.returnProcess = "rtNone";
+      dataObj.raPostCode = '';
+      dataObj.returnProcess = 'rtNone';
       dataObj.variables = [];
-      for (var i = 0; i < this.$scope.varLinks.length; i += 1) {
+      for (i = 0; i < scope.varLinks.length; i += 1) {
         dataObj.variables.push({
-          ...this.$scope.varLinks[i].variable,
-          docType: "dtJSON",
+          ...scope.varLinks[i].variable,
           docLink: `$.output[${i}].result`,
           docPath: resultsPath,
+          docType: 'dtJSON',
           pathMustExist: false,
-          type: "double",
+          type: 'double',
         });
       }
     }
@@ -266,30 +455,34 @@ class OpenErrorForm extends ExternalExeForm {
   }
 }
 
-var form = new OpenErrorForm();
+const form = new OpenErrorForm();
 
-openErrorForm.controller("openErrorController", [
-  "$scope",
-  function ($scope) {
+openErrorForm.controller('openErrorController', [
+  '$scope',
+  /**
+   * OpenError controller.
+   *
+   * @param {OpenErrorForm.Scope & angular.IScope} $scope - The angular scope.
+   */
+  function openErrorController($scope) {
     $scope.hasModel = false;
     $scope.model = null;
-    $scope.modelFile = "";
+    $scope.modelFile = '';
     $scope.elements = [];
     $scope.failures = [];
     $scope.dataNodes = [];
-    $scope.rows = [];
-    $scope.prismPath = "";
-    $scope.exePath = "";
+    $scope.prismPath = '';
+    $scope.exePath = '';
     $scope.prismMethods = [
-      "compute_execution_time",
-      "compute_P_single",
-      "compute_MTTF",
-      "compute_P",
-      "compute_N_failures",
-      "compute_downtime",
-      "compute_repetitions",
-      "compute_sub_models_and_repetitions_for_element",
-      "compute_sub_models_and_repetitions",
+      'compute_execution_time',
+      'compute_P_single',
+      'compute_MTTF',
+      'compute_P',
+      'compute_N_failures',
+      'compute_downtime',
+      'compute_repetitions',
+      'compute_sub_models_and_repetitions_for_element',
+      'compute_sub_models_and_repetitions',
     ];
     $scope.addElement = null;
     $scope.addCondition = null;
@@ -297,78 +490,83 @@ openErrorForm.controller("openErrorController", [
     $scope.docVars = [];
     $scope.modified = [];
 
+    /**
+     * Parses the XML model.
+     *
+     * @param {string} xml - The raw XML file.
+     */
     function parseModel(xml) {
       try {
         $scope.model = new DOMParser().parseFromString(
           xml.replace(/\\"/g, '"'),
-          "text/xml"
+          'text/xml',
         );
         $scope.dataNodes = Array.from(
-          $scope.model.getElementsByTagName("data")
+          $scope.model.getElementsByTagName('data'),
         ).map((node) => new DataNode(node));
         $scope.elements = Array.from(
-          $scope.model.getElementsByTagName("element")
-        ).map((node) => new Element(node, $scope.cvVariables));
+          $scope.model.getElementsByTagName('element'),
+        ).map((node) => new ModelElement(node, $scope.cvVariables));
         $scope.failures = Array.from(
-          $scope.model.getElementsByTagName("failure")
-        ).map((node) => node.getAttribute("name"));
+          $scope.model.getElementsByTagName('failure'),
+        ).map((node) => node.getAttribute('name'));
         $scope.hasModel = true;
       } catch (err) {
-        alert("Could not parse model file!");
+        console.error('Could not parse model file!');
+        throw err;
       }
     }
 
-    $scope.$watch("modelFile", function () {
+    $scope.$watch('modelFile', () => {
       if ($scope.modelFile.length > 0) {
         parseModel($scope.modelFile);
       }
     });
 
-    $scope.getDataValues = function (name) {
+    $scope.getDataValues = function getDataValues(name) {
       return $scope.dataNodes.find((node) => node.name === name).values;
     };
 
-    var { parentScope } = form;
+    const { parentScope } = form;
     // $scope.modified =
     $scope.cvVariables = parentScope.data.cvVariables;
     $scope.docVars = parentScope.data.cvVariables.filter(
-      (cvVariable) => cvVariable.varScope === "gtDocLink"
+      (cvVariable) => cvVariable.varScope === 'gtDocLink',
     );
     $scope.exePath = parentScope.data.raLocation;
     if (parentScope.data.raFormData) {
       if (
-        parentScope.data.raFormData.model &&
-        parentScope.data.raFormData.model.length > 0
+        parentScope.data.raFormData.model
+        && parentScope.data.raFormData.model.length > 0
       ) {
         parseModel(parentScope.data.raFormData.model);
         $scope.fileName = parentScope.data.raFormData.modelName;
         $scope.prismPath = parentScope.data.raFormData.prismPath;
         $scope.varLinks = parentScope.data.raFormData.varLinks.map(
-          (data) =>
-            new VarLink(
-              data.prismMethod,
-              data.target,
-              form.findVariable(data.variable),
-              form.findVariable(data.initialTime || {})
-            )
+          (data) => new VarLink(
+            data.prismMethod,
+            data.target,
+            form.findVariable(data.variable),
+            form.findVariable(data.initialTime || {}),
+          ),
         );
       }
     }
 
-    $scope.save = function () {
+    $scope.save = function save() {
       form.save();
     };
 
     // TODO: validate inputs
-    $scope.addOutput = function () {
+    $scope.addOutput = function addOutput() {
       $scope.varLinks.push(new VarLink());
     };
 
-    $scope.removeOutput = function (index) {
+    $scope.removeOutput = function removeOutput(index) {
       $scope.varLinks.splice(index, 1);
     };
 
-    $scope.addOutcome = function () {
+    $scope.addOutcome = function addOutcome() {
       $scope.addCondition.then.splice(
         $scope.addCondition.then.length - 1,
         0,
@@ -378,22 +576,22 @@ openErrorForm.controller("openErrorController", [
             then: [],
           },
           $scope.cvVariables,
-          $scope.addCondition
-        )
+          $scope.addCondition,
+        ),
       );
     };
 
-    $scope.removeOutcome = function (index) {
+    $scope.removeOutcome = function removeOutcome(index) {
       $scope.addCondition.then.splice(index, 1);
       $scope.setModified($scope.addCondition);
     };
 
-    $scope.getValuesByNodeName = function (name) {
+    $scope.getValuesByNodeName = function getValuesByNodeName(name) {
       return $scope.dataNodes.find((node) => node.name === name).values;
     };
 
-    $scope.getConditionDisplay = function () {
-      var re = [];
+    $scope.getConditionDisplay = function getConditionDisplay() {
+      let re = [];
       if ($scope.addCondition !== null) {
         re = re.concat($scope.addCondition.then);
       }
@@ -402,13 +600,13 @@ openErrorForm.controller("openErrorController", [
           element
             .getModified()
             .map((epc) => epc.then[0])
-            .filter((then) => then !== re[0])
+            .filter((then) => then !== re[0]),
         );
       });
       return re;
     };
 
-    $scope.setModified = function (epc) {
+    $scope.setModified = function setModified(epc) {
       epc.modified = true;
       form.save();
     };
@@ -417,4 +615,4 @@ openErrorForm.controller("openErrorController", [
   },
 ]);
 
-openErrorForm.directive("fileModel", ["$parse", fileModel]);
+openErrorForm.directive('fileModel', ['$parse', fileModel]);
