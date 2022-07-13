@@ -22,9 +22,7 @@ var WindowFrame = (function (_super) {
     var baseWindowInit = this.init;
     this.init = function (x, y, width, height, style) {
       if (this.content) {
-        if (baseWindowInit) {
-          baseWindowInit.apply(this, arguments);
-        }
+        baseWindowInit.apply(this, arguments);
 
 
         if (ismodal) {
