@@ -30,7 +30,7 @@
  * @property {string} inputPath - Path to the INP file.
  * @property {string} parameterPath - Path to the PAR file.
  * @property {Parameter[]} parameters - Parameter items.
- * @property {Initiator[]} initiators - Initiators.
+ * @property {import('maap-inp-parser').SourceElement[]} initiators - Initiators.
  * @property {VarLink[]} varLinks - Var links.
  * @property {Block[]} blocks - Input blocks.
  * @property {Initiator[]} initiatorOptions - Initiator options.
@@ -65,7 +65,7 @@ class MAAPForm extends ExternalExeForm {
     dataObj.varNames = this.getVarNames(scope.parameters);
     dataObj.raFormData = {
       exePath: scope.exePath,
-      initiators: scope.initiators.map((initiator) => initiator.toJSON()),
+      initiators: scope.initiators,
       inputPath: scope.inputPath,
       overrideSections: scope.overrideSections,
       parameterPath: scope.parameterPath,
@@ -83,7 +83,9 @@ class MAAPForm extends ExternalExeForm {
       .sort((a, b) => a.bounds[0] - b.bounds[0])
       .forEach((override) => {
         overrideCode += `newInp += originalInp.Substring(${pointer}, ${override.bounds[0]});\n`;
-        overrideCode += `newInp += "\\n${scope[override.data].map((value) => value.toString()).join('\\n')}\\n";\n`;
+        overrideCode += `newInp += "\\n${scope[override.data]
+          .map((value) => maapInpParser.toString(value))
+          .join('\\n')}\\n";\n`;
         [, pointer] = override.bounds;
       });
     overrideCode += `newInp += originalInp.Substring(${pointer});\n`;
@@ -145,7 +147,7 @@ class MAAPForm extends ExternalExeForm {
 }
 
 const form = new MAAPForm();
-const maapForm = angular.module('maapForm', ['sourceElement']);
+const maapForm = angular.module('maapForm', window.maapComponents);
 
 /**
  * @typedef MAAPForm.ParameterName
@@ -442,13 +444,12 @@ maapForm.controller('maapFormController', [
         });
       }
       if (raFormData.initiators) {
-        $scope.initiators = raFormData.initiators.map(
-          (initiator) => new Initiator(initiator.data),
-        );
+        $scope.initiators = raFormData.initiators;
       }
       if (typeof raFormData.varLinks === 'object') {
         $scope.varLinks = raFormData.varLinks.map(
-          (varLink) => new VarLink(varLink.target, form.findVariable(varLink.variable)),
+          (varLink) =>
+            new VarLink(varLink.target, form.findVariable(varLink.variable)),
         );
       }
       if (raFormData.overrideSections) {
@@ -552,16 +553,9 @@ maapForm.controller('maapFormController', [
                   // Same issue is present for parameter change too
                   data: 'initiators',
                 });
-                sourceElement.value.forEach((innerElement) => {
-                  const initiator = parser.toString(innerElement);
-                  if (parameterInfo[initiator]) {
-                    $scope.initiators.push(
-                      new Initiator(parameterInfo[initiator]),
-                    );
-                  } else {
-                    // TODO
-                  }
-                });
+                $scope.initiators = $scope.initiators.concat(
+                  sourceElement.value,
+                );
               }
               break;
             default:
