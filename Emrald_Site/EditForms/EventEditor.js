@@ -113,7 +113,7 @@ function ValidateData() {
     if (scope.typeOption.value === 'et3dSimEv' && !scope.variable) {
         return "Please specify an External Sim Variable before saving the event.";
     }
-    if (scope.typeOption.value === 'etComponentLogic' && !scope.logicTop) {
+    if (scope.typeOption.value === 'etComponentLogic' && !scope.data.logicTop) {
         return "Please specify a top logic gate before saving the event.";
     }
     return "";
@@ -311,7 +311,7 @@ function OnLoad(dataObj) {
                     scope.onSuccess = eventData.onSuccess;
                     var lt = scope.logicTops.find((o) => o.name == eventData.logicTop);
                     if (lt)
-                        scope.logicTop = lt;
+                        scope.data.logicTop = lt;
                     opTypeEl.selectedIndex = 2;
                     break;
                 case "etTimer":
@@ -397,8 +397,8 @@ function GetDataObject() {
             break;
         case "etComponentLogic":
             dataObj.onSuccess = scope.onSuccess;
-            if (scope.logicTop) {
-                dataObj.logicTop = scope.logicTop.name;
+            if (scope.data.logicTop) {
+                dataObj.logicTop = scope.data.logicTop.name;
             }
             break;
         case "etTimer":
@@ -552,7 +552,8 @@ EEApp.controller("EEController", function ($scope) {
                 variableName: "",
                 allowedVariables: []
             }
-        }
+        },
+        logicTop: null,
     };
 
     //var Condition
@@ -575,7 +576,6 @@ EEApp.controller("EEController", function ($scope) {
     $scope.logicTopsLoaded = false;
     $scope.onSuccess = false;
     $scope.logicTops = [];
-    $scope.logicTop = null;
     //timer
     $scope.time = {
         days: null,
@@ -730,7 +730,6 @@ EEApp.controller("EEController", function ($scope) {
     $scope.$watch("evalCurOnInitial", function (newVal, oldVal) { if (newVal !== oldVal) somethingChanged(); });
     $scope.$watch("var3DCode", function (newVal, oldVal) { if (newVal !== oldVal) somethingChanged(); });
     $scope.$watch("onSuccess", function (newVal, oldVal) { if (newVal !== oldVal) somethingChanged(); });
-    $scope.$watch("logicTop", function (newVal, oldVal) { if (newVal !== oldVal) somethingChanged(); });
     $scope.$watch("time.days", function (newVal, oldVal) { if (newVal !== oldVal) somethingChanged(); });
     $scope.$watch("time.hours", function (newVal, oldVal) { if (newVal !== oldVal) somethingChanged(); });
     $scope.$watch("time.minutes", function (newVal, oldVal) { if (newVal !== oldVal) somethingChanged(); });

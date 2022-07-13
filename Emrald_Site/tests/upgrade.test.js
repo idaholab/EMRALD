@@ -38,7 +38,20 @@ describe('upgrade', () => {
           },
         },
       ],
-      LogicNodeList: [],
+      LogicNodeList: [
+        {
+          LogicNode: {
+            name: 'NodeA',
+            rootName: 'NodeA',
+          },
+        },
+        {
+          LogicNode: {
+            name: 'NodeB',
+            rootName: 'NodeA',
+          },
+        },
+      ],
     };
     const upgraded = window.upgrade(model);
     expect(upgraded.EventList[0].Event.mainItem).to.be.true;
@@ -52,5 +65,7 @@ describe('upgrade', () => {
     expect(upgraded.EventList[3].Event.distType).to.equal('dtWeibull');
     expect(upgraded.ActionList[0].Action.mainItem).to.be.true;
     expect(upgraded.ActionList[0].Action.mutExcl).to.be.true;
+    expect(upgraded.LogicNodeList[0].LogicNode.isRoot).to.be.true;
+    expect(upgraded.LogicNodeList[1].LogicNode.isRoot).to.be.false;
   });
 });

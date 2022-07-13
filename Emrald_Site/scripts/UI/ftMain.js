@@ -339,7 +339,7 @@ function main(container, outline) {
 														name: "gate_" + newID,
 														desc: "",
 														gateType: gateType,
-														rootName: graph.tree.LogicNode.LogicNode.name,
+														isRoot: false,
 														compChildren: [],
 														gateChildren: []
 												}
@@ -690,7 +690,7 @@ function getDefaultGateID(graph) {
 }
 
 function addOverlays(graph, cell, isEditable) {
-  const isRoot = graph.tree.LogicNode.LogicNode.rootName === cell.value;
+  const isRoot = graph.tree.LogicNode.LogicNode.name === cell.value;
   var overlay = new mxCellOverlay(new mxImage('images/delete.png', 16, 16), 'delete');
   overlay.cursor = 'hand';
   overlay.offset = new mxPoint(-6, 4);//(-4, 8);
@@ -932,7 +932,7 @@ function addNode(graph, stateCell) {
 																name: retObj.newName,
 																desc: retObj.newDesc,
 																gateType: retObj.newGateType,
-																"rootName": cell.value.rootName,
+																isRoot: false,
 																"compChildren": [],
 																"gateChildren": []
 														}
