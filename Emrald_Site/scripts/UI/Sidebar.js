@@ -40,8 +40,7 @@ if (typeof Navigation === 'undefined')
               console.log("Data received: Length: " + this.jsonStr.length + ", decoding...");
               var jobj = JSON.parse(this.jsonStr);
               console.log("...data decoded!");
-              simApp.allDataModel = jobj;
-              this.upgrade(simApp.allDataModel);
+              simApp.allDataModel = this.upgrade(jobj);
               this.assignList(jobj);
               //load templates
               this.loadTemplates();
@@ -55,8 +54,7 @@ if (typeof Navigation === 'undefined')
         this.jsonStr = modelStr;
         this.lookupLoaded = true;
         var jobj = JSON.parse(this.jsonStr);
-        simApp.allDataModel = jobj;
-        this.upgrade(simApp.allDataModel);
+        simApp.allDataModel = this.upgrade(jobj);
         this.assignList(jobj);
         //load templates
         this.loadTemplates(jobj.templates);
