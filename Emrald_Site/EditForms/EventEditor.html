@@ -19,14 +19,14 @@
     <script src="../scripts/UI/wcfService.js"></script>
 
     <style type="text/css">
-        table {
+        table2 {
             font-family: arial, sans-serif;
             border-collapse: collapse;
             width: 100%;
             font-size: 12px;
         }
 
-        td, th {
+        td2, th2 {
             border: 1px solid #dddddd;
             text-align: left;
             padding: 0px;
@@ -34,6 +34,11 @@
 
         tr:nth-child(even) {
             background-color: #dddddd;
+        }
+
+        .editor {
+            flex: 1;
+            margin-right: 12px;
         }
     </style>
     <script src="./components/code-editor.js"></script>
@@ -46,7 +51,7 @@
         <div ng-controller="EEController" id="EEControllerPanel">
             <div style="display:table-row;">
                 <span style="display:table-cell;vertical-align:middle;">Type:</span>
-                <select id="typeOptionSelector" ng-model="typeOption" ng-options="to.name for to in typeOptions" style="width: 140px;" onchange="handleSelection(); return false;">
+                <select id="typeOptionSelector" ng-model="typeOption" ng-options="to.name for to in typeOptions" style="width: 140px;" ng-change="handleSelection()">
                     <option>-- Choose Type --</option>
                 </select>
             </div>
@@ -76,50 +81,89 @@
             <hr />
             <!-- Dynamic content    -->
             <div id="DetailContentPanel" style="height:auto;">
-                <div id="VarConditionPanel" style="display:table-row;position:absolute;visibility:collapse;height:100%;width:96%;overflow-x:hidden; overflow-y:visible;">
-                    Evaluate Code (c#) - Must return a boolean value! <br>
-                    <div style="height: 300px;">
-                        <div code-editor style="height: 300px;" code="conditionCode"></div>
+                <div id="VarConditionPanel"
+                    ng-if="typeOption.value === 'etVarCond'"
+                    style="display: flex; flex-direction: row; align-items: stretch; height: calc(100vh - 9em); width: 94vw;"
+                >
+                    <div style="display: flex; flex-direction: column; flex: 1">
+                        Evaluate Code (c#) - Must return a boolean value! <br>
+                        <div code-editor class="editor" code="conditionCode"></div>
                     </div>
-                    <div id="VarList" style="display:table-row;position:absolute;width:96%;overflow-x:hidden;overflow-y:visible;">
-
-                        <table id="tblVariables" style="text-align: left; width: 200px;" border="1" cellspacing="0">
-                            <tr><td></td><td><b>Variables used in code</b></td></tr>
-                            <tr ng-repeat="row in varMap">
-                                <td sstyle="border: none;height:15px;"><input type="checkbox" onchange="variableChecked(this);" ng-true-value=true ng-false-value=false ng-checked={{row.check}} value={{row.value}} /></td>
-                                <td sstyle="border: none;height:15px;">{{row.value.name}}</td>
-                            </tr>
-                        </table>
-                    </div>
-                    <br>
+                    <table id="tblVariables" style="text-align: left;" border="1" cellspacing="0">
+                        <tr>
+                            <th colspan="2">Variables used in code</th>
+                        </tr>
+                        <tr>
+                            <td style="border: 1px solid #dddddd; text-align: left; padding: 0px;">
+                                <input id="varId_CurTime" type="checkbox" checked disabled />
+                            </td>
+                            <td style="border: 1px solid #dddddd; text-align: left; padding: 0px;">
+                                <label for="varId_CurTime" style="display:block">CurTime</label>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="border: 1px solid #dddddd; text-align: left; padding: 0px;">
+                                <input id="varId_RunIdx" type="checkbox" checked disabled />
+                            </td>
+                            <td style="border: 1px solid #dddddd; text-align: left; padding: 0px;">
+                                <label for="varId_RunIdx" style="display:block">RunIdx</label>
+                            </td>
+                        </tr>
+                        <tr ng-repeat="row in varMap">
+                            <td style="border: 1px solid #dddddd; text-align: left; padding: 0px;">
+                                <input type="checkbox" onchange="variableChecked(this);" ng-true-value=true ng-false-value=false ng-checked={{row.check}} value={{row.value}} />
+                            </td>
+                            <td style="border: 1px solid #dddddd; text-align: left; padding: 0px;">{{row.value.name}}</td>
+                        </tr>
+                    </table>
                 </div>
-                <div id="3DSimPanel" style="display:table-row;position:absolute;visibility:collapse;height:70%;width:96%;overflow-x:hidden;overflow-y:scroll">
+                <div id="3DSimPanel" ng-if="typeOption.value === 'et3dSimEv'" style="display:table-row;position:absolute;width:96%;overflow-x:hidden;">
                     <label style="display:table-cell;vertical-align:middle; white-space:nowrap;">External Sim Variable:</label>
                     <select name="Variables" ng-model="variable" ng-options="v.name for v in variables" style="width: 130px;">
                         <option>-- Choose Variable --</option>
                     </select><br>
-                    <label style="display:table-cell;vertical-align:middle; white-space:nowrap;">Evaluate Code (c#)</label><br>
-                    <div style="height: 300px;">
-                        <div code-editor style="height: 300px;" code="var3DCode"></div>
-                    </div>
-                    <div id="VarList" style="display:table-row;position:absolute;width:96%;overflow-x:hidden;overflow-y:visible;">
-
-                        <table id="tblVariables" style="text-align: left; width: 200px;" border="1" cellspacing="0">
-                            <tr><td></td><td><b>Variables used in code</b></td></tr>
+                    <div style="display: flex; flex-direction: row; align-items: stretch; height: calc(100vh - 10em); width: 94vw;">
+                        <div style="display: flex; flex-direction: column; flex: 1">
+                            <label style="display:table-cell;vertical-align:middle; white-space:nowrap;">Evaluate Code (c#)</label>
+                            <br>
+                            <div style="display: flex; flex-direction:row; flex: 1">
+                                <div code-editor class="editor" code="var3DCode"></div>
+                            </div>
+                        </div>
+                        <table id="tblVariables" style="text-align: left;" border="1" cellspacing="0">
+                            <tr>
+                                <th colspan="2">Variables used in code</th>
+                            </tr>
+                            <tr>
+                                <td style="border: 1px solid #dddddd; text-align: left; padding: 0px;">
+                                    <input id="varId_CurTime" type="checkbox" checked disabled />
+                                </td>
+                                <td style="border: 1px solid #dddddd; text-align: left; padding: 0px;">
+                                    <label for="varId_CurTime" style="display:block">CurTime</label>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="border: 1px solid #dddddd; text-align: left; padding: 0px;">
+                                    <input id="varId_RunIdx" type="checkbox" checked disabled />
+                                </td>
+                                <td style="border: 1px solid #dddddd; text-align: left; padding: 0px;">
+                                    <label for="varId_RunIdx" style="display:block">RunIdx</label>
+                                </td>
+                            </tr>
                             <tr ng-repeat="row in varMap">
-                                <td sstyle="border: none;height:15px;"><input type="checkbox" onchange="variableChecked(this);" ng-true-value=true ng-false-value=false ng-checked={{row.check}} value={{row.value}} /></td>
-                                <td sstyle="border: none;height:15px;">{{row.value.name}}</td>
+                                <td style="border: 1px solid #dddddd; text-align: left; padding: 0px;">
+                                    <input type="checkbox" onchange="variableChecked(this);" ng-true-value=true ng-false-value=false ng-checked={{row.check}} value={{row.value}} />
+                                </td>
+                                <td style="border: 1px solid #dddddd; text-align: left; padding: 0px;">{{row.value.name}}</td>
                             </tr>
                         </table>
                     </div>
-                    <br>
-                    <br>
                 </div>
-                <div id="DistributionPanel" style="display:table-row;position:absolute;visibility:collapse;height:70%;width:96%;overflow-x:hidden;overflow-y:scroll;">
+                <div id="DistributionPanel" ng-if="typeOption.value === 'etDistribution'" style="display:table-row;position:absolute;height:70%;width:96%;overflow-x:hidden;">
                     <div style="display:table-row">
                         <span>Distribution type:</span>
-                        <select name="distType" id="distTypeSelector" ng-model="distType" ng-options="type.name for type in distTypes" onchange="handleDistSelection()"></select>
-                        <div id="NormDistributionPanel">
+                        <select name="distType" id="distTypeSelector" ng-model="distType" ng-options="type.name for type in distTypes" ng-change="handleDistSelection()"></select>
+                        <div id="NormDistributionPanel" ng-if="distType.value === 'dtNormal' || distType.value === 'dtLogNormal'">
                             <div style="display:table-row">
                                 <span style="display:table-cell;vertical-align:middle;">Mean:</span>
                                 <select ng-if="distParameters[0].useVariable" ng-options="v.name as v.name for v in variables" ng-model="distParameters[0].variable"></select>
@@ -149,7 +193,7 @@
                                 <input type="checkbox" ng-model="distParameters[3].useVariable" /> Use Variable
                             </div>
                         </div>
-                        <div id="ExpDistributionPanel">
+                        <div id="ExpDistributionPanel" ng-if="distType.value === 'dtExponential'">
                             <div style="display:table-row">
                                 <span style="display:table-cell;vertical-align:middle;">Rate:</span>
                                 <select ng-if="distParameters[0].useVariable" ng-options="v.name as v.name for v in variables" ng-model="distParameters[0].variable"></select>
@@ -172,7 +216,7 @@
                                 <input type="checkbox" ng-model="distParameters[2].useVariable" /> Use Variable
                             </div>
                         </div>
-                        <div id="WeibullDistributionPanel">
+                        <div id="WeibullDistributionPanel" ng-if="distType.value === 'dtWeibull'">
                             <div style="display:table-row">
                                 <span style="display:table-cell;vertical-align:middle;">Shape:</span>
                                 <select ng-if="distParameters[0].useVariable" ng-options="v.name as v.name for v in variables" ng-model="distParameters[0].variable"></select>
@@ -211,7 +255,7 @@
                         </div>
                     </div>
                 </div>
-                <div id="StateChangePanel" style="display:table-row;position:absolute;visibility:collapse;height:70%;width:96%;overflow-x:hidden;overflow-y:scroll;">
+                <div id="StateChangePanel" ng-if="typeOption.value === 'etStateCng'" style="display:table-row;position:absolute;height:70%;width:96%;overflow-x:hidden;">
 
                     <form name="inState">
                         <label>
@@ -243,14 +287,14 @@
                         </tr>
                     </table>
                 </div>
-                <div id="ComponentLogicPanel" style="display:table-row;position:absolute;visibility:collapse;height:70%;width:96%;overflow-x:hidden;overflow-y:scroll">
+                <div id="ComponentLogicPanel" ng-if="typeOption.value === 'etComponentLogic'" style="display:table-row;position:absolute;height:70%;width:96%;overflow-x:hidden;overflow-y:scroll">
                     <input name="OnSuccess" type="checkbox" ng-model="onSuccess" />On Success <br />
                     <label style="display:table-cell;vertical-align:middle; white-space:nowrap;">Logic Top:</label>
                     <select name="LogicTop" ng-model="logicTop" ng-options="lt.name for lt in logicTops" style="width:130px;">
                         <option>-- Choose logic top --</option>
                     </select>
                 </div>
-                <div id="TimerPanel" style="display:table-row;position:absolute;visibility:collapse;height:70%;width:96%;overflow-x:hidden;overflow-y:scroll;">
+                <div id="TimerPanel" ng-if="typeOption.value === 'etTimer'" style="display:table-row;position:absolute;height:70%;width:96%;overflow-x:hidden;">
                     <div style="display: table-row">
                         <label style="display: table-cell; vertical-align: top; white-space: nowrap;">Time Span:</label>
                         <div style="display: table-cell" ng-if="!data.timer.useVariable">
@@ -299,7 +343,7 @@
                     <input type="checkbox" ng-model="fromSimStart" /> From sim start
                 </div>
 
-                <div id="FailProbabilityPanel" style="display:table-row;position:absolute;visibility:collapse;height:70%;width:96%;overflow-x:hidden;overflow-y:scroll;">
+                <div id="FailProbabilityPanel" ng-if="typeOption.value === 'etFailRate'" style="display:table-row;position:absolute;height:70%;width:96%;overflow-x:hidden;">
                     <div style="display: table-row">
                         <label style="display: table-cell" for="useFailureRateTimeRateVariableCheckbox">Use Variable Lambda/Frequency? </label>
                         <input id="useFailureRateTimeRateVariableCheckbox" type="checkbox" ng-model="data.failureRate.lambda.useVariable" />

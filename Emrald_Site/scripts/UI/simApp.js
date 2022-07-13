@@ -40,32 +40,6 @@ function downloadClientTesterSource() {
 }
 
 //------------------
-/// <reference path="../../About.html" />
-/// <reference path="WindowFrame.js" />
-//opens logic tree
-function openFaultTree() {
-  var wnd = mxWindow.createFrameWindow(
-    'FTViewer10.html',
-    '',  //command buttons
-    'minimize, maximize, close', //top buttons
-    function (btn, dataObj) {
-      if (btn === 'close') {
-      }
-      return true;
-    },
-    null,
-    false, //ismodal
-    null,
-    null,
-    600, //width
-    400 //height
-  );
-  document.body.removeChild(wnd.div);
-  var contentPanel = document.getElementById("ContentPanel");
-  adjustWindowPos(contentPanel, wnd.div);
-  contentPanel.appendChild(wnd.div);
-}
-//------------------
 //a proxy function responding to menu.
 function saveProject() {
   simApp.mainApp.saveProject();
@@ -127,7 +101,7 @@ function newProject() {
   function (btn, retObj) {
     if (btn === 'OK') {
       simApp.newProjectCreated = false;
-      getServerFile('defaultModel.json', function (data) {
+      fetch('defaultModel.json').then((response) => response.text().then((data) => {
         var model = JSON.parse(data);
         appConfig.simInfo = { name: retObj.projectName, desc: retObj.projectDescription };
         model.name = retObj.projectName;
@@ -135,7 +109,7 @@ function newProject() {
         var modelStr = JSON.stringify(model);
         simApp.mainApp.loadSidebar(modelStr);
         simApp.mainApp.updateProjectTitle(model.name);
-      });
+      }));
     }
     return true;
   }.bind(this),
@@ -554,7 +528,7 @@ var simApp;
       //makeTransparent(img);
       new Navigation.Menu("resources/menu.json");
 
-      getServerFile(this.modelFileName, function (retData) {
+      fetch(this.modelFileName).then((response) => response.text().then((retData) => {
         simApp.mainApp.loadSidebar(retData);
         var model = JSON.parse(retData);
         if (model.name.isNullOrUndefined || model.name === '') {
@@ -563,7 +537,7 @@ var simApp;
         }
         this.updateProjectTitle(model.name);
         this.makeProjectNameEditable();
-      }.bind(this));
+      }));
       //this.loadSidebar();
     }
     //------------------

@@ -291,7 +291,7 @@ if (typeof Navigation === 'undefined')
                       this.editActionProperties(dataObj);
                       break;
                     case "Events":
-                      var eventObj = { id: -1, name: "", desc: "", mainItem: true, evType: "etVarCode", varNames: [], Code: "return 1.0;", sim3dID: 1 };
+                      var eventObj = { id: -1, name: "", desc: "", mainItem: true, evType: "etVarCode", };
                       this.editEventProperties(eventObj);
                       break;
                     case "Diagrams":
@@ -325,7 +325,7 @@ if (typeof Navigation === 'undefined')
         return cmenu;
       }.bind(this);
 
-      getServerFile(url, function onSuccess(jsonStr) {
+      fetch(url).then((response) => response.text().then((jsonStr) => {
         var sbObj = JSON.parse(jsonStr);
         var div = document.createElement('div');
         div.id = "Sidebar_Accordion";
@@ -532,7 +532,14 @@ if (typeof Navigation === 'undefined')
         setUpAll();
         setUpGlobal();
         this.showDynamicSidebar("all");
-      }.bind(this));
+
+        // Initialize ContentPanel position
+        const sideBarContainer = document.getElementById('SidePanelContainer');
+        const sideBar = document.getElementById('SidePanel');
+        $('#ContentPanel').css({
+          left: sideBar.clientWidth + $('.ui-resizable-handle.ui-resizable-e').width() + parseInt(sideBarContainer.style.marginLeft) + parseInt(sideBarContainer.style.marginRight) + 24
+        });
+      }));
 
     }
 
@@ -2029,7 +2036,7 @@ if (typeof Navigation === 'undefined')
                 el.innerText = dataObj.name;
                 const oldName = outDataObj.rootName;
                 outDataObj.rootName = outDataObj.name;
-                simApp.mainApp.sidebar.replaceNames(oldName, dataObj.name, 'LogicTree', simApp.allDataModel, false);
+                simApp.mainApp.sidebar.replaceNames(oldName, dataObj.name, 'LogicNode', simApp.allDataModel, false);
               } else {
                 if (this.existsLogicName(outDataObj.name)) {
                   MessageBox.alert("New Logic Tree", "A logic tree with the '" + outDataObj.name + "' exists, please try a different name.");
@@ -2069,6 +2076,7 @@ if (typeof Navigation === 'undefined')
           'minimize, maximize, close', //top buttons
           function (btn, retObj) {
             if (btn === 'OK') {
+              // TODO: Only save fault tree changes when the OK button is clicked.
             }
             return true;
           }.bind(this),
@@ -2659,7 +2667,6 @@ if (typeof Navigation === 'undefined')
               }
               break;
             case "LogicNode":
-            case "LogicTree":
               //etComponentLogic
               if (cur.logicTop && cur.logicTop == name) {
                 if (del) {
@@ -2831,7 +2838,6 @@ if (typeof Navigation === 'undefined')
               //not applicable
               break;
             case "LogicNode":
-            case "LogicTree":
               //not applicable
               break;
             default:
@@ -2936,7 +2942,6 @@ if (typeof Navigation === 'undefined')
               //Not applicable
               break;
             case "LogicNode":
-            case "LogicTree":
               //not applicable
               break;
             default:
@@ -3014,7 +3019,6 @@ if (typeof Navigation === 'undefined')
               //Not applicable
               break;
             case "LogicNode":
-            case "LogicTree":
               //not applicable
               break;
             default:
@@ -3052,7 +3056,6 @@ if (typeof Navigation === 'undefined')
               }
               break;
             case "LogicNode":
-            case "LogicTree":
               // Reference to itself
               if (cur.name == name) {
                 if (replaceName != null) {
@@ -3074,6 +3077,20 @@ if (typeof Navigation === 'undefined')
                     }
                     if (del) {
                       cur.gateChildren.splice(i, 1);
+                    }
+                  }
+                });
+              }
+              // Comp children
+              if (cur.compChildren) {
+                cur.compChildren.forEach((gate, i) => {
+                  if (gate == name) {
+                    refs.push(cur);
+                    if (replaceName) {
+                      cur.compChildren[i] = replaceName;
+                    }
+                    if (del) {
+                      cur.compChildren.splice(i, 1);
                     }
                   }
                 });
@@ -3126,7 +3143,6 @@ if (typeof Navigation === 'undefined')
               //not applicable
               break;
             case "LogicNode":
-            case "LogicTree":
               //not applicable
               break;
             case "Action":
@@ -3188,7 +3204,6 @@ if (typeof Navigation === 'undefined')
               //not applicable
               break;
             case "LogicNode":
-            case "LogicTree":
               //not applicable
               break;
             case "Action":
@@ -4279,7 +4294,6 @@ if (typeof Navigation === 'undefined')
     Sidebar.prototype.saveProject = function () {
       simApp.mainApp.saveProject();
     }
-
 
     return Sidebar;
   })(Object);
