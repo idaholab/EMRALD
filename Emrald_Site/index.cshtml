@@ -38,7 +38,10 @@
     <script src="scripts/UI/Window.js?v=@version"></script>
     <script src="scripts/UI/WindowFrame.js?v=@version"></script>
     <script src="scripts/UI/menu.js?v=@version"></script>
-    <script src="scripts/UI/upgrade.js?v=@version"></script>
+    <script type="module">
+        import upgrade from './scripts/UI/upgrade.js';
+        window.upgrade = upgrade;
+    </script>
     <script src="scripts/UI/Sidebar.js?v=@version"></script>
     <script src="scripts/UI/simApp.js"></script>
     <style>

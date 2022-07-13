@@ -387,7 +387,6 @@ function main(container, outline) {
               (oldTarget) => oldTarget.parentNode.removeChild(oldTarget),
             );
             const dropTarget = document.createElement('div');
-            console.log(state);
             dropTarget.classList.add('drop-target');
             const cellHeight = state.cell.geometry.height;
             const cellWidth = state.cell.geometry.width;
