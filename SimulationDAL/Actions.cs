@@ -1219,9 +1219,13 @@ namespace SimulationDAL
       //add all the states
       foreach (KeyValuePair<int, State> state in lists.allStates)
       {
-        //todo see if there are any variables with the name of the state
-        makeInputFileCompEval.AddVariable(state.Value.name, typeof(bool));
-        makeInputFileCompEval.AddVariable(state.Value.name + "_Time", typeof(TimeSpan));
+        //todo see if there are any variables with the name of the state && and valid variable name
+        if ((makeInputFileCode.Contains(state.Value.name) || makeInputFileCode.Contains(state.Value.name + "_Time")) &&
+           (state.Value.name.IndexOfAny(new char[] { '*', '&', '#', ' ', '-', '+', '_', '@', '$', '#', '%', ',', ')', '=', '/', '>', '<', '.', ';', '~', '`', '|', '}', '{', ']', '[', '\\' }) == -1))
+        {
+          makeInputFileCompEval.AddVariable(state.Value.name, typeof(bool));
+          makeInputFileCompEval.AddVariable(state.Value.name + "_Time", typeof(TimeSpan));
+        }
       }
 
 
