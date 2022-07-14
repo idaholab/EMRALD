@@ -159,22 +159,6 @@ function ValidateData() {
 function setModified(state) {
     isDirty = state;
 }
-function variableChecked(el) {
-    var scope = angular.element(document.querySelector('#actionControllerPanel')).scope();
-    var value;
-    if (el) {
-        value = JSON.parse(el.value);
-    }
-    if (value) {
-        if (scope.varNames.indexOf(value.Variable.name) > -1) {
-            var index = scope.varNames.indexOf(value.Variable.name);
-            scope.varNames.splice(index, 1);
-        }
-        else {
-            scope.varNames.push(value.Variable.name);
-        }
-    }
-}
 
 function handleExtSimSelection() {
     var extSimOpt = document.getElementById('extSimSelection');
@@ -625,6 +609,19 @@ actionModule.controller('actionController', ['$scope', function ($scope) {
 
     $scope.rowDropdownDisabled = function (row) {
       return $scope.data.mutExcl && row.remaining;
+    };
+
+    $scope.variableChecked = (row) => {
+        const index = $scope.varNames.indexOf(row.value.Variable.name);
+        if (row.check) {
+            if (index > -1) {
+                $scope.varNames.splice(index, 0, row.value.Variable.name);
+            } else {
+                $scope.varNames.push(row.value.Variable.name);
+            }
+        } else {
+            $scope.varNames.splice(index, 1);
+        }
     };
 
     $scope.$watch('name', function (newV, oldV) { if (newV !== oldV) somethingChanged(); });

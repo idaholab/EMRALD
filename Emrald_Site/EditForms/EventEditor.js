@@ -110,7 +110,7 @@ function isModified() {
 
 function ValidateData() {
     var scope = angular.element(document.querySelector('#EEControllerPanel')).scope();
-    if (scope.typeOption.value === 'et3dSimEv' && !scope.variable) {
+    if (scope.typeOption.value === 'et3dSimEv' && !scope.data.variable) {
         return "Please specify an External Sim Variable before saving the event.";
     }
     if (scope.typeOption.value === 'etComponentLogic' && !scope.logicTop) {
@@ -168,23 +168,6 @@ function moveFromCurrentHandler(el) {
     }
 }
 
-function variableChecked(el) {
-    var scope = angular.element(document.querySelector('#VarConditionPanel')).scope();
-    var value;
-    if (el) {
-        value = JSON.parse(el.value);
-    }
-    if (value) {
-        if (scope.varNames.indexOf(value.name) > -1) {
-            var indx = scope.varNames.indexOf(value.name);
-            scope.varNames.splice(indx, 1);
-        }
-        else {
-            scope.varNames.push(value.name);
-        }
-    }
-}
-
 function isNumeric(stringOrNumber) {
   return isNaN(stringOrNumber) ? false : (parseFloat(stringOrNumber) ? true : (parseFloat(stringOrNumber) === 0 ? true : false))
 }
@@ -193,6 +176,8 @@ function isNumeric(stringOrNumber) {
  * Installs the drag/drop handler on the states table.
  */
 function installDragHandler() {
+  // We need to delay this code 1ms to wait for Angular to create the table element
+  setTimeout(() => {
     const tblStates = document.getElementById('tblStates');
     if (tblStates) {
       tblStates.ondragover = (evt) => {
@@ -218,6 +203,7 @@ function installDragHandler() {
         }
       };
     }
+  }, 1);
 }
 
 //Holding the data model for the form.
@@ -290,19 +276,19 @@ function OnLoad(dataObj) {
             var opTypeEl = document.getElementById("typeOptionSelector");
             opTypeEl.disabled = true;  // Do not allow change type if not new.
             if (eventData.onVarChange) {
-                scope.onVarChange = scope.distChangeTypes.find((type) => type.value === eventData.onVarChange);
+                scope.data.onVarChange = scope.distChangeTypes.find((type) => type.value === eventData.onVarChange);
             }
             switch (eventData.evType) {
                 case "etVarCond":
-                    scope.conditionCode = eventData.code;
+                    scope.data.conditionCode = eventData.code;
                     opTypeEl.selectedIndex = 0;
                     break;
                 case "etStateCng":
-                    scope.isInState = eventData.ifInState;
-                    scope.isAllItems = eventData.allItems;
-                    scope.evalCurOnInitial = eventData.evalCurOnInitial;
+                    scope.data.isInState = eventData.ifInState;
+                    scope.data.isAllItems = eventData.allItems;
+                    scope.data.evalCurOnInitial = eventData.evalCurOnInitial;
                     if (typeof eventData.evalCurOnInitial !== 'boolean') {
-                        scope.evalCurOnInitial = true;
+                        scope.data.evalCurOnInitial = true;
                     }
                     scope.states = deepClone(eventData.triggerStates);
                     opTypeEl.selectedIndex = 1;
@@ -344,13 +330,13 @@ function OnLoad(dataObj) {
                 case "etDistribution":
                     scope.distParameters = eventData.parameters;
                     scope.dfltTimeRate = eventData.dfltTimeRate;
-                    scope.distType = scope.distTypes.find((type) => type.value === eventData.distType);
+                    scope.data.distType = scope.distTypes.find((type) => type.value === eventData.distType);
                 case "et3dSimEv":
                     var vb = scope.variables.find((v) => v.name == eventData.variable);
                     if (vb)
-                        scope.variable = vb;
+                        scope.data.variable = vb;
                     opTypeEl.selectedIndex = 8;
-                    scope.var3DCode = dataObj.code;
+                    scope.data.var3DCode = dataObj.code;
 
                     break;
             }
@@ -381,18 +367,18 @@ function GetDataObject() {
     dataObj.evType = scope.typeOption.value;
     switch (eventData.evType) {
         case "etVarCond":
-            dataObj.code = scope.conditionCode;
+            dataObj.code = scope.data.conditionCode;
             dataObj.varNames = scope.varNames;
             break;
         case "et3dSimEv":
-            dataObj.variable = scope.variable.name;
-            dataObj.code = scope.var3DCode;
+            dataObj.variable = scope.data.variable.name;
+            dataObj.code = scope.data.var3DCode;
             dataObj.varNames = scope.varNames;
             break;
         case "etStateCng":
-            dataObj.ifInState = scope.isInState;
-            dataObj.allItems = scope.isAllItems;
-            dataObj.evalCurOnInitial = scope.evalCurOnInitial;
+            dataObj.ifInState = scope.data.isInState;
+            dataObj.allItems = scope.data.isAllItems;
+            dataObj.evalCurOnInitial = scope.data.evalCurOnInitial;
             dataObj.triggerStates = scope.states;
             break;
         case "etComponentLogic":
@@ -410,8 +396,8 @@ function GetDataObject() {
                 dataObj.time = toTimespan(scope.time);
                 dataObj.timeVariableUnit = "";
             }
-            if (scope.onVarChange) {
-                dataObj.onVarChange = scope.onVarChange.value;
+            if (scope.data.onVarChange) {
+                dataObj.onVarChange = scope.data.onVarChange.value;
             }
             dataObj.fromSimStart = scope.fromSimStart;
             break;
@@ -424,12 +410,12 @@ function GetDataObject() {
             dataObj.lambdaTimeRate = toTimespan(scope.lambdaTimeRate);
             dataObj.useVariable = scope.data.failureRate.lambda.useVariable;
             //dataObj.missionTime = toTimespan(scope.missionTime);
-            if (scope.onVarChange) {
-                dataObj.onVarChange = scope.onVarChange.value;
+            if (scope.data.onVarChange) {
+                dataObj.onVarChange = scope.data.onVarChange.value;
             }
             break;
         case "etDistribution":
-            dataObj.distType = scope.distType.value;
+            dataObj.distType = scope.data.distType.value;
             // Remove variable property from parameters not using variables.
             const distParameters = scope.distParameters;
             distParameters.forEach((p, i) => {
@@ -439,8 +425,8 @@ function GetDataObject() {
             });
             dataObj.parameters = distParameters;
             dataObj.dfltTimeRate = scope.dfltTimeRate;
-            if (scope.onVarChange) {
-                dataObj.onVarChange = scope.onVarChange.value;
+            if (scope.data.onVarChange) {
+                dataObj.onVarChange = scope.data.onVarChange.value;
             }
     }
     return dataObj;
@@ -511,9 +497,7 @@ EEApp.controller("EEController", function ($scope) {
         { "name": "Resample", value: "ocResample", desc: ", a new event time." },
         { "name": "Adjust", value: "ocAdjust", desc: ", use the new variable values to adjust the event time without resampling, if possible." },
     ];
-    $scope.distType = $scope.distTypes[0];
     $scope.distParameters = [];
-    $scope.onVarChange = null;
     $scope.dfltTimeRate = 'trHours';
     $scope.distUsesVariable = function () {
         var re = false;
@@ -552,24 +536,26 @@ EEApp.controller("EEController", function ($scope) {
                 variableName: "",
                 allowedVariables: []
             }
-        }
+        },
+        conditionCode: '',
+        variable: null,
+        var3DCode: '',
+        distType: $scope.distTypes[0],
+        onVarChange: null,
+        isInState: "true",
+        isAllItems: true,
+        evalCurOnInitial: true,
     };
 
     //var Condition
-    $scope.conditionCode = "";
-    $scope.var3DCode = "";
     $scope.varMap = [];
     $scope.varNames = [];
 
     //3D Sim
     $scope.VariablesLoaded = false;
     $scope.variables = [];
-    $scope.variable = null;
     $scope.varNames = [];
     //State Change
-    $scope.isInState = "true";
-    $scope.isAllItems = true;
-    $scope.evalCurOnInitial = true;
     $scope.states = []
     //Component logic
     $scope.logicTopsLoaded = false;
@@ -610,7 +596,7 @@ EEApp.controller("EEController", function ($scope) {
      * Handles switching between distribution type panels.
      */
     $scope.handleDistSelection = () => {
-      switch ($scope.distType.value) {
+      switch ($scope.data.distType.value) {
         case 'dtNormal':
         case 'dtLogNormal':
           if (
@@ -718,17 +704,24 @@ EEApp.controller("EEController", function ($scope) {
         }
     };
 
+    $scope.variableChecked = (row) => {
+        const index = $scope.varNames.indexOf(row.value.name);
+        if (row.check) {
+            if (index > -1) {
+                $scope.varNames.splice(index, 0, row.value.name);
+            } else {
+                $scope.varNames.push(row.value.name);
+            }
+        } else {
+            $scope.varNames.splice(index, 1);
+        }
+    };
+
     $scope.$watch("name", function (newVal, oldVal) { if (newVal !== oldVal) somethingChanged(); });
     $scope.$watch("desc", function (newVal, oldVal) { if (newVal !== oldVal) somethingChanged(); });
     $scope.$watch("typeOption", function (newV, oldV) { if (newV !== oldV) { somethingChanged(); updateName(); } });
     $scope.$watch("moveFromCurrent", function (newVal, oldVal) { if (newVal !== oldVal) somethingChanged(); });
-    $scope.$watch("conditionCode", function (newVal, oldVal) { if (newVal !== oldVal) somethingChanged(); });
-    $scope.$watch("variable", function (newVal, oldVal) { if (newVal !== oldVal) somethingChanged(); });
     $scope.$watch("varNames", function (newVal, oldVal) { if (newVal !== oldVal) somethingChanged(); });
-    $scope.$watch("isInState", function (newVal, oldVal) { if (newVal !== oldVal) somethingChanged(); });
-    $scope.$watch("isAllItems", function (newVal, oldVal) { if (newVal !== oldVal) somethingChanged(); });
-    $scope.$watch("evalCurOnInitial", function (newVal, oldVal) { if (newVal !== oldVal) somethingChanged(); });
-    $scope.$watch("var3DCode", function (newVal, oldVal) { if (newVal !== oldVal) somethingChanged(); });
     $scope.$watch("onSuccess", function (newVal, oldVal) { if (newVal !== oldVal) somethingChanged(); });
     $scope.$watch("logicTop", function (newVal, oldVal) { if (newVal !== oldVal) somethingChanged(); });
     $scope.$watch("time.days", function (newVal, oldVal) { if (newVal !== oldVal) somethingChanged(); });
