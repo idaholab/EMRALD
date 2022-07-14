@@ -175,11 +175,10 @@ gateModule.controller('gateController', ['$scope', function ($scope) {
 			const parentWindow = window.frameElement.ownerDocument.defaultView?.frameElement?.ownerDocument.defaultView;
 			const sidebar = parentWindow.simApp.mainApp.sidebar;
 			$scope.match = sidebar.LogicNodeList.find(
-				(l) => l.LogicNode.name.toUpperCase() === $scope.newName.toUpperCase(),
+				(l) => l.LogicNode.name === $scope.newName,
 			);
 			$scope.data.useExisting = !!$scope.match;
 			if ($scope.match) {
-				console.log($scope.match);
 				$scope.newGateType = $scope.newGateTypes.find(
 					(type) => type.value === $scope.match.LogicNode.gateType,
 				);

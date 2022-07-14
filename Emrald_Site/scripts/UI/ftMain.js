@@ -766,10 +766,13 @@ function updateCell(graph, cell) {
 
 function BuildTreeRec(graph, parentCell, node) {
     if (node != undefined) {
+        if (node.LogicNode) {
+          node = node.LogicNode;
+        }
         if (parentCell == null)
-            var addedChild = AddChildGate(graph, parent, node.LogicNode);
+            var addedChild = AddChildGate(graph, parent, node);
         else
-            var addedChild = AddChildGate(graph, parentCell, node.LogicNode);
+            var addedChild = AddChildGate(graph, parentCell, node);
 
         //addedChild.value = node.LogicNode;
         if (node.gateChildren != undefined) {
@@ -895,9 +898,6 @@ function addNode(graph, stateCell) {
 										}
 								}
 								else if (retObj.addType == "standard") {
-                  console.log(retObj.useExisting);
-										//check to make sure component not already child
-										var alreadyExist = false;
 										var vertex = null;
 										var state = graph.getView().getState(stateCell);
 										var cell = state.cell;
@@ -921,18 +921,20 @@ function addNode(graph, stateCell) {
                         }
                     }
 
-                    var newLogicNode = {
-                        LogicNode: {
-                            id: newID,
-                            name: retObj.newName,
-                            desc: retObj.newDesc,
-                            gateType: retObj.newGateType,
-                            isRoot: false,
-                            "compChildren": [],
-                            "gateChildren": []
-                        }
-                    };
-                    graph.sidebar.LogicNodeList.push(newLogicNode);
+                    if (!retObj.useExisting) {
+                      var newLogicNode = {
+                          LogicNode: {
+                              id: newID,
+                              name: retObj.newName,
+                              desc: retObj.newDesc,
+                              gateType: retObj.newGateType,
+                              isRoot: false,
+                              "compChildren": [],
+                              "gateChildren": []
+                          }
+                      };
+                      graph.sidebar.LogicNodeList.push(newLogicNode);
+                    }
                     graph.zoomActual();
                     graph.zoomOut();	
 								}
