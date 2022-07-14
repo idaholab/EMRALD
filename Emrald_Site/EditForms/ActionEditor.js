@@ -312,6 +312,7 @@ function OnLoad(dataObj) {
     var transitionPanel = document.getElementById('TransitionPanel');
     if (transitionPanel) {
         transitionPanel.ondragover = function (evt) {
+            console.log(evt);
             var isStateEvent = false;
             for (var i = 0; i < evt.dataTransfer.types.length; i++) {
                 var type = evt.dataTransfer.types[i].toLowerCase();

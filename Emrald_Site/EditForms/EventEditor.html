@@ -277,7 +277,7 @@
                                 <b>States</b><br>
                             </td>
                         </tr>
-                        <tr ng-repeat="row in states">
+                        <tr ng-repeat="row in data.states">
                             <td style="border: thin dotted green;height:20px;">{{row}}</td>
                             <td style="width:12px;height:10px;text-align:center; ">
                                 <img id="{{row}}" src="../images/delete2.png"
@@ -288,9 +288,9 @@
                     </table>
                 </div>
                 <div id="ComponentLogicPanel" ng-if="typeOption.value === 'etComponentLogic'" style="display:table-row;position:absolute;height:70%;width:96%;overflow-x:hidden;overflow-y:scroll">
-                    <input name="OnSuccess" type="checkbox" ng-model="onSuccess" />On Success <br />
+                    <input name="OnSuccess" type="checkbox" ng-model="data.onSuccess" />On Success <br />
                     <label style="display:table-cell;vertical-align:middle; white-space:nowrap;">Logic Top:</label>
-                    <select name="LogicTop" ng-model="logicTop" ng-options="lt.name for lt in logicTops" style="width:130px;">
+                    <select name="LogicTop" ng-model="data.logicTop" ng-options="lt.name for lt in logicTops" style="width:130px;">
                         <option>-- Choose logic top --</option>
                     </select>
                 </div>
@@ -340,7 +340,7 @@
                         </select>
                         {{data.onVarChange.desc}}
                     </div>
-                    <input type="checkbox" ng-model="fromSimStart" /> From sim start
+                    <input type="checkbox" ng-model="data.fromSimStart" /> From sim start
                 </div>
 
                 <div id="FailProbabilityPanel" ng-if="typeOption.value === 'etFailRate'" style="display:table-row;position:absolute;height:70%;width:96%;overflow-x:hidden;">
