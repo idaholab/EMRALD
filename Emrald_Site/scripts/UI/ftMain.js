@@ -895,57 +895,46 @@ function addNode(graph, stateCell) {
 										}
 								}
 								else if (retObj.addType == "standard") {
+                  console.log(retObj.useExisting);
 										//check to make sure component not already child
 										var alreadyExist = false;
 										var vertex = null;
 										var state = graph.getView().getState(stateCell);
 										var cell = state.cell;
 										var newID = getDefaultGateID(graph);
-										for (var i = 0; i < graph.sidebar.LogicNodeList.length; i++) {
-												if (graph.sidebar.LogicNodeList[i].LogicNode.name == retObj.newName) {
-														alreadyExist = true;
-												}
-										}
-										if (!alreadyExist) {
-												graph.getModel().beginUpdate();
-												try {
-														var ftNode = new FTItem(newID, retObj.newName, retObj.newDesc, retObj.newGateType, "Gate", null, null, null);
-														ftNode.gateType = retObj.newGateType;
-														vertex = AddChildGate(graph, cell, ftNode);
-												}
-												finally {
-														graph.getModel().endUpdate();
-												}
+                    graph.getModel().beginUpdate();
+                    try {
+                        var ftNode = new FTItem(newID, retObj.newName, retObj.newDesc, retObj.newGateType, "Gate", null, null, null);
+                        ftNode.gateType = retObj.newGateType;
+                        vertex = AddChildGate(graph, cell, ftNode);
+                    }
+                    finally {
+                        graph.getModel().endUpdate();
+                    }
 
-												graph.setSelectionCell(vertex);
-												for (var i = 0; i < graph.sidebar.LogicNodeList.length; i++) {
-														if (graph.sidebar.LogicNodeList[i].LogicNode.name == cell.value) {
-																if (graph.sidebar.LogicNodeList[i].LogicNode.gateChildren.indexOf(retObj.newName) < 0) {
-                                  graph.sidebar.LogicNodeList[i].LogicNode.gateChildren.push(retObj.newName);
-                                }
-														}
-												}
+                    graph.setSelectionCell(vertex);
+                    for (var i = 0; i < graph.sidebar.LogicNodeList.length; i++) {
+                        if (graph.sidebar.LogicNodeList[i].LogicNode.name == cell.value) {
+                            if (graph.sidebar.LogicNodeList[i].LogicNode.gateChildren.indexOf(retObj.newName) < 0) {
+                              graph.sidebar.LogicNodeList[i].LogicNode.gateChildren.push(retObj.newName);
+                            }
+                        }
+                    }
 
-												var newLogicNode = {
-														LogicNode: {
-																id: newID,
-																name: retObj.newName,
-																desc: retObj.newDesc,
-																gateType: retObj.newGateType,
-																isRoot: false,
-																"compChildren": [],
-																"gateChildren": []
-														}
-												};
-												graph.sidebar.LogicNodeList.push(newLogicNode);
-												graph.zoomActual();
-												graph.zoomOut();
-
-										}
-										else {
-												alert(retObj.newName + " is already added to that cell");
-										}
-										
+                    var newLogicNode = {
+                        LogicNode: {
+                            id: newID,
+                            name: retObj.newName,
+                            desc: retObj.newDesc,
+                            gateType: retObj.newGateType,
+                            isRoot: false,
+                            "compChildren": [],
+                            "gateChildren": []
+                        }
+                    };
+                    graph.sidebar.LogicNodeList.push(newLogicNode);
+                    graph.zoomActual();
+                    graph.zoomOut();	
 								}
 
 						}

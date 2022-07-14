@@ -15,7 +15,7 @@
 </head>
 <body ng-app="gateModule" onload="handleSelection();">
     <div ng-controller="gateController" id="gateControllerPanel">
-        <form novalidate style="font-size:0.7em;">
+        <form novalidate>
             <div style="display:table-row">
                 <span style="display:table-cell">Gate type:</span>
                 <select style="width: 140px;" id="ScopeOption" ng-model="type" ng-options="typ.name for typ in types" name="Type" onchange="handleSelection(); return false;"></select>
