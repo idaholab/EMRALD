@@ -1323,22 +1323,21 @@ namespace SimulationDAL
           case EnDistType.dtTriangular:
             sampled = (new Triangular(Globals.ConvertToNewTimeSpan(_dParams[1].timeRate, (double)valuePs[1], _dParams[0].timeRate), //min
                                     Globals.ConvertToNewTimeSpan(_dParams[2].timeRate, (double)valuePs[2], _dParams[0].timeRate),   //max
-                                    (double)valuePs[2], //mode or peak
+                                    (double)valuePs[0], //mode or peak
                                     SingleRandom.Instance)).Sample();
             distTimeRate = _dParams[0].timeRate;
             break;
           case EnDistType.dtGamma:
             sampled = (new Gamma((double)valuePs[0],
-                                    Globals.ConvertToNewTimeSpan(_dParams[1].timeRate, (double)valuePs[1], _dParams[0].timeRate), //shape
+                                 (double)valuePs[1], //shape
                                     SingleRandom.Instance)).Sample(); //rate
+            distTimeRate = _dParams[1].timeRate;
+            break;
+          case EnDistType.dtGompertz:
+            sampled = 1;
             distTimeRate = _dParams[0].timeRate;
             break;
-          case EnDistType.dtBeta:
-            sampled = (new Beta((double)valuePs[0],//alpha
-                                    Globals.ConvertToNewTimeSpan(_dParams[1].timeRate, (double)valuePs[1], _dParams[0].timeRate), //beta
-                                    SingleRandom.Instance)).Sample();
-            distTimeRate = _dParams[0].timeRate;
-            break;
+
           default:
             throw new Exception("Distribution type not implemented for " + this._distType.ToString());
             break;
