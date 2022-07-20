@@ -1306,7 +1306,7 @@ namespace SimulationDAL
             break;
           case EnDistType.dtWeibull:
             sampled = (new Weibull((double)valuePs[0], (double)valuePs[1], SingleRandom.Instance)).Sample();
-            distTimeRate = _dParams[0].timeRate;
+            distTimeRate = _dParams[1].timeRate;
             break;
           case EnDistType.dtLogNormal:
             sampled = (new LogNormal((double)valuePs[0],
@@ -1314,6 +1314,36 @@ namespace SimulationDAL
                                     SingleRandom.Instance)).Sample();
             distTimeRate = _dParams[0].timeRate;
             break;
+          case EnDistType.dtUniform:
+            sampled = (new ContinuousUniform((double)valuePs[0],
+                                    Globals.ConvertToNewTimeSpan(_dParams[1].timeRate, (double)valuePs[1], _dParams[0].timeRate),
+                                    SingleRandom.Instance)).Sample();
+            distTimeRate = _dParams[0].timeRate;
+            break;
+          case EnDistType.dtTriangular:
+            sampled = (new Triangular(Globals.ConvertToNewTimeSpan(_dParams[1].timeRate, (double)valuePs[1], _dParams[0].timeRate), //min
+                                    Globals.ConvertToNewTimeSpan(_dParams[2].timeRate, (double)valuePs[2], _dParams[0].timeRate),   //max
+                                    (double)valuePs[0], //mode or peak
+                                    SingleRandom.Instance)).Sample();
+            distTimeRate = _dParams[0].timeRate;
+            break;
+          case EnDistType.dtGamma:
+            sampled = (new Gamma((double)valuePs[0],
+                                 ((double)valuePs[1]), //shape
+                                    SingleRandom.Instance)).Sample(); //rate
+            distTimeRate = _dParams[1].timeRate;
+            break;
+          case EnDistType.dtGompertz:
+            //Shape*scale*Math.Exp((Shape+(scale*x)) - (Shape*Math.Exp(scale*x)))
+
+            double shape = (double)valuePs[0]; //shape
+            double scale = (double)valuePs[1]; //scale
+            double r = SingleRandom.Instance.NextDouble();
+            sampled = ((1 / scale) * Math.Log(Math.Log(1 - r) / -shape + 1));
+
+            distTimeRate = _dParams[1].timeRate;
+            break;
+
           default:
             throw new Exception("Distribution type not implemented for " + this._distType.ToString());
             break;
@@ -1391,6 +1421,7 @@ namespace SimulationDAL
     }
   }
 
+  //Depricated use Dist Event
   public class NormalDistEvent : TimeBasedEvent //etNormalDist  
   {
     protected double _Mean = 0.0;
@@ -1510,6 +1541,7 @@ namespace SimulationDAL
     }
   }
 
+  //Depricated use Dist Event
   public class LogNormalDistEvent : NormalDistEvent //etNormalDist  
   {
     protected LogNormal mathFuncs = null;
@@ -1561,6 +1593,7 @@ namespace SimulationDAL
     }
   }
 
+  //Depricated use Dist Event
   public class WeibullDistEvent : TimeBasedEvent  //etWeibullDist  
   {
     protected double _Shape = 0.0;
@@ -1632,6 +1665,7 @@ namespace SimulationDAL
       return Globals.NumberToTimeSpan(sampled, this._TimeRate);
     }
   }
+  //Depricated use Dist Event
   public class ExponentialDistEvent : TimeBasedEvent
   {
     protected VariableList varList = null;
