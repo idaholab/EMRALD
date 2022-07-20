@@ -455,6 +455,10 @@ EEApp.controller("EEController", function ($scope) {
         { "name": "Exp. Distribution", value: "dtExponential" },
         { "name": "Weibull. Distribution", value: "dtWeibull" },
         { "name": "LogNorm. Distribution", value: "dtLogNormal" },
+        { "name": "Uniform Distribution", value: "dtUniform" },
+        { "name": "Triangular Distribution", value: "dtTriangular" },
+        { "name": "Gamma Distribution", value: "dtGamma" },
+        { "name": "Gompertz Distribution", value: "dtGompertz" },
     ];
     $scope.distChangeTypes = [
         { "name": "Ignore", value: "ocIgnore", desc: ", keeping the same sampled event time." },
@@ -516,6 +520,8 @@ EEApp.controller("EEController", function ($scope) {
     };
 
     //var Condition
+    $scope.conditionCode = "";
+    $scope.var3DCode = "";
     $scope.varMap = [];
     $scope.varNames = [];
 
@@ -630,6 +636,119 @@ EEApp.controller("EEController", function ($scope) {
               {
                 name: 'Shape',
                 value: 1,
+                useVariable: false,
+              },
+              {
+                name: 'Scale',
+                value: 1,
+                timeRate: 'trHours',
+                useVariable: false,
+              },
+              {
+                name: 'Minimum',
+                value: 0,
+                timeRate: 'trHours',
+                useVariable: false,
+              },
+              {
+                name: 'Maximum',
+                value: 1000,
+                timeRate: 'trYears',
+                useVariable: false,
+              },
+            ];
+          }
+          break;
+        case 'dtUniform':
+          if (
+            $scope.distParameters[0].length === 0 ||
+            $scope.distParameters[0].name !== 'Minimum'
+          ) {
+            $scope.distParameters = [
+              {
+                name: 'Minimum',
+                value: 0,
+                timeRate: 'trHours',
+                useVariable: false,
+              },
+              {
+                name: 'Maximum',
+                value: 1000,
+                timeRate: 'trYears',
+                useVariable: false,
+              },
+            ];
+          }
+          break;
+        case 'dtTriangular':
+          if (
+            $scope.distParameters[0].length === 0 ||
+            $scope.distParameters[0].name !== 'Peak'
+          ) {
+            $scope.distParameters = [
+              {
+                name: 'Peak',
+                value: 1,
+                timeRate: 'trHours',
+                useVariable: false,
+              },
+              {
+                name: 'Minimum',
+                value: 0,
+                timeRate: 'trHours',
+                useVariable: false,
+              },
+              {
+                name: 'Maximum',
+                value: 1000,
+                timeRate: 'trYears',
+                useVariable: false,
+              },
+            ];
+          }
+          break;
+        case 'dtGamma':
+          if (
+            $scope.distParameters[0].length === 0 ||
+            $scope.distParameters[0].name !== 'Shape'
+          ) {
+            $scope.distParameters = [
+              {
+                name: 'Shape',
+                value: 24,
+                useVariable: false,
+              },
+              {
+                name: 'Rate',
+                value: 1,
+                timeRate: 'trHours',
+                useVariable: false,
+              },
+              {
+                name: 'Minimum',
+                value: 0,
+                timeRate: 'trHours',
+                useVariable: false,
+              },
+              {
+                name: 'Maximum',
+                value: 1000,
+                timeRate: 'trYears',
+                useVariable: false,
+              },
+            ];
+          }
+          break;
+          case 'dtGompertz':
+          if (
+            $scope.distParameters[0].length === 0 ||
+            $scope.distParameters[0].name !== 'Shape'
+          ) {
+            $scope.distParameters = [
+              {
+                name: 'Shape',
+                value: 1,
+                timeRate: 'trHours',
                 useVariable: false,
               },
               {
