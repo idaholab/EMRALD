@@ -218,13 +218,13 @@
                         </div>
                         <div id="WeibullDistributionPanel" ng-if="data.distType.value === 'dtWeibull'">
                             <div style="display:table-row">
-                                <span style="display:table-cell;vertical-align:middle;">Shape (Lambda):</span>
+                                <span style="display:table-cell;vertical-align:middle;">Shape (k):</span>
                                 <select ng-if="distParameters[0].useVariable" ng-options="v.name as v.name for v in variables" ng-model="distParameters[0].variable"></select>
                                 <input name="wdShape" ng-model="distParameters[0].value" ng-if="!distParameters[0].useVariable" />
                                 <input type="checkbox" ng-model="distParameters[0].useVariable" /> Use Variable
                             </div>
                             <div style="display:table-row">
-                                <span style="display:table-cell;vertical-align:middle;">Scale (K):</span>
+                                <span style="display:table-cell;vertical-align:middle;">Scale (Lambda):</span>
                                 <select ng-if="distParameters[1].useVariable" ng-options="v.name as v.name for v in variables" ng-model="distParameters[1].variable"></select>
                                 <input name="wdScale" ng-model="distParameters[1].value" ng-if="!distParameters[1].useVariable" />
                                 <select ng-model="distParameters[1].timeRate" ng-options="t.value as t.name for t in timeOptions"></select>
