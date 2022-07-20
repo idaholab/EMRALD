@@ -53,7 +53,7 @@
                     </select>
                 </div>
                 <div ng-if="!data.templateIsSelected">
-                    <select style="display:table-cell;width: 130px;float:left" id="TypeOption" ng-model="diagramType" ng-options="dt.name for dt in diagramTypes" name="Type" ng-disabled="data.importedContent"></select>
+                    <select style="display:table-cell;width: 130px;float:left" id="TypeOption" ng-model="data.diagramType" ng-options="dt.name for dt in diagramTypes" name="Type" ng-disabled="data.importedContent"></select>
                 </div>
             </div>
             <div ng-if="showNewTypeEditor">

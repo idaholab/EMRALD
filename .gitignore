@@ -286,3 +286,5 @@ _Pvt_Extensions
 EMRALD_Site/coverage
 coverage
 EMRALD_Site/tests/temp
+instrumented
+.nyc_output

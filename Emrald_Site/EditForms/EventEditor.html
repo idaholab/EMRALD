@@ -87,7 +87,7 @@
                 >
                     <div style="display: flex; flex-direction: column; flex: 1">
                         Evaluate Code (c#) - Must return a boolean value! <br>
-                        <div code-editor class="editor" code="conditionCode"></div>
+                        <div code-editor class="editor" code="data.conditionCode"></div>
                     </div>
                     <table id="tblVariables" style="text-align: left;" border="1" cellspacing="0">
                         <tr>
@@ -111,7 +111,7 @@
                         </tr>
                         <tr ng-repeat="row in varMap">
                             <td style="border: 1px solid #dddddd; text-align: left; padding: 0px;">
-                                <input type="checkbox" onchange="variableChecked(this);" ng-true-value=true ng-false-value=false ng-checked={{row.check}} value={{row.value}} />
+                                <input type="checkbox" ng-change="variableChecked(row);" ng-model="row.check" />
                             </td>
                             <td style="border: 1px solid #dddddd; text-align: left; padding: 0px;">{{row.value.name}}</td>
                         </tr>
@@ -119,7 +119,7 @@
                 </div>
                 <div id="3DSimPanel" ng-if="typeOption.value === 'et3dSimEv'" style="display:table-row;position:absolute;width:96%;overflow-x:hidden;">
                     <label style="display:table-cell;vertical-align:middle; white-space:nowrap;">External Sim Variable:</label>
-                    <select name="Variables" ng-model="variable" ng-options="v.name for v in variables" style="width: 130px;">
+                    <select name="Variables" ng-model="data.variable" ng-options="v.name for v in variables" style="width: 130px;">
                         <option>-- Choose Variable --</option>
                     </select><br>
                     <div style="display: flex; flex-direction: row; align-items: stretch; height: calc(100vh - 10em); width: 94vw;">
@@ -127,7 +127,7 @@
                             <label style="display:table-cell;vertical-align:middle; white-space:nowrap;">Evaluate Code (c#)</label>
                             <br>
                             <div style="display: flex; flex-direction:row; flex: 1">
-                                <div code-editor class="editor" code="var3DCode"></div>
+                                <div code-editor class="editor" code="data.var3DCode"></div>
                             </div>
                         </div>
                         <table id="tblVariables" style="text-align: left;" border="1" cellspacing="0">
@@ -152,7 +152,7 @@
                             </tr>
                             <tr ng-repeat="row in varMap">
                                 <td style="border: 1px solid #dddddd; text-align: left; padding: 0px;">
-                                    <input type="checkbox" onchange="variableChecked(this);" ng-true-value=true ng-false-value=false ng-checked={{row.check}} value={{row.value}} />
+                                    <input type="checkbox" ng-change="variableChecked(row);" ng-model="row.check" />
                                 </td>
                                 <td style="border: 1px solid #dddddd; text-align: left; padding: 0px;">{{row.value.name}}</td>
                             </tr>
@@ -345,10 +345,10 @@
                         <hr />
                         <div ng-show="distUsesVariable()">
                             If Variable Changes:
-                            <select ng-model="onVarChange" ng-options="t as t.name for t in distChangeTypes" ng-change="updateChangeDesc()">
+                            <select ng-model="data.onVarChange" ng-options="t as t.name for t in distChangeTypes" ng-change="updateChangeDesc()">
                                 <option></option>
                             </select>
-                            {{onVarChange.desc}}
+                            {{data.onVarChange.desc}}
                         </div>
                     </div>
                 </div>
@@ -356,16 +356,16 @@
 
                     <form name="inState">
                         <label>
-                            <input type="radio" ng-model="isInState" value=true>
+                            <input type="radio" ng-model="data.isInState" value=true>
                             Enter state
                         </label>
                         <label>
-                            <input type="radio" ng-model="isInState" value=false>
+                            <input type="radio" ng-model="data.isInState" value=false>
                             Exit state
                         </label>
                     </form>
-                    <input name="AllItems" type="checkbox" ng-model="isAllItems">All Items
-                    <input name="EvalCurOnInitial" type="checkbox" ng-model="evalCurOnInitial">Trigger if in a specified 'Enter State' initially
+                    <input name="AllItems" type="checkbox" ng-model="data.isAllItems">All Items
+                    <input name="EvalCurOnInitial" type="checkbox" ng-model="data.evalCurOnInitial">Trigger if in a specified 'Enter State' initially
                     <br><br />
 
                     <table id="tblStates" style="text-align: left; width: 295px;" border="1" cellspacing="2">
@@ -374,7 +374,7 @@
                                 <b>States</b><br>
                             </td>
                         </tr>
-                        <tr ng-repeat="row in states">
+                        <tr ng-repeat="row in data.states">
                             <td style="border: thin dotted green;height:20px;">{{row}}</td>
                             <td style="width:12px;height:10px;text-align:center; ">
                                 <img id="{{row}}" src="../images/delete2.png"
@@ -385,9 +385,9 @@
                     </table>
                 </div>
                 <div id="ComponentLogicPanel" ng-if="typeOption.value === 'etComponentLogic'" style="display:table-row;position:absolute;height:70%;width:96%;overflow-x:hidden;overflow-y:scroll">
-                    <input name="OnSuccess" type="checkbox" ng-model="onSuccess" />On Success <br />
+                    <input name="OnSuccess" type="checkbox" ng-model="data.onSuccess" />On Success <br />
                     <label style="display:table-cell;vertical-align:middle; white-space:nowrap;">Logic Top:</label>
-                    <select name="LogicTop" ng-model="logicTop" ng-options="lt.name for lt in logicTops" style="width:130px;">
+                    <select name="LogicTop" ng-model="data.logicTop" ng-options="lt.name for lt in logicTops" style="width:130px;">
                         <option>-- Choose logic top --</option>
                     </select>
                 </div>
@@ -432,12 +432,12 @@
                     </div>
                     <div ng-show="data.timer.useVariable">
                         If Variable Changes:
-                        <select ng-model="onVarChange" ng-options="t as t.name for t in distChangeTypes" ng-change="updateChangeDesc()">
+                        <select ng-model="data.onVarChange" ng-options="t as t.name for t in distChangeTypes" ng-change="updateChangeDesc()">
                             <option></option>
                         </select>
-                        {{onVarChange.desc}}
+                        {{data.onVarChange.desc}}
                     </div>
-                    <input type="checkbox" ng-model="fromSimStart" /> From sim start
+                    <input type="checkbox" ng-model="data.fromSimStart" /> From sim start
                 </div>
 
                 <div id="FailProbabilityPanel" ng-if="typeOption.value === 'etFailRate'" style="display:table-row;position:absolute;height:70%;width:96%;overflow-x:hidden;">
@@ -488,10 +488,10 @@
                     <br />
                     <div ng-show="data.failureRate.lambda.useVariable">
                         If Variable Changes:
-                        <select ng-model="onVarChange" ng-options="t as t.name for t in distChangeTypes" ng-change="updateChangeDesc()">
+                        <select ng-model="data.onVarChange" ng-options="t as t.name for t in distChangeTypes" ng-change="updateChangeDesc()">
                             <option></option>
                         </select>
-                        {{onVarChange.desc}}
+                        {{data.onVarChange.desc}}
                     </div>
                     <!--<span class="item_caption" style="display:table-cell;vertical-align:middle; white-space:nowrap;">Mission Time:</span>
     <input name="missiontimespandays" ng-model="missionTime.days" size="4" />

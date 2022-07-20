@@ -110,10 +110,10 @@ function isModified() {
 
 function ValidateData() {
     var scope = angular.element(document.querySelector('#EEControllerPanel')).scope();
-    if (scope.typeOption.value === 'et3dSimEv' && !scope.variable) {
+    if (scope.typeOption.value === 'et3dSimEv' && !scope.data.variable) {
         return "Please specify an External Sim Variable before saving the event.";
     }
-    if (scope.typeOption.value === 'etComponentLogic' && !scope.logicTop) {
+    if (scope.typeOption.value === 'etComponentLogic' && !scope.data.logicTop) {
         return "Please specify a top logic gate before saving the event.";
     }
     return "";
@@ -128,9 +128,9 @@ function handleStateDelete() {
     if (confirm("Are you sure you want to delete: " + state + "?")) {
         var scope = angular.element(document.querySelector("#EEControllerPanel")).scope();
         scope.$apply(function () {
-            var idx = scope.states.indexOf(state);
+            var idx = scope.data.states.indexOf(state);
             if (idx >= 0)
-                scope.states.splice(idx, 1);
+                scope.data.states.splice(idx, 1);
             somethingChanged();
         });
     }
@@ -168,56 +168,8 @@ function moveFromCurrentHandler(el) {
     }
 }
 
-function variableChecked(el) {
-    var scope = angular.element(document.querySelector('#VarConditionPanel')).scope();
-    var value;
-    if (el) {
-        value = JSON.parse(el.value);
-    }
-    if (value) {
-        if (scope.varNames.indexOf(value.name) > -1) {
-            var indx = scope.varNames.indexOf(value.name);
-            scope.varNames.splice(indx, 1);
-        }
-        else {
-            scope.varNames.push(value.name);
-        }
-    }
-}
-
 function isNumeric(stringOrNumber) {
   return isNaN(stringOrNumber) ? false : (parseFloat(stringOrNumber) ? true : (parseFloat(stringOrNumber) === 0 ? true : false))
-}
-
-/**
- * Installs the drag/drop handler on the states table.
- */
-function installDragHandler() {
-    const tblStates = document.getElementById('tblStates');
-    if (tblStates) {
-      tblStates.ondragover = (evt) => {
-        if (evt.dataTransfer.types.indexOf('states') >= 0) {
-          //call preventDefault() to allow drop.
-          evt.preventDefault();
-        }
-      };
-
-      tblStates.ondrop = (evt) => {
-        evt.preventDefault();
-        if (evt.dataTransfer.types.indexOf('states') >= 0) {
-          var state = JSON.parse(evt.dataTransfer.getData('states'));
-          if (this.states.indexOf(state.name) < 0) {
-            this.$apply(
-              function () {
-                this.states.push(state.name);
-              }.bind(this),
-            );
-            somethingChanged();
-          } else
-            alert("The state '" + state.name + "' already exists in the list.");
-        }
-      };
-    }
 }
 
 //Holding the data model for the form.
@@ -230,8 +182,6 @@ function OnLoad(dataObj) {
     if (!dataObj) return;
     eventData = dataObj;
     var scope = angular.element(document.querySelector("#EEControllerPanel")).scope();
-
-    installDragHandler();
 
     if (eventData.moveFromCurrent == true || eventData.moveFromCurrent == false) {
         var moveFromCurrent = document.getElementById("movePanel");
@@ -283,35 +233,35 @@ function OnLoad(dataObj) {
 
         if (eventData.triggerStates)
             for (var i = 0; i < eventData.triggerStates.length; i++) {
-                scope.states.push(eventData.triggerStates[i]);
+                scope.data.states.push(eventData.triggerStates[i]);
             }
 
         if (eventData.id >= 0) {
             var opTypeEl = document.getElementById("typeOptionSelector");
             opTypeEl.disabled = true;  // Do not allow change type if not new.
             if (eventData.onVarChange) {
-                scope.onVarChange = scope.distChangeTypes.find((type) => type.value === eventData.onVarChange);
+                scope.data.onVarChange = scope.distChangeTypes.find((type) => type.value === eventData.onVarChange);
             }
             switch (eventData.evType) {
                 case "etVarCond":
-                    scope.conditionCode = eventData.code;
+                    scope.data.conditionCode = eventData.code;
                     opTypeEl.selectedIndex = 0;
                     break;
                 case "etStateCng":
-                    scope.isInState = eventData.ifInState;
-                    scope.isAllItems = eventData.allItems;
-                    scope.evalCurOnInitial = eventData.evalCurOnInitial;
+                    scope.data.isInState = eventData.ifInState;
+                    scope.data.isAllItems = eventData.allItems;
+                    scope.data.evalCurOnInitial = eventData.evalCurOnInitial;
                     if (typeof eventData.evalCurOnInitial !== 'boolean') {
-                        scope.evalCurOnInitial = true;
+                        scope.data.evalCurOnInitial = true;
                     }
-                    scope.states = deepClone(eventData.triggerStates);
+                    scope.data.states = deepClone(eventData.triggerStates);
                     opTypeEl.selectedIndex = 1;
                     break;
                 case "etComponentLogic":
-                    scope.onSuccess = eventData.onSuccess;
+                    scope.data.onSuccess = eventData.onSuccess;
                     var lt = scope.logicTops.find((o) => o.name == eventData.logicTop);
                     if (lt)
-                        scope.logicTop = lt;
+                        scope.data.logicTop = lt;
                     opTypeEl.selectedIndex = 2;
                     break;
                 case "etTimer":
@@ -323,7 +273,7 @@ function OnLoad(dataObj) {
                     } else {
                         scope.time = fromTimespan(eventData.time);
                     }
-                    scope.fromSimStart = eventData.fromSimStart || false;
+                    scope.data.fromSimStart = eventData.fromSimStart || false;
 
 
                     break;
@@ -348,9 +298,9 @@ function OnLoad(dataObj) {
                 case "et3dSimEv":
                     var vb = scope.variables.find((v) => v.name == eventData.variable);
                     if (vb)
-                        scope.variable = vb;
+                        scope.data.variable = vb;
                     opTypeEl.selectedIndex = 8;
-                    scope.var3DCode = dataObj.code;
+                    scope.data.var3DCode = dataObj.code;
 
                     break;
             }
@@ -381,24 +331,24 @@ function GetDataObject() {
     dataObj.evType = scope.typeOption.value;
     switch (eventData.evType) {
         case "etVarCond":
-            dataObj.code = scope.conditionCode;
+            dataObj.code = scope.data.conditionCode;
             dataObj.varNames = scope.varNames;
             break;
         case "et3dSimEv":
-            dataObj.variable = scope.variable.name;
-            dataObj.code = scope.var3DCode;
+            dataObj.variable = scope.data.variable.name;
+            dataObj.code = scope.data.var3DCode;
             dataObj.varNames = scope.varNames;
             break;
         case "etStateCng":
-            dataObj.ifInState = scope.isInState;
-            dataObj.allItems = scope.isAllItems;
-            dataObj.evalCurOnInitial = scope.evalCurOnInitial;
-            dataObj.triggerStates = scope.states;
+            dataObj.ifInState = scope.data.isInState;
+            dataObj.allItems = scope.data.isAllItems;
+            dataObj.evalCurOnInitial = scope.data.evalCurOnInitial;
+            dataObj.triggerStates = scope.data.states;
             break;
         case "etComponentLogic":
-            dataObj.onSuccess = scope.onSuccess;
-            if (scope.logicTop) {
-                dataObj.logicTop = scope.logicTop.name;
+            dataObj.onSuccess = scope.data.onSuccess;
+            if (scope.data.logicTop) {
+                dataObj.logicTop = scope.data.logicTop.name;
             }
             break;
         case "etTimer":
@@ -410,10 +360,10 @@ function GetDataObject() {
                 dataObj.time = toTimespan(scope.time);
                 dataObj.timeVariableUnit = "";
             }
-            if (scope.onVarChange) {
-                dataObj.onVarChange = scope.onVarChange.value;
+            if (scope.data.onVarChange) {
+                dataObj.onVarChange = scope.data.onVarChange.value;
             }
-            dataObj.fromSimStart = scope.fromSimStart;
+            dataObj.fromSimStart = scope.data.fromSimStart;
             break;
         case "etFailRate":
             if (scope.data.failureRate.lambda.useVariable) {
@@ -424,8 +374,8 @@ function GetDataObject() {
             dataObj.lambdaTimeRate = toTimespan(scope.lambdaTimeRate);
             dataObj.useVariable = scope.data.failureRate.lambda.useVariable;
             //dataObj.missionTime = toTimespan(scope.missionTime);
-            if (scope.onVarChange) {
-                dataObj.onVarChange = scope.onVarChange.value;
+            if (scope.data.onVarChange) {
+                dataObj.onVarChange = scope.data.onVarChange.value;
             }
             break;
         case "etDistribution":
@@ -439,8 +389,8 @@ function GetDataObject() {
             });
             dataObj.parameters = distParameters;
             dataObj.dfltTimeRate = scope.dfltTimeRate;
-            if (scope.onVarChange) {
-                dataObj.onVarChange = scope.onVarChange.value;
+            if (scope.data.onVarChange) {
+                dataObj.onVarChange = scope.data.onVarChange.value;
             }
     }
     return dataObj;
@@ -516,7 +466,6 @@ EEApp.controller("EEController", function ($scope) {
         { "name": "Adjust", value: "ocAdjust", desc: ", use the new variable values to adjust the event time without resampling, if possible." },
     ];
     $scope.distParameters = [];
-    $scope.onVarChange = null;
     $scope.dfltTimeRate = 'trHours';
     $scope.distUsesVariable = function () {
         var re = false;
@@ -556,7 +505,18 @@ EEApp.controller("EEController", function ($scope) {
                 allowedVariables: []
             }
         },
+        conditionCode: '',
+        variable: null,
+        var3DCode: '',
         distType: $scope.distTypes[0],
+        onVarChange: null,
+        isInState: "true",
+        isAllItems: true,
+        evalCurOnInitial: true,
+        states: [],
+        onSuccess: false,
+        logicTop: null,
+        fromSimStart: false,
     };
 
     //var Condition
@@ -568,18 +528,10 @@ EEApp.controller("EEController", function ($scope) {
     //3D Sim
     $scope.VariablesLoaded = false;
     $scope.variables = [];
-    $scope.variable = null;
     $scope.varNames = [];
-    //State Change
-    $scope.isInState = "true";
-    $scope.isAllItems = true;
-    $scope.evalCurOnInitial = true;
-    $scope.states = []
     //Component logic
     $scope.logicTopsLoaded = false;
-    $scope.onSuccess = false;
     $scope.logicTops = [];
-    $scope.logicTop = null;
     //timer
     $scope.time = {
         days: null,
@@ -587,7 +539,6 @@ EEApp.controller("EEController", function ($scope) {
         minutes: null,
         seconds: null
     };
-    $scope.fromSimStart = false;
     //Fail Probability
     $scope.lambdaTimeRates = [];
     $scope.lambdaTimeRate = {
@@ -828,10 +779,52 @@ EEApp.controller("EEController", function ($scope) {
      * Handles switching between detail panels.
      */
     $scope.handleSelection = () => {
-        if ($scope.typeOption.value === 'etDistribution') {
-            $scope.handleDistSelection();
-        } else if ($scope.typeOption.value === 'etStateCng') {
-            installDragHandler();
+      if ($scope.typeOption.value === 'etDistribution') {
+        $scope.handleDistSelection();
+      } else if ($scope.typeOption.value === 'etStateCng') {
+        // Install the drag/drop handler on the state table
+        setTimeout(() => {
+          const tblStates = document.getElementById('tblStates');
+          if (tblStates) {
+            tblStates.ondragover = (evt) => {
+              if (evt.dataTransfer.types.indexOf('states') >= 0) {
+                //call preventDefault() to allow drop.
+                evt.preventDefault();
+              }
+            };
+            tblStates.ondrop = (evt) => {
+              evt.preventDefault();
+              if (evt.dataTransfer.types.indexOf('states') >= 0) {
+                const state = JSON.parse(evt.dataTransfer.getData('states'));
+                if ($scope.data.states.indexOf(state.name) < 0) {
+                  $scope.$apply(() => {
+                    $scope.data.states.push(state.name);
+                  });
+                  somethingChanged();
+                } else {
+                  alert(
+                    "The state '" +
+                      state.name +
+                      "' already exists in the list.",
+                  );
+                }
+              }
+            };
+          }
+        }, 1);
+      }
+    };
+
+    $scope.variableChecked = (row) => {
+        const index = $scope.varNames.indexOf(row.value.name);
+        if (row.check) {
+            if (index > -1) {
+                $scope.varNames.splice(index, 0, row.value.name);
+            } else {
+                $scope.varNames.push(row.value.name);
+            }
+        } else {
+            $scope.varNames.splice(index, 1);
         }
     };
 
@@ -839,15 +832,7 @@ EEApp.controller("EEController", function ($scope) {
     $scope.$watch("desc", function (newVal, oldVal) { if (newVal !== oldVal) somethingChanged(); });
     $scope.$watch("typeOption", function (newV, oldV) { if (newV !== oldV) { somethingChanged(); updateName(); } });
     $scope.$watch("moveFromCurrent", function (newVal, oldVal) { if (newVal !== oldVal) somethingChanged(); });
-    $scope.$watch("conditionCode", function (newVal, oldVal) { if (newVal !== oldVal) somethingChanged(); });
-    $scope.$watch("variable", function (newVal, oldVal) { if (newVal !== oldVal) somethingChanged(); });
     $scope.$watch("varNames", function (newVal, oldVal) { if (newVal !== oldVal) somethingChanged(); });
-    $scope.$watch("isInState", function (newVal, oldVal) { if (newVal !== oldVal) somethingChanged(); });
-    $scope.$watch("isAllItems", function (newVal, oldVal) { if (newVal !== oldVal) somethingChanged(); });
-    $scope.$watch("evalCurOnInitial", function (newVal, oldVal) { if (newVal !== oldVal) somethingChanged(); });
-    $scope.$watch("var3DCode", function (newVal, oldVal) { if (newVal !== oldVal) somethingChanged(); });
-    $scope.$watch("onSuccess", function (newVal, oldVal) { if (newVal !== oldVal) somethingChanged(); });
-    $scope.$watch("logicTop", function (newVal, oldVal) { if (newVal !== oldVal) somethingChanged(); });
     $scope.$watch("time.days", function (newVal, oldVal) { if (newVal !== oldVal) somethingChanged(); });
     $scope.$watch("time.hours", function (newVal, oldVal) { if (newVal !== oldVal) somethingChanged(); });
     $scope.$watch("time.minutes", function (newVal, oldVal) { if (newVal !== oldVal) somethingChanged(); });
@@ -861,7 +846,6 @@ EEApp.controller("EEController", function ($scope) {
     //$scope.$watch("missionTime.hours", function (newVal, oldVal) { if (newVal !== oldVal) somethingChanged(); });
     //$scope.$watch("missionTime.minutes", function (newVal, oldVal) { if (newVal !== oldVal) somethingChanged(); });
     //$scope.$watch("missionTime.seconds", function (newVal, oldVal) { if (newVal !== oldVal) somethingChanged(); });
-    $scope.$watch("states", function (newVal, oldVal) { if (newVal !== oldVal) somethingChanged(); });
     $scope.$watch("ndMean", function (newVal, oldVal) { if (newVal !== oldVal) somethingChanged(); });
     $scope.$watch("ndStdDev", function (newVal, oldVal) { if (newVal !== oldVal) somethingChanged(); });
     $scope.$watch("ndMin", function (newVal, oldVal) { if (newVal !== oldVal) somethingChanged(); });

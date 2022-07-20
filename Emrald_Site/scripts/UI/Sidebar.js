@@ -538,7 +538,6 @@ if (typeof Navigation === 'undefined')
         // Initialize ContentPanel position
         const sideBarContainer = document.getElementById('SidePanelContainer');
         const sideBar = document.getElementById('SidePanel');
-        console.log(`${sideBar.clientWidth} + ${$('.ui-resizable-handle.ui-resizable-e').width()} + ${parseInt(sideBarContainer.style.marginLeft)} + ${parseInt(sideBarContainer.style.marginRight)} + ${24}`);
         $('#ContentPanel').css({
           left: sideBar.clientWidth + $('.ui-resizable-handle.ui-resizable-e').width() + parseInt(sideBarContainer.style.marginLeft) + parseInt(sideBarContainer.style.marginRight) + 24
         });
@@ -2039,7 +2038,7 @@ if (typeof Navigation === 'undefined')
                 el.innerText = dataObj.name;
                 const oldName = outDataObj.rootName;
                 outDataObj.rootName = outDataObj.name;
-                simApp.mainApp.sidebar.replaceNames(oldName, dataObj.name, 'LogicTree', simApp.allDataModel, false);
+                simApp.mainApp.sidebar.replaceNames(oldName, dataObj.name, 'LogicNode', simApp.allDataModel, false);
               } else {
                 if (this.existsLogicName(outDataObj.name)) {
                   MessageBox.alert("New Logic Tree", "A logic tree with the '" + outDataObj.name + "' exists, please try a different name.");
@@ -2079,6 +2078,7 @@ if (typeof Navigation === 'undefined')
           'minimize, maximize, close', //top buttons
           function (btn, retObj) {
             if (btn === 'OK') {
+              // TODO: Only save fault tree changes when the OK button is clicked.
             }
             return true;
           }.bind(this),
@@ -2669,7 +2669,6 @@ if (typeof Navigation === 'undefined')
               }
               break;
             case "LogicNode":
-            case "LogicTree":
               //etComponentLogic
               if (cur.logicTop && cur.logicTop == name) {
                 if (del) {
@@ -2841,7 +2840,6 @@ if (typeof Navigation === 'undefined')
               //not applicable
               break;
             case "LogicNode":
-            case "LogicTree":
               //not applicable
               break;
             default:
@@ -2946,7 +2944,6 @@ if (typeof Navigation === 'undefined')
               //Not applicable
               break;
             case "LogicNode":
-            case "LogicTree":
               //not applicable
               break;
             default:
@@ -3024,7 +3021,6 @@ if (typeof Navigation === 'undefined')
               //Not applicable
               break;
             case "LogicNode":
-            case "LogicTree":
               //not applicable
               break;
             default:
@@ -3062,7 +3058,6 @@ if (typeof Navigation === 'undefined')
               }
               break;
             case "LogicNode":
-            case "LogicTree":
               // Reference to itself
               if (cur.name == name) {
                 if (replaceName != null) {
@@ -3084,6 +3079,20 @@ if (typeof Navigation === 'undefined')
                     }
                     if (del) {
                       cur.gateChildren.splice(i, 1);
+                    }
+                  }
+                });
+              }
+              // Comp children
+              if (cur.compChildren) {
+                cur.compChildren.forEach((gate, i) => {
+                  if (gate == name) {
+                    refs.push(cur);
+                    if (replaceName) {
+                      cur.compChildren[i] = replaceName;
+                    }
+                    if (del) {
+                      cur.compChildren.splice(i, 1);
                     }
                   }
                 });
@@ -3136,7 +3145,6 @@ if (typeof Navigation === 'undefined')
               //not applicable
               break;
             case "LogicNode":
-            case "LogicTree":
               //not applicable
               break;
             case "Action":
@@ -3198,7 +3206,6 @@ if (typeof Navigation === 'undefined')
               //not applicable
               break;
             case "LogicNode":
-            case "LogicTree":
               //not applicable
               break;
             case "Action":
