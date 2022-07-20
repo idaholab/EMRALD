@@ -1306,7 +1306,7 @@ namespace SimulationDAL
             break;
           case EnDistType.dtWeibull:
             sampled = (new Weibull((double)valuePs[0], (double)valuePs[1], SingleRandom.Instance)).Sample();
-            distTimeRate = _dParams[0].timeRate;
+            distTimeRate = _dParams[1].timeRate;
             break;
           case EnDistType.dtLogNormal:
             sampled = (new LogNormal((double)valuePs[0],
@@ -1329,13 +1329,19 @@ namespace SimulationDAL
             break;
           case EnDistType.dtGamma:
             sampled = (new Gamma((double)valuePs[0],
-                                 (double)valuePs[1], //shape
+                                 (1/(double)valuePs[1]), //shape
                                     SingleRandom.Instance)).Sample(); //rate
             distTimeRate = _dParams[1].timeRate;
             break;
           case EnDistType.dtGompertz:
-            sampled = 1;
-            distTimeRate = _dParams[0].timeRate;
+            //Shape*scale*Math.Exp((Shape+(scale*x)) - (Shape*Math.Exp(scale*x)))
+
+            double shape = (double)valuePs[0];
+            double scale = (double)valuePs[1];
+            double r = SingleRandom.Instance.NextDouble();
+            sampled = ((1 / scale) * Math.Log(Math.Log(1 - r) / -shape + 1));
+
+            distTimeRate = _dParams[1].timeRate;
             break;
 
           default:

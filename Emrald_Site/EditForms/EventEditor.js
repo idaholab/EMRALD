@@ -508,7 +508,7 @@ EEApp.controller("EEController", function ($scope) {
         { "name": "Uniform Distribution", value: "dtUniform" },
         { "name": "Triangular Distribution", value: "dtTriangular" },
         { "name": "Gamma Distribution", value: "dtGamma" },
-        { "name": "Beta Distribution", value: "dtBeta" },
+        { "name": "Gompertz Distribution", value: "dtGompertz" },
     ];
     $scope.distChangeTypes = [
         { "name": "Ignore", value: "ocIgnore", desc: ", keeping the same sampled event time." },
@@ -768,7 +768,7 @@ EEApp.controller("EEController", function ($scope) {
                 useVariable: false,
               },
               {
-                name: 'Alpha',
+                name: 'Rate',
                 value: 1,
                 timeRate: 'trHours',
                 useVariable: false,
@@ -788,20 +788,20 @@ EEApp.controller("EEController", function ($scope) {
             ];
           }
           break;
-        case 'dtBeta':
+          case 'dtGompertz':
           if (
             $scope.distParameters[0].length === 0 ||
-            $scope.distParameters[0].name !== 'Alpha'
+            $scope.distParameters[0].name !== 'Shape'
           ) {
             $scope.distParameters = [
               {
-                name: 'Alpha',
+                name: 'Shape',
                 value: 1,
                 timeRate: 'trHours',
                 useVariable: false,
               },
               {
-                name: 'Beta',
+                name: 'Scale',
                 value: 1,
                 timeRate: 'trHours',
                 useVariable: false,
