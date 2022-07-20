@@ -1329,7 +1329,7 @@ namespace SimulationDAL
             break;
           case EnDistType.dtGamma:
             sampled = (new Gamma((double)valuePs[0],
-                                 (1/(double)valuePs[1]), //shape
+                                 ((double)valuePs[1]), //shape
                                     SingleRandom.Instance)).Sample(); //rate
             distTimeRate = _dParams[1].timeRate;
             break;
