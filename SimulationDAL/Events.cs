@@ -1336,8 +1336,8 @@ namespace SimulationDAL
           case EnDistType.dtGompertz:
             //Shape*scale*Math.Exp((Shape+(scale*x)) - (Shape*Math.Exp(scale*x)))
 
-            double shape = (double)valuePs[0];
-            double scale = (double)valuePs[1];
+            double shape = (double)valuePs[0]; //shape
+            double scale = (double)valuePs[1]; //scale
             double r = SingleRandom.Instance.NextDouble();
             sampled = ((1 / scale) * Math.Log(Math.Log(1 - r) / -shape + 1));
 
