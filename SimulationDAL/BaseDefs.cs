@@ -499,6 +499,14 @@ namespace SimulationDAL
       return retVal;
     }
 
+    public void Reset()
+    {
+      for (int i = 0; i < _Instance.curMaxID.Length; ++i)
+      {
+        _Instance.curMaxID[i] = 1;
+      }
+    }
+
     public void ResetTimerIDs()
     {
       curMaxID[(int)EnIDTypes.itTimer] = 1;

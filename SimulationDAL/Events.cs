@@ -1355,8 +1355,20 @@ namespace SimulationDAL
       }
 
 
-
-      TimeSpan sampledTime = Globals.NumberToTimeSpan(sampled, distTimeRate);
+      TimeSpan sampledTime = TimeSpan.Zero;
+      try
+      {
+        sampledTime = Globals.NumberToTimeSpan(sampled, distTimeRate);
+      }
+      catch (OverflowException e)
+      {
+        sampledTime = TimeSpan.MaxValue;
+      }
+      catch
+      {
+        throw new Exception("Failed to set time for " + this._distType.ToString() + " - " + sampled);
+      }
+      
       //Globals.ConvertToNewTimeSpan(_dParams[1].timeRate, (double)valuePs[1], _dParams[0].timeRate)
       try
       {
