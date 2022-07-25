@@ -163,7 +163,9 @@ gateModule.controller('gateController', ['$scope', function ($scope) {
 
 		$scope.newGateTypes = [
 				{ name: "AND", value: "gtAnd" },
-				{ name: "OR", value: "gtOr" }],
+				{ name: "OR", value: "gtOr" },
+				{ name: "NOT", value: "gtNot" },
+		];
 				$scope.newGateType = $scope.newGateTypes[0];
 		$scope.newDiagramOptions = [];
 		$scope.match = false;

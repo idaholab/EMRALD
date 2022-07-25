@@ -107,7 +107,9 @@ gateModule.controller('gateController', ['$scope', function ($scope) {
     $scope.desc = "";
     $scope.types = [
         { name: "AND", value: "gtAnd" },
-        { name: "OR", value: "gtOr" }],
+        { name: "OR", value: "gtOr" },
+        { name: "NOT", value: "gtNot" },
+    ];
         $scope.type = $scope.types[0];
 
  
