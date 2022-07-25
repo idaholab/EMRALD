@@ -121,6 +121,7 @@ namespace SimulationDAL
 
     public bool DeserializeJSON(string jsonModel, string modelPath) 
     {
+      SingleNextIDs.Instance.Reset();
       this.rootPath = modelPath;
       dynamic jsonObj = JsonConvert.DeserializeObject(jsonModel); 
       return DeserializeDerived(jsonObj, true, this, false);
