@@ -19,7 +19,7 @@ namespace ScriptEngineNS
     const String domain = "UserScript";
     public enum Languages { CSharp };
     public Languages language;
-    private string assemblyName = "";
+    private string assemblyName = "TestClass";
     private object evaluator = null;
     private Type evaluatorType = null;
     Assembly assembly = null;
@@ -31,9 +31,8 @@ namespace ScriptEngineNS
     public List<string> messages = new List<string>();
 
 
-    public ScriptEngine(string name, Languages language, string code = "")
+    public ScriptEngine(Languages language, string code = "")
     {
-      this.assemblyName = name;
       this.language = language;
       this.code = code;
       this.variables = "";

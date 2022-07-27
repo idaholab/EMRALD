@@ -428,7 +428,7 @@ namespace SimulationDAL
 
     public EvalVarEvent() : base("")
     {
-      compiledComp = new ScriptEngine("EvalVar_" + this.name, ScriptEngine.Languages.CSharp);
+      compiledComp = new ScriptEngine(ScriptEngine.Languages.CSharp);
     }
 
     public EvalVarEvent(string inName, string inCompCode, VariableList inVarList, Sim3DVariable sim3dVar)// = null)
@@ -451,7 +451,7 @@ namespace SimulationDAL
       else
         this.sim3dID = null;
 
-      compiledComp = new ScriptEngine("EvarVal_" + this.name, ScriptEngine.Languages.CSharp);
+      compiledComp = new ScriptEngine(ScriptEngine.Languages.CSharp);
     }
 
     protected override EnEventType GetEvType() { return (variable == "") ? EnEventType.etVarCond : EnEventType.et3dSimEv; }

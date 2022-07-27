@@ -653,7 +653,7 @@ namespace SimulationDAL
       }
 
       this.compiled = false;
-      scriptRunner = new ScriptEngine("Act_" + this.name, ScriptEngine.Languages.CSharp, scriptCode);
+      scriptRunner = new ScriptEngine(ScriptEngine.Languages.CSharp, scriptCode);
 
       //add the Time and 3D Frame variables
       scriptRunner.AddVariable("CurTime", typeof(double));
@@ -910,7 +910,7 @@ namespace SimulationDAL
       }
 
       this.compiled = false;
-      scriptRunner = new ScriptEngine("JumpAct_" + this.name, ScriptEngine.Languages.CSharp);
+      scriptRunner = new ScriptEngine(ScriptEngine.Languages.CSharp);
       scriptRunner.Code = scriptCode; // "Result = var1+3;";
 
       //add the Time and 3D Frame variables
@@ -1189,7 +1189,7 @@ namespace SimulationDAL
       }
 
       this.compiled = false;
-      makeInputFileCompEval = new ScriptEngine("RunExtAppAct_Pre_" + this.name, ScriptEngine.Languages.CSharp);
+      makeInputFileCompEval = new ScriptEngine(ScriptEngine.Languages.CSharp);
       makeInputFileCompEval.Code = makeInputFileCode; // "Result = var1+3;";
 
       //add the Time and 3D Frame variables
@@ -1246,7 +1246,7 @@ namespace SimulationDAL
       }
 
       this.compiled = false;
-      processOutputFileCompEval = new ScriptEngine("RunExtAppAct_Post_" + this.name, ScriptEngine.Languages.CSharp);
+      processOutputFileCompEval = new ScriptEngine(ScriptEngine.Languages.CSharp);
       processOutputFileCompEval.Code = processOutputFileCode; // "Result = var1+3;";
 
       //add the Time and 3D Frame variables
