@@ -331,7 +331,7 @@ namespace SimulationEngine
         options.debugStartIdx = 1;
       }
 
-      if (options.debugStartIdx > (options.runct - 1))
+      if (options.debugStartIdx > (options.runct))
       {
         _error = "debugStartIdx must be less than the # of runs";
         return false;
