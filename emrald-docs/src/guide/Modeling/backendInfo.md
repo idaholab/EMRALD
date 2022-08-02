@@ -21,6 +21,30 @@ EMRALD runs user defined scripts to perform evaluations and post process data. T
 
 Users can define scripts in the following locations:
 - **Action "Run Application":** Fields "Preprocess Code" and "Postprocess Code." See Run Application under [Types of Actions](./actions.md#types-of-actions) for more information.
+- **Action "Change Var Value":** Fields "New Code Value" and See New Code Value under [Types of Actions](./actions.md#types-of-actions) for more information.
 - **Event "Var Condition":** Field "Evaluate Code." See Variable Condition under [Conditional Events](./events.md#conditional-events) for more information.
+- **Event "Ext Simulation":** Field "Evaluate Code." See Variable Condition under [Conditional Events](./events.md#conditional-events) for more information.
+
+## Default Variales
+
+All custom user scripts can use the following default variables:
+- **CurTime** type[double]: The current time of the simulation in hours.
+- **RunIdx** type[int]: The current index or count of simulations run in this batch.
+
+
+The "Run Application" action, see Run Application under [Types of Actions](./actions.md#types-of-actions) also has the following:
+Preprocess Code
+- **ExePath** type[string]: The path to the application being run.
+Postprocess Code
+- **ExeExitCode** type[int]: Exit code of the application that ran.
+- **OutputFile** type[string]: The path to any text written to standard out when executing the application.
+
+
+The "Var Condition" event, see Variable Condition under [Conditional Events](./events.md#conditional-events), also has the following:
+- **NextEvTime** type[double]: The simulation time for the next event in EMRALD.
+
+
+
+
 
 <!--Copyright 2021 Battelle Energy Alliance-->

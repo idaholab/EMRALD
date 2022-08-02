@@ -47,7 +47,8 @@ namespace SimulationDAL
     public Dictionary<int, List<AccrualVariable>> AccrualVars = new Dictionary<int, List<AccrualVariable>>();
     public string rootPath = "";
 
-    public int dbID = 0;
+    //public int dbID = 0;
+    public int curRunIdx = 0;
     
     //public Dictionary<int, Formula> allFormulas = new Dictionary<int, Formula>();
     //public Diagram curDiagram { get { return _Diagram; } set { _Diagram = value; } }

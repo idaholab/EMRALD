@@ -111,7 +111,7 @@ namespace SimulationDAL
     public CondBasedEvent(string inName)
       : base(inName) { }
 
-    public abstract bool EventTriggered(MyBitArray curStates, object otherData, TimeSpan curSimTime, TimeSpan start3DTime, TimeSpan nextEvTime);
+    public abstract bool EventTriggered(MyBitArray curStates, object otherData, TimeSpan curSimTime, TimeSpan start3DTime, TimeSpan nextEvTime, int runIdx);
 
     //public override bool DeleteFromDB(LookupLists lists) { return base.DeleteFromDB(lists); }
   }
@@ -242,7 +242,7 @@ namespace SimulationDAL
       return true;
     }
 
-    public override bool EventTriggered(MyBitArray curStates, object otherData, TimeSpan curSimTime, TimeSpan start3DTime, TimeSpan nextEvTime)
+    public override bool EventTriggered(MyBitArray curStates, object otherData, TimeSpan curSimTime, TimeSpan start3DTime, TimeSpan nextEvTime, int runIdx)
     {
       ChangedIDs changedItems = (ChangedIDs)otherData;
       int matchCnt = 0;
@@ -382,7 +382,7 @@ namespace SimulationDAL
       return true;
     }
 
-    public override bool EventTriggered(MyBitArray curStates, object otherData, TimeSpan curSimTime, TimeSpan start3DTime, TimeSpan nextEvTime)
+    public override bool EventTriggered(MyBitArray curStates, object otherData, TimeSpan curSimTime, TimeSpan start3DTime, TimeSpan nextEvTime, int runIdx)
     {
       bool evalRes = logicTop.Evaluate(curStates);
 
@@ -591,6 +591,7 @@ namespace SimulationDAL
 
       //add the Time and 3D Frame variables needed event if 
       compiledComp.AddVariable("CurTime", typeof(Double));
+      compiledComp.AddVariable("RunIdx", typeof(int));
       compiledComp.AddVariable("ExtSimStartTime", typeof(double));
       compiledComp.AddVariable("NextEvTime", typeof(double));
 
@@ -600,6 +601,7 @@ namespace SimulationDAL
         foreach (var varItem in varList)
         {
           if ((varItem.Value.name != "CurTime") &&
+              (varItem.Value.name != "RunIdx") &&
               (varItem.Value.name != "ExtSimStartTime") &&
               (varItem.Value.name != "NextEvTime"))
           {
@@ -621,7 +623,7 @@ namespace SimulationDAL
       return this.compiled;
     }
 
-    public override bool EventTriggered(MyBitArray curStates, object otherData, TimeSpan curSimTime, TimeSpan start3DTime, TimeSpan nextEvTime)
+    public override bool EventTriggered(MyBitArray curStates, object otherData, TimeSpan curSimTime, TimeSpan start3DTime, TimeSpan nextEvTime, int runIdx)
     {
       if (!this.compiled)
       {
@@ -639,6 +641,7 @@ namespace SimulationDAL
       }
 
       compiledComp.SetVariable("CurTime", typeof(double), curSimTime.TotalHours);
+      compiledComp.SetVariable("RunIdx", typeof(int), runIdx);
       compiledComp.SetVariable("ExtSimStartTime", typeof(double), start3DTime.TotalHours);
       compiledComp.SetVariable("NextEvTime", typeof(double), nextEvTime.TotalHours);//NextEvTime
 

@@ -624,6 +624,45 @@ namespace SimulationDAL
     protected bool _pathMustExist = true;
     protected object _dfltValue = null;
     protected string _docFullPath = "";
+    private VariableList _vars = null;
+
+    protected string linkStr()
+    {
+      if (_vars == null)
+        return _linkStr;
+
+      //replace any variables in the string
+      string newStr = "";
+      //string remaining = _linkStr;
+      int lastIdx = 0;
+      for (int index = 0; ; index += 1)
+      {
+        index = _linkStr.IndexOf('%', index);
+        if (index == -1)
+        {
+          newStr += _linkStr.Substring(lastIdx, (_linkStr.Length - lastIdx));
+          break;
+        }
+        int end = 1;
+        while (Char.IsDigit(_linkStr[end + index]) || Char.IsLetter(_linkStr[end + index]) || (_linkStr[end + index] == '_'))
+          end++;
+        string varName = _linkStr.Substring(index, end).Trim('%');
+        SimVariable replVar = _vars.FindByName(varName, false);
+        if (replVar == null)
+          throw new Exception("Failed to find variable " + varName + " for document variable in " + this.name);
+
+        newStr += _linkStr.Substring(lastIdx, (index - lastIdx));
+        newStr += replVar.value.ToString();
+        index = index + end;
+        lastIdx = index;        
+      }
+
+      return newStr;
+    }
+
+    //params to see if we need to update the value or not on reading data
+    protected DateTime _timestamp = DateTime.MinValue; //timestamp of doc file
+    protected string _oldLinkStr = ""; //To see if link string has changed 
 
     public DocVariable(DocType subType)
       : base()
@@ -695,7 +734,7 @@ namespace SimulationDAL
       this._linkStr = Convert.ToString(dynObj.docLink);
 
       bool retVal = base.DeserializeDerived((object)dynObj, false, lists, useGivenIDs);
-
+      this._vars = lists.allVariables;
       
       //must load everything in LoadObjLinks because the states must be loaded first so we have the IDs. 
       processed = true;
@@ -745,7 +784,7 @@ namespace SimulationDAL
       XmlDocument xDoc = new XmlDocument();
       xDoc.Load(_docFullPath);
       XmlElement pRoot = xDoc.DocumentElement;
-      XmlNodeList nodes = pRoot.SelectNodes(_linkStr);
+      XmlNodeList nodes = pRoot.SelectNodes(linkStr());
       XmlNode replNode = null;
       if ((nodes == null) || (nodes.Count == 0))
         throw new Exception("Path string found no items.");
@@ -781,31 +820,54 @@ namespace SimulationDAL
       {
         return this._dfltValue;
       }
+
+      //if not changed return the previous value
+      DateTime curTimestamp = File.GetCreationTime(_docFullPath);
+      string curLinkStr = linkStr();
+      if ((curTimestamp == _timestamp) && (_oldLinkStr == curLinkStr))
+        return this._value;
+
+
+      //value new so save timestamp and lookup new value
+      _timestamp = File.GetCreationTime(_docFullPath);
+      _oldLinkStr = curLinkStr;
       XmlDocument xDoc = new XmlDocument();
       xDoc.Load(_docFullPath);
       XmlElement pRoot = xDoc.DocumentElement;
-      XmlNodeList nodes = pRoot.SelectNodes(_linkStr);
+      XmlNodeList nodes = pRoot.SelectNodes(curLinkStr);
       if ((nodes == null) || (nodes.Count == 0))
       {
-        if(_dfltValue == null)
+        if (_dfltValue == null)
           throw new Exception("Path string found no items.");
         else
-          return Convert.ChangeType(_dfltValue, dType);
+        {
+          _value = Convert.ChangeType(_dfltValue, dType);
+          return _value;
+        }
+          
       }
       if (nodes.Count == 1)
       {
         switch (nodes[0].NodeType)
         {
           case XmlNodeType.Attribute:
-            return Convert.ChangeType(nodes[0].Value, dType);
+            {
+              _value = Convert.ChangeType(nodes[0].Value, dType);
+              return _value;
+            } 
           case XmlNodeType.Text:
-            return Convert.ChangeType(nodes[0].InnerText, dType);
+            {
+              _value = Convert.ChangeType(nodes[0].InnerText, dType);
+              return _value;
+            }
           default:
             if (this.dType != typeof(string))
             {
               throw new Exception("Variable type to match to a XML object must be a String");
             }
-            return nodes[0].OuterXml;
+
+            _value = nodes[0].OuterXml;
+            return _value;
         }
       }
       else //more than one, only allow text
@@ -841,7 +903,6 @@ namespace SimulationDAL
     }
   }
 
-
   public class JSONDocVariable : DocVariable
   {
     public JSONDocVariable()
@@ -856,10 +917,10 @@ namespace SimulationDAL
       sr.Close();
       //update the document
       JObject fullObj = JObject.Parse(test);
-      var modItems = fullObj.SelectTokens(_linkStr);
+      var modItems = fullObj.SelectTokens(linkStr());
       if (modItems == null)
-        throw new Exception("Failed to locate document reference - " + _linkStr);
-      modItems = JsonExtensions.ReplacePath(fullObj, _linkStr, newValue);
+        throw new Exception("Failed to locate document reference - " + linkStr());
+      modItems = JsonExtensions.ReplacePath(fullObj, linkStr(), newValue);
 
       //update the json file with the change
       using (StreamWriter file = File.CreateText(_docFullPath))
@@ -876,16 +937,29 @@ namespace SimulationDAL
       {
         return this._dfltValue;
       }
-      
+
+      //if not changed return the previous value
+      DateTime curTimestamp = File.GetCreationTime(_docFullPath);
+      string curLinkStr = linkStr();
+      if ((curTimestamp == _timestamp) && (_oldLinkStr == curLinkStr))
+        return this._value;
+
+
+      //value new so save timestamp and lookup new value
+      _timestamp = File.GetCreationTime(_docFullPath);
+      _oldLinkStr = curLinkStr;
       string fileStr = File.ReadAllText(_docFullPath);
       JObject fullObj = JObject.Parse(fileStr);
-      JToken modItem = fullObj.SelectToken(_linkStr);
+      JToken modItem = fullObj.SelectToken(curLinkStr);
       if(modItem == null)
       {
         if (_dfltValue == null)
           throw new Exception("Path string found no items.");
         else
-          return Convert.ChangeType(_dfltValue, dType);
+        {
+          _value = Convert.ChangeType(_dfltValue, dType);
+          return _value;
+        }
       }
       else if (modItem.Type == JTokenType.Object)
       {
@@ -893,11 +967,14 @@ namespace SimulationDAL
         {
           throw new Exception("Variable type to match to a JSON object must be a String");
         }
-        return modItem.ToString();
+        
+        _value = modItem.ToString();
+        return _value; 
       }
       else
       {
-        return modItem.ToObject(dType);
+        _value = modItem.ToObject(dType);
+        return _value;
       }
     }
   }
@@ -964,14 +1041,14 @@ namespace SimulationDAL
     public override void SetValue(object newValue)
     {
       _value = newValue;
-      Regex rx = new Regex(_linkStr, RegexOptions.Compiled | RegexOptions.IgnoreCase);
+      Regex rx = new Regex(linkStr(), RegexOptions.Compiled | RegexOptions.IgnoreCase);
       string docTxt = File.ReadAllText(_docFullPath);
       // Find matches.
       MatchCollection matches = rx.Matches(docTxt);
 
       if (matches.Count < 0)
       {
-        throw new Exception("Failed to find RegEx - " + _linkStr + " in file - " + _docFullPath);
+        throw new Exception("Failed to find RegEx - " + linkStr() + " in file - " + _docFullPath);
       }
 
       try
@@ -1031,11 +1108,22 @@ namespace SimulationDAL
 
     public override object GetValue()
     {
-      Regex rx = new Regex(_linkStr, RegexOptions.Compiled | RegexOptions.IgnoreCase);
+      Regex rx = new Regex(linkStr(), RegexOptions.Compiled | RegexOptions.IgnoreCase);
       if (!File.Exists(_docFullPath) && !_pathMustExist)
       {
         return this._dfltValue;
       }
+
+      //if not changed return the previous value
+      DateTime curTimestamp = File.GetCreationTime(_docFullPath);
+      string curLinkStr = linkStr();
+      if ((curTimestamp == _timestamp) && (_oldLinkStr == curLinkStr))
+        return this._value;
+
+
+      //value new so save timestamp and lookup new value
+      _timestamp = File.GetCreationTime(_docFullPath);
+      _oldLinkStr = curLinkStr;
       string docTxt = File.ReadAllText(_docFullPath);
       // Find matches.
       MatchCollection matches = rx.Matches(docTxt);
@@ -1043,9 +1131,12 @@ namespace SimulationDAL
       if (matches.Count <= 0)
       {
         if (_dfltValue == null)
-          throw new Exception("Failed to find RegEx - " + _linkStr + " in file - " + _docFullPath);
+          throw new Exception("Failed to find RegEx - " + curLinkStr + " in file - " + _docFullPath);
         else
-          return Convert.ChangeType(_dfltValue, dType);
+        {
+          _value = Convert.ChangeType(_dfltValue, dType);
+          return _value;
+        }
       }
       string foundTxt = matches[0].Value;
       try
@@ -1071,8 +1162,9 @@ namespace SimulationDAL
             foundTxt = foundTxt.Substring(_begPosition, cnt);
           }
         }
-
-        return Convert.ChangeType(foundTxt, dType);
+        
+        _value = Convert.ChangeType(foundTxt, dType);
+        return _value;
       }
       catch
       {
