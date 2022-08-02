@@ -1,0 +1,32 @@
+{
+  "name": "emrald",
+  "version": "1.0.0",
+  "description": "Event-Modeled Risk Assessment using Linked Diagrams (EMRALD)",
+  "main": "EMRALD_Site/app.js",
+  "private": true,
+  "scripts": {
+    "tauri": "tauri",
+    "test": "node ./Emrald_Site/tests/index.js",
+    "build": "npm run tauri build",
+    "build:dev": "npm run tauri dev"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/idaholab/EMRALD.git"
+  },
+  "author": "idaholab",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/idaholab/EMRALD/issues"
+  },
+  "homepage": "https://github.com/idaholab/EMRALD#readme",
+  "devDependencies": {
+    "@tauri-apps/cli": "^1.0.0-rc.13",
+    "@types/mocha": "^9.1.1",
+    "eslint": "^8.15.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-plugin-import": "^2.26.0",
+    "eslint-plugin-jsdoc": "^39.2.9",
+    "eslint-plugin-sort-class-members": "^1.14.1"
+  }
+}

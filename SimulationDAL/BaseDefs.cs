@@ -51,7 +51,7 @@ namespace SimulationDAL
   public enum EnTimeRate { trYears, trDays, trHours, trMinutes, trSeconds}
 
   public enum EnIDTypes { itVar = 0, itComp, itState, itEvent, itAction, itTreeNode, itTimer, itPacket, itDiagram, itExtSim };
-  public enum EnDistType { dtNormal, dtWeibull, dtExponential, dtLogNormal}
+  public enum EnDistType { dtNormal, dtWeibull, dtExponential, dtLogNormal, dtUniform, dtTriangular, dtGamma, dtGompertz};
   //public class ModelTypesInfo
   //{
   //  //private static readonly string[] EnDiagramTypeName = { "Component", "System", "Plant Response", "Other" };
@@ -497,6 +497,14 @@ namespace SimulationDAL
       }
 
       return retVal;
+    }
+
+    public void Reset()
+    {
+      for (int i = 0; i < _Instance.curMaxID.Length; ++i)
+      {
+        _Instance.curMaxID[i] = 1;
+      }
     }
 
     public void ResetTimerIDs()

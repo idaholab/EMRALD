@@ -6,6 +6,14 @@
     <title>Action Properties</title>
     <link href="../styles/Editors.css" rel="stylesheet" />
     <script src="./lib/jsonpath-0.8.0.js"></script>
+    <script type="module">
+        import { CodeJar } from "./lib/codejar.js";
+        import { withLineNumbers } from "./lib/linenumbers.js";
+    
+        window.CodeJar = CodeJar;
+        window.withLineNumbers = withLineNumbers;
+    </script>
+    <script src="./lib/prism.js"></script>
     <script src="../config.js"></script>
     <script src="../scripts/jquery/jquery-2.1.4.js"></script>
     <script src="../scripts/angular/angular.js"></script>
@@ -14,6 +22,7 @@
     <script src="../scripts/UI/FileSaver.js"></script>
     <script src="../scripts/UI/wcfService.js"></script>
     <script src="./customForms.js"></script>
+    <script src="./components/code-editor.js"></script>
     <script src="ActionEditor.js"></script>
     <style type="text/css">
         html, .fill-height {
@@ -35,11 +44,16 @@
         tr:nth-child(even) {
             background-color: #dddddd;
         }
+
+        .editor {
+            flex: 1;
+            margin-right: 12px;
+        }
     </style>
 </head>
-<body ng-app="actionModule" class="fill-height">
-    <div ng-controller="actionController" id="actionControllerPanel" class="fill-height">
-        <form novalidate class="fill-height">
+<body ng-app="actionModule">
+    <div ng-controller="actionController" id="actionControllerPanel">
+        <form novalidate>
             <div style="display: table; border-collapse: collapse;">
                 <div style="display:table-row">
                     <span style="display:table-cell;">Type:</span>
@@ -67,7 +81,7 @@
                 </div>
             </div>
             <hr />
-            <div id="detailTable" class="fill-height">
+            <div id="detailTable">
                 <!-- Begin Transition Type -->
                 <div id="TransitionPanel" ng-if="data.action.value=='atTransition'">
                     <div style="display: table;">
@@ -76,7 +90,7 @@
                             <p style="display: table-cell; padding: 0.5em">To add a new destination state, drag and drop a State from the sidebar into the To State box and then fill in the probability.</p>
                         </div>
                         <div style="display:table-row;">
-                            <input id="mutuallyExclusive" style="display: table-cell; margin: 0 3em 0 3em;" type="checkbox" onchange="mutuallyExclusiveHandler(this);" ng-true-value=true ng-false-value=false ng-checked=mutExcl />
+                            <input id="mutuallyExclusive" style="display: table-cell; margin: 0 3em 0 3em;" type="checkbox" ng-model="data.mutExcl" />
                             <label for="mutuallyExclusive" style="display: table-cell; padding: 0.5em">Mutually Exclusive (will transition to one and only one of the states in the list)</label>
                         </div>
                     </div>
@@ -86,19 +100,34 @@
                             <tr class="tabHeader">
                                 <th ng-repeat="head in data.transHeader" width="{{head.width}}"><span>{{head.column}}</span></th>
                             </tr>
-                            <tr ng-repeat="row in data.transitions">
+                            <tr ng-repeat="row in data.transitions track by $index">
                                 <!--<td style="display:none;"><input type="checkbox" value="{{row.To_State}}" onchange="toStateChecked(this, event); return false;" /></td>-->
                                 <td style="vertical-align: top;" ng-scope>
                                     {{row.To_State}}
                                 </td>
                                 <td style="vertical-align: top;" ng-scope>
-                                    <!--<input type="text" ng-model="row.Probability" style="border: none; background-color: transparent;" onkeypress="return validateNumber(this, event);" />-->
-                                    <input type="text" ng-model="row.Probability" style="border: none; background-color: transparent;" onfocusout="validateNumber(this);" />
+                                    <div ng-if="rowInputDisabled(row)">
+                                        <input type="text" disabled />
+                                    </div>
+                                    <div ng-if="!rowInputDisabled(row)">
+                                        <input type="text" ng-model="row.Probability" onfocusout="validateNumber(this);" />
+                                    </div>
+                                    <div ng-if="rowCheckboxDisabled(row, $index)">
+                                        <input type="checkbox" disabled /> Remaining
+                                    </div>
+                                    <div ng-if="!rowCheckboxDisabled(row, $index)">
+                                        <input type="checkbox" ng-model="row.remaining" /> Remaining
+                                    </div>
                                 </td>
                                 <td style="vertical-align: top;" ng-scope>
-                                    <select style="width: 120px;" ng-model="row.varProb" ng-options="opt.name as opt.name for opt in data.cvVariables">
-                                        <option></option>
-                                    </select>
+                                    <div ng-if="rowDropdownDisabled(row)">
+                                        <select disabled style="width: 120px;"></select>
+                                    </div>
+                                    <div ng-if="!rowDropdownDisabled(row)">
+                                        <select style="width: 120px;" ng-model="row.varProb" ng-options="opt.name as opt.name for opt in data.cvVariables">
+                                            <option></option>
+                                        </select>
+                                    </div>
                                 </td>
                                 <td style="vertical-align: top;" ng-scope>
                                     <img src="../images/delete.png" rowValue="{{row.To_State}}" title="Remove" style="width:25px;height:25px;" onclick="toStateChecked(this, event); deleteTransition(); return false;" />
@@ -122,14 +151,22 @@
                             <span style="display:table-cell; padding: 1em 0 1em 0">New Value Code (c#) - Must return same type as the specified variable!</span>
                         </div>
                     </div>
-                    <div style="display: flex; flex-direction: row; align-items: stretch; height: calc(100vh - 12em); width: 98vw;">
-                        <textarea style="flex: 1; white-space: nowrap; overflow: auto;" name="NewValueCode" ng-model="data.cvCode" placeholder="Your code goes here" wrap="soft"></textarea>
+                    <div style="display: flex; flex-direction: row; align-items: stretch; height: calc(100vh - 12em); width: 97vw;">
+                        <div code-editor class="editor" code="data.cvCode"></div>
                         <table id="tblVariables" style="text-align: left;" border="1" cellspacing="0">
                             <tr>
                                 <th colspan="2">Variables used in code</th>
                             </tr>
+                            <tr>
+                                <td style="border: 1px solid #dddddd; text-align: left; padding: 0px;"><input id="varId_CurTime" type="checkbox" checked disabled /></td>
+                                <td style="border: 1px solid #dddddd; text-align: left; padding: 0px;"><label for="varId_CurTime" style="display:block">CurTime</label></td>
+                            </tr>
+                            <tr>
+                                <td style="border: 1px solid #dddddd; text-align: left; padding: 0px;"><input id="varId_RunIdx" type="checkbox" checked disabled /></td>
+                                <td style="border: 1px solid #dddddd; text-align: left; padding: 0px;"><label for="varId_RunIdx" style="display:block">RunIdx</label></td>
+                            </tr>
                             <tr ng-repeat="row in data.varMap">
-                                <td style="border: 1px solid #dddddd; text-align: left; padding: 0px;"><input id="{{'varId_' + row.value.Variable.name}}" type="checkbox" onchange="variableChecked(this);" ng-true-value=true ng-false-value=false ng-checked={{row.check}} value={{row.value}} /></td>
+                                <td style="border: 1px solid #dddddd; text-align: left; padding: 0px;"><input id="{{'varId_' + row.value.Variable.name}}" type="checkbox" ng-change="variableChecked(row);" ng-model="row.check" /></td>
                                 <td style="border: 1px solid #dddddd; text-align: left; padding: 0px;"><label for="{{'varId_' + row.value.Variable.name}}" style="display:block">{{row.value.Variable.name}}</label></td>
                             </tr>
                         </table>
@@ -206,11 +243,11 @@
                     <input type="radio" name="tabControl" value="code" ng-model="data.raType"> Use Code
                     <input type="radio" name="tabControl" value="template" ng-model="data.raType"> Use Custom Application
                     <!-- Code Tab -->
-                    <div style="display: flex; flex-direction: row; align-items: stretch; height: calc(100vh - 8em); width: 98vw;" ng-if="data.raType == 'code'">
+                    <div style="display: flex; flex-direction: row; align-items: stretch; height: calc(100vh - 9em); width: 94vw;" ng-if="data.raType == 'code'">
                         <div style="display: flex; flex-direction: column; flex: 1">
                             <p style="margin-bottom:0">Preprocess Code(c#)</p>
                             <div style="display: flex; flex-direction:row; flex: 1">
-                                <textarea style="flex: 1; min-height: 5em; white-space: nowrap; overflow: auto;" name="PreprocCode" ng-model="data.raPreCode" placeholder="Your Preprocess code goes here"></textarea>
+                                <div code-editor class="editor" code="data.raPreCode"></div>
                             </div>
                             <div style="display: flex; flex-direction: row">
                                 <span>Executable Location:</span>
@@ -218,7 +255,7 @@
                             </div>
                             <p style="margin-bottom:0">Postprocess Code(c#)</p>
                             <div style="display: flex; flex-direction:row; flex: 1">
-                                <textarea style="flex: 1; min-height: 5em; white-space: nowrap; overflow: auto;" name="PostprocCode" ng-model="data.raPostCode" placeholder="Your Postprocess code goes here"></textarea>
+                                <div code-editor class="editor" code="data.raPostCode"></div>
                             </div>
                         </div>
 
@@ -226,14 +263,30 @@
                             <tr>
                                 <th colspan="2">Variables used in code</th>
                             </tr>
+                            <tr>
+                                <td style="border: 1px solid #dddddd; text-align: left; padding: 0px;"><input id="varId_CurTime" type="checkbox" checked disabled /></td>
+                                <td style="border: 1px solid #dddddd; text-align: left; padding: 0px;"><label for="varId_CurTime" style="display:block">CurTime</label></td>
+                            </tr>
+                            <tr>
+                                <td style="border: 1px solid #dddddd; text-align: left; padding: 0px;"><input id="varId_RunIdx" type="checkbox" checked disabled /></td>
+                                <td style="border: 1px solid #dddddd; text-align: left; padding: 0px;"><label for="varId_RunIdx" style="display:block">RunIdx</label></td>
+                            </tr>
+                            <tr>
+                                <td style="border: 1px solid #dddddd; text-align: left; padding: 0px;"><input id="varId_ExePath" type="checkbox" checked disabled /></td>
+                                <td style="border: 1px solid #dddddd; text-align: left; padding: 0px;"><label for="varId_ExePath" style="display:block">ExePath</label></td>
+                            </tr>
+                            <tr>
+                                <td style="border: 1px solid #dddddd; text-align: left; padding: 0px;"><input id="varId_ExeExitCode" type="checkbox" checked disabled /></td>
+                                <td style="border: 1px solid #dddddd; text-align: left; padding: 0px;"><label for="varId_ExeExitCode" style="display:block">ExeExitCode</label></td>
+                            </tr>
                             <tr ng-repeat="row in data.varMap">
-                                <td style="border: 1px solid #dddddd; text-align: left; padding: 0px;"><input id="{{'varId_' + row.value.Variable.name}}" type="checkbox" onchange="variableChecked(this);" ng-true-value=true ng-false-value=false ng-checked={{row.check}} value={{row.value}} /></td>
+                                <td style="border: 1px solid #dddddd; text-align: left; padding: 0px;"><input id="{{'varId_' + row.value.Variable.name}}" type="checkbox" ng-change="variableChecked(row);" ng-model="row.check" /></td>
                                 <td style="border: 1px solid #dddddd; text-align: left; padding: 0px;"><label for="{{'varId_' + row.value.Variable.name}}" style="display:block">{{row.value.Variable.name}}</label></td>
                             </tr>
                         </table>
                     </div>
                     <!-- Template Tab -->
-                    <div ng-if="data.raType == 'template'" class="fill-height">
+                    <div ng-if="data.raType == 'template'" style="height: calc(100vh - 9em);">
                         <select ng-options="opt as opt.name for opt in raTemplates" ng-model="data.raTemplate"></select>
                         <iframe name="customForm" src="{{data.raTemplate.path}}" style="display: block; height: 100%; width: 100%; border: none;"></iframe>
                     </div>
