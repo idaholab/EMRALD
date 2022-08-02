@@ -1,5 +1,4 @@
 ﻿// Copyright 2021 Battelle Energy Alliance
-// @ts-check
 /// <reference path="../jsdoc-types.js" />
 /// <reference path="../../EditForms/ImportEditor.js" />
 
@@ -40,8 +39,7 @@ if (typeof Navigation === 'undefined')
               console.log("Data received: Length: " + this.jsonStr.length + ", decoding...");
               var jobj = JSON.parse(this.jsonStr);
               console.log("...data decoded!");
-              simApp.allDataModel = jobj;
-              this.upgrade(simApp.allDataModel);
+              simApp.allDataModel = window.upgrade(jobj);
               this.assignList(jobj);
               //load templates
               this.loadTemplates();
@@ -55,8 +53,7 @@ if (typeof Navigation === 'undefined')
         this.jsonStr = modelStr;
         this.lookupLoaded = true;
         var jobj = JSON.parse(this.jsonStr);
-        simApp.allDataModel = jobj;
-        this.upgrade(simApp.allDataModel);
+        simApp.allDataModel = window.upgrade(jobj);
         this.assignList(jobj);
         //load templates
         this.loadTemplates(jobj.templates);
@@ -81,7 +78,6 @@ if (typeof Navigation === 'undefined')
         }
       }
     }
-    Sidebar.prototype.upgrade = window.upgrade;
     //this will make the sidebar sections have the accordion function 
     Sidebar.prototype.ApplyJqueryUi = function (id) {
 
@@ -285,7 +281,7 @@ if (typeof Navigation === 'undefined')
                       this.editVariableProperties(dataObj);
                       break;
                     case "Logic Tree":
-                      var dataObj = { id: -1, name: "", desc: "", gateType: "gtAnd", rootName: "", compChildren: [], gateChildren: [] };
+                      var dataObj = { id: -1, name: "", desc: "", gateType: "gtAnd", isRoot: true, compChildren: [], gateChildren: [] };
                       this.editLogicProperties(dataObj);
                       break;
                     case "Actions":
@@ -2022,7 +2018,7 @@ if (typeof Navigation === 'undefined')
           name: "",
           desc: "",
           gateType: "gtAnd",
-          rootName: "",
+          isRoot: false,
           compChildren: [],
           gateChildren: []
         };
@@ -2036,16 +2032,12 @@ if (typeof Navigation === 'undefined')
               simApp.modelChanged = true;
               if (el) {
                 el.innerText = dataObj.name;
-                const oldName = outDataObj.rootName;
-                outDataObj.rootName = outDataObj.name;
-                simApp.mainApp.sidebar.replaceNames(oldName, dataObj.name, 'LogicNode', simApp.allDataModel, false);
               } else {
                 if (this.existsLogicName(outDataObj.name)) {
                   MessageBox.alert("New Logic Tree", "A logic tree with the '" + outDataObj.name + "' exists, please try a different name.");
                   return false;
                 }
                 if (outDataObj.name.length > 0) {
-                  outDataObj.rootName = outDataObj.name;
                   var logicNode = { LogicNode: outDataObj };
                   this.addNewLogicTree(logicNode, null);
                   this.openLogicTree(outDataObj);
@@ -2176,7 +2168,7 @@ if (typeof Navigation === 'undefined')
       var ln;
       for (var i = 0; i < nodeList.length; i++) {
         ln = nodeList[i].LogicNode;
-        if (ln.rootName === ln.name)
+        if (ln.isRoot)
           logicNodes.push(ln);
       }
       dataObj.tempLogicTopList = logicNodes;
@@ -3096,16 +3088,6 @@ if (typeof Navigation === 'undefined')
                     }
                   }
                 });
-              }
-              // All nodes
-              if (cur.rootName === name) {
-                if (replaceName !== null) {
-                  cur.rootName = replaceName;
-                }
-                if (del) {
-                  cur.rootName = '';
-                }
-                refs.push(cur);
               }
               break;
             case "Action":
@@ -4103,7 +4085,7 @@ if (typeof Navigation === 'undefined')
         case "Logic Tree":
           if (this.LogicNodeList) {
             this.LogicNodeList.forEach(function (item) {
-              if (item.LogicNode.name == item.LogicNode.rootName || !item.LogicNode.rootName) {
+              if (item.LogicNode.isRoot) {
                 item.ui_el = this.addSectionItem(container, section, item.LogicNode.name, item.LogicNode);
                 sortDOMList(container);
               }

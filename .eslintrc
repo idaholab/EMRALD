@@ -21,11 +21,13 @@
     "jsdoc/check-indentation": 1,
     "jsdoc/check-line-alignment": 1,
     "jsdoc/match-description": 1,
+    "jsdoc/no-undefined-types": "off",
     "jsdoc/require-description": 1,
     "jsdoc/require-description-complete-sentence": 1,
     "jsdoc/require-file-overview": 1,
     "jsdoc/valid-types": "off",
     "linebreak-style": "off",
+    "operator-linebreak": "off",
     "max-classes-per-file": "off",
     "max-len": ["error", { "ignoreComments": true }],
     "require-jsdoc": [

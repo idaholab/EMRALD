@@ -119,6 +119,7 @@ function GetDataObject() {
 		dataObj.name = scope.name;
 		dataObj.desc = scope.desc;
 		dataObj.addType = scope.compType.value;
+		dataObj.useExisting = scope.data.useExisting;
 		switch (dataObj.addType) {
 				case "standard":
 						dataObj.newGateType = scope.newGateType.value;
@@ -165,6 +166,24 @@ gateModule.controller('gateController', ['$scope', function ($scope) {
 				{ name: "OR", value: "gtOr" }],
 				$scope.newGateType = $scope.newGateTypes[0];
 		$scope.newDiagramOptions = [];
+		$scope.match = false;
+		$scope.data = {
+			useExisting: false,
+		};
+
+		$scope.nameChanged = function nameChanged() {
+			const parentWindow = window.frameElement.ownerDocument.defaultView?.frameElement?.ownerDocument.defaultView;
+			const sidebar = parentWindow.simApp.mainApp.sidebar;
+			$scope.match = sidebar.LogicNodeList.find(
+				(l) => l.LogicNode.name === $scope.newName,
+			);
+			$scope.data.useExisting = !!$scope.match;
+			if ($scope.match) {
+				$scope.newGateType = $scope.newGateTypes.find(
+					(type) => type.value === $scope.match.LogicNode.gateType,
+				);
+			}
+		};
 
 		$scope.newDiagramOption = null;
 		$scope.$watch('newName', function (newV, oldV) { if (newV !== oldV) somethingChanged(); });

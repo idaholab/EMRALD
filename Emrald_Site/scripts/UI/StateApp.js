@@ -662,7 +662,7 @@ var StateApp = (function (global, _super) {
     var ln;
     for (var i = 0; i < nodeList.length; i++) {
       ln = nodeList[i].LogicNode;
-      if (ln.rootName === ln.name)
+      if (ln.isRoot)
         logicNodes.push(ln);
     }
     dataObj.tempLogicTopList = logicNodes;
