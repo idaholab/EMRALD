@@ -15,14 +15,23 @@ angular.module('variableInput', []).directive('variableInput', () => ({
     if ($scope.data.useVariable) {
       $scope.data.variable = controllerScope.form.findVariable($scope.data.variable);
     }
+    $scope.syncValue = function () {
+      if ($scope.data.useVariable && $scope.data.variable) {
+        $scope.data.oldValue = $scope.data.value;
+        $scope.data.value = `" + ${$scope.data.variable.name} + "`;
+      } else {
+        $scope.data.value = $scope.data.oldValue;
+      }
+      $scope.save();
+    };
   },
   scope: {
     data: '=',
   },
   template: `<div>
     <input ng-if="!data.useVariable" ng-model="data.value" ng-change="save()" />
-    <select ng-if="data.useVariable" ng-options="opt.name for opt in variables" ng-model="data.variable" ng-change="save()"></select>
-    <input type="checkbox" ng-model="data.useVariable" ng-change="save()" /> Use Variable
+    <select ng-if="data.useVariable" ng-options="opt.name for opt in variables" ng-model="data.variable" ng-change="syncValue()"></select>
+    <input type="checkbox" ng-model="data.useVariable" ng-change="syncValue()" /> Use Variable
   </div>`,
 }));
 
