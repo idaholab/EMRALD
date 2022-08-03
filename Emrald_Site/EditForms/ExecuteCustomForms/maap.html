@@ -37,6 +37,10 @@
         margin-right: 8px;
       }
 
+      #active-tab {
+        width: 100%;
+      }
+
       .tab-header {
         padding: 20px;
         margin-bottom: 8px;
@@ -48,10 +52,23 @@
       .tab-active {
         border-right: 2px solid #222;
       }
+
+      .block {
+        padding: 8px;
+        width: 100%;
+      }
+
+      .block:nth-child(odd) {
+        background-color: rgb(182 182 182 / 35%);
+      }
+
+      .block > div {
+        padding: 8px;
+      }
     </style>
   </head>
   <body ng-app="maapForm">
-    <form ng-controller="maapFormController">
+    <form ng-controller="maapFormController" id="maapFormController">
       <label for="exePath">Executable location:</label>
       <input id="exePath" ng-model="exePath" class="pathInput" />
       <br />
@@ -174,115 +191,7 @@
           <div ng-if="tab == 'input-blocks'">
             <h3>Input Blocks:</h3>
             <div>
-              <div ng-repeat="block in blocks" maap-conditional-block data="block">
-              <!--
-                <h4>{{block.type}}</h4>
-                Conditions:
-                <table>
-                  <tr>
-                    <th></th>
-                    <th></th>
-                    <th>Operator</th>
-                    <th></th>
-                    <th>Use Variable</th>
-                  </tr>
-                  <tr ng-repeat="d in block.data[0]">
-                    <td>
-                      <select
-                        title="Select operator"
-                        ng-if="d.joiner"
-                        ng-model="d.joiner"
-                      >
-                        <option>AND</option>
-                        <option>OR</option>
-                      </select>
-                    </td>
-                    <td>
-                      <select
-                        title="Select variable"
-                        ng-if="d.lhs.useVariable"
-                        ng-options="opt.name for opt in variables"
-                        ng-model="d.lhs.variable"
-                        ng-change="save()"
-                      ></select>
-                      <input
-                        title="Use variable"
-                        ng-if="!d.lhs.useVariable"
-                        ng-model="d.lhs.value"
-                        ng-change="save()"
-                      />
-                    </td>
-                    <td>
-                      <select
-                        title="Select operator"
-                        ng-options="op as op for op in operators"
-                        ng-model="d.op"
-                        ng-change="save()"
-                      ></select>
-                    </td>
-                    <td>
-                      <select
-                        title="Use variable"
-                        ng-if="d.rhs.useVariable"
-                        ng-options="opt.name for opt in variables"
-                        ng-model="d.rhs.variable"
-                        ng-change="save()"
-                      ></select>
-                      <input
-                        title="Set value"
-                        ng-if="!d.rhs.useVariable"
-                        ng-model="d.rhs.value"
-                        ng-change="save()"
-                      />
-                    </td>
-                    <td>
-                      <input
-                        title="Use variable"
-                        type="checkbox"
-                        ng-model="d.rhs.useVariable"
-                      />
-                    </td>
-                  </tr>
-                </table>
-                Outcomes:
-                <table>
-                  <tr>
-                    <th>Variable</th>
-                    <th>Value</th>
-                    <th>Use Variable</th>
-                  </tr>
-                  <tr ng-repeat="parameter in block.data[1]">
-                    <td ng-if="parameter.parsed">{{parameter.label}}</td>
-                    <td ng-if="parameter.parsed">
-                      <select
-                        title="Select variable"
-                        ng-if="parameter.useVariable"
-                        ng-options="opt.name for opt in variables"
-                        ng-model="parameter.variable"
-                        ng-change="save()"
-                      ></select>
-                      <span ng-if="!parameter.useVariable"
-                        >{{parameter.valueLabel}}</span
-                      >
-                    </td>
-                    <td ng-if="parameter.parsed">
-                      <input
-                        title="Use variable"
-                        type="checkbox"
-                        ng-model="parameter.useVariable"
-                      />
-                    </td>
-                    <td ng-if="!parameter.parsed">
-                      <input
-                        title="Set value"
-                        ng-model="parameter.text"
-                        ng-change="save()"
-                      />
-                    </td>
-                  </tr>
-                </table>
-              -->
-              </div>
+              <div ng-repeat="block in blocks" maap-conditional-block data="block" class="block"></div>
             </div>
           </div>
           <div ng-if="tab == 'outputs'">

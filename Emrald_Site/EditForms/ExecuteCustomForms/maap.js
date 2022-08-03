@@ -63,6 +63,7 @@ class MAAPForm extends ExternalExeForm {
     const scope = cast(this.$scope, s);
     dataObj.raLocation = '';
     dataObj.varNames = this.getVarNames(scope.parameters);
+    console.log(scope.blocks);
     dataObj.raFormData = {
       blocks: scope.blocks,
       exePath: scope.exePath,
@@ -418,6 +419,7 @@ maapForm.controller('maapFormController', [
       initiatorQuery: '',
     };
     $scope.overrideSections = [];
+    $scope.form = form;
 
     const parameterInfo = {};
     const possibleInitiators = {};
@@ -572,7 +574,6 @@ maapForm.controller('maapFormController', [
               break;
             default:
           }
-          console.log($scope.blocks);
         });
         form.save();
       }
