@@ -64,6 +64,7 @@ class MAAPForm extends ExternalExeForm {
     dataObj.raLocation = '';
     dataObj.varNames = this.getVarNames(scope.parameters);
     dataObj.raFormData = {
+      blocks: scope.blocks,
       exePath: scope.exePath,
       initiators: scope.initiators,
       inputPath: scope.inputPath,
@@ -460,6 +461,9 @@ maapForm.controller('maapFormController', [
       if (raFormData.overrideSections) {
         $scope.overrideSections = raFormData.overrideSections;
       }
+      if (raFormData.blocks) {
+        $scope.blocks = raFormData.blocks;
+      }
     }
 
     $scope.removeInitiator = function removeInitiator(index) {
@@ -563,8 +567,12 @@ maapForm.controller('maapFormController', [
                 );
               }
               break;
+            case 'conditional_block':
+              $scope.blocks.push(sourceElement);
+              break;
             default:
           }
+          console.log($scope.blocks);
         });
         form.save();
       }
