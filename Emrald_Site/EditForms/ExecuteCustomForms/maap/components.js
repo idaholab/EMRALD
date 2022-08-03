@@ -204,7 +204,7 @@ angular.module('maapSourceElement', []).directive('maapSourceElement', [
     scope: {
       data: '=',
     },
-    template: `<div>{{data}}</div>`,
+    template: `<div maap-expression data="data"></div>`,
   }),
 ]);
 
@@ -226,9 +226,8 @@ angular.module('maapConditionalBlock', []).directive('maapConditionalBlock', [
     {{data.blockType}}
     <div maap-expression data="data.test"></div>
     <hr />
-    <div>
-      {{data.value}}
-      <div ng-repeat="sourceElement in data.value" maap-source-element data="sourceElement"></div>
+    <div ng-repeat="sourceElement in data.value">
+      <div maap-source-element data="sourceElement"></div>
     </div>
   </div>`,
   }),
