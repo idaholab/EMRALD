@@ -158,7 +158,18 @@
                 </tr>
               </table>
             </div>
-            <div ng-repeat="(i, initiator) in initiators" source-element data="initiator"></div>
+            <table>
+              <tr>
+                <th>Name</th>
+                <th>Remove</th>
+              </tr>
+              <tr ng-repeat="(i, initiator) in initiators">
+                <td>{{initiator.value}}</td>
+                <td>
+                  <button type="button" ng-click="removeInitiator(i)">X</button>
+                </td>
+              </tr>
+            </table>
           </div>
           <div ng-if="tab == 'input-blocks'">
             <h3>Input Blocks:</h3>

@@ -164,13 +164,28 @@ angular.module('maapVariable', []).directive('maapVariable', () => ({
     </div>`,
 }));
 
-angular.module('maapStatement', []).directive('maapStatement', () => ({
+angular.module('maapSourceElement', []).directive('maapSourceElement', () => ({
   scope: {
     data: '=',
   },
   template: `<div ng-switch="data.type">
-        <div
-            ng-switch-when="sensitivity"
-            
+      <div ng-switch-when="parameter_name" style="display: flex;">
+        <div>{{data.value}}</div>
+        <button>X</button>
+      </div>
     </div>`,
 }));
+
+window.maapComponents = [
+  'maapParameter',
+  'maapCallExpression',
+  'maapPureExpression',
+  'maapExpressionBlock',
+  'maapExpressionType',
+  'maapAssignment',
+  'maapIsExpression',
+  'maapAsExpression',
+  'maapExpression',
+  'maapVariable',
+  'maapSourceElement',
+];
