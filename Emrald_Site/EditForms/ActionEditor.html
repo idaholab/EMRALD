@@ -166,7 +166,7 @@
                                 <td style="border: 1px solid #dddddd; text-align: left; padding: 0px;"><label for="varId_RunIdx" style="display:block">RunIdx</label></td>
                             </tr>
                             <tr ng-repeat="row in data.varMap">
-                                <td style="border: 1px solid #dddddd; text-align: left; padding: 0px;"><input id="{{'varId_' + row.value.Variable.name}}" type="checkbox" onchange="variableChecked(this);" ng-true-value=true ng-false-value=false ng-checked={{row.check}} value={{row.value}} /></td>
+                                <td style="border: 1px solid #dddddd; text-align: left; padding: 0px;"><input id="{{'varId_' + row.value.Variable.name}}" type="checkbox" ng-change="variableChecked(row);" ng-model="row.check" /></td>
                                 <td style="border: 1px solid #dddddd; text-align: left; padding: 0px;"><label for="{{'varId_' + row.value.Variable.name}}" style="display:block">{{row.value.Variable.name}}</label></td>
                             </tr>
                         </table>
@@ -280,7 +280,7 @@
                                 <td style="border: 1px solid #dddddd; text-align: left; padding: 0px;"><label for="varId_ExeExitCode" style="display:block">ExeExitCode</label></td>
                             </tr>
                             <tr ng-repeat="row in data.varMap">
-                                <td style="border: 1px solid #dddddd; text-align: left; padding: 0px;"><input id="{{'varId_' + row.value.Variable.name}}" type="checkbox" onchange="variableChecked(this);" ng-true-value=true ng-false-value=false ng-checked={{row.check}} value={{row.value}} /></td>
+                                <td style="border: 1px solid #dddddd; text-align: left; padding: 0px;"><input id="{{'varId_' + row.value.Variable.name}}" type="checkbox" ng-change="variableChecked(row);" ng-model="row.check" /></td>
                                 <td style="border: 1px solid #dddddd; text-align: left; padding: 0px;"><label for="{{'varId_' + row.value.Variable.name}}" style="display:block">{{row.value.Variable.name}}</label></td>
                             </tr>
                         </table>

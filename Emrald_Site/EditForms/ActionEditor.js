@@ -159,22 +159,6 @@ function ValidateData() {
 function setModified(state) {
     isDirty = state;
 }
-function variableChecked(el) {
-    var scope = angular.element(document.querySelector('#actionControllerPanel')).scope();
-    var value;
-    if (el) {
-        value = JSON.parse(el.value);
-    }
-    if (value) {
-        if (scope.varNames.indexOf(value.Variable.name) > -1) {
-            var index = scope.varNames.indexOf(value.Variable.name);
-            scope.varNames.splice(index, 1);
-        }
-        else {
-            scope.varNames.push(value.Variable.name);
-        }
-    }
-}
 
 function handleExtSimSelection() {
     var extSimOpt = document.getElementById('extSimSelection');
@@ -257,11 +241,7 @@ function OnLoad(dataObj) {
                         }
                     });
                 }
-                if (typeof actionData.mutExcl === 'string') {
-                    actionData.mutExcl = actionData.mutExcl === 'True';
-                } else {
-                    scope.data.mutExcl = actionData.mutExcl;
-                }
+                scope.data.mutExcl = actionData.mutExcl;
                 break;
             case 'atCngVarVal':
                 actTypeEl.selectedIndex = 1;
@@ -332,6 +312,7 @@ function OnLoad(dataObj) {
     var transitionPanel = document.getElementById('TransitionPanel');
     if (transitionPanel) {
         transitionPanel.ondragover = function (evt) {
+            console.log(evt);
             var isStateEvent = false;
             for (var i = 0; i < evt.dataTransfer.types.length; i++) {
                 var type = evt.dataTransfer.types[i].toLowerCase();
@@ -603,7 +584,7 @@ actionModule.controller('actionController', ['$scope', function ($scope) {
 
     $scope.rowInputDisabled = function (row) {
       return (
-        (row.varProb !== 'null' && row.varProb !== null) ||
+        (row.varProb !== 'null' && row.varProb !== null && row.varProb !== undefined) ||
         ($scope.data.mutExcl && row.remaining)
       );
     };
@@ -617,11 +598,11 @@ actionModule.controller('actionController', ['$scope', function ($scope) {
         }
       }
       if ($scope.data.mutExcl) {
-        if (row.remaining && row.varProb !== 'null' && row.varProb !== null) {
+        if (row.remaining && row.varProb !== 'null' && row.varProb !== null && row.varProb !== undefined) {
           return false;
         }
         return (
-          !isOnlyRemaining || (row.varProb !== 'null' && row.varProb !== null)
+          !isOnlyRemaining || (row.varProb !== 'null' && row.varProb !== null && row.varProb !== undefined)
         );
       }
       return true;
@@ -629,6 +610,19 @@ actionModule.controller('actionController', ['$scope', function ($scope) {
 
     $scope.rowDropdownDisabled = function (row) {
       return $scope.data.mutExcl && row.remaining;
+    };
+
+    $scope.variableChecked = (row) => {
+        const index = $scope.varNames.indexOf(row.value.Variable.name);
+        if (row.check) {
+            if (index > -1) {
+                $scope.varNames.splice(index, 0, row.value.Variable.name);
+            } else {
+                $scope.varNames.push(row.value.Variable.name);
+            }
+        } else {
+            $scope.varNames.splice(index, 1);
+        }
     };
 
     $scope.$watch('name', function (newV, oldV) { if (newV !== oldV) somethingChanged(); });

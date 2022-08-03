@@ -111,7 +111,7 @@ namespace SimulationDAL
     public CondBasedEvent(string inName)
       : base(inName) { }
 
-    public abstract bool EventTriggered(MyBitArray curStates, object otherData, TimeSpan curSimTime, TimeSpan start3DTime, TimeSpan nextEvTime);
+    public abstract bool EventTriggered(MyBitArray curStates, object otherData, TimeSpan curSimTime, TimeSpan start3DTime, TimeSpan nextEvTime, int runIdx);
 
     //public override bool DeleteFromDB(LookupLists lists) { return base.DeleteFromDB(lists); }
   }
@@ -242,7 +242,7 @@ namespace SimulationDAL
       return true;
     }
 
-    public override bool EventTriggered(MyBitArray curStates, object otherData, TimeSpan curSimTime, TimeSpan start3DTime, TimeSpan nextEvTime)
+    public override bool EventTriggered(MyBitArray curStates, object otherData, TimeSpan curSimTime, TimeSpan start3DTime, TimeSpan nextEvTime, int runIdx)
     {
       ChangedIDs changedItems = (ChangedIDs)otherData;
       int matchCnt = 0;
@@ -382,7 +382,7 @@ namespace SimulationDAL
       return true;
     }
 
-    public override bool EventTriggered(MyBitArray curStates, object otherData, TimeSpan curSimTime, TimeSpan start3DTime, TimeSpan nextEvTime)
+    public override bool EventTriggered(MyBitArray curStates, object otherData, TimeSpan curSimTime, TimeSpan start3DTime, TimeSpan nextEvTime, int runIdx)
     {
       bool evalRes = logicTop.Evaluate(curStates);
 
@@ -428,7 +428,7 @@ namespace SimulationDAL
 
     public EvalVarEvent() : base("")
     {
-      compiledComp = new ScriptEngine("EvalVar_" + this.name, ScriptEngine.Languages.CSharp);
+      compiledComp = new ScriptEngine(ScriptEngine.Languages.CSharp);
     }
 
     public EvalVarEvent(string inName, string inCompCode, VariableList inVarList, Sim3DVariable sim3dVar)// = null)
@@ -451,7 +451,7 @@ namespace SimulationDAL
       else
         this.sim3dID = null;
 
-      compiledComp = new ScriptEngine("EvarVal_" + this.name, ScriptEngine.Languages.CSharp);
+      compiledComp = new ScriptEngine(ScriptEngine.Languages.CSharp);
     }
 
     protected override EnEventType GetEvType() { return (variable == "") ? EnEventType.etVarCond : EnEventType.et3dSimEv; }
@@ -591,6 +591,7 @@ namespace SimulationDAL
 
       //add the Time and 3D Frame variables needed event if 
       compiledComp.AddVariable("CurTime", typeof(Double));
+      compiledComp.AddVariable("RunIdx", typeof(int));
       compiledComp.AddVariable("ExtSimStartTime", typeof(double));
       compiledComp.AddVariable("NextEvTime", typeof(double));
 
@@ -600,6 +601,7 @@ namespace SimulationDAL
         foreach (var varItem in varList)
         {
           if ((varItem.Value.name != "CurTime") &&
+              (varItem.Value.name != "RunIdx") &&
               (varItem.Value.name != "ExtSimStartTime") &&
               (varItem.Value.name != "NextEvTime"))
           {
@@ -621,7 +623,7 @@ namespace SimulationDAL
       return this.compiled;
     }
 
-    public override bool EventTriggered(MyBitArray curStates, object otherData, TimeSpan curSimTime, TimeSpan start3DTime, TimeSpan nextEvTime)
+    public override bool EventTriggered(MyBitArray curStates, object otherData, TimeSpan curSimTime, TimeSpan start3DTime, TimeSpan nextEvTime, int runIdx)
     {
       if (!this.compiled)
       {
@@ -639,6 +641,7 @@ namespace SimulationDAL
       }
 
       compiledComp.SetVariable("CurTime", typeof(double), curSimTime.TotalHours);
+      compiledComp.SetVariable("RunIdx", typeof(int), runIdx);
       compiledComp.SetVariable("ExtSimStartTime", typeof(double), start3DTime.TotalHours);
       compiledComp.SetVariable("NextEvTime", typeof(double), nextEvTime.TotalHours);//NextEvTime
 
@@ -1306,7 +1309,7 @@ namespace SimulationDAL
             break;
           case EnDistType.dtWeibull:
             sampled = (new Weibull((double)valuePs[0], (double)valuePs[1], SingleRandom.Instance)).Sample();
-            distTimeRate = _dParams[0].timeRate;
+            distTimeRate = _dParams[1].timeRate;
             break;
           case EnDistType.dtLogNormal:
             sampled = (new LogNormal((double)valuePs[0],
@@ -1314,6 +1317,36 @@ namespace SimulationDAL
                                     SingleRandom.Instance)).Sample();
             distTimeRate = _dParams[0].timeRate;
             break;
+          case EnDistType.dtUniform:
+            sampled = (new ContinuousUniform((double)valuePs[0],
+                                    Globals.ConvertToNewTimeSpan(_dParams[1].timeRate, (double)valuePs[1], _dParams[0].timeRate),
+                                    SingleRandom.Instance)).Sample();
+            distTimeRate = _dParams[0].timeRate;
+            break;
+          case EnDistType.dtTriangular:
+            sampled = (new Triangular(Globals.ConvertToNewTimeSpan(_dParams[1].timeRate, (double)valuePs[1], _dParams[0].timeRate), //min
+                                    Globals.ConvertToNewTimeSpan(_dParams[2].timeRate, (double)valuePs[2], _dParams[0].timeRate),   //max
+                                    (double)valuePs[0], //mode or peak
+                                    SingleRandom.Instance)).Sample();
+            distTimeRate = _dParams[0].timeRate;
+            break;
+          case EnDistType.dtGamma:
+            sampled = (new Gamma((double)valuePs[0],
+                                 ((double)valuePs[1]), //shape
+                                    SingleRandom.Instance)).Sample(); //rate
+            distTimeRate = _dParams[1].timeRate;
+            break;
+          case EnDistType.dtGompertz:
+            //Shape*scale*Math.Exp((Shape+(scale*x)) - (Shape*Math.Exp(scale*x)))
+
+            double shape = (double)valuePs[0]; //shape
+            double scale = (double)valuePs[1]; //scale
+            double r = SingleRandom.Instance.NextDouble();
+            sampled = ((1 / scale) * Math.Log(Math.Log(1 - r) / -shape + 1));
+
+            distTimeRate = _dParams[1].timeRate;
+            break;
+
           default:
             throw new Exception("Distribution type not implemented for " + this._distType.ToString());
             break;
@@ -1325,8 +1358,20 @@ namespace SimulationDAL
       }
 
 
-
-      TimeSpan sampledTime = Globals.NumberToTimeSpan(sampled, distTimeRate);
+      TimeSpan sampledTime = TimeSpan.Zero;
+      try
+      {
+        sampledTime = Globals.NumberToTimeSpan(sampled, distTimeRate);
+      }
+      catch (OverflowException e)
+      {
+        sampledTime = TimeSpan.MaxValue;
+      }
+      catch
+      {
+        throw new Exception("Failed to set time for " + this._distType.ToString() + " - " + sampled);
+      }
+      
       //Globals.ConvertToNewTimeSpan(_dParams[1].timeRate, (double)valuePs[1], _dParams[0].timeRate)
       try
       {
@@ -1391,6 +1436,7 @@ namespace SimulationDAL
     }
   }
 
+  //Depricated use Dist Event
   public class NormalDistEvent : TimeBasedEvent //etNormalDist  
   {
     protected double _Mean = 0.0;
@@ -1510,6 +1556,7 @@ namespace SimulationDAL
     }
   }
 
+  //Depricated use Dist Event
   public class LogNormalDistEvent : NormalDistEvent //etNormalDist  
   {
     protected LogNormal mathFuncs = null;
@@ -1561,6 +1608,7 @@ namespace SimulationDAL
     }
   }
 
+  //Depricated use Dist Event
   public class WeibullDistEvent : TimeBasedEvent  //etWeibullDist  
   {
     protected double _Shape = 0.0;
@@ -1632,6 +1680,7 @@ namespace SimulationDAL
       return Globals.NumberToTimeSpan(sampled, this._TimeRate);
     }
   }
+  //Depricated use Dist Event
   public class ExponentialDistEvent : TimeBasedEvent
   {
     protected VariableList varList = null;
