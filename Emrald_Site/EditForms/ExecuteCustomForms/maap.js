@@ -84,7 +84,12 @@ class MAAPForm extends ExternalExeForm {
       .forEach((override) => {
         overrideCode += `newInp += originalInp.Substring(${pointer}, ${override.bounds[0]});\n`;
         overrideCode += `newInp += "\\n${scope[override.data]
-          .map((value) => maapInpParser.toString(value))
+          .map((value) => {
+            if (value.data) {
+              return maapInpParser.default.toString(value.data);
+            }
+            return maapInpParser.default.toString(value);
+          })
           .join('\\n')}\\n";\n`;
         [, pointer] = override.bounds;
       });
@@ -561,7 +566,6 @@ maapForm.controller('maapFormController', [
             default:
           }
         });
-        console.log($scope.overrideSections);
         form.save();
       }
     });
