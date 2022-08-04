@@ -50,6 +50,18 @@
  * @property {MAAPForm.Override[]} overrideSections - Sections of the INP file to override.
  */
 
+function getBlockVarNames(block) {
+  let names = [];
+  Object.values(block).forEach((val) => {
+    if (val.useVariable) {
+      names.push(val.variable.name);
+    } else if (typeof val === 'object') {
+      names = names.concat(getBlockVarNames(val));
+    }
+  });
+  return names;
+}
+
 /**
  * The MAAP custom form controller.
  */
@@ -63,6 +75,14 @@ class MAAPForm extends ExternalExeForm {
     const scope = cast(this.$scope, s);
     dataObj.raLocation = '';
     dataObj.varNames = this.getVarNames(scope.parameters);
+    scope.blocks.forEach((block) => {
+      getBlockVarNames(block).forEach((name) => {
+        console.log(name);
+        if (dataObj.varNames.indexOf(name) < 0) {
+          dataObj.varNames.push(name);
+        }
+      });
+    });
     dataObj.raFormData = {
       blocks: scope.blocks,
       exePath: scope.exePath,
