@@ -1022,6 +1022,7 @@ namespace SimulationDAL
     public string processOutputFileCode = "";
     public ReturnType returnProcess = ReturnType.rtStateList;
     public SimVariable assignVariable = null;
+    private Dictionary<string, bool> stateVarsAdded = new Dictionary<string, bool>();
 
     public RunExtAppAct()
       : base("", EnActionType.atRunExtApp)
@@ -1225,12 +1226,13 @@ namespace SimulationDAL
       //add all the states
       foreach (KeyValuePair<int, State> state in lists.allStates)
       {
-        //todo see if there are any variables with the name of the state && and valid variable name
+        //see if there are any variables with the name of the state && and valid variable name
         if ((makeInputFileCode.Contains(state.Value.name) || makeInputFileCode.Contains(state.Value.name + "_Time")) &&
            (state.Value.name.IndexOfAny(new char[] { '*', '&', '#', ' ', '-', '+', '_', '@', '$', '#', '%', ',', ')', '=', '/', '>', '<', '.', ';', '~', '`', '|', '}', '{', ']', '[', '\\' }) == -1))
         {
           makeInputFileCompEval.AddVariable(state.Value.name, typeof(bool));
           makeInputFileCompEval.AddVariable(state.Value.name + "_Time", typeof(TimeSpan));
+          stateVarsAdded.Add(state.Value.name, true);
         }
       }
 
@@ -1384,25 +1386,28 @@ namespace SimulationDAL
       //add if in states
       foreach (KeyValuePair<int, State> state in lists.allStates)
       {
-        TimeSpan stateTime;
-        if (curStatesTime.TryGetValue(state.Value.id, out stateTime))
+        if (stateVarsAdded.ContainsKey(state.Value.name))
         {
-          makeInputFileCompEval.SetVariable(state.Value.name, typeof(bool), true);
-          makeInputFileCompEval.SetVariable(state.Value.name + "_Time", typeof(TimeSpan), stateTime);
-          if (processOutputFileCompEval != null)
+          TimeSpan stateTime;
+          if (curStatesTime.TryGetValue(state.Value.id, out stateTime))
           {
-            processOutputFileCompEval.SetVariable(state.Value.name, typeof(bool), true);
-            processOutputFileCompEval.SetVariable(state.Value.name + "_Time", typeof(TimeSpan), stateTime);
+            makeInputFileCompEval.SetVariable(state.Value.name, typeof(bool), true);
+            makeInputFileCompEval.SetVariable(state.Value.name + "_Time", typeof(TimeSpan), stateTime);
+            if (processOutputFileCompEval != null)
+            {
+              processOutputFileCompEval.SetVariable(state.Value.name, typeof(bool), true);
+              processOutputFileCompEval.SetVariable(state.Value.name + "_Time", typeof(TimeSpan), stateTime);
+            }
           }
-        }
-        else
-        {
-          makeInputFileCompEval.SetVariable(state.Value.name, typeof(bool), false);
-          makeInputFileCompEval.SetVariable(state.Value.name + "_Time", typeof(TimeSpan), TimeSpan.FromMilliseconds(0));
-          if (processOutputFileCompEval != null)
+          else
           {
-            processOutputFileCompEval.SetVariable(state.Value.name, typeof(bool), false);
-            processOutputFileCompEval.SetVariable(state.Value.name + "_Time", typeof(TimeSpan), TimeSpan.FromMilliseconds(0));
+            makeInputFileCompEval.SetVariable(state.Value.name, typeof(bool), false);
+            makeInputFileCompEval.SetVariable(state.Value.name + "_Time", typeof(TimeSpan), TimeSpan.FromMilliseconds(0));
+            if (processOutputFileCompEval != null)
+            {
+              processOutputFileCompEval.SetVariable(state.Value.name, typeof(bool), false);
+              processOutputFileCompEval.SetVariable(state.Value.name + "_Time", typeof(TimeSpan), TimeSpan.FromMilliseconds(0));
+            }
           }
         }
       }
