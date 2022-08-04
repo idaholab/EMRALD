@@ -64,6 +64,7 @@ class MAAPForm extends ExternalExeForm {
     dataObj.raLocation = '';
     dataObj.varNames = this.getVarNames(scope.parameters);
     dataObj.raFormData = {
+      blocks: scope.blocks,
       exePath: scope.exePath,
       initiators: scope.initiators,
       inputPath: scope.inputPath,
@@ -83,12 +84,24 @@ class MAAPForm extends ExternalExeForm {
       .sort((a, b) => a.bounds[0] - b.bounds[0])
       .forEach((override) => {
         overrideCode += `newInp += originalInp.Substring(${pointer}, ${override.bounds[0]});\n`;
-        overrideCode += `newInp += "\\n${scope[override.data]
-          .map((value) => maapInpParser.toString(value))
-          .join('\\n')}\\n";\n`;
+        if (Array.isArray(override.data)) {
+          overrideCode += `newInp += "\\n${override.data
+            .map((value) => {
+              if (value.data) {
+                return maapInpParser.default.toString(value.data);
+              }
+              return maapInpParser.default.toString(value);
+            })
+            .join('\\n')}\\n";\n`;
+        } else {
+          overrideCode += `newInp += "\\n${maapInpParser.default
+            .toString(scope.blocks[override.data])
+            .replace(/\n/g, '\\n')}\\n";\n`;
+        }
         [, pointer] = override.bounds;
       });
     overrideCode += `newInp += originalInp.Substring(${pointer});\n`;
+    console.log(overrideCode);
     dataObj.raPreCode = `string exeLoc = @"${this.escape(scope.exePath)}";
       string paramLoc = @"${this.escape(scope.parameterPath)}";
       string inpLoc = @"${this.escape(scope.inputPath)}";
@@ -412,6 +425,7 @@ maapForm.controller('maapFormController', [
       initiatorQuery: '',
     };
     $scope.overrideSections = [];
+    $scope.form = form;
 
     const parameterInfo = {};
     const possibleInitiators = {};
@@ -454,6 +468,9 @@ maapForm.controller('maapFormController', [
       }
       if (raFormData.overrideSections) {
         $scope.overrideSections = raFormData.overrideSections;
+      }
+      if (raFormData.blocks) {
+        $scope.blocks = raFormData.blocks;
       }
     }
 
@@ -533,7 +550,7 @@ maapForm.controller('maapFormController', [
                     sourceElement.location.start.offset + 16,
                     sourceElement.location.end.offset - 3,
                   ],
-                  data: 'parameters',
+                  data: $scope.parameters,
                 });
                 sourceElement.value.forEach((innerElement) => {
                   if (innerElement.type === 'assignment') {
@@ -549,19 +566,26 @@ maapForm.controller('maapFormController', [
                     sourceElement.location.start.offset + 10,
                     sourceElement.location.end.offset - 3,
                   ],
-                  // TODO: This will result in duplication for files with multiple initiators sections
-                  // Same issue is present for parameter change too
-                  data: 'initiators',
+                  data: $scope.initiators,
                 });
                 $scope.initiators = $scope.initiators.concat(
                   sourceElement.value,
                 );
               }
               break;
+            case 'conditional_block':
+              $scope.blocks.push(sourceElement);
+              $scope.overrideSections.push({
+                bounds: [
+                  sourceElement.location.start.offset,
+                  sourceElement.location.end.offset,
+                ],
+                data: $scope.blocks.length - 1,
+              });
+              break;
             default:
           }
         });
-        console.log($scope.overrideSections);
         form.save();
       }
     });

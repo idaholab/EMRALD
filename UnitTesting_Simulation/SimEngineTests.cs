@@ -21,7 +21,8 @@ using NLog.Config;
 
 namespace UnitTesting_Simulation
 {
-
+  // Do not run multiple test classes in parallel, as it can cause some tests to fail: https://tsuyoshiushio.medium.com/controlling-the-serial-and-parallel-test-on-xunit-6174326da196
+  [Collection("Serial")]
   //construct each of the types of model objects from JSON and then get the JSON back and compare.
   public class SimEngineTests
   {
@@ -348,7 +349,7 @@ namespace UnitTesting_Simulation
       Assert.True(TestRunSim(testRun));
 
       //Uncomment to update the validation files after they verified correct
-      //CopyToValidated(dir, testName, optionsJ);
+      CopyToValidated(dir, testName, optionsJ);
 
       //compare the test result and optionally the paths and json if assigned
       Compare(dir, testName, optionsJ);
@@ -356,7 +357,7 @@ namespace UnitTesting_Simulation
 
     [Fact]
     //Test the JSON variable 
-    public void JsonVarExeTest2()
+    public void JsonVarExeTest()
     {
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
 
