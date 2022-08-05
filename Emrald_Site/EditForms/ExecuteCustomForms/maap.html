@@ -125,7 +125,7 @@
                 <th>Use Variable</th>
               </tr>
               <tr ng-repeat="parameter in parameters">
-                <td>{{parameter.label}}</td>
+                <td>{{parameter.target.value}}</td>
                 <td>
                   <select
                     title="Select a variable"
@@ -137,7 +137,7 @@
                   <input
                     title="Parameter value"
                     ng-if="!parameter.useVariable"
-                    ng-model="parameter.tempText"
+                    ng-model="parameter.value.value"
                     ng-change="changeText(parameter)"
                   />
                 </td>
