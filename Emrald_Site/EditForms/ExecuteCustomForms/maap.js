@@ -48,17 +48,20 @@
  * @property {(target: Parameter) => void} changeText - Changes the text of a parameter directly.
  * @property {MAAPForm.ScopeData} data - Globally scoped form data.
  * @property {MAAPForm.Override[]} overrideSections - Sections of the INP file to override.
+ * @property {import('maap-inp-parser').SourceElement[]} sections - File sections.
  */
 
 function getBlockVarNames(block) {
   let names = [];
-  Object.values(block).forEach((val) => {
-    if (val.useVariable) {
-      names.push(val.variable.name);
-    } else if (typeof val === 'object') {
-      names = names.concat(getBlockVarNames(val));
-    }
-  });
+  Object.values(block)
+    .filter((val) => !!val)
+    .forEach((val) => {
+      if (val.useVariable) {
+        names.push(val.variable.name);
+      } else if (typeof val === 'object') {
+        names = names.concat(getBlockVarNames(val));
+      }
+    });
   return names;
 }
 
@@ -77,20 +80,18 @@ class MAAPForm extends ExternalExeForm {
     dataObj.varNames = this.getVarNames(scope.parameters);
     scope.blocks.forEach((block) => {
       getBlockVarNames(block).forEach((name) => {
-        console.log(name);
         if (dataObj.varNames.indexOf(name) < 0) {
           dataObj.varNames.push(name);
         }
       });
     });
     dataObj.raFormData = {
-      blocks: scope.blocks,
       exePath: scope.exePath,
       initiators: scope.initiators,
       inputPath: scope.inputPath,
       overrideSections: scope.overrideSections,
       parameterPath: scope.parameterPath,
-      parameters: scope.parameters.map((parameter) => parameter.toJSON()),
+      sections: scope.sections,
       varLinks: scope.varLinks.map((varLink) => varLink.toJSON()),
     };
     const tempFilePath = `${scope.inputPath.replace(
@@ -98,7 +99,10 @@ class MAAPForm extends ExternalExeForm {
       'temp.INP',
     )}`;
     /* eslint-disable max-len */
-    let overrideCode = '';
+    let overrideCode = `newInp += "${scope.sections
+      .map((section) => maapInpParser.default.toString(section))
+      .join('\\n')}";`;
+    /*
     let pointer = 0;
     scope.overrideSections
       .sort((a, b) => a.bounds[0] - b.bounds[0])
@@ -122,6 +126,7 @@ class MAAPForm extends ExternalExeForm {
       });
     overrideCode += `newInp += originalInp.Substring(${pointer});\n`;
     console.log(overrideCode);
+    */
     dataObj.raPreCode = `string exeLoc = @"${this.escape(scope.exePath)}";
       string paramLoc = @"${this.escape(scope.parameterPath)}";
       string inpLoc = @"${this.escape(scope.inputPath)}";
@@ -446,6 +451,7 @@ maapForm.controller('maapFormController', [
     };
     $scope.overrideSections = [];
     $scope.form = form;
+    $scope.sections = [];
 
     const parameterInfo = {};
     const possibleInitiators = {};
@@ -467,16 +473,6 @@ maapForm.controller('maapFormController', [
       if (typeof raFormData.exePath === 'string') {
         $scope.exePath = raFormData.exePath;
       }
-      if (raFormData.parameters) {
-        $scope.parameters = raFormData.parameters.map((parameter) => {
-          const param = new Parameter(parameter.data);
-          param.useVariable = parameter.useVariable;
-          if (parameter.useVariable) {
-            param.variable = form.findVariable(parameter.variable);
-          }
-          return param;
-        });
-      }
       if (raFormData.initiators) {
         $scope.initiators = raFormData.initiators;
       }
@@ -489,8 +485,35 @@ maapForm.controller('maapFormController', [
       if (raFormData.overrideSections) {
         $scope.overrideSections = raFormData.overrideSections;
       }
-      if (raFormData.blocks) {
-        $scope.blocks = raFormData.blocks;
+      if (raFormData.sections) {
+        $scope.sections = raFormData.sections;
+        raFormData.sections.forEach((section) => {
+          if (
+            section.type === 'block' &&
+            section.blockType === 'PARAMETER CHANGE'
+          ) {
+            $scope.parameters = section.value.map((v) => {
+              if (v.useVariable) {
+                v.variable = form.findVariable(v.variable);
+              }
+              return v;
+            });
+          } else if (section.type === 'conditional_block') {
+            function bindBlockVars(block) {
+              Object.values(block)
+                .filter((val) => !!val)
+                .forEach((val) => {
+                  if (val.useVariable) {
+                    block.variable = form.findVariable(val.variable);
+                  } else if (typeof val === 'object') {
+                    bindBlockVars(val);
+                  }
+                });
+            }
+            bindBlockVars(section);
+            $scope.blocks.push(section);
+          }
+        });
       }
     }
 
@@ -562,13 +585,14 @@ maapForm.controller('maapFormController', [
           // TODO: Notify of parsing errors
         }
         parsed.output.value.forEach((sourceElement) => {
+          $scope.sections.push(sourceElement);
           switch (sourceElement.type) {
             case 'block':
               if (sourceElement.blockType === 'PARAMETER CHANGE') {
                 $scope.overrideSections.push({
                   bounds: [
-                    sourceElement.location.start.offset + 16,
-                    sourceElement.location.end.offset - 3,
+                    sourceElement.location.start.offset,
+                    sourceElement.location.end.offset,
                   ],
                   data: $scope.parameters,
                 });
@@ -583,8 +607,8 @@ maapForm.controller('maapFormController', [
                 $scope.overrideSections.push({
                   bounds: [
                     // TODO: this offset will be off if the block is specified with just INITIATOR
-                    sourceElement.location.start.offset + 10,
-                    sourceElement.location.end.offset - 3,
+                    sourceElement.location.start.offset,
+                    sourceElement.location.end.offset,
                   ],
                   data: $scope.initiators,
                 });
