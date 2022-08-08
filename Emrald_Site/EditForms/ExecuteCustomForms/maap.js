@@ -93,7 +93,7 @@ function removeLocations(json) {
     }
   });
   */
-  return data;
+  return json;
 }
 
 /**
@@ -130,15 +130,15 @@ class MAAPForm extends ExternalExeForm {
       varLinks: scope.varLinks.map((varLink) => varLink.toJSON()),
     };
     const tempFilePath = `${scope.inputPath.replace(
-      /[^/\\]*\.INP$/,
+      /[^/\\]*\.(inp|INP)$/,
       'temp.log',
     )}`;
+    console.log(tempFilePath);
     /* eslint-disable max-len */
     let overrideCode = `newInp += "${scope.sections
       .map((section) => {
-        console.log(section);
         return maapInpParser.default.toString(section).replace(/\n/g, '\\n');
-    })
+      })
       .join('\\n')}";`;
     /*
     let pointer = 0;
@@ -530,8 +530,6 @@ maapForm.controller('maapFormController', [
             section.type === 'block' &&
             section.blockType === 'PARAMETER CHANGE'
           ) {
-            console.log(section);
-            console.log(section.value);
             $scope.parameters = section.value.map((v) => {
               if (v.useVariable) {
                 v.variable = form.findVariable(v.variable);
