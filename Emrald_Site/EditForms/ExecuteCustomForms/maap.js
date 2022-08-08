@@ -100,7 +100,7 @@ class MAAPForm extends ExternalExeForm {
     )}`;
     /* eslint-disable max-len */
     let overrideCode = `newInp += "${scope.sections
-      .map((section) => maapInpParser.default.toString(section))
+      .map((section) => maapInpParser.default.toString(section).replace(/\n/g, '\\n'))
       .join('\\n')}";`;
     /*
     let pointer = 0;
