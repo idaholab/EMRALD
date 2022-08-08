@@ -51,6 +51,12 @@
  * @property {import('maap-inp-parser').SourceElement[]} sections - File sections.
  */
 
+/**
+ * Gets a list of variable names from the blocks.
+ *
+ * @param {*} block - The block to get names from.
+ * @returns The list of variable names.
+ */
 function getBlockVarNames(block) {
   let names = [];
   Object.values(block)
@@ -63,6 +69,31 @@ function getBlockVarNames(block) {
       }
     });
   return names;
+}
+
+/**
+ * Removes the "location" properties from the JSON.
+ *
+ * @param {*} json - The JSON object to remove the locations from.
+ * @returns The new JSON object.
+ */
+function removeLocations(json) {
+  /*
+  const data = {
+    ...json,
+  };
+  delete data.location;
+  Object.entries(data).forEach(([key, value]) => {
+    if (typeof value === 'object') {
+      if (Array.isArray(value)) {
+        data[key] = value.map((v) => removeLocations(v)[0]);
+      } else {
+        data[key] = removeLocations(value);
+      }
+    }
+  });
+  */
+  return json;
 }
 
 /**
@@ -87,20 +118,27 @@ class MAAPForm extends ExternalExeForm {
     });
     dataObj.raFormData = {
       exePath: scope.exePath,
-      initiators: scope.initiators,
+      initiators: scope.initiators.map((initiator) =>
+        removeLocations(initiator),
+      ),
       inputPath: scope.inputPath,
-      overrideSections: scope.overrideSections,
+      overrideSections: scope.overrideSections.map((section) =>
+        removeLocations(section),
+      ),
       parameterPath: scope.parameterPath,
-      sections: scope.sections,
+      sections: scope.sections.map((section) => removeLocations(section)),
       varLinks: scope.varLinks.map((varLink) => varLink.toJSON()),
     };
     const tempFilePath = `${scope.inputPath.replace(
-      /[^/\\]*\.INP$/,
-      'temp.INP',
+      /[^/\\]*\.(inp|INP)$/,
+      'temp.log',
     )}`;
+    console.log(tempFilePath);
     /* eslint-disable max-len */
     let overrideCode = `newInp += "${scope.sections
-      .map((section) => maapInpParser.default.toString(section).replace(/\n/g, '\\n'))
+      .map((section) => {
+        return maapInpParser.default.toString(section).replace(/\n/g, '\\n');
+      })
       .join('\\n')}";`;
     /*
     let pointer = 0;
