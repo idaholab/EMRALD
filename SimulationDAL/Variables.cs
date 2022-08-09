@@ -709,6 +709,9 @@ namespace SimulationDAL
 
       this._docType = (DocType)dynObj.docType;
       this._docPath = Convert.ToString(dynObj.docPath);
+
+      if (_docPath.Trim() == "")
+        throw new Exception("No doc path assigned for document variable.");
       
       if (!Path.IsPathRooted(_docPath) && (_docPath[0] == '.'))
       {

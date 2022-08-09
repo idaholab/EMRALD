@@ -629,7 +629,7 @@ namespace SimulationDAL
       }
       catch (Exception e)
       {
-        throw new Exception("On diagram named " + curName + ". " + e.Message);
+         throw new Exception("On diagram named " + curName + ". " + e.Message);
       }
     }
 
