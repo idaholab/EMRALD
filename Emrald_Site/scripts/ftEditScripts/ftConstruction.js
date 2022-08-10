@@ -118,11 +118,16 @@ function AddChildGate(graph, cell, ftNode) {
 					ftNode.compChildren = [];
 			}
 
-    vertex = graph.insertVertex(parent, ftNode.name + '~Name', ftNode, 0, 0, itemWidth, itemHeight, styleType );
+    vertex = graph.insertVertex(parent, ftNode.name + '~Name', ftNode.name, 0, 0, itemWidth, itemHeight, styleType );
    // vertex.geometry.alternateBounds = new mxRectangle(0, 0, 200, 50);
     vertex.geometry.offset = new mxPoint(0,0);
 
-    var descItem = graph.insertVertex(vertex, ftNode.desc + '~Desc', ftNode, 0, 0, 200, 22, 'ftDesc;whiteSpace=wrap;', true);
+    // This stores the gate JSON in a way that's easily retrievable while still using a string as the actual label
+    var valueItem = graph.insertVertex(vertex, ftNode.name + '~Value', ftNode, 0, 0, 0, 0, 'ftValue');
+    valueItem.parentCell = vertex;
+    valueItem.setVisible(false);
+
+    var descItem = graph.insertVertex(vertex, ftNode.name + '~Desc', ftNode.desc, 0, 0, 0, 0, 'ftDesc;whiteSpace=wrap;', true);
     descItem.geometry.offset = new mxPoint(0, 22);
     descItem.parentCell = vertex;
  
@@ -148,27 +153,25 @@ function AddChildGate(graph, cell, ftNode) {
 
     // add the edit and delete button at bottom right corner.
     addOverlays(graph, vertex, true);
-			var name;
-			if (cell.value) {
-					name = cell.value.name;
-					for (var i = 0; i < graph.sidebar.LogicNodeList.length; i++) {
-							if (graph.sidebar.LogicNodeList[i].LogicNode) {
-									if (graph.sidebar.LogicNodeList[i].LogicNode.name == name) {
-											var gateChildren = graph.sidebar.LogicNodeList[i].LogicNode.gateChildren;
-											var alreadyAdded = false;
-											for (var k = 0; k < gateChildren.length; k++) {
-													if (gateChildren[k] == ftNode.name) {
-															alreadyAdded = true;
-													}
-											}
-											if (!alreadyAdded) {
-													graph.sidebar.LogicNodeList[i].LogicNode.gateChildren.add(ftNode.name);
-											}
+    if (cell.value) {
+        for (var i = 0; i < graph.sidebar.LogicNodeList.length; i++) {
+            if (graph.sidebar.LogicNodeList[i].LogicNode) {
+                if (graph.sidebar.LogicNodeList[i].LogicNode.name == cell.value) {
+                    var gateChildren = graph.sidebar.LogicNodeList[i].LogicNode.gateChildren;
+                    var alreadyAdded = false;
+                    for (var k = 0; k < gateChildren.length; k++) {
+                        if (gateChildren[k] == ftNode.name) {
+                            alreadyAdded = true;
+                        }
+                    }
+                    if (!alreadyAdded) {
+                      graph.sidebar.LogicNodeList[i].LogicNode.gateChildren.push(ftNode.name);
+                    }
 
-									}
-							}
-					}
-			}
+                }
+            }
+        }
+    }
     return vertex;
   }
 
@@ -195,7 +198,6 @@ function AddChildComp(graph, cell, comp)
     var valSpace = Globals.ftNodeSettings.valSpace; //change according to precision
     var gateImgSize = Globals.ftNodeSettings.gateImgSize;
 
-    var sb = graph.sidebar;
     var ds = graph.DiagramList;
     var compDesc = null;
     for (var i = 0; i < ds.length; i++) {
@@ -223,11 +225,11 @@ function AddChildComp(graph, cell, comp)
     gate.geometry.offset = new mxPoint(-12, -1);
 
     vertex.gate = gate;
-    var nameItem = graph.insertVertex(vertex, comp.name + '~Name', comp, 0, 0, itemWidth - 20 - valSpace, 18, 'ftName;', true);
+    var nameItem = graph.insertVertex(vertex, comp.name + '~Name', comp.name, 0, 0, itemWidth - 20 - valSpace, 18, 'ftName;', true);
     nameItem.geometry.offset = new mxPoint(0, 0);
     vertex.nameItem = nameItem;
 
-    var descItem = graph.insertVertex(vertex, comp.desc + '~Desc', compDesc, 0, 0, 200, itemHeight - 22, 'ftDesc;whiteSpace=wrap;', true);
+    var descItem = graph.insertVertex(vertex, comp.name + '~Desc', compDesc, 0, 0, 200, itemHeight - 22, 'ftDesc;whiteSpace=wrap;', true);
     descItem.geometry.offset = new mxPoint(0, 18);
     vertex.descItem = descItem;
 
@@ -256,108 +258,21 @@ function AddChildComp(graph, cell, comp)
   return vertex;
 };
 
-
-//function expandCollapseTree(graph, cell)
-//{
-//  graph.getModel().beginUpdate();
-
-//  cell.value.expanded = !cell.value.expanded;
-//  if (cell.value.expanded)
-//  {
-//    cell.overlays[0].image = new mxImage('images/Navigate_minus.png', 20, 20);
-//    cell.overlays[0].tooltip = 'Collapse';
-//  }
-//  else
-//  {
-//    cell.overlays[0].image = new mxImage('images/Navigate_plus.png', 20, 20);
-//    cell.overlays[0].tooltip = 'Expand';
-//  }
-
-//  var model = graph.getModel();
-
-//  var edgeCount = model.getEdgeCount(cell);
-//  for (var i = 0; i < edgeCount; i++)
-//  {
-//    var e = model.getEdgeAt(cell, i);
-//    var isSource = model.getTerminal(e, true) == cell;
-
-//    if (isSource)
-//    {
-//      var next = model.getTerminal(e, !isSource);
-//      SetCellVisbleRec(graph, next, cell.value.expanded)
-//    }
-//  }
-
-//  graph.getModel().endUpdate();
-//  graph.refresh(cell.parent);
-
-//  function SetCellVisbleRec(graph, cell, show)
-//  {
-//    if ((show && (cell.value.expanded == show)) || (!show && (cell.value.expanded != show)))// || (cell.visible != show))
-//    {
-//      var childCount = model.getChildCount(cell);
-//      for (var i = 0; i < childCount; i++)
-//      {
-//        model.setVisible(cell.children[i], show);
-//      }
-
-//      var edgeCount = model.getEdgeCount(cell);
-//      for (var i = 0; i < edgeCount; i++)
-//      {
-//        var e = model.getEdgeAt(cell, i);
-//        var isSource = model.getTerminal(e, true) == cell;
-
-//        if (isSource)
-//        {
-//          var next = model.getTerminal(e, !isSource);
-//          SetCellVisbleRec(graph, next, show);
-//        }
-//      }
-//    }
-
-//    model.setVisible(cell, show);
-//  }
-//};
-
 function deleteSubtree(graph, cell)
 {
   // Gets the subtree from cell downwards
   var cells = [];
   graph.traverse(cell, true, mxUtils.bind(graph,function (vertex)
   {
-    
-    //var st = this.getCellStyle(vertex);
-    //st[mxConstants.STYLE_DELETABLE] = undefined;
-    //this.model.setStyle(vertex, st);
-
-    //if (vertex.gate) {
-    //  st = this.getCellStyle(vertex.gate);
-    //  st[mxConstants.STYLE_DELETABLE] = undefined;
-    //  this.model.setStyle(vertex.gate, st);
-    //}
-
-    //if (vertex.nameItem) {
-    //  st = this.getCellStyle(vertex.nameItem);
-    //  st[mxConstants.STYLE_DELETABLE] = undefined;
-    //  this.model.setStyle(vertex.nameItem, st);
-    //}
-
-    //if (vertex.valItem) {
-    //  st = this.getCellStyle(vertex.valItem);
-    //  st[mxConstants.STYLE_DELETABLE] = undefined;
-    //  this.model.setStyle(vertex.valItem, st);
-    //}
-    //if (vertex.descItem) {
-    //  st = this.getCellStyle(vertex.descItem);
-    //  st[mxConstants.STYLE_DELETABLE] = undefined;
-    //  this.model.setStyle(vertex.descItem, st);
-    //}
     vertex.forceDelete = true;
     cells.push(vertex);
 			//Delete it from sidebar
 			var name;
 			if (vertex.value) {
+        if (vertex.value.name) {
 					name = vertex.value.name;
+        }
+        name = vertex.value;
 			}
 			else if (vertex.id) {
 					name = vertex.id;
@@ -367,59 +282,52 @@ function deleteSubtree(graph, cell)
 							var source = vertex.edges[0].source;
 							var sName;
 							if (source.value) {
-									sName = source.value.name;
+									sName = source.value;
 							}
 							else if (source.id) {
 									sName = source.id;
 							}
-
-							for (var i = 0; i < graph.sidebar.LogicNodeList.length; i++) {
-									if (graph.sidebar.LogicNodeList[i].LogicNode) {
-											if (graph.sidebar.LogicNodeList[i].LogicNode.name == sName) {
-													var compChildren = graph.sidebar.LogicNodeList[i].LogicNode.compChildren;
-													if (compChildren) {
-															for (var k = 0; k < compChildren.length; k++) {
-																	if (compChildren[k] == name) {
-																			graph.sidebar.LogicNodeList[i].LogicNode.compChildren.splice(k, 1);
-																			break;
-																	}
-															}
-													}
-											}
-									}
-							}
+              for (let i = 0; i < graph.sidebar.LogicNodeList.length; i += 1) {
+                if (graph.sidebar.LogicNodeList[i].LogicNode) {
+                  if (graph.sidebar.LogicNodeList[i].LogicNode.name === sName) {
+                    const compChildren =
+                    graph.sidebar.LogicNodeList[i].LogicNode.compChildren;
+                    if (compChildren) {
+                      for (let k = 0; k < compChildren.length; k += 1) {
+                        if (compChildren[k] === name) {
+                          graph.sidebar.LogicNodeList[
+                            i
+                          ].LogicNode.compChildren.splice(k, 1);
+                          break;
+                        }
+                      }
+                    }
+                  }
+                }
+              }
 					}
+			} else {
+        for (let i = 0; i < graph.sidebar.LogicNodeList.length; i += 1) {
+          if (graph.sidebar.LogicNodeList[i].LogicNode) {
+            const gateChildren =
+            graph.sidebar.LogicNodeList[i].LogicNode.gateChildren;
+            if (gateChildren) {
+              for (let k = 0; k < gateChildren.length; k += 1) {
+                if (gateChildren[k] === name) {
+                  graph.sidebar.LogicNodeList[i].LogicNode.gateChildren.splice(
+                    k,
+                    1,
+                  );
+                }
+              }
+            }
+            if (graph.sidebar.LogicNodeList[i].LogicNode.name === name) {
+              graph.sidebar.LogicNodeList.splice(i, 1);
+            }
+          }
+        }
 			}
-			else {
-				for (var i = 0; i < graph.sidebar.LogicNodeList.length; i++) {
-					if (graph.sidebar.LogicNodeList[i].LogicNode ) {
-							if (graph.sidebar.LogicNodeList[i].LogicNode.name == name) {
-									graph.sidebar.LogicNodeList.splice(i, 1);
-							}
-							
-							var gateChildren = graph.sidebar.LogicNodeList[i].LogicNode.gateChildren;
-							if (gateChildren) {
-									for (var k = 0; k < gateChildren.length; k++) {
-											if (gateChildren[k] == name) {
-													graph.sidebar.LogicNodeList[i].LogicNode.gateChildren.splice(k, 1);
-											}
-									}
-							}
-							
-					}
-			}
-			}
-			
-		
-
     return true;
   }));
-
   graph.removeCells(cells);
-	
-
 };
-
-
-
-

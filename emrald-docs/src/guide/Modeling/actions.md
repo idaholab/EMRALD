@@ -123,7 +123,7 @@ Listed as "Change Var Value" in the dropdown menu. This action changes the value
 The value returned by the script is assigned to the variable, so one must be selected in order to create the event. 
 - **New Value Code (c#):** Type or copy and paste into this text field. The script must have a return value and that value must be the
 same type as the assigned variable or an error will occur. Other variables from the code can be used in the script if marked in the Variables section.
-- **Variables used in code:** A list of variables available in the model. This list will not include pre-existing variables such as CurTime. See [Dynamic Scripts](./backendInfo.md#dynamic-scripts) for more information. It will include all of the variables that you create and are listed in the "All" Tab of the Left Navigation Frame. Click the check box to identify which variables are used in the code. Do not click the check box for the variable that is being updated even if it is used in the code. It only needs to be selected from the "Variable" dropdown menu.
+- **Variables used in code:** A list of variables available in the model. Pre-existing variables such as CurTime are auto checked and always available. See [Dynamic Scripts](./backendInfo.md#dynamic-scripts) for more information. It will include all of the variables that you create and are listed in the "All" Tab of the Left Navigation Frame. Click the check box to identify which variables are used in the code. Do not click the check box for the variable that is being updated even if it is used in the code. It only needs to be selected from the "Variable" dropdown menu.
 
 <h3>External Simulation Message <img src="/images/Modeling/actions/extSim.png" alt="External Simulation Message" width="25"/></h3>  
 Listed as "Ext. Sim Message" in the dropdown menu. This action sends a message to an external code through coupled communication messaging protocol. See [XMPP communication protocol](/guide/Modeling/xmppProtocol.md) for details on coupling code to EMRALD.
@@ -145,7 +145,7 @@ return "c:/somepath/file.txt" to open a specific file.
 This code typically processes the results of the executable and determines what to do because of them. It must return a list of states to enter or exit.
 It is recommened that you use a C# compiler to test and debug code before entering it. See the video [Coupling an Executable](https://www.youtube.com/watch?v=SZzNcougc9k&list=PLX2nBoWRisnXWhC2LD9j4jV0iFzQbRcFX&index=6) for detailed instructions and an example.
 - **Variables used in code:**  A list of variables available in the model. Click the check box to identify which variables are used in the code.
-This list will not include pre-existing variables such as CurTime. See [Dynamic Scripts](./backendInfo.md#dynamic-scripts) for more information. It will include the all of the variables that you create and are listed in the "All" Tab of the Left Navigation Frame. 
+Pre-existing variables such as CurTime are auto checked and always available. See [Dynamic Scripts](./backendInfo.md#dynamic-scripts) for more information. It will include the all of the variables that you create and are listed in the "All" Tab of the Left Navigation Frame. 
 
 ## Summary of Icons
 Below is a table of icons that either identify the type of action (left hand side of action item) or identify the status of an action (right hand side of action item).

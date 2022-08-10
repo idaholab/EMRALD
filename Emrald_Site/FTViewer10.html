@@ -85,11 +85,11 @@
 
     }
 
+    window.dataObj = {
+      LogicNodeList: [],
+    };
     function GetDataObject() {
-      var dataObj = {};
-      //TODO: Gather any data to be sent back.
-
-      return dataObj;
+      return window.dataObj;
     }
 
 
@@ -108,7 +108,10 @@
     //a new data package is sent from the parent window frame.
     function DataChanged(dataObj) {
       console.log("State data changed received.");
-      OnLoad(dataObj);
+      // Check that the new data is a logic tree
+      if (dataObj.DiagramList && dataObj.LogicNode && dataObj.sidebar) {
+        OnLoad(dataObj);
+      }
     }
 
     function somethingChanged() {

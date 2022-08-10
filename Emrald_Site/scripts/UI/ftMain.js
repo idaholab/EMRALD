@@ -211,6 +211,8 @@ function main(container, outline) {
         }
         else if (cell.value.diagramType) { //DiagramType
           tmp = cell.value.name;
+        } else if (typeof cell.value === 'string') {
+          tmp = cell.value;
         }
       }
       else tmp = mxGraph.prototype.getLabel.apply(this, arguments); // "supercall"
@@ -273,13 +275,13 @@ function main(container, outline) {
 										var compChildren;
 										var index = -1;
 										for (var i = 0; i < graph.sidebar.LogicNodeList.length; i++) {
-												if (graph.sidebar.LogicNodeList[i].LogicNode.name == cell.value.name) {
+												if (graph.sidebar.LogicNodeList[i].LogicNode.name == cell.value) {
 														compChildren = graph.sidebar.LogicNodeList[i].LogicNode.compChildren;
 														index = i;
 												}
 										}
 										if (!compChildren) {
-												graph.sidebar.LogicNodeList[index].LogicNode.compChildren = [];
+                      graph.sidebar.LogicNodeList[index].LogicNode.compChildren = [];
 										}
 										for (var i = 0; i < compChildren.length; i++) {
 												if (compChildren[i] == newDiagram.name) {
@@ -288,7 +290,7 @@ function main(container, outline) {
 										}
 										if (!alreadyExist) {
 												AddChildComp(graph, cell, newDiagram);
-												graph.sidebar.LogicNodeList[index].LogicNode.compChildren.add(newDiagram.name);
+												graph.sidebar.LogicNodeList[index].LogicNode.compChildren.push(newDiagram.name);
 										}
 										else {
 												alert(newDiagram.name + " is already added to that cell");
@@ -328,20 +330,21 @@ function main(container, outline) {
 										}
 
 										graph.setSelectionCell(vertex);
-										if (cell.value.gateChildren.indexOf("gate_" + newID) < 0)
-												cell.value.gateChildren.add("gate_" + newID);
+										if (cell.children[0].value.gateChildren.indexOf("gate_" + newID) < 0) {
+												cell.children[0].value.gateChildren.push("gate_" + newID);
+                    }
 										var newLogicNode = {
 												LogicNode: {
 														id: newID,
 														name: "gate_" + newID,
 														desc: "",
 														gateType: gateType,
-														rootName: cell.value.rootName,
+														rootName: graph.tree.LogicNode.LogicNode.name,
 														compChildren: [],
 														gateChildren: []
 												}
 										};
-										graph.sidebar.LogicNodeList.add(newLogicNode);
+										graph.sidebar.LogicNodeList.push(newLogicNode);
 										graph.zoomOut();
 										graph.zoomActual();
 										graph.zoomOut();
@@ -362,27 +365,47 @@ function main(container, outline) {
       //var s = graph.view.scale;
      
       if (graph.getModel().isVertex(state.cell) && state.text != null) {
-        if (((state.shape instanceof mxLabel) || (state.shape instanceof mxImageShape))
-          && (typeof (state.cell.value) !== 'string')) {
+        if (((state.shape instanceof mxLabel) || (state.shape instanceof mxImageShape))) {
           if (!state.cell.value) return;
           if (state.cell.value.diagramType) return;  //don't need to drop on leave node.
 
           // Scrollbars are on the div
           //state.text.node.style.overflow = 'hidden';
           //get the main TableShape panel and should be only one.
-          var el = state.text.node.getElementsByTagName('div');
+          var el = state.text.node.querySelectorAll('div :not(.drop-target)');
           if (el) {
             if (el.length > 1) el = el[1];
             else if (el.length > 0) el = el[0];
           }
           else el = null;
 
-          if (el != null) {
-            el.style.width = '200px';
-            el.style.height = '40px';
-            //el.style.border = '1px solid red';
-           
-            installDropHandler(el);
+          if (
+            el != null &&
+            !state.cell.parent.geometry
+          ) {
+            Array.from(el.getElementsByClassName('drop-target')).forEach(
+              (oldTarget) => oldTarget.parentNode.removeChild(oldTarget),
+            );
+            const dropTarget = document.createElement('div');
+            console.log(state);
+            dropTarget.classList.add('drop-target');
+            const cellHeight = state.cell.geometry.height;
+            const cellWidth = state.cell.geometry.width;
+            let height = state.height;
+            let width = state.width;
+            if (cellHeight > height) {
+              height = cellHeight;
+            }
+            if (cellWidth > width) {
+              width = cellWidth;
+            }
+            dropTarget.style.height = `${height}px`;
+            dropTarget.style.width = `${width}px`;
+            dropTarget.style.position = 'absolute';
+            dropTarget.style.top = '0';
+            dropTarget.style.left = `-${width / 3}px`;
+            el.appendChild(dropTarget);
+            installDropHandler(dropTarget);
           }
         }
       }
@@ -473,28 +496,9 @@ function main(container, outline) {
 					graph.zoomIn();
 					graph.zoomIn();
 					graph.zoomIn();
-			var sb = graph.sidebar;
-			//sb.emptyLocalPanels();
     };
 
     window.mainLoadTree = handleTree;
-        
-    //--------------------------------------------------
-			function reloadGraph(graph) {
-					var tree = graph.tree;
-					var rootcell = graph.getDefaultParent();
-					deleteSubtree(graph, rootcell);
-					graph.tree = tree;
-					graph.sidebar = tree.sidebar;
-					graph.DiagramList = tree.DiagramList;
-					BuildTree(graph, null, tree);
-					graph.zoomOut();
-			}
-
-    //ParseBED('../ftFiles/DEMO.BED', ftNodes);
-    //ParseGTD('ftFiles/DEMO.GTD', ftNodes);
-    //ParseBEI('ftFiles/DEMO.BEI', ftNodes);
-    //ParseFTL(graph, 'ftFiles/DEMO.FTL', ftNodes);
 
     var content = document.createElement('div');
     content.style.padding = '4px';
@@ -687,6 +691,7 @@ function getDefaultGateID(graph) {
 }
 
 function addOverlays(graph, cell, isEditable) {
+  const isRoot = graph.tree.LogicNode.LogicNode.rootName === cell.value;
   var overlay = new mxCellOverlay(new mxImage('images/delete.png', 16, 16), 'delete');
   overlay.cursor = 'hand';
   overlay.offset = new mxPoint(-6, 4);//(-4, 8);
@@ -696,23 +701,31 @@ function addOverlays(graph, cell, isEditable) {
     deleteSubtree(graph, cell);
   }.bind(this));
 
-  graph.addCellOverlay(cell, overlay);
+  if (!isRoot) {
+    graph.addCellOverlay(cell, overlay);
+  }
 
 
   if (isEditable) {
     overlay = new mxCellOverlay(new mxImage('images/edit.png', 16, 16), 'Edit');
     overlay.cursor = 'hand';
     overlay.offset = new mxPoint(-26, 4);//(-4, 8);
+    if (isRoot) {
+      overlay.offset.x = -6;
+    }
     overlay.align = mxConstants.ALIGN_RIGHT;
     overlay.verticalAlign = mxConstants.ALIGN_BOTTOM;
     overlay.addListener(mxEvent.CLICK, function (sender, evt) {
       if (cell.value) {
-          if (cell.value.diagramType)
+          if (typeof cell.value === 'string') {
+            editNode(graph, cell);
+          }
+          else if (cell.value.diagramType)
               editDiagramNode(graph, cell);
           else if (cell.value.gateType)
               editNode(graph, cell);
       }
-      else if (cell.nameItem && cell.nameItem.value.diagramType)
+      else if (cell.nameItem)
         editDiagramNode(graph, cell.nameItem);
     });
 
@@ -725,10 +738,7 @@ function addOverlays(graph, cell, isEditable) {
 			overlay.align = mxConstants.ALIGN_LEFT;
 			overlay.verticalAlign = mxConstants.ALIGN_BOTTOM;
 			overlay.addListener(mxEvent.CLICK, function (sender, evt) {
-					if (cell.value) {
-							if (cell.value.gateType)
-									addNode(graph, cell);
-					}
+					addNode(graph, cell);
 			});
 
 			graph.addCellOverlay(cell, overlay);
@@ -743,40 +753,15 @@ function mergeFTData(obj1, obj2) {
 //When a state is edited and data were written back to the underlying user object, we need to update the 
 //overlay cells manually.
 function updateCell(graph, cell) {
-
-   
-
-		graph.labelChanged(cell, cell.value, this);
-//Not sure what the intention was of this??
-/*
-    //Rebuild the graph - not the most efficient way but it works
-    deleteSubtree(graph, cell);
-    var GetFTItem = function (cell) {
-        if (cell instanceof mxCell) {
-            if (cell.children == null) {
-                return null;
-            }
-
-            for (var i = 0; i < cell.children.length; i++) {
-                var cellVal = cell.children[i].value;
-                if ((cellVal != null) && (cellVal instanceof FTItem)) {
-                    return cellVal;
-                }
-            }
-        }
-
-        return null;
-    }
-    graph.gateChanged(cell, cell.value, this);
-    //aState = graph.view.getState(cell.descItem);
-    //if (aState) graph.cellRenderer.redraw(aState);
-			//	AddChildGate(graph, parent, GetFTItem)
-    //BuildTree(graph, parent, tree);
-   
-*/
-
- 
- 
+  graph.labelChanged(cell, cell.value, this);
+  // Force the child cells to sync up with the changes
+  // There is probably a better way to do this
+  graph.labelChanged(cell.children[1], cell.children[0].value.desc, this);
+  let imgName = 'ORGate.png';
+  if (cell.children[0].value.gateType === 'gtAnd') {
+    imgName = 'ANDGate.png';
+  }
+  graph.model.setStyle(cell.children[2], `ftGateShape;image=images/${imgName};`);
 }
 
 
@@ -805,19 +790,9 @@ function BuildTreeRec(graph, parentCell, node) {
 
 function editDiagramNode(graph, cell) {
   var sb = graph.sidebar;
-  //var ds = graph.DiagramList;
-
-  var diagram = cell.value;
-  //for (var i = 0; i < ds.length; i++) {
-  //  if (ds[i].Diagram.name == cell.id) {
-  //    diagram = ds[i].Diagram;
-  //    break;
-  //  }
-  //}
-
+  var diagram = sb.getDiagramByName(sb, cell.value);
   if (diagram)
-    sb.openDiagramWindow(diagram);
-
+    sb.openDiagramWindow(diagram.Diagram);
 }
 
 /*
@@ -851,31 +826,17 @@ function editNode(graph, cell) {
 
 function editNode (graph, stateCell) {
     var url = "EditForms/GateEditor.html";
-		var sModel = stateCell.value;
-		var oldName = stateCell.value.name;
+		var sModel = stateCell.children.find((cell) => cell.style === 'ftValue').value;
+		var oldName = stateCell.value;
     mxWindow.createFrameWindow(
         url,
         'OK, Cancel',  //command buttons
         'minimize, maximize, close', //top buttons
         function (btn, retObj) {
             if (btn === 'OK') {
-								var logicNodeList = graph.sidebar.LogicNodeList;
-								for (var i = 0; i < logicNodeList.length; i++) {
-										if (logicNodeList[i].LogicNode.name == oldName) {
-                      graph.sidebar.LogicNodeList[i].LogicNode.desc = retObj.desc;
-                      graph.sidebar.LogicNodeList[i].LogicNode.gateType = retObj.gateType;
-										}
-										var gateChildren = logicNodeList[i].LogicNode.gateChildren;
-										if (gateChildren) {
-												for (var j = 0; j < gateChildren.length; j++) {
-														if (gateChildren[j] == oldName) {
-																graph.sidebar.LogicNodeList[i].LogicNode.gateChildren[j] = retObj.name;
-														}
-												}
-										}
-								}
-								mergeFTData(stateCell.value, retObj);
-								var state = graph.getView().getState(stateCell);
+								graph.sidebar.replaceNames(oldName, retObj.name, 'LogicNode', null, true);
+								mergeFTData(sModel, retObj);
+                stateCell.value = retObj.name;
 								updateCell(graph, stateCell);
             }
             return true;
@@ -896,7 +857,7 @@ function addNode(graph, stateCell) {
 		for (var i = 0; i < diagramList.length; i++) {
 				if (diagramList[i].Diagram.diagramType == "dtComponent") {
 						var obj = diagramList[i].Diagram;
-						componentDiagrams.add(obj);
+						componentDiagrams.push(obj);
 						//TODO: do not add diagrams that already exist
 				}
 		}
@@ -916,7 +877,7 @@ function addNode(graph, stateCell) {
 										var compChildren;
 										var index = -1;
 										for (var i = 0; i < graph.sidebar.LogicNodeList.length; i++) {
-												if (graph.sidebar.LogicNodeList[i].LogicNode.name == cell.value.name) {
+												if (graph.sidebar.LogicNodeList[i].LogicNode.name == cell.value) {
 														compChildren = graph.sidebar.LogicNodeList[i].LogicNode.compChildren;
 														index = i;
 												}
@@ -928,7 +889,7 @@ function addNode(graph, stateCell) {
 										}
 										if (!alreadyExist) {
 												AddChildComp(graph, cell, retObj.newDiagram);
-												graph.sidebar.LogicNodeList[index].LogicNode.compChildren.add(retObj.newDiagram.name);
+												graph.sidebar.LogicNodeList[index].LogicNode.compChildren.push(retObj.newDiagram.name);
 										}
 										else {
 												alert(retObj.newDiagram.name + " is already added to that cell");
@@ -959,9 +920,10 @@ function addNode(graph, stateCell) {
 
 												graph.setSelectionCell(vertex);
 												for (var i = 0; i < graph.sidebar.LogicNodeList.length; i++) {
-														if (graph.sidebar.LogicNodeList[i].LogicNode.name == cell.value.name) {
-																if (graph.sidebar.LogicNodeList[i].LogicNode.gateChildren.indexOf(retObj.newName) < 0)
-																		graph.sidebar.LogicNodeList[i].LogicNode.gateChildren.add(retObj.newName);
+														if (graph.sidebar.LogicNodeList[i].LogicNode.name == cell.value) {
+																if (graph.sidebar.LogicNodeList[i].LogicNode.gateChildren.indexOf(retObj.newName) < 0) {
+                                  graph.sidebar.LogicNodeList[i].LogicNode.gateChildren.push(retObj.newName);
+                                }
 														}
 												}
 
@@ -976,7 +938,7 @@ function addNode(graph, stateCell) {
 																"gateChildren": []
 														}
 												};
-												graph.sidebar.LogicNodeList.add(newLogicNode);
+												graph.sidebar.LogicNodeList.push(newLogicNode);
 												graph.zoomActual();
 												graph.zoomOut();
 
@@ -1008,7 +970,7 @@ function addBE(graph, cell) {
 		for (var i = 0; i < diagramList.length; i++) {
 				if (diagramList[i].Diagram.diagramType == "dtComponent") {
 						var obj = diagramList[i].Diagram;
-						componentDiagrams.add(obj);
+						componentDiagrams.push(obj);
 						//TODO: do not add diagrams that already exist
 				}
 		}
@@ -1024,13 +986,13 @@ function addBE(graph, cell) {
 								var newDiagram = retObj.element;
 								var index = -1;
 								for (var i = 0; i < graph.sidebar.LogicNodeList.length; i++) {
-										if (graph.sidebar.LogicNodeList[i].LogicNode.name == cell.value.name) {
+										if (graph.sidebar.LogicNodeList[i].LogicNode.name == cell.value) {
 												compChildren = graph.sidebar.LogicNodeList[i].LogicNode.compChildren;
 												index = i;
 										}
 								}
 								if (!compChildren) {
-										graph.sidebar.LogicNodeList[index].LogicNode.compChildren = [];
+                  graph.sidebar.LogicNodeList[index].LogicNode.compChildren = [];
 								}
 								for (var i = 0; i < compChildren.length; i++) {
 										if (compChildren[i] == newDiagram.name) {
@@ -1039,7 +1001,7 @@ function addBE(graph, cell) {
 								}
 								if (!alreadyExist) {
 										AddChildComp(graph, cell, newDiagram);
-										graph.sidebar.LogicNodeList[index].LogicNode.compChildren.add(newDiagram.name);
+										graph.sidebar.LogicNodeList[index].LogicNode.compChildren.push(newDiagram.name);
 								}
 								else {
 										alert(newDiagram.name + " is already added to that cell");
