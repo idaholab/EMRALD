@@ -1049,13 +1049,15 @@ namespace SimulationTracking
       EmraldModel inLists,
       TimeSpan endTime, //max time allowed for events to occur
       double in3dFrameRate,//todo remove obsolete
-      EMRALDMsgServer inSim3DServer
+      EMRALDMsgServer inSim3DServer,
+      int desiredRuns
       )
     {
       this.allLists = inLists;
       this.maxTime = endTime;
       this.curTime = new TimeSpan();
       this.sim3DServer = inSim3DServer;
+      this.allLists.totRunsReq = desiredRuns;
       condEvList = new ConditionEventLists(curStates);
       SingleNextIDs.Instance.ResetTimerIDs();
 
@@ -1820,8 +1822,8 @@ namespace SimulationTracking
               case SimActionType.atOpenSim:
                 //stop3DInEv = false;
                 msg = new TMsgWrapper(MessageType.mtSimAction, "OpenSim", curTime, "Start External Sim");
-                msg.simAction = new SimAction(new SimInfo(cur3DAct.ModelRef(allLists), cur3DAct.simMaxTime, cur3DAct.ConfigData(allLists), SingleRandom.Instance.Next(), cur3DAct.simVar Convert.ToInt32(tbRunCnt.Text)));
-                this.allLists
+                msg.simAction = new SimAction(new SimInfo(cur3DAct.ModelRef(allLists), cur3DAct.simMaxTime, cur3DAct.ConfigData(allLists), SingleRandom.Instance.Next(), this.allLists.totRunsReq, this.allLists.curRunIdx));
+                
                 if (sim3DServer == null)
                   throw new Exception("External Simulation not assigned.");
 

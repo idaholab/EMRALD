@@ -249,9 +249,9 @@ namespace SimulationEngine
           SimulationTracking.StateTracker trackSim;
 
           if (_msgServer == null)
-            trackSim = new SimulationTracking.StateTracker(_lists, _endTime, 0, null);
+            trackSim = new SimulationTracking.StateTracker(_lists, _endTime, 0, null, _numRuns);
           else
-            trackSim = new SimulationTracking.StateTracker(_lists, _endTime, _frameRate, _msgServer);
+            trackSim = new SimulationTracking.StateTracker(_lists, _endTime, _frameRate, _msgServer, _numRuns);
 
           //trackSim.logFunc = logFunc;
 

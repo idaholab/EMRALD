@@ -48,7 +48,8 @@ namespace SimulationDAL
     public string rootPath = "";
 
     //public int dbID = 0;
-    public int curRunIdx = 0;
+    public int curRunIdx = 0; //current run index.
+    public int totRunsReq = 0; //total runs requested
     
     //public Dictionary<int, Formula> allFormulas = new Dictionary<int, Formula>();
     //public Diagram curDiagram { get { return _Diagram; } set { _Diagram = value; } }
