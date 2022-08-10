@@ -588,7 +588,7 @@ namespace EMRALD_Sim
         case SimActionType.atOpenSim:
           TimeSpan endTime = TimeSpan.FromSeconds(0);
           try { endTime = TimeSpan.Parse(tbEndTime.Text); } catch { }
-          msgObj.simAction = new SimAction(new SimInfo(tbModelRef.Text, endTime, tbConfigData.Text));
+          msgObj.simAction = new SimAction(new SimInfo(tbModelRef.Text, endTime, tbConfigData.Text, Convert.ToInt32(tbSeed), 1, 1));
           break;
 
         case SimActionType.atTimer:

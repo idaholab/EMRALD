@@ -1864,8 +1864,8 @@ namespace SimulationTracking
               case SimActionType.atOpenSim:
                 //stop3DInEv = false;
                 msg = new TMsgWrapper(MessageType.mtSimAction, "OpenSim", curTime, "Start External Sim");
-                msg.simAction = new SimAction(new SimInfo(cur3DAct.ModelRef(allLists), cur3DAct.simMaxTime, cur3DAct.ConfigData(allLists)));
-
+                msg.simAction = new SimAction(new SimInfo(cur3DAct.ModelRef(allLists), cur3DAct.simMaxTime, cur3DAct.ConfigData(allLists), SingleRandom.Instance.Next(), cur3DAct.simVar Convert.ToInt32(tbRunCnt.Text)));
+                this.allLists
                 if (sim3DServer == null)
                   throw new Exception("External Simulation not assigned.");
 
