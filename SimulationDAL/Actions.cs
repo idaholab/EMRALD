@@ -1022,7 +1022,9 @@ namespace SimulationDAL
     public string processOutputFileCode = "";
     public ReturnType returnProcess = ReturnType.rtStateList;
     public SimVariable assignVariable = null;
-    private Dictionary<string, bool> stateVarsAdded = new Dictionary<string, bool>();
+    private Dictionary<string, bool> stateVarsAddedPre = new Dictionary<string, bool>();
+    private Dictionary<string, bool> stateVarsAddedPost = new Dictionary<string, bool>();
+
 
     public RunExtAppAct()
       : base("", EnActionType.atRunExtApp)
@@ -1232,7 +1234,7 @@ namespace SimulationDAL
         {
           makeInputFileCompEval.AddVariable(state.Value.name, typeof(bool));
           makeInputFileCompEval.AddVariable(state.Value.name + "_Time", typeof(TimeSpan));
-          stateVarsAdded.Add(state.Value.name, true);
+          stateVarsAddedPre.Add(state.Value.name, true);
         }
       }
 
@@ -1290,10 +1292,16 @@ namespace SimulationDAL
       //add all the states
       foreach (KeyValuePair<int, State> state in lists.allStates)
       {
-        //todo see if there are any variables with the name of the state
-        processOutputFileCompEval.AddVariable(state.Value.name, typeof(bool));
-        processOutputFileCompEval.AddVariable(state.Value.name + "_Time", typeof(TimeSpan));
+        //see if there are any variables with the name of the state && and valid variable name
+        if ((makeInputFileCode.Contains(state.Value.name) || makeInputFileCode.Contains(state.Value.name + "_Time")) &&
+           (state.Value.name.IndexOfAny(new char[] { '*', '&', '#', ' ', '-', '+', '_', '@', '$', '#', '%', ',', ')', '=', '/', '>', '<', '.', ';', '~', '`', '|', '}', '{', ']', '[', '\\' }) == -1))
+        {
+          processOutputFileCompEval.AddVariable(state.Value.name, typeof(bool));
+          processOutputFileCompEval.AddVariable(state.Value.name + "_Time", typeof(TimeSpan));
+          stateVarsAddedPost.Add(state.Value.name, true);
+        }
       }
+      
 
       Type retType = typeof(object);
       switch (returnProcess)
@@ -1386,28 +1394,33 @@ namespace SimulationDAL
       //add if in states
       foreach (KeyValuePair<int, State> state in lists.allStates)
       {
-        if (stateVarsAdded.ContainsKey(state.Value.name))
+        if (stateVarsAddedPre.ContainsKey(state.Value.name))
         {
           TimeSpan stateTime;
           if (curStatesTime.TryGetValue(state.Value.id, out stateTime))
           {
             makeInputFileCompEval.SetVariable(state.Value.name, typeof(bool), true);
             makeInputFileCompEval.SetVariable(state.Value.name + "_Time", typeof(TimeSpan), stateTime);
-            if (processOutputFileCompEval != null)
-            {
-              processOutputFileCompEval.SetVariable(state.Value.name, typeof(bool), true);
-              processOutputFileCompEval.SetVariable(state.Value.name + "_Time", typeof(TimeSpan), stateTime);
-            }
           }
           else
           {
             makeInputFileCompEval.SetVariable(state.Value.name, typeof(bool), false);
             makeInputFileCompEval.SetVariable(state.Value.name + "_Time", typeof(TimeSpan), TimeSpan.FromMilliseconds(0));
-            if (processOutputFileCompEval != null)
-            {
-              processOutputFileCompEval.SetVariable(state.Value.name, typeof(bool), false);
-              processOutputFileCompEval.SetVariable(state.Value.name + "_Time", typeof(TimeSpan), TimeSpan.FromMilliseconds(0));
-            }
+          }
+        }
+
+        if ((processOutputFileCompEval != null) && (stateVarsAddedPost.ContainsKey(state.Value.name)))
+        {
+          TimeSpan stateTime;
+          if (curStatesTime.TryGetValue(state.Value.id, out stateTime))
+          {
+            processOutputFileCompEval.SetVariable(state.Value.name, typeof(bool), true);
+            processOutputFileCompEval.SetVariable(state.Value.name + "_Time", typeof(TimeSpan), stateTime);
+          }
+          else
+          {
+            processOutputFileCompEval.SetVariable(state.Value.name, typeof(bool), false);
+            processOutputFileCompEval.SetVariable(state.Value.name + "_Time", typeof(TimeSpan), TimeSpan.FromMilliseconds(0));
           }
         }
       }
