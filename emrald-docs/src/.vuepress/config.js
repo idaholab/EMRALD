@@ -34,6 +34,7 @@ module.exports = {
     docsDir: '',
     editLinkText: '',
     lastUpdated: false,
+    sidebarDepth: 2,
     nav: [
       {
         text: 'Guide',

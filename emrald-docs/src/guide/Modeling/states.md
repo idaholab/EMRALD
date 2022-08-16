@@ -74,7 +74,7 @@ The CCS_Sys_Failed State Properties window with "False" selected as the Status V
 ## Types of States
 The type of state will be indicated by an icon in the header of the state. Those icons are included in the title of the respective section as well as in the [Icons: States](./icons.md#states) section.
 
-<h3>Start <img src="/images/Modeling/states/green-dot.gif" alt="Start" width="25"/></h3>
+### Start <img src="/images/Modeling/states/green-dot.gif" alt="Start" width="25"/>
 
 Start states are the states the model is in when the simulation begins. There must be at least one but can be more. All start states will be activated simultaneously.<br>
 <div style="width:220px">![Start State](/images/Modeling/states/StartState.png)</div>
@@ -83,13 +83,13 @@ Start states are the states the model is in when the simulation begins. There mu
 A normal state representing no special conditions. It will have no icon in the Header.<br>
 <div style="width:220px">![Standard State](/images/Modeling/states/StandardState.png)</div>
 
-<h3>Key <img src="/images/Modeling/states/key.png" alt="Key" width="25"/></h3>
+### Key <img src="/images/Modeling/states/key.png" alt="Key" width="25"/>
 
 A key state is what is of interest in the model, it will be tracked and reported if the model is in this state at the end of a simulation. In comparison to traditional PRA, all "End Sates" would have a corresponding "Key State." <br>
 <div style="width:220px">![Key State](/images/Modeling/states/KeyState.png)</div>
 
 
-<h3>Terminal <img src="/images/Modeling/states/red-dot.png" alt="Terminal" width="25"/></h3>
+### Terminal <img src="/images/Modeling/states/red-dot.png" alt="Terminal" width="25"/>
 
 A user-defined simulation stopping point. A terminal state is not required but the simulation will run until the end time parameter is reached. However, it is recommend that terminal states be used to end all simulations when desired stop conditions are met for shortened computing time.<br>
 <div style="width:220px">![Terminal State](/images/Modeling/states/TerminalState.png)</div>
