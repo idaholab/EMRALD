@@ -72,8 +72,7 @@ module.exports = {
             'Modeling/solver',
             'Modeling/xmppProtocol',
             'Modeling/backendInfo',   
-            'Modeling/cmdLineOptions',
-            'Modeling/validationCases'
+            'Modeling/cmdLineOptions'
           ]
         }
       ],
