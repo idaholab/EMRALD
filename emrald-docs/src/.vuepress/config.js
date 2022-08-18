@@ -40,6 +40,10 @@ module.exports = {
         link: '/guide/',
       },
       {
+        text: 'Validation Cases',
+        link: '/validation/'
+      },
+      {
         text: 'FAQ',
         link: '/faq/'
       },
@@ -68,10 +72,21 @@ module.exports = {
             'Modeling/solver',
             'Modeling/xmppProtocol',
             'Modeling/backendInfo',   
-            'Modeling/cmdLineOptions',        
+            'Modeling/cmdLineOptions',
+            'Modeling/validationCases'
           ]
         }
       ],
+      '/validation/': [
+        {
+          title: 'Validation Cases',
+          collapsable: false,
+          children: [
+            '',
+            'cases/template'
+          ]
+        }
+      ]
     }
   },
 
