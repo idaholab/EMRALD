@@ -57,7 +57,7 @@ namespace SimulationDAL
       //save initial value for initValue if resetting
       initValue = _value;
     }
-    public void ReInit()
+    public virtual void ReInit()
     {
       this._value = this.initValue;
     }
@@ -660,6 +660,12 @@ namespace SimulationDAL
       return newStr;
     }
 
+    public override void ReInit()
+    {
+      this._value = this.initValue;
+      this._oldLinkStr = ""; //reset so it tires to load as needed
+    }
+
     //params to see if we need to update the value or not on reading data
     protected DateTime _timestamp = DateTime.MinValue; //timestamp of doc file
     protected string _oldLinkStr = ""; //To see if link string has changed 
@@ -824,9 +830,8 @@ namespace SimulationDAL
       //if not changed return the previous value
       DateTime curTimestamp = File.GetCreationTime(_docFullPath);
       string curLinkStr = linkStr();
-      if ((curTimestamp == _timestamp) && (_oldLinkStr == curLinkStr))
+      if ((curTimestamp == _timestamp) && (_oldLinkStr == curLinkStr) && (_value != null))
         return this._value;
-
 
       //value new so save timestamp and lookup new value
       _timestamp = File.GetCreationTime(_docFullPath);
@@ -941,7 +946,7 @@ namespace SimulationDAL
       //if not changed return the previous value
       DateTime curTimestamp = File.GetCreationTime(_docFullPath);
       string curLinkStr = linkStr();
-      if ((curTimestamp == _timestamp) && (_oldLinkStr == curLinkStr))
+      if ((curTimestamp == _timestamp) && (_oldLinkStr == curLinkStr) && (_value != null))
         return this._value;
 
 
@@ -1117,7 +1122,7 @@ namespace SimulationDAL
       //if not changed return the previous value
       DateTime curTimestamp = File.GetCreationTime(_docFullPath);
       string curLinkStr = linkStr();
-      if ((curTimestamp == _timestamp) && (_oldLinkStr == curLinkStr))
+      if ((curTimestamp == _timestamp) && (_oldLinkStr == curLinkStr) && (_value != null))
         return this._value;
 
 
