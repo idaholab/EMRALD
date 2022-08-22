@@ -774,6 +774,11 @@ namespace SimulationDAL
           throw new Exception("RedoNextTime not implemented for " + onVarChange.ToString());
       }
     }
+
+    public virtual bool UsesVariables()
+    {
+      return false;
+    }
   }
 
   public class TimerEvent : TimeBasedEvent //etTimer
@@ -932,6 +937,11 @@ namespace SimulationDAL
       //if not "ocAdjust" call parent as they are all the same.
       return base.RedoNextTime(sampledTime, curTime, oldOccurTime);
     }
+
+    public override bool UsesVariables()
+    {
+      return timeVariable != null;
+    }
   }
 
   public class NowTimerEvent : TimerEvent
@@ -961,7 +971,7 @@ namespace SimulationDAL
     public TimeSpan timeRate = TimeSpan.FromDays(365.25);
     public TimeSpan compMissionTime = TimeSpan.FromHours(24);
     protected SimVariable lambdaVariable = null;
-
+    
     protected override EnEventType GetEvType() { return EnEventType.etFailRate; }
 
     public FailProbEvent() : base("") { }
@@ -1145,6 +1155,10 @@ namespace SimulationDAL
 
       //if not "ocAdjust" call parent as they are all the same.
       return base.RedoNextTime(sampledTime, curTime, oldOccurTime);
+    }
+    public override bool UsesVariables()
+    {
+      return lambdaVariable != null;
     }
   }
 
@@ -1433,6 +1447,11 @@ namespace SimulationDAL
 
       //if not "ocAdjust" call parent as they are all the same.
       return base.RedoNextTime(sampledTime, curTime, oldOccurTime);
+    }
+
+    public override bool UsesVariables()
+    {
+      return ((vars == null) && (vars.Count > 0));
     }
   }
 
