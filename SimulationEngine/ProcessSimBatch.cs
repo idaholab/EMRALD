@@ -380,6 +380,11 @@ namespace SimulationEngine
      
         string output = JsonConvert.SerializeObject(resultObj, Formatting.Indented);
         File.WriteAllText(_jsonResultPaths, output);
+        /*
+        File.WriteAllText(Path.Combine(Path.GetDirectoryName(_jsonResultPaths), @"sankeyData.js"), @"window.data=" + output);
+        File.WriteAllText(Path.Combine(Path.GetDirectoryName(_jsonResultPaths), @"sankeyDiagram.html"), @"");
+        File.WriteAllText(Path.Combine(Path.GetDirectoryName(_jsonResultPaths), @"sankeyDiagram.js"), @"");
+        */
       }
       batchSuccess = retVal;
     }
