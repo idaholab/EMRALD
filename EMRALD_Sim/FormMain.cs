@@ -1033,7 +1033,8 @@ namespace EMRALD_Sim
 
     private void button4_Click(object sender, EventArgs e)
     {
-      System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(Path.Combine(Path.GetDirectoryName(this.tbSavePath2.Text), @"sankeyDiagram.html")) { UseShellExecute = true });
+      string tempLoc = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\\EMRALD_SANKEY\\";
+      System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(Path.Combine(tempLoc, @"emrald-sankey-timeline.html")) { UseShellExecute = true });
     }
 
     private void saveFileDialog1_FileOk(object sender, CancelEventArgs e)
