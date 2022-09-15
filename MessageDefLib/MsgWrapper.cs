@@ -59,15 +59,22 @@ namespace MessageDefLib
 
   public class SimInfo
   {
-    public SimInfo(string inModel, TimeSpan inEndTime, string inConfigData)
+    public SimInfo(string inModel, TimeSpan inEndTime, string inConfigData, int seed, int numRuns, int curRun)
     {
       model = inModel;
       configData = inConfigData;
       endTime = inEndTime;
+      this.seed = seed;
+      this.numRuns = numRuns;
+      this.curRun = curRun;
+
     }
 
     public string model { get; set; } //reference to the model to run. Name, path, etc.
     public TimeSpan endTime { get; set; } //time in global run time of when to end the simulation
+    public int seed { get; set; } //optional random seed from to start with
+    public int numRuns { get; set; } //planned number of runs 
+    public int curRun { get; set; }
     public string configData { get; set; } //any additional information required by the client to setup run. Set by the user in the controller or EMRALD model.
   }
 
@@ -96,6 +103,7 @@ namespace MessageDefLib
       simInfo = null;
       itemData = compModData;
       time = actTime;
+
     }
 
     public SimActionType actType { get; set; } //type of action to be taken by child simulation

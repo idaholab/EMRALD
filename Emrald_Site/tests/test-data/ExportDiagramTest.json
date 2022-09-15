@@ -1,0 +1,187 @@
+{
+  "id": 0,
+  "name": "ExportDiagramTest",
+  "desc": "",
+  "version": 1.2,
+  "DiagramList": [
+    {
+      "Diagram": {
+        "id": 1,
+        "name": "Main",
+        "desc": "",
+        "diagramType": "dtPlant",
+        "diagramTemplate": "",
+        "diagramLabel": "Plant",
+        "states": [
+          "State1",
+          "State2"
+        ]
+      }
+    },
+    {
+      "Diagram": {
+        "id": 2,
+        "name": "TemplateDiagram",
+        "desc": "",
+        "diagramType": "dtComponent",
+        "diagramTemplate": "",
+        "diagramLabel": "Component",
+        "states": [
+          "State3"
+        ],
+        "singleStates": []
+      }
+    },
+    {
+      "Diagram": {
+        "id": 3,
+        "name": "LogicComponent",
+        "desc": "",
+        "diagramType": "dtComponent",
+        "diagramTemplate": "",
+        "diagramLabel": "Component",
+        "states": [],
+        "singleStates": []
+      }
+    }
+  ],
+  "StateList": [
+    {
+      "State": {
+        "id": 1,
+        "name": "State1",
+        "desc": "",
+        "stateType": "stStandard",
+        "diagramName": "Main",
+        "immediateActions": [],
+        "events": [
+          "VarCondEvent"
+        ],
+        "eventActions": [
+          {
+            "actions": [
+              "Goto_State2"
+            ],
+            "moveFromCurrent": false
+          }
+        ],
+        "geometry": "{ x: 199.9027862548828, y: 79.72222900390625, width: 200, height: 130}"
+      }
+    },
+    {
+      "State": {
+        "id": 2,
+        "name": "State2",
+        "desc": "",
+        "stateType": "stStandard",
+        "diagramName": "Main",
+        "immediateActions": [],
+        "events": [],
+        "eventActions": [],
+        "geometry": "{ x: 525.90283203125, y: 254.72222900390625, width: 200, height: 80}"
+      }
+    },
+    {
+      "State": {
+        "id": 3,
+        "name": "State3",
+        "desc": "",
+        "stateType": "stStandard",
+        "diagramName": "TemplateDiagram",
+        "immediateActions": [],
+        "events": [
+          "new event"
+        ],
+        "eventActions": [
+          {
+            "actions": [],
+            "moveFromCurrent": false
+          }
+        ],
+        "geometry": "{ x: 330.232666015625, y: 310.1632080078125, width: 200, height: 110}"
+      }
+    }
+  ],
+  "ActionList": [
+    {
+      "Action": {
+        "id": 1,
+        "name": "Goto_State2",
+        "desc": "",
+        "actType": "atTransition",
+        "mainItem": false,
+        "mutExcl": true,
+        "newStates": [
+          {
+            "toState": "State2",
+            "prob": -1,
+            "failDesc": ""
+          }
+        ],
+        "itemId": 2
+      }
+    }
+  ],
+  "EventList": [
+    {
+      "Event": {
+        "id": 1,
+        "name": "VarCondEvent",
+        "desc": "",
+        "mainItem": false,
+        "evType": "etVarCond",
+        "allItems": true,
+        "triggerStates": [],
+        "moveFromCurrent": false,
+        "varNames": [
+          "Int_"
+        ],
+        "code": "return Int_ == 0;"
+      }
+    },
+    {
+      "Event": {
+        "id": 2,
+        "name": "new event",
+        "desc": "",
+        "mainItem": false,
+        "evType": "etComponentLogic",
+        "allItems": true,
+        "triggerStates": [],
+        "moveFromCurrent": false,
+        "varNames": [],
+        "onSuccess": false,
+        "logicTop": "LogicTree1"
+      }
+    }
+  ],
+  "LogicNodeList": [
+    {
+      "LogicNode": {
+        "id": 1,
+        "name": "LogicTree1",
+        "desc": "",
+        "gateType": "gtAnd",
+        "rootName": "LogicTree1",
+        "compChildren": [
+          "LogicComponent"
+        ],
+        "gateChildren": []
+      }
+    }
+  ],
+  "VariableList": [
+    {
+      "Variable": {
+        "id": 1,
+        "name": "Int_",
+        "desc": "",
+        "varScope": "gtGlobal",
+        "value": 0,
+        "resetOnRuns": true,
+        "type": "int"
+      }
+    }
+  ],
+  "templates": []
+}

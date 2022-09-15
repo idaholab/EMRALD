@@ -47,7 +47,9 @@ namespace SimulationDAL
     public Dictionary<int, List<AccrualVariable>> AccrualVars = new Dictionary<int, List<AccrualVariable>>();
     public string rootPath = "";
 
-    public int dbID = 0;
+    //public int dbID = 0;
+    public int curRunIdx = 0; //current run index.
+    public int totRunsReq = 0; //total runs requested
     
     //public Dictionary<int, Formula> allFormulas = new Dictionary<int, Formula>();
     //public Diagram curDiagram { get { return _Diagram; } set { _Diagram = value; } }
@@ -121,6 +123,7 @@ namespace SimulationDAL
 
     public bool DeserializeJSON(string jsonModel, string modelPath) 
     {
+      SingleNextIDs.Instance.Reset();
       this.rootPath = modelPath;
       dynamic jsonObj = JsonConvert.DeserializeObject(jsonModel); 
       return DeserializeDerived(jsonObj, true, this, false);

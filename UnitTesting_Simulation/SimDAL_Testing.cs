@@ -23,7 +23,8 @@ using JsonDiffPatchDotNet;
 
 namespace UnitTesting_Simulation
 {
-
+  // Do not run multiple test classes in parallel, as it can cause some tests to fail: https://tsuyoshiushio.medium.com/controlling-the-serial-and-parallel-test-on-xunit-6174326da196
+  [Collection("Serial")]
   //construct each of the types of model objects from JSON and then get the JSON back and compare.
   public class SimDAL_Testing
   {
@@ -51,6 +52,9 @@ namespace UnitTesting_Simulation
 
     private void SetupTheTest(string testName, EmraldModel model = null)
     {
+      // Reset IDs and the random number generator so tests don't fail when run together
+      SingleNextIDs.Instance.ResetAllIDs();
+      SingleRandom.Reset();
       // set up the random number generator so it starts with the same key each time.
       ConfigData.seed = 0;
       if (model != null)
@@ -189,7 +193,7 @@ namespace UnitTesting_Simulation
 
       //Is there a way to easily test the triggering of the event 
       //test for true
-      TimeSpan s = ev.NextTime();
+      TimeSpan s = ev.NextTime(TimeSpan.FromSeconds(0));
       Assert.True(s.TotalMilliseconds == 77730.9248);
       //test for false
       //Assert.False(ev.EventTriggered());
@@ -223,7 +227,7 @@ namespace UnitTesting_Simulation
 
       //Is there a way to easily test the triggering of the event 
       //test for true
-      TimeSpan s = ev.NextTime();
+      TimeSpan s = ev.NextTime(TimeSpan.FromSeconds(0));
       Assert.True((s.TotalMilliseconds - 60000) < 1);
       //test for false
       //Assert.False(ev.EventTriggered());
@@ -234,7 +238,7 @@ namespace UnitTesting_Simulation
       string retJsonStr = ev.GetJSON(true, mainModel);
       Assert.True(CompareJSON(retJsonStr, jsonModel));
     }
-    
+
     [Fact]
     public void VarCondEventTest()
     {
@@ -290,7 +294,7 @@ namespace UnitTesting_Simulation
 
       //Is there a way to easily test the triggering of the event 
       //test for true
-      TimeSpan s = ev.NextTime();
+      TimeSpan s = ev.NextTime(TimeSpan.FromSeconds(0));
       Assert.True(s.TotalMilliseconds == 2303065.7113);
       //test for false
       //Assert.False(ev.EventTriggered());
@@ -325,7 +329,7 @@ namespace UnitTesting_Simulation
 
       //Is there a way to easily test the triggering of the event 
       //test for true
-      Assert.True(ev.NextTime().TotalMilliseconds == 45286473.5153);
+      Assert.True(ev.NextTime(TimeSpan.FromSeconds(0)).TotalMilliseconds == 45286473.5153);
       //test for false
       //Assert.False(ev.EventTriggered());
 
@@ -398,7 +402,7 @@ namespace UnitTesting_Simulation
 
       //Is there a way to easily test the triggering of the event 
       //test for true
-      TimeSpan s = ev.NextTime();
+      TimeSpan s = ev.NextTime(TimeSpan.FromSeconds(0));
       Assert.True(s.TotalMilliseconds == 1151532.8556);
       //test for false
       //Assert.False(ev.EventTriggered());
@@ -434,7 +438,7 @@ namespace UnitTesting_Simulation
 
       //Is there a way to easily test the triggering of the event 
       //test for true
-      Assert.True(ev.NextTime().TotalMilliseconds == 29869832.9832);
+      Assert.True(ev.NextTime(TimeSpan.FromSeconds(0)).TotalMilliseconds == 29869832.9832);
       //test for false
       //Assert.False(ev.EventTriggered());
 
@@ -1092,6 +1096,8 @@ namespace UnitTesting_Simulation
       string retJsonStr = var.GetJSON(true, mainModel);
       Assert.True(CompareJSON(retJsonStr, jsonModel));
     }
+
+
 
   }
 }
