@@ -9,6 +9,7 @@ using System.Collections.ObjectModel;
 using MathNet.Numerics.Distributions;
 using MessageDefLib;
 using Newtonsoft.Json;
+using System.Linq;
 
 namespace SimulationDAL
 {
@@ -121,7 +122,9 @@ namespace SimulationDAL
     //protected override EnModifiableTypes GetModType() { return EnModifiableTypes.mtState; }
     public bool ifInState = true;
     public bool allItems = false;
-    public bool evalCurOnInitial = true; //triggered if "Enter States" are in the current state list on first evaluation
+    public bool evalCurOnInitial = true; //triggered if "Enter/Exit States" are in the current state list on first evaluation
+    //public int prevCngMatch =0; //items that were prevoiusly entered or exited as needed for trigger, decrimented if no valid anymore.
+    public MyBitArray initialItems = null;
 
     protected override EnEventType GetEvType() { return EnEventType.etStateCng; }
 
@@ -247,38 +250,74 @@ namespace SimulationDAL
       ChangedIDs changedItems = (ChangedIDs)otherData;
       int matchCnt = 0;
 
-      foreach (int i in _relatedIDs)
+      //mark all initial items if to be used
+      if ((initialItems == null) && evalCurOnInitial)
       {
-        if ((changedItems.HasItem(EnModifiableTypes.mtState, i)))
+        initialItems = new MyBitArray(_relatedIDs.Max(t => t) +1);
+        foreach (int i in _relatedIDs)
         {
-          if ((curStates.Count > i) && (curStates[i])) //desired state is in current list
+          if (ifInState) //want to be in state/s
           {
-            if (ifInState) //We are looking for an item in the list to trigger us       
+            if ((curStates.Count > i) && (curStates[i])) //desired state is in current list 
             {
-              ++matchCnt;
-            }
-            else //don't want the item in order to trigger us but we found it
-            {
-              if (allItems) //only one item needed to not trigger.
-                return false;
+              initialItems.Set(i, true);
             }
           }
-          else //desired state is not in current list
+          else //don't want to be in state/s
           {
-            if (ifInState) //We are looking for an item in the list to trigger us       
+            if ((curStates.Count <= i) || (!curStates[i])) //desired not in state is current list 
             {
-              if (allItems) //must have all items for a trigger needed.
-                return false;
-            }
-            else //don't want the item in order to trigger and we didn't find it
-            {
-              ++matchCnt;
+              initialItems.Set(i, true);
             }
           }
         }
+      }
 
-        if (!allItems && (matchCnt > 0)) //only need one so return
-          return true;
+      if (ifInState) //We are looking for an item in the list to trigger us       
+      {
+        foreach (int i in _relatedIDs)
+        {
+          if ((curStates.Count > i) && (curStates[i])) //desired state is in current list
+          {
+            ++matchCnt;
+          }
+          else if (evalCurOnInitial && initialItems[i]) //if started out in the desired condition
+          {
+            ++matchCnt;
+          }
+          else if (allItems) //not there and we need all so short circuit and return
+          {
+            return false;
+          }
+
+          if(!allItems && matchCnt > 0) //only need one so short circuit and return
+          {
+            return true;
+          }
+        }
+      }
+      else //Don't want to be in the specified states
+      {
+        foreach (int i in _relatedIDs)
+        {
+          if ((curStates.Count >= i) || (!curStates[i])) //desired state is not in current list, which is what is needed
+          {
+            ++matchCnt;
+          }
+          else if (evalCurOnInitial && initialItems[i]) //if started out in the desired condition
+          {
+            ++matchCnt;
+          }
+          else if (allItems) //not there and we need all so short circuit and return
+          {
+            return false;
+          }
+
+          if (!allItems && matchCnt > 0) //only need one so short circuit and return
+          {
+            return true;
+          }
+        }
       }
 
       //if we didn't kick out early then we went through all the items and we need to have found all of them in order to return true..
