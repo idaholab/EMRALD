@@ -122,20 +122,17 @@ namespace SimulationDAL
     //protected override EnModifiableTypes GetModType() { return EnModifiableTypes.mtState; }
     public bool ifInState = true;
     public bool allItems = false;
-    public bool evalCurOnInitial = true; //triggered if "Enter/Exit States" are in the current state list on first evaluation
-    //public int prevCngMatch =0; //items that were prevoiusly entered or exited as needed for trigger, decrimented if no valid anymore.
     public MyBitArray initialItems = null;
 
     protected override EnEventType GetEvType() { return EnEventType.etStateCng; }
 
     public StateCngEvent() : base("") { }
 
-    public StateCngEvent(string inName, bool inIfInState, bool inAllItems = true, List<int> inStates = null, bool evalCurOnInitial = true)
+    public StateCngEvent(string inName, bool inIfInState, bool inAllItems = true, List<int> inStates = null)
       : base(inName)
     {
       this.ifInState = inIfInState;
       this.allItems = inAllItems;
-      this.evalCurOnInitial = evalCurOnInitial;
 
       if (inStates != null)
       {
@@ -147,8 +144,7 @@ namespace SimulationDAL
     {
 
       string retStr = "\"ifInState\":\"" + this.ifInState.ToString().ToLower() + "\"," + Environment.NewLine +
-                      "\"allItems\":\"" + this.allItems.ToString().ToLower() + "\"," + Environment.NewLine +
-                      "\"evalCurOnInitial\":\"" + evalCurOnInitial.ToString() + "\"";
+                      "\"allItems\":\"" + this.allItems.ToString().ToLower() + "\"";
 
       retStr = retStr + "," + Environment.NewLine + "\"triggerStates\": [";
 
@@ -187,11 +183,7 @@ namespace SimulationDAL
 
       this.ifInState = Convert.ToBoolean(dynObj.ifInState);
       this.allItems = Convert.ToBoolean(dynObj.allItems);
-      if (dynObj.evalCurOnInitial != null)
-      {
-        evalCurOnInitial = Convert.ToBoolean(dynObj.evalCurOnInitial);
-      }
-
+      
       //Now Done in LoadOBjLinks()
       ////load the Trigger States.
       //if (dynObj.triggerStates != null)
@@ -247,31 +239,7 @@ namespace SimulationDAL
 
     public override bool EventTriggered(MyBitArray curStates, object otherData, TimeSpan curSimTime, TimeSpan start3DTime, TimeSpan nextEvTime, int runIdx)
     {
-      ChangedIDs changedItems = (ChangedIDs)otherData;
       int matchCnt = 0;
-
-      //mark all initial items if to be used
-      if ((initialItems == null) && evalCurOnInitial)
-      {
-        initialItems = new MyBitArray(_relatedIDs.Max(t => t) +1);
-        foreach (int i in _relatedIDs)
-        {
-          if (ifInState) //want to be in state/s
-          {
-            if ((curStates.Count > i) && (curStates[i])) //desired state is in current list 
-            {
-              initialItems.Set(i, true);
-            }
-          }
-          else //don't want to be in state/s
-          {
-            if ((curStates.Count <= i) || (!curStates[i])) //desired not in state is current list 
-            {
-              initialItems.Set(i, true);
-            }
-          }
-        }
-      }
 
       if (ifInState) //We are looking for an item in the list to trigger us       
       {
@@ -280,12 +248,7 @@ namespace SimulationDAL
           if ((curStates.Count > i) && (curStates[i])) //desired state is in current list
           {
             ++matchCnt;
-          }
-          else if (evalCurOnInitial && initialItems[i]) //if started out in the desired condition
-          {
-            ++matchCnt;
-          }
-          else if (allItems) //not there and we need all so short circuit and return
+          }else if (allItems) //not there and we need all so short circuit and return
           {
             return false;
           }
@@ -301,10 +264,6 @@ namespace SimulationDAL
         foreach (int i in _relatedIDs)
         {
           if ((curStates.Count >= i) || (!curStates[i])) //desired state is not in current list, which is what is needed
-          {
-            ++matchCnt;
-          }
-          else if (evalCurOnInitial && initialItems[i]) //if started out in the desired condition
           {
             ++matchCnt;
           }
