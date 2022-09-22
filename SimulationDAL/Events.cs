@@ -17,11 +17,13 @@ namespace SimulationDAL
   public abstract class Event : BaseObjInfo
   {
     protected List<int> _relatedIDs = new List<int>(); //IDs of items used to evaluate this event. 
+    protected MyBitArray _relatedIDsBitSet = null;
     public bool mainItem = false;
     //protected virtual EnModifiableTypes GetModType() { return EnModifiableTypes.mtNone; }
 
     public ReadOnlyCollection<int> relatedIDs { get { return _relatedIDs.AsReadOnly(); } }
     //public EnModifiableTypes modType { get { return GetModType(); } }
+    public MyBitArray relatedIDsBitSet { get { return _relatedIDsBitSet; } }
 
     protected abstract EnEventType GetEvType();
     public EnEventType evType { get { return GetEvType(); } }
@@ -45,6 +47,21 @@ namespace SimulationDAL
     {
       foreach (int id in itemIDs)
         AddRelatedItem(id);
+    }
+
+    /// <summary>
+    /// Call when done adding related items so a bitset of the IDs can be made.
+    /// </summary>
+    public void DoneAddingRelatedItems()
+    {
+      if (_relatedIDs.Count > 0)
+      {
+        _relatedIDsBitSet = new MyBitArray(_relatedIDs.Max()+1);
+        for (int i = 0; i < this.relatedIDs.Count(); ++i)
+        {
+          relatedIDsBitSet[_relatedIDs[i]] = true;
+        }
+      }
     }
 
     public abstract string GetDerivedJSON(EmraldModel lists);
@@ -122,8 +139,7 @@ namespace SimulationDAL
     //protected override EnModifiableTypes GetModType() { return EnModifiableTypes.mtState; }
     public bool ifInState = true;
     public bool allItems = false;
-    public MyBitArray initialItems = null;
-
+    
     protected override EnEventType GetEvType() { return EnEventType.etStateCng; }
 
     public StateCngEvent() : base("") { }
@@ -239,48 +255,22 @@ namespace SimulationDAL
 
     public override bool EventTriggered(MyBitArray curStates, object otherData, TimeSpan curSimTime, TimeSpan start3DTime, TimeSpan nextEvTime, int runIdx)
     {
-      int matchCnt = 0;
-
+      //do a bitset comparison of curStates and related items
+      if(_relatedIDsBitSet.Length < curStates.Length)
+        _relatedIDsBitSet.Length = curStates.Length;
+            
+      MyBitArray both = _relatedIDsBitSet.And(curStates);
+      
       if (ifInState) //We are looking for an item in the list to trigger us       
       {
-        foreach (int i in _relatedIDs)
-        {
-          if ((curStates.Count > i) && (curStates[i])) //desired state is in current list
-          {
-            ++matchCnt;
-          }else if (allItems) //not there and we need all so short circuit and return
-          {
-            return false;
-          }
-
-          if(!allItems && matchCnt > 0) //only need one so short circuit and return
-          {
-            return true;
-          }
-        }
+        //curStates must contain all of the items in relatedIDs
+        return (both.BitCount() == _relatedIDsBitSet.BitCount());
       }
       else //Don't want to be in the specified states
       {
-        foreach (int i in _relatedIDs)
-        {
-          if ((curStates.Count >= i) || (!curStates[i])) //desired state is not in current list, which is what is needed
-          {
-            ++matchCnt;
-          }
-          else if (allItems) //not there and we need all so short circuit and return
-          {
-            return false;
-          }
-
-          if (!allItems && matchCnt > 0) //only need one so short circuit and return
-          {
-            return true;
-          }
-        }
+        //curStates must contain none of the items in relatedIDs
+        return (both.BitCount() > 0);
       }
-
-      //if we didn't kick out early then we went through all the items and we need to have found all of them in order to return true..
-      return matchCnt == _relatedIDs.Count;
     }
 
     public override void LookupRelatedItems(EmraldModel all, EmraldModel addToList)
@@ -1966,6 +1956,8 @@ namespace SimulationDAL
 
             if (!curItem.LoadObjLinks((object)item, false, lists))
               throw new Exception("Failed to deserialize Action List JSON");
+            
+            curItem.DoneAddingRelatedItems();
           }
           catch (Exception e)
           {

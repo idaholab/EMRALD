@@ -59,23 +59,9 @@ namespace SimulationTracking
   {
     public ConditionMoveEvent(String name, EventStatesAndActions inStEvID, Event inEventData)
       : base(name, inStEvID, inEventData)
-    {
-      //if (inEventData.relatedIDs.Count == 0)
-      //{
-      //  MessageBox.Show("No Related IDs for " + inEventData.name);
-      //  return;
-      //}
-      if (inEventData.relatedIDs.Count > 0)
-      {
-        this.relatedIDs = new MyBitArray(inEventData.relatedIDs.Max() + 1);
-        for (int i = 0; i < inEventData.relatedIDs.Count(); ++i)
-        {
-          relatedIDs[inEventData.relatedIDs[i]] = true;
-        }
-      }
-    }
+    {}
 
-    public MyBitArray relatedIDs;
+    //placeholder for any extra info for condition events;
   }
 
 
@@ -225,7 +211,7 @@ namespace SimulationTracking
                 retList.Add(item);
               }
               else if ((curIDType == EnModifiableTypes.mtState) &&
-                  (curStatesBS.HasCommonBits(item.relatedIDs) || !(item.eventData as StateCngEvent).ifInState) && //in cur states or not wanting in current states
+                  (curStatesBS.HasCommonBits(item.eventData.relatedIDsBitSet) || !(item.eventData as StateCngEvent).ifInState) && //in cur states or not wanting in current states
                   (item.eventData as CondBasedEvent).EventTriggered(curStatesBS, otherData, curTime, start3DTime, nextEvTime, runIdx))
               {
                 retList.Add(item);
@@ -233,7 +219,7 @@ namespace SimulationTracking
               initialCondEvalDone.Remove(item);
             }
 
-            else if ((item.relatedIDs != null) && (changedItems.HasApplicableItems(curIDType, item.relatedIDs)) &&
+            else if ((item.eventData.relatedIDsBitSet != null) && (changedItems.HasApplicableItems(curIDType, item.eventData.relatedIDsBitSet)) &&
                ((item.eventData as CondBasedEvent).EventTriggered(curStatesBS, otherData, curTime, start3DTime, nextEvTime, runIdx)))
             {
               retList.Add(item);
