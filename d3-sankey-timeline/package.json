@@ -6,8 +6,7 @@
   "packageManager": "yarn@3.2.1",
   "scripts": {
     "test": "node .yarn/releases/yarn-3.2.1.cjs jest",
-    "build": "node .yarn/releases/yarn-3.2.1.cjs webpack",
-    "build:emrald": "yarn webpack --config ./emrald.config.js"
+    "build": "yarn webpack --config ./emrald.config.js"
   },
   "repository": {
     "type": "git",
@@ -40,6 +39,7 @@
     "@typescript-eslint/eslint-plugin": "^5.28.0",
     "@typescript-eslint/parser": "^5.28.0",
     "babel-loader": "^8.2.5",
+    "copy-webpack-plugin": "^11.0.0",
     "eslint": "^7.24.0",
     "eslint-config-airbnb-typescript": "^17.0.0",
     "eslint-plugin-import": "^2.26.0",

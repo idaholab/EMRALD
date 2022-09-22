@@ -5,7 +5,7 @@ const path = require('path');
 
 module.exports = frontend(
   path.resolve(__dirname, 'src', 'index.ts'),
-  path.resolve(__dirname, 'dist'),
+  path.resolve(__dirname, '..', 'EMRALD_Sim', 'dist'),
   {
     output: {
       library: 'sankeyTimeline',

@@ -388,8 +388,8 @@ namespace SimulationEngine
           Directory.CreateDirectory(tempLoc);
         } catch {}
         File.WriteAllText(Path.Combine(tempLoc, @"data.js"), @"window.data=" + output);
-        File.Copy(@"./d3-sankey-timeline/emrald-sankey-timeline.html", Path.Combine(tempLoc, @"emrald-sankey-timeline.html"));
-        File.Copy(@"./d3-sankey-timeline/dist/emrald-sankey-timeline.js", Path.Combine(tempLoc, @"emrald-sankey-timeline.js"));
+        File.Copy(@"./sankey/emrald-sankey-timeline.html", Path.Combine(tempLoc, @"emrald-sankey-timeline.html"));
+        File.Copy(@"./sankey/emrald-sankey-timeline.js", Path.Combine(tempLoc, @"emrald-sankey-timeline.js"));
       }
       batchSuccess = retVal;
     }
