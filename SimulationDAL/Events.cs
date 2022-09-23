@@ -59,7 +59,7 @@ namespace SimulationDAL
         _relatedIDsBitSet = new MyBitArray(_relatedIDs.Max()+1);
         for (int i = 0; i < this.relatedIDs.Count(); ++i)
         {
-          relatedIDsBitSet[_relatedIDs[i]] = true;
+          _relatedIDsBitSet[_relatedIDs[i]] = true;
         }
       }
     }
@@ -258,8 +258,9 @@ namespace SimulationDAL
       //do a bitset comparison of curStates and related items
       if(_relatedIDsBitSet.Length < curStates.Length)
         _relatedIDsBitSet.Length = curStates.Length;
-            
-      MyBitArray both = _relatedIDsBitSet.And(curStates);
+
+      MyBitArray both = new MyBitArray(_relatedIDsBitSet);
+      both.And(curStates);
       
       if (ifInState) //We are looking for an item in the list to trigger us       
       {
@@ -269,7 +270,7 @@ namespace SimulationDAL
       else //Don't want to be in the specified states
       {
         //curStates must contain none of the items in relatedIDs
-        return (both.BitCount() > 0);
+        return (both.BitCount() == 0);
       }
     }
 

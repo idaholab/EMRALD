@@ -2,6 +2,7 @@
   "id": 0,
   "name": "EventsTest",
   "desc": "",
+  "version": 1.2,
   "DiagramList": [
     {
       "Diagram": {
@@ -35,16 +36,9 @@
           "Goto_StCng"
         ],
         "events": [
-          "MoveOutDetected",
           "StateCng"
         ],
         "eventActions": [
-          {
-            "actions": [
-              "Goto_MoveOutDetected"
-            ],
-            "moveFromCurrent": false
-          },
           {
             "moveFromCurrent": false,
             "actions": [
@@ -52,7 +46,7 @@
             ]
           }
         ],
-        "geometry": "{ x: 120, y: 80, width: 200, height: 190}"
+        "geometry": "{ x: 120, y: 80, width: 200, height: 150}"
       }
     },
     {
@@ -107,9 +101,18 @@
         "stateType": "stKeyState",
         "diagramName": "Main",
         "immediateActions": [],
-        "events": [],
-        "eventActions": [],
-        "geometry": "{ x: 40, y: 340, width: 200, height: 80}"
+        "events": [
+          "MoveOutDetected"
+        ],
+        "eventActions": [
+          {
+            "actions": [
+              "Goto_MoveOutDetected"
+            ],
+            "moveFromCurrent": false
+          }
+        ],
+        "geometry": "{ x: 40, y: 340, width: 200, height: 130}"
       }
     },
     {
@@ -144,7 +147,7 @@
         "immediateActions": [],
         "events": [],
         "eventActions": [],
-        "geometry": "{ x: 180, y: 450, width: 200, height: 80}"
+        "geometry": "{ x: 200, y: 550, width: 200, height: 80}"
       }
     },
     {
@@ -168,7 +171,7 @@
         "name": "Goto_StCng",
         "desc": "",
         "actType": "atTransition",
-        "mainItem": "False",
+        "mainItem": false,
         "mutExcl": "True",
         "newStates": [
           {
@@ -186,7 +189,7 @@
         "name": "Goto_MovedTo",
         "desc": "",
         "actType": "atTransition",
-        "mainItem": "False",
+        "mainItem": false,
         "mutExcl": "True",
         "newStates": [
           {
@@ -204,7 +207,7 @@
         "name": "Goto_MoveInDetected",
         "desc": "",
         "actType": "atTransition",
-        "mainItem": "False",
+        "mainItem": false,
         "mutExcl": "True",
         "newStates": [
           {
@@ -223,7 +226,7 @@
         "name": "Goto_MovedOut",
         "desc": "",
         "actType": "atTransition",
-        "mainItem": "False",
+        "mainItem": false,
         "mutExcl": "True",
         "newStates": [
           {
@@ -241,7 +244,7 @@
         "name": "Goto_MoveOutDetected",
         "desc": "",
         "actType": "atTransition",
-        "mainItem": "False",
+        "mainItem": false,
         "mutExcl": "True",
         "newStates": [
           {
@@ -259,7 +262,7 @@
         "name": "Goto_Terminate",
         "desc": "",
         "actType": "atTransition",
-        "mainItem": "False",
+        "mainItem": false,
         "mutExcl": "True",
         "newStates": [
           {
@@ -278,7 +281,7 @@
         "id": 1,
         "name": "FiveMin",
         "desc": "",
-        "mainItem": "False",
+        "mainItem": false,
         "evType": "etTimer",
         "allItems": true,
         "triggerStates": [],
@@ -293,14 +296,13 @@
         "id": 1,
         "name": "FiveMin2",
         "desc": "",
-        "mainItem": "False",
+        "mainItem": false,
         "evType": "etTimer",
         "allItems": true,
         "triggerStates": [],
         "moveFromCurrent": true,
         "varNames": [],
-        "time": "PT5M",
-        "tempVariableList": []
+        "time": "PT5M"
       }
     },
     {
@@ -308,7 +310,7 @@
         "id": 1,
         "name": "FiveMin3",
         "desc": "",
-        "mainItem": "False",
+        "mainItem": false,
         "evType": "etTimer",
         "allItems": true,
         "triggerStates": [],
@@ -323,7 +325,7 @@
         "id": 2,
         "name": "StateCng",
         "desc": "",
-        "mainItem": "False",
+        "mainItem": false,
         "evType": "etStateCng",
         "allItems": true,
         "triggerStates": [
@@ -339,7 +341,7 @@
         "id": 3,
         "name": "MoveOutDetected",
         "desc": "",
-        "mainItem": "False",
+        "mainItem": false,
         "evType": "etStateCng",
         "allItems": true,
         "triggerStates": [
@@ -352,5 +354,6 @@
     }
   ],
   "LogicNodeList": [],
-  "VariableList": []
+  "VariableList": [],
+  "templates": []
 }

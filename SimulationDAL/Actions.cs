@@ -934,7 +934,7 @@ namespace SimulationDAL
         }
       }
 
-      scriptRunner.AddVariable("outputFile", typeof(string));
+      scriptRunner.AddVariable("OutputFile", typeof(string));
 
       //add all the states
       foreach (KeyValuePair<int, State> state in lists.allStates)
@@ -1279,7 +1279,7 @@ namespace SimulationDAL
         }
       }
 
-      processOutputFileCompEval.AddVariable("outputFile", typeof(string));
+      processOutputFileCompEval.AddVariable("OutputFile", typeof(string));
 
       //add all the states
       foreach (KeyValuePair<int, State> state in lists.allStates)
