@@ -250,10 +250,6 @@ function OnLoad(dataObj) {
                 case "etStateCng":
                     scope.data.isInState = eventData.ifInState;
                     scope.data.isAllItems = eventData.allItems;
-                    scope.data.evalCurOnInitial = eventData.evalCurOnInitial;
-                    if (typeof eventData.evalCurOnInitial !== 'boolean') {
-                        scope.data.evalCurOnInitial = true;
-                    }
                     scope.data.states = deepClone(eventData.triggerStates);
                     opTypeEl.selectedIndex = 1;
                     break;
@@ -342,7 +338,6 @@ function GetDataObject() {
         case "etStateCng":
             dataObj.ifInState = scope.data.isInState;
             dataObj.allItems = scope.data.isAllItems;
-            dataObj.evalCurOnInitial = scope.data.evalCurOnInitial;
             dataObj.triggerStates = scope.data.states;
             break;
         case "etComponentLogic":
@@ -512,7 +507,6 @@ EEApp.controller("EEController", function ($scope) {
         onVarChange: null,
         isInState: "true",
         isAllItems: true,
-        evalCurOnInitial: true,
         states: [],
         onSuccess: false,
         logicTop: null,
