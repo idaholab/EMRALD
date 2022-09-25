@@ -1065,6 +1065,8 @@ namespace SimulationTracking
         tempVar.SetValue(0.0);
       }
 
+      allLists.allEvents.Reset();
+
       //tempVar = allLists.allVariables.FindByName("Sim3DRunning");
       //if (tempVar == null)
       //{

@@ -122,6 +122,11 @@ namespace SimulationDAL
 
       addToList.allEvents.Add(this, false);
     }
+
+    public virtual void Reset()
+    {
+      //stub to do in classes if needed
+    }
   }
 
   public abstract class CondBasedEvent : Event
@@ -139,7 +144,8 @@ namespace SimulationDAL
     //protected override EnModifiableTypes GetModType() { return EnModifiableTypes.mtState; }
     public bool ifInState = true;
     public bool allItems = false;
-    
+    private MyBitArray changed = null; //all changed items for an EventTriggered call on this event
+
     protected override EnEventType GetEvType() { return EnEventType.etStateCng; }
 
     public StateCngEvent() : base("") { }
@@ -255,23 +261,39 @@ namespace SimulationDAL
 
     public override bool EventTriggered(MyBitArray curStates, object otherData, TimeSpan curSimTime, TimeSpan start3DTime, TimeSpan nextEvTime, int runIdx)
     {
-      //do a bitset comparison of curStates and related items
-      if(_relatedIDsBitSet.Length < curStates.Length)
+      //do a bitset operation to keep track of changed items that are related
+      if (changed == null)
+      {
+        changed = new MyBitArray(curStates.Length);
+      }
+      
+      changed.OrApply(((ChangedIDs)otherData).stateIDs_BS);
+
+      
+      if (_relatedIDsBitSet.Length < curStates.Length)
         _relatedIDsBitSet.Length = curStates.Length;
 
-      MyBitArray both = new MyBitArray(_relatedIDsBitSet);
-      both.And(curStates);
-      
-      if (ifInState) //We are looking for an item in the list to trigger us       
+      if (changed == null)
       {
-        //curStates must contain all of the items in relatedIDs
-        return (both.BitCount() == _relatedIDsBitSet.BitCount());
+        changed = new MyBitArray(curStates.Length);
       }
-      else //Don't want to be in the specified states
-      {
-        //curStates must contain none of the items in relatedIDs
-        return (both.BitCount() == 0);
-      }
+      //MyBitArray changed = new MyBitArray(_relatedIDsBitSet);
+      //changed.And(((ChangedIDs)otherData).stateIDs_BS);
+
+      MyBitArray cngAndRelated = changed.And(_relatedIDsBitSet);
+
+      return (cngAndRelated.BitCount() == relatedIDs.Count());
+
+      //if (ifInState) //We are looking for an item in the list to trigger us       
+      //{
+      //  //curStates must contain all of the items in relatedIDs
+      //  return (both.BitCount() == _relatedIDsBitSet.BitCount());
+      //}
+      //else //Don't want to be in the specified states
+      //{
+      //  //curStates must contain none of the items in relatedIDs
+      //  return (both.BitCount() == 0);
+      //}
     }
 
     public override void LookupRelatedItems(EmraldModel all, EmraldModel addToList)
@@ -288,6 +310,11 @@ namespace SimulationDAL
       //  State curItem = all.allStates[this.relatedIDs[0]];
       //  curItem.LookupRelatedItems(all, addToList);
       //}
+    }
+
+    public override  void Reset()
+    {
+      this.changed = null;
     }
   }
 
@@ -1985,6 +2012,14 @@ namespace SimulationDAL
             throw new Exception("Event \"" + item.Value.name + " \" - " + e.Message);
           }
         }
+      }
+    }
+
+    public void Reset()
+    {
+      foreach(var item in this.Values)
+      {
+        item.Reset();
       }
     }
 

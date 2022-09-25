@@ -13,15 +13,19 @@ namespace SimulationDAL
   /// </summary>
   public class ChangedIDs
   {
-    private MyBitArray variableIDs;
-    private MyBitArray compIDs;
-    private MyBitArray stateIDs;
+    private MyBitArray _variableIDs;
+    private MyBitArray _compIDs;
+    private MyBitArray _stateIDs;
+
+    public MyBitArray variableIDs_BS { get { return _variableIDs; } }
+    public MyBitArray compIDs_BS { get { return _compIDs; } }
+    public MyBitArray stateIDs_BS { get { return _stateIDs; } }
 
     public ChangedIDs(int varIDMax, int compIDMax, int stateIDMax)
     {
-      this.variableIDs = new MyBitArray(varIDMax + 1);
-      this.compIDs = new MyBitArray(compIDMax + 1);
-      this.stateIDs = new MyBitArray(stateIDMax + 1);
+      this._variableIDs = new MyBitArray(varIDMax + 1);
+      this._compIDs = new MyBitArray(compIDMax + 1);
+      this._stateIDs = new MyBitArray(stateIDMax + 1);
     }
 
     public void AddChangedID(EnModifiableTypes idType, int id)
@@ -30,15 +34,15 @@ namespace SimulationDAL
       switch (idType)
       {
         case EnModifiableTypes.mtVar:
-          max = variableIDs.Count;
+          max = _variableIDs.Count;
           break;
 
         case EnModifiableTypes.mtComp:
-          max = compIDs.Count;
+          max = _compIDs.Count;
           break;
 
         case EnModifiableTypes.mtState:
-          max = stateIDs.Count;
+          max = _stateIDs.Count;
           break;
 
         default:
@@ -53,15 +57,15 @@ namespace SimulationDAL
       switch (idType)
       {
         case EnModifiableTypes.mtVar:
-          variableIDs[id] = true;
+          _variableIDs[id] = true;
           break;
 
         case EnModifiableTypes.mtComp:
-          compIDs[id] = true;
+          _compIDs[id] = true;
           break;
 
         case EnModifiableTypes.mtState:
-          stateIDs[id] = true;
+          _stateIDs[id] = true;
           break;
 
         default:
@@ -86,13 +90,13 @@ namespace SimulationDAL
       //    return false;        
       //}
       if (idType == EnModifiableTypes.mtVar)
-        return variableIDs.HasCommonBits(ids);
+        return _variableIDs.HasCommonBits(ids);
 
       else if (idType == EnModifiableTypes.mtComp)
-        return compIDs.HasCommonBits(ids);
+        return _compIDs.HasCommonBits(ids);
 
       else if (idType == EnModifiableTypes.mtState)
-        return stateIDs.HasCommonBits(ids);
+        return _stateIDs.HasCommonBits(ids);
 
       else
         return false;
@@ -107,9 +111,9 @@ namespace SimulationDAL
 
     public void Clear()
     {
-      variableIDs.SetAll(false);
-      compIDs.SetAll(false);
-      stateIDs.SetAll(false);
+      _variableIDs.SetAll(false);
+      _compIDs.SetAll(false);
+      _stateIDs.SetAll(false);
     }
   }
 }
