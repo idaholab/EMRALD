@@ -267,7 +267,7 @@ namespace SimulationDAL
         changed = new MyBitArray(curStates.Length);
       }
       
-      changed.OrApply(((ChangedIDs)otherData).stateIDs_BS);
+      //changed.OrApply(((ChangedIDs)otherData).stateIDs_BS);
 
       
       if (_relatedIDsBitSet.Length < curStates.Length)
@@ -278,8 +278,14 @@ namespace SimulationDAL
         changed = new MyBitArray(curStates.Length);
       }
       //MyBitArray changed = new MyBitArray(_relatedIDsBitSet);
-      if(!ifInState)
-       changed.And(((ChangedIDs)otherData).stateIDs_BS);
+      if (!ifInState)
+      {
+        //find in changed and not in current (xor then and with origional)
+        MyBitArray compareBits = ((ChangedIDs)otherData).stateIDs_BS.Xor(curStates).And(((ChangedIDs)otherData).stateIDs_BS);
+        changed.OrApply(compareBits);
+      }
+      else
+        changed.OrApply(((ChangedIDs)otherData).stateIDs_BS);
 
       MyBitArray cngAndRelated = changed.And(_relatedIDsBitSet);
 

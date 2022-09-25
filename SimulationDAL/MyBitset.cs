@@ -159,11 +159,11 @@ namespace MyStuff.Collections
       _version++;
     }
 
-    void checkOperand(MyBitArray operand, bool chkLength = true)
+    void checkOperand(MyBitArray operand, bool matchLength = true)
     {
       if (operand == null)
         throw new ArgumentNullException();
-      if ((chkLength && (operand.m_length != m_length)) ||
+      if ((matchLength && (operand.m_length != m_length)) ||
           (operand.m_length > m_length))
         throw new ArgumentException();
     }
@@ -359,11 +359,40 @@ namespace MyStuff.Collections
     {
       checkOperand(value, false);
 
-      int ints = Math.Min(((m_length + 31) / 32), ((value.m_length + 31) / 32));
-      for (int i = 0; i < ints-1; i++)
-        m_array[i] &= value.m_array[i];
+      if (m_length == value.m_length)
+      {
+        int ints = ((m_length + 31) / 32);
+        for (int i = 0; i < ints; i++)
+          m_array[i] &= value.m_array[i];
+      }
+      else
+      {
+        int ints = Math.Min(((m_length + 31) / 32), ((value.m_length + 31) / 32)) - 1;
+        int maxInts = ((m_length + 31) / 32);
+        //copy full initial array pieces
+        for (int i = 0; i < ints - 1; i++)
+          m_array[i] &= value.m_array[i];
 
+        //copy incomplete piece
+        int begPiece = ints * 32;
+        int endPiece = begPiece + (value.m_length % 32);
+        for (int i = begPiece; i < endPiece; i++)
+        {
+          this[i] = value[i] && this[i];
+        }
+        //finish up incomplete with 0's
+        for (int i = endPiece; i < (begPiece + 32); i++)
+        {
+          this[i] = false;
+        }
+
+        //end piece change to all 0's
+        ints++;
+        for (int i = ints; i < maxInts; i++)
+          m_array[i] &= 0;
+      }
       _version++;
+
     }
 
     public void OrApply(MyBitArray value)
@@ -399,13 +428,34 @@ namespace MyStuff.Collections
 
     public void XorApply(MyBitArray value)
     {
-      checkOperand(value);
+      checkOperand(value, false);
 
-      int ints = (m_length + 31) / 32;
-      for (int i = 0; i < ints; i++)
-        m_array[i] ^= value.m_array[i];
+      if (m_length == value.m_length)
+      {
+        int ints = (m_length + 31) / 32;
+        for (int i = 0; i < ints; i++)
+          m_array[i] ^= value.m_array[i];
+      }
+      else
+      {
+        int ints = Math.Min(((m_length + 31) / 32), ((value.m_length + 31) / 32)) - 1;
+        //copy full initial array pieces
+        for (int i = 0; i < ints; i++)
+          m_array[i] ^= value.m_array[i];
 
+        //copy incomplete piece
+        int begPiece = ints * 32;
+        int endPiece = begPiece + (value.m_length % 32);
+        for (int i = begPiece; i < endPiece; i++)
+        {
+          this[i] = value[i] |= this[i];
+        }
+
+        //XOr, so leave end the same as the other array is considered 0's
+      }
       _version++;
+
+      
     }
 
     public MyBitArray Not()
