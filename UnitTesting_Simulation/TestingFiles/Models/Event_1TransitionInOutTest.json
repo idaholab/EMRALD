@@ -36,7 +36,8 @@
           "Goto_StCng"
         ],
         "events": [
-          "StateCng"
+          "StateCng",
+          "MoveOutDetected"
         ],
         "eventActions": [
           {
@@ -44,9 +45,15 @@
             "actions": [
               "Goto_MoveInDetected"
             ]
+          },
+          {
+            "actions": [
+              "Goto_MoveOutDetected"
+            ],
+            "moveFromCurrent": false
           }
         ],
-        "geometry": "{ x: 120, y: 80, width: 200, height: 150}"
+        "geometry": "{ x: 120, y: 80, width: 200, height: 190}"
       }
     },
     {
@@ -101,18 +108,9 @@
         "stateType": "stKeyState",
         "diagramName": "Main",
         "immediateActions": [],
-        "events": [
-          "MoveOutDetected"
-        ],
-        "eventActions": [
-          {
-            "actions": [
-              "Goto_MoveOutDetected"
-            ],
-            "moveFromCurrent": false
-          }
-        ],
-        "geometry": "{ x: 40, y: 340, width: 200, height: 130}"
+        "events": [],
+        "eventActions": [],
+        "geometry": "{ x: 40, y: 340, width: 200, height: 80}"
       }
     },
     {

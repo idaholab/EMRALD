@@ -1347,15 +1347,17 @@ namespace SimulationTracking
     private bool ProcessActiveLoop()
     {
       inProcessingLoop = true;
-
+      bool change = true;
       //loop through processing event or states while any are still in the queues, processing one can add to the other.
-      while ((!terminated) && ((processEventList.Count > 0) || (nextStateQue.Count > 0)))
+      while (change && (!terminated) && ((processEventList.Count > 0) || (nextStateQue.Count > 0)))
       {
+        change = false;
         //process all the events in the list before processing the next state
         while ((!terminated) && (processEventList.Count > 0))
         {
           ProcessEvent(processEventList[0]);
           processEventList.RemoveAt(0);
+          change = changedItems.HasChange();
         }
 
         //while there are items in the Next State Queue, process them.
@@ -1368,10 +1370,11 @@ namespace SimulationTracking
           }
 
           nextStateQue.RemoveAt(0);
+          change = true;
         }
 
         //Look for events that now meet conditions
-        if (!terminated)
+        if (change && !terminated)
           ScanCondEvList();
       }
 
@@ -1575,8 +1578,10 @@ namespace SimulationTracking
             List<IdxAndStr> toStates = tCurAct.WhichToState();
             foreach (IdxAndStr cur in toStates)
             {
-              //only add it if we are currently not going to that state from another action
-              if (nextStateQue.Where(t => t.Item1 == cur.idx).FirstOrDefault() == null)
+              //only add it if we are currently not going to that state from another action and not already in the state
+              if (curStates.ContainsKey(cur.idx))
+                logger.Debug("No Transition, already in state: " + curAct.name);
+              else if (nextStateQue.Where(t => t.Item1 == cur.idx).FirstOrDefault() == null)
                 nextStateQue.Add(Tuple.Create(cur.idx, ownerStateID, causeEvent == null ? "immediate action" : causeEvent.name, curAct.name));
             }
             break;

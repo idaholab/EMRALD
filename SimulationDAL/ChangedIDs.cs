@@ -109,6 +109,17 @@ namespace SimulationDAL
       return this.HasApplicableItems(idType, itemAsBS);
     }
 
+    public bool HasChange()
+    {
+      if (this._variableIDs.BitCount() > 0)
+        return true;
+      if (this._stateIDs.BitCount() > 0)
+        return true;
+      if (this._compIDs.BitCount() > 0)
+        return true;
+      return false;
+    }
+
     public void Clear()
     {
       _variableIDs.SetAll(false);

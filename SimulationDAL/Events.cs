@@ -278,7 +278,8 @@ namespace SimulationDAL
         changed = new MyBitArray(curStates.Length);
       }
       //MyBitArray changed = new MyBitArray(_relatedIDsBitSet);
-      //changed.And(((ChangedIDs)otherData).stateIDs_BS);
+      if(!ifInState)
+       changed.And(((ChangedIDs)otherData).stateIDs_BS);
 
       MyBitArray cngAndRelated = changed.And(_relatedIDsBitSet);
 
