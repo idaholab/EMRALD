@@ -39,7 +39,7 @@ Event Modeling Risk Assessment using Linked Diagrams (EMRALD) is a software tool
 		3. Install Rust from [https://www.rust-lang.org/tools/install](https://www.rust-lang.org/tools/install)
 		4. Install Node.js & NPM from [https://nodejs.org/en/](https://nodejs.org/en/)
 		5. Build dependencies by running `npm install` in the root directory
-		6. Build the executable by running `npm build` in the root directory
+		6. Build the executable by running `npm run build` in the root directory
     - To run JavaScript unit tests:
 		1. Install Node.js & NPM from [https://nodejs.org/en/](https://nodejs.org/en/)
 		2. Build dependencies by running `npm install` in the root directory
