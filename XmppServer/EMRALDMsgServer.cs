@@ -196,13 +196,12 @@ namespace XmppMessageServer
     public List<string> GetResources()
     {
       var ret = new List<string>();
-      foreach(var item in _resourceLookup)
+      foreach (var item in _resourceLookup.Keys.ToList())
       {
-        ret.Add(item.Key);
-        //_rosterMan.
+        ret.Add(item);
       }
       return ret;
-    } 
+    }
 
     public bool HasResource(string name)
     {

@@ -781,37 +781,40 @@ namespace SimulationDAL
 
       _value = newValue;
       //update the document
-      XmlDocument xDoc = new XmlDocument();
-      xDoc.Load(_docFullPath);
-      XmlElement pRoot = xDoc.DocumentElement;
-      XmlNodeList nodes = pRoot.SelectNodes(linkStr());
-      XmlNode replNode = null;
-      if ((nodes == null) || (nodes.Count == 0))
-        throw new Exception("Path string found no items.");
-      foreach (XmlNode i in nodes)
+      using (Stream s = File.OpenRead(_docFullPath))
       {
-        switch (i.NodeType)
+        XmlDocument xDoc = new XmlDocument();
+        xDoc.Load(s);
+        XmlElement pRoot = xDoc.DocumentElement;
+        XmlNodeList nodes = pRoot.SelectNodes(linkStr());
+        XmlNode replNode = null;
+        if ((nodes == null) || (nodes.Count == 0))
+          throw new Exception("Path string found no items.");
+        foreach (XmlNode i in nodes)
         {
-          case XmlNodeType.Attribute:
-            i.Value = _value.ToString();
-            break;
-          case XmlNodeType.Text:
-            i.InnerText = _value.ToString();
-            break;
-          default:
-            if (replNode == null)
-            {
-              XmlDocument repl = new XmlDocument();
-              repl.LoadXml(this.strValue);
-              replNode = xDoc.ImportNode(repl.DocumentElement, true);
-            }
-            var p = i.ParentNode;
-            var ret = p.ReplaceChild(replNode, i);
-            break;
+          switch (i.NodeType)
+          {
+            case XmlNodeType.Attribute:
+              i.Value = _value.ToString();
+              break;
+            case XmlNodeType.Text:
+              i.InnerText = _value.ToString();
+              break;
+            default:
+              if (replNode == null)
+              {
+                XmlDocument repl = new XmlDocument();
+                repl.LoadXml(this.strValue);
+                replNode = xDoc.ImportNode(repl.DocumentElement, true);
+              }
+              var p = i.ParentNode;
+              var ret = p.ReplaceChild(replNode, i);
+              break;
+          }
         }
-      }
 
-      xDoc.Save(_docFullPath);
+        xDoc.Save(_docFullPath);
+      }
     }
 
     public override object GetValue()
@@ -831,74 +834,77 @@ namespace SimulationDAL
       //value new so save timestamp and lookup new value
       _timestamp = File.GetCreationTime(_docFullPath);
       _oldLinkStr = curLinkStr;
-      XmlDocument xDoc = new XmlDocument();
-      xDoc.Load(_docFullPath);
-      XmlElement pRoot = xDoc.DocumentElement;
-      XmlNodeList nodes = pRoot.SelectNodes(curLinkStr);
-      if ((nodes == null) || (nodes.Count == 0))
+      using (Stream s = File.OpenRead(_docFullPath))
       {
-        if (_dfltValue == null)
-          throw new Exception("Path string found no items.");
-        else
+        XmlDocument xDoc = new XmlDocument();
+        xDoc.Load(s);
+        XmlElement pRoot = xDoc.DocumentElement;
+        XmlNodeList nodes = pRoot.SelectNodes(curLinkStr);
+        if ((nodes == null) || (nodes.Count == 0))
         {
-          _value = Convert.ChangeType(_dfltValue, dType);
-          return _value;
-        }
-          
-      }
-      if (nodes.Count == 1)
-      {
-        switch (nodes[0].NodeType)
-        {
-          case XmlNodeType.Attribute:
-            {
-              _value = Convert.ChangeType(nodes[0].Value, dType);
-              return _value;
-            } 
-          case XmlNodeType.Text:
-            {
-              _value = Convert.ChangeType(nodes[0].InnerText, dType);
-              return _value;
-            }
-          default:
-            if (this.dType != typeof(string))
-            {
-              throw new Exception("Variable type to match to a XML object must be a String");
-            }
-
-            _value = nodes[0].OuterXml;
+          if (_dfltValue == null)
+            throw new Exception("Path string found no items.");
+          else
+          {
+            _value = Convert.ChangeType(_dfltValue, dType);
             return _value;
-        }
-      }
-      else //more than one, only allow text
-      {
-        if (this.dType != typeof(string))
-        {
-          throw new Exception("Variable type to match to a XML object list must be a String");
-        }
-        _value = "";
+          }
 
-        if(nodes.Count < 1)
-          throw new Exception("Missing match for or data for XPath - " + _linkStr);
-
-        foreach (XmlNode i in nodes)
+        }
+        if (nodes.Count == 1)
         {
           switch (nodes[0].NodeType)
           {
             case XmlNodeType.Attribute:
-              _value += Environment.NewLine + i.Value;
-            break;
+              {
+                _value = Convert.ChangeType(nodes[0].Value, dType);
+                return _value;
+              }
             case XmlNodeType.Text:
-              _value += Environment.NewLine + i.InnerText;
-            break;
+              {
+                _value = Convert.ChangeType(nodes[0].InnerText, dType);
+                return _value;
+              }
             default:
-              _value += Environment.NewLine + i.OuterXml;
-            break;
+              if (this.dType != typeof(string))
+              {
+                throw new Exception("Variable type to match to a XML object must be a String");
+              }
+
+              _value = nodes[0].OuterXml;
+              return _value;
           }
         }
-          
-        _value = ((string)_value).TrimStart();
-        return _value;
+        else //more than one, only allow text
+        {
+          if (this.dType != typeof(string))
+          {
+            throw new Exception("Variable type to match to a XML object list must be a String");
+          }
+          _value = "";
+
+          if (nodes.Count < 1)
+            throw new Exception("Missing match for or data for XPath - " + _linkStr);
+
+          foreach (XmlNode i in nodes)
+          {
+            switch (nodes[0].NodeType)
+            {
+              case XmlNodeType.Attribute:
+                _value += Environment.NewLine + i.Value;
+                break;
+              case XmlNodeType.Text:
+                _value += Environment.NewLine + i.InnerText;
+                break;
+              default:
+                _value += Environment.NewLine + i.OuterXml;
+                break;
+            }
+          }
+
+          _value = ((string)_value).TrimStart();
+          return _value;
+        }
       }
     }
   }
