@@ -1260,7 +1260,10 @@ namespace SimulationTracking
 
           case SimEventType.etStatus:
             if (ev.status == StatusType.stError)
+            {
+              logger.Info("Coupled App XMPP Error: " + evData.desc + ", time: " + curTime.ToString(@"d\.hh\:mm\:ss\.f"));
               throw new Exception("Unhandled client simulation error - " + evData.desc);
+            }
             if (!this.sim3DRunning)
               return;
             break;

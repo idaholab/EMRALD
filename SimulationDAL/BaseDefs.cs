@@ -225,9 +225,9 @@ namespace SimulationDAL
 
     public static EnEventType EvClass_To_EnEventType(Event evItem)
     {
-      if ((evItem is EvalVarEvent) && (((EvalVarEvent)evItem).sim3dID != null))
+      if (evItem is ExtSimEv)
         return EnEventType.et3dSimEv;
-      else if ((evItem is EvalVarEvent) && (((EvalVarEvent)evItem).sim3dID == null))
+      else if (evItem is EvalVarEvent)
         return EnEventType.etVarCond;
       else if (evItem is StateCngEvent)
         return EnEventType.etStateCng;
