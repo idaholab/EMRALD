@@ -297,7 +297,11 @@ function OnLoad(dataObj) {
                         scope.data.variable = vb;
                     opTypeEl.selectedIndex = 8;
                     scope.data.var3DCode = dataObj.code;
-
+                    if (!dataObj.extEventType) {
+                      scope.data.extEventType = scope.extEventTypeOptions[0];
+                    } else {
+                      scope.data.extEventType = scope.extEventTypeOptions.find((type) => type.value === dataObj.extEventType);
+                    }
                     break;
             }
         }
@@ -331,9 +335,16 @@ function GetDataObject() {
             dataObj.varNames = scope.varNames;
             break;
         case "et3dSimEv":
-            dataObj.variable = scope.data.variable.name;
-            dataObj.code = scope.data.var3DCode;
-            dataObj.varNames = scope.varNames;
+            dataObj.extEventType = scope.data.extEventType.value;
+            if (dataObj.extEventType === 'etCompEv') {
+              dataObj.variable = scope.data.variable.name;
+              dataObj.code = scope.data.var3DCode;
+              dataObj.varNames = scope.varNames;
+            } else {
+              delete dataObj.variable;
+              delete dataObj.code;
+              delete dataObj.varNames;
+            }
             break;
         case "etStateCng":
             dataObj.ifInState = scope.data.isInState;
@@ -511,6 +522,7 @@ EEApp.controller("EEController", function ($scope) {
         onSuccess: false,
         logicTop: null,
         fromSimStart: false,
+        extEventType: null,
     };
 
     //var Condition
@@ -523,6 +535,21 @@ EEApp.controller("EEController", function ($scope) {
     $scope.VariablesLoaded = false;
     $scope.variables = [];
     $scope.varNames = [];
+    $scope.extEventTypeOptions = [
+      {
+        description: 'Trigger event when the external variable changes and the code condition is met.',
+        label: 'Variable Change',
+        value: 'etCompEv',
+      }, {
+        description: 'Trigger event when the external simulation has ended.',
+        label: 'Simulation End',
+        value: 'etEndSim',
+      }, {
+        description: 'Trigger event if the external simulation has sent a error status.',
+        label: 'Error Status',
+        value: 'etStatus',
+      },
+    ];
     //Component logic
     $scope.logicTopsLoaded = false;
     $scope.logicTops = [];
