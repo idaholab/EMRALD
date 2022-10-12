@@ -8,8 +8,8 @@
 
   <ItemGroup>
     <PackageReference Include="JsonDiffPatch.Net" Version="2.3.0" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.2.0" />
-    <PackageReference Include="NLog" Version="5.0.1" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.3.2" />
+    <PackageReference Include="NLog" Version="5.0.4" />
     <PackageReference Include="xunit" Version="2.4.2" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.5">
       <PrivateAssets>all</PrivateAssets>
@@ -24,6 +24,11 @@
   <ItemGroup>
     <ProjectReference Include="..\SimulationDAL\SimulationDAL.csproj" />
     <ProjectReference Include="..\SimulationEngine\SimulationEngine.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="TestingFiles\CompareFiles\Validations\" />
+    <Folder Include="TestingFiles\EMRALDTests\ValidationCases\" />
   </ItemGroup>
 
 </Project>

@@ -380,6 +380,16 @@ namespace SimulationEngine
      
         string output = JsonConvert.SerializeObject(resultObj, Formatting.Indented);
         File.WriteAllText(_jsonResultPaths, output);
+        string tempLoc = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\\EMRALD_SANKEY\\";
+        try {
+          if (Directory.Exists(tempLoc)) {
+            Directory.Delete(tempLoc, true);
+          }
+          Directory.CreateDirectory(tempLoc);
+        } catch {}
+        File.WriteAllText(Path.Combine(tempLoc, @"data.js"), @"window.data=" + output);
+        File.Copy(@"./sankey/emrald-sankey-timeline.html", Path.Combine(tempLoc, @"emrald-sankey-timeline.html"));
+        File.Copy(@"./sankey/emrald-sankey-timeline.js", Path.Combine(tempLoc, @"emrald-sankey-timeline.js"));
       }
       batchSuccess = retVal;
     }

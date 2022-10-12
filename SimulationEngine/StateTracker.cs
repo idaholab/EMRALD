@@ -59,23 +59,9 @@ namespace SimulationTracking
   {
     public ConditionMoveEvent(String name, EventStatesAndActions inStEvID, Event inEventData)
       : base(name, inStEvID, inEventData)
-    {
-      //if (inEventData.relatedIDs.Count == 0)
-      //{
-      //  MessageBox.Show("No Related IDs for " + inEventData.name);
-      //  return;
-      //}
-      if (inEventData.relatedIDs.Count > 0)
-      {
-        this.relatedIDs = new MyBitArray(inEventData.relatedIDs.Max() + 1);
-        for (int i = 0; i < inEventData.relatedIDs.Count(); ++i)
-        {
-          relatedIDs[inEventData.relatedIDs[i]] = true;
-        }
-      }
-    }
+    {}
 
-    public MyBitArray relatedIDs;
+    //placeholder for any extra info for condition events;
   }
 
 
@@ -225,17 +211,15 @@ namespace SimulationTracking
                 retList.Add(item);
               }
               else if ((curIDType == EnModifiableTypes.mtState) &&
-                       ((!(item.eventData is StateCngEvent)) ||
-                       (((StateCngEvent)item.eventData).evalCurOnInitial) &&
-                       (curStatesBS.HasCommonBits(item.relatedIDs))) &&
-                       (item.eventData as CondBasedEvent).EventTriggered(curStatesBS, otherData, curTime, start3DTime, nextEvTime, runIdx))
+                  (curStatesBS.HasCommonBits(item.eventData.relatedIDsBitSet) || !(item.eventData as StateCngEvent).ifInState) && //in cur states or not wanting in current states
+                  (item.eventData as CondBasedEvent).EventTriggered(curStatesBS, otherData, curTime, start3DTime, nextEvTime, runIdx))
               {
                 retList.Add(item);
               }
               initialCondEvalDone.Remove(item);
             }
 
-            else if ((item.relatedIDs != null) && (changedItems.HasApplicableItems(curIDType, item.relatedIDs)) &&
+            else if ((item.eventData.relatedIDsBitSet != null) && (changedItems.HasApplicableItems(curIDType, item.eventData.relatedIDsBitSet)) &&
                ((item.eventData as CondBasedEvent).EventTriggered(curStatesBS, otherData, curTime, start3DTime, nextEvTime, runIdx)))
             {
               retList.Add(item);
@@ -1084,6 +1068,8 @@ namespace SimulationTracking
         tempVar.SetValue(0.0);
       }
 
+      allLists.allEvents.Reset();
+
       //tempVar = allLists.allVariables.FindByName("Sim3DRunning");
       //if (tempVar == null)
       //{
@@ -1400,15 +1386,17 @@ namespace SimulationTracking
     private bool ProcessActiveLoop()
     {
       inProcessingLoop = true;
-
+      bool change = true;
       //loop through processing event or states while any are still in the queues, processing one can add to the other.
-      while ((!terminated) && ((processEventList.Count > 0) || (nextStateQue.Count > 0)))
+      while (change && (!terminated) && ((processEventList.Count > 0) || (nextStateQue.Count > 0)))
       {
+        change = false;
         //process all the events in the list before processing the next state
         while ((!terminated) && (processEventList.Count > 0))
         {
           ProcessEvent(processEventList[0]);
           processEventList.RemoveAt(0);
+          change = changedItems.HasChange();
         }
 
         //while there are items in the Next State Queue, process them.
@@ -1421,10 +1409,11 @@ namespace SimulationTracking
           }
 
           nextStateQue.RemoveAt(0);
+          change = true;
         }
 
         //Look for events that now meet conditions
-        if (!terminated)
+        if (change && !terminated)
           ScanCondEvList();
       }
 
@@ -1628,8 +1617,10 @@ namespace SimulationTracking
             List<IdxAndStr> toStates = tCurAct.WhichToState();
             foreach (IdxAndStr cur in toStates)
             {
-              //only add it if we are currently not going to that state from another action
-              if (nextStateQue.Where(t => t.Item1 == cur.idx).FirstOrDefault() == null)
+              //only add it if we are currently not going to that state from another action and not already in the state
+              if (curStates.ContainsKey(cur.idx))
+                logger.Debug("No Transition, already in state: " + curAct.name);
+              else if (nextStateQue.Where(t => t.Item1 == cur.idx).FirstOrDefault() == null)
                 nextStateQue.Add(Tuple.Create(cur.idx, ownerStateID, causeEvent == null ? "immediate action" : causeEvent.name, curAct.name));
             }
             break;
