@@ -470,14 +470,15 @@ namespace XmppMessageClient
       }
     }
 
-    private void tbHowMany_TextChanged(object sender, EventArgs e)
+    private void tbHowMany_Leave(object sender, EventArgs e)
     {
+
       try
       {
         int cnt = int.Parse(tbHowMany.Text);
         if (cnt > _testMsgCnt)
             tbHowMany.Text = _testMsgCnt.ToString();
-        UI_Update();
+        //UI_Update();
       }
       catch
       {
@@ -515,6 +516,8 @@ namespace XmppMessageClient
       _testMsgCnt = modelJson.Count;
       btnSendMsg.Enabled = true;
     }
+
+    
   } 
 
 }

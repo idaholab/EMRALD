@@ -257,7 +257,7 @@ namespace XmppMessageClient
       this.tbHowMany.TabIndex = 21;
       this.tbHowMany.Text = "1";
       this.tbHowMany.Visible = false;
-      this.tbHowMany.TextChanged += new System.EventHandler(this.tbHowMany_TextChanged);
+      this.tbHowMany.Leave += new System.EventHandler(this.tbHowMany_Leave);
       // 
       // lblClientMsg
       // 

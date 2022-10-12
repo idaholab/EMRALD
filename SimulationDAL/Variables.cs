@@ -825,14 +825,14 @@ namespace SimulationDAL
       }
 
       //if not changed return the previous value
-      DateTime curTimestamp = File.GetCreationTime(_docFullPath);
+      DateTime curTimestamp = File.GetLastWriteTime(_docFullPath);
       string curLinkStr = linkStr();
       if ((curTimestamp == _timestamp) && (_oldLinkStr == curLinkStr))
         return this._value;
 
 
       //value new so save timestamp and lookup new value
-      _timestamp = File.GetCreationTime(_docFullPath);
+      _timestamp = File.GetLastWriteTime(_docFullPath);
       _oldLinkStr = curLinkStr;
       using (Stream s = File.OpenRead(_docFullPath))
       {
@@ -918,21 +918,32 @@ namespace SimulationDAL
     {
       //update the document
       _value = newValue;
-      StreamReader sr = new StreamReader(_docFullPath);
-      string test = sr.ReadToEnd();
-      sr.Close();
-      //update the document
-      JObject fullObj = JObject.Parse(test);
-      var modItems = fullObj.SelectTokens(linkStr());
-      if (modItems == null)
-        throw new Exception("Failed to locate document reference - " + linkStr());
-      modItems = JsonExtensions.ReplacePath(fullObj, linkStr(), newValue);
+      NLog.Logger logger = NLog.LogManager.GetLogger("logfile");
+      logger.Info("Assign Doc Var: " + this.name + "  = " + newValue.ToString());
 
-      //update the json file with the change
-      using (StreamWriter file = File.CreateText(_docFullPath))
-      using (JsonTextWriter writer = new JsonTextWriter(file))
+      try
       {
-        fullObj.WriteTo(writer);
+        StreamReader sr = new StreamReader(_docFullPath);
+        string test = sr.ReadToEnd();
+        sr.Close();
+        //update the document
+        JObject fullObj = JObject.Parse(test);
+        var modItems = fullObj.SelectTokens(linkStr());
+        if (modItems == null)
+          throw new Exception("Failed to locate document reference - " + linkStr());
+        modItems = JsonExtensions.ReplacePath(fullObj, linkStr(), newValue);
+
+        //update the json file with the change
+        using (StreamWriter file = File.CreateText(_docFullPath))
+        using (JsonTextWriter writer = new JsonTextWriter(file))
+        {
+          fullObj.WriteTo(writer);
+        }
+      }
+      catch (Exception e)
+      {
+        logger.Error("Assign Doc Var failed: " + this.name + "  = " + newValue.ToString() + " Error - " + e.Message);
+        throw (e);
       }
     }
 
@@ -945,14 +956,14 @@ namespace SimulationDAL
       }
 
       //if not changed return the previous value
-      DateTime curTimestamp = File.GetCreationTime(_docFullPath);
+      DateTime curTimestamp = File.GetLastWriteTime(_docFullPath);
       string curLinkStr = linkStr();
       if ((curTimestamp == _timestamp) && (_oldLinkStr == curLinkStr))
         return this._value;
 
 
       //value new so save timestamp and lookup new value
-      _timestamp = File.GetCreationTime(_docFullPath);
+      _timestamp = File.GetLastWriteTime(_docFullPath);
       _oldLinkStr = curLinkStr;
       string fileStr = File.ReadAllText(_docFullPath);
       JObject fullObj = JObject.Parse(fileStr);
@@ -1121,14 +1132,14 @@ namespace SimulationDAL
       }
 
       //if not changed return the previous value
-      DateTime curTimestamp = File.GetCreationTime(_docFullPath);
+      DateTime curTimestamp = File.GetLastWriteTime(_docFullPath);
       string curLinkStr = linkStr();
       if ((curTimestamp == _timestamp) && (_oldLinkStr == curLinkStr))
         return this._value;
 
 
       //value new so save timestamp and lookup new value
-      _timestamp = File.GetCreationTime(_docFullPath);
+      _timestamp = File.GetLastWriteTime(_docFullPath);
       _oldLinkStr = curLinkStr;
       string docTxt = File.ReadAllText(_docFullPath);
       // Find matches.
