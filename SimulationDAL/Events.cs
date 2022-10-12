@@ -519,9 +519,9 @@ namespace SimulationDAL
          (EnEventType.et3dSimEv != (EnEventType)Enum.Parse(typeof(EnEventType), (string)dynObj.evType, true)))
         throw new Exception("event types do not match, cannot change the type once an item is created!");
 
-      if (dynObj.code == null)
+      if ((this.evType == EnEventType.etVarCond) && (dynObj.code == null))
       {
-        throw new Exception("Deserilaizing Event, missing code");
+        throw new Exception("Evaluate Var Event, missing code");
       }
 
       compCode = (string)dynObj.code;
@@ -659,7 +659,7 @@ namespace SimulationDAL
 
   public class ExtSimEv : EvalVarEvent //et3dSimEv
   {
-    protected SimEventType extEventType = SimEventType.etCompEv;
+    public SimEventType extEventType = SimEventType.etCompEv;
     protected string variable = null;
 
 
@@ -731,13 +731,18 @@ namespace SimulationDAL
       {
         this.extEventType = (SimEventType)Enum.Parse(typeof(SimEventType), (string)dynObj.extEventType, true);
 
-        if (dynObj.varNames == null)
-          throw new Exception("Deserilaizing Event, missing varNames value for the 3D SimVar ");
+        //if (dynObj.varNames == null)
+          //throw new Exception("External Sim Event, missing varNames value for the 3D SimVar ");
       }
 
       //3D simulation var condition has a variable link
       if (this.extEventType == SimEventType.etCompEv)
       {
+        if (dynObj.code == null)
+        {
+          throw new Exception("External Sim Event, missing code");
+        }
+
         if (dynObj.variable == null)
         {
           throw new Exception("External Sim variable not assigned");
@@ -763,6 +768,7 @@ namespace SimulationDAL
 
     public override bool EventTriggered(MyBitArray curStates, object otherData, TimeSpan curSimTime, TimeSpan start3DTime, TimeSpan nextEvTime, int runIdx)
     {
+      Dictionary<string, SimEventType> evTypes = (Dictionary<string, SimEventType>)otherData;
       switch (extEventType)
       {
         case SimEventType.etCompEv: //works just like a eval var event
@@ -770,11 +776,11 @@ namespace SimulationDAL
           break;
 
         case SimEventType.etEndSim:
-          return true;
+          return evTypes.ContainsValue(SimEventType.etEndSim);
           break;
 
-        case SimEventType.etPing:
-          return true;
+        case SimEventType.etStatus:
+          return evTypes.ContainsValue(SimEventType.etStatus);
           break;
 
         default:          
@@ -785,7 +791,14 @@ namespace SimulationDAL
       
       return false;
     }
-    
+
+    public virtual bool CompileCompCode()
+    {
+      if (extEventType == SimEventType.etCompEv)
+        return base.CompileCompCode();
+      else
+        return true;
+    }
   }
 
   public enum EnOnChangeTask { ocIgnore, ocResample, ocAdjust}
@@ -991,9 +1004,9 @@ namespace SimulationDAL
   }
 
   //This is only used internally and not meant to be modeled. An immediate message needs an event to trigger the evaluation 
-  public class ExtSimEvent : TimerEvent
+  public class ExtSimEventPlaceholder : TimerEvent
   {
-    public ExtSimEvent(string inName)
+    public ExtSimEventPlaceholder(string inName)
       : base(inName, Globals.NowTimeSpan) { }
   }
 
@@ -2035,7 +2048,18 @@ namespace SimulationDAL
     {
       foreach (var item in this)
       {
-        if (item.Value is EvalVarEvent )
+        if (item.Value is ExtSimEv)
+        {
+          try
+          {
+            ((ExtSimEv)item.Value).CompileCompCode();
+          }
+          catch (Exception e)
+          {
+            throw new Exception("Event \"" + item.Value.name + " \" - " + e.Message);
+          }
+        }
+        else if (item.Value is EvalVarEvent )
         {
           try
           {

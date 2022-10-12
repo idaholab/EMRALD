@@ -73,7 +73,7 @@ namespace SimulationTracking
     private CurrentStates curStates;
     private Dictionary<EventStatesAndActions, ConditionMoveEvent>[] evLists; //lists to hold the different kind of condition, array by eventtype
     private Dictionary<int, List<EventStatesAndActions>>[] stateRefLookups; //lookup keys for all condition events from the same state.
-    private Dictionary<ConditionMoveEvent, bool> initialCondEvalDone; //make sure all events are returned at least after fist added even if no related items have changed.
+    private Dictionary<ConditionMoveEvent, bool> initialCondEvalNotDone; //make sure all events are returned at least after fist added even if no related items have changed.
 
 
 
@@ -84,7 +84,7 @@ namespace SimulationTracking
       int cnt = (int)Enum.GetValues(typeof(EnEventType)).Cast<EnEventType>().Last() + 1;
       evLists = new Dictionary<EventStatesAndActions, ConditionMoveEvent>[cnt];
       stateRefLookups = new Dictionary<int, List<EventStatesAndActions>>[cnt];
-      initialCondEvalDone = new Dictionary<ConditionMoveEvent, bool>();
+      initialCondEvalNotDone = new Dictionary<ConditionMoveEvent, bool>();
       foreach (EnEventType itemType in Enum.GetValues(typeof(EnEventType)))
       {
 
@@ -114,7 +114,7 @@ namespace SimulationTracking
       }
 
       evLists[(int)addEv.eventData.evType].Add(addEv.eventStateActions, addEv);
-      initialCondEvalDone.Add(addEv, false);
+      initialCondEvalNotDone.Add(addEv, true);
 
       List<EventStatesAndActions> refs;
       foreach (var stID in addEv.eventStateActions.statesAndActions)
@@ -161,7 +161,7 @@ namespace SimulationTracking
       return retBool;
     }
 
-    public List<ConditionMoveEvent> GetMatchedCondMoveEvents(ChangedIDs changedItems, /*Dictionary<int, SimEventType> lastEvTypes,*/ TimeSpan curTime, TimeSpan start3DTime, TimeSpan nextEvTime, int runIdx)
+    public List<ConditionMoveEvent> GetMatchedCondMoveEvents(ChangedIDs changedItems, Dictionary<string, SimEventType> lastExtEvTypes, TimeSpan curTime, TimeSpan start3DTime, TimeSpan nextEvTime, int runIdx)
     {
       List<ConditionMoveEvent> retList = new List<ConditionMoveEvent>();
       if (curStates.Count == 0)
@@ -182,8 +182,8 @@ namespace SimulationTracking
             switch (item.eventData.evType)
             {
               case EnEventType.et3dSimEv:
-                curIDType = EnModifiableTypes.mtVar;
-                //otherData = lastEvTypes;
+                curIDType = EnModifiableTypes.mtExtEv;
+                otherData = lastExtEvTypes;
                 break;
 
               case EnEventType.etVarCond:
@@ -203,33 +203,39 @@ namespace SimulationTracking
                 return retList;
             }
 
-            if (initialCondEvalDone.ContainsKey(item)) //initialCondEvalDone[item] == false) //make sure each event is evaluated to start off with, then only if the related items change.
+            if (initialCondEvalNotDone.ContainsKey(item)) //make sure each event is evaluated to start off with, then only if the related items change.
             {
-              if ((curIDType == EnModifiableTypes.mtVar) &&
-                  (item.eventData as CondBasedEvent).EventTriggered(curStatesBS, otherData, curTime, start3DTime, nextEvTime, runIdx)) //see if the code is triggered
+              switch (curIDType)
               {
-                retList.Add(item);
-              }
-              else if ((curIDType == EnModifiableTypes.mtState) &&
-                  (curStatesBS.HasCommonBits(item.eventData.relatedIDsBitSet) || !(item.eventData as StateCngEvent).ifInState) && //in cur states or not wanting in current states
-                  (item.eventData as CondBasedEvent).EventTriggered(curStatesBS, otherData, curTime, start3DTime, nextEvTime, runIdx))
-              {
-                retList.Add(item);
-              }
-              initialCondEvalDone.Remove(item);
+                //only evaluate these event types when initially entering a state
+                case EnModifiableTypes.mtExtEv:
+                case EnModifiableTypes.mtVar: //don't check if there are related IDs for these
+                  if ((item.eventData as CondBasedEvent).EventTriggered(curStatesBS, otherData, curTime, start3DTime, nextEvTime, runIdx)) //see if the code is triggered)
+                    retList.Add(item);
+                  break;
+                case EnModifiableTypes.mtState:
+                  if ((curStatesBS.HasCommonBits(item.eventData.relatedIDsBitSet) || !(item.eventData as StateCngEvent).ifInState) && //in cur states or not wanting in current states
+                      (item.eventData as CondBasedEvent).EventTriggered(curStatesBS, otherData, curTime, start3DTime, nextEvTime, runIdx))
+                    retList.Add(item);
+                  break;
+                default:
+                  break;
+              }              
+              initialCondEvalNotDone.Remove(item);
             }
-
+            //after first evaluation always check applicable items have changed for all events
             else if ((item.eventData.relatedIDsBitSet != null) && (changedItems.HasApplicableItems(curIDType, item.eventData.relatedIDsBitSet)) &&
                ((item.eventData as CondBasedEvent).EventTriggered(curStatesBS, otherData, curTime, start3DTime, nextEvTime, runIdx)))
             {
               retList.Add(item);
             }
+                  
           }
         }
       }
 
       //clear the initial eval list so we don't check them again and we have an empty list for the next round.
-      initialCondEvalDone.Clear();
+      initialCondEvalNotDone.Clear();
 
       return retList;
     }
@@ -329,7 +335,7 @@ namespace SimulationTracking
       Event nowEv = allLists.allEvents.FindByName("ExtSimEv_", false);
       if (nowEv == null)
       {
-        nowEv = new ExtSimEvent("Now");
+        nowEv = new ExtSimEventPlaceholder("Now");
       }
       EventStatesAndActions key = new EventStatesAndActions(nowEv.id, 0, actList);
 
@@ -1016,6 +1022,8 @@ namespace SimulationTracking
     private bool tempStateCngCheck = false; //see if there was a state change because of an external sim message 
     //public TLogEvCallBack logFunc = null;
     public bool keepExtSimEvs = true;
+    //keep track of last external events so that we can trigger internal events if needed
+    Dictionary<string, SimEventType> lastExtEvTypes = new Dictionary<string, SimEventType>();
     //private bool debugLog = false;//todo remove
     //private TimeStateVariable toSave = null;
     //private TimeSpan sim3DStartTime;
@@ -1090,7 +1098,7 @@ namespace SimulationTracking
       this.timeEvList.Clear();
       this.processEventList.Clear();
       this.nextStateQue.Clear();
-      //this.last3DVarEvType.Clear();
+      this.lastExtEvTypes.Clear();
       this.changedItems.Clear();
       this.curStates.Clear();
       this.condEvList.Clear();
@@ -1208,6 +1216,9 @@ namespace SimulationTracking
       TimeSpan shiftTimeTo = new TimeSpan();
       bool sendTimers = false;
       int i = 0;
+      //clear the tracking of last events recieved
+      lastExtEvTypes.Clear();
+
       foreach (var ev in evData.simEvents)
       {
         tempStateCngCheck = false;
@@ -1215,6 +1226,7 @@ namespace SimulationTracking
         switch (ev.evType)
         {
           case SimEventType.etEndSim:  //stop the simulation
+            lastExtEvTypes.Add(fromClient, ev.evType);
             stopped3DSims.Add(fromClient);
             this.sim3DStarting = false;
             this.sim3DStopping = false;
@@ -1247,6 +1259,7 @@ namespace SimulationTracking
           case SimEventType.etStatus:
             if (ev.status == StatusType.stError)
             {
+              lastExtEvTypes.Add(fromClient, ev.evType);
               logger.Info("Coupled App XMPP Error: " + evData.desc + ", time: " + curTime.ToString(@"d\.hh\:mm\:ss\.f"));
               throw new Exception("Unhandled client simulation error - " + evData.desc);
             }
@@ -1259,7 +1272,7 @@ namespace SimulationTracking
             {
               return;
             }
-
+            lastExtEvTypes.Add(fromClient, ev.evType);
             shiftTimeTo = (TimeSpan)ev.time; //If checked and passed with schema, this will not be null.
             if (shiftTimeTo == Globals.NowTimeSpan)
               shiftTimeTo = TimeSpan.FromMilliseconds(1) + sim3DStartTime;
@@ -1580,11 +1593,11 @@ namespace SimulationTracking
       //Look for events that now meet conditions and add them to the processEventList
       TimeMoveEvent nextItem = timeEvList.LookNextTimedEvent();
       if (nextItem != null)
-        //matchedEvs = condEvList.GetMatchedCondMoveEvents(this.changedItems, this.last3DVarEvType, curTime, sim3DStartTime, nextItem.time);
-        matchedEvs = condEvList.GetMatchedCondMoveEvents(this.changedItems, curTime, sim3DStartTime, nextItem.time, this.allLists.curRunIdx);
+        matchedEvs = condEvList.GetMatchedCondMoveEvents(this.changedItems, this.lastExtEvTypes, curTime, sim3DStartTime, nextItem.time, this.allLists.curRunIdx);
+        //matchedEvs = condEvList.GetMatchedCondMoveEvents(this.changedItems, curTime, sim3DStartTime, nextItem.time, this.allLists.curRunIdx);
       else
-        //matchedEvs = condEvList.GetMatchedCondMoveEvents(this.changedItems, this.last3DVarEvType, curTime, sim3DStartTime, TimeSpan.FromHours(0));
-        matchedEvs = condEvList.GetMatchedCondMoveEvents(this.changedItems, curTime, sim3DStartTime, TimeSpan.FromHours(0), this.allLists.curRunIdx);
+        matchedEvs = condEvList.GetMatchedCondMoveEvents(this.changedItems, this.lastExtEvTypes, curTime, sim3DStartTime, TimeSpan.FromHours(0), this.allLists.curRunIdx);
+        //matchedEvs = condEvList.GetMatchedCondMoveEvents(this.changedItems, curTime, sim3DStartTime, TimeSpan.FromHours(0), this.allLists.curRunIdx);
       this.processEventList.AddRange(matchedEvs);
       changedItems.Clear();
     }

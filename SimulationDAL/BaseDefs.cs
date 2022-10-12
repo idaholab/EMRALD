@@ -44,7 +44,7 @@ namespace SimulationDAL
 
   public enum EnStateType { stStart = 0, stStandard, stKeyState, stTerminal };
   public enum EnActionType { atTransition = 0, atCngVarVal, at3DSimMsg, atRunExtApp, atCustomStateShift, atJumpToTime };
-  public enum EnModifiableTypes { mtNone = 0, mtVar, mtComp, mtState };
+  public enum EnModifiableTypes { mtNone = 0, mtVar, mtComp, mtState, mtExtEv };
   public enum EnFailType { ftFailToStart = 0, ftFailToRun }
 
   [JsonConverter(typeof(StringEnumConverter))]

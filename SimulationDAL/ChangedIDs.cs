@@ -98,6 +98,9 @@ namespace SimulationDAL
       else if (idType == EnModifiableTypes.mtState)
         return _stateIDs.HasCommonBits(ids);
 
+      else if (idType == EnModifiableTypes.mtExtEv)
+        return true; //always say yes //todo could limit to what connected simulation we want the event from
+
       else
         return false;
     }
