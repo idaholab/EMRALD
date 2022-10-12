@@ -1259,6 +1259,7 @@ namespace SimulationDAL
       processOutputFileCompEval.AddVariable("CurTime", typeof(Double));
       processOutputFileCompEval.AddVariable("RunIdx", typeof(int));
       processOutputFileCompEval.AddVariable("ExeExitCode", typeof(int));
+      processOutputFileCompEval.AddVariable("OutputFile", typeof(string));
 
       //add all the variables needed
       if (codeVariables != null)
