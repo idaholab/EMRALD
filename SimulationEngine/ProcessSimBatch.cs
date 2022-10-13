@@ -236,6 +236,12 @@ namespace SimulationEngine
       {
         _lists.allVariables.ReInitAll();
 
+        SimulationTracking.StateTracker trackSim;
+        if (_msgServer == null)
+          trackSim = new SimulationTracking.StateTracker(_lists, _endTime, 0, null, _numRuns);
+        else
+          trackSim = new SimulationTracking.StateTracker(_lists, _endTime, _frameRate, _msgServer, _numRuns);
+
         for (int i = 1; i <= _numRuns; ++i)
         {
           SetLog(i);
@@ -244,14 +250,7 @@ namespace SimulationEngine
 
           curI = i;
           if (_stop)
-            break;
-
-          SimulationTracking.StateTracker trackSim;
-
-          if (_msgServer == null)
-            trackSim = new SimulationTracking.StateTracker(_lists, _endTime, 0, null, _numRuns);
-          else
-            trackSim = new SimulationTracking.StateTracker(_lists, _endTime, _frameRate, _msgServer, _numRuns);
+            break;          
 
           //trackSim.logFunc = logFunc;
 
@@ -320,6 +319,8 @@ namespace SimulationEngine
             }
           }
 
+          
+
           if (((stopWatch.Elapsed - resTime) > TimeSpan.FromSeconds(1)) && (i > 0))
           {
             stopWatch.Stop();
@@ -332,6 +333,9 @@ namespace SimulationEngine
 
           logger.Info("EndOfRun: " + i);
         }
+
+        //send message to all ext sims to terminate
+        trackSim.SendExtSimTerminate();
       }
       catch(Exception e)
       {        

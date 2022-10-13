@@ -772,15 +772,15 @@ namespace SimulationDAL
       switch (extEventType)
       {
         case SimEventType.etCompEv: //works just like a eval var event
-          return base.EventTriggered(curStates, otherData, curSimTime, start3DTime, nextEvTime, runIdx);
+          return (evTypes.ContainsValue(SimEventType.etCompEv) && base.EventTriggered(curStates, otherData, curSimTime, start3DTime, nextEvTime, runIdx));
           break;
 
         case SimEventType.etEndSim:
           return evTypes.ContainsValue(SimEventType.etEndSim);
           break;
 
-        case SimEventType.etStatus:
-          return evTypes.ContainsValue(SimEventType.etStatus);
+        case SimEventType.etPing:
+          return evTypes.ContainsValue(SimEventType.etPing);
           break;
 
         default:          

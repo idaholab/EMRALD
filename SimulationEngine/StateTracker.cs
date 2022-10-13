@@ -223,12 +223,30 @@ namespace SimulationTracking
               }              
               initialCondEvalNotDone.Remove(item);
             }
-            //after first evaluation always check applicable items have changed for all events
-            else if ((item.eventData.relatedIDsBitSet != null) && (changedItems.HasApplicableItems(curIDType, item.eventData.relatedIDsBitSet)) &&
-               ((item.eventData as CondBasedEvent).EventTriggered(curStatesBS, otherData, curTime, start3DTime, nextEvTime, runIdx)))
+            else
             {
-              retList.Add(item);
+              switch (curIDType)
+              {
+                //only evaluate these event types when initially entering a state
+                case EnModifiableTypes.mtExtEv:
+                  if((changedItems.HasApplicableItems(curIDType, item.eventData.relatedIDsBitSet)) && 
+                     ((item.eventData as CondBasedEvent).EventTriggered(curStatesBS, otherData, curTime, start3DTime, nextEvTime, runIdx)))
+                    retList.Add(item);
+                  break;
+
+                default:
+                  if ((item.eventData.relatedIDsBitSet != null) && (changedItems.HasApplicableItems(curIDType, item.eventData.relatedIDsBitSet)) &&
+                      ((item.eventData as CondBasedEvent).EventTriggered(curStatesBS, otherData, curTime, start3DTime, nextEvTime, runIdx)))
+                    retList.Add(item);
+                  break;
+              }
             }
+            //after first evaluation always check applicable items have changed for all events
+            //else if ((item.eventData.relatedIDsBitSet != null) && (changedItems.HasApplicableItems(curIDType, item.eventData.relatedIDsBitSet)) &&
+            //   ((item.eventData as CondBasedEvent).EventTriggered(curStatesBS, otherData, curTime, start3DTime, nextEvTime, runIdx)))
+            //{
+            //  retList.Add(item);
+            //}
                   
           }
         }
@@ -328,19 +346,29 @@ namespace SimulationTracking
 
     public void ExternalEvOccurred(String evDispName, SimEvent evData, EmraldModel allLists, TimeSpan curTime, TimeSpan simExtStartTime)
     {
-      SimVariable setVar = allLists.allVariables.FindBySim3dId(evData.itemData.nameId);
-      VarValueAct act = new VarValueAct(evData.itemData.nameId + "_3D_Assign", setVar, "return " + evData.itemData.value + ";", typeof(double), null);
-      ActionList actList = new ActionList();
-      actList.Add(act);
-      Event nowEv = allLists.allEvents.FindByName("ExtSimEv_", false);
-      if (nowEv == null)
+      if (evData.evType == SimEventType.etCompEv)
       {
-        nowEv = new ExtSimEventPlaceholder("Now");
-      }
-      EventStatesAndActions key = new EventStatesAndActions(nowEv.id, 0, actList);
+        SimVariable setVar = allLists.allVariables.FindBySim3dId(evData.itemData.nameId);
+        VarValueAct act = new VarValueAct(evData.itemData.nameId + "_3D_Assign", setVar, "return " + evData.itemData.value + ";", typeof(double), null);
+        ActionList actList = new ActionList();
+        actList.Add(act);
+        Event nowEv = allLists.allEvents.FindByName("ExtSimEv_", false);
+        if (nowEv == null)
+        {
+          nowEv = new ExtSimEventPlaceholder("Now");
+        }
+        EventStatesAndActions key = new EventStatesAndActions(nowEv.id, 0, actList);
 
-      TimeMoveEvent extEv = new TimeMoveEvent(evDispName, key, nowEv, curTime - simExtStartTime, simExtStartTime); //FromMilliseconds just in case the curTime is the same as the RevetToTime
-      poppedList.Add(extEv);
+        TimeMoveEvent extEv = new TimeMoveEvent(evDispName, key, nowEv, curTime - simExtStartTime, simExtStartTime); //FromMilliseconds just in case the curTime is the same as the RevetToTime
+        poppedList.Add(extEv);
+      }
+      else
+      {
+        Event nowEv = new ExtSimEventPlaceholder("Now");
+        EventStatesAndActions key = new EventStatesAndActions(nowEv.id, 0, new ActionList());
+        TimeMoveEvent extEv = new TimeMoveEvent(evDispName, key, nowEv, curTime - simExtStartTime, simExtStartTime);
+        AddTimedEvent(extEv);
+      }
 
     }
 
@@ -1001,9 +1029,9 @@ namespace SimulationTracking
     /// </summary>
     private EMRALDMsgServer sim3DServer;
     //todo store these in ExternalSim object and adjust code for multiple simulations
-    private bool sim3DRunning = false;
-    private bool sim3DStopping = false;
-    private bool sim3DStarting = false;
+    private bool extSimRunning = false;
+    private bool emraldStopping3D = false;
+    private bool extSimStarting = false;
     private List<string> stopped3DSims = new List<string>();
     private bool inProcessingLoop = false;
     private TimeSpan sim3DStartTime;
@@ -1102,10 +1130,11 @@ namespace SimulationTracking
       this.changedItems.Clear();
       this.curStates.Clear();
       this.condEvList.Clear();
+
       //TODO : 
       //this.sim3D.SendAction(Reset Sim
-      this.sim3DRunning = false;
-      this.sim3DStarting = false;
+      this.extSimRunning = false;
+      this.extSimStarting = false;
       this.inProcessingLoop = false;
       this.terminated = false;
     }
@@ -1113,6 +1142,7 @@ namespace SimulationTracking
 
     public List<int> StartTracker()
     {
+      this.Reset();
       terminated = false;
       this.allLists.curRunIdx++;
 
@@ -1134,7 +1164,7 @@ namespace SimulationTracking
 
       bool ranXMPPSim = false;
       //in case a 3d simulations starts up in the beginning
-      while ((this.sim3DStopping || this.sim3DRunning || this.sim3DStarting) && (this.sim3DServer.ResourceCnt() > 0))
+      while ((this.emraldStopping3D || this.extSimRunning || this.extSimStarting) && (this.sim3DServer.ResourceCnt() > 0))
       {
         //Application.DoEvents();
         ranXMPPSim = true;
@@ -1143,11 +1173,11 @@ namespace SimulationTracking
 
       if (ranXMPPSim) //for all the XMPP simulations that ran send a final continue now that all other processing is done
       {
-        TMsgWrapper msg = new TMsgWrapper(MessageType.mtSimAction, "Continue", curTime, "Continue External Sim");
-        msg.simAction = new SimAction(SimActionType.atContinue);
+        TMsgWrapper msg2 = new TMsgWrapper(MessageType.mtSimAction, "Continue", curTime, "Continue External Sim");
+        msg2.simAction = new SimAction(SimActionType.atContinue);
         foreach (var name in stopped3DSims)
         {
-          sim3DServer.SendMessage(msg, name);
+          sim3DServer.SendMessage(msg2, name);
         }
 
       }
@@ -1165,7 +1195,7 @@ namespace SimulationTracking
         }
 
         ranXMPPSim = false;
-        while (this.sim3DStopping || this.sim3DStarting || this.sim3DRunning || inProcessingLoop)
+        while (this.emraldStopping3D || this.extSimStarting || this.extSimRunning || inProcessingLoop)
         {
           //Application.DoEvents();
           ranXMPPSim = true;
@@ -1174,17 +1204,15 @@ namespace SimulationTracking
 
         if (ranXMPPSim) //for all the XMPP simulations that ran send a final continue now that all other processing is done
         {
-          TMsgWrapper msg = new TMsgWrapper(MessageType.mtSimAction, "Continue", curTime, "Continue External Sim");
-          msg.simAction = new SimAction(SimActionType.atContinue);
+          TMsgWrapper msg2 = new TMsgWrapper(MessageType.mtSimAction, "Continue", curTime, "Continue External Sim");
+          msg2.simAction = new SimAction(SimActionType.atContinue);
           foreach (var name in stopped3DSims)
           {
-            sim3DServer.SendMessage(msg, name);
+            sim3DServer.SendMessage(msg2, name);
           }
 
         }
       }
-
-      
 
       //MessageBox.Show("end sim");
       //logFunc("end sim" + Environment.NewLine);
@@ -1205,6 +1233,17 @@ namespace SimulationTracking
 
       return finalStates;
     }
+
+    public void SendExtSimTerminate()
+    {
+      //send message to all ext sims to terminate
+      TMsgWrapper msg = new TMsgWrapper(MessageType.mtSimAction, "Done", curTime, "Terminating all");
+      msg.simAction = new SimAction(SimActionType.atTerminate);
+      foreach (var name in stopped3DSims)
+      {
+        sim3DServer.SendMessage(msg, name);
+      }
+    }
     /// <summary>
     /// An external simulation event occurred so process the event
     /// </summary>
@@ -1215,9 +1254,11 @@ namespace SimulationTracking
 
       TimeSpan shiftTimeTo = new TimeSpan();
       bool sendTimers = false;
+      
       int i = 0;
       //clear the tracking of last events recieved
       lastExtEvTypes.Clear();
+      bool doProcessLoop = false;
 
       foreach (var ev in evData.simEvents)
       {
@@ -1227,15 +1268,16 @@ namespace SimulationTracking
         {
           case SimEventType.etEndSim:  //stop the simulation
             lastExtEvTypes.Add(fromClient, ev.evType);
+            ScanCondEvList();
+            this.timeEvList.ExternalEvOccurred(evData.desc + i.ToString(), ev, allLists, curTime, sim3DStartTime);            
             stopped3DSims.Add(fromClient);
-            this.sim3DStarting = false;
-            this.sim3DStopping = false;
-            this.sim3DRunning = false;
-            
+            this.extSimStarting = false;
+            this.emraldStopping3D = false; //Stopping call from EMRALD processed by ext sim now. 
+            this.extSimRunning = false;
             return;
 
           case SimEventType.etTimer: // if the event is a timer then just pop the next time event and let state tracker continue.
-            if (this.sim3DStopping || !this.sim3DRunning)
+            if (this.emraldStopping3D || !this.extSimRunning)
             {
               //stop3DInEv = false;
               return;
@@ -1243,32 +1285,36 @@ namespace SimulationTracking
 
             PopNextTimeEvent();// TODO : evData.itemID);
             sendTimers = true;
+            doProcessLoop = true;
             break;
 
           case SimEventType.etSimLoaded:
             this.sim3DStartTime = this.curTime;
             sendTimers = true;
-            this.sim3DRunning = true;
-            this.sim3DStarting = false;
+            this.extSimRunning = true;
+            this.extSimStarting = false;
             break;
 
-          //case SimEventType.etSubSim:
-          //  //ignore these   
-          //  return;
+          case SimEventType.etPing:
+            lastExtEvTypes.Add(fromClient, ev.evType);
+            logger.Info("Ping: from " + fromClient + ", time: " + curTime.ToString(@"d\.hh\:mm\:ss\.f"));
+            break;
 
           case SimEventType.etStatus:
             if (ev.status == StatusType.stError)
             {
-              lastExtEvTypes.Add(fromClient, ev.evType);
               logger.Info("Coupled App XMPP Error: " + evData.desc + ", time: " + curTime.ToString(@"d\.hh\:mm\:ss\.f"));
+              TMsgWrapper msg = new TMsgWrapper(MessageType.mtSimAction, "GotError", curTime, "Terminating all");
+              msg.simAction = new SimAction(SimActionType.atTerminate);
+              sim3DServer.SendMessage(msg, fromClient);
               throw new Exception("Unhandled client simulation error - " + evData.desc);
             }
-            if (!this.sim3DRunning)
+            if (!this.extSimRunning)
               return;
             break;
 
           case SimEventType.etCompEv:
-            if (this.sim3DStopping || !this.sim3DRunning)
+            if (this.emraldStopping3D || !this.extSimRunning)
             {
               return;
             }
@@ -1289,7 +1335,7 @@ namespace SimulationTracking
               this.allLists.allVariables[curVar.id].SetValue(ev.itemData.value);
               this.changedItems.AddChangedID(EnModifiableTypes.mtVar, curVar.id);
             }
-
+            doProcessLoop = true;
             break;
 
           default: //items are 3D variables that were affected
@@ -1321,17 +1367,20 @@ namespace SimulationTracking
 
       //Look for events that now meet conditions
       ScanCondEvList();
+      lastExtEvTypes.Clear();
       //start a new round of processing
-      if (!ProcessActiveLoop())
+      if (doProcessLoop && !ProcessActiveLoop())
       {
         //sim3DServer.SendAction(new TActionPacketData(new TActionData(T3DActionType.atReset))); //let the simulation run.
         TMsgWrapper msg = new TMsgWrapper(MessageType.mtSimAction, "Reset", curTime, "Reset External Sim");
         msg.simAction = new SimAction(SimActionType.atCancelSim);
         sim3DServer.SendMessage(msg, fromClient);
-        this.sim3DStopping = true;
+        this.emraldStopping3D = true;  //telling ext sim to stop
       }
 
-      if (!this.sim3DStopping)
+
+
+      if (!this.emraldStopping3D)
       {
         if (sendTimers || tempStateCngCheck)
         {
@@ -1562,7 +1611,7 @@ namespace SimulationTracking
             if (evTime < maxTime)
             {
               TimeMoveEvent addTimeEv = new TimeMoveEvent(curEv.name, new EventStatesAndActions(curEv.id, curState.id, curState.GetEvActionsIdx(idx)), curEv, evTime, curTime);
-              if ((evTime == Globals.NowTimeSpan) && !this.sim3DStopping)// || //add the event to be processed immediately
+              if ((evTime == Globals.NowTimeSpan) && !this.emraldStopping3D)// || //add the event to be processed immediately
                                                                          //todo : how to handle if next event is before the first timestep of a simulation 
                                                                          //if only one simulation you just process the event as an immediate ((this.sim3DRunning || this.sim3DStarting) && ((evTime.TotalSeconds * sim3DFameRate) < 1)))
               {
@@ -1848,9 +1897,9 @@ namespace SimulationTracking
                 //if (sim3DServer.SendAction(new TActionPacketData(startup)))  //initialize it
                 if (sim3DServer.SendMessage(msg, cur3DAct.resourceName))
                 {
-                  sim3DStarting = true;
-                  sim3DStopping = false;
-                  while (!this.sim3DRunning)
+                  extSimStarting = true;
+                  emraldStopping3D = false;
+                  while (!this.extSimRunning)
                   {
                     //Application.DoEvents();
                     System.Threading.Thread.Sleep(10);
@@ -1859,9 +1908,9 @@ namespace SimulationTracking
                 else //already running so set correct params.
                 {
                   this.sim3DStartTime = this.curTime;
-                  this.sim3DStarting = false;
-                  this.sim3DRunning = true;
-                  this.sim3DStopping = false;
+                  this.extSimStarting = false;
+                  this.extSimRunning = true;
+                  this.emraldStopping3D = false;
                 }
 
                 break;
@@ -1869,9 +1918,9 @@ namespace SimulationTracking
               case SimActionType.atCompModify:
                 logger.Debug("DoComponentModifyAction: " + curAct.name);
                 //wait to make sure the 3D sim has started
-                while ((!this.sim3DRunning) && (!this.sim3DStopping))
+                while ((!this.extSimRunning) && (!this.emraldStopping3D))
                 {
-                  if (!this.sim3DStarting)
+                  if (!this.extSimStarting)
                   {
                     return true;
                   }
@@ -1919,9 +1968,9 @@ namespace SimulationTracking
                 if (cur3DAct.sim3DMessage == SimActionType.atCancelSim)
                 {
                   //debugLog = true; //todo remove
-                  if ((this.sim3DRunning) && (!this.sim3DStopping))
+                  if ((this.extSimRunning) && (!this.emraldStopping3D))
                   {
-                    this.sim3DStopping = true;
+                    this.emraldStopping3D = true; //Stopping call from EMRALD not processed by ext sim yet. 
                     sim3DServer.SendMessage(msg, cur3DAct.resourceName);
 
                     //while (this.sim3DRunning)
@@ -1970,7 +2019,7 @@ namespace SimulationTracking
       }        
 
       //make sure the 3DSim is fully started before the message is sent.
-      while (!this.sim3DRunning)
+      while (!this.extSimRunning)
       {
         //Application.DoEvents();
         System.Threading.Thread.Sleep(500);
