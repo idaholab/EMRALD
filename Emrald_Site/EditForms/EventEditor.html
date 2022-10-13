@@ -119,8 +119,10 @@
                 </div>
                 <div id="3DSimPanel" ng-if="typeOption.value === 'et3dSimEv'" style="display:table-row;position:absolute;width:96%;overflow-x:hidden;">
                     <label style="display:table-cell;vertical-align:middle; white-space:nowrap;">External Event Type:</label>
-                    <div style="display:flex;height:20px;">
-                        <select name="extEventType" ng-model="data.extEventType" ng-options="t.label for t in extEventTypeOptions" style="width: 130px"></select>
+                    <div style="display:flex;">
+                        <div>
+                            <select name="extEventType" ng-model="data.extEventType" ng-options="t.label for t in extEventTypeOptions" style="width: 130px"></select>
+                        </div>
                         <div style="margin-left:8px">{{data.extEventType.description}}</div>
                     </div>
                     <div ng-if="data.extEventType.value == 'etCompEv'">
