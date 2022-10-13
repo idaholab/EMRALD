@@ -545,9 +545,9 @@ EEApp.controller("EEController", function ($scope) {
         label: 'Simulation End',
         value: 'etEndSim',
       }, {
-        description: 'Trigger event if the external simulation has sent a error status.',
-        label: 'Error Status',
-        value: 'etStatus',
+        description: 'Triggered if received a ping event from eternal simulation.',
+        label: 'Ping',
+        value: 'etPing',
       },
     ];
     //Component logic
