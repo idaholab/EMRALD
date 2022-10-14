@@ -110,7 +110,7 @@ function isModified() {
 
 function ValidateData() {
     var scope = angular.element(document.querySelector('#EEControllerPanel')).scope();
-    if (scope.typeOption.value === 'et3dSimEv' && !scope.data.variable) {
+    if (scope.typeOption.value === 'et3dSimEv' && !scope.data.variable && scope.data.extEventType.value === 'etCompEv') {
         return "Please specify an External Sim Variable before saving the event.";
     }
     if (scope.typeOption.value === 'etComponentLogic' && !scope.data.logicTop) {
@@ -545,9 +545,9 @@ EEApp.controller("EEController", function ($scope) {
         label: 'Simulation End',
         value: 'etEndSim',
       }, {
-        description: 'Trigger event if the external simulation has sent a error status.',
-        label: 'Error Status',
-        value: 'etStatus',
+        description: 'Triggered if received a ping event from eternal simulation.',
+        label: 'Ping',
+        value: 'etPing',
       },
     ];
     //Component logic
