@@ -1279,9 +1279,7 @@ namespace SimulationDAL
           }
         }
       }
-
-      processOutputFileCompEval.AddVariable("OutputFile", typeof(string));
-
+      
       //add all the states
       foreach (KeyValuePair<int, State> state in lists.allStates)
       {

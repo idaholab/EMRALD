@@ -7,7 +7,6 @@
         "evType": "etStateCng",
         "ifInState": "true",
         "allItems": true,
-        "evalCurOnInitial": "True",
         "triggerStates": []
       }
 	}
