@@ -675,6 +675,12 @@ namespace SimulationTracking
     public MyBitArray bitMap { get { return _bitMap; } }
     //public bool trackStateMovement = true;
 
+    public void Clear()
+    {
+      base.Clear();
+      this._bitMap = new MyBitArray(_bitMap.Length);
+      removedItems.Clear();
+    }
 
     public TimeSpan RemoveState(int stateID, TimeSpan curTime)
     {
