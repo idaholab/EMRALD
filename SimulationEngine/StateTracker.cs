@@ -104,6 +104,20 @@ namespace SimulationTracking
     public void Clear()
     {
       this.curStates.Clear();
+      initialCondEvalNotDone.Clear();
+      foreach (EnEventType itemType in Enum.GetValues(typeof(EnEventType)))
+      {
+
+        if (evLists[(int)itemType] != null)
+        {
+          evLists[(int)itemType].Clear();          
+        }
+        if (stateRefLookups[(int)itemType] != null)
+        {
+          stateRefLookups[(int)itemType].Clear();
+        }
+      }
+
     }
 
     public void AddConditionEvent(ConditionMoveEvent addEv)
@@ -1045,6 +1059,7 @@ namespace SimulationTracking
     //private string sim3dPath;
     //private HoudiniSimClient.TLogEvCallBack p_logEvCallBack;
     private bool terminated = false;
+    private TimeSpan settingsMaxTime;
     /// <summary>
     /// max time left
     /// </summary>
@@ -1080,14 +1095,32 @@ namespace SimulationTracking
       )
     {
       this.allLists = inLists;
-      this.maxTime = endTime;
-      this.curTime = new TimeSpan();
+      this.settingsMaxTime = endTime;
       this.sim3DServer = inSim3DServer;
       this.allLists.totRunsReq = desiredRuns;
       condEvList = new ConditionEventLists(curStates);
-      SingleNextIDs.Instance.ResetTimerIDs();
 
       changedItems = new ChangedIDs(allLists.allVariables.maxID, allLists.allDiagrams.maxID, allLists.allStates.Keys.Max());
+    }
+
+    public void Reset()
+    {
+      this.timeEvList.Clear();
+      this.processEventList.Clear();
+      this.nextStateQue.Clear();
+      this.lastExtEvTypes.Clear();
+      this.changedItems.Clear();
+      this.curStates.Clear();
+      this.condEvList.Clear();
+      this.curTime = new TimeSpan();
+
+      //TODO : 
+      //this.sim3D.SendAction(Reset Sim
+      this.extSimRunning = false;
+      this.extSimStarting = false;
+      this.inProcessingLoop = false;
+      this.terminated = false;
+      this.maxTime = settingsMaxTime;
 
       SimVariable tempVar;
       tempVar = allLists.allVariables.FindByName("CurTime", false);
@@ -1110,39 +1143,9 @@ namespace SimulationTracking
         tempVar.SetValue(0.0);
       }
 
+      SingleNextIDs.Instance.ResetTimerIDs();      
+      
       allLists.allEvents.Reset();
-
-      //tempVar = allLists.allVariables.FindByName("Sim3DRunning");
-      //if (tempVar == null)
-      //{
-      //  allLists.allVariables.AddVar(new SimVariable("Sim3DRunning", EnVarType.gtGlobal, 0.0));
-      //}
-      //else
-      //{
-      //  tempVar.value = 0.0;
-      //}
-
-
-      //set up the compOKList bitset to hold a bit for all components 
-      //compOKList = new MyBitArray(inCompData.Keys.Max() + 1);
-    }
-
-    public void Reset()
-    {
-      this.timeEvList.Clear();
-      this.processEventList.Clear();
-      this.nextStateQue.Clear();
-      this.lastExtEvTypes.Clear();
-      this.changedItems.Clear();
-      this.curStates.Clear();
-      this.condEvList.Clear();
-
-      //TODO : 
-      //this.sim3D.SendAction(Reset Sim
-      this.extSimRunning = false;
-      this.extSimStarting = false;
-      this.inProcessingLoop = false;
-      this.terminated = false;
     }
 
 
