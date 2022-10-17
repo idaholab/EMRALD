@@ -1273,7 +1273,7 @@ namespace SimulationTracking
         switch (ev.evType)
         {
           case SimEventType.etEndSim:  //stop the simulation
-            lastExtEvTypes.Add(fromClient, ev.evType);
+            lastExtEvTypes.Add(fromClient + "-" + ev.evType.ToString() + "_" + evData.pID, ev.evType);
             ScanCondEvList();
             this.timeEvList.ExternalEvOccurred(evData.desc + i.ToString(), ev, allLists, curTime, sim3DStartTime);            
             stopped3DSims.Add(fromClient);
@@ -1302,7 +1302,7 @@ namespace SimulationTracking
             break;
 
           case SimEventType.etPing:
-            lastExtEvTypes.Add(fromClient, ev.evType);
+            lastExtEvTypes.Add(fromClient + "-" + ev.evType.ToString() + "_" + evData.pID, ev.evType);
             logger.Info("Ping: from " + fromClient + ", time: " + curTime.ToString(@"d\.hh\:mm\:ss\.f"));
             break;
 
@@ -1324,7 +1324,7 @@ namespace SimulationTracking
             {
               return;
             }
-            lastExtEvTypes.Add(fromClient, ev.evType);
+            lastExtEvTypes.Add(fromClient + "-" + ev.evType.ToString() + "_" + evData.pID, ev.evType);
             shiftTimeTo = (TimeSpan)ev.time; //If checked and passed with schema, this will not be null.
             if (shiftTimeTo == Globals.NowTimeSpan)
               shiftTimeTo = TimeSpan.FromMilliseconds(1) + sim3DStartTime;
