@@ -257,7 +257,7 @@ namespace SimulationDAL
         if (failTypes.Contains(EnFailType.ftFailToRun))
         {
           //add event leading from active to failed 
-          FailProbEvent failEv = new FailProbEvent(compName + "_FR", runFailure, Globals.HourTimeSpan, Globals.DayTimeSpan);
+          FailProbEvent failEv = new FailProbEvent(compName + "_FR", runFailure, Globals.HourTimeSpan);
           allEvents.Add(failEv);        
 
           activeState.AddEvent(failEv, true, failAct);
@@ -404,7 +404,7 @@ namespace SimulationDAL
           allActions.Add(failAct);
 
           //add event leading from active to failed 
-          FailProbEvent failEv = new FailProbEvent(compName + rateNames[i], runningFailRates[i], Globals.HourTimeSpan, Globals.DayTimeSpan);
+          FailProbEvent failEv = new FailProbEvent(compName + rateNames[i], runningFailRates[i], Globals.HourTimeSpan);
           allEvents.Add(failEv);
 
           activeState.AddEvent(failEv, true, failAct);
@@ -581,7 +581,7 @@ namespace SimulationDAL
           allActions.Add(failAct);
 
           //add event leading from active to failed 
-          FailProbEvent failEv = new FailProbEvent(compName + rateNames[i], runningFailRates[i], Globals.HourTimeSpan, Globals.DayTimeSpan);
+          FailProbEvent failEv = new FailProbEvent(compName + rateNames[i], runningFailRates[i], Globals.HourTimeSpan);
           allEvents.Add(failEv);
 
           activeState.AddEvent(failEv, true, failAct);

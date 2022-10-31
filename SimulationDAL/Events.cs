@@ -799,6 +799,11 @@ namespace SimulationDAL
           throw new Exception("RedoNextTime not implemented for " + onVarChange.ToString());
       }
     }
+
+    public virtual bool Changeable()
+    {
+      return ((onVarChange == EnOnChangeTask.ocAdjust) || (onVarChange == EnOnChangeTask.ocResample));
+    }
   }
 
   public class TimerEvent : TimeBasedEvent //etTimer
@@ -974,35 +979,24 @@ namespace SimulationDAL
 
   public class FailProbEvent : TimeBasedEvent //etFailRate
   {
-    //public TimeSpan timeRate { get { return _dbItem.dFailRateEv.lambdaTimeRate; } set { this.locOutOfSync = true; _dbItem.dFailRateEv.lambdaTimeRate = value; } }
     protected double _lambda = 0.0;
-    //protected TimeSpan _compMissionTime { get { return _dbItem.dFailRateEv.missionTime; } set { this.locOutOfSync = true; _dbItem.dFailRateEv.missionTime = value; } }
-
-    //protected TimeSpan _lambdaTimeRate;
-    //protected double _lambda;
-    //protected TimeSpan _compMissionTime;
-    //protected FailProbEvType _failType;
-    //public int FailureFuncID { get { return _FailureFuncID; } set { this.linksModified = true; _FailureFuncID = value; } }
     public TimeSpan timeRate = TimeSpan.FromDays(365.25);
-    public TimeSpan compMissionTime = TimeSpan.FromHours(24);
     protected SimVariable lambdaVariable = null;
 
     protected override EnEventType GetEvType() { return EnEventType.etFailRate; }
 
     public FailProbEvent() : base("") { }
 
-    public FailProbEvent(string inName, double lambdaOrFreq, TimeSpan lambdaTimeRate, TimeSpan compMissionTime)
+    public FailProbEvent(string inName, double lambdaOrFreq, TimeSpan lambdaTimeRate)
       : base(inName)
     {
       this._lambda = lambdaOrFreq; // (lambdaOrFreq / lambdaTimeRate.TotalHours);
       this.timeRate = lambdaTimeRate;
-      this.compMissionTime = compMissionTime;
     }
 
     public override string GetDerivedJSON(EmraldModel lists)
     {
-      string retStr = "\"lambdaTimeRate\":\"" + XmlConvert.ToString(this.timeRate) + "\"," + Environment.NewLine;// +
-                      //"\"missionTime\":\"" + XmlConvert.ToString(this.compMissionTime) + "\",";
+      string retStr = "\"lambdaTimeRate\":\"" + XmlConvert.ToString(this.timeRate) + "\"," + Environment.NewLine;
       if (lambdaVariable != null)
       {
         retStr = retStr +
@@ -1036,20 +1030,13 @@ namespace SimulationDAL
 
       lists.allEvents.Add(this, false);
 
-      if (EnEventType.etFailRate != (EnEventType)Enum.Parse(typeof(EnEventType), (string)dynObj.evType, true))
+      if ((EnEventType.etFailRate != (EnEventType)Enum.Parse(typeof(EnEventType), (string)dynObj.evType, true)) &&
+          (EnEventType.etFTProb != (EnEventType)Enum.Parse(typeof(EnEventType), (string)dynObj.evType, true)))
         throw new Exception("event types do not match, cannot change the type once an item is created!");
 
       
       this.timeRate = XmlConvert.ToTimeSpan((string)dynObj.lambdaTimeRate);
-      if (dynObj.missionTime == null)
-        compMissionTime = TimeSpan.FromDays(365.3);
-      else
-      {
-        this.compMissionTime = XmlConvert.ToTimeSpan((string)dynObj.missionTime);
-        if (compMissionTime < TimeSpan.FromSeconds(1))
-          compMissionTime = TimeSpan.FromDays(365.3);
-      }
-
+      
       if ((dynObj.useVariable == null) || !(bool)dynObj.useVariable)
       {
         //use normal assigned lambda if not a variable
@@ -1125,7 +1112,7 @@ namespace SimulationDAL
       //debugging to keep track of probabilities of items
       if (Stats.Instance.logStats)
       {
-        if ((retVal < compMissionTime) && (timeRate == Globals.HourTimeSpan))
+        if (timeRate == Globals.HourTimeSpan)
         {
           if (Stats.Instance.comp_fails.ContainsKey(name))
           {
@@ -1142,9 +1129,9 @@ namespace SimulationDAL
         }
       }
 
-      if ((retVal > compMissionTime) || (retVal < Globals.NowTimeSpan)) //time surpasses the allotted time span or is negative (to small to calculate) so return back that it does not fail.
+      if (retVal < Globals.NowTimeSpan) // negative (to small to calculate) so return back that it does not fail.
       {
-        return TimeSpan.MaxValue;
+        throw new Exception("Negative time sample for event.");
       }
 
       return retVal;
@@ -1191,7 +1178,7 @@ namespace SimulationDAL
     {
       string retStr = base.GetDerivedJSON(lists);
       retStr = retStr +
-        JsonConvert.SerializeObject(toChangeBEs) + "," + Environment.NewLine +
+        "\"toChangeBEs\": " + JsonConvert.SerializeObject(toChangeBEs) + "," + Environment.NewLine +
         "\"ftModel\": " + JsonConvert.SerializeObject(ftModel) + Environment.NewLine;
 
       return retStr;
@@ -1210,12 +1197,21 @@ namespace SimulationDAL
 
       if (!base.DeserializeDerived((object)dynObj, false, lists, useGivenIDs))
         return false;
-      
+
+      try //may not exist in earlier versions so use a default
+      {
+        onVarChange = (EnOnChangeTask)Enum.Parse(typeof(EnOnChangeTask), (string)dynObj.onVarChange, true);
+      }
+      catch
+      {
+        onVarChange = EnOnChangeTask.ocIgnore;
+      }
+
       if (dynObj.toChangeBEs != null)
       {
         try
         {
-          toChangeBEs = JsonConvert.DeserializeObject<Dictionary<string, string>>((string)dynObj.toChangeBEs);
+          toChangeBEs = JsonConvert.DeserializeObject<Dictionary<string, string>>(dynObj.toChangeBEs.ToString());
         }
         catch (Exception e)
         {
@@ -1286,7 +1282,7 @@ namespace SimulationDAL
       //todo call saphsolver to get the rate
       string workDir = System.Reflection.Assembly.GetExecutingAssembly().Location;
       workDir = System.IO.Path.GetDirectoryName(workDir);
-      string ftSolverPath = workDir + "\\SaphSolver.exe";
+      string ftSolverPath = workDir + "\\SAPHSolver.exe";
       string tempFile  = workDir + "\\ftSolve.JSCut";
       //todo call the module to modify the model to send to the FT solver
       string modifiedJSCut = this.ftModel;
@@ -1319,6 +1315,10 @@ namespace SimulationDAL
 
       if (exitCode != 0)
         throw new Exception("Failed in running the FT solver.");
+      else
+      {
+        //todo get the result value from the JSCut
+      }
      
       return 3.5e-4;
     }
@@ -2055,17 +2055,18 @@ namespace SimulationDAL
 
       switch (evType)
       {
-        case EnEventType.et3dSimEv: retEv = new EvalVarEvent(); break;//string inName, string inCompCode, VariableList inVarList, Sim3DVariable sim3dVar = null)
-        case EnEventType.etComponentLogic: retEv = new ComponentLogicEvent(); break; //(string inName, LogicNode inLogicTop, bool inOnSuccess);
-        case EnEventType.etFailRate: retEv = new FailProbEvent(); break;  //(string inName, double lambdaOrFreq, TimeSpan lambdaTimeRate, TimeSpan compMissionTime)                
-        case EnEventType.etStateCng: retEv = new StateCngEvent(); break; //string inName, bool inIfInState, bool inAllItems = true, List<int> inStates = null)();
-        case EnEventType.etTimer: retEv = new TimerEvent(); break; //(string inName, TimeSpan inTime)                  
-        case EnEventType.etVarCond: retEv = new EvalVarEvent(); break; //(string inName, string inCompCode, VariableList inVarList, Sim3DVariable sim3dVar = null)
-        case EnEventType.etNormalDist: retEv = new NormalDistEvent(); break;
-        case EnEventType.etWeibullDist: retEv = new WeibullDistEvent(); break;
+        case EnEventType.et3dSimEv:         retEv = new EvalVarEvent(); break;//string inName, string inCompCode, VariableList inVarList, Sim3DVariable sim3dVar = null)
+        case EnEventType.etComponentLogic:  retEv = new ComponentLogicEvent(); break; //(string inName, LogicNode inLogicTop, bool inOnSuccess);
+        case EnEventType.etFailRate:        retEv = new FailProbEvent(); break;  //(string inName, double lambdaOrFreq, TimeSpan lambdaTimeRate)                
+        case EnEventType.etStateCng:        retEv = new StateCngEvent(); break; //string inName, bool inIfInState, bool inAllItems = true, List<int> inStates = null)();
+        case EnEventType.etTimer:           retEv = new TimerEvent(); break; //(string inName, TimeSpan inTime)                  
+        case EnEventType.etVarCond:         retEv = new EvalVarEvent(); break; //(string inName, string inCompCode, VariableList inVarList, Sim3DVariable sim3dVar = null)
+        case EnEventType.etNormalDist:      retEv = new NormalDistEvent(); break;
+        case EnEventType.etWeibullDist:     retEv = new WeibullDistEvent(); break;
         case EnEventType.etExponentialDist: retEv = new ExponentialDistEvent(); break;
-        case EnEventType.etLogNormalDist: retEv = new LogNormalDistEvent(); break;
-        case EnEventType.etDistribution: retEv = new DistEvent(); break;
+        case EnEventType.etLogNormalDist:   retEv = new LogNormalDistEvent(); break;
+        case EnEventType.etDistribution:    retEv = new DistEvent(); break;
+        case EnEventType.etFTProb:          retEv = new FTProbEvent(); break;
 
         default: break;
       }
@@ -2160,14 +2161,14 @@ namespace SimulationDAL
         if ((evType == EnEventType.etStateCng) || (evType == EnEventType.etComponentLogic) || 
             (evType == EnEventType.etVarCond) || (evType == EnEventType.et3dSimEv) ||
             (evType == EnEventType.etTimer) || (evType == EnEventType.etFailRate) ||
-            (evType == EnEventType.etDistribution))
+            (evType == EnEventType.etFTProb) || (evType == EnEventType.etDistribution))
         {
           Event curItem = this.FindByName((string)item.name, false);
           try
           {
             if (curItem == null)
             {
-              throw new Exception("Failed to find Action with the name of " + (string)item.name);
+              throw new Exception("Failed to find Event with the name of " + (string)item.name);
             }
 
             if (!curItem.LoadObjLinks((object)item, false, lists))

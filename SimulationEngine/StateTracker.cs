@@ -12,6 +12,7 @@ using SimulationDAL;
 using XmppMessageServer;
 using MessageDefLib;
 using SimulationEngineHelper;
+using System.Runtime.ConstrainedExecution;
 
 namespace SimulationEngine
 {
@@ -186,7 +187,7 @@ namespace SimulationEngine
       while ((this.sim3DStopping || this.sim3DRunning || this.sim3DStarting) && (this.sim3DServer.ResourceCnt() > 0))
       {
         //Application.DoEvents();
-        System.Threading.Thread.Sleep(10);
+        System.Threading.Thread.Sleep(10);//processEventList
       }
 
       //do the process while there are still time events in the que and a terminal state is not met
@@ -371,6 +372,11 @@ namespace SimulationEngine
 
       curTime = curTime + nextItem.time;
       maxTime = maxTime - nextItem.time;
+      if (maxTime <= TimeSpan.Zero) //we are past the mission time all further time vents are invalid
+      {
+        timeEvList.Clear();
+        terminated = true;
+      }
 
       allLists.allVariables.FindByName("CurTime").SetValue(curTime.TotalHours);
 
@@ -420,17 +426,37 @@ namespace SimulationEngine
           change = changedItems.HasChange();
         }
 
+        
+        MyBitArray stateChanges = new MyBitArray(nextStateQue.MaxBy(x => x.Item1).Item1); //keep track of states entered
         //while there are items in the Next State Queue, process them.
         while ((!terminated) && (nextStateQue.Count > 0))
         {
+          stateChanges[nextStateQue[0].Item1] = true;//mark bitset for state enter
+
           if (!ProcessState(nextStateQue[0])) //was a terminal state so quit;
           {
             inProcessingLoop = false;
             return false;
           }
-
+          
           nextStateQue.RemoveAt(0);
           change = true;
+        }
+
+        //see if there are any events that use this if so we need to update
+        foreach (var ev in timeEvList.timedEvQue)
+        {
+          TimeBasedEvent curTimeEv = (TimeBasedEvent)ev.Value.eventData;
+          if (curTimeEv.relatedIDsBitSet.HasCommonBits(stateChanges))
+          {
+            //get a new time for the event.
+            TimeSpan lastSampledTime = ev.Key;
+            TimeSpan regotTime = curTimeEv.RedoNextTime(ev.Value.whenCreated, curTime, lastSampledTime, curStates.bitMap);
+            if (regotTime < TimeSpan.Zero)
+              regotTime = TimeSpan.Zero;
+
+            timeEvList.ChangeEventTime(regotTime, ev.Value.eventStateActions.eventID);
+          }
         }
 
         //Look for events that now meet conditions
@@ -567,7 +593,7 @@ namespace SimulationEngine
           {
 
             TimeSpan evTime = timeEv.NextTime(curTime, this.curStates.bitMap);
-            if (evTime < maxTime)
+            if ((evTime < maxTime) || (timeEv.Changeable())) //if in the current mission time or the event time could be changed to be in mission time.
             {
               TimeMoveEvent addTimeEv = new TimeMoveEvent(curEv.name, new EventStatesAndActions(curEv.id, curState.id, curState.GetEvActionsIdx(idx)), curEv, evTime, curTime);
               if ((evTime == Globals.NowTimeSpan) && !this.sim3DStopping)// || //add the event to be processed immediately
@@ -642,7 +668,9 @@ namespace SimulationEngine
               if (curStates.ContainsKey(cur.idx))
                 logger.Debug("No Transition, already in state: " + curAct.name);
               else if (nextStateQue.Where(t => t.Item1 == cur.idx).FirstOrDefault() == null)
+              {
                 nextStateQue.Add(Tuple.Create(cur.idx, ownerStateID, causeEvent == null ? "immediate action" : causeEvent.name, curAct.name));
+              }
             }
             break;
 

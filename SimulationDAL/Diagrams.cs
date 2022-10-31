@@ -368,7 +368,7 @@ namespace SimulationDAL
 
     public MyBitArray GetFailBitSet()
     {
-      MyBitArray retBS = new MyBitArray(this.stateIDs.Max(), false);
+      MyBitArray retBS = new MyBitArray(this.stateIDs.Max()+1, false);
       foreach(var i in this._States)
       {
         retBS[i.id] = IsFailedState(i.id);
