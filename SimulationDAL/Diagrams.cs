@@ -15,7 +15,7 @@ namespace SimulationDAL
     //protected dSimulation _Sim = null;
     protected List<State> _States = null;
     public EnDiagramType diagType = EnDiagramType.dtOther;
-
+    protected int maxStateID = 0;
    
 
     public Diagram()
@@ -364,6 +364,27 @@ namespace SimulationDAL
     public bool IsFailedState(int stateID)
     {      
       return (this._singleStateGroup.Contains(stateID) && (!this._okStates.Contains(stateID)));
+    }
+
+    public MyBitArray GetFailBitSet()
+    {
+      MyBitArray retBS = new MyBitArray(this.stateIDs.Max(), false);
+      foreach(var i in this._States)
+      {
+        retBS[i.id] = IsFailedState(i.id);
+      }
+      return retBS;
+    }
+
+    public List<int> GetFailList()
+    {
+      List<int> retBS = new List<int>();
+      foreach (var i in this._States)
+      {
+        if(IsFailedState(i.id))
+          retBS.Add(i.id);
+      }
+      return retBS;
     }
 
     /// <summary>

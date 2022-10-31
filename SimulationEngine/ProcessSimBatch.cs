@@ -8,13 +8,13 @@ using System.Threading.Tasks;
 using System.Diagnostics;
 using MyStuff.Collections;
 using System.IO;
-using SimulationTracking;
 //using System.Windows.Forms;
 using XmppMessageServer;
 using NLog;
 using SimulationDAL;
 using Newtonsoft.Json;
 using MathNet.Numerics.Statistics;
+using SimulationEngineHelper;
 
 namespace SimulationEngine
 {
@@ -246,12 +246,12 @@ namespace SimulationEngine
           if (_stop)
             break;
 
-          SimulationTracking.StateTracker trackSim;
+          StateTracker trackSim;
 
           if (_msgServer == null)
-            trackSim = new SimulationTracking.StateTracker(_lists, _endTime, 0, null);
+            trackSim = new StateTracker(_lists, _endTime, 0, null);
           else
-            trackSim = new SimulationTracking.StateTracker(_lists, _endTime, _frameRate, _msgServer);
+            trackSim = new StateTracker(_lists, _endTime, _frameRate, _msgServer);
 
           //trackSim.logFunc = logFunc;
 

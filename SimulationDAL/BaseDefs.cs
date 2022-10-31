@@ -37,8 +37,9 @@ namespace SimulationDAL
     etWeibullDist,
     etExponentialDist,
     etLogNormalDist,
-    etDistribution
-    };
+    etDistribution,
+    etFTProb//evaluate a fault tree for the failure rate
+  };
 
   public enum EnDiagramType { dtComponent = 0, dtSystem, dtPlant, dtOther }; 
 

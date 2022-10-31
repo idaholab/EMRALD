@@ -10,6 +10,8 @@ using MathNet.Numerics.Distributions;
 using MessageDefLib;
 using Newtonsoft.Json;
 using System.Linq;
+using System.Diagnostics;
+using System.IO;
 
 namespace SimulationDAL
 {
@@ -771,7 +773,7 @@ namespace SimulationDAL
     public TimeBasedEvent(string inName)
       : base(inName) { }
 
-    public abstract TimeSpan NextTime(TimeSpan curTime);
+    public abstract TimeSpan NextTime(TimeSpan curTime, MyBitArray curStates);
 
     /// <summary>
     /// RedoNextTime called if a variable is used and that variable has changed. Implement in derived class if ocAdjust is allowed for that type of event.
@@ -780,7 +782,7 @@ namespace SimulationDAL
     /// <param name="curTime">Current simulation time</param>
     /// <param name="oldOccurTime">Original time for the event to occur before variable change</param>
     /// <returns>returns the new time for the event</returns>
-    public virtual TimeSpan RedoNextTime(TimeSpan sampledTime, TimeSpan curTime, TimeSpan oldOccurTime)
+    public virtual TimeSpan RedoNextTime(TimeSpan sampledTime, TimeSpan curTime, TimeSpan oldOccurTime, MyBitArray curStates)
     {
       switch (onVarChange)
       {
@@ -788,7 +790,7 @@ namespace SimulationDAL
           return oldOccurTime;
           break;
         case EnOnChangeTask.ocResample:
-          return NextTime(curTime) - (curTime - sampledTime);
+          return NextTime(curTime, curStates) - (curTime - sampledTime);
           break;
         case EnOnChangeTask.ocAdjust:
           throw new Exception("RedoNextTime function not implemented for " + this.evType.ToString());
@@ -921,7 +923,7 @@ namespace SimulationDAL
       return true;
     }
 
-    public override TimeSpan NextTime(TimeSpan curTime)
+    public override TimeSpan NextTime(TimeSpan curTime, MyBitArray curStates)
     {
       TimeSpan retTime = time;
       if (this.timeVariable != null)
@@ -940,12 +942,12 @@ namespace SimulationDAL
       return (TimeSpan)retTime;
     }
 
-    public override TimeSpan RedoNextTime(TimeSpan sampledTime, TimeSpan curTime, TimeSpan oldOccurTime)
+    public override TimeSpan RedoNextTime(TimeSpan sampledTime, TimeSpan curTime, TimeSpan oldOccurTime, MyBitArray curStates)
     {
       //A timer doesn't sample, but if a variable is used and we are to adjust then it is just the new variable time - what has already past
       if (onVarChange == EnOnChangeTask.ocAdjust)
       {
-        TimeSpan time = NextTime(curTime) - (curTime - sampledTime);
+        TimeSpan time = NextTime(curTime, null) - (curTime - sampledTime);
         if (time < curTime)
           return curTime;
         else
@@ -953,7 +955,7 @@ namespace SimulationDAL
       }
 
       //if not "ocAdjust" call parent as they are all the same.
-      return base.RedoNextTime(sampledTime, curTime, oldOccurTime);
+      return base.RedoNextTime(sampledTime, curTime, oldOccurTime, curStates);
     }
   }
 
@@ -1097,7 +1099,7 @@ namespace SimulationDAL
       return true;
     }
 
-    public override TimeSpan NextTime(TimeSpan curTime)
+    public override TimeSpan NextTime(TimeSpan curTime, MyBitArray curStates)
     {
       TimeSpan retVal = TimeSpan.MaxValue;
       if (lambdaVariable != null)
@@ -1148,7 +1150,7 @@ namespace SimulationDAL
       return retVal;
     }
 
-    public override TimeSpan RedoNextTime(TimeSpan sampledTime, TimeSpan curTime, TimeSpan oldOccurTime)
+    public override TimeSpan RedoNextTime(TimeSpan sampledTime, TimeSpan curTime, TimeSpan oldOccurTime, MyBitArray curStates)
     {
       if (onVarChange == EnOnChangeTask.ocAdjust)
       {
@@ -1167,7 +1169,186 @@ namespace SimulationDAL
       }
 
       //if not "ocAdjust" call parent as they are all the same.
-      return base.RedoNextTime(sampledTime, curTime, oldOccurTime);
+      return base.RedoNextTime(sampledTime, curTime, oldOccurTime, curStates);
+    }
+  }
+
+  public class FTProbEvent : FailProbEvent //etFTProb
+  {
+    protected Dictionary<string, string> toChangeBEs = new Dictionary<string, string>();
+    protected string ftModel = null;
+    private bool firstEval = true;
+    /// <summary>
+    /// bitset of state IDs that are failures for the diagrams used, put in a bitset on load for fast compare
+    /// </summary>
+    protected Dictionary<string, MyBitArray> faiureStates = new Dictionary<string, MyBitArray>();
+
+    protected override EnEventType GetEvType() { return EnEventType.etFailRate; }
+
+    public FTProbEvent() : base() { }
+        
+    public override string GetDerivedJSON(EmraldModel lists)
+    {
+      string retStr = base.GetDerivedJSON(lists);
+      retStr = retStr +
+        JsonConvert.SerializeObject(toChangeBEs) + "," + Environment.NewLine +
+        "\"ftModel\": " + JsonConvert.SerializeObject(ftModel) + Environment.NewLine;
+
+      return retStr;
+    }
+
+    public override bool DeserializeDerived(object obj, bool wrapped, EmraldModel lists, bool useGivenIDs)
+    {
+      dynamic dynObj = (dynamic)obj;
+      if (wrapped)
+      {
+        if (dynObj.Event == null)
+          return false;
+
+        dynObj = ((dynamic)obj).Event;
+      }
+
+      if (!base.DeserializeDerived((object)dynObj, false, lists, useGivenIDs))
+        return false;
+      
+      if (dynObj.toChangeBEs != null)
+      {
+        try
+        {
+          toChangeBEs = JsonConvert.DeserializeObject<Dictionary<string, string>>((string)dynObj.toChangeBEs);
+        }
+        catch (Exception e)
+        {
+          throw new Exception("Failed to inport event lookup dictionary. " + e.Message);
+        }
+      }
+      else
+      {
+        throw new Exception("Missing toChangeBEs dictionary lookup.");
+      }
+
+      if (dynObj.ftModel != null)
+      {
+        ftModel = (string)dynObj.ftModel;
+      }
+      else
+      {
+        throw new Exception("Missing toChangeBEs dictionary lookup.");
+      }
+
+
+      processed = true;
+      return true;
+    }
+
+    public override bool LoadObjLinks(object obj, bool wrapped, EmraldModel lists)
+    {
+      //see if all the dictionary items have a component diagram
+      foreach(var name in toChangeBEs.Keys)
+      {
+        Diagram curD = lists.allDiagrams.FindByName(name);
+        if (curD is EvalDiagram)
+        {
+          EvalDiagram curEvalD = (EvalDiagram)curD;
+          if (curD == null)
+            throw new Exception("Missing diagram for " + name);
+          else
+          {
+            this.faiureStates.Add(name, curEvalD.GetFailBitSet());
+            this.AddRelatedItems(curEvalD.GetFailList());
+          }
+        }
+        else
+        {
+          throw new Exception("Diagram \"" + name + "\" is not a diagram that can be evaluated and can't be used in the FTProbEvent");
+        }
+      }
+
+      return base.LoadObjLinks(obj, wrapped, lists);
+    }
+
+    private double GetFTResult(MyBitArray curStates)
+    {
+      //todo for each dictionary item find the current state value.
+      foreach (string name in toChangeBEs.Keys)
+      {
+        //see if failed items are in the currentStates
+        MyBitArray failStates = this.faiureStates[name];
+        if (failStates.HasCommonBits(curStates))
+        {
+          toChangeBEs[name] = "1.0";
+        }
+      }
+
+
+
+      int exitCode = 0;
+      //todo call saphsolver to get the rate
+      string workDir = System.Reflection.Assembly.GetExecutingAssembly().Location;
+      workDir = System.IO.Path.GetDirectoryName(workDir);
+      string ftSolverPath = workDir + "\\SaphSolver.exe";
+      string tempFile  = workDir + "\\ftSolve.JSCut";
+      //todo call the module to modify the model to send to the FT solver
+      string modifiedJSCut = this.ftModel;
+      File.WriteAllText(tempFile, modifiedJSCut);
+
+
+      //Start solver executable
+      ProcessStartInfo extApp = new ProcessStartInfo();
+      
+      extApp.Arguments = tempFile;
+      extApp.FileName = ftSolverPath; 
+      extApp.WorkingDirectory = Path.GetDirectoryName(workDir);
+      extApp.UseShellExecute = false;
+      extApp.RedirectStandardOutput = false;
+      extApp.RedirectStandardError = false;
+
+      // Do you want to show a console window?
+      // extApp.WindowStyle = Hidden.ProcessWindowStyle;
+      extApp.CreateNoWindow = true;
+
+      // Run the external process & wait for it to finish
+      using (Process proc = Process.Start(extApp))
+      {        
+        proc.WaitForExit();
+
+        // Retrieve the app's exit code
+        exitCode = proc.ExitCode;
+        proc.Close();
+      }
+
+      if (exitCode != 0)
+        throw new Exception("Failed in running the FT solver.");
+     
+      return 3.5e-4;
+    }
+
+    public override TimeSpan NextTime(TimeSpan curTime, MyBitArray curStates)
+    {      
+      if(firstEval)
+      {
+        _lambda = GetFTResult(curStates);
+        firstEval = false;
+      }
+
+      return base.NextTime(curTime, curStates);
+    }
+
+    public override TimeSpan RedoNextTime(TimeSpan sampledTime, TimeSpan curTime, TimeSpan oldOccurTime, MyBitArray curStates)
+    {
+      if (onVarChange == EnOnChangeTask.ocAdjust)
+      {
+        double newLambda = GetFTResult(curStates);
+        double rnd = SingleRandom.Instance.NextDouble();
+        double var1 = (Math.Log(rnd) + (_lambda * curTime.TotalHours)) / (-newLambda);
+        _lambda = newLambda;
+        //what will happen if we have more than 2 loops (example: cooling system is repaired)
+        return (TimeSpan.FromHours(var1) + curTime);
+        //return NextTime() - (curTime - sampledTime);
+      }
+
+      //if not "ocAdjust" call parent as they are all the same.
+      return base.RedoNextTime(sampledTime, curTime, oldOccurTime, curStates);
     }
   }
 
@@ -1293,7 +1474,7 @@ namespace SimulationDAL
       return true;
     }
 
-    public override TimeSpan NextTime(TimeSpan curTime)
+    public override TimeSpan NextTime(TimeSpan curTime, MyBitArray curStates)
     {
       double sampled = 0.0;
       List<double?> valuePs = new List<double?>();
@@ -1425,7 +1606,7 @@ namespace SimulationDAL
     /// <param name="curTime">Current simulation time</param>
     /// <param name="oldOccurTime">Original time for the event to occur before variable change</param>
     /// <returns>returns the new time for the event</returns>
-    public override TimeSpan RedoNextTime(TimeSpan sampledTime, TimeSpan curTime, TimeSpan oldOccurTime)
+    public override TimeSpan RedoNextTime(TimeSpan sampledTime, TimeSpan curTime, TimeSpan oldOccurTime, MyBitArray curStates)
     {
       if (onVarChange == EnOnChangeTask.ocAdjust)
       {
@@ -1434,19 +1615,19 @@ namespace SimulationDAL
         {
           case EnDistType.dtExponential:
             //todo: not correct
-            return NextTime(curTime) - (curTime - sampledTime);
+            return NextTime(curTime, null) - (curTime - sampledTime);
             break;
           case EnDistType.dtNormal: //mean and standard deviation
             //todo: not correct
-            return NextTime(curTime) - (curTime - sampledTime);
+            return NextTime(curTime, null) - (curTime - sampledTime);
             break;
           case EnDistType.dtWeibull:
             //todo: not correct
-            return NextTime(curTime) - (curTime - sampledTime);
+            return NextTime(curTime, null) - (curTime - sampledTime);
             break;
           case EnDistType.dtLogNormal:
             //todo: not correct
-            return NextTime(curTime) - (curTime - sampledTime);
+            return NextTime(curTime, null) - (curTime - sampledTime);
             break;
           default:
             throw new Exception("Distribution type not implemented for " + this._distType.ToString());
@@ -1455,7 +1636,7 @@ namespace SimulationDAL
       }
 
       //if not "ocAdjust" call parent as they are all the same.
-      return base.RedoNextTime(sampledTime, curTime, oldOccurTime);
+      return base.RedoNextTime(sampledTime, curTime, oldOccurTime, curStates);
     }
   }
 
@@ -1560,7 +1741,7 @@ namespace SimulationDAL
       return true;
       }
 
-    public override TimeSpan NextTime(TimeSpan curTime)
+    public override TimeSpan NextTime(TimeSpan curTime, MyBitArray curStates)
     {
       if (mathFuncs == null)
         mathFuncs = new Normal(_Mean, Globals.ConvertToNewTimeSpan(_StdTimeRate, _Std, _MeanTimeRate), SingleRandom.Instance);
@@ -1602,7 +1783,7 @@ namespace SimulationDAL
     //  return retStr;
     //}
 
-    public override TimeSpan NextTime(TimeSpan curTime)
+    public override TimeSpan NextTime(TimeSpan curTime, MyBitArray curStates)
     {
       if (mathFuncs == null)
         mathFuncs = new LogNormal(_Mean, _Std, SingleRandom.Instance);
@@ -1695,7 +1876,7 @@ namespace SimulationDAL
       return true;
     }
 
-    public override TimeSpan NextTime(TimeSpan curTime)
+    public override TimeSpan NextTime(TimeSpan curTime, MyBitArray curStates)
     {
       if (mathFuncs == null)
         mathFuncs = new Weibull(_Shape, _Scale, SingleRandom.Instance);
@@ -1766,7 +1947,7 @@ namespace SimulationDAL
       return true;
     }
 
-    public override TimeSpan NextTime(TimeSpan curTime)
+    public override TimeSpan NextTime(TimeSpan curTime, MyBitArray curStates)
     {
       if (mathFuncs == null)
         mathFuncs = new Exponential(_Rate, SingleRandom.Instance);
