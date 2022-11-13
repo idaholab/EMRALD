@@ -18,6 +18,7 @@ if (typeof Navigation === 'undefined')
       this.lookupLoaded = false;
       this.lookupError = false;
       this.jsonStr = null;
+      var sidebar = this;
       if (!modelStr) {
         this.loadLookup();  //get lookup data information from backend server -- through service.
         waitToSync(
@@ -39,6 +40,7 @@ if (typeof Navigation === 'undefined')
               console.log("Data received: Length: " + this.jsonStr.length + ", decoding...");
               var jobj = JSON.parse(this.jsonStr);
               console.log("...data decoded!");
+              sidebar.sortVariables();
               simApp.allDataModel = window.upgrade(jobj);
               this.assignList(jobj);
               //load templates
@@ -53,6 +55,7 @@ if (typeof Navigation === 'undefined')
         this.jsonStr = modelStr;
         this.lookupLoaded = true;
         var jobj = JSON.parse(this.jsonStr);
+        sidebar.sortVariables();
         simApp.allDataModel = window.upgrade(jobj);
         this.assignList(jobj);
         //load templates
@@ -1645,6 +1648,21 @@ if (typeof Navigation === 'undefined')
       }
       dataState.State.eventActions.push(emptyAction);
     }
+    /**
+     * Sorts variables alphabetically by name.
+     */
+    Sidebar.prototype.sortVariables = function () {
+      const mainModel = simApp.allDataModel;
+      mainModel.VariableList = mainModel.VariableList.sort((a, b) => {
+        if (a.Variable.name < b.Variable.name) {
+          return -1;
+        }
+        if (a.Variable.name > b.Variable.name) {
+          return 1;
+        }
+        return 0;
+      });
+    }
     //---------------------------------------------------
     Sidebar.prototype.addNewVariable = function (newVariable, parent) {
       var mainModel = simApp.allDataModel;
@@ -1653,6 +1671,7 @@ if (typeof Navigation === 'undefined')
         if (!varr) {
           var idx = mainModel.VariableList.push(newVariable);
           newVariable.Variable.id = idx;
+          this.sortVariables();
           if (parent) {
             parent.push(newVariable.Variable.name);
           }
@@ -1958,6 +1977,7 @@ if (typeof Navigation === 'undefined')
     Sidebar.prototype.editVariableProperties = function (dataObj, el) {
       var oldName = dataObj.name;
       var url = 'EditForms/VariableEditor.html';
+      var sidebar = this;
       var wnd = mxWindow.createFrameWindow(
         url,
         'OK, Cancel',  //command buttons
@@ -1971,6 +1991,11 @@ if (typeof Navigation === 'undefined')
                 el.innerText = dataObj.name;
                 simApp.modelChanged = true;
                 this.replaceVariableName(oldName, dataObj.name);
+                sidebar.sortVariables();
+                var container = document.getElementById("VariablesPanel_id");
+                if (container) {
+                  sortDOMList(container);
+                }
               }
               else {
                 return false;
