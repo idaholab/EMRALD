@@ -32,7 +32,8 @@ export default function main() {
     }[];
   } = (window as any).data;
   const renderer = new sankeyTimeline.Renderer(timeline);
-  renderer.options.height = 750;
+  renderer.options.height = window.innerHeight;
+  renderer.options.width = window.innerWidth;
   renderer.options.dynamicNodeHeight = true;
   renderer.options.layout = 1;
 
@@ -128,13 +129,26 @@ export default function main() {
 
   renderer.render(select('svg'));
 
+  /**
+   * Forcibly re-renders the diagram.
+   */
+  function reRender() {
+    selectAll('svg > *').remove();
+    renderer.render(select('svg'));
+  }
+
   (window as any).toggleTimelineMode = (value: boolean) => {
     if (value) {
       renderer.options.layout = 1;
     } else {
       renderer.options.layout = 0;
     }
-    selectAll('svg > *').remove();
-    renderer.render(select('svg'));
+    reRender();
   };
+
+  window.addEventListener('resize', () => {
+    renderer.options.width = window.innerWidth;
+    renderer.options.height = window.innerHeight;
+    reRender();
+  });
 }

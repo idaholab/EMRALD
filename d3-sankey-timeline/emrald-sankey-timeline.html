@@ -12,6 +12,11 @@
                 width: 100%;
                 position: absolute;
                 font-family: 'Roboto', sans-serif;
+                background: white;
+            }
+
+            #chart {
+                display: block;
             }
         </style>
     </head>
@@ -22,12 +27,19 @@
         <script src="./data.js"></script>
         <script src="./emrald-sankey-timeline.js"></script>
         <script>
-            sankeyTimeline.default();
+            if (window.data) {
+                sankeyTimeline.default();
+            }
             let timelineMode = true;
             document.getElementById('timelineToggle').addEventListener('change', () => {
                 timelineMode = !timelineMode;
                 window.toggleTimelineMode(timelineMode);
             });
+
+            function OnLoad(dataObj) {
+                window.data = dataObj;
+                sankeyTimeline.default();
+            }
         </script>
     </body>
 </html>
