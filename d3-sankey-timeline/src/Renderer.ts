@@ -143,94 +143,73 @@ export default class Renderer {
   public calculateLayout(): TimelineGraph {
     this.graph = this.timeline.graph;
     this.initializeLayout();
-    if (this.options.layout === 1) {
-      let totalMaxColumn = 0;
-      let totalMaxRow = 0;
-      this.graph.nodes.forEach((node) => {
-        let maxColumn = -1;
-        let maxRow = -1;
-        node.incomingLinks.forEach((link) => {
-          if (link.source.layout.column > maxColumn) {
-            maxColumn = link.source.layout.column;
-          }
-          if (link.source.layout.row > maxRow) {
-            maxRow = link.source.layout.row;
-          }
+    const cols: TimelineNode[][] = [];
+    const rows: number[] = [];
+    let maxColumn = -1;
+    let maxRow = -1;
+    /**
+     * Assigns columns along a path.
+     *
+     * @param source The current source node.
+     * @param currentCol The current row number.
+     */
+    function assignColumns(source: TimelineNode, currentCol: number) {
+      if (source.layout.column < 0) {
+        if (currentCol >= cols.length) {
+          cols.push([]);
+          rows.push(0);
+        }
+        if (currentCol > maxColumn) {
+          maxColumn = currentCol;
+        }
+        source.setColumn(currentCol);
+        cols[currentCol].push(source);
+        source.outgoingLinks.forEach((link) => {
+          assignColumns(link.target, currentCol + 1);
         });
-        node.layout.column = maxColumn + 1;
-        node.layout.row = maxRow + 1;
-        if (maxColumn > totalMaxColumn) {
-          totalMaxColumn = maxColumn;
-        }
-        if (maxRow > totalMaxRow) {
-          totalMaxRow = maxRow;
-        }
-      });
-      this.graph.nodes.forEach((node) => {
-        node.layout.x =
-          (node.layout.column / (totalMaxColumn + 2)) * this.options.width;
-        node.layout.y =
-          (node.layout.row / (totalMaxRow + 2)) * this.options.height;
-      });
-      this.calculateLinkPaths();
-      return this.graph;
+      }
     }
-    const rows: TimelineNode[][] = [];
-    const placed: number[] = [];
-    this.graph.nodes.forEach((node) => {
-      node.layout.x -= node.layout.width / 2;
-      if (placed.indexOf(node.id) < 0) {
-        rows.push([]);
-        this.findNodeOverlaps(node)
-          .map((overlap) => overlap.node)
-          .forEach((o) => {
-            rows[rows.length - 1].push(o);
-            placed.push(o.id);
-          });
+    /**
+     * Assigns rows along a path.
+     *
+     * @param source The current source node.
+     * @param baseRow The row the original source is assigned to.
+     */
+    function assignRows(source: TimelineNode, baseRow: number) {
+      if (source.layout.row < 0) {
+        let row = baseRow;
+        if (rows[source.layout.column] > baseRow) {
+          row = rows[source.layout.column] + 1;
+        }
+        source.setRow(row);
+        if (row > maxRow) {
+          maxRow = row;
+        }
+        rows[source.layout.column] = row;
+        source.outgoingLinks.forEach((link) => {
+          assignRows(link.target, baseRow);
+        });
       }
+    }
+    this.timeline.sourceNodes.forEach((sourceNode) => {
+      assignColumns(sourceNode, 0);
     });
-    rows.forEach((row) => {
-      const columnHeight =
-        (this.options.height - this.options.marginTop) / row.length;
-      for (let col = 0; col < row.length; col += 1) {
-        this.graph.nodes[row[col].id].layout.y =
-          col * columnHeight + this.options.marginTop;
+    let row = 0;
+    cols[0].forEach((node) => {
+      assignRows(node, row);
+      row += 1;
+    });
+    this.graph.nodes.forEach((node) => {
+      node.layout.x =
+        (node.layout.column / (maxColumn + 1)) * this.options.width;
+      if (this.options.layout === 0) {
+        node.layout.x -= node.layout.width / 2;
       }
+      node.layout.y = (node.layout.row / (maxRow + 1)) * this.options.height;
     });
     this.calculateLinkPaths();
     this.calculateDistributionLayout();
     return this.graph;
-  }
-
-  /**
-   * Finds nodes that overlap with the given node.
-   *
-   * @param node - The node to find overlaps for.
-   * @param strict - If true, borders touching will be considered an overlap.
-   * @returns Other nodes that overlap with the given node.
-   */
-  private findNodeOverlaps(node: TimelineNode, strict = true) {
-    const overlaps: { node: TimelineNode; range: [number, number] }[] = [];
-    this.graph.nodes.forEach((o) => {
-      if (
-        (strict &&
-          ((o.layout.x + o.layout.width >= node.layout.x &&
-            o.layout.x <= node.layout.x) ||
-            (node.layout.x + node.layout.width >= o.layout.x &&
-              node.layout.x <= o.layout.x))) ||
-        (!strict &&
-          ((o.layout.x + o.layout.width > node.layout.x &&
-            o.layout.x <= node.layout.x) ||
-            (node.layout.x + node.layout.width > o.layout.x &&
-              node.layout.x <= o.layout.x)))
-      ) {
-        overlaps.push({
-          node: o,
-          range: [o.layout.y, o.layout.y + o.layout.height],
-        });
-      }
-    });
-    return overlaps;
   }
 
   /**
@@ -245,9 +224,9 @@ export default class Renderer {
         height *= node.size / this.timeline.maxSize;
       }
       this.graph.nodes[n].layout = {
-        column: 0,
+        column: -1,
         height,
-        row: 0,
+        row: -1,
         width,
         x,
         y: 0,
@@ -305,22 +284,14 @@ export default class Renderer {
         .attr('width', '100%')
         .attr('height', this.options.axisHeight)
         .attr('fill', this.options.axisColor);
-      for (
-        let i = Math.max(this.timeline.minTime, 0);
-        i <= this.timeline.maxTime;
-        i += 1
-      ) {
-        if (
-          i %
-            10 **
-              ((Math.round(
-                (this.timeline.maxTime - this.timeline.minTime) /
-                  this.options.ticks,
-              ) %
-                10) -
-                2) ===
-          0
-        ) {
+      const tickInterval = Math.round(
+        (this.timeline.maxTime - this.timeline.minTime) / this.options.ticks,
+      );
+      console.log(this.timeline.maxTime);
+      console.log(this.timeline.minTime);
+      console.log(this.options.ticks);
+      for (let i = this.timeline.minTime; i <= this.timeline.maxTime; i += 1) {
+        if (i % tickInterval === 0) {
           const x = this.getTimeX(i);
           axisContainer
             .append('text')
