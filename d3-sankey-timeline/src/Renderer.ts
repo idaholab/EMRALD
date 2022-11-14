@@ -171,7 +171,7 @@ export default class Renderer {
     }
     /**
      * Assigns rows along a path.
-     * 
+     *
      * @param source The current source node.
      * @param baseRow The row the original source is assigned to.
      */
@@ -199,10 +199,12 @@ export default class Renderer {
       assignRows(node, row);
       row += 1;
     });
-    console.log(this.graph.nodes);
     this.graph.nodes.forEach((node) => {
       node.layout.x =
         (node.layout.column / (maxColumn + 1)) * this.options.width;
+      if (this.options.layout === 0) {
+        node.layout.x -= node.layout.width / 2;
+      }
       node.layout.y = (node.layout.row / (maxRow + 1)) * this.options.height;
     });
     this.calculateLinkPaths();
@@ -282,22 +284,14 @@ export default class Renderer {
         .attr('width', '100%')
         .attr('height', this.options.axisHeight)
         .attr('fill', this.options.axisColor);
-      for (
-        let i = Math.max(this.timeline.minTime, 0);
-        i <= this.timeline.maxTime;
-        i += 1
-      ) {
-        if (
-          i %
-            10 **
-              ((Math.round(
-                (this.timeline.maxTime - this.timeline.minTime) /
-                  this.options.ticks,
-              ) %
-                10) -
-                2) ===
-          0
-        ) {
+      const tickInterval = Math.round(
+        (this.timeline.maxTime - this.timeline.minTime) / this.options.ticks,
+      );
+      console.log(this.timeline.maxTime);
+      console.log(this.timeline.minTime);
+      console.log(this.options.ticks);
+      for (let i = this.timeline.minTime; i <= this.timeline.maxTime; i += 1) {
+        if (i % tickInterval === 0) {
           const x = this.getTimeX(i);
           axisContainer
             .append('text')
