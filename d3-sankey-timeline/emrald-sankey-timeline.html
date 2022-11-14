@@ -23,6 +23,8 @@
     <body>
         <input id="timelineToggle" type="checkbox" />
         <label for="timelineToggle">Show Timeline</label>
+        <input id="otherStatesToggle" type="checkbox" />
+        <label for="otherStatesToggle">Show Other State Paths</label>
         <svg id="chart"></svg>
         <script src="./data.js"></script>
         <script src="./emrald-sankey-timeline.js"></script>
@@ -30,10 +32,17 @@
             if (window.data) {
                 sankeyTimeline.default();
             }
+
             let timelineMode = true;
             document.getElementById('timelineToggle').addEventListener('change', () => {
                 timelineMode = !timelineMode;
                 window.toggleTimelineMode(timelineMode);
+            });
+
+            let otherStatesMode = false;
+            document.getElementById('otherStatesToggle').addEventListener('change', () => {
+                otherStatesMode = !otherStatesMode;
+                window.toggleOtherStatesMode(otherStatesMode);
             });
 
             function OnLoad(dataObj) {

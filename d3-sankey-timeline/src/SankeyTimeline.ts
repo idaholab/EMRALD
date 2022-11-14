@@ -33,6 +33,17 @@ export default class SankeyTimeline {
   }
 
   /**
+   * Clears all nodes and links from the timeline.
+   */
+  public clear() {
+    this.nodes = {};
+    this.links = {};
+    this.keyTimes = [];
+    this.nextLinkId = 0;
+    this.nextNodeId = 0;
+  }
+
+  /**
    * Creates a link between two nodes.
    *
    * @param source - The source node.
