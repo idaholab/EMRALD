@@ -182,7 +182,9 @@ export default class SankeyTimeline {
   public get graph(): TimelineGraph {
     return {
       links: Object.values(this.links),
-      nodes: Object.values(this.nodes),
+      nodes: Object.values(this.nodes).sort(
+        (a, b) => a.links.length - b.links.length,
+      ),
     };
   }
 

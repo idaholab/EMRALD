@@ -60,7 +60,7 @@ export default function main() {
       d.data.timeMean
     } (${timestampToSeconds(d.data.timeMean)} s)\nStandard Deviation: ${
       d.data.timeStdDeviation
-    }`;
+    }\nRow: ${d.layout.row},Col: ${d.layout.column}`;
 
   /**
    * Creates the node and link objects.
@@ -143,7 +143,6 @@ export default function main() {
         );
       });
     });
-    console.log(timeline);
   }
 
   createPaths();

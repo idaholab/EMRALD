@@ -18,9 +18,9 @@ export default class TimelineNode {
   public label: string;
 
   public layout: NodeLayout = {
-    column: 0,
+    column: -1,
     height: 0,
-    row: 0,
+    row: -1,
     width: 0,
     x: 0,
     y: 0,
@@ -83,6 +83,24 @@ export default class TimelineNode {
    */
   public get links(): TimelineLink[] {
     return this.incomingLinks.concat(this.outgoingLinks);
+  }
+
+  /**
+   * Sets the layout column.
+   * 
+   * @param col The column to set.
+   */
+   public setColumn(col: number) {
+    this.layout.column = col;
+  }
+
+  /**
+   * Sets the layout row.
+   * 
+   * @param row The row to set.
+   */
+   public setRow(row: number) {
+    this.layout.row = row;
   }
 
   /**
