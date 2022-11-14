@@ -934,7 +934,7 @@ namespace SimulationDAL
         }
       }
 
-      scriptRunner.AddVariable("outputFile", typeof(string));
+      scriptRunner.AddVariable("OutputFile", typeof(string));
 
       //add all the states
       foreach (KeyValuePair<int, State> state in lists.allStates)
@@ -1267,6 +1267,7 @@ namespace SimulationDAL
       processOutputFileCompEval.AddVariable("CurTime", typeof(Double));
       processOutputFileCompEval.AddVariable("RunIdx", typeof(int));
       processOutputFileCompEval.AddVariable("ExeExitCode", typeof(int));
+      processOutputFileCompEval.AddVariable("OutputFile", typeof(string));
 
       //add all the variables needed
       if (codeVariables != null)
@@ -1286,9 +1287,7 @@ namespace SimulationDAL
           }
         }
       }
-
-      processOutputFileCompEval.AddVariable("outputFile", typeof(string));
-
+      
       //add all the states
       foreach (KeyValuePair<int, State> state in lists.allStates)
       {

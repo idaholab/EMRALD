@@ -831,13 +831,13 @@ namespace SimulationDAL
       }
 
       //if not changed return the previous value
-      DateTime curTimestamp = File.GetCreationTime(_docFullPath);
+      DateTime curTimestamp = File.GetLastWriteTime(_docFullPath);
       string curLinkStr = linkStr();
       if ((curTimestamp == _timestamp) && (_oldLinkStr == curLinkStr) && (_value != null))
         return this._value;
 
       //value new so save timestamp and lookup new value
-      _timestamp = File.GetCreationTime(_docFullPath);
+      _timestamp = File.GetLastWriteTime(_docFullPath);
       _oldLinkStr = curLinkStr;
       XmlDocument xDoc = new XmlDocument();
       xDoc.Load(_docFullPath);
@@ -947,14 +947,14 @@ namespace SimulationDAL
       }
 
       //if not changed return the previous value
-      DateTime curTimestamp = File.GetCreationTime(_docFullPath);
+      DateTime curTimestamp = File.GetLastWriteTime(_docFullPath);
       string curLinkStr = linkStr();
       if ((curTimestamp == _timestamp) && (_oldLinkStr == curLinkStr) && (_value != null))
         return this._value;
 
 
       //value new so save timestamp and lookup new value
-      _timestamp = File.GetCreationTime(_docFullPath);
+      _timestamp = File.GetLastWriteTime(_docFullPath);
       _oldLinkStr = curLinkStr;
       string fileStr = File.ReadAllText(_docFullPath);
       JObject fullObj = JObject.Parse(fileStr);
@@ -1123,14 +1123,14 @@ namespace SimulationDAL
       }
 
       //if not changed return the previous value
-      DateTime curTimestamp = File.GetCreationTime(_docFullPath);
+      DateTime curTimestamp = File.GetLastWriteTime(_docFullPath);
       string curLinkStr = linkStr();
       if ((curTimestamp == _timestamp) && (_oldLinkStr == curLinkStr) && (_value != null))
         return this._value;
 
 
       //value new so save timestamp and lookup new value
-      _timestamp = File.GetCreationTime(_docFullPath);
+      _timestamp = File.GetLastWriteTime(_docFullPath);
       _oldLinkStr = curLinkStr;
       string docTxt = File.ReadAllText(_docFullPath);
       // Find matches.
