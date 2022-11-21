@@ -28,6 +28,19 @@ export default class TimelineNode {
 
   public outgoingLinks: TimelineLink[] = [];
 
+  public persist: {
+    default: {
+      x?: number;
+      y?: number;
+    };
+    timeline: {
+      y?: number;
+    };
+  } = {
+    default: {},
+    timeline: {},
+  };
+
   public textHeight = 0;
 
   public textWidth = 0;

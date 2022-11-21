@@ -202,14 +202,25 @@ export default class Renderer {
     const adjusted: number[] = [];
     this.graph.nodes.forEach((node) => {
       if (this.options.layout === 1) {
-        node.layout.x =
-          (node.layout.column / (maxColumn + 1)) * this.options.width -
-          node.layout.width / 2;
-        node.layout.y = (node.layout.row / (maxRow + 1)) * this.options.height;
+        if (
+          typeof node.persist.default.x === 'number' &&
+          typeof node.persist.default.y === 'number'
+        ) {
+          node.layout.x = node.persist.default.x;
+          node.layout.y = node.persist.default.y;
+        } else {
+          node.layout.x =
+            (node.layout.column / (maxColumn + 1)) * this.options.width -
+            node.layout.width / 2;
+          node.layout.y =
+            (node.layout.row / (maxRow + 1)) * this.options.height;
+        }
       } else if (this.options.layout === 0) {
         node.layout.x =
           this.getTimeX(node.times.meanTime || 0) - node.layout.width / 2;
-        if (adjusted.indexOf(node.id) < 0) {
+        if (typeof node.persist.timeline.y === 'number') {
+          node.layout.y = node.persist.timeline.y;
+        } else if (adjusted.indexOf(node.id) < 0) {
           node.layout.y = this.options.axisTickHeight;
           adjusted.push(node.id);
           this.findNodeOverlaps(node)
@@ -308,8 +319,8 @@ export default class Renderer {
       .attr('dominant-baseline', 'middle')
       .style('fill', this.options.fontColor)
       .style('font-size', `${this.options.fontSize}px`)
-      .text((d) => d.label)
-      .each(function (d) {
+      .text((d: TimelineNode) => d.label)
+      .each(function (d: TimelineNode) {
         d.textHeight = this.getBBox().height;
         d.textWidth = this.getBBox().width;
         d.layout.width = d.textWidth;
@@ -334,7 +345,11 @@ export default class Renderer {
       const tickInterval = Math.round(
         (this.timeline.maxTime - this.timeline.minTime) / this.options.ticks,
       );
-      for (let i = this.timeline.minTime; i <= this.timeline.maxTime + 1; i += 1) {
+      for (
+        let i = this.timeline.minTime;
+        i <= this.timeline.maxTime + 1;
+        i += 1
+      ) {
         if (i % tickInterval === 0) {
           const x = this.getTimeX(i);
           axisContainer
@@ -369,7 +384,7 @@ export default class Renderer {
       .selectAll('g')
       .data(graph.links)
       .join('g')
-      .attr('stroke', (d) =>
+      .attr('stroke', (d: TimelineLink) =>
         (
           color(gradient(d.source.id / graph.nodes.length)) as RGBColor
         ).toString(),
@@ -379,12 +394,14 @@ export default class Renderer {
 
     links
       .append('path')
-      .attr('d', (d) => d.layout.path)
-      .attr('stroke-width', (d) => Math.max(1, d.layout.width));
+      .attr('d', (d: TimelineLink) => d.layout.path)
+      .attr('stroke-width', (d: TimelineLink) => Math.max(1, d.layout.width));
 
     links
       .append('title')
-      .text((d) => `${d.source.label} → ${d.target.label}\n${d.flow}`);
+      .text(
+        (d: TimelineLink) => `${d.source.label} → ${d.target.label}\n${d.flow}`,
+      );
 
     // Create nodes
     type TransitionType = Transition<BaseType, null, null, undefined>;
@@ -394,13 +411,13 @@ export default class Renderer {
       .selectAll('g')
       .data(graph.nodes)
       .join('g')
-      .attr('x', (d) => d.layout.x)
-      .attr('y', (d) => d.layout.y)
-      .attr('height', (d) => d.layout.height)
-      .attr('width', (d) => d.layout.width)
+      .attr('x', (d: TimelineNode) => d.layout.x)
+      .attr('y', (d: TimelineNode) => d.layout.y)
+      .attr('height', (d: TimelineNode) => d.layout.height)
+      .attr('width', (d: TimelineNode) => d.layout.width)
       .attr('class', 'node')
       // TODO: Make this renderer-agnostic
-      .on('mouseover', (event, d) => {
+      .on('mouseover', (event: DragEvent, d: TimelineNode) => {
         let shortestPath: number[] = [];
         const paths: number[][] = this.timeline.getPath(d.id);
         paths.forEach((path) => {
@@ -408,7 +425,7 @@ export default class Renderer {
             shortestPath = path;
           }
         });
-        selectAll('.node').each(function (n) {
+        selectAll('.node').each(function (n: unknown) {
           const node = n as TimelineNode;
           if (paths.flat().indexOf(node.id) < 0) {
             select(this)
@@ -424,7 +441,7 @@ export default class Renderer {
         paths.forEach((path) => {
           pathLinks.push(...this.timeline.getLinksInPath(path));
         });
-        selectAll('.link').each(function (l) {
+        selectAll('.link').each(function (l: unknown) {
           const link = l as TimelineLink;
           if (pathLinks.indexOf(link.id) < 0) {
             select(this)
@@ -448,14 +465,21 @@ export default class Renderer {
       })
       .call(
         drag<any, TimelineNode>()
-          .on('drag', (event, d) => {
+          .on('drag', (event: DragEvent, d: TimelineNode) => {
             if (options.layout !== 0) {
               d.layout.x = event.x;
+              d.layout.y = event.y;
+              d.persist.default.x = event.x;
+              d.persist.default.y = event.y;
+            } else {
+              d.layout.y = event.y;
+              d.persist.timeline.y = event.y;
             }
-            d.layout.y = event.y;
           })
           .on('drag.update', () => {
-            selectAll<BaseType, TimelineNode>('.node').each(function (d) {
+            selectAll<BaseType, TimelineNode>('.node').each(function (
+              d: TimelineNode,
+            ) {
               const element = select(this);
               element
                 .select('rect')
@@ -469,7 +493,9 @@ export default class Renderer {
                 .select('.meanValue')
                 .attr('x', () => d.layout.x + d.layout.width / 2)
                 .attr('y', () => d.layout.y - options.meanBarWidth);
-              selectAll<BaseType, TimelineLink>('.link').each(function (l) {
+              selectAll<BaseType, TimelineLink>('.link').each(function (
+                l: TimelineLink,
+              ) {
                 const path = l.layout.path.substring(1).split(',');
                 if (l.source.id === d.id) {
                   l.layout.path = `M${d.layout.x + d.layout.width},${
@@ -496,62 +522,62 @@ export default class Renderer {
       );
     nodes
       .append('rect')
-      .attr('fill', (d) => gradient(d.id / graph.nodes.length))
-      .attr('x', (d) => d.layout.x)
-      .attr('y', (d) => d.layout.y)
-      .attr('height', (d) => d.layout.height)
-      .attr('width', (d) => d.layout.width);
-    nodes.append('title').text((d) => this.options.nodeTitle(d));
+      .attr('fill', (d: TimelineNode) => gradient(d.id / graph.nodes.length))
+      .attr('x', (d: TimelineNode) => d.layout.x)
+      .attr('y', (d: TimelineNode) => d.layout.y)
+      .attr('height', (d: TimelineNode) => d.layout.height)
+      .attr('width', (d: TimelineNode) => d.layout.width);
+    nodes.append('title').text((d: TimelineNode) => this.options.nodeTitle(d));
 
     if (this.options.layout === 0) {
       // Left handle
       nodes
         .append('rect')
-        .attr('x', (d) => {
+        .attr('x', (d: TimelineNode) => {
           if (d.layout.distribution) {
             return d.layout.distribution[0].x;
           }
           return 0;
         })
-        .attr('y', (d) => {
+        .attr('y', (d: TimelineNode) => {
           if (d.layout.distribution) {
             return d.layout.distribution[0].y;
           }
           return 0;
         })
         .attr('class', 'distHandleLeft')
-        .attr('height', (d) => d.layout.height)
+        .attr('height', (d: TimelineNode) => d.layout.height)
         .attr('width', () => this.options.distHandleWidth)
-        .attr('fill', (d) => gradient(d.id / graph.nodes.length));
+        .attr('fill', (d: TimelineNode) => gradient(d.id / graph.nodes.length));
       // Right handle
       nodes
         .append('rect')
-        .attr('x', (d) => {
+        .attr('x', (d: TimelineNode) => {
           if (d.layout.distribution) {
             return d.layout.distribution[1].x;
           }
           return 0;
         })
-        .attr('y', (d) => {
+        .attr('y', (d: TimelineNode) => {
           if (d.layout.distribution) {
             return d.layout.distribution[1].y;
           }
           return 0;
         })
         .attr('class', 'distHandleRight')
-        .attr('height', (d) => d.layout.height)
+        .attr('height', (d: TimelineNode) => d.layout.height)
         .attr('width', () => this.options.distHandleWidth)
-        .attr('fill', (d) => gradient(d.id / graph.nodes.length));
+        .attr('fill', (d: TimelineNode) => gradient(d.id / graph.nodes.length));
       // Center line
       nodes
         .append('rect')
-        .attr('x', (d) => {
+        .attr('x', (d: TimelineNode) => {
           if (d.layout.distribution) {
             return d.layout.distribution[0].x;
           }
           return 0;
         })
-        .attr('y', (d) => {
+        .attr('y', (d: TimelineNode) => {
           if (d.layout.distribution) {
             return d.layout.y + d.layout.height / 2;
           }
@@ -559,22 +585,25 @@ export default class Renderer {
         })
         .attr('class', 'distHandleCenter')
         .attr('height', () => this.options.distHandleWidth)
-        .attr('width', (d) => {
+        .attr('width', (d: TimelineNode) => {
           if (d.layout.distribution) {
             return d.layout.distribution[1].x - d.layout.distribution[0].x;
           }
           return 0;
         })
-        .attr('fill', (d) => gradient(d.id / graph.nodes.length));
+        .attr('fill', (d: TimelineNode) => gradient(d.id / graph.nodes.length));
 
       // Mean value bar
       nodes
         .append('rect')
-        .attr('x', (d) => d.layout.x + d.layout.width / 2)
-        .attr('y', (d) => d.layout.y - this.options.meanBarWidth)
+        .attr('x', (d: TimelineNode) => d.layout.x + d.layout.width / 2)
+        .attr('y', (d: TimelineNode) => d.layout.y - this.options.meanBarWidth)
         .attr('class', 'meanValue')
         .attr('width', this.options.meanBarWidth)
-        .attr('height', (d) => d.layout.height + this.options.meanBarWidth * 2)
+        .attr(
+          'height',
+          (d: TimelineNode) => d.layout.height + this.options.meanBarWidth * 2,
+        )
         .attr('fill', this.options.meanBarColor);
     }
 
@@ -586,9 +615,9 @@ export default class Renderer {
       .attr('class', 'label')
       .style('fill', this.options.fontColor)
       .style('font-size', `${this.options.fontSize}px`)
-      .text((d) => d.label)
-      .attr('x', (d) => d.layout.x + d.layout.width / 2)
-      .attr('y', (d) => d.layout.y + d.layout.height / 2);
+      .text((d: TimelineNode) => d.label)
+      .attr('x', (d: TimelineNode) => d.layout.x + d.layout.width / 2)
+      .attr('y', (d: TimelineNode) => d.layout.y + d.layout.height / 2);
 
     // Label boxes
     /*
