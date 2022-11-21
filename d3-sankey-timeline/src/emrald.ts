@@ -170,6 +170,20 @@ export default function main() {
     reRender();
   };
 
+  (window as any).zoomIn = () => {
+    renderer.options.fontSize *= 1.1;
+    renderer.options.maxNodeHeight *= 1.1;
+    renderer.options.maxLinkWidth *= 1.1;
+    reRender();
+  };
+
+  (window as any).zoomOut = () => {
+    renderer.options.fontSize *= 0.9;
+    renderer.options.maxNodeHeight *= 0.9;
+    renderer.options.maxLinkWidth *= 0.9;
+    reRender();
+  };
+
   window.addEventListener('resize', () => {
     renderer.options.width = window.innerWidth;
     renderer.options.height = window.innerHeight;

@@ -25,6 +25,8 @@
         <label for="timelineToggle">Show Timeline</label>
         <input id="otherStatesToggle" type="checkbox" />
         <label for="otherStatesToggle">Show Other State Paths</label>
+        <button id="zoomOut">Zoom Out</button>
+        <button id="zoomIn">Zoom In</button>
         <svg id="chart"></svg>
         <script src="./data.js"></script>
         <script src="./emrald-sankey-timeline.js"></script>
@@ -43,6 +45,14 @@
             document.getElementById('otherStatesToggle').addEventListener('change', () => {
                 otherStatesMode = !otherStatesMode;
                 window.toggleOtherStatesMode(otherStatesMode);
+            });
+
+            document.getElementById('zoomIn').addEventListener('click', () => {
+                window.zoomIn();
+            });
+
+            document.getElementById('zoomOut').addEventListener('click', () => {
+                window.zoomOut();
             });
 
             function OnLoad(dataObj) {
