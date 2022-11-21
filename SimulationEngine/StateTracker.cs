@@ -436,7 +436,7 @@ namespace SimulationTracking
       }
     }
 
-    public void AddEventStateActions(int evID, int stateID, ActionList actions)
+    public bool AddEventStateActions(int evID, int stateID, ActionList actions)
     {
       //see if this event is an event already in there from another state if so don't create a new one use the previous sampled event and time.
       List<TimeSpan> refs;
@@ -451,12 +451,13 @@ namespace SimulationTracking
             {
               timedEvQue.CurrentValue.eventStateActions.AddStateEv(stateID, actions);
               AddStateLookup(stateID, refTime);
-              return;
+              return true;
             }
             while (timedEvQue.MoveNext() && timedEvQue.CurrentKey == refTime);
           }
         }
       }
+      return false;
     }
 
     //public void SaveCurrent(TimeStateVariable curSave, TimeSpan curTime)
@@ -637,7 +638,7 @@ namespace SimulationTracking
     private NLog.Logger logger = NLog.LogManager.GetLogger("logfile");
     private Dictionary<int, RemovedStateInfo> removedItems = new Dictionary<int, RemovedStateInfo>();
 
-    private MyBitArray _bitMap = new MyBitArray(100, false);
+    private MyBitArray _bitMap = new MyBitArray(200, false);
     public MyBitArray bitMap { get { return _bitMap; } }
     //public bool trackStateMovement = true;
 

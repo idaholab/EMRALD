@@ -235,6 +235,7 @@ namespace SimulationEngine
       try
       {
         _lists.allVariables.ReInitAll();
+        _lists.curRunIdx = 0;
 
         for (int i = 1; i <= _numRuns; ++i)
         {
