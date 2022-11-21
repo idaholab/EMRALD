@@ -40,7 +40,7 @@ export default class Renderer {
     fontSize: 25,
     height: window.innerHeight,
     layout: 0,
-    margin: 40,
+    margin: 60,
     marginTop: 25,
     maxLinkWidth: 50,
     maxNodeHeight: 100,
@@ -334,7 +334,7 @@ export default class Renderer {
       const tickInterval = Math.round(
         (this.timeline.maxTime - this.timeline.minTime) / this.options.ticks,
       );
-      for (let i = this.timeline.minTime; i <= this.timeline.maxTime; i += 1) {
+      for (let i = this.timeline.minTime; i <= this.timeline.maxTime + 1; i += 1) {
         if (i % tickInterval === 0) {
           const x = this.getTimeX(i);
           axisContainer

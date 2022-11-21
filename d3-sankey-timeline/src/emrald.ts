@@ -189,6 +189,7 @@ export default function main() {
     renderer.options.height = window.innerHeight;
     renderer.options.maxNodeHeight = window.innerHeight / 7;
     renderer.options.maxLinkWidth = renderer.options.maxNodeHeight / 2;
+    renderer.options.fontSize = 25;
     reRender();
   });
 }
