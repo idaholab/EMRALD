@@ -49,8 +49,12 @@
           "title": "Load Demo",
           "fnc": "createDemo",
           "submenu": null
+        },
+        {
+          "title": "Load Results",
+          "fnc": "openSankey",
+          "submenu": null
         }
-
       ]
     },
     {

@@ -40,9 +40,9 @@ if (typeof Navigation === 'undefined')
               console.log("Data received: Length: " + this.jsonStr.length + ", decoding...");
               var jobj = JSON.parse(this.jsonStr);
               console.log("...data decoded!");
-              simApp.allDataModel = window.upgrade(jobj);
+              simApp.allDataModel = jobj;
               sidebar.sortVariables();
-              
+              window.upgrade(simApp.allDataModel);
               this.assignList(jobj);
               //load templates
               this.loadTemplates();
@@ -56,8 +56,9 @@ if (typeof Navigation === 'undefined')
         this.jsonStr = modelStr;
         this.lookupLoaded = true;
         var jobj = JSON.parse(this.jsonStr);
-        simApp.allDataModel = window.upgrade(jobj);
+        simApp.allDataModel = jobj;
         sidebar.sortVariables();
+        window.upgrade(simApp.allDataModel);
         this.assignList(jobj);
         //load templates
         this.loadTemplates(jobj.templates);
@@ -82,6 +83,7 @@ if (typeof Navigation === 'undefined')
         }
       }
     }
+    Sidebar.prototype.upgrade = window.upgrade;
     //this will make the sidebar sections have the accordion function 
     Sidebar.prototype.ApplyJqueryUi = function (id) {
 
