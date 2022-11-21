@@ -40,7 +40,7 @@ export default class Renderer {
     fontSize: 25,
     height: window.innerHeight,
     layout: 0,
-    margin: 0,
+    margin: 40,
     marginTop: 25,
     maxLinkWidth: 50,
     maxNodeHeight: 100,
@@ -199,17 +199,64 @@ export default class Renderer {
       assignRows(node, row);
       row += 1;
     });
+    const adjusted: number[] = [];
     this.graph.nodes.forEach((node) => {
-      node.layout.x =
-        (node.layout.column / (maxColumn + 1)) * this.options.width;
-      if (this.options.layout === 0) {
-        node.layout.x -= node.layout.width / 2;
+      if (this.options.layout === 1) {
+        node.layout.x =
+          (node.layout.column / (maxColumn + 1)) * this.options.width -
+          node.layout.width / 2;
+        node.layout.y = (node.layout.row / (maxRow + 1)) * this.options.height;
+      } else if (this.options.layout === 0) {
+        node.layout.x =
+          this.getTimeX(node.times.meanTime || 0) - node.layout.width / 2;
+        if (adjusted.indexOf(node.id) < 0) {
+          node.layout.y = this.options.axisTickHeight;
+          adjusted.push(node.id);
+          this.findNodeOverlaps(node)
+            .map((overlap) => overlap.node)
+            .forEach((o) => {
+              if (adjusted.indexOf(o.id) < 0 && o.id !== node.id) {
+                adjusted.push(o.id);
+                o.layout.y += this.options.maxNodeHeight;
+              }
+            });
+        }
       }
-      node.layout.y = (node.layout.row / (maxRow + 1)) * this.options.height;
     });
     this.calculateLinkPaths();
     this.calculateDistributionLayout();
     return this.graph;
+  }
+
+  /**
+   * Finds nodes that overlap with the given node.
+   *
+   * @param node - The node to find overlaps for.
+   * @param strict - If true, borders touching will be considered an overlap.
+   * @returns Other nodes that overlap with the given node.
+   */
+  private findNodeOverlaps(node: TimelineNode, strict = true) {
+    const overlaps: { node: TimelineNode; range: [number, number] }[] = [];
+    this.graph.nodes.forEach((o) => {
+      if (
+        (strict &&
+          ((o.layout.x + o.layout.width >= node.layout.x &&
+            o.layout.x <= node.layout.x) ||
+            (node.layout.x + node.layout.width >= o.layout.x &&
+              node.layout.x <= o.layout.x))) ||
+        (!strict &&
+          ((o.layout.x + o.layout.width > node.layout.x &&
+            o.layout.x <= node.layout.x) ||
+            (node.layout.x + node.layout.width > o.layout.x &&
+              node.layout.x <= o.layout.x)))
+      ) {
+        overlaps.push({
+          node: o,
+          range: [o.layout.y, o.layout.y + o.layout.height],
+        });
+      }
+    });
+    return overlaps;
   }
 
   /**
@@ -287,9 +334,6 @@ export default class Renderer {
       const tickInterval = Math.round(
         (this.timeline.maxTime - this.timeline.minTime) / this.options.ticks,
       );
-      console.log(this.timeline.maxTime);
-      console.log(this.timeline.minTime);
-      console.log(this.options.ticks);
       for (let i = this.timeline.minTime; i <= this.timeline.maxTime; i += 1) {
         if (i % tickInterval === 0) {
           const x = this.getTimeX(i);
