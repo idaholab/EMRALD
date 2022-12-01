@@ -480,6 +480,16 @@ export default class Renderer {
               d.layout.y = event.y;
               d.persist.timeline.y = event.y;
             }
+            const top = d.layout.y + d.layout.height;
+            if (top > this.options.height) {
+              this.options.height = top;
+              svg.style('height', top);
+            }
+            const right = d.layout.x + d.layout.width;
+            if (right > this.options.width) {
+              this.options.width = right;
+              svg.style('width', right);
+            }
           })
           .on('drag.update', () => {
             selectAll<BaseType, TimelineNode>('.node').each(function (
