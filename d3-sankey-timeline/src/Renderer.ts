@@ -21,6 +21,8 @@ export default class Renderer {
     nodes: [],
   };
 
+  private maxRow = 0;
+
   public options = {
     axisColor: 'rgba(0,0,0,0.25)',
     axisFontSize: 8,
@@ -178,6 +180,7 @@ export default class Renderer {
     function assignRows(source: TimelineNode, baseRow: number) {
       if (source.layout.row < 0) {
         let row = baseRow;
+        source.layout.baseRow = baseRow;
         if (rows[source.layout.column] > baseRow) {
           row = rows[source.layout.column] + 1;
         }
@@ -236,6 +239,7 @@ export default class Renderer {
     });
     this.calculateLinkPaths();
     this.calculateDistributionLayout();
+    this.maxRow = row;
     return this.graph;
   }
 
@@ -282,6 +286,7 @@ export default class Renderer {
         height *= node.size / this.timeline.maxSize;
       }
       this.graph.nodes[n].layout = {
+        baseRow: 0,
         column: -1,
         height,
         row: -1,
@@ -386,7 +391,7 @@ export default class Renderer {
       .join('g')
       .attr('stroke', (d: TimelineLink) =>
         (
-          color(gradient(d.source.id / graph.nodes.length)) as RGBColor
+          color(gradient(d.source.layout.baseRow / this.maxRow)) as RGBColor
         ).toString(),
       )
       .attr('class', 'link')
@@ -522,7 +527,7 @@ export default class Renderer {
       );
     nodes
       .append('rect')
-      .attr('fill', (d: TimelineNode) => gradient(d.id / graph.nodes.length))
+      .attr('fill', (d: TimelineNode) => gradient(d.layout.baseRow / this.maxRow))
       .attr('x', (d: TimelineNode) => d.layout.x)
       .attr('y', (d: TimelineNode) => d.layout.y)
       .attr('height', (d: TimelineNode) => d.layout.height)
@@ -618,17 +623,6 @@ export default class Renderer {
       .text((d: TimelineNode) => d.label)
       .attr('x', (d: TimelineNode) => d.layout.x + d.layout.width / 2)
       .attr('y', (d: TimelineNode) => d.layout.y + d.layout.height / 2);
-
-    // Label boxes
-    /*
-    nodes
-      .append('rect')
-      .style('fill', 'rgba(0,0,0,0.3)')
-      .attr('x', (d) => d.layout.x + d.layout.width / 2)
-      .attr('y', (d) => d.layout.y + d.layout.height / 2)
-      .attr('width', (d) => d.textWidth)
-      .attr('height', (d) => d.textHeight);
-    */
   }
 
   /**
