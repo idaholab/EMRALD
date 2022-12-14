@@ -37,19 +37,31 @@ type Link = {
 export default function main() {
   let timeline = new sankeyTimeline.SankeyTimeline();
   const data: {
+    fileName: string;
     keyStates: {
       name: string;
       paths: Node[];
     }[];
+    options?: {
+      fontSize: number;
+      maxNodeHeight: number;
+      maxLinkWidth: number;
+    };
     otherStatePaths: Node[];
   } = (window as any).data;
   const renderer = new sankeyTimeline.Renderer(timeline);
   renderer.options.height = window.innerHeight;
   renderer.options.width = window.innerWidth;
-  renderer.options.maxNodeHeight = window.innerHeight / 7;
-  renderer.options.maxLinkWidth = renderer.options.maxNodeHeight / 2;
   renderer.options.dynamicNodeHeight = true;
   renderer.options.layout = 1;
+  if (data.options) {
+    renderer.options.fontSize = data.options.fontSize;
+    renderer.options.maxNodeHeight = data.options.maxNodeHeight;
+    renderer.options.maxLinkWidth = data.options.maxLinkWidth;
+  } else {
+    renderer.options.maxNodeHeight = window.innerHeight / 7;
+    renderer.options.maxLinkWidth = renderer.options.maxNodeHeight / 2;
+  }
 
   /**
    * Converts the timestamp string from the data into a number of seconds since the start.
@@ -209,12 +221,17 @@ export default function main() {
         delete pathResults.keyStates[k].paths[s].timelineNode;
       });
     });
+    pathResults.options = {
+      fontSize: renderer.options.fontSize,
+      maxNodeHeight: renderer.options.maxNodeHeight,
+      maxLinkWidth: renderer.options.maxLinkWidth,
+    };
     const link = document.createElement('a');
     const file = new Blob([JSON.stringify(pathResults)], {
       type: 'text/plain',
     });
     link.href = URL.createObjectURL(file);
-    link.download = 'file.json';
+    link.download = data.fileName;
     link.click();
     URL.revokeObjectURL(link.href);
   };
