@@ -36,7 +36,7 @@ export default class Renderer {
     distributions: true,
     dynamicLinkWidth: true,
     dynamicNodeHeight: false,
-    endColor: 'orange',
+    endColor: '#FF9800',
     fadeOpacity: 0.3,
     fontColor: 'white',
     fontSize: 25,
@@ -49,7 +49,7 @@ export default class Renderer {
     meanBarColor: 'rgba(0,0,0,0.25)',
     meanBarWidth: 3,
     nodeTitle: (d: TimelineNode): string => d.label,
-    startColor: 'purple',
+    startColor: '#9C27B0',
     ticks: 25,
     transitionSpeed: 75,
     width: window.innerWidth,
@@ -147,6 +147,7 @@ export default class Renderer {
     this.initializeLayout();
     const cols: TimelineNode[][] = [];
     const rows: number[] = [];
+    const maxCols: number[] = [];
     let maxColumn = -1;
     let maxRow = -1;
     /**
@@ -160,6 +161,7 @@ export default class Renderer {
         if (currentCol >= cols.length) {
           cols.push([]);
           rows.push(0);
+          maxCols.push(0);
         }
         if (currentCol > maxColumn) {
           maxColumn = currentCol;
@@ -188,6 +190,9 @@ export default class Renderer {
         if (row > maxRow) {
           maxRow = row;
         }
+        if (source.layout.column > maxCols[row]) {
+          maxCols[row] = source.layout.column;
+        }
         rows[source.layout.column] = row;
         source.outgoingLinks.forEach((link) => {
           assignRows(link.target, baseRow);
@@ -203,7 +208,14 @@ export default class Renderer {
       row += 1;
     });
     const adjusted: number[] = [];
+    let gradientSwitch = false;
     this.graph.nodes.forEach((node) => {
+      if (gradientSwitch) {
+        node.setColor(this.options.endColor);
+      } else {
+        node.setColor(this.options.startColor);
+      }
+      gradientSwitch = !gradientSwitch;
       if (this.options.layout === 1) {
         if (
           typeof node.persist.default.x === 'number' &&
@@ -287,6 +299,7 @@ export default class Renderer {
       }
       this.graph.nodes[n].layout = {
         baseRow: 0,
+        color: '',
         column: -1,
         height,
         row: -1,
@@ -377,11 +390,6 @@ export default class Renderer {
       }
     }
 
-    const gradient = interpolateHsl(
-      color(this.options.startColor) as HSLColor,
-      color(this.options.endColor) as HSLColor,
-    );
-
     // Create links
     const links = svg
       .append('g')
@@ -390,9 +398,7 @@ export default class Renderer {
       .data(graph.links)
       .join('g')
       .attr('stroke', (d: TimelineLink) =>
-        (
-          color(gradient(d.source.layout.baseRow / this.maxRow)) as RGBColor
-        ).toString(),
+        (color(d.source.layout.color) as RGBColor).toString(),
       )
       .attr('class', 'link')
       .style('mix-blend-mode', 'multiply');
@@ -537,7 +543,7 @@ export default class Renderer {
       );
     nodes
       .append('rect')
-      .attr('fill', (d: TimelineNode) => gradient(d.layout.baseRow / this.maxRow))
+      .attr('fill', (d: TimelineNode) => d.layout.color)
       .attr('x', (d: TimelineNode) => d.layout.x)
       .attr('y', (d: TimelineNode) => d.layout.y)
       .attr('height', (d: TimelineNode) => d.layout.height)
@@ -563,7 +569,7 @@ export default class Renderer {
         .attr('class', 'distHandleLeft')
         .attr('height', (d: TimelineNode) => d.layout.height)
         .attr('width', () => this.options.distHandleWidth)
-        .attr('fill', (d: TimelineNode) => gradient(d.id / graph.nodes.length));
+        .attr('fill', (d: TimelineNode) => d.layout.color);
       // Right handle
       nodes
         .append('rect')
@@ -582,7 +588,7 @@ export default class Renderer {
         .attr('class', 'distHandleRight')
         .attr('height', (d: TimelineNode) => d.layout.height)
         .attr('width', () => this.options.distHandleWidth)
-        .attr('fill', (d: TimelineNode) => gradient(d.id / graph.nodes.length));
+        .attr('fill', (d: TimelineNode) => d.layout.color);
       // Center line
       nodes
         .append('rect')
@@ -606,7 +612,7 @@ export default class Renderer {
           }
           return 0;
         })
-        .attr('fill', (d: TimelineNode) => gradient(d.id / graph.nodes.length));
+        .attr('fill', (d: TimelineNode) => d.layout.color);
 
       // Mean value bar
       nodes

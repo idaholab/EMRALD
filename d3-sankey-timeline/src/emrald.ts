@@ -184,6 +184,10 @@ export default function main() {
     reRender();
   };
 
+  (window as any).saveDiagram = () => {
+    
+  };
+
   window.addEventListener('resize', () => {
     renderer.options.width = window.innerWidth;
     renderer.options.height = window.innerHeight;
