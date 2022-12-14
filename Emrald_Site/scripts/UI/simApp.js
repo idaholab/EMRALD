@@ -337,6 +337,7 @@ function openSankey() {
     const reader = new FileReader();
     reader.onload = (e) => {
       const data = JSON.parse(e.target.result);
+      data.fileName = evt.target.files[0].name;
       const wnd = mxWindow.createFrameWindow(
         'sankey/emrald-sankey-timeline.html',
         'OK',

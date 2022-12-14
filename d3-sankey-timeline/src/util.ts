@@ -19,12 +19,15 @@ export function hasDist(times: NodeTimes): boolean {
  * @returns The key start/end times.
  */
 export function getKeyTimes(times: NodeTimes): number[] {
+  return [times.meanTime || 0];
+  /*
   const keyTimes = [times.startTime, times.endTime];
   if (times.meanTime && times.stdDeviation) {
     keyTimes.push(times.meanTime - times.stdDeviation);
     keyTimes.push(times.meanTime + times.stdDeviation);
   }
   return keyTimes.sort((a, b) => a - b);
+  */
 }
 
 /**
