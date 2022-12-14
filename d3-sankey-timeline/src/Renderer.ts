@@ -217,10 +217,7 @@ export default class Renderer {
       }
       gradientSwitch = !gradientSwitch;
       if (this.options.layout === 1) {
-        if (
-          typeof node.persist.default.x === 'number' &&
-          typeof node.persist.default.y === 'number'
-        ) {
+        if (node.persist) {
           node.layout.x = node.persist.default.x;
           node.layout.y = node.persist.default.y;
         } else {
@@ -233,7 +230,7 @@ export default class Renderer {
       } else if (this.options.layout === 0) {
         node.layout.x =
           this.getTimeX(node.times.meanTime || 0) - node.layout.width / 2;
-        if (typeof node.persist.timeline.y === 'number') {
+        if (node.persist) {
           node.layout.y = node.persist.timeline.y;
         } else if (adjusted.indexOf(node.id) < 0) {
           node.layout.y = this.options.axisTickHeight;
@@ -477,6 +474,17 @@ export default class Renderer {
       .call(
         drag<any, TimelineNode>()
           .on('drag', (event: DragEvent, d: TimelineNode) => {
+            if (!d.persist) {
+              d.persist = {
+                default: {
+                  x: 0,
+                  y: 0,
+                },
+                timeline: {
+                  y: 0,
+                },
+              };
+            }
             if (options.layout !== 0) {
               d.layout.x = event.x;
               d.layout.y = event.y;

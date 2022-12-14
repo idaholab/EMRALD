@@ -30,17 +30,14 @@ export default class TimelineNode {
 
   public outgoingLinks: TimelineLink[] = [];
 
-  public persist: {
+  public persist?: {
     default: {
-      x?: number;
-      y?: number;
+      x: number;
+      y: number;
     };
     timeline: {
-      y?: number;
+      y: number;
     };
-  } = {
-    default: {},
-    timeline: {},
   };
 
   public textHeight = 0;
