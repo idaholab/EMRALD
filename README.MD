@@ -45,6 +45,10 @@ Event Modeling Risk Assessment using Linked Diagrams (EMRALD) is a software tool
 		2. Build dependencies by running `npm install` in the root directory
 		3. Start the testing app by running `npm test` in the root directory
 		4. Visit [https://localhost:8080/](http://localhost:8080) to view the test results
+	- To compile the Sankey diagrams:
+		1. Install Node.js & NPM from [https://nodejs.org/en/](https://nodejs.org/en/)
+		2. Install Yarn by running `corepack enable` in the root directory
+		3. In the d3-sankey-timeline directory, run `yarn build` to compile the project
 
 
 

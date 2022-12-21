@@ -522,9 +522,14 @@ export default class Renderer {
                 .select('.meanValue')
                 .attr('x', () => d.layout.x + d.layout.width / 2)
                 .attr('y', () => d.layout.y - options.meanBarWidth);
-              selectAll<BaseType, TimelineLink>('.link').each(function (
-                l: TimelineLink,
-              ) {
+              element
+                .select('.labelBox')
+                .attr('x', () => d.layout.x)
+                .attr(
+                  'y',
+                  () => d.layout.y + d.layout.height / 2 - d.textHeight / 2,
+                );
+              selectAll<BaseType, TimelineLink>('.link').each(function (l) {
                 const path = l.layout.path.substring(1).split(',');
                 if (l.source.id === d.id) {
                   l.layout.path = `M${d.layout.x + d.layout.width},${
@@ -635,6 +640,16 @@ export default class Renderer {
         )
         .attr('fill', this.options.meanBarColor);
     }
+
+    // Label boxes
+    nodes
+      .append('rect')
+      .attr('class', 'labelBox')
+      .style('fill', 'rgba(0,0,0,0.2)')
+      .attr('x', (d) => d.layout.x)
+      .attr('y', (d) => d.layout.y + d.layout.height / 2 - d.textHeight / 2)
+      .attr('width', (d) => d.textWidth)
+      .attr('height', (d) => d.textHeight);
 
     // Visible labels
     nodes
