@@ -212,6 +212,7 @@ declare module 'maap-inp-parser' {
   };
 
   export type MAAPInpParser = {
+    default: MAAPInpParser;
     options: WrapperOptions;
     parse(input: string, options?: WrapperOptions): MAAPInpParserOutput;
     toString(input: any): string;

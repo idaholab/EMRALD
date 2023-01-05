@@ -5,35 +5,47 @@
 /// <reference path="./fileModel.js" />
 /// <reference path="../lib/EditFormUtil.js" />
 /// <reference path="../lib/ExternalExeForm.js" />
-/* global ExternalExeForm, ExeFormItem, cast, fileModel, maapParParser, maapInpParser, angular */
+/* global ExternalExeForm */
+
+// This section tells the editor how to assign types to objects declared in the global scope.
+
+/* eslint-disable prefer-destructuring */
+/** @type {*} */ const win = window;
+/** @type {import('maap-inp-parser').MAAPInpParser} */
+const maapInpParser = win.maapInpParser;
+/** @type {import('maap-par-parser').MAAPParParser} */
+const maapParParser = win.maapParParser;
+/** @type {import('angular')} */
+const angular = win.angular;
+/* eslint-enable prefer-destructuring */
 
 /**
- * @namespace MAAPForm
+ * @typedef {import('maap-inp-parser').SourceElement} SourceElement
  */
 
 /**
- * @typedef MAAPForm.ScopeData
+ * @typedef ScopeData
  * @property {string} initiatorQuery - Initiator query text.
  */
 
 /**
- * @typedef MAAPForm.Override
+ * @typedef Override
  * @property {number[]} bounds - The substring bounds.
- * @property {string} data - The **key** of the scope property to stringify. Must be an array of objects with a toString method.
+ * @property {*} data - The **key** of the scope property to stringify. Must be an array of objects with a toString method.
  */
 
 /**
- * @typedef MAAPForm.Scope
+ * @typedef Scope
  * @property {string} exePath - Path to the MAAP executeable.
  * @property {string} inputFile - Full contents of the input file.
  * @property {string} parameterFile - Full contents of the parameter file.
  * @property {string} inputPath - Path to the INP file.
  * @property {string} parameterPath - Path to the PAR file.
- * @property {Parameter[]} parameters - Parameter items.
- * @property {import('maap-inp-parser').SourceElement[]} initiators - Initiators.
+ * @property {SourceElement[]} parameters - Parameter items.
+ * @property {SourceElement[]} initiators - Initiators.
  * @property {VarLink[]} varLinks - Var links.
- * @property {Block[]} blocks - Input blocks.
- * @property {Initiator[]} initiatorOptions - Initiator options.
+ * @property {SourceElement[]} blocks - Input blocks.
+ * @property {SourceElement[]} initiatorOptions - Initiator options.
  * @property {boolean} parametersLoaded - If the parameters file has been loaded & parsed.
  * @property {string[]} operators - Possible operator choices.
  * @property {string} tab - The current tab.
@@ -41,24 +53,37 @@
  * @property {EMRALD.Variable[]} docVars - Document link variables from the EMRALD project.
  * @property {(index: number) => void} removeInitiator - Removes the initiator at the given index.
  * @property {() => void} findInitiators - Finds initiators given the current initiatorQuery.
- * @property {(data: Initiator) => void} addInitiator - Adds the given initiator to initiators.
+ * @property {(data: any) => void} addInitiator - Adds the given initiator to initiators.
  * @property {() => void} addOutput - Adds an empty var link.
  * @property {(index: number) => void} removeOutput - Removes the var link at the given index.
  * @property {() => void} save - Saves the form data.
- * @property {(target: Parameter) => void} changeText - Changes the text of a parameter directly.
- * @property {MAAPForm.ScopeData} data - Globally scoped form data.
- * @property {MAAPForm.Override[]} overrideSections - Sections of the INP file to override.
- * @property {import('maap-inp-parser').SourceElement[]} sections - File sections.
+ * @property {(target: any) => void} changeText - Changes the text of a parameter directly.
+ * @property {ScopeData} data - Globally scoped form data.
+ * @property {Override[]} overrideSections - Sections of the INP file to override.
+ * @property {SourceElement[]} sections - File sections.
+ * @property {MAAPForm} form - Reference to the form instance.
+ * @property {(element: SourceElement) => string} extractName - Extracts the name from a complex object.
+ * @property {Record<string, import('maap-par-parser').MAAPParParserOutput>} possibleInitiators - Initiator dropdown list options.
+ */
+
+/**
+ * @typedef RAFormData
+ * @property {string} exePath - The executable path.
+ * @property {string} inputPath - The INP file path.
+ * @property {string} parameterPath - The parameter file path.
+ * @property {SourceElement[]} sections - File sections.
+ * @property {VarLinkJSON[]} varLinks - Variable links.
+ * @property {Record<string, import('maap-par-parser').MAAPParParserOutput>} possibleInitiators - Initiator options.
  */
 
 /**
  * Gets a list of variable names from the blocks.
  *
  * @param {*} block - The block to get names from.
- * @returns The list of variable names.
+ * @returns {string[]} The list of variable names.
  */
 function getBlockVarNames(block) {
-  let names = [];
+  /** @type {string[]} */ let names = [];
   Object.values(block)
     .filter((val) => !!val)
     .forEach((val) => {
@@ -72,32 +97,9 @@ function getBlockVarNames(block) {
 }
 
 /**
- * Removes the "location" properties from the JSON.
- *
- * @param {*} json - The JSON object to remove the locations from.
- * @returns The new JSON object.
- */
-function removeLocations(json) {
-  /*
-  const data = {
-    ...json,
-  };
-  delete data.location;
-  Object.entries(data).forEach(([key, value]) => {
-    if (typeof value === 'object') {
-      if (Array.isArray(value)) {
-        data[key] = value.map((v) => removeLocations(v)[0]);
-      } else {
-        data[key] = removeLocations(value);
-      }
-    }
-  });
-  */
-  return json;
-}
-
-/**
  * The MAAP custom form controller.
+ *
+ * @augments ExternalExeForm<Scope>
  */
 class MAAPForm extends ExternalExeForm {
   /**
@@ -105,10 +107,16 @@ class MAAPForm extends ExternalExeForm {
    */
   getDataObject() {
     /** @type {ExternalExeForm.DataObject} */ const dataObj = {};
-    /** @type {MAAPForm.Scope} */ let s;
-    const scope = cast(this.$scope, s);
+    const scope = this.$scope;
     dataObj.raLocation = '';
-    dataObj.varNames = this.getVarNames(scope.parameters);
+    dataObj.varNames = [];
+    scope.sections.forEach((section) => {
+      getBlockVarNames(section).forEach((name) => {
+        if (dataObj.varNames.indexOf(name) < 0) {
+          dataObj.varNames.push(name);
+        }
+      });
+    });
     scope.blocks.forEach((block) => {
       getBlockVarNames(block).forEach((name) => {
         if (dataObj.varNames.indexOf(name) < 0) {
@@ -116,58 +124,29 @@ class MAAPForm extends ExternalExeForm {
         }
       });
     });
-    dataObj.raFormData = {
+    /** @type {RAFormData} */ const raFormData = {
       exePath: scope.exePath,
-      initiators: scope.initiators.map((initiator) =>
-        removeLocations(initiator),
-      ),
       inputPath: scope.inputPath,
-      overrideSections: scope.overrideSections.map((section) =>
-        removeLocations(section),
-      ),
       parameterPath: scope.parameterPath,
-      sections: scope.sections.map((section) => removeLocations(section)),
+      possibleInitiators: scope.possibleInitiators,
+      sections: scope.sections.map((section) => section),
       varLinks: scope.varLinks.map((varLink) => varLink.toJSON()),
     };
+    dataObj.raFormData = raFormData;
     const tempFilePath = `${scope.inputPath.replace(
       /[^/\\]*\.(inp|INP)$/,
       'temp.log',
     )}`;
-    console.log(tempFilePath);
-    /* eslint-disable max-len */
-    let overrideCode = `newInp += "${scope.sections
-      .map((section) => {
-        return maapInpParser.default.toString(section).replace(/\n/g, '\\n');
-      })
+    const overrideCode = `newInp += "${scope.sections
+      .map((section) =>
+        maapInpParser.default.toString(section).replace(/\n/g, '\\n'),
+      )
       .join('\\n')}";`;
-    /*
-    let pointer = 0;
-    scope.overrideSections
-      .sort((a, b) => a.bounds[0] - b.bounds[0])
-      .forEach((override) => {
-        overrideCode += `newInp += originalInp.Substring(${pointer}, ${override.bounds[0]});\n`;
-        if (Array.isArray(override.data)) {
-          overrideCode += `newInp += "\\n${override.data
-            .map((value) => {
-              if (value.data) {
-                return maapInpParser.default.toString(value.data);
-              }
-              return maapInpParser.default.toString(value);
-            })
-            .join('\\n')}\\n";\n`;
-        } else {
-          overrideCode += `newInp += "\\n${maapInpParser.default
-            .toString(scope.blocks[override.data])
-            .replace(/\n/g, '\\n')}\\n";\n`;
-        }
-        [, pointer] = override.bounds;
-      });
-    overrideCode += `newInp += originalInp.Substring(${pointer});\n`;
-    console.log(overrideCode);
-    */
+    /* eslint-disable max-len */
     dataObj.raPreCode = `string exeLoc = @"${this.escape(scope.exePath)}";
       string paramLoc = @"${this.escape(scope.parameterPath)}";
       string inpLoc = @"${this.escape(scope.inputPath)}";
+      
       string tempLoc = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\\EMRALD_MAAP\\";
       try {
         if (Directory.Exists(tempLoc)) {
@@ -222,178 +201,12 @@ class MAAPForm extends ExternalExeForm {
   }
 }
 
-const form = new MAAPForm();
-const maapForm = angular.module('maapForm', window.maapComponents);
+const maapForm = angular.module('maapForm', win.maapComponents);
 
 /**
- * @typedef MAAPForm.ParameterName
- * @property {string} name - The text value of the name.
- * @property {number} index - If an index is being accessed.
- */
-
-/**
- * @typedef MAAPForm.ParameterValue
- * @property {number} index - If an index is being accessed.
- * @property {string} name - The value name.
- * @property {string} type - The value type.
- * @property {string} units - The value units.
- * @property {string} value - The value value.
- */
-
-/**
- * @typedef MAAPForm.ParameterJSON
- * @property {import('maap-inp-parser').Assignment} data - The raw parameter data.
- * @property {boolean} useVariable - If the parameter is using a variable.
- * @property {EMRALD.Variable['Variable']} variable - The variable being used, if any.
- */
-
-/**
- * Parameter options.
- */
-class Parameter extends ExeFormItem {
-  /**
-   * Constructs Parameter.
-   *
-   * @param {import('maap-inp-parser').Assignment} data - The parameter data.
-   */
-  constructor(data) {
-    // TODO: for this class and all other classes, make sure to handle any case the parser can handle.
-    super(data);
-    this.target = data.target;
-    this.value = data.value;
-    this.data = data;
-    this.tempText = this.valueLabel;
-  }
-
-  /**
-   * Gets the parameter label.
-   *
-   * @returns {string} The parameter label.
-   */
-  get label() {
-    let label = '';
-    if (this.target) {
-      label = maapInpParser.default.toString(this.target);
-    }
-    return label;
-  }
-
-  /**
-   * Gets the parameter value label.
-   *
-   * @returns {string} - The parameter value label.
-   */
-  get valueLabel() {
-    let label = '';
-    if (this.value) {
-      label = maapInpParser.default.toString(this.value);
-    }
-    return label;
-  }
-
-  /**
-   * Creates a string representation of the parameter.
-   *
-   * @returns {string} The parameter as a string.
-   */
-  toString() {
-    const d = this.data;
-    if (this.useVariable) {
-      d.value = {
-        type: 'identifier',
-        value: `"+${this.variable.name}+"`,
-      };
-    }
-    return maapInpParser.default.toString(d);
-  }
-
-  /**
-   * Creates a JSON representation of the parameter.
-   *
-   * @returns {MAAPForm.ParameterJSON} The parameter JSON.
-   */
-  toJSON() {
-    return {
-      data: this.data,
-      useVariable: this.useVariable,
-      variable: this.variable,
-    };
-  }
-
-  /**
-   * Allows direct editing of the text.
-   */
-  changeText() {
-    const s = this.tempText.split(' ');
-    if (this.value) {
-      [this.value.value, this.value.units] = s;
-    }
-    [this.data.value.value, this.data.value.units] = s;
-  }
-}
-
-/**
- * @typedef MAAPForm.InitiatorData
- * @property {string} desc - The initiator description.
- * @property {number} index - The initiator index.
- * @property {string} value - The initator value.
- */
-
-/**
- * @typedef MAAPForm.InitiatorJSON
- * @property {MAAPForm.InitiatorData} data - The initiator data.
- */
-
-/**
- * Initiator section item.
- */
-class Initiator extends ExeFormItem {
-  /**
-   * Constructs Initiator.
-   *
-   * @param {MAAPForm.InitiatorData} data - The initiator data.
-   */
-  constructor(data) {
-    super(data);
-    this.desc = data.desc;
-    this.index = data.index;
-    this.value = data.value;
-  }
-
-  /**
-   * Gets the initiator label text.
-   *
-   * @returns {string} The initiator label.
-   */
-  get label() {
-    return `${this.index} ${this.value} ${this.desc}`;
-  }
-
-  /**
-   * Creates a string representation of the initiator.
-   *
-   * @returns {string} The string representation of the initiator.
-   */
-  toString() {
-    return this.desc;
-  }
-
-  /**
-   * Creates a JSON representation of the initiator.
-   *
-   * @returns {MAAPForm.InitiatorJSON} - The initiator JSON.
-   */
-  toJSON() {
-    return {
-      data: this.data,
-    };
-  }
-}
-
-/**
- * @typedef MAAPForm.VarLinkJSON
+ * @typedef VarLinkJSON
  * @property {string} target - The target MAAP output.
- * @property {{ id: number, name: string }} variable - The document link variable to bind.
+ * @property {ExternalExeForm.VariableMatchingData} variable - The document link variable to bind.
  */
 
 /**
@@ -414,10 +227,10 @@ class VarLink {
   /**
    * Creates a JSON representation of the var link.
    *
-   * @returns {MAAPForm.VarLinkJSON} The var link json.
+   * @returns {VarLinkJSON} The var link json.
    */
   toJSON() {
-    /** @type {MAAPForm.VarLinkJSON} */ const json = {
+    /** @type {VarLinkJSON} */ const json = {
       target: this.target || '',
       variable: {
         id: -1,
@@ -432,45 +245,16 @@ class VarLink {
   }
 }
 
-/**
- * Generic input block data.
- */
-class BlockData {
-  /**
-   * Constructs BlockData.
-   *
-   * @param {*} value - The data value.
-   */
-  constructor(value) {
-    this.value = value;
-    this.useVariable = false;
-  }
-}
-
-/**
- * An input block.
- */
-class Block {
-  /**
-   * Constructs Block.
-   *
-   * @param {string} type - The input block type.
-   * @param {...any} data - Any data to store with the block.
-   */
-  constructor(type, ...data) {
-    this.type = type;
-    this.data = data;
-  }
-}
-
 maapForm.controller('maapFormController', [
   '$scope',
   /**
    * The MAAP form controller.
    *
-   * @param {MAAPForm.Scope & angular.IScope} $scope - The angular scope.
+   * @param {Scope & angular.IScope} $scope - The angular scope.
    */
   function maapFormController($scope) {
+    const form = new MAAPForm($scope);
+
     $scope.parameterFile = '';
     $scope.inputFile = '';
     $scope.parameters = [];
@@ -490,9 +274,7 @@ maapForm.controller('maapFormController', [
     $scope.overrideSections = [];
     $scope.form = form;
     $scope.sections = [];
-
-    const parameterInfo = {};
-    const possibleInitiators = {};
+    $scope.possibleInitiators = {};
 
     const { parentScope } = form;
     $scope.variables = parentScope.data.cvVariables;
@@ -500,7 +282,9 @@ maapForm.controller('maapFormController', [
     $scope.docVars = parentScope.data.cvVariables.filter(
       (cvVariable) => cvVariable.varScope === 'gtDocLink',
     );
-    const { raFormData } = parentScope.data;
+    /** @type {RAFormData} */
+    // eslint-disable-next-line prefer-destructuring
+    const raFormData = parentScope.data.raFormData;
     if (raFormData) {
       if (typeof raFormData.parameterPath === 'string') {
         $scope.parameterPath = raFormData.parameterPath;
@@ -511,17 +295,14 @@ maapForm.controller('maapFormController', [
       if (typeof raFormData.exePath === 'string') {
         $scope.exePath = raFormData.exePath;
       }
-      if (raFormData.initiators) {
-        $scope.initiators = raFormData.initiators;
+      if (raFormData.possibleInitiators) {
+        $scope.possibleInitiators = raFormData.possibleInitiators;
       }
       if (typeof raFormData.varLinks === 'object') {
         $scope.varLinks = raFormData.varLinks.map(
           (varLink) =>
             new VarLink(varLink.target, form.findVariable(varLink.variable)),
         );
-      }
-      if (raFormData.overrideSections) {
-        $scope.overrideSections = raFormData.overrideSections;
       }
       if (raFormData.sections) {
         $scope.sections = raFormData.sections;
@@ -536,8 +317,18 @@ maapForm.controller('maapFormController', [
               }
               return v;
             });
+          } else if (
+            section.type === 'block' &&
+            section.blockType === 'INITIATORS'
+          ) {
+            $scope.initiators = section.value;
           } else if (section.type === 'conditional_block') {
-            function bindBlockVars(block) {
+            /**
+             * Binds the variable property of each block to the actual object reference.
+             *
+             * @param {import('maap-inp-parser').ConditionalBlockStatement} block The block to bind.
+             */
+            const bindBlockVars = (block) => {
               Object.values(block)
                 .filter((val) => !!val)
                 .forEach((val) => {
@@ -547,7 +338,7 @@ maapForm.controller('maapFormController', [
                     bindBlockVars(val);
                   }
                 });
-            }
+            };
             bindBlockVars(section);
             $scope.blocks.push(section);
           }
@@ -556,27 +347,59 @@ maapForm.controller('maapFormController', [
     }
 
     $scope.removeInitiator = function removeInitiator(index) {
-      $scope.initiators.splice(index, 1);
+      const removed = $scope.initiators.splice(index, 1)[0];
+      $scope.sections.forEach((section) => {
+        if (section.type === 'block' && section.blockType === 'INITIATORS') {
+          let i = -1;
+          section.value.forEach((element, x) => {
+            if (element.value === removed.value) {
+              i = x;
+            }
+          });
+          section.value.splice(i, 1);
+        }
+      });
       form.save();
     };
 
     $scope.findInitiators = function findInitiators() {
       if ($scope.data.initiatorQuery.length > 0) {
         $scope.initiatorOptions = [];
-        Object.keys(possibleInitiators).forEach((key) => {
+        Object.keys($scope.possibleInitiators).forEach((key) => {
           if (
             key
               .toUpperCase()
               .indexOf($scope.data.initiatorQuery.toUpperCase()) > -1
           ) {
-            $scope.initiatorOptions.push(possibleInitiators[key]);
+            const choice = $scope.possibleInitiators[key];
+            $scope.initiatorOptions.push({
+              type: 'parameter_name',
+              value: choice.desc,
+            });
           }
         });
       }
     };
 
+    /**
+     * Adds an item to the initiator section.
+     *
+     * @param {import('maap-par-parser').MAAPParParserOutput} data The initiator to add.
+     */
     $scope.addInitiator = function addInitiator(data) {
-      $scope.initiators.push(data);
+      // TODO?
+      $scope.initiators.push({
+        type: 'parameter_name',
+        value: data.value,
+      });
+      $scope.sections.forEach((section) => {
+        if (section.type === 'block' && section.blockType === 'INITIATORS') {
+          section.value.push({
+            type: 'parameter_name',
+            value: data.value,
+          });
+        }
+      });
       form.save();
     };
 
@@ -590,6 +413,19 @@ maapForm.controller('maapFormController', [
       form.save();
     };
 
+    $scope.extractName = function extractName(element) {
+      /** @type {*} */ const v = element.value;
+      if (
+        typeof element.value === 'string' ||
+        typeof element.value === 'boolean' ||
+        typeof element.value === 'number' ||
+        element.value === undefined
+      ) {
+        return `${element.value}`;
+      }
+      return $scope.extractName(v);
+    };
+
     $scope.$watch('parameterFile', () => {
       if ($scope.parameterFile.length > 0) {
         $scope.parametersLoaded = true;
@@ -597,9 +433,8 @@ maapForm.controller('maapFormController', [
           if (/^[0-9]{3}/.test(line)) {
             try {
               const data = maapParParser.parse(line);
-              parameterInfo[data.desc] = new Initiator(data);
               if (data.value === 'T') {
-                possibleInitiators[data.desc] = new Initiator(data);
+                $scope.possibleInitiators[data.desc] = data;
               }
             } catch (err) {
               // Do something or just ignore it? It seems like all the lines failing are out of bounds anyway
@@ -636,7 +471,7 @@ maapForm.controller('maapFormController', [
                 });
                 sourceElement.value.forEach((innerElement) => {
                   if (innerElement.type === 'assignment') {
-                    $scope.parameters.push(new Parameter(innerElement));
+                    $scope.parameters.push(innerElement);
                   } else {
                     // TODO
                   }

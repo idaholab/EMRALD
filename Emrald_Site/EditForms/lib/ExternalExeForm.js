@@ -21,27 +21,37 @@
  */
 
 /**
+ * @typedef ExternalExeForm.VariableMatchingData
+ * @property {string} name - The name of the variable.
+ * @property {number} id - The variable ID.
+ */
+
+/**
  * Provides utilities for custom run application forms.
  *
  * @global
+ * @template T - The individual form scope type.
  */
 class ExternalExeForm {
   /**
    * Constructs ExternalExeForm.
    *
    * @constructs
+   * @param {T & import('angular').IScope} $scope The angular scope.
    */
-  constructor() {
+  constructor($scope) {
     const parentWindow = /** @type {ActionEditor.Window & Window} */ (
       /** @type {unknown} */ (window.frameElement.ownerDocument.defaultView)
     );
     if (parentWindow === null || parentWindow === undefined) {
       throw new Error('Custom forms must be embedded in an action editor.');
     }
-    // eslint-disable-next-line max-len
-    /** @type {ActionEditor.Window & Window} */ this.parentWindow = parentWindow;
-    // eslint-disable-next-line max-len
-    /** @type {ActionEditor.Scope & angular.IScope} */ this.parentScope = parentWindow.getScope();
+    /** @type {ActionEditor.Window & Window} */
+    this.parentWindow = parentWindow;
+    /** @type {ActionEditor.Scope & angular.IScope} */
+    this.parentScope = parentWindow.getScope();
+    this.$scope = $scope;
+    this.bindScope($scope);
   }
 
   /**
@@ -92,7 +102,7 @@ class ExternalExeForm {
   /**
    * Finds the matching variable object in the parent scope.
    *
-   * @param {EMRALD.Variable['Variable']} variable1 The variable to find.
+   * @param {ExternalExeForm.VariableMatchingData} variable1 The variable to find.
    * @returns {EMRALD.Variable['Variable']} The matching variable, if any.
    */
   findVariable(variable1) {
