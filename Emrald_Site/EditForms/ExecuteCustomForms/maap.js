@@ -73,7 +73,7 @@ const angular = win.angular;
  * @property {string} parameterPath - The parameter file path.
  * @property {SourceElement[]} sections - File sections.
  * @property {VarLinkJSON[]} varLinks - Variable links.
- * @property {Record<string, import('maap-par-parser').MAAPParParserOutput>} possibleInitiators - Initiator options.
+ * @property {string[]} possibleInitiators - Initiator options.
  */
 
 /**
@@ -94,6 +94,31 @@ function getBlockVarNames(block) {
       }
     });
   return names;
+}
+
+/**
+ * Removes the location data from the parser to reduce file size.
+ *
+ * @param {SourceElement} obj The object to remove data from.
+ * @returns {SourceElement} The cleaned object.
+ */
+function removeLocations(obj) {
+  if (Array.isArray(obj)) {
+    return obj.map((item) => removeLocations(item));
+  }
+  if (typeof obj === 'object') {
+    const re = {
+      ...obj,
+    };
+    const keys = Object.keys(re);
+    for (let i = 0; i < keys.length; i += 1) {
+      re[keys[i]] = removeLocations(re[keys[i]]);
+    }
+    delete re.location;
+    delete re.$$hashKey;
+    return re;
+  }
+  return obj;
 }
 
 /**
@@ -128,8 +153,8 @@ class MAAPForm extends ExternalExeForm {
       exePath: scope.exePath,
       inputPath: scope.inputPath,
       parameterPath: scope.parameterPath,
-      possibleInitiators: scope.possibleInitiators,
-      sections: scope.sections.map((section) => section),
+      possibleInitiators: Object.keys(scope.possibleInitiators),
+      sections: scope.sections.map((section) => removeLocations(section)),
       varLinks: scope.varLinks.map((varLink) => varLink.toJSON()),
     };
     dataObj.raFormData = raFormData;
@@ -296,7 +321,14 @@ maapForm.controller('maapFormController', [
         $scope.exePath = raFormData.exePath;
       }
       if (raFormData.possibleInitiators) {
-        $scope.possibleInitiators = raFormData.possibleInitiators;
+        $scope.possibleInitiators = {};
+        raFormData.possibleInitiators.forEach((initiator) => {
+          $scope.possibleInitiators[initiator] = {
+            desc: initiator,
+            index: 0,
+            value: 'T',
+          };
+        });
       }
       if (typeof raFormData.varLinks === 'object') {
         $scope.varLinks = raFormData.varLinks.map(
