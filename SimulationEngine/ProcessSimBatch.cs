@@ -15,6 +15,7 @@ using NLog;
 using SimulationDAL;
 using Newtonsoft.Json;
 using MathNet.Numerics.Statistics;
+using System.Threading;
 
 namespace SimulationEngine
 {
@@ -373,6 +374,63 @@ namespace SimulationEngine
       batchSuccess = retVal;
     }
 
+    //protected virtual bool IsFileLocked(FileInfo file)
+    //{
+    //  try
+    //  {
+    //    using (FileStream stream = file.Open(FileMode.Open, FileAccess.Read, FileShare.None))
+    //    {
+    //      stream.Close();
+    //    }
+    //  }
+    //  catch (IOException)
+    //  {
+    //    //the file is unavailable because it is:
+    //    //still being written to
+    //    //or being processed by another thread
+    //    //or does not exist (has already been processed)
+    //    return true;
+    //  }
+
+    //  //file is not locked
+    //  return false;
+    //}
+    private static ReaderWriterLockSlim _readWriteLock = new ReaderWriterLockSlim();
+
+    public void WriteToFileThreadSafe(string path, string text)
+    {
+      // Set Status to Locked
+      _readWriteLock.EnterWriteLock();
+      try
+      {
+        if(File.Exists(path))
+        {
+          bool deleted = false;
+          while (!deleted)
+          {
+            try
+            {
+              File.Delete(path);
+              deleted = true;
+            }
+            catch { };
+          }
+
+        }
+        // Append text to the file
+        using (StreamWriter sw = File.AppendText(path))
+        {
+          sw.WriteLine(text);
+          sw.Close();
+        }
+      }
+      finally
+      {
+        // Release lock
+        _readWriteLock.ExitWriteLock();
+      }
+    }
+
     private bool MakePathResults(int curIdx, bool makeSankey)
     {
       try
@@ -401,7 +459,16 @@ namespace SimulationEngine
           }
 
           string output = JsonConvert.SerializeObject(resultObj, Formatting.Indented);
-          File.WriteAllText(_jsonResultPaths, output);
+          //if (File.Exists(_jsonResultPaths))
+          //{
+          //  bool locked = true;
+          //  while (locked)
+          //  { 
+          //    locked = IsFileLocked(new FileInfo(_jsonResultPaths));
+          //  }
+          //}
+          //File.WriteAllText(_jsonResultPaths, output);
+          WriteToFileThreadSafe(_jsonResultPaths, output);
 
           //set up the sankey file to view results
           if (makeSankey)
