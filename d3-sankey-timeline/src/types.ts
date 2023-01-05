@@ -12,6 +12,7 @@ export interface Coordinate {
 }
 
 export interface NodeLayout extends Coordinate {
+  baseRow: number;
   column: number;
   distribution?: Coordinate[];
   height: number;

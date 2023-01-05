@@ -87,6 +87,7 @@ namespace SimulationEngine
     private string _keyPathsOutput = "";
     public bool batchSuccess = false;
     private Progress _progress = null;
+    private int _pathResultsInterval = 5;
 
     //public Dictionary<string, double> variableVals { get { return _variableVals; } }
     public Dictionary<string, FailedItems> keyFailedItems = new Dictionary<string, FailedItems>(); //key = StateName, value = cut sets
@@ -332,6 +333,11 @@ namespace SimulationEngine
           actRuns = i;
 
           logger.Info("EndOfRun: " + i);
+
+          if ((i % _pathResultsInterval) == 0)
+          {
+            MakePathResults(curI, false);
+          }
         }
 
         //send message to all ext sims to terminate
@@ -359,43 +365,76 @@ namespace SimulationEngine
         pathOutputFile.Close();
       progressCallback(stopWatch.Elapsed, actRuns, _logFailedComps);
 
-      if (_jsonResultPaths != "")
-      { 
-        OverallResults resultObj = new OverallResults();
-        resultObj.name = this._lists.name;
-        resultObj.keyStates = keyPaths.Values.ToList();
-        resultObj.otherStatePaths = otherPaths.Values.ToList();
-        resultObj.numRuns = curI;
-        resultObj.CalcStats();
-        Dictionary<string, int> inStateCnts = new Dictionary<string, int>();
-        //foreach (var keyS in resultObj.keyStates)
-        //{
-        //  Dictionary<string, int> depth = new Dictionary<string, int>();
-        //  StateCounts(keyS, inStateCnts, depth);
-        //}
-        foreach (var keyS in resultObj.keyStates)
-        {
-          // Dictionary<string, int> depth = new Dictionary<string, int>();
-          //SetResultStatsRec(keyS, inStateCnts, curI);//, depth);
+      MakePathResults(curI, true);
 
-          if(_variableVals.Count > 0) //if there are any being tracked, they should have a value for each key state.
-            keyS.watchVariables = _variableVals[keyS.name];
-        }
-     
-        string output = JsonConvert.SerializeObject(resultObj, Formatting.Indented);
-        File.WriteAllText(_jsonResultPaths, output);
-        string tempLoc = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\\EMRALD_SANKEY\\";
-        try {
-          if (Directory.Exists(tempLoc)) {
-            Directory.Delete(tempLoc, true);
-          }
-          Directory.CreateDirectory(tempLoc);
-        } catch {}
-        File.WriteAllText(Path.Combine(tempLoc, @"data.js"), @"window.data=" + output);
-        File.Copy(@"./sankey/emrald-sankey-timeline.html", Path.Combine(tempLoc, @"emrald-sankey-timeline.html"));
-        File.Copy(@"./sankey/emrald-sankey-timeline.js", Path.Combine(tempLoc, @"emrald-sankey-timeline.js"));
-      }
+      
+      
+
       batchSuccess = retVal;
+    }
+
+    private bool MakePathResults(int curIdx, bool makeSankey)
+    {
+      try
+      {
+        if (_jsonResultPaths != "")
+        {
+          OverallResults resultObj = new OverallResults();
+          resultObj.name = this._lists.name;
+          resultObj.keyStates = keyPaths.Values.ToList();
+          resultObj.otherStatePaths = otherPaths.Values.ToList();
+          resultObj.numRuns = curIdx;
+          resultObj.CalcStats();
+          Dictionary<string, int> inStateCnts = new Dictionary<string, int>();
+          //foreach (var keyS in resultObj.keyStates)
+          //{
+          //  Dictionary<string, int> depth = new Dictionary<string, int>();
+          //  StateCounts(keyS, inStateCnts, depth);
+          //}
+          foreach (var keyS in resultObj.keyStates)
+          {
+            // Dictionary<string, int> depth = new Dictionary<string, int>();
+            //SetResultStatsRec(keyS, inStateCnts, curI);//, depth);
+
+            if (_variableVals.Count > 0) //if there are any being tracked, they should have a value for each key state.
+              keyS.watchVariables = _variableVals[keyS.name];
+          }
+
+          string output = JsonConvert.SerializeObject(resultObj, Formatting.Indented);
+          File.WriteAllText(_jsonResultPaths, output);
+
+          //set up the sankey file to view results
+          if (makeSankey)
+          {
+            string tempLoc = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\\EMRALD_SANKEY\\";
+            try
+            {
+              if (Directory.Exists(tempLoc))
+              {
+                Directory.Delete(tempLoc, true);
+              }
+              Directory.CreateDirectory(tempLoc);
+
+              File.WriteAllText(Path.Combine(tempLoc, @"data.js"), @"window.data=" + output);
+            }
+            catch
+            {
+              File.WriteAllText(Path.Combine(tempLoc, @"data.js"), @"window.data= ");
+            }
+
+            File.Copy(@"./sankey/emrald-sankey-timeline.html", Path.Combine(tempLoc, @"emrald-sankey-timeline.html"));
+            File.Copy(@"./sankey/emrald-sankey-timeline.js", Path.Combine(tempLoc, @"emrald-sankey-timeline.js"));
+          }
+        }
+      }
+      catch (Exception e)
+      {
+        _error = "Error writing path results file - " + Environment.NewLine + e.InnerException;
+        Console.Write(_error);
+        logger.Info(_error);
+        return false;
+      }
+      return true;
     }
 
     /// <summary>

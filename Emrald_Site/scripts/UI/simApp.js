@@ -319,6 +319,52 @@ function createDemo() {
 
 }
 
+/**
+ * Prompts the user to open a path results file to view in the Sankey diagram window.
+ */
+function openSankey() {
+  const el = document.getElementById('OpenFileDialogInput');
+  if (el) {
+    el.remove();
+  }
+  const dialog = document.createElement('input');
+  dialog.id = 'OpenFileDialogInput';
+  dialog.value = '';
+  dialog.type = 'file';
+  dialog.style.display = 'none';
+  dialog.accept = 'application/json,.json';
+  dialog.addEventListener('change', (evt) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const data = JSON.parse(e.target.result);
+      const wnd = mxWindow.createFrameWindow(
+        'sankey/emrald-sankey-timeline.html',
+        'OK',
+        'close',
+        (btn) => {
+          if (btn === 'OK') {
+            console.log('OK');
+          }
+          return true;
+        },
+        data,
+        true,
+        null,
+        null,
+        500,
+        220,
+      );
+      document.body.removeChild(wnd.div);
+      const contentPanel = document.getElementById('ContentPanel');
+      adjustWindowPos(contentPanel, wnd.div);
+      contentPanel.appendChild(wnd.div);
+    };
+    reader.readAsText(evt.target.files[0]);
+  }, false);
+  document.body.appendChild(dialog);
+  dialog.click();
+}
+
 function noSpaces(text) {
   if (text) return text.replace(/ /g, '');
   return text;

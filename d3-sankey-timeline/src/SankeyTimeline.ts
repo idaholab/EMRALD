@@ -33,6 +33,17 @@ export default class SankeyTimeline {
   }
 
   /**
+   * Clears all nodes and links from the timeline.
+   */
+  public clear() {
+    this.nodes = {};
+    this.links = {};
+    this.keyTimes = [];
+    this.nextLinkId = 0;
+    this.nextNodeId = 0;
+  }
+
+  /**
    * Creates a link between two nodes.
    *
    * @param source - The source node.
@@ -171,7 +182,9 @@ export default class SankeyTimeline {
   public get graph(): TimelineGraph {
     return {
       links: Object.values(this.links),
-      nodes: Object.values(this.nodes),
+      nodes: Object.values(this.nodes).sort(
+        (a, b) => a.links.length - b.links.length,
+      ),
     };
   }
 

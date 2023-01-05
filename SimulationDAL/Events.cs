@@ -288,8 +288,10 @@ namespace SimulationDAL
         changed.OrApply(((ChangedIDs)otherData).stateIDs_BS);
 
       MyBitArray cngAndRelated = changed.And(_relatedIDsBitSet);
-
-      return (cngAndRelated.BitCount() == relatedIDs.Count());
+      if (this.allItems)
+        return (cngAndRelated.BitCount() == relatedIDs.Count());
+      else
+        return cngAndRelated.BitCount() > 0;
 
       //if (ifInState) //We are looking for an item in the list to trigger us       
       //{
