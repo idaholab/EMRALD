@@ -410,7 +410,7 @@ namespace MyStuff.Collections
         int ints = Math.Min(((m_length + 31) / 32), ((value.m_length + 31) / 32));
         //copy full initial array pieces
         for (int i = 0; i < ints; i++)
-          m_array[i] &= value.m_array[i];
+          m_array[i] |= value.m_array[i];
 
         //copy incomplete piece
         int begPiece = ints*32;

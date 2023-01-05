@@ -6,7 +6,7 @@
   "packageManager": "yarn@3.2.1",
   "scripts": {
     "test": "node .yarn/releases/yarn-3.2.1.cjs jest",
-    "build": "yarn webpack --config ./emrald.config.js"
+    "build": "yarn webpack"
   },
   "repository": {
     "type": "git",
@@ -48,7 +48,6 @@
     "eslint-plugin-tsdoc": "^0.2.16",
     "jest": "^28.1.1",
     "jest-extended": "^2.0.0",
-    "nmde-common": "https://github.com/nmde/nmde-common.git#0065f98ba13a23b81035f216e0b8396016610cf1",
     "ts-jest": "^28.0.5",
     "ts-loader": "^9.3.0",
     "typescript": "^4.7.4",

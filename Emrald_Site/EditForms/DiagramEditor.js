@@ -145,6 +145,13 @@ function OnLoad(dataObj) {
         scope.desc = diagramData.desc;
         loadCustomDiagramLabels();
         scope.states = diagramData.states;
+        const diagramType = scope.diagramTypes.find((type) => type.name === dataObj.diagramLabel);
+        if (!diagramType) {
+            scope.data.diagramType = scope.diagramTypes[1];
+        } else {
+            scope.settingInitialDiagramType = true;
+            scope.data.diagramType = diagramType;
+        }
 
         if (dataObj.diagramType == "dtComponent" || dataObj.diagramType == "dtSystem") {
             scope.singleStates = diagramData.singleStates;
@@ -269,6 +276,7 @@ diagramModule.controller('diagramController', function ($scope, $timeout) {
         label: '',
         type: $scope.typeCategories[0],
     };
+    $scope.settingInitialDiagramType = false;
 
 
     $scope.$watch('name', function () {
@@ -278,16 +286,20 @@ diagramModule.controller('diagramController', function ($scope, $timeout) {
         somethingChanged();
     }, true);
     $scope.$watch('data.diagramType', function (newValue, oldValue) {
-        if ($scope.loading) {
-            $timeout(() => $scope.loading = false);
-        }
-        else if (tryChangeDiagramType(oldValue.value, newValue.value)) {
-            $scope.onTypeChanged();
-            somethingChanged();
-        }
-        else {
-            updateDiagramTypeSelection(oldValue.value, oldValue.name);
-            $scope.loading = true;
+        if ($scope.settingInitialDiagramType) {
+            $scope.settingInitialDiagramType = false;
+        } else if (newValue) {
+            if ($scope.loading) {
+                $timeout(() => $scope.loading = false);
+            }
+            else if (tryChangeDiagramType(oldValue.value, newValue.value)) {
+                $scope.onTypeChanged();
+                somethingChanged();
+            }
+            else {
+                updateDiagramTypeSelection(oldValue.value, oldValue.name);
+                $scope.loading = true;
+            }
         }
     }, true);
     $scope.$watch('diagramTemplate', function (newV, oldV) { if (newV !== oldV) somethingChanged(); }, true);
