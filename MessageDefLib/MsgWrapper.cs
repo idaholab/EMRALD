@@ -113,6 +113,7 @@ namespace MessageDefLib
     public SimInfo simInfo; //if type is OpenSim
     [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
     public ItemData itemData; //if type is compModify, timer
+    public StatusType status { get; set; } //if status type then this has a value  
   }
 
 

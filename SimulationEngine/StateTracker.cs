@@ -1307,15 +1307,21 @@ namespace SimulationTracking
           case SimEventType.etPing:
             lastExtEvTypes.Add(fromClient + "-" + ev.evType.ToString() + "_" + evData.pID, ev.evType);
             logger.Info("Ping: from " + fromClient + ", time: " + curTime.ToString(@"d\.hh\:mm\:ss\.f"));
-            break;
+
+            TMsgWrapper msg = new TMsgWrapper(MessageType.mtOther, "GotPing");
+            msg.simAction = new SimAction(SimActionType.atStatus);
+            //TODO if waiting for external sim put as stWaiting
+            msg.simAction.status = StatusType.stRunning;
+            sim3DServer.SendMessage(msg, fromClient);
+            return;
 
           case SimEventType.etStatus:
             if (ev.status == StatusType.stError)
             {
               logger.Info("Coupled App XMPP Error: " + evData.desc + ", time: " + curTime.ToString(@"d\.hh\:mm\:ss\.f"));
-              TMsgWrapper msg = new TMsgWrapper(MessageType.mtSimAction, "GotError", curTime, "Terminating all");
-              msg.simAction = new SimAction(SimActionType.atTerminate);
-              sim3DServer.SendMessage(msg, fromClient);
+              TMsgWrapper msg2 = new TMsgWrapper(MessageType.mtSimAction, "GotError", curTime, "Terminating all");
+              msg2.simAction = new SimAction(SimActionType.atTerminate);
+              sim3DServer.SendMessage(msg2, fromClient);
               throw new Exception("Unhandled client simulation error - " + evData.desc);
             }
             if (!this.extSimRunning)
