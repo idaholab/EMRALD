@@ -367,7 +367,7 @@ namespace MyStuff.Collections
       }
       else
       {
-        int ints = Math.Min(((m_length + 31) / 32), ((value.m_length + 31) / 32)) - 1;
+        int ints = Math.Min(m_length / 32, value.m_length / 32);
         int maxInts = ((m_length + 31) / 32);
         //copy full initial array pieces
         for (int i = 0; i < ints - 1; i++)
