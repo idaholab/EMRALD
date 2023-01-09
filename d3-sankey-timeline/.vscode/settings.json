@@ -1,0 +1,11 @@
+{
+  "jest.jestCommandLine": "node .yarn\\releases\\yarn-3.2.1.cjs jest",
+  "search.exclude": {
+    "**/.yarn": true,
+    "**/.pnp.*": true
+  },
+  "typescript.tsdk": ".yarn/sdks/typescript/lib",
+  "typescript.enablePromptUseWorkspaceTsdk": true,
+  "eslint.nodePath": ".yarn/sdks",
+  "npm.packageManager": "npm"
+}

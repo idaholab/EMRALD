@@ -1031,6 +1031,12 @@ namespace EMRALD_Sim
       saveFileDialog1.ShowDialog();
     }
 
+    private void button4_Click(object sender, EventArgs e)
+    {
+      string tempLoc = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\\EMRALD_SANKEY\\";
+      System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(Path.Combine(tempLoc, @"emrald-sankey-timeline.html")) { UseShellExecute = true });
+    }
+
     private void saveFileDialog1_FileOk(object sender, CancelEventArgs e)
     {
       tbSavePath.Text = saveFileDialog1.FileName;

@@ -23,7 +23,8 @@ using JsonDiffPatchDotNet;
 
 namespace UnitTesting_Simulation
 {
-
+  // Do not run multiple test classes in parallel, as it can cause some tests to fail: https://tsuyoshiushio.medium.com/controlling-the-serial-and-parallel-test-on-xunit-6174326da196
+  [Collection("Serial")]
   //construct each of the types of model objects from JSON and then get the JSON back and compare.
   public class SimDAL_Testing
   {
@@ -51,6 +52,9 @@ namespace UnitTesting_Simulation
 
     private void SetupTheTest(string testName, EmraldModel model = null)
     {
+      // Reset IDs and the random number generator so tests don't fail when run together
+      SingleNextIDs.Instance.ResetAllIDs();
+      SingleRandom.Reset();
       // set up the random number generator so it starts with the same key each time.
       ConfigData.seed = 0;
       if (model != null)

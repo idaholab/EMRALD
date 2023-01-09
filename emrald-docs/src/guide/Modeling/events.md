@@ -101,7 +101,7 @@
   <img src="/images/Modeling/events/VarConditionOptions.png" alt="Variable Condition Options" width="500"/>
  
   - **Evaluate Code (c#):** Type or copy and paste into this text field the C# code to evaluate to determine if this event is triggered. This must return a boolean true or false value.
-  - **Variables used in code:** A list of variables available in the model. This list will not include pre-existing variables such as CurTime. See [Dynamic Scripts](./backendInfo.md#dynamic-scripts) for more information. It will include the all of the variables that you create and are listed in the "All" Tab of the Left Navigation Frame. Click the check box to identify which variables are used in the code.
+  - **Variables used in code:** A list of variables available in the model. Pre-existing variables such as CurTime are auto checked and always available. See [Dynamic Scripts](./backendInfo.md#dynamic-scripts) for more information. It will include the all of the variables that you create and are listed in the "All" Tab of the Left Navigation Frame. Click the check box to identify which variables are used in the code.
 
   
 <h3>State Change <img src="/images/Modeling/events/stateChange.png" alt="State Change" width="25"/></h3>
@@ -136,7 +136,7 @@
 
   - **External Sim Variable:** Click the field to expand the drop down menu of external simulation variables you created in the model. Select the one that will change when this event could be triggered. One must be selected in order to create the event. 
   - **Evaluate Code (C#):** Type or copy and paste into this text field the C# code to evaluate to determine if this event is triggered. This must return a boolean true or false value.
-  - **Variables used in code:** A list of other variables available in the model for use in evaluating the code. This list will not include pre-existing variables such as CurTime. See [Dynamic Scripts](./backendInfo.md#dynamic-scripts) for more information. It will include the all of the variables that you create and are listed in the "All" Tab of the Left Navigation Frame. Check box to identify which variables are used in the code.
+  - **Variables used in code:** A list of other variables available in the model for use in evaluating the code. Pre-existing variables such as CurTime are auto checked and always available. See [Dynamic Scripts](./backendInfo.md#dynamic-scripts) for more information. It will include the all of the variables that you create and are listed in the "All" Tab of the Left Navigation Frame. Check box to identify which variables are used in the code.
 
 ## Time Based Events
   
