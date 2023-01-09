@@ -840,16 +840,16 @@ namespace EMRALD_Sim
       Cursor saveCurs = Cursor.Current;
       Cursor.Current = Cursors.WaitCursor;
 
-      teModel.Text = LoadLib.ValidateModel(ref _sim, teModel.Text, Path.GetDirectoryName(_modelPath));
+      txtMStatus.Text = LoadLib.ValidateModel(ref _sim, teModel.Text, Path.GetDirectoryName(_modelPath));
       _validSim = txtMStatus.Text == "";
-      if (txtMStatus.Text != "")
+      if (txtMStatus.Text != "") 
       {
         txtMStatus.ForeColor = Color.Maroon;
         Console.Write(txtMStatus.Text);
       }
       else
       {
-        txtMStatus.Text = "Model Loaded Successfully";
+        txtMStatus.Text = "Model Loaded Successfully" ; 
         txtMStatus.ForeColor = Color.Green;
         Console.Write(txtMStatus.Text);
       }
@@ -1155,11 +1155,62 @@ namespace EMRALD_Sim
     private void teModel_TextChanged(object sender, EventArgs e)
     {
       _validSim = false;
+      txtMStatus.Text = "";
     }
 
     private void saveStripMenuItem_Click(object sender, EventArgs e)
     {
+      sdSaveModel.FileName = _modelPath;
+      if (File.Exists(_modelPath))
+      {
+        try
+        {
+          File.Delete(_modelPath);
+          File.WriteAllText(_modelPath, teModel.Text);
+        }
+        catch
+        {
+          txtMStatus.ForeColor = Color.Maroon;
+          txtMStatus.Text = "Failed to save model";
+          Console.Write("Failed to save model");
+          return;
+        }
+      }
+      else
+      {
+        sdSaveModel.ShowDialog();
+      }
+    }
 
+    private void sdSaveModel_FileOk(object sender, CancelEventArgs e)
+    {
+      string saveLoc = sdSaveModel.FileName;
+      try
+      {
+        if(File.Exists(saveLoc))
+        {
+          txtMStatus.ForeColor = Color.Maroon;
+          txtMStatus.Text = "Failed to save, File Already Exists";
+          Console.Write("Failed to save, File Already Exists");
+        }
+
+        File.Delete(saveLoc);
+        File.WriteAllText(saveLoc, teModel.Text);
+        _modelPath = saveLoc;
+      }
+      catch
+      {
+        txtMStatus.ForeColor = Color.Maroon;
+        txtMStatus.Text = "Failed to save model";
+        Console.Write("Failed to save model");
+        return;
+      }
+    }
+
+    private void toolStripMenuItem1_Click(object sender, EventArgs e)
+    {
+      sdSaveModel.FileName = _modelPath;
+      sdSaveModel.ShowDialog();
     }
   }
 }

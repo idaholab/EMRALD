@@ -36,6 +36,7 @@ namespace EMRALD_Sim
       this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.defaultLoadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.saveStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+      this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
       this.openModel = new System.Windows.Forms.OpenFileDialog();
       this.tabXMPP = new System.Windows.Forms.TabPage();
       this.panel1 = new System.Windows.Forms.Panel();
@@ -159,6 +160,7 @@ namespace EMRALD_Sim
       this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
       this.saveFileDialog2 = new System.Windows.Forms.SaveFileDialog();
       this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
+      this.sdSaveModel = new System.Windows.Forms.SaveFileDialog();
       this.menuStrip1.SuspendLayout();
       this.tabXMPP.SuspendLayout();
       this.panel1.SuspendLayout();
@@ -212,7 +214,8 @@ namespace EMRALD_Sim
       this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.openToolStripMenuItem,
             this.defaultLoadToolStripMenuItem,
-            this.saveStripMenuItem});
+            this.saveStripMenuItem,
+            this.toolStripMenuItem1});
       this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
       this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
       this.fileToolStripMenuItem.Text = "File";
@@ -220,14 +223,14 @@ namespace EMRALD_Sim
       // openToolStripMenuItem
       // 
       this.openToolStripMenuItem.Name = "openToolStripMenuItem";
-      this.openToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+      this.openToolStripMenuItem.Size = new System.Drawing.Size(138, 22);
       this.openToolStripMenuItem.Text = "Open";
       this.openToolStripMenuItem.Click += new System.EventHandler(this.openToolStripMenuItem_Click);
       // 
       // defaultLoadToolStripMenuItem
       // 
       this.defaultLoadToolStripMenuItem.Name = "defaultLoadToolStripMenuItem";
-      this.defaultLoadToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+      this.defaultLoadToolStripMenuItem.Size = new System.Drawing.Size(138, 22);
       this.defaultLoadToolStripMenuItem.Text = "DefaultLoad";
       this.defaultLoadToolStripMenuItem.Visible = false;
       this.defaultLoadToolStripMenuItem.Click += new System.EventHandler(this.defaultLoadToolStripMenuItem_Click);
@@ -235,9 +238,16 @@ namespace EMRALD_Sim
       // saveStripMenuItem
       // 
       this.saveStripMenuItem.Name = "saveStripMenuItem";
-      this.saveStripMenuItem.Size = new System.Drawing.Size(180, 22);
+      this.saveStripMenuItem.Size = new System.Drawing.Size(138, 22);
       this.saveStripMenuItem.Text = "Save";
       this.saveStripMenuItem.Click += new System.EventHandler(this.saveStripMenuItem_Click);
+      // 
+      // toolStripMenuItem1
+      // 
+      this.toolStripMenuItem1.Name = "toolStripMenuItem1";
+      this.toolStripMenuItem1.Size = new System.Drawing.Size(138, 22);
+      this.toolStripMenuItem1.Text = "Save As";
+      this.toolStripMenuItem1.Click += new System.EventHandler(this.toolStripMenuItem1_Click);
       // 
       // openModel
       // 
@@ -901,7 +911,7 @@ namespace EMRALD_Sim
       this.teModel.Name = "teModel";
       this.teModel.Size = new System.Drawing.Size(1243, 651);
       this.teModel.TabIndex = 2;
-      this.teModel.Text = "textEditorControl1";
+      this.teModel.Text = "No Model Open";
       this.teModel.TextChanged += new System.EventHandler(this.teModel_TextChanged);
       // 
       // panel9
@@ -1596,6 +1606,11 @@ namespace EMRALD_Sim
       this.saveFileDialog2.Filter = "Text Files (*/txt)|*.txt,*.*";
       this.saveFileDialog2.FileOk += new System.ComponentModel.CancelEventHandler(this.saveFileDialog2_FileOk);
       // 
+      // sdSaveModel
+      // 
+      this.sdSaveModel.Filter = "JSON Files (*.json)|*.json";
+      this.sdSaveModel.FileOk += new System.ComponentModel.CancelEventHandler(this.sdSaveModel_FileOk);
+      // 
       // FormMain
       // 
       this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -1793,5 +1808,7 @@ namespace EMRALD_Sim
     private System.Windows.Forms.ToolTip toolTip1;
     private ICSharpCode.TextEditor.TextEditorControl teModel;
     private System.Windows.Forms.ToolStripMenuItem saveStripMenuItem;
+    private System.Windows.Forms.SaveFileDialog sdSaveModel;
+    private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem1;
   }
 }
