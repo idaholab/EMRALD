@@ -1248,6 +1248,7 @@ namespace SimulationTracking
       //send message to all ext sims to terminate
       TMsgWrapper msg = new TMsgWrapper(MessageType.mtSimAction, "Done", curTime, "Terminating all");
       msg.simAction = new SimAction(SimActionType.atTerminate);
+      msg.simAction.status = StatusType.stDone;
       foreach (var name in stopped3DSims)
       {
         sim3DServer.SendMessage(msg, name);
@@ -1321,6 +1322,7 @@ namespace SimulationTracking
               logger.Info("Coupled App XMPP Error: " + evData.desc + ", time: " + curTime.ToString(@"d\.hh\:mm\:ss\.f"));
               TMsgWrapper msg2 = new TMsgWrapper(MessageType.mtSimAction, "GotError", curTime, "Terminating all");
               msg2.simAction = new SimAction(SimActionType.atTerminate);
+              msg2.simAction.status = StatusType.stDone;
               sim3DServer.SendMessage(msg2, fromClient);
               throw new Exception("Unhandled client simulation error - " + evData.desc);
             }
