@@ -35,6 +35,7 @@ namespace EMRALD_Sim
       this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.defaultLoadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+      this.saveStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.openModel = new System.Windows.Forms.OpenFileDialog();
       this.tabXMPP = new System.Windows.Forms.TabPage();
       this.panel1 = new System.Windows.Forms.Panel();
@@ -158,7 +159,6 @@ namespace EMRALD_Sim
       this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
       this.saveFileDialog2 = new System.Windows.Forms.SaveFileDialog();
       this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
-      this.saveStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.menuStrip1.SuspendLayout();
       this.tabXMPP.SuspendLayout();
       this.panel1.SuspendLayout();
@@ -220,17 +220,24 @@ namespace EMRALD_Sim
       // openToolStripMenuItem
       // 
       this.openToolStripMenuItem.Name = "openToolStripMenuItem";
-      this.openToolStripMenuItem.Size = new System.Drawing.Size(138, 22);
+      this.openToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
       this.openToolStripMenuItem.Text = "Open";
       this.openToolStripMenuItem.Click += new System.EventHandler(this.openToolStripMenuItem_Click);
       // 
       // defaultLoadToolStripMenuItem
       // 
       this.defaultLoadToolStripMenuItem.Name = "defaultLoadToolStripMenuItem";
-      this.defaultLoadToolStripMenuItem.Size = new System.Drawing.Size(138, 22);
+      this.defaultLoadToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
       this.defaultLoadToolStripMenuItem.Text = "DefaultLoad";
       this.defaultLoadToolStripMenuItem.Visible = false;
       this.defaultLoadToolStripMenuItem.Click += new System.EventHandler(this.defaultLoadToolStripMenuItem_Click);
+      // 
+      // saveStripMenuItem
+      // 
+      this.saveStripMenuItem.Name = "saveStripMenuItem";
+      this.saveStripMenuItem.Size = new System.Drawing.Size(180, 22);
+      this.saveStripMenuItem.Text = "Save";
+      this.saveStripMenuItem.Click += new System.EventHandler(this.saveStripMenuItem_Click);
       // 
       // openModel
       // 
@@ -1588,12 +1595,6 @@ namespace EMRALD_Sim
       this.saveFileDialog2.DefaultExt = "txt";
       this.saveFileDialog2.Filter = "Text Files (*/txt)|*.txt,*.*";
       this.saveFileDialog2.FileOk += new System.ComponentModel.CancelEventHandler(this.saveFileDialog2_FileOk);
-      // 
-      // saveStripMenuItem
-      // 
-      this.saveStripMenuItem.Name = "saveStripMenuItem";
-      this.saveStripMenuItem.Size = new System.Drawing.Size(138, 22);
-      this.saveStripMenuItem.Text = "Save";
       // 
       // FormMain
       // 

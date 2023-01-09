@@ -1156,5 +1156,10 @@ namespace EMRALD_Sim
     {
       _validSim = false;
     }
+
+    private void saveStripMenuItem_Click(object sender, EventArgs e)
+    {
+
+    }
   }
 }
