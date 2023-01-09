@@ -46,6 +46,7 @@ namespace EMRALD_Sim
     {
       _appSettingsService = appSettingsService;
       InitializeComponent();
+      teModel.SetHighlighting("JSON");
       lvResults.Columns[3].Text = "Mean Time or Failed Components";
       lvResults.Columns[1].Text = "Count";
 
@@ -820,7 +821,7 @@ namespace EMRALD_Sim
       this.Text = "EMRALD (" + path + ");";
 
       string errorStr = "";
-      txtModel.Text = LoadLib.LoadModel(path, ref errorStr);
+      teModel.Text = LoadLib.LoadModel(path, ref errorStr);
       _modelPath = path;
       if (errorStr != "")
       {
@@ -839,11 +840,17 @@ namespace EMRALD_Sim
       Cursor saveCurs = Cursor.Current;
       Cursor.Current = Cursors.WaitCursor;
 
-      txtMStatus.Text = LoadLib.ValidateModel(ref _sim, txtModel.Text, Path.GetDirectoryName(_modelPath));
+      teModel.Text = LoadLib.ValidateModel(ref _sim, teModel.Text, Path.GetDirectoryName(_modelPath));
       _validSim = txtMStatus.Text == "";
       if (txtMStatus.Text != "")
       {
         txtMStatus.ForeColor = Color.Maroon;
+        Console.Write(txtMStatus.Text);
+      }
+      else
+      {
+        txtMStatus.Text = "Model Loaded Successfully";
+        txtMStatus.ForeColor = Color.Green;
         Console.Write(txtMStatus.Text);
       }
 
@@ -883,11 +890,6 @@ namespace EMRALD_Sim
           lbMonitorVars.SetItemChecked(idx, chk);
         }
       }
-    }
-
-    private void txtModel_TextChanged(object sender, EventArgs e)
-    {
-      _validSim = false;
     }
 
     private void DispResults(TimeSpan runTime, int runCnt, bool finalValOnly)
@@ -1150,5 +1152,9 @@ namespace EMRALD_Sim
         tbSavePath2.Text = Path.GetDirectoryName(tbSavePath2.Text) + "\\" + Path.GetFileNameWithoutExtension(tbSavePath2.Text) + ".json";
     }
 
+    private void teModel_TextChanged(object sender, EventArgs e)
+    {
+      _validSim = false;
+    }
   }
 }
