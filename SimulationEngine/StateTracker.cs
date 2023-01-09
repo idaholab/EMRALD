@@ -1112,6 +1112,7 @@ namespace SimulationTracking
       this.changedItems.Clear();
       this.curStates.Clear();
       this.condEvList.Clear();
+      this.stopped3DSims.Clear();
       this.curTime = new TimeSpan();
 
       //TODO : 
@@ -1183,9 +1184,9 @@ namespace SimulationTracking
       if (ranXMPPSim) //for all the XMPP simulations that ran send a final continue now that all other processing is done
       {
         TMsgWrapper msg2 = new TMsgWrapper(MessageType.mtSimAction, "Continue", curTime, "Continue External Sim");
-        msg2.simAction = new SimAction(SimActionType.atContinue);
         foreach (var name in stopped3DSims)
         {
+          msg2.simAction = new SimAction(SimActionType.atContinue);
           sim3DServer.SendMessage(msg2, name);
         }
 
@@ -1210,17 +1211,18 @@ namespace SimulationTracking
           ranXMPPSim = true;
           System.Threading.Thread.Sleep(10);
         }
+      }
 
-        if (ranXMPPSim) //for all the XMPP simulations that ran send a final continue now that all other processing is done
+      if (ranXMPPSim) //for all the XMPP simulations that ran send a final continue now that all other processing is done
+      {
+        TMsgWrapper msg2 = new TMsgWrapper(MessageType.mtSimAction, "Continue", curTime, "Current EMRALD run done, continue ext Sim");
+        foreach (var name in stopped3DSims)
         {
-          TMsgWrapper msg2 = new TMsgWrapper(MessageType.mtSimAction, "Continue", curTime, "Continue External Sim");
           msg2.simAction = new SimAction(SimActionType.atContinue);
-          foreach (var name in stopped3DSims)
-          {
-            sim3DServer.SendMessage(msg2, name);
-          }
 
+          sim3DServer.SendMessage(msg2, name);
         }
+
       }
 
       //MessageBox.Show("end sim");
@@ -1309,11 +1311,12 @@ namespace SimulationTracking
             lastExtEvTypes.Add(fromClient + "-" + ev.evType.ToString() + "_" + evData.pID, ev.evType);
             logger.Info("Ping: from " + fromClient + ", time: " + curTime.ToString(@"d\.hh\:mm\:ss\.f"));
 
-            TMsgWrapper msg = new TMsgWrapper(MessageType.mtOther, "GotPing");
-            msg.simAction = new SimAction(SimActionType.atStatus);
-            //TODO if waiting for external sim put as stWaiting
-            msg.simAction.status = StatusType.stRunning;
-            sim3DServer.SendMessage(msg, fromClient);
+            //TODO proper responce to a ping?
+            //TMsgWrapper msg = new TMsgWrapper(MessageType.mtOther, "GotPing");
+            //msg.simAction = new SimAction(SimActionType.?);
+            ////TODO if waiting for external sim put as stWaiting
+            //msg.simAction.status = StatusType.stRunning;
+            //sim3DServer.SendMessage(msg, fromClient);
             return;
 
           case SimEventType.etStatus:
