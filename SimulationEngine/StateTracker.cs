@@ -1271,15 +1271,21 @@ namespace SimulationTracking
       //clear the tracking of last events recieved
       lastExtEvTypes.Clear();
       bool doProcessLoop = false;
-
+      
       foreach (var ev in evData.simEvents)
       {
         tempStateCngCheck = false;
+        string lastEvKey = fromClient + "-" + ev.evType.ToString();
+        if (ev.itemData != null)
+        {
+          lastEvKey += "_" + ev.itemData.nameId;
+        }
+
         //etWaterContact=0, etWaterSubmerge=1, etTimer=2, etSubSim=3, etSimStarted=4, etEndSim=5
         switch (ev.evType)
         {
           case SimEventType.etEndSim:  //stop the simulation
-            lastExtEvTypes.Add(fromClient + "-" + ev.evType.ToString() + "_" + evData.pID, ev.evType);
+            lastExtEvTypes.Add(lastEvKey, ev.evType);
             ScanCondEvList();
             this.timeEvList.ExternalEvOccurred(evData.desc + i.ToString(), ev, allLists, curTime, sim3DStartTime);            
             stopped3DSims.Add(fromClient);
@@ -1308,7 +1314,7 @@ namespace SimulationTracking
             break;
 
           case SimEventType.etPing:
-            lastExtEvTypes.Add(fromClient + "-" + ev.evType.ToString() + "_" + evData.pID, ev.evType);
+            lastExtEvTypes.Add(lastEvKey, ev.evType);
             logger.Info("Ping: from " + fromClient + ", time: " + curTime.ToString(@"d\.hh\:mm\:ss\.f"));
 
             //TODO proper responce to a ping?
@@ -1338,7 +1344,7 @@ namespace SimulationTracking
             {
               return;
             }
-            lastExtEvTypes.Add(fromClient + "-" + ev.evType.ToString() + "_" + evData.pID, ev.evType);
+            lastExtEvTypes.Add(lastEvKey, ev.evType);
             shiftTimeTo = (TimeSpan)ev.time; //If checked and passed with schema, this will not be null.
             if (shiftTimeTo == Globals.NowTimeSpan)
               shiftTimeTo = TimeSpan.FromMilliseconds(1) + sim3DStartTime;
