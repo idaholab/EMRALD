@@ -1909,9 +1909,24 @@ namespace SimulationTracking
                 if (sim3DServer == null)
                   throw new Exception("External Simulation not assigned.");
 
-                if (!sim3DServer.GetResources().Contains(cur3DAct.resourceName))
+                bool hasConnection = false;
+                int conCnt = 0;
+                while (!hasConnection)
                 {
-                  throw new Exception("No external client code named - " + cur3DAct.resourceName);
+                  ++conCnt;
+                  if (!sim3DServer.GetResources().Contains(cur3DAct.resourceName))
+                  {
+                    logger.Error("Lost XMPP connection");
+
+                    if (conCnt > 60)
+                    {
+                      logger.Error("End wait for XMPP reconnection");
+                      throw new Exception("No external client code named - " + cur3DAct.resourceName);
+                    }
+
+                    //give time to establish a new connection
+                    System.Threading.Thread.Sleep(1000);                    
+                  }
                 }
 
                 allLists.allVariables.FindByName("ExtSimStartTime").SetValue(curTime.TotalHours);

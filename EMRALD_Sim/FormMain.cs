@@ -682,7 +682,11 @@ namespace EMRALD_Sim
             {
               rtbJSONErrors.Visible = false;
               AssignServer(); //make sure it has been assigned
-              _server.SendMessage(msg, (string)cbRegisteredClients.Items[cbRegisteredClients.SelectedIndex]);
+              if (_server.SendMessage(msg, (string)cbRegisteredClients.Items[cbRegisteredClients.SelectedIndex]))
+              {
+                rtbJSONErrors.Visible = true;
+                rtbJSONErrors.Text = "Failed to send message";
+              }
             }
             else
             {
