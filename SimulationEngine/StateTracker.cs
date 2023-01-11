@@ -1927,6 +1927,10 @@ namespace SimulationTracking
                     //give time to establish a new connection
                     System.Threading.Thread.Sleep(1000);                    
                   }
+                  else
+                  {
+                    hasConnection = true;
+                  }
                 }
 
                 allLists.allVariables.FindByName("ExtSimStartTime").SetValue(curTime.TotalHours);
