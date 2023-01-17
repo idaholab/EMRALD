@@ -35,6 +35,8 @@ namespace EMRALD_Sim
       this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.defaultLoadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+      this.saveStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+      this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
       this.openModel = new System.Windows.Forms.OpenFileDialog();
       this.tabXMPP = new System.Windows.Forms.TabPage();
       this.panel1 = new System.Windows.Forms.Panel();
@@ -92,7 +94,7 @@ namespace EMRALD_Sim
       this.button1 = new System.Windows.Forms.Button();
       this.panel3 = new System.Windows.Forms.Panel();
       this.panel15 = new System.Windows.Forms.Panel();
-      this.txtModel = new System.Windows.Forms.TextBox();
+      this.teModel = new ICSharpCode.TextEditor.TextEditorControl();
       this.panel9 = new System.Windows.Forms.Panel();
       this.btnValidateModel = new System.Windows.Forms.Button();
       this.splitter2 = new System.Windows.Forms.Splitter();
@@ -158,6 +160,7 @@ namespace EMRALD_Sim
       this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
       this.saveFileDialog2 = new System.Windows.Forms.SaveFileDialog();
       this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
+      this.sdSaveModel = new System.Windows.Forms.SaveFileDialog();
       this.menuStrip1.SuspendLayout();
       this.tabXMPP.SuspendLayout();
       this.panel1.SuspendLayout();
@@ -210,7 +213,9 @@ namespace EMRALD_Sim
       // 
       this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.openToolStripMenuItem,
-            this.defaultLoadToolStripMenuItem});
+            this.defaultLoadToolStripMenuItem,
+            this.saveStripMenuItem,
+            this.toolStripMenuItem1});
       this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
       this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
       this.fileToolStripMenuItem.Text = "File";
@@ -230,6 +235,20 @@ namespace EMRALD_Sim
       this.defaultLoadToolStripMenuItem.Visible = false;
       this.defaultLoadToolStripMenuItem.Click += new System.EventHandler(this.defaultLoadToolStripMenuItem_Click);
       // 
+      // saveStripMenuItem
+      // 
+      this.saveStripMenuItem.Name = "saveStripMenuItem";
+      this.saveStripMenuItem.Size = new System.Drawing.Size(138, 22);
+      this.saveStripMenuItem.Text = "Save";
+      this.saveStripMenuItem.Click += new System.EventHandler(this.saveStripMenuItem_Click);
+      // 
+      // toolStripMenuItem1
+      // 
+      this.toolStripMenuItem1.Name = "toolStripMenuItem1";
+      this.toolStripMenuItem1.Size = new System.Drawing.Size(138, 22);
+      this.toolStripMenuItem1.Text = "Save As";
+      this.toolStripMenuItem1.Click += new System.EventHandler(this.toolStripMenuItem1_Click);
+      // 
       // openModel
       // 
       this.openModel.Filter = "JSON Files (*.json)|*.json";
@@ -243,7 +262,7 @@ namespace EMRALD_Sim
       this.tabXMPP.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
       this.tabXMPP.Name = "tabXMPP";
       this.tabXMPP.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
-      this.tabXMPP.Size = new System.Drawing.Size(1251, 723);
+      this.tabXMPP.Size = new System.Drawing.Size(1251, 793);
       this.tabXMPP.TabIndex = 1;
       this.tabXMPP.Text = "XMPP Messaging";
       this.tabXMPP.UseVisualStyleBackColor = true;
@@ -259,7 +278,7 @@ namespace EMRALD_Sim
       this.panel1.Location = new System.Drawing.Point(467, 3);
       this.panel1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
       this.panel1.Name = "panel1";
-      this.panel1.Size = new System.Drawing.Size(780, 717);
+      this.panel1.Size = new System.Drawing.Size(780, 787);
       this.panel1.TabIndex = 28;
       // 
       // panel2
@@ -274,13 +293,13 @@ namespace EMRALD_Sim
       this.panel2.Location = new System.Drawing.Point(0, 107);
       this.panel2.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
       this.panel2.Name = "panel2";
-      this.panel2.Size = new System.Drawing.Size(776, 551);
+      this.panel2.Size = new System.Drawing.Size(776, 621);
       this.panel2.TabIndex = 28;
       // 
       // splitter4
       // 
       this.splitter4.Dock = System.Windows.Forms.DockStyle.Bottom;
-      this.splitter4.Location = new System.Drawing.Point(0, 431);
+      this.splitter4.Location = new System.Drawing.Point(0, 501);
       this.splitter4.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
       this.splitter4.Name = "splitter4";
       this.splitter4.Size = new System.Drawing.Size(774, 3);
@@ -291,7 +310,7 @@ namespace EMRALD_Sim
       // 
       this.rtbJSONErrors.BackColor = System.Drawing.SystemColors.Control;
       this.rtbJSONErrors.Dock = System.Windows.Forms.DockStyle.Bottom;
-      this.rtbJSONErrors.Location = new System.Drawing.Point(0, 434);
+      this.rtbJSONErrors.Location = new System.Drawing.Point(0, 504);
       this.rtbJSONErrors.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
       this.rtbJSONErrors.Name = "rtbJSONErrors";
       this.rtbJSONErrors.Size = new System.Drawing.Size(774, 115);
@@ -306,7 +325,7 @@ namespace EMRALD_Sim
       this.rtbJSONMsg.Location = new System.Drawing.Point(0, 347);
       this.rtbJSONMsg.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
       this.rtbJSONMsg.Name = "rtbJSONMsg";
-      this.rtbJSONMsg.Size = new System.Drawing.Size(774, 202);
+      this.rtbJSONMsg.Size = new System.Drawing.Size(774, 272);
       this.rtbJSONMsg.TabIndex = 3;
       this.rtbJSONMsg.Text = "";
       // 
@@ -414,7 +433,7 @@ namespace EMRALD_Sim
       this.tabSimInfo.Location = new System.Drawing.Point(4, 22);
       this.tabSimInfo.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
       this.tabSimInfo.Name = "tabSimInfo";
-      this.tabSimInfo.Size = new System.Drawing.Size(769, 106);
+      this.tabSimInfo.Size = new System.Drawing.Size(764, 106);
       this.tabSimInfo.TabIndex = 0;
       this.tabSimInfo.Text = "SimInfo";
       // 
@@ -624,7 +643,7 @@ namespace EMRALD_Sim
       this.panel7.Controls.Add(this.btnSendMsg);
       this.panel7.Controls.Add(this.cbRegisteredClients);
       this.panel7.Dock = System.Windows.Forms.DockStyle.Bottom;
-      this.panel7.Location = new System.Drawing.Point(0, 658);
+      this.panel7.Location = new System.Drawing.Point(0, 728);
       this.panel7.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
       this.panel7.Name = "panel7";
       this.panel7.Size = new System.Drawing.Size(776, 55);
@@ -759,7 +778,7 @@ namespace EMRALD_Sim
       this.splitter1.Location = new System.Drawing.Point(460, 3);
       this.splitter1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
       this.splitter1.Name = "splitter1";
-      this.splitter1.Size = new System.Drawing.Size(7, 717);
+      this.splitter1.Size = new System.Drawing.Size(7, 787);
       this.splitter1.TabIndex = 25;
       this.splitter1.TabStop = false;
       // 
@@ -772,7 +791,7 @@ namespace EMRALD_Sim
       this.pnlConInfo.Location = new System.Drawing.Point(4, 3);
       this.pnlConInfo.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
       this.pnlConInfo.Name = "pnlConInfo";
-      this.pnlConInfo.Size = new System.Drawing.Size(456, 717);
+      this.pnlConInfo.Size = new System.Drawing.Size(456, 787);
       this.pnlConInfo.TabIndex = 24;
       // 
       // groupBoxReceived
@@ -781,10 +800,10 @@ namespace EMRALD_Sim
       this.groupBoxReceived.Controls.Add(this.rtfReceived);
       this.groupBoxReceived.Dock = System.Windows.Forms.DockStyle.Fill;
       this.groupBoxReceived.Location = new System.Drawing.Point(0, 121);
-      this.groupBoxReceived.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+      this.groupBoxReceived.Margin = new System.Windows.Forms.Padding(2);
       this.groupBoxReceived.Name = "groupBoxReceived";
-      this.groupBoxReceived.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
-      this.groupBoxReceived.Size = new System.Drawing.Size(454, 594);
+      this.groupBoxReceived.Padding = new System.Windows.Forms.Padding(2);
+      this.groupBoxReceived.Size = new System.Drawing.Size(454, 664);
       this.groupBoxReceived.TabIndex = 22;
       this.groupBoxReceived.TabStop = false;
       this.groupBoxReceived.Text = "Message Log";
@@ -806,10 +825,10 @@ namespace EMRALD_Sim
       // 
       this.rtfReceived.Dock = System.Windows.Forms.DockStyle.Fill;
       this.rtfReceived.Location = new System.Drawing.Point(2, 18);
-      this.rtfReceived.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+      this.rtfReceived.Margin = new System.Windows.Forms.Padding(2);
       this.rtfReceived.Name = "rtfReceived";
       this.rtfReceived.ReadOnly = true;
-      this.rtfReceived.Size = new System.Drawing.Size(450, 574);
+      this.rtfReceived.Size = new System.Drawing.Size(450, 644);
       this.rtfReceived.TabIndex = 0;
       this.rtfReceived.Text = "";
       // 
@@ -818,9 +837,9 @@ namespace EMRALD_Sim
       this.groupBoxClients.Controls.Add(this.listBoxClients);
       this.groupBoxClients.Dock = System.Windows.Forms.DockStyle.Top;
       this.groupBoxClients.Location = new System.Drawing.Point(0, 0);
-      this.groupBoxClients.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+      this.groupBoxClients.Margin = new System.Windows.Forms.Padding(2);
       this.groupBoxClients.Name = "groupBoxClients";
-      this.groupBoxClients.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
+      this.groupBoxClients.Padding = new System.Windows.Forms.Padding(2);
       this.groupBoxClients.Size = new System.Drawing.Size(454, 121);
       this.groupBoxClients.TabIndex = 21;
       this.groupBoxClients.TabStop = false;
@@ -832,7 +851,7 @@ namespace EMRALD_Sim
       this.listBoxClients.FormattingEnabled = true;
       this.listBoxClients.ItemHeight = 15;
       this.listBoxClients.Location = new System.Drawing.Point(2, 18);
-      this.listBoxClients.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+      this.listBoxClients.Margin = new System.Windows.Forms.Padding(2);
       this.listBoxClients.Name = "listBoxClients";
       this.listBoxClients.Size = new System.Drawing.Size(450, 101);
       this.listBoxClients.TabIndex = 0;
@@ -847,7 +866,7 @@ namespace EMRALD_Sim
       this.tabModel.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
       this.tabModel.Name = "tabModel";
       this.tabModel.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
-      this.tabModel.Size = new System.Drawing.Size(1251, 531);
+      this.tabModel.Size = new System.Drawing.Size(1251, 793);
       this.tabModel.TabIndex = 0;
       this.tabModel.Text = "Model";
       this.tabModel.UseVisualStyleBackColor = true;
@@ -871,36 +890,35 @@ namespace EMRALD_Sim
       this.panel3.Location = new System.Drawing.Point(4, 3);
       this.panel3.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
       this.panel3.Name = "panel3";
-      this.panel3.Size = new System.Drawing.Size(1243, 422);
+      this.panel3.Size = new System.Drawing.Size(1243, 684);
       this.panel3.TabIndex = 4;
       // 
       // panel15
       // 
-      this.panel15.Controls.Add(this.txtModel);
+      this.panel15.Controls.Add(this.teModel);
       this.panel15.Dock = System.Windows.Forms.DockStyle.Fill;
       this.panel15.Location = new System.Drawing.Point(0, 0);
       this.panel15.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
       this.panel15.Name = "panel15";
-      this.panel15.Size = new System.Drawing.Size(1243, 389);
+      this.panel15.Size = new System.Drawing.Size(1243, 651);
       this.panel15.TabIndex = 3;
       // 
-      // txtModel
+      // teModel
       // 
-      this.txtModel.Dock = System.Windows.Forms.DockStyle.Fill;
-      this.txtModel.Location = new System.Drawing.Point(0, 0);
-      this.txtModel.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-      this.txtModel.Multiline = true;
-      this.txtModel.Name = "txtModel";
-      this.txtModel.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-      this.txtModel.Size = new System.Drawing.Size(1243, 389);
-      this.txtModel.TabIndex = 1;
-      this.txtModel.TextChanged += new System.EventHandler(this.txtModel_TextChanged);
+      this.teModel.Dock = System.Windows.Forms.DockStyle.Fill;
+      this.teModel.IsReadOnly = false;
+      this.teModel.Location = new System.Drawing.Point(0, 0);
+      this.teModel.Name = "teModel";
+      this.teModel.Size = new System.Drawing.Size(1243, 651);
+      this.teModel.TabIndex = 2;
+      this.teModel.Text = "No Model Open";
+      this.teModel.TextChanged += new System.EventHandler(this.teModel_TextChanged);
       // 
       // panel9
       // 
       this.panel9.Controls.Add(this.btnValidateModel);
       this.panel9.Dock = System.Windows.Forms.DockStyle.Bottom;
-      this.panel9.Location = new System.Drawing.Point(0, 389);
+      this.panel9.Location = new System.Drawing.Point(0, 651);
       this.panel9.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
       this.panel9.Name = "panel9";
       this.panel9.Size = new System.Drawing.Size(1243, 33);
@@ -921,7 +939,7 @@ namespace EMRALD_Sim
       // 
       this.splitter2.Cursor = System.Windows.Forms.Cursors.HSplit;
       this.splitter2.Dock = System.Windows.Forms.DockStyle.Bottom;
-      this.splitter2.Location = new System.Drawing.Point(4, 425);
+      this.splitter2.Location = new System.Drawing.Point(4, 687);
       this.splitter2.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
       this.splitter2.Name = "splitter2";
       this.splitter2.Size = new System.Drawing.Size(1243, 3);
@@ -931,7 +949,7 @@ namespace EMRALD_Sim
       // txtMStatus
       // 
       this.txtMStatus.Dock = System.Windows.Forms.DockStyle.Bottom;
-      this.txtMStatus.Location = new System.Drawing.Point(4, 428);
+      this.txtMStatus.Location = new System.Drawing.Point(4, 690);
       this.txtMStatus.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
       this.txtMStatus.Multiline = true;
       this.txtMStatus.Name = "txtMStatus";
@@ -949,7 +967,7 @@ namespace EMRALD_Sim
       this.tcMain.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
       this.tcMain.Name = "tcMain";
       this.tcMain.SelectedIndex = 0;
-      this.tcMain.Size = new System.Drawing.Size(1259, 559);
+      this.tcMain.Size = new System.Drawing.Size(1259, 821);
       this.tcMain.TabIndex = 1;
       // 
       // tabSimulate
@@ -960,7 +978,7 @@ namespace EMRALD_Sim
       this.tabSimulate.Location = new System.Drawing.Point(4, 24);
       this.tabSimulate.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
       this.tabSimulate.Name = "tabSimulate";
-      this.tabSimulate.Size = new System.Drawing.Size(1251, 531);
+      this.tabSimulate.Size = new System.Drawing.Size(1251, 793);
       this.tabSimulate.TabIndex = 3;
       this.tabSimulate.Text = "Simulate";
       this.tabSimulate.UseVisualStyleBackColor = true;
@@ -975,7 +993,7 @@ namespace EMRALD_Sim
       this.pnlSimResults.Location = new System.Drawing.Point(0, 293);
       this.pnlSimResults.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
       this.pnlSimResults.Name = "pnlSimResults";
-      this.pnlSimResults.Size = new System.Drawing.Size(1251, 238);
+      this.pnlSimResults.Size = new System.Drawing.Size(1251, 500);
       this.pnlSimResults.TabIndex = 3;
       // 
       // lvVarValues
@@ -984,13 +1002,13 @@ namespace EMRALD_Sim
       this.lvVarValues.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.colName,
             this.colValue});
-      this.lvVarValues.Dock = System.Windows.Forms.DockStyle.Top;
+      this.lvVarValues.Dock = System.Windows.Forms.DockStyle.Fill;
       this.lvVarValues.FullRowSelect = true;
       this.lvVarValues.GridLines = true;
-      this.lvVarValues.Location = new System.Drawing.Point(0, 474);
+      this.lvVarValues.Location = new System.Drawing.Point(0, 307);
       this.lvVarValues.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
       this.lvVarValues.Name = "lvVarValues";
-      this.lvVarValues.Size = new System.Drawing.Size(1251, 432);
+      this.lvVarValues.Size = new System.Drawing.Size(1251, 193);
       this.lvVarValues.TabIndex = 5;
       this.lvVarValues.UseCompatibleStateImageBehavior = false;
       this.lvVarValues.View = System.Windows.Forms.View.Details;
@@ -1008,7 +1026,7 @@ namespace EMRALD_Sim
       // splitter8
       // 
       this.splitter8.Dock = System.Windows.Forms.DockStyle.Top;
-      this.splitter8.Location = new System.Drawing.Point(0, 471);
+      this.splitter8.Location = new System.Drawing.Point(0, 304);
       this.splitter8.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
       this.splitter8.Name = "splitter8";
       this.splitter8.Size = new System.Drawing.Size(1251, 3);
@@ -1029,7 +1047,7 @@ namespace EMRALD_Sim
       this.lvResults.Location = new System.Drawing.Point(0, 39);
       this.lvResults.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
       this.lvResults.Name = "lvResults";
-      this.lvResults.Size = new System.Drawing.Size(1251, 432);
+      this.lvResults.Size = new System.Drawing.Size(1251, 265);
       this.lvResults.TabIndex = 3;
       this.lvResults.UseCompatibleStateImageBehavior = false;
       this.lvResults.View = System.Windows.Forms.View.Details;
@@ -1177,11 +1195,11 @@ namespace EMRALD_Sim
       // 
       this.gbPathResults.Controls.Add(this.rbJsonPaths);
       this.gbPathResults.Controls.Add(this.rbSimplePath);
-      this.gbPathResults.Location = new System.Drawing.Point(131, 125);
+      this.gbPathResults.Location = new System.Drawing.Point(131, 110);
       this.gbPathResults.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
       this.gbPathResults.Name = "gbPathResults";
       this.gbPathResults.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
-      this.gbPathResults.Size = new System.Drawing.Size(537, 23);
+      this.gbPathResults.Size = new System.Drawing.Size(537, 36);
       this.gbPathResults.TabIndex = 39;
       this.gbPathResults.TabStop = false;
       this.gbPathResults.Visible = false;
@@ -1560,7 +1578,7 @@ namespace EMRALD_Sim
       this.tabLog.Location = new System.Drawing.Point(4, 24);
       this.tabLog.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
       this.tabLog.Name = "tabLog";
-      this.tabLog.Size = new System.Drawing.Size(1251, 723);
+      this.tabLog.Size = new System.Drawing.Size(1251, 793);
       this.tabLog.TabIndex = 2;
       this.tabLog.Text = "Log";
       this.tabLog.UseVisualStyleBackColor = true;
@@ -1569,10 +1587,10 @@ namespace EMRALD_Sim
       // 
       this.rtbLog.Dock = System.Windows.Forms.DockStyle.Fill;
       this.rtbLog.Location = new System.Drawing.Point(0, 0);
-      this.rtbLog.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+      this.rtbLog.Margin = new System.Windows.Forms.Padding(2);
       this.rtbLog.Name = "rtbLog";
       this.rtbLog.ReadOnly = true;
-      this.rtbLog.Size = new System.Drawing.Size(1251, 723);
+      this.rtbLog.Size = new System.Drawing.Size(1251, 793);
       this.rtbLog.TabIndex = 1;
       this.rtbLog.Text = "";
       // 
@@ -1588,11 +1606,16 @@ namespace EMRALD_Sim
       this.saveFileDialog2.Filter = "Text Files (*/txt)|*.txt,*.*";
       this.saveFileDialog2.FileOk += new System.ComponentModel.CancelEventHandler(this.saveFileDialog2_FileOk);
       // 
+      // sdSaveModel
+      // 
+      this.sdSaveModel.Filter = "JSON Files (*.json)|*.json";
+      this.sdSaveModel.FileOk += new System.ComponentModel.CancelEventHandler(this.sdSaveModel_FileOk);
+      // 
       // FormMain
       // 
       this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-      this.ClientSize = new System.Drawing.Size(1259, 583);
+      this.ClientSize = new System.Drawing.Size(1259, 845);
       this.Controls.Add(this.tcMain);
       this.Controls.Add(this.menuStrip1);
       this.MainMenuStrip = this.menuStrip1;
@@ -1630,7 +1653,6 @@ namespace EMRALD_Sim
       this.tabModel.PerformLayout();
       this.panel3.ResumeLayout(false);
       this.panel15.ResumeLayout(false);
-      this.panel15.PerformLayout();
       this.panel9.ResumeLayout(false);
       this.tcMain.ResumeLayout(false);
       this.tabSimulate.ResumeLayout(false);
@@ -1721,7 +1743,6 @@ namespace EMRALD_Sim
     private System.Windows.Forms.Panel pnlSimulate;
     private System.Windows.Forms.Button btnStartSims;
     private System.Windows.Forms.TextBox txtMStatus;
-    private System.Windows.Forms.TextBox txtModel;
     private System.Windows.Forms.Splitter splitter2;
     private System.Windows.Forms.Panel panel3;
     private System.Windows.Forms.Panel panel9;
@@ -1785,5 +1806,9 @@ namespace EMRALD_Sim
     private System.Windows.Forms.RadioButton rbJsonPaths;
     private System.Windows.Forms.RadioButton rbSimplePath;
     private System.Windows.Forms.ToolTip toolTip1;
+    private ICSharpCode.TextEditor.TextEditorControl teModel;
+    private System.Windows.Forms.ToolStripMenuItem saveStripMenuItem;
+    private System.Windows.Forms.SaveFileDialog sdSaveModel;
+    private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem1;
   }
 }
