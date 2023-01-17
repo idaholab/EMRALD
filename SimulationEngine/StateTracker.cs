@@ -1999,7 +1999,7 @@ namespace SimulationTracking
                 }
 
                 msg = new TMsgWrapper(MessageType.mtSimAction, "SetSimValue", curTime, "Adjust External Sim");
-                msg.simAction = new SimAction(SimActionType.atCompModify, curTime, new ItemData(cur3DAct.simVar.name, setValue));
+                msg.simAction = new SimAction(SimActionType.atCompModify, curTime, new ItemData(cur3DAct.simVar.sim3DNameId, setValue));
 
                 sim3DServer.SendMessage(msg, cur3DAct.resourceName);
                 //sim3DServer.SendAction(new TActionPacketData(sendVal));
