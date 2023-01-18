@@ -66,7 +66,8 @@
                 <input size="40" tabindex="2" name="DescValue" ng-model="desc" />
             </div>
 
-            <div id="movePanel" style="height:0px">
+            <div id="movePanel"
+                 style="display:table-row;position:absolute;visibility:collapse;height:60%;width:96%;overflow-x:hidden;overflow-y:visible;">
                 <br />
                 <div style="display:table-row;">
                     <input type="checkbox" onchange="moveFromCurrentHandler(this);" ng-true-value=true ng-false-value=false ng-checked=moveFromCurrent />
