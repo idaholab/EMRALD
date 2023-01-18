@@ -1304,9 +1304,12 @@ namespace SimulationDAL
         foreach (DistribParams p in this._dParams)
         {
           if (p.variable != null)
-            valuePs.Add((double)vars.FindByName(p.variable).value);
+          {
+            var v = vars.FindByName(p.variable);
+            valuePs.Add(Convert.ToDouble(v.value));
+          }
           else if (p.value != null)
-            valuePs.Add((double)p.value);
+            valuePs.Add(Convert.ToDouble(p.value));
           else
             valuePs.Add(null);
         }
