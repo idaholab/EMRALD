@@ -1479,7 +1479,7 @@ namespace SimulationDAL
 
     public override bool UsesVariables()
     {
-      return ((vars == null) && (vars.Count > 0));
+      return ((vars != null) && (vars.Count > 0));
     }
   }
 
