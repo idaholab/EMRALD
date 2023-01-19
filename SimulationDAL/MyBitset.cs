@@ -367,7 +367,7 @@ namespace MyStuff.Collections
       }
       else
       {
-        int ints = Math.Min(((m_length + 31) / 32), ((value.m_length + 31) / 32)) - 1;
+        int ints = Math.Min(m_length / 32, value.m_length / 32);
         int maxInts = ((m_length + 31) / 32);
         //copy full initial array pieces
         for (int i = 0; i < ints - 1; i++)
@@ -406,11 +406,11 @@ namespace MyStuff.Collections
           m_array[i] |= value.m_array[i];
       }
       else
-      {
-        int ints = Math.Min(((m_length + 31) / 32), ((value.m_length + 31) / 32)) -1;
+      { 
+        int ints = Math.Min(m_length / 32, value.m_length / 32);
         //copy full initial array pieces
         for (int i = 0; i < ints; i++)
-          m_array[i] &= value.m_array[i];
+          m_array[i] |= value.m_array[i];
 
         //copy incomplete piece
         int begPiece = ints*32;
@@ -438,7 +438,7 @@ namespace MyStuff.Collections
       }
       else
       {
-        int ints = Math.Min(((m_length + 31) / 32), ((value.m_length + 31) / 32)) - 1;
+        int ints = Math.Min(m_length / 32, value.m_length / 32);
         //copy full initial array pieces
         for (int i = 0; i < ints; i++)
           m_array[i] ^= value.m_array[i];

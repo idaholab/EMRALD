@@ -66,8 +66,7 @@
                 <input size="40" tabindex="2" name="DescValue" ng-model="desc" />
             </div>
 
-            <div id="movePanel"
-                 style="display:table-row;position:absolute;visibility:collapse;height:60%;width:96%;overflow-x:hidden;overflow-y:visible;">
+            <div id="movePanel" style="height:0px">
                 <br />
                 <div style="display:table-row;">
                     <input type="checkbox" onchange="moveFromCurrentHandler(this);" ng-true-value=true ng-false-value=false ng-checked=moveFromCurrent />
@@ -109,11 +108,13 @@
                                 <label for="varId_RunIdx" style="display:block">RunIdx</label>
                             </td>
                         </tr>
-                        <tr ng-repeat="row in varMap">
+                        <tr ng-repeat="row in data.varMap">
                             <td style="border: 1px solid #dddddd; text-align: left; padding: 0px;">
-                                <input type="checkbox" ng-change="variableChecked(row);" ng-model="row.check" />
+                                <input id="{{'varId_' + row.value.name}}" type="checkbox" ng-change="variableChecked(row);" ng-model="row.check" />
                             </td>
-                            <td style="border: 1px solid #dddddd; text-align: left; padding: 0px;">{{row.value.name}}</td>
+                            <td style="border: 1px solid #dddddd; text-align: left; padding: 0px;">
+                                <label for="{{'varId_' + row.value.name}}" style="display:block">{{row.value.name}}</label>
+                            </td>
                         </tr>
                     </table>
                 </div>
@@ -150,11 +151,13 @@
                                     <label for="varId_RunIdx" style="display:block">RunIdx</label>
                                 </td>
                             </tr>
-                            <tr ng-repeat="row in varMap">
+                            <tr ng-repeat="row in data.varMap">
                                 <td style="border: 1px solid #dddddd; text-align: left; padding: 0px;">
-                                    <input type="checkbox" ng-change="variableChecked(row);" ng-model="row.check" />
+                                    <input id="{{'varId_' + row.value.name}}" type="checkbox" ng-change="variableChecked(row);" ng-model="row.check" />
                                 </td>
-                                <td style="border: 1px solid #dddddd; text-align: left; padding: 0px;">{{row.value.name}}</td>
+                                <td style="border: 1px solid #dddddd; text-align: left; padding: 0px;">
+                                    <label for="{{'varId_' + row.value.name}}" style="display:block">{{row.value.name}}</label>
+                                </td>
                             </tr>
                         </table>
                     </div>
