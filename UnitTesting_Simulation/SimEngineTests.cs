@@ -554,6 +554,8 @@ namespace UnitTesting_Simulation
     [Fact]
     public void VarTimeCngTest()
     {
+      //make sure that a distribution using a variable correctly adds the event if it is resampled and inside the mission time
+
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
 
       //Setup directory for unit test 
