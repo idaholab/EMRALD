@@ -217,7 +217,7 @@ function OnLoad(dataObj) {
         scope.variables = eventData.tempVariableList;
         PopulateAllowedVariablesArrays();
         scope.varNames = eventData.varNames || [];
-        scope.varMap = eventData.tempVariableList.map(function (value, index) {
+        scope.data.varMap = eventData.tempVariableList.map(function (value, index) {
             var checkValue = false;
             if (scope.varNames.indexOf(value.name) > -1) {
                 checkValue = true;
@@ -250,10 +250,6 @@ function OnLoad(dataObj) {
                 case "etStateCng":
                     scope.data.isInState = eventData.ifInState;
                     scope.data.isAllItems = eventData.allItems;
-                    scope.data.evalCurOnInitial = eventData.evalCurOnInitial;
-                    if (typeof eventData.evalCurOnInitial !== 'boolean') {
-                        scope.data.evalCurOnInitial = true;
-                    }
                     scope.data.states = deepClone(eventData.triggerStates);
                     opTypeEl.selectedIndex = 1;
                     break;
@@ -342,7 +338,6 @@ function GetDataObject() {
         case "etStateCng":
             dataObj.ifInState = scope.data.isInState;
             dataObj.allItems = scope.data.isAllItems;
-            dataObj.evalCurOnInitial = scope.data.evalCurOnInitial;
             dataObj.triggerStates = scope.data.states;
             break;
         case "etComponentLogic":
@@ -512,17 +507,16 @@ EEApp.controller("EEController", function ($scope) {
         onVarChange: null,
         isInState: "true",
         isAllItems: true,
-        evalCurOnInitial: true,
         states: [],
         onSuccess: false,
         logicTop: null,
         fromSimStart: false,
+        varMap: [],
     };
 
     //var Condition
     $scope.conditionCode = "";
     $scope.var3DCode = "";
-    $scope.varMap = [];
     $scope.varNames = [];
 
     //3D Sim

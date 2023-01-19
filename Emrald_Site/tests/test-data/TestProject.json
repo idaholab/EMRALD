@@ -288,8 +288,7 @@
         ],
         "moveFromCurrent": false,
         "varNames": [],
-        "ifInState": "true",
-        "evalCurOnInitial": true
+        "ifInState": "true"
       }
     },
     {

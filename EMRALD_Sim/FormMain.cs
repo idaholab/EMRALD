@@ -46,6 +46,7 @@ namespace EMRALD_Sim
     {
       _appSettingsService = appSettingsService;
       InitializeComponent();
+      teModel.SetHighlighting("JSON");
       lvResults.Columns[3].Text = "Mean Time or Failed Components";
       lvResults.Columns[1].Text = "Count";
 
@@ -820,7 +821,7 @@ namespace EMRALD_Sim
       this.Text = "EMRALD (" + path + ");";
 
       string errorStr = "";
-      txtModel.Text = LoadLib.LoadModel(path, ref errorStr);
+      teModel.Text = LoadLib.LoadModel(path, ref errorStr);
       _modelPath = path;
       if (errorStr != "")
       {
@@ -839,11 +840,17 @@ namespace EMRALD_Sim
       Cursor saveCurs = Cursor.Current;
       Cursor.Current = Cursors.WaitCursor;
 
-      txtMStatus.Text = LoadLib.ValidateModel(ref _sim, txtModel.Text, Path.GetDirectoryName(_modelPath));
+      txtMStatus.Text = LoadLib.ValidateModel(ref _sim, teModel.Text, Path.GetDirectoryName(_modelPath));
       _validSim = txtMStatus.Text == "";
-      if (txtMStatus.Text != "")
+      if (txtMStatus.Text != "") 
       {
         txtMStatus.ForeColor = Color.Maroon;
+        Console.Write(txtMStatus.Text);
+      }
+      else
+      {
+        txtMStatus.Text = "Model Loaded Successfully" ; 
+        txtMStatus.ForeColor = Color.Green;
         Console.Write(txtMStatus.Text);
       }
 
@@ -883,11 +890,6 @@ namespace EMRALD_Sim
           lbMonitorVars.SetItemChecked(idx, chk);
         }
       }
-    }
-
-    private void txtModel_TextChanged(object sender, EventArgs e)
-    {
-      _validSim = false;
     }
 
     private void DispResults(TimeSpan runTime, int runCnt, bool finalValOnly)
@@ -1031,6 +1033,12 @@ namespace EMRALD_Sim
       saveFileDialog1.ShowDialog();
     }
 
+    private void button4_Click(object sender, EventArgs e)
+    {
+      string tempLoc = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\\EMRALD_SANKEY\\";
+      System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(Path.Combine(tempLoc, @"emrald-sankey-timeline.html")) { UseShellExecute = true });
+    }
+
     private void saveFileDialog1_FileOk(object sender, CancelEventArgs e)
     {
       tbSavePath.Text = saveFileDialog1.FileName;
@@ -1144,5 +1152,65 @@ namespace EMRALD_Sim
         tbSavePath2.Text = Path.GetDirectoryName(tbSavePath2.Text) + "\\" + Path.GetFileNameWithoutExtension(tbSavePath2.Text) + ".json";
     }
 
+    private void teModel_TextChanged(object sender, EventArgs e)
+    {
+      _validSim = false;
+      txtMStatus.Text = "";
+    }
+
+    private void saveStripMenuItem_Click(object sender, EventArgs e)
+    {
+      sdSaveModel.FileName = _modelPath;
+      if (File.Exists(_modelPath))
+      {
+        try
+        {
+          File.Delete(_modelPath);
+          File.WriteAllText(_modelPath, teModel.Text);
+        }
+        catch
+        {
+          txtMStatus.ForeColor = Color.Maroon;
+          txtMStatus.Text = "Failed to save model";
+          Console.Write("Failed to save model");
+          return;
+        }
+      }
+      else
+      {
+        sdSaveModel.ShowDialog();
+      }
+    }
+
+    private void sdSaveModel_FileOk(object sender, CancelEventArgs e)
+    {
+      string saveLoc = sdSaveModel.FileName;
+      try
+      {
+        if(File.Exists(saveLoc))
+        {
+          txtMStatus.ForeColor = Color.Maroon;
+          txtMStatus.Text = "Failed to save, File Already Exists";
+          Console.Write("Failed to save, File Already Exists");
+        }
+
+        File.Delete(saveLoc);
+        File.WriteAllText(saveLoc, teModel.Text);
+        _modelPath = saveLoc;
+      }
+      catch
+      {
+        txtMStatus.ForeColor = Color.Maroon;
+        txtMStatus.Text = "Failed to save model";
+        Console.Write("Failed to save model");
+        return;
+      }
+    }
+
+    private void toolStripMenuItem1_Click(object sender, EventArgs e)
+    {
+      sdSaveModel.FileName = _modelPath;
+      sdSaveModel.ShowDialog();
+    }
   }
 }

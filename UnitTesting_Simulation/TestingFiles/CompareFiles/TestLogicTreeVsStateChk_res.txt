@@ -1,0 +1,515 @@
+Simulation = McCormick Reliability and Risk Analysis Example 6-4
+Runtime = 00.00:00:01
+Runs = 10000 of 10000
+D_Failed Occurred 6321 times, Rate =0.6321, MeanTime = 01.18:04:42 +/- 01.04:10:22.88
+(146)[2.309761113747825]D_Failed, E_Failed, F_Failed
+(219)[3.4646416706217367]B_Failed, D_Failed, E_Failed, F_Failed
+(75)[1.1865211200759374]B_Failed, D_Failed
+(68)[1.07577914886885]B_Failed, F_Failed
+(126)[1.9933554817275747]B_Failed, E_Failed, F_Failed
+(113)[1.7876918209144124]A_Failed, B_Failed, C_Failed
+(252)[3.9867109634551494]A_Failed, B_Failed, C_Failed, E_Failed
+(199)[3.148236038601487]A_Failed, B_Failed, E_Failed, F_Failed
+(374)[5.9167853187786745]A_Failed, B_Failed, C_Failed, E_Failed, F_Failed
+(42)[0.6644518272425249]A_Failed
+(128)[2.0249960449296]A_Failed, B_Failed, E_Failed
+(136)[2.1515582977377]A_Failed, D_Failed, F_Failed
+(39)[0.6169909824394874]D_Failed
+(372)[5.885144755576649]A_Failed, C_Failed, D_Failed, E_Failed, F_Failed
+(54)[0.8542952064546749]B_Failed
+(222)[3.5121025154247745]B_Failed, C_Failed, E_Failed, F_Failed
+(211)[3.338079417813637]B_Failed, C_Failed, D_Failed, E_Failed
+(139)[2.1990191425407373]A_Failed, C_Failed, E_Failed
+(353)[5.584559405157412]A_Failed, B_Failed, D_Failed, E_Failed, F_Failed
+(242)[3.828508147445025]A_Failed, B_Failed, D_Failed, E_Failed
+(212)[3.3538996994146495]C_Failed, D_Failed, E_Failed, F_Failed
+(340)[5.378895744344249]A_Failed, B_Failed, C_Failed, D_Failed, F_Failed
+(224)[3.5437430786267994]A_Failed, D_Failed, E_Failed, F_Failed
+(124)[1.9617149185255498]B_Failed, D_Failed, F_Failed
+(659)[10.425565575067235]A_Failed, B_Failed, C_Failed, D_Failed, E_Failed, F_Failed
+(236)[3.7335864578389493]A_Failed, B_Failed, D_Failed, F_Failed
+(120)[1.8984337921214998]B_Failed, D_Failed, E_Failed
+(130)[2.0566366081316247]C_Failed, D_Failed, F_Failed
+(212)[3.3538996994146495]A_Failed, C_Failed, D_Failed, E_Failed
+(216)[3.4171808258186998]A_Failed, C_Failed, E_Failed, F_Failed
+(117)[1.8509729473184622]A_Failed, C_Failed, D_Failed
+(70)[1.1074197120708749]C_Failed, F_Failed
+(149)[2.3572219585508623]A_Failed, C_Failed, F_Failed
+(206)[3.2589780098085748]B_Failed, C_Failed, D_Failed, F_Failed
+(78)[1.2339819648789747]D_Failed, F_Failed
+(379)[5.995886726783737]A_Failed, B_Failed, C_Failed, D_Failed, E_Failed
+(347)[5.4896377155513365]B_Failed, C_Failed, D_Failed, E_Failed, F_Failed
+(118)[1.8667932289194746]A_Failed, B_Failed, D_Failed
+(148)[2.3414016769498494]B_Failed, C_Failed, D_Failed
+(131)[2.072456889732637]B_Failed, C_Failed, E_Failed
+(214)[3.3855402626166744]A_Failed, B_Failed, C_Failed, D_Failed
+(41)[0.6486315456415124]E_Failed
+(71)[1.1232399936718873]E_Failed, F_Failed
+(73)[1.1548805568739124]D_Failed, E_Failed
+(118)[1.8667932289194746]B_Failed, C_Failed, F_Failed
+(176)[2.7843695617782]A_Failed, B_Failed, C_Failed, F_Failed
+(67)[1.0599588672678373]C_Failed, E_Failed
+(129)[2.0408163265306123]A_Failed, D_Failed, E_Failed
+(200)[3.1640563202024996]A_Failed, C_Failed, D_Failed, F_Failed
+(125)[1.9775352001265623]A_Failed, E_Failed, F_Failed
+(131)[2.072456889732637]A_Failed, B_Failed, F_Failed
+(86)[1.3605442176870748]A_Failed, E_Failed
+(82)[1.2972630912830247]A_Failed, B_Failed
+(35)[0.5537098560354374]F_Failed
+(37)[0.5853504192374623]C_Failed
+(75)[1.1865211200759374]B_Failed, C_Failed
+(136)[2.1515582977377]C_Failed, E_Failed, F_Failed
+(121)[1.9142540737225124]C_Failed, D_Failed, E_Failed
+(76)[1.2023414016769498]A_Failed, D_Failed
+(67)[1.0599588672678373]B_Failed, E_Failed
+(67)[1.0599588672678373]A_Failed, C_Failed
+(61)[0.9650371776617624]A_Failed, F_Failed
+(65)[1.0283183040658124]C_Failed, D_Failed
+E_Failed Occurred 6399 times, Rate =0.6399, MeanTime = 01.17:59:38 +/- 01.04:09:10.40
+(146)[2.2816065010157836]D_Failed, E_Failed, F_Failed
+(219)[3.4224097515236758]B_Failed, D_Failed, E_Failed, F_Failed
+(75)[1.1720581340834506]B_Failed, D_Failed
+(68)[1.062666041568995]B_Failed, F_Failed
+(126)[1.969057665260197]B_Failed, E_Failed, F_Failed
+(113)[1.7659009220190653]A_Failed, B_Failed, C_Failed
+(252)[3.938115330520394]A_Failed, B_Failed, C_Failed, E_Failed
+(199)[3.1098609157680888]A_Failed, B_Failed, E_Failed, F_Failed
+(374)[5.844663228629473]A_Failed, B_Failed, C_Failed, E_Failed, F_Failed
+(42)[0.6563525550867323]A_Failed
+(128)[2.0003125488357556]A_Failed, B_Failed, E_Failed
+(136)[2.12533208313799]A_Failed, D_Failed, F_Failed
+(39)[0.6094702297233943]D_Failed
+(372)[5.813408345053914]A_Failed, C_Failed, D_Failed, E_Failed, F_Failed
+(54)[0.8438818565400843]B_Failed
+(222)[3.4692920768870135]B_Failed, C_Failed, E_Failed, F_Failed
+(211)[3.297390217221441]B_Failed, C_Failed, D_Failed, E_Failed
+(139)[2.172214408501328]A_Failed, C_Failed, E_Failed
+(353)[5.516486951086107]A_Failed, B_Failed, D_Failed, E_Failed, F_Failed
+(242)[3.7818409126426005]A_Failed, B_Failed, D_Failed, E_Failed
+(212)[3.31301765900922]C_Failed, D_Failed, E_Failed, F_Failed
+(340)[5.3133302078449764]A_Failed, B_Failed, C_Failed, D_Failed, F_Failed
+(224)[3.500546960462572]A_Failed, D_Failed, E_Failed, F_Failed
+(124)[1.9378027816846382]B_Failed, D_Failed, F_Failed
+(659)[10.298484138146586]A_Failed, B_Failed, C_Failed, D_Failed, E_Failed, F_Failed
+(236)[3.688076261915924]A_Failed, B_Failed, D_Failed, F_Failed
+(120)[1.875293014533521]B_Failed, D_Failed, E_Failed
+(130)[2.031567432411314]C_Failed, D_Failed, F_Failed
+(212)[3.31301765900922]A_Failed, C_Failed, D_Failed, E_Failed
+(216)[3.375527426160337]A_Failed, C_Failed, E_Failed, F_Failed
+(117)[1.8284106891701828]A_Failed, C_Failed, D_Failed
+(70)[1.0939209251445539]C_Failed, F_Failed
+(149)[2.3284888263791217]A_Failed, C_Failed, F_Failed
+(206)[3.2192530082825446]B_Failed, C_Failed, D_Failed, F_Failed
+(78)[1.2189404594467885]D_Failed, F_Failed
+(379)[5.92280043756837]A_Failed, B_Failed, C_Failed, D_Failed, E_Failed
+(347)[5.422722300359431]B_Failed, C_Failed, D_Failed, E_Failed, F_Failed
+(118)[1.844038130957962]A_Failed, B_Failed, D_Failed
+(148)[2.3128613845913426]B_Failed, C_Failed, D_Failed
+(131)[2.0471948741990937]B_Failed, C_Failed, E_Failed
+(214)[3.3442725425847786]A_Failed, B_Failed, C_Failed, D_Failed
+(41)[0.6407251132989529]E_Failed
+(71)[1.1095483669323332]E_Failed, F_Failed
+(73)[1.1408032505078918]D_Failed, E_Failed
+(118)[1.844038130957962]B_Failed, C_Failed, F_Failed
+(176)[2.750429754649164]A_Failed, B_Failed, C_Failed, F_Failed
+(67)[1.0470385997812157]C_Failed, E_Failed
+(129)[2.0159399906235347]A_Failed, D_Failed, E_Failed
+(200)[3.1254883575558683]A_Failed, C_Failed, D_Failed, F_Failed
+(125)[1.9534302234724175]A_Failed, E_Failed, F_Failed
+(131)[2.0471948741990937]A_Failed, B_Failed, F_Failed
+(86)[1.3439599937490232]A_Failed, E_Failed
+(82)[1.2814502265979058]A_Failed, B_Failed
+(35)[0.5469604625722769]F_Failed
+(37)[0.5782153461478357]C_Failed
+(75)[1.1720581340834506]B_Failed, C_Failed
+(136)[2.12533208313799]C_Failed, E_Failed, F_Failed
+(121)[1.8909204563213002]C_Failed, D_Failed, E_Failed
+(76)[1.18768557587123]A_Failed, D_Failed
+(67)[1.0470385997812157]B_Failed, E_Failed
+(67)[1.0470385997812157]A_Failed, C_Failed
+(61)[0.9532739490545398]A_Failed, F_Failed
+(65)[1.015783716205657]C_Failed, D_Failed
+F_Failed Occurred 6259 times, Rate =0.6259, MeanTime = 01.18:11:59 +/- 01.04:13:51.60
+(146)[2.332640996964371]D_Failed, E_Failed, F_Failed
+(219)[3.498961495446557]B_Failed, D_Failed, E_Failed, F_Failed
+(75)[1.1982744847419715]B_Failed, D_Failed
+(68)[1.0864355328327209]B_Failed, F_Failed
+(126)[2.013101134366512]B_Failed, E_Failed, F_Failed
+(113)[1.8054002236779036]A_Failed, B_Failed, C_Failed
+(252)[4.026202268733024]A_Failed, B_Failed, C_Failed, E_Failed
+(199)[3.179421632848698]A_Failed, B_Failed, E_Failed, F_Failed
+(374)[5.975395430579964]A_Failed, B_Failed, C_Failed, E_Failed, F_Failed
+(42)[0.6710337114555041]A_Failed
+(128)[2.045055120626298]A_Failed, B_Failed, E_Failed
+(136)[2.1728710656654417]A_Failed, D_Failed, F_Failed
+(39)[0.6231027320658252]D_Failed
+(372)[5.943441444320179]A_Failed, C_Failed, D_Failed, E_Failed, F_Failed
+(54)[0.8627576290142195]B_Failed
+(222)[3.546892474836236]B_Failed, C_Failed, E_Failed, F_Failed
+(211)[3.3711455504074133]B_Failed, C_Failed, D_Failed, E_Failed
+(139)[2.2208020450551205]A_Failed, C_Failed, E_Failed
+(353)[5.6398785748522124]A_Failed, B_Failed, D_Failed, E_Failed, F_Failed
+(242)[3.8664323374340945]A_Failed, B_Failed, D_Failed, E_Failed
+(212)[3.387122543537306]C_Failed, D_Failed, E_Failed, F_Failed
+(340)[5.432177664163604]A_Failed, B_Failed, C_Failed, D_Failed, F_Failed
+(224)[3.578846461096022]A_Failed, D_Failed, E_Failed, F_Failed
+(124)[1.9811471481067262]B_Failed, D_Failed, F_Failed
+(659)[10.528838472599457]A_Failed, B_Failed, C_Failed, D_Failed, E_Failed, F_Failed
+(236)[3.770570378654737]A_Failed, B_Failed, D_Failed, F_Failed
+(120)[1.9172391755871547]B_Failed, D_Failed, E_Failed
+(130)[2.0770091068860843]C_Failed, D_Failed, F_Failed
+(212)[3.387122543537306]A_Failed, C_Failed, D_Failed, E_Failed
+(216)[3.451030516056878]A_Failed, C_Failed, E_Failed, F_Failed
+(117)[1.8693081961974758]A_Failed, C_Failed, D_Failed
+(70)[1.1183895190925068]C_Failed, F_Failed
+(149)[2.3805719763540503]A_Failed, C_Failed, F_Failed
+(206)[3.291260584757948]B_Failed, C_Failed, D_Failed, F_Failed
+(78)[1.2462054641316505]D_Failed, F_Failed
+(379)[6.0552803962294295]A_Failed, B_Failed, C_Failed, D_Failed, E_Failed
+(347)[5.544016616072855]B_Failed, C_Failed, D_Failed, E_Failed, F_Failed
+(118)[1.8852851893273685]A_Failed, B_Failed, D_Failed
+(148)[2.3645949832241575]B_Failed, C_Failed, D_Failed
+(131)[2.092986100015977]B_Failed, C_Failed, E_Failed
+(214)[3.4190765297970924]A_Failed, B_Failed, C_Failed, D_Failed
+(41)[0.6550567183256111]E_Failed
+(71)[1.1343665122223998]E_Failed, F_Failed
+(73)[1.1663204984821856]D_Failed, E_Failed
+(118)[1.8852851893273685]B_Failed, C_Failed, F_Failed
+(176)[2.8119507908611596]A_Failed, B_Failed, C_Failed, F_Failed
+(67)[1.070458539702828]C_Failed, E_Failed
+(129)[2.061032113756191]A_Failed, D_Failed, E_Failed
+(200)[3.195398625978591]A_Failed, C_Failed, D_Failed, F_Failed
+(125)[1.9971241412366194]A_Failed, E_Failed, F_Failed
+(131)[2.092986100015977]A_Failed, B_Failed, F_Failed
+(86)[1.374021409170794]A_Failed, E_Failed
+(82)[1.3101134366512222]A_Failed, B_Failed
+(35)[0.5591947595462534]F_Failed
+(37)[0.5911487458060394]C_Failed
+(75)[1.1982744847419715]B_Failed, C_Failed
+(136)[2.1728710656654417]C_Failed, E_Failed, F_Failed
+(121)[1.9332161687170473]C_Failed, D_Failed, E_Failed
+(76)[1.2142514778718645]A_Failed, D_Failed
+(67)[1.070458539702828]B_Failed, E_Failed
+(67)[1.070458539702828]A_Failed, C_Failed
+(61)[0.9745965809234702]A_Failed, F_Failed
+(65)[1.0385045534430422]C_Failed, D_Failed
+SYS_FAILS_FT Occurred 8535 times, Rate =0.8535, MeanTime = 01.21:25:44 +/- 01.00:38:38.06
+(146)[1.7106033977738724]D_Failed, E_Failed, F_Failed
+(219)[2.5659050966608086]B_Failed, D_Failed, E_Failed, F_Failed
+(75)[0.8787346221441126]B_Failed, D_Failed
+(68)[0.7967193907439953]B_Failed, F_Failed
+(126)[1.476274165202109]B_Failed, E_Failed, F_Failed
+(113)[1.3239601640304628]A_Failed, B_Failed, C_Failed
+(252)[2.952548330404218]A_Failed, B_Failed, C_Failed, E_Failed
+(199)[2.331575864089045]A_Failed, B_Failed, E_Failed, F_Failed
+(374)[4.381956649091974]A_Failed, B_Failed, C_Failed, E_Failed, F_Failed
+(42)[0.492091388400703]A_Failed
+(128)[1.4997070884592854]A_Failed, B_Failed, E_Failed
+(136)[1.5934387814879907]A_Failed, D_Failed, F_Failed
+(39)[0.45694200351493847]D_Failed
+(372)[4.358523725834798]A_Failed, C_Failed, D_Failed, E_Failed, F_Failed
+(54)[0.632688927943761]B_Failed
+(222)[2.601054481546573]B_Failed, C_Failed, E_Failed, F_Failed
+(211)[2.472173403632103]B_Failed, C_Failed, D_Failed, E_Failed
+(139)[1.628588166373755]A_Failed, C_Failed, E_Failed
+(353)[4.135910954891623]A_Failed, B_Failed, D_Failed, E_Failed, F_Failed
+(242)[2.8353837141183362]A_Failed, B_Failed, D_Failed, E_Failed
+(212)[2.483889865260691]C_Failed, D_Failed, E_Failed, F_Failed
+(340)[3.9835969537199762]A_Failed, B_Failed, C_Failed, D_Failed, F_Failed
+(224)[2.624487404803749]A_Failed, D_Failed, E_Failed, F_Failed
+(124)[1.4528412419449328]B_Failed, D_Failed, F_Failed
+(659)[7.721148213239602]A_Failed, B_Failed, C_Failed, D_Failed, E_Failed, F_Failed
+(236)[2.7650849443468073]A_Failed, B_Failed, D_Failed, F_Failed
+(120)[1.4059753954305798]B_Failed, D_Failed, E_Failed
+(130)[1.5231400117164615]C_Failed, D_Failed, F_Failed
+(212)[2.483889865260691]A_Failed, C_Failed, D_Failed, E_Failed
+(216)[2.530755711775044]A_Failed, C_Failed, E_Failed, F_Failed
+(117)[1.3708260105448156]A_Failed, C_Failed, D_Failed
+(70)[0.8201523140011716]C_Failed, F_Failed
+(149)[1.7457527826596368]A_Failed, C_Failed, F_Failed
+(206)[2.4135910954891626]B_Failed, C_Failed, D_Failed, F_Failed
+(78)[0.9138840070298769]D_Failed, F_Failed
+(379)[4.440538957234915]A_Failed, B_Failed, C_Failed, D_Failed, E_Failed
+(347)[4.065612185120094]B_Failed, C_Failed, D_Failed, E_Failed, F_Failed
+(118)[1.3825424721734036]A_Failed, B_Failed, D_Failed
+(148)[1.7340363210310485]B_Failed, C_Failed, D_Failed
+(131)[1.5348564733450498]B_Failed, C_Failed, E_Failed
+(214)[2.5073227885178677]A_Failed, B_Failed, C_Failed, D_Failed
+(41)[0.48037492677211485]E_Failed
+(71)[0.8318687756297597]E_Failed, F_Failed
+(73)[0.8553016988869362]D_Failed, E_Failed
+(118)[1.3825424721734036]B_Failed, C_Failed, F_Failed
+(176)[2.062097246631517]A_Failed, B_Failed, C_Failed, F_Failed
+(67)[0.7850029291154071]C_Failed, E_Failed
+(129)[1.5114235500878734]A_Failed, D_Failed, E_Failed
+(200)[2.3432923257176332]A_Failed, C_Failed, D_Failed, F_Failed
+(125)[1.4645577035735209]A_Failed, E_Failed, F_Failed
+(131)[1.5348564733450498]A_Failed, B_Failed, F_Failed
+(86)[1.0076157000585824]A_Failed, E_Failed
+(82)[0.9607498535442297]A_Failed, B_Failed
+(35)[0.4100761570005858]F_Failed
+(37)[0.43350908025776214]C_Failed
+(75)[0.8787346221441126]B_Failed, C_Failed
+(136)[1.5934387814879907]C_Failed, E_Failed, F_Failed
+(121)[1.4176918570591681]C_Failed, D_Failed, E_Failed
+(76)[0.8904510837727007]A_Failed, D_Failed
+(67)[0.7850029291154071]B_Failed, E_Failed
+(67)[0.7850029291154071]A_Failed, C_Failed
+(61)[0.7147041593438781]A_Failed, F_Failed
+(65)[0.7615700058582308]C_Failed, D_Failed
+SYS_FAILS Occurred 8535 times, Rate =0.8535, MeanTime = 01.21:25:44 +/- 01.00:38:38.06
+(146)[1.7106033977738724]D_Failed, E_Failed, F_Failed
+(219)[2.5659050966608086]B_Failed, D_Failed, E_Failed, F_Failed
+(75)[0.8787346221441126]B_Failed, D_Failed
+(68)[0.7967193907439953]B_Failed, F_Failed
+(126)[1.476274165202109]B_Failed, E_Failed, F_Failed
+(113)[1.3239601640304628]A_Failed, B_Failed, C_Failed
+(252)[2.952548330404218]A_Failed, B_Failed, C_Failed, E_Failed
+(199)[2.331575864089045]A_Failed, B_Failed, E_Failed, F_Failed
+(374)[4.381956649091974]A_Failed, B_Failed, C_Failed, E_Failed, F_Failed
+(42)[0.492091388400703]A_Failed
+(128)[1.4997070884592854]A_Failed, B_Failed, E_Failed
+(136)[1.5934387814879907]A_Failed, D_Failed, F_Failed
+(39)[0.45694200351493847]D_Failed
+(372)[4.358523725834798]A_Failed, C_Failed, D_Failed, E_Failed, F_Failed
+(54)[0.632688927943761]B_Failed
+(222)[2.601054481546573]B_Failed, C_Failed, E_Failed, F_Failed
+(211)[2.472173403632103]B_Failed, C_Failed, D_Failed, E_Failed
+(139)[1.628588166373755]A_Failed, C_Failed, E_Failed
+(353)[4.135910954891623]A_Failed, B_Failed, D_Failed, E_Failed, F_Failed
+(242)[2.8353837141183362]A_Failed, B_Failed, D_Failed, E_Failed
+(212)[2.483889865260691]C_Failed, D_Failed, E_Failed, F_Failed
+(340)[3.9835969537199762]A_Failed, B_Failed, C_Failed, D_Failed, F_Failed
+(224)[2.624487404803749]A_Failed, D_Failed, E_Failed, F_Failed
+(124)[1.4528412419449328]B_Failed, D_Failed, F_Failed
+(659)[7.721148213239602]A_Failed, B_Failed, C_Failed, D_Failed, E_Failed, F_Failed
+(236)[2.7650849443468073]A_Failed, B_Failed, D_Failed, F_Failed
+(120)[1.4059753954305798]B_Failed, D_Failed, E_Failed
+(130)[1.5231400117164615]C_Failed, D_Failed, F_Failed
+(212)[2.483889865260691]A_Failed, C_Failed, D_Failed, E_Failed
+(216)[2.530755711775044]A_Failed, C_Failed, E_Failed, F_Failed
+(117)[1.3708260105448156]A_Failed, C_Failed, D_Failed
+(70)[0.8201523140011716]C_Failed, F_Failed
+(149)[1.7457527826596368]A_Failed, C_Failed, F_Failed
+(206)[2.4135910954891626]B_Failed, C_Failed, D_Failed, F_Failed
+(78)[0.9138840070298769]D_Failed, F_Failed
+(379)[4.440538957234915]A_Failed, B_Failed, C_Failed, D_Failed, E_Failed
+(347)[4.065612185120094]B_Failed, C_Failed, D_Failed, E_Failed, F_Failed
+(118)[1.3825424721734036]A_Failed, B_Failed, D_Failed
+(148)[1.7340363210310485]B_Failed, C_Failed, D_Failed
+(131)[1.5348564733450498]B_Failed, C_Failed, E_Failed
+(214)[2.5073227885178677]A_Failed, B_Failed, C_Failed, D_Failed
+(41)[0.48037492677211485]E_Failed
+(71)[0.8318687756297597]E_Failed, F_Failed
+(73)[0.8553016988869362]D_Failed, E_Failed
+(118)[1.3825424721734036]B_Failed, C_Failed, F_Failed
+(176)[2.062097246631517]A_Failed, B_Failed, C_Failed, F_Failed
+(67)[0.7850029291154071]C_Failed, E_Failed
+(129)[1.5114235500878734]A_Failed, D_Failed, E_Failed
+(200)[2.3432923257176332]A_Failed, C_Failed, D_Failed, F_Failed
+(125)[1.4645577035735209]A_Failed, E_Failed, F_Failed
+(131)[1.5348564733450498]A_Failed, B_Failed, F_Failed
+(86)[1.0076157000585824]A_Failed, E_Failed
+(82)[0.9607498535442297]A_Failed, B_Failed
+(35)[0.4100761570005858]F_Failed
+(37)[0.43350908025776214]C_Failed
+(75)[0.8787346221441126]B_Failed, C_Failed
+(136)[1.5934387814879907]C_Failed, E_Failed, F_Failed
+(121)[1.4176918570591681]C_Failed, D_Failed, E_Failed
+(76)[0.8904510837727007]A_Failed, D_Failed
+(67)[0.7850029291154071]B_Failed, E_Failed
+(67)[0.7850029291154071]A_Failed, C_Failed
+(61)[0.7147041593438781]A_Failed, F_Failed
+(65)[0.7615700058582308]C_Failed, D_Failed
+B_Failed Occurred 6307 times, Rate =0.6307, MeanTime = 01.18:01:53 +/- 01.04:22:08.66
+(219)[3.472332329158078]B_Failed, D_Failed, E_Failed, F_Failed
+(75)[1.189154907245917]B_Failed, D_Failed
+(68)[1.078167115902965]B_Failed, F_Failed
+(126)[1.9977802441731412]B_Failed, E_Failed, F_Failed
+(113)[1.7916600602505155]A_Failed, B_Failed, C_Failed
+(252)[3.9955604883462823]A_Failed, B_Failed, C_Failed, E_Failed
+(199)[3.1552243538925]A_Failed, B_Failed, E_Failed, F_Failed
+(374)[5.929919137466308]A_Failed, B_Failed, C_Failed, E_Failed, F_Failed
+(42)[0.6659267480577136]A_Failed
+(128)[2.029491041699699]A_Failed, B_Failed, E_Failed
+(136)[2.15633423180593]A_Failed, D_Failed, F_Failed
+(39)[0.618360551767877]D_Failed
+(372)[5.89820833993975]A_Failed, C_Failed, D_Failed, E_Failed, F_Failed
+(54)[0.8561915332170603]B_Failed
+(222)[3.519898525447915]B_Failed, C_Failed, E_Failed, F_Failed
+(211)[3.345489139051847]B_Failed, C_Failed, D_Failed, E_Failed
+(139)[2.203900428095767]A_Failed, C_Failed, E_Failed
+(353)[5.5969557634374505]A_Failed, B_Failed, D_Failed, E_Failed, F_Failed
+(242)[3.8370065007134926]A_Failed, B_Failed, D_Failed, E_Failed
+(212)[3.361344537815126]C_Failed, D_Failed, E_Failed, F_Failed
+(340)[5.3908355795148255]A_Failed, B_Failed, C_Failed, D_Failed, F_Failed
+(224)[3.551609322974473]A_Failed, D_Failed, E_Failed, F_Failed
+(124)[1.9660694466465831]B_Failed, D_Failed, F_Failed
+(659)[10.448707785000792]A_Failed, B_Failed, C_Failed, D_Failed, E_Failed, F_Failed
+(236)[3.74187410813382]A_Failed, B_Failed, D_Failed, F_Failed
+(120)[1.9026478515934677]B_Failed, D_Failed, E_Failed
+(130)[2.0612018392262565]C_Failed, D_Failed, F_Failed
+(212)[3.361344537815126]A_Failed, C_Failed, D_Failed, E_Failed
+(145)[2.29903282067544]D_Failed, E_Failed, F_Failed
+(216)[3.4247661328682413]A_Failed, C_Failed, E_Failed, F_Failed
+(117)[1.855081655303631]A_Failed, C_Failed, D_Failed
+(70)[1.1098779134295227]C_Failed, F_Failed
+(149)[2.3624544157285556]A_Failed, C_Failed, F_Failed
+(206)[3.2662121452354524]B_Failed, C_Failed, D_Failed, F_Failed
+(78)[1.236721103535754]D_Failed, F_Failed
+(379)[6.009196131282702]A_Failed, B_Failed, C_Failed, D_Failed, E_Failed
+(347)[5.501823370857777]B_Failed, C_Failed, D_Failed, E_Failed, F_Failed
+(118)[1.87093705406691]A_Failed, B_Failed, D_Failed
+(148)[2.3465990169652766]B_Failed, C_Failed, D_Failed
+(131)[2.0770572379895356]B_Failed, C_Failed, E_Failed
+(214)[3.393055335341684]A_Failed, B_Failed, C_Failed, D_Failed
+(41)[0.6500713492944348]E_Failed
+(71)[1.1257333121928015]E_Failed, F_Failed
+(73)[1.1574441097193595]D_Failed, E_Failed
+(118)[1.87093705406691]B_Failed, C_Failed, F_Failed
+(176)[2.7905501823370855]A_Failed, B_Failed, C_Failed, F_Failed
+(67)[1.062311717139686]C_Failed, E_Failed
+(129)[2.0453464404629775]A_Failed, D_Failed, E_Failed
+(200)[3.1710797526557797]A_Failed, C_Failed, D_Failed, F_Failed
+(125)[1.9819248454098621]A_Failed, E_Failed, F_Failed
+(131)[2.0770572379895356]A_Failed, B_Failed, F_Failed
+(86)[1.3635642936419852]A_Failed, E_Failed
+(82)[1.3001426985888695]A_Failed, B_Failed
+(35)[0.5549389567147613]F_Failed
+(37)[0.5866497542413192]C_Failed
+(75)[1.189154907245917]B_Failed, C_Failed
+(136)[2.15633423180593]C_Failed, E_Failed, F_Failed
+(121)[1.9185032503567463]C_Failed, D_Failed, E_Failed
+(76)[1.2050103060091961]A_Failed, D_Failed
+(67)[1.062311717139686]B_Failed, E_Failed
+(67)[1.062311717139686]A_Failed, C_Failed
+(61)[0.9671793245600127]A_Failed, F_Failed
+(65)[1.0306009196131283]C_Failed, D_Failed
+A_Failed Occurred 6347 times, Rate =0.6347, MeanTime = 01.17:12:53 +/- 01.04:01:21.73
+(113)[1.7803686781156451]A_Failed, B_Failed, C_Failed
+(252)[3.9703797069481643]A_Failed, B_Failed, C_Failed, E_Failed
+(199)[3.1353395304868443]A_Failed, B_Failed, E_Failed, F_Failed
+(374)[5.892547660311958]A_Failed, B_Failed, C_Failed, E_Failed, F_Failed
+(42)[0.6617299511580274]A_Failed
+(128)[2.0167008035292264]A_Failed, B_Failed, E_Failed
+(136)[2.142744603749803]A_Failed, D_Failed, F_Failed
+(39)[0.6144635260753112]D_Failed
+(372)[5.861036710256815]A_Failed, C_Failed, D_Failed, E_Failed, F_Failed
+(54)[0.8507956514888924]B_Failed
+(222)[3.4977154561210018]B_Failed, C_Failed, E_Failed, F_Failed
+(211)[3.324405230817709]B_Failed, C_Failed, D_Failed, E_Failed
+(139)[2.190011028832519]A_Failed, C_Failed, E_Failed
+(353)[5.561682684732944]A_Failed, B_Failed, D_Failed, E_Failed, F_Failed
+(242)[3.8128249566724435]A_Failed, B_Failed, D_Failed, E_Failed
+(212)[3.3401607058452814]C_Failed, D_Failed, E_Failed, F_Failed
+(340)[5.356861509374507]A_Failed, B_Failed, C_Failed, D_Failed, F_Failed
+(224)[3.529226406176146]A_Failed, D_Failed, E_Failed, F_Failed
+(124)[1.953678903418938]B_Failed, D_Failed, F_Failed
+(659)[10.382858043170001]A_Failed, B_Failed, C_Failed, D_Failed, E_Failed, F_Failed
+(236)[3.718292106507011]A_Failed, B_Failed, D_Failed, F_Failed
+(120)[1.8906570033086496]B_Failed, D_Failed, E_Failed
+(130)[2.0482117535843707]C_Failed, D_Failed, F_Failed
+(212)[3.3401607058452814]A_Failed, C_Failed, D_Failed, E_Failed
+(145)[2.284543878997952]D_Failed, E_Failed, F_Failed
+(216)[3.4031826059555694]A_Failed, C_Failed, E_Failed, F_Failed
+(117)[1.8433905782259334]A_Failed, C_Failed, D_Failed
+(125)[1.96943437844651]B_Failed, E_Failed, F_Failed
+(70)[1.1028832519300458]C_Failed, F_Failed
+(149)[2.34756577910824]A_Failed, C_Failed, F_Failed
+(218)[3.4346935560107137]B_Failed, D_Failed, E_Failed, F_Failed
+(206)[3.2456278556798486]B_Failed, C_Failed, D_Failed, F_Failed
+(78)[1.2289270521506224]D_Failed, F_Failed
+(379)[5.971325035449819]A_Failed, B_Failed, C_Failed, D_Failed, E_Failed
+(347)[5.467149834567512]B_Failed, C_Failed, D_Failed, E_Failed, F_Failed
+(118)[1.8591460532535056]A_Failed, B_Failed, D_Failed
+(148)[2.331810304080668]B_Failed, C_Failed, D_Failed
+(131)[2.0639672286119426]B_Failed, C_Failed, E_Failed
+(214)[3.371671655900425]A_Failed, B_Failed, C_Failed, D_Failed
+(41)[0.6459744761304553]E_Failed
+(71)[1.118638726957618]E_Failed, F_Failed
+(73)[1.150149677012762]D_Failed, E_Failed
+(118)[1.8591460532535056]B_Failed, C_Failed, F_Failed
+(176)[2.772963604852686]A_Failed, B_Failed, C_Failed, F_Failed
+(67)[1.0556168268473296]C_Failed, E_Failed
+(129)[2.032456278556799]A_Failed, D_Failed, E_Failed
+(200)[3.1510950055144162]A_Failed, C_Failed, D_Failed, F_Failed
+(125)[1.96943437844651]A_Failed, E_Failed, F_Failed
+(74)[1.165905152040334]B_Failed, D_Failed
+(131)[2.0639672286119426]A_Failed, B_Failed, F_Failed
+(86)[1.354970852371199]A_Failed, E_Failed
+(82)[1.2919489522609107]A_Failed, B_Failed
+(35)[0.5514416259650229]F_Failed
+(37)[0.582952576020167]C_Failed
+(75)[1.1816606270679062]B_Failed, C_Failed
+(136)[2.142744603749803]C_Failed, E_Failed, F_Failed
+(121)[1.9064124783362217]C_Failed, D_Failed, E_Failed
+(76)[1.197416102095478]A_Failed, D_Failed
+(67)[1.0556168268473296]B_Failed, E_Failed
+(67)[1.0556168268473296]A_Failed, C_Failed
+(61)[0.9610839766818969]A_Failed, F_Failed
+(67)[1.0556168268473296]B_Failed, F_Failed
+(65)[1.0241058767921853]C_Failed, D_Failed
+C_Failed Occurred 6275 times, Rate =0.6275, MeanTime = 01.17:48:30 +/- 01.04:06:08.24
+(113)[1.800796812749004]A_Failed, B_Failed, C_Failed
+(252)[4.01593625498008]A_Failed, B_Failed, C_Failed, E_Failed
+(199)[3.1713147410358564]A_Failed, B_Failed, E_Failed, F_Failed
+(374)[5.960159362549801]A_Failed, B_Failed, C_Failed, E_Failed, F_Failed
+(42)[0.6693227091633466]A_Failed
+(128)[2.039840637450199]A_Failed, B_Failed, E_Failed
+(136)[2.1673306772908365]A_Failed, D_Failed, F_Failed
+(39)[0.6215139442231076]D_Failed
+(372)[5.9282868525896415]A_Failed, C_Failed, D_Failed, E_Failed, F_Failed
+(54)[0.8605577689243029]B_Failed
+(222)[3.537848605577689]B_Failed, C_Failed, E_Failed, F_Failed
+(211)[3.362549800796813]B_Failed, C_Failed, D_Failed, E_Failed
+(139)[2.2151394422310755]A_Failed, C_Failed, E_Failed
+(353)[5.625498007968127]A_Failed, B_Failed, D_Failed, E_Failed, F_Failed
+(242)[3.856573705179283]A_Failed, B_Failed, D_Failed, E_Failed
+(212)[3.378486055776892]C_Failed, D_Failed, E_Failed, F_Failed
+(340)[5.418326693227091]A_Failed, B_Failed, C_Failed, D_Failed, F_Failed
+(224)[3.5697211155378485]A_Failed, D_Failed, E_Failed, F_Failed
+(124)[1.9760956175298807]B_Failed, D_Failed, F_Failed
+(659)[10.501992031872511]A_Failed, B_Failed, C_Failed, D_Failed, E_Failed, F_Failed
+(236)[3.7609561752988045]A_Failed, B_Failed, D_Failed, F_Failed
+(120)[1.9123505976095616]B_Failed, D_Failed, E_Failed
+(130)[2.0717131474103585]C_Failed, D_Failed, F_Failed
+(212)[3.378486055776892]A_Failed, C_Failed, D_Failed, E_Failed
+(145)[2.3107569721115535]D_Failed, E_Failed, F_Failed
+(216)[3.4422310756972117]A_Failed, C_Failed, E_Failed, F_Failed
+(117)[1.8645418326693228]A_Failed, C_Failed, D_Failed
+(125)[1.9920318725099602]B_Failed, E_Failed, F_Failed
+(70)[1.1155378486055778]C_Failed, F_Failed
+(149)[2.3745019920318726]A_Failed, C_Failed, F_Failed
+(218)[3.4741035856573705]B_Failed, D_Failed, E_Failed, F_Failed
+(206)[3.2828685258964145]B_Failed, C_Failed, D_Failed, F_Failed
+(78)[1.2430278884462151]D_Failed, F_Failed
+(379)[6.039840637450199]A_Failed, B_Failed, C_Failed, D_Failed, E_Failed
+(347)[5.52988047808765]B_Failed, C_Failed, D_Failed, E_Failed, F_Failed
+(118)[1.8804780876494023]A_Failed, B_Failed, D_Failed
+(148)[2.358565737051793]B_Failed, C_Failed, D_Failed
+(131)[2.087649402390438]B_Failed, C_Failed, E_Failed
+(214)[3.410358565737052]A_Failed, B_Failed, C_Failed, D_Failed
+(41)[0.6533864541832669]E_Failed
+(71)[1.1314741035856575]E_Failed, F_Failed
+(73)[1.1633466135458168]D_Failed, E_Failed
+(118)[1.8804780876494023]B_Failed, C_Failed, F_Failed
+(176)[2.804780876494024]A_Failed, B_Failed, C_Failed, F_Failed
+(67)[1.0677290836653386]C_Failed, E_Failed
+(129)[2.055776892430279]A_Failed, D_Failed, E_Failed
+(200)[3.187250996015936]A_Failed, C_Failed, D_Failed, F_Failed
+(125)[1.9920318725099602]A_Failed, E_Failed, F_Failed
+(74)[1.1792828685258965]B_Failed, D_Failed
+(131)[2.087649402390438]A_Failed, B_Failed, F_Failed
+(86)[1.3705179282868525]A_Failed, E_Failed
+(82)[1.3067729083665338]A_Failed, B_Failed
+(35)[0.5577689243027889]F_Failed
+(37)[0.5896414342629482]C_Failed
+(75)[1.1952191235059761]B_Failed, C_Failed
+(136)[2.1673306772908365]C_Failed, E_Failed, F_Failed
+(121)[1.9282868525896415]C_Failed, D_Failed, E_Failed
+(76)[1.2111553784860558]A_Failed, D_Failed
+(67)[1.0677290836653386]B_Failed, E_Failed
+(67)[1.0677290836653386]A_Failed, C_Failed
+(61)[0.9721115537848605]A_Failed, F_Failed
+(67)[1.0677290836653386]B_Failed, F_Failed
+(65)[1.0358565737051793]C_Failed, D_Failed
