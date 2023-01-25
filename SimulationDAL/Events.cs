@@ -288,8 +288,10 @@ namespace SimulationDAL
         changed.OrApply(((ChangedIDs)otherData).stateIDs_BS);
 
       MyBitArray cngAndRelated = changed.And(_relatedIDsBitSet);
-
-      return (cngAndRelated.BitCount() == relatedIDs.Count());
+      if (this.allItems)
+        return (cngAndRelated.BitCount() == relatedIDs.Count());
+      else
+        return cngAndRelated.BitCount() > 0;
 
       //if (ifInState) //We are looking for an item in the list to trigger us       
       //{
@@ -1316,9 +1318,12 @@ namespace SimulationDAL
         foreach (DistribParams p in this._dParams)
         {
           if (p.variable != null)
-            valuePs.Add((double)vars.FindByName(p.variable).value);
+          {
+            var v = vars.FindByName(p.variable);
+            valuePs.Add(Convert.ToDouble(v.value));
+          }
           else if (p.value != null)
-            valuePs.Add((double)p.value);
+            valuePs.Add(Convert.ToDouble(p.value));
           else
             valuePs.Add(null);
         }
@@ -1474,7 +1479,7 @@ namespace SimulationDAL
 
     public override bool UsesVariables()
     {
-      return ((vars == null) && (vars.Count > 0));
+      return ((vars != null) && (vars.Count > 0));
     }
   }
 

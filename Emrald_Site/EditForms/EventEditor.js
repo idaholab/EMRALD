@@ -217,7 +217,7 @@ function OnLoad(dataObj) {
         scope.variables = eventData.tempVariableList;
         PopulateAllowedVariablesArrays();
         scope.varNames = eventData.varNames || [];
-        scope.varMap = eventData.tempVariableList.map(function (value, index) {
+        scope.data.varMap = eventData.tempVariableList.map(function (value, index) {
             var checkValue = false;
             if (scope.varNames.indexOf(value.name) > -1) {
                 checkValue = true;
@@ -511,12 +511,12 @@ EEApp.controller("EEController", function ($scope) {
         onSuccess: false,
         logicTop: null,
         fromSimStart: false,
+        varMap: [],
     };
 
     //var Condition
     $scope.conditionCode = "";
     $scope.var3DCode = "";
-    $scope.varMap = [];
     $scope.varNames = [];
 
     //3D Sim

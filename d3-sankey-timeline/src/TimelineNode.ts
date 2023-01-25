@@ -18,6 +18,8 @@ export default class TimelineNode {
   public label: string;
 
   public layout: NodeLayout = {
+    baseRow: 0,
+    color: '',
     column: -1,
     height: 0,
     row: -1,
@@ -27,6 +29,16 @@ export default class TimelineNode {
   };
 
   public outgoingLinks: TimelineLink[] = [];
+
+  public persist?: {
+    default: {
+      x: number;
+      y: number;
+    };
+    timeline: {
+      y: number;
+    };
+  };
 
   public textHeight = 0;
 
@@ -86,20 +98,29 @@ export default class TimelineNode {
   }
 
   /**
+   * Sets the layout color.
+   *
+   * @param color The color to set.
+   */
+  public setColor(color: string) {
+    this.layout.color = color;
+  }
+
+  /**
    * Sets the layout column.
-   * 
+   *
    * @param col The column to set.
    */
-   public setColumn(col: number) {
+  public setColumn(col: number) {
     this.layout.column = col;
   }
 
   /**
    * Sets the layout row.
-   * 
+   *
    * @param row The row to set.
    */
-   public setRow(row: number) {
+  public setRow(row: number) {
     this.layout.row = row;
   }
 

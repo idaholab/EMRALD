@@ -45,7 +45,7 @@
         padding: 20px;
         margin-bottom: 8px;
         background-color: white;
-        transition: all 250ms ease;
+        transition: all 150ms ease;
         border-right: 2px solid white;
       }
 
@@ -125,7 +125,7 @@
                 <th>Use Variable</th>
               </tr>
               <tr ng-repeat="parameter in parameters">
-                <td>{{parameter.target.value}}</td>
+                <td>{{extractName(parameter.target)}}</td>
                 <td>
                   <select
                     title="Select a variable"
@@ -166,7 +166,7 @@
               <b>Results:</b>
               <table>
                 <tr ng-repeat="opt in initiatorOptions">
-                  <td>{{opt.label}}</td>
+                  <td>{{opt.value}}</td>
                   <td>
                     <button type="button" ng-click="addInitiator(opt)">
                       Add
