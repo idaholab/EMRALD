@@ -150,13 +150,14 @@ export default class Renderer {
     const maxCols: number[] = [];
     let maxColumn = -1;
     let maxRow = -1;
+    let leftHandAdjustment = 0;
     /**
      * Assigns columns along a path.
      *
      * @param source The current source node.
      * @param currentCol The current row number.
      */
-    function assignColumns(source: TimelineNode, currentCol: number) {
+    const assignColumns = (source: TimelineNode, currentCol: number) => {
       if (source.layout.column < 0) {
         if (currentCol >= cols.length) {
           cols.push([]);
@@ -171,8 +172,14 @@ export default class Renderer {
         source.outgoingLinks.forEach((link) => {
           assignColumns(link.target, currentCol + 1);
         });
+        if (currentCol === 0) {
+          const nodeAdjustment = this.getTimeX(source.times.meanTime || 0) - source.layout.width / 2;
+          if (nodeAdjustment < leftHandAdjustment) {
+            leftHandAdjustment = nodeAdjustment;
+          }
+        }
       }
-    }
+    };
     /**
      * Assigns rows along a path.
      *
@@ -228,6 +235,8 @@ export default class Renderer {
             (node.layout.row / (maxRow + 1)) * this.options.height;
         }
       } else if (this.options.layout === 0) {
+        const originalMargin = this.options.margin;
+        this.options.margin += -leftHandAdjustment;
         node.layout.x =
           this.getTimeX(node.times.meanTime || 0) - node.layout.width / 2;
         if (node.persist) {
@@ -244,6 +253,7 @@ export default class Renderer {
               }
             });
         }
+        this.options.margin = originalMargin;
       }
     });
     this.calculateLinkPaths();
@@ -675,11 +685,13 @@ export default class Renderer {
     if (this.timeline.minTime < 0) {
       shift = 0 - this.timeline.minTime;
     }
-    return (
+    const x = (
       (this.range[1] - this.range[0]) *
         ((time + shift) /
           (this.timeline.maxTime + shift - (this.timeline.minTime + shift))) +
       this.range[0]
     );
+    console.log(`Time: ${time} = ${x}`);
+    return x;
   }
 }
