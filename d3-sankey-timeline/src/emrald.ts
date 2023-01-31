@@ -3,6 +3,7 @@ import type TimelineNode from './TimelineNode';
 import * as sankeyTimeline from './index';
 
 type Node = {
+  count: number;
   entries: {
     cnt: number;
   }[];
@@ -31,24 +32,90 @@ type Link = {
   name: string;
 };
 
+type TimelineOptions = {
+  fileName: string;
+  keyStates: {
+    name: string;
+    paths: Node[];
+  }[];
+  options?: {
+    fontSize: number;
+    maxNodeHeight: number;
+    maxLinkWidth: number;
+  };
+  otherStatePaths: Node[];
+};
+
+/**
+ * Preprocesses path results for the selected key states.
+ *
+ * @param input The original data.
+ * @param selectedKeyStates Key states to include.
+ * @returns The processed data.
+ */
+function preprocess(
+  input: TimelineOptions,
+  selectedKeyStates: string[],
+): [Record<string, Node>, Record<string, Record<string, number>>] {
+  const nodes: Record<string, Node> = {};
+  const links: Record<string, Record<string, number>> = {};
+  input.keyStates
+    .filter((keyState) => selectedKeyStates.indexOf(keyState.name) >= 0)
+    .forEach((keyState) => {
+      keyState.paths.forEach((path) => {
+        if (!nodes[path.name]) {
+          nodes[path.name] = {...path};
+          links[path.name] = {};
+        } else {
+          nodes[path.name].count += path.count;
+        }
+        path.exits.forEach((link) => {
+          if (!links[path.name][link.otherState]) {
+            links[path.name][link.otherState] = link.cnt;
+          } else {
+            links[path.name][link.otherState] += link.cnt;
+          }
+        });
+      });
+    });
+  return [nodes, links];
+}
+
+const keyStates: string[] = [];
+
+function toggleKeyState(stateName: string) {
+  const idx = keyStates.indexOf(stateName);
+  if (idx < 0) {
+    keyStates.push(stateName);
+  } else {
+    keyStates.splice(idx, 1);
+  }
+}
+
 /**
  * Reads the data & displays the Sankey diagram.
  */
 export default function main() {
   let timeline = new sankeyTimeline.SankeyTimeline();
-  const data: {
-    fileName: string;
-    keyStates: {
-      name: string;
-      paths: Node[];
-    }[];
-    options?: {
-      fontSize: number;
-      maxNodeHeight: number;
-      maxLinkWidth: number;
-    };
-    otherStatePaths: Node[];
-  } = (window as any).data;
+  const data: TimelineOptions = (window as any).data;
+  const keyStateOptions = document.getElementById('keyStateOptions');
+  data.keyStates.forEach((keyState) => {
+    // TODO: are key state names unique?
+    keyStates.push(keyState.name);
+    const checkbox = document.createElement('input');
+    checkbox.type = 'checkbox';
+    checkbox.checked = true;
+    checkbox.setAttribute('data-state', keyState.name);
+    checkbox.addEventListener('change', function handleCheck() {
+      toggleKeyState(this.getAttribute('data-state') as string);
+      console.log(keyStates);
+    });
+    const label = document.createTextNode(keyState.name);
+    keyStateOptions?.appendChild(checkbox);
+    keyStateOptions?.appendChild(label);
+  });
+  const [nodes, links] = preprocess(data, keyStates);
+  console.log(nodes);
   const renderer = new sankeyTimeline.Renderer(timeline);
   renderer.options.height = window.innerHeight;
   renderer.options.width = window.innerWidth;
@@ -91,9 +158,6 @@ export default function main() {
    * @param otherStates If true, otherStatePaths will be included.
    */
   function createPaths(otherStates = false) {
-    const nodes: Record<string, Node> = {};
-    const links: Record<string, Link[]> = {};
-
     /**
      * Process a step in a path.
      *
@@ -102,22 +166,11 @@ export default function main() {
      */
     function processPath(path: Node, paths: Node[], processedPaths: string[]) {
       if (processedPaths.indexOf(path.name) < 0) {
-        if (!nodes[path.name]) {
-          nodes[path.name] = path;
-        }
-        if (!links[path.name]) {
-          links[path.name] = [];
-        }
         path.exits.forEach((exitPath) => {
           if (
-            links[path.name]
-              .map((link) => link.name)
-              .indexOf(exitPath.otherState) < 0
+            !links[path.name][exitPath.otherState]
           ) {
-            links[path.name].push({
-              count: exitPath.cnt,
-              name: exitPath.otherState,
-            });
+            links[path.name][exitPath.otherState] = exitPath.cnt;
           }
           processPath(
             paths.find((p) => p.name === exitPath.otherState) as Node,

@@ -377,7 +377,6 @@ export default class Renderer {
       .attr('height', (d: TimelineNode) => d.layout.height)
       .attr('width', (d: TimelineNode) => d.layout.width)
       .attr('class', 'node')
-      // TODO: Make this renderer-agnostic
       .on('mouseover', (event: DragEvent, d: TimelineNode) => {
         let shortestPath: number[] = [];
         const paths: number[][] = this.timeline.getPath(d.id);
@@ -464,7 +463,11 @@ export default class Renderer {
             ) {
               const element = select(this);
               element
-                .select('rect')
+                .select('.nodeFill')
+                .attr('x', () => d.layout.x)
+                .attr('y', () => d.layout.y);
+              element
+                .select('.labelBox')
                 .attr('x', () => d.layout.x)
                 .attr('y', () => d.layout.y);
               element
@@ -507,8 +510,18 @@ export default class Renderer {
             });
           }),
       );
+    // Label boxes
     nodes
       .append('rect')
+      .attr('class', 'labelBox')
+      .style('fill', 'rgba(0,0,0,0.2)')
+      .attr('x', (d) => d.layout.x)
+      .attr('y', (d) => d.layout.y + d.layout.height / 2 - d.textHeight / 2)
+      .attr('width', (d) => d.textWidth)
+      .attr('height', (d) => d.textHeight);
+    nodes
+      .append('rect')
+      .attr('class', 'nodeFill')
       .attr('fill', (d: TimelineNode) => d.layout.color)
       .attr('x', (d: TimelineNode) => d.layout.x)
       .attr('y', (d: TimelineNode) => d.layout.y)
@@ -593,16 +606,6 @@ export default class Renderer {
         )
         .attr('fill', this.options.meanBarColor);
     }
-
-    // Label boxes
-    nodes
-      .append('rect')
-      .attr('class', 'labelBox')
-      .style('fill', 'rgba(0,0,0,0.2)')
-      .attr('x', (d) => d.layout.x)
-      .attr('y', (d) => d.layout.y + d.layout.height / 2 - d.textHeight / 2)
-      .attr('width', (d) => d.textWidth)
-      .attr('height', (d) => d.textHeight);
 
     // Visible labels
     nodes
