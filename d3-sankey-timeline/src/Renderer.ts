@@ -1,7 +1,6 @@
-import { color, HSLColor, RGBColor } from 'd3-color';
+import { color, RGBColor } from 'd3-color';
 import { drag } from 'd3-drag';
 import { easeCubicIn } from 'd3-ease';
-import { interpolateHsl } from 'd3-interpolate';
 import { BaseType, select, selectAll, Selection } from 'd3-selection';
 import { Transition, transition } from 'd3-transition';
 import SankeyTimeline from './SankeyTimeline';
@@ -39,7 +38,7 @@ export default class Renderer {
     endColor: '#FF9800',
     fadeOpacity: 0.3,
     fontColor: 'white',
-    fontSize: 25,
+    fontSize: 20,
     height: window.innerHeight,
     layout: 0,
     margin: 60,
@@ -146,68 +145,60 @@ export default class Renderer {
     this.graph = this.timeline.graph;
     this.initializeLayout();
     const cols: TimelineNode[][] = [];
-    const rows: number[] = [];
+    const colWidths: number[] = [];
+    const colXs: number[] = [];
     const maxCols: number[] = [];
     let maxColumn = -1;
     let maxRow = -1;
+    let leftHandAdjustment = 0;
     /**
      * Assigns columns along a path.
      *
      * @param source The current source node.
      * @param currentCol The current row number.
      */
-    function assignColumns(source: TimelineNode, currentCol: number) {
+    const assignColumns = (source: TimelineNode, currentCol: number) => {
       if (source.layout.column < 0) {
         if (currentCol >= cols.length) {
           cols.push([]);
-          rows.push(0);
           maxCols.push(0);
+          colWidths.push(0);
+          colXs.push(0);
         }
         if (currentCol > maxColumn) {
           maxColumn = currentCol;
         }
         source.setColumn(currentCol);
         cols[currentCol].push(source);
+        if (source.textWidth > colWidths[currentCol]) {
+          colWidths[currentCol] = source.textWidth;
+        }
         source.outgoingLinks.forEach((link) => {
           assignColumns(link.target, currentCol + 1);
         });
+        if (currentCol === 0) {
+          const nodeAdjustment =
+            this.getTimeX(source.times.meanTime || 0) - source.layout.width / 2;
+          if (nodeAdjustment < leftHandAdjustment) {
+            leftHandAdjustment = nodeAdjustment;
+          }
+        }
       }
-    }
-    /**
-     * Assigns rows along a path.
-     *
-     * @param source The current source node.
-     * @param baseRow The row the original source is assigned to.
-     */
-    function assignRows(source: TimelineNode, baseRow: number) {
-      if (source.layout.row < 0) {
-        let row = baseRow;
-        source.layout.baseRow = baseRow;
-        if (rows[source.layout.column] > baseRow) {
-          row = rows[source.layout.column] + 1;
-        }
-        source.setRow(row);
-        if (row > maxRow) {
-          maxRow = row;
-        }
-        if (source.layout.column > maxCols[row]) {
-          maxCols[row] = source.layout.column;
-        }
-        rows[source.layout.column] = row;
-        source.outgoingLinks.forEach((link) => {
-          assignRows(link.target, baseRow);
-        });
-      }
-    }
+    };
     this.timeline.sourceNodes.forEach((sourceNode) => {
       assignColumns(sourceNode, 0);
     });
-    let row = 0;
-    cols[0].forEach((node) => {
-      assignRows(node, row);
-      row += 1;
+    for (let i = 1; i < colWidths.length; i += 1) {
+      colXs[i] = colXs[i - 1] + colWidths[i - 1];
+    }
+    cols.forEach((col) => {
+      for (let r = 0; r < col.length; r += 1) {
+        col[r].layout.row = r;
+        if (r > maxRow) {
+          maxRow = r;
+        }
+      }
     });
-    const adjusted: number[] = [];
     let gradientSwitch = false;
     this.graph.nodes.forEach((node) => {
       if (gradientSwitch) {
@@ -221,66 +212,28 @@ export default class Renderer {
           node.layout.x = node.persist.default.x;
           node.layout.y = node.persist.default.y;
         } else {
-          node.layout.x =
-            (node.layout.column / (maxColumn + 1)) * this.options.width -
-            node.layout.width / 2;
+          node.layout.x = colXs[node.layout.column];
           node.layout.y =
             (node.layout.row / (maxRow + 1)) * this.options.height;
         }
       } else if (this.options.layout === 0) {
+        const originalMargin = this.options.margin;
+        this.options.margin += -leftHandAdjustment;
         node.layout.x =
           this.getTimeX(node.times.meanTime || 0) - node.layout.width / 2;
         if (node.persist) {
           node.layout.y = node.persist.timeline.y;
-        } else if (adjusted.indexOf(node.id) < 0) {
-          node.layout.y = this.options.axisTickHeight;
-          adjusted.push(node.id);
-          this.findNodeOverlaps(node)
-            .map((overlap) => overlap.node)
-            .forEach((o) => {
-              if (adjusted.indexOf(o.id) < 0 && o.id !== node.id) {
-                adjusted.push(o.id);
-                o.layout.y += this.options.maxNodeHeight;
-              }
-            });
+        } else {
+          node.layout.y =
+            (node.layout.row / (maxRow + 1)) * this.options.height;
         }
+        this.options.margin = originalMargin;
       }
     });
     this.calculateLinkPaths();
     this.calculateDistributionLayout();
-    this.maxRow = row;
+    this.maxRow = maxRow;
     return this.graph;
-  }
-
-  /**
-   * Finds nodes that overlap with the given node.
-   *
-   * @param node - The node to find overlaps for.
-   * @param strict - If true, borders touching will be considered an overlap.
-   * @returns Other nodes that overlap with the given node.
-   */
-  private findNodeOverlaps(node: TimelineNode, strict = true) {
-    const overlaps: { node: TimelineNode; range: [number, number] }[] = [];
-    this.graph.nodes.forEach((o) => {
-      if (
-        (strict &&
-          ((o.layout.x + o.layout.width >= node.layout.x &&
-            o.layout.x <= node.layout.x) ||
-            (node.layout.x + node.layout.width >= o.layout.x &&
-              node.layout.x <= o.layout.x))) ||
-        (!strict &&
-          ((o.layout.x + o.layout.width > node.layout.x &&
-            o.layout.x <= node.layout.x) ||
-            (node.layout.x + node.layout.width > o.layout.x &&
-              node.layout.x <= o.layout.x)))
-      ) {
-        overlaps.push({
-          node: o,
-          range: [o.layout.y, o.layout.y + o.layout.height],
-        });
-      }
-    });
-    return overlaps;
   }
 
   /**
@@ -424,7 +377,6 @@ export default class Renderer {
       .attr('height', (d: TimelineNode) => d.layout.height)
       .attr('width', (d: TimelineNode) => d.layout.width)
       .attr('class', 'node')
-      // TODO: Make this renderer-agnostic
       .on('mouseover', (event: DragEvent, d: TimelineNode) => {
         let shortestPath: number[] = [];
         const paths: number[][] = this.timeline.getPath(d.id);
@@ -511,7 +463,11 @@ export default class Renderer {
             ) {
               const element = select(this);
               element
-                .select('rect')
+                .select('.nodeFill')
+                .attr('x', () => d.layout.x)
+                .attr('y', () => d.layout.y);
+              element
+                .select('.labelBox')
                 .attr('x', () => d.layout.x)
                 .attr('y', () => d.layout.y);
               element
@@ -522,9 +478,14 @@ export default class Renderer {
                 .select('.meanValue')
                 .attr('x', () => d.layout.x + d.layout.width / 2)
                 .attr('y', () => d.layout.y - options.meanBarWidth);
-              selectAll<BaseType, TimelineLink>('.link').each(function (
-                l: TimelineLink,
-              ) {
+              element
+                .select('.labelBox')
+                .attr('x', () => d.layout.x)
+                .attr(
+                  'y',
+                  () => d.layout.y + d.layout.height / 2 - d.textHeight / 2,
+                );
+              selectAll<BaseType, TimelineLink>('.link').each(function (l) {
                 const path = l.layout.path.substring(1).split(',');
                 if (l.source.id === d.id) {
                   l.layout.path = `M${d.layout.x + d.layout.width},${
@@ -549,8 +510,18 @@ export default class Renderer {
             });
           }),
       );
+    // Label boxes
     nodes
       .append('rect')
+      .attr('class', 'labelBox')
+      .style('fill', 'rgba(0,0,0,0.2)')
+      .attr('x', (d) => d.layout.x)
+      .attr('y', (d) => d.layout.y + d.layout.height / 2 - d.textHeight / 2)
+      .attr('width', (d) => d.textWidth)
+      .attr('height', (d) => d.textHeight);
+    nodes
+      .append('rect')
+      .attr('class', 'nodeFill')
       .attr('fill', (d: TimelineNode) => d.layout.color)
       .attr('x', (d: TimelineNode) => d.layout.x)
       .attr('y', (d: TimelineNode) => d.layout.y)
