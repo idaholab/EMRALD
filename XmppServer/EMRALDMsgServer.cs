@@ -68,23 +68,40 @@ namespace XmppMessageServer
     public bool SendMessage(TMsgWrapper msg, string resAndClient)
     {
       string key = resAndClient;
-      if (_resourceLookup.ContainsKey(key))
+      bool sent = false;
+      int tryCnt = 0;
+      while (!sent)
       {
-        Jid userJid = _resourceLookup[key];
+        tryCnt++;
 
-        // Convert the SampleMessage to a JSON string
-        string jsonStr = JsonConvert.SerializeObject(msg);
-        logger.Debug("Sending message - " + jsonStr);
-        _xmppMsgServer.SendMessage(jsonStr, "S-"+_nextMsgId.ToString(), userJid);
-        _nextMsgId++;
-        return true;
+        if (_resourceLookup.ContainsKey(key))
+        {
+          Jid userJid = _resourceLookup[key];
+
+          // Convert the SampleMessage to a JSON string
+          string jsonStr = JsonConvert.SerializeObject(msg);
+          logger.Debug("Sending message - " + jsonStr);
+          _xmppMsgServer.SendMessage(jsonStr, "S-" + _nextMsgId.ToString(), userJid);
+          _nextMsgId++;
+          return true;
+        }
+        else
+        {
+          string err = "Warning, could not find XMPP attached simulation for " + resAndClient;
+          logger.Error(err);
+          System.Threading.Thread.Sleep(10000); //sleep for 10 seconds.
+
+          //jID not found
+          if (tryCnt > 6)
+          {
+            err = "Xmpp connection lost and not reconnected for " + resAndClient;
+            logger.Error(err);
+            throw new Exception(err);
+          }
+        }
       }
-      else
-      {
-        string err = "error, could not find attached simulation for " + resAndClient;
-        logger.Error(err);
-        throw new Exception(err);
-      }
+
+      return false;
     }
 
     public void IncomingMessage(Message msg)
@@ -196,13 +213,12 @@ namespace XmppMessageServer
     public List<string> GetResources()
     {
       var ret = new List<string>();
-      foreach(var item in _resourceLookup)
+      foreach (var item in _resourceLookup.Keys.ToList())
       {
-        ret.Add(item.Key);
-        //_rosterMan.
+        ret.Add(item);
       }
       return ret;
-    } 
+    }
 
     public bool HasResource(string name)
     {

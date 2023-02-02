@@ -101,7 +101,7 @@ namespace XmppMessageClient
             else
               m_form.IncomingEMRALDMsg(msg.From, msgObj);
           }
-          //todo - process the message with EMRALD  
+            
 
         }
         else
