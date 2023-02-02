@@ -899,7 +899,9 @@ namespace SimulationTracking
               evName = curStatePath.eventNames[i];
               actName = curStatePath.actionNames[i];
               SimulationDAL.Action act = model.allActions.FindByName(actName);
-              SimulationDAL.Event ev = model.allEvents.FindByName(evName);
+              SimulationDAL.Event ev = null;
+              if (evName != "immediate action")
+                ev = model.allEvents.FindByName(evName);
 
               curCause = new SimulationEngine.EnterExitCause(prevState.name, ev, act, true);
               // if exist use it
@@ -921,7 +923,9 @@ namespace SimulationTracking
               evName = curStatePath.eventNames[i+1];
               actName = curStatePath.actionNames[i+1];
               SimulationDAL.Action act = model.allActions.FindByName(actName);
-              SimulationDAL.Event ev = model.allEvents.FindByName(evName);
+              SimulationDAL.Event ev = null;
+              if (evName != "immediate action")
+                ev = model.allEvents.FindByName(evName);
 
               curCause = new SimulationEngine.EnterExitCause(nextState.name, ev, act, false);
               // if exist use it

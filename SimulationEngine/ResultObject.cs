@@ -237,9 +237,16 @@ namespace SimulationEngine
 
     public EnterExitCause(string otherState, SimulationDAL.Event ev, SimulationDAL.Action act, bool from)
     {
-      this.name = ev.name + " & " + act.name;
-      this.desc = "Event [" + ev.name + "] occured and caused the action - " + act.name;
-      this.evDesc = ev.desc;
+      string evName = "Immediate Action";
+      if (ev!=null)
+      {
+        evName = ev.name;
+        this.evDesc = ev.desc;
+      }
+      
+      this.name = evName + " & " + act.name;
+      this.desc = "Event [" + evName + "] occured and caused the action - " + act.name;
+      
       this.actDesc = act.desc;
       this.otherState = otherState;
       if(from)
