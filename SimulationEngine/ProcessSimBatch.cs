@@ -88,7 +88,7 @@ namespace SimulationEngine
     private string _keyPathsOutput = "";
     public bool batchSuccess = false;
     private Progress _progress = null;
-    private int _pathResultsInterval = 5;
+    private int _pathResultsInterval = -1;
 
     //public Dictionary<string, double> variableVals { get { return _variableVals; } }
     public Dictionary<string, FailedItems> keyFailedItems = new Dictionary<string, FailedItems>(); //key = StateName, value = cut sets
@@ -103,12 +103,13 @@ namespace SimulationEngine
     private string _error = "";
     public string error { get { return _error; } }
 
-    public ProcessSimBatch(EmraldModel lists, TimeSpan endtime, string resultFile, string jsonResPaths)
+    public ProcessSimBatch(EmraldModel lists, TimeSpan endtime, string resultFile, string jsonResPaths, int pathResultsInterval)
     {
       this._lists = lists;
       this._endTime = endtime;
       this._resultFile = resultFile;
       this._jsonResultPaths = jsonResPaths;
+      this._pathResultsInterval = pathResultsInterval;
       this.progressCallback = LogResults;
     }
 
@@ -220,6 +221,8 @@ namespace SimulationEngine
       TimeSpan resTime = stopWatch.Elapsed;
       int actRuns = 0;
       int curI = 0;
+      if (_pathResultsInterval < 1)
+        _pathResultsInterval = _numRuns;
 
       StreamWriter pathOutputFile = null;
       if (!string.IsNullOrEmpty(_keyPathsOutput)) 

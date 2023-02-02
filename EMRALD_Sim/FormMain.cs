@@ -37,6 +37,7 @@ namespace EMRALD_Sim
     private List<string> monitor = new List<string>();
     private List<List<string>> _xmppLink = new List<List<string>>();
     private string _XMPP_Password = "secret";
+    private int _pathResultsInterval = -1;
 
     [DllImport("kernel32.dll")]
     static extern bool AttachConsole(int dwProcessId);
@@ -228,6 +229,19 @@ namespace EMRALD_Sim
               break;
             }
 
+          case "-rIntrv":
+            {
+              try
+              {
+                _pathResultsInterval = int.Parse(args[i + 1]);
+              }
+              catch
+              {
+                Console.WriteLine("-rIntrv option must be a valid integer number");
+              }
+              break;
+            }
+
           case "-d": //debug the runs
             {
               string strLev = args[i + 1];
@@ -307,6 +321,7 @@ namespace EMRALD_Sim
               Console.WriteLine("-d \"debug level \"basic\" or \"detailed\", (optional) range [start end]. " + Environment.NewLine +
                                 "    Basic - state movement only. Detailed - state movement, actions and events. " + Environment.NewLine +
                                 "    Example: -d basic [10 20]");
+              Console.WriteLine("-rIntrv \"how often to save the path results, every X number of runs.\"");
               break;
             }
 
@@ -764,7 +779,7 @@ namespace EMRALD_Sim
           _statsFile = "";
 
 
-        simRuns = new ProcessSimBatch(_sim, maxTime, tbSavePath.Text, _statsFile);
+        simRuns = new ProcessSimBatch(_sim, maxTime, tbSavePath.Text, _statsFile, _pathResultsInterval);
 
         simRuns.progressCallback = DispResults;
         if (_server != null)
