@@ -76,13 +76,13 @@
             "type": "object",
             "properties": {
               "evType": {
-                "enum": [ "etCompEv", "etTimer", "etSimStarted", "etEndSim", "etPing", "etStatus" ]
+                "enum": [ "etCompEv", "etTimer", "etSimLoaded", "etEndSim", "etPing", "etStatus" ]
               },
               "time": {
                 "type": "string"
               },
               "status": {
-                "enum": [ "stWaiting", "stLoading", "stRunning", "stDone", "stError" ]
+                "enum": [ "stWaiting", "stLoading", "stRunning", "stDone", "stError", "stIdle" ]
               }
             },
             "oneOf": [
@@ -105,7 +105,7 @@
               {
                 "properties": {
                   "evType": {
-                    "enum": [ "etSimStarted", "etEndSim", "etPing", "etError" ]
+                    "enum": [ "etSimLoaded", "etEndSim", "etPing", "etError" ]
                   }
                 },
                 "required": [ "time" ]
@@ -128,7 +128,7 @@
           "type": "object",
           "properties": {
             "actType": {
-              "enum": [ "atCompModify", "atOpenSim", "atCancelSim", "atPauseSim", "atContinue", "atTimer", "atReset", "atRestartAtTime", "atPing", "atStatus" ]
+              "enum": [ "atCompModify", "atOpenSim", "atCancelSim", "atPauseSim", "atContinue", "atTimer", "atRestartAtTime", "atPing", "atStatus", "atTerminate" ]
             },
             "time": {
               "type": "string"
@@ -162,7 +162,7 @@
             {
               "properties": {
                 "actType": {
-                  "enum": [ "atCancelSim", "atPauseSim", "atContinue", "atReset", "atPing", "atStatus" ]
+                  "enum": [ "atCancelSim", "atPauseSim", "atContinue", "atReset", "atPing", "atStatus", "atTerminate" ]
                 }
               },
               "required": []

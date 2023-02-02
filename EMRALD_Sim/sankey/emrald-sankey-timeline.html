@@ -27,6 +27,7 @@
         <label for="otherStatesToggle">Show Other State Paths</label>
         <button id="zoomOut">Zoom Out</button>
         <button id="zoomIn">Zoom In</button>
+        <button id="save">Save</button>
         <svg id="chart"></svg>
         <script src="./data.js"></script>
         <script src="./emrald-sankey-timeline.js"></script>
@@ -53,6 +54,10 @@
 
             document.getElementById('zoomOut').addEventListener('click', () => {
                 window.zoomOut();
+            });
+
+            document.getElementById('save').addEventListener('click', () => {
+                window.saveDiagram();
             });
 
             function OnLoad(dataObj) {
