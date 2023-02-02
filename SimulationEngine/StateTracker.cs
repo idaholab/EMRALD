@@ -1198,20 +1198,22 @@ namespace SimulationTracking
       //do the process while there are still time events in the que and a terminal state is not met
       while (timeEvList.cnt > 0)
       {
-        PopNextTimeEvent();
-
-        //run through all the stuff until it needs a new timed event or it hits a terminal state
-        if (!ProcessActiveLoop())
+        if (PopNextTimeEvent())
         {
-          return curStates.GetFinalStateList();
-        }
 
-        ranXMPPSim = false;
-        while (this.emraldStopping3D || this.extSimStarting || this.extSimRunning || inProcessingLoop)
-        {
-          //Application.DoEvents();
-          ranXMPPSim = true;
-          System.Threading.Thread.Sleep(10);
+          //run through all the stuff until it needs a new timed event or it hits a terminal state
+          if (!ProcessActiveLoop())
+          {
+            return curStates.GetFinalStateList();
+          }
+
+          ranXMPPSim = false;
+          while (this.emraldStopping3D || this.extSimStarting || this.extSimRunning || inProcessingLoop)
+          {
+            //Application.DoEvents();
+            ranXMPPSim = true;
+            System.Threading.Thread.Sleep(10);
+          }
         }
       }
 
@@ -1434,11 +1436,13 @@ namespace SimulationTracking
       }
 
     }
+
     /// <summary>
     /// pop the next time event off the queue
     /// </summary>
     /// <param name="idMatch">if not -1 then only pop it off if the ID matches</param>
-    private void PopNextTimeEvent(int idMatch = -1)
+    /// <returns>bool if there is a next time event processed</returns>
+    private bool PopNextTimeEvent(int idMatch = -1)
     {
 
       //timeEvList.PrintTimes();
@@ -1446,7 +1450,13 @@ namespace SimulationTracking
       TimeMoveEvent nextItem = timeEvList.LookNextTimedEvent();
       if ((idMatch > -1) && (idMatch != nextItem.id))
       {
-        return;
+        return false;
+      }
+      //if item is greater then max time then done and clear out rest of the items
+      if(nextItem.time > maxTime)
+      {
+        timeEvList.Clear();
+        return false;
       }
 
       curTime = curTime + nextItem.time;
@@ -1478,6 +1488,7 @@ namespace SimulationTracking
       //}
 
       processEventList.AddRange(timeEvList.PopTimedEvent(curTime));
+      return true;
     }
 
     /// <summary>
@@ -1647,7 +1658,7 @@ namespace SimulationTracking
           {
 
             TimeSpan evTime = timeEv.NextTime(curTime);
-            if (evTime < maxTime)
+            if ((evTime < maxTime) || (timeEv.UsesVariables()))//if using variables we still need to add incase those variables change
             {
               TimeMoveEvent addTimeEv = new TimeMoveEvent(curEv.name, new EventStatesAndActions(curEv.id, curState.id, curState.GetEvActionsIdx(idx)), curEv, evTime, curTime);
               if ((evTime == Globals.NowTimeSpan) && !this.emraldStopping3D)// || //add the event to be processed immediately

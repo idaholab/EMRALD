@@ -8,10 +8,20 @@ type Node = {
   }[];
   exits: {
     cnt: number;
+    name: string;
     otherState: string;
   }[];
+  layout?: {
+    default: {
+      x: number;
+      y: number;
+    };
+    timeline: {
+      y: number;
+    };
+  };
   name: string;
-  timelineNode: TimelineNode;
+  timelineNode?: TimelineNode;
   timeMean: string;
   timeStdDeviation: string;
 };
@@ -27,18 +37,31 @@ type Link = {
 export default function main() {
   let timeline = new sankeyTimeline.SankeyTimeline();
   const data: {
+    fileName: string;
     keyStates: {
+      name: string;
       paths: Node[];
     }[];
+    options?: {
+      fontSize: number;
+      maxNodeHeight: number;
+      maxLinkWidth: number;
+    };
     otherStatePaths: Node[];
   } = (window as any).data;
   const renderer = new sankeyTimeline.Renderer(timeline);
   renderer.options.height = window.innerHeight;
   renderer.options.width = window.innerWidth;
-  renderer.options.maxNodeHeight = window.innerHeight / 7;
-  renderer.options.maxLinkWidth = renderer.options.maxNodeHeight / 2;
   renderer.options.dynamicNodeHeight = true;
   renderer.options.layout = 1;
+  if (data.options) {
+    renderer.options.fontSize = data.options.fontSize;
+    renderer.options.maxNodeHeight = data.options.maxNodeHeight;
+    renderer.options.maxLinkWidth = data.options.maxLinkWidth;
+  } else {
+    renderer.options.maxNodeHeight = window.innerHeight / 7;
+    renderer.options.maxLinkWidth = renderer.options.maxNodeHeight / 2;
+  }
 
   /**
    * Converts the timestamp string from the data into a number of seconds since the start.
@@ -71,16 +94,14 @@ export default function main() {
     const nodes: Record<string, Node> = {};
     const links: Record<string, Link[]> = {};
 
-    const processedPaths: string[] = [];
     /**
      * Process a step in a path.
      *
      * @param path - The focused path object.
      * @param paths - All paths.
      */
-    function processPath(path: Node, paths: Node[]) {
+    function processPath(path: Node, paths: Node[], processedPaths: string[]) {
       if (processedPaths.indexOf(path.name) < 0) {
-        processedPaths.push(path.name);
         if (!nodes[path.name]) {
           nodes[path.name] = path;
         }
@@ -101,6 +122,7 @@ export default function main() {
           processPath(
             paths.find((p) => p.name === exitPath.otherState) as Node,
             paths,
+            [...processedPaths, path.name],
           );
         });
       }
@@ -110,13 +132,14 @@ export default function main() {
       processPath(
         keyState.paths.find((path) => path.entries.length === 0) as Node,
         keyState.paths,
+        [],
       );
     });
     if (otherStates) {
       data.otherStatePaths
         .filter((state) => state.entries.length === 0)
         .forEach((state) => {
-          processPath(state, data.otherStatePaths);
+          processPath(state, data.otherStatePaths, []);
         });
     }
     timeline.clear();
@@ -126,19 +149,23 @@ export default function main() {
       if (start < 0) {
         start = 0;
       }
-      nodes[n].timelineNode = timeline.createNode(node.name, {
+      const timelineNode = timeline.createNode(node.name, {
         endTime: timestampToSeconds(node.timeMean) + 2500,
         meanTime: timestampToSeconds(node.timeMean),
         startTime: start,
         stdDeviation: timestampToSeconds(node.timeStdDeviation),
       });
-      nodes[n].timelineNode.data = node;
+      timelineNode.data = node;
+      if (node.layout) {
+        timelineNode.persist = node.layout;
+      }
+      nodes[n].timelineNode = timelineNode;
     });
     Object.keys(nodes).forEach((n) => {
       links[n].forEach((link) => {
         timeline.createLink(
-          nodes[n].timelineNode,
-          nodes[link.name].timelineNode,
+          nodes[n].timelineNode as TimelineNode,
+          nodes[link.name].timelineNode as TimelineNode,
           link.count,
         );
       });
@@ -182,6 +209,31 @@ export default function main() {
     renderer.options.maxNodeHeight *= 0.9;
     renderer.options.maxLinkWidth *= 0.9;
     reRender();
+  };
+
+  (window as any).saveDiagram = () => {
+    const pathResults = data;
+    pathResults.keyStates.forEach((path, k) => {
+      path.paths.forEach((state, s) => {
+        pathResults.keyStates[k].paths[s].layout = timeline.getNodesByLabel(
+          state.name,
+        )[0].persist;
+        delete pathResults.keyStates[k].paths[s].timelineNode;
+      });
+    });
+    pathResults.options = {
+      fontSize: renderer.options.fontSize,
+      maxNodeHeight: renderer.options.maxNodeHeight,
+      maxLinkWidth: renderer.options.maxLinkWidth,
+    };
+    const link = document.createElement('a');
+    const file = new Blob([JSON.stringify(pathResults)], {
+      type: 'text/plain',
+    });
+    link.href = URL.createObjectURL(file);
+    link.download = data.fileName;
+    link.click();
+    URL.revokeObjectURL(link.href);
   };
 
   window.addEventListener('resize', () => {
