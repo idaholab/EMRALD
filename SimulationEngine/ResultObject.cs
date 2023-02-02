@@ -7,6 +7,8 @@ using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using MathNet.Numerics.Statistics;
+using SimulationDAL;
+using System.Xml.Linq;
 
 
 namespace SimulationEngine
@@ -203,16 +205,16 @@ namespace SimulationEngine
            
       foreach (var item in include.enterDict.Values)
       {
-        if (!this.enterDict.TryGetValue(item.desc, out curCause))
-          this.enterDict.Add(item.desc, item);
+        if (!this.enterDict.TryGetValue(item.key, out curCause))
+          this.enterDict.Add(item.key, item);
         else
           curCause.cnt += item.cnt;
       }
 
       foreach (var item in include.exitDict.Values)
       {
-        if (!this.exitDict.TryGetValue(item.desc, out curCause))
-          this.exitDict.Add(item.desc, item);
+        if (!this.exitDict.TryGetValue(item.key, out curCause))
+          this.exitDict.Add(item.key, item);
         else
         {
           curCause.cnt += item.cnt;
@@ -224,17 +226,26 @@ namespace SimulationEngine
   public class EnterExitCause
   {
     [JsonIgnore]
+    public string key = "";
     public string desc = ""; //Enter key of -  prevState.name + ", " + eventName + ", " + actionName;
                              //Enter key of -  eventName + ", " + actionName + ", " + nextState.name;
     public string name = ""; //eventName + " -> " + actionName
+    public string evDesc = "";
+    public string actDesc = "";
     public string otherState = ""; //too or from state 
     public int cnt = 0; //number of times this cause leads to parent state.
 
-    public EnterExitCause(string from, string name, string desc = "")
+    public EnterExitCause(string otherState, SimulationDAL.Event ev, SimulationDAL.Action act, bool from)
     {
-      this.name = name;
-      this.desc = desc;
-      this.otherState = from;
+      this.name = ev.name + " & " + act.name;
+      this.desc = "Event [" + ev.name + "] occured and caused the action - " + act.name;
+      this.evDesc = ev.desc;
+      this.actDesc = act.desc;
+      this.otherState = otherState;
+      if(from)
+        this.key = otherState + "->" + this.name;
+      else
+        this.key = this.name + "->" + otherState;
     }
   }
 

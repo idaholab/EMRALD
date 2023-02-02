@@ -843,7 +843,7 @@ namespace SimulationTracking
       return finalStates;
     }
 
-    public void GetKeyStatePaths(AllStates allStates = null, Dictionary<string, SimulationEngine.KeyStateResult> keyResMap = null, Dictionary<string, SimulationEngine.ResultState> otherResMap = null)
+    public void GetKeyStatePaths(EmraldModel model = null, Dictionary<string, SimulationEngine.KeyStateResult> keyResMap = null, Dictionary<string, SimulationEngine.ResultState> otherResMap = null)
     {
       foreach (StatePath curStatePath in this.Values)
       {
@@ -874,10 +874,10 @@ namespace SimulationTracking
             if (nextState != null)
               curState = nextState;
             else
-              curState = allStates[curStatePath.path[i+1]];
+              curState = model.allStates[curStatePath.path[i+1]];
 
             if (i < (curStatePath.path.Count - 2))
-              nextState = allStates[curStatePath.path[i + 2]];
+              nextState = model.allStates[curStatePath.path[i + 2]];
             else if (i == (curStatePath.path.Count - 2))
               nextState = curStatePath.state;
             else
@@ -891,17 +891,25 @@ namespace SimulationTracking
               curResDict.Add(curResState.name, curResState);
             }
 
+            SimulationEngine.EnterExitCause foundCause = null;
             curResState.AddTime(curStatePath.times[i]);
             //add where came from. if not at the beginning
             if (prevState != null)
             {
               evName = curStatePath.eventNames[i];
               actName = curStatePath.actionNames[i];
-              causeKey = prevState.name + ", " + evName + ", " + actName;
-              if (!curResState.enterDict.TryGetValue(causeKey, out curCause))
+              SimulationDAL.Action act = model.allActions.FindByName(actName);
+              SimulationDAL.Event ev = model.allEvents.FindByName(evName);
+
+              curCause = new SimulationEngine.EnterExitCause(prevState.name, ev, act, true);
+              // if exist use it
+              if (curResState.enterDict.TryGetValue(curCause.key, out foundCause))
               {
-                curCause = new SimulationEngine.EnterExitCause(prevState.name, evName + " -> " + actName, causeKey);
-                curResState.enterDict.Add(curCause.desc, curCause);
+                curCause = foundCause;
+              }
+              else //if it doesn't exit then add it
+              {                
+                curResState.enterDict.Add(curCause.key, curCause);
               }
 
               curCause.cnt++;
@@ -912,11 +920,18 @@ namespace SimulationTracking
             {
               evName = curStatePath.eventNames[i+1];
               actName = curStatePath.actionNames[i+1];
-              causeKey = evName + ", " + actName + ", " + nextState.name;
-              if (!curResState.exitDict.TryGetValue(causeKey, out curCause))
+              SimulationDAL.Action act = model.allActions.FindByName(actName);
+              SimulationDAL.Event ev = model.allEvents.FindByName(evName);
+
+              curCause = new SimulationEngine.EnterExitCause(nextState.name, ev, act, false);
+              // if exist use it
+              if (curResState.exitDict.TryGetValue(curCause.key, out foundCause))
               {
-                curCause = new SimulationEngine.EnterExitCause(nextState.name, evName + " -> " + actName, causeKey);
-                curResState.exitDict.Add(curCause.desc, curCause);
+                curCause = foundCause;
+              }
+              else //if it doesn't exit then add it
+              {                
+                curResState.exitDict.Add(curCause.key, curCause);
               }
 
               curCause.cnt++;
@@ -1937,7 +1952,7 @@ namespace SimulationTracking
     /// <returns></returns>
     public void GetKeyPaths(Dictionary<string, SimulationEngine.KeyStateResult> resMap, Dictionary<string, SimulationEngine.ResultState> otherResMap)
     {
-      curStates.GetKeyStatePaths(allLists.allStates, resMap, otherResMap);
+      curStates.GetKeyStatePaths(allLists, resMap, otherResMap);
     }
 
     /// <summary>
