@@ -321,7 +321,7 @@ namespace EMRALD_Sim
               Console.WriteLine("-d \"debug level \"basic\" or \"detailed\", (optional) range [start end]. " + Environment.NewLine +
                                 "    Basic - state movement only. Detailed - state movement, actions and events. " + Environment.NewLine +
                                 "    Example: -d basic [10 20]");
-              Console.WriteLine("-rIntrv \"how often to save the path results, every X number of runs.\"");
+              Console.WriteLine("-rIntrv \"how often to save the path results, every X number of runs. No value or <1 will result in saving only after all runs are complete.\"");
               break;
             }
 
