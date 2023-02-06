@@ -9,7 +9,7 @@ using Newtonsoft.Json;
 using MathNet.Numerics.Statistics;
 using SimulationDAL;
 using System.Xml.Linq;
-
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace SimulationEngine
 {
@@ -54,6 +54,17 @@ namespace SimulationEngine
       }
 
       this.CalcStats(keyStateCnt);
+    }
+
+    /// <summary>
+    /// update this key state reault item with the values from that state in the path list
+    /// </summary>
+    public void AssignResults()
+    {
+      if (pathsLookup.ContainsKey(this.name))
+      {
+        base.ShallowCopy(pathsLookup[this.name]);
+      }
     }
 
   }
@@ -101,8 +112,6 @@ namespace SimulationEngine
     public Dictionary<string, EnterExitCause> enterDict { get; set; } = new Dictionary<string, EnterExitCause>(); //key will be from state, event, and action 
     [JsonIgnore]
     public Dictionary<string, EnterExitCause> exitDict { get; set; } = new Dictionary<string, EnterExitCause>(); //key will be from state, event, and action
-    public EnterExitCause[] entries { get { return enterDict.Values.ToArray(); } }
-    public EnterExitCause[] exits { get { return exitDict.Values.ToArray(); } }
     protected TimeSpan _totalTime = TimeSpan.Zero;
     private double _extraDays = 0.0;
     protected List<TimeSpan> _times = new List<TimeSpan>();
@@ -220,6 +229,29 @@ namespace SimulationEngine
           curCause.cnt += item.cnt;
         }
       }
+
+      //add the variables
+      foreach (var v in include.watchVariables)
+      {
+        this.watchVariables[v.Key].Add(v.Value[0]);
+      }
+    }
+
+    public void ShallowCopy(ResultStateBase toCopy)
+    {
+      watchVariables = toCopy.watchVariables;
+      enterDict = toCopy.enterDict;
+      exitDict = toCopy.exitDict;
+      _totalTime = toCopy._totalTime;
+      _extraDays = toCopy._extraDays;
+      _times= toCopy._times;
+      _count= toCopy._count;
+      _contributionCnt = toCopy._contributionCnt;
+      _rate= toCopy._rate;
+      _rate5th= toCopy._rate5th;  
+      _rate95th= toCopy._rate95th;
+      _timeMin= toCopy._timeMin;  
+      _timeMax= toCopy._timeMax;
     }
   }
 
