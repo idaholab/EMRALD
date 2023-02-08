@@ -277,41 +277,41 @@ namespace SimulationEngine
               pathOutputFile.WriteLine("Run - " + i.ToString());
             }
 
-            trackSim.GetKeyPaths(keyPaths, otherPaths);
+            trackSim.GetKeyPaths(keyPaths, otherPaths, logVarVals);
             
             foreach (SimulationEngine.ResultStateBase path in keyPaths.Values)
             {
               string keyStateName = path.name;
 
-              if (logVarVals.Count > 0)
-              {
-                Dictionary<string, List<string>> varDict;
-                if (!_variableVals.TryGetValue(keyStateName, out varDict))
-                {
-                  varDict = new Dictionary<string, List<string>>();
-                  _variableVals.Add(keyStateName, varDict);
-                }
+              //  if (logVarVals.Count > 0)
+              //  {
+              //    Dictionary<string, List<string>> varDict;
+              //    if (!_variableVals.TryGetValue(keyStateName, out varDict))
+              //    {
+              //      varDict = new Dictionary<string, List<string>>();
+              //      _variableVals.Add(keyStateName, varDict);
+              //    }
 
-                List<string> varVals;
+              //    List<string> varVals;
 
-                foreach (string varName in logVarVals)
-                {
-                  SimVariable curVar = _lists.allVariables.FindByName(varName);
-                  if (curVar == null)
-                  {
-                    this._error = "No variable found named - " + varName;
-                    logger.Error(this.error);
-                  }
+              //    foreach (string varName in logVarVals)
+              //    {
+              //      SimVariable curVar = _lists.allVariables.FindByName(varName);
+              //      if (curVar == null)
+              //      {
+              //        this._error = "No variable found named - " + varName;
+              //        logger.Error(this.error);
+              //      }
 
-                  if (!varDict.TryGetValue(varName, out varVals))
-                  {
-                    varVals = new List<string>();
-                    varDict.Add(varName, varVals);
-                  }
+              //      if (!varDict.TryGetValue(varName, out varVals))
+              //      {
+              //        varVals = new List<string>();
+              //        varDict.Add(varName, varVals);
+              //      }
 
-                  varVals.Add(curVar.strValue);
-                }
-              }
+              //      varVals.Add(curVar.strValue);
+              //    }
+              //  }
 
               if (_logFailedComps && (failedComps.Length > 0))
               {
