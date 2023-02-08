@@ -452,14 +452,14 @@ namespace SimulationEngine
           //  Dictionary<string, int> depth = new Dictionary<string, int>();
           //  StateCounts(keyS, inStateCnts, depth);
           //}
-          //foreach (var keyS in resultObj.keyStates)
-          //{
-          //  // Dictionary<string, int> depth = new Dictionary<string, int>();
-          //  //SetResultStatsRec(keyS, inStateCnts, curI);//, depth);
+          foreach (var keyS in resultObj.keyStates)
+          {
+            // Dictionary<string, int> depth = new Dictionary<string, int>();
+            //SetResultStatsRec(keyS, inStateCnts, curI);//, depth);
 
-          //  if (_variableVals.Count > 0) //if there are any being tracked, they should have a value for each key state.
-          //    keyS.watchVariables = _variableVals[keyS.name];
-          //}
+            if (_variableVals.Count > 0) //if there are any being tracked, they should have a value for each key state.
+              keyS.watchVariables = _variableVals[keyS.name];
+          }
 
           string output = JsonConvert.SerializeObject(resultObj, Formatting.Indented);
           //if (File.Exists(_jsonResultPaths))
