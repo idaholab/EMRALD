@@ -1197,10 +1197,11 @@ namespace SimulationTracking
 
       foreach (var stID in curEv.eventStateActions.statesAndActions)
       {
-        if (!ProcessActions((ActionList)stID.Value, stID.Key, curEv.eventData))
+        bool movingOut = ((ActionList)stID.Value).moveFromCurrent;
+        if (!ProcessActions((ActionList)stID.Value, stID.Key, curEv.eventData, movingOut))
           return; //return of false means a time jump was done so we can stop processing
 
-        if (((ActionList)stID.Value).moveFromCurrent) //leaving this state to go to a different one so remove any other events that also leave this state
+        if (movingOut) //leaving this state to go to a different one so remove any other events that also leave this state
         {
           timeEvList.RemoveMatchingStateItems(stID.Key);
           condEvList.RemoveMatchingStateItems(stID.Key);
@@ -1250,7 +1251,7 @@ namespace SimulationTracking
       changedItems.AddChangedID(EnModifiableTypes.mtState, stateID.Item1);
 
       //do all the immediate actions for the state
-      ProcessActions(curState.GetImmediateActions(), curState.id, null);
+      ProcessActions(curState.GetImmediateActions(), curState.id, null, false);
 
       //add all the events to either the TimeEventQue or the CondEventList
       for (int idx = 0; idx < curState.eventCnt; ++idx)
@@ -1332,7 +1333,7 @@ namespace SimulationTracking
     /// <param name="curActions">action list to process</param>
     /// <param name="ownerStateID">state that actions are being run for</param>
     /// <returns></returns>
-    private bool ProcessActions(ActionList curActions, int ownerStateID, Event causeEvent)
+    private bool ProcessActions(ActionList curActions, int ownerStateID, Event causeEvent, bool exiting)
     {
       foreach (SimulationDAL.Action curAct in curActions)
       {
@@ -1348,7 +1349,10 @@ namespace SimulationTracking
             foreach (IdxAndStr cur in toStates)
             {
               //only add it if we are currently not going to that state from another action and not already in the state
-              if (curStates.ContainsKey(cur.idx))
+              bool inStateAlready = curStates.ContainsKey(cur.idx);
+              if ((inStateAlready && !exiting) ||
+                 (inStateAlready && (ownerStateID != cur.idx)))
+                // if(curStates.ContainsKey(cur.idx))
                 logger.Debug("No Transition, already in state: " + curAct.name);
               else if (nextStateQue.Where(t => t.Item1 == cur.idx).FirstOrDefault() == null)
                 nextStateQue.Add(Tuple.Create(cur.idx, ownerStateID, causeEvent == null ? "immediate action" : causeEvent.name, curAct.name));

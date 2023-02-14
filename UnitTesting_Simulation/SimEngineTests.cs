@@ -560,6 +560,34 @@ namespace UnitTesting_Simulation
       Compare(dir, testName, optionsJ);
     }
 
+    [Fact]
+    public void SelfLoopTest()
+    {
+      //make sure that a distribution using a variable correctly adds the event if it is resampled and inside the mission time
+
+      string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
+
+      //Setup directory for unit test 
+      string dir = SetupTestDir(testName);
+      //initial options, and optional results to save/test
+      JObject optionsJ = SetupJSON(dir, testName, true);
+
+      Options options = optionsJ.ToObject<Options>();
+      //Change the default settings as needed for the test seed default set to 0 for testing.
+      options.inpfile = MainTestDir() + ModelFolder() + testName + ".json";
+      options.runct = 1;
+      options.variables = new List<string>() { "Int_Cnt" };
+      //optionsJ["variables"] = JsonConvert.SerializeObject(args);
+      JSONRun testRun = new JSONRun(options);
+      Assert.True(TestRunSim(testRun));
+
+      //Uncomment to update the validation files after they verified correct
+      //CopyToValidated(dir, testName, optionsJ);
+
+      //compare the test result and optionally the paths and json if assigned
+      Compare(dir, testName, optionsJ);
+    }
+
 
     //[Fact]
     //public void DistEvent_Exponential()

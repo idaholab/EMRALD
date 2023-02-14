@@ -1,0 +1,5 @@
+Simulation = SelfLoopTest
+Runtime = 00.00:00:09
+Runs = 1 of 1
+MadeCnt Occurred 1 times, Rate =1, MeanTime = 00.09:00:00 +/- 00.00:00:00.00
+Int_Cnt - 10
