@@ -548,7 +548,7 @@ export default class Renderer {
         .attr('class', 'distHandleLeft')
         .attr('height', (d: TimelineNode) => d.layout.height)
         .attr('width', () => this.options.distHandleWidth)
-        .attr('fill', (d: TimelineNode) => d.layout.color);
+        .attr('fill', 'black');
       // Right handle
       nodes
         .append('rect')
@@ -567,7 +567,7 @@ export default class Renderer {
         .attr('class', 'distHandleRight')
         .attr('height', (d: TimelineNode) => d.layout.height)
         .attr('width', () => this.options.distHandleWidth)
-        .attr('fill', (d: TimelineNode) => d.layout.color);
+        .attr('fill', 'black');
       // Center line
       nodes
         .append('rect')
@@ -591,7 +591,7 @@ export default class Renderer {
           }
           return 0;
         })
-        .attr('fill', (d: TimelineNode) => d.layout.color);
+        .attr('fill', 'black');
 
       // Mean value bar
       nodes
