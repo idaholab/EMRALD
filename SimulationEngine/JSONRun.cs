@@ -75,6 +75,14 @@ namespace SimulationEngine
       _progressCallBack = progressCallBack;
     }
 
+    public JSONRun(Options ops, string modelJsonStr = "", TProgressCallBack progressCallBack = null)
+    {
+      this.options = ops;
+      _optsJsonStr = JsonConvert.SerializeObject(ops);
+      _modelJsonStr = modelJsonStr;
+      _progressCallBack = progressCallBack;
+    }
+
     public string RunSim(Progress progress = null)
     {
       percentDone = 0;
@@ -157,6 +165,10 @@ namespace SimulationEngine
       _simRuns = new ProcessSimBatch(_model, TimeSpan.Parse(options.runtime), options.resout, options.jsonRes, options.pathResultsInterval);
       _simRuns.SetupBatch(options.runct, true, options.pathout);
       _simRuns.AssignProgress(progress);
+      foreach (var varItem in this.options.variables)
+      {
+        _simRuns.logVarVals.Add(varItem.ToString());
+      }
       ThreadStart tStarter = new ThreadStart(_simRuns.RunBatch);
       //run this when the thread is done.
       tStarter += () =>
