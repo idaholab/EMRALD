@@ -166,6 +166,8 @@ namespace XmppMessageServer
         // Convert the string data to byte data using ASCII encoding.
         byte[] byteData = Encoding.UTF8.GetBytes(data);
 
+        logger.Debug("SentMessage - " + data);
+
         // Begin sending the data to the remote device.
         if (m_Sock.Connected)
           m_Sock.BeginSend(byteData, 0, byteData.Length, 0, SendCallback, null);
