@@ -31,7 +31,7 @@ namespace XmppMessageServer
     private int m_port;
     private string m_passwd;
     #endregion
-
+    private NLog.Logger logger = NLog.LogManager.GetLogger("logfile");
 
     public XmppMessageServer(int port, string passwd, IAppSettingsService appSettingsService)
     {
@@ -158,7 +158,7 @@ namespace XmppMessageServer
       }
       catch
       {
-        //jID not found 
+        logger.Error("Failed to send - " + msgId);
       }
     }
 
