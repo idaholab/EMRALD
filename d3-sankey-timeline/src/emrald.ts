@@ -1,6 +1,7 @@
 import { select, selectAll } from 'd3-selection';
 import type TimelineNode from './TimelineNode';
 import * as sankeyTimeline from './index';
+import TimelineLink from './TimelineLink';
 
 type Node = {
   count: number;
@@ -9,6 +10,7 @@ type Node = {
   }[];
   exits: {
     cnt: number;
+    desc: string;
     name: string;
     otherState: string;
   }[];
@@ -24,11 +26,14 @@ type Node = {
   name: string;
   timelineNode?: TimelineNode;
   timeMean: string;
+  timeMeanSum: number;
+  timeMeanN: number;
   timeStdDeviation: string;
 };
 
 type Link = {
   count: number;
+  desc: string;
   name: string;
 };
 
@@ -74,26 +79,36 @@ export default function main() {
   function preprocess(
     input: TimelineOptions,
     selectedKeyStates: string[],
-  ): [Record<string, Node>, Record<string, Record<string, number>>] {
+  ): [Record<string, Node>, Record<string, Record<string, Link>>] {
     const nodes: Record<string, Node> = {};
-    const links: Record<string, Record<string, number>> = {};
+    const links: Record<string, Record<string, Link>> = {};
     input.keyStates
       .filter((keyState) => selectedKeyStates.indexOf(keyState.name) >= 0)
       .forEach((keyState) => {
         keyState.paths.forEach((path) => {
           if (!nodes[path.name]) {
-            nodes[path.name] = { ...path };
+            nodes[path.name] = {
+              ...path,
+              timeMeanSum: timestampToSeconds(path.timeMean),
+              timeMeanN: 1,
+            };
           } else {
             nodes[path.name].count += path.count;
+            nodes[path.name].timeMeanSum += timestampToSeconds(path.timeMean);
+            nodes[path.name].timeMeanN += 1;
           }
           path.exits.forEach((link) => {
             if (!links[path.name]) {
               links[path.name] = {};
             }
             if (!links[path.name][link.otherState]) {
-              links[path.name][link.otherState] = link.cnt;
+              links[path.name][link.otherState] = {
+                count: link.cnt,
+                desc: link.desc,
+                name: link.name,
+              };
             } else {
-              links[path.name][link.otherState] += link.cnt;
+              links[path.name][link.otherState].count += link.cnt;
             }
           });
         });
@@ -101,7 +116,7 @@ export default function main() {
     return [nodes, links];
   }
   let nodes: Record<string, Node> = {};
-  let links: Record<string, Record<string, number>> = {};
+  let links: Record<string, Record<string, Link>> = {};
   data.keyStates.forEach((keyState) => {
     // TODO: are key state names unique?
     keyStates.push(keyState.name);
@@ -128,7 +143,7 @@ export default function main() {
   renderer.options.height = window.innerHeight;
   renderer.options.width = window.innerWidth;
   renderer.options.dynamicNodeHeight = true;
-  renderer.options.layout = 1;
+  renderer.options.layout = 'default';
   if (data.options) {
     renderer.options.fontSize = data.options.fontSize;
     renderer.options.maxNodeHeight = data.options.maxNodeHeight;
@@ -149,16 +164,39 @@ export default function main() {
     return t[2] + t[1] * 60 + t[0] * 3600;
   }
 
+  /**
+   * Converts the number of seconds since the start to a timestamp string.
+   * 
+   * @param seconds - The seconds to convert.
+   * @returns The timestamp string.
+   */
+  function secondsToTimestamp(seconds: number) {
+    const hours = seconds % (60 * 3600);
+    const minutes = (seconds - hours) % 60;
+    return `${hours}:${minutes}:${seconds - hours - minutes}`;
+  }
+
+  /**
+   * Calculates the real time mean.
+   * 
+   * @param node - The node to calculate for.
+   * @returns The real time mean.
+   */
+  function timeMean(node: Node) {
+    return node.timeMeanSum / node.timeMeanN;
+  }
+
   renderer.options.nodeTitle = (d: TimelineNode) =>
     `Name: ${d.label}\nCount: ${d.data.count}\nRate 5th: ${
       d.data.cRate5th
     }\nRate 95th: ${d.data.cRate95th}\nContribution Rate: ${
       d.data.contributionRate
     }\nMin Time: ${d.data.timeMin}\nMax Time: ${d.data.timeMax}\nMean Time: ${
-      d.data.timeMean
-    } (${timestampToSeconds(d.data.timeMean)} s)\nStandard Deviation: ${
+      secondsToTimestamp(timeMean(d.data))
+    } (${timeMean(d.data)} s)\nStandard Deviation: ${
       d.data.timeStdDeviation
     }\nRow: ${d.layout.row},Col: ${d.layout.column}`;
+  renderer.options.linkTitle = (d: TimelineLink) => `${d.data.name}\n${d.data.desc}`;
 
   /**
    * Creates the node and link objects.
@@ -179,13 +217,13 @@ export default function main() {
     timeline.clear();
     Object.keys(nodes).forEach((n) => {
       const node = nodes[n];
-      let start = timestampToSeconds(node.timeMean) - 2500;
+      let start = timeMean(node) - 2500;
       if (start < 0) {
         start = 0;
       }
       const timelineNode = timeline.createNode(node.name, {
-        endTime: timestampToSeconds(node.timeMean) + 2500,
-        meanTime: timestampToSeconds(node.timeMean),
+        endTime: timeMean(node) + 2500,
+        meanTime: timeMean(node),
         startTime: start,
         stdDeviation: timestampToSeconds(node.timeStdDeviation),
       });
@@ -197,12 +235,13 @@ export default function main() {
     });
     Object.keys(nodes).forEach((n) => {
       if (links[n]) {
-        Object.entries(links[n]).forEach(([otherState, count]) => {
-          timeline.createLink(
+        Object.entries(links[n]).forEach(([otherState, data]) => {
+          const timelineLink = timeline.createLink(
             nodes[n].timelineNode as TimelineNode,
             nodes[otherState].timelineNode as TimelineNode,
-            count,
+            data.count,
           );
+          timelineLink.data = data;
         });
       }
     });
@@ -221,9 +260,9 @@ export default function main() {
 
   (window as any).toggleTimelineMode = (value: boolean) => {
     if (value) {
-      renderer.options.layout = 1;
+      renderer.options.layout = 'default';
     } else {
-      renderer.options.layout = 0;
+      renderer.options.layout = 'timeline';
     }
     reRender();
   };
