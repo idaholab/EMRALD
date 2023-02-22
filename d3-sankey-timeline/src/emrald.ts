@@ -5,6 +5,7 @@ import TimelineLink from './TimelineLink';
 
 type Node = {
   count: number;
+  contributionRate: number;
   entries: {
     cnt: number;
   }[];
@@ -26,9 +27,13 @@ type Node = {
   name: string;
   timelineNode?: TimelineNode;
   timeMean: string;
-  timeMeanSum: number;
-  timeMeanN: number;
   timeStdDeviation: string;
+  combined: {
+    c: number[];
+    n: number[];
+    x: number[];
+    s: number[];
+  };
 };
 
 type Link = {
@@ -89,13 +94,23 @@ export default function main() {
           if (!nodes[path.name]) {
             nodes[path.name] = {
               ...path,
-              timeMeanSum: timestampToSeconds(path.timeMean),
-              timeMeanN: 1,
+              combined: {
+                c: [path.count],
+                n: [path.count / path.contributionRate],
+                x: [timestampToSeconds(path.timeMean)],
+                s: [timestampToSeconds(path.timeStdDeviation)],
+              },
             };
           } else {
             nodes[path.name].count += path.count;
-            nodes[path.name].timeMeanSum += timestampToSeconds(path.timeMean);
-            nodes[path.name].timeMeanN += 1;
+            nodes[path.name].combined.c.push(path.count);
+            nodes[path.name].combined.n.push(
+              path.count / path.contributionRate,
+            );
+            nodes[path.name].combined.x.push(timestampToSeconds(path.timeMean));
+            nodes[path.name].combined.s.push(
+              timestampToSeconds(path.timeStdDeviation),
+            );
           }
           path.exits.forEach((link) => {
             if (!links[path.name]) {
@@ -166,7 +181,7 @@ export default function main() {
 
   /**
    * Converts the number of seconds since the start to a timestamp string.
-   * 
+   *
    * @param seconds - The seconds to convert.
    * @returns The timestamp string.
    */
@@ -177,26 +192,70 @@ export default function main() {
   }
 
   /**
-   * Calculates the real time mean.
-   * 
+   * Calculates the combined time mean.
+   *
    * @param node - The node to calculate for.
-   * @returns The real time mean.
+   * @returns The combined time mean.
    */
-  function timeMean(node: Node) {
-    return node.timeMeanSum / node.timeMeanN;
+  function combinedMean(node: Node) {
+    let weighedSum = 0;
+    let nTotal = 0;
+    node.combined.n.forEach((n, i) => {
+      weighedSum += n * node.combined.x[i];
+      nTotal += n;
+    });
+    return weighedSum / nTotal;
+  }
+
+  /**
+   * Calculates the combined standard deviation.
+   *
+   * @param node - The node to calculate for.
+   * @returns The combined standard deviation.
+   */
+  function combinedStd(node: Node) {
+    let weighedSum = 0;
+    let nTotal = 0;
+    node.combined.n.forEach((n, i) => {
+      weighedSum += (n - 1) * node.combined.s[i] ** 2;
+      nTotal += n;
+    });
+    return weighedSum / (nTotal - 2);
+  }
+
+  /**
+   * Calculates the combined 5th & 95th count rates.
+   *
+   * @param node - The node to calculate for.
+   * @returns The combined 5th & 95th count rates.
+   */
+  function combined5th95th(node: Node) {
+    let cTotal = 0;
+    let nTotal = 0;
+    node.combined.n.forEach((n, i) => {
+      cTotal += node.combined.c[i];
+      nTotal += n;
+    });
+    const p = cTotal / nTotal;
+    const cRate5th = p - 1.96 * Math.sqrt((p * (1 - p)) / nTotal);
+    const cRate95th = p + 1.96 * Math.sqrt((p * (1 - p)) / nTotal);
+    return [cRate5th, cRate95th];
   }
 
   renderer.options.nodeTitle = (d: TimelineNode) =>
     `Name: ${d.label}\nCount: ${d.data.count}\nRate 5th: ${
-      d.data.cRate5th
-    }\nRate 95th: ${d.data.cRate95th}\nContribution Rate: ${
+      combined5th95th(d.data)[0]
+    }\nRate 95th: ${combined5th95th(d.data)[1]}\nContribution Rate: ${
       d.data.contributionRate
-    }\nMin Time: ${d.data.timeMin}\nMax Time: ${d.data.timeMax}\nMean Time: ${
-      secondsToTimestamp(timeMean(d.data))
-    } (${timeMean(d.data)} s)\nStandard Deviation: ${
-      d.data.timeStdDeviation
-    }\nRow: ${d.layout.row},Col: ${d.layout.column}`;
-  renderer.options.linkTitle = (d: TimelineLink) => `${d.data.name}\n${d.data.desc}`;
+    }\nMin Time: ${d.data.timeMin}\nMax Time: ${
+      d.data.timeMax
+    }\nMean Time: ${secondsToTimestamp(combinedMean(d.data))} (${combinedMean(
+      d.data,
+    )} s)\nStandard Deviation: ${combinedStd(d.data)}\nRow: ${
+      d.layout.row
+    },Col: ${d.layout.column}`;
+  renderer.options.linkTitle = (d: TimelineLink) =>
+    `${d.data.name}\n${d.data.desc}`;
 
   /**
    * Creates the node and link objects.
@@ -217,15 +276,15 @@ export default function main() {
     timeline.clear();
     Object.keys(nodes).forEach((n) => {
       const node = nodes[n];
-      let start = timeMean(node) - 2500;
+      let start = combinedMean(node) - 2500;
       if (start < 0) {
         start = 0;
       }
       const timelineNode = timeline.createNode(node.name, {
-        endTime: timeMean(node) + 2500,
-        meanTime: timeMean(node),
+        endTime: combinedMean(node) + 2500,
+        meanTime: combinedMean(node),
         startTime: start,
-        stdDeviation: timestampToSeconds(node.timeStdDeviation),
+        stdDeviation: combinedStd(node),
       });
       timelineNode.data = node;
       if (node.layout) {
