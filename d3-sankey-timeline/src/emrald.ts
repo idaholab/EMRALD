@@ -14,6 +14,8 @@ type Node = {
     desc: string;
     name: string;
     otherState: string;
+    evDesc: string;
+    actDesc: string;
   }[];
   layout?: {
     default: {
@@ -37,8 +39,10 @@ type Node = {
 };
 
 type Link = {
+  actDesc: string;
   count: number;
   desc: string;
+  evDesc: string;
   name: string;
 };
 
@@ -118,8 +122,10 @@ export default function main() {
             }
             if (!links[path.name][link.otherState]) {
               links[path.name][link.otherState] = {
+                actDesc: link.actDesc,
                 count: link.cnt,
                 desc: link.desc,
+                evDesc: link.evDesc,
                 name: link.name,
               };
             } else {
@@ -256,7 +262,7 @@ export default function main() {
       d.layout.row
     },Col: ${d.layout.column}`;
   renderer.options.linkTitle = (d: TimelineLink) =>
-    `${d.data.name}\n${d.data.desc}`;
+    `${d.data.name}\n${d.data.desc}\nAction Description: ${d.data.actDesc}\nEvent Description: ${d.data.evDesc}\nCount: ${d.data.count}`;
 
   /**
    * Creates the node and link objects.
