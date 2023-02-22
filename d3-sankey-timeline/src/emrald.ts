@@ -216,11 +216,12 @@ export default function main() {
   function combinedStd(node: Node) {
     let weighedSum = 0;
     let nTotal = 0;
+    let count = node.combined.n.length;
     node.combined.n.forEach((n, i) => {
       weighedSum += (n - 1) * node.combined.s[i] ** 2;
       nTotal += n;
     });
-    return weighedSum / (nTotal - 2);
+    return Math.sqrt(weighedSum / (nTotal - count));
   }
 
   /**
