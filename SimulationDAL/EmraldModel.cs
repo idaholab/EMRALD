@@ -48,7 +48,8 @@ namespace SimulationDAL
     public string rootPath = "";
 
     //public int dbID = 0;
-    public int curRunIdx = 0;
+    public int curRunIdx = 0; //current run index.
+    public int totRunsReq = 0; //total runs requested
     
     //public Dictionary<int, Formula> allFormulas = new Dictionary<int, Formula>();
     //public Diagram curDiagram { get { return _Diagram; } set { _Diagram = value; } }
@@ -266,7 +267,7 @@ namespace SimulationDAL
         if (sim3DComp != "")
         {
           Sim3DVariable simVar = (Sim3DVariable)this.allVariables.FindByName(sim3DComp);
-          EvalVarEvent sim3DEvent = new EvalVarEvent(sim3DComp, "return true;", null, simVar);
+          ExtSimEv sim3DEvent = new ExtSimEv(sim3DComp, "return true;", null, simVar, SimEventType.etCompEv);
           //sim3DEvent.AddRelatedItem(simVar.id);
           allEvents.Add(sim3DEvent);
           activeState.AddEvent(sim3DEvent, true, failAct);
@@ -427,7 +428,7 @@ namespace SimulationDAL
           Sim3DVariable simVar = (Sim3DVariable)this.allVariables.FindByName(sim3DComp);
           VariableList varList = new VariableList();
           varList.Add(simVar);
-          EvalVarEvent sim3DEvent = new EvalVarEvent(sim3DComp, "if (" + simVar.name + " > 0) return true; else return false;", varList, simVar);
+          ExtSimEv sim3DEvent = new ExtSimEv(sim3DComp, "if (" + simVar.name + " > 0) return true; else return false;", varList, simVar, SimEventType.etCompEv) ;
           //sim3DEvent.AddRelatedItem(simVar.id);
           allEvents.Add(sim3DEvent);
           activeState.AddEvent(sim3DEvent, true, failAct);
@@ -605,10 +606,10 @@ namespace SimulationDAL
           VariableList varList = new VariableList();
           varList.Add(simVar);
 
-          EvalVarEvent sim3DEvent = (EvalVarEvent)allEvents.FindByName(sim3DComp, false);
+          ExtSimEv sim3DEvent = (ExtSimEv)allEvents.FindByName(sim3DComp, false);
           if (sim3DEvent == null)
           {
-            sim3DEvent = new EvalVarEvent(sim3DComp, "if (" + simVar.name + " > 0) return true; else return false;", varList, simVar);
+            sim3DEvent = new ExtSimEv(sim3DComp, "if (" + simVar.name + " > 0) return true; else return false;", varList, simVar, SimEventType.etCompEv);
             allEvents.Add(sim3DEvent);
           }
           activeState.AddEvent(sim3DEvent, true, failAct);

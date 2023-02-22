@@ -7,7 +7,9 @@ using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using MathNet.Numerics.Statistics;
-
+using SimulationDAL;
+using System.Xml.Linq;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace SimulationEngine
 {
@@ -52,6 +54,17 @@ namespace SimulationEngine
       }
 
       this.CalcStats(keyStateCnt);
+    }
+
+    /// <summary>
+    /// update this key state reault item with the values from that state in the path list
+    /// </summary>
+    public void AssignResults()
+    {
+      if (pathsLookup.ContainsKey(this.name))
+      {
+        base.ShallowCopy(pathsLookup[this.name]);
+      }
     }
 
   }
@@ -99,8 +112,6 @@ namespace SimulationEngine
     public Dictionary<string, EnterExitCause> enterDict { get; set; } = new Dictionary<string, EnterExitCause>(); //key will be from state, event, and action 
     [JsonIgnore]
     public Dictionary<string, EnterExitCause> exitDict { get; set; } = new Dictionary<string, EnterExitCause>(); //key will be from state, event, and action
-    public EnterExitCause[] entries { get { return enterDict.Values.ToArray(); } }
-    public EnterExitCause[] exits { get { return exitDict.Values.ToArray(); } }
     protected TimeSpan _totalTime = TimeSpan.Zero;
     private double _extraDays = 0.0;
     protected List<TimeSpan> _times = new List<TimeSpan>();
@@ -203,38 +214,77 @@ namespace SimulationEngine
            
       foreach (var item in include.enterDict.Values)
       {
-        if (!this.enterDict.TryGetValue(item.desc, out curCause))
-          this.enterDict.Add(item.desc, item);
+        if (!this.enterDict.TryGetValue(item.key, out curCause))
+          this.enterDict.Add(item.key, item);
         else
           curCause.cnt += item.cnt;
       }
 
       foreach (var item in include.exitDict.Values)
       {
-        if (!this.exitDict.TryGetValue(item.desc, out curCause))
-          this.exitDict.Add(item.desc, item);
+        if (!this.exitDict.TryGetValue(item.key, out curCause))
+          this.exitDict.Add(item.key, item);
         else
         {
           curCause.cnt += item.cnt;
         }
       }
+
+      //add the variables
+      foreach (var v in include.watchVariables)
+      {
+        this.watchVariables[v.Key].Add(v.Value[0]);
+      }
+    }
+
+    public void ShallowCopy(ResultStateBase toCopy)
+    {
+      watchVariables = toCopy.watchVariables;
+      enterDict = toCopy.enterDict;
+      exitDict = toCopy.exitDict;
+      _totalTime = toCopy._totalTime;
+      _extraDays = toCopy._extraDays;
+      _times= toCopy._times;
+      _count= toCopy._count;
+      _contributionCnt = toCopy._contributionCnt;
+      _rate= toCopy._rate;
+      _rate5th= toCopy._rate5th;  
+      _rate95th= toCopy._rate95th;
+      _timeMin= toCopy._timeMin;  
+      _timeMax= toCopy._timeMax;
     }
   }
 
   public class EnterExitCause
   {
     [JsonIgnore]
+    public string key = "";
     public string desc = ""; //Enter key of -  prevState.name + ", " + eventName + ", " + actionName;
                              //Enter key of -  eventName + ", " + actionName + ", " + nextState.name;
     public string name = ""; //eventName + " -> " + actionName
+    public string evDesc = "";
+    public string actDesc = "";
     public string otherState = ""; //too or from state 
     public int cnt = 0; //number of times this cause leads to parent state.
 
-    public EnterExitCause(string from, string name, string desc = "")
+    public EnterExitCause(string otherState, SimulationDAL.Event ev, SimulationDAL.Action act, bool from)
     {
-      this.name = name;
-      this.desc = desc;
-      this.otherState = from;
+      string evName = "Immediate Action";
+      if (ev!=null)
+      {
+        evName = ev.name;
+        this.evDesc = ev.desc;
+      }
+      
+      this.name = evName + " & " + act.name;
+      this.desc = "Event [" + evName + "] occured and caused the action - " + act.name;
+      
+      this.actDesc = act.desc;
+      this.otherState = otherState;
+      if(from)
+        this.key = otherState + "->" + this.name;
+      else
+        this.key = this.name + "->" + otherState;
     }
   }
 

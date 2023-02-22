@@ -1,4 +1,4 @@
 Simulation = DistEvTest1
 Runtime = 00.00:00:02
 Runs = 100000 of 100000
-Event Occurred 99858 times, Rate =0.99858, MeanTime = 27.05:49:05 +/- 32.10:24:47.87
+Event Occurred 99858 times, Rate =0.99858, MeanTime = 27.05:49:05 +/- 45.20:50:33.44

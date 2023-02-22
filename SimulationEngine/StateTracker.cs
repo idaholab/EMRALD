@@ -11,6 +11,8 @@ using MultiKeyDict;
 using SimulationDAL;
 using XmppMessageServer;
 using MessageDefLib;
+using Matrix.Xmpp.XHtmlIM;
+using Newtonsoft.Json;
 
 namespace SimulationTracking
 {
@@ -73,7 +75,7 @@ namespace SimulationTracking
     private CurrentStates curStates;
     private Dictionary<EventStatesAndActions, ConditionMoveEvent>[] evLists; //lists to hold the different kind of condition, array by eventtype
     private Dictionary<int, List<EventStatesAndActions>>[] stateRefLookups; //lookup keys for all condition events from the same state.
-    private Dictionary<ConditionMoveEvent, bool> initialCondEvalDone; //make sure all events are returned at least after fist added even if no related items have changed.
+    private Dictionary<ConditionMoveEvent, bool> initialCondEvalNotDone; //make sure all events are returned at least after fist added even if no related items have changed.
 
 
 
@@ -84,7 +86,7 @@ namespace SimulationTracking
       int cnt = (int)Enum.GetValues(typeof(EnEventType)).Cast<EnEventType>().Last() + 1;
       evLists = new Dictionary<EventStatesAndActions, ConditionMoveEvent>[cnt];
       stateRefLookups = new Dictionary<int, List<EventStatesAndActions>>[cnt];
-      initialCondEvalDone = new Dictionary<ConditionMoveEvent, bool>();
+      initialCondEvalNotDone = new Dictionary<ConditionMoveEvent, bool>();
       foreach (EnEventType itemType in Enum.GetValues(typeof(EnEventType)))
       {
 
@@ -104,6 +106,20 @@ namespace SimulationTracking
     public void Clear()
     {
       this.curStates.Clear();
+      initialCondEvalNotDone.Clear();
+      foreach (EnEventType itemType in Enum.GetValues(typeof(EnEventType)))
+      {
+
+        if (evLists[(int)itemType] != null)
+        {
+          evLists[(int)itemType].Clear();          
+        }
+        if (stateRefLookups[(int)itemType] != null)
+        {
+          stateRefLookups[(int)itemType].Clear();
+        }
+      }
+
     }
 
     public void AddConditionEvent(ConditionMoveEvent addEv)
@@ -114,7 +130,7 @@ namespace SimulationTracking
       }
 
       evLists[(int)addEv.eventData.evType].Add(addEv.eventStateActions, addEv);
-      initialCondEvalDone.Add(addEv, false);
+      initialCondEvalNotDone.Add(addEv, true);
 
       List<EventStatesAndActions> refs;
       foreach (var stID in addEv.eventStateActions.statesAndActions)
@@ -161,7 +177,7 @@ namespace SimulationTracking
       return retBool;
     }
 
-    public List<ConditionMoveEvent> GetMatchedCondMoveEvents(ChangedIDs changedItems, /*Dictionary<int, SimEventType> lastEvTypes,*/ TimeSpan curTime, TimeSpan start3DTime, TimeSpan nextEvTime, int runIdx)
+    public List<ConditionMoveEvent> GetMatchedCondMoveEvents(ChangedIDs changedItems, Dictionary<string, SimEventType> lastExtEvTypes, TimeSpan curTime, TimeSpan start3DTime, TimeSpan nextEvTime, int runIdx)
     {
       List<ConditionMoveEvent> retList = new List<ConditionMoveEvent>();
       if (curStates.Count == 0)
@@ -182,8 +198,8 @@ namespace SimulationTracking
             switch (item.eventData.evType)
             {
               case EnEventType.et3dSimEv:
-                curIDType = EnModifiableTypes.mtVar;
-                //otherData = lastEvTypes;
+                curIDType = EnModifiableTypes.mtExtEv;
+                otherData = lastExtEvTypes;
                 break;
 
               case EnEventType.etVarCond:
@@ -203,33 +219,57 @@ namespace SimulationTracking
                 return retList;
             }
 
-            if (initialCondEvalDone.ContainsKey(item)) //initialCondEvalDone[item] == false) //make sure each event is evaluated to start off with, then only if the related items change.
+            if (initialCondEvalNotDone.ContainsKey(item)) //make sure each event is evaluated to start off with, then only if the related items change.
             {
-              if ((curIDType == EnModifiableTypes.mtVar) &&
-                  (item.eventData as CondBasedEvent).EventTriggered(curStatesBS, otherData, curTime, start3DTime, nextEvTime, runIdx)) //see if the code is triggered
+              switch (curIDType)
               {
-                retList.Add(item);
-              }
-              else if ((curIDType == EnModifiableTypes.mtState) &&
-                       (curStatesBS.HasCommonBits(item.eventData.relatedIDsBitSet) || ((item.eventData is StateCngEvent) && !(item.eventData as StateCngEvent).ifInState)) && //in cur states or not wanting in current states
-                       (item.eventData as CondBasedEvent).EventTriggered(curStatesBS, otherData, curTime, start3DTime, nextEvTime, runIdx))
-              {
-                retList.Add(item);
-              }
-              initialCondEvalDone.Remove(item);
+                //only evaluate these event types when initially entering a state
+                case EnModifiableTypes.mtExtEv:
+                case EnModifiableTypes.mtVar: //don't check if there are related IDs for these
+                  if ((item.eventData as CondBasedEvent).EventTriggered(curStatesBS, otherData, curTime, start3DTime, nextEvTime, runIdx)) //see if the code is triggered)
+                    retList.Add(item);
+                  break;
+                case EnModifiableTypes.mtState:
+                  if ((curStatesBS.HasCommonBits(item.eventData.relatedIDsBitSet) || ((item.eventData is StateCngEvent) && !(item.eventData as StateCngEvent).ifInState)) && //in cur states or not wanting in current states
+                      (item.eventData as CondBasedEvent).EventTriggered(curStatesBS, otherData, curTime, start3DTime, nextEvTime, runIdx))
+                    retList.Add(item);
+                  break;
+                default:
+                  break;
+              }              
+              initialCondEvalNotDone.Remove(item);
             }
+            else
+            {
+              switch (curIDType)
+              {
+                //only evaluate these event types when initially entering a state
+                case EnModifiableTypes.mtExtEv:
+                  if((changedItems.HasApplicableItems(curIDType, item.eventData.relatedIDsBitSet)) && 
+                     ((item.eventData as CondBasedEvent).EventTriggered(curStatesBS, otherData, curTime, start3DTime, nextEvTime, runIdx)))
+                    retList.Add(item);
+                  break;
 
-            else if ((item.eventData.relatedIDsBitSet != null) && (changedItems.HasApplicableItems(curIDType, item.eventData.relatedIDsBitSet)) &&
-               ((item.eventData as CondBasedEvent).EventTriggered(curStatesBS, otherData, curTime, start3DTime, nextEvTime, runIdx)))
-            {
-              retList.Add(item);
+                default:
+                  if ((item.eventData.relatedIDsBitSet != null) && (changedItems.HasApplicableItems(curIDType, item.eventData.relatedIDsBitSet)) &&
+                      ((item.eventData as CondBasedEvent).EventTriggered(curStatesBS, otherData, curTime, start3DTime, nextEvTime, runIdx)))
+                    retList.Add(item);
+                  break;
+              }
             }
+            //after first evaluation always check applicable items have changed for all events
+            //else if ((item.eventData.relatedIDsBitSet != null) && (changedItems.HasApplicableItems(curIDType, item.eventData.relatedIDsBitSet)) &&
+            //   ((item.eventData as CondBasedEvent).EventTriggered(curStatesBS, otherData, curTime, start3DTime, nextEvTime, runIdx)))
+            //{
+            //  retList.Add(item);
+            //}
+                  
           }
         }
       }
 
       //clear the initial eval list so we don't check them again and we have an empty list for the next round.
-      initialCondEvalDone.Clear();
+      initialCondEvalNotDone.Clear();
 
       return retList;
     }
@@ -322,19 +362,29 @@ namespace SimulationTracking
 
     public void ExternalEvOccurred(String evDispName, SimEvent evData, EmraldModel allLists, TimeSpan curTime, TimeSpan simExtStartTime)
     {
-      SimVariable setVar = allLists.allVariables.FindBySim3dId(evData.itemData.nameId);
-      VarValueAct act = new VarValueAct(evData.itemData.nameId + "_3D_Assign", setVar, "return " + evData.itemData.value + ";", typeof(double), null);
-      ActionList actList = new ActionList();
-      actList.Add(act);
-      Event nowEv = allLists.allEvents.FindByName("ExtSimEv_", false);
-      if (nowEv == null)
+      if (evData.evType == SimEventType.etCompEv)
       {
-        nowEv = new ExtSimEvent("Now");
-      }
-      EventStatesAndActions key = new EventStatesAndActions(nowEv.id, 0, actList);
+        SimVariable setVar = allLists.allVariables.FindBySim3dId(evData.itemData.nameId);
+        VarValueAct act = new VarValueAct(evData.itemData.nameId + "_3D_Assign", setVar, "return " + evData.itemData.value + ";", typeof(double), null);
+        ActionList actList = new ActionList();
+        actList.Add(act);
+        Event nowEv = allLists.allEvents.FindByName("ExtSimEv_", false);
+        if (nowEv == null)
+        {
+          nowEv = new ExtSimEventPlaceholder("Now");
+        }
+        EventStatesAndActions key = new EventStatesAndActions(nowEv.id, 0, actList);
 
-      TimeMoveEvent extEv = new TimeMoveEvent(evDispName, key, nowEv, curTime - simExtStartTime, simExtStartTime); //FromMilliseconds just in case the curTime is the same as the RevetToTime
-      poppedList.Add(extEv);
+        TimeMoveEvent extEv = new TimeMoveEvent(evDispName, key, nowEv, curTime - simExtStartTime, simExtStartTime); //FromMilliseconds just in case the curTime is the same as the RevetToTime
+        poppedList.Add(extEv);
+      }
+      else
+      {
+        Event nowEv = new ExtSimEventPlaceholder("Now");
+        EventStatesAndActions key = new EventStatesAndActions(nowEv.id, 0, new ActionList());
+        TimeMoveEvent extEv = new TimeMoveEvent(evDispName, key, nowEv, curTime - simExtStartTime, simExtStartTime);
+        AddTimedEvent(extEv);
+      }
 
     }
 
@@ -580,388 +630,6 @@ namespace SimulationTracking
     }
   }
 
-  public class StatePath
-  {
-    public State state;
-    public List<int> path;
-    public List<TimeSpan> times;
-    public List<string> eventNames;
-    public List<string> actionNames;
-
-    public StatePath(State inState, List<int> inPath, List<TimeSpan> inTimes, List<string> eventName, List<string> actionName)
-    {
-      this.state = inState;
-      this.path = inPath;
-      this.times = inTimes;
-      this.eventNames = eventName;
-      this.actionNames = actionName;
-    }
-
-    public StatePath(StatePath toCopy)
-    {
-      this.state = toCopy.state;
-      this.path = toCopy.path;
-      this.times = toCopy.times;
-      this.eventNames = toCopy.eventNames;
-      this.actionNames = toCopy.actionNames;
-    }
-  }
-
-  public class RemovedStateInfo
-  {
-    public TimeSpan time;
-    public StatePath statePath;
-
-    public RemovedStateInfo(TimeSpan inTime, StatePath inStatePath)
-    {
-      this.time = inTime;
-      this.statePath = inStatePath;
-    }
-
-    public RemovedStateInfo(RemovedStateInfo toCopy, bool fullCopy = false)
-    {
-      this.time = toCopy.time;
-      if (fullCopy)
-        this.statePath = new StatePath(toCopy.statePath);
-      else
-        this.statePath = toCopy.statePath;
-    }
-
-  }
-
-  /// <summary>
-  /// Dictionary of current states at any given point in the simulation
-  /// </summary>
-  public class CurrentStates : Dictionary<int, StatePath>
-  {
-    private NLog.Logger logger = NLog.LogManager.GetLogger("logfile");
-    private Dictionary<int, RemovedStateInfo> removedItems = new Dictionary<int, RemovedStateInfo>();
-
-    private MyBitArray _bitMap = new MyBitArray(100, false);
-    public MyBitArray bitMap { get { return _bitMap; } }
-    //public bool trackStateMovement = true;
-
-    public void Clear()
-    {
-      base.Clear();
-      this._bitMap = new MyBitArray(_bitMap.Length);
-      removedItems.Clear();
-    }
-
-    public TimeSpan RemoveState(int stateID, TimeSpan curTime)
-    {
-      TimeSpan timeInIt = new TimeSpan();
-      StatePath curStatePath;
-      if (this.TryGetValue(stateID, out curStatePath))
-      {
-        //keep a copy of the state/path so we can copy the path if an added item came from this state
-        if (removedItems.ContainsKey(stateID))
-        {
-          removedItems.Remove(stateID);
-        }
-
-        removedItems.Add(stateID, new RemovedStateInfo(curTime, curStatePath));
-        timeInIt = curTime - this[stateID].times.Last();
-        this.Remove(stateID);
-      }
-
-      _bitMap.Set(stateID, false);
-      return timeInIt;
-    }
-
-    public TimeSpan CurTimeInState(int stateID, TimeSpan curTIme)
-    {
-      TimeSpan timeInIt = new TimeSpan();
-      StatePath curStatePath;
-      if (this.TryGetValue(stateID, out curStatePath))
-      {
-        this.Remove(stateID);
-      }
-
-      return timeInIt;
-    }
-
-    ////public void SaveStateQue(Dictionary<int, RemovedStateInfo> removedItems, MyBitArray curStates)
-    //public void SaveCurrent(TimeStateVariable curSave)
-    //{
-    //  curSave.SaveStateQue(this, removedItems, _bitMap);
-    //}
-
-    //public void RevertToGivenTime(TimeStateVariable saved)
-    //{
-    //  this.Clear();
-    //  foreach (var st in saved.curStates)
-    //  {
-    //    this.Add(st.Key, new StatePath(st.Value));
-    //  }
-
-    //  //this.removedItems.Clear();
-    //  //foreach (var st in saved.removedItems)
-    //  //{
-    //  //  this.removedItems.Add(st.Key, new RemovedStateInfo(st.Value));
-    //  //}
-
-    //  this._bitMap = new MyStuff.Collections.MyBitArray(saved.curStatesBS);
-    //}
-
-    public void RevertToGivenTime(TimeSpan forTime, ConditionEventLists condEvs) //returns states put back in CurrentState list
-    {
-      List<int> remList = new List<int>();
-      foreach (var curState in this.Values)
-      {
-        int idx = curState.times.Count - 1;
-        if (curState.times[idx] > forTime)
-        {
-          condEvs.RemoveMatchingStateItems(curState.state.id);
-          remList.Add(curState.state.id);
-        }
-      }
-
-      //remove all the items from the list
-      foreach (var id in remList)
-      {
-        this.Remove(id);
-        _bitMap.Set(id, false);
-      }
-
-      List<RemovedStateInfo> timeSorted = new List<RemovedStateInfo>();
-      timeSorted = removedItems.Values.ToList();
-      timeSorted.Sort((ts1, ts2) => TimeSpan.Compare(ts1.time, ts2.time));
-
-      remList.Clear();
-      int i = timeSorted.Count - 1;
-      while ((i >= 0) && (timeSorted[i].time > forTime)) //added time is greater than 
-      {
-        var remState = timeSorted[i];
-        if (remState.statePath.times[remState.statePath.times.Count - 1] <= forTime)//state was added after the time we are moving back to.
-        {
-          State curState = remState.statePath.state;
-          //move back to the CurrentStates and put items back in condEvList.
-          this.Add(curState.id, remState.statePath);
-          _bitMap.Set(curState.id, true);
-          remList.Add(curState.id);
-
-          //add all the events to either the TimeEventQue or the CondEventList
-          for (int idx = 0; idx < curState.eventCnt; ++idx)
-          {
-            Event curEv = curState.GetEventIdx(idx);
-
-            if (Constants.CondEventTypes.Contains(curEv.evType))
-            {
-              //Condition event  
-              ConditionMoveEvent addCondEv = new ConditionMoveEvent(curEv.name, new EventStatesAndActions(curEv.id, curState.id, curState.GetEvActionsIdx(idx)), curEv);
-              //add it to the condition list, if the condition is already met, it will be handled in the loop.
-              condEvs.AddConditionEvent(addCondEv);
-            }
-            //else - Time based Event time events from the states will be put back in the list
-          }
-        }
-        --i;
-      }
-
-      foreach (int id in remList)
-      {
-        removedItems.Remove(id);
-        _bitMap.Set(id, true);
-      }
-    }
-
-    public void Add(State toState, int fromState, TimeSpan curTime, string actName, string evName)
-    {
-      logger.Info("EnterState: " + toState.name + ", time: " + curTime.ToString(@"d\.hh\:mm\:ss\.f") + ", Cause Event: " + evName + ", fromState-Action: " + actName);
-
-      if (this.ContainsKey(toState.id)) //already in the state so don't add, can't be in it twice
-      {
-        return;
-      }
-
-      //get the parent diagram and make sure if it is a single state diagram then other ones are not in the current list already.
-      if (toState.diagram is EvalDiagram)
-      {
-        State inState = toState.diagram.HasAStateInCurrentStates(_bitMap);
-        if (inState != null)
-#if DEBUG
-          throw new Exception("Already in a state for the diagram " + toState.diagram.name + " can't add go into another one.");
-        //return;
-#else
-          return;
-#endif
-      }
-
-      List<int> addList = new List<int>();
-      List<TimeSpan> addTimes = new List<TimeSpan>();
-      List<string> eventNames = new List<string>();
-      List<string> actionNames = new List<string>();
-
-      //if (trackStateMovement)
-      //{
-      StatePath curStatePath;
-      if ((fromState != -1) && (this.TryGetValue(fromState, out curStatePath)))
-      {
-        addList.AddRange(curStatePath.path);
-        addTimes.AddRange(curStatePath.times);
-        eventNames.AddRange(curStatePath.eventNames);
-        actionNames.AddRange(curStatePath.actionNames);
-        addList.Add(fromState);
-        addTimes.Add(curTime);
-        eventNames.Add(actName);
-        actionNames.Add(evName);
-      }
-      else
-      {
-        if (fromState != -1)
-        {
-          addList.AddRange(removedItems[fromState].statePath.path);
-          addTimes.AddRange(removedItems[fromState].statePath.times);
-          eventNames.AddRange(removedItems[fromState].statePath.eventNames);
-          actionNames.AddRange(removedItems[fromState].statePath.actionNames);
-        }
-
-        addList.Add(fromState);
-        addTimes.Add(curTime);
-        eventNames.Add(actName);
-        actionNames.Add(evName);
-      }
-      //}      
-      this.Add(toState.id, new StatePath(toState, addList, addTimes, eventNames, actionNames));
-
-      if (toState.id >= _bitMap.Length)
-        _bitMap.Length = toState.id + 50;
-
-      _bitMap.Set(toState.id, true);
-    }
-
-    public List<int> GetFinalStateList()
-    {
-      List<int> finalStates = new List<int>();
-
-      foreach (StatePath curState in this.Values)
-      {
-        finalStates.Add(curState.state.id);
-      }
-
-      return finalStates;
-    }
-
-    public void GetKeyStatePaths(AllStates allStates = null, Dictionary<string, SimulationEngine.KeyStateResult> keyResMap = null, Dictionary<string, SimulationEngine.ResultState> otherResMap = null)
-    {
-      foreach (StatePath curStatePath in this.Values)
-      {
-        bool isKeyPath = (curStatePath.state.stateType == EnStateType.stKeyState);
-
-        //get the paths for both key states and standard states
-        if (((curStatePath.state.stateType == EnStateType.stKeyState) && (keyResMap != null)) ||
-           ((curStatePath.state.stateType == EnStateType.stStandard) && (otherResMap != null)))
-        {
-          //make a new results item which will capture any looping items.
-          Dictionary<string, SimulationEngine.ResultState> curResDict = new Dictionary<string, SimulationEngine.ResultState>();
-
-          State curState = null;
-          State prevState = null;
-          State nextState = null;
-
-          //bellow items declared here for efficiency
-          SimulationEngine.ResultState curResState = null;
-          SimulationEngine.EnterExitCause curCause = null;
-          SimulationEngine.ResultState updateItem = null;
-          string causeKey = "";
-          string evName = "";
-          string actName = "";
-
-          //this runs from the first to last item
-          for (int i = 0; i <= curStatePath.path.Count - 1; i++)
-          {
-            if (nextState != null)
-              curState = nextState;
-            else
-              curState = allStates[curStatePath.path[i+1]];
-
-            if (i < (curStatePath.path.Count - 2))
-              nextState = allStates[curStatePath.path[i + 2]];
-            else if (i == (curStatePath.path.Count - 2))
-              nextState = curStatePath.state;
-            else
-              nextState = null;
-
-
-            //see if the item is already in the current result dictionary
-            if (!curResDict.TryGetValue(curState.name, out curResState))
-            {
-              curResState = new SimulationEngine.ResultState(curState.name, isKeyPath);
-              curResDict.Add(curResState.name, curResState);
-            }
-
-            curResState.AddTime(curStatePath.times[i]);
-            //add where came from. if not at the beginning
-            if (prevState != null)
-            {
-              evName = curStatePath.eventNames[i];
-              actName = curStatePath.actionNames[i];
-              causeKey = prevState.name + ", " + evName + ", " + actName;
-              if (!curResState.enterDict.TryGetValue(causeKey, out curCause))
-              {
-                curCause = new SimulationEngine.EnterExitCause(prevState.name, evName + " -> " + actName, causeKey);
-                curResState.enterDict.Add(curCause.desc, curCause);
-              }
-
-              curCause.cnt++;
-            }
-
-            //add where going to, if not at the end
-            if (nextState != null)
-            {
-              evName = curStatePath.eventNames[i+1];
-              actName = curStatePath.actionNames[i+1];
-              causeKey = evName + ", " + actName + ", " + nextState.name;
-              if (!curResState.exitDict.TryGetValue(causeKey, out curCause))
-              {
-                curCause = new SimulationEngine.EnterExitCause(nextState.name, evName + " -> " + actName, causeKey);
-                curResState.exitDict.Add(curCause.desc, curCause);
-              }
-
-              curCause.cnt++;
-            }
-
-            //prep for the next round
-            prevState = curState;
-
-          }
-
-          //collapse all the stats for this path 
-          foreach (var item in curResDict.Values)
-            item.Collapse();
-
-          //add cur run to either other results map or the key state results map
-          Dictionary<string, SimulationEngine.ResultState> addToRes = otherResMap;
-          if (curStatePath.state.stateType == EnStateType.stKeyState)
-          {
-            if (!keyResMap.ContainsKey(curStatePath.state.name))
-              keyResMap.Add(curStatePath.state.name, new SimulationEngine.KeyStateResult(curStatePath.state.name));
-
-            addToRes = keyResMap[curStatePath.state.name].pathsLookup;
-            //add the time for the key state overall result
-            keyResMap[curStatePath.state.name].AddTime(curStatePath.times[curStatePath.times.Count-1]);
-          }
-
-          foreach(var item in curResDict.Values)
-          {
-            if (!addToRes.TryGetValue(item.name, out updateItem))
-              addToRes.Add(item.name, item);
-            else
-              updateItem.Combine(item);
-
-          }
-        }
-      }
-    }
-  }
-
-
-
-
-
-
-
   /// <summary>
   /// Main solve engine object
   /// </summary>
@@ -1001,15 +669,17 @@ namespace SimulationTracking
     /// </summary>
     private EMRALDMsgServer sim3DServer;
     //todo store these in ExternalSim object and adjust code for multiple simulations
-    private bool sim3DRunning = false;
-    private bool sim3DStopping = false;
-    private bool sim3DStarting = false;
+    private bool extSimRunning = false;
+    private bool emraldStopping3D = false;
+    private bool extSimStarting = false;
+    private List<string> stopped3DSims = new List<string>();
     private bool inProcessingLoop = false;
     private TimeSpan sim3DStartTime;
     //private double sim3DFameRate;
     //private string sim3dPath;
     //private HoudiniSimClient.TLogEvCallBack p_logEvCallBack;
     private bool terminated = false;
+    private TimeSpan settingsMaxTime;
     /// <summary>
     /// max time left
     /// </summary>
@@ -1021,6 +691,8 @@ namespace SimulationTracking
     private bool tempStateCngCheck = false; //see if there was a state change because of an external sim message 
     //public TLogEvCallBack logFunc = null;
     public bool keepExtSimEvs = true;
+    //keep track of last external events so that we can trigger internal events if needed
+    Dictionary<string, SimEventType> lastExtEvTypes = new Dictionary<string, SimEventType>();
     //private bool debugLog = false;//todo remove
     //private TimeStateVariable toSave = null;
     //private TimeSpan sim3DStartTime;
@@ -1038,17 +710,38 @@ namespace SimulationTracking
       EmraldModel inLists,
       TimeSpan endTime, //max time allowed for events to occur
       double in3dFrameRate,//todo remove obsolete
-      EMRALDMsgServer inSim3DServer
+      EMRALDMsgServer inSim3DServer,
+      int desiredRuns
       )
     {
       this.allLists = inLists;
-      this.maxTime = endTime;
-      this.curTime = new TimeSpan();
+      this.settingsMaxTime = endTime;
       this.sim3DServer = inSim3DServer;
+      this.allLists.totRunsReq = desiredRuns;
       condEvList = new ConditionEventLists(curStates);
-      SingleNextIDs.Instance.ResetTimerIDs();
 
       changedItems = new ChangedIDs(allLists.allVariables.maxID, allLists.allDiagrams.maxID, allLists.allStates.Keys.Max());
+    }
+
+    public void Reset()
+    {
+      this.timeEvList.Clear();
+      this.processEventList.Clear();
+      this.nextStateQue.Clear();
+      this.lastExtEvTypes.Clear();
+      this.changedItems.Clear();
+      this.curStates.Clear();
+      this.condEvList.Clear();
+      this.stopped3DSims.Clear();
+      this.curTime = new TimeSpan();
+
+      //TODO : 
+      //this.sim3D.SendAction(Reset Sim
+      this.extSimRunning = false;
+      this.extSimStarting = false;
+      this.inProcessingLoop = false;
+      this.terminated = false;
+      this.maxTime = settingsMaxTime;
 
       SimVariable tempVar;
       tempVar = allLists.allVariables.FindByName("CurTime", false);
@@ -1071,43 +764,15 @@ namespace SimulationTracking
         tempVar.SetValue(0.0);
       }
 
+      SingleNextIDs.Instance.ResetTimerIDs();      
+      
       allLists.allEvents.Reset();
-
-      //tempVar = allLists.allVariables.FindByName("Sim3DRunning");
-      //if (tempVar == null)
-      //{
-      //  allLists.allVariables.AddVar(new SimVariable("Sim3DRunning", EnVarType.gtGlobal, 0.0));
-      //}
-      //else
-      //{
-      //  tempVar.value = 0.0;
-      //}
-
-
-      //set up the compOKList bitset to hold a bit for all components 
-      //compOKList = new MyBitArray(inCompData.Keys.Max() + 1);
-    }
-
-    public void Reset()
-    {
-      this.timeEvList.Clear();
-      this.processEventList.Clear();
-      this.nextStateQue.Clear();
-      //this.last3DVarEvType.Clear();
-      this.changedItems.Clear();
-      this.curStates.Clear();
-      this.condEvList.Clear();
-      //TODO : 
-      //this.sim3D.SendAction(Reset Sim
-      this.sim3DRunning = false;
-      this.sim3DStarting = false;
-      this.inProcessingLoop = false;
-      this.terminated = false;
     }
 
 
     public List<int> StartTracker()
     {
+      this.Reset();
       terminated = false;
       this.allLists.curRunIdx++;
 
@@ -1127,13 +792,26 @@ namespace SimulationTracking
         return curStates.GetFinalStateList();
       }
 
-
+      bool ranXMPPSim = false;
       //in case a 3d simulations starts up in the beginning
-      while ((this.sim3DStopping || this.sim3DRunning || this.sim3DStarting) && (this.sim3DServer.ResourceCnt() > 0))
+      while ((this.emraldStopping3D || this.extSimRunning || this.extSimStarting) && (this.sim3DServer.ResourceCnt() > 0))
       {
         //Application.DoEvents();
+        ranXMPPSim = true;
         System.Threading.Thread.Sleep(10);
       }
+
+      if (ranXMPPSim) //for all the XMPP simulations that ran send a final continue now that all other processing is done
+      {
+        TMsgWrapper msg2 = new TMsgWrapper(MessageType.mtSimAction, "Continue", curTime, "Continue External Sim");
+        foreach (var name in stopped3DSims)
+        {
+          msg2.simAction = new SimAction(SimActionType.atContinue);
+          sim3DServer.SendMessage(msg2, name);
+        }
+
+      }
+
 
       //do the process while there are still time events in the que and a terminal state is not met
       while (timeEvList.cnt > 0)
@@ -1147,13 +825,28 @@ namespace SimulationTracking
             return curStates.GetFinalStateList();
           }
 
-          while (this.sim3DStopping || this.sim3DStarting || this.sim3DRunning || inProcessingLoop)
+          ranXMPPSim = false;
+          while (this.emraldStopping3D || this.extSimStarting || this.extSimRunning || inProcessingLoop)
           {
             //Application.DoEvents();
+            ranXMPPSim = true;
             System.Threading.Thread.Sleep(10);
           }
         }
       }
+
+      if (ranXMPPSim) //for all the XMPP simulations that ran send a final continue now that all other processing is done
+      {
+        TMsgWrapper msg2 = new TMsgWrapper(MessageType.mtSimAction, "Continue", curTime, "Current EMRALD run done, continue ext Sim");
+        foreach (var name in stopped3DSims)
+        {
+          msg2.simAction = new SimAction(SimActionType.atContinue);
+
+          sim3DServer.SendMessage(msg2, name);
+        }
+
+      }
+
       //MessageBox.Show("end sim");
       //logFunc("end sim" + Environment.NewLine);
       List<int> finalStates = curStates.GetFinalStateList();
@@ -1173,6 +866,18 @@ namespace SimulationTracking
 
       return finalStates;
     }
+
+    public void SendExtSimTerminate()
+    {
+      //send message to all ext sims to terminate
+      TMsgWrapper msg = new TMsgWrapper(MessageType.mtSimAction, "Done", curTime, "Terminating all");
+      msg.simAction = new SimAction(SimActionType.atTerminate);
+      msg.simAction.status = StatusType.stDone;
+      foreach (var name in stopped3DSims)
+      {
+        sim3DServer.SendMessage(msg, name);
+      }
+    }
     /// <summary>
     /// An external simulation event occurred so process the event
     /// </summary>
@@ -1183,74 +888,118 @@ namespace SimulationTracking
 
       TimeSpan shiftTimeTo = new TimeSpan();
       bool sendTimers = false;
+      
       int i = 0;
+      //clear the tracking of last events recieved
+      lastExtEvTypes.Clear();
+      bool doProcessLoop = false;
+      
       foreach (var ev in evData.simEvents)
       {
         tempStateCngCheck = false;
-        //etWaterContact=0, etWaterSubmerge=1, etTimer=2, etSubSim=3, etSimStarted=4, etEndSim=5
-        switch (ev.evType)
+        string lastEvKey = fromClient + "-" + ev.evType.ToString();
+        if (ev.itemData != null)
         {
-          case SimEventType.etEndSim:  //stop the simulation
-            this.sim3DStarting = false;
-            this.sim3DStopping = false;
-            this.sim3DRunning = false;
-            return;
+          lastEvKey += "_" + ev.itemData.nameId;
+          if (ev.itemData.value != null)
+          {
+            lastEvKey += "_" + ev.itemData.value.ToString();
+          }
+        }
 
-          case SimEventType.etTimer: // if the event is a timer then just pop the next time event and let state tracker continue.
-            if (this.sim3DStopping || !this.sim3DRunning)
-            {
-              //stop3DInEv = false;
+        if (lastExtEvTypes.ContainsKey(lastEvKey))
+        {
+          logger.Info("Duplicate external event - " + JsonConvert.SerializeObject(ev));
+        }
+        else
+        {
+          //etWaterContact=0, etWaterSubmerge=1, etTimer=2, etSubSim=3, etSimStarted=4, etEndSim=5
+          switch (ev.evType)
+          {
+            case SimEventType.etEndSim:  //stop the simulation
+              lastExtEvTypes.Add(lastEvKey, ev.evType);
+              ScanCondEvList();
+              this.timeEvList.ExternalEvOccurred(evData.desc + i.ToString(), ev, allLists, curTime, sim3DStartTime);
+              stopped3DSims.Add(fromClient);
+              this.extSimStarting = false;
+              this.emraldStopping3D = false; //Stopping call from EMRALD processed by ext sim now. 
+              this.extSimRunning = false;
               return;
-            }
 
-            PopNextTimeEvent();// TODO : evData.itemID);
-            sendTimers = true;
-            break;
+            case SimEventType.etTimer: // if the event is a timer then just pop the next time event and let state tracker continue.
+              if (this.emraldStopping3D || !this.extSimRunning)
+              {
+                //stop3DInEv = false;
+                return;
+              }
 
-          case SimEventType.etSimStarted:
-            this.sim3DStartTime = this.curTime;
-            sendTimers = true;
-            this.sim3DRunning = true;
-            this.sim3DStarting = false;
-            break;
+              PopNextTimeEvent();// TODO : evData.itemID);
+              sendTimers = true;
+              doProcessLoop = true;
+              break;
 
-          //case SimEventType.etSubSim:
-          //  //ignore these   
-          //  return;
+            case SimEventType.etSimLoaded:
+              this.sim3DStartTime = this.curTime;
+              sendTimers = true;
+              this.extSimRunning = true;
+              this.extSimStarting = false;
+              break;
 
-          case SimEventType.etStatus:
-            if (ev.status == StatusType.stError)
-              throw new Exception("Unhandled client simulation error - " + evData.desc);
-            break;
+            case SimEventType.etPing:
+              lastExtEvTypes.Add(lastEvKey, ev.evType);
+              logger.Info("Ping: from " + fromClient + ", time: " + curTime.ToString(@"d\.hh\:mm\:ss\.f"));
 
-          case SimEventType.etCompEv:
-            if (this.sim3DStopping || !this.sim3DRunning)
-            {
+              //TODO proper responce to a ping?
+              //TMsgWrapper msg = new TMsgWrapper(MessageType.mtOther, "GotPing");
+              //msg.simAction = new SimAction(SimActionType.?);
+              ////TODO if waiting for external sim put as stWaiting
+              //msg.simAction.status = StatusType.stRunning;
+              //sim3DServer.SendMessage(msg, fromClient);
               return;
-            }
 
-            shiftTimeTo = (TimeSpan)ev.time; //If checked and passed with schema, this will not be null.
-            if (shiftTimeTo == Globals.NowTimeSpan)
-              shiftTimeTo = TimeSpan.FromMilliseconds(1) + sim3DStartTime;
-            else
-              shiftTimeTo = shiftTimeTo + sim3DStartTime;
+            case SimEventType.etStatus:
+              if (ev.status == StatusType.stError)
+              {
+                logger.Info("Coupled App XMPP Error: " + evData.desc + ", time: " + curTime.ToString(@"d\.hh\:mm\:ss\.f"));
+                TMsgWrapper msg2 = new TMsgWrapper(MessageType.mtSimAction, "GotError", curTime, "Terminating all");
+                msg2.simAction = new SimAction(SimActionType.atTerminate);
+                msg2.simAction.status = StatusType.stDone;
+                sim3DServer.SendMessage(msg2, fromClient);
+                throw new Exception("Unhandled client simulation error - " + evData.desc);
+              }
+              if (!this.extSimRunning)
+                return;
+              break;
 
-            SimVariable curVar = allLists.allVariables.FindBySim3dId(ev.itemData.nameId);
-            if (curVar != null)
-            {
-              //Create a extSim time event so it is processed
-              //because all timeque events are sent to the simulation as timers, this event must be less than the next time event.
-              if (keepExtSimEvs)
-                this.timeEvList.ExternalEvOccurred(evData.desc + i.ToString(), ev, allLists, shiftTimeTo, sim3DStartTime);
-              this.allLists.allVariables[curVar.id].SetValue(ev.itemData.value);
-              this.changedItems.AddChangedID(EnModifiableTypes.mtVar, curVar.id);
-            }
+            case SimEventType.etCompEv:
+              if (this.emraldStopping3D || !this.extSimRunning)
+              {
+                return;
+              }
+              lastExtEvTypes.Add(lastEvKey, ev.evType);
+              shiftTimeTo = (TimeSpan)ev.time; //If checked and passed with schema, this will not be null.
+              if (shiftTimeTo == Globals.NowTimeSpan)
+                shiftTimeTo = TimeSpan.FromMilliseconds(1) + sim3DStartTime;
+              else
+                shiftTimeTo = shiftTimeTo + sim3DStartTime;
 
-            break;
+              SimVariable curVar = allLists.allVariables.FindBySim3dId(ev.itemData.nameId);
+              if (curVar != null)
+              {
+                //Create a extSim time event so it is processed
+                //because all timeque events are sent to the simulation as timers, this event must be less than the next time event.
+                if (keepExtSimEvs)
+                  this.timeEvList.ExternalEvOccurred(evData.desc + i.ToString(), ev, allLists, shiftTimeTo, sim3DStartTime);
+                this.allLists.allVariables[curVar.id].SetValue(ev.itemData.value);
+                this.changedItems.AddChangedID(EnModifiableTypes.mtVar, curVar.id);
+              }
+              doProcessLoop = true;
+              break;
 
-          default: //items are 3D variables that were affected
-            break;
+            default: //items are 3D variables that were affected
+              break;
 
+          }
         }
 
         ++i;
@@ -1260,7 +1009,7 @@ namespace SimulationTracking
       //wait for state processing to be done.
       while (inProcessingLoop)
       {
-        //Application.DoEvents();
+        //Application.DoEvents(); //this is required for the main processing of the simulation while 
         System.Threading.Thread.Sleep(10);
       }
 
@@ -1277,17 +1026,20 @@ namespace SimulationTracking
 
       //Look for events that now meet conditions
       ScanCondEvList();
+      lastExtEvTypes.Clear();
       //start a new round of processing
-      if (!ProcessActiveLoop())
+      if (doProcessLoop && !ProcessActiveLoop())
       {
         //sim3DServer.SendAction(new TActionPacketData(new TActionData(T3DActionType.atReset))); //let the simulation run.
         TMsgWrapper msg = new TMsgWrapper(MessageType.mtSimAction, "Reset", curTime, "Reset External Sim");
-        msg.simAction = new SimAction(SimActionType.atReset);
+        msg.simAction = new SimAction(SimActionType.atCancelSim);
         sim3DServer.SendMessage(msg, fromClient);
-        this.sim3DStopping = true;
+        this.emraldStopping3D = true;  //telling ext sim to stop
       }
 
-      if (!this.sim3DStopping)
+
+
+      if (!this.emraldStopping3D)
       {
         if (sendTimers || tempStateCngCheck)
         {
@@ -1445,10 +1197,11 @@ namespace SimulationTracking
 
       foreach (var stID in curEv.eventStateActions.statesAndActions)
       {
-        if (!ProcessActions((ActionList)stID.Value, stID.Key, curEv.eventData))
+        bool movingOut = ((ActionList)stID.Value).moveFromCurrent;
+        if (!ProcessActions((ActionList)stID.Value, stID.Key, curEv.eventData, movingOut))
           return; //return of false means a time jump was done so we can stop processing
 
-        if (((ActionList)stID.Value).moveFromCurrent) //leaving this state to go to a different one so remove any other events that also leave this state
+        if (movingOut) //leaving this state to go to a different one so remove any other events that also leave this state
         {
           timeEvList.RemoveMatchingStateItems(stID.Key);
           condEvList.RemoveMatchingStateItems(stID.Key);
@@ -1494,11 +1247,11 @@ namespace SimulationTracking
       }
       tempStateCngCheck = true;
       //TransitionAct tAct = allLists.allActions.FindByName(stateID.Item3) as TransitionAct;
-      curStates.Add(curState, stateID.Item2, this.curTime, stateID.Item3, stateID.Item4);
+      curStates.Add(this.allLists, curState, stateID.Item2, this.curTime, stateID.Item3, stateID.Item4);
       changedItems.AddChangedID(EnModifiableTypes.mtState, stateID.Item1);
 
       //do all the immediate actions for the state
-      ProcessActions(curState.GetImmediateActions(), curState.id, null);
+      ProcessActions(curState.GetImmediateActions(), curState.id, null, false);
 
       //add all the events to either the TimeEventQue or the CondEventList
       for (int idx = 0; idx < curState.eventCnt; ++idx)
@@ -1527,7 +1280,7 @@ namespace SimulationTracking
             if ((evTime < maxTime) || (timeEv.UsesVariables()))//if using variables we still need to add incase those variables change
             {
               TimeMoveEvent addTimeEv = new TimeMoveEvent(curEv.name, new EventStatesAndActions(curEv.id, curState.id, curState.GetEvActionsIdx(idx)), curEv, evTime, curTime);
-              if ((evTime == Globals.NowTimeSpan) && !this.sim3DStopping)// || //add the event to be processed immediately
+              if ((evTime == Globals.NowTimeSpan) && !this.emraldStopping3D)// || //add the event to be processed immediately
                                                                          //todo : how to handle if next event is before the first timestep of a simulation 
                                                                          //if only one simulation you just process the event as an immediate ((this.sim3DRunning || this.sim3DStarting) && ((evTime.TotalSeconds * sim3DFameRate) < 1)))
               {
@@ -1558,11 +1311,11 @@ namespace SimulationTracking
       //Look for events that now meet conditions and add them to the processEventList
       TimeMoveEvent nextItem = timeEvList.LookNextTimedEvent();
       if (nextItem != null)
-        //matchedEvs = condEvList.GetMatchedCondMoveEvents(this.changedItems, this.last3DVarEvType, curTime, sim3DStartTime, nextItem.time);
-        matchedEvs = condEvList.GetMatchedCondMoveEvents(this.changedItems, curTime, sim3DStartTime, nextItem.time, this.allLists.curRunIdx);
+        matchedEvs = condEvList.GetMatchedCondMoveEvents(this.changedItems, this.lastExtEvTypes, curTime, sim3DStartTime, nextItem.time, this.allLists.curRunIdx);
+        //matchedEvs = condEvList.GetMatchedCondMoveEvents(this.changedItems, curTime, sim3DStartTime, nextItem.time, this.allLists.curRunIdx);
       else
-        //matchedEvs = condEvList.GetMatchedCondMoveEvents(this.changedItems, this.last3DVarEvType, curTime, sim3DStartTime, TimeSpan.FromHours(0));
-        matchedEvs = condEvList.GetMatchedCondMoveEvents(this.changedItems, curTime, sim3DStartTime, TimeSpan.FromHours(0), this.allLists.curRunIdx);
+        matchedEvs = condEvList.GetMatchedCondMoveEvents(this.changedItems, this.lastExtEvTypes, curTime, sim3DStartTime, TimeSpan.FromHours(0), this.allLists.curRunIdx);
+        //matchedEvs = condEvList.GetMatchedCondMoveEvents(this.changedItems, curTime, sim3DStartTime, TimeSpan.FromHours(0), this.allLists.curRunIdx);
       this.processEventList.AddRange(matchedEvs);
       changedItems.Clear();
     }
@@ -1580,7 +1333,7 @@ namespace SimulationTracking
     /// <param name="curActions">action list to process</param>
     /// <param name="ownerStateID">state that actions are being run for</param>
     /// <returns></returns>
-    private bool ProcessActions(ActionList curActions, int ownerStateID, Event causeEvent)
+    private bool ProcessActions(ActionList curActions, int ownerStateID, Event causeEvent, bool exiting)
     {
       foreach (SimulationDAL.Action curAct in curActions)
       {
@@ -1596,7 +1349,10 @@ namespace SimulationTracking
             foreach (IdxAndStr cur in toStates)
             {
               //only add it if we are currently not going to that state from another action and not already in the state
-              if (curStates.ContainsKey(cur.idx))
+              bool inStateAlready = curStates.ContainsKey(cur.idx);
+              if ((inStateAlready && !exiting) ||
+                 (inStateAlready && (ownerStateID != cur.idx)))
+                // if(curStates.ContainsKey(cur.idx))
                 logger.Debug("No Transition, already in state: " + curAct.name);
               else if (nextStateQue.Where(t => t.Item1 == cur.idx).FirstOrDefault() == null)
                 nextStateQue.Add(Tuple.Create(cur.idx, ownerStateID, causeEvent == null ? "immediate action" : causeEvent.name, curAct.name));
@@ -1794,14 +1550,33 @@ namespace SimulationTracking
               case SimActionType.atOpenSim:
                 //stop3DInEv = false;
                 msg = new TMsgWrapper(MessageType.mtSimAction, "OpenSim", curTime, "Start External Sim");
-                msg.simAction = new SimAction(new SimInfo(cur3DAct.ModelRef(allLists), cur3DAct.simMaxTime, cur3DAct.ConfigData(allLists)));
-
+                msg.simAction = new SimAction(new SimInfo(cur3DAct.ModelRef(allLists), cur3DAct.simMaxTime, cur3DAct.ConfigData(allLists), SingleRandom.Instance.Next(), this.allLists.totRunsReq, this.allLists.curRunIdx));
+                
                 if (sim3DServer == null)
                   throw new Exception("External Simulation not assigned.");
 
-                if (!sim3DServer.GetResources().Contains(cur3DAct.resourceName))
+                bool hasConnection = false;
+                int conCnt = 0;
+                while (!hasConnection)
                 {
-                  throw new Exception("No external client code named - " + cur3DAct.resourceName);
+                  ++conCnt;
+                  if (!sim3DServer.GetResources().Contains(cur3DAct.resourceName))
+                  {
+                    logger.Error("Lost XMPP connection");
+
+                    if (conCnt > 60)
+                    {
+                      logger.Error("End wait for XMPP reconnection");
+                      throw new Exception("No external client code named - " + cur3DAct.resourceName);
+                    }
+
+                    //give time to establish a new connection
+                    System.Threading.Thread.Sleep(1000);                    
+                  }
+                  else
+                  {
+                    hasConnection = true;
+                  }
                 }
 
                 allLists.allVariables.FindByName("ExtSimStartTime").SetValue(curTime.TotalHours);
@@ -1813,9 +1588,9 @@ namespace SimulationTracking
                 //if (sim3DServer.SendAction(new TActionPacketData(startup)))  //initialize it
                 if (sim3DServer.SendMessage(msg, cur3DAct.resourceName))
                 {
-                  sim3DStarting = true;
-                  sim3DStopping = false;
-                  while (!this.sim3DRunning)
+                  extSimStarting = true;
+                  emraldStopping3D = false;
+                  while (!this.extSimRunning)
                   {
                     //Application.DoEvents();
                     System.Threading.Thread.Sleep(10);
@@ -1824,9 +1599,9 @@ namespace SimulationTracking
                 else //already running so set correct params.
                 {
                   this.sim3DStartTime = this.curTime;
-                  this.sim3DStarting = false;
-                  this.sim3DRunning = true;
-                  this.sim3DStopping = false;
+                  this.extSimStarting = false;
+                  this.extSimRunning = true;
+                  this.emraldStopping3D = false;
                 }
 
                 break;
@@ -1834,9 +1609,9 @@ namespace SimulationTracking
               case SimActionType.atCompModify:
                 logger.Debug("DoComponentModifyAction: " + curAct.name);
                 //wait to make sure the 3D sim has started
-                while ((!this.sim3DRunning) && (!this.sim3DStopping))
+                while ((!this.extSimRunning) && (!this.emraldStopping3D))
                 {
-                  if (!this.sim3DStarting)
+                  if (!this.extSimStarting)
                   {
                     return true;
                   }
@@ -1870,7 +1645,7 @@ namespace SimulationTracking
                 }
 
                 msg = new TMsgWrapper(MessageType.mtSimAction, "SetSimValue", curTime, "Adjust External Sim");
-                msg.simAction = new SimAction(SimActionType.atCompModify, curTime, new ItemData(cur3DAct.simVar.name, setValue));
+                msg.simAction = new SimAction(SimActionType.atCompModify, curTime, new ItemData(cur3DAct.simVar.sim3DNameId, setValue));
 
                 sim3DServer.SendMessage(msg, cur3DAct.resourceName);
                 //sim3DServer.SendAction(new TActionPacketData(sendVal));
@@ -1881,13 +1656,12 @@ namespace SimulationTracking
                 msg = new TMsgWrapper(MessageType.mtSimAction, cur3DAct.sim3DMessage.ToString(), curTime, "Stop/Continue/ping/status the Simulation");
                 msg.simAction = new SimAction(cur3DAct.sim3DMessage);
 
-                if ((cur3DAct.sim3DMessage == SimActionType.atReset) ||
-                    (cur3DAct.sim3DMessage == SimActionType.atCancelSim))
+                if (cur3DAct.sim3DMessage == SimActionType.atCancelSim)
                 {
                   //debugLog = true; //todo remove
-                  if ((this.sim3DRunning) && (!this.sim3DStopping))
+                  if ((this.extSimRunning) && (!this.emraldStopping3D))
                   {
-                    this.sim3DStopping = true;
+                    this.emraldStopping3D = true; //Stopping call from EMRALD not processed by ext sim yet. 
                     sim3DServer.SendMessage(msg, cur3DAct.resourceName);
 
                     //while (this.sim3DRunning)
@@ -1920,35 +1694,40 @@ namespace SimulationTracking
     /// <param name="toClient"></param>
     private void Send3DNextEvTimers(string toClient)
     {
+      var msg = new TMsgWrapper(MessageType.mtSimAction, "SetCallbackTimer", curTime, "Check back with the EMRALD Simulation");
+
       if (timeEvList.cnt > 0)
       {
         TimeMoveEvent nextTimeItem = timeEvList.LookNextTimedEvent();
 
         //int nextItemTime = Convert.ToInt32(((nextTimeItem.time + this.curTime) - this.sim3DStartTime).TotalSeconds * sim3DFameRate);
-        TimeSpan nextItemTime = (nextTimeItem.time + this.curTime);
-
-        var msg = new TMsgWrapper(MessageType.mtSimAction, "SetCallbackTimer", curTime, "Check back with the EMRALD Simulation");
+        TimeSpan nextItemTime = (nextTimeItem.time + this.curTime);        
         msg.simAction = new SimAction(SimActionType.atTimer, nextItemTime, new ItemData(nextTimeItem.name, nextTimeItem.id.ToString()));
-
-        //make sure the 3DSim is fully started before the message is sent.
-        while (!this.sim3DRunning)
-        {
-          //Application.DoEvents();
-          System.Threading.Thread.Sleep(500);
-        }
-
-        //sim3DServer.SendAction(new TActionPacketData(new TActionData(T3DActionType.atTimer, nextTimeItem.name, nextTimeItem.id, nextItemTime)));
-        sim3DServer.SendMessage(msg, toClient);
       }
+      else
+      {
+        msg.simAction = new SimAction(SimActionType.atTimer, maxTime, new ItemData("MaxSimTime", "0"));
+      }        
+
+      //make sure the 3DSim is fully started before the message is sent.
+      while (!this.extSimRunning)
+      {
+        //Application.DoEvents();
+        System.Threading.Thread.Sleep(500);
+      }
+
+      //sim3DServer.SendAction(new TActionPacketData(new TActionData(T3DActionType.atTimer, nextTimeItem.name, nextTimeItem.id, nextItemTime)));
+      sim3DServer.SendMessage(msg, toClient);
+      
     }
 
     /// <summary>
     /// Get the paths of movement from start states to the key states for the simulation run
     /// </summary>
     /// <returns></returns>
-    public void GetKeyPaths(Dictionary<string, SimulationEngine.KeyStateResult> resMap, Dictionary<string, SimulationEngine.ResultState> otherResMap)
+    public void GetKeyPaths(Dictionary<string, SimulationEngine.KeyStateResult> resMap, Dictionary<string, SimulationEngine.ResultState> otherResMap, List<string> watchVars)
     {
-      curStates.GetKeyStatePaths(allLists.allStates, resMap, otherResMap);
+      curStates.GetKeyStatePaths(allLists, resMap, otherResMap, watchVars);
     }
 
     /// <summary>
