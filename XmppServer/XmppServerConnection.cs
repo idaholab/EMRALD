@@ -166,7 +166,7 @@ namespace XmppMessageServer
         // Convert the string data to byte data using ASCII encoding.
         byte[] byteData = Encoding.UTF8.GetBytes(data);
 
-        logger.Debug("SentMessage - " + data);
+        
 
         // Begin sending the data to the remote device.
         if (m_Sock.Connected)
@@ -270,14 +270,14 @@ namespace XmppMessageServer
 
           //}
 
-          m_server.IncomingMessage(msg);
-
           // Send the acknowledgement
           var to = msg.From;
           msg.To = msg.From;
           msg.From = to;
           msg.DeliveryReceipt(msg.Id);
           Send(msg);
+
+          m_server.IncomingMessage(msg);         
 
         }
       }
@@ -565,6 +565,11 @@ namespace XmppMessageServer
     {
       try
       {
+        if (el.HasAttribute("from") && (el.Attribute("from").Value.ToString() == "EMRALD"))
+        {          
+          logger.Debug("SentMessage - " + el.ToString(false));
+        }
+
         Send(el.ToString(false));
       }
       catch (Exception e)
