@@ -32,6 +32,7 @@ namespace XmppMessageServer
     private string m_passwd;
     #endregion
     private NLog.Logger logger = NLog.LogManager.GetLogger("logfile");
+    private DateTime lastMsgSendTime;
 
     public XmppMessageServer(int port, string passwd, IAppSettingsService appSettingsService)
     {
@@ -153,8 +154,13 @@ namespace XmppMessageServer
       //var con = Global.ServerConnections.FirstOrDefault(sc => sc.m_clientJid.Equals(userJid, new BareJidComparer()));
       try
       {
+        //temp fix to help with orders
+        if ((DateTime.Now - lastMsgSendTime) < TimeSpan.FromMilliseconds(100))
+          System.Threading.Thread.Sleep(100);
+
         var con = Global.ServerConnections[userJid];
         con.Send(msg);
+        lastMsgSendTime = DateTime.Now;
       }
       catch
       {
