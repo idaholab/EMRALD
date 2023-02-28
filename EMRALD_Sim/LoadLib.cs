@@ -87,5 +87,10 @@ namespace EMRALD_Sim
 
       return true;
     }
+
+    public static void MergeResults(string r1, string r2, string destPath)
+    {
+
+    }
   }
 }

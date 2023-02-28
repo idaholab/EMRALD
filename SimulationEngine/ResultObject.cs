@@ -10,6 +10,9 @@ using MathNet.Numerics.Statistics;
 using SimulationDAL;
 using System.Xml.Linq;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Matrix.Xmpp.Disco;
+using Newtonsoft.Json.Schema;
+using System.Runtime.Intrinsics.X86;
 
 namespace SimulationEngine
 {
@@ -29,6 +32,68 @@ namespace SimulationEngine
       {
         i.CalcAllStats(numRuns);
       }
+    }
+
+    public void CombineResults(OverallResults inclThese)
+    {
+      int totRuns = this.numRuns + inclThese.numRuns;
+      
+      //make dictionary for lookup
+      Dictionary<string, KeyStateResult> inclDict = inclThese.keyStates.ToDictionary(row => row.name, row => row);
+      
+      //Matched items merged in from the incl
+      List<string> merged = new List<string>();
+
+      foreach (var keyState in this.keyStates)
+      {
+        if(inclDict.ContainsKey(keyState.name))
+        {
+          keyState.Merge(inclDict[keyState.name], totRuns);
+          merged.Add(keyState.name);
+        }
+      }
+
+      //remove the items merged
+      foreach(var name in merged)
+      {
+        inclDict.Remove(name);
+      }
+
+      //add all incl items that didn't exist in the current results
+      foreach(var item in inclDict.Values)
+      {
+        this.keyStates.Add(item);
+      }
+
+
+      //add all the other state paths
+      //make dictionary for lookup
+      Dictionary<string, ResultState> otherInclDict = inclThese.otherStatePaths.ToDictionary(row => row.name, row => row);
+
+      //Matched items merged in from the incl
+      merged = new List<string>();
+
+      foreach (var s in this.otherStatePaths)
+      {
+        if (otherInclDict.ContainsKey(s.name))
+        {
+          s.Merge(inclDict[s.name], totRuns);
+          merged.Add(s.name);
+        }
+      }
+
+      //remove the items merged
+      foreach (var name in merged)
+      {
+        otherInclDict.Remove(name);
+      }
+
+      //add all incl items that didn't exist in the current results
+      foreach (var item in otherInclDict.Values)
+      {
+        this.otherStatePaths.Add(item);
+      }
+
     }
   }
 
@@ -99,12 +164,12 @@ namespace SimulationEngine
     [JsonProperty(Order = 6)]
     public TimeSpan timeMean { get { return (_totalTime / count) + TimeSpan.FromDays(_extraDays / count); } }
     [JsonProperty(Order = 7)]
-    public TimeSpan timeStdDeviation { get {return GetTimeStdDev(); } }
+    public TimeSpan timeStdDeviation { get { return GetTimeStdDev(); } }
     [JsonProperty(Order = 8)]
-    public TimeSpan timeMin { get {return _timeMin; } }
+    public TimeSpan timeMin { get { return _timeMin; } }
     [JsonProperty(Order = 9)]
-    public TimeSpan timeMax { get {return _timeMax; } }
-    
+    public TimeSpan timeMax { get { return _timeMax; } }
+
     [JsonProperty(Order = 10)]
 
     public Dictionary<string, List<string>> watchVariables = new Dictionary<string, List<string>>();
@@ -123,6 +188,8 @@ namespace SimulationEngine
     protected TimeSpan _timeMin = TimeSpan.FromSeconds(0);
     protected TimeSpan _timeMax = TimeSpan.FromSeconds(0);
     private bool statsDone = false;
+    protected TimeSpan? _stdDev = null;
+    private bool _mergedResults = false;
 
     public ResultStateBase(string name, bool inKeyPath)
     {
@@ -132,23 +199,25 @@ namespace SimulationEngine
     }
 
     public TimeSpan GetTimeStdDev()
-    {
-      if (_count <= 1)
-        return TimeSpan.Zero;
-
-      double mean = timeMean.TotalMinutes;
-      //List<double> diffSq = new List<double>(); //difference squared
-      double sumDiffSq = 0; //sum of difference squared;
-      foreach(var t in this._times)
+    { 
+      if(_stdDev == null)
       {
-        sumDiffSq += Math.Pow(((t.TotalMinutes) - mean), 2);
+        if (_count <= 1)
+          return TimeSpan.Zero;
+
+        double mean = timeMean.TotalMinutes;
+        double sumDiffSq = 0; //sum of difference squared;
+        foreach (var t in this._times)
+        {
+          sumDiffSq += Math.Pow(((t.TotalMinutes) - mean), 2);
+        }
+
+        //calc variance   
+        double variance = sumDiffSq / (count - 1);
+        _stdDev = TimeSpan.FromMinutes(Math.Sqrt(variance)); //return square root of variance
       }
-
-      //calc variance   
-      double variance = sumDiffSq / (count-1);
-      double res = Math.Sqrt(variance); //return square root of variance
-
-      return TimeSpan.FromMinutes(res);
+          
+      return (TimeSpan)_stdDev;
     }
 
     public void AddTime(TimeSpan newTime)
@@ -174,7 +243,9 @@ namespace SimulationEngine
         this._totalTime = TimeSpan.MaxValue;
       }
       ++_count;
-    }  
+
+      _stdDev = null;
+    }
 
     public void CalcStats(int totCnt)
     {
@@ -211,7 +282,7 @@ namespace SimulationEngine
       this.AddTime(include.timeMean);
       EnterExitCause curCause = null;
       this._contributionCnt += include.contributionCnt;
-           
+
       foreach (var item in include.enterDict.Values)
       {
         if (!this.enterDict.TryGetValue(item.key, out curCause))
@@ -244,14 +315,36 @@ namespace SimulationEngine
       exitDict = toCopy.exitDict;
       _totalTime = toCopy._totalTime;
       _extraDays = toCopy._extraDays;
-      _times= toCopy._times;
-      _count= toCopy._count;
+      _times = toCopy._times;
+      _count = toCopy._count;
       _contributionCnt = toCopy._contributionCnt;
-      _rate= toCopy._rate;
-      _rate5th= toCopy._rate5th;  
-      _rate95th= toCopy._rate95th;
-      _timeMin= toCopy._timeMin;  
-      _timeMax= toCopy._timeMax;
+      _rate = toCopy._rate;
+      _rate5th = toCopy._rate5th;
+      _rate95th = toCopy._rate95th;
+      _timeMin = toCopy._timeMin;
+      _timeMax = toCopy._timeMax;
+    }
+
+    public void Merge(ResultStateBase other, int totCnt)
+    {
+      _mergedResults = true;
+      _totalTime += other._totalTime;
+      _extraDays += other._extraDays;
+      _count += other._count;
+      _contributionCnt += other._contributionCnt;
+
+      //estimate the standard deviation for combination of 2 
+      double sum = (((_contributionCnt / this._rate)-1) * Math.Pow(((TimeSpan)_stdDev).TotalMinutes, 2));
+      sum += (((_contributionCnt / other._rate) - 1) * Math.Pow(((TimeSpan)other._stdDev).TotalMinutes, 2));
+      double res = Math.Sqrt(sum / ((_contributionCnt / this._rate) + (other._contributionCnt / other._rate) - 2));
+
+
+      _rate = (double)_contributionCnt / totCnt;
+      double range = 1.96 * Math.Sqrt((_rate * (1 - _rate)) / totCnt);
+      _rate5th = Math.Round(_rate - range, 8);
+      _rate95th = Math.Round(_rate + range, 8);
+      _timeMin = _timeMin <= other._timeMin ? _timeMin : other._timeMin;
+      _timeMax = _timeMin >= other._timeMax ? _timeMax : other._timeMax;
     }
   }
 
@@ -287,5 +380,6 @@ namespace SimulationEngine
         this.key = this.name + "->" + otherState;
     }
   }
+  
 
 }
