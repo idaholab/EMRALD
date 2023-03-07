@@ -192,9 +192,7 @@ export default function main() {
    * @returns The timestamp string.
    */
   function secondsToTimestamp(seconds: number) {
-    const hours = seconds % (60 * 3600);
-    const minutes = (seconds - hours) % 60;
-    return `${hours}:${minutes}:${seconds - hours - minutes}`;
+    return new Date(seconds * 1000).toISOString().slice(11, 19);
   }
 
   /**
@@ -256,9 +254,9 @@ export default function main() {
       d.data.contributionRate
     }\nMin Time: ${d.data.timeMin}\nMax Time: ${
       d.data.timeMax
-    }\nMean Time: ${secondsToTimestamp(combinedMean(d.data))} (${combinedMean(
-      d.data,
-    )} s)\nStandard Deviation: ${combinedStd(d.data)}\nRow: ${
+    }\nMean Time: ${secondsToTimestamp(
+      combinedMean(d.data),
+    )}\nStandard Deviation: ${secondsToTimestamp(combinedStd(d.data))}\nRow: ${
       d.layout.row
     },Col: ${d.layout.column}`;
   renderer.options.linkTitle = (d: TimelineLink) =>

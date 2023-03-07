@@ -365,6 +365,7 @@ export default class Renderer {
     // Create nodes
     type TransitionType = Transition<BaseType, null, null, undefined>;
     const { options } = this;
+    const _timeline = this.timeline;
     const nodes = svg
       .append('g')
       .selectAll('g')
@@ -375,9 +376,16 @@ export default class Renderer {
       .attr('height', (d: TimelineNode) => d.layout.height)
       .attr('width', (d: TimelineNode) => d.layout.width)
       .attr('class', 'node')
-      .on('mouseover', (event: DragEvent, d: TimelineNode) => {
+      .on('mouseover', function (event: DragEvent, d: TimelineNode) {
+        const fade = transition()
+          .duration(options.transitionSpeed)
+          .ease(easeCubicIn) as any as TransitionType;
+        select(this)
+          .selectAll('.distHandle')
+          .transition(fade)
+          .style('opacity', 1);
         let shortestPath: number[] = [];
-        const paths: number[][] = this.timeline.getPath(d.id);
+        const paths: number[][] = _timeline.getPath(d.id);
         paths.forEach((path) => {
           if (shortestPath.length === 0 || path.length < shortestPath.length) {
             shortestPath = path;
@@ -386,40 +394,28 @@ export default class Renderer {
         selectAll('.node').each(function (n: unknown) {
           const node = n as TimelineNode;
           if (paths.flat().indexOf(node.id) < 0) {
-            select(this)
-              .transition(
-                transition()
-                  .duration(options.transitionSpeed)
-                  .ease(easeCubicIn) as any as TransitionType,
-              )
-              .style('opacity', options.fadeOpacity);
+            select(this).transition(fade).style('opacity', options.fadeOpacity);
           }
         });
         const pathLinks: number[] = [];
         paths.forEach((path) => {
-          pathLinks.push(...this.timeline.getLinksInPath(path));
+          pathLinks.push(..._timeline.getLinksInPath(path));
         });
         selectAll('.link').each(function (l: unknown) {
           const link = l as TimelineLink;
           if (pathLinks.indexOf(link.id) < 0) {
-            select(this)
-              .transition(
-                transition()
-                  .duration(options.transitionSpeed)
-                  .ease(easeCubicIn) as any as TransitionType,
-              )
-              .style('opacity', options.fadeOpacity);
+            select(this).transition(fade).style('opacity', options.fadeOpacity);
           }
         });
       })
       .on('mouseleave', () => {
-        selectAll('.node, .link')
-          .transition(
-            transition()
-              .duration(this.options.transitionSpeed)
-              .ease(easeCubicIn) as any as TransitionType,
-          )
-          .style('opacity', 1);
+        const fade = transition()
+          .duration(this.options.transitionSpeed)
+          .ease(easeCubicIn) as any as TransitionType;
+        selectAll('.node, .link').transition(fade).style('opacity', 1);
+        selectAll('.distHandle')
+          .transition(fade)
+          .style('opacity', options.fadeOpacity);
       })
       .call(
         drag<any, TimelineNode>()
@@ -528,6 +524,7 @@ export default class Renderer {
     nodes.append('title').text((d: TimelineNode) => this.options.nodeTitle(d));
 
     if (this.options.layout === 'timeline') {
+      const handleColor = 'rgba(0,0,0)';
       // Left handle
       nodes
         .append('rect')
@@ -543,10 +540,11 @@ export default class Renderer {
           }
           return 0;
         })
-        .attr('class', 'distHandleLeft')
+        .attr('class', 'distHandle distHandleLeft')
         .attr('height', (d: TimelineNode) => d.layout.height)
         .attr('width', () => this.options.distHandleWidth)
-        .attr('fill', 'rgba(0,0,0,0.7)');
+        .attr('fill', handleColor)
+        .style('opacity', this.options.fadeOpacity);
       // Right handle
       nodes
         .append('rect')
@@ -562,10 +560,11 @@ export default class Renderer {
           }
           return 0;
         })
-        .attr('class', 'distHandleRight')
+        .attr('class', 'distHandle distHandleRight')
         .attr('height', (d: TimelineNode) => d.layout.height)
         .attr('width', () => this.options.distHandleWidth)
-        .attr('fill', 'rgba(0,0,0,0.7)');
+        .attr('fill', handleColor)
+        .style('opacity', this.options.fadeOpacity);
       // Center line
       nodes
         .append('rect')
@@ -581,7 +580,7 @@ export default class Renderer {
           }
           return 0;
         })
-        .attr('class', 'distHandleCenter')
+        .attr('class', 'distHandle distHandleCenter')
         .attr('height', () => this.options.distHandleWidth)
         .attr('width', (d: TimelineNode) => {
           if (d.layout.distribution) {
@@ -589,7 +588,8 @@ export default class Renderer {
           }
           return 0;
         })
-        .attr('fill', 'rgba(0,0,0,0.7)');
+        .attr('fill', handleColor)
+        .style('opacity', this.options.fadeOpacity);
 
       // Mean value bar
       nodes
