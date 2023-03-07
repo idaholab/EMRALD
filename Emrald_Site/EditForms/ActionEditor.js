@@ -237,7 +237,7 @@ function OnLoad(dataObj) {
                             scope.data.transitions.push({ checked: false, To_State: aState.toState, Probability: aState.prob.toString(), varProb: aState.varProb, failDesc: aState.failDesc, remaining: false, });
                         }
                         else {
-                            scope.data.transitions.push({ checked: false, To_State: aState.toState, Probability: '0', varProb: aState.varProb, failDesc: aState.failDesc, remaining: scope.data.transitions.length === 0, });
+                            scope.data.transitions.push({ checked: false, To_State: aState.toState, Probability: '0', varProb: aState.varProb, failDesc: aState.failDesc, remaining: true });
                         }
                     });
                 }
