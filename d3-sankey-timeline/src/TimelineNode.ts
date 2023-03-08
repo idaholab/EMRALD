@@ -130,9 +130,6 @@ export default class TimelineNode {
    * @returns The size of the node.
    */
   public get size(): number {
-    return Math.max(
-      sum(this.incomingLinks, (link) => link.flow),
-      sum(this.outgoingLinks, (link) => link.flow),
-    );
+    return this.data.count;
   }
 }
