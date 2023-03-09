@@ -19,6 +19,7 @@ using NLog;
 using NLog.Config;
 using SimulationDAL;
 using JsonDiffPatchDotNet;
+
 //using System.Windows.Forms;
 
 namespace UnitTesting_Simulation
@@ -70,15 +71,22 @@ namespace UnitTesting_Simulation
 
     public bool CompareJSON(string jStr1, string jStr2)
     {
-      //Fix any string "True" vs boolean true json issues
-      jStr1 = jStr1.Replace("\"True\"", "true").Replace("\"true\"", "true").Replace("\"False\"", "false").Replace("\"false\"", "false");
       jStr2 = jStr2.Replace("\"True\"", "true").Replace("\"true\"", "true").Replace("\"False\"", "false").Replace("\"false\"", "false");
-
-      JObject jObj1 = JObject.Parse(jStr1);
       JObject jObj2 = JObject.Parse(jStr2);
 
+      
+      return CompareJSON(jStr1, jObj2);
+    }
+    public bool CompareJSON(string origResStr, JObject newJSON)
+    {
+      //Fix any string "True" vs boolean true json issues
+      origResStr = origResStr.Replace("\"True\"", "true").Replace("\"true\"", "true").Replace("\"False\"", "false").Replace("\"false\"", "false");
+      
+      JObject jObj1 = JObject.Parse(origResStr);
+      
       JsonDiffPatch jdp = new JsonDiffPatch();
-      JToken diffObj = jdp.Diff(jObj1, jObj2);
+      
+      JToken diffObj = jdp.Diff(jObj1, newJSON);
       if (diffObj != null)
       {
         string diffResult = diffObj.ToString();
@@ -90,6 +98,16 @@ namespace UnitTesting_Simulation
       return true;
     }
 
+    private void CopyToValidated(string path, string resText)
+    {
+      
+      if (File.Exists(path))
+      { 
+        File.Delete(path); 
+      }
+
+      File.WriteAllText(path, resText);
+    }
 
     /// //////////////
     // Event Tests
@@ -1097,7 +1115,34 @@ namespace UnitTesting_Simulation
       Assert.True(CompareJSON(retJsonStr, jsonModel));
     }
 
+    [Fact]
+    public void JoinPathResultsTest()
+    {
+      string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
+      EmraldModel mainModel = new EmraldModel();
+      SetupTheTest(testName, mainModel);
 
+      AccrualVariable var = new AccrualVariable();
+      //use a sample JSON piece to set the values
+      string fileLoc1 = MainTestDir() + ItemFolder() + testName + "1.json";
+      string fileLoc2 = MainTestDir() + ItemFolder() + testName + "2.json";
+      string compRes = CompareFilesDir() + testName + "_res.json";
+      string pathRes1 = "";
+     
+
+      string combinedResStr = OverallResults.CombineResultFiles(fileLoc1, fileLoc2);
+
+      //Uncomment to update the validation files after they verified correct
+      //CopyToValidated(compRes, combinedResStr);
+
+      string compResStr = "";
+      if (File.Exists(compRes))
+        compResStr = File.ReadAllText(compRes);
+      else
+        throw new Exception("Failed to find comparison file for " + testName);
+
+      Assert.True(CompareJSON(compResStr, combinedResStr));
+    }
 
   }
 }

@@ -38,6 +38,7 @@ namespace EMRALD_Sim
     private List<List<string>> _xmppLink = new List<List<string>>();
     private string _XMPP_Password = "secret";
     private int _pathResultsInterval = -1;
+    
 
     [DllImport("kernel32.dll")]
     static extern bool AttachConsole(int dwProcessId);
@@ -69,7 +70,7 @@ namespace EMRALD_Sim
       //SimulationDAL.Globals.simID = 1;
       for (int i = 0; i < args.Length; i++) // Loop through array
       {
-        string argument = args[i];
+        string argument = args[i].ToLower();
         switch (argument)
         {
           case "-n": //run count
@@ -223,13 +224,13 @@ namespace EMRALD_Sim
               break;
             }
 
-          case "-jsonStats":
+          case "-jsonstats":
             {
               _statsFile = args[i + 1];
               break;
             }
 
-          case "-rIntrv":
+          case "-rintrv":
             {
               try
               {
@@ -305,6 +306,32 @@ namespace EMRALD_Sim
               break;
             }
 
+          case "-mergeresults":
+            if (args.Length < (i + 4))
+            {
+              Console.Write("Invalid option, must have two result file paths and a destination file path after -mergeresults.");
+              return;
+            }
+            string mergePath1 = _statsFile = args[i + 1];
+            string mergePath2 = _statsFile = args[i + 2];
+            string resPath = _statsFile = args[i + 3];
+            
+            try
+            {
+              if (SimulationEngine.OverallResults.CombineResultFiles(mergePath1, mergePath2, resPath) == "")
+              {
+                Console.Write("Failed to load files, must have two valid file paths after -mergeresults.");
+                return;
+              }
+
+              //all went well so be done
+            }
+            catch
+            {
+              Console.Write("Failed to merge result files, verify they are valid EMRALD path result JSON files.");
+            }
+            break;
+
           case "-help":
             {
               Console.WriteLine("-n \"run count\"");
@@ -322,6 +349,8 @@ namespace EMRALD_Sim
                                 "    Basic - state movement only. Detailed - state movement, actions and events. " + Environment.NewLine +
                                 "    Example: -d basic [10 20]");
               Console.WriteLine("-rIntrv \"how often to save the path results, every X number of runs. No value or <1 will result in saving only after all runs are complete.\"");
+              Console.WriteLine("-mergeResults \"merge two json path result files into one. Estimates the 5th and 95th. Example: -mergeResults c:/temp/PathResultsBatch1.json c:/temp/PathResultsBatch2.json c:/temp/PathResultsCombined.json\"");
+
               break;
             }
 
