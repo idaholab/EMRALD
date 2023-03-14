@@ -341,7 +341,7 @@ function openSankey() {
       const wnd = mxWindow.createFrameWindow(
         'sankey/emrald-sankey-timeline.html',
         'OK',
-        'close',
+        'minimize, maximize, close',
         (btn) => {
           if (btn === 'OK') {
             console.log('OK');

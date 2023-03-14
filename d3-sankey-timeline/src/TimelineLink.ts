@@ -6,6 +6,8 @@ import { LinkLayout } from './types';
  * Represents a link between two nodes in the graph.
  */
 export default class TimelineLink {
+  public data: any;
+
   public flow: number;
 
   public graph: SankeyTimeline;
