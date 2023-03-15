@@ -1,6 +1,6 @@
 # External Couping using XMPP
 
-!<div style="width:300px">![logo](/images/Modeling/xmppProtocol/XMPP_logo.png)</div><br>
+!<div style="width:300px">![logo](/images/Modeling/XMPPProtocol/XMPP_logo.png)</div><br>
 # Overview
 The XMPP message passing protocol in EMRALD makes it possible to do two-way coupling where the events in another simulation affect what happens in the EMRALD model and the events in the EMRALD model can change the other simulation, all in real time. To do this, you must either have access to the source of the coupling simulation or write a wrapper for an API of the other application. This section covers the message structure and minimum requirements. 
 Notice - This is feature is still in beta development and subject to change.
@@ -27,11 +27,11 @@ The messages are in JSON format and there are two types of messages: Action Mess
 
 **Action Message Example**
 
-![Action Message](/images/Modeling/xmppProtocol/ActionMessage.png)<br>
+![Action Message](/images/Modeling/XMPPProtocol/ActionMessage.png)<br>
 
 **Event Message Example**
 
-![Event Message](/images/Modeling/xmppProtocol/EventMessage.png)<br>
+![Event Message](/images/Modeling/XMPPProtocol/EventMessage.png)<br>
 
 
 ## Action Message Types - From EMRALD
@@ -177,11 +177,11 @@ In this condition there was an error somewhere in the simulation or communicatio
 * Shut down simulation and all associated threads.
 
 ### State Diagram
-![Messaging State Digram](/images/Modeling/xmppProtocol/XMPP_Msg_StateDiagram.png)<br>
+![Messaging State Digram](/images/Modeling/XMPPProtocol/XMPP_Msg_StateDiagram.png)<br>
 This state diagram shows the recommended design flow for reacting to EMRALD messages outlined in the above section. Immediate actions are what should be done when entering the status state. The events are either messages from EMRALD or conditions that happen inside the simulation. The sub items under the Events are Actions to be taken if the Event occurs. Both atPing and atStatus are ignored in this diagram because they should be responded to in every state.
 
 ### Sequence Diagram
-![Messaging Sequence Digram](/images/Modeling/xmppProtocol/SequenceDiagram.png)<br>
+![Messaging Sequence Digram](/images/Modeling/XMPPProtocol/SequenceDiagram.png)<br>
 This sequence diagram show the flow of messages between the two applicaitons.
 
 # Testing
@@ -192,24 +192,24 @@ To couple with an external application first load a model. If it loads with no e
 
 ### Establishing a connection
 The external simulation or client application must then be opened and connected. Next the user clicks on the items in "Links to External Simulations" in the upper left. 
-<div style="width:500px">![External Links](/images/Modeling/xmppProtocol/SolveEngineExtLink.png)</div><br>
+<div style="width:500px">![External Links](/images/Modeling/XMPPProtocol/SolveEngineExtLink.png)</div><br>
 This pops up a list of all clients currently connected to EMRALD. The user selects the correct linked application for the EMRALD item. 
-<div style="width:300px">![Select Link](/images/Modeling/xmppProtocol/SolveEngineSelLink.png)</div><br>
+<div style="width:300px">![Select Link](/images/Modeling/XMPPProtocol/SolveEngineSelLink.png)</div><br>
 
 ### Manually send EMRALD messages
 The 'XMPP Messaging' tab allows the user to manually construct and send messages and see messages sent from a coupled application.
 
 The left side shows the connected clients and the messages received.
-<div style="width:500px">![EMRALD message log](/images/Modeling/xmppProtocol/SolveEngineMsgLog.png)</div><br>
+<div style="width:500px">![EMRALD message log](/images/Modeling/XMPPProtocol/SolveEngineMsgLog.png)</div><br>
 
 The right side allows the user to manually construct a message to send to the coupled application.
-<div style="width:500px">![EMRALD message builder](/images/Modeling/xmppProtocol/SolveEngineMsgBuilder.png)</div><br>
+<div style="width:500px">![EMRALD message builder](/images/Modeling/XMPPProtocol/SolveEngineMsgBuilder.png)</div><br>
 
 If the user knows or has the JSON message to be sent they can type or paste it in the bottom right section.
-<div style="width:500px">![EMRALD message area](/images/Modeling/xmppProtocol/SolveEngineMsgBuilderBtm.png)</div><br>
+<div style="width:500px">![EMRALD message area](/images/Modeling/XMPPProtocol/SolveEngineMsgBuilderBtm.png)</div><br>
 
 By selecting and filling out the top options, a message can be automatically constructed. The options depend on the type of message selected by the user. Clicking the "Generate Message" button auto generates the JSON message in the box below. 
-<div style="width:500px">![EMRALD auto build message](/images/Modeling/xmppProtocol/SolveEngineMsgBuilderAuto.png)</div><br>
+<div style="width:500px">![EMRALD auto build message](/images/Modeling/XMPPProtocol/SolveEngineMsgBuilderAuto.png)</div><br>
 
 
 ## Client Demo
@@ -218,15 +218,15 @@ This project allows you to see the messages coming from the EMRALD simulation an
 
 **Connections/Send Tab**<br>
 After EMRALD is running define the user, domain and resource. (See above section Message Requirements -> Connecting) Then click connect.
-<div style="width:300px">![Client Tester](/images/Modeling/xmppProtocol/ClentTesterMain.png)</div><br>
+<div style="width:300px">![Client Tester](/images/Modeling/XMPPProtocol/ClentTesterMain.png)</div><br>
 
 After connecting this tab allows you to manually send messages to the connected EMRALD simulation or other clients connected. This can be done by pasting the message in the bottom text area and selecting the client in the bottom dropdown, and clicking "Send".
 For assistance in constructing a message options can be selected in the center area. The items DispName, Occur time and Event Msg Type need to be assigned for every message. When selecting the Event Msg Type, the sub options will very as needed. Refer to Messaging requirements above to determine what values to set for each message. After assigning the values click the "Generate Message" button and correctly syntax-ed JSON will be generated in the text area below. Then click send.
-<div style="width:300px">![Client Tester](/images/Modeling/xmppProtocol/ClentTesterMsgArea.png)</div><br>
+<div style="width:300px">![Client Tester](/images/Modeling/XMPPProtocol/ClentTesterMsgArea.png)</div><br>
 
 **Received Messages**<br>
 Each message received is posted in this tabs list.
-<div style="width:300px">![Client message log](/images/Modeling/xmppProtocol/ClientMsglog.png)</div><br>
+<div style="width:300px">![Client message log](/images/Modeling/XMPPProtocol/ClientMsglog.png)</div><br>
 
 
 
