@@ -16,6 +16,7 @@ namespace EMRALD_Sim
             var builder = new ConfigurationBuilder().AddEnvironmentVariables();
             builder.SetBasePath(AppContext.BaseDirectory);
             builder.AddJsonFile("AppSettings.json", optional: true, reloadOnChange: true);
+            builder.AddJsonFile("UISettings.json", optional: true);
             builder.AddUserSecrets(assembly, optional: true);
                 
             return builder.Build();

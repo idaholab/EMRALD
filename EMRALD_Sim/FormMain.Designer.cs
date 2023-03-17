@@ -30,1651 +30,1634 @@ namespace EMRALD_Sim
     /// </summary>
     private void InitializeComponent()
     {
-      this.components = new System.ComponentModel.Container();
-      this.menuStrip1 = new System.Windows.Forms.MenuStrip();
-      this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-      this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-      this.defaultLoadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-      this.saveStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-      this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-      this.openModel = new System.Windows.Forms.OpenFileDialog();
-      this.tabXMPP = new System.Windows.Forms.TabPage();
-      this.panel1 = new System.Windows.Forms.Panel();
-      this.panel2 = new System.Windows.Forms.Panel();
-      this.splitter4 = new System.Windows.Forms.Splitter();
-      this.rtbJSONErrors = new System.Windows.Forms.RichTextBox();
-      this.rtbJSONMsg = new System.Windows.Forms.RichTextBox();
-      this.splitter5 = new System.Windows.Forms.Splitter();
-      this.pnlJSONGen = new System.Windows.Forms.Panel();
-      this.tabCtrlMsgTypes = new System.Windows.Forms.TabControl();
-      this.tabItemData = new System.Windows.Forms.TabPage();
-      this.tbItemDataValue = new System.Windows.Forms.TextBox();
-      this.label5 = new System.Windows.Forms.Label();
-      this.tbItemDataName = new System.Windows.Forms.TextBox();
-      this.compID = new System.Windows.Forms.Label();
-      this.tabSimInfo = new System.Windows.Forms.TabPage();
-      this.label9 = new System.Windows.Forms.Label();
-      this.tbEndTime = new System.Windows.Forms.TextBox();
-      this.label8 = new System.Windows.Forms.Label();
-      this.tbConfigData = new System.Windows.Forms.TextBox();
-      this.label4 = new System.Windows.Forms.Label();
-      this.tbModelRef = new System.Windows.Forms.TextBox();
-      this.label6 = new System.Windows.Forms.Label();
-      this.panel6 = new System.Windows.Forms.Panel();
-      this.groupBox1 = new System.Windows.Forms.GroupBox();
-      this.rtbMsgInfo = new System.Windows.Forms.RichTextBox();
-      this.btnGenMsg = new System.Windows.Forms.Button();
-      this.pnlTimePicking = new System.Windows.Forms.Panel();
-      this.label3 = new System.Windows.Forms.Label();
-      this.tbTimeSpan = new System.Windows.Forms.TextBox();
-      this.label2 = new System.Windows.Forms.Label();
-      this.panel5 = new System.Windows.Forms.Panel();
-      this.label11 = new System.Windows.Forms.Label();
-      this.cbMsgType = new System.Windows.Forms.ComboBox();
-      this.panel7 = new System.Windows.Forms.Panel();
-      this.label1 = new System.Windows.Forms.Label();
-      this.btnSendMsg = new System.Windows.Forms.Button();
-      this.cbRegisteredClients = new System.Windows.Forms.ComboBox();
-      this.panel8 = new System.Windows.Forms.Panel();
-      this.tbDispName = new System.Windows.Forms.TextBox();
-      this.label10 = new System.Windows.Forms.Label();
-      this.lblSimTime = new System.Windows.Forms.Label();
-      this.tbMsgDesc = new System.Windows.Forms.TextBox();
-      this.lblMsgTime = new System.Windows.Forms.Label();
-      this.lblManMsgDesc = new System.Windows.Forms.Label();
-      this.lblSendManualMsg = new System.Windows.Forms.Label();
-      this.splitter1 = new System.Windows.Forms.Splitter();
-      this.pnlConInfo = new System.Windows.Forms.Panel();
-      this.groupBoxReceived = new System.Windows.Forms.GroupBox();
-      this.chkClearOnMsg = new System.Windows.Forms.CheckBox();
-      this.rtfReceived = new System.Windows.Forms.RichTextBox();
-      this.groupBoxClients = new System.Windows.Forms.GroupBox();
-      this.listBoxClients = new System.Windows.Forms.ListBox();
-      this.tabModel = new System.Windows.Forms.TabPage();
-      this.button1 = new System.Windows.Forms.Button();
-      this.panel3 = new System.Windows.Forms.Panel();
-      this.panel15 = new System.Windows.Forms.Panel();
-      this.teModel = new ICSharpCode.TextEditor.TextEditorControl();
-      this.panel9 = new System.Windows.Forms.Panel();
-      this.btnValidateModel = new System.Windows.Forms.Button();
-      this.splitter2 = new System.Windows.Forms.Splitter();
-      this.txtMStatus = new System.Windows.Forms.TextBox();
-      this.tcMain = new System.Windows.Forms.TabControl();
-      this.tabSimulate = new System.Windows.Forms.TabPage();
-      this.pnlSimResults = new System.Windows.Forms.Panel();
-      this.lvVarValues = new System.Windows.Forms.ListView();
-      this.colName = new System.Windows.Forms.ColumnHeader();
-      this.colValue = new System.Windows.Forms.ColumnHeader();
-      this.splitter8 = new System.Windows.Forms.Splitter();
-      this.lvResults = new System.Windows.Forms.ListView();
-      this.colKeyState = new System.Windows.Forms.ColumnHeader();
-      this.colFailureCnt = new System.Windows.Forms.ColumnHeader();
-      this.colRate = new System.Windows.Forms.ColumnHeader();
-      this.colFailedItems = new System.Windows.Forms.ColumnHeader();
-      this.panel13 = new System.Windows.Forms.Panel();
-      this.lblRunTime = new System.Windows.Forms.Label();
-      this.btn_Stop = new System.Windows.Forms.Button();
-      this.lbl_ResultHeader = new System.Windows.Forms.Label();
-      this.splitter6 = new System.Windows.Forms.Splitter();
-      this.pnlSimulate = new System.Windows.Forms.Panel();
-      this.chkDebug = new System.Windows.Forms.Panel();
-      this.tbSavePath2 = new System.Windows.Forms.TextBox();
-      this.button2 = new System.Windows.Forms.Button();
-      this.gbPathResults = new System.Windows.Forms.GroupBox();
-      this.rbJsonPaths = new System.Windows.Forms.RadioButton();
-      this.rbSimplePath = new System.Windows.Forms.RadioButton();
-      this.label19 = new System.Windows.Forms.Label();
-      this.tbSeed = new System.Windows.Forms.TextBox();
-      this.label18 = new System.Windows.Forms.Label();
-      this.chkLog = new System.Windows.Forms.CheckBox();
-      this.grpDebugOpts = new System.Windows.Forms.GroupBox();
-      this.label21 = new System.Windows.Forms.Label();
-      this.label20 = new System.Windows.Forms.Label();
-      this.tbLogRunEnd = new System.Windows.Forms.TextBox();
-      this.tbLogRunStart = new System.Windows.Forms.TextBox();
-      this.rbDebugDetailed = new System.Windows.Forms.RadioButton();
-      this.rbDebugBasic = new System.Windows.Forms.RadioButton();
-      this.label17 = new System.Windows.Forms.Label();
-      this.label16 = new System.Windows.Forms.Label();
-      this.button3 = new System.Windows.Forms.Button();
-      this.button4 = new System.Windows.Forms.Button();
-      this.tbSavePath = new System.Windows.Forms.TextBox();
-      this.label13 = new System.Windows.Forms.Label();
-      this.tbMaxSimTime = new System.Windows.Forms.TextBox();
-      this.label15 = new System.Windows.Forms.Label();
-      this.label14 = new System.Windows.Forms.Label();
-      this.tbRunCnt = new System.Windows.Forms.TextBox();
-      this.btnStartSims = new System.Windows.Forms.Button();
-      this.splitter7 = new System.Windows.Forms.Splitter();
-      this.panel12 = new System.Windows.Forms.Panel();
-      this.lbMonitorVars = new System.Windows.Forms.CheckedListBox();
-      this.panel14 = new System.Windows.Forms.Panel();
-      this.label7 = new System.Windows.Forms.Label();
-      this.splitter3 = new System.Windows.Forms.Splitter();
-      this.panel4 = new System.Windows.Forms.Panel();
-      this.lbExtSimLinks = new System.Windows.Forms.CheckedListBox();
-      this.panel10 = new System.Windows.Forms.Panel();
-      this.label12 = new System.Windows.Forms.Label();
-      this.tabLog = new System.Windows.Forms.TabPage();
-      this.rtbLog = new System.Windows.Forms.RichTextBox();
-      this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
-      this.saveFileDialog2 = new System.Windows.Forms.SaveFileDialog();
-      this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
-      this.sdSaveModel = new System.Windows.Forms.SaveFileDialog();
-      this.menuStrip1.SuspendLayout();
-      this.tabXMPP.SuspendLayout();
-      this.panel1.SuspendLayout();
-      this.panel2.SuspendLayout();
-      this.pnlJSONGen.SuspendLayout();
-      this.tabCtrlMsgTypes.SuspendLayout();
-      this.tabItemData.SuspendLayout();
-      this.tabSimInfo.SuspendLayout();
-      this.panel6.SuspendLayout();
-      this.groupBox1.SuspendLayout();
-      this.pnlTimePicking.SuspendLayout();
-      this.panel5.SuspendLayout();
-      this.panel7.SuspendLayout();
-      this.panel8.SuspendLayout();
-      this.pnlConInfo.SuspendLayout();
-      this.groupBoxReceived.SuspendLayout();
-      this.groupBoxClients.SuspendLayout();
-      this.tabModel.SuspendLayout();
-      this.panel3.SuspendLayout();
-      this.panel15.SuspendLayout();
-      this.panel9.SuspendLayout();
-      this.tcMain.SuspendLayout();
-      this.tabSimulate.SuspendLayout();
-      this.pnlSimResults.SuspendLayout();
-      this.panel13.SuspendLayout();
-      this.pnlSimulate.SuspendLayout();
-      this.chkDebug.SuspendLayout();
-      this.gbPathResults.SuspendLayout();
-      this.grpDebugOpts.SuspendLayout();
-      this.panel12.SuspendLayout();
-      this.panel14.SuspendLayout();
-      this.panel4.SuspendLayout();
-      this.panel10.SuspendLayout();
-      this.tabLog.SuspendLayout();
-      this.SuspendLayout();
+      components = new System.ComponentModel.Container();
+      menuStrip1 = new System.Windows.Forms.MenuStrip();
+      fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+      openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+      defaultLoadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+      saveStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+      toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+      openModel = new System.Windows.Forms.OpenFileDialog();
+      tabXMPP = new System.Windows.Forms.TabPage();
+      panel1 = new System.Windows.Forms.Panel();
+      panel2 = new System.Windows.Forms.Panel();
+      splitter4 = new System.Windows.Forms.Splitter();
+      rtbJSONErrors = new System.Windows.Forms.RichTextBox();
+      rtbJSONMsg = new System.Windows.Forms.RichTextBox();
+      splitter5 = new System.Windows.Forms.Splitter();
+      pnlJSONGen = new System.Windows.Forms.Panel();
+      tabCtrlMsgTypes = new System.Windows.Forms.TabControl();
+      tabItemData = new System.Windows.Forms.TabPage();
+      tbItemDataValue = new System.Windows.Forms.TextBox();
+      label5 = new System.Windows.Forms.Label();
+      tbItemDataName = new System.Windows.Forms.TextBox();
+      compID = new System.Windows.Forms.Label();
+      tabSimInfo = new System.Windows.Forms.TabPage();
+      label9 = new System.Windows.Forms.Label();
+      tbEndTime = new System.Windows.Forms.TextBox();
+      label8 = new System.Windows.Forms.Label();
+      tbConfigData = new System.Windows.Forms.TextBox();
+      label4 = new System.Windows.Forms.Label();
+      tbModelRef = new System.Windows.Forms.TextBox();
+      label6 = new System.Windows.Forms.Label();
+      panel6 = new System.Windows.Forms.Panel();
+      groupBox1 = new System.Windows.Forms.GroupBox();
+      rtbMsgInfo = new System.Windows.Forms.RichTextBox();
+      btnGenMsg = new System.Windows.Forms.Button();
+      pnlTimePicking = new System.Windows.Forms.Panel();
+      label3 = new System.Windows.Forms.Label();
+      tbTimeSpan = new System.Windows.Forms.TextBox();
+      label2 = new System.Windows.Forms.Label();
+      panel5 = new System.Windows.Forms.Panel();
+      label11 = new System.Windows.Forms.Label();
+      cbMsgType = new System.Windows.Forms.ComboBox();
+      panel7 = new System.Windows.Forms.Panel();
+      label1 = new System.Windows.Forms.Label();
+      btnSendMsg = new System.Windows.Forms.Button();
+      cbRegisteredClients = new System.Windows.Forms.ComboBox();
+      panel8 = new System.Windows.Forms.Panel();
+      tbDispName = new System.Windows.Forms.TextBox();
+      label10 = new System.Windows.Forms.Label();
+      lblSimTime = new System.Windows.Forms.Label();
+      tbMsgDesc = new System.Windows.Forms.TextBox();
+      lblMsgTime = new System.Windows.Forms.Label();
+      lblManMsgDesc = new System.Windows.Forms.Label();
+      lblSendManualMsg = new System.Windows.Forms.Label();
+      splitter1 = new System.Windows.Forms.Splitter();
+      pnlConInfo = new System.Windows.Forms.Panel();
+      groupBoxReceived = new System.Windows.Forms.GroupBox();
+      chkClearOnMsg = new System.Windows.Forms.CheckBox();
+      rtfReceived = new System.Windows.Forms.RichTextBox();
+      groupBoxClients = new System.Windows.Forms.GroupBox();
+      listBoxClients = new System.Windows.Forms.ListBox();
+      tabModel = new System.Windows.Forms.TabPage();
+      button1 = new System.Windows.Forms.Button();
+      panel3 = new System.Windows.Forms.Panel();
+      panel15 = new System.Windows.Forms.Panel();
+      teModel = new ICSharpCode.TextEditor.TextEditorControl();
+      panel9 = new System.Windows.Forms.Panel();
+      btnValidateModel = new System.Windows.Forms.Button();
+      splitter2 = new System.Windows.Forms.Splitter();
+      txtMStatus = new System.Windows.Forms.TextBox();
+      tcMain = new System.Windows.Forms.TabControl();
+      tabSimulate = new System.Windows.Forms.TabPage();
+      pnlSimResults = new System.Windows.Forms.Panel();
+      lvVarValues = new System.Windows.Forms.ListView();
+      colName = new System.Windows.Forms.ColumnHeader();
+      colValue = new System.Windows.Forms.ColumnHeader();
+      splitter8 = new System.Windows.Forms.Splitter();
+      lvResults = new System.Windows.Forms.ListView();
+      colKeyState = new System.Windows.Forms.ColumnHeader();
+      colFailureCnt = new System.Windows.Forms.ColumnHeader();
+      colRate = new System.Windows.Forms.ColumnHeader();
+      colFailedItems = new System.Windows.Forms.ColumnHeader();
+      panel13 = new System.Windows.Forms.Panel();
+      lblRunTime = new System.Windows.Forms.Label();
+      btn_Stop = new System.Windows.Forms.Button();
+      lbl_ResultHeader = new System.Windows.Forms.Label();
+      splitter6 = new System.Windows.Forms.Splitter();
+      pnlSimulate = new System.Windows.Forms.Panel();
+      chkDebug = new System.Windows.Forms.Panel();
+      tbSavePath2 = new System.Windows.Forms.TextBox();
+      button2 = new System.Windows.Forms.Button();
+      gbPathResults = new System.Windows.Forms.GroupBox();
+      rbJsonPaths = new System.Windows.Forms.RadioButton();
+      rbSimplePath = new System.Windows.Forms.RadioButton();
+      label19 = new System.Windows.Forms.Label();
+      tbSeed = new System.Windows.Forms.TextBox();
+      label18 = new System.Windows.Forms.Label();
+      chkLog = new System.Windows.Forms.CheckBox();
+      grpDebugOpts = new System.Windows.Forms.GroupBox();
+      label21 = new System.Windows.Forms.Label();
+      label20 = new System.Windows.Forms.Label();
+      tbLogRunEnd = new System.Windows.Forms.TextBox();
+      tbLogRunStart = new System.Windows.Forms.TextBox();
+      rbDebugDetailed = new System.Windows.Forms.RadioButton();
+      rbDebugBasic = new System.Windows.Forms.RadioButton();
+      label17 = new System.Windows.Forms.Label();
+      label16 = new System.Windows.Forms.Label();
+      button3 = new System.Windows.Forms.Button();
+      button4 = new System.Windows.Forms.Button();
+      tbSavePath = new System.Windows.Forms.TextBox();
+      label13 = new System.Windows.Forms.Label();
+      tbMaxSimTime = new System.Windows.Forms.TextBox();
+      label15 = new System.Windows.Forms.Label();
+      label14 = new System.Windows.Forms.Label();
+      tbRunCnt = new System.Windows.Forms.TextBox();
+      btnStartSims = new System.Windows.Forms.Button();
+      splitter7 = new System.Windows.Forms.Splitter();
+      panel12 = new System.Windows.Forms.Panel();
+      lbMonitorVars = new System.Windows.Forms.CheckedListBox();
+      panel14 = new System.Windows.Forms.Panel();
+      label7 = new System.Windows.Forms.Label();
+      splitter3 = new System.Windows.Forms.Splitter();
+      panel4 = new System.Windows.Forms.Panel();
+      lbExtSimLinks = new System.Windows.Forms.CheckedListBox();
+      panel10 = new System.Windows.Forms.Panel();
+      label12 = new System.Windows.Forms.Label();
+      tabLog = new System.Windows.Forms.TabPage();
+      rtbLog = new System.Windows.Forms.RichTextBox();
+      saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
+      saveFileDialog2 = new System.Windows.Forms.SaveFileDialog();
+      toolTip1 = new System.Windows.Forms.ToolTip(components);
+      sdSaveModel = new System.Windows.Forms.SaveFileDialog();
+      recentToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+      menuStrip1.SuspendLayout();
+      tabXMPP.SuspendLayout();
+      panel1.SuspendLayout();
+      panel2.SuspendLayout();
+      pnlJSONGen.SuspendLayout();
+      tabCtrlMsgTypes.SuspendLayout();
+      tabItemData.SuspendLayout();
+      tabSimInfo.SuspendLayout();
+      panel6.SuspendLayout();
+      groupBox1.SuspendLayout();
+      pnlTimePicking.SuspendLayout();
+      panel5.SuspendLayout();
+      panel7.SuspendLayout();
+      panel8.SuspendLayout();
+      pnlConInfo.SuspendLayout();
+      groupBoxReceived.SuspendLayout();
+      groupBoxClients.SuspendLayout();
+      tabModel.SuspendLayout();
+      panel3.SuspendLayout();
+      panel15.SuspendLayout();
+      panel9.SuspendLayout();
+      tcMain.SuspendLayout();
+      tabSimulate.SuspendLayout();
+      pnlSimResults.SuspendLayout();
+      panel13.SuspendLayout();
+      pnlSimulate.SuspendLayout();
+      chkDebug.SuspendLayout();
+      gbPathResults.SuspendLayout();
+      grpDebugOpts.SuspendLayout();
+      panel12.SuspendLayout();
+      panel14.SuspendLayout();
+      panel4.SuspendLayout();
+      panel10.SuspendLayout();
+      tabLog.SuspendLayout();
+      SuspendLayout();
       // 
       // menuStrip1
       // 
-      this.menuStrip1.ImageScalingSize = new System.Drawing.Size(24, 24);
-      this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.fileToolStripMenuItem});
-      this.menuStrip1.Location = new System.Drawing.Point(0, 0);
-      this.menuStrip1.Name = "menuStrip1";
-      this.menuStrip1.Padding = new System.Windows.Forms.Padding(7, 2, 0, 2);
-      this.menuStrip1.Size = new System.Drawing.Size(1259, 24);
-      this.menuStrip1.TabIndex = 0;
-      this.menuStrip1.Text = "menuStrip1";
+      menuStrip1.ImageScalingSize = new System.Drawing.Size(24, 24);
+      menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { fileToolStripMenuItem });
+      menuStrip1.Location = new System.Drawing.Point(0, 0);
+      menuStrip1.Name = "menuStrip1";
+      menuStrip1.Padding = new System.Windows.Forms.Padding(7, 2, 0, 2);
+      menuStrip1.Size = new System.Drawing.Size(1259, 24);
+      menuStrip1.TabIndex = 0;
+      menuStrip1.Text = "menuStrip1";
       // 
       // fileToolStripMenuItem
       // 
-      this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.openToolStripMenuItem,
-            this.defaultLoadToolStripMenuItem,
-            this.saveStripMenuItem,
-            this.toolStripMenuItem1});
-      this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
-      this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
-      this.fileToolStripMenuItem.Text = "File";
+      fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { openToolStripMenuItem, defaultLoadToolStripMenuItem, saveStripMenuItem, toolStripMenuItem1, recentToolStripMenuItem });
+      fileToolStripMenuItem.Name = "fileToolStripMenuItem";
+      fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
+      fileToolStripMenuItem.Text = "File";
       // 
       // openToolStripMenuItem
       // 
-      this.openToolStripMenuItem.Name = "openToolStripMenuItem";
-      this.openToolStripMenuItem.Size = new System.Drawing.Size(138, 22);
-      this.openToolStripMenuItem.Text = "Open";
-      this.openToolStripMenuItem.Click += new System.EventHandler(this.openToolStripMenuItem_Click);
+      openToolStripMenuItem.Name = "openToolStripMenuItem";
+      openToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+      openToolStripMenuItem.Text = "Open";
+      openToolStripMenuItem.Click += openToolStripMenuItem_Click;
       // 
       // defaultLoadToolStripMenuItem
       // 
-      this.defaultLoadToolStripMenuItem.Name = "defaultLoadToolStripMenuItem";
-      this.defaultLoadToolStripMenuItem.Size = new System.Drawing.Size(138, 22);
-      this.defaultLoadToolStripMenuItem.Text = "DefaultLoad";
-      this.defaultLoadToolStripMenuItem.Visible = false;
-      this.defaultLoadToolStripMenuItem.Click += new System.EventHandler(this.defaultLoadToolStripMenuItem_Click);
+      defaultLoadToolStripMenuItem.Name = "defaultLoadToolStripMenuItem";
+      defaultLoadToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+      defaultLoadToolStripMenuItem.Text = "DefaultLoad";
+      defaultLoadToolStripMenuItem.Visible = false;
+      defaultLoadToolStripMenuItem.Click += defaultLoadToolStripMenuItem_Click;
       // 
       // saveStripMenuItem
       // 
-      this.saveStripMenuItem.Name = "saveStripMenuItem";
-      this.saveStripMenuItem.Size = new System.Drawing.Size(138, 22);
-      this.saveStripMenuItem.Text = "Save";
-      this.saveStripMenuItem.Click += new System.EventHandler(this.saveStripMenuItem_Click);
+      saveStripMenuItem.Name = "saveStripMenuItem";
+      saveStripMenuItem.Size = new System.Drawing.Size(180, 22);
+      saveStripMenuItem.Text = "Save";
+      saveStripMenuItem.Click += saveStripMenuItem_Click;
       // 
       // toolStripMenuItem1
       // 
-      this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-      this.toolStripMenuItem1.Size = new System.Drawing.Size(138, 22);
-      this.toolStripMenuItem1.Text = "Save As";
-      this.toolStripMenuItem1.Click += new System.EventHandler(this.toolStripMenuItem1_Click);
+      toolStripMenuItem1.Name = "toolStripMenuItem1";
+      toolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
+      toolStripMenuItem1.Text = "Save As";
+      toolStripMenuItem1.Click += toolStripMenuItem1_Click;
       // 
       // openModel
       // 
-      this.openModel.Filter = "JSON Files (*.json)|*.json";
+      openModel.Filter = "JSON Files (*.json)|*.json";
       // 
       // tabXMPP
       // 
-      this.tabXMPP.Controls.Add(this.panel1);
-      this.tabXMPP.Controls.Add(this.splitter1);
-      this.tabXMPP.Controls.Add(this.pnlConInfo);
-      this.tabXMPP.Location = new System.Drawing.Point(4, 24);
-      this.tabXMPP.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-      this.tabXMPP.Name = "tabXMPP";
-      this.tabXMPP.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
-      this.tabXMPP.Size = new System.Drawing.Size(1251, 793);
-      this.tabXMPP.TabIndex = 1;
-      this.tabXMPP.Text = "XMPP Messaging";
-      this.tabXMPP.UseVisualStyleBackColor = true;
-      this.tabXMPP.Enter += new System.EventHandler(this.tabXMPP_Enter);
+      tabXMPP.Controls.Add(panel1);
+      tabXMPP.Controls.Add(splitter1);
+      tabXMPP.Controls.Add(pnlConInfo);
+      tabXMPP.Location = new System.Drawing.Point(4, 24);
+      tabXMPP.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+      tabXMPP.Name = "tabXMPP";
+      tabXMPP.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
+      tabXMPP.Size = new System.Drawing.Size(1251, 793);
+      tabXMPP.TabIndex = 1;
+      tabXMPP.Text = "XMPP Messaging";
+      tabXMPP.UseVisualStyleBackColor = true;
+      tabXMPP.Enter += tabXMPP_Enter;
       // 
       // panel1
       // 
-      this.panel1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-      this.panel1.Controls.Add(this.panel2);
-      this.panel1.Controls.Add(this.panel7);
-      this.panel1.Controls.Add(this.panel8);
-      this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
-      this.panel1.Location = new System.Drawing.Point(467, 3);
-      this.panel1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-      this.panel1.Name = "panel1";
-      this.panel1.Size = new System.Drawing.Size(780, 787);
-      this.panel1.TabIndex = 28;
+      panel1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+      panel1.Controls.Add(panel2);
+      panel1.Controls.Add(panel7);
+      panel1.Controls.Add(panel8);
+      panel1.Dock = System.Windows.Forms.DockStyle.Fill;
+      panel1.Location = new System.Drawing.Point(467, 3);
+      panel1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+      panel1.Name = "panel1";
+      panel1.Size = new System.Drawing.Size(780, 787);
+      panel1.TabIndex = 28;
       // 
       // panel2
       // 
-      this.panel2.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-      this.panel2.Controls.Add(this.splitter4);
-      this.panel2.Controls.Add(this.rtbJSONErrors);
-      this.panel2.Controls.Add(this.rtbJSONMsg);
-      this.panel2.Controls.Add(this.splitter5);
-      this.panel2.Controls.Add(this.pnlJSONGen);
-      this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
-      this.panel2.Location = new System.Drawing.Point(0, 107);
-      this.panel2.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-      this.panel2.Name = "panel2";
-      this.panel2.Size = new System.Drawing.Size(776, 621);
-      this.panel2.TabIndex = 28;
+      panel2.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+      panel2.Controls.Add(splitter4);
+      panel2.Controls.Add(rtbJSONErrors);
+      panel2.Controls.Add(rtbJSONMsg);
+      panel2.Controls.Add(splitter5);
+      panel2.Controls.Add(pnlJSONGen);
+      panel2.Dock = System.Windows.Forms.DockStyle.Fill;
+      panel2.Location = new System.Drawing.Point(0, 107);
+      panel2.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+      panel2.Name = "panel2";
+      panel2.Size = new System.Drawing.Size(776, 621);
+      panel2.TabIndex = 28;
       // 
       // splitter4
       // 
-      this.splitter4.Dock = System.Windows.Forms.DockStyle.Bottom;
-      this.splitter4.Location = new System.Drawing.Point(0, 501);
-      this.splitter4.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-      this.splitter4.Name = "splitter4";
-      this.splitter4.Size = new System.Drawing.Size(774, 3);
-      this.splitter4.TabIndex = 6;
-      this.splitter4.TabStop = false;
+      splitter4.Dock = System.Windows.Forms.DockStyle.Bottom;
+      splitter4.Location = new System.Drawing.Point(0, 501);
+      splitter4.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+      splitter4.Name = "splitter4";
+      splitter4.Size = new System.Drawing.Size(774, 3);
+      splitter4.TabIndex = 6;
+      splitter4.TabStop = false;
       // 
       // rtbJSONErrors
       // 
-      this.rtbJSONErrors.BackColor = System.Drawing.SystemColors.Control;
-      this.rtbJSONErrors.Dock = System.Windows.Forms.DockStyle.Bottom;
-      this.rtbJSONErrors.Location = new System.Drawing.Point(0, 504);
-      this.rtbJSONErrors.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-      this.rtbJSONErrors.Name = "rtbJSONErrors";
-      this.rtbJSONErrors.Size = new System.Drawing.Size(774, 115);
-      this.rtbJSONErrors.TabIndex = 5;
-      this.rtbJSONErrors.Text = "JSON Errors";
-      this.rtbJSONErrors.Visible = false;
+      rtbJSONErrors.BackColor = System.Drawing.SystemColors.Control;
+      rtbJSONErrors.Dock = System.Windows.Forms.DockStyle.Bottom;
+      rtbJSONErrors.Location = new System.Drawing.Point(0, 504);
+      rtbJSONErrors.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+      rtbJSONErrors.Name = "rtbJSONErrors";
+      rtbJSONErrors.Size = new System.Drawing.Size(774, 115);
+      rtbJSONErrors.TabIndex = 5;
+      rtbJSONErrors.Text = "JSON Errors";
+      rtbJSONErrors.Visible = false;
       // 
       // rtbJSONMsg
       // 
-      this.rtbJSONMsg.BackColor = System.Drawing.SystemColors.Control;
-      this.rtbJSONMsg.Dock = System.Windows.Forms.DockStyle.Fill;
-      this.rtbJSONMsg.Location = new System.Drawing.Point(0, 347);
-      this.rtbJSONMsg.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-      this.rtbJSONMsg.Name = "rtbJSONMsg";
-      this.rtbJSONMsg.Size = new System.Drawing.Size(774, 272);
-      this.rtbJSONMsg.TabIndex = 3;
-      this.rtbJSONMsg.Text = "";
+      rtbJSONMsg.BackColor = System.Drawing.SystemColors.Control;
+      rtbJSONMsg.Dock = System.Windows.Forms.DockStyle.Fill;
+      rtbJSONMsg.Location = new System.Drawing.Point(0, 347);
+      rtbJSONMsg.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+      rtbJSONMsg.Name = "rtbJSONMsg";
+      rtbJSONMsg.Size = new System.Drawing.Size(774, 272);
+      rtbJSONMsg.TabIndex = 3;
+      rtbJSONMsg.Text = "";
       // 
       // splitter5
       // 
-      this.splitter5.Dock = System.Windows.Forms.DockStyle.Top;
-      this.splitter5.Location = new System.Drawing.Point(0, 344);
-      this.splitter5.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-      this.splitter5.Name = "splitter5";
-      this.splitter5.Size = new System.Drawing.Size(774, 3);
-      this.splitter5.TabIndex = 2;
-      this.splitter5.TabStop = false;
+      splitter5.Dock = System.Windows.Forms.DockStyle.Top;
+      splitter5.Location = new System.Drawing.Point(0, 344);
+      splitter5.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+      splitter5.Name = "splitter5";
+      splitter5.Size = new System.Drawing.Size(774, 3);
+      splitter5.TabIndex = 2;
+      splitter5.TabStop = false;
       // 
       // pnlJSONGen
       // 
-      this.pnlJSONGen.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-      this.pnlJSONGen.Controls.Add(this.tabCtrlMsgTypes);
-      this.pnlJSONGen.Controls.Add(this.panel6);
-      this.pnlJSONGen.Controls.Add(this.pnlTimePicking);
-      this.pnlJSONGen.Controls.Add(this.panel5);
-      this.pnlJSONGen.Dock = System.Windows.Forms.DockStyle.Top;
-      this.pnlJSONGen.Location = new System.Drawing.Point(0, 0);
-      this.pnlJSONGen.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-      this.pnlJSONGen.Name = "pnlJSONGen";
-      this.pnlJSONGen.Size = new System.Drawing.Size(774, 344);
-      this.pnlJSONGen.TabIndex = 4;
+      pnlJSONGen.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+      pnlJSONGen.Controls.Add(tabCtrlMsgTypes);
+      pnlJSONGen.Controls.Add(panel6);
+      pnlJSONGen.Controls.Add(pnlTimePicking);
+      pnlJSONGen.Controls.Add(panel5);
+      pnlJSONGen.Dock = System.Windows.Forms.DockStyle.Top;
+      pnlJSONGen.Location = new System.Drawing.Point(0, 0);
+      pnlJSONGen.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+      pnlJSONGen.Name = "pnlJSONGen";
+      pnlJSONGen.Size = new System.Drawing.Size(774, 344);
+      pnlJSONGen.TabIndex = 4;
       // 
       // tabCtrlMsgTypes
       // 
-      this.tabCtrlMsgTypes.Controls.Add(this.tabItemData);
-      this.tabCtrlMsgTypes.Controls.Add(this.tabSimInfo);
-      this.tabCtrlMsgTypes.Dock = System.Windows.Forms.DockStyle.Fill;
-      this.tabCtrlMsgTypes.ItemSize = new System.Drawing.Size(100, 18);
-      this.tabCtrlMsgTypes.Location = new System.Drawing.Point(0, 72);
-      this.tabCtrlMsgTypes.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-      this.tabCtrlMsgTypes.Multiline = true;
-      this.tabCtrlMsgTypes.Name = "tabCtrlMsgTypes";
-      this.tabCtrlMsgTypes.SelectedIndex = 0;
-      this.tabCtrlMsgTypes.Size = new System.Drawing.Size(772, 132);
-      this.tabCtrlMsgTypes.SizeMode = System.Windows.Forms.TabSizeMode.Fixed;
-      this.tabCtrlMsgTypes.TabIndex = 0;
+      tabCtrlMsgTypes.Controls.Add(tabItemData);
+      tabCtrlMsgTypes.Controls.Add(tabSimInfo);
+      tabCtrlMsgTypes.Dock = System.Windows.Forms.DockStyle.Fill;
+      tabCtrlMsgTypes.ItemSize = new System.Drawing.Size(100, 18);
+      tabCtrlMsgTypes.Location = new System.Drawing.Point(0, 72);
+      tabCtrlMsgTypes.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+      tabCtrlMsgTypes.Multiline = true;
+      tabCtrlMsgTypes.Name = "tabCtrlMsgTypes";
+      tabCtrlMsgTypes.SelectedIndex = 0;
+      tabCtrlMsgTypes.Size = new System.Drawing.Size(772, 132);
+      tabCtrlMsgTypes.SizeMode = System.Windows.Forms.TabSizeMode.Fixed;
+      tabCtrlMsgTypes.TabIndex = 0;
       // 
       // tabItemData
       // 
-      this.tabItemData.BackColor = System.Drawing.Color.Gainsboro;
-      this.tabItemData.Controls.Add(this.tbItemDataValue);
-      this.tabItemData.Controls.Add(this.label5);
-      this.tabItemData.Controls.Add(this.tbItemDataName);
-      this.tabItemData.Controls.Add(this.compID);
-      this.tabItemData.Location = new System.Drawing.Point(4, 22);
-      this.tabItemData.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-      this.tabItemData.Name = "tabItemData";
-      this.tabItemData.Size = new System.Drawing.Size(764, 106);
-      this.tabItemData.TabIndex = 0;
-      this.tabItemData.Text = "ItemData";
+      tabItemData.BackColor = System.Drawing.Color.Gainsboro;
+      tabItemData.Controls.Add(tbItemDataValue);
+      tabItemData.Controls.Add(label5);
+      tabItemData.Controls.Add(tbItemDataName);
+      tabItemData.Controls.Add(compID);
+      tabItemData.Location = new System.Drawing.Point(4, 22);
+      tabItemData.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+      tabItemData.Name = "tabItemData";
+      tabItemData.Size = new System.Drawing.Size(764, 106);
+      tabItemData.TabIndex = 0;
+      tabItemData.Text = "ItemData";
       // 
       // tbItemDataValue
       // 
-      this.tbItemDataValue.Location = new System.Drawing.Point(83, 40);
-      this.tbItemDataValue.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-      this.tbItemDataValue.Name = "tbItemDataValue";
-      this.tbItemDataValue.Size = new System.Drawing.Size(170, 23);
-      this.tbItemDataValue.TabIndex = 8;
-      this.tbItemDataValue.Text = "300";
+      tbItemDataValue.Location = new System.Drawing.Point(83, 40);
+      tbItemDataValue.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+      tbItemDataValue.Name = "tbItemDataValue";
+      tbItemDataValue.Size = new System.Drawing.Size(170, 23);
+      tbItemDataValue.TabIndex = 8;
+      tbItemDataValue.Text = "300";
       // 
       // label5
       // 
-      this.label5.AutoSize = true;
-      this.label5.Location = new System.Drawing.Point(12, 44);
-      this.label5.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-      this.label5.Name = "label5";
-      this.label5.Size = new System.Drawing.Size(41, 15);
-      this.label5.TabIndex = 7;
-      this.label5.Text = "Value :";
+      label5.AutoSize = true;
+      label5.Location = new System.Drawing.Point(12, 44);
+      label5.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+      label5.Name = "label5";
+      label5.Size = new System.Drawing.Size(41, 15);
+      label5.TabIndex = 7;
+      label5.Text = "Value :";
       // 
       // tbItemDataName
       // 
-      this.tbItemDataName.Location = new System.Drawing.Point(83, 12);
-      this.tbItemDataName.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-      this.tbItemDataName.Name = "tbItemDataName";
-      this.tbItemDataName.Size = new System.Drawing.Size(170, 23);
-      this.tbItemDataName.TabIndex = 6;
-      this.tbItemDataName.Text = "myNameID";
+      tbItemDataName.Location = new System.Drawing.Point(83, 12);
+      tbItemDataName.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+      tbItemDataName.Name = "tbItemDataName";
+      tbItemDataName.Size = new System.Drawing.Size(170, 23);
+      tbItemDataName.TabIndex = 6;
+      tbItemDataName.Text = "myNameID";
       // 
       // compID
       // 
-      this.compID.AutoSize = true;
-      this.compID.Location = new System.Drawing.Point(12, 15);
-      this.compID.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-      this.compID.Name = "compID";
-      this.compID.Size = new System.Drawing.Size(59, 15);
-      this.compID.TabIndex = 5;
-      this.compID.Text = "Name ID :";
+      compID.AutoSize = true;
+      compID.Location = new System.Drawing.Point(12, 15);
+      compID.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+      compID.Name = "compID";
+      compID.Size = new System.Drawing.Size(59, 15);
+      compID.TabIndex = 5;
+      compID.Text = "Name ID :";
       // 
       // tabSimInfo
       // 
-      this.tabSimInfo.BackColor = System.Drawing.Color.Gainsboro;
-      this.tabSimInfo.Controls.Add(this.label9);
-      this.tabSimInfo.Controls.Add(this.tbEndTime);
-      this.tabSimInfo.Controls.Add(this.label8);
-      this.tabSimInfo.Controls.Add(this.tbConfigData);
-      this.tabSimInfo.Controls.Add(this.label4);
-      this.tabSimInfo.Controls.Add(this.tbModelRef);
-      this.tabSimInfo.Controls.Add(this.label6);
-      this.tabSimInfo.Location = new System.Drawing.Point(4, 22);
-      this.tabSimInfo.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-      this.tabSimInfo.Name = "tabSimInfo";
-      this.tabSimInfo.Size = new System.Drawing.Size(764, 106);
-      this.tabSimInfo.TabIndex = 0;
-      this.tabSimInfo.Text = "SimInfo";
+      tabSimInfo.BackColor = System.Drawing.Color.Gainsboro;
+      tabSimInfo.Controls.Add(label9);
+      tabSimInfo.Controls.Add(tbEndTime);
+      tabSimInfo.Controls.Add(label8);
+      tabSimInfo.Controls.Add(tbConfigData);
+      tabSimInfo.Controls.Add(label4);
+      tabSimInfo.Controls.Add(tbModelRef);
+      tabSimInfo.Controls.Add(label6);
+      tabSimInfo.Location = new System.Drawing.Point(4, 22);
+      tabSimInfo.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+      tabSimInfo.Name = "tabSimInfo";
+      tabSimInfo.Size = new System.Drawing.Size(764, 106);
+      tabSimInfo.TabIndex = 0;
+      tabSimInfo.Text = "SimInfo";
       // 
       // label9
       // 
-      this.label9.AutoSize = true;
-      this.label9.Location = new System.Drawing.Point(231, 77);
-      this.label9.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-      this.label9.Name = "label9";
-      this.label9.Size = new System.Drawing.Size(119, 15);
-      this.label9.TabIndex = 9;
-      this.label9.Text = " [days hh:mm:ss.ms] ";
+      label9.AutoSize = true;
+      label9.Location = new System.Drawing.Point(231, 77);
+      label9.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+      label9.Name = "label9";
+      label9.Size = new System.Drawing.Size(119, 15);
+      label9.TabIndex = 9;
+      label9.Text = " [days hh:mm:ss.ms] ";
       // 
       // tbEndTime
       // 
-      this.tbEndTime.Location = new System.Drawing.Point(88, 74);
-      this.tbEndTime.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-      this.tbEndTime.Name = "tbEndTime";
-      this.tbEndTime.Size = new System.Drawing.Size(136, 23);
-      this.tbEndTime.TabIndex = 16;
-      this.tbEndTime.Text = "00:00:00";
+      tbEndTime.Location = new System.Drawing.Point(88, 74);
+      tbEndTime.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+      tbEndTime.Name = "tbEndTime";
+      tbEndTime.Size = new System.Drawing.Size(136, 23);
+      tbEndTime.TabIndex = 16;
+      tbEndTime.Text = "00:00:00";
       // 
       // label8
       // 
-      this.label8.AutoSize = true;
-      this.label8.Location = new System.Drawing.Point(9, 77);
-      this.label8.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-      this.label8.Name = "label8";
-      this.label8.Size = new System.Drawing.Size(62, 15);
-      this.label8.TabIndex = 15;
-      this.label8.Text = "End Time :";
+      label8.AutoSize = true;
+      label8.Location = new System.Drawing.Point(9, 77);
+      label8.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+      label8.Name = "label8";
+      label8.Size = new System.Drawing.Size(62, 15);
+      label8.TabIndex = 15;
+      label8.Text = "End Time :";
       // 
       // tbConfigData
       // 
-      this.tbConfigData.Location = new System.Drawing.Point(88, 44);
-      this.tbConfigData.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-      this.tbConfigData.Name = "tbConfigData";
-      this.tbConfigData.Size = new System.Drawing.Size(646, 23);
-      this.tbConfigData.TabIndex = 12;
+      tbConfigData.Location = new System.Drawing.Point(88, 44);
+      tbConfigData.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+      tbConfigData.Name = "tbConfigData";
+      tbConfigData.Size = new System.Drawing.Size(646, 23);
+      tbConfigData.TabIndex = 12;
       // 
       // label4
       // 
-      this.label4.AutoSize = true;
-      this.label4.Location = new System.Drawing.Point(8, 47);
-      this.label4.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-      this.label4.Name = "label4";
-      this.label4.Size = new System.Drawing.Size(76, 15);
-      this.label4.TabIndex = 11;
-      this.label4.Text = "Config Data :";
+      label4.AutoSize = true;
+      label4.Location = new System.Drawing.Point(8, 47);
+      label4.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+      label4.Name = "label4";
+      label4.Size = new System.Drawing.Size(76, 15);
+      label4.TabIndex = 11;
+      label4.Text = "Config Data :";
       // 
       // tbModelRef
       // 
-      this.tbModelRef.Location = new System.Drawing.Point(88, 15);
-      this.tbModelRef.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-      this.tbModelRef.Name = "tbModelRef";
-      this.tbModelRef.Size = new System.Drawing.Size(396, 23);
-      this.tbModelRef.TabIndex = 10;
-      this.tbModelRef.Text = "c:\\temp\\model.x";
+      tbModelRef.Location = new System.Drawing.Point(88, 15);
+      tbModelRef.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+      tbModelRef.Name = "tbModelRef";
+      tbModelRef.Size = new System.Drawing.Size(396, 23);
+      tbModelRef.TabIndex = 10;
+      tbModelRef.Text = "c:\\temp\\model.x";
       // 
       // label6
       // 
-      this.label6.AutoSize = true;
-      this.label6.Location = new System.Drawing.Point(8, 18);
-      this.label6.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-      this.label6.Name = "label6";
-      this.label6.Size = new System.Drawing.Size(67, 15);
-      this.label6.TabIndex = 9;
-      this.label6.Text = "Model Ref :";
+      label6.AutoSize = true;
+      label6.Location = new System.Drawing.Point(8, 18);
+      label6.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+      label6.Name = "label6";
+      label6.Size = new System.Drawing.Size(67, 15);
+      label6.TabIndex = 9;
+      label6.Text = "Model Ref :";
       // 
       // panel6
       // 
-      this.panel6.BackColor = System.Drawing.Color.Gainsboro;
-      this.panel6.Controls.Add(this.groupBox1);
-      this.panel6.Controls.Add(this.btnGenMsg);
-      this.panel6.Dock = System.Windows.Forms.DockStyle.Bottom;
-      this.panel6.Location = new System.Drawing.Point(0, 204);
-      this.panel6.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-      this.panel6.Name = "panel6";
-      this.panel6.Size = new System.Drawing.Size(772, 138);
-      this.panel6.TabIndex = 2;
+      panel6.BackColor = System.Drawing.Color.Gainsboro;
+      panel6.Controls.Add(groupBox1);
+      panel6.Controls.Add(btnGenMsg);
+      panel6.Dock = System.Windows.Forms.DockStyle.Bottom;
+      panel6.Location = new System.Drawing.Point(0, 204);
+      panel6.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+      panel6.Name = "panel6";
+      panel6.Size = new System.Drawing.Size(772, 138);
+      panel6.TabIndex = 2;
       // 
       // groupBox1
       // 
-      this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-      this.groupBox1.Controls.Add(this.rtbMsgInfo);
-      this.groupBox1.Location = new System.Drawing.Point(5, 3);
-      this.groupBox1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-      this.groupBox1.Name = "groupBox1";
-      this.groupBox1.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
-      this.groupBox1.Size = new System.Drawing.Size(751, 95);
-      this.groupBox1.TabIndex = 12;
-      this.groupBox1.TabStop = false;
-      this.groupBox1.Text = "Info (Likely JSON)";
+      groupBox1.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+      groupBox1.Controls.Add(rtbMsgInfo);
+      groupBox1.Location = new System.Drawing.Point(5, 3);
+      groupBox1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+      groupBox1.Name = "groupBox1";
+      groupBox1.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
+      groupBox1.Size = new System.Drawing.Size(751, 95);
+      groupBox1.TabIndex = 12;
+      groupBox1.TabStop = false;
+      groupBox1.Text = "Info (Likely JSON)";
       // 
       // rtbMsgInfo
       // 
-      this.rtbMsgInfo.Dock = System.Windows.Forms.DockStyle.Fill;
-      this.rtbMsgInfo.Location = new System.Drawing.Point(4, 19);
-      this.rtbMsgInfo.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-      this.rtbMsgInfo.Name = "rtbMsgInfo";
-      this.rtbMsgInfo.Size = new System.Drawing.Size(743, 73);
-      this.rtbMsgInfo.TabIndex = 0;
-      this.rtbMsgInfo.Text = "";
+      rtbMsgInfo.Dock = System.Windows.Forms.DockStyle.Fill;
+      rtbMsgInfo.Location = new System.Drawing.Point(4, 19);
+      rtbMsgInfo.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+      rtbMsgInfo.Name = "rtbMsgInfo";
+      rtbMsgInfo.Size = new System.Drawing.Size(743, 73);
+      rtbMsgInfo.TabIndex = 0;
+      rtbMsgInfo.Text = "";
       // 
       // btnGenMsg
       // 
-      this.btnGenMsg.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-      this.btnGenMsg.Location = new System.Drawing.Point(301, 105);
-      this.btnGenMsg.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-      this.btnGenMsg.Name = "btnGenMsg";
-      this.btnGenMsg.Size = new System.Drawing.Size(139, 27);
-      this.btnGenMsg.TabIndex = 1;
-      this.btnGenMsg.Text = "Generate Message";
-      this.btnGenMsg.UseVisualStyleBackColor = true;
-      this.btnGenMsg.Click += new System.EventHandler(this.btnGenMsg_Click);
+      btnGenMsg.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+      btnGenMsg.Location = new System.Drawing.Point(301, 105);
+      btnGenMsg.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+      btnGenMsg.Name = "btnGenMsg";
+      btnGenMsg.Size = new System.Drawing.Size(139, 27);
+      btnGenMsg.TabIndex = 1;
+      btnGenMsg.Text = "Generate Message";
+      btnGenMsg.UseVisualStyleBackColor = true;
+      btnGenMsg.Click += btnGenMsg_Click;
       // 
       // pnlTimePicking
       // 
-      this.pnlTimePicking.BackColor = System.Drawing.Color.Gainsboro;
-      this.pnlTimePicking.Controls.Add(this.label3);
-      this.pnlTimePicking.Controls.Add(this.tbTimeSpan);
-      this.pnlTimePicking.Controls.Add(this.label2);
-      this.pnlTimePicking.Dock = System.Windows.Forms.DockStyle.Top;
-      this.pnlTimePicking.Location = new System.Drawing.Point(0, 36);
-      this.pnlTimePicking.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-      this.pnlTimePicking.Name = "pnlTimePicking";
-      this.pnlTimePicking.Size = new System.Drawing.Size(772, 36);
-      this.pnlTimePicking.TabIndex = 4;
+      pnlTimePicking.BackColor = System.Drawing.Color.Gainsboro;
+      pnlTimePicking.Controls.Add(label3);
+      pnlTimePicking.Controls.Add(tbTimeSpan);
+      pnlTimePicking.Controls.Add(label2);
+      pnlTimePicking.Dock = System.Windows.Forms.DockStyle.Top;
+      pnlTimePicking.Location = new System.Drawing.Point(0, 36);
+      pnlTimePicking.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+      pnlTimePicking.Name = "pnlTimePicking";
+      pnlTimePicking.Size = new System.Drawing.Size(772, 36);
+      pnlTimePicking.TabIndex = 4;
       // 
       // label3
       // 
-      this.label3.AutoSize = true;
-      this.label3.Location = new System.Drawing.Point(227, 8);
-      this.label3.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-      this.label3.Name = "label3";
-      this.label3.Size = new System.Drawing.Size(116, 15);
-      this.label3.TabIndex = 8;
-      this.label3.Text = "[days hh:mm:ss.ms] ";
+      label3.AutoSize = true;
+      label3.Location = new System.Drawing.Point(227, 8);
+      label3.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+      label3.Name = "label3";
+      label3.Size = new System.Drawing.Size(116, 15);
+      label3.TabIndex = 8;
+      label3.Text = "[days hh:mm:ss.ms] ";
       // 
       // tbTimeSpan
       // 
-      this.tbTimeSpan.Location = new System.Drawing.Point(56, 3);
-      this.tbTimeSpan.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-      this.tbTimeSpan.Name = "tbTimeSpan";
-      this.tbTimeSpan.Size = new System.Drawing.Size(170, 23);
-      this.tbTimeSpan.TabIndex = 7;
-      this.tbTimeSpan.Text = "00:00:00";
+      tbTimeSpan.Location = new System.Drawing.Point(56, 3);
+      tbTimeSpan.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+      tbTimeSpan.Name = "tbTimeSpan";
+      tbTimeSpan.Size = new System.Drawing.Size(170, 23);
+      tbTimeSpan.TabIndex = 7;
+      tbTimeSpan.Text = "00:00:00";
       // 
       // label2
       // 
-      this.label2.AutoSize = true;
-      this.label2.Location = new System.Drawing.Point(9, 8);
-      this.label2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-      this.label2.Name = "label2";
-      this.label2.Size = new System.Drawing.Size(39, 15);
-      this.label2.TabIndex = 1;
-      this.label2.Text = "Time :";
+      label2.AutoSize = true;
+      label2.Location = new System.Drawing.Point(9, 8);
+      label2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+      label2.Name = "label2";
+      label2.Size = new System.Drawing.Size(39, 15);
+      label2.TabIndex = 1;
+      label2.Text = "Time :";
       // 
       // panel5
       // 
-      this.panel5.BackColor = System.Drawing.Color.Gainsboro;
-      this.panel5.Controls.Add(this.label11);
-      this.panel5.Controls.Add(this.cbMsgType);
-      this.panel5.Dock = System.Windows.Forms.DockStyle.Top;
-      this.panel5.Location = new System.Drawing.Point(0, 0);
-      this.panel5.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-      this.panel5.Name = "panel5";
-      this.panel5.Size = new System.Drawing.Size(772, 36);
-      this.panel5.TabIndex = 3;
+      panel5.BackColor = System.Drawing.Color.Gainsboro;
+      panel5.Controls.Add(label11);
+      panel5.Controls.Add(cbMsgType);
+      panel5.Dock = System.Windows.Forms.DockStyle.Top;
+      panel5.Location = new System.Drawing.Point(0, 0);
+      panel5.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+      panel5.Name = "panel5";
+      panel5.Size = new System.Drawing.Size(772, 36);
+      panel5.TabIndex = 3;
       // 
       // label11
       // 
-      this.label11.AutoSize = true;
-      this.label11.Location = new System.Drawing.Point(212, 8);
-      this.label11.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-      this.label11.Name = "label11";
-      this.label11.Size = new System.Drawing.Size(98, 15);
-      this.label11.TabIndex = 1;
-      this.label11.Text = "Action Msg Type:";
+      label11.AutoSize = true;
+      label11.Location = new System.Drawing.Point(212, 8);
+      label11.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+      label11.Name = "label11";
+      label11.Size = new System.Drawing.Size(98, 15);
+      label11.TabIndex = 1;
+      label11.Text = "Action Msg Type:";
       // 
       // cbMsgType
       // 
-      this.cbMsgType.FormattingEnabled = true;
-      this.cbMsgType.Items.AddRange(new object[] {
-            "CompModify",
-            "Timer",
-            "OpenSim",
-            "CancelSim",
-            "PauseSim",
-            "Continue",
-            "Reset",
-            "RestartAtTime",
-            "Ping",
-            "Status"});
-      this.cbMsgType.Location = new System.Drawing.Point(322, 5);
-      this.cbMsgType.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-      this.cbMsgType.Name = "cbMsgType";
-      this.cbMsgType.Size = new System.Drawing.Size(140, 23);
-      this.cbMsgType.TabIndex = 0;
-      this.cbMsgType.SelectedIndexChanged += new System.EventHandler(this.cbMsgType_SelectedIndexChanged);
+      cbMsgType.FormattingEnabled = true;
+      cbMsgType.Items.AddRange(new object[] { "CompModify", "Timer", "OpenSim", "CancelSim", "PauseSim", "Continue", "Reset", "RestartAtTime", "Ping", "Status" });
+      cbMsgType.Location = new System.Drawing.Point(322, 5);
+      cbMsgType.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+      cbMsgType.Name = "cbMsgType";
+      cbMsgType.Size = new System.Drawing.Size(140, 23);
+      cbMsgType.TabIndex = 0;
+      cbMsgType.SelectedIndexChanged += cbMsgType_SelectedIndexChanged;
       // 
       // panel7
       // 
-      this.panel7.Controls.Add(this.label1);
-      this.panel7.Controls.Add(this.btnSendMsg);
-      this.panel7.Controls.Add(this.cbRegisteredClients);
-      this.panel7.Dock = System.Windows.Forms.DockStyle.Bottom;
-      this.panel7.Location = new System.Drawing.Point(0, 728);
-      this.panel7.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-      this.panel7.Name = "panel7";
-      this.panel7.Size = new System.Drawing.Size(776, 55);
-      this.panel7.TabIndex = 27;
+      panel7.Controls.Add(label1);
+      panel7.Controls.Add(btnSendMsg);
+      panel7.Controls.Add(cbRegisteredClients);
+      panel7.Dock = System.Windows.Forms.DockStyle.Bottom;
+      panel7.Location = new System.Drawing.Point(0, 728);
+      panel7.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+      panel7.Name = "panel7";
+      panel7.Size = new System.Drawing.Size(776, 55);
+      panel7.TabIndex = 27;
       // 
       // label1
       // 
-      this.label1.AutoSize = true;
-      this.label1.Location = new System.Drawing.Point(55, 21);
-      this.label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-      this.label1.Name = "label1";
-      this.label1.Size = new System.Drawing.Size(53, 15);
-      this.label1.TabIndex = 7;
-      this.label1.Text = "Send to :";
+      label1.AutoSize = true;
+      label1.Location = new System.Drawing.Point(55, 21);
+      label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+      label1.Name = "label1";
+      label1.Size = new System.Drawing.Size(53, 15);
+      label1.TabIndex = 7;
+      label1.Text = "Send to :";
       // 
       // btnSendMsg
       // 
-      this.btnSendMsg.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-      this.btnSendMsg.Location = new System.Drawing.Point(346, 15);
-      this.btnSendMsg.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-      this.btnSendMsg.Name = "btnSendMsg";
-      this.btnSendMsg.Size = new System.Drawing.Size(237, 27);
-      this.btnSendMsg.TabIndex = 0;
-      this.btnSendMsg.Text = "Send";
-      this.btnSendMsg.UseVisualStyleBackColor = true;
-      this.btnSendMsg.Click += new System.EventHandler(this.btnSendMsg_Click_1);
+      btnSendMsg.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+      btnSendMsg.Location = new System.Drawing.Point(346, 15);
+      btnSendMsg.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+      btnSendMsg.Name = "btnSendMsg";
+      btnSendMsg.Size = new System.Drawing.Size(237, 27);
+      btnSendMsg.TabIndex = 0;
+      btnSendMsg.Text = "Send";
+      btnSendMsg.UseVisualStyleBackColor = true;
+      btnSendMsg.Click += btnSendMsg_Click_1;
       // 
       // cbRegisteredClients
       // 
-      this.cbRegisteredClients.FormattingEnabled = true;
-      this.cbRegisteredClients.Items.AddRange(new object[] {
-            "EMRALD"});
-      this.cbRegisteredClients.Location = new System.Drawing.Point(120, 17);
-      this.cbRegisteredClients.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-      this.cbRegisteredClients.Name = "cbRegisteredClients";
-      this.cbRegisteredClients.Size = new System.Drawing.Size(219, 23);
-      this.cbRegisteredClients.TabIndex = 0;
+      cbRegisteredClients.FormattingEnabled = true;
+      cbRegisteredClients.Items.AddRange(new object[] { "EMRALD" });
+      cbRegisteredClients.Location = new System.Drawing.Point(120, 17);
+      cbRegisteredClients.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+      cbRegisteredClients.Name = "cbRegisteredClients";
+      cbRegisteredClients.Size = new System.Drawing.Size(219, 23);
+      cbRegisteredClients.TabIndex = 0;
       // 
       // panel8
       // 
-      this.panel8.BackColor = System.Drawing.Color.Gainsboro;
-      this.panel8.Controls.Add(this.tbDispName);
-      this.panel8.Controls.Add(this.label10);
-      this.panel8.Controls.Add(this.lblSimTime);
-      this.panel8.Controls.Add(this.tbMsgDesc);
-      this.panel8.Controls.Add(this.lblMsgTime);
-      this.panel8.Controls.Add(this.lblManMsgDesc);
-      this.panel8.Controls.Add(this.lblSendManualMsg);
-      this.panel8.Dock = System.Windows.Forms.DockStyle.Top;
-      this.panel8.Location = new System.Drawing.Point(0, 0);
-      this.panel8.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-      this.panel8.Name = "panel8";
-      this.panel8.Size = new System.Drawing.Size(776, 107);
-      this.panel8.TabIndex = 27;
+      panel8.BackColor = System.Drawing.Color.Gainsboro;
+      panel8.Controls.Add(tbDispName);
+      panel8.Controls.Add(label10);
+      panel8.Controls.Add(lblSimTime);
+      panel8.Controls.Add(tbMsgDesc);
+      panel8.Controls.Add(lblMsgTime);
+      panel8.Controls.Add(lblManMsgDesc);
+      panel8.Controls.Add(lblSendManualMsg);
+      panel8.Dock = System.Windows.Forms.DockStyle.Top;
+      panel8.Location = new System.Drawing.Point(0, 0);
+      panel8.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+      panel8.Name = "panel8";
+      panel8.Size = new System.Drawing.Size(776, 107);
+      panel8.TabIndex = 27;
       // 
       // tbDispName
       // 
-      this.tbDispName.Location = new System.Drawing.Point(104, 20);
-      this.tbDispName.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-      this.tbDispName.Name = "tbDispName";
-      this.tbDispName.Size = new System.Drawing.Size(170, 23);
-      this.tbDispName.TabIndex = 8;
-      this.tbDispName.Text = "ManualEv";
+      tbDispName.Location = new System.Drawing.Point(104, 20);
+      tbDispName.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+      tbDispName.Name = "tbDispName";
+      tbDispName.Size = new System.Drawing.Size(170, 23);
+      tbDispName.TabIndex = 8;
+      tbDispName.Text = "ManualEv";
       // 
       // label10
       // 
-      this.label10.AutoSize = true;
-      this.label10.Location = new System.Drawing.Point(12, 20);
-      this.label10.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-      this.label10.Name = "label10";
-      this.label10.Size = new System.Drawing.Size(68, 15);
-      this.label10.TabIndex = 7;
-      this.label10.Text = "DispName :";
+      label10.AutoSize = true;
+      label10.Location = new System.Drawing.Point(12, 20);
+      label10.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+      label10.Name = "label10";
+      label10.Size = new System.Drawing.Size(68, 15);
+      label10.TabIndex = 7;
+      label10.Text = "DispName :";
       // 
       // lblSimTime
       // 
-      this.lblSimTime.AutoSize = true;
-      this.lblSimTime.Location = new System.Drawing.Point(100, 74);
-      this.lblSimTime.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-      this.lblSimTime.Name = "lblSimTime";
-      this.lblSimTime.Size = new System.Drawing.Size(49, 15);
-      this.lblSimTime.TabIndex = 6;
-      this.lblSimTime.Text = "00:00:00";
+      lblSimTime.AutoSize = true;
+      lblSimTime.Location = new System.Drawing.Point(100, 74);
+      lblSimTime.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+      lblSimTime.Name = "lblSimTime";
+      lblSimTime.Size = new System.Drawing.Size(49, 15);
+      lblSimTime.TabIndex = 6;
+      lblSimTime.Text = "00:00:00";
       // 
       // tbMsgDesc
       // 
-      this.tbMsgDesc.Location = new System.Drawing.Point(104, 44);
-      this.tbMsgDesc.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-      this.tbMsgDesc.Name = "tbMsgDesc";
-      this.tbMsgDesc.Size = new System.Drawing.Size(546, 23);
-      this.tbMsgDesc.TabIndex = 3;
-      this.tbMsgDesc.Text = "Testing";
+      tbMsgDesc.Location = new System.Drawing.Point(104, 44);
+      tbMsgDesc.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+      tbMsgDesc.Name = "tbMsgDesc";
+      tbMsgDesc.Size = new System.Drawing.Size(546, 23);
+      tbMsgDesc.TabIndex = 3;
+      tbMsgDesc.Text = "Testing";
       // 
       // lblMsgTime
       // 
-      this.lblMsgTime.AutoSize = true;
-      this.lblMsgTime.Location = new System.Drawing.Point(12, 74);
-      this.lblMsgTime.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-      this.lblMsgTime.Name = "lblMsgTime";
-      this.lblMsgTime.Size = new System.Drawing.Size(62, 15);
-      this.lblMsgTime.TabIndex = 2;
-      this.lblMsgTime.Text = "Sim Time :";
+      lblMsgTime.AutoSize = true;
+      lblMsgTime.Location = new System.Drawing.Point(12, 74);
+      lblMsgTime.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+      lblMsgTime.Name = "lblMsgTime";
+      lblMsgTime.Size = new System.Drawing.Size(62, 15);
+      lblMsgTime.TabIndex = 2;
+      lblMsgTime.Text = "Sim Time :";
       // 
       // lblManMsgDesc
       // 
-      this.lblManMsgDesc.AutoSize = true;
-      this.lblManMsgDesc.Location = new System.Drawing.Point(12, 47);
-      this.lblManMsgDesc.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-      this.lblManMsgDesc.Name = "lblManMsgDesc";
-      this.lblManMsgDesc.Size = new System.Drawing.Size(73, 15);
-      this.lblManMsgDesc.TabIndex = 1;
-      this.lblManMsgDesc.Text = "Description :";
+      lblManMsgDesc.AutoSize = true;
+      lblManMsgDesc.Location = new System.Drawing.Point(12, 47);
+      lblManMsgDesc.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+      lblManMsgDesc.Name = "lblManMsgDesc";
+      lblManMsgDesc.Size = new System.Drawing.Size(73, 15);
+      lblManMsgDesc.TabIndex = 1;
+      lblManMsgDesc.Text = "Description :";
       // 
       // lblSendManualMsg
       // 
-      this.lblSendManualMsg.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-      this.lblSendManualMsg.AutoSize = true;
-      this.lblSendManualMsg.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-      this.lblSendManualMsg.Location = new System.Drawing.Point(271, 1);
-      this.lblSendManualMsg.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-      this.lblSendManualMsg.Name = "lblSendManualMsg";
-      this.lblSendManualMsg.Size = new System.Drawing.Size(208, 16);
-      this.lblSendManualMsg.TabIndex = 1;
-      this.lblSendManualMsg.Text = "Send Manual Event Message";
-      this.lblSendManualMsg.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+      lblSendManualMsg.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+      lblSendManualMsg.AutoSize = true;
+      lblSendManualMsg.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+      lblSendManualMsg.Location = new System.Drawing.Point(271, 1);
+      lblSendManualMsg.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+      lblSendManualMsg.Name = "lblSendManualMsg";
+      lblSendManualMsg.Size = new System.Drawing.Size(208, 16);
+      lblSendManualMsg.TabIndex = 1;
+      lblSendManualMsg.Text = "Send Manual Event Message";
+      lblSendManualMsg.TextAlign = System.Drawing.ContentAlignment.TopCenter;
       // 
       // splitter1
       // 
-      this.splitter1.BackColor = System.Drawing.SystemColors.ScrollBar;
-      this.splitter1.Location = new System.Drawing.Point(460, 3);
-      this.splitter1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-      this.splitter1.Name = "splitter1";
-      this.splitter1.Size = new System.Drawing.Size(7, 787);
-      this.splitter1.TabIndex = 25;
-      this.splitter1.TabStop = false;
+      splitter1.BackColor = System.Drawing.SystemColors.ScrollBar;
+      splitter1.Location = new System.Drawing.Point(460, 3);
+      splitter1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+      splitter1.Name = "splitter1";
+      splitter1.Size = new System.Drawing.Size(7, 787);
+      splitter1.TabIndex = 25;
+      splitter1.TabStop = false;
       // 
       // pnlConInfo
       // 
-      this.pnlConInfo.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-      this.pnlConInfo.Controls.Add(this.groupBoxReceived);
-      this.pnlConInfo.Controls.Add(this.groupBoxClients);
-      this.pnlConInfo.Dock = System.Windows.Forms.DockStyle.Left;
-      this.pnlConInfo.Location = new System.Drawing.Point(4, 3);
-      this.pnlConInfo.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-      this.pnlConInfo.Name = "pnlConInfo";
-      this.pnlConInfo.Size = new System.Drawing.Size(456, 787);
-      this.pnlConInfo.TabIndex = 24;
+      pnlConInfo.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+      pnlConInfo.Controls.Add(groupBoxReceived);
+      pnlConInfo.Controls.Add(groupBoxClients);
+      pnlConInfo.Dock = System.Windows.Forms.DockStyle.Left;
+      pnlConInfo.Location = new System.Drawing.Point(4, 3);
+      pnlConInfo.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+      pnlConInfo.Name = "pnlConInfo";
+      pnlConInfo.Size = new System.Drawing.Size(456, 787);
+      pnlConInfo.TabIndex = 24;
       // 
       // groupBoxReceived
       // 
-      this.groupBoxReceived.Controls.Add(this.chkClearOnMsg);
-      this.groupBoxReceived.Controls.Add(this.rtfReceived);
-      this.groupBoxReceived.Dock = System.Windows.Forms.DockStyle.Fill;
-      this.groupBoxReceived.Location = new System.Drawing.Point(0, 121);
-      this.groupBoxReceived.Margin = new System.Windows.Forms.Padding(2);
-      this.groupBoxReceived.Name = "groupBoxReceived";
-      this.groupBoxReceived.Padding = new System.Windows.Forms.Padding(2);
-      this.groupBoxReceived.Size = new System.Drawing.Size(454, 664);
-      this.groupBoxReceived.TabIndex = 22;
-      this.groupBoxReceived.TabStop = false;
-      this.groupBoxReceived.Text = "Message Log";
+      groupBoxReceived.Controls.Add(chkClearOnMsg);
+      groupBoxReceived.Controls.Add(rtfReceived);
+      groupBoxReceived.Dock = System.Windows.Forms.DockStyle.Fill;
+      groupBoxReceived.Location = new System.Drawing.Point(0, 121);
+      groupBoxReceived.Margin = new System.Windows.Forms.Padding(2);
+      groupBoxReceived.Name = "groupBoxReceived";
+      groupBoxReceived.Padding = new System.Windows.Forms.Padding(2);
+      groupBoxReceived.Size = new System.Drawing.Size(454, 664);
+      groupBoxReceived.TabIndex = 22;
+      groupBoxReceived.TabStop = false;
+      groupBoxReceived.Text = "Message Log";
       // 
       // chkClearOnMsg
       // 
-      this.chkClearOnMsg.AutoSize = true;
-      this.chkClearOnMsg.Checked = true;
-      this.chkClearOnMsg.CheckState = System.Windows.Forms.CheckState.Checked;
-      this.chkClearOnMsg.Location = new System.Drawing.Point(356, -1);
-      this.chkClearOnMsg.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-      this.chkClearOnMsg.Name = "chkClearOnMsg";
-      this.chkClearOnMsg.Size = new System.Drawing.Size(103, 19);
-      this.chkClearOnMsg.TabIndex = 1;
-      this.chkClearOnMsg.Text = "Clear Sim Start";
-      this.chkClearOnMsg.UseVisualStyleBackColor = true;
+      chkClearOnMsg.AutoSize = true;
+      chkClearOnMsg.Checked = true;
+      chkClearOnMsg.CheckState = System.Windows.Forms.CheckState.Checked;
+      chkClearOnMsg.Location = new System.Drawing.Point(356, -1);
+      chkClearOnMsg.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+      chkClearOnMsg.Name = "chkClearOnMsg";
+      chkClearOnMsg.Size = new System.Drawing.Size(103, 19);
+      chkClearOnMsg.TabIndex = 1;
+      chkClearOnMsg.Text = "Clear Sim Start";
+      chkClearOnMsg.UseVisualStyleBackColor = true;
       // 
       // rtfReceived
       // 
-      this.rtfReceived.Dock = System.Windows.Forms.DockStyle.Fill;
-      this.rtfReceived.Location = new System.Drawing.Point(2, 18);
-      this.rtfReceived.Margin = new System.Windows.Forms.Padding(2);
-      this.rtfReceived.Name = "rtfReceived";
-      this.rtfReceived.ReadOnly = true;
-      this.rtfReceived.Size = new System.Drawing.Size(450, 644);
-      this.rtfReceived.TabIndex = 0;
-      this.rtfReceived.Text = "";
+      rtfReceived.Dock = System.Windows.Forms.DockStyle.Fill;
+      rtfReceived.Location = new System.Drawing.Point(2, 18);
+      rtfReceived.Margin = new System.Windows.Forms.Padding(2);
+      rtfReceived.Name = "rtfReceived";
+      rtfReceived.ReadOnly = true;
+      rtfReceived.Size = new System.Drawing.Size(450, 644);
+      rtfReceived.TabIndex = 0;
+      rtfReceived.Text = "";
       // 
       // groupBoxClients
       // 
-      this.groupBoxClients.Controls.Add(this.listBoxClients);
-      this.groupBoxClients.Dock = System.Windows.Forms.DockStyle.Top;
-      this.groupBoxClients.Location = new System.Drawing.Point(0, 0);
-      this.groupBoxClients.Margin = new System.Windows.Forms.Padding(2);
-      this.groupBoxClients.Name = "groupBoxClients";
-      this.groupBoxClients.Padding = new System.Windows.Forms.Padding(2);
-      this.groupBoxClients.Size = new System.Drawing.Size(454, 121);
-      this.groupBoxClients.TabIndex = 21;
-      this.groupBoxClients.TabStop = false;
-      this.groupBoxClients.Text = "Connected Clients";
+      groupBoxClients.Controls.Add(listBoxClients);
+      groupBoxClients.Dock = System.Windows.Forms.DockStyle.Top;
+      groupBoxClients.Location = new System.Drawing.Point(0, 0);
+      groupBoxClients.Margin = new System.Windows.Forms.Padding(2);
+      groupBoxClients.Name = "groupBoxClients";
+      groupBoxClients.Padding = new System.Windows.Forms.Padding(2);
+      groupBoxClients.Size = new System.Drawing.Size(454, 121);
+      groupBoxClients.TabIndex = 21;
+      groupBoxClients.TabStop = false;
+      groupBoxClients.Text = "Connected Clients";
       // 
       // listBoxClients
       // 
-      this.listBoxClients.Dock = System.Windows.Forms.DockStyle.Fill;
-      this.listBoxClients.FormattingEnabled = true;
-      this.listBoxClients.ItemHeight = 15;
-      this.listBoxClients.Location = new System.Drawing.Point(2, 18);
-      this.listBoxClients.Margin = new System.Windows.Forms.Padding(2);
-      this.listBoxClients.Name = "listBoxClients";
-      this.listBoxClients.Size = new System.Drawing.Size(450, 101);
-      this.listBoxClients.TabIndex = 0;
+      listBoxClients.Dock = System.Windows.Forms.DockStyle.Fill;
+      listBoxClients.FormattingEnabled = true;
+      listBoxClients.ItemHeight = 15;
+      listBoxClients.Location = new System.Drawing.Point(2, 18);
+      listBoxClients.Margin = new System.Windows.Forms.Padding(2);
+      listBoxClients.Name = "listBoxClients";
+      listBoxClients.Size = new System.Drawing.Size(450, 101);
+      listBoxClients.TabIndex = 0;
       // 
       // tabModel
       // 
-      this.tabModel.Controls.Add(this.button1);
-      this.tabModel.Controls.Add(this.panel3);
-      this.tabModel.Controls.Add(this.splitter2);
-      this.tabModel.Controls.Add(this.txtMStatus);
-      this.tabModel.Location = new System.Drawing.Point(4, 24);
-      this.tabModel.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-      this.tabModel.Name = "tabModel";
-      this.tabModel.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
-      this.tabModel.Size = new System.Drawing.Size(1251, 793);
-      this.tabModel.TabIndex = 0;
-      this.tabModel.Text = "Model";
-      this.tabModel.UseVisualStyleBackColor = true;
+      tabModel.Controls.Add(button1);
+      tabModel.Controls.Add(panel3);
+      tabModel.Controls.Add(splitter2);
+      tabModel.Controls.Add(txtMStatus);
+      tabModel.Location = new System.Drawing.Point(4, 24);
+      tabModel.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+      tabModel.Name = "tabModel";
+      tabModel.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
+      tabModel.Size = new System.Drawing.Size(1251, 793);
+      tabModel.TabIndex = 0;
+      tabModel.Text = "Model";
+      tabModel.UseVisualStyleBackColor = true;
       // 
       // button1
       // 
-      this.button1.Location = new System.Drawing.Point(29, 807);
-      this.button1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-      this.button1.Name = "button1";
-      this.button1.Size = new System.Drawing.Size(88, 27);
-      this.button1.TabIndex = 5;
-      this.button1.Text = "Test";
-      this.button1.UseVisualStyleBackColor = true;
-      this.button1.Visible = false;
+      button1.Location = new System.Drawing.Point(29, 807);
+      button1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+      button1.Name = "button1";
+      button1.Size = new System.Drawing.Size(88, 27);
+      button1.TabIndex = 5;
+      button1.Text = "Test";
+      button1.UseVisualStyleBackColor = true;
+      button1.Visible = false;
       // 
       // panel3
       // 
-      this.panel3.Controls.Add(this.panel15);
-      this.panel3.Controls.Add(this.panel9);
-      this.panel3.Dock = System.Windows.Forms.DockStyle.Fill;
-      this.panel3.Location = new System.Drawing.Point(4, 3);
-      this.panel3.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-      this.panel3.Name = "panel3";
-      this.panel3.Size = new System.Drawing.Size(1243, 684);
-      this.panel3.TabIndex = 4;
+      panel3.Controls.Add(panel15);
+      panel3.Controls.Add(panel9);
+      panel3.Dock = System.Windows.Forms.DockStyle.Fill;
+      panel3.Location = new System.Drawing.Point(4, 3);
+      panel3.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+      panel3.Name = "panel3";
+      panel3.Size = new System.Drawing.Size(1243, 684);
+      panel3.TabIndex = 4;
       // 
       // panel15
       // 
-      this.panel15.Controls.Add(this.teModel);
-      this.panel15.Dock = System.Windows.Forms.DockStyle.Fill;
-      this.panel15.Location = new System.Drawing.Point(0, 0);
-      this.panel15.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-      this.panel15.Name = "panel15";
-      this.panel15.Size = new System.Drawing.Size(1243, 651);
-      this.panel15.TabIndex = 3;
+      panel15.Controls.Add(teModel);
+      panel15.Dock = System.Windows.Forms.DockStyle.Fill;
+      panel15.Location = new System.Drawing.Point(0, 0);
+      panel15.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+      panel15.Name = "panel15";
+      panel15.Size = new System.Drawing.Size(1243, 651);
+      panel15.TabIndex = 3;
       // 
       // teModel
       // 
-      this.teModel.Dock = System.Windows.Forms.DockStyle.Fill;
-      this.teModel.IsReadOnly = false;
-      this.teModel.Location = new System.Drawing.Point(0, 0);
-      this.teModel.Name = "teModel";
-      this.teModel.Size = new System.Drawing.Size(1243, 651);
-      this.teModel.TabIndex = 2;
-      this.teModel.Text = "No Model Open";
-      this.teModel.TextChanged += new System.EventHandler(this.teModel_TextChanged);
+      teModel.Dock = System.Windows.Forms.DockStyle.Fill;
+      teModel.IsReadOnly = false;
+      teModel.Location = new System.Drawing.Point(0, 0);
+      teModel.Name = "teModel";
+      teModel.Size = new System.Drawing.Size(1243, 651);
+      teModel.TabIndex = 2;
+      teModel.Text = "No Model Open";
+      teModel.TextChanged += teModel_TextChanged;
       // 
       // panel9
       // 
-      this.panel9.Controls.Add(this.btnValidateModel);
-      this.panel9.Dock = System.Windows.Forms.DockStyle.Bottom;
-      this.panel9.Location = new System.Drawing.Point(0, 651);
-      this.panel9.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-      this.panel9.Name = "panel9";
-      this.panel9.Size = new System.Drawing.Size(1243, 33);
-      this.panel9.TabIndex = 2;
+      panel9.Controls.Add(btnValidateModel);
+      panel9.Dock = System.Windows.Forms.DockStyle.Bottom;
+      panel9.Location = new System.Drawing.Point(0, 651);
+      panel9.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+      panel9.Name = "panel9";
+      panel9.Size = new System.Drawing.Size(1243, 33);
+      panel9.TabIndex = 2;
       // 
       // btnValidateModel
       // 
-      this.btnValidateModel.Location = new System.Drawing.Point(581, 5);
-      this.btnValidateModel.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-      this.btnValidateModel.Name = "btnValidateModel";
-      this.btnValidateModel.Size = new System.Drawing.Size(88, 27);
-      this.btnValidateModel.TabIndex = 0;
-      this.btnValidateModel.Text = "Validate";
-      this.btnValidateModel.UseVisualStyleBackColor = true;
-      this.btnValidateModel.Click += new System.EventHandler(this.btnValidateModel_Click);
+      btnValidateModel.Location = new System.Drawing.Point(581, 5);
+      btnValidateModel.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+      btnValidateModel.Name = "btnValidateModel";
+      btnValidateModel.Size = new System.Drawing.Size(88, 27);
+      btnValidateModel.TabIndex = 0;
+      btnValidateModel.Text = "Validate";
+      btnValidateModel.UseVisualStyleBackColor = true;
+      btnValidateModel.Click += btnValidateModel_Click;
       // 
       // splitter2
       // 
-      this.splitter2.Cursor = System.Windows.Forms.Cursors.HSplit;
-      this.splitter2.Dock = System.Windows.Forms.DockStyle.Bottom;
-      this.splitter2.Location = new System.Drawing.Point(4, 687);
-      this.splitter2.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-      this.splitter2.Name = "splitter2";
-      this.splitter2.Size = new System.Drawing.Size(1243, 3);
-      this.splitter2.TabIndex = 3;
-      this.splitter2.TabStop = false;
+      splitter2.Cursor = System.Windows.Forms.Cursors.HSplit;
+      splitter2.Dock = System.Windows.Forms.DockStyle.Bottom;
+      splitter2.Location = new System.Drawing.Point(4, 687);
+      splitter2.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+      splitter2.Name = "splitter2";
+      splitter2.Size = new System.Drawing.Size(1243, 3);
+      splitter2.TabIndex = 3;
+      splitter2.TabStop = false;
       // 
       // txtMStatus
       // 
-      this.txtMStatus.Dock = System.Windows.Forms.DockStyle.Bottom;
-      this.txtMStatus.Location = new System.Drawing.Point(4, 690);
-      this.txtMStatus.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-      this.txtMStatus.Multiline = true;
-      this.txtMStatus.Name = "txtMStatus";
-      this.txtMStatus.Size = new System.Drawing.Size(1243, 100);
-      this.txtMStatus.TabIndex = 2;
+      txtMStatus.Dock = System.Windows.Forms.DockStyle.Bottom;
+      txtMStatus.Location = new System.Drawing.Point(4, 690);
+      txtMStatus.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+      txtMStatus.Multiline = true;
+      txtMStatus.Name = "txtMStatus";
+      txtMStatus.Size = new System.Drawing.Size(1243, 100);
+      txtMStatus.TabIndex = 2;
       // 
       // tcMain
       // 
-      this.tcMain.Controls.Add(this.tabModel);
-      this.tcMain.Controls.Add(this.tabSimulate);
-      this.tcMain.Controls.Add(this.tabXMPP);
-      this.tcMain.Controls.Add(this.tabLog);
-      this.tcMain.Dock = System.Windows.Forms.DockStyle.Fill;
-      this.tcMain.Location = new System.Drawing.Point(0, 24);
-      this.tcMain.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-      this.tcMain.Name = "tcMain";
-      this.tcMain.SelectedIndex = 0;
-      this.tcMain.Size = new System.Drawing.Size(1259, 821);
-      this.tcMain.TabIndex = 1;
+      tcMain.Controls.Add(tabModel);
+      tcMain.Controls.Add(tabSimulate);
+      tcMain.Controls.Add(tabXMPP);
+      tcMain.Controls.Add(tabLog);
+      tcMain.Dock = System.Windows.Forms.DockStyle.Fill;
+      tcMain.Location = new System.Drawing.Point(0, 24);
+      tcMain.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+      tcMain.Name = "tcMain";
+      tcMain.SelectedIndex = 0;
+      tcMain.Size = new System.Drawing.Size(1259, 821);
+      tcMain.TabIndex = 1;
       // 
       // tabSimulate
       // 
-      this.tabSimulate.Controls.Add(this.pnlSimResults);
-      this.tabSimulate.Controls.Add(this.splitter6);
-      this.tabSimulate.Controls.Add(this.pnlSimulate);
-      this.tabSimulate.Location = new System.Drawing.Point(4, 24);
-      this.tabSimulate.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-      this.tabSimulate.Name = "tabSimulate";
-      this.tabSimulate.Size = new System.Drawing.Size(1251, 793);
-      this.tabSimulate.TabIndex = 3;
-      this.tabSimulate.Text = "Simulate";
-      this.tabSimulate.UseVisualStyleBackColor = true;
+      tabSimulate.Controls.Add(pnlSimResults);
+      tabSimulate.Controls.Add(splitter6);
+      tabSimulate.Controls.Add(pnlSimulate);
+      tabSimulate.Location = new System.Drawing.Point(4, 24);
+      tabSimulate.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+      tabSimulate.Name = "tabSimulate";
+      tabSimulate.Size = new System.Drawing.Size(1251, 793);
+      tabSimulate.TabIndex = 3;
+      tabSimulate.Text = "Simulate";
+      tabSimulate.UseVisualStyleBackColor = true;
       // 
       // pnlSimResults
       // 
-      this.pnlSimResults.Controls.Add(this.lvVarValues);
-      this.pnlSimResults.Controls.Add(this.splitter8);
-      this.pnlSimResults.Controls.Add(this.lvResults);
-      this.pnlSimResults.Controls.Add(this.panel13);
-      this.pnlSimResults.Dock = System.Windows.Forms.DockStyle.Fill;
-      this.pnlSimResults.Location = new System.Drawing.Point(0, 293);
-      this.pnlSimResults.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-      this.pnlSimResults.Name = "pnlSimResults";
-      this.pnlSimResults.Size = new System.Drawing.Size(1251, 500);
-      this.pnlSimResults.TabIndex = 3;
+      pnlSimResults.Controls.Add(lvVarValues);
+      pnlSimResults.Controls.Add(splitter8);
+      pnlSimResults.Controls.Add(lvResults);
+      pnlSimResults.Controls.Add(panel13);
+      pnlSimResults.Dock = System.Windows.Forms.DockStyle.Fill;
+      pnlSimResults.Location = new System.Drawing.Point(0, 293);
+      pnlSimResults.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+      pnlSimResults.Name = "pnlSimResults";
+      pnlSimResults.Size = new System.Drawing.Size(1251, 500);
+      pnlSimResults.TabIndex = 3;
       // 
       // lvVarValues
       // 
-      this.lvVarValues.AllowColumnReorder = true;
-      this.lvVarValues.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.colName,
-            this.colValue});
-      this.lvVarValues.Dock = System.Windows.Forms.DockStyle.Fill;
-      this.lvVarValues.FullRowSelect = true;
-      this.lvVarValues.GridLines = true;
-      this.lvVarValues.Location = new System.Drawing.Point(0, 307);
-      this.lvVarValues.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-      this.lvVarValues.Name = "lvVarValues";
-      this.lvVarValues.Size = new System.Drawing.Size(1251, 193);
-      this.lvVarValues.TabIndex = 5;
-      this.lvVarValues.UseCompatibleStateImageBehavior = false;
-      this.lvVarValues.View = System.Windows.Forms.View.Details;
+      lvVarValues.AllowColumnReorder = true;
+      lvVarValues.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] { colName, colValue });
+      lvVarValues.Dock = System.Windows.Forms.DockStyle.Fill;
+      lvVarValues.FullRowSelect = true;
+      lvVarValues.GridLines = true;
+      lvVarValues.Location = new System.Drawing.Point(0, 307);
+      lvVarValues.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+      lvVarValues.Name = "lvVarValues";
+      lvVarValues.Size = new System.Drawing.Size(1251, 193);
+      lvVarValues.TabIndex = 5;
+      lvVarValues.UseCompatibleStateImageBehavior = false;
+      lvVarValues.View = System.Windows.Forms.View.Details;
       // 
       // colName
       // 
-      this.colName.Text = "Variable Name";
-      this.colName.Width = 150;
+      colName.Text = "Variable Name";
+      colName.Width = 150;
       // 
       // colValue
       // 
-      this.colValue.Text = "Value";
-      this.colValue.Width = 80;
+      colValue.Text = "Value";
+      colValue.Width = 80;
       // 
       // splitter8
       // 
-      this.splitter8.Dock = System.Windows.Forms.DockStyle.Top;
-      this.splitter8.Location = new System.Drawing.Point(0, 304);
-      this.splitter8.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-      this.splitter8.Name = "splitter8";
-      this.splitter8.Size = new System.Drawing.Size(1251, 3);
-      this.splitter8.TabIndex = 4;
-      this.splitter8.TabStop = false;
+      splitter8.Dock = System.Windows.Forms.DockStyle.Top;
+      splitter8.Location = new System.Drawing.Point(0, 304);
+      splitter8.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+      splitter8.Name = "splitter8";
+      splitter8.Size = new System.Drawing.Size(1251, 3);
+      splitter8.TabIndex = 4;
+      splitter8.TabStop = false;
       // 
       // lvResults
       // 
-      this.lvResults.AllowColumnReorder = true;
-      this.lvResults.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.colKeyState,
-            this.colFailureCnt,
-            this.colRate,
-            this.colFailedItems});
-      this.lvResults.Dock = System.Windows.Forms.DockStyle.Top;
-      this.lvResults.FullRowSelect = true;
-      this.lvResults.GridLines = true;
-      this.lvResults.Location = new System.Drawing.Point(0, 39);
-      this.lvResults.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-      this.lvResults.Name = "lvResults";
-      this.lvResults.Size = new System.Drawing.Size(1251, 265);
-      this.lvResults.TabIndex = 3;
-      this.lvResults.UseCompatibleStateImageBehavior = false;
-      this.lvResults.View = System.Windows.Forms.View.Details;
+      lvResults.AllowColumnReorder = true;
+      lvResults.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] { colKeyState, colFailureCnt, colRate, colFailedItems });
+      lvResults.Dock = System.Windows.Forms.DockStyle.Top;
+      lvResults.FullRowSelect = true;
+      lvResults.GridLines = true;
+      lvResults.Location = new System.Drawing.Point(0, 39);
+      lvResults.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+      lvResults.Name = "lvResults";
+      lvResults.Size = new System.Drawing.Size(1251, 265);
+      lvResults.TabIndex = 3;
+      lvResults.UseCompatibleStateImageBehavior = false;
+      lvResults.View = System.Windows.Forms.View.Details;
       // 
       // colKeyState
       // 
-      this.colKeyState.Text = "KeyState";
-      this.colKeyState.Width = 150;
+      colKeyState.Text = "KeyState";
+      colKeyState.Width = 150;
       // 
       // colFailureCnt
       // 
-      this.colFailureCnt.Text = "Failure Cnt";
-      this.colFailureCnt.Width = 80;
+      colFailureCnt.Text = "Failure Cnt";
+      colFailureCnt.Width = 80;
       // 
       // colRate
       // 
-      this.colRate.Text = "Rate";
+      colRate.Text = "Rate";
       // 
       // colFailedItems
       // 
-      this.colFailedItems.Text = "Failed Items";
-      this.colFailedItems.Width = 400;
+      colFailedItems.Text = "Failed Items";
+      colFailedItems.Width = 400;
       // 
       // panel13
       // 
-      this.panel13.Controls.Add(this.lblRunTime);
-      this.panel13.Controls.Add(this.btn_Stop);
-      this.panel13.Controls.Add(this.lbl_ResultHeader);
-      this.panel13.Dock = System.Windows.Forms.DockStyle.Top;
-      this.panel13.Location = new System.Drawing.Point(0, 0);
-      this.panel13.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-      this.panel13.Name = "panel13";
-      this.panel13.Size = new System.Drawing.Size(1251, 39);
-      this.panel13.TabIndex = 0;
+      panel13.Controls.Add(lblRunTime);
+      panel13.Controls.Add(btn_Stop);
+      panel13.Controls.Add(lbl_ResultHeader);
+      panel13.Dock = System.Windows.Forms.DockStyle.Top;
+      panel13.Location = new System.Drawing.Point(0, 0);
+      panel13.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+      panel13.Name = "panel13";
+      panel13.Size = new System.Drawing.Size(1251, 39);
+      panel13.TabIndex = 0;
       // 
       // lblRunTime
       // 
-      this.lblRunTime.Location = new System.Drawing.Point(374, 18);
-      this.lblRunTime.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-      this.lblRunTime.Name = "lblRunTime";
-      this.lblRunTime.RightToLeft = System.Windows.Forms.RightToLeft.No;
-      this.lblRunTime.Size = new System.Drawing.Size(70, 15);
-      this.lblRunTime.TabIndex = 11;
-      this.lblRunTime.Text = "00:00:00";
-      this.lblRunTime.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-      this.lblRunTime.Visible = false;
+      lblRunTime.Location = new System.Drawing.Point(374, 18);
+      lblRunTime.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+      lblRunTime.Name = "lblRunTime";
+      lblRunTime.RightToLeft = System.Windows.Forms.RightToLeft.No;
+      lblRunTime.Size = new System.Drawing.Size(70, 15);
+      lblRunTime.TabIndex = 11;
+      lblRunTime.Text = "00:00:00";
+      lblRunTime.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+      lblRunTime.Visible = false;
       // 
       // btn_Stop
       // 
-      this.btn_Stop.Location = new System.Drawing.Point(280, 7);
-      this.btn_Stop.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-      this.btn_Stop.Name = "btn_Stop";
-      this.btn_Stop.Size = new System.Drawing.Size(88, 27);
-      this.btn_Stop.TabIndex = 10;
-      this.btn_Stop.Text = "Stop";
-      this.btn_Stop.UseVisualStyleBackColor = true;
-      this.btn_Stop.Click += new System.EventHandler(this.btn_Stop_Click);
+      btn_Stop.Location = new System.Drawing.Point(280, 7);
+      btn_Stop.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+      btn_Stop.Name = "btn_Stop";
+      btn_Stop.Size = new System.Drawing.Size(88, 27);
+      btn_Stop.TabIndex = 10;
+      btn_Stop.Text = "Stop";
+      btn_Stop.UseVisualStyleBackColor = true;
+      btn_Stop.Click += btn_Stop_Click;
       // 
       // lbl_ResultHeader
       // 
-      this.lbl_ResultHeader.Location = new System.Drawing.Point(451, 18);
-      this.lbl_ResultHeader.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-      this.lbl_ResultHeader.Name = "lbl_ResultHeader";
-      this.lbl_ResultHeader.Size = new System.Drawing.Size(774, 15);
-      this.lbl_ResultHeader.TabIndex = 6;
-      this.lbl_ResultHeader.Text = "0 of n runs";
-      this.lbl_ResultHeader.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-      this.lbl_ResultHeader.Visible = false;
+      lbl_ResultHeader.Location = new System.Drawing.Point(451, 18);
+      lbl_ResultHeader.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+      lbl_ResultHeader.Name = "lbl_ResultHeader";
+      lbl_ResultHeader.Size = new System.Drawing.Size(774, 15);
+      lbl_ResultHeader.TabIndex = 6;
+      lbl_ResultHeader.Text = "0 of n runs";
+      lbl_ResultHeader.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+      lbl_ResultHeader.Visible = false;
       // 
       // splitter6
       // 
-      this.splitter6.Cursor = System.Windows.Forms.Cursors.HSplit;
-      this.splitter6.Dock = System.Windows.Forms.DockStyle.Top;
-      this.splitter6.Location = new System.Drawing.Point(0, 290);
-      this.splitter6.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-      this.splitter6.Name = "splitter6";
-      this.splitter6.Size = new System.Drawing.Size(1251, 3);
-      this.splitter6.TabIndex = 2;
-      this.splitter6.TabStop = false;
+      splitter6.Cursor = System.Windows.Forms.Cursors.HSplit;
+      splitter6.Dock = System.Windows.Forms.DockStyle.Top;
+      splitter6.Location = new System.Drawing.Point(0, 290);
+      splitter6.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+      splitter6.Name = "splitter6";
+      splitter6.Size = new System.Drawing.Size(1251, 3);
+      splitter6.TabIndex = 2;
+      splitter6.TabStop = false;
       // 
       // pnlSimulate
       // 
-      this.pnlSimulate.Controls.Add(this.chkDebug);
-      this.pnlSimulate.Controls.Add(this.splitter7);
-      this.pnlSimulate.Controls.Add(this.panel12);
-      this.pnlSimulate.Controls.Add(this.splitter3);
-      this.pnlSimulate.Controls.Add(this.panel4);
-      this.pnlSimulate.Dock = System.Windows.Forms.DockStyle.Top;
-      this.pnlSimulate.Enabled = false;
-      this.pnlSimulate.Location = new System.Drawing.Point(0, 0);
-      this.pnlSimulate.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-      this.pnlSimulate.Name = "pnlSimulate";
-      this.pnlSimulate.Size = new System.Drawing.Size(1251, 290);
-      this.pnlSimulate.TabIndex = 1;
+      pnlSimulate.Controls.Add(chkDebug);
+      pnlSimulate.Controls.Add(splitter7);
+      pnlSimulate.Controls.Add(panel12);
+      pnlSimulate.Controls.Add(splitter3);
+      pnlSimulate.Controls.Add(panel4);
+      pnlSimulate.Dock = System.Windows.Forms.DockStyle.Top;
+      pnlSimulate.Enabled = false;
+      pnlSimulate.Location = new System.Drawing.Point(0, 0);
+      pnlSimulate.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+      pnlSimulate.Name = "pnlSimulate";
+      pnlSimulate.Size = new System.Drawing.Size(1251, 290);
+      pnlSimulate.TabIndex = 1;
       // 
       // chkDebug
       // 
-      this.chkDebug.Controls.Add(this.tbSavePath2);
-      this.chkDebug.Controls.Add(this.button2);
-      this.chkDebug.Controls.Add(this.gbPathResults);
-      this.chkDebug.Controls.Add(this.label19);
-      this.chkDebug.Controls.Add(this.tbSeed);
-      this.chkDebug.Controls.Add(this.label18);
-      this.chkDebug.Controls.Add(this.chkLog);
-      this.chkDebug.Controls.Add(this.grpDebugOpts);
-      this.chkDebug.Controls.Add(this.label17);
-      this.chkDebug.Controls.Add(this.label16);
-      this.chkDebug.Controls.Add(this.button3);
-      this.chkDebug.Controls.Add(this.button4);
-      this.chkDebug.Controls.Add(this.tbSavePath);
-      this.chkDebug.Controls.Add(this.label13);
-      this.chkDebug.Controls.Add(this.tbMaxSimTime);
-      this.chkDebug.Controls.Add(this.label15);
-      this.chkDebug.Controls.Add(this.label14);
-      this.chkDebug.Controls.Add(this.tbRunCnt);
-      this.chkDebug.Controls.Add(this.btnStartSims);
-      this.chkDebug.Dock = System.Windows.Forms.DockStyle.Fill;
-      this.chkDebug.Location = new System.Drawing.Point(404, 0);
-      this.chkDebug.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-      this.chkDebug.Name = "chkDebug";
-      this.chkDebug.Size = new System.Drawing.Size(847, 290);
-      this.chkDebug.TabIndex = 3;
+      chkDebug.Controls.Add(tbSavePath2);
+      chkDebug.Controls.Add(button2);
+      chkDebug.Controls.Add(gbPathResults);
+      chkDebug.Controls.Add(label19);
+      chkDebug.Controls.Add(tbSeed);
+      chkDebug.Controls.Add(label18);
+      chkDebug.Controls.Add(chkLog);
+      chkDebug.Controls.Add(grpDebugOpts);
+      chkDebug.Controls.Add(label17);
+      chkDebug.Controls.Add(label16);
+      chkDebug.Controls.Add(button3);
+      chkDebug.Controls.Add(button4);
+      chkDebug.Controls.Add(tbSavePath);
+      chkDebug.Controls.Add(label13);
+      chkDebug.Controls.Add(tbMaxSimTime);
+      chkDebug.Controls.Add(label15);
+      chkDebug.Controls.Add(label14);
+      chkDebug.Controls.Add(tbRunCnt);
+      chkDebug.Controls.Add(btnStartSims);
+      chkDebug.Dock = System.Windows.Forms.DockStyle.Fill;
+      chkDebug.Location = new System.Drawing.Point(404, 0);
+      chkDebug.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+      chkDebug.Name = "chkDebug";
+      chkDebug.Size = new System.Drawing.Size(847, 290);
+      chkDebug.TabIndex = 3;
       // 
       // tbSavePath2
       // 
-      this.tbSavePath2.Location = new System.Drawing.Point(131, 90);
-      this.tbSavePath2.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-      this.tbSavePath2.Name = "tbSavePath2";
-      this.tbSavePath2.Size = new System.Drawing.Size(433, 23);
-      this.tbSavePath2.TabIndex = 27;
-      this.tbSavePath2.Text = "c:\\temp\\PathResults.json";
+      tbSavePath2.Location = new System.Drawing.Point(131, 90);
+      tbSavePath2.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+      tbSavePath2.Name = "tbSavePath2";
+      tbSavePath2.Size = new System.Drawing.Size(433, 23);
+      tbSavePath2.TabIndex = 27;
+      tbSavePath2.Text = "c:\\temp\\PathResults.json";
+      tbSavePath2.Leave += Leave_SaveSettings;
       // 
       // button2
       // 
-      this.button2.Location = new System.Drawing.Point(572, 88);
-      this.button2.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-      this.button2.Name = "button2";
-      this.button2.Size = new System.Drawing.Size(88, 27);
-      this.button2.TabIndex = 28;
-      this.button2.Text = "Open";
-      this.button2.UseVisualStyleBackColor = true;
-      this.button2.Click += new System.EventHandler(this.button2_Click_1);
+      button2.Location = new System.Drawing.Point(572, 88);
+      button2.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+      button2.Name = "button2";
+      button2.Size = new System.Drawing.Size(88, 27);
+      button2.TabIndex = 28;
+      button2.Text = "Open";
+      button2.UseVisualStyleBackColor = true;
+      button2.Click += button2_Click_1;
       // 
       // gbPathResults
       // 
-      this.gbPathResults.Controls.Add(this.rbJsonPaths);
-      this.gbPathResults.Controls.Add(this.rbSimplePath);
-      this.gbPathResults.Location = new System.Drawing.Point(131, 110);
-      this.gbPathResults.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-      this.gbPathResults.Name = "gbPathResults";
-      this.gbPathResults.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
-      this.gbPathResults.Size = new System.Drawing.Size(537, 36);
-      this.gbPathResults.TabIndex = 39;
-      this.gbPathResults.TabStop = false;
-      this.gbPathResults.Visible = false;
+      gbPathResults.Controls.Add(rbJsonPaths);
+      gbPathResults.Controls.Add(rbSimplePath);
+      gbPathResults.Location = new System.Drawing.Point(131, 110);
+      gbPathResults.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+      gbPathResults.Name = "gbPathResults";
+      gbPathResults.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
+      gbPathResults.Size = new System.Drawing.Size(537, 36);
+      gbPathResults.TabIndex = 39;
+      gbPathResults.TabStop = false;
+      gbPathResults.Visible = false;
       // 
       // rbJsonPaths
       // 
-      this.rbJsonPaths.AutoSize = true;
-      this.rbJsonPaths.Checked = true;
-      this.rbJsonPaths.Location = new System.Drawing.Point(107, 10);
-      this.rbJsonPaths.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-      this.rbJsonPaths.Name = "rbJsonPaths";
-      this.rbJsonPaths.Size = new System.Drawing.Size(135, 19);
-      this.rbJsonPaths.TabIndex = 32;
-      this.rbJsonPaths.TabStop = true;
-      this.rbJsonPaths.Text = "Detailed Stats (JSON)";
-      this.rbJsonPaths.UseVisualStyleBackColor = true;
-      this.rbJsonPaths.Visible = false;
+      rbJsonPaths.AutoSize = true;
+      rbJsonPaths.Checked = true;
+      rbJsonPaths.Location = new System.Drawing.Point(107, 10);
+      rbJsonPaths.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+      rbJsonPaths.Name = "rbJsonPaths";
+      rbJsonPaths.Size = new System.Drawing.Size(135, 19);
+      rbJsonPaths.TabIndex = 32;
+      rbJsonPaths.TabStop = true;
+      rbJsonPaths.Text = "Detailed Stats (JSON)";
+      rbJsonPaths.UseVisualStyleBackColor = true;
+      rbJsonPaths.Visible = false;
       // 
       // rbSimplePath
       // 
-      this.rbSimplePath.AutoSize = true;
-      this.rbSimplePath.Location = new System.Drawing.Point(7, 10);
-      this.rbSimplePath.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-      this.rbSimplePath.Name = "rbSimplePath";
-      this.rbSimplePath.Size = new System.Drawing.Size(85, 19);
-      this.rbSimplePath.TabIndex = 31;
-      this.rbSimplePath.Text = "Simple Text";
-      this.rbSimplePath.UseVisualStyleBackColor = true;
-      this.rbSimplePath.Visible = false;
-      this.rbSimplePath.CheckedChanged += new System.EventHandler(this.rbSimplePath_CheckedChanged);
+      rbSimplePath.AutoSize = true;
+      rbSimplePath.Location = new System.Drawing.Point(7, 10);
+      rbSimplePath.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+      rbSimplePath.Name = "rbSimplePath";
+      rbSimplePath.Size = new System.Drawing.Size(85, 19);
+      rbSimplePath.TabIndex = 31;
+      rbSimplePath.Text = "Simple Text";
+      rbSimplePath.UseVisualStyleBackColor = true;
+      rbSimplePath.Visible = false;
+      rbSimplePath.CheckedChanged += rbSimplePath_CheckedChanged;
       // 
       // label19
       // 
-      this.label19.AutoSize = true;
-      this.label19.Location = new System.Drawing.Point(251, 160);
-      this.label19.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-      this.label19.Name = "label19";
-      this.label19.Size = new System.Drawing.Size(137, 15);
-      this.label19.TabIndex = 36;
-      this.label19.Text = "(leave blank for random)";
+      label19.AutoSize = true;
+      label19.Location = new System.Drawing.Point(251, 160);
+      label19.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+      label19.Name = "label19";
+      label19.Size = new System.Drawing.Size(137, 15);
+      label19.TabIndex = 36;
+      label19.Text = "(leave blank for random)";
       // 
       // tbSeed
       // 
-      this.tbSeed.Location = new System.Drawing.Point(131, 152);
-      this.tbSeed.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-      this.tbSeed.Name = "tbSeed";
-      this.tbSeed.Size = new System.Drawing.Size(116, 23);
-      this.tbSeed.TabIndex = 35;
-      this.tbSeed.Leave += new System.EventHandler(this.tbSeed_Leave);
+      tbSeed.Location = new System.Drawing.Point(131, 152);
+      tbSeed.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+      tbSeed.Name = "tbSeed";
+      tbSeed.Size = new System.Drawing.Size(116, 23);
+      tbSeed.TabIndex = 35;
+      tbSeed.Leave += tbSeed_Leave;
       // 
       // label18
       // 
-      this.label18.AutoSize = true;
-      this.label18.Location = new System.Drawing.Point(14, 156);
-      this.label18.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-      this.label18.Name = "label18";
-      this.label18.Size = new System.Drawing.Size(38, 15);
-      this.label18.TabIndex = 34;
-      this.label18.Text = "Seed :";
+      label18.AutoSize = true;
+      label18.Location = new System.Drawing.Point(14, 156);
+      label18.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+      label18.Name = "label18";
+      label18.Size = new System.Drawing.Size(38, 15);
+      label18.TabIndex = 34;
+      label18.Text = "Seed :";
       // 
       // chkLog
       // 
-      this.chkLog.AutoSize = true;
-      this.chkLog.Location = new System.Drawing.Point(159, 187);
-      this.chkLog.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-      this.chkLog.Name = "chkLog";
-      this.chkLog.Size = new System.Drawing.Size(226, 19);
-      this.chkLog.TabIndex = 33;
-      this.chkLog.Text = "Debug (file debug.txt in run directory)";
-      this.chkLog.UseVisualStyleBackColor = true;
-      this.chkLog.CheckedChanged += new System.EventHandler(this.chkLog_CheckedChanged);
+      chkLog.AutoSize = true;
+      chkLog.Location = new System.Drawing.Point(159, 187);
+      chkLog.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+      chkLog.Name = "chkLog";
+      chkLog.Size = new System.Drawing.Size(226, 19);
+      chkLog.TabIndex = 33;
+      chkLog.Text = "Debug (file debug.txt in run directory)";
+      chkLog.UseVisualStyleBackColor = true;
+      chkLog.CheckedChanged += chkLog_CheckedChanged;
       // 
       // grpDebugOpts
       // 
-      this.grpDebugOpts.Controls.Add(this.label21);
-      this.grpDebugOpts.Controls.Add(this.label20);
-      this.grpDebugOpts.Controls.Add(this.tbLogRunEnd);
-      this.grpDebugOpts.Controls.Add(this.tbLogRunStart);
-      this.grpDebugOpts.Controls.Add(this.rbDebugDetailed);
-      this.grpDebugOpts.Controls.Add(this.rbDebugBasic);
-      this.grpDebugOpts.Enabled = false;
-      this.grpDebugOpts.Location = new System.Drawing.Point(159, 197);
-      this.grpDebugOpts.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-      this.grpDebugOpts.Name = "grpDebugOpts";
-      this.grpDebugOpts.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
-      this.grpDebugOpts.Size = new System.Drawing.Size(429, 61);
-      this.grpDebugOpts.TabIndex = 32;
-      this.grpDebugOpts.TabStop = false;
+      grpDebugOpts.Controls.Add(label21);
+      grpDebugOpts.Controls.Add(label20);
+      grpDebugOpts.Controls.Add(tbLogRunEnd);
+      grpDebugOpts.Controls.Add(tbLogRunStart);
+      grpDebugOpts.Controls.Add(rbDebugDetailed);
+      grpDebugOpts.Controls.Add(rbDebugBasic);
+      grpDebugOpts.Enabled = false;
+      grpDebugOpts.Location = new System.Drawing.Point(159, 197);
+      grpDebugOpts.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+      grpDebugOpts.Name = "grpDebugOpts";
+      grpDebugOpts.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
+      grpDebugOpts.Size = new System.Drawing.Size(429, 61);
+      grpDebugOpts.TabIndex = 32;
+      grpDebugOpts.TabStop = false;
       // 
       // label21
       // 
-      this.label21.AutoSize = true;
-      this.label21.Location = new System.Drawing.Point(155, 36);
-      this.label21.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-      this.label21.Name = "label21";
-      this.label21.Size = new System.Drawing.Size(46, 15);
-      this.label21.TabIndex = 38;
-      this.label21.Text = "To Run:";
+      label21.AutoSize = true;
+      label21.Location = new System.Drawing.Point(155, 36);
+      label21.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+      label21.Name = "label21";
+      label21.Size = new System.Drawing.Size(46, 15);
+      label21.TabIndex = 38;
+      label21.Text = "To Run:";
       // 
       // label20
       // 
-      this.label20.AutoSize = true;
-      this.label20.Location = new System.Drawing.Point(7, 36);
-      this.label20.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-      this.label20.Name = "label20";
-      this.label20.Size = new System.Drawing.Size(62, 15);
-      this.label20.TabIndex = 37;
-      this.label20.Text = "From Run:";
+      label20.AutoSize = true;
+      label20.Location = new System.Drawing.Point(7, 36);
+      label20.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+      label20.Name = "label20";
+      label20.Size = new System.Drawing.Size(62, 15);
+      label20.TabIndex = 37;
+      label20.Text = "From Run:";
       // 
       // tbLogRunEnd
       // 
-      this.tbLogRunEnd.Location = new System.Drawing.Point(216, 32);
-      this.tbLogRunEnd.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-      this.tbLogRunEnd.Name = "tbLogRunEnd";
-      this.tbLogRunEnd.Size = new System.Drawing.Size(63, 23);
-      this.tbLogRunEnd.TabIndex = 34;
-      this.tbLogRunEnd.Leave += new System.EventHandler(this.tbLogRunEnd_Leave);
+      tbLogRunEnd.Location = new System.Drawing.Point(216, 32);
+      tbLogRunEnd.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+      tbLogRunEnd.Name = "tbLogRunEnd";
+      tbLogRunEnd.Size = new System.Drawing.Size(63, 23);
+      tbLogRunEnd.TabIndex = 34;
+      tbLogRunEnd.Leave += tbLogRunEnd_Leave;
       // 
       // tbLogRunStart
       // 
-      this.tbLogRunStart.Location = new System.Drawing.Point(79, 32);
-      this.tbLogRunStart.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-      this.tbLogRunStart.Name = "tbLogRunStart";
-      this.tbLogRunStart.Size = new System.Drawing.Size(61, 23);
-      this.tbLogRunStart.TabIndex = 33;
-      this.tbLogRunStart.Leave += new System.EventHandler(this.tbLogRunStart_Leave);
+      tbLogRunStart.Location = new System.Drawing.Point(79, 32);
+      tbLogRunStart.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+      tbLogRunStart.Name = "tbLogRunStart";
+      tbLogRunStart.Size = new System.Drawing.Size(61, 23);
+      tbLogRunStart.TabIndex = 33;
+      tbLogRunStart.Leave += tbLogRunStart_Leave;
       // 
       // rbDebugDetailed
       // 
-      this.rbDebugDetailed.AutoSize = true;
-      this.rbDebugDetailed.Location = new System.Drawing.Point(175, 10);
-      this.rbDebugDetailed.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-      this.rbDebugDetailed.Name = "rbDebugDetailed";
-      this.rbDebugDetailed.Size = new System.Drawing.Size(196, 19);
-      this.rbDebugDetailed.TabIndex = 32;
-      this.rbDebugDetailed.TabStop = true;
-      this.rbDebugDetailed.Text = "Detailed (States, Actions, Events)";
-      this.rbDebugDetailed.UseVisualStyleBackColor = true;
-      this.rbDebugDetailed.CheckedChanged += new System.EventHandler(this.rbDebug_CheckedChanged);
+      rbDebugDetailed.AutoSize = true;
+      rbDebugDetailed.Location = new System.Drawing.Point(175, 10);
+      rbDebugDetailed.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+      rbDebugDetailed.Name = "rbDebugDetailed";
+      rbDebugDetailed.Size = new System.Drawing.Size(196, 19);
+      rbDebugDetailed.TabIndex = 32;
+      rbDebugDetailed.TabStop = true;
+      rbDebugDetailed.Text = "Detailed (States, Actions, Events)";
+      rbDebugDetailed.UseVisualStyleBackColor = true;
+      rbDebugDetailed.CheckedChanged += rbDebug_CheckedChanged;
       // 
       // rbDebugBasic
       // 
-      this.rbDebugBasic.AutoSize = true;
-      this.rbDebugBasic.Location = new System.Drawing.Point(7, 10);
-      this.rbDebugBasic.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-      this.rbDebugBasic.Name = "rbDebugBasic";
-      this.rbDebugBasic.Size = new System.Drawing.Size(150, 19);
-      this.rbDebugBasic.TabIndex = 31;
-      this.rbDebugBasic.TabStop = true;
-      this.rbDebugBasic.Text = "Basic (State Movement)";
-      this.rbDebugBasic.UseVisualStyleBackColor = true;
-      this.rbDebugBasic.CheckedChanged += new System.EventHandler(this.rbDebug_CheckedChanged);
+      rbDebugBasic.AutoSize = true;
+      rbDebugBasic.Location = new System.Drawing.Point(7, 10);
+      rbDebugBasic.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+      rbDebugBasic.Name = "rbDebugBasic";
+      rbDebugBasic.Size = new System.Drawing.Size(150, 19);
+      rbDebugBasic.TabIndex = 31;
+      rbDebugBasic.TabStop = true;
+      rbDebugBasic.Text = "Basic (State Movement)";
+      rbDebugBasic.UseVisualStyleBackColor = true;
+      rbDebugBasic.CheckedChanged += rbDebug_CheckedChanged;
       // 
       // label17
       // 
-      this.label17.AutoSize = true;
-      this.label17.Location = new System.Drawing.Point(14, 93);
-      this.label17.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-      this.label17.Name = "label17";
-      this.label17.Size = new System.Drawing.Size(96, 15);
-      this.label17.TabIndex = 29;
-      this.label17.Text = "Path Results Loc:";
-      this.toolTip1.SetToolTip(this.label17, "JSON tree structure with all the satistics for paths, event, and actions");
+      label17.AutoSize = true;
+      label17.Location = new System.Drawing.Point(14, 93);
+      label17.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+      label17.Name = "label17";
+      label17.Size = new System.Drawing.Size(96, 15);
+      label17.TabIndex = 29;
+      label17.Text = "Path Results Loc:";
+      toolTip1.SetToolTip(label17, "JSON tree structure with all the satistics for paths, event, and actions");
       // 
       // label16
       // 
-      this.label16.AutoSize = true;
-      this.label16.Location = new System.Drawing.Point(14, 66);
-      this.label16.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-      this.label16.Name = "label16";
-      this.label16.Size = new System.Drawing.Size(99, 15);
-      this.label16.TabIndex = 26;
-      this.label16.Text = "Basic Results Loc:";
+      label16.AutoSize = true;
+      label16.Location = new System.Drawing.Point(14, 66);
+      label16.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+      label16.Name = "label16";
+      label16.Size = new System.Drawing.Size(99, 15);
+      label16.TabIndex = 26;
+      label16.Text = "Basic Results Loc:";
       // 
       // button3
       // 
-      this.button3.Location = new System.Drawing.Point(572, 60);
-      this.button3.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-      this.button3.Name = "button3";
-      this.button3.Size = new System.Drawing.Size(88, 27);
-      this.button3.TabIndex = 25;
-      this.button3.Text = "Open";
-      this.button3.UseVisualStyleBackColor = true;
-      this.button3.Click += new System.EventHandler(this.button3_Click);
+      button3.Location = new System.Drawing.Point(572, 60);
+      button3.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+      button3.Name = "button3";
+      button3.Size = new System.Drawing.Size(88, 27);
+      button3.TabIndex = 25;
+      button3.Text = "Open";
+      button3.UseVisualStyleBackColor = true;
+      button3.Click += button3_Click;
       // 
       // button4
       // 
-      this.button4.Location = new System.Drawing.Point(663, 88);
-      this.button4.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-      this.button4.Name = "button4";
-      this.button4.Size = new System.Drawing.Size(88, 27);
-      this.button4.TabIndex = 25;
-      this.button4.Text = "View Diagram";
-      this.button4.UseVisualStyleBackColor = true;
-      this.button4.Click += new System.EventHandler(this.button4_Click);
+      button4.Location = new System.Drawing.Point(663, 88);
+      button4.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+      button4.Name = "button4";
+      button4.Size = new System.Drawing.Size(88, 27);
+      button4.TabIndex = 25;
+      button4.Text = "View Diagram";
+      button4.UseVisualStyleBackColor = true;
+      button4.Click += button4_Click;
       // 
       // tbSavePath
       // 
-      this.tbSavePath.Location = new System.Drawing.Point(131, 62);
-      this.tbSavePath.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-      this.tbSavePath.Name = "tbSavePath";
-      this.tbSavePath.Size = new System.Drawing.Size(433, 23);
-      this.tbSavePath.TabIndex = 24;
-      this.tbSavePath.Text = "c:\\temp\\NewSimResults.txt";
+      tbSavePath.Location = new System.Drawing.Point(131, 62);
+      tbSavePath.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+      tbSavePath.Name = "tbSavePath";
+      tbSavePath.Size = new System.Drawing.Size(433, 23);
+      tbSavePath.TabIndex = 24;
+      tbSavePath.Text = "c:\\temp\\NewSimResults.txt";
+      tbSavePath.Leave += Leave_SaveSettings;
       // 
       // label13
       // 
-      this.label13.AutoSize = true;
-      this.label13.Location = new System.Drawing.Point(302, 40);
-      this.label13.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-      this.label13.Name = "label13";
-      this.label13.Size = new System.Drawing.Size(269, 15);
-      this.label13.TabIndex = 23;
-      this.label13.Text = "[days.hh:mm:ss.ms]  Don\'t put 24 hours for 1 day.";
+      label13.AutoSize = true;
+      label13.Location = new System.Drawing.Point(302, 40);
+      label13.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+      label13.Name = "label13";
+      label13.Size = new System.Drawing.Size(269, 15);
+      label13.TabIndex = 23;
+      label13.Text = "[days.hh:mm:ss.ms]  Don't put 24 hours for 1 day.";
       // 
       // tbMaxSimTime
       // 
-      this.tbMaxSimTime.Location = new System.Drawing.Point(131, 36);
-      this.tbMaxSimTime.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-      this.tbMaxSimTime.Name = "tbMaxSimTime";
-      this.tbMaxSimTime.Size = new System.Drawing.Size(170, 23);
-      this.tbMaxSimTime.TabIndex = 22;
-      this.tbMaxSimTime.Text = "365.00:00:00";
+      tbMaxSimTime.Location = new System.Drawing.Point(131, 36);
+      tbMaxSimTime.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+      tbMaxSimTime.Name = "tbMaxSimTime";
+      tbMaxSimTime.Size = new System.Drawing.Size(170, 23);
+      tbMaxSimTime.TabIndex = 22;
+      tbMaxSimTime.Text = "365.00:00:00";
+      tbMaxSimTime.Leave += Leave_SaveSettings;
       // 
       // label15
       // 
-      this.label15.AutoSize = true;
-      this.label15.Location = new System.Drawing.Point(12, 40);
-      this.label15.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-      this.label15.Name = "label15";
-      this.label15.Size = new System.Drawing.Size(88, 15);
-      this.label15.TabIndex = 21;
-      this.label15.Text = "Max Sim Time :";
+      label15.AutoSize = true;
+      label15.Location = new System.Drawing.Point(12, 40);
+      label15.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+      label15.Name = "label15";
+      label15.Size = new System.Drawing.Size(88, 15);
+      label15.TabIndex = 21;
+      label15.Text = "Max Sim Time :";
       // 
       // label14
       // 
-      this.label14.AutoSize = true;
-      this.label14.Location = new System.Drawing.Point(14, 14);
-      this.label14.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-      this.label14.Name = "label14";
-      this.label14.Size = new System.Drawing.Size(39, 15);
-      this.label14.TabIndex = 20;
-      this.label14.Text = "Runs :";
+      label14.AutoSize = true;
+      label14.Location = new System.Drawing.Point(14, 14);
+      label14.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+      label14.Name = "label14";
+      label14.Size = new System.Drawing.Size(39, 15);
+      label14.TabIndex = 20;
+      label14.Text = "Runs :";
       // 
       // tbRunCnt
       // 
-      this.tbRunCnt.Location = new System.Drawing.Point(131, 10);
-      this.tbRunCnt.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-      this.tbRunCnt.Name = "tbRunCnt";
-      this.tbRunCnt.Size = new System.Drawing.Size(116, 23);
-      this.tbRunCnt.TabIndex = 19;
-      this.tbRunCnt.Text = "1000";
-      this.tbRunCnt.Leave += new System.EventHandler(this.tbRunCnt_Leave);
+      tbRunCnt.Location = new System.Drawing.Point(131, 10);
+      tbRunCnt.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+      tbRunCnt.Name = "tbRunCnt";
+      tbRunCnt.Size = new System.Drawing.Size(116, 23);
+      tbRunCnt.TabIndex = 19;
+      tbRunCnt.Text = "1000";
+      tbRunCnt.Leave += tbRunCnt_Leave;
       // 
       // btnStartSims
       // 
-      this.btnStartSims.Location = new System.Drawing.Point(18, 201);
-      this.btnStartSims.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-      this.btnStartSims.Name = "btnStartSims";
-      this.btnStartSims.Size = new System.Drawing.Size(88, 27);
-      this.btnStartSims.TabIndex = 0;
-      this.btnStartSims.Text = "Run";
-      this.btnStartSims.UseVisualStyleBackColor = true;
-      this.btnStartSims.Click += new System.EventHandler(this.btnStartSims_Click);
+      btnStartSims.Location = new System.Drawing.Point(18, 201);
+      btnStartSims.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+      btnStartSims.Name = "btnStartSims";
+      btnStartSims.Size = new System.Drawing.Size(88, 27);
+      btnStartSims.TabIndex = 0;
+      btnStartSims.Text = "Run";
+      btnStartSims.UseVisualStyleBackColor = true;
+      btnStartSims.Click += btnStartSims_Click;
       // 
       // splitter7
       // 
-      this.splitter7.Location = new System.Drawing.Point(400, 0);
-      this.splitter7.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-      this.splitter7.Name = "splitter7";
-      this.splitter7.Size = new System.Drawing.Size(4, 290);
-      this.splitter7.TabIndex = 5;
-      this.splitter7.TabStop = false;
+      splitter7.Location = new System.Drawing.Point(400, 0);
+      splitter7.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+      splitter7.Name = "splitter7";
+      splitter7.Size = new System.Drawing.Size(4, 290);
+      splitter7.TabIndex = 5;
+      splitter7.TabStop = false;
       // 
       // panel12
       // 
-      this.panel12.Controls.Add(this.lbMonitorVars);
-      this.panel12.Controls.Add(this.panel14);
-      this.panel12.Dock = System.Windows.Forms.DockStyle.Left;
-      this.panel12.Location = new System.Drawing.Point(202, 0);
-      this.panel12.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-      this.panel12.Name = "panel12";
-      this.panel12.Size = new System.Drawing.Size(198, 290);
-      this.panel12.TabIndex = 4;
+      panel12.Controls.Add(lbMonitorVars);
+      panel12.Controls.Add(panel14);
+      panel12.Dock = System.Windows.Forms.DockStyle.Left;
+      panel12.Location = new System.Drawing.Point(202, 0);
+      panel12.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+      panel12.Name = "panel12";
+      panel12.Size = new System.Drawing.Size(198, 290);
+      panel12.TabIndex = 4;
       // 
       // lbMonitorVars
       // 
-      this.lbMonitorVars.CheckOnClick = true;
-      this.lbMonitorVars.Dock = System.Windows.Forms.DockStyle.Fill;
-      this.lbMonitorVars.FormattingEnabled = true;
-      this.lbMonitorVars.Location = new System.Drawing.Point(0, 27);
-      this.lbMonitorVars.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-      this.lbMonitorVars.Name = "lbMonitorVars";
-      this.lbMonitorVars.Size = new System.Drawing.Size(198, 263);
-      this.lbMonitorVars.TabIndex = 1;
+      lbMonitorVars.CheckOnClick = true;
+      lbMonitorVars.Dock = System.Windows.Forms.DockStyle.Fill;
+      lbMonitorVars.FormattingEnabled = true;
+      lbMonitorVars.Location = new System.Drawing.Point(0, 27);
+      lbMonitorVars.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+      lbMonitorVars.Name = "lbMonitorVars";
+      lbMonitorVars.Size = new System.Drawing.Size(198, 263);
+      lbMonitorVars.TabIndex = 1;
       // 
       // panel14
       // 
-      this.panel14.BackColor = System.Drawing.Color.Gainsboro;
-      this.panel14.Controls.Add(this.label7);
-      this.panel14.Dock = System.Windows.Forms.DockStyle.Top;
-      this.panel14.Location = new System.Drawing.Point(0, 0);
-      this.panel14.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-      this.panel14.Name = "panel14";
-      this.panel14.Size = new System.Drawing.Size(198, 27);
-      this.panel14.TabIndex = 0;
+      panel14.BackColor = System.Drawing.Color.Gainsboro;
+      panel14.Controls.Add(label7);
+      panel14.Dock = System.Windows.Forms.DockStyle.Top;
+      panel14.Location = new System.Drawing.Point(0, 0);
+      panel14.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+      panel14.Name = "panel14";
+      panel14.Size = new System.Drawing.Size(198, 27);
+      panel14.TabIndex = 0;
       // 
       // label7
       // 
-      this.label7.AutoSize = true;
-      this.label7.Location = new System.Drawing.Point(4, 6);
-      this.label7.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-      this.label7.Name = "label7";
-      this.label7.Size = new System.Drawing.Size(113, 15);
-      this.label7.TabIndex = 0;
-      this.label7.Text = "Variables to Monitor";
-      this.label7.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+      label7.AutoSize = true;
+      label7.Location = new System.Drawing.Point(4, 6);
+      label7.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+      label7.Name = "label7";
+      label7.Size = new System.Drawing.Size(113, 15);
+      label7.TabIndex = 0;
+      label7.Text = "Variables to Monitor";
+      label7.TextAlign = System.Drawing.ContentAlignment.TopCenter;
       // 
       // splitter3
       // 
-      this.splitter3.Location = new System.Drawing.Point(198, 0);
-      this.splitter3.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-      this.splitter3.Name = "splitter3";
-      this.splitter3.Size = new System.Drawing.Size(4, 290);
-      this.splitter3.TabIndex = 2;
-      this.splitter3.TabStop = false;
+      splitter3.Location = new System.Drawing.Point(198, 0);
+      splitter3.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+      splitter3.Name = "splitter3";
+      splitter3.Size = new System.Drawing.Size(4, 290);
+      splitter3.TabIndex = 2;
+      splitter3.TabStop = false;
       // 
       // panel4
       // 
-      this.panel4.Controls.Add(this.lbExtSimLinks);
-      this.panel4.Controls.Add(this.panel10);
-      this.panel4.Dock = System.Windows.Forms.DockStyle.Left;
-      this.panel4.Location = new System.Drawing.Point(0, 0);
-      this.panel4.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-      this.panel4.Name = "panel4";
-      this.panel4.Size = new System.Drawing.Size(198, 290);
-      this.panel4.TabIndex = 1;
+      panel4.Controls.Add(lbExtSimLinks);
+      panel4.Controls.Add(panel10);
+      panel4.Dock = System.Windows.Forms.DockStyle.Left;
+      panel4.Location = new System.Drawing.Point(0, 0);
+      panel4.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+      panel4.Name = "panel4";
+      panel4.Size = new System.Drawing.Size(198, 290);
+      panel4.TabIndex = 1;
       // 
       // lbExtSimLinks
       // 
-      this.lbExtSimLinks.CheckOnClick = true;
-      this.lbExtSimLinks.Dock = System.Windows.Forms.DockStyle.Fill;
-      this.lbExtSimLinks.FormattingEnabled = true;
-      this.lbExtSimLinks.Location = new System.Drawing.Point(0, 27);
-      this.lbExtSimLinks.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-      this.lbExtSimLinks.Name = "lbExtSimLinks";
-      this.lbExtSimLinks.Size = new System.Drawing.Size(198, 263);
-      this.lbExtSimLinks.TabIndex = 1;
-      this.lbExtSimLinks.Click += new System.EventHandler(this.lbExtSimLinks_Click);
+      lbExtSimLinks.CheckOnClick = true;
+      lbExtSimLinks.Dock = System.Windows.Forms.DockStyle.Fill;
+      lbExtSimLinks.FormattingEnabled = true;
+      lbExtSimLinks.Location = new System.Drawing.Point(0, 27);
+      lbExtSimLinks.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+      lbExtSimLinks.Name = "lbExtSimLinks";
+      lbExtSimLinks.Size = new System.Drawing.Size(198, 263);
+      lbExtSimLinks.TabIndex = 1;
+      lbExtSimLinks.Click += lbExtSimLinks_Click;
       // 
       // panel10
       // 
-      this.panel10.BackColor = System.Drawing.Color.Gainsboro;
-      this.panel10.Controls.Add(this.label12);
-      this.panel10.Dock = System.Windows.Forms.DockStyle.Top;
-      this.panel10.Location = new System.Drawing.Point(0, 0);
-      this.panel10.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-      this.panel10.Name = "panel10";
-      this.panel10.Size = new System.Drawing.Size(198, 27);
-      this.panel10.TabIndex = 0;
+      panel10.BackColor = System.Drawing.Color.Gainsboro;
+      panel10.Controls.Add(label12);
+      panel10.Dock = System.Windows.Forms.DockStyle.Top;
+      panel10.Location = new System.Drawing.Point(0, 0);
+      panel10.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+      panel10.Name = "panel10";
+      panel10.Size = new System.Drawing.Size(198, 27);
+      panel10.TabIndex = 0;
       // 
       // label12
       // 
-      this.label12.AutoSize = true;
-      this.label12.Location = new System.Drawing.Point(4, 6);
-      this.label12.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-      this.label12.Name = "label12";
-      this.label12.Size = new System.Drawing.Size(158, 15);
-      this.label12.TabIndex = 0;
-      this.label12.Text = "Links to External Simulations";
-      this.label12.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+      label12.AutoSize = true;
+      label12.Location = new System.Drawing.Point(4, 6);
+      label12.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+      label12.Name = "label12";
+      label12.Size = new System.Drawing.Size(158, 15);
+      label12.TabIndex = 0;
+      label12.Text = "Links to External Simulations";
+      label12.TextAlign = System.Drawing.ContentAlignment.TopCenter;
       // 
       // tabLog
       // 
-      this.tabLog.Controls.Add(this.rtbLog);
-      this.tabLog.Location = new System.Drawing.Point(4, 24);
-      this.tabLog.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-      this.tabLog.Name = "tabLog";
-      this.tabLog.Size = new System.Drawing.Size(1251, 793);
-      this.tabLog.TabIndex = 2;
-      this.tabLog.Text = "Log";
-      this.tabLog.UseVisualStyleBackColor = true;
+      tabLog.Controls.Add(rtbLog);
+      tabLog.Location = new System.Drawing.Point(4, 24);
+      tabLog.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+      tabLog.Name = "tabLog";
+      tabLog.Size = new System.Drawing.Size(1251, 793);
+      tabLog.TabIndex = 2;
+      tabLog.Text = "Log";
+      tabLog.UseVisualStyleBackColor = true;
       // 
       // rtbLog
       // 
-      this.rtbLog.Dock = System.Windows.Forms.DockStyle.Fill;
-      this.rtbLog.Location = new System.Drawing.Point(0, 0);
-      this.rtbLog.Margin = new System.Windows.Forms.Padding(2);
-      this.rtbLog.Name = "rtbLog";
-      this.rtbLog.ReadOnly = true;
-      this.rtbLog.Size = new System.Drawing.Size(1251, 793);
-      this.rtbLog.TabIndex = 1;
-      this.rtbLog.Text = "";
+      rtbLog.Dock = System.Windows.Forms.DockStyle.Fill;
+      rtbLog.Location = new System.Drawing.Point(0, 0);
+      rtbLog.Margin = new System.Windows.Forms.Padding(2);
+      rtbLog.Name = "rtbLog";
+      rtbLog.ReadOnly = true;
+      rtbLog.Size = new System.Drawing.Size(1251, 793);
+      rtbLog.TabIndex = 1;
+      rtbLog.Text = "";
       // 
       // saveFileDialog1
       // 
-      this.saveFileDialog1.DefaultExt = "txt";
-      this.saveFileDialog1.Filter = "Text Files (*/txt)|*.txt,*.*";
-      this.saveFileDialog1.FileOk += new System.ComponentModel.CancelEventHandler(this.saveFileDialog1_FileOk);
+      saveFileDialog1.DefaultExt = "txt";
+      saveFileDialog1.Filter = "Text Files (*/txt)|*.txt,*.*";
+      saveFileDialog1.FileOk += saveFileDialog1_FileOk;
       // 
       // saveFileDialog2
       // 
-      this.saveFileDialog2.DefaultExt = "txt";
-      this.saveFileDialog2.Filter = "Text Files (*/txt)|*.txt,*.*";
-      this.saveFileDialog2.FileOk += new System.ComponentModel.CancelEventHandler(this.saveFileDialog2_FileOk);
+      saveFileDialog2.DefaultExt = "txt";
+      saveFileDialog2.Filter = "Text Files (*/txt)|*.txt,*.*";
+      saveFileDialog2.FileOk += saveFileDialog2_FileOk;
       // 
       // sdSaveModel
       // 
-      this.sdSaveModel.Filter = "JSON Files (*.json)|*.json";
-      this.sdSaveModel.FileOk += new System.ComponentModel.CancelEventHandler(this.sdSaveModel_FileOk);
+      sdSaveModel.Filter = "JSON Files (*.json)|*.json";
+      sdSaveModel.FileOk += sdSaveModel_FileOk;
+      // 
+      // recentToolStripMenuItem
+      // 
+      recentToolStripMenuItem.Name = "recentToolStripMenuItem";
+      recentToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+      recentToolStripMenuItem.Text = "Recent";
       // 
       // FormMain
       // 
-      this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
-      this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-      this.ClientSize = new System.Drawing.Size(1259, 845);
-      this.Controls.Add(this.tcMain);
-      this.Controls.Add(this.menuStrip1);
-      this.MainMenuStrip = this.menuStrip1;
-      this.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-      this.Name = "FormMain";
-      this.Text = "EMRALD Simulation Engine";
-      this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.FormMain_FormClosed);
-      this.Load += new System.EventHandler(this.FormMain_Load);
-      this.menuStrip1.ResumeLayout(false);
-      this.menuStrip1.PerformLayout();
-      this.tabXMPP.ResumeLayout(false);
-      this.panel1.ResumeLayout(false);
-      this.panel2.ResumeLayout(false);
-      this.pnlJSONGen.ResumeLayout(false);
-      this.tabCtrlMsgTypes.ResumeLayout(false);
-      this.tabItemData.ResumeLayout(false);
-      this.tabItemData.PerformLayout();
-      this.tabSimInfo.ResumeLayout(false);
-      this.tabSimInfo.PerformLayout();
-      this.panel6.ResumeLayout(false);
-      this.groupBox1.ResumeLayout(false);
-      this.pnlTimePicking.ResumeLayout(false);
-      this.pnlTimePicking.PerformLayout();
-      this.panel5.ResumeLayout(false);
-      this.panel5.PerformLayout();
-      this.panel7.ResumeLayout(false);
-      this.panel7.PerformLayout();
-      this.panel8.ResumeLayout(false);
-      this.panel8.PerformLayout();
-      this.pnlConInfo.ResumeLayout(false);
-      this.groupBoxReceived.ResumeLayout(false);
-      this.groupBoxReceived.PerformLayout();
-      this.groupBoxClients.ResumeLayout(false);
-      this.tabModel.ResumeLayout(false);
-      this.tabModel.PerformLayout();
-      this.panel3.ResumeLayout(false);
-      this.panel15.ResumeLayout(false);
-      this.panel9.ResumeLayout(false);
-      this.tcMain.ResumeLayout(false);
-      this.tabSimulate.ResumeLayout(false);
-      this.pnlSimResults.ResumeLayout(false);
-      this.panel13.ResumeLayout(false);
-      this.pnlSimulate.ResumeLayout(false);
-      this.chkDebug.ResumeLayout(false);
-      this.chkDebug.PerformLayout();
-      this.gbPathResults.ResumeLayout(false);
-      this.gbPathResults.PerformLayout();
-      this.grpDebugOpts.ResumeLayout(false);
-      this.grpDebugOpts.PerformLayout();
-      this.panel12.ResumeLayout(false);
-      this.panel14.ResumeLayout(false);
-      this.panel14.PerformLayout();
-      this.panel4.ResumeLayout(false);
-      this.panel10.ResumeLayout(false);
-      this.panel10.PerformLayout();
-      this.tabLog.ResumeLayout(false);
-      this.ResumeLayout(false);
-      this.PerformLayout();
-
+      AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
+      AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+      ClientSize = new System.Drawing.Size(1259, 845);
+      Controls.Add(tcMain);
+      Controls.Add(menuStrip1);
+      MainMenuStrip = menuStrip1;
+      Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+      Name = "FormMain";
+      Text = "EMRALD Simulation Engine";
+      FormClosed += FormMain_FormClosed;
+      Load += FormMain_Load;
+      menuStrip1.ResumeLayout(false);
+      menuStrip1.PerformLayout();
+      tabXMPP.ResumeLayout(false);
+      panel1.ResumeLayout(false);
+      panel2.ResumeLayout(false);
+      pnlJSONGen.ResumeLayout(false);
+      tabCtrlMsgTypes.ResumeLayout(false);
+      tabItemData.ResumeLayout(false);
+      tabItemData.PerformLayout();
+      tabSimInfo.ResumeLayout(false);
+      tabSimInfo.PerformLayout();
+      panel6.ResumeLayout(false);
+      groupBox1.ResumeLayout(false);
+      pnlTimePicking.ResumeLayout(false);
+      pnlTimePicking.PerformLayout();
+      panel5.ResumeLayout(false);
+      panel5.PerformLayout();
+      panel7.ResumeLayout(false);
+      panel7.PerformLayout();
+      panel8.ResumeLayout(false);
+      panel8.PerformLayout();
+      pnlConInfo.ResumeLayout(false);
+      groupBoxReceived.ResumeLayout(false);
+      groupBoxReceived.PerformLayout();
+      groupBoxClients.ResumeLayout(false);
+      tabModel.ResumeLayout(false);
+      tabModel.PerformLayout();
+      panel3.ResumeLayout(false);
+      panel15.ResumeLayout(false);
+      panel9.ResumeLayout(false);
+      tcMain.ResumeLayout(false);
+      tabSimulate.ResumeLayout(false);
+      pnlSimResults.ResumeLayout(false);
+      panel13.ResumeLayout(false);
+      pnlSimulate.ResumeLayout(false);
+      chkDebug.ResumeLayout(false);
+      chkDebug.PerformLayout();
+      gbPathResults.ResumeLayout(false);
+      gbPathResults.PerformLayout();
+      grpDebugOpts.ResumeLayout(false);
+      grpDebugOpts.PerformLayout();
+      panel12.ResumeLayout(false);
+      panel14.ResumeLayout(false);
+      panel14.PerformLayout();
+      panel4.ResumeLayout(false);
+      panel10.ResumeLayout(false);
+      panel10.PerformLayout();
+      tabLog.ResumeLayout(false);
+      ResumeLayout(false);
+      PerformLayout();
     }
 
     #endregion
@@ -1810,5 +1793,6 @@ namespace EMRALD_Sim
     private System.Windows.Forms.ToolStripMenuItem saveStripMenuItem;
     private System.Windows.Forms.SaveFileDialog sdSaveModel;
     private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem1;
+    private System.Windows.Forms.ToolStripMenuItem recentToolStripMenuItem;
   }
 }
