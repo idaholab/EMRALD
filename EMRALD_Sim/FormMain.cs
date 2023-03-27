@@ -664,6 +664,13 @@ namespace EMRALD_Sim
           Filename = _modelPath
         };
 
+        // Limit the size of the list
+        if (_optionsAccessor.Value.SettingsByModel.Count == 10)
+        {
+          _optionsAccessor.Value.SettingsByModel.RemoveLast();
+          recentToolStripMenuItem.DropDownItems.RemoveAt(recentToolStripMenuItem.DropDownItems.Count - 1);
+        }
+        
         _optionsAccessor.Value.SettingsByModel.AddFirst(_currentModelSettings);
 
         // Might be hidden if there were no recent entries in the json file to start with
@@ -671,7 +678,7 @@ namespace EMRALD_Sim
         ToolStripMenuItem fileRecent = new ToolStripMenuItem(_modelPath, null, RecentFile_click) { Tag = _currentModelSettings };
         recentToolStripMenuItem.DropDownItems.Insert(0, fileRecent);
 
-        PopulateSettings();
+        PopulateSettingsFromJson();
         SaveUISettings();
       }
     }
@@ -683,8 +690,16 @@ namespace EMRALD_Sim
       if (toolStripMenuItem.Text != _modelPath)
       {
         _currentModelSettings = toolStripMenuItem.Tag as ModelSettings;
+
+        // Move item to top of list
+        _optionsAccessor.Value.SettingsByModel.Remove(_currentModelSettings);
+        _optionsAccessor.Value.SettingsByModel.AddFirst(_currentModelSettings);
+        recentToolStripMenuItem.DropDownItems.Remove(toolStripMenuItem);
+        recentToolStripMenuItem.DropDownItems.Insert(0, toolStripMenuItem);
+
         OpenModel(toolStripMenuItem.Text);
-        PopulateSettings();
+        PopulateSettingsFromJson();
+        SaveUISettings();
       }
     }
 
@@ -912,7 +927,7 @@ namespace EMRALD_Sim
       Cursor.Current = saveCurs;
     }
 
-    private void SaveUISettings()
+    private void SaveUISettingsToJson()
     {
       _currentModelSettings.RunCount = tbRunCnt.Text;
       _currentModelSettings.MaxRunTime = tbMaxSimTime.Text;
@@ -934,10 +949,14 @@ namespace EMRALD_Sim
         }
       }
 
+      SaveUISettings();
+    }
+
+    private void SaveUISettings() {
       File.WriteAllText("UISettings.json", JsonConvert.SerializeObject(_optionsAccessor.Value, Formatting.Indented));
     }
 
-    private void PopulateSettings()
+    private void PopulateSettingsFromJson()
     {
       tbRunCnt.Text = _currentModelSettings.RunCount.ToString();
       tbMaxSimTime.Text = _currentModelSettings.MaxRunTime.ToString();
@@ -958,7 +977,9 @@ namespace EMRALD_Sim
         rbDebugBasic.Checked = false;
         rbDebugDetailed.Checked = true;
         ConfigData.debugLev = LogLevel.Debug;
-      } else {
+      }
+      else
+      {
         chkLog.Checked = false;
         rbDebugBasic.Checked = false;
         rbDebugDetailed.Checked = false;
@@ -1202,7 +1223,7 @@ namespace EMRALD_Sim
       if (rbDebugDetailed.Checked)
         ConfigData.debugLev = LogLevel.Debug;
 
-      SaveUISettings();
+      SaveUISettingsToJson();
     }
 
     private void chkLog_CheckedChanged(object sender, EventArgs e)
@@ -1223,7 +1244,7 @@ namespace EMRALD_Sim
         rbDebugDetailed.Checked = false;
       }
       grpDebugOpts.Enabled = chkLog.Checked;
-      SaveUISettings();
+      SaveUISettingsToJson();
     }
 
     private void tbSeed_Leave(object sender, EventArgs e)
@@ -1235,7 +1256,7 @@ namespace EMRALD_Sim
       }
       else
       {
-        SaveUISettings();
+        SaveUISettingsToJson();
       }
     }
 
@@ -1253,7 +1274,7 @@ namespace EMRALD_Sim
         tbLogRunStart.Text = "1";
 
       ConfigData.debugRunStart = int.Parse(tbLogRunStart.Text);
-      SaveUISettings();
+      SaveUISettingsToJson();
     }
 
     private void tbLogRunEnd_Leave(object sender, EventArgs e)
@@ -1270,7 +1291,7 @@ namespace EMRALD_Sim
         tbLogRunStart.Text = tbRunCnt.Text;
 
       ConfigData.debugRunEnd = int.Parse(tbLogRunEnd.Text);
-      SaveUISettings();
+      SaveUISettingsToJson();
     }
 
     private void tbRunCnt_Leave(object sender, EventArgs e)
@@ -1284,13 +1305,13 @@ namespace EMRALD_Sim
       }
       else
       {
-        SaveUISettings();
+        SaveUISettingsToJson();
       }
     }
 
     private void Leave_SaveSettings(object sender, System.EventArgs e)
     {
-      SaveUISettings();
+      SaveUISettingsToJson();
     }
 
     private void rbSimplePath_CheckedChanged(object sender, EventArgs e)
