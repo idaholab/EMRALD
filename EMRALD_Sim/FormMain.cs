@@ -19,13 +19,15 @@ using NLog;
 using SimulationEngine;
 using System.Threading;
 using XmppServer;
-
+using Microsoft.Extensions.Options;
+using static EMRALD_Sim.UISettings;
 
 namespace EMRALD_Sim
 {
   public partial class FormMain : Form, IMessageForm //XmppMessageServer.MessageForm
   {
     private readonly IAppSettingsService _appSettingsService;
+    private readonly IOptions<UISettings> _optionsAccessor;
     private EMRALDMsgServer _server = null;
     private EmraldModel _sim = null;
     private bool _validSim = false;
@@ -38,14 +40,16 @@ namespace EMRALD_Sim
     private List<List<string>> _xmppLink = new List<List<string>>();
     private string _XMPP_Password = "secret";
     private int _pathResultsInterval = -1;
+    private ModelSettings _currentModelSettings = null;
 
     [DllImport("kernel32.dll")]
     static extern bool AttachConsole(int dwProcessId);
     private const int ATTACH_PARENT_PROCESS = -1;
 
-    public FormMain(string[] args, IAppSettingsService appSettingsService)
+    public FormMain(string[] args, IAppSettingsService appSettingsService, IOptions<UISettings> optionsAccessor)
     {
       _appSettingsService = appSettingsService;
+      _optionsAccessor = optionsAccessor;
       InitializeComponent();
       teModel.SetHighlighting("JSON");
       lvResults.Columns[3].Text = "Mean Time or Failed Components";
@@ -187,7 +191,7 @@ namespace EMRALD_Sim
                     ++i;
                     int timeout = int.Parse(args[i + 1].TrimEnd(']')); //verify it is a number
 
-                    _xmppLink.Add(new List<string>() { linkName, xmppResouce, xmppUser, timeout.ToString()});
+                    _xmppLink.Add(new List<string>() { linkName, xmppResouce, xmppUser, timeout.ToString() });
                   }
 
                   arg = args[i + 1];
@@ -203,7 +207,7 @@ namespace EMRALD_Sim
                   ++i;
                   int timeout = int.Parse(args[i + 1]); //verify it is a number
 
-                  _xmppLink.Add(new List<string>() { linkName, xmppResouce, xmppUser, timeout.ToString()});
+                  _xmppLink.Add(new List<string>() { linkName, xmppResouce, xmppUser, timeout.ToString() });
                   ++i;
                 }
               }
@@ -368,7 +372,7 @@ namespace EMRALD_Sim
         {
           AssignServer(); //make sure it has been assigned
           var extSimLink = _sim.allExtSims.FindByName(_xmppLink[idx][0], false);
-          if(extSimLink == null)
+          if (extSimLink == null)
           {
             Console.Write("Bad -c first input. No external link in model named - " + _xmppLink[idx][0]);
           }
@@ -380,7 +384,7 @@ namespace EMRALD_Sim
             //check the UI
             var itemIdx = lbExtSimLinks.FindStringExact(_xmppLink[idx][0]);
             lbExtSimLinks.SetItemChecked(itemIdx, true);
-          }                
+          }
         }
 
 
@@ -629,6 +633,74 @@ namespace EMRALD_Sim
         cbMsgType.Items.Add(actT.ToString().Substring(2));
       }
       cbMsgType.SelectedIndex = 0;
+      PopulateRecentFileList();
+    }
+
+    private void PopulateRecentFileList()
+    {
+      if (_optionsAccessor.Value.SettingsByModel.Count > 0)
+      {
+        foreach (ModelSettings modelSettings in _optionsAccessor.Value.SettingsByModel)
+        {
+          ToolStripMenuItem fileRecent = new ToolStripMenuItem(modelSettings.Filename, null, RecentFile_click) { Tag = modelSettings };
+          recentToolStripMenuItem.DropDownItems.Add(fileRecent);
+        }
+
+      }
+      else
+      {
+        recentToolStripMenuItem.Visible = false;
+      }
+    }
+
+    private void AddRecentlyOpenedFileToSettings()
+    {
+      _currentModelSettings = _optionsAccessor.Value.SettingsByModel.SingleOrDefault(m => m.Filename == _modelPath);
+
+      if (_currentModelSettings == null)
+      {
+        _currentModelSettings = new ModelSettings
+        {
+          Filename = _modelPath
+        };
+
+        // Limit the size of the list
+        if (_optionsAccessor.Value.SettingsByModel.Count == 10)
+        {
+          _optionsAccessor.Value.SettingsByModel.RemoveLast();
+          recentToolStripMenuItem.DropDownItems.RemoveAt(recentToolStripMenuItem.DropDownItems.Count - 1);
+        }
+        
+        _optionsAccessor.Value.SettingsByModel.AddFirst(_currentModelSettings);
+
+        // Might be hidden if there were no recent entries in the json file to start with
+        recentToolStripMenuItem.Visible = true;
+        ToolStripMenuItem fileRecent = new ToolStripMenuItem(_modelPath, null, RecentFile_click) { Tag = _currentModelSettings };
+        recentToolStripMenuItem.DropDownItems.Insert(0, fileRecent);
+
+        PopulateSettingsFromJson();
+        SaveUISettings();
+      }
+    }
+
+    private void RecentFile_click(object sender, EventArgs e)
+    {
+      ToolStripMenuItem toolStripMenuItem = sender as ToolStripMenuItem;
+
+      if (toolStripMenuItem.Text != _modelPath)
+      {
+        _currentModelSettings = toolStripMenuItem.Tag as ModelSettings;
+
+        // Move item to top of list
+        _optionsAccessor.Value.SettingsByModel.Remove(_currentModelSettings);
+        _optionsAccessor.Value.SettingsByModel.AddFirst(_currentModelSettings);
+        recentToolStripMenuItem.DropDownItems.Remove(toolStripMenuItem);
+        recentToolStripMenuItem.DropDownItems.Insert(0, toolStripMenuItem);
+
+        OpenModel(toolStripMenuItem.Text);
+        PopulateSettingsFromJson();
+        SaveUISettings();
+      }
     }
 
     private void cbMsgType_SelectedIndexChanged(object sender, EventArgs e)
@@ -829,6 +901,7 @@ namespace EMRALD_Sim
       if (openModel.ShowDialog() == DialogResult.OK)
       {
         OpenModel(openModel.FileName);
+        AddRecentlyOpenedFileToSettings();
       }
     }
 
@@ -854,6 +927,66 @@ namespace EMRALD_Sim
       Cursor.Current = saveCurs;
     }
 
+    private void SaveUISettingsToJson()
+    {
+      _currentModelSettings.RunCount = tbRunCnt.Text;
+      _currentModelSettings.MaxRunTime = tbMaxSimTime.Text;
+      _currentModelSettings.BasicResultsLocation = tbSavePath.Text;
+      _currentModelSettings.PathResultsLocation = tbSavePath2.Text;
+      _currentModelSettings.Seed = tbSeed.Text;
+      _currentModelSettings.DebugFromRun = tbLogRunStart.Text;
+      _currentModelSettings.DebugToRun = tbLogRunEnd.Text;
+
+      if (chkLog.Checked)
+      {
+        if (ConfigData.debugLev == LogLevel.Info)
+        {
+          _currentModelSettings.DebugLevel = "Basic";
+        }
+        else
+        {
+          _currentModelSettings.DebugLevel = "Detailed";
+        }
+      }
+
+      SaveUISettings();
+    }
+
+    private void SaveUISettings() {
+      File.WriteAllText("UISettings.json", JsonConvert.SerializeObject(_optionsAccessor.Value, Formatting.Indented));
+    }
+
+    private void PopulateSettingsFromJson()
+    {
+      tbRunCnt.Text = _currentModelSettings.RunCount.ToString();
+      tbMaxSimTime.Text = _currentModelSettings.MaxRunTime.ToString();
+      tbSavePath.Text = _currentModelSettings.BasicResultsLocation;
+      tbSavePath2.Text = _currentModelSettings.PathResultsLocation;
+      tbSeed.Text = _currentModelSettings.Seed;
+      tbLogRunStart.Text = _currentModelSettings.DebugFromRun.ToString();
+      tbLogRunEnd.Text = _currentModelSettings.DebugToRun.ToString();
+
+      if (_currentModelSettings.DebugLevel == "Basic")
+      {
+        chkLog.Checked = true;
+        ConfigData.debugLev = LogLevel.Info;
+      }
+      else if (_currentModelSettings.DebugLevel == "Detailed")
+      {
+        chkLog.Checked = true;
+        rbDebugBasic.Checked = false;
+        rbDebugDetailed.Checked = true;
+        ConfigData.debugLev = LogLevel.Debug;
+      }
+      else
+      {
+        chkLog.Checked = false;
+        rbDebugBasic.Checked = false;
+        rbDebugDetailed.Checked = false;
+        ConfigData.debugLev = LogLevel.Off;
+      }
+    }
+
     private void btnValidateModel_Click(object sender, EventArgs e)
     {
       Cursor saveCurs = Cursor.Current;
@@ -861,14 +994,14 @@ namespace EMRALD_Sim
 
       txtMStatus.Text = LoadLib.ValidateModel(ref _sim, teModel.Text, Path.GetDirectoryName(_modelPath));
       _validSim = txtMStatus.Text == "";
-      if (txtMStatus.Text != "") 
+      if (txtMStatus.Text != "")
       {
         txtMStatus.ForeColor = Color.Maroon;
         Console.Write(txtMStatus.Text);
       }
       else
       {
-        txtMStatus.Text = "Model Loaded Successfully" ; 
+        txtMStatus.Text = "Model Loaded Successfully";
         txtMStatus.ForeColor = Color.Green;
         Console.Write(txtMStatus.Text);
       }
@@ -1018,7 +1151,8 @@ namespace EMRALD_Sim
         }
       }
 
-      if (lbExtSimLinks.SelectedIndex > -1) {
+      if (lbExtSimLinks.SelectedIndex > -1)
+      {
         lbExtSimLinks.SetItemCheckState(lbExtSimLinks.SelectedIndex, ck);
       }
     }
@@ -1089,6 +1223,7 @@ namespace EMRALD_Sim
       if (rbDebugDetailed.Checked)
         ConfigData.debugLev = LogLevel.Debug;
 
+      SaveUISettingsToJson();
     }
 
     private void chkLog_CheckedChanged(object sender, EventArgs e)
@@ -1109,6 +1244,7 @@ namespace EMRALD_Sim
         rbDebugDetailed.Checked = false;
       }
       grpDebugOpts.Enabled = chkLog.Checked;
+      SaveUISettingsToJson();
     }
 
     private void tbSeed_Leave(object sender, EventArgs e)
@@ -1117,6 +1253,10 @@ namespace EMRALD_Sim
       {
         MessageBox.Show("Invalid Seed, must be a number");
         tbSeed.Text = "";
+      }
+      else
+      {
+        SaveUISettingsToJson();
       }
     }
 
@@ -1134,6 +1274,7 @@ namespace EMRALD_Sim
         tbLogRunStart.Text = "1";
 
       ConfigData.debugRunStart = int.Parse(tbLogRunStart.Text);
+      SaveUISettingsToJson();
     }
 
     private void tbLogRunEnd_Leave(object sender, EventArgs e)
@@ -1150,6 +1291,7 @@ namespace EMRALD_Sim
         tbLogRunStart.Text = tbRunCnt.Text;
 
       ConfigData.debugRunEnd = int.Parse(tbLogRunEnd.Text);
+      SaveUISettingsToJson();
     }
 
     private void tbRunCnt_Leave(object sender, EventArgs e)
@@ -1161,6 +1303,15 @@ namespace EMRALD_Sim
         tbRunCnt.Text = "1000";
         return;
       }
+      else
+      {
+        SaveUISettingsToJson();
+      }
+    }
+
+    private void Leave_SaveSettings(object sender, System.EventArgs e)
+    {
+      SaveUISettingsToJson();
     }
 
     private void rbSimplePath_CheckedChanged(object sender, EventArgs e)
@@ -1206,7 +1357,7 @@ namespace EMRALD_Sim
       string saveLoc = sdSaveModel.FileName;
       try
       {
-        if(File.Exists(saveLoc))
+        if (File.Exists(saveLoc))
         {
           txtMStatus.ForeColor = Color.Maroon;
           txtMStatus.Text = "Failed to save, File Already Exists";
