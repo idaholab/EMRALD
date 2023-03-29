@@ -225,6 +225,9 @@ export default function main() {
       weighedSum += (n - 1) * node.combined.s[i] ** 2;
       nTotal += n;
     });
+    if (nTotal - count === 0) {
+      return timestampToSeconds(node.timeStdDeviation);
+    }
     return Math.sqrt(weighedSum / (nTotal - count));
   }
 

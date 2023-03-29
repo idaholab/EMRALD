@@ -11,7 +11,6 @@ export default [
   "#4CAF50",
   "#8BC34A",
   "#CDDC39",
-  "#FFEB3B",
   "#FFC107",
   "#FF9800",
   "#FF5722",
