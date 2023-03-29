@@ -68,6 +68,7 @@
 
             function OnLoad(dataObj) {
                 window.data = dataObj;
+                UpdateFrameTitle(`${dataObj.fileName} - Results View`);
                 sankeyTimeline.default();
             }
         </script>

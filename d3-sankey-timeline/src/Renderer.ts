@@ -613,10 +613,7 @@ export default class Renderer {
       .attr('class', 'label')
       .style('fill', this.options.fontColor)
       .style('font-size', `${this.options.fontSize}px`)
-      .text((d: TimelineNode) => {
-        console.log(d);
-        return d.label;
-      })
+      .text((d: TimelineNode) => d.label)
       .attr('x', (d: TimelineNode) => d.layout.x + d.layout.width / 2)
       .attr('y', (d: TimelineNode) => d.layout.y + d.layout.height / 2);
   }
