@@ -1,0 +1,178 @@
+{
+  "name": "TestTimers",
+  "numRuns": 1,
+  "keyStates": [
+    {
+      "name": "Key",
+      "contributionRate": 1.0,
+      "cRate5th": 1.0,
+      "cRate95th": 1.0,
+      "count": 1,
+      "timeMean": "00:07:00",
+      "timeStdDeviation": "00:00:00",
+      "timeMin": "00:07:00",
+      "timeMax": "00:07:00",
+      "watchVariables": {},
+      "paths": [
+        {
+          "name": "State1",
+          "contributionRate": 1.0,
+          "cRate5th": 1.0,
+          "cRate95th": 1.0,
+          "count": 1,
+          "timeMean": "00:00:00",
+          "timeStdDeviation": "00:00:00",
+          "timeMin": "00:00:00",
+          "timeMax": "00:00:00",
+          "watchVariables": {},
+          "entries": [],
+          "exits": [
+            {
+              "desc": "Event [T1] occured and caused the action - Goto_State2",
+              "name": "T1 & Goto_State2",
+              "evDesc": "",
+              "actDesc": "",
+              "otherState": "State2",
+              "cnt": 1
+            }
+          ]
+        },
+        {
+          "name": "State2",
+          "contributionRate": 1.0,
+          "cRate5th": 1.0,
+          "cRate95th": 1.0,
+          "count": 1,
+          "timeMean": "00:05:00",
+          "timeStdDeviation": "00:00:00",
+          "timeMin": "00:05:00",
+          "timeMax": "00:05:00",
+          "watchVariables": {},
+          "entries": [
+            {
+              "desc": "Event [T1] occured and caused the action - Goto_State2",
+              "name": "T1 & Goto_State2",
+              "evDesc": "",
+              "actDesc": "",
+              "otherState": "State1",
+              "cnt": 1
+            }
+          ],
+          "exits": [
+            {
+              "desc": "Event [T2] occured and caused the action - Goto_Key",
+              "name": "T2 & Goto_Key",
+              "evDesc": "",
+              "actDesc": "",
+              "otherState": "Key",
+              "cnt": 1
+            }
+          ]
+        },
+        {
+          "name": "Key",
+          "contributionRate": 1.0,
+          "cRate5th": 1.0,
+          "cRate95th": 1.0,
+          "count": 1,
+          "timeMean": "00:07:00",
+          "timeStdDeviation": "00:00:00",
+          "timeMin": "00:07:00",
+          "timeMax": "00:07:00",
+          "watchVariables": {},
+          "entries": [
+            {
+              "desc": "Event [T2] occured and caused the action - Goto_Key",
+              "name": "T2 & Goto_Key",
+              "evDesc": "",
+              "actDesc": "",
+              "otherState": "State2",
+              "cnt": 1
+            }
+          ],
+          "exits": []
+        }
+      ]
+    }
+  ],
+  "otherStatePaths": [
+    {
+      "name": "State1",
+      "contributionRate": 0.0,
+      "cRate5th": 0.0,
+      "cRate95th": 0.0,
+      "count": 1,
+      "timeMean": "00:00:00",
+      "timeStdDeviation": "00:00:00",
+      "timeMin": "00:00:00",
+      "timeMax": "00:00:00",
+      "watchVariables": {},
+      "entries": [],
+      "exits": [
+        {
+          "desc": "Event [T1] occured and caused the action - Goto_State2",
+          "name": "T1 & Goto_State2",
+          "evDesc": "",
+          "actDesc": "",
+          "otherState": "State2",
+          "cnt": 1
+        }
+      ]
+    },
+    {
+      "name": "State2",
+      "contributionRate": 0.0,
+      "cRate5th": 0.0,
+      "cRate95th": 0.0,
+      "count": 1,
+      "timeMean": "00:05:00",
+      "timeStdDeviation": "00:00:00",
+      "timeMin": "00:05:00",
+      "timeMax": "00:05:00",
+      "watchVariables": {},
+      "entries": [
+        {
+          "desc": "Event [T1] occured and caused the action - Goto_State2",
+          "name": "T1 & Goto_State2",
+          "evDesc": "",
+          "actDesc": "",
+          "otherState": "State1",
+          "cnt": 1
+        }
+      ],
+      "exits": [
+        {
+          "desc": "Event [Immediate Action] occured and caused the action - Goto_Update",
+          "name": "Immediate Action & Goto_Update",
+          "evDesc": "",
+          "actDesc": "",
+          "otherState": "Update",
+          "cnt": 1
+        }
+      ]
+    },
+    {
+      "name": "Update",
+      "contributionRate": 0.0,
+      "cRate5th": 0.0,
+      "cRate95th": 0.0,
+      "count": 1,
+      "timeMean": "00:05:00",
+      "timeStdDeviation": "00:00:00",
+      "timeMin": "00:05:00",
+      "timeMax": "00:05:00",
+      "watchVariables": {},
+      "entries": [
+        {
+          "desc": "Event [Immediate Action] occured and caused the action - Goto_Update",
+          "name": "Immediate Action & Goto_Update",
+          "evDesc": "",
+          "actDesc": "",
+          "otherState": "State2",
+          "cnt": 1
+        }
+      ],
+      "exits": []
+    }
+  ]
+}

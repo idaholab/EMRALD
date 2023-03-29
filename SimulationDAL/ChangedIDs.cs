@@ -75,20 +75,6 @@ namespace SimulationDAL
 
     public bool HasApplicableItems(EnModifiableTypes idType, MyBitArray ids)
     {
-      //switch (idType)
-      //{
-      //  case EnModifiableTypes.mtVar:
-      //    return variableIDs.HasCommonBits(ids);
-
-      //  case EnModifiableTypes.mtComp:
-      //    return compIDs.HasCommonBits(ids);
-
-      //  case EnModifiableTypes.mtState:
-      //    return stateIDs.HasCommonBits(ids);
-
-      //  default :
-      //    return false;        
-      //}
       if (idType == EnModifiableTypes.mtVar)
         return _variableIDs.HasCommonBits(ids);
 
@@ -98,6 +84,9 @@ namespace SimulationDAL
       else if (idType == EnModifiableTypes.mtState)
         return _stateIDs.HasCommonBits(ids);
 
+      else if (idType == EnModifiableTypes.mtExtEv)
+        return _variableIDs.HasCommonBits(ids);
+      
       else
         return false;
     }

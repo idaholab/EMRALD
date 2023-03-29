@@ -4,175 +4,441 @@
   "keyStates": [
     {
       "name": "OK",
-      "watchVariables": {},
-      "rate": 0.0,
-      "rate5th": 0.0,
-      "rate95th": 0.0,
+      "contributionRate": 0.5,
+      "cRate5th": 0.19009679,
+      "cRate95th": 0.80990321,
       "count": 5,
-      "times": [
-        "00:00:10",
-        "00:00:10",
-        "00:00:10",
-        "00:00:10",
-        "00:00:10"
-      ],
       "timeMean": "00:00:10",
       "timeStdDeviation": "00:00:00",
-      "causes": [
+      "timeMin": "00:00:10",
+      "timeMax": "00:00:10",
+      "watchVariables": {},
+      "paths": [
         {
-          "desc": "S3, immediate action, RunV2_DBLGreaterThan",
-          "name": "immediate action -> RunV2_DBLGreaterThan",
-          "fromState": {
-            "name": "S3",
-            "watchVariables": {},
-            "rate": 0.0,
-            "rate5th": 0.0,
-            "rate95th": 0.0,
-            "count": 5,
-            "times": [
-              "00:00:10",
-              "00:00:10",
-              "00:00:10",
-              "00:00:10",
-              "00:00:10"
-            ],
-            "timeMean": "00:00:10",
-            "timeStdDeviation": "00:00:00",
-            "causes": [
-              {
-                "desc": "S2, FiveSec, Goto_S3",
-                "name": "FiveSec -> Goto_S3",
-                "fromState": {
-                  "name": "S2",
-                  "watchVariables": {},
-                  "rate": 0.0,
-                  "rate5th": 0.0,
-                  "rate95th": 0.0,
-                  "count": 5,
-                  "times": [
-                    "00:00:05",
-                    "00:00:05",
-                    "00:00:05",
-                    "00:00:05",
-                    "00:00:05"
-                  ],
-                  "timeMean": "00:00:05",
-                  "timeStdDeviation": "00:00:00",
-                  "causes": [
-                    {
-                      "desc": "Start, FiveSec, Goto_S2",
-                      "name": "FiveSec -> Goto_S2",
-                      "fromState": {
-                        "name": "Start",
-                        "watchVariables": {},
-                        "rate": 0.0,
-                        "rate5th": 0.0,
-                        "rate95th": 0.0,
-                        "count": 5,
-                        "times": [
-                          "00:00:00",
-                          "00:00:00",
-                          "00:00:00",
-                          "00:00:00",
-                          "00:00:00"
-                        ],
-                        "timeMean": "00:00:00",
-                        "timeStdDeviation": "00:00:00",
-                        "causes": []
-                      }
-                    }
-                  ]
-                }
-              }
-            ]
-          }
+          "name": "Start",
+          "contributionRate": 1.0,
+          "cRate5th": 1.0,
+          "cRate95th": 1.0,
+          "count": 5,
+          "timeMean": "00:00:00",
+          "timeStdDeviation": "00:00:00",
+          "timeMin": "00:00:00",
+          "timeMax": "00:00:00",
+          "watchVariables": {},
+          "entries": [],
+          "exits": [
+            {
+              "desc": "Event [FiveSec] occured and caused the action - Goto_S2",
+              "name": "FiveSec & Goto_S2",
+              "evDesc": "",
+              "actDesc": "",
+              "otherState": "S2",
+              "cnt": 5
+            }
+          ]
+        },
+        {
+          "name": "S2",
+          "contributionRate": 1.0,
+          "cRate5th": 1.0,
+          "cRate95th": 1.0,
+          "count": 5,
+          "timeMean": "00:00:05",
+          "timeStdDeviation": "00:00:00",
+          "timeMin": "00:00:05",
+          "timeMax": "00:00:05",
+          "watchVariables": {},
+          "entries": [
+            {
+              "desc": "Event [FiveSec] occured and caused the action - Goto_S2",
+              "name": "FiveSec & Goto_S2",
+              "evDesc": "",
+              "actDesc": "",
+              "otherState": "Start",
+              "cnt": 5
+            }
+          ],
+          "exits": [
+            {
+              "desc": "Event [FiveSec] occured and caused the action - Goto_S3",
+              "name": "FiveSec & Goto_S3",
+              "evDesc": "",
+              "actDesc": "",
+              "otherState": "S3",
+              "cnt": 5
+            }
+          ]
+        },
+        {
+          "name": "S3",
+          "contributionRate": 1.0,
+          "cRate5th": 1.0,
+          "cRate95th": 1.0,
+          "count": 5,
+          "timeMean": "00:00:10",
+          "timeStdDeviation": "00:00:00",
+          "timeMin": "00:00:10",
+          "timeMax": "00:00:10",
+          "watchVariables": {},
+          "entries": [
+            {
+              "desc": "Event [FiveSec] occured and caused the action - Goto_S3",
+              "name": "FiveSec & Goto_S3",
+              "evDesc": "",
+              "actDesc": "",
+              "otherState": "S2",
+              "cnt": 5
+            }
+          ],
+          "exits": [
+            {
+              "desc": "Event [Immediate Action] occured and caused the action - RunV2_DBLGreaterThan",
+              "name": "Immediate Action & RunV2_DBLGreaterThan",
+              "evDesc": "",
+              "actDesc": "",
+              "otherState": "OK",
+              "cnt": 5
+            }
+          ]
+        },
+        {
+          "name": "OK",
+          "contributionRate": 1.0,
+          "cRate5th": 1.0,
+          "cRate95th": 1.0,
+          "count": 5,
+          "timeMean": "00:00:10",
+          "timeStdDeviation": "00:00:00",
+          "timeMin": "00:00:10",
+          "timeMax": "00:00:10",
+          "watchVariables": {},
+          "entries": [
+            {
+              "desc": "Event [Immediate Action] occured and caused the action - RunV2_DBLGreaterThan",
+              "name": "Immediate Action & RunV2_DBLGreaterThan",
+              "evDesc": "",
+              "actDesc": "",
+              "otherState": "S3",
+              "cnt": 5
+            }
+          ],
+          "exits": []
         }
       ]
     },
     {
       "name": "Fail",
-      "watchVariables": {},
-      "rate": 0.0,
-      "rate5th": 0.0,
-      "rate95th": 0.0,
+      "contributionRate": 0.5,
+      "cRate5th": 0.19009679,
+      "cRate95th": 0.80990321,
       "count": 5,
-      "times": [
-        "00:00:10",
-        "00:00:10",
-        "00:00:10",
-        "00:00:10",
-        "00:00:10"
-      ],
       "timeMean": "00:00:10",
       "timeStdDeviation": "00:00:00",
-      "causes": [
+      "timeMin": "00:00:10",
+      "timeMax": "00:00:10",
+      "watchVariables": {},
+      "paths": [
         {
-          "desc": "S3, immediate action, RunV2_DBLGreaterThan",
-          "name": "immediate action -> RunV2_DBLGreaterThan",
-          "fromState": {
-            "name": "S3",
-            "watchVariables": {},
-            "rate": 0.0,
-            "rate5th": 0.0,
-            "rate95th": 0.0,
-            "count": 5,
-            "times": [
-              "00:00:10",
-              "00:00:10",
-              "00:00:10",
-              "00:00:10",
-              "00:00:10"
-            ],
-            "timeMean": "00:00:10",
-            "timeStdDeviation": "00:00:00",
-            "causes": [
-              {
-                "desc": "S2, FiveSec, Goto_S3",
-                "name": "FiveSec -> Goto_S3",
-                "fromState": {
-                  "name": "S2",
-                  "watchVariables": {},
-                  "rate": 0.0,
-                  "rate5th": 0.0,
-                  "rate95th": 0.0,
-                  "count": 5,
-                  "times": [
-                    "00:00:05",
-                    "00:00:05",
-                    "00:00:05",
-                    "00:00:05",
-                    "00:00:05"
-                  ],
-                  "timeMean": "00:00:05",
-                  "timeStdDeviation": "00:00:00",
-                  "causes": [
-                    {
-                      "desc": "Start, FiveSec, Goto_S2",
-                      "name": "FiveSec -> Goto_S2",
-                      "fromState": {
-                        "name": "Start",
-                        "watchVariables": {},
-                        "rate": 0.0,
-                        "rate5th": 0.0,
-                        "rate95th": 0.0,
-                        "count": 5,
-                        "times": [
-                          "00:00:00",
-                          "00:00:00",
-                          "00:00:00",
-                          "00:00:00",
-                          "00:00:00"
-                        ],
-                        "timeMean": "00:00:00",
-                        "timeStdDeviation": "00:00:00",
-                        "causes": []
-                      }
-                    }
-                  ]
-                }
-              }
-            ]
-          }
+          "name": "Start",
+          "contributionRate": 1.0,
+          "cRate5th": 1.0,
+          "cRate95th": 1.0,
+          "count": 5,
+          "timeMean": "00:00:00",
+          "timeStdDeviation": "00:00:00",
+          "timeMin": "00:00:00",
+          "timeMax": "00:00:00",
+          "watchVariables": {},
+          "entries": [],
+          "exits": [
+            {
+              "desc": "Event [FiveSec] occured and caused the action - Goto_S2",
+              "name": "FiveSec & Goto_S2",
+              "evDesc": "",
+              "actDesc": "",
+              "otherState": "S2",
+              "cnt": 5
+            }
+          ]
+        },
+        {
+          "name": "S2",
+          "contributionRate": 1.0,
+          "cRate5th": 1.0,
+          "cRate95th": 1.0,
+          "count": 5,
+          "timeMean": "00:00:05",
+          "timeStdDeviation": "00:00:00",
+          "timeMin": "00:00:05",
+          "timeMax": "00:00:05",
+          "watchVariables": {},
+          "entries": [
+            {
+              "desc": "Event [FiveSec] occured and caused the action - Goto_S2",
+              "name": "FiveSec & Goto_S2",
+              "evDesc": "",
+              "actDesc": "",
+              "otherState": "Start",
+              "cnt": 5
+            }
+          ],
+          "exits": [
+            {
+              "desc": "Event [FiveSec] occured and caused the action - Goto_S3",
+              "name": "FiveSec & Goto_S3",
+              "evDesc": "",
+              "actDesc": "",
+              "otherState": "S3",
+              "cnt": 5
+            }
+          ]
+        },
+        {
+          "name": "S3",
+          "contributionRate": 1.0,
+          "cRate5th": 1.0,
+          "cRate95th": 1.0,
+          "count": 5,
+          "timeMean": "00:00:10",
+          "timeStdDeviation": "00:00:00",
+          "timeMin": "00:00:10",
+          "timeMax": "00:00:10",
+          "watchVariables": {},
+          "entries": [
+            {
+              "desc": "Event [FiveSec] occured and caused the action - Goto_S3",
+              "name": "FiveSec & Goto_S3",
+              "evDesc": "",
+              "actDesc": "",
+              "otherState": "S2",
+              "cnt": 5
+            }
+          ],
+          "exits": [
+            {
+              "desc": "Event [Immediate Action] occured and caused the action - RunV2_DBLGreaterThan",
+              "name": "Immediate Action & RunV2_DBLGreaterThan",
+              "evDesc": "",
+              "actDesc": "",
+              "otherState": "Fail",
+              "cnt": 5
+            }
+          ]
+        },
+        {
+          "name": "Fail",
+          "contributionRate": 1.0,
+          "cRate5th": 1.0,
+          "cRate95th": 1.0,
+          "count": 5,
+          "timeMean": "00:00:10",
+          "timeStdDeviation": "00:00:00",
+          "timeMin": "00:00:10",
+          "timeMax": "00:00:10",
+          "watchVariables": {},
+          "entries": [
+            {
+              "desc": "Event [Immediate Action] occured and caused the action - RunV2_DBLGreaterThan",
+              "name": "Immediate Action & RunV2_DBLGreaterThan",
+              "evDesc": "",
+              "actDesc": "",
+              "otherState": "S3",
+              "cnt": 5
+            }
+          ],
+          "exits": []
+        }
+      ]
+    }
+  ],
+  "otherStatePaths": [
+    {
+      "name": "Start",
+      "contributionRate": 0.0,
+      "cRate5th": 0.0,
+      "cRate95th": 0.0,
+      "count": 10,
+      "timeMean": "00:00:00",
+      "timeStdDeviation": "00:00:00",
+      "timeMin": "00:00:00",
+      "timeMax": "00:00:00",
+      "watchVariables": {},
+      "entries": [],
+      "exits": [
+        {
+          "desc": "Event [FiveSec] occured and caused the action - Goto_S2",
+          "name": "FiveSec & Goto_S2",
+          "evDesc": "",
+          "actDesc": "",
+          "otherState": "S2",
+          "cnt": 10
+        }
+      ]
+    },
+    {
+      "name": "S2",
+      "contributionRate": 0.0,
+      "cRate5th": 0.0,
+      "cRate95th": 0.0,
+      "count": 10,
+      "timeMean": "00:00:05",
+      "timeStdDeviation": "00:00:00",
+      "timeMin": "00:00:05",
+      "timeMax": "00:00:05",
+      "watchVariables": {},
+      "entries": [
+        {
+          "desc": "Event [FiveSec] occured and caused the action - Goto_S2",
+          "name": "FiveSec & Goto_S2",
+          "evDesc": "",
+          "actDesc": "",
+          "otherState": "Start",
+          "cnt": 10
+        }
+      ],
+      "exits": [
+        {
+          "desc": "Event [FiveSec] occured and caused the action - Goto_S3",
+          "name": "FiveSec & Goto_S3",
+          "evDesc": "",
+          "actDesc": "",
+          "otherState": "S3",
+          "cnt": 10
+        }
+      ]
+    },
+    {
+      "name": "S3",
+      "contributionRate": 0.0,
+      "cRate5th": 0.0,
+      "cRate95th": 0.0,
+      "count": 10,
+      "timeMean": "00:00:10",
+      "timeStdDeviation": "00:00:00",
+      "timeMin": "00:00:10",
+      "timeMax": "00:00:10",
+      "watchVariables": {},
+      "entries": [
+        {
+          "desc": "Event [FiveSec] occured and caused the action - Goto_S3",
+          "name": "FiveSec & Goto_S3",
+          "evDesc": "",
+          "actDesc": "",
+          "otherState": "S2",
+          "cnt": 10
+        }
+      ],
+      "exits": [
+        {
+          "desc": "Event [Immediate Action] occured and caused the action - RunV2_DBLGreaterThan",
+          "name": "Immediate Action & RunV2_DBLGreaterThan",
+          "evDesc": "",
+          "actDesc": "",
+          "otherState": "OK",
+          "cnt": 5
+        },
+        {
+          "desc": "Event [Immediate Action] occured and caused the action - RunV2_DBLGreaterThan",
+          "name": "Immediate Action & RunV2_DBLGreaterThan",
+          "evDesc": "",
+          "actDesc": "",
+          "otherState": "Fail",
+          "cnt": 5
+        }
+      ]
+    },
+    {
+      "name": "OK",
+      "contributionRate": 0.0,
+      "cRate5th": 0.0,
+      "cRate95th": 0.0,
+      "count": 5,
+      "timeMean": "00:00:10",
+      "timeStdDeviation": "00:00:00",
+      "timeMin": "00:00:10",
+      "timeMax": "00:00:10",
+      "watchVariables": {},
+      "entries": [
+        {
+          "desc": "Event [Immediate Action] occured and caused the action - RunV2_DBLGreaterThan",
+          "name": "Immediate Action & RunV2_DBLGreaterThan",
+          "evDesc": "",
+          "actDesc": "",
+          "otherState": "S3",
+          "cnt": 5
+        }
+      ],
+      "exits": [
+        {
+          "desc": "Event [Immediate Action] occured and caused the action - Goto_Terminate",
+          "name": "Immediate Action & Goto_Terminate",
+          "evDesc": "",
+          "actDesc": "",
+          "otherState": "Terminate",
+          "cnt": 5
+        }
+      ]
+    },
+    {
+      "name": "Terminate",
+      "contributionRate": 0.0,
+      "cRate5th": 0.0,
+      "cRate95th": 0.0,
+      "count": 10,
+      "timeMean": "00:00:10",
+      "timeStdDeviation": "00:00:00",
+      "timeMin": "00:00:10",
+      "timeMax": "00:00:10",
+      "watchVariables": {},
+      "entries": [
+        {
+          "desc": "Event [Immediate Action] occured and caused the action - Goto_Terminate",
+          "name": "Immediate Action & Goto_Terminate",
+          "evDesc": "",
+          "actDesc": "",
+          "otherState": "OK",
+          "cnt": 5
+        },
+        {
+          "desc": "Event [Immediate Action] occured and caused the action - Goto_Terminate",
+          "name": "Immediate Action & Goto_Terminate",
+          "evDesc": "",
+          "actDesc": "",
+          "otherState": "Fail",
+          "cnt": 5
+        }
+      ],
+      "exits": []
+    },
+    {
+      "name": "Fail",
+      "contributionRate": 0.0,
+      "cRate5th": 0.0,
+      "cRate95th": 0.0,
+      "count": 5,
+      "timeMean": "00:00:10",
+      "timeStdDeviation": "00:00:00",
+      "timeMin": "00:00:10",
+      "timeMax": "00:00:10",
+      "watchVariables": {},
+      "entries": [
+        {
+          "desc": "Event [Immediate Action] occured and caused the action - RunV2_DBLGreaterThan",
+          "name": "Immediate Action & RunV2_DBLGreaterThan",
+          "evDesc": "",
+          "actDesc": "",
+          "otherState": "S3",
+          "cnt": 5
+        }
+      ],
+      "exits": [
+        {
+          "desc": "Event [Immediate Action] occured and caused the action - Goto_Terminate",
+          "name": "Immediate Action & Goto_Terminate",
+          "evDesc": "",
+          "actDesc": "",
+          "otherState": "Terminate",
+          "cnt": 5
         }
       ]
     }

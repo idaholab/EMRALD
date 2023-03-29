@@ -1,9 +1,9 @@
-import { color, HSLColor, RGBColor } from 'd3-color';
+import { color, RGBColor } from 'd3-color';
 import { drag } from 'd3-drag';
 import { easeCubicIn } from 'd3-ease';
-import { interpolateHsl } from 'd3-interpolate';
 import { BaseType, select, selectAll, Selection } from 'd3-selection';
 import { Transition, transition } from 'd3-transition';
+import colors from './colors';
 import SankeyTimeline from './SankeyTimeline';
 import type TimelineLink from './TimelineLink';
 import TimelineNode from './TimelineNode';
@@ -36,12 +36,14 @@ export default class Renderer {
     distributions: true,
     dynamicLinkWidth: true,
     dynamicNodeHeight: false,
-    endColor: 'orange',
+    endColor: '#FF9800',
     fadeOpacity: 0.3,
     fontColor: 'white',
-    fontSize: 25,
+    fontSize: 20,
     height: window.innerHeight,
-    layout: 0,
+    layout: 'default',
+    linkTitle: (d: TimelineLink) =>
+      `${d.source.label} → ${d.target.label}\n${d.flow}`,
     margin: 60,
     marginTop: 25,
     maxLinkWidth: 50,
@@ -49,7 +51,7 @@ export default class Renderer {
     meanBarColor: 'rgba(0,0,0,0.25)',
     meanBarWidth: 3,
     nodeTitle: (d: TimelineNode): string => d.label,
-    startColor: 'purple',
+    startColor: '#9C27B0',
     ticks: 25,
     transitionSpeed: 75,
     width: window.innerWidth,
@@ -146,132 +148,94 @@ export default class Renderer {
     this.graph = this.timeline.graph;
     this.initializeLayout();
     const cols: TimelineNode[][] = [];
-    const rows: number[] = [];
+    const colWidths: number[] = [];
+    const colXs: number[] = [];
+    const maxCols: number[] = [];
     let maxColumn = -1;
     let maxRow = -1;
+    let leftHandAdjustment = 0;
     /**
      * Assigns columns along a path.
      *
      * @param source The current source node.
      * @param currentCol The current row number.
      */
-    function assignColumns(source: TimelineNode, currentCol: number) {
+    const assignColumns = (source: TimelineNode, currentCol: number) => {
       if (source.layout.column < 0) {
         if (currentCol >= cols.length) {
           cols.push([]);
-          rows.push(0);
+          maxCols.push(0);
+          colWidths.push(0);
+          colXs.push(0);
         }
         if (currentCol > maxColumn) {
           maxColumn = currentCol;
         }
         source.setColumn(currentCol);
         cols[currentCol].push(source);
+        if (source.textWidth > colWidths[currentCol]) {
+          colWidths[currentCol] = source.textWidth;
+        }
         source.outgoingLinks.forEach((link) => {
           assignColumns(link.target, currentCol + 1);
         });
-      }
-    }
-    /**
-     * Assigns rows along a path.
-     *
-     * @param source The current source node.
-     * @param baseRow The row the original source is assigned to.
-     */
-    function assignRows(source: TimelineNode, baseRow: number) {
-      if (source.layout.row < 0) {
-        let row = baseRow;
-        source.layout.baseRow = baseRow;
-        if (rows[source.layout.column] > baseRow) {
-          row = rows[source.layout.column] + 1;
+        if (currentCol === 0) {
+          const nodeAdjustment =
+            this.getTimeX(source.times.meanTime || 0) - source.layout.width / 2;
+          if (nodeAdjustment < leftHandAdjustment) {
+            leftHandAdjustment = nodeAdjustment;
+          }
         }
-        source.setRow(row);
-        if (row > maxRow) {
-          maxRow = row;
-        }
-        rows[source.layout.column] = row;
-        source.outgoingLinks.forEach((link) => {
-          assignRows(link.target, baseRow);
-        });
       }
-    }
+    };
     this.timeline.sourceNodes.forEach((sourceNode) => {
       assignColumns(sourceNode, 0);
     });
-    let row = 0;
-    cols[0].forEach((node) => {
-      assignRows(node, row);
-      row += 1;
+    for (let i = 1; i < colWidths.length; i += 1) {
+      colXs[i] = colXs[i - 1] + colWidths[i - 1];
+    }
+    cols.forEach((col) => {
+      for (let r = 0; r < col.length; r += 1) {
+        col[r].layout.row = r;
+        if (r > maxRow) {
+          maxRow = r;
+        }
+      }
     });
-    const adjusted: number[] = [];
+    let currentColor = 0;
     this.graph.nodes.forEach((node) => {
-      if (this.options.layout === 1) {
-        if (
-          typeof node.persist.default.x === 'number' &&
-          typeof node.persist.default.y === 'number'
-        ) {
+      node.setColor(colors[currentColor]);
+      currentColor += 1;
+      if (currentColor >= colors.length) {
+        currentColor = 0;
+      }
+      if (this.options.layout === 'default') {
+        if (node.persist) {
           node.layout.x = node.persist.default.x;
           node.layout.y = node.persist.default.y;
         } else {
-          node.layout.x =
-            (node.layout.column / (maxColumn + 1)) * this.options.width -
-            node.layout.width / 2;
+          node.layout.x = colXs[node.layout.column];
           node.layout.y =
             (node.layout.row / (maxRow + 1)) * this.options.height;
         }
-      } else if (this.options.layout === 0) {
+      } else if (this.options.layout === 'timeline') {
+        const originalMargin = this.options.margin;
+        this.options.margin += -leftHandAdjustment;
         node.layout.x =
           this.getTimeX(node.times.meanTime || 0) - node.layout.width / 2;
-        if (typeof node.persist.timeline.y === 'number') {
+        if (node.persist) {
           node.layout.y = node.persist.timeline.y;
-        } else if (adjusted.indexOf(node.id) < 0) {
-          node.layout.y = this.options.axisTickHeight;
-          adjusted.push(node.id);
-          this.findNodeOverlaps(node)
-            .map((overlap) => overlap.node)
-            .forEach((o) => {
-              if (adjusted.indexOf(o.id) < 0 && o.id !== node.id) {
-                adjusted.push(o.id);
-                o.layout.y += this.options.maxNodeHeight;
-              }
-            });
+        } else {
+          node.layout.y =
+            (node.layout.row / (maxRow + 1)) * this.options.height;
         }
+        this.options.margin = originalMargin;
       }
     });
     this.calculateLinkPaths();
     this.calculateDistributionLayout();
-    this.maxRow = row;
+    this.maxRow = maxRow;
     return this.graph;
-  }
-
-  /**
-   * Finds nodes that overlap with the given node.
-   *
-   * @param node - The node to find overlaps for.
-   * @param strict - If true, borders touching will be considered an overlap.
-   * @returns Other nodes that overlap with the given node.
-   */
-  private findNodeOverlaps(node: TimelineNode, strict = true) {
-    const overlaps: { node: TimelineNode; range: [number, number] }[] = [];
-    this.graph.nodes.forEach((o) => {
-      if (
-        (strict &&
-          ((o.layout.x + o.layout.width >= node.layout.x &&
-            o.layout.x <= node.layout.x) ||
-            (node.layout.x + node.layout.width >= o.layout.x &&
-              node.layout.x <= o.layout.x))) ||
-        (!strict &&
-          ((o.layout.x + o.layout.width > node.layout.x &&
-            o.layout.x <= node.layout.x) ||
-            (node.layout.x + node.layout.width > o.layout.x &&
-              node.layout.x <= o.layout.x)))
-      ) {
-        overlaps.push({
-          node: o,
-          range: [o.layout.y, o.layout.y + o.layout.height],
-        });
-      }
-    });
-    return overlaps;
   }
 
   /**
@@ -287,6 +251,7 @@ export default class Renderer {
       }
       this.graph.nodes[n].layout = {
         baseRow: 0,
+        color: '',
         column: -1,
         height,
         row: -1,
@@ -340,7 +305,7 @@ export default class Renderer {
       .style('height', this.options.height);
 
     // Create the axis
-    if (this.options.layout === 0) {
+    if (this.options.layout === 'timeline') {
       const axisContainer = svg.append('g').style('width', '100%');
       axisContainer
         .append('rect')
@@ -377,11 +342,6 @@ export default class Renderer {
       }
     }
 
-    const gradient = interpolateHsl(
-      color(this.options.startColor) as HSLColor,
-      color(this.options.endColor) as HSLColor,
-    );
-
     // Create links
     const links = svg
       .append('g')
@@ -390,9 +350,7 @@ export default class Renderer {
       .data(graph.links)
       .join('g')
       .attr('stroke', (d: TimelineLink) =>
-        (
-          color(gradient(d.source.layout.baseRow / this.maxRow)) as RGBColor
-        ).toString(),
+        (color(d.source.layout.color) as RGBColor).toString(),
       )
       .attr('class', 'link')
       .style('mix-blend-mode', 'multiply');
@@ -402,15 +360,12 @@ export default class Renderer {
       .attr('d', (d: TimelineLink) => d.layout.path)
       .attr('stroke-width', (d: TimelineLink) => Math.max(1, d.layout.width));
 
-    links
-      .append('title')
-      .text(
-        (d: TimelineLink) => `${d.source.label} → ${d.target.label}\n${d.flow}`,
-      );
+    links.append('title').text(this.options.linkTitle);
 
     // Create nodes
     type TransitionType = Transition<BaseType, null, null, undefined>;
     const { options } = this;
+    const _timeline = this.timeline;
     const nodes = svg
       .append('g')
       .selectAll('g')
@@ -421,10 +376,16 @@ export default class Renderer {
       .attr('height', (d: TimelineNode) => d.layout.height)
       .attr('width', (d: TimelineNode) => d.layout.width)
       .attr('class', 'node')
-      // TODO: Make this renderer-agnostic
-      .on('mouseover', (event: DragEvent, d: TimelineNode) => {
+      .on('mouseover', function (event: DragEvent, d: TimelineNode) {
+        const fade = transition()
+          .duration(options.transitionSpeed)
+          .ease(easeCubicIn) as any as TransitionType;
+        select(this)
+          .selectAll('.distHandle')
+          .transition(fade)
+          .style('opacity', 1);
         let shortestPath: number[] = [];
-        const paths: number[][] = this.timeline.getPath(d.id);
+        const paths: number[][] = _timeline.getPath(d.id);
         paths.forEach((path) => {
           if (shortestPath.length === 0 || path.length < shortestPath.length) {
             shortestPath = path;
@@ -433,45 +394,44 @@ export default class Renderer {
         selectAll('.node').each(function (n: unknown) {
           const node = n as TimelineNode;
           if (paths.flat().indexOf(node.id) < 0) {
-            select(this)
-              .transition(
-                transition()
-                  .duration(options.transitionSpeed)
-                  .ease(easeCubicIn) as any as TransitionType,
-              )
-              .style('opacity', options.fadeOpacity);
+            select(this).transition(fade).style('opacity', options.fadeOpacity);
           }
         });
         const pathLinks: number[] = [];
         paths.forEach((path) => {
-          pathLinks.push(...this.timeline.getLinksInPath(path));
+          pathLinks.push(..._timeline.getLinksInPath(path));
         });
         selectAll('.link').each(function (l: unknown) {
           const link = l as TimelineLink;
           if (pathLinks.indexOf(link.id) < 0) {
-            select(this)
-              .transition(
-                transition()
-                  .duration(options.transitionSpeed)
-                  .ease(easeCubicIn) as any as TransitionType,
-              )
-              .style('opacity', options.fadeOpacity);
+            select(this).transition(fade).style('opacity', options.fadeOpacity);
           }
         });
       })
       .on('mouseleave', () => {
-        selectAll('.node, .link')
-          .transition(
-            transition()
-              .duration(this.options.transitionSpeed)
-              .ease(easeCubicIn) as any as TransitionType,
-          )
-          .style('opacity', 1);
+        const fade = transition()
+          .duration(this.options.transitionSpeed)
+          .ease(easeCubicIn) as any as TransitionType;
+        selectAll('.node, .link').transition(fade).style('opacity', 1);
+        selectAll('.distHandle')
+          .transition(fade)
+          .style('opacity', options.fadeOpacity);
       })
       .call(
         drag<any, TimelineNode>()
           .on('drag', (event: DragEvent, d: TimelineNode) => {
-            if (options.layout !== 0) {
+            if (!d.persist) {
+              d.persist = {
+                default: {
+                  x: 0,
+                  y: 0,
+                },
+                timeline: {
+                  y: 0,
+                },
+              };
+            }
+            if (options.layout !== 'timeline') {
               d.layout.x = event.x;
               d.layout.y = event.y;
               d.persist.default.x = event.x;
@@ -497,7 +457,11 @@ export default class Renderer {
             ) {
               const element = select(this);
               element
-                .select('rect')
+                .select('.nodeFill')
+                .attr('x', () => d.layout.x)
+                .attr('y', () => d.layout.y);
+              element
+                .select('.labelBox')
                 .attr('x', () => d.layout.x)
                 .attr('y', () => d.layout.y);
               element
@@ -508,9 +472,14 @@ export default class Renderer {
                 .select('.meanValue')
                 .attr('x', () => d.layout.x + d.layout.width / 2)
                 .attr('y', () => d.layout.y - options.meanBarWidth);
-              selectAll<BaseType, TimelineLink>('.link').each(function (
-                l: TimelineLink,
-              ) {
+              element
+                .select('.labelBox')
+                .attr('x', () => d.layout.x)
+                .attr(
+                  'y',
+                  () => d.layout.y + d.layout.height / 2 - d.textHeight / 2,
+                );
+              selectAll<BaseType, TimelineLink>('.link').each(function (l) {
                 const path = l.layout.path.substring(1).split(',');
                 if (l.source.id === d.id) {
                   l.layout.path = `M${d.layout.x + d.layout.width},${
@@ -535,16 +504,27 @@ export default class Renderer {
             });
           }),
       );
+    // Label boxes
     nodes
       .append('rect')
-      .attr('fill', (d: TimelineNode) => gradient(d.layout.baseRow / this.maxRow))
+      .attr('class', 'labelBox')
+      .style('fill', 'rgba(0,0,0,0.2)')
+      .attr('x', (d) => d.layout.x)
+      .attr('y', (d) => d.layout.y + d.layout.height / 2 - d.textHeight / 2)
+      .attr('width', (d) => d.textWidth)
+      .attr('height', (d) => d.textHeight);
+    nodes
+      .append('rect')
+      .attr('class', 'nodeFill')
+      .attr('fill', (d: TimelineNode) => d.layout.color)
       .attr('x', (d: TimelineNode) => d.layout.x)
       .attr('y', (d: TimelineNode) => d.layout.y)
       .attr('height', (d: TimelineNode) => d.layout.height)
       .attr('width', (d: TimelineNode) => d.layout.width);
     nodes.append('title').text((d: TimelineNode) => this.options.nodeTitle(d));
 
-    if (this.options.layout === 0) {
+    if (this.options.layout === 'timeline') {
+      const handleColor = 'rgba(0,0,0)';
       // Left handle
       nodes
         .append('rect')
@@ -560,10 +540,11 @@ export default class Renderer {
           }
           return 0;
         })
-        .attr('class', 'distHandleLeft')
+        .attr('class', 'distHandle distHandleLeft')
         .attr('height', (d: TimelineNode) => d.layout.height)
         .attr('width', () => this.options.distHandleWidth)
-        .attr('fill', (d: TimelineNode) => gradient(d.id / graph.nodes.length));
+        .attr('fill', handleColor)
+        .style('opacity', this.options.fadeOpacity);
       // Right handle
       nodes
         .append('rect')
@@ -579,10 +560,11 @@ export default class Renderer {
           }
           return 0;
         })
-        .attr('class', 'distHandleRight')
+        .attr('class', 'distHandle distHandleRight')
         .attr('height', (d: TimelineNode) => d.layout.height)
         .attr('width', () => this.options.distHandleWidth)
-        .attr('fill', (d: TimelineNode) => gradient(d.id / graph.nodes.length));
+        .attr('fill', handleColor)
+        .style('opacity', this.options.fadeOpacity);
       // Center line
       nodes
         .append('rect')
@@ -598,7 +580,7 @@ export default class Renderer {
           }
           return 0;
         })
-        .attr('class', 'distHandleCenter')
+        .attr('class', 'distHandle distHandleCenter')
         .attr('height', () => this.options.distHandleWidth)
         .attr('width', (d: TimelineNode) => {
           if (d.layout.distribution) {
@@ -606,7 +588,8 @@ export default class Renderer {
           }
           return 0;
         })
-        .attr('fill', (d: TimelineNode) => gradient(d.id / graph.nodes.length));
+        .attr('fill', handleColor)
+        .style('opacity', this.options.fadeOpacity);
 
       // Mean value bar
       nodes

@@ -18,6 +18,11 @@
             #chart {
                 display: block;
             }
+
+            #keyStateOptions {
+                bottom: 0;
+                position: fixed;
+            }
         </style>
     </head>
     <body>
@@ -27,7 +32,9 @@
         <label for="otherStatesToggle">Show Other State Paths</label>
         <button id="zoomOut">Zoom Out</button>
         <button id="zoomIn">Zoom In</button>
+        <button id="save">Save</button>
         <svg id="chart"></svg>
+        <div id="keyStateOptions"></div>
         <script src="./data.js"></script>
         <script src="./emrald-sankey-timeline.js"></script>
         <script>
@@ -53,6 +60,10 @@
 
             document.getElementById('zoomOut').addEventListener('click', () => {
                 window.zoomOut();
+            });
+
+            document.getElementById('save').addEventListener('click', () => {
+                window.saveDiagram();
             });
 
             function OnLoad(dataObj) {

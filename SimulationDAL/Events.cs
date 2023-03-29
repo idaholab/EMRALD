@@ -439,14 +439,13 @@ namespace SimulationDAL
     }
   }
 
-  public class EvalVarEvent : CondBasedEvent //etVarCond, et3dSimEv
+  public class EvalVarEvent : CondBasedEvent //etVarCond
   {
-    public string sim3dID = null;
+    
     public string compCode = "";
     protected bool compiled;
     protected ScriptEngine compiledComp;
     protected VariableList varList = null;
-    protected string variable = "";
     //protected override EnModifiableTypes GetModType() { return EnModifiableTypes.mtVar; }
 
     //protected override EnEventType GetEvType() { return (variable == "") ? EnEventType.etVarCond : EnEventType.et3dSimEv; }
@@ -456,7 +455,7 @@ namespace SimulationDAL
       compiledComp = new ScriptEngine(ScriptEngine.Languages.CSharp);
     }
 
-    public EvalVarEvent(string inName, string inCompCode, VariableList inVarList, Sim3DVariable sim3dVar)// = null)
+    public EvalVarEvent(string inName, string inCompCode, VariableList inVarList)// = null)
       : base(inName)
     {
       this.compCode = inCompCode;
@@ -468,18 +467,12 @@ namespace SimulationDAL
           this.AddRelatedItem(curVar.Value.id);
         }
 
-      if (sim3dVar != null)
-      {
-        this.sim3dID = sim3dVar.sim3DNameId;
-        this.AddRelatedItem(sim3dVar.id);
-      }
-      else
-        this.sim3dID = null;
+      
 
       compiledComp = new ScriptEngine(ScriptEngine.Languages.CSharp);
     }
 
-    protected override EnEventType GetEvType() { return (variable == "") ? EnEventType.etVarCond : EnEventType.et3dSimEv; }
+    protected override EnEventType GetEvType() { return EnEventType.etVarCond; }
 
     public override string GetDerivedJSON(EmraldModel lists)
     {
@@ -491,7 +484,6 @@ namespace SimulationDAL
       {
         foreach(var i in varList.Values)
         {
-          if(i.name!=variable)
           varNames += ", \"" + i.name + "\"";
         }
         varNames = varNames.TrimStart(',');
@@ -501,9 +493,6 @@ namespace SimulationDAL
       string retStr = null;
       retStr = retStr + "\"varNames\": [" + varNames + "]," + Environment.NewLine;// +
       //                "\"code\":\"" + compCodeStr + "\"";
-
-      if (sim3dID != null)// re-ordered list to match actual where the External Sim variable comes before code
-        retStr = retStr + "," + Environment.NewLine + "\"sim3dID\":" + this.sim3dID;
 
       retStr = retStr + Environment.NewLine;
 
@@ -532,18 +521,9 @@ namespace SimulationDAL
          (EnEventType.et3dSimEv != (EnEventType)Enum.Parse(typeof(EnEventType), (string)dynObj.evType, true)))
         throw new Exception("event types do not match, cannot change the type once an item is created!");
 
-    //  this.evType = (EnEventType)Enum.Parse(typeof(EnEventType), (string)dynObj.evType, true);
-      if (dynObj.sim3dID != null)
+      if ((this.evType == EnEventType.etVarCond) && (dynObj.code == null))
       {
-        this.sim3dID = Convert.ToString(dynObj.sim3DId);
-
-        if (dynObj.varNames == null)
-          throw new Exception("Deserilaizing Event, missing varNames value for the 3D SimVar ");
-      }
-
-      if (dynObj.code == null)
-      {
-        throw new Exception("Deserilaizing Event, missing code");
+        throw new Exception("Evaluate Var Event, missing code");
       }
 
       compCode = (string)dynObj.code;
@@ -578,20 +558,7 @@ namespace SimulationDAL
           this.AddRelatedItem(curVar.id);
         }
       }
-      //3D simulation var condition has a variable link
-      if (dynObj.variable != null)
-      {
-        variable = (string)dynObj.variable;
-        SimVariable curVar = lists.allVariables.FindByName((string)dynObj.variable);
-        if (curVar == null)
-          throw new Exception("Failed to find variable - " + dynObj.variable);
-        if(varList == null)
-        {
-          varList = new VariableList();
-        }
-        this.varList.Add(curVar);
-        this.AddRelatedItem(curVar.id);
-      }
+      
       return true;
     }
 
@@ -600,19 +567,6 @@ namespace SimulationDAL
     public virtual bool CompileCompCode()
     {
       compiledComp.Code = compCode;
-
-      if (this.sim3dID != null)
-      {
-        //add the TEventType as a constant //TODO is this still correct with the new XMPP message system
-        foreach (SimEventType itemType in Enum.GetValues(typeof(SimEventType)))
-        {
-          compiledComp.AddConstant(itemType.ToString(), typeof(int), (int)itemType);
-        }
-
-        //add the variable for the 3D simulation TEventType for use in the code
-        compiledComp.AddVariable("simEventType", typeof(int));
-
-      }
 
       //add the Time and 3D Frame variables needed event if 
       compiledComp.AddVariable("CurTime", typeof(Double));
@@ -654,15 +608,6 @@ namespace SimulationDAL
       {
         if (!CompileCompCode())
           throw new Exception("Code failed compile, can not evaluate");
-      }
-
-      if ((this.sim3dID != null) && (otherData != null))
-      {
-        Dictionary<string, SimEventType> lastEvTypes = (Dictionary<string, SimEventType>)otherData;
-        if (lastEvTypes.ContainsKey(this.sim3dID))
-        {
-          compiledComp.SetVariable("simEventType", typeof(int), (int)lastEvTypes[this.sim3dID]);
-        }
       }
 
       compiledComp.SetVariable("CurTime", typeof(double), curSimTime.TotalHours);
@@ -714,54 +659,149 @@ namespace SimulationDAL
     }
   }
 
-  //public class Eval3DVarEvent : EvalEvent //et3dSimEv
-  //{
-  //  private int sim3dId;
+  public class ExtSimEv : EvalVarEvent //et3dSimEv
+  {
+    public SimEventType extEventType = SimEventType.etCompEv;
+    protected string variable = null;
 
 
+    public ExtSimEv() : base() { }
+    
+    public ExtSimEv(string inName, string inCompCode, VariableList inVarList, Sim3DVariable sim3dVar, SimEventType evType = SimEventType.etCompEv)
+      : base(inName, inCompCode, inVarList)
+    {
+      extEventType = evType;
 
-  //  //public EvalEvent(int inID, EnEventType inEvType, string inCompCode, string inCompStyle) : base(inID, inEvType)
-  //  public Eval3DVarEvent(string inName, int in3dId, string inCompCode, VariableList inVarList)
-  //    : base(inName, inCompCode, inVarList)
-  //  {
-  //    this.sim3dId = in3dId;
-  //  }
+      if (sim3dVar != null)
+      {
+        this.variable = sim3dVar.sim3DNameId;
+        this.AddRelatedItem(sim3dVar.id);
+      }
+      else
+        this.variable = null;
+    }
 
-  //  public override bool CompileCompCode()
-  //  {
-  //    //add the TEventType as a constant
-  //    foreach (T3DEventType itemType in Enum.GetValues(typeof(T3DEventType)))
-  //    {
-  //      compiledComp.AddConstant(itemType.ToString(), typeof(int), (int)itemType);
-  //    }
+    protected override EnEventType GetEvType() { return EnEventType.et3dSimEv; }
+    public override string GetDerivedJSON(EmraldModel lists)
+    {
+      string compCodeStr = compCode.Replace("\n", "\\n").Replace("\r", "\\r");
+      string codeHasVars = varList == null ? "False" : "True";
+      string varNames = "";
 
-  //    //add the variable for the 3D simulation TEventType for use in the code
-  //    compiledComp.AddVariable("simEventType", typeof(int));
+      if (varList != null)
+      {
+        foreach (var i in varList.Values)
+        {
+          if (i.name != variable)
+            varNames += ", \"" + i.name + "\"";
+        }
+        varNames = varNames.TrimStart(',');
+      }
+      //varNames = string.Join(",", varList.Values);
+
+      string retStr = null;
+      retStr = retStr + "\"varNames\": [" + varNames + "]," + Environment.NewLine;// +
+      //                "\"code\":\"" + compCodeStr + "\"";
+
+      if (extEventType != null)
+        retStr = retStr + "," + Environment.NewLine + "\"extEventType\":" + this.extEventType;
+
+      if (variable != null)
+        retStr = retStr + "," + Environment.NewLine + "\"variable\":" + this.variable;
+
+      retStr = retStr + Environment.NewLine;
+
+      retStr = retStr + "\"code\":\"" + compCodeStr + "\"";
+
+      return retStr;
+    }
+
+    public override bool DeserializeDerived(object obj, bool wrapped, EmraldModel lists, bool useGivenIDs)
+    {
+      base.DeserializeDerived(obj, wrapped, lists, useGivenIDs);
+      processed = false;
+      dynamic dynObj = (dynamic)obj;
+      if (wrapped)
+      {
+        if (dynObj.Event == null)
+          return false;
+
+        dynObj = ((dynamic)obj).Event;
+      }
+      
+      if (dynObj.extEventType != null)
+      {
+        this.extEventType = (SimEventType)Enum.Parse(typeof(SimEventType), (string)dynObj.extEventType, true);
+
+        //if (dynObj.varNames == null)
+          //throw new Exception("External Sim Event, missing varNames value for the 3D SimVar ");
+      }
+
+      //3D simulation var condition has a variable link
+      if (this.extEventType == SimEventType.etCompEv)
+      {
+        if (dynObj.code == null)
+        {
+          throw new Exception("External Sim Event, missing code");
+        }
+
+        if (dynObj.variable == null)
+        {
+          throw new Exception("External Sim variable not assigned");
+        }
+
+        variable = (string)dynObj.variable;
+        SimVariable curVar = lists.allVariables.FindByName((string)dynObj.variable);
+        if (curVar == null)
+          throw new Exception("Failed to find variable - " + dynObj.variable);
+        if (varList == null)
+        {
+          varList = new VariableList();
+        }
+        this.varList.Add(curVar);
+        this.AddRelatedItem(curVar.id);
+      }
+        
 
 
-  //    return base.CompileCompCode();
-  //  }
+      processed = true;
+      return true;
+    }
 
-  //  public override bool EventTriggered(MyBitArray curStates, object otherData)
-  //  {
-  //    if (!this.compiled)
-  //    {
-  //      if (!CompileCompCode())
-  //        throw new Exception("Code failed compile, can not evaluate");
-  //    }
+    public override bool EventTriggered(MyBitArray curStates, object otherData, TimeSpan curSimTime, TimeSpan start3DTime, TimeSpan nextEvTime, int runIdx)
+    {
+      Dictionary<string, SimEventType> evTypes = (Dictionary<string, SimEventType>)otherData;
+      switch (extEventType)
+      {
+        case SimEventType.etCompEv: //works just like a eval var event
+          return (evTypes.ContainsValue(SimEventType.etCompEv) && base.EventTriggered(curStates, otherData, curSimTime, start3DTime, nextEvTime, runIdx));
+          break;
 
-  //    if (otherData != null)
-  //    {
-  //      Dictionary<int, T3DEventType> lastEvTypes = (Dictionary<int, T3DEventType>)otherData;
-  //      if (lastEvTypes.ContainsKey(this.sim3dId))
-  //      {
-  //        compiledComp.SetVariable("simEventType", typeof(int), (int)lastEvTypes[this.sim3dId]);
-  //      }
-  //    }
+        case SimEventType.etEndSim:
+          return evTypes.ContainsValue(SimEventType.etEndSim);
+          break;
 
-  //    return base.EventTriggered(curStates, otherData);
-  //  }
-  //}
+        case SimEventType.etPing:
+          return evTypes.ContainsValue(SimEventType.etPing);
+          break;
+
+        default:          
+          NLog.Logger logger = NLog.LogManager.GetLogger("logfile");
+          logger.Info("Error = externalSim event type not allowed " + extEventType.ToString());
+          break;
+      }
+      
+      return false;
+    }
+
+    public virtual bool CompileCompCode()
+    {
+      if (extEventType == SimEventType.etCompEv)
+        return base.CompileCompCode();
+      else
+        return true;
+    }
+  }
 
   public enum EnOnChangeTask { ocIgnore, ocResample, ocAdjust}
 
@@ -798,6 +838,11 @@ namespace SimulationDAL
         default:
           throw new Exception("RedoNextTime not implemented for " + onVarChange.ToString());
       }
+    }
+
+    public virtual bool UsesVariables()
+    {
+      return false;
     }
   }
 
@@ -957,6 +1002,11 @@ namespace SimulationDAL
       //if not "ocAdjust" call parent as they are all the same.
       return base.RedoNextTime(sampledTime, curTime, oldOccurTime);
     }
+
+    public override bool UsesVariables()
+    {
+      return timeVariable != null;
+    }
   }
 
   public class NowTimerEvent : TimerEvent
@@ -966,9 +1016,9 @@ namespace SimulationDAL
   }
 
   //This is only used internally and not meant to be modeled. An immediate message needs an event to trigger the evaluation 
-  public class ExtSimEvent : TimerEvent
+  public class ExtSimEventPlaceholder : TimerEvent
   {
-    public ExtSimEvent(string inName)
+    public ExtSimEventPlaceholder(string inName)
       : base(inName, Globals.NowTimeSpan) { }
   }
 
@@ -986,7 +1036,7 @@ namespace SimulationDAL
     public TimeSpan timeRate = TimeSpan.FromDays(365.25);
     public TimeSpan compMissionTime = TimeSpan.FromHours(24);
     protected SimVariable lambdaVariable = null;
-
+    
     protected override EnEventType GetEvType() { return EnEventType.etFailRate; }
 
     public FailProbEvent() : base("") { }
@@ -1171,6 +1221,10 @@ namespace SimulationDAL
       //if not "ocAdjust" call parent as they are all the same.
       return base.RedoNextTime(sampledTime, curTime, oldOccurTime);
     }
+    public override bool UsesVariables()
+    {
+      return lambdaVariable != null;
+    }
   }
 
   public class DistEvent : TimeBasedEvent //etDistribution
@@ -1304,9 +1358,12 @@ namespace SimulationDAL
         foreach (DistribParams p in this._dParams)
         {
           if (p.variable != null)
-            valuePs.Add((double)vars.FindByName(p.variable).value);
+          {
+            var v = vars.FindByName(p.variable);
+            valuePs.Add(Convert.ToDouble(v.value));
+          }
           else if (p.value != null)
-            valuePs.Add((double)p.value);
+            valuePs.Add(Convert.ToDouble(p.value));
           else
             valuePs.Add(null);
         }
@@ -1458,6 +1515,11 @@ namespace SimulationDAL
 
       //if not "ocAdjust" call parent as they are all the same.
       return base.RedoNextTime(sampledTime, curTime, oldOccurTime);
+    }
+
+    public override bool UsesVariables()
+    {
+      return ((vars != null) && (vars.Count > 0));
     }
   }
 
@@ -1876,7 +1938,7 @@ namespace SimulationDAL
 
       switch (evType)
       {
-        case EnEventType.et3dSimEv: retEv = new EvalVarEvent(); break;//string inName, string inCompCode, VariableList inVarList, Sim3DVariable sim3dVar = null)
+        case EnEventType.et3dSimEv: retEv = new ExtSimEv(); break;//string inName, string inCompCode, VariableList inVarList, Sim3DVariable sim3dVar = null)
         case EnEventType.etComponentLogic: retEv = new ComponentLogicEvent(); break; //(string inName, LogicNode inLogicTop, bool inOnSuccess);
         case EnEventType.etFailRate: retEv = new FailProbEvent(); break;  //(string inName, double lambdaOrFreq, TimeSpan lambdaTimeRate, TimeSpan compMissionTime)                
         case EnEventType.etStateCng: retEv = new StateCngEvent(); break; //string inName, bool inIfInState, bool inAllItems = true, List<int> inStates = null)();
@@ -2010,7 +2072,18 @@ namespace SimulationDAL
     {
       foreach (var item in this)
       {
-        if (item.Value is EvalVarEvent )
+        if (item.Value is ExtSimEv)
+        {
+          try
+          {
+            ((ExtSimEv)item.Value).CompileCompCode();
+          }
+          catch (Exception e)
+          {
+            throw new Exception("Event \"" + item.Value.name + " \" - " + e.Message);
+          }
+        }
+        else if (item.Value is EvalVarEvent )
         {
           try
           {

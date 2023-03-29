@@ -13,11 +13,11 @@ namespace MessageDefLib
   [JsonConverter(typeof(StringEnumConverter))]
   public enum MessageType { mtSimEvent = 0, mtSimAction, mtOther };
   [JsonConverter(typeof(StringEnumConverter))]
-  public enum SimActionType { atCompModify = 0, atTimer, atOpenSim, atCancelSim, atPauseSim, atContinue, atReset, atRestartAtTime, atPing, atStatus };
+  public enum SimActionType { atCompModify = 0, atTimer, atOpenSim, atCancelSim, atPauseSim, atContinue, atRestartAtTime, atPing, atStatus, atTerminate }; 
   [JsonConverter(typeof(StringEnumConverter))]
-  public enum SimEventType { etCompEv = 0, etTimer, etSimStarted, etEndSim, etPing, etStatus };
+  public enum SimEventType { etCompEv = 0, etTimer, etSimLoaded, etEndSim, etPing, etStatus };
   [JsonConverter(typeof(StringEnumConverter))]
-  public enum StatusType { stWaiting = 0, stLoading, stRunning, stDone, stError };
+  public enum StatusType { stWaiting = 0, stLoading, stRunning, stIdle, stDone, stError };
 
   //public class TOtherMsgData
   //{
@@ -59,15 +59,22 @@ namespace MessageDefLib
 
   public class SimInfo
   {
-    public SimInfo(string inModel, TimeSpan inEndTime, string inConfigData)
+    public SimInfo(string inModel, TimeSpan inEndTime, string inConfigData, int seed, int numRuns, int curRun)
     {
       model = inModel;
       configData = inConfigData;
       endTime = inEndTime;
+      this.seed = seed;
+      this.numRuns = numRuns;
+      this.curRun = curRun;
+
     }
 
     public string model { get; set; } //reference to the model to run. Name, path, etc.
     public TimeSpan endTime { get; set; } //time in global run time of when to end the simulation
+    public int seed { get; set; } //optional random seed from to start with
+    public int numRuns { get; set; } //planned number of runs 
+    public int curRun { get; set; }
     public string configData { get; set; } //any additional information required by the client to setup run. Set by the user in the controller or EMRALD model.
   }
 
@@ -96,6 +103,7 @@ namespace MessageDefLib
       simInfo = null;
       itemData = compModData;
       time = actTime;
+
     }
 
     public SimActionType actType { get; set; } //type of action to be taken by child simulation
@@ -105,6 +113,7 @@ namespace MessageDefLib
     public SimInfo simInfo; //if type is OpenSim
     [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
     public ItemData itemData; //if type is compModify, timer
+    public StatusType status { get; set; } //if status type then this has a value  
   }
 
 

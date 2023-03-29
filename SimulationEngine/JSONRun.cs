@@ -39,6 +39,7 @@ namespace SimulationEngine
     // start index for debug if null then to end
     public int? debugEndIdx { get; set; } = null;
     // external application XMPP connection
+    public int pathResultsInterval { get; set; } = -1;
     public string xmppPassword { get; set; } = "secret";
     public List<List<string>> xmppLinks = new List<List<string>>();
   }
@@ -70,6 +71,14 @@ namespace SimulationEngine
     public JSONRun(string optionsJsonStr, string modelJsonStr = "", TProgressCallBack progressCallBack = null)
     {
       _optsJsonStr = optionsJsonStr;
+      _modelJsonStr = modelJsonStr;
+      _progressCallBack = progressCallBack;
+    }
+
+    public JSONRun(Options ops, string modelJsonStr = "", TProgressCallBack progressCallBack = null)
+    {
+      this.options = ops;
+      _optsJsonStr = JsonConvert.SerializeObject(ops);
       _modelJsonStr = modelJsonStr;
       _progressCallBack = progressCallBack;
     }
@@ -153,9 +162,13 @@ namespace SimulationEngine
       //{
       //  _error = _simRuns.error;
       bool done = false;
-      _simRuns = new ProcessSimBatch(_model, TimeSpan.Parse(options.runtime), options.resout, options.jsonRes);
+      _simRuns = new ProcessSimBatch(_model, TimeSpan.Parse(options.runtime), options.resout, options.jsonRes, options.pathResultsInterval);
       _simRuns.SetupBatch(options.runct, true, options.pathout);
       _simRuns.AssignProgress(progress);
+      foreach (var varItem in this.options.variables)
+      {
+        _simRuns.logVarVals.Add(varItem.ToString());
+      }
       ThreadStart tStarter = new ThreadStart(_simRuns.RunBatch);
       //run this when the thread is done.
       tStarter += () =>
