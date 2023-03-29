@@ -42,7 +42,7 @@ if (typeof Navigation === 'undefined')
               console.log("...data decoded!");
               simApp.allDataModel = jobj;
               sidebar.sortVariables();
-              this.upgrade(simApp.allDataModel);
+              window.upgrade(simApp.allDataModel);
               this.assignList(jobj);
               //load templates
               this.loadTemplates();
@@ -58,7 +58,7 @@ if (typeof Navigation === 'undefined')
         var jobj = JSON.parse(this.jsonStr);
         simApp.allDataModel = jobj;
         sidebar.sortVariables();
-        this.upgrade(simApp.allDataModel);
+        window.upgrade(simApp.allDataModel);
         this.assignList(jobj);
         //load templates
         this.loadTemplates(jobj.templates);
@@ -83,6 +83,7 @@ if (typeof Navigation === 'undefined')
         }
       }
     }
+    Sidebar.prototype.upgrade = window.upgrade;
     //this will make the sidebar sections have the accordion function 
     Sidebar.prototype.ApplyJqueryUi = function (id) {
 
