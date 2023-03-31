@@ -18,6 +18,11 @@
             #chart {
                 display: block;
             }
+
+            #keyStateOptions {
+                bottom: 0;
+                position: fixed;
+            }
         </style>
     </head>
     <body>
@@ -29,6 +34,7 @@
         <button id="zoomIn">Zoom In</button>
         <button id="save">Save</button>
         <svg id="chart"></svg>
+        <div id="keyStateOptions"></div>
         <script src="./data.js"></script>
         <script src="./emrald-sankey-timeline.js"></script>
         <script>
@@ -62,6 +68,7 @@
 
             function OnLoad(dataObj) {
                 window.data = dataObj;
+                UpdateFrameTitle(`${dataObj.fileName} - Results View`);
                 sankeyTimeline.default();
             }
         </script>

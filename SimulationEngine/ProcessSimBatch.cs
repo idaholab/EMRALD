@@ -229,7 +229,7 @@ namespace SimulationEngine
         pathOutputFile = new StreamWriter(_keyPathsOutput, append: false);
 
       //if user defined the seed then reset random so that seed is used.
-      if (ConfigData.seed != null)
+      if ((ConfigData.seed != null) && (ConfigData.seed >= 0))
         SingleRandom.Reset();
 
       //make a list of result items for each key state.

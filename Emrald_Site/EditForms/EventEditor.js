@@ -108,13 +108,26 @@ function isModified() {
   return isDirty;
 }
 
+/**
+ * Checks the form data for invalid values and prompts the user to correct them.
+ *
+ * @returns {string} An empty string if the data is valid, or a description of the error if not.
+ */
 function ValidateData() {
   var scope = angular.element(document.querySelector('#EEControllerPanel')).scope();
-  if (scope.typeOption.value === 'et3dSimEv' && !scope.data.variable && scope.data.extEventType.value === 'etCompEv') {
+  if (scope.typeOption.value === 'et3dSimEv' && !scope.data.variable && (scope.data.extEventType && scope.data.extEventType.value === 'etCompEv')) {
       return "Please specify an External Sim Variable before saving the event.";
   }
   if (scope.typeOption.value === 'etComponentLogic' && !scope.data.logicTop) {
       return "Please specify a top logic gate before saving the event.";
+  }
+  if (
+    (scope.distUsesVariable()
+    || scope.data.timer.useVariable
+    || scope.data.failureRate.lambda.useVariable)
+    && scope.data.onVarChange === null
+  ) {
+    return 'Please select an option for handling variable changes.';
   }
   return "";
 }
