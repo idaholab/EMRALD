@@ -10,6 +10,7 @@ using MathNet.Numerics.Distributions;
 using MessageDefLib;
 using Newtonsoft.Json;
 using System.Linq;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace SimulationDAL
 {
@@ -1224,6 +1225,154 @@ namespace SimulationDAL
     public override bool UsesVariables()
     {
       return lambdaVariable != null;
+    }
+  }
+
+  public class HRAEval : TimeBasedEvent //etHRAEval
+  {
+    //TODO variables needed for hunter info
+
+
+    protected override EnEventType GetEvType() { return EnEventType.etHRAEval; }
+
+    public HRAEval() : base("") { }
+
+    public HRAEval(string inName )//todo add variables)
+      : base(inName)
+    {
+      //todo assign variables
+    }
+
+    public override string GetDerivedJSON(EmraldModel lists)
+    {
+      //todo return the json for the object
+      string retStr = "";
+      //string retStr = "\"lambdaTimeRate\":\"" + XmlConvert.ToString(this.timeRate) + "\"," + Environment.NewLine;// +
+      //                                                                                                           //"\"missionTime\":\"" + XmlConvert.ToString(this.compMissionTime) + "\",";
+      //if (lambdaVariable != null)
+      //{
+      //  retStr = retStr +
+      //    "\"useVariable\": true, " + Environment.NewLine +
+      //    "\"lambda\":\"" + this.lambdaVariable.name + "\"," + Environment.NewLine +
+      //    "\"onVarChange\":\"" + this.onVarChange.ToString() + "\"," + Environment.NewLine;
+      //}
+      //else
+      //{
+      //  retStr = retStr +
+      //    "\"useVariable\": false, " + Environment.NewLine +
+      //    "\"lambda\":" + this._lambda.ToString() + Environment.NewLine;
+      //}
+
+      return retStr;
+    }
+
+    public override bool DeserializeDerived(object obj, bool wrapped, EmraldModel lists, bool useGivenIDs)
+    {
+      dynamic dynObj = (dynamic)obj;
+      if (wrapped)
+      {
+        if (dynObj.Event == null)
+          return false;
+
+        dynObj = ((dynamic)obj).Event;
+      }
+
+      if (!base.DeserializeDerived((object)dynObj, false, lists, useGivenIDs))
+        return false;
+
+      lists.allEvents.Add(this, false);
+
+      if (EnEventType.etFailRate != (EnEventType)Enum.Parse(typeof(EnEventType), (string)dynObj.evType, true))
+        throw new Exception("event types do not match, cannot change the type once an item is created!");
+
+      //TODO read the HRA specific items that are not references to other items
+      //this.timeRate = XmlConvert.ToTimeSpan((string)dynObj.lambdaTimeRate);
+      //if (dynObj.missionTime == null)
+      //  compMissionTime = TimeSpan.FromDays(365.3);
+      //else
+      //{
+      //  this.compMissionTime = XmlConvert.ToTimeSpan((string)dynObj.missionTime);
+      //  if (compMissionTime < TimeSpan.FromSeconds(1))
+      //    compMissionTime = TimeSpan.FromDays(365.3);
+      //}
+
+      //if ((dynObj.useVariable == null) || !(bool)dynObj.useVariable)
+      //{
+      //  //use normal assigned lambda if not a variable
+      //  this._lambda = (double)dynObj.lambda;
+      //}
+      //else
+      //{
+
+      //  try //may not exist in earlier versions so use a default
+      //  {
+      //    onVarChange = (EnOnChangeTask)Enum.Parse(typeof(EnOnChangeTask), (string)dynObj.onVarChange, true);
+      //  }
+      //  catch
+      //  {
+      //    onVarChange = EnOnChangeTask.ocIgnore;
+      //  }
+      //}
+
+      processed = true;
+      return true;
+    }
+
+    public override bool LoadObjLinks(object obj, bool wrapped, EmraldModel lists)
+    {
+      dynamic dynObj = (dynamic)obj;
+      if (wrapped)
+      {
+        if (dynObj.Event == null)
+          return false;
+
+        dynObj = ((dynamic)obj).Event;
+      }
+
+      //TODO load any referenced items
+      //if ((dynObj.useVariable != null) && (bool)dynObj.useVariable)
+      //{
+      //  try
+      //  {
+      //    this.lambdaVariable = lists.allVariables.FindByName((string)dynObj.lambda);
+      //    this.AddRelatedItem(lambdaVariable.id);
+      //  }
+      //  catch
+      //  {
+      //    throw new Exception("Failed to find variable - " + (string)dynObj.time);
+      //  }
+      //}
+
+      return true;
+    }
+
+    public override TimeSpan NextTime(TimeSpan curTime)
+    {
+      TimeSpan retVal = TimeSpan.MaxValue; //value in hours until the time this event occures
+
+      //TODO - Assign any data from the model before running the HRA code
+
+      //Call the HRA library to determine the time of the event
+      
+
+      return retVal;
+    }
+
+    public override TimeSpan RedoNextTime(TimeSpan sampledTime, TimeSpan curTime, TimeSpan oldOccurTime)
+    {
+      if (onVarChange == EnOnChangeTask.ocAdjust)
+      {
+        //todo: how to adjust time from a 
+        throw new Exception("Adjust event time from a parameter change has not been implimented for HRAEvent");
+      }
+
+      //if not "ocAdjust" call parent as they are all the same.
+      return base.RedoNextTime(sampledTime, curTime, oldOccurTime);
+    }
+    public override bool UsesVariables()
+    {
+      //todo - return if the event uses variables or not.
+      return false;
     }
   }
 
