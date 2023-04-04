@@ -1,0 +1,134 @@
+[
+  {
+    "operator": "Action",
+    "sub_operator_type": "control room",
+    "base_primitive_type": "A",
+    "sub_primitive_type": "c",
+    "id": "Ac",
+    "distribution_type": "log",
+    "time": 2.23,
+    "std": 1.18,
+    "nominal_hep": 0.001
+  },
+  {
+    "operator": "Action",
+    "sub_operator_type": "field",
+    "base_primitive_type": "A",
+    "sub_primitive_type": "f",
+    "id": "Af",
+    "distribution_type": "log",
+    "time": null,
+    "std": null,
+    "nominal_hep": 0.008
+  },
+  {
+    "operator": "Checking",
+    "sub_operator_type": "control room",
+    "base_primitive_type": "C",
+    "sub_primitive_type": "c",
+    "id": "Cc",
+    "distribution_type": "log",
+    "time": 2.14,
+    "std": 0.76,
+    "nominal_hep": 0.001
+  },
+  {
+    "operator": "Checking",
+    "sub_operator_type": "field",
+    "base_primitive_type": "C",
+    "sub_primitive_type": "f",
+    "id": "Cf",
+    "distribution_type": "log",
+    "time": null,
+    "std": null,
+    "nominal_hep": 0.01
+  },
+  {
+    "operator": "Retrieval",
+    "sub_operator_type": "control room",
+    "base_primitive_type": "R",
+    "sub_primitive_type": "c",
+    "id": "Rc",
+    "distribution_type": "log",
+    "time": 2.11,
+    "std": 0.6,
+    "nominal_hep": 0.001
+  },
+  {
+    "operator": "Retrieval",
+    "sub_operator_type": "field",
+    "base_primitive_type": "R",
+    "sub_primitive_type": "f",
+    "id": "Rf",
+    "distribution_type": "log",
+    "time": null,
+    "std": null,
+    "nominal_hep": 0.01
+  },
+  {
+    "operator": "Instruction Communication",
+    "sub_operator_type": "produce written or verbal",
+    "base_primitive_type": "IC",
+    "sub_primitive_type": "p",
+    "id": "ICp",
+    "distribution_type": "log",
+    "time": 2.46,
+    "std": 0.76,
+    "nominal_hep": 0.003
+  },
+  {
+    "operator": "Instruction Communication",
+    "sub_operator_type": "receive written or verbal",
+    "base_primitive_type": "IC",
+    "sub_primitive_type": "r",
+    "id": "ICr",
+    "distribution_type": "log",
+    "time": 1.92,
+    "std": 0.93,
+    "nominal_hep": 0.001
+  },
+  {
+    "operator": "Selection",
+    "sub_operator_type": "control room",
+    "base_primitive_type": "S",
+    "sub_primitive_type": "c",
+    "id": "Sc",
+    "distribution_type": "log",
+    "time": 2.93,
+    "std": 1.11,
+    "nominal_hep": 0.001
+  },
+  {
+    "operator": "Selection",
+    "sub_operator_type": "field",
+    "base_primitive_type": "S",
+    "sub_primitive_type": "f",
+    "id": "Sf",
+    "distribution_type": "log",
+    "time": null,
+    "std": null,
+    "nominal_hep": 0.008
+  },
+  {
+    "operator": "Decision",
+    "sub_operator_type": "based on procedures",
+    "base_primitive_type": "D",
+    "sub_primitive_type": "p",
+    "id": "Dp",
+    "distribution_type": "expo",
+    "time": 0.02,
+    "std": null,
+    "nominal_hep": 0.001
+  },
+  {
+    "operator": "Decision",
+    "sub_operator_type": "without procedures",
+    "base_primitive_type": "D",
+    "sub_primitive_type": "w",
+    "id": "Dw",
+    "distribution_type": "log",
+    "time": null,
+    "std": null,
+    "nominal_hep": 0.01
+  }
+]

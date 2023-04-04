@@ -39,8 +39,11 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "Emrald_Site", "Emrald_Site\
 		Release.AspNetCompiler.FixedNames = "false"
 		Release.AspNetCompiler.Debug = "False"
 		VWDPort = "56455"
-		SlnRelativePath = "Emrald_Site\"
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hunter", "Hunter\Hunter.csproj", "{1A428B75-0F9F-4170-8F18-7F3F6394CAA5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hunter.Tests", "Hunter.Tests\Hunter.Tests.csproj", "{3260699B-40A9-48F6-8503-9AA57F22C260}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -80,6 +83,14 @@ Global
 		{6A02BDBB-CBDA-4ADF-81DA-4499666F7C2B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6A02BDBB-CBDA-4ADF-81DA-4499666F7C2B}.Release|Any CPU.ActiveCfg = Debug|Any CPU
 		{6A02BDBB-CBDA-4ADF-81DA-4499666F7C2B}.Release|Any CPU.Build.0 = Debug|Any CPU
+		{1A428B75-0F9F-4170-8F18-7F3F6394CAA5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1A428B75-0F9F-4170-8F18-7F3F6394CAA5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1A428B75-0F9F-4170-8F18-7F3F6394CAA5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1A428B75-0F9F-4170-8F18-7F3F6394CAA5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3260699B-40A9-48F6-8503-9AA57F22C260}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3260699B-40A9-48F6-8503-9AA57F22C260}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3260699B-40A9-48F6-8503-9AA57F22C260}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3260699B-40A9-48F6-8503-9AA57F22C260}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
