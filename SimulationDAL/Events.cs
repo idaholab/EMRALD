@@ -10,7 +10,6 @@ using MathNet.Numerics.Distributions;
 using MessageDefLib;
 using Newtonsoft.Json;
 using System.Linq;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace SimulationDAL
 {
