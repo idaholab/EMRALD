@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using Hunter;
+using Newtonsoft.Json;
 using NUnit.Framework;
 
 namespace Hunter.Tests
@@ -60,10 +61,10 @@ namespace Hunter.Tests
             List<string> primitiveIds = new List<string> { "Ac" };
 
             // Act
-            TimeSpan elapsedTime = hraEngine.Evaluate(primitiveIds);
+            double elapsedTime = hraEngine.Evaluate(primitiveIds);
 
             // Assert
-            Assert.Greater(elapsedTime.TotalSeconds, 0);
+            Assert.Greater(elapsedTime, 0);
         }
 
         [Test]
@@ -74,10 +75,26 @@ namespace Hunter.Tests
             List<string> primitiveIds = new List<string> { "Ac", "Rc", "Sf" };
 
             // Act
-            TimeSpan elapsedTime = hraEngine.Evaluate(primitiveIds);
+            double elapsedTime = hraEngine.Evaluate(primitiveIds);
 
             // Assert
-            Assert.Greater(elapsedTime.TotalSeconds, 0);
+            Assert.Greater(elapsedTime, 0);
+        }
+
+        [Test]
+        public void TestEvaluate_MultiplePrimitives_withPSFs()
+        {
+            // Arrange
+            HRAEngine hraEngine = new HRAEngine();
+            List<string> primitiveIds = new List<string> { "Ac", "Rc", "Sf" };
+
+            PerformanceShapingFactorCollection psfCollection = new PerformanceShapingFactorCollection();
+
+            // Act
+            double elapsedTime = hraEngine.Evaluate(primitiveIds, psfCollection);
+
+            // Assert
+            Assert.Greater(elapsedTime, 0);
         }
 
         [Test]
@@ -88,10 +105,10 @@ namespace Hunter.Tests
             List<string> primitiveIds = new List<string> { "Unknown" };
 
             // Act
-            TimeSpan elapsedTime = hraEngine.Evaluate(primitiveIds);
+            double elapsedTime = hraEngine.Evaluate(primitiveIds);
 
             // Assert
-            Assert.AreEqual(0, elapsedTime.TotalSeconds);
+            Assert.AreEqual(0, elapsedTime);
         }
 
         [Test]
@@ -102,10 +119,148 @@ namespace Hunter.Tests
             List<string> primitiveIds = new List<string>();
 
             // Act
-            TimeSpan elapsedTime = hraEngine.Evaluate(primitiveIds);
+            double elapsedTime = hraEngine.Evaluate(primitiveIds);
 
             // Assert
-            Assert.AreEqual(0, elapsedTime.TotalSeconds);
+            Assert.AreEqual(0, elapsedTime);
+        }
+
+
+        [Test]
+        public void BuildProcedureCatalog_ReturnsExpectedDictionary()
+        {
+            // Arrange
+            string hunterModelFilename = @"hunter/models/sgtr_model.json";
+
+            // Act
+            Dictionary<string, Procedure> procedures = HRAEngine.BuildProcedureCatalog(hunterModelFilename);
+
+            // Assert
+            Assert.AreEqual(2, procedures.Count);
+
+            Assert.IsTrue(procedures.ContainsKey("sgtr"));
+            Procedure sgtrProcedure = procedures["sgtr"];
+            Assert.AreEqual(7, sgtrProcedure.Steps.Count);
+            Assert.AreEqual("Entry Conditions", sgtrProcedure.Steps[0].StepId);
+            Assert.AreEqual("Step 3 - Perform Rapid Shutdown", sgtrProcedure.Steps[6].StepId);
+
+            Assert.IsTrue(procedures.ContainsKey("rapid_shutdown"));
+            Procedure rapidShutdownProcedure = procedures["rapid_shutdown"];
+            Assert.AreEqual(14, rapidShutdownProcedure.Steps.Count);
+        }
+
+        [Test]
+        public void BuildProcedureCatalog_ThrowsFileNotFoundException_WhenHunterModelFileDoesNotExist()
+        {
+            // Arrange
+            string hunterModelFilename = @"nonexistent_file.json";
+
+            // Assert
+            Assert.Throws<System.IO.FileNotFoundException>(() =>
+            {
+                // Act
+                Dictionary<string, Procedure> procedures = HRAEngine.BuildProcedureCatalog(hunterModelFilename);
+            });
+        }
+
+
+        [Test]
+        public void EvaluateSteps_WithJsonString_ReturnsExpectedTimeSpan()
+        {
+            // Arrange
+            string hunterModelFilename = @"hunter/models/sgtr_model.json";
+            Dictionary<string, Procedure> procedures = HRAEngine.BuildProcedureCatalog(hunterModelFilename);
+            string proceduresString = JsonConvert.SerializeObject(procedures);
+
+            HRAEngine hraEngine = new HRAEngine();
+
+            // Arrange
+            string procedureId = "sgtr";
+            int startStep = 1;
+            int endStep = 3;
+
+            // Act
+            TimeSpan result = hraEngine.EvaluateSteps(proceduresString, procedureId, startStep, endStep);
+
+            // Assert
+            Assert.That(result.TotalSeconds > 0);
+        }
+
+        [Test]
+        public void EvaluateSteps_WithBadJsonString_ThrowsArgumentException()
+        {
+            string proceduresString = "";
+
+            HRAEngine hraEngine = new HRAEngine();
+
+            // Arrange
+            string procedureId = "sgtr";
+            int startStep = 1;
+            int endStep = 3;
+
+
+            // Act & Assert
+            Assert.Throws<ArgumentException>(() => hraEngine.EvaluateSteps(proceduresString, procedureId, startStep, endStep));
+        }
+
+        [Test]
+        public void EvaluateSteps_WithDictionary_ReturnsExpectedTimeSpan()
+        {
+            // Arrange
+            string hunterModelFilename = @"hunter/models/sgtr_model.json";
+            Dictionary<string, Procedure> procedures = HRAEngine.BuildProcedureCatalog(hunterModelFilename);
+
+            HRAEngine hraEngine = new HRAEngine();
+
+            // Arrange
+            string procedureId = "sgtr";
+            int startStep = 1;
+            int endStep = 3;
+
+            // Act
+            TimeSpan result = hraEngine.EvaluateSteps(procedures, procedureId, startStep, endStep);
+
+            // Assert
+            Assert.That(result.TotalSeconds > 0);
+        }
+
+        [Test]
+        public void EvaluateSteps_WithDictionarySingleStep_ReturnsExpectedTimeSpan()
+        {
+            // Arrange
+            string hunterModelFilename = @"hunter/models/sgtr_model.json";
+            Dictionary<string, Procedure> procedures = HRAEngine.BuildProcedureCatalog(hunterModelFilename);
+
+            HRAEngine hraEngine = new HRAEngine();
+
+            // Arrange
+            string procedureId = "sgtr";
+            int startStep = 3;
+            int endStep = 3;
+
+            // Act
+            TimeSpan result = hraEngine.EvaluateSteps(procedures, procedureId, startStep, endStep);
+
+            // Assert
+            Assert.That(result.TotalSeconds > 0);
+        }
+
+        [Test]
+        public void EvaluateSteps_WithDictionaryStepsOutOfRange_ThrowsArgumentOutOfRangeException()
+        {
+            // Arrange
+            string hunterModelFilename = @"hunter/models/sgtr_model.json";
+            Dictionary<string, Procedure> procedures = HRAEngine.BuildProcedureCatalog(hunterModelFilename);
+
+            HRAEngine hraEngine = new HRAEngine();
+
+            // Arrange
+            string procedureId = "sgtr";
+            int startStep = 99;
+            int endStep = 99;
+
+            // Act & Assert
+            Assert.Throws<ArgumentOutOfRangeException>(() => hraEngine.EvaluateSteps(procedures, procedureId, startStep, endStep));
         }
     }
 }

@@ -1,0 +1,12 @@
+{
+  "procedure_refs": [
+    {
+      "$ref": "../procedures/sgtr.json",
+      "procedure_id": "sgtr"
+    },
+    {
+      "$ref": "../procedures/rapid_shutdown.json",
+      "procedure_id": "rapid_shutdown"
+    }
+  ]
+}
