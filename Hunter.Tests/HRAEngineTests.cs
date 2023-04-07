@@ -172,6 +172,9 @@ namespace Hunter.Tests
             Dictionary<string, Procedure> procedures = HRAEngine.BuildProcedureCatalog(hunterModelFilename);
             string proceduresString = JsonConvert.SerializeObject(procedures);
 
+            PerformanceShapingFactorCollection psfCollection = new PerformanceShapingFactorCollection();
+
+
             HRAEngine hraEngine = new HRAEngine();
 
             // Arrange
@@ -180,7 +183,7 @@ namespace Hunter.Tests
             int endStep = 3;
 
             // Act
-            TimeSpan result = hraEngine.EvaluateSteps(proceduresString, procedureId, startStep, endStep);
+            TimeSpan result = hraEngine.EvaluateSteps(proceduresString, procedureId, startStep, endStep, psfCollection);
 
             // Assert
             Assert.That(result.TotalSeconds > 0);
