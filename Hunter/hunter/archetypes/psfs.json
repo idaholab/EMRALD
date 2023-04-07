@@ -1,0 +1,354 @@
+[
+  {
+    "type": "Action",
+    "label": "Available Time",
+    "levels": [
+      {
+        "level": "Barely adequate time",
+        "multiplier": "0.01"
+      },
+      {
+        "level": "Expansive time",
+        "multiplier": "0.00001"
+      },
+      {
+        "level": "Extra time",
+        "multiplier": "0.0001"
+      },
+      {
+        "level": "Inadequate time",
+        "multiplier": "1"
+      },
+      {
+        "level": "Nominal time",
+        "multiplier": "0.001"
+      }
+    ],
+    "id": "ATa"
+  },
+  {
+    "type": "Diagnosis",
+    "label": "Available Time",
+    "levels": [
+      {
+        "level": "Barely adequate time",
+        "multiplier": "0.1"
+      },
+      {
+        "level": "Expansive time",
+        "multiplier": "0.0001"
+      },
+      {
+        "level": "Extra time",
+        "multiplier": "0.001"
+      },
+      {
+        "level": "Inadequate time",
+        "multiplier": "1"
+      },
+      {
+        "level": "Nominal time",
+        "multiplier": "0.01"
+      }
+    ],
+    "id": "ATd"
+  },
+  {
+    "type": "Action",
+    "label": "Complexity",
+    "levels": [
+      {
+        "level": "Highly complex",
+        "multiplier": "0.005"
+      },
+      {
+        "level": "Moderately complex",
+        "multiplier": "0.002"
+      },
+      {
+        "level": "Nominal",
+        "multiplier": "0.001"
+      },
+      {
+        "level": "Obvious diagnosis",
+        "multiplier": "0"
+      }
+    ],
+    "id": "Ca"
+  },
+  {
+    "type": "Diagnosis",
+    "label": "Complexity",
+    "levels": [
+      {
+        "level": "Highly complex",
+        "multiplier": "0.05"
+      },
+      {
+        "level": "Moderately complex",
+        "multiplier": "0.02"
+      },
+      {
+        "level": "Nominal",
+        "multiplier": "0.01"
+      },
+      {
+        "level": "Obvious diagnosis",
+        "multiplier": "0.001"
+      }
+    ],
+    "id": "Cd"
+  },
+  {
+    "type": "Action",
+    "label": "Ergonomics/HMI",
+    "levels": [
+      {
+        "level": "Good",
+        "multiplier": "0.0005"
+      },
+      {
+        "level": "Missing/Misleading",
+        "multiplier": "0.05"
+      },
+      {
+        "level": "Nominal",
+        "multiplier": "0.001"
+      },
+      {
+        "level": "Poor",
+        "multiplier": "0.01"
+      }
+    ],
+    "id": "Ea"
+  },
+  {
+    "type": "Action",
+    "label": "Experience and Training",
+    "levels": [
+      {
+        "level": "High",
+        "multiplier": "0.5"
+      },
+      {
+        "level": "Nominal",
+        "multiplier": "1.0"
+      },
+      {
+        "level": "Low",
+        "multiplier": "3.0"
+      }
+    ],
+    "id": "EaTa"
+  },
+  {
+    "type": "Diagnosis",
+    "label": "Experience and Training",
+    "levels": [
+      {
+        "level": "High",
+        "multiplier": "0.5"
+      },
+      {
+        "level": "Nominal",
+        "multiplier": "1.0"
+      },
+      {
+        "level": "Low",
+        "multiplier": "10.0"
+      }
+    ],
+    "id": "EaTd"
+  },
+  {
+    "type": "Diagnosis",
+    "label": "Ergonomics/HMI",
+    "levels": [
+      {
+        "level": "Good",
+        "multiplier": "0.005"
+      },
+      {
+        "level": "Missing/Misleading",
+        "multiplier": "0.5"
+      },
+      {
+        "level": "Nominal",
+        "multiplier": "0.01"
+      },
+      {
+        "level": "Poor",
+        "multiplier": "0.1"
+      }
+    ],
+    "id": "Ed"
+  },
+  {
+    "type": "Action",
+    "label": "Fitness for Duty",
+    "levels": [
+      {
+        "level": "Degraded Fitness",
+        "multiplier": "0.005"
+      },
+      {
+        "level": "Nominal",
+        "multiplier": "0.001"
+      },
+      {
+        "level": "Unfit",
+        "multiplier": "1"
+      }
+    ],
+    "id": "FfDa"
+  },
+  {
+    "type": "Diagnosis",
+    "label": "Fitness for Duty",
+    "levels": [
+      {
+        "level": "Degraded Fitness",
+        "multiplier": "0.05"
+      },
+      {
+        "level": "Nominal",
+        "multiplier": "0.01"
+      },
+      {
+        "level": "Unfit",
+        "multiplier": "1"
+      }
+    ],
+    "id": "FfDd"
+  },
+  {
+    "type": "Action",
+    "label": "Procedures",
+    "levels": [
+      {
+        "level": "Avalable, but poor",
+        "multiplier": "0.005"
+      },
+      {
+        "level": "Diagnostic/symptom oriented",
+        "multiplier": "0"
+      },
+      {
+        "level": "Incomplete",
+        "multiplier": "0.02"
+      },
+      {
+        "level": "Nominal",
+        "multiplier": "0.001"
+      },
+      {
+        "level": "Not available",
+        "multiplier": "0.05"
+      }
+    ],
+    "id": "Pa"
+  },
+  {
+    "type": "Diagnosis",
+    "label": "Procedures",
+    "levels": [
+      {
+        "level": "Avalable, but poor",
+        "multiplier": "0.05"
+      },
+      {
+        "level": "Diagnostic/symptom oriented",
+        "multiplier": "0.005"
+      },
+      {
+        "level": "Incomplete",
+        "multiplier": "0.2"
+      },
+      {
+        "level": "Nominal",
+        "multiplier": "0.01"
+      },
+      {
+        "level": "Not available",
+        "multiplier": "0.5"
+      }
+    ],
+    "id": "Pd"
+  },
+  {
+    "type": "Action",
+    "label": "Stress",
+    "levels": [
+      {
+        "level": "Extreme",
+        "multiplier": "0.005"
+      },
+      {
+        "level": "High",
+        "multiplier": "0.002"
+      },
+      {
+        "level": "Nominal",
+        "multiplier": "0.001"
+      }
+    ],
+    "id": "Sa"
+  },
+  {
+    "type": "Diagnosis",
+    "label": "Stress",
+    "levels": [
+      {
+        "level": "Extreme",
+        "multiplier": "0.05"
+      },
+      {
+        "level": "High",
+        "multiplier": "0.02"
+      },
+      {
+        "level": "Nominal",
+        "multiplier": "0.01"
+      }
+    ],
+    "id": "Sd"
+  },
+  {
+    "type": "Action",
+    "label": "Work Processes",
+    "levels": [
+      {
+        "level": "Good",
+        "multiplier": "0.0005"
+      },
+      {
+        "level": "Nominal",
+        "multiplier": "0.001"
+      },
+      {
+        "level": "Poor",
+        "multiplier": "0.005"
+      }
+    ],
+    "id": "WPa"
+  },
+  {
+    "type": "Diagnosis",
+    "label": "Work Processes",
+    "levels": [
+      {
+        "level": "Good",
+        "multiplier": "0.008"
+      },
+      {
+        "level": "Nominal",
+        "multiplier": "0.01"
+      },
+      {
+        "level": "Poor",
+        "multiplier": "0.02"
+      }
+    ],
+    "id": "WPd"
+  }
+]
