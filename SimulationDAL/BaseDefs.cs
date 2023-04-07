@@ -37,7 +37,8 @@ namespace SimulationDAL
     etWeibullDist,
     etExponentialDist,
     etLogNormalDist,
-    etDistribution
+    etDistribution,
+    etHRAEval //time based event using HRA time calculation module
     };
 
   public enum EnDiagramType { dtComponent = 0, dtSystem, dtPlant, dtOther }; 
