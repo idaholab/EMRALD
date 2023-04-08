@@ -957,27 +957,29 @@ namespace EMRALD_Sim
 
     private void SaveUISettingsToJson()
     {
-      _currentModelSettings.RunCount = tbRunCnt.Text;
-      _currentModelSettings.MaxRunTime = tbMaxSimTime.Text;
-      _currentModelSettings.BasicResultsLocation = tbSavePath.Text;
-      _currentModelSettings.PathResultsLocation = tbSavePath2.Text;
-      _currentModelSettings.Seed = tbSeed.Text;
-      _currentModelSettings.DebugFromRun = tbLogRunStart.Text;
-      _currentModelSettings.DebugToRun = tbLogRunEnd.Text;
-
-      if (chkLog.Checked)
+      if (_currentModelSettings != null)
       {
-        if (ConfigData.debugLev == LogLevel.Info)
-        {
-          _currentModelSettings.DebugLevel = "Basic";
-        }
-        else
-        {
-          _currentModelSettings.DebugLevel = "Detailed";
-        }
-      }
+        _currentModelSettings.RunCount = tbRunCnt.Text;
+        _currentModelSettings.MaxRunTime = tbMaxSimTime.Text;
+        _currentModelSettings.BasicResultsLocation = tbSavePath.Text;
+        _currentModelSettings.PathResultsLocation = tbSavePath2.Text;
+        _currentModelSettings.Seed = tbSeed.Text;
+        _currentModelSettings.DebugFromRun = tbLogRunStart.Text;
+        _currentModelSettings.DebugToRun = tbLogRunEnd.Text;
 
-      SaveUISettings();
+        if (chkLog.Checked)
+        {
+          if (ConfigData.debugLev == LogLevel.Info)
+          {
+            _currentModelSettings.DebugLevel = "Basic";
+          }
+          else
+          {
+            _currentModelSettings.DebugLevel = "Detailed";
+          }
+        }
+        SaveUISettings();
+      }
     }
 
     private void SaveUISettings() {
