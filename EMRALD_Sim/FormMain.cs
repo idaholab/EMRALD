@@ -1108,28 +1108,10 @@ namespace EMRALD_Sim
               lvCols[1] = ((Double)cs.Value).ToString();
               lvCols[2] = String.Format("{0:0.00}", (((double)cs.Value / item.Value.count) * 100)) + "%";
               lvCols[3] = string.Join(", ", names);
-
+              lvResults.Items.Add(new ListViewItem(lvCols));
             }
           }
 
-          //foreach (var cs in item.Value.compFailSets)
-          //{
-          //  string[] lvCols2 = new string[4];
-
-          //  int[] ids = cs.Key.Get1sIndexArray();
-          //  List<string> names = new List<String>();
-          //  foreach (int id in ids)
-          //  {
-          //    names.Add(_sim.allStates[id].name);
-          //  }
-          //  names.Sort();
-
-          //  lvCols[0] = "";
-          //  lvCols[1] = ((Double)cs.Value).ToString();
-          //  lvCols[2] = String.Format("{0:0.00}", (((double)cs.Value / item.Value.failCnt) * 100)) + "%";
-          //  lvCols[3] = string.Join(", ", names);
-          //  lvResults.Items.Add(new ListViewItem(lvCols));
-          //}
         }
 
         lvVarValues.Items.Clear();
