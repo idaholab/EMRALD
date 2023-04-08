@@ -1072,7 +1072,7 @@ namespace EMRALD_Sim
       }
     }
 
-    private void DispResults(TimeSpan runTime, int runCnt, bool finalValOnly)
+    private void DispResults(TimeSpan runTime, int runCnt, bool logFailedComps)
     {
       MethodInvoker methodInvokerDelegate = delegate ()
       {
@@ -1131,7 +1131,7 @@ namespace EMRALD_Sim
 
         if (tbSavePath.Text != "")
         {
-          simRuns.LogResults(runTime, runCnt, !finalValOnly);
+          simRuns.LogResults(runTime, runCnt, logFailedComps);
         }
 
       };

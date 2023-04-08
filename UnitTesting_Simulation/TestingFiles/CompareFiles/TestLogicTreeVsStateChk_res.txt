@@ -513,3 +513,6 @@ C_Failed Occurred 6275 times, Rate =0.6275, MeanTime = 01.17:48:30 +/- 01.15:44:
 (61)[0.9721115537848605]A_Failed, F_Failed
 (67)[1.0677290836653386]B_Failed, F_Failed
 (65)[1.0358565737051793]C_Failed, D_Failed
+---------------------------
+- End Sim Variable Values -
+---------------------------
