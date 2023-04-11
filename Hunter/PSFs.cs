@@ -6,11 +6,20 @@ namespace Hunter
     using System.Collections.Generic;
     using System.Runtime.Serialization;
     using Newtonsoft.Json;
+    using Newtonsoft.Json.Converters;
+
+    public enum TaskType
+    {
+        Action,
+        Diagnosis
+    }
+
 
     public class PerformanceShapingFactor
     {
         [JsonProperty("type")]
-        public string Type { get; set; }
+        [JsonConverter(typeof(StringEnumConverter))]
+        public TaskType Type { get; set; }
 
         [JsonProperty("label")]
         public string Label { get; set; }
@@ -39,7 +48,7 @@ namespace Hunter
             public double Multiplier { get; set; }
         }
 
-        public PerformanceShapingFactor(string type, string label, List<Level> levels, string id, string initialLevelName = null, bool isStatic = false)
+        public PerformanceShapingFactor(TaskType type, string label, List<Level> levels, string id, string initialLevelName = null, bool isStatic = false)
         {
             Type = type;
             Label = label;
@@ -100,7 +109,9 @@ namespace Hunter
                 return;
             } else
             {
-                // update current level
+                // Implement effect of lag and linger on PSF levels
+
+                // Adjust PSF based on plant state
             }
         }
     }
@@ -126,6 +137,7 @@ namespace Hunter
                 _psfs.Add(psf.Id, psf);
             }
         }
+
         public PerformanceShapingFactor this[string id]
         {
             get { return _psfs[id]; }
@@ -143,21 +155,52 @@ namespace Hunter
                 psf.Update(elapsedTime, jsonData);
             }
         }
-        public double AggregateMultiplier(string aggregationMethod = "minimum")
+
+        /// <summary>
+        /// Calculates the time multiplier for the given task type based on the current 
+        /// multipliers of relevant performance shaping factors (PSFs).
+        /// </summary>
+        /// <param name="taskType">The task type to calculate the time multiplier for.</param>
+        /// <returns>The time multiplier for the given task type.</returns>
+        public double TimeMultiplier(TaskType taskType)
         {
+            // Get all relevant PSFs for the task type
+            var relevantPsfs = _psfs.Values.Where(psf => psf.Type == taskType);
+
+            // Filter relevant PSFs further to only include the "Available Time" PSF
+            relevantPsfs = relevantPsfs.Where(psf => psf.Label == "Available Time");
+
+            // Calculate the combined multiplier for all relevant PSFs
+            double currentMultiplier = relevantPsfs.Aggregate(1.0, (acc, psf) => acc * psf.CurrentMultiplier);
+
+            // If the combined multiplier is greater than 1, return 2.0, otherwise return 1.0
+            if (currentMultiplier > 1)
+                return 0.5;
+            return 1.0;
+        }
+
+        /// <summary>
+        /// Calculates the composite multiplier for the given task type based on the current 
+        /// multipliers of relevant performance shaping factors (PSFs).
+        /// </summary>
+        /// <param name="taskType">The task type to calculate the composite multiplier for.</param>
+        /// <param name="aggregationMethod">The method to use for aggregating the PSF multipliers 
+        /// (default is "multiply").</param>
+        /// <returns>The composite multiplier for the given task type.</returns>
+        public double CompositeMultiplier(TaskType taskType, string aggregationMethod = "multiply")
+        {
+            // Get all relevant PSFs for the task type
+            var relevantPsfs = _psfs.Values.Where(psf => psf.Type == taskType);
+
+            // Aggregate the multipliers based on the specified aggregation method
             switch (aggregationMethod)
             {
+                case "multiply":
+                    // Multiply the multipliers together
+                    return relevantPsfs.Aggregate(1.0, (acc, psf) => acc * psf.CurrentMultiplier);
                 case "minimum":
-                    double minMultiplier = double.MaxValue;
-                    foreach (PerformanceShapingFactor psf in _psfs.Values)
-                    {
-                        double currentMultiplier = psf.CurrentMultiplier;
-                        if (currentMultiplier < minMultiplier)
-                        {
-                            minMultiplier = currentMultiplier;
-                        }
-                    }
-                    return minMultiplier;
+                    // Take the minimum multiplier
+                    return relevantPsfs.Min(psf => psf.CurrentMultiplier);
                 default:
                     throw new ArgumentException("Invalid aggregation method.");
             }
@@ -172,6 +215,45 @@ namespace Hunter
         {
             return GetEnumerator();
         }
+        /// <summary>
+        /// Sets the current level of a performance shaping factor with the specified ID to the level with the specified name.
+        /// </summary>
+        /// <param name="psfId">The ID of the performance shaping factor to update.</param>
+        /// <param name="levelName">The name of the level to set as the current level.</param>
+        /// <exception cref="ArgumentException">Thrown when the specified performance shaping factor ID or level name is not found.</exception>
+        ///
+        /// <example>
+        /// This example demonstrates how to set the level of two performance shaping factors in a collection:
+        ///
+        /// <code>
+        /// var psfCollection = new PerformanceShapingFactorCollection();
+        /// psfCollection.SetLevel("ATa", "Barely adequate time");
+        /// psfCollection.SetLevel("ATd", "Barely adequate time");
+        /// </code>
+        /// </example>
+        public void SetLevel(string psfId, string levelName)
+        {
+            // Check if the performance shaping factor exists in the collection
+            if (!_psfs.ContainsKey(psfId))
+            {
+                throw new ArgumentException($"Performance shaping factor with ID '{psfId}' not found.");
+            }
+
+            // Retrieve the performance shaping factor from the collection
+            PerformanceShapingFactor psf = _psfs[psfId];
+
+            // Search for the level with the specified name in the performance shaping factor's levels list
+            PerformanceShapingFactor.Level level = psf.Levels.FirstOrDefault(l => l.LevelName == levelName);
+
+            // Check if the level was found
+            if (level == null)
+            {
+                throw new ArgumentException($"Level with name '{levelName}' not found for performance shaping factor with ID '{psfId}'.");
+            }
+
+            // Set the current level of the performance shaping factor to the specified level
+            psf.CurrentLevel = level;
+        }
+
     }
 }
-
