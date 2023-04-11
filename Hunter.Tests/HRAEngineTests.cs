@@ -61,7 +61,8 @@ namespace Hunter.Tests
             List<string> primitiveIds = new List<string> { "Ac" };
 
             // Act
-            double elapsedTime = hraEngine.Evaluate(primitiveIds);
+            bool success = true;
+            double elapsedTime = hraEngine.Evaluate(primitiveIds, ref success);
 
             // Assert
             Assert.Greater(elapsedTime, 0);
@@ -75,7 +76,8 @@ namespace Hunter.Tests
             List<string> primitiveIds = new List<string> { "Ac", "Rc", "Sf" };
 
             // Act
-            double elapsedTime = hraEngine.Evaluate(primitiveIds);
+            bool success = true;
+            double elapsedTime = hraEngine.Evaluate(primitiveIds, ref success);
 
             // Assert
             Assert.Greater(elapsedTime, 0);
@@ -91,7 +93,8 @@ namespace Hunter.Tests
             PerformanceShapingFactorCollection psfCollection = new PerformanceShapingFactorCollection();
 
             // Act
-            double elapsedTime = hraEngine.Evaluate(primitiveIds, psfCollection);
+            bool success = true;
+            double elapsedTime = hraEngine.Evaluate(primitiveIds, ref success, psfCollection);
 
             // Assert
             Assert.Greater(elapsedTime, 0);
@@ -105,7 +108,8 @@ namespace Hunter.Tests
             List<string> primitiveIds = new List<string> { "Unknown" };
 
             // Act
-            double elapsedTime = hraEngine.Evaluate(primitiveIds);
+            bool success = true;
+            double elapsedTime = hraEngine.Evaluate(primitiveIds, ref success);
 
             // Assert
             Assert.AreEqual(0, elapsedTime);
@@ -119,7 +123,8 @@ namespace Hunter.Tests
             List<string> primitiveIds = new List<string>();
 
             // Act
-            double elapsedTime = hraEngine.Evaluate(primitiveIds);
+            bool success = true;
+            double elapsedTime = hraEngine.Evaluate(primitiveIds, ref success);
 
             // Assert
             Assert.AreEqual(0, elapsedTime);

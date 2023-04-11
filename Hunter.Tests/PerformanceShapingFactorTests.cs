@@ -53,7 +53,7 @@ namespace Hunter.Tests
             PerformanceShapingFactor psf = JsonConvert.DeserializeObject<PerformanceShapingFactor>(json);
 
             Assert.IsNotNull(psf);
-            Assert.AreEqual("Action", psf.Type);
+            Assert.AreEqual(TaskType.Action, psf.Type);
             Assert.AreEqual("Available Time", psf.Label);
             Assert.AreEqual("ATa", psf.Id);
             Assert.AreEqual(5, psf.Levels.Count);
