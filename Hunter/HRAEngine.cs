@@ -57,39 +57,32 @@ namespace Hunter
 
             [JsonProperty("nominal_hep")]
             public double NominalHep { get; set; }
-        }
 
-        public struct PSF
-        {
-            [JsonProperty("operator")]
-            public string Operator { get; set; }
+            public TaskType OperatorType => Operator == "Action" ? TaskType.Action : TaskType.Diagnosis;
 
-            [JsonProperty("sub_operator_type")]
-            public string SubOperatorType { get; set; }
-
-            [JsonProperty("base_primitive_type")]
-            public string BasePrimitiveType { get; set; }
-
-            [JsonProperty("sub_primitive_type")]
-            public string SubPrimitiveType { get; set; }
-
-            [JsonProperty("id")]
-            public string Id { get; set; }
-
-            [JsonProperty("distribution_type")]
-            public string DistributionType { get; set; }
-
-            [JsonProperty("time")]
-            public double? Time { get; set; }
-
-            [JsonProperty("std")]
-            public double? Std { get; set; }
-
-            [JsonProperty("nominal_hep")]
-            public double NominalHep { get; set; }
         }
 
         private Dictionary<string, Primitive> _primitives;
+
+        private Random _random = new Random();
+
+        /// <summary>
+        /// Gets or sets a value indicating whether to repeat <see cref="EvalStep"/> until all primitives are completed (default is false).
+        /// </summary>
+        /// <remarks>
+        /// When <see cref="RepeatMode"/> is true, <see cref="EvalStep"/> will be repeated until all primitives are completed. When <see cref="RepeatMode"/> is false, <see cref="EvalStep"/> will only be called once.
+        /// </remarks>
+        public bool RepeatMode { get; set; } = false;
+
+        /// <summary>
+        /// Gets or sets the maximum number of repetitions for <see cref="EvalStep"/> when <see cref="RepeatMode"/> is true (default is 100).
+        /// </summary>
+        /// <remarks>
+        /// When <see cref="RepeatMode"/> is true, <see cref="EvalStep"/> will be repeated until all primitives are completed or the maximum repeat count is reached.
+        /// </remarks>
+        public int MaxRepeatCount { get; set; } = 100;
+
+
         public HRAEngine(string primitivesFilePath = null)
         {
             if (primitivesFilePath == null)
@@ -117,6 +110,13 @@ namespace Hunter
                 return null;
             }
         }
+
+        /// <summary>
+        /// Samples a random time value from a Normal distribution with the given mean and standard deviation.
+        /// </summary>
+        /// <param name="time">The mean time value of the Normal distribution.</param>
+        /// <param name="std">The standard deviation of the Normal distribution.</param>
+        /// <returns>A random time value sampled from the Normal distribution with a minimum value of zero.</returns>
         private static double SampleNormalTime(double time, double std)
         {
             // Create a Normal distribution object with the given mean (time) and standard deviation (std)
@@ -130,12 +130,19 @@ namespace Hunter
 
             return randomTime;
         }
+
+        /// <summary>
+        /// Samples a random time value from a Log-Normal distribution with the given mean and standard deviation.
+        /// </summary>
+        /// <param name="time">The mean time value of the Log-Normal distribution.</param>
+        /// <param name="std">The standard deviation of the Log-Normal distribution.</param>
+        /// <returns>A random time value sampled from the Log-Normal distribution with a minimum value of zero.</returns>
         private static double SampleLogTime(double time, double std)
         {
             // Create a Log-Normal distribution object with the given mean (time) and standard deviation (std)
             LogNormal logNormalDistribution = new LogNormal(time, std);
 
-            // Sample a random time value from the log-normal distribution
+            // Sample a random time value from the Log-Normal distribution
             double randomTime = logNormalDistribution.Sample();
 
             // Ensure the sampled time is non-negative
@@ -144,7 +151,11 @@ namespace Hunter
             // Return the random time (in seconds) as a double
             return randomTime;
         }
-
+        /// <summary>
+        /// Samples a random time value from an Exponential distribution with the given mean.
+        /// </summary>
+        /// <param name="time">The mean time value of the Exponential distribution.</param>
+        /// <returns>A random time value sampled from the Exponential distribution with a minimum value of zero.</returns>
         private static double SampleExponentialTime(double time)
         {
             // Create an Exponential distribution object with the given mean (time)
@@ -159,6 +170,13 @@ namespace Hunter
             // Return the random time (in seconds) as a double
             return randomTime;
         }
+
+        /// <summary>
+        /// Deserializes a JSON string into a dictionary of Procedure objects.
+        /// </summary>
+        /// <param name="procedureCollectionJson">The JSON string to deserialize.</param>
+        /// <returns>A dictionary of Procedure objects deserialized from the JSON string.</returns>
+        /// <exception cref="ArgumentException">Thrown when an error occurs while deserializing the JSON string, or if the deserialized procedure collection has no items.</exception>
         private Dictionary<string, Procedure> DeserializeProcedureCollection(string procedureCollectionJson)
         {
             Dictionary<string, Procedure> catalog;
@@ -179,6 +197,19 @@ namespace Hunter
             return catalog;
         }
 
+        /// <summary>
+        /// Deserializes a JSON string into a dictionary of Procedure objects, then evaluates a range 
+        /// of steps in the specified Procedure object.
+        /// </summary>
+        /// <param name="procedureCollectionJson">The JSON string to deserialize into a dictionary of 
+        /// Procedure objects.</param>
+        /// <param name="procedureId">The ID of the Procedure object to evaluate.</param>
+        /// <param name="startStep">The 1-relative index of the first step to evaluate.</param>
+        /// <param name="endStep">The 1-relative index of the last step to evaluate.</param>
+        /// <param name="psfs">An optional collection of PerformanceShapingFactor objects to use in the 
+        /// evaluation.</param>
+        /// <returns>A TimeSpan object representing the total elapsed time to evaluate the specified range 
+        /// of steps in the specified Procedure object.</returns>
         public TimeSpan EvaluateSteps(string procedureCollectionJson,
                                       string procedureId,
                                       int startStep, int endStep,
@@ -187,24 +218,51 @@ namespace Hunter
             var procedureCollection = DeserializeProcedureCollection(procedureCollectionJson);
             return EvaluateSteps(procedureCollection, procedureId,
                 startStep, endStep, psfs);
-
         }
 
-        public TimeSpan EvaluateSteps(Dictionary<string, Procedure> procedureCollection, 
-                                      string procedureId,  
+        /// <summary>
+        /// Evaluates a range of steps in the specified Procedure object.
+        /// </summary>
+        /// <param name="procedureCollection">A dictionary of Procedure objects to use in the evaluation.</param>
+        /// <param name="procedureId">The ID of the Procedure object to evaluate.</param>
+        /// <param name="startStep">The 1-relative index of the first step to evaluate.</param>
+        /// <param name="endStep">The 1-relative index of the last step to evaluate.</param>
+        /// <param name="psfs">An optional collection of PerformanceShapingFactor objects to use in the evaluation.</param>
+        /// <returns>A TimeSpan object representing the total elapsed time to evaluate the specified range of steps in the specified Procedure object.</returns>
+        public TimeSpan EvaluateSteps(Dictionary<string, Procedure> procedureCollection,
+                                      string procedureId,
                                       int startStep, int endStep,
                                       PerformanceShapingFactorCollection? psfs = null)
-        // use 1 relative step numbering
-        // to run one step start_step and end_step
         {
+            // Initialize elapsed_time and success variables to 0 and true, respectively.
             double elapsed_time = 0.0;
+            bool success = true;
 
+            // Check if the specified Procedure object exists in the dictionary.
             if (procedureCollection.TryGetValue(procedureId, out Procedure procedure))
             {
+                // Iterate over the range of steps to evaluate.
                 for (int i = startStep; i <= endStep; i++)
                 {
+                    // Get the list of primitive IDs for the current step.
                     List<string> primitiveIds = procedure.Steps[i - 1].PrimitiveIds;
-                    elapsed_time += Evaluate(primitiveIds, psfs);
+
+                    // Evaluate the current step and update the elapsed_time variable.
+                    bool stepSuccess = true;
+                    elapsed_time += Evaluate(primitiveIds, ref stepSuccess, psfs);
+
+                    // If RepeatMode is true and the current step was not successful, repeat the evaluation up to the specified maximum count.
+                    if (RepeatMode && !stepSuccess)
+                    {
+                        for (int j = 1; j < MaxRepeatCount && !stepSuccess; j++)
+                        {
+                            stepSuccess = true;
+                            elapsed_time += Evaluate(primitiveIds, ref stepSuccess, psfs);
+                        }
+                    }
+
+                    // Update the overall success variable based on the success of the current step.
+                    success = success && stepSuccess;
                 }
             }
             else
@@ -212,42 +270,75 @@ namespace Hunter
                 Console.WriteLine($"Procedure not found: {procedureId}");
             }
 
+            // Return the total elapsed time as a TimeSpan object.
             return TimeSpan.FromSeconds(elapsed_time);
         }
-
-        public double Evaluate(List<string> primitiveIds, PerformanceShapingFactorCollection? psfs = null)
+        /// <summary>
+        /// Evaluates a list of primitive IDs and calculates the elapsed time for each primitive based on its distribution type,
+        /// time, and standard deviation. The method also updates the success status based on the nominal human error probability (HEP).
+        /// </summary>
+        /// <param name="primitiveIds">A list of primitive IDs to evaluate.</param>
+        /// <param name="success">A reference to a boolean that indicates whether the evaluation is successful or not.</param>
+        /// <param name="psfs">An optional collection of PerformanceShapingFactor objects to use for calculating the elapsed time.</param>
+        /// <returns>The total elapsed time for all primitives in the list.</returns>
+        public double Evaluate(List<string> primitiveIds, ref bool success, PerformanceShapingFactorCollection? psfs = null)
         {
             double elapsed_time = 0.0;
+
             foreach (string primitiveId in primitiveIds)
             {
+                // Get the primitive object from the _primitives dictionary
                 if (_primitives.TryGetValue(primitiveId, out Primitive primitive))
                 {
+                    // Get the primitive's distribution type, time, standard deviation, and nominal HEP
                     string distributionType = primitive.DistributionType;
                     double? time = primitive.Time;
                     double? std = primitive.Std;
+                    double nominalHep = primitive.NominalHep;
 
+                    // If time is null, continue to the next primitive
                     if (time == null)
                         continue;
 
+                    double compositePSF = 1.0;
+                    double timeMultiplier = 1.0;
+
+                    // If psfs is not null, calculate the composite multiplier and time multiplier
+                    if (psfs != null)
+                    {
+                        // Get the composite multiplier for the primitive's task type
+                        compositePSF = psfs.CompositeMultiplier(primitive.OperatorType);
+                        nominalHep *= compositePSF;
+
+                        // Cap the nominal HEP at 1.0
+                        if (nominalHep > 1.0)
+                            nominalHep = 1.0;
+
+                        // Get the time multiplier for the primitive's task type
+                        timeMultiplier = psfs.TimeMultiplier(primitive.OperatorType);
+                    }
+
+                    // Sample the elapsed time for the primitive based on its distribution type
                     switch (distributionType)
                     {
                         case "log":
-                            // Implement log distribution logic here
-                            elapsed_time += SampleLogTime(System.Convert.ToDouble(time), 
-                                                          System.Convert.ToDouble(std));
+                            elapsed_time += SampleLogTime(Convert.ToDouble(time), Convert.ToDouble(std)) * timeMultiplier;
                             break;
                         case "normal":
-                            // Implement normal distribution logic here
-                            elapsed_time += SampleNormalTime(System.Convert.ToDouble(time),
-                                                             System.Convert.ToDouble(std));
+                            elapsed_time += SampleNormalTime(Convert.ToDouble(time), Convert.ToDouble(std)) * timeMultiplier;
                             break;
-                        case "exponential":
-                            // Implement exponential distribution logic here
-                            elapsed_time += SampleExponentialTime(System.Convert.ToDouble(time));
+                        case "expo":
+                            elapsed_time += SampleExponentialTime(Convert.ToDouble(time)) * timeMultiplier;
                             break;
                         default:
                             Console.WriteLine($"Unknown distribution type: {distributionType}");
                             break;
+                    }
+
+                    // Update the success status based on the nominal HEP
+                    if (success)
+                    {
+                        success = _random.NextDouble() >= nominalHep;
                     }
                 }
                 else
@@ -255,12 +346,19 @@ namespace Hunter
                     Console.WriteLine($"Primitive not found: {primitiveId}");
                 }
             }
+
             // Convert the random time (in seconds) to a TimeSpan object and return it
             return elapsed_time;
         }
+
+        /// <summary>
+        /// Builds a dictionary of procedures based on a JSON file containing procedure references.
+        /// </summary>
+        /// <param name="hunterModelFilename">The path of the JSON file containing procedure references.</param>
+        /// <returns>A dictionary of procedures keyed by their respective procedure_id.</returns>
         public static Dictionary<string, Procedure> BuildProcedureCatalog(string hunterModelFilename)
         {
-            // 
+            // Get the directory of the hunterModelFilename file
             var hunterModelDir = Path.GetDirectoryName(Path.GetFullPath(hunterModelFilename));
 
             // Load the hunterModelFilename file into a string
@@ -297,5 +395,6 @@ namespace Hunter
 
             return procedures;
         }
+
     }
 }
