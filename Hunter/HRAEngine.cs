@@ -75,6 +75,19 @@ namespace Hunter
         public bool RepeatMode { get; set; } = false;
 
         /// <summary>
+        /// The number of times an action should be repeated.
+        /// </summary>
+        private int _repeatCount;
+
+        /// <summary>
+        /// Gets the number of times an action should be repeated.
+        /// </summary>
+        public int RepeatCount
+        {
+            get { return _repeatCount; }
+        }
+
+        /// <summary>
         /// Gets or sets the maximum number of repetitions for <see cref="EvalStep"/> when <see cref="RepeatMode"/> is true (default is 100).
         /// </summary>
         /// <remarks>
@@ -82,8 +95,34 @@ namespace Hunter
         /// </remarks>
         public int MaxRepeatCount { get; set; } = 100;
 
+        /// <summary>
+        /// Gets or sets a value indicating whether TimeOnShift Fatigue should impact the model.
+        /// </summary>
+        /// <value><c>true</c> if TimeOnShift Fatigue should impact the model; otherwise, <c>false</c>.</value>
+        public bool TimeOnShiftFatigueEnabled { get; set; } = true;
 
-        public HRAEngine(string primitivesFilePath = null)
+        /// <summary>
+        /// The time on shift
+        /// </summary>
+        public TimeSpan TimeOnShift { get; set; } = TimeSpan.Zero;
+
+
+        /// <summary>
+        /// Calculates the fatigue index based on the duration of the shift.
+        /// </summary>
+        /// <returns>The fatigue index as a double value.</returns>
+        public double FatigueIndex
+        {
+            get
+            {
+                double timeOnShiftH = Math.Min(TimeOnShift.TotalHours, 18);
+                return ((0.0054 * Math.Pow(timeOnShiftH, 3)) -
+                        (0.0939 * Math.Pow(timeOnShiftH, 2)) +
+                        (0.4271 * timeOnShiftH) + 0.599);
+            }
+        }
+
+        public HRAEngine(string primitivesFilePath = null, TimeSpan timeOnShift = default)
         {
             if (primitivesFilePath == null)
             {
@@ -91,6 +130,7 @@ namespace Hunter
                 primitivesFilePath = Path.Combine(assemblyLocation, "hunter", "archetypes", "primitives.json");
             }
             _primitives = LoadPrimitives(primitivesFilePath);
+            TimeOnShift = timeOnShift;
         }
 
         private Dictionary<string, Primitive> LoadPrimitives(string filePath)
@@ -256,6 +296,7 @@ namespace Hunter
                     {
                         for (int j = 1; j < MaxRepeatCount && !stepSuccess; j++)
                         {
+                            _repeatCount += 1;
                             stepSuccess = true;
                             elapsed_time += Evaluate(primitiveIds, ref stepSuccess, psfs);
                         }
@@ -268,6 +309,11 @@ namespace Hunter
             else
             {
                 Console.WriteLine($"Procedure not found: {procedureId}");
+            }
+
+            if (psfs!= null)
+            {
+                psfs.Update(this);
             }
 
             // Return the total elapsed time as a TimeSpan object.
@@ -347,6 +393,11 @@ namespace Hunter
                 }
             }
 
+            if (TimeOnShiftFatigueEnabled)
+            {
+                elapsed_time *= FatigueIndex;
+            }
+
             // Convert the random time (in seconds) to a TimeSpan object and return it
             return elapsed_time;
         }
@@ -395,6 +446,7 @@ namespace Hunter
 
             return procedures;
         }
+
 
     }
 }
