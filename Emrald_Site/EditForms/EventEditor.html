@@ -357,7 +357,7 @@
                         <hr />
                         <div ng-show="distUsesVariable()">
                             If Variable Changes:
-                            <select ng-model="data.onVarChange" ng-options="t as t.name for t in distChangeTypes" ng-change="updateChangeDesc()">
+                            <select ng-model="data.onVarChange" ng-options="t as t.name for t in distChangeTypes" ng-change="updateChangeDesc()" style="width:200px;">
                                 <option></option>
                             </select>
                             {{data.onVarChange.desc}}
@@ -398,7 +398,7 @@
                 <div id="ComponentLogicPanel" ng-if="typeOption.value === 'etComponentLogic'" style="display:table-row;position:absolute;height:70%;width:96%;overflow-x:hidden;overflow-y:scroll">
                     <input name="OnSuccess" type="checkbox" ng-model="data.onSuccess" />On Success <br />
                     <label style="display:table-cell;vertical-align:middle; white-space:nowrap;">Logic Top:</label>
-                    <select name="LogicTop" ng-model="data.logicTop" ng-options="lt.name for lt in logicTops" style="width:130px;">
+                    <select name="LogicTop" ng-model="data.logicTop" ng-options="lt.name for lt in logicTops" style="width:200px;">
                         <option>-- Choose logic top --</option>
                     </select>
                 </div>

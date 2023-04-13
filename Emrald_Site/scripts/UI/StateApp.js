@@ -644,7 +644,7 @@ var StateApp = (function (global, _super) {
       varList.push(vars[i].Variable);
     }
     dataObj.tempVariableList = varList;
-
+      
     if (cell.parent && cell.parent.value && cell.parent.value.State) {
       var stateParent = cell.parent.value.State;
       for (var j = 0; j < stateParent.events.length; j++) {
@@ -662,10 +662,11 @@ var StateApp = (function (global, _super) {
     var ln;
     for (var i = 0; i < nodeList.length; i++) {
       ln = nodeList[i].LogicNode;
-      if (ln.rootName === ln.name)
+      if ((ln.rootName === ln.name) || (ln.isRoot))
         logicNodes.push(ln);
     }
     dataObj.tempLogicTopList = logicNodes;
+
     if (!dataObj.varNames) {
       dataObj.varNames = [];
     }
