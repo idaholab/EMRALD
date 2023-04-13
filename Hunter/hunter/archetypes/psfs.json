@@ -192,11 +192,11 @@
     "label": "Fitness for Duty",
     "levels": [
       {
-        "level": "Degraded Fitness",
+        "level": "Unfit",
         "multiplier": "5"
       },
       {
-        "level": "Unfit",
+        "level": "Degraded Fitness",
         "multiplier": "2"
       },
       {
@@ -211,11 +211,11 @@
     "label": "Fitness for Duty",
     "levels": [
       {
-        "level": "Degraded Fitness",
+        "level": "Unfit",
         "multiplier": "5"
       },
       {
-        "level": "Unfit",
+        "level": "Degraded Fitness",
         "multiplier": "2"
       },
       {
