@@ -4,6 +4,7 @@ namespace Hunter
 {
     using System.Collections;
     using System.Collections.Generic;
+    using System.Reflection.Emit;
     using System.Runtime.Serialization;
     using Newtonsoft.Json;
     using Newtonsoft.Json.Converters;
@@ -17,6 +18,9 @@ namespace Hunter
 
     public class PerformanceShapingFactor
     {
+        [JsonIgnore]
+        public IUpdateStrategy UpdateStrategy { get; set; }
+
         [JsonProperty("type")]
         [JsonConverter(typeof(StringEnumConverter))]
         public TaskType Type { get; set; }
@@ -68,6 +72,8 @@ namespace Hunter
             {
                 CalculateInitialLevel();
             }
+
+            SetUpdateStrategy();
         }
 
         [OnDeserialized]
@@ -75,6 +81,7 @@ namespace Hunter
         {
             // Calculate the initial level based on the Levels list
             CalculateInitialLevel();
+            SetUpdateStrategy();
         }
 
         public void CalculateInitialLevel()
@@ -90,6 +97,15 @@ namespace Hunter
             // If no level with "Nominal" is found, set CurrentLevel to the first level in the list
             CurrentLevel = Levels[0];
         }
+
+        public void SetUpdateStrategy()
+        {
+            if (Label.Contains("Fitness"))
+            {
+                UpdateStrategy = new FitnessforDuty();
+            }
+        }
+
         public double CurrentMultiplier
         {
             get
@@ -102,7 +118,7 @@ namespace Hunter
             }
         }
 
-        public void Update(TimeSpan? elapsedTime = null, string jsonData = null)
+        public void Update(HRAEngine? hRAEngine= null, string jsonData = null)
         {
             if (IsStatic)
             {
@@ -112,6 +128,8 @@ namespace Hunter
                 // Implement effect of lag and linger on PSF levels
 
                 // Adjust PSF based on plant state
+                UpdateStrategy?.UpdateLevel(this, hRAEngine, jsonData);
+
             }
         }
     }
@@ -148,11 +166,11 @@ namespace Hunter
             get { return _psfs.Count; }
         }
 
-        public void Update(TimeSpan? elapsedTime = null, string jsonData = null)
+        public void Update(HRAEngine? hRAEngine= null, string jsonData = null)
         {
             foreach (var psf in _psfs.Values)
             {
-                psf.Update(elapsedTime, jsonData);
+                psf.Update(hRAEngine, jsonData);
             }
         }
 
@@ -175,7 +193,7 @@ namespace Hunter
 
             // If the combined multiplier is greater than 1, return 2.0, otherwise return 1.0
             if (currentMultiplier > 1)
-                return 0.5;
+                return 0.5; // execute at twice the speed
             return 1.0;
         }
 
@@ -211,6 +229,27 @@ namespace Hunter
             return _psfs.Values.GetEnumerator();
         }
 
+        /// <summary>
+        /// Adds a PerformanceShapingFactor to the collection.
+        /// </summary>
+        /// <param name="psf">The PerformanceShapingFactor to add.</param>
+        /// <exception cref="System.ArgumentNullException">Thrown when psf is null.</exception>
+        /// <exception cref="System.ArgumentException">Thrown when a PerformanceShapingFactor with the same ID already exists in the collection.</exception>
+        public void Add(PerformanceShapingFactor psf)
+        {
+            if (psf == null)
+            {
+                throw new ArgumentNullException(nameof(psf), "PerformanceShapingFactor cannot be null.");
+            }
+
+            if (_psfs.ContainsKey(psf.Id))
+            {
+                throw new ArgumentException($"A PerformanceShapingFactor with ID '{psf.Id}' already exists in the collection.", nameof(psf));
+            }
+
+            _psfs.Add(psf.Id, psf);
+        }
+
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
@@ -236,7 +275,8 @@ namespace Hunter
             // Check if the performance shaping factor exists in the collection
             if (!_psfs.ContainsKey(psfId))
             {
-                throw new ArgumentException($"Performance shaping factor with ID '{psfId}' not found.");
+                var validPsfIds = string.Join(", ", _psfs.Keys);
+                throw new ArgumentException($"Performance shaping factor with ID '{psfId}' not found. Valid IDs: {validPsfIds}");
             }
 
             // Retrieve the performance shaping factor from the collection
@@ -248,7 +288,8 @@ namespace Hunter
             // Check if the level was found
             if (level == null)
             {
-                throw new ArgumentException($"Level with name '{levelName}' not found for performance shaping factor with ID '{psfId}'.");
+                var validLevelNames = string.Join(", ", psf.Levels.Select(l => l.LevelName));
+                throw new ArgumentException($"Level with name '{levelName}' not found for performance shaping factor with ID '{psfId}'. Valid level names: {validLevelNames}");
             }
 
             // Set the current level of the performance shaping factor to the specified level
