@@ -1,6 +1,7 @@
 ﻿using Hunter;
 using MathNet.Numerics.Statistics;
 using NUnit.Framework;
+using System;
 using System.Collections.Generic;
 
 namespace Hunter.Tests {
@@ -10,32 +11,73 @@ namespace Hunter.Tests {
     {
         private const int ITERATIONS = 1000;
         private List<double> results;
+        private List<int> repeatCounts;
 
         [SetUp]
         public void Setup()
         {
             results = new List<double>();
+            repeatCounts = new List<int>();
         }
-
         [Test]
         public void RunFullModel_WithoutPSFS()
         {
-            RunTest(false, false);
+            RunTest(withPsfs: false, timePressure: false);
+        }
+
+        [Test]
+        public void RunFullModel_WithoutPSFS_Fatigue()
+        {
+            RunTest(withPsfs: false, timePressure: false, fatigue: true);
+        }
+
+        [Test]
+        public void RunFullModel_WithPSFS_repeatMode_Stress_Fatigue()
+        {
+            RunTest(withPsfs: true, timePressure: true, repeatMode: true, stress: true, fatigue: true);
+        }
+
+        [Test]
+        public void RunFullModel_WithPSFS_repeatMode_Stress()
+        {
+            RunTest(withPsfs: true, timePressure: true, repeatMode: true, stress: true);
         }
 
         [Test]
         public void RunFullModel_WithPSFS()
         {
-            RunTest(true, false);
+            RunTest(withPsfs: true, timePressure: false);
         }
 
         [Test]
         public void RunFullModel_WithTimePressure()
         {
-            RunTest(true, true);
+            RunTest(withPsfs: true, timePressure: true);
         }
 
-        private void RunTest(bool withPsfs, bool TimePressure)
+        [Test]
+        public void RunFullModel_WithPSFs_repeatMode_Stress_Fatigue_TimePressure()
+        {
+            RunTest(withPsfs: true, timePressure: true, repeatMode: true, stress: true, fatigue: true);
+        }
+
+        [Test]
+        public void RunFullModel_WithPSFs_repeatMode_Stress_Fatigue_StartOfShift()
+        {
+            RunTest(withPsfs: true, timePressure: false, repeatMode: true,
+                stress: true, fatigue: true, atStartOfShift: true);
+        }
+
+        [Test]
+        public void RunFullModel_WithPSFs_repeatMode_Stress_Fatigue_TimePressure_StartOfShift()
+        {
+            RunTest(withPsfs: true, timePressure: true, repeatMode: true, 
+                stress: true, fatigue: true, atStartOfShift: true);
+        }
+
+        private void RunTest(bool withPsfs, bool timePressure, 
+            bool repeatMode=false, bool stress = false, 
+            bool fatigue = false, bool atStartOfShift = false)
         {
             // start timer
             var watch = System.Diagnostics.Stopwatch.StartNew();
@@ -43,8 +85,12 @@ namespace Hunter.Tests {
             // run the stochastic code multiple times and add the result of each iteration to the list
             for (int i = 0; i < ITERATIONS; i++)
             {
-                double result = RunSGTR(withPsfs, TimePressure); // replace with the name of your stochastic code method
+                (double result, int repeatCount) = RunSGTR(
+                    withPsfs, timePressure, 
+                    repeatMode, stress, 
+                    fatigue, atStartOfShift);
                 results.Add(result);
+                repeatCounts.Add(repeatCount);
             }
 
             // stop timer
@@ -52,13 +98,14 @@ namespace Hunter.Tests {
 
             double mean = Math.Round(results.Average(), 0);
             double stdev = Math.Round(results.StandardDeviation(), 0);
+            double aveRepeats = Math.Round(repeatCounts.Average(), 3);
 
             // calculate time per iteration
             TimeSpan timePerIteration = TimeSpan.FromMilliseconds(watch.ElapsedMilliseconds / ITERATIONS);
 
-            TestContext.Out.WriteLine("Operator Time");
-            TestContext.Out.WriteLine($"Mean: {mean} s, Stdev: {stdev} s\n");
-            TestContext.Out.WriteLine("Test Time");
+            TestContext.Out.WriteLine("Operator");
+            TestContext.Out.WriteLine($"Mean Time: {mean} s, Time Stdev: {stdev} s");
+            TestContext.Out.WriteLine($"Mean Repeats per Iteration: {aveRepeats}");
             TestContext.Out.WriteLine($"Total time: {watch.Elapsed}, Time per iteration: {timePerIteration}");
 
             // assert that the results meet certain criteria
@@ -68,7 +115,9 @@ namespace Hunter.Tests {
             Assert.That(results[0], Is.GreaterThan(0));
         }
 
-        private double RunSGTR(bool PSFs=false, bool TimePressure=false)
+        private (double, int) RunSGTR(bool PSFs = false, bool timePressure = false, 
+                                      bool repeatMode = false, bool stress = false, 
+                                      bool fatigue = false, bool atStartOfShift=false)
         {
             // Arrange
             string hunterModelFilename = @"hunter/models/sgtr_model.json";
@@ -78,14 +127,31 @@ namespace Hunter.Tests {
             if (PSFs)
             {
                 psfCollection = new PerformanceShapingFactorCollection();
-                if (TimePressure)
+                psfCollection.SetLevel("ATa", "Barely adequate time");
+                Assert.That(psfCollection.Count > 0);
+
+                if (timePressure)
                 {
                     psfCollection.SetLevel("ATa", "Barely adequate time");
                     psfCollection.SetLevel("ATd", "Barely adequate time");
                 }
+
+                if (stress)
+                {
+                    psfCollection.SetLevel("Sa", "High");
+                    psfCollection.SetLevel("Sd", "High");
+                }
+
             }
 
             HRAEngine hraEngine = new HRAEngine();
+            hraEngine.RepeatMode = repeatMode;
+            hraEngine.TimeOnShiftFatigueEnabled = fatigue;
+            if (!atStartOfShift)
+            {
+                hraEngine.TimeOnShift = TimeSpan.FromHours(12);
+            }
+            
 
             TimeSpan result = TimeSpan.Zero;
 
@@ -98,7 +164,7 @@ namespace Hunter.Tests {
                 result += hraEngine.EvaluateSteps(procedures, procedureId, 1, endStep, psfCollection);
             }
 
-            return result.TotalSeconds;
+            return (result.TotalSeconds, hraEngine.RepeatCount);
         }
     }
 }
