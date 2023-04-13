@@ -7,75 +7,72 @@ using static Hunter.HRAEngine;
 
 namespace Hunter.Tests
 {
-    namespace Hunter.Tests
+    [TestFixture]
+    public class PerformanceShapingFactorUpdateTests
     {
-        [TestFixture]
-        public class PerformanceShapingFactorCollectionTests
-        {
-            private PerformanceShapingFactor _psf;
-            private PerformanceShapingFactorCollection _psfCollection;
+        private PerformanceShapingFactor _psf;
+        private PerformanceShapingFactorCollection _psfCollection;
 
-            [SetUp]
-            public void SetUp()
-            {            
-                // Set up a PerformanceShapingFactor object with some sample data
-                _psf = new PerformanceShapingFactor(TaskType.Action, "Available Time", new List<PerformanceShapingFactor.Level>
+        [SetUp]
+        public void SetUp()
+        {            
+            // Set up a PerformanceShapingFactor object with some sample data
+            _psf = new PerformanceShapingFactor(TaskType.Action, "Available Time", new List<PerformanceShapingFactor.Level>
 {
-    new PerformanceShapingFactor.Level { LevelName = "Barely adequate time", Multiplier = 0.01 },
-    new PerformanceShapingFactor.Level { LevelName = "Expansive time", Multiplier = 0.00001 },
-    new PerformanceShapingFactor.Level { LevelName = "Extra time", Multiplier = 0.0001 },
-    new PerformanceShapingFactor.Level { LevelName = "Inadequate time", Multiplier = 1 },
-    new PerformanceShapingFactor.Level { LevelName = "Nominal time", Multiplier = 0.001 }
+new PerformanceShapingFactor.Level { LevelName = "Barely adequate time", Multiplier = 0.01 },
+new PerformanceShapingFactor.Level { LevelName = "Expansive time", Multiplier = 0.00001 },
+new PerformanceShapingFactor.Level { LevelName = "Extra time", Multiplier = 0.0001 },
+new PerformanceShapingFactor.Level { LevelName = "Inadequate time", Multiplier = 1 },
+new PerformanceShapingFactor.Level { LevelName = "Nominal time", Multiplier = 0.001 }
 }, "ATa", "Inadequate time");
-                _psfCollection = new PerformanceShapingFactorCollection();
-            }
-
-            [Test]
-            public void Update_WithJsonData_UpdatesPerformanceShapingFactor()
-            {
-                // Arrange
-                TimeSpan? elapsedTime = null;
-                string jsonData = "{\"levelName\": \"Expansive time\"}";
-
-                Assert.That(_psf.CurrentLevel.LevelName, Is.EqualTo("Inadequate time"));
-
-                // Act
-                _psf.Update(elapsedTime, jsonData);
-
-                // Assert
-//                Assert.That(_psf.CurrentLevel.LevelName, Is.EqualTo("Expansive time"));
-            }
-
-            [Test]
-            public void Update_WithElapsedTime_UpdatesAllPerformanceShapingFactors()
-            {
-                // Arrange
-                TimeSpan elapsedTime = TimeSpan.FromSeconds(5);
-                string jsonData = null;
-
-                // Act
-                _psfCollection.Update(elapsedTime, jsonData);
-
-                // Assert
-                Assert.That(_psfCollection.Count, Is.EqualTo(16));
-            }
-
-            [Test]
-            public void Update_WithJsonData_UpdatesSelectedPerformanceShapingFactors()
-            {
-                // Arrange
-                TimeSpan? elapsedTime = null;
-                string jsonData = "{\"id\": \"ATa\", \"levelName\": \"Extra time\"}";
-
-                // Act
-                _psfCollection.Update(elapsedTime, jsonData);
-
-                // Assert
-                Assert.That(_psfCollection.Count, Is.EqualTo(16));
-            }
-
-
+            _psfCollection = new PerformanceShapingFactorCollection();
         }
-    }
 
+        [Test]
+        public void Update_WithJsonData_UpdatesPerformanceShapingFactor()
+        {
+            // Arrange
+            HRAEngine? hraEngine = null;
+            string jsonData = "{\"levelName\": \"Expansive time\"}";
+
+            Assert.That(_psf.CurrentLevel.LevelName, Is.EqualTo("Inadequate time"));
+
+            // Act
+            _psf.Update(hraEngine, jsonData);
+
+            // Assert
+//                Assert.That(_psf.CurrentLevel.LevelName, Is.EqualTo("Expansive time"));
+        }
+
+        [Test]
+        public void Update_WithHRAEngine_UpdatesAllPerformanceShapingFactors()
+        {
+            // Arrange
+            HRAEngine hRAEngine = new HRAEngine(timeOnShift: TimeSpan.FromHours(12));
+            string jsonData = null;
+
+            // Act
+            _psfCollection.Update(hRAEngine, jsonData);
+
+            // Assert
+            Assert.That(_psfCollection.Count, Is.EqualTo(16));
+        }
+
+        [Test]
+        public void Update_WithJsonData_UpdatesSelectedPerformanceShapingFactors()
+        {
+            // Arrange
+            HRAEngine? hRAEngine = null;
+            string jsonData = "{\"id\": \"ATa\", \"levelName\": \"Extra time\"}";
+
+            // Act
+            _psfCollection.Update(hRAEngine, jsonData);
+
+            // Assert
+            Assert.That(_psfCollection.Count, Is.EqualTo(16));
+        }
+
+
+    }
 }
+

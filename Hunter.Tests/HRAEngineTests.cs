@@ -3,6 +3,7 @@ using System.IO;
 using Hunter;
 using Newtonsoft.Json;
 using NUnit.Framework;
+using NUnit.Framework.Constraints;
 
 namespace Hunter.Tests
 {
