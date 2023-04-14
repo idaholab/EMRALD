@@ -1,145 +1,23 @@
-﻿using Newtonsoft.Json;
+﻿using System.Collections;
+using System.Collections.Generic;
+using System.Reflection.Emit;
+using System.Runtime.Serialization;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace Hunter
 {
-    using System.Collections;
-    using System.Collections.Generic;
-    using System.Reflection.Emit;
-    using System.Runtime.Serialization;
-    using Newtonsoft.Json;
-    using Newtonsoft.Json.Converters;
-
-    public enum TaskType
-    {
-        Action,
-        Diagnosis
-    }
-
-
-    public class PerformanceShapingFactor
-    {
-        [JsonIgnore]
-        public IUpdateStrategy UpdateStrategy { get; set; }
-
-        [JsonProperty("type")]
-        [JsonConverter(typeof(StringEnumConverter))]
-        public TaskType Type { get; set; }
-
-        [JsonProperty("label")]
-        public string Label { get; set; }
-
-        [JsonProperty("levels")]
-        public List<Level> Levels { get; set; }
-
-        [JsonProperty("id")]
-        public string Id { get; set; }
-
-        [JsonProperty("is_static", DefaultValueHandling = DefaultValueHandling.Populate)]
-        public bool IsStatic { get; set; } = false;
-
-        [JsonProperty("initial_level")]
-        public Level? InitialLevel { get; set; }
-
-        [JsonIgnore]
-        public Level CurrentLevel { get; set; }
-
-        public class Level
-        {
-            [JsonProperty("level")]
-            public string LevelName { get; set; }
-
-            [JsonProperty("multiplier")]
-            public double Multiplier { get; set; }
-        }
-
-        public PerformanceShapingFactor(TaskType type, string label, List<Level> levels, string id, string initialLevelName = null, bool isStatic = false)
-        {
-            Type = type;
-            Label = label;
-            Levels = levels;
-            Id = id;
-            IsStatic = isStatic;
-
-            if (initialLevelName != null)
-            {
-                CurrentLevel = Levels.FirstOrDefault(l => l.LevelName == initialLevelName);
-                if (CurrentLevel == null)
-                {
-                    throw new ArgumentException("Invalid initial level name.");
-                }
-            }
-            else
-            {
-                CalculateInitialLevel();
-            }
-
-            SetUpdateStrategy();
-        }
-
-        [OnDeserialized]
-        private void OnDeserialized(StreamingContext context)
-        {
-            // Calculate the initial level based on the Levels list
-            CalculateInitialLevel();
-            SetUpdateStrategy();
-        }
-
-        public void CalculateInitialLevel()
-        {
-            foreach (Level level in Levels)
-            {
-                if (level.LevelName.Contains("Nominal"))
-                {
-                    CurrentLevel = level;
-                    return;
-                }
-            }
-            // If no level with "Nominal" is found, set CurrentLevel to the first level in the list
-            CurrentLevel = Levels[0];
-        }
-
-        public void SetUpdateStrategy()
-        {
-            if (Label.Contains("Fitness"))
-            {
-                UpdateStrategy = new FitnessforDuty();
-            }
-        }
-
-        public double CurrentMultiplier
-        {
-            get
-            {
-                if (CurrentLevel == null)
-                {
-                    return 0;
-                }
-                return Levels.FirstOrDefault(l => l.LevelName == CurrentLevel.LevelName)?.Multiplier ?? 1.0;
-            }
-        }
-
-        public void Update(HRAEngine? hRAEngine= null, string jsonData = null)
-        {
-            if (IsStatic)
-            {
-                return;
-            } else
-            {
-                // Implement effect of lag and linger on PSF levels
-
-                // Adjust PSF based on plant state
-                UpdateStrategy?.UpdateLevel(this, hRAEngine, jsonData);
-
-            }
-        }
-    }
-
     public class PerformanceShapingFactorCollection : IEnumerable<PerformanceShapingFactor>
     {
         private readonly Dictionary<string, PerformanceShapingFactor> _psfs;
 
         public PerformanceShapingFactorCollection(string filePath = null)
         {
+            _psfs = new Dictionary<string, PerformanceShapingFactor>();
+
+            if (filePath == "")
+                return;
+
             if (filePath == null)
             {
                 string assemblyLocation = Path.GetDirectoryName(typeof(HRAEngine).Assembly.Location);
@@ -147,9 +25,8 @@ namespace Hunter
             }
 
             string jsonData = File.ReadAllText(filePath);
-            List<PerformanceShapingFactor> psfList = JsonConvert.DeserializeObject<List<PerformanceShapingFactor>>(jsonData);
-
-            _psfs = new Dictionary<string, PerformanceShapingFactor>();
+            List<PerformanceShapingFactor> psfList = 
+                JsonConvert.DeserializeObject<List<PerformanceShapingFactor>>(jsonData);
             foreach (PerformanceShapingFactor psf in psfList)
             {
                 _psfs.Add(psf.Id, psf);
@@ -166,7 +43,7 @@ namespace Hunter
             get { return _psfs.Count; }
         }
 
-        public void Update(HRAEngine? hRAEngine= null, string jsonData = null)
+        public void Update(HRAEngine? hRAEngine = null, string jsonData = null)
         {
             foreach (var psf in _psfs.Values)
             {
@@ -229,13 +106,18 @@ namespace Hunter
             return _psfs.Values.GetEnumerator();
         }
 
+        public void Clear()
+        {
+            _psfs.Clear();
+        }
+
         /// <summary>
         /// Adds a PerformanceShapingFactor to the collection.
         /// </summary>
         /// <param name="psf">The PerformanceShapingFactor to add.</param>
         /// <exception cref="System.ArgumentNullException">Thrown when psf is null.</exception>
         /// <exception cref="System.ArgumentException">Thrown when a PerformanceShapingFactor with the same ID already exists in the collection.</exception>
-        public void Add(PerformanceShapingFactor psf)
+        public void Add(PerformanceShapingFactor psf, bool overwrite = false)
         {
             if (psf == null)
             {
@@ -244,16 +126,26 @@ namespace Hunter
 
             if (_psfs.ContainsKey(psf.Id))
             {
-                throw new ArgumentException($"A PerformanceShapingFactor with ID '{psf.Id}' already exists in the collection.", nameof(psf));
+                if (overwrite)
+                {
+                    _psfs[psf.Id] = psf;
+                }
+                else
+                {
+                    throw new ArgumentException($"A PerformanceShapingFactor with ID '{psf.Id}' already exists in the collection.", nameof(psf));
+                }
             }
-
-            _psfs.Add(psf.Id, psf);
+            else
+            {
+                _psfs.Add(psf.Id, psf);
+            }
         }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
         }
+
         /// <summary>
         /// Sets the current level of a performance shaping factor with the specified ID to the level with the specified name.
         /// </summary>
@@ -270,6 +162,7 @@ namespace Hunter
         /// psfCollection.SetLevel("ATd", "Barely adequate time");
         /// </code>
         /// </example>
+
         public void SetLevel(string psfId, string levelName)
         {
             // Check if the performance shaping factor exists in the collection
@@ -295,6 +188,20 @@ namespace Hunter
             // Set the current level of the performance shaping factor to the specified level
             psf.CurrentLevel = level;
         }
+        public string GetJSON()
+        {
+            var jsonSettings = new JsonSerializerSettings();
+            jsonSettings.Converters.Add(new PerformanceShapingFactorCollectionConverter());
 
+            return JsonConvert.SerializeObject(this, Formatting.Indented, jsonSettings);
+        }
+
+        public static PerformanceShapingFactorCollection DeserializeJSON(string json)
+        {
+            var jsonSettings = new JsonSerializerSettings();
+            jsonSettings.Converters.Add(new PerformanceShapingFactorCollectionConverter());
+
+            return JsonConvert.DeserializeObject<PerformanceShapingFactorCollection>(json, jsonSettings);
+        }
     }
 }

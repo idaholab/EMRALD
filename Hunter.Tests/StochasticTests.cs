@@ -152,7 +152,6 @@ namespace Hunter.Tests {
                 hraEngine.TimeOnShift = TimeSpan.FromHours(12);
             }
             
-
             TimeSpan result = TimeSpan.Zero;
 
             foreach (KeyValuePair<string, Procedure> kvp in procedures)

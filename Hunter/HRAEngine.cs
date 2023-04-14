@@ -8,7 +8,6 @@ using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Schema;
 using MathNet.Numerics.Distributions;
 
-using static Hunter.HRAEngine;
 
 namespace Hunter
 {

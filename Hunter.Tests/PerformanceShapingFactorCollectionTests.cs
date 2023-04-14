@@ -51,5 +51,46 @@ namespace Hunter.Tests
             Assert.IsTrue(ex.Message.Contains("Level with name 'InvalidLevelName' not found for performance shaping factor with ID 'ATa'."));
             TestContext.Out.WriteLine($"Message: {ex.Message}");
         }
+
+        [Test]
+        public void SerializeDeserializePerformanceShapingFactorCollectionTest()
+        {
+            // Arrange
+            var psfCollection = new PerformanceShapingFactorCollection();
+
+            // Act
+            // Serialize the PerformanceShapingFactorCollection
+            string serializedPsfCollection = psfCollection.GetJSON();
+
+            // Deserialize the serialized PerformanceShapingFactorCollection
+            var deserializedPsfCollection = PerformanceShapingFactorCollection.DeserializeJSON(serializedPsfCollection);
+
+            // Assert
+            // Compare the properties of the original and deserialized PerformanceShapingFactorCollections
+            Assert.AreEqual(psfCollection.Count, deserializedPsfCollection.Count);
+
+            foreach (var originalPsf in psfCollection)
+            {
+                var deserializedPsf = deserializedPsfCollection[originalPsf.Id];
+                Assert.NotNull(deserializedPsf);
+                Assert.AreEqual(originalPsf.Id, deserializedPsf.Id);
+                Assert.AreEqual(originalPsf.Label, deserializedPsf.Label);
+                Assert.AreEqual(originalPsf.Type, deserializedPsf.Type);
+                Assert.AreEqual(originalPsf.IsStatic, deserializedPsf.IsStatic);
+                Assert.AreEqual(originalPsf.CurrentLevel.LevelName, deserializedPsf.CurrentLevel.LevelName);
+
+                Assert.AreEqual(originalPsf.Levels.Count, deserializedPsf.Levels.Count);
+
+                for (int i = 0; i < originalPsf.Levels.Count; i++)
+                {
+                    var originalLevel = originalPsf.Levels[i];
+                    var deserializedLevel = deserializedPsf.Levels[i];
+
+                    Assert.AreEqual(originalLevel.LevelName, deserializedLevel.LevelName);
+                    Assert.AreEqual(originalLevel.Multiplier, deserializedLevel.Multiplier);
+                }
+            }
+        }
+
     }
 }
