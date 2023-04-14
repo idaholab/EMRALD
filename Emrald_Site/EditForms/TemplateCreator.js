@@ -106,10 +106,10 @@ window.cast(window, w).OnLoad = (dataObj) => {
     templateCreatorScope,
   );
   scope.$apply(() => {
-    scope.addGroupToLocalStorage({name:'', parent: null, subgroups: null}, true);
+    scope.groups = scope.getGroupsFromLocalStorage();
+    scope.setDisplayedGroups(scope.model.group, scope.groups );
     scope.model = dataObj.model;
     scope.model.name += "_Template";
-    scope.setDisplayedGroups(scope.model.group, scope.groups );
     scope.entries = [];
     Object.values(scope.model).forEach((value, i) => {
       if (Array.isArray(value)) {

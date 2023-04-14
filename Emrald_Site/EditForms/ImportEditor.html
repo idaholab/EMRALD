@@ -93,6 +93,7 @@
                 type="radio"
                 ng-model="entry.action"
                 value="ignore"
+                ng-disabled="entry.data.required"
                 ng-change="checkEntryAction(entry)"
               />
               <label for="{{'action-ignore-' + $index}}">Ignore</label>
@@ -102,6 +103,7 @@
                 type="radio"
                 ng-model="entry.action"
                 value="replace"
+                ng-disabled="entry.data.required"
                 ng-change="checkEntryAction(entry)"
               />
               <label for="{{'action-replace-' + $index}}">Replace</label>
@@ -111,6 +113,7 @@
                 type="radio"
                 ng-model="entry.action"
                 value="rename"
+                ng-disabled="entry.data.required"
                 ng-change="checkEntryAction(entry)"
               />
               <label for="{{'action-rename-' + $index}}">Rename</label>

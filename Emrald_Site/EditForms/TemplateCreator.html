@@ -50,6 +50,21 @@
       th {
         text-align: left;
       }
+
+      .path {
+            background: white;
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        .group-button::before {
+            content: "\1F4C1  ";
+        }
+        .group-button {
+            background-color: antiquewhite;
+            padding: 0.5em;
+            font-size: 1em;
+            margin: 0.1em;
+        }
     </style>
   </head>
   <body ng-app="templateCreator">
@@ -69,7 +84,9 @@
         <br />
         <span>
           Assign this template to a group:
-          {{selectedGroupString}}
+          <div class="path">
+            {{selectedGroupString}}
+          </div>
 
           <!-- <select
             class="form-control"
@@ -83,7 +100,8 @@
           <button ng-if="model.group!==null" ng-click="unselectGroup(model.group, selectedGroup)">Go Up</button>
           <button ng-if="model.group!==null" ng-click="createNewSubGroup(selectedGroup)">Create a new Sub Group</button>
           <br />
-          <button ng-repeat="group in displayedGroups" ng-click="selectGroup(model.group, group)">{{group.name}}</button>
+          <button class="group-button" ng-repeat="group in displayedGroups track by $index" ng-click="selectGroup(model.group, group)">{{group.name}}</button>
+
           <!-- <select
             class="form-control"
             ng-model="entry.data.group">
@@ -106,7 +124,6 @@
         <br />
         <br />
         <button ng-click="toggleAction('ignore')">Ignore Unlocked</button>
-        <button ng-click="toggleAction('replace')">Replace Unlocked</button>
         <button ng-click="toggleAction('rename')">Rename Unlocked</button>
       </div>
       <br />
