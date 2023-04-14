@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using Hunter;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using NUnit.Framework.Constraints;
 
@@ -270,6 +271,41 @@ namespace Hunter.Tests
 
             // Act & Assert
             Assert.Throws<ArgumentOutOfRangeException>(() => hraEngine.EvaluateSteps(procedures, procedureId, startStep, endStep));
+        }
+
+
+        [Test]
+        public void TestGetJSON()
+        {
+            // Arrange
+            HRAEngine engine = new HRAEngine();
+            // Set any necessary properties and fields in your engine instance
+
+            // Act
+            string json = engine.GetJSON();
+
+            // Assert
+            Assert.IsNotNull(json, "GetJSON() should return a non-null JSON string.");
+            JObject jsonObject = JObject.Parse(json);
+            Assert.IsNotNull(jsonObject, "GetJSON() should return a valid JSON object.");
+        }
+
+        [Test]
+        public void TestDeserializeJSON()
+        {
+            // Arrange
+            HRAEngine engine0 = new HRAEngine();
+            engine0.TimeOnShift = TimeSpan.FromHours(8);
+
+            string json = engine0.GetJSON();
+
+            // Act
+            HRAEngine engine = HRAEngine.DeserializeJSON(json);
+
+            // Assert
+            Assert.IsNotNull(engine, "DeserializeJSON() should return a non-null HRAEngine instance.");
+
+            Assert.That(engine0.TimeOnShift.TotalHours == engine.TimeOnShift.TotalHours);
         }
     }
 }

@@ -78,7 +78,7 @@ namespace Hunter
                 CurrentLevel = Levels.FirstOrDefault(l => l.LevelName == InitialLevel);
                 if (CurrentLevel == null)
                 {
-                    throw new ArgumentException($"Hunter.PerformanceShapingFactor.CalculateInitialLevel Invalid initial level name: {InitialLevel}");
+                    throw new ArgumentException($"Invalid initial level name: {InitialLevel}");
                 }
                 return;
             }
@@ -138,11 +138,20 @@ namespace Hunter
             }
         }
 
+        /// <summary>
+        /// Serializes the current PerformanceShapingFactor instance into a JSON string.
+        /// </summary>
+        /// <returns>A JSON string representation of the current PerformanceShapingFactor instance.</returns>
         public string GetJSON()
         {
             return JsonConvert.SerializeObject(this, Formatting.Indented);
         }
 
+        /// <summary>
+        /// Deserializes a JSON string into an PerformanceShapingFactor instance.
+        /// </summary>
+        /// <param name="json">The JSON string to deserialize.</param>
+        /// <returns>An HRAEngine instance deserialized from the JSON string.</returns>
         public static PerformanceShapingFactor DeserializeJSON(string json)
         {
             return JsonConvert.DeserializeObject<PerformanceShapingFactor>(json);

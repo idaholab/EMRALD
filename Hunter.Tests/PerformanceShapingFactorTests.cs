@@ -219,7 +219,7 @@ namespace Hunter.Tests
                 levels,
                 "FfDd",
                 "Invalid Level"));
-            Assert.AreEqual("Hunter.PerformanceShapingFactor.CalculateInitialLevel Invalid initial level name: Invalid Level", exception.Message);
+            Assert.AreEqual("Invalid initial level name: Invalid Level", exception.Message);
         }
 
         [Test]

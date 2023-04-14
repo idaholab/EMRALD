@@ -446,6 +446,42 @@ namespace Hunter
             return procedures;
         }
 
+        /// <summary>
+        /// Serializes the current HRAEngine instance into a JSON string.
+        /// </summary>
+        /// <returns>A JSON string representation of the current HRAEngine instance.</returns>
+        public string GetJSON()
+        {
+            try
+            {
+                string jsonData = JsonConvert.SerializeObject(this, Formatting.Indented);
+                return jsonData;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error serializing HRAEngine instance to JSON: {ex.Message}");
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Deserializes a JSON string into an HRAEngine instance.
+        /// </summary>
+        /// <param name="json">The JSON string to deserialize.</param>
+        /// <returns>An HRAEngine instance deserialized from the JSON string.</returns>
+        public static HRAEngine DeserializeJSON(string json)
+        {
+            try
+            {
+                HRAEngine deserializedInstance = JsonConvert.DeserializeObject<HRAEngine>(json);
+                return deserializedInstance;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error deserializing JSON into HRAEngine instance: {ex.Message}");
+                return null;
+            }
+        }
 
     }
 }

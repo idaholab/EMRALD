@@ -188,6 +188,11 @@ namespace Hunter
             // Set the current level of the performance shaping factor to the specified level
             psf.CurrentLevel = level;
         }
+
+        /// <summary>
+        /// Serializes the current PerformanceShapingFactorCollection instance into a JSON string.
+        /// </summary>
+        /// <returns>A JSON string representation of the current PerformanceShapingFactorCollection instance.</returns>
         public string GetJSON()
         {
             var jsonSettings = new JsonSerializerSettings();
@@ -196,6 +201,11 @@ namespace Hunter
             return JsonConvert.SerializeObject(this, Formatting.Indented, jsonSettings);
         }
 
+        /// <summary>
+        /// Deserializes a JSON string into an PerformanceShapingFactorCollection instance.
+        /// </summary>
+        /// <param name="json">The JSON string to deserialize.</param>
+        /// <returns>An HRAEngine instance deserialized from the JSON string.</returns>
         public static PerformanceShapingFactorCollection DeserializeJSON(string json)
         {
             var jsonSettings = new JsonSerializerSettings();
