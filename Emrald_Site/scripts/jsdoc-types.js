@@ -122,7 +122,37 @@
  * @property {string} desc - The model description.
  * @property {number} id - The model id.
  * @property {string} name - The model name.
- * @property {EMRALD.Model[]} [templates] - Templates loaded into the project.
+ * @property {string} version - The version of the model format.
+ * @property {EMRALD.ModelTemplate[]} [templates] - Templates loaded into the project.
+ */
+
+/**
+ * @typedef EMRALD.ModelTemplate
+ * @property {EMRALD.Action[]} ActionList - The list of actions.
+ * @property {EMRALD.Diagram[]} DiagramList - The list of diagrams.
+ * @property {EMRALD.Event[]} EventList - The list of events.
+ * @property {EMRALD.ExtSim[]} ExtSimList - The list of ext sims.
+ * @property {EMRALD.LogicNode[]} LogicNodeList - The list of logic nodes.
+ * @property {EMRALD.State[]} StateList - The list of states.
+ * @property {EMRALD.Variable[]} VariableList - The list of variables.
+ * @property {string} desc - The model description.
+ * @property {number} id - The model id.
+ * @property {string} name - The model name.
+ * @property {string} version - The version of the model format.
+ * @property {EMRALD.TemplateGroup | null} group - The group to which the template belongs.
+ */
+
+/**
+ * @typedef EMRALD.TemplateGroup
+ * @property {string} name
+ * @property {EMRALD.TemplateGroup | null} subgroup
+ */
+
+/**
+ * @typedef EMRALD.TemplateGroups
+ * @property {string} name
+ * @property {EMRALD.TemplateGroups[] | null} subgroups
+ * @property {EMRALD.TemplateGroups | null} parent
  */
 
 /**

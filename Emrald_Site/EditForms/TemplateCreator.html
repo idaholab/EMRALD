@@ -3,11 +3,11 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width" />
-    <title>Import Diagram</title>
+    <title>Create Diagram Template</title>
     <link href="../styles/Editors.css" rel="stylesheet" />
     <script src="../scripts/angular/angular.js"></script>
     <script src="./lib/EditFormUtil.js"></script>
-    <script src="ImportEditor.js"></script>
+    <script src="TemplateCreator.js"></script>
     <style>
       :root {
         --lock-icon-size: 20px;
@@ -21,11 +21,11 @@
         background-color: #e0e0e0;
       }
 
-      input[type=checkbox] {
+      .lock input[type=checkbox] {
         display: none;
       }
 
-      input[type=checkbox] + label {
+      .lock input[type=checkbox] + label {
         background: url(../images/lock_open.webp);
         background-size: 19px;
         margin-left: 12px;
@@ -36,7 +36,7 @@
         display: inline-block;
       }
 
-      input[type=checkbox]:checked + label {
+      .lock input[type=checkbox]:checked + label {
         background: url(../images/lock_closed.webp);
         background-size: 12px;
         background-repeat: no-repeat;
@@ -46,13 +46,53 @@
         padding: 0;
         display: inline-block;
       }
+
+      th {
+        text-align: left;
+      }
     </style>
   </head>
-  <body ng-app="importEditor">
+  <body ng-app="templateCreator">
     <div
-      ng-controller="importEditorController"
-      id="importEditorControllerPanel"
+      ng-controller="templateCreatorController"
+      id="templateCreatorControllerPanel"
     >
+      <div>
+        <h1>Create a Template</h1>
+
+        <span>Name this template:
+          <input
+            placeholder="Name"
+            ng-model="model.name"
+          />
+        </span>
+        <br />
+        <span>
+          Assign this template to a group:
+          {{selectedGroupString}}
+
+          <!-- <select
+            class="form-control"
+            ng-model="entry.data.group">
+            <option ng-repeat="group in groups">{{ group }}</option>
+          </select> -->
+          <button ng-click="createNewGroup()">Create a new Group</button>
+        </span>
+        <br />
+        <span>
+          <button ng-if="model.group!==null" ng-click="unselectGroup(model.group, selectedGroup)">Go Up</button>
+          <button ng-if="model.group!==null" ng-click="createNewSubGroup(selectedGroup)">Create a new Sub Group</button>
+          <br />
+          <button ng-repeat="group in displayedGroups" ng-click="selectGroup(model.group, group)">{{group.name}}</button>
+          <!-- <select
+            class="form-control"
+            ng-model="entry.data.group">
+            <option ng-repeat="group in groups">{{ group }}</option>
+          </select> -->
+        </span>
+      </div>
+      <br />
+      <br />
       <div>
         <label for="find">Find:</label>
         <input id="find" ng-model="find" />
@@ -60,28 +100,32 @@
         <input id="replace" ng-model="replace" />
         <button ng-click="apply()">Apply</button>
         <br />
+        <br />
         <button ng-click="toggleLocks(true)">Lock All</button>
         <button ng-click="toggleLocks(false)">Unlock All</button>
+        <br />
         <br />
         <button ng-click="toggleAction('ignore')">Ignore Unlocked</button>
         <button ng-click="toggleAction('replace')">Replace Unlocked</button>
         <button ng-click="toggleAction('rename')">Rename Unlocked</button>
       </div>
+      <br />
+      <br />
       <table>
         <thead>
           <tr>
             <th>Type</th>
             <th>Lock</th>
-            <th>Old Name</th>
-            <th>Action</th>
             <th>Name</th>
-            <th>Conflict</th>
+            <th>Action</th>
+            <th></th>
+            <th title="Required in Model">Required in Model</th>
           </tr>
         </thead>
         <tbody>
           <tr ng-repeat="entry in entries track by $index" ng-class="{ locked: entry.isLocked }">
             <td>{{entry.type}}</td>
-            <td>
+            <td class="lock">
               <input type="checkbox" ng-model="entry.isLocked" id="{{'checkbox-' + $index}}" />
               <label for="{{'checkbox-' + $index}}"></label>
             </td>
@@ -97,15 +141,6 @@
               />
               <label for="{{'action-ignore-' + $index}}">Ignore</label>
               <input
-                id="{{'action-replace-' + $index}}"
-                title="Replace"
-                type="radio"
-                ng-model="entry.action"
-                value="replace"
-                ng-change="checkEntryAction(entry)"
-              />
-              <label for="{{'action-replace-' + $index}}">Replace</label>
-              <input
                 id="{{'action-rename-' + $index}}"
                 title="Rename"
                 type="radio"
@@ -118,12 +153,20 @@
             <td>
               <input
                 placeholder="Name"
+                ng-if="entry.action=='rename'"
                 ng-model="entry.data.name"
                 ng-change="nameChanged($index)"
               />
             </td>
             <td>
-              <div ng-if="entry.isConflicting" class="conflict">Conflicts!</div>
+              <input
+                id="{{'required-' + $index}}"
+                title="Required"
+                type="checkbox"
+                ng-model="entry.data.required"
+                ng-change="checkEntryAction(entry)"
+              />
+              <label for="{{'required-' + $index}}">Required</label>
             </td>
           </tr>
         </tbody>

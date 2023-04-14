@@ -3473,8 +3473,12 @@ if (typeof Navigation === 'undefined')
               break;
             case "Template":
               if (ui.target.context.dataObject) {
-                const dataObj = this.exportDiagram(ui.target.context.dataObject);
-                this.addLocalTemplate(dataObj);
+                /** @type {EMRALD.ModelTemplate} */
+                let dataObj = this.exportDiagram(ui.target.context.dataObject);
+                dataObj.group = null;
+                this.createTemplate(dataObj).then(template => {
+                  this.addLocalTemplate(template);
+                });
               }
               break;
             case "Export":
@@ -3510,7 +3514,14 @@ if (typeof Navigation === 'undefined')
       return sol;
     }
 
-    Sidebar.prototype.exportDiagram = function (dataObject, model) {
+    /**
+     * Creates a diagram for exporting
+     * 
+     * @param {EMRALD.Model} dataObject - The states to process.
+     * @param {EMRALD.Model} [model] - The model to use (defaults to allDataModel). 
+     * @returns {EMRALD.Model} The list of ExtSims.
+     */
+    Sidebar.prototype.exportDiagram = function (dataObject, model = undefined) {
       const StateList = this.statesReferencing(model, dataObject.name, 'Diagram');
       const exportObject = {
         id: dataObject.id,
@@ -3672,6 +3683,84 @@ if (typeof Navigation === 'undefined')
           });
           resolve(importedContent);
         }
+      });
+    };
+
+    /**
+     * Saves a diagram as a template and opens the UI for template settings.
+     * 
+     * @param {EMRALD.ModelTemplate} exportedContent - The diagram to import.
+     */
+    Sidebar.prototype.createTemplate = function (exportedContent) {
+      return new Promise((resolve, reject) => {
+        const sidebar = simApp.mainApp.sidebar;
+        const wnd = mxWindow.createFrameWindow(
+          'EditForms/TemplateCreator.html',
+          'OK, Cancel',
+          'minimize, maximize, close',
+          /**
+           * Handles the window closing.
+           *
+           * @param {string} btn - The button that was clicked.
+           * @param {ImportEditor.OutputData} outDataObj The dialog output.
+           * @returns {boolean} If the window closed.
+           */
+          (btn, outDataObj) => {
+            if (btn === 'OK') {
+              // Replace names in the local model
+              outDataObj.entries.forEach((entry) => {
+                this.replaceNames(
+                  entry.oldName,
+                  entry.data.name,
+                  entry.type,
+                  outDataObj.model,
+                  false,
+                );
+              });
+              // Apply changes to the global model
+              // outDataObj.entries.forEach((entry) => {
+              //   switch (entry.action) {
+              //     case 'rename':
+              //       const obj = outDataObj.model[`${entry.type}List`].find(
+              //         (item) => item[entry.type].name === entry.data.name,
+              //       );
+              //       if (entry.type === 'LogicNode') {
+              //         this.addNewLogicTree(obj);
+              //       } else {
+              //         this[`addNew${entry.type}`](obj);
+              //       }
+              //       break;
+              //     case 'replace':
+              //       const target = this.getByName(
+              //         entry.type,
+              //         simApp.allDataModel,
+              //         entry.data.name,
+              //       );
+              //       Object.keys(entry.data).forEach((key) => {
+              //         target[entry.type][key] = entry.data[key];
+              //       });
+              //       break;
+              //     default:
+              //     // ignore (literally)
+              //   }
+              // });
+              resolve(outDataObj.model);
+            }
+            return true;
+          },
+          {
+            model: exportedContent,
+          },
+          false,
+          null,
+          null,
+          800,
+          500,
+        );
+        document.body.removeChild(wnd.div);
+        var contentPanel = document.getElementById('ContentPanel');
+        adjustWindowPos(contentPanel, wnd.div);
+        contentPanel.appendChild(wnd.div);
       });
     };
 
