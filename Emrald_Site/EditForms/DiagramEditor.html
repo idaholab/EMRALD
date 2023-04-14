@@ -38,6 +38,25 @@
         .template-choice.selected {
             background: rgb(211, 211, 211);
         }
+
+        .template-choice.disabled {
+            color: rgb(150, 150, 150);
+        }
+
+        .path {
+            background: white;
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        .group-button::before {
+            content: "\1F4C1  ";
+        }
+        .group-button {
+            background-color: antiquewhite;
+            padding: 0.5em;
+            font-size: 1em;
+            margin: 0.1em;
+        }
     </style>
 
 </head>
@@ -82,12 +101,27 @@
                 <div class="separator">OR</div>
                 <br />
                 <b>Select a template: </b>
-                <div
+                <button ng-if="!templateListView" ng-click="toggleTemplateListView()">List View</button>
+                <button ng-if="templateListView" ng-click="toggleTemplateListView()">Group View</button>
+                <div ng-if="templateListView"
                     ng-repeat="template in diagramList track by $index"
                     ng-click="chooseTemplate($index)"
                     class="template-choice"
-                    ng-class="{ selected: selectedTemplate === $index }">
-                    {{stringifyGroup(template.group)}} | {{template.name}}
+                    ng-class="{ selected: selectedTemplate === $index, disabled: template.disabledReasons.length > 0 }">
+                    <span class="path">{{stringifyGroup(template.group)}}</span> | <b>{{template.name}}</b>
+                </div>
+                <div ng-if="!templateListView" class="path">{{currentGroupPath.join(" > ")}}</div>
+                <button ng-if="!templateListView && currentGroupPath.length > 0" ng-click="goUpGroupLevel()">Go Up</button>
+                <br />
+                <div ng-if="!templateListView">
+                    <button class="group-button" ng-repeat="group in currentGroupButtons" ng-click="goDownGroupLevel(group)">{{group}}</button>
+                    <div
+                        ng-repeat="template in currentGroupTemplates track by $index"
+                        ng-click="chooseTemplateFromCurrentGroup($index)"
+                        class="template-choice"
+                        ng-class="{ selected: selectedTemplateFromGroup === $index, disabled: template.disabledReasons.length > 0 }">
+                        <b>{{template.name}}</b>
+                    </div>
                 </div>
             </div>
             <div id="singleStatePanel" style="display:none;">
