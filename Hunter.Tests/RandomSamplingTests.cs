@@ -25,6 +25,7 @@ namespace Hunter.Tests
 
             TestContext.Out.WriteLine($"Random Sequence: {firstSample}, {secondSample}, {thirdSample}");
 
+
             Assert.AreEqual(firstSample, 9.555961172814055, 0.0001);
             Assert.AreEqual(secondSample, 9.712146815037777, 0.0001);
             Assert.AreEqual(thirdSample, 9.705234995378733, 0.0001);
@@ -45,9 +46,9 @@ namespace Hunter.Tests
 
             TestContext.Out.WriteLine($"Random Sequence: {firstSample}, {secondSample}, {thirdSample}");
 
-            Assert.AreEqual(firstSample, 8.667883518442164, 0.0001);
-            Assert.AreEqual(secondSample, 9.13644044511333, 0.0001);
-            Assert.AreEqual(thirdSample, 9.115704986136201, 0.0001);
+            Assert.AreEqual(firstSample, 7.581644173065969, 0.0001);
+            Assert.AreEqual(secondSample, 7.917168049025229, 0.0001);
+            Assert.AreEqual(thirdSample, 7.902010535724295, 0.0001);
         }
 
         [Test]

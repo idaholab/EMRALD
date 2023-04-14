@@ -176,11 +176,15 @@ namespace Hunter
         /// <returns>A random time value sampled from the Log-Normal distribution with a minimum value of zero.</returns>
         internal static double SampleLogTime(double time, double std)
         {
-            // Create a Log-Normal distribution object with the given mean (time) and standard deviation (std)
-            LogNormal logNormalDistribution = new LogNormal(time, std, SingleRandom.Instance);
+            // Calculate the shape and scale parameters
+            double shape = Math.Sqrt(Math.Log(1 + (std * std) / (time * time)));
+            double scale = Math.Log(time) - 0.5 * shape * shape;
+
+            // Create a Log-Normal distribution object with the given shape and scale parameters
+            LogNormal logNormalDistribution = new LogNormal(scale, shape, SingleRandom.Instance);
 
             // Sample a random time value from the Log-Normal distribution
-            double randomTime = Math.Log(logNormalDistribution.Sample());
+            double randomTime = logNormalDistribution.Sample();
 
             // Ensure the sampled time is non-negative
             randomTime = Math.Max(0, randomTime);
