@@ -7,7 +7,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Schema;
 using MathNet.Numerics.Distributions;
-
+using SimulationDAL;
 
 namespace Hunter
 {
@@ -62,8 +62,6 @@ namespace Hunter
         }
 
         private Dictionary<string, Primitive> _primitives;
-
-        private Random _random = new Random();
 
         /// <summary>
         /// Gets or sets a value indicating whether to repeat <see cref="EvalStep"/> until all primitives are completed (default is false).
@@ -159,7 +157,7 @@ namespace Hunter
         private static double SampleNormalTime(double time, double std)
         {
             // Create a Normal distribution object with the given mean (time) and standard deviation (std)
-            Normal normalDistribution = new Normal(time, std);
+            Normal normalDistribution = new Normal(time, std, SingleRandom.Instance);
 
             // Sample a random time value from the normal distribution
             double randomTime = normalDistribution.Sample();
@@ -179,7 +177,7 @@ namespace Hunter
         private static double SampleLogTime(double time, double std)
         {
             // Create a Log-Normal distribution object with the given mean (time) and standard deviation (std)
-            LogNormal logNormalDistribution = new LogNormal(time, std);
+            LogNormal logNormalDistribution = new LogNormal(time, std, SingleRandom.Instance);
 
             // Sample a random time value from the Log-Normal distribution
             double randomTime = logNormalDistribution.Sample();
@@ -198,7 +196,7 @@ namespace Hunter
         private static double SampleExponentialTime(double time)
         {
             // Create an Exponential distribution object with the given mean (time)
-            Exponential exponentialDistribution = new Exponential(time);
+            Exponential exponentialDistribution = new Exponential(time, SingleRandom.Instance);
 
             // Sample a random time value from the exponential distribution
             double randomTime = exponentialDistribution.Sample();
@@ -383,7 +381,7 @@ namespace Hunter
                     // Update the success status based on the nominal HEP
                     if (success)
                     {
-                        success = _random.NextDouble() >= nominalHep;
+                        success = SingleRandom.Instance.NextDouble() >= nominalHep;
                     }
                 }
                 else

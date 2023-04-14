@@ -27,6 +27,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\SimulationDAL\SimulationDAL.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Update="hunter\archetypes\psfs.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

@@ -6,6 +6,8 @@ using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using NUnit.Framework.Constraints;
 
+using SimulationDAL;
+
 namespace Hunter.Tests
 {
     [TestFixture]
