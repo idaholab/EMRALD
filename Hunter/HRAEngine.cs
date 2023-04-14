@@ -154,7 +154,7 @@ namespace Hunter
         /// <param name="time">The mean time value of the Normal distribution.</param>
         /// <param name="std">The standard deviation of the Normal distribution.</param>
         /// <returns>A random time value sampled from the Normal distribution with a minimum value of zero.</returns>
-        private static double SampleNormalTime(double time, double std)
+        internal static double SampleNormalTime(double time, double std)
         {
             // Create a Normal distribution object with the given mean (time) and standard deviation (std)
             Normal normalDistribution = new Normal(time, std, SingleRandom.Instance);
@@ -174,13 +174,13 @@ namespace Hunter
         /// <param name="time">The mean time value of the Log-Normal distribution.</param>
         /// <param name="std">The standard deviation of the Log-Normal distribution.</param>
         /// <returns>A random time value sampled from the Log-Normal distribution with a minimum value of zero.</returns>
-        private static double SampleLogTime(double time, double std)
+        internal static double SampleLogTime(double time, double std)
         {
             // Create a Log-Normal distribution object with the given mean (time) and standard deviation (std)
             LogNormal logNormalDistribution = new LogNormal(time, std, SingleRandom.Instance);
 
             // Sample a random time value from the Log-Normal distribution
-            double randomTime = logNormalDistribution.Sample();
+            double randomTime = Math.Log(logNormalDistribution.Sample());
 
             // Ensure the sampled time is non-negative
             randomTime = Math.Max(0, randomTime);
@@ -193,10 +193,11 @@ namespace Hunter
         /// </summary>
         /// <param name="time">The mean time value of the Exponential distribution.</param>
         /// <returns>A random time value sampled from the Exponential distribution with a minimum value of zero.</returns>
-        private static double SampleExponentialTime(double time)
+        internal static double SampleExponentialTime(double time)
         {
             // Create an Exponential distribution object with the given mean (time)
-            Exponential exponentialDistribution = new Exponential(time, SingleRandom.Instance);
+            var rate = 1 / time;
+            Exponential exponentialDistribution = new Exponential(rate, SingleRandom.Instance);
 
             // Sample a random time value from the exponential distribution
             double randomTime = exponentialDistribution.Sample();

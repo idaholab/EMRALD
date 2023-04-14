@@ -5,6 +5,12 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
+	
+  <ItemGroup>
+	<AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+	  <_Parameter1>Hunter.Tests</_Parameter1>
+	</AssemblyAttribute>
+  </ItemGroup>
 
   <ItemGroup>
     <None Remove="hunter\primitives.json" />
