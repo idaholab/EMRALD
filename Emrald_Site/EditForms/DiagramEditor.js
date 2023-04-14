@@ -164,6 +164,8 @@ function OnLoad(dataObj) {
                 el.style.display = "block";
             }
         }
+
+        scope.diagramList = diagramData.diagramList;
         scope.diagramTemplates = diagramData.diagramTemplates;
         if (scope.diagramTemplates && scope.diagramTemplates.length > 0) {
             var aInst = scope.diagramTemplates.find(function (temp) {
@@ -212,7 +214,7 @@ function GetDataObject() {
         diagramData.importedContent = scope.data.importedContent;
     }
     if (scope.selectedTemplate !== null) {
-        diagramData.diagramTemplate = scope.diagramTemplates[scope.selectedTemplate];
+        diagramData.diagramTemplate = scope.diagramList[scope.selectedTemplate].name;
     }
     diagramData.forceMerge = scope.data.forceMerge;
     return diagramData;
@@ -328,9 +330,45 @@ diagramModule.controller('diagramController', function ($scope, $timeout) {
             $scope.selectedTemplate = null;
             $scope.data.templateIsSelected = false;
         } else {
+            if ($scope.diagramList[index].disabledReasons.length > 0){
+                alert(`This template cannot be selected because: \n\n${$scope.diagramList[index].disabledReasons.join('\n')}`);
+                return;
+            }
             $scope.selectedTemplate = index;
             $scope.data.templateIsSelected = true;
+            $scope.data.forceMerge = true;
         }
     };
+
+    $scope.getGroupsFromLocalStorage = () => {
+        /** @type {string | null} */
+        let groupsString = localStorage.getItem('templates');
+        /** @type {EMRALD.ModelTemplate[]} */
+        let groups = [];
+        if (groupsString && groupsString !== "undefined") {
+          groups = JSON.parse(groupsString);
+        }
+
+        return groups;
+      }
+
+    $scope.stringifyGroup = (group) => {
+        let groupString = "";
+        if (group !== null){
+          groupString = group.name;
+          if (group.subgroup !== null){
+            groupString += $scope.stringifySubGroup(group.subgroup)
+          }
+        }
+        return groupString;
+      }
+
+      $scope.stringifySubGroup = (group) => {
+        let res = " > " + group.name;
+        if (group.subgroup !== null) {
+          res += $scope.stringifySubGroup(group.subgroup);
+        }
+        return res;
+      }
 
 });

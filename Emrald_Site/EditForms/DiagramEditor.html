@@ -83,11 +83,11 @@
                 <br />
                 <b>Select a template: </b>
                 <div
-                    ng-repeat="template in diagramTemplates track by $index"
+                    ng-repeat="template in diagramList track by $index"
                     ng-click="chooseTemplate($index)"
                     class="template-choice"
                     ng-class="{ selected: selectedTemplate === $index }">
-                    {{template}}
+                    {{stringifyGroup(template.group)}} | {{template.name}}
                 </div>
             </div>
             <div id="singleStatePanel" style="display:none;">

@@ -24,6 +24,7 @@
  * @property {string} mutExcl - If the action is mutually exclusive.
  * @property {string} name - The name of the action.
  * @property {NewState[]} newStates - New states the action can enter.
+ * @property {boolean} required - Is required in model (for importing templates).
  */
 
 /**
@@ -46,6 +47,7 @@
  * @property {string} name - The diagram name.
  * @property {SingleState[]} singleStates - Single state list.
  * @property {string[]} states - The names of states in the diagram.
+ * @property {boolean} required - Is required in model (for importing templates).
  */
 
 /**
@@ -63,6 +65,7 @@
  * @property {boolean} mainItem - If the event is the main item.
  * @property {string} name - The name of the event.
  * @property {string[]} triggerStates - The names of states the event triggers.
+ * @property {boolean} required - Is required in model (for importing templates).
  */
 
 /**
@@ -79,6 +82,7 @@
  * @property {number} id - The logic node id.
  * @property {string} name - The logic node name.
  * @property {string} rootName - The name of the root node.
+ * @property {boolean} required - Is required in model (for importing templates).
  */
 
 /**
@@ -103,6 +107,7 @@
  * @property {string[]} immediateActions - Immediate actions in the state.
  * @property {string} name - The name of the state.
  * @property {string} stateType - The state type.
+ * @property {boolean} required - Is required in model (for importing templates).
  */
 
 /**
@@ -140,6 +145,7 @@
  * @property {string} name - The model name.
  * @property {string} version - The version of the model format.
  * @property {EMRALD.TemplateGroup | null} group - The group to which the template belongs.
+ * @property {string[]} disabledReasons - List of missing requirements for the template to be used.
  */
 
 /**

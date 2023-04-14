@@ -120,9 +120,48 @@ if (typeof Navigation === 'undefined')
       var diagramList = this.getLocalTemplates();
       var diagramTemplates = [];
       for (var i = 0; i < diagramList.length; i++) {
+        diagramList[i].disabledReasons = [];
+
+        diagramList[i].ActionList.forEach(a => {
+          if (a.Action.required && !this.ActionExists(a.Action.name)) {
+            diagramList[i].disabledReasons.push(`Action '${a.Action.name}' must already exist.`)
+          }
+        });
+        diagramList[i].DiagramList.forEach(d => {
+          if (d.Diagram.required && !this.DiagramExists(d.Diagram.name)) {
+            diagramList[i].disabledReasons.push(`Diagram '${d.Diagram.name}' must already exist.`)
+          }
+        });
+        diagramList[i].EventList.forEach(e => {
+          if (e.Event.required && !this.EventExists(e.Event.name)) {
+            diagramList[i].disabledReasons.push(`Event '${e.Event.name}' must already exist.`)
+          }
+        });
+        diagramList[i].ExtSimList.forEach(es => {
+          if (es.ExtSim.required && !this.ExtSimExists(es.ExtSim.name)) {
+            diagramList[i].disabledReasons.push(`ExtSim '${es.ExtSim.name}' must already exist.`)
+          }
+        });
+        diagramList[i].LogicNodeList.forEach(ln => {
+          if (ln.LogicNode.required && !this.LogicNodeExists(ln.LogicNode.name)) {
+            diagramList[i].disabledReasons.push(`Logic Node '${ln.LogicNode.name}' must already exist.`)
+          }
+        });
+        diagramList[i].StateList.forEach(s => {
+          if (s.State.required && !this.StateExists(s.State.name)) {
+            diagramList[i].disabledReasons.push(`State '${s.State.name}' must already exist.`)
+          }
+        });
+        diagramList[i].VariableList.forEach(s => {
+          if (s.Variable.required && !this.VariableExists(s.Variable.name)) {
+            diagramList[i].disabledReasons.push(`Variable '${s.Variable.name}' must already exist.`)
+          }
+        });
+
         diagramTemplates.push(diagramList[i].name);
       }
       dataObj.diagramTemplates = diagramTemplates;
+      dataObj.diagramList = diagramList;
 
       var wnd = mxWindow.createFrameWindow(
         url,
@@ -195,7 +234,7 @@ if (typeof Navigation === 'undefined')
           }
           return true;
         }.bind(this),
-      dataObj,
+      dataObj,  // input data
       true, //ismodal
         null,
         null,
@@ -3320,7 +3359,7 @@ if (typeof Navigation === 'undefined')
     /**
      * Safely gets the saved local templates, if any.
      * 
-     * @returns {EMRALD.Model[]} The local templates.
+     * @returns {EMRALD.ModelTemplate[]} The local templates.
      */
     Sidebar.prototype.getLocalTemplates = function () {
       let localTemplates = [];
@@ -3588,7 +3627,7 @@ if (typeof Navigation === 'undefined')
         let hasConflict = false;
         const conflicts = [];
         Object.values(importedContent).forEach((value, i) => {
-          if (typeof value === 'object' && typeof value.length === 'number') {
+          if (value !== null && typeof value === 'object' && typeof value.length === 'number') {
             value.forEach((item) => {
               const [type] = Object.keys(item);
               const name = item[type].name;
