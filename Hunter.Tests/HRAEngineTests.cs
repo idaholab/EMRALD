@@ -287,6 +287,7 @@ namespace Hunter.Tests
 
             // Assert
             Assert.IsNotNull(json, "GetJSON() should return a non-null JSON string.");
+            TestContext.Out.WriteLine(json);
             JObject jsonObject = JObject.Parse(json);
             Assert.IsNotNull(jsonObject, "GetJSON() should return a valid JSON object.");
         }

@@ -8,7 +8,8 @@
     "distribution_type": "log",
     "time": 2.23,
     "std": 1.18,
-    "nominal_hep": 0.001
+    "nominal_hep": 0.001,
+    "relevant_psfs": [ "Sa", "ATa", "Ca", "Ea", "EaTa", "FfDa", "Pa", "WPa" ]
   },
   {
     "operator": "Action",
@@ -17,9 +18,10 @@
     "sub_primitive_type": "f",
     "id": "Af",
     "distribution_type": "log",
-    "time": null,
-    "std": null,
-    "nominal_hep": 0.008
+    "time": 5,
+    "std": 2.5,
+    "nominal_hep": 0.008,
+    "relevant_psfs": [ "Sa", "ATa", "Ca", "Ea", "EaTa", "FfDa", "Pa", "WPa" ]
   },
   {
     "operator": "Checking",
@@ -30,7 +32,8 @@
     "distribution_type": "log",
     "time": 2.14,
     "std": 0.76,
-    "nominal_hep": 0.001
+    "nominal_hep": 0.001,
+    "relevant_psfs": [ "Sd", "ATd", "Cd", "Ed", "EaTd", "FfDd" ]
   },
   {
     "operator": "Checking",
@@ -39,9 +42,10 @@
     "sub_primitive_type": "f",
     "id": "Cf",
     "distribution_type": "log",
-    "time": null,
-    "std": null,
-    "nominal_hep": 0.01
+    "time": 4.3,
+    "std": 1.5,
+    "nominal_hep": 0.01,
+    "relevant_psfs": [ "Sd", "ATd", "Cd", "Ed", "EaTd", "FfDd" ]
   },
   {
     "operator": "Retrieval",
@@ -52,7 +56,8 @@
     "distribution_type": "log",
     "time": 2.11,
     "std": 0.6,
-    "nominal_hep": 0.001
+    "nominal_hep": 0.001,
+    "relevant_psfs": [ "Sd", "ATd", "Cd", "Ed", "EaTd", "FfDd" ]
   },
   {
     "operator": "Retrieval",
@@ -61,9 +66,10 @@
     "sub_primitive_type": "f",
     "id": "Rf",
     "distribution_type": "log",
-    "time": null,
-    "std": null,
-    "nominal_hep": 0.01
+    "time": 4.2,
+    "std": 1.2,
+    "nominal_hep": 0.01,
+    "relevant_psfs": [ "Sd", "ATd", "Cd", "Ed", "EaTd", "FfDd" ]
   },
   {
     "operator": "Instruction Communication",
@@ -74,7 +80,8 @@
     "distribution_type": "log",
     "time": 2.46,
     "std": 0.76,
-    "nominal_hep": 0.003
+    "nominal_hep": 0.003,
+    "relevant_psfs": [ "Sd", "ATd", "Cd", "Ed", "EaTd", "FfDd" ]
   },
   {
     "operator": "Instruction Communication",
@@ -85,7 +92,8 @@
     "distribution_type": "log",
     "time": 1.92,
     "std": 0.93,
-    "nominal_hep": 0.001
+    "nominal_hep": 0.001,
+    "relevant_psfs": [ "Sa", "ATa", "Ca", "Ea", "EaTa", "FfDa" ]
   },
   {
     "operator": "Selection",
@@ -96,7 +104,8 @@
     "distribution_type": "log",
     "time": 2.93,
     "std": 1.11,
-    "nominal_hep": 0.001
+    "nominal_hep": 0.001,
+    "relevant_psfs": [ "Sd", "ATd", "Cd", "Ed", "EaTd", "FfDd" ]
   },
   {
     "operator": "Selection",
@@ -105,9 +114,10 @@
     "sub_primitive_type": "f",
     "id": "Sf",
     "distribution_type": "log",
-    "time": null,
-    "std": null,
-    "nominal_hep": 0.008
+    "time": 6,
+    "std": 2.2,
+    "nominal_hep": 0.008,
+    "relevant_psfs": [ "Sd", "ATd", "Cd", "Ed", "EaTd", "FfDd" ]
   },
   {
     "operator": "Decision",
@@ -116,9 +126,10 @@
     "sub_primitive_type": "p",
     "id": "Dp",
     "distribution_type": "expo",
-    "time": 0.02,
+    "time": 5,
     "std": null,
-    "nominal_hep": 0.001
+    "nominal_hep": 0.001,
+    "relevant_psfs": [ "Sd", "ATd", "Cd", "Ed", "EaTd", "FfDd", "Pd", "WPd" ]
   },
   {
     "operator": "Decision",
@@ -126,9 +137,10 @@
     "base_primitive_type": "D",
     "sub_primitive_type": "w",
     "id": "Dw",
-    "distribution_type": "log",
-    "time": null,
+    "distribution_type": "expo",
+    "time": 5,
     "std": null,
-    "nominal_hep": 0.01
+    "nominal_hep": 0.01,
+    "relevant_psfs": [ "Sd", "ATd", "Cd", "Ed", "EaTd", "FfDd", "WPd" ]
   }
 ]

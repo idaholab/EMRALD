@@ -2,27 +2,30 @@
   "steps": [
       {
         "step_id": "Entry Conditions",
-        "primitive_ids": [ "Rc", "Rc", "Rc", "Dp" ]
+        "primitive_ids": [ "ICp", "Rc", "ICp", "Rc", "ICp", "Rc", "ICp", "Dp" ]
       },
       {
         "step_id": "Step 1 - Investigate SG Rupture",
-        "primitive_ids": [ "Rc", "Dw", "Rc", "Dw", "Rc", "Dw", "Dp" ]
+        "primitive_ids": [ "ICp", "Rc", "ICp", "Dw", 
+                           "ICp", "Rc", "ICp", "Dw", 
+                           "ICp", "Rc", "ICp", "Dw", 
+                           "ICp", "Dp" ]
       },
       {
         "step_id": "Step 2.1 - Isolate SG - Stop Fw",
-        "primitive_ids": [ "Ac", "Rc" ]
+        "primitive_ids": [ "ICp", "Ac", "ICp", "Rc" ]
       },
       {
         "step_id": "Step 2.2 - Isolate SG - Place the SG Level Controller in manual",
-        "primitive_ids": [ "Ac", "Rc" ]
+        "primitive_ids": [ "ICp", "Ac", "ICp", "Rc" ]
       },
       {
         "step_id": "Step 2.3 - Isolate SG - Close FW IV",
-        "primitive_ids": [ "Ac", "Rc" ]
+        "primitive_ids": [ "ICp", "Ac", "ICp", "Rc" ]
       },
       {
         "step_id": "Step 2.4 - Isolate SG - Close MS IV",
-        "primitive_ids": [ "Ac", "Rc" ]
+        "primitive_ids": [ "ICp", "Ac", "ICp", "Rc" ]
       },
       {
         "step_id": "Step 3 - Perform Rapid Shutdown",
