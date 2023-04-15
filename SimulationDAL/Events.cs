@@ -7,9 +7,13 @@ using ScriptEngineNS;
 using System.Xml;
 using System.Collections.ObjectModel;
 using MathNet.Numerics.Distributions;
-using MessageDefLib;
+using CommonDefLib;
 using Newtonsoft.Json;
 using System.Linq;
+using static SimulationDAL.DistEvent;
+using System.IO;
+using Hunter;
+using Microsoft.CodeAnalysis;
 
 namespace SimulationDAL
 {
@@ -1227,9 +1231,22 @@ namespace SimulationDAL
     }
   }
 
+  class PSF_Link
+  {
+    public string psfName { get; set; }
+    public string simVar { get; set; }
+  }
+
+
   public class HRAEval : TimeBasedEvent //etHRAEval
   {
-    //TODO variables needed for hunter info
+    //variables needed for hunter info
+    private string _hunterModelFilename = @"hunter/models/sgtr_model.json";
+    private string _procedureName = "";
+    private int _startStep = 1;
+    private int _endStep = 0;
+    private Dictionary<string, SimVariable> _PSFs = new Dictionary<string, SimVariable>(); //key is the psf name value is the EMRALD variable
+
 
 
     protected override EnEventType GetEvType() { return EnEventType.etHRAEval; }
@@ -1281,37 +1298,37 @@ namespace SimulationDAL
 
       lists.allEvents.Add(this, false);
 
-      if (EnEventType.etFailRate != (EnEventType)Enum.Parse(typeof(EnEventType), (string)dynObj.evType, true))
+      if (EnEventType.etHRAEval != (EnEventType)Enum.Parse(typeof(EnEventType), (string)dynObj.evType, true))
         throw new Exception("event types do not match, cannot change the type once an item is created!");
 
-      //TODO read the HRA specific items that are not references to other items
-      //this.timeRate = XmlConvert.ToTimeSpan((string)dynObj.lambdaTimeRate);
-      //if (dynObj.missionTime == null)
-      //  compMissionTime = TimeSpan.FromDays(365.3);
-      //else
-      //{
-      //  this.compMissionTime = XmlConvert.ToTimeSpan((string)dynObj.missionTime);
-      //  if (compMissionTime < TimeSpan.FromSeconds(1))
-      //    compMissionTime = TimeSpan.FromDays(365.3);
-      //}
+      
+      //read the HRA specific items that are not references to other items
+      try
+      {
+        _hunterModelFilename = (string)dynObj.hraTaskModelFile;
+        if (!Path.IsPathRooted(_hunterModelFilename))
+        {
+          _hunterModelFilename = System.IO.Directory.GetCurrentDirectory() + _hunterModelFilename;
+        }
 
-      //if ((dynObj.useVariable == null) || !(bool)dynObj.useVariable)
-      //{
-      //  //use normal assigned lambda if not a variable
-      //  this._lambda = (double)dynObj.lambda;
-      //}
-      //else
-      //{
 
-      //  try //may not exist in earlier versions so use a default
-      //  {
-      //    onVarChange = (EnOnChangeTask)Enum.Parse(typeof(EnOnChangeTask), (string)dynObj.onVarChange, true);
-      //  }
-      //  catch
-      //  {
-      //    onVarChange = EnOnChangeTask.ocIgnore;
-      //  }
-      //}
+        if (!File.Exists(this._hunterModelFilename))
+          throw new Exception();
+      }
+      catch
+      {
+        throw new Exception("Missing the hraTaskModelFile for " + this.name);
+      }
+
+      if (dynObj.procedureName == null)
+        throw new Exception("Missing procedure name for HRA event - " + this.name );
+      else
+        this._procedureName = (string)dynObj.procedureName;
+
+      if (dynObj.startStep != null)
+        this._startStep = (int)dynObj.startStep;
+      if (dynObj.endStep != null)
+        this._endStep = (int)dynObj.endStep;
 
       processed = true;
       return true;
@@ -1329,18 +1346,24 @@ namespace SimulationDAL
       }
 
       //TODO load any referenced items
-      //if ((dynObj.useVariable != null) && (bool)dynObj.useVariable)
-      //{
-      //  try
-      //  {
-      //    this.lambdaVariable = lists.allVariables.FindByName((string)dynObj.lambda);
-      //    this.AddRelatedItem(lambdaVariable.id);
-      //  }
-      //  catch
-      //  {
-      //    throw new Exception("Failed to find variable - " + (string)dynObj.time);
-      //  }
-      //}
+      if ((dynObj.psfLinks != null))
+      {
+        //Load the psf to variable connection
+        string psfLinksStr = Convert.ToString(dynObj.psfLinks);
+        List<PSF_Link> psfLinks = JsonConvert.DeserializeObject<List<PSF_Link>>(psfLinksStr);
+        foreach(PSF_Link psfLink in psfLinks)
+        {
+          try
+          {
+            this._PSFs.Add(psfLink.psfName, lists.allVariables.FindByName(psfLink.simVar));
+          }
+          catch
+          {
+            throw new Exception("Failed to find variable - " + (string)psfLink.simVar);
+          }
+        }
+
+      }
 
       return true;
     }
@@ -1349,10 +1372,16 @@ namespace SimulationDAL
     {
       TimeSpan retVal = TimeSpan.MaxValue; //value in hours until the time this event occures
 
-      //TODO - Assign any data from the model before running the HRA code
+      //Assign any data from the model before running the HRA code
+
+      Dictionary<string, Procedure> procedures = HRAEngine.BuildProcedureCatalog(_hunterModelFilename);
+
+      HRAEngine hraEngine = new HRAEngine();
+
+      //TODO setup the PSFs
 
       //Call the HRA library to determine the time of the event
-      
+      retVal = hraEngine.EvaluateSteps(procedures, _procedureName, _startStep, _endStep);
 
       return retVal;
     }
@@ -2097,8 +2126,10 @@ namespace SimulationDAL
         case EnEventType.etExponentialDist: retEv = new ExponentialDistEvent(); break;
         case EnEventType.etLogNormalDist: retEv = new LogNormalDistEvent(); break;
         case EnEventType.etDistribution: retEv = new DistEvent(); break;
+        case EnEventType.etHRAEval: retEv = new HRAEval(); break;
 
-        default: break;
+        default: 
+          throw new Exception("Creation method for this type not implementd - " + evType.ToString() );
       }
 
       return retEv;
@@ -2191,7 +2222,7 @@ namespace SimulationDAL
         if ((evType == EnEventType.etStateCng) || (evType == EnEventType.etComponentLogic) || 
             (evType == EnEventType.etVarCond) || (evType == EnEventType.et3dSimEv) ||
             (evType == EnEventType.etTimer) || (evType == EnEventType.etFailRate) ||
-            (evType == EnEventType.etDistribution))
+            (evType == EnEventType.etDistribution) || (evType == EnEventType.etHRAEval))
         {
           Event curItem = this.FindByName((string)item.name, false);
           try

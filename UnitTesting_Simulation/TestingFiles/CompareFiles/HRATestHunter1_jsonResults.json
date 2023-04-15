@@ -1,0 +1,191 @@
+{
+  "name": "HRATest",
+  "numRuns": 100,
+  "keyStates": [
+    {
+      "name": "TaskDone",
+      "contributionRate": 0.41,
+      "cRate5th": 0.31360067,
+      "cRate95th": 0.50639933,
+      "count": 41,
+      "timeMean": "00:15:47.8183211",
+      "timeStdDeviation": "00:07:36.6805063",
+      "timeMin": "00:03:28.7863444",
+      "timeMax": "00:33:19.8397574",
+      "watchVariables": {},
+      "paths": [
+        {
+          "name": "EventStart",
+          "contributionRate": 1.0,
+          "cRate5th": 1.0,
+          "cRate95th": 1.0,
+          "count": 41,
+          "timeMean": "00:00:00",
+          "timeStdDeviation": "00:00:00",
+          "timeMin": "00:00:00",
+          "timeMax": "00:00:00",
+          "watchVariables": {},
+          "entries": [],
+          "exits": [
+            {
+              "desc": "Event [TimeUntilDirections] occured and caused the action - Goto_PerformingAction",
+              "name": "TimeUntilDirections & Goto_PerformingAction",
+              "evDesc": "",
+              "actDesc": "",
+              "otherState": "PerformingAction",
+              "cnt": 41
+            }
+          ]
+        },
+        {
+          "name": "PerformingAction",
+          "contributionRate": 1.0,
+          "cRate5th": 1.0,
+          "cRate95th": 1.0,
+          "count": 41,
+          "timeMean": "00:15:09.9575833",
+          "timeStdDeviation": "00:05:22.6059114",
+          "timeMin": "00:02:54.2419392",
+          "timeMax": "00:32:39.8404167",
+          "watchVariables": {},
+          "entries": [
+            {
+              "desc": "Event [TimeUntilDirections] occured and caused the action - Goto_PerformingAction",
+              "name": "TimeUntilDirections & Goto_PerformingAction",
+              "evDesc": "",
+              "actDesc": "",
+              "otherState": "EventStart",
+              "cnt": 41
+            }
+          ],
+          "exits": [
+            {
+              "desc": "Event [HRAProcedure] occured and caused the action - Goto_TaskDone",
+              "name": "HRAProcedure & Goto_TaskDone",
+              "evDesc": "",
+              "actDesc": "",
+              "otherState": "TaskDone",
+              "cnt": 41
+            }
+          ]
+        },
+        {
+          "name": "TaskDone",
+          "contributionRate": 1.0,
+          "cRate5th": 1.0,
+          "cRate95th": 1.0,
+          "count": 41,
+          "timeMean": "00:15:47.8183211",
+          "timeStdDeviation": "00:07:36.6805063",
+          "timeMin": "00:03:28.7863444",
+          "timeMax": "00:33:19.8397574",
+          "watchVariables": {},
+          "entries": [
+            {
+              "desc": "Event [HRAProcedure] occured and caused the action - Goto_TaskDone",
+              "name": "HRAProcedure & Goto_TaskDone",
+              "evDesc": "",
+              "actDesc": "",
+              "otherState": "PerformingAction",
+              "cnt": 41
+            }
+          ],
+          "exits": []
+        }
+      ]
+    },
+    {
+      "name": "NotInTime",
+      "contributionRate": 0.59,
+      "cRate5th": 0.49360067,
+      "cRate95th": 0.68639933,
+      "count": 59,
+      "timeMean": "00:15:41.1668907",
+      "timeStdDeviation": "00:07:12.8100829",
+      "timeMin": "00:03:46.2624104",
+      "timeMax": "00:25:52.8701182",
+      "watchVariables": {},
+      "paths": [
+        {
+          "name": "EventStart",
+          "contributionRate": 1.0,
+          "cRate5th": 1.0,
+          "cRate95th": 1.0,
+          "count": 59,
+          "timeMean": "00:00:00",
+          "timeStdDeviation": "00:00:00",
+          "timeMin": "00:00:00",
+          "timeMax": "00:00:00",
+          "watchVariables": {},
+          "entries": [],
+          "exits": [
+            {
+              "desc": "Event [TimeUntilDirections] occured and caused the action - Goto_PerformingAction",
+              "name": "TimeUntilDirections & Goto_PerformingAction",
+              "evDesc": "",
+              "actDesc": "",
+              "otherState": "PerformingAction",
+              "cnt": 59
+            }
+          ]
+        },
+        {
+          "name": "PerformingAction",
+          "contributionRate": 1.0,
+          "cRate5th": 1.0,
+          "cRate95th": 1.0,
+          "count": 59,
+          "timeMean": "00:14:59.1668907",
+          "timeStdDeviation": "00:05:07.9246165",
+          "timeMin": "00:03:04.2624104",
+          "timeMax": "00:25:10.8701182",
+          "watchVariables": {},
+          "entries": [
+            {
+              "desc": "Event [TimeUntilDirections] occured and caused the action - Goto_PerformingAction",
+              "name": "TimeUntilDirections & Goto_PerformingAction",
+              "evDesc": "",
+              "actDesc": "",
+              "otherState": "EventStart",
+              "cnt": 59
+            }
+          ],
+          "exits": [
+            {
+              "desc": "Event [TimeToFail] occured and caused the action - Goto_NotInTime",
+              "name": "TimeToFail & Goto_NotInTime",
+              "evDesc": "",
+              "actDesc": "",
+              "otherState": "NotInTime",
+              "cnt": 59
+            }
+          ]
+        },
+        {
+          "name": "NotInTime",
+          "contributionRate": 1.0,
+          "cRate5th": 1.0,
+          "cRate95th": 1.0,
+          "count": 59,
+          "timeMean": "00:15:41.1668907",
+          "timeStdDeviation": "00:07:12.8100829",
+          "timeMin": "00:03:46.2624104",
+          "timeMax": "00:25:52.8701182",
+          "watchVariables": {},
+          "entries": [
+            {
+              "desc": "Event [TimeToFail] occured and caused the action - Goto_NotInTime",
+              "name": "TimeToFail & Goto_NotInTime",
+              "evDesc": "",
+              "actDesc": "",
+              "otherState": "PerformingAction",
+              "cnt": 59
+            }
+          ],
+          "exits": []
+        }
+      ]
+    }
+  ],
+  "otherStatePaths": []
+}

@@ -19,6 +19,7 @@ using NLog;
 using NLog.Config;
 using SimulationDAL;
 using JsonDiffPatchDotNet;
+using CommonDefLib;
 
 //using System.Windows.Forms;
 

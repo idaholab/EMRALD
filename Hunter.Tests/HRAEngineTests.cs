@@ -5,8 +5,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using NUnit.Framework.Constraints;
-
-using SimulationDAL;
+using CommonDefLib;
 
 namespace Hunter.Tests
 {

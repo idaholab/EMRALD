@@ -16,7 +16,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\MessageDefLib\MessageDefLib.csproj" />
+    <ProjectReference Include="..\Hunter\Hunter.csproj" />
+    <ProjectReference Include="..\MessageDefLib\CommonDefLib.csproj" />
   </ItemGroup>
 
   <ItemGroup>

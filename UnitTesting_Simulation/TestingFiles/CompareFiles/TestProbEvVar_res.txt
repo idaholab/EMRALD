@@ -2,3 +2,6 @@ Simulation = Sim1
 Runtime = 00.00:00:00
 Runs = 1000 of 1000
 Occured Occurred 397 times, Rate =0.397, MeanTime = 159.03:09:34 +/- 141.19:01:45.79
+---------------------------
+- End Sim Variable Values -
+---------------------------

@@ -7,7 +7,7 @@ using System.Data.SqlClient;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using MessageDefLib;
+using CommonDefLib;
 using System.Linq;
 using NLog;
 
@@ -87,15 +87,8 @@ namespace SimulationDAL
   //  //public static string EventTypeDesc(EnEventType dType) { return EnActionTypeName[(int)dType]; }
   //}
 
-  public static class ConfigData
-  {
-    static public int? seed = null;
-    static public LogLevel debugLev = LogLevel.Off;
-    static public int? debugRunStart = null;
-    static public int? debugRunEnd = null;
-  }
 
-    public class DBModified
+  public class DBModified
   {
     protected bool _itemModified = true;
     protected bool _linksModified = true;
@@ -247,20 +240,27 @@ namespace SimulationDAL
 
     public static TimeSpan NumberToTimeSpan(double number, EnTimeRate timeRate)
     {
-      switch (timeRate)
+      try
       {
-        case EnTimeRate.trYears:
-          return TimeSpan.FromDays(number * 365);
-        case EnTimeRate.trDays:
-          return TimeSpan.FromDays(number);
-        case EnTimeRate.trHours:
-          return TimeSpan.FromHours(number);
-        case EnTimeRate.trMinutes:
-          return TimeSpan.FromMinutes(number);
-        case EnTimeRate.trSeconds:
-          return TimeSpan.FromSeconds(number);
-        default:
-          throw new Exception("Invalid time rate");
+        switch (timeRate)
+        {
+          case EnTimeRate.trYears:
+            return TimeSpan.FromDays(number * 365);
+          case EnTimeRate.trDays:
+            return TimeSpan.FromDays(number);
+          case EnTimeRate.trHours:
+            return TimeSpan.FromHours(number);
+          case EnTimeRate.trMinutes:
+            return TimeSpan.FromMinutes(number);
+          case EnTimeRate.trSeconds:
+            return TimeSpan.FromSeconds(number);
+          default:
+            throw new Exception("Invalid time rate");
+        }
+      }
+      catch
+      {
+        return TimeSpan.MaxValue;
       }
 
     }
@@ -333,32 +333,6 @@ namespace SimulationDAL
     //         (etType == EnEventType.etStateLogic);
 
     //}
-  }
-
-  public class SingleRandom : Random
-  {
-    static SingleRandom _Instance;
-    public static SingleRandom Instance
-    {
-      get
-      {
-        if (_Instance == null)
-        {
-          if(ConfigData.seed == null)
-            _Instance = new SingleRandom();
-          else
-            _Instance = new SingleRandom((int)ConfigData.seed);
-        }
-        return _Instance;
-      }
-    }
-
-    private SingleRandom() : base() { }
-    private SingleRandom(int seed) : base(seed) { }
-    public static void Reset()
-    {
-      _Instance = null;
-    }
   }
 
 
@@ -563,43 +537,5 @@ namespace SimulationDAL
     }
   }
 
-  public static class JsonExtensions
-  {
-    public static JObject ReplacePath<T>(this JToken root, string path, T newValue)
-    {
-      if (root == null || path == null)
-      {
-        throw new ArgumentNullException();
-      }
-
-      foreach (var value in root.SelectTokens(path).ToList())
-      {
-        if (value == root)
-        {
-          if (value.Type == JTokenType.Object)
-          {
-            root = JToken.Parse(newValue.ToString());
-          }
-          else
-          {
-            root = JToken.FromObject(newValue);
-          }
-        }
-        else
-        {
-          if (value.Type == JTokenType.Object)
-          {
-            value.Replace(JToken.Parse(newValue.ToString()));
-          }
-          else
-          {
-            value.Replace(JToken.FromObject(newValue));
-          }          
-        }
-      }
-
-      return (JObject)root;
-    }
-  }
 
 }

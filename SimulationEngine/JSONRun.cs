@@ -11,6 +11,7 @@ using System.IO;
 using NLog;
 using SimulationDAL;
 using System.Threading;
+using CommonDefLib;
 
 namespace SimulationEngine
 {

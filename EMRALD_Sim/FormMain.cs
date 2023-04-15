@@ -11,7 +11,7 @@ using XmppMessageServer;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Schema;
 using Newtonsoft.Json.Linq;
-using MessageDefLib;
+using CommonDefLib;
 using SimulationDAL;
 using System.IO;
 using System.Runtime.InteropServices;
@@ -957,27 +957,29 @@ namespace EMRALD_Sim
 
     private void SaveUISettingsToJson()
     {
-      _currentModelSettings.RunCount = tbRunCnt.Text;
-      _currentModelSettings.MaxRunTime = tbMaxSimTime.Text;
-      _currentModelSettings.BasicResultsLocation = tbSavePath.Text;
-      _currentModelSettings.PathResultsLocation = tbSavePath2.Text;
-      _currentModelSettings.Seed = tbSeed.Text;
-      _currentModelSettings.DebugFromRun = tbLogRunStart.Text;
-      _currentModelSettings.DebugToRun = tbLogRunEnd.Text;
-
-      if (chkLog.Checked)
+      if (_currentModelSettings != null)
       {
-        if (ConfigData.debugLev == LogLevel.Info)
-        {
-          _currentModelSettings.DebugLevel = "Basic";
-        }
-        else
-        {
-          _currentModelSettings.DebugLevel = "Detailed";
-        }
-      }
+        _currentModelSettings.RunCount = tbRunCnt.Text;
+        _currentModelSettings.MaxRunTime = tbMaxSimTime.Text;
+        _currentModelSettings.BasicResultsLocation = tbSavePath.Text;
+        _currentModelSettings.PathResultsLocation = tbSavePath2.Text;
+        _currentModelSettings.Seed = tbSeed.Text;
+        _currentModelSettings.DebugFromRun = tbLogRunStart.Text;
+        _currentModelSettings.DebugToRun = tbLogRunEnd.Text;
 
-      SaveUISettings();
+        if (chkLog.Checked)
+        {
+          if (ConfigData.debugLev == LogLevel.Info)
+          {
+            _currentModelSettings.DebugLevel = "Basic";
+          }
+          else
+          {
+            _currentModelSettings.DebugLevel = "Detailed";
+          }
+        }
+        SaveUISettings();
+      }
     }
 
     private void SaveUISettings() {
@@ -1072,7 +1074,7 @@ namespace EMRALD_Sim
       }
     }
 
-    private void DispResults(TimeSpan runTime, int runCnt, bool finalValOnly)
+    private void DispResults(TimeSpan runTime, int runCnt, bool logFailedComps)
     {
       MethodInvoker methodInvokerDelegate = delegate ()
       {
@@ -1108,28 +1110,10 @@ namespace EMRALD_Sim
               lvCols[1] = ((Double)cs.Value).ToString();
               lvCols[2] = String.Format("{0:0.00}", (((double)cs.Value / item.Value.count) * 100)) + "%";
               lvCols[3] = string.Join(", ", names);
-
+              lvResults.Items.Add(new ListViewItem(lvCols));
             }
           }
 
-          //foreach (var cs in item.Value.compFailSets)
-          //{
-          //  string[] lvCols2 = new string[4];
-
-          //  int[] ids = cs.Key.Get1sIndexArray();
-          //  List<string> names = new List<String>();
-          //  foreach (int id in ids)
-          //  {
-          //    names.Add(_sim.allStates[id].name);
-          //  }
-          //  names.Sort();
-
-          //  lvCols[0] = "";
-          //  lvCols[1] = ((Double)cs.Value).ToString();
-          //  lvCols[2] = String.Format("{0:0.00}", (((double)cs.Value / item.Value.failCnt) * 100)) + "%";
-          //  lvCols[3] = string.Join(", ", names);
-          //  lvResults.Items.Add(new ListViewItem(lvCols));
-          //}
         }
 
         lvVarValues.Items.Clear();
@@ -1149,7 +1133,7 @@ namespace EMRALD_Sim
 
         if (tbSavePath.Text != "")
         {
-          simRuns.LogResults(runTime, runCnt, !finalValOnly);
+          simRuns.LogResults(runTime, runCnt, logFailedComps);
         }
 
       };

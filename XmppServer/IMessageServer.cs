@@ -2,7 +2,7 @@
 
 using Matrix;
 using Matrix.Xmpp.Base;
-using MessageDefLib;
+using CommonDefLib;
 
 namespace XmppMessageServer
 {

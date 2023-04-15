@@ -10,6 +10,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using SimulationDAL;
 using NLog;
+using CommonDefLib;
 
 namespace EMRALD_Sim
 {

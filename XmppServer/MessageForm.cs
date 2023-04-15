@@ -1,7 +1,7 @@
 ﻿// Copyright 2021 Battelle Energy Alliance
 
 using System;
-using MessageDefLib;
+using CommonDefLib;
 
 namespace XmppMessageServer
 {
