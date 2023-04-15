@@ -48,6 +48,9 @@ namespace Hunter
 
             [JsonProperty("multiplier")]
             public double Multiplier { get; set; }
+
+            [JsonProperty("time_multiplier")]
+            public double? TimeMultiplier { get; set; } = null;
         }
 
         public PerformanceShapingFactor(TaskType type, string label, List<Level> levels, string id, string initialLevelName = null, bool isStatic = false)
@@ -120,6 +123,18 @@ namespace Hunter
                     return 0;
                 }
                 return Levels.FirstOrDefault(l => l.LevelName == CurrentLevel.LevelName)?.Multiplier ?? 1.0;
+            }
+        }
+
+        public double? CurrentTimeMultiplier
+        {
+            get
+            {
+                if (CurrentLevel == null)
+                {
+                    return 1;
+                }
+                return Levels.FirstOrDefault(l => l.LevelName == CurrentLevel.LevelName)?.TimeMultiplier;
             }
         }
 

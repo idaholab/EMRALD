@@ -422,7 +422,7 @@ namespace Hunter
                             nominalHep = 1.0;
 
                         // Get the time multiplier for the primitive's task type
-                        timeMultiplier = psfs.TimeMultiplier(primitive.OperatorType);
+                        timeMultiplier = psfs.TimeMultiplier(primitive) ?? 1.0;
                     }
 
                     // Sample the elapsed time for the primitive based on its distribution type

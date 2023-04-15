@@ -52,59 +52,119 @@ namespace Hunter
         }
 
         /// <summary>
-        /// Calculates the time multiplier for the given task type based on the current 
-        /// multipliers of relevant performance shaping factors (PSFs).
+        /// Retrieves the relevant performance shaping factors (PSFs) for the given primitive.
         /// </summary>
-        /// <param name="taskType">The task type to calculate the time multiplier for.</param>
-        /// <returns>The time multiplier for the given task type.</returns>
-        public double TimeMultiplier(TaskType taskType)
-        {
-            // Get all relevant PSFs for the task type
-            var relevantPsfs = _psfs.Values.Where(psf => psf.Type == taskType);
-
-            // Filter relevant PSFs further to only include the "Available Time" PSF
-            relevantPsfs = relevantPsfs.Where(psf => psf.Label == "Available Time");
-
-            // Calculate the combined multiplier for all relevant PSFs
-            double currentMultiplier = relevantPsfs.Aggregate(1.0, (acc, psf) => acc * psf.CurrentMultiplier);
-
-            // If the combined multiplier is greater than 1, return 2.0, otherwise return 1.0
-            if (currentMultiplier > 1)
-                return 0.5; // execute at twice the speed
-            return 1.0;
-        }
-
-        /// <summary>
-        /// Calculates the composite multiplier for the given task type based on the current 
-        /// multipliers of relevant performance shaping factors (PSFs).
-        /// </summary>
-        /// <param name="taskType">The task type to calculate the composite multiplier for.</param>
-        /// <param name="aggregationMethod">The method to use for aggregating the PSF multipliers 
-        /// (default is "multiply").</param>
-        /// <returns>The composite multiplier for the given task type.</returns>
-        public double CompositeMultiplier(HRAEngine.Primitive primitive, string aggregationMethod = "multiply")
+        /// <param name="primitive">The primitive used to determine relevant PSFs.</param>
+        /// <returns>A list of relevant performance shaping factors for the specified primitive.</returns>
+        public List<PerformanceShapingFactor> RelevantPsfs(HRAEngine.Primitive primitive)
         {
             var relevantPsfIds = primitive.RelevantPsfIds;
+            var relevantPsfs = new List<PerformanceShapingFactor>();
 
-            // Get all relevant PSFs for the task type
-            var relevantPsfs =  new List<PerformanceShapingFactor>();
             foreach (var psfId in relevantPsfIds)
             {
                 relevantPsfs.Add(_psfs[psfId]);
             }
 
-            // Aggregate the multipliers based on the specified aggregation method
+            return relevantPsfs;
+        }
+
+        /// <summary>
+        /// Aggregates a list of multipliers using the specified aggregation method.
+        /// </summary>
+        /// <param name="multipliers">A list of double values representing the multipliers to be aggregated.</param>
+        /// <param name="aggregationMethod">The method to use for aggregating the multipliers (options: "multiply" or "minimum").</param>
+        /// <returns>The aggregated value of the multipliers based on the specified aggregation method.</returns>
+        /// <exception cref="ArgumentException">Thrown when an invalid aggregation method is provided.</exception>
+        /// <exception cref="InvalidOperationException">Thrown when the aggregated multiplier is less than or equal to 0.</exception>
+        internal double? AggregateMultipliers(List<double> multipliers, string aggregationMethod)
+        {
+            return AggregateMultipliers(multipliers.Select(x => (double?)x).ToList(), aggregationMethod);
+        }
+
+        /// <summary>
+        /// Aggregates a list of multipliers using the specified aggregation method.
+        /// </summary>
+        /// <param name="multipliers">A list of double values representing the multipliers to be aggregated.</param>
+        /// <param name="aggregationMethod">The method to use for aggregating the multipliers (options: "multiply" or "minimum").</param>
+        /// <returns>The aggregated value of the multipliers based on the specified aggregation method.</returns>
+        /// <exception cref="ArgumentException">Thrown when an invalid aggregation method is provided.</exception>
+        /// <exception cref="InvalidOperationException">Thrown when the aggregated multiplier is less than or equal to 0.</exception>
+        /// <summary>
+        /// Aggregates a list of nullable multipliers using the specified aggregation method, ignoring null values.
+        /// </summary>
+        /// <param name="multipliers">A list of nullable double values representing the multipliers to be aggregated.</param>
+        /// <param name="aggregationMethod">The method to use for aggregating the multipliers (options: "multiply" or "minimum").</param>
+        /// <returns>The aggregated value of the non-null multipliers based on the specified aggregation method.</returns>
+        /// <exception cref="ArgumentException">Thrown when an invalid aggregation method is provided.</exception>
+        /// <exception cref="InvalidOperationException">Thrown when the aggregated multiplier is less than or equal to 0</exception>
+        internal double? AggregateMultipliers(List<double?> multipliers, string aggregationMethod)
+        {
+            var nonNullMultipliers = multipliers.Where(x => x.HasValue).Select(x => x.Value).ToList();
+
+            if (!nonNullMultipliers.Any())
+            {
+                return null;
+            }
+
+            double result;
+
             switch (aggregationMethod)
             {
                 case "multiply":
-                    // Multiply the multipliers together
-                    return relevantPsfs.Aggregate(1.0, (acc, psf) => acc * psf.CurrentMultiplier);
+                    result = nonNullMultipliers.Aggregate(1.0, (acc, multiplier) => acc * multiplier);
+                    break;
                 case "minimum":
-                    // Take the minimum multiplier
-                    return relevantPsfs.Min(psf => psf.CurrentMultiplier);
+                    result = nonNullMultipliers.Min();
+                    break;
                 default:
                     throw new ArgumentException("Invalid aggregation method.");
             }
+
+            if (result <= 0)
+            {
+                throw new InvalidOperationException("The aggregated multiplier must be greater than 0.");
+            }
+
+            return result;
+        }
+
+
+
+        /// <summary>
+        /// Calculates the composite multiplier for the given task type based on the current 
+        /// multipliers of relevant performance shaping factors (PSFs).
+        /// </summary>
+        /// <param name="primitive">The primitive used to determine relevant psfs.</param>
+        /// <param name="aggregationMethod">The method to use for aggregating the PSF multipliers 
+        /// (default is "multiply").</param>
+        /// <returns>The composite multiplier for the given task type.</returns>
+        public double CompositeMultiplier(HRAEngine.Primitive primitive, string aggregationMethod = "multiply")
+        {
+            var relevantPsfs = RelevantPsfs(primitive);
+            var multipliers = relevantPsfs.Select(psf => psf.CurrentMultiplier).ToList();
+            var result = AggregateMultipliers(multipliers, aggregationMethod);
+
+            if (!result.HasValue)
+            {
+                throw new ArgumentNullException(nameof(result), "The provided value is null.");
+            }
+            return result.Value;
+        }
+
+        /// <summary>
+        /// Calculates the time multiplier for the given task type based on the current 
+        /// multipliers of relevant performance shaping factors (PSFs).
+        /// </summary>
+        /// <param name="primitive">The primitive used to determine relevant psfs.</param>
+        /// <param name="aggregationMethod">The method to use for aggregating the PSF multipliers 
+        /// (default is "multiply").</param>
+        /// <returns>The composite multiplier for the given task type.</returns>
+        public double? TimeMultiplier(HRAEngine.Primitive primitive, string aggregationMethod = "multiply")
+        {
+            var relevantPsfs = RelevantPsfs(primitive);
+            var multipliers = relevantPsfs.Select(psf => psf.CurrentTimeMultiplier).ToList();
+            return AggregateMultipliers(multipliers, aggregationMethod);
         }
 
         public IEnumerator<PerformanceShapingFactor> GetEnumerator()
