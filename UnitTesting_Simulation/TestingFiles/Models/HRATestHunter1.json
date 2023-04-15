@@ -267,7 +267,7 @@
         "moveFromCurrent": true,
         "varNames": [],
         "useVariable": false,
-        "time": "PT10S",
+        "time": "PT42S",
         "timeVariableUnit": "",
         "fromSimStart": false
       }
