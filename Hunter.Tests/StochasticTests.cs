@@ -12,13 +12,16 @@ namespace Hunter.Tests {
         private const int ITERATIONS = 1000;
         private List<double> results;
         private List<int> repeatCounts;
+        private List<int> primitiveEvalCounts;
 
         [SetUp]
         public void Setup()
         {
             results = new List<double>();
             repeatCounts = new List<int>();
+            primitiveEvalCounts = new List<int>();
         }
+
         [Test]
         public void RunFullModel_WithoutPSFS()
         {
@@ -85,12 +88,13 @@ namespace Hunter.Tests {
             // run the stochastic code multiple times and add the result of each iteration to the list
             for (int i = 0; i < ITERATIONS; i++)
             {
-                (double result, int repeatCount) = RunSGTR(
+                (double result, int repeatCount, int primitiveEvalCount) = RunSGTR(
                     withPsfs, timePressure, 
                     repeatMode, stress, 
                     fatigue, atStartOfShift);
                 results.Add(result);
                 repeatCounts.Add(repeatCount);
+                primitiveEvalCounts.Add(primitiveEvalCount);
             }
 
             // stop timer
@@ -99,6 +103,7 @@ namespace Hunter.Tests {
             double mean = Math.Round(results.Average(), 0);
             double stdev = Math.Round(results.StandardDeviation(), 0);
             double aveRepeats = Math.Round(repeatCounts.Average(), 3);
+            double aveEvals = Math.Round(primitiveEvalCounts.Average(), 3);
 
             // calculate time per iteration
             TimeSpan timePerIteration = TimeSpan.FromMilliseconds(watch.ElapsedMilliseconds / ITERATIONS);
@@ -106,6 +111,8 @@ namespace Hunter.Tests {
             TestContext.Out.WriteLine("Operator");
             TestContext.Out.WriteLine($"Mean Time: {mean} s, Time Stdev: {stdev} s");
             TestContext.Out.WriteLine($"Mean Repeats per Iteration: {aveRepeats}");
+            TestContext.Out.WriteLine($"Mean Primitives Evaluated: {aveEvals}");
+
             TestContext.Out.WriteLine($"Total time: {watch.Elapsed}, Time per iteration: {timePerIteration}");
 
             // assert that the results meet certain criteria
@@ -115,7 +122,7 @@ namespace Hunter.Tests {
             Assert.That(results[0], Is.GreaterThan(0));
         }
 
-        private (double, int) RunSGTR(bool PSFs = false, bool timePressure = false, 
+        private (double, int, int) RunSGTR(bool PSFs = false, bool timePressure = false, 
                                       bool repeatMode = false, bool stress = false, 
                                       bool fatigue = false, bool atStartOfShift=false)
         {
@@ -163,7 +170,7 @@ namespace Hunter.Tests {
                 result += hraEngine.EvaluateSteps(procedures, procedureId, 1, endStep, psfCollection);
             }
 
-            return (result.TotalSeconds, hraEngine.RepeatCount);
+            return (result.TotalSeconds, hraEngine.RepeatCount, hraEngine.PrimitiveEvalCount);
         }
     }
 }
