@@ -8,6 +8,8 @@ using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Schema;
 using MathNet.Numerics.Distributions;
 using SimulationDAL;
+using System.Collections;
+using static Hunter.HRAEngine;
 
 namespace Hunter
 {
@@ -26,7 +28,7 @@ namespace Hunter
         public List<Step> Steps { get; set; }
     }
 
-    public class HRAEngine
+    public class HRAEngine : IEnumerable<Primitive>
     {
         public struct Primitive
         {
@@ -57,8 +59,10 @@ namespace Hunter
             [JsonProperty("nominal_hep")]
             public double NominalHep { get; set; }
 
-            public TaskType OperatorType => Operator == "Action" ? TaskType.Action : TaskType.Diagnosis;
+            [JsonProperty("relevant_psfs")]
+            public List<string> RelevantPsfIds { get; set; }
 
+            public TaskType OperatorType => Operator == "Action" ? TaskType.Action : TaskType.Diagnosis;
         }
 
         private Dictionary<string, Primitive> _primitives;
@@ -118,6 +122,21 @@ namespace Hunter
                         (0.4271 * timeOnShiftH) + 0.599);
             }
         }
+        private int _primitiveEvalCount;
+
+        public int PrimitiveEvalCount
+        {
+            get { return _primitiveEvalCount; }
+        }
+        public void ResetPrimitiveEvalCount()
+        {
+            _primitiveEvalCount = 0;
+        }
+
+        public int Count
+        {
+            get { return _primitives.Count; }
+        }
 
         public HRAEngine(string primitivesFilePath = null, TimeSpan timeOnShift = default)
         {
@@ -128,6 +147,46 @@ namespace Hunter
             }
             _primitives = LoadPrimitives(primitivesFilePath);
             TimeOnShift = timeOnShift;
+        }
+
+        /// <summary>
+        /// Adds a Primitive to the collection.
+        /// </summary>
+        /// <param name="primitive">The Primitive to add.</param>
+        /// <exception cref="System.ArgumentNullException">Thrown when primitive is null.</exception>
+        /// <exception cref="System.ArgumentException">Thrown when a Primitive with the same ID already exists in the collection.</exception>
+        public void Add(Primitive primitive, bool overwrite = false)
+        {
+            if (_primitives.ContainsKey(primitive.Id))
+            {
+                if (overwrite)
+                {
+                    _primitives[primitive.Id] = primitive;
+                }
+                else
+                {
+                    throw new ArgumentException($"A Primitive with ID '{primitive.Id}' already exists in the collection.", nameof(primitive));
+                }
+            }
+            else
+            {
+                _primitives.Add(primitive.Id, primitive);
+            }
+        }
+
+        public IEnumerator<Primitive> GetEnumerator()
+        {
+            return _primitives.Values.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
+        public void Clear()
+        {
+            _primitives.Clear();
         }
 
         private Dictionary<string, Primitive> LoadPrimitives(string filePath)
@@ -355,7 +414,7 @@ namespace Hunter
                     if (psfs != null)
                     {
                         // Get the composite multiplier for the primitive's task type
-                        compositePSF = psfs.CompositeMultiplier(primitive.OperatorType);
+                        compositePSF = psfs.CompositeMultiplier(primitive);
                         nominalHep *= compositePSF;
 
                         // Cap the nominal HEP at 1.0
@@ -382,6 +441,7 @@ namespace Hunter
                             Console.WriteLine($"Unknown distribution type: {distributionType}");
                             break;
                     }
+                    _primitiveEvalCount += 1;
 
                     // Update the success status based on the nominal HEP
                     if (success)
@@ -455,16 +515,10 @@ namespace Hunter
         /// <returns>A JSON string representation of the current HRAEngine instance.</returns>
         public string GetJSON()
         {
-            try
-            {
-                string jsonData = JsonConvert.SerializeObject(this, Formatting.Indented);
-                return jsonData;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error serializing HRAEngine instance to JSON: {ex.Message}");
-                return null;
-            }
+            var jsonSettings = new JsonSerializerSettings();
+            jsonSettings.Converters.Add(new HRAEngineConverter());
+
+            return JsonConvert.SerializeObject(this, Formatting.Indented, jsonSettings);
         }
 
         /// <summary>
@@ -474,16 +528,10 @@ namespace Hunter
         /// <returns>An HRAEngine instance deserialized from the JSON string.</returns>
         public static HRAEngine DeserializeJSON(string json)
         {
-            try
-            {
-                HRAEngine deserializedInstance = JsonConvert.DeserializeObject<HRAEngine>(json);
-                return deserializedInstance;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error deserializing JSON into HRAEngine instance: {ex.Message}");
-                return null;
-            }
+            var jsonSettings = new JsonSerializerSettings();
+            jsonSettings.Converters.Add(new HRAEngineConverter());
+
+            return JsonConvert.DeserializeObject<HRAEngine>(json, jsonSettings);
         }
 
     }
