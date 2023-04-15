@@ -82,10 +82,16 @@ namespace Hunter
         /// <param name="aggregationMethod">The method to use for aggregating the PSF multipliers 
         /// (default is "multiply").</param>
         /// <returns>The composite multiplier for the given task type.</returns>
-        public double CompositeMultiplier(TaskType taskType, string aggregationMethod = "multiply")
+        public double CompositeMultiplier(HRAEngine.Primitive primitive, string aggregationMethod = "multiply")
         {
+            var relevantPsfIds = primitive.RelevantPsfIds;
+
             // Get all relevant PSFs for the task type
-            var relevantPsfs = _psfs.Values.Where(psf => psf.Type == taskType);
+            var relevantPsfs =  new List<PerformanceShapingFactor>();
+            foreach (var psfId in relevantPsfIds)
+            {
+                relevantPsfs.Add(_psfs[psfId]);
+            }
 
             // Aggregate the multipliers based on the specified aggregation method
             switch (aggregationMethod)
@@ -104,6 +110,11 @@ namespace Hunter
         public IEnumerator<PerformanceShapingFactor> GetEnumerator()
         {
             return _psfs.Values.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
 
         public void Clear()
@@ -141,10 +152,6 @@ namespace Hunter
             }
         }
 
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
 
         /// <summary>
         /// Sets the current level of a performance shaping factor with the specified ID to the level with the specified name.
