@@ -62,6 +62,8 @@ namespace Hunter.Tests
             // Serialize the PerformanceShapingFactorCollection
             string serializedPsfCollection = psfCollection.GetJSON();
 
+            TestContext.Out.WriteLine(serializedPsfCollection);
+
             // Deserialize the serialized PerformanceShapingFactorCollection
             var deserializedPsfCollection = PerformanceShapingFactorCollection.DeserializeJSON(serializedPsfCollection);
 
