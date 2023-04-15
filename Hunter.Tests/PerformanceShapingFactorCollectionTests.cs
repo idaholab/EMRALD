@@ -26,19 +26,19 @@ namespace Hunter.Tests
         public void SetLevel_ValidPsfIdAndLevelName_SetsCurrentLevel()
         {
             // Act
-            _psfCollection.SetLevel("ATi", "Barely adequate time");
+            _psfCollection.SetLevel("ATd", "BarelyAdequateTime");
 
             // Assert
-            var currentLevel = _psfCollection["ATi"].CurrentLevel;
+            var currentLevel = _psfCollection["ATd"].CurrentLevel;
             Assert.IsNotNull(currentLevel);
-            Assert.AreEqual("Barely adequate time", currentLevel.LevelName);
+            Assert.AreEqual("BarelyAdequateTime", currentLevel.LevelName);
         }
 
         [Test]
         public void SetLevel_InvalidPsfId_ThrowsArgumentException()
         {
             // Act & Assert
-            var ex = Assert.Throws<ArgumentException>(() => _psfCollection.SetLevel("InvalidId", "Barely adequate time"));
+            var ex = Assert.Throws<ArgumentException>(() => _psfCollection.SetLevel("InvalidId", "BarelyAdequateTime"));
             Assert.IsTrue(ex.Message.Contains("Performance shaping factor with ID 'InvalidId' not found."));
             TestContext.Out.WriteLine($"Message: {ex.Message}");
         }

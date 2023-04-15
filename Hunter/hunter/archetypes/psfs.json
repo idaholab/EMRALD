@@ -1,26 +1,26 @@
 [
   {
     "type": "Action",
-    "label": "Available Time",
+    "label": "AvailableTime",
     "levels": [
       {
-        "level": "Inadequate time",
+        "level": "InadequateTime",
         "multiplier": "9999"
       },
       {
-        "level": "Barely adequate time",
+        "level": "BarelyAdequateTime",
         "multiplier": "10"
       },
       {
-        "level": "Nominal time",
+        "level": "NominalTime",
         "multiplier": "1"
       },
       {
-        "level": "Extra time",
+        "level": "ExtraTime",
         "multiplier": "0.1"
       },
       {
-        "level": "Expansive time",
+        "level": "ExpansiveTime",
         "multiplier": "0.01"
       }
     ],
@@ -28,26 +28,26 @@
   },
   {
     "type": "Diagnosis",
-    "label": "Available Time",
+    "label": "AvailableTime",
     "levels": [
       {
-        "level": "Inadequate time",
+        "level": "InadequateTime",
         "multiplier": "9999"
       },
       {
-        "level": "Barely adequate time",
+        "level": "BarelyAdequateTime",
         "multiplier": "10"
       },
       {
-        "level": "Nominal time",
+        "level": "NominalTime",
         "multiplier": "1"
       },
       {
-        "level": "Extra time",
+        "level": "ExtraTime",
         "multiplier": "0.1"
       },
       {
-        "level": "Expansive time",
+        "level": "ExpansiveTime",
         "multiplier": "0.01"
       }
     ],
@@ -58,11 +58,11 @@
     "label": "Complexity",
     "levels": [
       {
-        "level": "Highly complex",
+        "level": "HighlyComplex",
         "multiplier": "50"
       },
       {
-        "level": "Moderately complex",
+        "level": "ModeratelyComplex",
         "multiplier": "20"
       },
       {
@@ -70,7 +70,7 @@
         "multiplier": "1"
       },
       {
-        "level": "Obvious diagnosis",
+        "level": "ObviousDiagnosis",
         "multiplier": "0.01"
       }
     ],
@@ -81,11 +81,11 @@
     "label": "Complexity",
     "levels": [
       {
-        "level": "Highly complex",
+        "level": "HighlyComplex",
         "multiplier": "5"
       },
       {
-        "level": "Moderately complex",
+        "level": "ModeratelyComplex",
         "multiplier": "2"
       },
       {
@@ -93,7 +93,7 @@
         "multiplier": "1"
       },
       {
-        "level": "Obvious diagnosis",
+        "level": "ObviousDiagnosis",
         "multiplier": "0.001"
       }
     ],
@@ -102,10 +102,10 @@
   },
   {
     "type": "Action",
-    "label": "Ergonomics/HMI",
+    "label": "ErgonomicsHMI",
     "levels": [
       {
-        "level": "Missing/Misleading",
+        "level": "MissingOrMisleading",
         "multiplier": "50"
       },
       {
@@ -126,10 +126,10 @@
   },
   {
     "type": "Diagnosis",
-    "label": "Ergonomics/HMI",
+    "label": "ErgonomicsHMI",
     "levels": [
       {
-        "level": "Missing/Misleading",
+        "level": "MissingOrMisleading",
         "multiplier": "5"
       },
       {
@@ -149,12 +149,12 @@
   },
   {
     "type": "Action",
-    "label": "Experience and Training",
+    "label": "ExperienceAndTraining",
     "levels": [
       {
         "level": "Low",
         "multiplier": "10.0",
-        "time_multiplier": "3.0",
+        "time_multiplier": "3.0"
       },
       {
         "level": "Nominal",
@@ -170,7 +170,7 @@
   },
   {
     "type": "Diagnosis",
-    "label": "Experience and Training",
+    "label": "ExperienceAndTraining",
     "levels": [
       {
         "level": "Low",
@@ -191,14 +191,14 @@
   },
   {
     "type": "Action",
-    "label": "Fitness for Duty",
+    "label": "FitnessForDuty",
     "levels": [
       {
         "level": "Unfit",
         "multiplier": "5"
       },
       {
-        "level": "Degraded Fitness",
+        "level": "DegradedFitness",
         "multiplier": "2"
       },
       {
@@ -210,14 +210,14 @@
   },
   {
     "type": "Diagnosis",
-    "label": "Fitness for Duty",
+    "label": "FitnessForDuty",
     "levels": [
       {
         "level": "Unfit",
         "multiplier": "5"
       },
       {
-        "level": "Degraded Fitness",
+        "level": "DegradedFitness",
         "multiplier": "2"
       },
       {
@@ -232,7 +232,7 @@
     "label": "Procedures",
     "levels": [
       {
-        "level": "Not available",
+        "level": "NotAvailable",
         "multiplier": "100"
       },
       {
@@ -240,7 +240,7 @@
         "multiplier": "50"
       },
       {
-        "level": "Available, but poor",
+        "level": "AvailableButPoor",
         "multiplier": "20"
       },
       {
@@ -248,7 +248,7 @@
         "multiplier": "1"
       },
       {
-        "level": "Diagnostic/symptom oriented",
+        "level": "DiagnosticOrSymptomOriented",
         "multiplier": "0.1"
       }
     ],
@@ -260,7 +260,7 @@
     "label": "Procedures",
     "levels": [
       {
-        "level": "Not available",
+        "level": "NotAvailable",
         "multiplier": "10"
       },
       {
@@ -268,7 +268,7 @@
         "multiplier": "5"
       },
       {
-        "level": "Available, but poor",
+        "level": "AvailableButPoor",
         "multiplier": "2"
       },
       {
@@ -276,7 +276,7 @@
         "multiplier": "1"
       },
       {
-        "level": "Diagnostic/symptom oriented",
+        "level": "DiagnosticOrSymptomOriented",
         "multiplier": "0.01"
       }
     ],
@@ -323,7 +323,7 @@
   },
   {
     "type": "Action",
-    "label": "Work Processes",
+    "label": "WorkProcesses",
     "levels": [
       {
         "level": "Poor",
@@ -343,7 +343,7 @@
   },
   {
     "type": "Diagnosis",
-    "label": "Work Processes",
+    "label": "WorkProcesses",
     "levels": [
       {
         "level": "Poor",

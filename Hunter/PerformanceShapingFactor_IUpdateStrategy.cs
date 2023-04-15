@@ -23,7 +23,7 @@ namespace Hunter
         public void UpdateLevel(PerformanceShapingFactor psf, HRAEngine? hRAEngine, string jsonData)
         {
             // Check if label "Fitness for Duty"
-            if (psf.Label == "Fitness for Duty")
+            if (psf.Label == "FitnessForDuty")
             {
                 // Implement the logic for updating the level based on FitnessforDutyAction
                 // For example, you can check properties of hRAEngine, like TimeOnShift or FatigueIndex,
@@ -39,7 +39,7 @@ namespace Hunter
                         }
                         else if (hRAEngine.TimeOnShift.TotalHours > 12)
                         {
-                            newLevel = psf.Levels.FirstOrDefault(l => l.LevelName == "Degraded Fitness");
+                            newLevel = psf.Levels.FirstOrDefault(l => l.LevelName == "DegradedFitness");
                         }
                         else
                         {

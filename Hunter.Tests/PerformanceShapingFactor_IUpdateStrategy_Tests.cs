@@ -54,7 +54,7 @@ namespace Hunter.Tests
             if (level is not null)
             {
                 TestContext.Out.WriteLine($"LevelName: {level.LevelName}");
-                Assert.That(level.LevelName == "Degraded Fitness");
+                Assert.That(level.LevelName == "DegradedFitness");
             }
             else
             {
@@ -76,7 +76,7 @@ namespace Hunter.Tests
             if (level is not null)
             {
                 TestContext.Out.WriteLine($"LevelName: {level.LevelName}");
-                Assert.That(level.LevelName == "Degraded Fitness");
+                Assert.That(level.LevelName == "DegradedFitness");
             }
             else
             {

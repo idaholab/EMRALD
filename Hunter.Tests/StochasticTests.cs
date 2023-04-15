@@ -134,13 +134,13 @@ namespace Hunter.Tests {
             if (PSFs)
             {
                 psfCollection = new PerformanceShapingFactorCollection();
-                psfCollection.SetLevel("ATa", "Barely adequate time");
+                psfCollection.SetLevel("ATa", "BarelyAdequateTime");
                 Assert.That(psfCollection.Count > 0);
 
                 if (timePressure)
                 {
-                    psfCollection.SetLevel("ATa", "Barely adequate time");
-                    psfCollection.SetLevel("ATd", "Barely adequate time");
+                    psfCollection.SetLevel("ATa", "BarelyAdequateTime");
+                    psfCollection.SetLevel("ATd", "BarelyAdequateTime");
                 }
 
                 if (stress)

@@ -225,8 +225,8 @@ namespace Hunter
         ///
         /// <code>
         /// var psfCollection = new PerformanceShapingFactorCollection();
-        /// psfCollection.SetLevel("ATa", "Barely adequate time");
-        /// psfCollection.SetLevel("ATd", "Barely adequate time");
+        /// psfCollection.SetLevel("ATa", "BarelyAdequateTime");
+        /// psfCollection.SetLevel("ATd", "BarelyAdequateTime");
         /// </code>
         /// </example>
 
