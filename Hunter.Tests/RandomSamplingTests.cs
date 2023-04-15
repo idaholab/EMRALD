@@ -1,7 +1,7 @@
 ﻿using NUnit.Framework;
 using Hunter; // Replace with your actual namespace
 using MathNet.Numerics.Distributions;
-using SimulationDAL;
+using CommonDefLib;
 
 namespace Hunter.Tests
 {

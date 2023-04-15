@@ -33,7 +33,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\SimulationDAL\SimulationDAL.csproj" />
+    <ProjectReference Include="..\MessageDefLib\CommonDefLib.csproj" />
   </ItemGroup>
 
   <ItemGroup>

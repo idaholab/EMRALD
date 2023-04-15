@@ -5,7 +5,7 @@ VisualStudioVersion = 17.2.32526.322
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimulationDAL", "SimulationDAL\SimulationDAL.csproj", "{536E2AE0-B2F3-4DEE-8E35-5E2AD2D74F7F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MessageDefLib", "MessageDefLib\MessageDefLib.csproj", "{A3E8023A-5CE3-4A59-BB43-E1431D865167}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CommonDefLib", "MessageDefLib\CommonDefLib.csproj", "{A3E8023A-5CE3-4A59-BB43-E1431D865167}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "XmppServerController", "XmppServer\XmppServerController.csproj", "{5C2228FC-B166-4E6D-861C-7340CEBE02EA}"
 EndProject
@@ -39,11 +39,12 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "Emrald_Site", "Emrald_Site\
 		Release.AspNetCompiler.FixedNames = "false"
 		Release.AspNetCompiler.Debug = "False"
 		VWDPort = "56455"
+		SlnRelativePath = "Emrald_Site\"
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hunter", "Hunter\Hunter.csproj", "{1A428B75-0F9F-4170-8F18-7F3F6394CAA5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hunter", "Hunter\Hunter.csproj", "{1A428B75-0F9F-4170-8F18-7F3F6394CAA5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hunter.Tests", "Hunter.Tests\Hunter.Tests.csproj", "{3260699B-40A9-48F6-8503-9AA57F22C260}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hunter.Tests", "Hunter.Tests\Hunter.Tests.csproj", "{3260699B-40A9-48F6-8503-9AA57F22C260}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

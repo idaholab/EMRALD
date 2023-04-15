@@ -7,7 +7,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Schema;
 using MathNet.Numerics.Distributions;
-using SimulationDAL;
+using CommonDefLib;
 
 namespace Hunter
 {

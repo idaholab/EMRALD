@@ -11,7 +11,7 @@ using XmppMessageServer;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Schema;
 using Newtonsoft.Json.Linq;
-using MessageDefLib;
+using CommonDefLib;
 using SimulationDAL;
 using System.IO;
 using System.Runtime.InteropServices;

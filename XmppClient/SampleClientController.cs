@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Message = Matrix.Xmpp.Client.Message;
-using MessageDefLib;
+using CommonDefLib;
 using Newtonsoft.Json;
 
 

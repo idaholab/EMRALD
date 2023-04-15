@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
-namespace MessageDefLib
+namespace CommonDefLib
 {
   [JsonConverter(typeof(StringEnumConverter))]
   public enum MessageType { mtSimEvent = 0, mtSimAction, mtOther };

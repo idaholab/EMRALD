@@ -44,7 +44,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\MessageDefLib\MessageDefLib.csproj" />
+    <ProjectReference Include="..\MessageDefLib\CommonDefLib.csproj" />
     <ProjectReference Include="..\SimulationDAL\SimulationDAL.csproj" />
     <ProjectReference Include="..\SimulationEngine\SimulationEngine.csproj" />
   </ItemGroup>

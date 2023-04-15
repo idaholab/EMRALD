@@ -9,7 +9,7 @@ using System.Data.SqlClient;
 //using System.Windows.Forms;
 using System.Data;
 using System.IO;
-using MessageDefLib;
+using CommonDefLib;
 using Newtonsoft.Json;
 
 

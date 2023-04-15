@@ -10,7 +10,7 @@ using System.Text;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Matrix.Xmpp.Roster;
-using MessageDefLib;
+using CommonDefLib;
 using XmppServer;
 
 namespace XmppMessageServer
@@ -22,7 +22,7 @@ namespace XmppMessageServer
   public class EMRALDMsgServer : IMessageServer
   {
     private NLog.Logger logger = NLog.LogManager.GetLogger("logfile");
-    public delegate void TEventCallBack(string clientName, MessageDefLib.TMsgWrapper evData);
+    public delegate void TEventCallBack(string clientName, CommonDefLib.TMsgWrapper evData);
 
 
     private XmppMessageServer _xmppMsgServer;

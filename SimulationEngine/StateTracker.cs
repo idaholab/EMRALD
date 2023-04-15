@@ -10,7 +10,7 @@ using Sop.Collections.Generic.BTree;
 using MultiKeyDict;
 using SimulationDAL;
 using XmppMessageServer;
-using MessageDefLib;
+using CommonDefLib;
 using Matrix.Xmpp.XHtmlIM;
 using Newtonsoft.Json;
 

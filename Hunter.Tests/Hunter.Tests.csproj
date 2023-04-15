@@ -18,6 +18,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Hunter\Hunter.csproj" />
+    <ProjectReference Include="..\MessageDefLib\CommonDefLib.csproj" />
   </ItemGroup>
 
 </Project>
