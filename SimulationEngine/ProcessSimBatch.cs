@@ -16,7 +16,8 @@ using SimulationDAL;
 using Newtonsoft.Json;
 using MathNet.Numerics.Statistics;
 using System.Threading;
-using CommonDefLib;
+using Matrix.Xmpp.XHtmlIM;
+using System.Xml.Linq;
 
 namespace SimulationEngine
 {
@@ -284,35 +285,35 @@ namespace SimulationEngine
             {
               string keyStateName = path.name;
 
-              //  if (logVarVals.Count > 0)
-              //  {
-              //    Dictionary<string, List<string>> varDict;
-              //    if (!_variableVals.TryGetValue(keyStateName, out varDict))
-              //    {
-              //      varDict = new Dictionary<string, List<string>>();
-              //      _variableVals.Add(keyStateName, varDict);
-              //    }
+                if (logVarVals.Count > 0)
+                {
+                  Dictionary<string, List<string>> varDict;
+                  if (!_variableVals.TryGetValue(keyStateName, out varDict))
+                  {
+                    varDict = new Dictionary<string, List<string>>();
+                    _variableVals.Add(keyStateName, varDict);
+                  }
 
-              //    List<string> varVals;
+                  List<string> varVals;
 
-              //    foreach (string varName in logVarVals)
-              //    {
-              //      SimVariable curVar = _lists.allVariables.FindByName(varName);
-              //      if (curVar == null)
-              //      {
-              //        this._error = "No variable found named - " + varName;
-              //        logger.Error(this.error);
-              //      }
+                  foreach (string varName in logVarVals)
+                  {
+                    SimVariable curVar = _lists.allVariables.FindByName(varName);
+                    if (curVar == null)
+                    {
+                      this._error = "No variable found named - " + varName;
+                      logger.Error(this.error);
+                    }
 
-              //      if (!varDict.TryGetValue(varName, out varVals))
-              //      {
-              //        varVals = new List<string>();
-              //        varDict.Add(varName, varVals);
-              //      }
+                    if (!varDict.TryGetValue(varName, out varVals))
+                    {
+                      varVals = new List<string>();
+                      varDict.Add(varName, varVals);
+                    }
 
-              //      varVals.Add(curVar.strValue);
-              //    }
-              //  }
+                    varVals.Add(curVar.strValue);
+                  }
+                }
 
               if (_logFailedComps && (failedComps.Length > 0))
               {
@@ -564,7 +565,7 @@ namespace SimulationEngine
     //  //depths[curRes.name] -= 1;
     //}
 
-    public void LogResults(TimeSpan runTime, int runCnt, bool finalValOnly)
+    public void LogResults(TimeSpan runTime, int runCnt, bool logFailedComps)
     {
       if (_progress != null)
       { 
@@ -586,8 +587,8 @@ namespace SimulationEngine
         {
           File.AppendAllText(_resultFile, item.Key + " Occurred " + item.Value.count.ToString() + " times, Rate =" + (item.Value.count / (double)runCnt).ToString() + 
             ", MeanTime = " + item.Value.timeMean.ToString(@"dd\.hh\:mm\:ss") + " +/- " + item.Value.timeStdDeviation.ToString(@"dd\.hh\:mm\:ss\.ff") + Environment.NewLine, Encoding.UTF8);
-          //todo write the failed components and times.
-          if (keyFailedItems.ContainsKey(item.Key))
+          //write the failed components and times.
+          if (logFailedComps && keyFailedItems.ContainsKey(item.Key))
           {
             foreach (var cs in keyFailedItems[item.Key].compFailSets)
             {
@@ -615,35 +616,44 @@ namespace SimulationEngine
           {
             //List<double> varVals;
             File.AppendAllText(_resultFile, "- Variable Values - " + Environment.NewLine, Encoding.UTF8);
-            if (!finalValOnly || (item.Value == lastItem.Value))
+            //write the name of each variable for header
+            string varNames = "Run Idx, " + string.Join(", ", varDict.Keys.ToList());
+            File.AppendAllText(_resultFile, varNames + Environment.NewLine, Encoding.UTF8);
+
+
+            for (int row = 0; row < runCnt; row++)
             {
+              string varValues = (row +1).ToString();
               foreach (var varValItem in varDict)
               {
-                string varName = varValItem.Key;
-                string varValues = "";
-                if (finalValOnly)
-                  varValues = varValItem.Value.Last<string>().ToString();
-                else
-                  varValues = string.Join(",", varValItem.Value);
-                File.AppendAllText(_resultFile, varName + " = " + varValues + Environment.NewLine, Encoding.UTF8);
+                //get the value for each variable in a row 
+                varValues = varValues + ", " + varValItem.Value[row];
               }
+              File.AppendAllText(_resultFile, varValues + Environment.NewLine, Encoding.UTF8);
             }
           }
         }
       }
     }
 
-    public List<string> GetVarValues(List<string> varNames, bool log = false)
+    public List<string> GetVarValues(List<string> varNames, bool finalLog = false)
     {
       List<string> retVals = new List<string>();
-      foreach(string name in varNames)
+      if (finalLog)
+      {
+        File.AppendAllText(_resultFile, "---------------------------" + Environment.NewLine, Encoding.UTF8);
+        File.AppendAllText(_resultFile, "- End Sim Variable Values -" + Environment.NewLine, Encoding.UTF8);
+        File.AppendAllText(_resultFile, "---------------------------" + Environment.NewLine, Encoding.UTF8);
+      }
+
+      foreach (string name in varNames)
       {
         string val = _lists.allVariables.FindByName(name).strValue;
         retVals.Add(val);
 
-        if (log)
+        if (finalLog)
         {
-          File.AppendAllText(_resultFile, name + " - " + val.ToString()  + Environment.NewLine, Encoding.UTF8);
+          File.AppendAllText(_resultFile, name + " = " + val.ToString()  + Environment.NewLine, Encoding.UTF8);
         }
       }
 

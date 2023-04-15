@@ -154,7 +154,8 @@ function openProject() {
             el.innerText = modelName;
 
           var filename = document.getElementById("filename");
-          filename.innerText = afile.name;
+          if(filename)
+            filename.innerText = afile.name;
 
           simApp.mainApp.loadSidebar(content);
         }.bind(this);
