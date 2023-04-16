@@ -27,7 +27,7 @@ namespace Hunter
             if (filePath == null)
             {
                 string assemblyLocation = Path.GetDirectoryName(typeof(HRAEngine).Assembly.Location);
-                filePath = Path.Combine(assemblyLocation, "hunter", "archetypes", "psfs.json");
+                filePath = Path.Combine(assemblyLocation, "db", "archetypes", "psfs.json");
             }
 
             string jsonData = File.ReadAllText(filePath);

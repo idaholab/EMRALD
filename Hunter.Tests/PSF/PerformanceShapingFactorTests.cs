@@ -9,7 +9,7 @@ namespace Hunter.Tests.PerformanceShapingFactor
     [TestFixture]
     public class PerformanceShapingFactorTests
     {
-        private const string psfFilePath = "hunter/archetypes/psfs.json";
+        private const string psfFilePath = @"db/archetypes/psfs.json";
         private List<PSF> psfList;
 
         [SetUp]

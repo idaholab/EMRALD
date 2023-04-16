@@ -156,7 +156,7 @@ namespace Hunter
             if (primitivesFilePath == null)
             {
                 string assemblyLocation = Path.GetDirectoryName(typeof(HRAEngine).Assembly.Location);
-                primitivesFilePath = Path.Combine(assemblyLocation, "hunter", "archetypes", "primitives.json");
+                primitivesFilePath = Path.Combine(assemblyLocation, "db", "archetypes", "primitives.json");
             }
             _primitives = LoadPrimitives(primitivesFilePath);
             TimeOnShift = timeOnShift;

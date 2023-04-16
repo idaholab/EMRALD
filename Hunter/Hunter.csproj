@@ -13,24 +13,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="hunter\primitives.json" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="hunter\archetypes\primitives.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="CsvHelper" Version="30.0.1" />
     <PackageReference Include="MathNet.Numerics" Version="5.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="hunter\models\" />
-    <Folder Include="hunter\procedures\" />
   </ItemGroup>
 
   <ItemGroup>
@@ -38,16 +23,19 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="hunter\archetypes\psfs.json">
+    <None Update="db\archetypes\primitives.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="hunter\models\sgtr_model.json">
+    <None Update="db\archetypes\psfs.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="hunter\procedures\rapid_shutdown.json">
+    <None Update="db\models\sgtr_model.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="hunter\procedures\sgtr.json">
+    <None Update="db\procedures\rapid_shutdown.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="db\procedures\sgtr.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

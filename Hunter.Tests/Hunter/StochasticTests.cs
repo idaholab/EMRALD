@@ -127,7 +127,7 @@ namespace Hunter.Tests {
                                       bool fatigue = false, bool atStartOfShift=false)
         {
             // Arrange
-            string hunterModelFilename = @"hunter/models/sgtr_model.json";
+            string hunterModelFilename = @"db/models/sgtr_model.json";
             Dictionary<string, Procedure> procedures = HRAEngine.BuildProcedureCatalog(hunterModelFilename);
 
             PSFCollection? psfCollection = null;

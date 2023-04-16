@@ -1241,7 +1241,7 @@ namespace SimulationDAL
   public class HRAEval : TimeBasedEvent //etHRAEval
   {
     //variables needed for hunter info
-    private string _hunterModelFilename = @"hunter/models/sgtr_model.json";
+    private string _hunterModelFilename = @"db/models/sgtr_model.json";
     private string _procedureName = "";
     private int _startStep = 1;
     private int _endStep = 0;

@@ -138,7 +138,7 @@ namespace Hunter.Tests.HumanReliabilityAnalysisEngine
         public void BuildProcedureCatalog_ReturnsExpectedDictionary()
         {
             // Arrange
-            string hunterModelFilename = @"hunter/models/sgtr_model.json";
+            string hunterModelFilename = @"db/models/sgtr_model.json";
 
             // Act
             Dictionary<string, Procedure> procedures = HRAEngine.BuildProcedureCatalog(hunterModelFilename);
@@ -176,7 +176,7 @@ namespace Hunter.Tests.HumanReliabilityAnalysisEngine
         public void EvaluateSteps_WithJsonString_ReturnsExpectedTimeSpan()
         {
             // Arrange
-            string hunterModelFilename = @"hunter/models/sgtr_model.json";
+            string hunterModelFilename = @"db/models/sgtr_model.json";
             Dictionary<string, Procedure> procedures = HRAEngine.BuildProcedureCatalog(hunterModelFilename);
             string proceduresString = JsonConvert.SerializeObject(procedures);
 
@@ -218,7 +218,7 @@ namespace Hunter.Tests.HumanReliabilityAnalysisEngine
         public void EvaluateSteps_WithDictionary_ReturnsExpectedTimeSpan()
         {
             // Arrange
-            string hunterModelFilename = @"hunter/models/sgtr_model.json";
+            string hunterModelFilename = @"db/models/sgtr_model.json";
             Dictionary<string, Procedure> procedures = HRAEngine.BuildProcedureCatalog(hunterModelFilename);
 
             HRAEngine hraEngine = new HRAEngine();
@@ -239,7 +239,7 @@ namespace Hunter.Tests.HumanReliabilityAnalysisEngine
         public void EvaluateSteps_WithDictionarySingleStep_ReturnsExpectedTimeSpan()
         {
             // Arrange
-            string hunterModelFilename = @"hunter/models/sgtr_model.json";
+            string hunterModelFilename = @"db/models/sgtr_model.json";
             Dictionary<string, Procedure> procedures = HRAEngine.BuildProcedureCatalog(hunterModelFilename);
 
             HRAEngine hraEngine = new HRAEngine();
@@ -260,7 +260,7 @@ namespace Hunter.Tests.HumanReliabilityAnalysisEngine
         public void EvaluateSteps_WithDictionaryStepsOutOfRange_ThrowsArgumentOutOfRangeException()
         {
             // Arrange
-            string hunterModelFilename = @"hunter/models/sgtr_model.json";
+            string hunterModelFilename = @"db/models/sgtr_model.json";
             Dictionary<string, Procedure> procedures = HRAEngine.BuildProcedureCatalog(hunterModelFilename);
 
             HRAEngine hraEngine = new HRAEngine();
