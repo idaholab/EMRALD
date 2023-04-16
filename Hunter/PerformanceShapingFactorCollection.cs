@@ -9,6 +9,12 @@ namespace Hunter
 {
     public class PerformanceShapingFactorCollection : IEnumerable<PerformanceShapingFactor>
     {
+        public enum AggregationMethod
+        {
+            Multipy,
+            Minimum
+        }
+
         private readonly Dictionary<string, PerformanceShapingFactor> _psfs;
 
         public PerformanceShapingFactorCollection(string filePath = null)
@@ -30,6 +36,7 @@ namespace Hunter
             foreach (PerformanceShapingFactor psf in psfList)
             {
                 _psfs.Add(psf.Id, psf);
+                psf.ValidateAgainstStaticEnums();
             }
         }
 
@@ -77,7 +84,7 @@ namespace Hunter
         /// <returns>The aggregated value of the multipliers based on the specified aggregation method.</returns>
         /// <exception cref="ArgumentException">Thrown when an invalid aggregation method is provided.</exception>
         /// <exception cref="InvalidOperationException">Thrown when the aggregated multiplier is less than or equal to 0.</exception>
-        internal double? AggregateMultipliers(List<double> multipliers, string aggregationMethod)
+        internal double? AggregateMultipliers(List<double> multipliers, AggregationMethod aggregationMethod)
         {
             return AggregateMultipliers(multipliers.Select(x => (double?)x).ToList(), aggregationMethod);
         }
@@ -98,7 +105,7 @@ namespace Hunter
         /// <returns>The aggregated value of the non-null multipliers based on the specified aggregation method.</returns>
         /// <exception cref="ArgumentException">Thrown when an invalid aggregation method is provided.</exception>
         /// <exception cref="InvalidOperationException">Thrown when the aggregated multiplier is less than or equal to 0</exception>
-        internal double? AggregateMultipliers(List<double?> multipliers, string aggregationMethod)
+        internal double? AggregateMultipliers(List<double?> multipliers, AggregationMethod aggregationMethod)
         {
             var nonNullMultipliers = multipliers.Where(x => x.HasValue).Select(x => x.Value).ToList();
 
@@ -111,10 +118,10 @@ namespace Hunter
 
             switch (aggregationMethod)
             {
-                case "multiply":
+                case AggregationMethod.Multipy:
                     result = nonNullMultipliers.Aggregate(1.0, (acc, multiplier) => acc * multiplier);
                     break;
-                case "minimum":
+                case AggregationMethod.Minimum:
                     result = nonNullMultipliers.Min();
                     break;
                 default:
@@ -139,7 +146,8 @@ namespace Hunter
         /// <param name="aggregationMethod">The method to use for aggregating the PSF multipliers 
         /// (default is "multiply").</param>
         /// <returns>The composite multiplier for the given task type.</returns>
-        public double CompositeMultiplier(HRAEngine.Primitive primitive, string aggregationMethod = "multiply")
+        public double CompositeMultiplier(HRAEngine.Primitive primitive, 
+            AggregationMethod aggregationMethod = AggregationMethod.Multipy)
         {
             var relevantPsfs = RelevantPsfs(primitive);
             var multipliers = relevantPsfs.Select(psf => psf.CurrentMultiplier).ToList();
@@ -160,7 +168,7 @@ namespace Hunter
         /// <param name="aggregationMethod">The method to use for aggregating the PSF multipliers 
         /// (default is "multiply").</param>
         /// <returns>The composite multiplier for the given task type.</returns>
-        public double? TimeMultiplier(HRAEngine.Primitive primitive, string aggregationMethod = "multiply")
+        public double? TimeMultiplier(HRAEngine.Primitive primitive, AggregationMethod aggregationMethod = AggregationMethod.Multipy)
         {
             var relevantPsfs = RelevantPsfs(primitive);
             var multipliers = relevantPsfs.Select(psf => psf.CurrentTimeMultiplier).ToList();

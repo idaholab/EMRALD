@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Reflection.Emit;
 using System.Runtime.Serialization;
 using Newtonsoft.Json;
@@ -7,24 +8,23 @@ using Newtonsoft.Json.Converters;
 
 namespace Hunter
 {
-    public enum TaskType
+    public enum OperationType
     {
         Action,
         Diagnosis
     }
-
 
     public class PerformanceShapingFactor
     {
         [JsonIgnore]
         private IUpdateStrategy UpdateStrategy { get; set; }
 
-        [JsonProperty("type")]
+        [JsonProperty("operation")]
         [JsonConverter(typeof(StringEnumConverter))]
-        public TaskType Type { get; set; }
+        public OperationType Operation { get; set; }
 
-        [JsonProperty("label")]
-        public string Label { get; set; }
+        [JsonProperty("factor")]
+        public string Factor { get; set; }
 
         [JsonProperty("levels")]
         public List<Level> Levels { get; set; }
@@ -53,10 +53,11 @@ namespace Hunter
             public double? TimeMultiplier { get; set; } = null;
         }
 
-        public PerformanceShapingFactor(TaskType type, string label, List<Level> levels, string id, string initialLevelName = null, bool isStatic = false)
+        public PerformanceShapingFactor(OperationType type, string factor, List<Level> levels, string id, 
+            string initialLevelName = null, bool isStatic = false, bool validateAgainstEnums = true)
         {
-            Type = type;
-            Label = label;
+            Operation = type;
+            Factor = factor;
             Levels = levels;
             Id = id;
             IsStatic = isStatic;
@@ -65,10 +66,10 @@ namespace Hunter
             SetUpdateStrategy();
         }
 
+
         [OnDeserialized]
         private void OnDeserialized(StreamingContext context)
         {
-            // Calculate the initial level based on the Levels list
             CalculateInitialLevel();
             SetUpdateStrategy();
         }
@@ -89,7 +90,7 @@ namespace Hunter
             // If no matching level is found or InitialLevel is not specified, use the existing logic
             foreach (Level level in Levels)
             {
-                if (level.LevelName.Contains("Nominal"))
+                if (level.LevelName.Contains(PsfEnums.Nominal))
                 {
                     CurrentLevel = level;
                     return;
@@ -106,12 +107,68 @@ namespace Hunter
 
         private void SetUpdateStrategy()
         {
-            if (Label.Contains("Fitness"))
+            if (Factor == PsfEnums.Factor.FitnessForDuty)
             {
                 UpdateStrategy = new FitnessforDuty();
             }
 
             // Add more strategies here
+        }
+
+        // called from PerformanceShapingFactorCollection
+        public void ValidateAgainstStaticEnums()
+        {
+            // Check if OperationDescription is in PsfEnums.OperationDescription
+            var typeFields = typeof(PsfEnums.Operation).GetFields(BindingFlags.Public | BindingFlags.Static);
+            bool typeMatched = false;
+
+            foreach (var field in typeFields)
+            {
+                if (Enum.TryParse(field.GetValue(null).ToString(), out OperationType taskType) && taskType == Operation)
+                {
+                    typeMatched = true;
+                    break;
+                }
+            }
+
+            if (!typeMatched)
+            {
+                throw new ArgumentException($"Invalid OperationDescription value: {Operation}");
+            }
+
+            // Check if Factor is in PsfEnums.Factor
+            var factorFields = typeof(PsfEnums.Factor).GetFields(BindingFlags.Public | BindingFlags.Static);
+            if (!factorFields.Any(field => field.GetValue(null).ToString() == Factor))
+            {
+                throw new ArgumentException($"Invalid Factor value: {Factor}");
+            }
+
+            // Check if Id is in PsfEnums.Id
+            var idFields = typeof(PsfEnums.Id).GetFields(BindingFlags.Public | BindingFlags.Static);
+            if (!idFields.Any(field => field.GetValue(null).ToString() == Id))
+            {
+                throw new ArgumentException($"Invalid Id value: {Id}");
+            }
+
+            // Get the nested class corresponding to the current factor in the PsfEnums.Level class
+            Type nestedClass = typeof(PsfEnums.Level).GetNestedTypes().FirstOrDefault(nt => nt.Name == Factor);
+
+            if (nestedClass == null)
+            {
+                throw new ArgumentException($"Invalid factor name: {Factor}");
+            }
+
+            // Get the property names in the nested class
+            List<string> nestedClassProperties = nestedClass.GetFields().Select(field => field.GetValue(null).ToString()).ToList();
+
+            // Compare the property names with the level names in the Levels list
+            foreach (Level level in Levels)
+            {
+                if (!nestedClassProperties.Contains(level.LevelName))
+                {
+                    throw new ArgumentException($"{level.LevelName} not in PsfEnums.Level.{Factor}");
+                }
+            }
         }
 
         public double CurrentMultiplier

@@ -180,7 +180,7 @@ namespace Hunter.Tests
             Dictionary<string, Procedure> procedures = HRAEngine.BuildProcedureCatalog(hunterModelFilename);
             string proceduresString = JsonConvert.SerializeObject(procedures);
 
-            PerformanceShapingFactorCollection psfCollection = new PerformanceShapingFactorCollection();
+            var psfCollection = new PerformanceShapingFactorCollection();
 
 
             HRAEngine hraEngine = new HRAEngine();

@@ -108,7 +108,7 @@ namespace Hunter.Tests {
             // calculate time per iteration
             TimeSpan timePerIteration = TimeSpan.FromMilliseconds(watch.ElapsedMilliseconds / ITERATIONS);
 
-            TestContext.Out.WriteLine("Operator");
+            TestContext.Out.WriteLine("OperationDescription");
             TestContext.Out.WriteLine($"Mean Time: {mean} s, Time Stdev: {stdev} s");
             TestContext.Out.WriteLine($"Mean Repeats per Iteration: {aveRepeats}");
             TestContext.Out.WriteLine($"Mean Primitives Evaluated: {aveEvals}");

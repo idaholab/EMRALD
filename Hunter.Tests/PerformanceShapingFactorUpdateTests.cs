@@ -17,7 +17,7 @@ namespace Hunter.Tests
         public void SetUp()
         {            
             // Set up a PerformanceShapingFactor object with some sample data
-            _psf = new PerformanceShapingFactor(TaskType.Action, "Available Time", new List<PerformanceShapingFactor.Level>
+            _psf = new PerformanceShapingFactor(OperationType.Action, "Available Time", new List<PerformanceShapingFactor.Level>
 {
 new PerformanceShapingFactor.Level { LevelName = "Barely adequate time", Multiplier = 0.01 },
 new PerformanceShapingFactor.Level { LevelName = "Expansive time", Multiplier = 0.00001 },

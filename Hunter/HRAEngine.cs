@@ -10,9 +10,19 @@ using MathNet.Numerics.Distributions;
 using System.Collections;
 using static Hunter.HRAEngine;
 using CommonDefLib;
+using Newtonsoft.Json.Converters;
+using System.Data.Common;
+using MathNet.Numerics.LinearAlgebra.Solvers;
 
 namespace Hunter
 {
+    public enum DistributionType
+    {
+        Lognormal,
+        Normal,
+        Exponential
+    }
+
     public struct Step
     {
         [JsonProperty("primitive_ids")]
@@ -32,23 +42,24 @@ namespace Hunter
     {
         public struct Primitive
         {
-            [JsonProperty("operator")]
-            public string Operator { get; set; }
+            [JsonProperty("operation")]
+            public string OperationDescription { get; set; }
 
-            [JsonProperty("sub_operator_type")]
-            public string SubOperatorType { get; set; }
+            [JsonProperty("sub_operation")]
+            public string SubOperation { get; set; }
 
-            [JsonProperty("base_primitive_type")]
-            public string BasePrimitiveType { get; set; }
+            [JsonProperty("base_primitive")]
+            public string BasePrimitive { get; set; }
 
-            [JsonProperty("sub_primitive_type")]
-            public string SubPrimitiveType { get; set; }
+            [JsonProperty("sub_primitive")]
+            public string SubPrimitive { get; set; }
 
             [JsonProperty("id")]
             public string Id { get; set; }
 
             [JsonProperty("distribution_type")]
-            public string DistributionType { get; set; }
+            [JsonConverter(typeof(StringEnumConverter))]
+            public DistributionType Distribution { get; set; }
 
             [JsonProperty("time")]
             public double? Time { get; set; }
@@ -62,7 +73,9 @@ namespace Hunter
             [JsonProperty("relevant_psfs")]
             public List<string> RelevantPsfIds { get; set; }
 
-            public TaskType OperatorType => Operator == "Action" ? TaskType.Action : TaskType.Diagnosis;
+            public OperationType Operation => 
+                OperationDescription == PsfEnums.Operation.Action ? OperationType.Action : OperationType.Diagnosis;
+
         }
 
         private Dictionary<string, Primitive> _primitives;
@@ -233,7 +246,7 @@ namespace Hunter
         /// <param name="time">The mean time value of the Log-Normal distribution.</param>
         /// <param name="std">The standard deviation of the Log-Normal distribution.</param>
         /// <returns>A random time value sampled from the Log-Normal distribution with a minimum value of zero.</returns>
-        internal static double SampleLogTime(double time, double std)
+        internal static double SampleLognormalTime(double time, double std)
         {
             // Calculate the shape and scale parameters
             double shape = Math.Sqrt(Math.Log(1 + (std * std) / (time * time)));
@@ -398,7 +411,7 @@ namespace Hunter
                 if (_primitives.TryGetValue(primitiveId, out Primitive primitive))
                 {
                     // Get the primitive's distribution type, time, standard deviation, and nominal HEP
-                    string distributionType = primitive.DistributionType;
+                    var distributionType = primitive.Distribution;
                     double? time = primitive.Time;
                     double? std = primitive.Std;
                     double nominalHep = primitive.NominalHep;
@@ -413,7 +426,7 @@ namespace Hunter
                     // If psfs is not null, calculate the composite multiplier and time multiplier
                     if (psfs != null)
                     {
-                        // Get the composite multiplier for the primitive's task type
+                        // Get the composite multiplier for the primitive
                         compositePSF = psfs.CompositeMultiplier(primitive);
                         nominalHep *= compositePSF;
 
@@ -421,20 +434,20 @@ namespace Hunter
                         if (nominalHep > 1.0)
                             nominalHep = 1.0;
 
-                        // Get the time multiplier for the primitive's task type
+                        // Get the time multiplier for the primitive
                         timeMultiplier = psfs.TimeMultiplier(primitive) ?? 1.0;
                     }
 
                     // Sample the elapsed time for the primitive based on its distribution type
                     switch (distributionType)
                     {
-                        case "log":
-                            elapsed_time += SampleLogTime(Convert.ToDouble(time), Convert.ToDouble(std)) * timeMultiplier;
+                        case DistributionType.Lognormal:
+                            elapsed_time += SampleLognormalTime(Convert.ToDouble(time), Convert.ToDouble(std)) * timeMultiplier;
                             break;
-                        case "normal":
+                        case DistributionType.Normal:
                             elapsed_time += SampleNormalTime(Convert.ToDouble(time), Convert.ToDouble(std)) * timeMultiplier;
                             break;
-                        case "expo":
+                        case DistributionType.Exponential:
                             elapsed_time += SampleExponentialTime(Convert.ToDouble(time)) * timeMultiplier;
                             break;
                         default:

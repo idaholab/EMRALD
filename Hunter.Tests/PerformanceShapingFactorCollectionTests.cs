@@ -15,10 +15,10 @@ namespace Hunter.Tests
             // Add a sample PerformanceShapingFactor to the collection
             var levels = new List<PerformanceShapingFactor.Level>
             {
-                new PerformanceShapingFactor.Level { LevelName = "Barely adequate time", Multiplier = 2 },
-                new PerformanceShapingFactor.Level { LevelName = "Nominal", Multiplier = 1 }
+                new PerformanceShapingFactor.Level { LevelName = PsfEnums.Level.AvailableTime.BarelyAdequateTime, Multiplier = 2 },
+                new PerformanceShapingFactor.Level { LevelName = PsfEnums.Level.AvailableTime.NominalTime, Multiplier = 1 }
             };
-            var psf = new PerformanceShapingFactor(TaskType.Action, "Time", levels, "ATi");
+            var psf = new PerformanceShapingFactor(OperationType.Action, "Time", levels, "ATi");
             _psfCollection.Add(psf);
         }
 
@@ -26,12 +26,12 @@ namespace Hunter.Tests
         public void SetLevel_ValidPsfIdAndLevelName_SetsCurrentLevel()
         {
             // Act
-            _psfCollection.SetLevel("ATd", "BarelyAdequateTime");
+            _psfCollection.SetLevel(PsfEnums.Id.ATd, PsfEnums.Level.AvailableTime.BarelyAdequateTime);
 
             // Assert
-            var currentLevel = _psfCollection["ATd"].CurrentLevel;
+            var currentLevel = _psfCollection[PsfEnums.Id.ATd].CurrentLevel;
             Assert.IsNotNull(currentLevel);
-            Assert.AreEqual("BarelyAdequateTime", currentLevel.LevelName);
+            Assert.AreEqual(PsfEnums.Level.AvailableTime.BarelyAdequateTime, currentLevel.LevelName);
         }
 
         [Test]
@@ -76,8 +76,8 @@ namespace Hunter.Tests
                 var deserializedPsf = deserializedPsfCollection[originalPsf.Id];
                 Assert.NotNull(deserializedPsf);
                 Assert.AreEqual(originalPsf.Id, deserializedPsf.Id);
-                Assert.AreEqual(originalPsf.Label, deserializedPsf.Label);
-                Assert.AreEqual(originalPsf.Type, deserializedPsf.Type);
+                Assert.AreEqual(originalPsf.Factor, deserializedPsf.Factor);
+                Assert.AreEqual(originalPsf.Operation, deserializedPsf.Operation);
                 Assert.AreEqual(originalPsf.IsStatic, deserializedPsf.IsStatic);
                 Assert.AreEqual(originalPsf.CurrentLevel.LevelName, deserializedPsf.CurrentLevel.LevelName);
 

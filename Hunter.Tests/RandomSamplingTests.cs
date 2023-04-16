@@ -40,9 +40,9 @@ namespace Hunter.Tests
             double mean = 10;
             double std = 6;
 
-            double firstSample = HRAEngine.SampleLogTime(mean, std);
-            double secondSample = HRAEngine.SampleLogTime(mean, std);
-            double thirdSample = HRAEngine.SampleLogTime(mean, std);
+            double firstSample = HRAEngine.SampleLognormalTime(mean, std);
+            double secondSample = HRAEngine.SampleLognormalTime(mean, std);
+            double thirdSample = HRAEngine.SampleLognormalTime(mean, std);
 
             TestContext.Out.WriteLine($"Random Sequence: {firstSample}, {secondSample}, {thirdSample}");
 
@@ -93,9 +93,9 @@ namespace Hunter.Tests
             double mean = 10;
             double std = 6;
 
-            double firstSample = HRAEngine.SampleLogTime(mean, std);
-            double secondSample = HRAEngine.SampleLogTime(mean, std);
-            double thirdSample = HRAEngine.SampleLogTime(mean, std);
+            double firstSample = HRAEngine.SampleLognormalTime(mean, std);
+            double secondSample = HRAEngine.SampleLognormalTime(mean, std);
+            double thirdSample = HRAEngine.SampleLognormalTime(mean, std);
 
             TestContext.Out.WriteLine($"Random Sequence: {firstSample}, {secondSample}, {thirdSample}");
             

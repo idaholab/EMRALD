@@ -1,7 +1,7 @@
 [
   {
-    "type": "Action",
-    "label": "AvailableTime",
+    "operation": "Action",
+    "factor": "AvailableTime",
     "levels": [
       {
         "level": "InadequateTime",
@@ -27,8 +27,8 @@
     "id": "ATa"
   },
   {
-    "type": "Diagnosis",
-    "label": "AvailableTime",
+    "operation": "Diagnosis",
+    "factor": "AvailableTime",
     "levels": [
       {
         "level": "InadequateTime",
@@ -54,8 +54,8 @@
     "id": "ATd"
   },
   {
-    "type": "Action",
-    "label": "Complexity",
+    "operation": "Action",
+    "factor": "Complexity",
     "levels": [
       {
         "level": "HighlyComplex",
@@ -77,8 +77,8 @@
     "id": "Ca"
   },
   {
-    "type": "Diagnosis",
-    "label": "Complexity",
+    "operation": "Diagnosis",
+    "factor": "Complexity",
     "levels": [
       {
         "level": "HighlyComplex",
@@ -101,8 +101,8 @@
     "id": "Cd"
   },
   {
-    "type": "Action",
-    "label": "ErgonomicsHMI",
+    "operation": "Action",
+    "factor": "ErgonomicsHMI",
     "levels": [
       {
         "level": "MissingOrMisleading",
@@ -125,8 +125,8 @@
     "id": "Ea"
   },
   {
-    "type": "Diagnosis",
-    "label": "ErgonomicsHMI",
+    "operation": "Diagnosis",
+    "factor": "ErgonomicsHMI",
     "levels": [
       {
         "level": "MissingOrMisleading",
@@ -148,8 +148,8 @@
     "id": "Ed"
   },
   {
-    "type": "Action",
-    "label": "ExperienceAndTraining",
+    "operation": "Action",
+    "factor": "ExperienceAndTraining",
     "levels": [
       {
         "level": "Low",
@@ -169,8 +169,8 @@
     "id": "EaTa"
   },
   {
-    "type": "Diagnosis",
-    "label": "ExperienceAndTraining",
+    "operation": "Diagnosis",
+    "factor": "ExperienceAndTraining",
     "levels": [
       {
         "level": "Low",
@@ -190,8 +190,8 @@
     "id": "EaTd"
   },
   {
-    "type": "Action",
-    "label": "FitnessForDuty",
+    "operation": "Action",
+    "factor": "FitnessForDuty",
     "levels": [
       {
         "level": "Unfit",
@@ -209,8 +209,8 @@
     "id": "FfDa"
   },
   {
-    "type": "Diagnosis",
-    "label": "FitnessForDuty",
+    "operation": "Diagnosis",
+    "factor": "FitnessForDuty",
     "levels": [
       {
         "level": "Unfit",
@@ -228,8 +228,8 @@
     "id": "FfDd"
   },
   {
-    "type": "Action",
-    "label": "Procedures",
+    "operation": "Action",
+    "factor": "Procedures",
     "levels": [
       {
         "level": "NotAvailable",
@@ -256,8 +256,8 @@
     "id": "Pa"
   },
   {
-    "type": "Diagnosis",
-    "label": "Procedures",
+    "operation": "Diagnosis",
+    "factor": "Procedures",
     "levels": [
       {
         "level": "NotAvailable",
@@ -284,8 +284,8 @@
     "id": "Pd"
   },
   {
-    "type": "Action",
-    "label": "Stress",
+    "operation": "Action",
+    "factor": "Stress",
     "levels": [
       {
         "level": "Extreme",
@@ -303,8 +303,8 @@
     "id": "Sa"
   },
   {
-    "type": "Diagnosis",
-    "label": "Stress",
+    "operation": "Diagnosis",
+    "factor": "Stress",
     "levels": [
       {
         "level": "Extreme",
@@ -322,8 +322,8 @@
     "id": "Sd"
   },
   {
-    "type": "Action",
-    "label": "WorkProcesses",
+    "operation": "Action",
+    "factor": "WorkProcesses",
     "levels": [
       {
         "level": "Poor",
@@ -342,8 +342,8 @@
     "id": "WPa"
   },
   {
-    "type": "Diagnosis",
-    "label": "WorkProcesses",
+    "operation": "Diagnosis",
+    "factor": "WorkProcesses",
     "levels": [
       {
         "level": "Poor",
