@@ -7,10 +7,10 @@ using System.Threading.Tasks;
 
 namespace Hunter
 {
-    public class HunterFactory
+    public static class HunterFactory
     {
 
-        public (HRAEngine, PSFCollection) CreateOperator(
+        public static (HRAEngine, PSFCollection) CreateOperator(
             bool repeatMode = true, 
             bool timeOnShiftFatigueEnabled = true,
             TimeSpan timeOnShift = default,
@@ -46,37 +46,37 @@ namespace Hunter
             return (hraEngine, psfCollection);
         }
 
-        public (HRAEngine, PSFCollection) CreateNoviceOperator()
+        public static (HRAEngine, PSFCollection) CreateNoviceOperator()
         {
             return CreateOperator(
                 experience: PsfEnums.Level.ExperienceAndTraining.Low);
         }
 
-        public (HRAEngine, PSFCollection) CreateDefaultOperator()
+        public static (HRAEngine, PSFCollection) CreateDefaultOperator()
         {
             return CreateOperator();
         }
 
-        public (HRAEngine, PSFCollection) CreateExpertOperator()
+        public static (HRAEngine, PSFCollection) CreateExpertOperator()
         {
             return CreateOperator(
                 experience: PsfEnums.Level.ExperienceAndTraining.High);
         }
 
-        public (HRAEngine, PSFCollection) CreateDefaultOperatorWithTimePressure()
+        public static (HRAEngine, PSFCollection) CreateDefaultOperatorWithTimePressure()
         {
             return CreateOperator(
                 hasTimePressure: true);
         }
 
-        public (HRAEngine, PSFCollection) CreateNoviceOperatorWithTimePressure()
+        public static (HRAEngine, PSFCollection) CreateNoviceOperatorWithTimePressure()
         {
             return CreateOperator(
                 experience: PsfEnums.Level.ExperienceAndTraining.Low,
                 hasTimePressure: true);
         }
 
-        public (HRAEngine, PSFCollection) CreateExpertOperatorWithTimePressure()
+        public static (HRAEngine, PSFCollection) CreateExpertOperatorWithTimePressure()
         {
             return CreateOperator(
                 experience: PsfEnums.Level.ExperienceAndTraining.High,
