@@ -14,7 +14,7 @@ namespace Hunter
         Diagnosis
     }
 
-    public class PerformanceShapingFactor
+    public class PSF
     {
         [JsonIgnore]
         private IUpdateStrategy UpdateStrategy { get; set; }
@@ -53,7 +53,7 @@ namespace Hunter
             public double? TimeMultiplier { get; set; } = null;
         }
 
-        public PerformanceShapingFactor(OperationType type, string factor, List<Level> levels, string id, 
+        public PSF(OperationType type, string factor, List<Level> levels, string id, 
             string initialLevelName = null, bool isStatic = false, bool validateAgainstEnums = true)
         {
             Operation = type;
@@ -98,7 +98,7 @@ namespace Hunter
             }
 
             // If no level with "Nominal" is found, warn the user
-            Console.WriteLine("Warning: Hunter.PerformanceShapingFactor.CalculateInitialLevel No 'Nominal' level found. Setting CurrentLevel to the middle level.");
+            Console.WriteLine("Warning: Hunter.PSF.CalculateInitialLevel No 'Nominal' level found. Setting CurrentLevel to the middle level.");
 
             // If no level with "Nominal" is found, set CurrentLevel to the middle level
             int middleIndex = (int)Math.Round((double)Levels.Count / 2) - 1;
@@ -115,7 +115,7 @@ namespace Hunter
             // Add more strategies here
         }
 
-        // called from PerformanceShapingFactorCollection
+        // called from PSFCollection
         public void ValidateAgainstStaticEnums()
         {
             // Check if OperationDescription is in PsfEnums.OperationDescription
@@ -211,22 +211,22 @@ namespace Hunter
         }
 
         /// <summary>
-        /// Serializes the current PerformanceShapingFactor instance into a JSON string.
+        /// Serializes the current PSF instance into a JSON string.
         /// </summary>
-        /// <returns>A JSON string representation of the current PerformanceShapingFactor instance.</returns>
+        /// <returns>A JSON string representation of the current PSF instance.</returns>
         public string GetJSON()
         {
             return JsonConvert.SerializeObject(this, Formatting.Indented);
         }
 
         /// <summary>
-        /// Deserializes a JSON string into an PerformanceShapingFactor instance.
+        /// Deserializes a JSON string into an PSF instance.
         /// </summary>
         /// <param name="json">The JSON string to deserialize.</param>
         /// <returns>An HRAEngine instance deserialized from the JSON string.</returns>
-        public static PerformanceShapingFactor DeserializeJSON(string json)
+        public static PSF DeserializeJSON(string json)
         {
-            return JsonConvert.DeserializeObject<PerformanceShapingFactor>(json);
+            return JsonConvert.DeserializeObject<PSF>(json);
         }
     }
 }

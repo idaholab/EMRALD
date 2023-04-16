@@ -2,30 +2,29 @@
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
-using Hunter;
 using static Hunter.HRAEngine;
 
-namespace Hunter.Tests
+namespace Hunter.Tests.PerformanceShapingFactor
 {
     [TestFixture]
     public class PerformanceShapingFactorUpdateTests
     {
-        private PerformanceShapingFactor _psf;
-        private PerformanceShapingFactorCollection _psfCollection;
+        private PSF _psf;
+        private PSFCollection _psfCollection;
 
         [SetUp]
         public void SetUp()
-        {            
-            // Set up a PerformanceShapingFactor object with some sample data
-            _psf = new PerformanceShapingFactor(OperationType.Action, "Available Time", new List<PerformanceShapingFactor.Level>
+        {
+            // Set up a PSF object with some sample data
+            _psf = new PSF(OperationType.Action, "Available Time", new List<PSF.Level>
 {
-new PerformanceShapingFactor.Level { LevelName = "Barely adequate time", Multiplier = 0.01 },
-new PerformanceShapingFactor.Level { LevelName = "Expansive time", Multiplier = 0.00001 },
-new PerformanceShapingFactor.Level { LevelName = "Extra time", Multiplier = 0.0001 },
-new PerformanceShapingFactor.Level { LevelName = "Inadequate time", Multiplier = 1 },
-new PerformanceShapingFactor.Level { LevelName = "Nominal time", Multiplier = 0.001 }
+new PSF.Level { LevelName = "Barely adequate time", Multiplier = 0.01 },
+new PSF.Level { LevelName = "Expansive time", Multiplier = 0.00001 },
+new PSF.Level { LevelName = "Extra time", Multiplier = 0.0001 },
+new PSF.Level { LevelName = "Inadequate time", Multiplier = 1 },
+new PSF.Level { LevelName = "Nominal time", Multiplier = 0.001 }
 }, "ATa", "Inadequate time");
-            _psfCollection = new PerformanceShapingFactorCollection();
+            _psfCollection = new PSFCollection();
         }
 
         [Test]
@@ -41,7 +40,7 @@ new PerformanceShapingFactor.Level { LevelName = "Nominal time", Multiplier = 0.
             _psf.Update(hraEngine, jsonData);
 
             // Assert
-//                Assert.That(_psf.CurrentLevel.LevelName, Is.EqualTo("Expansive time"));
+            //                Assert.That(_psf.CurrentLevel.LevelName, Is.EqualTo("Expansive time"));
         }
 
         [Test]

@@ -320,14 +320,14 @@ namespace Hunter
         /// <param name="procedureId">The ID of the Procedure object to evaluate.</param>
         /// <param name="startStep">The 1-relative index of the first step to evaluate.</param>
         /// <param name="endStep">The 1-relative index of the last step to evaluate.</param>
-        /// <param name="psfs">An optional collection of PerformanceShapingFactor objects to use in the 
+        /// <param name="psfs">An optional collection of PSF objects to use in the 
         /// evaluation.</param>
         /// <returns>A TimeSpan object representing the total elapsed time to evaluate the specified range 
         /// of steps in the specified Procedure object.</returns>
         public TimeSpan EvaluateSteps(string procedureCollectionJson,
                                       string procedureId,
                                       int startStep, int endStep,
-                                      PerformanceShapingFactorCollection? psfs = null)
+                                      PSFCollection? psfs = null)
         {
             var procedureCollection = DeserializeProcedureCollection(procedureCollectionJson);
             return EvaluateSteps(procedureCollection, procedureId,
@@ -341,12 +341,12 @@ namespace Hunter
         /// <param name="procedureId">The ID of the Procedure object to evaluate.</param>
         /// <param name="startStep">The 1-relative index of the first step to evaluate.</param>
         /// <param name="endStep">The 1-relative index of the last step to evaluate.</param>
-        /// <param name="psfs">An optional collection of PerformanceShapingFactor objects to use in the evaluation.</param>
+        /// <param name="psfs">An optional collection of PSF objects to use in the evaluation.</param>
         /// <returns>A TimeSpan object representing the total elapsed time to evaluate the specified range of steps in the specified Procedure object.</returns>
         public TimeSpan EvaluateSteps(Dictionary<string, Procedure> procedureCollection,
                                       string procedureId,
                                       int startStep, int endStep,
-                                      PerformanceShapingFactorCollection? psfs = null)
+                                      PSFCollection? psfs = null)
         {
             // Initialize elapsed_time and success variables to 0 and true, respectively.
             double elapsed_time = 0.0;
@@ -399,9 +399,9 @@ namespace Hunter
         /// </summary>
         /// <param name="primitiveIds">A list of primitive IDs to evaluate.</param>
         /// <param name="success">A reference to a boolean that indicates whether the evaluation is successful or not.</param>
-        /// <param name="psfs">An optional collection of PerformanceShapingFactor objects to use for calculating the elapsed time.</param>
+        /// <param name="psfs">An optional collection of PSF objects to use for calculating the elapsed time.</param>
         /// <returns>The total elapsed time for all primitives in the list.</returns>
-        public double Evaluate(List<string> primitiveIds, ref bool success, PerformanceShapingFactorCollection? psfs = null)
+        public double Evaluate(List<string> primitiveIds, ref bool success, PSFCollection? psfs = null)
         {
             double elapsed_time = 0.0;
 

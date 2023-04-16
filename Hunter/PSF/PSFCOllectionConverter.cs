@@ -5,22 +5,22 @@ using Hunter;
 
 namespace Hunter
 {
-    public class PerformanceShapingFactorCollectionConverter : JsonConverter
+    public class PSFCollectionConverter : JsonConverter
     {
         public override bool CanConvert(Type objectType)
         {
-            return objectType == typeof(PerformanceShapingFactorCollection);
+            return objectType == typeof(PSFCollection);
         }
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
             var jsonArray = JArray.Load(reader);
-            var collection = new PerformanceShapingFactorCollection();
+            var collection = new PSFCollection();
             collection.Clear();
 
             foreach (var jsonPerformanceShapingFactor in jsonArray)
             {
-                var performanceShapingFactor = jsonPerformanceShapingFactor.ToObject<PerformanceShapingFactor>(serializer);
+                var performanceShapingFactor = jsonPerformanceShapingFactor.ToObject<PSF>(serializer);
                 collection.Add(performanceShapingFactor, overwrite: true);
             }
 
@@ -29,7 +29,7 @@ namespace Hunter
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
-            var collection = (PerformanceShapingFactorCollection)value;
+            var collection = (PSFCollection)value;
             var jsonArray = new JArray();
 
             foreach (var performanceShapingFactor in collection)

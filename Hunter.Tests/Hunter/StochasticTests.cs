@@ -130,10 +130,10 @@ namespace Hunter.Tests {
             string hunterModelFilename = @"hunter/models/sgtr_model.json";
             Dictionary<string, Procedure> procedures = HRAEngine.BuildProcedureCatalog(hunterModelFilename);
 
-            PerformanceShapingFactorCollection? psfCollection = null;
+            PSFCollection? psfCollection = null;
             if (PSFs)
             {
-                psfCollection = new PerformanceShapingFactorCollection();
+                psfCollection = new PSFCollection();
                 psfCollection.SetLevel("ATa", "BarelyAdequateTime");
                 Assert.That(psfCollection.Count > 0);
 

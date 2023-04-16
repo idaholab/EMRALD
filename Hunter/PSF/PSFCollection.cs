@@ -7,7 +7,7 @@ using Newtonsoft.Json.Converters;
 
 namespace Hunter
 {
-    public class PerformanceShapingFactorCollection : IEnumerable<PerformanceShapingFactor>
+    public class PSFCollection : IEnumerable<PSF>
     {
         public enum AggregationMethod
         {
@@ -15,11 +15,11 @@ namespace Hunter
             Minimum
         }
 
-        private readonly Dictionary<string, PerformanceShapingFactor> _psfs;
+        private readonly Dictionary<string, PSF> _psfs;
 
-        public PerformanceShapingFactorCollection(string filePath = null)
+        public PSFCollection(string filePath = null)
         {
-            _psfs = new Dictionary<string, PerformanceShapingFactor>();
+            _psfs = new Dictionary<string, PSF>();
 
             if (filePath == "")
                 return;
@@ -31,16 +31,16 @@ namespace Hunter
             }
 
             string jsonData = File.ReadAllText(filePath);
-            List<PerformanceShapingFactor> psfList = 
-                JsonConvert.DeserializeObject<List<PerformanceShapingFactor>>(jsonData);
-            foreach (PerformanceShapingFactor psf in psfList)
+            List<PSF> psfList = 
+                JsonConvert.DeserializeObject<List<PSF>>(jsonData);
+            foreach (PSF psf in psfList)
             {
                 _psfs.Add(psf.Id, psf);
                 psf.ValidateAgainstStaticEnums();
             }
         }
 
-        public PerformanceShapingFactor this[string id]
+        public PSF this[string id]
         {
             get { return _psfs[id]; }
         }
@@ -63,10 +63,10 @@ namespace Hunter
         /// </summary>
         /// <param name="primitive">The primitive used to determine relevant PSFs.</param>
         /// <returns>A list of relevant performance shaping factors for the specified primitive.</returns>
-        public List<PerformanceShapingFactor> RelevantPsfs(HRAEngine.Primitive primitive)
+        public List<PSF> RelevantPsfs(HRAEngine.Primitive primitive)
         {
             var relevantPsfIds = primitive.RelevantPsfIds;
-            var relevantPsfs = new List<PerformanceShapingFactor>();
+            var relevantPsfs = new List<PSF>();
 
             foreach (var psfId in relevantPsfIds)
             {
@@ -175,7 +175,7 @@ namespace Hunter
             return AggregateMultipliers(multipliers, aggregationMethod);
         }
 
-        public IEnumerator<PerformanceShapingFactor> GetEnumerator()
+        public IEnumerator<PSF> GetEnumerator()
         {
             return _psfs.Values.GetEnumerator();
         }
@@ -191,16 +191,16 @@ namespace Hunter
         }
 
         /// <summary>
-        /// Adds a PerformanceShapingFactor to the collection.
+        /// Adds a PSF to the collection.
         /// </summary>
-        /// <param name="psf">The PerformanceShapingFactor to add.</param>
+        /// <param name="psf">The PSF to add.</param>
         /// <exception cref="System.ArgumentNullException">Thrown when psf is null.</exception>
-        /// <exception cref="System.ArgumentException">Thrown when a PerformanceShapingFactor with the same ID already exists in the collection.</exception>
-        public void Add(PerformanceShapingFactor psf, bool overwrite = false)
+        /// <exception cref="System.ArgumentException">Thrown when a PSF with the same ID already exists in the collection.</exception>
+        public void Add(PSF psf, bool overwrite = false)
         {
             if (psf == null)
             {
-                throw new ArgumentNullException(nameof(psf), "PerformanceShapingFactor cannot be null.");
+                throw new ArgumentNullException(nameof(psf), "PSF cannot be null.");
             }
 
             if (_psfs.ContainsKey(psf.Id))
@@ -211,7 +211,7 @@ namespace Hunter
                 }
                 else
                 {
-                    throw new ArgumentException($"A PerformanceShapingFactor with ID '{psf.Id}' already exists in the collection.", nameof(psf));
+                    throw new ArgumentException($"A PSF with ID '{psf.Id}' already exists in the collection.", nameof(psf));
                 }
             }
             else
@@ -232,7 +232,7 @@ namespace Hunter
         /// This example demonstrates how to set the level of two performance shaping factors in a collection:
         ///
         /// <code>
-        /// var psfCollection = new PerformanceShapingFactorCollection();
+        /// var psfCollection = new PSFCollection();
         /// psfCollection.SetLevel("ATa", "BarelyAdequateTime");
         /// psfCollection.SetLevel("ATd", "BarelyAdequateTime");
         /// </code>
@@ -248,10 +248,10 @@ namespace Hunter
             }
 
             // Retrieve the performance shaping factor from the collection
-            PerformanceShapingFactor psf = _psfs[psfId];
+            PSF psf = _psfs[psfId];
 
             // Search for the level with the specified name in the performance shaping factor's levels list
-            PerformanceShapingFactor.Level level = psf.Levels.FirstOrDefault(l => l.LevelName == levelName);
+            PSF.Level level = psf.Levels.FirstOrDefault(l => l.LevelName == levelName);
 
             // Check if the level was found
             if (level == null)
@@ -265,28 +265,28 @@ namespace Hunter
         }
 
         /// <summary>
-        /// Serializes the current PerformanceShapingFactorCollection instance into a JSON string.
+        /// Serializes the current PSFCollection instance into a JSON string.
         /// </summary>
-        /// <returns>A JSON string representation of the current PerformanceShapingFactorCollection instance.</returns>
+        /// <returns>A JSON string representation of the current PSFCollection instance.</returns>
         public string GetJSON()
         {
             var jsonSettings = new JsonSerializerSettings();
-            jsonSettings.Converters.Add(new PerformanceShapingFactorCollectionConverter());
+            jsonSettings.Converters.Add(new PSFCollectionConverter());
 
             return JsonConvert.SerializeObject(this, Formatting.Indented, jsonSettings);
         }
 
         /// <summary>
-        /// Deserializes a JSON string into an PerformanceShapingFactorCollection instance.
+        /// Deserializes a JSON string into an PSFCollection instance.
         /// </summary>
         /// <param name="json">The JSON string to deserialize.</param>
         /// <returns>An HRAEngine instance deserialized from the JSON string.</returns>
-        public static PerformanceShapingFactorCollection DeserializeJSON(string json)
+        public static PSFCollection DeserializeJSON(string json)
         {
             var jsonSettings = new JsonSerializerSettings();
-            jsonSettings.Converters.Add(new PerformanceShapingFactorCollectionConverter());
+            jsonSettings.Converters.Add(new PSFCollectionConverter());
 
-            return JsonConvert.DeserializeObject<PerformanceShapingFactorCollection>(json, jsonSettings);
+            return JsonConvert.DeserializeObject<PSFCollection>(json, jsonSettings);
         }
     }
 }

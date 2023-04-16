@@ -4,18 +4,18 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Hunter.Tests
+namespace Hunter.Tests.PerformanceShapingFactor
 {
     [TestFixture]
     public class PerformanceShapingFactor_IUpdateStrategy_Tests
     {
 
-        private PerformanceShapingFactorCollection _psfCollection;
+        private PSFCollection _psfCollection;
 
         [SetUp]
         public void SetUp()
         {
-            _psfCollection = new PerformanceShapingFactorCollection();
+            _psfCollection = new PSFCollection();
 
         }
 
@@ -29,8 +29,9 @@ namespace Hunter.Tests
             _psfCollection.Update(hRAEngine: engine);
 
             var level = _psfCollection["FfDa"].CurrentLevel;
-            
-            if (level is not null) {
+
+            if (level is not null)
+            {
                 TestContext.Out.WriteLine($"LevelName: {level.LevelName}");
                 Assert.That(level.LevelName == "Nominal");
             }

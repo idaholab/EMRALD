@@ -4,7 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Hunter.Tests
+using Hunter;
+
+namespace Hunter.Tests.HumanReliabilityAnalysisEngine
 {
     [TestFixture]
     public class HRAEngine_FatigueIndex_Tests

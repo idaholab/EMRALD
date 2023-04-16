@@ -10,7 +10,7 @@ namespace Hunter
     public class HunterFactory
     {
 
-        public (HRAEngine, PerformanceShapingFactorCollection) CreateOperator(
+        public (HRAEngine, PSFCollection) CreateOperator(
             bool repeatMode = true, 
             bool timeOnShiftFatigueEnabled = true,
             TimeSpan timeOnShift = default,
@@ -25,7 +25,7 @@ namespace Hunter
                 TimeOnShift = timeOnShift       
             };
 
-            PerformanceShapingFactorCollection? psfCollection = new PerformanceShapingFactorCollection();
+            PSFCollection? psfCollection = new PSFCollection();
             if (hasTimePressure)
             {
                 psfCollection.SetLevel(PsfEnums.Id.ATa, PsfEnums.Level.AvailableTime.BarelyAdequateTime);
@@ -46,37 +46,37 @@ namespace Hunter
             return (hraEngine, psfCollection);
         }
 
-        public (HRAEngine, PerformanceShapingFactorCollection) CreateNoviceOperator()
+        public (HRAEngine, PSFCollection) CreateNoviceOperator()
         {
             return CreateOperator(
                 experience: PsfEnums.Level.ExperienceAndTraining.Low);
         }
 
-        public (HRAEngine, PerformanceShapingFactorCollection) CreateDefaultOperator()
+        public (HRAEngine, PSFCollection) CreateDefaultOperator()
         {
             return CreateOperator();
         }
 
-        public (HRAEngine, PerformanceShapingFactorCollection) CreateExpertOperator()
+        public (HRAEngine, PSFCollection) CreateExpertOperator()
         {
             return CreateOperator(
                 experience: PsfEnums.Level.ExperienceAndTraining.High);
         }
 
-        public (HRAEngine, PerformanceShapingFactorCollection) CreateDefaultOperatorWithTimePressure()
+        public (HRAEngine, PSFCollection) CreateDefaultOperatorWithTimePressure()
         {
             return CreateOperator(
                 hasTimePressure: true);
         }
 
-        public (HRAEngine, PerformanceShapingFactorCollection) CreateNoviceOperatorWithTimePressure()
+        public (HRAEngine, PSFCollection) CreateNoviceOperatorWithTimePressure()
         {
             return CreateOperator(
                 experience: PsfEnums.Level.ExperienceAndTraining.Low,
                 hasTimePressure: true);
         }
 
-        public (HRAEngine, PerformanceShapingFactorCollection) CreateExpertOperatorWithTimePressure()
+        public (HRAEngine, PSFCollection) CreateExpertOperatorWithTimePressure()
         {
             return CreateOperator(
                 experience: PsfEnums.Level.ExperienceAndTraining.High,

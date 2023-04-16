@@ -1,24 +1,22 @@
-﻿using Hunter;
-
-namespace Hunter.Tests
+﻿namespace Hunter.Tests.PerformanceShapingFactor
 {
     [TestFixture]
     public class PerformanceShapingFactorCollectionTests
     {
-        private PerformanceShapingFactorCollection _psfCollection;
+        private PSFCollection _psfCollection;
 
         [SetUp]
         public void SetUp()
         {
-            _psfCollection = new PerformanceShapingFactorCollection();
+            _psfCollection = new PSFCollection();
 
-            // Add a sample PerformanceShapingFactor to the collection
-            var levels = new List<PerformanceShapingFactor.Level>
+            // Add a sample PSF to the collection
+            var levels = new List<PSF.Level>
             {
-                new PerformanceShapingFactor.Level { LevelName = PsfEnums.Level.AvailableTime.BarelyAdequateTime, Multiplier = 2 },
-                new PerformanceShapingFactor.Level { LevelName = PsfEnums.Level.AvailableTime.NominalTime, Multiplier = 1 }
+                new PSF.Level { LevelName = PsfEnums.Level.AvailableTime.BarelyAdequateTime, Multiplier = 2 },
+                new PSF.Level { LevelName = PsfEnums.Level.AvailableTime.NominalTime, Multiplier = 1 }
             };
-            var psf = new PerformanceShapingFactor(OperationType.Action, "Time", levels, "ATi");
+            var psf = new PSF(OperationType.Action, "Time", levels, "ATi");
             _psfCollection.Add(psf);
         }
 
@@ -56,16 +54,16 @@ namespace Hunter.Tests
         public void SerializeDeserializePerformanceShapingFactorCollectionTest()
         {
             // Arrange
-            var psfCollection = new PerformanceShapingFactorCollection();
+            var psfCollection = new PSFCollection();
 
             // Act
-            // Serialize the PerformanceShapingFactorCollection
+            // Serialize the PSFCollection
             string serializedPsfCollection = psfCollection.GetJSON();
 
             TestContext.Out.WriteLine(serializedPsfCollection);
 
-            // Deserialize the serialized PerformanceShapingFactorCollection
-            var deserializedPsfCollection = PerformanceShapingFactorCollection.DeserializeJSON(serializedPsfCollection);
+            // Deserialize the serialized PSFCollection
+            var deserializedPsfCollection = PSFCollection.DeserializeJSON(serializedPsfCollection);
 
             // Assert
             // Compare the properties of the original and deserialized PerformanceShapingFactorCollections

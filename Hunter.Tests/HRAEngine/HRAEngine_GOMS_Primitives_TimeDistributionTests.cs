@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Hunter.Tests
+namespace Hunter.Tests.HumanReliabilityAnalysisEngine
 {
     [TestFixture]
     public class HRAEngine_GOMS_Primitives_TimeDistributionTests

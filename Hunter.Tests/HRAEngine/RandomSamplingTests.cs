@@ -3,7 +3,7 @@ using Hunter; // Replace with your actual namespace
 using MathNet.Numerics.Distributions;
 using CommonDefLib;
 
-namespace Hunter.Tests
+namespace Hunter.Tests.HumanReliabilityAnalysisEngine
 {
     [TestFixture]
     public class RandomSamplingTests

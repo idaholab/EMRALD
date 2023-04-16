@@ -4,33 +4,33 @@ using System.IO;
 using Newtonsoft.Json;
 
 
-namespace Hunter.Tests
+namespace Hunter.Tests.PerformanceShapingFactor
 {
     [TestFixture]
     public class PerformanceShapingFactorTests
     {
         private const string psfFilePath = "hunter/archetypes/psfs.json";
-        private List<PerformanceShapingFactor> psfList;
+        private List<PSF> psfList;
 
         [SetUp]
         public void Setup()
         {
             string jsonData = File.ReadAllText(psfFilePath);
-            psfList = JsonConvert.DeserializeObject<List<PerformanceShapingFactor>>(jsonData);
+            psfList = JsonConvert.DeserializeObject<List<PSF>>(jsonData);
         }
 
         [Test]
         public void TestCalculateInitialLevel()
         {
             // Arrange
-            var levels = new List<PerformanceShapingFactor.Level>
+            var levels = new List<PSF.Level>
             {
-                new PerformanceShapingFactor.Level { LevelName = "Low", Multiplier = 0.5 },
-                new PerformanceShapingFactor.Level { LevelName = "Nominal", Multiplier = 1.0 },
-                new PerformanceShapingFactor.Level { LevelName = "High", Multiplier = 1.5 }
+                new PSF.Level { LevelName = "Low", Multiplier = 0.5 },
+                new PSF.Level { LevelName = "Nominal", Multiplier = 1.0 },
+                new PSF.Level { LevelName = "High", Multiplier = 1.5 }
             };
 
-            var psf = new PerformanceShapingFactor(OperationType.Action, "Test Factor", levels, "TestId");
+            var psf = new PSF(OperationType.Action, "Test Factor", levels, "TestId");
 
             // Assert
             Assert.AreEqual("Nominal", psf.CurrentLevel.LevelName);
@@ -40,14 +40,14 @@ namespace Hunter.Tests
         public void TestCalculateInitialLevelNoNominal()
         {
             // Arrange
-            var levels = new List<PerformanceShapingFactor.Level>
+            var levels = new List<PSF.Level>
             {
-                new PerformanceShapingFactor.Level { LevelName = "Low", Multiplier = 0.5 },
-                new PerformanceShapingFactor.Level { LevelName = "Medium", Multiplier = 1.0 },
-                new PerformanceShapingFactor.Level { LevelName = "High", Multiplier = 1.5 }
+                new PSF.Level { LevelName = "Low", Multiplier = 0.5 },
+                new PSF.Level { LevelName = "Medium", Multiplier = 1.0 },
+                new PSF.Level { LevelName = "High", Multiplier = 1.5 }
             };
 
-            var psf = new PerformanceShapingFactor(OperationType.Action, "Test Factor", levels, "TestId");
+            var psf = new PSF(OperationType.Action, "Test Factor", levels, "TestId");
 
             // Assert
             Assert.AreEqual("Medium", psf.CurrentLevel.LevelName);
@@ -84,7 +84,7 @@ namespace Hunter.Tests
             ""id"": ""ATa""
         }";
 
-            PerformanceShapingFactor psf = JsonConvert.DeserializeObject<PerformanceShapingFactor>(json);
+            PSF psf = JsonConvert.DeserializeObject<PSF>(json);
 
             Assert.IsNotNull(psf);
             Assert.AreEqual(OperationType.Action, psf.Operation);
@@ -98,13 +98,13 @@ namespace Hunter.Tests
         [Test]
         public void PerformanceShapingFactorCollection_Create_ValidJson_ReturnsObject()
         {
-            PerformanceShapingFactorCollection psfCollection = new PerformanceShapingFactorCollection();
+            PSFCollection psfCollection = new PSFCollection();
 
             Assert.IsNotNull(psfCollection);
             Assert.AreEqual(psfList.Count, psfCollection.Count);
-            foreach (PerformanceShapingFactor psf in psfList)
+            foreach (PSF psf in psfList)
             {
-                PerformanceShapingFactor retrievedPsf = psfCollection[psf.Id];
+                PSF retrievedPsf = psfCollection[psf.Id];
                 Assert.IsNotNull(retrievedPsf);
                 Assert.AreEqual(psf.Operation, retrievedPsf.Operation);
                 Assert.AreEqual(psf.Factor, retrievedPsf.Factor);
@@ -121,17 +121,17 @@ namespace Hunter.Tests
         public void PerformanceShapingFactorTestSerializationAndDeserialization()
         {
             // Arrange
-            var levels = new List<PerformanceShapingFactor.Level>
+            var levels = new List<PSF.Level>
             {
-                new PerformanceShapingFactor.Level { LevelName = "Nominal", Multiplier = 1.0 },
-                new PerformanceShapingFactor.Level { LevelName = "High", Multiplier = 1.5 }
+                new PSF.Level { LevelName = "Nominal", Multiplier = 1.0 },
+                new PSF.Level { LevelName = "High", Multiplier = 1.5 }
             };
 
-            var psf = new PerformanceShapingFactor(OperationType.Action, "TestFactor", levels, "TestId", "Nominal", false);
+            var psf = new PSF(OperationType.Action, "TestFactor", levels, "TestId", "Nominal", false);
 
             // Act
             string json = psf.GetJSON();
-            PerformanceShapingFactor deserializedPsf = PerformanceShapingFactor.DeserializeJSON(json);
+            PSF deserializedPsf = PSF.DeserializeJSON(json);
 
             // Assert
             Assert.AreEqual(psf.Operation, deserializedPsf.Operation);
@@ -146,7 +146,7 @@ namespace Hunter.Tests
                 Assert.AreEqual(psf.Levels[i].Multiplier, deserializedPsf.Levels[i].Multiplier);
             }
         }
-        
+
         [Test]
         public void DeserializeJSON_WithInitialLevel_SetsCurrentLevelCorrectly()
         {
@@ -174,8 +174,8 @@ namespace Hunter.Tests
         }";
 
             // Act
-            PerformanceShapingFactor psf = JsonConvert.DeserializeObject<PerformanceShapingFactor>(json);
-            
+            PSF psf = JsonConvert.DeserializeObject<PSF>(json);
+
             // Assert
             Assert.AreEqual("DegradedFitness", psf.CurrentLevel.LevelName);
         }
@@ -184,20 +184,20 @@ namespace Hunter.Tests
         public void InstantiatePSF_WithInitialLevel_SetsCurrentLevelCorrectly()
         {
             // Arrange
-            List<PerformanceShapingFactor.Level> levels = new List<PerformanceShapingFactor.Level>
+            List<PSF.Level> levels = new List<PSF.Level>
             {
-                new PerformanceShapingFactor.Level { LevelName = "Unfit", Multiplier = 5 },
-                new PerformanceShapingFactor.Level { LevelName = "Degraded Fitness", Multiplier = 2 },
-                new PerformanceShapingFactor.Level { LevelName = "Nominal", Multiplier = 1 }
+                new PSF.Level { LevelName = "Unfit", Multiplier = 5 },
+                new PSF.Level { LevelName = "Degraded Fitness", Multiplier = 2 },
+                new PSF.Level { LevelName = "Nominal", Multiplier = 1 }
             };
 
-            PerformanceShapingFactor psf = new PerformanceShapingFactor(
-                OperationType.Diagnosis,"Fitness for Duty",
+            PSF psf = new PSF(
+                OperationType.Diagnosis, "Fitness for Duty",
                 levels,
                 "FfDd",
                 "Degraded Fitness");
 
-            
+
             // Assert
             Assert.AreEqual(psf.CurrentLevel.LevelName, "Degraded Fitness");
         }
@@ -206,14 +206,14 @@ namespace Hunter.Tests
         public void InstantiatePSF_WithInvalidInitialLevel_Raise()
         {
             // Arrange
-            List<PerformanceShapingFactor.Level> levels = new List<PerformanceShapingFactor.Level>
+            List<PSF.Level> levels = new List<PSF.Level>
             {
-                new PerformanceShapingFactor.Level { LevelName = "Unfit", Multiplier = 5 },
-                new PerformanceShapingFactor.Level { LevelName = "Degraded Fitness", Multiplier = 2 },
-                new PerformanceShapingFactor.Level { LevelName = "Nominal", Multiplier = 1 }
+                new PSF.Level { LevelName = "Unfit", Multiplier = 5 },
+                new PSF.Level { LevelName = "Degraded Fitness", Multiplier = 2 },
+                new PSF.Level { LevelName = "Nominal", Multiplier = 1 }
             };
 
-            var exception = Assert.Throws<ArgumentException>(() => new PerformanceShapingFactor(
+            var exception = Assert.Throws<ArgumentException>(() => new PSF(
                 OperationType.Diagnosis,
                 "Fitness for Duty",
                 levels,
@@ -225,7 +225,7 @@ namespace Hunter.Tests
         [Test]
         public void TestIsStaticProperty()
         {
-            // JSON data for the PerformanceShapingFactor
+            // JSON data for the PSF
             string psfJson = @"{
             ""type"": ""Diagnosis"",
             ""factor"": ""FitnessForDuty"",
@@ -247,8 +247,8 @@ namespace Hunter.Tests
             ""id"": ""FfDd""
         }";
 
-            // Deserialize the JSON data into a PerformanceShapingFactor instance
-            PerformanceShapingFactor psf = JsonConvert.DeserializeObject<PerformanceShapingFactor>(psfJson);
+            // Deserialize the JSON data into a PSF instance
+            PSF psf = JsonConvert.DeserializeObject<PSF>(psfJson);
 
             // Assert that the current multiplier hasn't changed after calling Update
             Assert.That(psf.CurrentLevel.LevelName, Is.EqualTo("Unfit"));

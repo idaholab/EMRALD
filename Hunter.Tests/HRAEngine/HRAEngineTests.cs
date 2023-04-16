@@ -7,7 +7,7 @@ using NUnit.Framework;
 using NUnit.Framework.Constraints;
 using CommonDefLib;
 
-namespace Hunter.Tests
+namespace Hunter.Tests.HumanReliabilityAnalysisEngine
 {
     [TestFixture]
     public class HRAEngineTests
@@ -93,7 +93,7 @@ namespace Hunter.Tests
             HRAEngine hraEngine = new HRAEngine();
             List<string> primitiveIds = new List<string> { "Ac", "Rc", "Sf" };
 
-            PerformanceShapingFactorCollection psfCollection = new PerformanceShapingFactorCollection();
+            PSFCollection psfCollection = new PSFCollection();
 
             // Act
             bool success = true;
@@ -180,7 +180,7 @@ namespace Hunter.Tests
             Dictionary<string, Procedure> procedures = HRAEngine.BuildProcedureCatalog(hunterModelFilename);
             string proceduresString = JsonConvert.SerializeObject(procedures);
 
-            var psfCollection = new PerformanceShapingFactorCollection();
+            var psfCollection = new PSFCollection();
 
 
             HRAEngine hraEngine = new HRAEngine();
