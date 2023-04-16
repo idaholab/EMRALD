@@ -8,7 +8,6 @@ using System;
 
 namespace Hunter.Utils
 {
-    
     public class DictWriter
     {
         private List<string> fieldnames;
@@ -57,5 +56,4 @@ namespace Hunter.Utils
             }
         }
     }
-
 }

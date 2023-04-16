@@ -23,19 +23,19 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="db\archetypes\primitives.json">
+    <None Update="hunter_db\archetypes\primitives.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="db\archetypes\psfs.json">
+    <None Update="hunter_db\archetypes\psfs.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="db\models\sgtr_model.json">
+    <None Update="hunter_db\models\sgtr_model.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="db\procedures\rapid_shutdown.json">
+    <None Update="hunter_db\procedures\rapid_shutdown.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="db\procedures\sgtr.json">
+    <None Update="hunter_db\procedures\sgtr.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

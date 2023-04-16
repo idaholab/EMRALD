@@ -1,7 +1,7 @@
 [
   {
     "operation": "Action",
-    "sub_operation": "control room",
+    "sub_operation": "controlRoom",
     "base_primitive": "A",
     "sub_primitive": "c",
     "id": "Ac",
@@ -25,7 +25,7 @@
   },
   {
     "operation": "Checking",
-    "sub_operation": "control room",
+    "sub_operation": "controlRoom",
     "base_primitive": "C",
     "sub_primitive": "c",
     "id": "Cc",
@@ -49,7 +49,7 @@
   },
   {
     "operation": "Retrieval",
-    "sub_operation": "control room",
+    "sub_operation": "controlRoom",
     "base_primitive": "R",
     "sub_primitive": "c",
     "id": "Rc",
@@ -72,8 +72,8 @@
     "relevant_psfs": [ "Sd", "ATd", "Cd", "Ed", "EaTd", "FfDd" ]
   },
   {
-    "operation": "Instruction Communication",
-    "sub_operation": "produce written or verbal",
+    "operation": "InstructionCommunication",
+    "sub_operation": "produceWrittenOrVerbal",
     "base_primitive": "IC",
     "sub_primitive": "p",
     "id": "ICp",
@@ -84,8 +84,8 @@
     "relevant_psfs": [ "Sd", "ATd", "Cd", "Ed", "EaTd", "FfDd" ]
   },
   {
-    "operation": "Instruction Communication",
-    "sub_operation": "receive written or verbal",
+    "operation": "InstructionCommunication",
+    "sub_operation": "receiveWrittenOrVerbal",
     "base_primitive": "IC",
     "sub_primitive": "r",
     "id": "ICr",
@@ -97,7 +97,7 @@
   },
   {
     "operation": "Selection",
-    "sub_operation": "control room",
+    "sub_operation": "controlRoom",
     "base_primitive": "S",
     "sub_primitive": "c",
     "id": "Sc",
@@ -121,7 +121,7 @@
   },
   {
     "operation": "Decision",
-    "sub_operation": "based on procedures",
+    "sub_operation": "basedOnProcedures",
     "base_primitive": "D",
     "sub_primitive": "p",
     "id": "Dp",
@@ -133,7 +133,7 @@
   },
   {
     "operation": "Decision",
-    "sub_operation": "without procedures",
+    "sub_operation": "withoutProcedures",
     "base_primitive": "D",
     "sub_primitive": "w",
     "id": "Dw",

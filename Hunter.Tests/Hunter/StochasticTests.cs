@@ -126,8 +126,12 @@ namespace Hunter.Tests {
                                       bool repeatMode = false, bool stress = false, 
                                       bool fatigue = false, bool atStartOfShift=false)
         {
+            string outputDirectory = TestUtility.GetOutputDirectory();
+            TestUtility.CleanDirectory(outputDirectory);
+
+
             // Arrange
-            string hunterModelFilename = @"db/models/sgtr_model.json";
+            string hunterModelFilename = @"hunter_db/models/sgtr_model.json";
             Dictionary<string, Procedure> procedures = HRAEngine.BuildProcedureCatalog(hunterModelFilename);
 
             PSFCollection? psfCollection = null;
@@ -167,7 +171,8 @@ namespace Hunter.Tests {
                 Procedure procedure = kvp.Value;
                 int endStep = procedure.Steps.Count;
 
-                result += hraEngine.EvaluateSteps(procedures, procedureId, 1, endStep, psfCollection);
+                result += hraEngine.EvaluateSteps(procedures, procedureId, 1, endStep, 
+                                                  psfs: psfCollection, outputDir: outputDirectory);
             }
 
             return (result.TotalSeconds, hraEngine.RepeatCount, hraEngine.PrimitiveEvalCount);

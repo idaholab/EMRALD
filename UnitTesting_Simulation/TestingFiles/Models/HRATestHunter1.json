@@ -243,7 +243,7 @@
         "mainItem": false,
         "evType": "etHRAEval",
         "moveFromCurrent": true,
-        "hraTaskModelFile": ".//hunter//models//sgtr_model.json",
+        "hraTaskModelFile": ".//hunter_db//models//sgtr_model.json",
 		"procedureName": "sgtr",
 		"startStep": 1,
 		"endStep": 3,
