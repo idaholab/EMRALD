@@ -141,7 +141,8 @@ namespace Hunter.Tests.HumanReliabilityAnalysisEngine
             string hunterModelFilename = @"hunter_db/models/sgtr_model.json";
 
             // Act
-            Dictionary<string, Procedure> procedures = HRAEngine.BuildProcedureCatalog(hunterModelFilename);
+            Dictionary<string, Procedure> procedures = 
+                ProceduresFactory.FromHunterModelFilename(hunterModelFilename);
 
             // Assert
             Assert.AreEqual(2, procedures.Count);
@@ -167,7 +168,8 @@ namespace Hunter.Tests.HumanReliabilityAnalysisEngine
             Assert.Throws<System.IO.FileNotFoundException>(() =>
             {
                 // Act
-                Dictionary<string, Procedure> procedures = HRAEngine.BuildProcedureCatalog(hunterModelFilename);
+                Dictionary<string, Procedure> procedures = 
+                ProceduresFactory.FromHunterModelFilename(hunterModelFilename);
             });
         }
 
@@ -177,7 +179,8 @@ namespace Hunter.Tests.HumanReliabilityAnalysisEngine
         {
             // Arrange
             string hunterModelFilename = @"hunter_db/models/sgtr_model.json";
-            Dictionary<string, Procedure> procedures = HRAEngine.BuildProcedureCatalog(hunterModelFilename);
+            Dictionary<string, Procedure> procedures = 
+                ProceduresFactory.FromHunterModelFilename(hunterModelFilename);
             string proceduresString = JsonConvert.SerializeObject(procedures);
 
             var psfCollection = new PSFCollection();
@@ -211,7 +214,8 @@ namespace Hunter.Tests.HumanReliabilityAnalysisEngine
 
 
             // Act & Assert
-            Assert.Throws<ArgumentException>(() => hraEngine.EvaluateSteps(proceduresString, procedureId, startStep, endStep));
+            Assert.Throws<ArgumentException>(() => 
+                hraEngine.EvaluateSteps(proceduresString, procedureId, startStep, endStep));
         }
 
         [Test]
@@ -219,7 +223,8 @@ namespace Hunter.Tests.HumanReliabilityAnalysisEngine
         {
             // Arrange
             string hunterModelFilename = @"hunter_db/models/sgtr_model.json";
-            Dictionary<string, Procedure> procedures = HRAEngine.BuildProcedureCatalog(hunterModelFilename);
+            Dictionary<string, Procedure> procedures = 
+                ProceduresFactory.FromHunterModelFilename(hunterModelFilename);
 
             HRAEngine hraEngine = new HRAEngine();
 
@@ -240,7 +245,8 @@ namespace Hunter.Tests.HumanReliabilityAnalysisEngine
         {
             // Arrange
             string hunterModelFilename = @"hunter_db/models/sgtr_model.json";
-            Dictionary<string, Procedure> procedures = HRAEngine.BuildProcedureCatalog(hunterModelFilename);
+            Dictionary<string, Procedure> procedures = 
+                ProceduresFactory.FromHunterModelFilename(hunterModelFilename);
 
             HRAEngine hraEngine = new HRAEngine();
 
@@ -261,7 +267,8 @@ namespace Hunter.Tests.HumanReliabilityAnalysisEngine
         {
             // Arrange
             string hunterModelFilename = @"hunter_db/models/sgtr_model.json";
-            Dictionary<string, Procedure> procedures = HRAEngine.BuildProcedureCatalog(hunterModelFilename);
+            Dictionary<string, Procedure> procedures = 
+                ProceduresFactory.FromHunterModelFilename(hunterModelFilename);
 
             HRAEngine hraEngine = new HRAEngine();
 
@@ -271,7 +278,8 @@ namespace Hunter.Tests.HumanReliabilityAnalysisEngine
             int endStep = 99;
 
             // Act & Assert
-            Assert.Throws<ArgumentOutOfRangeException>(() => hraEngine.EvaluateSteps(procedures, procedureId, startStep, endStep));
+            Assert.Throws<ArgumentOutOfRangeException>(() => 
+                hraEngine.EvaluateSteps(procedures, procedureId, startStep, endStep));
         }
 
 

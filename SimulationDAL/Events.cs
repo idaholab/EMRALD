@@ -1374,9 +1374,9 @@ namespace SimulationDAL
 
       //Assign any data from the model before running the HRA code
 
-      Dictionary<string, Procedure> procedures = HRAEngine.BuildProcedureCatalog(_hunterModelFilename);
+      Dictionary<string, Procedure> procedures = ProceduresFactory.FromHunterModelFilename(_hunterModelFilename);
 
-      (HRAEngine hraEngine, PSFCollection psfCollection) = HunterFactory.FromHunterModelPath(_hunterModelFilename);
+      (HRAEngine hraEngine, PSFCollection psfCollection) = HunterFactory.FromHunterModelFilename(_hunterModelFilename);
       hraEngine.TimeOnShift += curTime;
 
       //TODO setup the PSFs

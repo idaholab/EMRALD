@@ -19,7 +19,12 @@ namespace Hunter
             public bool HasTimePressure { get; set; } = false;
             public string Experience { get; set; } = default;
 
-            public HunterSnapshot(bool repeatMode, bool timeOnShiftFatigueEnabled, TimeSpan startTimeOnShift, bool hasTimePressure, string experience)
+            public HunterSnapshot(
+                bool repeatMode, 
+                bool timeOnShiftFatigueEnabled, 
+                TimeSpan startTimeOnShift, 
+                bool hasTimePressure, 
+                string experience)
             {
                 RepeatMode = repeatMode;
                 TimeOnShiftFatigueEnabled = timeOnShiftFatigueEnabled;
@@ -41,7 +46,7 @@ namespace Hunter
             }
         }
 
-        public static (HRAEngine, PSFCollection) FromHunterModelPath(string hunterModelFilename)
+        public static (HRAEngine, PSFCollection) FromHunterModelFilename(string hunterModelFilename)
         {
             // Get the directory of the hunterModelFilename file
             var hunterModelDir = Path.GetDirectoryName(Path.GetFullPath(hunterModelFilename));
@@ -66,10 +71,9 @@ namespace Hunter
             var hunterSnapshot = HunterSnapshot.DeserializeJson(jsonData);
 
             return CreateOperator(hunterSnapshot);
-
         }
 
-            public static (HRAEngine, PSFCollection) CreateOperator(HunterSnapshot snapshot)
+        public static (HRAEngine, PSFCollection) CreateOperator(HunterSnapshot snapshot)
         {
             return CreateOperator(
                 snapshot.RepeatMode,
@@ -78,14 +82,12 @@ namespace Hunter
                 snapshot.HasTimePressure,
                 snapshot.Experience);
         }
-
         public static (HRAEngine, PSFCollection) CreateOperator(
             bool repeatMode = true, 
             bool timeOnShiftFatigueEnabled = true,
             TimeSpan startTimeOnShift = default,
             bool hasTimePressure = false,
-            string experience = default
-            )
+            string experience = default)
         {
             HRAEngine hraEngine = new HRAEngine
             {

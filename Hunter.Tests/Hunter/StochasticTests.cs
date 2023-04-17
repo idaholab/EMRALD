@@ -6,6 +6,7 @@ using System.Collections.Generic;
 
 namespace Hunter.Tests {
 
+
     [TestFixture]
     public class StochasticTests
     {
@@ -13,6 +14,8 @@ namespace Hunter.Tests {
         private List<double> results;
         private List<int> repeatCounts;
         private List<int> primitiveEvalCounts;
+
+        private bool writeCsvs = false;
 
         [SetUp]
         public void Setup()
@@ -126,13 +129,15 @@ namespace Hunter.Tests {
                                       bool repeatMode = false, bool stress = false, 
                                       bool fatigue = false, bool atStartOfShift=false)
         {
-            string outputDirectory = TestUtility.GetOutputDirectory();
-            TestUtility.CleanDirectory(outputDirectory);
-
+            string outputDirectory = null;
+            if (writeCsvs) { 
+                outputDirectory = TestUtility.GetOutputDirectory();
+                TestUtility.CleanDirectory(outputDirectory);
+            }
 
             // Arrange
             string hunterModelFilename = @"hunter_db/models/sgtr_model.json";
-            Dictionary<string, Procedure> procedures = HRAEngine.BuildProcedureCatalog(hunterModelFilename);
+            Dictionary<string, Procedure> procedures = ProceduresFactory.FromHunterModelFilename(hunterModelFilename);
 
             PSFCollection? psfCollection = null;
             if (PSFs)
