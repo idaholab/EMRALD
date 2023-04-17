@@ -288,7 +288,7 @@ if (typeof Navigation === 'undefined')
                       this.editVariableProperties(dataObj);
                       break;
                     case "Logic Tree":
-                      var dataObj = { id: -1, name: "", desc: "", gateType: "gtAnd", rootName: "", compChildren: [], gateChildren: [] };
+                      var dataObj = { id: -1, name: "", desc: "", gateType: "gtAnd", rootName: "", compChildren: [], gateChildren: [], isRoot: true };
                       this.editLogicProperties(dataObj);
                       break;
                     case "Actions":
@@ -1591,6 +1591,8 @@ if (typeof Navigation === 'undefined')
     //---------------------------------------------------
     Sidebar.prototype.addNewEvent = function (newEvent, parent) {
       var mainModel = simApp.allDataModel;
+      delete newEvent.tempVariableList;
+      delete newEvent.tempLogicTopList;
       if (mainModel.EventList) {
         var evt = this.getEventByName(mainModel, newEvent.Event.name);
         if (!evt) {
@@ -2218,12 +2220,10 @@ if (typeof Navigation === 'undefined')
             var oldName = el.innerText;
             if (oldName != dataObj.name) {
               this.replaceEventName(oldName, dataObj.name);
-            }
-              //el.innerText = dataObj.name;
-              //this.editEventPropertiesHelper(original, dataObj.name);              
+            }           
           }
           else { //new event.
-            var evtObj = { Event: dataObj };
+            var evtObj = { Event: retObj };
             this.addNewEvent(evtObj, null);
           }
         }
