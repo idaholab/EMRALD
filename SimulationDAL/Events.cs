@@ -1242,6 +1242,7 @@ namespace SimulationDAL
   {
     //variables needed for hunter info
     private string _hunterModelFilename = @"hunter_db/models/sgtr_model.json";
+    private string _hunterModelJson;
     private string _procedureName = "";
     private int _startStep = 1;
     private int _endStep = 0;
@@ -1311,7 +1312,6 @@ namespace SimulationDAL
           _hunterModelFilename = System.IO.Directory.GetCurrentDirectory() + _hunterModelFilename;
         }
 
-
         if (!File.Exists(this._hunterModelFilename))
           throw new Exception();
       }
@@ -1319,6 +1319,8 @@ namespace SimulationDAL
       {
         throw new Exception("Missing the hraTaskModelFile for " + this.name);
       }
+
+      _hunterModelJson = HunterModel.FromHunterModelFilename(_hunterModelFilename).GetJSON();
 
       if (dynObj.procedureName == null)
         throw new Exception("Missing procedure name for HRA event - " + this.name );
@@ -1374,15 +1376,14 @@ namespace SimulationDAL
 
       //Assign any data from the model before running the HRA code
 
-      Dictionary<string, Procedure> procedures = ProceduresFactory.FromHunterModelFilename(_hunterModelFilename);
-
-      (HRAEngine hraEngine, PSFCollection psfCollection) = HunterFactory.FromHunterModelFilename(_hunterModelFilename);
+      HunterModel hunterModel = HunterModel.DeserializeJSON(_hunterModelJson);
+      (HRAEngine hraEngine, PSFCollection psfCollection) = HunterFactory.CreateOperator(hunterModel.Snapshot);
       hraEngine.TimeOnShift += curTime;
 
       //TODO setup the PSFs
 
       //Call the HRA library to determine the time of the event
-      retVal = hraEngine.EvaluateSteps(procedures, _procedureName, _startStep, _endStep, psfCollection);
+      retVal = hraEngine.EvaluateSteps(hunterModel.Task.ProcedureCatalog, _procedureName, _startStep, _endStep, psfCollection);
 
       bool? success = hraEngine.CurrentSuccess;
       // success == null means HEP = 1.0

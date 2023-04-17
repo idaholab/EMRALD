@@ -159,7 +159,7 @@ namespace Hunter
             TimeOnShift = timeOnShift;
         }
 
-        public HunterFactory.HunterSnapshot Snapshot()
+        public HunterSnapshot Snapshot()
         {
             string experience = "null";
             bool hasTimePressure = false;
@@ -169,7 +169,7 @@ namespace Hunter
                 hasTimePressure = _currentPSFCollection.HasTimePressure;
             }
 
-            return new HunterFactory.HunterSnapshot
+            return new HunterSnapshot
             {
                 RepeatMode = RepeatMode,
                 TimeOnShiftFatigueEnabled = TimeOnShiftFatigueEnabled,

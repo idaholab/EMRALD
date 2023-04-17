@@ -54,6 +54,7 @@ namespace Hunter.Tests
 
         [Test]
         public void TestJsonSerialization()
+
         {
             string json = snapshot.GetJSON();
             TestContext.Out.WriteLine(json);
