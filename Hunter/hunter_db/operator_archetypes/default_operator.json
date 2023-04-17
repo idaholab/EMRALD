@@ -1,0 +1,7 @@
+﻿{
+  "RepeatMode": true,
+  "TimeOnShiftFatigueEnabled": true,
+  "StartTimeOnShift": "01:00:00",
+  "HasTimePressure": false,
+  "Experience": "Nominal"
+}

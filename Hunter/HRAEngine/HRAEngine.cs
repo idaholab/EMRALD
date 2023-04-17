@@ -450,7 +450,7 @@ namespace Hunter
                     if (primitive.Time is null)
                         continue;
 
-                    elapsed_time += EvaluatePrimitive(primitive, ref success, psfs);
+                    elapsed_time += EvaluatePrimitive(primitive, ref success, psfs, outputDir);
                 }
                 else
                 {
@@ -566,7 +566,7 @@ namespace Hunter
 
             return adjusted_time;
         }
-
+        
         /// <summary>
         /// Builds a dictionary of procedures based on a JSON file containing procedure references.
         /// </summary>

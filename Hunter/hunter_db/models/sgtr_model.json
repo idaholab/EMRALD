@@ -1,4 +1,8 @@
 {
+  "hunter_snapshot": {
+    "$ref": "../operator_archetypes/default_operator_wTimePressure.json",
+    "description": "Default Operator with Time Pressure"
+  },
   "procedure_refs": [
     {
       "$ref": "../procedures/sgtr.json",

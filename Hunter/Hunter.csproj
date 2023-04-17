@@ -32,6 +32,15 @@
     <None Update="hunter_db\models\sgtr_model.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="hunter_db\operator_archetypes\default_operator.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="hunter_db\operator_archetypes\default_operator_wTimePressure.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="hunter_db\operator_archetypes\novice_operator.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="hunter_db\procedures\rapid_shutdown.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

@@ -1376,12 +1376,13 @@ namespace SimulationDAL
 
       Dictionary<string, Procedure> procedures = HRAEngine.BuildProcedureCatalog(_hunterModelFilename);
 
-      HRAEngine hraEngine = new HRAEngine();
+      (HRAEngine hraEngine, PSFCollection psfCollection) = HunterFactory.FromHunterModelPath(_hunterModelFilename);
+      hraEngine.TimeOnShift += curTime;
 
       //TODO setup the PSFs
 
       //Call the HRA library to determine the time of the event
-      retVal = hraEngine.EvaluateSteps(procedures, _procedureName, _startStep, _endStep);
+      retVal = hraEngine.EvaluateSteps(procedures, _procedureName, _startStep, _endStep, psfCollection);
 
       return retVal;
     }
