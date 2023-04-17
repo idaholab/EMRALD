@@ -175,6 +175,16 @@ namespace Hunter
             return AggregateMultipliers(multipliers, aggregationMethod);
         }
 
+        public bool HasTimePressure
+        {
+            get { 
+                return (_psfs[PsfEnums.Id.ATa].CurrentLevel.LevelName == 
+                        PsfEnums.Level.AvailableTime.BarelyAdequateTime) ||
+                       (_psfs[PsfEnums.Id.ATd].CurrentLevel.LevelName == 
+                        PsfEnums.Level.AvailableTime.BarelyAdequateTime);
+            }
+        }
+
         public IEnumerator<PSF> GetEnumerator()
         {
             return _psfs.Values.GetEnumerator();

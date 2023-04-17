@@ -15,32 +15,47 @@ namespace Hunter
         {
             public bool RepeatMode { get; set; } = true;
             public bool TimeOnShiftFatigueEnabled { get; set; } = true;
-            public TimeSpan StartTimeOnShift { get; set; } = default;
+            public TimeSpan TimeOnShift { get; set; } = default;
             public bool HasTimePressure { get; set; } = false;
             public string Experience { get; set; } = default;
+            public string? _currentProcedureId { get; set; } = default;
+            public string? _currentStepId { get; set; } = default;
+            public bool? _currentSuccess { get; set; } = default;
+            public int _primitiveEvalCount { get; set; } = default;
+            public int _repeatCount { get; set; } = default;
 
             public HunterSnapshot(
-                bool repeatMode, 
-                bool timeOnShiftFatigueEnabled, 
-                TimeSpan startTimeOnShift, 
-                bool hasTimePressure, 
-                string experience)
+                bool repeatMode = true, 
+                bool timeOnShiftFatigueEnabled = true, 
+                TimeSpan timeOnShift = default, 
+                bool hasTimePressure = false, 
+                string experience = "Nominal", 
+                string? currentProcedureId = null, 
+                string? currentStepId = null, 
+                bool? currentSuccess = null, 
+                int primitiveEvalCount = 0, 
+                int repeatCount = 0)
             {
                 RepeatMode = repeatMode;
                 TimeOnShiftFatigueEnabled = timeOnShiftFatigueEnabled;
-                StartTimeOnShift = startTimeOnShift;
+                TimeOnShift = timeOnShift;
                 HasTimePressure = hasTimePressure;
                 Experience = experience;
+                _currentProcedureId = currentProcedureId;
+                _currentStepId = currentStepId;
+                _currentSuccess = currentSuccess;
+                _primitiveEvalCount = primitiveEvalCount;
+                _repeatCount = repeatCount;
             }
 
             // Get JSON representation of this instance
             public string GetJSON()
             {
-                return JsonConvert.SerializeObject(this);
+                return JsonConvert.SerializeObject(this, Formatting.Indented);
             }
 
             // Deserialize a JSON string to an instance of HunterSnapshot
-            public static HunterSnapshot DeserializeJson(string json)
+            public static HunterSnapshot DeserializeJSON(string json)
             {
                 return JsonConvert.DeserializeObject<HunterSnapshot>(json);
             }
@@ -68,19 +83,31 @@ namespace Hunter
             var jsonData = File.ReadAllText(snapshotFilename);
 
             // Deserialize the procedure JArray into a Procedure object
-            var hunterSnapshot = HunterSnapshot.DeserializeJson(jsonData);
+            var hunterSnapshot = HunterSnapshot.DeserializeJSON(jsonData);
 
             return CreateOperator(hunterSnapshot);
         }
 
         public static (HRAEngine, PSFCollection) CreateOperator(HunterSnapshot snapshot)
         {
-            return CreateOperator(
+            (HRAEngine hraEngine, PSFCollection psfCollection) = CreateOperator(
                 snapshot.RepeatMode,
                 snapshot.TimeOnShiftFatigueEnabled,
-                snapshot.StartTimeOnShift,
+                snapshot.TimeOnShift,
                 snapshot.HasTimePressure,
                 snapshot.Experience);
+
+            hraEngine = new HRAEngine();
+            hraEngine.RepeatMode = snapshot.RepeatMode;
+            hraEngine.TimeOnShiftFatigueEnabled = snapshot.TimeOnShiftFatigueEnabled;
+            hraEngine.TimeOnShift = snapshot.TimeOnShift;
+            hraEngine.SetCurrentProcedureId(snapshot._currentProcedureId);
+            hraEngine.SetCurrentStepId(snapshot._currentStepId);
+            hraEngine.SetCurrentSuccess(snapshot._currentSuccess);
+            hraEngine.SetPrimitiveEvalCount(snapshot._primitiveEvalCount);
+            hraEngine.SetRepeatCount(snapshot._repeatCount);
+
+            return (hraEngine, psfCollection);
         }
         public static (HRAEngine, PSFCollection) CreateOperator(
             bool repeatMode = true, 

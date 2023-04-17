@@ -80,10 +80,8 @@ namespace Hunter
         /// <summary>
         /// Gets the number of times an action should be repeated.
         /// </summary>
-        public int RepeatCount
-        {
-            get { return _repeatCount; }
-        }
+        public int RepeatCount { get { return _repeatCount; } }
+        internal void SetRepeatCount(int value) { _repeatCount = value; }
 
         /// <summary>
         /// Gets or sets the maximum number of repetitions for <see cref="EvalStep"/> when <see cref="RepeatMode"/> is true (default is 100).
@@ -120,23 +118,30 @@ namespace Hunter
             }
         }
 
-        private Step? _currentStep;
-        
+        private string? _currentStepId;
+        public string? CurrentStepId { get { return _currentStepId; } }
+        internal void SetCurrentStepId(string? value) { _currentStepId = value; }
+
+
         private string? _currentProcedureId;
+        public string? CurrentProcedureId { get { return _currentProcedureId; } }
+
+        internal void SetCurrentProcedureId(string? value) { _currentProcedureId = value; }
+
 
         private bool? _currentSuccess;
         public bool? CurrentSuccess { get { return _currentSuccess; } }
 
-        private int _primitiveEvalCount;
+        internal void SetCurrentSuccess(bool? value) { _currentSuccess = value; }
 
-        public int PrimitiveEvalCount
-        {
-            get { return _primitiveEvalCount; }
-        }
-        public void ResetPrimitiveEvalCount()
-        {
-            _primitiveEvalCount = 0;
-        }
+
+        private int _primitiveEvalCount;
+        public int PrimitiveEvalCount { get { return _primitiveEvalCount; } }
+        internal void SetPrimitiveEvalCount(int value) { _primitiveEvalCount = value; }
+        public void ResetPrimitiveEvalCount() { _primitiveEvalCount = 0; }
+
+        private PSFCollection? _currentPSFCollection;
+        
 
         public int Count
         {
@@ -152,6 +157,31 @@ namespace Hunter
             }
             _primitives = LoadPrimitives(primitivesFilePath);
             TimeOnShift = timeOnShift;
+        }
+
+        public HunterFactory.HunterSnapshot Snapshot()
+        {
+            string experience = "null";
+            bool hasTimePressure = false;
+            if (_currentPSFCollection != null)
+            {
+                experience = _currentPSFCollection[PsfEnums.Id.Ea].CurrentLevel.LevelName;
+                hasTimePressure = _currentPSFCollection.HasTimePressure;
+            }
+
+            return new HunterFactory.HunterSnapshot
+            {
+                RepeatMode = RepeatMode,
+                TimeOnShiftFatigueEnabled = TimeOnShiftFatigueEnabled,
+                TimeOnShift = TimeOnShift,
+                Experience = experience,
+                HasTimePressure = hasTimePressure,
+                _currentProcedureId = CurrentProcedureId,
+                _currentStepId = CurrentStepId,
+                _currentSuccess = CurrentSuccess,
+                _primitiveEvalCount = PrimitiveEvalCount,
+                _repeatCount = RepeatCount
+            };
         }
 
         /// <summary>
@@ -364,6 +394,7 @@ namespace Hunter
             // Initialize elapsed_time and success variables to 0 and true, respectively.
             double elapsed_time = 0.0;
             _currentSuccess = true;
+            _currentPSFCollection = psfs;
 
             // Check if the specified Procedure object exists in the dictionary.
             if (procedureCollection.TryGetValue(procedureId, out Procedure procedure))
@@ -374,8 +405,8 @@ namespace Hunter
                 for (int i = startStep; i <= endStep; i++)
                 {
                     // Get the list of primitive IDs for the current step.
-                    _currentStep = procedure.Steps[i - 1];
-                    List<string> primitiveIds = _currentStep?.PrimitiveIds;
+                    _currentStepId = procedure.Steps[i - 1].StepId;
+                    List<string> primitiveIds = procedure.Steps[i - 1].PrimitiveIds;
 
                     // Evaluate the current step and update the elapsed_time variable.
                     bool? stepSuccess = true;
@@ -450,7 +481,7 @@ namespace Hunter
 
                 Dictionary<string, object> record = new Dictionary<string, object>
                 {
-                    { "step_id", _currentStep?.StepId ?? "null" },
+                    { "step_id", _currentStepId ?? "null" },
                     { "success", success?.CompareTo(true) ?? 0 },
                     { "elapsed_time", elapsed_time }
                 };
@@ -538,7 +569,7 @@ namespace Hunter
                 Dictionary<string, object> record = new Dictionary<string, object>
                 {
                     { "procedure_id", _currentProcedureId ?? "null" },
-                    { "step_id", _currentStep?.StepId ?? "null" },
+                    { "step_id", _currentStepId ?? "null" },
                     { "primitive_id", primitive.Id },
                     { "success", success?.CompareTo(true) ?? 00 },
                     { "sampled_time", sampled_time },
@@ -555,7 +586,6 @@ namespace Hunter
             return adjusted_time;
         }
         
-
         /// <summary>
         /// Serializes the current HRAEngine instance into a JSON string.
         /// </summary>
