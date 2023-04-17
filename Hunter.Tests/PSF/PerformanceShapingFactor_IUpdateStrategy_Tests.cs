@@ -77,7 +77,7 @@ namespace Hunter.Tests.PerformanceShapingFactor
             if (level is not null)
             {
                 TestContext.Out.WriteLine($"LevelName: {level.LevelName}");
-                Assert.That(level.LevelName == "DegradedFitness");
+                Assert.That(level.LevelName == "Unfit");
             }
             else
             {

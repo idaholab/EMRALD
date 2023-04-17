@@ -121,7 +121,11 @@ namespace Hunter
         }
 
         private Step? _currentStep;
+        
         private string? _currentProcedureId;
+
+        private bool? _currentSuccess;
+        public bool? CurrentSuccess { get { return _currentSuccess; } }
 
         private int _primitiveEvalCount;
 
@@ -334,7 +338,8 @@ namespace Hunter
                                       string procedureId,
                                       int startStep, int endStep,
                                       PSFCollection? psfs = null,
-                                      string? outputDir = null)
+                                      string? outputDir = null,
+                                      bool? success = true)
         {
             var procedureCollection = DeserializeProcedureCollection(procedureCollectionJson);
             return EvaluateSteps(procedureCollection, procedureId,
@@ -358,8 +363,7 @@ namespace Hunter
         {
             // Initialize elapsed_time and success variables to 0 and true, respectively.
             double elapsed_time = 0.0;
-            bool success = true;
-
+            _currentSuccess = true;
 
             // Check if the specified Procedure object exists in the dictionary.
             if (procedureCollection.TryGetValue(procedureId, out Procedure procedure))
@@ -374,13 +378,15 @@ namespace Hunter
                     List<string> primitiveIds = _currentStep?.PrimitiveIds;
 
                     // Evaluate the current step and update the elapsed_time variable.
-                    bool stepSuccess = true;
+                    bool? stepSuccess = true;
                     elapsed_time += Evaluate(primitiveIds, ref stepSuccess, psfs, outputDir);
 
-                    // If RepeatMode is true and the current step was not successful, repeat the evaluation up to the specified maximum count.
-                    if (RepeatMode && !stepSuccess)
+                    // If RepeatMode is true and the current step was not successful,
+                    // repeat the evaluation up to the specified maximum count.
+                    // unless stepSuccess is null -> HEP = 1.0
+                    if (RepeatMode && (stepSuccess == false)) 
                     {
-                        for (int j = 1; j < MaxRepeatCount && !stepSuccess; j++)
+                        for (int j = 1; j < MaxRepeatCount && (stepSuccess == false); j++)
                         {
                             _repeatCount += 1;
                             stepSuccess = true;
@@ -389,7 +395,7 @@ namespace Hunter
                     }
 
                     // Update the overall success variable based on the success of the current step.
-                    success = success && stepSuccess;
+                    _currentSuccess = (_currentSuccess & stepSuccess) ?? null;
                 }
             }
             else
@@ -402,8 +408,6 @@ namespace Hunter
                 psfs.Update(this);
             }
 
-            _currentStep = null;
-            _currentProcedureId = null;
             // Return the total elapsed time as a TimeSpan object.
             return TimeSpan.FromSeconds(elapsed_time);
         }
@@ -417,7 +421,7 @@ namespace Hunter
         /// <param name="psfs">An optional collection of PSF objects to use for calculating the elapsed time.</param>
         /// <returns>The total elapsed time for all primitives in the list.</returns>
         public double Evaluate(List<string> primitiveIds, 
-                               ref bool success, 
+                               ref bool? success, 
                                PSFCollection? psfs = null,
                                string? outputDir = null)
         {
@@ -447,7 +451,7 @@ namespace Hunter
                 Dictionary<string, object> record = new Dictionary<string, object>
                 {
                     { "step_id", _currentStep?.StepId ?? "null" },
-                    { "success", success ? 1 : 0 },
+                    { "success", success?.CompareTo(true) ?? 0 },
                     { "elapsed_time", elapsed_time }
                 };
                 CsvLogger.WriteRow(outputFile, record);
@@ -458,7 +462,7 @@ namespace Hunter
         }
 
         public double EvaluatePrimitive(Primitive primitive, 
-                                        ref bool success, 
+                                        ref bool? success, 
                                         PSFCollection? psfs = null,
                                         string? outputDir = null)
         {
@@ -515,8 +519,11 @@ namespace Hunter
 
             _primitiveEvalCount += 1;
 
+            if (adjusted_hep == 1.0)
+                success = null;
+
             // Update the success status based on the adjusted HEP
-            if (success)
+            if (success == true)
             {
                 success = SingleRandom.Instance.NextDouble() >= adjusted_hep;
             }
@@ -533,7 +540,7 @@ namespace Hunter
                     { "procedure_id", _currentProcedureId ?? "null" },
                     { "step_id", _currentStep?.StepId ?? "null" },
                     { "primitive_id", primitive.Id },
-                    { "success", success ? 1 : 0 },
+                    { "success", success?.CompareTo(true) ?? 00 },
                     { "sampled_time", sampled_time },
                     { "psf_time_multiplier", psfs != null ? psf_time_multiplier : "null" },
                     { "fatigue_index", TimeOnShiftFatigueEnabled ? fatigue_index : "null"},

@@ -64,7 +64,7 @@ namespace Hunter.Tests.HumanReliabilityAnalysisEngine
             List<string> primitiveIds = new List<string> { "Ac" };
 
             // Act
-            bool success = true;
+            bool? success = true;
             double elapsedTime = hraEngine.Evaluate(primitiveIds, ref success);
 
             // Assert
@@ -79,7 +79,7 @@ namespace Hunter.Tests.HumanReliabilityAnalysisEngine
             List<string> primitiveIds = new List<string> { "Ac", "Rc", "Sf" };
 
             // Act
-            bool success = true;
+            bool? success = true;
             double elapsedTime = hraEngine.Evaluate(primitiveIds, ref success);
 
             // Assert
@@ -96,7 +96,7 @@ namespace Hunter.Tests.HumanReliabilityAnalysisEngine
             PSFCollection psfCollection = new PSFCollection();
 
             // Act
-            bool success = true;
+            bool? success = true;
             double elapsedTime = hraEngine.Evaluate(primitiveIds, ref success, psfCollection);
 
             // Assert
@@ -111,7 +111,7 @@ namespace Hunter.Tests.HumanReliabilityAnalysisEngine
             List<string> primitiveIds = new List<string> { "Unknown" };
 
             // Act
-            bool success = true;
+            bool? success = true;
             double elapsedTime = hraEngine.Evaluate(primitiveIds, ref success);
 
             // Assert
@@ -126,7 +126,7 @@ namespace Hunter.Tests.HumanReliabilityAnalysisEngine
             List<string> primitiveIds = new List<string>();
 
             // Act
-            bool success = true;
+            bool? success = true;
             double elapsedTime = hraEngine.Evaluate(primitiveIds, ref success);
 
             // Assert

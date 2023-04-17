@@ -1384,6 +1384,12 @@ namespace SimulationDAL
       //Call the HRA library to determine the time of the event
       retVal = hraEngine.EvaluateSteps(procedures, _procedureName, _startStep, _endStep, psfCollection);
 
+      bool? success = hraEngine.CurrentSuccess;
+      // success == null means HEP = 1.0
+      // success == true means operator succeeded
+      // success == false means operator failed
+
+
       return retVal;
     }
 

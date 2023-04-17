@@ -33,11 +33,11 @@ namespace Hunter
                     if (psf.Levels != null)
                     {
                         PSF.Level? newLevel;
-                        if (hRAEngine.TimeOnShift.TotalHours > 18)
+                        if (hRAEngine.TimeOnShift.TotalHours >= 18)
                         {
                             newLevel = psf.Levels.FirstOrDefault(l => l.LevelName == PsfEnums.Level.FitnessForDuty.Unfit);
                         }
-                        else if (hRAEngine.TimeOnShift.TotalHours > 12)
+                        else if (hRAEngine.TimeOnShift.TotalHours >= 12)
                         {
                             newLevel = psf.Levels.FirstOrDefault(l => l.LevelName == PsfEnums.Level.FitnessForDuty.DegradedFitness);
                         }

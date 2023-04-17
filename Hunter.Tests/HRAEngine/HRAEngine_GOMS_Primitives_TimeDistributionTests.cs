@@ -38,7 +38,7 @@ namespace Hunter.Tests.HumanReliabilityAnalysisEngine
 
                 for (int i = 0; i < count; i++)
                 {
-                    bool success = true;
+                    bool? success = true;
                     times.Add(engine.EvaluatePrimitive(primitive, ref success, psfs: psfCollection, outputDir: outputDirectory));
                 }
 
@@ -73,7 +73,7 @@ namespace Hunter.Tests.HumanReliabilityAnalysisEngine
 
                 for (int i = 0; i < count; i++)
                 {
-                    bool success = true;
+                    bool? success = true;
                     times.Add(engine.EvaluatePrimitive(primitive, ref success, outputDir: outputDirectory));
                 }
 
@@ -96,7 +96,7 @@ namespace Hunter.Tests.HumanReliabilityAnalysisEngine
 
             HRAEngine engine = new HRAEngine();
             engine.RepeatMode = false;
-            bool success = true;
+            bool? success = true;
             Primitive primitive = engine.GetPrimitiveById(Goms.Id.Ac);
             engine.EvaluatePrimitive(primitive, ref success, outputDir: outputDirectory);
         }
