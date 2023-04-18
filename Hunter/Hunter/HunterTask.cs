@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace Hunter
 {
+    /// <summary>
+    /// HunterTask represents a task that the operator is performing.
+    /// </summary>
     public class HunterTask
     {
         public Dictionary<string, Procedure> ProcedureCatalog { get; set; }

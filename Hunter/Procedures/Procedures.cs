@@ -8,6 +8,9 @@ using System.Threading.Tasks;
 
 namespace Hunter
 {
+    /// <summary>
+    /// A step is a list of primitive_ids.
+    /// </summary>
     public struct Step
     {
         [JsonProperty("primitive_ids")]
@@ -17,12 +20,18 @@ namespace Hunter
         public string StepId { get; set; }
     }
 
+    /// <summary>
+    /// A procedure is a list of steps.
+    /// </summary>
     public struct Procedure
     {
         [JsonProperty("steps")]
         public List<Step> Steps { get; set; }
     }
 
+    /// <summary>
+    /// Factory class to build a dictionary of procedures based on a JSON file containing procedure references.
+    /// </summary>
     public static class ProceduresFactory
     {
         /// <summary>

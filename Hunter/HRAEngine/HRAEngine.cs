@@ -317,6 +317,11 @@ namespace Hunter
                               PSFCollection? psfs = null,
                               string? outputDir = null)
         {
+            if (psfs != null)
+            {
+                psfs.Update(this);
+            }
+
             double elapsedTime = 0.0;
             _currentSuccess = true;
             _currentPSFCollection = psfs;
@@ -340,11 +345,6 @@ namespace Hunter
             else
             {
                 Console.WriteLine($"Procedure not found: {procedureId}");
-            }
-
-            if (psfs != null)
-            {
-                psfs.Update(this);
             }
 
             return TimeSpan.FromSeconds(elapsedTime);

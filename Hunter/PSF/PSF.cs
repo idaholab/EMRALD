@@ -14,6 +14,9 @@ namespace Hunter
         Diagnosis
     }
 
+    /// <summary>
+    /// Represents SPAR-H Performance Shaping Factors (PSF)
+    /// </summary>
     public class PSF
     {
         [JsonIgnore]
@@ -122,6 +125,7 @@ namespace Hunter
             ValidateId();
             ValidateLevels();
         }
+
         private void ValidateOperationDescription()
         {
             var typeFields = typeof(PsfEnums.Operation).GetFields(BindingFlags.Public | BindingFlags.Static);
@@ -131,6 +135,7 @@ namespace Hunter
                 throw new ArgumentException($"Invalid OperationDescription value: {Operation}");
             }
         }
+
         private bool EnumFieldsContainOperationValue(FieldInfo[] fields, OperationType value)
         {
             return fields.Any(field => Enum.TryParse(field.GetValue(null).ToString(), out OperationType operationType) && operationType == value);
@@ -181,6 +186,9 @@ namespace Hunter
             return fields.Any(field => field.GetValue(null).ToString() == value);
         }
 
+        /// <summary>
+        /// Current HEP Multiplier for the PSF
+        /// </summary>
         public double CurrentMultiplier
         {
             get
@@ -193,13 +201,20 @@ namespace Hunter
             }
         }
 
+        /// <summary>
+        /// Gets the current time multiplier for the PSF. 
+        /// If the current level is not set, returns null.
+        /// </summary>
+        /// <value>
+        /// A nullable double representing the time multiplier for the current level or null if the current level is not set.
+        /// </value>
         public double? CurrentTimeMultiplier
         {
             get
             {
                 if (CurrentLevel == null)
                 {
-                    return 1;
+                    return null;
                 }
                 return Levels.FirstOrDefault(l => l.LevelName == CurrentLevel.LevelName)?.TimeMultiplier;
             }

@@ -9,6 +9,10 @@ using System.Threading.Tasks;
 
 namespace Hunter
 {
+    /// <summary>
+    /// HunterFactory is a static class that contains methods 
+    /// for creating a Hunter HRAEngine and PSFCollection.
+    /// </summary>
     public static class HunterFactory
     {
         public static (HRAEngine, PSFCollection) FromHunterModelFilename(string hunterModelFilename)

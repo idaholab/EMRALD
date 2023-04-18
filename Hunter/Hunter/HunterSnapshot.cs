@@ -8,6 +8,10 @@ using System.Threading.Tasks;
 
 namespace Hunter
 {
+    /// <summary>
+    /// HunterSnapshot is a simple struct that contains all the properties 
+    /// of the HRAEngine to support serialization and deserialization.
+    /// </summary>
     public struct HunterSnapshot
     {
         public bool RepeatMode { get; set; } = true;
