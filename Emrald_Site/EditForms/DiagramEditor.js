@@ -443,7 +443,7 @@ diagramModule.controller('diagramController', function ($scope, $timeout) {
         if (group !== null){
 
             if (angular.element(event.target)[0].innerText.includes("+")){
-                angular.element(event.target)[0].innerText = " – ";
+                angular.element(event.target)[0].innerText = " – "; // This is an "en dash" not a normal dash.  This is used because it looks better in the tree view.
                 action = "expand";
             } else {
                 angular.element(event.target)[0].innerText = " + ";
@@ -463,7 +463,7 @@ diagramModule.controller('diagramController', function ($scope, $timeout) {
             let subgroups = $scope.getSubgroupsFromPath(path);
 
             if (event.innerText.includes("+")){
-                event.innerText = " – ";
+                event.innerText = " – "; // This is an "en dash" not a normal dash.  This is used because it looks better in the tree view.
                 action = "expand";
             } else {
                 event.innerText = " + ";
