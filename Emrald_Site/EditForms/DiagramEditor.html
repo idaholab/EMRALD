@@ -57,6 +57,27 @@
             font-size: 1em;
             margin: 0.1em;
         }
+
+        .templates {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+        }
+
+        .templates-tree {
+            max-width: 50%;
+            overflow: auto;
+        }
+
+        .folder {
+            cursor: pointer;
+        }
+
+        .folder::after {
+            content: "\1F4C1  ";
+        }
+
+
     </style>
 
 </head>
@@ -101,26 +122,40 @@
                 <div class="separator">OR</div>
                 <br />
                 <b>Select a template: </b>
-                <button ng-if="!templateListView" ng-click="toggleTemplateListView()">List View</button>
-                <button ng-if="templateListView" ng-click="toggleTemplateListView()">Group View</button>
-                <div ng-if="templateListView"
+                <button ng-if="templateView !== 'list'" ng-click="toggleTemplateView('list')">List View</button>
+                <button ng-if="templateView !== 'group'" ng-click="toggleTemplateView('group')">Group View</button>
+                <button ng-if="templateView !== 'tree'" ng-click="toggleTemplateView('tree')">Tree View</button>
+                <div ng-if="templateView === 'list'"
                     ng-repeat="template in diagramList track by $index"
                     ng-click="chooseTemplate($index)"
                     class="template-choice"
                     ng-class="{ selected: selectedTemplate === $index, disabled: template.disabledReasons.length > 0 }">
                     <span class="path">{{stringifyGroup(template.group)}}</span> | <b>{{template.name}}</b>
                 </div>
-                <div ng-if="!templateListView" class="path">{{currentGroupPath.join(" > ")}}</div>
-                <button ng-if="!templateListView && currentGroupPath.length > 0" ng-click="goUpGroupLevel()">Go Up</button>
+                <div ng-if="templateView !== 'list'" class="path">{{currentGroupPath.join(" > ")}}</div>
+                <button ng-if="templateView === 'group' && currentGroupPath.length > 0" ng-click="goUpGroupLevel()">Go Up</button>
                 <br />
-                <div ng-if="!templateListView">
-                    <button class="group-button" ng-repeat="group in currentGroupButtons" ng-click="goDownGroupLevel(group)">{{group}}</button>
-                    <div
-                        ng-repeat="template in currentGroupTemplates track by $index"
-                        ng-click="chooseTemplateFromCurrentGroup($index)"
-                        class="template-choice"
-                        ng-class="{ selected: selectedTemplateFromGroup === $index, disabled: template.disabledReasons.length > 0 }">
-                        <b>{{template.name}}</b>
+                <div class="templates" ng-if="templateView !== 'list'">
+                    <div class="templates-tree" ng-if="templateView === 'tree'">
+                        <span class="folder"></span><span ng-click="showTemplatesBelongingToPath([], null, false)">(No Group)</span>
+                        <hr>
+                        <div ng-repeat="group in groupTree track by $index"><span class="folder" ng-click="expandTree($event, group, null, null)"> + </span><span ng-click="showTemplatesBelongingToPath([], group.name, false)">{{group.name}}</span></div>
+                    </div>
+
+                    <div>
+                        <div  ng-if="templateView === 'group'">
+                            <button class="group-button" ng-repeat="group in currentGroupButtons" ng-click="goDownGroupLevel(group)">{{group}}</button>
+                        </div>
+                        <div
+                            ng-repeat="template in currentGroupTemplates track by $index"
+                            ng-click="chooseTemplateFromCurrentGroup($index)"
+                            class="template-choice"
+                            ng-class="{ selected: selectedTemplateFromGroup === $index, disabled: template.disabledReasons.length > 0 }">
+                            <b>{{template.name}}</b>
+                        </div>
+                        <div ng-if="currentGroupTemplates.length < 1">
+                            There are no templates in the selected group.
+                        </div>
                     </div>
                 </div>
             </div>

@@ -238,8 +238,8 @@ if (typeof Navigation === 'undefined')
       true, //ismodal
         null,
         null,
-        450, //width
-        300 //height
+        500, //width
+        600 //height
       );
       document.body.removeChild(wnd.div);
       var contentPanel = document.getElementById("ContentPanel");
@@ -1930,8 +1930,8 @@ if (typeof Navigation === 'undefined')
         false, //ismodal
         null,
         null,
-        450, //width
-        300 //height
+        500, //width
+        600 //height
       );
       document.body.removeChild(wnd.div);
       var contentPanel = document.getElementById("ContentPanel");

@@ -274,10 +274,11 @@ diagramModule.controller('diagramController', function ($scope, $timeout) {
     $scope.initialChange = true;
     $scope.timeout = $timeout;
     $scope.createDiagram = false;
-    $scope.templateListView = false;
+    $scope.templateView = 'tree';
     $scope.currentGroupTemplates = [];
     $scope.currentGroupButtons = [];
     $scope.currentGroupPath = [];
+    $scope.groupTree = [];
     $scope.data = {
         diagramType: $scope.diagramTypes[1],
         fileName: "",
@@ -414,6 +415,155 @@ diagramModule.controller('diagramController', function ($scope, $timeout) {
         return res;
     }
 
+    $scope.createGroupTree = () => {
+        /** @type {EMRALD.TemplateGroups[]} */
+        let groups = [];
+        /** @type {EMRALD.ModelTemplate[]} */
+        let templates = $scope.diagramList;
+        templates.forEach(template => {
+            let path = [];
+            if (template.group !== null){
+                path.push(template.group.name);
+            }
+
+            /** @type {number} */
+            let level = 2;
+            while ($scope.getGroupNameForLevelFromTemplate(level, template) !== null){
+                path.push($scope.getGroupNameForLevelFromTemplate(level, template));
+                level++;
+            }
+
+            groups = $scope.mergePathIntoGroups(path, groups);
+        });
+        $scope.groupTree = groups;
+    }
+
+    $scope.expandTree = (event, group, path, currentName) => {
+        let action = "";
+        if (group !== null){
+
+            if (angular.element(event.target)[0].innerText.includes("+")){
+                angular.element(event.target)[0].innerText = " – ";
+                action = "expand";
+            } else {
+                angular.element(event.target)[0].innerText = " + ";
+                action = "collapse";
+            }
+            group.subgroups.forEach(subgroup => {
+                if (action === "expand") {
+                    let child = document.createElement('div');
+                    angular.element(event.target).parent().append(child);
+                    child.outerHTML = `<div style="padding-left:1em"><div><span class="folder" onclick="angular.element(this).scope().expandTree(this, null, ['${group.name}'], '${subgroup.name}')"> + </span><span onclick='angular.element(this).scope().showTemplatesBelongingToPath(["${group.name}"], "${subgroup.name}")'>${subgroup.name}</span></div></div>`;
+                } else {
+                    angular.element(event.target).parent()[0].getElementsByTagName("div")[0].remove();
+                }
+            });
+        } else {
+            path.push(currentName);
+            let subgroups = $scope.getSubgroupsFromPath(path);
+
+            if (event.innerText.includes("+")){
+                event.innerText = " – ";
+                action = "expand";
+            } else {
+                event.innerText = " + ";
+                action = "collapse";
+            }
+
+            subgroups.forEach(subgroup => {
+                if (action === "expand") {
+                    let child = document.createElement('div');
+                    event.parentElement.append(child);
+                    child.outerHTML = `<div style="padding-left:1em"><div><span class='folder' onclick='angular.element(this).scope().expandTree(this, null, ${JSON.stringify(path)}, "${subgroup.name}")'> + </span><span onclick='angular.element(this).scope().showTemplatesBelongingToPath(${JSON.stringify(path)}, "${subgroup.name}")'>${subgroup.name}</span></div></div>`;
+                } else {
+                    event.parentElement.getElementsByTagName("div")[0].remove();
+                }
+            });
+        }
+    }
+
+    $scope.getSubgroupsFromPath = (path) => {
+        /** @type {EMRALD.TemplateGroups[] | null} */
+        let groups = $scope.groupTree;
+        for (let index = 0; index < path.length; index++){
+            if (groups !== null) {
+                groups = groups.find(group => group.name === path[index])?.subgroups ?? null;
+            }
+        }
+        return groups;
+    }
+
+    $scope.showTemplatesBelongingToPath = (path, subgroup, needsDigest = true) => {
+        /** @type {EMRALD.ModelTemplate[]} */
+        let diagramList = $scope.diagramList;
+        /** @type {EMRALD.ModelTemplate[]} */
+        let groupTemplates = [];
+
+        path.push(subgroup);
+        diagramList.forEach(template => {
+            let existsInCurrentGroup = true;
+            for(let index = 0; index < path.length; index++){
+                if ($scope.getGroupNameForLevelFromTemplate(index + 1, template) !== path[index]) {
+                    existsInCurrentGroup = false;
+                    break;
+                }
+            }
+            if ($scope.getGroupNameForLevelFromTemplate(path.length + 1, template) !== null) {
+                // This means that the template belongs to a subgroup of the selected group, so it should not be shown.
+                return;
+            }
+            if(existsInCurrentGroup) {
+                groupTemplates.push(template);
+            }
+        });
+
+        $scope.currentGroupTemplates = groupTemplates;
+        $scope.currentGroupPath = path;
+        if (needsDigest) {
+            $scope.$digest();
+        }
+    }
+
+
+
+    $scope.mergePathIntoGroups = (/** @type {string[]} */ path, /** @type {EMRALD.TemplateGroups[]} */ groups) => {
+        /** @type {EMRALD.TemplateGroups[] | null} */
+        let currentGroups = groups;
+        /** @type {EMRALD.TemplateGroups | null} */
+        let previousGroup = null;
+
+        for(let index = 0; index < path.length; index ++){
+            if (currentGroups === null){
+                currentGroups = [];
+            }
+
+            /** @type {boolean} */
+            let matched = false;
+            /** @type {EMRALD.TemplateGroups} */
+            let currentGroup = {
+                name: path[index],
+                subgroups: [],
+                parent: previousGroup
+            };
+
+            currentGroups.forEach(group => {
+                if (path[index] === group.name) {
+                    matched = true;
+                    currentGroup = group;
+                    return;
+                }
+            });
+
+            if(!matched) {
+                currentGroups.push(currentGroup);
+            }
+
+            previousGroup = currentGroup;
+            currentGroups = currentGroup.subgroups;
+        }
+        return groups;
+    }
+
     $scope.initializeGroupView = () => {
         /** @type {EMRALD.ModelTemplate[]} */
         let currentGroupTemplates = [];
@@ -433,6 +583,8 @@ diagramModule.controller('diagramController', function ($scope, $timeout) {
         $scope.currentGroupButtons = currentGroupButtons;
         $scope.currentGroupPath = [];
         $scope.selectedTemplateFromGroup = null;
+
+        $scope.createGroupTree();
     }
 
     $scope.goDownGroupLevel = (groupName) => {
@@ -522,9 +674,10 @@ diagramModule.controller('diagramController', function ($scope, $timeout) {
         }
     }
 
-    $scope.toggleTemplateListView = () => {
-        $scope.templateListView = !$scope.templateListView;
-        if (!$scope.templateListView) {
+    $scope.toggleTemplateView = (/** @type {string} */ view) => {
+        view = view.toLowerCase();
+        $scope.templateView = view;
+        if ($scope.templateView === 'group') {
             $scope.initializeGroupView();
         }
     }
