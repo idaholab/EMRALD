@@ -33,6 +33,7 @@
  * @property {(group: EMRALD.TemplateGroup) => string} stringifySubGroup - Stringifies a group.
  * @property {string} find - Text to find to replace.
  * @property {string} replace - Replacement text.
+ * @property {string} templateView - The view for browsing template groups.
  * @property {(index: number) => void} checkName - Checks if the name of the object of the given type at the given index conflicts.
  * @property {() => void} apply - Applies the search/replace.
  * @property {() => void} checkAllNames - Checks all names for conflicts.
@@ -53,6 +54,11 @@
  * @property {(selectedGroup: EMRALD.TemplateGroup | null, groupOptions: EMRALD.TemplateGroups[]) => void} setDisplayedGroups - Displays the current list of groups/subgroups
  * @property {(parent: EMRALD.TemplateGroups) => void} createNewSubGroup - Adds a new subgroup to the parent group
  * @property {(child: EMRALD.TemplateGroups) => EMRALD.TemplateGroups} getTopLevelParentGroup - Gets the Group that is not a subgroup.
+ * @property {(event: any, group: EMRALD.TemplateGroups, path: string[], currentName: string) => void} expandTree - Expands or collapses the tree view group.
+ * @property {(path: string[]) => EMRALD.TemplateGroups[] | null} getSubgroupsFromPath - Gets all subgroups for a specified path.
+ * @property {(path: string[], groupName: string, needsDigest: boolean) => void} selectGroupByPath - Selects a group based on the given path and specified group name.
+ * @property {(path: string[]) => EMRALD.TemplateGroup | null} createTemplateGroupObjectFromPath - Turns a given path into a EMRALD.TemplateGroup object.
+ * @property {(view: string) => void} toggleTemplateView - Changes the view for the group browser.
  */
 
 /**
@@ -107,7 +113,7 @@ window.cast(window, w).OnLoad = (dataObj) => {
   );
   scope.$apply(() => {
     scope.groups = scope.getGroupsFromLocalStorage();
-    scope.setDisplayedGroups(scope.model.group, scope.groups );
+    scope.setDisplayedGroups(scope.model.group, scope.groups);
     scope.model = dataObj.model;
     scope.model.name += "_Template";
     scope.entries = [];
@@ -169,6 +175,7 @@ const templateCreatorController = ($scope) => {
   $scope.find = '';
   $scope.replace = '';
   $scope.selectGroup = null;
+  $scope.templateView = 'group';
 
   $scope.apply = () => {
     $scope.entries.forEach((entry, i) => {
@@ -213,9 +220,9 @@ const templateCreatorController = ($scope) => {
 
   $scope.stringifySelectedGroup = () => {
     $scope.selectedGroupString = "";
-    if ($scope.model.group !== null){
+    if ($scope.model.group !== null) {
       $scope.selectedGroupString = $scope.model.group.name;
-      if ($scope.model.group.subgroup !== null){
+      if ($scope.model.group.subgroup !== null) {
         $scope.selectedGroupString += $scope.stringifySubGroup($scope.model.group.subgroup)
       }
     }
@@ -233,7 +240,7 @@ const templateCreatorController = ($scope) => {
     /** @type {EMRALD.TemplateGroups[]} */
     let groups = $scope.getGroupsFromLocalStorage();
 
-    if (!refreshOnly){
+    if (!refreshOnly) {
       groups.push(groupObj);
     }
 
@@ -245,7 +252,7 @@ const templateCreatorController = ($scope) => {
     let groups = $scope.getGroupsFromLocalStorage();
 
     let foundGroup = groups.findIndex(x => x.name === groupObj.name);
-    if (foundGroup > -1){
+    if (foundGroup > -1) {
       groups.splice(foundGroup, 1);
     }
     groups.push(groupObj);
@@ -254,7 +261,7 @@ const templateCreatorController = ($scope) => {
   }
 
   $scope.setGroupsInLocalStorage = (groups) => {
-    localStorage.setItem('templateGroups', JSON.stringify(groups, (key, val) => {if (key === "parent") return null; else return val;}));
+    localStorage.setItem('templateGroups', JSON.stringify(groups, (key, val) => { if (key === "parent") return null; else return val; }));
     $scope.groups = groups;
   }
 
@@ -267,7 +274,7 @@ const templateCreatorController = ($scope) => {
       groups = JSON.parse(groupsString);
     }
     groups.forEach((baseGroup) => {
-      if(baseGroup.subgroups !== null){
+      if (baseGroup.subgroups !== null) {
         $scope.assignParentGroupToChildGroups(baseGroup);
       }
     });
@@ -275,7 +282,7 @@ const templateCreatorController = ($scope) => {
   }
 
   $scope.assignParentGroupToChildGroups = (parentGroup) => {
-    if(parentGroup.subgroups !== null){
+    if (parentGroup.subgroups !== null) {
       parentGroup.subgroups.forEach(subgroup => {
         subgroup.parent = parentGroup;
         if (subgroup.subgroups !== null) {
@@ -298,7 +305,7 @@ const templateCreatorController = ($scope) => {
       }
       $scope.addGroupToLocalStorage(newGroupObj, false);
     }
-    $scope.setDisplayedGroups($scope.model.group, $scope.groups );
+    $scope.setDisplayedGroups($scope.model.group, $scope.groups);
   }
 
   $scope.createNewSubGroup = (parent) => {
@@ -318,7 +325,7 @@ const templateCreatorController = ($scope) => {
       parent.subgroups.push(newGroupObj);
       $scope.updateGroupInLocalStorage($scope.getTopLevelParentGroup(parent));
     }
-    $scope.setDisplayedGroups($scope.model.group, $scope.groups );
+    $scope.setDisplayedGroups($scope.model.group, $scope.groups);
   }
 
   $scope.getTopLevelParentGroup = (child) => {
@@ -351,7 +358,7 @@ const templateCreatorController = ($scope) => {
     } else {
       $scope.unselectGroupInModel(parent.subgroup, group);
     }
-    $scope.setDisplayedGroups($scope.model.group, $scope.groups );
+    $scope.setDisplayedGroups($scope.model.group, $scope.groups);
   }
 
   $scope.selectGroupInModel = (parent, group) => {
@@ -368,7 +375,7 @@ const templateCreatorController = ($scope) => {
     } else {
       $scope.selectGroupInModel(parent.subgroup, group);
     }
-    $scope.setDisplayedGroups($scope.model.group, $scope.groups );
+    $scope.setDisplayedGroups($scope.model.group, $scope.groups);
   }
 
   $scope.setDisplayedGroups = (selectedGroup, groupOptions) => {
@@ -387,10 +394,120 @@ const templateCreatorController = ($scope) => {
       }
     }
   }
+
+
+
+  $scope.expandTree = (event, group, path, currentName) => {
+    let action = "";
+    if (group !== null) {
+
+      if (angular.element(event.target)[0].innerText.includes("+")) {
+        angular.element(event.target)[0].innerText = " – "; // This is an "en dash" not a normal dash.  This is used because it looks better in the tree view.
+        action = "expand";
+      } else {
+        angular.element(event.target)[0].innerText = " + ";
+        action = "collapse";
+      }
+      if (group.subgroups === null) {
+        return;
+      }
+      group.subgroups.forEach(subgroup => {
+        if (action === "expand") {
+          let child = document.createElement('div');
+          angular.element(event.target).parent().append(child);
+          child.outerHTML = `<div style="padding-left:1em"><div><span class="folder" onclick="angular.element(this).scope().expandTree(this, null, ['${group.name}'], '${subgroup.name}')"> + </span><span onclick='angular.element(this).scope().selectGroupByPath(["${group.name}"], "${subgroup.name}")'>${subgroup.name}</span></div></div>`;
+        } else {
+          angular.element(event.target).parent()[0].getElementsByTagName("div")[0].remove();
+        }
+      });
+    } else {
+      path.push(currentName);
+      let subgroups = $scope.getSubgroupsFromPath(path);
+
+      if (event.innerText.includes("+")) {
+        event.innerText = " – "; // This is an "en dash" not a normal dash.  This is used because it looks better in the tree view.
+        action = "expand";
+      } else {
+        event.innerText = " + ";
+        action = "collapse";
+      }
+      if (subgroups === null) {
+        return;
+      }
+
+      subgroups.forEach(subgroup => {
+        if (action === "expand") {
+          let child = document.createElement('div');
+          event.parentElement.append(child);
+          child.outerHTML = `<div style="padding-left:1em"><div><span class='folder' onclick='angular.element(this).scope().expandTree(this, null, ${JSON.stringify(path)}, "${subgroup.name}")'> + </span><span onclick='angular.element(this).scope().selectGroupByPath(${JSON.stringify(path)}, "${subgroup.name}")'>${subgroup.name}</span></div></div>`;
+        } else {
+          event.parentElement.getElementsByTagName("div")[0].remove();
+        }
+      });
+    }
+  }
+
+  $scope.getSubgroupsFromPath = (path) => {
+    /** @type {EMRALD.TemplateGroups[] | null} */
+    let groups = $scope.groups;
+    for (let index = 0; index < path.length; index++) {
+      if (groups !== null) {
+        groups = groups.find(group => group.name === path[index])?.subgroups ?? null;
+      }
+    }
+    return groups;
+  }
+
+
+  $scope.selectGroupByPath = (path, group, needsDigest = true) => {
+    /** @type {EMRALD.TemplateGroups[] | null} */
+    let groups = $scope.groups;
+    /** @type {EMRALD.TemplateGroups | null} */
+    let mainGroup = null;
+    /** @type {EMRALD.TemplateGroup} */
+    $scope.model.group = $scope.createTemplateGroupObjectFromPath(path);
+    path.push(group);
+    for (let index = 0; index < path.length; index++) {
+      if (groups !== null) {
+        mainGroup = groups.find(group => group.name === path[index]) ?? null;
+        groups = mainGroup?.subgroups ?? null;
+      }
+    }
+    if (mainGroup) {
+      $scope.selectGroup($scope.model.group, mainGroup);
+    }
+
+    if (needsDigest) {
+      // @ts-ignore
+      $scope.$digest();
+    }
+  }
+
+  $scope.createTemplateGroupObjectFromPath = (path) => {
+    if (path.length < 1) { return null; }
+    /** @type {EMRALD.TemplateGroup} */
+    let mainGroup = {
+      name: path[0],
+      subgroup: null
+    };
+    let group = mainGroup;
+    for (let index = 1; index < path.length; index++) {
+      group.subgroup = {
+        name: path[index],
+        subgroup: null
+      }
+      group = group.subgroup;
+    }
+
+    return mainGroup;
+  }
+
+  $scope.toggleTemplateView = (view) => {
+    view = view.toLowerCase();
+    $scope.templateView = view;
+  }
+
 };
-
-
-
 
 
 templateCreatorModule.controller('templateCreatorController', [

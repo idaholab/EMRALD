@@ -1,193 +1,190 @@
 <!DOCTYPE html>
 <html lang="en-US">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width" />
-    <title>Create Diagram Template</title>
-    <link href="../styles/Editors.css" rel="stylesheet" />
-    <script src="../scripts/angular/angular.js"></script>
-    <script src="./lib/EditFormUtil.js"></script>
-    <script src="TemplateCreator.js"></script>
-    <style>
-      :root {
-        --lock-icon-size: 20px;
-      }
 
-      .conflict {
-        color: #eb5834;
-      }
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width" />
+  <title>Create Diagram Template</title>
+  <link href="../styles/Editors.css" rel="stylesheet" />
+  <script src="../scripts/angular/angular.js"></script>
+  <script src="./lib/EditFormUtil.js"></script>
+  <script src="TemplateCreator.js"></script>
+  <style>
+    :root {
+      --lock-icon-size: 20px;
+    }
 
-      .locked {
-        background-color: #e0e0e0;
-      }
+    .conflict {
+      color: #eb5834;
+    }
 
-      .lock input[type=checkbox] {
-        display: none;
-      }
+    .locked {
+      background-color: #e0e0e0;
+    }
 
-      .lock input[type=checkbox] + label {
-        background: url(../images/lock_open.webp);
-        background-size: 19px;
-        margin-left: 12px;
-        background-repeat: no-repeat;
-        width: var(--lock-icon-size);
-        height: var(--lock-icon-size);
-        padding: 0;
-        display: inline-block;
-      }
+    .lock input[type=checkbox] {
+      display: none;
+    }
 
-      .lock input[type=checkbox]:checked + label {
-        background: url(../images/lock_closed.webp);
-        background-size: 12px;
-        background-repeat: no-repeat;
-        margin-left: 12px;
-        width: var(--lock-icon-size);
-        height: var(--lock-icon-size);
-        padding: 0;
-        display: inline-block;
-      }
+    .lock input[type=checkbox]+label {
+      background: url(../images/lock_open.webp);
+      background-size: 19px;
+      margin-left: 12px;
+      background-repeat: no-repeat;
+      width: var(--lock-icon-size);
+      height: var(--lock-icon-size);
+      padding: 0;
+      display: inline-block;
+    }
 
-      th {
-        text-align: left;
-      }
+    .lock input[type=checkbox]:checked+label {
+      background: url(../images/lock_closed.webp);
+      background-size: 12px;
+      background-repeat: no-repeat;
+      margin-left: 12px;
+      width: var(--lock-icon-size);
+      height: var(--lock-icon-size);
+      padding: 0;
+      display: inline-block;
+    }
 
-      .path {
-          background: white;
-          font-family: 'Courier New', Courier, monospace;
-      }
+    th {
+      text-align: left;
+    }
 
-      .group-button::before {
-          content: "\1F4C1  ";
-      }
-      .group-button {
-          background-color: antiquewhite;
-          padding: 0.5em;
-          font-size: 1em;
-          margin: 0.1em;
-      }
-    </style>
-  </head>
-  <body ng-app="templateCreator">
-    <div
-      ng-controller="templateCreatorController"
-      id="templateCreatorControllerPanel"
-    >
-      <div>
-        <h1>Create a Template</h1>
+    .path {
+      background: white;
+      font-family: 'Courier New', Courier, monospace;
+    }
 
-        <span>Name this template:
-          <input
-            placeholder="Name"
-            ng-model="model.name"
-          />
-        </span>
-        <br />
-        <span>
-          Assign this template to a group:
-          <div class="path">
-            {{selectedGroupString}}
-          </div>
+    .group-button::before {
+      content: "\1F4C1  ";
+    }
 
-          <!-- <select
+    .group-button {
+      background-color: antiquewhite;
+      padding: 0.5em;
+      font-size: 1em;
+      margin: 0.1em;
+    }
+
+    .templates-tree {
+      max-width: 100%;
+      overflow: auto;
+    }
+
+    .folder {
+      cursor: pointer;
+    }
+
+    .folder::after {
+      content: "\1F4C1  ";
+    }
+  </style>
+</head>
+
+<body ng-app="templateCreator">
+  <div ng-controller="templateCreatorController" id="templateCreatorControllerPanel">
+    <div>
+      <h1>Create a Template</h1>
+
+      <span>Name this template:
+        <input placeholder="Name" ng-model="model.name" />
+      </span>
+      <br />
+      <span>
+        Assign this template to a group:
+
+        <button ng-if="templateView !== 'group'" ng-click="toggleTemplateView('group')">Group View</button>
+        <button ng-if="templateView !== 'tree'" ng-click="toggleTemplateView('tree')">Tree View</button>
+        <div class="path">
+          {{selectedGroupString}}
+        </div>
+
+        <!-- <select
             class="form-control"
             ng-model="entry.data.group">
             <option ng-repeat="group in groups">{{ group }}</option>
           </select> -->
-          <button ng-click="createNewGroup()">Create a new Group</button>
-        </span>
+        <button ng-click="createNewGroup()">Create a new Group</button>
+      </span>
+      <br />
+      <div ng-if="templateView === 'group'">
+        <button ng-if="model.group!==null" ng-click="unselectGroup(model.group, selectedGroup)">Go Up</button>
+        <button ng-if="model.group!==null" ng-click="createNewSubGroup(selectedGroup)">Create a new Sub Group</button>
         <br />
-        <span>
-          <button ng-if="model.group!==null" ng-click="unselectGroup(model.group, selectedGroup)">Go Up</button>
-          <button ng-if="model.group!==null" ng-click="createNewSubGroup(selectedGroup)">Create a new Sub Group</button>
-          <br />
-          <button class="group-button" ng-repeat="group in displayedGroups track by $index" ng-click="selectGroup(model.group, group)">{{group.name}}</button>
+        <button class="group-button" ng-repeat="group in displayedGroups track by $index" ng-click="selectGroup(model.group, group)">{{group.name}}</button>
 
-          <!-- <select
+        <!-- <select
             class="form-control"
             ng-model="entry.data.group">
             <option ng-repeat="group in groups">{{ group }}</option>
           </select> -->
-        </span>
       </div>
-      <br />
-      <br />
-      <div>
-        <label for="find">Find:</label>
-        <input id="find" ng-model="find" />
-        <label for="replace">Replace with:</label>
-        <input id="replace" ng-model="replace" />
-        <button ng-click="apply()">Apply</button>
-        <br />
-        <br />
-        <button ng-click="toggleLocks(true)">Lock All</button>
-        <button ng-click="toggleLocks(false)">Unlock All</button>
-        <br />
-        <br />
-        <button ng-click="toggleAction('ignore')">Ignore Unlocked</button>
-        <button ng-click="toggleAction('rename')">Rename Unlocked</button>
+
+
+      <div class="templates-tree" ng-if="templateView === 'tree'">
+        <button ng-if="model.group!==null" ng-click="createNewSubGroup(selectedGroup)">Create a new Sub Group</button>
+        <div ng-repeat="group in groups track by $index"><span class="folder" ng-click="expandTree($event, group, null, null)"> + </span><span ng-click="selectGroupByPath([], group.name, false)">{{group.name}}</span></div>
       </div>
-      <br />
-      <br />
-      <table>
-        <thead>
-          <tr>
-            <th>Type</th>
-            <th>Lock</th>
-            <th>Name</th>
-            <th>Action</th>
-            <th></th>
-            <th title="Required in Model">Required in Model</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr ng-repeat="entry in entries track by $index" ng-class="{ locked: entry.isLocked }">
-            <td>{{entry.type}}</td>
-            <td class="lock">
-              <input type="checkbox" ng-model="entry.isLocked" id="{{'checkbox-' + $index}}" />
-              <label for="{{'checkbox-' + $index}}"></label>
-            </td>
-            <td>{{entry.oldName}}</td>
-            <td>
-              <input
-                id="{{'action-ignore-' + $index}}"
-                title="Ignore"
-                type="radio"
-                ng-model="entry.action"
-                value="ignore"
-                ng-change="checkEntryAction(entry)"
-              />
-              <label for="{{'action-ignore-' + $index}}">Ignore</label>
-              <input
-                id="{{'action-rename-' + $index}}"
-                title="Rename"
-                type="radio"
-                ng-model="entry.action"
-                value="rename"
-                ng-change="checkEntryAction(entry)"
-              />
-              <label for="{{'action-rename-' + $index}}">Rename</label>
-            </td>
-            <td>
-              <input
-                placeholder="Name"
-                ng-if="entry.action=='rename'"
-                ng-model="entry.data.name"
-                ng-change="nameChanged($index)"
-              />
-            </td>
-            <td>
-              <input
-                id="{{'required-' + $index}}"
-                title="Required"
-                type="checkbox"
-                ng-model="entry.data.required"
-                ng-change="checkEntryAction(entry)"
-              />
-              <label for="{{'required-' + $index}}">Required</label>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+
+
     </div>
-  </body>
+    <br />
+    <br />
+    <div>
+      <label for="find">Find:</label>
+      <input id="find" ng-model="find" />
+      <label for="replace">Replace with:</label>
+      <input id="replace" ng-model="replace" />
+      <button ng-click="apply()">Apply</button>
+      <br />
+      <br />
+      <button ng-click="toggleLocks(true)">Lock All</button>
+      <button ng-click="toggleLocks(false)">Unlock All</button>
+      <br />
+      <br />
+      <button ng-click="toggleAction('ignore')">Ignore Unlocked</button>
+      <button ng-click="toggleAction('rename')">Rename Unlocked</button>
+    </div>
+    <br />
+    <br />
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Lock</th>
+          <th>Name</th>
+          <th>Action</th>
+          <th></th>
+          <th title="Required in Model">Required in Model</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr ng-repeat="entry in entries track by $index" ng-class="{ locked: entry.isLocked }">
+          <td>{{entry.type}}</td>
+          <td class="lock">
+            <input type="checkbox" ng-model="entry.isLocked" id="{{'checkbox-' + $index}}" />
+            <label for="{{'checkbox-' + $index}}"></label>
+          </td>
+          <td>{{entry.oldName}}</td>
+          <td>
+            <input id="{{'action-ignore-' + $index}}" title="Ignore" type="radio" ng-model="entry.action" value="ignore" ng-change="checkEntryAction(entry)" />
+            <label for="{{'action-ignore-' + $index}}">Ignore</label>
+            <input id="{{'action-rename-' + $index}}" title="Rename" type="radio" ng-model="entry.action" value="rename" ng-change="checkEntryAction(entry)" />
+            <label for="{{'action-rename-' + $index}}">Rename</label>
+          </td>
+          <td>
+            <input placeholder="Name" ng-if="entry.action=='rename'" ng-model="entry.data.name" ng-change="nameChanged($index)" />
+          </td>
+          <td>
+            <input id="{{'required-' + $index}}" title="Required" type="checkbox" ng-model="entry.data.required" ng-change="checkEntryAction(entry)" />
+            <label for="{{'required-' + $index}}">Required</label>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</body>
+
 </html>
