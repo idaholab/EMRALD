@@ -81,7 +81,9 @@
         "desc": "",
         "stateType": "stStandard",
         "diagramName": "MainTest",
-        "immediateActions": [],
+        "immediateActions": [
+          "SetTimeOnShift"
+        ],
         "events": [
           "HRAProcedure",
           "TimeToFail"
@@ -100,7 +102,7 @@
             "moveFromCurrent": true
           }
         ],
-        "geometry": "{ x: 50.5, y: 260, width: 200, height: 170}"
+        "geometry": "{ x: 50.5, y: 260, width: 200, height: 200}"
       }
     },
     {
@@ -191,6 +193,20 @@
         ],
         "itemId": 5
       }
+    },
+    {
+      "Action": {
+        "id": 5,
+        "name": "SetTimeOnShift",
+        "desc": "",
+        "actType": "atCngVarVal",
+        "mainItem": false,
+        "mutExcl": true,
+        "newStates": [],
+        "scriptCode": "return CurTime;",
+        "variableName": "TimeOnShift",
+        "codeVariables": []
+      }
     }
   ],
   "EventList": [
@@ -243,14 +259,13 @@
         "mainItem": false,
         "evType": "etHRAEval",
         "moveFromCurrent": true,
-        "hraTaskModelFile": ".//hunter_db//models//sgtr_model.json",
-		"procedureName": "sgtr",
+        "procedureName": "sgtr",
 		"startStep": 1,
 		"endStep": 3,
-		"psfLinks":[
+		"contextLinks":[
 		  {
-			"psfName": "Stress",
-            "simVar": "PSF1"			
+			"contextName": "ShiftTime",
+            "simVar": "TimeOnShift"			
 		  }
 		]
       }
@@ -267,7 +282,7 @@
         "moveFromCurrent": true,
         "varNames": [],
         "useVariable": false,
-        "time": "PT42S",
+        "time": "PT10M",
         "timeVariableUnit": "",
         "fromSimStart": false
       }
@@ -278,7 +293,7 @@
     {
       "Variable": {
         "id": 1,
-        "name": "PSF1",
+        "name": "TimeOnShift",
         "desc": "",
         "varScope": "gtGlobal",
         "value": 0,
@@ -287,5 +302,23 @@
       }
     }
   ],
-  "templates": []
+  "templates": [],
+  "HunterModel":
+  {
+    "hunter_snapshot": 
+    {
+	  "$ref": "../operator_archetypes/default_operator_wTimePressure.json",
+	  "description": "Default Operator with Time Pressure"
+    },
+    "procedure_refs": [
+		{
+		  "$ref": "../procedures/sgtr.json",
+		  "procedure_id": "sgtr"
+		},
+		{
+		  "$ref": "../procedures/rapid_shutdown.json",
+		  "procedure_id": "rapid_shutdown"
+		}
+	]
+  }
 }

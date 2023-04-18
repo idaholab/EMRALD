@@ -14,6 +14,7 @@ using static SimulationDAL.DistEvent;
 using System.IO;
 using Hunter;
 using Microsoft.CodeAnalysis;
+using NLog;
 
 namespace SimulationDAL
 {
@@ -1233,7 +1234,7 @@ namespace SimulationDAL
 
   class PSF_Link
   {
-    public string psfName { get; set; }
+    public string contextName { get; set; }
     public string simVar { get; set; }
   }
 
@@ -1242,11 +1243,11 @@ namespace SimulationDAL
   {
     //variables needed for hunter info
     private string _hunterModelFilename = @"hunter_db/models/sgtr_model.json";
-    private string _hunterModelJson;
+    HunterModel _hunterModel = null;
     private string _procedureName = "";
     private int _startStep = 1;
     private int _endStep = 0;
-    private Dictionary<string, SimVariable> _PSFs = new Dictionary<string, SimVariable>(); //key is the psf name value is the EMRALD variable
+    private Dictionary<string, SimVariable> _contextVariables = new Dictionary<string, SimVariable>(); //key is the psf name value is the EMRALD variable
 
 
 
@@ -1303,25 +1304,25 @@ namespace SimulationDAL
         throw new Exception("event types do not match, cannot change the type once an item is created!");
 
       
-      //read the HRA specific items that are not references to other items
-      try
-      {
-        _hunterModelFilename = (string)dynObj.hraTaskModelFile;
-        if (!Path.IsPathRooted(_hunterModelFilename))
-        {
-          _hunterModelFilename = System.IO.Directory.GetCurrentDirectory() + _hunterModelFilename;
-        }
+      ////read the HRA specific items that are not references to other items
+      //try
+      //{
+      //  _hunterModelFilename = (string)dynObj.hraTaskModelFile;
+      //  if (!Path.IsPathRooted(_hunterModelFilename))
+      //  {
+      //    _hunterModelFilename = System.IO.Directory.GetCurrentDirectory() + _hunterModelFilename;
+      //  }
 
-        if (!File.Exists(this._hunterModelFilename))
-          throw new Exception();
-      }
-      catch
-      {
-        throw new Exception("Missing the hraTaskModelFile for " + this.name);
-      }
+      //  if (!File.Exists(this._hunterModelFilename))
+      //    throw new Exception();
+      //}
+      //catch
+      //{
+      //  throw new Exception("Missing the hraTaskModelFile for " + this.name);
+      //}
 
-      _hunterModelJson = HunterModel.FromHunterModelFilename(_hunterModelFilename)
-                                    .GetJSON();
+      //_hunterModelJson = HunterModel.FromHunterModelFilename(_hunterModelFilename)
+      //                              .GetJSON();
 
       if (dynObj.procedureName == null)
         throw new Exception("Missing procedure name for HRA event - " + this.name );
@@ -1349,20 +1350,20 @@ namespace SimulationDAL
       }
 
       //TODO load any referenced items
-      if ((dynObj.psfLinks != null))
+      if ((dynObj.contextLinks != null))
       {
         //Load the psf to variable connection
-        string psfLinksStr = Convert.ToString(dynObj.psfLinks);
-        List<PSF_Link> psfLinks = JsonConvert.DeserializeObject<List<PSF_Link>>(psfLinksStr);
-        foreach(PSF_Link psfLink in psfLinks)
+        string contextLinksStr = Convert.ToString(dynObj.contextLinks);
+        List<PSF_Link> contextLinks = JsonConvert.DeserializeObject<List<PSF_Link>>(contextLinksStr);
+        foreach(PSF_Link contextLink in contextLinks)
         {
           try
           {
-            this._PSFs.Add(psfLink.psfName, lists.allVariables.FindByName(psfLink.simVar));
+            this._contextVariables.Add(contextLink.contextName, lists.allVariables.FindByName(contextLink.simVar));
           }
           catch
           {
-            throw new Exception("Failed to find variable - " + (string)psfLink.simVar);
+            throw new Exception("Failed to find variable - " + (string)contextLink.simVar);
           }
         }
 
@@ -1371,20 +1372,28 @@ namespace SimulationDAL
       return true;
     }
 
+    public void SetHunterModel(HunterModel hModel)
+    {
+      _hunterModel = hModel;
+    }
+
     public override TimeSpan NextTime(TimeSpan curTime)
     {
       TimeSpan retVal = TimeSpan.MaxValue; //value in hours until the time this event occures
 
       //Assign any data from the model before running the HRA code
+      if(_hunterModel == null)
+      {
+        throw new Exception("Missing the hunter model");
+      }
+      //HunterModel hunterModel = HunterModel.DeserializeJSON(_hunterModelJson);
+      (HRAEngine hraEngine, PSFCollection psfCollection)  = _hunterModel.CreateOperator();
 
-      HunterModel hunterModel = HunterModel.DeserializeJSON(_hunterModelJson);
-      (HRAEngine hraEngine, PSFCollection psfCollection)  = hunterModel.CreateOperator();
-      hraEngine.TimeOnShift += curTime;
-
-      //TODO setup the PSFs
+      //TODO setup the contextVarables
+      //hraEngine.SetContext(_contextVariables);
 
       //Call the HRA library to determine the time of the event
-      retVal = hraEngine.EvaluateSteps(hunterModel.Task.ProcedureCatalog, _procedureName, _startStep, _endStep, psfCollection);
+      retVal = hraEngine.EvaluateSteps(_hunterModel.Task.ProcedureCatalog, _procedureName, _startStep, _endStep, psfCollection);
 
       bool? success = hraEngine.CurrentSuccess;
       // success == null means HEP = 1.0
@@ -2233,9 +2242,15 @@ namespace SimulationDAL
             (evType == EnEventType.etTimer) || (evType == EnEventType.etFailRate) ||
             (evType == EnEventType.etDistribution) || (evType == EnEventType.etHRAEval))
         {
+         
           Event curItem = this.FindByName((string)item.name, false);
           try
           {
+            if (evType == EnEventType.etHRAEval)
+            {
+              ((HRAEval)curItem).SetHunterModel(lists.hunterModel);
+            }
+
             if (curItem == null)
             {
               throw new Exception("Failed to find Action with the name of " + (string)item.name);

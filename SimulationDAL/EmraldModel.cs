@@ -11,6 +11,7 @@ using System.Data;
 using System.IO;
 using CommonDefLib;
 using Newtonsoft.Json;
+using Hunter;
 
 
 namespace SimulationDAL
@@ -46,6 +47,7 @@ namespace SimulationDAL
     public LogicNodeList allLogicNodes = new LogicNodeList();
     public Dictionary<int, List<AccrualVariable>> AccrualVars = new Dictionary<int, List<AccrualVariable>>();
     public string rootPath = "";
+    public HunterModel hunterModel = null;
 
     //public int dbID = 0;
     public int curRunIdx = 0; //current run index.
@@ -147,6 +149,12 @@ namespace SimulationDAL
       this.allStates.DeserializeJSON(dynObj.StateList, this, useGivenIDs);
       if (dynObj.ExtSimList != null)
         this.allExtSims.DeserializeJSON(dynObj.ExtSimList, this, useGivenIDs);
+
+      if (dynObj.HunterModel != null)
+      {
+        string hModelStr = dynObj.HunterModel.ToString();
+        hunterModel = HunterModel.DeserializeJSON(hModelStr);
+      }
 
       //make the links to all the other objects
       this.allActions.LoadLinks(dynObj.ActionList, this);
