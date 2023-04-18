@@ -1,7 +1,7 @@
 Simulation = HRATest
 Runtime = 00.00:00:00
 Runs = 100 of 100
-TaskDone Occurred 100 times, Rate =1, MeanTime = 00.00:15:38 +/- 00.00:07:44.32
+TaskDone Occurred 100 times, Rate =1, MeanTime = 00.00:15:49 +/- 00.00:07:49.64
 ---------------------------
 - End Sim Variable Values -
 ---------------------------

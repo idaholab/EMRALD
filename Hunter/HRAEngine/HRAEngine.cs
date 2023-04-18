@@ -187,12 +187,13 @@ namespace Hunter
 
         public void SetContext(Dictionary<string, object> context)
         {
+            /*
             // assuming the file path is stored in a variable called filePath
-            using (StreamWriter file = File.CreateText("hraContextVariables.json"))
+            using (StreamWriter file = File.CreateText(@"hraContextVariables.json"))
             {
                 JsonSerializer serializer = new JsonSerializer();
                 serializer.Serialize(file, context);
-            }
+            }*/
 
             if (context.ContainsKey("ShiftTime"))
             {

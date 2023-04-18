@@ -1390,7 +1390,10 @@ namespace SimulationDAL
       (HRAEngine hraEngine, PSFCollection psfCollection)  = _hunterModel.CreateOperator();
 
       //TODO setup the contextVarables
-      //hraEngine.SetContext(_contextVariables);
+      hraEngine.SetContext(_contextVariables.ToDictionary(
+        kvp => kvp.Key,
+        kvp => kvp.Value.GetValue() as object
+      ));
 
       //Call the HRA library to determine the time of the event
       retVal = hraEngine.EvaluateSteps(_hunterModel.Task.ProcedureCatalog, _procedureName, _startStep, _endStep, psfCollection);

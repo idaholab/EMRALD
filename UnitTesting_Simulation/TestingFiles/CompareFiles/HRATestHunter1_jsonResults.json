@@ -8,10 +8,10 @@
       "cRate5th": 1.0,
       "cRate95th": 1.0,
       "count": 100,
-      "timeMean": "00:15:38.1097540",
-      "timeStdDeviation": "00:07:44.3285922",
-      "timeMin": "00:02:49.1997053",
-      "timeMax": "00:29:08.6250049",
+      "timeMean": "00:15:49.0612977",
+      "timeStdDeviation": "00:07:49.6465291",
+      "timeMin": "00:02:50.5895332",
+      "timeMax": "00:29:23.1295317",
       "watchVariables": {},
       "paths": [
         {
@@ -75,10 +75,10 @@
           "cRate5th": 1.0,
           "cRate95th": 1.0,
           "count": 100,
-          "timeMean": "00:15:38.1097540",
-          "timeStdDeviation": "00:07:44.3285922",
-          "timeMin": "00:02:49.1997053",
-          "timeMax": "00:29:08.6250049",
+          "timeMean": "00:15:49.0612977",
+          "timeStdDeviation": "00:07:49.6465291",
+          "timeMin": "00:02:50.5895332",
+          "timeMax": "00:29:23.1295317",
           "watchVariables": {},
           "entries": [
             {
