@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Hunter": {
+      "commandName": "Project",
+      "hotReloadEnabled": false
+    }
+  }
+}

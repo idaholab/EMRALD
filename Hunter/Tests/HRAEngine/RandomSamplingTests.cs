@@ -1,5 +1,5 @@
 ﻿using NUnit.Framework;
-using Hunter; // Replace with your actual namespace
+using Hunter;
 using MathNet.Numerics.Distributions;
 using CommonDefLib;
 

@@ -1,4 +1,8 @@
-﻿namespace Hunter.Tests.PerformanceShapingFactor
+﻿
+using NUnit.Framework;
+using Hunter;
+
+namespace Hunter.Tests.PerformanceShapingFactor
 {
     [TestFixture]
     public class PerformanceShapingFactorCollectionTests

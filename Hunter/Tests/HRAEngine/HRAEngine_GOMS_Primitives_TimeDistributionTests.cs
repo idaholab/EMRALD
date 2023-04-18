@@ -6,6 +6,8 @@ using System.Text;
 using System.Threading.Tasks;
 using static Hunter.HRAEngine;
 
+using NUnit.Framework;
+
 namespace Hunter.Tests.HumanReliabilityAnalysisEngine
 {
     [TestFixture]

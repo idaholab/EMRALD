@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using Newtonsoft.Json;
 
+using NUnit.Framework;
 
 namespace Hunter.Tests.PerformanceShapingFactor
 {
