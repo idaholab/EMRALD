@@ -19,9 +19,9 @@ namespace Hunter.Tests.HumanReliabilityAnalysisEngine
             double mean = 10;
             double std = 2;
 
-            double firstSample = HRAEngine.SampleNormalTime(mean, std);
-            double secondSample = HRAEngine.SampleNormalTime(mean, std);
-            double thirdSample = HRAEngine.SampleNormalTime(mean, std);
+            double firstSample = NormalDistributionHandler.SampleNormalTime(mean, std);
+            double secondSample = NormalDistributionHandler.SampleNormalTime(mean, std);
+            double thirdSample = NormalDistributionHandler.SampleNormalTime(mean, std);
 
             TestContext.Out.WriteLine($"Random Sequence: {firstSample}, {secondSample}, {thirdSample}");
 
@@ -40,9 +40,9 @@ namespace Hunter.Tests.HumanReliabilityAnalysisEngine
             double mean = 10;
             double std = 6;
 
-            double firstSample = HRAEngine.SampleLognormalTime(mean, std);
-            double secondSample = HRAEngine.SampleLognormalTime(mean, std);
-            double thirdSample = HRAEngine.SampleLognormalTime(mean, std);
+            double firstSample = LognormalDistributionHandler.SampleLognormalTime(mean, std);
+            double secondSample = LognormalDistributionHandler.SampleLognormalTime(mean, std);
+            double thirdSample = LognormalDistributionHandler.SampleLognormalTime(mean, std);
 
             TestContext.Out.WriteLine($"Random Sequence: {firstSample}, {secondSample}, {thirdSample}");
 
@@ -59,9 +59,9 @@ namespace Hunter.Tests.HumanReliabilityAnalysisEngine
 
             double mean = 10;
 
-            double firstSample = HRAEngine.SampleExponentialTime(mean);
-            double secondSample = HRAEngine.SampleExponentialTime(mean);
-            double thirdSample = HRAEngine.SampleExponentialTime(mean);
+            double firstSample = ExponentialDistributionHandler.SampleExponentialTime(mean);
+            double secondSample = ExponentialDistributionHandler.SampleExponentialTime(mean);
+            double thirdSample = ExponentialDistributionHandler.SampleExponentialTime(mean);
 
             TestContext.Out.WriteLine($"Random Sequence: {firstSample}, {secondSample}, {thirdSample}");
 
@@ -76,9 +76,9 @@ namespace Hunter.Tests.HumanReliabilityAnalysisEngine
             double mean = 10;
             double std = 2;
 
-            double firstSample = HRAEngine.SampleNormalTime(mean, std);
-            double secondSample = HRAEngine.SampleNormalTime(mean, std);
-            double thirdSample = HRAEngine.SampleNormalTime(mean, std);
+            double firstSample = NormalDistributionHandler.SampleNormalTime(mean, std);
+            double secondSample = NormalDistributionHandler.SampleNormalTime(mean, std);
+            double thirdSample = NormalDistributionHandler.SampleNormalTime(mean, std);
 
             TestContext.Out.WriteLine($"Random Sequence: {firstSample}, {secondSample}, {thirdSample}");
 
@@ -93,9 +93,9 @@ namespace Hunter.Tests.HumanReliabilityAnalysisEngine
             double mean = 10;
             double std = 6;
 
-            double firstSample = HRAEngine.SampleLognormalTime(mean, std);
-            double secondSample = HRAEngine.SampleLognormalTime(mean, std);
-            double thirdSample = HRAEngine.SampleLognormalTime(mean, std);
+            double firstSample = LognormalDistributionHandler.SampleLognormalTime(mean, std);
+            double secondSample = LognormalDistributionHandler.SampleLognormalTime(mean, std);
+            double thirdSample = LognormalDistributionHandler.SampleLognormalTime(mean, std);
 
             TestContext.Out.WriteLine($"Random Sequence: {firstSample}, {secondSample}, {thirdSample}");
             
@@ -109,9 +109,9 @@ namespace Hunter.Tests.HumanReliabilityAnalysisEngine
         {
             double mean = 10;
 
-            double firstSample = HRAEngine.SampleExponentialTime(mean);
-            double secondSample = HRAEngine.SampleExponentialTime(mean);
-            double thirdSample = HRAEngine.SampleExponentialTime(mean);
+            double firstSample = ExponentialDistributionHandler.SampleExponentialTime(mean);
+            double secondSample = ExponentialDistributionHandler.SampleExponentialTime(mean);
+            double thirdSample = ExponentialDistributionHandler.SampleExponentialTime(mean);
 
             TestContext.Out.WriteLine($"Random Sequence: {firstSample}, {secondSample}, {thirdSample}");
 

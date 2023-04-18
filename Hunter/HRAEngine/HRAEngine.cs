@@ -11,7 +11,7 @@ using Newtonsoft.Json.Converters;
 using System.Data.Common;
 using MathNet.Numerics.LinearAlgebra.Solvers;
 using NLog;
-using Hunter.utils;
+using Hunter.Utils;
 using static Hunter.HRAEngine;
 
 namespace Hunter
@@ -261,71 +261,6 @@ namespace Hunter
         }
 
         /// <summary>
-        /// Samples a random time value from a Normal distribution with the given mean and standard deviation.
-        /// </summary>
-        /// <param name="time">The mean time value of the Normal distribution.</param>
-        /// <param name="std">The standard deviation of the Normal distribution.</param>
-        /// <returns>A random time value sampled from the Normal distribution with a minimum value of zero.</returns>
-        internal static double SampleNormalTime(double time, double std)
-        {
-            // Create a Normal distribution object with the given mean (time) and standard deviation (std)
-            Normal normalDistribution = new Normal(time, std, SingleRandom.Instance);
-
-            // Sample a random time value from the normal distribution
-            double randomTime = normalDistribution.Sample();
-
-            // Ensure the sampled time is non-negative
-            randomTime = Math.Max(0, randomTime);
-
-            return randomTime;
-        }
-
-        /// <summary>
-        /// Samples a random time value from a Log-Normal distribution with the given mean and standard deviation.
-        /// </summary>
-        /// <param name="time">The mean time value of the Log-Normal distribution.</param>
-        /// <param name="std">The standard deviation of the Log-Normal distribution.</param>
-        /// <returns>A random time value sampled from the Log-Normal distribution with a minimum value of zero.</returns>
-        internal static double SampleLognormalTime(double time, double std)
-        {
-            // Calculate the shape and scale parameters
-            double shape = Math.Sqrt(Math.Log(1 + (std * std) / (time * time)));
-            double scale = Math.Log(time) - 0.5 * shape * shape;
-
-            // Create a Log-Normal distribution object with the given shape and scale parameters
-            LogNormal logNormalDistribution = new LogNormal(scale, shape, SingleRandom.Instance);
-
-            // Sample a random time value from the Log-Normal distribution
-            double randomTime = logNormalDistribution.Sample();
-
-            // Ensure the sampled time is non-negative
-            randomTime = Math.Max(0, randomTime);
-
-            // Return the random time (in seconds) as a double
-            return randomTime;
-        }
-        /// <summary>
-        /// Samples a random time value from an Exponential distribution with the given mean.
-        /// </summary>
-        /// <param name="time">The mean time value of the Exponential distribution.</param>
-        /// <returns>A random time value sampled from the Exponential distribution with a minimum value of zero.</returns>
-        internal static double SampleExponentialTime(double time)
-        {
-            // Create an Exponential distribution object with the given mean (time)
-            var rate = 1 / time;
-            Exponential exponentialDistribution = new Exponential(rate, SingleRandom.Instance);
-
-            // Sample a random time value from the exponential distribution
-            double randomTime = exponentialDistribution.Sample();
-
-            // Ensure the sampled time is non-negative
-            randomTime = Math.Max(0, randomTime);
-
-            // Return the random time (in seconds) as a double
-            return randomTime;
-        }
-
-        /// <summary>
         /// Deserializes a JSON string into a dictionary of Procedure objects.
         /// </summary>
         /// <param name="procedureCollectionJson">The JSON string to deserialize.</param>
@@ -376,56 +311,29 @@ namespace Hunter
                 startStep, endStep, psfs, outputDir);
         }
 
-        /// <summary>
-        /// Evaluates a range of steps in the specified Procedure object.
-        /// </summary>
-        /// <param name="procedureCollection">A dictionary of Procedure objects to use in the evaluation.</param>
-        /// <param name="procedureId">The ID of the Procedure object to evaluate.</param>
-        /// <param name="startStep">The 1-relative index of the first step to evaluate.</param>
-        /// <param name="endStep">The 1-relative index of the last step to evaluate.</param>
-        /// <param name="psfs">An optional collection of PSF objects to use in the evaluation.</param>
-        /// <returns>A TimeSpan object representing the total elapsed time to evaluate the specified range of steps in the specified Procedure object.</returns>
         public TimeSpan EvaluateSteps(Dictionary<string, Procedure> procedureCollection,
-                                      string procedureId,
-                                      int startStep, int endStep,
-                                      PSFCollection? psfs = null,
-                                      string? outputDir = null)
+                              string procedureId,
+                              int startStep, int endStep,
+                              PSFCollection? psfs = null,
+                              string? outputDir = null)
         {
-            // Initialize elapsed_time and success variables to 0 and true, respectively.
-            double elapsed_time = 0.0;
+            double elapsedTime = 0.0;
             _currentSuccess = true;
             _currentPSFCollection = psfs;
 
-            // Check if the specified Procedure object exists in the dictionary.
             if (procedureCollection.TryGetValue(procedureId, out Procedure procedure))
             {
                 _currentProcedureId = procedureId;
 
-                // Iterate over the range of steps to evaluate.
                 for (int i = startStep; i <= endStep; i++)
                 {
-                    // Get the list of primitive IDs for the current step.
                     _currentStepId = procedure.Steps[i - 1].StepId;
                     List<string> primitiveIds = procedure.Steps[i - 1].PrimitiveIds;
 
-                    // Evaluate the current step and update the elapsed_time variable.
                     bool? stepSuccess = true;
-                    elapsed_time += Evaluate(primitiveIds, ref stepSuccess, psfs, outputDir);
+                    elapsedTime += EvaluateStep(primitiveIds, ref stepSuccess, psfs, outputDir);
+                    elapsedTime += HandleRepeatMode(primitiveIds, ref stepSuccess, psfs);
 
-                    // If RepeatMode is true and the current step was not successful,
-                    // repeat the evaluation up to the specified maximum count.
-                    // unless stepSuccess is null -> HEP = 1.0
-                    if (RepeatMode && (stepSuccess == false)) 
-                    {
-                        for (int j = 1; j < MaxRepeatCount && (stepSuccess == false); j++)
-                        {
-                            _repeatCount += 1;
-                            stepSuccess = true;
-                            elapsed_time += Evaluate(primitiveIds, ref stepSuccess, psfs);
-                        }
-                    }
-
-                    // Update the overall success variable based on the success of the current step.
                     _currentSuccess = (_currentSuccess & stepSuccess) ?? null;
                 }
             }
@@ -434,158 +342,223 @@ namespace Hunter
                 Console.WriteLine($"Procedure not found: {procedureId}");
             }
 
-            if (psfs!= null)
+            if (psfs != null)
             {
                 psfs.Update(this);
             }
 
-            // Return the total elapsed time as a TimeSpan object.
-            return TimeSpan.FromSeconds(elapsed_time);
+            return TimeSpan.FromSeconds(elapsedTime);
         }
 
-        /// <summary>
-        /// Evaluates a list of primitive IDs and calculates the elapsed time for each primitive based on its distribution type,
-        /// time, and standard deviation. The method also updates the success status based on the nominal human error probability (HEP).
-        /// </summary>
-        /// <param name="primitiveIds">A list of primitive IDs to evaluate.</param>
-        /// <param name="success">A reference to a boolean that indicates whether the evaluation is successful or not.</param>
-        /// <param name="psfs">An optional collection of PSF objects to use for calculating the elapsed time.</param>
-        /// <returns>The total elapsed time for all primitives in the list.</returns>
-        public double Evaluate(List<string> primitiveIds, 
-                               ref bool? success, 
-                               PSFCollection? psfs = null,
-                               string? outputDir = null)
+        private double EvaluateStep(List<string> primitiveIds, ref bool? stepSuccess, PSFCollection? psfs, string? outputDir)
         {
-            double elapsed_time = 0.0;
+            double elapsedTime = Evaluate(primitiveIds, ref stepSuccess, psfs, outputDir);
+            return elapsedTime;
+        }
+
+        private double HandleRepeatMode(List<string> primitiveIds, ref bool? stepSuccess, PSFCollection? psfs)
+        {
+            double elapsedTime = 0.0;
+
+            if (RepeatMode && (stepSuccess == false))
+            {
+                for (int j = 1; j < MaxRepeatCount && (stepSuccess == false); j++)
+                {
+                    _repeatCount += 1;
+                    stepSuccess = true;
+                    elapsedTime += Evaluate(primitiveIds, ref stepSuccess, psfs);
+                }
+            }
+
+            return elapsedTime;
+        }
+        public double Evaluate(List<string> primitiveIds,
+                       ref bool? success,
+                       PSFCollection? psfs = null,
+                       string? outputDir = null)
+        {
+            double elapsedTime = 0.0;
 
             foreach (string primitiveId in primitiveIds)
             {
-                // Get the primitive object from the _primitives dictionary
-                if (_primitives.TryGetValue(primitiveId, out Primitive primitive))
-                {
-                    if (primitive.Time is null)
-                        continue;
-
-                    elapsed_time += EvaluatePrimitive(primitive, ref success, psfs, outputDir);
-                }
-                else
-                {
-                    Console.WriteLine($"Primitive not found: {primitiveId}");
-                }
+                elapsedTime += EvaluatePrimitiveById(primitiveId, ref success, psfs, outputDir);
             }
 
             if (outputDir != null)
             {
-                // use the output directory to write test file outputs
-                string outputFile = Path.Combine(outputDir, "step.csv");
-
-                Dictionary<string, object> record = new Dictionary<string, object>
-                {
-                    { "step_id", _currentStepId ?? "null" },
-                    { "success", success?.CompareTo(true) ?? 0 },
-                    { "elapsed_time", elapsed_time }
-                };
-                CsvLogger.WriteRow(outputFile, record);
+                WriteEvaluateOutput(outputDir, success, elapsedTime);
             }
 
-            // Convert the random time (in seconds) to a TimeSpan object and return it
-            return elapsed_time;
+            return elapsedTime;
         }
 
-        public double EvaluatePrimitive(Primitive primitive, 
-                                        ref bool? success, 
+        private double EvaluatePrimitiveById(string primitiveId,
+                                             ref bool? success,
+                                             PSFCollection? psfs,
+                                             string? outputDir)
+        {
+            double elapsedTime = 0.0;
+
+            if (_primitives.TryGetValue(primitiveId, out Primitive primitive))
+            {
+                if (primitive.Time is null)
+                    return elapsedTime;
+
+                elapsedTime = EvaluatePrimitive(primitive, ref success, psfs, outputDir);
+            }
+            else
+            {
+                Console.WriteLine($"Primitive not found: {primitiveId}");
+            }
+
+            return elapsedTime;
+        }
+
+        private void WriteEvaluateOutput(string outputDir, bool? success, double elapsedTime)
+        {
+            string outputFile = Path.Combine(outputDir, "step.csv");
+
+            Dictionary<string, object> record = new Dictionary<string, object>
+            {
+                { "step_id", _currentStepId ?? "null" },
+                { "success", success?.CompareTo(true) ?? 0 },
+                { "elapsed_time", elapsedTime }
+            };
+            CsvLogger.WriteRow(outputFile, record);
+        }
+        /// <summary>
+        /// Evaluates a primitive, calculating the adjusted time and human error probability (HEP) based on the given primitive, PSF collection, and output directory.
+        /// </summary>
+        /// <param name="primitive">The primitive object to evaluate.</param>
+        /// <param name="success">A reference to a nullable boolean indicating the success status of the primitive.</param>
+        /// <param name="psfs">The PSF collection object containing the time multiplier and composite multiplier, or null if not available.</param>
+        /// <param name="outputDir">The output directory for writing test file outputs, or null if not required.</param>
+        /// <returns>The adjusted time value for the primitive.</returns>
+        public double EvaluatePrimitive(Primitive primitive,
+                                        ref bool? success,
                                         PSFCollection? psfs = null,
                                         string? outputDir = null)
         {
-            // Get the primitive's distribution type, time, standard deviation, and nominal HEP
-            var distributionType = primitive.Distribution;
-            double? time = primitive.Time;
-            double? std = primitive.Std;
-            double nominal_hep = primitive.NominalHep;
-            double adjusted_hep = nominal_hep;
-
-            double psf_composite_multiplier = 1.0;
-            double psf_time_multiplier = 1.0;
-            double sampled_time = 0;
-            // Sample the elapsed time for the primitive based on its distribution type
-            switch (distributionType)
-            {
-                case DistributionType.Lognormal:
-                    sampled_time = SampleLognormalTime(Convert.ToDouble(time), Convert.ToDouble(std));
-                    break;
-                case DistributionType.Normal:
-                    sampled_time = SampleNormalTime(Convert.ToDouble(time), Convert.ToDouble(std));
-                    break;
-                case DistributionType.Exponential:
-                    sampled_time = SampleExponentialTime(Convert.ToDouble(time));
-                    break;
-                default:
-                    Console.WriteLine($"Unknown distribution type: {distributionType}");
-                    break;
-            }
-
-            double adjusted_time = sampled_time;
-
-            if (psfs != null)
-            {
-                // Get the composite multiplier for the primitive
-                psf_composite_multiplier = psfs.CompositeMultiplier(primitive);
-                adjusted_hep *= psf_composite_multiplier;
-
-                // Cap the nominal HEP at 1.0
-                if (adjusted_hep > 1.0)
-                    adjusted_hep = 1.0;
-
-                // Get the time multiplier for the primitive
-                psf_time_multiplier = psfs.TimeMultiplier(primitive) ?? 1.0;
-                adjusted_time *= psf_time_multiplier;
-            }
-
-            double fatigue_index = 1.0;
-            if (TimeOnShiftFatigueEnabled)
-            {
-                fatigue_index = FatigueIndex;
-                adjusted_time *= fatigue_index;
-            }
-
-            _primitiveEvalCount += 1;
+            double sampled_time = SamplePrimitiveTime(primitive);
+            double adjusted_hep = CalculateAdjustedHep(primitive, psfs);
+            double adjusted_time = CalculateAdjustedTime(primitive, psfs, sampled_time);
 
             if (adjusted_hep == 1.0)
                 success = null;
 
-            // Update the success status based on the adjusted HEP
             if (success == true)
             {
                 success = SingleRandom.Instance.NextDouble() >= adjusted_hep;
             }
-            
+
             TimeOnShift += TimeSpan.FromSeconds(adjusted_time);
 
             if (outputDir != null)
             {
-                // use the output directory to write test file outputs
-                string outputFile = Path.Combine(outputDir, "primitive.csv");
+                WritePrimitiveOutput(primitive, success, psfs, sampled_time, adjusted_time, outputDir);
+            }
 
-                Dictionary<string, object> record = new Dictionary<string, object>
-                {
-                    { "procedure_id", _currentProcedureId ?? "null" },
-                    { "step_id", _currentStepId ?? "null" },
-                    { "primitive_id", primitive.Id },
-                    { "success", success?.CompareTo(true) ?? 00 },
-                    { "sampled_time", sampled_time },
-                    { "psf_time_multiplier", psfs != null ? psf_time_multiplier : "null" },
-                    { "fatigue_index", TimeOnShiftFatigueEnabled ? fatigue_index : "null"},
-                    { "adjusted_time", adjusted_time },
-                    { "nominal_hep", nominal_hep },
-                    { "psf_composite_multiplier", psfs != null ? psf_composite_multiplier : "null" },
-                    { "adjusted_hep", adjusted_hep },
-                };
-                CsvLogger.WriteRow(outputFile, record);
+            _primitiveEvalCount += 1;
+
+            return adjusted_time;
+        }
+
+        /// <summary>
+        /// Calculates the adjusted human error probability (HEP) based on the given primitive and PSF collection.
+        /// </summary>
+        /// <param name="primitive">The primitive object containing the nominal HEP.</param>
+        /// <param name="psfs">The PSF collection object containing the composite multiplier, or null if not available.</param>
+        /// <returns>The adjusted HEP value.</returns>
+        private double CalculateAdjustedHep(Primitive primitive, PSFCollection? psfs)
+        {
+            double nominal_hep = primitive.NominalHep;
+            double adjusted_hep = nominal_hep;
+
+            if (psfs != null)
+            {
+                double psf_composite_multiplier = psfs.CompositeMultiplier(primitive);
+                adjusted_hep *= psf_composite_multiplier;
+
+                if (adjusted_hep > 1.0)
+                    adjusted_hep = 1.0;
+            }
+
+            return adjusted_hep;
+        }
+
+        /// <summary>
+        /// Samples a time value for the given primitive based on its distribution type.
+        /// </summary>
+        /// <param name="primitive">The primitive object containing the distribution information.</param>
+        /// <returns>A sampled time value.</returns>
+        private double SamplePrimitiveTime(Primitive primitive)
+        {
+            DistributionHandler handler = primitive.Distribution switch
+            {
+                DistributionType.Lognormal => new LognormalDistributionHandler(),
+                DistributionType.Normal => new NormalDistributionHandler(),
+                DistributionType.Exponential => new ExponentialDistributionHandler(),
+                _ => new UnknownDistributionHandler(),
+            };
+
+            return handler.SampleTime(primitive);
+        }
+
+        /// <summary>
+        /// Calculates the adjusted time value based on the given primitive, PSF collection, and sampled time.
+        /// </summary>
+        /// <param name="primitive">The primitive object containing the distribution information.</param>
+        /// <param name="psfs">The PSF collection object containing the time multiplier, or null if not available.</param>
+        /// <param name="sampled_time">The sampled time value.</param>
+        /// <returns>The adjusted time value.</returns>
+        private double CalculateAdjustedTime(Primitive primitive, PSFCollection? psfs, double sampled_time)
+        {
+            double adjusted_time = sampled_time;
+
+            if (psfs != null)
+            {
+                double psf_time_multiplier = psfs.TimeMultiplier(primitive) ?? 1.0;
+                adjusted_time *= psf_time_multiplier;
+            }
+
+            if (TimeOnShiftFatigueEnabled)
+            {
+                adjusted_time *= FatigueIndex;
             }
 
             return adjusted_time;
         }
-        
+
+        /// <summary>
+        /// Writes the primitive evaluation output to a CSV file in the specified output directory.
+        /// </summary>
+        /// <param name="primitive">The primitive object to evaluate.</param>
+        /// <param name="success">A nullable boolean indicating the success status of the primitive.</param>
+        /// <param name="psfs">The PSF collection object containing the time multiplier and composite multiplier, or null if not available.</param>
+        /// <param name="sampled_time">The sampled time value.</param>
+        /// <param name="adjusted_time">The adjusted time value.</param>
+        /// <param name="outputDir">The output directory for writing test file outputs.</param>
+        private void WritePrimitiveOutput(Primitive primitive, bool? success, PSFCollection? psfs, double sampled_time, double adjusted_time, string outputDir)
+        {
+            string outputFile = Path.Combine(outputDir, "primitive.csv");
+
+            Dictionary<string, object> record = new Dictionary<string, object>
+            {
+                { "procedure_id", _currentProcedureId ?? "null" },
+                { "step_id", _currentStepId ?? "null" },
+                { "primitive_id", primitive.Id },
+                { "success", success?.CompareTo(true) ?? 00 },
+                { "sampled_time", sampled_time },
+                { "psf_time_multiplier", psfs != null ? psfs.TimeMultiplier(primitive) ?? 1.0 : "null" },
+                { "fatigue_index", TimeOnShiftFatigueEnabled ? FatigueIndex : "null" },
+                { "adjusted_time", adjusted_time },
+                { "nominal_hep", primitive.NominalHep },
+                { "psf_composite_multiplier", psfs != null ? psfs.CompositeMultiplier(primitive) : "null" },
+                { "adjusted_hep", CalculateAdjustedHep(primitive, psfs) },
+            };
+            CsvLogger.WriteRow(outputFile, record);
+        }
+
         /// <summary>
         /// Serializes the current HRAEngine instance into a JSON string.
         /// </summary>

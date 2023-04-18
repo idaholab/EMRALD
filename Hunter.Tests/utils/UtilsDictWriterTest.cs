@@ -8,7 +8,6 @@ using NUnit.Framework;
 
 using Hunter;
 using Hunter.Utils;
-using Hunter.utils;
 
 namespace Hunter.Tests.utils
 {

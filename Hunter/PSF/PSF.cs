@@ -54,7 +54,7 @@ namespace Hunter
         }
 
         public PSF(OperationType type, string factor, List<Level> levels, string id, 
-            string initialLevelName = null, bool isStatic = false, bool validateAgainstEnums = true)
+            string initialLevelName = null, bool isStatic = false)
         {
             Operation = type;
             Factor = factor;
@@ -115,42 +115,49 @@ namespace Hunter
             // Add more strategies here
         }
 
-        // called from PSFCollection
         public void ValidateAgainstStaticEnums()
         {
-            // Check if OperationDescription is in PsfEnums.OperationDescription
+            ValidateOperationDescription();
+            ValidateFactor();
+            ValidateId();
+            ValidateLevels();
+        }
+        private void ValidateOperationDescription()
+        {
             var typeFields = typeof(PsfEnums.Operation).GetFields(BindingFlags.Public | BindingFlags.Static);
-            bool typeMatched = false;
 
-            foreach (var field in typeFields)
-            {
-                if (Enum.TryParse(field.GetValue(null).ToString(), out OperationType taskType) && taskType == Operation)
-                {
-                    typeMatched = true;
-                    break;
-                }
-            }
-
-            if (!typeMatched)
+            if (!EnumFieldsContainOperationValue(typeFields, Operation))
             {
                 throw new ArgumentException($"Invalid OperationDescription value: {Operation}");
             }
+        }
+        private bool EnumFieldsContainOperationValue(FieldInfo[] fields, OperationType value)
+        {
+            return fields.Any(field => Enum.TryParse(field.GetValue(null).ToString(), out OperationType operationType) && operationType == value);
+        }
 
-            // Check if Factor is in PsfEnums.Factor
+        private void ValidateFactor()
+        {
             var factorFields = typeof(PsfEnums.Factor).GetFields(BindingFlags.Public | BindingFlags.Static);
-            if (!factorFields.Any(field => field.GetValue(null).ToString() == Factor))
+
+            if (!EnumFieldsContainValue(factorFields, Factor))
             {
                 throw new ArgumentException($"Invalid Factor value: {Factor}");
             }
+        }
 
-            // Check if Id is in PsfEnums.Id
+        private void ValidateId()
+        {
             var idFields = typeof(PsfEnums.Id).GetFields(BindingFlags.Public | BindingFlags.Static);
-            if (!idFields.Any(field => field.GetValue(null).ToString() == Id))
+
+            if (!EnumFieldsContainValue(idFields, Id))
             {
                 throw new ArgumentException($"Invalid Id value: {Id}");
             }
+        }
 
-            // Get the nested class corresponding to the current factor in the PsfEnums.Level class
+        private void ValidateLevels()
+        {
             Type nestedClass = typeof(PsfEnums.Level).GetNestedTypes().FirstOrDefault(nt => nt.Name == Factor);
 
             if (nestedClass == null)
@@ -158,10 +165,8 @@ namespace Hunter
                 throw new ArgumentException($"Invalid factor name: {Factor}");
             }
 
-            // Get the property names in the nested class
             List<string> nestedClassProperties = nestedClass.GetFields().Select(field => field.GetValue(null).ToString()).ToList();
 
-            // Compare the property names with the level names in the Levels list
             foreach (Level level in Levels)
             {
                 if (!nestedClassProperties.Contains(level.LevelName))
@@ -169,6 +174,11 @@ namespace Hunter
                     throw new ArgumentException($"{level.LevelName} not in PsfEnums.Level.{Factor}");
                 }
             }
+        }
+
+        private bool EnumFieldsContainValue(FieldInfo[] fields, string value)
+        {
+            return fields.Any(field => field.GetValue(null).ToString() == value);
         }
 
         public double CurrentMultiplier

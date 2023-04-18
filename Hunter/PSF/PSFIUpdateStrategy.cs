@@ -16,45 +16,52 @@ namespace Hunter
     //
     // Define a Update Strategy for each Performance Shaping Factor OperationDescription or OperationDescription/Factors
     // and make sure PSFCollection.SetUpdateStrategy() intializes the strategy
-    // if you don't do this second part it will be null and the UpdateLevel() method will not be called
 
+    // if you don't do this second part it will be null and the UpdateLevel() method will not be called
+    /// <summary>
+    /// The FitnessforDuty class implements the IUpdateStrategy interface to update PSF levels based on the "Fitness for Duty" factor.
+    /// The class evaluates properties of an HRAEngine object, such as TimeOnShift, and updates the PSF levels accordingly.
+    /// </summary>
     public class FitnessforDuty : IUpdateStrategy
     {
+        /// <summary>
+        /// Updates the level of the given PSF object based on the "Fitness for Duty" factor. The method evaluates properties of the HRAEngine object,
+        /// such as TimeOnShift, and updates the PSF levels accordingly. If the PSF does not match the criteria, the method returns without updating the level.
+        /// </summary>
+        /// <param name="psf">The PSF object to update.</param>
+        /// <param name="hRAEngine">The HRAEngine object containing relevant properties for updating the PSF level.</param>
+        /// <param name="jsonData">JSON data string used for additional data input, if needed. Currently not utilized in this implementation.</param>
         public void UpdateLevel(PSF psf, HRAEngine? hRAEngine, string jsonData)
         {
-            // Check if Factor "Fitness for Duty"
-            if (psf.Factor == PsfEnums.Factor.FitnessForDuty)
+            if (IsFitnessForDuty(psf) && hRAEngine != null && psf.Levels != null)
             {
-                // Implement the logic for updating the level based on FitnessforDutyAction
-                // For example, you can check properties of hRAEngine, like TimeOnShift or FatigueIndex,
-                // and update the level accordingly
-                if (hRAEngine != null)
+                PSF.Level? newLevel = GetNewLevel(psf, hRAEngine.TimeOnShift.TotalHours);
+                if (newLevel != null)
                 {
-                    if (psf.Levels != null)
-                    {
-                        PSF.Level? newLevel;
-                        if (hRAEngine.TimeOnShift.TotalHours >= 18)
-                        {
-                            newLevel = psf.Levels.FirstOrDefault(l => l.LevelName == PsfEnums.Level.FitnessForDuty.Unfit);
-                        }
-                        else if (hRAEngine.TimeOnShift.TotalHours >= 12)
-                        {
-                            newLevel = psf.Levels.FirstOrDefault(l => l.LevelName == PsfEnums.Level.FitnessForDuty.DegradedFitness);
-                        }
-                        else
-                        {
-                            newLevel = psf.Levels.FirstOrDefault(l => l.LevelName == PsfEnums.Level.FitnessForDuty.Nominal);
-                        }
-
-                        if (newLevel != null)
-                        {
-                            psf.CurrentLevel = newLevel;
-                        }
-                    }
+                    psf.CurrentLevel = newLevel;
                 }
             }
-            // The PSF does not match the criteria
-            // Return without updating the level
+        }
+
+        private bool IsFitnessForDuty(PSF psf)
+        {
+            return psf.Factor == PsfEnums.Factor.FitnessForDuty;
+        }
+
+        private PSF.Level? GetNewLevel(PSF psf, double totalHours)
+        {
+            if (totalHours >= 18)
+            {
+                return psf.Levels.FirstOrDefault(l => l.LevelName == PsfEnums.Level.FitnessForDuty.Unfit);
+            }
+            else if (totalHours >= 12)
+            {
+                return psf.Levels.FirstOrDefault(l => l.LevelName == PsfEnums.Level.FitnessForDuty.DegradedFitness);
+            }
+            else
+            {
+                return psf.Levels.FirstOrDefault(l => l.LevelName == PsfEnums.Level.FitnessForDuty.Nominal);
+            }
         }
     }
 }

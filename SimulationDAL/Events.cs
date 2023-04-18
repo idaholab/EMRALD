@@ -1320,7 +1320,8 @@ namespace SimulationDAL
         throw new Exception("Missing the hraTaskModelFile for " + this.name);
       }
 
-      _hunterModelJson = HunterModel.FromHunterModelFilename(_hunterModelFilename).GetJSON();
+      _hunterModelJson = HunterModel.FromHunterModelFilename(_hunterModelFilename)
+                                    .GetJSON();
 
       if (dynObj.procedureName == null)
         throw new Exception("Missing procedure name for HRA event - " + this.name );
@@ -1377,7 +1378,7 @@ namespace SimulationDAL
       //Assign any data from the model before running the HRA code
 
       HunterModel hunterModel = HunterModel.DeserializeJSON(_hunterModelJson);
-      (HRAEngine hraEngine, PSFCollection psfCollection) = HunterFactory.CreateOperator(hunterModel.Snapshot);
+      (HRAEngine hraEngine, PSFCollection psfCollection)  = hunterModel.CreateOperator();
       hraEngine.TimeOnShift += curTime;
 
       //TODO setup the PSFs

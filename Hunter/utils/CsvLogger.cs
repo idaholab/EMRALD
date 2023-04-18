@@ -1,18 +1,65 @@
-﻿using Hunter.Utils;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Hunter.utils
+namespace Hunter.Utils
 {
+    /// <summary>
+    /// CsvLogger is a static utility class for writing rows and multiple rows of data to CSV files.
+    /// It provides methods for writing dictionaries with string keys and object values as rows in CSV files,
+    /// handling file creation, field name validation, and directory creation as needed.
+    /// </summary>
     public static class CsvLogger
     {
         private static readonly Dictionary<string, List<string>> fieldnameCache =
             new Dictionary<string, List<string>>();
 
-        internal static void CreateDirectory(string outputFile)
+        public static void WriteRow(string outputFile, Dictionary<string, object> record)
+        {
+            CreateDirectoryIfNeeded(outputFile);
+
+            bool writeHeader = !File.Exists(outputFile);
+            List<string> fieldnames = new List<string>(record.Keys);
+
+            if (!writeHeader)
+            {
+                CheckFieldNames(outputFile, fieldnames);
+            }
+
+            using (StreamWriter streamWriter = new StreamWriter(outputFile, true))
+            {
+                DictWriter dictWriter = new DictWriter(streamWriter, fieldnames);
+                if (writeHeader)
+                    dictWriter.WriteHeader();
+
+                dictWriter.WriteRow(record);
+            }
+        }
+
+        public static void WriteRows(string outputFile, List<Dictionary<string, object>> records)
+        {
+            CreateDirectoryIfNeeded(outputFile);
+
+            bool writeHeader = !File.Exists(outputFile);
+            List<string> fieldnames = new List<string>(records[0].Keys);
+
+            if (!writeHeader)
+            {
+                CheckFieldNames(outputFile, fieldnames);
+            }
+
+            using (StreamWriter streamWriter = new StreamWriter(outputFile, true))
+            {
+                DictWriter dictWriter = new DictWriter(streamWriter, fieldnames);
+                if (writeHeader)
+                    dictWriter.WriteHeader();
+
+                dictWriter.WriteRows(records);
+            }
+        }
+
+        private static void CreateDirectoryIfNeeded(string outputFile)
         {
             string outputDirectory = Path.GetDirectoryName(outputFile);
             if (!Directory.Exists(outputDirectory))
@@ -43,51 +90,6 @@ namespace Hunter.utils
                         throw new ArgumentException("The field names in the record do not match the existing field names in the file.");
                     }
                 }
-            }
-
-        }
-
-        public static void WriteRow(string outputFile, Dictionary<string, object> record)
-        {
-            CreateDirectory(outputFile);
-
-            bool writeHeader = !File.Exists(outputFile);
-            List<string> fieldnames = new List<string>(record.Keys);
-
-            if (!writeHeader)
-            {
-                CheckFieldNames(outputFile, fieldnames);
-            }
-
-            using (StreamWriter streamWriter = new StreamWriter(outputFile, true))
-            {
-                DictWriter dictWriter = new DictWriter(streamWriter, fieldnames);
-                if (writeHeader)
-                    dictWriter.WriteHeader();
-
-                dictWriter.WriteRow(record);
-            }
-        }
-
-        public static void WriteRows(string outputFile, List<Dictionary<string, object>> records)
-        {
-            CreateDirectory(outputFile);
-
-            bool writeHeader = !File.Exists(outputFile);
-            List<string> fieldnames = new List<string>(records[0].Keys);
-
-            if (!writeHeader)
-            {
-                CheckFieldNames(outputFile, fieldnames);
-            }
-
-            using (StreamWriter streamWriter = new StreamWriter(outputFile, true))
-            {
-                DictWriter dictWriter = new DictWriter(streamWriter, fieldnames);
-                if (writeHeader)
-                    dictWriter.WriteHeader();
-
-                dictWriter.WriteRows(records);
             }
         }
     }

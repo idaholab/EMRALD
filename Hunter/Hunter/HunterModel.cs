@@ -21,6 +21,11 @@ namespace Hunter
             return model;
         }
 
+        public (HRAEngine hraEngine, PSFCollection psfCollection) CreateOperator()
+        {
+            return HunterFactory.CreateOperator(Snapshot);
+        }
+
         public string GetJSON()
         {
             return JsonConvert.SerializeObject(this, Formatting.Indented);
