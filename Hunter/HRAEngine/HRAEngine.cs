@@ -13,6 +13,7 @@ using MathNet.Numerics.LinearAlgebra.Solvers;
 using NLog;
 using Hunter.Utils;
 using static Hunter.HRAEngine;
+using MathNet.Numerics.LinearAlgebra;
 
 namespace Hunter
 {
@@ -182,6 +183,22 @@ namespace Hunter
                 _primitiveEvalCount = PrimitiveEvalCount,
                 _repeatCount = RepeatCount
             };
+        }
+
+        public void SetContext(Dictionary<string, object> context)
+        {
+            // assuming the file path is stored in a variable called filePath
+            using (StreamWriter file = File.CreateText("hraContextVariables.json"))
+            {
+                JsonSerializer serializer = new JsonSerializer();
+                serializer.Serialize(file, context);
+            }
+
+            if (context.ContainsKey("ShiftTime"))
+            {
+                TimeOnShift = TimeSpan.FromHours((double)context["ShiftTime"]);
+            }
+
         }
 
         /// <summary>
