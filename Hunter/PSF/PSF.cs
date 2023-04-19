@@ -220,7 +220,7 @@ namespace Hunter
             }
         }
 
-        public void Update(HRAEngine? hRAEngine= null, string jsonData = null)
+        public void Update(HRAEngine? hraEngine= null, string jsonData = null)
         {
             if (IsStatic)
             {
@@ -230,8 +230,7 @@ namespace Hunter
                 // Implement effect of lag and linger on PSF levels
 
                 // Adjust PSF based on plant state
-                UpdateStrategy?.UpdateLevel(this, hRAEngine, jsonData);
-
+                UpdateStrategy?.UpdateLevel(this, hraEngine, jsonData);
             }
         }
 

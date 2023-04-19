@@ -103,7 +103,6 @@ namespace Hunter
         /// </summary>
         public TimeSpan TimeOnShift { get; set; } = TimeSpan.Zero;
 
-
         /// <summary>
         /// Calculates the fatigue index based on the duration of the shift.
         /// </summary>
@@ -142,7 +141,9 @@ namespace Hunter
         public void ResetPrimitiveEvalCount() { _primitiveEvalCount = 0; }
 
         private PSFCollection? _currentPSFCollection;
-        
+
+        private Dictionary<string, object> _context;
+        public Dictionary<string, object> Context { get { return _context; } }
 
         public int Count
         {
@@ -195,10 +196,16 @@ namespace Hunter
                 serializer.Serialize(file, context);
             }*/
 
+            if (context.ContainsKey("StartShiftTime"))
+            {
+                TimeOnShift = TimeSpan.FromHours((double)context["StartShiftTime"]);
+            }
+
             if (context.ContainsKey("ShiftTime"))
             {
-                TimeOnShift = TimeSpan.FromHours((double)context["ShiftTime"]);
+                TimeOnShift += TimeSpan.FromHours((double)context["ShiftTime"]);
             }
+            _context = context;
 
         }
 

@@ -28,7 +28,7 @@ namespace Hunter.Tests.PerformanceShapingFactor
             HRAEngine engine = new HRAEngine(timeOnShift: TimeSpan.FromHours(8));
             var fatigueIndex = engine.FatigueIndex;
 
-            _psfCollection.Update(hRAEngine: engine);
+            _psfCollection.Update(hraEngine: engine);
 
             var level = _psfCollection["FfDa"].CurrentLevel;
 
@@ -50,7 +50,7 @@ namespace Hunter.Tests.PerformanceShapingFactor
             HRAEngine engine = new HRAEngine(timeOnShift: TimeSpan.FromHours(12.1));
             var fatigueIndex = engine.FatigueIndex;
 
-            _psfCollection.Update(hRAEngine: engine);
+            _psfCollection.Update(hraEngine: engine);
 
             var level = _psfCollection["FfDa"].CurrentLevel;
 
@@ -72,7 +72,7 @@ namespace Hunter.Tests.PerformanceShapingFactor
             HRAEngine engine = new HRAEngine(timeOnShift: TimeSpan.FromHours(18));
             var fatigueIndex = engine.FatigueIndex;
 
-            _psfCollection.Update(hRAEngine: engine);
+            _psfCollection.Update(hraEngine: engine);
 
             var level = _psfCollection["FfDa"].CurrentLevel;
 
@@ -94,7 +94,7 @@ namespace Hunter.Tests.PerformanceShapingFactor
             HRAEngine engine = new HRAEngine(timeOnShift: TimeSpan.FromHours(24));
             var fatigueIndex = engine.FatigueIndex;
 
-            _psfCollection.Update(hRAEngine: engine);
+            _psfCollection.Update(hraEngine: engine);
 
             var level = _psfCollection["FfDa"].CurrentLevel;
 

@@ -263,10 +263,18 @@
 		"startStep": 1,
 		"endStep": 3,
 		"contextLinks":[
-		  {
-			"contextName": "ShiftTime",
-            "simVar": "TimeOnShift"			
-		  }
+      {
+        "contextName": "StartShiftTime",
+        "simVar": "StartTimeOnShift"
+      },
+      {
+        "contextName": "ShiftTime",
+        "simVar": "TimeOnShift"
+      },
+      {
+        "contextName": "Stress",
+        "simVar": "ExtremeStress"
+      }
 		]
       }
     },
@@ -296,9 +304,31 @@
         "name": "TimeOnShift",
         "desc": "",
         "varScope": "gtGlobal",
+        "value": 0,
+        "resetOnRuns": true,
+        "type": "double"
+      }
+    },
+    {
+      "Variable": {
+        "id": 2,
+        "name": "StartTimeOnShift",
+        "desc": "",
+        "varScope": "gtGlobal",
         "value": 12,
         "resetOnRuns": true,
         "type": "double"
+      }
+    },
+    {
+      "Variable": {
+        "id": 3,
+        "name": "ExtremeStress",
+        "desc": "",
+        "varScope": "gtGlobal",
+        "value": "Extreme",
+        "resetOnRuns": true,
+        "type": "string"
       }
     }
   ],

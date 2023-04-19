@@ -50,11 +50,21 @@ namespace Hunter
             get { return _psfs.Count; }
         }
 
-        public void Update(HRAEngine? hRAEngine = null, string jsonData = null)
+        public void Update(HRAEngine? hraEngine = null, string jsonData = null)
         {
+            if (hraEngine?.Context != null)
+            {
+                if (hraEngine.Context.ContainsKey("Stress"))
+                {
+                    string levelName = (string)hraEngine.Context["Stress"];
+                    SetLevel(PsfEnums.Id.Sa, levelName);
+                    SetLevel(PsfEnums.Id.Sd, levelName);
+                }
+            }
+
             foreach (var psf in _psfs.Values)
             {
-                psf.Update(hRAEngine, jsonData);
+                psf.Update(hraEngine, jsonData);
             }
         }
 
