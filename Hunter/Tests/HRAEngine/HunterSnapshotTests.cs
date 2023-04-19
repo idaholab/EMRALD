@@ -7,7 +7,8 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using System;
-using static Hunter.HunterFactory;
+using Hunter.Hra;
+using Hunter.Model;
 
 namespace Hunter.Tests
 {

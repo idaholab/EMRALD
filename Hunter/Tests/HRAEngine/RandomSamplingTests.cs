@@ -1,7 +1,6 @@
 ﻿using NUnit.Framework;
-using Hunter;
-using MathNet.Numerics.Distributions;
 using CommonDefLib;
+using Hunter.Hra;
 
 namespace Hunter.Tests.HumanReliabilityAnalysisEngine
 {

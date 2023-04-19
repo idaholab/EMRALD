@@ -11,7 +11,7 @@ using System.Data;
 using System.IO;
 using CommonDefLib;
 using Newtonsoft.Json;
-using Hunter;
+using Hunter.Model;
 
 
 namespace SimulationDAL

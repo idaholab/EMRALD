@@ -74,7 +74,8 @@ namespace Hunter.Utils
             {
                 if (!newFieldNames.SequenceEqual(existingFieldNames))
                 {
-                    throw new ArgumentException("The field names in the record do not match the existing field names in the file.");
+                    throw new ArgumentException(
+                        "The field names in the record do not match the existing field names in the file.");
                 }
             }
             else
@@ -87,7 +88,8 @@ namespace Hunter.Utils
 
                     if (!newFieldNames.SequenceEqual(existingFieldNames))
                     {
-                        throw new ArgumentException("The field names in the record do not match the existing field names in the file.");
+                        throw new ArgumentException(
+                            "The field names in the record do not match the existing field names in the file.");
                     }
                 }
             }

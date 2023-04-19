@@ -1,21 +1,14 @@
-﻿
-using System;
-using System.Collections.Generic;
-using System.IO;
-using MathNet.Numerics.Distributions;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json;
 using System.Collections;
 using CommonDefLib;
 using Newtonsoft.Json.Converters;
-using System.Data.Common;
-using MathNet.Numerics.LinearAlgebra.Solvers;
-using NLog;
 using Hunter.Utils;
-using static Hunter.HRAEngine;
-using MathNet.Numerics.LinearAlgebra;
+using Hunter.Psf;
+using static Hunter.Hra.HRAEngine;
+using Hunter.Proc;
+using Hunter.Model;
 
-namespace Hunter
+namespace Hunter.Hra
 {
     public enum DistributionType
     {
@@ -192,14 +185,6 @@ namespace Hunter
 
         public void SetContext(Dictionary<string, object> context)
         {
-            /*
-            // assuming the file path is stored in a variable called filePath
-            using (StreamWriter file = File.CreateText(@"hraContextVariables.json"))
-            {
-                JsonSerializer serializer = new JsonSerializer();
-                serializer.Serialize(file, context);
-            }*/
-
             if (context.ContainsKey("StartShiftTime"))
             {
                 TimeOnShift = TimeSpan.FromHours((double)context["StartShiftTime"]);
@@ -209,13 +194,13 @@ namespace Hunter
             {
                 TimeOnShift += TimeSpan.FromHours((double)context["ShiftTime"]);
             }
-            _context = context;
 
             if (psfCollection != null)
             {
                 psfCollection.SetContext(context);
             }
 
+            _context = context;
         }
 
         /// <summary>

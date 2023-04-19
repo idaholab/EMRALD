@@ -1,13 +1,7 @@
 ﻿using CommonDefLib;
 using MathNet.Numerics.Distributions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static Hunter.HRAEngine;
 
-namespace Hunter
+namespace Hunter.Hra
 {
     /// <summary>
     /// Represents an abstract distribution handler, which is responsible for sampling time values based on different distributions.
@@ -19,7 +13,7 @@ namespace Hunter
         /// </summary>
         /// <param name="primitive">The primitive object containing the distribution information.</param>
         /// <returns>A sampled time value.</returns>
-        public abstract double SampleTime(Primitive primitive);
+        public abstract double SampleTime(HRAEngine.Primitive primitive);
     }
 
     /// <summary>
@@ -32,7 +26,7 @@ namespace Hunter
         /// </summary>
         /// <param name="primitive">The primitive object containing the distribution information.</param>
         /// <returns>A sampled time value.</returns>
-        public override double SampleTime(Primitive primitive)
+        public override double SampleTime(HRAEngine.Primitive primitive)
         {
             return SampleLognormalTime(Convert.ToDouble(primitive.Time), Convert.ToDouble(primitive.Std));
         }
@@ -74,7 +68,7 @@ namespace Hunter
         /// </summary>
         /// <param name="primitive">The primitive object containing the distribution information.</param>
         /// <returns>A sampled time value.</returns>
-        public override double SampleTime(Primitive primitive)
+        public override double SampleTime(HRAEngine.Primitive primitive)
         {
             return SampleNormalTime(Convert.ToDouble(primitive.Time), Convert.ToDouble(primitive.Std));
         }
@@ -111,7 +105,7 @@ namespace Hunter
         /// </summary>
         /// <param name="primitive">The primitive object containing the distribution information.</param>
         /// <returns>A sampled time value.</returns>
-        public override double SampleTime(Primitive primitive)
+        public override double SampleTime(HRAEngine.Primitive primitive)
         {
             return SampleExponentialTime(Convert.ToDouble(primitive.Time));
         }
@@ -148,7 +142,7 @@ namespace Hunter
         /// </summary>
         /// <param name="primitive">The primitive object containing the unknown distribution information.</param>
         /// <returns>A default time value of 0.</returns>
-        public override double SampleTime(Primitive primitive)
+        public override double SampleTime(HRAEngine.Primitive primitive)
         {
             Console.WriteLine($"Unknown distribution type: {primitive.Distribution}");
             return 0;

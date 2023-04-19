@@ -1,8 +1,6 @@
-﻿
-using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using static Hunter.HRAEngine;
+﻿using NUnit.Framework;
+using Hunter.Psf;
+using Hunter.Hra;
 
 namespace Hunter.Tests.PerformanceShapingFactor
 {

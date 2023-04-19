@@ -1,6 +1,8 @@
 ﻿using Hunter;
 using NUnit.Framework;
 using System;
+using Hunter.Hra;
+using Hunter.Model;
 
 namespace Hunter.Tests
 {

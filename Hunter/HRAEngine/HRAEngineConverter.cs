@@ -1,12 +1,8 @@
-﻿using System;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using Hunter;
-using static Hunter.HRAEngine;
-using System.Text.Json.Nodes;
-using System.Reflection;
+using static Hunter.Hra.HRAEngine;
 
-namespace Hunter
+namespace Hunter.Hra
 {
     public class HRAEngineConverter : JsonConverter<HRAEngine>
     {

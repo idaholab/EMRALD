@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Hunter.Proc;
 
-namespace Hunter
+namespace Hunter.Model
 {
     /// <summary>
     /// HunterTask represents a task that the operator is performing.

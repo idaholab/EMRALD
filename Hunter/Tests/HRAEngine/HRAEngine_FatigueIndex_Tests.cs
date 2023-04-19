@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using NUnit.Framework;
-using Hunter;
+﻿using NUnit.Framework;
+using Hunter.Hra;
 
 namespace Hunter.Tests.HumanReliabilityAnalysisEngine
 {

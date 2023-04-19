@@ -1,9 +1,7 @@
 ﻿using NUnit.Framework;
-using System.Collections.Generic;
-using System.IO;
 using Newtonsoft.Json;
-
-using NUnit.Framework;
+using Hunter.Psf;
+using Hunter.Hra;
 
 namespace Hunter.Tests.PerformanceShapingFactor
 {

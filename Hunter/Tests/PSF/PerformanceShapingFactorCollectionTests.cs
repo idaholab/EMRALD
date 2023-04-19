@@ -1,6 +1,5 @@
-﻿
-using NUnit.Framework;
-using Hunter;
+﻿using NUnit.Framework;
+using Hunter.Psf;
 
 namespace Hunter.Tests.PerformanceShapingFactor
 {

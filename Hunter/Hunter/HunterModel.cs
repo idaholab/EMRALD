@@ -1,8 +1,8 @@
-﻿using System.Collections.Generic;
-using System.IO;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
+using Hunter.Proc;
+using Hunter.Hra;
 
-namespace Hunter
+namespace Hunter.Model
 {
     public class HunterModel
     {

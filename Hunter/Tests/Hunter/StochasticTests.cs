@@ -1,8 +1,7 @@
-﻿using Hunter;
-using MathNet.Numerics.Statistics;
+﻿using MathNet.Numerics.Statistics;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
+using Hunter.Hra;
+using Hunter.Proc;
 
 namespace Hunter.Tests {
 

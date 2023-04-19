@@ -12,7 +12,8 @@ using Newtonsoft.Json;
 using System.Linq;
 using static SimulationDAL.DistEvent;
 using System.IO;
-using Hunter;
+using Hunter.Hra;
+using Hunter.Model;
 using Microsoft.CodeAnalysis;
 using NLog;
 

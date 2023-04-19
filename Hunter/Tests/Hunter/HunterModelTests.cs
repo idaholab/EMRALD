@@ -11,7 +11,7 @@ namespace Hunter.Tests
     using System.IO;
     using Newtonsoft.Json.Linq;
     using NUnit.Framework;
-    using Hunter;
+    using Hunter.Model;
 
     namespace HunterTests
     {

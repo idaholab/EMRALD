@@ -6,7 +6,7 @@ using System.Linq;
 using System;
 using NUnit.Framework;
 
-using Hunter;
+using Hunter.Psf;
 using Hunter.Utils;
 
 namespace Hunter.Tests.utils

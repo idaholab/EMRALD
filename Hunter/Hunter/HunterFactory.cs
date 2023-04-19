@@ -1,13 +1,7 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Hunter.Hra;
+using Hunter.Psf;
 
-namespace Hunter
+namespace Hunter.Model
 {
     /// <summary>
     /// HunterFactory is a static class that contains methods 

@@ -1,9 +1,7 @@
-﻿using System;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using Hunter;
 
-namespace Hunter
+namespace Hunter.Psf
 {
     public class PSFCollectionConverter : JsonConverter
     {

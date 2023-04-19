@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using MathNet.Numerics.Statistics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static Hunter.HRAEngine;
-
+﻿using MathNet.Numerics.Statistics;
 using NUnit.Framework;
+using Hunter.Hra;
+using Hunter.Model;
 
 namespace Hunter.Tests.HumanReliabilityAnalysisEngine
 {
@@ -94,7 +89,7 @@ namespace Hunter.Tests.HumanReliabilityAnalysisEngine
             HRAEngine engine = new HRAEngine();
             engine.RepeatMode = false;
             bool? success = true;
-            Primitive primitive = engine.GetPrimitiveById(Goms.Id.Ac);
+            HRAEngine.Primitive primitive = engine.GetPrimitiveById(Goms.Id.Ac);
             engine.EvaluatePrimitive(primitive, ref success, outputDir: outputDirectory);
         }
     }
