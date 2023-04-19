@@ -139,28 +139,26 @@ namespace Hunter.Tests {
             string hunterModelFilename = @"hunter_db/models/sgtr_model.json";
             Dictionary<string, Procedure> procedures = ProceduresFactory.FromHunterModelFilename(hunterModelFilename);
 
-            PSFCollection? psfCollection = null;
+            HRAEngine hraEngine = new HRAEngine(initPsfs: PSFs);
             if (PSFs)
             {
-                psfCollection = new PSFCollection();
-                psfCollection.SetLevel("ATa", "BarelyAdequateTime");
-                Assert.That(psfCollection.Count > 0);
+                hraEngine.psfCollection.SetLevel("ATa", "BarelyAdequateTime");
+                Assert.That(hraEngine.psfCollection.Count > 0);
 
                 if (timePressure)
                 {
-                    psfCollection.SetLevel("ATa", "BarelyAdequateTime");
-                    psfCollection.SetLevel("ATd", "BarelyAdequateTime");
+                    hraEngine.psfCollection.SetLevel("ATa", "BarelyAdequateTime");
+                    hraEngine.psfCollection.SetLevel("ATd", "BarelyAdequateTime");
                 }
 
                 if (stress)
                 {
-                    psfCollection.SetLevel("Sa", "High");
-                    psfCollection.SetLevel("Sd", "High");
+                    hraEngine.psfCollection.SetLevel("Sa", "High");
+                    hraEngine.psfCollection.SetLevel("Sd", "High");
                 }
 
             }
 
-            HRAEngine hraEngine = new HRAEngine();
             hraEngine.RepeatMode = repeatMode;
             hraEngine.TimeOnShiftFatigueEnabled = fatigue;
             if (!atStartOfShift)
@@ -177,7 +175,7 @@ namespace Hunter.Tests {
                 int endStep = procedure.Steps.Count;
 
                 result += hraEngine.EvaluateSteps(procedures, procedureId, 1, endStep, 
-                                                  psfs: psfCollection, outputDir: outputDirectory);
+                                                  outputDir: outputDirectory);
             }
 
             return (result.TotalSeconds, hraEngine.RepeatCount, hraEngine.PrimitiveEvalCount);

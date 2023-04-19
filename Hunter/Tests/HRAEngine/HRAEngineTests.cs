@@ -93,11 +93,9 @@ namespace Hunter.Tests.HumanReliabilityAnalysisEngine
             HRAEngine hraEngine = new HRAEngine();
             List<string> primitiveIds = new List<string> { "Ac", "Rc", "Sf" };
 
-            PSFCollection psfCollection = new PSFCollection();
-
             // Act
             bool? success = true;
-            double elapsedTime = hraEngine.Evaluate(primitiveIds, ref success, psfCollection);
+            double elapsedTime = hraEngine.Evaluate(primitiveIds, ref success);
 
             // Assert
             Assert.Greater(elapsedTime, 0);
@@ -183,9 +181,6 @@ namespace Hunter.Tests.HumanReliabilityAnalysisEngine
                 ProceduresFactory.FromHunterModelFilename(hunterModelFilename);
             string proceduresString = JsonConvert.SerializeObject(procedures);
 
-            var psfCollection = new PSFCollection();
-
-
             HRAEngine hraEngine = new HRAEngine();
 
             // Arrange
@@ -194,7 +189,7 @@ namespace Hunter.Tests.HumanReliabilityAnalysisEngine
             int endStep = 3;
 
             // Act
-            TimeSpan result = hraEngine.EvaluateSteps(proceduresString, procedureId, startStep, endStep, psfCollection);
+            TimeSpan result = hraEngine.EvaluateSteps(proceduresString, procedureId, startStep, endStep);
 
             // Assert
             Assert.That(result.TotalSeconds > 0);

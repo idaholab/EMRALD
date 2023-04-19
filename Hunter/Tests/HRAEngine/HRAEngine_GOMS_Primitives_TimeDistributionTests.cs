@@ -26,10 +26,7 @@ namespace Hunter.Tests.HumanReliabilityAnalysisEngine
             string outputDirectory = TestUtility.GetOutputDirectory();
             TestUtility.CleanDirectory(outputDirectory);
 
-            PSFCollection psfCollection;
-            HRAEngine engine;
-
-            (engine, psfCollection) = HunterFactory.CreateNoviceOperator();
+            HRAEngine engine = HunterFactory.CreateNoviceOperator();
 
             engine.RepeatMode = false;
 
@@ -41,7 +38,7 @@ namespace Hunter.Tests.HumanReliabilityAnalysisEngine
                 for (int i = 0; i < count; i++)
                 {
                     bool? success = true;
-                    times.Add(engine.EvaluatePrimitive(primitive, ref success, psfs: psfCollection, outputDir: outputDirectory));
+                    times.Add(engine.EvaluatePrimitive(primitive, ref success, outputDir: outputDirectory));
                 }
 
                 double mean = Math.Round(times.Average(), 2);
@@ -62,8 +59,6 @@ namespace Hunter.Tests.HumanReliabilityAnalysisEngine
         {
             string outputDirectory = TestUtility.GetOutputDirectory();
             TestUtility.CleanDirectory(outputDirectory);
-
-            PSFCollection psfCollection = new PSFCollection();
 
             HRAEngine engine = new HRAEngine();
             engine.RepeatMode = false;

@@ -50,18 +50,21 @@ namespace Hunter
             get { return _psfs.Count; }
         }
 
+        private Dictionary<string, object> _context;
+
+        public void SetContext(Dictionary<string, object> context)
+        {
+            if (context.ContainsKey("Stress"))
+            {
+                string levelName = (string)context["Stress"];
+                SetLevel(PsfEnums.Id.Sa, levelName);
+                SetLevel(PsfEnums.Id.Sd, levelName);
+            }
+            _context = context;
+        }
+
         public void Update(HRAEngine? hraEngine = null, string jsonData = null)
         {
-            if (hraEngine?.Context != null)
-            {
-                if (hraEngine.Context.ContainsKey("Stress"))
-                {
-                    string levelName = (string)hraEngine.Context["Stress"];
-                    SetLevel(PsfEnums.Id.Sa, levelName);
-                    SetLevel(PsfEnums.Id.Sd, levelName);
-                }
-            }
-
             foreach (var psf in _psfs.Values)
             {
                 psf.Update(hraEngine, jsonData);

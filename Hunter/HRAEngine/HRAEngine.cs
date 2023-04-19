@@ -65,6 +65,10 @@ namespace Hunter
 
         private Dictionary<string, Primitive> _primitives;
 
+        private PSFCollection _psfCollection;
+        public PSFCollection psfCollection { get { return _psfCollection; } }
+        internal void SetPSFCollection(PSFCollection value) { _psfCollection = value; }
+
         /// <summary>
         /// Gets or sets a value indicating whether to repeat <see cref="EvalStep"/> until all primitives are completed (default is false).
         /// </summary>
@@ -140,8 +144,6 @@ namespace Hunter
         internal void SetPrimitiveEvalCount(int value) { _primitiveEvalCount = value; }
         public void ResetPrimitiveEvalCount() { _primitiveEvalCount = 0; }
 
-        private PSFCollection? _currentPSFCollection;
-
         private Dictionary<string, object> _context;
         public Dictionary<string, object> Context { get { return _context; } }
 
@@ -150,7 +152,7 @@ namespace Hunter
             get { return _primitives.Count; }
         }
 
-        public HRAEngine(string primitivesFilePath = null, TimeSpan timeOnShift = default)
+        public HRAEngine(string primitivesFilePath = null, TimeSpan timeOnShift = default, bool initPsfs = true)
         {
             if (primitivesFilePath == null)
             {
@@ -159,16 +161,18 @@ namespace Hunter
             }
             _primitives = LoadPrimitives(primitivesFilePath);
             TimeOnShift = timeOnShift;
+            if (initPsfs)
+                _psfCollection = new PSFCollection();
         }
 
         public HunterSnapshot Snapshot()
         {
             string experience = "null";
             bool hasTimePressure = false;
-            if (_currentPSFCollection != null)
+            if (psfCollection != null)
             {
-                experience = _currentPSFCollection[PsfEnums.Id.Ea].CurrentLevel.LevelName;
-                hasTimePressure = _currentPSFCollection.HasTimePressure;
+                experience = psfCollection[PsfEnums.Id.Ea].CurrentLevel.LevelName;
+                hasTimePressure = psfCollection.HasTimePressure;
             }
 
             return new HunterSnapshot
@@ -206,6 +210,11 @@ namespace Hunter
                 TimeOnShift += TimeSpan.FromHours((double)context["ShiftTime"]);
             }
             _context = context;
+
+            if (psfCollection != null)
+            {
+                psfCollection.SetContext(context);
+            }
 
         }
 
@@ -327,29 +336,26 @@ namespace Hunter
         public TimeSpan EvaluateSteps(string procedureCollectionJson,
                                       string procedureId,
                                       int startStep, int endStep,
-                                      PSFCollection? psfs = null,
                                       string? outputDir = null,
                                       bool? success = true)
         {
             var procedureCollection = DeserializeProcedureCollection(procedureCollectionJson);
             return EvaluateSteps(procedureCollection, procedureId,
-                startStep, endStep, psfs, outputDir);
+                startStep, endStep, outputDir);
         }
 
         public TimeSpan EvaluateSteps(Dictionary<string, Procedure> procedureCollection,
                               string procedureId,
                               int startStep, int endStep,
-                              PSFCollection? psfs = null,
                               string? outputDir = null)
         {
-            if (psfs != null)
+            if (psfCollection != null)
             {
-                psfs.Update(this);
+                psfCollection.Update(this);
             }
 
             double elapsedTime = 0.0;
             _currentSuccess = true;
-            _currentPSFCollection = psfs;
 
             if (procedureCollection.TryGetValue(procedureId, out Procedure procedure))
             {
@@ -361,8 +367,8 @@ namespace Hunter
                     List<string> primitiveIds = procedure.Steps[i - 1].PrimitiveIds;
 
                     bool? stepSuccess = true;
-                    elapsedTime += EvaluateStep(primitiveIds, ref stepSuccess, psfs, outputDir);
-                    elapsedTime += HandleRepeatMode(primitiveIds, ref stepSuccess, psfs);
+                    elapsedTime += EvaluateStep(primitiveIds, ref stepSuccess, outputDir);
+                    elapsedTime += HandleRepeatMode(primitiveIds, ref stepSuccess);
 
                     _currentSuccess = (_currentSuccess & stepSuccess) ?? null;
                 }
@@ -375,13 +381,13 @@ namespace Hunter
             return TimeSpan.FromSeconds(elapsedTime);
         }
 
-        private double EvaluateStep(List<string> primitiveIds, ref bool? stepSuccess, PSFCollection? psfs, string? outputDir)
+        private double EvaluateStep(List<string> primitiveIds, ref bool? stepSuccess, string? outputDir)
         {
-            double elapsedTime = Evaluate(primitiveIds, ref stepSuccess, psfs, outputDir);
+            double elapsedTime = Evaluate(primitiveIds, ref stepSuccess, outputDir);
             return elapsedTime;
         }
 
-        private double HandleRepeatMode(List<string> primitiveIds, ref bool? stepSuccess, PSFCollection? psfs)
+        private double HandleRepeatMode(List<string> primitiveIds, ref bool? stepSuccess)
         {
             double elapsedTime = 0.0;
 
@@ -391,7 +397,7 @@ namespace Hunter
                 {
                     _repeatCount += 1;
                     stepSuccess = true;
-                    elapsedTime += Evaluate(primitiveIds, ref stepSuccess, psfs);
+                    elapsedTime += Evaluate(primitiveIds, ref stepSuccess);
                 }
             }
 
@@ -399,14 +405,13 @@ namespace Hunter
         }
         public double Evaluate(List<string> primitiveIds,
                        ref bool? success,
-                       PSFCollection? psfs = null,
                        string? outputDir = null)
         {
             double elapsedTime = 0.0;
 
             foreach (string primitiveId in primitiveIds)
             {
-                elapsedTime += EvaluatePrimitiveById(primitiveId, ref success, psfs, outputDir);
+                elapsedTime += EvaluatePrimitiveById(primitiveId, ref success, outputDir);
             }
 
             if (outputDir != null)
@@ -419,7 +424,6 @@ namespace Hunter
 
         private double EvaluatePrimitiveById(string primitiveId,
                                              ref bool? success,
-                                             PSFCollection? psfs,
                                              string? outputDir)
         {
             double elapsedTime = 0.0;
@@ -429,7 +433,7 @@ namespace Hunter
                 if (primitive.Time is null)
                     return elapsedTime;
 
-                elapsedTime = EvaluatePrimitive(primitive, ref success, psfs, outputDir);
+                elapsedTime = EvaluatePrimitive(primitive, ref success, outputDir);
             }
             else
             {
@@ -461,12 +465,11 @@ namespace Hunter
         /// <returns>The adjusted time value for the primitive.</returns>
         public double EvaluatePrimitive(Primitive primitive,
                                         ref bool? success,
-                                        PSFCollection? psfs = null,
                                         string? outputDir = null)
         {
             double sampled_time = SamplePrimitiveTime(primitive);
-            double adjusted_hep = CalculateAdjustedHep(primitive, psfs);
-            double adjusted_time = CalculateAdjustedTime(primitive, psfs, sampled_time);
+            double adjusted_hep = CalculateAdjustedHep(primitive);
+            double adjusted_time = CalculateAdjustedTime(primitive, sampled_time);
 
             if (adjusted_hep == 1.0)
                 success = null;
@@ -480,7 +483,7 @@ namespace Hunter
 
             if (outputDir != null)
             {
-                WritePrimitiveOutput(primitive, success, psfs, sampled_time, adjusted_time, outputDir);
+                WritePrimitiveOutput(primitive, success, sampled_time, adjusted_time, outputDir);
             }
 
             _primitiveEvalCount += 1;
@@ -494,14 +497,14 @@ namespace Hunter
         /// <param name="primitive">The primitive object containing the nominal HEP.</param>
         /// <param name="psfs">The PSF collection object containing the composite multiplier, or null if not available.</param>
         /// <returns>The adjusted HEP value.</returns>
-        private double CalculateAdjustedHep(Primitive primitive, PSFCollection? psfs)
+        private double CalculateAdjustedHep(Primitive primitive)
         {
             double nominal_hep = primitive.NominalHep;
             double adjusted_hep = nominal_hep;
 
-            if (psfs != null)
+            if (psfCollection != null)
             {
-                double psf_composite_multiplier = psfs.CompositeMultiplier(primitive);
+                double psf_composite_multiplier = psfCollection.CompositeMultiplier(primitive);
                 adjusted_hep *= psf_composite_multiplier;
 
                 if (adjusted_hep > 1.0)
@@ -536,13 +539,13 @@ namespace Hunter
         /// <param name="psfs">The PSF collection object containing the time multiplier, or null if not available.</param>
         /// <param name="sampled_time">The sampled time value.</param>
         /// <returns>The adjusted time value.</returns>
-        private double CalculateAdjustedTime(Primitive primitive, PSFCollection? psfs, double sampled_time)
+        private double CalculateAdjustedTime(Primitive primitive, double sampled_time)
         {
             double adjusted_time = sampled_time;
 
-            if (psfs != null)
+            if (psfCollection != null)
             {
-                double psf_time_multiplier = psfs.TimeMultiplier(primitive) ?? 1.0;
+                double psf_time_multiplier = psfCollection.TimeMultiplier(primitive) ?? 1.0;
                 adjusted_time *= psf_time_multiplier;
             }
 
@@ -563,7 +566,7 @@ namespace Hunter
         /// <param name="sampled_time">The sampled time value.</param>
         /// <param name="adjusted_time">The adjusted time value.</param>
         /// <param name="outputDir">The output directory for writing test file outputs.</param>
-        private void WritePrimitiveOutput(Primitive primitive, bool? success, PSFCollection? psfs, double sampled_time, double adjusted_time, string outputDir)
+        private void WritePrimitiveOutput(Primitive primitive, bool? success, double sampled_time, double adjusted_time, string outputDir)
         {
             string outputFile = Path.Combine(outputDir, "primitive.csv");
 
@@ -574,12 +577,12 @@ namespace Hunter
                 { "primitive_id", primitive.Id },
                 { "success", success?.CompareTo(true) ?? 00 },
                 { "sampled_time", sampled_time },
-                { "psf_time_multiplier", psfs != null ? psfs.TimeMultiplier(primitive) ?? 1.0 : "null" },
+                { "psf_time_multiplier", psfCollection != null ? psfCollection.TimeMultiplier(primitive) ?? 1.0 : "null" },
                 { "fatigue_index", TimeOnShiftFatigueEnabled ? FatigueIndex : "null" },
                 { "adjusted_time", adjusted_time },
                 { "nominal_hep", primitive.NominalHep },
-                { "psf_composite_multiplier", psfs != null ? psfs.CompositeMultiplier(primitive) : "null" },
-                { "adjusted_hep", CalculateAdjustedHep(primitive, psfs) },
+                { "psf_composite_multiplier", psfCollection != null ? psfCollection.CompositeMultiplier(primitive) : "null" },
+                { "adjusted_hep", CalculateAdjustedHep(primitive) },
             };
             CsvLogger.WriteRow(outputFile, record);
         }

@@ -21,7 +21,7 @@ namespace Hunter
             return model;
         }
 
-        public (HRAEngine hraEngine, PSFCollection psfCollection) CreateOperator()
+        public HRAEngine CreateOperator()
         {
             return HunterFactory.CreateOperator(Snapshot);
         }

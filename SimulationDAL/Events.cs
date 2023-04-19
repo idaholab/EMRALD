@@ -1386,8 +1386,7 @@ namespace SimulationDAL
       {
         throw new Exception("Missing the hunter model");
       }
-      //HunterModel hunterModel = HunterModel.DeserializeJSON(_hunterModelJson);
-      (HRAEngine hraEngine, PSFCollection psfCollection)  = _hunterModel.CreateOperator();
+      HRAEngine hraEngine = _hunterModel.CreateOperator();
 
       //TODO setup the contextVarables
       hraEngine.SetContext(_contextVariables.ToDictionary(
@@ -1396,7 +1395,7 @@ namespace SimulationDAL
       ));
 
       //Call the HRA library to determine the time of the event
-      retVal = hraEngine.EvaluateSteps(_hunterModel.Task.ProcedureCatalog, _procedureName, _startStep, _endStep, psfCollection);
+      retVal = hraEngine.EvaluateSteps(_hunterModel.Task.ProcedureCatalog, _procedureName, _startStep, _endStep);
 
       bool? success = hraEngine.CurrentSuccess;
       // success == null means HEP = 1.0

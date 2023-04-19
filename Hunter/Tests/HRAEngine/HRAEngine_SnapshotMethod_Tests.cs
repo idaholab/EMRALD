@@ -43,7 +43,7 @@ namespace Hunter.Tests
         {
             HunterSnapshot snapshot = hraEngine.Snapshot();
 
-            (HRAEngine hraEngine2, PSFCollection psfCollection2) = HunterFactory.CreateOperator(snapshot);
+            HRAEngine hraEngine2 = HunterFactory.CreateOperator(snapshot);
 
             Assert.AreEqual(hraEngine.RepeatMode, hraEngine2.RepeatMode);
             Assert.AreEqual(hraEngine.TimeOnShiftFatigueEnabled, hraEngine2.TimeOnShiftFatigueEnabled);
@@ -55,6 +55,4 @@ namespace Hunter.Tests
             Assert.AreEqual(hraEngine.RepeatCount, hraEngine2.RepeatCount);
         }
     }
-
-
 }
