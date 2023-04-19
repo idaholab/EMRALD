@@ -13,6 +13,10 @@ using System.IO;
 using System.Xml;
 using System.Text.RegularExpressions;
 using CommonDefLib;
+using Hunter.Model;
+using Hunter.Hra;
+using Hunter.Psf;
+using System.Xml.Linq;
 
 namespace SimulationDAL
 {
@@ -1568,6 +1572,22 @@ namespace SimulationDAL
         catch (Exception e)
         {
           throw new Exception("(Variable - " + item["name"] + ") " + e.Message);
+        }
+      }
+    }
+
+    public void InjectHunterVariables(HunterModel hunterModel)
+    {
+      HRAEngine hraEngine = hunterModel.CreateOperator();
+      foreach (PSF psf in hraEngine.psfCollection)
+      {
+        foreach (PSF.Level level in psf.Levels)
+        {
+          string name = $"Psf.{psf.Factor}.{level.LevelName}";
+          if (this.FindByName((string)name, false) == null)
+          {
+            Add(new SimGlobVariable(name, inDType: typeof(string), inVal: level.LevelName));
+          }
         }
       }
     }

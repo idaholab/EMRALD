@@ -82,7 +82,7 @@
         "stateType": "stStandard",
         "diagramName": "MainTest",
         "immediateActions": [
-          "SetTimeOnShift"
+          "SetTimeOnShiftH"
         ],
         "events": [
           "HRAProcedure",
@@ -197,14 +197,14 @@
     {
       "Action": {
         "id": 5,
-        "name": "SetTimeOnShift",
+        "name": "SetTimeOnShiftH",
         "desc": "",
         "actType": "atCngVarVal",
         "mainItem": false,
         "mutExcl": true,
         "newStates": [],
         "scriptCode": "return CurTime;",
-        "variableName": "TimeOnShift",
+        "variableName": "TimeOnShiftH",
         "codeVariables": []
       }
     }
@@ -264,16 +264,16 @@
 		"endStep": 3,
 		"contextLinks":[
       {
-        "contextName": "StartShiftTime",
-        "simVar": "StartTimeOnShift"
+        "contextName": "StartShiftTimeH",
+        "simVar": "StartTimeOnShiftH"
       },
       {
-        "contextName": "ShiftTime",
-        "simVar": "TimeOnShift"
+        "contextName": "ShiftTimeH",
+        "simVar": "TimeOnShiftH"
       },
       {
         "contextName": "Stress",
-        "simVar": "ExtremeStress"
+        "simVar": "Psf.Stress.Extreme"
       }
 		]
       }
@@ -301,7 +301,7 @@
     {
       "Variable": {
         "id": 1,
-        "name": "TimeOnShift",
+        "name": "TimeOnShiftH",
         "desc": "",
         "varScope": "gtGlobal",
         "value": 0,
@@ -312,23 +312,12 @@
     {
       "Variable": {
         "id": 2,
-        "name": "StartTimeOnShift",
+        "name": "StartTimeOnShiftH",
         "desc": "",
         "varScope": "gtGlobal",
         "value": 12,
         "resetOnRuns": true,
         "type": "double"
-      }
-    },
-    {
-      "Variable": {
-        "id": 3,
-        "name": "ExtremeStress",
-        "desc": "",
-        "varScope": "gtGlobal",
-        "value": "Extreme",
-        "resetOnRuns": true,
-        "type": "string"
       }
     }
   ],

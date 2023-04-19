@@ -185,14 +185,14 @@ namespace Hunter.Hra
 
         public void SetContext(Dictionary<string, object> context)
         {
-            if (context.ContainsKey("StartShiftTime"))
+            if (context.ContainsKey("StartShiftTimeH"))
             {
-                TimeOnShift = TimeSpan.FromHours((double)context["StartShiftTime"]);
+                TimeOnShift = TimeSpan.FromHours((double)context["StartShiftTimeH"]);
             }
 
-            if (context.ContainsKey("ShiftTime"))
+            if (context.ContainsKey("ShiftTimeH"))
             {
-                TimeOnShift += TimeSpan.FromHours((double)context["ShiftTime"]);
+                TimeOnShift += TimeSpan.FromHours((double)context["ShiftTimeH"]);
             }
 
             if (psfCollection != null)

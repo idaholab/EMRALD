@@ -12,7 +12,9 @@ using System.IO;
 using CommonDefLib;
 using Newtonsoft.Json;
 using Hunter.Model;
-
+using System.Xml.Linq;
+using Hunter.Hra;
+using Hunter.Psf;
 
 namespace SimulationDAL
 {
@@ -154,6 +156,7 @@ namespace SimulationDAL
       {
         string hModelStr = dynObj.HunterModel.ToString();
         hunterModel = HunterModel.DeserializeJSON(hModelStr);
+        this.allVariables.InjectHunterVariables(hunterModel);
       }
 
       //make the links to all the other objects
