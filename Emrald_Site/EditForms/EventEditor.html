@@ -119,47 +119,56 @@
                     </table>
                 </div>
                 <div id="3DSimPanel" ng-if="typeOption.value === 'et3dSimEv'" style="display:table-row;position:absolute;width:96%;overflow-x:hidden;">
-                    <label style="display:table-cell;vertical-align:middle; white-space:nowrap;">External Sim Variable:</label>
-                    <select name="Variables" ng-model="data.variable" ng-options="v.name for v in variables" style="width: 130px;">
-                        <option>-- Choose Variable --</option>
-                    </select><br>
-                    <div style="display: flex; flex-direction: row; align-items: stretch; height: calc(100vh - 10em); width: 94vw;">
-                        <div style="display: flex; flex-direction: column; flex: 1">
-                            <label style="display:table-cell;vertical-align:middle; white-space:nowrap;">Evaluate Code (c#)</label>
-                            <br>
-                            <div style="display: flex; flex-direction:row; flex: 1">
-                                <div code-editor class="editor" code="data.var3DCode"></div>
-                            </div>
+                    <label style="display:table-cell;vertical-align:middle; white-space:nowrap;">External Event Type:</label>
+                    <div style="display:flex;">
+                        <div>
+                            <select name="extEventType" ng-model="data.extEventType" ng-options="t.label for t in extEventTypeOptions" style="width: 130px"></select>
                         </div>
-                        <table id="tblVariables" style="text-align: left;" border="1" cellspacing="0">
-                            <tr>
-                                <th colspan="2">Variables used in code</th>
-                            </tr>
-                            <tr>
-                                <td style="border: 1px solid #dddddd; text-align: left; padding: 0px;">
-                                    <input id="varId_CurTime" type="checkbox" checked disabled />
-                                </td>
-                                <td style="border: 1px solid #dddddd; text-align: left; padding: 0px;">
-                                    <label for="varId_CurTime" style="display:block">CurTime</label>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td style="border: 1px solid #dddddd; text-align: left; padding: 0px;">
-                                    <input id="varId_RunIdx" type="checkbox" checked disabled />
-                                </td>
-                                <td style="border: 1px solid #dddddd; text-align: left; padding: 0px;">
-                                    <label for="varId_RunIdx" style="display:block">RunIdx</label>
-                                </td>
-                            </tr>
-                            <tr ng-repeat="row in data.varMap">
-                                <td style="border: 1px solid #dddddd; text-align: left; padding: 0px;">
-                                    <input id="{{'varId_' + row.value.name}}" type="checkbox" ng-change="variableChecked(row);" ng-model="row.check" />
-                                </td>
-                                <td style="border: 1px solid #dddddd; text-align: left; padding: 0px;">
-                                    <label for="{{'varId_' + row.value.name}}" style="display:block">{{row.value.name}}</label>
-                                </td>
-                            </tr>
-                        </table>
+                        <div style="margin-left:8px">{{data.extEventType.description}}</div>
+                    </div>
+                    <div ng-if="data.extEventType.value == 'etCompEv'">
+                        <label style="display:table-cell;vertical-align:middle; white-space:nowrap;">External Sim Variable:</label>
+                        <select name="Variables" ng-model="data.variable" ng-options="v.name for v in variables" style="width: 130px;">
+                            <option>-- Choose Variable --</option>
+                        </select><br>
+                        <div style="display: flex; flex-direction: row; align-items: stretch; height: calc(100vh - 10em); width: 94vw;">
+                            <div style="display: flex; flex-direction: column; flex: 1">
+                                <label style="display:table-cell;vertical-align:middle; white-space:nowrap;">Evaluate Code (c#)</label>
+                                <br>
+                                <div style="display: flex; flex-direction:row; flex: 1">
+                                    <div code-editor class="editor" code="data.var3DCode"></div>
+                                </div>
+                            </div>
+                            <table id="tblVariables" style="text-align: left;" border="1" cellspacing="0">
+                                <tr>
+                                    <th colspan="2">Variables used in code</th>
+                                </tr>
+                                <tr>
+                                    <td style="border: 1px solid #dddddd; text-align: left; padding: 0px;">
+                                        <input id="varId_CurTime" type="checkbox" checked disabled />
+                                    </td>
+                                    <td style="border: 1px solid #dddddd; text-align: left; padding: 0px;">
+                                        <label for="varId_CurTime" style="display:block">CurTime</label>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="border: 1px solid #dddddd; text-align: left; padding: 0px;">
+                                        <input id="varId_RunIdx" type="checkbox" checked disabled />
+                                    </td>
+                                    <td style="border: 1px solid #dddddd; text-align: left; padding: 0px;">
+                                        <label for="varId_RunIdx" style="display:block">RunIdx</label>
+                                    </td>
+                                </tr>
+                                <tr ng-repeat="row in data.varMap">
+                                    <td style="border: 1px solid #dddddd; text-align: left; padding: 0px;">
+                                        <input id="{{'varId_' + row.value.name}}" type="checkbox" ng-change="variableChecked(row);" ng-model="row.check" />
+                                    </td>
+                                    <td style="border: 1px solid #dddddd; text-align: left; padding: 0px;">
+                                        <label for="{{'varId_' + row.value.name}}" style="display:block">{{row.value.name}}</label>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
                     </div>
                 </div>
                 <div id="DistributionPanel" ng-if="typeOption.value === 'etDistribution'" style="display:table-row;position:absolute;height:70%;width:96%;overflow-x:hidden;">
@@ -348,7 +357,7 @@
                         <hr />
                         <div ng-show="distUsesVariable()">
                             If Variable Changes:
-                            <select ng-model="data.onVarChange" ng-options="t as t.name for t in distChangeTypes" ng-change="updateChangeDesc()">
+                            <select ng-model="data.onVarChange" ng-options="t as t.name for t in distChangeTypes" ng-change="updateChangeDesc()" style="width:200px;">
                                 <option></option>
                             </select>
                             {{data.onVarChange.desc}}
@@ -389,7 +398,7 @@
                 <div id="ComponentLogicPanel" ng-if="typeOption.value === 'etComponentLogic'" style="display:table-row;position:absolute;height:70%;width:96%;overflow-x:hidden;overflow-y:scroll">
                     <input name="OnSuccess" type="checkbox" ng-model="data.onSuccess" />On Success <br />
                     <label style="display:table-cell;vertical-align:middle; white-space:nowrap;">Logic Top:</label>
-                    <select name="LogicTop" ng-model="data.logicTop" ng-options="lt.name for lt in logicTops" style="width:130px;">
+                    <select name="LogicTop" ng-model="data.logicTop" ng-options="lt.name for lt in logicTops" style="width:200px;">
                         <option>-- Choose logic top --</option>
                     </select>
                 </div>

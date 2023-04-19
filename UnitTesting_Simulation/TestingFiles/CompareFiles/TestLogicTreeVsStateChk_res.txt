@@ -1,7 +1,7 @@
 Simulation = McCormick Reliability and Risk Analysis Example 6-4
 Runtime = 00.00:00:01
 Runs = 10000 of 10000
-D_Failed Occurred 6321 times, Rate =0.6321, MeanTime = 01.18:04:42 +/- 01.04:10:22.88
+D_Failed Occurred 6321 times, Rate =0.6321, MeanTime = 01.18:04:42 +/- 01.15:50:22.40
 (146)[2.309761113747825]D_Failed, E_Failed, F_Failed
 (219)[3.4646416706217367]B_Failed, D_Failed, E_Failed, F_Failed
 (75)[1.1865211200759374]B_Failed, D_Failed
@@ -65,7 +65,7 @@ D_Failed Occurred 6321 times, Rate =0.6321, MeanTime = 01.18:04:42 +/- 01.04:10:
 (67)[1.0599588672678373]A_Failed, C_Failed
 (61)[0.9650371776617624]A_Failed, F_Failed
 (65)[1.0283183040658124]C_Failed, D_Failed
-E_Failed Occurred 6399 times, Rate =0.6399, MeanTime = 01.17:59:38 +/- 01.04:09:10.40
+E_Failed Occurred 6399 times, Rate =0.6399, MeanTime = 01.17:59:38 +/- 01.15:48:48.59
 (146)[2.2816065010157836]D_Failed, E_Failed, F_Failed
 (219)[3.4224097515236758]B_Failed, D_Failed, E_Failed, F_Failed
 (75)[1.1720581340834506]B_Failed, D_Failed
@@ -129,7 +129,7 @@ E_Failed Occurred 6399 times, Rate =0.6399, MeanTime = 01.17:59:38 +/- 01.04:09:
 (67)[1.0470385997812157]A_Failed, C_Failed
 (61)[0.9532739490545398]A_Failed, F_Failed
 (65)[1.015783716205657]C_Failed, D_Failed
-F_Failed Occurred 6259 times, Rate =0.6259, MeanTime = 01.18:11:59 +/- 01.04:13:51.60
+F_Failed Occurred 6259 times, Rate =0.6259, MeanTime = 01.18:11:59 +/- 01.15:55:17.47
 (146)[2.332640996964371]D_Failed, E_Failed, F_Failed
 (219)[3.498961495446557]B_Failed, D_Failed, E_Failed, F_Failed
 (75)[1.1982744847419715]B_Failed, D_Failed
@@ -193,7 +193,7 @@ F_Failed Occurred 6259 times, Rate =0.6259, MeanTime = 01.18:11:59 +/- 01.04:13:
 (67)[1.070458539702828]A_Failed, C_Failed
 (61)[0.9745965809234702]A_Failed, F_Failed
 (65)[1.0385045534430422]C_Failed, D_Failed
-SYS_FAILS_FT Occurred 8535 times, Rate =0.8535, MeanTime = 01.21:25:44 +/- 01.00:38:38.06
+SYS_FAILS_FT Occurred 8535 times, Rate =0.8535, MeanTime = 01.21:25:44 +/- 01.10:50:58.33
 (146)[1.7106033977738724]D_Failed, E_Failed, F_Failed
 (219)[2.5659050966608086]B_Failed, D_Failed, E_Failed, F_Failed
 (75)[0.8787346221441126]B_Failed, D_Failed
@@ -257,7 +257,7 @@ SYS_FAILS_FT Occurred 8535 times, Rate =0.8535, MeanTime = 01.21:25:44 +/- 01.00
 (67)[0.7850029291154071]A_Failed, C_Failed
 (61)[0.7147041593438781]A_Failed, F_Failed
 (65)[0.7615700058582308]C_Failed, D_Failed
-SYS_FAILS Occurred 8535 times, Rate =0.8535, MeanTime = 01.21:25:44 +/- 01.00:38:38.06
+SYS_FAILS Occurred 8535 times, Rate =0.8535, MeanTime = 01.21:25:44 +/- 01.10:50:58.33
 (146)[1.7106033977738724]D_Failed, E_Failed, F_Failed
 (219)[2.5659050966608086]B_Failed, D_Failed, E_Failed, F_Failed
 (75)[0.8787346221441126]B_Failed, D_Failed
@@ -321,7 +321,7 @@ SYS_FAILS Occurred 8535 times, Rate =0.8535, MeanTime = 01.21:25:44 +/- 01.00:38
 (67)[0.7850029291154071]A_Failed, C_Failed
 (61)[0.7147041593438781]A_Failed, F_Failed
 (65)[0.7615700058582308]C_Failed, D_Failed
-B_Failed Occurred 6307 times, Rate =0.6307, MeanTime = 01.18:01:53 +/- 01.04:22:08.66
+B_Failed Occurred 6307 times, Rate =0.6307, MeanTime = 01.18:01:53 +/- 01.16:07:09.84
 (219)[3.472332329158078]B_Failed, D_Failed, E_Failed, F_Failed
 (75)[1.189154907245917]B_Failed, D_Failed
 (68)[1.078167115902965]B_Failed, F_Failed
@@ -385,7 +385,7 @@ B_Failed Occurred 6307 times, Rate =0.6307, MeanTime = 01.18:01:53 +/- 01.04:22:
 (67)[1.062311717139686]A_Failed, C_Failed
 (61)[0.9671793245600127]A_Failed, F_Failed
 (65)[1.0306009196131283]C_Failed, D_Failed
-A_Failed Occurred 6347 times, Rate =0.6347, MeanTime = 01.17:12:53 +/- 01.04:01:21.73
+A_Failed Occurred 6347 times, Rate =0.6347, MeanTime = 01.17:12:53 +/- 01.15:37:45.30
 (113)[1.7803686781156451]A_Failed, B_Failed, C_Failed
 (252)[3.9703797069481643]A_Failed, B_Failed, C_Failed, E_Failed
 (199)[3.1353395304868443]A_Failed, B_Failed, E_Failed, F_Failed
@@ -449,7 +449,7 @@ A_Failed Occurred 6347 times, Rate =0.6347, MeanTime = 01.17:12:53 +/- 01.04:01:
 (61)[0.9610839766818969]A_Failed, F_Failed
 (67)[1.0556168268473296]B_Failed, F_Failed
 (65)[1.0241058767921853]C_Failed, D_Failed
-C_Failed Occurred 6275 times, Rate =0.6275, MeanTime = 01.17:48:30 +/- 01.04:06:08.24
+C_Failed Occurred 6275 times, Rate =0.6275, MeanTime = 01.17:48:30 +/- 01.15:44:33.19
 (113)[1.800796812749004]A_Failed, B_Failed, C_Failed
 (252)[4.01593625498008]A_Failed, B_Failed, C_Failed, E_Failed
 (199)[3.1713147410358564]A_Failed, B_Failed, E_Failed, F_Failed
@@ -513,3 +513,6 @@ C_Failed Occurred 6275 times, Rate =0.6275, MeanTime = 01.17:48:30 +/- 01.04:06:
 (61)[0.9721115537848605]A_Failed, F_Failed
 (67)[1.0677290836653386]B_Failed, F_Failed
 (65)[1.0358565737051793]C_Failed, D_Failed
+---------------------------
+- End Sim Variable Values -
+---------------------------

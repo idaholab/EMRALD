@@ -44,7 +44,7 @@ namespace SimulationDAL
 
   public enum EnStateType { stStart = 0, stStandard, stKeyState, stTerminal };
   public enum EnActionType { atTransition = 0, atCngVarVal, at3DSimMsg, atRunExtApp, atCustomStateShift, atJumpToTime };
-  public enum EnModifiableTypes { mtNone = 0, mtVar, mtComp, mtState };
+  public enum EnModifiableTypes { mtNone = 0, mtVar, mtComp, mtState, mtExtEv };
   public enum EnFailType { ftFailToStart = 0, ftFailToRun }
 
   [JsonConverter(typeof(StringEnumConverter))]
@@ -225,9 +225,9 @@ namespace SimulationDAL
 
     public static EnEventType EvClass_To_EnEventType(Event evItem)
     {
-      if ((evItem is EvalVarEvent) && (((EvalVarEvent)evItem).sim3dID != null))
+      if (evItem is ExtSimEv)
         return EnEventType.et3dSimEv;
-      else if ((evItem is EvalVarEvent) && (((EvalVarEvent)evItem).sim3dID == null))
+      else if (evItem is EvalVarEvent)
         return EnEventType.etVarCond;
       else if (evItem is StateCngEvent)
         return EnEventType.etStateCng;
@@ -246,20 +246,27 @@ namespace SimulationDAL
 
     public static TimeSpan NumberToTimeSpan(double number, EnTimeRate timeRate)
     {
-      switch (timeRate)
+      try
       {
-        case EnTimeRate.trYears:
-          return TimeSpan.FromDays(number * 365);
-        case EnTimeRate.trDays:
-          return TimeSpan.FromDays(number);
-        case EnTimeRate.trHours:
-          return TimeSpan.FromHours(number);
-        case EnTimeRate.trMinutes:
-          return TimeSpan.FromMinutes(number);
-        case EnTimeRate.trSeconds:
-          return TimeSpan.FromSeconds(number);
-        default:
-          throw new Exception("Invalid time rate");
+        switch (timeRate)
+        {
+          case EnTimeRate.trYears:
+            return TimeSpan.FromDays(number * 365);
+          case EnTimeRate.trDays:
+            return TimeSpan.FromDays(number);
+          case EnTimeRate.trHours:
+            return TimeSpan.FromHours(number);
+          case EnTimeRate.trMinutes:
+            return TimeSpan.FromMinutes(number);
+          case EnTimeRate.trSeconds:
+            return TimeSpan.FromSeconds(number);
+          default:
+            throw new Exception("Invalid time rate");
+        }
+      }
+      catch
+      {
+        return TimeSpan.MaxValue;
       }
 
     }

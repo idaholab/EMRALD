@@ -15,6 +15,9 @@ using NLog;
 using SimulationDAL;
 using Newtonsoft.Json;
 using MathNet.Numerics.Statistics;
+using System.Threading;
+using Matrix.Xmpp.XHtmlIM;
+using System.Xml.Linq;
 
 namespace SimulationEngine
 {
@@ -87,6 +90,7 @@ namespace SimulationEngine
     private string _keyPathsOutput = "";
     public bool batchSuccess = false;
     private Progress _progress = null;
+    private int _pathResultsInterval = -1;
 
     //public Dictionary<string, double> variableVals { get { return _variableVals; } }
     public Dictionary<string, FailedItems> keyFailedItems = new Dictionary<string, FailedItems>(); //key = StateName, value = cut sets
@@ -101,12 +105,13 @@ namespace SimulationEngine
     private string _error = "";
     public string error { get { return _error; } }
 
-    public ProcessSimBatch(EmraldModel lists, TimeSpan endtime, string resultFile, string jsonResPaths)
+    public ProcessSimBatch(EmraldModel lists, TimeSpan endtime, string resultFile, string jsonResPaths, int pathResultsInterval)
     {
       this._lists = lists;
       this._endTime = endtime;
       this._resultFile = resultFile;
       this._jsonResultPaths = jsonResPaths;
+      this._pathResultsInterval = pathResultsInterval;
       this.progressCallback = LogResults;
     }
 
@@ -218,13 +223,15 @@ namespace SimulationEngine
       TimeSpan resTime = stopWatch.Elapsed;
       int actRuns = 0;
       int curI = 0;
+      if (_pathResultsInterval < 1)
+        _pathResultsInterval = _numRuns;
 
       StreamWriter pathOutputFile = null;
       if (!string.IsNullOrEmpty(_keyPathsOutput)) 
         pathOutputFile = new StreamWriter(_keyPathsOutput, append: false);
 
       //if user defined the seed then reset random so that seed is used.
-      if (ConfigData.seed != null)
+      if ((ConfigData.seed != null) && (ConfigData.seed >= 0))
         SingleRandom.Reset();
 
       //make a list of result items for each key state.
@@ -237,6 +244,12 @@ namespace SimulationEngine
         _lists.allVariables.ReInitAll();
         _lists.curRunIdx = 0;
 
+        SimulationTracking.StateTracker trackSim;
+        if (_msgServer == null)
+          trackSim = new SimulationTracking.StateTracker(_lists, _endTime, 0, null, _numRuns);
+        else
+          trackSim = new SimulationTracking.StateTracker(_lists, _endTime, _frameRate, _msgServer, _numRuns);
+
         for (int i = 1; i <= _numRuns; ++i)
         {
           SetLog(i);
@@ -245,14 +258,7 @@ namespace SimulationEngine
 
           curI = i;
           if (_stop)
-            break;
-
-          SimulationTracking.StateTracker trackSim;
-
-          if (_msgServer == null)
-            trackSim = new SimulationTracking.StateTracker(_lists, _endTime, 0, null);
-          else
-            trackSim = new SimulationTracking.StateTracker(_lists, _endTime, _frameRate, _msgServer);
+            break;          
 
           //trackSim.logFunc = logFunc;
 
@@ -274,41 +280,41 @@ namespace SimulationEngine
               pathOutputFile.WriteLine("Run - " + i.ToString());
             }
 
-            trackSim.GetKeyPaths(keyPaths, otherPaths);
+            trackSim.GetKeyPaths(keyPaths, otherPaths, logVarVals);
             
             foreach (SimulationEngine.ResultStateBase path in keyPaths.Values)
             {
               string keyStateName = path.name;
 
-              if (logVarVals.Count > 0)
-              {
-                Dictionary<string, List<string>> varDict;
-                if (!_variableVals.TryGetValue(keyStateName, out varDict))
+                if (logVarVals.Count > 0)
                 {
-                  varDict = new Dictionary<string, List<string>>();
-                  _variableVals.Add(keyStateName, varDict);
-                }
-
-                List<string> varVals;
-
-                foreach (string varName in logVarVals)
-                {
-                  SimVariable curVar = _lists.allVariables.FindByName(varName);
-                  if (curVar == null)
+                  Dictionary<string, List<string>> varDict;
+                  if (!_variableVals.TryGetValue(keyStateName, out varDict))
                   {
-                    this._error = "No variable found named - " + varName;
-                    logger.Error(this.error);
+                    varDict = new Dictionary<string, List<string>>();
+                    _variableVals.Add(keyStateName, varDict);
                   }
 
-                  if (!varDict.TryGetValue(varName, out varVals))
-                  {
-                    varVals = new List<string>();
-                    varDict.Add(varName, varVals);
-                  }
+                  List<string> varVals;
 
-                  varVals.Add(curVar.strValue);
+                  foreach (string varName in logVarVals)
+                  {
+                    SimVariable curVar = _lists.allVariables.FindByName(varName);
+                    if (curVar == null)
+                    {
+                      this._error = "No variable found named - " + varName;
+                      logger.Error(this.error);
+                    }
+
+                    if (!varDict.TryGetValue(varName, out varVals))
+                    {
+                      varVals = new List<string>();
+                      varDict.Add(varName, varVals);
+                    }
+
+                    varVals.Add(curVar.strValue);
+                  }
                 }
-              }
 
               if (_logFailedComps && (failedComps.Length > 0))
               {
@@ -321,6 +327,8 @@ namespace SimulationEngine
             }
           }
 
+          
+
           if (((stopWatch.Elapsed - resTime) > TimeSpan.FromSeconds(1)) && (i > 0))
           {
             stopWatch.Stop();
@@ -332,7 +340,15 @@ namespace SimulationEngine
           actRuns = i;
 
           logger.Info("EndOfRun: " + i);
+
+          if ((i % _pathResultsInterval) == 0)
+          {
+            MakePathResults(curI, false);
+          }
         }
+
+        //send message to all ext sims to terminate
+        trackSim.SendExtSimTerminate();
       }
       catch(Exception e)
       {        
@@ -356,43 +372,142 @@ namespace SimulationEngine
         pathOutputFile.Close();
       progressCallback(stopWatch.Elapsed, actRuns, _logFailedComps);
 
-      if (_jsonResultPaths != "")
-      { 
-        OverallResults resultObj = new OverallResults();
-        resultObj.name = this._lists.name;
-        resultObj.keyStates = keyPaths.Values.ToList();
-        resultObj.otherStatePaths = otherPaths.Values.ToList();
-        resultObj.numRuns = curI;
-        resultObj.CalcStats();
-        Dictionary<string, int> inStateCnts = new Dictionary<string, int>();
-        //foreach (var keyS in resultObj.keyStates)
-        //{
-        //  Dictionary<string, int> depth = new Dictionary<string, int>();
-        //  StateCounts(keyS, inStateCnts, depth);
-        //}
-        foreach (var keyS in resultObj.keyStates)
-        {
-          // Dictionary<string, int> depth = new Dictionary<string, int>();
-          //SetResultStatsRec(keyS, inStateCnts, curI);//, depth);
+      MakePathResults(curI, true);
 
-          if(_variableVals.Count > 0) //if there are any being tracked, they should have a value for each key state.
-            keyS.watchVariables = _variableVals[keyS.name];
-        }
-     
-        string output = JsonConvert.SerializeObject(resultObj, Formatting.Indented);
-        File.WriteAllText(_jsonResultPaths, output);
-        string tempLoc = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\\EMRALD_SANKEY\\";
-        try {
-          if (Directory.Exists(tempLoc)) {
-            Directory.Delete(tempLoc, true);
-          }
-          Directory.CreateDirectory(tempLoc);
-        } catch {}
-        File.WriteAllText(Path.Combine(tempLoc, @"data.js"), @"window.data=" + output);
-        File.Copy(@"./sankey/emrald-sankey-timeline.html", Path.Combine(tempLoc, @"emrald-sankey-timeline.html"));
-        File.Copy(@"./sankey/emrald-sankey-timeline.js", Path.Combine(tempLoc, @"emrald-sankey-timeline.js"));
-      }
+      
+      
+
       batchSuccess = retVal;
+    }
+
+    //protected virtual bool IsFileLocked(FileInfo file)
+    //{
+    //  try
+    //  {
+    //    using (FileStream stream = file.Open(FileMode.Open, FileAccess.Read, FileShare.None))
+    //    {
+    //      stream.Close();
+    //    }
+    //  }
+    //  catch (IOException)
+    //  {
+    //    //the file is unavailable because it is:
+    //    //still being written to
+    //    //or being processed by another thread
+    //    //or does not exist (has already been processed)
+    //    return true;
+    //  }
+
+    //  //file is not locked
+    //  return false;
+    //}
+    private static ReaderWriterLockSlim _readWriteLock = new ReaderWriterLockSlim();
+
+    public void WriteToFileThreadSafe(string path, string text)
+    {
+      // Set Status to Locked
+      _readWriteLock.EnterWriteLock();
+      try
+      {
+        if(File.Exists(path))
+        {
+          bool deleted = false;
+          while (!deleted)
+          {
+            try
+            {
+              File.Delete(path);
+              deleted = true;
+            }
+            catch { };
+          }
+
+        }
+        // Append text to the file
+        using (StreamWriter sw = File.AppendText(path))
+        {
+          sw.WriteLine(text);
+          sw.Close();
+        }
+      }
+      finally
+      {
+        // Release lock
+        _readWriteLock.ExitWriteLock();
+      }
+    }
+
+    private bool MakePathResults(int curIdx, bool makeSankey)
+    {
+      try
+      {
+        if (_jsonResultPaths != "")
+        {
+          OverallResults resultObj = new OverallResults();
+          resultObj.name = this._lists.name;
+          resultObj.keyStates = keyPaths.Values.ToList();
+          resultObj.otherStatePaths = otherPaths.Values.ToList();
+          resultObj.numRuns = curIdx;
+          resultObj.CalcStats();
+          Dictionary<string, int> inStateCnts = new Dictionary<string, int>();
+          //foreach (var keyS in resultObj.keyStates)
+          //{
+          //  Dictionary<string, int> depth = new Dictionary<string, int>();
+          //  StateCounts(keyS, inStateCnts, depth);
+          //}
+          foreach (var keyS in resultObj.keyStates)
+          {
+            // Dictionary<string, int> depth = new Dictionary<string, int>();
+            //SetResultStatsRec(keyS, inStateCnts, curI);//, depth);
+
+            if (_variableVals.Count > 0) //if there are any being tracked, they should have a value for each key state.
+              keyS.watchVariables = _variableVals[keyS.name];
+          }
+
+          string output = JsonConvert.SerializeObject(resultObj, Formatting.Indented);
+          //if (File.Exists(_jsonResultPaths))
+          //{
+          //  bool locked = true;
+          //  while (locked)
+          //  { 
+          //    locked = IsFileLocked(new FileInfo(_jsonResultPaths));
+          //  }
+          //}
+          //File.WriteAllText(_jsonResultPaths, output);
+          WriteToFileThreadSafe(_jsonResultPaths, output);
+
+          //set up the sankey file to view results
+          if (makeSankey)
+          {
+            string tempLoc = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\\EMRALD_SANKEY\\";
+            try
+            {
+              if (Directory.Exists(tempLoc))
+              {
+                Directory.Delete(tempLoc, true);
+              }
+              Directory.CreateDirectory(tempLoc);
+
+              File.WriteAllText(Path.Combine(tempLoc, @"data.js"), @"window.data=" + output);
+            }
+            catch
+            {
+              File.WriteAllText(Path.Combine(tempLoc, @"data.js"), @"window.data= ");
+            }
+
+            File.Copy(@"./sankey/emrald-sankey-timeline.html", Path.Combine(tempLoc, @"emrald-sankey-timeline.html"));
+            File.Copy(@"./sankey/emrald-sankey-timeline.js", Path.Combine(tempLoc, @"emrald-sankey-timeline.js"));
+          }
+        }
+      }
+      catch (Exception e)
+      {
+        _error = "Error writing path results file - " + Environment.NewLine + e.InnerException;
+        Console.Write(_error);
+        logger.Info(_error);
+        return false;
+      }
+      return true;
     }
 
     /// <summary>
@@ -451,7 +566,7 @@ namespace SimulationEngine
     //  //depths[curRes.name] -= 1;
     //}
 
-    public void LogResults(TimeSpan runTime, int runCnt, bool finalValOnly)
+    public void LogResults(TimeSpan runTime, int runCnt, bool logFailedComps)
     {
       if (_progress != null)
       { 
@@ -473,8 +588,8 @@ namespace SimulationEngine
         {
           File.AppendAllText(_resultFile, item.Key + " Occurred " + item.Value.count.ToString() + " times, Rate =" + (item.Value.count / (double)runCnt).ToString() + 
             ", MeanTime = " + item.Value.timeMean.ToString(@"dd\.hh\:mm\:ss") + " +/- " + item.Value.timeStdDeviation.ToString(@"dd\.hh\:mm\:ss\.ff") + Environment.NewLine, Encoding.UTF8);
-          //todo write the failed components and times.
-          if (keyFailedItems.ContainsKey(item.Key))
+          //write the failed components and times.
+          if (logFailedComps && keyFailedItems.ContainsKey(item.Key))
           {
             foreach (var cs in keyFailedItems[item.Key].compFailSets)
             {
@@ -502,35 +617,44 @@ namespace SimulationEngine
           {
             //List<double> varVals;
             File.AppendAllText(_resultFile, "- Variable Values - " + Environment.NewLine, Encoding.UTF8);
-            if (!finalValOnly || (item.Value == lastItem.Value))
+            //write the name of each variable for header
+            string varNames = "Run Idx, " + string.Join(", ", varDict.Keys.ToList());
+            File.AppendAllText(_resultFile, varNames + Environment.NewLine, Encoding.UTF8);
+
+
+            for (int row = 0; row < runCnt; row++)
             {
+              string varValues = (row +1).ToString();
               foreach (var varValItem in varDict)
               {
-                string varName = varValItem.Key;
-                string varValues = "";
-                if (finalValOnly)
-                  varValues = varValItem.Value.Last<string>().ToString();
-                else
-                  varValues = string.Join(",", varValItem.Value);
-                File.AppendAllText(_resultFile, varName + " = " + varValues + Environment.NewLine, Encoding.UTF8);
+                //get the value for each variable in a row 
+                varValues = varValues + ", " + varValItem.Value[row];
               }
+              File.AppendAllText(_resultFile, varValues + Environment.NewLine, Encoding.UTF8);
             }
           }
         }
       }
     }
 
-    public List<string> GetVarValues(List<string> varNames, bool log = false)
+    public List<string> GetVarValues(List<string> varNames, bool finalLog = false)
     {
       List<string> retVals = new List<string>();
-      foreach(string name in varNames)
+      if (finalLog)
+      {
+        File.AppendAllText(_resultFile, "---------------------------" + Environment.NewLine, Encoding.UTF8);
+        File.AppendAllText(_resultFile, "- End Sim Variable Values -" + Environment.NewLine, Encoding.UTF8);
+        File.AppendAllText(_resultFile, "---------------------------" + Environment.NewLine, Encoding.UTF8);
+      }
+
+      foreach (string name in varNames)
       {
         string val = _lists.allVariables.FindByName(name).strValue;
         retVals.Add(val);
 
-        if (log)
+        if (finalLog)
         {
-          File.AppendAllText(_resultFile, name + " - " + val.ToString()  + Environment.NewLine, Encoding.UTF8);
+          File.AppendAllText(_resultFile, name + " = " + val.ToString()  + Environment.NewLine, Encoding.UTF8);
         }
       }
 

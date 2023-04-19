@@ -1,0 +1,114 @@
+{
+  "name": "VarTimeCngTest",
+  "numRuns": 10,
+  "keyStates": [
+    {
+      "name": "Failed",
+      "contributionRate": 1.0,
+      "cRate5th": 1.0,
+      "cRate95th": 1.0,
+      "count": 10,
+      "timeMean": "1.00:06:24.6278536",
+      "timeStdDeviation": "01:44:24.0514407",
+      "timeMin": "21:58:54.9616136",
+      "timeMax": "1.02:13:24.0427173",
+      "watchVariables": {},
+      "paths": [
+        {
+          "name": "Start",
+          "contributionRate": 1.0,
+          "cRate5th": 1.0,
+          "cRate95th": 1.0,
+          "count": 10,
+          "timeMean": "00:00:00",
+          "timeStdDeviation": "00:00:00",
+          "timeMin": "00:00:00",
+          "timeMax": "00:00:00",
+          "watchVariables": {},
+          "entries": [],
+          "exits": [
+            {
+              "desc": "Event [VarTimeFail] occured and caused the action - Goto_Failed",
+              "name": "VarTimeFail & Goto_Failed",
+              "evDesc": "",
+              "actDesc": "",
+              "otherState": "Failed",
+              "cnt": 10
+            }
+          ]
+        },
+        {
+          "name": "Failed",
+          "contributionRate": 1.0,
+          "cRate5th": 1.0,
+          "cRate95th": 1.0,
+          "count": 10,
+          "timeMean": "1.00:06:24.6278536",
+          "timeStdDeviation": "01:44:24.0514407",
+          "timeMin": "21:58:54.9616136",
+          "timeMax": "1.02:13:24.0427173",
+          "watchVariables": {},
+          "entries": [
+            {
+              "desc": "Event [VarTimeFail] occured and caused the action - Goto_Failed",
+              "name": "VarTimeFail & Goto_Failed",
+              "evDesc": "",
+              "actDesc": "",
+              "otherState": "Start",
+              "cnt": 10
+            }
+          ],
+          "exits": []
+        }
+      ]
+    }
+  ],
+  "otherStatePaths": [
+    {
+      "name": "Start",
+      "contributionRate": 0.0,
+      "cRate5th": 0.0,
+      "cRate95th": 0.0,
+      "count": 10,
+      "timeMean": "00:00:00",
+      "timeStdDeviation": "00:00:00",
+      "timeMin": "00:00:00",
+      "timeMax": "00:00:00",
+      "watchVariables": {},
+      "entries": [],
+      "exits": [
+        {
+          "desc": "Event [FiveMin] occured and caused the action - Goto_SomeEvent",
+          "name": "FiveMin & Goto_SomeEvent",
+          "evDesc": "",
+          "actDesc": "",
+          "otherState": "SomeEvent",
+          "cnt": 10
+        }
+      ]
+    },
+    {
+      "name": "SomeEvent",
+      "contributionRate": 0.0,
+      "cRate5th": 0.0,
+      "cRate95th": 0.0,
+      "count": 10,
+      "timeMean": "00:05:00",
+      "timeStdDeviation": "00:00:00",
+      "timeMin": "00:05:00",
+      "timeMax": "00:05:00",
+      "watchVariables": {},
+      "entries": [
+        {
+          "desc": "Event [FiveMin] occured and caused the action - Goto_SomeEvent",
+          "name": "FiveMin & Goto_SomeEvent",
+          "evDesc": "",
+          "actDesc": "",
+          "otherState": "Start",
+          "cnt": 10
+        }
+      ],
+      "exits": []
+    }
+  ]
+}

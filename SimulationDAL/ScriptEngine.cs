@@ -142,9 +142,18 @@ namespace ScriptEngineNS
                       .GetAssemblies()
                       .Where(a => !a.IsDynamic)
                       .Select(a => a.Location);
+
+      var necessaryAssemblies = new List<string>()
+      {
+          "System.Runtime.dll",  // For Object, Decimal, and general running
+          "Newtonsoft.Json.dll", // Newtonsoft stuff
+          "System.Console.dll", // For Writing to Console
+          "System.Private.CoreLib.dll", // For Object, Int32, String, List, etc.
+          "netstandard.dll" // Also for Object
+      };
       foreach (var item in assemblies)
       {
-        if (!item.Contains("xunit") && (item != "") && File.Exists(item)) 
+        if (necessaryAssemblies.Any(x => item.Contains(x)) && File.Exists(item))
         {
           references.Add(MetadataReference.CreateFromFile(item));
           added.Add(Path.GetFileName(item));

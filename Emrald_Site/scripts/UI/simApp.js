@@ -141,10 +141,6 @@ function openProject() {
     if (!evt.target.files || !evt.target.files[0]) return;
     var afile = evt.target.files[0];
     var el = document.getElementById("project_name");
-    var aname = afile.name.substring(0, afile.name.indexOf('.'));
-    if (aname == "") aname = afile.name;
-    if (el)
-      el.innerText = aname;
     var ext = /\.[0-9a-z]+$/.exec(afile.name);
     ext = ext && ext.length > 0 ? ext[0] : "";
     switch (ext) {
@@ -152,6 +148,15 @@ function openProject() {
         var reader = new FileReader();
         reader.onload = function (evt) {
           var content = evt.target.result;
+          var modelName = JSON.parse(content)['name'];
+
+          if (el)
+            el.innerText = modelName;
+
+          var filename = document.getElementById("filename");
+          if(filename)
+            filename.innerText = afile.name;
+
           simApp.mainApp.loadSidebar(content);
         }.bind(this);
         reader.readAsText(afile);
@@ -218,14 +223,7 @@ function loadTemplate() {
       return;
     }
     const afile = evt.target.files[0];
-    const el = document.getElementById('project_name');
-    let aname = afile.name.substring(0, afile.name.indexOf('.'));
-    if (aname === '') {
-      aname = afile.name;
-    }
-    if (el) {
-      el.innerText = aname;
-    }
+   
     let ext = /\.[0-9a-z]+$/.exec(afile.name);
     ext = ext && ext.length > 0 ? ext[0] : '';
     switch (ext) {
@@ -341,7 +339,7 @@ function openSankey() {
       const wnd = mxWindow.createFrameWindow(
         'sankey/emrald-sankey-timeline.html',
         'OK',
-        'close',
+        'minimize, maximize, close',
         (btn) => {
           if (btn === 'OK') {
             console.log('OK');
@@ -554,6 +552,11 @@ var simApp;
       var titleEl = document.getElementById("project_name");
       if (titleEl) {
         titleEl.innerText = atitle;
+
+        if (atitle != 'Click Here to Name Project') {
+          var filename = document.getElementById("filename");
+          filename.innerText = atitle + ".json";
+        }
       }
     }
     SimApp.prototype.makeProjectNameEditable = function() {
