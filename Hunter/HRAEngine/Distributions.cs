@@ -1,7 +1,7 @@
 ﻿using CommonDefLib;
 using MathNet.Numerics.Distributions;
 
-namespace Hunter.Hra
+namespace Hunter.Hra.Distributions
 {
     /// <summary>
     /// Represents an abstract distribution handler, which is responsible for sampling time values based on different distributions.

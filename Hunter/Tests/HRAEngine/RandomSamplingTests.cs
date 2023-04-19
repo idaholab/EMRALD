@@ -1,6 +1,6 @@
 ﻿using NUnit.Framework;
 using CommonDefLib;
-using Hunter.Hra;
+using Hunter.Hra.Distributions;
 
 namespace Hunter.Tests.HumanReliabilityAnalysisEngine
 {
@@ -23,7 +23,6 @@ namespace Hunter.Tests.HumanReliabilityAnalysisEngine
             double thirdSample = NormalDistributionHandler.SampleNormalTime(mean, std);
 
             TestContext.Out.WriteLine($"Random Sequence: {firstSample}, {secondSample}, {thirdSample}");
-
 
             Assert.AreEqual(firstSample, 9.555961172814055, 0.0001);
             Assert.AreEqual(secondSample, 9.712146815037777, 0.0001);

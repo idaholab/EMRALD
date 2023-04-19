@@ -4,9 +4,9 @@ using CommonDefLib;
 using Newtonsoft.Json.Converters;
 using Hunter.Utils;
 using Hunter.Psf;
-using static Hunter.Hra.HRAEngine;
 using Hunter.Proc;
 using Hunter.Model;
+using Hunter.Hra.Distributions;
 
 namespace Hunter.Hra
 {
@@ -17,7 +17,7 @@ namespace Hunter.Hra
         Exponential
     }
 
-    public class HRAEngine : IEnumerable<Primitive>
+    public class HRAEngine : IEnumerable<HRAEngine.Primitive>
     {
         public struct Primitive
         {
