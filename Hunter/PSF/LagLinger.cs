@@ -16,6 +16,7 @@ namespace Hunter.Psf
         public double tLag { get; set; } // Lag Time Constant
         public double tLinger { get; set; } // Linger Time Constant
 
+        private double _t = -1;
         private double _fK = 1;
 
         public LagLinger(double tLag = 3600, double tLinger = 7400)
@@ -34,21 +35,24 @@ namespace Hunter.Psf
             {
                 tReturn = null;
             }
+            _t  = t;
         }
 
         public void TriggerLinger(double t)
         {
             tReturn = t + tLinger;
             K = _fK;
+            _t = t;
         }
 
         public double getValue(double t)
         {
-            
+
             // TriggerLag has not been called
             if (K is null)
             {
                 _fK = 1;
+                _t = t;
                 return _fK;
             }
 
@@ -73,6 +77,8 @@ namespace Hunter.Psf
                     K = null;
                     _fK = Math.Max(_fK, 1);
                 }
+
+                _t = t;
                 return _fK;
             }
 
@@ -81,17 +87,19 @@ namespace Hunter.Psf
             {
                 _fK = ((K.Value - 1) / Math.Log(tLag + 1)) *
                     Math.Log(x + 1) + 1;
+                _t = t;
                 return _fK;
-
             } 
             // in sustain phase
             else if (x >= tLag && x < tAvail)
             {
                 _fK = K.Value;
+                _t = t;
                 return _fK;
             }
 
             _fK = 1;
+            _t = t;
             return _fK;
 
         }

@@ -1578,8 +1578,7 @@ namespace SimulationDAL
 
     public void InjectHunterVariables(HunterModel hunterModel)
     {
-      HRAEngine hraEngine = hunterModel.CreateOperator();
-      foreach (PSF psf in hraEngine.psfCollection)
+      foreach (PSF psf in hunterModel._engine.psfCollection)
       {
         foreach (PSF.Level level in psf.Levels)
         {

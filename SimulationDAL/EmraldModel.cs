@@ -156,6 +156,7 @@ namespace SimulationDAL
       {
         string hModelStr = dynObj.HunterModel.ToString();
         hunterModel = HunterModel.DeserializeJSON(hModelStr);
+        hunterModel.LoadEngine();
         this.allVariables.InjectHunterVariables(hunterModel);
       }
 

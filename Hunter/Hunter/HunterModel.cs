@@ -9,6 +9,9 @@ namespace Hunter.Model
         public HunterSnapshot Snapshot { get; set; }
         public HunterTask Task { get; set; }
 
+        [JsonIgnore]
+        public HRAEngine _engine;
+
         public static HunterModel FromHunterModelFilename(string filename)
         {
             string json = File.ReadAllText(filename);
@@ -19,6 +22,11 @@ namespace Hunter.Model
                 ProcedureCatalog = ProceduresFactory.FromHunterModelFilename(filename)
             };
             return model;
+        }
+
+        public void LoadEngine()
+        {
+            _engine = HunterFactory.CreateOperator(Snapshot);
         }
 
         public HRAEngine CreateOperator()

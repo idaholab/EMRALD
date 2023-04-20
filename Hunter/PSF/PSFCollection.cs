@@ -14,6 +14,9 @@ namespace Hunter.Psf
 
         private readonly Dictionary<string, PSF> _psfs;
 
+        [JsonIgnore]
+        public HRAEngine _hraEngine { get; set; }
+
         public PSFCollection(string filePath = null)
         {
             _psfs = new Dictionary<string, PSF>();
@@ -28,13 +31,13 @@ namespace Hunter.Psf
             }
 
             string jsonData = File.ReadAllText(filePath);
-            List<PSF> psfList = 
-                JsonConvert.DeserializeObject<List<PSF>>(jsonData);
+            List<PSF> psfList = JsonConvert.DeserializeObject<List<PSF>>(jsonData);
             foreach (PSF psf in psfList)
             {
                 _psfs.Add(psf.Id, psf);
                 psf.ValidateAgainstStaticEnums();
             }
+            SetReferences();
         }
 
         public PSF this[string id]
@@ -48,6 +51,14 @@ namespace Hunter.Psf
         }
 
         private Dictionary<string, object> _context;
+
+        private void SetReferences()
+        {
+            foreach (PSF psf in this)
+            {
+                _psfs[psf.Id]._psfCollection = this;
+            }
+        }
 
         public void SetContext(Dictionary<string, object> context)
         {

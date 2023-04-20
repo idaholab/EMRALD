@@ -60,7 +60,10 @@ namespace Hunter.Hra
 
         private PSFCollection _psfCollection;
         public PSFCollection psfCollection { get { return _psfCollection; } }
-        internal void SetPSFCollection(PSFCollection value) { _psfCollection = value; }
+        internal void SetPSFCollection(PSFCollection value) { 
+            _psfCollection = value; 
+            _psfCollection._hraEngine = this;
+        }
 
         /// <summary>
         /// Gets or sets a value indicating whether to repeat <see cref="EvalStep"/> until all primitives are completed (default is false).

@@ -1304,27 +1304,6 @@ namespace SimulationDAL
       if (EnEventType.etHRAEval != (EnEventType)Enum.Parse(typeof(EnEventType), (string)dynObj.evType, true))
         throw new Exception("event types do not match, cannot change the type once an item is created!");
 
-      
-      ////read the HRA specific items that are not references to other items
-      //try
-      //{
-      //  _hunterModelFilename = (string)dynObj.hraTaskModelFile;
-      //  if (!Path.IsPathRooted(_hunterModelFilename))
-      //  {
-      //    _hunterModelFilename = System.IO.Directory.GetCurrentDirectory() + _hunterModelFilename;
-      //  }
-
-      //  if (!File.Exists(this._hunterModelFilename))
-      //    throw new Exception();
-      //}
-      //catch
-      //{
-      //  throw new Exception("Missing the hraTaskModelFile for " + this.name);
-      //}
-
-      //_hunterModelJson = HunterModel.FromHunterModelFilename(_hunterModelFilename)
-      //                              .GetJSON();
-
       if (dynObj.procedureName == null)
         throw new Exception("Missing procedure name for HRA event - " + this.name );
       else
@@ -1387,18 +1366,17 @@ namespace SimulationDAL
       {
         throw new Exception("Missing the hunter model");
       }
-      HRAEngine hraEngine = _hunterModel.CreateOperator();
 
       //TODO setup the contextVarables
-      hraEngine.SetContext(_contextVariables.ToDictionary(
+      _hunterModel._engine.SetContext(_contextVariables.ToDictionary(
         kvp => kvp.Key,
         kvp => kvp.Value.GetValue() as object
       ));
 
       //Call the HRA library to determine the time of the event
-      retVal = hraEngine.EvaluateSteps(_hunterModel.Task.ProcedureCatalog, _procedureName, _startStep, _endStep);
+      retVal = _hunterModel._engine.EvaluateSteps(_hunterModel.Task.ProcedureCatalog, _procedureName, _startStep, _endStep);
 
-      bool? success = hraEngine.CurrentSuccess;
+      bool? success = _hunterModel._engine.CurrentSuccess;
       // success == null means HEP = 1.0
       // success == true means operator succeeded
       // success == false means operator failed

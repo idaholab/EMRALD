@@ -36,11 +36,46 @@ namespace Hunter.Psf
         [JsonProperty("is_static", DefaultValueHandling = DefaultValueHandling.Populate)]
         public bool IsStatic { get; set; } = false;
 
+        [JsonProperty("is_lag_linger", DefaultValueHandling = DefaultValueHandling.Populate)]
+        public bool IsLagLinger { get; set; } = false;
+
         [JsonProperty("initial_level")]
         public string? InitialLevel { get; set; }
 
         [JsonIgnore]
-        public Level CurrentLevel { get; set; }
+        private Level _currentLevel;
+
+        [JsonIgnore]
+        public Level CurrentLevel
+        {
+            get { return _currentLevel; }
+            set
+            {
+                _currentLevel = value;
+
+                if (IsLagLinger)
+                {
+                    if (_currentLevel.Multiplier > 1)
+                    { 
+                        _lagLinger.TriggerLag(t: _t, k: _currentLevel.Multiplier);
+                    }
+                    else if (_currentLevel.Multiplier == 1)
+                    {
+                        _lagLinger.TriggerLinger(t: _t);
+                    }
+                }
+            }
+        }
+
+        private LagLinger _lagLinger;
+
+        [JsonIgnore]
+        public PSFCollection _psfCollection { get; set; }
+
+
+        [JsonIgnore]
+        private double _t => _psfCollection?._hraEngine?.TimeOnShift.TotalSeconds ?? -1;
+
 
         public class Level
         {
@@ -52,10 +87,13 @@ namespace Hunter.Psf
 
             [JsonProperty("time_multiplier")]
             public double? TimeMultiplier { get; set; } = null;
+
+            [JsonIgnore]
+            public PSF? _psf;
         }
 
         public PSF(OperationType type, string factor, List<Level> levels, string id, 
-            string initialLevelName = null, bool isStatic = false)
+            string initialLevelName = null, bool isStatic = false, bool isLagLinger = false)
         {
             Operation = type;
             Factor = factor;
@@ -63,17 +101,41 @@ namespace Hunter.Psf
             Id = id;
             IsStatic = isStatic;
             InitialLevel = initialLevelName;
+            IsLagLinger = isLagLinger;
             CalculateInitialLevel();
             SetUpdateStrategy();
-        }
 
+            if (IsLagLinger)
+            {
+                _lagLinger = new LagLinger();
+            }
+
+            SetReferences();
+        }
+             
 
         [OnDeserialized]
         private void OnDeserialized(StreamingContext context)
         {
             CalculateInitialLevel();
             SetUpdateStrategy();
+
+            if (IsLagLinger)
+            {
+                _lagLinger = new LagLinger();
+            }
+
+            SetReferences();
         }
+
+        private void SetReferences()
+        {
+            for (int i = 0; i < Levels.Count; i++)
+            {
+                Levels[i]._psf = this;
+            }
+        }
+
 
         private void CalculateInitialLevel()
         {
@@ -191,6 +253,11 @@ namespace Hunter.Psf
         {
             get
             {
+                if (IsLagLinger)
+                {
+                    return _lagLinger.getValue(_t);
+                }
+
                 if (CurrentLevel == null)
                 {
                     return 0;

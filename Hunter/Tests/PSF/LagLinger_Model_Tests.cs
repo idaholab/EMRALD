@@ -66,6 +66,7 @@ namespace Hunter.Tests.PerformanceShapingFactorTests
             LagLinger _lagLinger1 = new LagLinger();
             LagLinger _lagLinger2 = new LagLinger();
             LagLinger _lagLinger3 = new LagLinger();
+            LagLinger _lagLinger4 = new LagLinger();
 
             double dt = 1;
             double end = 3600 * 5;
