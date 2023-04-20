@@ -378,8 +378,10 @@ namespace SimulationDAL
 
       this.successSpace = (((string)dynObj.onSuccess).ToLower() == "true");
 
-      if(dynObj.triggerOnFalse != null)
+      if (dynObj.triggerOnFalse != null)
         triggerOnFalse = ((bool)dynObj.triggerOnFalse);
+      else if (this.successSpace == true) //old version where success space was just the not of failure space
+        triggerOnFalse = true;
 
       //Now done in LoadObjLinks()
       //if ((dynObj.logicTop != null) || (dynObj.LogicTop == 0))
