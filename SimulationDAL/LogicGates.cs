@@ -301,26 +301,7 @@ namespace SimulationDAL
 
     public int Evaluate(MyBitArray curStates, bool success)
     {
-      int retVal;
-      int cnt = 0;
-
-      switch (gateType)
-      {
-        case EnGateType.gtAnd:
-        case EnGateType.gtNot:
-          retVal = 1;
-          break;
-
-        case EnGateType.gtOr:
-        case EnGateType.gtNofM:
-          retVal = 0;
-          break;
-
-        default:
-          retVal = 0;
-          break;
-      }
-
+      int retVal = 0;
       int evalSum = 0;
       int unknownCnt = 0;
       //go through all the child item both components and gates
@@ -363,7 +344,7 @@ namespace SimulationDAL
           break;
 
         case EnGateType.gtOr:
-          return evalSum > 0 ? 0 : 1; //if no 1's return false. Treat unknowns as false so they are ignored
+          return evalSum > 0 ? 1 : 0; //if no 1's return false. Treat unknowns as false so they are ignored
           break;
 
         case EnGateType.gtNot:
@@ -371,9 +352,9 @@ namespace SimulationDAL
 
         case EnGateType.gtNofM:
           return evalSum > val1 ? 1 : 0;
+        default:
+          throw new Exception("Gate not defined to evaluate");
       }
-
-      return retVal;
     }
 
     public void AddGateChild(LogicNode child)
