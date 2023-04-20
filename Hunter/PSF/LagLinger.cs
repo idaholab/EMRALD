@@ -65,6 +65,14 @@ namespace Hunter.Psf
             if (tReturn != null)
             {
                 _fK = Math.Exp(-(Math.Log(K.Value) / tLinger) * (t - (double)tReturn));
+
+                // returned to K = 1
+                if (_fK < 1.0)
+                {
+                    tReturn = null;
+                    K = null;
+                    _fK = Math.Max(_fK, 1);
+                }
                 return _fK;
             }
 

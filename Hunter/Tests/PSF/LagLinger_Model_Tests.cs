@@ -68,7 +68,7 @@ namespace Hunter.Tests.PerformanceShapingFactorTests
             LagLinger _lagLinger3 = new LagLinger();
 
             double dt = 1;
-            double end = 3600 * 6;
+            double end = 3600 * 5;
             StringBuilder csvData = new StringBuilder();
 
             csvData.AppendLine("Time (s),Available Time Expires before Task Completed,Task Completed before t0 + tLag,Task Completed after t0 + tLag but before Available Time expires");
