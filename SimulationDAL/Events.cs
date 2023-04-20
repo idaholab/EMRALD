@@ -332,6 +332,7 @@ namespace SimulationDAL
   {
     //bool onSuccess;//true if our logic evaluation is looking for a true.
     public bool successSpace = true;
+    public bool triggerOnFalse = false;
     private LogicNode logicTop = null;
 
     //protected override EnModifiableTypes GetModType() { return EnModifiableTypes.mtState; } //the modified items concerned about for component logic are states.
@@ -377,6 +378,9 @@ namespace SimulationDAL
 
       this.successSpace = (((string)dynObj.onSuccess).ToLower() == "true");
 
+      if(dynObj.triggerOnFalse != null)
+        triggerOnFalse = ((bool)dynObj.triggerOnFalse);
+
       //Now done in LoadObjLinks()
       //if ((dynObj.logicTop != null) || (dynObj.LogicTop == 0))
       //{
@@ -409,12 +413,18 @@ namespace SimulationDAL
 
     public override bool EventTriggered(MyBitArray curStates, object otherData, TimeSpan curSimTime, TimeSpan start3DTime, TimeSpan nextEvTime, int runIdx)
     {
-      bool evalRes = logicTop.Evaluate(curStates);
+      bool evalBool = true;
+      int evalRes = logicTop.Evaluate(curStates, successSpace);
+      if((evalRes == 0) || (evalRes == -1)) //false or unknown so dont trigger.
+      {
+        evalBool =  false;
+      }
+      //else should be 1 so value is true
 
-      if (!successSpace)
-        return evalRes;
+      if (triggerOnFalse)
+        return !evalBool;
       else
-        return !evalRes;
+        return evalBool;
     }
 
     public void AutoAddRelatedComponents(LogicNode logicTop)
