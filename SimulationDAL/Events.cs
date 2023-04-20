@@ -409,12 +409,15 @@ namespace SimulationDAL
 
     public override bool EventTriggered(MyBitArray curStates, object otherData, TimeSpan curSimTime, TimeSpan start3DTime, TimeSpan nextEvTime, int runIdx)
     {
-      bool evalRes = logicTop.Evaluate(curStates);
-
-      if (!successSpace)
-        return evalRes;
-      else
-        return !evalRes;
+      int evalRes = logicTop.Evaluate(curStates, successSpace);
+      if((evalRes == 0) || (evalRes == -1)) //false or unknown so dont trigger.
+      {
+        return false;
+      }
+      else //should be 1 so return true
+      {
+        return true;
+      }
     }
 
     public void AutoAddRelatedComponents(LogicNode logicTop)
