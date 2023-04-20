@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 using Hunter.Psf;
 using Hunter.Hra;
 
-namespace Hunter.Tests.PerformanceShapingFactor
+namespace Hunter.Tests.PerformanceShapingFactorTests
 {
     [TestFixture]
     public class PerformanceShapingFactorTests

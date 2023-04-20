@@ -100,7 +100,7 @@ namespace UnitTesting_Simulation
     }
 
     /// <summary>
-    /// Asserts the type of the exception with the expected type (T)
+    /// Asserts the type of the exception with the expected type (t0)
     /// </summary>
     /// <param name="ex">The exception thrown by the method under test.</param>
     /// <param name="inheritanceOptions">The options.</param>
@@ -109,11 +109,11 @@ namespace UnitTesting_Simulation
     private static void AssertExceptionType<T>(Exception ex, ExceptionInheritanceOptions inheritanceOptions)
     {
       Assert.IsType<T>(ex);
-      ////Assert.IsInstanceOfType(ex, typeof(T), "Expected exception type failed.");
+      ////Assert.IsInstanceOfType(ex, typeof(t0), "Expected exception type failed.");
       //switch (inheritanceOptions)
       //{
       //  case ExceptionInheritanceOptions.Exact:
-      //    AssertExceptionNotInherited<T>(ex);
+      //    AssertExceptionNotInherited<t0>(ex);
       //  case ExceptionInheritanceOptions.Inherits:
       //    break;
       //  default:

@@ -154,7 +154,7 @@ namespace SimulationEngine
       //TODO put this back with thread.
       //// Create a new ProcessSimBatch object
       //// This is where the maxTime and outfile_path attributes are used
-      //_simRuns = new ProcessSimBatch(_model, TimeSpan.Parse(_options.runtime), _options.resout, _options.jsonRes);
+      //_simRuns = new ProcessSimBatch(model, TimeSpan.Parse(_options.runtime), _options.resout, _options.jsonRes);
       //if(_options.variables != null)
       //  _simRuns.logVarVals.AddRange(_options.variables);
       //// Submit the runs

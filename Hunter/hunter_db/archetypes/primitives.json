@@ -33,7 +33,7 @@
     "time": 2.14,
     "std": 0.76,
     "nominal_hep": 0.001,
-    "relevant_psfs": [ "Sd", "ATd", "Cd", "Ed", "EaTd", "FfDd", "WPd" ]
+    "relevant_psfs": [ "Sa", "ATa", "Ca", "Ea", "EaTa", "FfDa", "Pa", "WPa" ]
   },
   {
     "operation": "Checking",
@@ -45,7 +45,7 @@
     "time": 4.3,
     "std": 1.5,
     "nominal_hep": 0.01,
-    "relevant_psfs": [ "Sd", "ATd", "Cd", "Ed", "EaTd", "FfDd", "WPd" ]
+    "relevant_psfs": [ "Sa", "ATa", "Ca", "Ea", "EaTa", "FfDa", "Pa", "WPa" ]
   },
   {
     "operation": "Retrieval",
@@ -57,7 +57,7 @@
     "time": 2.11,
     "std": 0.6,
     "nominal_hep": 0.001,
-    "relevant_psfs": [ "Sd", "ATd", "Cd", "Ed", "EaTd", "FfDd", "Pd", "WPd" ]
+    "relevant_psfs": [ "Sa", "ATa", "Ca", "Ea", "EaTa", "FfDa", "Pa", "WPa" ]
   },
   {
     "operation": "Retrieval",
@@ -69,7 +69,7 @@
     "time": 4.2,
     "std": 1.2,
     "nominal_hep": 0.01,
-    "relevant_psfs": [ "Sd", "ATd", "Cd", "Ed", "EaTd", "FfDd", "Pd", "WPd" ]
+    "relevant_psfs": [ "Sa", "ATa", "Ca", "Ea", "EaTa", "FfDa", "Pa", "WPa" ]
   },
   {
     "operation": "InstructionCommunication",
@@ -81,7 +81,7 @@
     "time": 2.46,
     "std": 0.76,
     "nominal_hep": 0.003,
-    "relevant_psfs": [ "Sd", "ATd", "Cd", "Ed", "EaTd", "FfDd", "WPd" ]
+    "relevant_psfs": [ "Sa", "ATa", "Ca", "Ea", "EaTa", "FfDa", "Pa", "WPa" ]
   },
   {
     "operation": "InstructionCommunication",
@@ -93,7 +93,7 @@
     "time": 1.92,
     "std": 0.93,
     "nominal_hep": 0.001,
-    "relevant_psfs": [ "Sa", "ATa", "Ca", "Ea", "EaTa", "FfDa", "WPd" ]
+    "relevant_psfs": [ "Sa", "ATa", "Ca", "Ea", "EaTa", "FfDa", "Pa", "WPa" ]
   },
   {
     "operation": "Selection",
@@ -105,7 +105,7 @@
     "time": 2.93,
     "std": 1.11,
     "nominal_hep": 0.001,
-    "relevant_psfs": [ "Sd", "ATd", "Cd", "Ed", "EaTd", "FfDd", "WPd" ]
+    "relevant_psfs": [ "Sa", "ATa", "Ca", "Ea", "EaTa", "FfDa", "Pa", "WPa" ]
   },
   {
     "operation": "Selection",
@@ -117,7 +117,7 @@
     "time": 6,
     "std": 2.2,
     "nominal_hep": 0.008,
-    "relevant_psfs": [ "Sd", "ATd", "Cd", "Ed", "EaTd", "FfDd", "WPd" ]
+    "relevant_psfs": [ "Sa", "ATa", "Ca", "Ea", "EaTa", "FfDa", "Pa", "WPa" ]
   },
   {
     "operation": "Decision",

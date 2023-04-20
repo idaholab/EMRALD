@@ -1,7 +1,7 @@
 ﻿using NUnit.Framework;
 using Hunter.Psf;
 
-namespace Hunter.Tests.PerformanceShapingFactor
+namespace Hunter.Tests.PerformanceShapingFactorTests
 {
     [TestFixture]
     public class PerformanceShapingFactorCollectionTests

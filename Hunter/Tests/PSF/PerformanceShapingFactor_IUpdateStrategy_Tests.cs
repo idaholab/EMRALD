@@ -8,7 +8,7 @@ using Hunter.Hra;
 
 using NUnit.Framework;
 
-namespace Hunter.Tests.PerformanceShapingFactor
+namespace Hunter.Tests.PerformanceShapingFactorTests
 {
     [TestFixture]
     public class PerformanceShapingFactor_IUpdateStrategy_Tests
@@ -22,7 +22,7 @@ namespace Hunter.Tests.PerformanceShapingFactor
             _psfCollection = new PSFCollection();
 
         }
-
+        
         [Test]
         public void FatigueIndex_Test8h()
         {
