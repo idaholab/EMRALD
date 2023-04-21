@@ -8,10 +8,10 @@
       "cRate5th": 1.0,
       "cRate95th": 1.0,
       "count": 100,
-      "timeMean": "00:17:13.0046182",
-      "timeStdDeviation": "00:08:10.3452483",
-      "timeMin": "00:05:49.1096606",
-      "timeMax": "00:34:57.8299754",
+      "timeMean": "00:16:52.9562769",
+      "timeStdDeviation": "00:07:06.0279756",
+      "timeMin": "00:04:16.8318881",
+      "timeMax": "00:29:12.8316036",
       "watchVariables": {},
       "paths": [
         {
@@ -43,10 +43,10 @@
           "cRate5th": 1.0,
           "cRate95th": 1.0,
           "count": 100,
-          "timeMean": "00:15:10.4167554",
-          "timeStdDeviation": "00:05:42.0737431",
-          "timeMin": "00:04:13.0918195",
-          "timeMax": "00:32:28.5883566",
+          "timeMean": "00:14:58.2641730",
+          "timeStdDeviation": "00:04:46.1721357",
+          "timeMin": "00:02:35.0124695",
+          "timeMax": "00:26:33.8467190",
           "watchVariables": {},
           "entries": [
             {
@@ -75,10 +75,10 @@
           "cRate5th": 1.0,
           "cRate95th": 1.0,
           "count": 100,
-          "timeMean": "00:17:13.0046182",
-          "timeStdDeviation": "00:08:10.3452483",
-          "timeMin": "00:05:49.1096606",
-          "timeMax": "00:34:57.8299754",
+          "timeMean": "00:16:52.9562769",
+          "timeStdDeviation": "00:07:06.0279756",
+          "timeMin": "00:04:16.8318881",
+          "timeMax": "00:29:12.8316036",
           "watchVariables": {},
           "entries": [
             {

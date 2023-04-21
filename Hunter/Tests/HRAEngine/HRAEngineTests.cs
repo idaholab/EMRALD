@@ -3,6 +3,7 @@ using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using Hunter.Proc;
 using Hunter.Hra;
+using CommonDefLib;
 
 namespace Hunter.Tests.HumanReliabilityAnalysisEngine
 {

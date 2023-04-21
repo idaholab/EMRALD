@@ -16,7 +16,7 @@ namespace Hunter.Tests.PerformanceShapingFactorTests
         [Test]
         public void Test1_value_before_k()
         {
-            LagLinger lagLinger = new LagLinger();
+            LagAdaptLinger lagLinger = new LagAdaptLinger();
             TestContext.WriteLine($"{lagLinger.getValue(t: 60)}");
             TestContext.WriteLine($"{lagLinger.getValue(t: 65)}");
             TestContext.WriteLine($"{lagLinger.getValue(t: 70)}");
@@ -30,7 +30,7 @@ namespace Hunter.Tests.PerformanceShapingFactorTests
         [Test]
         public void Test1_AvailableTimeExpires()
         {
-            LagLinger lagLinger = new LagLinger();
+            LagAdaptLinger lagLinger = new LagAdaptLinger();
             lagLinger.TriggerLag(t: 60, k: 2);
             TestContext.WriteLine($"{lagLinger.getValue(t:60)}");
             TestContext.WriteLine($"{lagLinger.getValue(t: 65)}");
@@ -45,7 +45,7 @@ namespace Hunter.Tests.PerformanceShapingFactorTests
         [Test]
         public void Test2_TaskCompletedBefore_Tlag()
         {
-            LagLinger lagLinger = new LagLinger();
+            LagAdaptLinger lagLinger = new LagAdaptLinger();
             lagLinger.TriggerLag(t: 60, k: 2);
             TestContext.WriteLine($"{lagLinger.getValue(t: 60)}");
             TestContext.WriteLine($"{lagLinger.getValue(t: 65)}");
@@ -63,10 +63,9 @@ namespace Hunter.Tests.PerformanceShapingFactorTests
         [Test]
         public void Test1_csv()
         {
-            LagLinger _lagLinger1 = new LagLinger();
-            LagLinger _lagLinger2 = new LagLinger();
-            LagLinger _lagLinger3 = new LagLinger();
-            LagLinger _lagLinger4 = new LagLinger();
+            LagAdaptLinger _lagLinger1 = new LagAdaptLinger();
+            LagAdaptLinger _lagLinger2 = new LagAdaptLinger();
+            LagAdaptLinger _lagLinger3 = new LagAdaptLinger();
 
             double dt = 1;
             double end = 3600 * 5;

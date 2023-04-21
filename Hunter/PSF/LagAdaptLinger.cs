@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace Hunter.Psf
 {
 
-    public class LagLinger
+    public class LagAdaptLinger
     {
         public double t0 { get; set; } // Start of Stress
         public double? tReturn { get; set; } // End of Stress
@@ -15,14 +15,16 @@ namespace Hunter.Psf
         public double tAvail { get; set; } // Available Time
         public double tLag { get; set; } // Lag Time Constant
         public double tLinger { get; set; } // Linger Time Constant
+        public double tAdapt { get; set; } // Adaptation Time Constant
 
         private double _t = -1;
         private double _fK = 1;
 
-        public LagLinger(double tLag = 3600, double tLinger = 7400)
+        public LagAdaptLinger(double tLag = 3600, double tLinger = 7200, double tAdapt = 57600)
         {
             this.tLag = tLag;
             this.tLinger = tLinger;
+            this.tAdapt = tAdapt;
         }
 
         public void TriggerLag(double t, double k, double tAvail = 7200)
@@ -90,10 +92,12 @@ namespace Hunter.Psf
                 _t = t;
                 return _fK;
             } 
-            // in sustain phase
+            // in adaptation phase
             else if (x >= tLag && x < tAvail)
             {
-                _fK = K.Value;
+                double lambda = Math.Log(1.0 / K.Value) / tAdapt;
+                _fK = K.Value * Math.Exp(lambda * (x- tLag));
+
                 _t = t;
                 return _fK;
             }

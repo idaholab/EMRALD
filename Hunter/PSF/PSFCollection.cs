@@ -62,12 +62,16 @@ namespace Hunter.Psf
 
         public void SetContext(Dictionary<string, object> context)
         {
-            if (context.ContainsKey("Stress"))
+            foreach (var grouping in this.Where(p => p.IsStatic && 
+                                                context.ContainsKey(p.Factor)).GroupBy(p => p.Factor))
             {
-                string levelName = (string)context["Stress"];
-                SetLevel(PsfEnums.Id.Sa, levelName);
-                SetLevel(PsfEnums.Id.Sd, levelName);
+                string levelName = (string)context[grouping.Key];
+                foreach (PSF _psf in this.Where(p => p.Factor == grouping.Key))
+                {
+                    SetLevel(_psf.Id, levelName);
+                }
             }
+
             _context = context;
         }
 

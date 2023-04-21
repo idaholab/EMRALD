@@ -131,7 +131,6 @@ namespace Hunter.Hra
 
         private bool? _currentSuccess;
         public bool? CurrentSuccess { get { return _currentSuccess; } }
-
         internal void SetCurrentSuccess(bool? value) { _currentSuccess = value; }
 
 
@@ -142,6 +141,10 @@ namespace Hunter.Hra
 
         private Dictionary<string, object> _context;
         public Dictionary<string, object> Context { get { return _context; } }
+
+
+        private AvailableTime _taskAvailableTime;
+        public AvailableTime TaskAvailableTime { get { return _taskAvailableTime; } }
 
         public int Count
         {
@@ -188,6 +191,7 @@ namespace Hunter.Hra
 
         public void SetContext(Dictionary<string, object> context)
         {
+            // Get the time on shift from the context
             if (context.ContainsKey("StartShiftTimeH"))
             {
                 TimeOnShift = TimeSpan.FromHours((double)context["StartShiftTimeH"]);
@@ -198,6 +202,14 @@ namespace Hunter.Hra
                 TimeOnShift += TimeSpan.FromHours((double)context["ShiftTimeH"]);
             }
 
+            // Get the available time from the context
+            AvailableTime? availableTime = AvailableTime.FromContext(context, this);
+            if (availableTime != null)
+            {
+                _taskAvailableTime = (AvailableTime)availableTime;
+            }
+
+            // Set the context in the PSF collection
             if (psfCollection != null)
             {
                 psfCollection.SetContext(context);
@@ -355,10 +367,25 @@ namespace Hunter.Hra
                     List<string> primitiveIds = procedure.Steps[i - 1].PrimitiveIds;
 
                     bool? stepSuccess = true;
-                    elapsedTime += EvaluateStep(primitiveIds, ref stepSuccess, outputDir);
+                    elapsedTime += Evaluate(primitiveIds, ref stepSuccess, outputDir);
                     elapsedTime += HandleRepeatMode(primitiveIds, ref stepSuccess);
 
                     _currentSuccess = (_currentSuccess & stepSuccess) ?? null;
+
+                    var hasTimeRemaining = _taskAvailableTime.HasTimeRemaining;
+                    if (hasTimeRemaining != null && _currentSuccess != null)
+                    {
+                        if (!hasTimeRemaining.Value)
+                        {
+                            _currentSuccess = null;
+                        }
+                    }
+
+                    if (_currentSuccess == null)
+                    {
+                        return TimeSpan.FromSeconds(elapsedTime);
+                    }
+
                 }
             }
             else
@@ -367,12 +394,6 @@ namespace Hunter.Hra
             }
 
             return TimeSpan.FromSeconds(elapsedTime);
-        }
-
-        private double EvaluateStep(List<string> primitiveIds, ref bool? stepSuccess, string? outputDir)
-        {
-            double elapsedTime = Evaluate(primitiveIds, ref stepSuccess, outputDir);
-            return elapsedTime;
         }
 
         private double HandleRepeatMode(List<string> primitiveIds, ref bool? stepSuccess)
@@ -391,7 +412,7 @@ namespace Hunter.Hra
 
             return elapsedTime;
         }
-        public double Evaluate(List<string> primitiveIds,
+        internal double Evaluate(List<string> primitiveIds,
                        ref bool? success,
                        string? outputDir = null)
         {

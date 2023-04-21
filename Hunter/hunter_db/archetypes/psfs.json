@@ -300,6 +300,7 @@
         "multiplier": "1"
       }
     ],
+    "is_static": true,
     "is_lag_linger": true,
     "id": "Sa"
   },
@@ -320,6 +321,7 @@
         "multiplier": "1"
       }
     ],
+    "is_static": true,
     "is_lag_linger": true,
     "id": "Sd"
   },

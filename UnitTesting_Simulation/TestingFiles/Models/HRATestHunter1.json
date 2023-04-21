@@ -262,20 +262,24 @@
         "procedureName": "sgtr",
 		"startStep": 1,
 		"endStep": 3,
-		"contextLinks":[
-      {
-        "contextName": "StartShiftTimeH",
-        "simVar": "StartTimeOnShiftH"
-      },
-      {
-        "contextName": "ShiftTimeH",
-        "simVar": "TimeOnShiftH"
-      },
-      {
-        "contextName": "Stress",
-        "simVar": "Psf.Stress.Extreme"
-      }
-		]
+        "contextLinks": [
+          {
+            "contextName": "StartShiftTimeH",
+            "simVar": "StartTimeOnShiftH"
+          },
+          {
+            "contextName": "ShiftTimeH",
+            "simVar": "TimeOnShiftH"
+          },
+          {
+            "contextName": "TaskAvailableTimeM",
+            "simVar": "AvailableTimeM"
+          },
+          {
+            "contextName": "Stress",
+            "simVar": "Psf.Stress.Extreme"
+          }
+        ]
       }
     },
     {
@@ -318,6 +322,17 @@
         "value": 12,
         "resetOnRuns": true,
         "type": "double"
+      }
+    },
+    {
+      "Variable": {
+        "id": 3,
+        "name": "AvailableTimeM",
+        "desc": "",
+        "varScope": "gtGlobal",
+        "value": 240,
+        "resetOnRuns": true,
+        "type": "int"
       }
     }
   ],

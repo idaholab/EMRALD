@@ -53,11 +53,12 @@ namespace Hunter.Psf
             {
                 _currentLevel = value;
 
-                if (IsLagLinger)
+                if (IsLagLinger && _lagLinger != null)
                 {
                     if (_currentLevel.Multiplier > 1)
-                    { 
-                        _lagLinger.TriggerLag(t: _t, k: _currentLevel.Multiplier);
+                    {
+                        double k = 1 / (_psfCollection?._hraEngine?.FatigueIndex ?? 1);
+                        _lagLinger.TriggerLag(t: _t, k: _currentLevel.Multiplier * k);
                     }
                     else if (_currentLevel.Multiplier == 1)
                     {
@@ -67,7 +68,7 @@ namespace Hunter.Psf
             }
         }
 
-        private LagLinger _lagLinger;
+        private LagAdaptLinger _lagLinger;
 
         [JsonIgnore]
         public PSFCollection _psfCollection { get; set; }
@@ -107,7 +108,7 @@ namespace Hunter.Psf
 
             if (IsLagLinger)
             {
-                _lagLinger = new LagLinger();
+                _lagLinger = new LagAdaptLinger();
             }
 
             SetReferences();
@@ -122,7 +123,7 @@ namespace Hunter.Psf
 
             if (IsLagLinger)
             {
-                _lagLinger = new LagLinger();
+                _lagLinger = new LagAdaptLinger();
             }
 
             SetReferences();
