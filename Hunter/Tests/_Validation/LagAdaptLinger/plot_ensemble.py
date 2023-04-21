@@ -18,6 +18,10 @@ fig, ax = plt.subplots()
 for i in range(len(df)):
     ax.plot(x, df.iloc[i], alpha=alpha, color=color, linewidth=linewidth)
 
+# Add the median line
+median_line = df.median(axis=0)
+ax.plot(x, median_line, color='red', linewidth=1)
+
 # Set the x-axis label
 ax.set_xlabel('Time (h)')
 
@@ -25,4 +29,4 @@ ax.set_xlabel('Time (h)')
 ax.set_ylabel('Value')
 
 # Save the plot as "LagAdjustLinger_Ensemble.png"
-plt.savefig('LagAdjustLinger_Ensemble.png')
+plt.savefig('LagAdjustLinger_Ensemble.png', dpi = 300)

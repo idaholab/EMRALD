@@ -27,8 +27,8 @@ namespace Hunter.Tests.PerformanceShapingFactorTests
             for (int i = 0; i < 1000; i++ )
             {
                 double dt = 10;
-                double end = 3600 * 5;
-                double k = Math.Round(LognormalDistributionHandler.SampleLognormalTime(5, 5* 0.25));
+                double end = 3600 * 10;
+                double k = LognormalDistributionHandler.SampleLognormalTime(5, 5* 0.25);
                 double tLag = Math.Round(LognormalDistributionHandler.SampleLognormalTime(3600, 3600 * 0.5));
                 double tLinger = Math.Round(LognormalDistributionHandler.SampleLognormalTime(7200, 7200 * 0.5));
                 double tAdapt = Math.Round(LognormalDistributionHandler.SampleLognormalTime(57600, 57600 * 0.5));
