@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Hunter.Hra.Distributions;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -20,11 +21,34 @@ namespace Hunter.Psf
         private double _t = -1;
         private double _fK = 1;
 
-        public LagAdaptLinger(double tLag = 3600, double tLinger = 7200, double tAdapt = 57600)
+        public LagAdaptLinger(double? tLag = null, double? tLinger = null, double? tAdapt = null)
         {
-            this.tLag = tLag;
-            this.tLinger = tLinger;
-            this.tAdapt = tAdapt;
+            if (tLag is not null)
+            {
+                this.tLag = (double)tLag;
+            }
+            else
+            {
+                this.tLag = Math.Round(LognormalDistributionHandler.SampleLognormalTime(3600, 3600 * 0.5));
+            }
+
+            if (tLinger is not null)
+            {
+                this.tLinger = (double)tLinger;
+            }
+            else
+            {
+                this.tLinger = Math.Round(LognormalDistributionHandler.SampleLognormalTime(7200, 7200 * 0.5));
+            }
+
+            if (tAdapt is not null)
+            {
+                this.tAdapt = (double)tAdapt;
+            }
+            else
+            {
+                this.tAdapt = Math.Round(LognormalDistributionHandler.SampleLognormalTime(57600, 57600 * 0.5));
+            }
         }
 
         public void TriggerLag(double t, double k, double tAvail = 7200)

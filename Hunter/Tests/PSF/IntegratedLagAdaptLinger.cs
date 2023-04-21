@@ -23,7 +23,7 @@ namespace Hunter.Tests.PerformanceShapingFactorTests
             hraEngine.TimeOnShift += TimeSpan.FromSeconds(3600);
             double v = hraEngine.psfCollection[PsfEnums.Id.Sd].CurrentMultiplier;
             TestContext.WriteLine(v);
-            Assert.AreEqual(5.332764505119454, v, 0.00001);
+            Assert.AreEqual(5.071441974184423d, v, 0.00001);
         }
         [Test]
         public void DefaultOp_12hr()
@@ -34,7 +34,7 @@ namespace Hunter.Tests.PerformanceShapingFactorTests
             hraEngine.TimeOnShift += TimeSpan.FromSeconds(3600);
             double v = hraEngine.psfCollection[PsfEnums.Id.Sd].CurrentMultiplier;
             TestContext.WriteLine(v);
-            Assert.AreEqual(3.2598774286086822, v, 0.00001);
+            Assert.AreEqual(3.2481028563958887, v, 0.00001);
         }
     }
 }

@@ -37,7 +37,7 @@ namespace Hunter.Hra.Distributions
         /// <param name="time">The mean time value of the Log-Normal distribution.</param>
         /// <param name="std">The standard deviation of the Log-Normal distribution.</param>
         /// <returns>A random time value sampled from the Log-Normal distribution with a minimum value of zero.</returns>
-        internal static double SampleLognormalTime(double time, double std)
+        public static double SampleLognormalTime(double time, double std)
         {
             // Calculate the shape and scale parameters
             double shape = Math.Sqrt(Math.Log(1 + (std * std) / (time * time)));
@@ -79,7 +79,7 @@ namespace Hunter.Hra.Distributions
         /// <param name="time">The mean time value of the Normal distribution.</param>
         /// <param name="std">The standard deviation of the Normal distribution.</param>
         /// <returns>A random time value sampled from the Normal distribution with a minimum value of zero.</returns>
-        internal static double SampleNormalTime(double time, double std)
+        public static double SampleNormalTime(double time, double std)
         {
             // Create a Normal distribution object with the given mean (time) and standard deviation (std)
             Normal normalDistribution = new Normal(time, std, SingleRandom.Instance);
@@ -115,7 +115,7 @@ namespace Hunter.Hra.Distributions
         /// </summary>
         /// <param name="time">The mean time value of the Exponential distribution.</param>
         /// <returns>A random time value sampled from the Exponential distribution with a minimum value of zero.</returns>
-        internal static double SampleExponentialTime(double time)
+        public static double SampleExponentialTime(double time)
         {
             // Create an Exponential distribution object with the given mean (time)
             var rate = 1 / time;

@@ -99,6 +99,5 @@ namespace Hunter.Tests.PerformanceShapingFactorTests
             string outputFile = Path.Combine(outputDirectory, "output.csv");
             File.WriteAllText(outputFile, csvData.ToString());
         }
-
     }
 }
