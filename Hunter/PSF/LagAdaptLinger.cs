@@ -20,6 +20,7 @@ namespace Hunter.Psf
 
         private double _t = -1;
         private double _fK = 1;
+        private double _Kbase = 1;
 
         public LagAdaptLinger(double? tLag = null, double? tLinger = null, double? tAdapt = null)
         {
@@ -53,16 +54,29 @@ namespace Hunter.Psf
 
         public void TriggerLag(double t, double k, double tAvail = 7200)
         {
-            t0 = t;
-            this.tAvail = tAvail;
+            // Raise Exception if k <= 1
+            if (k <= 1)
+            {
+                throw new Exception("K must be greater than 1");
+            }
+
             K = k;
+            this.tAvail = tAvail;
+
+            // Calculate x
+            double x = Math.Exp((_fK - 1) * Math.Log(tLag + 1) / (K.Value - 1)) - 1;
+
+            // Update t0
+            t0 = t - x;
 
             if (tReturn != null)
             {
                 tReturn = null;
             }
-            _t  = t;
+            _t = t;
+            _Kbase = _fK;
         }
+
 
         public void TriggerLinger(double t)
         {
@@ -126,7 +140,6 @@ namespace Hunter.Psf
                 return _fK;
             }
 
-            _fK = 1;
             _t = t;
             return _fK;
 
