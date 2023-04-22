@@ -20,6 +20,7 @@ namespace Hunter.Psf
 
         private double _t = -1;
         private double _fK = 1;
+        private double _tLoss = 0; // Time lost due to t0 adjustment
 
         public LagAdaptLinger(double? tLag = null, double? tLinger = null, double? tAdapt = null)
         {
@@ -62,13 +63,13 @@ namespace Hunter.Psf
             K = k;
             
             // Calculate tLoss
-            double tLoss = Math.Exp((_fK - 1) * Math.Log(tLag + 1) / (K.Value - 1)) - 1;
+            _tLoss = Math.Exp((_fK - 1) * Math.Log(tLag + 1) / (K.Value - 1)) - 1;
 
             // Update tAvail
-            this.tAvail = tAvail - tLoss;
+            this.tAvail = tAvail - _tLoss;
 
             // Update t0
-            t0 = t - tLoss;
+            t0 = t - _tLoss;
 
             if (tReturn != null)
             {
@@ -79,69 +80,58 @@ namespace Hunter.Psf
 
         public void TriggerLinger(double t)
         {
-            tReturn = t + tLinger;
+            tReturn = t + tLinger - _tLoss;
             K = _fK;
-            _t = t;
+            _t = t - _tLoss;
         }
 
-        public double getValue(double t)
+        public double GetValue(double t)
         {
+            // Get time since TriggerLag
+            double x = t - t0;
 
-            // TriggerLag has not been called
-            if (K is null)
-            {
-                _fK = 1;
-                _t = t;
-                return _fK;
-            }
-
-            // get time since TriggerLag
-            var x = t - t0;
-
-            // available time has expired
-            if (x >= tAvail && tReturn == null)
-            {
-                TriggerLinger(t);
-            }
-
-            // in linger phase
+            // If in the linger phase
             if (tReturn != null)
             {
                 _fK = Math.Exp(-(Math.Log(K.Value) / tLinger) * (t - (double)tReturn));
 
-                // returned to K = 1
+                // If returned to K = 1
                 if (_fK < 1.0)
                 {
                     tReturn = null;
                     K = null;
                     _fK = Math.Max(_fK, 1);
                 }
-
-                _t = t;
                 return _fK;
             }
 
-            // in lag phase
-            if (x < tLag)
+            // If TriggerLag has not been called
+            if (K is null)
             {
-                _fK = ((K.Value - 1) / Math.Log(tLag + 1)) *
-                    Math.Log(x + 1) + 1;
-                _t = t;
+                _fK = 1;
                 return _fK;
-            } 
-            // in adaptation phase
-            else if (x >= tLag && x < tAvail)
+            }
+
+            // If available time has expired and not in the linger phase
+            if (x >= tAvail && tReturn == null)
+            {
+                TriggerLinger(t);
+                return GetValue(t);
+            }
+
+            // If in the lag phase
+            if (x < tLag && tReturn == null)
+            {
+                _fK = ((K.Value - 1) / Math.Log(tLag + 1)) * Math.Log(x + 1) + 1;
+            }
+            // If in the adaptation phase
+            else
             {
                 double lambda = Math.Log(1.0 / K.Value) / tAdapt;
-                _fK = K.Value * Math.Exp(lambda * (x- tLag));
-
-                _t = t;
-                return _fK;
+                _fK = K.Value * Math.Exp(lambda * (x - tLag));
             }
 
-            _t = t;
             return _fK;
-
         }
     }
 }

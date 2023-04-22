@@ -17,13 +17,13 @@ namespace Hunter.Tests.PerformanceShapingFactorTests
         public void Test1_value_before_k()
         {
             LagAdaptLinger lagLinger = new LagAdaptLinger();
-            TestContext.WriteLine($"{lagLinger.getValue(t: 60)}");
-            TestContext.WriteLine($"{lagLinger.getValue(t: 65)}");
-            TestContext.WriteLine($"{lagLinger.getValue(t: 70)}");
-            TestContext.WriteLine($"{lagLinger.getValue(t: 1860)}");
-            TestContext.WriteLine($"{lagLinger.getValue(t: 2000)}");
-            TestContext.WriteLine($"{lagLinger.getValue(t: 3660)}");
-            TestContext.WriteLine($"{lagLinger.getValue(t: 7300)}");
+            TestContext.WriteLine($"{lagLinger.GetValue(t: 60)}");
+            TestContext.WriteLine($"{lagLinger.GetValue(t: 65)}");
+            TestContext.WriteLine($"{lagLinger.GetValue(t: 70)}");
+            TestContext.WriteLine($"{lagLinger.GetValue(t: 1860)}");
+            TestContext.WriteLine($"{lagLinger.GetValue(t: 2000)}");
+            TestContext.WriteLine($"{lagLinger.GetValue(t: 3660)}");
+            TestContext.WriteLine($"{lagLinger.GetValue(t: 7300)}");
 
         }
 
@@ -32,13 +32,13 @@ namespace Hunter.Tests.PerformanceShapingFactorTests
         {
             LagAdaptLinger lagLinger = new LagAdaptLinger();
             lagLinger.TriggerLag(t: 60, k: 2);
-            TestContext.WriteLine($"{lagLinger.getValue(t:60)}");
-            TestContext.WriteLine($"{lagLinger.getValue(t: 65)}");
-            TestContext.WriteLine($"{lagLinger.getValue(t: 70)}");
-            TestContext.WriteLine($"{lagLinger.getValue(t: 1860)}");
-            TestContext.WriteLine($"{lagLinger.getValue(t: 2000)}");
-            TestContext.WriteLine($"{lagLinger.getValue(t: 3660)}");
-            TestContext.WriteLine($"{lagLinger.getValue(t: 7300)}");
+            TestContext.WriteLine($"{lagLinger.GetValue(t:60)}");
+            TestContext.WriteLine($"{lagLinger.GetValue(t: 65)}");
+            TestContext.WriteLine($"{lagLinger.GetValue(t: 70)}");
+            TestContext.WriteLine($"{lagLinger.GetValue(t: 1860)}");
+            TestContext.WriteLine($"{lagLinger.GetValue(t: 2000)}");
+            TestContext.WriteLine($"{lagLinger.GetValue(t: 3660)}");
+            TestContext.WriteLine($"{lagLinger.GetValue(t: 7300)}");
 
         }
 
@@ -47,16 +47,16 @@ namespace Hunter.Tests.PerformanceShapingFactorTests
         {
             LagAdaptLinger lagLinger = new LagAdaptLinger();
             lagLinger.TriggerLag(t: 60, k: 2);
-            TestContext.WriteLine($"{lagLinger.getValue(t: 60)}");
-            TestContext.WriteLine($"{lagLinger.getValue(t: 65)}");
-            TestContext.WriteLine($"{lagLinger.getValue(t: 70)}");
+            TestContext.WriteLine($"{lagLinger.GetValue(t: 60)}");
+            TestContext.WriteLine($"{lagLinger.GetValue(t: 65)}");
+            TestContext.WriteLine($"{lagLinger.GetValue(t: 70)}");
 
             lagLinger.TriggerLinger(t: 1860);
 
-            TestContext.WriteLine($"{lagLinger.getValue(t: 1860)}");
-            TestContext.WriteLine($"{lagLinger.getValue(t: 2000)}");
-            TestContext.WriteLine($"{lagLinger.getValue(t: 3660)}");
-            TestContext.WriteLine($"{lagLinger.getValue(t: 7300)}");
+            TestContext.WriteLine($"{lagLinger.GetValue(t: 1860)}");
+            TestContext.WriteLine($"{lagLinger.GetValue(t: 2000)}");
+            TestContext.WriteLine($"{lagLinger.GetValue(t: 3660)}");
+            TestContext.WriteLine($"{lagLinger.GetValue(t: 7300)}");
 
         }
 
@@ -112,10 +112,10 @@ namespace Hunter.Tests.PerformanceShapingFactorTests
                     _lagLinger3.TriggerLinger(x);
                 }
 
-                double value1 = _lagLinger1.getValue(x);
-                double value2 = _lagLinger2.getValue(x);
-                double value3 = _lagLinger3.getValue(x);
-                double value4 = _lagLinger4.getValue(x);
+                double value1 = _lagLinger1.GetValue(x);
+                double value2 = _lagLinger2.GetValue(x);
+                double value3 = _lagLinger3.GetValue(x);
+                double value4 = _lagLinger4.GetValue(x);
 
                 csvData.AppendLine($"{x/3600},{value1},{value2},{value3},{value4}");
             }

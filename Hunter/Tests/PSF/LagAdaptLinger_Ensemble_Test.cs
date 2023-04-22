@@ -47,7 +47,7 @@ namespace Hunter.Tests.PerformanceShapingFactorTests
                     if (x == 3600 * 3)
                         _lagLinger2.TriggerLinger(x);
 
-                    vals.Add(_lagLinger2.getValue(x));
+                    vals.Add(_lagLinger2.GetValue(x));
                 }
 
                 foreach (double x in vals)

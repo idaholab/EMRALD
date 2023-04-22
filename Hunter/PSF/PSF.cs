@@ -256,7 +256,7 @@ namespace Hunter.Psf
             {
                 if (IsLagLinger)
                 {
-                    return _lagLinger.getValue(_t);
+                    return _lagLinger.GetValue(_t);
                 }
 
                 if (CurrentLevel == null)
