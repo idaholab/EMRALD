@@ -20,7 +20,6 @@ namespace Hunter.Psf
 
         private double _t = -1;
         private double _fK = 1;
-        private double _Kbase = 1;
 
         public LagAdaptLinger(double? tLag = null, double? tLinger = null, double? tAdapt = null)
         {
@@ -61,22 +60,22 @@ namespace Hunter.Psf
             }
 
             K = k;
-            this.tAvail = tAvail;
+            
+            // Calculate tLoss
+            double tLoss = Math.Exp((_fK - 1) * Math.Log(tLag + 1) / (K.Value - 1)) - 1;
 
-            // Calculate x
-            double x = Math.Exp((_fK - 1) * Math.Log(tLag + 1) / (K.Value - 1)) - 1;
+            // Update tAvail
+            this.tAvail = tAvail - tLoss;
 
             // Update t0
-            t0 = t - x;
+            t0 = t - tLoss;
 
             if (tReturn != null)
             {
                 tReturn = null;
             }
             _t = t;
-            _Kbase = _fK;
         }
-
 
         public void TriggerLinger(double t)
         {

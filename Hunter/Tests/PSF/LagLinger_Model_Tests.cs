@@ -69,7 +69,7 @@ namespace Hunter.Tests.PerformanceShapingFactorTests
             LagAdaptLinger _lagLinger4 = new LagAdaptLinger();
 
             double dt = 1;
-            double end = 3600 * 5;
+            double end = 3600 * 8;
             StringBuilder csvData = new StringBuilder();
 
             csvData.AppendLine("Time (s),Available Time Expires before Task Completed,Task Completed before t0 + tLag,Task Completed after t0 + tLag but before Available Time expires,Double Stimuli");
@@ -84,24 +84,21 @@ namespace Hunter.Tests.PerformanceShapingFactorTests
                     _lagLinger4.TriggerLag(x, k: 1.5);
                 }
 
-                if (x == 3660)
+                
+                if (x == 3600 * 2)
                 {
                     _lagLinger4.TriggerLag(x, k: 2);
                 }
 
-                if (x == 3660 + 3600)
+                
+                if (x == 3600 * 4)
                 {
                     _lagLinger4.TriggerLag(x, k: 2.5);
                 }
 
-                if (x == 1860 + 3600 + 3600)
+                if (x == 3600 * 6)
                 {
-                   // _lagLinger4.TriggerLinger(x);
-                }
-
-                if (x == 3660 + 3600)
-                {
-                    _lagLinger4.TriggerLag(x, k: 3);
+                    _lagLinger4.TriggerLinger(x);
                 }
 
 
@@ -113,7 +110,6 @@ namespace Hunter.Tests.PerformanceShapingFactorTests
                 if (x == 4260)
                 { 
                     _lagLinger3.TriggerLinger(x);
-                    _lagLinger4.TriggerLinger(x);
                 }
 
                 double value1 = _lagLinger1.getValue(x);
