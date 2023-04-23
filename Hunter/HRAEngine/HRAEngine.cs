@@ -7,6 +7,7 @@ using Hunter.Psf;
 using Hunter.Proc;
 using Hunter.Model;
 using Hunter.Hra.Distributions;
+using Hunter.ExpGoms;
 
 namespace Hunter.Hra
 {
@@ -364,12 +365,11 @@ namespace Hunter.Hra
                 for (int i = startStep; i <= endStep; i++)
                 {
                     _currentStepId = procedure.Steps[i - 1].StepId;
-                    List<string> primitiveIds = procedure.Steps[i - 1].PrimitiveIds;
+                    List<ExpressiveGoms.Token> tokens = procedure.Steps[i - 1].GomsExpression;
 
                     bool? stepSuccess = true;
-                    elapsedTime += Evaluate(primitiveIds, ref stepSuccess, outputDir);
-                    elapsedTime += HandleRepeatMode(primitiveIds, ref stepSuccess);
-
+                    elapsedTime += ExpressiveGoms.EvaluatePostfixExpression(tokens, this);
+                    elapsedTime += HandleRepeatMode(tokens, ref stepSuccess);
                     _currentSuccess = (_currentSuccess & stepSuccess) ?? null;
 
                     var hasTimeRemaining = _taskAvailableTime.HasTimeRemaining;
@@ -396,7 +396,7 @@ namespace Hunter.Hra
             return TimeSpan.FromSeconds(elapsedTime);
         }
 
-        private double HandleRepeatMode(List<string> primitiveIds, ref bool? stepSuccess)
+        private double HandleRepeatMode(List<ExpressiveGoms.Token> groupedTokens, ref bool? stepSuccess)
         {
             double elapsedTime = 0.0;
 
@@ -406,7 +406,7 @@ namespace Hunter.Hra
                 {
                     _repeatCount += 1;
                     stepSuccess = true;
-                    elapsedTime += Evaluate(primitiveIds, ref stepSuccess);
+                    elapsedTime += ExpressiveGoms.EvaluatePostfixExpression(groupedTokens, this);
                 }
             }
 

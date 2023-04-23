@@ -1,35 +1,32 @@
 {
   "steps": [
-      {
-        "step_id": "Entry Conditions",
-        "primitive_ids": [ "ICp", "Rc", "ICp", "Rc", "ICp", "Rc", "ICp", "Dp" ]
-      },
-      {
-        "step_id": "Step 1 - Investigate SG Rupture",
-        "primitive_ids": [ "ICp", "Rc", "ICp", "Dw", 
-                           "ICp", "Rc", "ICp", "Dw", 
-                           "ICp", "Rc", "ICp", "Dw", 
-                           "ICp", "Dp" ]
-      },
-      {
-        "step_id": "Step 2.1 - Isolate SG - Stop Fw",
-        "primitive_ids": [ "ICp", "Ac", "ICp", "Rc" ]
-      },
-      {
-        "step_id": "Step 2.2 - Isolate SG - Place the SG Level Controller in manual",
-        "primitive_ids": [ "ICp", "Ac", "ICp", "Rc" ]
-      },
-      {
-        "step_id": "Step 2.3 - Isolate SG - Close FW IV",
-        "primitive_ids": [ "ICp", "Ac", "ICp", "Rc" ]
-      },
-      {
-        "step_id": "Step 2.4 - Isolate SG - Close MS IV",
-        "primitive_ids": [ "ICp", "Ac", "ICp", "Rc" ]
-      },
-      {
-        "step_id": "Step 3 - Perform Rapid Shutdown",
-        "primitive_ids": [ "ICp" ]
-      }
-    ]
+    {
+      "step_id": "Entry Conditions",
+      "goms_expression": "ICp Rc ICp Rc ICp Rc ICp Dp"
+    },
+    {
+      "step_id": "Step 1 - Investigate SG Rupture",
+      "goms_expression": "ICp Rc ICp Dw , 4 _repeat ICp Dp"
+    },
+    {
+      "step_id": "Step 2.1 - Isolate SG - Stop Fw",
+      "goms_expression": "ICp Ac ICp Rc"
+    },
+    {
+      "step_id": "Step 2.2 - Isolate SG - Place the SG Level Controller in manual",
+      "goms_expression": "ICp Ac ICp Rc"
+    },
+    {
+      "step_id": "Step 2.3 - Isolate SG - Close FW IV",
+      "goms_expression": "ICp Ac ICp Rc"
+    },
+    {
+      "step_id": "Step 2.4 - Isolate SG - Close MS IV",
+      "goms_expression": "ICp Ac ICp Rc"
+    },
+    {
+      "step_id": "Step 3 - Perform Rapid Shutdown",
+      "goms_expression": "ICp"
+    }
+  ]
 }

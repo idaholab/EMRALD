@@ -30,3 +30,13 @@ ax.set_ylabel('Value')
 
 # Save the plot as "LagAdjustLinger_Ensemble.png"
 plt.savefig('LagAdjustLinger_Ensemble.png', dpi = 300)
+
+
+def tokenize(input_string):
+    for c in "+-*":
+        input_string = input_string.replace(c, f' {c} ')
+    input_string = input_string.replace('_', f' _')
+    
+    tokens = input_string.split()
+    
+        

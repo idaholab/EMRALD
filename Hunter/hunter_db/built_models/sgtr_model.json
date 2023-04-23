@@ -16,207 +16,120 @@
       "sgtr": {
         "steps": [
           {
-            "primitive_ids": [
-              "ICp",
-              "Rc",
-              "ICp",
-              "Rc",
-              "ICp",
-              "Rc",
-              "ICp",
-              "Dp"
-            ],
-            "step_id": "Entry Conditions"
+            "step_id": "Step 1 - Trip Turbine",
+            "goms_expression": "ICp Ac"
           },
           {
-            "primitive_ids": [
-              "ICp",
-              "Rc",
-              "ICp",
-              "Dw",
-              "ICp",
-              "Rc",
-              "ICp",
-              "Dw",
-              "ICp",
-              "Rc",
-              "ICp",
-              "Dw",
-              "ICp",
-              "Dp"
-            ],
-            "step_id": "Step 1 - Investigate SG Rupture"
+            "step_id": "Step 2 - Verify Turbine Trip",
+            "goms_expression": "ICp Rc , 3 _repeat"
           },
           {
-            "primitive_ids": [
-              "ICp",
-              "Ac",
-              "ICp",
-              "Rc"
-            ],
-            "step_id": "Step 2.1 - Isolate SG - Stop Fw"
+            "step_id": "Step 3 - Trip Reactor",
+            "goms_expression": "ICp Ac"
           },
           {
-            "primitive_ids": [
-              "ICp",
-              "Ac",
-              "ICp",
-              "Rc"
-            ],
-            "step_id": "Step 2.2 - Isolate SG - Place the SG Level Controller in manual"
+            "step_id": "Step 4 - Verify Reactor Trip",
+            "goms_expression": "ICp Rc , 3 _repeat"
           },
           {
-            "primitive_ids": [
-              "ICp",
-              "Ac",
-              "ICp",
-              "Rc"
-            ],
-            "step_id": "Step 2.3 - Isolate SG - Close FW IV"
+            "step_id": "Step 5 - Initiate Safety Injection",
+            "goms_expression": "ICp Ac"
           },
           {
-            "primitive_ids": [
-              "ICp",
-              "Ac",
-              "ICp",
-              "Rc"
-            ],
-            "step_id": "Step 2.4 - Isolate SG - Close MS IV"
+            "step_id": "Step 6 - Verify Reactor Trip",
+            "goms_expression": "ICp Ac"
           },
           {
-            "primitive_ids": [
-              "ICp"
-            ],
-            "step_id": "Step 3 - Perform Rapid Shutdown"
+            "step_id": "Step 7.1 - Bypass cooling decision",
+            "goms_expression": "ICp Rc Dp"
+          },
+          {
+            "step_id": "Step 7.2 - Bypass cooling action",
+            "goms_expression": "ICp Ac"
+          },
+          {
+            "step_id": "Step 7.3 - Bypass cooling verification",
+            "goms_expression": "ICp Rc ICp Dp"
+          },
+          {
+            "step_id": "Step 7.4 - Close Bypass",
+            "goms_expression": "ICp Ac"
+          },
+          {
+            "step_id": "Step 8 - Close Porvs",
+            "goms_expression": "ICp Ac , 4 _repeat"
+          },
+          {
+            "step_id": "Step 9 - Close Dumps",
+            "goms_expression": "ICp Ac , 4 _repeat"
+          },
+          {
+            "step_id": "Step 10 - Check Core Temp",
+            "goms_expression": "ICp Rc ICp Dp"
+          },
+          {
+            "step_id": "Step 11 - Leave one RCP in service",
+            "goms_expression": "Rc Rc Dp Ac"
           }
         ]
       },
       "rapid_shutdown": {
         "steps": [
           {
-            "primitive_ids": [
-              "ICp",
-              "Ac"
-            ],
-            "step_id": "Step 1 - Trip Turbine"
+            "step_id": "Step 1 - Trip Turbine",
+            "goms_expression": "ICp Ac"
           },
           {
-            "primitive_ids": [
-              "ICp",
-              "Rc",
-              "ICp",
-              "Rc",
-              "ICp",
-              "Rc"
-            ],
-            "step_id": "Step 2 - Verify Turbine Trip"
+            "step_id": "Step 2 - Verify Turbine Trip",
+            "goms_expression": "ICp Rc , 3 _repeat"
           },
           {
-            "primitive_ids": [
-              "ICp",
-              "Ac"
-            ],
-            "step_id": "Step 3 - Trip Reactor"
+            "step_id": "Step 3 - Trip Reactor",
+            "goms_expression": "ICp Ac"
           },
           {
-            "primitive_ids": [
-              "ICp",
-              "Rc",
-              "ICp",
-              "Rc",
-              "ICp",
-              "Rc"
-            ],
-            "step_id": "Step 4 - Verify Reactor Trip"
+            "step_id": "Step 4 - Verify Reactor Trip",
+            "goms_expression": "ICp Rc , 3 _repeat"
           },
           {
-            "primitive_ids": [
-              "ICp",
-              "Ac"
-            ],
-            "step_id": "Step 5 - Initiate Safety Injection"
+            "step_id": "Step 5 - Initiate Safety Injection",
+            "goms_expression": "ICp Ac"
           },
           {
-            "primitive_ids": [
-              "ICp",
-              "Rc"
-            ],
-            "step_id": "Step 6 - Verify Reactor Trip"
+            "step_id": "Step 6 - Verify Reactor Trip",
+            "goms_expression": "ICp Ac"
           },
           {
-            "primitive_ids": [
-              "ICp",
-              "Rc",
-              "Dp"
-            ],
-            "step_id": "Step 7.1 - Bypass cooling decision"
+            "step_id": "Step 7.1 - Bypass cooling decision",
+            "goms_expression": "ICp Rc Dp"
           },
           {
-            "primitive_ids": [
-              "ICp",
-              "Ac"
-            ],
-            "step_id": "Step 7.2 - Bypass cooling action"
+            "step_id": "Step 7.2 - Bypass cooling action",
+            "goms_expression": "ICp Ac"
           },
           {
-            "primitive_ids": [
-              "ICp",
-              "Rc",
-              "ICp",
-              "Dp"
-            ],
-            "step_id": "Step 7.3 - Bypass cooling verification"
+            "step_id": "Step 7.3 - Bypass cooling verification",
+            "goms_expression": "ICp Rc ICp Dp"
           },
           {
-            "primitive_ids": [
-              "ICp",
-              "Ac"
-            ],
-            "step_id": "Step 7.4 - Close Bypass"
+            "step_id": "Step 7.4 - Close Bypass",
+            "goms_expression": "ICp Ac"
           },
           {
-            "primitive_ids": [
-              "ICp",
-              "Ac",
-              "ICp",
-              "Ac",
-              "ICp",
-              "Ac",
-              "ICp",
-              "Ac"
-            ],
-            "step_id": "Step 8 - Close Porvs"
+            "step_id": "Step 8 - Close Porvs",
+            "goms_expression": "ICp Ac , 4 _repeat"
           },
           {
-            "primitive_ids": [
-              "ICp",
-              "Ac",
-              "ICp",
-              "Ac",
-              "ICp",
-              "Ac",
-              "ICp",
-              "Ac"
-            ],
-            "step_id": "Step 9 - Close Dumps"
+            "step_id": "Step 9 - Close Dumps",
+            "goms_expression": "ICp Ac , 4 _repeat"
           },
           {
-            "primitive_ids": [
-              "ICp",
-              "Rc",
-              "ICp",
-              "Dp"
-            ],
-            "step_id": "Step 10 - Check Core Temp"
+            "step_id": "Step 10 - Check Core Temp",
+            "goms_expression": "ICp Rc ICp Dp"
           },
           {
-            "primitive_ids": [
-              "Rc",
-              "Rc",
-              "Dp",
-              "Ac"
-            ],
-            "step_id": "Step 11 - Leave one RCP in service"
+            "step_id": "Step 11 - Leave one RCP in service",
+            "goms_expression": "Rc Rc Dp Ac"
           }
         ]
       }

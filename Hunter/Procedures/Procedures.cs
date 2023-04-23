@@ -1,6 +1,10 @@
 ﻿using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
 
+using Hunter.ExpGoms;
+using Hunter.Psf;
+using Hunter.Procedures;
+
 namespace Hunter.Proc
 {
     /// <summary>
@@ -8,8 +12,8 @@ namespace Hunter.Proc
     /// </summary>
     public struct Step
     {
-        [JsonProperty("primitive_ids")]
-        public List<string> PrimitiveIds { get; set; }
+        [JsonProperty("goms_expression")]
+        public List<ExpressiveGoms.Token> GomsExpression { get; set; }
 
         [JsonProperty("step_id")]
         public string StepId { get; set; }
@@ -22,6 +26,22 @@ namespace Hunter.Proc
     {
         [JsonProperty("steps")]
         public List<Step> Steps { get; set; }
+
+        public string GetJSON()
+        {
+            var jsonSettings = new JsonSerializerSettings();
+            jsonSettings.Converters.Add(new ProcedureJsonConverter());
+
+            return JsonConvert.SerializeObject(this, Formatting.Indented, jsonSettings);
+        }
+
+        public static Procedure DeserializeJSON(string json)
+        {
+            var jsonSettings = new JsonSerializerSettings();
+            jsonSettings.Converters.Add(new ProcedureJsonConverter());
+
+            return JsonConvert.DeserializeObject<Procedure>(json, jsonSettings);
+        }
     }
 
     /// <summary>
@@ -64,7 +84,7 @@ namespace Hunter.Proc
                 var jsonData = File.ReadAllText(procedureFilename);
 
                 // Deserialize the procedure JArray into a Procedure object
-                var procedure = JsonConvert.DeserializeObject<Procedure>(jsonData);
+                var procedure = Procedure.DeserializeJSON(jsonData);
 
                 // Add the procedure to the Dictionary using the "description" property as the key
                 string key = (string)referenceObject["procedure_id"];

@@ -51,9 +51,6 @@
     <None Update="hunter_db\archetypes\psfs.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="hunter_db\built_models\sgtr_model.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <None Update="hunter_db\models\sgtr_model.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

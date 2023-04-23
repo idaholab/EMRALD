@@ -355,76 +355,241 @@
         "sgtr": {
           "steps": [
             {
-              "primitive_ids": [
-                "ICp",
-                "Rc",
-                "ICp",
-                "Rc",
-                "ICp",
-                "Rc",
-                "ICp",
-                "Dp"
+              "goms_expression": [
+                {
+                  "Type": 0,
+                  "Value": "ICp",
+                  "Operator": null,
+                  "GroupOperator": null
+                },
+                {
+                  "Type": 0,
+                  "Value": "Rc",
+                  "Operator": null,
+                  "GroupOperator": null
+                },
+                {
+                  "Type": 0,
+                  "Value": "ICp",
+                  "Operator": null,
+                  "GroupOperator": null
+                },
+                {
+                  "Type": 0,
+                  "Value": "Rc",
+                  "Operator": null,
+                  "GroupOperator": null
+                },
+                {
+                  "Type": 0,
+                  "Value": "ICp",
+                  "Operator": null,
+                  "GroupOperator": null
+                },
+                {
+                  "Type": 0,
+                  "Value": "Rc",
+                  "Operator": null,
+                  "GroupOperator": null
+                },
+                {
+                  "Type": 0,
+                  "Value": "ICp",
+                  "Operator": null,
+                  "GroupOperator": null
+                },
+                {
+                  "Type": 0,
+                  "Value": "Dp",
+                  "Operator": null,
+                  "GroupOperator": null
+                }
               ],
               "step_id": "Entry Conditions"
             },
             {
-              "primitive_ids": [
-                "ICp",
-                "Rc",
-                "ICp",
-                "Dw",
-                "ICp",
-                "Rc",
-                "ICp",
-                "Dw",
-                "ICp",
-                "Rc",
-                "ICp",
-                "Dw",
-                "ICp",
-                "Dp"
+              "goms_expression": [
+                {
+                  "Type": 0,
+                  "Value": "ICp",
+                  "Operator": null,
+                  "GroupOperator": null
+                },
+                {
+                  "Type": 0,
+                  "Value": "Rc",
+                  "Operator": null,
+                  "GroupOperator": null
+                },
+                {
+                  "Type": 0,
+                  "Value": "ICp",
+                  "Operator": null,
+                  "GroupOperator": null
+                },
+                {
+                  "Type": 0,
+                  "Value": "Dw",
+                  "Operator": null,
+                  "GroupOperator": null
+                },
+                {
+                  "Type": 3,
+                  "Value": ",",
+                  "Operator": null,
+                  "GroupOperator": null
+                },
+                {
+                  "Type": 4,
+                  "Value": "4",
+                  "Operator": null,
+                  "GroupOperator": null
+                },
+                {
+                  "Type": 2,
+                  "Value": "_repeat",
+                  "Operator": null,
+                  "GroupOperator": 2
+                },
+                {
+                  "Type": 0,
+                  "Value": "ICp",
+                  "Operator": null,
+                  "GroupOperator": null
+                },
+                {
+                  "Type": 0,
+                  "Value": "Dp",
+                  "Operator": null,
+                  "GroupOperator": null
+                }
               ],
               "step_id": "Step 1 - Investigate SG Rupture"
             },
             {
-              "primitive_ids": [
-                "ICp",
-                "Ac",
-                "ICp",
-                "Rc"
+              "goms_expression": [
+                {
+                  "Type": 0,
+                  "Value": "ICp",
+                  "Operator": null,
+                  "GroupOperator": null
+                },
+                {
+                  "Type": 0,
+                  "Value": "Ac",
+                  "Operator": null,
+                  "GroupOperator": null
+                },
+                {
+                  "Type": 0,
+                  "Value": "ICp",
+                  "Operator": null,
+                  "GroupOperator": null
+                },
+                {
+                  "Type": 0,
+                  "Value": "Rc",
+                  "Operator": null,
+                  "GroupOperator": null
+                }
               ],
               "step_id": "Step 2.1 - Isolate SG - Stop Fw"
             },
             {
-              "primitive_ids": [
-                "ICp",
-                "Ac",
-                "ICp",
-                "Rc"
+              "goms_expression": [
+                {
+                  "Type": 0,
+                  "Value": "ICp",
+                  "Operator": null,
+                  "GroupOperator": null
+                },
+                {
+                  "Type": 0,
+                  "Value": "Ac",
+                  "Operator": null,
+                  "GroupOperator": null
+                },
+                {
+                  "Type": 0,
+                  "Value": "ICp",
+                  "Operator": null,
+                  "GroupOperator": null
+                },
+                {
+                  "Type": 0,
+                  "Value": "Rc",
+                  "Operator": null,
+                  "GroupOperator": null
+                }
               ],
               "step_id": "Step 2.2 - Isolate SG - Place the SG Level Controller in manual"
             },
             {
-              "primitive_ids": [
-                "ICp",
-                "Ac",
-                "ICp",
-                "Rc"
+              "goms_expression": [
+                {
+                  "Type": 0,
+                  "Value": "ICp",
+                  "Operator": null,
+                  "GroupOperator": null
+                },
+                {
+                  "Type": 0,
+                  "Value": "Ac",
+                  "Operator": null,
+                  "GroupOperator": null
+                },
+                {
+                  "Type": 0,
+                  "Value": "ICp",
+                  "Operator": null,
+                  "GroupOperator": null
+                },
+                {
+                  "Type": 0,
+                  "Value": "Rc",
+                  "Operator": null,
+                  "GroupOperator": null
+                }
               ],
               "step_id": "Step 2.3 - Isolate SG - Close FW IV"
             },
             {
-              "primitive_ids": [
-                "ICp",
-                "Ac",
-                "ICp",
-                "Rc"
+              "goms_expression": [
+                {
+                  "Type": 0,
+                  "Value": "ICp",
+                  "Operator": null,
+                  "GroupOperator": null
+                },
+                {
+                  "Type": 0,
+                  "Value": "Ac",
+                  "Operator": null,
+                  "GroupOperator": null
+                },
+                {
+                  "Type": 0,
+                  "Value": "ICp",
+                  "Operator": null,
+                  "GroupOperator": null
+                },
+                {
+                  "Type": 0,
+                  "Value": "Rc",
+                  "Operator": null,
+                  "GroupOperator": null
+                }
               ],
               "step_id": "Step 2.4 - Isolate SG - Close MS IV"
             },
             {
-              "primitive_ids": [
-                "ICp"
+              "goms_expression": [
+                {
+                  "Type": 0,
+                  "Value": "ICp",
+                  "Operator": null,
+                  "GroupOperator": null
+                }
               ],
               "step_id": "Step 3 - Perform Rapid Shutdown"
             }
@@ -433,127 +598,354 @@
         "rapid_shutdown": {
           "steps": [
             {
-              "primitive_ids": [
-                "ICp",
-                "Ac"
+              "goms_expression": [
+                {
+                  "Type": 0,
+                  "Value": "ICp",
+                  "Operator": null,
+                  "GroupOperator": null
+                },
+                {
+                  "Type": 0,
+                  "Value": "Ac",
+                  "Operator": null,
+                  "GroupOperator": null
+                }
               ],
               "step_id": "Step 1 - Trip Turbine"
             },
             {
-              "primitive_ids": [
-                "ICp",
-                "Rc",
-                "ICp",
-                "Rc",
-                "ICp",
-                "Rc"
+              "goms_expression": [
+                {
+                  "Type": 0,
+                  "Value": "ICp",
+                  "Operator": null,
+                  "GroupOperator": null
+                },
+                {
+                  "Type": 0,
+                  "Value": "Rc",
+                  "Operator": null,
+                  "GroupOperator": null
+                },
+                {
+                  "Type": 3,
+                  "Value": ",",
+                  "Operator": null,
+                  "GroupOperator": null
+                },
+                {
+                  "Type": 4,
+                  "Value": "3",
+                  "Operator": null,
+                  "GroupOperator": null
+                },
+                {
+                  "Type": 2,
+                  "Value": "_repeat",
+                  "Operator": null,
+                  "GroupOperator": 2
+                }
               ],
               "step_id": "Step 2 - Verify Turbine Trip"
             },
             {
-              "primitive_ids": [
-                "ICp",
-                "Ac"
+              "goms_expression": [
+                {
+                  "Type": 0,
+                  "Value": "ICp",
+                  "Operator": null,
+                  "GroupOperator": null
+                },
+                {
+                  "Type": 0,
+                  "Value": "Ac",
+                  "Operator": null,
+                  "GroupOperator": null
+                }
               ],
               "step_id": "Step 3 - Trip Reactor"
             },
             {
-              "primitive_ids": [
-                "ICp",
-                "Rc",
-                "ICp",
-                "Rc",
-                "ICp",
-                "Rc"
+              "goms_expression": [
+                {
+                  "Type": 0,
+                  "Value": "ICp",
+                  "Operator": null,
+                  "GroupOperator": null
+                },
+                {
+                  "Type": 0,
+                  "Value": "Rc",
+                  "Operator": null,
+                  "GroupOperator": null
+                },
+                {
+                  "Type": 3,
+                  "Value": ",",
+                  "Operator": null,
+                  "GroupOperator": null
+                },
+                {
+                  "Type": 4,
+                  "Value": "3",
+                  "Operator": null,
+                  "GroupOperator": null
+                },
+                {
+                  "Type": 2,
+                  "Value": "_repeat",
+                  "Operator": null,
+                  "GroupOperator": 2
+                }
               ],
               "step_id": "Step 4 - Verify Reactor Trip"
             },
             {
-              "primitive_ids": [
-                "ICp",
-                "Ac"
+              "goms_expression": [
+                {
+                  "Type": 0,
+                  "Value": "ICp",
+                  "Operator": null,
+                  "GroupOperator": null
+                },
+                {
+                  "Type": 0,
+                  "Value": "Ac",
+                  "Operator": null,
+                  "GroupOperator": null
+                }
               ],
               "step_id": "Step 5 - Initiate Safety Injection"
             },
             {
-              "primitive_ids": [
-                "ICp",
-                "Rc"
+              "goms_expression": [
+                {
+                  "Type": 0,
+                  "Value": "ICp",
+                  "Operator": null,
+                  "GroupOperator": null
+                },
+                {
+                  "Type": 0,
+                  "Value": "Ac",
+                  "Operator": null,
+                  "GroupOperator": null
+                }
               ],
               "step_id": "Step 6 - Verify Reactor Trip"
             },
             {
-              "primitive_ids": [
-                "ICp",
-                "Rc",
-                "Dp"
+              "goms_expression": [
+                {
+                  "Type": 0,
+                  "Value": "ICp",
+                  "Operator": null,
+                  "GroupOperator": null
+                },
+                {
+                  "Type": 0,
+                  "Value": "Rc",
+                  "Operator": null,
+                  "GroupOperator": null
+                },
+                {
+                  "Type": 0,
+                  "Value": "Dp",
+                  "Operator": null,
+                  "GroupOperator": null
+                }
               ],
               "step_id": "Step 7.1 - Bypass cooling decision"
             },
             {
-              "primitive_ids": [
-                "ICp",
-                "Ac"
+              "goms_expression": [
+                {
+                  "Type": 0,
+                  "Value": "ICp",
+                  "Operator": null,
+                  "GroupOperator": null
+                },
+                {
+                  "Type": 0,
+                  "Value": "Ac",
+                  "Operator": null,
+                  "GroupOperator": null
+                }
               ],
               "step_id": "Step 7.2 - Bypass cooling action"
             },
             {
-              "primitive_ids": [
-                "ICp",
-                "Rc",
-                "ICp",
-                "Dp"
+              "goms_expression": [
+                {
+                  "Type": 0,
+                  "Value": "ICp",
+                  "Operator": null,
+                  "GroupOperator": null
+                },
+                {
+                  "Type": 0,
+                  "Value": "Rc",
+                  "Operator": null,
+                  "GroupOperator": null
+                },
+                {
+                  "Type": 0,
+                  "Value": "ICp",
+                  "Operator": null,
+                  "GroupOperator": null
+                },
+                {
+                  "Type": 0,
+                  "Value": "Dp",
+                  "Operator": null,
+                  "GroupOperator": null
+                }
               ],
               "step_id": "Step 7.3 - Bypass cooling verification"
             },
             {
-              "primitive_ids": [
-                "ICp",
-                "Ac"
+              "goms_expression": [
+                {
+                  "Type": 0,
+                  "Value": "ICp",
+                  "Operator": null,
+                  "GroupOperator": null
+                },
+                {
+                  "Type": 0,
+                  "Value": "Ac",
+                  "Operator": null,
+                  "GroupOperator": null
+                }
               ],
               "step_id": "Step 7.4 - Close Bypass"
             },
             {
-              "primitive_ids": [
-                "ICp",
-                "Ac",
-                "ICp",
-                "Ac",
-                "ICp",
-                "Ac",
-                "ICp",
-                "Ac"
+              "goms_expression": [
+                {
+                  "Type": 0,
+                  "Value": "ICp",
+                  "Operator": null,
+                  "GroupOperator": null
+                },
+                {
+                  "Type": 0,
+                  "Value": "Ac",
+                  "Operator": null,
+                  "GroupOperator": null
+                },
+                {
+                  "Type": 3,
+                  "Value": ",",
+                  "Operator": null,
+                  "GroupOperator": null
+                },
+                {
+                  "Type": 4,
+                  "Value": "4",
+                  "Operator": null,
+                  "GroupOperator": null
+                },
+                {
+                  "Type": 2,
+                  "Value": "_repeat",
+                  "Operator": null,
+                  "GroupOperator": 2
+                }
               ],
               "step_id": "Step 8 - Close Porvs"
             },
             {
-              "primitive_ids": [
-                "ICp",
-                "Ac",
-                "ICp",
-                "Ac",
-                "ICp",
-                "Ac",
-                "ICp",
-                "Ac"
+              "goms_expression": [
+                {
+                  "Type": 0,
+                  "Value": "ICp",
+                  "Operator": null,
+                  "GroupOperator": null
+                },
+                {
+                  "Type": 0,
+                  "Value": "Ac",
+                  "Operator": null,
+                  "GroupOperator": null
+                },
+                {
+                  "Type": 3,
+                  "Value": ",",
+                  "Operator": null,
+                  "GroupOperator": null
+                },
+                {
+                  "Type": 4,
+                  "Value": "4",
+                  "Operator": null,
+                  "GroupOperator": null
+                },
+                {
+                  "Type": 2,
+                  "Value": "_repeat",
+                  "Operator": null,
+                  "GroupOperator": 2
+                }
               ],
               "step_id": "Step 9 - Close Dumps"
             },
             {
-              "primitive_ids": [
-                "ICp",
-                "Rc",
-                "ICp",
-                "Dp"
+              "goms_expression": [
+                {
+                  "Type": 0,
+                  "Value": "ICp",
+                  "Operator": null,
+                  "GroupOperator": null
+                },
+                {
+                  "Type": 0,
+                  "Value": "Rc",
+                  "Operator": null,
+                  "GroupOperator": null
+                },
+                {
+                  "Type": 0,
+                  "Value": "ICp",
+                  "Operator": null,
+                  "GroupOperator": null
+                },
+                {
+                  "Type": 0,
+                  "Value": "Dp",
+                  "Operator": null,
+                  "GroupOperator": null
+                }
               ],
               "step_id": "Step 10 - Check Core Temp"
             },
             {
-              "primitive_ids": [
-                "Rc",
-                "Rc",
-                "Dp",
-                "Ac"
+              "goms_expression": [
+                {
+                  "Type": 0,
+                  "Value": "Rc",
+                  "Operator": null,
+                  "GroupOperator": null
+                },
+                {
+                  "Type": 0,
+                  "Value": "Rc",
+                  "Operator": null,
+                  "GroupOperator": null
+                },
+                {
+                  "Type": 0,
+                  "Value": "Dp",
+                  "Operator": null,
+                  "GroupOperator": null
+                },
+                {
+                  "Type": 0,
+                  "Value": "Ac",
+                  "Operator": null,
+                  "GroupOperator": null
+                }
               ],
               "step_id": "Step 11 - Leave one RCP in service"
             }
