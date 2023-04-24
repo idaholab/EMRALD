@@ -63,6 +63,7 @@
  * @property {boolean} mainItem - If the event is the main item.
  * @property {string} name - The name of the event.
  * @property {string[]} triggerStates - The names of states the event triggers.
+ * @property {boolean} triggerOnFalse
  */
 
 /**

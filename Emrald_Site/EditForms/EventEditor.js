@@ -268,6 +268,7 @@ function OnLoad(dataObj) {
                   break;
               case "etComponentLogic":
                   scope.data.onSuccess = eventData.onSuccess;
+                  scope.data.triggerOnFalse = eventData.triggerOnFalse;
                   var lt = scope.logicTops.find((o) => o.name == eventData.logicTop);
                   if (lt)
                       scope.data.logicTop = lt;
@@ -366,6 +367,7 @@ function GetDataObject() {
           break;
       case "etComponentLogic":
           dataObj.onSuccess = scope.data.onSuccess;
+          dataObj.triggerOnFalse = scope.data.triggerOnFalse;
           if (scope.data.logicTop) {
               dataObj.logicTop = scope.data.logicTop.name;
           }
@@ -536,6 +538,7 @@ EEApp.controller("EEController", function ($scope) {
       logicTop: null,
       fromSimStart: false,
       extEventType: null,
+      triggerOnFalse: false,
       varMap: [],
   };
 
