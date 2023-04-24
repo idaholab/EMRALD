@@ -396,8 +396,8 @@
                     </table>
                 </div>
                 <div id="ComponentLogicPanel" ng-if="typeOption.value === 'etComponentLogic'" style="display:table-row;position:absolute;height:70%;width:96%;overflow-x:hidden;overflow-y:scroll">
-                    <input id="onSuccessTrue" name="OnSuccess" type="radio" ng-model="data.onSuccess" ng-value="true" /><label for="onSuccessTrue">On Success</label><br />
-                    <input id="onSuccessFalse" name="OnSuccess" type="radio" ng-model="data.onSuccess" ng-value="false" /><label for="onSuccessFalse">On Failure</label><br />
+                    <input id="onSuccessTrue" name="OnSuccess" type="radio" ng-model="data.onSuccess" ng-value="true" /><label for="onSuccessTrue">Success Tree</label><br />
+                    <input id="onSuccessFalse" name="OnSuccess" type="radio" ng-model="data.onSuccess" ng-value="false" /><label for="onSuccessFalse">Failure Tree</label><br />
                     <p>Value is: {{data.onSuccess}}</p>
                     <label style="display:table-cell;vertical-align:middle; white-space:nowrap;">Logic Top:</label>
                     <select name="LogicTop" ng-model="data.logicTop" ng-options="lt.name for lt in logicTops" style="width:200px;">
