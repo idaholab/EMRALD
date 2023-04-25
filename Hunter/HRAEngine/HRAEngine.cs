@@ -130,6 +130,8 @@ namespace Hunter.Hra
         internal void SetCurrentProcedureId(string? value) { _currentProcedureId = value; }
 
 
+        public bool? StepSuccess;
+
         private bool? _currentSuccess;
         public bool? CurrentSuccess { get { return _currentSuccess; } }
         internal void SetCurrentSuccess(bool? value) { _currentSuccess = value; }
@@ -151,6 +153,8 @@ namespace Hunter.Hra
         {
             get { return _primitives.Count; }
         }
+
+        private List<string> _eventLog { get; set; } = new List<string>();
 
         public HRAEngine(string primitivesFilePath = null, TimeSpan timeOnShift = default, bool initPsfs = true)
         {
@@ -350,42 +354,33 @@ namespace Hunter.Hra
                               int startStep, int endStep,
                               string? outputDir = null)
         {
-            if (psfCollection != null)
-            {
-                psfCollection.Update(this);
-            }
-
+            psfCollection?.Update(this);
             double elapsedTime = 0.0;
             _currentSuccess = true;
-
             if (procedureCollection.TryGetValue(procedureId, out Procedure procedure))
             {
                 _currentProcedureId = procedureId;
-
                 for (int i = startStep; i <= endStep; i++)
                 {
                     _currentStepId = procedure.Steps[i - 1].StepId;
                     List<ExpressiveGoms.Token> tokens = procedure.Steps[i - 1].GomsExpression;
 
-                    bool? stepSuccess = true;
                     elapsedTime += ExpressiveGoms.EvaluatePostfixExpression(tokens, this);
-                    elapsedTime += HandleRepeatMode(tokens, ref stepSuccess);
-                    _currentSuccess = (_currentSuccess & stepSuccess) ?? null;
+                    elapsedTime += HandleRepeatMode(tokens);
 
-                    var hasTimeRemaining = _taskAvailableTime.HasTimeRemaining;
-                    if (hasTimeRemaining != null && _currentSuccess != null)
+                    // ExpressiveGoms sets StepSuccess
+                    _currentSuccess = (_currentSuccess & StepSuccess) ?? null;
+
+                    if (!_taskAvailableTime.HasTimeRemaining ?? false && _currentSuccess != null)
                     {
-                        if (!hasTimeRemaining.Value)
-                        {
-                            _currentSuccess = null;
-                        }
+                        _currentSuccess = null;
                     }
 
+                    // halt execution of the procedure if the current step failed
                     if (_currentSuccess == null)
                     {
                         return TimeSpan.FromSeconds(elapsedTime);
                     }
-
                 }
             }
             else
@@ -396,16 +391,15 @@ namespace Hunter.Hra
             return TimeSpan.FromSeconds(elapsedTime);
         }
 
-        private double HandleRepeatMode(List<ExpressiveGoms.Token> groupedTokens, ref bool? stepSuccess)
+        private double HandleRepeatMode(List<ExpressiveGoms.Token> groupedTokens)
         {
             double elapsedTime = 0.0;
 
-            if (RepeatMode && (stepSuccess == false))
+            if (RepeatMode && (StepSuccess == false))
             {
-                for (int j = 1; j < MaxRepeatCount && (stepSuccess == false); j++)
+                for (int j = 1; j < MaxRepeatCount && (StepSuccess == false); j++)
                 {
                     _repeatCount += 1;
-                    stepSuccess = true;
                     elapsedTime += ExpressiveGoms.EvaluatePostfixExpression(groupedTokens, this);
                 }
             }

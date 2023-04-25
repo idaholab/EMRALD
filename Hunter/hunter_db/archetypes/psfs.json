@@ -5,23 +5,24 @@
     "levels": [
       {
         "level": "InadequateTime",
-        "multiplier": "9999"
+        "multiplier": 9999
       },
       {
         "level": "BarelyAdequateTime",
-        "multiplier": "10"
+        "multiplier": 10,
+        "time_multiplier": 0.5
       },
       {
         "level": "NominalTime",
-        "multiplier": "1"
+        "multiplier": 1
       },
       {
         "level": "ExtraTime",
-        "multiplier": "0.1"
+        "multiplier": 0.1
       },
       {
         "level": "ExpansiveTime",
-        "multiplier": "0.01"
+        "multiplier": 0.01
       }
     ],
     "id": "ATa"
@@ -32,23 +33,24 @@
     "levels": [
       {
         "level": "InadequateTime",
-        "multiplier": "9999"
+        "multiplier": 9999
       },
       {
         "level": "BarelyAdequateTime",
-        "multiplier": "10"
+        "multiplier": 10,
+        "time_multiplier": 0.5
       },
       {
         "level": "NominalTime",
-        "multiplier": "1"
+        "multiplier": 1
       },
       {
         "level": "ExtraTime",
-        "multiplier": "0.1"
+        "multiplier": 0.1
       },
       {
         "level": "ExpansiveTime",
-        "multiplier": "0.01"
+        "multiplier": 0.01
       }
     ],
     "id": "ATd"
@@ -59,19 +61,19 @@
     "levels": [
       {
         "level": "HighlyComplex",
-        "multiplier": "50"
+        "multiplier": 50
       },
       {
         "level": "ModeratelyComplex",
-        "multiplier": "20"
+        "multiplier": 20
       },
       {
         "level": "Nominal",
-        "multiplier": "1"
+        "multiplier": 1
       },
       {
         "level": "ObviousDiagnosis",
-        "multiplier": "0.01"
+        "multiplier": 0.01
       }
     ],
     "id": "Ca"
@@ -82,22 +84,21 @@
     "levels": [
       {
         "level": "HighlyComplex",
-        "multiplier": "5"
+        "multiplier": 5
       },
       {
         "level": "ModeratelyComplex",
-        "multiplier": "2"
+        "multiplier": 2
       },
       {
         "level": "Nominal",
-        "multiplier": "1"
+        "multiplier": 1
       },
       {
         "level": "ObviousDiagnosis",
-        "multiplier": "0.001"
+        "multiplier": 0.001
       }
     ],
-    "is_static": true,
     "id": "Cd"
   },
   {
@@ -106,19 +107,19 @@
     "levels": [
       {
         "level": "MissingOrMisleading",
-        "multiplier": "50"
+        "multiplier": 50
       },
       {
         "level": "Poor",
-        "multiplier": "20"
+        "multiplier": 20
       },
       {
         "level": "Nominal",
-        "multiplier": "1"
+        "multiplier": 1
       },
       {
         "level": "Good",
-        "multiplier": "0.1"
+        "multiplier": 0.1
       }
     ],
     "is_static": true,
@@ -130,21 +131,22 @@
     "levels": [
       {
         "level": "MissingOrMisleading",
-        "multiplier": "5"
+        "multiplier": 5
       },
       {
         "level": "Poor",
-        "multiplier": "2"
+        "multiplier": 2
       },
       {
         "level": "Nominal",
-        "multiplier": "1"
+        "multiplier": 1
       },
       {
         "level": "Good",
-        "multiplier": "0.01"
+        "multiplier": 0.01
       }
     ],
+    "is_static": true,
     "id": "Ed"
   },
   {
@@ -153,16 +155,16 @@
     "levels": [
       {
         "level": "Low",
-        "multiplier": "10.0",
-        "time_multiplier": "3.0"
+        "multiplier": 10,
+        "time_multiplier": 3
       },
       {
         "level": "Nominal",
-        "multiplier": "1.0"
+        "multiplier": 1
       },
       {
         "level": "High",
-        "multiplier": "0.5"
+        "multiplier": 0.5
       }
     ],
     "is_static": true,
@@ -174,16 +176,16 @@
     "levels": [
       {
         "level": "Low",
-        "multiplier": "3.0",
-        "time_multiplier": "3.0"
+        "multiplier": 3,
+        "time_multiplier": 3
       },
       {
         "level": "Nominal",
-        "multiplier": "1.0"
+        "multiplier": 1
       },
       {
         "level": "High",
-        "multiplier": "0.5"
+        "multiplier": 0.5
       }
     ],
     "is_static": true,
@@ -195,15 +197,15 @@
     "levels": [
       {
         "level": "Unfit",
-        "multiplier": "5"
+        "multiplier": 5
       },
       {
         "level": "DegradedFitness",
-        "multiplier": "2"
+        "multiplier": 2
       },
       {
         "level": "Nominal",
-        "multiplier": "1"
+        "multiplier": 1
       }
     ],
     "id": "FfDa"
@@ -214,15 +216,15 @@
     "levels": [
       {
         "level": "Unfit",
-        "multiplier": "5"
+        "multiplier": 5
       },
       {
         "level": "DegradedFitness",
-        "multiplier": "2"
+        "multiplier": 2
       },
       {
         "level": "Nominal",
-        "multiplier": "1"
+        "multiplier": 1
       }
     ],
     "id": "FfDd"
@@ -233,23 +235,23 @@
     "levels": [
       {
         "level": "NotAvailable",
-        "multiplier": "100"
+        "multiplier": 100
       },
       {
         "level": "Incomplete",
-        "multiplier": "50"
+        "multiplier": 50
       },
       {
         "level": "AvailableButPoor",
-        "multiplier": "20"
+        "multiplier": 20
       },
       {
         "level": "Nominal",
-        "multiplier": "1"
+        "multiplier": 1
       },
       {
         "level": "DiagnosticOrSymptomOriented",
-        "multiplier": "0.1"
+        "multiplier": 0.1
       }
     ],
     "is_static": true,
@@ -261,23 +263,23 @@
     "levels": [
       {
         "level": "NotAvailable",
-        "multiplier": "10"
+        "multiplier": 10
       },
       {
         "level": "Incomplete",
-        "multiplier": "5"
+        "multiplier": 5
       },
       {
         "level": "AvailableButPoor",
-        "multiplier": "2"
+        "multiplier": 2
       },
       {
         "level": "Nominal",
-        "multiplier": "1"
+        "multiplier": 1
       },
       {
         "level": "DiagnosticOrSymptomOriented",
-        "multiplier": "0.01"
+        "multiplier": 0.01
       }
     ],
     "is_static": true,
@@ -289,15 +291,15 @@
     "levels": [
       {
         "level": "Extreme",
-        "multiplier": "50"
+        "multiplier": 50
       },
       {
         "level": "High",
-        "multiplier": "20"
+        "multiplier": 20
       },
       {
         "level": "Nominal",
-        "multiplier": "1"
+        "multiplier": 1
       }
     ],
     "is_static": true,
@@ -310,15 +312,15 @@
     "levels": [
       {
         "level": "Extreme",
-        "multiplier": "5"
+        "multiplier": 5
       },
       {
         "level": "High",
-        "multiplier": "2"
+        "multiplier": 2
       },
       {
         "level": "Nominal",
-        "multiplier": "1"
+        "multiplier": 1
       }
     ],
     "is_static": true,
@@ -331,15 +333,15 @@
     "levels": [
       {
         "level": "Poor",
-        "multiplier": "5"
+        "multiplier": 5
       },
       {
         "level": "Nominal",
-        "multiplier": "1"
+        "multiplier": 1
       },
       {
         "level": "Good",
-        "multiplier": "0.05"
+        "multiplier": 0.05
       }
     ],
     "is_static": true,
@@ -351,15 +353,15 @@
     "levels": [
       {
         "level": "Poor",
-        "multiplier": "5"
+        "multiplier": 5
       },
       {
         "level": "Nominal",
-        "multiplier": "1"
+        "multiplier": 1
       },
       {
         "level": "Good",
-        "multiplier": "0.05"
+        "multiplier": 0.05
       }
     ],
     "is_static": true,

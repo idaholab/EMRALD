@@ -80,6 +80,20 @@ namespace Hunter.Tests {
                 stress: true, fatigue: true, atStartOfShift: true);
         }
 
+        [Test]
+        public void RunFullModel_WithPSFs_repeatMode_TimePressure_StartOfShift()
+        {
+            RunTest(withPsfs: true, timePressure: true, repeatMode: true,
+                stress: false, fatigue: false, atStartOfShift: true);
+        }
+
+        [Test]
+        public void RunFullModel_WithPSFs_repeatMode_StartOfShift()
+        {
+            RunTest(withPsfs: true, timePressure: false, repeatMode: true,
+                stress: false, fatigue: false, atStartOfShift: true);
+        }
+
         private void RunTest(bool withPsfs, bool timePressure, 
             bool repeatMode=false, bool stress = false, 
             bool fatigue = false, bool atStartOfShift = false)

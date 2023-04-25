@@ -93,6 +93,7 @@ namespace Hunter.ExpGoms
             public string Value { get; set; }
             public OperatorType? Operator { get; set; }
             public GroupOperatorType? GroupOperator { get; set; }
+
             public Token(TokenType type, string value)
             {
                 Type = type;
@@ -189,7 +190,9 @@ namespace Hunter.ExpGoms
                 else if (Type == TokenType.Primitive)
                 {
                     bool? success = true;
-                    return hraEngine.EvaluatePrimitive(ToPrimitive(hraEngine), ref success);
+                    double elapsed_time = hraEngine.EvaluatePrimitive(ToPrimitive(hraEngine), ref success);
+                    hraEngine.StepSuccess = success;
+                    return elapsed_time;
                 }
                 else
                 {
