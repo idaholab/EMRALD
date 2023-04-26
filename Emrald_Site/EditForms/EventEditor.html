@@ -396,7 +396,16 @@
                     </table>
                 </div>
                 <div id="ComponentLogicPanel" ng-if="typeOption.value === 'etComponentLogic'" style="display:table-row;position:absolute;height:70%;width:96%;overflow-x:hidden;overflow-y:scroll">
-                    <input name="OnSuccess" type="checkbox" ng-model="data.onSuccess" />On Success <br />
+                    <div style="display:flex; flex-direction: row">
+                        <div>
+                            <input id="onSuccessTrue" name="OnSuccess" type="radio" ng-model="data.onSuccess" ng-value="true" /><label for="onSuccessTrue">Success Tree</label><br />
+                            <input id="onSuccessFalse" name="OnSuccess" type="radio" ng-model="data.onSuccess" ng-value="false" /><label for="onSuccessFalse">Failure Tree</label><br />
+                        </div>
+                        <div>
+                            <input id="TriggerOnFalse-True" name="TriggerOnFalse" type="radio" ng-model="data.triggerOnFalse" ng-value="true" /><label for="TriggerOnFalse-True">Trigger on False</label><br />
+                            <input id="TriggerOnFalse-False" name="TriggerOnFalse" type="radio" ng-model="data.triggerOnFalse" ng-value="false" /><label for="TriggerOnFalse-False">Trigger on True</label><br />
+                        </div>
+                    </div>
                     <label style="display:table-cell;vertical-align:middle; white-space:nowrap;">Logic Top:</label>
                     <select name="LogicTop" ng-model="data.logicTop" ng-options="lt.name for lt in logicTops" style="width:200px;">
                         <option>-- Choose logic top --</option>

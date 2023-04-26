@@ -4113,7 +4113,7 @@ if (typeof Navigation === 'undefined')
         case "Logic Tree":
           if (this.LogicNodeList) {
             this.LogicNodeList.forEach(function (item) {
-              if (item.LogicNode.isRoot) {
+              if (item.LogicNode.name == item.LogicNode.rootName || item.LogicNode.isRoot) {
                 item.ui_el = this.addSectionItem(container, section, item.LogicNode.name, item.LogicNode);
                 sortDOMList(container);
               }
