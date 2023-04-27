@@ -378,8 +378,10 @@ namespace SimulationDAL
 
       this.successSpace = (((string)dynObj.onSuccess).ToLower() == "true");
 
-      if(dynObj.triggerOnFalse != null)
+      if (dynObj.triggerOnFalse != null)
         triggerOnFalse = ((bool)dynObj.triggerOnFalse);
+      else if (this.successSpace == true) //old version where success space was just the not of failure space
+        triggerOnFalse = true;
 
       //Now done in LoadObjLinks()
       //if ((dynObj.logicTop != null) || (dynObj.LogicTop == 0))
@@ -430,6 +432,8 @@ namespace SimulationDAL
     public void AutoAddRelatedComponents(LogicNode logicTop)
     {
       this.AddRelatedItems(logicTop.AllUsedStateIDs);
+      if (logicTop.AllUsedStateIDs.Count == 0)
+        throw new Exception("no state IDs under logic tree " + logicTop.name);
     }
 
     public override void LookupRelatedItems(EmraldModel all, EmraldModel addToList)
