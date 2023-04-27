@@ -273,7 +273,7 @@ function OnLoad(dataObj) {
                     scope.data.onSuccess = eventData.onSuccess;
                   }
                   if (eventData.triggerOnFalse === undefined || eventData.triggerOnFalse === null) {
-                    scope.data.triggerOnFalse = true;
+                    scope.data.triggerOnFalse = false;
                   } else {
                     scope.data.triggerOnFalse = eventData.triggerOnFalse;
                   }
@@ -546,7 +546,7 @@ EEApp.controller("EEController", function ($scope) {
       logicTop: null,
       fromSimStart: false,
       extEventType: null,
-      triggerOnFalse: true,
+      triggerOnFalse: false,
       varMap: [],
   };
 
