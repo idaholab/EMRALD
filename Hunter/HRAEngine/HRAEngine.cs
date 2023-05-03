@@ -196,15 +196,9 @@ namespace Hunter.Hra
 
         public void SetContext(Dictionary<string, object> context)
         {
-            // Get the time on shift from the context
-            if (context.ContainsKey("StartShiftTimeH"))
-            {
-                TimeOnShift = TimeSpan.FromHours((double)context["StartShiftTimeH"]);
-            }
-
             if (context.ContainsKey("ShiftTimeH"))
             {
-                TimeOnShift += TimeSpan.FromHours((double)context["ShiftTimeH"]);
+                TimeOnShift = TimeSpan.FromHours((double)context["ShiftTimeH"]);
             }
 
             // Get the available time from the context
@@ -379,7 +373,8 @@ namespace Hunter.Hra
                     // halt execution of the procedure if the current step failed
                     if (_currentSuccess == null)
                     {
-                        return TimeSpan.FromSeconds(elapsedTime);
+                        return TimeSpan.MaxValue;
+                        //return TimeSpan.FromSeconds(elapsedTime);
                     }
                 }
             }
@@ -388,7 +383,15 @@ namespace Hunter.Hra
                 Console.WriteLine($"Procedure not found: {procedureId}");
             }
 
-            return TimeSpan.FromSeconds(elapsedTime);
+            if (_currentSuccess != true)
+            {
+                return TimeSpan.MaxValue;
+            } else
+            {
+                return TimeSpan.FromSeconds(elapsedTime);
+
+            }
+
         }
 
         private double HandleRepeatMode(List<ExpressiveGoms.Token> groupedTokens)

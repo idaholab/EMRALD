@@ -1381,7 +1381,6 @@ namespace SimulationDAL
       // success == true means operator succeeded
       // success == false means operator failed
 
-
       return retVal;
     }
 

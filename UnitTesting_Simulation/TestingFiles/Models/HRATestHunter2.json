@@ -1,0 +1,501 @@
+{
+  "id": 0,
+  "name": "HUNTER_Integration",
+  "desc": "Simple human action with external call to HUNTER",
+  "version": 1.2,
+  "DiagramList": [
+    {
+      "Diagram": {
+        "id": 1,
+        "name": "ScenarioModel",
+        "desc": "",
+        "diagramType": "dtPlant",
+        "diagramTemplate": "",
+        "diagramLabel": "Plant",
+        "forceMerge": false,
+        "states": [
+          "InitiatingEvent",
+          "TimeExceededEventFailure",
+          "DiagnoseSGTR",
+          "Start",
+          "MitigateSGTR",
+          "EventResolved",
+          "DiagnosisFailedSGTR",
+          "Terminate"
+        ]
+      }
+    }
+  ],
+  "StateList": [
+    {
+      "State": {
+        "id": 1,
+        "name": "InitiatingEvent",
+        "desc": "",
+        "stateType": "stStart",
+        "diagramName": "ScenarioModel",
+        "immediateActions": [
+          "UpdateContextTimeOnShift",
+          "Goto_DiagnoseSGTR"
+        ],
+        "events": [
+          "TimeAvailable"
+        ],
+        "eventActions": [
+          {
+            "actions": [
+              "Goto_TimeExceeded"
+            ],
+            "moveFromCurrent": true
+          }
+        ],
+        "geometry": "{ x: 690.5, y: 350.5, width: 200, height: 150}"
+      }
+    },
+    {
+      "State": {
+        "id": 2,
+        "name": "TimeExceededEventFailure",
+        "desc": "",
+        "stateType": "stKeyState",
+        "diagramName": "ScenarioModel",
+        "immediateActions": [
+          "Goto_Terminate"
+        ],
+        "events": [],
+        "eventActions": [],
+        "geometry": "{ x: 1291, y: 781, width: 270, height: 100}"
+      }
+    },
+    {
+      "State": {
+        "id": 3,
+        "name": "DiagnoseSGTR",
+        "desc": "",
+        "stateType": "stKeyState",
+        "diagramName": "ScenarioModel",
+        "immediateActions": [],
+        "events": [
+          "RunHUNTERDiagnose"
+        ],
+        "eventActions": [
+          {
+            "actions": [
+              "Goto_MitigateSGTR"
+            ],
+            "moveFromCurrent": true
+          }
+        ],
+        "geometry": "{ x: 1040.5, y: 320.5, width: 200, height: 120}"
+      }
+    },
+    {
+      "State": {
+        "id": 4,
+        "name": "Start",
+        "desc": "",
+        "stateType": "stStart",
+        "diagramName": "ScenarioModel",
+        "immediateActions": [],
+        "events": [
+          "SampleStartTimeOnShift"
+        ],
+        "eventActions": [
+          {
+            "actions": [
+              "Goto_InitiatingEvent"
+            ],
+            "moveFromCurrent": false
+          }
+        ],
+        "geometry": "{ x: 310, y: 400.5, width: 200, height: 120}"
+      }
+    },
+    {
+      "State": {
+        "id": 5,
+        "name": "MitigateSGTR",
+        "desc": "",
+        "stateType": "stKeyState",
+        "diagramName": "ScenarioModel",
+        "immediateActions": [
+          "UpdateContextTimeOnShift"
+        ],
+        "events": [
+          "RunHUNTERMitigate"
+        ],
+        "eventActions": [
+          {
+            "actions": [
+              "Goto_EventResolved"
+            ],
+            "moveFromCurrent": false
+          }
+        ],
+        "geometry": "{ x: 1560, y: 320.5, width: 200, height: 140}"
+      }
+    },
+    {
+      "State": {
+        "id": 6,
+        "name": "EventResolved",
+        "desc": "",
+        "stateType": "stKeyState",
+        "diagramName": "ScenarioModel",
+        "immediateActions": [
+          "UpdateContextTimeOnShift",
+          "Goto_Terminate"
+        ],
+        "events": [],
+        "eventActions": [],
+        "geometry": "{ x: 1870, y: 340.5, width: 200, height: 110}"
+      }
+    },
+    {
+      "State": {
+        "id": 7,
+        "name": "DiagnosisFailedSGTR",
+        "desc": "",
+        "stateType": "stKeyState",
+        "diagramName": "ScenarioModel",
+        "immediateActions": [
+          "Goto_Terminate"
+        ],
+        "events": [],
+        "eventActions": [],
+        "geometry": "{ x: 1340, y: 550, width: 200, height: 100}"
+      }
+    },
+    {
+      "State": {
+        "id": 8,
+        "name": "Terminate",
+        "desc": "",
+        "stateType": "stTerminal",
+        "diagramName": "ScenarioModel",
+        "immediateActions": [],
+        "events": [],
+        "eventActions": [],
+        "geometry": "{ x: 1890, y: 640, width: 200, height: 80}"
+      }
+    }
+  ],
+  "ActionList": [
+    {
+      "Action": {
+        "id": 1,
+        "name": "Goto_TimeExceeded",
+        "desc": "",
+        "actType": "atTransition",
+        "mainItem": false,
+        "mutExcl": true,
+        "newStates": [
+          {
+            "toState": "TimeExceededEventFailure",
+            "prob": -1,
+            "failDesc": ""
+          }
+        ],
+        "itemId": 2
+      }
+    },
+    {
+      "Action": {
+        "id": 2,
+        "name": "Goto_InterventionSuccess",
+        "desc": "",
+        "actType": "atTransition",
+        "mainItem": false,
+        "mutExcl": true,
+        "newStates": [
+          {
+            "toState": "DiagnoseSGTR",
+            "prob": -1,
+            "failDesc": ""
+          }
+        ],
+        "itemId": 0,
+        "moveFromCurrent": false
+      }
+    },
+    {
+      "Action": {
+        "id": 3,
+        "name": "UpdateContextTimeOnShift",
+        "desc": "Set",
+        "actType": "atCngVarVal",
+        "mainItem": false,
+        "mutExcl": true,
+        "newStates": [],
+        "scriptCode": "return curTime;",
+        "variableName": "TimeOnShiftH",
+        "codeVariables": []
+      }
+    },
+    {
+      "Action": {
+        "id": 4,
+        "name": "Goto_MitigateSGTR",
+        "desc": "",
+        "actType": "atTransition",
+        "mainItem": false,
+        "mutExcl": true,
+        "newStates": [
+          {
+            "toState": "MitigateSGTR",
+            "prob": -1,
+            "failDesc": ""
+          }
+        ],
+        "itemId": 5
+      }
+    },
+    {
+      "Action": {
+        "id": 5,
+        "name": "Goto_EventResolved",
+        "desc": "",
+        "actType": "atTransition",
+        "mainItem": false,
+        "mutExcl": true,
+        "newStates": [
+          {
+            "toState": "EventResolved",
+            "prob": -1,
+            "failDesc": ""
+          }
+        ],
+        "itemId": 6,
+        "moveFromCurrent": false
+      }
+    },
+    {
+      "Action": {
+        "id": 8,
+        "name": "Goto_DiagnoseSGTR",
+        "desc": "",
+        "actType": "atTransition",
+        "mainItem": false,
+        "mutExcl": false,
+        "newStates": [
+          {
+            "toState": "DiagnoseSGTR",
+            "prob": -1,
+            "failDesc": ""
+          }
+        ],
+        "itemId": 1
+      }
+    },
+    {
+      "Action": {
+        "id": 8,
+        "name": "Goto_InitiatingEvent",
+        "desc": "",
+        "actType": "atTransition",
+        "mainItem": false,
+        "mutExcl": true,
+        "newStates": [
+          {
+            "toState": "InitiatingEvent",
+            "prob": -1,
+            "failDesc": ""
+          }
+        ],
+        "itemId": 9
+      }
+    },
+    {
+      "Action": {
+        "id": 8,
+        "name": "Goto_Terminate",
+        "desc": "",
+        "actType": "atTransition",
+        "mainItem": false,
+        "mutExcl": true,
+        "newStates": [
+          {
+            "toState": "Terminate",
+            "prob": -1,
+            "failDesc": ""
+          }
+        ],
+        "itemId": 1
+      }
+    }
+  ],
+  "EventList": [
+    {
+      "Event": {
+        "id": 2,
+        "name": "TimeAvailable",
+        "desc": "AvailableTimeToFailure",
+        "mainItem": false,
+        "evType": "etTimer",
+        "allItems": true,
+        "triggerStates": [],
+        "moveFromCurrent": true,
+        "varNames": [],
+        "useVariable": true,
+        "timeVariableUnit": "trMinutes",
+        "fromSimStart": true,
+        "onVarChange": "ocAdjust",
+        "time": "AvailableTimeM"
+      }
+    },
+    {
+      "Event": {
+        "id": 3,
+        "name": "RunHUNTERDiagnose",
+        "desc": "",
+        "mainItem": false,
+        "mainItem": false,
+        "evType": "etHRAEval",
+        "moveFromCurrent": true,
+        "procedureName": "sgtr",
+        "startStep": 1,
+        "endStep": 3,
+        "contextLinks": [
+          {
+            "contextName": "StartShiftTimeH",
+            "simVar": "StartTimeOnShiftH"
+          },
+          {
+            "contextName": "ShiftTimeH",
+            "simVar": "TimeOnShiftH"
+          },
+          {
+            "contextName": "TaskAvailableTimeM",
+            "simVar": "AvailableTimeM"
+          },
+          {
+            "contextName": "Stress",
+            "simVar": "Psf.Stress.Extreme"
+          }
+        ]
+      }
+    },
+    {
+      "Event": {
+        "id": 4,
+        "name": "RunHUNTERMitigate",
+        "desc": "",
+        "mainItem": false,
+        "mainItem": false,
+        "evType": "etHRAEval",
+        "moveFromCurrent": true,
+        "procedureName": "rapid_shutdown",
+        "startStep": 1,
+        "endStep": 3,
+        "contextLinks": [
+          {
+            "contextName": "StartShiftTimeH",
+            "simVar": "StartTimeOnShiftH"
+          },
+          {
+            "contextName": "ShiftTimeH",
+            "simVar": "TimeOnShiftH"
+          },
+          {
+            "contextName": "TaskAvailableTimeM",
+            "simVar": "AvailableTimeM"
+          },
+          {
+            "contextName": "Stress",
+            "simVar": "Psf.Stress.Extreme"
+          }
+        ]
+      }
+    },
+    {
+      "Event": {
+        "id": 6,
+        "name": "SampleStartTimeOnShift",
+        "desc": "",
+        "mainItem": false,
+        "evType": "etDistribution",
+        "allItems": true,
+        "triggerStates": [],
+        "moveFromCurrent": false,
+        "varNames": [],
+        "distType": "dtNormal",
+        "parameters": [
+          {
+            "name": "Mean",
+            "value": "12",
+            "timeRate": "trHours",
+            "useVariable": false
+          },
+          {
+            "name": "Standard Deviation",
+            "value": "2",
+            "timeRate": "trHours",
+            "useVariable": false
+          },
+          {
+            "name": "Minimum",
+            "value": 0,
+            "timeRate": "trHours",
+            "useVariable": false
+          },
+          {
+            "name": "Maximum",
+            "value": "18",
+            "timeRate": "trHours",
+            "useVariable": false
+          }
+        ],
+        "dfltTimeRate": "trHours"
+      }
+    }
+  ],
+  "LogicNodeList": [
+    {
+      "LogicNode": {
+        "id": 1,
+        "name": "SuccessFail",
+        "desc": "",
+        "gateType": "gtAnd",
+        "rootName": "SuccessFail",
+        "compChildren": [],
+        "gateChildren": []
+      }
+    }
+  ],
+  "VariableList": [
+    {
+      "Variable": {
+        "id": 6,
+        "name": "AvailableTimeM",
+        "desc": "",
+        "varScope": "gtGlobal",
+        "value": 10,
+        "resetOnRuns": true,
+        "type": "double"
+      }
+    },
+    {
+      "Variable": {
+        "id": 8,
+        "name": "TaskAvailableTimeH",
+        "desc": "",
+        "varScope": "gtGlobal",
+        "value": 0,
+        "resetOnRuns": true,
+        "type": "double"
+      }
+    },
+    {
+      "Variable": {
+        "id": 9,
+        "name": "TimeOnShiftH",
+        "desc": "",
+        "varScope": "gtGlobal",
+        "value": 0,
+        "resetOnRuns": true,
+        "type": "int"
+      }
+    }
+  ],
+  "templates": []
+}
