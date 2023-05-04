@@ -15,13 +15,15 @@ namespace Hunter.Hra
             _hraEngine = hraEngine;
             StartTime = _hraEngine.TimeOnShift;
 
-            int hours = context.ContainsKey("TaskAvailableTimeH") ? (int)context["TaskAvailableTimeH"] : 0;
-            int minutes = context.ContainsKey("TaskAvailableTimeM") ? (int)context["TaskAvailableTimeM"] : 0;
-            int seconds = context.ContainsKey("TaskAvailableTimeS") ? (int)context["TaskAvailableTimeS"] : 0;
+            double hours = context.ContainsKey("TaskAvailableTimeH") ? (double)context["TaskAvailableTimeH"] : 0;
+            double minutes = context.ContainsKey("TaskAvailableTimeM") ? (double)context["TaskAvailableTimeM"] : 0;
+            double seconds = context.ContainsKey("TaskAvailableTimeS") ? (double)context["TaskAvailableTimeS"] : 0;
 
             if (hours != 0 || minutes != 0 || seconds != 0)
             {
-                Duration = TimeSpan.FromHours(hours) + TimeSpan.FromMinutes(minutes) + TimeSpan.FromSeconds(seconds);
+                Duration = TimeSpan.FromSeconds(hours * 3600) + 
+                           TimeSpan.FromSeconds(minutes * 60) + 
+                           TimeSpan.FromSeconds(seconds);
             }
         }
 
