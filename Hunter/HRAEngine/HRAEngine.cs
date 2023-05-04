@@ -365,17 +365,28 @@ namespace Hunter.Hra
                     // ExpressiveGoms sets StepSuccess
                     _currentSuccess = (_currentSuccess & StepSuccess) ?? null;
 
-                    if (!_taskAvailableTime.HasTimeRemaining ?? false && _currentSuccess != null)
-                    {
-                        _currentSuccess = null;
-                    }
+                    return TimeSpan.FromSeconds(elapsedTime);
 
-                    // halt execution of the procedure if the current step failed
-                    if (_currentSuccess == null)
+                    if (_currentSuccess != true)
                     {
                         return TimeSpan.MaxValue;
-                        //return TimeSpan.FromSeconds(elapsedTime);
                     }
+                    else
+                    {
+                        return TimeSpan.FromSeconds(elapsedTime);
+                    }
+
+                    //if (!_taskAvailableTime.HasTimeRemaining ?? false && _currentSuccess != null)
+                    //{
+                    //    _currentSuccess = null;
+                    //}
+
+                    //// halt execution of the procedure if the current step failed
+                    //if (_currentSuccess == null)
+                    //{
+                    //    return TimeSpan.MaxValue;
+                    //    //return TimeSpan.FromSeconds(elapsedTime);
+                    //}
                 }
             }
             else
@@ -389,7 +400,6 @@ namespace Hunter.Hra
             } else
             {
                 return TimeSpan.FromSeconds(elapsedTime);
-
             }
 
         }
