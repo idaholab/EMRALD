@@ -7,17 +7,49 @@ using System.Threading.Tasks;
 
 namespace Hunter.Hra
 {
-
+    /// <summary>
+    /// Represents the evaluated state of Hunter.HRAEngine as a pseudo enumeration.
+    /// </summary>
     public struct EvalState
     {
+        /// <summary>
+        /// The integer value associated with the EvalState.
+        /// </summary>
         public int Value;
 
+        /// <summary>
+        /// Represents an undefined evaluation state.
+        /// </summary>
         public static readonly EvalState None = new EvalState(-1);
+
+        /// <summary>
+        /// Represents a successful evaluation state.
+        /// </summary>
         public static readonly EvalState Success = new EvalState(0);
+
+        /// <summary>
+        /// Represents an evaluation state where HEP is greater than one.
+        /// </summary>
         public static readonly EvalState HepGtOneFailure = new EvalState(1);
+
+        /// <summary>
+        /// Represents an evaluation state where a human error occurred.
+        /// </summary>
         public static readonly EvalState HumanErrorFailure = new EvalState(2);
+
+        /// <summary>
+        /// Represents an evaluation state where the evaluation timed out.
+        /// </summary>
         public static readonly EvalState OutOfTimeFailure = new EvalState(3);
+
+        /// <summary>
+        /// Represents an evaluation state where the evaluation repeated until maxRepeatCount.
+        /// </summary>
         public static readonly EvalState OnRepeatFailure = new EvalState(4);
+
+        /// <summary>
+        /// Represents an evaluation state where multiple failures occurred.
+        /// </summary>
         public static readonly EvalState MultipleFailure = new EvalState(5);
 
         public EvalState(int value)
