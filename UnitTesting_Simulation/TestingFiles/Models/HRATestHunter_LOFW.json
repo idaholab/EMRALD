@@ -360,7 +360,7 @@
         "fromSimStart": false,
         "procedureName": "sgtr",
         "startStep": 1,
-        "endStep": 7,
+        "endStep": -1,
         "contextLinks": [
           {
             "contextName": "ShiftTimeH",
@@ -394,7 +394,7 @@
         "fromSimStart": false,
         "procedureName": "rapid_shutdown",
         "startStep": 1,
-        "endStep": 14,
+        "endStep": -1,
         "contextLinks": [
           {
             "contextName": "ShiftTimeH",

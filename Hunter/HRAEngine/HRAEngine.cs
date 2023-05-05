@@ -373,6 +373,12 @@ namespace Hunter.Hra
             _currentEvalState = EvalState.None;
             if (procedureCollection.TryGetValue(procedureId, out Procedure procedure))
             {
+                // Allow for negative indexing (-1) is the last step
+                if (endStep < 0)
+                {
+                    endStep = procedure.Steps.Count + endStep + 1;
+                }
+
                 _currentProcedureId = procedureId;
                 for (int i = startStep; i <= endStep; i++)
                 {
