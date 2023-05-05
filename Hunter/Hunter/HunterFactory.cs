@@ -26,7 +26,7 @@ namespace Hunter.Model
 
             hraEngine.SetCurrentProcedureId(snapshot._currentProcedureId);
             hraEngine.SetCurrentStepId(snapshot._currentStepId);
-            hraEngine.SetCurrentSuccess(snapshot._currentSuccess);
+            hraEngine.SetCurrentEvalState(snapshot._currentEvalState);
             hraEngine.SetPrimitiveEvalCount(snapshot._primitiveEvalCount);
             hraEngine.SetRepeatCount(snapshot._repeatCount);
 

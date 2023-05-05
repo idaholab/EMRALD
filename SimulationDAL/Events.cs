@@ -1243,14 +1243,11 @@ namespace SimulationDAL
   public class HRAEval : TimeBasedEvent //etHRAEval
   {
     //variables needed for hunter info
-    private string _hunterModelFilename = @"hunter_db/models/sgtr_model.json";
     HunterModel _hunterModel = null;
     private string _procedureName = "";
     private int _startStep = 1;
     private int _endStep = 0;
     private Dictionary<string, SimVariable> _contextVariables = new Dictionary<string, SimVariable>(); //key is the psf name value is the EMRALD variable
-
-
 
     protected override EnEventType GetEvType() { return EnEventType.etHRAEval; }
 
@@ -1367,7 +1364,7 @@ namespace SimulationDAL
         throw new Exception("Missing the hunter model");
       }
 
-      //TODO setup the contextVarables
+      //Setup the contextVarables
       _hunterModel._engine.SetContext(_contextVariables.ToDictionary(
         kvp => kvp.Key,
         kvp => kvp.Value.GetValue() as object
@@ -1376,10 +1373,14 @@ namespace SimulationDAL
       //Call the HRA library to determine the time of the event
       retVal = _hunterModel._engine.EvaluateSteps(_hunterModel.Task.ProcedureCatalog, _procedureName, _startStep, _endStep);
 
-      bool? success = _hunterModel._engine.CurrentSuccess;
-      // success == null means HEP = 1.0
-      // success == true means operator succeeded
-      // success == false means operator failed
+      // Get the Evaluated State
+      EvalState evalState = _hunterModel._engine.CurrentEvalState;
+      EmraldModel em = _hunterModel.Parent as EmraldModel;
+      var hunterStateVar = em?.allVariables.Values.FirstOrDefault(v => v.name == "HunterState");
+      if (hunterStateVar != null)
+      {
+        hunterStateVar.SetValue(evalState.Value);
+      }
 
       return retVal;
     }

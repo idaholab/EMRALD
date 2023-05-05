@@ -189,9 +189,9 @@ namespace Hunter.ExpGoms
                 }
                 else if (Type == TokenType.Primitive)
                 {
-                    bool? success = true;
-                    double elapsed_time = hraEngine.EvaluatePrimitive(ToPrimitive(hraEngine), ref success);
-                    hraEngine.StepSuccess = success;
+                    EvalState evalState = EvalState.Success;
+                    double elapsed_time = hraEngine.EvaluatePrimitive(ToPrimitive(hraEngine), ref evalState);
+                    hraEngine.StepEvalState = evalState;
                     return elapsed_time;
                 }
                 else

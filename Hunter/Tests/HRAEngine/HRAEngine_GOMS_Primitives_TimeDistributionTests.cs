@@ -32,8 +32,8 @@ namespace Hunter.Tests.HumanReliabilityAnalysisEngine
 
                 for (int i = 0; i < count; i++)
                 {
-                    bool? success = true;
-                    times.Add(engine.EvaluatePrimitive(primitive, ref success, outputDir: outputDirectory));
+                    EvalState evalState = EvalState.Success;
+                    times.Add(engine.EvaluatePrimitive(primitive, ref evalState, outputDir: outputDirectory));
                 }
 
                 double mean = Math.Round(times.Average(), 2);
@@ -65,8 +65,8 @@ namespace Hunter.Tests.HumanReliabilityAnalysisEngine
 
                 for (int i = 0; i < count; i++)
                 {
-                    bool? success = true;
-                    times.Add(engine.EvaluatePrimitive(primitive, ref success, outputDir: outputDirectory));
+                    EvalState evalState = EvalState.Success;
+                    times.Add(engine.EvaluatePrimitive(primitive, ref evalState, outputDir: outputDirectory));
                 }
 
                 double mean = Math.Round(times.Average(), 2);
@@ -88,9 +88,9 @@ namespace Hunter.Tests.HumanReliabilityAnalysisEngine
 
             HRAEngine engine = new HRAEngine();
             engine.RepeatMode = false;
-            bool? success = true;
+            EvalState evalState = EvalState.Success;
             HRAEngine.Primitive primitive = engine.GetPrimitiveById(Goms.Id.Ac);
-            engine.EvaluatePrimitive(primitive, ref success, outputDir: outputDirectory);
+            engine.EvaluatePrimitive(primitive, ref evalState, outputDir: outputDirectory);
         }
     }
 }

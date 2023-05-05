@@ -62,8 +62,8 @@ namespace Hunter.Tests.HumanReliabilityAnalysisEngine
             List<string> primitiveIds = new List<string> { "Ac" };
 
             // Act
-            bool? success = true;
-            double elapsedTime = hraEngine.Evaluate(primitiveIds, ref success);
+            EvalState evalState = EvalState.Success;
+            double elapsedTime = hraEngine.Evaluate(primitiveIds, ref evalState);
 
             // Assert
             Assert.Greater(elapsedTime, 0);
@@ -77,8 +77,8 @@ namespace Hunter.Tests.HumanReliabilityAnalysisEngine
             List<string> primitiveIds = new List<string> { "Ac", "Rc", "Sf" };
 
             // Act
-            bool? success = true;
-            double elapsedTime = hraEngine.Evaluate(primitiveIds, ref success);
+            EvalState evalState = EvalState.Success;
+            double elapsedTime = hraEngine.Evaluate(primitiveIds, ref evalState);
 
             // Assert
             Assert.Greater(elapsedTime, 0);
@@ -92,8 +92,8 @@ namespace Hunter.Tests.HumanReliabilityAnalysisEngine
             List<string> primitiveIds = new List<string> { "Ac", "Rc", "Sf" };
 
             // Act
-            bool? success = true;
-            double elapsedTime = hraEngine.Evaluate(primitiveIds, ref success);
+            EvalState evalState = EvalState.Success;
+            double elapsedTime = hraEngine.Evaluate(primitiveIds, ref evalState);
 
             // Assert
             Assert.Greater(elapsedTime, 0);
@@ -107,8 +107,8 @@ namespace Hunter.Tests.HumanReliabilityAnalysisEngine
             List<string> primitiveIds = new List<string> { "Unknown" };
 
             // Act
-            bool? success = true;
-            double elapsedTime = hraEngine.Evaluate(primitiveIds, ref success);
+            EvalState evalState = EvalState.Success;
+            double elapsedTime = hraEngine.Evaluate(primitiveIds, ref evalState);
 
             // Assert
             Assert.AreEqual(0, elapsedTime);
@@ -122,8 +122,8 @@ namespace Hunter.Tests.HumanReliabilityAnalysisEngine
             List<string> primitiveIds = new List<string>();
 
             // Act
-            bool? success = true;
-            double elapsedTime = hraEngine.Evaluate(primitiveIds, ref success);
+            EvalState evalState = EvalState.Success;
+            double elapsedTime = hraEngine.Evaluate(primitiveIds, ref evalState);
 
             // Assert
             Assert.AreEqual(0, elapsedTime);

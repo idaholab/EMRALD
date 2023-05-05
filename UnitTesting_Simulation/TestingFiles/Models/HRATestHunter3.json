@@ -505,7 +505,7 @@
       "TimeOnShiftFatigueEnabled": true,
       "TimeOnShift": "00:00:00",
       "HasTimePressure": false,
-      "Experience": "Nominal",
+      "Experience": "Low",
       "_currentProcedureId": null,
       "_currentStepId": null,
       "_currentSuccess": null,

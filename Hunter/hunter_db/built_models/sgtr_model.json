@@ -7,7 +7,7 @@
     "Experience": "Nominal",
     "_currentProcedureId": null,
     "_currentStepId": null,
-    "_currentSuccess": null,
+    "_currentEvalState": 0,
     "_primitiveEvalCount": 0,
     "_repeatCount": 0
   },

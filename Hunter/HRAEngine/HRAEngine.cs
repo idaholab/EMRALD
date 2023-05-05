@@ -1,14 +1,13 @@
-﻿using Newtonsoft.Json;
-using System.Collections;
-using CommonDefLib;
-using Newtonsoft.Json.Converters;
-using Hunter.Utils;
-using Hunter.Psf;
-using Hunter.Proc;
-using Hunter.Model;
-using Hunter.Hra.Distributions;
+﻿using CommonDefLib;
 using Hunter.ExpGoms;
-using Newtonsoft.Json.Linq;
+using Hunter.Hra.Distributions;
+using Hunter.Model;
+using Hunter.Proc;
+using Hunter.Psf;
+using Hunter.Utils;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+using System.Collections;
 
 namespace Hunter.Hra
 {
@@ -139,11 +138,11 @@ namespace Hunter.Hra
         internal void SetCurrentProcedureId(string? value) { _currentProcedureId = value; }
 
 
-        public bool? StepSuccess;
+        public EvalState StepEvalState;
 
-        private bool? _currentSuccess;
-        public bool? CurrentSuccess { get { return _currentSuccess; } }
-        internal void SetCurrentSuccess(bool? value) { _currentSuccess = value; }
+        private EvalState _currentEvalState;
+        public EvalState CurrentEvalState { get { return _currentEvalState; } }
+        internal void SetCurrentEvalState(int value) { _currentEvalState = new EvalState(value); }
 
 
         private int _primitiveEvalCount;
@@ -201,7 +200,7 @@ namespace Hunter.Hra
                 HasTimePressure = hasTimePressure,
                 _currentProcedureId = CurrentProcedureId,
                 _currentStepId = CurrentStepId,
-                _currentSuccess = CurrentSuccess,
+                _currentEvalState = CurrentEvalState.Value,
                 _primitiveEvalCount = PrimitiveEvalCount,
                 _repeatCount = RepeatCount
             };
@@ -357,8 +356,7 @@ namespace Hunter.Hra
         public TimeSpan EvaluateSteps(string procedureCollectionJson,
                                       string procedureId,
                                       int startStep, int endStep,
-                                      string? outputDir = null,
-                                      bool? success = true)
+                                      string? outputDir = null)
         {
             var procedureCollection = DeserializeProcedureCollection(procedureCollectionJson);
             return EvaluateSteps(procedureCollection, procedureId,
@@ -372,7 +370,7 @@ namespace Hunter.Hra
         {
             psfCollection?.Update(this);
             double elapsedTime = 0.0;
-            _currentSuccess = true;
+            _currentEvalState = EvalState.None;
             if (procedureCollection.TryGetValue(procedureId, out Procedure procedure))
             {
                 _currentProcedureId = procedureId;
@@ -384,23 +382,23 @@ namespace Hunter.Hra
                     elapsedTime += ExpressiveGoms.EvaluatePostfixExpression(tokens, this);
                     elapsedTime += HandleRepeatMode(tokens);
 
-                    // ExpressiveGoms sets StepSuccess
-                    _currentSuccess = (_currentSuccess & StepSuccess) ?? null;
+                    // ExpressiveGoms sets StepEvalState
+                    _currentEvalState = _currentEvalState & StepEvalState;
 
                     // failed on HEP > 1.0
-                    if (_currentSuccess != true)
+                    if (_currentEvalState != EvalState.Success)
                     {
                         return TimeSpan.MaxValue;
                     }
 
                     // Check if available time has elapsed
-                    if (!_taskAvailableTime?.HasTimeRemaining ?? false && _currentSuccess != null)
+                    if (!_taskAvailableTime?.HasTimeRemaining ?? false && _currentEvalState != EvalState.Success)
                     {
-                        _currentSuccess = null;
+                        _currentEvalState = EvalState.OutOfTimeFailure;
                     }
 
                     // halt execution of the procedure if the current step failed
-                    if (_currentSuccess == null)
+                    if (_currentEvalState != EvalState.Success)
                     {
                         return TimeSpan.MaxValue;
                     }
@@ -408,10 +406,10 @@ namespace Hunter.Hra
             }
             else
             {
-                Console.WriteLine($"Procedure not found: {procedureId}");
+                throw new ArgumentException($"procedureId {procedureId} not found.");
             }
 
-            if (_currentSuccess == true)
+            if (_currentEvalState == EvalState.Success)
             {
                 return TimeSpan.FromSeconds(elapsedTime);
             } 
@@ -426,9 +424,9 @@ namespace Hunter.Hra
         {
             double elapsedTime = 0.0;
 
-            if (RepeatMode && (StepSuccess == false))
+            if (RepeatMode && (StepEvalState != EvalState.Success))
             {
-                for (int j = 1; j < MaxRepeatCount && (StepSuccess == false); j++)
+                for (int j = 1; j < MaxRepeatCount && (StepEvalState == EvalState.HumanErrorFailure); j++)
                 {
                     _repeatCount += 1;
                     elapsedTime += ExpressiveGoms.EvaluatePostfixExpression(groupedTokens, this);
@@ -438,26 +436,26 @@ namespace Hunter.Hra
             return elapsedTime;
         }
         internal double Evaluate(List<string> primitiveIds,
-                       ref bool? success,
+                       ref EvalState evalState,
                        string? outputDir = null)
         {
             double elapsedTime = 0.0;
 
             foreach (string primitiveId in primitiveIds)
             {
-                elapsedTime += EvaluatePrimitiveById(primitiveId, ref success, outputDir);
+                elapsedTime += EvaluatePrimitiveById(primitiveId, ref evalState, outputDir);
             }
 
             if (outputDir != null)
             {
-                WriteEvaluateOutput(outputDir, success, elapsedTime);
+                WriteEvaluateOutput(outputDir, evalState, elapsedTime);
             }
 
             return elapsedTime;
         }
 
         private double EvaluatePrimitiveById(string primitiveId,
-                                             ref bool? success,
+                                             ref EvalState evalState,
                                              string? outputDir)
         {
             double elapsedTime = 0.0;
@@ -467,7 +465,7 @@ namespace Hunter.Hra
                 if (primitive.Time is null)
                     return elapsedTime;
 
-                elapsedTime = EvaluatePrimitive(primitive, ref success, outputDir);
+                elapsedTime = EvaluatePrimitive(primitive, ref evalState, outputDir);
             }
             else
             {
@@ -477,14 +475,14 @@ namespace Hunter.Hra
             return elapsedTime;
         }
 
-        private void WriteEvaluateOutput(string outputDir, bool? success, double elapsedTime)
+        private void WriteEvaluateOutput(string outputDir, EvalState evalState, double elapsedTime)
         {
             string outputFile = Path.Combine(outputDir, "step.csv");
 
             Dictionary<string, object> record = new Dictionary<string, object>
             {
                 { "step_id", _currentStepId ?? "null" },
-                { "success", success?.CompareTo(true) ?? 0 },
+                { "evalState", evalState.ToString() },
                 { "elapsed_time", elapsedTime }
             };
             CsvLogger.WriteRow(outputFile, record);
@@ -503,38 +501,39 @@ namespace Hunter.Hra
         /// Evaluates a primitive, calculating the adjusted time and human error probability (HEP) based on the given primitive, PSF collection, and output directory.
         /// </summary>
         /// <param name="primitive">The primitive object to evaluate.</param>
-        /// <param name="success">A reference to a nullable boolean indicating the success status of the primitive.</param>
+        /// <param name="evalState">A reference to a nullable boolean indicating the evalState status of the primitive.</param>
         /// <param name="psfs">The PSF collection object containing the time multiplier and composite multiplier, or null if not available.</param>
         /// <param name="outputDir">The output directory for writing test file outputs, or null if not required.</param>
         /// <returns>The adjusted time value for the primitive.</returns>
         public double EvaluatePrimitive(Primitive primitive,
-                                        ref bool? success,
+                                        ref EvalState evalState,
                                         string? outputDir = null)
         {
             double sampled_time = SamplePrimitiveTime(primitive);
             double adjusted_hep = CalculateAdjustedHep(primitive);
             double adjusted_time = CalculateAdjustedTime(primitive, sampled_time);
 
-            if (adjusted_hep == 1.0)
-                success = null;
+            if (adjusted_hep == 1.0) { 
+                evalState = EvalState.HepGtOneFailure;
+            }
 
-            if (success == true)
+            if (evalState == EvalState.Success)
             {
-                success = SingleRandom.Instance.NextDouble() >= adjusted_hep;
+                evalState = EvalState.FromBool(SingleRandom.Instance.NextDouble() >= adjusted_hep);
             }
 
             TimeOnShift += TimeSpan.FromSeconds(adjusted_time);
 
             if (outputDir != null)
             {
-                WritePrimitiveOutput(primitive, success, sampled_time, adjusted_time, outputDir);
+                WritePrimitiveOutput(primitive, evalState, sampled_time, adjusted_time, outputDir);
             }
 
             _primitiveEvalCount += 1;
 
             LogEvent(new Dictionary<string, object> {{"primitiveId", primitive.Id },
                                                      {"elapsed_time", adjusted_time},
-                                                     {"success", success},
+                                                     {"evalState", evalState},
                                                      {"adjusted_hep", adjusted_hep } });
             
             return adjusted_time;
@@ -610,12 +609,12 @@ namespace Hunter.Hra
         /// Writes the primitive evaluation output to a CSV file in the specified output directory.
         /// </summary>
         /// <param name="primitive">The primitive object to evaluate.</param>
-        /// <param name="success">A nullable boolean indicating the success status of the primitive.</param>
+        /// <param name="success">A nullable boolean indicating the evalState status of the primitive.</param>
         /// <param name="psfs">The PSF collection object containing the time multiplier and composite multiplier, or null if not available.</param>
         /// <param name="sampled_time">The sampled time value.</param>
         /// <param name="adjusted_time">The adjusted time value.</param>
         /// <param name="outputDir">The output directory for writing test file outputs.</param>
-        private void WritePrimitiveOutput(Primitive primitive, bool? success, double sampled_time, double adjusted_time, string outputDir)
+        private void WritePrimitiveOutput(Primitive primitive, EvalState success, double sampled_time, double adjusted_time, string outputDir)
         {
             string outputFile = Path.Combine(outputDir, "primitive.csv");
 
@@ -624,7 +623,7 @@ namespace Hunter.Hra
                 { "procedure_id", _currentProcedureId ?? "null" },
                 { "step_id", _currentStepId ?? "null" },
                 { "primitive_id", primitive.Id },
-                { "success", success?.CompareTo(true) ?? 00 },
+                { "evalState", success.Value},
                 { "sampled_time", sampled_time },
                 { "psf_time_multiplier", psfCollection != null ? psfCollection.TimeMultiplier(primitive) ?? 1.0 : "null" },
                 { "fatigue_index", TimeOnShiftFatigueEnabled ? FatigueIndex : "null" },

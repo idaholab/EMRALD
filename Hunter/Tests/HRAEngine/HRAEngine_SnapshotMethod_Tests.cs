@@ -20,7 +20,7 @@ namespace Hunter.Tests
             hraEngine.TimeOnShift = TimeSpan.FromHours(1);
             hraEngine.SetCurrentProcedureId("procedure123");
             hraEngine.SetCurrentStepId("step456");
-            hraEngine.SetCurrentSuccess(true);
+            hraEngine.SetCurrentEvalState(-1);
             hraEngine.SetPrimitiveEvalCount(42);
             hraEngine.SetRepeatCount(3);
         }
@@ -35,7 +35,7 @@ namespace Hunter.Tests
             Assert.AreEqual(hraEngine.TimeOnShift, snapshot.TimeOnShift);
             Assert.AreEqual(hraEngine.CurrentProcedureId, snapshot._currentProcedureId);
             Assert.AreEqual(hraEngine.CurrentStepId, snapshot._currentStepId);
-            Assert.AreEqual(hraEngine.CurrentSuccess, snapshot._currentSuccess);
+            Assert.AreEqual(hraEngine.CurrentEvalState.Value, snapshot._currentEvalState);
             Assert.AreEqual(hraEngine.PrimitiveEvalCount, snapshot._primitiveEvalCount);
             Assert.AreEqual(hraEngine.RepeatCount, snapshot._repeatCount);
         }
@@ -52,7 +52,7 @@ namespace Hunter.Tests
             Assert.AreEqual(hraEngine.TimeOnShift, hraEngine2.TimeOnShift);
             Assert.AreEqual(hraEngine.CurrentProcedureId, hraEngine2.CurrentProcedureId);
             Assert.AreEqual(hraEngine.CurrentStepId, hraEngine2.CurrentStepId);
-            Assert.AreEqual(hraEngine.CurrentSuccess, hraEngine2.CurrentSuccess);
+            Assert.AreEqual(hraEngine.CurrentEvalState, hraEngine2.CurrentEvalState);
             Assert.AreEqual(hraEngine.PrimitiveEvalCount, hraEngine2.PrimitiveEvalCount);
             Assert.AreEqual(hraEngine.RepeatCount, hraEngine2.RepeatCount);
         }

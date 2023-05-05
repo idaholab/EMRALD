@@ -6,6 +6,8 @@ namespace Hunter.Model
 {
     public class HunterModel
     {
+        public object Parent;
+
         public HunterSnapshot Snapshot { get; set; }
         public HunterTask Task { get; set; }
 

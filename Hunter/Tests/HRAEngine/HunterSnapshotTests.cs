@@ -29,7 +29,7 @@ namespace Hunter.Tests
                 experience: "Nominal",
                 currentProcedureId: "procedure123",
                 currentStepId: "step456",
-                currentSuccess: true,
+                currentEvalState: -1,
                 primitiveEvalCount: 42,
                 repeatCount: 3);
 
@@ -39,7 +39,7 @@ namespace Hunter.Tests
             hraEngine.TimeOnShift = snapshot.TimeOnShift;
             hraEngine.SetCurrentProcedureId(snapshot._currentProcedureId);
             hraEngine.SetCurrentStepId(snapshot._currentStepId);
-            hraEngine.SetCurrentSuccess(snapshot._currentSuccess);
+            hraEngine.SetCurrentEvalState(snapshot._currentEvalState);
             hraEngine.SetPrimitiveEvalCount(snapshot._primitiveEvalCount);
             hraEngine.SetRepeatCount(snapshot._repeatCount);
         }
@@ -64,7 +64,7 @@ namespace Hunter.Tests
             Assert.AreEqual(snapshot, deserializedSnapshot);
         }
 
-        [TestCase(true, true, "01:00:00", false, "Nominal", "procedure123", "step456", true, 42, 3)]
+        [TestCase(true, true, "01:00:00", false, "Nominal", "procedure123", "step456", 0, 42, 3)]
         public void TestConstructor(
             bool repeatMode,
             bool timeOnShiftFatigueEnabled,
@@ -73,7 +73,7 @@ namespace Hunter.Tests
             string experience,
             string currentProcedureId,
             string currentStepId,
-            bool currentSuccess,
+            int currentEvalState,
             int primitiveEvalCount,
             int repeatCount)
         {
@@ -86,7 +86,7 @@ namespace Hunter.Tests
                 experience,
                 currentProcedureId,
                 currentStepId,
-                currentSuccess,
+                currentEvalState,
                 primitiveEvalCount,
                 repeatCount);
 

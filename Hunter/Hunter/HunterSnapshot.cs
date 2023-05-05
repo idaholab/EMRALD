@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Hunter.Hra;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace Hunter.Model
@@ -16,7 +17,7 @@ namespace Hunter.Model
         public string Experience { get; set; } = default;
         public string? _currentProcedureId { get; set; } = default;
         public string? _currentStepId { get; set; } = default;
-        public bool? _currentSuccess { get; set; } = default;
+        public int _currentEvalState { get; set; } = default;
         public int _primitiveEvalCount { get; set; } = default;
         public int _repeatCount { get; set; } = default;
 
@@ -28,7 +29,7 @@ namespace Hunter.Model
             string experience = "Nominal",
             string? currentProcedureId = null,
             string? currentStepId = null,
-            bool? currentSuccess = null,
+            int currentEvalState = -1,
             int primitiveEvalCount = 0,
             int repeatCount = 0)
         {
@@ -39,7 +40,7 @@ namespace Hunter.Model
             Experience = experience;
             _currentProcedureId = currentProcedureId;
             _currentStepId = currentStepId;
-            _currentSuccess = currentSuccess;
+            _currentEvalState = currentEvalState;
             _primitiveEvalCount = primitiveEvalCount;
             _repeatCount = repeatCount;
         }
