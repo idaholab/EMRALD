@@ -175,6 +175,10 @@ namespace Hunter.Psf
             {
                 UpdateStrategy = new FitnessforDuty();
             }
+            else if (Factor == PsfEnums.Factor.AvailableTime)
+            {
+                UpdateStrategy = new AvailableTime();
+            }
 
             // Add more strategies here
         }
@@ -256,7 +260,7 @@ namespace Hunter.Psf
             {
                 if (IsLagLinger)
                 {
-                    return _lagLinger.GetValue(_t);
+                    return _lagLinger.GetValue(_t) * (Operation == OperationType.Action ? 10.0 : 1.0);
                 }
 
                 if (CurrentLevel == null)

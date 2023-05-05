@@ -8,6 +8,7 @@ using Hunter.Proc;
 using Hunter.Model;
 using Hunter.Hra.Distributions;
 using Hunter.ExpGoms;
+using Newtonsoft.Json.Linq;
 
 namespace Hunter.Hra
 {
@@ -66,6 +67,14 @@ namespace Hunter.Hra
             _psfCollection._hraEngine = this;
         }
 
+        public void Update()
+        {
+            _psfCollection.Update(this, null);
+        }
+
+        internal List<Dictionary<string, object>> _log = new List<Dictionary<string, object>>();
+        internal int _logMaxSize = 1000;
+
         /// <summary>
         /// Gets or sets a value indicating whether to repeat <see cref="EvalStep"/> until all primitives are completed (default is false).
         /// </summary>
@@ -91,7 +100,7 @@ namespace Hunter.Hra
         /// <remarks>
         /// When <see cref="RepeatMode"/> is true, <see cref="EvalStep"/> will be repeated until all primitives are completed or the maximum repeat count is reached.
         /// </remarks>
-        public int MaxRepeatCount { get; set; } = 100;
+        public int MaxRepeatCount { get; set; } = 3;
 
         /// <summary>
         /// Gets or sets a value indicating whether TimeOnShift Fatigue should impact the model.
@@ -146,8 +155,12 @@ namespace Hunter.Hra
         public Dictionary<string, object> Context { get { return _context; } }
 
 
-        private AvailableTime _taskAvailableTime;
-        public AvailableTime TaskAvailableTime { get { return _taskAvailableTime; } }
+        private Timer? _taskAvailableTime;
+        public Timer? TaskAvailableTime { get { return _taskAvailableTime; } }
+
+        private Timer? _taskTimeRequired;
+        public Timer? TaskTimeRequired { get { return _taskTimeRequired; } }
+
 
         public int Count
         {
@@ -194,6 +207,16 @@ namespace Hunter.Hra
             };
         }
 
+        public void SetTaskAvailableTime(TimeSpan availableTime)
+        {
+            _taskAvailableTime = new Timer(availableTime, this);
+        }
+
+        public void SetTaskTimeRequired(TimeSpan timeRequired)
+        {
+            _taskTimeRequired = new Timer(timeRequired, this);
+        }
+
         public void SetContext(Dictionary<string, object> context)
         {
             if (context.ContainsKey("ShiftTimeH"))
@@ -202,12 +225,11 @@ namespace Hunter.Hra
             }
 
             // Get the available time from the context
-            AvailableTime? availableTime = AvailableTime.FromContext(context, this);
-            if (availableTime != null)
-            {
-                _taskAvailableTime = (AvailableTime)availableTime;
-            }
-
+            _taskAvailableTime = Timer.FromContext(context, this, "AvailableTime");
+            
+            // Get the time required from the context
+            _taskTimeRequired = Timer.FromContext(context, this, "TaskTimeRequired");
+            
             // Set the context in the PSF collection
             if (psfCollection != null)
             {
@@ -365,28 +387,23 @@ namespace Hunter.Hra
                     // ExpressiveGoms sets StepSuccess
                     _currentSuccess = (_currentSuccess & StepSuccess) ?? null;
 
-                    return TimeSpan.FromSeconds(elapsedTime);
-
+                    // failed on HEP > 1.0
                     if (_currentSuccess != true)
                     {
                         return TimeSpan.MaxValue;
                     }
-                    else
+
+                    // Check if available time has elapsed
+                    if (!_taskAvailableTime?.HasTimeRemaining ?? false && _currentSuccess != null)
                     {
-                        return TimeSpan.FromSeconds(elapsedTime);
+                        _currentSuccess = null;
                     }
 
-                    //if (!_taskAvailableTime.HasTimeRemaining ?? false && _currentSuccess != null)
-                    //{
-                    //    _currentSuccess = null;
-                    //}
-
-                    //// halt execution of the procedure if the current step failed
-                    //if (_currentSuccess == null)
-                    //{
-                    //    return TimeSpan.MaxValue;
-                    //    //return TimeSpan.FromSeconds(elapsedTime);
-                    //}
+                    // halt execution of the procedure if the current step failed
+                    if (_currentSuccess == null)
+                    {
+                        return TimeSpan.MaxValue;
+                    }
                 }
             }
             else
@@ -394,12 +411,13 @@ namespace Hunter.Hra
                 Console.WriteLine($"Procedure not found: {procedureId}");
             }
 
-            if (_currentSuccess != true)
-            {
-                return TimeSpan.MaxValue;
-            } else
+            if (_currentSuccess == true)
             {
                 return TimeSpan.FromSeconds(elapsedTime);
+            } 
+            else
+            {
+                return TimeSpan.MaxValue;
             }
 
         }
@@ -471,6 +489,16 @@ namespace Hunter.Hra
             };
             CsvLogger.WriteRow(outputFile, record);
         }
+
+        void LogEvent(Dictionary<string, object> evt)
+        {
+            _log.Add(evt);
+            if (_log.Count > _logMaxSize)
+            {
+                _log.RemoveAt(0);
+            }
+        }
+
         /// <summary>
         /// Evaluates a primitive, calculating the adjusted time and human error probability (HEP) based on the given primitive, PSF collection, and output directory.
         /// </summary>
@@ -504,6 +532,11 @@ namespace Hunter.Hra
 
             _primitiveEvalCount += 1;
 
+            LogEvent(new Dictionary<string, object> {{"primitiveId", primitive.Id },
+                                                     {"elapsed_time", adjusted_time},
+                                                     {"success", success},
+                                                     {"adjusted_hep", adjusted_hep } });
+            
             return adjusted_time;
         }
 

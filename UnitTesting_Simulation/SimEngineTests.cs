@@ -618,7 +618,7 @@ namespace UnitTesting_Simulation
 
 
         [Fact]
-        public void HRATestHunter2()
+        public void HRATestHunter3()
         {
             //simple model to test the HRA hunter model 
 

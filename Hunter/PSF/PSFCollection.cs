@@ -203,10 +203,10 @@ namespace Hunter.Psf
         public bool HasTimePressure
         {
             get { 
-                return (_psfs[PsfEnums.Id.ATa].CurrentLevel.LevelName == 
-                        PsfEnums.Level.AvailableTime.BarelyAdequateTime) ||
-                       (_psfs[PsfEnums.Id.ATd].CurrentLevel.LevelName == 
-                        PsfEnums.Level.AvailableTime.BarelyAdequateTime);
+                return (_psfs[PsfEnums.Id.TPa].CurrentLevel.LevelName == 
+                        PsfEnums.Level.TimePressure.High) ||
+                       (_psfs[PsfEnums.Id.TPd].CurrentLevel.LevelName == 
+                        PsfEnums.Level.TimePressure.High);
             }
         }
 

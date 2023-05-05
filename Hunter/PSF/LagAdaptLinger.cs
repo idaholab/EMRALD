@@ -57,7 +57,7 @@ namespace Hunter.Psf
             // Raise Exception if k <= 1
             if (k <= 1)
             {
-                throw new Exception("K must be greater than 1");
+                k = 1.00000001;
             }
 
             K = k;

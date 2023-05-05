@@ -27,12 +27,12 @@ namespace Hunter.Tests.PerformanceShapingFactorTests
         public void SetLevel_ValidPsfIdAndLevelName_SetsCurrentLevel()
         {
             // Act
-            _psfCollection.SetLevel(PsfEnums.Id.ATd, PsfEnums.Level.AvailableTime.BarelyAdequateTime);
+            _psfCollection.SetLevel(PsfEnums.Id.TPd, PsfEnums.Level.TimePressure.High);
 
             // Assert
-            var currentLevel = _psfCollection[PsfEnums.Id.ATd].CurrentLevel;
+            var currentLevel = _psfCollection[PsfEnums.Id.TPd].CurrentLevel;
             Assert.IsNotNull(currentLevel);
-            Assert.AreEqual(PsfEnums.Level.AvailableTime.BarelyAdequateTime, currentLevel.LevelName);
+            Assert.AreEqual(PsfEnums.Level.TimePressure.High, currentLevel.LevelName);
         }
 
         [Test]

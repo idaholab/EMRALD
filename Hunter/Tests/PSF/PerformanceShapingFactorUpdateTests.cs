@@ -52,7 +52,7 @@ new PSF.Level { LevelName = "Nominal time", Multiplier = 0.001 }
             _psfCollection.Update(hRAEngine, jsonData);
 
             // Assert
-            Assert.That(_psfCollection.Count, Is.EqualTo(16));
+            Assert.That(_psfCollection.Count, Is.EqualTo(18));
         }
 
         [Test]
@@ -66,7 +66,7 @@ new PSF.Level { LevelName = "Nominal time", Multiplier = 0.001 }
             _psfCollection.Update(hRAEngine, jsonData);
 
             // Assert
-            Assert.That(_psfCollection.Count, Is.EqualTo(16));
+            Assert.That(_psfCollection.Count, Is.EqualTo(18));
         }
 
 

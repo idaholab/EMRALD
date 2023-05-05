@@ -291,11 +291,11 @@
     "levels": [
       {
         "level": "Extreme",
-        "multiplier": 50
+        "multiplier": 5
       },
       {
         "level": "High",
-        "multiplier": 20
+        "multiplier": 2
       },
       {
         "level": "Nominal",
@@ -366,5 +366,41 @@
     ],
     "is_static": true,
     "id": "WPd"
+  },
+  {
+    "operation": "Action",
+    "factor": "TimePressure",
+    "levels": [
+      {
+        "level": "High",
+        "multiplier": 2,
+        "time_multiplier": 0.5
+      },
+      {
+        "level": "Nominal",
+        "multiplier": 1,
+        "time_multiplier": 1
+      }
+    ],
+    "is_static": true,
+    "id": "TPa"
+  },
+  {
+    "operation": "Diagnosis",
+    "factor": "TimePressure",
+    "levels": [
+      {
+        "level": "High",
+        "multiplier": 2,
+        "time_multiplier": 0.5
+      },
+      {
+        "level": "Nominal",
+        "multiplier": 1,
+        "time_multiplier": 1
+      }
+    ],
+    "is_static": true,
+    "id": "TPd"
   }
 ]

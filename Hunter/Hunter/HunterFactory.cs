@@ -48,8 +48,8 @@ namespace Hunter.Model
 
             if (hasTimePressure)
             {
-                hraEngine.psfCollection.SetLevel(PsfEnums.Id.ATa, PsfEnums.Level.AvailableTime.BarelyAdequateTime);
-                hraEngine.psfCollection.SetLevel(PsfEnums.Id.ATd, PsfEnums.Level.AvailableTime.BarelyAdequateTime);
+                hraEngine.psfCollection.SetLevel(PsfEnums.Id.TPa, PsfEnums.Level.TimePressure.High);
+                hraEngine.psfCollection.SetLevel(PsfEnums.Id.TPd, PsfEnums.Level.TimePressure.High);
             }
 
             if (experience == PsfEnums.Level.ExperienceAndTraining.Low)

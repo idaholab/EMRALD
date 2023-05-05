@@ -57,7 +57,7 @@ namespace Hunter.Tests.PerformanceShapingFactorTests
         {
             string json = @"{
             ""type"": ""Action"",
-            ""factor"": ""AvailableTime"",
+            ""factor"": ""Timer"",
             ""levels"": [
                 {
                     ""level"": ""BarelyAdequateTime"",
@@ -87,7 +87,7 @@ namespace Hunter.Tests.PerformanceShapingFactorTests
 
             Assert.IsNotNull(psf);
             Assert.AreEqual(OperationType.Action, psf.Operation);
-            Assert.AreEqual("AvailableTime", psf.Factor);
+            Assert.AreEqual("Timer", psf.Factor);
             Assert.AreEqual("ATa", psf.Id);
             Assert.AreEqual(5, psf.Levels.Count);
             Assert.AreEqual("BarelyAdequateTime", psf.Levels[0].LevelName);

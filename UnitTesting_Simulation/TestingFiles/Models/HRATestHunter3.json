@@ -340,7 +340,7 @@
         "timeVariableUnit": "trHours",
         "fromSimStart": false,
         "onVarChange": "ocAdjust",
-        "time": "AvailableTimeH"
+        "time": "AvailableTimeM"
       }
     },
     {
@@ -360,15 +360,15 @@
         "fromSimStart": false,
         "procedureName": "sgtr",
         "startStep": 1,
-        "endStep": 3,
+        "endStep": 7,
         "contextLinks": [
           {
             "contextName": "ShiftTimeH",
             "simVar": "StartTimeOnShiftH"
           },
           {
-            "contextName": "TaskAvailableTimeH",
-            "simVar": "AvailableTimeH"
+            "contextName": "TaskAvailableTimeM",
+            "simVar": "AvailableTimeM"
           },
           {
             "contextName": "Stress",
@@ -394,15 +394,11 @@
         "fromSimStart": false,
         "procedureName": "rapid_shutdown",
         "startStep": 1,
-        "endStep": 3,
+        "endStep": 14,
         "contextLinks": [
           {
             "contextName": "ShiftTimeH",
             "simVar": "StartTimeOnShiftH"
-          },
-          {
-            "contextName": "TaskAvailableTimeH",
-            "simVar": "AvailableTimeH"
           },
           {
             "contextName": "Stress",
@@ -471,7 +467,7 @@
     {
       "Variable": {
         "id": 6,
-        "name": "AvailableTimeH",
+        "name": "AvailableTimeM",
         "desc": "",
         "varScope": "gtGlobal",
         "value": 10,
@@ -508,7 +504,7 @@
       "RepeatMode": true,
       "TimeOnShiftFatigueEnabled": true,
       "TimeOnShift": "00:00:00",
-      "HasTimePressure": true,
+      "HasTimePressure": false,
       "Experience": "Nominal",
       "_currentProcedureId": null,
       "_currentStepId": null,

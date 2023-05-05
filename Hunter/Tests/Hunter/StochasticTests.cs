@@ -95,7 +95,7 @@ namespace Hunter.Tests {
         }
 
         private void RunTest(bool withPsfs, bool timePressure, 
-            bool repeatMode=false, bool stress = false, 
+            bool repeatMode=true, bool stress = false, 
             bool fatigue = false, bool atStartOfShift = false)
         {
             // start timer
@@ -187,8 +187,17 @@ namespace Hunter.Tests {
                 Procedure procedure = kvp.Value;
                 int endStep = procedure.Steps.Count;
 
-                result += hraEngine.EvaluateSteps(procedures, procedureId, 1, endStep, 
+                var _result =hraEngine.EvaluateSteps(procedures, procedureId, 1, endStep, 
                                                   outputDir: outputDirectory);
+
+                if (_result == TimeSpan.MaxValue || result == TimeSpan.MaxValue) 
+                { 
+                    result = TimeSpan.MaxValue;
+                }
+                else
+                {
+                    result += _result;
+                }
             }
 
             return (result.TotalSeconds, hraEngine.RepeatCount, hraEngine.PrimitiveEvalCount);

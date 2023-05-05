@@ -4,30 +4,30 @@ using System.Collections.Generic;
 
 namespace Hunter.Hra
 {
-    public struct AvailableTime
+    public struct Timer
     {
         private HRAEngine _hraEngine;
         public TimeSpan? Duration { get; private set; }
         public TimeSpan StartTime { get; private set; }
 
-        public AvailableTime(Dictionary<string, object> context, HRAEngine hraEngine) : this()
+        public Timer(Dictionary<string, object> context, HRAEngine hraEngine, string contextKey) : this()
         {
             _hraEngine = hraEngine;
             StartTime = _hraEngine.TimeOnShift;
 
-            double hours = context.ContainsKey("TaskAvailableTimeH") ? (double)context["TaskAvailableTimeH"] : 0;
-            double minutes = context.ContainsKey("TaskAvailableTimeM") ? (double)context["TaskAvailableTimeM"] : 0;
-            double seconds = context.ContainsKey("TaskAvailableTimeS") ? (double)context["TaskAvailableTimeS"] : 0;
+            double hours = context.ContainsKey(contextKey + "H") ? (double)context[contextKey + "H"] : 0;
+            double minutes = context.ContainsKey(contextKey + "M") ? (double)context[contextKey + "M"] : 0;
+            double seconds = context.ContainsKey(contextKey + "S") ? (double)context[contextKey + "S"] : 0;
 
             if (hours != 0 || minutes != 0 || seconds != 0)
             {
-                Duration = TimeSpan.FromSeconds(hours * 3600) + 
-                           TimeSpan.FromSeconds(minutes * 60) + 
+                Duration = TimeSpan.FromHours(hours) + 
+                           TimeSpan.FromMinutes(minutes) + 
                            TimeSpan.FromSeconds(seconds);
             }
         }
 
-        public AvailableTime(TimeSpan duration, HRAEngine hraEngine) : this()
+        public Timer(TimeSpan duration, HRAEngine hraEngine) : this()
         {
             _hraEngine = hraEngine;
             StartTime = _hraEngine.TimeOnShift;
@@ -64,16 +64,16 @@ namespace Hunter.Hra
             }
         }
 
-        public static AvailableTime? FromContext(Dictionary<string, object> context, HRAEngine hraEngine)
+        public static Timer? FromContext(Dictionary<string, object> context, HRAEngine hraEngine, string contextKey)
         {
-            if (!context.ContainsKey("TaskAvailableTimeH") &&
-                !context.ContainsKey("TaskAvailableTimeM") &&
-                !context.ContainsKey("TaskAvailableTimeS"))
+            if (!context.ContainsKey(contextKey + "H") &&
+                !context.ContainsKey(contextKey + "M") &&
+                !context.ContainsKey(contextKey + "S"))
             {
                 return null;
             }
 
-            return new AvailableTime(context, hraEngine);
+            return new Timer(context, hraEngine, contextKey);
         }
     }
 }

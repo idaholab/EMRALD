@@ -20,6 +20,7 @@
             public static readonly string Procedures = "Procedures";
             public static readonly string Stress = "Stress";
             public static readonly string WorkProcesses = "WorkProcesses";
+            public static readonly string TimePressure = "TimePressure";
         }
 
         public static class Id
@@ -40,6 +41,8 @@
             public static readonly string Sd = "Sd";
             public static readonly string WPa = "WPa";
             public static readonly string WPd = "WPd";
+            public static readonly string TPa = "TPa";
+            public static readonly string TPd = "TPd";
         }
 
         public static class Level
@@ -105,6 +108,13 @@
                 public static readonly string Nominal = "Nominal";
                 public static readonly string Good = "Good";
             }
+
+            public static class TimePressure
+            {
+                public static readonly string Nominal = "Nominal";
+                public static readonly string High = "High";
+            }
+
         }
     }
 }
