@@ -1,4 +1,5 @@
 {
+  "Parent": null,
   "Snapshot": {
     "RepeatMode": true,
     "TimeOnShiftFatigueEnabled": true,
@@ -242,6 +243,250 @@
               }
             ],
             "step_id": "Step 2.4 - Isolate SG - Close MS IV"
+          },
+          {
+            "goms_expression": [
+              {
+                "Type": 0,
+                "Value": "ICp",
+                "Operator": null,
+                "GroupOperator": null
+              }
+            ],
+            "step_id": "Step 3 - Perform Rapid Shutdown"
+          }
+        ]
+      },
+      "lofw": {
+        "steps": [
+          {
+            "goms_expression": [
+              {
+                "Type": 0,
+                "Value": "ICp",
+                "Operator": null,
+                "GroupOperator": null
+              },
+              {
+                "Type": 0,
+                "Value": "Rc",
+                "Operator": null,
+                "GroupOperator": null
+              },
+              {
+                "Type": 0,
+                "Value": "ICp",
+                "Operator": null,
+                "GroupOperator": null
+              },
+              {
+                "Type": 0,
+                "Value": "Rc",
+                "Operator": null,
+                "GroupOperator": null
+              },
+              {
+                "Type": 0,
+                "Value": "ICp",
+                "Operator": null,
+                "GroupOperator": null
+              },
+              {
+                "Type": 0,
+                "Value": "Rc",
+                "Operator": null,
+                "GroupOperator": null
+              },
+              {
+                "Type": 0,
+                "Value": "ICp",
+                "Operator": null,
+                "GroupOperator": null
+              },
+              {
+                "Type": 0,
+                "Value": "Rc",
+                "Operator": null,
+                "GroupOperator": null
+              },
+              {
+                "Type": 0,
+                "Value": "ICp",
+                "Operator": null,
+                "GroupOperator": null
+              },
+              {
+                "Type": 0,
+                "Value": "Rc",
+                "Operator": null,
+                "GroupOperator": null
+              },
+              {
+                "Type": 0,
+                "Value": "ICp",
+                "Operator": null,
+                "GroupOperator": null
+              },
+              {
+                "Type": 0,
+                "Value": "Rc",
+                "Operator": null,
+                "GroupOperator": null
+              },
+              {
+                "Type": 0,
+                "Value": "ICp",
+                "Operator": null,
+                "GroupOperator": null
+              },
+              {
+                "Type": 0,
+                "Value": "Dp",
+                "Operator": null,
+                "GroupOperator": null
+              }
+            ],
+            "step_id": "Entry Conditions"
+          },
+          {
+            "goms_expression": [
+              {
+                "Type": 0,
+                "Value": "ICp",
+                "Operator": null,
+                "GroupOperator": null
+              },
+              {
+                "Type": 0,
+                "Value": "Ac",
+                "Operator": null,
+                "GroupOperator": null
+              },
+              {
+                "Type": 0,
+                "Value": "ICp",
+                "Operator": null,
+                "GroupOperator": null
+              },
+              {
+                "Type": 0,
+                "Value": "Ac",
+                "Operator": null,
+                "GroupOperator": null
+              }
+            ],
+            "step_id": "Step 1.1 - Manually Open Feedwater Control Valve A"
+          },
+          {
+            "goms_expression": [
+              {
+                "Type": 0,
+                "Value": "ICp",
+                "Operator": null,
+                "GroupOperator": null
+              },
+              {
+                "Type": 0,
+                "Value": "Ac",
+                "Operator": null,
+                "GroupOperator": null
+              },
+              {
+                "Type": 0,
+                "Value": "ICp",
+                "Operator": null,
+                "GroupOperator": null
+              },
+              {
+                "Type": 0,
+                "Value": "Ac",
+                "Operator": null,
+                "GroupOperator": null
+              }
+            ],
+            "step_id": "Step 1.2 - Manually Open Feedwater Control Valve B"
+          },
+          {
+            "goms_expression": [
+              {
+                "Type": 0,
+                "Value": "ICp",
+                "Operator": null,
+                "GroupOperator": null
+              },
+              {
+                "Type": 0,
+                "Value": "Dp",
+                "Operator": null,
+                "GroupOperator": null
+              },
+              {
+                "Type": 0,
+                "Value": "Ac",
+                "Operator": null,
+                "GroupOperator": null
+              },
+              {
+                "Type": 0,
+                "Value": "ICp",
+                "Operator": null,
+                "GroupOperator": null
+              },
+              {
+                "Type": 0,
+                "Value": "Ac",
+                "Operator": null,
+                "GroupOperator": null
+              },
+              {
+                "Type": 0,
+                "Value": "Dp",
+                "Operator": null,
+                "GroupOperator": null
+              }
+            ],
+            "step_id": "Step 2.1 - Verify FW Pump A"
+          },
+          {
+            "goms_expression": [
+              {
+                "Type": 0,
+                "Value": "ICp",
+                "Operator": null,
+                "GroupOperator": null
+              },
+              {
+                "Type": 0,
+                "Value": "Dp",
+                "Operator": null,
+                "GroupOperator": null
+              },
+              {
+                "Type": 0,
+                "Value": "Ac",
+                "Operator": null,
+                "GroupOperator": null
+              },
+              {
+                "Type": 0,
+                "Value": "ICp",
+                "Operator": null,
+                "GroupOperator": null
+              },
+              {
+                "Type": 0,
+                "Value": "Ac",
+                "Operator": null,
+                "GroupOperator": null
+              },
+              {
+                "Type": 0,
+                "Value": "Dp",
+                "Operator": null,
+                "GroupOperator": null
+              }
+            ],
+            "step_id": "Step 2.2 - Verify FW Pump B"
           },
           {
             "goms_expression": [

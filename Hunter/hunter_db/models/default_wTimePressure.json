@@ -9,6 +9,10 @@
       "procedure_id": "sgtr"
     },
     {
+      "$ref": "../procedures/lofw.json",
+      "procedure_id": "lofw"
+    },
+    {
       "$ref": "../procedures/rapid_shutdown.json",
       "procedure_id": "rapid_shutdown"
     }

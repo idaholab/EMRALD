@@ -1343,9 +1343,7 @@ namespace SimulationDAL
             throw new Exception("Failed to find variable - " + (string)contextLink.simVar);
           }
         }
-
       }
-
       return true;
     }
 
@@ -1365,9 +1363,10 @@ namespace SimulationDAL
       }
 
       //Setup the contextVarables
-      _hunterModel._engine.SetContext(_contextVariables.ToDictionary(
-        kvp => kvp.Key,
-        kvp => kvp.Value.GetValue() as object
+      _hunterModel._engine.SetContext(
+        _contextVariables.ToDictionary(
+          kvp => kvp.Key,
+          kvp => kvp.Value.GetValue() as object
       ));
 
       //Call the HRA library to determine the time of the event

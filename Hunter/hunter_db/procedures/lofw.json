@@ -1,0 +1,28 @@
+{
+  "steps": [
+    {
+      "step_id": "Entry Conditions",
+      "goms_expression": "(FW A Low Flow) ICp Rc (FW B Low Flow) ICp Rc (FW A Flow) ICp Rc (FW B Flow) ICp Rc (FW A Amps) ICp Rc (FW B Amps) ICp Rc ICp (Decision) Dp"
+    },
+    {
+      "step_id": "Step 1.1 - Manually Open Feedwater Control Valve A",
+      "goms_expression": "(Set to Manual) ICp Ac (Raise Position) ICp Ac"
+    },
+    {
+      "step_id": "Step 1.2 - Manually Open Feedwater Control Valve B",
+      "goms_expression": "(Set to Manual) ICp Ac (Raise Position) ICp Ac"
+    },
+    {
+      "step_id": "Step 2.1 - Verify FW Pump A",
+      "goms_expression": "(Start) ICp Dp Ac (Verify) ICp Ac Dp"
+    },
+    {
+      "step_id": "Step 2.2 - Verify FW Pump B",
+      "goms_expression": "(Start) ICp Dp Ac (Verify) ICp Ac Dp"
+    },
+    {
+      "step_id": "Step 3 - Perform Rapid Shutdown",
+      "goms_expression": "ICp"
+    }
+  ]
+}

@@ -20,7 +20,7 @@
           "Start",
           "MitigateSGTR",
           "EventResolved",
-          "DiagnosisFailedSGTR"
+          "Terminate"
         ]
       }
     }
@@ -31,14 +31,15 @@
         "id": 1,
         "name": "InitiatingEvent",
         "desc": "",
-        "stateType": "stKeyState",
+        "stateType": "stStandard",
         "diagramName": "ScenarioModel",
         "immediateActions": [
-          "UpdateContextTimeOnShift",
-          "Goto_DiagnoseSGTR"
+          "UpdateStartTimeOnShift",
+          "Goto_DiagnoseSGTR",
+          "UpdateTimeOnShift"
         ],
         "events": [
-          "TimeAvailable"
+          "SampleTimeAvailable"
         ],
         "eventActions": [
           {
@@ -48,7 +49,7 @@
             "moveFromCurrent": true
           }
         ],
-        "geometry": "{ x: 690.5, y: 350.5, width: 200, height: 160}"
+        "geometry": "{ x: 700.5, y: 320.5, width: 200, height: 180}"
       }
     },
     {
@@ -56,12 +57,15 @@
         "id": 2,
         "name": "TimeExceededEventFailure",
         "desc": "",
-        "stateType": "stTerminal",
+        "stateType": "stKeyState",
         "diagramName": "ScenarioModel",
-        "immediateActions": [],
+        "immediateActions": [
+          "Goto_Terminate",
+          "UpdateTimeOnShift"
+        ],
         "events": [],
         "eventActions": [],
-        "geometry": "{ x: 1291, y: 781, width: 270, height: 80}"
+        "geometry": "{ x: 1291, y: 781, width: 270, height: 110}"
       }
     },
     {
@@ -69,10 +73,10 @@
         "id": 3,
         "name": "DiagnoseSGTR",
         "desc": "",
-        "stateType": "stKeyState",
+        "stateType": "stStandard",
         "diagramName": "ScenarioModel",
         "immediateActions": [
-          "UpdateContextTimeOnShift"
+          "UpdateTimeOnShift"
         ],
         "events": [
           "RunHUNTERDiagnose"
@@ -85,7 +89,7 @@
             "moveFromCurrent": true
           }
         ],
-        "geometry": "{ x: 1050.5, y: 320.5, width: 200, height: 150}"
+        "geometry": "{ x: 1080.5, y: 310.5, width: 200, height: 150}"
       }
     },
     {
@@ -104,7 +108,7 @@
             "actions": [
               "Goto_InitiatingEvent"
             ],
-            "moveFromCurrent": false
+            "moveFromCurrent": true
           }
         ],
         "geometry": "{ x: 310, y: 400.5, width: 200, height: 130}"
@@ -115,11 +119,10 @@
         "id": 5,
         "name": "MitigateSGTR",
         "desc": "",
-        "stateType": "stKeyState",
+        "stateType": "stStandard",
         "diagramName": "ScenarioModel",
         "immediateActions": [
-          "UpdateContextTimeOnShift",
-          "UpdateContextTimeOnShift"
+          "UpdateTimeOnShift"
         ],
         "events": [
           "RunHUNTERMitigate"
@@ -129,7 +132,7 @@
             "actions": [
               "Goto_EventResolved"
             ],
-            "moveFromCurrent": false
+            "moveFromCurrent": true
           }
         ],
         "geometry": "{ x: 1560, y: 320.5, width: 200, height: 150}"
@@ -140,25 +143,27 @@
         "id": 6,
         "name": "EventResolved",
         "desc": "",
+        "stateType": "stKeyState",
+        "diagramName": "ScenarioModel",
+        "immediateActions": [
+          "Goto_Terminate"
+        ],
+        "events": [],
+        "eventActions": [],
+        "geometry": "{ x: 1870, y: 340.5, width: 200, height: 100}"
+      }
+    },
+    {
+      "State": {
+        "id": 8,
+        "name": "Terminate",
+        "desc": "",
         "stateType": "stTerminal",
         "diagramName": "ScenarioModel",
         "immediateActions": [],
         "events": [],
         "eventActions": [],
-        "geometry": "{ x: 1870, y: 340.5, width: 200, height: 80}"
-      }
-    },
-    {
-      "State": {
-        "id": 7,
-        "name": "DiagnosisFailedSGTR",
-        "desc": "",
-        "stateType": "stStandard",
-        "diagramName": "ScenarioModel",
-        "immediateActions": [],
-        "events": [],
-        "eventActions": [],
-        "geometry": "{ x: 1300, y: 570, width: 200, height: 80}"
+        "geometry": "{ x: 1780.488525390625, y: 720.2385864257812, width: 200, height: 80}"
       }
     }
   ],
@@ -203,17 +208,14 @@
     {
       "Action": {
         "id": 3,
-        "name": "UpdateContextTimeOnShift",
-        "desc": "Set",
+        "name": "UpdateStartTimeOnShift",
+        "desc": "Set Initial Start Time on Shift in Hours",
         "actType": "atCngVarVal",
         "mainItem": false,
         "mutExcl": true,
         "newStates": [],
         "scriptCode": "return CurTime;",
-        "variableName": "psf_stress",
-        "codeVariables": [
-          "psf_stress"
-        ]
+        "variableName": "StartTimeOnShiftH"
       }
     },
     {
@@ -288,14 +290,46 @@
         ],
         "itemId": 9
       }
+    },
+    {
+      "Action": {
+        "id": 8,
+        "name": "Goto_Terminate",
+        "desc": "",
+        "actType": "atTransition",
+        "mainItem": false,
+        "mutExcl": true,
+        "newStates": [
+          {
+            "toState": "Terminate",
+            "prob": -1,
+            "failDesc": ""
+          }
+        ],
+        "itemId": 0
+      }
+    },
+    {
+      "Action": {
+        "id": 9,
+        "name": "UpdateTimeOnShift",
+        "desc": "",
+        "actType": "atCngVarVal",
+        "mainItem": false,
+        "mutExcl": true,
+        "newStates": [],
+        "scriptCode": "return CurTime;",
+        "variableName": "TimeOnShiftH",
+        "codeVariables": []
+      }
     }
   ],
   "EventList": [
     {
       "Event": {
         "id": 2,
-        "name": "TimeAvailable",
-        "desc": "AvailableTimeToFailure",
+        "name": "SampleTimeAvailable",
+        "desc": "",
         "mainItem": false,
         "evType": "etTimer",
         "allItems": true,
@@ -306,7 +340,7 @@
         "timeVariableUnit": "trHours",
         "fromSimStart": false,
         "onVarChange": "ocAdjust",
-        "time": "AvailableTimeH"
+        "time": "AvailableTimeM"
       }
     },
     {
@@ -326,15 +360,15 @@
         "fromSimStart": false,
         "procedureName": "sgtr",
         "startStep": 1,
-        "endStep": 3,
+        "endStep": 7,
         "contextLinks": [
           {
             "contextName": "ShiftTimeH",
             "simVar": "StartTimeOnShiftH"
           },
           {
-            "contextName": "TaskAvailableTimeH",
-            "simVar": "AvailableTimeH"
+            "contextName": "TaskAvailableTimeM",
+            "simVar": "AvailableTimeM"
           },
           {
             "contextName": "Stress",
@@ -358,23 +392,20 @@
         "time": "01:00:00",
         "timeVariableUnit": "",
         "fromSimStart": false,
-        "procedureName": "sgtr",
+        "procedureName": "rapid_shutdown",
         "startStep": 1,
-        "endStep": 3,
+        "endStep": 14,
         "contextLinks": [
           {
             "contextName": "ShiftTimeH",
             "simVar": "StartTimeOnShiftH"
           },
           {
-            "contextName": "TaskAvailableTimeH",
-            "simVar": "AvailableTimeH"
-          },
-          {
             "contextName": "Stress",
             "simVar": "Psf.Stress.Extreme"
           }
-        ]
+        ],
+        "code": ""
       }
     },
     {
@@ -386,7 +417,7 @@
         "evType": "etDistribution",
         "allItems": true,
         "triggerStates": [],
-        "moveFromCurrent": false,
+        "moveFromCurrent": true,
         "varNames": [],
         "distType": "dtNormal",
         "parameters": [
@@ -436,21 +467,10 @@
     {
       "Variable": {
         "id": 6,
-        "name": "AvailableTimeH",
+        "name": "AvailableTimeM",
         "desc": "",
         "varScope": "gtGlobal",
         "value": 10,
-        "resetOnRuns": true,
-        "type": "double"
-      }
-    },
-    {
-      "Variable": {
-        "id": 5,
-        "name": "TimeRequired",
-        "desc": "",
-        "varScope": "gtGlobal",
-        "value": 0,
         "resetOnRuns": true,
         "type": "double"
       }
@@ -465,10 +485,22 @@
         "resetOnRuns": true,
         "type": "double"
       }
+    },
+    {
+      "Variable": {
+        "id": 4,
+        "name": "TimeOnShiftH",
+        "desc": "",
+        "varScope": "gtGlobal",
+        "value": 0,
+        "resetOnRuns": true,
+        "type": "double"
+      }
     }
   ],
   "templates": [],
   "HunterModel": {
+    "Parent": null,
     "Snapshot": {
       "RepeatMode": true,
       "TimeOnShiftFatigueEnabled": true,
@@ -477,7 +509,7 @@
       "Experience": "Nominal",
       "_currentProcedureId": null,
       "_currentStepId": null,
-      "_currentSuccess": null,
+      "_currentEvalState": 0,
       "_primitiveEvalCount": 0,
       "_repeatCount": 0
     },
@@ -712,6 +744,250 @@
                 }
               ],
               "step_id": "Step 2.4 - Isolate SG - Close MS IV"
+            },
+            {
+              "goms_expression": [
+                {
+                  "Type": 0,
+                  "Value": "ICp",
+                  "Operator": null,
+                  "GroupOperator": null
+                }
+              ],
+              "step_id": "Step 3 - Perform Rapid Shutdown"
+            }
+          ]
+        },
+        "lofw": {
+          "steps": [
+            {
+              "goms_expression": [
+                {
+                  "Type": 0,
+                  "Value": "ICp",
+                  "Operator": null,
+                  "GroupOperator": null
+                },
+                {
+                  "Type": 0,
+                  "Value": "Rc",
+                  "Operator": null,
+                  "GroupOperator": null
+                },
+                {
+                  "Type": 0,
+                  "Value": "ICp",
+                  "Operator": null,
+                  "GroupOperator": null
+                },
+                {
+                  "Type": 0,
+                  "Value": "Rc",
+                  "Operator": null,
+                  "GroupOperator": null
+                },
+                {
+                  "Type": 0,
+                  "Value": "ICp",
+                  "Operator": null,
+                  "GroupOperator": null
+                },
+                {
+                  "Type": 0,
+                  "Value": "Rc",
+                  "Operator": null,
+                  "GroupOperator": null
+                },
+                {
+                  "Type": 0,
+                  "Value": "ICp",
+                  "Operator": null,
+                  "GroupOperator": null
+                },
+                {
+                  "Type": 0,
+                  "Value": "Rc",
+                  "Operator": null,
+                  "GroupOperator": null
+                },
+                {
+                  "Type": 0,
+                  "Value": "ICp",
+                  "Operator": null,
+                  "GroupOperator": null
+                },
+                {
+                  "Type": 0,
+                  "Value": "Rc",
+                  "Operator": null,
+                  "GroupOperator": null
+                },
+                {
+                  "Type": 0,
+                  "Value": "ICp",
+                  "Operator": null,
+                  "GroupOperator": null
+                },
+                {
+                  "Type": 0,
+                  "Value": "Rc",
+                  "Operator": null,
+                  "GroupOperator": null
+                },
+                {
+                  "Type": 0,
+                  "Value": "ICp",
+                  "Operator": null,
+                  "GroupOperator": null
+                },
+                {
+                  "Type": 0,
+                  "Value": "Dp",
+                  "Operator": null,
+                  "GroupOperator": null
+                }
+              ],
+              "step_id": "Entry Conditions"
+            },
+            {
+              "goms_expression": [
+                {
+                  "Type": 0,
+                  "Value": "ICp",
+                  "Operator": null,
+                  "GroupOperator": null
+                },
+                {
+                  "Type": 0,
+                  "Value": "Ac",
+                  "Operator": null,
+                  "GroupOperator": null
+                },
+                {
+                  "Type": 0,
+                  "Value": "ICp",
+                  "Operator": null,
+                  "GroupOperator": null
+                },
+                {
+                  "Type": 0,
+                  "Value": "Ac",
+                  "Operator": null,
+                  "GroupOperator": null
+                }
+              ],
+              "step_id": "Step 1.1 - Manually Open Feedwater Control Valve A"
+            },
+            {
+              "goms_expression": [
+                {
+                  "Type": 0,
+                  "Value": "ICp",
+                  "Operator": null,
+                  "GroupOperator": null
+                },
+                {
+                  "Type": 0,
+                  "Value": "Ac",
+                  "Operator": null,
+                  "GroupOperator": null
+                },
+                {
+                  "Type": 0,
+                  "Value": "ICp",
+                  "Operator": null,
+                  "GroupOperator": null
+                },
+                {
+                  "Type": 0,
+                  "Value": "Ac",
+                  "Operator": null,
+                  "GroupOperator": null
+                }
+              ],
+              "step_id": "Step 1.2 - Manually Open Feedwater Control Valve B"
+            },
+            {
+              "goms_expression": [
+                {
+                  "Type": 0,
+                  "Value": "ICp",
+                  "Operator": null,
+                  "GroupOperator": null
+                },
+                {
+                  "Type": 0,
+                  "Value": "Dp",
+                  "Operator": null,
+                  "GroupOperator": null
+                },
+                {
+                  "Type": 0,
+                  "Value": "Ac",
+                  "Operator": null,
+                  "GroupOperator": null
+                },
+                {
+                  "Type": 0,
+                  "Value": "ICp",
+                  "Operator": null,
+                  "GroupOperator": null
+                },
+                {
+                  "Type": 0,
+                  "Value": "Ac",
+                  "Operator": null,
+                  "GroupOperator": null
+                },
+                {
+                  "Type": 0,
+                  "Value": "Dp",
+                  "Operator": null,
+                  "GroupOperator": null
+                }
+              ],
+              "step_id": "Step 2.1 - Verify FW Pump A"
+            },
+            {
+              "goms_expression": [
+                {
+                  "Type": 0,
+                  "Value": "ICp",
+                  "Operator": null,
+                  "GroupOperator": null
+                },
+                {
+                  "Type": 0,
+                  "Value": "Dp",
+                  "Operator": null,
+                  "GroupOperator": null
+                },
+                {
+                  "Type": 0,
+                  "Value": "Ac",
+                  "Operator": null,
+                  "GroupOperator": null
+                },
+                {
+                  "Type": 0,
+                  "Value": "ICp",
+                  "Operator": null,
+                  "GroupOperator": null
+                },
+                {
+                  "Type": 0,
+                  "Value": "Ac",
+                  "Operator": null,
+                  "GroupOperator": null
+                },
+                {
+                  "Type": 0,
+                  "Value": "Dp",
+                  "Operator": null,
+                  "GroupOperator": null
+                }
+              ],
+              "step_id": "Step 2.2 - Verify FW Pump B"
             },
             {
               "goms_expression": [
