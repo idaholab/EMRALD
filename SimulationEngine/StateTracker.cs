@@ -1283,7 +1283,10 @@ namespace SimulationTracking
             TimeSpan evTime = timeEv.NextTime(curTime);
             if ((evTime < maxTime) || (timeEv.UsesVariables()))//if using variables we still need to add incase those variables change
             {
-              TimeMoveEvent addTimeEv = new TimeMoveEvent(curEv.name, new EventStatesAndActions(curEv.id, curState.id, curState.GetEvActionsIdx(idx)), curEv, evTime, curTime);
+              List<string> custEventPickActionKey = null;
+              if (curEv is CustomTimeEvent)
+                custEventPickActionKey = ((CustomTimeEvent)curEv).EventPickedActionKeys();
+              TimeMoveEvent addTimeEv = new TimeMoveEvent(curEv.name, new EventStatesAndActions(curEv.id, curState.id, curState.GetEvActionsIdx(idx), custEventPickActionKey), curEv, evTime, curTime);
               if ((evTime == Globals.NowTimeSpan) && !this.emraldStopping3D)// || //add the event to be processed immediately
                                                                          //todo : how to handle if next event is before the first timestep of a simulation 
                                                                          //if only one simulation you just process the event as an immediate ((this.sim3DRunning || this.sim3DStarting) && ((evTime.TotalSeconds * sim3DFameRate) < 1)))

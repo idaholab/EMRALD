@@ -1239,8 +1239,20 @@ namespace SimulationDAL
     public string simVar { get; set; }
   }
 
+  /// <summary>
+  /// abstract class for new custom processing events that may need to pick the action as well as when.
+  /// </summary>
+  public abstract class CustomTimeEvent : TimeBasedEvent
+  {
+    public CustomTimeEvent(string inName)
+      : base(inName) { }
 
-  public class HRAEval : TimeBasedEvent //etHRAEval
+    public virtual List<string> EventPickedActionKeys() //If the custom event needs to select from a set of actions overwride this call and return a list.
+    {
+      return null;
+    }
+  }
+  public class HRAEval : CustomTimeEvent //etHRAEval
   {
     //variables needed for hunter info
     HunterModel _hunterModel = null;
@@ -1248,6 +1260,7 @@ namespace SimulationDAL
     private int _startStep = 1;
     private int _endStep = 0;
     private Dictionary<string, SimVariable> _contextVariables = new Dictionary<string, SimVariable>(); //key is the psf name value is the EMRALD variable
+    private List<string> _pickedActions = new List<string>();
 
     protected override EnEventType GetEvType() { return EnEventType.etHRAEval; }
 
@@ -1374,12 +1387,13 @@ namespace SimulationDAL
 
       // Get the Evaluated State
       EvalState evalState = _hunterModel._engine.CurrentEvalState;
-      EmraldModel em = _hunterModel.Parent as EmraldModel;
-      var hunterStateVar = em?.allVariables.Values.FirstOrDefault(v => v.name == "HunterState");
-      if (hunterStateVar != null)
-      {
-        hunterStateVar.SetValue(evalState.Value);
-      }
+      _pickedActions.Add(evalState.ToString());
+      //EmraldModel em = _hunterModel.Parent as EmraldModel;
+      //var hunterStateVar = em?.allVariables.Values.FirstOrDefault(v => v.name == "HunterState");
+      //if (hunterStateVar != null)
+      //{
+      //  hunterStateVar.SetValue(evalState.Value);
+      //}
 
       return retVal;
     }
@@ -1399,6 +1413,11 @@ namespace SimulationDAL
     {
       //todo - return if the event uses variables or not.
       return false;
+    }
+
+    public override List<string> EventPickedActionKeys()
+    {
+      return _pickedActions;
     }
   }
 

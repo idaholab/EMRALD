@@ -16,6 +16,7 @@ using System.Threading;
 using Newtonsoft.Json.Linq;
 using CommonDefLib;
 using System.Xml;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace SimulationDAL
 {
@@ -1695,10 +1696,18 @@ namespace SimulationDAL
   {
     //private List<Transition> transItems = new List<Transition>();
     public bool moveFromCurrent;
+    protected List<string> _eventPickedActionKeys;
+    public List<string> eventPickedActionKeys { get { return _eventPickedActionKeys; } }
 
     public ActionList(bool inMoveFromCurrent = false)
     {
       this.moveFromCurrent = inMoveFromCurrent;
+    }
+
+    public ActionList(ActionList copy)
+    {
+      this.AddRange(copy);
+      this.moveFromCurrent = copy.moveFromCurrent;
     }
 
     public string GetJSON(bool incBrackets, EmraldModel lists)
@@ -1757,6 +1766,22 @@ namespace SimulationDAL
           }
 
           this.Add(curAct);
+        }
+      }
+
+      if (dynObj.CustEventPick != null)
+      {
+        if (this._eventPickedActionKeys == null)
+          this._eventPickedActionKeys = new List<string>();
+
+        foreach (var keyName in dynObj.CustEventPick)
+        {
+          this._eventPickedActionKeys.Add((string)keyName);
+        }
+       
+        if(this.Count != this._eventPickedActionKeys.Count)
+        {
+          throw new Exception("Number of tags for event picked actions doesn't match the number of actions ");
         }
       }
 

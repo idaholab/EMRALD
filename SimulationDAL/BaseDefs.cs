@@ -501,17 +501,29 @@ namespace SimulationDAL
 
   public class EventStatesAndActions
   {
-    public readonly Dictionary<int, ActionList> statesAndActions = new Dictionary<int, ActionList>();
+    public readonly Dictionary<int, List<Action>> statesAndActions = new Dictionary<int, List<Action>>();
     public readonly int eventID;
     
 
-    public EventStatesAndActions(int evID, int stID, ActionList inActions)
+    public EventStatesAndActions(int evID, int stID, ActionList inActions, List<string> evPickKeys = null)
     {
-      if((evID == 2) && (stID ==2))
+      //copy the action list
+      ActionList actions = null; 
+      if(evPickKeys == null) //use all of them
       {
-        evID = evID / 1;
+        actions = new ActionList(inActions);
       }
-      this.statesAndActions.Add(stID, inActions);
+      else //only add action options the event says are to be executed.
+      {
+        actions = new ActionList();
+        for(int i = 0; i < inActions.Count();  ++i)
+        {
+          if (evPickKeys.Contains(inActions.eventPickedActionKeys[i]))
+            actions.Add(inActions[i]);
+        }
+      }
+
+      this.statesAndActions.Add(stID, actions);
       this.eventID = evID;
     }
 
