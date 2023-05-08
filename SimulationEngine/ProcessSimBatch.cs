@@ -16,6 +16,8 @@ using SimulationDAL;
 using Newtonsoft.Json;
 using MathNet.Numerics.Statistics;
 using System.Threading;
+using Matrix.Xmpp.XHtmlIM;
+using System.Xml.Linq;
 
 namespace SimulationEngine
 {
@@ -283,35 +285,35 @@ namespace SimulationEngine
             {
               string keyStateName = path.name;
 
-              //  if (logVarVals.Count > 0)
-              //  {
-              //    Dictionary<string, List<string>> varDict;
-              //    if (!_variableVals.TryGetValue(keyStateName, out varDict))
-              //    {
-              //      varDict = new Dictionary<string, List<string>>();
-              //      _variableVals.Add(keyStateName, varDict);
-              //    }
+                if (logVarVals.Count > 0)
+                {
+                  Dictionary<string, List<string>> varDict;
+                  if (!_variableVals.TryGetValue(keyStateName, out varDict))
+                  {
+                    varDict = new Dictionary<string, List<string>>();
+                    _variableVals.Add(keyStateName, varDict);
+                  }
 
-              //    List<string> varVals;
+                  List<string> varVals;
 
-              //    foreach (string varName in logVarVals)
-              //    {
-              //      SimVariable curVar = _lists.allVariables.FindByName(varName);
-              //      if (curVar == null)
-              //      {
-              //        this._error = "No variable found named - " + varName;
-              //        logger.Error(this.error);
-              //      }
+                  foreach (string varName in logVarVals)
+                  {
+                    SimVariable curVar = _lists.allVariables.FindByName(varName);
+                    if (curVar == null)
+                    {
+                      this._error = "No variable found named - " + varName;
+                      logger.Error(this.error);
+                    }
 
-              //      if (!varDict.TryGetValue(varName, out varVals))
-              //      {
-              //        varVals = new List<string>();
-              //        varDict.Add(varName, varVals);
-              //      }
+                    if (!varDict.TryGetValue(varName, out varVals))
+                    {
+                      varVals = new List<string>();
+                      varDict.Add(varName, varVals);
+                    }
 
-              //      varVals.Add(curVar.strValue);
-              //    }
-              //  }
+                    varVals.Add(curVar.strValue);
+                  }
+                }
 
               if (_logFailedComps && (failedComps.Length > 0))
               {
@@ -563,9 +565,9 @@ namespace SimulationEngine
     //  //depths[curRes.name] -= 1;
     //}
 
-    public void LogResults(TimeSpan runTime, int runCnt, bool finalValOnly)
+    public void LogResults(TimeSpan runTime, int runCnt, bool logFailedComps)
     {
-      if (_progress != null)
+        if (_progress != null)
       { 
         _progress.runTime = runTime;
         _progress.percentDone = (runCnt * 100) / this._numRuns;
@@ -576,55 +578,59 @@ namespace SimulationEngine
         return;
 
       System.IO.File.WriteAllText(_resultFile, "Simulation = " + this._lists.name + Environment.NewLine);
-      File.AppendAllText(_resultFile, "Runtime = " + runTime.ToString(@"dd\.hh\:mm\:ss") + Environment.NewLine + "Runs = " + runCnt.ToString() + " of " + _numRuns.ToString()  + Environment.NewLine);
-
-      if (keyPaths.Count > 0)
+      using (StreamWriter streamwriter = File.AppendText(_resultFile))
       {
-        var lastItem = keyPaths.Last();
-        foreach (var item in keyPaths)
+        streamwriter.WriteLine("Runtime = " + runTime.ToString(@"dd\.hh\:mm\:ss") + Environment.NewLine + "Runs = " + runCnt.ToString() + " of " + _numRuns.ToString());
+        if (keyPaths.Count > 0)
         {
-          File.AppendAllText(_resultFile, item.Key + " Occurred " + item.Value.count.ToString() + " times, Rate =" + (item.Value.count / (double)runCnt).ToString() + 
-            ", MeanTime = " + item.Value.timeMean.ToString(@"dd\.hh\:mm\:ss") + " +/- " + item.Value.timeStdDeviation.ToString(@"dd\.hh\:mm\:ss\.ff") + Environment.NewLine, Encoding.UTF8);
-          //todo write the failed components and times.
-          if (keyFailedItems.ContainsKey(item.Key))
+          var lastItem = keyPaths.Last();
+          foreach (var item in keyPaths)
           {
-            foreach (var cs in keyFailedItems[item.Key].compFailSets)
+            streamwriter.WriteLine(item.Key + " Occurred " + item.Value.count.ToString() + " times, Rate =" + (item.Value.count / (double)runCnt).ToString() +
+              ", MeanTime = " + item.Value.timeMean.ToString(@"dd\.hh\:mm\:ss") + " +/- " + item.Value.timeStdDeviation.ToString(@"dd\.hh\:mm\:ss\.ff"));
+            //write the failed components and times.
+            if (logFailedComps && keyFailedItems.ContainsKey(item.Key))
             {
-              int[] ids = cs.Key.Get1sIndexArray();
-              List<string> names = new List<String>();
-              foreach (int id in ids)
+              foreach (var cs in keyFailedItems[item.Key].compFailSets)
               {
-                //if(ids.Length > 3)
-                //  names.Add(lists.allStates[id].name + "[" + id.ToString() + "]");
-                //else
-                names.Add(_lists.allStates[id].name);
+                int[] ids = cs.Key.Get1sIndexArray();
+                List<string> names = new List<String>();
+                foreach (int id in ids)
+                {
+                  names.Add(_lists.allStates[id].name);
+                }
+                names.Sort();
+                double csPercent = ((double)cs.Value / item.Value.count) * 100;
+
+                string csLine = "(" + cs.Value.ToString() + ")[" + csPercent.ToString() + "]" + string.Join(", ", names);
+
+                streamwriter.WriteLine(csLine);
               }
-              names.Sort();
-              double csPercent = ((double)cs.Value / item.Value.count) * 100;
-
-              string csLine = "(" + cs.Value.ToString() + ")[" + csPercent.ToString() + "]" + string.Join(", ", names);
-
-              File.AppendAllText(_resultFile, csLine + Environment.NewLine, Encoding.UTF8);
-
             }
-          }
-
-          Dictionary<string, List<string>> varDict;
-          if (_variableVals.TryGetValue(item.Key, out varDict))
-          {
-            //List<double> varVals;
-            File.AppendAllText(_resultFile, "- Variable Values - " + Environment.NewLine, Encoding.UTF8);
-            if (!finalValOnly || (item.Value == lastItem.Value))
+            Dictionary<string, List<string>> varDict;
+            if (_variableVals.TryGetValue(item.Key, out varDict))
             {
-              foreach (var varValItem in varDict)
+              streamwriter.WriteLine("- Variable Values - ");
+              //write the name of each variable for header
+              string varNames = "Run Idx, " + string.Join(", ", varDict.Keys.ToList());
+              streamwriter.WriteLine(varNames);
+
+              for (int row = 0; row < runCnt; row++)
               {
-                string varName = varValItem.Key;
-                string varValues = "";
-                if (finalValOnly)
-                  varValues = varValItem.Value.Last<string>().ToString();
-                else
-                  varValues = string.Join(",", varValItem.Value);
-                File.AppendAllText(_resultFile, varName + " = " + varValues + Environment.NewLine, Encoding.UTF8);
+                string varValues = (row + 1).ToString();
+                foreach (var varValItem in varDict.Values)
+                {
+                  //get the value for each variable in a row
+                  if (varValItem.Count > row)
+                  {
+                    varValues = varValues + ", " + varValItem[row];
+                  }
+                  else
+                  {
+                    varValues = varValues + ", " + "unkown";
+                  }
+                }
+               streamwriter.WriteLine(varValues);
               }
             }
           }
@@ -632,17 +638,24 @@ namespace SimulationEngine
       }
     }
 
-    public List<string> GetVarValues(List<string> varNames, bool log = false)
+    public List<string> GetVarValues(List<string> varNames, bool finalLog = false)
     {
       List<string> retVals = new List<string>();
-      foreach(string name in varNames)
+      if (finalLog)
+      {
+        File.AppendAllText(_resultFile, "---------------------------" + Environment.NewLine, Encoding.UTF8);
+        File.AppendAllText(_resultFile, "- End Sim Variable Values -" + Environment.NewLine, Encoding.UTF8);
+        File.AppendAllText(_resultFile, "---------------------------" + Environment.NewLine, Encoding.UTF8);
+      }
+
+      foreach (string name in varNames)
       {
         string val = _lists.allVariables.FindByName(name).strValue;
         retVals.Add(val);
 
-        if (log)
+        if (finalLog)
         {
-          File.AppendAllText(_resultFile, name + " - " + val.ToString()  + Environment.NewLine, Encoding.UTF8);
+          File.AppendAllText(_resultFile, name + " = " + val.ToString()  + Environment.NewLine, Encoding.UTF8);
         }
       }
 

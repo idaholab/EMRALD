@@ -73,7 +73,7 @@ namespace EMRALD_Sim
       //SimulationDAL.Globals.simID = 1;
       for (int i = 0; i < args.Length; i++) // Loop through array
       {
-        string argument = args[i];
+        string argument = args[i].ToLower();
         switch (argument)
         {
           case "-n": //run count
@@ -227,13 +227,13 @@ namespace EMRALD_Sim
               break;
             }
 
-          case "-jsonStats":
+          case "-jsonstats":
             {
               _statsFile = args[i + 1];
               break;
             }
 
-          case "-rIntrv":
+          case "-rintrv":
             {
               try
               {
@@ -309,6 +309,32 @@ namespace EMRALD_Sim
               break;
             }
 
+          case "-mergeresults":
+            if (args.Length < (i + 4))
+            {
+              Console.Write("Invalid option, must have two result file paths and a destination file path after -mergeresults.");
+              return;
+            }
+            string mergePath1 = _statsFile = args[i + 1];
+            string mergePath2 = _statsFile = args[i + 2];
+            string resPath = _statsFile = args[i + 3];
+            
+            try
+            {
+              if (SimulationEngine.OverallResults.CombineResultFiles(mergePath1, mergePath2, resPath) == "")
+              {
+                Console.Write("Failed to load files, must have two valid file paths after -mergeresults.");
+                return;
+              }
+
+              //all went well so be done
+            }
+            catch
+            {
+              Console.Write("Failed to merge result files, verify they are valid EMRALD path result JSON files.");
+            }
+            break;
+
           case "-help":
             {
               Console.WriteLine("-n \"run count\"");
@@ -326,6 +352,8 @@ namespace EMRALD_Sim
                                 "    Basic - state movement only. Detailed - state movement, actions and events. " + Environment.NewLine +
                                 "    Example: -d basic [10 20]");
               Console.WriteLine("-rIntrv \"how often to save the path results, every X number of runs. No value or <1 will result in saving only after all runs are complete.\"");
+              Console.WriteLine("-mergeResults \"merge two json path result files into one. Estimates the 5th and 95th. Example: -mergeResults c:/temp/PathResultsBatch1.json c:/temp/PathResultsBatch2.json c:/temp/PathResultsCombined.json\"");
+
               break;
             }
 
@@ -929,27 +957,29 @@ namespace EMRALD_Sim
 
     private void SaveUISettingsToJson()
     {
-      _currentModelSettings.RunCount = tbRunCnt.Text;
-      _currentModelSettings.MaxRunTime = tbMaxSimTime.Text;
-      _currentModelSettings.BasicResultsLocation = tbSavePath.Text;
-      _currentModelSettings.PathResultsLocation = tbSavePath2.Text;
-      _currentModelSettings.Seed = tbSeed.Text;
-      _currentModelSettings.DebugFromRun = tbLogRunStart.Text;
-      _currentModelSettings.DebugToRun = tbLogRunEnd.Text;
-
-      if (chkLog.Checked)
+      if (_currentModelSettings != null)
       {
-        if (ConfigData.debugLev == LogLevel.Info)
-        {
-          _currentModelSettings.DebugLevel = "Basic";
-        }
-        else
-        {
-          _currentModelSettings.DebugLevel = "Detailed";
-        }
-      }
+        _currentModelSettings.RunCount = tbRunCnt.Text;
+        _currentModelSettings.MaxRunTime = tbMaxSimTime.Text;
+        _currentModelSettings.BasicResultsLocation = tbSavePath.Text;
+        _currentModelSettings.PathResultsLocation = tbSavePath2.Text;
+        _currentModelSettings.Seed = tbSeed.Text;
+        _currentModelSettings.DebugFromRun = tbLogRunStart.Text;
+        _currentModelSettings.DebugToRun = tbLogRunEnd.Text;
 
-      SaveUISettings();
+        if (chkLog.Checked)
+        {
+          if (ConfigData.debugLev == LogLevel.Info)
+          {
+            _currentModelSettings.DebugLevel = "Basic";
+          }
+          else
+          {
+            _currentModelSettings.DebugLevel = "Detailed";
+          }
+        }
+        SaveUISettings();
+      }
     }
 
     private void SaveUISettings() {
@@ -1044,7 +1074,7 @@ namespace EMRALD_Sim
       }
     }
 
-    private void DispResults(TimeSpan runTime, int runCnt, bool finalValOnly)
+    private void DispResults(TimeSpan runTime, int runCnt, bool logFailedComps)
     {
       MethodInvoker methodInvokerDelegate = delegate ()
       {
@@ -1080,28 +1110,10 @@ namespace EMRALD_Sim
               lvCols[1] = ((Double)cs.Value).ToString();
               lvCols[2] = String.Format("{0:0.00}", (((double)cs.Value / item.Value.count) * 100)) + "%";
               lvCols[3] = string.Join(", ", names);
-
+              lvResults.Items.Add(new ListViewItem(lvCols));
             }
           }
 
-          //foreach (var cs in item.Value.compFailSets)
-          //{
-          //  string[] lvCols2 = new string[4];
-
-          //  int[] ids = cs.Key.Get1sIndexArray();
-          //  List<string> names = new List<String>();
-          //  foreach (int id in ids)
-          //  {
-          //    names.Add(_sim.allStates[id].name);
-          //  }
-          //  names.Sort();
-
-          //  lvCols[0] = "";
-          //  lvCols[1] = ((Double)cs.Value).ToString();
-          //  lvCols[2] = String.Format("{0:0.00}", (((double)cs.Value / item.Value.failCnt) * 100)) + "%";
-          //  lvCols[3] = string.Join(", ", names);
-          //  lvResults.Items.Add(new ListViewItem(lvCols));
-          //}
         }
 
         lvVarValues.Items.Clear();
@@ -1121,7 +1133,7 @@ namespace EMRALD_Sim
 
         if (tbSavePath.Text != "")
         {
-          simRuns.LogResults(runTime, runCnt, !finalValOnly);
+          simRuns.LogResults(runTime, runCnt, logFailedComps);
         }
 
       };

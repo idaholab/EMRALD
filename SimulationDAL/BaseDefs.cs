@@ -246,20 +246,27 @@ namespace SimulationDAL
 
     public static TimeSpan NumberToTimeSpan(double number, EnTimeRate timeRate)
     {
-      switch (timeRate)
+      try
       {
-        case EnTimeRate.trYears:
-          return TimeSpan.FromDays(number * 365);
-        case EnTimeRate.trDays:
-          return TimeSpan.FromDays(number);
-        case EnTimeRate.trHours:
-          return TimeSpan.FromHours(number);
-        case EnTimeRate.trMinutes:
-          return TimeSpan.FromMinutes(number);
-        case EnTimeRate.trSeconds:
-          return TimeSpan.FromSeconds(number);
-        default:
-          throw new Exception("Invalid time rate");
+        switch (timeRate)
+        {
+          case EnTimeRate.trYears:
+            return TimeSpan.FromDays(number * 365);
+          case EnTimeRate.trDays:
+            return TimeSpan.FromDays(number);
+          case EnTimeRate.trHours:
+            return TimeSpan.FromHours(number);
+          case EnTimeRate.trMinutes:
+            return TimeSpan.FromMinutes(number);
+          case EnTimeRate.trSeconds:
+            return TimeSpan.FromSeconds(number);
+          default:
+            throw new Exception("Invalid time rate");
+        }
+      }
+      catch
+      {
+        return TimeSpan.MaxValue;
       }
 
     }

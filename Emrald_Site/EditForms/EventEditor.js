@@ -115,7 +115,7 @@ function isModified() {
  */
 function ValidateData() {
   var scope = angular.element(document.querySelector('#EEControllerPanel')).scope();
-  if (scope.typeOption.value === 'et3dSimEv' && !scope.data.variable && scope.data.extEventType.value === 'etCompEv') {
+  if (scope.typeOption.value === 'et3dSimEv' && !scope.data.variable && (scope.data.extEventType && scope.data.extEventType.value === 'etCompEv')) {
       return "Please specify an External Sim Variable before saving the event.";
   }
   if (scope.typeOption.value === 'etComponentLogic' && !scope.data.logicTop) {

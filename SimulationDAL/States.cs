@@ -343,6 +343,14 @@ namespace SimulationDAL
       }
 
     }
+
+    public void ResetEventCriteria()
+    {
+      foreach(var e in _events)
+      {
+        e.Reset();
+      }
+    }
   }
 
 
