@@ -1,7 +1,3 @@
-/**
- * Copied from https://github.com/nmde/maap-input-parser/blob/main/src/types.ts.
- */
-
 declare module 'maap-inp-parser' {
   import type { LocationRange, ParserOptions } from 'peggy';
 
@@ -10,6 +6,7 @@ declare module 'maap-inp-parser' {
   };
 
   export type WrapperOptions = ParserOptions & {
+    locations?: boolean;
     safeMode?: boolean;
   };
 
@@ -188,9 +185,14 @@ declare module 'maap-inp-parser' {
     value: string[];
   };
 
+  export type Comment = {
+    type: 'comment';
+    value: string;
+  };
+
   export type Program = {
     type: 'program';
-    value: SourceElement[];
+    value: (SourceElement | Comment)[];
   };
 
   export type SourceElement =
@@ -212,9 +214,8 @@ declare module 'maap-inp-parser' {
   };
 
   export type MAAPInpParser = {
-    default: MAAPInpParser;
     options: WrapperOptions;
     parse(input: string, options?: WrapperOptions): MAAPInpParserOutput;
-    toString(input: any): string;
+    toString(input: Program | UserEvtElement | Literal | Identifier): string;
   };
 }

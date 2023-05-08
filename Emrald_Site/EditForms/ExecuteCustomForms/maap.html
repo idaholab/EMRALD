@@ -191,8 +191,12 @@
           <div ng-if="tab == 'input-blocks'">
             <h3>Input Blocks:</h3>
             <div>
-              <!-- TODO: display comments -->
-              <div ng-repeat="block in blocks" maap-conditional-block data="block" class="block"></div>
+              <div ng-repeat="block in blocks">
+                <div ng-if="block.type === 'comment'">{{ block.value }}</div>
+                <div ng-if="block.type !== 'comment'">
+                  <div maap-conditional-block data="block" class="block"></div>
+                </div>
+              </div>
             </div>
           </div>
           <div ng-if="tab == 'outputs'">

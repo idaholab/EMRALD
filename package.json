@@ -32,5 +32,8 @@
     "eslint-plugin-jsdoc": "^39.2.9",
     "eslint-plugin-sort-class-members": "^1.14.1",
     "nyc": "^15.1.0"
+  },
+  "dependencies": {
+    "angular": "^1.8.3"
   }
 }

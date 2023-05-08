@@ -44,7 +44,7 @@ const angular = win.angular;
  * @property {SourceElement[]} parameters - Parameter items.
  * @property {SourceElement[]} initiators - Initiators.
  * @property {VarLink[]} varLinks - Var links.
- * @property {SourceElement[]} blocks - Input blocks.
+ * @property {(Comment | SourceElement)[]} blocks - Input blocks.
  * @property {SourceElement[]} initiatorOptions - Initiator options.
  * @property {boolean} parametersLoaded - If the parameters file has been loaded & parsed.
  * @property {string[]} operators - Possible operator choices.
@@ -79,7 +79,7 @@ const angular = win.angular;
 /**
  * Gets a list of variable names from the blocks.
  *
- * @param {*} block - The block to get names from.
+ * @param {SourceElement | Comment} block - The block to get names from.
  * @returns {string[]} The list of variable names.
  */
 function getBlockVarNames(block) {
@@ -485,12 +485,20 @@ maapForm.controller('maapFormController', [
         const parser = maapInpParser.default;
         // Turning safeMode on will allow the file to fully parse even if there are syntax errors
         parser.options.safeMode = true;
-        const parsed = parser.parse($scope.inputFile);
+        const parsed = parser.parse($scope.inputFile, {
+          locations: true,
+        });
         if (parsed.errors.length > 0) {
           // TODO: Notify of parsing errors
         }
-        parsed.output.value.forEach((sourceElement) => {
-          $scope.sections.push(sourceElement);
+        /** @type {import('maap-inp-parser').Comment[]} */
+        const comments = [];
+        parsed.output.value.forEach((sourceElement, i) => {
+          if (sourceElement.type === 'comment') {
+            comments[i] = sourceElement;
+          } else {
+            $scope.sections.push(sourceElement);
+          }
           switch (sourceElement.type) {
             case 'block':
               if (sourceElement.blockType === 'PARAMETER CHANGE') {
@@ -523,6 +531,9 @@ maapForm.controller('maapFormController', [
               }
               break;
             case 'conditional_block':
+              if (comments[i - 1]) {
+                $scope.blocks.push(comments[i - 1]);
+              }
               $scope.blocks.push(sourceElement);
               $scope.overrideSections.push({
                 bounds: [
