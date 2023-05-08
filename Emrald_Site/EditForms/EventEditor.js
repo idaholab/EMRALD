@@ -267,8 +267,16 @@ function OnLoad(dataObj) {
                   opTypeEl.selectedIndex = 1;
                   break;
               case "etComponentLogic":
-                  scope.data.onSuccess = eventData.onSuccess;
-                  scope.data.triggerOnFalse = eventData.triggerOnFalse;
+                  if (eventData.onSuccess === undefined || eventData.onSuccess === null) {
+                    scope.data.onSuccess = true;
+                  } else {
+                    scope.data.onSuccess = eventData.onSuccess;
+                  }
+                  if (eventData.triggerOnFalse === undefined || eventData.triggerOnFalse === null) {
+                    scope.data.triggerOnFalse = false;
+                  } else {
+                    scope.data.triggerOnFalse = eventData.triggerOnFalse;
+                  }
                   var lt = scope.logicTops.find((o) => o.name == eventData.logicTop);
                   if (lt)
                       scope.data.logicTop = lt;
@@ -534,7 +542,7 @@ EEApp.controller("EEController", function ($scope) {
       isInState: "true",
       isAllItems: true,
       states: [],
-      onSuccess: false,
+      onSuccess: true,
       logicTop: null,
       fromSimStart: false,
       extEventType: null,

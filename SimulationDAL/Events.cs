@@ -432,6 +432,8 @@ namespace SimulationDAL
     public void AutoAddRelatedComponents(LogicNode logicTop)
     {
       this.AddRelatedItems(logicTop.AllUsedStateIDs);
+      if (logicTop.AllUsedStateIDs.Count == 0)
+        throw new Exception("no state IDs under logic tree " + logicTop.name);
     }
 
     public override void LookupRelatedItems(EmraldModel all, EmraldModel addToList)
