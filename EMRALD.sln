@@ -44,8 +44,6 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "Emrald_Site", "Emrald_Site\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hunter", "Hunter\Hunter.csproj", "{1A428B75-0F9F-4170-8F18-7F3F6394CAA5}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hunter.Tests", "Hunter.Tests\Hunter.Tests.csproj", "{3260699B-40A9-48F6-8503-9AA57F22C260}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -88,10 +86,6 @@ Global
 		{1A428B75-0F9F-4170-8F18-7F3F6394CAA5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1A428B75-0F9F-4170-8F18-7F3F6394CAA5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1A428B75-0F9F-4170-8F18-7F3F6394CAA5}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3260699B-40A9-48F6-8503-9AA57F22C260}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3260699B-40A9-48F6-8503-9AA57F22C260}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3260699B-40A9-48F6-8503-9AA57F22C260}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3260699B-40A9-48F6-8503-9AA57F22C260}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
