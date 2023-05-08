@@ -1804,6 +1804,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/bezier-js@npm:^4.1.0":
+  version: 4.1.0
+  resolution: "@types/bezier-js@npm:4.1.0"
+  checksum: b786ee61e25ddace8cf56b6ebfe2140323a96dd8e166f0cf2204781144b35928306cbc300f72b8e1f15fd7f0d051c50dfa142983fe2ad34723313450e50dba2d
+  languageName: node
+  linkType: hard
+
 "@types/d3-axis@npm:^3.0.1":
   version: 3.0.1
   resolution: "@types/d3-axis@npm:3.0.1"
@@ -2718,6 +2725,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"bezier-js@npm:^6.1.3":
+  version: 6.1.3
+  resolution: "bezier-js@npm:6.1.3"
+  checksum: 5ca3317b00c844c15b4b179f1b54638bc943d393d17dd1551777c7178017663f3d61e469e56c2c2cc5b28459380706ccc12e46d80677b9375970ca55f48b5338
+  languageName: node
+  linkType: hard
+
 "big.js@npm:^5.2.2":
   version: 5.2.2
   resolution: "big.js@npm:5.2.2"
@@ -3146,6 +3160,7 @@ __metadata:
     "@babel/core": ^7.18.5
     "@babel/plugin-transform-modules-commonjs": ^7.18.2
     "@babel/preset-env": ^7.18.2
+    "@types/bezier-js": ^4.1.0
     "@types/d3-axis": ^3.0.1
     "@types/d3-color": ^3.1.0
     "@types/d3-drag": ^3.0.1
@@ -3159,6 +3174,7 @@ __metadata:
     "@typescript-eslint/eslint-plugin": ^5.28.0
     "@typescript-eslint/parser": ^5.28.0
     babel-loader: ^8.2.5
+    bezier-js: ^6.1.3
     copy-webpack-plugin: ^11.0.0
     d3-color: ^3.1.0
     d3-drag: ^3.0.0

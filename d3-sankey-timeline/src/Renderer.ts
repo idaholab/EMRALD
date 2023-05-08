@@ -1,3 +1,4 @@
+import { Bezier } from 'bezier-js';
 import { color, RGBColor } from 'd3-color';
 import { drag } from 'd3-drag';
 import { easeCubicIn } from 'd3-ease';
@@ -616,6 +617,48 @@ export default class Renderer {
       .text((d: TimelineNode) => d.label)
       .attr('x', (d: TimelineNode) => d.layout.x + d.layout.width / 2)
       .attr('y', (d: TimelineNode) => d.layout.y + d.layout.height / 2);
+
+    links
+      .append('text')
+      .attr('text-anchor', 'middle')
+      .attr('dominant-baseline', 'middle')
+      .style('fill', this.options.fontColor)
+      .style('font-size', `${this.options.fontSize}px`)
+      .text((d: TimelineLink) => d.data.count)
+      .attr('x', (link: TimelineLink) => {
+        const y = link.source.layout.y + link.source.layout.height / 2;
+        const y1 = link.target.layout.y + link.target.layout.height / 2;
+        const curve = new Bezier([
+          link.source.layout.x + link.source.layout.width,
+          y,
+          link.source.layout.x +
+            link.source.layout.width +
+            this.options.curveWidth,
+          y,
+          link.target.layout.x - this.options.curveWidth,
+          y1,
+          link.target.layout.x,
+          y1,
+        ]);
+        return curve.getLUT()[50].x;
+      })
+      .attr('y', (link: TimelineLink) => {
+        const y = link.source.layout.y + link.source.layout.height / 2;
+        const y1 = link.target.layout.y + link.target.layout.height / 2;
+        const curve = new Bezier([
+          link.source.layout.x + link.source.layout.width,
+          y,
+          link.source.layout.x +
+            link.source.layout.width +
+            this.options.curveWidth,
+          y,
+          link.target.layout.x - this.options.curveWidth,
+          y1,
+          link.target.layout.x,
+          y1,
+        ]);
+        return curve.getLUT()[50].y;
+      });
   }
 
   /**

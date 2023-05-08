@@ -36,6 +36,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@babel/core", "npm:7.18.5"],\
             ["@babel/plugin-transform-modules-commonjs", "virtual:2ec16778ec8d3fa318ec65f0b01ad42f2afe652a7eb8f17308aa0f1b844ef6cee69055b54cf62c418781e10a0dbbf011742aaa9a8a78508b6858ea64ed5afc91#npm:7.18.2"],\
             ["@babel/preset-env", "virtual:2ec16778ec8d3fa318ec65f0b01ad42f2afe652a7eb8f17308aa0f1b844ef6cee69055b54cf62c418781e10a0dbbf011742aaa9a8a78508b6858ea64ed5afc91#npm:7.18.2"],\
+            ["@types/bezier-js", "npm:4.1.0"],\
             ["@types/d3-axis", "npm:3.0.1"],\
             ["@types/d3-color", "npm:3.1.0"],\
             ["@types/d3-drag", "npm:3.0.1"],\
@@ -49,6 +50,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@typescript-eslint/eslint-plugin", "virtual:2ec16778ec8d3fa318ec65f0b01ad42f2afe652a7eb8f17308aa0f1b844ef6cee69055b54cf62c418781e10a0dbbf011742aaa9a8a78508b6858ea64ed5afc91#npm:5.28.0"],\
             ["@typescript-eslint/parser", "virtual:2ec16778ec8d3fa318ec65f0b01ad42f2afe652a7eb8f17308aa0f1b844ef6cee69055b54cf62c418781e10a0dbbf011742aaa9a8a78508b6858ea64ed5afc91#npm:5.28.0"],\
             ["babel-loader", "virtual:2ec16778ec8d3fa318ec65f0b01ad42f2afe652a7eb8f17308aa0f1b844ef6cee69055b54cf62c418781e10a0dbbf011742aaa9a8a78508b6858ea64ed5afc91#npm:8.2.5"],\
+            ["bezier-js", "npm:6.1.3"],\
             ["copy-webpack-plugin", "virtual:2ec16778ec8d3fa318ec65f0b01ad42f2afe652a7eb8f17308aa0f1b844ef6cee69055b54cf62c418781e10a0dbbf011742aaa9a8a78508b6858ea64ed5afc91#npm:11.0.0"],\
             ["d3-color", "npm:3.1.0"],\
             ["d3-drag", "npm:3.0.0"],\
@@ -3023,6 +3025,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD"\
         }]\
       ]],\
+      ["@types/bezier-js", [\
+        ["npm:4.1.0", {\
+          "packageLocation": "./.yarn/cache/@types-bezier-js-npm-4.1.0-77fc2cf02f-b786ee61e2.zip/node_modules/@types/bezier-js/",\
+          "packageDependencies": [\
+            ["@types/bezier-js", "npm:4.1.0"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
       ["@types/d3-axis", [\
         ["npm:3.0.1", {\
           "packageLocation": "./.yarn/cache/@types-d3-axis-npm-3.0.1-7bb318c997-ac3f9f86ee.zip/node_modules/@types/d3-axis/",\
@@ -4321,6 +4332,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD"\
         }]\
       ]],\
+      ["bezier-js", [\
+        ["npm:6.1.3", {\
+          "packageLocation": "./.yarn/cache/bezier-js-npm-6.1.3-5ee67b1048-5ca3317b00.zip/node_modules/bezier-js/",\
+          "packageDependencies": [\
+            ["bezier-js", "npm:6.1.3"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
       ["big.js", [\
         ["npm:5.2.2", {\
           "packageLocation": "./.yarn/cache/big.js-npm-5.2.2-e147c30820-b89b6e8419.zip/node_modules/big.js/",\
@@ -4821,6 +4841,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@babel/core", "npm:7.18.5"],\
             ["@babel/plugin-transform-modules-commonjs", "virtual:2ec16778ec8d3fa318ec65f0b01ad42f2afe652a7eb8f17308aa0f1b844ef6cee69055b54cf62c418781e10a0dbbf011742aaa9a8a78508b6858ea64ed5afc91#npm:7.18.2"],\
             ["@babel/preset-env", "virtual:2ec16778ec8d3fa318ec65f0b01ad42f2afe652a7eb8f17308aa0f1b844ef6cee69055b54cf62c418781e10a0dbbf011742aaa9a8a78508b6858ea64ed5afc91#npm:7.18.2"],\
+            ["@types/bezier-js", "npm:4.1.0"],\
             ["@types/d3-axis", "npm:3.0.1"],\
             ["@types/d3-color", "npm:3.1.0"],\
             ["@types/d3-drag", "npm:3.0.1"],\
@@ -4834,6 +4855,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@typescript-eslint/eslint-plugin", "virtual:2ec16778ec8d3fa318ec65f0b01ad42f2afe652a7eb8f17308aa0f1b844ef6cee69055b54cf62c418781e10a0dbbf011742aaa9a8a78508b6858ea64ed5afc91#npm:5.28.0"],\
             ["@typescript-eslint/parser", "virtual:2ec16778ec8d3fa318ec65f0b01ad42f2afe652a7eb8f17308aa0f1b844ef6cee69055b54cf62c418781e10a0dbbf011742aaa9a8a78508b6858ea64ed5afc91#npm:5.28.0"],\
             ["babel-loader", "virtual:2ec16778ec8d3fa318ec65f0b01ad42f2afe652a7eb8f17308aa0f1b844ef6cee69055b54cf62c418781e10a0dbbf011742aaa9a8a78508b6858ea64ed5afc91#npm:8.2.5"],\
+            ["bezier-js", "npm:6.1.3"],\
             ["copy-webpack-plugin", "virtual:2ec16778ec8d3fa318ec65f0b01ad42f2afe652a7eb8f17308aa0f1b844ef6cee69055b54cf62c418781e10a0dbbf011742aaa9a8a78508b6858ea64ed5afc91#npm:11.0.0"],\
             ["d3-color", "npm:3.1.0"],\
             ["d3-drag", "npm:3.0.0"],\
