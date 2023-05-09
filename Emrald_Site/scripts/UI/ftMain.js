@@ -570,6 +570,7 @@ function main(container, outline) {
 			tb.addSeparator('images/Vert.png');
 			tb.addNewDraggableItem('gtOr', 'images/OrGate.png', null, true);
 			tb.addNewDraggableItem('gtAnd', 'images/AndGate.png', null, true);
+      tb.addNewDraggableItem('gtNot', 'images/NOTGate.webp', null, true);
 			tb.addNewDraggableItem('ftBasicEvent', 'images/BE.png', null, true);
     //tb.addDraggableItem('OR State', 'images/OrGate.png', null, true, dropHandler);
     //tb.addDraggableItem('AND State', 'images/AndGate.png', null, true, dropHandler);
@@ -759,6 +760,8 @@ function updateCell(graph, cell) {
   let imgName = 'ORGate.png';
   if (cell.children[0].value.gateType === 'gtAnd') {
     imgName = 'ANDGate.png';
+  } else if (cell.children[0].value.gateType === 'gtNot') {
+    imgName = 'NOTGate.webp';
   }
   graph.model.setStyle(cell.children[2], `ftGateShape;image=images/${imgName};`);
 }
