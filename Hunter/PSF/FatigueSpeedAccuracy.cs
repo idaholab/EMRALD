@@ -1,5 +1,6 @@
 ﻿using CommonDefLib;
 using Hunter.Hra.Distributions;
+using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -122,23 +123,35 @@ namespace Hunter.Psf
             }
 
 
-            return Math.Clamp(v + sinusoid * sinusoidFade, 0.5, 3.5);
+            return Math.Clamp(v + sinusoid * sinusoidFade, 0.333, 3.5);
         }
 
         public double GetSpeedAccuracy(double t)
         {
-            double b = 0.0005;
-            double a = (FinalMultiplier - 1 - b * 72) / (72 * 72);
+            double x = (625 * (1/ FinalMultiplier) - 598) / 3240000;
 
-            double v = a * t * t + b * t + 1;
-            return 1 / Math.Clamp(v, 0, FinalMultiplier);
+            double b = 0.0005;
+            double a = ((1/FinalMultiplier) - 1 - b * 72) / (72 * 72);
+
+            if (a > 0)
+            {
+                throw new Exception("a should be > 0");
+            }
+
+            double v = 1 + a * t * t - b * t;
+
+            double radians = 2 * Math.PI * (t / 24);
+            double phase = 2 * Math.PI * CircadianPhase;
+            double sinusoid = CircadianAmplitude / 5 * Math.Sin(radians + phase);
+
+            return x * (t * t) - 0.0006 * t + 1 + sinusoid;
         }
 
         public double GetMultiplier(double t)
         {
             double speedAccuracy = GetSpeedAccuracy(t);
             double speedMultiplier = GetValue(t);
-            double accuracy = speedAccuracy / speedMultiplier;
+            double accuracy = speedAccuracy * speedMultiplier;
             return 1 / accuracy;
         }
 
