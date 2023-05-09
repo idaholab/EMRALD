@@ -138,7 +138,7 @@ namespace Hunter.Tests.GomsParser
             List<Token> tokens = ExpressiveGoms.Tokenize(result);
             double elapsedTime = ExpressiveGoms.EvaluatePostfixExpression(tokens, hraEngine);
 
-            Assert.AreEqual(12.95638760517252d, elapsedTime);
+            Assert.AreEqual(36.410839488715858d, elapsedTime);
         }
 
 
@@ -201,7 +201,7 @@ namespace Hunter.Tests.GomsParser
             string result = ExpressiveGoms.Preprocess(input);
             List<Token> tokens = ExpressiveGoms.Tokenize(result);
             double elapsedTime = ExpressiveGoms.EvaluatePostfixExpression(tokens, hraEngine);
-            Assert.AreEqual(elapsedTime, 2.173715467135704d, 0.0001);
+            Assert.AreEqual(52.424779228871174d, elapsedTime, 0.0001);
         }
 
         [Test]
@@ -216,12 +216,12 @@ namespace Hunter.Tests.GomsParser
             List<Token> tokens = ExpressiveGoms.Tokenize(preprocessedInput);
 
             double elapsedTime = ExpressiveGoms.EvaluatePostfixExpression(tokens, hraEngine);
-            Assert.AreEqual(15.605224470728377d, elapsedTime, 1e-6);
+            Assert.AreEqual(21.566100967490776d, elapsedTime, 1e-6);
         }
 
 
-        [TestCase("Ac Cc Rc + + Ac Cf Rf + +", 15.605224470728377d)] 
-        [TestCase("5 2 * _expo_rv", 1.2331634513890486d)] 
+        [TestCase("Ac Cc Rc + + Ac Cf Rf + +", 21.566100967490776d)] 
+        [TestCase("5 2 * _expo_rv", 19.106521828110107d)] 
         public void TestEvaluatePostfixExpression(string input, double expectedElapsedTime)
         {
             SingleRandom.Reset();

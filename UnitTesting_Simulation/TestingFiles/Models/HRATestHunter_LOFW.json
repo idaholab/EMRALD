@@ -514,7 +514,7 @@
         "time": "00:00:00",
         "timeVariableUnit": "",
         "fromSimStart": false,
-        "procedureName": "sgtr",
+        "procedureName": "lofw",
         "startStep": 1,
         "endStep": -1,
         "contextLinks": [
@@ -555,10 +555,6 @@
           {
             "contextName": "ShiftTimeH",
             "simVar": "TimeOnShiftH"
-          },
-          {
-            "contextName": "TaskAvailableTimeM",
-            "simVar": "AvailableTimeM"
           },
           {
             "contextName": "Stress",
@@ -630,7 +626,7 @@
         "name": "AvailableTimeM",
         "desc": "",
         "varScope": "gtGlobal",
-        "value": 1,
+        "value": 7,
         "resetOnRuns": true,
         "type": "double"
       }
@@ -662,9 +658,10 @@
   "HunterModel": {
     "Snapshot": {
       "RepeatMode": true,
+      "MaxRepeat": 4,
       "TimeOnShiftFatigueEnabled": true,
       "TimeOnShift": "00:00:00",
-      "HasTimePressure": false,
+      "HasTimePressure": true,
       "Experience": "Nominal",
       "_currentProcedureId": null,
       "_currentStepId": null,

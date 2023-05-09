@@ -11,6 +11,7 @@ namespace Hunter.Model
     public struct HunterSnapshot
     {
         public bool RepeatMode { get; set; } = true;
+        public int MaxRepeat { get; set; } = 4;
         public bool TimeOnShiftFatigueEnabled { get; set; } = true;
         public TimeSpan TimeOnShift { get; set; } = default;
         public bool HasTimePressure { get; set; } = false;
@@ -31,9 +32,11 @@ namespace Hunter.Model
             string? currentStepId = null,
             int currentEvalState = -1,
             int primitiveEvalCount = 0,
-            int repeatCount = 0)
+            int repeatCount = 0,
+            int maxRepeat = 4)
         {
             RepeatMode = repeatMode;
+            MaxRepeat = maxRepeat;
             TimeOnShiftFatigueEnabled = timeOnShiftFatigueEnabled;
             TimeOnShift = timeOnShift;
             HasTimePressure = hasTimePressure;

@@ -22,7 +22,8 @@ namespace Hunter.Model
                 snapshot.TimeOnShiftFatigueEnabled,
                 snapshot.TimeOnShift,
                 snapshot.HasTimePressure,
-                snapshot.Experience);
+                snapshot.Experience,
+                snapshot.MaxRepeat);
 
             hraEngine.SetCurrentProcedureId(snapshot._currentProcedureId);
             hraEngine.SetCurrentStepId(snapshot._currentStepId);
@@ -37,13 +38,15 @@ namespace Hunter.Model
             bool timeOnShiftFatigueEnabled = true,
             TimeSpan startTimeOnShift = default,
             bool hasTimePressure = false,
-            string experience = default)
+            string experience = default,
+            int maxRepeat=4)
         {
             HRAEngine hraEngine = new HRAEngine
             {
                 RepeatMode = repeatMode,
                 TimeOnShiftFatigueEnabled = timeOnShiftFatigueEnabled,
-                TimeOnShift = startTimeOnShift
+                TimeOnShift = startTimeOnShift,
+                MaxRepeatCount = maxRepeat
             };
 
             if (hasTimePressure)

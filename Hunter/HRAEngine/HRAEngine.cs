@@ -168,7 +168,7 @@ namespace Hunter.Hra
 
         private List<string> _eventLog { get; set; } = new List<string>();
 
-        public HRAEngine(string primitivesFilePath = null, TimeSpan timeOnShift = default, bool initPsfs = true)
+        public HRAEngine(string primitivesFilePath = null, TimeSpan timeOnShift = default, bool initPsfs = true, int maxRepeat = 4)
         {
             if (primitivesFilePath == null)
             {
@@ -181,6 +181,8 @@ namespace Hunter.Hra
                 _psfCollection = new PSFCollection();
 
             fatigueModel = new FatigueSpeedAccuracy();
+
+            MaxRepeatCount = maxRepeat;
         }
 
         public HunterSnapshot Snapshot()
@@ -400,16 +402,12 @@ namespace Hunter.Hra
                     }
 
                     // Check if available time has elapsed
-                    if (!_taskAvailableTime?.HasTimeRemaining == false && _currentEvalState != EvalState.Success)
+                    if (_taskAvailableTime?.HasTimeRemaining == false)
                     {
                         _currentEvalState = EvalState.OutOfTimeFailure;
-                    }
-
-                    // halt execution of the procedure if the current step failed
-                    if (_currentEvalState != EvalState.Success)
-                    {
                         return TimeSpan.FromSeconds(elapsedTime);
                     }
+
                 }
             }
             else
@@ -528,8 +526,10 @@ namespace Hunter.Hra
                         break;
                     }
                 }
-            }
 
+                if (evalState != EvalState.Success)
+                    evalState = EvalState.OnRepeatFailure;
+            }
 
             if (outputDir != null)
             {
