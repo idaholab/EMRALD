@@ -5,6 +5,7 @@
   "main": "EMRALD_Site/app.js",
   "private": true,
   "scripts": {
+    "coverage": "npx nyc instrument Emrald_Site instrumented && node ./Emrald_Site/tests/index.js --coverage",
     "tauri": "tauri",
     "test": "node ./Emrald_Site/tests/index.js",
     "build": "npm run tauri build",
@@ -23,10 +24,12 @@
   "devDependencies": {
     "@tauri-apps/cli": "^1.0.0-rc.13",
     "@types/mocha": "^9.1.1",
+    "@types/node": "^18.0.3",
     "eslint": "^8.15.0",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-jsdoc": "^39.2.9",
-    "eslint-plugin-sort-class-members": "^1.14.1"
+    "eslint-plugin-sort-class-members": "^1.14.1",
+    "nyc": "^15.1.0"
   }
 }
