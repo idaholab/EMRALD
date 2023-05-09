@@ -138,12 +138,14 @@ namespace Hunter.Hra
                 case 0:
                     return "Success";
                 case 1:
-                    return "HumanErrorFailure";
+                    return "HepGtOneFailure";
                 case 2:
-                    return "OutOfTimeFailure";
+                    return "HumanErrorFailure";
                 case 3:
-                    return "OnRepeatFailure";
+                    return "OutOfTimeFailure";
                 case 4:
+                    return "OnRepeatFailure";
+                case 5:
                     return "MultipleFailure";
                 default:
                     return $"Unknown({Value})";
@@ -151,3 +153,4 @@ namespace Hunter.Hra
         }
     }
 }
+

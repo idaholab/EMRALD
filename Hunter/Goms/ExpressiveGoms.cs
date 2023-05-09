@@ -517,7 +517,11 @@ namespace Hunter.ExpGoms
             while (stack.Count > 0)
             {
                 StackItem token = stack.Pop();
-                sum += token.YieldNumber(hraEngine);
+                var elapsedTime = token.YieldNumber(hraEngine);
+                if (elapsedTime <0) { 
+                    throw new InvalidOperationException("sampled time is < 0");
+                }
+                sum += elapsedTime;
             }
 
             return sum;

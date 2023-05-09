@@ -7,6 +7,8 @@ using Hunter.Psf;
 using Hunter.Hra;
 
 using NUnit.Framework;
+using CommonDefLib;
+using Hunter.Model;
 
 namespace Hunter.Tests.PerformanceShapingFactorTests
 {
@@ -48,67 +50,16 @@ namespace Hunter.Tests.PerformanceShapingFactorTests
         [Test]
         public void FatigueIndex_Test12h()
         {
+
+            SingleRandom.Reset();
+            ConfigData.seed = 1234;
+
             // Arrange
-            HRAEngine engine = new HRAEngine(timeOnShift: TimeSpan.FromHours(12.1));
-            var fatigueIndex = engine.FatigueIndex;
-
-            _psfCollection.Update(hraEngine: engine);
-
-            var level = _psfCollection["FfDa"].CurrentLevel;
-
-            if (level is not null)
-            {
-                TestContext.Out.WriteLine($"LevelName: {level.LevelName}");
-                Assert.That(level.LevelName == "DegradedFitness");
-            }
-            else
-            {
-                Assert.Fail("CurrentLevel is null");
-            }
-        }
-
-        [Test]
-        public void FatigueIndex_Test18h()
-        {
-            // Arrange
-            HRAEngine engine = new HRAEngine(timeOnShift: TimeSpan.FromHours(18));
-            var fatigueIndex = engine.FatigueIndex;
-
-            _psfCollection.Update(hraEngine: engine);
-
-            var level = _psfCollection["FfDa"].CurrentLevel;
-
-            if (level is not null)
-            {
-                TestContext.Out.WriteLine($"LevelName: {level.LevelName}");
-                Assert.That(level.LevelName == "Unfit");
-            }
-            else
-            {
-                Assert.Fail("CurrentLevel is null");
-            }
-        }
-
-        [Test]
-        public void FatigueIndex_Test24h()
-        {
-            // Arrange
-            HRAEngine engine = new HRAEngine(timeOnShift: TimeSpan.FromHours(24));
-            var fatigueIndex = engine.FatigueIndex;
-
-            _psfCollection.Update(hraEngine: engine);
-
-            var level = _psfCollection["FfDa"].CurrentLevel;
-
-            if (level is not null)
-            {
-                TestContext.Out.WriteLine($"LevelName: {level.LevelName}");
-                Assert.That(level.LevelName == "Unfit");
-            }
-            else
-            {
-                Assert.Fail("CurrentLevel is null");
-            }
+            HRAEngine hraEngine = HunterFactory.CreateDefaultOperator();
+            hraEngine.TimeOnShift = TimeSpan.FromHours(12);
+            hraEngine.fatigueModel = new FatigueSpeedAccuracy();
+            var multiplier = hraEngine._psfCollection[PsfEnums.Id.FfDd].CurrentMultiplier;
+            Assert.AreEqual(multiplier, 1.7258792660358675d, 0.0001);
         }
     }
 }

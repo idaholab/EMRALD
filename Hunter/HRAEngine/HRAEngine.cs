@@ -59,7 +59,7 @@ namespace Hunter.Hra
 
         private Dictionary<string, Primitive> _primitives;
 
-        private PSFCollection _psfCollection;
+        internal PSFCollection _psfCollection;
         public PSFCollection psfCollection { get { return _psfCollection; } }
         internal void SetPSFCollection(PSFCollection value) { 
             _psfCollection = value; 
@@ -99,7 +99,7 @@ namespace Hunter.Hra
         /// <remarks>
         /// When <see cref="RepeatMode"/> is true, <see cref="EvalStep"/> will be repeated until all primitives are completed or the maximum repeat count is reached.
         /// </remarks>
-        public int MaxRepeatCount { get; set; } = 3;
+        public int MaxRepeatCount { get; set; } = 7;
 
         /// <summary>
         /// Gets or sets a value indicating whether TimeOnShift Fatigue should impact the model.
@@ -112,6 +112,8 @@ namespace Hunter.Hra
         /// </summary>
         public TimeSpan TimeOnShift { get; set; } = TimeSpan.Zero;
 
+
+        internal FatigueSpeedAccuracy fatigueModel;
         /// <summary>
         /// Calculates the fatigue index based on the duration of the shift.
         /// </summary>
@@ -120,10 +122,8 @@ namespace Hunter.Hra
         {
             get
             {
-                double timeOnShiftH = Math.Min(TimeOnShift.TotalHours, 18);
-                return ((0.0054 * Math.Pow(timeOnShiftH, 3)) -
-                        (0.0939 * Math.Pow(timeOnShiftH, 2)) +
-                        (0.4271 * timeOnShiftH) + 0.599);
+                double timeOnShiftH = Math.Min(TimeOnShift.TotalHours, 14);
+                return fatigueModel.GetValue(timeOnShiftH);
             }
         }
 
@@ -179,6 +179,8 @@ namespace Hunter.Hra
             TimeOnShift = timeOnShift;
             if (initPsfs)
                 _psfCollection = new PSFCollection();
+
+            fatigueModel = new FatigueSpeedAccuracy();
         }
 
         public HunterSnapshot Snapshot()
@@ -224,7 +226,7 @@ namespace Hunter.Hra
             }
 
             // Get the available time from the context
-            _taskAvailableTime = Timer.FromContext(context, this, "AvailableTime");
+            _taskAvailableTime = Timer.FromContext(context, this, "TaskAvailableTime");
             
             // Get the time required from the context
             _taskTimeRequired = Timer.FromContext(context, this, "TaskTimeRequired");
@@ -386,7 +388,7 @@ namespace Hunter.Hra
                     List<ExpressiveGoms.Token> tokens = procedure.Steps[i - 1].GomsExpression;
 
                     elapsedTime += ExpressiveGoms.EvaluatePostfixExpression(tokens, this);
-                    elapsedTime += HandleRepeatMode(tokens);
+                    //elapsedTime += HandleRepeatMode(tokens);
 
                     // ExpressiveGoms sets StepEvalState
                     _currentEvalState = _currentEvalState & StepEvalState;
@@ -394,11 +396,11 @@ namespace Hunter.Hra
                     // failed on HEP > 1.0
                     if (_currentEvalState != EvalState.Success)
                     {
-                        return TimeSpan.MaxValue;
+                        return TimeSpan.FromSeconds(elapsedTime);
                     }
 
                     // Check if available time has elapsed
-                    if (!_taskAvailableTime?.HasTimeRemaining ?? false && _currentEvalState != EvalState.Success)
+                    if (!_taskAvailableTime?.HasTimeRemaining == false && _currentEvalState != EvalState.Success)
                     {
                         _currentEvalState = EvalState.OutOfTimeFailure;
                     }
@@ -406,7 +408,7 @@ namespace Hunter.Hra
                     // halt execution of the procedure if the current step failed
                     if (_currentEvalState != EvalState.Success)
                     {
-                        return TimeSpan.MaxValue;
+                        return TimeSpan.FromSeconds(elapsedTime);
                     }
                 }
             }
@@ -415,32 +417,10 @@ namespace Hunter.Hra
                 throw new ArgumentException($"procedureId {procedureId} not found.");
             }
 
-            if (_currentEvalState == EvalState.Success)
-            {
-                return TimeSpan.FromSeconds(elapsedTime);
-            } 
-            else
-            {
-                return TimeSpan.MaxValue;
-            }
+            return TimeSpan.FromSeconds(elapsedTime);
 
         }
 
-        private double HandleRepeatMode(List<ExpressiveGoms.Token> groupedTokens)
-        {
-            double elapsedTime = 0.0;
-
-            if (RepeatMode && (StepEvalState != EvalState.Success))
-            {
-                for (int j = 1; j < MaxRepeatCount && (StepEvalState == EvalState.HumanErrorFailure); j++)
-                {
-                    _repeatCount += 1;
-                    elapsedTime += ExpressiveGoms.EvaluatePostfixExpression(groupedTokens, this);
-                }
-            }
-
-            return elapsedTime;
-        }
         internal double Evaluate(List<string> primitiveIds,
                        ref EvalState evalState,
                        string? outputDir = null)
@@ -529,6 +509,27 @@ namespace Hunter.Hra
             }
 
             TimeOnShift += TimeSpan.FromSeconds(adjusted_time);
+
+
+            if (RepeatMode && (evalState != EvalState.Success))
+            {
+                _repeatCount = 0;
+                for (int j = 1; j < MaxRepeatCount && (evalState != EvalState.HepGtOneFailure); j++)
+                {
+                    _repeatCount += 1;
+                    sampled_time = SamplePrimitiveTime(primitive);
+                    adjusted_time = CalculateAdjustedTime(primitive, sampled_time);
+                    evalState = EvalState.FromBool(SingleRandom.Instance.NextDouble() >= adjusted_hep);
+
+                    TimeOnShift += TimeSpan.FromSeconds(adjusted_time);
+
+                    if (evalState == EvalState.Success)
+                    {
+                        break;
+                    }
+                }
+            }
+
 
             if (outputDir != null)
             {

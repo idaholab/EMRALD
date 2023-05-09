@@ -16,9 +16,9 @@
         "states": [
           "InitiatingEvent",
           "TimeExceededEventFailure",
-          "DiagnoseSGTR",
+          "DiagnoseLOFW",
           "Start",
-          "MitigateSGTR",
+          "MitigateLOFW",
           "EventResolved",
           "Terminate"
         ]
@@ -35,8 +35,7 @@
         "diagramName": "ScenarioModel",
         "immediateActions": [
           "UpdateStartTimeOnShift",
-          "Goto_DiagnoseSGTR",
-          "UpdateTimeOnShift"
+          "Goto_DiagnoseLOFW"
         ],
         "events": [
           "SampleTimeAvailable"
@@ -71,7 +70,7 @@
     {
       "State": {
         "id": 3,
-        "name": "DiagnoseSGTR",
+        "name": "DiagnoseLOFW",
         "desc": "",
         "stateType": "stStandard",
         "diagramName": "ScenarioModel",
@@ -84,7 +83,20 @@
         "eventActions": [
           {
             "actions": [
-              "Goto_MitigateSGTR"
+              "Goto_MitigateLOFW",
+              "Goto_HepGtOneFailure",
+              "Goto_HumanErrorFailure",
+              "Goto_OutOfTimeFailure",
+              "Goto_OnRepeatFailure",
+              "Goto_MultipleFailure"
+            ],
+            "CustEventPick": [
+              "Success",
+              "HepGtOneFailure",
+              "HumanErrorFailure",
+              "OutOfTimeFailure",
+              "OnRepeatFailure",
+              "MultipleFailure"
             ],
             "moveFromCurrent": true
           }
@@ -117,7 +129,7 @@
     {
       "State": {
         "id": 5,
-        "name": "MitigateSGTR",
+        "name": "MitigateLOFW",
         "desc": "",
         "stateType": "stStandard",
         "diagramName": "ScenarioModel",
@@ -130,7 +142,20 @@
         "eventActions": [
           {
             "actions": [
-              "Goto_EventResolved"
+              "Goto_EventResolved",
+              "Goto_HepGtOneFailure",
+              "Goto_HumanErrorFailure",
+              "Goto_OutOfTimeFailure",
+              "Goto_OnRepeatFailure",
+              "Goto_MultipleFailure"
+            ],
+            "CustEventPick": [
+              "Success",
+              "HepGtOneFailure",
+              "HumanErrorFailure",
+              "OutOfTimeFailure",
+              "OnRepeatFailure",
+              "MultipleFailure"
             ],
             "moveFromCurrent": true
           }
@@ -146,6 +171,7 @@
         "stateType": "stKeyState",
         "diagramName": "ScenarioModel",
         "immediateActions": [
+          "UpdateTimeOnShift",
           "Goto_Terminate"
         ],
         "events": [],
@@ -164,6 +190,86 @@
         "events": [],
         "eventActions": [],
         "geometry": "{ x: 1780.488525390625, y: 720.2385864257812, width: 200, height: 80}"
+      }
+    },
+    {
+      "State": {
+        "id": 9,
+        "name": "HepGtOneFailure",
+        "desc": "",
+        "stateType": "stKeyState",
+        "diagramName": "ScenarioModel",
+        "immediateActions": [
+          "UpdateTimeOnShift",
+          "Goto_Terminate"
+        ],
+        "events": [],
+        "eventActions": [],
+        "geometry": "{ x: 1291, y: 781, width: 270, height: 110}"
+      }
+    },
+    {
+      "State": {
+        "id": 10,
+        "name": "HumanErrorFailure",
+        "desc": "",
+        "stateType": "stKeyState",
+        "diagramName": "ScenarioModel",
+        "immediateActions": [
+          "UpdateTimeOnShift",
+          "Goto_Terminate"
+        ],
+        "events": [],
+        "eventActions": [],
+        "geometry": "{ x: 1291, y: 781, width: 270, height: 110}"
+      }
+    },
+    {
+      "State": {
+        "id": 11,
+        "name": "OutOfTimeFailure",
+        "desc": "",
+        "stateType": "stKeyState",
+        "diagramName": "ScenarioModel",
+        "immediateActions": [
+          "UpdateTimeOnShift",
+          "Goto_Terminate"
+        ],
+        "events": [],
+        "eventActions": [],
+        "geometry": "{ x: 1291, y: 781, width: 270, height: 110}"
+      }
+    },
+    {
+      "State": {
+        "id": 12,
+        "name": "OnRepeatFailure",
+        "desc": "",
+        "stateType": "stKeyState",
+        "diagramName": "ScenarioModel",
+        "immediateActions": [
+          "UpdateTimeOnShift",
+          "Goto_Terminate"
+        ],
+        "events": [],
+        "eventActions": [],
+        "geometry": "{ x: 1291, y: 781, width: 270, height: 110}"
+      }
+    },
+    {
+      "State": {
+        "id": 13,
+        "name": "MultipleFailure",
+        "desc": "",
+        "stateType": "stKeyState",
+        "diagramName": "ScenarioModel",
+        "immediateActions": [
+          "UpdateTimeOnShift",
+          "Goto_Terminate"
+        ],
+        "events": [],
+        "eventActions": [],
+        "geometry": "{ x: 1291, y: 781, width: 270, height: 110}"
       }
     }
   ],
@@ -196,7 +302,7 @@
         "mutExcl": true,
         "newStates": [
           {
-            "toState": "DiagnoseSGTR",
+            "toState": "DiagnoseLOFW",
             "prob": -1,
             "failDesc": ""
           }
@@ -221,14 +327,14 @@
     {
       "Action": {
         "id": 4,
-        "name": "Goto_MitigateSGTR",
+        "name": "Goto_MitigateLOFW",
         "desc": "",
         "actType": "atTransition",
         "mainItem": false,
         "mutExcl": true,
         "newStates": [
           {
-            "toState": "MitigateSGTR",
+            "toState": "MitigateLOFW",
             "prob": -1,
             "failDesc": ""
           }
@@ -257,15 +363,34 @@
     },
     {
       "Action": {
-        "id": 8,
-        "name": "Goto_DiagnoseSGTR",
+        "id": 6,
+        "name": "Goto_HepGtOneFailure",
+        "desc": "",
+        "actType": "atTransition",
+        "mainItem": false,
+        "mutExcl": true,
+        "newStates": [
+          {
+            "toState": "HepGtOneFailure",
+            "prob": -1,
+            "failDesc": ""
+          }
+        ],
+        "itemId": 6,
+        "moveFromCurrent": false
+      }
+    },
+    {
+      "Action": {
+        "id": 7,
+        "name": "Goto_DiagnoseLOFW",
         "desc": "",
         "actType": "atTransition",
         "mainItem": false,
         "mutExcl": false,
         "newStates": [
           {
-            "toState": "DiagnoseSGTR",
+            "toState": "DiagnoseLOFW",
             "prob": -1,
             "failDesc": ""
           }
@@ -293,7 +418,7 @@
     },
     {
       "Action": {
-        "id": 8,
+        "id": 9,
         "name": "Goto_Terminate",
         "desc": "",
         "actType": "atTransition",
@@ -311,7 +436,7 @@
     },
     {
       "Action": {
-        "id": 9,
+        "id": 10,
         "name": "UpdateTimeOnShift",
         "desc": "",
         "actType": "atCngVarVal",
@@ -321,6 +446,82 @@
         "scriptCode": "return CurTime;",
         "variableName": "TimeOnShiftH",
         "codeVariables": []
+      }
+    },
+    {
+      "Action": {
+        "id": 11,
+        "name": "Goto_HumanErrorFailure",
+        "desc": "",
+        "actType": "atTransition",
+        "mainItem": false,
+        "mutExcl": true,
+        "newStates": [
+          {
+            "toState": "HumanErrorFailure",
+            "prob": -1,
+            "failDesc": ""
+          }
+        ],
+        "itemId": 6,
+        "moveFromCurrent": false
+      }
+    },
+    {
+      "Action": {
+        "id": 12,
+        "name": "Goto_OutOfTimeFailure",
+        "desc": "",
+        "actType": "atTransition",
+        "mainItem": false,
+        "mutExcl": true,
+        "newStates": [
+          {
+            "toState": "OutOfTimeFailure",
+            "prob": -1,
+            "failDesc": ""
+          }
+        ],
+        "itemId": 6,
+        "moveFromCurrent": false
+      }
+    },
+    {
+      "Action": {
+        "id": 13,
+        "name": "Goto_OnRepeatFailure",
+        "desc": "",
+        "actType": "atTransition",
+        "mainItem": false,
+        "mutExcl": true,
+        "newStates": [
+          {
+            "toState": "OnRepeatFailure",
+            "prob": -1,
+            "failDesc": ""
+          }
+        ],
+        "itemId": 6,
+        "moveFromCurrent": false
+      }
+    },
+    {
+      "Action": {
+        "id": 14,
+        "name": "Goto_MultipleFailure",
+        "desc": "",
+        "actType": "atTransition",
+        "mainItem": false,
+        "mutExcl": true,
+        "newStates": [
+          {
+            "toState": "MultipleFailure",
+            "prob": -1,
+            "failDesc": ""
+          }
+        ],
+        "itemId": 6,
+        "moveFromCurrent": false
       }
     }
   ],
@@ -364,7 +565,7 @@
         "contextLinks": [
           {
             "contextName": "ShiftTimeH",
-            "simVar": "StartTimeOnShiftH"
+            "simVar": "TimeOnShiftH"
           },
           {
             "contextName": "TaskAvailableTimeM",
@@ -398,7 +599,11 @@
         "contextLinks": [
           {
             "contextName": "ShiftTimeH",
-            "simVar": "StartTimeOnShiftH"
+            "simVar": "TimeOnShiftH"
+          },
+          {
+            "contextName": "TaskAvailableTimeM",
+            "simVar": "AvailableTimeM"
           },
           {
             "contextName": "Stress",
@@ -423,7 +628,7 @@
         "parameters": [
           {
             "name": "Mean",
-            "value": "12",
+            "value": "4",
             "timeRate": "trHours",
             "useVariable": false
           },
@@ -466,11 +671,11 @@
   "VariableList": [
     {
       "Variable": {
-        "id": 6,
+        "id": 30,
         "name": "AvailableTimeM",
         "desc": "",
         "varScope": "gtGlobal",
-        "value": 10,
+        "value": 1,
         "resetOnRuns": true,
         "type": "double"
       }
@@ -581,7 +786,6 @@
                 {
                   "Type": 0,
                   "Value": "Rc",
-                  "Operator": null,
                   "GroupOperator": null
                 },
                 {

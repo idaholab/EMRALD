@@ -216,11 +216,11 @@ namespace Hunter.Tests.GomsParser
             List<Token> tokens = ExpressiveGoms.Tokenize(preprocessedInput);
 
             double elapsedTime = ExpressiveGoms.EvaluatePostfixExpression(tokens, hraEngine);
-            Assert.AreEqual(11.362145521415897d, elapsedTime, 1e-6);
+            Assert.AreEqual(15.605224470728377d, elapsedTime, 1e-6);
         }
 
 
-        [TestCase("Ac Cc Rc + + Ac Cf Rf + +", 11.362145521415897d)] 
+        [TestCase("Ac Cc Rc + + Ac Cf Rf + +", 15.605224470728377d)] 
         [TestCase("5 2 * _expo_rv", 1.2331634513890486d)] 
         public void TestEvaluatePostfixExpression(string input, double expectedElapsedTime)
         {

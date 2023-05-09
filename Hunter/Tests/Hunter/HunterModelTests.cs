@@ -18,7 +18,7 @@ namespace Hunter.Tests
         [TestFixture]
         public class HunterModelTests
         {
-            private const string TestFilename = @"hunter_db/models/sgtr_model.json";
+            private const string TestFilename = @"hunter_db/models/default_wTimePressure.json";
 
             [Test]
             public void FromHunterModelFilename_WithValidFilename_ReturnsHunterModelInstance()

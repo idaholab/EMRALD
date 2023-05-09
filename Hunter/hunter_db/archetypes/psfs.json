@@ -9,8 +9,7 @@
       },
       {
         "level": "BarelyAdequateTime",
-        "multiplier": 10,
-        "time_multiplier": 0.5
+        "multiplier": 10
       },
       {
         "level": "NominalTime",
@@ -37,8 +36,7 @@
       },
       {
         "level": "BarelyAdequateTime",
-        "multiplier": 10,
-        "time_multiplier": 0.5
+        "multiplier": 10
       },
       {
         "level": "NominalTime",
@@ -208,6 +206,7 @@
         "multiplier": 1
       }
     ],
+    "is_fatigue_speed_accuracy": true,
     "id": "FfDa"
   },
   {
@@ -227,6 +226,7 @@
         "multiplier": 1
       }
     ],
+    "is_fatigue_speed_accuracy": true,
     "id": "FfDd"
   },
   {

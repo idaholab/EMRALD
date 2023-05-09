@@ -134,14 +134,14 @@ namespace Hunter.Tests.HumanReliabilityAnalysisEngine
         public void BuildProcedureCatalog_ReturnsExpectedDictionary()
         {
             // Arrange
-            string hunterModelFilename = @"hunter_db/models/sgtr_model.json";
+            string hunterModelFilename = @"hunter_db/models/default_wTimePressure.json";
 
             // Act
             Dictionary<string, Procedure> procedures = 
                 ProceduresFactory.FromHunterModelFilename(hunterModelFilename);
 
             // Assert
-            Assert.AreEqual(2, procedures.Count);
+            Assert.AreEqual(3, procedures.Count);
 
             Assert.IsTrue(procedures.ContainsKey("sgtr"));
             Procedure sgtrProcedure = procedures["sgtr"];
@@ -174,7 +174,8 @@ namespace Hunter.Tests.HumanReliabilityAnalysisEngine
         public void EvaluateSteps_WithJsonString_ReturnsExpectedTimeSpan()
         {
             // Arrange
-            string hunterModelFilename = @"hunter_db/models/sgtr_model.json";
+            string hunterModelFilename = @"hunter_db/models/default_wTimePressure.json";
+
             Dictionary<string, Procedure> procedures = 
                 ProceduresFactory.FromHunterModelFilename(hunterModelFilename);
             string proceduresString = JsonConvert.SerializeObject(procedures);
@@ -215,7 +216,8 @@ namespace Hunter.Tests.HumanReliabilityAnalysisEngine
         public void EvaluateSteps_WithDictionary_ReturnsExpectedTimeSpan()
         {
             // Arrange
-            string hunterModelFilename = @"hunter_db/models/sgtr_model.json";
+            string hunterModelFilename = @"hunter_db/models/default_wTimePressure.json";
+
             Dictionary<string, Procedure> procedures = 
                 ProceduresFactory.FromHunterModelFilename(hunterModelFilename);
 
@@ -237,7 +239,8 @@ namespace Hunter.Tests.HumanReliabilityAnalysisEngine
         public void EvaluateSteps_WithDictionarySingleStep_ReturnsExpectedTimeSpan()
         {
             // Arrange
-            string hunterModelFilename = @"hunter_db/models/sgtr_model.json";
+            string hunterModelFilename = @"hunter_db/models/default_wTimePressure.json";
+
             Dictionary<string, Procedure> procedures = 
                 ProceduresFactory.FromHunterModelFilename(hunterModelFilename);
 
@@ -259,7 +262,8 @@ namespace Hunter.Tests.HumanReliabilityAnalysisEngine
         public void EvaluateSteps_WithDictionaryStepsOutOfRange_ThrowsArgumentOutOfRangeException()
         {
             // Arrange
-            string hunterModelFilename = @"hunter_db/models/sgtr_model.json";
+            string hunterModelFilename = @"hunter_db/models/default_wTimePressure.json";
+
             Dictionary<string, Procedure> procedures = 
                 ProceduresFactory.FromHunterModelFilename(hunterModelFilename);
 

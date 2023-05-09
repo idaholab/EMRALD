@@ -1247,7 +1247,7 @@ namespace SimulationDAL
     public CustomTimeEvent(string inName)
       : base(inName) { }
 
-    public virtual List<string> EventPickedActionKeys() //If the custom event needs to select from a set of actions overwride this call and return a list.
+    public virtual List<string> EventPickedActionKeys() //If the custom event needs to select from a set of actions overwrite this call and return a list.
     {
       return null;
     }

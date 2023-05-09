@@ -149,7 +149,7 @@ namespace Hunter.Tests {
             }
 
             // Arrange
-            string hunterModelFilename = @"hunter_db/models/sgtr_model.json";
+            string hunterModelFilename = @"hunter_db/models/default_wTimePressure.json";
             Dictionary<string, Procedure> procedures = ProceduresFactory.FromHunterModelFilename(hunterModelFilename);
 
             HRAEngine hraEngine = new HRAEngine(initPsfs: PSFs);

@@ -51,7 +51,7 @@
     <None Update="hunter_db\archetypes\psfs.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="hunter_db\models\sgtr_model.json">
+    <None Update="hunter_db\models\default_wTimePressure.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="hunter_db\operator_archetypes\default_operator.json">
@@ -61,6 +61,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="hunter_db\operator_archetypes\novice_operator.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="hunter_db\procedures\lofw.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="hunter_db\procedures\rapid_shutdown.json">

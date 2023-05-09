@@ -9,7 +9,7 @@
     "time": 2.23,
     "std": 1.18,
     "nominal_hep": 0.001,
-    "relevant_psfs": [ "Sa", "ATa", "Ca", "Ea", "EaTa", "FfDa", "Pa", "WPa" ]
+    "relevant_psfs": [ "Sa", "ATa", "Ca", "Ea", "EaTa", "FfDa", "Pa", "WPa", "TPa" ]
   },
   {
     "operation": "Action",
@@ -21,7 +21,7 @@
     "time": 5,
     "std": 2.5,
     "nominal_hep": 0.008,
-    "relevant_psfs": [ "Sa", "ATa", "Ca", "Ea", "EaTa", "FfDa", "Pa", "WPa" ]
+    "relevant_psfs": [ "Sa", "ATa", "Ca", "Ea", "EaTa", "FfDa", "Pa", "WPa", "TPa" ]
   },
   {
     "operation": "Checking",
@@ -33,7 +33,7 @@
     "time": 2.14,
     "std": 0.76,
     "nominal_hep": 0.001,
-    "relevant_psfs": [ "Sa", "ATa", "Ca", "Ea", "EaTa", "FfDa", "Pa", "WPa" ]
+    "relevant_psfs": [ "Sa", "ATa", "Ca", "Ea", "EaTa", "FfDa", "Pa", "WPa", "TPa" ]
   },
   {
     "operation": "Checking",
@@ -45,7 +45,7 @@
     "time": 4.3,
     "std": 1.5,
     "nominal_hep": 0.01,
-    "relevant_psfs": [ "Sa", "ATa", "Ca", "Ea", "EaTa", "FfDa", "Pa", "WPa" ]
+    "relevant_psfs": [ "Sa", "ATa", "Ca", "Ea", "EaTa", "FfDa", "Pa", "WPa", "TPa" ]
   },
   {
     "operation": "Retrieval",
@@ -57,7 +57,7 @@
     "time": 2.11,
     "std": 0.6,
     "nominal_hep": 0.001,
-    "relevant_psfs": [ "Sa", "ATa", "Ca", "Ea", "EaTa", "FfDa", "Pa", "WPa" ]
+    "relevant_psfs": [ "Sa", "ATa", "Ca", "Ea", "EaTa", "FfDa", "Pa", "WPa", "TPa" ]
   },
   {
     "operation": "Retrieval",
@@ -69,7 +69,7 @@
     "time": 4.2,
     "std": 1.2,
     "nominal_hep": 0.01,
-    "relevant_psfs": [ "Sa", "ATa", "Ca", "Ea", "EaTa", "FfDa", "Pa", "WPa" ]
+    "relevant_psfs": [ "Sa", "ATa", "Ca", "Ea", "EaTa", "FfDa", "Pa", "WPa", "TPa" ]
   },
   {
     "operation": "InstructionCommunication",
@@ -81,7 +81,7 @@
     "time": 2.46,
     "std": 0.76,
     "nominal_hep": 0.003,
-    "relevant_psfs": [ "Sa", "ATa", "Ca", "Ea", "EaTa", "FfDa", "Pa", "WPa" ]
+    "relevant_psfs": [ "Sa", "ATa", "Ca", "Ea", "EaTa", "FfDa", "Pa", "WPa", "TPa" ]
   },
   {
     "operation": "InstructionCommunication",
@@ -93,7 +93,7 @@
     "time": 1.92,
     "std": 0.93,
     "nominal_hep": 0.001,
-    "relevant_psfs": [ "Sa", "ATa", "Ca", "Ea", "EaTa", "FfDa", "Pa", "WPa" ]
+    "relevant_psfs": [ "Sa", "ATa", "Ca", "Ea", "EaTa", "FfDa", "Pa", "WPa", "TPa" ]
   },
   {
     "operation": "Selection",
@@ -105,7 +105,7 @@
     "time": 2.93,
     "std": 1.11,
     "nominal_hep": 0.001,
-    "relevant_psfs": [ "Sa", "ATa", "Ca", "Ea", "EaTa", "FfDa", "Pa", "WPa" ]
+    "relevant_psfs": [ "Sa", "ATa", "Ca", "Ea", "EaTa", "FfDa", "Pa", "WPa", "TPa" ]
   },
   {
     "operation": "Selection",
@@ -117,7 +117,7 @@
     "time": 6,
     "std": 2.2,
     "nominal_hep": 0.008,
-    "relevant_psfs": [ "Sa", "ATa", "Ca", "Ea", "EaTa", "FfDa", "Pa", "WPa" ]
+    "relevant_psfs": [ "Sa", "ATa", "Ca", "Ea", "EaTa", "FfDa", "Pa", "WPa", "TPa" ]
   },
   {
     "operation": "Decision",
@@ -126,10 +126,10 @@
     "sub_primitive": "p",
     "id": "Dp",
     "distribution_type": "Exponential",
-    "time": 5,
+    "time": 50,
     "std": null,
     "nominal_hep": 0.001,
-    "relevant_psfs": [ "Sd", "ATd", "Cd", "Ed", "EaTd", "FfDd", "Pd", "WPd" ]
+    "relevant_psfs": [ "Sd", "ATd", "Cd", "Ed", "EaTd", "FfDd", "Pd", "WPd", "TPd" ]
   },
   {
     "operation": "Decision",
@@ -138,9 +138,9 @@
     "sub_primitive": "w",
     "id": "Dw",
     "distribution_type": "Exponential",
-    "time": 5,
+    "time": 50,
     "std": null,
     "nominal_hep": 0.01,
-    "relevant_psfs": [ "Sd", "ATd", "Cd", "Ed", "EaTd", "FfDd", "WPd" ]
+    "relevant_psfs": [ "Sd", "ATd", "Cd", "Ed", "EaTd", "FfDd", "WPd", "TPd" ]
   }
 ]

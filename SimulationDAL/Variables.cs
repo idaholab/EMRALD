@@ -1578,7 +1578,6 @@ namespace SimulationDAL
 
     public void InjectHunterVariables(HunterModel hunterModel)
     {
-      Add(new SimGlobVariable("HunterState", inDType: typeof(int), inVal: -1));
       foreach (PSF psf in hunterModel._engine.psfCollection)
       {
         foreach (PSF.Level level in psf.Levels)

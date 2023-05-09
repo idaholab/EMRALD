@@ -39,6 +39,9 @@ namespace Hunter.Psf
         [JsonProperty("is_lag_linger", DefaultValueHandling = DefaultValueHandling.Populate)]
         public bool IsLagLinger { get; set; } = false;
 
+        [JsonProperty("is_fatigue_speed_accuracy", DefaultValueHandling = DefaultValueHandling.Populate)]
+        public bool IsFatigueSpeedAccuracy { get; set; } = false;
+
         [JsonProperty("initial_level")]
         public string? InitialLevel { get; set; }
 
@@ -171,11 +174,7 @@ namespace Hunter.Psf
 
         private void SetUpdateStrategy()
         {
-            if (Factor == PsfEnums.Factor.FitnessForDuty)
-            {
-                UpdateStrategy = new FitnessforDuty();
-            }
-            else if (Factor == PsfEnums.Factor.AvailableTime)
+            if (Factor == PsfEnums.Factor.AvailableTime)
             {
                 UpdateStrategy = new AvailableTime();
             }
@@ -261,6 +260,16 @@ namespace Hunter.Psf
                 if (IsLagLinger)
                 {
                     return _lagLinger.GetValue(_t) * (Operation == OperationType.Action ? 10.0 : 1.0);
+                }
+
+                var hraEngine = _psfCollection?._hraEngine;
+                if (hraEngine != null)
+                {
+                    var fatigueModel = hraEngine.fatigueModel;
+                    if (IsFatigueSpeedAccuracy && fatigueModel != null)
+                    {
+                        return fatigueModel.GetMultiplier(_t / 3600.0);
+                    }
                 }
 
                 if (CurrentLevel == null)
