@@ -16,7 +16,7 @@
 <body ng-app="gateModule" onload="handleSelection();">
     <div ng-controller="gateController" id="gateControllerPanel">
         <div style="display:table-row">
-            <span style="display:table-cell">Gate Type: </span>
+            <span style="display:table-cell">Gate\Component: </span>
             <select style="width: 260px;" id="ScopeOption" ng-model="compType" ng-options="comp.name for comp in compTypes" name="Type" onchange="handleSelection(); return false;"></select>
         </div>
         <hr />
@@ -36,7 +36,7 @@
                     </div>
                     <div style="display:table-row">
                         <span style="display:table-cell">Desc:</span>
-                        <input ng-model="newDesc" size="40" tabindex="2">
+                        <input ng-model="newDesc" size="40" tabindex="2"; ng-disabled="data.useExisting">
                     </div>
                 </form>
             </div>

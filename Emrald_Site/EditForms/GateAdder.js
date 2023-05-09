@@ -158,7 +158,7 @@ gateModule.controller('gateController', ['$scope', function ($scope) {
 		$scope.newDesc = "";
 		$scope.compTypes = [
 				{ name: "Standard Gate", value: "standard" },
-				{ name: "Gate from Component Diagram", value: "diagram" }],
+				{ name: "Component Value", value: "diagram" }],
 				$scope.compType = $scope.compTypes[0];
 
 		$scope.newGateTypes = [
