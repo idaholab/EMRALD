@@ -1387,6 +1387,7 @@ namespace SimulationDAL
 
       // Get the Evaluated State
       EvalState evalState = _hunterModel._engine.CurrentEvalState;
+      _pickedActions.Clear();
       _pickedActions.Add(evalState.ToString());
       //EmraldModel em = _hunterModel.Parent as EmraldModel;
       //var hunterStateVar = em?.allVariables.Values.FirstOrDefault(v => v.name == "HunterState");

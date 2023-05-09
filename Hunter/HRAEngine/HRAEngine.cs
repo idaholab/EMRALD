@@ -99,7 +99,7 @@ namespace Hunter.Hra
         /// <remarks>
         /// When <see cref="RepeatMode"/> is true, <see cref="EvalStep"/> will be repeated until all primitives are completed or the maximum repeat count is reached.
         /// </remarks>
-        public int MaxRepeatCount { get; set; } = 7;
+        public int MaxRepeatCount { get; set; } = 3;
 
         /// <summary>
         /// Gets or sets a value indicating whether TimeOnShift Fatigue should impact the model.

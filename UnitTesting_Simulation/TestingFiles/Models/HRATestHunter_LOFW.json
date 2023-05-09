@@ -15,12 +15,16 @@
         "forceMerge": false,
         "states": [
           "InitiatingEvent",
-          "TimeExceededEventFailure",
           "DiagnoseLOFW",
           "Start",
           "MitigateLOFW",
           "EventResolved",
-          "Terminate"
+          "Terminate",
+          "HepGtOneFailure",
+          "HumanErrorFailure",
+          "OutOfTimeFailure",
+          "OnRepeatFailure",
+          "MultipleFailure"
         ]
       }
     }
@@ -37,34 +41,9 @@
           "UpdateStartTimeOnShift",
           "Goto_DiagnoseLOFW"
         ],
-        "events": [
-          "SampleTimeAvailable"
-        ],
-        "eventActions": [
-          {
-            "actions": [
-              "Goto_TimeExceeded"
-            ],
-            "moveFromCurrent": true
-          }
-        ],
-        "geometry": "{ x: 700.5, y: 320.5, width: 200, height: 180}"
-      }
-    },
-    {
-      "State": {
-        "id": 2,
-        "name": "TimeExceededEventFailure",
-        "desc": "",
-        "stateType": "stKeyState",
-        "diagramName": "ScenarioModel",
-        "immediateActions": [
-          "Goto_Terminate",
-          "UpdateTimeOnShift"
-        ],
         "events": [],
         "eventActions": [],
-        "geometry": "{ x: 1291, y: 781, width: 270, height: 110}"
+        "geometry": "{ x: 700.5, y: 320.5, width: 200, height: 110}"
       }
     },
     {
@@ -101,7 +80,7 @@
             "moveFromCurrent": true
           }
         ],
-        "geometry": "{ x: 1080.5, y: 310.5, width: 200, height: 150}"
+        "geometry": "{ x: 1080.5, y: 310.5, width: 200, height: 230}"
       }
     },
     {
@@ -160,7 +139,7 @@
             "moveFromCurrent": true
           }
         ],
-        "geometry": "{ x: 1560, y: 320.5, width: 200, height: 150}"
+        "geometry": "{ x: 1560, y: 320.5, width: 200, height: 230}"
       }
     },
     {
@@ -176,7 +155,7 @@
         ],
         "events": [],
         "eventActions": [],
-        "geometry": "{ x: 1870, y: 340.5, width: 200, height: 100}"
+        "geometry": "{ x: 1870, y: 340.5, width: 200, height: 110}"
       }
     },
     {
@@ -205,7 +184,7 @@
         ],
         "events": [],
         "eventActions": [],
-        "geometry": "{ x: 1291, y: 781, width: 270, height: 110}"
+        "geometry": "{ x: 930, y: 570, width: 270, height: 110}"
       }
     },
     {
@@ -221,7 +200,7 @@
         ],
         "events": [],
         "eventActions": [],
-        "geometry": "{ x: 1291, y: 781, width: 270, height: 110}"
+        "geometry": "{ x: 930, y: 710, width: 270, height: 110}"
       }
     },
     {
@@ -237,7 +216,7 @@
         ],
         "events": [],
         "eventActions": [],
-        "geometry": "{ x: 1291, y: 781, width: 270, height: 110}"
+        "geometry": "{ x: 930, y: 840, width: 270, height: 110}"
       }
     },
     {
@@ -253,7 +232,7 @@
         ],
         "events": [],
         "eventActions": [],
-        "geometry": "{ x: 1291, y: 781, width: 270, height: 110}"
+        "geometry": "{ x: 930, y: 970, width: 270, height: 110}"
       }
     },
     {
@@ -269,7 +248,7 @@
         ],
         "events": [],
         "eventActions": [],
-        "geometry": "{ x: 1291, y: 781, width: 270, height: 110}"
+        "geometry": "{ x: 930, y: 1100, width: 270, height: 110}"
       }
     }
   ],
@@ -282,13 +261,7 @@
         "actType": "atTransition",
         "mainItem": false,
         "mutExcl": true,
-        "newStates": [
-          {
-            "toState": "TimeExceededEventFailure",
-            "prob": -1,
-            "failDesc": ""
-          }
-        ],
+        "newStates": [],
         "itemId": 2
       }
     },
@@ -382,6 +355,82 @@
     },
     {
       "Action": {
+        "id": 6,
+        "name": "Goto_HumanErrorFailure",
+        "desc": "",
+        "actType": "atTransition",
+        "mainItem": false,
+        "mutExcl": true,
+        "newStates": [
+          {
+            "toState": "HumanErrorFailure",
+            "prob": -1,
+            "failDesc": ""
+          }
+        ],
+        "itemId": 6,
+        "moveFromCurrent": false
+      }
+    },
+    {
+      "Action": {
+        "id": 6,
+        "name": "Goto_OutOfTimeFailure",
+        "desc": "",
+        "actType": "atTransition",
+        "mainItem": false,
+        "mutExcl": true,
+        "newStates": [
+          {
+            "toState": "OutOfTimeFailure",
+            "prob": -1,
+            "failDesc": ""
+          }
+        ],
+        "itemId": 6,
+        "moveFromCurrent": false
+      }
+    },
+    {
+      "Action": {
+        "id": 6,
+        "name": "Goto_OnRepeatFailure",
+        "desc": "",
+        "actType": "atTransition",
+        "mainItem": false,
+        "mutExcl": true,
+        "newStates": [
+          {
+            "toState": "OnRepeatFailure",
+            "prob": -1,
+            "failDesc": ""
+          }
+        ],
+        "itemId": 6,
+        "moveFromCurrent": false
+      }
+    },
+    {
+      "Action": {
+        "id": 6,
+        "name": "Goto_MultipleFailure",
+        "desc": "",
+        "actType": "atTransition",
+        "mainItem": false,
+        "mutExcl": true,
+        "newStates": [
+          {
+            "toState": "MultipleFailure",
+            "prob": -1,
+            "failDesc": ""
+          }
+        ],
+        "itemId": 6,
+        "moveFromCurrent": false
+      }
+    },
+    {
+      "Action": {
         "id": 7,
         "name": "Goto_DiagnoseLOFW",
         "desc": "",
@@ -447,103 +496,9 @@
         "variableName": "TimeOnShiftH",
         "codeVariables": []
       }
-    },
-    {
-      "Action": {
-        "id": 11,
-        "name": "Goto_HumanErrorFailure",
-        "desc": "",
-        "actType": "atTransition",
-        "mainItem": false,
-        "mutExcl": true,
-        "newStates": [
-          {
-            "toState": "HumanErrorFailure",
-            "prob": -1,
-            "failDesc": ""
-          }
-        ],
-        "itemId": 6,
-        "moveFromCurrent": false
-      }
-    },
-    {
-      "Action": {
-        "id": 12,
-        "name": "Goto_OutOfTimeFailure",
-        "desc": "",
-        "actType": "atTransition",
-        "mainItem": false,
-        "mutExcl": true,
-        "newStates": [
-          {
-            "toState": "OutOfTimeFailure",
-            "prob": -1,
-            "failDesc": ""
-          }
-        ],
-        "itemId": 6,
-        "moveFromCurrent": false
-      }
-    },
-    {
-      "Action": {
-        "id": 13,
-        "name": "Goto_OnRepeatFailure",
-        "desc": "",
-        "actType": "atTransition",
-        "mainItem": false,
-        "mutExcl": true,
-        "newStates": [
-          {
-            "toState": "OnRepeatFailure",
-            "prob": -1,
-            "failDesc": ""
-          }
-        ],
-        "itemId": 6,
-        "moveFromCurrent": false
-      }
-    },
-    {
-      "Action": {
-        "id": 14,
-        "name": "Goto_MultipleFailure",
-        "desc": "",
-        "actType": "atTransition",
-        "mainItem": false,
-        "mutExcl": true,
-        "newStates": [
-          {
-            "toState": "MultipleFailure",
-            "prob": -1,
-            "failDesc": ""
-          }
-        ],
-        "itemId": 6,
-        "moveFromCurrent": false
-      }
     }
   ],
   "EventList": [
-    {
-      "Event": {
-        "id": 2,
-        "name": "SampleTimeAvailable",
-        "desc": "",
-        "mainItem": false,
-        "evType": "etTimer",
-        "allItems": true,
-        "triggerStates": [],
-        "moveFromCurrent": true,
-        "varNames": [],
-        "useVariable": true,
-        "timeVariableUnit": "trHours",
-        "fromSimStart": false,
-        "onVarChange": "ocAdjust",
-        "time": "AvailableTimeM"
-      }
-    },
     {
       "Event": {
         "id": 3,
@@ -705,16 +660,15 @@
   ],
   "templates": [],
   "HunterModel": {
-    "Parent": null,
     "Snapshot": {
       "RepeatMode": true,
       "TimeOnShiftFatigueEnabled": true,
       "TimeOnShift": "00:00:00",
-      "HasTimePressure": true,
+      "HasTimePressure": false,
       "Experience": "Nominal",
       "_currentProcedureId": null,
       "_currentStepId": null,
-      "_currentEvalState": 0,
+      "_currentSuccess": null,
       "_primitiveEvalCount": 0,
       "_repeatCount": 0
     },
@@ -786,6 +740,7 @@
                 {
                   "Type": 0,
                   "Value": "Rc",
+                  "Operator": null,
                   "GroupOperator": null
                 },
                 {
@@ -948,250 +903,6 @@
                 }
               ],
               "step_id": "Step 2.4 - Isolate SG - Close MS IV"
-            },
-            {
-              "goms_expression": [
-                {
-                  "Type": 0,
-                  "Value": "ICp",
-                  "Operator": null,
-                  "GroupOperator": null
-                }
-              ],
-              "step_id": "Step 3 - Perform Rapid Shutdown"
-            }
-          ]
-        },
-        "lofw": {
-          "steps": [
-            {
-              "goms_expression": [
-                {
-                  "Type": 0,
-                  "Value": "ICp",
-                  "Operator": null,
-                  "GroupOperator": null
-                },
-                {
-                  "Type": 0,
-                  "Value": "Rc",
-                  "Operator": null,
-                  "GroupOperator": null
-                },
-                {
-                  "Type": 0,
-                  "Value": "ICp",
-                  "Operator": null,
-                  "GroupOperator": null
-                },
-                {
-                  "Type": 0,
-                  "Value": "Rc",
-                  "Operator": null,
-                  "GroupOperator": null
-                },
-                {
-                  "Type": 0,
-                  "Value": "ICp",
-                  "Operator": null,
-                  "GroupOperator": null
-                },
-                {
-                  "Type": 0,
-                  "Value": "Rc",
-                  "Operator": null,
-                  "GroupOperator": null
-                },
-                {
-                  "Type": 0,
-                  "Value": "ICp",
-                  "Operator": null,
-                  "GroupOperator": null
-                },
-                {
-                  "Type": 0,
-                  "Value": "Rc",
-                  "Operator": null,
-                  "GroupOperator": null
-                },
-                {
-                  "Type": 0,
-                  "Value": "ICp",
-                  "Operator": null,
-                  "GroupOperator": null
-                },
-                {
-                  "Type": 0,
-                  "Value": "Rc",
-                  "Operator": null,
-                  "GroupOperator": null
-                },
-                {
-                  "Type": 0,
-                  "Value": "ICp",
-                  "Operator": null,
-                  "GroupOperator": null
-                },
-                {
-                  "Type": 0,
-                  "Value": "Rc",
-                  "Operator": null,
-                  "GroupOperator": null
-                },
-                {
-                  "Type": 0,
-                  "Value": "ICp",
-                  "Operator": null,
-                  "GroupOperator": null
-                },
-                {
-                  "Type": 0,
-                  "Value": "Dp",
-                  "Operator": null,
-                  "GroupOperator": null
-                }
-              ],
-              "step_id": "Entry Conditions"
-            },
-            {
-              "goms_expression": [
-                {
-                  "Type": 0,
-                  "Value": "ICp",
-                  "Operator": null,
-                  "GroupOperator": null
-                },
-                {
-                  "Type": 0,
-                  "Value": "Ac",
-                  "Operator": null,
-                  "GroupOperator": null
-                },
-                {
-                  "Type": 0,
-                  "Value": "ICp",
-                  "Operator": null,
-                  "GroupOperator": null
-                },
-                {
-                  "Type": 0,
-                  "Value": "Ac",
-                  "Operator": null,
-                  "GroupOperator": null
-                }
-              ],
-              "step_id": "Step 1.1 - Manually Open Feedwater Control Valve A"
-            },
-            {
-              "goms_expression": [
-                {
-                  "Type": 0,
-                  "Value": "ICp",
-                  "Operator": null,
-                  "GroupOperator": null
-                },
-                {
-                  "Type": 0,
-                  "Value": "Ac",
-                  "Operator": null,
-                  "GroupOperator": null
-                },
-                {
-                  "Type": 0,
-                  "Value": "ICp",
-                  "Operator": null,
-                  "GroupOperator": null
-                },
-                {
-                  "Type": 0,
-                  "Value": "Ac",
-                  "Operator": null,
-                  "GroupOperator": null
-                }
-              ],
-              "step_id": "Step 1.2 - Manually Open Feedwater Control Valve B"
-            },
-            {
-              "goms_expression": [
-                {
-                  "Type": 0,
-                  "Value": "ICp",
-                  "Operator": null,
-                  "GroupOperator": null
-                },
-                {
-                  "Type": 0,
-                  "Value": "Dp",
-                  "Operator": null,
-                  "GroupOperator": null
-                },
-                {
-                  "Type": 0,
-                  "Value": "Ac",
-                  "Operator": null,
-                  "GroupOperator": null
-                },
-                {
-                  "Type": 0,
-                  "Value": "ICp",
-                  "Operator": null,
-                  "GroupOperator": null
-                },
-                {
-                  "Type": 0,
-                  "Value": "Ac",
-                  "Operator": null,
-                  "GroupOperator": null
-                },
-                {
-                  "Type": 0,
-                  "Value": "Dp",
-                  "Operator": null,
-                  "GroupOperator": null
-                }
-              ],
-              "step_id": "Step 2.1 - Verify FW Pump A"
-            },
-            {
-              "goms_expression": [
-                {
-                  "Type": 0,
-                  "Value": "ICp",
-                  "Operator": null,
-                  "GroupOperator": null
-                },
-                {
-                  "Type": 0,
-                  "Value": "Dp",
-                  "Operator": null,
-                  "GroupOperator": null
-                },
-                {
-                  "Type": 0,
-                  "Value": "Ac",
-                  "Operator": null,
-                  "GroupOperator": null
-                },
-                {
-                  "Type": 0,
-                  "Value": "ICp",
-                  "Operator": null,
-                  "GroupOperator": null
-                },
-                {
-                  "Type": 0,
-                  "Value": "Ac",
-                  "Operator": null,
-                  "GroupOperator": null
-                },
-                {
-                  "Type": 0,
-                  "Value": "Dp",
-                  "Operator": null,
-                  "GroupOperator": null
-                }
-              ],
-              "step_id": "Step 2.2 - Verify FW Pump B"
             },
             {
               "goms_expression": [
