@@ -1,9 +1,12 @@
 <!DOCTYPE html>
-<html>
+<html lang="en-US">
   <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
     <title>Open Error Pro Form</title>
     <link href="../lib/ExternalExeForm.css" rel="stylesheet" />
     <script src="../../scripts/angular/angular.js"></script>
+    <script src="../lib/EditFormUtil.js"></script>
     <script src="../lib/ExternalExeForm.js"></script>
     <script src="./fileModel.js"></script>
     <script src="./openerror.js"></script>
@@ -29,6 +32,15 @@
       .conditions tr:nth-child(2) {
         border-bottom: 2px solid #c7c7c7;
       }
+
+      #fileBtn {
+        color: rgba(0, 0, 0, 0);
+        width: 90px;
+      }
+
+      .inline {
+        display: inline;
+      }
     </style>
   </head>
   <body ng-app="openErrorForm">
@@ -43,9 +55,8 @@
           id="fileBtn"
           file-model="modelFile"
           accept="application/xml, .xml"
-          style="color: rgba(0, 0, 0, 0); width: 90px"
         />
-        <div style="display: inline">{{fileName}}</div>
+        <div class="inline">{{fileName}}</div>
         <br />
         <label for="prismPath">PRISM executable location:</label>
         <input id="prismPath" ng-model="prismPath" />
@@ -74,6 +85,7 @@
             <td>{{then.epc.label}}</td>
             <td>
               <input
+                title="Use variable"
                 type="checkbox"
                 ng-model="then.useVariable"
                 ng-if="!then.remaining"
@@ -84,11 +96,13 @@
               <span ng-if="then.remaining">Remaining</span>
               <div ng-if="!then.remaining">
                 <input
+                  title="Use variable"
                   ng-model="then.probability"
                   ng-if="!then.useVariable"
                   ng-change="setModified(then.epc)"
                 />
                 <select
+                  title="Select variable"
                   ng-if="then.useVariable"
                   ng-options="opt.name for opt in cvVariables"
                   ng-model="then.variable"
@@ -98,19 +112,24 @@
             </td>
             <td>
               <textarea
+                title="Outcomes"
                 ng-model="then.outcomes"
                 ng-change="setModified(then.epc)"
               ></textarea>
             </td>
             <td>
-              <button ng-if="!then.remaining" ng-click="removeOutcome($index)">
+              <button
+                type="button"
+                ng-if="!then.remaining"
+                ng-click="removeOutcome($index)"
+              >
                 Remove
               </button>
             </td>
           </tr>
           <tr>
             <td>
-              <button ng-click="addOutcome()">Add Outcome</button>
+              <button type="button" ng-click="addOutcome()">Add Outcome</button>
             </td>
           </tr>
         </table>
@@ -125,6 +144,7 @@
           <tr ng-repeat="varLink in varLinks track by $index">
             <td>
               <select
+                title="Select variable"
                 ng-options="variable as variable.name for variable in docVars"
                 ng-model="varLink.variable"
                 ng-change="save()"
@@ -132,6 +152,7 @@
             </td>
             <td>
               <select
+                title="Select PRISM method"
                 ng-model="varLink.prismMethod"
                 ng-options="opt for opt in prismMethods"
                 ng-change="save()"
@@ -139,6 +160,7 @@
               <div ng-if="varLink.prismMethod == 'compute_P'">
                 Initial time:
                 <select
+                  title="Select initial time"
                   ng-model="varLink.initialTime"
                   ng-options="varOpt.name for varOpt in cvVariables"
                   ng-change="save()"
@@ -148,18 +170,21 @@
             <td>
               <!-- TODO: fix select not working the first time -->
               <select
+                title="Select target failure mode"
                 ng-model="varLink.target"
                 ng-options="failure for failure in failures"
                 ng-change="save()"
               ></select>
             </td>
             <td>
-              <button ng-click="removeOutput($index)">Remove</button>
+              <button type="button" ng-click="removeOutput($index)">
+                Remove
+              </button>
             </td>
           </tr>
           <tr>
             <td>
-              <button ng-click="addOutput()">Add Output</button>
+              <button type="button" ng-click="addOutput()">Add Output</button>
             </td>
           </tr>
         </table>

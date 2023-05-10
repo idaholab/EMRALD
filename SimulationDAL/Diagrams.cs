@@ -247,10 +247,9 @@ namespace SimulationDAL
 
   public abstract class EvalDiagram : Diagram // dtComponent or dtSystem
   {
-    private List<int> _okStates = new List<int>(); //TODO may be faster to use a bitset
-    private List<int> _singleStateGroup = new List<int>(); //TODO may be faster to use a bitset
-    //private bool? value = null;
-    private List<int> _failStates = null;
+    //TODO may be faster to add a bitset for success, failed and unknown states
+    private Dictionary<int, bool> _singleStateGroup = new Dictionary<int, bool>(); 
+
 
     /// <summary>
     /// Create a component
@@ -268,14 +267,16 @@ namespace SimulationDAL
     public override string GetDerivedJSON(EmraldModel lists)
     {
       string retStr = "," + Environment.NewLine + "\"singleStates\": [";
-      for (int i = 0; i < this._singleStateGroup.Count; ++i)
+      int i = 0;
+      foreach(var item in this._singleStateGroup)
       {
-        retStr = retStr + Environment.NewLine + "{\"stateName\": \"" + lists.allStates[this._singleStateGroup[i]].name + "\"," +
-                                                 "\"okState\":\"" + _okStates.Contains(this._singleStateGroup[i]).ToString() + "\"}";
+        retStr = retStr + Environment.NewLine + "{\"stateName\": \"" + lists.allStates[item.Key].name + "\"," +
+                                                 "\"okState\":\"" + item.Value.ToString() + "\"}";
         if (i < this._singleStateGroup.Count - 1)
         {
           retStr = retStr + "," + Environment.NewLine;
         }
+        ++i;
       }
 
       retStr = retStr + "]";
@@ -339,129 +340,80 @@ namespace SimulationDAL
       
       if (dynObj.singleStates != null)
       {
-        _okStates.Clear();
         _singleStateGroup.Clear();
-
+        
         foreach (dynamic curToObj in dynObj.singleStates)
         {
           State curState = lists.allStates.FindByName((string)curToObj.stateName);
           if (curState == null)
             throw new Exception("Failed to locate ok state " + (string)curToObj.stateName + " in state list");
 
-          _singleStateGroup.Add(curState.id);
-
-          if (Convert.ToBoolean((string)curToObj.okState))
-            _okStates.Add(curState.id);
+          _singleStateGroup.Add(curState.id, Convert.ToBoolean((string)curToObj.okState));
         }
       }
 
-      if ((_singleStateGroup.Count < 1) || (_okStates.Count < 1) || (_singleStateGroup.Count == _okStates.Count) || (_singleStateGroup.Count - _okStates.Count == 0))
-        throw new Exception("Diagram named - " + this.name + " can not be evaluated. Make sure at least one state in the diagram has a value of 1 and another has a value of 0.");
+      if(!_singleStateGroup.Where(i=> i.Value == true).Any())
+      {
+        throw new Exception("Diagram named - " + this.name + " can not be evaluated, there are no states with a true value.");
+      }
+
+      if (!_singleStateGroup.Where(i => i.Value == false).Any())
+      {
+        throw new Exception("Diagram named - " + this.name + " can not be evaluated, there are no states with a false value.");
+      }
       
       return true;
     }
 
     public bool IsFailedState(int stateID)
-    {      
-      return (this._singleStateGroup.Contains(stateID) && (!this._okStates.Contains(stateID)));
+    {   
+      if(_singleStateGroup.ContainsKey(stateID))
+        return (this._singleStateGroup[stateID] == false);
+      else
+        return false;
     }
 
     /// <summary>
     /// Evaluate the component depending on what state it is in.
+    /// depending on if evaluating for success or fail return the correct value 1 or 0.
+    /// return -1 for ignore cases.
     /// </summary>
-    public bool Evaluate(MyBitArray curStates)
-    {
-      //if (onSuccess) //go through all the OK states
-      //{
-      //  foreach (int id in _okStates)
-      //  {
-      //    if (curStates[id])
-      //    {
-      //      return true;
-      //    }
-      //  }
-      //}
-      //else
-      //{
-        if (_failStates == null)
+    public int Evaluate(MyBitArray curStates, bool onSuccess)
+    {      
+      foreach (var s in _singleStateGroup)
+      {
+        if (curStates[s.Key])
         {
-          _failStates = new List<int>();
-          foreach (int id in _singleStateGroup)
-          {
-            if (!_okStates.Contains(id))
-            {
-              _failStates.Add(id);
-            }
-          }
+          bool eval = s.Value;
+          if (!onSuccess) //do inverse for on failure evaluateion
+            eval = !s.Value;
+          
+          return eval == true ? 1 : 0;
         }
+      }
 
-        foreach (int id in _failStates)
-        {
-          if (curStates[id])
-          {
-            return true;
-          }
-        }
-//      }
-      return false;
+      //item not found so it is unknown. //So return -1 so it basicly ignore this entry
+      return -1;
     }
 
     public void AddEvalVal(int stateID, bool inIsSuccessState)
     {
-      _singleStateGroup.Add(stateID);
-      if (inIsSuccessState)
-      {
-        _okStates.Add(stateID);
-      }
+      _singleStateGroup.Add(stateID, inIsSuccessState);
     }
 
     public void Remove(int stateID)
     {
-      if (_singleStateGroup.Contains(stateID))
+      if (_singleStateGroup.ContainsKey(stateID))
       {
         _singleStateGroup.Remove(stateID);
-        if (_okStates.Contains(stateID))
-        {
-          _okStates.Remove(stateID);
-        }
       }
     }
-
-    //public bool CanAddState(int newState, MyBitArray curStates)
-    //{
-    //  bool newInGroup = false;
-    //  bool hasCur = false;
-    //  foreach (int id in _singleStateGroup)
-    //  {
-    //    if (curStates[id])
-    //      hasCur = true;
-
-    //    if (id == newState)
-    //      newInGroup = true;
-    //  }
-
-    //  if ((newInGroup) && (hasCur))
-    //  {
-    //    return false;
-    //  }
-    //  else
-    //  {
-    //    return true;
-    //  }
-    //}
-
-    //public bool StateInComp(int stateID)
-    //{
-    //  return _singleStateGroup.Contains(stateID);
-    //}
 
     public List<int> stateIDs
     {
       get
       {
-        List<int> retList = new List<int>();
-        retList.AddRange(this._singleStateGroup);
-        return retList;
+        return this._singleStateGroup.Keys.ToList();
       }
     }
   }
