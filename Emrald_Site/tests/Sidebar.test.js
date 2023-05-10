@@ -5,6 +5,7 @@
 // @ts-check
 
 const sidebar = simApp.mainApp.sidebar;
+const { expect } = chai;
 
 describe('getExtSimList', () => {
   it('lists all ext sims', async () => {
