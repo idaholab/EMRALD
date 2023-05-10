@@ -16,6 +16,7 @@ using Hunter.Hra;
 using Hunter.Model;
 using Microsoft.CodeAnalysis;
 using NLog;
+using Hunter.Psf;
 
 namespace SimulationDAL
 {
@@ -1261,6 +1262,7 @@ namespace SimulationDAL
     private int _endStep = 0;
     private Dictionary<string, SimVariable> _contextVariables = new Dictionary<string, SimVariable>(); //key is the psf name value is the EMRALD variable
     private List<string> _pickedActions = new List<string>();
+    private Logger logger;
 
     protected override EnEventType GetEvType() { return EnEventType.etHRAEval; }
 
@@ -1325,6 +1327,8 @@ namespace SimulationDAL
         this._endStep = (int)dynObj.endStep;
 
       processed = true;
+
+      this.logger = NLog.LogManager.GetLogger("logfile");
       return true;
     }
 
@@ -1395,6 +1399,20 @@ namespace SimulationDAL
       //{
       //  hunterStateVar.SetValue(evalState.Value);
       //}
+
+      logger.Debug($"HraEvalExitState: {{" +
+                   $"procedureId: {_procedureName}, startStep: {_startStep}, endStep: {_endStep}, " +
+                   $"primitiveEvalCount: {_hunterModel._engine.PrimitiveEvalCount}, " +
+                   $"evalState: {_hunterModel._engine.CurrentEvalState.ToString()}, " +
+                   $"timeOnShift: {_hunterModel._engine.TimeOnShift.ToString()}, " +
+                   $"elapsedTime: {retVal.ToString()}, " +
+                   $"fatigueIndex: {_hunterModel._engine.FatigueIndex}, " +
+                   $"psfMultipliers: {{" +
+                   $"Sa: {_hunterModel._engine.psfCollection[PsfEnums.Id.Sa].CurrentMultiplier}, " +
+                   $"Sd: {_hunterModel._engine.psfCollection[PsfEnums.Id.Sd].CurrentMultiplier}, " +
+                   $"FfDd: {_hunterModel._engine.psfCollection[PsfEnums.Id.FfDd].CurrentMultiplier}" +
+                   $"}} }}"
+                  );
 
       return retVal;
     }

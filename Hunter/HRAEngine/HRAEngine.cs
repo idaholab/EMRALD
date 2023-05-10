@@ -372,6 +372,8 @@ namespace Hunter.Hra
                               int startStep, int endStep,
                               string? outputDir = null)
         {
+            SetPrimitiveEvalCount(0);
+
             psfCollection?.Update(this);
             double elapsedTime = 0.0;
             _currentEvalState = EvalState.None;
