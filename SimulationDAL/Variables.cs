@@ -715,6 +715,9 @@ namespace SimulationDAL
 
       this._docType = (DocType)dynObj.docType;
       this._docPath = Convert.ToString(dynObj.docPath);
+
+      if (_docPath.Trim() == "")
+        throw new Exception("No doc path assigned for document variable.");
       
       if (!Path.IsPathRooted(_docPath) && (_docPath[0] == '.'))
       {
@@ -1170,7 +1173,7 @@ namespace SimulationDAL
           string[] matchSplit = rx.Split(docTxt);
           //Then count the number of line brakes before the match.
           int lineMatch = new Regex(@"(\n|\r\n?)").Matches(matchSplit[0]).Count;
-          string[] docLines = docTxt.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
+          string[] docLines = docTxt.Split(new[] { Environment.NewLine, "\r" }, StringSplitOptions.None);
           foundTxt = docLines[lineMatch + _regExpLine];
 
           if (_begPosition >= 0)

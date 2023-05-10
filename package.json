@@ -23,6 +23,7 @@
   "homepage": "https://github.com/idaholab/EMRALD#readme",
   "devDependencies": {
     "@tauri-apps/cli": "^1.0.0-rc.13",
+    "@types/angular": "^1.8.4",
     "@types/mocha": "^9.1.1",
     "@types/node": "^18.0.3",
     "eslint": "^8.15.0",
@@ -31,5 +32,8 @@
     "eslint-plugin-jsdoc": "^39.2.9",
     "eslint-plugin-sort-class-members": "^1.14.1",
     "nyc": "^15.1.0"
+  },
+  "dependencies": {
+    "angular": "^1.8.3"
   }
 }
