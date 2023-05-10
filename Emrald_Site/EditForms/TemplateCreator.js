@@ -59,6 +59,8 @@
  * @property {(path: string[], groupName: string, needsDigest: boolean) => void} selectGroupByPath - Selects a group based on the given path and specified group name.
  * @property {(path: string[]) => EMRALD.TemplateGroup | null} createTemplateGroupObjectFromPath - Turns a given path into a EMRALD.TemplateGroup object.
  * @property {(view: string) => void} toggleTemplateView - Changes the view for the group browser.
+ * @property {boolean[]} disabledEntries - Contains boolean values for whether entries should be disabled, using the entry index and the disabledEntry index
+ * @property {() => void} findDisabledEntries - Fills the disabledEntries array.
  */
 
 /**
@@ -124,6 +126,7 @@ window.cast(window, w).OnLoad = (dataObj) => {
         );
       }
     });
+    scope.findDisabledEntries();
   });
 };
 
