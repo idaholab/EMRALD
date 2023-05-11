@@ -579,13 +579,13 @@
         "parameters": [
           {
             "name": "Mean",
-            "value": "4",
+            "value": 4,
             "timeRate": "trHours",
             "useVariable": false
           },
           {
             "name": "Standard Deviation",
-            "value": "2",
+            "value": 2,
             "timeRate": "trHours",
             "useVariable": false
           },
@@ -597,7 +597,7 @@
           },
           {
             "name": "Maximum",
-            "value": "18",
+            "value": 18,
             "timeRate": "trHours",
             "useVariable": false
           }
@@ -661,7 +661,7 @@
       "MaxRepeat":  3,
       "TimeOnShiftFatigueEnabled": true,
       "TimeOnShift": "00:00:00",
-      "HasTimePressure": false,
+      "HasTimePressure": true,
       "Experience": "Nominal",
       "_currentProcedureId": null,
       "_currentStepId": null,

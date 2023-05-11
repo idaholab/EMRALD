@@ -528,7 +528,7 @@
           },
           {
             "contextName": "Stress",
-            "simVar": "Psf.Stress.Extreme"
+            "simVar": "Psf.Stress.Nominal"
           }
         ]
       }
@@ -558,7 +558,7 @@
           },
           {
             "contextName": "Stress",
-            "simVar": "Psf.Stress.Extreme"
+            "simVar": "Psf.Stress.Nominal"
           }
         ],
         "code": ""
@@ -661,7 +661,7 @@
       "MaxRepeat": 4,
       "TimeOnShiftFatigueEnabled": true,
       "TimeOnShift": "00:00:00",
-      "HasTimePressure": true,
+      "HasTimePressure": false,
       "Experience": "Nominal",
       "_currentProcedureId": null,
       "_currentStepId": null,
