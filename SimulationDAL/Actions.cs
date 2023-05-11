@@ -1023,6 +1023,9 @@ namespace SimulationDAL
     public string processOutputFileCode = "";
     public ReturnType returnProcess = ReturnType.rtStateList;
     public SimVariable assignVariable = null;
+    private Dictionary<string, bool> stateVarsAddedPre = new Dictionary<string, bool>();
+    private Dictionary<string, bool> stateVarsAddedPost = new Dictionary<string, bool>();
+
 
     public RunExtAppAct()
       : base("", EnActionType.atRunExtApp)
@@ -1125,14 +1128,14 @@ namespace SimulationDAL
         throw new Exception("missing variable definition  " + exePath);
       }
 
-      if (Path.IsPathRooted(exePath))
+      if ((exePath != "") && Path.IsPathRooted(exePath))
       {
         if (!exePath.StartsWith("cmd.exe") && !File.Exists(exePath))
           throw new Exception("Executable path for the \"RunApplication\" action does not exist ! - " + exePath);
       }
       else
       {
-        if (!exePath.StartsWith("cmd.exe"))
+        if ((exePath != "") && !exePath.StartsWith("cmd.exe"))
         {
           string fullExePath = exePath;
           fullExePath = lists.rootPath;
@@ -1226,9 +1229,14 @@ namespace SimulationDAL
       //add all the states
       foreach (KeyValuePair<int, State> state in lists.allStates)
       {
-        //todo see if there are any variables with the name of the state
-        makeInputFileCompEval.AddVariable(state.Value.name, typeof(bool));
-        makeInputFileCompEval.AddVariable(state.Value.name + "_Time", typeof(TimeSpan));
+        //see if there are any variables with the name of the state && and valid variable name
+        if ((makeInputFileCode.Contains(state.Value.name) || makeInputFileCode.Contains(state.Value.name + "_Time")) &&
+           (state.Value.name.IndexOfAny(new char[] { '*', '&', '#', ' ', '-', '+', '_', '@', '$', '#', '%', ',', ')', '=', '/', '>', '<', '.', ';', '~', '`', '|', '}', '{', ']', '[', '\\' }) == -1))
+        {
+          makeInputFileCompEval.AddVariable(state.Value.name, typeof(bool));
+          makeInputFileCompEval.AddVariable(state.Value.name + "_Time", typeof(TimeSpan));
+          stateVarsAddedPre.Add(state.Value.name, true);
+        }
       }
 
 
@@ -1284,13 +1292,32 @@ namespace SimulationDAL
       //add all the states
       foreach (KeyValuePair<int, State> state in lists.allStates)
       {
-        //todo see if there are any variables with the name of the state
-        processOutputFileCompEval.AddVariable(state.Value.name, typeof(bool));
-        processOutputFileCompEval.AddVariable(state.Value.name + "_Time", typeof(TimeSpan));
+        //see if there are any variables with the name of the state && and valid variable name
+        if ((makeInputFileCode.Contains(state.Value.name) || makeInputFileCode.Contains(state.Value.name + "_Time")) &&
+           (state.Value.name.IndexOfAny(new char[] { '*', '&', '#', ' ', '-', '+', '_', '@', '$', '#', '%', ',', ')', '=', '/', '>', '<', '.', ';', '~', '`', '|', '}', '{', ']', '[', '\\' }) == -1))
+        {
+          processOutputFileCompEval.AddVariable(state.Value.name, typeof(bool));
+          processOutputFileCompEval.AddVariable(state.Value.name + "_Time", typeof(TimeSpan));
+          stateVarsAddedPost.Add(state.Value.name, true);
+        }
+      }
+      
+
+      Type retType = typeof(object);
+      switch (returnProcess)
+      {
+        case ReturnType.rtNone:
+          retType = typeof(void);
+          break;
+        case ReturnType.rtStateList:
+          retType = typeof(List<string>);
+          break;
+        case ReturnType.rtVar:
+          retType = typeof(object);
+          break;
       }
 
-
-      if (!processOutputFileCompEval.Compile(typeof(List<string>)))
+      if (!processOutputFileCompEval.Compile(retType))
       {
         throw new Exception("failed to compile code - " + String.Join(Environment.NewLine, processOutputFileCompEval.messages.ToArray()) + Environment.NewLine + processOutputFileCode);
       }
@@ -1298,6 +1325,7 @@ namespace SimulationDAL
       {
         this.compiled = true;
       }
+      
 
       return this.compiled;
     }
@@ -1366,22 +1394,30 @@ namespace SimulationDAL
       //add if in states
       foreach (KeyValuePair<int, State> state in lists.allStates)
       {
-        TimeSpan stateTime;
-        if (curStatesTime.TryGetValue(state.Value.id, out stateTime))
+        if (stateVarsAddedPre.ContainsKey(state.Value.name))
         {
-          makeInputFileCompEval.SetVariable(state.Value.name, typeof(bool), true);
-          makeInputFileCompEval.SetVariable(state.Value.name + "_Time", typeof(TimeSpan), stateTime);
-          if (processOutputFileCompEval != null)
+          TimeSpan stateTime;
+          if (curStatesTime.TryGetValue(state.Value.id, out stateTime))
+          {
+            makeInputFileCompEval.SetVariable(state.Value.name, typeof(bool), true);
+            makeInputFileCompEval.SetVariable(state.Value.name + "_Time", typeof(TimeSpan), stateTime);
+          }
+          else
+          {
+            makeInputFileCompEval.SetVariable(state.Value.name, typeof(bool), false);
+            makeInputFileCompEval.SetVariable(state.Value.name + "_Time", typeof(TimeSpan), TimeSpan.FromMilliseconds(0));
+          }
+        }
+
+        if ((processOutputFileCompEval != null) && (stateVarsAddedPost.ContainsKey(state.Value.name)))
+        {
+          TimeSpan stateTime;
+          if (curStatesTime.TryGetValue(state.Value.id, out stateTime))
           {
             processOutputFileCompEval.SetVariable(state.Value.name, typeof(bool), true);
             processOutputFileCompEval.SetVariable(state.Value.name + "_Time", typeof(TimeSpan), stateTime);
           }
-        }
-        else
-        {
-          makeInputFileCompEval.SetVariable(state.Value.name, typeof(bool), false);
-          makeInputFileCompEval.SetVariable(state.Value.name + "_Time", typeof(TimeSpan), TimeSpan.FromMilliseconds(0));
-          if (processOutputFileCompEval != null)
+          else
           {
             processOutputFileCompEval.SetVariable(state.Value.name, typeof(bool), false);
             processOutputFileCompEval.SetVariable(state.Value.name + "_Time", typeof(TimeSpan), TimeSpan.FromMilliseconds(0));
@@ -1390,14 +1426,22 @@ namespace SimulationDAL
       }
 
       string runParams = makeInputFileCompEval.EvaluateString();
-      string fullExePath = exePath;
-      if ((exePath[0] == '.') && (!Path.IsPathRooted(exePath)))
+      var locExePath = exePath;
+      if(locExePath == "")
+      {
+        int idx = runParams.IndexOf(' ');
+        locExePath = runParams.Substring(0, idx);
+        runParams = runParams.Substring(idx, runParams.Length - idx);
+      }
+
+      string fullExePath = locExePath;
+      if ((locExePath[0] == '.')&&(!Path.IsPathRooted(locExePath)))
       {
         fullExePath = lists.rootPath;
         if (!fullExePath.EndsWith(@"\"))
           fullExePath += @"\";
 
-        fullExePath = Path.GetFullPath(Path.Combine(fullExePath + exePath));
+        fullExePath = Path.GetFullPath(Path.Combine(fullExePath + locExePath));
       }
 
       NLog.Logger logger = NLog.LogManager.GetLogger("logfile");
@@ -1406,11 +1450,14 @@ namespace SimulationDAL
       int exitCode;
       if (runParams != null)
       {
-        if (!File.Exists(fullExePath) && !exePath.Contains("cmd.exe"))
+        if (!File.Exists(fullExePath) && !locExePath.Contains("cmd.exe"))
           throw new Exception("No executable specified for RunExtApp - " + this.name);
-
-        if (exePath.Contains("cmd.exe"))
-          runParams = "/K " + runParams;
+        bool setWKDir = true;
+        if (locExePath.Contains("cmd.exe"))
+        {
+          runParams = "/C " + runParams;
+          setWKDir = false;
+        }
 
         //Start the executable
         extApp = new ProcessStartInfo();
@@ -1443,7 +1490,7 @@ namespace SimulationDAL
           //  throw new Exception("Failed to run external code - " + exePath + ".   exit code - " + exitCode.ToString());
         }
       }
-      else
+      else 
         exitCode = -1;
 
       //Set all the variable values
@@ -1452,7 +1499,7 @@ namespace SimulationDAL
         processOutputFileCompEval.SetVariable("CurTime", typeof(double), curTime.TotalHours);
         processOutputFileCompEval.SetVariable("RunIdx", typeof(int), lists.curRunIdx);
         processOutputFileCompEval.SetVariable("ExeExitCode", typeof(int), exitCode);
-        processOutputFileCompEval.SetVariable("OutputFile", typeof(string), exeOutputPath + "\\_out.txt");
+        //processOutputFileCompEval.SetVariable("OutputFile", typeof(string), exeOutputPath + "\\_out.txt");
         //Set all the variable values
         if (codeVariables != null)
         {
@@ -1470,15 +1517,19 @@ namespace SimulationDAL
 
       switch (this.returnProcess)
       {
-        case ReturnType.rtStateList:
+        case ReturnType.rtNone:
+          processOutputFileCompEval.EvaluateGeneric();
+          break;
+
+        case ReturnType.rtStateList:        
           List<String> retStates = processOutputFileCompEval.EvaluateStrList();
           System.Threading.Thread.Sleep(10);
 
-          while (File.Exists(Path.GetDirectoryName(exePath) + "\\_out.txt"))
+          while (File.Exists(Path.GetDirectoryName(exePath) + Path.DirectorySeparatorChar + "_out.txt"))
           {
             try
             {
-              System.IO.File.Delete(Path.GetDirectoryName(exePath) + "\\_out.txt");
+              System.IO.File.Delete(Path.GetDirectoryName(exePath) + Path.DirectorySeparatorChar + "_out.txt");
             }
             catch
             {
@@ -1509,7 +1560,7 @@ namespace SimulationDAL
           }
           break;
         case ReturnType.rtVar:
-          assignVariable.SetValue(processOutputFileCompEval.EvaluateGeneric());
+          assignVariable.SetValue(processOutputFileCompEval.EvaluateGeneric()); 
           break;
 
         default: //do nothing
@@ -1671,7 +1722,7 @@ namespace SimulationDAL
       string retVal = _extSim.modelRef;
       if (openSimVarParams)
       {
-        retVal = lists.allVariables.FindByName(_extSim.modelRef, true).strValue;
+         retVal = lists.allVariables.FindByName(_extSim.modelRef, true).strValue;
       }
 
       return retVal;
@@ -1764,7 +1815,7 @@ namespace SimulationDAL
           {
             throw new Exception("Failed to find Action - " + (string)toActName);
           }
-
+          
           this.Add(curAct);
         }
       }
@@ -1793,7 +1844,7 @@ namespace SimulationDAL
   {
     private List<Action> deleted = new List<Action>();
     private Dictionary<string, int> nameToID = new Dictionary<string, int>();
-
+    
     public bool loaded = false;
 
     public void Add(Action inAction, bool errorOnDup = true)
@@ -1806,7 +1857,7 @@ namespace SimulationDAL
       }
 
       nameToID.Add(inAction.name, inAction.id);
-
+      
       this.Add(inAction.id, inAction);
     }
 
@@ -1856,10 +1907,10 @@ namespace SimulationDAL
         deleted.Add(curAct);
 
         nameToID.Remove(curAct.name);
-
+        
         base.Remove(key);
       }
-    }
+    }    
 
     public Action FindByName(string name, bool exception = true)
     {
@@ -1883,7 +1934,7 @@ namespace SimulationDAL
           throw new Exception("Failed to find Action - " + name);
         else
           return null;
-      }
+      }      
     }
 
     public static Action CreateNewAction(EnActionType actType)
@@ -1981,10 +2032,10 @@ namespace SimulationDAL
       foreach (var wrapper in dynamicObj)
       {
         var item = wrapper.Action;
-
+        
         Action curItem = this.FindByName((string)item.name);
         try
-        {
+        { 
           if (curItem == null)
           {
             throw new Exception("Failed to find Action with the name of " + (string)item.name);
@@ -1998,7 +2049,7 @@ namespace SimulationDAL
         {
           throw new Exception("On Action named " + curItem.name + ". " + e.Message);
         }
-      }
+      }  
 
 
       return true;
@@ -2018,7 +2069,7 @@ namespace SimulationDAL
           {
             throw new Exception("Action \"" + item.Value.name + " \" - " + e.Message);
           }
-
+          
         }
 
         if (item.Value is RunExtAppAct)

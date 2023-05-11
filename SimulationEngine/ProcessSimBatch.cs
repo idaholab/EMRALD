@@ -243,6 +243,7 @@ namespace SimulationEngine
       try
       {
         _lists.allVariables.ReInitAll();
+        _lists.curRunIdx = 0;
 
         SimulationTracking.StateTracker trackSim;
         if (_msgServer == null)

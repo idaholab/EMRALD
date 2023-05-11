@@ -299,91 +299,62 @@ namespace SimulationDAL
     }
 
 
-    public bool Evaluate(MyBitArray curStates, bool success = false)
+    public int Evaluate(MyBitArray curStates, bool success)
     {
-      bool retVal;
-      int cnt = 0;
+      int retVal = 0;
+      int evalSum = 0;
+      int unknownCnt = 0;
+      //go through all the child item both components and gates
+      foreach (EvalDiagram curComp in _compChildren)
+      {
+        int evalNum = curComp.Evaluate(curStates, success);
+        if (evalNum < 0)
+          unknownCnt++;
+        else
+        {
+          if ((gateType == EnGateType.gtAnd) && (evalNum == 0)) //short curcuit AND with a 0 in it
+            return 0;
+          if ((gateType == EnGateType.gtOr) && (evalNum == 1)) //short curcuit OR with a 1 in it
+            return 1;
+          evalSum += evalNum;
+        }
+      }
+      foreach (LogicNode curNode in _subGates)
+      {
+        int evalNum = curNode.Evaluate(curStates, success);
+        if (evalNum < 0)
+          unknownCnt++;
+        else
+        {
+          if ((gateType == EnGateType.gtAnd) && (evalNum == 0)) //short curcuit AND with a 0 in it
+            return 0;
+          if ((gateType == EnGateType.gtOr) && (evalNum == 1)) //short curcuit OR with a 1 in it
+            return 1;
+          evalSum += evalNum;
+        }
+      }
+
+      if (unknownCnt == (_compChildren.Count + _subGates.Count)) //all children unknown
+        return -1;
 
       switch (gateType)
       {
         case EnGateType.gtAnd:
-        case EnGateType.gtNot:
-          retVal = true;
+          return (_compChildren.Count + _subGates.Count) == (evalSum + unknownCnt) ? 1 : 0; //if all 1's or unknown then 1. Treat unknowns as true so the are ignored
           break;
 
         case EnGateType.gtOr:
+          return evalSum > 0 ? 1 : 0; //if no 1's return false. Treat unknowns as false so they are ignored
+          break;
+
+        case EnGateType.gtNot:
+          return evalSum > 0 ? 1 : 0; //Should only be one so just return 1 if greater than 0.
+
         case EnGateType.gtNofM:
-          retVal = false;
-          break;
-
+          return evalSum > val1 ? 1 : 0;
         default:
-          retVal = false;
-          break;
+          throw new Exception("Gate not defined to evaluate");
       }
-
-
-      foreach (EvalDiagram curComp in _compChildren)
-      {
-        switch (gateType)
-        {
-          case EnGateType.gtAnd:
-            retVal = (retVal && curComp.Evaluate(curStates));
-            if (!retVal)
-              return retVal;
-            break;
-
-          case EnGateType.gtOr:
-            retVal = (retVal || curComp.Evaluate(curStates));
-            if (retVal)
-              return retVal;
-            break;
-
-          case EnGateType.gtNot:
-            return (!curComp.Evaluate(curStates));
-
-          case EnGateType.gtNofM:
-            { 
-              ++cnt;
-              if (cnt >= val1)
-              {
-                return true;
-              }
-            }
-            break;
-        }
-      }
-
-      foreach (LogicNode curNode in _subGates)
-      {
-        switch (gateType)
-        {
-          case EnGateType.gtAnd:
-            retVal = (retVal && curNode.Evaluate(curStates));
-            if (!retVal)
-              return retVal;
-            break;
-
-          case EnGateType.gtOr:
-            retVal = (retVal || curNode.Evaluate(curStates));
-            if (retVal)
-              return retVal;
-            break;
-
-          case EnGateType.gtNot:
-            return (!curNode.Evaluate(curStates));
-
-          case EnGateType.gtNofM:
-            if (curNode.Evaluate(curStates))
-            {
-              ++cnt;
-              if (cnt >= val1)
-                return true;
-            }
-            break;
-        }
-      }
-
-      return retVal;
     }
 
     public void AddGateChild(LogicNode child)
@@ -629,7 +600,7 @@ namespace SimulationDAL
       }
       catch (Exception e)
       {
-        throw new Exception("On diagram named " + curName + ". " + e.Message);
+         throw new Exception("On diagram named " + curName + ". " + e.Message);
       }
     }
 
