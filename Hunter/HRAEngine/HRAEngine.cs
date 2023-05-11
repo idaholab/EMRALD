@@ -222,10 +222,9 @@ namespace Hunter.Hra
 
         public void SetContext(Dictionary<string, object> context)
         {
-            if (context.ContainsKey("ShiftTimeH"))
-            {
-                TimeOnShift = TimeSpan.FromHours((double)context["ShiftTimeH"]);
-            }
+
+            Timer? _timeOnShift = Timer.FromContext(context, this, "ShiftTime");
+            TimeOnShift = _timeOnShift?.Duration ?? TimeOnShift;
 
             // Get the available time from the context
             _taskAvailableTime = Timer.FromContext(context, this, "TaskAvailableTime");

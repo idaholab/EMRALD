@@ -528,7 +528,7 @@
           },
           {
             "contextName": "Stress",
-            "simVar": "Psf.Stress.Extreme"
+            "simVar": "Psf.Stress.High"
           }
         ]
       }
@@ -558,7 +558,7 @@
           },
           {
             "contextName": "Stress",
-            "simVar": "Psf.Stress.Extreme"
+            "simVar": "Psf.Stress.High"
           }
         ],
         "code": ""
@@ -658,10 +658,10 @@
   "HunterModel": {
     "Snapshot": {
       "RepeatMode": true,
-      "MaxRepeat":  4,
+      "MaxRepeat":  3,
       "TimeOnShiftFatigueEnabled": true,
       "TimeOnShift": "00:00:00",
-      "HasTimePressure": true,
+      "HasTimePressure": false,
       "Experience": "Nominal",
       "_currentProcedureId": null,
       "_currentStepId": null,

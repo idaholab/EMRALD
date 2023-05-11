@@ -10,7 +10,6 @@ using System.Threading.Tasks;
 
 namespace Hunter.Psf
 {
-
     public class FatigueSpeedAccuracy
     {
         public double FatigueBaseline { get; set; }
@@ -29,75 +28,35 @@ namespace Hunter.Psf
                                     double? circadianPhase = null,
                                     double? finalMultiplier = null)
         {
-            if (fatigueBaseline is not null)
-            {
-                FatigueBaseline = (double)fatigueBaseline;
-            }
-            else
-            {
-                FatigueBaseline = NormalDistributionHandler.SampleNormalTime(0.925, 0.925 * 0.2);
-            }
+            FatigueBaseline = fatigueBaseline ?? 
+                NormalDistributionHandler.SampleNormalTime(
+                    0.925, 0.925 * 0.2);
+            FatigueLimit = fatigueLimit ?? 
+                NormalDistributionHandler.SampleNormalTime(
+                    2.06, 2.06 * 0.2);
+            TimeToFatigueLimit = timeToFatigueLimit ?? 
+                LognormalDistributionHandler.SampleLognormalTime(
+                    11, 11 * 0.2);
+            FatigueTransitionTime = fatigueTransitionTime ?? 
+                LognormalDistributionHandler.SampleLognormalTime(
+                    2, 2 * 0.2);
+            FinalMultiplier = finalMultiplier ?? 
+                LognormalDistributionHandler.SampleLognormalTime(
+                    4.5, 4.5 * 0.2);
+            CircadianAmplitude = circadianAmpitude ?? 
+                Math.Round(NormalDistributionHandler.SampleNormalTime(
+                    0.437, 0.437 * 0.2));
+            CircadianPhase = circadianPhase ?? 
+                NormalDistributionHandler.SampleNormalTime(
+                    -0.15, 0.03);
 
-            if (fatigueLimit is not null)
-            {
-                FatigueLimit = (double)fatigueLimit;
+            while (FatigueBaseline - CircadianAmplitude < 0.1 || 
+                   CircadianAmplitude < 0.1)
+            { 
+                CircadianAmplitude = 
+                    NormalDistributionHandler.SampleNormalTime(
+                        0.437, 0.437 * 0.2);
             }
-            else
-            {
-                FatigueLimit = 0;
-                while (FatigueLimit < FatigueBaseline)
-                    FatigueLimit = NormalDistributionHandler.SampleNormalTime(2.06, 2.06 * 0.2);
-            }
-
-            if (timeToFatigueLimit is not null)
-            {
-                TimeToFatigueLimit = (double)timeToFatigueLimit;
-            }
-            else
-            {
-                TimeToFatigueLimit = LognormalDistributionHandler.SampleLognormalTime(11, 11 * 0.2);
-            }
-
-            if (fatigueTransitionTime is not null)
-            {
-                FatigueTransitionTime = (double)fatigueTransitionTime;
-            }
-            else
-            {
-                FatigueTransitionTime = LognormalDistributionHandler.SampleLognormalTime(2, 2 * 0.2);
-            }
-
-
-            if (circadianAmpitude is not null)
-            {
-                CircadianAmplitude = (double)circadianAmpitude;
-            }
-            else
-            {
-                CircadianAmplitude = Math.Round(NormalDistributionHandler.SampleNormalTime(0.437, 0.437 * 0.2));
-                while (FatigueBaseline - CircadianAmplitude < 0.1 || CircadianAmplitude < 0.1)
-                    CircadianAmplitude = NormalDistributionHandler.SampleNormalTime(0.437, 0.437 * 0.2);
-            }
-
-            if (circadianPhase is not null)
-            {
-                CircadianPhase = (double)circadianPhase;
-            }
-            else
-            {
-                CircadianPhase = NormalDistributionHandler.SampleNormalTime(-0.15, 0.03); //  0.0; //SingleRandom.Instance.NextDouble();
-            }
-
-            if (finalMultiplier is not null)
-            {
-                FinalMultiplier = (double)finalMultiplier;
-            }
-            else
-            {
-                FinalMultiplier = LognormalDistributionHandler.SampleLognormalTime(4.5, 4.5 * 0.2);
-            }
-            
-
         }
 
         public double GetValue(double t)
@@ -113,7 +72,10 @@ namespace Hunter.Psf
             double v;
             if (t > TimeToFatigueLimit)
             {
-                double delta = (FatigueLimit - FatigueBaseline) *  (Math.Clamp(t - TimeToFatigueLimit, 0, FatigueTransitionTime) / FatigueTransitionTime);
+                double transTime = t - TimeToFatigueLimit;
+                transTime = Math.Clamp(transTime, 0, FatigueTransitionTime);
+                double delta = (FatigueLimit - FatigueBaseline) * 
+                               (transTime / FatigueTransitionTime);
 
                 v = FatigueBaseline + delta;
             }
@@ -138,11 +100,10 @@ namespace Hunter.Psf
                 throw new Exception("a should be > 0");
             }
 
-            double v = 1 + a * t * t - b * t;
-
             double radians = 2 * Math.PI * (t / 24);
             double phase = 2 * Math.PI * CircadianPhase;
-            double sinusoid = CircadianAmplitude / 5 * Math.Sin(radians + phase);
+            double sinusoid = CircadianAmplitude / 
+                              5 * Math.Sin(radians + phase);
 
             return x * (t * t) - 0.0006 * t + 1 + sinusoid;
         }
