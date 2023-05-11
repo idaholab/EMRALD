@@ -113,7 +113,7 @@ namespace Hunter.Hra
         public TimeSpan TimeOnShift { get; set; } = TimeSpan.Zero;
 
 
-        internal FatigueSpeedAccuracy fatigueModel;
+        public FatigueSpeedAccuracy fatigueModel;
         /// <summary>
         /// Calculates the fatigue index based on the duration of the shift.
         /// </summary>

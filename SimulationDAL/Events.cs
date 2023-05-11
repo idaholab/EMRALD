@@ -1299,6 +1299,7 @@ namespace SimulationDAL
 
     public override bool DeserializeDerived(object obj, bool wrapped, EmraldModel lists, bool useGivenIDs)
     {
+
       dynamic dynObj = (dynamic)obj;
       if (wrapped)
       {
@@ -1371,8 +1372,6 @@ namespace SimulationDAL
 
     public override TimeSpan NextTime(TimeSpan curTime)
     {
-      TimeSpan retVal = TimeSpan.MaxValue; //value in hours until the time this event occures
-
       //Assign any data from the model before running the HRA code
       if(_hunterModel == null)
       {
@@ -1387,18 +1386,12 @@ namespace SimulationDAL
       ));
 
       //Call the HRA library to determine the time of the event
-      retVal = _hunterModel._engine.EvaluateSteps(_hunterModel.Task.ProcedureCatalog, _procedureName, _startStep, _endStep);
+      TimeSpan retVal = _hunterModel._engine.EvaluateSteps(_hunterModel.Task.ProcedureCatalog, _procedureName, _startStep, _endStep);
 
       // Get the Evaluated State
       EvalState evalState = _hunterModel._engine.CurrentEvalState;
       _pickedActions.Clear();
       _pickedActions.Add(evalState.ToString());
-      //EmraldModel em = _hunterModel.Parent as EmraldModel;
-      //var hunterStateVar = em?.allVariables.Values.FirstOrDefault(v => v.name == "HunterState");
-      //if (hunterStateVar != null)
-      //{
-      //  hunterStateVar.SetValue(evalState.Value);
-      //}
 
       logger.Debug($"HraEvalExitState: {{" +
                    $"procedureId: {_procedureName}, startStep: {_startStep}, endStep: {_endStep}, " +
@@ -1407,6 +1400,7 @@ namespace SimulationDAL
                    $"timeOnShift: {_hunterModel._engine.TimeOnShift.ToString()}, " +
                    $"elapsedTime: {retVal.ToString()}, " +
                    $"fatigueIndex: {_hunterModel._engine.FatigueIndex}, " +
+                   $"FatigueBaseline: {_hunterModel._engine.fatigueModel.FatigueBaseline}, " +
                    $"psfMultipliers: {{" +
                    $"Sa: {_hunterModel._engine.psfCollection[PsfEnums.Id.Sa].CurrentMultiplier}, " +
                    $"Sd: {_hunterModel._engine.psfCollection[PsfEnums.Id.Sd].CurrentMultiplier}, " +

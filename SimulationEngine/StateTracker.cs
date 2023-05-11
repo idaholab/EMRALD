@@ -767,6 +767,11 @@ namespace SimulationTracking
       SingleNextIDs.Instance.ResetTimerIDs();      
       
       allLists.allEvents.Reset();
+
+      if (allLists.hunterModel != null)
+      {
+        allLists.hunterModel.LoadEngine();
+      }
     }
 
 
