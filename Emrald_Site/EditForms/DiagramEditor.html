@@ -129,7 +129,8 @@
                 </div>
             </div>
             <div style="display:table-row">
-                <span style="display:table-cell">Name:</span> <input style="display:table-cell" id="Diagram_Name_Input" ng-model="name" tabindex="1" ng-disabled="data.importedContent">
+                <span style="display:table-cell">Name:</span>
+                <input style="display:table-cell" id="Diagram_Name_Input" ng-model="name" tabindex="1" ng-disabled="data.importedContent || data.templateIsSelected">
             </div>
             <div style="display:table-row">
                 <span style="display:table-cell">Desc:</span> <input style="display:table-cell" ng-model="desc" size="40" tabindex="2" ng-disabled="data.importedContent" />

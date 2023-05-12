@@ -351,6 +351,8 @@ diagramModule.controller('diagramController', function ($scope, $timeout) {
         if ($scope.selectedTemplate === index) {
             $scope.selectedTemplate = null;
             $scope.data.templateIsSelected = false;
+            $scope.name = '';
+            $scope.desc = '';
         } else {
             if ($scope.diagramList[index].disabledReasons.length > 0){
                 alert(`This template cannot be selected because: \n\n${$scope.diagramList[index].disabledReasons.join('\n')}`);
@@ -359,6 +361,8 @@ diagramModule.controller('diagramController', function ($scope, $timeout) {
             $scope.selectedTemplate = index;
             $scope.data.templateIsSelected = true;
             $scope.data.forceMerge = true;
+            $scope.name = $scope.diagramList[index].DiagramList[0].Diagram.name;
+            $scope.desc = $scope.diagramList[index].DiagramList[0].Diagram.desc;
         }
     };
 
@@ -372,6 +376,8 @@ diagramModule.controller('diagramController', function ($scope, $timeout) {
             $scope.selectedTemplateFromGroup = null;
             $scope.selectedTemplate = null;
             $scope.data.templateIsSelected = false;
+            $scope.name = '';
+            $scope.desc = '';
         } else {
             if ($scope.diagramList[realIndex].disabledReasons.length > 0){
                 alert(`This template cannot be selected because: \n\n${$scope.diagramList[realIndex].disabledReasons.join('\n')}`);
@@ -381,6 +387,8 @@ diagramModule.controller('diagramController', function ($scope, $timeout) {
             $scope.selectedTemplate = realIndex;
             $scope.data.templateIsSelected = true;
             $scope.data.forceMerge = true;
+            $scope.name = $scope.diagramList[realIndex].DiagramList[0].Diagram.name;
+            $scope.desc = $scope.diagramList[realIndex].DiagramList[0].Diagram.desc;
         }
     }
 
