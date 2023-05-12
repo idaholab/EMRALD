@@ -174,6 +174,7 @@ if (typeof Navigation === 'undefined')
               delete outDataObj.importedContent;
               return true;
             }
+            else if (outDataObj.diagramTemplate) { }
             else {
               if (this.existsDiagramName(outDataObj.name)) {
                 MessageBox.alert("New Diagram", "A diagram with the name '" + outDataObj.name + "' exists, please try a different name.");
