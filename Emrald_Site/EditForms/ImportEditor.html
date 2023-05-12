@@ -123,6 +123,7 @@
                 placeholder="Name"
                 ng-model="entry.data.name"
                 ng-change="nameChanged($index)"
+                ng-disabled="entry.action !== 'rename'"
               />
             </td>
             <td>
