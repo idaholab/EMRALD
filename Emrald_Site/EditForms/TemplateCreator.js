@@ -59,6 +59,7 @@
  * @property {(path: string[], groupName: string, needsDigest: boolean) => void} selectGroupByPath - Selects a group based on the given path and specified group name.
  * @property {(path: string[]) => EMRALD.TemplateGroup | null} createTemplateGroupObjectFromPath - Turns a given path into a EMRALD.TemplateGroup object.
  * @property {(view: string) => void} toggleTemplateView - Changes the view for the group browser.
+ * @property {string} originalModelName - The initial name of the model when first opened; this does not include any programmatic or user changes.
  * @property {boolean[]} disabledEntries - Contains boolean values for whether entries should be disabled, using the entry index and the disabledEntry index
  * @property {() => void} findDisabledEntries - Fills the disabledEntries array.
  */
@@ -117,6 +118,7 @@ window.cast(window, w).OnLoad = (dataObj) => {
     scope.groups = scope.getGroupsFromLocalStorage();
     scope.setDisplayedGroups(scope.model.group, scope.groups);
     scope.model = dataObj.model;
+    scope.originalModelName = scope.model.name;
     scope.model.name += "_Template";
     scope.entries = [];
     Object.values(scope.model).forEach((value, i) => {
@@ -508,6 +510,38 @@ const templateCreatorController = ($scope) => {
   $scope.toggleTemplateView = (view) => {
     view = view.toLowerCase();
     $scope.templateView = view;
+  }
+
+
+  $scope.findDisabledEntries = () => {
+    let mainDiagram = $scope.entries.find(x => (x.type === 'Diagram' && x.data.name === $scope.originalModelName));
+    if (!mainDiagram) {
+      alert("Unable to find main diagram.  Check console for details.");
+      console.error("The main diagram was not able to be found in following list:");
+      console.error($scope.entries);
+      return;
+    }
+    mainDiagram.isLocked = true;
+    mainDiagram.data.required = true;
+    $scope.disabledEntries = [];
+    for (let index = 0; index < $scope.entries.length; index++) {
+      let entry = $scope.entries[index];
+      if (entry.type === 'State' && mainDiagram.data.states.includes(entry.data.name)) {
+        $scope.disabledEntries[index] = true;
+        entry.isLocked = true;
+        entry.data.required = false;
+      } else if (entry.type === 'State') {
+        $scope.disabledEntries[index] = true;
+        entry.isLocked = true;
+        entry.data.required = true;
+      } else if (entry.type === 'Diagram' && entry.data.name === $scope.originalModelName) {
+        $scope.disabledEntries[index] = true;
+        entry.isLocked = true;
+        entry.data.required = false;
+      } else {
+        $scope.disabledEntries[index] = false;
+      }
+    }
   }
 
 };

@@ -144,7 +144,7 @@
       <button ng-click="toggleLocks(false)">Unlock All</button>
       <br />
       <br />
-      <button ng-click="toggleAction('ignore')">Ignore Unlocked</button>
+      <button ng-click="toggleAction('ignore')">Keep Unlocked Names</button>
       <button ng-click="toggleAction('rename')">Rename Unlocked</button>
     </div>
     <br />
@@ -153,7 +153,7 @@
       <thead>
         <tr>
           <th>Type</th>
-          <th>Lock</th>
+          <th title="Find and Replace Lock">Lock</th>
           <th>Name</th>
           <th>Action</th>
           <th></th>
@@ -164,21 +164,21 @@
         <tr ng-repeat="entry in entries track by $index" ng-class="{ locked: entry.isLocked }">
           <td>{{entry.type}}</td>
           <td class="lock">
-            <input type="checkbox" ng-model="entry.isLocked" ng-disabled="entry.data.required" id="{{'checkbox-' + $index}}" />
+            <input type="checkbox" ng-model="entry.isLocked" ng-disabled="disabledEntries[$index]" id="{{'checkbox-' + $index}}" />
             <label for="{{'checkbox-' + $index}}"></label>
           </td>
           <td>{{entry.oldName}}</td>
           <td>
-            <input id="{{'action-ignore-' + $index}}" title="Ignore" type="radio" ng-model="entry.action" value="ignore" ng-change="checkEntryAction(entry)" />
-            <label for="{{'action-ignore-' + $index}}">Ignore</label>
-            <input id="{{'action-rename-' + $index}}" title="Rename" type="radio" ng-model="entry.action" value="rename" ng-change="checkEntryAction(entry)" />
+            <input id="{{'action-ignore-' + $index}}" title="Ignore" type="radio" ng-model="entry.action" value="ignore" ng-change="checkEntryAction(entry)" ng-disabled="disabledEntries[$index]" />
+            <label for="{{'action-ignore-' + $index}}">Keep Name</label>
+            <input id="{{'action-rename-' + $index}}" title="Rename" type="radio" ng-model="entry.action" value="rename" ng-change="checkEntryAction(entry)" ng-disabled="disabledEntries[$index]" />
             <label for="{{'action-rename-' + $index}}">Rename</label>
           </td>
           <td>
             <input placeholder="Name" ng-if="entry.action=='rename'" ng-model="entry.data.name" ng-change="nameChanged($index)" />
           </td>
           <td>
-            <input id="{{'required-' + $index}}" title="Required" type="checkbox" ng-model="entry.data.required" ng-change="checkEntryAction(entry)" />
+            <input id="{{'required-' + $index}}" title="Required" type="checkbox" ng-model="entry.data.required" ng-change="checkEntryAction(entry)" ng-disabled="disabledEntries[$index]" />
             <label for="{{'required-' + $index}}">Required</label>
           </td>
         </tr>
