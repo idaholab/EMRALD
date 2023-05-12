@@ -59,11 +59,11 @@
     "levels": [
       {
         "level": "HighlyComplex",
-        "multiplier": 50
+        "multiplier": 5
       },
       {
         "level": "ModeratelyComplex",
-        "multiplier": 20
+        "multiplier": 2
       },
       {
         "level": "Nominal",
@@ -109,7 +109,7 @@
       },
       {
         "level": "Poor",
-        "multiplier": 20
+        "multiplier": 10
       },
       {
         "level": "Nominal",
@@ -117,7 +117,7 @@
       },
       {
         "level": "Good",
-        "multiplier": 0.1
+        "multiplier": 0.5
       }
     ],
     "is_static": true,
@@ -129,11 +129,11 @@
     "levels": [
       {
         "level": "MissingOrMisleading",
-        "multiplier": 5
+        "multiplier": 50
       },
       {
         "level": "Poor",
-        "multiplier": 2
+        "multiplier": 10
       },
       {
         "level": "Nominal",
@@ -141,7 +141,7 @@
       },
       {
         "level": "Good",
-        "multiplier": 0.01
+        "multiplier": 0.5
       }
     ],
     "is_static": true,
@@ -195,11 +195,11 @@
     "levels": [
       {
         "level": "Unfit",
-        "multiplier": 5
+        "multiplier": 9999
       },
       {
         "level": "DegradedFitness",
-        "multiplier": 2
+        "multiplier": 5
       },
       {
         "level": "Nominal",
@@ -215,11 +215,11 @@
     "levels": [
       {
         "level": "Unfit",
-        "multiplier": 5
+        "multiplier": 9999
       },
       {
         "level": "DegradedFitness",
-        "multiplier": 2
+        "multiplier": 5
       },
       {
         "level": "Nominal",
@@ -235,15 +235,15 @@
     "levels": [
       {
         "level": "NotAvailable",
-        "multiplier": 100
-      },
-      {
-        "level": "Incomplete",
         "multiplier": 50
       },
       {
-        "level": "AvailableButPoor",
+        "level": "Incomplete",
         "multiplier": 20
+      },
+      {
+        "level": "AvailableButPoor",
+        "multiplier": 5
       },
       {
         "level": "Nominal",
@@ -251,7 +251,7 @@
       },
       {
         "level": "DiagnosticOrSymptomOriented",
-        "multiplier": 0.1
+        "multiplier": 1
       }
     ],
     "is_static": true,
@@ -263,15 +263,15 @@
     "levels": [
       {
         "level": "NotAvailable",
-        "multiplier": 10
+        "multiplier": 50
       },
       {
         "level": "Incomplete",
-        "multiplier": 5
+        "multiplier": 20
       },
       {
         "level": "AvailableButPoor",
-        "multiplier": 2
+        "multiplier": 5
       },
       {
         "level": "Nominal",
@@ -279,7 +279,7 @@
       },
       {
         "level": "DiagnosticOrSymptomOriented",
-        "multiplier": 0.01
+        "multiplier": 0.5
       }
     ],
     "is_static": true,
@@ -341,7 +341,7 @@
       },
       {
         "level": "Good",
-        "multiplier": 0.05
+        "multiplier": 0.5
       }
     ],
     "is_static": true,
@@ -353,7 +353,7 @@
     "levels": [
       {
         "level": "Poor",
-        "multiplier": 5
+        "multiplier": 2
       },
       {
         "level": "Nominal",
@@ -361,7 +361,7 @@
       },
       {
         "level": "Good",
-        "multiplier": 0.05
+        "multiplier": 0.8
       }
     ],
     "is_static": true,
