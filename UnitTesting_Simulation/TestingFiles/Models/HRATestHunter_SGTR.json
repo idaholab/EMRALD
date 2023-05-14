@@ -579,7 +579,7 @@
         "parameters": [
           {
             "name": "Mean",
-            "value": 4,
+            "value": 8,
             "timeRate": "trHours",
             "useVariable": false
           },
