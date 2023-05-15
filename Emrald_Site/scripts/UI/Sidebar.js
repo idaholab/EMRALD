@@ -420,39 +420,94 @@ if (typeof Navigation === 'undefined')
           buttonAll.style.backgroundColor = '#d7ebf9';
           var divAll = document.createElement('div');
           divAll.id = "Sidebar_Dynamic_All";
-          sbObj.sidebar.dynamCategories.forEach(function (cat) {
-            var h3 = document.createElement('h3');
-            switch (cat.title) {
-              case "States":
-                h3.textContent = "All " + cat.title;
-                cat.id = "StatesPanel_id";
-                break;
-              case "Actions":
-                h3.textContent = "All " + cat.title;
-                cat.id = "ActionsPanel_id";
-                break;
-              case "Events":
-                h3.textContent = "All " + cat.title;
-                cat.id = "EventsPanel_id";
-                break;
-              case "Variables":
-                h3.textContent = "All " + cat.title;
-                cat.id = "VariablesPanel_id";
-                break;
+
+          let filterH3 = document.createElement('h3');
+          filterH3.textContent = "Filters";
+          divAll.appendChild(filterH3);
+
+          let filtersDiv = document.createElement('div');
+          filtersDiv.style.padding = "0.5em";
+          let diagramTypeFilterDropdownElement = document.createElement("select");
+          let diagramFilterDropdownElement = document.createElement("select");
+          diagramFilterDropdownElement.style.display = "none";
+
+          let diagramTypes = ["", ... new Set(simApp.allDataModel.DiagramList.map((diagram) => diagram.Diagram.diagramLabel))];
+          for (let category of diagramTypes) {
+            const optionElement = document.createElement("option");
+            optionElement.text = category;
+            diagramTypeFilterDropdownElement.add(optionElement);
+          }
+
+          diagramTypeFilterDropdownElement.addEventListener("change", function() {
+            // First, clear exising options from the diagramFilter Dropdown
+            while (diagramFilterDropdownElement.options.length > 0) {
+              diagramFilterDropdownElement.remove(0);
             }
-            var cMenu = getContextMenu(cat, h3);
-            $(h3).contextmenu(cMenu);
-            divAll.appendChild(h3);
 
-            var cdiv = document.createElement('div');
-            cdiv.id = cat.id; //Assign the id from the sidebar.json "DiagramsPanel_id", "StatesPanel_id", "LogicTreesPanel_id", "ActionsPanel_id", "EventsPanel_id", "VariablesPanel_id", "ExtSimPanel_id"
+            let filterType = diagramTypeFilterDropdownElement.value;
 
-            cdiv.className = "CategorySection";
-            divAll.appendChild(cdiv);
-            sidebar.loadContent(cdiv, cat);
+            diagramFilterDropdownElement.value = "";
+            filterChanged();
 
-          }.bind(this));
-          container.appendChild(divAll);
+            if (filterType === "") {
+              diagramFilterDropdownElement.style.display = "none";
+              setupCategories(divAll, container);
+              return;
+            }
+            diagramFilterDropdownElement.style.display = "block";
+
+            let matchingDiagrams = simApp.allDataModel.DiagramList.filter(diagram => diagram.Diagram.diagramLabel === filterType);
+            let /** @type {string[]} */ diagramFilterDropdownOptions = ["", ...matchingDiagrams.map(diagram => diagram.Diagram.name)];
+
+            for (let option of diagramFilterDropdownOptions) {
+              const optionElement = document.createElement("option");
+              optionElement.text = option;
+              diagramFilterDropdownElement.add(optionElement);
+            }
+          });
+
+
+          var filterChanged = function() {
+            let filterDiagram = diagramFilterDropdownElement.value;
+
+            setupCategories(divAll, container);
+            if (filterDiagram === "") {
+              filterH3.textContent = "Filters";
+              return;
+            }
+            filterH3.textContent = "Filters (Active)";
+          }
+
+          diagramFilterDropdownElement.addEventListener("change", filterChanged);
+
+          filtersDiv.appendChild(diagramTypeFilterDropdownElement);
+          filtersDiv.appendChild(diagramFilterDropdownElement);
+          divAll.appendChild(filtersDiv);
+
+          var setupCategories = function(/** @type {HTMLDivElement} */ divAll, container) {
+            sbObj.sidebar.dynamCategories.forEach(function (/** @type {{ title: string; id: string; }} */ cat) {
+
+              cat.id = cat.title + "Panel_id";
+              let cdiv = document.getElementById(cat.id);
+              if (!cdiv) {
+                var h3 = document.createElement('h3');
+                h3.textContent = "All " + cat.title;
+
+                var cMenu = getContextMenu(cat, h3);
+                $(h3).contextmenu(cMenu);
+                divAll.appendChild(h3);
+                cdiv = document.createElement('div');
+                cdiv.id = cat.id; //Assign the id from the sidebar.json "DiagramsPanel_id", "StatesPanel_id", "LogicTreesPanel_id", "ActionsPanel_id", "EventsPanel_id", "VariablesPanel_id", "ExtSimPanel_id"
+
+                cdiv.className = "CategorySection";
+                divAll.appendChild(cdiv);
+              } else { cdiv.innerHTML = ""; }
+              sidebar.loadFilteredContent(cdiv, cat, diagramTypeFilterDropdownElement.value, diagramFilterDropdownElement.value);
+
+            }.bind(this));
+          }
+          setupCategories(divAll, container);
+            container.appendChild(divAll);
           sidebar.ApplyJqueryUi(divAll.id);
         };
 
@@ -4149,6 +4204,96 @@ if (typeof Navigation === 'undefined')
     }
 
     //------------------------------------------
+    //Assign the id from the sidebar.json "DiagramsPanel_id", "StatesPanel_id", "LogicTreesPanel_id", "ActionsPanel_id", "EventsPanel_id", "VariablesPanel_id", "ExtSimPanel_id"
+
+    Sidebar.prototype.getFilteredLookup = function (container, section, id, /** @type {string}} */ diagramType, /** @type {string}} */ diagramName) {
+      switch (section) {
+        case "Diagrams":
+          if (this.DiagramList) {
+            this.addDiagramSectionItem(container, this.DiagramList);
+          }
+          break;
+        case "Actions":
+          if (this.ActionList) {
+            if (id == "Global_ActionsPanel_id") {
+              this.ActionList.forEach(function (item) {
+                var mainItem = item.Action.mainItem;
+                if (mainItem) {
+                  item.ui_el = this.addSectionItem(container, section, item.Action.name, item.Action);
+                }
+              }.bind(this));
+            }
+            else { // It should always come here since filters are only in the "All" tab.
+              let states = this.statesReferencing(null, diagramName, 'Diagram').forEach((state) => {
+                let actions = this.actionsReferencing(null, state.name, 'State').forEach(function (item) {
+                  item.ui_el = this.addSectionItem(container, section, item.name, item);
+                }.bind(this));
+              });
+            }
+            sortDOMList(container);
+          }
+          break;
+        case "Events":
+          if (this.EventList) {
+            if (id == "Global_EventsPanel_id") {
+              this.EventList.forEach(function (item) {
+                if (item.Event.mainItem) {
+                  item.ui_el = this.addSectionItem(container, section, item.Event.name, item.Event);
+                }
+              }.bind(this));
+            }
+            else { // It should always come here since filters are only in the "All" tab.
+              this.statesReferencing(null, diagramName, 'Diagram').forEach((state) => {
+                this.eventsReferencing(null, state.name, 'State').forEach(function (item) {
+                  item.ui_el = this.addSectionItem(container, section, item.name, item);
+                }.bind(this));
+              });
+            }
+
+            sortDOMList(container);
+          }
+          break;
+        case "Logic Tree":
+          if (this.LogicNodeList) {
+            this.LogicNodeList.forEach(function (item) {
+              if (item.LogicNode.isRoot) {
+                item.ui_el = this.addSectionItem(container, section, item.LogicNode.name, item.LogicNode);
+                sortDOMList(container);
+              }
+            }.bind(this));
+          }
+          break;
+        case "External Sims":
+          if (this.ExtSimList) {
+            this.ExtSimList.forEach(function (item) {
+              item.ui_el = this.addSectionItem(container, section, item.ExtSim.name, item.ExtSim);
+              sortDOMList(container);
+            }.bind(this));
+          }
+          break;
+        case "Variables":
+          if (this.VariableList) {
+            this.VariableList.forEach(function (item) {
+              var varScope = item.Variable.varScope;
+              item.ui_el = this.addSectionItem(container, section, item.Variable.name, item.Variable);
+              sortDOMList(container);
+            }.bind(this));
+          }
+          break;
+        case "States":
+          if (this.StateList) {
+
+            this.statesReferencing(null, diagramName, 'Diagram').forEach(function (item) {
+              item.ui_el = this.addSectionItem(container, section, item.name, item);
+              sortDOMList(container);
+            }.bind(this));
+
+          }
+          break;
+      }
+    }
+
+    //------------------------------------------
     Sidebar.prototype.onLoadLocal = function (dataObject) {
 
       var stateArray = [];
@@ -4288,6 +4433,13 @@ if (typeof Navigation === 'undefined')
     //execution of it is during creation of the object.
     Sidebar.prototype.loadContent = function (container, catInfo) {
       var lookup = this.getLookup(container, catInfo.title, catInfo.id);
+    }
+
+    Sidebar.prototype.loadFilteredContent = function (container, catInfo, /** @type {string}} */ diagramType, /** @type {string}} */ diagramName) {
+      if (diagramName === "") { this.loadContent(container, catInfo); }
+      else {
+        var lookup = this.getFilteredLookup(container, catInfo.title, catInfo.id, diagramType, diagramName);
+      }
     }
 
     Sidebar.prototype.getActionVariables = function () {
