@@ -110,6 +110,11 @@ function AddChildGate(graph, cell, ftNode) {
         imgName = 'ANDGate.png';
         styleType = 'ftGate;';
         break;
+
+      case 'gtNot':
+        imgName = 'NOTGate.webp';
+        styleType = 'ftGate;';
+        break;
 			}
 			if (!ftNode.gateChildren) {
 					ftNode.gateChildren = [];

@@ -339,7 +339,7 @@ function main(container, outline) {
 														name: "gate_" + newID,
 														desc: "",
 														gateType: gateType,
-														rootName: graph.tree.LogicNode.LogicNode.name,
+														isRoot: false,
 														compChildren: [],
 														gateChildren: []
 												}
@@ -387,7 +387,6 @@ function main(container, outline) {
               (oldTarget) => oldTarget.parentNode.removeChild(oldTarget),
             );
             const dropTarget = document.createElement('div');
-            console.log(state);
             dropTarget.classList.add('drop-target');
             const cellHeight = state.cell.geometry.height;
             const cellWidth = state.cell.geometry.width;
@@ -571,6 +570,7 @@ function main(container, outline) {
 			tb.addSeparator('images/Vert.png');
 			tb.addNewDraggableItem('gtOr', 'images/OrGate.png', null, true);
 			tb.addNewDraggableItem('gtAnd', 'images/AndGate.png', null, true);
+      tb.addNewDraggableItem('gtNot', 'images/NOTGate.webp', null, true);
 			tb.addNewDraggableItem('ftBasicEvent', 'images/BE.png', null, true);
     //tb.addDraggableItem('OR State', 'images/OrGate.png', null, true, dropHandler);
     //tb.addDraggableItem('AND State', 'images/AndGate.png', null, true, dropHandler);
@@ -691,7 +691,7 @@ function getDefaultGateID(graph) {
 }
 
 function addOverlays(graph, cell, isEditable) {
-  const isRoot = graph.tree.LogicNode.LogicNode.rootName === cell.value;
+  const isRoot = graph.tree.LogicNode.LogicNode.name === cell.value;
   var overlay = new mxCellOverlay(new mxImage('images/delete.png', 16, 16), 'delete');
   overlay.cursor = 'hand';
   overlay.offset = new mxPoint(-6, 4);//(-4, 8);
@@ -760,6 +760,8 @@ function updateCell(graph, cell) {
   let imgName = 'ORGate.png';
   if (cell.children[0].value.gateType === 'gtAnd') {
     imgName = 'ANDGate.png';
+  } else if (cell.children[0].value.gateType === 'gtNot') {
+    imgName = 'NOTGate.webp';
   }
   graph.model.setStyle(cell.children[2], `ftGateShape;image=images/${imgName};`);
 }
@@ -767,10 +769,13 @@ function updateCell(graph, cell) {
 
 function BuildTreeRec(graph, parentCell, node) {
     if (node != undefined) {
+        if (node.LogicNode) {
+          node = node.LogicNode;
+        }
         if (parentCell == null)
-            var addedChild = AddChildGate(graph, parent, node.LogicNode);
+            var addedChild = AddChildGate(graph, parent, node);
         else
-            var addedChild = AddChildGate(graph, parentCell, node.LogicNode);
+            var addedChild = AddChildGate(graph, parentCell, node);
 
         //addedChild.value = node.LogicNode;
         if (node.gateChildren != undefined) {
@@ -896,57 +901,45 @@ function addNode(graph, stateCell) {
 										}
 								}
 								else if (retObj.addType == "standard") {
-										//check to make sure component not already child
-										var alreadyExist = false;
 										var vertex = null;
 										var state = graph.getView().getState(stateCell);
 										var cell = state.cell;
 										var newID = getDefaultGateID(graph);
-										for (var i = 0; i < graph.sidebar.LogicNodeList.length; i++) {
-												if (graph.sidebar.LogicNodeList[i].LogicNode.name == retObj.newName) {
-														alreadyExist = true;
-												}
-										}
-										if (!alreadyExist) {
-												graph.getModel().beginUpdate();
-												try {
-														var ftNode = new FTItem(newID, retObj.newName, retObj.newDesc, retObj.newGateType, "Gate", null, null, null);
-														ftNode.gateType = retObj.newGateType;
-														vertex = AddChildGate(graph, cell, ftNode);
-												}
-												finally {
-														graph.getModel().endUpdate();
-												}
+                    graph.getModel().beginUpdate();
+                    try {
+                        var ftNode = new FTItem(newID, retObj.newName, retObj.newDesc, retObj.newGateType, "Gate", null, null, null);
+                        ftNode.gateType = retObj.newGateType;
+                        vertex = AddChildGate(graph, cell, ftNode);
+                    }
+                    finally {
+                        graph.getModel().endUpdate();
+                    }
 
-												graph.setSelectionCell(vertex);
-												for (var i = 0; i < graph.sidebar.LogicNodeList.length; i++) {
-														if (graph.sidebar.LogicNodeList[i].LogicNode.name == cell.value) {
-																if (graph.sidebar.LogicNodeList[i].LogicNode.gateChildren.indexOf(retObj.newName) < 0) {
-                                  graph.sidebar.LogicNodeList[i].LogicNode.gateChildren.push(retObj.newName);
-                                }
-														}
-												}
+                    graph.setSelectionCell(vertex);
+                    for (var i = 0; i < graph.sidebar.LogicNodeList.length; i++) {
+                        if (graph.sidebar.LogicNodeList[i].LogicNode.name == cell.value) {
+                            if (graph.sidebar.LogicNodeList[i].LogicNode.gateChildren.indexOf(retObj.newName) < 0) {
+                              graph.sidebar.LogicNodeList[i].LogicNode.gateChildren.push(retObj.newName);
+                            }
+                        }
+                    }
 
-												var newLogicNode = {
-														LogicNode: {
-																id: newID,
-																name: retObj.newName,
-																desc: retObj.newDesc,
-																gateType: retObj.newGateType,
-																"rootName": cell.value.rootName,
-																"compChildren": [],
-																"gateChildren": []
-														}
-												};
-												graph.sidebar.LogicNodeList.push(newLogicNode);
-												graph.zoomActual();
-												graph.zoomOut();
-
-										}
-										else {
-												alert(retObj.newName + " is already added to that cell");
-										}
-										
+                    if (!retObj.useExisting) {
+                      var newLogicNode = {
+                          LogicNode: {
+                              id: newID,
+                              name: retObj.newName,
+                              desc: retObj.newDesc,
+                              gateType: retObj.newGateType,
+                              isRoot: false,
+                              "compChildren": [],
+                              "gateChildren": []
+                          }
+                      };
+                      graph.sidebar.LogicNodeList.push(newLogicNode);
+                    }
+                    graph.zoomActual();
+                    graph.zoomOut();	
 								}
 
 						}

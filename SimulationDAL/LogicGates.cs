@@ -20,12 +20,12 @@ namespace SimulationDAL
 
   public class LogicNode : BaseObjInfo
   {
-    protected LogicNode _rootParent;  //root node of this one 
+    protected bool _isTop;  //root node of this one 
     private List<EvalDiagram> _compChildren = new List<EvalDiagram>();
     private List<LogicNode> _subGates = new List<LogicNode>();
 
     public EnGateType gateType = EnGateType.gtAnd;
-    public LogicNode rootParent { get { return _rootParent; } }
+    //public bool isTop { get { return _isTop; } }
     public int val1 = 0;
     public LogicNode ChildGate(int idx) {return _subGates[idx];}
     public int childGateCnt { get { return _subGates.Count; } }
@@ -44,12 +44,22 @@ namespace SimulationDAL
       this.val1 = inVal1;
       if (inRootParent == null)
       {
-        this._rootParent = this;
+        this._isTop = true;
       }
       else
       {
-        this._rootParent = inRootParent;
+        this._isTop = false;
       }
+    }
+
+    public LogicNode(string inName, EnGateType inGType, bool isTop, int inVal1 = 0)
+    {
+      this._id = SingleNextIDs.Instance.NextID(EnIDTypes.itTreeNode);
+
+      this.name = inName;
+      this.gateType = inGType;
+      this.val1 = inVal1;
+      this._isTop = isTop;
     }
 
     public override string GetJSON(bool incBrackets, EmraldModel lists)
@@ -63,9 +73,9 @@ namespace SimulationDAL
 
       //add derived items
       retStr = retStr + "\"gateType\": \"" + this.gateType.ToString() + "\"";
-      if(this._rootParent != null)
+      if(this._isTop != null)
       {
-        retStr = retStr + "," + Environment.NewLine + "\"rootName\": \"" + this._rootParent.name + "\"";
+        retStr = retStr + "," + Environment.NewLine + "\"isTop\": \"" + _isTop.ToString() + "\"";
       }
 
 
@@ -120,7 +130,7 @@ namespace SimulationDAL
 
       //add derived items
       retStr = retStr + "\"gateType\": \"" + this.gateType.ToString() + "\"";
-      retStr = retStr + "," + Environment.NewLine + "\"rootName\": \"" + this._rootParent.name + "\"";
+      retStr = retStr + "," + Environment.NewLine + "\"isTop\": \"" + this._isTop.ToString() + "\"";
 
 
       retStr = retStr + "," + Environment.NewLine + "\"compChildren\": [";
@@ -243,12 +253,13 @@ namespace SimulationDAL
       //load the root obj info
       if (dynObj.rootName != null)
       {
-        _rootParent = lists.allLogicNodes.FindByName((string)dynObj.rootName);
-        if (_rootParent == null)
-        {
-          throw new Exception("Root node " + (string)dynObj.rootName + " not found.");
-        }
+        _isTop = this.name == (string)dynObj.rootName;
       }
+      if (dynObj.isTop != null)
+      {
+        _isTop = (bool)dynObj.isTop;
+      }
+      
 
       //load the gate children
       if (dynObj.gateChildren != null)
@@ -288,91 +299,62 @@ namespace SimulationDAL
     }
 
 
-    public bool Evaluate(MyBitArray curStates, bool success = false)
+    public int Evaluate(MyBitArray curStates, bool success)
     {
-      bool retVal;
-      int cnt = 0;
+      int retVal = 0;
+      int evalSum = 0;
+      int unknownCnt = 0;
+      //go through all the child item both components and gates
+      foreach (EvalDiagram curComp in _compChildren)
+      {
+        int evalNum = curComp.Evaluate(curStates, success);
+        if (evalNum < 0)
+          unknownCnt++;
+        else
+        {
+          if ((gateType == EnGateType.gtAnd) && (evalNum == 0)) //short curcuit AND with a 0 in it
+            return 0;
+          if ((gateType == EnGateType.gtOr) && (evalNum == 1)) //short curcuit OR with a 1 in it
+            return 1;
+          evalSum += evalNum;
+        }
+      }
+      foreach (LogicNode curNode in _subGates)
+      {
+        int evalNum = curNode.Evaluate(curStates, success);
+        if (evalNum < 0)
+          unknownCnt++;
+        else
+        {
+          if ((gateType == EnGateType.gtAnd) && (evalNum == 0)) //short curcuit AND with a 0 in it
+            return 0;
+          if ((gateType == EnGateType.gtOr) && (evalNum == 1)) //short curcuit OR with a 1 in it
+            return 1;
+          evalSum += evalNum;
+        }
+      }
+
+      if (unknownCnt == (_compChildren.Count + _subGates.Count)) //all children unknown
+        return -1;
 
       switch (gateType)
       {
         case EnGateType.gtAnd:
-        case EnGateType.gtNot:
-          retVal = true;
+          return (_compChildren.Count + _subGates.Count) == (evalSum + unknownCnt) ? 1 : 0; //if all 1's or unknown then 1. Treat unknowns as true so the are ignored
           break;
 
         case EnGateType.gtOr:
+          return evalSum > 0 ? 1 : 0; //if no 1's return false. Treat unknowns as false so they are ignored
+          break;
+
+        case EnGateType.gtNot:
+          return evalSum > 0 ? 1 : 0; //Should only be one so just return 1 if greater than 0.
+
         case EnGateType.gtNofM:
-          retVal = false;
-          break;
-
+          return evalSum > val1 ? 1 : 0;
         default:
-          retVal = false;
-          break;
+          throw new Exception("Gate not defined to evaluate");
       }
-
-
-      foreach (EvalDiagram curComp in _compChildren)
-      {
-        switch (gateType)
-        {
-          case EnGateType.gtAnd:
-            retVal = (retVal && curComp.Evaluate(curStates));
-            if (!retVal)
-              return retVal;
-            break;
-
-          case EnGateType.gtOr:
-            retVal = (retVal || curComp.Evaluate(curStates));
-            if (retVal)
-              return retVal;
-            break;
-
-          case EnGateType.gtNot:
-            return (!curComp.Evaluate(curStates));
-
-          case EnGateType.gtNofM:
-            { 
-              ++cnt;
-              if (cnt >= val1)
-              {
-                return true;
-              }
-            }
-            break;
-        }
-      }
-
-      foreach (LogicNode curNode in _subGates)
-      {
-        switch (gateType)
-        {
-          case EnGateType.gtAnd:
-            retVal = (retVal && curNode.Evaluate(curStates));
-            if (!retVal)
-              return retVal;
-            break;
-
-          case EnGateType.gtOr:
-            retVal = (retVal || curNode.Evaluate(curStates));
-            if (retVal)
-              return retVal;
-            break;
-
-          case EnGateType.gtNot:
-            return (!curNode.Evaluate(curStates));
-
-          case EnGateType.gtNofM:
-            if (curNode.Evaluate(curStates))
-            {
-              ++cnt;
-              if (cnt >= val1)
-                return true;
-            }
-            break;
-        }
-      }
-
-      return retVal;
     }
 
     public void AddGateChild(LogicNode child)
@@ -581,38 +563,6 @@ namespace SimulationDAL
       return retStr;
     }
 
-    public string GetTopsJSON(bool incBrackets, EmraldModel lists)
-    {
-      string retStr = "";
-      if (incBrackets)
-      {
-        retStr = "{";
-      }
-      retStr = retStr + "\"LogicNodeList\": [";
-
-      bool first = true;
-      foreach (LogicNode curItem in this.Values)
-      {
-        if ((curItem.rootParent == curItem) || (curItem.rootParent == null))
-        {
-          if (!first)
-            retStr = retStr + "," + Environment.NewLine;
-
-          retStr = retStr + Environment.NewLine + curItem.GetJSON(true, lists);
-          first = false;
-        }
-      }
-
-      retStr = retStr + "]";
-
-      if (incBrackets)
-      {
-        retStr = retStr + Environment.NewLine + "}";
-      }
-
-      return retStr;
-    }
-
     public void DeserializeJSON(object obj, EmraldModel lists, bool useGivenIDs)
     {
       var dynamicObj = (dynamic)obj;
@@ -650,7 +600,7 @@ namespace SimulationDAL
       }
       catch (Exception e)
       {
-        throw new Exception("On diagram named " + curName + ". " + e.Message);
+         throw new Exception("On diagram named " + curName + ". " + e.Message);
       }
     }
 

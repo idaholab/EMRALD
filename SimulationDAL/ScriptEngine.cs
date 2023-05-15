@@ -117,6 +117,10 @@ namespace ScriptEngineNS
       {
         typeStr = "List<string>";
       }
+      if (typeStr.Substring(0, 4) == "Void")
+      {
+        typeStr = "void";
+      }
       //Add using statements here
       source = "namespace UserScript\r\n{\r\nusing System;\r\n" +
                "using System.IO;\r\n" +
@@ -128,6 +132,7 @@ namespace ScriptEngineNS
               variables + "\r\npublic " + typeStr + " Eval()\r\n{\r\n";
       int realLn0 = source.Count(c => c.Equals('\n')) + 1;
       source = source + code + "\r\n\r\n}\r\n}\r\n}";
+      File.WriteAllText("WriteText" + assemblyName + ".txt", source);
 
       SyntaxTree syntaxTree = CSharpSyntaxTree.ParseText(source);
       var references = new List<MetadataReference>();
