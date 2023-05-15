@@ -495,7 +495,27 @@ export default class Renderer {
                     d.layout.y + d.layout.height / 2
                   },${d.layout.x},${d.layout.y + d.layout.height / 2}`;
                 }
-                select(this).select('path').attr('d', l.layout.path);
+                const current = select(this);
+                current.select('path').attr('d', l.layout.path);
+                const y = l.source.layout.y + l.source.layout.height / 2;
+                const y1 = l.target.layout.y + l.target.layout.height / 2;
+                const curve = new Bezier([
+                  l.source.layout.x + l.source.layout.width,
+                  y,
+                  l.source.layout.x +
+                    l.source.layout.width +
+                    options.curveWidth,
+                  y,
+                  l.target.layout.x - options.curveWidth,
+                  y1,
+                  l.target.layout.x,
+                  y1,
+                ]);
+                const lut = curve.getLUT();
+                current
+                  .select('text')
+                  .attr('x', lut[50].x)
+                  .attr('y', lut[50].y);
               });
               element.select('.distHandleLeft').attr('y', () => d.layout.y);
               element
@@ -620,6 +640,7 @@ export default class Renderer {
 
     links
       .append('text')
+      .attr('class', 'link-label')
       .attr('text-anchor', 'middle')
       .attr('dominant-baseline', 'middle')
       .style('fill', this.options.fontColor)
