@@ -1,12 +1,19 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
 /* eslint-disable import/no-extraneous-dependencies */
 const CopyPlugin = require('copy-webpack-plugin');
 const path = require('path');
 
 module.exports = {
   entry: {
-    '../EMRALD_Sim/sankey/emrald-sankey-timeline': path.resolve(__dirname, 'src', 'emrald.ts'),
-    '../Emrald_Site/sankey/emrald-sankey-timeline': path.resolve(__dirname, 'src', 'emrald.ts'),
+    '../EMRALD_Sim/sankey/emrald-sankey-timeline': path.resolve(
+      __dirname,
+      'src',
+      'emrald.ts',
+    ),
+    '../Emrald_Site/sankey/emrald-sankey-timeline': path.resolve(
+      __dirname,
+      'src',
+      'emrald.ts',
+    ),
   },
   mode: 'production',
   module: {

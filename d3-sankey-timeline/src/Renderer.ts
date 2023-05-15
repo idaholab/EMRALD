@@ -31,6 +31,8 @@ export default class Renderer {
     axisMargin: 8,
     axisTickHeight: 12,
     axisTickWidth: 3,
+    buttonRadius: 2,
+    buttonSpacing: 6,
     curveHeight: 50,
     curveWidth: 200,
     distHandleWidth: 3,
@@ -381,10 +383,9 @@ export default class Renderer {
         const fade = transition()
           .duration(options.transitionSpeed)
           .ease(easeCubicIn) as any as TransitionType;
-        select(this)
-          .selectAll('.distHandle')
-          .transition(fade)
-          .style('opacity', 1);
+        const target = select(this);
+        target.selectAll('.distHandle').transition(fade).style('opacity', 1);
+        target.selectAll('.menu-button').transition(fade).style('opacity', 1);
         let shortestPath: number[] = [];
         const paths: number[][] = _timeline.getPath(d.id);
         paths.forEach((path) => {
@@ -409,14 +410,18 @@ export default class Renderer {
           }
         });
       })
-      .on('mouseleave', () => {
+      .on('mouseleave', function () {
         const fade = transition()
-          .duration(this.options.transitionSpeed)
+          .duration(options.transitionSpeed)
           .ease(easeCubicIn) as any as TransitionType;
         selectAll('.node, .link').transition(fade).style('opacity', 1);
         selectAll('.distHandle')
           .transition(fade)
           .style('opacity', options.fadeOpacity);
+        select(this)
+          .selectAll('.menu-button')
+          .transition(fade)
+          .style('opacity', 0);
       })
       .call(
         drag<any, TimelineNode>()
@@ -456,7 +461,7 @@ export default class Renderer {
             selectAll<BaseType, TimelineNode>('.node').each(function (
               d: TimelineNode,
             ) {
-              const element = select(this);
+              const element = select<BaseType, TimelineNode>(this);
               element
                 .select('.nodeFill')
                 .attr('x', () => d.layout.x)
@@ -517,6 +522,51 @@ export default class Renderer {
                   .attr('x', lut[50].x)
                   .attr('y', lut[50].y);
               });
+              element
+                .select('.menu-button-1')
+                .attr(
+                  'cx',
+                  (d) =>
+                    d.layout.x +
+                    d.layout.width -
+                    options.axisMargin -
+                    2 * options.buttonSpacing,
+                )
+                .attr('cy', (d) => d.layout.y + options.axisMargin);
+              element
+                .select('.menu-button-2')
+                .attr(
+                  'cx',
+                  (d) =>
+                    d.layout.x +
+                    d.layout.width -
+                    options.axisMargin -
+                    options.buttonSpacing,
+                )
+                .attr('cy', (d) => d.layout.y + options.axisMargin);
+              element
+                .select('.menu-button-3')
+                .attr(
+                  'cx',
+                  (d) => d.layout.x + d.layout.width - options.axisMargin,
+                )
+                .attr('cy', (d) => d.layout.y + options.axisMargin);
+              element
+                .select('.menu-button-container')
+                .attr(
+                  'x',
+                  (d: TimelineNode) =>
+                    d.layout.x +
+                    d.layout.width -
+                    options.axisMargin -
+                    2 * options.buttonSpacing -
+                    2 * options.buttonRadius,
+                )
+                .attr(
+                  'y',
+                  (d: TimelineNode) =>
+                    d.layout.y + options.axisMargin - options.buttonRadius,
+                );
               element.select('.distHandleLeft').attr('y', () => d.layout.y);
               element
                 .select('.distHandleCenter')
@@ -543,6 +593,74 @@ export default class Renderer {
       .attr('height', (d: TimelineNode) => d.layout.height)
       .attr('width', (d: TimelineNode) => d.layout.width);
     nodes.append('title').text((d: TimelineNode) => this.options.nodeTitle(d));
+
+    // Menu buttons
+    nodes
+      .append('circle')
+      .attr('class', 'menu-button menu-button-1')
+      .style('opacity', 0)
+      .style('fill', this.options.fontColor)
+      .attr(
+        'cx',
+        (d: TimelineNode) =>
+          d.layout.x +
+          d.layout.width -
+          this.options.axisMargin -
+          2 * this.options.buttonSpacing,
+      )
+      .attr('cy', (d: TimelineNode) => d.layout.y + this.options.axisMargin)
+      .attr('r', this.options.buttonRadius);
+    nodes
+      .append('circle')
+      .attr('class', 'menu-button menu-button-2')
+      .style('opacity', 0)
+      .style('fill', this.options.fontColor)
+      .attr(
+        'cx',
+        (d: TimelineNode) =>
+          d.layout.x +
+          d.layout.width -
+          this.options.axisMargin -
+          this.options.buttonSpacing,
+      )
+      .attr('cy', (d: TimelineNode) => d.layout.y + this.options.axisMargin)
+      .attr('r', this.options.buttonRadius);
+    nodes
+      .append('circle')
+      .attr('class', 'menu-button menu-button-3')
+      .style('opacity', 0)
+      .style('fill', this.options.fontColor)
+      .attr(
+        'cx',
+        (d: TimelineNode) =>
+          d.layout.x + d.layout.width - this.options.axisMargin,
+      )
+      .attr('cy', (d: TimelineNode) => d.layout.y + this.options.axisMargin)
+      .attr('r', this.options.buttonRadius);
+    nodes
+      .append('rect')
+      .attr('class', 'menu-button-container')
+      .style('cursor', 'pointer')
+      .style('fill', 'rgba(0,0,0,0)')
+      .attr(
+        'x',
+        (d: TimelineNode) =>
+          d.layout.x +
+          d.layout.width -
+          this.options.axisMargin -
+          2 * this.options.buttonSpacing -
+          2 * this.options.buttonRadius,
+      )
+      .attr(
+        'y',
+        (d: TimelineNode) =>
+          d.layout.y + this.options.axisMargin - this.options.buttonRadius,
+      )
+      .attr('height', 2 * this.options.buttonRadius)
+      .attr(
+        'width',
+        this.options.buttonRadius * 6 + this.options.axisMargin * 2,
+      );
 
     if (this.options.layout === 'timeline') {
       const handleColor = 'rgba(0,0,0)';
