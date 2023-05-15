@@ -17,6 +17,8 @@ export interface NodeLayout extends Coordinate {
   column: number;
   distribution?: Coordinate[];
   height: number;
+  menuX: number[];
+  menuY: number;
   row: number;
   width: number;
 }

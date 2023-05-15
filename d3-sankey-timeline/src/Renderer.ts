@@ -22,8 +22,6 @@ export default class Renderer {
     nodes: [],
   };
 
-  private maxRow = 0;
-
   public options = {
     axisColor: 'rgba(0,0,0,0.25)',
     axisFontSize: 8,
@@ -237,8 +235,23 @@ export default class Renderer {
     });
     this.calculateLinkPaths();
     this.calculateDistributionLayout();
-    this.maxRow = maxRow;
+    this.calculateMenuLayouts();
     return this.graph;
+  }
+
+  /**
+   * Assigns the positions for the menu button circles.
+   */
+  private calculateMenuLayouts() {
+    this.graph.nodes.forEach((d, i) => {
+      this.graph.nodes[i].layout.menuY = d.layout.y + this.options.axisMargin;
+      const base = d.layout.x + d.layout.width - this.options.axisMargin;
+      this.graph.nodes[i].layout.menuX = [
+        base - 2 * this.options.buttonSpacing,
+        base - this.options.buttonSpacing,
+        base,
+      ];
+    });
   }
 
   /**
@@ -257,6 +270,8 @@ export default class Renderer {
         color: '',
         column: -1,
         height,
+        menuX: [],
+        menuY: 0,
         row: -1,
         width,
         x,
@@ -369,6 +384,7 @@ export default class Renderer {
     type TransitionType = Transition<BaseType, null, null, undefined>;
     const { options } = this;
     const _timeline = this.timeline;
+    const renderer = this;
     const nodes = svg
       .append('g')
       .selectAll('g')
@@ -467,10 +483,6 @@ export default class Renderer {
                 .attr('x', () => d.layout.x)
                 .attr('y', () => d.layout.y);
               element
-                .select('.labelBox')
-                .attr('x', () => d.layout.x)
-                .attr('y', () => d.layout.y);
-              element
                 .select('text')
                 .attr('x', () => d.layout.x + d.layout.width / 2)
                 .attr('y', () => d.layout.y + d.layout.height / 2);
@@ -502,71 +514,14 @@ export default class Renderer {
                 }
                 const current = select(this);
                 current.select('path').attr('d', l.layout.path);
-                const y = l.source.layout.y + l.source.layout.height / 2;
-                const y1 = l.target.layout.y + l.target.layout.height / 2;
-                const curve = new Bezier([
-                  l.source.layout.x + l.source.layout.width,
-                  y,
-                  l.source.layout.x +
-                    l.source.layout.width +
-                    options.curveWidth,
-                  y,
-                  l.target.layout.x - options.curveWidth,
-                  y1,
-                  l.target.layout.x,
-                  y1,
-                ]);
-                const lut = curve.getLUT();
+                const midpoint = renderer.getCurveMidpoint(l);
                 current
                   .select('text')
-                  .attr('x', lut[50].x)
-                  .attr('y', lut[50].y);
+                  .attr('x', midpoint.x)
+                  .attr('y', midpoint.y);
               });
-              element
-                .select('.menu-button-1')
-                .attr(
-                  'cx',
-                  (d) =>
-                    d.layout.x +
-                    d.layout.width -
-                    options.axisMargin -
-                    2 * options.buttonSpacing,
-                )
-                .attr('cy', (d) => d.layout.y + options.axisMargin);
-              element
-                .select('.menu-button-2')
-                .attr(
-                  'cx',
-                  (d) =>
-                    d.layout.x +
-                    d.layout.width -
-                    options.axisMargin -
-                    options.buttonSpacing,
-                )
-                .attr('cy', (d) => d.layout.y + options.axisMargin);
-              element
-                .select('.menu-button-3')
-                .attr(
-                  'cx',
-                  (d) => d.layout.x + d.layout.width - options.axisMargin,
-                )
-                .attr('cy', (d) => d.layout.y + options.axisMargin);
-              element
-                .select('.menu-button-container')
-                .attr(
-                  'x',
-                  (d: TimelineNode) =>
-                    d.layout.x +
-                    d.layout.width -
-                    options.axisMargin -
-                    2 * options.buttonSpacing -
-                    2 * options.buttonRadius,
-                )
-                .attr(
-                  'y',
-                  (d: TimelineNode) =>
-                    d.layout.y + options.axisMargin - options.buttonRadius,
-                );
+              renderer.calculateMenuLayouts();
+              renderer.positionMenuNodes();
               element.select('.distHandleLeft').attr('y', () => d.layout.y);
               element
                 .select('.distHandleCenter')
@@ -595,72 +550,25 @@ export default class Renderer {
     nodes.append('title').text((d: TimelineNode) => this.options.nodeTitle(d));
 
     // Menu buttons
-    nodes
-      .append('circle')
-      .attr('class', 'menu-button menu-button-1')
-      .style('opacity', 0)
-      .style('fill', this.options.fontColor)
-      .attr(
-        'cx',
-        (d: TimelineNode) =>
-          d.layout.x +
-          d.layout.width -
-          this.options.axisMargin -
-          2 * this.options.buttonSpacing,
-      )
-      .attr('cy', (d: TimelineNode) => d.layout.y + this.options.axisMargin)
-      .attr('r', this.options.buttonRadius);
-    nodes
-      .append('circle')
-      .attr('class', 'menu-button menu-button-2')
-      .style('opacity', 0)
-      .style('fill', this.options.fontColor)
-      .attr(
-        'cx',
-        (d: TimelineNode) =>
-          d.layout.x +
-          d.layout.width -
-          this.options.axisMargin -
-          this.options.buttonSpacing,
-      )
-      .attr('cy', (d: TimelineNode) => d.layout.y + this.options.axisMargin)
-      .attr('r', this.options.buttonRadius);
-    nodes
-      .append('circle')
-      .attr('class', 'menu-button menu-button-3')
-      .style('opacity', 0)
-      .style('fill', this.options.fontColor)
-      .attr(
-        'cx',
-        (d: TimelineNode) =>
-          d.layout.x + d.layout.width - this.options.axisMargin,
-      )
-      .attr('cy', (d: TimelineNode) => d.layout.y + this.options.axisMargin)
-      .attr('r', this.options.buttonRadius);
+    for (let i = 0; i < 3; i += 1) {
+      nodes
+        .append('circle')
+        .attr('class', `menu-button menu-button-${i + 1}`)
+        .style('opacity', 0)
+        .style('fill', this.options.fontColor)
+        .attr('r', this.options.buttonRadius);
+    }
     nodes
       .append('rect')
       .attr('class', 'menu-button-container')
       .style('cursor', 'pointer')
       .style('fill', 'rgba(0,0,0,0)')
-      .attr(
-        'x',
-        (d: TimelineNode) =>
-          d.layout.x +
-          d.layout.width -
-          this.options.axisMargin -
-          2 * this.options.buttonSpacing -
-          2 * this.options.buttonRadius,
-      )
-      .attr(
-        'y',
-        (d: TimelineNode) =>
-          d.layout.y + this.options.axisMargin - this.options.buttonRadius,
-      )
       .attr('height', 2 * this.options.buttonRadius)
       .attr(
         'width',
         this.options.buttonRadius * 6 + this.options.axisMargin * 2,
       );
+    this.positionMenuNodes();
 
     if (this.options.layout === 'timeline') {
       const handleColor = 'rgba(0,0,0)';
@@ -764,40 +672,30 @@ export default class Renderer {
       .style('fill', this.options.fontColor)
       .style('font-size', `${this.options.fontSize}px`)
       .text((d: TimelineLink) => d.data.count)
-      .attr('x', (link: TimelineLink) => {
-        const y = link.source.layout.y + link.source.layout.height / 2;
-        const y1 = link.target.layout.y + link.target.layout.height / 2;
-        const curve = new Bezier([
-          link.source.layout.x + link.source.layout.width,
-          y,
-          link.source.layout.x +
-            link.source.layout.width +
-            this.options.curveWidth,
-          y,
-          link.target.layout.x - this.options.curveWidth,
-          y1,
-          link.target.layout.x,
-          y1,
-        ]);
-        return curve.getLUT()[50].x;
-      })
-      .attr('y', (link: TimelineLink) => {
-        const y = link.source.layout.y + link.source.layout.height / 2;
-        const y1 = link.target.layout.y + link.target.layout.height / 2;
-        const curve = new Bezier([
-          link.source.layout.x + link.source.layout.width,
-          y,
-          link.source.layout.x +
-            link.source.layout.width +
-            this.options.curveWidth,
-          y,
-          link.target.layout.x - this.options.curveWidth,
-          y1,
-          link.target.layout.x,
-          y1,
-        ]);
-        return curve.getLUT()[50].y;
-      });
+      .attr('x', (link: TimelineLink) => this.getCurveMidpoint(link).x)
+      .attr('y', (link: TimelineLink) => this.getCurveMidpoint(link).y);
+  }
+
+  /**
+   * Calculates the midpoint of a link's bezier curve.
+   *
+   * @param link - The link to calculate for.
+   * @returns The x and y coordinates of the midpoint.
+   */
+  private getCurveMidpoint(link: TimelineLink) {
+    const y = link.source.layout.y + link.source.layout.height / 2;
+    const y1 = link.target.layout.y + link.target.layout.height / 2;
+    const curve = new Bezier([
+      link.source.layout.x + link.source.layout.width,
+      y,
+      link.source.layout.x + link.source.layout.width + this.options.curveWidth,
+      y,
+      link.target.layout.x - this.options.curveWidth,
+      y1,
+      link.target.layout.x,
+      y1,
+    ]);
+    return curve.getLUT()[50];
   }
 
   /**
@@ -817,5 +715,25 @@ export default class Renderer {
           (this.timeline.maxTime + shift - (this.timeline.minTime + shift))) +
       this.range[0]
     );
+  }
+
+  /**
+   * Repositions the menu nodes.
+   */
+  private positionMenuNodes() {
+    for (let i = 0; i < 3; i += 1) {
+      selectAll<BaseType, TimelineNode>(`.menu-button-${i + 1}`)
+        .attr('cx', (d) => d.layout.menuX[i])
+        .attr('cy', (d) => d.layout.menuY);
+    }
+    selectAll<BaseType, TimelineNode>('.menu-button-container')
+      .attr(
+        'x',
+        (d: TimelineNode) => d.layout.menuX[0] - 2 * this.options.buttonRadius,
+      )
+      .attr(
+        'y',
+        (d: TimelineNode) => d.layout.menuY - this.options.buttonRadius,
+      );
   }
 }
