@@ -85,10 +85,11 @@ export default class SankeyTimeline {
    *
    * @param label - The label for the node.
    * @param times - Node timing data (either start + end time or median + std deviation).
+   * @param color - The color of the node, if specified.
    * @returns The created TimelineNode object.
    */
-  public createNode(label: string, times: NodeTimes): TimelineNode {
-    const node = new TimelineNode(this, this.nextNodeId, label, times);
+  public createNode(label: string, times: NodeTimes, color?: string): TimelineNode {
+    const node = new TimelineNode(this, this.nextNodeId, label, times, color);
     this.nodes[this.nextNodeId] = node;
     this.addKeyTimes(...getKeyTimes(times));
     this.nextNodeId += 1;
@@ -180,6 +181,7 @@ export default class SankeyTimeline {
    * @returns The graph object.
    */
   public get graph(): TimelineGraph {
+    console.log(this.nodes);
     return {
       links: Object.values(this.links),
       nodes: Object.values(this.nodes).sort(
@@ -240,6 +242,16 @@ export default class SankeyTimeline {
       return this.keyTimes[0];
     }
     return 0;
+  }
+
+  /**
+   * Sets the display color of a node.
+   *
+   * @param targetNode - The node to set the color of.
+   * @param color - The color to set.
+   */
+  public setNodeColor(targetNode: number, color: string) {
+    this.nodes[targetNode].setColor(color);
   }
 
   /**

@@ -51,6 +51,7 @@ export default class Renderer {
     maxNodeHeight: 100,
     meanBarColor: 'rgba(0,0,0,0.25)',
     meanBarWidth: 3,
+    menuWidth: 500,
     nodeTitle: (d: TimelineNode): string => d.label,
     startColor: '#9C27B0',
     ticks: 25,
@@ -205,10 +206,14 @@ export default class Renderer {
     });
     let currentColor = 0;
     this.graph.nodes.forEach((node) => {
-      node.setColor(colors[currentColor]);
-      currentColor += 1;
-      if (currentColor >= colors.length) {
-        currentColor = 0;
+      if (typeof node.color === 'string') {
+        node.setColor(node.color);
+      } else {
+        node.setColor(colors[currentColor]);
+        currentColor += 1;
+        if (currentColor >= colors.length) {
+          currentColor = 0;
+        }
       }
       if (this.options.layout === 'default') {
         if (node.persist) {
@@ -267,7 +272,7 @@ export default class Renderer {
       }
       this.graph.nodes[n].layout = {
         baseRow: 0,
-        color: '',
+        color: node.color || '',
         column: -1,
         height,
         menuX: [],
@@ -567,7 +572,10 @@ export default class Renderer {
       .attr(
         'width',
         this.options.buttonRadius * 6 + this.options.axisMargin * 2,
-      );
+      )
+      .on('click', (event: PointerEvent, d: TimelineNode) => {
+        (window as any).showNodeMenu(d);
+      });
     this.positionMenuNodes();
 
     if (this.options.layout === 'timeline') {
@@ -735,5 +743,19 @@ export default class Renderer {
         'y',
         (d: TimelineNode) => d.layout.menuY - this.options.buttonRadius,
       );
+  }
+
+  /**
+   * Sets the display color of a node.
+   *
+   * @param targetNode - The node to set the color of.
+   * @param color - The color to set.
+   */
+  public setNodeColor(targetNode: number, color: string) {
+    this.timeline.setNodeColor(targetNode, color);
+    selectAll<BaseType, TimelineNode>('.nodeFill').attr(
+      'fill',
+      (d) => d.layout.color,
+    );
   }
 }

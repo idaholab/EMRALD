@@ -1,4 +1,6 @@
 import { select, selectAll } from 'd3-selection';
+import '../style.css';
+import colors from './colors';
 import type TimelineNode from './TimelineNode';
 import * as sankeyTimeline from './index';
 import TimelineLink from './TimelineLink';
@@ -36,6 +38,7 @@ type Node = {
     x: number[];
     s: number[];
   };
+  color?: string;
 };
 
 type Link = {
@@ -53,6 +56,7 @@ type TimelineOptions = {
     paths: Node[];
   }[];
   options?: {
+    customColors: string[];
     fontSize: number;
     maxNodeHeight: number;
     maxLinkWidth: number;
@@ -78,6 +82,7 @@ export default function main() {
   let timeline = new sankeyTimeline.SankeyTimeline();
   const data: TimelineOptions = (window as any).data;
   const keyStateOptions = document.getElementById('keyStateOptions');
+  let customColors: string[] = [];
   /**
    * Preprocesses path results for the selected key states.
    *
@@ -166,6 +171,7 @@ export default function main() {
   renderer.options.dynamicNodeHeight = true;
   renderer.options.layout = 'default';
   if (data.options) {
+    customColors = data.options.customColors;
     renderer.options.fontSize = data.options.fontSize;
     renderer.options.maxNodeHeight = data.options.maxNodeHeight;
     renderer.options.maxLinkWidth = data.options.maxLinkWidth;
@@ -288,12 +294,16 @@ export default function main() {
       if (start < 0) {
         start = 0;
       }
-      const timelineNode = timeline.createNode(node.name, {
-        endTime: combinedMean(node) + 2500,
-        meanTime: combinedMean(node),
-        startTime: start,
-        stdDeviation: combinedStd(node),
-      });
+      const timelineNode = timeline.createNode(
+        node.name,
+        {
+          endTime: combinedMean(node) + 2500,
+          meanTime: combinedMean(node),
+          startTime: start,
+          stdDeviation: combinedStd(node),
+        },
+        node.color,
+      );
       timelineNode.data = node;
       if (node.layout) {
         timelineNode.persist = node.layout;
@@ -364,6 +374,7 @@ export default function main() {
       });
     });
     pathResults.options = {
+      customColors,
       fontSize: renderer.options.fontSize,
       maxNodeHeight: renderer.options.maxNodeHeight,
       maxLinkWidth: renderer.options.maxLinkWidth,
@@ -377,6 +388,65 @@ export default function main() {
     link.click();
     URL.revokeObjectURL(link.href);
   };
+
+  /**
+   * Helper function to select an element by ID with correct typing.
+   * @param id - The ID of the element to get.
+   * @returns The element, cast as an HTMLElement.
+   */
+  function $<T extends HTMLElement>(id: string) {
+    return document.getElementById(id) as T;
+  }
+
+  /**
+   * Helper function to populate the color pickers.
+   *
+   * @param parent - The node to creat the options in.
+   * @param colors - The colors to create options for.
+   * @param targetNode - The node to update when a color is picked.
+   */
+  function createColorOptions(
+    parent: HTMLDivElement,
+    colors: string[],
+    targetNode: TimelineNode,
+  ) {
+    parent.innerHTML = '';
+    colors.forEach((color) => {
+      const option = document.createElement('div');
+      option.classList.add('color-option');
+      option.style.backgroundColor = color;
+      option.setAttribute('title', color);
+      option.addEventListener('click', () => {
+        renderer.setNodeColor(targetNode.id, color);
+      });
+      parent.appendChild(option);
+    });
+  }
+
+  const colorInput = $<HTMLInputElement>('color-custom-input');
+
+  (window as any).showNodeMenu = (targetNode: TimelineNode) => {
+    createColorOptions($('color-options'), colors, targetNode);
+    createColorOptions($('color-custom-options'), customColors, targetNode);
+    $('node-menu-container').style.display = 'block';
+    $('node-menu-header').innerText = `Edit Properties of ${targetNode.label}`;
+    $('set-custom-color').onclick = () => {
+      const color = colorInput.value;
+      renderer.setNodeColor(targetNode.id, color);
+      if (customColors.indexOf(color) < 0) {
+        customColors.push(color);
+      }
+    };
+  };
+
+  colorInput.addEventListener('keyup', () => {
+    colorInput.style.color = colorInput.value;
+  });
+
+  $('close-menu').addEventListener('click', () => {
+    reRender();
+    $('node-menu-container').style.display = 'none';
+  });
 
   window.addEventListener('resize', () => {
     renderer.options.width = window.innerWidth;

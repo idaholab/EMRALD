@@ -5,25 +5,6 @@
         <meta name="viewport" content="width=device-width" />
         <title>D3 Sankey Timeline</title>
         <link href="https://fonts.googleapis.com/css2?family=Roboto" rel="stylesheet">
-        <style>
-            body {
-                margin: 0;
-                height: 100%;
-                width: 100%;
-                position: absolute;
-                font-family: 'Roboto', sans-serif;
-                background: white;
-            }
-
-            #chart {
-                display: block;
-            }
-
-            #keyStateOptions {
-                bottom: 0;
-                position: fixed;
-            }
-        </style>
     </head>
     <body>
         <input id="timelineToggle" type="checkbox" />
@@ -35,6 +16,21 @@
         <button id="save">Save</button>
         <svg id="chart"></svg>
         <div id="keyStateOptions"></div>
+        <div id="node-menu-container">
+            <div id="node-menu">
+                <h3 id="node-menu-header">Edit Node Properties</h3>
+                Choose a color:
+                <div id="color-options"></div>
+                <div id="color-custom-options"></div>
+                <div class="input-group">
+                    <label for="color-custom-input">Or enter a custom color:</label>
+                    <input id="color-custom-input" />
+                    <button id="set-custom-color">Set Color</button>
+                </div>
+                <br />
+                <button id="close-menu">Close</button>
+            </div>
+        </div>
         <script src="./data.js"></script>
         <script src="./emrald-sankey-timeline.js"></script>
         <script>
