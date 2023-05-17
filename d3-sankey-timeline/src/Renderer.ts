@@ -731,18 +731,46 @@ export default class Renderer {
   private positionMenuNodes() {
     for (let i = 0; i < 3; i += 1) {
       selectAll<BaseType, TimelineNode>(`.menu-button-${i + 1}`)
-        .attr('cx', (d) => d.layout.menuX[i])
-        .attr('cy', (d) => d.layout.menuY);
+        .attr('cx', (d) => {
+          if (d.textHeight >= d.layout.height) {
+            return d.layout.menuX[i] + this.options.axisMargin;
+          }
+          return d.layout.menuX[i];
+        })
+        .attr('cy', (d) => {
+          if (d.textHeight >= d.layout.height) {
+            return (
+              d.layout.y +
+              d.layout.height / 2 -
+              d.textHeight / 2 -
+              this.options.buttonRadius
+            );
+          }
+          return d.layout.menuY;
+        })
+        .style('fill', (d) => {
+          if (d.textHeight >= d.layout.height) {
+            return 'black';
+          }
+          return this.options.fontColor;
+        });
     }
     selectAll<BaseType, TimelineNode>('.menu-button-container')
       .attr(
         'x',
         (d: TimelineNode) => d.layout.menuX[0] - 2 * this.options.buttonRadius,
       )
-      .attr(
-        'y',
-        (d: TimelineNode) => d.layout.menuY - this.options.buttonRadius,
-      );
+      .attr('y', (d: TimelineNode) => {
+        if (d.textHeight >= d.layout.height) {
+          return (
+            d.layout.y +
+            d.layout.height / 2 -
+            d.textHeight / 2 -
+            2 * this.options.buttonRadius
+          );
+        }
+        return d.layout.menuY - this.options.buttonRadius;
+      });
   }
 
   /**
