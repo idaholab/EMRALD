@@ -367,9 +367,9 @@ export default function main() {
     const pathResults = data;
     pathResults.keyStates.forEach((path, k) => {
       path.paths.forEach((state, s) => {
-        pathResults.keyStates[k].paths[s].layout = timeline.getNodesByLabel(
-          state.name,
-        )[0].persist;
+        const n = timeline.getNodesByLabel(state.name)[0];
+        pathResults.keyStates[k].paths[s].layout = n.persist;
+        pathResults.keyStates[k].paths[s].color = n.color;
         delete pathResults.keyStates[k].paths[s].timelineNode;
       });
     });
@@ -447,6 +447,53 @@ export default function main() {
     reRender();
     $('node-menu-container').style.display = 'none';
   });
+
+  /**
+   * Enables dragging an element.
+   * Adapted from https://www.w3schools.com/howto/howto_js_draggable.asp.
+   *
+   * @param elmnt - The element to drag.
+   */
+  function dragElement(elmnt: HTMLDivElement) {
+    var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+    if ($(elmnt.id + "-handle")) {
+      // if present, the header is where you move the DIV from:
+      $(elmnt.id + "-handle").onmousedown = dragMouseDown;
+    } else {
+      // otherwise, move the DIV from anywhere inside the DIV:
+      elmnt.onmousedown = dragMouseDown;
+    }
+  
+    function dragMouseDown(e: MouseEvent) {
+      e = e || window.event;
+      e.preventDefault();
+      // get the mouse cursor position at startup:
+      pos3 = e.clientX;
+      pos4 = e.clientY;
+      document.onmouseup = closeDragElement;
+      // call a function whenever the cursor moves:
+      document.onmousemove = elementDrag;
+    }
+  
+    function elementDrag(e: MouseEvent) {
+      e = e || window.event;
+      e.preventDefault();
+      // calculate the new cursor position:
+      pos1 = pos3 - e.clientX;
+      pos2 = pos4 - e.clientY;
+      pos3 = e.clientX;
+      pos4 = e.clientY;
+      elmnt.style.top = `${e.clientY}px`;
+      elmnt.style.left = `${e.clientX}px`;
+    }
+  
+    function closeDragElement() {
+      // stop moving when mouse button is released:
+      document.onmouseup = null;
+      document.onmousemove = null;
+    }
+  }
+  dragElement($("node-menu"));
 
   window.addEventListener('resize', () => {
     renderer.options.width = window.innerWidth;
