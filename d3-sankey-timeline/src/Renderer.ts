@@ -71,45 +71,33 @@ export default class Renderer {
   }
 
   /**
+   * Calculates a bezier curve for the given link.
+   * @param link - The link to calculate for.
+   * @returns The bezier curve.
+   */
+  private calculateCurve(link: TimelineLink) {
+    const y = link.source.layout.y + link.source.layout.height / 2;
+    const x = link.source.layout.x + link.source.layout.width;
+    const y1 = link.target.layout.y + link.target.layout.height / 2;
+    return [
+      [x, y],
+      [x + this.options.curveWidth, y],
+      [link.target.layout.x - this.options.curveWidth, y1],
+      [link.target.layout.x, y1],
+    ];
+  }
+
+  /**
    * Calculates timeline link paths based on node's X and Y coordinates.
    */
   private calculateLinkPaths(): void {
     this.graph.links.forEach((link, l) => {
-      const y = link.source.layout.y + link.source.layout.height / 2;
-      const y1 = link.target.layout.y + link.target.layout.height / 2;
-      const curve = [
-        [link.source.layout.x + link.source.layout.width, y],
-        [
-          link.source.layout.x +
-            link.source.layout.width +
-            this.options.curveWidth,
-          y,
-        ],
-        [link.target.layout.x - this.options.curveWidth, y1],
-        [link.target.layout.x, y1],
-      ];
-      let path;
-      if (link.isSelfLinking) {
-        path = `M${link.source.layout.x + link.source.layout.width - 5},${y}C${
-          link.source.layout.x +
-          link.source.layout.width +
-          this.options.curveWidth
-        },${y - this.options.curveHeight},${
-          link.target.layout.x - this.options.curveWidth
-        },${y1 - this.options.curveHeight},${link.target.layout.x + 5},${y1}`;
-      } else {
-        // TODO: Have curveHeight option effect non-circular curve paths
-        // TODO: If the curve width is larger than the nodes it connects to,
-        // adjust the curve to be the size of the node at the connection point
-        path = `M${curve[0][0]},${curve[0][1]}C${curve[1][0]},${curve[1][1]},${curve[2][0]},${curve[2][1]},${curve[3][0]},${curve[3][1]}`;
-      }
       let width = this.options.maxLinkWidth;
       if (this.timeline.maxFlow !== 0 && this.options.dynamicLinkWidth) {
         width *= link.flow / this.timeline.maxFlow;
       }
       this.graph.links[l].layout = {
-        curve,
-        path,
+        path: this.getCurvePath(link),
         width,
       };
       return l;
@@ -503,20 +491,7 @@ export default class Renderer {
                   () => d.layout.y + d.layout.height / 2 - d.textHeight / 2,
                 );
               selectAll<BaseType, TimelineLink>('.link').each(function (l) {
-                const path = l.layout.path.substring(1).split(',');
-                if (l.source.id === d.id) {
-                  l.layout.path = `M${d.layout.x + d.layout.width},${
-                    d.layout.y + d.layout.height / 2
-                  }C${d.layout.x + d.layout.width + options.curveWidth},${
-                    d.layout.y + d.layout.height / 2
-                  },${path[3]},${path[4]},${path[5]},${path[6]}`;
-                } else if (l.target.id === d.id) {
-                  l.layout.path = `M${path[0]},${path[1].split('C')[0]}C${
-                    path[1].split('C')[1]
-                  },${path[2]},${d.layout.x - options.curveWidth},${
-                    d.layout.y + d.layout.height / 2
-                  },${d.layout.x},${d.layout.y + d.layout.height / 2}`;
-                }
+                l.layout.path = renderer.getCurvePath(l);
                 const current = select(this);
                 current.select('path').attr('d', l.layout.path);
                 const midpoint = renderer.getCurveMidpoint(l);
@@ -685,15 +660,14 @@ export default class Renderer {
   }
 
   /**
-   * Calculates the midpoint of a link's bezier curve.
-   *
+   * Calculates the LUT of a bezier curve.
    * @param link - The link to calculate for.
-   * @returns The x and y coordinates of the midpoint.
+   * @returns 100 points along the curve.
    */
-  private getCurveMidpoint(link: TimelineLink) {
+  private getCurveLUT(link: TimelineLink) {
     const y = link.source.layout.y + link.source.layout.height / 2;
     const y1 = link.target.layout.y + link.target.layout.height / 2;
-    const curve = new Bezier([
+    return new Bezier([
       link.source.layout.x + link.source.layout.width,
       y,
       link.source.layout.x + link.source.layout.width + this.options.curveWidth,
@@ -702,8 +676,58 @@ export default class Renderer {
       y1,
       link.target.layout.x,
       y1,
-    ]);
-    return curve.getLUT()[50];
+    ]).getLUT();
+  }
+
+  /**
+   * Calculates the midpoint of a link's bezier curve.
+   *
+   * @param link - The link to calculate for.
+   * @returns The x and y coordinates of the midpoint.
+   */
+  private getCurveMidpoint(link: TimelineLink) {
+    return this.getCurveLUT(link)[50];
+  }
+
+  /**
+   * Gets the minimum and maximum x coordinates of points of the curve.
+   * @param link - The link to calculate the curve for.
+   * @returns The [minimum, maximum] x coordinates.
+   */
+  private getCurveExtrema(link: TimelineLink) {
+    const curve = this.getCurveLUT(link);
+    let min = Infinity;
+    let max = -Infinity;
+    curve.forEach((point) => {
+      if (point.x > max) {
+        max = point.x;
+      }
+      if (point.x < min) {
+        min = point.x;
+      }
+    });
+    return [min, max];
+  }
+
+  /**
+   * Calcualtes the SVG path string for a curve.
+   * @param link - The link to calculate for.
+   * @returns The path string.
+   */
+  private getCurvePath(link: TimelineLink) {
+    const curve = this.calculateCurve(link);
+    // TODO: Have curveHeight option effect non-circular curve paths
+    // TODO: If the curve width is larger than the nodes it connects to,
+    // adjust the curve to be the size of the node at the connection point
+    let path = `M${curve[0][0]},${curve[0][1]}C${curve[1][0]},${curve[1][1]},${curve[2][0]},${curve[2][1]},${curve[3][0]},${curve[3][1]}`;
+    if (link.isSelfLinking) {
+      path = `M${curve[0][0] - 5},${curve[0][1]}C${curve[1][0]},${
+        curve[1][1] - this.options.curveHeight
+      },${curve[2][0]},${curve[2][1] - this.options.curveHeight},${
+        curve[3][0] + 5
+      },${curve[3][1]}`;
+    }
+    return path;
   }
 
   /**

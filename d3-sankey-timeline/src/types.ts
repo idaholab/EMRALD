@@ -24,7 +24,6 @@ export interface NodeLayout extends Coordinate {
 }
 
 export interface LinkLayout {
-  curve: number[][];
   path: string;
   width: number;
 }
