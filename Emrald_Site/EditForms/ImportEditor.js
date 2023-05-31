@@ -35,6 +35,7 @@
  * @property {(index: number) => void} nameChanged - Handles manually changing names.
  * @property {(state: boolean) => void} toggleLocks - Toggles all locks on/off.
  * @property {(state: string) => void} toggleAction - Sets all unlocked entries's actions.
+ * @property {() => void} lockRequiredEntries - Sets all required entries to locked with the ignore Action (for importing templates that require items to already exist in the model).
  */
 
 /**
@@ -112,6 +113,7 @@ window.cast(window, w).OnLoad = (dataObj) => {
         scope.entries[i].isLocked = true;
       }
     });
+    scope.lockRequiredEntries();
   });
 };
 
@@ -206,17 +208,28 @@ const importEditorController = ($scope) => {
 
   $scope.toggleLocks = (state) => {
     $scope.entries.forEach((entry, i) => {
-      $scope.entries[i].isLocked = state;
+      if (!entry.data.required){
+        $scope.entries[i].isLocked = state;
+      }
     });
   };
 
   $scope.toggleAction = (state) => {
     $scope.entries.forEach((entry, i) => {
-      if (!entry.isLocked) {
+      if (!entry.isLocked && !entry.data.required) {
         $scope.entries[i].action = state;
       }
     });
   };
+
+  $scope.lockRequiredEntries = () => {
+    $scope.entries.forEach(entry => {
+      if (entry.data.required) {
+        entry.action = 'ignore';
+        entry.isLocked = true;
+      }
+    })
+  }
 };
 
 importEditorModule.controller('importEditorController', [

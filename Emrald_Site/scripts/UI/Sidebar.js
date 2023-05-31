@@ -119,9 +119,48 @@ if (typeof Navigation === 'undefined')
       var diagramList = this.getLocalTemplates();
       var diagramTemplates = [];
       for (var i = 0; i < diagramList.length; i++) {
+        diagramList[i].disabledReasons = [];
+
+        diagramList[i].ActionList.forEach(a => {
+          if (a.Action.required && !this.ActionExists(a.Action.name)) {
+            diagramList[i].disabledReasons.push(`Action '${a.Action.name}' must already exist.`)
+          }
+        });
+        diagramList[i].DiagramList.forEach(d => {
+          if (d.Diagram.required && !this.DiagramExists(d.Diagram.name)) {
+            diagramList[i].disabledReasons.push(`Diagram '${d.Diagram.name}' must already exist.`)
+          }
+        });
+        diagramList[i].EventList.forEach(e => {
+          if (e.Event.required && !this.EventExists(e.Event.name)) {
+            diagramList[i].disabledReasons.push(`Event '${e.Event.name}' must already exist.`)
+          }
+        });
+        diagramList[i].ExtSimList.forEach(es => {
+          if (es.ExtSim.required && !this.ExtSimExists(es.ExtSim.name)) {
+            diagramList[i].disabledReasons.push(`ExtSim '${es.ExtSim.name}' must already exist.`)
+          }
+        });
+        diagramList[i].LogicNodeList.forEach(ln => {
+          if (ln.LogicNode.required && !this.LogicNodeExists(ln.LogicNode.name)) {
+            diagramList[i].disabledReasons.push(`Logic Node '${ln.LogicNode.name}' must already exist.`)
+          }
+        });
+        diagramList[i].StateList.forEach(s => {
+          if (s.State.required && !this.StateExists(s.State.name)) {
+            diagramList[i].disabledReasons.push(`State '${s.State.name}' must already exist.`)
+          }
+        });
+        diagramList[i].VariableList.forEach(s => {
+          if (s.Variable.required && !this.VariableExists(s.Variable.name)) {
+            diagramList[i].disabledReasons.push(`Variable '${s.Variable.name}' must already exist.`)
+          }
+        });
+
         diagramTemplates.push(diagramList[i].name);
       }
       dataObj.diagramTemplates = diagramTemplates;
+      dataObj.diagramList = diagramList;
 
       var wnd = mxWindow.createFrameWindow(
         url,
@@ -134,6 +173,7 @@ if (typeof Navigation === 'undefined')
               delete outDataObj.importedContent;
               return true;
             }
+            else if (outDataObj.diagramTemplate) { }
             else {
               if (this.existsDiagramName(outDataObj.name)) {
                 MessageBox.alert("New Diagram", "A diagram with the name '" + outDataObj.name + "' exists, please try a different name.");
@@ -194,12 +234,12 @@ if (typeof Navigation === 'undefined')
           }
           return true;
         }.bind(this),
-      dataObj,
+      dataObj,  // input data
       true, //ismodal
         null,
         null,
-        450, //width
-        300 //height
+        500, //width
+        600 //height
       );
       document.body.removeChild(wnd.div);
       var contentPanel = document.getElementById("ContentPanel");
@@ -1892,8 +1932,8 @@ if (typeof Navigation === 'undefined')
         false, //ismodal
         null,
         null,
-        450, //width
-        300 //height
+        500, //width
+        600 //height
       );
       document.body.removeChild(wnd.div);
       var contentPanel = document.getElementById("ContentPanel");
@@ -3305,7 +3345,7 @@ if (typeof Navigation === 'undefined')
     /**
      * Safely gets the saved local templates, if any.
      * 
-     * @returns {EMRALD.Model[]} The local templates.
+     * @returns {EMRALD.ModelTemplate[]} The local templates.
      */
     Sidebar.prototype.getLocalTemplates = function () {
       let localTemplates = [];
@@ -3458,8 +3498,12 @@ if (typeof Navigation === 'undefined')
               break;
             case "Template":
               if (ui.target.context.dataObject) {
-                const dataObj = this.exportDiagram(ui.target.context.dataObject);
-                this.addLocalTemplate(dataObj);
+                /** @type {EMRALD.ModelTemplate} */
+                let dataObj = this.exportDiagram(ui.target.context.dataObject);
+                dataObj.group = null;
+                this.createTemplate(dataObj).then(template => {
+                  this.addLocalTemplate(template);
+                });
               }
               break;
             case "Export":
@@ -3495,7 +3539,14 @@ if (typeof Navigation === 'undefined')
       return sol;
     }
 
-    Sidebar.prototype.exportDiagram = function (dataObject, model) {
+    /**
+     * Creates a diagram for exporting
+     * 
+     * @param {EMRALD.Model} dataObject - The states to process.
+     * @param {EMRALD.Model} [model] - The model to use (defaults to allDataModel). 
+     * @returns {EMRALD.Model} The list of ExtSims.
+     */
+    Sidebar.prototype.exportDiagram = function (dataObject, model = undefined) {
       const StateList = this.statesReferencing(model, dataObject.name, 'Diagram');
       const exportObject = {
         id: dataObject.id,
@@ -3562,7 +3613,7 @@ if (typeof Navigation === 'undefined')
         let hasConflict = false;
         const conflicts = [];
         Object.values(importedContent).forEach((value, i) => {
-          if (typeof value === 'object' && typeof value.length === 'number') {
+          if (value !== null && typeof value === 'object' && typeof value.length === 'number') {
             value.forEach((item) => {
               const [type] = Object.keys(item);
               const name = item[type].name;
@@ -3657,6 +3708,84 @@ if (typeof Navigation === 'undefined')
           });
           resolve(importedContent);
         }
+      });
+    };
+
+    /**
+     * Saves a diagram as a template and opens the UI for template settings.
+     * 
+     * @param {EMRALD.ModelTemplate} exportedContent - The diagram to import.
+     */
+    Sidebar.prototype.createTemplate = function (exportedContent) {
+      return new Promise((resolve, reject) => {
+        const sidebar = simApp.mainApp.sidebar;
+        const wnd = mxWindow.createFrameWindow(
+          'EditForms/TemplateCreator.html',
+          'OK, Cancel',
+          'minimize, maximize, close',
+          /**
+           * Handles the window closing.
+           *
+           * @param {string} btn - The button that was clicked.
+           * @param {ImportEditor.OutputData} outDataObj The dialog output.
+           * @returns {boolean} If the window closed.
+           */
+          (btn, outDataObj) => {
+            if (btn === 'OK') {
+              // Replace names in the local model
+              outDataObj.entries.forEach((entry) => {
+                this.replaceNames(
+                  entry.oldName,
+                  entry.data.name,
+                  entry.type,
+                  outDataObj.model,
+                  false,
+                );
+              });
+              // Apply changes to the global model
+              // outDataObj.entries.forEach((entry) => {
+              //   switch (entry.action) {
+              //     case 'rename':
+              //       const obj = outDataObj.model[`${entry.type}List`].find(
+              //         (item) => item[entry.type].name === entry.data.name,
+              //       );
+              //       if (entry.type === 'LogicNode') {
+              //         this.addNewLogicTree(obj);
+              //       } else {
+              //         this[`addNew${entry.type}`](obj);
+              //       }
+              //       break;
+              //     case 'replace':
+              //       const target = this.getByName(
+              //         entry.type,
+              //         simApp.allDataModel,
+              //         entry.data.name,
+              //       );
+              //       Object.keys(entry.data).forEach((key) => {
+              //         target[entry.type][key] = entry.data[key];
+              //       });
+              //       break;
+              //     default:
+              //     // ignore (literally)
+              //   }
+              // });
+              resolve(outDataObj.model);
+            }
+            return true;
+          },
+          {
+            model: exportedContent,
+          },
+          false,
+          null,
+          null,
+          800,
+          500,
+        );
+        document.body.removeChild(wnd.div);
+        var contentPanel = document.getElementById('ContentPanel');
+        adjustWindowPos(contentPanel, wnd.div);
+        contentPanel.appendChild(wnd.div);
       });
     };
 
