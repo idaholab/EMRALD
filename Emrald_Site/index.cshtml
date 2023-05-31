@@ -20,7 +20,7 @@
     </script>
 
     @{
-        string version = "2.1.4";
+        string version = "2.2.0";
     }
 
     <script src="scripts/jquery/jquery-2.1.4.min.js?v=@version"></script>
@@ -38,7 +38,10 @@
     <script src="scripts/UI/Window.js?v=@version"></script>
     <script src="scripts/UI/WindowFrame.js?v=@version"></script>
     <script src="scripts/UI/menu.js?v=@version"></script>
-    <script src="scripts/UI/upgrade.js?v=@version"></script>
+    <script type="module">
+        import upgrade from './scripts/UI/upgrade.js';
+        window.upgrade = upgrade;
+    </script>
     <script src="scripts/UI/Sidebar.js?v=@version"></script>
     <script src="scripts/UI/simApp.js"></script>
     <style>
@@ -62,7 +65,10 @@
     <h1 id="title_Text" style="float: left; color: teal; margin: 20px 0 0 0; font-family: 'Arial', 'sans-serif'">
         Model Editor
     </h1>
-    <h1 id="project_name" style="float: right; color: teal; margin: 20px 0 0 0; padding-right: 30px; font-family: 'Arial', 'sans-serif'"></h1>
+    <div style="height: 65px; float: right; color: teal; display: flex; align-items: flex-start; flex-direction: column; justify-content: center; padding-right: 30px; font-family: 'Arial', 'sans-serif' ">
+        <h1 id="project_name" style="margin: 0;"></h1>
+        <span id="filename"></span>
+    </div>
 
 </div>
 <nav id="menu-wrap" style="background-color: white;">

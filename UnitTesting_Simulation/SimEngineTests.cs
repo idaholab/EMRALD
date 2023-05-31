@@ -17,6 +17,7 @@ using System.Reflection;
 using System.Diagnostics;
 using NLog;
 using NLog.Config;
+using JsonDiffPatchDotNet;
 //using System.Windows.Forms;
 
 namespace UnitTesting_Simulation
@@ -99,7 +100,7 @@ namespace UnitTesting_Simulation
 
     private JObject SetupJSON(string loc, string testName, bool jsonResults = false)
     {
-      Options ops = new Options();
+      SimulationEngine.Options ops = new SimulationEngine.Options();
       ops.resout = loc + testName + resName;
       //path results depricated, all info in json results
       //if (pathResults)
@@ -572,7 +573,7 @@ namespace UnitTesting_Simulation
       //initial options, and optional results to save/test
       JObject optionsJ = SetupJSON(dir, testName, true);
 
-      Options options = optionsJ.ToObject<Options>();
+      SimulationEngine.Options options = optionsJ.ToObject<SimulationEngine.Options>();
       //Change the default settings as needed for the test seed default set to 0 for testing.
       options.inpfile = MainTestDir() + ModelFolder() + testName + ".json";
       options.runct = 1;

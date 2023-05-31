@@ -1246,6 +1246,10 @@ namespace SimulationTracking
         return false;
       }
       tempStateCngCheck = true;
+
+      //since we are entering the state fresh reset any data for events incase we have already been in the state
+      curState.ResetEventCriteria();
+
       //TransitionAct tAct = allLists.allActions.FindByName(stateID.Item3) as TransitionAct;
       curStates.Add(this.allLists, curState, stateID.Item2, this.curTime, stateID.Item3, stateID.Item4);
       changedItems.AddChangedID(EnModifiableTypes.mtState, stateID.Item1);

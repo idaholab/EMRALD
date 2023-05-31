@@ -2,6 +2,7 @@
 
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
+
 <head>
     <title>Event Editor</title>
     <!--<link href="../styles/Editors.css" rel="stylesheet" />-->
@@ -10,7 +11,7 @@
     <script type="module">
         import { CodeJar } from "./lib/codejar.js";
         import { withLineNumbers } from "./lib/linenumbers.js";
-    
+
         window.CodeJar = CodeJar;
         window.withLineNumbers = withLineNumbers;
     </script>
@@ -26,7 +27,8 @@
             font-size: 12px;
         }
 
-        td2, th2 {
+        td2,
+        th2 {
             border: 1px solid #dddddd;
             text-align: left;
             padding: 0px;
@@ -40,11 +42,16 @@
             flex: 1;
             margin-right: 12px;
         }
+
+        .radio-button {
+            margin-right: 2em;
+        }
     </style>
     <script src="./components/code-editor.js"></script>
     <script src="EventEditor.js"></script>
 
 </head>
+
 <body>
 
     <div ng-app="EventEditor">
@@ -66,7 +73,7 @@
                 <input size="40" tabindex="2" name="DescValue" ng-model="desc" />
             </div>
 
-            <div id="movePanel" style="height:0px">
+            <div id="movePanel">
                 <br />
                 <div style="display:table-row;">
                     <input type="checkbox" onchange="moveFromCurrentHandler(this);" ng-true-value=true ng-false-value=false ng-checked=moveFromCurrent />
@@ -74,16 +81,10 @@
                 </div>
                 <br />
             </div>
-            <br />
 
-            <br />
-            <hr />
             <!-- Dynamic content    -->
             <div id="DetailContentPanel" style="height:auto;">
-                <div id="VarConditionPanel"
-                    ng-if="typeOption.value === 'etVarCond'"
-                    style="display: flex; flex-direction: row; align-items: stretch; height: calc(100vh - 9em); width: 94vw;"
-                >
+                <div id="VarConditionPanel" ng-if="typeOption.value === 'etVarCond'" style="display: flex; flex-direction: row; align-items: stretch; height: calc(100vh - 9em); width: 94vw;">
                     <div style="display: flex; flex-direction: column; flex: 1">
                         Evaluate Code (c#) - Must return a boolean value! <br>
                         <div code-editor class="editor" code="data.conditionCode"></div>
@@ -357,7 +358,7 @@
                         <hr />
                         <div ng-show="distUsesVariable()">
                             If Variable Changes:
-                            <select ng-model="data.onVarChange" ng-options="t as t.name for t in distChangeTypes" ng-change="updateChangeDesc()">
+                            <select ng-model="data.onVarChange" ng-options="t as t.name for t in distChangeTypes" ng-change="updateChangeDesc()" style="width:200px;">
                                 <option></option>
                             </select>
                             {{data.onVarChange.desc}}
@@ -388,17 +389,24 @@
                         <tr ng-repeat="row in data.states">
                             <td style="border: thin dotted green;height:20px;">{{row}}</td>
                             <td style="width:12px;height:10px;text-align:center; ">
-                                <img id="{{row}}" src="../images/delete2.png"
-                                     style="height:16px;width:10px;cursor:pointer;" title="Delete"
-                                     onclick="handleStateDelete(this);" />
+                                <img id="{{row}}" src="../images/delete2.png" style="height:16px;width:10px;cursor:pointer;" title="Delete" onclick="handleStateDelete(this);" />
                             </td>
                         </tr>
                     </table>
                 </div>
-                <div id="ComponentLogicPanel" ng-if="typeOption.value === 'etComponentLogic'" style="display:table-row;position:absolute;height:70%;width:96%;overflow-x:hidden;overflow-y:scroll">
-                    <input name="OnSuccess" type="checkbox" ng-model="data.onSuccess" />On Success <br />
+                <div id="ComponentLogicPanel" ng-if="typeOption.value === 'etComponentLogic'" style="display:table-row;position:absolute;width:96%;overflow-x:hidden;overflow-y:scroll">
+                    <div style="display:flex; flex-direction: column">
+                        <div style="border: 1px solid black; border-bottom: none;">
+                            <span class="radio-button"><input id="onSuccessTrue" name="OnSuccess" type="radio" ng-model="data.onSuccess" ng-value="true" /><label for="onSuccessTrue">Success Tree</label></span>
+                            <span><input id="onSuccessFalse" name="OnSuccess" type="radio" ng-model="data.onSuccess" ng-value="false" /><label for="onSuccessFalse">Failure Tree</label></span>
+                        </div>
+                        <div style="border: 1px solid black;">
+                            <span class="radio-button"><input id="TriggerOnFalse-True" name="TriggerOnFalse" type="radio" ng-model="data.triggerOnFalse" ng-value="true" /><label for="TriggerOnFalse-True">Trigger on False</label></span>
+                            <span><input id="TriggerOnFalse-False" name="TriggerOnFalse" type="radio" ng-model="data.triggerOnFalse" ng-value="false" /><label for="TriggerOnFalse-False">Trigger on True</label></span>
+                        </div>
+                    </div>
                     <label style="display:table-cell;vertical-align:middle; white-space:nowrap;">Logic Top:</label>
-                    <select name="LogicTop" ng-model="data.logicTop" ng-options="lt.name for lt in logicTops" style="width:130px;">
+                    <select name="LogicTop" ng-model="data.logicTop" ng-options="lt.name for lt in logicTops" style="width:200px;">
                         <option>-- Choose logic top --</option>
                     </select>
                 </div>
@@ -519,4 +527,5 @@
     </div>
 
 </body>
+
 </html>

@@ -332,6 +332,7 @@ namespace SimulationDAL
   {
     //bool onSuccess;//true if our logic evaluation is looking for a true.
     public bool successSpace = true;
+    public bool triggerOnFalse = false;
     private LogicNode logicTop = null;
 
     //protected override EnModifiableTypes GetModType() { return EnModifiableTypes.mtState; } //the modified items concerned about for component logic are states.
@@ -377,6 +378,11 @@ namespace SimulationDAL
 
       this.successSpace = (((string)dynObj.onSuccess).ToLower() == "true");
 
+      if (dynObj.triggerOnFalse != null)
+        triggerOnFalse = ((bool)dynObj.triggerOnFalse);
+      else if (this.successSpace == true) //old version where success space was just the not of failure space
+        triggerOnFalse = true;
+
       //Now done in LoadObjLinks()
       //if ((dynObj.logicTop != null) || (dynObj.LogicTop == 0))
       //{
@@ -409,17 +415,25 @@ namespace SimulationDAL
 
     public override bool EventTriggered(MyBitArray curStates, object otherData, TimeSpan curSimTime, TimeSpan start3DTime, TimeSpan nextEvTime, int runIdx)
     {
-      bool evalRes = logicTop.Evaluate(curStates);
+      bool evalBool = true;
+      int evalRes = logicTop.Evaluate(curStates, successSpace);
+      if((evalRes == 0) || (evalRes == -1)) //false or unknown so dont trigger.
+      {
+        evalBool =  false;
+      }
+      //else should be 1 so value is true
 
-      if (!successSpace)
-        return evalRes;
+      if (triggerOnFalse)
+        return !evalBool;
       else
-        return !evalRes;
+        return evalBool;
     }
 
     public void AutoAddRelatedComponents(LogicNode logicTop)
     {
       this.AddRelatedItems(logicTop.AllUsedStateIDs);
+      if (logicTop.AllUsedStateIDs.Count == 0)
+        throw new Exception("no state IDs under logic tree " + logicTop.name);
     }
 
     public override void LookupRelatedItems(EmraldModel all, EmraldModel addToList)
@@ -1046,7 +1060,6 @@ namespace SimulationDAL
     {
       this._lambda = lambdaOrFreq; // (lambdaOrFreq / lambdaTimeRate.TotalHours);
       this.timeRate = lambdaTimeRate;
-      this.compMissionTime = compMissionTime;
     }
 
     public override string GetDerivedJSON(EmraldModel lists)
@@ -1091,15 +1104,7 @@ namespace SimulationDAL
 
       
       this.timeRate = XmlConvert.ToTimeSpan((string)dynObj.lambdaTimeRate);
-      if (dynObj.missionTime == null)
-        compMissionTime = TimeSpan.FromDays(365.3);
-      else
-      {
-        this.compMissionTime = XmlConvert.ToTimeSpan((string)dynObj.missionTime);
-        if (compMissionTime < TimeSpan.FromSeconds(1))
-          compMissionTime = TimeSpan.FromDays(365.3);
-      }
-
+      
       if ((dynObj.useVariable == null) || !(bool)dynObj.useVariable)
       {
         //use normal assigned lambda if not a variable
@@ -1175,7 +1180,7 @@ namespace SimulationDAL
       //debugging to keep track of probabilities of items
       if (Stats.Instance.logStats)
       {
-        if ((retVal < compMissionTime) && (timeRate == Globals.HourTimeSpan))
+        if (timeRate == Globals.HourTimeSpan)
         {
           if (Stats.Instance.comp_fails.ContainsKey(name))
           {
@@ -1192,7 +1197,7 @@ namespace SimulationDAL
         }
       }
 
-      if ((retVal > compMissionTime) || (retVal < Globals.NowTimeSpan)) //time surpasses the allotted time span or is negative (to small to calculate) so return back that it does not fail.
+      if (retVal < Globals.NowTimeSpan) //time surpasses the allotted time span or is negative (to small to calculate) so return back that it does not fail.
       {
         return TimeSpan.MaxValue;
       }

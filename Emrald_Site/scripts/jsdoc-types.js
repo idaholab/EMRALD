@@ -66,11 +66,28 @@
  * @property {string} name - The name of the event.
  * @property {string[]} triggerStates - The names of states the event triggers.
  * @property {boolean} required - Is required in model (for importing templates).
+ * @property {boolean} triggerOnFalse
  */
 
 /**
  * @typedef EMRALD.Event
  * @property {EventData} Event - The event data.
+ */
+
+/**
+ * @typedef ExtSimData
+ * @property {number} id - The ext sim id.
+ * @property {string} name - The ext sim name.
+ * @property {string} resourceName - The resource name.
+ * @property {string} modelRef - The model reference.
+ * @property {string[]} states - Associated state names.
+ * @property {string} configData - Configuration data.
+ * @property {string} simMaxTime - Maximum simulation time.
+ */
+
+/**
+ * @typedef EMRALD.ExtSim
+ * @property {ExtSimData} ExtSim - The ext sim data.
  */
 
 /**
@@ -113,6 +130,39 @@
 /**
  * @typedef EMRALD.State
  * @property {StateData} State - The state data.
+ */
+
+/**
+ * @typedef AccrualStateData
+ * @property {string} stateName - The name of the state.
+ * @property {string} type - The state type.
+ * @property {number} accrualMult - The accrual multiplier.
+ * @property {string} multRate - The multiplier time rate.
+ * @property {number[]} accrualTable - The accrual table.
+ */
+
+/**
+ * @typedef VariableData
+ * @property {number} id - The variable id.
+ * @property {string} name - The variable name.
+ * @property {string} desc - The variable description.
+ * @property {string} varScope - The variable scope.
+ * @property {*} value - The numberical value.
+ * @property {boolean} resetOnRuns - If the variable should be reset each run.
+ * @property {AccrualStateData[]} accrualStatesData - Accrual states data.
+ * @property {string} type - The C# type of the variable value.
+ * @property {number} [begPosition] - Begin position for document link variables.
+ * @property {string} [docLink] - The document to link to for document link variables.
+ * @property {string} [docPath] - The path to the target document for document link variables.
+ * @property {string} [docType] - The document type for document link variables.
+ * @property {number} [numChars] - The number of characters to read for document link variables.
+ * @property {boolean} [pathMustExist] - If the path must exist for document link variables.
+ * @property {number} [regExpLine] - RegExp line for document link variables.
+ */
+
+/**
+ * @typedef EMRALD.Variable
+ * @property {VariableData} Variable - The variable data.
  */
 
 /**
@@ -159,6 +209,16 @@
  * @property {string} name
  * @property {EMRALD.TemplateGroups[] | null} subgroups
  * @property {EMRALD.TemplateGroups | null} parent
+ */
+
+/**
+ * @namespace ActionEditor
+ */
+
+/**
+ * @typedef ActionEditor.Window
+ * @property {() => import('angular').IScope} getScope - Gets the Angular scope of the action editor window.
+ * @property {EMRALD.Model[]} [templates] - Templates loaded into the project.
  */
 
 /**

@@ -119,6 +119,7 @@ function GetDataObject() {
 		dataObj.name = scope.name;
 		dataObj.desc = scope.desc;
 		dataObj.addType = scope.compType.value;
+		dataObj.useExisting = scope.data.useExisting;
 		switch (dataObj.addType) {
 				case "standard":
 						dataObj.newGateType = scope.newGateType.value;
@@ -157,14 +158,34 @@ gateModule.controller('gateController', ['$scope', function ($scope) {
 		$scope.newDesc = "";
 		$scope.compTypes = [
 				{ name: "Standard Gate", value: "standard" },
-				{ name: "Gate from Component Diagram", value: "diagram" }],
+				{ name: "Component Value", value: "diagram" }],
 				$scope.compType = $scope.compTypes[0];
 
 		$scope.newGateTypes = [
 				{ name: "AND", value: "gtAnd" },
-				{ name: "OR", value: "gtOr" }],
+				{ name: "OR", value: "gtOr" },
+				{ name: "NOT", value: "gtNot" },
+		];
 				$scope.newGateType = $scope.newGateTypes[0];
 		$scope.newDiagramOptions = [];
+		$scope.match = false;
+		$scope.data = {
+			useExisting: false,
+		};
+
+		$scope.nameChanged = function nameChanged() {
+			const parentWindow = window.frameElement.ownerDocument.defaultView?.frameElement?.ownerDocument.defaultView;
+			const sidebar = parentWindow.simApp.mainApp.sidebar;
+			$scope.match = sidebar.LogicNodeList.find(
+				(l) => l.LogicNode.name === $scope.newName,
+			);
+			$scope.data.useExisting = !!$scope.match;
+			if ($scope.match) {
+				$scope.newGateType = $scope.newGateTypes.find(
+					(type) => type.value === $scope.match.LogicNode.gateType,
+				);
+			}
+		};
 
 		$scope.newDiagramOption = null;
 		$scope.$watch('newName', function (newV, oldV) { if (newV !== oldV) somethingChanged(); });
