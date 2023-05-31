@@ -88,35 +88,42 @@
             <td>{{entry.oldName}}</td>
             <td>
               <input
+                id="{{'action-ignore-' + $index}}"
                 title="Ignore"
                 type="radio"
                 ng-model="entry.action"
                 value="ignore"
+                ng-disabled="entry.data.required"
                 ng-change="checkEntryAction(entry)"
               />
-              Ignore
+              <label for="{{'action-ignore-' + $index}}">Ignore</label>
               <input
+                id="{{'action-replace-' + $index}}"
                 title="Replace"
                 type="radio"
                 ng-model="entry.action"
                 value="replace"
+                ng-disabled="entry.data.required"
                 ng-change="checkEntryAction(entry)"
               />
-              Replace
+              <label for="{{'action-replace-' + $index}}">Replace</label>
               <input
+                id="{{'action-rename-' + $index}}"
                 title="Rename"
                 type="radio"
                 ng-model="entry.action"
                 value="rename"
+                ng-disabled="entry.data.required"
                 ng-change="checkEntryAction(entry)"
               />
-              Rename
+              <label for="{{'action-rename-' + $index}}">Rename</label>
             </td>
             <td>
               <input
                 placeholder="Name"
                 ng-model="entry.data.name"
                 ng-change="nameChanged($index)"
+                ng-disabled="entry.action !== 'rename'"
               />
             </td>
             <td>

@@ -1,7 +1,7 @@
 ﻿/*Copyright 2021 Battelle Energy Alliance*/
 
 #SidePanel {
-    overflow-y: scroll;
+    overflow-y: auto;
     height: calc(100% - 20px);
     width: 100%;
 }
