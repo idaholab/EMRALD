@@ -227,6 +227,23 @@ export default class Renderer {
       }
     });
     this.calculateLinkPaths();
+    if (this.options.layout === 'timeline') {
+      let minX = Infinity;
+      this.graph.links.forEach((link) => {
+        const x = this.getCurveExtrema(link)[0];
+        if (x < minX) {
+          minX = x;
+        }
+      });
+      if (minX < 0) {
+        this.graph.nodes.forEach((node) => {
+          if (!node.persist) {
+            node.layout.x += 0 - minX;
+          }
+        });
+      }
+    }
+    this.calculateLinkPaths();
     this.calculateDistributionLayout();
     this.calculateMenuLayouts();
     return this.graph;
@@ -446,14 +463,22 @@ export default class Renderer {
                 },
               };
             }
+            let x = event.x;
+            let y = event.y;
+            if (x < 0) {
+              x = 0;
+            }
+            if (y < 0) {
+              y = 0;
+            }
             if (options.layout !== 'timeline') {
-              d.layout.x = event.x;
-              d.layout.y = event.y;
-              d.persist.default.x = event.x;
-              d.persist.default.y = event.y;
+              d.layout.x = x;
+              d.layout.y = y;
+              d.persist.default.x = x;
+              d.persist.default.y = y;
             } else {
-              d.layout.y = event.y;
-              d.persist.timeline.y = event.y;
+              d.layout.y = y;
+              d.persist.timeline.y = y;
             }
             const top = d.layout.y + d.layout.height;
             if (top > this.options.height) {
@@ -510,6 +535,15 @@ export default class Renderer {
             });
           }),
       );
+
+    this.graph.nodes.forEach((node) => {
+      const right = node.layout.x + node.layout.width;
+      if (right > this.options.width) {
+        this.options.width = right;
+        svg.style('width', right);
+      }
+    });
+
     // Label boxes
     nodes
       .append('rect')
@@ -706,6 +740,7 @@ export default class Renderer {
         min = point.x;
       }
     });
+    min -= 28;
     return [min, max];
   }
 
