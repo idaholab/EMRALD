@@ -577,10 +577,10 @@ export default class Renderer {
       .attr('class', 'menu-button-container')
       .style('cursor', 'pointer')
       .style('fill', 'rgba(0,0,0,0)')
-      .attr('height', 2 * this.options.buttonRadius)
+      .attr('height', 3 * this.options.buttonRadius)
       .attr(
         'width',
-        this.options.buttonRadius * 6 + this.options.axisMargin * 2,
+        this.options.buttonRadius * 9 + this.options.axisMargin * 2,
       )
       .on('click', (event: PointerEvent, d: TimelineNode) => {
         (window as any).showNodeMenu(d);
@@ -817,7 +817,7 @@ export default class Renderer {
     selectAll<BaseType, TimelineNode>('.menu-button-container')
       .attr(
         'x',
-        (d: TimelineNode) => d.layout.menuX[0] - 2 * this.options.buttonRadius,
+        (d: TimelineNode) => d.layout.menuX[0] - 3 * this.options.buttonRadius,
       )
       .attr('y', (d: TimelineNode) => {
         if (d.textHeight >= d.layout.height) {
