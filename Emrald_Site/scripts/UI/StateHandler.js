@@ -860,19 +860,19 @@ StateApp.prototype.Initialize = function (graph) {
       //handler for actual drop of drag over item.
       pdiv.ondrop = function (evt) {
         var atype = 'actions';
-        var newAction = evt.dataTransfer.getData("Actions");
-        if (newAction == '') {
-          newAction = evt.dataTransfer.getData('Events');
+        var dropItem = evt.dataTransfer.getData("Actions");
+          if (dropItem == '') {
+            dropItem = evt.dataTransfer.getData('Events');
           atype = 'events';
         }
 
         var model = mainApp.graph.getDefaultParent().value;
         var sb = model.sidebar;
 
-        if (newAction !== '') {
+          if (dropItem !== '') {
           var target = evt.target;
-          newAction = JSON.parse(newAction);
-          newAction.dataType = atype;
+          dropItem = JSON.parse(dropItem);
+          dropItem.dataType = atype;
 
           if ((atype == 'actions') &&
             (target.tagName == 'TD' || evt.target.tagName == 'TH' || evt.target.tagName == "IMG")
@@ -921,9 +921,9 @@ StateApp.prototype.Initialize = function (graph) {
                 if (actionId >= 0) {
                   //Item was dropped on an action, do a replacement.
                   var oldData = item.actions[actionId];
-                  newAction.targetStateId = oldData.targetStateId;
-                  newAction.actionId = oldData.actionId;
-                  item.actions[actionId] = newAction;
+                  dropItem.targetStateId = oldData.targetStateId;
+                  dropItem.actionId = oldData.actionId;
+                  item.actions[actionId] = dropItem;
                 }
                 else {
                   //Action item was dropped on the EventAction header, insert a new action.
@@ -939,8 +939,8 @@ StateApp.prototype.Initialize = function (graph) {
                       else if (sbState.State.eventActions.length <= itemId) {
                         sbState.State.eventActions[itemId] = { moveFromCurrent: true, actions: [] };
                       }
-                      sbState.State.eventActions[itemId].actions.push(newAction.name);
-                      var act = { name: newAction.name, value: newAction, dataType: 'actions', itemId: itemId, actionId: 0 }
+                      sbState.State.eventActions[itemId].actions.push(dropItem.name);
+                      var act = { name: dropItem.name, value: dropItem, dataType: 'actions', itemId: itemId, actionId: 0 }
 
                       var model = graph.getModel();
                       model.beginUpdate();
@@ -961,9 +961,9 @@ StateApp.prototype.Initialize = function (graph) {
                         var actCell = sbState.actionCell;
                         var evtCell = sbState.eventCell;
 
-                        for (var p = 0; p < newAction.newStates.length; p++) {
-                          var ns = deepClone(newAction.newStates[p]);
-                          ns.linkState = newAction.newStates[p];
+                        for (var p = 0; p < dropItem.newStates.length; p++) {
+                          var ns = deepClone(dropItem.newStates[p]);
+                          ns.linkState = dropItem.newStates[p];
                           ns.dataType = "NewStates";
                           ns.baseDataType = 'events';
                           ns.itemId = itemId;
@@ -972,7 +972,7 @@ StateApp.prototype.Initialize = function (graph) {
                           ns.targetRow = -1;
                           var targetCell = graph.getCellByStateName(ns.toState);
                           if (targetCell) {
-                            ns.name = newAction.name + ' -> ' + targetCell.value.State.name;
+                            ns.name = dropItem.name + ' -> ' + targetCell.value.State.name;
                             //Add a green dashed line
                             if (sbState.State.eventActions[itemId].moveFromCurrent != true) {
                               var edge = graph.insertEdge(graph.getDefaultParent(), null, null, evtCell, targetCell, 'dashed=1;fontColor=#1E8449 ;strokeColor=#1E8449;');
@@ -998,24 +998,34 @@ StateApp.prototype.Initialize = function (graph) {
           } else {
             //add as Immediate Actions item and Event Action items.
             if (atype == "actions") {
-              state.cell.value.items.push({ itemId: itemId, dataType: atype, Action: newAction });
+              state.cell.value.items.push({ itemId: itemId, dataType: atype, Action: dropItem });
               //add to immediate action
               var stateName = state.cell.parent.value.State.name;
               for (var j = 0; j < sb.StateList.length; j++) {
                 if (sb.StateList[j].State.name == stateName) {
-                  sb.StateList[j].State.immediateActions.push(newAction.name);
+                  sb.StateList[j].State.immediateActions.push(dropItem.name);
                 }
               }
 
             }
             else if (atype = "events") {
-              state.cell.value.items.push({ itemId: itemId, dataType: atype, Event: newAction });
+              //set up the visual cell info
+              var addCellItem = {
+                dataType: atype,
+                itemId: dropItem.id,
+                value: dropItem,
+                eActions: [],
+                name: dropItem.name
+              }
+              state.cell.value.items.push(addCellItem);
+
+              //Assign the actual object to the model
               //add to immediate action
               var stateName = state.cell.parent.value.State.name;
 
               for (var j = 0; j < sb.StateList.length; j++) {
                 if (sb.StateList[j].State.name == stateName) {
-                  sb.StateList[j].State.events.push(newAction.name);
+                  sb.StateList[j].State.events.push(dropItem.name);  
                   var evAct = {
                     actions: [],
                     moveFromCurrent: false
