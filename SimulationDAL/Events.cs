@@ -407,8 +407,15 @@ namespace SimulationDAL
 
       if ((dynObj.logicTop != null) || ((int)dynObj.LogicTop == 0))
       {
-        this.logicTop = lists.allLogicNodes.FindByName((string)dynObj.logicTop);
-        AutoAddRelatedComponents(logicTop);
+        try
+        {
+          this.logicTop = lists.allLogicNodes.FindByName((string)dynObj.logicTop);
+          AutoAddRelatedComponents(logicTop);
+        }
+        catch
+        {
+          return false;
+        }
       }
       return true;
     }
