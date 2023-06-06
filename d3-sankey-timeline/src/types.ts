@@ -29,7 +29,7 @@ export interface LinkLayout {
 }
 export interface NodeTimes {
   endTime: number;
-  meanTime?: number;
+  meanTime: number;
   startTime: number;
   stdDeviation?: number;
 }

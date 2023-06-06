@@ -59,6 +59,10 @@ export default class Renderer {
     width: window.innerWidth,
   };
 
+  private maxRight = 0;
+
+  private shift = 0;
+
   public timeline: SankeyTimeline;
 
   /**
@@ -225,6 +229,9 @@ export default class Renderer {
         }
         this.options.margin = originalMargin;
       }
+      if (node.layout.x + node.layout.width > this.maxRight) {
+        this.maxRight = node.layout.x + node.layout.width;
+      }
     });
     this.calculateLinkPaths();
     if (this.options.layout === 'timeline') {
@@ -236,14 +243,9 @@ export default class Renderer {
         }
       });
       if (minX < 0) {
-        this.graph.nodes.forEach((node) => {
-          if (!node.persist) {
-            node.layout.x += 0 - minX;
-          }
-        });
+        this.shift = 0 - minX;
       }
     }
-    this.calculateLinkPaths();
     this.calculateDistributionLayout();
     this.calculateMenuLayouts();
     return this.graph;
@@ -329,8 +331,10 @@ export default class Renderer {
     // Create the graph element
     svg
       .style('background', '#fff')
-      .style('width', this.options.width)
-      .style('height', this.options.height);
+      .style('width', Math.max(this.options.width, this.maxRight))
+      .style('height', this.options.height)
+      .style('left', this.shift)
+      .style('position', 'relative');
 
     // Create the axis
     if (this.options.layout === 'timeline') {
@@ -352,7 +356,7 @@ export default class Renderer {
           const x = this.getTimeX(i);
           axisContainer
             .append('text')
-            .text(Math.round(i))
+            .text(new Date(Math.round(i) * 1000).toISOString().slice(11, 19))
             .attr('x', x + this.options.axisTickWidth)
             .attr('y', this.options.axisHeight + this.options.axisMargin)
             .attr('font-size', this.options.axisFontSize);
@@ -400,7 +404,7 @@ export default class Renderer {
       .selectAll('g')
       .data(graph.nodes)
       .join('g')
-      .attr('x', (d: TimelineNode) => d.layout.x)
+      .attr('x', (d: TimelineNode) => this.getX(d))
       .attr('y', (d: TimelineNode) => d.layout.y)
       .attr('height', (d: TimelineNode) => d.layout.height)
       .attr('width', (d: TimelineNode) => d.layout.width)
@@ -485,7 +489,7 @@ export default class Renderer {
               this.options.height = top;
               svg.style('height', top);
             }
-            const right = d.layout.x + d.layout.width;
+            const right = renderer.getX(d) + d.layout.width;
             if (right > this.options.width) {
               this.options.width = right;
               svg.style('width', right);
@@ -498,19 +502,19 @@ export default class Renderer {
               const element = select<BaseType, TimelineNode>(this);
               element
                 .select('.nodeFill')
-                .attr('x', () => d.layout.x)
+                .attr('x', () => renderer.getX(d))
                 .attr('y', () => d.layout.y);
               element
                 .select('text')
-                .attr('x', () => d.layout.x + d.layout.width / 2)
+                .attr('x', () => renderer.getX(d) + d.layout.width / 2)
                 .attr('y', () => d.layout.y + d.layout.height / 2);
               element
                 .select('.meanValue')
-                .attr('x', () => d.layout.x + d.layout.width / 2)
+                .attr('x', () => renderer.getX(d) + d.layout.width / 2)
                 .attr('y', () => d.layout.y - options.meanBarWidth);
               element
                 .select('.labelBox')
-                .attr('x', () => d.layout.x)
+                .attr('x', () => renderer.getX(d))
                 .attr(
                   'y',
                   () => d.layout.y + d.layout.height / 2 - d.textHeight / 2,
@@ -537,7 +541,7 @@ export default class Renderer {
       );
 
     this.graph.nodes.forEach((node) => {
-      const right = node.layout.x + node.layout.width;
+      const right = this.getTimeX(node.times.meanTime) + node.layout.width / 2;
       if (right > this.options.width) {
         this.options.width = right;
         svg.style('width', right);
@@ -549,7 +553,7 @@ export default class Renderer {
       .append('rect')
       .attr('class', 'labelBox')
       .style('fill', 'rgba(0,0,0,0.2)')
-      .attr('x', (d) => d.layout.x)
+      .attr('x', (d) => this.getX(d))
       .attr('y', (d) => d.layout.y + d.layout.height / 2 - d.textHeight / 2)
       .attr('width', (d) => d.textWidth)
       .attr('height', (d) => d.textHeight);
@@ -557,7 +561,7 @@ export default class Renderer {
       .append('rect')
       .attr('class', 'nodeFill')
       .attr('fill', (d: TimelineNode) => d.layout.color)
-      .attr('x', (d: TimelineNode) => d.layout.x)
+      .attr('x', (d: TimelineNode) => this.getX(d))
       .attr('y', (d: TimelineNode) => d.layout.y)
       .attr('height', (d: TimelineNode) => d.layout.height)
       .attr('width', (d: TimelineNode) => d.layout.width);
@@ -658,7 +662,7 @@ export default class Renderer {
       // Mean value bar
       nodes
         .append('rect')
-        .attr('x', (d: TimelineNode) => d.layout.x + d.layout.width / 2)
+        .attr('x', (d: TimelineNode) => this.getX(d) + d.layout.width / 2)
         .attr('y', (d: TimelineNode) => d.layout.y - this.options.meanBarWidth)
         .attr('class', 'meanValue')
         .attr('width', this.options.meanBarWidth)
@@ -678,7 +682,7 @@ export default class Renderer {
       .style('fill', this.options.fontColor)
       .style('font-size', `${this.options.fontSize}px`)
       .text((d: TimelineNode) => d.label)
-      .attr('x', (d: TimelineNode) => d.layout.x + d.layout.width / 2)
+      .attr('x', (d: TimelineNode) => this.getX(d) + d.layout.width / 2)
       .attr('y', (d: TimelineNode) => d.layout.y + d.layout.height / 2);
 
     links
@@ -701,14 +705,16 @@ export default class Renderer {
   private getCurveLUT(link: TimelineLink) {
     const y = link.source.layout.y + link.source.layout.height / 2;
     const y1 = link.target.layout.y + link.target.layout.height / 2;
+    const sourceX = this.getX(link.source);
+    const targetX = this.getX(link.target);
     return new Bezier([
-      link.source.layout.x + link.source.layout.width,
+      sourceX,
       y,
-      link.source.layout.x + link.source.layout.width + this.options.curveWidth,
+      sourceX + this.options.curveWidth,
       y,
-      link.target.layout.x - this.options.curveWidth,
+      targetX - this.options.curveWidth,
       y1,
-      link.target.layout.x,
+      targetX,
       y1,
     ]).getLUT();
   }
@@ -782,6 +788,18 @@ export default class Renderer {
           (this.timeline.maxTime + shift - (this.timeline.minTime + shift))) +
       this.range[0]
     );
+  }
+
+  /**
+   * Resolves a node's x coordinate based on the current layout.
+   * @param node - The node to get.
+   * @returns The x coordinate.
+   */
+  private getX(node: TimelineNode): number {
+    if (this.options.layout === 'default') {
+      return node.layout.x;
+    }
+    return this.getTimeX(node.times.meanTime) - node.layout.width / 2;
   }
 
   /**
