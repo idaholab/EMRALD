@@ -1,17 +1,15 @@
 import { Bezier } from 'bezier-js';
-import { color, RGBColor } from 'd3-color';
+import { color, type RGBColor } from 'd3-color';
 import { drag } from 'd3-drag';
 import { easeCubicIn } from 'd3-ease';
-import { BaseType, select, selectAll, Selection } from 'd3-selection';
-import { Transition, transition } from 'd3-transition';
+import { type BaseType, select, selectAll, type Selection } from 'd3-selection';
+import { type Transition, transition } from 'd3-transition';
 import colors from './colors';
-import SankeyTimeline from './SankeyTimeline';
+import type SankeyTimeline from './SankeyTimeline';
 import type TimelineLink from './TimelineLink';
-import TimelineNode from './TimelineNode';
+import type TimelineNode from './TimelineNode';
 import type { TimelineGraph } from './types';
 import { hasDist } from './util';
-
-// The typings for d3-transition are incompatible with d3-selection, so we have to use ts-ignore when using transitions.
 
 /**
  * Renders the chart using D3.
@@ -23,21 +21,27 @@ export default class Renderer {
   };
 
   public options = {
-    axisColor: 'rgba(0,0,0,0.25)',
-    axisFontSize: 8,
-    axisHeight: 2,
-    axisMargin: 8,
-    axisTickHeight: 12,
-    axisTickWidth: 3,
-    buttonRadius: 2,
-    buttonSpacing: 6,
-    curveHeight: 50,
-    curveWidth: 200,
-    distHandleWidth: 3,
+    axis: {
+      color: 'rgba(0,0,0,0.25)',
+      fontSize: 8,
+      height: 2,
+      margin: 8,
+      tick: {
+        height: 12,
+        width: 3,
+      },
+    },
+    curve: {
+      height: 50,
+      width: 200,
+    },
+    distHandle: {
+      color: 'rgb(0,0,0)',
+      width: 3,
+    },
     distributions: true,
     dynamicLinkWidth: true,
     dynamicNodeHeight: false,
-    endColor: '#FF9800',
     fadeOpacity: 0.3,
     fontColor: 'white',
     fontSize: 20,
@@ -46,14 +50,20 @@ export default class Renderer {
     linkTitle: (d: TimelineLink) =>
       `${d.source.label} → ${d.target.label}\n${d.flow}`,
     margin: 60,
-    marginTop: 25,
     maxLinkWidth: 50,
     maxNodeHeight: 100,
-    meanBarColor: 'rgba(0,0,0,0.25)',
-    meanBarWidth: 3,
-    menuWidth: 500,
+    meanBar: {
+      color: 'rgba(0,0,0,0.25)',
+      width: 3,
+    },
+    menu: {
+      button: {
+        radius: 2,
+        spacing: 6,
+      },
+      margin: 8,
+    },
     nodeTitle: (d: TimelineNode): string => d.label,
-    startColor: '#9C27B0',
     ticks: 25,
     transitionSpeed: 75,
     width: window.innerWidth,
@@ -61,18 +71,15 @@ export default class Renderer {
 
   private maxRight = 0;
 
-  private shift = 0;
-
-  public timeline: SankeyTimeline;
-
   /**
    * Constructs Renderer.
-   *
    * @param timeline - The timeline to render.
+   * @param container - The SVG element to render within.
    */
-  public constructor(timeline: SankeyTimeline) {
-    this.timeline = timeline;
-  }
+  public constructor(
+    private timeline: SankeyTimeline,
+    private container: Selection<BaseType, unknown, HTMLElement, any>,
+  ) {}
 
   /**
    * Calculates a bezier curve for the given link.
@@ -85,8 +92,8 @@ export default class Renderer {
     const y1 = link.target.layout.y + link.target.layout.height / 2;
     return [
       [x, y],
-      [x + this.options.curveWidth, y],
-      [link.target.layout.x - this.options.curveWidth, y1],
+      [x + this.options.curve.width, y],
+      [link.target.layout.x - this.options.curve.width, y1],
       [link.target.layout.x, y1],
     ];
   }
@@ -104,7 +111,6 @@ export default class Renderer {
         path: this.getCurvePath(link),
         width,
       };
-      return l;
     });
   }
 
@@ -135,19 +141,14 @@ export default class Renderer {
   /**
    * Given the bounds of the container to render in,
    * construct a clone of the graph with all measurements adjusted to fit in the given range.
-   *
-   * @returns A graph object with layout properties assigned to nodes and links.
    */
-  public calculateLayout(): TimelineGraph {
-    this.graph = this.timeline.graph;
-    this.initializeLayout();
+  private calculateLayout() {
     const cols: TimelineNode[][] = [];
     const colWidths: number[] = [];
     const colXs: number[] = [];
     const maxCols: number[] = [];
     let maxColumn = -1;
     let maxRow = -1;
-    let leftHandAdjustment = 0;
     /**
      * Assigns columns along a path.
      *
@@ -173,13 +174,6 @@ export default class Renderer {
         source.outgoingLinks.forEach((link) => {
           assignColumns(link.target, currentCol + 1);
         });
-        if (currentCol === 0) {
-          const nodeAdjustment =
-            this.getTimeX(source.times.meanTime || 0) - source.layout.width / 2;
-          if (nodeAdjustment < leftHandAdjustment) {
-            leftHandAdjustment = nodeAdjustment;
-          }
-        }
       }
     };
     this.timeline.sourceNodes.forEach((sourceNode) => {
@@ -217,38 +211,40 @@ export default class Renderer {
             (node.layout.row / (maxRow + 1)) * this.options.height;
         }
       } else if (this.options.layout === 'timeline') {
-        const originalMargin = this.options.margin;
-        this.options.margin += -leftHandAdjustment;
         node.layout.x =
-          this.getTimeX(node.times.meanTime || 0) - node.layout.width / 2;
+          this.getTimeX(node.times.meanTime) - node.layout.width / 2;
         if (node.persist) {
           node.layout.y = node.persist.timeline.y;
         } else {
           node.layout.y =
             (node.layout.row / (maxRow + 1)) * this.options.height;
         }
-        this.options.margin = originalMargin;
       }
       if (node.layout.x + node.layout.width > this.maxRight) {
         this.maxRight = node.layout.x + node.layout.width;
       }
     });
-    this.calculateLinkPaths();
-    if (this.options.layout === 'timeline') {
-      let minX = Infinity;
-      this.graph.links.forEach((link) => {
-        const x = this.getCurveExtrema(link)[0];
-        if (x < minX) {
-          minX = x;
+  }
+
+  /**
+   * Shifts the layout to prevent things from going off the left hand side.
+   */
+  private calculateShift() {
+    let minX = Infinity;
+    this.graph.links.forEach((link) => {
+      const x = this.getCurveExtrema(link)[0];
+      if (x < minX) {
+        minX = x;
+      }
+    });
+    if (minX < 0) {
+      this.graph.nodes.forEach((node, n) => {
+        this.graph.nodes[n].layout.x += 0 - minX;
+        if (node.layout.x + node.layout.width > this.maxRight) {
+          this.maxRight = node.layout.x + node.layout.width;
         }
       });
-      if (minX < 0) {
-        this.shift = 0 - minX;
-      }
     }
-    this.calculateDistributionLayout();
-    this.calculateMenuLayouts();
-    return this.graph;
   }
 
   /**
@@ -256,11 +252,11 @@ export default class Renderer {
    */
   private calculateMenuLayouts() {
     this.graph.nodes.forEach((d, i) => {
-      this.graph.nodes[i].layout.menuY = d.layout.y + this.options.axisMargin;
-      const base = d.layout.x + d.layout.width - this.options.axisMargin;
+      this.graph.nodes[i].layout.menuY = d.layout.y + this.options.menu.margin;
+      const base = d.layout.x + d.layout.width - this.options.menu.margin;
       this.graph.nodes[i].layout.menuX = [
-        base - 2 * this.options.buttonSpacing,
-        base - this.options.buttonSpacing,
+        base - 2 * this.options.menu.button.spacing,
+        base - this.options.menu.button.spacing,
         base,
       ];
     });
@@ -271,8 +267,7 @@ export default class Renderer {
    */
   private initializeLayout() {
     this.graph.nodes.forEach((node, n) => {
-      const x = this.getTimeX(node.times.meanTime || 0);
-      const width = node.layout.width;
+      const x = this.getTimeX(node.times.meanTime);
       let height = this.options.maxNodeHeight;
       if (this.options.dynamicNodeHeight) {
         height *= node.size / this.timeline.maxSize;
@@ -285,7 +280,7 @@ export default class Renderer {
         menuX: [],
         menuY: 0,
         row: -1,
-        width,
+        width: node.layout.width,
         x,
         y: 0,
       };
@@ -302,13 +297,10 @@ export default class Renderer {
   }
 
   /**
-   * Renders the graph.
-   *
-   * @param svg - The SVG element to render within.
+   * Calculates the width of the nodes to accomodate the size of their text.
    */
-  public render(svg: Selection<BaseType, unknown, HTMLElement, any>): void {
-    // Create labels
-    svg
+  private calculateLabelSizes() {
+    this.container
       .append('g')
       .selectAll('g')
       .data(this.timeline.graph.nodes)
@@ -317,7 +309,7 @@ export default class Renderer {
       .data(this.timeline.graph.nodes)
       .attr('text-anchor', 'middle')
       .attr('dominant-baseline', 'middle')
-      .style('fill', this.options.fontColor)
+      .style('display', 'none')
       .style('font-size', `${this.options.fontSize}px`)
       .text((d: TimelineNode) => d.label)
       .each(function (d: TimelineNode) {
@@ -325,61 +317,91 @@ export default class Renderer {
         d.textWidth = this.getBBox().width;
         d.layout.width = d.textWidth;
       });
+  }
 
-    const graph = this.calculateLayout();
-
-    // Create the graph element
-    svg
+  /**
+   * Renders the graph.
+   */
+  public render() {
+    this.graph = this.timeline.graph;
+    this.container
       .style('background', '#fff')
       .style('width', Math.max(this.options.width, this.maxRight))
       .style('height', this.options.height)
-      .style('left', this.shift)
+      .style('top', '23px')
       .style('position', 'relative');
-
-    // Create the axis
+    this.calculateLabelSizes();
+    this.initializeLayout();
+    this.calculateLayout();
+    this.calculateLinkPaths();
+    this.calculateShift();
+    this.calculateLinkPaths();
+    this.calculateDistributionLayout();
+    this.calculateMenuLayouts();
     if (this.options.layout === 'timeline') {
-      const axisContainer = svg.append('g').style('width', '100%');
-      axisContainer
-        .append('rect')
-        .attr('width', '100%')
-        .attr('height', this.options.axisHeight)
-        .attr('fill', this.options.axisColor);
-      const tickInterval = Math.round(
-        (this.timeline.maxTime - this.timeline.minTime) / this.options.ticks,
-      );
-      for (
-        let i = this.timeline.minTime;
-        i <= this.timeline.maxTime + 1;
-        i += 1
-      ) {
-        if (i % tickInterval === 0) {
-          const x = this.getTimeX(i);
-          axisContainer
-            .append('text')
-            .text(new Date(Math.round(i) * 1000).toISOString().slice(11, 19))
-            .attr('x', x + this.options.axisTickWidth)
-            .attr('y', this.options.axisHeight + this.options.axisMargin)
-            .attr('font-size', this.options.axisFontSize);
-          axisContainer
-            .append('rect')
-            .style(
-              'height',
-              this.options.axisTickHeight - this.options.axisHeight,
-            )
-            .style('width', this.options.axisTickWidth)
-            .attr('x', x)
-            .attr('y', this.options.axisHeight)
-            .attr('fill', this.options.axisColor);
-        }
+      this.createAxis();
+    }
+    this.createLinks();
+    this.createNodes();
+    this.expandToContent();
+    this.createLabelBoxes();
+    this.createMenuButtons();
+    if (this.options.layout === 'timeline') {
+      this.createDistributionHandles();
+    }
+    this.createNodeLabels();
+    this.createLinkLabels();
+  }
+
+  /**
+   * Creates the axis.
+   */
+  private createAxis() {
+    const axisContainer = this.container.append('g').style('width', '100%');
+    axisContainer
+      .append('rect')
+      .attr('width', '100%')
+      .attr('height', this.options.axis.height)
+      .attr('fill', this.options.axis.color);
+    const tickInterval = Math.round(
+      (this.timeline.maxTime - this.timeline.minTime) / this.options.ticks,
+    );
+    for (
+      let i = this.timeline.minTime;
+      i <= this.timeline.maxTime + 1;
+      i += 1
+    ) {
+      if (i % tickInterval === 0) {
+        const x = this.getTimeX(i);
+        axisContainer
+          .append('text')
+          .text(new Date(Math.round(i) * 1000).toISOString().slice(11, 19))
+          .attr('x', x + this.options.axis.tick.width)
+          .attr('y', this.options.axis.height + this.options.axis.margin)
+          .attr('font-size', this.options.axis.fontSize);
+        axisContainer
+          .append('rect')
+          .style(
+            'height',
+            this.options.axis.tick.height - this.options.axis.height,
+          )
+          .style('width', this.options.axis.tick.width)
+          .attr('x', x)
+          .attr('y', this.options.axis.height)
+          .attr('fill', this.options.axis.color);
       }
     }
+  }
 
-    // Create links
-    const links = svg
+  /**
+   * Creates links.
+   */
+  private createLinks() {
+    const links = this.container
       .append('g')
       .attr('fill', 'none')
       .selectAll('g')
-      .data(graph.links)
+      .data(this.graph.links)
       .join('g')
       .attr('stroke', (d: TimelineLink) =>
         (color(d.source.layout.color) as RGBColor).toString(),
@@ -393,18 +415,22 @@ export default class Renderer {
       .attr('stroke-width', (d: TimelineLink) => Math.max(1, d.layout.width));
 
     links.append('title').text(this.options.linkTitle);
+  }
 
-    // Create nodes
+  /**
+   * Creates the nodes.
+   */
+  private createNodes() {
     type TransitionType = Transition<BaseType, null, null, undefined>;
     const { options } = this;
     const _timeline = this.timeline;
     const renderer = this;
-    const nodes = svg
+    this.container
       .append('g')
       .selectAll('g')
-      .data(graph.nodes)
+      .data(this.graph.nodes)
       .join('g')
-      .attr('x', (d: TimelineNode) => this.getX(d))
+      .attr('x', (d: TimelineNode) => d.layout.x)
       .attr('y', (d: TimelineNode) => d.layout.y)
       .attr('height', (d: TimelineNode) => d.layout.height)
       .attr('width', (d: TimelineNode) => d.layout.width)
@@ -487,12 +513,12 @@ export default class Renderer {
             const top = d.layout.y + d.layout.height;
             if (top > this.options.height) {
               this.options.height = top;
-              svg.style('height', top);
+              this.container.style('height', top);
             }
-            const right = renderer.getX(d) + d.layout.width;
+            const right = d.layout.x + d.layout.width;
             if (right > this.options.width) {
               this.options.width = right;
-              svg.style('width', right);
+              this.container.style('width', right);
             }
           })
           .on('drag.update', () => {
@@ -502,19 +528,19 @@ export default class Renderer {
               const element = select<BaseType, TimelineNode>(this);
               element
                 .select('.nodeFill')
-                .attr('x', () => renderer.getX(d))
+                .attr('x', () => d.layout.x)
                 .attr('y', () => d.layout.y);
               element
                 .select('text')
-                .attr('x', () => renderer.getX(d) + d.layout.width / 2)
+                .attr('x', () => d.layout.x + d.layout.width / 2)
                 .attr('y', () => d.layout.y + d.layout.height / 2);
               element
                 .select('.meanValue')
-                .attr('x', () => renderer.getX(d) + d.layout.width / 2)
-                .attr('y', () => d.layout.y - options.meanBarWidth);
+                .attr('x', () => d.layout.x + d.layout.width / 2)
+                .attr('y', () => d.layout.y - options.meanBar.width);
               element
                 .select('.labelBox')
-                .attr('x', () => renderer.getX(d))
+                .attr('x', () => d.layout.x)
                 .attr(
                   'y',
                   () => d.layout.y + d.layout.height / 2 - d.textHeight / 2,
@@ -539,21 +565,31 @@ export default class Renderer {
             });
           }),
       );
+  }
 
+  /**
+   * Ensures the SVG is wide enough that nodes aren't going off the right hand side.
+   */
+  private expandToContent() {
     this.graph.nodes.forEach((node) => {
       const right = this.getTimeX(node.times.meanTime) + node.layout.width / 2;
       if (right > this.options.width) {
         this.options.width = right;
-        svg.style('width', right);
+        this.container.style('width', right);
       }
     });
+  }
 
-    // Label boxes
+  /**
+   * Creates the label boxes.
+   */
+  private createLabelBoxes() {
+    const nodes = selectAll<BaseType, TimelineNode>('.node');
     nodes
       .append('rect')
       .attr('class', 'labelBox')
       .style('fill', 'rgba(0,0,0,0.2)')
-      .attr('x', (d) => this.getX(d))
+      .attr('x', (d) => d.layout.x)
       .attr('y', (d) => d.layout.y + d.layout.height / 2 - d.textHeight / 2)
       .attr('width', (d) => d.textWidth)
       .attr('height', (d) => d.textHeight);
@@ -561,120 +597,132 @@ export default class Renderer {
       .append('rect')
       .attr('class', 'nodeFill')
       .attr('fill', (d: TimelineNode) => d.layout.color)
-      .attr('x', (d: TimelineNode) => this.getX(d))
+      .attr('x', (d: TimelineNode) => d.layout.x)
       .attr('y', (d: TimelineNode) => d.layout.y)
       .attr('height', (d: TimelineNode) => d.layout.height)
       .attr('width', (d: TimelineNode) => d.layout.width);
     nodes.append('title').text((d: TimelineNode) => this.options.nodeTitle(d));
+  }
 
-    // Menu buttons
+  /**
+   * Creates the menu buttons.
+   */
+  private createMenuButtons() {
+    const nodes = selectAll<BaseType, TimelineNode>('.node');
     for (let i = 0; i < 3; i += 1) {
       nodes
         .append('circle')
         .attr('class', `menu-button menu-button-${i + 1}`)
         .style('opacity', 0)
         .style('fill', this.options.fontColor)
-        .attr('r', this.options.buttonRadius);
+        .attr('r', this.options.menu.button.radius);
     }
     nodes
       .append('rect')
       .attr('class', 'menu-button-container')
       .style('cursor', 'pointer')
       .style('fill', 'rgba(0,0,0,0)')
-      .attr('height', 3 * this.options.buttonRadius)
+      .attr('height', 3 * this.options.menu.button.radius)
       .attr(
         'width',
-        this.options.buttonRadius * 9 + this.options.axisMargin * 2,
+        this.options.menu.button.radius * 9 + this.options.menu.margin * 2,
       )
       .on('click', (event: PointerEvent, d: TimelineNode) => {
         (window as any).showNodeMenu(d);
       });
     this.positionMenuNodes();
+  }
 
-    if (this.options.layout === 'timeline') {
-      const handleColor = 'rgba(0,0,0)';
-      // Left handle
-      nodes
-        .append('rect')
-        .attr('x', (d: TimelineNode) => {
-          if (d.layout.distribution) {
-            return d.layout.distribution[0].x;
-          }
-          return 0;
-        })
-        .attr('y', (d: TimelineNode) => {
-          if (d.layout.distribution) {
-            return d.layout.distribution[0].y;
-          }
-          return 0;
-        })
-        .attr('class', 'distHandle distHandleLeft')
-        .attr('height', (d: TimelineNode) => d.layout.height)
-        .attr('width', () => this.options.distHandleWidth)
-        .attr('fill', handleColor)
-        .style('opacity', this.options.fadeOpacity);
-      // Right handle
-      nodes
-        .append('rect')
-        .attr('x', (d: TimelineNode) => {
-          if (d.layout.distribution) {
-            return d.layout.distribution[1].x;
-          }
-          return 0;
-        })
-        .attr('y', (d: TimelineNode) => {
-          if (d.layout.distribution) {
-            return d.layout.distribution[1].y;
-          }
-          return 0;
-        })
-        .attr('class', 'distHandle distHandleRight')
-        .attr('height', (d: TimelineNode) => d.layout.height)
-        .attr('width', () => this.options.distHandleWidth)
-        .attr('fill', handleColor)
-        .style('opacity', this.options.fadeOpacity);
-      // Center line
-      nodes
-        .append('rect')
-        .attr('x', (d: TimelineNode) => {
-          if (d.layout.distribution) {
-            return d.layout.distribution[0].x;
-          }
-          return 0;
-        })
-        .attr('y', (d: TimelineNode) => {
-          if (d.layout.distribution) {
-            return d.layout.y + d.layout.height / 2;
-          }
-          return 0;
-        })
-        .attr('class', 'distHandle distHandleCenter')
-        .attr('height', () => this.options.distHandleWidth)
-        .attr('width', (d: TimelineNode) => {
-          if (d.layout.distribution) {
-            return d.layout.distribution[1].x - d.layout.distribution[0].x;
-          }
-          return 0;
-        })
-        .attr('fill', handleColor)
-        .style('opacity', this.options.fadeOpacity);
-
-      // Mean value bar
-      nodes
-        .append('rect')
-        .attr('x', (d: TimelineNode) => this.getX(d) + d.layout.width / 2)
-        .attr('y', (d: TimelineNode) => d.layout.y - this.options.meanBarWidth)
-        .attr('class', 'meanValue')
-        .attr('width', this.options.meanBarWidth)
-        .attr(
-          'height',
-          (d: TimelineNode) => d.layout.height + this.options.meanBarWidth * 2,
-        )
-        .attr('fill', this.options.meanBarColor);
-    }
-
-    // Visible labels
+  /**
+   * Creates distribution handles.
+   */
+  private createDistributionHandles() {
+    const nodes = selectAll<BaseType, TimelineNode>('.node');
+    // Left handle
     nodes
+      .append('rect')
+      .attr('x', (d: TimelineNode) => {
+        if (d.layout.distribution) {
+          return d.layout.distribution[0].x;
+        }
+        return 0;
+      })
+      .attr('y', (d: TimelineNode) => {
+        if (d.layout.distribution) {
+          return d.layout.distribution[0].y;
+        }
+        return 0;
+      })
+      .attr('class', 'distHandle distHandleLeft')
+      .attr('height', (d: TimelineNode) => d.layout.height)
+      .attr('width', () => this.options.distHandle.width)
+      .attr('fill', this.options.distHandle.color)
+      .style('opacity', this.options.fadeOpacity);
+    // Right handle
+    nodes
+      .append('rect')
+      .attr('x', (d: TimelineNode) => {
+        if (d.layout.distribution) {
+          return d.layout.distribution[1].x;
+        }
+        return 0;
+      })
+      .attr('y', (d: TimelineNode) => {
+        if (d.layout.distribution) {
+          return d.layout.distribution[1].y;
+        }
+        return 0;
+      })
+      .attr('class', 'distHandle distHandleRight')
+      .attr('height', (d: TimelineNode) => d.layout.height)
+      .attr('width', () => this.options.distHandle.width)
+      .attr('fill', this.options.distHandle.color)
+      .style('opacity', this.options.fadeOpacity);
+    // Center line
+    nodes
+      .append('rect')
+      .attr('x', (d: TimelineNode) => {
+        if (d.layout.distribution) {
+          return d.layout.distribution[0].x;
+        }
+        return 0;
+      })
+      .attr('y', (d: TimelineNode) => {
+        if (d.layout.distribution) {
+          return d.layout.y + d.layout.height / 2;
+        }
+        return 0;
+      })
+      .attr('class', 'distHandle distHandleCenter')
+      .attr('height', () => this.options.distHandle.width)
+      .attr('width', (d: TimelineNode) => {
+        if (d.layout.distribution) {
+          return d.layout.distribution[1].x - d.layout.distribution[0].x;
+        }
+        return 0;
+      })
+      .attr('fill', this.options.distHandle.color)
+      .style('opacity', this.options.fadeOpacity);
+
+    // Mean value bar
+    nodes
+      .append('rect')
+      .attr('x', (d: TimelineNode) => d.layout.x + d.layout.width / 2)
+      .attr('y', (d: TimelineNode) => d.layout.y - this.options.meanBar.width)
+      .attr('class', 'meanValue')
+      .attr('width', this.options.meanBar.width)
+      .attr(
+        'height',
+        (d: TimelineNode) => d.layout.height + this.options.meanBar.width * 2,
+      )
+      .attr('fill', this.options.meanBar.color);
+  }
+
+  /**
+   * Creates the visible node labels.
+   */
+  private createNodeLabels() {
+    selectAll<BaseType, TimelineNode>('.node')
       .append('text')
       .attr('text-anchor', 'middle')
       .attr('dominant-baseline', 'middle')
@@ -682,10 +730,15 @@ export default class Renderer {
       .style('fill', this.options.fontColor)
       .style('font-size', `${this.options.fontSize}px`)
       .text((d: TimelineNode) => d.label)
-      .attr('x', (d: TimelineNode) => this.getX(d) + d.layout.width / 2)
+      .attr('x', (d: TimelineNode) => d.layout.x + d.layout.width / 2)
       .attr('y', (d: TimelineNode) => d.layout.y + d.layout.height / 2);
+  }
 
-    links
+  /**
+   * Creates link labels.
+   */
+  private createLinkLabels() {
+    selectAll<BaseType, TimelineLink>('.link')
       .append('text')
       .attr('class', 'link-label')
       .attr('text-anchor', 'middle')
@@ -705,14 +758,14 @@ export default class Renderer {
   private getCurveLUT(link: TimelineLink) {
     const y = link.source.layout.y + link.source.layout.height / 2;
     const y1 = link.target.layout.y + link.target.layout.height / 2;
-    const sourceX = this.getX(link.source);
-    const targetX = this.getX(link.target);
+    const sourceX = link.source.layout.x;
+    const targetX = link.target.layout.x;
     return new Bezier([
       sourceX,
       y,
-      sourceX + this.options.curveWidth,
+      sourceX + this.options.curve.width,
       y,
-      targetX - this.options.curveWidth,
+      targetX - this.options.curve.width,
       y1,
       targetX,
       y1,
@@ -763,8 +816,8 @@ export default class Renderer {
     let path = `M${curve[0][0]},${curve[0][1]}C${curve[1][0]},${curve[1][1]},${curve[2][0]},${curve[2][1]},${curve[3][0]},${curve[3][1]}`;
     if (link.isSelfLinking) {
       path = `M${curve[0][0] - 5},${curve[0][1]}C${curve[1][0]},${
-        curve[1][1] - this.options.curveHeight
-      },${curve[2][0]},${curve[2][1] - this.options.curveHeight},${
+        curve[1][1] - this.options.curve.height
+      },${curve[2][0]},${curve[2][1] - this.options.curve.height},${
         curve[3][0] + 5
       },${curve[3][1]}`;
     }
@@ -778,28 +831,11 @@ export default class Renderer {
    * @returns - The scaled x coordinate.
    */
   private getTimeX(time: number): number {
-    let shift = this.timeline.minTime;
-    if (this.timeline.minTime < 0) {
-      shift = 0 - this.timeline.minTime;
-    }
     return (
       (this.range[1] - this.range[0]) *
-        ((time + shift) /
-          (this.timeline.maxTime + shift - (this.timeline.minTime + shift))) +
+        (time / (this.timeline.maxTime - this.timeline.minTime)) +
       this.range[0]
     );
-  }
-
-  /**
-   * Resolves a node's x coordinate based on the current layout.
-   * @param node - The node to get.
-   * @returns The x coordinate.
-   */
-  private getX(node: TimelineNode): number {
-    if (this.options.layout === 'default') {
-      return node.layout.x;
-    }
-    return this.getTimeX(node.times.meanTime) - node.layout.width / 2;
   }
 
   /**
@@ -810,7 +846,7 @@ export default class Renderer {
       selectAll<BaseType, TimelineNode>(`.menu-button-${i + 1}`)
         .attr('cx', (d) => {
           if (d.textHeight >= d.layout.height) {
-            return d.layout.menuX[i] + this.options.axisMargin;
+            return d.layout.menuX[i] + this.options.menu.margin;
           }
           return d.layout.menuX[i];
         })
@@ -820,7 +856,7 @@ export default class Renderer {
               d.layout.y +
               d.layout.height / 2 -
               d.textHeight / 2 -
-              this.options.buttonRadius
+              this.options.menu.button.radius
             );
           }
           return d.layout.menuY;
@@ -835,7 +871,8 @@ export default class Renderer {
     selectAll<BaseType, TimelineNode>('.menu-button-container')
       .attr(
         'x',
-        (d: TimelineNode) => d.layout.menuX[0] - 3 * this.options.buttonRadius,
+        (d: TimelineNode) =>
+          d.layout.menuX[0] - 3 * this.options.menu.button.radius,
       )
       .attr('y', (d: TimelineNode) => {
         if (d.textHeight >= d.layout.height) {
@@ -843,10 +880,10 @@ export default class Renderer {
             d.layout.y +
             d.layout.height / 2 -
             d.textHeight / 2 -
-            2 * this.options.buttonRadius
+            2 * this.options.menu.button.radius
           );
         }
-        return d.layout.menuY - this.options.buttonRadius;
+        return d.layout.menuY - this.options.menu.button.radius;
       });
   }
 

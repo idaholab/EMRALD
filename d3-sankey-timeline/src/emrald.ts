@@ -165,7 +165,7 @@ export default function main() {
   const processed = preprocess(data, keyStates);
   nodes = processed[0];
   links = processed[1];
-  const renderer = new sankeyTimeline.Renderer(timeline);
+  const renderer = new sankeyTimeline.Renderer(timeline, select('svg'));
   renderer.options.height = window.innerHeight;
   renderer.options.width = window.innerWidth;
   renderer.options.dynamicNodeHeight = true;
@@ -325,14 +325,14 @@ export default function main() {
   }
 
   createPaths();
-  renderer.render(select('svg'));
+  renderer.render();
 
   /**
    * Forcibly re-renders the diagram.
    */
   function reRender() {
     selectAll('svg > *').remove();
-    renderer.render(select('svg'));
+    renderer.render();
   }
 
   (window as any).toggleTimelineMode = (value: boolean) => {

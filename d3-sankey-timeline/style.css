@@ -61,3 +61,10 @@ body {
     width: 100%;
     height: 30px;
 }
+
+#top-bar {
+    position: fixed;
+    background: white;
+    z-index: 1;
+    width: 100%;
+}

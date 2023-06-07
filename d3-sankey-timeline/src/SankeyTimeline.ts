@@ -181,7 +181,6 @@ export default class SankeyTimeline {
    * @returns The graph object.
    */
   public get graph(): TimelineGraph {
-    console.log(this.nodes);
     return {
       links: Object.values(this.links),
       nodes: Object.values(this.nodes).sort(
