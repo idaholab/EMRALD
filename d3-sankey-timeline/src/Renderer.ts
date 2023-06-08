@@ -8,7 +8,7 @@ import colors from './colors';
 import type SankeyTimeline from './SankeyTimeline';
 import type TimelineLink from './TimelineLink';
 import type TimelineNode from './TimelineNode';
-import type { TimelineGraph } from './types';
+import type { Coordinate, TimelineGraph } from './types';
 import { hasDist } from './util';
 
 /**
@@ -31,6 +31,7 @@ export default class Renderer {
         width: 3,
       },
     },
+    background: 'white',
     curve: {
       height: 50,
       width: 200,
@@ -71,6 +72,10 @@ export default class Renderer {
 
   private maxRight = 0;
 
+  private range: [number, number];
+
+  private shift = 0;
+
   /**
    * Constructs Renderer.
    * @param timeline - The timeline to render.
@@ -79,7 +84,12 @@ export default class Renderer {
   public constructor(
     private timeline: SankeyTimeline,
     private container: Selection<BaseType, unknown, HTMLElement, any>,
-  ) {}
+  ) {
+    this.range = [
+      this.options.margin,
+      this.options.width - this.options.margin,
+    ];
+  }
 
   /**
    * Calculates a bezier curve for the given link.
@@ -111,30 +121,6 @@ export default class Renderer {
         path: this.getCurvePath(link),
         width,
       };
-    });
-  }
-
-  /**
-   * Calculates the distribution data layout for nodes in the graph.
-   */
-  private calculateDistributionLayout() {
-    this.graph.nodes.forEach((node) => {
-      if (hasDist(node.times) && this.options.distributions) {
-        node.layout.distribution = [
-          {
-            x: this.getTimeX(
-              (node.times.meanTime || 0) - (node.times.stdDeviation || 0),
-            ),
-            y: node.layout.y,
-          },
-          {
-            x: this.getTimeX(
-              (node.times.meanTime || 0) + (node.times.stdDeviation || 0),
-            ),
-            y: node.layout.y,
-          },
-        ];
-      }
     });
   }
 
@@ -238,12 +224,36 @@ export default class Renderer {
       }
     });
     if (minX < 0) {
+      const shift = 0 - minX;
       this.graph.nodes.forEach((node, n) => {
-        this.graph.nodes[n].layout.x += 0 - minX;
-        if (node.layout.x + node.layout.width > this.maxRight) {
+        this.graph.nodes[n].layout.x += shift;
+        let right = this.graph.nodes[n].layout.x;
+        if (hasDist(node.times) && this.options.distributions) {
+          node.layout.distribution = [
+            {
+              x:
+                shift +
+                this.getTimeX(
+                  node.times.meanTime - (node.times.stdDeviation || 0),
+                ),
+              y: node.layout.y,
+            },
+            {
+              x:
+                shift +
+                this.getTimeX(
+                  node.times.meanTime + (node.times.stdDeviation || 0),
+                ),
+              y: node.layout.y,
+            },
+          ];
+        }
+        right = (this.graph.nodes[n].layout.distribution as Coordinate[])[1].x;
+        if (right > this.maxRight) {
           this.maxRight = node.layout.x + node.layout.width;
         }
       });
+      this.shift = shift;
     }
   }
 
@@ -288,15 +298,6 @@ export default class Renderer {
   }
 
   /**
-   * The chart range.
-   *
-   * @returns The chart range.
-   */
-  private get range(): [number, number] {
-    return [this.options.margin, this.options.width - this.options.margin];
-  }
-
-  /**
    * Calculates the width of the nodes to accomodate the size of their text.
    */
   private calculateLabelSizes() {
@@ -309,7 +310,7 @@ export default class Renderer {
       .data(this.timeline.graph.nodes)
       .attr('text-anchor', 'middle')
       .attr('dominant-baseline', 'middle')
-      .style('display', 'none')
+      .attr('x', '-1000')
       .style('font-size', `${this.options.fontSize}px`)
       .text((d: TimelineNode) => d.label)
       .each(function (d: TimelineNode) {
@@ -324,8 +325,12 @@ export default class Renderer {
    */
   public render() {
     this.graph = this.timeline.graph;
+    this.range = [
+      this.options.margin,
+      this.options.width - this.options.margin,
+    ];
     this.container
-      .style('background', '#fff')
+      .style('background', this.options.background)
       .style('width', Math.max(this.options.width, this.maxRight))
       .style('height', this.options.height)
       .style('top', '23px')
@@ -335,8 +340,7 @@ export default class Renderer {
     this.calculateLayout();
     this.calculateLinkPaths();
     this.calculateShift();
-    this.calculateLinkPaths();
-    this.calculateDistributionLayout();
+    this.calculateLinkPaths();  // Reposition links after shifting
     this.calculateMenuLayouts();
     if (this.options.layout === 'timeline') {
       this.createAxis();
@@ -373,12 +377,20 @@ export default class Renderer {
     ) {
       if (i % tickInterval === 0) {
         const x = this.getTimeX(i);
+        const renderer = this;
         axisContainer
           .append('text')
           .text(new Date(Math.round(i) * 1000).toISOString().slice(11, 19))
-          .attr('x', x + this.options.axis.tick.width)
-          .attr('y', this.options.axis.height + this.options.axis.margin)
-          .attr('font-size', this.options.axis.fontSize);
+          .attr('font-size', this.options.axis.fontSize)
+          .attr('x', function () {
+            return renderer.shift + x - this.getBBox().width / 2;
+          })
+          .attr(
+            'y',
+            this.options.axis.height +
+              this.options.axis.tick.height +
+              this.options.axis.margin,
+          );
         axisContainer
           .append('rect')
           .style(
@@ -386,7 +398,7 @@ export default class Renderer {
             this.options.axis.tick.height - this.options.axis.height,
           )
           .style('width', this.options.axis.tick.width)
-          .attr('x', x)
+          .attr('x', this.shift + x)
           .attr('y', this.options.axis.height)
           .attr('fill', this.options.axis.color);
       }
@@ -751,25 +763,22 @@ export default class Renderer {
   }
 
   /**
-   * Calculates the LUT of a bezier curve.
+   * Wraps a curve in the Bezier library.
    * @param link - The link to calculate for.
-   * @returns 100 points along the curve.
+   * @returns The Bezier curve.
    */
-  private getCurveLUT(link: TimelineLink) {
-    const y = link.source.layout.y + link.source.layout.height / 2;
-    const y1 = link.target.layout.y + link.target.layout.height / 2;
-    const sourceX = link.source.layout.x;
-    const targetX = link.target.layout.x;
+  private getBezierCurve(link: TimelineLink) {
+    const curve = this.calculateCurve(link);
     return new Bezier([
-      sourceX,
-      y,
-      sourceX + this.options.curve.width,
-      y,
-      targetX - this.options.curve.width,
-      y1,
-      targetX,
-      y1,
-    ]).getLUT();
+      curve[0][0],
+      curve[0][1],
+      curve[1][0],
+      curve[1][1],
+      curve[2][0],
+      curve[2][1],
+      curve[3][0],
+      curve[3][1],
+    ]);
   }
 
   /**
@@ -779,7 +788,7 @@ export default class Renderer {
    * @returns The x and y coordinates of the midpoint.
    */
   private getCurveMidpoint(link: TimelineLink) {
-    return this.getCurveLUT(link)[50];
+    return this.getBezierCurve(link).getLUT()[50];
   }
 
   /**
@@ -788,7 +797,7 @@ export default class Renderer {
    * @returns The [minimum, maximum] x coordinates.
    */
   private getCurveExtrema(link: TimelineLink) {
-    const curve = this.getCurveLUT(link);
+    const curve = this.getBezierCurve(link).getLUT();
     let min = Infinity;
     let max = -Infinity;
     curve.forEach((point) => {
