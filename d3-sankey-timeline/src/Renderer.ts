@@ -584,10 +584,17 @@ export default class Renderer {
    */
   private expandToContent() {
     this.graph.nodes.forEach((node) => {
-      const right = this.getTimeX(node.times.meanTime) + node.layout.width / 2;
+      const right = node.layout.x + node.layout.width;
       if (right > this.options.width) {
-        this.options.width = right;
-        this.container.style('width', right);
+        this.options.width = right + this.options.margin;
+        this.container.style('width', this.options.width);
+      }
+    });
+    this.graph.links.forEach((link) => {
+      const right = this.getCurveExtrema(link)[1];
+      if (right > this.options.width) {
+        this.options.width = right + this.options.margin;
+        this.container.style('width', this.options.width);
       }
     });
   }
