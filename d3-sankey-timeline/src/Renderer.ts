@@ -57,13 +57,6 @@ export default class Renderer {
       color: 'rgba(0,0,0,0.25)',
       width: 3,
     },
-    menu: {
-      button: {
-        radius: 2,
-        spacing: 6,
-      },
-      margin: 6,
-    },
     nodeTitle: (d: TimelineNode): string => d.label,
     ticks: 25,
     transitionSpeed: 75,
@@ -258,21 +251,6 @@ export default class Renderer {
   }
 
   /**
-   * Assigns the positions for the menu button circles.
-   */
-  private calculateMenuLayouts() {
-    this.graph.nodes.forEach((d, i) => {
-      this.graph.nodes[i].layout.menuY = d.layout.y + this.options.menu.margin;
-      const base = d.layout.x + d.layout.width - this.options.menu.margin;
-      this.graph.nodes[i].layout.menuX = [
-        base - 2 * this.options.menu.button.spacing,
-        base - this.options.menu.button.spacing,
-        base,
-      ];
-    });
-  }
-
-  /**
    * Places nodes in their initial positions.
    */
   private initializeLayout() {
@@ -287,8 +265,6 @@ export default class Renderer {
         color: node.color || '',
         column: -1,
         height,
-        menuX: [],
-        menuY: 0,
         row: -1,
         width: node.layout.width,
         x,
@@ -341,7 +317,6 @@ export default class Renderer {
     this.calculateLinkPaths();
     this.calculateShift();
     this.calculateLinkPaths(); // Reposition links after shifting
-    this.calculateMenuLayouts();
     if (this.options.layout === 'timeline') {
       this.createAxis();
     }
@@ -349,7 +324,6 @@ export default class Renderer {
     this.createNodes();
     this.expandToContent();
     this.createLabelBoxes();
-    this.createMenuButtons();
     if (this.options.layout === 'timeline') {
       this.createDistributionHandles();
     }
@@ -453,7 +427,6 @@ export default class Renderer {
           .ease(easeCubicIn) as any as TransitionType;
         const target = select(this);
         target.selectAll('.distHandle').transition(fade).style('opacity', 1);
-        target.selectAll('.menu-button').transition(fade).style('opacity', 1);
         let shortestPath: number[] = [];
         const paths: number[][] = _timeline.getPath(d.id);
         paths.forEach((path) => {
@@ -478,7 +451,7 @@ export default class Renderer {
           }
         });
       })
-      .on('mouseleave', function () {
+      .on('mouseleave', function (e) {
         const fade = transition()
           .duration(options.transitionSpeed)
           .ease(easeCubicIn) as any as TransitionType;
@@ -486,10 +459,6 @@ export default class Renderer {
         selectAll('.distHandle')
           .transition(fade)
           .style('opacity', options.fadeOpacity);
-        select(this)
-          .selectAll('.menu-button')
-          .transition(fade)
-          .style('opacity', 0);
       })
       .call(
         drag<any, TimelineNode>()
@@ -576,8 +545,6 @@ export default class Renderer {
                     return y;
                   });
               });
-              renderer.calculateMenuLayouts();
-              renderer.positionMenuNodes();
               element.select('.distHandleLeft').attr('y', () => d.layout.y);
               element
                 .select('.distHandleCenter')
@@ -630,35 +597,6 @@ export default class Renderer {
       .attr('height', (d: TimelineNode) => d.layout.height)
       .attr('width', (d: TimelineNode) => d.layout.width);
     nodes.append('title').text((d: TimelineNode) => this.options.nodeTitle(d));
-  }
-
-  /**
-   * Creates the menu buttons.
-   */
-  private createMenuButtons() {
-    const nodes = selectAll<BaseType, TimelineNode>('.node');
-    for (let i = 0; i < 3; i += 1) {
-      nodes
-        .append('circle')
-        .attr('class', `menu-button menu-button-${i + 1}`)
-        .style('opacity', 0)
-        .style('fill', this.options.fontColor)
-        .attr('r', this.options.menu.button.radius);
-    }
-    nodes
-      .append('rect')
-      .attr('class', 'menu-button-container')
-      .style('cursor', 'pointer')
-      .style('fill', 'rgba(0,0,0,0)')
-      .attr('height', 4 * this.options.menu.button.radius)
-      .attr(
-        'width',
-        this.options.menu.button.radius * 7 + this.options.menu.margin * 2,
-      )
-      .on('click', (event: PointerEvent, d: TimelineNode) => {
-        (window as any).showNodeMenu(d);
-      });
-    this.positionMenuNodes();
   }
 
   /**
@@ -868,29 +806,6 @@ export default class Renderer {
         (time / (this.timeline.maxTime - this.timeline.minTime)) +
       this.range[0]
     );
-  }
-
-  /**
-   * Repositions the menu nodes.
-   */
-  private positionMenuNodes() {
-    for (let i = 0; i < 3; i += 1) {
-      selectAll<BaseType, TimelineNode>(`.menu-button-${i + 1}`)
-        .attr('cx', (d) => d.layout.menuX[i])
-        .attr('cy', (d) => d.layout.y - this.options.menu.button.radius * 2)
-        .style('fill', 'black');
-    }
-    selectAll<BaseType, TimelineNode>('.menu-button-container')
-      .attr(
-        'x',
-        (d: TimelineNode) =>
-          d.layout.menuX[0] - 3 * this.options.menu.button.radius,
-      )
-      .attr(
-        'y',
-        (d: TimelineNode) =>
-          d.layout.y - 2 * this.options.menu.button.radius * 2,
-      );
   }
 
   /**

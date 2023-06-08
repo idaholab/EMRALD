@@ -18,6 +18,7 @@
       <button id="zoomOut">Zoom Out</button>
       <button id="zoomIn">Zoom In</button>
       <button id="save">Save</button>
+      <button id="menu">Change Colors</button>
     </div>
     <svg id="chart"></svg>
     <div id="keyStateOptions"></div>
@@ -25,7 +26,9 @@
       <div id="node-menu">
         <div id="node-menu-handle"></div>
         <div id="node-menu-contents">
-          <h3 id="node-menu-header">Edit Node Properties</h3>
+          <h3 id="node-menu-header">Edit Node Properties of </h3>
+          <select id="node-options" title="Select node to edit"></select>
+          <br />
           Choose a color:
           <div id="color-options"></div>
           <div id="color-custom-options"></div>
@@ -39,7 +42,6 @@
         </div>
       </div>
     </div>
-    <script src="./data.js"></script>
     <script src="./emrald-sankey-timeline.js"></script>
     <script>
       if (window.data) {
@@ -72,6 +74,10 @@
 
       document.getElementById('save').addEventListener('click', () => {
         window.saveDiagram();
+      });
+
+      document.getElementById('menu').addEventListener('click', () => {
+        window.showNodeMenu();
       });
 
       function OnLoad(dataObj) {

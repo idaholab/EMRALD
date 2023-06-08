@@ -425,18 +425,55 @@ export default function main() {
 
   const colorInput = $<HTMLInputElement>('color-custom-input');
 
-  (window as any).showNodeMenu = (targetNode: TimelineNode) => {
-    createColorOptions($('color-options'), colors, targetNode);
-    createColorOptions($('color-custom-options'), customColors, targetNode);
-    $('node-menu-container').style.display = 'block';
-    $('node-menu-header').innerText = `Edit Properties of ${targetNode.label}`;
+  /**
+   * Selects which node to edit when the dropdown is changed.
+   * @param id - The selected ID.
+   */
+  function selectNodeToEdit(id: string) {
+    createColorOptions(
+      $('color-options'),
+      colors,
+      timeline.getNode(Number(id)),
+    );
+    createColorOptions(
+      $('color-custom-options'),
+      customColors,
+      timeline.getNode(Number(id)),
+    );
     $('set-custom-color').onclick = () => {
       const color = colorInput.value;
-      renderer.setNodeColor(targetNode.id, color);
+      renderer.setNodeColor(Number(id), color);
       if (customColors.indexOf(color) < 0) {
         customColors.push(color);
       }
     };
+  }
+
+  (window as any).showNodeMenu = () => {
+    $('node-menu-container').style.display = 'block';
+    $('node-options').innerHTML = '';
+    timeline.graph.nodes
+      .sort((a, b) => {
+        if (a.label < b.label) {
+          return -1;
+        }
+        if (a.label > b.label) {
+          return 1;
+        }
+        return 0;
+      })
+      .forEach((node) => {
+        const option = document.createElement('option');
+        option.innerText = node.label;
+        option.setAttribute('value', `${node.id}`);
+        $('node-options').appendChild(option);
+      });
+    $<HTMLSelectElement>('node-options').addEventListener(
+      'change',
+      function () {
+        selectNodeToEdit(this.value);
+      },
+    );
   };
 
   colorInput.addEventListener('keyup', () => {
@@ -448,6 +485,8 @@ export default function main() {
     $('node-menu-container').style.display = 'none';
   });
 
+  selectNodeToEdit(`${timeline.graph.nodes[0].id}`);
+
   /**
    * Enables dragging an element.
    * Adapted from https://www.w3schools.com/howto/howto_js_draggable.asp.
@@ -455,15 +494,18 @@ export default function main() {
    * @param elmnt - The element to drag.
    */
   function dragElement(elmnt: HTMLDivElement) {
-    var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
-    if ($(elmnt.id + "-handle")) {
+    var pos1 = 0,
+      pos2 = 0,
+      pos3 = 0,
+      pos4 = 0;
+    if ($(elmnt.id + '-handle')) {
       // if present, the header is where you move the DIV from:
-      $(elmnt.id + "-handle").onmousedown = dragMouseDown;
+      $(elmnt.id + '-handle').onmousedown = dragMouseDown;
     } else {
       // otherwise, move the DIV from anywhere inside the DIV:
       elmnt.onmousedown = dragMouseDown;
     }
-  
+
     function dragMouseDown(e: MouseEvent) {
       e = e || window.event;
       e.preventDefault();
@@ -474,7 +516,7 @@ export default function main() {
       // call a function whenever the cursor moves:
       document.onmousemove = elementDrag;
     }
-  
+
     function elementDrag(e: MouseEvent) {
       e = e || window.event;
       e.preventDefault();
@@ -486,14 +528,14 @@ export default function main() {
       elmnt.style.top = `${e.clientY}px`;
       elmnt.style.left = `${e.clientX}px`;
     }
-  
+
     function closeDragElement() {
       // stop moving when mouse button is released:
       document.onmouseup = null;
       document.onmousemove = null;
     }
   }
-  dragElement($("node-menu"));
+  dragElement($('node-menu'));
 
   window.addEventListener('resize', () => {
     renderer.options.width = window.innerWidth;

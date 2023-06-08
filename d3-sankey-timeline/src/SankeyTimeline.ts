@@ -139,6 +139,15 @@ export default class SankeyTimeline {
   }
 
   /**
+   * Gets a node by ID.
+   * @param id - The ID of the node to get.
+   * @returns The node.
+   */
+  public getNode(id: number) {
+    return this.nodes[id];
+  }
+
+  /**
    * Returns all nodes with the given label.
    *
    * @param label - The label of nodes to find.

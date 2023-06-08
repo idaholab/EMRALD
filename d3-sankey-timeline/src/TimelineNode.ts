@@ -24,8 +24,6 @@ export default class TimelineNode {
     color: '',
     column: -1,
     height: 0,
-    menuX: [0, 0, 0],
-    menuY: 0,
     row: -1,
     width: 0,
     x: 0,
