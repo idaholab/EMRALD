@@ -58,6 +58,7 @@ type TimelineOptions = {
   options?: {
     customColors: string[];
     fontSize: number;
+    lastEditedNode?: string;
     maxNodeHeight: number;
     maxLinkWidth: number;
   };
@@ -325,6 +326,10 @@ export default function main() {
   }
 
   createPaths();
+  let lastEditedNode = `${timeline.graph.nodes[0].id}`;
+  if (data.options?.lastEditedNode) {
+    lastEditedNode = data.options.lastEditedNode;
+  }
   renderer.render();
 
   /**
@@ -376,6 +381,7 @@ export default function main() {
     pathResults.options = {
       customColors,
       fontSize: renderer.options.fontSize,
+      lastEditedNode: lastEditedNode,
       maxNodeHeight: renderer.options.maxNodeHeight,
       maxLinkWidth: renderer.options.maxLinkWidth,
     };
@@ -430,6 +436,8 @@ export default function main() {
    * @param id - The selected ID.
    */
   function selectNodeToEdit(id: string) {
+    lastEditedNode = id;
+    (document.getElementById('node-options') as HTMLSelectElement).value = id;
     createColorOptions(
       $('color-options'),
       colors,
@@ -468,6 +476,7 @@ export default function main() {
         option.setAttribute('value', `${node.id}`);
         $('node-options').appendChild(option);
       });
+    selectNodeToEdit(lastEditedNode);
     $<HTMLSelectElement>('node-options').addEventListener(
       'change',
       function () {
@@ -484,8 +493,6 @@ export default function main() {
     reRender();
     $('node-menu-container').style.display = 'none';
   });
-
-  selectNodeToEdit(`${timeline.graph.nodes[0].id}`);
 
   /**
    * Enables dragging an element.
