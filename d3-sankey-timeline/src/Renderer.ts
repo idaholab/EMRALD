@@ -62,7 +62,7 @@ export default class Renderer {
         radius: 2,
         spacing: 6,
       },
-      margin: 8,
+      margin: 6,
     },
     nodeTitle: (d: TimelineNode): string => d.label,
     ticks: 25,
@@ -340,7 +340,7 @@ export default class Renderer {
     this.calculateLayout();
     this.calculateLinkPaths();
     this.calculateShift();
-    this.calculateLinkPaths();  // Reposition links after shifting
+    this.calculateLinkPaths(); // Reposition links after shifting
     this.calculateMenuLayouts();
     if (this.options.layout === 'timeline') {
       this.createAxis();
@@ -634,10 +634,10 @@ export default class Renderer {
       .attr('class', 'menu-button-container')
       .style('cursor', 'pointer')
       .style('fill', 'rgba(0,0,0,0)')
-      .attr('height', 3 * this.options.menu.button.radius)
+      .attr('height', 4 * this.options.menu.button.radius)
       .attr(
         'width',
-        this.options.menu.button.radius * 9 + this.options.menu.margin * 2,
+        this.options.menu.button.radius * 7 + this.options.menu.margin * 2,
       )
       .on('click', (event: PointerEvent, d: TimelineNode) => {
         (window as any).showNodeMenu(d);
@@ -853,29 +853,9 @@ export default class Renderer {
   private positionMenuNodes() {
     for (let i = 0; i < 3; i += 1) {
       selectAll<BaseType, TimelineNode>(`.menu-button-${i + 1}`)
-        .attr('cx', (d) => {
-          if (d.textHeight >= d.layout.height) {
-            return d.layout.menuX[i] + this.options.menu.margin;
-          }
-          return d.layout.menuX[i];
-        })
-        .attr('cy', (d) => {
-          if (d.textHeight >= d.layout.height) {
-            return (
-              d.layout.y +
-              d.layout.height / 2 -
-              d.textHeight / 2 -
-              this.options.menu.button.radius
-            );
-          }
-          return d.layout.menuY;
-        })
-        .style('fill', (d) => {
-          if (d.textHeight >= d.layout.height) {
-            return 'black';
-          }
-          return this.options.fontColor;
-        });
+        .attr('cx', (d) => d.layout.menuX[i])
+        .attr('cy', (d) => d.layout.y - this.options.menu.button.radius * 2)
+        .style('fill', 'black');
     }
     selectAll<BaseType, TimelineNode>('.menu-button-container')
       .attr(
@@ -883,17 +863,10 @@ export default class Renderer {
         (d: TimelineNode) =>
           d.layout.menuX[0] - 3 * this.options.menu.button.radius,
       )
-      .attr('y', (d: TimelineNode) => {
-        if (d.textHeight >= d.layout.height) {
-          return (
-            d.layout.y +
-            d.layout.height / 2 -
-            d.textHeight / 2 -
-            2 * this.options.menu.button.radius
-          );
-        }
-        return d.layout.menuY - this.options.menu.button.radius;
-      });
+      .attr(
+        'y',
+        (d: TimelineNode) => d.layout.y - 2 * this.options.menu.button.radius * 2,
+      );
   }
 
   /**
