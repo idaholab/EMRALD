@@ -600,7 +600,7 @@ namespace UnitTesting_Simulation
       //Setup directory for unit test 
       string dir = SetupTestDir(testName);
       //initial options, and optional results to save/test
-      JObject optionsJ = SetupJSON(dir, testName, true);
+      JObject optionsJ = SetupJSON(dir, testName, false);
 
       SimulationEngine.Options options = optionsJ.ToObject<SimulationEngine.Options>();
       //Change the default settings as needed for the test seed default set to 0 for testing.
