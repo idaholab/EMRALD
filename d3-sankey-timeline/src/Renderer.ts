@@ -563,9 +563,18 @@ export default class Renderer {
                 current.select('path').attr('d', l.layout.path);
                 const midpoint = renderer.getCurveMidpoint(l);
                 current
-                  .select('text')
+                  .select<SVGTextElement>('text')
                   .attr('x', midpoint.x)
-                  .attr('y', midpoint.y);
+                  .attr('y', function () {
+                    let y = midpoint.y;
+                    if (l.isSelfLinking) {
+                      y =
+                        y -
+                        renderer.options.curve.height +
+                        this.getBBox().height / 2;
+                    }
+                    return y;
+                  });
               });
               renderer.calculateMenuLayouts();
               renderer.positionMenuNodes();
@@ -757,6 +766,7 @@ export default class Renderer {
    * Creates link labels.
    */
   private createLinkLabels() {
+    const renderer = this;
     selectAll<BaseType, TimelineLink>('.link')
       .append('text')
       .attr('class', 'link-label')
@@ -766,7 +776,13 @@ export default class Renderer {
       .style('font-size', `${this.options.fontSize}px`)
       .text((d: TimelineLink) => d.data.count)
       .attr('x', (link: TimelineLink) => this.getCurveMidpoint(link).x)
-      .attr('y', (link: TimelineLink) => this.getCurveMidpoint(link).y);
+      .attr('y', function (link: TimelineLink) {
+        let y = renderer.getCurveMidpoint(link).y;
+        if (link.isSelfLinking) {
+          y = y - renderer.options.curve.height + this.getBBox().height / 2;
+        }
+        return y;
+      });
   }
 
   /**
@@ -872,7 +888,8 @@ export default class Renderer {
       )
       .attr(
         'y',
-        (d: TimelineNode) => d.layout.y - 2 * this.options.menu.button.radius * 2,
+        (d: TimelineNode) =>
+          d.layout.y - 2 * this.options.menu.button.radius * 2,
       );
   }
 
