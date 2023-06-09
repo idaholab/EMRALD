@@ -15,7 +15,6 @@ export default class TimelineLink {
   public id: number;
 
   public layout: LinkLayout = {
-    curve: [],
     path: '',
     width: 0,
   };
