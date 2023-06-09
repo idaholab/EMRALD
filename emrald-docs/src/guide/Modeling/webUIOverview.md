@@ -29,9 +29,12 @@
   Once you complete your conflict resolution choices, click ""Submit"" and the model will merge into the base model accordingly.
   - **Open:** Browse to open an existing project.
   - **Save:** Operates like a standard "Save As" to save the current project.
-  - **Export Templates:** Allows you to save any project template items for use in other projects. When clicked from the dropdown menu, the following window appears in the Modeling Area.<br><div style="width:400px">![Export Template Window](/images/Modeling/webUIOverview/ExportTemplate.png)</div>
+  - **Templates:** 
+    - **Import Templates** Imports a template that has been saved from another project for use in current project.
+    - **Export Templates** Allows you to save any project template items for use in other projects.When clicked from the dropdown menu, the following window appears in the Modeling Area.<br><div style="width:400px">![Export Template Window](/images/Modeling/webUIOverview/ExportTemplate.png)</div>
+    - **Clear Templates** Wipes the templates from the browser.
   - **Load Demo:** Exits the current project and loads the demo project as with any changing of projects, unsaved changes in the current project would be lost.
-
+  - **Load Results:** Presents the results as a sankey diagram. 
 
 **Download** <br>
   <div style="width:500px">![Download Menu](/images/Modeling/webUIOverview/TopMenuDownload.png)</div> <br>

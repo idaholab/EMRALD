@@ -1,0 +1,26 @@
+namespace UserScript
+{
+using System;
+using System.IO;
+using System.Collections.Generic;
+using MathNet.Numerics.Distributions;
+using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
+public class TestClass
+{
+Double CurTime = 0;
+public void SetCurTime(Double x) { CurTime = x; }
+Int32 RunIdx = 0;
+public void SetRunIdx(Int32 x) { RunIdx = x; }
+Double ExtSimStartTime = 0;
+public void SetExtSimStartTime(Double x) { ExtSimStartTime = x; }
+Double No_AFW_Time = 0;
+public void SetNo_AFW_Time(Double x) { No_AFW_Time = x; }
+
+public Double Eval()
+{
+return CurTime;
+
+}
+}
+}

@@ -133,6 +133,7 @@
   For example, you want to trigger the event when a tank is over 2 meters full so you have created a new "Ext Sim Variable" named "Height" to monitor the tank fill height. When "Height" gets modified by the external simulation, you would put the code "return Height > 2;". See [External Simulation Variables](./variables.md#external-simulation-variables) for more information.<br>
 
 <img src="/images/Modeling/events/ExternalSimOptions.png" alt="[External Simulation Options" width="500"/>
+ <! -- Replace ExternalSimOption.png --> 
 
   - **External Sim Variable:** Click the field to expand the drop down menu of external simulation variables you created in the model. Select the one that will change when this event could be triggered. One must be selected in order to create the event. 
   - **Evaluate Code (C#):** Type or copy and paste into this text field the C# code to evaluate to determine if this event is triggered. This must return a boolean true or false value.
@@ -165,7 +166,7 @@
 
   - **Lambda/Freq:** The frequency (instances) of this event occurring per the time rate defined. Likely a decimal value like 0.0003. If you choose to have it as a static value, checkbox unchecked, type in the value into the field. If you choose to have it as a variable value, checkbox checked, click the field to reveal the dropdown menu of variables available in your model and click the variable to set it.
   - **Time Rate:** Enter the time rate that the frequency is sampled over. The first box is the number of days, the second is the number of hours, the third is the number of minutes, and the fourth is the number of seconds. Values can only be integers.
-
+<! -- TO DO: Add Distributions Section --> 
 
 <h3>Normal Distribution <img src="/images/Modeling/events/dist.png" alt="Normal Distribution" width="25"/></h3>
   Listed as Norm. Distribution in the dropdown menu. Samples a normal distribution according to user specified parameters for when this event will occur from the time entering the state.<br>

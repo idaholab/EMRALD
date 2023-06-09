@@ -1,0 +1,70 @@
+{
+  "SettingsByModel": [
+    {
+      "Filename": "C:\\Users\\PANDP\\Desktop\\EMRALD Models\\Two Components Fail in Parallel.json",
+      "RunCount": "100",
+      "MaxRunTime": "1000.00:00:00",
+      "BasicResultsLocation": "c:\\temp\\NewSimResults.txt",
+      "PathResultsLocation": "c:\\temp\\PathResults.json",
+      "Seed": "",
+      "DebugLevel": "Detailed",
+      "DebugFromRun": "1",
+      "DebugToRun": "1"
+    },
+    {
+      "Filename": "C:\\Users\\PANDP\\Desktop\\EMRALD Models\\Single Component Repair.json",
+      "RunCount": "1",
+      "MaxRunTime": "1000.00:00:00",
+      "BasicResultsLocation": "c:\\temp\\NewSimResults.txt",
+      "PathResultsLocation": "c:\\temp\\PathResults.json",
+      "Seed": "",
+      "DebugLevel": "Detailed",
+      "DebugFromRun": "1",
+      "DebugToRun": "1"
+    },
+    {
+      "Filename": "C:\\Users\\PANDP\\Desktop\\EMRALD Models\\Test.json",
+      "RunCount": "1",
+      "MaxRunTime": "1.00:00:00",
+      "BasicResultsLocation": "c:\\temp\\NewSimResults.txt",
+      "PathResultsLocation": "c:\\temp\\PathResults.json",
+      "Seed": "",
+      "DebugLevel": "",
+      "DebugFromRun": "",
+      "DebugToRun": ""
+    },
+    {
+      "Filename": "X:\\Test\\EMRALD\\AccruVarTest.json",
+      "RunCount": "1",
+      "MaxRunTime": "1.00:00:00",
+      "BasicResultsLocation": "c:\\temp\\NewSimResults.txt",
+      "PathResultsLocation": "c:\\temp\\PathResults.json",
+      "Seed": "",
+      "DebugLevel": "",
+      "DebugFromRun": "",
+      "DebugToRun": ""
+    },
+    {
+      "Filename": "X:\\Test\\EMRALD\\CumulativeVarTest.json",
+      "RunCount": "1",
+      "MaxRunTime": "0.00:30:00.0",
+      "BasicResultsLocation": "c:\\temp\\NewSimResults.txt",
+      "PathResultsLocation": "c:\\temp\\PathResults.json",
+      "Seed": "",
+      "DebugLevel": "",
+      "DebugFromRun": "",
+      "DebugToRun": ""
+    },
+    {
+      "Filename": "X:\\Test\\Simanij_FLEX\\Models\\GenericPWR_FOF (9).json",
+      "RunCount": "1000",
+      "MaxRunTime": "365.00:00:00",
+      "BasicResultsLocation": "c:\\temp\\NewSimResults.txt",
+      "PathResultsLocation": "c:\\temp\\PathResults.json",
+      "Seed": "",
+      "DebugLevel": "",
+      "DebugFromRun": "",
+      "DebugToRun": ""
+    }
+  ]
+}

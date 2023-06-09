@@ -1,0 +1,1078 @@
+StartRun: 1
+EnterState: Running , time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+EndOfRun: 1
+StartRun: 1
+EnterState: Running , time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+DoEvent: Failure Rate, time: 32.22:39:59.5
+DoTransitionAction: Goto_Failed
+ExitState: Running 
+EnterState: Failed, time: 32.22:39:59.5, Cause Event: Goto_Failed, fromState-Action: Failure Rate
+DoEvent: Repair Rate, time: 33.08:59:01.9
+DoTransitionAction: Goto_Running
+ExitState: Failed
+EnterState: Running , time: 33.08:59:01.9, Cause Event: Goto_Running, fromState-Action: Repair Rate
+DoEvent: Failure Rate, time: 144.08:40:37.4
+DoTransitionAction: Goto_Failed
+ExitState: Running 
+EnterState: Failed, time: 144.08:40:37.4, Cause Event: Goto_Failed, fromState-Action: Failure Rate
+DoEvent: Repair Rate, time: 148.19:19:01.2
+DoTransitionAction: Goto_Running
+ExitState: Failed
+EnterState: Running , time: 148.19:19:01.2, Cause Event: Goto_Running, fromState-Action: Repair Rate
+DoEvent: Failure Rate, time: 163.04:23:28.0
+DoTransitionAction: Goto_Failed
+ExitState: Running 
+EnterState: Failed, time: 163.04:23:28.0, Cause Event: Goto_Failed, fromState-Action: Failure Rate
+DoEvent: Repair Rate, time: 163.14:49:49.2
+DoTransitionAction: Goto_Running
+ExitState: Failed
+EnterState: Running , time: 163.14:49:49.2, Cause Event: Goto_Running, fromState-Action: Repair Rate
+DoEvent: Failure Rate, time: 171.01:33:40.4
+DoTransitionAction: Goto_Failed
+ExitState: Running 
+EnterState: Failed, time: 171.01:33:40.4, Cause Event: Goto_Failed, fromState-Action: Failure Rate
+DoEvent: Repair Rate, time: 172.23:53:17.4
+DoTransitionAction: Goto_Running
+ExitState: Failed
+EnterState: Running , time: 172.23:53:17.4, Cause Event: Goto_Running, fromState-Action: Repair Rate
+DoEvent: Failure Rate, time: 184.11:51:21.7
+DoTransitionAction: Goto_Failed
+ExitState: Running 
+EnterState: Failed, time: 184.11:51:21.7, Cause Event: Goto_Failed, fromState-Action: Failure Rate
+DoEvent: Repair Rate, time: 184.21:41:02.5
+DoTransitionAction: Goto_Running
+ExitState: Failed
+EnterState: Running , time: 184.21:41:02.5, Cause Event: Goto_Running, fromState-Action: Repair Rate
+DoEvent: Failure Rate, time: 230.14:31:53.8
+DoTransitionAction: Goto_Failed
+ExitState: Running 
+EnterState: Failed, time: 230.14:31:53.8, Cause Event: Goto_Failed, fromState-Action: Failure Rate
+DoEvent: Repair Rate, time: 230.14:44:42.3
+DoTransitionAction: Goto_Running
+ExitState: Failed
+EnterState: Running , time: 230.14:44:42.3, Cause Event: Goto_Running, fromState-Action: Repair Rate
+DoEvent: Failure Rate, time: 231.09:39:06.9
+DoTransitionAction: Goto_Failed
+ExitState: Running 
+EnterState: Failed, time: 231.09:39:06.9, Cause Event: Goto_Failed, fromState-Action: Failure Rate
+DoEvent: Repair Rate, time: 233.08:16:46.3
+DoTransitionAction: Goto_Running
+ExitState: Failed
+EnterState: Running , time: 233.08:16:46.3, Cause Event: Goto_Running, fromState-Action: Repair Rate
+DoEvent: Failure Rate, time: 237.17:08:54.6
+DoTransitionAction: Goto_Failed
+ExitState: Running 
+EnterState: Failed, time: 237.17:08:54.6, Cause Event: Goto_Failed, fromState-Action: Failure Rate
+DoEvent: Repair Rate, time: 237.17:24:49.6
+DoTransitionAction: Goto_Running
+ExitState: Failed
+EnterState: Running , time: 237.17:24:49.6, Cause Event: Goto_Running, fromState-Action: Repair Rate
+DoEvent: Failure Rate, time: 361.19:16:17.6
+DoTransitionAction: Goto_Failed
+ExitState: Running 
+EnterState: Failed, time: 361.19:16:17.6, Cause Event: Goto_Failed, fromState-Action: Failure Rate
+DoEvent: Repair Rate, time: 362.15:18:18.7
+DoTransitionAction: Goto_Running
+ExitState: Failed
+EnterState: Running , time: 362.15:18:18.7, Cause Event: Goto_Running, fromState-Action: Repair Rate
+DoEvent: Failure Rate, time: 381.05:40:03.1
+DoTransitionAction: Goto_Failed
+ExitState: Running 
+EnterState: Failed, time: 381.05:40:03.1, Cause Event: Goto_Failed, fromState-Action: Failure Rate
+DoEvent: Repair Rate, time: 381.19:29:21.8
+DoTransitionAction: Goto_Running
+ExitState: Failed
+EnterState: Running , time: 381.19:29:21.8, Cause Event: Goto_Running, fromState-Action: Repair Rate
+DoEvent: Failure Rate, time: 482.19:56:31.7
+DoTransitionAction: Goto_Failed
+ExitState: Running 
+EnterState: Failed, time: 482.19:56:31.7, Cause Event: Goto_Failed, fromState-Action: Failure Rate
+DoEvent: Repair Rate, time: 482.22:02:13.4
+DoTransitionAction: Goto_Running
+ExitState: Failed
+EnterState: Running , time: 482.22:02:13.4, Cause Event: Goto_Running, fromState-Action: Repair Rate
+DoEvent: Failure Rate, time: 566.03:01:36.7
+DoTransitionAction: Goto_Failed
+ExitState: Running 
+EnterState: Failed, time: 566.03:01:36.7, Cause Event: Goto_Failed, fromState-Action: Failure Rate
+DoEvent: Repair Rate, time: 566.15:15:16.3
+DoTransitionAction: Goto_Running
+ExitState: Failed
+EnterState: Running , time: 566.15:15:16.3, Cause Event: Goto_Running, fromState-Action: Repair Rate
+DoEvent: Failure Rate, time: 758.18:27:11.8
+DoTransitionAction: Goto_Failed
+ExitState: Running 
+EnterState: Failed, time: 758.18:27:11.8, Cause Event: Goto_Failed, fromState-Action: Failure Rate
+DoEvent: Repair Rate, time: 758.18:44:09.6
+DoTransitionAction: Goto_Running
+ExitState: Failed
+EnterState: Running , time: 758.18:44:09.6, Cause Event: Goto_Running, fromState-Action: Repair Rate
+DoEvent: Failure Rate, time: 760.20:12:21.1
+DoTransitionAction: Goto_Failed
+ExitState: Running 
+EnterState: Failed, time: 760.20:12:21.1, Cause Event: Goto_Failed, fromState-Action: Failure Rate
+DoEvent: Repair Rate, time: 761.14:27:35.6
+DoTransitionAction: Goto_Running
+ExitState: Failed
+EnterState: Running , time: 761.14:27:35.6, Cause Event: Goto_Running, fromState-Action: Repair Rate
+DoEvent: Failure Rate, time: 773.15:31:22.2
+DoTransitionAction: Goto_Failed
+ExitState: Running 
+EnterState: Failed, time: 773.15:31:22.2, Cause Event: Goto_Failed, fromState-Action: Failure Rate
+DoEvent: Repair Rate, time: 774.02:07:06.5
+DoTransitionAction: Goto_Running
+ExitState: Failed
+EnterState: Running , time: 774.02:07:06.5, Cause Event: Goto_Running, fromState-Action: Repair Rate
+DoEvent: Failure Rate, time: 788.15:20:04.4
+DoTransitionAction: Goto_Failed
+ExitState: Running 
+EnterState: Failed, time: 788.15:20:04.4, Cause Event: Goto_Failed, fromState-Action: Failure Rate
+DoEvent: Repair Rate, time: 789.12:46:25.9
+DoTransitionAction: Goto_Running
+ExitState: Failed
+EnterState: Running , time: 789.12:46:25.9, Cause Event: Goto_Running, fromState-Action: Repair Rate
+DoEvent: Failure Rate, time: 791.16:58:07.5
+DoTransitionAction: Goto_Failed
+ExitState: Running 
+EnterState: Failed, time: 791.16:58:07.5, Cause Event: Goto_Failed, fromState-Action: Failure Rate
+DoEvent: Repair Rate, time: 792.11:10:48.8
+DoTransitionAction: Goto_Running
+ExitState: Failed
+EnterState: Running , time: 792.11:10:48.8, Cause Event: Goto_Running, fromState-Action: Repair Rate
+DoEvent: Failure Rate, time: 825.08:05:04.6
+DoTransitionAction: Goto_Failed
+ExitState: Running 
+EnterState: Failed, time: 825.08:05:04.6, Cause Event: Goto_Failed, fromState-Action: Failure Rate
+DoEvent: Repair Rate, time: 825.08:22:42.2
+DoTransitionAction: Goto_Running
+ExitState: Failed
+EnterState: Running , time: 825.08:22:42.2, Cause Event: Goto_Running, fromState-Action: Repair Rate
+DoEvent: Failure Rate, time: 879.07:19:18.8
+DoTransitionAction: Goto_Failed
+ExitState: Running 
+EnterState: Failed, time: 879.07:19:18.8, Cause Event: Goto_Failed, fromState-Action: Failure Rate
+DoEvent: Repair Rate, time: 880.19:49:00.1
+DoTransitionAction: Goto_Running
+ExitState: Failed
+EnterState: Running , time: 880.19:49:00.1, Cause Event: Goto_Running, fromState-Action: Repair Rate
+DoEvent: Failure Rate, time: 920.10:36:23.9
+DoTransitionAction: Goto_Failed
+ExitState: Running 
+EnterState: Failed, time: 920.10:36:23.9, Cause Event: Goto_Failed, fromState-Action: Failure Rate
+DoEvent: Repair Rate, time: 920.22:06:31.1
+DoTransitionAction: Goto_Running
+ExitState: Failed
+EnterState: Running , time: 920.22:06:31.1, Cause Event: Goto_Running, fromState-Action: Repair Rate
+DoEvent: Failure Rate, time: 928.21:37:22.7
+DoTransitionAction: Goto_Failed
+ExitState: Running 
+EnterState: Failed, time: 928.21:37:22.7, Cause Event: Goto_Failed, fromState-Action: Failure Rate
+DoEvent: Repair Rate, time: 930.03:41:26.3
+DoTransitionAction: Goto_Running
+ExitState: Failed
+EnterState: Running , time: 930.03:41:26.3, Cause Event: Goto_Running, fromState-Action: Repair Rate
+DoEvent: Failure Rate, time: 962.12:59:21.1
+DoTransitionAction: Goto_Failed
+ExitState: Running 
+EnterState: Failed, time: 962.12:59:21.1, Cause Event: Goto_Failed, fromState-Action: Failure Rate
+DoEvent: Repair Rate, time: 962.16:02:32.3
+DoTransitionAction: Goto_Running
+ExitState: Failed
+EnterState: Running , time: 962.16:02:32.3, Cause Event: Goto_Running, fromState-Action: Repair Rate
+EndOfRun: 1
+StartRun: 1
+EnterState: C1 Running, time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+EnterState: C2 Running, time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+DoEvent: C2 Fails, time: 16.08:51:49.5
+DoTransitionAction: Goto_C2_Fails
+ExitState: C2 Running
+EnterState: C2 Failed, time: 16.08:51:49.5, Cause Event: Goto_C2_Fails, fromState-Action: C2 Fails
+DoEvent: C1 Fails, time: 20.21:04:53.8
+DoTransitionAction: Goto_C1_Fails
+ExitState: C1 Running
+EnterState: C1 Failed, time: 20.21:04:53.8, Cause Event: Goto_C1_Fails, fromState-Action: C1 Fails
+EndOfRun: 1
+StartRun: 1
+EnterState: C1 Running, time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+EnterState: C2 Running, time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+DoEvent: C2 Fails, time: 2.04:55:17.0
+DoTransitionAction: Goto_C2_Fails
+ExitState: C2 Running
+EnterState: C2 Failed, time: 2.04:55:17.0, Cause Event: Goto_C2_Fails, fromState-Action: C2 Fails
+DoEvent: C1 Fails, time: 2.23:01:26.0
+DoTransitionAction: Goto_C1_Fails
+ExitState: C1 Running
+EnterState: C1 Failed, time: 2.23:01:26.0, Cause Event: Goto_C1_Fails, fromState-Action: C1 Fails
+EndOfRun: 1
+StartRun: 1
+EnterState: C1 Running, time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+EnterState: C2 Running, time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+DoEvent: C1 Fails, time: 17.18:43:38.1
+DoTransitionAction: Goto_C1_Fails
+ExitState: C1 Running
+EnterState: C1 Failed, time: 17.18:43:38.1, Cause Event: Goto_C1_Fails, fromState-Action: C1 Fails
+EndOfRun: 1
+StartRun: 1
+EnterState: C1 Running, time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+EnterState: C2 Running, time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+DoEvent: C1 Fails, time: 1.17:21:59.1
+DoTransitionAction: Goto_C1_Fails
+ExitState: C1 Running
+EnterState: C1 Failed, time: 1.17:21:59.1, Cause Event: Goto_C1_Fails, fromState-Action: C1 Fails
+DoEvent: C2 Fails, time: 13.18:11:21.8
+DoTransitionAction: Goto_C2_Fails
+ExitState: C2 Running
+EnterState: C2 Failed, time: 13.18:11:21.8, Cause Event: Goto_C2_Fails, fromState-Action: C2 Fails
+EndOfRun: 1
+StartRun: 1
+EnterState: C1 Running, time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+EnterState: C2 Running, time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+EnterState: Running , time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+DoEvent: C1 Fails, time: 0.04:52:19.9
+DoTransitionAction: Goto_C1_Fails
+ExitState: C1 Running
+EnterState: C1 Failed, time: 0.04:52:19.9, Cause Event: Goto_C1_Fails, fromState-Action: C1 Fails
+DoEvent: C2 Fails, time: 2.23:12:26.8
+DoTransitionAction: Goto_C2_Fails
+ExitState: C2 Running
+EnterState: C2 Failed, time: 2.23:12:26.8, Cause Event: Goto_C2_Fails, fromState-Action: C2 Fails
+DoEvent: Both Components Fail, time: 2.23:12:26.8
+DoTransitionAction: Goto_Failed
+ExitState: Running 
+EnterState: Failed, time: 2.23:12:26.8, Cause Event: Goto_Failed, fromState-Action: Both Components Fail
+EndOfRun: 1
+StartRun: 1
+EnterState: C1 Running, time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+EnterState: C2 Running, time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+EnterState: Running , time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+DoEvent: C1 Fails, time: 4.20:35:15.8
+DoTransitionAction: Goto_C1_Fails
+ExitState: C1 Running
+EnterState: C1 Failed, time: 4.20:35:15.8, Cause Event: Goto_C1_Fails, fromState-Action: C1 Fails
+DoEvent: C2 Fails, time: 8.00:48:10.0
+DoTransitionAction: Goto_C2_Fails
+ExitState: C2 Running
+EnterState: C2 Failed, time: 8.00:48:10.0, Cause Event: Goto_C2_Fails, fromState-Action: C2 Fails
+DoEvent: Both Components Fail, time: 8.00:48:10.0
+DoTransitionAction: Goto_Failed
+ExitState: Running 
+EnterState: Failed, time: 8.00:48:10.0, Cause Event: Goto_Failed, fromState-Action: Both Components Fail
+EndOfRun: 1
+StartRun: 1
+EnterState: C1 Running, time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+EnterState: C2 Running, time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+EnterState: Running , time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+DoEvent: C2 Fails, time: 0.03:13:29.2
+DoTransitionAction: Goto_C2_Fails
+ExitState: C2 Running
+EnterState: C2 Failed, time: 0.03:13:29.2, Cause Event: Goto_C2_Fails, fromState-Action: C2 Fails
+DoEvent: C1 Fails, time: 6.13:46:13.5
+DoTransitionAction: Goto_C1_Fails
+ExitState: C1 Running
+EnterState: C1 Failed, time: 6.13:46:13.5, Cause Event: Goto_C1_Fails, fromState-Action: C1 Fails
+DoEvent: Both Components Fail, time: 6.13:46:13.5
+DoTransitionAction: Goto_Failed
+ExitState: Running 
+EnterState: Failed, time: 6.13:46:13.5, Cause Event: Goto_Failed, fromState-Action: Both Components Fail
+EndOfRun: 1
+StartRun: 1
+EnterState: C1 Running, time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+EnterState: C2 Running, time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+EnterState: Running , time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+DoEvent: C1 Fails, time: 2.14:30:14.4
+DoTransitionAction: Goto_C1_Fails
+ExitState: C1 Running
+EnterState: C1 Failed, time: 2.14:30:14.4, Cause Event: Goto_C1_Fails, fromState-Action: C1 Fails
+DoEvent: C2 Fails, time: 3.18:26:05.3
+DoTransitionAction: Goto_C2_Fails
+ExitState: C2 Running
+EnterState: C2 Failed, time: 3.18:26:05.3, Cause Event: Goto_C2_Fails, fromState-Action: C2 Fails
+DoEvent: Both Components Fail, time: 3.18:26:05.3
+DoTransitionAction: Goto_Failed
+ExitState: Running 
+EnterState: Failed, time: 3.18:26:05.3, Cause Event: Goto_Failed, fromState-Action: Both Components Fail
+EndOfRun: 1
+StartRun: 1
+EnterState: C1 Running, time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+EnterState: C2 Running, time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+EnterState: Running , time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+DoEvent: C1 Fails, time: 9.04:12:02.0
+DoTransitionAction: Goto_C1_Fails
+ExitState: C1 Running
+EnterState: C1 Failed, time: 9.04:12:02.0, Cause Event: Goto_C1_Fails, fromState-Action: C1 Fails
+DoEvent: C2 Fails, time: 10.11:01:45.6
+DoTransitionAction: Goto_C2_Fails
+ExitState: C2 Running
+EnterState: C2 Failed, time: 10.11:01:45.6, Cause Event: Goto_C2_Fails, fromState-Action: C2 Fails
+DoEvent: Both Components Fail, time: 10.11:01:45.6
+DoTransitionAction: Goto_Failed
+ExitState: Running 
+EnterState: Failed, time: 10.11:01:45.6, Cause Event: Goto_Failed, fromState-Action: Both Components Fail
+EndOfRun: 1
+StartRun: 1
+EnterState: C1 Running, time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+EnterState: C2 Running, time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+EnterState: Running , time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+DoEvent: C2 Fails, time: 0.23:17:57.3
+DoTransitionAction: Goto_C2_Fails
+ExitState: C2 Running
+EnterState: C2 Failed, time: 0.23:17:57.3, Cause Event: Goto_C2_Fails, fromState-Action: C2 Fails
+DoEvent: C1 Fails, time: 18.09:17:44.2
+DoTransitionAction: Goto_C1_Fails
+ExitState: C1 Running
+EnterState: C1 Failed, time: 18.09:17:44.2, Cause Event: Goto_C1_Fails, fromState-Action: C1 Fails
+DoEvent: Both Components Fail, time: 18.09:17:44.2
+DoTransitionAction: Goto_Failed
+ExitState: Running 
+EnterState: Failed, time: 18.09:17:44.2, Cause Event: Goto_Failed, fromState-Action: Both Components Fail
+EndOfRun: 1
+StartRun: 1
+EnterState: C1 Running, time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+EnterState: C2 Running, time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+EnterState: Running , time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+DoEvent: C2 Fails, time: 34.10:07:10.3
+DoTransitionAction: Goto_C2_Fails
+ExitState: C2 Running
+EnterState: C2 Failed, time: 34.10:07:10.3, Cause Event: Goto_C2_Fails, fromState-Action: C2 Fails
+DoEvent: C1 Fails, time: 49.16:42:10.7
+DoTransitionAction: Goto_C1_Fails
+ExitState: C1 Running
+EnterState: C1 Failed, time: 49.16:42:10.7, Cause Event: Goto_C1_Fails, fromState-Action: C1 Fails
+DoEvent: Both Components Fail, time: 49.16:42:10.7
+DoTransitionAction: Goto_Failed
+ExitState: Running 
+EnterState: Failed, time: 49.16:42:10.7, Cause Event: Goto_Failed, fromState-Action: Both Components Fail
+EndOfRun: 1
+StartRun: 1
+EnterState: C1 Running, time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+EnterState: C2 Running, time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+EnterState: Running , time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+DoEvent: C2 Fails, time: 4.22:16:06.3
+DoTransitionAction: Goto_C2_Fails
+ExitState: C2 Running
+EnterState: C2 Failed, time: 4.22:16:06.3, Cause Event: Goto_C2_Fails, fromState-Action: C2 Fails
+DoEvent: C1 Fails, time: 6.14:25:54.5
+DoTransitionAction: Goto_C1_Fails
+ExitState: C1 Running
+EnterState: C1 Failed, time: 6.14:25:54.5, Cause Event: Goto_C1_Fails, fromState-Action: C1 Fails
+DoEvent: Both Components Fail, time: 6.14:25:54.5
+DoTransitionAction: Goto_Failed
+ExitState: Running 
+EnterState: Failed, time: 6.14:25:54.5, Cause Event: Goto_Failed, fromState-Action: Both Components Fail
+EndOfRun: 1
+StartRun: 1
+EnterState: C1 Running, time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+EnterState: C2 Running, time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+EnterState: Running , time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+DoEvent: C1 Fails, time: 0.16:57:27.9
+DoTransitionAction: Goto_C1_Fails
+ExitState: C1 Running
+EnterState: C1 Failed, time: 0.16:57:27.9, Cause Event: Goto_C1_Fails, fromState-Action: C1 Fails
+DoEvent: C2 Fails, time: 4.13:28:58.5
+DoTransitionAction: Goto_C2_Fails
+ExitState: C2 Running
+EnterState: C2 Failed, time: 4.13:28:58.5, Cause Event: Goto_C2_Fails, fromState-Action: C2 Fails
+DoEvent: Both Components Fail, time: 4.13:28:58.5
+DoTransitionAction: Goto_Failed
+ExitState: Running 
+EnterState: Failed, time: 4.13:28:58.5, Cause Event: Goto_Failed, fromState-Action: Both Components Fail
+EndOfRun: 1
+StartRun: 1
+EnterState: C1 Running, time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+EnterState: C2 Running, time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+EnterState: Running , time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+DoEvent: C2 Fails, time: 0.08:14:57.1
+DoTransitionAction: Goto_C2_Fails
+ExitState: C2 Running
+EnterState: C2 Failed, time: 0.08:14:57.1, Cause Event: Goto_C2_Fails, fromState-Action: C2 Fails
+DoEvent: C1 Fails, time: 1.08:19:05.4
+DoTransitionAction: Goto_C1_Fails
+ExitState: C1 Running
+EnterState: C1 Failed, time: 1.08:19:05.4, Cause Event: Goto_C1_Fails, fromState-Action: C1 Fails
+DoEvent: Both Components Fail, time: 1.08:19:05.4
+DoTransitionAction: Goto_Failed
+ExitState: Running 
+EnterState: Failed, time: 1.08:19:05.4, Cause Event: Goto_Failed, fromState-Action: Both Components Fail
+EndOfRun: 1
+StartRun: 1
+EnterState: C1 Running, time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+EnterState: C2 Running, time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+EnterState: Running , time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+DoEvent: C2 Fails, time: 3.12:12:08.4
+DoTransitionAction: Goto_C2_Fails
+ExitState: C2 Running
+EnterState: C2 Failed, time: 3.12:12:08.4, Cause Event: Goto_C2_Fails, fromState-Action: C2 Fails
+DoEvent: C1 Fails, time: 25.03:56:35.6
+DoTransitionAction: Goto_C1_Fails
+ExitState: C1 Running
+EnterState: C1 Failed, time: 25.03:56:35.6, Cause Event: Goto_C1_Fails, fromState-Action: C1 Fails
+DoEvent: Both Components Fail, time: 25.03:56:35.6
+DoTransitionAction: Goto_Failed
+ExitState: Running 
+EnterState: Failed, time: 25.03:56:35.6, Cause Event: Goto_Failed, fromState-Action: Both Components Fail
+EndOfRun: 1
+StartRun: 1
+EnterState: C1 Running, time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+EnterState: C2 Running, time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+EnterState: Running , time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+DoEvent: C1 Fails, time: 1.12:38:52.5
+DoTransitionAction: Goto_C1_Fails
+ExitState: C1 Running
+EnterState: C1 Failed, time: 1.12:38:52.5, Cause Event: Goto_C1_Fails, fromState-Action: C1 Fails
+DoEvent: C2 Fails, time: 9.16:48:18.5
+DoTransitionAction: Goto_C2_Fails
+ExitState: C2 Running
+EnterState: C2 Failed, time: 9.16:48:18.5, Cause Event: Goto_C2_Fails, fromState-Action: C2 Fails
+DoEvent: Both Components Fail, time: 9.16:48:18.5
+DoTransitionAction: Goto_Failed
+ExitState: Running 
+EnterState: Failed, time: 9.16:48:18.5, Cause Event: Goto_Failed, fromState-Action: Both Components Fail
+EndOfRun: 1
+StartRun: 1
+EnterState: C1 Running, time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+EnterState: C2 Running, time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+EnterState: Running , time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+DoEvent: C1 Fails, time: 3.08:57:44.9
+DoTransitionAction: Goto_C1_Fails
+ExitState: C1 Running
+EnterState: C1 Failed, time: 3.08:57:44.9, Cause Event: Goto_C1_Fails, fromState-Action: C1 Fails
+DoEvent: C2 Fails, time: 27.03:58:29.6
+DoTransitionAction: Goto_C2_Fails
+ExitState: C2 Running
+EnterState: C2 Failed, time: 27.03:58:29.6, Cause Event: Goto_C2_Fails, fromState-Action: C2 Fails
+DoEvent: Both Components Fail, time: 27.03:58:29.6
+DoTransitionAction: Goto_Failed
+ExitState: Running 
+EnterState: Failed, time: 27.03:58:29.6, Cause Event: Goto_Failed, fromState-Action: Both Components Fail
+EndOfRun: 1
+StartRun: 1
+EnterState: C1 Running, time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+EnterState: C2 Running, time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+EnterState: Running , time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+DoEvent: C1 Fails, time: 4.03:34:11.4
+DoTransitionAction: Goto_C1_Fails
+ExitState: C1 Running
+EnterState: C1 Failed, time: 4.03:34:11.4, Cause Event: Goto_C1_Fails, fromState-Action: C1 Fails
+DoEvent: C2 Fails, time: 5.02:46:44.1
+DoTransitionAction: Goto_C2_Fails
+ExitState: C2 Running
+EnterState: C2 Failed, time: 5.02:46:44.1, Cause Event: Goto_C2_Fails, fromState-Action: C2 Fails
+DoEvent: Both Components Fail, time: 5.02:46:44.1
+DoTransitionAction: Goto_Failed
+ExitState: Running 
+EnterState: Failed, time: 5.02:46:44.1, Cause Event: Goto_Failed, fromState-Action: Both Components Fail
+EndOfRun: 1
+StartRun: 1
+EnterState: C1 Running, time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+EnterState: C2 Running, time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+EnterState: Running , time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+DoEvent: C2 Fails, time: 2.02:32:08.0
+DoTransitionAction: Goto_C2_Fails
+ExitState: C2 Running
+EnterState: C2 Failed, time: 2.02:32:08.0, Cause Event: Goto_C2_Fails, fromState-Action: C2 Fails
+DoEvent: C1 Fails, time: 26.14:53:16.3
+DoTransitionAction: Goto_C1_Fails
+ExitState: C1 Running
+EnterState: C1 Failed, time: 26.14:53:16.3, Cause Event: Goto_C1_Fails, fromState-Action: C1 Fails
+DoEvent: Both Components Fail, time: 26.14:53:16.3
+DoTransitionAction: Goto_Failed
+ExitState: Running 
+EnterState: Failed, time: 26.14:53:16.3, Cause Event: Goto_Failed, fromState-Action: Both Components Fail
+EndOfRun: 1
+StartRun: 1
+EnterState: C1 Running, time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+EnterState: C2 Running, time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+EnterState: Running , time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+DoEvent: C1 Fails, time: 6.11:44:31.1
+DoTransitionAction: Goto_C1_Fails
+ExitState: C1 Running
+EnterState: C1 Failed, time: 6.11:44:31.1, Cause Event: Goto_C1_Fails, fromState-Action: C1 Fails
+DoEvent: C2 Fails, time: 7.23:52:55.9
+DoTransitionAction: Goto_C2_Fails
+ExitState: C2 Running
+EnterState: C2 Failed, time: 7.23:52:55.9, Cause Event: Goto_C2_Fails, fromState-Action: C2 Fails
+DoEvent: Both Components Fail, time: 7.23:52:55.9
+DoTransitionAction: Goto_Failed
+ExitState: Running 
+EnterState: Failed, time: 7.23:52:55.9, Cause Event: Goto_Failed, fromState-Action: Both Components Fail
+EndOfRun: 1
+StartRun: 1
+EnterState: C1 Running, time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+EnterState: C2 Running, time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+EnterState: Running , time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+DoEvent: C1 Fails, time: 1.17:09:46.1
+DoTransitionAction: Goto_C1_Fails
+ExitState: C1 Running
+EnterState: C1 Failed, time: 1.17:09:46.1, Cause Event: Goto_C1_Fails, fromState-Action: C1 Fails
+DoEvent: C2 Fails, time: 8.03:25:18.5
+DoTransitionAction: Goto_C2_Fails
+ExitState: C2 Running
+EnterState: C2 Failed, time: 8.03:25:18.5, Cause Event: Goto_C2_Fails, fromState-Action: C2 Fails
+DoEvent: Both Components Fail, time: 8.03:25:18.5
+DoTransitionAction: Goto_Failed
+ExitState: Running 
+EnterState: Failed, time: 8.03:25:18.5, Cause Event: Goto_Failed, fromState-Action: Both Components Fail
+EndOfRun: 1
+StartRun: 1
+EnterState: C1 Running, time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+EnterState: C2 Running, time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+EnterState: Running , time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+DoEvent: C1 Fails, time: 0.14:26:50.1
+DoTransitionAction: Goto_C1_Fails
+ExitState: C1 Running
+EnterState: C1 Failed, time: 0.14:26:50.1, Cause Event: Goto_C1_Fails, fromState-Action: C1 Fails
+DoEvent: C2 Fails, time: 23.07:56:56.7
+DoTransitionAction: Goto_C2_Fails
+ExitState: C2 Running
+EnterState: C2 Failed, time: 23.07:56:56.7, Cause Event: Goto_C2_Fails, fromState-Action: C2 Fails
+DoEvent: Both Components Fail, time: 23.07:56:56.7
+DoTransitionAction: Goto_Failed
+ExitState: Running 
+EnterState: Failed, time: 23.07:56:56.7, Cause Event: Goto_Failed, fromState-Action: Both Components Fail
+EndOfRun: 1
+StartRun: 1
+EnterState: C1 Running, time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+EnterState: C2 Running, time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+EnterState: Running , time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+DoEvent: C1 Fails, time: 5.08:27:23.5
+DoTransitionAction: Goto_C1_Fails
+ExitState: C1 Running
+EnterState: C1 Failed, time: 5.08:27:23.5, Cause Event: Goto_C1_Fails, fromState-Action: C1 Fails
+DoEvent: C2 Fails, time: 12.12:52:47.9
+DoTransitionAction: Goto_C2_Fails
+ExitState: C2 Running
+EnterState: C2 Failed, time: 12.12:52:47.9, Cause Event: Goto_C2_Fails, fromState-Action: C2 Fails
+DoEvent: Both Components Fail, time: 12.12:52:47.9
+DoTransitionAction: Goto_Failed
+ExitState: Running 
+EnterState: Failed, time: 12.12:52:47.9, Cause Event: Goto_Failed, fromState-Action: Both Components Fail
+EndOfRun: 1
+StartRun: 1
+EnterState: C1 Running, time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+EnterState: C2 Running, time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+EnterState: Running , time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+DoEvent: C2 Fails, time: 1.07:57:21.1
+DoTransitionAction: Goto_C2_Fails
+ExitState: C2 Running
+EnterState: C2 Failed, time: 1.07:57:21.1, Cause Event: Goto_C2_Fails, fromState-Action: C2 Fails
+DoEvent: C1 Fails, time: 14.22:44:35.2
+DoTransitionAction: Goto_C1_Fails
+ExitState: C1 Running
+EnterState: C1 Failed, time: 14.22:44:35.2, Cause Event: Goto_C1_Fails, fromState-Action: C1 Fails
+DoEvent: Both Components Fail, time: 14.22:44:35.2
+DoTransitionAction: Goto_Failed
+ExitState: Running 
+EnterState: Failed, time: 14.22:44:35.2, Cause Event: Goto_Failed, fromState-Action: Both Components Fail
+EndOfRun: 1
+StartRun: 1
+EnterState: C1 Running, time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+EnterState: C2 Running, time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+EnterState: Running , time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+DoEvent: C2 Fails, time: 0.07:57:31.7
+DoTransitionAction: Goto_C2_Fails
+ExitState: C2 Running
+EnterState: C2 Failed, time: 0.07:57:31.7, Cause Event: Goto_C2_Fails, fromState-Action: C2 Fails
+DoEvent: C1 Fails, time: 9.23:44:40.8
+DoTransitionAction: Goto_C1_Fails
+ExitState: C1 Running
+EnterState: C1 Failed, time: 9.23:44:40.8, Cause Event: Goto_C1_Fails, fromState-Action: C1 Fails
+DoEvent: Both Components Fail, time: 9.23:44:40.8
+DoTransitionAction: Goto_Failed
+ExitState: Running 
+EnterState: Failed, time: 9.23:44:40.8, Cause Event: Goto_Failed, fromState-Action: Both Components Fail
+EndOfRun: 1
+StartRun: 1
+EnterState: C1 Running, time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+EnterState: C2 Running, time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+EnterState: Running , time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+DoEvent: C2 Fails, time: 3.12:45:06.4
+DoTransitionAction: Goto_C2_Fails
+ExitState: C2 Running
+EnterState: C2 Failed, time: 3.12:45:06.4, Cause Event: Goto_C2_Fails, fromState-Action: C2 Fails
+DoEvent: C1 Fails, time: 4.17:09:41.1
+DoTransitionAction: Goto_C1_Fails
+ExitState: C1 Running
+EnterState: C1 Failed, time: 4.17:09:41.1, Cause Event: Goto_C1_Fails, fromState-Action: C1 Fails
+DoEvent: Both Components Fail, time: 4.17:09:41.1
+DoTransitionAction: Goto_Failed
+ExitState: Running 
+EnterState: Failed, time: 4.17:09:41.1, Cause Event: Goto_Failed, fromState-Action: Both Components Fail
+EndOfRun: 1
+StartRun: 1
+EnterState: C1 Running, time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+EnterState: C2 Running, time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+EnterState: Running , time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+DoEvent: C1 Fails, time: 2.05:56:17.5
+DoTransitionAction: Goto_C1_Fails
+ExitState: C1 Running
+EnterState: C1 Failed, time: 2.05:56:17.5, Cause Event: Goto_C1_Fails, fromState-Action: C1 Fails
+DoEvent: C2 Fails, time: 4.06:52:23.0
+DoTransitionAction: Goto_C2_Fails
+ExitState: C2 Running
+EnterState: C2 Failed, time: 4.06:52:23.0, Cause Event: Goto_C2_Fails, fromState-Action: C2 Fails
+DoEvent: Both Components Fail, time: 4.06:52:23.0
+DoTransitionAction: Goto_Failed
+ExitState: Running 
+EnterState: Failed, time: 4.06:52:23.0, Cause Event: Goto_Failed, fromState-Action: Both Components Fail
+EndOfRun: 1
+StartRun: 1
+EnterState: C1 Running, time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+EnterState: C2 Running, time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+EnterState: Running , time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+DoEvent: C1 Fails, time: 0.14:05:07.0
+DoTransitionAction: Goto_C1_Fails
+ExitState: C1 Running
+EnterState: C1 Failed, time: 0.14:05:07.0, Cause Event: Goto_C1_Fails, fromState-Action: C1 Fails
+DoEvent: C2 Fails, time: 1.07:17:01.2
+DoTransitionAction: Goto_C2_Fails
+ExitState: C2 Running
+EnterState: C2 Failed, time: 1.07:17:01.2, Cause Event: Goto_C2_Fails, fromState-Action: C2 Fails
+DoEvent: Both Components Fail, time: 1.07:17:01.2
+DoTransitionAction: Goto_Failed
+ExitState: Running 
+EnterState: Failed, time: 1.07:17:01.2, Cause Event: Goto_Failed, fromState-Action: Both Components Fail
+EndOfRun: 1
+StartRun: 1
+EnterState: C1 Running, time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+EnterState: C2 Running, time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+EnterState: Running , time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+DoEvent: C1 Fails, time: 3.23:43:19.9
+DoTransitionAction: Goto_C1_Fails
+ExitState: C1 Running
+EnterState: C1 Failed, time: 3.23:43:19.9, Cause Event: Goto_C1_Fails, fromState-Action: C1 Fails
+DoEvent: C2 Fails, time: 6.09:23:41.8
+DoTransitionAction: Goto_C2_Fails
+ExitState: C2 Running
+EnterState: C2 Failed, time: 6.09:23:41.8, Cause Event: Goto_C2_Fails, fromState-Action: C2 Fails
+DoEvent: Both Components Fail, time: 6.09:23:41.8
+DoTransitionAction: Goto_Failed
+ExitState: Running 
+EnterState: Failed, time: 6.09:23:41.8, Cause Event: Goto_Failed, fromState-Action: Both Components Fail
+EndOfRun: 1
+StartRun: 1
+EnterState: C1 Running, time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+EnterState: C2 Running, time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+EnterState: Running , time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+DoEvent: C1 Fails, time: 17.15:22:09.4
+DoTransitionAction: Goto_C1_Fails
+ExitState: C1 Running
+EnterState: C1 Failed, time: 17.15:22:09.4, Cause Event: Goto_C1_Fails, fromState-Action: C1 Fails
+DoEvent: C2 Fails, time: 28.15:47:13.1
+DoTransitionAction: Goto_C2_Fails
+ExitState: C2 Running
+EnterState: C2 Failed, time: 28.15:47:13.1, Cause Event: Goto_C2_Fails, fromState-Action: C2 Fails
+DoEvent: Both Components Fail, time: 28.15:47:13.1
+DoTransitionAction: Goto_Failed
+ExitState: Running 
+EnterState: Failed, time: 28.15:47:13.1, Cause Event: Goto_Failed, fromState-Action: Both Components Fail
+EndOfRun: 1
+StartRun: 1
+EnterState: C1 Running, time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+EnterState: C2 Running, time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+EnterState: Running , time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+DoEvent: C2 Fails, time: 5.04:09:43.3
+DoTransitionAction: Goto_C2_Fails
+ExitState: C2 Running
+EnterState: C2 Failed, time: 5.04:09:43.3, Cause Event: Goto_C2_Fails, fromState-Action: C2 Fails
+DoEvent: C1 Fails, time: 14.21:28:15.9
+DoTransitionAction: Goto_C1_Fails
+ExitState: C1 Running
+EnterState: C1 Failed, time: 14.21:28:15.9, Cause Event: Goto_C1_Fails, fromState-Action: C1 Fails
+DoEvent: Both Components Fail, time: 14.21:28:15.9
+DoTransitionAction: Goto_Failed
+ExitState: Running 
+EnterState: Failed, time: 14.21:28:15.9, Cause Event: Goto_Failed, fromState-Action: Both Components Fail
+EndOfRun: 1
+StartRun: 1
+EnterState: C1 Running, time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+EnterState: C2 Running, time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+EnterState: Running , time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+DoEvent: C1 Fails, time: 2.06:58:04.9
+DoTransitionAction: Goto_C1_Fails
+ExitState: C1 Running
+EnterState: C1 Failed, time: 2.06:58:04.9, Cause Event: Goto_C1_Fails, fromState-Action: C1 Fails
+DoEvent: C2 Fails, time: 6.19:58:52.5
+DoTransitionAction: Goto_C2_Fails
+ExitState: C2 Running
+EnterState: C2 Failed, time: 6.19:58:52.5, Cause Event: Goto_C2_Fails, fromState-Action: C2 Fails
+DoEvent: Both Components Fail, time: 6.19:58:52.5
+DoTransitionAction: Goto_Failed
+ExitState: Running 
+EnterState: Failed, time: 6.19:58:52.5, Cause Event: Goto_Failed, fromState-Action: Both Components Fail
+EndOfRun: 1
+StartRun: 1
+EnterState: C1 Running, time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+EnterState: C2 Running, time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+EnterState: Running , time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+DoEvent: C2 Fails, time: 3.02:43:16.3
+DoTransitionAction: Goto_C2_Fails
+ExitState: C2 Running
+EnterState: C2 Failed, time: 3.02:43:16.3, Cause Event: Goto_C2_Fails, fromState-Action: C2 Fails
+DoEvent: C1 Fails, time: 7.13:28:51.6
+DoTransitionAction: Goto_C1_Fails
+ExitState: C1 Running
+EnterState: C1 Failed, time: 7.13:28:51.6, Cause Event: Goto_C1_Fails, fromState-Action: C1 Fails
+DoEvent: Both Components Fail, time: 7.13:28:51.6
+DoTransitionAction: Goto_Failed
+ExitState: Running 
+EnterState: Failed, time: 7.13:28:51.6, Cause Event: Goto_Failed, fromState-Action: Both Components Fail
+EndOfRun: 1
+StartRun: 1
+EnterState: C1 Running, time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+EnterState: C2 Running, time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+EnterState: Running , time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+DoEvent: C1 Fails, time: 4.18:21:31.5
+DoTransitionAction: Goto_C1_Fails
+ExitState: C1 Running
+EnterState: C1 Failed, time: 4.18:21:31.5, Cause Event: Goto_C1_Fails, fromState-Action: C1 Fails
+DoEvent: C2 Fails, time: 21.09:37:43.6
+DoTransitionAction: Goto_C2_Fails
+ExitState: C2 Running
+EnterState: C2 Failed, time: 21.09:37:43.6, Cause Event: Goto_C2_Fails, fromState-Action: C2 Fails
+DoEvent: Both Components Fail, time: 21.09:37:43.6
+DoTransitionAction: Goto_Failed
+ExitState: Running 
+EnterState: Failed, time: 21.09:37:43.6, Cause Event: Goto_Failed, fromState-Action: Both Components Fail
+EndOfRun: 1
+StartRun: 1
+EnterState: C1 Running, time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+EnterState: C2 Running, time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+EnterState: Running , time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+DoEvent: C1 Fails, time: 0.19:39:51.8
+DoTransitionAction: Goto_C1_Fails
+ExitState: C1 Running
+EnterState: C1 Failed, time: 0.19:39:51.8, Cause Event: Goto_C1_Fails, fromState-Action: C1 Fails
+DoEvent: C2 Fails, time: 8.13:10:42.8
+DoTransitionAction: Goto_C2_Fails
+ExitState: C2 Running
+EnterState: C2 Failed, time: 8.13:10:42.8, Cause Event: Goto_C2_Fails, fromState-Action: C2 Fails
+DoEvent: Both Components Fail, time: 8.13:10:42.8
+DoTransitionAction: Goto_Failed
+ExitState: Running 
+EnterState: Failed, time: 8.13:10:42.8, Cause Event: Goto_Failed, fromState-Action: Both Components Fail
+EndOfRun: 1
+StartRun: 1
+EnterState: C1 Running, time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+EnterState: C2 Running, time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+EnterState: Running , time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+DoEvent: C1 Fails, time: 7.05:16:36.0
+DoTransitionAction: Goto_C1_Fails
+ExitState: C1 Running
+EnterState: C1 Failed, time: 7.05:16:36.0, Cause Event: Goto_C1_Fails, fromState-Action: C1 Fails
+DoEvent: C2 Fails, time: 31.02:44:36.7
+DoTransitionAction: Goto_C2_Fails
+ExitState: C2 Running
+EnterState: C2 Failed, time: 31.02:44:36.7, Cause Event: Goto_C2_Fails, fromState-Action: C2 Fails
+DoEvent: Both Components Fail, time: 31.02:44:36.7
+DoTransitionAction: Goto_Failed
+ExitState: Running 
+EnterState: Failed, time: 31.02:44:36.7, Cause Event: Goto_Failed, fromState-Action: Both Components Fail
+EndOfRun: 1
+StartRun: 1
+EnterState: C1 Running, time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+EnterState: C2 Running, time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+EnterState: Running , time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+DoEvent: C2 Fails, time: 1.18:07:25.0
+DoTransitionAction: Goto_C2_Fails
+ExitState: C2 Running
+EnterState: C2 Failed, time: 1.18:07:25.0, Cause Event: Goto_C2_Fails, fromState-Action: C2 Fails
+DoEvent: C1 Fails, time: 5.00:41:55.9
+DoTransitionAction: Goto_C1_Fails
+ExitState: C1 Running
+EnterState: C1 Failed, time: 5.00:41:55.9, Cause Event: Goto_C1_Fails, fromState-Action: C1 Fails
+DoEvent: Both Components Fail, time: 5.00:41:55.9
+DoTransitionAction: Goto_Failed
+ExitState: Running 
+EnterState: Failed, time: 5.00:41:55.9, Cause Event: Goto_Failed, fromState-Action: Both Components Fail
+EndOfRun: 1
+StartRun: 1
+EnterState: C1 Running, time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+EnterState: C2 Running, time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+EnterState: Running , time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+DoEvent: C1 Fails, time: 6.04:35:59.9
+DoTransitionAction: Goto_C1_Fails
+ExitState: C1 Running
+EnterState: C1 Failed, time: 6.04:35:59.9, Cause Event: Goto_C1_Fails, fromState-Action: C1 Fails
+DoEvent: C2 Fails, time: 10.19:40:18.4
+DoTransitionAction: Goto_C2_Fails
+ExitState: C2 Running
+EnterState: C2 Failed, time: 10.19:40:18.4, Cause Event: Goto_C2_Fails, fromState-Action: C2 Fails
+DoEvent: Both Components Fail, time: 10.19:40:18.4
+DoTransitionAction: Goto_Failed
+ExitState: Running 
+EnterState: Failed, time: 10.19:40:18.4, Cause Event: Goto_Failed, fromState-Action: Both Components Fail
+EndOfRun: 1
+StartRun: 1
+EnterState: C1 Running, time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+EnterState: C2 Running, time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+EnterState: Running , time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+DoEvent: C1 Fails, time: 18.00:51:20.1
+DoTransitionAction: Goto_C1_Fails
+ExitState: C1 Running
+EnterState: C1 Failed, time: 18.00:51:20.1, Cause Event: Goto_C1_Fails, fromState-Action: C1 Fails
+DoEvent: C2 Fails, time: 32.03:02:30.0
+DoTransitionAction: Goto_C2_Fails
+ExitState: C2 Running
+EnterState: C2 Failed, time: 32.03:02:30.0, Cause Event: Goto_C2_Fails, fromState-Action: C2 Fails
+DoEvent: Both Components Fail, time: 32.03:02:30.0
+DoTransitionAction: Goto_Failed
+ExitState: Running 
+EnterState: Failed, time: 32.03:02:30.0, Cause Event: Goto_Failed, fromState-Action: Both Components Fail
+EndOfRun: 1
+StartRun: 1
+EnterState: C1 Running, time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+EnterState: C2 Running, time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+EnterState: Running , time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+DoEvent: C2 Fails, time: 11.07:39:11.7
+DoTransitionAction: Goto_C2_Fails
+ExitState: C2 Running
+EnterState: C2 Failed, time: 11.07:39:11.7, Cause Event: Goto_C2_Fails, fromState-Action: C2 Fails
+DoEvent: C1 Fails, time: 21.23:02:45.7
+DoTransitionAction: Goto_C1_Fails
+ExitState: C1 Running
+EnterState: C1 Failed, time: 21.23:02:45.7, Cause Event: Goto_C1_Fails, fromState-Action: C1 Fails
+DoEvent: Both Components Fail, time: 21.23:02:45.7
+DoTransitionAction: Goto_Failed
+ExitState: Running 
+EnterState: Failed, time: 21.23:02:45.7, Cause Event: Goto_Failed, fromState-Action: Both Components Fail
+EndOfRun: 1
+StartRun: 1
+EnterState: C1 Running, time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+EnterState: C2 Running, time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+EnterState: Running , time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+DoEvent: C2 Fails, time: 1.19:05:49.1
+DoTransitionAction: Goto_C2_Fails
+ExitState: C2 Running
+EnterState: C2 Failed, time: 1.19:05:49.1, Cause Event: Goto_C2_Fails, fromState-Action: C2 Fails
+DoEvent: C1 Fails, time: 16.02:33:13.0
+DoTransitionAction: Goto_C1_Fails
+ExitState: C1 Running
+EnterState: C1 Failed, time: 16.02:33:13.0, Cause Event: Goto_C1_Fails, fromState-Action: C1 Fails
+DoEvent: Both Components Fail, time: 16.02:33:13.0
+DoTransitionAction: Goto_Failed
+ExitState: Running 
+EnterState: Failed, time: 16.02:33:13.0, Cause Event: Goto_Failed, fromState-Action: Both Components Fail
+EndOfRun: 1
+StartRun: 1
+EnterState: C1 Running, time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+EnterState: C2 Running, time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+EnterState: Running , time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+DoEvent: C1 Fails, time: 3.05:12:50.1
+DoTransitionAction: Goto_C1_Fails
+ExitState: C1 Running
+EnterState: C1 Failed, time: 3.05:12:50.1, Cause Event: Goto_C1_Fails, fromState-Action: C1 Fails
+DoEvent: C2 Fails, time: 11.09:42:55.6
+DoTransitionAction: Goto_C2_Fails
+ExitState: C2 Running
+EnterState: C2 Failed, time: 11.09:42:55.6, Cause Event: Goto_C2_Fails, fromState-Action: C2 Fails
+DoEvent: Both Components Fail, time: 11.09:42:55.6
+DoTransitionAction: Goto_Failed
+ExitState: Running 
+EnterState: Failed, time: 11.09:42:55.6, Cause Event: Goto_Failed, fromState-Action: Both Components Fail
+EndOfRun: 1
+StartRun: 1
+EnterState: C1 Running, time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+EnterState: C2 Running, time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+EnterState: Running , time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+DoEvent: C1 Fails, time: 1.21:24:53.9
+DoTransitionAction: Goto_C1_Fails
+ExitState: C1 Running
+EnterState: C1 Failed, time: 1.21:24:53.9, Cause Event: Goto_C1_Fails, fromState-Action: C1 Fails
+DoEvent: C2 Fails, time: 9.22:58:12.6
+DoTransitionAction: Goto_C2_Fails
+ExitState: C2 Running
+EnterState: C2 Failed, time: 9.22:58:12.6, Cause Event: Goto_C2_Fails, fromState-Action: C2 Fails
+DoEvent: Both Components Fail, time: 9.22:58:12.6
+DoTransitionAction: Goto_Failed
+ExitState: Running 
+EnterState: Failed, time: 9.22:58:12.6, Cause Event: Goto_Failed, fromState-Action: Both Components Fail
+EndOfRun: 1
+StartRun: 1
+EnterState: C1 Running, time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+EnterState: C2 Running, time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+EnterState: Running , time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+DoEvent: C1 Fails, time: 6.14:33:57.0
+DoTransitionAction: Goto_C1_Fails
+ExitState: C1 Running
+EnterState: C1 Failed, time: 6.14:33:57.0, Cause Event: Goto_C1_Fails, fromState-Action: C1 Fails
+DoEvent: C2 Fails, time: 8.20:01:43.0
+DoTransitionAction: Goto_C2_Fails
+ExitState: C2 Running
+EnterState: C2 Failed, time: 8.20:01:43.0, Cause Event: Goto_C2_Fails, fromState-Action: C2 Fails
+DoEvent: Both Components Fail, time: 8.20:01:43.0
+DoTransitionAction: Goto_Failed
+ExitState: Running 
+EnterState: Failed, time: 8.20:01:43.0, Cause Event: Goto_Failed, fromState-Action: Both Components Fail
+EndOfRun: 1
+StartRun: 1
+EnterState: C1 Running, time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+EnterState: C2 Running, time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+EnterState: Running , time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+DoEvent: C1 Fails, time: 1.02:21:38.7
+DoTransitionAction: Goto_C1_Fails
+ExitState: C1 Running
+EnterState: C1 Failed, time: 1.02:21:38.7, Cause Event: Goto_C1_Fails, fromState-Action: C1 Fails
+DoEvent: C2 Fails, time: 6.13:13:38.1
+DoTransitionAction: Goto_C2_Fails
+ExitState: C2 Running
+EnterState: C2 Failed, time: 6.13:13:38.1, Cause Event: Goto_C2_Fails, fromState-Action: C2 Fails
+DoEvent: Both Components Fail, time: 6.13:13:38.1
+DoTransitionAction: Goto_Failed
+ExitState: Running 
+EnterState: Failed, time: 6.13:13:38.1, Cause Event: Goto_Failed, fromState-Action: Both Components Fail
+EndOfRun: 1
+StartRun: 1
+EnterState: C1 Running, time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+EnterState: C2 Running, time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+EnterState: Running , time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+DoEvent: C2 Fails, time: 4.04:35:58.2
+DoTransitionAction: Goto_C2_Fails
+ExitState: C2 Running
+EnterState: C2 Failed, time: 4.04:35:58.2, Cause Event: Goto_C2_Fails, fromState-Action: C2 Fails
+DoEvent: C1 Fails, time: 19.01:21:43.5
+DoTransitionAction: Goto_C1_Fails
+ExitState: C1 Running
+EnterState: C1 Failed, time: 19.01:21:43.5, Cause Event: Goto_C1_Fails, fromState-Action: C1 Fails
+DoEvent: Both Components Fail, time: 19.01:21:43.5
+DoTransitionAction: Goto_Failed
+ExitState: Running 
+EnterState: Failed, time: 19.01:21:43.5, Cause Event: Goto_Failed, fromState-Action: Both Components Fail
+EndOfRun: 1
+StartRun: 1
+EnterState: C1 Running, time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+EnterState: C2 Running, time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+EnterState: Running , time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+DoEvent: C1 Fails, time: 10.20:40:38.9
+DoTransitionAction: Goto_C1_Fails
+ExitState: C1 Running
+EnterState: C1 Failed, time: 10.20:40:38.9, Cause Event: Goto_C1_Fails, fromState-Action: C1 Fails
+DoEvent: C2 Fails, time: 15.08:35:17.9
+DoTransitionAction: Goto_C2_Fails
+ExitState: C2 Running
+EnterState: C2 Failed, time: 15.08:35:17.9, Cause Event: Goto_C2_Fails, fromState-Action: C2 Fails
+DoEvent: Both Components Fail, time: 15.08:35:17.9
+DoTransitionAction: Goto_Failed
+ExitState: Running 
+EnterState: Failed, time: 15.08:35:17.9, Cause Event: Goto_Failed, fromState-Action: Both Components Fail
+EndOfRun: 1
+StartRun: 1
+EnterState: C1 Running, time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+EnterState: C2 Running, time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+EnterState: Running , time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+DoEvent: C2 Fails, time: 0.11:29:29.7
+DoTransitionAction: Goto_C2_Fails
+ExitState: C2 Running
+EnterState: C2 Failed, time: 0.11:29:29.7, Cause Event: Goto_C2_Fails, fromState-Action: C2 Fails
+DoEvent: C1 Fails, time: 2.04:39:24.8
+DoTransitionAction: Goto_C1_Fails
+ExitState: C1 Running
+EnterState: C1 Failed, time: 2.04:39:24.8, Cause Event: Goto_C1_Fails, fromState-Action: C1 Fails
+DoEvent: Both Components Fail, time: 2.04:39:24.8
+DoTransitionAction: Goto_Failed
+ExitState: Running 
+EnterState: Failed, time: 2.04:39:24.8, Cause Event: Goto_Failed, fromState-Action: Both Components Fail
+EndOfRun: 1
+StartRun: 1
+EnterState: C1 Running, time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+EnterState: C2 Running, time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+EnterState: Running , time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+DoEvent: C2 Fails, time: 5.10:25:47.6
+DoTransitionAction: Goto_C2_Fails
+ExitState: C2 Running
+EnterState: C2 Failed, time: 5.10:25:47.6, Cause Event: Goto_C2_Fails, fromState-Action: C2 Fails
+DoEvent: C1 Fails, time: 18.09:38:47.0
+DoTransitionAction: Goto_C1_Fails
+ExitState: C1 Running
+EnterState: C1 Failed, time: 18.09:38:47.0, Cause Event: Goto_C1_Fails, fromState-Action: C1 Fails
+DoEvent: Both Components Fail, time: 18.09:38:47.0
+DoTransitionAction: Goto_Failed
+ExitState: Running 
+EnterState: Failed, time: 18.09:38:47.0, Cause Event: Goto_Failed, fromState-Action: Both Components Fail
+EndOfRun: 1
+StartRun: 1
+EnterState: C1 Running, time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+EnterState: C2 Running, time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+EnterState: Running , time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+DoEvent: C1 Fails, time: 2.22:44:09.1
+DoTransitionAction: Goto_C1_Fails
+ExitState: C1 Running
+EnterState: C1 Failed, time: 2.22:44:09.1, Cause Event: Goto_C1_Fails, fromState-Action: C1 Fails
+DoEvent: C2 Fails, time: 4.07:25:33.2
+DoTransitionAction: Goto_C2_Fails
+ExitState: C2 Running
+EnterState: C2 Failed, time: 4.07:25:33.2, Cause Event: Goto_C2_Fails, fromState-Action: C2 Fails
+DoEvent: Both Components Fail, time: 4.07:25:33.2
+DoTransitionAction: Goto_Failed
+ExitState: Running 
+EnterState: Failed, time: 4.07:25:33.2, Cause Event: Goto_Failed, fromState-Action: Both Components Fail
+EndOfRun: 1
+StartRun: 1
+EnterState: C1 Running, time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+EnterState: C2 Running, time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+EnterState: Running , time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+DoEvent: C1 Fails, time: 3.15:13:15.8
+DoTransitionAction: Goto_C1_Fails
+ExitState: C1 Running
+EnterState: C1 Failed, time: 3.15:13:15.8, Cause Event: Goto_C1_Fails, fromState-Action: C1 Fails
+DoEvent: C2 Fails, time: 15.22:08:16.3
+DoTransitionAction: Goto_C2_Fails
+ExitState: C2 Running
+EnterState: C2 Failed, time: 15.22:08:16.3, Cause Event: Goto_C2_Fails, fromState-Action: C2 Fails
+DoEvent: Both Components Fail, time: 15.22:08:16.3
+DoTransitionAction: Goto_Failed
+ExitState: Running 
+EnterState: Failed, time: 15.22:08:16.3, Cause Event: Goto_Failed, fromState-Action: Both Components Fail
+EndOfRun: 1
+StartRun: 1
+EnterState: C1 Running, time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+EnterState: C2 Running, time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+EnterState: Running , time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+DoEvent: C1 Fails, time: 2.01:00:01.3
+DoTransitionAction: Goto_C1_Fails
+ExitState: C1 Running
+EnterState: C1 Failed, time: 2.01:00:01.3, Cause Event: Goto_C1_Fails, fromState-Action: C1 Fails
+DoEvent: C2 Fails, time: 7.15:27:19.7
+DoTransitionAction: Goto_C2_Fails
+ExitState: C2 Running
+EnterState: C2 Failed, time: 7.15:27:19.7, Cause Event: Goto_C2_Fails, fromState-Action: C2 Fails
+DoEvent: Both Components Fail, time: 7.15:27:19.7
+DoTransitionAction: Goto_Failed
+ExitState: Running 
+EnterState: Failed, time: 7.15:27:19.7, Cause Event: Goto_Failed, fromState-Action: Both Components Fail
+EndOfRun: 1
+StartRun: 1
+EnterState: C1 Running, time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+EnterState: C2 Running, time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+EnterState: Running , time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+DoEvent: C2 Fails, time: 1.00:32:29.5
+DoTransitionAction: Goto_C2_Fails
+ExitState: C2 Running
+EnterState: C2 Failed, time: 1.00:32:29.5, Cause Event: Goto_C2_Fails, fromState-Action: C2 Fails
+DoEvent: C1 Fails, time: 11.08:51:51.9
+DoTransitionAction: Goto_C1_Fails
+ExitState: C1 Running
+EnterState: C1 Failed, time: 11.08:51:51.9, Cause Event: Goto_C1_Fails, fromState-Action: C1 Fails
+DoEvent: Both Components Fail, time: 11.08:51:51.9
+DoTransitionAction: Goto_Failed
+ExitState: Running 
+EnterState: Failed, time: 11.08:51:51.9, Cause Event: Goto_Failed, fromState-Action: Both Components Fail
+EndOfRun: 1
+StartRun: 1
+EnterState: C1 Running, time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+EnterState: C2 Running, time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+EnterState: Running , time: 0.00:00:00.0, Cause Event: , fromState-Action: 
+DoEvent: C2 Fails, time: 1.00:58:36.2
+DoTransitionAction: Goto_C2_Fails
+ExitState: C2 Running
+EnterState: C2 Failed, time: 1.00:58:36.2, Cause Event: Goto_C2_Fails, fromState-Action: C2 Fails
+DoEvent: C1 Fails, time: 6.12:30:48.6
+DoTransitionAction: Goto_C1_Fails
+ExitState: C1 Running
+EnterState: C1 Failed, time: 6.12:30:48.6, Cause Event: Goto_C1_Fails, fromState-Action: C1 Fails
+DoEvent: Both Components Fail, time: 6.12:30:48.6
+DoTransitionAction: Goto_Failed
+ExitState: Running 
+EnterState: Failed, time: 6.12:30:48.6, Cause Event: Goto_Failed, fromState-Action: Both Components Fail
+DoTransitionAction: Goto_terminate
+EnterState: Terminate, time: 6.12:30:48.6, Cause Event: Goto_terminate, fromState-Action: immediate action
+EndOfRun: 1

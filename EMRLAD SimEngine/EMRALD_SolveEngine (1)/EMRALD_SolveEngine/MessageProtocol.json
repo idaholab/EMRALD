@@ -1,0 +1,185 @@
+{
+  "description": "schema for open message System Analysis Simulation Coupling with Open Messaging",
+  "type": "object",
+  "required": [ "version", "pID", "msgType", "globalRunTime", "dispName", "desc" ],
+  "properties": {
+    "version": {
+      "type": "string"
+    },
+    "pID": {
+      "type": "string"
+    },
+    "msgType": {
+      "enum": [ "mtOther", "mtSimEvent", "mtSimAction" ]
+    },
+    "dispName": {
+      "type": "string"
+    },
+    "globalRunTime": {
+      "type": "string"
+    },
+    "desc": {
+      "type": "string"
+    },
+    "otherInfo": {
+      "type": "string"
+    }
+  },
+  "oneOf": [
+    {
+      "$ref": "#/definitions/mtSimEvent"
+    },
+    {
+      "$ref": "#/definitions/mtSimAction"
+    }
+  ],
+  "definitions": {
+    "mtItemData": {
+      "properties": {
+        "itemData": {
+          "type": "object",
+          "properties": {
+            "nameId": {
+              "type": "string"
+            },
+            "value": {
+              "type": "string"
+            }
+          },
+          "required": [ "nameId", "value" ]
+        }
+      }
+    },
+    "mtSimInfo": {
+      "properties": {
+        "simInfo": {
+          "type": "object",
+          "properties": {
+            "model": {
+              "type": "string"
+            },
+            "configData": {
+              "type": "string"
+            },
+            "endTime": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "mtSimEvent": {
+      "properties": {
+        "simEvents": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "evType": {
+                "enum": [ "etCompEv", "etTimer", "etSimLoaded", "etEndSim", "etPing", "etStatus" ]
+              },
+              "time": {
+                "type": "string"
+              },
+              "status": {
+                "enum": [ "stWaiting", "stLoading", "stRunning", "stDone", "stError", "stIdle" ]
+              }
+            },
+            "oneOf": [
+              {
+                "properties": {
+                  "evType": {
+                    "enum": [ "etCompEv", "etTimer" ]
+                  }
+                },
+                "required": [ "itemData", "time" ]
+              },
+              {
+                "properties": {
+                  "evType": {
+                    "enum": [ "etStatus" ]
+                  }
+                },
+                "required": [ "status", "time" ]
+              },
+              {
+                "properties": {
+                  "evType": {
+                    "enum": [ "etSimLoaded", "etEndSim", "etPing", "etError" ]
+                  }
+                },
+                "required": [ "time" ]
+              }
+            ]
+          }
+        }
+        },
+      "required": [ "simEvents" ],
+      "anyOf": [
+        {
+          "$ref": "#/definitions/mtItemData"
+        }
+      ]
+
+    },
+    "mtSimAction": {
+      "properties": {
+        "simAction": {
+          "type": "object",
+          "properties": {
+            "actType": {
+              "enum": [ "atCompModify", "atOpenSim", "atCancelSim", "atPauseSim", "atContinue", "atTimer", "atRestartAtTime", "atPing", "atStatus", "atTerminate" ]
+            },
+            "time": {
+              "type": "string"
+            }
+          },
+          "oneOf": [
+            {
+              "properties": {
+                "actType": {
+                  "enum": [ "atCompModify"]
+                }
+              },
+              "required": [ "itemData", "time" ]
+            },
+            {
+              "properties": {
+                "actType": {
+                  "enum": [ "atOpenSim" ]
+                }
+              },
+              "required": [ "simInfo" ]
+            },
+            {
+              "properties": {
+                "actType": {
+                  "enum": [ "atRestartAtTime", "atTimer" ]
+                }
+              },
+              "required": [ "time" ]
+            },
+            {
+              "properties": {
+                "actType": {
+                  "enum": [ "atCancelSim", "atPauseSim", "atContinue", "atReset", "atPing", "atStatus", "atTerminate" ]
+                }
+              },
+              "required": []
+            }
+          ]
+        }
+      },
+      "required": [ "simAction" ],
+      "anyOf": [
+        {
+          "$ref": "#/definitions/mtItemData"
+        },
+        {
+          "$ref": "#/definitions/mtSimInfo"
+        }
+      ]
+
+    }
+  }
+}
