@@ -366,6 +366,108 @@ if (typeof Navigation === 'undefined')
         buttonLocal.id = "Button_Dynamic_local"
         buttonLocal.innerHTML = 'Local';
         buttonLocal.className = "SidebarButton";
+
+        var setUpFilters = function () {
+          let divFilters = document.createElement('div');
+          divFilters.id = "Sidebar_Dynamic_Filters";
+          let filterH3 = document.createElement('h3');
+          let filterH3Span = document.createElement('span');
+          filterH3Span.textContent = "Filters";
+          filterH3.appendChild(filterH3Span);
+          divFilters.appendChild(filterH3);
+
+          let filtersDiv = document.createElement('div');
+          filtersDiv.style.padding = "0.5em";
+          filtersDiv.id = "Sidebar_Filters_Content"
+          filtersDiv.className = "CategorySection";
+          let diagramTypeFilterDropdownElement = document.createElement("select");
+          let diagramFilterDropdownElement = document.createElement("select");
+          diagramFilterDropdownElement.style.display = "none";
+
+          let diagramTypes = ["", ... new Set(simApp.allDataModel.DiagramList.map((diagram) => diagram.Diagram.diagramLabel))];
+          for (let category of diagramTypes) {
+            const optionElement = document.createElement("option");
+            optionElement.text = category;
+            diagramTypeFilterDropdownElement.add(optionElement);
+          }
+
+          diagramTypeFilterDropdownElement.addEventListener("change", function () {
+            // First, clear exising options from the diagramFilter Dropdown
+            while (diagramFilterDropdownElement.options.length > 0) {
+              diagramFilterDropdownElement.remove(0);
+            }
+
+            let filterType = diagramTypeFilterDropdownElement.value;
+
+            diagramFilterDropdownElement.value = "";
+            filterChanged();
+
+            if (filterType === "") {
+              diagramFilterDropdownElement.style.display = "none";
+              let divAll = document.getElementById("Sidebar_Dynamic_All");
+              setupCategories(divAll, container);
+              return;
+            }
+            diagramFilterDropdownElement.style.display = "block";
+
+            let matchingDiagrams = simApp.allDataModel.DiagramList.filter(diagram => diagram.Diagram.diagramLabel === filterType);
+            let /** @type {string[]} */ diagramFilterDropdownOptions = ["", ...matchingDiagrams.map(diagram => diagram.Diagram.name)];
+
+            for (let option of diagramFilterDropdownOptions) {
+              const optionElement = document.createElement("option");
+              optionElement.text = option;
+              diagramFilterDropdownElement.add(optionElement);
+            }
+          });
+
+
+          var filterChanged = function () {
+            let filterDiagram = diagramFilterDropdownElement.value;
+
+            let divAll = document.getElementById("Sidebar_Dynamic_All");
+            setupCategories(divAll, container);
+            if (filterDiagram === "") {
+              filterH3Span.textContent = "Filters";
+              return;
+            }
+            filterH3Span.textContent = "Filters (Active)";
+          }
+
+
+          var setupCategories = function (/** @type {HTMLElement | null} */ divAll, container) {
+            if (divAll == null) return;
+            sbObj.sidebar.dynamCategories.forEach(function (/** @type {{ title: string; id: string; }} */ cat) {
+
+              cat.id = cat.title + "Panel_id";
+              let cdiv = document.getElementById(cat.id);
+              if (!cdiv) {
+                var h3 = document.createElement('h3');
+                h3.textContent = "All " + cat.title;
+
+                var cMenu = getContextMenu(cat, h3);
+                $(h3).contextmenu(cMenu);
+                divAll.appendChild(h3);
+                cdiv = document.createElement('div');
+                cdiv.id = cat.id; //Assign the id from the sidebar.json "DiagramsPanel_id", "StatesPanel_id", "LogicTreesPanel_id", "ActionsPanel_id", "EventsPanel_id", "VariablesPanel_id", "ExtSimPanel_id"
+
+                cdiv.className = "CategorySection";
+                divAll.appendChild(cdiv);
+              } else { cdiv.innerHTML = ""; }
+                sidebar.loadFilteredContent(cdiv, cat, diagramTypeFilterDropdownElement.value, diagramFilterDropdownElement.value);
+
+            }.bind(this));
+          }
+          let divAll = document.getElementById("Sidebar_Dynamic_All");
+          setupCategories(divAll, container);
+
+          diagramFilterDropdownElement.addEventListener("change", filterChanged);
+
+          filtersDiv.appendChild(diagramTypeFilterDropdownElement);
+          filtersDiv.appendChild(diagramFilterDropdownElement);
+          divFilters.appendChild(filtersDiv);
+          container.appendChild(divFilters);
+          sidebar.ApplyJqueryUi(divFilters.id);
+        }
         var setUpLocal = function () {
           //Reset the color of global button to default and set color of local to be dark
           buttonLocal.style.backgroundColor = '#d7ebf9';
@@ -420,70 +522,6 @@ if (typeof Navigation === 'undefined')
           buttonAll.style.backgroundColor = '#d7ebf9';
           var divAll = document.createElement('div');
           divAll.id = "Sidebar_Dynamic_All";
-
-          let filterH3 = document.createElement('h3');
-          filterH3.textContent = "Filters";
-          divAll.appendChild(filterH3);
-
-          let filtersDiv = document.createElement('div');
-          filtersDiv.style.padding = "0.5em";
-          let diagramTypeFilterDropdownElement = document.createElement("select");
-          let diagramFilterDropdownElement = document.createElement("select");
-          diagramFilterDropdownElement.style.display = "none";
-
-          let diagramTypes = ["", ... new Set(simApp.allDataModel.DiagramList.map((diagram) => diagram.Diagram.diagramLabel))];
-          for (let category of diagramTypes) {
-            const optionElement = document.createElement("option");
-            optionElement.text = category;
-            diagramTypeFilterDropdownElement.add(optionElement);
-          }
-
-          diagramTypeFilterDropdownElement.addEventListener("change", function() {
-            // First, clear exising options from the diagramFilter Dropdown
-            while (diagramFilterDropdownElement.options.length > 0) {
-              diagramFilterDropdownElement.remove(0);
-            }
-
-            let filterType = diagramTypeFilterDropdownElement.value;
-
-            diagramFilterDropdownElement.value = "";
-            filterChanged();
-
-            if (filterType === "") {
-              diagramFilterDropdownElement.style.display = "none";
-              setupCategories(divAll, container);
-              return;
-            }
-            diagramFilterDropdownElement.style.display = "block";
-
-            let matchingDiagrams = simApp.allDataModel.DiagramList.filter(diagram => diagram.Diagram.diagramLabel === filterType);
-            let /** @type {string[]} */ diagramFilterDropdownOptions = ["", ...matchingDiagrams.map(diagram => diagram.Diagram.name)];
-
-            for (let option of diagramFilterDropdownOptions) {
-              const optionElement = document.createElement("option");
-              optionElement.text = option;
-              diagramFilterDropdownElement.add(optionElement);
-            }
-          });
-
-
-          var filterChanged = function() {
-            let filterDiagram = diagramFilterDropdownElement.value;
-
-            setupCategories(divAll, container);
-            if (filterDiagram === "") {
-              filterH3.textContent = "Filters";
-              return;
-            }
-            filterH3.textContent = "Filters (Active)";
-          }
-
-          diagramFilterDropdownElement.addEventListener("change", filterChanged);
-
-          filtersDiv.appendChild(diagramTypeFilterDropdownElement);
-          filtersDiv.appendChild(diagramFilterDropdownElement);
-          divAll.appendChild(filtersDiv);
-
           var setupCategories = function(/** @type {HTMLDivElement} */ divAll, container) {
             sbObj.sidebar.dynamCategories.forEach(function (/** @type {{ title: string; id: string; }} */ cat) {
 
@@ -502,12 +540,12 @@ if (typeof Navigation === 'undefined')
                 cdiv.className = "CategorySection";
                 divAll.appendChild(cdiv);
               } else { cdiv.innerHTML = ""; }
-              sidebar.loadFilteredContent(cdiv, cat, diagramTypeFilterDropdownElement.value, diagramFilterDropdownElement.value);
+              sidebar.loadFilteredContent(cdiv, cat, "", "");
 
             }.bind(this));
           }
-          setupCategories(divAll, container);
-            container.appendChild(divAll);
+            setupCategories(divAll, container);
+          container.appendChild(divAll);
           sidebar.ApplyJqueryUi(divAll.id);
         };
 
@@ -570,8 +608,9 @@ if (typeof Navigation === 'undefined')
         label.className = "modelLabel";
         label.textContent = "Modeling Items";
 
-          var spacer2 = document.createElement('hr');
-          spacer.className = "sidebarSpace";
+        var spacer2 = document.createElement('hr');
+        spacer.className = "sidebarSpace";
+        spacer2.className = "sidebarSpace";
 
         buttonLocal.onclick = function () { sidebar.showDynamicSidebar("local"); }
         buttonAll.onclick = function () { sidebar.showDynamicSidebar("all"); }
@@ -580,13 +619,14 @@ if (typeof Navigation === 'undefined')
         container.appendChild(div);
         this.ApplyJqueryUi(div.id);
         container.appendChild(spacer);
+        setUpFilters();
+        container.appendChild(spacer2);
         //container.appendChild(label);
         var buttonGroup = document.createElement('btn-group');
         buttonGroup.appendChild(buttonAll);
         buttonGroup.appendChild(buttonGlobal);
         buttonGroup.appendChild(buttonLocal);
         container.appendChild(buttonGroup);
-        //container.appendChild(spacer2);
         setUpLocal();
         setUpAll();
         setUpGlobal();
@@ -613,6 +653,8 @@ if (typeof Navigation === 'undefined')
       var globalButton = document.getElementById("Button_Dynamic_global");
       var allButton = document.getElementById("Button_Dynamic_All");
 
+      let filtersAccordion = document.getElementById("Sidebar_Dynamic_Filters");
+
       if (type == "global") {
         localElement.parentNode.insertBefore(localElement, allElement);
         globalElement.parentNode.insertBefore(globalElement, localElement);
@@ -623,6 +665,7 @@ if (typeof Navigation === 'undefined')
         globalButton.style.backgroundColor = '#d7ebf9';
         localButton.style.backgroundColor = '';
         allButton.style.backgroundColor = '';
+        filtersAccordion.style.display = 'none';
       }
       else if (type == "all") {
         localElement.parentNode.insertBefore(localElement, globalElement);
@@ -633,6 +676,7 @@ if (typeof Navigation === 'undefined')
         allButton.style.backgroundColor = '#d7ebf9';
         localButton.style.backgroundColor = '';
         globalButton.style.backgroundColor = '';
+        filtersAccordion.style.display = '';
       }
       else {
         ///localElement.clone().insertBefore(globalElement);
@@ -644,6 +688,7 @@ if (typeof Navigation === 'undefined')
         globalButton.style.backgroundColor = '';
         localButton.style.backgroundColor = '#d7ebf9';
         allButton.style.backgroundColor = '';
+        filtersAccordion.style.display = 'none';
       }
     }
 
