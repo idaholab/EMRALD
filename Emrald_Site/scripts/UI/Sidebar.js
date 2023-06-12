@@ -453,7 +453,7 @@ if (typeof Navigation === 'undefined')
                 cdiv.className = "CategorySection";
                 divAll.appendChild(cdiv);
               } else { cdiv.innerHTML = ""; }
-                sidebar.loadFilteredContent(cdiv, cat, diagramTypeFilterDropdownElement.value, diagramFilterDropdownElement.value);
+              sidebar.loadFilteredContent(cdiv, cat, diagramTypeFilterDropdownElement.value, diagramFilterDropdownElement.value);
 
             }.bind(this));
           }
@@ -544,7 +544,7 @@ if (typeof Navigation === 'undefined')
 
             }.bind(this));
           }
-            setupCategories(divAll, container);
+          setupCategories(divAll, container);
           container.appendChild(divAll);
           sidebar.ApplyJqueryUi(divAll.id);
         };
