@@ -307,7 +307,7 @@ namespace SimulationTracking
 
     public void RemoveMatchingStateItems(int stateID)
     {
-      //get the indexes for the state. 
+      //get the indexes for the state.
       List<TimeSpan> refs;
       if (stateRefLookup.TryGetValue(stateID, out refs))
       {
@@ -320,10 +320,26 @@ namespace SimulationTracking
             {
               if (timedEvQue.CurrentValue.eventStateActions.statesAndActions.ContainsKey(stateID))
               {
-                if (timedEvQue.CurrentValue.eventStateActions.statesAndActions.Count == 1)
-                  timedEvQue.Remove();
+                EventStatesAndActions rem = timedEvQue.CurrentValue.eventStateActions;
+                List<TimeSpan> times2;
+                if (eventRefLookup.TryGetValue(rem.eventID, out times2))
+                {
+                  if(times2.Count > 1)
+                  {
+                    times2.Remove(refTime);
+                  }
+                  else
+                  {
+                    eventRefLookup.Remove(rem.eventID);
+                  }
+                }
+                if (rem.statesAndActions.Count == 1)
+                {
+                  timedEvQue.Remove();                  
+                }
+
                 else
-                  timedEvQue.CurrentValue.eventStateActions.RemoveStateActions(stateID);
+                  rem.RemoveStateActions(stateID);
               }
             }
             while (timedEvQue.MoveNext() && timedEvQue.CurrentKey == refTime);

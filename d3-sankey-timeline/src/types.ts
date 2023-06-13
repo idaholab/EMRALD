@@ -22,13 +22,12 @@ export interface NodeLayout extends Coordinate {
 }
 
 export interface LinkLayout {
-  curve: number[][];
   path: string;
   width: number;
 }
 export interface NodeTimes {
   endTime: number;
-  meanTime?: number;
+  meanTime: number;
   startTime: number;
   stdDeviation?: number;
 }
