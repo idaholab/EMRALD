@@ -16,6 +16,10 @@ using System.Threading;
 using Newtonsoft.Json.Linq;
 using MessageDefLib;
 using System.Xml;
+using Newtonsoft.Json.Schema.Generation;
+using Newtonsoft.Json;
+using System.Security.Principal;
+using System.Runtime.InteropServices;
 
 namespace SimulationDAL
 {
@@ -551,6 +555,7 @@ namespace SimulationDAL
       : base("", actType)
     {
       this.compiled = false;
+      scriptRunner = new ScriptEngine(ScriptEngine.Languages.CSharp, "");
     }
 
     public ScriptAct(string inName, string inScriptCode, List<String> inCodeVars, EnActionType actType)
@@ -560,6 +565,7 @@ namespace SimulationDAL
       if (inCodeVars != null)
         this.codeVariables = new List<String>(inCodeVars);
       this.scriptCode = inScriptCode;
+      scriptRunner = new ScriptEngine(ScriptEngine.Languages.CSharp, scriptCode);
     }
 
     public override string GetDerivedJSON(EmraldModel lists)
@@ -653,7 +659,7 @@ namespace SimulationDAL
       }
 
       this.compiled = false;
-      scriptRunner = new ScriptEngine(ScriptEngine.Languages.CSharp, scriptCode);
+      scriptRunner.Code = scriptCode;
 
       //add the Time and 3D Frame variables
       scriptRunner.AddVariable("CurTime", typeof(double));
@@ -701,6 +707,9 @@ namespace SimulationDAL
 
     public VarValueAct()
       : base(EnActionType.atCngVarVal) { }
+
+    public VarValueAct(EnActionType t)
+      : base(t) { }
 
     //public VarValueAct(string inName, TimeStateVariable inSimVar)
     // : this(inName, inSimVar, "", typeof(double), null)
@@ -834,6 +843,173 @@ namespace SimulationDAL
 
 
 
+    }
+  }
+
+  
+  public class VarValueDLLAct : VarValueAct //atCngVarValDLL
+  {
+    public class DllParamInfo
+    {
+      public bool emraldVar { get; set; } = false;
+      public string name { get; set; } //name of input
+      public string dTypeStr { get; set; } //type of the value if not an emrald variable
+      
+      public string value { get; set; } //value for the parameter if not a variable from EMRALD
+
+    }
+
+    public string libPath = "";
+    public String functionName = "";
+    public List<DllParamInfo> callParams = new List<DllParamInfo>();
+
+    private const string preClassCode = "[DllImport(\"kernel32.dll\")]\r\n  private static extern IntPtr LoadLibrary(string dllToLoad);\r\n  [DllImport(\"kernel32.dll\")]\r\n  private static extern IntPtr GetProcAddress(IntPtr hModule, string procedureName);\r\n  [UnmanagedFunctionPointer(CallingConvention.Cdecl)]";
+    private const string mainCallCode1 = "string dllPath = @\"E:\\Projects_VS\\Tests\\DynamicLoadDLLTest\\SimpleCDLL.dll\";\r\n      string functionName = \"";
+    private const string mainCallCode2 = "\";  \r\n      IntPtr dllHandle = LoadLibrary(dllPath);\r\n      IntPtr functionAddress = GetProcAddress(dllHandle, functionName);\r\n     ";
+
+
+    public int varID { get { return (simVar != null) ? simVar.id : 0; } }
+    //public bool isTimeStateVar { get { return this.simVar is TimeStateVariable; } }  
+
+    public VarValueDLLAct()
+      : base(EnActionType.atCngVarDll) 
+    { 
+      this.scriptRunner.addUsing.Add("System.Runtime.InteropServices");
+    }
+
+    //public VarValueDLLAct(string inName, SimVariable inSimVar, Type inRetType, List<string> inCodeVars)
+    //  : base(inName, inSimVar, "", inRetType, inCodeVars )
+    //{
+    //  this._actType = EnActionType.atCngVarDll;
+    //  this.scriptRunner.addUsing.Add("System.Runtime.InteropServices");
+    //}  
+
+    public override string GetDerivedJSON(EmraldModel lists)
+    {
+      //script code is dynamically created and not specified by the user
+      string save = this.scriptCode;
+      this.scriptCode = "";
+      string retStr = base.GetDerivedJSON(lists);
+      this.scriptCode = save;
+
+      if (simVar != null)
+        retStr = retStr + "," + Environment.NewLine + "\"libPath\":" + "\"" +libPath + "\"";
+
+      if (!File.Exists(libPath))
+      {
+        Console.WriteLine("Missing DLL file - "  + libPath);
+      }
+
+      retStr = retStr + "," + Environment.NewLine + "\"functionName\":" + "\"" + functionName + "\"";
+
+      string callParams = JsonConvert.SerializeObject(this.callParams);
+
+      retStr = retStr + "," + Environment.NewLine + "\"callParams\":" + "\"" + callParams + "\"";
+
+     
+
+      return retStr;
+    }
+
+    public override bool DeserializeDerived(object obj, bool wrapped, EmraldModel lists, bool useGivenIDs)
+    {
+      dynamic dynObj = (dynamic)obj;
+      if (wrapped)
+      {
+        if (dynObj.Action == null)
+          return false;
+
+        dynObj = ((dynamic)obj).Action;
+      }
+
+      if (!base.DeserializeDerived((object)dynObj, false, lists, useGivenIDs))
+        return false;
+
+      try
+      {
+        functionName = Convert.ToString(dynObj.functionName);
+        libPath = Convert.ToString(dynObj.libPath);
+        string callParamJson = Convert.ToString(dynObj.callParams);
+
+        callParams.Add(new DllParamInfo() { dTypeStr = "atCngVarDll", emraldVar = true, name = "varName", value = "5" });
+        String test = JsonConvert.SerializeObject(callParams);
+        callParams = JsonConvert.DeserializeObject<List<DllParamInfo>>(callParamJson);
+      }
+      catch
+      {
+        throw new Exception("Missing data for CngVarValDLL, check functionName, libPath, and callParams");
+      }
+      if(!File.Exists(libPath)) 
+      {
+        throw new Exception("Library path missing - " + libPath);
+      }
+
+      processed = true;
+      return true;
+    }
+
+    public override bool LoadObjLinks(object obj, bool wrapped, EmraldModel lists)
+    {
+      dynamic dynObj = (dynamic)obj;
+      if (wrapped)
+      {
+        if (dynObj.Action == null)
+          return false;
+
+        dynObj = ((dynamic)obj).Action;
+      }
+
+      base.LoadObjLinks(obj, wrapped, lists);
+
+      //load the sim variable if there is one
+      foreach (var p in callParams)
+      {
+        if (p.emraldVar)
+        {
+          
+          if ((p.value != "CurTime") && (p.value != "RunIdx"))
+          {
+            SimVariable curVar = lists.allVariables.FindByName(p.name, false);
+            if (curVar == null)
+              throw new Exception("Failed to find variable named " + p.value);
+          }
+          if(!codeVariables.Contains(p.name))
+            this.codeVariables.Add(p.name);
+        }
+      }
+
+      //string functionCall = functionName + "(";
+      string functionCall = "myFunction(";
+      string fullPreClassCode = preClassCode + Environment.NewLine + "private delegate " + simVar.dType.ToString() + " " + functionName + "(";
+      
+
+
+      foreach (var p in callParams)
+      {
+        if (p.emraldVar)
+        {
+          var v = lists.allVariables.FindByName(p.name);
+          fullPreClassCode += v.dType.ToString() + " " + v.name + ", ";
+          functionCall += v.name + ", ";
+        }
+        else
+        {
+          fullPreClassCode += p.dTypeStr + " " + p.name + ", ";
+          functionCall += p.value + ", ";
+        }
+      }
+
+      //remove the last comma and add the end characters
+      fullPreClassCode = fullPreClassCode.Substring(0, fullPreClassCode.Length - 2) + ");";
+      functionCall = functionCall.Substring(0, functionCall.Length - 2) + ");";
+      
+
+      this.scriptRunner.preClassInfo = fullPreClassCode;
+      scriptCode = mainCallCode1 + functionName + mainCallCode2;
+      scriptCode += functionName + " myFunction = Marshal.GetDelegateForFunctionPointer<" + functionName  + "> (functionAddress);\r\n  return ";
+      scriptCode += functionCall;
+
+      return true;
     }
   }
 
@@ -1923,6 +2099,7 @@ namespace SimulationDAL
         case EnActionType.atTransition: retAct = new TransitionAct(); break;
         case EnActionType.atRunExtApp: retAct = new RunExtAppAct(); break;
         case EnActionType.atCustomStateShift: retAct = new CustomStateShiftAct(); break;
+        case EnActionType.atCngVarDll: retAct = new VarValueDLLAct(); break;
         default: break;
       }
 
@@ -2034,7 +2211,7 @@ namespace SimulationDAL
     {
       foreach (var item in this)
       {
-        if (item.Value is VarValueAct)
+        if ((item.Value is VarValueAct) || (item.Value is VarValueDLLAct))
         {
           try
           {
