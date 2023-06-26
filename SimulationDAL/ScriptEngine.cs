@@ -11,6 +11,7 @@ using Microsoft.CodeAnalysis.Emit;
 using System.Diagnostics;
 using Newtonsoft.Json.Linq;
 using System.IO;
+using System.Diagnostics.Tracing;
 
 namespace ScriptEngineNS
 {
@@ -29,6 +30,9 @@ namespace ScriptEngineNS
     string variables, variables1;
     string code;
     public List<string> messages = new List<string>();
+    public List<string> addAssemblies = new List<string>() { "MathNet.Numerics.dll" };
+    public List<string> addUsing = new List<string>();
+    public string preClassInfo = "";
 
 
     public ScriptEngine(Languages language, string code = "")
@@ -127,9 +131,14 @@ namespace ScriptEngineNS
                "using System.Collections.Generic;\r\n" +
                "using MathNet.Numerics.Distributions;\r\n" +
                "using Newtonsoft.Json.Linq;\r\n" +
-               "using Newtonsoft.Json;\r\n" +
+               "using Newtonsoft.Json;\r\n";
+      
+      foreach(string s in addUsing)
+        source = source + "using " + s + ";\r\n";
+
+      source = source + 
                "public class " + assemblyName + "\r\n{\r\n" +
-              variables + "\r\npublic " + typeStr + " Eval()\r\n{\r\n";
+              variables + preClassInfo + "\r\npublic " + typeStr + " Eval()\r\n{\r\n";
       int realLn0 = source.Count(c => c.Equals('\n')) + 1;
       source = source + code + "\r\n\r\n}\r\n}\r\n}";
       File.WriteAllText("WriteText" + assemblyName + ".txt", source);
@@ -159,10 +168,13 @@ namespace ScriptEngineNS
           added.Add(Path.GetFileName(item));
         }
       }
-      if (!added.Contains("MathNet.Numerics.dll"))
+      foreach (var addLib in addAssemblies)
       {
-        string appPath = System.IO.Directory.GetCurrentDirectory();
-        references.Add(MetadataReference.CreateFromFile(appPath + Path.DirectorySeparatorChar + "MathNet.Numerics.dll"));
+        if (!added.Contains(addLib))
+        {
+          string appPath = System.IO.Directory.GetCurrentDirectory();
+          references.Add(MetadataReference.CreateFromFile(appPath + Path.DirectorySeparatorChar + addLib));
+        }      
       }
 
       ////or specify the libraries to load.

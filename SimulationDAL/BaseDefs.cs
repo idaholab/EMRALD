@@ -43,7 +43,7 @@ namespace SimulationDAL
   public enum EnDiagramType { dtComponent = 0, dtSystem, dtPlant, dtOther }; 
 
   public enum EnStateType { stStart = 0, stStandard, stKeyState, stTerminal };
-  public enum EnActionType { atTransition = 0, atCngVarVal, at3DSimMsg, atRunExtApp, atCustomStateShift, atJumpToTime };
+  public enum EnActionType { atTransition = 0, atCngVarVal, at3DSimMsg, atRunExtApp, atCustomStateShift, atJumpToTime, atCngVarDll };
   public enum EnModifiableTypes { mtNone = 0, mtVar, mtComp, mtState, mtExtEv };
   public enum EnFailType { ftFailToStart = 0, ftFailToRun }
 
