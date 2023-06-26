@@ -895,10 +895,7 @@ namespace SimulationDAL
       if (simVar != null)
         retStr = retStr + "," + Environment.NewLine + "\"libPath\":" + "\"" +libPath + "\"";
 
-      if (!File.Exists(libPath))
-      {
-        Console.WriteLine("Missing DLL file - "  + libPath);
-      }
+      
 
       retStr = retStr + "," + Environment.NewLine + "\"functionName\":" + "\"" + functionName + "\"";
 
@@ -928,7 +925,24 @@ namespace SimulationDAL
       try
       {
         functionName = Convert.ToString(dynObj.functionName);
-        libPath = Convert.ToString(dynObj.libPath);
+        string pathRef = Convert.ToString(dynObj.libPath);
+        if (!Path.IsPathRooted(pathRef) && (pathRef[0] == '.'))
+        {
+          libPath = lists.rootPath;
+          if (!libPath.EndsWith(@"\"))
+            libPath += @"\";
+
+          libPath = Path.GetFullPath(Path.Combine(libPath + pathRef));
+        }
+        else
+        {
+          libPath = this.libPath;
+        }
+
+        if (!File.Exists(libPath))
+        {
+          Console.WriteLine("Missing DLL file - " + libPath);
+        }
         string callParamJson = Convert.ToString(dynObj.callParams);
 
         callParams.Add(new DllParamInfo() { dTypeStr = "atCngVarDll", emraldVar = true, name = "varName", value = "5" });
