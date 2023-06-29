@@ -47,6 +47,10 @@ export default class Renderer {
     fontColor: 'white',
     fontSize: 20,
     height: window.innerHeight,
+    labels: {
+      fontSize: 1,
+      borderWidth: 6,
+    },
     layout: 'default',
     linkTitle: (d: TimelineLink) =>
       `${d.source.label} → ${d.target.label}\n${d.flow}`,
@@ -532,7 +536,7 @@ export default class Renderer {
                 current.select('path').attr('d', l.layout.path);
                 const midpoint = renderer.getCurveMidpoint(l);
                 current
-                  .select<SVGTextElement>('text')
+                  .selectAll<SVGTextElement, unknown>('text')
                   .attr('x', midpoint.x)
                   .attr('y', function () {
                     let y = midpoint.y;
@@ -710,8 +714,26 @@ export default class Renderer {
       .attr('class', 'link-label')
       .attr('text-anchor', 'middle')
       .attr('dominant-baseline', 'middle')
-      .style('fill', this.options.fontColor)
-      .style('font-size', `${this.options.fontSize}px`)
+      .style('fill', 'white')
+      .style('stroke', 'black')
+      .style('stroke-width', this.options.labels.borderWidth)
+      .text((d: TimelineLink) => d.data.count)
+      .attr('x', (link: TimelineLink) => this.getCurveMidpoint(link).x)
+      .attr('y', function (link: TimelineLink) {
+        let y = renderer.getCurveMidpoint(link).y;
+        if (link.isSelfLinking) {
+          y = y - renderer.options.curve.height + this.getBBox().height / 2;
+        }
+        return y;
+      });
+    selectAll<BaseType, TimelineLink>('.link')
+      .append('text')
+      .attr('class', 'link-label')
+      .attr('text-anchor', 'middle')
+      .attr('dominant-baseline', 'middle')
+      .style('fill', 'white')
+      .style('stroke', 'white')
+      .style('stroke-width', this.options.labels.fontSize)
       .text((d: TimelineLink) => d.data.count)
       .attr('x', (link: TimelineLink) => this.getCurveMidpoint(link).x)
       .attr('y', function (link: TimelineLink) {
