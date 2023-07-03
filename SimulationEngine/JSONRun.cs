@@ -165,6 +165,11 @@ namespace SimulationEngine
       _simRuns = new ProcessSimBatch(_model, TimeSpan.Parse(options.runtime), options.resout, options.jsonRes, options.pathResultsInterval);
       _simRuns.SetupBatch(options.runct, true, options.pathout);
       _simRuns.AssignProgress(progress);
+      foreach(var v in _model.allVariables.Values)
+      {
+        if(v.monitorInSim)
+          _simRuns.logVarVals.Add(v.name);
+      }
       foreach (var varItem in this.options.variables)
       {
         _simRuns.logVarVals.Add(varItem.ToString());
