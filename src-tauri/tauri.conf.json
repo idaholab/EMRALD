@@ -8,7 +8,7 @@
   },
   "package": {
     "productName": "emrald_site",
-    "version": "0.1.0"
+    "version": "2.3.0"
   },
   "tauri": {
     "allowlist": {
