@@ -21,7 +21,9 @@ namespace SimulationDAL
 
   public abstract class SimVariable : BaseObjInfo
   {
-    private bool _monitor = false;
+    private bool _canMonitor = true; //Show in the UI to watch the variable
+    private bool _monitor = false; //Default value to watch the variable in the solver UI
+    private bool _cumulativeStats = false; //provide the statistical results for this variable at the end of the sim runs
     public EnVarScope varScope = EnVarScope.gtGlobal;
     public Type dType; 
     protected object _value = null;
@@ -33,6 +35,9 @@ namespace SimulationDAL
     public string strValue { get { return Convert.ToString(GetValue()); } }
     public bool boolValue { get { return Convert.ToBoolean(GetValue()); } }
     public bool monitorInSim { get { return _monitor; } }
+    public bool canMonitorSim { get { return _canMonitor; } }
+    public bool cumulativeStats { get { return _cumulativeStats; } }
+
     public virtual object value { get { return GetValue(); } }
     // public DateTime timeValue { get { return Convert.ToDateTime(value); } }
 
@@ -202,13 +207,31 @@ namespace SimulationDAL
         throw new Exception("Variable \"" + this.name + "\"  missing type.");
       }
 
-      try
+      if(dynObj.monitorInSim != null)
       {
         _monitor = Convert.ToBoolean(dynObj.monitorInSim);
       }
-      catch
+      else
       {
         _monitor = false;
+      }
+
+      if (dynObj.canMonitor != null)
+      {
+        _canMonitor = Convert.ToBoolean(dynObj.canMonitor);
+      }
+      else
+      {
+        _canMonitor = true;
+      }
+
+      if (dynObj.cumulativeStats != null)
+      {
+        _cumulativeStats = Convert.ToBoolean(dynObj.cumulativeStats);
+      }
+      else
+      {
+        _cumulativeStats = false;
       }
 
       try
@@ -218,7 +241,7 @@ namespace SimulationDAL
       }
       catch
       {
-        _monitor = false;
+        resetOnRuns = true;
       }
 
       if (varScope != (EnVarScope)Enum.Parse(typeof(EnVarScope), (string)dynObj.varScope, true))

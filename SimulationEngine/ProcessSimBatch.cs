@@ -91,6 +91,7 @@ namespace SimulationEngine
     public bool batchSuccess = false;
     private Progress _progress = null;
     private int _pathResultsInterval = -1;
+    private Dictionary<string, List<double>> finalVarValueList = new Dictionary<string, List<double>>();
 
     //public Dictionary<string, double> variableVals { get { return _variableVals; } }
     public Dictionary<string, FailedItems> keyFailedItems = new Dictionary<string, FailedItems>(); //key = StateName, value = cut sets
@@ -260,11 +261,8 @@ namespace SimulationEngine
           if (_stop)
             break;          
 
-          //trackSim.logFunc = logFunc;
-
-          //logFunc("Run " + i.ToString() + Environment.NewLine);
+          //Run the simulation and get final states
           List<int> finalStates = trackSim.StartTracker();
-          //logFunc("Run " + i.ToString() + " done" + Environment.NewLine);
 
           if (trackSim.keyStateCnt > 0)
           {
@@ -273,13 +271,12 @@ namespace SimulationEngine
             if (_logFailedComps)
               failedComps = trackSim.GetFailedComponents();
 
-            //if (failedComps.Length == 0)
-            //  failedComps = trackSim.GetCurrentStates();
             if (pathOutputFile != null)
             {
               pathOutputFile.WriteLine("Run - " + i.ToString());
             }
 
+            //get the key paths
             trackSim.GetKeyPaths(keyPaths, otherPaths, logVarVals);
             
             foreach (SimulationEngine.ResultStateBase path in keyPaths.Values)
@@ -323,6 +320,23 @@ namespace SimulationEngine
                   keyFailedItems.Add(keyStateName, new FailedItems());
 
                 keyFailedItems[keyStateName].AddCompFailSet(idArray);
+              }
+            }
+          
+            foreach (var v in _lists.allVariables.Values)
+            {
+              //save cumulativeStats for numeric types
+              if (v.cumulativeStats && ((v.dType != typeof(string)) || (v.dType != typeof(bool))))
+              {
+                List<double> values;
+                if (!finalVarValueList.TryGetValue(v.name, out values))
+                {
+                  finalVarValueList.Add(v.name, new List<double> { v.dblValue });
+                }
+                else
+                {
+                  values.Add(v.dblValue);
+                }
               }
             }
           }
@@ -651,16 +665,46 @@ namespace SimulationEngine
 
       foreach (string name in varNames)
       {
+        SimVariable v = _lists.allVariables.FindByName(name);
+        
         string val = _lists.allVariables.FindByName(name).strValue;
         retVals.Add(val);
 
         if (finalLog)
         {
-          File.AppendAllText(_resultFile, name + " = " + val.ToString()  + Environment.NewLine, Encoding.UTF8);
+          
+          List<double> values;
+          if (finalVarValueList.TryGetValue(name, out values))
+          {
+            //get the sum, average and std dev of the variable.
+            double sum = values.Sum();
+            double mean = sum / values.Count;
+            double std = 0;
+            if (values.Count > 0)
+            {
+              double sumDiffSq = 0; //sum of difference squared;
+              foreach (double t in values)
+              {
+                sumDiffSq += Math.Pow(((t) - mean), 2);
+              }
+
+              //calc variance   
+              double variance = sumDiffSq / (values.Count - 1);
+              std = Math.Sqrt(variance); //return square root of variance
+            }
+
+            File.AppendAllText(_resultFile, name + " Total = " + sum.ToString() + Environment.NewLine, Encoding.UTF8);
+            File.AppendAllText(_resultFile, name + " Mean = " + mean.ToString() + Environment.NewLine, Encoding.UTF8);
+            File.AppendAllText(_resultFile, name + " Standard Deviation = +/- " + std.ToString() + Environment.NewLine, Encoding.UTF8);
+          }
+          else
+          {
+            File.AppendAllText(_resultFile, name + " = " + val.ToString() + Environment.NewLine, Encoding.UTF8);
+          }
         }
       }
 
-      
+
 
       return retVals;
     }
