@@ -1065,11 +1065,14 @@ namespace EMRALD_Sim
       lbMonitorVars.Items.Clear();
       if (_validSim)
       {
-        foreach (var var in _sim.allVariables)
+        foreach (SimVariable v in _sim.allVariables.Values)
         {
-          int idx = lbMonitorVars.Items.Add(var.Value.name);
-          bool chk = var.Value.monitorInSim;
-          lbMonitorVars.SetItemChecked(idx, chk);
+          if (v.canMonitorSim)
+          {
+            int idx = lbMonitorVars.Items.Add(v.name);
+            bool chk = v.monitorInSim;
+            lbMonitorVars.SetItemChecked(idx, chk);
+          }
         }
       }
     }
