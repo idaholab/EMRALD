@@ -4417,11 +4417,18 @@ if (typeof Navigation === 'undefined')
               }.bind(this));
             }
             else { // It should always come here since filters are only in the "All" tab.
+              let filteredEventsNames = new Set();
               this.statesReferencing(null, diagramName, 'Diagram').forEach((state) => {
-                this.eventsReferencing(null, state.name, 'State').forEach(function (item) {
-                  item.ui_el = this.addSectionItem(container, section, item.name, item);
-                }.bind(this));
+                state.events.forEach(eventName => {
+                  filteredEventsNames.add(eventName);
+                });
               });
+
+              this.EventList.forEach(function (item) {
+                if (filteredEventsNames.has(item.Event.name)) {
+                  item.ui_el = this.addSectionItem(container, section, item.Event.name, item.Event);
+                }
+              }.bind(this));
             }
 
             sortDOMList(container);
