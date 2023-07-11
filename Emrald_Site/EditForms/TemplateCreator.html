@@ -206,8 +206,10 @@
             <input placeholder="Name" ng-if="entry.action=='rename'" ng-model="entry.data.name" ng-change="nameChanged($index)" />
           </td>
           <td title="This item is {{ entry.data.excluded ? '': 'not '}}excluded and will {{ entry.data.excluded ? 'not ': ''}}appear in the template.">
-            <input id="{{'excluded-' + $index}}" title="Excluded" type="checkbox" ng-model="entry.data.excluded" ng-change="checkEntryAction(entry)" ng-disabled="disabledEntries[$index]" />
-            <label for="{{'excluded-' + $index}}">Exclude</label>
+            <div ng-if="entry.type!=='Diagram'">
+              <input id="{{'excluded-' + $index}}" title="Excluded" type="checkbox" ng-model="entry.data.excluded" ng-change="checkEntryAction(entry)" />
+              <label for="{{'excluded-' + $index}}">Exclude</label>
+            </div>
           </td>
           <td title="This item is {{ entry.data.required ? '': 'not '}}required to exist in a model before this template can be used.">
             <input id="{{'required-' + $index}}" title="Required" type="checkbox" ng-model="entry.data.required" ng-change="checkEntryAction(entry)" ng-disabled="disabledEntries[$index]" />
