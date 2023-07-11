@@ -185,16 +185,11 @@ const templateCreatorController = ($scope) => {
   $scope.apply = () => {
     $scope.entries.forEach((entry, i) => {
       if (!entry.isLocked) {
-        const original = $scope.entries[i].data.name;
         $scope.entries[i].data.name = entry.data.name.replace(
           $scope.find,
           $scope.replace,
         );
-        if (
-          original !== $scope.entries[i].data.name
-        ) {
-          $scope.entries[i].isLocked = true;
-        }
+        entry.action = 'rename';
       }
     });
     $scope.find = '';
