@@ -148,8 +148,6 @@
       <button ng-click="toggleLocks(false)">Unlock All</button>
       <br />
       <br />
-      <button ng-click="toggleAction('ignore')">Keep Unlocked Names</button>
-      <button ng-click="toggleAction('rename')">Rename Unlocked</button>
     </div>
     <br />
     <br />
@@ -157,9 +155,13 @@
       <thead>
         <tr>
           <th>Type</th>
-          <th title="Find and Replace Lock">Lock</th>
+          <th title="Lock for Find & Replace and Action buttons.">Lock</th>
           <th>Name</th>
-          <th>Action</th>
+          <th>
+            Action
+            <button ng-click="toggleAction('ignore')" title="Toggle All Unlocked Items to 'Keep Name'">Keep All</button>
+            <button ng-click="toggleAction('rename')" title="Toggle All Unlocked Items to 'Rename'">Rename All</button>
+          </th>
           <th></th>
           <th title="Required in Model">Required in Model</th>
         </tr>
@@ -167,7 +169,7 @@
       <tbody>
         <tr ng-repeat="entry in entries track by $index" ng-class="{ locked: entry.isLocked }">
           <td>{{entry.type}}</td>
-          <td class="lock">
+          <td class="lock" title="Action buttons and Find & Replace will {{ entry.isLocked ? 'not ': ''}}affect this item." >
             <input type="checkbox" ng-model="entry.isLocked" ng-disabled="disabledEntries[$index]" id="{{'checkbox-' + $index}}" />
             <label for="{{'checkbox-' + $index}}"></label>
           </td>
