@@ -104,6 +104,7 @@ class TemplateCreatorEntry {
     this.action = 'ignore';
     this.isLocked = false;
     this.data.required = false;
+    this.data.excluded = false;
     this.oldName = this.data.name;
   }
 }

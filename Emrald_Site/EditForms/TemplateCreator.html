@@ -57,6 +57,20 @@
       padding: 0 0.5em 0 0.5em;
     }
 
+    .strike-through {
+      position: relative;
+    }
+
+    .strike-through::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 50%;
+      height: 1px;
+      background-color: black;
+    }
+
     .path {
       background: white;
       font-family: 'Courier New', Courier, monospace;
@@ -170,11 +184,12 @@
             <button ng-click="toggleAction('rename')" title="Toggle All Unlocked Items to 'Rename'">Rename All</button>
           </th>
           <th></th>
+          <th>Exclude</th>
           <th title="Require items to exist in a model before this template can be used.">Required in Importing Model</th>
         </tr>
       </thead>
       <tbody>
-        <tr ng-repeat="entry in entries track by $index" ng-class="{ locked: entry.isLocked }">
+        <tr ng-repeat="entry in entries track by $index" ng-class="{ 'locked': entry.isLocked, 'strike-through': entry.data.excluded }" >
           <td>{{entry.type}}</td>
           <td class="lock" title="Action buttons and Find & Replace will {{ entry.isLocked ? 'not ': ''}}affect this item." >
             <input type="checkbox" ng-model="entry.isLocked" ng-disabled="disabledEntries[$index]" id="{{'checkbox-' + $index}}" />
@@ -189,6 +204,10 @@
           </td>
           <td title="Enter the new name for the item here.  This name will be applied once the template is created.">
             <input placeholder="Name" ng-if="entry.action=='rename'" ng-model="entry.data.name" ng-change="nameChanged($index)" />
+          </td>
+          <td title="This item is {{ entry.data.excluded ? '': 'not '}}excluded and will {{ entry.data.excluded ? 'not ': ''}}appear in the template.">
+            <input id="{{'excluded-' + $index}}" title="Excluded" type="checkbox" ng-model="entry.data.excluded" ng-change="checkEntryAction(entry)" ng-disabled="disabledEntries[$index]" />
+            <label for="{{'excluded-' + $index}}">Exclude</label>
           </td>
           <td title="This item is {{ entry.data.required ? '': 'not '}}required to exist in a model before this template can be used.">
             <input id="{{'required-' + $index}}" title="Required" type="checkbox" ng-model="entry.data.required" ng-change="checkEntryAction(entry)" ng-disabled="disabledEntries[$index]" />

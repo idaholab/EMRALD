@@ -3841,13 +3841,28 @@ if (typeof Navigation === 'undefined')
             if (btn === 'OK') {
               // Replace names in the local model
               outDataObj.entries.forEach((entry) => {
-                this.replaceNames(
-                  entry.oldName,
-                  entry.data.name,
-                  entry.type,
-                  outDataObj.model,
-                  false,
-                );
+                if (entry.data.excluded) {
+                  this.statesReferencing(outDataObj.model, entry.oldName, entry.type, true);
+                  this.variableReferencing(outDataObj.model, entry.oldName, entry.type, true);
+                  this.eventsReferencing(outDataObj.model, entry.oldName, entry.type, true);
+                  this.actionsReferencing(outDataObj.model, entry.oldName, entry.type, true);
+                  this.diagramsReferencing(outDataObj.model, entry.oldName, entry.type, true);
+                  this.logicNodesReferencing(outDataObj.model, entry.oldName, entry.type, true);
+                  this.extSimsReferencing(outDataObj.model, entry.oldName, entry.type, true);
+                  let excludedIndex = outDataObj.model[`${entry.type}List`].findIndex(
+                    (item) => item[entry.type].name === entry.data.name,
+                  );
+                  outDataObj.model[`${entry.type}List`].splice(excludedIndex, 1);
+                }
+                else {
+                  this.replaceNames(
+                    entry.oldName,
+                    entry.data.name,
+                    entry.type,
+                    outDataObj.model,
+                    false,
+                  );
+                }
               });
               // Apply changes to the global model
               // outDataObj.entries.forEach((entry) => {
