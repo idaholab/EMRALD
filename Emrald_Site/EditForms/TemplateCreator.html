@@ -156,14 +156,14 @@
         <tr>
           <th>Type</th>
           <th title="Lock for Find & Replace and Action buttons.">Lock</th>
-          <th>Name</th>
-          <th>
+          <th title="Original name of item.">Original Name</th>
+          <th title="Choose whether to rename an item or keep its existing name.">
             Action
             <button ng-click="toggleAction('ignore')" title="Toggle All Unlocked Items to 'Keep Name'">Keep All</button>
             <button ng-click="toggleAction('rename')" title="Toggle All Unlocked Items to 'Rename'">Rename All</button>
           </th>
           <th></th>
-          <th title="Required in Model">Required in Model</th>
+          <th title="Require items to exist in a model before this template can be used.">Required in Model</th>
         </tr>
       </thead>
       <tbody>
@@ -173,17 +173,17 @@
             <input type="checkbox" ng-model="entry.isLocked" ng-disabled="disabledEntries[$index]" id="{{'checkbox-' + $index}}" />
             <label for="{{'checkbox-' + $index}}"></label>
           </td>
-          <td>{{entry.oldName}}</td>
+          <td title="This is the original name of the item.">{{entry.oldName}}</td>
           <td>
-            <input id="{{'action-ignore-' + $index}}" title="Ignore" type="radio" ng-model="entry.action" value="ignore" ng-change="checkEntryAction(entry)" ng-disabled="disabledEntries[$index]" />
+            <input id="{{'action-ignore-' + $index}}" title="Ignore" type="radio" ng-model="entry.action" value="ignore" ng-change="checkEntryAction(entry)" />
             <label for="{{'action-ignore-' + $index}}">Keep Name</label>
-            <input id="{{'action-rename-' + $index}}" title="Rename" type="radio" ng-model="entry.action" value="rename" ng-change="checkEntryAction(entry)" ng-disabled="disabledEntries[$index]" />
+            <input id="{{'action-rename-' + $index}}" title="Rename" type="radio" ng-model="entry.action" value="rename" ng-change="checkEntryAction(entry)" />
             <label for="{{'action-rename-' + $index}}">Rename</label>
           </td>
-          <td>
+          <td title="Enter the new name for the item here.  This name will be applied once the template is created.">
             <input placeholder="Name" ng-if="entry.action=='rename'" ng-model="entry.data.name" ng-change="nameChanged($index)" />
           </td>
-          <td>
+          <td title="This item is {{ entry.data.required ? '': 'not '}}required to exist in a model before this template can be used.">
             <input id="{{'required-' + $index}}" title="Required" type="checkbox" ng-model="entry.data.required" ng-change="checkEntryAction(entry)" ng-disabled="disabledEntries[$index]" />
             <label for="{{'required-' + $index}}">Required</label>
           </td>
