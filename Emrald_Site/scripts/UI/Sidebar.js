@@ -223,8 +223,15 @@ if (typeof Navigation === 'undefined')
               template.id = outDataObj.id;
               template.desc = outDataObj.desc;
               this.importDiagram(template, outDataObj.forceMerge).then((importedContent) => {
-                this.openDiagram(importedContent.DiagramList[0].Diagram);
-                this.onLoadLocal(diagram.Diagram);
+                let importedDiagramIndex = simApp.allDataModel.DiagramList.findIndex(diagramListItem => diagramListItem.Diagram.name === importedContent.DiagramList[0].Diagram.name);
+                if (importedDiagramIndex !== -1) {
+                  simApp.allDataModel.DiagramList[importedDiagramIndex] = { Diagram: importedContent.DiagramList[0].Diagram}
+                  simApp.allDataModel.DiagramList[importedDiagramIndex].diagramTemplate = importedContent.DiagramList[0].diagramTemplate;
+                  delete simApp.allDataModel.DiagramList[importedDiagramIndex].Diagram.required;
+                }
+
+                this.openDiagram(simApp.allDataModel.DiagramList[importedDiagramIndex].Diagram);
+                this.onLoadLocal(simApp.allDataModel.DiagramList[importedDiagramIndex].Diagram);
               });
             }
             else {
