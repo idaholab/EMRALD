@@ -178,7 +178,7 @@
                         <select name="distType" id="distTypeSelector" ng-model="data.distType" ng-options="type.name for type in distTypes" ng-change="handleDistSelection()"></select>
                         <div id="NormDistributionPanel" ng-if="data.distType.value === 'dtNormal' || data.distType.value === 'dtLogNormal'">
                             <div style="display:table-row">
-                                <span style="display:table-cell;vertical-align:middle;">Mean:</span>
+                                <span style="display:table-cell;vertical-align:middle;">Mu or Mean:</span>
                                 <select ng-if="distParameters[0].useVariable" ng-options="v.name as v.name for v in variables" ng-model="distParameters[0].variable"></select>
                                 <input name="ngMean" ng-model="distParameters[0].value" ng-if="!distParameters[0].useVariable" />
                                 <select ng-model="distParameters[0].timeRate" ng-options="t.value as t.name for t in timeOptions"></select>
