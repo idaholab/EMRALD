@@ -223,8 +223,15 @@ if (typeof Navigation === 'undefined')
               template.id = outDataObj.id;
               template.desc = outDataObj.desc;
               this.importDiagram(template, outDataObj.forceMerge).then((importedContent) => {
-                this.openDiagram(importedContent.DiagramList[0].Diagram);
-                this.onLoadLocal(diagram.Diagram);
+                let importedDiagramIndex = simApp.allDataModel.DiagramList.findIndex(diagramListItem => diagramListItem.Diagram.name === importedContent.DiagramList[0].Diagram.name);
+                if (importedDiagramIndex !== -1) {
+                  simApp.allDataModel.DiagramList[importedDiagramIndex] = { Diagram: importedContent.DiagramList[0].Diagram}
+                  simApp.allDataModel.DiagramList[importedDiagramIndex].diagramTemplate = importedContent.DiagramList[0].diagramTemplate;
+                  delete simApp.allDataModel.DiagramList[importedDiagramIndex].Diagram.required;
+                }
+
+                this.openDiagram(simApp.allDataModel.DiagramList[importedDiagramIndex].Diagram);
+                this.onLoadLocal(simApp.allDataModel.DiagramList[importedDiagramIndex].Diagram);
               });
             }
             else {
@@ -3834,13 +3841,28 @@ if (typeof Navigation === 'undefined')
             if (btn === 'OK') {
               // Replace names in the local model
               outDataObj.entries.forEach((entry) => {
-                this.replaceNames(
-                  entry.oldName,
-                  entry.data.name,
-                  entry.type,
-                  outDataObj.model,
-                  false,
-                );
+                if (entry.data.excluded) {
+                  this.statesReferencing(outDataObj.model, entry.oldName, entry.type, true);
+                  this.variableReferencing(outDataObj.model, entry.oldName, entry.type, true);
+                  this.eventsReferencing(outDataObj.model, entry.oldName, entry.type, true);
+                  this.actionsReferencing(outDataObj.model, entry.oldName, entry.type, true);
+                  this.diagramsReferencing(outDataObj.model, entry.oldName, entry.type, true);
+                  this.logicNodesReferencing(outDataObj.model, entry.oldName, entry.type, true);
+                  this.extSimsReferencing(outDataObj.model, entry.oldName, entry.type, true);
+                  let excludedIndex = outDataObj.model[`${entry.type}List`].findIndex(
+                    (item) => item[entry.type].name === entry.data.name,
+                  );
+                  outDataObj.model[`${entry.type}List`].splice(excludedIndex, 1);
+                }
+                else {
+                  this.replaceNames(
+                    entry.oldName,
+                    entry.data.name,
+                    entry.type,
+                    outDataObj.model,
+                    false,
+                  );
+                }
               });
               // Apply changes to the global model
               // outDataObj.entries.forEach((entry) => {
@@ -4417,11 +4439,18 @@ if (typeof Navigation === 'undefined')
               }.bind(this));
             }
             else { // It should always come here since filters are only in the "All" tab.
+              let filteredEventsNames = new Set();
               this.statesReferencing(null, diagramName, 'Diagram').forEach((state) => {
-                this.eventsReferencing(null, state.name, 'State').forEach(function (item) {
-                  item.ui_el = this.addSectionItem(container, section, item.name, item);
-                }.bind(this));
+                state.events.forEach(eventName => {
+                  filteredEventsNames.add(eventName);
+                });
               });
+
+              this.EventList.forEach(function (item) {
+                if (filteredEventsNames.has(item.Event.name)) {
+                  item.ui_el = this.addSectionItem(container, section, item.Event.name, item.Event);
+                }
+              }.bind(this));
             }
 
             sortDOMList(container);

@@ -13,6 +13,7 @@ using System.IO;
 using System.Xml;
 using System.Text.RegularExpressions;
 using NLog;
+using System.Linq.Expressions;
 
 namespace SimulationDAL
 {
@@ -815,15 +816,15 @@ namespace SimulationDAL
       : base(DocType.dtXML) { }    
               
     public override void SetValue(object newValue)
-    {
-
-      
+    {            
       _value = newValue;
-      
-      XmlDocument xDoc = new XmlDocument();
-      using (XmlReader reader = XmlReader.Create(_docFullPath))
+      try
       {
-        xDoc.Load(reader);
+        XmlDocument xDoc = new XmlDocument();
+        using (XmlReader reader = XmlReader.Create(_docFullPath))
+        {
+          xDoc.Load(reader);
+        }
         XmlElement pRoot = xDoc.DocumentElement;
         XmlNodeList nodes = pRoot.SelectNodes(linkStr());
         XmlNode replNode = null;
@@ -850,10 +851,15 @@ namespace SimulationDAL
               var ret = p.ReplaceChild(replNode, i);
               break;
           }
-        }
+          
 
-        xDoc.Save(_docFullPath);
-      }      
+          xDoc.Save(_docFullPath);
+        }
+      }  
+      catch(Exception ex)
+      {
+        throw new Exception("Failed to set the value for XML variable " + this.name + " check the XML syntax. " + this.linkStr);
+      }
     }
 
     public override object GetValue()
