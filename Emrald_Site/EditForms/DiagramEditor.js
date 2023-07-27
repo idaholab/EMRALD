@@ -406,7 +406,7 @@ diagramModule.controller('diagramController', function ($scope, $timeout) {
 
     $scope.stringifyGroup = (group) => {
         let groupString = "";
-        if (group !== null){
+        if (group !== undefined && group !== null){
           groupString = group.name;
           if (group.subgroup !== null){
             groupString += $scope.stringifySubGroup(group.subgroup)
@@ -430,7 +430,7 @@ diagramModule.controller('diagramController', function ($scope, $timeout) {
         let templates = $scope.diagramList;
         templates.forEach(template => {
             let path = [];
-            if (template.group !== null){
+            if (template.group !== undefined && template.group !== null){
                 path.push(template.group.name);
             }
 
@@ -668,7 +668,7 @@ diagramModule.controller('diagramController', function ($scope, $timeout) {
     $scope.getGroupNameForLevelFromTemplate = (/** @type {number} */ level, /** @type {EMRALD.ModelTemplate} */template) => {
         /** @type {EMRALD.TemplateGroup | null} */
         let group = template.group;
-        if (group === null || level < 1){
+        if (group === undefined || group === null || level < 1){
             return null;
         }
         for (let l = 1; l <= level; l++) {
