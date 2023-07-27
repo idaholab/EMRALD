@@ -461,7 +461,7 @@ diagramModule.controller('diagramController', function ($scope, $timeout) {
                 if (action === "expand") {
                     let child = document.createElement('div');
                     angular.element(event.target).parent().append(child);
-                    child.outerHTML = `<div style="padding-left:1em"><div><span class="folder" onclick="angular.element(this).scope().expandTree(this, null, ['${group.name}'], '${subgroup.name}')"> + </span><span onclick='angular.element(this).scope().showTemplatesBelongingToPath(["${group.name}"], "${subgroup.name}")'>${subgroup.name}</span></div></div>`;
+                    child.outerHTML = `<div style="padding-left:1em"><div><span class="folder" onclick="angular.element(this).scope().expandTree(this, null, ['${group.name}'], '${subgroup.name}')"> + </span><span class="tree-path-option" onclick='angular.element(this).scope().showTemplatesBelongingToPath(["${group.name}"], "${subgroup.name}", this)'>${subgroup.name}</span></div></div>`;
                 } else {
                     angular.element(event.target).parent()[0].getElementsByTagName("div")[0].remove();
                 }
@@ -482,7 +482,7 @@ diagramModule.controller('diagramController', function ($scope, $timeout) {
                 if (action === "expand") {
                     let child = document.createElement('div');
                     event.parentElement.append(child);
-                    child.outerHTML = `<div style="padding-left:1em"><div><span class='folder' onclick='angular.element(this).scope().expandTree(this, null, ${JSON.stringify(path)}, "${subgroup.name}")'> + </span><span onclick='angular.element(this).scope().showTemplatesBelongingToPath(${JSON.stringify(path)}, "${subgroup.name}")'>${subgroup.name}</span></div></div>`;
+                    child.outerHTML = `<div style="padding-left:1em"><div><span class='folder' onclick='angular.element(this).scope().expandTree(this, null, ${JSON.stringify(path)}, "${subgroup.name}")'> + </span><span class="tree-path-option" onclick='angular.element(this).scope().showTemplatesBelongingToPath(${JSON.stringify(path)}, "${subgroup.name}", this)'>${subgroup.name}</span></div></div>`;
                 } else {
                     event.parentElement.getElementsByTagName("div")[0].remove();
                 }
@@ -501,7 +501,7 @@ diagramModule.controller('diagramController', function ($scope, $timeout) {
         return groups;
     }
 
-    $scope.showTemplatesBelongingToPath = (path, subgroup, needsDigest = true) => {
+    $scope.showTemplatesBelongingToPath = (path, subgroup, event, needsDigest = true) => {
         /** @type {EMRALD.ModelTemplate[]} */
         let diagramList = $scope.diagramList;
         /** @type {EMRALD.ModelTemplate[]} */
@@ -530,6 +530,16 @@ diagramModule.controller('diagramController', function ($scope, $timeout) {
         if (needsDigest) {
             $scope.$digest();
         }
+
+      let allTreePathOptions = document.getElementsByClassName('tree-path-option');
+      for (let i = 0; i < allTreePathOptions.length; i++) {
+        allTreePathOptions[i].classList.remove('active-tree-path');
+      }
+      if (event.parentElement === undefined) {
+        event = angular.element(event.target)[0];
+      }
+      event.classList.add('active-tree-path')
+
     }
 
 
