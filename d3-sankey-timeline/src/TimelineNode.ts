@@ -7,6 +7,8 @@ import { sum } from './util';
  * Represents a node in the timeline.
  */
 export default class TimelineNode {
+  public color?: string;
+
   public data: any;
 
   public graph: SankeyTimeline;
@@ -53,17 +55,20 @@ export default class TimelineNode {
    * @param id - The node's id.
    * @param label - The node's label.
    * @param times - Node timing data (either start + end time or median + std deviation).
+   * @param color - The node color, if specified.
    */
   public constructor(
     graph: SankeyTimeline,
     id: number,
     label: string,
     times: NodeTimes,
+    color?: string,
   ) {
     this.graph = graph;
     this.id = id;
     this.label = label;
     this.times = times;
+    this.color = color;
   }
 
   /**
@@ -103,6 +108,7 @@ export default class TimelineNode {
    * @param color The color to set.
    */
   public setColor(color: string) {
+    this.color = color;
     this.layout.color = color;
   }
 

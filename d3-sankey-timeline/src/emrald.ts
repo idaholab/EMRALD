@@ -1,4 +1,6 @@
 import { select, selectAll } from 'd3-selection';
+import '../style.css';
+import colors from './colors';
 import type TimelineNode from './TimelineNode';
 import * as sankeyTimeline from './index';
 import TimelineLink from './TimelineLink';
@@ -36,6 +38,7 @@ type Node = {
     x: number[];
     s: number[];
   };
+  color?: string;
 };
 
 type Link = {
@@ -53,7 +56,9 @@ type TimelineOptions = {
     paths: Node[];
   }[];
   options?: {
+    customColors: string[];
     fontSize: number;
+    lastEditedNode?: string;
     maxNodeHeight: number;
     maxLinkWidth: number;
   };
@@ -78,6 +83,7 @@ export default function main() {
   let timeline = new sankeyTimeline.SankeyTimeline();
   const data: TimelineOptions = (window as any).data;
   const keyStateOptions = document.getElementById('keyStateOptions');
+  let customColors: string[] = [];
   /**
    * Preprocesses path results for the selected key states.
    *
@@ -160,12 +166,13 @@ export default function main() {
   const processed = preprocess(data, keyStates);
   nodes = processed[0];
   links = processed[1];
-  const renderer = new sankeyTimeline.Renderer(timeline);
+  const renderer = new sankeyTimeline.Renderer(timeline, select('svg'));
   renderer.options.height = window.innerHeight;
   renderer.options.width = window.innerWidth;
   renderer.options.dynamicNodeHeight = true;
   renderer.options.layout = 'default';
   if (data.options) {
+    customColors = data.options.customColors;
     renderer.options.fontSize = data.options.fontSize;
     renderer.options.maxNodeHeight = data.options.maxNodeHeight;
     renderer.options.maxLinkWidth = data.options.maxLinkWidth;
@@ -288,12 +295,16 @@ export default function main() {
       if (start < 0) {
         start = 0;
       }
-      const timelineNode = timeline.createNode(node.name, {
-        endTime: combinedMean(node) + 2500,
-        meanTime: combinedMean(node),
-        startTime: start,
-        stdDeviation: combinedStd(node),
-      });
+      const timelineNode = timeline.createNode(
+        node.name,
+        {
+          endTime: combinedMean(node) + 2500,
+          meanTime: combinedMean(node),
+          startTime: start,
+          stdDeviation: combinedStd(node),
+        },
+        node.color,
+      );
       timelineNode.data = node;
       if (node.layout) {
         timelineNode.persist = node.layout;
@@ -315,14 +326,18 @@ export default function main() {
   }
 
   createPaths();
-  renderer.render(select('svg'));
+  let lastEditedNode = `${timeline.graph.nodes[0].id}`;
+  if (data.options?.lastEditedNode) {
+    lastEditedNode = data.options.lastEditedNode;
+  }
+  renderer.render();
 
   /**
    * Forcibly re-renders the diagram.
    */
   function reRender() {
     selectAll('svg > *').remove();
-    renderer.render(select('svg'));
+    renderer.render();
   }
 
   (window as any).toggleTimelineMode = (value: boolean) => {
@@ -341,6 +356,8 @@ export default function main() {
 
   (window as any).zoomIn = () => {
     renderer.options.fontSize *= 1.1;
+    renderer.options.labels.borderWidth *= 1.1;
+    renderer.options.labels.fontSize *= 1.1;
     renderer.options.maxNodeHeight *= 1.1;
     renderer.options.maxLinkWidth *= 1.1;
     reRender();
@@ -348,6 +365,8 @@ export default function main() {
 
   (window as any).zoomOut = () => {
     renderer.options.fontSize *= 0.9;
+    renderer.options.labels.borderWidth *= 0.9;
+    renderer.options.labels.fontSize *= 0.9;
     renderer.options.maxNodeHeight *= 0.9;
     renderer.options.maxLinkWidth *= 0.9;
     reRender();
@@ -357,14 +376,16 @@ export default function main() {
     const pathResults = data;
     pathResults.keyStates.forEach((path, k) => {
       path.paths.forEach((state, s) => {
-        pathResults.keyStates[k].paths[s].layout = timeline.getNodesByLabel(
-          state.name,
-        )[0].persist;
+        const n = timeline.getNodesByLabel(state.name)[0];
+        pathResults.keyStates[k].paths[s].layout = n.persist;
+        pathResults.keyStates[k].paths[s].color = n.color;
         delete pathResults.keyStates[k].paths[s].timelineNode;
       });
     });
     pathResults.options = {
+      customColors,
       fontSize: renderer.options.fontSize,
+      lastEditedNode: lastEditedNode,
       maxNodeHeight: renderer.options.maxNodeHeight,
       maxLinkWidth: renderer.options.maxLinkWidth,
     };
@@ -377,6 +398,155 @@ export default function main() {
     link.click();
     URL.revokeObjectURL(link.href);
   };
+
+  /**
+   * Helper function to select an element by ID with correct typing.
+   * @param id - The ID of the element to get.
+   * @returns The element, cast as an HTMLElement.
+   */
+  function $<T extends HTMLElement>(id: string) {
+    return document.getElementById(id) as T;
+  }
+
+  /**
+   * Helper function to populate the color pickers.
+   *
+   * @param parent - The node to creat the options in.
+   * @param colors - The colors to create options for.
+   * @param targetNode - The node to update when a color is picked.
+   */
+  function createColorOptions(
+    parent: HTMLDivElement,
+    colors: string[],
+    targetNode: TimelineNode,
+  ) {
+    parent.innerHTML = '';
+    colors.forEach((color) => {
+      const option = document.createElement('div');
+      option.classList.add('color-option');
+      option.style.backgroundColor = color;
+      option.setAttribute('title', color);
+      option.addEventListener('click', () => {
+        renderer.setNodeColor(targetNode.id, color);
+      });
+      parent.appendChild(option);
+    });
+  }
+
+  const colorInput = $<HTMLInputElement>('color-custom-input');
+
+  /**
+   * Selects which node to edit when the dropdown is changed.
+   * @param id - The selected ID.
+   */
+  function selectNodeToEdit(id: string) {
+    lastEditedNode = id;
+    (document.getElementById('node-options') as HTMLSelectElement).value = id;
+    createColorOptions(
+      $('color-options'),
+      colors,
+      timeline.getNode(Number(id)),
+    );
+    createColorOptions(
+      $('color-custom-options'),
+      customColors,
+      timeline.getNode(Number(id)),
+    );
+    $('set-custom-color').onclick = () => {
+      const color = colorInput.value;
+      renderer.setNodeColor(Number(id), color);
+      if (customColors.indexOf(color) < 0) {
+        customColors.push(color);
+      }
+    };
+  }
+
+  (window as any).showNodeMenu = () => {
+    $('node-menu-container').style.display = 'block';
+    $('node-options').innerHTML = '';
+    timeline.graph.nodes
+      .sort((a, b) => {
+        if (a.label < b.label) {
+          return -1;
+        }
+        if (a.label > b.label) {
+          return 1;
+        }
+        return 0;
+      })
+      .forEach((node) => {
+        const option = document.createElement('option');
+        option.innerText = node.label;
+        option.setAttribute('value', `${node.id}`);
+        $('node-options').appendChild(option);
+      });
+    selectNodeToEdit(lastEditedNode);
+    $<HTMLSelectElement>('node-options').addEventListener(
+      'change',
+      function () {
+        selectNodeToEdit(this.value);
+      },
+    );
+  };
+
+  colorInput.addEventListener('keyup', () => {
+    colorInput.style.color = colorInput.value;
+  });
+
+  $('close-menu').addEventListener('click', () => {
+    reRender();
+    $('node-menu-container').style.display = 'none';
+  });
+
+  /**
+   * Enables dragging an element.
+   * Adapted from https://www.w3schools.com/howto/howto_js_draggable.asp.
+   *
+   * @param elmnt - The element to drag.
+   */
+  function dragElement(elmnt: HTMLDivElement) {
+    var pos1 = 0,
+      pos2 = 0,
+      pos3 = 0,
+      pos4 = 0;
+    if ($(elmnt.id + '-handle')) {
+      // if present, the header is where you move the DIV from:
+      $(elmnt.id + '-handle').onmousedown = dragMouseDown;
+    } else {
+      // otherwise, move the DIV from anywhere inside the DIV:
+      elmnt.onmousedown = dragMouseDown;
+    }
+
+    function dragMouseDown(e: MouseEvent) {
+      e = e || window.event;
+      e.preventDefault();
+      // get the mouse cursor position at startup:
+      pos3 = e.clientX;
+      pos4 = e.clientY;
+      document.onmouseup = closeDragElement;
+      // call a function whenever the cursor moves:
+      document.onmousemove = elementDrag;
+    }
+
+    function elementDrag(e: MouseEvent) {
+      e = e || window.event;
+      e.preventDefault();
+      // calculate the new cursor position:
+      pos1 = pos3 - e.clientX;
+      pos2 = pos4 - e.clientY;
+      pos3 = e.clientX;
+      pos4 = e.clientY;
+      elmnt.style.top = `${e.clientY}px`;
+      elmnt.style.left = `${e.clientX}px`;
+    }
+
+    function closeDragElement() {
+      // stop moving when mouse button is released:
+      document.onmouseup = null;
+      document.onmousemove = null;
+    }
+  }
+  dragElement($('node-menu'));
 
   window.addEventListener('resize', () => {
     renderer.options.width = window.innerWidth;

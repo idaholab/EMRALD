@@ -1,76 +1,91 @@
 <!DOCTYPE html>
 <html lang="en-US">
-    <head>
-        <meta charset="utf-8" />
-        <meta name="viewport" content="width=device-width" />
-        <title>D3 Sankey Timeline</title>
-        <link href="https://fonts.googleapis.com/css2?family=Roboto" rel="stylesheet">
-        <style>
-            body {
-                margin: 0;
-                height: 100%;
-                width: 100%;
-                position: absolute;
-                font-family: 'Roboto', sans-serif;
-                background: white;
-            }
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>D3 Sankey Timeline</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div id="top-bar">
+      <input id="timelineToggle" type="checkbox" />
+      <label for="timelineToggle">Show Timeline</label>
+      <input id="otherStatesToggle" type="checkbox" />
+      <label for="otherStatesToggle">Show Other State Paths</label>
+      <button id="zoomOut">Zoom Out</button>
+      <button id="zoomIn">Zoom In</button>
+      <button id="save">Save</button>
+      <button id="menu">Change Colors</button>
+    </div>
+    <svg id="chart"></svg>
+    <div id="keyStateOptions"></div>
+    <div id="node-menu-container">
+      <div id="node-menu">
+        <div id="node-menu-handle"></div>
+        <div id="node-menu-contents">
+          <h3 id="node-menu-header">Edit Node Properties of </h3>
+          <select id="node-options" title="Select node to edit"></select>
+          <br />
+          Choose a color:
+          <div id="color-options"></div>
+          <div id="color-custom-options"></div>
+          <div class="input-group">
+            <label for="color-custom-input">Or enter a custom color:</label>
+            <input id="color-custom-input" />
+            <button id="set-custom-color">Set Color</button>
+          </div>
+          <br />
+          <button id="close-menu">Close</button>
+        </div>
+      </div>
+    </div>
+    <script src="./data.js"></script>
+    <script src="./emrald-sankey-timeline.js"></script>
+    <script>
+      if (window.data) {
+        sankeyTimeline.default();
+      }
 
-            #chart {
-                display: block;
-            }
+      let timelineMode = true;
+      document
+        .getElementById('timelineToggle')
+        .addEventListener('change', () => {
+          timelineMode = !timelineMode;
+          window.toggleTimelineMode(timelineMode);
+        });
 
-            #keyStateOptions {
-                bottom: 0;
-                position: fixed;
-            }
-        </style>
-    </head>
-    <body>
-        <input id="timelineToggle" type="checkbox" />
-        <label for="timelineToggle">Show Timeline</label>
-        <input id="otherStatesToggle" type="checkbox" />
-        <label for="otherStatesToggle">Show Other State Paths</label>
-        <button id="zoomOut">Zoom Out</button>
-        <button id="zoomIn">Zoom In</button>
-        <button id="save">Save</button>
-        <svg id="chart"></svg>
-        <div id="keyStateOptions"></div>
-        <script src="./data.js"></script>
-        <script src="./emrald-sankey-timeline.js"></script>
-        <script>
-            if (window.data) {
-                sankeyTimeline.default();
-            }
+      let otherStatesMode = false;
+      document
+        .getElementById('otherStatesToggle')
+        .addEventListener('change', () => {
+          otherStatesMode = !otherStatesMode;
+          window.toggleOtherStatesMode(otherStatesMode);
+        });
 
-            let timelineMode = true;
-            document.getElementById('timelineToggle').addEventListener('change', () => {
-                timelineMode = !timelineMode;
-                window.toggleTimelineMode(timelineMode);
-            });
+      document.getElementById('zoomIn').addEventListener('click', () => {
+        window.zoomIn();
+      });
 
-            let otherStatesMode = false;
-            document.getElementById('otherStatesToggle').addEventListener('change', () => {
-                otherStatesMode = !otherStatesMode;
-                window.toggleOtherStatesMode(otherStatesMode);
-            });
+      document.getElementById('zoomOut').addEventListener('click', () => {
+        window.zoomOut();
+      });
 
-            document.getElementById('zoomIn').addEventListener('click', () => {
-                window.zoomIn();
-            });
+      document.getElementById('save').addEventListener('click', () => {
+        window.saveDiagram();
+      });
 
-            document.getElementById('zoomOut').addEventListener('click', () => {
-                window.zoomOut();
-            });
+      document.getElementById('menu').addEventListener('click', () => {
+        window.showNodeMenu();
+      });
 
-            document.getElementById('save').addEventListener('click', () => {
-                window.saveDiagram();
-            });
-
-            function OnLoad(dataObj) {
-                window.data = dataObj;
-                UpdateFrameTitle(`${dataObj.fileName} - Results View`);
-                sankeyTimeline.default();
-            }
-        </script>
-    </body>
+      function OnLoad(dataObj) {
+        window.data = dataObj;
+        UpdateFrameTitle(`${dataObj.fileName} - Results View`);
+        sankeyTimeline.default();
+      }
+    </script>
+  </body>
 </html>

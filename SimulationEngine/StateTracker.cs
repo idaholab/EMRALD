@@ -307,7 +307,7 @@ namespace SimulationTracking
 
     public void RemoveMatchingStateItems(int stateID)
     {
-      //get the indexes for the state. 
+      //get the indexes for the state.
       List<TimeSpan> refs;
       if (stateRefLookup.TryGetValue(stateID, out refs))
       {
@@ -320,10 +320,26 @@ namespace SimulationTracking
             {
               if (timedEvQue.CurrentValue.eventStateActions.statesAndActions.ContainsKey(stateID))
               {
-                if (timedEvQue.CurrentValue.eventStateActions.statesAndActions.Count == 1)
-                  timedEvQue.Remove();
+                EventStatesAndActions rem = timedEvQue.CurrentValue.eventStateActions;
+                List<TimeSpan> times2;
+                if (eventRefLookup.TryGetValue(rem.eventID, out times2))
+                {
+                  if(times2.Count > 1)
+                  {
+                    times2.Remove(refTime);
+                  }
+                  else
+                  {
+                    eventRefLookup.Remove(rem.eventID);
+                  }
+                }
+                if (rem.statesAndActions.Count == 1)
+                {
+                  timedEvQue.Remove();                  
+                }
+
                 else
-                  timedEvQue.CurrentValue.eventStateActions.RemoveStateActions(stateID);
+                  rem.RemoveStateActions(stateID);
               }
             }
             while (timedEvQue.MoveNext() && timedEvQue.CurrentKey == refTime);
@@ -1367,10 +1383,12 @@ namespace SimulationTracking
             }
             break;
 
+          case EnActionType.atCngVarDll:
           case EnActionType.atCngVarVal:
             logger.Debug("DoChangeVarValueAction: " + curAct.name);
             //change Var values or add states depending on the action.
             SimVariable varItem = null;
+           
             VarValueAct curVarAct = (curAct as VarValueAct);
             try
             {
@@ -1382,8 +1400,7 @@ namespace SimulationTracking
             }
 
             curVarAct.SetVal(varItem, this.allLists, curTime, sim3DStartTime, this.allLists.curRunIdx);
-            //TODO : if this is a 3D var item and we are running a 3D simulation notify the 3D simulator of the change.
-
+                    
 
             try
             {
@@ -1411,13 +1428,13 @@ namespace SimulationTracking
             }
             catch (Exception e)
             {
-              throw new Exception("Failed to adjust event time for changes to " + curVarAct.name, e);
+              throw new Exception("Failed to adjust event time for changes to " + curAct.name, e);
             }
 
             
 
             //add the ID to the changed list
-            changedItems.AddChangedID(EnModifiableTypes.mtVar, curVarAct.varID);
+            changedItems.AddChangedID(EnModifiableTypes.mtVar, varItem.id);
             break;
 
           case EnActionType.atJumpToTime:

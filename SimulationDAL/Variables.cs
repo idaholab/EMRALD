@@ -12,6 +12,8 @@ using Newtonsoft.Json.Converters;
 using System.IO;
 using System.Xml;
 using System.Text.RegularExpressions;
+using NLog;
+using System.Linq.Expressions;
 
 namespace SimulationDAL
 {
@@ -20,22 +22,30 @@ namespace SimulationDAL
 
   public abstract class SimVariable : BaseObjInfo
   {
-    private bool _monitor = false;
+    private bool _canMonitor = true; //Show in the UI to watch the variable
+    private bool _monitor = false; //Default value to watch the variable in the solver UI
+    private bool _cumulativeStats = false; //provide the statistical results for this variable at the end of the sim runs
     public EnVarScope varScope = EnVarScope.gtGlobal;
     public Type dType; 
     protected object _value = null;
     public bool resetOnRuns = false;
     protected object initValue = null;
+    NLog.Logger logger = NLog.LogManager.GetLogger("logfile");
 
     public double dblValue { get { return Convert.ToDouble(GetValue()); } }
     public string strValue { get { return Convert.ToString(GetValue()); } }
     public bool boolValue { get { return Convert.ToBoolean(GetValue()); } }
     public bool monitorInSim { get { return _monitor; } }
+    public bool canMonitorSim { get { return _canMonitor; } }
+    public bool cumulativeStats { get { return _cumulativeStats; } }
+
     public virtual object value { get { return GetValue(); } }
     // public DateTime timeValue { get { return Convert.ToDateTime(value); } }
 
     public virtual void SetValue(object newValue)
     {
+
+      logger.Debug("Set variable Value : " + this.name + " = "  + newValue.ToString());
       _value = newValue;
     }
 
@@ -48,6 +58,7 @@ namespace SimulationDAL
       try
       {
         _value = Convert.ChangeType(dynObj, dType);
+        logger.Debug("Init variable Value : " + this.name + " = " + _value.ToString());
       }
       catch (Exception e)
       {
@@ -60,6 +71,7 @@ namespace SimulationDAL
     public virtual void ReInit()
     {
       this._value = this.initValue;
+      logger.Debug("Init variable Value : " + this.name + " = " + _value.ToString());
     }
 
     protected SimVariable()
@@ -196,13 +208,31 @@ namespace SimulationDAL
         throw new Exception("Variable \"" + this.name + "\"  missing type.");
       }
 
-      try
+      if(dynObj.monitorInSim != null)
       {
         _monitor = Convert.ToBoolean(dynObj.monitorInSim);
       }
-      catch
+      else
       {
         _monitor = false;
+      }
+
+      if (dynObj.canMonitor != null)
+      {
+        _canMonitor = Convert.ToBoolean(dynObj.canMonitor);
+      }
+      else
+      {
+        _canMonitor = true;
+      }
+
+      if (dynObj.cumulativeStats != null)
+      {
+        _cumulativeStats = Convert.ToBoolean(dynObj.cumulativeStats);
+      }
+      else
+      {
+        _cumulativeStats = false;
       }
 
       try
@@ -212,7 +242,7 @@ namespace SimulationDAL
       }
       catch
       {
-        _monitor = false;
+        resetOnRuns = true;
       }
 
       if (varScope != (EnVarScope)Enum.Parse(typeof(EnVarScope), (string)dynObj.varScope, true))
@@ -579,7 +609,7 @@ namespace SimulationDAL
 
         case EnCumultiveType.ctMultiplier:
           double addVal = aData.accrualMult * Globals.ConvertToNewTimeSpan(EnTimeRate.trHours, tInState.TotalHours, aData.multRate);
-          _value = (double)_value + addVal;
+          base.SetValue((double)_value + addVal);
           break;
 
         case EnCumultiveType.ctTable:
@@ -597,7 +627,7 @@ namespace SimulationDAL
             totalTblTime += tblTimeConverted;
             if (tInState.TotalHours > totalTblTime) //full time used
             {
-              _value = (double)_value + tblTimeConverted * aData.accrualTable[i - 1][1];
+              base.SetValue((double)_value + tblTimeConverted * aData.accrualTable[i - 1][1]);
             }
             else //partial time used
             {
@@ -766,7 +796,7 @@ namespace SimulationDAL
         if (_pathMustExist)
         {
           //do this different for document items as the value is not set by the user data
-          _value = GetValue();
+          base.InitValue(GetValue());
           //save initial value for initValue if resetting
           initValue = _value;
         }
@@ -786,14 +816,15 @@ namespace SimulationDAL
       : base(DocType.dtXML) { }    
               
     public override void SetValue(object newValue)
-    {
-
+    {            
       _value = newValue;
-      //update the document
-      using (Stream s = File.OpenRead(_docFullPath))
+      try
       {
         XmlDocument xDoc = new XmlDocument();
-        xDoc.Load(s);
+        using (XmlReader reader = XmlReader.Create(_docFullPath))
+        {
+          xDoc.Load(reader);
+        }
         XmlElement pRoot = xDoc.DocumentElement;
         XmlNodeList nodes = pRoot.SelectNodes(linkStr());
         XmlNode replNode = null;
@@ -820,9 +851,14 @@ namespace SimulationDAL
               var ret = p.ReplaceChild(replNode, i);
               break;
           }
-        }
+          
 
-        xDoc.Save(_docFullPath);
+          xDoc.Save(_docFullPath);
+        }
+      }  
+      catch(Exception ex)
+      {
+        throw new Exception("Failed to set the value for XML variable " + this.name + " check the XML syntax. " + this.linkStr);
       }
     }
 
@@ -854,7 +890,7 @@ namespace SimulationDAL
             throw new Exception("Path string found no items.");
           else
           {
-            _value = Convert.ChangeType(_dfltValue, dType);
+            base.SetValue(Convert.ChangeType(_dfltValue, dType));
             return _value;
           }
 
@@ -865,12 +901,12 @@ namespace SimulationDAL
           {
             case XmlNodeType.Attribute:
               {
-                _value = Convert.ChangeType(nodes[0].Value, dType);
+                base.SetValue(Convert.ChangeType(nodes[0].Value, dType));
                 return _value;
               }
             case XmlNodeType.Text:
               {
-                _value = Convert.ChangeType(nodes[0].InnerText, dType);
+                base.SetValue(Convert.ChangeType(nodes[0].InnerText, dType));
                 return _value;
               }
             default:
@@ -879,7 +915,7 @@ namespace SimulationDAL
                 throw new Exception("Variable type to match to a XML object must be a String");
               }
 
-              _value = nodes[0].OuterXml;
+              base.SetValue(nodes[0].OuterXml);
               return _value;
           }
         }
@@ -889,7 +925,7 @@ namespace SimulationDAL
           {
             throw new Exception("Variable type to match to a XML object list must be a String");
           }
-          _value = "";
+          base.SetValue("");
 
           if (nodes.Count < 1)
             throw new Exception("Missing match for or data for XPath - " + _linkStr);
@@ -899,18 +935,18 @@ namespace SimulationDAL
             switch (nodes[0].NodeType)
             {
               case XmlNodeType.Attribute:
-                _value += Environment.NewLine + i.Value;
+                base.SetValue(_value + Environment.NewLine + i.Value);
                 break;
               case XmlNodeType.Text:
-                _value += Environment.NewLine + i.InnerText;
+                base.SetValue(_value + Environment.NewLine + i.InnerText);
                 break;
               default:
-                _value += Environment.NewLine + i.OuterXml;
+                base.SetValue(_value + Environment.NewLine + i.OuterXml);
                 break;
             }
           }
 
-          _value = ((string)_value).TrimStart();
+          base.SetValue(((string)_value).TrimStart());
           return _value;
         }
       }
@@ -925,7 +961,7 @@ namespace SimulationDAL
     public override void SetValue(object newValue)
     {
       //update the document
-      _value = newValue;
+      base.SetValue(newValue);
       NLog.Logger logger = NLog.LogManager.GetLogger("logfile");
       logger.Info("Assign Doc Var: " + this.name + "  = " + newValue.ToString());
 
@@ -982,7 +1018,7 @@ namespace SimulationDAL
           throw new Exception("Path string found no items.");
         else
         {
-          _value = Convert.ChangeType(_dfltValue, dType);
+          base.SetValue(Convert.ChangeType(_dfltValue, dType));
           return _value;
         }
       }
@@ -992,13 +1028,13 @@ namespace SimulationDAL
         {
           throw new Exception("Variable type to match to a JSON object must be a String");
         }
-        
-        _value = modItem.ToString();
+
+        base.SetValue(modItem.ToString());
         return _value; 
       }
       else
       {
-        _value = modItem.ToObject(dType);
+        base.SetValue(modItem.ToObject(dType));
         return _value;
       }
     }
@@ -1065,7 +1101,7 @@ namespace SimulationDAL
 
     public override void SetValue(object newValue)
     {
-      _value = newValue;
+      base.SetValue(newValue);
       Regex rx = new Regex(linkStr(), RegexOptions.Compiled | RegexOptions.IgnoreCase);
       string docTxt = File.ReadAllText(_docFullPath);
       // Find matches.
@@ -1159,7 +1195,7 @@ namespace SimulationDAL
           throw new Exception("Failed to find RegEx - " + curLinkStr + " in file - " + _docFullPath);
         else
         {
-          _value = Convert.ChangeType(_dfltValue, dType);
+          base.SetValue(Convert.ChangeType(_dfltValue, dType));
           return _value;
         }
       }
@@ -1187,8 +1223,8 @@ namespace SimulationDAL
             foundTxt = foundTxt.Substring(_begPosition, cnt);
           }
         }
-        
-        _value = Convert.ChangeType(foundTxt, dType);
+
+        base.SetValue(Convert.ChangeType(foundTxt, dType));
         return _value;
       }
       catch
