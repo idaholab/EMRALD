@@ -49,6 +49,7 @@ function saveTemplate() {
 }
 function clearTemplates() {
   localStorage.removeItem('templates');
+  localStorage.removeItem('templateGroups');
 }
 
 //------------------

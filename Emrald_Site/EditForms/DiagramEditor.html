@@ -99,6 +99,16 @@
         .table-row td {
             padding: 0.5em 0.3em;
         }
+
+        .tree-path-option {
+            cursor: pointer;
+        }
+
+        .active-tree-path {
+            color: red;
+            font-weight: bolder;
+        }
+
     </style>
 
 </head>
@@ -163,9 +173,9 @@
                 <br />
                 <div class="templates" ng-if="templateView !== 'list'">
                     <div class="templates-tree" ng-if="templateView === 'tree'">
-                        <span class="folder"></span><span ng-click="showTemplatesBelongingToPath([], null, false)">(No Group)</span>
+                        <span class="folder"></span><span class="tree-path-option" ng-click="showTemplatesBelongingToPath([], null, $event, false)">(No Group)</span>
                         <hr>
-                        <div ng-repeat="group in groupTree track by $index"><span class="folder" ng-click="expandTree($event, group, null, null)"> + </span><span ng-click="showTemplatesBelongingToPath([], group.name, false)">{{group.name}}</span></div>
+                        <div ng-repeat="group in groupTree track by $index"><span class="folder" ng-click="expandTree($event, group, null, null)"> + </span><span class="tree-path-option" ng-click="showTemplatesBelongingToPath([], group.name, $event, false)">{{group.name}}</span></div>
                     </div>
 
                     <div>
