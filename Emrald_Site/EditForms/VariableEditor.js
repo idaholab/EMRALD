@@ -455,7 +455,7 @@ function handleVarScopeChanged(newV, oldV) {
   somethingChanged();
 }
 
-var variableModule = angular.module("variableModule", []);
+var variableModule = angular.module("variableModule", ['autosizeTextareaDirective']);
 variableModule.controller("variableController", ["$scope", function ($scope) {
   $scope.name = "";
   $scope.namingPatterns = [];

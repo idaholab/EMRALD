@@ -9,6 +9,7 @@
     <script src="../scripts/angular/angular.js"></script>
     <script src="../scripts/UI/Common.js"></script>
     <script src="DiagramEditor.js"></script>
+    <script src="./directives/AutosizeTextareaDirective.js"></script>
     <style>
         .separator {
             display: flex;
@@ -143,7 +144,8 @@
                 <input style="display:table-cell" id="Diagram_Name_Input" ng-model="name" tabindex="1" ng-disabled="data.importedContent || data.templateIsSelected">
             </div>
             <div style="display:table-row">
-                <span style="display:table-cell">Desc:</span> <input style="display:table-cell" ng-model="desc" size="40" tabindex="2" ng-disabled="data.importedContent || data.templateIsSelected" />
+                <span style="display:table-cell">Desc:</span>
+                <textarea rows="1" cols="30" tabindex="2" ng-model="desc" ng-disabled="data.importedContent || data.templateIsSelected"  auto-resize></textarea>
             </div>
 
             <div ng-if="createDiagram"><br />

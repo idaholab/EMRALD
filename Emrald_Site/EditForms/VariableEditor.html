@@ -5,38 +5,39 @@
 <head>
     <title>Variable Editor</title>
     <link href="../styles/Editors.css" rel="stylesheet" />
+    <link href="../styles/VariableEditor.css" rel="stylesheet" />
     <script src="../scripts/angular/angular.js"></script>
     <script src="../scripts/UI/Common.js"></script>
     <script src="VariableEditor.js"></script>
-
+    <script src="./directives/AutosizeTextareaDirective.js"></script>
 </head>
 <body ng-app="variableModule">
 
 
     <div ng-controller="variableController" id="variableControllerPanel">
         <form novalidate>
-            <div style="display: table; border-collapse: collapse;">
+            <div class="table-container">
 
                 <!-- All Variable Scopes -->
-                <div style="display: table-row;">
-                    <label style="display: table-cell;">Var Type:</label>
-                    <select id="typeVal" name="TypeValue" ng-model="varType" ng-options="type for type in varTypes" onchange="typeSelection();" style="display: table-cell; width: 130px;" ng-disabled="!varTypeSelectionEnabled">
+                <div class="table-row">
+                    <label>Var Type:</label>
+                    <select id="typeVal" name="TypeValue" ng-model="varType" ng-options="type for type in varTypes" onchange="typeSelection();" ng-disabled="!varTypeSelectionEnabled">
                         <option>-- select Type --</option>
                     </select><br>
                 </div>
-                <div style="display: table-row;">
-                    <label style="display: table-cell;">Name:</label>
-                    <input tabindex="1" ng-model="name" style="display: table-cell;" onfocusout="validateName(this);">
-                    <input type="checkbox" name="AsNewItem" id="AsNewItem" value="false" ng-model="saveAsNew" onchange="setAsNewChecked()" />
+                <div class="table-row">
+                    <label>Name:</label>
+                    <input type="text" tabindex="1" ng-model="name" onfocusout="validateName(this);">
+                    <input type="checkbox" name="AsNewItem" id="AsNewItem" value="false" ng-model="saveAsNew" onchange="setAsNewChecked()" style="width: 75%" />
                     <label for="AsNewItem" id="AsNewItemText"> Save As New</label><br>
                 </div>
-                <div style="display: table-row;">
-                    <label style="display: table-cell;">Desc:</label>
-                    <input size="40" tabindex="2" ng-model="desc" style="display: table-cell;">
+                <div class="table-row">
+                    <label>Desc:</label>
+                    <textarea rows="1" ng-model="desc" auto-resize></textarea>
                 </div>
-                <div style="display: table-row;">
-                    <label style="display: table-cell;">Scope:</label>
-                    <select name="ScopeValue" ng-model="varScope" ng-options="opt.name for opt in varScopes" style="display: table-cell; width: 130px;">
+                <div class="table-row">
+                    <label>Scope:</label>
+                    <select name="ScopeValue" ng-model="varScope" ng-options="opt.name for opt in varScopes">
                         <option>-- select Scope --</option>
                     </select><br>
                 </div>
@@ -44,18 +45,18 @@
                 <!-- Document Link Variable Scopes -->
                 <div ng-if="documentLinkScopeSelected" style="display: table-row-group">
                     <div id="VarDocTypePanel" style="display: table-row;">
-                        <label style="display: table-cell;">Doc Type:</label>
-                        <select id="docTypeVal" name="DocTypeValue" ng-model="data.docType" ng-options="opt.name for opt in docTypes" style="display: table-cell; width: 130px;">
+                        <label>Doc Type:</label>
+                        <select id="docTypeVal" name="DocTypeValue" ng-model="data.docType" ng-options="opt.name for opt in docTypes">
                             <option>-- select Type --</option>
                         </select>
                     </div>
                     <div id="VarDocPathPanel" style="display: table-row;">
-                        <label style="display: table-cell;">Doc Path:</label>
-                        <input size="40" ng-model="data.docPath" style="display: table-cell;">
+                        <label>Doc Path:</label>
+                        <input type="text" ng-model="data.docPath">
                     </div>
 
 
-                    <div style="display: table-row;">
+                    <div class="table-row">
                         <span style="display: table-cell"></span>
                         <span ng-if="data.docType.value == 'dtXML'">
                             <small>Use XPath Syntax for the Var Link.</small>
@@ -75,11 +76,11 @@
                         </span>
                     </div>
 
-                    <div style="display: table-row;">
-                        <label style="display: table-cell; vertical-align: top;">Var Link:</label>
-                        <textarea rows="4" cols="40" ng-model="data.varLink"></textarea>
-                        <div id="ExistOnStartupPanel" style="white-space: nowrap;">
-                            <input type="checkbox" name="ResetOnRuns" id="ExistOnStartup" value="false" ng-model="data.resetOnRuns" />
+                    <div class="table-row">
+                        <label>Var Link:</label>
+                        <textarea rows="4" cols="30" ng-model="data.varLink" auto-resize></textarea>
+                        <div id="ExistOnStartupPanel" style="display: flex; white-space: nowrap;">
+                            <input type="checkbox" name="ResetOnRuns" id="ExistOnStartup" value="false" ng-model="data.resetOnRuns" style="margin-right: 10px;"/>
                             <label for="ExistOnStartup">Doc Path and Var Link must exist on startup.</label>
                         </div>
                     </div>
@@ -121,37 +122,37 @@
 
                     <br />
                     <div style="display: table-row;">
-                        <label style="display: table-cell; vertical-align: top;">Default:</label>
+                        <label>Default:</label>
                         <div style="display: table-cell" title="The value to be returned if no match is found">
                             <span>The value to be returned if no match is found</span>
                             <br />
                             <textarea rows="4" cols="40" ng-model="data.value" ng-if="stringTypeSelected" style="display: table-cell;"></textarea>
                             <input type="number" ng-model="data.value" step="1" ng-if="intTypeSelected" style="display: table-cell;" />
                             <input type="number" ng-model="data.value" ng-if="doubleTypeSelected" style="display: table-cell;" />
-                            <select ng-model="data.value" ng-options="val for val in varBoolVal" ng-if="boolTypeSelected" style="display: table-cell; width: 130px;"></select>
+                            <select ng-model="data.value" ng-options="val for val in varBoolVal" ng-if="boolTypeSelected"></select>
                         </div>
                     </div>
                 </div>
                 <!-- End Document Link Variable Scopes -->
                 <!-- Value Box Used for Global and Ext Sim Variable Scopes-->
-                <div style="display: table-row;" ng-if="extSimVariableScopeSelected || globalScopeSelected">
-                    <label id="ValueLabel" style="display: table-cell; vertical-align: top;">Value:</label>
+                <div class="table-row" ng-if="extSimVariableScopeSelected || globalScopeSelected">
+                    <label id="ValueLabel">Value:</label>
                     <textarea id="valInput" rows="4" cols="40" ng-model="data.value" ng-if="stringTypeSelected" style="display: table-cell;"></textarea>
                     <input type="number" ng-model="data.value" step="1" ng-if="intTypeSelected" style="display: table-cell;" />
                     <input ng-model="data.value" ng-if="doubleTypeSelected" style="display: table-cell;" />
-                    <select id="selectBool" ng-model="data.value" ng-options="val for val in varBoolVal" ng-if="boolTypeSelected" style="display: table-cell; width: 130px;"></select>
+                    <select id="selectBool" ng-model="data.value" ng-options="val for val in varBoolVal" ng-if="boolTypeSelected"></select>
                     <br />
-                    <div id="ResetValuePanel" style="white-space:nowrap;">
-                        <input type="checkbox" name="ResetOnRuns" id="SelectReset" value="false" ng-model="data.resetOnRuns" />
+                    <div id="ResetValuePanel" style="display: flex; align-items: center; text-wrap: nowrap">
+                        <input type="checkbox" name="ResetOnRuns" id="SelectReset" value="false" ng-model="data.resetOnRuns" style="margin: 10px 10px 10px 0;"/>
                         <label for="SelectReset" id="ResetOnRunsText">Reset to initial value for every simulation run.</label>
                     </div>
                 </div>
                 <!-- End Value Box Used for Global and Ext Sim Variable Scopes-->
                 <!-- Ext Sim Variable Scopes -->
                 <div ng-if="extSimVariableScopeSelected" style="display: table-row-group">
-                    <div id="Scope3DSimIDPanel" style="display: table-row;">
-                        <label style="display: table-cell; white-space: nowrap;">3DSim ID:</label>
-                        <input size="5" name="externalName" ng-model="data.sim3DId" style="display: table-cell; width: 125px;" />
+                    <div id="Scope3DSimIDPanel" class="table-row">
+                        <label>3DSim ID:</label>
+                        <input type="text" name="externalName" ng-model="data.sim3DId"/>
                         <small> <i><br />(Name or ID of variable in the external simulation)</i></small>
                     </div>
                 </div>
@@ -164,7 +165,7 @@
                 <br />
                 <div style="width:100%" ng-if="accrualScopeSelected">
                     State Accrual Variables:
-                    <table id="tblAccrualStates" style="text-align: left" border="1" cellspacing="2">
+                    <table id="tblAccrualStates" style="width: 100%; text-align: left" border="1" cellspacing="2">
                         <tr>
                             <td class="tabHeader">
                                 Name
@@ -177,7 +178,7 @@
                             </td>
                         </tr>
                         <tr ng-if="accrualStatesData.length < 1">
-                            <td colspan="3">
+                            <td colspan="3" style="height: 50px;">
                                 Drag States Here
                             </td>
                         </tr>
@@ -189,25 +190,25 @@
                                 <input type="button" value="Remove This State" ng-click="accrualStatesData.splice($index,1)" />
                             </td>
                             <td style="border: none;border-bottom:2px solid black;height:20px;">
-                                <label ng-repeat="type in accrualRateTypes">
+                                <label class="accrualTypeLabel" ng-repeat="type in accrualRateTypes">
                                     <input type="radio" name="{{accrualState.stateName}}" ng-model="$parent.accrualState.type" ng-checked="type.default" ng-value="type.value" />{{type.name}}<br />
                                 </label>
                             </td>
-                            <td style="border: none;border-bottom:2px solid black;">
+                            <td style="width: 60%; border: none; border-bottom: 2px solid black;">
                                 <div ng-if="accrualState.type == 'ctMultiplier'">
                                     <input type="number" ng-model="accrualState.accrualMult" style="width:80px" /> per
-                                    <select ng-model="accrualState.multRate" ng-options="unit.value as unit.name for unit in accrualUnits"></select>
+                                    <select class="accrualRateSelect" ng-model="accrualState.multRate" ng-options="unit.value as unit.name for unit in accrualUnits"></select>
                                 </div>
                                 <div ng-if="accrualState.type == 'ctTable'">
                                     <table style="text-align: left" border="1" cellspacing="2">
                                         <tr>
                                             <td class="tabHeader">
                                                 Simulation Time (
-                                                <select ng-model="accrualState.multRate" ng-options="unit.value as unit.abbr for unit in accrualUnits"></select>)
+                                                <select class="accrualRateSelect" ng-model="accrualState.multRate" ng-options="unit.value as unit.abbr for unit in accrualUnits"></select>)
                                             </td>
                                             <td class="tabHeader">
                                                 Accrual Rate (Units per
-                                                <select ng-model="accrualState.multRate" ng-options="unit.value as unit.abbr for unit in accrualUnits"></select>)
+                                                <select class="accrualRateSelect" ng-model="accrualState.multRate" ng-options="unit.value as unit.abbr for unit in accrualUnits"></select>)
                                             </td>
                                         </tr>
                                         <tr ng-repeat="row in accrualState.accrualTable track by $index" ng-if="!accrualState.minimizeTable">

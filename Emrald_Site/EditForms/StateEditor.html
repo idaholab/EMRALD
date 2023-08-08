@@ -7,6 +7,7 @@
     <script src="../scripts/angular/angular.js"></script>
     <script src="../scripts/UI/Common.js"></script>
     <script src="StateEditor.js"></script>
+    <script src="./directives/AutosizeTextareaDirective.js"></script>
     <script src="../scripts/jquery/jquery-2.1.4.min.js"></script>
 
 </head>
@@ -17,7 +18,8 @@
                 <span style="display:table-cell;">Name:</span> <input style="display:table-cell;" ng-model="name" tabindex="1">
             </div>
             <div style="display:table-row">
-                <span style="display:table-cell;">Desc:</span> <input style="display:table-cell;" ng-model="desc" size="40" tabindex="2">
+                <span style="display:table-cell;">Desc:</span>
+                <textarea rows="1" cols="40" ng-model="desc" tabindex="2" auto-resize></textarea>
             </div>
             <div style="display:table-row">
                 <span style="display:table-cell;">Type:</span>
