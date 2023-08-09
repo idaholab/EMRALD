@@ -28,7 +28,6 @@
 
   <ItemGroup>
     <Folder Include="TestingFiles\CompareFiles\Validations\" />
-    <Folder Include="TestingFiles\EMRALDTests\ValidationCases\" />
   </ItemGroup>
 
   <ItemGroup>

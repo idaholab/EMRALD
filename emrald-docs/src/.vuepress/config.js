@@ -82,7 +82,9 @@ module.exports = {
           collapsable: false,
           children: [
             '',
-            'cases/template'
+              'cases/template'
+              'cases/single_component_failure'
+
           ]
         }
       ]

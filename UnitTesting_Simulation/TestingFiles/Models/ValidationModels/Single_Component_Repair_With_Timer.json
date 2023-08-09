@@ -1,0 +1,215 @@
+{
+  "id": 0,
+  "name": "Single Component Repair",
+  "desc": "",
+  "version": 1.3,
+  "DiagramList": [
+    {
+      "Diagram": {
+        "id": 1,
+        "name": "Component A",
+        "desc": "",
+        "diagramType": "dtComponent",
+        "diagramTemplate": "",
+        "diagramLabel": "Component",
+        "forceMerge": false,
+        "states": [
+          "Running ",
+          "Failed"
+        ],
+        "singleStates": [
+          {
+            "stateName": "Running ",
+            "okState": "False"
+          },
+          {
+            "stateName": "Failed",
+            "okState": "True"
+          }
+        ]
+      }
+    }
+  ],
+  "StateList": [
+    {
+      "State": {
+        "id": 1,
+        "name": "Running ",
+        "desc": "",
+        "stateType": "stStart",
+        "diagramName": "Component A",
+        "immediateActions": [],
+        "events": [
+          "Failure Rate"
+        ],
+        "eventActions": [
+          {
+            "actions": [
+              "Goto_Failed"
+            ],
+            "moveFromCurrent": true
+          }
+        ],
+        "geometry": "{ x: 39.800018310546875, y: 50, width: 200, height: 130}"
+      }
+    },
+    {
+      "State": {
+        "id": 2,
+        "name": "Failed",
+        "desc": "",
+        "stateType": "stKeyState",
+        "diagramName": "Component A",
+        "immediateActions": [],
+        "events": [
+          "Repair Time"
+        ],
+        "eventActions": [
+          {
+            "actions": [
+              "Goto_Running"
+            ],
+            "moveFromCurrent": true
+          }
+        ],
+        "geometry": "{ x: 476.20001220703125, y: 192.8000030517578, width: 200, height: 130}"
+      }
+    }
+  ],
+  "ActionList": [
+    {
+      "Action": {
+        "id": 1,
+        "name": "Goto_Failed",
+        "desc": "",
+        "actType": "atTransition",
+        "mainItem": false,
+        "mutExcl": true,
+        "newStates": [
+          {
+            "toState": "Failed",
+            "prob": -1,
+            "failDesc": ""
+          }
+        ],
+        "itemId": 2
+      }
+    },
+    {
+      "Action": {
+        "id": 2,
+        "name": "Goto_Running",
+        "desc": "",
+        "actType": "atTransition",
+        "mainItem": false,
+        "mutExcl": true,
+        "newStates": [
+          {
+            "toState": "Running ",
+            "prob": -1,
+            "failDesc": ""
+          }
+        ],
+        "itemId": 0,
+        "moveFromCurrent": true
+      }
+    },
+    {
+      "Action": {
+        "id": 3,
+        "name": "Goto_Next",
+        "desc": "",
+        "actType": "atTransition",
+        "mainItem": false,
+        "mutExcl": true,
+        "newStates": [
+          {
+            "toState": "Running ",
+            "prob": -1,
+            "failDesc": ""
+          }
+        ],
+        "itemId": 4
+      }
+    }
+  ],
+  "EventList": [
+    {
+      "Event": {
+        "id": 1,
+        "name": "Failure Rate",
+        "desc": "",
+        "mainItem": false,
+        "evType": "etFailRate",
+        "allItems": true,
+        "triggerStates": [],
+        "moveFromCurrent": true,
+        "varNames": [],
+        "lambda": 1,
+        "lambdaTimeRate": "P365D",
+        "useVariable": false
+      }
+    },
+    {
+      "Event": {
+        "id": 2,
+        "name": "Repair Time",
+        "desc": "",
+        "mainItem": false,
+        "evType": "etTimer",
+        "allItems": true,
+        "triggerStates": [],
+        "moveFromCurrent": true,
+        "varNames": [],
+        "useVariable": false,
+        "time": "P1D",
+        "timeVariableUnit": "",
+        "fromSimStart": false
+      }
+    }
+  ],
+  "LogicNodeList": [],
+  "VariableList": [
+    {
+      "Variable": {
+        "id": 2,
+        "name": "time_failed",
+        "desc": "",
+        "varScope": "gtAccrual",
+        "value": 0,
+        "accrualStatesData": [
+          {
+            "stateName": "Failed",
+            "type": "ctMultiplier",
+            "accrualMult": 1,
+            "multRate": "trHours",
+            "accrualTable": [],
+            "$$hashKey": "008"
+          }
+        ],
+        "type": "double"
+      }
+    },
+    {
+      "Variable": {
+        "id": 1,
+        "name": "time_running",
+        "desc": "",
+        "varScope": "gtAccrual",
+        "value": 0,
+        "accrualStatesData": [
+          {
+            "stateName": "Running ",
+            "type": "ctMultiplier",
+            "accrualMult": 1,
+            "multRate": "trHours",
+            "accrualTable": [],
+            "$$hashKey": "009"
+          }
+        ],
+        "type": "double"
+      }
+    }
+  ],
+  "templates": []
+}
