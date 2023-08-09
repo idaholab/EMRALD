@@ -4662,6 +4662,15 @@ if (typeof Navigation === 'undefined')
       simApp.mainApp.saveProject();
     }
 
+    //* Check which browser the user is using and alert them if not Chrome
+    function isChrome() {
+      return /Chrome/.test(navigator.userAgent) && !/Edg/.test(navigator.userAgent);
+    }
+    
+    if (!isChrome()) {
+      alert("EMRALD Model Editor is currently only supported by Google Chrome. Please switch browsers for the best experience using EMRALD.");
+    }
+
     return Sidebar;
   })(Object);
   Navigation.Sidebar = Sidebar;
