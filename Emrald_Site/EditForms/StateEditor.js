@@ -178,7 +178,7 @@ function eventChecked(el, evt) {
 
 
 
-var stateModule = angular.module('stateModule', []);
+var stateModule = angular.module('stateModule', ['autosizeTextareaDirective']);
 stateModule.controller('stateController', function ($scope) {
   $scope.name = "state1";
   $scope.desc = "new state";

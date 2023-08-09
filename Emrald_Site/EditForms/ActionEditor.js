@@ -505,7 +505,7 @@ function toStateChecked(el, evt) {
         delEl.disabled = cnt === 0;
 }
 
-var actionModule = angular.module('actionModule', ['codeEditor']);
+var actionModule = angular.module('actionModule', ['codeEditor', 'autosizeTextareaDirective']);
 actionModule.controller('actionController', ['$scope', function ($scope) {
     $scope.name = '';
     $scope.desc = '';
