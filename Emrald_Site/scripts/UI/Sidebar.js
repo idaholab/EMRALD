@@ -1,4 +1,4 @@
-﻿// Copyright 2021 Battelle Energy Alliance
+﻿﻿// Copyright 2021 Battelle Energy Alliance
 /// <reference path="../jsdoc-types.js" />
 /// <reference path="../../EditForms/ImportEditor.js" />
 
@@ -18,6 +18,7 @@ if (typeof Navigation === 'undefined')
       this.lookupLoaded = false;
       this.lookupError = false;
       this.jsonStr = null;
+      this.openWindows = [];
       var sidebar = this;
       if (!modelStr) {
         this.loadLookup();  //get lookup data information from backend server -- through service.
@@ -1956,6 +1957,7 @@ if (typeof Navigation === 'undefined')
             if (dia && dia.wnd)
               delete dia.wnd;
           }
+          this.windowIsClosed(dataObj.name);
           return true;
         }.bind(this),
         diagramPlus, //dataObj
@@ -1965,7 +1967,11 @@ if (typeof Navigation === 'undefined')
 				(window.innerWidth / 1.5) - 200, //width
 				(window.innerHeight / 1.5) - 150  //height
       );
-
+      if (diagram.name) {
+        wnd.id = diagram.name;
+        this.openWindows.push(wnd);
+      }  
+      
       //we want to keep the window handle so when the diagram is tried to open again, we just show it.
       var dia = this.getDiagramByName(simApp.allDataModel, diagram.name);
       if (dia)
@@ -2033,6 +2039,7 @@ if (typeof Navigation === 'undefined')
               this.replaceDiagramName(oldName, dataObj.name);
             }
           }
+          this.windowIsClosed(dataObj.name);
           return true;
         }.bind(this),
         dataObj,
@@ -2042,6 +2049,10 @@ if (typeof Navigation === 'undefined')
         500, //width
         600 //height
       );
+      if (dataObj.name) {
+        wnd.id = dataObj.name;
+        this.openWindows.push(wnd);
+      }
       document.body.removeChild(wnd.div);
       var contentPanel = document.getElementById("ContentPanel");
       adjustWindowPos(contentPanel, wnd.div);
@@ -2074,6 +2085,8 @@ if (typeof Navigation === 'undefined')
                 this.addNewExtSim(extSimObj, null);
               }
             }
+            // Once window is closed remove it from open windows list
+            this.windowIsClosed(dataObj.name);
             return true;
           }.bind(this),
           dataObj,
@@ -2083,6 +2096,10 @@ if (typeof Navigation === 'undefined')
           500, //width
           150 //height
       );
+      if (dataObj.name) {
+        wnd.id = dataObj.name;
+        this.openWindows.push(wnd);
+      }
       document.body.removeChild(wnd.div);
       var contentPanel = document.getElementById("ContentPanel");
       adjustWindowPos(contentPanel, wnd.div);
@@ -2110,6 +2127,10 @@ if (typeof Navigation === 'undefined')
             simApp.modelChanged = true;
 
           }
+
+          // Once window is closed remove it from open windows list
+          this.windowIsClosed(dataObj.name);
+
           dataObj.sidebar = undefined;
           return true;
         }.bind(this),
@@ -2120,6 +2141,12 @@ if (typeof Navigation === 'undefined')
         450, //width
         300 //height
       );
+      
+      // Only add existing state to list of open windows
+      if (dataObj.name) { 
+        wnd.id = dataObj.name;
+        this.openWindows.push(wnd); 
+      };
       document.body.removeChild(wnd.div);
       var contentPanel = document.getElementById("ContentPanel");
       adjustWindowPos(contentPanel, wnd.div);
@@ -2158,6 +2185,8 @@ if (typeof Navigation === 'undefined')
               this.addNewVariable(variableObj, null);
             }
           }
+          // Once window is closed remove it from open windows list
+          this.windowIsClosed(dataObj.name);
           return true;
         }.bind(this),
         dataObj,
@@ -2167,6 +2196,13 @@ if (typeof Navigation === 'undefined')
         450, //width
         300 //height
       );
+
+      // If variable is existing add it to the open windows list.
+      if (dataObj.name) { 
+        wnd.id = dataObj.name;
+        this.openWindows.push(wnd); 
+      };
+
       document.body.removeChild(wnd.div);
       var contentPanel = document.getElementById("ContentPanel");
       adjustWindowPos(contentPanel, wnd.div);
@@ -2221,6 +2257,8 @@ if (typeof Navigation === 'undefined')
                 }
               }
             }
+            // Once window is closed remove it from open windows list
+            this.windowIsClosed(dataObj.name);
             return true;
           }.bind(this),
           dataObj,
@@ -2230,6 +2268,10 @@ if (typeof Navigation === 'undefined')
           450, //width
           300 //height
       );
+      if (dataObj.name) {
+        wnd.id = dataObj.name;
+        this.openWindows.push(wnd);
+      }
       document.body.removeChild(wnd.div);
       var contentPanel = document.getElementById("ContentPanel");
       adjustWindowPos(contentPanel, wnd.div);
@@ -2249,6 +2291,8 @@ if (typeof Navigation === 'undefined')
             if (btn === 'OK') {
               // TODO: Only save fault tree changes when the OK button is clicked.
             }
+            // Once window is closed remove it from open windows list
+            this.windowIsClosed(dataObj.name);
             return true;
           }.bind(this),
           logicTree,
@@ -2258,6 +2302,10 @@ if (typeof Navigation === 'undefined')
           650, //width
           500 //height, 
         );
+        if (dataObj.name) {
+          wnd.id = dataObj.name;
+          this.openWindows.push(wnd);
+        }
         document.body.removeChild(wnd.div);
         var contentPanel = document.getElementById("ContentPanel");
         adjustWindowPos(contentPanel, wnd.div);
@@ -2291,6 +2339,9 @@ if (typeof Navigation === 'undefined')
             this.addNewAction(actionObj, null);
           }
         }
+        // Once window is closed remove it from open windows list
+        this.windowIsClosed(dataObj.name);
+
         //When we are done editing the action object, the variables is then removed.
         delete dataObj.tempVariableList;
         delete dataObj.tempExtSimList;
@@ -2303,6 +2354,11 @@ if (typeof Navigation === 'undefined')
       500, //width
       400 //height
       );
+      // Only add an existing action to list of open windows
+      if (dataObj.name) { 
+        wnd.id = dataObj.name;
+        this.openWindows.push(wnd); 
+      };
       document.body.removeChild(wnd.div);
       var contentPanel = document.getElementById("ContentPanel");
       adjustWindowPos(contentPanel, wnd.div);
@@ -2369,6 +2425,9 @@ if (typeof Navigation === 'undefined')
             this.addNewEvent(evtObj, null);
           }
         }
+        // Once window is closed remove it from open windows list
+        this.windowIsClosed(dataObj.name);
+
         //When we are done editing the action object, the variables is then removed.
         delete dataObj.tempVariableList;
         delete dataObj.tempLogicTopList;
@@ -2381,6 +2440,12 @@ if (typeof Navigation === 'undefined')
       500, //width
       500 //height
       );
+      // Only add an existing event to list of open windows
+      if (dataObj.name) { 
+        wnd.id = dataObj.name;
+        this.openWindows.push(wnd); 
+      };
+
       document.body.removeChild(wnd.div);
       var contentPanel = document.getElementById("ContentPanel");
       adjustWindowPos(contentPanel, wnd.div);
@@ -3597,9 +3662,11 @@ if (typeof Navigation === 'undefined')
               if (ui.target.context.dataObject) {
                 MessageBox.confirm("Deleting a Diagram", "Are you sure you want to delete the highlighted diagram?", ["Yes", "Cancel"],
                   function (btn, evt) {
-                    if (btn == "Yes")
+                    if (btn === "Yes") {
+                      this.closeDeletedWindow(ui.target.context.dataObject.name);
                       this.deleteDiagram(ui.target.context.dataObject, ui.target.context);
                     return true;
+                    }
                   }.bind(this));
               }
               break;
@@ -3784,6 +3851,9 @@ if (typeof Navigation === 'undefined')
                 });
                 resolve(outDataObj.model);
               }
+
+              // Once window is closed remove it from open windows list
+              this.windowIsClosed(dataObj.name);
               return true;
             },
             {
@@ -3796,6 +3866,10 @@ if (typeof Navigation === 'undefined')
             800,
             500,
           );
+          if (GetDataObject.name) {
+            wnd.id = dataObj.name;
+            this.openWindows.push(wnd);
+          }
           document.body.removeChild(wnd.div);
           var contentPanel = document.getElementById('ContentPanel');
           adjustWindowPos(contentPanel, wnd.div);
@@ -3893,6 +3967,8 @@ if (typeof Navigation === 'undefined')
               // });
               resolve(outDataObj.model);
             }
+            // Once window is closed remove it from open windows list
+            this.windowIsClosed(dataObj.name);
             return true;
           },
           {
@@ -3904,6 +3980,10 @@ if (typeof Navigation === 'undefined')
           800,
           500,
         );
+        if (dataObj.name) {
+          wnd.id = dataObj.name;
+          this.openWindows.push(wnd);
+        }
         document.body.removeChild(wnd.div);
         var contentPanel = document.getElementById('ContentPanel');
         adjustWindowPos(contentPanel, wnd.div);
@@ -4032,9 +4112,11 @@ if (typeof Navigation === 'undefined')
                     if (actionList.length < 1) {
                       MessageBox.confirm("Deleting a variable", "Are you sure you want to delete the highlighted Variable?", ["Yes", "Cancel"],
                           function (btn, evt) {
-                            if (btn == "Yes")
+                            if (btn == "Yes") {
+                              this.closeDeletedWindow(ui.target.context.dataObject.name);
                               this.deleteVariable(ui.target.context.dataObject, ui.target.context);
-                            return true;
+                              return true;
+                            }
                           }.bind(this));
                     }
                     else {
@@ -4087,7 +4169,8 @@ if (typeof Navigation === 'undefined')
                   if (ui.target.context.dataObject) {
                     MessageBox.confirm("Deleting a Logic Node", "Are you sure you want to delete the highlighted Logic Node?", ["Yes", "Cancel"],
                      function (btn, evt) {
-                       if (btn == "Yes") {
+                       if (btn === "Yes") {
+                         this.closeDeletedWindow(ui.target.context.dataObject.name);
                          this.deleteLogicTree(ui.target.context.dataObject, ui.target.context);
                        }
                        return true;
@@ -4126,6 +4209,7 @@ if (typeof Navigation === 'undefined')
                     MessageBox.confirm("Deleting a Action", "Are you sure you want to delete the highlighted Action?", ["Yes", "Cancel"],
                     function (btn, evt) {
                       if (btn == "Yes") {
+                        this.closeDeletedWindow(ui.target.context.dataObject.name);
                         this.deleteAction(ui.target.context.dataObject, true);
                         //ui.target.context.remove();
                       }
@@ -4164,6 +4248,7 @@ if (typeof Navigation === 'undefined')
                     MessageBox.confirm("Deleting a Event", "Are you sure you want to delete the highlighted Event?", ["Yes", "Cancel"],
                       function (btn, evt) {
                         if (btn == "Yes") {
+                          this.closeDeletedWindow(ui.target.context.dataObject.name);
                           this.deleteEvent(ui.target.context.dataObject, true);
                           //ui.target.context.remove();
                         }
@@ -4208,6 +4293,7 @@ if (typeof Navigation === 'undefined')
                     MessageBox.confirm("Deleting a State", "Are you sure you want to delete the highlighted state?", ["Yes", "Cancel"],
                       function (btn, evt) {
                         if (btn == "Yes") {
+                          this.closeDeletedWindow(ui.target.context.dataObject.name);
                           this.deleteState(ui.target.context.dataObject);
                           //ui.target.context.remove();
                         }
@@ -4246,6 +4332,7 @@ if (typeof Navigation === 'undefined')
                     MessageBox.confirm("Deleting a External Sim", "Are you sure you want to delete the highlighted External Sim?", ["Yes", "Cancel"],
                         function (btn, evt) {
                           if (btn == "Yes")
+                            this.closeDeletedWindow(ui.target.context.dataObject.name);
                             this.deleteExtSim(ui.target.context.dataObject, ui.target.context);
                           return true;
                         }.bind(this));
@@ -4662,6 +4749,18 @@ if (typeof Navigation === 'undefined')
       simApp.mainApp.saveProject();
     }
 
+    // Removes window from the list of open windows. This is used to track which windows to remove if one is deleted while still open.
+    Sidebar.prototype.windowIsClosed = function (windowName) { return this.openWindows = this.openWindows.filter((window) => window.id !== windowName) };
+
+    // Once an item is deleted this checks the open windows and if the deleted item matches one of the windows its removed.
+    Sidebar.prototype.closeDeletedWindow = function (windowToDelete) {
+      var matchingWindow = this.openWindows.find((window) => window.id === windowToDelete);
+      this.openWindows = this.openWindows.filter((window) => {
+        return window !== matchingWindow;
+      });
+      matchingWindow.forceClose();
+    };
+    
     return Sidebar;
   })(Object);
   Navigation.Sidebar = Sidebar;
