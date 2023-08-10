@@ -1,0 +1,819 @@
+{
+  "id": 0,
+  "name": "Two Components in Parallel, One in standby, fail, get repaired, two repairmen",
+  "desc": "",
+  "version": 1.3,
+  "DiagramList": [
+    {
+      "Diagram": {
+        "id": 1,
+        "name": "Component 1",
+        "desc": "",
+        "diagramType": "dtComponent",
+        "diagramTemplate": "",
+        "diagramLabel": "Component",
+        "forceMerge": false,
+        "states": [
+          "C1_Running",
+          "C1_Repair ",
+          "C1_Standby"
+        ],
+        "singleStates": [
+          {
+            "stateName": "C1_Running",
+            "okState": "True"
+          },
+          {
+            "stateName": "C1_Repair ",
+            "okState": "False"
+          },
+          {
+            "stateName": "C1_Standby",
+            "okState": "False"
+          }
+        ]
+      }
+    },
+    {
+      "Diagram": {
+        "id": 2,
+        "name": "Component 2",
+        "desc": "",
+        "diagramType": "dtComponent",
+        "diagramTemplate": "",
+        "diagramLabel": "Component",
+        "forceMerge": false,
+        "states": [
+          "C2_Running",
+          "C2_Repair",
+          "C2_Standby"
+        ],
+        "singleStates": [
+          {
+            "stateName": "C2_Running",
+            "okState": "True"
+          },
+          {
+            "stateName": "C2_Repair",
+            "okState": "False"
+          },
+          {
+            "stateName": "C2_Standby",
+            "okState": "False"
+          }
+        ]
+      }
+    },
+    {
+      "Diagram": {
+        "id": 3,
+        "name": "Repair and Down Time",
+        "desc": "",
+        "diagramType": "dtPlant",
+        "diagramTemplate": "",
+        "diagramLabel": "Plant",
+        "forceMerge": false,
+        "states": [
+          "Okay",
+          "Failed ",
+          "Mission Time",
+          "Terminate"
+        ]
+      }
+    }
+  ],
+  "StateList": [
+    {
+      "State": {
+        "id": 1,
+        "name": "C1_Running",
+        "desc": "",
+        "stateType": "stStart",
+        "diagramName": "Component 1",
+        "immediateActions": [],
+        "events": [
+          "Failure Rate"
+        ],
+        "eventActions": [
+          {
+            "actions": [
+              "Goto_C1_Repair"
+            ],
+            "moveFromCurrent": true
+          }
+        ],
+        "geometry": "{ x: 19.600006103515625, y: 19.70000457763672, width: 200, height: 130}"
+      }
+    },
+    {
+      "State": {
+        "id": 4,
+        "name": "C2_Running",
+        "desc": "",
+        "stateType": "stStart",
+        "diagramName": "Component 2",
+        "immediateActions": [],
+        "events": [
+          "Failure Rate_C2"
+        ],
+        "eventActions": [
+          {
+            "actions": [
+              "Goto_C2_Repair"
+            ],
+            "moveFromCurrent": true
+          }
+        ],
+        "geometry": "{ x: 9.600006103515625, y: 19.70000457763672, width: 200, height: 130}"
+      }
+    },
+    {
+      "State": {
+        "id": 6,
+        "name": "C2_Repair",
+        "desc": "",
+        "stateType": "stStandard",
+        "diagramName": "Component 2",
+        "immediateActions": [],
+        "events": [
+          "C2_Repair Rate"
+        ],
+        "eventActions": [
+          {
+            "actions": [
+              "Goto_C2_Standby"
+            ],
+            "moveFromCurrent": true
+          }
+        ],
+        "geometry": "{ x: 280.3999938964844, y: 20.300018310546875, width: 200, height: 130}"
+      }
+    },
+    {
+      "State": {
+        "id": 7,
+        "name": "Okay",
+        "desc": "",
+        "stateType": "stStart",
+        "diagramName": "Repair and Down Time",
+        "immediateActions": [
+          "Goto_Mission_Time"
+        ],
+        "events": [
+          "Both Components Fail"
+        ],
+        "eventActions": [
+          {
+            "actions": [
+              "Goto_Offline"
+            ],
+            "moveFromCurrent": true
+          }
+        ],
+        "geometry": "{ x: 9.900001525878906, y: 20.300003051757812, width: 200, height: 150}"
+      }
+    },
+    {
+      "State": {
+        "id": 6,
+        "name": "Failed ",
+        "desc": "",
+        "stateType": "stStandard",
+        "diagramName": "Repair and Down Time",
+        "immediateActions": [],
+        "events": [
+          "repair"
+        ],
+        "eventActions": [
+          {
+            "actions": [
+              "Goto_okay"
+            ],
+            "moveFromCurrent": true
+          }
+        ],
+        "geometry": "{ x: 310.3999938964844, y: 19.600006103515625, width: 200, height: 130}"
+      }
+    },
+    {
+      "State": {
+        "id": 8,
+        "name": "C1_Repair ",
+        "desc": "",
+        "stateType": "stStandard",
+        "diagramName": "Component 1",
+        "immediateActions": [],
+        "events": [
+          "C1_Repair_Rate"
+        ],
+        "eventActions": [
+          {
+            "actions": [
+              "Goto_C1_standby"
+            ],
+            "moveFromCurrent": true
+          }
+        ],
+        "geometry": "{ x: 290, y: 20, width: 200, height: 130}"
+      }
+    },
+    {
+      "State": {
+        "id": 10,
+        "name": "C2_Standby",
+        "desc": "",
+        "stateType": "stStandard",
+        "diagramName": "Component 2",
+        "immediateActions": [],
+        "events": [
+          "C1 Standby"
+        ],
+        "eventActions": [
+          {
+            "actions": [
+              "Goto_C2_Running"
+            ],
+            "moveFromCurrent": true
+          }
+        ],
+        "geometry": "{ x: 280, y: 200, width: 200, height: 130}"
+      }
+    },
+    {
+      "State": {
+        "id": 11,
+        "name": "C1_Standby",
+        "desc": "",
+        "stateType": "stStandard",
+        "diagramName": "Component 1",
+        "immediateActions": [],
+        "events": [
+          "C2 standby"
+        ],
+        "eventActions": [
+          {
+            "actions": [
+              "Goto_C1_running"
+            ],
+            "moveFromCurrent": true
+          }
+        ],
+        "geometry": "{ x: 290, y: 190, width: 200, height: 130}"
+      }
+    },
+    {
+      "State": {
+        "id": 9,
+        "name": "Mission Time",
+        "desc": "",
+        "stateType": "stKeyState",
+        "diagramName": "Repair and Down Time",
+        "immediateActions": [],
+        "events": [
+          "Time"
+        ],
+        "eventActions": [
+          {
+            "actions": [
+              "Goto_Terminate"
+            ],
+            "moveFromCurrent": false
+          }
+        ],
+        "geometry": "{ x: 10.083335876464844, y: 189.72222900390625, width: 200, height: 130}"
+      }
+    },
+    {
+      "State": {
+        "id": 10,
+        "name": "Terminate",
+        "desc": "",
+        "stateType": "stTerminal",
+        "diagramName": "Repair and Down Time",
+        "immediateActions": [],
+        "events": [],
+        "eventActions": [],
+        "geometry": "{ x: 309.638916015625, y: 189.50001525878906, width: 200, height: 80}"
+      }
+    }
+  ],
+  "ActionList": [
+    {
+      "Action": {
+        "id": 2,
+        "name": "Goto_Repair",
+        "desc": "",
+        "actType": "atTransition",
+        "mainItem": false,
+        "mutExcl": true,
+        "newStates": [],
+        "itemId": 3,
+        "moveFromCurrent": false
+      }
+    },
+    {
+      "Action": {
+        "id": 3,
+        "name": "Goto_Running",
+        "desc": "",
+        "actType": "atTransition",
+        "mainItem": false,
+        "mutExcl": true,
+        "newStates": [
+          {
+            "toState": "C1_Running",
+            "prob": -1,
+            "failDesc": ""
+          }
+        ],
+        "itemId": 4
+      }
+    },
+    {
+      "Action": {
+        "id": 4,
+        "name": "Goto_C2_Repair",
+        "desc": "",
+        "actType": "atTransition",
+        "mainItem": false,
+        "mutExcl": true,
+        "newStates": [
+          {
+            "toState": "C2_Repair",
+            "prob": -1,
+            "failDesc": ""
+          }
+        ],
+        "itemId": 0,
+        "moveFromCurrent": true
+      }
+    },
+    {
+      "Action": {
+        "id": 5,
+        "name": "Goto_Repair_C2",
+        "desc": "",
+        "actType": "atTransition",
+        "mainItem": false,
+        "mutExcl": true,
+        "newStates": [
+          {
+            "toState": "C2_Repair",
+            "prob": -1,
+            "failDesc": ""
+          }
+        ],
+        "itemId": 3
+      }
+    },
+    {
+      "Action": {
+        "id": 6,
+        "name": "Goto_Running_C2",
+        "desc": "",
+        "actType": "atTransition",
+        "mainItem": false,
+        "mutExcl": true,
+        "newStates": [
+          {
+            "toState": "C2_Running",
+            "prob": -1,
+            "failDesc": ""
+          }
+        ],
+        "itemId": 4
+      }
+    },
+    {
+      "Action": {
+        "id": 7,
+        "name": "Goto_Offline",
+        "desc": "",
+        "actType": "atTransition",
+        "mainItem": false,
+        "mutExcl": true,
+        "newStates": [
+          {
+            "toState": "Failed ",
+            "prob": -1,
+            "failDesc": ""
+          }
+        ],
+        "itemId": 0
+      }
+    },
+    {
+      "Action": {
+        "id": 8,
+        "name": "Goto_Failed",
+        "desc": "",
+        "actType": "atTransition",
+        "mainItem": false,
+        "mutExcl": true,
+        "newStates": [],
+        "itemId": 9
+      }
+    },
+    {
+      "Action": {
+        "id": 10,
+        "name": "Goto_C1_Repair",
+        "desc": "",
+        "actType": "atTransition",
+        "mainItem": false,
+        "mutExcl": true,
+        "newStates": [
+          {
+            "toState": "C1_Repair ",
+            "prob": -1,
+            "failDesc": ""
+          }
+        ],
+        "itemId": 0,
+        "moveFromCurrent": true
+      }
+    },
+    {
+      "Action": {
+        "id": 11,
+        "name": "Goto_C2_Standby",
+        "desc": "",
+        "actType": "atTransition",
+        "mainItem": false,
+        "mutExcl": true,
+        "newStates": [
+          {
+            "toState": "C2_Standby",
+            "prob": -1,
+            "failDesc": ""
+          }
+        ],
+        "itemId": 0,
+        "moveFromCurrent": true
+      }
+    },
+    {
+      "Action": {
+        "id": 12,
+        "name": "Goto_C1_standby",
+        "desc": "",
+        "actType": "atTransition",
+        "mainItem": false,
+        "mutExcl": true,
+        "newStates": [
+          {
+            "toState": "C1_Standby",
+            "prob": -1,
+            "failDesc": ""
+          }
+        ],
+        "itemId": 0,
+        "moveFromCurrent": true
+      }
+    },
+    {
+      "Action": {
+        "id": 13,
+        "name": "Goto_C2_Running",
+        "desc": "",
+        "actType": "atTransition",
+        "mainItem": false,
+        "mutExcl": true,
+        "newStates": [
+          {
+            "toState": "C2_Running",
+            "prob": -1,
+            "failDesc": ""
+          }
+        ],
+        "itemId": 14
+      }
+    },
+    {
+      "Action": {
+        "id": 14,
+        "name": "Goto_C1_running",
+        "desc": "",
+        "actType": "atTransition",
+        "mainItem": false,
+        "mutExcl": true,
+        "newStates": [
+          {
+            "toState": "C1_Running",
+            "prob": -1,
+            "failDesc": ""
+          }
+        ],
+        "itemId": 15
+      }
+    },
+    {
+      "Action": {
+        "id": 13,
+        "name": "Goto_okay",
+        "desc": "",
+        "actType": "atTransition",
+        "mainItem": false,
+        "mutExcl": true,
+        "newStates": [
+          {
+            "toState": "Okay",
+            "prob": -1,
+            "failDesc": ""
+          }
+        ],
+        "itemId": 15
+      }
+    },
+    {
+      "Action": {
+        "id": 15,
+        "name": "Goto_Mission_Time",
+        "desc": "",
+        "actType": "atTransition",
+        "mainItem": false,
+        "mutExcl": true,
+        "newStates": [
+          {
+            "toState": "Mission Time",
+            "prob": -1,
+            "failDesc": ""
+          }
+        ],
+        "itemId": 0
+      }
+    },
+    {
+      "Action": {
+        "id": 15,
+        "name": "Goto_Terminate",
+        "desc": "",
+        "actType": "atTransition",
+        "mainItem": false,
+        "mutExcl": true,
+        "newStates": [
+          {
+            "toState": "Terminate",
+            "prob": -1,
+            "failDesc": ""
+          }
+        ],
+        "itemId": 16
+      }
+    }
+  ],
+  "EventList": [
+    {
+      "Event": {
+        "id": 1,
+        "name": "Failure Rate",
+        "desc": "",
+        "mainItem": false,
+        "evType": "etFailRate",
+        "allItems": true,
+        "triggerStates": [],
+        "moveFromCurrent": true,
+        "varNames": [],
+        "lambda": 1,
+        "lambdaTimeRate": "P10D",
+        "useVariable": false
+      }
+    },
+    {
+      "Event": {
+        "id": 4,
+        "name": "Failure Rate_C2",
+        "desc": "",
+        "mainItem": false,
+        "evType": "etFailRate",
+        "allItems": true,
+        "triggerStates": [],
+        "moveFromCurrent": true,
+        "varNames": [],
+        "lambda": 1,
+        "lambdaTimeRate": "P10D",
+        "useVariable": false
+      }
+    },
+    {
+      "Event": {
+        "id": 7,
+        "name": "Both Components Fail",
+        "desc": "",
+        "mainItem": false,
+        "evType": "etComponentLogic",
+        "allItems": true,
+        "triggerStates": [],
+        "moveFromCurrent": true,
+        "varNames": [],
+        "onSuccess": false,
+        "triggerOnFalse": false,
+        "logicTop": "Repair and Down Time"
+      }
+    },
+    {
+      "Event": {
+        "id": 6,
+        "name": "C2_Repair Rate",
+        "desc": "",
+        "mainItem": false,
+        "evType": "etFailRate",
+        "allItems": true,
+        "triggerStates": [],
+        "moveFromCurrent": true,
+        "varNames": [],
+        "lambda": 1,
+        "lambdaTimeRate": "PT24H",
+        "useVariable": false
+      }
+    },
+    {
+      "Event": {
+        "id": 5,
+        "name": "C1_Repair_Rate",
+        "desc": "",
+        "mainItem": false,
+        "evType": "etFailRate",
+        "allItems": true,
+        "triggerStates": [],
+        "moveFromCurrent": true,
+        "varNames": [],
+        "lambda": 1,
+        "lambdaTimeRate": "PT24H",
+        "useVariable": false
+      }
+    },
+    {
+      "Event": {
+        "id": 8,
+        "name": "C1 Standby",
+        "desc": "",
+        "mainItem": false,
+        "evType": "etComponentLogic",
+        "allItems": true,
+        "triggerStates": [],
+        "moveFromCurrent": true,
+        "varNames": [],
+        "onSuccess": false,
+        "triggerOnFalse": false,
+        "logicTop": "Component 1"
+      }
+    },
+    {
+      "Event": {
+        "id": 9,
+        "name": "C2 standby",
+        "desc": "",
+        "mainItem": false,
+        "evType": "etComponentLogic",
+        "allItems": true,
+        "triggerStates": [],
+        "moveFromCurrent": true,
+        "varNames": [],
+        "onSuccess": false,
+        "triggerOnFalse": false,
+        "logicTop": "Component 2"
+      }
+    },
+    {
+      "Event": {
+        "id": 8,
+        "name": "repair",
+        "desc": "",
+        "mainItem": false,
+        "evType": "etComponentLogic",
+        "allItems": true,
+        "triggerStates": [],
+        "moveFromCurrent": true,
+        "varNames": [],
+        "onSuccess": false,
+        "triggerOnFalse": true,
+        "logicTop": "Repair and Down Time"
+      }
+    },
+    {
+      "Event": {
+        "id": 9,
+        "name": "Time",
+        "desc": "",
+        "mainItem": false,
+        "evType": "etTimer",
+        "allItems": true,
+        "triggerStates": [],
+        "moveFromCurrent": false,
+        "varNames": [],
+        "useVariable": false,
+        "time": "P1000D",
+        "timeVariableUnit": "",
+        "fromSimStart": false
+      }
+    }
+  ],
+  "LogicNodeList": [
+    {
+      "LogicNode": {
+        "id": 1,
+        "name": "Repair and Down Time",
+        "desc": "",
+        "gateType": "gtAnd",
+        "rootName": "",
+        "compChildren": [
+          "Component 1",
+          "Component 2"
+        ],
+        "gateChildren": [],
+        "isRoot": true
+      }
+    },
+    {
+      "LogicNode": {
+        "id": 2,
+        "name": "Component 1",
+        "desc": "",
+        "gateType": "gtNot",
+        "rootName": "",
+        "compChildren": [
+          "Component 1"
+        ],
+        "gateChildren": [],
+        "isRoot": true
+      }
+    },
+    {
+      "LogicNode": {
+        "id": 3,
+        "name": "Component 2",
+        "desc": "",
+        "gateType": "gtNot",
+        "rootName": "",
+        "compChildren": [
+          "Component 2"
+        ],
+        "gateChildren": [],
+        "isRoot": true
+      }
+    }
+  ],
+  "VariableList": [
+    {
+      "Variable": {
+        "id": 4,
+        "name": "Failed_time",
+        "desc": "",
+        "varScope": "gtAccrual",
+        "value": 0,
+        "accrualStatesData": [
+          {
+            "stateName": "C1_Repair ",
+            "type": "ctMultiplier",
+            "accrualMult": 1,
+            "multRate": "trHours",
+            "accrualTable": [],
+            "$$hashKey": "00G"
+          },
+          {
+            "stateName": "C2_Repair",
+            "type": "ctMultiplier",
+            "accrualMult": 1,
+            "multRate": "trHours",
+            "accrualTable": [],
+            "$$hashKey": "00L"
+          }
+        ],
+        "type": "double"
+      }
+    },
+    {
+      "Variable": {
+        "id": 3,
+        "name": "down_time",
+        "desc": "",
+        "varScope": "gtAccrual",
+        "value": 0,
+        "accrualStatesData": [
+          {
+            "stateName": "Failed ",
+            "type": "ctMultiplier",
+            "accrualMult": 1,
+            "multRate": "trHours",
+            "accrualTable": [],
+            "$$hashKey": "00E"
+          }
+        ],
+        "type": "double"
+      }
+    },
+    {
+      "Variable": {
+        "id": 1,
+        "name": "repair_crew_available",
+        "desc": "",
+        "varScope": "gtGlobal",
+        "value": true,
+        "resetOnRuns": true,
+        "type": "bool"
+      }
+    }
+  ],
+  "templates": []
+}

@@ -1,0 +1,12 @@
+Simulation = Two Components in Parallel, One in standby, fail, get repaired, two repairmen
+Runtime = 00.00:15:46
+Runs = 100000 of 100000
+Mission Time Occurred 100000 times, Rate =1, MeanTime = 00.00:00:00 +/- 00.00:00:00.00
+(45394)[45.394]C1_Standby
+(4595)[4.595]C2_Repair
+(45032)[45.032]C2_Standby
+(4553)[4.553]C1_Repair 
+(426)[0.426]C1_Repair , C2_Repair
+---------------------------
+- End Sim Variable Values -
+---------------------------

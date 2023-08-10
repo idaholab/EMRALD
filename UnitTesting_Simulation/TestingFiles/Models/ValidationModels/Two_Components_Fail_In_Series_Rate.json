@@ -1,0 +1,360 @@
+{
+  "id": 0,
+  "name": "Two Components Fail in Series",
+  "desc": "",
+  "version": 1.3,
+  "DiagramList": [
+    {
+      "Diagram": {
+        "id": 1,
+        "name": "C1",
+        "desc": "",
+        "diagramType": "dtComponent",
+        "diagramTemplate": "",
+        "diagramLabel": "Component",
+        "forceMerge": false,
+        "states": [
+          "C1 Running",
+          "C1 Failed"
+        ],
+        "singleStates": [
+          {
+            "stateName": "C1 Running",
+            "okState": "True"
+          },
+          {
+            "stateName": "C1 Failed",
+            "okState": "False"
+          }
+        ]
+      }
+    },
+    {
+      "Diagram": {
+        "id": 2,
+        "name": "C2",
+        "desc": "",
+        "diagramType": "dtComponent",
+        "diagramTemplate": "",
+        "diagramLabel": "Component",
+        "forceMerge": false,
+        "states": [
+          "C2 Running",
+          "C2 Failed"
+        ],
+        "singleStates": [
+          {
+            "stateName": "C2 Running",
+            "okState": "True"
+          },
+          {
+            "stateName": "C2 Failed",
+            "okState": "False"
+          }
+        ]
+      }
+    },
+    {
+      "Diagram": {
+        "id": 3,
+        "name": "System",
+        "desc": "",
+        "diagramType": "dtPlant",
+        "diagramTemplate": "",
+        "diagramLabel": "Plant",
+        "forceMerge": false,
+        "states": [
+          "Running ",
+          "Failed",
+          "Terminate"
+        ]
+      }
+    }
+  ],
+  "StateList": [
+    {
+      "State": {
+        "id": 1,
+        "name": "C1 Running",
+        "desc": "",
+        "stateType": "stStart",
+        "diagramName": "C1",
+        "immediateActions": [],
+        "events": [
+          "C1 Fails"
+        ],
+        "eventActions": [
+          {
+            "actions": [
+              "Goto_C1_Fails"
+            ],
+            "moveFromCurrent": true
+          }
+        ],
+        "geometry": "{ x: 335.8000183105469, y: 177.40000915527344, width: 200, height: 130}"
+      }
+    },
+    {
+      "State": {
+        "id": 2,
+        "name": "C1 Failed",
+        "desc": "",
+        "stateType": "stKeyState",
+        "diagramName": "C1",
+        "immediateActions": [],
+        "events": [],
+        "eventActions": [],
+        "geometry": "{ x: 614.2000122070312, y: 195, width: 200, height: 80}"
+      }
+    },
+    {
+      "State": {
+        "id": 3,
+        "name": "C2 Running",
+        "desc": "",
+        "stateType": "stStart",
+        "diagramName": "C2",
+        "immediateActions": [],
+        "events": [
+          "C2 Fails"
+        ],
+        "eventActions": [
+          {
+            "actions": [
+              "Goto_C2_Fails"
+            ],
+            "moveFromCurrent": true
+          }
+        ],
+        "geometry": "{ x: 335.8000183105469, y: 177.40000915527344, width: 200, height: 130}"
+      }
+    },
+    {
+      "State": {
+        "id": 4,
+        "name": "C2 Failed",
+        "desc": "",
+        "stateType": "stKeyState",
+        "diagramName": "C2",
+        "immediateActions": [],
+        "events": [],
+        "eventActions": [],
+        "geometry": "{ x: 614.2000122070312, y: 195, width: 200, height: 80}"
+      }
+    },
+    {
+      "State": {
+        "id": 5,
+        "name": "Running ",
+        "desc": "",
+        "stateType": "stStart",
+        "diagramName": "System",
+        "immediateActions": [],
+        "events": [
+          "One Component Fails"
+        ],
+        "eventActions": [
+          {
+            "actions": [
+              "Goto_Failed"
+            ],
+            "moveFromCurrent": true
+          }
+        ],
+        "geometry": "{ x: 556.6000366210938, y: 200.60000610351562, width: 200, height: 130}"
+      }
+    },
+    {
+      "State": {
+        "id": 6,
+        "name": "Failed",
+        "desc": "",
+        "stateType": "stKeyState",
+        "diagramName": "System",
+        "immediateActions": [
+          "Goto_terminate"
+        ],
+        "events": [],
+        "eventActions": [],
+        "geometry": "{ x: 880.6000366210938, y: 239, width: 200, height: 100}"
+      }
+    },
+    {
+      "State": {
+        "id": 7,
+        "name": "Terminate",
+        "desc": "",
+        "stateType": "stTerminal",
+        "diagramName": "System",
+        "immediateActions": [],
+        "events": [],
+        "eventActions": [],
+        "geometry": "{ x: 549.4000244140625, y: 399, width: 200, height: 80}"
+      }
+    }
+  ],
+  "ActionList": [
+    {
+      "Action": {
+        "id": 1,
+        "name": "Goto_C1_Fails",
+        "desc": "",
+        "actType": "atTransition",
+        "mainItem": false,
+        "mutExcl": true,
+        "newStates": [
+          {
+            "toState": "C1 Failed",
+            "prob": -1,
+            "failDesc": ""
+          }
+        ],
+        "itemId": 2
+      }
+    },
+    {
+      "Action": {
+        "id": 2,
+        "name": "Goto_C2_Fails",
+        "desc": "",
+        "actType": "atTransition",
+        "mainItem": false,
+        "mutExcl": true,
+        "newStates": [
+          {
+            "toState": "C2 Failed",
+            "prob": -1,
+            "failDesc": ""
+          }
+        ],
+        "itemId": 2
+      }
+    },
+    {
+      "Action": {
+        "id": 3,
+        "name": "Goto_Failed",
+        "desc": "",
+        "actType": "atTransition",
+        "mainItem": false,
+        "mutExcl": true,
+        "newStates": [
+          {
+            "toState": "Failed",
+            "prob": -1,
+            "failDesc": ""
+          }
+        ],
+        "itemId": 4
+      }
+    },
+    {
+      "Action": {
+        "id": 4,
+        "name": "Goto_terminate",
+        "desc": "",
+        "actType": "atTransition",
+        "mainItem": false,
+        "mutExcl": true,
+        "newStates": [
+          {
+            "toState": "Terminate",
+            "prob": -1,
+            "failDesc": ""
+          }
+        ],
+        "itemId": 0
+      }
+    }
+  ],
+  "EventList": [
+    {
+      "Event": {
+        "id": 1,
+        "name": "C1 Fails",
+        "desc": "",
+        "mainItem": false,
+        "evType": "etFailRate",
+        "allItems": true,
+        "triggerStates": [],
+        "moveFromCurrent": true,
+        "varNames": [],
+        "lambda": 1,
+        "lambdaTimeRate": "P365D",
+        "useVariable": false
+      }
+    },
+    {
+      "Event": {
+        "id": 2,
+        "name": "C2 Fails",
+        "desc": "",
+        "mainItem": false,
+        "evType": "etFailRate",
+        "allItems": true,
+        "triggerStates": [],
+        "moveFromCurrent": true,
+        "varNames": [],
+        "lambda": 1,
+        "lambdaTimeRate": "P365D",
+        "useVariable": false
+      }
+    },
+    {
+      "Event": {
+        "id": 3,
+        "name": "One Component Fails",
+        "desc": "",
+        "mainItem": false,
+        "evType": "etComponentLogic",
+        "allItems": true,
+        "triggerStates": [],
+        "moveFromCurrent": true,
+        "varNames": [],
+        "onSuccess": false,
+        "triggerOnFalse": false,
+        "logicTop": "system"
+      }
+    }
+  ],
+  "LogicNodeList": [
+    {
+      "LogicNode": {
+        "id": 1,
+        "name": "system",
+        "desc": "",
+        "gateType": "gtOr",
+        "rootName": "",
+        "compChildren": [
+          "C1",
+          "C2"
+        ],
+        "gateChildren": [],
+        "isRoot": true
+      }
+    }
+  ],
+  "VariableList": [
+    {
+      "Variable": {
+        "id": 1,
+        "name": "running_time",
+        "desc": "",
+        "varScope": "gtAccrual",
+        "value": 0,
+        "accrualStatesData": [
+          {
+            "stateName": "Running ",
+            "type": "ctMultiplier",
+            "accrualMult": 1,
+            "multRate": "trHours",
+            "accrualTable": [],
+            "$$hashKey": "00C"
+          }
+        ],
+        "type": "double"
+      }
+    }
+  ],
+  "templates": []
+}

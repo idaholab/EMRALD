@@ -1,0 +1,15 @@
+Simulation = Two Components Fail in Series
+Runtime = 00.00:00:04
+Runs = 100000 of 100000
+C1 Failed Occurred 50036 times, Rate =0.50036, MeanTime = 05.00:08:09 +/- 07.02:08:59.35
+(50036)[100]C1 Failed
+(49964)[99.85610360540412]C2 Failed
+Failed Occurred 100000 times, Rate =1, MeanTime = 04.23:47:39 +/- 07.01:13:28.94
+(50036)[50.036]C1 Failed
+(49964)[49.964]C2 Failed
+C2 Failed Occurred 49964 times, Rate =0.49964, MeanTime = 04.23:27:07 +/- 07.00:17:35.28
+(49964)[100]C2 Failed
+(50035)[100.14210231366584]C1 Failed
+---------------------------
+- End Sim Variable Values -
+---------------------------
