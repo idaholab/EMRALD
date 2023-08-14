@@ -254,7 +254,7 @@ function somethingChanged() {
 }
 
 //Default diagram editor values
-var diagramModule = angular.module('diagramModule', []);
+var diagramModule = angular.module('diagramModule', ['autosizeTextareaDirective']);
 diagramModule.controller('diagramController', function ($scope, $timeout) {
     $scope.name = "diagram1";
     $scope.desc = "new diagram";

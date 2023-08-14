@@ -575,27 +575,7 @@ function main(container, outline) {
     //tb.addDraggableItem('OR State', 'images/OrGate.png', null, true, dropHandler);
     //tb.addDraggableItem('AND State', 'images/AndGate.png', null, true, dropHandler);
     //tb.addDraggableItem('BE Event', 'images/BE.png', null, true, dropHandler);
-		tb.addSeparator('images/Vert.png');
-		tb.addItem('Help', 'images/question.png', function (evt) {
-				
-		var url = "HelpLogicTree.html";
-		var componentDiagrams = [];
-		mxWindow.createFrameWindow(
-				url,
-				'OK',  //command buttons
-				'minimize, maximize, close', //top buttons
-				function (btn, retObj) {
-						return true;
-				},
-				componentDiagrams,
-				true, //ismodal
-				null,
-				null,
-				450, //width
-				200 //height
-		);
 
-			});
     var wnd = new mxWindow('Tools', content, 0, 0, null, null, false);
     wnd.setMaximizable(false);
     wnd.setScrollable(false);

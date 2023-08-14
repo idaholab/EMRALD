@@ -23,6 +23,7 @@
     <script src="../scripts/UI/wcfService.js"></script>
     <script src="./customForms.js"></script>
     <script src="./components/code-editor.js"></script>
+    <script src="./directives/AutosizeTextareaDirective.js"></script>
     <script src="ActionEditor.js"></script>
     <style type="text/css">
         html, .fill-height {
@@ -69,7 +70,7 @@
                 </div>
                 <div style="display:table-row">
                     <span style="display:table-cell">Desc:</span>
-                    <input style="display:table-cell;" ng-model="desc" size="40" tabindex="2">
+                    <textarea rows="1" cols="40" tabindex="2" ng-model="desc" auto-resize></textarea>
                 </div>
             </div>
             <div style="display: table; border-collapse: collapse;">
