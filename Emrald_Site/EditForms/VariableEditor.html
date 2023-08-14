@@ -143,10 +143,29 @@
                     <select id="selectBool" ng-model="data.value" ng-options="val for val in varBoolVal" ng-if="boolTypeSelected"></select>
                     <br />
                     <div id="ResetValuePanel" style="display: flex; align-items: center; text-wrap: nowrap">
-                        <input type="checkbox" name="ResetOnRuns" id="SelectReset" value="false" ng-model="data.resetOnRuns" style="margin: 10px 10px 10px 0;"/>
+                        <input type="checkbox" name="ResetOnRuns" id="SelectReset" value="false" ng-model="data.resetOnRuns" style="margin-right: 10px;"/>
                         <label for="SelectReset" id="ResetOnRunsText">Reset to initial value for every simulation run.</label>
                     </div>
                 </div>
+
+                <div class="table-row" ng-if="accrualScopeSelected || globalScopeSelected">
+                    <label id="ValueLabel"></label>
+                    <div id="CanMonitorPanel" style="display: flex; align-items: center; text-wrap: nowrap">
+                        <input type="checkbox" name="canMonitor" id="canMonitor" value="false" ng-model="data.canMonitor" style="margin-right: 10px;"/>
+                        <label for="canMonitor" id="canMonitorText">Allow Monitor in Simulation</label>
+                    </div>
+                    <div ng-if="data.canMonitor">
+                        <div id="MonitorInSimPanel" style="display: flex; align-items: center; text-wrap: nowrap">
+                            <input type="checkbox" name="monitorInSim" id="monitorInSim" value="false" ng-model="data.monitorInSim" style="margin-right: 10px;"/>
+                            <label for="monitorInSim" id="monitorInSimText">Monitor by default</label>
+                        </div>
+                        <div id="CumulativeStatsPanel" style="display: flex; align-items: center; text-wrap: nowrap">
+                            <input type="checkbox" name="cumulativeStats" id="cumulativeStats" value="false" ng-model="data.cumulativeStats" style="margin-right: 10px;"/>
+                            <label for="cumulativeStats" id="cumulativeStatsText">Monitor Cumulative Stats</label>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- End Value Box Used for Global and Ext Sim Variable Scopes-->
                 <!-- Ext Sim Variable Scopes -->
                 <div ng-if="extSimVariableScopeSelected" style="display: table-row-group">

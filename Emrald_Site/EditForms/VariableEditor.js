@@ -473,6 +473,9 @@ variableModule.controller("variableController", ["$scope", function ($scope) {
     docType: $scope.docTypes[0],
     docPath: "",
     varLink: "",
+    cumulativeStats: false,
+    monitorInSim: false,
+    canMonitor: false,
     
     useRegExLine: false,
     regExLine: -1,
@@ -505,6 +508,7 @@ variableModule.controller("variableController", ["$scope", function ($scope) {
   $scope.$watch("data.value", function (newV, oldV) { if (newV !== oldV) validateValue(); });
   $scope.$watch("data.sim3DId", function (newV, oldV) { if (newV !== oldV) somethingChanged(); });
   $scope.$watch("data.docType", function (newV, oldV) { if (newV !== oldV) handleDocTypeChange(); });
+  $scope.$watch("data.canMonitor", function (newV, oldV) { if (newV !== true) $scope.data.monitorInSim = false; $scope.data.cumulativeStats = false; });
 
   $scope.accrualScopeSelected= false;
   $scope.extSimVariableScopeSelected = false;
