@@ -522,7 +522,6 @@ variableModule.controller("variableController", ["$scope", function ($scope) {
   $scope.$watch("data.sim3DId", function (newV, oldV) { if (newV !== oldV) somethingChanged(); });
   $scope.$watch("data.docType", function (newV, oldV) { if (newV !== oldV) handleDocTypeChange(); });
   $scope.$watch("data.canMonitor", function (newV) { 
-    console.log(newV)
     if (newV === false) { 
     $scope.data.monitorInSim = false; 
     $scope.data.cumulativeStats = false; 
