@@ -190,9 +190,11 @@ function OnLoad(dataObj) {
     scope.name = variableData.name;
     scope.desc = variableData.desc;
 
-    scope.data.canMonitor = variableData.canMonitor;
+    if (typeof variableData.canMonitor !== "undefined") {
+      scope.data.canMonitor = variableData.canMonitor;
     scope.data.monitorInSim = variableData.monitorInSim;
     scope.data.cumulativeStats = variableData.cumulativeStats;
+    }
 
     if (typeof variableData.resetOnRuns !== "undefined") {
       scope.data.resetOnRuns = variableData.resetOnRuns;
@@ -484,7 +486,7 @@ variableModule.controller("variableController", ["$scope", function ($scope) {
     docPath: "",
     varLink: "",
 
-    canMonitor: false,
+    canMonitor: true,
     monitorInSim: false,
     cumulativeStats: false,
     
@@ -520,6 +522,7 @@ variableModule.controller("variableController", ["$scope", function ($scope) {
   $scope.$watch("data.sim3DId", function (newV, oldV) { if (newV !== oldV) somethingChanged(); });
   $scope.$watch("data.docType", function (newV, oldV) { if (newV !== oldV) handleDocTypeChange(); });
   $scope.$watch("data.canMonitor", function (newV) { 
+    console.log(newV)
     if (newV === false) { 
     $scope.data.monitorInSim = false; 
     $scope.data.cumulativeStats = false; 
