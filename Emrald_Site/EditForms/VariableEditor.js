@@ -192,8 +192,8 @@ function OnLoad(dataObj) {
 
     if (typeof variableData.canMonitor !== "undefined") {
       scope.data.canMonitor = variableData.canMonitor;
-    scope.data.monitorInSim = variableData.monitorInSim;
-    scope.data.cumulativeStats = variableData.cumulativeStats;
+      scope.data.monitorInSim = variableData.monitorInSim;
+      scope.data.cumulativeStats = variableData.cumulativeStats;
     }
 
     if (typeof variableData.resetOnRuns !== "undefined") {
