@@ -75,7 +75,7 @@ export default function Header() {
           label="Name"
           type="text"
           fullWidth
-          variant="standard"
+          variant="outlined"
           value={updatedName}
           onChange={(e) => setUpdatedName(e.target.value)}
         />
@@ -85,7 +85,7 @@ export default function Header() {
           label="Description"
           type="text"
           fullWidth
-          variant="standard"
+          variant="outlined"
           value={updatedDesc}
           onChange={(e) => setUpdatedDesc(e.target.value)}
         />

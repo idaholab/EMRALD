@@ -20,7 +20,7 @@ const WindowComponent: React.FC = () => {
         <DraggableContainer
           key={window.id}
           id={window.id}
-          initialPosition={{ x: 0, y: 0, width: 500, height: 500 }}
+          initialPosition={{ x: 10, y: 10, width: 1000, height: 700 }}
           fullScreen={window.maximized}
         >
           <Card
@@ -77,7 +77,7 @@ const WindowComponent: React.FC = () => {
                 <CloseIcon />
               </IconButton>
             </Box>
-            <CardContent sx={{ height: '94%', p: 0 }}>
+            <CardContent sx={{ height: 'calc(100% - 60px);', p: 0, overflow: 'auto' }}>
               <Box
                 sx={{ height: '100%', width: '100%' }}
                 className={`droppable-area-${window.id}`}

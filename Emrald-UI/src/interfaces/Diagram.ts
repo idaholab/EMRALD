@@ -3,8 +3,8 @@ export interface Diagram {
   name: string;
   desc: string;
   diagramType: string;
-  states: string[];
-  diagramLabel: string;
+  states?: string[];
+  diagramLabel?: string;
 }
 
 export interface DiagramListItem {
