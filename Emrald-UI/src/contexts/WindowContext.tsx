@@ -14,7 +14,7 @@ interface WindowContextType {
   windows: Window[];
   addWindow: (title: string, content: React.ReactNode) => void;
   bringToFront: (window: Window) => void;
-  handleClose: (id: string) => void;
+  handleClose: (id?: string) => void;
   toggleMaximize: (windowToToggle: Window) => void;
   toggleMinimize: (windowToToggle: Window) => void;
 }
@@ -40,6 +40,7 @@ interface WindowProviderProps {
 export const WindowProvider: React.FC<WindowProviderProps> = ({ children }) => {
   const [windows, setWindows] = useState<Window[]>([]);
   const [nextWindowId, setNextWindowId] = useState<number>(1);
+  const [activeWindowId, setActiveWindowId] = useState<string | null>(null);
 
   // Bring a window to the front
   const bringToFront = (selectedWindow: Window) => {
@@ -51,12 +52,19 @@ export const WindowProvider: React.FC<WindowProviderProps> = ({ children }) => {
       updatedWindows.splice(windowIndex, 1);
       updatedWindows.push(selectedWindow);
       setWindows(updatedWindows);
+      setActiveWindowId(selectedWindow.id);
     }
   };
 
-  const handleClose = (id: string) => {
-    const filteredWindows = windows.filter((window) => window.id !== id);
-    setWindows(filteredWindows);
+  const handleClose = (id?: string) => {
+    const windowIdToClose = id || activeWindowId; // Use activeWindowId if id is not provided
+    if (windowIdToClose) {
+      const filteredWindows = windows.filter((window) => window.id !== windowIdToClose);
+      setWindows(filteredWindows);
+      if (activeWindowId === windowIdToClose) {
+        setActiveWindowId(null); // Reset activeWindowId if the closed window was active
+      }
+    }
   };
 
   const addWindow = (title: string, content: React.ReactNode): void => {
@@ -68,17 +76,17 @@ export const WindowProvider: React.FC<WindowProviderProps> = ({ children }) => {
       return;
     }
 
-    setWindows([
-      ...windows,
-      {
-        id: uuidv4(),
-        title,
-        isOpen: true,
-        minimized: false,
-        maximized: false,
-        content,
-      },
-    ]);
+    const newWindow: Window = {
+      id: uuidv4(),
+      title,
+      isOpen: true,
+      minimized: false,
+      maximized: false,
+      content,
+    };
+  
+    setWindows([...windows, newWindow]);
+    setActiveWindowId(newWindow.id); // Set the active window ID to the newly added window
     setNextWindowId(nextWindowId + 1);
   };
 

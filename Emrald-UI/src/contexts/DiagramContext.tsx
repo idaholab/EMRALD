@@ -2,6 +2,7 @@ import React, {
   PropsWithChildren,
   createContext,
   useContext,
+  useMemo,
   useState,
 } from 'react';
 import { Diagram, DiagramList } from '../interfaces/Diagram';
@@ -30,8 +31,11 @@ const DiagramContextProvider: React.FC<PropsWithChildren> = ({ children }) => {
   const [diagramList, setDiagramList] = useState<DiagramList>(
     emraldData.DiagramList,
   );
-  const [diagrams] = useState<Diagram[]>(
-    emraldData.DiagramList.map(({ Diagram }) => Diagram),
+
+   // Memoize the value of `diagrams` to avoid unnecessary re-renders
+  const diagrams = useMemo(
+    () => diagramList.map(({ Diagram }) => Diagram),
+    [diagramList]
   );
 
   const createDiagram = (newDiagram: Diagram) => {
