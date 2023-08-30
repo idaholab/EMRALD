@@ -5,7 +5,7 @@ import React, {
   useState,
 } from 'react';
 import emraldData from '../emraldData.json';
-import { Action, ActionList } from '../interfaces/Action';
+import { Action, ActionList } from '../types/Action';
 
 interface ActionContextType {
   actions: Action[];

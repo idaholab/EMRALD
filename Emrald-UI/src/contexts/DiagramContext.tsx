@@ -5,7 +5,7 @@ import React, {
   useMemo,
   useState,
 } from 'react';
-import { Diagram, DiagramList } from '../interfaces/Diagram';
+import { Diagram, DiagramList } from '../types/Diagram';
 import emraldData from '../emraldData.json';
 
 interface DiagramContextType {

@@ -1,5 +1,5 @@
 import { render } from '@testing-library/react';
-import Header from '../Header';
+import Header from '../Header/Header';
 
 test('Header component renders correctly', () => {
   const { getByRole } = render(<Header />);

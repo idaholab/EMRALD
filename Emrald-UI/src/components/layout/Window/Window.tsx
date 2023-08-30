@@ -7,7 +7,7 @@ import IconButton from '@mui/material/IconButton';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Box from '@mui/material/Box';
-import { useWindowContext } from '../../contexts/WindowContext';
+import { useWindowContext } from '../../../contexts/WindowContext';
 import DraggableContainer from './DraggableContainer';
 
 const WindowComponent: React.FC = () => {
@@ -20,7 +20,7 @@ const WindowComponent: React.FC = () => {
         <DraggableContainer
           key={window.id}
           id={window.id}
-          initialPosition={{ x: 10, y: 10, width: 1000, height: 700 }}
+          initialPosition={{ x: 100, y: 50, width: 500, height: 500 }}
           fullScreen={window.maximized}
         >
           <Card
@@ -77,7 +77,7 @@ const WindowComponent: React.FC = () => {
                 <CloseIcon />
               </IconButton>
             </Box>
-            <CardContent sx={{ height: 'calc(100% - 60px);', p: 0, overflow: 'auto' }}>
+            <CardContent sx={{ height: '94%', p: 0 }}>
               <Box
                 sx={{ height: '100%', width: '100%' }}
                 className={`droppable-area-${window.id}`}

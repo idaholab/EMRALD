@@ -5,7 +5,7 @@ import React, {
   useState,
 } from 'react';
 import emraldData from '../emraldData.json';
-import { LogicNode, LogicNodeList } from '../interfaces/LogicNode';
+import { LogicNode, LogicNodeList } from '../types/LogicNode';
 
 interface LogicNodeContextType {
   logicNodes: LogicNode[];

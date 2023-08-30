@@ -6,11 +6,11 @@ import {
   SpeedDialIcon,
   SpeedDialAction,
 } from '@mui/material';
-import WindowComponent from '../window/Window';
+import WindowComponent from '../Window/Window';
 import SchemaIcon from '@mui/icons-material/Schema';
 import AccountTreeIcon from '@mui/icons-material/AccountTree';
-import { useWindowContext } from '../../contexts/WindowContext';
-import NewDiagramForm from '../features/diagramForm/newDiagramForm';
+import { useWindowContext } from '../../../contexts/WindowContext';
+import NewDiagramForm from '../../features/diagramForm/NewDiagramForm';
 
 const MainCanvas = () => {
   const actions = [
@@ -31,7 +31,17 @@ const MainCanvas = () => {
 
   const { addWindow } = useWindowContext();
   return (
-    <>
+    <Box
+    component="main"
+    sx={{
+      flexGrow: 1,
+      p: 3,
+      position: 'relative',
+      height: 'calc(100% - 75px)',
+      top: '65px',
+      backgroundColor:"#eee"
+    }}
+  >
       <Toolbar />
 
       <Box sx={{ height: 135, transform: 'translateZ(0px)', flexGrow: 1 }}>
@@ -56,7 +66,7 @@ const MainCanvas = () => {
       </Box>
 
       <WindowComponent />
-    </>
+    </Box>
   );
 };
 

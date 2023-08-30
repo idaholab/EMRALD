@@ -1,9 +1,9 @@
 import './scss/global.scss';
 import { Box, CssBaseline, ThemeProvider } from '@mui/material';
-import Header from './components/layout/Header';
-import Sidebar from './components/layout/Sidebar';
+import Header from './components/layout/Header/Header';
+import Sidebar from './components/layout/Sidebar/Sidebar';
 import theme from './theme';
-import MainCanvas from './components/layout/MainCanvas';
+import MainCanvas from './components/layout/MainCanvas/MainCanvas';
 import EmraldContextWrapper from './contexts/EmraldContextWrapper';
 
 function App() {
@@ -14,18 +14,7 @@ function App() {
           <CssBaseline />
           <Header />
           <Sidebar />
-          <Box
-            component="main"
-            sx={{
-              flexGrow: 1,
-              p: 3,
-              position: 'relative',
-              height: 'calc(100% - 75px)',
-              top: '65px',
-            }}
-          >
-            <MainCanvas />
-          </Box>
+          <MainCanvas />
         </Box>
       </EmraldContextWrapper>
     </ThemeProvider>
