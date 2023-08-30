@@ -3,10 +3,14 @@ import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { styled } from '@mui/system';
-import Logo from '../../assets/EMRALD-logo.png';
-import { useModelDetailsContext } from '../../contexts/ModelDetailsContext';
-import DialogComponent from '../common/DialogComponent/DialogComponent';
+import Logo from '../../../assets/EMRALD-logo.png';
+import { useModelDetailsContext } from '../../../contexts/ModelDetailsContext';
+import DialogComponent from '../../common/DialogComponent/DialogComponent';
 import TextField from '@mui/material/TextField';
+import Box from '@mui/material/Box';
+import theme from '../../../theme';
+import { ProjectCallbacks, DownloadCallbacks } from './menu';
+import MenuButton from './MenuButton';
 
 const EmraldLogo = styled('img')(({ theme }) => ({
   marginRight: theme.spacing(2),
@@ -16,14 +20,20 @@ const EmraldLogo = styled('img')(({ theme }) => ({
 export default function Header() {
   const { name, desc, updateName, updateDescription } =
     useModelDetailsContext();
-  const [open, setOpen] = useState(false);
+  const [openDialog, setOpenDialog] = useState(false);
   const [updatedName, setUpdatedName] = useState(name);
   const [updatedDesc, setUpdatedDesc] = useState(desc);
 
   const handleSave = () => {
     updateName(updatedName);
     updateDescription(updatedDesc);
-    setOpen(false);
+    setOpenDialog(false);
+  };
+
+  const handleClose = () => {
+    setOpenDialog(false);
+    setUpdatedName('');
+    setUpdatedDesc('');
   };
 
   return (
@@ -32,8 +42,8 @@ export default function Header() {
       position="fixed"
       elevation={1}
       sx={{
-        zIndex: (theme) => theme.zIndex.drawer + 1,
-        boxShadow: '1px 1px 1px #008080',
+        zIndex: theme.zIndex.drawer + 1,
+        boxShadow: `1px 3px 1px ${theme.palette.primary.main}`,
       }}
     >
       <Toolbar>
@@ -44,10 +54,15 @@ export default function Header() {
           color="primary"
           fontSize="2em"
           fontWeight="bold"
-          flexGrow={1}
         >
           Model Editor
         </Typography>
+        <Box display="flex" alignItems="center" flexGrow={1} ml={5}>
+          <MenuButton id={1} title="Project" optionCallbacks={ProjectCallbacks} />
+          <MenuButton id={2} title="Download" optionCallbacks={DownloadCallbacks} />
+          <MenuButton id={3} title="Help" handleClick={() => window.open("https://emraldapp.inl.gov/docs/")}/>
+          <MenuButton id={4} title="About" handleClick={() => window.open("https://emrald.inl.gov/SitePages/Overview.aspx")}/>
+        </Box>
 
         <Typography
           variant="h5"
@@ -55,19 +70,19 @@ export default function Header() {
           color="primary"
           fontWeight="bold"
           sx={{ cursor: 'pointer' }}
-          onClick={() => setOpen(true)}
+          onClick={() => setOpenDialog(true)}
         >
           {name ? name : 'Click Here to Name Project'}
         </Typography>
       </Toolbar>
 
-      {/* Dialog for updating name and description */}
+      {/* Dialog for project updating name and description */}
       <DialogComponent
-        open={open}
+        open={openDialog}
         title="Enter new project name and description"
         disabled={updatedName === ''}
         onSave={handleSave}
-        onClose={() => setOpen(false)}
+        onClose={handleClose}
       >
         <TextField
           margin="dense"

@@ -8,26 +8,14 @@ import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
 import FolderIcon from '@mui/icons-material/Folder';
 import FolderOpenIcon from '@mui/icons-material/FolderOpen';
-import DraggableItem from '../drag-and-drop/DraggableItem';
-import { useWindowContext } from '../../contexts/WindowContext';
-import { useDiagramContext } from '../../contexts/DiagramContext';
+import DraggableItem from '../../drag-and-drop/DraggableItem';
+import { useWindowContext } from '../../../contexts/WindowContext';
+import { useDiagramContext } from '../../../contexts/DiagramContext';
 import Box from '@mui/material/Box';
-import ListComponent from '../common/List/List';
+import ListComponent from '../../common/List/List';
+import { AccordionMenuListProps } from './types/AccordionMenuItems';
 
-export interface MenuItemType {
-  type: string;
-  data: any[];
-}
-
-export interface MenuList {
-  panels: MenuItemType[];
-}
-
-interface MenuListProps {
-  item: MenuItemType;
-}
-
-const MenuItems: React.FC<MenuListProps> = ({ item }) => {
+const AccordionMenuItems: React.FC<AccordionMenuListProps> = ({ item }) => {
   const { addWindow } = useWindowContext();
   const { diagrams } = useDiagramContext();
   const [openIndex, setOpenIndex] = React.useState<number | null>(null); // Keeps track of the index of the open item
@@ -104,4 +92,4 @@ const MenuItems: React.FC<MenuListProps> = ({ item }) => {
   );
 };
 
-export default MenuItems;
+export default AccordionMenuItems;

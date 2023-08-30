@@ -1,5 +1,5 @@
 import { render, fireEvent, screen } from '@testing-library/react';
-import MenuAccordion from '../Accordion';
+import MenuAccordion from '../Accordion/Accordion';
 
 test('MenuAccordion component renders correctly', () => {
   const { getByText } = render(<MenuAccordion panel="Diagrams" />);

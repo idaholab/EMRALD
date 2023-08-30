@@ -1,7 +1,7 @@
 import Box from '@mui/material/Box';
 import React, { useRef, useState } from 'react';
 import { Rnd } from 'react-rnd';
-import { DraggableContainerProps } from './interfaces/draggableContainer';
+import { DraggableContainerProps } from './types/draggableContainer';
 
 const CustomResizeHandle: React.FC = () => {
   return (
@@ -31,8 +31,8 @@ const DraggableContainer: React.FC<DraggableContainerProps> = ({
   children,
 }) => {
   const [position, setPosition] = useState({
-    x: 0,
-    y: 0,
+    x: initialPosition.x,
+    y: initialPosition.y,
   });
   const [size, setSize] = useState({
     height: initialPosition.height,

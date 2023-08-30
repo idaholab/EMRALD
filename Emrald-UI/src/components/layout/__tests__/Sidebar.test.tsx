@@ -1,5 +1,5 @@
 import { render } from '@testing-library/react';
-import Sidebar from '../Sidebar';
+import Sidebar from '../Sidebar/Sidebar';
 
 test('Sidebar component renders correctly', () => {
   const { getByTestId, getByText } = render(<Sidebar />);

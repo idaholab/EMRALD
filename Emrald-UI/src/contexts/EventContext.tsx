@@ -5,7 +5,7 @@ import React, {
   useState,
 } from 'react';
 import emraldData from '../emraldData.json';
-import { Event, EventList } from '../interfaces/Event';
+import { Event, EventList } from '../types/Event';
 
 interface EventContextType {
   events: Event[];
