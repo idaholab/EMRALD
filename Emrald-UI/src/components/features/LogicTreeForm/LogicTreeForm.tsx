@@ -3,7 +3,6 @@ import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
 import TextField from '@mui/material/TextField';
 import Box from '@mui/material/Box';
-import DropTargetComponent from '../../drag-and-drop/Droppable';
 import Typography from '@mui/material/Typography';
 import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
@@ -11,24 +10,25 @@ import Select, { SelectChangeEvent } from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import React from 'react';
 import { useWindowContext } from '../../../contexts/WindowContext';
-import { useDiagramContext } from '../../../contexts/DiagramContext';
+import { useLogicNodeContext } from '../../../contexts/LogicNodeContext';
+import { v4 as uuidv4 } from 'uuid';
 
-const NewDiagramForm = () => {
+const LogicTreeForm = () => {
   const {handleClose} = useWindowContext();
-  const {createDiagram} = useDiagramContext();
-  const [diagramType, setDiagramType] = useState<string>('');
+  const {createLogicNode} = useLogicNodeContext();
+  const [gateType, setGateType] = useState<string>('');
   const [name, setName] = useState<string>('');
   const [desc, setDesc] = useState<string>('');
 
   const handleSave = () => {
-    const newDiagram = {
-        id: 1111,
-        diagramType,
+    const newLogicNode = {
+        id: uuidv4(),
+        gateType,
         name,
         desc
       } 
     
-    createDiagram(newDiagram);
+    createLogicNode(newLogicNode);
     handleClose();
   };
 
@@ -36,30 +36,32 @@ const NewDiagramForm = () => {
   return (
     <Container maxWidth="sm">
       <Typography variant="h5" my={3}>
-        Create New Diagram
+        Create New Logic Tree
       </Typography>
       <form>
         <FormControl
           variant="outlined"
+          size="small"
           sx={{ minWidth: 120, width: '100%' }}
         >
-          <InputLabel id="demo-simple-select-standard-label">Type</InputLabel>
+          <InputLabel id="demo-simple-select-standard-label">Gate Type</InputLabel>
           <Select
             labelId="demo-simple-select-standard-label"
             id="demo-simple-select-standard"
-            value={diagramType}
-            onChange={(event: SelectChangeEvent<string>) => setDiagramType(event.target.value)}
-            label="Type"
+            value={gateType}
+            onChange={(event: SelectChangeEvent<string>) => setGateType(event.target.value)}
+            label="Gate Type"
           >
-            <MenuItem value={'dtPlant'}>Plant</MenuItem>
-            <MenuItem value={'dtComponent'}>Component</MenuItem>
-            <MenuItem value={'dtSystem'}>System</MenuItem>
+            <MenuItem value={'gtAnd'}>And</MenuItem>
+            <MenuItem value={'gtOr'}>Or</MenuItem>
+            <MenuItem value={'gtNot'}>Not</MenuItem>
           </Select>
         </FormControl>
         <TextField
           label="Name"
           margin="normal"
           variant="outlined"
+          size="small"
           onChange={(e: React.ChangeEvent<HTMLInputElement>) => setName(e.target.value)}
           fullWidth
         />
@@ -67,6 +69,7 @@ const NewDiagramForm = () => {
         <TextField
           label="Description"
           variant="outlined"
+          size="small"
           fullWidth
           multiline
           margin="normal"
@@ -81,13 +84,8 @@ const NewDiagramForm = () => {
           </Button>
         </Box>
       </form>
-
-      <Typography variant="h6" mt={5}>
-        Drop Components Here
-      </Typography>
-      <DropTargetComponent />
     </Container>
   );
 };
 
-export default NewDiagramForm;
+export default LogicTreeForm;

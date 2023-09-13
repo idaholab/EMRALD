@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import {
   Box,
-  Toolbar,
   SpeedDial,
   SpeedDialIcon,
   SpeedDialAction,
@@ -10,19 +9,21 @@ import WindowComponent from '../Window/Window';
 import SchemaIcon from '@mui/icons-material/Schema';
 import AccountTreeIcon from '@mui/icons-material/AccountTree';
 import { useWindowContext } from '../../../contexts/WindowContext';
-import NewDiagramForm from '../../features/diagramForm/NewDiagramForm';
+import DiagramForm from '../../features/DiagramForm/DiagramForm';
+import MinimizedWindows from '../Window/MinimizedWindows';
+import LogicTreeForm from '../../features/LogicTreeForm/LogicTreeForm';
 
 const MainCanvas = () => {
   const actions = [
     {
       icon: <SchemaIcon />,
       name: 'New Diagram',
-      content: <NewDiagramForm />,
+      content: <DiagramForm />,
     },
     {
       icon: <AccountTreeIcon />,
       name: 'New Logic Tree',
-      content: <>New Logic Tree Form</>,
+      content: <LogicTreeForm />,
     },
   ];
   const [open, setOpen] = useState(false);
@@ -37,17 +38,17 @@ const MainCanvas = () => {
       flexGrow: 1,
       p: 3,
       position: 'relative',
-      height: 'calc(100% - 75px)',
+      height: 'calc(100% - 65px)',
       top: '65px',
       backgroundColor:"#eee"
     }}
   >
-      <Toolbar />
 
-      <Box sx={{ height: 135, transform: 'translateZ(0px)', flexGrow: 1 }}>
+      <Box sx={{ display: 'flex', height: '100%', transform: 'translateZ(0px)', flexGrow: 1 }}>
+        <MinimizedWindows />
         <SpeedDial
           ariaLabel="SpeedDial tooltip example"
-          sx={{ position: 'absolute', bottom: 16, right: 16 }}
+          sx={{ position: 'absolute', right: 16 }}
           icon={<SpeedDialIcon />}
           onClose={handleClose}
           onOpen={handleOpen}

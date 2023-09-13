@@ -2,19 +2,26 @@ import { useState } from 'react';
 import Typography from '@mui/material/Typography';
 import AccordionMenuItems from './AccordionMenuItems';
 import { AccordionMenuItemType } from './types/AccordionMenuItems';
-import { Accordion, AccordionDetails, AccordionSummary } from './StyledComponents/StyledComponents';
+import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
+} from './StyledComponents/StyledComponents';
 import List from '@mui/material/List';
-
 interface MenuAccordionProps {
   panels: AccordionMenuItemType[];
+  group: string;
+  setAccordionGroupOpen: (value: boolean) => void;
+  bothAccordionsOpen: boolean;
 }
 
-const MenuAccordion: React.FC<MenuAccordionProps> = ({ panels }) => {
+const MenuAccordion: React.FC<MenuAccordionProps> = ({ panels, group, setAccordionGroupOpen, bothAccordionsOpen }) => {
   const [expandedPanel, setExpandedPanel] = useState<string>('');
 
   const handleChange =
     (panel: string) => (_event: React.SyntheticEvent, isExpanded: boolean) => {
       setExpandedPanel(isExpanded ? panel : '');
+      setAccordionGroupOpen(isExpanded);
     };
 
   return (
@@ -29,7 +36,7 @@ const MenuAccordion: React.FC<MenuAccordionProps> = ({ panels }) => {
             <Typography>{panel.type}</Typography>
           </AccordionSummary>
           <AccordionDetails sx={{ p: 0 }}>
-            <AccordionMenuItems item={panel} />
+            <AccordionMenuItems item={panel} bothAccordionsOpen={bothAccordionsOpen}/>
           </AccordionDetails>
         </Accordion>
       ))}

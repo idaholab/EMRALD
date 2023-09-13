@@ -2,6 +2,7 @@ import React, {
   PropsWithChildren,
   createContext,
   useContext,
+  useMemo,
   useState,
 } from 'react';
 import emraldData from '../emraldData.json';
@@ -12,6 +13,7 @@ interface EventContextType {
   createEvent: (event: Event) => void;
   updateEvent: (event: Event) => void;
   deleteEvent: (eventId: number) => void;
+  clearEventList: () => void;
 }
 
 const EventContext = createContext<EventContextType | undefined>(undefined);
@@ -30,8 +32,12 @@ const EventContextProvider: React.FC<PropsWithChildren> = ({ children }) => {
   const [eventList, setEventList] = useState<EventList>(
     emraldData.EventList as EventList,
   );
-
-  const events = emraldData.EventList.map((item) => item.Event) as Event[];
+  
+  // Memoize the value of `actions` to avoid unnecessary re-renders
+  const events = useMemo(
+    () => eventList.map(({Event}) => Event) as Event[],
+    [eventList]
+  );
 
   const createEvent = (newEvent: Event) => {
     const updatedEventList = [...eventList, { Event: newEvent }];
@@ -52,6 +58,10 @@ const EventContextProvider: React.FC<PropsWithChildren> = ({ children }) => {
     setEventList(updatedEventList);
   };
 
+  const clearEventList = () => {
+    setEventList([]);
+  }
+
   return (
     <EventContext.Provider
       value={{
@@ -59,6 +69,7 @@ const EventContextProvider: React.FC<PropsWithChildren> = ({ children }) => {
         createEvent,
         updateEvent,
         deleteEvent,
+        clearEventList
       }}
     >
       {children}

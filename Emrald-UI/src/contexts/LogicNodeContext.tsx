@@ -2,6 +2,7 @@ import React, {
   PropsWithChildren,
   createContext,
   useContext,
+  useMemo,
   useState,
 } from 'react';
 import emraldData from '../emraldData.json';
@@ -12,6 +13,9 @@ interface LogicNodeContextType {
   createLogicNode: (logicNode: LogicNode) => void;
   updateLogicNode: (logicNode: LogicNode) => void;
   deleteLogicNode: (logicNodeId: number) => void;
+  newLogicNodeList: (newLogicNodeList: LogicNodeList) => void;
+  mergeLogicNodeList: (newLogicNodeList: LogicNodeList) => void;
+  clearLogicNodeList: () => void;
 }
 
 const LogicNodeContext = createContext<LogicNodeContextType | undefined>(
@@ -35,8 +39,10 @@ const LogicNodeContextProvider: React.FC<PropsWithChildren> = ({
     emraldData.LogicNodeList,
   );
 
-  const [logicNodes] = useState<LogicNode[]>(
-    emraldData.LogicNodeList.map(({ LogicNode }) => LogicNode),
+  // Memoize the value of `diagrams` to avoid unnecessary re-renders
+  const logicNodes = useMemo(
+    () => logicNodeList.map(({ LogicNode }) => LogicNode),
+    [logicNodeList],
   );
 
   const createLogicNode = (newLogicNode: LogicNode) => {
@@ -60,6 +66,19 @@ const LogicNodeContextProvider: React.FC<PropsWithChildren> = ({
     setLogicNodeList(updatedLogicNodes);
   };
 
+  // Open New, Merge, and Clear Diagram List
+  const newLogicNodeList = (newLogicNodeList: LogicNodeList) => {
+    setLogicNodeList(newLogicNodeList);
+  };
+
+  const mergeLogicNodeList = (newLogicNodeList: LogicNodeList) => {
+    setLogicNodeList([...logicNodeList, ...newLogicNodeList]);
+  };
+
+  const clearLogicNodeList = () => {
+    setLogicNodeList([]);
+  };
+
   return (
     <LogicNodeContext.Provider
       value={{
@@ -67,6 +86,9 @@ const LogicNodeContextProvider: React.FC<PropsWithChildren> = ({
         createLogicNode,
         updateLogicNode,
         deleteLogicNode,
+        newLogicNodeList,
+        mergeLogicNodeList,
+        clearLogicNodeList
       }}
     >
       {children}

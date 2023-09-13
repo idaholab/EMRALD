@@ -2,6 +2,7 @@ import React, {
   PropsWithChildren,
   createContext,
   useContext,
+  useMemo,
   useState,
 } from 'react';
 import emraldData from '../emraldData.json';
@@ -12,6 +13,7 @@ interface ActionContextType {
   createAction: (action: Action) => void;
   updateAction: (action: Action) => void;
   deleteAction: (actionId: number) => void;
+  clearActionList: () => void;
 }
 
 const ActionContext = createContext<ActionContextType | undefined>(undefined);
@@ -31,7 +33,11 @@ const ActionContextProvider: React.FC<PropsWithChildren> = ({ children }) => {
     emraldData.ActionList as ActionList,
   );
 
-  const actions = emraldData.ActionList.map((item) => item.Action) as Action[];
+  // Memoize the value of `actions` to avoid unnecessary re-renders
+  const actions = useMemo(
+    () => actionList.map(({Action}) => Action) as Action[],
+    [actionList]
+  );
 
   const createAction = (newAction: Action) => {
     const updatedActionList = [...actionList, { Action: newAction }];
@@ -52,6 +58,13 @@ const ActionContextProvider: React.FC<PropsWithChildren> = ({ children }) => {
     setActionList(updatedActionList);
   };
 
+  const clearActionList = () => {
+    setActionList([]);
+
+    console.log(actionList);
+    console.log(actions)
+  }
+
   return (
     <ActionContext.Provider
       value={{
@@ -59,6 +72,7 @@ const ActionContextProvider: React.FC<PropsWithChildren> = ({ children }) => {
         createAction,
         updateAction,
         deleteAction,
+        clearActionList
       }}
     >
       {children}

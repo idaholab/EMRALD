@@ -6,7 +6,3 @@ export interface AccordionMenuItemType {
 export interface AccordionMenuList {
   panels: AccordionMenuItemType[];
 }
-
-export interface AccordionMenuListProps {
-  item: AccordionMenuItemType;
-}

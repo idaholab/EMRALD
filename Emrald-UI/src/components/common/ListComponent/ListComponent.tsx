@@ -6,9 +6,10 @@ import Typography from '@mui/material/Typography';
 
 interface ListComponentProps {
   items: any[];
+  handleClick: (title: string, content: React.ReactNode) => void;
 }
 
-const ListComponent: React.FC<ListComponentProps> = ({ items }) => (
+const ListComponent: React.FC<ListComponentProps> = ({ items, handleClick }) => (
   <List
     disablePadding
     sx={{
@@ -21,7 +22,7 @@ const ListComponent: React.FC<ListComponentProps> = ({ items }) => (
     {items.length > 0 ? (
       items.map((item, index) => (
         <ListItemButton key={item.id || index} sx={{ p: '0 0 0 2rem' }}>
-          <ListItemText primary={item.name} />
+          <ListItemText primary={item.name} onClick={() => handleClick(item.name, <>{JSON.stringify(item)}</>)}/>
         </ListItemButton>
       ))
     ) : (
