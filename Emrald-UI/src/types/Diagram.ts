@@ -1,5 +1,5 @@
 export interface Diagram {
-  id: number;
+  id: number | string;
   name: string;
   desc: string;
   diagramType: string;

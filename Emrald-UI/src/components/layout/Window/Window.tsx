@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import HorizontalRuleIcon from '@mui/icons-material/HorizontalRule';
 import CloseFullscreenIcon from '@mui/icons-material/CloseFullscreen';
 import CropSquareIcon from '@mui/icons-material/CropSquare';
@@ -14,9 +14,11 @@ const WindowComponent: React.FC = () => {
   const { windows, bringToFront, handleClose, toggleMaximize, toggleMinimize } =
     useWindowContext();
 
+  const openWindows = useMemo(() => windows.filter((window) => !window.minimized), [windows])  
+
   return (
     <>
-      {windows.map((window) => (
+      {openWindows.map((window) => (
         <DraggableContainer
           key={window.id}
           id={window.id}
@@ -52,7 +54,7 @@ const WindowComponent: React.FC = () => {
                   color: (theme) => theme.palette.grey[500],
                 }}
               >
-                {!window.minimized ? <HorizontalRuleIcon /> : null}
+                {!window.minimized && !window.maximized ? <HorizontalRuleIcon /> : null}
               </IconButton>
               <IconButton
                 aria-label="maximize"
@@ -77,9 +79,9 @@ const WindowComponent: React.FC = () => {
                 <CloseIcon />
               </IconButton>
             </Box>
-            <CardContent sx={{ height: '94%', p: 0 }}>
+            <CardContent sx={{ height: 'calc(100% - 55px)', overflow: 'auto', p: 0 }}>
               <Box
-                sx={{ height: '100%', width: '100%' }}
+                sx={{ height: '96%', width: '100%' }}
                 className={`droppable-area-${window.id}`}
               >
                 {window.content}

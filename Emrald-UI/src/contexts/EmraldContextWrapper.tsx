@@ -7,6 +7,8 @@ import LogicNodeContextProvider from './LogicNodeContext';
 import ModelDetailsContextProvider from './ModelDetailsContext';
 import ActionContextProvider from './ActionContext';
 import EventContextProvider from './EventContext';
+import StateContextProvider from './StateContext';
+import VariableContextProvider from './VariableContext';
 
 const EmraldContextWrapper: React.FC<PropsWithChildren> = ({ children }) => {
   return (
@@ -16,7 +18,13 @@ const EmraldContextWrapper: React.FC<PropsWithChildren> = ({ children }) => {
           <DiagramContextProvider>
             <LogicNodeContextProvider>
               <ActionContextProvider>
-                <EventContextProvider>{children}</EventContextProvider>
+                <EventContextProvider>
+                  <StateContextProvider>
+                    <VariableContextProvider>
+                      {children}
+                    </VariableContextProvider>
+                  </StateContextProvider>
+                </EventContextProvider>
               </ActionContextProvider>
             </LogicNodeContextProvider>
           </DiagramContextProvider>

@@ -9,7 +9,7 @@ import DialogComponent from '../../common/DialogComponent/DialogComponent';
 import TextField from '@mui/material/TextField';
 import Box from '@mui/material/Box';
 import theme from '../../../theme';
-import { ProjectCallbacks, DownloadCallbacks } from './menu';
+import { projectOptions, downloadOptions } from './menuOptions';
 import MenuButton from './MenuButton';
 
 const EmraldLogo = styled('img')(({ theme }) => ({
@@ -58,8 +58,8 @@ export default function Header() {
           Model Editor
         </Typography>
         <Box display="flex" alignItems="center" flexGrow={1} ml={5}>
-          <MenuButton id={1} title="Project" optionCallbacks={ProjectCallbacks} />
-          <MenuButton id={2} title="Download" optionCallbacks={DownloadCallbacks} />
+          <MenuButton id={1} title="Project" options={projectOptions}/>
+          <MenuButton id={2} title="Download" options={downloadOptions}/>
           <MenuButton id={3} title="Help" handleClick={() => window.open("https://emraldapp.inl.gov/docs/")}/>
           <MenuButton id={4} title="About" handleClick={() => window.open("https://emrald.inl.gov/SitePages/Overview.aspx")}/>
         </Box>
@@ -91,6 +91,7 @@ export default function Header() {
           type="text"
           fullWidth
           variant="outlined"
+          size="small"
           value={updatedName}
           onChange={(e) => setUpdatedName(e.target.value)}
         />
@@ -101,6 +102,7 @@ export default function Header() {
           type="text"
           fullWidth
           variant="outlined"
+          size="small"
           value={updatedDesc}
           onChange={(e) => setUpdatedDesc(e.target.value)}
         />

@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import Drawer from '@mui/material/Drawer';
 import Toolbar from '@mui/material/Toolbar';
 import Box from '@mui/material/Box';
@@ -8,6 +8,11 @@ import { useDiagramContext } from '../../../contexts/DiagramContext';
 import { useLogicNodeContext } from '../../../contexts/LogicNodeContext';
 import { useActionContext } from '../../../contexts/ActionContext';
 import { useEventContext } from '../../../contexts/EventContext';
+import { useVariableContext } from '../../../contexts/VariableContext';
+import { useStateContext } from '../../../contexts/StateContext';
+import ButtonGroup from '@mui/material/ButtonGroup';
+import Button from '@mui/material/Button';
+import { Divider } from '@mui/material';
 
 const ResizeHandle = styled('div')({
   width: '6px',
@@ -24,6 +29,18 @@ const Sidebar = () => {
   const { logicNodes } = useLogicNodeContext();
   const { actions } = useActionContext();
   const { events } = useEventContext();
+  const { states } = useStateContext();
+  const { variables } = useVariableContext();
+
+  const [isDiagramAccordionOpen, setIsDiagramAccordionOpen] = useState(false);
+  const [isComponentAccordionOpen, setIsComponentAccordionOpen] =
+    useState(false);
+
+  const [componentGroup, setComponentGroup] = useState('all');
+
+  const bothAccordionsOpen = useMemo(() => {
+    return isDiagramAccordionOpen && isComponentAccordionOpen;
+  }, [isDiagramAccordionOpen, isComponentAccordionOpen]);
 
   const defaultDrawerWidth = 245;
   const minDrawerWidth = 215;
@@ -38,8 +55,8 @@ const Sidebar = () => {
   const componentPanels = [
     { type: 'Actions', data: actions },
     { type: 'Events', data: events },
-    { type: 'Variables', data: [] },
-    { type: 'States', data: [] },
+    { type: 'Variables', data: variables },
+    { type: 'States', data: states },
   ];
 
   const [drawerWidth, setDrawerWidth] = useState(defaultDrawerWidth);
@@ -97,9 +114,40 @@ const Sidebar = () => {
           handleMouseDown()
         }
       />
-      <Box sx={{ overflow: 'auto' }}>
-        <MenuAccordion panels={diagramPanels} />
-        <MenuAccordion panels={componentPanels} />
+      <Box sx={{ overflow: 'hidden' }}>
+        <MenuAccordion
+          panels={diagramPanels}
+          group="diagrams"
+          setAccordionGroupOpen={setIsDiagramAccordionOpen}
+          bothAccordionsOpen={bothAccordionsOpen}
+        />
+
+        <Divider sx={{ borderColor: '#fff', mx: 2 }} />
+
+        <ButtonGroup
+          size="small"
+          aria-label="small button group"
+          variant="contained"
+          color="secondary"
+          sx={{ ml: 2, position: 'relative', top: 12 }}
+        >
+          <Button key="all" onClick={() => setComponentGroup('all')}>
+            All
+          </Button>
+          <Button key="global" onClick={() => setComponentGroup('global')}>
+            Global
+          </Button>
+          <Button key="local" onClick={() => setComponentGroup('local')}>
+            Local
+          </Button>
+        </ButtonGroup>
+
+        <MenuAccordion
+          panels={componentPanels}
+          group="components"
+          setAccordionGroupOpen={setIsComponentAccordionOpen}
+          bothAccordionsOpen={bothAccordionsOpen}
+        />
       </Box>
     </Drawer>
   );

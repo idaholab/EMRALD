@@ -4,43 +4,56 @@ import MenuItem from '@mui/material/MenuItem';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
 import { startCase } from 'lodash';
+import { MenuOption } from './menuOptions';
+import { useAssembledData } from '../../../hooks/useAssembledData';
 
 interface MenuButtonProps {
   id: number;
   title: string;
-  optionCallbacks?: Record<string, () => void>;
-  handleClick?: () => void;
+  options?: MenuOption[];
+  handleClick?: (args: any) => void;
 }
 
 const MenuButton: React.FC<MenuButtonProps> = ({
   id,
   title,
-  optionCallbacks,
+  options,
   handleClick,
 }) => {
+  const { assembledData, newProject, populateNewData, mergeNewData } = useAssembledData();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [open, setOpen] = useState<boolean>(false);
 
   const handleMouseEnter = (event: React.MouseEvent<HTMLElement>) => {
-    console.log('enter');
     setAnchorEl(event.currentTarget);
     setOpen(true);
   };
 
   const handleMouseLeave = () => {
-    console.log('leave');
     setAnchorEl(null);
     setOpen(false);
   };
 
-  const handleMenuItemClick = (option: string) => {
-    if (optionCallbacks && optionCallbacks[option]) {
-      optionCallbacks[option]();
+  const handleMenuItemClick = (option: MenuOption) => {
+    switch (option.label) {
+      case 'New':
+        option.onClick(newProject);
+        break;
+      case 'Open':
+        option.onClick(populateNewData);
+        break;
+      case 'Merge':
+        option.onClick(mergeNewData);
+        break;
+      case 'Save':
+        option.onClick(assembledData);
+        break;
+      // Add cases for other menu items as needed
+      default:
+        option.onClick(); // Call the onClick function without arguments by default
     }
     handleMouseLeave();
   };
-
-  const menuOptions = Object.keys(optionCallbacks ? optionCallbacks : {});
 
   return (
     <Box>
@@ -48,8 +61,8 @@ const MenuButton: React.FC<MenuButtonProps> = ({
         aria-label="menu"
         aria-controls={`menu-${id}`} // Use the id prop
         aria-haspopup="true"
-        onClick={optionCallbacks ? handleMouseEnter : handleClick}
-        onMouseEnter={optionCallbacks && handleMouseEnter}
+        onClick={options ? handleMouseEnter : handleClick}
+        onMouseEnter={options && handleMouseEnter}
         sx={{
           borderRight: '2px solid #bbb',
           borderRadius: 0,
@@ -61,7 +74,7 @@ const MenuButton: React.FC<MenuButtonProps> = ({
       >
         {title}
       </Button>
-      {menuOptions && (
+      {options && (
         <Menu
           id={`menu-${id}`} // Use the id prop
           anchorEl={anchorEl}
@@ -75,12 +88,12 @@ const MenuButton: React.FC<MenuButtonProps> = ({
           }}
           transformOrigin={{
             vertical: 'top',
-            horizontal: "left",
+            horizontal: 'left',
           }}
         >
-          {menuOptions.map((option, index) => (
+          {options.map((option, index) => (
             <MenuItem key={index} onClick={() => handleMenuItemClick(option)}>
-              {startCase(option)}
+              {startCase(option.label)}
             </MenuItem>
           ))}
         </Menu>

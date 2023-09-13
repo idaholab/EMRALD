@@ -1,5 +1,5 @@
 export interface Action {
-  id?: number;
+  id?: number | string;
   name?: string;
   desc?: string;
   actType?: string;

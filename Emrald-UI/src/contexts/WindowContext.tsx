@@ -72,6 +72,7 @@ export const WindowProvider: React.FC<WindowProviderProps> = ({ children }) => {
 
     if (existingWindow) {
       // If a window with the same name exists, bring it to the front
+      existingWindow.minimized = false; // Un-minimize window if existing window is minimized
       bringToFront(existingWindow);
       return;
     }
@@ -105,6 +106,12 @@ export const WindowProvider: React.FC<WindowProviderProps> = ({ children }) => {
         ? { ...window, minimized: !window.minimized, maximized: false }
         : window,
     );
+    
+    // If the window is being un-minimized, bring it to the front
+    if (!windowToToggle.minimized) {
+      bringToFront(windowToToggle);
+    }
+    
     setWindows(updatedWindows);
   };
 
