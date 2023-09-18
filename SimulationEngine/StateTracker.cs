@@ -1363,8 +1363,7 @@ namespace SimulationTracking
       {
         switch (curAct.actType)
         {
-          case EnActionType.atTransition:
-            logger.Debug("DoTransitionAction: " + curAct.name);
+          case EnActionType.atTransition:            
             TransitionAct tCurAct = (curAct as TransitionAct);
 
             //ProcessTransition((Transition)curAct);
@@ -1372,12 +1371,14 @@ namespace SimulationTracking
             List<IdxAndStr> toStates = tCurAct.WhichToState();
             foreach (IdxAndStr cur in toStates)
             {
+              State curState = this.allLists.allStates[cur.idx];
+              logger.Debug("DoTransitionAction: " + curAct.name + " - " + curState.name);
               //only add it if we are currently not going to that state from another action and not already in the state
               bool inStateAlready = curStates.ContainsKey(cur.idx);
               if ((inStateAlready && !exiting) ||
                  (inStateAlready && (ownerStateID != cur.idx)))
                 // if(curStates.ContainsKey(cur.idx))
-                logger.Debug("No Transition, already in state: " + curAct.name);
+                logger.Debug("No Transition, already in state: " + curState.name);
               else if (nextStateQue.Where(t => t.Item1 == cur.idx).FirstOrDefault() == null)
                 nextStateQue.Add(Tuple.Create(cur.idx, ownerStateID, causeEvent == null ? "immediate action" : causeEvent.name, curAct.name));
             }
