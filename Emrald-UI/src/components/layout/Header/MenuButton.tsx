@@ -20,7 +20,7 @@ const MenuButton: React.FC<MenuButtonProps> = ({
   options,
   handleClick,
 }) => {
-  const { assembledData, newProject, populateNewData, mergeNewData } = useAssembledData();
+  const { assembleData, newProject, populateNewData, mergeNewData } = useAssembledData();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [open, setOpen] = useState<boolean>(false);
 
@@ -46,7 +46,7 @@ const MenuButton: React.FC<MenuButtonProps> = ({
         option.onClick(mergeNewData);
         break;
       case 'Save':
-        option.onClick(assembledData);
+        option.onClick(assembleData);
         break;
       // Add cases for other menu items as needed
       default:

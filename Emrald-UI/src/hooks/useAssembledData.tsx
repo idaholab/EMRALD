@@ -12,9 +12,11 @@ export function useAssembledData() {
     id,
     name,
     desc,
+    emraldVersion,
     version,
     updateName,
     updateDescription,
+    updateEmraldVersion,
     updateVersion,
   } = useModelDetailsContext();
   const { diagrams, clearDiagramList, newDiagramList, mergeDiagramList } =
@@ -26,9 +28,9 @@ export function useAssembledData() {
     mergeLogicNodeList,
   } = useLogicNodeContext();
   const { actions, clearActionList } = useActionContext();
-  const { events, clearEventList } = useEventContext();
+  const { events, clearEventList, newEventList } = useEventContext();
   const { states, clearStateList } = useStateContext();
-  const { variables, clearVariableList } = useVariableContext();
+  const { variables, clearVariableList, newVariableList } = useVariableContext();
   // ... get data from other contexts
 
   const newProject = () => {
@@ -52,6 +54,8 @@ export function useAssembledData() {
       updateVersion(jsonData.version);
       newDiagramList(jsonData.DiagramList || []);
       newLogicNodeList(jsonData.LogicNodeList || []);
+      newEventList(jsonData.EventList || []);
+      newVariableList(jsonData.VariableList || []);
     } catch (error) {
       console.error('Error parsing JSON:', error);
     }
@@ -67,10 +71,29 @@ export function useAssembledData() {
     }
   };
 
+  const assembleData = () => {
+    updateVersion(parseFloat((version + 0.1).toFixed(1)));
+
+    return {
+      id,
+      name,
+      desc,
+      emraldVersion,
+      version,
+      DiagramList: diagrams,
+      LogicNodeList: logicNodes,
+      StateList: states,
+      ActionList: actions,
+      EventList: events,
+      VariableList: variables,
+    }
+  }
+
   const assembledData = {
     id,
     name,
     desc,
+    emraldVersion,
     version,
     DiagramList: diagrams,
     LogicNodeList: logicNodes,
@@ -84,6 +107,7 @@ export function useAssembledData() {
     newProject,
     populateNewData,
     mergeNewData,
+    assembleData,
     assembledData,
   };
 }
