@@ -1393,6 +1393,8 @@ namespace SimulationDAL
       makeInputFileCompEval.AddVariable("CurTime", typeof(double));
       makeInputFileCompEval.AddVariable("RunIdx", typeof(int));
       makeInputFileCompEval.AddVariable("ExePath", typeof(string));
+      makeInputFileCompEval.AddVariable("RootPath", typeof(string));
+      
 
       //add all the variables needed
       if (codeVariables != null)
@@ -1407,7 +1409,8 @@ namespace SimulationDAL
 
           if ((varName != "CurTime") &&
               (varName != "RunIdx") &&
-              (varName != "ExtSimStartTime"))
+              (varName != "ExtSimStartTime") &&
+              (varName != "RootPath"))
           {
             makeInputFileCompEval.AddVariable(varName, var.dType);
           }
@@ -1458,6 +1461,7 @@ namespace SimulationDAL
       processOutputFileCompEval.AddVariable("RunIdx", typeof(int));
       processOutputFileCompEval.AddVariable("ExeExitCode", typeof(int));
       processOutputFileCompEval.AddVariable("OutputFile", typeof(string));
+      processOutputFileCompEval.AddVariable("RootPath", typeof(string));
 
       //add all the variables needed
       if (codeVariables != null)
@@ -1471,7 +1475,8 @@ namespace SimulationDAL
 
           if ((varName != "CurTime") &&
               (varName != "RunIdx") &&
-              (varName != "ExeExitCode"))
+              (varName != "ExeExitCode") &&
+              (varName != "RootPath"))
           {
             processOutputFileCompEval.AddVariable(varName, var.dType);
           }
@@ -1577,7 +1582,8 @@ namespace SimulationDAL
 
         makeInputFileCompEval.SetVariable("CurTime", typeof(double), curTime.TotalHours);
         makeInputFileCompEval.SetVariable("RunIdx", typeof(int), lists.curRunIdx);
-        makeInputFileCompEval.SetVariable("ExePath", typeof(string), Path.GetDirectoryName(exePath));        
+        makeInputFileCompEval.SetVariable("ExePath", typeof(string), Path.GetDirectoryName(exePath));
+        makeInputFileCompEval.SetVariable("RootPath", typeof(string), lists.rootPath);
       }
 
       //add if in states
@@ -1688,6 +1694,7 @@ namespace SimulationDAL
         processOutputFileCompEval.SetVariable("CurTime", typeof(double), curTime.TotalHours);
         processOutputFileCompEval.SetVariable("RunIdx", typeof(int), lists.curRunIdx);
         processOutputFileCompEval.SetVariable("ExeExitCode", typeof(int), exitCode);
+        processOutputFileCompEval.SetVariable("RootPath", typeof(string), lists.rootPath);
         //processOutputFileCompEval.SetVariable("OutputFile", typeof(string), exeOutputPath + "\\_out.txt");
         //Set all the variable values
         if (codeVariables != null)
