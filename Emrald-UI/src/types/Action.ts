@@ -1,6 +1,6 @@
 export interface Action {
-  id?: number | string;
-  name?: string;
+  id: number | string;
+  name: string;
   desc?: string;
   actType?: string;
   mainItem?: boolean;

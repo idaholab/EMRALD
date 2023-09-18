@@ -13,10 +13,13 @@ interface VariableContextType {
   createVariable: (Variable: Variable) => void;
   updateVariable: (Variable: Variable) => void;
   deleteVariable: (VariableId: number) => void;
+  newVariableList: (newVariableList: VariableList) => void;
   clearVariableList: () => void;
 }
 
-const VariableContext = createContext<VariableContextType | undefined>(undefined);
+const VariableContext = createContext<VariableContextType | undefined>(
+  undefined,
+);
 
 export function useVariableContext() {
   const context = useContext(VariableContext);
@@ -35,8 +38,8 @@ const VariableContextProvider: React.FC<PropsWithChildren> = ({ children }) => {
 
   // Memoize the value of `Variables` to avoid unnecessary re-renders
   const variables = useMemo(
-    () => variableList.map(({Variable}) => Variable) as Variable[],
-    [variableList]
+    () => variableList.map(({ Variable }) => Variable) as Variable[],
+    [variableList],
   );
 
   const createVariable = (newVariable: Variable) => {
@@ -46,7 +49,9 @@ const VariableContextProvider: React.FC<PropsWithChildren> = ({ children }) => {
 
   const updateVariable = (updatedVariable: Variable) => {
     const updatedVariableList = variableList.map((item) =>
-      item.Variable.id === updatedVariable.id ? { Variable: updatedVariable } : item,
+      item.Variable.id === updatedVariable.id
+        ? { Variable: updatedVariable }
+        : item,
     );
     setVariableList(updatedVariableList);
   };
@@ -58,12 +63,17 @@ const VariableContextProvider: React.FC<PropsWithChildren> = ({ children }) => {
     setVariableList(updatedVariableList);
   };
 
+  // Open New, Merge, and Clear Event List
+  const newVariableList = (newVariableList: VariableList) => {
+    setVariableList(newVariableList);
+  };
+
   const clearVariableList = () => {
     setVariableList([]);
 
     console.log(variableList);
-    console.log(variables)
-  }
+    console.log(variables);
+  };
 
   return (
     <VariableContext.Provider
@@ -72,7 +82,8 @@ const VariableContextProvider: React.FC<PropsWithChildren> = ({ children }) => {
         createVariable,
         updateVariable,
         deleteVariable,
-        clearVariableList
+        newVariableList,
+        clearVariableList,
       }}
     >
       {children}

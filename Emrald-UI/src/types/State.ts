@@ -1,6 +1,6 @@
 export interface State {
-  id?: number | string;
-  name?: string;
+  id: number | string;
+  name: string;
   desc?: string;
   stateType?: string;
   diagramName?: string;
@@ -10,7 +10,7 @@ export interface State {
   eventActions?: EventAction[];
 }
 
-interface EventAction {
+export interface EventAction {
   moveFromCurrent?: boolean;
   actions?: string[];
 }

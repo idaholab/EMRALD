@@ -71,8 +71,8 @@ const AccordionMenuItems: React.FC<AccordionMenuListProps> = ({ item, bothAccord
                         {diagram.diagramType === type && (
                           <DraggableItem key={diagram.id} itemData={diagram}>
                             <ListItemButton sx={{ p: '0 0 0 3rem', width: '100%' }}>
-                              {/* <ListItemText primary={diagram.name} onClick={() => addWindow(diagram.name, <DiagramForm diagramData={diagram}/>)}/> */}
-                            <ItemWithContextMenu itemData={diagram}/>
+                              <ListItemText primary={diagram.name} onClick={() => addWindow(diagram.name, <DiagramForm diagramData={diagram}/>)}/>
+                            {/* <ItemWithContextMenu itemData={diagram}/> */}
                             </ListItemButton>
                           </DraggableItem>
                         )}

@@ -1,6 +1,6 @@
 export interface Event {
-  id?: number | string;
-  name?: string;
+  id: number | string;
+  name: string;
   desc?: string;
   mainItem?: boolean;
   evType?: string;
@@ -15,8 +15,8 @@ export interface Event {
   ndStdDev?: number;
   ndMin?: number;
   ndMax?: number;
-  onSuccess: string;
-  logicTop: string;
+  onSuccess?: string;
+  logicTop?: string;
   itemId?: number;
   actType?: string;
   mutExcl?: string;

@@ -13,6 +13,7 @@ interface EventContextType {
   createEvent: (event: Event) => void;
   updateEvent: (event: Event) => void;
   deleteEvent: (eventId: number) => void;
+  newEventList: (newEventList: EventList) => void;
   clearEventList: () => void;
 }
 
@@ -58,6 +59,11 @@ const EventContextProvider: React.FC<PropsWithChildren> = ({ children }) => {
     setEventList(updatedEventList);
   };
 
+    // Open New, Merge, and Clear Event List
+    const newEventList = (newEventList: EventList) => {
+      setEventList(newEventList);
+    };
+
   const clearEventList = () => {
     setEventList([]);
   }
@@ -69,6 +75,7 @@ const EventContextProvider: React.FC<PropsWithChildren> = ({ children }) => {
         createEvent,
         updateEvent,
         deleteEvent,
+        newEventList,
         clearEventList
       }}
     >

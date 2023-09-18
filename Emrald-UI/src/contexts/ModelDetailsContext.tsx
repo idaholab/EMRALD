@@ -10,9 +10,11 @@ interface ModelDetailsContextType {
   id: number;
   name: string;
   desc: string;
+  emraldVersion: number;
   version: number;
   updateName: (name: string) => void;
   updateDescription: (desc: string) => void;
+  updateEmraldVersion: (version: number) => void;
   updateVersion: (version: number) => void;
 }
 
@@ -36,6 +38,7 @@ const ModelDetailsContextProvider: React.FC<PropsWithChildren> = ({
   const id = emraldData.id;
   const [name, setName] = useState(emraldData.name);
   const [desc, setDesc] = useState(emraldData.desc);
+  const [emraldVersion, setEmraldVersion] = useState(emraldData.emraldVersion);
   const [version, setVersion] = useState(emraldData.version);
 
   const updateName = (updatedName: string) => {
@@ -43,6 +46,9 @@ const ModelDetailsContextProvider: React.FC<PropsWithChildren> = ({
   };
   const updateDescription = (updatedDesc: string) => {
     setDesc(updatedDesc);
+  };
+  const updateEmraldVersion = (updatedVersion: number) => {
+    setEmraldVersion(updatedVersion);
   };
   const updateVersion = (updatedVersion: number) => {
     setVersion(updatedVersion);
@@ -54,9 +60,11 @@ const ModelDetailsContextProvider: React.FC<PropsWithChildren> = ({
         id,
         name,
         desc,
+        emraldVersion,
         version,
         updateName,
         updateDescription,
+        updateEmraldVersion,
         updateVersion,
       }}
     >

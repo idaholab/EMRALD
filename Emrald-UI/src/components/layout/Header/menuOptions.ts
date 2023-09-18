@@ -86,7 +86,7 @@ export const projectOptions: MenuOption[] = [
     label: 'Save',
     onClick: (assembledData: any) => {
       // Convert JSON data to a string
-      const jsonString = JSON.stringify(assembledData);
+      const jsonString = JSON.stringify(assembledData());
 
       // Create a Blob (Binary Large Object) with the JSON string
       const blob = new Blob([jsonString], { type: 'application/json' });
