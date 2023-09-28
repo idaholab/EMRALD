@@ -1,76 +1,73 @@
 import { useEffect, useState } from 'react';
 import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
-import TextField from '@mui/material/TextField';
 import Box from '@mui/material/Box';
 import DropTargetComponent from '../../drag-and-drop/Droppable';
 import Typography from '@mui/material/Typography';
-import FormControl from '@mui/material/FormControl';
-import InputLabel from '@mui/material/InputLabel';
-import Select, { SelectChangeEvent } from '@mui/material/Select';
-import MenuItem from '@mui/material/MenuItem';
 import React from 'react';
 import { useWindowContext } from '../../../contexts/WindowContext';
-import { useDiagramContext } from '../../../contexts/DiagramContext';
-import { Diagram } from '../../../types/Diagram';
-import { useAssembledData } from '../../../hooks/useAssembledData';
+import { Event } from '../../../types/Event';
 import { v4 as uuidv4 } from 'uuid';
 import MainDetailsForm from '../MainDetailsForm';
+import { useEventContext } from '../../../contexts/EventContext';
 
-interface DiagramFormProps {
-  diagramData?: Diagram;
+interface EventFormProps {
+  eventData?: Event;
 }
 
-const DiagramForm: React.FC<DiagramFormProps> = ({ diagramData }) => {
+const EventForm: React.FC<EventFormProps> = ({ eventData }) => {
   const { handleClose } = useWindowContext();
-  const { diagrams, updateDiagram, createDiagram } = useDiagramContext();
-  const [diagramType, setDiagramType] = useState<string>(
-    diagramData?.diagramType || '',
+  const { updateEvent, createEvent } = useEventContext();
+  const [evType, setEvType] = useState<string>(
+    eventData?.evType || '',
   );
-  const [name, setName] = useState<string>(diagramData?.name || '');
-  const [desc, setDesc] = useState<string>(diagramData?.desc || '');
-  const { assembledData } = useAssembledData();
+  const [name, setName] = useState<string>(eventData?.name || '');
+  const [desc, setDesc] = useState<string>(eventData?.desc || '');
 
   const handleSave = () => {
-    const newDiagram = {
+    const newEvent = {
       id: uuidv4(),
-      diagramType,
+      evType,
       name,
       desc,
     };
 
-    diagramData
-      ? updateDiagram(assembledData, {
-          id: diagramData.id,
-          diagramType,
+    eventData
+      ? updateEvent({
+          id: eventData.id,
+          evType,
           name,
           desc,
         })
-      : createDiagram(newDiagram);
+      : createEvent(newEvent);
     handleClose();
   };
 
   useEffect(() => {
-    if (diagramData) {
-      setDiagramType(diagramData.diagramType || '');
-      setName(diagramData.name || '');
-      setDesc(diagramData.desc || '');
+    if (eventData) {
+      setEvType(eventData.evType || '');
+      setName(eventData.name || '');
+      setDesc(eventData.desc || '');
     }
-  }, [diagramData]);
+  }, [eventData]);
 
   return (
     <Container maxWidth="sm">
       <Typography variant="h5" my={3}>
-        {diagramData ? `Edit` : `Create`} Diagram
+        {eventData ? `Edit` : `Create`} Event
       </Typography>
       <form>
         <MainDetailsForm 
-          type={diagramType}
-          setType={setDiagramType}
+          type={evType}
+          setType={setEvType}
           typeOptions={[
-            {value: 'dtPlant', label: 'Plant'},
-            {value: 'dtComponent', label: 'Component'},
-            {value: 'dtSystem', label: 'System'},
+            {value: 'etVarCond', label: 'Var Condition'},
+            {value: 'etStateCng', label: 'State Change'},
+            {value: 'etComponentLogic', label: 'Component Logic'},
+            {value: 'etTimer', label: 'Timer'},
+            {value: 'etFailRate', label: 'Failure Rate'},
+            {value: 'et3dSimEv', label: 'Ext Simulation'},
+            {value: 'etDistribution', label: 'Distribution'},
           ]}
           name={name}
           setName={setName}
@@ -104,4 +101,4 @@ const DiagramForm: React.FC<DiagramFormProps> = ({ diagramData }) => {
   );
 };
 
-export default DiagramForm;
+export default EventForm;

@@ -13,7 +13,7 @@ interface DiagramContextType {
   diagrams: Diagram[];
   createDiagram: (newDiagram: Diagram) => void;
   updateDiagram: (data: any, updatedDiagram: Diagram) => void;
-  deleteDiagram: (diagramId: number) => void;
+  deleteDiagram: (diagramId: number | string) => void;
   newDiagramList: (newDiagramList: DiagramList) => void;
   mergeDiagramList: (newDiagramList: DiagramList) => void;
   clearDiagramList: () => void;
@@ -77,7 +77,7 @@ const DiagramContextProvider: React.FC<PropsWithChildren> = ({ children }) => {
     setDiagramList(updatedDiagrams);
   };
 
-  const deleteDiagram = (diagramId: number) => {
+  const deleteDiagram = (diagramId: number | string) => {
     const updatedDiagrams = diagramList.filter(
       (item) => item.Diagram.id !== diagramId,
     );

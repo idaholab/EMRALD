@@ -1,76 +1,70 @@
 import { useEffect, useState } from 'react';
 import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
-import TextField from '@mui/material/TextField';
 import Box from '@mui/material/Box';
 import DropTargetComponent from '../../drag-and-drop/Droppable';
 import Typography from '@mui/material/Typography';
-import FormControl from '@mui/material/FormControl';
-import InputLabel from '@mui/material/InputLabel';
-import Select, { SelectChangeEvent } from '@mui/material/Select';
-import MenuItem from '@mui/material/MenuItem';
 import React from 'react';
 import { useWindowContext } from '../../../contexts/WindowContext';
-import { useDiagramContext } from '../../../contexts/DiagramContext';
-import { Diagram } from '../../../types/Diagram';
-import { useAssembledData } from '../../../hooks/useAssembledData';
+import { Action } from '../../../types/Action';
 import { v4 as uuidv4 } from 'uuid';
 import MainDetailsForm from '../MainDetailsForm';
+import { useActionContext } from '../../../contexts/ActionContext';
 
-interface DiagramFormProps {
-  diagramData?: Diagram;
+interface ActionFormProps {
+  actionData?: Action;
 }
 
-const DiagramForm: React.FC<DiagramFormProps> = ({ diagramData }) => {
+const ActionForm: React.FC<ActionFormProps> = ({ actionData }) => {
   const { handleClose } = useWindowContext();
-  const { diagrams, updateDiagram, createDiagram } = useDiagramContext();
-  const [diagramType, setDiagramType] = useState<string>(
-    diagramData?.diagramType || '',
+  const { updateAction, createAction } = useActionContext();
+  const [actType, setActType] = useState<string>(
+    actionData?.actType || '',
   );
-  const [name, setName] = useState<string>(diagramData?.name || '');
-  const [desc, setDesc] = useState<string>(diagramData?.desc || '');
-  const { assembledData } = useAssembledData();
+  const [name, setName] = useState<string>(actionData?.name || '');
+  const [desc, setDesc] = useState<string>(actionData?.desc || '');
 
   const handleSave = () => {
-    const newDiagram = {
+    const newAction = {
       id: uuidv4(),
-      diagramType,
+      actType,
       name,
       desc,
     };
 
-    diagramData
-      ? updateDiagram(assembledData, {
-          id: diagramData.id,
-          diagramType,
+    actionData
+      ? updateAction({
+          id: actionData.id,
+          actType,
           name,
           desc,
         })
-      : createDiagram(newDiagram);
+      : createAction(newAction);
     handleClose();
   };
 
   useEffect(() => {
-    if (diagramData) {
-      setDiagramType(diagramData.diagramType || '');
-      setName(diagramData.name || '');
-      setDesc(diagramData.desc || '');
+    if (actionData) {
+      setActType(actionData.actType || '');
+      setName(actionData.name || '');
+      setDesc(actionData.desc || '');
     }
-  }, [diagramData]);
+  }, [actionData]);
 
   return (
     <Container maxWidth="sm">
       <Typography variant="h5" my={3}>
-        {diagramData ? `Edit` : `Create`} Diagram
+        {actionData ? `Edit` : `Create`} Action
       </Typography>
       <form>
         <MainDetailsForm 
-          type={diagramType}
-          setType={setDiagramType}
+          type={actType}
+          setType={setActType}
           typeOptions={[
-            {value: 'dtPlant', label: 'Plant'},
-            {value: 'dtComponent', label: 'Component'},
-            {value: 'dtSystem', label: 'System'},
+            {value: 'atTransition', label: 'Transition'},
+            {value: 'CngVar_test', label: 'Change Var Value'},
+            {value: 'at3DSimMsg', label: 'Ext. Sim Message'},
+            {value: 'atRunExtApp', label: 'Run Application'},
           ]}
           name={name}
           setName={setName}
@@ -104,4 +98,4 @@ const DiagramForm: React.FC<DiagramFormProps> = ({ diagramData }) => {
   );
 };
 
-export default DiagramForm;
+export default ActionForm;

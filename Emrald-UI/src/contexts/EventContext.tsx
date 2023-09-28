@@ -12,7 +12,7 @@ interface EventContextType {
   events: Event[];
   createEvent: (event: Event) => void;
   updateEvent: (event: Event) => void;
-  deleteEvent: (eventId: number) => void;
+  deleteEvent: (eventId: number | string) => void;
   newEventList: (newEventList: EventList) => void;
   clearEventList: () => void;
 }
@@ -52,7 +52,7 @@ const EventContextProvider: React.FC<PropsWithChildren> = ({ children }) => {
     setEventList(updatedEventList);
   };
 
-  const deleteEvent = (eventId: number) => {
+  const deleteEvent = (eventId: number | string) => {
     const updatedEventList = eventList.filter(
       (item) => item.Event.id !== eventId,
     );

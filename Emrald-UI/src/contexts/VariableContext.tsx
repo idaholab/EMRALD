@@ -12,7 +12,7 @@ interface VariableContextType {
   variables: Variable[];
   createVariable: (Variable: Variable) => void;
   updateVariable: (Variable: Variable) => void;
-  deleteVariable: (VariableId: number) => void;
+  deleteVariable: (VariableId: number | string) => void;
   newVariableList: (newVariableList: VariableList) => void;
   clearVariableList: () => void;
 }
@@ -56,7 +56,7 @@ const VariableContextProvider: React.FC<PropsWithChildren> = ({ children }) => {
     setVariableList(updatedVariableList);
   };
 
-  const deleteVariable = (VariableId: number) => {
+  const deleteVariable = (VariableId: number | string) => {
     const updatedVariableList = variableList.filter(
       (item) => item.Variable.id !== VariableId,
     );

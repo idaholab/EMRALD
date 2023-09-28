@@ -16,6 +16,8 @@ import { AccordionMenuItemType } from './types/AccordionMenuItems';
 import ItemWithContextMenu from './ItemWithContextMenu';
 import DiagramForm from '../../features/DiagramForm/DiagramForm';
 import Typography from '@mui/material/Typography';
+import TestD3Chart from '../../features/TestD3Chart';
+import TreeDiagram from '../../features/TreeDiagram';
 export interface AccordionMenuListProps {
   item: AccordionMenuItemType;
   bothAccordionsOpen: boolean;
@@ -71,8 +73,8 @@ const AccordionMenuItems: React.FC<AccordionMenuListProps> = ({ item, bothAccord
                         {diagram.diagramType === type && (
                           <DraggableItem key={diagram.id} itemData={diagram}>
                             <ListItemButton sx={{ p: '0 0 0 3rem', width: '100%' }}>
-                              <ListItemText primary={diagram.name} onClick={() => addWindow(diagram.name, <DiagramForm diagramData={diagram}/>)}/>
-                            {/* <ItemWithContextMenu itemData={diagram}/> */}
+                              {/* <ListItemText primary={diagram.name} onClick={() => addWindow(diagram.name, <DiagramForm diagramData={diagram}/>)}/> */}
+                            <ItemWithContextMenu itemData={diagram} optionType={item.type}/>
                             </ListItemButton>
                           </DraggableItem>
                         )}
@@ -95,10 +97,10 @@ const AccordionMenuItems: React.FC<AccordionMenuListProps> = ({ item, bothAccord
         }}
       >
         {item.data.length > 0 ? (
-          item.data.map((item, index) => (
-            <ListItemButton key={item.id || index} sx={{ p: '0 0 0 2rem' }}>
-              <ListItemText primary={item.name} onClick={() => addWindow(item.name, <>{JSON.stringify(item)}</>)}/>
-              {/* <ItemWithContextMenu itemData={diagram}/> */}
+          item.data.map((option, index) => (
+            <ListItemButton key={option.id || index} sx={{ p: '0 0 0 2rem' }}>
+              {/* <ListItemText primary={option.name} onClick={() => addWindow(option.name, <TestD3Chart/>)}/> */}
+              <ItemWithContextMenu itemData={option} optionType={item.type}/>
             </ListItemButton>
           ))
         ) : (

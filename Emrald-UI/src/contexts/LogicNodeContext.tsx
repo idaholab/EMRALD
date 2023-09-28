@@ -12,7 +12,7 @@ interface LogicNodeContextType {
   logicNodes: LogicNode[];
   createLogicNode: (logicNode: LogicNode) => void;
   updateLogicNode: (logicNode: LogicNode) => void;
-  deleteLogicNode: (logicNodeId: number) => void;
+  deleteLogicNode: (logicNodeId: number | string) => void;
   newLogicNodeList: (newLogicNodeList: LogicNodeList) => void;
   mergeLogicNodeList: (newLogicNodeList: LogicNodeList) => void;
   clearLogicNodeList: () => void;
@@ -59,7 +59,7 @@ const LogicNodeContextProvider: React.FC<PropsWithChildren> = ({
     setLogicNodeList(updatedLogicNodes);
   };
 
-  const deleteLogicNode = (logicNodeId: number) => {
+  const deleteLogicNode = (logicNodeId: number | string) => {
     const updatedLogicNodes = logicNodeList.filter(
       (item) => item.LogicNode.id !== logicNodeId,
     );
