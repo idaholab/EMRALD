@@ -12,7 +12,7 @@ interface StateContextType {
   states: State[];
   createState: (newState: State) => void;
   updateState: (updatedState: State) => void;
-  deleteState: (StateId: number) => void;
+  deleteState: (StateId: number | string) => void;
   newStateList: (newStateList: StateList) => void;
   mergeStateList: (newStateList: StateList) => void;
   clearStateList: () => void;
@@ -56,7 +56,7 @@ const StateContextProvider: React.FC<PropsWithChildren> = ({ children }) => {
     setStateList(updatedStates);
   };
 
-  const deleteState = (stateId: number) => {
+  const deleteState = (stateId: number | string) => {
     const updatedStates = stateList.filter(
       (item) => item.State.id !== stateId,
     );

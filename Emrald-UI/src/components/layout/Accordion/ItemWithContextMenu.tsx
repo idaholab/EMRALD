@@ -3,16 +3,31 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import { Box } from '@mui/material';
 import { Diagram } from '../../../types/Diagram';
+import { Option, useOptionsMapping } from './OptionMapping';
+import { LogicNode } from '../../../types/LogicNode';
+import { Action } from '../../../types/Action';
+import { Event } from '../../../types/Event';
+import { State } from '../../../types/State';
+import { Variable } from '../../../types/Variable';
 
 interface ItemWithContextMenuProps {
-  itemData: Diagram;
+  itemData: Diagram | LogicNode | Action | Event | State | Variable;
+  optionType: string;
 }
 
-const ItemWithContextMenu: React.FC<ItemWithContextMenuProps> = ({ itemData }) => {
+const ItemWithContextMenu: React.FC<ItemWithContextMenuProps> = ({
+  itemData,
+  optionType,
+}) => {
+  
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [isContextMenuOpen, setContextMenuOpen] = useState(false);
+  const optionsMapping = useOptionsMapping();
+  const options = optionsMapping[optionType];
 
-  const handleContextMenu = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+  const handleContextMenu = (
+    event: React.MouseEvent<HTMLDivElement, MouseEvent>,
+  ) => {
     event.preventDefault();
     setAnchorEl(event.currentTarget);
     setContextMenuOpen(true); // Set the context menu to open
@@ -23,34 +38,39 @@ const ItemWithContextMenu: React.FC<ItemWithContextMenuProps> = ({ itemData }) =
     setContextMenuOpen(false); // Set the context menu to closed
   };
 
-  const handleRegularClick = () => {
+  const handleRegularClick = (itemData: Diagram | LogicNode | Action | Event | State | Variable) => {
     if (!isContextMenuOpen) {
-      // Handle your regular click functionality here
-      console.log('Regular click');
+      // Double click functionality here
+      options[0].action(itemData);
     }
   };
 
-  const handleMenuItemClick = (option: string) => {
+  const handleMenuItemClick = (
+    option: Option,
+    itemData: Diagram | LogicNode | Action | Event | State | Variable,
+  ) => {
     // Implement functionality based on the selected option
-    console.log(`Clicked on ${option}`);
+    option.action(itemData);
     handleClose();
   };
 
   return (
-    <Box onContextMenu={handleContextMenu} onClick={handleRegularClick} sx={{width: '100%'}}>
+    <Box
+      onContextMenu={handleContextMenu}
+      onDoubleClick={() => handleRegularClick(itemData)}
+      sx={{ width: '100%' }}
+    >
       <Box>{itemData.name}</Box>
 
-      <Menu
-        anchorEl={anchorEl}
-        open={Boolean(anchorEl)}
-        onClose={handleClose}
-      >
-        <MenuItem onClick={() => handleMenuItemClick('Open')}>Open</MenuItem>
-        <MenuItem onClick={() => handleMenuItemClick('Edit Properties')}>Edit Properties</MenuItem>
-        <MenuItem onClick={() => handleMenuItemClick('Delete')}>Delete</MenuItem>
-        <MenuItem onClick={() => handleMenuItemClick('Make Template')}>Make Template</MenuItem>
-        <MenuItem onClick={() => handleMenuItemClick('Export')}>Export</MenuItem>
-        <MenuItem onClick={() => handleMenuItemClick('Copy')}>Copy</MenuItem>
+      <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
+        {options && options.map((option, index) => (
+          <MenuItem
+            key={index}
+            onClick={() => handleMenuItemClick(option, itemData)}
+          >
+            {option.label}
+          </MenuItem>
+        ))}
       </Menu>
     </Box>
   );

@@ -8,10 +8,18 @@ import {
 import WindowComponent from '../Window/Window';
 import SchemaIcon from '@mui/icons-material/Schema';
 import AccountTreeIcon from '@mui/icons-material/AccountTree';
+import EventIcon from '@mui/icons-material/Event';
+import CommitIcon from '@mui/icons-material/Commit';
+import ShapeLineIcon from '@mui/icons-material/ShapeLine';
+import PermDataSettingIcon from '@mui/icons-material/PermDataSetting';
 import { useWindowContext } from '../../../contexts/WindowContext';
 import DiagramForm from '../../features/DiagramForm/DiagramForm';
 import MinimizedWindows from '../Window/MinimizedWindows';
 import LogicTreeForm from '../../features/LogicTreeForm/LogicTreeForm';
+import ActionForm from '../../features/ActionForm/ActionForm';
+import EventForm from '../../features/EventForm/EventForm';
+import StateForm from '../../features/StateForm/StateForm';
+import VariableForm from '../../features/VariableForm/VariableForm';
 
 const MainCanvas = () => {
   const actions = [
@@ -24,6 +32,26 @@ const MainCanvas = () => {
       icon: <AccountTreeIcon />,
       name: 'New Logic Tree',
       content: <LogicTreeForm />,
+    },
+    {
+      icon: <CommitIcon />,
+      name: 'New Action',
+      content: <ActionForm />,
+    },
+    {
+      icon: <EventIcon />,
+      name: 'New Event',
+      content: <EventForm />,
+    },
+    {
+      icon: <ShapeLineIcon />,
+      name: 'New State',
+      content: <StateForm />,
+    },
+    {
+      icon: <PermDataSettingIcon />,
+      name: 'New Variable',
+      content: <VariableForm />,
     },
   ];
   const [open, setOpen] = useState(false);

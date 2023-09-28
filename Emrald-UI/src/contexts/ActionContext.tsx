@@ -12,7 +12,7 @@ interface ActionContextType {
   actions: Action[];
   createAction: (action: Action) => void;
   updateAction: (action: Action) => void;
-  deleteAction: (actionId: number) => void;
+  deleteAction: (actionId: number | string) => void;
   clearActionList: () => void;
 }
 
@@ -51,7 +51,7 @@ const ActionContextProvider: React.FC<PropsWithChildren> = ({ children }) => {
     setActionList(updatedActionList);
   };
 
-  const deleteAction = (actionId: number) => {
+  const deleteAction = (actionId: number | string) => {
     const updatedActionList = actionList.filter(
       (item) => item.Action.id !== actionId,
     );

@@ -8,11 +8,11 @@ export interface Action {
   newStates?: NewState[];
   itemId?: number;
   moveFromCurrent?: boolean;
-  time: string;
-  evtType: string;
-  ifInState: string;
-  logicTop: string;
-  missionTime: string;
+  time?: string;
+  evtType?: string;
+  ifInState?: string;
+  logicTop?: string;
+  missionTime?: string;
 }
 
 export interface NewState {
