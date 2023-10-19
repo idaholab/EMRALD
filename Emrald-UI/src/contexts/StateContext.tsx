@@ -5,7 +5,7 @@ import React, {
   useMemo,
   useState,
 } from 'react';
-import { State, StateList } from '../types/State';
+import { EventAction, State, StateList } from '../types/State';
 import emraldData from '../emraldData.json';
 
 interface StateContextType {
@@ -13,6 +13,8 @@ interface StateContextType {
   createState: (newState: State) => void;
   updateState: (updatedState: State) => void;
   deleteState: (StateId: number | string) => void;
+  getEventsByStateName: (stateName: string) => {events: String[]; type: string; eventActions: EventAction[]; immediateActions: string[]};
+  getStatePosition: (stateName: string) => {x: number; y: number};
   newStateList: (newStateList: StateList) => void;
   mergeStateList: (newStateList: StateList) => void;
   clearStateList: () => void;
@@ -63,6 +65,35 @@ const StateContextProvider: React.FC<PropsWithChildren> = ({ children }) => {
     setStateList(updatedStates);
   };
 
+  const getEventsByStateName = (stateName: string) => {
+    const state = stateList.find(({ State }) => State.name === stateName);
+    if (state) {
+      return {
+        type: state.State.stateType || '',
+        events: state.State.events || [],
+        eventActions: state.State.eventActions || [],
+        immediateActions: state.State.immediateActions || [],
+      };
+    }
+    return { events: [], eventActions: [], immediateActions: [] };
+  };
+
+  const getStatePosition = (stateName: string) => {
+    const state = stateList.find(({ State }) => State.name === stateName);
+    if (state?.State.geometry) {
+      try {
+        const correctedString = state.State.geometry
+        .replace(/([a-zA-Z0-9]+)\s*:/g, '"$1":') // Replace property names with double quotes
+        .replace(/'/g, '"'); // Replace single quotes with double quotes
+        const parsedGeometry = JSON.parse(correctedString);
+        return parsedGeometry || { x: 0, y: 0 };
+      } catch (error) {
+        console.error('Error parsing geometry:', error);
+      }
+    }
+    return { x: 0, y: 0 };
+  };
+
   // Open New, Merge, and Clear State List
   const newStateList = (newStateList: StateList) => {
     setStateList(newStateList);
@@ -83,6 +114,8 @@ const StateContextProvider: React.FC<PropsWithChildren> = ({ children }) => {
         createState,
         updateState,
         deleteState,
+        getEventsByStateName,
+        getStatePosition,
         newStateList,
         mergeStateList,
         clearStateList,

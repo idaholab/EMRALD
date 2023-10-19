@@ -18,6 +18,7 @@ import DiagramForm from '../../features/DiagramForm/DiagramForm';
 import Typography from '@mui/material/Typography';
 import TestD3Chart from '../../features/TestD3Chart';
 import TreeDiagram from '../../features/TreeDiagram';
+import ReactFlowTest from '../../features/ReactFlow/ReactFlowText';
 export interface AccordionMenuListProps {
   item: AccordionMenuItemType;
   bothAccordionsOpen: boolean;
@@ -73,7 +74,7 @@ const AccordionMenuItems: React.FC<AccordionMenuListProps> = ({ item, bothAccord
                         {diagram.diagramType === type && (
                           <DraggableItem key={diagram.id} itemData={diagram}>
                             <ListItemButton sx={{ p: '0 0 0 3rem', width: '100%' }}>
-                              {/* <ListItemText primary={diagram.name} onClick={() => addWindow(diagram.name, <DiagramForm diagramData={diagram}/>)}/> */}
+                            {/* <ListItemText primary={diagram.name} onClick={() => addWindow(diagram.name, <ReactFlowTest diagram={diagram}/>, { x: 75, y: 25, width: 1500, height: 700 })}/> */}
                             <ItemWithContextMenu itemData={diagram} optionType={item.type}/>
                             </ListItemButton>
                           </DraggableItem>
@@ -99,7 +100,6 @@ const AccordionMenuItems: React.FC<AccordionMenuListProps> = ({ item, bothAccord
         {item.data.length > 0 ? (
           item.data.map((option, index) => (
             <ListItemButton key={option.id || index} sx={{ p: '0 0 0 2rem' }}>
-              {/* <ListItemText primary={option.name} onClick={() => addWindow(option.name, <TestD3Chart/>)}/> */}
               <ItemWithContextMenu itemData={option} optionType={item.type}/>
             </ListItemButton>
           ))

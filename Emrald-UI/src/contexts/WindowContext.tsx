@@ -1,10 +1,14 @@
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 
+interface WindowPosition {
+  x: number, y: number, width: number, height: number
+}
 interface Window {
   id: string;
   title: string;
   isOpen: boolean;
+  initialPosition: WindowPosition;
   minimized: boolean;
   maximized: boolean;
   content: React.ReactNode;
@@ -12,7 +16,7 @@ interface Window {
 
 interface WindowContextType {
   windows: Window[];
-  addWindow: (title: string, content: React.ReactNode) => void;
+  addWindow: (title: string, content: React.ReactNode, initialPosition?: WindowPosition) => void;
   bringToFront: (window: Window) => void;
   handleClose: (id?: string) => void;
   toggleMaximize: (windowToToggle: Window) => void;
@@ -67,7 +71,7 @@ export const WindowProvider: React.FC<WindowProviderProps> = ({ children }) => {
     }
   };
 
-  const addWindow = (title: string, content: React.ReactNode): void => {
+  const addWindow = (title: string, content: React.ReactNode, position?: WindowPosition): void => {
     const existingWindow = windows.find((window) => window.title === title);
 
     if (existingWindow) {
@@ -81,6 +85,7 @@ export const WindowProvider: React.FC<WindowProviderProps> = ({ children }) => {
       id: uuidv4(),
       title,
       isOpen: true,
+      initialPosition: position || { x: 100, y: 50, width: 500, height: 500 },
       minimized: false,
       maximized: false,
       content,

@@ -67,7 +67,7 @@ const DraggableContainer: React.FC<DraggableContainerProps> = ({
       size={fullScreen ? { height: '99.2%', width: '99.2%' } : size}
       position={fullScreen ? { x: 0, y: 0 } : position}
       minHeight={35}
-      minWidth={250}
+      minWidth={350}
       resizeHandleComponent={{
         bottomRight: <CustomResizeHandle />,
       }}

@@ -27,7 +27,7 @@ const VariableForm: React.FC<VariableFormProps> = ({ variableData }) => {
   const { handleClose } = useWindowContext();
   const { updateVariable, createVariable } = useVariableContext();
   const [type, setType] = useState<string>(variableData?.type || 'int');
-  const [name, setName] = useState<string>(variableData?.name || '');
+  const [name, setName] = useState<string>(variableData?.name || 'Int_');
   const [namePrefix, setNamePrefix] = useState<string>('');
   const [desc, setDesc] = useState<string>(variableData?.desc || '');
   const [varScope, setVarScope] = useState<string>(
@@ -143,8 +143,8 @@ const VariableForm: React.FC<VariableFormProps> = ({ variableData }) => {
         >
           <InputLabel id="demo-simple-select-standard-label">Scope</InputLabel>
           <Select
-            labelId="demo-simple-select-standard-label"
-            id="demo-simple-select-standard"
+            labelId="var-scope"
+            id="var-scope"
             value={varScope}
             onChange={(event: SelectChangeEvent<string>) => {
               setVarScope(event.target.value);

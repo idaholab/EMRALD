@@ -23,6 +23,7 @@
     "react-dnd-html5-backend": "^16.0.1",
     "react-dom": "^18.2.0",
     "react-rnd": "^10.4.1",
+    "reactflow": "^11.9.2",
     "uuid": "^9.0.0"
   },
   "devDependencies": {

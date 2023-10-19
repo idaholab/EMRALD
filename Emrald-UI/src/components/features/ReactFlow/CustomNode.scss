@@ -1,0 +1,83 @@
+.react-flow__node-custom {
+  & {
+    font-size: 10px;
+    width: 180px;
+    background: #f5f5f6;
+    color: #222;
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 15%), 0 2px 4px -1px rgb(0 0 0 / 8%);
+    border-radius: 2px;
+  }
+
+  .react-flow__handle-right {
+    width: 3px;
+    height: 10px;
+    border-radius: 2px;
+    background-color: #778899;
+  }
+
+  .source-handle {
+    top: 10px;
+    right: -15px;
+  }
+
+  .target-handle {
+    top: 19px;
+    left: -5px;
+  }
+
+  .react-flow__handle-left {
+    width: 3px;
+    height: 10px;
+    border-radius: 2px;
+    background-color: #778899;
+  }
+}
+
+.react-flow__node.circle {
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: 700;
+}
+
+.react-flow__node.annotation {
+  & {
+    border-radius: 0;
+    text-align: left;
+    background: white;
+    border: none;
+    line-height: 1.4;
+    width: 225px;
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 15%), 0 2px 4px -1px rgb(0 0 0 / 8%);
+  }
+
+  .react-flow__handle {
+    display: none;
+  }
+}
+
+.custom-node__header {
+  padding: 8px 10px;
+  border-bottom: 1px solid #e2e8f0;
+  font-size: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.custom-node__body {
+  padding: 10px;
+}
+
+.custom-node__immediate-actions {
+  position: relative;
+  margin-bottom: 10px;
+}
+
+.custom-node__event-actions {
+  position: relative;
+  margin-bottom: 10px;
+}

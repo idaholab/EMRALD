@@ -6,13 +6,14 @@ import React, {
   useState,
 } from 'react';
 import emraldData from '../emraldData.json';
-import { Action, ActionList } from '../types/Action';
+import { Action, ActionList, NewState } from '../types/Action';
 
 interface ActionContextType {
   actions: Action[];
   createAction: (action: Action) => void;
   updateAction: (action: Action) => void;
   deleteAction: (actionId: number | string) => void;
+  getNewStatesByActionName: (actionName: string) => NewState[];
   clearActionList: () => void;
 }
 
@@ -58,6 +59,14 @@ const ActionContextProvider: React.FC<PropsWithChildren> = ({ children }) => {
     setActionList(updatedActionList);
   };
 
+  const getNewStatesByActionName = (actionName: string) => {
+    const action = actionList.find(({ Action }) => Action.name === actionName);
+    if (action) {
+      return action.Action.newStates || [];
+    }
+    return [];
+  };
+
   const clearActionList = () => {
     setActionList([]);
 
@@ -72,6 +81,7 @@ const ActionContextProvider: React.FC<PropsWithChildren> = ({ children }) => {
         createAction,
         updateAction,
         deleteAction,
+        getNewStatesByActionName,
         clearActionList
       }}
     >

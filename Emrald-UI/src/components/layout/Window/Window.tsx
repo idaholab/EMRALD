@@ -9,12 +9,16 @@ import CardContent from '@mui/material/CardContent';
 import Box from '@mui/material/Box';
 import { useWindowContext } from '../../../contexts/WindowContext';
 import DraggableContainer from './DraggableContainer';
+import { Typography } from '@mui/material';
 
 const WindowComponent: React.FC = () => {
   const { windows, bringToFront, handleClose, toggleMaximize, toggleMinimize } =
     useWindowContext();
 
-  const openWindows = useMemo(() => windows.filter((window) => !window.minimized), [windows])  
+  const openWindows = useMemo(
+    () => windows.filter((window) => !window.minimized),
+    [windows],
+  );
 
   return (
     <>
@@ -22,7 +26,7 @@ const WindowComponent: React.FC = () => {
         <DraggableContainer
           key={window.id}
           id={window.id}
-          initialPosition={{ x: 100, y: 50, width: 500, height: 500 }}
+          initialPosition={window.initialPosition}
           fullScreen={window.maximized}
         >
           <Card
@@ -47,39 +51,56 @@ const WindowComponent: React.FC = () => {
                 justifyContent: 'flex-end',
               }}
             >
-              <IconButton
-                aria-label="minimize"
-                onClick={() => toggleMinimize(window)}
+              <Box
                 sx={{
-                  color: (theme) => theme.palette.grey[500],
+                  minWidth: '250px',
+                  display: 'flex',
+                  flex: '1',
+                  justifyContent: 'center',
+                  alignItems: 'center',
                 }}
               >
-                {!window.minimized && !window.maximized ? <HorizontalRuleIcon /> : null}
-              </IconButton>
-              <IconButton
-                aria-label="maximize"
-                onClick={() => toggleMaximize(window)}
-                sx={{
-                  color: (theme) => theme.palette.grey[500],
-                }}
-              >
-                {window.maximized ? (
-                  <CloseFullscreenIcon />
-                ) : (
-                  <CropSquareIcon />
-                )}
-              </IconButton>
-              <IconButton
-                aria-label="close"
-                onClick={() => handleClose(window.id)}
-                sx={{
-                  color: (theme) => theme.palette.grey[500],
-                }}
-              >
-                <CloseIcon />
-              </IconButton>
+                <Typography>{window.title}</Typography>
+              </Box>
+              <Box sx={{position: 'relative', top: '-2px', display: 'flex', flexWrap: 'nowrap'}}>
+                <IconButton
+                  aria-label="minimize"
+                  onClick={() => toggleMinimize(window)}
+                  sx={{
+                    color: (theme) => theme.palette.grey[500],
+                  }}
+                >
+                  {!window.minimized && !window.maximized ? (
+                    <HorizontalRuleIcon />
+                  ) : null}
+                </IconButton>
+                <IconButton
+                  aria-label="maximize"
+                  onClick={() => toggleMaximize(window)}
+                  sx={{
+                    color: (theme) => theme.palette.grey[500],
+                  }}
+                >
+                  {window.maximized ? (
+                    <CloseFullscreenIcon />
+                  ) : (
+                    <CropSquareIcon />
+                  )}
+                </IconButton>
+                <IconButton
+                  aria-label="close"
+                  onClick={() => handleClose(window.id)}
+                  sx={{
+                    color: (theme) => theme.palette.grey[500],
+                  }}
+                >
+                  <CloseIcon />
+                </IconButton>
+              </Box>
             </Box>
-            <CardContent sx={{ height: 'calc(100% - 55px)', overflow: 'auto', p: 0 }}>
+            <CardContent
+              sx={{ height: 'calc(100% - 55px)', overflow: 'auto', p: 0 }}
+            >
               <Box
                 sx={{ height: '96%', width: '100%' }}
                 className={`droppable-area-${window.id}`}

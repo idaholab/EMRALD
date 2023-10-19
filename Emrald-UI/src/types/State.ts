@@ -2,7 +2,7 @@ export interface State {
   id: number | string;
   name: string;
   desc?: string;
-  stateType?: string;
+  stateType?: 'stStandard' | 'stStart' | 'stKeyState' | 'stTerminal';
   diagramName?: string;
   geometry?: string;
   immediateActions?: string[];

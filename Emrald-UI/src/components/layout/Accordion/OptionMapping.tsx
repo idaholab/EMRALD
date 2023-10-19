@@ -16,6 +16,7 @@ import ActionForm from '../../features/ActionForm/ActionForm';
 import EventForm from '../../features/EventForm/EventForm';
 import VariableForm from '../../features/VariableForm/VariableForm';
 import StateForm from '../../features/StateForm/StateForm';
+import ReactFlowTest from '../../features/ReactFlow/ReactFlowText';
 
 // Define your Option and OptionsMapping types
 export interface Option {
@@ -38,7 +39,7 @@ export const useOptionsMapping = () => {
 
   const optionsMapping: OptionsMapping = {
     Diagrams: [
-      { label: 'Open', action: (diagram: Diagram) => addWindow(`Open ${diagram.name}`, <>{JSON.stringify(diagram)}</>) },
+      { label: 'Open', action: (diagram: Diagram) => addWindow(diagram.name, <ReactFlowTest diagram={diagram}/>, { x: 75, y: 25, width: 1500, height: 700 }) },
       { label: 'Edit Properties', action: (diagram: Diagram) => addWindow(`Edit Properties ${diagram.name}`, <DiagramForm diagramData={diagram}/>) },
       { label: 'Delete', action: (diagram: Diagram) => deleteDiagram(diagram.id) },
       { label: 'Make Template', action: () => null },
@@ -51,11 +52,11 @@ export const useOptionsMapping = () => {
       { label: 'Delete', action: (logicNode: LogicNode) => deleteLogicNode(logicNode.id) },
     ],
     Actions: [
-      { label: 'Edit Properties', action: (action: Action) => addWindow(action.name, <ActionForm actionData={action}/>) },
+      { label: 'Edit Properties', action: (action: Action) => {console.log(action); addWindow(action.name, <ActionForm actionData={action}/>) }},
       { label: 'Delete', action: (action: Action) => deleteAction(action.id) },
     ],
     Events: [
-      { label: 'Edit Properties', action: (event: Event) => addWindow(event.name, <EventForm eventData={event}/>) },
+      { label: 'Edit Properties', action: (event: Event) => {console.log(event); addWindow(event.name, <EventForm eventData={event}/>) }},
       { label: 'Delete', action: (event: Event) => deleteEvent(event.id) },
     ],
     States: [
