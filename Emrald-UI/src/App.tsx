@@ -5,11 +5,14 @@ import Sidebar from './components/layout/Sidebar/Sidebar';
 import theme from './theme';
 import MainCanvas from './components/layout/MainCanvas/MainCanvas';
 import EmraldContextWrapper from './contexts/EmraldContextWrapper';
+import { useAppData } from './hooks/useAppData';
+
 
 function App() {
+  const { appData, updateAppData } = useAppData();
   return (
     <ThemeProvider theme={theme}>
-      <EmraldContextWrapper>
+      <EmraldContextWrapper appData={appData} updateAppData={updateAppData}>
         <Box sx={{ display: 'flex', height: '100%' }}>
           <CssBaseline />
           <Header />

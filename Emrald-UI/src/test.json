@@ -25,46 +25,6 @@
     },
     {
       "Diagram": {
-        "id": 2,
-        "name": "C-CKV-A",
-        "desc": "",
-        "diagramType": "dtComponent",
-        "states": ["C-CKV-A_Active", "C-CKV-A_Failed", "C-CKV-A_Standby"],
-        "singleStates": [
-          {
-            "stateName": "C-CKV-A_Active",
-            "okState": "True"
-          },
-          {
-            "stateName": "C-CKV-A_Failed",
-            "okState": "False"
-          }
-        ],
-        "diagramLabel": "Component"
-      }
-    },
-    {
-      "Diagram": {
-        "id": 3,
-        "name": "C-CKV-B",
-        "desc": "",
-        "diagramType": "dtComponent",
-        "states": ["C-CKV-B_Active", "C-CKV-B_Failed", "C-CKV-B_Standby"],
-        "singleStates": [
-          {
-            "stateName": "C-CKV-B_Active",
-            "okState": "True"
-          },
-          {
-            "stateName": "C-CKV-B_Failed",
-            "okState": "False"
-          }
-        ],
-        "diagramLabel": "Component"
-      }
-    },
-    {
-      "Diagram": {
         "id": 4,
         "name": "C-MOV-1",
         "desc": "",
@@ -102,187 +62,9 @@
         ],
         "diagramLabel": "Component"
       }
-    },
-    {
-      "Diagram": {
-        "id": 6,
-        "name": "C-MOV-B",
-        "desc": "",
-        "diagramType": "dtComponent",
-        "states": ["C-MOV-B_Active", "C-MOV-B_Failed", "C-MOV-B_Standby"],
-        "singleStates": [
-          {
-            "stateName": "C-MOV-B_Active",
-            "okState": "True"
-          },
-          {
-            "stateName": "C-MOV-B_Failed",
-            "okState": "False"
-          }
-        ],
-        "diagramLabel": "Component"
-      }
-    },
-    {
-      "Diagram": {
-        "id": 7,
-        "name": "C-PMP-A",
-        "desc": "",
-        "diagramType": "dtComponent",
-        "states": ["C-PMP-A_Active", "C-PMP-A_Failed", "C-PMP-A_Standby"],
-        "singleStates": [
-          {
-            "stateName": "C-PMP-A_Active",
-            "okState": "True"
-          },
-          {
-            "stateName": "C-PMP-A_Failed",
-            "okState": "False"
-          }
-        ],
-        "diagramLabel": "Component"
-      }
-    },
-    {
-      "Diagram": {
-        "id": 8,
-        "name": "C-PMP-B",
-        "desc": "",
-        "diagramType": "dtComponent",
-        "states": ["C-PMP-B_Active", "C-PMP-B_Failed", "C-PMP-B_Standby"],
-        "singleStates": [
-          {
-            "stateName": "C-PMP-B_Active",
-            "okState": "True"
-          },
-          {
-            "stateName": "C-PMP-B_Failed",
-            "okState": "False"
-          }
-        ],
-        "diagramLabel": "Component"
-      }
-    },
-    {
-      "Diagram": {
-        "id": 9,
-        "name": "E-CKV-A",
-        "desc": "",
-        "diagramType": "dtComponent",
-        "states": ["E-CKV-A_Active", "E-CKV-A_Failed", "E-CKV-A_Standby"],
-        "singleStates": [
-          {
-            "stateName": "E-CKV-A_Active",
-            "okState": "True"
-          },
-          {
-            "stateName": "E-CKV-A_Failed",
-            "okState": "False"
-          }
-        ],
-        "diagramLabel": "Component"
-      }
-    },
-    {
-      "Diagram": {
-        "id": 10,
-        "name": "E-CKV-B",
-        "desc": "",
-        "diagramType": "dtComponent",
-        "states": ["E-CKV-B_Active", "E-CKV-B_Failed", "E-CKV-B_Standby"],
-        "singleStates": [
-          {
-            "stateName": "E-CKV-B_Active",
-            "okState": "True"
-          },
-          {
-            "stateName": "E-CKV-B_Failed",
-            "okState": "False"
-          }
-        ],
-        "diagramLabel": "Component"
-      }
-    },
-    {
-      "Diagram": {
-        "id": 11,
-        "name": "E-MOV-1",
-        "desc": "",
-        "diagramType": "dtComponent",
-        "states": ["E-MOV-1_Active", "E-MOV-1_Failed", "E-MOV-1_Standby"],
-        "singleStates": [
-          {
-            "stateName": "E-MOV-1_Active",
-            "okState": "True"
-          },
-          {
-            "stateName": "E-MOV-1_Failed",
-            "okState": "False"
-          }
-        ],
-        "diagramLabel": "Component"
-      }
-    },
-    {
-      "Diagram": {
-        "id": 12,
-        "name": "E-MOV-A",
-        "desc": "",
-        "diagramType": "dtComponent",
-        "states": ["E-MOV-A_Active", "E-MOV-A_Failed", "E-MOV-A_Standby"],
-        "singleStates": [
-          {
-            "stateName": "E-MOV-A_Active",
-            "okState": "True"
-          },
-          {
-            "stateName": "E-MOV-A_Failed",
-            "okState": "False"
-          }
-        ],
-        "diagramLabel": "Component"
-      }
-    },
-    {
-      "Diagram": {
-        "id": 13,
-        "name": "E-MOV-B",
-        "desc": "",
-        "diagramType": "dtComponent",
-        "states": ["E-MOV-B_Active", "E-MOV-B_Failed", "E-MOV-B_Standby"],
-        "singleStates": [
-          {
-            "stateName": "E-MOV-B_Active",
-            "okState": "True"
-          },
-          {
-            "stateName": "E-MOV-B_Failed",
-            "okState": "False"
-          }
-        ],
-        "diagramLabel": "Component"
-      }
     }
   ],
   "StateList": [
-    {
-      "State": {
-        "id": 8,
-        "name": "C-CKV-B_Failed",
-        "desc": "",
-        "stateType": "stStandard",
-        "diagramName": "C-CKV-B",
-        "geometry": "{ x: 320, y: 190, width: 200, height: 130}",
-        "immediateActions": [],
-        "events": ["C-CKV-B_Stop"],
-        "eventActions": [
-          {
-            "moveFromCurrent": true,
-            "actions": ["Goto_C-CKV-B_Off"]
-          }
-        ]
-      }
-    },
     {
       "State": {
         "id": 9,
@@ -318,78 +100,6 @@
           }
         ]
       }
-    },
-    {
-      "State": {
-        "id": 11,
-        "name": "C-MOV-1_Failed",
-        "desc": "",
-        "stateType": "stStandard",
-        "diagramName": "C-MOV-1",
-        "geometry": "{ x: 320, y: 180, width: 200, height: 130}",
-        "immediateActions": [],
-        "events": ["C-MOV-1_Stop"],
-        "eventActions": [
-          {
-            "moveFromCurrent": true,
-            "actions": ["Goto_C-MOV-1_Off"]
-          }
-        ]
-      }
-    },
-    {
-      "State": {
-        "id": 12,
-        "name": "C-MOV-A_Standby",
-        "desc": "",
-        "stateType": "stStart",
-        "diagramName": "C-MOV-A",
-        "geometry": "{ x: 20, y: 50, width: 200, height: 130}",
-        "immediateActions": [],
-        "events": ["C-MOV-A_Demand"],
-        "eventActions": [
-          {
-            "moveFromCurrent": true,
-            "actions": ["Goto_C-MOV-A_ActOrFail"]
-          }
-        ]
-      }
-    },
-    {
-      "State": {
-        "id": 13,
-        "name": "C-MOV-A_Active",
-        "desc": "",
-        "stateType": "stStandard",
-        "diagramName": "C-MOV-A",
-        "geometry": "{ x: 330, y: 20, width: 200, height: 130}",
-        "immediateActions": [],
-        "events": ["C-MOV-A_Stop"],
-        "eventActions": [
-          {
-            "moveFromCurrent": true,
-            "actions": ["Goto_C-MOV-A_Off"]
-          }
-        ]
-      }
-    },
-    {
-      "State": {
-        "id": 14,
-        "name": "C-MOV-A_Failed",
-        "desc": "",
-        "stateType": "stStandard",
-        "diagramName": "C-MOV-A",
-        "geometry": "{ x: 330, y: 190, width: 200, height: 130}",
-        "immediateActions": [],
-        "events": ["C-MOV-A_Stop"],
-        "eventActions": [
-          {
-            "moveFromCurrent": true,
-            "actions": ["Goto_C-MOV-A_Off"]
-          }
-        ]
-      }
     }
   ],
   "ActionList": [
@@ -416,24 +126,6 @@
           }
         ]
       }
-    },
-    {
-      "Action": {
-        "id": 8,
-        "name": "Goto_C-MOV-A_Off",
-        "desc": "",
-        "actType": "atTransition",
-        "mainItem": false,
-        "mutExcl": "True",
-        "newStates": [
-          {
-            "toState": "C-MOV-A_Standby",
-            "prob": -1,
-            "varProb": "null",
-            "failDesc": ""
-          }
-        ]
-      }
     }
   ],
   "EventList": [
@@ -447,18 +139,6 @@
         "ifInState": "true",
         "allItems": "false",
         "triggerStates": ["Start_Systems"]
-      }
-    },
-    {
-      "Event": {
-        "id": 9,
-        "name": "C-MOV-A_Stop",
-        "desc": "",
-        "mainItem": false,
-        "evType": "etStateCng",
-        "ifInState": "false",
-        "allItems": "true",
-        "triggerStates": ["Stop_Systems"]
       }
     }
   ],

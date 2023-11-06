@@ -122,7 +122,6 @@ const ReactFlowTest: React.FC<ReactFlowTestProps> = ({ diagram }) => {
       const stateNodes = diagram.states.map((state, index) => {
         const statePosition = getStatePosition(state);
         const stateDetails = getEventsByStateName(state);
-        console.log(stateDetails);
         return {
           id: `state-${String(index)}`,
           position: { x: statePosition.x, y: statePosition.y },

@@ -1,12 +1,12 @@
 import React, {
-  PropsWithChildren,
   createContext,
   useContext,
+  useEffect,
   useMemo,
   useState,
 } from 'react';
-import emraldData from '../emraldData.json';
 import { Action, ActionList, NewState } from '../types/Action';
+import { EmraldContextWrapperProps } from './EmraldContextWrapper';
 
 interface ActionContextType {
   actions: Action[];
@@ -29,17 +29,21 @@ export function useActionContext() {
   return context;
 }
 
-const ActionContextProvider: React.FC<PropsWithChildren> = ({ children }) => {
+const ActionContextProvider: React.FC<EmraldContextWrapperProps> = ({ appData, updateAppData, children }) => {
   const [actionList, setActionList] = useState<ActionList>(
-    emraldData.ActionList as ActionList,
+    appData.ActionList as ActionList,
   );
 
   // Memoize the value of `actions` to avoid unnecessary re-renders
   const actions = useMemo(
     () => actionList.map(({Action}) => Action) as Action[],
-    [actionList]
+    [actionList, appData]
   );
 
+  useEffect(() => {
+    setActionList(appData.ActionList as ActionList);
+  }, [appData]);
+  
   const createAction = (newAction: Action) => {
     const updatedActionList = [...actionList, { Action: newAction }];
     setActionList(updatedActionList);

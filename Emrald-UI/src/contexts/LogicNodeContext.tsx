@@ -1,12 +1,12 @@
 import React, {
-  PropsWithChildren,
   createContext,
   useContext,
+  useEffect,
   useMemo,
   useState,
 } from 'react';
-import emraldData from '../emraldData.json';
 import { LogicNode, LogicNodeList } from '../types/LogicNode';
+import { EmraldContextWrapperProps } from './EmraldContextWrapper';
 
 interface LogicNodeContextType {
   logicNodes: LogicNode[];
@@ -32,11 +32,13 @@ export function useLogicNodeContext() {
   return context;
 }
 
-const LogicNodeContextProvider: React.FC<PropsWithChildren> = ({
+const LogicNodeContextProvider: React.FC<EmraldContextWrapperProps> = ({
+  appData,
+  updateAppData,
   children,
 }) => {
   const [logicNodeList, setLogicNodeList] = useState<LogicNodeList>(
-    emraldData.LogicNodeList,
+    appData.LogicNodeList,
   );
 
   // Memoize the value of `diagrams` to avoid unnecessary re-renders
@@ -44,6 +46,10 @@ const LogicNodeContextProvider: React.FC<PropsWithChildren> = ({
     () => logicNodeList.map(({ LogicNode }) => LogicNode),
     [logicNodeList],
   );
+
+  useEffect(() => {
+    setLogicNodeList(appData.LogicNodeList as LogicNodeList);
+  }, [appData]);
 
   const createLogicNode = (newLogicNode: LogicNode) => {
     const updatedLogicNodes = [...logicNodeList, { LogicNode: newLogicNode }];

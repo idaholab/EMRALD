@@ -6,7 +6,7 @@ import { State, StateList } from './State';
 import { Variable, VariableList } from './Variable';
 
 export interface appDataRaw {
-  id: string;
+  id: number;
   name: string;
   desc: string;
   emraldVersion: number;
@@ -17,12 +17,13 @@ export interface appDataRaw {
   ActionList: ActionList;
   EventList: EventList;
   LogicNodeList: LogicNodeList;
+  ExtSimList: []
   // Add other item types and their properties as needed
 }
 
 
 export interface appData {
-  id: string;
+  id: number;
   name: string;
   desc: string;
   emraldVersion: number;
@@ -33,5 +34,6 @@ export interface appData {
   ActionList: Action[];
   EventList: Event[];
   LogicNodeList: LogicNode[];
+  ExtSimList: []
   // Add other item types and their properties as needed
 }

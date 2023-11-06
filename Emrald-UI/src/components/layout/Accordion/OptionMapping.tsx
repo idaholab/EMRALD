@@ -39,7 +39,7 @@ export const useOptionsMapping = () => {
 
   const optionsMapping: OptionsMapping = {
     Diagrams: [
-      { label: 'Open', action: (diagram: Diagram) => addWindow(diagram.name, <ReactFlowTest diagram={diagram}/>, { x: 75, y: 25, width: 1500, height: 700 }) },
+      { label: 'Open', action: (diagram: Diagram) => {addWindow(diagram.name, <ReactFlowTest diagram={diagram}/>, { x: 75, y: 25, width: 1500, height: 700 }) }},
       { label: 'Edit Properties', action: (diagram: Diagram) => addWindow(`Edit Properties ${diagram.name}`, <DiagramForm diagramData={diagram}/>) },
       { label: 'Delete', action: (diagram: Diagram) => deleteDiagram(diagram.id) },
       { label: 'Make Template', action: () => null },

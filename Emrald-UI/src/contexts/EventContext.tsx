@@ -1,12 +1,12 @@
 import React, {
-  PropsWithChildren,
   createContext,
   useContext,
+  useEffect,
   useMemo,
   useState,
 } from 'react';
-import emraldData from '../emraldData.json';
 import { Event, EventList } from '../types/Event';
+import { EmraldContextWrapperProps } from './EmraldContextWrapper';
 
 interface EventContextType {
   events: Event[];
@@ -29,9 +29,9 @@ export function useEventContext() {
   return context;
 }
 
-const EventContextProvider: React.FC<PropsWithChildren> = ({ children }) => {
+const EventContextProvider: React.FC<EmraldContextWrapperProps> = ({ appData, updateAppData, children }) => {
   const [eventList, setEventList] = useState<EventList>(
-    emraldData.EventList as EventList,
+    appData.EventList as EventList,
   );
   
   // Memoize the value of `actions` to avoid unnecessary re-renders
@@ -39,6 +39,10 @@ const EventContextProvider: React.FC<PropsWithChildren> = ({ children }) => {
     () => eventList.map(({Event}) => Event) as Event[],
     [eventList]
   );
+
+  useEffect(() => {
+    setEventList(appData.EventList as EventList);
+  }, [appData]);
 
   const createEvent = (newEvent: Event) => {
     const updatedEventList = [...eventList, { Event: newEvent }];

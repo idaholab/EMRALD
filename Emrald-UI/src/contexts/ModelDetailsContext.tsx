@@ -1,10 +1,9 @@
 import React, {
-  PropsWithChildren,
   createContext,
   useContext,
   useState,
 } from 'react';
-import emraldData from '../emraldData.json';
+import { EmraldContextWrapperProps } from './EmraldContextWrapper';
 
 interface ModelDetailsContextType {
   id: number;
@@ -32,14 +31,16 @@ export function useModelDetailsContext() {
   return context;
 }
 
-const ModelDetailsContextProvider: React.FC<PropsWithChildren> = ({
+const ModelDetailsContextProvider: React.FC<EmraldContextWrapperProps> = ({
+  appData,
+  updateAppData,
   children,
 }) => {
-  const id = emraldData.id;
-  const [name, setName] = useState(emraldData.name);
-  const [desc, setDesc] = useState(emraldData.desc);
-  const [emraldVersion, setEmraldVersion] = useState(emraldData.emraldVersion);
-  const [version, setVersion] = useState(emraldData.version);
+  const id = appData.id;
+  const [name, setName] = useState(appData.name);
+  const [desc, setDesc] = useState(appData.desc);
+  const [emraldVersion, setEmraldVersion] = useState(appData.emraldVersion);
+  const [version, setVersion] = useState(appData.version);
 
   const updateName = (updatedName: string) => {
     setName(updatedName);

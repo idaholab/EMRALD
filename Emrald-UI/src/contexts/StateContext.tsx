@@ -1,12 +1,12 @@
 import React, {
-  PropsWithChildren,
   createContext,
   useContext,
+  useEffect,
   useMemo,
   useState,
 } from 'react';
 import { EventAction, State, StateList } from '../types/State';
-import emraldData from '../emraldData.json';
+import { EmraldContextWrapperProps } from './EmraldContextWrapper';
 
 interface StateContextType {
   states: State[];
@@ -32,9 +32,9 @@ export function useStateContext() {
   return context;
 }
 
-const StateContextProvider: React.FC<PropsWithChildren> = ({ children }) => {
+const StateContextProvider: React.FC<EmraldContextWrapperProps> = ({ appData, updateAppData, children }) => {
   const [stateList, setStateList] = useState<StateList>(
-    emraldData.StateList as StateList,
+    appData.StateList as StateList,
   );
 
   // Memoize the value of `States` to avoid unnecessary re-renders
@@ -42,6 +42,10 @@ const StateContextProvider: React.FC<PropsWithChildren> = ({ children }) => {
     () => stateList.map(({ State }) => State) as State[],
     [stateList],
   );
+
+  useEffect(() => {
+    setStateList(appData.StateList as StateList);
+  }, [appData]);
 
   // Create, Delete, Update individual States
   const createState = (newState: State) => {
@@ -75,7 +79,7 @@ const StateContextProvider: React.FC<PropsWithChildren> = ({ children }) => {
         immediateActions: state.State.immediateActions || [],
       };
     }
-    return { events: [], eventActions: [], immediateActions: [] };
+    return { type: '', events: [], eventActions: [], immediateActions: [] };
   };
 
   const getStatePosition = (stateName: string) => {

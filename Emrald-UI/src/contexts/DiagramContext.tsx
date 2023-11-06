@@ -1,14 +1,14 @@
 import React, {
-  PropsWithChildren,
   createContext,
   useContext,
+  useEffect,
   useMemo,
   useState,
 } from 'react';
 import { Diagram, DiagramList } from '../types/Diagram';
-import emraldData from '../emraldData.json';
 import { updateReferences } from '../utils/UpdateReferences';
-
+import jsonPath from 'jsonpath';
+import { EmraldContextWrapperProps } from './EmraldContextWrapper';
 interface DiagramContextType {
   diagrams: Diagram[];
   createDiagram: (newDiagram: Diagram) => void;
@@ -31,16 +31,21 @@ export function useDiagramContext() {
   return context;
 }
 
-const DiagramContextProvider: React.FC<PropsWithChildren> = ({ children }) => {
+const DiagramContextProvider: React.FC<EmraldContextWrapperProps> = ({ appData, updateAppData, children }) => {
   const [diagramList, setDiagramList] = useState<DiagramList>(
-    emraldData.DiagramList,
+    appData.DiagramList,
   );
 
   // Memoize the value of `diagrams` to avoid unnecessary re-renders
   const diagrams = useMemo(
-    () => diagramList.map(({ Diagram }) => Diagram),
+    () => {
+      return diagramList.map(({ Diagram }) => Diagram)},
     [diagramList],
   );
+
+  useEffect(() => {
+    setDiagramList(appData.DiagramList as DiagramList);
+  }, [appData]);
 
   // Create, Delete, Update individual diagrams
   const createDiagram = (newDiagram: Diagram) => {
@@ -48,25 +53,26 @@ const DiagramContextProvider: React.FC<PropsWithChildren> = ({ children }) => {
     setDiagramList(updatedDiagrams);
   };
 
-  // const updateDiagram = (data: any, updatedDiagram: Diagram) => {
-  //   const updatedDiagrams = diagramList.map((item) =>
-  //     item.Diagram.id === updatedDiagram.id
-  //       ? { Diagram: updatedDiagram }
-  //       : item,
-  //   );
-  //   setDiagramList(updatedDiagrams);
-  // };
-
   const updateDiagram = (data: any, updatedDiagram: Diagram) => {
     // Rest of your code to update the diagram list
     const updatedDiagrams = diagramList.map((item) => {
       if (item.Diagram.id === updatedDiagram.id) {
         const previousName = item.Diagram.name; // Get the previous name
         const newName = updatedDiagram.name; // Get the new name from the updatedDiagram object
-  
+
+        // Update all references to the name in the appData
+        const references = jsonPath.paths(appData, `$..[?(@ == "${previousName}")]`);
+        references.forEach(ref => {
+          const path = ref.join('.');
+          const value = jsonPath.value(appData, path);
+          if (value === previousName) {
+            jsonPath.value(appData, path, newName);
+          }
+        });
+
         // Call updateKeyAndReferences here to update references in the updatedDiagram
         const updatedData = updateReferences(data, previousName, newName);
-        console.log(updatedData);
+        updateAppData(updatedData);
   
         return { Diagram: updatedDiagram };
       } else {

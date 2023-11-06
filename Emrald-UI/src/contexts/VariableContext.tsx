@@ -1,12 +1,12 @@
 import React, {
-  PropsWithChildren,
   createContext,
   useContext,
+  useEffect,
   useMemo,
   useState,
 } from 'react';
-import emraldData from '../emraldData.json';
 import { Variable, VariableList } from '../types/Variable';
+import { EmraldContextWrapperProps } from './EmraldContextWrapper';
 
 interface VariableContextType {
   variables: Variable[];
@@ -31,9 +31,9 @@ export function useVariableContext() {
   return context;
 }
 
-const VariableContextProvider: React.FC<PropsWithChildren> = ({ children }) => {
+const VariableContextProvider: React.FC<EmraldContextWrapperProps> = ({ appData, updateAppData, children }) => {
   const [variableList, setVariableList] = useState<VariableList>(
-    emraldData.VariableList as VariableList,
+    appData.VariableList as VariableList,
   );
 
   // Memoize the value of `Variables` to avoid unnecessary re-renders
@@ -41,6 +41,10 @@ const VariableContextProvider: React.FC<PropsWithChildren> = ({ children }) => {
     () => variableList.map(({ Variable }) => Variable) as Variable[],
     [variableList],
   );
+
+  useEffect(() => {
+    setVariableList(appData.VariableList as VariableList);
+  }, [appData]);
 
   const createVariable = (newVariable: Variable) => {
     const updatedVariableList = [...variableList, { Variable: newVariable }];
