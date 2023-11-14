@@ -64,6 +64,7 @@ const angular = win.angular;
  * @property {MAAPForm} form - Reference to the form instance.
  * @property {(element: SourceElement) => string} extractName - Extracts the name from a complex object.
  * @property {Record<string, import('maap-par-parser').MAAPParParserOutput>} possibleInitiators - Initiator dropdown list options.
+ * @property {import('maap-inp-parser').Comment[]} comments - Comments in the INP file.
  */
 
 /**
@@ -74,6 +75,7 @@ const angular = win.angular;
  * @property {SourceElement[]} sections - File sections.
  * @property {VarLinkJSON[]} varLinks - Variable links.
  * @property {string[]} possibleInitiators - Initiator options.
+ * @property {import('maap-inp-parser').Comment[]} comments - Comments in the INP file.
  */
 
 /**
@@ -150,6 +152,7 @@ class MAAPForm extends ExternalExeForm {
       });
     });
     /** @type {RAFormData} */ const raFormData = {
+      comments: scope.comments,
       exePath: scope.exePath,
       inputPath: scope.inputPath,
       parameterPath: scope.parameterPath,
@@ -331,6 +334,7 @@ maapForm.controller('maapFormController', [
 
     // Loads the existing data from the EMRALD project
     const raFormData = parentScope.data.raFormData;
+    console.log(raFormData);
     if (raFormData) {
       if (typeof raFormData.parameterPath === 'string') {
         $scope.parameterPath = raFormData.parameterPath;
@@ -357,9 +361,12 @@ maapForm.controller('maapFormController', [
             new VarLink(varLink.target, form.findVariable(varLink.variable)),
         );
       }
+      if (raFormData.comments) {
+        $scope.comments = raFormData.comments;
+      }
       if (raFormData.sections) {
         $scope.sections = raFormData.sections;
-        raFormData.sections.forEach((section) => {
+        raFormData.sections.forEach((section, i) => {
           if (
             section.type === 'block' &&
             section.blockType === 'PARAMETER CHANGE'
@@ -395,6 +402,9 @@ maapForm.controller('maapFormController', [
                 });
             };
             bindBlockVars(section);
+            if ($scope.comments[i - 1]) {
+              $scope.blocks.push($scope.comments[i - 1]);
+            }
             $scope.blocks.push(section);
           }
         });
@@ -506,6 +516,7 @@ maapForm.controller('maapFormController', [
         $scope.initiators = [];
         $scope.blocks = [];
         $scope.sections = [];
+        $scope.comments = [];
         /** @type {import('maap-inp-parser').MAAPInpParser} */
         const parser = maapInpParser.default;
         // Turning safeMode on will allow the file to fully parse even if there are syntax errors
@@ -517,13 +528,11 @@ maapForm.controller('maapFormController', [
           // TODO: Notify of parsing errors
         }
         /** @type {import('maap-inp-parser').Comment[]} */
-        const comments = [];
         parsed.output.value.forEach((sourceElement, i) => {
           if (sourceElement.type === 'comment') {
-            comments[i] = sourceElement;
-          } else {
-            $scope.sections.push(sourceElement);
+            $scope.comments[i] = sourceElement;
           }
+          $scope.sections.push(sourceElement);
           switch (sourceElement.type) {
             case 'block':
               if (sourceElement.blockType === 'PARAMETER CHANGE') {
@@ -556,8 +565,8 @@ maapForm.controller('maapFormController', [
               }
               break;
             case 'conditional_block':
-              if (comments[i - 1]) {
-                $scope.blocks.push(comments[i - 1]);
+              if ($scope.comments[i - 1]) {
+                $scope.blocks.push($scope.comments[i - 1]);
               }
               $scope.blocks.push(sourceElement);
               $scope.overrideSections.push({
