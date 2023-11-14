@@ -171,7 +171,13 @@ class MAAPForm extends ExternalExeForm {
     dataObj.raPreCode = `string exeLoc = @"${this.escape(scope.exePath)}";
       string paramLoc = @"${this.escape(scope.parameterPath)}";
       string inpLoc = @"${this.escape(scope.inputPath)}";
-      
+
+      if (!Path.IsPathRooted(paramLoc))
+        paramLoc = RootPath + paramLoc;
+
+      if (!Path.IsPathRooted(inpLoc))
+        inpLoc = RootPath + inpLoc;    
+
       string tempLoc = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\\EMRALD_MAAP\\";
       try {
         if (Directory.Exists(tempLoc)) {
@@ -185,6 +191,15 @@ class MAAPForm extends ExternalExeForm {
       if (File.Exists(inpLoc)) {
         File.Copy(inpLoc, tempLoc + Path.GetFileName(inpLoc));
       }
+
+      string ext = ".INC";
+      string[] filesToCopy = Directory.GetFiles(Path.GetDirectoryName(inpLoc), $"*{ext}");
+      foreach (string filePath in filesToCopy)
+      {
+        string destinationPath = Path.Combine(tempLoc, Path.GetFileName(filePath));
+        File.Copy(filePath, destinationPath, true);
+      }
+
       string exeName = Path.GetFileName(exeLoc);
       if(File.Exists(exeLoc)) {
         File.Copy(exeLoc, tempLoc + exeName);
@@ -199,7 +214,11 @@ class MAAPForm extends ExternalExeForm {
       System.IO.File.WriteAllText(tempLoc + Path.GetFileName(inpLoc), newInp);
       return tempLoc + exeName + " " + Path.GetFileName(inpLoc) + " " + Path.GetFileName(paramLoc);`;
     dataObj.raPostCode = `string inpLoc = @"${this.escape(scope.inputPath)}";
+    if (!Path.IsPathRooted(inpLoc))
+      inpLoc = RootPath + inpLoc;
     string docVarPath = @"${tempFilePath}"; //whatever you assigned the results variables to
+    if (!Path.IsPathRooted(docVarPath))
+      docVarPath = RootPath + docVarPath;
     string resLoc = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\\EMRALD_MAAP\\" + Path.GetFileNameWithoutExtension(inpLoc) + ".log";
     File.Copy(resLoc, docVarPath, true);`;
     /* eslint-enable max-len */
@@ -309,6 +328,8 @@ maapForm.controller('maapFormController', [
     );
     /** @type {RAFormData} */
     // eslint-disable-next-line prefer-destructuring
+
+    // Loads the existing data from the EMRALD project
     const raFormData = parentScope.data.raFormData;
     if (raFormData) {
       if (typeof raFormData.parameterPath === 'string') {
@@ -343,12 +364,14 @@ maapForm.controller('maapFormController', [
             section.type === 'block' &&
             section.blockType === 'PARAMETER CHANGE'
           ) {
-            $scope.parameters = section.value.map((v) => {
-              if (v.useVariable) {
-                v.variable = form.findVariable(v.variable);
-              }
-              return v;
-            });
+            $scope.parameters = section.value
+              .filter((v) => v.type !== 'comment')
+              .map((v) => {
+                if (v.useVariable) {
+                  v.variable = form.findVariable(v.variable);
+                }
+                return v;
+              });
           } else if (
             section.type === 'block' &&
             section.blockType === 'INITIATORS'
@@ -482,6 +505,7 @@ maapForm.controller('maapFormController', [
         $scope.parameters = [];
         $scope.initiators = [];
         $scope.blocks = [];
+        $scope.sections = [];
         /** @type {import('maap-inp-parser').MAAPInpParser} */
         const parser = maapInpParser.default;
         // Turning safeMode on will allow the file to fully parse even if there are syntax errors
