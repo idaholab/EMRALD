@@ -5,10 +5,22 @@
     function safeValue(value) {
     	return (value || [])[0] || [];
     }
+    function stripLocations(o) {
+      if (o) {
+        delete o.location;
+      }
+      if (typeof o === 'object') {
+        Object.values(o).forEach((v) => stripLocations(v));
+      }
+      return o;
+    }
 }
 
 Start = __ program:Program __ {
+	// Switch the comments on the following lines to disable locations for debugging
+
 	return program;
+	// return stripLocations(program);
 }
 
 /* Lexical Grammar */
@@ -175,6 +187,14 @@ ExpressionBlock = "(" value:Expression ")" {
     }
 }
 ExpressionType = CallExpression / ExpressionBlock / Variable
+SpaceAssignment = target:(CallExpression / Identifier) WhiteSpace WhiteSpace+ value:Expr {
+	return {
+    	location: location(),
+    	target,
+    	type: "assignment",
+        value,
+    }
+}
 Assignment = target:(CallExpression / Identifier) _ "=" _ value:Expr {
 	return {
     	location: location(),
@@ -355,6 +375,7 @@ SourceElements = head:SourceElement tail:(___ SourceElement)* {
     return re;
 }
 SourceElement = Statement
+	/ SpaceAssignment
 	/ Assignment
 	/ AsExpression
 	/ IsExpression

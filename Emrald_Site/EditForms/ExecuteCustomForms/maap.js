@@ -334,7 +334,6 @@ maapForm.controller('maapFormController', [
 
     // Loads the existing data from the EMRALD project
     const raFormData = parentScope.data.raFormData;
-    console.log(raFormData);
     if (raFormData) {
       if (typeof raFormData.parameterPath === 'string') {
         $scope.parameterPath = raFormData.parameterPath;
