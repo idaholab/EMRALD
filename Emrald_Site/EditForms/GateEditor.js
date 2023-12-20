@@ -101,7 +101,7 @@ function somethingChanged() {
 }
 
 
-var gateModule = angular.module('gateModule', []);
+var gateModule = angular.module('gateModule', ['autosizeTextareaDirective']);
 gateModule.controller('gateController', ['$scope', function ($scope) {
     $scope.name = "";
     $scope.desc = "";

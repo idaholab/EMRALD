@@ -851,6 +851,9 @@ namespace SimulationTracking
         }
       }
 
+      if (!terminated)
+        curTime = settingsMaxTime;
+
       if (ranXMPPSim) //for all the XMPP simulations that ran send a final continue now that all other processing is done
       {
         TMsgWrapper msg2 = new TMsgWrapper(MessageType.mtSimAction, "Continue", curTime, "Current EMRALD run done, continue ext Sim");
@@ -875,7 +878,8 @@ namespace SimulationTracking
         {
           foreach (var v in aVars)
           {
-            v.Accrue(curTime, sID);
+            var timeInIt = curTime - curStates[sID].times.Last();
+            v.Accrue(timeInIt, sID);
           }
         }
       }

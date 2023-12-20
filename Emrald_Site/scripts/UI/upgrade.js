@@ -13,7 +13,7 @@ export default function upgrade(oldModel) {
   const model = /** @type {EMRALD.Model} */ (
     /** @type {any} */ (oldModel)
   );
-  const curVersion = 1.3;
+  const curVersion = 2.4;
   if (!model.version) {
     model.version = 0.0;
   }
@@ -157,15 +157,15 @@ export default function upgrade(oldModel) {
         model.EventList[e].Event.evType = 'etDistribution';
       }
     });
+  }
 
-    // LogicTree updates
-    if (model.version < 1.3) {
-      oldModel.LogicNodeList.forEach((logicNode, i) => {
-        model.LogicNodeList[i].LogicNode.isRoot =
-          logicNode.LogicNode.rootName === logicNode.LogicNode.name;
-        delete /** @type {any} */(model.LogicNodeList[i].LogicNode).rootName;
-      });
-    }
+  // LogicTree updates
+  if (model.version < 2.4) {
+    oldModel.LogicNodeList.forEach((logicNode, i) => {
+      model.LogicNodeList[i].LogicNode.isRoot =
+        logicNode.LogicNode.rootName === logicNode.LogicNode.name;
+      delete /** @type {any} */(model.LogicNodeList[i].LogicNode).rootName;
+    });
   }
 
   model.version = curVersion;

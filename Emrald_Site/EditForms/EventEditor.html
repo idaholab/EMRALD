@@ -5,7 +5,7 @@
 
 <head>
     <title>Event Editor</title>
-    <!--<link href="../styles/Editors.css" rel="stylesheet" />-->
+    <!-- <link href="../styles/Editors.css" rel="stylesheet" /> -->
     <script src="../config.js"></script>
     <script src="../scripts/angular/angular.js"></script>
     <script type="module">
@@ -47,6 +47,7 @@
             margin-right: 2em;
         }
     </style>
+    <script src="./directives/AutosizeTextareaDirective.js"></script>
     <script src="./components/code-editor.js"></script>
     <script src="EventEditor.js"></script>
 
@@ -70,8 +71,9 @@
             </div>
             <div style="display:table-row;">
                 <span style="display: table-cell;vertical-align:middle;">Desc:</span>
-                <input size="40" tabindex="2" name="DescValue" ng-model="desc" />
+                <textarea rows="1" cols="40" tabindex="2" name="DescValue" ng-model="desc" auto-resize></textarea>
             </div>
+        </div>
 
             <div id="movePanel">
                 <br />

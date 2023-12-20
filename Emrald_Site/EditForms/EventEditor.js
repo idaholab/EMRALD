@@ -461,7 +461,7 @@ function GetVariableList(varTypes) {
 }
 
 
-var EEApp = angular.module("EventEditor", ['codeEditor']);
+var EEApp = angular.module("EventEditor", ['codeEditor', 'autosizeTextareaDirective']);
 EEApp.controller("EEController", function ($scope) {
   $scope.name = "";
   $scope.namingPatterns = [];
