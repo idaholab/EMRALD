@@ -1748,12 +1748,12 @@ namespace SimulationTracking
     }
 
     /// <summary>
-    /// Get the paths of movement from start states to the key states for the simulation run
+    /// Add the paths of movement from start states to the key states for the simulation run to the overall results map
     /// </summary>
-    /// <returns></returns>
-    public void GetKeyPaths(Dictionary<string, SimulationEngine.KeyStateResult> resMap, Dictionary<string, SimulationEngine.ResultState> otherResMap, List<string> watchVars)
+    /// <returns>return the key paths for the current simulation run</returns>
+    public Dictionary<string, TimeSpan> GetKeyPaths(Dictionary<string, SimulationEngine.KeyStateResult> resMap, Dictionary<string, SimulationEngine.ResultState> otherResMap, List<string> watchVars)
     {
-      curStates.GetKeyStatePaths(allLists, resMap, otherResMap, watchVars);
+      return curStates.GetKeyStatePaths(allLists, resMap, otherResMap, watchVars);
     }
 
     /// <summary>
