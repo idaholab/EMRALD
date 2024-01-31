@@ -277,49 +277,53 @@ namespace SimulationEngine
             }
 
             //get the key paths
-            trackSim.GetKeyPaths(keyPaths, otherPaths, logVarVals);
-            
+            var curKeyStates = trackSim.GetKeyPaths(keyPaths, otherPaths, logVarVals);
+
+            //for this runs key states, add the failed components
+            foreach (var curKeyState in curKeyStates)
+            {
+              if (_logFailedComps && (failedComps.Length > 0))
+              {
+                int[] idArray = failedComps.Select(j => j.state.id).ToArray();
+                if (!keyFailedItems.ContainsKey(curKeyState.Key))
+                  keyFailedItems.Add(curKeyState.Key, new FailedItems());
+
+                keyFailedItems[curKeyState.Key].AddCompFailSet(idArray);
+              }
+            }
+
             foreach (SimulationEngine.ResultStateBase path in keyPaths.Values)
             {
               string keyStateName = path.name;
 
-                if (logVarVals.Count > 0)
+              if (logVarVals.Count > 0)
+              {
+                Dictionary<string, List<string>> varDict;
+                if (!_variableVals.TryGetValue(keyStateName, out varDict))
                 {
-                  Dictionary<string, List<string>> varDict;
-                  if (!_variableVals.TryGetValue(keyStateName, out varDict))
-                  {
-                    varDict = new Dictionary<string, List<string>>();
-                    _variableVals.Add(keyStateName, varDict);
-                  }
-
-                  List<string> varVals;
-
-                  foreach (string varName in logVarVals)
-                  {
-                    SimVariable curVar = _lists.allVariables.FindByName(varName);
-                    if (curVar == null)
-                    {
-                      this._error = "No variable found named - " + varName;
-                      logger.Error(this.error);
-                    }
-
-                    if (!varDict.TryGetValue(varName, out varVals))
-                    {
-                      varVals = new List<string>();
-                      varDict.Add(varName, varVals);
-                    }
-
-                    varVals.Add(curVar.strValue);
-                  }
+                  varDict = new Dictionary<string, List<string>>();
+                  _variableVals.Add(keyStateName, varDict);
                 }
 
-              if (_logFailedComps && (failedComps.Length > 0))
-              {
-                int[] idArray = failedComps.Select(j => j.state.id).ToArray();
-                if (!keyFailedItems.ContainsKey(keyStateName))
-                  keyFailedItems.Add(keyStateName, new FailedItems());
+                List<string> varVals;
 
-                keyFailedItems[keyStateName].AddCompFailSet(idArray);
+                foreach (string varName in logVarVals)
+                {
+                  SimVariable curVar = _lists.allVariables.FindByName(varName);
+                  if (curVar == null)
+                  {
+                    this._error = "No variable found named - " + varName;
+                    logger.Error(this.error);
+                  }
+
+                  if (!varDict.TryGetValue(varName, out varVals))
+                  {
+                    varVals = new List<string>();
+                    varDict.Add(varName, varVals);
+                  }
+
+                  varVals.Add(curVar.strValue);
+                }
               }
             }
           
