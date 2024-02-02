@@ -22,7 +22,7 @@ interface DiagramFormProps {
 }
 
 const DiagramForm: React.FC<DiagramFormProps> = ({ diagramData }) => {
-  const { handleClose } = useWindowContext();
+  const { handleClose, updateTitle } = useWindowContext();
   const { diagrams, updateDiagram, createDiagram } = useDiagramContext();
   const [diagramType, setDiagramType] = useState<string>(
     diagramData?.diagramType || '',
@@ -32,6 +32,7 @@ const DiagramForm: React.FC<DiagramFormProps> = ({ diagramData }) => {
   const { assembledData } = useAssembledData();
 
   const handleSave = () => {
+    updateTitle(diagramData?.name || '', name);
     const newDiagram = {
       id: uuidv4(),
       diagramType,

@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 
 interface WindowPosition {
@@ -17,6 +17,7 @@ interface Window {
 interface WindowContextType {
   windows: Window[];
   addWindow: (title: string, content: React.ReactNode, initialPosition?: WindowPosition) => void;
+  updateTitle: (currentTitle: string, newTitle: string) => void;
   bringToFront: (window: Window) => void;
   handleClose: (id?: string) => void;
   toggleMaximize: (windowToToggle: Window) => void;
@@ -46,6 +47,7 @@ export const WindowProvider: React.FC<WindowProviderProps> = ({ children }) => {
   const [nextWindowId, setNextWindowId] = useState<number>(1);
   const [activeWindowId, setActiveWindowId] = useState<string | null>(null);
 
+
   // Bring a window to the front
   const bringToFront = (selectedWindow: Window) => {
     const windowIndex = windows.findIndex(
@@ -70,22 +72,25 @@ export const WindowProvider: React.FC<WindowProviderProps> = ({ children }) => {
       }
     }
   };
-
-  const addWindow = (title: string, content: React.ReactNode, position?: WindowPosition): void => {
-    const existingWindow = windows.find((window) => window.title === title);
+  const addWindow = (title: string, content: React.ReactNode, position?: WindowPosition, windowId?: string,): void => {
+    const existingWindow = windows.find((window) => window.title === title || window.id === windowId);
 
     if (existingWindow) {
+      if (existingWindow.title !== title) {
+        existingWindow.title = title;
+      }
       // If a window with the same name exists, bring it to the front
       existingWindow.minimized = false; // Un-minimize window if existing window is minimized
       bringToFront(existingWindow);
       return;
     }
 
+
     const newWindow: Window = {
       id: uuidv4(),
       title,
       isOpen: true,
-      initialPosition: position || { x: 100, y: 50, width: 500, height: 500 },
+      initialPosition: position || { x: 100, y: 50, width: 600, height: 700 },
       minimized: false,
       maximized: false,
       content,
@@ -94,6 +99,16 @@ export const WindowProvider: React.FC<WindowProviderProps> = ({ children }) => {
     setWindows([...windows, newWindow]);
     setActiveWindowId(newWindow.id); // Set the active window ID to the newly added window
     setNextWindowId(nextWindowId + 1);
+  };
+
+  
+  const updateTitle = (currentTitle: string, newTitle: string): void => {
+    const windowToUpdate = windows.find((window) => window.title === currentTitle);
+    if (windowToUpdate) {
+      console.log(windowToUpdate.content);
+      console.log(windowToUpdate.initialPosition);
+      addWindow(newTitle, windowToUpdate.content, windowToUpdate.initialPosition, windowToUpdate.id);
+    }
   };
 
   const toggleMaximize = (windowToToggle: Window) => {
@@ -124,6 +139,7 @@ export const WindowProvider: React.FC<WindowProviderProps> = ({ children }) => {
   const contextValue: WindowContextType = {
     windows,
     addWindow,
+    updateTitle,
     bringToFront,
     handleClose,
     toggleMaximize,

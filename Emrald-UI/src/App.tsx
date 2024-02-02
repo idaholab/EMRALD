@@ -17,7 +17,7 @@ function App() {
           <CssBaseline />
           <Header />
           <Sidebar />
-          <MainCanvas />
+          <MainCanvas appData={appData} updateAppData={updateAppData}/>
         </Box>
       </EmraldContextWrapper>
     </ThemeProvider>

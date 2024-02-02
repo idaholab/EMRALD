@@ -23,7 +23,7 @@ interface EdgeType {
   target: string;
 }
 
-interface ReactFlowTestProps {
+interface ReactFlowDiagramProps {
   diagram: Diagram;
 }
 
@@ -33,7 +33,7 @@ interface ActionEvents {
   immediateActions: string[];
 }
 
-const ReactFlowTest: React.FC<ReactFlowTestProps> = ({ diagram }) => {
+const ReactFlowDiagram: React.FC<ReactFlowDiagramProps> = ({ diagram }) => {
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<EdgeType[]>([]);
   const [loading, setLoading] = useState(true);
@@ -175,4 +175,4 @@ const ReactFlowTest: React.FC<ReactFlowTestProps> = ({ diagram }) => {
   );
 };
 
-export default ReactFlowTest;
+export default ReactFlowDiagram;

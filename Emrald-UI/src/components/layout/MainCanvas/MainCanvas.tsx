@@ -4,7 +4,9 @@ import {
   SpeedDial,
   SpeedDialIcon,
   SpeedDialAction,
+  Fab,
 } from '@mui/material';
+import UndoIcon from '@mui/icons-material/Undo';
 import WindowComponent from '../Window/Window';
 import SchemaIcon from '@mui/icons-material/Schema';
 import AccountTreeIcon from '@mui/icons-material/AccountTree';
@@ -20,8 +22,14 @@ import ActionForm from '../../features/ActionForm/ActionForm';
 import EventForm from '../../features/EventForm/EventForm';
 import StateForm from '../../features/StateForm/StateForm';
 import VariableForm from '../../features/VariableForm/VariableForm';
+import emraldData from '../../../emraldData.json';
 
-const MainCanvas = () => {
+interface MainCanvasProps {
+  appData: any;
+  updateAppData: (newData: any, undoData?: any) => void;
+}
+
+const MainCanvas: React.FC<MainCanvasProps> = ({ appData, updateAppData }) => {
   const actions = [
     {
       icon: <SchemaIcon />,
@@ -57,23 +65,46 @@ const MainCanvas = () => {
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
+  const storedHistory = JSON.parse(localStorage.getItem('dataHistory') || '[]');
 
   const { addWindow } = useWindowContext();
+
+  const undoChange = () => {
+    if (storedHistory && storedHistory.length > 1) {
+      const newHistory = storedHistory.slice(0, storedHistory.length - 1); // Remove the last item in the array
+      localStorage.setItem('dataHistory', JSON.stringify(newHistory));
+      updateAppData(undefined, newHistory[newHistory.length - 1]);
+    }
+  };
+
   return (
     <Box
-    component="main"
-    sx={{
-      flexGrow: 1,
-      p: 3,
-      position: 'relative',
-      height: 'calc(100% - 65px)',
-      top: '65px',
-      backgroundColor:"#eee"
-    }}
-  >
-
-      <Box sx={{ display: 'flex', height: '100%', transform: 'translateZ(0px)', flexGrow: 1 }}>
+      component="main"
+      sx={{
+        flexGrow: 1,
+        p: 3,
+        position: 'relative',
+        height: 'calc(100% - 65px)',
+        top: '65px',
+        backgroundColor: '#eee',
+      }}
+    >
+      <Box
+        sx={{
+          display: 'flex',
+          height: '100%',
+          transform: 'translateZ(0px)',
+          flexGrow: 1,
+        }}
+      >
         <MinimizedWindows />
+
+        {storedHistory && storedHistory.length > 1 ? (
+          <Fab color="secondary" aria-label="add" onClick={() => undoChange()}>
+            <UndoIcon />
+          </Fab>
+        ) : null}
+
         <SpeedDial
           ariaLabel="SpeedDial tooltip example"
           sx={{ position: 'absolute', right: 16 }}

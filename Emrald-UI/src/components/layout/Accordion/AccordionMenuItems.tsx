@@ -18,7 +18,7 @@ import DiagramForm from '../../features/DiagramForm/DiagramForm';
 import Typography from '@mui/material/Typography';
 import TestD3Chart from '../../features/TestD3Chart';
 import TreeDiagram from '../../features/TreeDiagram';
-import ReactFlowTest from '../../features/ReactFlow/ReactFlowText';
+import ReactFlowTest from '../../features/ReactFlow/ReactFlowDiagram';
 export interface AccordionMenuListProps {
   item: AccordionMenuItemType;
   bothAccordionsOpen: boolean;
