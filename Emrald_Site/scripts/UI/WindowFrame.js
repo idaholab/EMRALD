@@ -32,7 +32,6 @@ var WindowFrame = (function (_super) {
           }
 
           this.modaldiv = document.createElement('div');
-          this.modaldiv.style.zIndex = this.z_index + 4;
           this.modaldiv.className = 'OverlayEffect';
           document.body.appendChild(this.modaldiv);
         }
