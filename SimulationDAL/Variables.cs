@@ -755,7 +755,7 @@ namespace SimulationDAL
         if (!_docFullPath.EndsWith(@"\"))
           _docFullPath += @"\";
 
-        _docFullPath = Path.GetFullPath(Path.Combine(_docFullPath + this._docPath));
+        _docFullPath = Path.GetFullPath(Path.Combine(_docFullPath, this._docPath));
       }
       else
       {
