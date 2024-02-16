@@ -1781,7 +1781,7 @@ namespace SimulationTracking
         //Use this instead to get all states
         //retList.Add(curStateInfo.state.id);
 
-        if ((curStateInfo.state.diagram is CompDiagram) && ((CompDiagram)curStateInfo.state.diagram).IsFailedState(curStateInfo.state.id))
+        if ((curStateInfo.state.diagram is EvalDiagram) && ((EvalDiagram)curStateInfo.state.diagram).IsFailedState(curStateInfo.state.id))
         {
           retList.Add(curStateInfo);
         }

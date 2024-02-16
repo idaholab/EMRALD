@@ -184,7 +184,7 @@ namespace SimulationDAL
                                          double demandFailure = 0.0, 
                                          string sim3DComp = "")
     {
-      CompDiagram addComp = new CompDiagram(compName);
+      EvalDiagram addComp = new EvalDiagram(compName);
       addComp.desc = desc;
       allDiagrams.Add(addComp);
 
@@ -295,7 +295,7 @@ namespace SimulationDAL
       if (rateNames.Count() != runningFailRates.Count())
         throw new Exception("Not equal Demand names and prob list");
 
-      CompDiagram addComp = new CompDiagram(compName);
+      EvalDiagram addComp = new EvalDiagram(compName);
       addComp.desc = desc;
       allDiagrams.Add(addComp);
 
@@ -458,7 +458,7 @@ namespace SimulationDAL
       if (rateNames.Count() != runningFailRates.Count())
         throw new Exception("Not equal Demand names and prob list");
 
-      CompDiagram addComp = new CompDiagram(compName);
+      EvalDiagram addComp = new EvalDiagram(compName);
       addComp.desc = desc;
       allDiagrams.Add(addComp);
 
@@ -630,7 +630,7 @@ namespace SimulationDAL
         throw new Exception("Not equal Demand names and lists");
 
 
-      CompDiagram addComp = new CompDiagram(compName);
+      EvalDiagram addComp = new EvalDiagram(compName);
       addComp.desc = desc;
       allDiagrams.Add(addComp);
 
@@ -722,7 +722,7 @@ namespace SimulationDAL
     //returns the active state
     public State AutoItemsForSystemGroup(string sysName, string desc, LogicNode logicTop, List<State> startSysStates, List<State> stopSysStates)
     {
-      SysDiagram addComp = new SysDiagram(sysName);
+      EvalDiagram addComp = new EvalDiagram(sysName);
       addComp.desc = desc;
       allDiagrams.Add(addComp);
 
@@ -773,7 +773,7 @@ namespace SimulationDAL
 
     public State AutoItemsForSystemGroup(string sysName, string desc, LogicNode logicTop, string[] startSysStates, string[] stopSysStates)
     {
-      SysDiagram addComp = new SysDiagram(sysName);
+      EvalDiagram addComp = new EvalDiagram(sysName);
       addComp.desc = desc;
       allDiagrams.Add(addComp);
 

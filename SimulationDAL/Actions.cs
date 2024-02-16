@@ -2165,7 +2165,7 @@ namespace SimulationDAL
       {
         foreach (var wrapper in dynamicObj)
         {
-          var item = wrapper.Action;
+          var item = wrapper;
           Action curItem = null;
           curName = (string)item.name;
 
@@ -2204,7 +2204,7 @@ namespace SimulationDAL
 
       foreach (var wrapper in dynamicObj)
       {
-        var item = wrapper.Action;
+        var item = wrapper;
         
         Action curItem = this.FindByName((string)item.name);
         try

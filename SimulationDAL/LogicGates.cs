@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using MyStuff.Collections;
+using Newtonsoft.Json;
 //using System.Windows.Forms;
 //using System.Web.Helpers;
 
@@ -18,10 +19,16 @@ namespace SimulationDAL
   //  bool Evaluate(MyBitArray curStates);
   //}
 
+  public class compChild
+  {
+    public EvalDiagram diagram = null;
+    public Dictionary<int, int> stateValues = new Dictionary<int, int>(); //stateID and then value for the state
+  }
+
   public class LogicNode : BaseObjInfo
   {
     protected bool _isTop;  //root node of this one 
-    private List<EvalDiagram> _compChildren = new List<EvalDiagram>();
+    private List<compChild> _compChildren = new List<compChild>();
     private List<LogicNode> _subGates = new List<LogicNode>();
 
     public EnGateType gateType = EnGateType.gtAnd;
@@ -84,8 +91,12 @@ namespace SimulationDAL
       for (int i = 0; i < this._compChildren.Count; ++i)
       {
 
-        retStr = retStr + "\"" + this._compChildren[i].name + "\"";
+        retStr = retStr + "\"diagramName\": \"" + this._compChildren[i].diagram.name + "\"," + Environment.NewLine;
 
+        Dictionary<string, int> nameDict = this._compChildren[i].stateValues
+            .ToDictionary(kvp => lists.allStates[kvp.Key].name, kvp => kvp.Value);
+
+        retStr = retStr + "\"stateValues\": " + JsonConvert.SerializeObject(nameDict) + Environment.NewLine;
 
         if (i < this._compChildren.Count - 1)
         {
@@ -119,56 +130,6 @@ namespace SimulationDAL
       return retStr;
     }
 
-    public string GetTreeJSON(bool incBrackets, EmraldModel lists)
-    {
-      string retStr = "";
-      if (incBrackets)
-      {
-        retStr = "{";
-      }
-      retStr = retStr + "\"LogicNode\": {" + Environment.NewLine + base.GetJSON(false, lists) + "," + Environment.NewLine;
-
-      //add derived items
-      retStr = retStr + "\"gateType\": \"" + this.gateType.ToString() + "\"";
-      retStr = retStr + "," + Environment.NewLine + "\"isTop\": \"" + this._isTop.ToString() + "\"";
-
-
-      retStr = retStr + "," + Environment.NewLine + "\"compChildren\": [";
-      for (int i = 0; i < this._compChildren.Count; ++i)
-      {
-        retStr = retStr + Environment.NewLine + "{ \"stateName\":\"" + this._compChildren[i].name + "\"}";
-
-        if (i < this._compChildren.Count - 1)
-        {
-          retStr = retStr + "," + Environment.NewLine;
-        }
-      }
-      retStr = retStr + "]";
-      
-
-      retStr = retStr + "," + Environment.NewLine + "\"gateChildren\": [";
-      for (int i = 0; i < this._subGates.Count; ++i)
-      {
-        retStr = retStr + Environment.NewLine + this._subGates[i].GetJSON(false, lists);
-
-        if (i < this._subGates.Count - 1)
-        {
-          retStr = retStr + "," + Environment.NewLine;
-        }
-      }
-      retStr = retStr + "]";
-      
-
-
-      retStr = retStr + Environment.NewLine + "}";
-
-      if (incBrackets)
-      {
-        retStr = retStr + Environment.NewLine + "}";
-      }
-
-      return retStr;
-    }
 
     public override bool DeserializeDerived(object obj, bool wrapped, EmraldModel lists, bool useGivenIDs)
     {
@@ -188,51 +149,10 @@ namespace SimulationDAL
 
       gateType = (EnGateType)Enum.Parse(typeof(EnGateType), (string)dynObj.gateType, true);
 
-      //Now done in LoadObjLinks()
-      ////load the root obj info
-      //if (dynObj.rootName != null)
-      //{
-      //  _rootParent = lists.allLogicNodes.FindByName((string)dynObj.rootName);
-      //  if (_rootParent == null)
-      //  {
-      //    throw new Exception("Root node " + (string)dynObj.rootName + " not found.");
-      //  }
-      //}
 
-      ////load the gate children
-      //if (dynObj.gateChildren != null)
-      //{
-      //  _subGates.Clear();
-      //  foreach (dynamic gateName in dynObj.gateChildren)
-      //  {
-      //    LogicNode curChildGate = lists.allLogicNodes.FindByName(gateName);
-      //    if (curChildGate == null)
-      //    {
-      //      throw new Exception("Deserialize Logic failed to find child gate - " + gateName);
-
-      //    }
-          
-      //    if (!_subGates.Contains(curChildGate))
-      //      _subGates.Add(curChildGate);
-      //  }
-      //}
-
-      ////load the component children
-      //if (dynObj.compChildren != null)
-      //{
-      //  _compChildren.Clear();
-      //  foreach (dynamic stateName in dynObj.compChildren)
-      //  {
-      //    EvalDiagram curChildComp = lists.allDiagrams.FindByName(stateName);
-      //    if (curChildComp == null)
-      //    {
-      //      throw new Exception("Deserialize Logic gate Failed to find child state - " + stateName);
-      //    }
-          
-      //    _compChildren.Add(curChildComp);
-      //  }
-
-      //}
+      //load the component children in the loadObjLinks so we keep the diagram name and load the state value list together.
+      
+      
 
       processed = true;
       return true;
@@ -285,13 +205,27 @@ namespace SimulationDAL
         _compChildren.Clear();
         foreach (var stateName in dynObj.compChildren)
         {
+          var compChild = new compChild();
           EvalDiagram curChildComp = (EvalDiagram)lists.allDiagrams.FindByName((string)stateName);
           if (curChildComp == null)
           {
             throw new Exception("Deserialize Logic gate Failed to find child state - " + stateName);
           }
+          compChild.diagram = curChildComp;
 
-          _compChildren.Add(curChildComp);
+          if (dynObj.compChildren.stateValues != null)
+          {
+            //var nameDict = dynObj.compChildren.stateValues.ToObject<Dictionary<string, int>>();
+            //string s = kvp.Key;
+            // lists.allStates.FindByName("name").id;
+            foreach (var item in dynObj.compChildren.stateValues)
+            {
+              compChild.stateValues.Add(lists.allStates.FindByName(item.stateName).id, item.stateValue);
+            }
+          }
+          
+
+          _compChildren.Add(compChild);
         }
 
       }
@@ -305,9 +239,9 @@ namespace SimulationDAL
       int evalSum = 0;
       int unknownCnt = 0;
       //go through all the child item both components and gates
-      foreach (EvalDiagram curComp in _compChildren)
+      foreach (var curComp in _compChildren)
       {
-        int evalNum = curComp.Evaluate(curStates, success);
+        int evalNum = curComp.diagram.Evaluate(curStates, success, curComp.stateValues);
         if (evalNum < 0)
           unknownCnt++;
         else
@@ -367,16 +301,6 @@ namespace SimulationDAL
       this._subGates.Remove(child);
     }
 
-    public void AddCompChild(EvalDiagram child)
-    {
-      this._compChildren.Add(child);
-    }
-
-    public void RemoveCompChild(EvalDiagram child)
-    {
-      this._compChildren.Remove(child);
-    }
-
     public List<int> AllUsedStateIDs
     {
       get
@@ -385,11 +309,11 @@ namespace SimulationDAL
 
 
         //get all the used states for the components
-        foreach (EvalDiagram comp in this._compChildren)
+        foreach (var comp in this._compChildren)
         {
-          retVal.AddRange(comp.stateIDs);
+          retVal.AddRange(comp.diagram.stateIDs);
         }
-
+        
         //add all the items under child gates
         foreach (LogicNode childNode in this._subGates)
         {
@@ -571,7 +495,7 @@ namespace SimulationDAL
       {
         foreach (var wrapper in dynamicObj)
         {
-          var item = wrapper.LogicNode;
+          var item = wrapper;
           LogicNode curItem = null;
           curName = (string)item.name;
 
@@ -610,7 +534,7 @@ namespace SimulationDAL
 
       foreach (var wrapper in dynamicObj)
       {
-        var item = wrapper.LogicNode;
+        var item = wrapper;
 
         LogicNode curItem = this.FindByName((string)item.name, false);
         try

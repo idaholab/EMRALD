@@ -2010,7 +2010,7 @@ namespace SimulationDAL
       {
         foreach (var wrapper in dynamicObj)
         {
-          var item = wrapper.Event;
+          var item = wrapper;
           curName = (string)item.name;
           Event curItem = null;
 
@@ -2049,7 +2049,7 @@ namespace SimulationDAL
 
       foreach (var wrapper in dynamicObj)
       {
-        var item = wrapper.Event;
+        var item = wrapper;
         EnEventType evType = (EnEventType)Enum.Parse(typeof(EnEventType), (string)item.evType, true);
 
         if ((evType == EnEventType.etStateCng) || (evType == EnEventType.etComponentLogic) || 

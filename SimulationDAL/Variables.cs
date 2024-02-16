@@ -1576,7 +1576,7 @@ namespace SimulationDAL
 
       foreach (var wrapper in dynamicObj)
       {
-        var item = wrapper.Variable;
+        var item = wrapper;
         try
         {
           SimVariable curItem = null;
@@ -1616,7 +1616,7 @@ namespace SimulationDAL
 
       foreach (var wrapper in dynamicObj)
       {
-        var item = wrapper.Variable;
+        var item = wrapper;
         EnVarScope scope = (EnVarScope)Enum.Parse(typeof(EnVarScope), (string)item.varScope, true);
 
         if ((scope == EnVarScope.gtLocal) || (scope == EnVarScope.gtAccrual))

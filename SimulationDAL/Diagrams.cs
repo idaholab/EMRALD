@@ -10,22 +10,23 @@ using MyStuff.Collections;
 
 namespace SimulationDAL
 {
-  public class Diagram : BaseObjInfo
+  public class Diagram : BaseObjInfo //multiState
   {
     //protected dSimulation _Sim = null;
     protected List<State> _States = null;
-    public EnDiagramType diagType = EnDiagramType.dtOther;
+    public EnDiagramType2 diagType = EnDiagramType2.dtMulti;
 
    
 
-    public Diagram()
+    public Diagram(EnDiagramType2 inDiagType = EnDiagramType2.dtSingle)
     {
       this._id = SingleNextIDs.Instance.NextID(EnIDTypes.itDiagram);
+      this.diagType = inDiagType;
       this._States = new List<State>();
       //_Sim = inSim;
     }
 
-    public Diagram(string inName, EnDiagramType inDiagType)
+    public Diagram(string inName, EnDiagramType2 inDiagType)
     {
       this._id = SingleNextIDs.Instance.NextID(EnIDTypes.itDiagram);
 
@@ -149,10 +150,8 @@ namespace SimulationDAL
       if (!base.DeserializeDerived((object)dynObj, false, lists, useGivenIDs))
         return false;
 
-      var jsonDiagType = (EnDiagramType)Enum.Parse(typeof(EnDiagramType), (string)dynObj.diagramType, true);
-      if (this.diagType == EnDiagramType.dtOther)
-        this.diagType = jsonDiagType;
-
+      var jsonDiagType = (EnDiagramType2)Enum.Parse(typeof(EnDiagramType2), (string)dynObj.diagramType, true);
+      
       if (this.diagType != jsonDiagType)
         throw new Exception("Diagram types do not match, cannot change the type once an item is created!");
 
@@ -245,7 +244,7 @@ namespace SimulationDAL
   }
 
 
-  public abstract class EvalDiagram : Diagram // dtComponent or dtSystem
+  public class EvalDiagram : Diagram // dtSingle
   {
     //TODO may be faster to add a bitset for success, failed and unknown states
     private Dictionary<int, bool> _singleStateGroup = new Dictionary<int, bool>(); 
@@ -257,11 +256,11 @@ namespace SimulationDAL
     /// <param name="compStates">Value states for this component can only be in one at a time </param>
     /// <param name="onStates">Which states will be a one or true value for the state </param>
 
-    public EvalDiagram(EnDiagramType inDiagType)
-      : base("", inDiagType) { }
+    public EvalDiagram()
+      : base("", EnDiagramType2.dtSingle) { }
 
-    public EvalDiagram(string inName, EnDiagramType inDiagType)
-      : base(inName, inDiagType) { }
+    public EvalDiagram(string inName)
+      : base(inName, EnDiagramType2.dtSingle) { }
     
 
     public override string GetDerivedJSON(EmraldModel lists)
@@ -378,22 +377,42 @@ namespace SimulationDAL
     /// depending on if evaluating for success or fail return the correct value 1 or 0.
     /// return -1 for ignore cases.
     /// </summary>
-    public int Evaluate(MyBitArray curStates, bool onSuccess)
-    {      
+    public int Evaluate(MyBitArray curStates, bool onSuccess, Dictionary<int, int> stateValues)
+    {
+      int retValue = -1;
+      bool found = false;
       foreach (var s in _singleStateGroup)
       {
-        if (curStates[s.Key])
+        // See if the user has specified a different value for the state than the default
+        if (!stateValues.TryGetValue(s.Key, out retValue))
         {
-          bool eval = s.Value;
-          if (!onSuccess) //do inverse for on failure evaluateion
-            eval = !s.Value;
-          
-          return eval == true ? 1 : 0;
+          found = true;
+          // No specified value so use the default one or ignore
+          if (curStates[s.Key])
+          {
+            retValue = s.Value ? 1 : 0; // Convert state default boolean value into 1 or 0.
+          }
+          else // Ignore
+          {
+            return -1; // Return -1 if state is not found
+          }
         }
       }
 
-      //item not found so it is unknown. //So return -1 so it basicly ignore this entry
-      return -1;
+      if(!found)
+      {
+        NLog.Logger logger = NLog.LogManager.GetLogger("logfile");
+        logger.Error("Logic Error - Did not evaluate " + this.name + " as the simulation is not in any of the diagrams states at this time of the simulation. This node is ignored in the logic tree evaluation.");
+      }
+
+      // Check if retValue needs to be inverted for onFailure evaluation
+      if (!onSuccess && retValue >= 0)
+      {
+        retValue = retValue == 0 ? 1 : 0; // Invert retValue
+      }
+
+      // Return the final retValue
+      return retValue;
     }
 
     public void AddEvalVal(int stateID, bool inIsSuccessState)
@@ -416,24 +435,6 @@ namespace SimulationDAL
         return this._singleStateGroup.Keys.ToList();
       }
     }
-  }
-
-  public class CompDiagram : EvalDiagram // dtComponent 
-  {
-    public CompDiagram()
-      : base(EnDiagramType.dtComponent) { }
-
-    public CompDiagram(string inName)
-      : base(inName, EnDiagramType.dtComponent) { }
-  }
-
-  public class SysDiagram : EvalDiagram // dtComponent 
-  {
-    public SysDiagram()
-      : base(EnDiagramType.dtSystem) { }
-
-    public SysDiagram(string inName)
-      : base(inName, EnDiagramType.dtSystem) { }
   }
 
   public class AllDiagrams : Dictionary<int, Diagram>, ModelItemLists
@@ -465,14 +466,12 @@ namespace SimulationDAL
       return retStr;
     }
 
-    public static Diagram CreateNewDiagram(EnDiagramType diagType)
+    public static Diagram CreateNewDiagram(EnDiagramType2 diagType)
     {
       switch (diagType)
       {
-        case EnDiagramType.dtComponent: return new CompDiagram();
-        case EnDiagramType.dtOther: return new Diagram();
-        case EnDiagramType.dtPlant: return new Diagram();
-        case EnDiagramType.dtSystem: return new SysDiagram();
+        case EnDiagramType2.dtMulti: return new EvalDiagram();
+        case EnDiagramType2.dtSingle: return new Diagram(EnDiagramType2.dtSingle);
         default: return null;
       }
     }
@@ -598,7 +597,7 @@ namespace SimulationDAL
       {
         foreach (var wrapper in dynamicObj)
         {
-          var item = wrapper.Diagram;
+          var item = wrapper;
           Diagram curItem = null;
           curName = (string)item.name;
 
@@ -617,7 +616,7 @@ namespace SimulationDAL
 
           if (curItem == null)
           {
-            curItem = AllDiagrams.CreateNewDiagram((EnDiagramType)Enum.Parse(typeof(EnDiagramType), (string)item.diagramType, true));
+            curItem = AllDiagrams.CreateNewDiagram((EnDiagramType2)Enum.Parse(typeof(EnDiagramType2), (string)item.diagramType, true));
             //done in deserialize - lists.allActions.Add(curAct);
           }
 
@@ -637,7 +636,7 @@ namespace SimulationDAL
 
       foreach (var wrapper in dynamicObj)
       {
-        var item = wrapper.Diagram;
+        var item = wrapper;
 
         Diagram curItem = this.FindByName((string)item.name);
         try

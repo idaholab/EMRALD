@@ -40,7 +40,8 @@ namespace SimulationDAL
     etDistribution
     };
 
-  public enum EnDiagramType { dtComponent = 0, dtSystem, dtPlant, dtOther }; 
+  //public enum EnDiagramType { dtComponent = 0, dtSystem, dtPlant, dtOther };
+  public enum EnDiagramType2 { dtSingle = 0, dtMulti };
 
   public enum EnStateType { stStart = 0, stStandard, stKeyState, stTerminal };
   public enum EnActionType { atTransition = 0, atCngVarVal, at3DSimMsg, atRunExtApp, atCustomStateShift, atJumpToTime, atCngVarDll };

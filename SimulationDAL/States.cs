@@ -494,7 +494,7 @@ namespace SimulationDAL
       {
         foreach (var wrapper in dynamicObj)
         {
-          var item = wrapper.State;
+          var item = wrapper;
           State curItem = null;
           curName = (string)item.name;
 
@@ -533,7 +533,7 @@ namespace SimulationDAL
 
       foreach (var wrapper in dynamicObj)
       {
-        var item = wrapper.State;
+        var item = wrapper;
 
         State curItem = this.FindByName((string)item.name, false);
         try

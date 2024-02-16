@@ -248,7 +248,7 @@ namespace SimulationDAL
       {
         foreach (var wrapper in dynamicObj)
         {
-          var item = wrapper.ExtSim;
+          var item = wrapper;
           ExternalSim curItem = null;
           curName = (string)item.name;
 
