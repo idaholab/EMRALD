@@ -57,7 +57,7 @@ export function UpgradeV3_0(modelTxt: string): UpgradeReturn {
                 ifInState
             };
 
-        }) : [],//({ ...Event })) : [], 
+        }) : [],
         LogicNodeList: oldModel.LogicNodeList ? oldModel.LogicNodeList.map(({ LogicNode }) => ({
             ...LogicNode,
             isRoot: LogicNode.isRoot !== undefined ? LogicNode.isRoot : false,
@@ -143,19 +143,32 @@ export function UpgradeV3_0(modelTxt: string): UpgradeReturn {
     newModel.version = 3.0;
     const retModel: UpgradeReturn = { newModel: JSON.stringify(newModel), errors: [] };
 
-    //to validate the new version against the schema
-    const schemaPath = './src/Upgrades/v3_0/EMRALD_JsonSchemaV3_0.json';
-    const schemaTxt = fs.readFileSync(schemaPath, 'utf-8').trim();
-    
-    const schema = JSON.parse(schemaTxt);
-    const validator = new Validator();
-    const validationResult = validator.validate(newModel, schema);
-    if(validationResult.valid === false){
-        validationResult.errors.forEach(error => {
-            retModel.errors.push(error.instance + " - " + error.message + " : " + JSON.stringify(error.argument))
-        });
-    }
+    // to validate the new version against the schema
+    const schemaPath = './src/utils/Upgrades/v3_0/EMRALD_JsonSchemaV3_0.json';
 
+    fetch(schemaPath)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error("Failed to fetch schema text");
+            }
+            return response.text();
+        })
+        .then(schemaTxt => {
+            console.log(JSON.parse(schemaTxt));
+            const schema = JSON.parse(schemaTxt);
+            const validator = new Validator();
+            console.log(validator);
+            const validationResult = validator.validate(newModel, schema);
+            if (validationResult.valid === false) {
+                validationResult.errors.forEach(error => {
+                    retModel.errors.push(error.instance + " - " + error.message + " : " + JSON.stringify(error.argument))
+                });
+            }
+        })
+        .catch(error => {
+            // handle error
+            console.error(error);
+        });
 
     return retModel;
 }

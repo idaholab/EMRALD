@@ -5,7 +5,7 @@ import React, {
   useMemo,
   useState,
 } from 'react';
-import { EventAction, State, StateList } from '../types/State';
+import { EventAction, State } from '../types/State';
 import { EmraldContextWrapperProps } from './EmraldContextWrapper';
 
 interface StateContextType {
@@ -15,8 +15,8 @@ interface StateContextType {
   deleteState: (StateId: number | string) => void;
   getEventsByStateName: (stateName: string) => {events: String[]; type: string; eventActions: EventAction[]; immediateActions: string[]};
   getStatePosition: (stateName: string) => {x: number; y: number};
-  newStateList: (newStateList: StateList) => void;
-  mergeStateList: (newStateList: StateList) => void;
+  newStateList: (newStateList: State[]) => void;
+  mergeStateList: (newStateList: State[]) => void;
   clearStateList: () => void;
 }
 
@@ -33,60 +33,60 @@ export function useStateContext() {
 }
 
 const StateContextProvider: React.FC<EmraldContextWrapperProps> = ({ appData, updateAppData, children }) => {
-  const [stateList, setStateList] = useState<StateList>(
-    appData.StateList as StateList,
+  const [states, setStates] = useState<State[]>(
+    appData.StateList,
   );
 
   // Memoize the value of `States` to avoid unnecessary re-renders
-  const states = useMemo(
-    () => stateList.map(({ State }) => State) as State[],
-    [stateList],
-  );
+  // const states = useMemo(
+  //   () => stateList.map(({ State }) => State) as State[],
+  //   [stateList],
+  // );
 
-  useEffect(() => {
-    setStateList(appData.StateList as StateList);
-  }, [appData]);
+  // useEffect(() => {
+  //   setStateList(appData.StateList as StateList);
+  // }, [appData]);
 
   // Create, Delete, Update individual States
   const createState = (newState: State) => {
-    const updatedStates = [...stateList, { State: newState }];
-    setStateList(updatedStates);
+    const updatedStates = [...states, newState];
+    setStates(updatedStates);
   };
 
   const updateState = (updatedState: State) => {
-    const updatedStates = stateList.map((item) =>
-      item.State.id === updatedState.id
-        ? { State: updatedState }
+    const updatedStates = states.map((item) =>
+      item.id === updatedState.id
+        ? updatedState
         : item,
     );
-    setStateList(updatedStates);
+    setStates(updatedStates);
   };
 
   const deleteState = (stateId: number | string) => {
-    const updatedStates = stateList.filter(
-      (item) => item.State.id !== stateId,
+    const updatedStates = states.filter(
+      (item) => item.id !== stateId,
     );
-    setStateList(updatedStates);
+    setStates(updatedStates);
   };
 
   const getEventsByStateName = (stateName: string) => {
-    const state = stateList.find(({ State }) => State.name === stateName);
+    const state = states.find((state) => state.name === stateName);
     if (state) {
       return {
-        type: state.State.stateType || '',
-        events: state.State.events || [],
-        eventActions: state.State.eventActions || [],
-        immediateActions: state.State.immediateActions || [],
+        type: state.stateType || '',
+        events: state.events || [],
+        eventActions: state.eventActions || [],
+        immediateActions: state.immediateActions || [],
       };
     }
     return { type: '', events: [], eventActions: [], immediateActions: [] };
   };
 
   const getStatePosition = (stateName: string) => {
-    const state = stateList.find(({ State }) => State.name === stateName);
-    if (state?.State.geometry) {
+    const state = states.find((state) => state.name === stateName);
+    if (state?.geometry) {
       try {
-        const correctedString = state.State.geometry
+        const correctedString = state.geometry
         .replace(/([a-zA-Z0-9]+)\s*:/g, '"$1":') // Replace property names with double quotes
         .replace(/'/g, '"'); // Replace single quotes with double quotes
         const parsedGeometry = JSON.parse(correctedString);
@@ -99,16 +99,16 @@ const StateContextProvider: React.FC<EmraldContextWrapperProps> = ({ appData, up
   };
 
   // Open New, Merge, and Clear State List
-  const newStateList = (newStateList: StateList) => {
-    setStateList(newStateList);
+  const newStateList = (newStateList: State[]) => {
+    setStates(newStateList);
   };
 
-  const mergeStateList = (newStateList: StateList) => {
-    setStateList([...stateList, ...newStateList]);
+  const mergeStateList = (newStateList: State[]) => {
+    setStates([...states, ...newStateList]);
   };
 
   const clearStateList = () => {
-    setStateList([]);
+    setStates([]);
   };
 
   return (

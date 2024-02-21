@@ -122,3 +122,10 @@ export interface Action {
      */
     updateVariables?: unknown[]
   }
+
+  export interface NewState {
+    toState?: string;
+    prob?: number;
+    varProb?: string;
+    failDesc?: string;
+  }

@@ -5,7 +5,7 @@ import React, {
   useMemo,
   useState,
 } from 'react';
-import { Action, ActionList, NewState } from '../types/Action';
+import { Action, NewState } from '../types/Action';
 import { EmraldContextWrapperProps } from './EmraldContextWrapper';
 
 interface ActionContextType {
@@ -30,52 +30,49 @@ export function useActionContext() {
 }
 
 const ActionContextProvider: React.FC<EmraldContextWrapperProps> = ({ appData, updateAppData, children }) => {
-  const [actionList, setActionList] = useState<ActionList>(
-    appData.ActionList as ActionList,
+  const [actions, setActions] = useState<Action[]>(
+    appData.ActionList
   );
 
   // Memoize the value of `actions` to avoid unnecessary re-renders
-  const actions = useMemo(
-    () => actionList.map(({Action}) => Action) as Action[],
-    [actionList, appData]
-  );
+  // const actions = useMemo(
+  //   () => actionList.map(({Action}) => Action) as Action[],
+  //   [actionList, appData]
+  // );
 
-  useEffect(() => {
-    setActionList(appData.ActionList as ActionList);
-  }, [appData]);
+  // useEffect(() => {
+  //   setActionList(appData.ActionList as ActionList);
+  // }, [appData]);
   
   const createAction = (newAction: Action) => {
-    const updatedActionList = [...actionList, { Action: newAction }];
-    setActionList(updatedActionList);
+    const updatedActionList = [...actions, newAction ];
+    setActions(updatedActionList);
   };
 
   const updateAction = (updatedAction: Action) => {
-    const updatedActionList = actionList.map((item) =>
-      item.Action.id === updatedAction.id ? { Action: updatedAction } : item,
+    const updatedActionList = actions.map((item) =>
+      item.id === updatedAction.id ? updatedAction : item,
     );
-    setActionList(updatedActionList);
+    setActions(updatedActionList);
   };
 
   const deleteAction = (actionId: number | string) => {
-    const updatedActionList = actionList.filter(
-      (item) => item.Action.id !== actionId,
+    const updatedActionList = actions.filter(
+      (item) => item.id !== actionId,
     );
-    setActionList(updatedActionList);
+    setActions(updatedActionList);
   };
 
   const getNewStatesByActionName = (actionName: string) => {
-    const action = actionList.find(({ Action }) => Action.name === actionName);
+    const action = actions.find((action) => action.name === actionName);
     if (action) {
-      return action.Action.newStates || [];
+      return action.newStates || [];
     }
     return [];
   };
 
   const clearActionList = () => {
-    setActionList([]);
-
-    console.log(actionList);
-    console.log(actions)
+    setActions([]);
   }
 
   return (
