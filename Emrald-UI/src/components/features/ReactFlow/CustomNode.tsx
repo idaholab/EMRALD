@@ -1,7 +1,7 @@
 import React, { memo } from 'react';
 import { Handle, Position } from 'reactflow';
 import './CustomNode.scss';
-import { List, ListItem, Typography } from '@mui/material';
+import { List, ListItem, Typography, Box } from '@mui/material';
 import {
   DiagramAccordion,
   DiagramAccordionDetails,
@@ -12,10 +12,12 @@ import KeyIcon from '@mui/icons-material/Key';
 import PlayCircleOutlineIcon from '@mui/icons-material/PlayCircleOutline';
 import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 import { capitalize } from 'lodash';
+import { TbReplaceFilled, TbArrowBarToRight } from 'react-icons/tb';
 
 interface NodeActionsProps {
   type: 'immediate' | 'event';
   actions: string[] | EventAction[];
+  events?: {event: {name: string, evType: string}, actions: string[], moveFromTarget: boolean}[];
 }
 
 /**
@@ -27,8 +29,11 @@ interface NodeActionsProps {
 const NodeActionsComponent: React.FC<NodeActionsProps> = ({
   type,
   actions,
+  events
 }) => {
   const [expandedPanel, setExpandedPanel] = React.useState<boolean>(true);
+
+  console.log(events);
 
   return (
     <div className={`custom-node__${type}-actions`}>
@@ -39,13 +44,41 @@ const NodeActionsComponent: React.FC<NodeActionsProps> = ({
         onClick={() => setExpandedPanel(!expandedPanel)}
       >
         <DiagramAccordionSummary aria-controls={`panel1a-content`}>
-          <Typography sx={{ fontSize: 12 }}>{`${capitalize(
+          <Typography sx={{ fontSize: 11 }}>{`${capitalize(
             type,
           )} actions`}</Typography>
         </DiagramAccordionSummary>
-        <DiagramAccordionDetails sx={{ p: 0 }}>
+        
+        {type === 'event' ? (
+          <DiagramAccordionDetails sx={{ p: 0 }}>
+            {events && events.map((item) => (
+              <Box key={item.event.name} sx={{borderBottom: "1px solid rgba(0, 0, 0, .125)", display: 'flex', alignItems: 'center', p: '5px', ":last-child": {
+                borderBottom: "none"
+              }}}>
+                <TbReplaceFilled style={{width: '15px', height: '15px'}}/>
+                <Box>
+                  <Typography sx={{ fontSize: 10, ml: "10px", ":hover": 'background: rgba(0, 0, 0, .125)' }}>{item.event.name}</Typography>
+                  <Box>
+                    {item.actions.map((action) => (
+                      <Box sx={{display: 'flex', alignItems: 'center', ml: "10px"}}>
+                        <TbArrowBarToRight />
+                        <Typography key={action} sx={{ fontSize: 10, ml: "5px" }}>{action}</Typography>
+                      </Box>
+                    ))}
+                  </Box>
+                </Box>
+              </Box>
+            ))}
+          </DiagramAccordionDetails>
+        ) : (
+          <DiagramAccordionDetails sx={{ p: 0 }}>
+            <ActionList actions={actions} />
+          </DiagramAccordionDetails>
+        )}
+        
+        {/* <DiagramAccordionDetails sx={{ p: 0 }}>
           <ActionList actions={actions} />
-        </DiagramAccordionDetails>
+        </DiagramAccordionDetails> */}
       </DiagramAccordion>
       <Handle
         className="custom-node__handle-right source-handle"
@@ -73,13 +106,13 @@ const ActionList: React.FC<ActionListProps> = ({ actions }) => {
     if (typeof action === 'string') {
       return (
         <ListItem key={index}>
-          <Typography sx={{ fontSize: 12 }}>{action}</Typography>
+          <TbArrowBarToRight /> <Typography sx={{ fontSize: 10, ml: '5px' }}>{action}</Typography>
         </ListItem>
       );
     } else {
       return (
         <ListItem key={index}>
-          <Typography sx={{ fontSize: 12 }}>
+          <Typography sx={{ fontSize: 10 }}>
             {action.actions ? action.actions[0] : ''}
           </Typography>
         </ListItem>
@@ -120,7 +153,7 @@ interface CustomNodeProps {
  * @return {ReactNode} The rendered custom node component.
  */
 function CustomNode({ id, data }: CustomNodeProps) {
-  const { immediateActions, eventActions } = data;
+  const { immediateActions, eventActions, events } = data;
   return (
     <>
       <div className="custom-node__header" id={id}>
@@ -134,7 +167,7 @@ function CustomNode({ id, data }: CustomNodeProps) {
         id={`action-target`}
       />
         <NodeActionsComponent actions={immediateActions} type="immediate" />
-        <NodeActionsComponent actions={eventActions} type="event" />
+        <NodeActionsComponent actions={eventActions} events={events} type="event" />
       </div>
     </>
   );

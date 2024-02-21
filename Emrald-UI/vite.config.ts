@@ -15,4 +15,9 @@ export default defineConfig({
     environment: 'jsdom',
     setupFiles: ['./src/setupTests.ts'],
   },
+  build: {
+    // Ensure sourcemaps are generated for debugging
+    sourcemap: true,
+    outDir: 'dist' // Adjust the output directory if needed
+  },
 });

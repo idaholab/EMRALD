@@ -130,8 +130,16 @@ const ReactFlowDiagram: React.FC<ReactFlowDiagramProps> = ({ diagram }) => {
             label: state,
             type: stateDetails.type,
             immediateActions: stateDetails.immediateActions,
+            events: stateDetails.events.map((event, index) => ({
+              event: {
+                name: event,
+                evType: 'test'
+              },
+              actions: stateDetails.eventActions[index].actions,
+              moveFromCurrent: stateDetails.eventActions[index].moveFromCurrent
+            })),
             eventActions: stateDetails.eventActions,
-          },
+          }
         };
       });
       setNodes(stateNodes);
