@@ -1,6 +1,4 @@
-import { Diagram } from "../ModelInterfaces/Current/Diagram";
-import { EMRALD_Model } from "../ModelInterfaces/Current/EMRALD_Model";
-import { Diagram as DiagramV_2_4 } from "./v2_4/AllModelInterfacesV2_4";
+import { EMRALD_Model } from "./v3_0/AllModelInterfacesV3_0";
 import { UpgradeV1_x } from "./v1_x/UpgradeV1_x"
 import { UpgradeV2_4 } from "./v2_4/UpgradeV2_4"
 import { UpgradeV3_0 } from "./v3_0/UpgradeV3_0"
