@@ -271,34 +271,7 @@
                     "type": "array",
                     "description": "Optional. If this is a transition action then these are the states that it could be transitioned to.",
                     "items": {
-                        "type": "object",
-                        "properties": {
-                            "toState": {
-                                "type": "string",
-                                "description": "reference name of the state to transtion to."
-                            },
-                            "prob": {
-                                "type": "number",
-                                "description": "probability that this state will be transtioned to."
-                            },
-                            "failDesc": {
-                                "type": "string",
-                                "description": "The description from the user for output if tthis transition takes place."
-                            },
-                            "varProb": {
-                                "type": [
-                                    "null",
-                                    "string"
-                                ],
-                                "description": "Optional, if used  then the a variable is used for the probability. This is the name of that variable"
-                            }
-                        },
-                        "additionalProperties": false,
-                        "required": [
-                            "toState",
-                            "prob",
-                            "failDesc"
-                        ]
+                        "$ref": "#/definitions/NewState"
                     }
                 },
                 "scriptCode": {
@@ -782,6 +755,36 @@
                 "varScope",
                 "value",
                 "type"
+            ]
+        },
+        "NewState": {
+            "type": "object",
+            "properties": {
+                "toState": {
+                    "type": "string",
+                    "description": "reference name of the state to transtion to."
+                },
+                "prob": {
+                    "type": "number",
+                    "description": "probability that this state will be transtioned to."
+                },
+                "failDesc": {
+                    "type": "string",
+                    "description": "The description from the user for output if tthis transition takes place."
+                },
+                "varProb": {
+                    "type": [
+                        "null",
+                        "string"
+                    ],
+                    "description": "Optional, if used  then the a variable is used for the probability. This is the name of that variable"
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "toState",
+                "prob",
+                "failDesc"
             ]
         },
         "ChangeLog": {

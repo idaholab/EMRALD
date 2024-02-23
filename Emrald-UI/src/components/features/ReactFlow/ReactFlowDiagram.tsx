@@ -16,6 +16,7 @@ import { useStateContext } from '../../../contexts/StateContext';
 import { useActionContext } from '../../../contexts/ActionContext';
 import CustomNode from './CustomNode';
 import { EventAction } from '../../../types/State';
+import { useEventContext } from '../../../contexts/EventContext';
 
 interface EdgeType {
   id: string;
@@ -38,7 +39,8 @@ const ReactFlowDiagram: React.FC<ReactFlowDiagramProps> = ({ diagram }) => {
   const [edges, setEdges, onEdgesChange] = useEdgesState<EdgeType[]>([]);
   const [loading, setLoading] = useState(true);
   const { getEventsByStateName, getStatePosition } = useStateContext();
-  const { getNewStatesByActionName } = useActionContext();
+  const { getNewStatesByActionName, getActionByActionName } = useActionContext();
+  const { getEventByEventName } = useEventContext();
 
   const nodeTypes = useMemo(() => {
     return { custom: CustomNode };
@@ -54,6 +56,8 @@ const ReactFlowDiagram: React.FC<ReactFlowDiagramProps> = ({ diagram }) => {
             (node) => node.data.label === newState.toState,
           );
 
+          
+
           if (moveToState) {
             setEdges((prevEdges) => [
               ...prevEdges,
@@ -62,9 +66,9 @@ const ReactFlowDiagram: React.FC<ReactFlowDiagramProps> = ({ diagram }) => {
                 source: state.id,
                 target: moveToState.id,
                 type: 'smoothstep',
-                animated: true,
                 style: {
                   stroke: 'green',
+                  strokeDasharray: 5
                 },
                 markerEnd: {
                   type: MarkerType.Arrow,
@@ -84,6 +88,7 @@ const ReactFlowDiagram: React.FC<ReactFlowDiagramProps> = ({ diagram }) => {
     eventActions.forEach((action) => {
       if (action.actions) {
         const newStates = getNewStatesByActionName(action.actions[0]);
+        const currentAction = getActionByActionName(action.actions[0]);
 
         newStates.forEach((newState) => {
           const moveToState = nodes.find(
@@ -98,9 +103,19 @@ const ReactFlowDiagram: React.FC<ReactFlowDiagramProps> = ({ diagram }) => {
                 source: state.id,
                 target: moveToState.id,
                 targetHandle: 'event-action-target',
-                sourceHandle: 'event-action-source',
+                sourceHandle: `event-action-source-${currentAction?.id}`,
                 type: 'smoothstep',
-                markerEnd: { type: MarkerType.Arrow, width: 25, height: 25 },
+                // animated: !action.moveFromCurrent,
+                style: {
+                  stroke: `${action.moveFromCurrent ? '' : 'green'}`,
+                  strokeDasharray: `${action.moveFromCurrent ? '' : 5}`
+                },
+                markerEnd: { 
+                  type: MarkerType.Arrow, 
+                  width: 25, 
+                  height: 25, 
+                  color: `${action.moveFromCurrent ? '' : 'green'}` 
+                },
               },
             ]);
           }
@@ -119,6 +134,7 @@ const ReactFlowDiagram: React.FC<ReactFlowDiagramProps> = ({ diagram }) => {
 
   useEffect(() => {
     if (diagram.states) {
+      console.log(diagram);
       const stateNodes = diagram.states.map((state, index) => {
         const statePosition = getStatePosition(state);
         const stateDetails = getEventsByStateName(state);
@@ -131,11 +147,8 @@ const ReactFlowDiagram: React.FC<ReactFlowDiagramProps> = ({ diagram }) => {
             type: stateDetails.type,
             immediateActions: stateDetails.immediateActions,
             events: stateDetails.events.map((event, index) => ({
-              event: {
-                name: event,
-                evType: 'test'
-              },
-              actions: stateDetails.eventActions[index].actions,
+              event: getEventByEventName(event),
+              actions: stateDetails.eventActions[index].actions.map((action: string) => getActionByActionName(action)),
               moveFromCurrent: stateDetails.eventActions[index].moveFromCurrent
             })),
             eventActions: stateDetails.eventActions,

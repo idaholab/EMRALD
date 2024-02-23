@@ -13,6 +13,7 @@ interface EventContextType {
   createEvent: (event: Event) => void;
   updateEvent: (event: Event) => void;
   deleteEvent: (eventId: number | string) => void;
+  getEventByEventName: (eventName: string) => Event | undefined;
   newEventList: (newEventList: Event[]) => void;
   clearEventList: () => void;
 }
@@ -33,16 +34,6 @@ const EventContextProvider: React.FC<EmraldContextWrapperProps> = ({ appData, up
   const [events, setEvents] = useState<Event[]>(
     appData.EventList,
   );
-  
-  // Memoize the value of `actions` to avoid unnecessary re-renders
-  // const events = useMemo(
-  //   () => eventList.map(({Event}) => Event) as Event[],
-  //   [eventList]
-  // );
-
-  // useEffect(() => {
-  //   setEventList(appData.EventList as EventList);
-  // }, [appData]);
 
   const createEvent = (newEvent: Event) => {
     const updatedEventList = [...events, newEvent ];
@@ -63,6 +54,10 @@ const EventContextProvider: React.FC<EmraldContextWrapperProps> = ({ appData, up
     setEvents(updatedEventList);
   };
 
+  const getEventByEventName = (eventName: string) => {
+    return events.find((eventItem) => eventItem.name === eventName);
+  };
+
     // Open New, Merge, and Clear Event List
     const newEventList = (newEventList: Event[]) => {
       setEvents(newEventList);
@@ -79,6 +74,7 @@ const EventContextProvider: React.FC<EmraldContextWrapperProps> = ({ appData, up
         createEvent,
         updateEvent,
         deleteEvent,
+        getEventByEventName,
         newEventList,
         clearEventList
       }}

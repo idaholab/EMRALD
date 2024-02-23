@@ -13,7 +13,7 @@ interface StateContextType {
   createState: (newState: State) => void;
   updateState: (updatedState: State) => void;
   deleteState: (StateId: number | string) => void;
-  getEventsByStateName: (stateName: string) => {events: String[]; type: string; eventActions: EventAction[]; immediateActions: string[]};
+  getEventsByStateName: (stateName: string) => {events: string[]; type: string; eventActions: EventAction[]; immediateActions: string[]};
   getStatePosition: (stateName: string) => {x: number; y: number};
   newStateList: (newStateList: State[]) => void;
   mergeStateList: (newStateList: State[]) => void;
