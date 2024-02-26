@@ -27,7 +27,7 @@ import {
 } from 'react-icons/pi';
 import { HiOutlineVariable } from 'react-icons/hi';
 import { Action } from '../../../types/Action';
-import { FaCog } from 'react-icons/fa';
+import { FaCog, FaLink } from 'react-icons/fa';
 import { BiExit } from 'react-icons/bi';
 import { useActionContext } from '../../../contexts/ActionContext';
 
@@ -35,6 +35,7 @@ interface NodeActionsProps {
   type: 'immediate' | 'event';
   actions: string[] | EventAction[];
   events?: { event: Event; actions: Action[]; moveFromCurrent: boolean }[];
+  diagramStates?: string[];
 }
 
 /**
@@ -47,6 +48,7 @@ const NodeActionsComponent: React.FC<NodeActionsProps> = ({
   type,
   actions,
   events,
+  diagramStates
 }) => {
   const [expandedPanel, setExpandedPanel] = React.useState<boolean>(true);
 
@@ -157,7 +159,7 @@ const NodeActionsComponent: React.FC<NodeActionsProps> = ({
           </DiagramAccordionDetails>
         ) : (
           <DiagramAccordionDetails sx={{ p: 0 }}>
-            <ActionList actions={actions} />
+            <ActionList actions={actions} diagramStates={diagramStates}/>
           </DiagramAccordionDetails>
         )}
       </DiagramAccordion>
@@ -167,6 +169,7 @@ const NodeActionsComponent: React.FC<NodeActionsProps> = ({
 
 interface ActionListProps {
   actions: string[] | EventAction[];
+  diagramStates: string[];
 }
 
 const ActionList: React.FC<ActionListProps> = ({ actions }) => {
@@ -180,10 +183,10 @@ const ActionList: React.FC<ActionListProps> = ({ actions }) => {
   const renderAction = (action: string | EventAction, index: number) => {
     const {getActionByActionName} = useActionContext();
     const actionValue = getActionByActionName(action);
-    
+    console.log(actionValue);
     if (typeof action === 'string') {
       return (
-        <ListItem key={index} sx={{ position: 'relative'}}>
+        <ListItem key={index} sx={{ position: 'relative', display: 'flex', justifyContent: 'space-between' }}>
           {actionValue ? (
             <Handle
               className="custom-node__handle-right source-handle"
@@ -196,6 +199,7 @@ const ActionList: React.FC<ActionListProps> = ({ actions }) => {
           )}
           <TbArrowBarToRight />{' '}
           <Typography sx={{ fontSize: 10, ml: '5px' }}>{action}</Typography>
+          <FaLink />
         </ListItem>
       );
     } else {
@@ -289,7 +293,7 @@ interface CustomNodeProps {
  * @return {ReactNode} The rendered custom node component.
  */
 function CustomNode({ id, data }: CustomNodeProps) {
-  const { immediateActions, eventActions, events } = data;
+  const { diagramStates, immediateActions, eventActions, events } = data;
   return (
     <>
       <div className="custom-node__header" id={id}>
@@ -302,7 +306,7 @@ function CustomNode({ id, data }: CustomNodeProps) {
           position={Position.Left}
           id={`action-target`}
         />
-        <NodeActionsComponent actions={immediateActions} events={events} type="immediate" />
+        <NodeActionsComponent actions={immediateActions} events={events} diagramStates={diagramStates} type="immediate" />
         <NodeActionsComponent
           actions={eventActions}
           events={events}

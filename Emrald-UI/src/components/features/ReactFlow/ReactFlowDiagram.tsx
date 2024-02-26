@@ -145,6 +145,7 @@ const ReactFlowDiagram: React.FC<ReactFlowDiagramProps> = ({ diagram }) => {
           data: {
             label: state,
             type: stateDetails.type,
+            diagramStates: diagram.states,
             immediateActions: stateDetails.immediateActions,
             events: stateDetails.events.map((event, index) => ({
               event: getEventByEventName(event),
