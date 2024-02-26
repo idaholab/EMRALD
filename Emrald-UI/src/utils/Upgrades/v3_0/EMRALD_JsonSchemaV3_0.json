@@ -271,34 +271,7 @@
                     "type": "array",
                     "description": "Optional. If this is a transition action then these are the states that it could be transitioned to.",
                     "items": {
-                        "type": "object",
-                        "properties": {
-                            "toState": {
-                                "type": "string",
-                                "description": "reference name of the state to transtion to."
-                            },
-                            "prob": {
-                                "type": "number",
-                                "description": "probability that this state will be transtioned to."
-                            },
-                            "failDesc": {
-                                "type": "string",
-                                "description": "The description from the user for output if tthis transition takes place."
-                            },
-                            "varProb": {
-                                "type": [
-                                    "null",
-                                    "string"
-                                ],
-                                "description": "Optional, if used  then the a variable is used for the probability. This is the name of that variable"
-                            }
-                        },
-                        "additionalProperties": false,
-                        "required": [
-                            "toState",
-                            "prob",
-                            "failDesc"
-                        ]
+                        "$ref": "#/definitions/NewState"
                     }
                 },
                 "scriptCode": {
@@ -420,10 +393,6 @@
                         "type": "string"
                     }
                 },
-                "moveFromCurrent": {
-                    "type": "boolean",
-                    "description": "Depricated, This is stored in the states eventActions property."
-                },
                 "varNames": {
                     "type": "array",
                     "description": "Optional, Name references for all variables used in scripts if the event type uses scripts.",
@@ -540,10 +509,7 @@
                             }
                         },
                         "additionalProperties": false,
-                        "required": [
-                            "name",
-                            "useVariable"
-                        ]
+                        "required": []
                     }
                 },
                 "dfltTimeRate": {
@@ -559,6 +525,36 @@
                 "desc",
                 "mainItem",
                 "evType"
+            ]
+        },
+        "NewState": {
+            "type": "object",
+            "properties": {
+                "toState": {
+                    "type": "string",
+                    "description": "reference name of the state to transtion to."
+                },
+                "prob": {
+                    "type": "number",
+                    "description": "probability that this state will be transtioned to."
+                },
+                "failDesc": {
+                    "type": "string",
+                    "description": "The description from the user for output if tthis transition takes place."
+                },
+                "varProb": {
+                    "type": [
+                        "null",
+                        "string"
+                    ],
+                    "description": "Optional, if used  then the a variable is used for the probability. This is the name of that variable"
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "toState",
+                "prob",
+                "failDesc"
             ]
         },
         "LogicNode": {
@@ -578,10 +574,6 @@
                 },
                 "gateType": {
                     "$ref": "#/definitions/GateType"
-                },
-                "rootName": {
-                    "type": "string",
-                    "description": "Depricated, dont use"
                 },
                 "compChildren": {
                     "type": "array",
@@ -773,7 +765,11 @@
                 },
                 "monitorInSim": {
                     "type": "boolean",
-                    "description": "Flag to indicate if this should be an option the user can monitor in the results. Must be true if cumulativeStats is true."
+                    "description": "Flag to have the monitor variable check box checked in the solver by default. "
+                },
+                "canMonitor": {
+                    "type": "boolean",
+                    "description": "Flag to indicate if the variable can be monitored in the solver. This removes it from the solver UI if false. Must be true if monitorInSim is true."
                 }
             },
             "additionalProperties": false,
@@ -798,6 +794,9 @@
                         "type": "string",
                         "description": "ISO 8601 date time format for the change",
                         "format": "date-time"
+                    },
+                    "cngID": {
+                        "type": "string"
                     }
                 },
                 "additionalProperties": false,

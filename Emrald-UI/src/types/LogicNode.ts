@@ -16,10 +16,6 @@ export interface LogicNode {
     desc: string
     gateType: GateType
     /**
-     * Depricated, dont use
-     */
-    rootName?: string
-    /**
      * Array of component diagram names and state values to use in evaluating if not using the default value.
      */
     compChildren: {

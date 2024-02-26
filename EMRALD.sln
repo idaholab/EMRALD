@@ -44,22 +44,23 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "Emrald_Site", "Emrald_Site\
 EndProject
 Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "Emrald-UI", "Emrald-UI\", "{DBFECD62-5F5A-4A30-BCC9-63FA05E10638}"
 	ProjectSection(WebsiteProperties) = preProject
-		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.8.1"
-		Debug.AspNetCompiler.VirtualPath = "/localhost_52230"
+		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.8"
+		Debug.AspNetCompiler.VirtualPath = "/localhost_51567"
 		Debug.AspNetCompiler.PhysicalPath = "Emrald-UI\"
-		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_52230\"
+		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_51567\"
 		Debug.AspNetCompiler.Updateable = "true"
 		Debug.AspNetCompiler.ForceOverwrite = "true"
 		Debug.AspNetCompiler.FixedNames = "false"
 		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.VirtualPath = "/localhost_52230"
+		Release.AspNetCompiler.VirtualPath = "/localhost_51567"
 		Release.AspNetCompiler.PhysicalPath = "Emrald-UI\"
-		Release.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_52230\"
+		Release.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_51567\"
 		Release.AspNetCompiler.Updateable = "true"
 		Release.AspNetCompiler.ForceOverwrite = "true"
 		Release.AspNetCompiler.FixedNames = "false"
 		Release.AspNetCompiler.Debug = "False"
-		VWDPort = "52230"
+		VWDPort = "51567"
+		SlnRelativePath = "Emrald-UI\"
 	EndProjectSection
 EndProject
 Global

@@ -14,6 +14,7 @@ export type ChangeLog = {
    * ISO 8601 date time format for the change
    */
   dateTime: string
+  cngID?: string
 }[]
 /**
  * Type of the state
@@ -379,10 +380,6 @@ export interface Event {
    */
   triggerStates?: string[]
   /**
-   * Depricated, This is stored in the states eventActions property.
-   */
-  moveFromCurrent?: boolean
-  /**
    * Optional, Name references for all variables used in scripts if the event type uses scripts.
    */
   varNames?: string[]
@@ -441,7 +438,7 @@ export interface Event {
     /**
      * For event type of etDistribution this is the name of the distribution parameter.
      */
-    name:
+    name?:
       | "Mean"
       | "Standard Deviation"
       | "Minimum"
@@ -460,7 +457,7 @@ export interface Event {
     /**
      * Flag to use the variable string vs the value item for the property
      */
-    useVariable: boolean
+    useVariable?: boolean
     /**
      * Optional. The reference name of the variable to use as the value of the parameter if the useVariable flag is true.
      */
@@ -483,10 +480,6 @@ export interface LogicNode {
    */
   desc: string
   gateType: GateType
-  /**
-   * Depricated, dont use
-   */
-  rootName?: string
   /**
    * Array of component diagram names and state values to use in evaluating if not using the default value.
    */
@@ -600,7 +593,11 @@ export interface Variable {
    */
   cumulativeStats?: boolean
   /**
-   * Flag to indicate if this should be an option the user can monitor in the results. Must be true if cumulativeStats is true.
+   * Flag to have the monitor variable check box checked in the solver by default.
    */
   monitorInSim?: boolean
+  /**
+   * Flag to indicate if the variable can be monitored in the solver. This removes it from the solver UI if false. Must be true if monitorInSim is true.
+   */
+  canMonitor?: boolean
 }
