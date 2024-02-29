@@ -93,7 +93,6 @@ const ActionForm: React.FC<ActionFormProps> = ({ actionData }) => {
       <Typography variant="h6" mt={5}>
         Drop Components Here
       </Typography>
-      <DropTargetComponent />
     </Container>
   );
 };

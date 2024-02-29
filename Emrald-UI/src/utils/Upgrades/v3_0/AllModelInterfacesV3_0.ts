@@ -223,12 +223,19 @@ export interface State {
     actions: string[]
     moveFromCurrent: boolean
   }[]
-  /**
-   * possition for the GUI
-   */
-  geometry?: string
+  geometry?: GeometryInfo
   changeLog?: ChangeLog
   defaultSingleStateValue?: StateEvalValue
+}
+/**
+ * position for the GUI
+ */
+export interface GeometryInfo {
+  x?: number
+  y?: number
+  width?: number
+  height?: number
+  [k: string]: unknown
 }
 export interface Action {
   /**

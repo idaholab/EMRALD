@@ -93,7 +93,6 @@ const StateForm: React.FC<StateFormProps> = ({ stateData }) => {
       <Typography variant="h6" mt={5}>
         Drop Components Here
       </Typography>
-      <DropTargetComponent />
     </Container>
   );
 };

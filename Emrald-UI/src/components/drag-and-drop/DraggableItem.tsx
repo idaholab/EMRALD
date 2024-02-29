@@ -1,9 +1,11 @@
 import { Box } from '@mui/material';
 import React, { PropsWithChildren } from 'react';
 import { useDrag } from 'react-dnd';
+import { Action } from '../../types/Action';
+import { Event as EventType } from '../../types/Event';
 
 interface DraggableItemProps {
-  itemData: any;
+  itemData: Action | EventType | any;
 }
 
 const DraggableItem: React.FC<PropsWithChildren<DraggableItemProps>> = ({
@@ -11,7 +13,7 @@ const DraggableItem: React.FC<PropsWithChildren<DraggableItemProps>> = ({
   children,
 }) => {
   const [, drag] = useDrag({
-    type: 'DRAGGABLE_ITEM',
+    type: isAction(itemData) ? 'Action' : isEventType(itemData) ? 'Event' : 'DRAGGABLE_ITEM',
     item: itemData,
   });
 
@@ -21,5 +23,13 @@ const DraggableItem: React.FC<PropsWithChildren<DraggableItemProps>> = ({
     </Box>
   );
 };
+
+function isAction(data: Action): data is Action {
+  return (data as Action).actType !== undefined;
+}
+
+function isEventType(data: EventType): data is EventType {
+  return (data as EventType).evType !== undefined;
+}
 
 export default DraggableItem;

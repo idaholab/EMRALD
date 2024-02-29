@@ -34,16 +34,6 @@ const ActionContextProvider: React.FC<EmraldContextWrapperProps> = ({ appData, u
   const [actions, setActions] = useState<Action[]>(
     appData.ActionList
   );
-
-  // Memoize the value of `actions` to avoid unnecessary re-renders
-  // const actions = useMemo(
-  //   () => actionList.map(({Action}) => Action) as Action[],
-  //   [actionList, appData]
-  // );
-
-  // useEffect(() => {
-  //   setActionList(appData.ActionList as ActionList);
-  // }, [appData]);
   
   const createAction = (newAction: Action) => {
     const updatedActionList = [...actions, newAction ];

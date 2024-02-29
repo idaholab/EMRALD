@@ -37,7 +37,12 @@ export interface State {
     /**
      * possition for the GUI
      */
-    geometry?: string
+    geometryInfo?: {
+      x: number
+      y: number
+      width: number
+      height: number
+    }
     changeLog?: ChangeLog
     defaultSingleStateValue?: StateEvalValue
   }

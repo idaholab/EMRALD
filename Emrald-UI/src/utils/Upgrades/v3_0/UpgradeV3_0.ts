@@ -10,7 +10,7 @@ import { LogicNode as LogicNodeV2_4 } from '../v2_4/AllModelInterfacesV2_4'
 import { Event } from './AllModelInterfacesV3_0'
 import { EMRALD_Model } from './AllModelInterfacesV3_0'
 import { EventType } from './AllModelInterfacesV3_0'
-import { DiagramType } from './AllModelInterfacesV3_0'
+import { DiagramType, GeometryInfo } from './AllModelInterfacesV3_0'
 import { LogicNode } from './AllModelInterfacesV3_0'
 import { State } from './AllModelInterfacesV3_0'
 import { Diagram } from './AllModelInterfacesV3_0'
@@ -28,7 +28,7 @@ export function UpgradeV3_0(modelTxt: string): UpgradeReturn {
     const newModel: EMRALD_Model = {
         ...oldModel,
         DiagramList: oldModel.DiagramList ? oldModel.DiagramList.map(({ Diagram }) => {
-            const { diagramList, forceMerge, singleStates, ...rest } = Diagram; //exclulde diagramList, forceMerge, singleStates
+            const { diagramList, forceMerge, singleStates, ...rest } = Diagram; //exclude diagramList, forceMerge, singleStates
             return {
                 ...rest, // Spread the rest of the properties
                 diagramType: mapDiagramType(Diagram.diagramType) // Add the mapped diagramType
@@ -38,9 +38,21 @@ export function UpgradeV3_0(modelTxt: string): UpgradeReturn {
             const { modelRef, states, configData, simMaxTime, varScope, value, resetOnRuns, type, sim3DId, ...rest } = ExtSim; //exclude
             return rest;
         }) : [],
-        StateList: oldModel.StateList ? oldModel.StateList.map(({ State }) => ({ ...State })) : [],
+        // StateList: oldModel.StateList ? oldModel.StateList.map(({ State }) => ({ ...State })) : [],
+        StateList: oldModel.StateList ? oldModel.StateList.map(({ State }) => {
+            const correctedString = State.geometry
+            .replace(/([a-zA-Z0-9]+)\s*:/g, '"$1":') // Replace property names with double quotes
+            .replace(/'/g, '"'); // Replace single quotes with double quotes
+            const parsedGeometry = JSON.parse(correctedString);
+            var geometryInfo: GeometryInfo = parsedGeometry;
+            const { geometry, ...rest } = State; //exclude geometry
+            return {
+                ...rest,
+                geometryInfo
+            };
+        }) : [],
         ActionList: oldModel.ActionList ? oldModel.ActionList.map(({ Action }) => {
-            const { itemId, moveFromCurrent, ...rest } = Action; //exclulde itemId
+            const { itemId, moveFromCurrent, ...rest } = Action; //exclude itemId and move from current
             var mainItem : boolean = Action.mainItem ? Action.mainItem : false;
             return {
                 ...rest,
@@ -48,7 +60,7 @@ export function UpgradeV3_0(modelTxt: string): UpgradeReturn {
             };
         }) : [],
         EventList: oldModel.EventList ? oldModel.EventList.map(({ Event }) => {
-            const {...rest } = Event; //exclulde itemId
+            const {...rest } = Event;
             var ifInState : boolean | undefined = Event.ifInState != null ?
                 (typeof Event.ifInState === 'string' ? Event.ifInState.toUpperCase() === 'TRUE' : Event.ifInState) :
                 undefined;

@@ -11,12 +11,12 @@ import ReactFlow, {
   Node,
 } from 'reactflow';
 import 'reactflow/dist/style.css';
+import { Box } from '@mui/material';
+import StateNode from '../EmraldDiagram/StateNodeComponent';
 import { Diagram } from '../../../types/Diagram';
+import { State } from '../../../types/State';
 import { useStateContext } from '../../../contexts/StateContext';
 import { useActionContext } from '../../../contexts/ActionContext';
-import CustomNode from './CustomNode';
-import { EventAction } from '../../../types/State';
-import { useEventContext } from '../../../contexts/EventContext';
 
 interface EdgeType {
   id: string;
@@ -24,46 +24,49 @@ interface EdgeType {
   target: string;
 }
 
-interface ReactFlowDiagramProps {
+interface EventAction {
+  moveFromCurrent?: boolean;
+  actions?: string[];
+}
+
+interface EmraldDiagramProps {
   diagram: Diagram;
 }
 
-interface ActionEvents {
-  events: string[];
-  eventActions: EventAction[];
-  immediateActions: string[];
-}
-
-const ReactFlowDiagram: React.FC<ReactFlowDiagramProps> = ({ diagram }) => {
+const EmraldDiagram: React.FC<EmraldDiagramProps> = ({ diagram }) => {
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<EdgeType[]>([]);
   const [loading, setLoading] = useState(true);
-  const { getEventsByStateName, getStatePosition } = useStateContext();
+  const { getStateByStateName, updateStatePosition, updateStateEvents, updateStateEventActions, updateStateImmediateActions } = useStateContext();
   const { getNewStatesByActionName, getActionByActionName } = useActionContext();
-  const { getEventByEventName } = useEventContext();
 
   const nodeTypes = useMemo(() => {
-    return { custom: CustomNode };
+    return { custom: StateNode };
   }, []);
 
-  const getImmediateActions = (state: Node, immediateActions: string[]) => {
+  const onConnect = useCallback(
+    (params: any) => setEdges((eds) => addEdge(params, eds)),
+    [setEdges],
+  );
+
+  const onNodeDragStop = (_event: React.MouseEvent, node: Node) => {
+    updateStatePosition(node.data.state, node.position);
+  };
+
+  const getImmediateActionEdges = (stateNode: Node, immediateActions: string[]) => {
     immediateActions.forEach((action: string) => {
       if (action) {
         const newStates = getNewStatesByActionName(action);
-
         newStates.forEach((newState) => {
           const moveToState = nodes.find(
             (node) => node.data.label === newState.toState,
           );
-
-          
-
           if (moveToState) {
             setEdges((prevEdges) => [
               ...prevEdges,
               {
                 id: `immediate-action-${prevEdges.length}`,
-                source: state.id,
+                source: stateNode.id,
                 target: moveToState.id,
                 type: 'smoothstep',
                 style: {
@@ -84,7 +87,7 @@ const ReactFlowDiagram: React.FC<ReactFlowDiagramProps> = ({ diagram }) => {
     });
   };
 
-  const getEventActions = (state: Node, eventActions: EventAction[]) => {
+  const getEventActionEdges = (stateNode: Node, eventActions: EventAction[]) => {
     eventActions.forEach((action) => {
       if (action.actions) {
         const newStates = getNewStatesByActionName(action.actions[0]);
@@ -100,12 +103,11 @@ const ReactFlowDiagram: React.FC<ReactFlowDiagramProps> = ({ diagram }) => {
               ...prevEdges,
               {
                 id: `event-action-${prevEdges.length}`,
-                source: state.id,
+                source: stateNode.id,
                 target: moveToState.id,
                 targetHandle: 'event-action-target',
                 sourceHandle: `event-action-source-${currentAction?.id}`,
                 type: 'smoothstep',
-                // animated: !action.moveFromCurrent,
                 style: {
                   stroke: `${action.moveFromCurrent ? '' : 'green'}`,
                   strokeDasharray: `${action.moveFromCurrent ? '' : 5}`
@@ -114,7 +116,7 @@ const ReactFlowDiagram: React.FC<ReactFlowDiagramProps> = ({ diagram }) => {
                   type: MarkerType.Arrow, 
                   width: 25, 
                   height: 25, 
-                  color: `${action.moveFromCurrent ? '' : 'green'}` 
+                  color: `${action.moveFromCurrent ? '#b1b1b7' : 'green'}` 
                 },
               },
             ]);
@@ -124,57 +126,48 @@ const ReactFlowDiagram: React.FC<ReactFlowDiagramProps> = ({ diagram }) => {
     });
   };
 
-  const getEventActionEdges = (stateNodes: Node[]) => {
-    stateNodes.forEach((state: Node) => {
-      const events = getEventsByStateName(state.data.label);
-      getEventActions(state, events.eventActions);
-      getImmediateActions(state, events.immediateActions);
+  const getEdges = (stateNodes: Node[]) => {
+    stateNodes.forEach((stateNode: Node) => {
+      const { state }: { state: State } = stateNode.data;
+      getEventActionEdges(stateNode, state.eventActions);
+      getImmediateActionEdges(stateNode, state.immediateActions);
     });
   };
 
   useEffect(() => {
+    if (nodes) {
+      getEdges(nodes);
+    }
+  }, [nodes]);
+
+  useEffect(() => {
     if (diagram.states) {
-      console.log(diagram);
-      const stateNodes = diagram.states.map((state, index) => {
-        const statePosition = getStatePosition(state);
-        const stateDetails = getEventsByStateName(state);
+      let stateNodes = diagram.states.map((state, index) => {
+        let stateDetails = getStateByStateName(state);
+        const { x, y } = stateDetails.geometryInfo || { x: 0, y: 0 };
         return {
           id: `state-${String(index)}`,
-          position: { x: statePosition.x, y: statePosition.y },
+          position: { x, y },
           type: 'custom',
           data: {
             label: state,
-            type: stateDetails.type,
             diagramStates: diagram.states,
-            immediateActions: stateDetails.immediateActions,
-            events: stateDetails.events.map((event, index) => ({
-              event: getEventByEventName(event),
-              actions: stateDetails.eventActions[index].actions.map((action: string) => getActionByActionName(action)),
-              moveFromCurrent: stateDetails.eventActions[index].moveFromCurrent
-            })),
-            eventActions: stateDetails.eventActions,
+            state: stateDetails,
+            updateStateEvents, 
+            updateStateEventActions, 
+            updateStateImmediateActions
           }
         };
       });
       setNodes(stateNodes);
       setLoading(false);
     }
-  }, [diagram]);
+  }, [diagram, updateStateEvents, updateStateEventActions, updateStateImmediateActions]);
 
-  useEffect(() => {
-    if (nodes) {
-      getEventActionEdges(nodes);
-    }
-  }, [nodes]);
-
-  const onConnect = useCallback(
-    (params: any) => setEdges((eds) => addEdge(params, eds)),
-    [setEdges],
-  );
 
   // Conditionally render ReactFlow
   return (
-    <div style={{ width: '100%', height: '100%' }}>
+    <Box sx={{ width: '100%', height: '100%' }}>
       {loading ? (
         <p>Loading...</p>
       ) : (
@@ -184,7 +177,8 @@ const ReactFlowDiagram: React.FC<ReactFlowDiagramProps> = ({ diagram }) => {
           onNodesChange={onNodesChange}
           onEdgesChange={onEdgesChange}
           onConnect={onConnect}
-          onEdgeDoubleClick={() => console.log(edges)}
+          onNodeDragStop={onNodeDragStop}
+          onEdgeDoubleClick={(_event: React.MouseEvent, edge: Edge) => console.log(edge)}
           fitView
           nodeTypes={nodeTypes}
         >
@@ -193,8 +187,8 @@ const ReactFlowDiagram: React.FC<ReactFlowDiagramProps> = ({ diagram }) => {
           <Background variant={BackgroundVariant.Dots} gap={12} size={1} />
         </ReactFlow>
       )}
-    </div>
+    </Box>
   );
 };
 
-export default ReactFlowDiagram;
+export default EmraldDiagram;
