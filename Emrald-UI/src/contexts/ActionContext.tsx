@@ -13,10 +13,20 @@ interface ActionContextType {
   createAction: (action: Action) => void;
   updateAction: (action: Action) => void;
   deleteAction: (actionId: number | string) => void;
-  getActionByActionName: (actionName: string) => Action | undefined;
+  getActionByActionName: (actionName: string) => Action;
+  getActionByActionId: (actionId: number) => Action;
   getNewStatesByActionName: (actionName: string) => NewState[];
+  addNewStateToAction: (action: Action, newState: NewState) => void;
   clearActionList: () => void;
 }
+
+const emptyAction: Action = {
+  id: 0,
+  name: '',
+  desc: '',
+  actType: 'atTransition',
+  mainItem: false,
+};
 
 const ActionContext = createContext<ActionContextType | undefined>(undefined);
 
@@ -54,9 +64,19 @@ const ActionContextProvider: React.FC<EmraldContextWrapperProps> = ({ appData, u
     setActions(updatedActionList);
   };
 
-  const getActionByActionName = (actionName: string) => {
-    return actions.find((action) => action.name === actionName);
+  const getActionByActionId = (actionId: number) => {
+    return actions.find((action) => action.id === actionId) || emptyAction;
   };
+  const getActionByActionName = (actionName: string) => {
+    return actions.find((action) => action.name === actionName) || emptyAction;
+  };
+
+  const addNewStateToAction = (action: Action, newState: NewState) => {
+    if (!action) { return } // If the action doesn't exist, do nothing
+    if (action.newStates?.includes(newState)) { return }; // Don't add the state if it already exists
+    action.newStates = [...(action.newStates || []), newState];
+    updateAction(action);
+  }
 
   const getNewStatesByActionName = (actionName: string) => {
     const action = actions.find((action) => action.name === actionName);
@@ -78,7 +98,9 @@ const ActionContextProvider: React.FC<EmraldContextWrapperProps> = ({ appData, u
         updateAction,
         deleteAction,
         getActionByActionName,
+        getActionByActionId,
         getNewStatesByActionName,
+        addNewStateToAction,
         clearActionList
       }}
     >

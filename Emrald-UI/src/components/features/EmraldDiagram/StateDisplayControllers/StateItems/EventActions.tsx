@@ -5,24 +5,20 @@ import { BiExit } from 'react-icons/bi';
 import DropTargetComponent from '../../../../drag-and-drop/Droppable';
 import { ActionTypeIcon, EventTypeIcon } from '../../IconTypes';
 import { State } from '../../../../../types/State';
-import { useEventContext } from '../../../../../contexts/EventContext';
-import { useActionContext } from '../../../../../contexts/ActionContext';
-import { Action } from '../../../../../types/Action';
+import { FaLink } from 'react-icons/fa';
+import { Diagram } from '../../../../../types/Diagram';
+import useEmraldDiagram from '../../useEmraldDiagram';
+import ContextMenu from '../../../../layout/ContextMenu/ContextMenu';
 
 interface EventActionsProps {
   state: State;
-  updateStateEventActions: (
-    stateName: string,
-    eventName: string,
-    action: Action,
-  ) => void;
+  diagram: Diagram;
 }
 const EventActions: React.FC<EventActionsProps> = ({
   state,
-  updateStateEventActions,
+  diagram
 }) => {
-  const { getEventByEventName } = useEventContext();
-  const { getActionByActionName } = useActionContext();
+  const { menu, menuOptions, closeContextMenu, onEventContextMenu, onActionContextMenu, isStateInCurrentDiagram, openDiagramFromNewState, getEventByEventName, getActionByActionName, updateStateEventActions } = useEmraldDiagram(diagram);
 
   const events = state.events.map((event, index) => ({
     event: getEventByEventName(event),
@@ -35,10 +31,13 @@ const EventActions: React.FC<EventActionsProps> = ({
       ? state.eventActions[index].moveFromCurrent
       : false,
   }));
+
   return (
     <>
       {events &&
         events.map((item) => (
+          
+          // Event container
           <Box
             key={item.event?.name}
             sx={{
@@ -59,14 +58,25 @@ const EventActions: React.FC<EventActionsProps> = ({
                 alignItems: 'center',
               }}
             >
+              {/* Event Type  */}
               <EventTypeIcon type={item.event?.evType || 'etStateCng'} />
             </Box>
             <Box
+              onContextMenu={(e) => onEventContextMenu(e, state, item.event)}
               sx={{
                 width: '100%',
                 borderLeft: '1px solid rgba(0, 0, 0, .125)',
               }}
             >
+              {menu && (
+                <ContextMenu
+                  mouseX={menu.mouseX}
+                  mouseY={menu.mouseY}
+                  handleClose={closeContextMenu}
+                  options={menuOptions}
+                />
+              )}
+              {/* Event  */}
               <DropTargetComponent
                 type="Action"
                 state={state.name}
@@ -75,6 +85,7 @@ const EventActions: React.FC<EventActionsProps> = ({
                 updateStateEventActions={updateStateEventActions}
               >
                 <Box
+                  
                   sx={{
                     display: 'flex',
                     alignItems: 'center',
@@ -100,15 +111,19 @@ const EventActions: React.FC<EventActionsProps> = ({
                   )}
                 </Box>
               </DropTargetComponent>
+
+              {/* Event Actions */}
               <Box>
                 {item.actions.map((action) => (
                   <Box
+                    onContextMenu={(e) => onActionContextMenu(e, state, action, "event")}
                     key={action?.id}
                     sx={{
                       position: 'relative',
                       display: 'flex',
                       alignItems: 'center',
-                      ml: '20px',
+                      ml: '10px',
+                      mr: '5px',
                       py: '5px',
                     }}
                   >
@@ -116,7 +131,7 @@ const EventActions: React.FC<EventActionsProps> = ({
                       <>
                         {action && action.actType === 'atTransition' ? (
                           <Handle
-                            className="custom-node__handle-right source-handle"
+                            className="state-node__handle-right source-handle"
                             type="source"
                             position={Position.Right}
                             id={`event-action-source-${action.id}`}
@@ -126,12 +141,25 @@ const EventActions: React.FC<EventActionsProps> = ({
                         )}
 
                         <ActionTypeIcon type={action.actType} />
-                        <Typography sx={{ fontSize: 10, ml: '5px' }}>
-                          {action?.name}
-                        </Typography>
+
+                        <Box
+                          sx={{
+                            width: '100%',
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                          }}
+                        >
+                          <Typography sx={{ fontSize: 10, ml: '5px' }}> {action?.name}</Typography>
+                          {!isStateInCurrentDiagram(action) ? (
+                            <FaLink onClick={() => openDiagramFromNewState(action)} style={{ cursor: 'pointer', width: '20px' }} />
+                          ) : (
+                            <></>
+                          )}
+                        </Box>
 
                         <Handle
-                          className="custom-node__handle-right source-handle"
+                          className="state-node__handle-right source-handle"
                           type="source"
                           position={Position.Right}
                           id={`event-action-source-${action.id}`}

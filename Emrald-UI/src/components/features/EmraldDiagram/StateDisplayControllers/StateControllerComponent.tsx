@@ -1,5 +1,5 @@
 import React from 'react';
-import '../CustomNode.scss';
+import '../StateNode.scss';
 import { Typography } from '@mui/material';
 import {
   DiagramAccordion,
@@ -7,34 +7,29 @@ import {
   DiagramAccordionSummary,
 } from '../DiagramAccordion';
 import { capitalize } from 'lodash';
-import { Event as EventType } from '../../../../types/Event';
-import { Action } from '../../../../types/Action';
 import DropTargetComponent from '../../../drag-and-drop/Droppable';
 import { State } from '../../../../types/State';
 import EventActions from './StateItems/EventActions';
 import ImmediateActions from './StateItems/ImmediateActions';
+import { Diagram } from '../../../../types/Diagram';
+import useEmraldDiagram from '../useEmraldDiagram';
 
 interface StateControllerComponentProps {
   type: 'immediate' | 'event';
   state: State;
-  diagramStates: string[];
-  updateStateEvents: (stateName: string, event: EventType) => void;
-  updateStateEventActions: (stateName: string, eventName: string, action: Action) => void;
-  updateStateImmediateActions: (stateName: string, action: Action) => void;
+  diagram: Diagram;
 }
 
 const StateControllerComponent: React.FC<StateControllerComponentProps> = ({
   type,
   state,
-  diagramStates,
-  updateStateEvents,
-  updateStateEventActions,
-  updateStateImmediateActions
+  diagram
 }) => {
   const [expandedPanel, setExpandedPanel] = React.useState<boolean>(true);
+  const { updateStateEvents, updateStateImmediateActions } = useEmraldDiagram(diagram);
 
   return (
-    <div className={`custom-node__${type}-actions`}>
+    <div className={`state-node__${type}-actions`}>
       <DiagramAccordion
         expanded={expandedPanel}
         aria-controls="panel1a-content"
@@ -57,9 +52,9 @@ const StateControllerComponent: React.FC<StateControllerComponentProps> = ({
 
         <DiagramAccordionDetails sx={{ p: 0 }}>
           {type === 'event' ? (
-              <EventActions state={state} updateStateEventActions={updateStateEventActions} />
+              <EventActions state={state} diagram={diagram} />
           ) : (
-              <ImmediateActions state={state} diagramStates={diagramStates} />
+              <ImmediateActions state={state} diagram={diagram} />
           )}
         </DiagramAccordionDetails>
       </DiagramAccordion>

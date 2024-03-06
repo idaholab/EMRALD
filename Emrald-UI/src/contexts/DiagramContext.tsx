@@ -1,8 +1,6 @@
 import React, {
   createContext,
   useContext,
-  useEffect,
-  useMemo,
   useState,
 } from 'react';
 import { Diagram } from '../types/Diagram';
@@ -14,9 +12,19 @@ interface DiagramContextType {
   createDiagram: (newDiagram: Diagram) => void;
   updateDiagram: (data: any, updatedDiagram: Diagram) => void;
   deleteDiagram: (diagramId: number | string) => void;
+  getDiagramByDiagramName: (diagramName: string) => Diagram;
   newDiagramList: (newDiagramList: Diagram[]) => void;
   mergeDiagramList: (newDiagramList: Diagram[]) => void;
   clearDiagramList: () => void;
+}
+
+const emptyDiagram: Diagram = {
+    id: 0,
+    name: '',
+    desc: '',
+    diagramType: 'dtSingle',
+    diagramLabel: "",
+    states: [],
 }
 
 const DiagramContext = createContext<DiagramContextType | undefined>(undefined);
@@ -33,17 +41,6 @@ export function useDiagramContext() {
 
 const DiagramContextProvider: React.FC<EmraldContextWrapperProps> = ({ appData, updateAppData, children }) => {
   const [diagrams, setDiagrams] = useState<Diagram[]>(appData.DiagramList);
-
-  // Memoize the value of `diagrams` to avoid unnecessary re-renders
-  // const diagrams = useMemo(
-  //   () => {
-  //     return diagramList.map(({ Diagram }) => Diagram)},
-  //   [diagramList],
-  // );
-
-  // useEffect(() => {
-  //   setDiagrams(appData.DiagramList as Diagram[]);
-  // }, [appData]);
 
   // Create, Delete, Update individual diagrams
   const createDiagram = (newDiagram: Diagram) => {
@@ -88,6 +85,10 @@ const DiagramContextProvider: React.FC<EmraldContextWrapperProps> = ({ appData, 
     setDiagrams(updatedDiagrams);
   };
 
+  const getDiagramByDiagramName = (diagramName: string) => {
+    return diagrams.find((diagram) => diagram.name === diagramName) || emptyDiagram;
+  }
+
   // Open New, Merge, and Clear Diagram List
   const newDiagramList = (newDiagramList: Diagram[]) => {
     setDiagrams(newDiagramList);
@@ -108,6 +109,7 @@ const DiagramContextProvider: React.FC<EmraldContextWrapperProps> = ({ appData, 
         createDiagram,
         updateDiagram,
         deleteDiagram,
+        getDiagramByDiagramName,
         newDiagramList,
         mergeDiagramList,
         clearDiagramList,

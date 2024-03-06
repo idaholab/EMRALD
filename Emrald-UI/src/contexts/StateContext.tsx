@@ -1,11 +1,9 @@
 import React, {
   createContext,
   useContext,
-  useEffect,
-  useMemo,
   useState,
 } from 'react';
-import { EventAction, State } from '../types/State';
+import { State } from '../types/State';
 import { EmraldContextWrapperProps } from './EmraldContextWrapper';
 import { Event } from '../types/Event';
 import { Action } from '../types/Action';
@@ -17,13 +15,19 @@ interface StateContextType {
   updateStateEvents: (stateName: string, event: Event) => void;
   updateStateEventActions: (stateName: string, eventName: string, action: Action) => void;
   updateStateImmediateActions: (stateName: string, action: Action) => void;
-  updateStatePosition: (stateName: string, position: { x: number; y: number }) => void;
+  updateStatePosition: (state: State, position: { x: number, y: number }) => void;
   deleteState: (StateId: number | string) => void;
   getEventsByStateName: (stateName: string) => { events: string[]; type: string; eventActions: EventAction[]; immediateActions: string[], geometryInfo: { x: number; y: number; width: number; height: number } };
   getStateByStateName: (stateName: string) => State;
+  getStateByStateId: (stateId: number) => State;
   newStateList: (newStateList: State[]) => void;
   mergeStateList: (newStateList: State[]) => void;
   clearStateList: () => void;
+}
+
+interface EventAction {
+  moveFromCurrent?: boolean;
+  actions?: string[];
 }
 
 const emptyState: State = {
@@ -86,7 +90,7 @@ const StateContextProvider: React.FC<EmraldContextWrapperProps> = ({ appData, up
     if (stateToUpdate) {
       const eventIndex = stateToUpdate?.events.indexOf(eventName);
       if (!stateToUpdate.eventActions[eventIndex]) {
-        stateToUpdate.eventActions.push({ actions: [action.name], moveFromCurrent: false });
+        stateToUpdate.eventActions.push({ moveFromCurrent: false, actions: [action.name] });
       } else {
         if (stateToUpdate.eventActions[eventIndex].actions.includes(action.name)) {
           return;
@@ -117,6 +121,10 @@ const StateContextProvider: React.FC<EmraldContextWrapperProps> = ({ appData, up
     setStates(updatedStates);
   };
 
+  const getStateByStateId = (stateId: number): State => {
+    const state = states.find((stateItem) => stateItem.id === stateId);
+    return state || emptyState;
+  };
 
   const getStateByStateName = (stateName: string): State => {
     const state = states.find((stateItem) => stateItem.name === stateName);
@@ -137,13 +145,12 @@ const StateContextProvider: React.FC<EmraldContextWrapperProps> = ({ appData, up
     return { type: '', events: [], eventActions: [], immediateActions: [], geometryInfo: { x: 0, y: 0, width: 0, height: 0 } };
   };
 
-  const updateStatePosition = (stateName: string, position: { x: number, y: number }) => {
-    const stateToUpdate = getStateByStateName(stateName);
-    if (stateToUpdate?.geometryInfo) {
+  const updateStatePosition = (state: State, position: { x: number, y: number }) => {
+    if (state?.geometryInfo) {
       try {
-        stateToUpdate.geometryInfo.x = position.x;
-        stateToUpdate.geometryInfo.y = position.y;
-        updateState(stateToUpdate);
+        state.geometryInfo.x = position.x;
+        state.geometryInfo.y = position.y;
+        updateState(state);
       } catch (error) {
         console.error('Error updating geometry:', error);
       }
@@ -178,6 +185,7 @@ const StateContextProvider: React.FC<EmraldContextWrapperProps> = ({ appData, up
         deleteState,
         getEventsByStateName,
         getStateByStateName,
+        getStateByStateId,
         newStateList,
         mergeStateList,
         clearStateList,

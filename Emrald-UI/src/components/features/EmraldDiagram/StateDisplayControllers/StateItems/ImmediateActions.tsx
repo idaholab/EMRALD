@@ -3,35 +3,52 @@ import { List, ListItem, Typography, Box } from '@mui/material';
 import { TbArrowBarToRight } from 'react-icons/tb';
 import { FaLink } from 'react-icons/fa';
 import { State } from '../../../../../types/State';
-import { useActionContext } from '../../../../../contexts/ActionContext';
+import { Diagram } from '../../../../../types/Diagram';
+import useEmraldDiagram from '../../useEmraldDiagram';
+import ContextMenu from '../../../../layout/ContextMenu/ContextMenu';
 
 interface ImmediateActionsProps {
   state: State;
-  diagramStates: string[];
+  diagram: Diagram;
 }
 
-const ImmediateActions: React.FC<ImmediateActionsProps> = ({ state, diagramStates }) => {
+const ImmediateActions: React.FC<ImmediateActionsProps> = ({
+  state,
+  diagram,
+}) => {
   const { immediateActions } = state;
-  const { getActionByActionName } = useActionContext();
+  const {
+    menu,
+    menuOptions,
+    closeContextMenu,
+    onActionContextMenu,
+    openDiagramFromNewState,
+    isStateInCurrentDiagram,
+    getActionByActionName,
+  } = useEmraldDiagram(diagram);
+
   return (
     <List dense={true} sx={{ padding: 0 }}>
       {immediateActions.map((action, index) => {
         const actionValue = getActionByActionName(action);
-        const newStates = actionValue?.newStates?.map((state) => state.toState) ?? [];
-        const newStatesIncluded = newStates.every(newState => diagramStates?.includes(newState));
-        
+
         return (
           <ListItem
+            onContextMenu={(e) => {
+              onActionContextMenu(e, state, actionValue, "immediate");
+            }}
             key={index}
             sx={{
               position: 'relative',
               display: 'flex',
               justifyContent: 'start',
+              pl: '10px',
+              pr: '5px',
             }}
           >
             {actionValue ? (
               <Handle
-                className="custom-node__handle-right source-handle"
+                className="state-node__handle-right source-handle"
                 type="source"
                 position={Position.Right}
                 id={`immediate-action-source-${actionValue.id}`}
@@ -49,8 +66,11 @@ const ImmediateActions: React.FC<ImmediateActionsProps> = ({ state, diagramState
               }}
             >
               <Typography sx={{ fontSize: 10, ml: '5px' }}>{action}</Typography>
-              {!newStatesIncluded ? (
-                <FaLink style={{ cursor: 'pointer', width: '20px' }} />
+              {!isStateInCurrentDiagram(actionValue) ? (
+                <FaLink
+                  onClick={() => openDiagramFromNewState(actionValue)}
+                  style={{ cursor: 'pointer', width: '20px' }}
+                />
               ) : (
                 <></>
               )}
@@ -58,6 +78,14 @@ const ImmediateActions: React.FC<ImmediateActionsProps> = ({ state, diagramState
           </ListItem>
         );
       })}
+      {menu && (
+        <ContextMenu
+          mouseX={menu.mouseX}
+          mouseY={menu.mouseY}
+          handleClose={closeContextMenu}
+          options={menuOptions}
+        />
+      )}
     </List>
   );
 };

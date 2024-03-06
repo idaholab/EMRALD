@@ -1,39 +1,32 @@
-import { memo } from 'react';
 import { Handle, Position } from 'reactflow';
-import './CustomNode.scss';
+import './StateNode.scss';
 import { NodeTypeIcon } from './IconTypes';
 import StateControllerComponent from './StateDisplayControllers/StateControllerComponent';
 import { State } from '../../../types/State';
-import { Action } from '../../../types/Action';
-import { Event } from '../../../types/Event';
+import { Diagram } from '../../../types/Diagram';
 
 interface StateNodeComponentProps {
   id: string;
   data: {
-    state: State,
-    diagramStates: string[],
-    updateStateEvents: (stateName: string, event: Event) => void;
-    updateStateEventActions: (stateName: string, eventName: string, action: Action) => void;
-    updateStateImmediateActions: (stateName: string, action: Action) => void;
+    diagram: Diagram,
+    state: State
   };
 }
 
 const StateNode: React.FC<StateNodeComponentProps> = ({ id, data }) => {
   const { 
     state, 
-    diagramStates, 
-    updateStateEvents,
-    updateStateEventActions,
-    updateStateImmediateActions
+    diagram, 
   } = data;
+
   return (
     <>
-      <div className="custom-node__header" id={id}>
+      <div className="state-node__header" id={id}>
         <strong>{state.name}</strong> <NodeTypeIcon type={state.stateType} />
       </div>
-      <div className="custom-node__body">
+      <div className="state-node__body">
         <Handle
-          className="custom-node__handle-left target-handle"
+          className="state-node__handle-left target-handle"
           type="target"
           position={Position.Left}
           id={`action-target`}
@@ -41,22 +34,17 @@ const StateNode: React.FC<StateNodeComponentProps> = ({ id, data }) => {
         <StateControllerComponent
           type="immediate"
           state={state}
-          diagramStates={diagramStates} 
-          updateStateEvents={updateStateEvents} 
-          updateStateEventActions={updateStateEventActions} 
-          updateStateImmediateActions={updateStateImmediateActions} 
+          diagram={diagram} 
         />
         <StateControllerComponent
           type="event"
           state={state}
-          diagramStates={diagramStates} 
-          updateStateEvents={updateStateEvents} 
-          updateStateEventActions={updateStateEventActions} 
-          updateStateImmediateActions={updateStateImmediateActions} 
+          diagram={diagram} 
         />
       </div>
     </>
   );
 }
 
-export default memo(StateNode);
+export default StateNode;
+
