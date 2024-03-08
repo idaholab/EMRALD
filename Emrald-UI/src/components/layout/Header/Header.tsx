@@ -81,7 +81,7 @@ export default function Header() {
         open={openDialog}
         title="Enter new project name and description"
         disabled={updatedName === ''}
-        onSave={handleSave}
+        onSubmit={handleSave}
         onClose={handleClose}
       >
         <TextField

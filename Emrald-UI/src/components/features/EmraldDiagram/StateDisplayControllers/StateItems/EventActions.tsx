@@ -6,19 +6,33 @@ import DropTargetComponent from '../../../../drag-and-drop/Droppable';
 import { ActionTypeIcon, EventTypeIcon } from '../../IconTypes';
 import { State } from '../../../../../types/State';
 import { FaLink } from 'react-icons/fa';
-import { Diagram } from '../../../../../types/Diagram';
 import useEmraldDiagram from '../../useEmraldDiagram';
 import ContextMenu from '../../../../layout/ContextMenu/ContextMenu';
+import useContextMenu from '../../useContextMenu';
+import DialogComponent from '../../../../common/DialogComponent/DialogComponent';
 
 interface EventActionsProps {
   state: State;
-  diagram: Diagram;
 }
-const EventActions: React.FC<EventActionsProps> = ({
-  state,
-  diagram
-}) => {
-  const { menu, menuOptions, closeContextMenu, onEventContextMenu, onActionContextMenu, isStateInCurrentDiagram, openDiagramFromNewState, getEventByEventName, getActionByActionName, updateStateEventActions } = useEmraldDiagram(diagram);
+const EventActions: React.FC<EventActionsProps> = ({ state }) => {
+  const {
+    isStateInCurrentDiagram,
+    openDiagramFromNewState,
+    getEventByEventName,
+    getActionByActionName,
+    updateStateEventActions,
+  } = useEmraldDiagram();
+
+  const {
+    menu,
+    menuOptions,
+    deleteConfirmation,
+    deleteItem,
+    closeDeleteConfirmation,
+    closeContextMenu,
+    onEventContextMenu,
+    onActionContextMenu,
+  } = useContextMenu();
 
   const events = state.events.map((event, index) => ({
     event: getEventByEventName(event),
@@ -36,7 +50,6 @@ const EventActions: React.FC<EventActionsProps> = ({
     <>
       {events &&
         events.map((item) => (
-          
           // Event container
           <Box
             key={item.event?.name}
@@ -85,7 +98,6 @@ const EventActions: React.FC<EventActionsProps> = ({
                 updateStateEventActions={updateStateEventActions}
               >
                 <Box
-                  
                   sx={{
                     display: 'flex',
                     alignItems: 'center',
@@ -116,7 +128,9 @@ const EventActions: React.FC<EventActionsProps> = ({
               <Box>
                 {item.actions.map((action) => (
                   <Box
-                    onContextMenu={(e) => onActionContextMenu(e, state, action, "event")}
+                    onContextMenu={(e) =>
+                      onActionContextMenu(e, state, action, 'event')
+                    }
                     key={action?.id}
                     sx={{
                       position: 'relative',
@@ -129,7 +143,7 @@ const EventActions: React.FC<EventActionsProps> = ({
                   >
                     {action ? (
                       <>
-                        {action && action.actType === 'atTransition' ? (
+                        {action.actType === 'atTransition' ? (
                           <Handle
                             className="state-node__handle-right source-handle"
                             type="source"
@@ -150,20 +164,19 @@ const EventActions: React.FC<EventActionsProps> = ({
                             alignItems: 'center',
                           }}
                         >
-                          <Typography sx={{ fontSize: 10, ml: '5px' }}> {action?.name}</Typography>
+                          <Typography sx={{ fontSize: 10, ml: '5px' }}>
+                            {' '}
+                            {action?.name}
+                          </Typography>
                           {!isStateInCurrentDiagram(action) ? (
-                            <FaLink onClick={() => openDiagramFromNewState(action)} style={{ cursor: 'pointer', width: '20px' }} />
+                            <FaLink
+                              onClick={() => openDiagramFromNewState(action)}
+                              style={{ cursor: 'pointer', width: '20px' }}
+                            />
                           ) : (
                             <></>
                           )}
                         </Box>
-
-                        <Handle
-                          className="state-node__handle-right source-handle"
-                          type="source"
-                          position={Position.Right}
-                          id={`event-action-source-${action.id}`}
-                        />
                       </>
                     ) : (
                       <></>
@@ -172,6 +185,20 @@ const EventActions: React.FC<EventActionsProps> = ({
                 ))}
               </Box>
             </Box>
+
+            {
+            deleteConfirmation && (
+              <DialogComponent 
+                open={true}
+                title="Delete Confirmation"
+                submitText="delete"
+                onSubmit={() => deleteItem()}
+                onClose={() => closeDeleteConfirmation()}
+              >
+                <Typography sx={{m: 3}}>Are you sure you want to delete this Event?</Typography>
+              </DialogComponent>
+            )
+          }
           </Box>
         ))}
     </>

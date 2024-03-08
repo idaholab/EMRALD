@@ -17,7 +17,7 @@ const getEventActionEdges = (
   eventActions.forEach((action) => {
     if (action.actions) {
       action.actions.forEach((actionName: string) => {
-        const newStates = getNewStatesByActionName(actionName);
+      const newStates = getNewStatesByActionName(actionName);
       const currentAction = getActionByActionName(actionName);
 
       newStates.forEach((newState) => {
@@ -34,7 +34,6 @@ const getEventActionEdges = (
               target: moveToState.id,
               targetHandle: 'event-action-target',
               sourceHandle: `event-action-source-${currentAction?.id}`,
-              type: 'smoothstep',
               style: {
                 stroke: `${action.moveFromCurrent ? '#b1b1b7' : 'green'}`,
                 strokeDasharray: `${action.moveFromCurrent ? '' : 5}`

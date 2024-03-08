@@ -11,22 +11,22 @@ import DropTargetComponent from '../../../drag-and-drop/Droppable';
 import { State } from '../../../../types/State';
 import EventActions from './StateItems/EventActions';
 import ImmediateActions from './StateItems/ImmediateActions';
-import { Diagram } from '../../../../types/Diagram';
 import useEmraldDiagram from '../useEmraldDiagram';
+import useContextMenu from '../useContextMenu';
+import ContextMenu from '../../../layout/ContextMenu/ContextMenu';
 
 interface StateControllerComponentProps {
   type: 'immediate' | 'event';
   state: State;
-  diagram: Diagram;
 }
 
 const StateControllerComponent: React.FC<StateControllerComponentProps> = ({
   type,
-  state,
-  diagram
+  state
 }) => {
   const [expandedPanel, setExpandedPanel] = React.useState<boolean>(true);
-  const { updateStateEvents, updateStateImmediateActions } = useEmraldDiagram(diagram);
+  const { updateStateEvents, updateStateImmediateActions } = useEmraldDiagram();
+  const { menu, menuOptions, onActionsHeaderContextMenu, closeContextMenu } = useContextMenu();
 
   return (
     <div className={`state-node__${type}-actions`}>
@@ -36,14 +36,16 @@ const StateControllerComponent: React.FC<StateControllerComponentProps> = ({
         id="panel1a-header"
         onClick={() => setExpandedPanel(!expandedPanel)}
       >
-        <DropTargetComponent 
-          type={type === 'event' ? 'Event' : 'Action'} 
-          state={state.name} 
-          actionType={type === 'event' ? 'event' : 'immediate'} 
+        <DropTargetComponent
+          type={type === 'event' ? 'Event' : 'Action'}
+          state={state.name}
+          actionType={type === 'event' ? 'event' : 'immediate'}
           updateStateEvents={updateStateEvents}
           updateStateImmediateActions={updateStateImmediateActions}
-          >
-          <DiagramAccordionSummary aria-controls={`panel1a-content`}>
+        >
+          <DiagramAccordionSummary 
+            aria-controls={`panel1a-content`}
+            onContextMenu={(e) => onActionsHeaderContextMenu(e, type)}>
             <Typography sx={{ fontSize: 11 }}>{`${capitalize(
               type,
             )} actions`}</Typography>
@@ -52,12 +54,21 @@ const StateControllerComponent: React.FC<StateControllerComponentProps> = ({
 
         <DiagramAccordionDetails sx={{ p: 0 }}>
           {type === 'event' ? (
-              <EventActions state={state} diagram={diagram} />
+            <EventActions state={state} />
           ) : (
-              <ImmediateActions state={state} diagram={diagram} />
+            <ImmediateActions state={state} />
           )}
         </DiagramAccordionDetails>
       </DiagramAccordion>
+
+      {menu && (
+        <ContextMenu
+          mouseX={menu.mouseX}
+          mouseY={menu.mouseY}
+          handleClose={closeContextMenu}
+          options={menuOptions}
+        />
+      )}
     </div>
   );
 };

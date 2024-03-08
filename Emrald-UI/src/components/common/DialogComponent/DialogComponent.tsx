@@ -7,10 +7,11 @@ import DialogTitle from '@mui/material/DialogTitle';
 
 interface DialogComponentProps {
   open: boolean;
-  title: string;
+  title?: string;
   disabled?: boolean;
   children: React.ReactNode;
-  onSave: () => void;
+  submitText?: string;
+  onSubmit: () => void;
   onClose: () => void;
 }
 
@@ -19,18 +20,19 @@ const DialogComponent: React.FC<DialogComponentProps> = ({
   title,
   disabled,
   children,
-  onSave,
+  submitText,
+  onSubmit,
   onClose,
 }) => {
   return (
     <Dialog open={open} onClose={onClose}>
-      <DialogTitle>{title}</DialogTitle>
+      {title && <DialogTitle>{title}</DialogTitle>}
       <DialogContent>{children}</DialogContent>
       <DialogActions sx={{ p: 3 }}>
-        <Button onClick={onSave} variant="contained" disabled={disabled}>
-          Save
-        </Button>
         <Button onClick={onClose}>Cancel</Button>
+        <Button onClick={onSubmit} variant="contained" disabled={disabled}>
+          {submitText ? submitText : 'Save'}
+        </Button>
       </DialogActions>
     </Dialog>
   );

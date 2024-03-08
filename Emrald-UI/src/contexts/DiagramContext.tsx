@@ -11,6 +11,7 @@ interface DiagramContextType {
   diagrams: Diagram[];
   createDiagram: (newDiagram: Diagram) => void;
   updateDiagram: (data: any, updatedDiagram: Diagram) => void;
+  updateDiagramDetails: (updatedDiagram: Diagram) => void;
   deleteDiagram: (diagramId: number | string) => void;
   getDiagramByDiagramName: (diagramName: string) => Diagram;
   newDiagramList: (newDiagramList: Diagram[]) => void;
@@ -18,7 +19,7 @@ interface DiagramContextType {
   clearDiagramList: () => void;
 }
 
-const emptyDiagram: Diagram = {
+export const emptyDiagram: Diagram = {
     id: 0,
     name: '',
     desc: '',
@@ -45,6 +46,15 @@ const DiagramContextProvider: React.FC<EmraldContextWrapperProps> = ({ appData, 
   // Create, Delete, Update individual diagrams
   const createDiagram = (newDiagram: Diagram) => {
     const updatedDiagrams = [...diagrams, newDiagram];
+    setDiagrams(updatedDiagrams);
+  };
+
+  const updateDiagramDetails = (updatedDiagram: Diagram) => {
+    const updatedDiagrams = diagrams.map((diagram) =>
+      diagram.id === updatedDiagram.id
+        ? updatedDiagram
+        : diagram,
+    );
     setDiagrams(updatedDiagrams);
   };
 
@@ -107,6 +117,7 @@ const DiagramContextProvider: React.FC<EmraldContextWrapperProps> = ({ appData, 
       value={{
         diagrams,
         createDiagram,
+        updateDiagramDetails,
         updateDiagram,
         deleteDiagram,
         getDiagramByDiagramName,

@@ -4,38 +4,51 @@ import ReactFlow, {
   Controls,
   Background,
   BackgroundVariant,
-  ConnectionLineType
 } from 'reactflow';
 import 'reactflow/dist/style.css';
-import { Box } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import StateNode from '../EmraldDiagram/StateNodeComponent';
 import { Diagram } from '../../../types/Diagram';
 import useEmraldDiagram from './useEmraldDiagram';
 import CustomConnectionLine from './Edges/ConnectionLineComponent';
 import ContextMenu from '../../layout/ContextMenu/ContextMenu';
+import DialogComponent from '../../common/DialogComponent/DialogComponent';
+import useContextMenu from './useContextMenu';
+import { signal } from '@preact/signals';
+import { emptyDiagram } from '../../../contexts/DiagramContext';
 
 interface EmraldDiagramProps {
   diagram: Diagram;
 }
 
+export const currentDiagram = signal<Diagram>(emptyDiagram);
+
 const EmraldDiagram: React.FC<EmraldDiagramProps> = ({ diagram }) => {
+  currentDiagram.value = diagram;
   const {
     nodes,
     edges,
     loading,
-    menu,
-    menuOptions,
-    closeContextMenu,
-    onPaneContextMenu,
-    onNodeContextMenu,
+    getStateNodes,
     onNodesChange,
     onEdgesChange,
     onConnect,
     onNodeDragStop,
-  } = useEmraldDiagram(diagram);
+  } = useEmraldDiagram();
+  const {
+    menu,
+    menuOptions,
+    deleteConfirmation,
+    deleteItem,
+    closeDeleteConfirmation,
+    closeContextMenu,
+    onPaneContextMenu,
+    onNodeContextMenu,
+  } = useContextMenu(getStateNodes);
 
   const nodeTypes = useMemo(() => ({ custom: StateNode }), []);
   const ref = useRef<HTMLDivElement>(null);
+
 
   return (
     <Box sx={{ width: '100%', height: '100%' }}>
@@ -53,7 +66,6 @@ const EmraldDiagram: React.FC<EmraldDiagramProps> = ({ diagram }) => {
             onNodeContextMenu={onNodeContextMenu}
             onPaneClick={() => closeContextMenu()}
             connectionLineComponent={CustomConnectionLine}
-            connectionLineType={ConnectionLineType.SmoothStep}
             onNodeDragStop={onNodeDragStop}
             fitView
             nodeTypes={nodeTypes}
@@ -70,6 +82,19 @@ const EmraldDiagram: React.FC<EmraldDiagramProps> = ({ diagram }) => {
               options={menuOptions}
             />
           )}
+          {
+            deleteConfirmation && (
+              <DialogComponent 
+                open={true}
+                title="Delete Confirmation"
+                submitText="delete"
+                onSubmit={() => deleteItem()}
+                onClose={() => closeDeleteConfirmation()}
+              >
+                <Typography sx={{m: 3}}>Are you sure you want to delete this state?</Typography>
+              </DialogComponent>
+            )
+          }
         </div>
       )}
     </Box>

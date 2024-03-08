@@ -2,30 +2,31 @@ import { Handle, Position } from 'reactflow';
 import { List, ListItem, Typography, Box } from '@mui/material';
 import { TbArrowBarToRight } from 'react-icons/tb';
 import { FaLink } from 'react-icons/fa';
-import { State } from '../../../../../types/State';
-import { Diagram } from '../../../../../types/Diagram';
 import useEmraldDiagram from '../../useEmraldDiagram';
 import ContextMenu from '../../../../layout/ContextMenu/ContextMenu';
+import useContextMenu from '../../useContextMenu';
+import { State } from '../../../../../types/State';
 
 interface ImmediateActionsProps {
   state: State;
-  diagram: Diagram;
 }
 
 const ImmediateActions: React.FC<ImmediateActionsProps> = ({
   state,
-  diagram,
 }) => {
   const { immediateActions } = state;
+  const {
+    openDiagramFromNewState,
+    isStateInCurrentDiagram,
+    getActionByActionName,
+  } = useEmraldDiagram();
+
   const {
     menu,
     menuOptions,
     closeContextMenu,
-    onActionContextMenu,
-    openDiagramFromNewState,
-    isStateInCurrentDiagram,
-    getActionByActionName,
-  } = useEmraldDiagram(diagram);
+    onActionContextMenu
+  } = useContextMenu()
 
   return (
     <List dense={true} sx={{ padding: 0 }}>

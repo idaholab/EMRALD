@@ -1,15 +1,18 @@
 import React from 'react';
 import { Edge, Node, MarkerType } from 'reactflow';
+import { Action } from '../../../../types/Action';
 
 const getImmediateActionEdges = (
   stateId: string,
   nodes: Node[],
   immediateActions: string[],
   setEdges: React.Dispatch<React.SetStateAction<Edge[]>>,
+  getActionByActionName: (actionName: string) => Action | undefined,
   getNewStatesByActionName: (actionName: string) => { toState: string }[],
 ) => {
   immediateActions.forEach((action: string) => {
     if (action) {
+      const currentAction = getActionByActionName(action);
       const newStates = getNewStatesByActionName(action);
       newStates.forEach((newState) => {
         const moveToState = nodes.find(
@@ -22,7 +25,8 @@ const getImmediateActionEdges = (
               id: `immediate-action-${prevEdges.length}`,
               source: stateId,
               target: moveToState.id,
-              type: 'smoothstep',
+              targetHandle: 'immediate-action-target',
+              sourceHandle: `immediate-action-source-${currentAction?.id}`,
               style: {
                 stroke: 'green',
                 strokeDasharray: 5
