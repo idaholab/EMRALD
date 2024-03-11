@@ -12,7 +12,7 @@ const getEventActionEdges = (
   eventActions: EventAction[],
   setEdges: React.Dispatch<React.SetStateAction<Edge[]>>,
   getActionByActionName: (actionName: string) => Action | undefined,
-  getNewStatesByActionName: (actionName: string) => { toState: string }[],
+  getNewStatesByActionName: (actionName: string) => { toState: string, prob: number }[],
 ) => {
   eventActions.forEach((action) => {
     if (action.actions) {
@@ -32,6 +32,7 @@ const getEventActionEdges = (
               id: `event-action-${prevEdges.length}`,
               source: stateId,
               target: moveToState.id,
+              label: newState.prob > 0 && newState.prob !== Number.NEGATIVE_INFINITY ? `${newState.prob * 100}%` : '',
               targetHandle: 'event-action-target',
               sourceHandle: `event-action-source-${currentAction?.id}`,
               style: {

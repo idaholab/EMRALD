@@ -8,7 +8,7 @@ const getImmediateActionEdges = (
   immediateActions: string[],
   setEdges: React.Dispatch<React.SetStateAction<Edge[]>>,
   getActionByActionName: (actionName: string) => Action | undefined,
-  getNewStatesByActionName: (actionName: string) => { toState: string }[],
+  getNewStatesByActionName: (actionName: string) => { toState: string, prob: number }[],
 ) => {
   immediateActions.forEach((action: string) => {
     if (action) {
@@ -23,6 +23,7 @@ const getImmediateActionEdges = (
             ...prevEdges,
             {
               id: `immediate-action-${prevEdges.length}`,
+              label: newState.prob > 0 && newState.prob !== Number.NEGATIVE_INFINITY ? `${newState.prob * 100}%` : '',
               source: stateId,
               target: moveToState.id,
               targetHandle: 'immediate-action-target',

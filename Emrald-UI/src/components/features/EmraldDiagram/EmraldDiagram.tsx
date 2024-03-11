@@ -29,6 +29,7 @@ const EmraldDiagram: React.FC<EmraldDiagramProps> = ({ diagram }) => {
     nodes,
     edges,
     loading,
+    setEdges,
     getStateNodes,
     onNodesChange,
     onEdgesChange,
@@ -44,7 +45,8 @@ const EmraldDiagram: React.FC<EmraldDiagramProps> = ({ diagram }) => {
     closeContextMenu,
     onPaneContextMenu,
     onNodeContextMenu,
-  } = useContextMenu(getStateNodes);
+    onEdgeContextMenu,
+  } = useContextMenu(getStateNodes, setEdges);
 
   const nodeTypes = useMemo(() => ({ custom: StateNode }), []);
   const ref = useRef<HTMLDivElement>(null);
@@ -64,6 +66,7 @@ const EmraldDiagram: React.FC<EmraldDiagramProps> = ({ diagram }) => {
             onConnect={onConnect}
             onPaneContextMenu={onPaneContextMenu}
             onNodeContextMenu={onNodeContextMenu}
+            onEdgeContextMenu={(event, edge) => onEdgeContextMenu(event, edge, edges)}
             onPaneClick={() => closeContextMenu()}
             connectionLineComponent={CustomConnectionLine}
             onNodeDragStop={onNodeDragStop}

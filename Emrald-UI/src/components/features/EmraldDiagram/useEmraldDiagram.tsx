@@ -18,8 +18,6 @@ import { Action } from '../../../types/Action';
 import { useEventContext } from '../../../contexts/EventContext';
 import { currentDiagram } from './EmraldDiagram';
 
-
-
 const useEmraldDiagram = () => {
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge[]>([]);
@@ -32,6 +30,7 @@ const useEmraldDiagram = () => {
 
   // Get the edges for the state nodes
   const getEdges = (stateNodes: Node[]) => {
+    setEdges([]);
     stateNodes.forEach((stateNode: Node) => {
       const { state }: { state: State } = stateNode.data;
       getEventActionEdges(stateNode.id, nodes, state.eventActions, setEdges, getActionByActionName, getNewStatesByActionName);
@@ -64,7 +63,6 @@ const useEmraldDiagram = () => {
           sourceHandle: connection.sourceHandle,
         },
       ]);
-      getEdges(nodes);  
     },
     [nodes]
   );
@@ -109,23 +107,20 @@ const useEmraldDiagram = () => {
           type: 'custom',
           data: {
             label: state,
-            diagram: currentDiagram.value,
-            state: stateDetails,
-            nodes: nodes
+            state: stateDetails
           }
         };
       });
       setNodes(stateNodes);
-
     }
   }
 
   // Initialize the edges for the state nodes
   useEffect(() => {
-    if (nodes) {
-      getEdges(nodes);
+    if (nodes && !loading) {
+      getEdges(nodes); // Only call getEdges when nodes are available and loading is false
     }
-  }, [nodes]);
+  }, [nodes, loading]);
 
   // Initialize the state nodes
   useEffect(() => {

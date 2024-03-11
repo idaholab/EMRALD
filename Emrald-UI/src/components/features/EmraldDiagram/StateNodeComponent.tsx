@@ -3,22 +3,16 @@ import './StateNode.scss';
 import { NodeTypeIcon } from './IconTypes';
 import StateControllerComponent from './StateDisplayControllers/StateControllerComponent';
 import { State } from '../../../types/State';
-import { Diagram } from '../../../types/Diagram';
 
 interface StateNodeComponentProps {
   id: string;
   data: {
-    diagram: Diagram,
     state: State
   };
 }
 
 const StateNode: React.FC<StateNodeComponentProps> = ({ id, data }) => {
-  const { 
-    state, 
-    diagram, 
-  } = data;
-
+  const { state } = data;
   return (
     <>
       <div className="state-node__header" id={id}>
@@ -34,12 +28,10 @@ const StateNode: React.FC<StateNodeComponentProps> = ({ id, data }) => {
         <StateControllerComponent
           type="immediate"
           state={state}
-          diagram={diagram} 
         />
         <StateControllerComponent
           type="event"
           state={state}
-          diagram={diagram} 
         />
       </div>
     </>

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import {
+  Edge,
   Node,
 } from 'reactflow';
 import { Event } from '../../../types/Event';
@@ -15,8 +16,9 @@ import { useWindowContext } from '../../../contexts/WindowContext';
 import StateForm from '../StateForm/StateForm';
 import EventForm from '../EventForm/EventForm';
 import ActionForm from '../ActionForm/ActionForm';
+import DiagramForm from '../DiagramForm/DiagramForm';
 
-const useContextMenu = (getStateNodes?: () => void) => { // Get state nodes function is needed if deleting or removing a state
+const useContextMenu = (getStateNodes?: () => void, setEdges?: (edges: Edge[]) => void) => { // Get state nodes function is needed if deleting or removing a state, set edges function is needed if deleting or removing an edge
   const [menu, setMenu] = useState<{ mouseX: number; mouseY: number; } | null>(null);
   const [menuOptions, setMenuOptions] = useState<Option[]>();
   const [deleteConfirmation, setDeleteConfirmation] = useState(false);
@@ -25,9 +27,9 @@ const useContextMenu = (getStateNodes?: () => void) => { // Get state nodes func
   const [actionTypeToModify, setActionTypeToModify] = useState<string>();
   const { addWindow } = useWindowContext();
   const { updateDiagramDetails } = useDiagramContext();
-  const { updateState, deleteState } = useStateContext();
+  const { updateState, deleteState, getStateByStateId } = useStateContext();
   const { deleteEvent } = useEventContext();
-  const { deleteAction } = useActionContext();
+  const { updateAction, deleteAction, getActionByActionId } = useActionContext();
 
   // Type guards checks for State, Event, and Action
   function isState(item: Event | State | Action): item is State {
@@ -58,7 +60,7 @@ const useContextMenu = (getStateNodes?: () => void) => { // Get state nodes func
     });
     setMenuOptions([
       { label: 'New State', action: () => {addWindow('New State', <StateForm />); closeContextMenu(); },isDivider: true },
-      { label: 'Diagram Properties', action: () => {console.log('Edit diagram properties'); closeContextMenu();} },
+      { label: 'Diagram Properties', action: () => {addWindow(`Edit Properties ${currentDiagram.value.name}`, <DiagramForm diagramData={currentDiagram.value}/>); closeContextMenu();} },
     ])
   };
 
@@ -74,6 +76,18 @@ const useContextMenu = (getStateNodes?: () => void) => { // Get state nodes func
       { label: 'State Properties', action: () => {addWindow(state.name, <StateForm stateData={state}/>); closeContextMenu(); },isDivider: true },
       { label: 'Remove State', action: () => { removeStateItem(state); closeContextMenu(); } },
       { label: 'Delete State', action: () => { showDeleteConfirmation(state); closeContextMenu(); } },
+    ])
+  };
+
+  // * Context menu for edge
+  const onEdgeContextMenu = (event: React.MouseEvent, edge: Edge, edges: Edge[]) => {
+    event.preventDefault(); // Prevent native context menu from showing
+    setMenu({
+      mouseX: event.clientX,
+      mouseY: event.clientY,
+    });
+    setMenuOptions([
+      { label: 'Delete Edge', action: () => { deleteEdge(edge, edges); closeContextMenu(); } },
     ])
   };
 
@@ -333,6 +347,22 @@ const useContextMenu = (getStateNodes?: () => void) => { // Get state nodes func
     setDeleteConfirmation(false);
   }
 
+  
+  // * Removes an edge connection
+  const deleteEdge = (edge: Edge, edges: Edge[]) => {
+    if (edge && edges && setEdges) { 
+      const actionToUpdate = getActionByActionId(Number(edge.sourceHandle?.split("-")[3]));
+      const targetState = getStateByStateId(Number(edge.target?.split("-")[1]));
+  
+      if (!actionToUpdate.newStates) { return; }
+      actionToUpdate.newStates = actionToUpdate.newStates.filter(state => state.toState !== targetState?.name);
+      updateAction(actionToUpdate);
+      const newEdges = edges.filter((edgeToRemove) => edgeToRemove.id !== edge.id);
+      setEdges(newEdges);
+    }
+  }
+  
+
   /* 
    **** Delete Confirmation  functions ****
   */  
@@ -362,8 +392,9 @@ const useContextMenu = (getStateNodes?: () => void) => { // Get state nodes func
     deleteConfirmation,
     closeDeleteConfirmation,
     deleteItem,
-    onNodeContextMenu,
     onPaneContextMenu,
+    onNodeContextMenu,
+    onEdgeContextMenu,
     onActionsHeaderContextMenu,
     onEventContextMenu,
     onActionContextMenu,
