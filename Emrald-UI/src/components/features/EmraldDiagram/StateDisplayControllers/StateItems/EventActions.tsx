@@ -27,6 +27,7 @@ const EventActions: React.FC<EventActionsProps> = ({ state }) => {
     menu,
     menuOptions,
     deleteConfirmation,
+    itemToDelete,
     deleteItem,
     closeDeleteConfirmation,
     closeContextMenu,
@@ -195,7 +196,7 @@ const EventActions: React.FC<EventActionsProps> = ({ state }) => {
                 onSubmit={() => deleteItem()}
                 onClose={() => closeDeleteConfirmation()}
               >
-                <Typography sx={{m: 3}}>Are you sure you want to delete this Event?</Typography>
+                <Typography>Are you sure you want to delete {itemToDelete?.name}? It will be removed from all other places it is used.</Typography>
               </DialogComponent>
             )
           }

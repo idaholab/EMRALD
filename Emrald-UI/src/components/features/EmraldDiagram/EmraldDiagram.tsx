@@ -40,6 +40,7 @@ const EmraldDiagram: React.FC<EmraldDiagramProps> = ({ diagram }) => {
     menu,
     menuOptions,
     deleteConfirmation,
+    itemToDelete,
     deleteItem,
     closeDeleteConfirmation,
     closeContextMenu,
@@ -94,7 +95,7 @@ const EmraldDiagram: React.FC<EmraldDiagramProps> = ({ diagram }) => {
                 onSubmit={() => deleteItem()}
                 onClose={() => closeDeleteConfirmation()}
               >
-                <Typography sx={{m: 3}}>Are you sure you want to delete this state?</Typography>
+                <Typography>Are you sure you want to delete {itemToDelete?.name}? It will be removed from all other places it is used.</Typography>
               </DialogComponent>
             )
           }

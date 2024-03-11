@@ -6,6 +6,7 @@ import useEmraldDiagram from '../../useEmraldDiagram';
 import ContextMenu from '../../../../layout/ContextMenu/ContextMenu';
 import useContextMenu from '../../useContextMenu';
 import { State } from '../../../../../types/State';
+import DialogComponent from '../../../../common/DialogComponent/DialogComponent';
 
 interface ImmediateActionsProps {
   state: State;
@@ -24,7 +25,11 @@ const ImmediateActions: React.FC<ImmediateActionsProps> = ({
   const {
     menu,
     menuOptions,
+    deleteConfirmation,
+    itemToDelete,
+    deleteItem,
     closeContextMenu,
+    closeDeleteConfirmation,
     onActionContextMenu
   } = useContextMenu()
 
@@ -87,6 +92,19 @@ const ImmediateActions: React.FC<ImmediateActionsProps> = ({
           options={menuOptions}
         />
       )}
+      {
+        deleteConfirmation && (
+          <DialogComponent 
+            open={true}
+            title="Delete Confirmation"
+            submitText="delete"
+            onSubmit={() => deleteItem()}
+            onClose={() => closeDeleteConfirmation()}
+          >
+            <Typography>Are you sure you want to delete {itemToDelete?.name}? It will be removed from all other places it is used.</Typography>
+          </DialogComponent>
+        )
+      }
     </List>
   );
 };

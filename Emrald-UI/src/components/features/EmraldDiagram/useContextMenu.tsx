@@ -390,6 +390,7 @@ const useContextMenu = (getStateNodes?: () => void, setEdges?: (edges: Edge[]) =
     menu,
     menuOptions,
     deleteConfirmation,
+    itemToDelete,
     closeDeleteConfirmation,
     deleteItem,
     onPaneContextMenu,
