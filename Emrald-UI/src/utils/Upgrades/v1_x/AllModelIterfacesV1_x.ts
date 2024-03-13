@@ -595,10 +595,7 @@
    */
   pathMustExist?: boolean
   type: VariableType
-  /**
-   * Optional. If the variable varScope is gtAccrual, then these are the states used for calculating the variables value over time.
-   */
-  accrualStatesData?: AccrualState[]
+
 		
 																			 
 		

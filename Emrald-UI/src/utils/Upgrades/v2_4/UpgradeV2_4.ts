@@ -1,5 +1,4 @@
 
-import fs from 'fs';
 import { Validator } from 'jsonschema';
 import { UpgradeReturn } from '../v1_x/UpgradeV1_x'
 import { EMRALD_Model as EMRALD_ModelV1_1} from '../v1_x/AllModelIterfacesV1_x'
