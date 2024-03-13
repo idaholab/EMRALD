@@ -5,7 +5,7 @@ import React, {
   useMemo,
   useState,
 } from 'react';
-import { Event, EventList } from '../types/Event';
+import { Event } from '../types/Event';
 import { EmraldContextWrapperProps } from './EmraldContextWrapper';
 
 interface EventContextType {
@@ -13,7 +13,8 @@ interface EventContextType {
   createEvent: (event: Event) => void;
   updateEvent: (event: Event) => void;
   deleteEvent: (eventId: number | string) => void;
-  newEventList: (newEventList: EventList) => void;
+  getEventByEventName: (eventName: string) => Event | undefined;
+  newEventList: (newEventList: Event[]) => void;
   clearEventList: () => void;
 }
 
@@ -30,46 +31,40 @@ export function useEventContext() {
 }
 
 const EventContextProvider: React.FC<EmraldContextWrapperProps> = ({ appData, updateAppData, children }) => {
-  const [eventList, setEventList] = useState<EventList>(
-    appData.EventList as EventList,
+  const [events, setEvents] = useState<Event[]>(
+    appData.EventList,
   );
-  
-  // Memoize the value of `actions` to avoid unnecessary re-renders
-  const events = useMemo(
-    () => eventList.map(({Event}) => Event) as Event[],
-    [eventList]
-  );
-
-  useEffect(() => {
-    setEventList(appData.EventList as EventList);
-  }, [appData]);
 
   const createEvent = (newEvent: Event) => {
-    const updatedEventList = [...eventList, { Event: newEvent }];
-    setEventList(updatedEventList);
+    const updatedEventList = [...events, newEvent ];
+    setEvents(updatedEventList);
   };
 
   const updateEvent = (updatedEvent: Event) => {
-    const updatedEventList = eventList.map((item) =>
-      item.Event.id === updatedEvent.id ? { Event: updatedEvent } : item,
+    const updatedEventList = events.map((item) =>
+      item.id === updatedEvent.id ? updatedEvent : item,
     );
-    setEventList(updatedEventList);
+    setEvents(updatedEventList);
   };
 
   const deleteEvent = (eventId: number | string) => {
-    const updatedEventList = eventList.filter(
-      (item) => item.Event.id !== eventId,
+    const updatedEventList = events.filter(
+      (item) => item.id !== eventId,
     );
-    setEventList(updatedEventList);
+    setEvents(updatedEventList);
+  };
+
+  const getEventByEventName = (eventName: string) => {
+    return events.find((eventItem) => eventItem.name === eventName);
   };
 
     // Open New, Merge, and Clear Event List
-    const newEventList = (newEventList: EventList) => {
-      setEventList(newEventList);
+    const newEventList = (newEventList: Event[]) => {
+      setEvents(newEventList);
     };
 
   const clearEventList = () => {
-    setEventList([]);
+    setEvents([]);
   }
 
   return (
@@ -79,6 +74,7 @@ const EventContextProvider: React.FC<EmraldContextWrapperProps> = ({ appData, up
         createEvent,
         updateEvent,
         deleteEvent,
+        getEventByEventName,
         newEventList,
         clearEventList
       }}

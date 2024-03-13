@@ -5,7 +5,7 @@ import React, {
   useMemo,
   useState,
 } from 'react';
-import { LogicNode, LogicNodeList } from '../types/LogicNode';
+import { LogicNode } from '../types/LogicNode';
 import { EmraldContextWrapperProps } from './EmraldContextWrapper';
 
 interface LogicNodeContextType {
@@ -13,10 +13,21 @@ interface LogicNodeContextType {
   createLogicNode: (logicNode: LogicNode) => void;
   updateLogicNode: (logicNode: LogicNode) => void;
   deleteLogicNode: (logicNodeId: number | string) => void;
-  newLogicNodeList: (newLogicNodeList: LogicNodeList) => void;
-  mergeLogicNodeList: (newLogicNodeList: LogicNodeList) => void;
+  getLogicNodeByName: (logicNodeName: string) => LogicNode;
+  newLogicNodeList: (newLogicNodeList: LogicNode[]) => void;
+  mergeLogicNodeList: (newLogicNodeList: LogicNode[]) => void;
   clearLogicNodeList: () => void;
 }
+
+const emptyLogicNode: LogicNode = {
+  id: 0,
+  name: '',
+  desc: '',
+  isRoot: false,
+  gateType: 'gtAnd',
+  compChildren: [],
+  gateChildren: [],
+};
 
 const LogicNodeContext = createContext<LogicNodeContextType | undefined>(
   undefined,
@@ -37,52 +48,44 @@ const LogicNodeContextProvider: React.FC<EmraldContextWrapperProps> = ({
   updateAppData,
   children,
 }) => {
-  const [logicNodeList, setLogicNodeList] = useState<LogicNodeList>(
-    appData.LogicNodeList,
-  );
-
-  // Memoize the value of `diagrams` to avoid unnecessary re-renders
-  const logicNodes = useMemo(
-    () => logicNodeList.map(({ LogicNode }) => LogicNode),
-    [logicNodeList],
-  );
-
-  useEffect(() => {
-    setLogicNodeList(appData.LogicNodeList as LogicNodeList);
-  }, [appData]);
+  const [logicNodes, setLogicNodes] = useState<LogicNode[]>(appData.LogicNodeList);
 
   const createLogicNode = (newLogicNode: LogicNode) => {
-    const updatedLogicNodes = [...logicNodeList, { LogicNode: newLogicNode }];
-    setLogicNodeList(updatedLogicNodes);
+    const updatedLogicNodes = [...logicNodes, newLogicNode];
+    setLogicNodes(updatedLogicNodes);
   };
 
   const updateLogicNode = (updatedLogicNode: LogicNode) => {
-    const updatedLogicNodes = logicNodeList.map((item) =>
-      item.LogicNode.id === updatedLogicNode.id
-        ? { LogicNode: updatedLogicNode }
+    const updatedLogicNodes = logicNodes.map((item) =>
+      item.id === updatedLogicNode.id
+        ? updatedLogicNode
         : item,
     );
-    setLogicNodeList(updatedLogicNodes);
+    setLogicNodes(updatedLogicNodes);
   };
 
   const deleteLogicNode = (logicNodeId: number | string) => {
-    const updatedLogicNodes = logicNodeList.filter(
-      (item) => item.LogicNode.id !== logicNodeId,
+    const updatedLogicNodes = logicNodes.filter(
+      (item) => item.id !== logicNodeId,
     );
-    setLogicNodeList(updatedLogicNodes);
+    setLogicNodes(updatedLogicNodes);
+  };
+
+  const getLogicNodeByName = (logicNodeName: string) => {
+    return logicNodes.find((node) => node.name === logicNodeName) || emptyLogicNode;
   };
 
   // Open New, Merge, and Clear Diagram List
-  const newLogicNodeList = (newLogicNodeList: LogicNodeList) => {
-    setLogicNodeList(newLogicNodeList);
+  const newLogicNodeList = (newLogicNodeList: LogicNode[]) => {
+    setLogicNodes(newLogicNodeList);
   };
 
-  const mergeLogicNodeList = (newLogicNodeList: LogicNodeList) => {
-    setLogicNodeList([...logicNodeList, ...newLogicNodeList]);
+  const mergeLogicNodeList = (newLogicNodeList: LogicNode[]) => {
+    setLogicNodes([...logicNodes, ...newLogicNodeList]);
   };
 
   const clearLogicNodeList = () => {
-    setLogicNodeList([]);
+    setLogicNodes([]);
   };
 
   return (
@@ -92,6 +95,7 @@ const LogicNodeContextProvider: React.FC<EmraldContextWrapperProps> = ({
         createLogicNode,
         updateLogicNode,
         deleteLogicNode,
+        getLogicNodeByName,
         newLogicNodeList,
         mergeLogicNodeList,
         clearLogicNodeList

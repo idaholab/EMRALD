@@ -2829,7 +2829,8 @@
         "evType": "etStateCng",
         "ifInState": "false",
         "allItems": "true",
-        "triggerStates": ["Stop_Systems"]
+        "triggerStates": ["Stop_Systems"],
+        "logicError": "missing state for something"
       }
     },
     {

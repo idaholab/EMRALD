@@ -1,11 +1,9 @@
 import React, {
   createContext,
   useContext,
-  useEffect,
-  useMemo,
   useState,
 } from 'react';
-import { Diagram, DiagramList } from '../types/Diagram';
+import { Diagram } from '../types/Diagram';
 import { updateReferences } from '../utils/UpdateReferences';
 import jsonPath from 'jsonpath';
 import { EmraldContextWrapperProps } from './EmraldContextWrapper';
@@ -13,10 +11,21 @@ interface DiagramContextType {
   diagrams: Diagram[];
   createDiagram: (newDiagram: Diagram) => void;
   updateDiagram: (data: any, updatedDiagram: Diagram) => void;
+  updateDiagramDetails: (updatedDiagram: Diagram) => void;
   deleteDiagram: (diagramId: number | string) => void;
-  newDiagramList: (newDiagramList: DiagramList) => void;
-  mergeDiagramList: (newDiagramList: DiagramList) => void;
+  getDiagramByDiagramName: (diagramName: string) => Diagram;
+  newDiagramList: (newDiagramList: Diagram[]) => void;
+  mergeDiagramList: (newDiagramList: Diagram[]) => void;
   clearDiagramList: () => void;
+}
+
+export const emptyDiagram: Diagram = {
+    id: 0,
+    name: '',
+    desc: '',
+    diagramType: 'dtSingle',
+    diagramLabel: "",
+    states: [],
 }
 
 const DiagramContext = createContext<DiagramContextType | undefined>(undefined);
@@ -32,32 +41,28 @@ export function useDiagramContext() {
 }
 
 const DiagramContextProvider: React.FC<EmraldContextWrapperProps> = ({ appData, updateAppData, children }) => {
-  const [diagramList, setDiagramList] = useState<DiagramList>(
-    appData.DiagramList,
-  );
-
-  // Memoize the value of `diagrams` to avoid unnecessary re-renders
-  const diagrams = useMemo(
-    () => {
-      return diagramList.map(({ Diagram }) => Diagram)},
-    [diagramList],
-  );
-
-  useEffect(() => {
-    setDiagramList(appData.DiagramList as DiagramList);
-  }, [appData]);
+  const [diagrams, setDiagrams] = useState<Diagram[]>(appData.DiagramList);
 
   // Create, Delete, Update individual diagrams
   const createDiagram = (newDiagram: Diagram) => {
-    const updatedDiagrams = [...diagramList, { Diagram: newDiagram }];
-    setDiagramList(updatedDiagrams);
+    const updatedDiagrams = [...diagrams, newDiagram];
+    setDiagrams(updatedDiagrams);
+  };
+
+  const updateDiagramDetails = (updatedDiagram: Diagram) => {
+    const updatedDiagrams = diagrams.map((diagram) =>
+      diagram.id === updatedDiagram.id
+        ? updatedDiagram
+        : diagram,
+    );
+    setDiagrams(updatedDiagrams);
   };
 
   const updateDiagram = (data: any, updatedDiagram: Diagram) => {
     // Rest of your code to update the diagram list
-    const updatedDiagrams = diagramList.map((item) => {
-      if (item.Diagram.id === updatedDiagram.id) {
-        const previousName = item.Diagram.name; // Get the previous name
+    const updatedDiagrams = diagrams.map((item) => {
+      if (item.id === updatedDiagram.id) {
+        const previousName = item.name; // Get the previous name
         const newName = updatedDiagram.name; // Get the new name from the updatedDiagram object
 
         // Update all references to the name in the appData
@@ -74,33 +79,37 @@ const DiagramContextProvider: React.FC<EmraldContextWrapperProps> = ({ appData, 
         const updatedData = updateReferences(data, previousName, newName);
         updateAppData(updatedData);
   
-        return { Diagram: updatedDiagram };
+        return updatedDiagram;
       } else {
         return item;
       }
     });
   
-    setDiagramList(updatedDiagrams);
+    setDiagrams(updatedDiagrams);
   };
 
   const deleteDiagram = (diagramId: number | string) => {
-    const updatedDiagrams = diagramList.filter(
-      (item) => item.Diagram.id !== diagramId,
+    const updatedDiagrams = diagrams.filter(
+      (item) => item.id !== diagramId,
     );
-    setDiagramList(updatedDiagrams);
+    setDiagrams(updatedDiagrams);
   };
+
+  const getDiagramByDiagramName = (diagramName: string) => {
+    return diagrams.find((diagram) => diagram.name === diagramName) || emptyDiagram;
+  }
 
   // Open New, Merge, and Clear Diagram List
-  const newDiagramList = (newDiagramList: DiagramList) => {
-    setDiagramList(newDiagramList);
+  const newDiagramList = (newDiagramList: Diagram[]) => {
+    setDiagrams(newDiagramList);
   };
 
-  const mergeDiagramList = (newDiagramList: DiagramList) => {
-    setDiagramList([...diagramList, ...newDiagramList]);
+  const mergeDiagramList = (newDiagramList: Diagram[]) => {
+    setDiagrams([...diagrams, ...newDiagramList]);
   };
 
   const clearDiagramList = () => {
-    setDiagramList([]);
+    setDiagrams([]);
   };
 
   return (
@@ -108,8 +117,10 @@ const DiagramContextProvider: React.FC<EmraldContextWrapperProps> = ({ appData, 
       value={{
         diagrams,
         createDiagram,
+        updateDiagramDetails,
         updateDiagram,
         deleteDiagram,
+        getDiagramByDiagramName,
         newDiagramList,
         mergeDiagramList,
         clearDiagramList,

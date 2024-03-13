@@ -1,22 +1,44 @@
 // DropTargetComponent.tsx
-import React, { useState } from 'react';
+import { Box } from '@mui/material';
+import React, { PropsWithChildren, useState } from 'react';
 import { useDrop } from 'react-dnd';
+import { Action } from '../../types/Action';
+import { Event } from '../../types/Event';
 
 interface DroppedItem {
   id: string;
-  itemData: any;
+  itemData: Event | Action;
 }
 
-const DropTargetComponent: React.FC = () => {
+interface DroppableItemProps {
+  type: 'Action' | 'Event' | 'DRAGGABLE_ITEM';
+  children?: React.ReactNode;
+  state?: string;
+  event?: string;
+  actionType?: 'immediate' | 'event';
+  updateStateEvents?: (stateName: string, event: Event) => void;
+  updateStateEventActions?: (stateName: string, eventName: string, action: Action) => void;
+  updateStateImmediateActions?: (stateName: string, action: Action) => void;
+}
+
+const DropTargetComponent: React.FC<PropsWithChildren<DroppableItemProps>> = ({type, state, event, children, actionType, updateStateEvents, updateStateEventActions, updateStateImmediateActions}) => {
   const [droppedItems, setDroppedItems] = useState<DroppedItem[]>([]);
 
   const [{ isOver }, drop] = useDrop({
-    accept: 'DRAGGABLE_ITEM',
-    drop: (item: DroppedItem) => {
-      console.log(item);
-      if (!droppedItems.some((droppedItem) => droppedItem.id === item.id)) {
-        setDroppedItems([...droppedItems, item]);
+    accept: type,
+    drop: (item: Action | Event) => {
+      if (type === 'Event' && state && updateStateEvents) {
+        updateStateEvents(state, item as Event);
       }
+      if (type === 'Action' && actionType === "immediate" && state && updateStateImmediateActions) {
+        updateStateImmediateActions(state, item as Action);
+      }
+      if (type === 'Action' && actionType === "event" && state && event && updateStateEventActions) {
+        updateStateEventActions(state, event, item as Action);
+      }
+      // if (!droppedItems.some((droppedItem) => droppedItem.id === item.id)) {
+      //   setDroppedItems([...droppedItems, item]);
+      // }
     },
     collect: (monitor) => ({
       isOver: !!monitor.isOver(),
@@ -26,32 +48,12 @@ const DropTargetComponent: React.FC = () => {
   const backgroundColor = isOver ? 'lightgreen' : 'white';
 
   return (
-    <div
+    <Box
       ref={drop}
-      style={{
-        height: '100%',
-        padding: '16px',
-        backgroundColor,
-      }}
+      sx={{backgroundColor}}
     >
-      {droppedItems.length > 0 ? (
-        <div>
-          Dropped Items:
-          <ul>
-            {droppedItems.map((item) => (
-              <li
-                key={item.id}
-                style={{ overflowWrap: 'break-word', padding: 10 }}
-              >
-                {JSON.stringify(item)}
-              </li>
-            ))}
-          </ul>
-        </div>
-      ) : (
-        <div>Drop here</div>
-      )}
-    </div>
+      {children}
+    </Box>
   );
 };
 

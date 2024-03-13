@@ -96,7 +96,6 @@ const EventForm: React.FC<EventFormProps> = ({ eventData }) => {
       <Typography variant="h6" mt={5}>
         Drop Components Here
       </Typography>
-      <DropTargetComponent />
     </Container>
   );
 };

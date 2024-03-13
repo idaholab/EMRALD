@@ -16,7 +16,8 @@ import ActionForm from '../../features/ActionForm/ActionForm';
 import EventForm from '../../features/EventForm/EventForm';
 import VariableForm from '../../features/VariableForm/VariableForm';
 import StateForm from '../../features/StateForm/StateForm';
-import ReactFlowTest from '../../features/ReactFlow/ReactFlowDiagram';
+import EmraldDiagram from '../../features/EmraldDiagram/EmraldDiagram';
+import LogicNodeTreeDiagram from '../../features/LogicTreeDiagram/LogicTreeDiagram';
 
 // Define your Option and OptionsMapping types
 export interface Option {
@@ -39,7 +40,7 @@ export const useOptionsMapping = () => {
 
   const optionsMapping: OptionsMapping = {
     Diagrams: [
-      { label: 'Open', action: (diagram: Diagram) => {addWindow(diagram.name, <ReactFlowTest diagram={diagram}/>, { x: 75, y: 25, width: 1300, height: 700 }) }},
+      { label: 'Open', action: (diagram: Diagram) => {addWindow(diagram.name, <EmraldDiagram diagram={diagram}/>, { x: 75, y: 25, width: 1300, height: 700 }) }},
       { label: 'Edit Properties', action: (diagram: Diagram) => addWindow(`Edit Properties ${diagram.name}`, <DiagramForm diagramData={diagram}/>) },
       { label: 'Delete', action: (diagram: Diagram) => deleteDiagram(diagram.id) },
       { label: 'Make Template', action: () => null },
@@ -47,7 +48,7 @@ export const useOptionsMapping = () => {
       { label: 'Copy', action: () => null },
     ],
     'Logic Tree': [
-      { label: 'Open', action: () => null },
+      { label: 'Open', action: (logicNode: LogicNode) => {addWindow(logicNode.name, <LogicNodeTreeDiagram logicNode={logicNode}/>, { x: 75, y: 25, width: 1300, height: 700 }) } },
       { label: 'Edit Properties', action: () => null },
       { label: 'Delete', action: (logicNode: LogicNode) => deleteLogicNode(logicNode.id) },
     ],
