@@ -1,13 +1,15 @@
 import React from 'react';
 import { Edge, Node, MarkerType } from 'reactflow';
 import { Action } from '../../../../types/Action';
+import { v4 as uuidv4 } from 'uuid';
+import { showRemainingValues } from './EventActionEdge';
 
 const getImmediateActionEdges = (
   stateId: string,
   nodes: Node[],
   immediateActions: string[],
   setEdges: React.Dispatch<React.SetStateAction<Edge[]>>,
-  getActionByActionName: (actionName: string) => Action | undefined,
+  getActionByActionName: (actionName: string) => Action,
   getNewStatesByActionName: (actionName: string) => { toState: string, prob: number }[],
 ) => {
   immediateActions.forEach((action: string) => {
@@ -22,10 +24,10 @@ const getImmediateActionEdges = (
           setEdges((prevEdges: Edge[]) => [
             ...prevEdges,
             {
-              id: `immediate-action-${prevEdges.length}`,
-              label: newState.prob > 0 && newState.prob !== Number.NEGATIVE_INFINITY ? `${newState.prob * 100}%` : '',
+              id: uuidv4(),
               source: stateId,
               target: moveToState.id,
+              label: showRemainingValues(currentAction, newState),
               targetHandle: 'immediate-action-target',
               sourceHandle: `immediate-action-source-${currentAction?.id}`,
               style: {

@@ -17,15 +17,28 @@ import { useDiagramContext } from '../../../contexts/DiagramContext';
 import { Action } from '../../../types/Action';
 import { useEventContext } from '../../../contexts/EventContext';
 import { currentDiagram } from './EmraldDiagram';
+import { v4 as uuidv4 } from 'uuid';
 
 const useEmraldDiagram = () => {
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge[]>([]);
   const [loading, setLoading] = useState(true);
   const { getDiagramByDiagramName } = useDiagramContext();
-  const { getActionByActionId, getActionByActionName, getNewStatesByActionName, addNewStateToAction } = useActionContext();
+  const {
+    getActionByActionId,
+    getActionByActionName,
+    getNewStatesByActionName,
+    addNewStateToAction,
+  } = useActionContext();
   const { getEventByEventName } = useEventContext();
-  const { getStateByStateId, getStateByStateName, updateStatePosition, updateStateEvents, updateStateEventActions, updateStateImmediateActions } = useStateContext();
+  const {
+    getStateByStateId,
+    getStateByStateName,
+    updateStatePosition,
+    updateStateEvents,
+    updateStateEventActions,
+    updateStateImmediateActions,
+  } = useStateContext();
   const { addWindow } = useWindowContext();
 
   // Get the edges for the state nodes
@@ -33,8 +46,22 @@ const useEmraldDiagram = () => {
     setEdges([]);
     stateNodes.forEach((stateNode: Node) => {
       const { state }: { state: State } = stateNode.data;
-      getEventActionEdges(stateNode.id, nodes, state.eventActions, setEdges, getActionByActionName, getNewStatesByActionName);
-      getImmediateActionEdges(stateNode.id, nodes, state.immediateActions, setEdges, getActionByActionName, getNewStatesByActionName);
+      getEventActionEdges(
+        stateNode.id,
+        nodes,
+        state.eventActions,
+        setEdges,
+        getActionByActionName,
+        getNewStatesByActionName,
+      );
+      getImmediateActionEdges(
+        stateNode.id,
+        nodes,
+        state.immediateActions,
+        setEdges,
+        getActionByActionName,
+        getNewStatesByActionName,
+      );
     });
   };
 
@@ -43,28 +70,47 @@ const useEmraldDiagram = () => {
     (connection: Connection) => {
       const sourceNode = nodes.find((node) => node.id === connection.source);
       const targetNode = nodes.find((node) => node.id === connection.target);
-      const type = connection.sourceHandle?.includes('event-action') ? 'event-action' : 'immediate-action';
-      const targetState = getStateByStateId(Number(connection.target?.split("-")[1]));
-      const currentAction = getActionByActionId(Number(connection.sourceHandle?.split("-")[3]));
+      const targetState = getStateByStateId(
+        Number(connection.target?.split('-')[1]),
+      );
+      const currentAction = getActionByActionId(
+        Number(connection.sourceHandle?.split('-')[3]),
+      );
+      
+      if (!sourceNode || !targetNode) { return; }
 
-      addNewStateToAction(currentAction, { toState: targetState?.name, prob: 0, varProb: null, failDesc: "" });
+      // Check if edge already exists and if so, don't add it.
+      const existingEdge = edges.find(
+        (edge) =>
+          edge.source === connection.source &&
+          edge.sourceHandle === connection.sourceHandle,
+      );
 
-      if (!sourceNode || !targetNode) {
-        return;
-      }
+      if (existingEdge) { return; }
 
+      // Add new state to action
+      addNewStateToAction(currentAction, {
+        toState: targetState?.name,
+        prob: 0,
+        varProb: null,
+        failDesc: '',
+      });
+
+      // Add new edge
       setEdges((prevEdges) => [
         ...prevEdges,
         {
-          id: `${type}-${prevEdges.length}`,
+          id: uuidv4(),
           source: sourceNode.id,
           target: targetNode.id,
           targetHandle: connection.targetHandle,
           sourceHandle: connection.sourceHandle,
         },
       ]);
+      // Update state nodes
+      getStateNodes();
     },
-    [nodes]
+    [edges],
   );
 
   // Update the state node position
@@ -74,24 +120,34 @@ const useEmraldDiagram = () => {
 
   // Get the new states for an action
   const getActionNewStates = (action?: Action) => {
-    return action?.newStates?.map((state: { toState: string }) => state.toState) ?? [];
-  }
+    return (
+      action?.newStates?.map((state: { toState: string }) => state.toState) ??
+      []
+    );
+  };
 
   // Check if the new states are in the current diagram
   const isStateInCurrentDiagram = (action: Action) => {
     if (!action) return false;
     const newStates = getActionNewStates(action);
-    return newStates.every((newState) => currentDiagram.value.states?.includes(newState));
+    return newStates.every(
+      (newState) => currentDiagram.value.states?.includes(newState),
+    );
   };
 
   // Find and open window for diagram that has new states
   const openDiagramFromNewState = (action: Action) => {
-    const newStates = getActionNewStates(action)
+    const newStates = getActionNewStates(action);
     newStates.forEach((newState) => {
       const stateDetails = getStateByStateName(newState);
       const { diagramName } = stateDetails;
       const diagram = getDiagramByDiagramName(diagramName);
-      addWindow(diagramName, <EmraldDiagram diagram={diagram} />, { x: 75, y: 25, width: 1300, height: 700 });
+      addWindow(diagramName, <EmraldDiagram diagram={diagram} />, {
+        x: 75,
+        y: 25,
+        width: 1300,
+        height: 700,
+      });
     });
   };
 
@@ -107,13 +163,13 @@ const useEmraldDiagram = () => {
           type: 'custom',
           data: {
             label: state,
-            state: stateDetails
-          }
+            state: stateDetails,
+          },
         };
       });
       setNodes(stateNodes);
     }
-  }
+  };
 
   // Initialize the edges for the state nodes
   useEffect(() => {
@@ -127,7 +183,6 @@ const useEmraldDiagram = () => {
     getStateNodes();
     setLoading(false);
   }, [currentDiagram.value]);
-  
 
   return {
     nodes,
@@ -148,7 +203,7 @@ const useEmraldDiagram = () => {
     updateStateImmediateActions,
     getEventByEventName,
     getActionByActionName,
-    getStateNodes
+    getStateNodes,
   };
 };
 

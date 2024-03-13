@@ -52,7 +52,6 @@ const EmraldDiagram: React.FC<EmraldDiagramProps> = ({ diagram }) => {
   const nodeTypes = useMemo(() => ({ custom: StateNode }), []);
   const ref = useRef<HTMLDivElement>(null);
 
-
   return (
     <Box sx={{ width: '100%', height: '100%' }}>
       {loading ? (

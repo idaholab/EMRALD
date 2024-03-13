@@ -1,8 +1,6 @@
 import React, {
   createContext,
   useContext,
-  useEffect,
-  useMemo,
   useState,
 } from 'react';
 import { Action, NewState } from '../types/Action';

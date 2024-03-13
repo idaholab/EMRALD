@@ -1,17 +1,33 @@
 import { Edge, Node, MarkerType } from 'reactflow';
 import { Action } from '../../../../types/Action';
+import { v4 as uuidv4 } from 'uuid';
 
 interface EventAction {
   moveFromCurrent?: boolean;
   actions?: string[];
 }
 
+export const showRemainingValues = (action: Action, newState: { toState: string, prob: number }) => {
+  if (action.newStates && action.newStates.length > 1) {
+    if (newState.prob === -1) {
+      return 'Remaining';
+    }
+    else {
+      return `${newState.prob * 100}%`;
+    }
+  } else {
+    if (newState.prob > 0 && newState.prob !== Number.NEGATIVE_INFINITY) {
+      return `${newState.prob * 100}%`;
+    }
+  }
+};
+
 const getEventActionEdges = (
   stateId: string,
   nodes: Node[],
   eventActions: EventAction[],
   setEdges: React.Dispatch<React.SetStateAction<Edge[]>>,
-  getActionByActionName: (actionName: string) => Action | undefined,
+  getActionByActionName: (actionName: string) => Action,
   getNewStatesByActionName: (actionName: string) => { toState: string, prob: number }[],
 ) => {
   eventActions.forEach((action) => {
@@ -29,10 +45,10 @@ const getEventActionEdges = (
           setEdges((prevEdges) => [
             ...prevEdges,
             {
-              id: `event-action-${prevEdges.length}`,
+              id: uuidv4(),
               source: stateId,
               target: moveToState.id,
-              label: newState.prob > 0 && newState.prob !== Number.NEGATIVE_INFINITY ? `${newState.prob * 100}%` : '',
+              label: showRemainingValues(currentAction, newState),
               targetHandle: 'event-action-target',
               sourceHandle: `event-action-source-${currentAction?.id}`,
               style: {
