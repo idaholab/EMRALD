@@ -1,12 +1,12 @@
 ﻿//Diagrams
-const DiagramRefs = [
-  "$.DiagramList[?(@.name == 'nameRef')].nam",
-  "$.Statelist[? (@.diagramName == 'nameRef')].diagramName",
-  "$.LogicNodeList[*].compChildren[? (@.diagramName == 'TDP1')].diagramName"
+export const DiagramRefs = [
+  "$.DiagramList[?(@.name == 'C-CKV-A')].name",
+  "$.StateList[?(@.diagramName == 'nameRef')].diagramName",
+  "$.LogicNodeList[*].compChildren[? (@.diagramName == 'nameRef')].diagramName"
 ];
 
 //States
-const StateRefs = [
+export const StateRefs = [
   "$.StateList[?(@.name == 'nameRef')].name",
   "$.DiagramList[*].states[? (@ == 'nameRef')]",
   "$.ActionList[*].newStates[? (@.toState == 'nameRef')].toState",
@@ -16,20 +16,20 @@ const StateRefs = [
 ];
 
 //Events
-const EventRefs = [
+export const EventRefs = [
   "$.EventList[?(@.name == 'nameRef')].name",
   "$.StateList[*].events[? (@ == 'nameRef')]"
 ];
 
 //Actions
-const ActionRefs = [
+export const ActionRefs = [
   "$.ActionList[?(@.name == 'nameRef')].name",
   "$.StateList[*].immediateActions[? (@ == 'nameRef')]",
   "$.StateList[*].eventActions[*].actions[? (@ == 'nameRef')]"
 ];
 
 //Variables
-const VariableRefs = [
+export const VariableRefs = [
   "$.VariableList[?(@.name == 'nameRef')].name" ,
   "$.ActionList[*].newStates[? (@.varProb == 'nameRef')].varProb" ,
   "$.ActionList[? (@.variableName == 'nameRef')].variableName" ,
@@ -40,13 +40,13 @@ const VariableRefs = [
 ];
 
 //ExtSim
-const ExtSimRefs = [
+export const ExtSimRefs = [
   "$.ExtSimList[?(@.name == 'nameRef')].name",
   "$.ActionList[? (@.extSim == 'nameRef')].name"
 ];
 
 //LogicNodes
-const logicNodesRefs = [
+export const logicNodesRefs = [
   "$.LogicNodeList[? (@.name == 'nameRef')].name",
   "$.EventList[? (@.logicTop == 'nameRef')].logicTop",
   "$.LogicNodeList[*].gateChildren[? (@ == 'ACPowerOK')]"
