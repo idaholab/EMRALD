@@ -2,6 +2,7 @@ import { EMRALD_Model } from "./v3_0/AllModelInterfacesV3_0";
 import { UpgradeV1_x } from "./v1_x/UpgradeV1_x"
 import { UpgradeV2_4 } from "./v2_4/UpgradeV2_4"
 import { UpgradeV3_0 } from "./v3_0/UpgradeV3_0"
+import { v4 as uuidv4 } from 'uuid';
 
 export class Upgrade
 {
@@ -24,7 +25,7 @@ export class Upgrade
         this._errors = "";
     }
 
-    upgrade(toVersion : number) : boolean
+    upgrade(toVersion : number, resetIDs : boolean = true) : boolean
     {
         const badModel = "Invalid EMRALD model format ";
         this._newModelTxt = this._oldModelTxt;
@@ -45,7 +46,7 @@ export class Upgrade
         if((this._version < 2.4) && (toVersion >= 2.4)){
             var upgraded = UpgradeV2_4(this._newModelTxt);
             this._newModelTxt = upgraded.newModel;
-            this._newModel = JSON.parse(upgraded.newModel); 
+            this._newModel = JSON.parse(upgraded.newModel);  
 
             if(upgraded.errors.length > 0){
                 this._errors = badModel + "v2.4 -" + upgraded.errors;
@@ -66,6 +67,33 @@ export class Upgrade
             this._version = 3.0; 
         } 
         
+        
+
+        if(resetIDs)
+        {
+            this._newModel?.ActionList.forEach(element => {
+                element.id = uuidv4();
+            });
+            this._newModel?.DiagramList.forEach(element => {
+                element.id = uuidv4();
+            });
+            this._newModel?.EventList.forEach(element => {
+                element.id = uuidv4();
+            });
+            this._newModel?.ExtSimList.forEach(element => {
+                element.id = uuidv4();
+            });
+            this._newModel?.LogicNodeList.forEach(element => {
+                element.id = uuidv4();
+            });
+            this._newModel?.StateList.forEach(element => {
+                element.id = uuidv4();
+            });
+            this._newModel?.VariableList.forEach(element => {
+                element.id = uuidv4();
+            });
+        }
+
         return true;
     }
 

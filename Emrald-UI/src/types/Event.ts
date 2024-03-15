@@ -5,7 +5,7 @@ export interface Event {
   /**
    * Optional, internal use only.
    */
-  id?: number
+  id?: number | string
   /**
    * referenace name in the event in the model.
    */

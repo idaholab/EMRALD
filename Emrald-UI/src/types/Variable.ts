@@ -5,7 +5,7 @@ import {ChangeLog} from './ChangeLog'
     /**
      * Optional, internal use only.
      */
-    id?: number
+    id?: number | string
     /**
      * referenace name in the model for the variable
      */

@@ -2,7 +2,7 @@ import {StateType, StateEvalValue} from './ItemTypes'
 import {ChangeLog} from './ChangeLog'
 
 export interface State {
-    id?: number
+    id?: number | string
     /**
      * referenace name in the model for state
      */

@@ -7,7 +7,7 @@ export interface Diagram {
   /**
    * Optional. Only used for internal processing needs.
    */
-  id?: number
+  id?: number | string
   /**
    * Name of the diagram
    */
