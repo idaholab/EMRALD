@@ -23,7 +23,7 @@ interface StateFormProps {
 const StateForm: React.FC<StateFormProps> = ({ stateData }) => {
   const { appData, updateAppData } = useAppData();
   const { handleClose } = useWindowContext();
-  //const { updateState, createState } = useStateContext();
+  const { updateState, createState } = useStateContext();
   const [stateType, setStateType] = useState<string>(
     stateData?.stateType || '',
   );
@@ -43,7 +43,7 @@ const StateForm: React.FC<StateFormProps> = ({ stateData }) => {
     const updatedEMRALDModel: EMRALD_Model = appData;
     //TODO update the state data
     //updatedEMRALDModel.StateList[? ]
-    updateModelAndReferences(updatedEMRALDModel, MainItemTypes.State, name, 'new_' + name);
+    updateModelAndReferences(updatedEMRALDModel, updateAppData, MainItemTypes.State, name, 'new_' + name);
 
     
     

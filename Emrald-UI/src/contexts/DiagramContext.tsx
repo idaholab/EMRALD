@@ -67,7 +67,7 @@ const DiagramContextProvider: React.FC<EmraldContextWrapperProps> = ({ appData, 
         const newName = updatedDiagram.name; // Get the new name from the updatedDiagram object
 
         // Call updateKeyAndReferences here to update references in the updatedDiagram
-        //const updatedData = updateModelAndReferences(data, MainItemTypes.Diagram,  previousName, newName);
+        const updatedData = updateModelAndReferences(data, MainItemTypes.Diagram,  previousName, newName);
   
         return updatedDiagram;
       } else {

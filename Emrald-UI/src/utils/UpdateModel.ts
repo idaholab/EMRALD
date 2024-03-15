@@ -11,11 +11,12 @@ import { useAppData } from '../hooks/useAppData.tsx';
 
 export const updateModelAndReferences = ( //Update the main appData EMRALD model with all the item changed in the model provided and references if the name changes
   emraldModel : EMRALD_Model, //It is assumed the the EMRALD model passed in has already been udpated with all the object changes
+  updateAppData : (model: EMRALD_Model) => void, 
   itemType : MainItemTypes, //This is the type of the object that was updated
   previousName: string, //old name of the item
   newName: string //new name of the item
 ) => {
-  const { updateAppData } = useAppData();
+  
   // Clone the original itemData to avoid mutating it directly
   //const updatedEMRALDModel: EMRALD_Model = appData;
   if(newName === previousName){
