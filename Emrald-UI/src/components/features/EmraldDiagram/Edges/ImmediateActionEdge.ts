@@ -30,6 +30,7 @@ const getImmediateActionEdges = (
               label: showRemainingValues(currentAction, newState),
               targetHandle: 'immediate-action-target',
               sourceHandle: `immediate-action-source-${currentAction?.id}`,
+              updatable: 'target',
               style: {
                 stroke: 'green',
                 strokeDasharray: 5

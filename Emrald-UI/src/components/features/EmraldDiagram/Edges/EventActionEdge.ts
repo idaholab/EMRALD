@@ -51,6 +51,7 @@ const getEventActionEdges = (
               label: showRemainingValues(currentAction, newState),
               targetHandle: 'event-action-target',
               sourceHandle: `event-action-source-${currentAction?.id}`,
+              updatable: 'target',
               style: {
                 stroke: `${action.moveFromCurrent ? '#b1b1b7' : 'green'}`,
                 strokeDasharray: `${action.moveFromCurrent ? '' : 5}`

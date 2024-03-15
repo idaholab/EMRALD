@@ -1,4 +1,4 @@
-.react-flow__node-custom {
+.emrald-diagram .react-flow__node-custom {
   & {
     font-size: 10px;
     width: 220px;
@@ -10,7 +10,7 @@
 
   .react-flow__handle-right {
     width: 3px;
-    height: 10px;
+    height: 20px;
     border-radius: 2px;
     background-color: #778899;
   }
@@ -27,13 +27,13 @@
 
   .react-flow__handle-left {
     width: 3px;
-    height: 10px;
+    height: 20px;
     border-radius: 2px;
     background-color: #778899;
   }
 }
 
-.react-flow__node.circle {
+.emrald-diagram .react-flow__node.circle {
   border-radius: 50%;
   width: 60px;
   height: 60px;
@@ -43,7 +43,7 @@
   font-weight: 700;
 }
 
-.react-flow__node.annotation {
+.emrald-diagram .react-flow__node.annotation {
   & {
     border-radius: 0;
     text-align: left;

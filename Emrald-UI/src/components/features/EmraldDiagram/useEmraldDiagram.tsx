@@ -5,6 +5,7 @@ import {
   Edge,
   Node,
   Connection,
+  updateEdge,
 } from 'reactflow';
 import EmraldDiagram from './EmraldDiagram';
 import { useActionContext } from '../../../contexts/ActionContext';
@@ -78,12 +79,14 @@ const useEmraldDiagram = () => {
       );
       
       if (!sourceNode || !targetNode) { return; }
+      // Prevent a node from connecting to itself
+      if (sourceNode.data.label === targetNode.data.label) { return; }
 
       // Check if edge already exists and if so, don't add it.
       const existingEdge = edges.find(
         (edge) =>
-          edge.source === connection.source &&
-          edge.sourceHandle === connection.sourceHandle,
+          edge.sourceHandle === connection.sourceHandle &&
+          edge.target === connection.target,
       );
 
       if (existingEdge) { return; }
@@ -91,7 +94,7 @@ const useEmraldDiagram = () => {
       // Add new state to action
       addNewStateToAction(currentAction, {
         toState: targetState?.name,
-        prob: 0,
+        prob: -1,
         varProb: null,
         failDesc: '',
       });
@@ -105,12 +108,55 @@ const useEmraldDiagram = () => {
           target: targetNode.id,
           targetHandle: connection.targetHandle,
           sourceHandle: connection.sourceHandle,
+          updatable: 'target',
         },
       ]);
       // Update state nodes
       getStateNodes();
     },
     [edges],
+  );
+
+  const isValidConnection = (connection: Connection) => {
+    // Check if source and target nodes are the same
+    if (connection.source === connection.target) {
+      return false; // Prevent the connection
+    }
+    return true; // Allow other connections
+  };
+
+  // Adds the ability to update an edge
+  const onEdgeUpdate = useCallback(
+    (oldEdge: Edge, newConnection: Connection) => {
+      const currentAction = getActionByActionId(
+        Number(newConnection.sourceHandle?.split('-')[3]),
+      );
+      const oldState = getStateByStateId(
+        Number(oldEdge.target?.split('-')[1]),
+      );
+      const targetState = getStateByStateId(
+        Number(newConnection.target?.split('-')[1]),
+      );
+
+      // Prevent a node from connecting to itself
+      if (oldEdge.source === newConnection.target) { return; }
+      
+      if (currentAction && currentAction.newStates) {
+        // Remove the old newStates.toState with the new state we are connecting.
+        currentAction.newStates = currentAction.newStates.filter(
+          (newState) => newState.toState !== oldState.name
+        );
+        addNewStateToAction(currentAction, {
+          toState: targetState?.name,
+          prob: -1,
+          varProb: null,
+          failDesc: '',
+        });
+
+        setEdges((els) => updateEdge(oldEdge, newConnection, els))
+      }
+    },
+    []
   );
 
   // Update the state node position
@@ -192,18 +238,20 @@ const useEmraldDiagram = () => {
     setEdges,
     onNodesChange,
     onEdgesChange,
+    onEdgeUpdate,
     onConnect,
+    isValidConnection,
     onNodeDragStop,
-    getActionNewStates,
     isStateInCurrentDiagram,
     openDiagramFromNewState,
+    getEventByEventName,
+    getActionByActionName,
+    getStateNodes,
+    getActionNewStates,
     updateStatePosition,
     updateStateEvents,
     updateStateEventActions,
     updateStateImmediateActions,
-    getEventByEventName,
-    getActionByActionName,
-    getStateNodes,
   };
 };
 

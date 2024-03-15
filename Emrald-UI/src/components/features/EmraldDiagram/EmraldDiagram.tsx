@@ -34,6 +34,8 @@ const EmraldDiagram: React.FC<EmraldDiagramProps> = ({ diagram }) => {
     onNodesChange,
     onEdgesChange,
     onConnect,
+    onEdgeUpdate,
+    isValidConnection,
     onNodeDragStop,
   } = useEmraldDiagram();
   const {
@@ -57,7 +59,7 @@ const EmraldDiagram: React.FC<EmraldDiagramProps> = ({ diagram }) => {
       {loading ? (
         <p>Loading...</p>
       ) : (
-        <div ref={ref} style={{ width: '100%', height: '100%' }}>
+        <div className="emrald-diagram" ref={ref} style={{ width: '100%', height: '100%' }}>
           <ReactFlow
             nodes={nodes}
             edges={edges}
@@ -67,9 +69,11 @@ const EmraldDiagram: React.FC<EmraldDiagramProps> = ({ diagram }) => {
             onPaneContextMenu={onPaneContextMenu}
             onNodeContextMenu={onNodeContextMenu}
             onEdgeContextMenu={(event, edge) => onEdgeContextMenu(event, edge, edges)}
+            onEdgeUpdate={onEdgeUpdate}
             onPaneClick={() => closeContextMenu()}
             connectionLineComponent={CustomConnectionLine}
             onNodeDragStop={onNodeDragStop}
+            isValidConnection={isValidConnection}
             fitView
             nodeTypes={nodeTypes}
           >

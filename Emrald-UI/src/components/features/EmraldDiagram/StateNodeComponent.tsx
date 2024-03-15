@@ -1,4 +1,4 @@
-import { Handle, Position } from 'reactflow';
+import { Connection, Handle, Position } from 'reactflow';
 import './StateNode.scss';
 import { NodeTypeIcon } from './IconTypes';
 import StateControllerComponent from './StateDisplayControllers/StateControllerComponent';
@@ -22,6 +22,7 @@ const StateNode: React.FC<StateNodeComponentProps> = ({ id, data }) => {
         <Handle
           className="state-node__handle-left target-handle"
           type="target"
+          isConnectableStart={false}
           position={Position.Left}
           id={`action-target`}
         />

@@ -13,7 +13,6 @@ const CustomConnectionLine: React.FC<ConnectionLineComponentProps> = ({
   const defaultStyle: React.CSSProperties = {
     stroke: connectionStatus === 'valid' ? 'green' : 'red',
     strokeWidth: 2,
-    strokeDasharray: 5,
     ...connectionLineStyle,
   };
 

@@ -1,0 +1,78 @@
+$shadow-color: rgba(0, 0, 0, 0.1);
+$font-color: #222;
+$header-bottom-border-color: #e2e8f0;
+
+.tree-diagram .react-flow__node-custom {
+  font-size: 10px;
+  width: 165px;
+  color: $font-color;
+  box-shadow: 0 4px 6px -1px $shadow-color, 0 2px 4px -1px darken($shadow-color, 10%);
+  border-radius: 2px;
+
+  .tree-node {
+    height: auto;
+    display: flex; /* Use flex layout */
+    flex-direction: column; /* Stack children vertically */
+    border-radius: 8px;
+    box-shadow: 1px 1px 1px 1px $shadow-color;
+  }
+  
+  .tree-node__gate {
+    background: #699ac0;
+  }
+  
+  .tree-node__comp {
+    background: #ddc462;
+  }
+
+  .tree-node__control-bar {
+    display: flex;
+    justify-content: flex-end;
+    position: absolute;
+    right: 5px;
+    top: 2px;
+
+    .control-icon {
+      position: absolute;
+      left: 3px;
+      top: 3px;
+      height: 10px;
+      width: 10px;
+    }
+  }
+  
+  .tree-node__header {
+    width: 100%; /* Make the header full width */
+    margin-top: 5px;
+    padding: 8px 10px 0 10px;
+    // border-bottom: 1px solid $header-bottom-border-color;
+    font-size: 12px;
+    display: flex;
+    justify-content: center;
+  }
+  
+  .tree-node__body {
+    padding: 10px;
+    flex-grow: 1; /* Allow body to grow and take remaining space */
+  }
+  
+  .tree-node__immediate-actions {
+    position: relative;
+    margin-bottom: 10px;
+  }
+  
+  .tree-node__event-actions {
+    position: relative;
+    margin-bottom: 10px;
+  }
+  
+  .tree-node__connection-svg { 
+    overflow: visible;
+    position: absolute;
+    left: 0; 
+    right: 0;
+    top: 0; 
+    bottom: 0;
+  }
+}
+
