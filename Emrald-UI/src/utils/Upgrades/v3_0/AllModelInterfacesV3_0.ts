@@ -102,7 +102,7 @@ export interface EMRALD_Model {
   /**
    * Temporary, only used internally for some identification or uniqueness needs
    */
-  id?: number
+  id?: number | string
   /**
    * Name of the EMRALD model
    */
@@ -153,7 +153,7 @@ export interface Diagram {
   /**
    * Optional. Only used for internal processing needs.
    */
-  id?: number
+  id?: number | string
   /**
    * Name of the diagram
    */
@@ -181,7 +181,7 @@ export interface ExtSim {
   /**
    * Optional, internal use only.
    */
-  id?: number
+  id?: number | string
   /**
    * referenace name in the model for the external simulation
    */
@@ -192,7 +192,7 @@ export interface ExtSim {
   resourceName: string
 }
 export interface State {
-  id?: number
+  id?: number | string
   /**
    * referenace name in the model for state
    */
@@ -224,18 +224,25 @@ export interface State {
     actions: string[]
     moveFromCurrent: boolean
   }[]
-  /**
-   * possition for the GUI
-   */
-  geometry?: string
+  geometry?: GeometryInfo
   changeLog?: ChangeLog
   defaultSingleStateValue?: StateEvalValue
+}
+/**
+ * position for the GUI
+ */
+export interface GeometryInfo {
+  x?: number
+  y?: number
+  width?: number
+  height?: number
+  [k: string]: unknown
 }
 export interface Action {
   /**
    * Optional, internal use only.
    */
-  id?: number
+  id?: number | string
   /**
    * referenace name in the model for the action
    */
@@ -357,7 +364,7 @@ export interface Event {
   /**
    * Optional, internal use only.
    */
-  id?: number
+  id?: number | string
   /**
    * referenace name in the event in the model.
    */
@@ -470,7 +477,7 @@ export interface LogicNode {
   /**
    * Optional, internal use only.
    */
-  id?: number
+  id?: number | string
   /**
    * referenace name in the logic node
    */
@@ -513,7 +520,7 @@ export interface Variable {
   /**
    * Optional, internal use only.
    */
-  id?: number
+  id?: number | string
   /**
    * referenace name in the model for the variable
    */

@@ -1,24 +1,46 @@
 import React, {
   createContext,
   useContext,
-  useEffect,
-  useMemo,
   useState,
 } from 'react';
-import { EventAction, State } from '../types/State';
+import { State } from '../types/State';
 import { EmraldContextWrapperProps } from './EmraldContextWrapper';
+import { Event } from '../types/Event';
+import { Action } from '../types/Action';
 
 interface StateContextType {
   states: State[];
   createState: (newState: State) => void;
   updateState: (updatedState: State) => void;
+  updateStateEvents: (stateName: string, event: Event) => void;
+  updateStateEventActions: (stateName: string, eventName: string, action: Action) => void;
+  updateStateImmediateActions: (stateName: string, action: Action) => void;
+  updateStatePosition: (state: State, position: { x: number, y: number }) => void;
   deleteState: (StateId: number | string) => void;
-  getEventsByStateName: (stateName: string) => {events: String[]; type: string; eventActions: EventAction[]; immediateActions: string[]};
-  getStatePosition: (stateName: string) => {x: number; y: number};
+  getEventsByStateName: (stateName: string) => { events: string[]; type: string; eventActions: EventAction[]; immediateActions: string[], geometryInfo: { x: number; y: number; width: number; height: number } };
+  getStateByStateName: (stateName: string) => State;
+  getStateByStateId: (stateId: number) => State;
   newStateList: (newStateList: State[]) => void;
   mergeStateList: (newStateList: State[]) => void;
   clearStateList: () => void;
 }
+
+interface EventAction {
+  moveFromCurrent?: boolean;
+  actions?: string[];
+}
+
+const emptyState: State = {
+  id: 0,
+  name: '',
+  desc: '',
+  diagramName: '',
+  stateType: 'stStandard',
+  events: [],
+  eventActions: [],
+  immediateActions: [],
+  geometryInfo: { x: 0, y: 0, width: 0, height: 0 },
+};
 
 const StateContext = createContext<StateContextType | undefined>(undefined);
 
@@ -37,16 +59,6 @@ const StateContextProvider: React.FC<EmraldContextWrapperProps> = ({ appData, up
     appData.StateList,
   );
 
-  // Memoize the value of `States` to avoid unnecessary re-renders
-  // const states = useMemo(
-  //   () => stateList.map(({ State }) => State) as State[],
-  //   [stateList],
-  // );
-
-  // useEffect(() => {
-  //   setStateList(appData.StateList as StateList);
-  // }, [appData]);
-
   // Create, Delete, Update individual States
   const createState = (newState: State) => {
     const updatedStates = [...states, newState];
@@ -62,6 +74,46 @@ const StateContextProvider: React.FC<EmraldContextWrapperProps> = ({ appData, up
     setStates(updatedStates);
   };
 
+  const updateStateEvents = (stateName: string, event: Event) => {
+    const stateToUpdate = getStateByStateName(stateName);
+    if (stateToUpdate) {
+      if (stateToUpdate.events.includes(event.name)) {
+        return;
+      }
+      stateToUpdate.events = [...stateToUpdate.events, event.name];
+      updateState(stateToUpdate);
+    }
+  };
+
+  const updateStateEventActions = (stateName: string, eventName: string, action: Action) => {
+    const stateToUpdate = getStateByStateName(stateName);
+    if (stateToUpdate) {
+      const eventIndex = stateToUpdate?.events.indexOf(eventName);
+      if (!stateToUpdate.eventActions[eventIndex]) {
+        stateToUpdate.eventActions.push({ moveFromCurrent: false, actions: [action.name] });
+      } else {
+        if (stateToUpdate.eventActions[eventIndex].actions.includes(action.name)) {
+          return;
+        }
+        stateToUpdate.eventActions[eventIndex].actions.push(action.name);
+      }
+      
+      updateState(stateToUpdate);
+    }
+  };
+
+  const updateStateImmediateActions = (stateName: string, action: Action) => {
+    const stateToUpdate = getStateByStateName(stateName);
+    if (stateToUpdate) {
+      if (stateToUpdate.immediateActions.includes(action.name)) {
+        return;
+      }
+      stateToUpdate.immediateActions = [...stateToUpdate.immediateActions, action.name];
+      updateState(stateToUpdate);
+    }
+  };
+
+
   const deleteState = (stateId: number | string) => {
     const updatedStates = states.filter(
       (item) => item.id !== stateId,
@@ -69,34 +121,43 @@ const StateContextProvider: React.FC<EmraldContextWrapperProps> = ({ appData, up
     setStates(updatedStates);
   };
 
+  const getStateByStateId = (stateId: number): State => {
+    const state = states.find((stateItem) => stateItem.id === stateId);
+    return state || emptyState;
+  };
+
+  const getStateByStateName = (stateName: string): State => {
+    const state = states.find((stateItem) => stateItem.name === stateName);
+    return state || emptyState;
+  };
+
   const getEventsByStateName = (stateName: string) => {
-    const state = states.find((state) => state.name === stateName);
+    const state = getStateByStateName(stateName);
     if (state) {
       return {
         type: state.stateType || '',
         events: state.events || [],
         eventActions: state.eventActions || [],
         immediateActions: state.immediateActions || [],
+        geometryInfo: state.geometryInfo || { x: 0, y: 0, width: 0, height: 0 },
       };
     }
-    return { type: '', events: [], eventActions: [], immediateActions: [] };
+    return { type: '', events: [], eventActions: [], immediateActions: [], geometryInfo: { x: 0, y: 0, width: 0, height: 0 } };
   };
 
-  const getStatePosition = (stateName: string) => {
-    const state = states.find((state) => state.name === stateName);
-    if (state?.geometry) {
+  const updateStatePosition = (state: State, position: { x: number, y: number }) => {
+    if (state?.geometryInfo) {
       try {
-        const correctedString = state.geometry
-        .replace(/([a-zA-Z0-9]+)\s*:/g, '"$1":') // Replace property names with double quotes
-        .replace(/'/g, '"'); // Replace single quotes with double quotes
-        const parsedGeometry = JSON.parse(correctedString);
-        return parsedGeometry || { x: 0, y: 0 };
+        state.geometryInfo.x = position.x;
+        state.geometryInfo.y = position.y;
+        updateState(state);
       } catch (error) {
-        console.error('Error parsing geometry:', error);
+        console.error('Error updating geometry:', error);
       }
     }
-    return { x: 0, y: 0 };
+    return;
   };
+
 
   // Open New, Merge, and Clear State List
   const newStateList = (newStateList: State[]) => {
@@ -117,9 +178,14 @@ const StateContextProvider: React.FC<EmraldContextWrapperProps> = ({ appData, up
         states,
         createState,
         updateState,
+        updateStateEvents,
+        updateStateEventActions,
+        updateStateImmediateActions,
+        updateStatePosition,
         deleteState,
         getEventsByStateName,
-        getStatePosition,
+        getStateByStateName,
+        getStateByStateId,
         newStateList,
         mergeStateList,
         clearStateList,

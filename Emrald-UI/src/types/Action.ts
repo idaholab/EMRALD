@@ -5,9 +5,9 @@ export interface Action {
   /**
    * Optional, internal use only.
    */
-  id?: number
+  id?: number | string
   /**
-   * referenace name in the model for the action
+   * reference name in the model for the action
    */
   name: string
   /**
@@ -16,11 +16,11 @@ export interface Action {
   desc: string
   actType: ActionType
   /**
-   * Is this a global item to show up in the global list, If false it showes up in local or all list.
+   * Is this a global item to show up in the global list, If false it shows up in local or all list.
    */
   mainItem: boolean
   /**
-   * Optional. Only one action may be taken so the probability determines if this action is taken vs another in the EventAction list. If false then the probability is used to sample if this action occured and multiple or no actions could happen when the event is triggered.
+   * Optional. Only one action may be taken so the probability determines if this action is taken vs another in the EventAction list. If false then the probability is used to sample if this action occurred and multiple or no actions could happen when the event is triggered.
    */
   mutExcl?: boolean
   /**
@@ -28,7 +28,7 @@ export interface Action {
    */
   newStates?: NewState[]
   /**
-   * Optionsl. Script code to be executed if the action type has a script
+   * Optional. Script code to be executed if the action type has a script
    */
   scriptCode?: string
   /**
@@ -68,7 +68,7 @@ export interface Action {
    */
   simEndTime?: string
   /**
-   * Optional. For action type atRunExtApp. It is the C# script to be executed and the result strig  passed as a parameter to the executable to be run.
+   * Optional. For action type atRunExtApp. It is the C# script to be executed and the result string  passed as a parameter to the executable to be run.
    */
   makeInputFileCode?: string
   /**
@@ -76,7 +76,7 @@ export interface Action {
    */
   exePath?: string
   /**
-   * Optional. For action type atRunExtApp. It is the C# script to be executed after the accociated exe is ran. Typically it reads a result file and script typically returns a string list with +/-[StateName] to shift out or into a state because of the results..
+   * Optional. For action type atRunExtApp. It is the C# script to be executed after the associated exe is ran. Typically it reads a result file and script typically returns a string list with +/-[StateName] to shift out or into a state because of the results..
    */
   processOutputFileCode?: string
   /**
@@ -92,7 +92,7 @@ export interface Action {
     [k: string]: unknown
   }
   /**
-   * Optional. For action type atRunExtApp. It is flag to indicate the type of return from the processOutputFileCode. If rtNone then it has no return, othrwise the C# script must return a List<string> with +/-[StateName] to shift out or into a state.
+   * Optional. For action type atRunExtApp. It is flag to indicate the type of return from the processOutputFileCode. If rtNone then it has no return, otherwise the C# script must return a List<string> with +/-[StateName] to shift out or into a state.
    */
   returnProcess?: string
   changeLog?: ChangeLog
@@ -108,15 +108,15 @@ export interface Action {
 
 export interface NewState {
   /**
-   * reference name of the state to transtion to.
+   * reference name of the state to transition to.
    */
   toState: string
   /**
-   * probability that this state will be transtioned to.
+   * probability that this state will be transitioned to.
    */
   prob: number
   /**
-   * The description from the user for output if tthis transition takes place.
+   * The description from the user for output if this transition takes place.
    */
   failDesc: string
   /**

@@ -13,10 +13,21 @@ interface LogicNodeContextType {
   createLogicNode: (logicNode: LogicNode) => void;
   updateLogicNode: (logicNode: LogicNode) => void;
   deleteLogicNode: (logicNodeId: number | string) => void;
+  getLogicNodeByName: (logicNodeName: string) => LogicNode;
   newLogicNodeList: (newLogicNodeList: LogicNode[]) => void;
   mergeLogicNodeList: (newLogicNodeList: LogicNode[]) => void;
   clearLogicNodeList: () => void;
 }
+
+const emptyLogicNode: LogicNode = {
+  id: 0,
+  name: '',
+  desc: '',
+  isRoot: false,
+  gateType: 'gtAnd',
+  compChildren: [],
+  gateChildren: [],
+};
 
 const LogicNodeContext = createContext<LogicNodeContextType | undefined>(
   undefined,
@@ -39,16 +50,6 @@ const LogicNodeContextProvider: React.FC<EmraldContextWrapperProps> = ({
 }) => {
   const [logicNodes, setLogicNodes] = useState<LogicNode[]>(appData.LogicNodeList);
 
-  // Memoize the value of `diagrams` to avoid unnecessary re-renders
-  // const logicNodes = useMemo(
-  //   () => logicNodeList.map(({ LogicNode }) => LogicNode),
-  //   [logicNodeList],
-  // );
-
-  // useEffect(() => {
-  //   setLogicNodes(appData.LogicNodeList as LogicNodeList);
-  // }, [appData]);
-
   const createLogicNode = (newLogicNode: LogicNode) => {
     const updatedLogicNodes = [...logicNodes, newLogicNode];
     setLogicNodes(updatedLogicNodes);
@@ -68,6 +69,10 @@ const LogicNodeContextProvider: React.FC<EmraldContextWrapperProps> = ({
       (item) => item.id !== logicNodeId,
     );
     setLogicNodes(updatedLogicNodes);
+  };
+
+  const getLogicNodeByName = (logicNodeName: string) => {
+    return logicNodes.find((node) => node.name === logicNodeName) || emptyLogicNode;
   };
 
   // Open New, Merge, and Clear Diagram List
@@ -90,6 +95,7 @@ const LogicNodeContextProvider: React.FC<EmraldContextWrapperProps> = ({
         createLogicNode,
         updateLogicNode,
         deleteLogicNode,
+        getLogicNodeByName,
         newLogicNodeList,
         mergeLogicNodeList,
         clearLogicNodeList

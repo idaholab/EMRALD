@@ -96,7 +96,7 @@
             "type": "object",
             "properties": {
                 "id": {
-                    "type": "integer",
+                    "type": ["string", "integer"],
                     "description": "Optional. Only used for internal processing needs."
                 },
                 "name": {
@@ -142,7 +142,7 @@
             "type": "object",
             "properties": {
                 "id": {
-                    "type": "integer",
+                    "type": ["string", "integer"],
                     "description": "Optional, internal use only."
                 },
                 "name": {
@@ -220,8 +220,7 @@
                     }
                 },
                 "geometry": {
-                    "type": "string",
-                    "description": "possition for the GUI"
+                    "$ref": "#/definitions/GeometryInfo"
                 },
                 "changeLog": {
                     "$ref": "#/definitions/ChangeLog"
@@ -245,7 +244,7 @@
             "type": "object",
             "properties": {
                 "id": {
-                    "type": "integer",
+                    "type": ["string", "integer"],
                     "description": "Optional, internal use only."
                 },
                 "name": {
@@ -364,7 +363,7 @@
             "type": "object",
             "properties": {
                 "id": {
-                    "type": "integer",
+                    "type": ["string", "integer"],
                     "description": "Optional, internal use only."
                 },
                 "name": {
@@ -561,7 +560,7 @@
             "type": "object",
             "properties": {
                 "id": {
-                    "type": "integer",
+                    "type": ["string", "integer"],
                     "description": "Optional, internal use only."
                 },
                 "name": {
@@ -642,7 +641,7 @@
             "type": "object",
             "properties": {
                 "id": {
-                    "type": "integer",
+                    "type": ["string", "integer"],
                     "description": "Optional, internal use only."
                 },
                 "name": {
@@ -780,6 +779,36 @@
                 "type"
             ]
         },
+        "NewState": {
+            "type": "object",
+            "properties": {
+                "toState": {
+                    "type": "string",
+                    "description": "reference name of the state to transtion to."
+                },
+                "prob": {
+                    "type": "number",
+                    "description": "probability that this state will be transtioned to."
+                },
+                "failDesc": {
+                    "type": "string",
+                    "description": "The description from the user for output if tthis transition takes place."
+                },
+                "varProb": {
+                    "type": [
+                        "null",
+                        "string"
+                    ],
+                    "description": "Optional, if used  then the a variable is used for the probability. This is the name of that variable"
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "toState",
+                "prob",
+                "failDesc"
+            ]
+        },
         "ChangeLog": {
             "type": "array",
             "description": "Type of the diagram.",
@@ -805,6 +834,24 @@
                     "dateTime"
                 ]
             }
+        },
+        "GeometryInfo": {
+            "type": "object",
+            "properties": {
+                "x": {
+                    "type": "integer"
+                },
+                "y": {
+                    "type": "integer"
+                },
+                "width": {
+                    "type": "integer"
+                },
+                "height": {
+                    "type": "integer"
+                }
+            },
+            "description": "position for the GUI"
         },
         "DiagramType": {
             "type": "string",

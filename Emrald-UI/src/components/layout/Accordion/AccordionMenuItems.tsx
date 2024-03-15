@@ -100,7 +100,9 @@ const AccordionMenuItems: React.FC<AccordionMenuListProps> = ({ item, bothAccord
         {item.data.length > 0 ? (
           item.data.map((option, index) => (
             <ListItemButton key={option.id || index} sx={{ p: '0 0 0 2rem' }}>
-              <ItemWithContextMenu itemData={option} optionType={item.type}/>
+              <DraggableItem key={option.id} itemData={option}>
+                <ItemWithContextMenu itemData={option} optionType={item.type}/>
+              </DraggableItem>
             </ListItemButton>
           ))
         ) : (

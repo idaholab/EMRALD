@@ -16,6 +16,7 @@ import { Diagram } from '../../../types/Diagram';
 import { useAssembledData } from '../../../hooks/useAssembledData';
 import { v4 as uuidv4 } from 'uuid';
 import MainDetailsForm from '../MainDetailsForm';
+import { DiagramType } from '../../../types/ItemTypes';
 
 interface DiagramFormProps {
   diagramData?: Diagram;
@@ -24,9 +25,7 @@ interface DiagramFormProps {
 const DiagramForm: React.FC<DiagramFormProps> = ({ diagramData }) => {
   const { handleClose, updateTitle } = useWindowContext();
   const { diagrams, updateDiagram, createDiagram } = useDiagramContext();
-  const [diagramType, setDiagramType] = useState<string>(
-    diagramData?.diagramType || '',
-  );
+  const [diagramType, setDiagramType] = useState<DiagramType>(diagramData?.diagramType || 'dtSingle');
   const [name, setName] = useState<string>(diagramData?.name || '');
   const [desc, setDesc] = useState<string>(diagramData?.desc || '');
   const { assembledData } = useAssembledData();
@@ -69,9 +68,8 @@ const DiagramForm: React.FC<DiagramFormProps> = ({ diagramData }) => {
           type={diagramType}
           setType={setDiagramType}
           typeOptions={[
-            {value: 'dtPlant', label: 'Plant'},
-            {value: 'dtComponent', label: 'Component'},
-            {value: 'dtSystem', label: 'System'},
+            {value: 'dtSingle', label: 'Single'},
+            {value: 'dtMulti', label: 'Multi'},
           ]}
           name={name}
           setName={setName}
@@ -100,7 +98,7 @@ const DiagramForm: React.FC<DiagramFormProps> = ({ diagramData }) => {
       <Typography variant="h6" mt={5}>
         Drop Components Here
       </Typography>
-      <DropTargetComponent />
+      {/* <DropTargetComponent /> */}
     </Container>
   );
 };

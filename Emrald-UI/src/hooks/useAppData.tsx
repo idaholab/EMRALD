@@ -6,6 +6,7 @@ export const useAppData = () => {
   const upgrade = new Upgrade(JSON.stringify(emraldData));
   const upgradeSuccessful = upgrade.upgrade(3.0); // upgrade to version 3.0
   console.log(upgradeSuccessful);
+  console.log(JSON.parse(upgrade.newModelStr))
 
   const [appData, setAppData] = useState(() => {
     const storedData = localStorage.getItem('appData');

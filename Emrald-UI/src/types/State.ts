@@ -2,7 +2,7 @@ import {StateType, StateEvalValue} from './ItemTypes'
 import {ChangeLog} from './ChangeLog'
 
 export interface State {
-    id?: number
+    id?: number | string
     /**
      * referenace name in the model for state
      */
@@ -37,7 +37,12 @@ export interface State {
     /**
      * possition for the GUI
      */
-    geometry?: string
+    geometryInfo?: {
+      x: number
+      y: number
+      width: number
+      height: number
+    }
     changeLog?: ChangeLog
     defaultSingleStateValue?: StateEvalValue
   }

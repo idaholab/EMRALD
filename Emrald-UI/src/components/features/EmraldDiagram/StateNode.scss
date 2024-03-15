@@ -16,7 +16,7 @@
   }
 
   .source-handle {
-    top: 10px;
+    top: 14px;
     right: -15px;
   }
 
@@ -59,7 +59,7 @@
   }
 }
 
-.custom-node__header {
+.state-node__header {
   padding: 8px 10px;
   border-bottom: 1px solid #e2e8f0;
   font-size: 12px;
@@ -68,16 +68,25 @@
   align-items: center;
 }
 
-.custom-node__body {
+.state-node__body {
   padding: 10px;
 }
 
-.custom-node__immediate-actions {
+.state-node__immediate-actions {
   position: relative;
   margin-bottom: 10px;
 }
 
-.custom-node__event-actions {
+.state-node__event-actions {
   position: relative;
   margin-bottom: 10px;
+}
+
+.state-node__connection-svg { 
+  overflow: visible;
+  position: absolute;
+  left: 0; 
+  right: 0;
+  top: 0; 
+  bottom: 0;
 }
