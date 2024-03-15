@@ -5,7 +5,7 @@ export interface LogicNode {
     /**
      * Optional, internal use only.
      */
-    id?: number
+    id?: number | string
     /**
      * referenace name in the logic node
      */

@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useNodesState, useEdgesState, Edge, Node, Position, ReactFlowProvider, ReactFlowInstance } from 'reactflow';
 import { useLogicNodeContext } from '../../../contexts/LogicNodeContext';
-// import { currentLogicNode } from './LogicTreeDiagram';
 import { LogicNode } from '../../../types/LogicNode';
 import { v4 as uuidv4 } from 'uuid';
 import dagre from '@dagrejs/dagre';

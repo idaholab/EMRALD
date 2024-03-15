@@ -6,7 +6,6 @@ import ReactFlow, {
   BackgroundVariant,
   Controls,
   ReactFlowProvider,
-  Edge,
   Panel,
 } from 'reactflow';
 

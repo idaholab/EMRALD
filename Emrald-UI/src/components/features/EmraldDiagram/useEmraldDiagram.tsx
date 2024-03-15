@@ -5,7 +5,6 @@ import {
   Edge,
   Node,
   Connection,
-  updateEdge,
 } from 'reactflow';
 import EmraldDiagram from './EmraldDiagram';
 import { useActionContext } from '../../../contexts/ActionContext';

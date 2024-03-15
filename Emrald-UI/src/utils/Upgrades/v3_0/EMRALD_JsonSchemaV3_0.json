@@ -96,7 +96,7 @@
             "type": "object",
             "properties": {
                 "id": {
-                    "type": "integer",
+                    "type": ["string", "integer"],
                     "description": "Optional. Only used for internal processing needs."
                 },
                 "name": {
@@ -142,7 +142,7 @@
             "type": "object",
             "properties": {
                 "id": {
-                    "type": "integer",
+                    "type": ["string", "integer"],
                     "description": "Optional, internal use only."
                 },
                 "name": {
@@ -244,7 +244,7 @@
             "type": "object",
             "properties": {
                 "id": {
-                    "type": "integer",
+                    "type": ["string", "integer"],
                     "description": "Optional, internal use only."
                 },
                 "name": {
@@ -363,7 +363,7 @@
             "type": "object",
             "properties": {
                 "id": {
-                    "type": "integer",
+                    "type": ["string", "integer"],
                     "description": "Optional, internal use only."
                 },
                 "name": {
@@ -560,7 +560,7 @@
             "type": "object",
             "properties": {
                 "id": {
-                    "type": "integer",
+                    "type": ["string", "integer"],
                     "description": "Optional, internal use only."
                 },
                 "name": {
@@ -641,7 +641,7 @@
             "type": "object",
             "properties": {
                 "id": {
-                    "type": "integer",
+                    "type": ["string", "integer"],
                     "description": "Optional, internal use only."
                 },
                 "name": {

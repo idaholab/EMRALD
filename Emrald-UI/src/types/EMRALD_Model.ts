@@ -15,7 +15,7 @@ import {ChangeLog} from './ChangeLog'
    /**
     * Temporary, only used internally for some identification or uniqueness needs
     */
-   id?: number
+   id?: number | string
    /**
     * Name of the EMRALD model
     */
