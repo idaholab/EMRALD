@@ -26,6 +26,8 @@ const DiagramForm: React.FC<DiagramFormProps> = ({ diagramData }) => {
   const { handleClose, updateTitle } = useWindowContext();
   const { diagrams, updateDiagram, createDiagram } = useDiagramContext();
   const [diagramType, setDiagramType] = useState<DiagramType>(diagramData?.diagramType || 'dtSingle');
+  const [diagramLabel, setDiagramLabel] = useState<string>(diagramData?.diagramLabel || 'plant');
+  const [states, setStates] = useState<string[]>([]);
   const [name, setName] = useState<string>(diagramData?.name || '');
   const [desc, setDesc] = useState<string>(diagramData?.desc || '');
   const { assembledData } = useAssembledData();
@@ -34,17 +36,21 @@ const DiagramForm: React.FC<DiagramFormProps> = ({ diagramData }) => {
     updateTitle(diagramData?.name || '', name);
     const newDiagram = {
       id: uuidv4(),
-      diagramType,
       name,
       desc,
+      diagramType,
+      diagramLabel,
+      states,
     };
 
     diagramData
       ? updateDiagram(assembledData, {
           id: diagramData.id,
-          diagramType,
           name,
           desc,
+          diagramType,
+          diagramLabel,
+          states
         })
       : createDiagram(newDiagram);
     handleClose();

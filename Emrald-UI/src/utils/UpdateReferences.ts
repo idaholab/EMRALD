@@ -2,8 +2,13 @@ import { Action, NewState } from '../types/Action';
 import { appData } from '../types/Data';
 import { Diagram } from '../types/Diagram';
 import { LogicNode } from '../types/LogicNode';
-import { EventAction, State } from '../types/State';
+import { State } from '../types/State';
 import { Event } from '../types/Event';
+
+interface EventAction {
+  actions: string[];
+  moveFromCurrent: boolean;
+}
 
 export const updateReferences = (
   itemData: appData,
