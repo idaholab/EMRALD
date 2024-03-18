@@ -5,7 +5,7 @@
     "description": "EMRALD model schema version 2.4",
     "properties": {
         "id": {
-            "type": "integer",
+            "type": "string",
             "description": "Temporary, only used internally for some identification or uniqueness needs"
         },
         "name": {
@@ -96,7 +96,7 @@
             "type": "object",
             "properties": {
                 "id": {
-                    "type": ["string", "integer"],
+                    "type": "string",
                     "description": "Optional. Only used for internal processing needs."
                 },
                 "name": {
@@ -142,7 +142,7 @@
             "type": "object",
             "properties": {
                 "id": {
-                    "type": ["string", "integer"],
+                    "type": "string",
                     "description": "Optional, internal use only."
                 },
                 "name": {
@@ -244,7 +244,7 @@
             "type": "object",
             "properties": {
                 "id": {
-                    "type": ["string", "integer"],
+                    "type": "string",
                     "description": "Optional, internal use only."
                 },
                 "name": {
@@ -363,7 +363,7 @@
             "type": "object",
             "properties": {
                 "id": {
-                    "type": ["string", "integer"],
+                    "type": "string",
                     "description": "Optional, internal use only."
                 },
                 "name": {
@@ -560,7 +560,7 @@
             "type": "object",
             "properties": {
                 "id": {
-                    "type": ["string", "integer"],
+                    "type": "string",
                     "description": "Optional, internal use only."
                 },
                 "name": {
@@ -641,7 +641,7 @@
             "type": "object",
             "properties": {
                 "id": {
-                    "type": ["string", "integer"],
+                    "type": "string",
                     "description": "Optional, internal use only."
                 },
                 "name": {

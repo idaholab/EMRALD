@@ -8,6 +8,7 @@ import {State} from './State'
 import {LogicNode} from './LogicNode'
 import {ChangeLog} from './ChangeLog'
 
+
  /**
   * EMRALD model schema version 2.4
   */
@@ -15,7 +16,7 @@ import {ChangeLog} from './ChangeLog'
    /**
     * Temporary, only used internally for some identification or uniqueness needs
     */
-   id?: number | string
+   id?: string
    /**
     * Name of the EMRALD model
     */

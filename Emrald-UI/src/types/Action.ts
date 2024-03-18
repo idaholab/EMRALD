@@ -5,7 +5,7 @@ export interface Action {
   /**
    * Optional, internal use only.
    */
-  id?: number | string
+  id?: string
   /**
    * reference name in the model for the action
    */

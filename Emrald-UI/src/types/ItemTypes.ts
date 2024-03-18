@@ -1,3 +1,12 @@
+export enum MainItemTypes {
+  Diagram = "Diagram",
+  State = "State",
+  Action = "Action",
+  Event = "Event",
+  ExtSim = "ExtSim",
+  LogicNode = "LogicNode",
+  Variable = "Variable"
+}
 
 /**
  * Type of the diagram. dtSingle - means you can only be in one state of the diagram at a time and states evaluate to a value. dtMulti - means you can be in multiple states at a time, but cant evaluate the diagram

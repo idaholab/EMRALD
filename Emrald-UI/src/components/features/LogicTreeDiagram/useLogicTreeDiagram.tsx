@@ -71,6 +71,7 @@ const useLogicNodeTreeDiagram = () => {
         source: parentId, // Use parentId as the source for edges
         target: gateNode.id,
         ariaLabel: node.name,
+        type: 'smoothstep',
       });
   
       // Process the gate children
@@ -102,6 +103,10 @@ const useLogicNodeTreeDiagram = () => {
             source: gateNode.id,
             target: compNode.id,
             ariaLabel: `${gateNode.data.label}-${childNode}`,
+            type: 'smoothstep',
+            style: {
+              strokeWidth: 3
+            }
           });
         }
       });

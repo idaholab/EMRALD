@@ -4,7 +4,8 @@ import React, {
   useState,
 } from 'react';
 import { Diagram } from '../types/Diagram';
-import { updateReferences } from '../utils/UpdateReferences';
+import { updateModelAndReferences } from '../utils/UpdateModel';
+import { MainItemTypes } from '../types/ItemTypes';
 import jsonPath from 'jsonpath';
 import { EmraldContextWrapperProps } from './EmraldContextWrapper';
 interface DiagramContextType {
@@ -64,21 +65,11 @@ const DiagramContextProvider: React.FC<EmraldContextWrapperProps> = ({ appData, 
       if (item.id === updatedDiagram.id) {
         const previousName = item.name; // Get the previous name
         const newName = updatedDiagram.name; // Get the new name from the updatedDiagram object
-
-        // Update all references to the name in the appData
-        const references = jsonPath.paths(appData, `$..[?(@ == "${previousName}")]`);
-        references.forEach(ref => {
-          const path = ref.join('.');
-          const value = jsonPath.value(appData, path);
-          if (value === previousName) {
-            jsonPath.value(appData, path, newName);
-          }
-        });
+        
 
         // Call updateKeyAndReferences here to update references in the updatedDiagram
-        const updatedData = updateReferences(data, previousName, newName);
-        updateAppData(updatedData);
-  
+        updateModelAndReferences(data, updateAppData, MainItemTypes.Diagram,  previousName, newName);
+
         return updatedDiagram;
       } else {
         return item;

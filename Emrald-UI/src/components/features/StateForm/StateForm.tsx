@@ -10,12 +10,18 @@ import { State } from '../../../types/State';
 import { v4 as uuidv4 } from 'uuid';
 import MainDetailsForm from '../MainDetailsForm';
 import { useStateContext } from '../../../contexts/StateContext';
+import { useAppData } from '../../../hooks/useAppData';
+import { EMRALD_Model } from '../../../types/EMRALD_Model';
+import {updateModelAndReferences} from '../../../utils/UpdateModel';
+import { MainItemTypes } from '../../../types/ItemTypes';
+
 
 interface StateFormProps {
   stateData?: State;
 }
 
 const StateForm: React.FC<StateFormProps> = ({ stateData }) => {
+  const { appData, updateAppData } = useAppData();
   const { handleClose } = useWindowContext();
   const { updateState, createState } = useStateContext();
   const [stateType, setStateType] = useState<string>(
@@ -31,16 +37,26 @@ const StateForm: React.FC<StateFormProps> = ({ stateData }) => {
       name,
       desc,
     };
+    //save here
+    
+    //EMRALD model is 
+    const updatedEMRALDModel: EMRALD_Model = appData;
+    //TODO update the state data
+    //updatedEMRALDModel.StateList[? ]
+    updateModelAndReferences(updatedEMRALDModel, updateAppData, MainItemTypes.State, name, 'new_' + name);
 
-    stateData
-      ? updateState({
-          id: stateData.id,
-          stateType,
-          name,
-          desc,
-        })
-      : createState(newState);
-    handleClose();
+    
+    
+
+    //stateData
+    //  ? updateState({
+    //      id: stateData.id,
+    //      stateType,
+    //      name,
+    //      desc,
+    //    })
+    //  : createState(newState);
+    //handleClose();
   };
 
   useEffect(() => {
