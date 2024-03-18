@@ -29,14 +29,14 @@ const getImmediateActionEdges = (
               target: moveToState.id,
               label: showRemainingValues(currentAction, newState),
               targetHandle: 'immediate-action-target',
-              sourceHandle: `immediate-action-source-${currentAction?.id}`,
+              sourceHandle: `${currentAction?.id}`,
               updatable: 'target',
               style: {
                 stroke: 'green',
                 strokeDasharray: 5
               },
               markerEnd: {
-                type: MarkerType.Arrow,
+                type: MarkerType.ArrowClosed,
                 width: 25,
                 height: 25,
                 color: 'green',

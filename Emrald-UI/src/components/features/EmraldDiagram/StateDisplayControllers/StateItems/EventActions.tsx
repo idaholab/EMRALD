@@ -149,7 +149,7 @@ const EventActions: React.FC<EventActionsProps> = ({ state }) => {
                             className="state-node__handle-right source-handle"
                             type="source"
                             position={Position.Right}
-                            id={`event-action-source-${action.id}`}
+                            id={`${action.id}`}
                           />
                         ) : (
                           <></>

@@ -57,7 +57,7 @@ const ImmediateActions: React.FC<ImmediateActionsProps> = ({
                 className="state-node__handle-right source-handle"
                 type="source"
                 position={Position.Right}
-                id={`immediate-action-source-${actionValue.id}`}
+                id={`${actionValue.id}`}
               />
             ) : (
               <></>

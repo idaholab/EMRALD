@@ -50,14 +50,14 @@ const getEventActionEdges = (
               target: moveToState.id,
               label: showRemainingValues(currentAction, newState),
               targetHandle: 'event-action-target',
-              sourceHandle: `event-action-source-${currentAction?.id}`,
+              sourceHandle: `${currentAction?.id}`,
               updatable: 'target',
               style: {
                 stroke: `${action.moveFromCurrent ? '#b1b1b7' : 'green'}`,
                 strokeDasharray: `${action.moveFromCurrent ? '' : 5}`
               },
               markerEnd: { 
-                type: MarkerType.Arrow, 
+                type: MarkerType.ArrowClosed, 
                 width: 25, 
                 height: 25, 
                 color: `${action.moveFromCurrent ? '#b1b1b7' : 'green'}` 

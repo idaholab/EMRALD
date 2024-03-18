@@ -60,7 +60,7 @@ const LogicNodeTreeDiagram: React.FC<LogicNodeTreeDiagramProps> = ({ logicNode }
                 <Box sx={{background: '#d3d3d3', padding: '10px'}}>Panel to add items if needed</Box>
               </Panel>
               <Controls />
-              <MiniMap />
+              {/* <MiniMap /> */}
               <Background variant={BackgroundVariant.Dots} gap={12} size={1} />
             </ReactFlow>
           </div>

@@ -19,7 +19,7 @@ interface StateContextType {
   deleteState: (StateId: number | string) => void;
   getEventsByStateName: (stateName: string) => { events: string[]; type: string; eventActions: EventAction[]; immediateActions: string[], geometryInfo: { x: number; y: number; width: number; height: number } };
   getStateByStateName: (stateName: string) => State;
-  getStateByStateId: (stateId: number) => State;
+  getStateByStateId: (stateId: string | null) => State;
   newStateList: (newStateList: State[]) => void;
   mergeStateList: (newStateList: State[]) => void;
   clearStateList: () => void;
@@ -121,7 +121,7 @@ const StateContextProvider: React.FC<EmraldContextWrapperProps> = ({ appData, up
     setStates(updatedStates);
   };
 
-  const getStateByStateId = (stateId: number): State => {
+  const getStateByStateId = (stateId: string | null): State => {
     const state = states.find((stateItem) => stateItem.id === stateId);
     return state || emptyState;
   };

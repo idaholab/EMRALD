@@ -35,7 +35,7 @@ const useLogicNodeTreeDiagram = () => {
       type: 'custom',
       data: {
         label: logicNode.name,
-        isRoot: true,
+        isRoot: logicNode.isRoot,
         parent: null,
         parentName: '',
         type: 'root',

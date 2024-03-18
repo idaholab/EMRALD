@@ -12,7 +12,7 @@ interface ActionContextType {
   updateAction: (action: Action) => void;
   deleteAction: (actionId: number | string) => void;
   getActionByActionName: (actionName: string) => Action;
-  getActionByActionId: (actionId: number) => Action;
+  getActionByActionId: (actionId: string | null) => Action;
   getNewStatesByActionName: (actionName: string) => NewState[];
   addNewStateToAction: (action: Action, newState: NewState) => void;
   clearActionList: () => void;
@@ -62,7 +62,7 @@ const ActionContextProvider: React.FC<EmraldContextWrapperProps> = ({ appData, u
     setActions(updatedActionList);
   };
 
-  const getActionByActionId = (actionId: number) => {
+  const getActionByActionId = (actionId: string | null) => {
     return actions.find((action) => action.id === actionId) || emptyAction;
   };
   const getActionByActionName = (actionName: string) => {

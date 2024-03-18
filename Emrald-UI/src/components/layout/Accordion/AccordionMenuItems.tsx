@@ -24,8 +24,10 @@ export interface AccordionMenuListProps {
   bothAccordionsOpen: boolean;
 }
 
-const AccordionMenuItems: React.FC<AccordionMenuListProps> = ({ item, bothAccordionsOpen }) => {
-  const { addWindow } = useWindowContext();
+const AccordionMenuItems: React.FC<AccordionMenuListProps> = ({
+  item,
+  bothAccordionsOpen,
+}) => {
   const { diagrams } = useDiagramContext();
   const [openIndex, setOpenIndex] = React.useState<number | null>(null); // Keeps track of the index of the open item
   const diagramTypes = [
@@ -67,15 +69,22 @@ const AccordionMenuItems: React.FC<AccordionMenuListProps> = ({ item, bothAccord
                   <List
                     component="div"
                     disablePadding
-                    sx={{ maxHeight: !bothAccordionsOpen ? '420px' : '210px', overflow: 'auto' }}
+                    sx={{
+                      maxHeight: !bothAccordionsOpen ? '420px' : '210px',
+                      overflow: 'auto',
+                    }}
                   >
                     {diagrams.map((diagram) => (
                       <React.Fragment key={diagram.id}>
                         {diagram.diagramLabel === name && (
                           <DraggableItem key={diagram.id} itemData={diagram}>
-                            <ListItemButton sx={{ p: '0 0 0 3rem', width: '100%' }}>
-                            {/* <ListItemText primary={diagram.name} onClick={() => addWindow(diagram.name, <ReactFlowTest diagram={diagram}/>, { x: 75, y: 25, width: 1500, height: 700 })}/> */}
-                            <ItemWithContextMenu itemData={diagram} optionType={item.type}/>
+                            <ListItemButton
+                              sx={{ p: '0 0 0 3rem', width: '100%' }}
+                            >
+                              <ItemWithContextMenu
+                                itemData={diagram}
+                                optionType={item.type}
+                              />
                             </ListItemButton>
                           </DraggableItem>
                         )}
@@ -89,26 +98,56 @@ const AccordionMenuItems: React.FC<AccordionMenuListProps> = ({ item, bothAccord
         </List>
       ) : (
         <List
-        disablePadding
-        sx={{
-          width: '100%',
-          bgcolor: 'background.paper',
-          maxHeight: !bothAccordionsOpen ? '420px' : '210px',
-          overflow: 'auto',
-        }}
-      >
-        {item.data.length > 0 ? (
-          item.data.map((option, index) => (
-            <ListItemButton key={option.id || index} sx={{ p: '0 0 0 2rem' }}>
-              <DraggableItem key={option.id} itemData={option}>
-                <ItemWithContextMenu itemData={option} optionType={item.type}/>
-              </DraggableItem>
-            </ListItemButton>
-          ))
-        ) : (
-          <Typography>N/A</Typography>
-        )}
-      </List>
+          disablePadding
+          sx={{
+            width: '100%',
+            bgcolor: 'background.paper',
+            maxHeight: !bothAccordionsOpen ? '420px' : '210px',
+            overflow: 'auto',
+          }}
+        >
+          {item.type === 'Logic Tree' && item.data.length > 0 ? (
+            item.data.map((option, index) => (
+              <React.Fragment key={option.id || index}>
+                {option.isRoot ? ( // Only show logic tree items that are root
+                  <ListItemButton
+                    key={option.id || index}
+                    sx={{ p: '0 0 0 2rem' }}
+                  >
+                    <DraggableItem itemData={option}>
+                      <ItemWithContextMenu
+                        itemData={option}
+                        optionType={item.type}
+                      />
+                    </DraggableItem>
+                  </ListItemButton>
+                ) : (
+                  <></>
+                )}
+              </React.Fragment>
+            ))
+          ) : (
+            <>
+              {item.data.length > 0 ? (
+                item.data.map((option, index) => (
+                  <ListItemButton
+                    key={option.id || index}
+                    sx={{ p: '0 0 0 2rem' }}
+                  >
+                    <DraggableItem key={option.id} itemData={option}>
+                      <ItemWithContextMenu
+                        itemData={option}
+                        optionType={item.type}
+                      />
+                    </DraggableItem>
+                  </ListItemButton>
+                ))
+              ) : (
+                <Typography>N/A</Typography>
+              )}
+            </>
+          )}
+        </List>
       )}
     </>
   );

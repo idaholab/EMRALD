@@ -5,6 +5,7 @@ import {
   Edge,
   Node,
   Connection,
+  updateEdge,
 } from 'reactflow';
 import EmraldDiagram from './EmraldDiagram';
 import { useActionContext } from '../../../contexts/ActionContext';
@@ -70,12 +71,8 @@ const useEmraldDiagram = () => {
     (connection: Connection) => {
       const sourceNode = nodes.find((node) => node.id === connection.source);
       const targetNode = nodes.find((node) => node.id === connection.target);
-      const targetState = getStateByStateId(
-        Number(connection.target?.split('-')[1]),
-      );
-      const currentAction = getActionByActionId(
-        Number(connection.sourceHandle?.split('-')[3]),
-      );
+      const targetState = getStateByStateId(connection.target);
+      const currentAction = getActionByActionId(connection.sourceHandle);
       
       if (!sourceNode || !targetNode) { return; }
       // Prevent a node from connecting to itself
@@ -127,15 +124,9 @@ const useEmraldDiagram = () => {
   // Adds the ability to update an edge
   const onEdgeUpdate = useCallback(
     (oldEdge: Edge, newConnection: Connection) => {
-      const currentAction = getActionByActionId(
-        Number(newConnection.sourceHandle?.split('-')[3]),
-      );
-      const oldState = getStateByStateId(
-        Number(oldEdge.target?.split('-')[1]),
-      );
-      const targetState = getStateByStateId(
-        Number(newConnection.target?.split('-')[1]),
-      );
+      const currentAction = getActionByActionId(newConnection.sourceHandle);
+      const oldState = getStateByStateId(oldEdge.target);
+      const targetState = getStateByStateId(newConnection.target);
 
       // Prevent a node from connecting to itself
       if (oldEdge.source === newConnection.target) { return; }
@@ -203,7 +194,7 @@ const useEmraldDiagram = () => {
         let stateDetails = getStateByStateName(state);
         const { x, y } = stateDetails.geometryInfo || { x: 0, y: 0 };
         return {
-          id: `state-${stateDetails.id}`,
+          id: `${stateDetails.id}`,
           position: { x, y },
           type: 'custom',
           data: {
