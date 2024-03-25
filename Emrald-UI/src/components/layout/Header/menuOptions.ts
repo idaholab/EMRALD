@@ -1,3 +1,5 @@
+import { clearCacheData } from "../../../hooks/useAppData";
+
 export interface MenuOption {
   label: string;
   onClick: (args?: any) => void;
@@ -99,7 +101,7 @@ export const projectOptions: MenuOption[] = [
       a.href = url;
       a.download = `${
         assembledData.name ? assembledData.name : 'Untitled_EMRALD_Project'
-      }.json`;
+      }.emrald`;
 
       // Trigger a click event on the <a> element to initiate the download
       a.click();
@@ -119,6 +121,10 @@ export const projectOptions: MenuOption[] = [
   {
     label: 'Load Results',
     onClick: () => {},
+  },
+  {
+    label: 'Clear Cached Data',
+    onClick: () => {clearCacheData();}
   },
 ];
 

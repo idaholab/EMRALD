@@ -15,13 +15,13 @@ import CommitIcon from '@mui/icons-material/Commit';
 import ShapeLineIcon from '@mui/icons-material/ShapeLine';
 import PermDataSettingIcon from '@mui/icons-material/PermDataSetting';
 import { useWindowContext } from '../../../contexts/WindowContext';
-import DiagramForm from '../../features/DiagramForm/DiagramForm';
+import DiagramForm from '../../forms/DiagramForm/DiagramForm';
 import MinimizedWindows from '../Window/MinimizedWindows';
-import LogicTreeForm from '../../features/LogicTreeForm/LogicTreeForm';
-import ActionForm from '../../features/ActionForm/ActionForm';
-import EventForm from '../../features/EventForm/EventForm';
-import StateForm from '../../features/StateForm/StateForm';
-import VariableForm from '../../features/VariableForm/VariableForm';
+import LogicNodeForm from '../../forms/LogicNodeForm/LogicNodeForm';
+import ActionForm from '../../forms/ActionForm/ActionForm';
+import EventForm from '../../forms/EventForm/EventForm';
+import StateForm from '../../forms/StateForm/StateForm';
+import VariableForm from '../../forms/VariableForm/VariableForm';
 import emraldData from '../../../emraldData.json';
 
 interface MainCanvasProps {
@@ -39,7 +39,7 @@ const MainCanvas: React.FC<MainCanvasProps> = ({ appData, updateAppData }) => {
     {
       icon: <AccountTreeIcon />,
       name: 'New Logic Tree',
-      content: <LogicTreeForm />,
+      content: <LogicNodeForm />,
     },
     {
       icon: <CommitIcon />,
@@ -99,11 +99,12 @@ const MainCanvas: React.FC<MainCanvasProps> = ({ appData, updateAppData }) => {
       >
         <MinimizedWindows />
 
-        {storedHistory && storedHistory.length > 1 ? (
+        {/* Figure this out later */}
+        {/* {storedHistory && storedHistory.length > 1 ? (
           <Fab color="secondary" aria-label="add" onClick={() => undoChange()}>
             <UndoIcon />
           </Fab>
-        ) : null}
+        ) : null} */}
 
         <SpeedDial
           ariaLabel="SpeedDial tooltip example"

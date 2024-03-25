@@ -20,6 +20,7 @@ const ImmediateActions: React.FC<ImmediateActionsProps> = ({
     openDiagramFromNewState,
     isStateInCurrentDiagram,
     getActionByActionName,
+    onActionDoubleClick
   } = useEmraldDiagram();
 
   const {
@@ -40,6 +41,7 @@ const ImmediateActions: React.FC<ImmediateActionsProps> = ({
 
         return (
           <ListItem
+            onDoubleClick={(e) => onActionDoubleClick(e, actionValue)}
             onContextMenu={(e) => {
               onActionContextMenu(e, state, actionValue, "immediate");
             }}

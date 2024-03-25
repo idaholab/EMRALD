@@ -14,6 +14,9 @@ import { LogicNode } from '../../../types/LogicNode.js';
 import useLogicNodeTreeDiagram from './useLogicTreeDiagram.js';
 import Box from '@mui/material/Box';
 import TreeNodeComponent from './TreeNodeComponent/TreeNodeComponent.js';
+import ContextMenu from '../../layout/ContextMenu/ContextMenu.js';
+import { useLogicNodeContext } from '../../../contexts/LogicNodeContext.js';
+import { TbLogicAnd, TbLogicNot, TbLogicOr } from 'react-icons/tb';
 
 // export const currentLogicNode = signal<LogicNode | null>(null);
 
@@ -26,6 +29,10 @@ const LogicNodeTreeDiagram: React.FC<LogicNodeTreeDiagramProps> = ({ logicNode }
     nodes, 
     edges, 
     loading,
+    menu,
+    menuOptions,
+    onNodeContextMenu,
+    closeContextMenu,
     buildLogicTree,
     onNodesChange, 
     onEdgesChange,
@@ -49,20 +56,34 @@ const LogicNodeTreeDiagram: React.FC<LogicNodeTreeDiagramProps> = ({ logicNode }
               nodes={nodes}
               edges={edges}
               onNodesChange={onNodesChange}
+              onNodeContextMenu={onNodeContextMenu}
               onEdgesChange={onEdgesChange}
               nodeTypes={nodeTypes}
               connectionLineType={ConnectionLineType.SmoothStep}
               onInit={handleLoad}
               nodesDraggable={false}
               nodesConnectable={false}
+              zoomOnDoubleClick={false}
             >
               <Panel position="top-left">
-                <Box sx={{background: '#d3d3d3', padding: '10px'}}>Panel to add items if needed</Box>
+                <Box sx={{background: '#fdfdfd', padding: '10px'}}>
+                  <TbLogicAnd />
+                  <TbLogicOr />
+                  <TbLogicNot />
+                  </Box>
               </Panel>
               <Controls />
               {/* <MiniMap /> */}
               <Background variant={BackgroundVariant.Dots} gap={12} size={1} />
             </ReactFlow>
+            {menu && (
+            <ContextMenu
+              mouseX={menu.mouseX}
+              mouseY={menu.mouseY}
+              handleClose={closeContextMenu}
+              options={menuOptions}
+            />
+          )}
           </div>
         )}
       </Box>

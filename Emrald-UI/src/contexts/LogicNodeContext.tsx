@@ -7,20 +7,22 @@ import React, {
 } from 'react';
 import { LogicNode } from '../types/LogicNode';
 import { EmraldContextWrapperProps } from './EmraldContextWrapper';
+import { v4 as uuidv4 } from 'uuid';
+import { appData, updateAppData } from '../hooks/useAppData';
 
 interface LogicNodeContextType {
   logicNodes: LogicNode[];
   createLogicNode: (logicNode: LogicNode) => void;
   updateLogicNode: (logicNode: LogicNode) => void;
-  deleteLogicNode: (logicNodeId: number | string) => void;
+  deleteLogicNode: (logicNodeId: string | undefined) => void;
   getLogicNodeByName: (logicNodeName: string) => LogicNode;
   newLogicNodeList: (newLogicNodeList: LogicNode[]) => void;
   mergeLogicNodeList: (newLogicNodeList: LogicNode[]) => void;
   clearLogicNodeList: () => void;
 }
 
-const emptyLogicNode: LogicNode = {
-  id: 0,
+export const emptyLogicNode: LogicNode = {
+  id: uuidv4(),
   name: '',
   desc: '',
   isRoot: false,
@@ -44,11 +46,9 @@ export function useLogicNodeContext() {
 }
 
 const LogicNodeContextProvider: React.FC<EmraldContextWrapperProps> = ({
-  appData,
-  updateAppData,
   children,
 }) => {
-  const [logicNodes, setLogicNodes] = useState<LogicNode[]>(appData.LogicNodeList);
+  const [logicNodes, setLogicNodes] = useState<LogicNode[]>(appData.value.LogicNodeList);
 
   const createLogicNode = (newLogicNode: LogicNode) => {
     const updatedLogicNodes = [...logicNodes, newLogicNode];
@@ -64,10 +64,12 @@ const LogicNodeContextProvider: React.FC<EmraldContextWrapperProps> = ({
     setLogicNodes(updatedLogicNodes);
   };
 
-  const deleteLogicNode = (logicNodeId: number | string) => {
+  const deleteLogicNode = (logicNodeId: string | undefined) => {
+    if (!logicNodeId) { return; }
     const updatedLogicNodes = logicNodes.filter(
       (item) => item.id !== logicNodeId,
     );
+    updateAppData(appData.value);
     setLogicNodes(updatedLogicNodes);
   };
 

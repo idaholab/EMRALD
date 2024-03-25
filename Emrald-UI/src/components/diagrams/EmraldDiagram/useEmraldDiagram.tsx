@@ -8,23 +8,31 @@ import {
   updateEdge,
 } from 'reactflow';
 import EmraldDiagram from './EmraldDiagram';
-import { useActionContext } from '../../../contexts/ActionContext';
-import { useStateContext } from '../../../contexts/StateContext';
-import { useWindowContext } from '../../../contexts/WindowContext';
-import getEventActionEdges from './Edges/EventActionEdge';
-import getImmediateActionEdges from './Edges/ImmediateActionEdge';
-import { State } from '../../../types/State';
-import { useDiagramContext } from '../../../contexts/DiagramContext';
-import { Action } from '../../../types/Action';
-import { useEventContext } from '../../../contexts/EventContext';
 import { currentDiagram } from './EmraldDiagram';
 import { v4 as uuidv4 } from 'uuid';
+// Edges
+import getEventActionEdges from './Edges/EventActionEdge';
+import getImmediateActionEdges from './Edges/ImmediateActionEdge';
+// Types
+import { State } from '../../../types/State';
+import { Action } from '../../../types/Action';
+import { Event } from '../../../types/Event';
+// Contexts
+import { useDiagramContext } from '../../../contexts/DiagramContext';
+import { useStateContext } from '../../../contexts/StateContext';
+import { useActionContext } from '../../../contexts/ActionContext';
+import { useEventContext } from '../../../contexts/EventContext';
+import { useWindowContext } from '../../../contexts/WindowContext';
+// Forms
+import StateForm from '../../forms/StateForm/StateForm';
+import EventForm from '../../forms/EventForm/EventForm';
+import ActionForm from '../../forms/ActionForm/ActionForm';
 
 const useEmraldDiagram = () => {
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge[]>([]);
   const [loading, setLoading] = useState(true);
-  const { getDiagramByDiagramName } = useDiagramContext();
+  const { diagrams, getDiagramByDiagramName } = useDiagramContext();
   const {
     getActionByActionId,
     getActionByActionName,
@@ -65,6 +73,27 @@ const useEmraldDiagram = () => {
       );
     });
   };
+
+  // Double Clicks
+  const onNodeDoubleClick = (_event: any, node: Node) => {
+    if (node.data.state) {
+      addWindow(`Edit State: ${node.data.state.name}`, <StateForm stateData={node.data.state} />);
+    }
+  }
+
+  const onEventDoubleClick = (e: any, event: Event | undefined) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!event) { return;}
+    addWindow(`Edit Event: ${event.name}`, <EventForm eventData={event} />);
+  }
+
+  const onActionDoubleClick = (e: any, action: Action) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!action) { return; }
+    addWindow(`Edit Action: ${action.name}`, <ActionForm actionData={action} />);
+  }
 
   // Add new edge connection to state
   const onConnect = useCallback(
@@ -218,7 +247,7 @@ const useEmraldDiagram = () => {
   useEffect(() => {
     getStateNodes();
     setLoading(false);
-  }, [currentDiagram.value]);
+  }, [currentDiagram.value, diagrams]);
 
   return {
     nodes,
@@ -230,6 +259,9 @@ const useEmraldDiagram = () => {
     onEdgesChange,
     onEdgeUpdate,
     onConnect,
+    onNodeDoubleClick,
+    onEventDoubleClick,
+    onActionDoubleClick,
     isValidConnection,
     onNodeDragStop,
     isStateInCurrentDiagram,

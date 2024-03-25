@@ -176,7 +176,6 @@ export function UpgradeV3_0(modelTxt: string): UpgradeReturn {
         .then(schemaTxt => {
             const schema = JSON.parse(schemaTxt);
             const validator = new Validator();
-            console.log(validator);
             const validationResult = validator.validate(newModel, schema);
             if (validationResult.valid === false) {
                 validationResult.errors.forEach(error => {
@@ -186,7 +185,7 @@ export function UpgradeV3_0(modelTxt: string): UpgradeReturn {
         })
         .catch(error => {
             // handle error
-            console.error(error);
+            // console.error(error);
         });
 
     return retModel;

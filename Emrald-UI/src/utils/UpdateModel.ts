@@ -57,8 +57,8 @@ export const updateModelAndReferences = ( //Update the main appData EMRALD model
       return jsonPath.replace(/nameRef/g, previousName);
     });
 
-    const exp = "";
-    const r = jsonpath.query(emraldModel, updatedJsonPathRefArray[0]);
+    // const exp = "";
+    // const r = jsonpath.query(emraldModel, updatedJsonPathRefArray[0]);
     const results = updatedJsonPathRefArray.map(jPath => jsonpath.query(emraldModel, jPath)).flat();
 
     // Update the objects selected by JSONPath

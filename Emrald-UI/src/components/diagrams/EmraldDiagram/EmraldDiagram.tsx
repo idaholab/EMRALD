@@ -33,10 +33,11 @@ const EmraldDiagram: React.FC<EmraldDiagramProps> = ({ diagram }) => {
     getStateNodes,
     onNodesChange,
     onEdgesChange,
+    onNodeDragStop,
     onConnect,
+    onNodeDoubleClick,
     onEdgeUpdate,
     isValidConnection,
-    onNodeDragStop,
   } = useEmraldDiagram();
   const {
     menu,
@@ -68,6 +69,7 @@ const EmraldDiagram: React.FC<EmraldDiagramProps> = ({ diagram }) => {
             onConnect={onConnect}
             onPaneContextMenu={onPaneContextMenu}
             onNodeContextMenu={onNodeContextMenu}
+            onNodeDoubleClick={onNodeDoubleClick}
             onEdgeContextMenu={(event, edge) => onEdgeContextMenu(event, edge, edges)}
             onEdgeUpdate={onEdgeUpdate}
             onPaneClick={() => closeContextMenu()}

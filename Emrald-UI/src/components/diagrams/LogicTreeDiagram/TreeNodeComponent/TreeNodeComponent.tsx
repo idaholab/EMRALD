@@ -1,0 +1,101 @@
+import { Handle, Position, Node, useNodes } from 'reactflow';
+import './TreeNode.scss';
+import { Box, IconButton, TextField } from '@mui/material';
+import { FaLink } from 'react-icons/fa';
+import { Close as DeleteIcon } from '@mui/icons-material';
+import useLogicNodeTreeDiagram from '../useLogicTreeDiagram';
+import React from 'react';
+import GateTypeIcon from '../IconTypes/GateTypeIcon';
+import { GateType } from '../../../../types/ItemTypes';
+import { LogicNode } from '../../../../types/LogicNode';
+
+interface TreeNodeComponentProps {
+  id: string;
+  data: {
+    label: string;
+    type: string;
+    gateType: GateType;
+    description: string;
+    parentName: string;
+  };
+}
+
+const TreeNodeComponent: React.FC<TreeNodeComponentProps> = ({ id, data }) => {
+  const { label, type, gateType, description, parentName } = data;
+  const { goToDiagram } = useLogicNodeTreeDiagram();
+  const nodes = useNodes();
+  const {
+    editingDescription,
+    editedDescription,
+    setEditedDescription,
+    handleDescriptionDoubleClick,
+    handleDescriptionBlur,
+    removeNode
+  } = useLogicNodeTreeDiagram();
+  
+  return (
+    <Box
+      className={`tree-node ${
+        type === 'comp' ? 'tree-node__comp' : 'tree-node__gate'
+      }`}
+    >
+      <Box className="tree-node__control-bar">
+      {
+          type === 'comp' ? ( // Only show delete button if not root
+            <IconButton
+            aria-label="close"
+            onClick={() => goToDiagram(label)}
+            sx={{height: 16, width: 16, display: 'flex', justifyContent: 'center', alignItems: 'center'}}
+          >
+            <FaLink className="tree-node__control-bar control-icon"/>
+          </IconButton>
+          ) : <></>
+        }
+        {
+          type !== 'root' ? ( // Only show delete button if not root
+            <IconButton
+            aria-label="close"
+            onClick={() => removeNode(parentName, label, type)}
+            sx={{height: 16, width: 16}}
+          >
+            <DeleteIcon sx={{height: 16, width: 16}}/>
+          </IconButton>
+          ) : <></>
+        }
+      </Box>
+      <Box className="tree-node__header">
+        <strong>{label}</strong>
+      </Box>
+      {/* <Box className="tree-node__body">{description}</Box> */}
+
+      {editingDescription ? (
+        <TextField
+          value={editedDescription}
+          onChange={(event) => setEditedDescription(event.target.value)}
+          onBlur={() => handleDescriptionBlur(id, type, label, nodes)}
+          multiline
+          fullWidth
+          variant="outlined"
+          autoFocus
+        />
+      ) : (
+        <Box
+          className="tree-node__body"
+          onDoubleClick={() => handleDescriptionDoubleClick(description)}
+        >
+          {editedDescription ? editedDescription : description}
+        </Box>
+      )}
+      
+      { type !== 'root' ? <Handle type="target" position={Position.Top} /> : <></>}
+      { type !== 'comp' ? (
+        <Box sx={{position: 'relative', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+          <Handle type="source" position={Position.Bottom} />
+          <GateTypeIcon type={gateType} className='logic-icon'/>
+        </Box>
+      ) : <></>}
+    </Box>
+  );
+};
+
+export default TreeNodeComponent;
