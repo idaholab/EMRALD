@@ -3,7 +3,8 @@ import './TreeNode.scss';
 import { Box, IconButton, TextField } from '@mui/material';
 import { FaLink } from 'react-icons/fa';
 import { Close as DeleteIcon } from '@mui/icons-material';
-import useLogicNodeTreeDiagram from '../useLogicTreeDiagram';
+import { PiNotePencilDuotone } from "react-icons/pi";
+import useLogicNodeTreeDiagram, { NodeType } from '../useLogicTreeDiagram';
 import React from 'react';
 import GateTypeIcon from '../IconTypes/GateTypeIcon';
 import { GateType } from '../../../../types/ItemTypes';
@@ -13,15 +14,16 @@ interface TreeNodeComponentProps {
   id: string;
   data: {
     label: string;
-    type: string;
+    type: NodeType;
     gateType: GateType;
     description: string;
     parentName: string;
+    defaultStateValues?: boolean;
   };
 }
 
 const TreeNodeComponent: React.FC<TreeNodeComponentProps> = ({ id, data }) => {
-  const { label, type, gateType, description, parentName } = data;
+  const { label, type, gateType, description, parentName, defaultStateValues } = data;
   const { goToDiagram } = useLogicNodeTreeDiagram();
   const nodes = useNodes();
   const {
@@ -35,13 +37,18 @@ const TreeNodeComponent: React.FC<TreeNodeComponentProps> = ({ id, data }) => {
   
   return (
     <Box
-      className={`tree-node ${
-        type === 'comp' ? 'tree-node__comp' : 'tree-node__gate'
-      }`}
+      className={`tree-node 
+      ${type === 'comp' ? 'tree-node__comp' : 'tree-node__gate'}
+      ${type === 'comp' && !defaultStateValues ? 'non-default' : ''}`}
     >
+      <Box sx={{display: 'flex', justifyContent: 'flex-start', position: 'absolute', top: 5, left: 8}}>
+        {
+          type === 'comp' &&!defaultStateValues ? <PiNotePencilDuotone className='modified-icon'/> : <></>
+        }
+      </Box>
       <Box className="tree-node__control-bar">
       {
-          type === 'comp' ? ( // Only show delete button if not root
+          type === 'comp' ? (
             <IconButton
             aria-label="close"
             onClick={() => goToDiagram(label)}

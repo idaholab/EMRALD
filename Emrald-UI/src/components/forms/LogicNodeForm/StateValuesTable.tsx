@@ -32,7 +32,7 @@ interface StateValuesTableProps {
   }[]>>
 }
 
-const StateValuesTable: React.FC<StateValuesTableProps> = ({ diagramName, nodeDetails, setCompChildren }) => {
+const StateValuesTable: React.FC<StateValuesTableProps> = ({ diagramName, nodeDetails }) => {
   const { getDiagramByDiagramName } = useDiagramContext();
   const [stateValues, setStateValues] = useState<ComponentStateValue[]>([]);
 
@@ -68,11 +68,15 @@ const StateValuesTable: React.FC<StateValuesTableProps> = ({ diagramName, nodeDe
 
     setStateValues(updatedValues);
 
-    setCompChildren(prev => ({
-      ...prev,
-      stateValues: updatedValues,
-      diagramName
-    }));
+    if (nodeDetails) {
+      nodeDetails.stateValues = updatedValues;
+    }
+
+    // setCompChildren(prev => ({
+    //   ...prev,
+    //   stateValues: updatedValues,
+    //   diagramName
+    // }));
   };
 
   return (

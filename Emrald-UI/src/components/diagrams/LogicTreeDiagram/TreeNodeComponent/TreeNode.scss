@@ -42,6 +42,14 @@ $header-bottom-border-color: #e2e8f0;
     background: #ddc462;
   }
 
+  .non-default {
+    background: #c09340;
+    .modified-icon {
+      height: 12px;
+      width: 12px;
+    }
+  }
+
   .tree-node__control-bar {
     display: flex;
     justify-content: flex-end;

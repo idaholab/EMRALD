@@ -116,7 +116,8 @@ const useLogicNodeTreeDiagram = () => {
               parentName: gateNode.data.label,
               type: 'comp',
               description: diagram.desc,
-              diagram: diagram
+              diagram: diagram,
+              defaultStateValues: child.stateValues && child.stateValues.length > 0 ? false : true
             },
           };
           nodeMap.set(compNode.id, compNode);
