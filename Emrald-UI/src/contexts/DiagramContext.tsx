@@ -67,22 +67,26 @@ const DiagramContextProvider: React.FC<EmraldContextWrapperProps> = ({ children 
   const updateDiagram = (updatedDiagram: Diagram) => {
     // Rest of your code to update the diagram list
     console.log(updatedDiagram);
-    const updatedDiagrams = diagrams.map((item) => {
-      if (item.id === updatedDiagram.id) {
-        const previousName = item.name; // Get the previous name
-        const newName = updatedDiagram.name; // Get the new name from the updatedDiagram object
+
+    updateModelAndReferences(updatedDiagram, MainItemTypes.Diagram);
+    
+    // const updatedDiagrams = diagrams.map((item) => {
+    //   if (item.id === updatedDiagram.id) {
+    //     const previousName = item.name; // Get the previous name
+    //     const newName = updatedDiagram.name; // Get the new name from the updatedDiagram object
         
-        // Call updateKeyAndReferences here to update references in the updatedDiagram
-        // updateModelAndReferences(data, updateAppData, MainItemTypes.Diagram,  previousName, newName);
-        item = updatedDiagram;
-        return updatedDiagram;
-      } else {
-        return item;
-      }
-    });
-    appData.value.DiagramList = updatedDiagrams;
-    updateAppData(appData.value);
-    setDiagrams(updatedDiagrams);
+    //     item = updatedDiagram;
+
+    //     // Call updateKeyAndReferences here to update references in the updatedDiagram
+    //     updateModelAndReferences(appData.value, MainItemTypes.Diagram,  previousName, newName);
+    //     return updatedDiagram;
+    //   } else {
+    //     return item;
+    //   }
+    //});
+    //appData.value.DiagramList = updatedDiagrams;
+    //updateAppData(appData.value);
+    setDiagrams(appData.value.DiagramList);
   };
 
   const deleteDiagram = (diagramId: string | undefined) => {
