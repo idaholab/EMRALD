@@ -59,8 +59,6 @@ export const updateModelAndReferences = ( //Update the main appData EMRALD model
     });
 
     updatedJsonPathRefArray.forEach((jPath) => {
-
-
       jsonpath.paths(emraldModel, jPath).forEach((ref: any) => {
         const path = ref.join('.');
         jsonpath.value(emraldModel, path, newName);
