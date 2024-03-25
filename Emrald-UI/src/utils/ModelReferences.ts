@@ -46,7 +46,7 @@ export const ExtSimRefs = [
 ];
 
 //LogicNodes
-export const logicNodesRefs = [
+export const LogicNodeRefs = [
   "$.LogicNodeList[? (@.name == 'nameRef')].name",
   "$.EventList[? (@.logicTop == 'nameRef')].logicTop",
   "$.LogicNodeList[*].gateChildren[? (@ == 'ACPowerOK')]"

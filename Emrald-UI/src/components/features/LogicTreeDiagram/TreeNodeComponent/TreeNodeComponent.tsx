@@ -2,7 +2,7 @@ import { Handle, Position } from 'reactflow';
 import './TreeNode.scss';
 import { Box, IconButton } from '@mui/material';
 import { FaLink } from 'react-icons/fa';
-import DeleteIcon from '@mui/icons-material/close';
+//import DeleteIcon from '@mui/icons-material/close';
 import useLogicNodeTreeDiagram from '../useLogicTreeDiagram';
 
 interface TreeNodeComponentProps {
@@ -41,7 +41,7 @@ const TreeNodeComponent: React.FC<TreeNodeComponentProps> = ({ id, data }) => {
             onClick={() => console.log("remove node")}
             sx={{height: 16, width: 16}}
           >
-            <DeleteIcon sx={{height: 16, width: 16}}/>
+            {/* <DeleteIcon sx={{height: 16, width: 16}}/> */}
           </IconButton>
           ) : <></>
         }

@@ -1,6 +1,7 @@
 import { EMRALD_Model, } from '../types/EMRALD_Model.ts';
 import jsonpath from 'jsonpath';
 import { MainItemTypes } from '../types/ItemTypes.ts';
+import { DiagramRefs, StateRefs, ActionRefs, EventRefs, VariableRefs, LogicNodeRefs, ExtSimRefs } from './ModelReferences.ts';
 
 //import { appData } from '../types/Data';
 // import { useAppData } from '../hooks/useAppData.tsx';
@@ -57,72 +58,17 @@ export const updateModelAndReferences = ( //Update the main appData EMRALD model
       return jsonPath.replace(/nameRef/g, previousName);
     });
 
-    const exp = "";
-    const r = jsonpath.query(emraldModel, updatedJsonPathRefArray[0]);
-    const results = updatedJsonPathRefArray.map(jPath => jsonpath.query(emraldModel, jPath)).flat();
+    updatedJsonPathRefArray.forEach((jPath) => {
 
-    // Update the objects selected by JSONPath
-    results.forEach((result: any) => {
-      // Example of updating each selected object
-      result.parent[result.parentProperty] = newName;
+
+      jsonpath.paths(emraldModel, jPath).forEach((ref: any) => {
+        const path = ref.join('.');
+        jsonpath.value(emraldModel, path, newName);
+      });
     });
 
 
     updateAppData(emraldModel);  
   }
 }
-
-//Diagrams
-export const DiagramRefs = [
-  "$.DiagramList[?(@.name == 'C-CKV-A')].name",
-  "$.StateList[?(@.diagramName == 'nameRef')].diagramName",
-  "$.LogicNodeList[*].compChildren[? (@.diagramName == 'nameRef')].diagramName"
-];
-
-//States
-export const StateRefs = [
-  "$.StateList[?(@.name == 'nameRef')].name",
-  "$.DiagramList[*].states[? (@ == 'nameRef')]",
-  "$.ActionList[*].newStates[? (@.toState == 'nameRef')].toState",
-  "$.EventList[*].triggerStates[? (@ == 'nameRef')]",
-  "$.LogicNodeList[*].compChildren[*].stateValues[? (@.stateName == 'nameRef')].stateName",
-  "$.VariableList[*].accrualStatesData[? (@.stateName == 'nameRef')]"
-];
-
-//Events
-export const EventRefs = [
-  "$.EventList[?(@.name == 'nameRef')].name",
-  "$.StateList[*].events[? (@ == 'nameRef')]"
-];
-
-//Actions
-export const ActionRefs = [
-  "$.ActionList[?(@.name == 'nameRef')].name",
-  "$.StateList[*].immediateActions[? (@ == 'nameRef')]",
-  "$.StateList[*].eventActions[*].actions[? (@ == 'nameRef')]"
-];
-
-//Variables
-export const VariableRefs = [
-  "$.VariableList[?(@.name == 'nameRef')].name" ,
-  "$.ActionList[*].newStates[? (@.varProb == 'nameRef')].varProb" ,
-  "$.ActionList[? (@.variableName == 'nameRef')].variableName" ,
-  "$.ActionList[*].codeVariables[? (@ == 'nameRef')]" ,
-  "$.EventList[*].varNames[? (@ == 'nameRef')]" ,
-  "$.EventList[? (@.variable == 'nameRef')].variable" ,
-  "$.EventList[*].parameters[? (@.variable == 'ProtPumpMoveTime')].variable"
-];
-
-//ExtSim
-export const ExtSimRefs = [
-  "$.ExtSimList[?(@.name == 'nameRef')].name",
-  "$.ActionList[? (@.extSim == 'nameRef')].name"
-];
-
-//LogicNodes
-export const LogicNodeRefs = [
-  "$.LogicNodeList[? (@.name == 'nameRef')].name",
-  "$.EventList[? (@.logicTop == 'nameRef')].logicTop",
-  "$.LogicNodeList[*].gateChildren[? (@ == 'ACPowerOK')]"
-];
 
