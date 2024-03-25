@@ -1,55 +1,87 @@
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import emraldData from '../emraldData.json';
 import { Upgrade } from '../utils/Upgrades/upgrade';
+import { signal } from '@preact/signals';
+import { EMRALD_Model } from '../types/EMRALD_Model';
+
+const storedData = localStorage.getItem('appData');
+const upgrade = new Upgrade(JSON.stringify(emraldData));
+upgrade.upgrade(3.0); // upgrade to version 3.0
+export const appData = signal<EMRALD_Model>(storedData ? JSON.parse(storedData) : JSON.parse(upgrade.newModelStr));
+console.log(appData);
+
+export const updateAppData = (newData: any, undoData?: any) => {
+  let updatedData;
+  const dataHistory = JSON.parse(localStorage.getItem('dataHistory') || '[]');
+  
+  if (undoData) {
+    updatedData = undoData;
+  } else {
+    updatedData = {
+      ...newData,
+      DiagramList: newData.DiagramList,
+      StateList: newData.StateList,
+      VariableList: newData.VariableList,
+      ActionList: newData.ActionList,
+      EventList: newData.EventList,
+      LogicNodeList: newData.LogicNodeList,
+      ExtSimList: newData.ExtSimList,
+    };
+
+    const newHistory = [...dataHistory, updatedData];
+    if (newHistory.length >= 5) {
+      newHistory.shift();
+    }
+    localStorage.setItem('dataHistory', JSON.stringify(newHistory));
+  }
+  
+  appData.value = updatedData;
+  // setAppData(updatedData);
+  localStorage.setItem('appData', JSON.stringify(updatedData));
+};
+
+export const clearCacheData = () => {
+  localStorage.clear();
+};
+
+
 
 export const useAppData = () => {
-  const upgrade = new Upgrade(JSON.stringify(emraldData));
-  const upgradeSuccessful = upgrade.upgrade(3.0); // upgrade to version 3.0
-  console.log(upgradeSuccessful);
-  console.log(JSON.parse(upgrade.newModelStr))
 
-  const [appData, setAppData] = useState(() => {
-    const storedData = localStorage.getItem('appData');
-    return storedData ? JSON.parse(storedData) : JSON.parse(upgrade.newModelStr);
-  });
-
-  const transformList = (list: any, itemType: string) => {
-    return list ? list.map((item: any) => ({ [itemType]: item })) : [];
-  };
-
-  const updateAppData = (newData: any, undoData?: any) => {
-    let updatedData;
-    const dataHistory = JSON.parse(localStorage.getItem('dataHistory') || '[]');
+  // const updateAppData = (newData: any, undoData?: any) => {
+  //   let updatedData;
+  //   const dataHistory = JSON.parse(localStorage.getItem('dataHistory') || '[]');
     
-    if (undoData) {
-      updatedData = undoData;
-    } else {
-      updatedData = {
-        ...newData,
-        DiagramList: transformList(newData.DiagramList, 'Diagram'),
-        StateList: transformList(newData.StateList, 'State'),
-        VariableList: transformList(newData.VariableList, 'Variable'),
-        ActionList: transformList(newData.ActionList, 'Action'),
-        EventList: transformList(newData.EventList, 'Event'),
-        LogicNodeList: transformList(newData.LogicNodeList, 'LogicNode'),
-        ExtSimList: transformList(newData.ExtSimList, 'ExtSim'),
-      };
+  //   if (undoData) {
+  //     updatedData = undoData;
+  //   } else {
+  //     updatedData = {
+  //       ...newData,
+  //       DiagramList: newData.DiagramList,
+  //       StateList: newData.StateList,
+  //       VariableList: newData.VariableList,
+  //       ActionList: newData.ActionList,
+  //       EventList: newData.EventList,
+  //       LogicNodeList: newData.LogicNodeList,
+  //       ExtSimList: newData.ExtSimList,
+  //     };
 
-      const newHistory = [...dataHistory, updatedData];
-      if (newHistory.length >= 5) {
-        newHistory.shift();
-      }
-      localStorage.setItem('dataHistory', JSON.stringify(newHistory));
-    }
+  //     const newHistory = [...dataHistory, updatedData];
+  //     if (newHistory.length >= 5) {
+  //       newHistory.shift();
+  //     }
+  //     localStorage.setItem('dataHistory', JSON.stringify(newHistory));
+  //   }
     
-    setAppData(updatedData);
-    localStorage.setItem('appData', JSON.stringify(updatedData));
-  };
+  //   appData.value = updatedData;
+  //   // setAppData(updatedData);
+  //   localStorage.setItem('appData', JSON.stringify(updatedData));
+  // };
 
   useEffect(() => {
     const dataHistory = JSON.parse(localStorage.getItem('dataHistory') || '[]');
     if (dataHistory.length === 0) {
-      localStorage.setItem('dataHistory', JSON.stringify([emraldData]));
+      localStorage.setItem('dataHistory', JSON.stringify([appData.value]));
     }
   }, [])
 

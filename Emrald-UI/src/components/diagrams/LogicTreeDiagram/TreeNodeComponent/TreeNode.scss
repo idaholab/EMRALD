@@ -9,12 +9,29 @@ $header-bottom-border-color: #e2e8f0;
   box-shadow: 0 4px 6px -1px $shadow-color, 0 2px 4px -1px darken($shadow-color, 10%);
   border-radius: 2px;
 
+  .react-flow__handle {
+    visibility: hidden;
+  }
+
+  .react-flow__handle-bottom {
+    top: 23px !important;
+  }
+
+  .logic-icon {
+    position: absolute;
+    transform: rotate(270deg);
+    font-size: 31px;
+    color: #b1b1b7;
+    top: -1px;
+  }
+
   .tree-node {
     height: auto;
     display: flex; /* Use flex layout */
     flex-direction: column; /* Stack children vertically */
     border-radius: 8px;
     box-shadow: 1px 1px 1px 1px $shadow-color;
+    margin: -4px 0;
   }
   
   .tree-node__gate {

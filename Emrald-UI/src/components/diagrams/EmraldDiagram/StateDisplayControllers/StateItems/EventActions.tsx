@@ -21,6 +21,8 @@ const EventActions: React.FC<EventActionsProps> = ({ state }) => {
     getEventByEventName,
     getActionByActionName,
     updateStateEventActions,
+    onEventDoubleClick,
+    onActionDoubleClick
   } = useEmraldDiagram();
 
   const {
@@ -76,6 +78,7 @@ const EventActions: React.FC<EventActionsProps> = ({ state }) => {
               <EventTypeIcon type={item.event?.evType || 'etStateCng'} />
             </Box>
             <Box
+              onDoubleClick={(e) => onEventDoubleClick(e, item.event)}
               onContextMenu={(e) => onEventContextMenu(e, state, item.event)}
               sx={{
                 width: '100%',
@@ -129,6 +132,7 @@ const EventActions: React.FC<EventActionsProps> = ({ state }) => {
               <Box>
                 {item.actions.map((action) => (
                   <Box
+                    onDoubleClick={(e) => onActionDoubleClick(e, action)}
                     onContextMenu={(e) =>
                       onActionContextMenu(e, state, action, 'event')
                     }

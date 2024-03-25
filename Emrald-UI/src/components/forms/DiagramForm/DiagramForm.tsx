@@ -15,7 +15,7 @@ import { useDiagramContext } from '../../../contexts/DiagramContext';
 import { Diagram } from '../../../types/Diagram';
 import { useAssembledData } from '../../../hooks/useAssembledData';
 import { v4 as uuidv4 } from 'uuid';
-import MainDetailsForm from '../MainDetailsForm';
+import MainDetailsForm from '../../forms/MainDetailsForm';
 import { DiagramType } from '../../../types/ItemTypes';
 
 interface DiagramFormProps {
@@ -24,7 +24,7 @@ interface DiagramFormProps {
 
 const DiagramForm: React.FC<DiagramFormProps> = ({ diagramData }) => {
   const { handleClose, updateTitle } = useWindowContext();
-  const { diagrams, updateDiagram, createDiagram } = useDiagramContext();
+  const { diagrams, updateDiagram, createDiagram, getDiagramByDiagramName } = useDiagramContext();
   const [diagramType, setDiagramType] = useState<DiagramType>(diagramData?.diagramType || 'dtSingle');
   const [diagramLabel, setDiagramLabel] = useState<string>(diagramData?.diagramLabel || 'plant');
   const [states, setStates] = useState<string[]>([]);
@@ -44,7 +44,7 @@ const DiagramForm: React.FC<DiagramFormProps> = ({ diagramData }) => {
     };
 
     diagramData
-      ? updateDiagram(assembledData, {
+      ? updateDiagram({
           id: diagramData.id,
           name,
           desc,
@@ -57,12 +57,15 @@ const DiagramForm: React.FC<DiagramFormProps> = ({ diagramData }) => {
   };
 
   useEffect(() => {
-    if (diagramData) {
-      setDiagramType(diagramData.diagramType || '');
-      setName(diagramData.name || '');
-      setDesc(diagramData.desc || '');
+    const currentDiagram = getDiagramByDiagramName(diagramData?.name || '');
+    if (currentDiagram) {
+      setDiagramType(currentDiagram.diagramType || '');
+      setName(currentDiagram.name || '');
+      setDesc(currentDiagram.desc || '');
+      setStates(currentDiagram.states || []);
+      setDiagramLabel(currentDiagram.diagramLabel || 'plant');
     }
-  }, [diagramData]);
+  }, [diagrams]);
 
   return (
     <Container maxWidth="sm">

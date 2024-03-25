@@ -5,12 +5,13 @@ import React, {
 } from 'react';
 import { Action, NewState } from '../types/Action';
 import { EmraldContextWrapperProps } from './EmraldContextWrapper';
+import { appData } from '../hooks/useAppData';
 
 interface ActionContextType {
   actions: Action[];
   createAction: (action: Action) => void;
   updateAction: (action: Action) => void;
-  deleteAction: (actionId: number | string) => void;
+  deleteAction: (actionId: string | undefined) => void;
   getActionByActionName: (actionName: string) => Action;
   getActionByActionId: (actionId: string | null) => Action;
   getNewStatesByActionName: (actionName: string) => NewState[];
@@ -38,9 +39,9 @@ export function useActionContext() {
   return context;
 }
 
-const ActionContextProvider: React.FC<EmraldContextWrapperProps> = ({ appData, updateAppData, children }) => {
+const ActionContextProvider: React.FC<EmraldContextWrapperProps> = ({ children }) => {
   const [actions, setActions] = useState<Action[]>(
-    appData.ActionList
+    appData.value.ActionList
   );
   
   const createAction = (newAction: Action) => {
@@ -55,7 +56,8 @@ const ActionContextProvider: React.FC<EmraldContextWrapperProps> = ({ appData, u
     setActions(updatedActionList);
   };
 
-  const deleteAction = (actionId: number | string) => {
+  const deleteAction = (actionId: string | undefined) => {
+    if (!actionId) { return; }
     const updatedActionList = actions.filter(
       (item) => item.id !== actionId,
     );

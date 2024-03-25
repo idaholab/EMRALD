@@ -1,7 +1,7 @@
 import { useWindowContext } from '../../../contexts/WindowContext';
 import { Diagram } from '../../../types/Diagram';
 import { Action } from '../../../types/Action';
-import DiagramForm from '../../features/DiagramForm/DiagramForm';
+import DiagramForm from '../../forms/DiagramForm/DiagramForm';
 import { useDiagramContext } from '../../../contexts/DiagramContext';
 import { useLogicNodeContext } from '../../../contexts/LogicNodeContext';
 import { useActionContext } from '../../../contexts/ActionContext';
@@ -12,12 +12,13 @@ import { LogicNode } from '../../../types/LogicNode';
 import { Variable } from '../../../types/Variable';
 import { Event } from '../../../types/Event';
 import { State } from '../../../types/State';
-import ActionForm from '../../features/ActionForm/ActionForm';
-import EventForm from '../../features/EventForm/EventForm';
-import VariableForm from '../../features/VariableForm/VariableForm';
-import StateForm from '../../features/StateForm/StateForm';
-import EmraldDiagram from '../../features/EmraldDiagram/EmraldDiagram';
-import LogicNodeTreeDiagram from '../../features/LogicTreeDiagram/LogicTreeDiagram';
+import ActionForm from '../../forms/ActionForm/ActionForm';
+import EventForm from '../../forms/EventForm/EventForm';
+import VariableForm from '../../forms/VariableForm/VariableForm';
+import StateForm from '../../forms/StateForm/StateForm';
+import EmraldDiagram from '../../diagrams/EmraldDiagram/EmraldDiagram';
+import LogicNodeTreeDiagram from '../../diagrams/LogicTreeDiagram/LogicTreeDiagram';
+import LogicNodeForm from '../../forms/LogicNodeForm/LogicNodeForm';
 
 // Define your Option and OptionsMapping types
 export interface Option {
@@ -41,7 +42,7 @@ export const useOptionsMapping = () => {
   const optionsMapping: OptionsMapping = {
     Diagrams: [
       { label: 'Open', action: (diagram: Diagram) => {addWindow(diagram.name, <EmraldDiagram diagram={diagram}/>, { x: 75, y: 25, width: 1300, height: 700 }) }},
-      { label: 'Edit Properties', action: (diagram: Diagram) => addWindow(`Edit Properties ${diagram.name}`, <DiagramForm diagramData={diagram}/>) },
+      { label: 'Edit Properties', action: (diagram: Diagram) => addWindow(`Edit Properties: ${diagram.name}`, <DiagramForm diagramData={diagram}/>) },
       { label: 'Delete', action: (diagram: Diagram) => deleteDiagram(diagram.id) },
       { label: 'Make Template', action: () => null },
       { label: 'Export', action: () => null },
@@ -49,23 +50,23 @@ export const useOptionsMapping = () => {
     ],
     'Logic Tree': [
       { label: 'Open', action: (logicNode: LogicNode) => {addWindow(logicNode.name, <LogicNodeTreeDiagram logicNode={logicNode}/>, { x: 75, y: 25, width: 1300, height: 700 }) } },
-      { label: 'Edit Properties', action: () => null },
+      { label: 'Edit Properties', action: (logicNode: LogicNode) => {addWindow(`Edit Properties: ${logicNode.name}`, <LogicNodeForm logicNodeData={logicNode}/>) }},
       { label: 'Delete', action: (logicNode: LogicNode) => deleteLogicNode(logicNode.id) },
     ],
     Actions: [
-      { label: 'Edit Properties', action: (action: Action) => {console.log(action); addWindow(action.name, <ActionForm actionData={action}/>) }},
+      { label: 'Edit Properties', action: (action: Action) => {console.log(action); addWindow(`Edit Properties: ${action.name}`, <ActionForm actionData={action}/>) }},
       { label: 'Delete', action: (action: Action) => deleteAction(action.id) },
     ],
     Events: [
-      { label: 'Edit Properties', action: (event: Event) => {console.log(event); addWindow(event.name, <EventForm eventData={event}/>) }},
+      { label: 'Edit Properties', action: (event: Event) => {console.log(event); addWindow(`Edit Properties: ${event.name}`, <EventForm eventData={event}/>) }},
       { label: 'Delete', action: (event: Event) => deleteEvent(event.id) },
     ],
     States: [
-      { label: 'Edit Properties', action: (state: State) => addWindow(state.name, <StateForm stateData={state}/>) },
+      { label: 'Edit Properties', action: (state: State) => addWindow(`Edit Properties: ${state.name}`, <StateForm stateData={state}/>) },
       { label: 'Delete', action: (state: State) => deleteState(state.id) },
     ],
     Variables: [
-      { label: 'Edit Properties', action: (variable: Variable) => addWindow(variable.name, <VariableForm variableData={variable}/>) },
+      { label: 'Edit Properties', action: (variable: Variable) => addWindow(`Edit Properties: ${variable.name}`, <VariableForm variableData={variable}/>) },
       { label: 'Delete', action: (variable: Variable) => deleteVariable(variable.id) },
     ],
   };

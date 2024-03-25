@@ -8,7 +8,7 @@ import React from 'react';
 import { useWindowContext } from '../../../contexts/WindowContext';
 import { State } from '../../../types/State';
 import { v4 as uuidv4 } from 'uuid';
-import MainDetailsForm from '../MainDetailsForm';
+import MainDetailsForm from '../../forms/MainDetailsForm';
 import { useStateContext } from '../../../contexts/StateContext';
 import { useAppData } from '../../../hooks/useAppData';
 import { EMRALD_Model } from '../../../types/EMRALD_Model';

@@ -6,6 +6,7 @@ import Box from '@mui/material/Box';
 import { startCase } from 'lodash';
 import { MenuOption } from './menuOptions';
 import { useAssembledData } from '../../../hooks/useAssembledData';
+import { useAppData } from '../../../hooks/useAppData';
 
 interface MenuButtonProps {
   id: number;
@@ -20,7 +21,8 @@ const MenuButton: React.FC<MenuButtonProps> = ({
   options,
   handleClick,
 }) => {
-  const { assembleData, newProject, populateNewData, mergeNewData } = useAssembledData();
+  const { assembleData, newProject, mergeNewData } = useAssembledData();
+  const { populateNewData } = useAssembledData();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [open, setOpen] = useState<boolean>(false);
 

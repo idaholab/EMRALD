@@ -7,6 +7,7 @@ import { State } from '../types/State';
 import { EmraldContextWrapperProps } from './EmraldContextWrapper';
 import { Event } from '../types/Event';
 import { Action } from '../types/Action';
+import { appData, updateAppData } from '../hooks/useAppData';
 
 interface StateContextType {
   states: State[];
@@ -16,7 +17,7 @@ interface StateContextType {
   updateStateEventActions: (stateName: string, eventName: string, action: Action) => void;
   updateStateImmediateActions: (stateName: string, action: Action) => void;
   updateStatePosition: (state: State, position: { x: number, y: number }) => void;
-  deleteState: (StateId: number | string) => void;
+  deleteState: (StateId: string | undefined) => void;
   getEventsByStateName: (stateName: string) => { events: string[]; type: string; eventActions: EventAction[]; immediateActions: string[], geometryInfo: { x: number; y: number; width: number; height: number } };
   getStateByStateName: (stateName: string) => State;
   getStateByStateId: (stateId: string | null) => State;
@@ -31,7 +32,7 @@ interface EventAction {
 }
 
 const emptyState: State = {
-  id: 0,
+  id: '',
   name: '',
   desc: '',
   diagramName: '',
@@ -54,10 +55,8 @@ export function useStateContext() {
   return context;
 }
 
-const StateContextProvider: React.FC<EmraldContextWrapperProps> = ({ appData, updateAppData, children }) => {
-  const [states, setStates] = useState<State[]>(
-    appData.StateList,
-  );
+const StateContextProvider: React.FC<EmraldContextWrapperProps> = ({ children }) => {
+  const [states, setStates] = useState<State[]>(appData.value.StateList);
 
   // Create, Delete, Update individual States
   const createState = (newState: State) => {
@@ -71,6 +70,7 @@ const StateContextProvider: React.FC<EmraldContextWrapperProps> = ({ appData, up
         ? updatedState
         : item,
     );
+    updateAppData(appData.value);
     setStates(updatedStates);
   };
 
@@ -114,7 +114,8 @@ const StateContextProvider: React.FC<EmraldContextWrapperProps> = ({ appData, up
   };
 
 
-  const deleteState = (stateId: number | string) => {
+  const deleteState = (stateId: string | undefined) => {
+    if (!stateId) { return; }
     const updatedStates = states.filter(
       (item) => item.id !== stateId,
     );

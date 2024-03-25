@@ -7,12 +7,13 @@ import React, {
 } from 'react';
 import { Variable } from '../types/Variable';
 import { EmraldContextWrapperProps } from './EmraldContextWrapper';
+import { appData } from '../hooks/useAppData';
 
 interface VariableContextType {
   variables: Variable[];
   createVariable: (Variable: Variable) => void;
   updateVariable: (Variable: Variable) => void;
-  deleteVariable: (VariableId: number | string) => void;
+  deleteVariable: (VariableId: string | undefined) => void;
   newVariableList: (newVariableList: Variable[]) => void;
   clearVariableList: () => void;
 }
@@ -31,9 +32,9 @@ export function useVariableContext() {
   return context;
 }
 
-const VariableContextProvider: React.FC<EmraldContextWrapperProps> = ({ appData, updateAppData, children }) => {
+const VariableContextProvider: React.FC<EmraldContextWrapperProps> = ({ children }) => {
   const [variables, setVariables] = useState<Variable[]>(
-    appData.VariableList,
+    appData.value.VariableList,
   );
 
   // Memoize the value of `Variables` to avoid unnecessary re-renders
@@ -60,7 +61,8 @@ const VariableContextProvider: React.FC<EmraldContextWrapperProps> = ({ appData,
     setVariables(updatedVariableList);
   };
 
-  const deleteVariable = (VariableId: number | string) => {
+  const deleteVariable = (VariableId: string | undefined) => {
+    if (!VariableId) { return; }
     const updatedVariableList = variables.filter(
       (item) => item.id !== VariableId,
     );

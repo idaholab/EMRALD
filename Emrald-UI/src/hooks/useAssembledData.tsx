@@ -5,9 +5,12 @@ import { useLogicNodeContext } from '../contexts/LogicNodeContext';
 import { useModelDetailsContext } from '../contexts/ModelDetailsContext';
 import { useStateContext } from '../contexts/StateContext';
 import { useVariableContext } from '../contexts/VariableContext';
+import { Upgrade } from '../utils/Upgrades/upgrade';
+import { appData, useAppData } from './useAppData';
 // ... import other context hooks
 
 export function useAssembledData() {
+  const { updateAppData } = useAppData();
   const {
     id,
     name,
@@ -45,21 +48,39 @@ export function useAssembledData() {
     clearStateList();
   };
 
-  // Function to replace data with imported data from the JSON file
-  const populateNewData = (jsonContent: string) => {
-    try {
-      const jsonData = JSON.parse(jsonContent);
-      updateName(jsonData.name);
-      updateDescription(jsonData.desc);
-      updateVersion(jsonData.version);
-      newDiagramList(jsonData.DiagramList || []);
-      newLogicNodeList(jsonData.LogicNodeList || []);
-      newEventList(jsonData.EventList || []);
-      newVariableList(jsonData.VariableList || []);
-    } catch (error) {
-      console.error('Error parsing JSON:', error);
-    }
-  };
+     // Function to replace data with imported data from the JSON file
+    const populateNewData = (jsonContent: string) => {
+      try {
+        let jsonData;
+    
+        if (typeof jsonContent === 'string') {
+          jsonData = JSON.parse(jsonContent);
+        } else {
+          jsonData = jsonContent;
+        }
+    
+        const upgrade = new Upgrade(JSON.stringify(jsonData));
+        const upgradeSuccessful = upgrade.upgrade(3.0); // upgrade to version 3.0
+
+        if (upgradeSuccessful) {
+          appData.value = JSON.parse(upgrade.newModelStr);
+          updateName(appData.value.name);
+          updateDescription(appData.value.desc);
+          updateVersion(appData.value.version);
+          newDiagramList(appData.value.DiagramList || []);
+          newLogicNodeList(appData.value.LogicNodeList || []);
+          newEventList(appData.value.EventList || []);
+          newVariableList(appData.value.VariableList || []);
+          // updateAppData(appData.value);
+        } else {
+          console.error('Error parsing JSON: Upgrade not successful');
+        }
+
+      } catch (error) {
+        console.error('Error parsing JSON:', error);
+      }
+    };
+
 
   // Function to merge data with imported data from the JSON file
   const mergeNewData = (jsonContent: string) => {

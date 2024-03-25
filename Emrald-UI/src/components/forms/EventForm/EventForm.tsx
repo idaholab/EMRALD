@@ -6,65 +6,68 @@ import DropTargetComponent from '../../drag-and-drop/Droppable';
 import Typography from '@mui/material/Typography';
 import React from 'react';
 import { useWindowContext } from '../../../contexts/WindowContext';
-import { Action } from '../../../types/Action';
+import { Event } from '../../../types/Event';
 import { v4 as uuidv4 } from 'uuid';
-import MainDetailsForm from '../MainDetailsForm';
-import { useActionContext } from '../../../contexts/ActionContext';
+import MainDetailsForm from '../../forms/MainDetailsForm';
+import { useEventContext } from '../../../contexts/EventContext';
 
-interface ActionFormProps {
-  actionData?: Action;
+interface EventFormProps {
+  eventData?: Event;
 }
 
-const ActionForm: React.FC<ActionFormProps> = ({ actionData }) => {
+const EventForm: React.FC<EventFormProps> = ({ eventData }) => {
   const { handleClose } = useWindowContext();
-  const { updateAction, createAction } = useActionContext();
-  const [actType, setActType] = useState<string>(
-    actionData?.actType || '',
+  const { updateEvent, createEvent } = useEventContext();
+  const [evType, setEvType] = useState<string>(
+    eventData?.evType || '',
   );
-  const [name, setName] = useState<string>(actionData?.name || '');
-  const [desc, setDesc] = useState<string>(actionData?.desc || '');
+  const [name, setName] = useState<string>(eventData?.name || '');
+  const [desc, setDesc] = useState<string>(eventData?.desc || '');
 
   const handleSave = () => {
-    const newAction = {
+    const newEvent = {
       id: uuidv4(),
-      actType,
+      evType,
       name,
       desc,
     };
 
-    actionData
-      ? updateAction({
-          id: actionData.id,
-          actType,
+    eventData
+      ? updateEvent({
+          id: eventData.id,
+          evType,
           name,
           desc,
         })
-      : createAction(newAction);
+      : createEvent(newEvent);
     handleClose();
   };
 
   useEffect(() => {
-    if (actionData) {
-      setActType(actionData.actType || '');
-      setName(actionData.name || '');
-      setDesc(actionData.desc || '');
+    if (eventData) {
+      setEvType(eventData.evType || '');
+      setName(eventData.name || '');
+      setDesc(eventData.desc || '');
     }
-  }, [actionData]);
+  }, [eventData]);
 
   return (
     <Container maxWidth="sm">
       <Typography variant="h5" my={3}>
-        {actionData ? `Edit` : `Create`} Action
+        {eventData ? `Edit` : `Create`} Event
       </Typography>
       <form>
         <MainDetailsForm 
-          type={actType}
-          setType={setActType}
+          type={evType}
+          setType={setEvType}
           typeOptions={[
-            {value: 'atTransition', label: 'Transition'},
-            {value: 'CngVar_test', label: 'Change Var Value'},
-            {value: 'at3DSimMsg', label: 'Ext. Sim Message'},
-            {value: 'atRunExtApp', label: 'Run Application'},
+            {value: 'etVarCond', label: 'Var Condition'},
+            {value: 'etStateCng', label: 'State Change'},
+            {value: 'etComponentLogic', label: 'Component Logic'},
+            {value: 'etTimer', label: 'Timer'},
+            {value: 'etFailRate', label: 'Failure Rate'},
+            {value: 'et3dSimEv', label: 'Ext Simulation'},
+            {value: 'etDistribution', label: 'Distribution'},
           ]}
           name={name}
           setName={setName}
@@ -97,4 +100,4 @@ const ActionForm: React.FC<ActionFormProps> = ({ actionData }) => {
   );
 };
 
-export default ActionForm;
+export default EventForm;

@@ -7,12 +7,13 @@ import React, {
 } from 'react';
 import { Event } from '../types/Event';
 import { EmraldContextWrapperProps } from './EmraldContextWrapper';
+import { appData } from '../hooks/useAppData';
 
 interface EventContextType {
   events: Event[];
   createEvent: (event: Event) => void;
   updateEvent: (event: Event) => void;
-  deleteEvent: (eventId: number | string) => void;
+  deleteEvent: (eventId: string | undefined) => void;
   getEventByEventName: (eventName: string) => Event | undefined;
   newEventList: (newEventList: Event[]) => void;
   clearEventList: () => void;
@@ -30,9 +31,9 @@ export function useEventContext() {
   return context;
 }
 
-const EventContextProvider: React.FC<EmraldContextWrapperProps> = ({ appData, updateAppData, children }) => {
+const EventContextProvider: React.FC<EmraldContextWrapperProps> = ({ children }) => {
   const [events, setEvents] = useState<Event[]>(
-    appData.EventList,
+    appData.value.EventList,
   );
 
   const createEvent = (newEvent: Event) => {
@@ -47,7 +48,8 @@ const EventContextProvider: React.FC<EmraldContextWrapperProps> = ({ appData, up
     setEvents(updatedEventList);
   };
 
-  const deleteEvent = (eventId: number | string) => {
+  const deleteEvent = (eventId: string | undefined) => {
+    if (!eventId) { return; }
     const updatedEventList = events.filter(
       (item) => item.id !== eventId,
     );

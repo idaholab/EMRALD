@@ -11,8 +11,8 @@ import StateContextProvider from './StateContext';
 import VariableContextProvider from './VariableContext';
 
 export interface EmraldContextWrapperProps {
-  appData: any;
-  updateAppData: (newData: any) => void;
+  // appData: any;
+  // updateAppData: (newData: any) => void;
   children: React.ReactNode;
 }
 

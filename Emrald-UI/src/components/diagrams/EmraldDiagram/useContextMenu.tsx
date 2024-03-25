@@ -13,10 +13,10 @@ import { useActionContext } from '../../../contexts/ActionContext';
 import { useDiagramContext } from '../../../contexts/DiagramContext';
 import { currentDiagram } from './EmraldDiagram';
 import { useWindowContext } from '../../../contexts/WindowContext';
-import StateForm from '../StateForm/StateForm';
-import EventForm from '../EventForm/EventForm';
-import ActionForm from '../ActionForm/ActionForm';
-import DiagramForm from '../DiagramForm/DiagramForm';
+import StateForm from '../../forms/StateForm/StateForm';
+import EventForm from '../../forms/EventForm/EventForm';
+import ActionForm from '../../forms/ActionForm/ActionForm';
+import DiagramForm from '../../forms/DiagramForm/DiagramForm';
 
 const useContextMenu = (getStateNodes?: () => void, setEdges?: (edges: Edge[]) => void) => { // Get state nodes function is needed if deleting or removing a state, set edges function is needed if deleting or removing an edge
   const [menu, setMenu] = useState<{ mouseX: number; mouseY: number; } | null>(null);
