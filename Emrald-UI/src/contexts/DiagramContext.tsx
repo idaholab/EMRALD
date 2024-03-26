@@ -4,7 +4,7 @@ import React, {
   useEffect,
   useState,
 } from 'react';
-import { computed, effect } from '@preact/signals';
+import { computed, effect, useComputed, useSignal, useSignalEffect } from '@preact/signals-react';
 import { Diagram } from '../types/Diagram';
 import { updateModelAndReferences } from '../utils/UpdateModel';
 import { MainItemTypes } from '../types/ItemTypes';
@@ -66,27 +66,32 @@ const DiagramContextProvider: React.FC<EmraldContextWrapperProps> = ({ children 
 
   const updateDiagram = (updatedDiagram: Diagram) => {
     // Rest of your code to update the diagram list
-    console.log(updatedDiagram);
-
-    updateModelAndReferences(updatedDiagram, MainItemTypes.Diagram);
-    
+    // console.log(updatedDiagram);
     // const updatedDiagrams = diagrams.map((item) => {
     //   if (item.id === updatedDiagram.id) {
     //     const previousName = item.name; // Get the previous name
     //     const newName = updatedDiagram.name; // Get the new name from the updatedDiagram object
         
-    //     item = updatedDiagram;
-
     //     // Call updateKeyAndReferences here to update references in the updatedDiagram
-    //     updateModelAndReferences(appData.value, MainItemTypes.Diagram,  previousName, newName);
+    //     // updateModelAndReferences(data, updateAppData, MainItemTypes.Diagram,  previousName, newName);
+    //     item = updatedDiagram;
     //     return updatedDiagram;
     //   } else {
     //     return item;
     //   }
-    //});
-    //appData.value.DiagramList = updatedDiagrams;
-    //updateAppData(appData.value);
-    setDiagrams(appData.value.DiagramList);
+    // });
+    // appData.value.DiagramList = updatedDiagrams;
+    // updateAppData(appData.value);
+    // setDiagrams(updatedDiagrams);
+
+    // Rest of your code to update the diagram list
+
+    console.log(appData.value);
+    const updatedDiagrams = updateModelAndReferences(updatedDiagram, MainItemTypes.Diagram)?.DiagramList;
+    if(updatedDiagrams){
+      let diagrams = updatedDiagrams;
+      setDiagrams(diagrams);
+    }
   };
 
   const deleteDiagram = (diagramId: string | undefined) => {

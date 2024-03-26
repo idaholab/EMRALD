@@ -85,6 +85,7 @@ export const updateModelAndReferences = ( //Update the main appData EMRALD model
     });
 
 
-    updateAppData(updatedEMRALDModel);  
+    // updateAppData(updatedEMRALDModel);  
+    return updatedEMRALDModel;
   }
 }

@@ -16,6 +16,7 @@ import { AccordionMenuItemType } from './types/AccordionMenuItems';
 import ItemWithContextMenu from './ItemWithContextMenu';
 // import DiagramForm from '../../features/DiagramForm/DiagramForm';
 import Typography from '@mui/material/Typography';
+import { useEffect } from 'react';
 // import TestD3Chart from '../../features/TestD3Chart';
 // import TreeDiagram from '../../features/TreeDiagram';
 // import ReactFlowTest from '../../features/ReactFlow/ReactFlowDiagram';
@@ -29,6 +30,10 @@ const AccordionMenuItems: React.FC<AccordionMenuListProps> = ({
   bothAccordionsOpen,
 }) => {
   const { diagrams } = useDiagramContext();
+
+  useEffect(() => {
+    console.log(diagrams);
+  }, [diagrams])
   const [openIndex, setOpenIndex] = React.useState<number | null>(null); // Keeps track of the index of the open item
   const diagramTypes = [
     { name: 'Plant' },
