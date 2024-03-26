@@ -9,8 +9,9 @@ import {LogicNode} from './LogicNode'
 import {ChangeLog} from './ChangeLog'
 
 
+const EMRALD_SchemaVersion = 3.0;
  /**
-  * EMRALD model schema version 2.4
+  * EMRALD model schema version 3.0
   */
  export interface EMRALD_Model {
    /**
@@ -63,6 +64,19 @@ import {ChangeLog} from './ChangeLog'
    templates?: unknown[]
    changeLog?: ChangeLog
  }
+
+ export const emptyEMRALDModel: Partial<EMRALD_Model> = {
+  name: '',
+  desc: '',
+  version: EMRALD_SchemaVersion,
+  DiagramList: [],
+  ExtSimList: [],
+  StateList: [],
+  ActionList: [],
+  EventList: [],
+  LogicNodeList: [],
+  VariableList: [],
+};
 
  
 

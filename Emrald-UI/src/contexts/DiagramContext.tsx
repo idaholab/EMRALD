@@ -68,7 +68,7 @@ const DiagramContextProvider: React.FC<EmraldContextWrapperProps> = ({ children 
     // Rest of your code to update the diagram list
     console.log(updatedDiagram);
 
-    updateModelAndReferences(updatedDiagram, MainItemTypes.Diagram);
+    var updatedModel : EMRALD_Model = updateModelAndReferences(updatedDiagram, MainItemTypes.Diagram);
     
     // const updatedDiagrams = diagrams.map((item) => {
     //   if (item.id === updatedDiagram.id) {
@@ -85,8 +85,9 @@ const DiagramContextProvider: React.FC<EmraldContextWrapperProps> = ({ children 
     //   }
     //});
     //appData.value.DiagramList = updatedDiagrams;
-    //updateAppData(appData.value);
-    setDiagrams(appData.value.DiagramList);
+    updateAppData(updatedModel);
+
+    setDiagrams(updatedModel.DiagramList);
   };
 
   const deleteDiagram = (diagramId: string | undefined) => {
