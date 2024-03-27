@@ -1,19 +1,26 @@
 ﻿import { MainItemTypes } from '../types/ItemTypes.ts';
 import jsonpath from 'jsonpath';
 import { appData } from '../hooks/useAppData';
-import { EMRALD_Model, emptyEMRALDModel} from '../types/EMRALD_Model.ts';
+import { EMRALD_Model, CreateEmptyEMRALDModel} from '../types/EMRALD_Model.ts';
 import { EmbedHTMLAttributes } from 'react';
+import { Diagram } from '../types/Diagram.ts';
+import { State } from '../types/State.ts';
+import { Action } from '../types/Action.ts';
+import { Event } from '../types/Event.ts';
+import { Variable } from '../types/Variable.ts';
+import { LogicNode } from '../types/LogicNode.ts';
+import { ExtSim } from '../types/ExtSim.ts';
 
 //Items that reference this type
 //Diagrams
-export const UsingDiagramRefs: Array<[string, MainItemTypes]> = [
+const UsingDiagramRefs: Array<[string, MainItemTypes]> = [
   ["$.DiagramList[?(@.name == 'nameRef')].name", MainItemTypes.Diagram],
   ["$.StateList[?(@.diagramName == 'nameRef')].diagramName", MainItemTypes.State],
   ["$.LogicNodeList[*].compChildren[?(@.diagramName == 'nameRef')].diagramName", MainItemTypes.LogicNode]
 ];
 
 //States
-export const UsingStateRefs: Array<[string, MainItemTypes]> = [
+const UsingStateRefs: Array<[string, MainItemTypes]> = [
   ["$.StateList[?(@.name == 'nameRef')].name", MainItemTypes.State],
   ["$.DiagramList[*].states[?(@ == 'nameRef')]", MainItemTypes.Diagram],
   ["$.ActionList[*].newStates[?(@.toState == 'nameRef')].toState", MainItemTypes.Action],
@@ -23,20 +30,20 @@ export const UsingStateRefs: Array<[string, MainItemTypes]> = [
 ];
 
 //Events
-export const UsingEventRefs: Array<[string, MainItemTypes]> = [
+const UsingEventRefs: Array<[string, MainItemTypes]> = [
   ["$.EventList[?(@.name == 'nameRef')].name", MainItemTypes.Event],
   ["$.StateList[*].events[?(@ == 'nameRef')]", MainItemTypes.State]
 ];
 
 //Actions
-export const UsingActionRefs: Array<[string, MainItemTypes]> = [
+const UsingActionRefs: Array<[string, MainItemTypes]> = [
   ["$.ActionList[?(@.name == 'nameRef')].name", MainItemTypes.Action],
   ["$.StateList[*].immediateActions[?(@ == 'nameRef')]", MainItemTypes.State],
   ["$.StateList[*].eventActions[*].actions[?(@ == 'nameRef')]", MainItemTypes.State]
 ];
 
 //Variables
-export const UsingVariableRefs: Array<[string, MainItemTypes]> = [
+const UsingVariableRefs: Array<[string, MainItemTypes]> = [
   ["$.VariableList[?(@.name == 'nameRef')].name", MainItemTypes.Variable],
   ["$.ActionList[*].newStates[?(@.varProb == 'nameRef')].varProb", MainItemTypes.Action],
   ["$.ActionList[?(@.variableName == 'nameRef')].variableName", MainItemTypes.Action],
@@ -47,13 +54,13 @@ export const UsingVariableRefs: Array<[string, MainItemTypes]> = [
 ];
 
 //ExtSim
-export const UsingExtSimRefs: Array<[string, MainItemTypes]> = [
+const UsingExtSimRefs: Array<[string, MainItemTypes]> = [
   ["$.ExtSimList[?(@.name == 'nameRef')].name", MainItemTypes.ExtSim],
   ["$.ActionList[?(@.extSim == 'nameRef')].name", MainItemTypes.Action]
 ];
 
 //LogicNodes
-export const UsingLogicNodeRefs: Array<[string, MainItemTypes]> = [
+const UsingLogicNodeRefs: Array<[string, MainItemTypes]> = [
   ["$.LogicNodeList[?(@.name == 'nameRef')].name", MainItemTypes.LogicNode],
   ["$.EventList[?(@.logicTop == 'nameRef')].logicTop", MainItemTypes.Event],
   ["$.LogicNodeList[*].gateChildren[?(@ == 'nameRef')]", MainItemTypes.LogicNode]
@@ -63,30 +70,30 @@ export const UsingLogicNodeRefs: Array<[string, MainItemTypes]> = [
 
 //Items referenced by these types
 //Diagrams
-export const InDiagramRefs: Array<[string, MainItemTypes]> = [
+const InDiagramRefs: Array<[string, MainItemTypes]> = [
   ["$.DiagramList[?(@.name == 'nameRef')].states", MainItemTypes.State],
 ];
 
 //States
-export const InStateRefs: Array<[string, MainItemTypes]> = [
+const InStateRefs: Array<[string, MainItemTypes]> = [
   ["$.StateList[?(@.name == 'nameRef')].diagramName", MainItemTypes.Diagram],
-  ["$.StateList[?(@.name == 'Start_Systems')].events", MainItemTypes.Event],
-  ["$.StateList[?(@.name == 'Start_Systems')].immediateActions", MainItemTypes.Action],
-  ["$.StateList[?(@.name == 'C-CKV-A_Standby')].eventActions[*].actions", MainItemTypes.Action],
+  ["$.StateList[?(@.name == 'nameRef')].events", MainItemTypes.Event],
+  ["$.StateList[?(@.name == 'nameRef')].immediateActions", MainItemTypes.Action],
+  ["$.StateList[?(@.name == 'nameRef')].eventActions[*].actions", MainItemTypes.Action],
 ];
 
 //Events
-export const InEventRefs: Array<[string, MainItemTypes]> = [
-  ["$.EventList[?(@.name == 'C-MOV-A_Stop')].triggerStates", MainItemTypes.State],
-  ["$.EventList[?(@.name == 'C-MOV-A_Stop')].varNames", MainItemTypes.Variable],
-  ["$.EventList[?(@.name == 'C-MOV-A_Stop')].logicTop", MainItemTypes.LogicNode],
-  ["$.EventList[?(@.name == 'C-MOV-A_Stop')].triggerStates", MainItemTypes.State],
-  ["$.EventList[?(@.name == 'C-MOV-A_Stop')].variable", MainItemTypes.Variable],
-  ["$.EventList[?(@.name == 'C-MOV-A_Stop')].parameters[*].variable", MainItemTypes.Variable],
+const InEventRefs: Array<[string, MainItemTypes]> = [
+  ["$.EventList[?(@.name == 'nameRef')].triggerStates", MainItemTypes.State],
+  ["$.EventList[?(@.name == 'nameRef')].varNames", MainItemTypes.Variable],
+  ["$.EventList[?(@.name == 'nameRef')].logicTop", MainItemTypes.LogicNode],
+  ["$.EventList[?(@.name == 'nameRef')].triggerStates", MainItemTypes.State],
+  ["$.EventList[?(@.name == 'nameRef')].variable", MainItemTypes.Variable],
+  ["$.EventList[?(@.name == 'nameRef')].parameters[*].variable", MainItemTypes.Variable],
 ];
 
 //Actions
-export const InActionRefs: Array<[string, MainItemTypes]> = [
+const InActionRefs: Array<[string, MainItemTypes]> = [
   ["$.ActionList[?(@.name == 'nameRef')].newStates.toState", MainItemTypes.State],
   ["$.ActionList[?(@.name == 'nameRef')].variableName", MainItemTypes.Variable],
   ["$.ActionList[?(@.name == 'nameRef')].codeVariables[*]", MainItemTypes.Variable],
@@ -94,19 +101,19 @@ export const InActionRefs: Array<[string, MainItemTypes]> = [
 ];
 
 //Variables
-export const InVariableRefs: Array<[string, MainItemTypes]> = [
-  ["$.VariableList[?(@.name == 'nameRef')].accrualStatesData[*].stateName", MainItemTypes.Variable]
+const InVariableRefs: Array<[string, MainItemTypes]> = [
+  ["$.VariableList[?(@.name == 'nameRef')].accrualStatesData[*].stateName", MainItemTypes.State]
 ];
 
 //ExtSim
-export const InExtSimRefs: Array<[string, MainItemTypes]> = [ 
+const InExtSimRefs: Array<[string, MainItemTypes]> = [ 
 ];
 
 //LogicNodes
-export const InLogicNodeRefs: Array<[string, MainItemTypes]> = [
+const InLogicNodeRefs: Array<[string, MainItemTypes]> = [
   ["$.LogicNodeList[?(@.name == 'nameRef')].compChildren[*].diagramName", MainItemTypes.Diagram],
   ["$.LogicNodeList[?(@.name == 'nameRef')].compChildren[*].stateValues[*].stateName", MainItemTypes.State],
-  ["$.LogicNodeList[?(@.name == 'nameRef')].gateChildren", MainItemTypes.State],
+  ["$.LogicNodeList[?(@.name == 'nameRef')].gateChildren", MainItemTypes.LogicNode],
 ];
 
 export const GetJSONPathUsingRefs = (itemType: MainItemTypes, lookupName : string): Array<[string, MainItemTypes]> => {
@@ -196,7 +203,7 @@ export const GetModelItemsReferencing = (
   if(addToModel){
     retRefModel = addToModel;
   }else{ //use an empty model
-    var retRefModel: EMRALD_Model = { ...(emptyEMRALDModel as EMRALD_Model) };
+    var retRefModel: EMRALD_Model = CreateEmptyEMRALDModel();
   }
 
   const emraldModel: EMRALD_Model = appData.value;  
@@ -247,6 +254,76 @@ export const GetModelItemsReferencing = (
   return retRefModel;
 }
 
+export const GetItemByNameType = (
+  itemName : string, 
+  itemType : MainItemTypes) : Diagram | State | Action | Event | ExtSim | Variable | LogicNode | undefined => {
+
+    var retItem: Diagram | State | Action | Event | ExtSim | Variable | LogicNode | undefined = undefined;
+
+    switch(itemType)
+    {
+      case MainItemTypes.Action:
+        retItem = appData.value.ActionList.find(item => item.name === itemName);
+        break;
+      case MainItemTypes.Event:
+        retItem = appData.value.EventList.find(item => item.name === itemName);
+        break;
+      case MainItemTypes.ExtSim:
+        retItem = appData.value.ExtSimList.find(item => item.name === itemName);
+        break;
+      case MainItemTypes.Variable:
+        retItem = appData.value.VariableList.find(item => item.name === itemName);
+        break;
+      case MainItemTypes.LogicNode:
+        retItem = appData.value.LogicNodeList.find(item => item.name === itemName);
+        break;
+      case MainItemTypes.State:
+        retItem = appData.value.StateList.find(item => item.name === itemName);
+        break;
+      case MainItemTypes.Diagram:
+        retItem = appData.value.DiagramList.find(item => item.name === itemName);
+        break;
+      default:
+        retItem = undefined;
+        break;
+    }
+
+    return retItem;
+}
+
+export const AddItemToModel = (
+  itemObj : Diagram | State | Action | Event | ExtSim | Variable | LogicNode, 
+  itemType : MainItemTypes,
+  model : EMRALD_Model) => {
+    switch(itemType)
+    {
+      case MainItemTypes.Action:
+        model.ActionList.push(itemObj as Action);
+        break;
+      case MainItemTypes.Event:
+        model.EventList.push(itemObj as Event);
+        break;
+      case MainItemTypes.ExtSim:
+        model.ExtSimList.push(itemObj as ExtSim);
+        break;
+      case MainItemTypes.Variable:
+        model.VariableList.push(itemObj as Variable);
+        break;
+      case MainItemTypes.LogicNode:
+        model.LogicNodeList.push(itemObj as LogicNode);
+        break;
+      case MainItemTypes.State:
+        model.StateList.push(itemObj as State);
+        break;
+      case MainItemTypes.Diagram:
+        model.DiagramList.push(itemObj as Diagram);
+        break;
+      default:
+        //todo error not a valid type
+        break;
+    }
+}
+
 
 export const GetModelItemsReferencedBy = ( 
   itemName : string, //Name of the item looking for references
@@ -255,31 +332,55 @@ export const GetModelItemsReferencedBy = (
 ) : EMRALD_Model => { //returns a subset model of just the referenced items.
   
   var refItems : Array<[string, MainItemTypes]> = [[itemName, itemType]];
-  var retRefModel: EMRALD_Model = { ...(emptyEMRALDModel as EMRALD_Model) };
-  const emraldModel: EMRALD_Model = appData.value;  
+  var retRefModel: EMRALD_Model = CreateEmptyEMRALDModel();
+  //const emraldModel: EMRALD_Model = appData.value;  
   const processed: { [key: string]: boolean; } = { [itemName + '_' + itemType]: true };
+  var firstRound = true; //use to just get the first round of references if not recursive
 
   while(refItems.length > 0)
   {  
-    var jsonPathRefArray : Array<[string, MainItemTypes]> = GetJSONPathInRefs(itemType, refItems[0][0]);
+    var curItemName : string = refItems[0][0];
+    var curItemType : MainItemTypes = refItems[0][1];
     refItems.shift(); //remove the item from the array
-    jsonpath.paths(appData.value, jsonPathRefArray[0][0]).forEach((ref: any) => {
-      ref.forEach((item: any) => {
-        var i = item;
-      })
-    });
+    
+    var itemObj = GetItemByNameType(curItemName, curItemType);      
+    if(itemObj != null){ //add to the reference subset model      
+      AddItemToModel(itemObj, curItemType, retRefModel);    
 
-    jsonPathRefArray.forEach((jsonPathSet) => {
-      const jPath = jsonPathSet[0]
-      jsonpath.paths(emraldModel, jPath).forEach((ref: any) => {
-        const path = ref.join('.');
-        var items = jsonpath.value(emraldModel, path);
+      //get all the references
+      if(firstRound || recursive)
+      {
+        //get the json paths for the references depending on the type
+        var jsonPathRefArray : Array<[string, MainItemTypes]> = GetJSONPathInRefs(curItemType, curItemName);
+        
+        jsonPathRefArray.forEach((jsonPathSet) => {    
+          jsonpath.paths(appData.value, jsonPathSet[0]).forEach((jPath: any) => {
+            var childNames = jsonpath.value(appData.value, jPath.join('.'));
+            //make sur eit is an array
+            childNames = Array.isArray(childNames) ? childNames : [childNames];
+            childNames.forEach((childName: any) => {
+              if(!processed[childName + '_' + jsonPathSet[1]])
+              {
+                refItems.push([childName, jsonPathSet[1]]);
+                processed[childName + '_' + jsonPathSet[1]] = true; //mark as processed
+              }
+            })
+          });
+        });
+      }
+    }
 
-        items.forEach((item: any) => {
-          GetModelItemsReferencing(item, jsonPathSet[1], retRefModel);
-        })
-      });
-    });    
+    // jsonPathRefArray.forEach((jsonPathSet) => {
+    //   const jPath = jsonPathSet[0]
+    //   jsonpath.paths(emraldModel, jPath).forEach((ref: any) => {
+    //     const path = ref.join('.');
+    //     var items = jsonpath.value(emraldModel, path);
+
+    //     items.forEach((item: any) => {
+    //       GetModelItemsReferencing(item, jsonPathSet[1], retRefModel);
+    //     })
+    //   });
+    // });    
   }
 
   return retRefModel;

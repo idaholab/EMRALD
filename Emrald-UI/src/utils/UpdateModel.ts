@@ -19,7 +19,8 @@ export const updateModelAndReferences = ( //Update the main appData EMRALD model
   //newName: string //new name of the item
 ) : EMRALD_Model => {
 
-  const updatedEMRALDModel: EMRALD_Model = appData.value;
+  //const updatedEMRALDModel: EMRALD_Model = {...appData.value};
+  const updatedEMRALDModel: EMRALD_Model = JSON.parse(JSON.stringify(appData.value));
   
   var jsonPathRefArray : Array<[string, MainItemTypes]> = GetJSONPathUsingRefs(itemType, item.name);
   var itemArray: any[];
@@ -27,25 +28,25 @@ export const updateModelAndReferences = ( //Update the main appData EMRALD model
 
   switch (itemType) {
     case MainItemTypes.Diagram:
-      itemArray = appData.value.DiagramList;
+      itemArray = updatedEMRALDModel.DiagramList;
       break;
     case MainItemTypes.State:
-      itemArray = appData.value.StateList;
+      itemArray = updatedEMRALDModel.StateList;
       break;
     case MainItemTypes.Action:
-      itemArray = appData.value.ActionList;
+      itemArray = updatedEMRALDModel.ActionList;
       break;
     case MainItemTypes.Event:
-      itemArray = appData.value.EventList;
+      itemArray = updatedEMRALDModel.EventList;
       break;
     case MainItemTypes.ExtSim:
-      itemArray = appData.value.ExtSimList;
+      itemArray = updatedEMRALDModel.ExtSimList;
       break;
     case MainItemTypes.Variable:
-      itemArray = appData.value.VariableList;
+      itemArray = updatedEMRALDModel.VariableList;
       break;
     case MainItemTypes.LogicNode:
-      itemArray = appData.value.LogicNodeList;
+      itemArray = updatedEMRALDModel.LogicNodeList;
       break;
     default:
       //error not a valid type

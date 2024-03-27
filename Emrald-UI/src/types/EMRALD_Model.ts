@@ -65,18 +65,20 @@ const EMRALD_SchemaVersion = 3.0;
    changeLog?: ChangeLog
  }
 
- export const emptyEMRALDModel: Partial<EMRALD_Model> = {
-  name: '',
-  desc: '',
-  version: EMRALD_SchemaVersion,
-  DiagramList: [],
-  ExtSimList: [],
-  StateList: [],
-  ActionList: [],
-  EventList: [],
-  LogicNodeList: [],
-  VariableList: [],
-};
+ export function CreateEmptyEMRALDModel(): EMRALD_Model {
+  return {
+    name: '',
+    desc: '',
+    version: EMRALD_SchemaVersion,
+    DiagramList: [],
+    ExtSimList: [],
+    StateList: [],
+    ActionList: [],
+    EventList: [],
+    LogicNodeList: [],
+    VariableList: [],
+  };
+}
 
  
 

@@ -7,6 +7,7 @@ import React, {
 import { computed, effect } from '@preact/signals';
 import { Diagram } from '../types/Diagram';
 import { updateModelAndReferences } from '../utils/UpdateModel';
+import { GetModelItemsReferencedBy, GetModelItemsReferencing } from '../utils/ModelReferences';
 import { MainItemTypes } from '../types/ItemTypes';
 import { EmraldContextWrapperProps } from './EmraldContextWrapper';
 import { EMRALD_Model } from '../types/EMRALD_Model';
@@ -67,24 +68,9 @@ const DiagramContextProvider: React.FC<EmraldContextWrapperProps> = ({ children 
   const updateDiagram = (updatedDiagram: Diagram) => {
     // Rest of your code to update the diagram list
     console.log(updatedDiagram);
-
+    
     var updatedModel : EMRALD_Model = updateModelAndReferences(updatedDiagram, MainItemTypes.Diagram);
     
-    // const updatedDiagrams = diagrams.map((item) => {
-    //   if (item.id === updatedDiagram.id) {
-    //     const previousName = item.name; // Get the previous name
-    //     const newName = updatedDiagram.name; // Get the new name from the updatedDiagram object
-        
-    //     item = updatedDiagram;
-
-    //     // Call updateKeyAndReferences here to update references in the updatedDiagram
-    //     updateModelAndReferences(appData.value, MainItemTypes.Diagram,  previousName, newName);
-    //     return updatedDiagram;
-    //   } else {
-    //     return item;
-    //   }
-    //});
-    //appData.value.DiagramList = updatedDiagrams;
     updateAppData(updatedModel);
 
     setDiagrams(updatedModel.DiagramList);
