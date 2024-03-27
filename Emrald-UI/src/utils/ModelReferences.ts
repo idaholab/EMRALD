@@ -205,17 +205,16 @@ export const GetModelItemsReferencing = (
     var retRefModel: EMRALD_Model = CreateEmptyEMRALDModel();
   }
 
-  const emraldModel: EMRALD_Model = appData.value;  
   var jsonPathRefArray : Array<[string, MainItemTypes]> = GetJSONPathUsingRefs(itemType, itemName);
 
   jsonPathRefArray.forEach((jsonPathSet) => {
     jsonpath.paths(appData.value, jsonPathSet[0]).forEach((ref: any) => {
       var parentPath = ref.slice(0, -1);
-      var parent = jsonpath.value(emraldModel, parentPath.join('.'));
+      var parent = jsonpath.value(appData.value, parentPath.join('.'));
       while((parent.id == null) && (parentPath.length > 0))
       {
         parentPath = parentPath.slice(0, -1);
-        parent = jsonpath.value(emraldModel, parentPath.join('.'));
+        parent = jsonpath.value(appData.value, parentPath.join('.'));
       }
       if(parent.id != null)
       {
