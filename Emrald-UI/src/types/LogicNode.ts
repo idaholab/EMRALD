@@ -18,22 +18,7 @@ export interface LogicNode {
     /**
      * Array of component diagram names and state values to use in evaluating if not using the default value.
      */
-    compChildren: {
-      /**
-       * Evaluate value if not the states default.
-       */
-      stateValues?: {
-        /**
-         * State name for the value.
-         */
-        stateName: string
-        stateValue: StateEvalValue
-      }[]
-      /**
-       * Name of the diagram to be evaluated
-       */
-      diagramName: string
-    }[]
+    compChildren: CompChild[]
     /**
      * Array of logic node names that are children of this gate.
      */
@@ -44,3 +29,20 @@ export interface LogicNode {
     isRoot: boolean
     changeLog?: ChangeLog
   }
+
+  export type CompChild = {
+    /**
+     * Evaluate value if not the states default.
+     */
+    stateValues?: {
+      /**
+       * State name for the value.
+       */
+      stateName: string;
+      stateValue: StateEvalValue;
+    }[];
+    /**
+     * Name of the diagram to be evaluated
+     */
+    diagramName: string;
+  };

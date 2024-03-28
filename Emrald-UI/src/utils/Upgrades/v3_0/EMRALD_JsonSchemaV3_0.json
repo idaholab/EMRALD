@@ -16,9 +16,13 @@
             "type": "string",
             "description": "description of the EMRALD model"
         },
-        "version": {
+        "emraldVersion": {
             "type": "number",
             "description": "Version of the EMRALD model"
+        },
+        "version": {
+            "type": "number",
+            "description": "Version of the users model"
         },
         "DiagramList": {
             "type": "array",
@@ -164,7 +168,7 @@
             "type": "object",
             "properties": {
                 "id": {
-                    "type": "integer"
+                    "type": "string"
                 },
                 "name": {
                     "type": "string",
@@ -575,42 +579,7 @@
                     "$ref": "#/definitions/GateType"
                 },
                 "compChildren": {
-                    "type": "array",
-                    "description": "Array of component diagram names and state values to use in evaluating if not using the default value.",
-                    "items": {
-                        "type": "object",
-                        "properties": {
-                            "stateValues": {
-                                "type": "array",
-                                "description": "Evaluate value if not the states default.",
-                                "items": {
-                                    "type": "object",
-                                    "properties": {
-                                        "stateName": {
-                                            "type": "string",
-                                            "description": "State name for the value."
-                                        },
-                                        "stateValue": {
-                                            "$ref": "#/definitions/StateEvalValue"
-                                        }
-                                    },
-                                    "additionalProperties": false,
-                                    "required": [
-                                        "stateName",
-                                        "stateValue"
-                                    ]
-                                }
-                            },
-                            "diagramName": {
-                                "type": "string",
-                                "description": "Name of the diagram to be evaluated"
-                            }
-                        },
-                        "additionalProperties": false,
-                        "required": [
-                            "diagramName"
-                        ]
-                    }
+                    "$ref": "#/definitions/CompChild"
                 },
                 "gateChildren": {
                     "type": "array",
@@ -779,36 +748,6 @@
                 "type"
             ]
         },
-        "NewState": {
-            "type": "object",
-            "properties": {
-                "toState": {
-                    "type": "string",
-                    "description": "reference name of the state to transtion to."
-                },
-                "prob": {
-                    "type": "number",
-                    "description": "probability that this state will be transtioned to."
-                },
-                "failDesc": {
-                    "type": "string",
-                    "description": "The description from the user for output if tthis transition takes place."
-                },
-                "varProb": {
-                    "type": [
-                        "null",
-                        "string"
-                    ],
-                    "description": "Optional, if used  then the a variable is used for the probability. This is the name of that variable"
-                }
-            },
-            "additionalProperties": false,
-            "required": [
-                "toState",
-                "prob",
-                "failDesc"
-            ]
-        },
         "ChangeLog": {
             "type": "array",
             "description": "Type of the diagram.",
@@ -837,6 +776,7 @@
         },
         "GeometryInfo": {
             "type": "object",
+            "description": "position for the GUI",
             "properties": {
                 "x": {
                     "type": "integer"
@@ -850,8 +790,45 @@
                 "height": {
                     "type": "integer"
                 }
-            },
-            "description": "position for the GUI"
+            }
+        },
+        "CompChild": {
+            "type": "array",
+            "description": "Array of component diagram names and state values to use in evaluating if not using the default value.",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "stateValues": {
+                        "type": "array",
+                        "description": "Evaluate value if not the states default.",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "stateName": {
+                                    "type": "string",
+                                    "description": "State name for the value."
+                                },
+                                "stateValue": {
+                                    "$ref": "#/definitions/StateEvalValue"
+                                }
+                            },
+                            "additionalProperties": false,
+                            "required": [
+                                "stateName",
+                                "stateValue"
+                            ]
+                        }
+                    },
+                    "diagramName": {
+                        "type": "string",
+                        "description": "Name of the diagram to be evaluated"
+                    }
+                },
+                "additionalProperties": false,
+                "required": [
+                    "diagramName"
+                ]
+            }
         },
         "DiagramType": {
             "type": "string",

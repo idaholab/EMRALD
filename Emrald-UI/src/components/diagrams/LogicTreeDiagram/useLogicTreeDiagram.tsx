@@ -28,7 +28,7 @@ const useLogicNodeTreeDiagram = () => {
   const dagreGraph = new dagre.graphlib.Graph();
   dagreGraph.setDefaultEdgeLabel(() => ({}));
 
-  const nodeWidth = 172;
+  const nodeWidth = 175;
   const nodeHeight = 150;
 
   // Build the logic tree
@@ -220,7 +220,7 @@ const useLogicNodeTreeDiagram = () => {
         options = [
           { label: 'Add Gate', action: () => addWindow(`New Node`, <LogicNodeForm parentNodeName={logicNode.name} nodeType='gate' gateType="gtAnd" />)  },
           { label: 'Add Component', action: () => addWindow(`New Node`, <LogicNodeForm parentNodeName={logicNode.name} nodeType='comp' />), isDivider: true },
-          { label: 'Edit Gate Node', action: () => addWindow(`Edit Gate Node: ${label}`, <LogicNodeForm logicNodeData={logicNode}/>) , isDivider: true  },
+          { label: 'Edit Gate Node', action: () => addWindow(`Edit Gate Node: ${label}`, <LogicNodeForm logicNodeData={logicNode} editing={true}/> ) , isDivider: true  },
         ];
         if (node.data.type === "gate") {
           options.push(
@@ -296,6 +296,7 @@ const useLogicNodeTreeDiagram = () => {
     if (updatedLogicNode) {
       buildLogicTree(updatedLogicNode);
     }
+    console.log(logicNodes);
   }, [logicNodes]);
 
   const handleLoad = useCallback((reactFlowInstance: ReactFlowInstance) => {

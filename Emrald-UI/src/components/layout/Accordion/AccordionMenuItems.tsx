@@ -16,6 +16,7 @@ import { AccordionMenuItemType } from './types/AccordionMenuItems';
 import ItemWithContextMenu from './ItemWithContextMenu';
 // import DiagramForm from '../../features/DiagramForm/DiagramForm';
 import Typography from '@mui/material/Typography';
+import { MainItemTypes } from '../../../types/ItemTypes';
 // import TestD3Chart from '../../features/TestD3Chart';
 // import TreeDiagram from '../../features/TreeDiagram';
 // import ReactFlowTest from '../../features/ReactFlow/ReactFlowDiagram';
@@ -77,7 +78,7 @@ const AccordionMenuItems: React.FC<AccordionMenuListProps> = ({
                     {diagrams.map((diagram) => (
                       <React.Fragment key={diagram.id}>
                         {diagram.diagramLabel === name && (
-                          <DraggableItem key={diagram.id} itemData={diagram}>
+                          <DraggableItem key={diagram.id} itemData={diagram} itemType={MainItemTypes.Diagram}>
                             <ListItemButton
                               sx={{ p: '0 0 0 3rem', width: '100%' }}
                             >
@@ -114,7 +115,7 @@ const AccordionMenuItems: React.FC<AccordionMenuListProps> = ({
                     key={option.id || index}
                     sx={{ p: '0 0 0 2rem' }}
                   >
-                    <DraggableItem itemData={option}>
+                    <DraggableItem key={option.id} itemData={option} itemType={MainItemTypes.LogicNode}>
                       <ItemWithContextMenu
                         itemData={option}
                         optionType={item.type}
@@ -134,7 +135,7 @@ const AccordionMenuItems: React.FC<AccordionMenuListProps> = ({
                     key={option.id || index}
                     sx={{ p: '0 0 0 2rem' }}
                   >
-                    <DraggableItem key={option.id} itemData={option}>
+                    <DraggableItem key={option.id} itemData={option} >
                       <ItemWithContextMenu
                         itemData={option}
                         optionType={item.type}

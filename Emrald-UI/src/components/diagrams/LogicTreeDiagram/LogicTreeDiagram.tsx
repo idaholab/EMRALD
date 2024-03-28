@@ -17,6 +17,8 @@ import TreeNodeComponent from './TreeNodeComponent/TreeNodeComponent.js';
 import ContextMenu from '../../layout/ContextMenu/ContextMenu.js';
 import { useLogicNodeContext } from '../../../contexts/LogicNodeContext.js';
 import { TbLogicAnd, TbLogicNot, TbLogicOr } from 'react-icons/tb';
+import DraggableItem from '../../drag-and-drop/DraggableItem.js';
+import { Typography } from '@mui/material';
 
 // export const currentLogicNode = signal<LogicNode | null>(null);
 
@@ -66,11 +68,14 @@ const LogicNodeTreeDiagram: React.FC<LogicNodeTreeDiagramProps> = ({ logicNode }
               zoomOnDoubleClick={false}
             >
               <Panel position="top-left">
-                <Box sx={{background: '#fdfdfd', padding: '10px'}}>
-                  <TbLogicAnd />
-                  <TbLogicOr />
-                  <TbLogicNot />
+                <Box sx={{background: '#fff', p: 1}}>
+                  <Typography variant="subtitle1" sx={{ml: 2}}>Drag and Drop Gates</Typography>
+                  <Box sx={{display: 'flex', padding: '10px'}}>
+                    <DraggableItem itemType='Gate' itemData={{gateType: 'gtAnd'}}><TbLogicAnd className='gate-icon'/></DraggableItem>
+                    <DraggableItem itemType='Gate' itemData={{gateType: 'gtOr'}}><TbLogicOr className='gate-icon'/></DraggableItem>
+                    <DraggableItem itemType='Gate' itemData={{gateType: 'gtNot'}}><TbLogicNot className='gate-icon'/></DraggableItem>
                   </Box>
+                </Box>
               </Panel>
               <Controls />
               {/* <MiniMap /> */}

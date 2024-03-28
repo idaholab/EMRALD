@@ -4,29 +4,40 @@ import MenuItem from '@mui/material/MenuItem';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import TextField from '@mui/material/TextField';
 import React from 'react';
+import { ExtSim } from '../../types/ExtSim';
+import { LogicNode } from '../../types/LogicNode';
+import { Variable } from '../../types/Variable';
+import { Action } from '../../types/Action';
+import { Event } from '../../types/Event';
+import { State } from '../../types/State';
+import { Diagram } from '../../types/Diagram';
+import { MainItemTypes } from '../../types/ItemTypes';
 
 interface MainDetailsFormProps {
+  item : Diagram | State | Action | Event | Variable | LogicNode | ExtSim,
+  itemType : MainItemTypes, //This is the type of the object that was updated
   typeLabel?: string;
-  type: string;
-  setType: (value: string) => void;
   typeOptions: { value: string; label: string }[];
   typeDisabled?: boolean;
-  name: string;
-  setName: (name: string) => void;
-  desc: string;
-  setDesc: (desc: string) => void;
+  // name: string;
+  // setName: (name: string) => void;
+  // desc: string;
+  // setDesc: (desc: string) => void;
+  // type: string;
+  // setType: (value: string) => void;
 }
 
 const MainDetailsForm: React.FC<MainDetailsFormProps> = ({
+  item,
   typeLabel,
-  type,
-  setType,
+  // type,
+  // setType,
   typeOptions,
   typeDisabled,
-  name,
-  setName,
-  desc,
-  setDesc,
+  // name,
+  // setName,
+  // desc,
+  // setDesc,
 }) => {
   return (
     <>
@@ -75,7 +86,7 @@ const MainDetailsForm: React.FC<MainDetailsFormProps> = ({
         fullWidth
         multiline
         margin="normal"
-        value={desc}
+        value={item.desc}
         onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
           setDesc(e.target.value)
         }

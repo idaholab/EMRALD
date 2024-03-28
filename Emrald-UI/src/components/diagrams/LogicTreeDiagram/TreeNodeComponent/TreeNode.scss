@@ -4,7 +4,7 @@ $header-bottom-border-color: #e2e8f0;
 
 .tree-diagram .react-flow__node-custom {
   font-size: 10px;
-  width: 165px;
+  min-width: 165px;
   color: $font-color;
   box-shadow: 0 4px 6px -1px $shadow-color, 0 2px 4px -1px darken($shadow-color, 10%);
   border-radius: 2px;
@@ -99,5 +99,12 @@ $header-bottom-border-color: #e2e8f0;
     top: 0; 
     bottom: 0;
   }
+}
+
+.gate-icon {
+  font-size: 30px;
+  color: #b1b1b7;
+  transform: rotate(270deg);
+  margin: 0 10px;
 }
 

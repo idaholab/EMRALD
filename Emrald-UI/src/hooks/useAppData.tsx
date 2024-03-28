@@ -4,7 +4,7 @@ import { Upgrade } from '../utils/Upgrades/upgrade';
 import { signal } from '@preact/signals';
 import { EMRALD_Model } from '../types/EMRALD_Model';
 
-const storedData = localStorage.getItem('appData');
+const storedData = sessionStorage.getItem('appData');
 const upgrade = new Upgrade(JSON.stringify(emraldData));
 upgrade.upgrade(3.0); // upgrade to version 3.0
 export const appData = signal<EMRALD_Model>(storedData ? JSON.parse(storedData) : JSON.parse(upgrade.newModelStr));
@@ -12,7 +12,7 @@ console.log(appData);
 
 export const updateAppData = (newData: any, undoData?: any) => {
   let updatedData;
-  const dataHistory = JSON.parse(localStorage.getItem('dataHistory') || '[]');
+  const dataHistory = JSON.parse(sessionStorage.getItem('dataHistory') || '[]');
   
   if (undoData) {
     updatedData = undoData;
@@ -32,16 +32,16 @@ export const updateAppData = (newData: any, undoData?: any) => {
     if (newHistory.length >= 5) {
       newHistory.shift();
     }
-    localStorage.setItem('dataHistory', JSON.stringify(newHistory));
+    sessionStorage.setItem('dataHistory', JSON.stringify(newHistory));
   }
   
   appData.value = updatedData;
   // setAppData(updatedData);
-  localStorage.setItem('appData', JSON.stringify(updatedData));
+  sessionStorage.setItem('appData', JSON.stringify(updatedData));
 };
 
 export const clearCacheData = () => {
-  localStorage.clear();
+  sessionStorage.clear();
 };
 
 
@@ -79,9 +79,9 @@ export const useAppData = () => {
   // };
 
   useEffect(() => {
-    const dataHistory = JSON.parse(localStorage.getItem('dataHistory') || '[]');
+    const dataHistory = JSON.parse(sessionStorage.getItem('dataHistory') || '[]');
     if (dataHistory.length === 0) {
-      localStorage.setItem('dataHistory', JSON.stringify([appData.value]));
+      sessionStorage.setItem('dataHistory', JSON.stringify([appData.value]));
     }
   }, [])
 

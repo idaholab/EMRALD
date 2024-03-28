@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { signal, useSignal } from '@preact/signals';
+import { signal, useSignal } from '@preact/signals-react';
 import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
 import Box from '@mui/material/Box';
@@ -11,7 +11,7 @@ import {
 } from '../../../contexts/LogicNodeContext';
 import { v4 as uuidv4 } from 'uuid';
 import MainDetailsForm from '../../forms/MainDetailsForm';
-import { LogicNode } from '../../../types/LogicNode';
+import { CompChild, LogicNode } from '../../../types/LogicNode';
 import { GateType, StateEvalValue } from '../../../types/ItemTypes';
 import { appData } from '../../../hooks/useAppData';
 import FormControl from '@mui/material/FormControl';
@@ -23,6 +23,7 @@ import { useDiagramContext } from '../../../contexts/DiagramContext';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
 import StateValuesTable from './StateValuesTable';
+import TextField from '@mui/material/TextField';
 
 interface LogicNodeFormProps {
   logicNodeData?: LogicNode;
@@ -42,13 +43,12 @@ const LogicNodeForm: React.FC<LogicNodeFormProps> = ({
   parentNodeName,
 }) => {
   const { handleClose, updateTitle } = useWindowContext();
-  const { logicNodes, createLogicNode, updateLogicNode } =
-    useLogicNodeContext();
+  const { logicNodes, createLogicNode, updateLogicNode } = useLogicNodeContext();
   const { diagrams } = useDiagramContext();
   const parentNode = logicNodes?.find((node) => node.name === parentNodeName);
-  const logicNode = signal<LogicNode>(
-    logicNodeData || parentNode || emptyLogicNode,
-  );
+  const logicNode = useSignal<LogicNode>(logicNodeData || parentNode || emptyLogicNode);
+  const newLogicNode = useSignal<LogicNode>(emptyLogicNode);
+  const compChildren = useSignal<CompChild[]>(logicNode.value.compChildren || []);
   const componentDiagrams =
     editing && component
       ? diagrams.filter(
@@ -63,13 +63,8 @@ const LogicNodeForm: React.FC<LogicNodeFormProps> = ({
             ),
         );
 
-  const currentNode = logicNode.value.compChildren.find(
-    (child) => child.diagramName === component,
-  );
-
-  const [leafNodeType, setLeafNodeType] = useState<string | undefined>(
-    nodeType,
-  );
+  const currentNode = logicNode.value.compChildren.find((child) => child.diagramName === component);
+  const [leafNodeType, setLeafNodeType] = useState<string | undefined>(nodeType);
   const [compDiagram, setCompDiagram] = useState<string>(component || '');
   const [defaultValues, setDefaultValues] = useState<boolean>(
     currentNode?.stateValues && currentNode.stateValues.length > 0
@@ -83,25 +78,56 @@ const LogicNodeForm: React.FC<LogicNodeFormProps> = ({
       }
     | undefined
   >();
+  const [gateTypeValue, setGateTypeValue] = useState<GateType>(gateType || 'gtAnd');
+  const [nameValue, setNameValue] = useState<string>(editing ? logicNode.value.name : '');
+  const [descValue, setDescValue] = useState<string>(editing ? logicNode.value.desc : '');
+  const [error, setError] = useState<boolean>(false);
 
-  // Reset the stateValues if the defaultValues checkbox is checked
-  const handleDefaultValuesChange = (
-    event: React.ChangeEvent<HTMLInputElement>,
-  ) => {
-    setDefaultValues(event.target.checked);
-    if (!event.target.checked && currentNode?.stateValues) {
-      currentNode.stateValues = [];
-    }
-  };
+  const gateTypeOptions = [
+    {label: 'And', value: 'gtAnd'},
+    {label: 'Or', value: 'gtOr'},
+    {label: 'Not', value: 'gtNot'},
+  ];
 
   // Add new comp child
   const handleAddNewCompChild = () => {
     if (newCompChild) {
       let newCompChildren = [...logicNode.value.compChildren, newCompChild];
-      console.log(newCompChildren);
-      logicNode.value.compChildren = newCompChildren;
+      compChildren.value = newCompChildren;
       setNewCompChild(undefined); // Move this line inside the condition
     }
+  };
+
+
+  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newName = e.target.value;
+    setError(logicNodes.some(node => node.name === newName));
+
+    editing ? (logicNode.value.name = newName) : (newLogicNode.value.name = newName);
+    setNameValue(newName);
+  };
+
+  const handleDescriptionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    editing ? logicNode.value.desc = e.target.value : newLogicNode.value.desc = e.target.value;
+    setDescValue(e.target.value);
+  };
+
+  const handleGateTypeChange = (e: SelectChangeEvent<"gtAnd" | "gtOr" | "gtNot">) => {
+    editing ? logicNode.value.gateType = e.target.value as GateType : newLogicNode.value.gateType = e.target.value as GateType;
+    setGateTypeValue(e.target.value as GateType);
+  };
+
+  const resetForm = () => {
+    logicNode.value = {id: '', name: '', desc: '', gateType: 'gtAnd', compChildren: [], gateChildren: [], isRoot: false};
+    newLogicNode.value = {id: '', name: '', desc: '', gateType: 'gtAnd', compChildren: [], gateChildren: [], isRoot: false};
+    setLeafNodeType('');
+    setCompDiagram('');
+    setDefaultValues(true);
+    setNewCompChild(undefined);
+    setGateTypeValue('gtAnd');
+    setNameValue('');
+    setDescValue('');
+    handleClose();
   };
 
   // Save logic node
@@ -110,29 +136,26 @@ const LogicNodeForm: React.FC<LogicNodeFormProps> = ({
 
     handleAddNewCompChild();
 
-    const newLogicNode = {
-      id: uuidv4(),
-      name: logicNode.value.name,
-      desc: logicNode.value.desc,
-      gateType: logicNode.value.gateType,
-      compChildren: logicNode.value.compChildren,
-      gateChildren: logicNode.value.gateChildren,
-      isRoot: logicNode.value.isRoot,
-    };
+    // Reset the stateValues if the defaultValues checkbox is checked
+    if (defaultValues === true && currentNode && (currentNode?.stateValues?.length ?? 0) > 0) {
+      currentNode.stateValues = [];
+    }
 
-    logicNode
-      ? updateLogicNode({
-          ...logicNode,
-          id: logicNode.value.id,
-          name: logicNode.value.name,
-          desc: logicNode.value.desc,
-          gateType: logicNode.value.gateType,
-          compChildren: logicNode.value.compChildren,
-          gateChildren: logicNode.value.gateChildren,
-          isRoot: logicNode.value.isRoot,
-        })
-      : createLogicNode(newLogicNode);
-    handleClose();
+    if (editing || nodeType === 'comp') {
+      updateLogicNode({
+        ...logicNode.value,
+        gateType: gateTypeValue,
+        compChildren: compChildren.value,
+      })
+    } else if (!editing && nodeType === 'gate' && parentNodeName) {
+      newLogicNode.value.id = uuidv4();
+      createLogicNode(newLogicNode.value);
+      logicNode.value.gateChildren = [...logicNode.value.gateChildren, newLogicNode.value.name];
+      updateLogicNode(logicNode.value);
+    } else {
+      createLogicNode(newLogicNode.value);
+    }
+    resetForm();
   };
 
   return (
@@ -224,7 +247,7 @@ const LogicNodeForm: React.FC<LogicNodeFormProps> = ({
                   <Checkbox
                     checked={defaultValues}
                     value={defaultValues}
-                    onChange={handleDefaultValuesChange}
+                    onChange={(e) => setDefaultValues(e.target.checked)}
                   />
                 }
                 label="Use default diagram values"
@@ -243,20 +266,50 @@ const LogicNodeForm: React.FC<LogicNodeFormProps> = ({
           </>
         ) : (
           <>
-            {/* <MainDetailsForm 
-            typeLabel='Gate Type'
-            type={type.value}
-            setType={setType}
-            typeOptions={[
-              {value: 'gtAnd', label: 'And'},
-              {value: 'gtOr', label: 'Or'},
-              {value: 'gtNot', label: 'Not'},
-            ]}
-            name={name.value}
-            setName={setName}
-            desc={desc.value}
-            setDesc={setDesc}
-          /> */}
+            <FormControl
+              variant="outlined"
+              size="small"
+              sx={{ minWidth: 120, width: '100%' }}
+            >
+              <InputLabel id="demo-simple-select-standard-label">
+                Type
+              </InputLabel>
+              <Select
+                labelId="type-select"
+                id="type-select"
+                value={gateTypeValue}
+                onChange={handleGateTypeChange}
+                label={'Type'}
+              >
+              {gateTypeOptions.map((option) => (
+                <MenuItem key={option.value} value={option.value}>
+                  {option.label}
+                </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            <TextField
+              label="Name"
+              margin="normal"
+              variant="outlined"
+              size="small"
+              inputProps={{ maxLength: 20 }}
+              value={nameValue}
+              onChange={handleNameChange}
+              fullWidth
+              error={error}
+              helperText={`${ error ? "A Logic Node with this name already exists" : nameValue.length === 20 ? "Maximum 20 characters" : ""}`}
+            />
+            <TextField
+              label="Description"
+              variant="outlined"
+              size="small"
+              fullWidth
+              multiline
+              margin="normal"
+              value={descValue}
+              onChange={handleDescriptionChange}
+            />
           </>
         )}
         <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 5 }}>
@@ -265,6 +318,7 @@ const LogicNodeForm: React.FC<LogicNodeFormProps> = ({
             color="primary"
             sx={{ mr: 2 }}
             onClick={() => handleSave()}
+            disabled={error}
           >
             Save
           </Button>

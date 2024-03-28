@@ -65,14 +65,14 @@ const MainCanvas: React.FC<MainCanvasProps> = ({ appData, updateAppData }) => {
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
-  const storedHistory = JSON.parse(localStorage.getItem('dataHistory') || '[]');
+  const storedHistory = JSON.parse(sessionStorage.getItem('dataHistory') || '[]');
 
   const { addWindow } = useWindowContext();
 
   const undoChange = () => {
     if (storedHistory && storedHistory.length > 1) {
       const newHistory = storedHistory.slice(0, storedHistory.length - 1); // Remove the last item in the array
-      localStorage.setItem('dataHistory', JSON.stringify(newHistory));
+      sessionStorage.setItem('dataHistory', JSON.stringify(newHistory));
       updateAppData(undefined, newHistory[newHistory.length - 1]);
     }
   };

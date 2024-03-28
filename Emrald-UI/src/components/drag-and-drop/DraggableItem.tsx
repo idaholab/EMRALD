@@ -3,18 +3,23 @@ import React, { PropsWithChildren } from 'react';
 import { useDrag } from 'react-dnd';
 import { Action } from '../../types/Action';
 import { Event as EventType } from '../../types/Event';
+import { LogicNode } from '../../types/LogicNode';
+import { Diagram } from '../../types/Diagram';
+import { MainItemTypes } from '../../types/ItemTypes';
 
 interface DraggableItemProps {
-  itemData: Action | EventType | any;
+  itemData: Action | EventType | LogicNode | Diagram | any;
+  itemType: MainItemTypes | 'Gate';
 }
 
 const DraggableItem: React.FC<PropsWithChildren<DraggableItemProps>> = ({
+  itemType,
   itemData,
   children,
 }) => {
   const [, drag] = useDrag({
-    type: isAction(itemData) ? 'Action' : isEventType(itemData) ? 'Event' : 'DRAGGABLE_ITEM',
-    item: itemData,
+    type: itemType === 'LogicNode' ? 'LogicNode' : itemType === 'Diagram' && itemData.diagramType === 'dtSingle' ? 'Diagram' : isAction(itemData) ? 'Action' : isEventType(itemData) ? 'Event' : 'Gate',
+    item: itemData
   });
 
   return (
