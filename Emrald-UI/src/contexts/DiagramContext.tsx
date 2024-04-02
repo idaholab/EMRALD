@@ -30,7 +30,7 @@ export const emptyDiagram: Diagram = {
     name: '',
     desc: '',
     diagramType: 'dtSingle',
-    diagramLabel: "",
+    diagramLabel: "Component",
     states: [],
 }
 
@@ -47,11 +47,13 @@ export function useDiagramContext() {
 }
 
 const DiagramContextProvider: React.FC<EmraldContextWrapperProps> = ({ children }) => {
-  const [diagrams, setDiagrams] = useState<Diagram[]>(appData.value.DiagramList);
+  const [diagrams, setDiagrams] = useState<Diagram[]>(JSON.parse(JSON.stringify(appData.value.DiagramList)));
 
   // Create, Delete, Update individual diagrams
   const createDiagram = (newDiagram: Diagram) => {
     const updatedDiagrams = [...diagrams, newDiagram];
+    appData.value.DiagramList = updatedDiagrams;
+    updateAppData(appData.value);
     setDiagrams(updatedDiagrams);
   };
 

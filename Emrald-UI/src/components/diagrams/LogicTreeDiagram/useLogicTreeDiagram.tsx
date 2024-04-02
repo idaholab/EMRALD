@@ -28,7 +28,7 @@ const useLogicNodeTreeDiagram = () => {
   const dagreGraph = new dagre.graphlib.Graph();
   dagreGraph.setDefaultEdgeLabel(() => ({}));
 
-  const nodeWidth = 175;
+  const nodeWidth = 220;
   const nodeHeight = 150;
 
   // Build the logic tree

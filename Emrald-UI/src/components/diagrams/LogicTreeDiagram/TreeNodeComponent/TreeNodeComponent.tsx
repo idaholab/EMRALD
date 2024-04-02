@@ -39,60 +39,56 @@ const TreeNodeComponent: React.FC<TreeNodeComponentProps> = ({ id, data }) => {
 
   return (
     <Box
-        className={`tree-node 
+      className={`tree-node 
         ${type === 'comp' ? 'tree-node__comp' : 'tree-node__gate'}
         ${type === 'comp' && !defaultStateValues ? 'non-default' : ''}`}
+    >
+      <LogicTreeNodeDropTarget
+        type={['Gate', 'Diagram']}
+        nodeType={type}
+        node={label}
       >
-        <LogicTreeNodeDropTarget type={['Gate', 'Diagram']} nodeType={type} node={label}>
-        <Box
-          sx={{
-            display: 'flex',
-            justifyContent: 'flex-start',
-            position: 'absolute',
-            top: 5,
-            left: 8,
-          }}
-        >
-          {type === 'comp' && !defaultStateValues ? (
-            <PiNotePencilDuotone className="modified-icon" />
-          ) : (
-            <></>
-          )}
-        </Box>
-        <Box className="tree-node__control-bar">
-          {type === 'comp' ? (
-            <IconButton
-              aria-label="close"
-              onClick={() => goToDiagram(label)}
-              sx={{
-                height: 16,
-                width: 16,
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-              }}
-            >
-              <FaLink className="tree-node__control-bar control-icon" />
-            </IconButton>
-          ) : (
-            <></>
-          )}
-          {type !== 'root' ? ( // Only show delete button if not root
-            <IconButton
-              aria-label="close"
-              onClick={() => removeNode(parentName, label, type)}
-              sx={{ height: 16, width: 16 }}
-            >
-              <DeleteIcon sx={{ height: 16, width: 16 }} />
-            </IconButton>
-          ) : (
-            <></>
-          )}
-        </Box>
-        <Box className="tree-node__header">
-          <strong>{label}</strong>
-        </Box>
-        {/* <Box className="tree-node__body">{description}</Box> */}
+<Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+  {/* Left container with icon */}
+  <Box sx={{ display: 'flex', alignItems: 'center', marginRight: '15px' }}>
+    {type === 'comp' && !defaultStateValues ? (
+      <PiNotePencilDuotone className="modified-icon" />
+    ) : (
+      <></>
+    )}
+  </Box>
+
+  {/* Center container with title text */}
+  <Box className="tree-node__header" sx={{ flex: 1 }}>
+    <strong>{label}</strong>
+  </Box>
+
+  {/* Right container with control buttons */}
+  <Box sx={{ display: 'flex', alignItems: 'center' }}>
+    {type === 'comp' ? (
+      <IconButton
+        aria-label="close"
+        onClick={() => goToDiagram(label)}
+        sx={{ marginLeft: '5px', width: 22, height: 22, p: '6px' }}
+      >
+        <FaLink className="tree-node__control-bar control-icon" />
+      </IconButton>
+    ) : (
+      <></>
+    )}
+    {type !== 'root' ? ( // Only show delete button if not root
+      <IconButton
+        aria-label="close"
+        onClick={() => removeNode(parentName, label, type)}
+        sx={{ p: 0, ml: '5px' }}
+      >
+        <DeleteIcon sx={{ height: 16, width: 16 }} />
+      </IconButton>
+    ) : (
+      <></>
+    )}
+  </Box>
+</Box>
 
         {editingDescription ? (
           <TextField
@@ -133,8 +129,8 @@ const TreeNodeComponent: React.FC<TreeNodeComponentProps> = ({ id, data }) => {
         ) : (
           <></>
         )}
-    </LogicTreeNodeDropTarget>
-      </Box>
+      </LogicTreeNodeDropTarget>
+    </Box>
   );
 };
 

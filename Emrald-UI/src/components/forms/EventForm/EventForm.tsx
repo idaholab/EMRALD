@@ -1,15 +1,16 @@
+import React from 'react';
 import { useEffect, useState } from 'react';
+import { useSignal } from '@preact/signals-react';
 import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
 import Box from '@mui/material/Box';
-import DropTargetComponent from '../../drag-and-drop/Droppable';
 import Typography from '@mui/material/Typography';
-import React from 'react';
-import { useWindowContext } from '../../../contexts/WindowContext';
-import { Event } from '../../../types/Event';
+import MainDetailsForm from '../MainDetailsForm';
 import { v4 as uuidv4 } from 'uuid';
-import MainDetailsForm from '../../forms/MainDetailsForm';
-import { useEventContext } from '../../../contexts/EventContext';
+import { Event } from '../../../types/Event';
+import { EventType, MainItemTypes } from '../../../types/ItemTypes';
+import { useWindowContext } from '../../../contexts/WindowContext';
+import { emptyEvent, useEventContext } from '../../../contexts/EventContext';
 
 interface EventFormProps {
   eventData?: Event;
@@ -18,28 +19,37 @@ interface EventFormProps {
 const EventForm: React.FC<EventFormProps> = ({ eventData }) => {
   const { handleClose } = useWindowContext();
   const { updateEvent, createEvent } = useEventContext();
-  const [evType, setEvType] = useState<string>(
-    eventData?.evType || '',
-  );
+  const event = useSignal<Event>(eventData || emptyEvent);
   const [name, setName] = useState<string>(eventData?.name || '');
   const [desc, setDesc] = useState<string>(eventData?.desc || '');
+  const [evType, setEvType] = useState<EventType>(
+    eventData?.evType || 'etStateCng',
+  );
+  const eventTypeOptions = [
+    { value: 'etVarCond', label: 'Var Condition' },
+    { value: 'etStateCng', label: 'State Change' },
+    { value: 'etComponentLogic', label: 'Component Logic' },
+    { value: 'etTimer', label: 'Timer' },
+    { value: 'etFailRate', label: 'Failure Rate' },
+    { value: 'et3dSimEv', label: 'Ext Simulation' },
+    { value: 'etDistribution', label: 'Distribution' },
+  ];
 
   const handleSave = () => {
-    const newEvent = {
-      id: uuidv4(),
-      evType,
-      name,
-      desc,
-    };
-
     eventData
       ? updateEvent({
-          id: eventData.id,
+          ...event.value,
           evType,
           name,
           desc,
         })
-      : createEvent(newEvent);
+      : createEvent({
+          ...event.value,
+          id: uuidv4(),
+          evType,
+          name,
+          desc,
+        });
     handleClose();
   };
 
@@ -57,18 +67,11 @@ const EventForm: React.FC<EventFormProps> = ({ eventData }) => {
         {eventData ? `Edit` : `Create`} Event
       </Typography>
       <form>
-        <MainDetailsForm 
+        <MainDetailsForm
+          itemType={MainItemTypes.Event}
           type={evType}
           setType={setEvType}
-          typeOptions={[
-            {value: 'etVarCond', label: 'Var Condition'},
-            {value: 'etStateCng', label: 'State Change'},
-            {value: 'etComponentLogic', label: 'Component Logic'},
-            {value: 'etTimer', label: 'Timer'},
-            {value: 'etFailRate', label: 'Failure Rate'},
-            {value: 'et3dSimEv', label: 'Ext Simulation'},
-            {value: 'etDistribution', label: 'Distribution'},
-          ]}
+          typeOptions={eventTypeOptions}
           name={name}
           setName={setName}
           desc={desc}
@@ -92,10 +95,6 @@ const EventForm: React.FC<EventFormProps> = ({ eventData }) => {
           </Button>
         </Box>
       </form>
-
-      <Typography variant="h6" mt={5}>
-        Drop Components Here
-      </Typography>
     </Container>
   );
 };

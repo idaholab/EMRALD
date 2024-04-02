@@ -31,7 +31,7 @@ interface EventAction {
   actions?: string[];
 }
 
-const emptyState: State = {
+export const emptyState: State = {
   id: '',
   name: '',
   desc: '',

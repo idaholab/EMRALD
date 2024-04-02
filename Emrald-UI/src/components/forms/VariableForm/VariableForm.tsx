@@ -18,6 +18,7 @@ import Checkbox from '@mui/material/Checkbox';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import DocLinkFields from './FormFieldsByType/DocLinkFields';
 import ExtSimFields from './FormFieldsByType/ExtSimFields';
+import { MainItemTypes, VariableType } from '../../../types/ItemTypes';
 
 interface VariableFormProps {
   variableData?: Variable;
@@ -26,14 +27,14 @@ interface VariableFormProps {
 const VariableForm: React.FC<VariableFormProps> = ({ variableData }) => {
   const { handleClose } = useWindowContext();
   const { updateVariable, createVariable } = useVariableContext();
-  const [type, setType] = useState<string>(variableData?.type || 'int');
   const [name, setName] = useState<string>(variableData?.name || 'Int_');
   const [namePrefix, setNamePrefix] = useState<string>('');
   const [desc, setDesc] = useState<string>(variableData?.desc || '');
+  const [type, setType] = useState<VariableType>(variableData?.type || 'int');
   const [varScope, setVarScope] = useState<string>(
     variableData?.varScope || 'gtGlobal',
   );
-  const [value, setValue] = useState<number>(variableData?.value || 0);
+  const [value, setValue] = useState<number | string | boolean>(variableData?.value || 0);
   const [sim3DId, setSim3DId] = useState<string>(variableData?.sim3DId || '');
   const [resetOnRuns, setResetOnRuns] = useState<boolean>(
     variableData?.resetOnRuns || true,
@@ -54,12 +55,12 @@ const VariableForm: React.FC<VariableFormProps> = ({ variableData }) => {
   };
 
   // Handle changes to'type' and updates name prefix.
-  const handleTypeChange = (updatedType: string) => {
-    // Update the 'type' state variable.
-    setType(updatedType);
+  const handleTypeChange = () => {
+    // // Update the 'type' state variable.
+    // setType(updatedType);
 
     // Determine the prefix based on the 'type' value, or use 'default' if not found.
-    const updatedPrefix: string = PREFIXES[updatedType] || PREFIXES.default;
+    const updatedPrefix: string = PREFIXES[type] || PREFIXES.default;
     setNamePrefix(updatedPrefix)
 
     // Extract the part of the name after the prefix.
@@ -108,12 +109,8 @@ const VariableForm: React.FC<VariableFormProps> = ({ variableData }) => {
   };
 
   useEffect(() => {
-    if (variableData) {
-      setType(variableData.type || '');
-      setName(variableData.name || '');
-      setDesc(variableData.desc || '');
-    }
-  }, [variableData]);
+    handleTypeChange();
+  }, [type, setType]);
 
   return (
     <Container maxWidth="md">
@@ -122,8 +119,9 @@ const VariableForm: React.FC<VariableFormProps> = ({ variableData }) => {
       </Typography>
       <form>
         <MainDetailsForm
+          itemType={MainItemTypes.Variable}
           type={type}
-          setType={handleTypeChange}
+          setType={setType}
           typeOptions={[
             { value: 'int', label: 'Int' },
             { value: 'double', label: 'Double' },
@@ -148,9 +146,7 @@ const VariableForm: React.FC<VariableFormProps> = ({ variableData }) => {
             value={varScope}
             onChange={(event: SelectChangeEvent<string>) => {
               setVarScope(event.target.value);
-              if (event.target.value === 'gtAccrual') {
-                handleTypeChange('double');
-              }
+              if (event.target.value === 'gtAccrual') { setType('double') }
             }}
             label="scope"
           >

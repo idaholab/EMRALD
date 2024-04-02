@@ -1,6 +1,6 @@
 // DropTargetComponent.tsx
 import { Box } from '@mui/material';
-import React, { PropsWithChildren } from 'react';
+import React, { PropsWithChildren, useState } from 'react';
 import { useDrop } from 'react-dnd';
 import { NodeType } from '../diagrams/LogicTreeDiagram/useLogicTreeDiagram';
 import { LogicNode } from '../../types/LogicNode';
@@ -20,7 +20,7 @@ interface LogicNodeDroppableItemProps {
   node?: string;
 }
 
-function isDiagram(data: Diagram): data is Diagram {
+function isDiagram(data: Diagram | LogicNode): data is Diagram {
   return (data as Diagram).diagramType !== undefined;
 }
 
@@ -29,6 +29,7 @@ const LogicTreeNodeDropTarget: React.FC<
 > = ({ type, nodeType, node, children }) => {
   const { logicNodes, createLogicNode, updateLogicNode, getLogicNodeByName } = useLogicNodeContext();
   const newGateNode = useSignal<LogicNode>(emptyLogicNode);
+  const [compDiagram, setCompDiagram] = useState<boolean>(false);
 
   const resetNewNode = () => {
     newGateNode.value = emptyLogicNode;
@@ -39,7 +40,8 @@ const LogicTreeNodeDropTarget: React.FC<
     drop: (item: LogicNode | Diagram) => {
       // If the item is a diagram, add its name to the compChildren of the dropped node
       if (isDiagram(item as Diagram)) {
-        const { name } = item as Diagram;
+        const { name, diagramType } = item as Diagram;
+        setCompDiagram(diagramType === 'dtSingle');
         if (!node) { return; }
         const logicNode = getLogicNodeByName(node); // Get the info of the logic node to be updated
         if (logicNode.compChildren.some((child) => child.diagramName === item.name)) {
@@ -86,9 +88,9 @@ const LogicTreeNodeDropTarget: React.FC<
         resetNewNode(); // Reset the new gate node to its empty state
       }
     },
-    canDrop: () => {
-      // Prevent drop if nodeType is 'comp'
-      return nodeType !== 'comp';
+    canDrop: (item: LogicNode | Diagram) => {
+      // Prevent drop if nodeType is 'comp' and if diagramType is 'dtMulti'
+      return nodeType !== 'comp' && ((isDiagram(item) && item.diagramType === 'dtSingle') || (isDiagram(item) === false));
     },
     collect: (monitor) => ({
       isOver: !!monitor.isOver(),

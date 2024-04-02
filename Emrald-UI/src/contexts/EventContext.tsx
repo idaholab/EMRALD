@@ -1,8 +1,6 @@
 import React, {
   createContext,
   useContext,
-  useEffect,
-  useMemo,
   useState,
 } from 'react';
 import { Event } from '../types/Event';
@@ -18,6 +16,14 @@ interface EventContextType {
   newEventList: (newEventList: Event[]) => void;
   clearEventList: () => void;
 }
+
+export const emptyEvent: Event = {
+  id: "",
+  name: '',
+  desc: '',
+  evType: 'etStateCng',
+  mainItem: false,
+};
 
 const EventContext = createContext<EventContextType | undefined>(undefined);
 

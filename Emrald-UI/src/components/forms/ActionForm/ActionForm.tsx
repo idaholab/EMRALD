@@ -1,15 +1,16 @@
+import React from 'react';
 import { useEffect, useState } from 'react';
+import { useSignal } from '@preact/signals-react';
 import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
 import Box from '@mui/material/Box';
-import DropTargetComponent from '../../drag-and-drop/Droppable';
 import Typography from '@mui/material/Typography';
-import React from 'react';
-import { useWindowContext } from '../../../contexts/WindowContext';
-import { Action } from '../../../types/Action';
+import MainDetailsForm from '../MainDetailsForm';
 import { v4 as uuidv4 } from 'uuid';
-import MainDetailsForm from '../../forms/MainDetailsForm';
-import { useActionContext } from '../../../contexts/ActionContext';
+import { Action } from '../../../types/Action';
+import { ActionType, MainItemTypes } from '../../../types/ItemTypes';
+import { emptyAction, useActionContext } from '../../../contexts/ActionContext';
+import { useWindowContext } from '../../../contexts/WindowContext';
 
 interface ActionFormProps {
   actionData?: Action;
@@ -18,28 +19,34 @@ interface ActionFormProps {
 const ActionForm: React.FC<ActionFormProps> = ({ actionData }) => {
   const { handleClose } = useWindowContext();
   const { updateAction, createAction } = useActionContext();
-  const [actType, setActType] = useState<string>(
-    actionData?.actType || '',
-  );
+  const action = useSignal<Action>(actionData || emptyAction);
   const [name, setName] = useState<string>(actionData?.name || '');
   const [desc, setDesc] = useState<string>(actionData?.desc || '');
+  const [actType, setActType] = useState<ActionType>(
+    actionData?.actType || 'atTransition',
+  );
+  const actionTypeOptions = [
+    { value: 'atTransition', label: 'Transition' },
+    { value: 'CngVar_test', label: 'Change Var Value' },
+    { value: 'at3DSimMsg', label: 'Ext. Sim Message' },
+    { value: 'atRunExtApp', label: 'Run Application' },
+  ];
 
   const handleSave = () => {
-    const newAction = {
-      id: uuidv4(),
-      actType,
-      name,
-      desc,
-    };
-
     actionData
       ? updateAction({
-          id: actionData.id,
-          actType,
+          ...action.value,
           name,
           desc,
+          actType,
         })
-      : createAction(newAction);
+      : createAction({
+          ...action.value,
+          id: uuidv4(),
+          name,
+          desc,
+          actType,
+        });
     handleClose();
   };
 
@@ -57,15 +64,11 @@ const ActionForm: React.FC<ActionFormProps> = ({ actionData }) => {
         {actionData ? `Edit` : `Create`} Action
       </Typography>
       <form>
-        <MainDetailsForm 
+        <MainDetailsForm
+          itemType={MainItemTypes.Action}
           type={actType}
           setType={setActType}
-          typeOptions={[
-            {value: 'atTransition', label: 'Transition'},
-            {value: 'CngVar_test', label: 'Change Var Value'},
-            {value: 'at3DSimMsg', label: 'Ext. Sim Message'},
-            {value: 'atRunExtApp', label: 'Run Application'},
-          ]}
+          typeOptions={actionTypeOptions}
           name={name}
           setName={setName}
           desc={desc}
@@ -89,10 +92,6 @@ const ActionForm: React.FC<ActionFormProps> = ({ actionData }) => {
           </Button>
         </Box>
       </form>
-
-      <Typography variant="h6" mt={5}>
-        Drop Components Here
-      </Typography>
     </Container>
   );
 };

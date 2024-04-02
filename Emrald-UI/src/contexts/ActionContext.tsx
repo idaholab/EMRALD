@@ -19,8 +19,8 @@ interface ActionContextType {
   clearActionList: () => void;
 }
 
-const emptyAction: Action = {
-  id: 0,
+export const emptyAction: Action = {
+  id: "",
   name: '',
   desc: '',
   actType: 'atTransition',
