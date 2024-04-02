@@ -1,8 +1,8 @@
 import { EMRALD_Model, } from '../types/EMRALD_Model.ts';
 import jsonpath from 'jsonpath';
 import { MainItemTypes } from '../types/ItemTypes.ts';
-import { DiagramRefs, StateRefs, ActionRefs, EventRefs, VariableRefs, LogicNodeRefs, ExtSimRefs } from './ModelReferences.ts';
-import { appData, updateAppData } from '../hooks/useAppData';
+import { GetJSONPathUsingRefs, GetModelItemsReferencing, GetModelItemsReferencedBy } from './ModelReferences.ts';
+import { appData } from '../hooks/useAppData';
 import { Diagram } from '../types/Diagram.ts';
 import { State } from '../types/State.ts';
 import { Action } from '../types/Action.ts';
@@ -17,75 +17,71 @@ export const updateModelAndReferences = ( //Update the main appData EMRALD model
   itemType : MainItemTypes, //This is the type of the object that was updated
   //previousName: string, //old name of the item
   //newName: string //new name of the item
-) => {
+) : EMRALD_Model => {
 
-  const updatedEMRALDModel: EMRALD_Model = appData.value;
+  //const updatedEMRALDModel: EMRALD_Model = {...appData.value};
+  const updatedEMRALDModel: EMRALD_Model = JSON.parse(JSON.stringify(appData.value));
   
-  var jsonPathRefArray : string[] = [];
+  var jsonPathRefArray : Array<[string, MainItemTypes]> = GetJSONPathUsingRefs(itemType, item.name);
   var itemArray: any[];
   var itemIdx = -1;
 
   switch (itemType) {
     case MainItemTypes.Diagram:
-      jsonPathRefArray = DiagramRefs;
-      itemArray = appData.value.DiagramList;
+      itemArray = updatedEMRALDModel.DiagramList;
       break;
     case MainItemTypes.State:
-      jsonPathRefArray = StateRefs;
-      itemArray = appData.value.StateList;
+      itemArray = updatedEMRALDModel.StateList;
       break;
     case MainItemTypes.Action:
-      jsonPathRefArray = ActionRefs;
-      itemArray = appData.value.ActionList;
+      itemArray = updatedEMRALDModel.ActionList;
       break;
     case MainItemTypes.Event:
-      jsonPathRefArray = EventRefs;
-      itemArray = appData.value.EventList;
+      itemArray = updatedEMRALDModel.EventList;
       break;
     case MainItemTypes.ExtSim:
-      jsonPathRefArray = ExtSimRefs;
-      itemArray = appData.value.ExtSimList;
+      itemArray = updatedEMRALDModel.ExtSimList;
       break;
     case MainItemTypes.Variable:
-      jsonPathRefArray = VariableRefs;
-      itemArray = appData.value.VariableList;
+      itemArray = updatedEMRALDModel.VariableList;
       break;
     case MainItemTypes.LogicNode:
-      jsonPathRefArray = LogicNodeRefs;
-      itemArray = appData.value.LogicNodeList;
+      itemArray = updatedEMRALDModel.LogicNodeList;
       break;
     default:
       //error not a valid type
-      return;
+      console.log("Error: Invalid type for updateModelAndReferences");
+      return updatedEMRALDModel;
       break;
   }
 
   //find the index of the item in the array
-  itemIdx = itemArray.findIndex(itemInArray => itemInArray.id === item.id);  
+  itemIdx = itemArray.findIndex(itemInArray => itemInArray.id === item.id); 
+  if(itemIdx < 0){
+    //todo error not found
+    console.log("Error: item not found in array for updateModelAndReferences");
+    return updatedEMRALDModel;
+  }
   var previousName: string = itemArray[itemIdx].name; //old name of the item
 
   //update the item with the new item data
   itemArray[itemIdx] = item;
     
-  if(item.name === previousName){ //name the same so no refernce updates.
-    updateAppData(updatedEMRALDModel);
-  }  
-  else{ //name change so update all the references as well
-    //replace all the 'nameRef' items with the given previousName
-    const updatedJsonPathRefArray = jsonPathRefArray.map(jsonPath => {
-      // Replace 'nameRef' with variableName
-      return jsonPath.replace(/nameRef/g, previousName);
-    });
+  if(item.name != previousName){  //name change so update all the references as well
+    
+    // //test
+    //var m = GetModelItemsReferencing('S-DGN-B', MainItemTypes.Diagram);
+    //var m2 = GetModelItemsReferencedBy('Test Diagram', MainItemTypes.Diagram, true);
+    
 
-    updatedJsonPathRefArray.forEach((jPath) => {
+    jsonPathRefArray.forEach((jsonPathSet) => {
+      const jPath = jsonPathSet[0]
       jsonpath.paths(updatedEMRALDModel, jPath).forEach((ref: any) => {
         const path = ref.join('.');
         jsonpath.value(updatedEMRALDModel, path, item.name);
       });
     });
-
-
-    // updateAppData(updatedEMRALDModel);  
-    return updatedEMRALDModel;
   }
+
+  return updatedEMRALDModel;
 }

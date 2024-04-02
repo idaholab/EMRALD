@@ -7,6 +7,7 @@ import React, {
 import { computed, effect, useComputed, useSignal, useSignalEffect } from '@preact/signals-react';
 import { Diagram } from '../types/Diagram';
 import { updateModelAndReferences } from '../utils/UpdateModel';
+import { GetModelItemsReferencedBy, GetModelItemsReferencing } from '../utils/ModelReferences';
 import { MainItemTypes } from '../types/ItemTypes';
 import { EmraldContextWrapperProps } from './EmraldContextWrapper';
 import { EMRALD_Model } from '../types/EMRALD_Model';
@@ -66,32 +67,13 @@ const DiagramContextProvider: React.FC<EmraldContextWrapperProps> = ({ children 
 
   const updateDiagram = (updatedDiagram: Diagram) => {
     // Rest of your code to update the diagram list
-    // console.log(updatedDiagram);
-    // const updatedDiagrams = diagrams.map((item) => {
-    //   if (item.id === updatedDiagram.id) {
-    //     const previousName = item.name; // Get the previous name
-    //     const newName = updatedDiagram.name; // Get the new name from the updatedDiagram object
-        
-    //     // Call updateKeyAndReferences here to update references in the updatedDiagram
-    //     // updateModelAndReferences(data, updateAppData, MainItemTypes.Diagram,  previousName, newName);
-    //     item = updatedDiagram;
-    //     return updatedDiagram;
-    //   } else {
-    //     return item;
-    //   }
-    // });
-    // appData.value.DiagramList = updatedDiagrams;
-    // updateAppData(appData.value);
-    // setDiagrams(updatedDiagrams);
+    console.log(updatedDiagram);
+    
+    var updatedModel : EMRALD_Model = updateModelAndReferences(updatedDiagram, MainItemTypes.Diagram);
+    
+    updateAppData(updatedModel);
 
-    // Rest of your code to update the diagram list
-
-    console.log(appData.value);
-    const updatedDiagrams = updateModelAndReferences(updatedDiagram, MainItemTypes.Diagram)?.DiagramList;
-    if(updatedDiagrams){
-      let diagrams = updatedDiagrams;
-      setDiagrams(diagrams);
-    }
+    setDiagrams(updatedModel.DiagramList);
   };
 
   const deleteDiagram = (diagramId: string | undefined) => {
