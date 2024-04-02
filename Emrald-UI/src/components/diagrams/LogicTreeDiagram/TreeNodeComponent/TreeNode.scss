@@ -14,7 +14,7 @@ $header-bottom-border-color: #e2e8f0;
   }
 
   .react-flow__handle-bottom {
-    top: 32px !important;
+    top: 23px !important;
   }
 
   .logic-icon {
@@ -22,7 +22,7 @@ $header-bottom-border-color: #e2e8f0;
     transform: rotate(270deg);
     font-size: 31px;
     color: #b1b1b7;
-    top: 8px;
+    top: -1px;
   }
 
   .tree-node {
@@ -32,7 +32,6 @@ $header-bottom-border-color: #e2e8f0;
     border-radius: 8px;
     box-shadow: 1px 1px 1px 1px $shadow-color;
     margin: -4px 0;
-    padding: 8px
   }
   
   .tree-node__gate {
@@ -50,28 +49,9 @@ $header-bottom-border-color: #e2e8f0;
       width: 12px;
     }
   }
-
-  .tree-node__control-bar {
-    // display: flex;
-    // justify-content: flex-end;
-    // position: absolute;
-    // right: 5px;
-    // top: 2px;
-
-    .control-icon {
-      // position: absolute;
-      // left: 3px;
-      // top: 3px;
-      // height: 10px;
-      // width: 10px;
-    }
-  }
   
   .tree-node__header {
     width: 100%; /* Make the header full width */
-    // margin-top: 5px;
-    // padding: 0px 10px 0 10px;
-    // border-bottom: 1px solid $header-bottom-border-color;
     font-size: 12px;
     display: flex;
     justify-content: center;

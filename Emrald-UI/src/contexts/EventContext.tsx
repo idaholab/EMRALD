@@ -38,9 +38,7 @@ export function useEventContext() {
 }
 
 const EventContextProvider: React.FC<EmraldContextWrapperProps> = ({ children }) => {
-  const [events, setEvents] = useState<Event[]>(
-    appData.value.EventList,
-  );
+  const [events, setEvents] = useState<Event[]>(JSON.parse(JSON.stringify(appData.value.EventList)));
 
   const createEvent = (newEvent: Event) => {
     const updatedEventList = [...events, newEvent ];

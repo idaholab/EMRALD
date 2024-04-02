@@ -19,6 +19,8 @@ const useLogicNodeTreeDiagram = () => {
   const [loading, setLoading] = useState(true);
   const [editingDescription, setEditingDescription] = useState(false);
   const [editedDescription, setEditedDescription] = useState("");
+  const [editingTitle, setEditingTitle] = useState(false);
+  const [editedTitle, setEditedTitle] = useState("");
   const [menu, setMenu] = useState<{ mouseX: number; mouseY: number; } | null>(null);
   const [menuOptions, setMenuOptions] = useState<Option[]>();
   const { logicNodes, getLogicNodeByName, updateLogicNode } = useLogicNodeContext();
@@ -245,12 +247,17 @@ const useLogicNodeTreeDiagram = () => {
     setMenuOptions(options);
   };
 
-  const handleDescriptionDoubleClick = (description: string) => {
-    setEditingDescription(true);
-    setEditedDescription(description);
+  const handleDoubleClick = (type: string, text: string) => {
+    if (type === 'description') {
+      setEditingDescription(true);
+      setEditedDescription(text);
+    } else {
+      setEditingTitle(true);
+      setEditedTitle(text);
+    }
   };
 
-  const handleDescriptionBlur = useCallback((nodeId: string, type: string, label: string, nodes: Node[]) => {
+  const handleDescriptionBlur = useCallback((type: string, label: string, nodes: Node[]) => {
     setEditingDescription(false);
     nodes.map((node) => {
       if (node.data.label === label) {
@@ -283,6 +290,33 @@ const useLogicNodeTreeDiagram = () => {
     setEditedDescription('');
   }, [nodes, getLogicNodeByName, getDiagramByDiagramName, updateLogicNode, updateDiagram, editedDescription]);
 
+  const handleTitleBlur = useCallback((type: string, label: string, nodes: Node[]) => {
+    setEditingTitle(false);
+
+    if (type === 'gate' || type === 'root') {
+      const LogicNodeToUpdate = getLogicNodeByName(label);
+      console.log(LogicNodeToUpdate)
+      if (LogicNodeToUpdate) {
+        updateLogicNode({
+          ...LogicNodeToUpdate,
+          name: editedTitle
+        });
+      }
+    }
+    
+    if (type === 'comp') {
+      const updatedDiagram = getDiagramByDiagramName(label);
+      if (updatedDiagram) {
+        updateDiagram({
+          ...updatedDiagram,
+          name: editedTitle
+        });
+      }
+    }
+    
+    setEditedTitle('');
+  }, [nodes, getLogicNodeByName, getDiagramByDiagramName, updateLogicNode, updateDiagram, editedTitle]);
+
   useEffect(() => {
     if (nodes && !loading) {
       const { nodes: formattedNodes } = dagreFormatNodes(nodes);
@@ -311,9 +345,13 @@ const useLogicNodeTreeDiagram = () => {
     menuOptions,
     editingDescription,
     editedDescription,
+    editingTitle,
+    editedTitle,
     setEditedDescription,
-    handleDescriptionDoubleClick,
+    setEditedTitle,
+    handleDoubleClick,
     handleDescriptionBlur,
+    handleTitleBlur,
     onNodeContextMenu,
     closeContextMenu,
     setNodes,

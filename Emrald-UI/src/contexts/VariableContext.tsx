@@ -33,9 +33,7 @@ export function useVariableContext() {
 }
 
 const VariableContextProvider: React.FC<EmraldContextWrapperProps> = ({ children }) => {
-  const [variables, setVariables] = useState<Variable[]>(
-    appData.value.VariableList,
-  );
+  const [variables, setVariables] = useState<Variable[]>(JSON.parse(JSON.stringify(appData.value.VariableList)));
 
   // Memoize the value of `Variables` to avoid unnecessary re-renders
   // const variables = useMemo(

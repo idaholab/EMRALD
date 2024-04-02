@@ -48,7 +48,6 @@ const LogicNodeContextProvider: React.FC<EmraldContextWrapperProps> = ({
   const [logicNodes, setLogicNodes] = useState<LogicNode[]>(JSON.parse(JSON.stringify(appData.value.LogicNodeList)));
 
   const createLogicNode = (newLogicNode: LogicNode) => {
-    console.log(newLogicNode);
     const updatedLogicNodes = [...appData.value.LogicNodeList, newLogicNode];
     appData.value.LogicNodeList = updatedLogicNodes;
     updateAppData(appData.value);

@@ -98,7 +98,7 @@ const LogicTreeNodeDropTarget: React.FC<
     }),
   });
 
-  const backgroundColor = isOver && canDrop ? 'lightgreen' : 'transparent';
+  const backgroundColor = isOver && canDrop ? '#18e7a8' : 'transparent';
 
   return (
     <Box ref={drop} sx={{ backgroundColor, borderRadius: '8px' }}>

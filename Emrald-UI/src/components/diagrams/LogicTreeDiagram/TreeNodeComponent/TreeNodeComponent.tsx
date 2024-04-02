@@ -29,11 +29,15 @@ const TreeNodeComponent: React.FC<TreeNodeComponentProps> = ({ id, data }) => {
   const { goToDiagram } = useLogicNodeTreeDiagram();
   const nodes = useNodes();
   const {
+    editingTitle,
     editingDescription,
     editedDescription,
+    editedTitle,
     setEditedDescription,
-    handleDescriptionDoubleClick,
+    setEditedTitle,
+    handleDoubleClick,
     handleDescriptionBlur,
+    handleTitleBlur,
     removeNode,
   } = useLogicNodeTreeDiagram();
 
@@ -48,62 +52,103 @@ const TreeNodeComponent: React.FC<TreeNodeComponentProps> = ({ id, data }) => {
         nodeType={type}
         node={label}
       >
-<Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-  {/* Left container with icon */}
-  <Box sx={{ display: 'flex', alignItems: 'center', marginRight: '15px' }}>
-    {type === 'comp' && !defaultStateValues ? (
-      <PiNotePencilDuotone className="modified-icon" />
-    ) : (
-      <></>
-    )}
-  </Box>
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            p: '8px'
+          }}
+        >
+          {/* Left container with icon */}
+          <Box
+            sx={{ display: 'flex', alignItems: 'center', marginRight: '15px' }}
+          >
+            {type === 'comp' && !defaultStateValues ? (
+              <PiNotePencilDuotone className="modified-icon" />
+            ) : (
+              <></>
+            )}
+          </Box>
 
-  {/* Center container with title text */}
-  <Box className="tree-node__header" sx={{ flex: 1 }}>
-    <strong>{label}</strong>
-  </Box>
+          {editingTitle ? (
+          <TextField
+          value={editedTitle}
+          onChange={(event) => setEditedTitle(event.target.value)}
+          onBlur={() => handleTitleBlur(type, label, nodes)}
+          multiline
+          fullWidth
+          variant="outlined"
+          inputProps={{ maxLength: 20,  style: { fontSize: '12px'}, }}
+          sx={{
+            '& .MuiOutlinedInput-root': {
+              padding: '6px',
+            },
+          }}
+          autoFocus
+          size='small'
+        />
+        ) : (
+          <Box
+            className="tree-node__header" sx={{ flex: 1 }}
+            onDoubleClick={() => handleDoubleClick("title", label)}
+          >
+            {editedTitle ? editedTitle : label}
+          </Box>
+        )}
 
-  {/* Right container with control buttons */}
-  <Box sx={{ display: 'flex', alignItems: 'center' }}>
-    {type === 'comp' ? (
-      <IconButton
-        aria-label="close"
-        onClick={() => goToDiagram(label)}
-        sx={{ marginLeft: '5px', width: 22, height: 22, p: '6px' }}
-      >
-        <FaLink className="tree-node__control-bar control-icon" />
-      </IconButton>
-    ) : (
-      <></>
-    )}
-    {type !== 'root' ? ( // Only show delete button if not root
-      <IconButton
-        aria-label="close"
-        onClick={() => removeNode(parentName, label, type)}
-        sx={{ p: 0, ml: '5px' }}
-      >
-        <DeleteIcon sx={{ height: 16, width: 16 }} />
-      </IconButton>
-    ) : (
-      <></>
-    )}
-  </Box>
-</Box>
+        
+          {/* <Box className="tree-node__header" sx={{ flex: 1 }}>
+            <strong>{label}</strong>
+          </Box> */}
+
+          {/* Right container with control buttons */}
+          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            {type === 'comp' ? (
+              <IconButton
+                aria-label="close"
+                onClick={() => goToDiagram(label)}
+                sx={{ marginLeft: '5px', width: 22, height: 22, p: '6px' }}
+              >
+                <FaLink className="tree-node__control-bar control-icon" />
+              </IconButton>
+            ) : (
+              <></>
+            )}
+            {type !== 'root' ? ( // Only show delete button if not root
+              <IconButton
+                aria-label="close"
+                onClick={() => removeNode(parentName, label, type)}
+                sx={{ p: 0, ml: '5px' }}
+              >
+                <DeleteIcon sx={{ height: 16, width: 16 }} />
+              </IconButton>
+            ) : (
+              <></>
+            )}
+          </Box>
+        </Box>
 
         {editingDescription ? (
           <TextField
             value={editedDescription}
             onChange={(event) => setEditedDescription(event.target.value)}
-            onBlur={() => handleDescriptionBlur(id, type, label, nodes)}
+            onBlur={() => handleDescriptionBlur(type, label, nodes)}
             multiline
             fullWidth
             variant="outlined"
             autoFocus
+            inputProps={{ style: { fontSize: '12px'}, }}
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                padding: '6px',
+              },
+            }}
           />
         ) : (
           <Box
             className="tree-node__body"
-            onDoubleClick={() => handleDescriptionDoubleClick(description)}
+            onDoubleClick={() => handleDoubleClick("description", description)}
           >
             {editedDescription ? editedDescription : description}
           </Box>

@@ -40,9 +40,7 @@ export function useActionContext() {
 }
 
 const ActionContextProvider: React.FC<EmraldContextWrapperProps> = ({ children }) => {
-  const [actions, setActions] = useState<Action[]>(
-    appData.value.ActionList
-  );
+  const [actions, setActions] = useState<Action[]>(JSON.parse(JSON.stringify(appData.value.ActionList)));
   
   const createAction = (newAction: Action) => {
     const updatedActionList = [...actions, newAction ];

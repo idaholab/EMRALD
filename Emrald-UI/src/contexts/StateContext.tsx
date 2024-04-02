@@ -56,7 +56,7 @@ export function useStateContext() {
 }
 
 const StateContextProvider: React.FC<EmraldContextWrapperProps> = ({ children }) => {
-  const [states, setStates] = useState<State[]>(appData.value.StateList);
+  const [states, setStates] = useState<State[]>(JSON.parse(JSON.stringify(appData.value.StateList)));
 
   // Create, Delete, Update individual States
   const createState = (newState: State) => {
