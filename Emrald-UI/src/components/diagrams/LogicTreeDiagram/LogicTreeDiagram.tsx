@@ -1,12 +1,12 @@
-import React, { useEffect, useMemo, useRef } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import ReactFlow, {
   ConnectionLineType,
-  MiniMap,
   Background,
   BackgroundVariant,
   Controls,
-  ReactFlowProvider,
   Panel,
+  NodeMouseHandler,
+  useReactFlow,
 } from 'reactflow';
 
 import 'reactflow/dist/style.css';
@@ -15,21 +15,21 @@ import useLogicNodeTreeDiagram from './useLogicTreeDiagram.js';
 import Box from '@mui/material/Box';
 import TreeNodeComponent from './TreeNodeComponent/TreeNodeComponent.js';
 import ContextMenu from '../../layout/ContextMenu/ContextMenu.js';
-import { useLogicNodeContext } from '../../../contexts/LogicNodeContext.js';
 import { TbLogicAnd, TbLogicNot, TbLogicOr } from 'react-icons/tb';
 import DraggableItem from '../../drag-and-drop/DraggableItem.js';
 import { Typography } from '@mui/material';
-
-// export const currentLogicNode = signal<LogicNode | null>(null);
+import useExpandCollapse from './useExpandCollapse.js';
 
 interface LogicNodeTreeDiagramProps {
   logicNode: LogicNode;
 }
+
 const LogicNodeTreeDiagram: React.FC<LogicNodeTreeDiagramProps> = ({ logicNode }) => {
   const ref = useRef<HTMLDivElement>(null);
+  const reactFlowInstance = useReactFlow();
   const { 
-    nodes, 
-    edges, 
+    nodes,
+    edges,
     loading,
     menu,
     menuOptions,
@@ -38,8 +38,42 @@ const LogicNodeTreeDiagram: React.FC<LogicNodeTreeDiagramProps> = ({ logicNode }
     buildLogicTree,
     onNodesChange, 
     onEdgesChange,
-    handleLoad
+    handleLoad,
+    setNodes
   } = useLogicNodeTreeDiagram();
+
+  const treeWidth = 240;
+  const treeHeight = 150;
+
+  const { nodes: visibleNodes, edges: visibleEdges } = useExpandCollapse(
+    nodes,
+    edges,
+    { treeWidth, treeHeight }
+  );
+
+  const onNodeClick: NodeMouseHandler = useCallback(
+    async (_, node) => {
+      await new Promise((resolve) => {
+        setNodes((nds) => {
+          const updatedNodes = nds.map((n) => {
+            if (n.id === node.id) {
+              return {
+                ...n,
+                data: { ...n.data, expanded: !n.data.expanded },
+              };
+            }
+            return n;
+          });
+          resolve(updatedNodes); // Resolve the promise after updating nodes
+          return updatedNodes;
+        });
+      });
+  
+      // Fit view after node click
+      reactFlowInstance && reactFlowInstance.fitView({ nodes: nodes, padding: 0.75 });
+    },
+    [setNodes, reactFlowInstance, visibleNodes]
+  );
 
   useEffect(() => {
     buildLogicTree(logicNode);
@@ -48,16 +82,16 @@ const LogicNodeTreeDiagram: React.FC<LogicNodeTreeDiagramProps> = ({ logicNode }
   const nodeTypes = useMemo(() => ({ custom: TreeNodeComponent }), []);
 
   return (
-    <ReactFlowProvider>
       <Box sx={{ width: '100%', height: '100%' }}>
         {loading ? (
           <p>Loading...</p>
         ) : (
           <div className="tree-diagram" ref={ref} style={{ width: '100%', height: '100%' }}>
             <ReactFlow
-              nodes={nodes}
-              edges={edges}
+              nodes={visibleNodes}
+              edges={visibleEdges}
               onNodesChange={onNodesChange}
+              onNodeClick={onNodeClick}
               onNodeContextMenu={onNodeContextMenu}
               onEdgesChange={onEdgesChange}
               nodeTypes={nodeTypes}
@@ -92,7 +126,6 @@ const LogicNodeTreeDiagram: React.FC<LogicNodeTreeDiagramProps> = ({ logicNode }
           </div>
         )}
       </Box>
-    </ReactFlowProvider>
   );
 };
 

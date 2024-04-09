@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { signal, useSignal } from '@preact/signals-react';
+import { useState } from 'react';
+import { useSignal } from '@preact/signals-react';
 import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
 import Box from '@mui/material/Box';
@@ -13,7 +13,6 @@ import { v4 as uuidv4 } from 'uuid';
 import MainDetailsForm from '../../forms/MainDetailsForm';
 import { CompChild, LogicNode } from '../../../types/LogicNode';
 import { GateType, StateEvalValue } from '../../../types/ItemTypes';
-import { appData } from '../../../hooks/useAppData';
 import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
@@ -43,9 +42,9 @@ const LogicNodeForm: React.FC<LogicNodeFormProps> = ({
   parentNodeName,
 }) => {
   const { handleClose, updateTitle } = useWindowContext();
-  const { logicNodes, createLogicNode, updateLogicNode } = useLogicNodeContext();
+  const { logicNodeList, createLogicNode, updateLogicNode } = useLogicNodeContext();
   const { diagrams } = useDiagramContext();
-  const parentNode = logicNodes?.find((node) => node.name === parentNodeName);
+  const parentNode = logicNodeList.value.find((node) => node.name === parentNodeName);
   const logicNode = useSignal<LogicNode>(logicNodeData || parentNode || emptyLogicNode);
   const newLogicNode = useSignal<LogicNode>(emptyLogicNode);
   const compChildren = useSignal<CompChild[]>(logicNode.value.compChildren || []);
@@ -101,7 +100,7 @@ const LogicNodeForm: React.FC<LogicNodeFormProps> = ({
 
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newName = e.target.value;
-    setError(logicNodes.some(node => node.name === newName));
+    setError(logicNodeList.value.some(node => node.name === newName));
 
     editing ? (logicNode.value.name = newName) : (newLogicNode.value.name = newName);
     setNameValue(newName);

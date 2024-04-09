@@ -69,13 +69,13 @@ const MainCanvas: React.FC<MainCanvasProps> = ({ appData, updateAppData }) => {
 
   const { addWindow } = useWindowContext();
 
-  const undoChange = () => {
-    if (storedHistory && storedHistory.length > 1) {
-      const newHistory = storedHistory.slice(0, storedHistory.length - 1); // Remove the last item in the array
-      sessionStorage.setItem('dataHistory', JSON.stringify(newHistory));
-      updateAppData(undefined, newHistory[newHistory.length - 1]);
-    }
-  };
+  // const undoChange = () => {
+  //   if (storedHistory && storedHistory.length > 1) {
+  //     const newHistory = storedHistory.slice(0, storedHistory.length - 1); // Remove the last item in the array
+  //     sessionStorage.setItem('dataHistory', JSON.stringify(newHistory));
+  //     updateAppData(undefined, newHistory[newHistory.length - 1]);
+  //   }
+  // };
 
   return (
     <Box

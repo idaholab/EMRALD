@@ -9,7 +9,6 @@ import ExpandMore from '@mui/icons-material/ExpandMore';
 import FolderIcon from '@mui/icons-material/Folder';
 import FolderOpenIcon from '@mui/icons-material/FolderOpen';
 import DraggableItem from '../../drag-and-drop/DraggableItem';
-import { useWindowContext } from '../../../contexts/WindowContext';
 import { useDiagramContext } from '../../../contexts/DiagramContext';
 import Box from '@mui/material/Box';
 import { AccordionMenuItemType } from './types/AccordionMenuItems';
@@ -17,9 +16,7 @@ import ItemWithContextMenu from './ItemWithContextMenu';
 // import DiagramForm from '../../features/DiagramForm/DiagramForm';
 import Typography from '@mui/material/Typography';
 import { MainItemTypes } from '../../../types/ItemTypes';
-// import TestD3Chart from '../../features/TestD3Chart';
-// import TreeDiagram from '../../features/TreeDiagram';
-// import ReactFlowTest from '../../features/ReactFlow/ReactFlowDiagram';
+
 export interface AccordionMenuListProps {
   item: AccordionMenuItemType;
   bothAccordionsOpen: boolean;
@@ -30,6 +27,7 @@ const AccordionMenuItems: React.FC<AccordionMenuListProps> = ({
   bothAccordionsOpen,
 }) => {
   const { diagrams } = useDiagramContext();
+  
   const [openIndex, setOpenIndex] = React.useState<number | null>(null); // Keeps track of the index of the open item
   const diagramTypes = [
     { name: 'Plant' },

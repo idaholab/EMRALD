@@ -14,7 +14,7 @@ $header-bottom-border-color: #e2e8f0;
   }
 
   .react-flow__handle-bottom {
-    top: 23px !important;
+    top: 45px !important;
   }
 
   .logic-icon {
@@ -23,6 +23,14 @@ $header-bottom-border-color: #e2e8f0;
     font-size: 31px;
     color: #b1b1b7;
     top: -1px;
+  }
+
+  .expanded-icon {
+    position: absolute;
+    font-size: 25px;
+    color: #b1b1b7;
+    top: 27px;
+    cursor: pointer;
   }
 
   .tree-node {

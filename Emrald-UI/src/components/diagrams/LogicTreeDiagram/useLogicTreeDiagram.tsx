@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { useNodesState, useEdgesState, Edge, Node, Position, ReactFlowProvider, ReactFlowInstance, useReactFlow, useNodes } from 'reactflow';
+import { useNodesState, useEdgesState, Edge, Node, Position, ReactFlowInstance } from 'reactflow';
 import { useLogicNodeContext } from '../../../contexts/LogicNodeContext';
 import { LogicNode } from '../../../types/LogicNode';
 import { v4 as uuidv4 } from 'uuid';
@@ -23,14 +23,14 @@ const useLogicNodeTreeDiagram = () => {
   const [editedTitle, setEditedTitle] = useState("");
   const [menu, setMenu] = useState<{ mouseX: number; mouseY: number; } | null>(null);
   const [menuOptions, setMenuOptions] = useState<Option[]>();
-  const { logicNodes, getLogicNodeByName, updateLogicNode } = useLogicNodeContext();
-  const { diagrams, getDiagramByDiagramName, updateDiagram } = useDiagramContext();
+  const { logicNodeList, getLogicNodeByName, updateLogicNode } = useLogicNodeContext();
+  const { getDiagramByDiagramName, updateDiagram } = useDiagramContext();
   const { addWindow } = useWindowContext();
 
   const dagreGraph = new dagre.graphlib.Graph();
   dagreGraph.setDefaultEdgeLabel(() => ({}));
 
-  const nodeWidth = 220;
+  const nodeWidth = 240;
   const nodeHeight = 150;
 
   // Build the logic tree
@@ -55,7 +55,8 @@ const useLogicNodeTreeDiagram = () => {
         gateType: logicNode.gateType,
         description: logicNode.desc,
         compChildren: [],
-        gateChildren: logicNode.gateChildren
+        gateChildren: logicNode.gateChildren,
+        expanded: true
       },
     };
   
@@ -78,7 +79,8 @@ const useLogicNodeTreeDiagram = () => {
           gateType: node.gateType,
           description: node.desc,
           compChildren: node.compChildren,
-          gateChildren: node.gateChildren
+          gateChildren: node.gateChildren,
+          expanded: true
         },
       };
   
@@ -152,7 +154,7 @@ const useLogicNodeTreeDiagram = () => {
   }, [getLogicNodeByName, setNodes, setEdges]); 
   
 
-  const dagreFormatNodes = (nodes: Node[], direction = 'TB') => {
+  const dagreFormatNodes = (nodes: Node[], edges: Edge[], direction = 'TB') => {
     dagreGraph.setGraph({ rankdir: direction }); // Create a new directed graph
 
     nodes.forEach((node) => {
@@ -319,7 +321,7 @@ const useLogicNodeTreeDiagram = () => {
 
   useEffect(() => {
     if (nodes && !loading) {
-      const { nodes: formattedNodes } = dagreFormatNodes(nodes);
+      const { nodes: formattedNodes } = dagreFormatNodes(nodes, edges);
       setNodes(formattedNodes); // Update the nodes state with the dagre formatted nodes
     }
   }, [nodes, loading]);
@@ -328,10 +330,12 @@ const useLogicNodeTreeDiagram = () => {
     if (!rootNode) { return ;}
     const updatedLogicNode = getLogicNodeByName(rootNode.name);
     if (updatedLogicNode) {
-      buildLogicTree(updatedLogicNode);
+      setTimeout(() => {
+        console.log("Building logic tree", logicNodeList.value);
+        buildLogicTree(updatedLogicNode);
+      }, 500)
     }
-    console.log(logicNodes);
-  }, [logicNodes]);
+  }, [logicNodeList.value]);
 
   const handleLoad = useCallback((reactFlowInstance: ReactFlowInstance) => {
     reactFlowInstance.fitView(); // Call fitView after the ReactFlow component has been fully loaded
@@ -347,6 +351,12 @@ const useLogicNodeTreeDiagram = () => {
     editedDescription,
     editingTitle,
     editedTitle,
+    setNodes,
+    setEdges,
+    onNodesChange,
+    onEdgesChange,
+    handleLoad,
+    buildLogicTree,
     setEditedDescription,
     setEditedTitle,
     handleDoubleClick,
@@ -354,12 +364,6 @@ const useLogicNodeTreeDiagram = () => {
     handleTitleBlur,
     onNodeContextMenu,
     closeContextMenu,
-    setNodes,
-    setEdges,
-    buildLogicTree,
-    onNodesChange,
-    onEdgesChange,
-    handleLoad,
     goToDiagram,
     removeNode
   };

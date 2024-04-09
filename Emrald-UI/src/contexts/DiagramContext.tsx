@@ -4,9 +4,10 @@ import React, {
   useEffect,
   useState,
 } from 'react';
-import { computed, effect } from '@preact/signals';
+import { computed, effect, useComputed, useSignal, useSignalEffect } from '@preact/signals-react';
 import { Diagram } from '../types/Diagram';
 import { updateModelAndReferences } from '../utils/UpdateModel';
+import { GetModelItemsReferencedBy, GetModelItemsReferencing } from '../utils/ModelReferences';
 import { MainItemTypes } from '../types/ItemTypes';
 import { EmraldContextWrapperProps } from './EmraldContextWrapper';
 import { EMRALD_Model } from '../types/EMRALD_Model';
@@ -47,7 +48,7 @@ export function useDiagramContext() {
 }
 
 const DiagramContextProvider: React.FC<EmraldContextWrapperProps> = ({ children }) => {
-  const [diagrams, setDiagrams] = useState<Diagram[]>(JSON.parse(JSON.stringify(appData.value.DiagramList)));
+  const [diagrams, setDiagrams] = useState<Diagram[]>(appData.value.DiagramList);
 
   // Create, Delete, Update individual diagrams
   const createDiagram = (newDiagram: Diagram) => {
@@ -66,25 +67,15 @@ const DiagramContextProvider: React.FC<EmraldContextWrapperProps> = ({ children 
     setDiagrams(updatedDiagrams);
   };
 
-  const updateDiagram = (updatedDiagram: Diagram) => {
+  const updateDiagram = async (updatedDiagram: Diagram) => {
     // Rest of your code to update the diagram list
     console.log(updatedDiagram);
-    const updatedDiagrams = diagrams.map((item) => {
-      if (item.id === updatedDiagram.id) {
-        const previousName = item.name; // Get the previous name
-        const newName = updatedDiagram.name; // Get the new name from the updatedDiagram object
-        
-        // Call updateKeyAndReferences here to update references in the updatedDiagram
-        // updateModelAndReferences(data, updateAppData, MainItemTypes.Diagram,  previousName, newName);
-        item = updatedDiagram;
-        return updatedDiagram;
-      } else {
-        return item;
-      }
-    });
-    appData.value.DiagramList = updatedDiagrams;
-    updateAppData(appData.value);
-    setDiagrams(updatedDiagrams);
+    
+    var updatedModel : EMRALD_Model = await updateModelAndReferences(updatedDiagram, MainItemTypes.Diagram);
+    console.log("Calling update app data");
+    updateAppData(JSON.parse(JSON.stringify(updatedModel)));
+    console.log("Called update app data");
+    setDiagrams(updatedModel.DiagramList);
   };
 
   const deleteDiagram = (diagramId: string | undefined) => {

@@ -1,13 +1,19 @@
 import React, {
   createContext,
   useContext,
+  useEffect,
   useState,
 } from 'react';
 import { LogicNode } from '../types/LogicNode';
 import { EmraldContextWrapperProps } from './EmraldContextWrapper';
 import { appData, updateAppData } from '../hooks/useAppData';
+import { EMRALD_Model } from '../types/EMRALD_Model';
+import { updateModelAndReferences } from '../utils/UpdateModel';
+import { MainItemTypes } from '../types/ItemTypes';
+import { effect, ReadonlySignal, useComputed } from '@preact/signals-react';
 
 interface LogicNodeContextType {
+  logicNodeList: ReadonlySignal<LogicNode[]>;
   logicNodes: LogicNode[];
   createLogicNode: (logicNode: LogicNode) => void;
   updateLogicNode: (logicNode: LogicNode) => void;
@@ -45,35 +51,39 @@ export function useLogicNodeContext() {
 const LogicNodeContextProvider: React.FC<EmraldContextWrapperProps> = ({
   children,
 }) => {
-  const [logicNodes, setLogicNodes] = useState<LogicNode[]>(JSON.parse(JSON.stringify(appData.value.LogicNodeList)));
+  const [logicNodes, setLogicNodes] = useState<LogicNode[]>(appData.value.LogicNodeList);
+  const logicNodeList = useComputed(() => appData.value.LogicNodeList);
+
+  effect(() => {
+    console.log(logicNodeList.value)
+  });
 
   const createLogicNode = (newLogicNode: LogicNode) => {
-    const updatedLogicNodes = [...appData.value.LogicNodeList, newLogicNode];
-    appData.value.LogicNodeList = updatedLogicNodes;
-    updateAppData(appData.value);
+    const updatedLogicNodes = [...appData.peek().LogicNodeList, newLogicNode];
+    updateAppData(JSON.parse(JSON.stringify({ ...appData.value, LogicNodeList: updatedLogicNodes })));
     setLogicNodes(updatedLogicNodes);
   };
 
-  const updateLogicNode = (updatedLogicNode: LogicNode) => {
-    let newLogicNodeList = JSON.parse(JSON.stringify(appData.value.LogicNodeList));
-    let index = newLogicNodeList.findIndex((item: LogicNode) => item.id === updatedLogicNode.id);
-    if (index === -1) { return; }
-    newLogicNodeList[index] = updatedLogicNode;
-    updateAppData({...appData.value, LogicNodeList: newLogicNodeList});
-    setLogicNodes(newLogicNodeList);
-};
+  const updateLogicNode = async (updatedLogicNode: LogicNode) => {
+    var updatedModel: EMRALD_Model = await updateModelAndReferences(updatedLogicNode, MainItemTypes.LogicNode);
+
+    console.log("Calling update app data");
+    updateAppData(updatedModel);
+    console.log("Called update app data");
+    setLogicNodes(updatedModel.LogicNodeList);
+  };
 
   const deleteLogicNode = (logicNodeId: string | undefined) => {
     if (!logicNodeId) { return; }
     const updatedLogicNodes = logicNodes.filter(
       (item) => item.id !== logicNodeId,
     );
-    updateAppData(appData.value);
+    updateAppData(JSON.parse(JSON.stringify(appData.value)), appData.value);
     setLogicNodes(updatedLogicNodes);
   };
 
   const getLogicNodeByName = (logicNodeName: string | undefined) => {
-    return logicNodes.find((node) => node.name === logicNodeName) || emptyLogicNode;
+    return logicNodeList.value.find((node) => node.name === logicNodeName) || emptyLogicNode;
   };
 
   // Open New, Merge, and Clear Diagram List
@@ -92,6 +102,7 @@ const LogicNodeContextProvider: React.FC<EmraldContextWrapperProps> = ({
   return (
     <LogicNodeContext.Provider
       value={{
+        logicNodeList,
         logicNodes,
         createLogicNode,
         updateLogicNode,

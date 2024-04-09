@@ -19,6 +19,7 @@ import StateForm from '../../forms/StateForm/StateForm';
 import EmraldDiagram from '../../diagrams/EmraldDiagram/EmraldDiagram';
 import LogicNodeTreeDiagram from '../../diagrams/LogicTreeDiagram/LogicTreeDiagram';
 import LogicNodeForm from '../../forms/LogicNodeForm/LogicNodeForm';
+import { ReactFlowProvider } from 'reactflow';
 
 // Define your Option and OptionsMapping types
 export interface Option {
@@ -49,7 +50,7 @@ export const useOptionsMapping = () => {
       { label: 'Copy', action: () => null },
     ],
     'Logic Tree': [
-      { label: 'Open', action: (logicNode: LogicNode) => {addWindow(logicNode.name, <LogicNodeTreeDiagram logicNode={logicNode}/>, { x: 75, y: 25, width: 1300, height: 700 }) } },
+      { label: 'Open', action: (logicNode: LogicNode) => {addWindow(logicNode.name, <ReactFlowProvider><LogicNodeTreeDiagram logicNode={logicNode}/></ReactFlowProvider>, { x: 75, y: 25, width: 1300, height: 700 }) } },
       { label: 'Edit Properties', action: (logicNode: LogicNode) => {addWindow(`Edit Properties: ${logicNode.name}`, <LogicNodeForm logicNodeData={logicNode}/>) }},
       { label: 'Delete', action: (logicNode: LogicNode) => deleteLogicNode(logicNode.id) },
     ],
