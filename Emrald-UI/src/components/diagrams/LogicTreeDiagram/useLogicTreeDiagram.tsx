@@ -261,13 +261,6 @@ const useLogicNodeTreeDiagram = () => {
 
   const handleDescriptionBlur = useCallback((type: string, label: string, nodes: Node[]) => {
     setEditingDescription(false);
-    nodes.map((node) => {
-      if (node.data.label === label) {
-        node.data.description = editedDescription;
-      }
-      return node;
-    });
-    setNodes(nodes);
     
     if (type === 'gate' || type === 'root') {
       const updatedLogicNode = getLogicNodeByName(label);
@@ -280,10 +273,10 @@ const useLogicNodeTreeDiagram = () => {
     }
 
     if (type === 'comp') {
-      const updatedDiagram = getDiagramByDiagramName(label);
-      if (updatedDiagram) {
+      const diagramToUpdate = getDiagramByDiagramName(label);
+      if (diagramToUpdate) {
         updateDiagram({
-          ...updatedDiagram,
+          ...diagramToUpdate,
           desc: editedDescription
         });
       }
@@ -307,10 +300,10 @@ const useLogicNodeTreeDiagram = () => {
     }
     
     if (type === 'comp') {
-      const updatedDiagram = getDiagramByDiagramName(label);
-      if (updatedDiagram) {
+      const diagramToUpdate = getDiagramByDiagramName(label);
+      if (diagramToUpdate) {
         updateDiagram({
-          ...updatedDiagram,
+          ...diagramToUpdate,
           name: editedTitle
         });
       }
@@ -330,10 +323,7 @@ const useLogicNodeTreeDiagram = () => {
     if (!rootNode) { return ;}
     const updatedLogicNode = getLogicNodeByName(rootNode.name);
     if (updatedLogicNode) {
-      setTimeout(() => {
-        console.log("Building logic tree", logicNodeList.value);
-        buildLogicTree(updatedLogicNode);
-      }, 500)
+      buildLogicTree(updatedLogicNode);
     }
   }, [logicNodeList.value]);
 

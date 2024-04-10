@@ -137,7 +137,16 @@ const TreeNodeComponent: React.FC<TreeNodeComponentProps> = ({ id, data }) => {
           </Box>
         </Box>
 
-        <Box onClick={(event) => event.stopPropagation()}>
+        <Box onClick={(event) => event.stopPropagation()}
+        sx={{
+          maxWidth: '220px',
+          maxHeight: '73px',
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+          display: '-webkit-box',
+          WebkitLineClamp: '4',
+          WebkitBoxOrient: 'vertical',
+        }}>
           {editingDescription ? (
             <TextField
               value={editedDescription}

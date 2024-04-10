@@ -81,7 +81,7 @@ const StateValuesTable: React.FC<StateValuesTableProps> = ({ diagramName, nodeDe
         <TableHead>
           <TableRow>
             <TableCell sx={{ fontWeight: 'bold', p: 2}}>State Name</TableCell>
-            <TableCell sx={{ fontWeight: 'bold'}}>Evaluation Value</TableCell>
+            <TableCell sx={{ fontWeight: 'bold'}}>Logic Evaluation Value</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>

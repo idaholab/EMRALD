@@ -70,9 +70,9 @@ const DiagramForm: React.FC<DiagramFormProps> = ({ diagramData }) => {
           desc={desc}
           setDesc={setDesc}
         />
-        <Box>
-          <SingleValueGroups states={diagram.value.states} />
-        </Box>
+        {/* <Box>
+          <SingleValueGroups states={diagram.value.states} /> Maybe put back in the future
+        </Box> */}
         <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 5 }}>
           <Button
             variant="contained"
