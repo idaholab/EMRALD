@@ -15,7 +15,7 @@ namespace EMRALD_Sim
 {
   public class LoadLib
   {
-    public static string LoadModel(string path, ref string errorMsg)
+    public static string LoadModel(ref EmraldModel sim, string path, ref string errorMsg)
     {
       string retStr = "";
       StreamReader srFileReader = new StreamReader(path);
@@ -23,6 +23,11 @@ namespace EMRALD_Sim
       string modelStr = srFileReader.ReadToEnd();
       try
       {
+        if (sim == null)
+        {
+          sim = new EmraldModel();
+        }
+        modelStr  = sim.UpdateModel(modelStr);
         JToken modelJson = JToken.Parse(modelStr);
         retStr = modelJson.ToString(Formatting.Indented);
       }
@@ -40,7 +45,10 @@ namespace EMRALD_Sim
     {
       try
       {
-        sim = new EmraldModel();
+        if (sim == null)
+        {
+          sim = new EmraldModel();
+        }
         sim.DeserializeJSON(modelText, modelDir); //throws and exception of failed
         return "";
       }

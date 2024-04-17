@@ -941,7 +941,9 @@ namespace EMRALD_Sim
       this.Text = "EMRALD (" + path + ");";
 
       string errorStr = "";
-      teModel.Text = LoadLib.LoadModel(path, ref errorStr);
+      //clear the existing model
+      _sim = null;
+      teModel.Text = LoadLib.LoadModel(ref _sim, path, ref errorStr);
       _modelPath = path;
       if (errorStr != "")
       {
@@ -950,7 +952,7 @@ namespace EMRALD_Sim
         Console.Write(errorStr);
       }
 
-      btnValidateModel_Click(null, null);
+      ValidateModelAndUpdateUI();
 
       Cursor.Current = saveCurs;
     }
@@ -1021,7 +1023,14 @@ namespace EMRALD_Sim
     {
       Cursor saveCurs = Cursor.Current;
       Cursor.Current = Cursors.WaitCursor;
+      //clear the current model
+      _sim = null;
+      ValidateModelAndUpdateUI();
+      Cursor.Current = saveCurs;
+    }
 
+    private void ValidateModelAndUpdateUI()
+    {
       txtMStatus.Text = LoadLib.ValidateModel(ref _sim, teModel.Text, Path.GetDirectoryName(_modelPath));
       _validSim = txtMStatus.Text == "";
       if (txtMStatus.Text != "")
@@ -1037,8 +1046,8 @@ namespace EMRALD_Sim
       }
 
       InitSimTabInfo();
-      Cursor.Current = saveCurs;
     }
+
 
     private void InitSimTabInfo()
     {

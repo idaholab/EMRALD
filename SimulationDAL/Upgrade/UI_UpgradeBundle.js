@@ -466,7 +466,8 @@ function UpgradeV3_0(modelTxt) {
             }
         }
     });
-    newModel.version = 3.0;
+    newModel.emraldVersion = 3.0;
+    newModel.version = 1.0; //set user version for first use of this property
     const retModel = { newModel: JSON.stringify(newModel), errors: [] };
     // //to validate the new version against the schema
     // const schemaPath = './src/utils/Upgrades/v3_0/EMRALD_JsonSchemaV3_0.json';
@@ -504,10 +505,13 @@ class Upgrade {
     constructor(modelTxt) {
         this._oldModelTxt = modelTxt;
         const modelObj = JSON.parse(modelTxt);
-        this._schemaVersion = ('verson' in modelObj) ? modelObj.version : 0.0;
+        //using emraldVersion for now
+        this._emraldVersion = ('schemaVerson' in modelObj) ? modelObj.emraldVersion : null;
+        if (this._emraldVersion == null) //if no emraldVersion use old version tag.
+            this._emraldVersion = ('verson' in modelObj) ? modelObj.version : 0.0;
         this._newModelTxt = "";
         this._newModel = undefined;
-        this._schemaVersion = 0.0;
+        this._emraldVersion = 0.0;
         this._errors = "";
     }
     upgradeGiveID(toVersion, setIdFunction) {
@@ -515,21 +519,21 @@ class Upgrade {
         this._newModelTxt = this._oldModelTxt;
         // Define upgrade functions
         const upgrades = [
-            { schemaVersion: 1.2, upgradeFunction: UpgradeV1_x },
-            { schemaVersion: 2.4, upgradeFunction: UpgradeV2_4 },
-            { schemaVersion: 3.0, upgradeFunction: UpgradeV3_0 }
+            { emraldVersion: 1.2, upgradeFunction: UpgradeV1_x },
+            { emraldVersion: 2.4, upgradeFunction: UpgradeV2_4 },
+            { emraldVersion: 3.0, upgradeFunction: UpgradeV3_0 }
         ];
         // Apply upgrades
         for (const upgrade of upgrades) {
-            if (this._schemaVersion < upgrade.schemaVersion && toVersion >= upgrade.schemaVersion) {
+            if (this._emraldVersion < upgrade.emraldVersion && toVersion >= upgrade.emraldVersion) {
                 const upgraded = upgrade.upgradeFunction(this._newModelTxt);
                 this._newModelTxt = upgraded.newModel;
                 this._newModel = JSON.parse(upgraded.newModel);
                 if (upgraded.errors.length > 0) {
-                    this._errors = `${badModel}v${upgrade.schemaVersion} - ${upgraded.errors}`;
+                    this._errors = `${badModel}v${upgrade.emraldVersion} - ${upgraded.errors}`;
                     return false;
                 }
-                this._schemaVersion = upgrade.schemaVersion;
+                this._emraldVersion = upgrade.emraldVersion;
             }
         }
         // Reset IDs if requested
@@ -545,20 +549,20 @@ class Upgrade {
             ];
             lists.forEach(list => {
                 list.forEach(element => {
-                    setIdFunction(element);
+                    element.id = setIdFunction();
                 });
             });
         }
         return true;
     }
     get newModel() {
-        return this.newModel;
+        return this._newModel;
     }
     get newModelStr() {
         return JSON.stringify(this._newModel);
     }
     get errorsStr() {
-        return JSON.stringify(this._errors);
+        return this._errors;
     }
 }
 

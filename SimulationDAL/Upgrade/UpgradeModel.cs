@@ -17,7 +17,7 @@ namespace SimulationDAL
       {
         try
         {
-          string javascriptCode = File.ReadAllText(@".//ExportForCSharp.js");
+          string javascriptCode = File.ReadAllText(@".//Upgrade//UI_UpgradeBundle.js");
           
 
           //compile the javascript code into an engine.

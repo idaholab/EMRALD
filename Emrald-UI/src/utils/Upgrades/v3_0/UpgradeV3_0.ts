@@ -160,6 +160,7 @@ export function UpgradeV3_0(modelTxt: string): UpgradeReturn {
     });
 
     newModel.emraldVersion = 3.0;
+    newModel.version = 1.0; //set user version for first use of this property
     const retModel: UpgradeReturn = { newModel: JSON.stringify(newModel), errors: [] };
 
     // //to validate the new version against the schema

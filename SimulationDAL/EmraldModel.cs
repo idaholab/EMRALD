@@ -123,13 +123,32 @@ namespace SimulationDAL
       return retStr;
     }
 
+    public string UpdateModel(string jsonModel)
+    {
+      dynamic jsonObj = JsonConvert.DeserializeObject(jsonModel);
+      //update the model if needed
+      if ((jsonObj.emraldVersion == null) || (jsonObj.emraldVersion < SCHEMA_VERSION))
+      {
+        try
+        {
+          string upgraded = UpgradeModel.UpgradeJSON(jsonModel);
+          return upgraded;
+        }
+        catch (Exception ex)
+        {
+          throw new Exception("Failed to Upgrade old model to v" + SCHEMA_VERSION + ex.Message);
+        }
+      }
+      return "";
+    }
+
     public bool DeserializeJSON(string jsonModel, string modelPath) 
     {
       SingleNextIDs.Instance.Reset();
       this.rootPath = modelPath;
       dynamic jsonObj = JsonConvert.DeserializeObject(jsonModel);
       //update the model if needed
-      if((jsonObj.schemaVersion == null) || (jsonObj.schemaVersion < SCHEMA_VERSION) ) 
+      if((jsonObj.emraldVersion == null) || (jsonObj.emraldVersion < SCHEMA_VERSION) ) 
       {
         try
         {
