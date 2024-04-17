@@ -88,7 +88,9 @@ export const projectOptions: MenuOption[] = [
     label: 'Save',
     onClick: () => {
       // Convert JSON data to a string
-      const jsonString = JSON.stringify(appData.value);
+      const jsonString = JSON.stringify(appData.value, null, 2);
+
+      //todo validate the appData from the latest emrald schema version in types
 
       // Create a Blob (Binary Large Object) with the JSON string
       const blob = new Blob([jsonString], { type: 'application/json' });

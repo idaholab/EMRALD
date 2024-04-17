@@ -54,9 +54,6 @@ const LogicNodeContextProvider: React.FC<EmraldContextWrapperProps> = ({
   const [logicNodes, setLogicNodes] = useState<LogicNode[]>(appData.value.LogicNodeList);
   const logicNodeList = useComputed(() => appData.value.LogicNodeList);
 
-  effect(() => {
-    console.log(logicNodeList.value)
-  });
 
   const createLogicNode = (newLogicNode: LogicNode) => {
     const updatedLogicNodes = [...appData.peek().LogicNodeList, newLogicNode];
@@ -66,19 +63,16 @@ const LogicNodeContextProvider: React.FC<EmraldContextWrapperProps> = ({
 
   const updateLogicNode = async (updatedLogicNode: LogicNode) => {
     var updatedModel: EMRALD_Model = await updateModelAndReferences(updatedLogicNode, MainItemTypes.LogicNode);
-
-    console.log("Calling update app data");
     updateAppData(updatedModel);
-    console.log("Called update app data");
     setLogicNodes(updatedModel.LogicNodeList);
   };
 
   const deleteLogicNode = (logicNodeId: string | undefined) => {
     if (!logicNodeId) { return; }
-    const updatedLogicNodes = logicNodes.filter(
+    const updatedLogicNodes = logicNodeList.value.filter(
       (item) => item.id !== logicNodeId,
     );
-    updateAppData(JSON.parse(JSON.stringify(appData.value)), appData.value);
+    updateAppData({ ...appData.value, LogicNodeList: updatedLogicNodes });
     setLogicNodes(updatedLogicNodes);
   };
 

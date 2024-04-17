@@ -9,6 +9,8 @@ import { useWindowContext } from '../../../contexts/WindowContext';
 import { useDiagramContext } from '../../../contexts/DiagramContext';
 import { Option } from '../../layout/ContextMenu/ContextMenu';
 import LogicNodeForm from '../../forms/LogicNodeForm/LogicNodeForm';
+import { MainItemTypes } from '../../../types/ItemTypes';
+import { GetItemByNameType, GetJSONPathUsingRefs, GetModelItemsReferencedBy, GetModelItemsReferencing } from '../../../utils/ModelReferences';
 
 export type NodeType = 'root' | 'gate' | 'comp';
 
@@ -19,11 +21,13 @@ const useLogicNodeTreeDiagram = () => {
   const [loading, setLoading] = useState(true);
   const [editingDescription, setEditingDescription] = useState(false);
   const [editedDescription, setEditedDescription] = useState("");
+  const [copiedNode, setCopiedNode] = useState("");
+  const [nodeExistsAlert, setNodeExistsAlert] = useState(false);
   const [editingTitle, setEditingTitle] = useState(false);
   const [editedTitle, setEditedTitle] = useState("");
   const [menu, setMenu] = useState<{ mouseX: number; mouseY: number; } | null>(null);
   const [menuOptions, setMenuOptions] = useState<Option[]>();
-  const { logicNodeList, getLogicNodeByName, updateLogicNode } = useLogicNodeContext();
+  const { logicNodeList, getLogicNodeByName, updateLogicNode, createLogicNode, deleteLogicNode } = useLogicNodeContext();
   const { getDiagramByDiagramName, updateDiagram } = useDiagramContext();
   const { addWindow } = useWindowContext();
 
@@ -195,11 +199,29 @@ const useLogicNodeTreeDiagram = () => {
     const parentLogicNode = getLogicNodeByName(parentNode);
     if (type === 'gate') {
       parentLogicNode.gateChildren = parentLogicNode.gateChildren.filter((child) => child !== nodeName);
+      checkToDeleteNode(nodeName);
     }
     if (type === 'comp') {
       parentLogicNode.compChildren = parentLogicNode.compChildren.filter((child) => child.diagramName !== nodeName);
     }
+    updateLogicNode(parentLogicNode);
+  }
 
+  const checkToDeleteNode = (nodeName: string) => {
+    const currentReferences = GetModelItemsReferencing(nodeName, MainItemTypes.LogicNode);
+    console.log(currentReferences);
+    const nodeToDelete = getLogicNodeByName(nodeName);
+    if (currentReferences.LogicNodeList.length === 1) {
+      deleteLogicNode(nodeToDelete.id);
+    }
+  }
+
+  const DeleteNode = (parentNode: string, nodeName: string) => {
+    const parentLogicNode = getLogicNodeByName(parentNode);
+    const nodeToDelete = getLogicNodeByName(nodeName);
+    deleteLogicNode(nodeToDelete.id);
+
+    parentLogicNode.gateChildren = parentLogicNode.gateChildren.filter((child) => child !== nodeName);
     updateLogicNode(parentLogicNode);
   }
   
@@ -228,8 +250,11 @@ const useLogicNodeTreeDiagram = () => {
         ];
         if (node.data.type === "gate") {
           options.push(
-            { label: 'Remove Gate', action: () => removeNode(parentName, label, 'gate') },
-            { label: 'Delete Gate', action: () => console.log('Delete Gate')}
+            { label: 'Copy', action: () => setCopiedNode(label) },
+            { label: 'Paste', action: () => pasteNode(copiedNode, label), disabled: !copiedNode  },
+            { label: 'Paste (as new)', action: () => pasteNode(copiedNode, label, 'new'), disabled: !copiedNode, isDivider: true  },
+            { label: 'Remove Gate', action: () => removeNode(parentName, label, 'gate')},
+            { label: 'Delete Gate', action: () => DeleteNode(parentName, label)}
           );
         }
         break;
@@ -247,6 +272,42 @@ const useLogicNodeTreeDiagram = () => {
     }
   
     setMenuOptions(options);
+  };
+
+  const pasteNode = (pasteNode: string, nodeToUpdate: string, type?: string) => {
+    const node = getLogicNodeByName(nodeToUpdate);
+    if (node) {
+      if (type === 'new') {
+        const pastedNode = getLogicNodeByName(pasteNode);
+        const gateNodes = logicNodeList.value.filter((node) =>
+          new RegExp(`^Copy of ${pastedNode.name}`).test(node.name)
+        ); // Find all existing logic nodes with the name
+    
+        let newGateNumber = 1;
+        if (gateNodes.length > 0) {
+          const existingNumbers = gateNodes.map((node) => {
+            const numberStr = node.name.match(/\((\d+)\)/);
+            return numberStr ? parseInt(numberStr[1]) : 0;
+          });
+          newGateNumber = Math.max(...existingNumbers) + 1;
+        }
+
+        const newNode: LogicNode = {
+          ...pastedNode,
+          id: uuidv4(),
+          name: `Copy of ${pastedNode.name} (${newGateNumber})`,
+        }
+        createLogicNode(newNode);
+        node.gateChildren = [...node.gateChildren, newNode.name];
+      } else {
+        if (node.gateChildren.includes(pasteNode)) {
+          setNodeExistsAlert(true);
+          return;
+        }
+        node.gateChildren = [...node.gateChildren, pasteNode];
+      }
+      updateLogicNode(node);
+    }
   };
 
   const handleDoubleClick = (type: string, text: string) => {
@@ -327,6 +388,16 @@ const useLogicNodeTreeDiagram = () => {
     }
   }, [logicNodeList.value]);
 
+  useEffect(() => {
+    if (nodeExistsAlert) {
+      const timer = setTimeout(() => {
+        setNodeExistsAlert(false);
+      }, 5000); // 5 seconds
+  
+      return () => clearTimeout(timer);
+    }
+  }, [nodeExistsAlert]);
+
   const handleLoad = useCallback((reactFlowInstance: ReactFlowInstance) => {
     reactFlowInstance.fitView(); // Call fitView after the ReactFlow component has been fully loaded
   }, []);
@@ -341,6 +412,7 @@ const useLogicNodeTreeDiagram = () => {
     editedDescription,
     editingTitle,
     editedTitle,
+    nodeExistsAlert,
     setNodes,
     setEdges,
     onNodesChange,
@@ -355,7 +427,8 @@ const useLogicNodeTreeDiagram = () => {
     onNodeContextMenu,
     closeContextMenu,
     goToDiagram,
-    removeNode
+    removeNode,
+    setNodeExistsAlert
   };
 };
 

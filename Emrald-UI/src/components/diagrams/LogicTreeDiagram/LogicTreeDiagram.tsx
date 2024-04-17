@@ -17,7 +17,7 @@ import TreeNodeComponent from './TreeNodeComponent/TreeNodeComponent.js';
 import ContextMenu from '../../layout/ContextMenu/ContextMenu.js';
 import { TbLogicAnd, TbLogicNot, TbLogicOr } from 'react-icons/tb';
 import DraggableItem from '../../drag-and-drop/DraggableItem.js';
-import { Typography } from '@mui/material';
+import { Alert, Typography } from '@mui/material';
 import useExpandCollapse from './useExpandCollapse.js';
 
 interface LogicNodeTreeDiagramProps {
@@ -33,13 +33,15 @@ const LogicNodeTreeDiagram: React.FC<LogicNodeTreeDiagramProps> = ({ logicNode }
     loading,
     menu,
     menuOptions,
+    nodeExistsAlert,
     onNodeContextMenu,
     closeContextMenu,
     buildLogicTree,
     onNodesChange, 
     onEdgesChange,
     handleLoad,
-    setNodes
+    setNodes,
+    setNodeExistsAlert
   } = useLogicNodeTreeDiagram();
 
   const treeWidth = 240;
@@ -123,6 +125,14 @@ const LogicNodeTreeDiagram: React.FC<LogicNodeTreeDiagramProps> = ({ logicNode }
               options={menuOptions}
             />
           )}
+            <Alert 
+              severity="warning" 
+              sx={{ position: 'absolute', top: '35px', right: 0, zIndex: 9999, opacity: nodeExistsAlert ? 1 : 0,
+              transition: 'opacity 0.4s ease-in-out', }} 
+              onClose={() => setNodeExistsAlert(false)}
+            >
+              Node already exists within the current gate
+            </Alert>
           </div>
         )}
       </Box>

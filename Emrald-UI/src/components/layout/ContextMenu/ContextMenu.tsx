@@ -7,6 +7,7 @@ export interface Option {
   label: string;
   action: () => void; // Pass context values as parameters
   isDivider?: boolean; // Whether to render a divider after this option
+  disabled?: boolean;
 }
 
 interface ContextMenuProps {
@@ -38,6 +39,7 @@ const ContextMenu: React.FC<ContextMenuProps> = ({
           <MenuItem
             key={index}
             divider={option.isDivider}
+            disabled={option.disabled}
             onClick={() => {
               option.action();
               handleClose();
