@@ -1,0 +1,3 @@
+Make sure the MakeJSFromTS.bat and ScripttoExportCS.bat are both executed on the new build of this project. 
+This is done by adding the following line to the pre-build event: call "$(ProjectDir)../Emrald-UI/src/utils/MakeJSFromTS.bat" & call "$(ProjectDir)../Emrald-UI/src/utils/ScriptToExportForCSharp.bat" "$(ProjectDir)/Upgrade/UI_UpgradeBundle.js"
+The upgrade of a project uses the same code as the UI.

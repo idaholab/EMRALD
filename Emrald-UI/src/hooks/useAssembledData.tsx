@@ -5,8 +5,9 @@ import { useLogicNodeContext } from '../contexts/LogicNodeContext';
 import { useModelDetailsContext } from '../contexts/ModelDetailsContext';
 import { useStateContext } from '../contexts/StateContext';
 import { useVariableContext } from '../contexts/VariableContext';
-import { Upgrade } from '../utils/Upgrades/upgrade';
+import { upgradeModel } from '../utils/Upgrades/upgrade';
 import { appData, useAppData } from './useAppData';
+import { EMRALD_Model, EMRALD_SchemaVersion } from '../types/EMRALD_Model';
 // ... import other context hooks
 
 export function useAssembledData() {
@@ -59,11 +60,11 @@ export function useAssembledData() {
           jsonData = jsonContent;
         }
     
-        const upgrade = new Upgrade(JSON.stringify(jsonData));
-        const upgradeSuccessful = upgrade.upgrade(3.0); // upgrade to version 3.0
-
-        if (upgradeSuccessful) {
-          appData.value = JSON.parse(upgrade.newModelStr);
+        //const upgrade = new Upgrade(JSON.stringify(jsonData));
+        //const upgradeSuccessful = upgrade.upgrade(3.0); // upgrade to version 3.0
+        const newModel : EMRALD_Model | null = upgradeModel(EMRALD_SchemaVersion, JSON.stringify(jsonData));
+        if (newModel != null) {
+          appData.value = newModel as EMRALD_Model;
           updateName(appData.value.name);
           updateDescription(appData.value.desc);
           updateVersion(appData.value.version);

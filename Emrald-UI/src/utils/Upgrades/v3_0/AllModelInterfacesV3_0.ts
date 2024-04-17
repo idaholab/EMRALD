@@ -112,9 +112,13 @@ export interface EMRALD_Model {
    */
   desc: string
   /**
-   * Version of the EMRALD model
+   * Users version of the model
    */
   version: number
+  /**
+   * EMRALD Scema Version
+   */
+  emraldVersion: number
   /**
    * All the diagrams for the model
    */

@@ -11,6 +11,7 @@ using System.Data;
 using System.IO;
 using MessageDefLib;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Schema;
 
 
 namespace SimulationDAL
@@ -34,6 +35,7 @@ namespace SimulationDAL
   //[DataContract]
   public class EmraldModel : BaseObjInfo
   {
+    public const double SCHEMA_VERSION = 3.0;
     //public dSimulation _Sim = null;
     //protected Diagram _Diagram = null; //TODO remove was added for testing.
     public AllDiagrams allDiagrams = new AllDiagrams();
@@ -125,7 +127,20 @@ namespace SimulationDAL
     {
       SingleNextIDs.Instance.Reset();
       this.rootPath = modelPath;
-      dynamic jsonObj = JsonConvert.DeserializeObject(jsonModel); 
+      dynamic jsonObj = JsonConvert.DeserializeObject(jsonModel);
+      //update the model if needed
+      if((jsonObj.schemaVersion == null) || (jsonObj.schemaVersion < SCHEMA_VERSION) ) 
+      {
+        try
+        {
+          string upgraded = UpgradeModel.UpgradeJSON(jsonModel);
+          jsonObj = JsonConvert.DeserializeObject(jsonModel);
+        }
+        catch (Exception ex)
+        {
+          throw new Exception("Failed to Upgrade old model to v" + SCHEMA_VERSION + ex.Message);
+        }
+      }
       return DeserializeDerived(jsonObj, true, this, false);
     }
 

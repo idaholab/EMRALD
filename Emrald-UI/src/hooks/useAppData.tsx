@@ -1,13 +1,17 @@
 import { useEffect } from 'react';
 import emraldData from '../emraldData.json';
-import { Upgrade } from '../utils/Upgrades/upgrade';
+import { upgradeModel } from '../utils/Upgrades/upgrade';
 import { signal } from '@preact/signals';
-import { EMRALD_Model } from '../types/EMRALD_Model';
+import { EMRALD_Model, EMRALD_SchemaVersion, CreateEmptyEMRALDModel } from '../types/EMRALD_Model';
 
+//TODO ask user if they want to restore or use previous model
 const storedData = localStorage.getItem('appData');
-const upgrade = new Upgrade(JSON.stringify(emraldData));
-upgrade.upgrade(3.0); // upgrade to version 3.0
-export const appData = signal<EMRALD_Model>(storedData ? JSON.parse(storedData) : JSON.parse(upgrade.newModelStr));
+const upgradedModel : EMRALD_Model | null = upgradeModel(EMRALD_SchemaVersion, JSON.stringify(emraldData));
+//use restored model or upgraded model or empty model
+export const appData = signal<EMRALD_Model>(storedData ? JSON.parse(storedData) : upgradedModel ? upgradedModel as EMRALD_Model : CreateEmptyEMRALDModel());
+
+//upgrade.upgrade(3.0); // upgrade to version 3.0
+//export const appData = signal<EMRALD_Model>(storedData ? JSON.parse(storedData) : JSON.parse(upgrade.newModelStr));
 console.log(appData);
 
 export const updateAppData = (newData: any, undoData?: any) => {
