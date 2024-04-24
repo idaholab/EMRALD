@@ -6,6 +6,7 @@ import React, {
 import { Action, NewState } from '../types/Action';
 import { EmraldContextWrapperProps } from './EmraldContextWrapper';
 import { appData } from '../hooks/useAppData';
+import { useComputed } from '@preact/signals-react';
 
 interface ActionContextType {
   actions: Action[];
@@ -41,6 +42,7 @@ export function useActionContext() {
 
 const ActionContextProvider: React.FC<EmraldContextWrapperProps> = ({ children }) => {
   const [actions, setActions] = useState<Action[]>(JSON.parse(JSON.stringify(appData.value.ActionList)));
+  const actionsList = useComputed(() => appData.value.ActionList);
   
   const createAction = (newAction: Action) => {
     const updatedActionList = [...actions, newAction ];
@@ -48,7 +50,7 @@ const ActionContextProvider: React.FC<EmraldContextWrapperProps> = ({ children }
   };
 
   const updateAction = (updatedAction: Action) => {
-    const updatedActionList = actions.map((item) =>
+    const updatedActionList = actionsList.value.map((item) =>
       item.id === updatedAction.id ? updatedAction : item,
     );
     setActions(updatedActionList);
@@ -56,17 +58,17 @@ const ActionContextProvider: React.FC<EmraldContextWrapperProps> = ({ children }
 
   const deleteAction = (actionId: string | undefined) => {
     if (!actionId) { return; }
-    const updatedActionList = actions.filter(
+    const updatedActionList = actionsList.value.filter(
       (item) => item.id !== actionId,
     );
     setActions(updatedActionList);
   };
 
   const getActionByActionId = (actionId: string | null) => {
-    return actions.find((action) => action.id === actionId) || emptyAction;
+    return actionsList.value.find((action) => action.id === actionId) || emptyAction;
   };
   const getActionByActionName = (actionName: string) => {
-    return actions.find((action) => action.name === actionName) || emptyAction;
+    return actionsList.value.find((action) => action.name === actionName) || emptyAction;
   };
 
   const addNewStateToAction = (action: Action, newState: NewState) => {
@@ -77,7 +79,7 @@ const ActionContextProvider: React.FC<EmraldContextWrapperProps> = ({ children }
   }
 
   const getNewStatesByActionName = (actionName: string) => {
-    const action = actions.find((action) => action.name === actionName);
+    const action = actionsList.value.find((action) => action.name === actionName);
     if (action) {
       return action.newStates || [];
     }

@@ -8,6 +8,7 @@ import { EmraldContextWrapperProps } from './EmraldContextWrapper';
 import { Event } from '../types/Event';
 import { Action } from '../types/Action';
 import { appData, updateAppData } from '../hooks/useAppData';
+import { useComputed } from '@preact/signals-react';
 
 interface StateContextType {
   states: State[];
@@ -57,6 +58,7 @@ export function useStateContext() {
 
 const StateContextProvider: React.FC<EmraldContextWrapperProps> = ({ children }) => {
   const [states, setStates] = useState<State[]>(JSON.parse(JSON.stringify(appData.value.StateList)));
+  const statesList = useComputed(() => appData.value.StateList);
 
   // Create, Delete, Update individual States
   const createState = (newState: State) => {
@@ -65,7 +67,7 @@ const StateContextProvider: React.FC<EmraldContextWrapperProps> = ({ children })
   };
 
   const updateState = (updatedState: State) => {
-    const updatedStates = states.map((item) =>
+    const updatedStates = statesList.value.map((item) =>
       item.id === updatedState.id
         ? updatedState
         : item,
@@ -116,19 +118,19 @@ const StateContextProvider: React.FC<EmraldContextWrapperProps> = ({ children })
 
   const deleteState = (stateId: string | undefined) => {
     if (!stateId) { return; }
-    const updatedStates = states.filter(
+    const updatedStates = statesList.value.filter(
       (item) => item.id !== stateId,
     );
     setStates(updatedStates);
   };
 
   const getStateByStateId = (stateId: string | null): State => {
-    const state = states.find((stateItem) => stateItem.id === stateId);
+    const state = statesList.value.find((stateItem) => stateItem.id === stateId);
     return state || emptyState;
   };
 
   const getStateByStateName = (stateName: string): State => {
-    const state = states.find((stateItem) => stateItem.name === stateName);
+    const state = statesList.value.find((stateItem) => stateItem.name === stateName);
     return state || emptyState;
   };
 

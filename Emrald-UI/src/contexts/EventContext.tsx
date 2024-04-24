@@ -6,6 +6,7 @@ import React, {
 import { Event } from '../types/Event';
 import { EmraldContextWrapperProps } from './EmraldContextWrapper';
 import { appData } from '../hooks/useAppData';
+import { useComputed } from '@preact/signals-react';
 
 interface EventContextType {
   events: Event[];
@@ -39,6 +40,7 @@ export function useEventContext() {
 
 const EventContextProvider: React.FC<EmraldContextWrapperProps> = ({ children }) => {
   const [events, setEvents] = useState<Event[]>(JSON.parse(JSON.stringify(appData.value.EventList)));
+  const eventsList = useComputed(() => appData.value.EventList);
 
   const createEvent = (newEvent: Event) => {
     const updatedEventList = [...events, newEvent ];
@@ -46,7 +48,7 @@ const EventContextProvider: React.FC<EmraldContextWrapperProps> = ({ children })
   };
 
   const updateEvent = (updatedEvent: Event) => {
-    const updatedEventList = events.map((item) =>
+    const updatedEventList = eventsList.value.map((item) =>
       item.id === updatedEvent.id ? updatedEvent : item,
     );
     setEvents(updatedEventList);
@@ -54,14 +56,14 @@ const EventContextProvider: React.FC<EmraldContextWrapperProps> = ({ children })
 
   const deleteEvent = (eventId: string | undefined) => {
     if (!eventId) { return; }
-    const updatedEventList = events.filter(
+    const updatedEventList = eventsList.value.filter(
       (item) => item.id !== eventId,
     );
     setEvents(updatedEventList);
   };
 
   const getEventByEventName = (eventName: string) => {
-    return events.find((eventItem) => eventItem.name === eventName);
+    return eventsList.value.find((eventItem) => eventItem.name === eventName);
   };
 
     // Open New, Merge, and Clear Event List

@@ -32,7 +32,7 @@ const useEmraldDiagram = () => {
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge[]>([]);
   const [loading, setLoading] = useState(true);
-  const { diagrams, getDiagramByDiagramName } = useDiagramContext();
+  const { diagramList, getDiagramByDiagramName } = useDiagramContext();
   const {
     getActionByActionId,
     getActionByActionName,
@@ -247,7 +247,7 @@ const useEmraldDiagram = () => {
   useEffect(() => {
     getStateNodes();
     setLoading(false);
-  }, [currentDiagram.value, diagrams]);
+  }, [currentDiagram.value, diagramList.value]);
 
   return {
     nodes,

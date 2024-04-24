@@ -5,12 +5,14 @@ import { useLogicNodeContext } from '../contexts/LogicNodeContext';
 import { useModelDetailsContext } from '../contexts/ModelDetailsContext';
 import { useStateContext } from '../contexts/StateContext';
 import { useVariableContext } from '../contexts/VariableContext';
+import { EMRALD_Model } from '../types/EMRALD_Model';
 import { Upgrade } from '../utils/Upgrades/upgrade';
-import { appData, useAppData } from './useAppData';
+import { updateAppData } from './useAppData';
+// import { appData, useAppData } from './useAppData';
 // ... import other context hooks
 
 export function useAssembledData() {
-  const { updateAppData } = useAppData();
+  // const { updateAppData } = useAppData();
   const {
     id,
     name,
@@ -32,7 +34,7 @@ export function useAssembledData() {
   } = useLogicNodeContext();
   const { actions, clearActionList } = useActionContext();
   const { events, clearEventList, newEventList } = useEventContext();
-  const { states, clearStateList } = useStateContext();
+  const { states, clearStateList, newStateList } = useStateContext();
   const { variables, clearVariableList, newVariableList } = useVariableContext();
   // ... get data from other contexts
 
@@ -63,15 +65,17 @@ export function useAssembledData() {
         const upgradeSuccessful = upgrade.upgrade(3.0); // upgrade to version 3.0
 
         if (upgradeSuccessful) {
-          appData.value = JSON.parse(upgrade.newModelStr);
-          updateName(appData.value.name);
-          updateDescription(appData.value.desc);
-          updateVersion(appData.value.version);
-          newDiagramList(appData.value.DiagramList || []);
-          newLogicNodeList(appData.value.LogicNodeList || []);
-          newEventList(appData.value.EventList || []);
-          newVariableList(appData.value.VariableList || []);
-          // updateAppData(appData.value);
+          const openedModel: EMRALD_Model = JSON.parse(upgrade.newModelStr);
+          // appData.value = JSON.parse(upgrade.newModelStr);
+          updateName(openedModel.name);
+          updateDescription(openedModel.desc);
+          updateVersion(openedModel.version);
+          newDiagramList(openedModel.DiagramList || []);
+          newLogicNodeList(openedModel.LogicNodeList || []);
+          newStateList(openedModel.StateList || []);
+          newEventList(openedModel.EventList || []);
+          newVariableList(openedModel.VariableList || []);
+          updateAppData(openedModel);
         } else {
           console.error('Error parsing JSON: Upgrade not successful');
         }
