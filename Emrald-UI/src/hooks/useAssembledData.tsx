@@ -32,7 +32,7 @@ export function useAssembledData() {
     newLogicNodeList,
     mergeLogicNodeList,
   } = useLogicNodeContext();
-  const { actions, clearActionList } = useActionContext();
+  const { actions, clearActionList, newActionList } = useActionContext();
   const { events, clearEventList, newEventList } = useEventContext();
   const { states, clearStateList, newStateList } = useStateContext();
   const { variables, clearVariableList, newVariableList } = useVariableContext();
@@ -72,6 +72,7 @@ export function useAssembledData() {
           updateVersion(openedModel.version);
           newDiagramList(openedModel.DiagramList || []);
           newLogicNodeList(openedModel.LogicNodeList || []);
+          newActionList(openedModel.ActionList || []);
           newStateList(openedModel.StateList || []);
           newEventList(openedModel.EventList || []);
           newVariableList(openedModel.VariableList || []);

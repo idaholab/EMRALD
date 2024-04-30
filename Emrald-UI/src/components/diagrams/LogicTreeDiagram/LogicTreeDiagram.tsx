@@ -44,8 +44,8 @@ const LogicNodeTreeDiagram: React.FC<LogicNodeTreeDiagramProps> = ({ logicNode }
     setNodeExistsAlert
   } = useLogicNodeTreeDiagram();
 
-  const treeWidth = 240;
-  const treeHeight = 150;
+  const treeWidth = 180;
+  const treeHeight = 140;
 
   const { nodes: visibleNodes, edges: visibleEdges } = useExpandCollapse(
     nodes,

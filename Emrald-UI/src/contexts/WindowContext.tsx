@@ -90,7 +90,7 @@ export const WindowProvider: React.FC<WindowProviderProps> = ({ children }) => {
       id: uuidv4(),
       title,
       isOpen: true,
-      initialPosition: position || { x: 100, y: 50, width: 600, height: 700 },
+      initialPosition: position || { x: 100, y: 50, width: 1000, height: 700 },
       minimized: false,
       maximized: false,
       content,

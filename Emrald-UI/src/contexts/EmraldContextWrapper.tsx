@@ -9,6 +9,7 @@ import ActionContextProvider from './ActionContext';
 import EventContextProvider from './EventContext';
 import StateContextProvider from './StateContext';
 import VariableContextProvider from './VariableContext';
+import ActionFormContextProvider from '../components/forms/ActionForm/ActionFormContext';
 
 export interface EmraldContextWrapperProps {
   // appData: any;
@@ -27,7 +28,9 @@ const EmraldContextWrapper: React.FC<EmraldContextWrapperProps> = ({ appData, up
                 <EventContextProvider appData={appData} updateAppData={updateAppData}>
                   <StateContextProvider appData={appData} updateAppData={updateAppData}>
                     <VariableContextProvider appData={appData} updateAppData={updateAppData}>
+                      <ActionFormContextProvider>
                       {children}
+                      </ActionFormContextProvider>
                     </VariableContextProvider>
                   </StateContextProvider>
                 </EventContextProvider>

@@ -1,65 +1,71 @@
 import React from 'react';
 import { useEffect, useState } from 'react';
-import { useSignal } from '@preact/signals-react';
 import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
+import Checkbox from '@mui/material/Checkbox';
+import FormControlLabel from '@mui/material/FormControlLabel';
 import MainDetailsForm from '../MainDetailsForm';
-import { v4 as uuidv4 } from 'uuid';
 import { Action } from '../../../types/Action';
-import { ActionType, MainItemTypes } from '../../../types/ItemTypes';
-import { emptyAction, useActionContext } from '../../../contexts/ActionContext';
 import { useWindowContext } from '../../../contexts/WindowContext';
+import ActionDropTarget from '../../drag-and-drop/ActionDroppable';
+import { useActionFormContext } from './ActionFormContext';
+import { MainItemTypes } from '../../../types/ItemTypes';
+import { Editor } from '@monaco-editor/react';
+import FormControl from '@mui/material/FormControl';
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
+import { useVariableContext } from '../../../contexts/VariableContext';
+import InputLabel from '@mui/material/InputLabel';
+import FormGroup from '@mui/material/FormGroup';
+import ChangeVarValue from './FormFieldsByType/ChangeVarValue';
+import RunApplication from './FormFieldsByType/RunApplication';
+import Transition from './FormFieldsByType/Transition';
 
 interface ActionFormProps {
   actionData?: Action;
 }
 
-const ActionForm: React.FC<ActionFormProps> = ({ actionData }) => {
-  const { handleClose } = useWindowContext();
-  const { updateAction, createAction } = useActionContext();
-  const action = useSignal<Action>(actionData || emptyAction);
-  const [name, setName] = useState<string>(actionData?.name || '');
-  const [desc, setDesc] = useState<string>(actionData?.desc || '');
-  const [actType, setActType] = useState<ActionType>(
-    actionData?.actType || 'atTransition',
-  );
-  const actionTypeOptions = [
-    { value: 'atTransition', label: 'Transition' },
-    { value: 'CngVar_test', label: 'Change Var Value' },
-    { value: 'at3DSimMsg', label: 'Ext. Sim Message' },
-    { value: 'atRunExtApp', label: 'Run Application' },
-  ];
+export interface NewStateItem {
+  id: string;
+  toState: string;
+  prob: number;
+  varProb?: string | null | undefined;
+  failDesc?: string;
+  remaining: boolean;
+  probType: string;
+}
 
-  const handleSave = () => {
-    actionData
-      ? updateAction({
-          ...action.value,
-          name,
-          desc,
-          actType,
-        })
-      : createAction({
-          ...action.value,
-          id: uuidv4(),
-          name,
-          desc,
-          actType,
-        });
-    handleClose();
-  };
+const ActionForm: React.FC<ActionFormProps> = ({ actionData }) => {
+  const { 
+    name,
+    desc,
+    actType,
+    mutuallyExclusive,
+    variableName,
+    codeVariables,
+    actionTypeOptions,
+    hasError,
+    setName,
+    setDesc,
+    setActType,
+    setMutuallyExclusive,
+    setVariableName,
+    addToUsedVariables,
+    handleSave,
+    initializeForm
+  } = useActionFormContext();
+  const { variableList } = useVariableContext();
 
   useEffect(() => {
-    if (actionData) {
-      setActType(actionData.actType || '');
-      setName(actionData.name || '');
-      setDesc(actionData.desc || '');
-    }
-  }, [actionData]);
+    initializeForm(actionData);
+  },[]);
+
+  const { handleClose } = useWindowContext();
 
   return (
-    <Container maxWidth="sm">
+    <Box sx={{px: 3}}>
       <Typography variant="h5" my={3}>
         {actionData ? `Edit` : `Create`} Action
       </Typography>
@@ -68,17 +74,40 @@ const ActionForm: React.FC<ActionFormProps> = ({ actionData }) => {
           itemType={MainItemTypes.Action}
           type={actType}
           setType={setActType}
+          typeDisabled={actionData?.actType !== undefined}
           typeOptions={actionTypeOptions}
           name={name}
           setName={setName}
           desc={desc}
           setDesc={setDesc}
         />
-        <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 5 }}>
+
+        {actType === 'atTransition' ? (
+          <Transition />
+        ) : (
+          <></>
+        )}
+        {actType === 'atCngVarVal' ? (
+          <ChangeVarValue />
+        ) : (
+          <></>
+        )}
+        {actType === 'at3DSimMsg' ? (
+          <>Add 3D Sim Form Fields</>
+        ) : (
+          <></>
+        )}
+        {actType === 'atRunExtApp' ? (
+          <RunApplication />
+        ) : (
+          <></>
+        )}
+        <Box sx={{ display: 'flex', justifyContent: 'flex-end', py: 5 }}>
           <Button
             variant="contained"
             color="primary"
             sx={{ mr: 2 }}
+            disabled={hasError}
             onClick={() => handleSave()}
           >
             Save
@@ -92,7 +121,7 @@ const ActionForm: React.FC<ActionFormProps> = ({ actionData }) => {
           </Button>
         </Box>
       </form>
-    </Container>
+    </Box>
   );
 };
 

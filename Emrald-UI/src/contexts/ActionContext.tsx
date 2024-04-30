@@ -6,10 +6,11 @@ import React, {
 import { Action, NewState } from '../types/Action';
 import { EmraldContextWrapperProps } from './EmraldContextWrapper';
 import { appData } from '../hooks/useAppData';
-import { useComputed } from '@preact/signals-react';
+import { ReadonlySignal, useComputed } from '@preact/signals-react';
 
 interface ActionContextType {
   actions: Action[];
+  actionsList: ReadonlySignal<Action[]>;
   createAction: (action: Action) => void;
   updateAction: (action: Action) => void;
   deleteAction: (actionId: string | undefined) => void;
@@ -17,6 +18,7 @@ interface ActionContextType {
   getActionByActionId: (actionId: string | null) => Action;
   getNewStatesByActionName: (actionName: string) => NewState[];
   addNewStateToAction: (action: Action, newState: NewState) => void;
+  newActionList: (newActionList: Action[]) => void;
   clearActionList: () => void;
 }
 
@@ -86,6 +88,11 @@ const ActionContextProvider: React.FC<EmraldContextWrapperProps> = ({ children }
     return [];
   };
 
+  // Open New, Merge, and Clear Diagram List
+  const newActionList = (newActionList: Action[]) => {
+    setActions(newActionList);
+  };
+
   const clearActionList = () => {
     setActions([]);
   }
@@ -94,6 +101,7 @@ const ActionContextProvider: React.FC<EmraldContextWrapperProps> = ({ children }
     <ActionContext.Provider
       value={{
         actions,
+        actionsList,
         createAction,
         updateAction,
         deleteAction,
@@ -101,6 +109,7 @@ const ActionContextProvider: React.FC<EmraldContextWrapperProps> = ({ children }
         getActionByActionId,
         getNewStatesByActionName,
         addNewStateToAction,
+        newActionList,
         clearActionList
       }}
     >

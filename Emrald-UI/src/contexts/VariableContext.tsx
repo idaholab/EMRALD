@@ -8,9 +8,11 @@ import React, {
 import { Variable } from '../types/Variable';
 import { EmraldContextWrapperProps } from './EmraldContextWrapper';
 import { appData } from '../hooks/useAppData';
+import { ReadonlySignal, useComputed } from '@preact/signals-react';
 
 interface VariableContextType {
   variables: Variable[];
+  variableList: ReadonlySignal<Variable[]>;
   createVariable: (Variable: Variable) => void;
   updateVariable: (Variable: Variable) => void;
   deleteVariable: (VariableId: string | undefined) => void;
@@ -34,16 +36,7 @@ export function useVariableContext() {
 
 const VariableContextProvider: React.FC<EmraldContextWrapperProps> = ({ children }) => {
   const [variables, setVariables] = useState<Variable[]>(JSON.parse(JSON.stringify(appData.value.VariableList)));
-
-  // Memoize the value of `Variables` to avoid unnecessary re-renders
-  // const variables = useMemo(
-  //   () => variableList.map(({ Variable }) => Variable) as Variable[],
-  //   [variableList],
-  // );
-
-  // useEffect(() => {
-  //   setVariableList(appData.VariableList as VariableList);
-  // }, [appData]);
+  const variableList = useComputed(() => appData.value.VariableList);
 
   const createVariable = (newVariable: Variable) => {
     const updatedVariableList = [...variables, newVariable];
@@ -68,7 +61,7 @@ const VariableContextProvider: React.FC<EmraldContextWrapperProps> = ({ children
   };
 
   // Open New, Merge, and Clear Event List
-  const newVariableList = (newVariableList: VariableList) => {
+  const newVariableList = (newVariableList: Variable[]) => {
     setVariables(newVariableList);
   };
 
@@ -82,6 +75,7 @@ const VariableContextProvider: React.FC<EmraldContextWrapperProps> = ({ children
     <VariableContext.Provider
       value={{
         variables,
+        variableList,
         createVariable,
         updateVariable,
         deleteVariable,
