@@ -1,27 +1,17 @@
 import React from 'react';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import Button from '@mui/material/Button';
-import Container from '@mui/material/Container';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
-import Checkbox from '@mui/material/Checkbox';
-import FormControlLabel from '@mui/material/FormControlLabel';
 import MainDetailsForm from '../MainDetailsForm';
 import { Action } from '../../../types/Action';
 import { useWindowContext } from '../../../contexts/WindowContext';
-import ActionDropTarget from '../../drag-and-drop/ActionDroppable';
 import { useActionFormContext } from './ActionFormContext';
 import { MainItemTypes } from '../../../types/ItemTypes';
-import { Editor } from '@monaco-editor/react';
-import FormControl from '@mui/material/FormControl';
-import Select from '@mui/material/Select';
-import MenuItem from '@mui/material/MenuItem';
-import { useVariableContext } from '../../../contexts/VariableContext';
-import InputLabel from '@mui/material/InputLabel';
-import FormGroup from '@mui/material/FormGroup';
 import ChangeVarValue from './FormFieldsByType/ChangeVarValue';
 import RunApplication from './FormFieldsByType/RunApplication';
 import Transition from './FormFieldsByType/Transition';
+import ExtSimulation from './FormFieldsByType/ExtSimulation';
 
 interface ActionFormProps {
   actionData?: Action;
@@ -42,21 +32,14 @@ const ActionForm: React.FC<ActionFormProps> = ({ actionData }) => {
     name,
     desc,
     actType,
-    mutuallyExclusive,
-    variableName,
-    codeVariables,
     actionTypeOptions,
     hasError,
     setName,
     setDesc,
     setActType,
-    setMutuallyExclusive,
-    setVariableName,
-    addToUsedVariables,
     handleSave,
     initializeForm
   } = useActionFormContext();
-  const { variableList } = useVariableContext();
 
   useEffect(() => {
     initializeForm(actionData);
@@ -93,7 +76,7 @@ const ActionForm: React.FC<ActionFormProps> = ({ actionData }) => {
           <></>
         )}
         {actType === 'at3DSimMsg' ? (
-          <>Add 3D Sim Form Fields</>
+          <ExtSimulation />
         ) : (
           <></>
         )}

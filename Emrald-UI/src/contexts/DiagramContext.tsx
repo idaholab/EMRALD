@@ -47,7 +47,7 @@ export function useDiagramContext() {
 }
 
 const DiagramContextProvider: React.FC<EmraldContextWrapperProps> = ({ children }) => {
-  const [diagrams, setDiagrams] = useState<Diagram[]>(appData.value.DiagramList);
+  const [diagrams, setDiagrams] = useState<Diagram[]>(appData.value.DiagramList.sort((a,b) => a.name.localeCompare(b.name)));
   const diagramList = useComputed(() => appData.value.DiagramList);
 
   // Create, Delete, Update individual diagrams

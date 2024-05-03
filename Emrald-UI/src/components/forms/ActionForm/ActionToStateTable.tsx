@@ -55,7 +55,9 @@ const ActionToStateTable: React.FC = () => {
   const {
     newStateItems,
     mutuallyExclusive,
+    hasError,
     handleProbChange,
+    handleProbBlur,
     handleProbTypeChange,
     handleRemainingChange,
     handleSelectChange,
@@ -67,14 +69,27 @@ const ActionToStateTable: React.FC = () => {
     const hasVarProb = newStateItems.some(
       (item) => item.probType === 'variable',
     );
-
+  
     if (hasVarProb) {
       return 'Calculated at runtime';
     } else {
+      // Check if all prob values are valid numbers
+      const allProbValuesAreNumbers = newStateItems.every(
+        (item) => typeof item.prob === 'number' && !isNaN(item.prob)
+      );
+  
+      if (!allProbValuesAreNumbers) {
+        return 'Unable to calculate';
+      }
+  
       const sumOfProbs = newStateItems
-        .filter((item) => item.prob !== -1)
-        .reduce((acc, item) => acc + item.prob, 0);
+        .filter((item) => typeof item.prob === 'number' && item.prob !== -1)
+        .reduce((acc, item) => acc + (item.prob as number), 0);
+  
       const remainingProb = 1 - sumOfProbs;
+      if (remainingProb > 1) { 
+        return 'Invalid Probability';
+      }
       const roundedProb = Math.round(remainingProb * 1e10) / 1e10;
       const formattedProb = Number.isInteger(roundedProb)
         ? roundedProb.toFixed(0)
@@ -94,7 +109,7 @@ const ActionToStateTable: React.FC = () => {
             <StyledTableCell sx={{ fontWeight: 'bold' }}>
               Fixed Value or Variable
             </StyledTableCell>
-            <StyledTableCell sx={{ fontWeight: 'bold' }}>Prob</StyledTableCell>
+            <StyledTableCell sx={{ fontWeight: 'bold' }}>Probability</StyledTableCell>
             <StyledTableCell sx={{ fontWeight: 'bold' }}>
               Command
             </StyledTableCell>
@@ -155,34 +170,51 @@ const ActionToStateTable: React.FC = () => {
                           {calculateProb()}
                         </Typography>
                       ) : (
+                        // <StyledTextField
+                        //   value={item.prob}
+                        //   type="number"
+                        //   disabled={item.prob === -1}
+                        //   id="prob value"
+                        //   size="small"
+                        //   onChange={(e) => handleProbChange(e, item)}
+                        //   inputProps={{
+                        //     step: null,
+                        //     min: 0,
+                        //     max: 1,
+                        //     style: {
+                        //       WebkitTextFillColor:
+                        //         item.prob === -1 ? 'transparent' : 'black',
+                        //     }
+                        //   }}
+                        //   error={
+                        //     (!item.remaining &&
+                        //       (item.prob < 0 || item.prob > 1)) ||
+                        //     isNaN(item.prob)
+                        //   }
+                        //   helperText={
+                        //     !item.remaining && (item.prob < 0 || item.prob > 1)
+                        //       ? 'Invalid value'
+                        //       : isNaN(item.prob)
+                        //       ? 'Must have a value'
+                        //       : ''
+                        //   }
+                        // />
+
                         <StyledTextField
-                          value={item.prob}
-                          type="number"
-                          disabled={item.prob === -1}
-                          id="prob value"
-                          size="small"
-                          onChange={(e) => handleProbChange(e, item)}
-                          inputProps={{
-                            step: null,
-                            min: 0,
-                            max: 1,
-                            style: {
-                              WebkitTextFillColor:
-                                item.prob === -1 ? 'transparent' : 'black',
-                            }
-                          }}
-                          error={
-                            (!item.remaining &&
-                              (item.prob < 0 || item.prob > 1)) ||
-                            isNaN(item.prob)
-                          }
-                          helperText={
-                            !item.remaining && (item.prob < 0 || item.prob > 1)
-                              ? 'Invalid value'
-                              : isNaN(item.prob)
-                              ? 'Must have a value'
-                              : ''
-                          }
+                        value={item.prob}
+                        type="text" // Change type to text
+                        disabled={item.prob === -1}
+                        id="prob value"
+                        size="small"
+                        onChange={(e) => handleProbChange(e, item)}
+                        onBlur={() => handleProbBlur(item)}
+                        inputProps={{
+                          style: {
+                            WebkitTextFillColor: item.prob === -1 ? 'transparent' : 'black',
+                          },
+                        }}
+                        error={hasError}
+                        helperText={hasError ? 'Invalid value' : ''}
                         />
                       )}
                     </Box>

@@ -41,8 +41,8 @@ const ChangeVarValue = () => {
           ))}
         </Select>
       </FormControl>
-      <Box sx={{ mt: 3, display: 'flex', justifyContent: 'space-between' }}>
-        <Box sx={{ flex: 1, mr: 3 }}>
+      <Box sx={{ mt: 3, display: 'flex', justifyContent: 'space-between', flex: 1 }}>
+        <Box sx={{ flex: 1, mr: 3, minWidth: '340px' }}>
           <Typography sx={{ mb: 1 }} fontWeight={600}>
             New Value Code (c#)<br></br>Must return same type as the specified
             variable

@@ -1,6 +1,7 @@
 import { useActionContext } from '../contexts/ActionContext';
 import { useDiagramContext } from '../contexts/DiagramContext';
 import { useEventContext } from '../contexts/EventContext';
+import { useExtSimContext } from '../contexts/ExtSimContext';
 import { useLogicNodeContext } from '../contexts/LogicNodeContext';
 import { useModelDetailsContext } from '../contexts/ModelDetailsContext';
 import { useStateContext } from '../contexts/StateContext';
@@ -36,6 +37,7 @@ export function useAssembledData() {
   const { events, clearEventList, newEventList } = useEventContext();
   const { states, clearStateList, newStateList } = useStateContext();
   const { variables, clearVariableList, newVariableList } = useVariableContext();
+  const { newExtSimList } = useExtSimContext();
   // ... get data from other contexts
 
   const newProject = () => {
@@ -76,6 +78,7 @@ export function useAssembledData() {
           newStateList(openedModel.StateList || []);
           newEventList(openedModel.EventList || []);
           newVariableList(openedModel.VariableList || []);
+          newExtSimList(openedModel.ExtSimList || []);
           updateAppData(openedModel);
         } else {
           console.error('Error parsing JSON: Upgrade not successful');

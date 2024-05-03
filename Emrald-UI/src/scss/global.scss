@@ -13,3 +13,11 @@ body {
     height: 100vh;
   }
 }
+
+.custom-duration-control.focused >.react-duration-control-fieldset {
+  border-color: #008080 !important;
+}
+
+.custom-duration-control.focused >.react-duration-control-fieldset>.react-duration-control-label {
+  color: #008080 !important;
+}

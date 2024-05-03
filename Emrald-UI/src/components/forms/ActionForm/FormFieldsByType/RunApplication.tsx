@@ -41,7 +41,7 @@ const RunApplication = () => {
         </Select>
       </FormControl> */}
       <Box sx={{ mt: 3, display: 'flex', justifyContent: 'space-between' }}>
-        <Box sx={{ flex: 1, mr: 3 }}>
+        <Box sx={{ flex: 1, mr: 3, minWidth: '340px' }}>
           <Box sx={{display: 'flex', flexDirection: 'column'}}>
             <Typography sx={{ mb: 1 }} fontWeight={600}>
               Preprocess Code (c#)

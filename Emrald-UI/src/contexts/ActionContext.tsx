@@ -5,8 +5,11 @@ import React, {
 } from 'react';
 import { Action, NewState } from '../types/Action';
 import { EmraldContextWrapperProps } from './EmraldContextWrapper';
-import { appData } from '../hooks/useAppData';
+import { appData, updateAppData } from '../hooks/useAppData';
 import { ReadonlySignal, useComputed } from '@preact/signals-react';
+import { EMRALD_Model } from '../types/EMRALD_Model';
+import { MainItemTypes } from '../types/ItemTypes';
+import { updateModelAndReferences } from '../utils/UpdateModel';
 
 interface ActionContextType {
   actions: Action[];
@@ -43,19 +46,24 @@ export function useActionContext() {
 }
 
 const ActionContextProvider: React.FC<EmraldContextWrapperProps> = ({ children }) => {
-  const [actions, setActions] = useState<Action[]>(JSON.parse(JSON.stringify(appData.value.ActionList)));
+  const [actions, setActions] = useState<Action[]>(JSON.parse(JSON.stringify(appData.value.ActionList.sort((a,b) => a.name.localeCompare(b.name)))));
   const actionsList = useComputed(() => appData.value.ActionList);
   
   const createAction = (newAction: Action) => {
-    const updatedActionList = [...actions, newAction ];
-    setActions(updatedActionList);
+    const updatedActions = [...actions, newAction ];
+    appData.value.ActionList = updatedActions;
+    updateAppData(appData.value);
+    setActions(updatedActions);
   };
 
-  const updateAction = (updatedAction: Action) => {
-    const updatedActionList = actionsList.value.map((item) =>
-      item.id === updatedAction.id ? updatedAction : item,
-    );
-    setActions(updatedActionList);
+  const updateAction = async (updatedAction: Action) => {
+    // const updatedActionList = actionsList.value.map((item) =>
+    //   item.id === updatedAction.id ? updatedAction : item,
+    // );
+
+    var updatedModel : EMRALD_Model = await updateModelAndReferences(updatedAction, MainItemTypes.Action);
+    updateAppData(JSON.parse(JSON.stringify(updatedModel)));
+    setActions(updatedModel.ActionList);
   };
 
   const deleteAction = (actionId: string | undefined) => {

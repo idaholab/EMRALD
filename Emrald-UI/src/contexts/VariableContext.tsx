@@ -35,7 +35,7 @@ export function useVariableContext() {
 }
 
 const VariableContextProvider: React.FC<EmraldContextWrapperProps> = ({ children }) => {
-  const [variables, setVariables] = useState<Variable[]>(JSON.parse(JSON.stringify(appData.value.VariableList)));
+  const [variables, setVariables] = useState<Variable[]>(JSON.parse(JSON.stringify(appData.value.VariableList.sort((a,b) => a.name.localeCompare(b.name)))));
   const variableList = useComputed(() => appData.value.VariableList);
 
   const createVariable = (newVariable: Variable) => {

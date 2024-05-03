@@ -51,7 +51,7 @@ export function useLogicNodeContext() {
 const LogicNodeContextProvider: React.FC<EmraldContextWrapperProps> = ({
   children,
 }) => {
-  const [logicNodes, setLogicNodes] = useState<LogicNode[]>(appData.value.LogicNodeList);
+  const [logicNodes, setLogicNodes] = useState<LogicNode[]>(appData.value.LogicNodeList.sort((a,b) => a.name.localeCompare(b.name)));
   const logicNodeList = useComputed(() => appData.value.LogicNodeList);
 
 

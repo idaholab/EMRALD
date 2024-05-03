@@ -57,7 +57,7 @@ export function useStateContext() {
 }
 
 const StateContextProvider: React.FC<EmraldContextWrapperProps> = ({ children }) => {
-  const [states, setStates] = useState<State[]>(JSON.parse(JSON.stringify(appData.value.StateList)));
+  const [states, setStates] = useState<State[]>(JSON.parse(JSON.stringify(appData.value.StateList.sort((a,b) => a.name.localeCompare(b.name)))));
   const statesList = useComputed(() => appData.value.StateList);
 
   // Create, Delete, Update individual States

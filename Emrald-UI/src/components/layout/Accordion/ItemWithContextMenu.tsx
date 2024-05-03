@@ -9,6 +9,7 @@ import { Action } from '../../../types/Action';
 import { Event } from '../../../types/Event';
 import { State } from '../../../types/State';
 import { Variable } from '../../../types/Variable';
+import { ExtSim } from '../../../types/ExtSim';
 
 interface ItemWithContextMenuProps {
   itemData: Diagram | LogicNode | Action | Event | State | Variable;
@@ -38,7 +39,7 @@ const ItemWithContextMenu: React.FC<ItemWithContextMenuProps> = ({
     setContextMenuOpen(false); // Set the context menu to closed
   };
 
-  const handleRegularClick = (itemData: Diagram | LogicNode | Action | Event | State | Variable) => {
+  const handleRegularClick = (itemData: Diagram | LogicNode | Action | Event | State | Variable | ExtSim) => {
     if (!isContextMenuOpen) {
       // Double click functionality here
       options[0].action(itemData);
@@ -47,7 +48,7 @@ const ItemWithContextMenu: React.FC<ItemWithContextMenuProps> = ({
 
   const handleMenuItemClick = (
     option: Option,
-    itemData: Diagram | LogicNode | Action | Event | State | Variable,
+    itemData: Diagram | LogicNode | Action | Event | State | Variable | ExtSim,
   ) => {
     // Implement functionality based on the selected option
     option.action(itemData);
