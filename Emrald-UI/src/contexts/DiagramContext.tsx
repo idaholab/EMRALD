@@ -16,7 +16,7 @@ interface DiagramContextType {
   diagrams: Diagram[];
   createDiagram: (newDiagram: Diagram) => void;
   updateDiagram: (updatedDiagram: Diagram) => void;
-  updateDiagramDetails: (updatedDiagram: Diagram) => void;
+  // updateDiagramDetails: (updatedDiagram: Diagram) => void;
   deleteDiagram: (diagramId: string | undefined) => void;
   getDiagramByDiagramName: (diagramName: string) => Diagram;
   getDiagramById: (diagramId: string) => Diagram;
@@ -58,14 +58,14 @@ const DiagramContextProvider: React.FC<EmraldContextWrapperProps> = ({ children 
     setDiagrams(updatedDiagrams);
   };
 
-  const updateDiagramDetails = (updatedDiagram: Diagram) => {
-    const updatedDiagrams = diagrams.map((diagram) =>
-      diagram.id === updatedDiagram.id
-        ? updatedDiagram
-        : diagram,
-    );
-    setDiagrams(updatedDiagrams);
-  };
+  // const updateDiagramDetails = (updatedDiagram: Diagram) => {
+  //   const updatedDiagrams = diagrams.map((diagram) =>
+  //     diagram.id === updatedDiagram.id
+  //       ? updatedDiagram
+  //       : diagram,
+  //   );
+  //   setDiagrams(updatedDiagrams);
+  // };
 
   const updateDiagram = async (updatedDiagram: Diagram) => {
     // Rest of your code to update the diagram list
@@ -113,7 +113,7 @@ const DiagramContextProvider: React.FC<EmraldContextWrapperProps> = ({ children 
         diagramList,
         diagrams,
         createDiagram,
-        updateDiagramDetails,
+        // updateDiagramDetails,
         updateDiagram,
         deleteDiagram,
         getDiagramByDiagramName,

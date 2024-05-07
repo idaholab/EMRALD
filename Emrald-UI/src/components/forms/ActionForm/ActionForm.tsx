@@ -9,7 +9,7 @@ import { useWindowContext } from '../../../contexts/WindowContext';
 import { useActionFormContext } from './ActionFormContext';
 import { MainItemTypes } from '../../../types/ItemTypes';
 import ChangeVarValue from './FormFieldsByType/ChangeVarValue';
-import RunApplication from './FormFieldsByType/RunApplication';
+import RunApplication from './FormFieldsByType/RunApplication/RunApplication';
 import Transition from './FormFieldsByType/Transition';
 import ExtSimulation from './FormFieldsByType/ExtSimulation';
 

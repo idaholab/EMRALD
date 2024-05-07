@@ -6,12 +6,10 @@ import {
   MenuItem,
   Box,
   Typography,
-  FormGroup,
-  FormControlLabel,
-  Checkbox,
 } from '@mui/material';
 import { useActionFormContext } from '../ActionFormContext';
 import { useVariableContext } from '../../../../contexts/VariableContext';
+import CodeVariables from '../CodeVariables';
 
 const ChangeVarValue = () => {
   const {
@@ -60,27 +58,7 @@ const ChangeVarValue = () => {
           />
         </Box>
 
-        <Box>
-          <b>Variables used in code</b>
-          <Box sx={{ height: '350px', overflowY: 'auto', ml: 3 }}>
-            <FormGroup>
-              {variableList.value.map((variable) => (
-                <FormControlLabel
-                  key={variable.id}
-                  control={
-                    <Checkbox
-                      sx={{ p: '0 9px' }}
-                      checked={codeVariables.includes(variable.name)}
-                      onChange={() => addToUsedVariables(variable.name)}
-                      name={variable.name}
-                    />
-                  }
-                  label={variable.name}
-                />
-              ))}
-            </FormGroup>
-          </Box>
-        </Box>
+        <CodeVariables variableList={variableList} codeVariables={codeVariables} addToUsedVariables={addToUsedVariables} />
       </Box>
     </>
   );

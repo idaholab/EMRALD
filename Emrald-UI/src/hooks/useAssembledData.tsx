@@ -6,6 +6,7 @@ import { useLogicNodeContext } from '../contexts/LogicNodeContext';
 import { useModelDetailsContext } from '../contexts/ModelDetailsContext';
 import { useStateContext } from '../contexts/StateContext';
 import { useVariableContext } from '../contexts/VariableContext';
+import { useWindowContext } from '../contexts/WindowContext';
 import { EMRALD_Model } from '../types/EMRALD_Model';
 import { Upgrade } from '../utils/Upgrades/upgrade';
 import { updateAppData } from './useAppData';
@@ -38,6 +39,7 @@ export function useAssembledData() {
   const { states, clearStateList, newStateList } = useStateContext();
   const { variables, clearVariableList, newVariableList } = useVariableContext();
   const { newExtSimList } = useExtSimContext();
+  const { closeAllWindows } = useWindowContext();
   // ... get data from other contexts
 
   const newProject = () => {
@@ -67,8 +69,8 @@ export function useAssembledData() {
         const upgradeSuccessful = upgrade.upgrade(3.0); // upgrade to version 3.0
 
         if (upgradeSuccessful) {
+          closeAllWindows();  // close all active windows when opening a new project
           const openedModel: EMRALD_Model = JSON.parse(upgrade.newModelStr);
-          // appData.value = JSON.parse(upgrade.newModelStr);
           updateName(openedModel.name);
           updateDescription(openedModel.desc);
           updateVersion(openedModel.version);

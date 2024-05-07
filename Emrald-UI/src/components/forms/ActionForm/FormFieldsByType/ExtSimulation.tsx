@@ -39,7 +39,6 @@ const ExtSimulation: React.FC = () => {
 
   useEffect(() => {
     const simEndTimeDuration = dayjs.duration(simEndTime);
-    console.log(simEndTimeDuration);
     setMilliseconds(simEndTimeDuration.$ms);
   }, [simEndTime])
 
