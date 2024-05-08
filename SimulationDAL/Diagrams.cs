@@ -470,8 +470,8 @@ namespace SimulationDAL
     {
       switch (diagType)
       {
-        case EnDiagramType2.dtMulti: return new EvalDiagram();
-        case EnDiagramType2.dtSingle: return new Diagram(EnDiagramType2.dtSingle);
+        case EnDiagramType2.dtMulti: return new Diagram(EnDiagramType2.dtMulti); 
+        case EnDiagramType2.dtSingle: return new EvalDiagram();
         default: return null;
       }
     }

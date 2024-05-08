@@ -7,6 +7,8 @@
   <ItemGroup>
     <PackageReference Include="Ewk.Math.Numerics" Version="1.0.4807.29504" />
     <PackageReference Include="MathNet.Numerics" Version="5.0.0" />
+    <PackageReference Include="Microsoft.ClearScript.V8" Version="7.4.5" />
+    <PackageReference Include="Microsoft.ClearScript.V8.Native.win-x64" Version="7.4.5" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="4.3.1" />
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
@@ -24,5 +26,15 @@
     <Folder Include="BTree\obj\Release\" />
     <Folder Include="BTree\obj\x86\Debug\" />
   </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Upgrade\UI_UpgradeBundle.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+    <Exec Command="call &quot;$(ProjectDir)../Emrald-UI/src/utils/MakeJSFromTS.bat&quot; &amp; call &quot;$(ProjectDir)../Emrald-UI/src/utils/ScriptToExportForCSharp.bat&quot; &quot;$(ProjectDir)/Upgrade/UI_UpgradeBundle.js&quot;" />
+  </Target>
 
 </Project>

@@ -38,6 +38,7 @@
     "uuid": "^9.0.0"
   },
   "devDependencies": {
+    "@rollup/plugin-node-resolve": "^15.2.3",
     "@testing-library/jest-dom": "^6.0.0",
     "@testing-library/react": "^14.0.0",
     "@types/d3": "^7.4.0",
@@ -61,6 +62,7 @@
     "eslint-plugin-react-refresh": "^0.4.3",
     "jsdom": "^22.1.0",
     "prettier": "3.0.1",
+    "rollup": "^4.14.2",
     "sass": "^1.65.1",
     "typescript": "^5.0.2",
     "vite": "^4.4.5",

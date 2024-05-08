@@ -1,5 +1,6 @@
 //import schema from './EMRALD_JsonSchemaV3_0.json';
-import { Validator } from 'jsonschema';
+//import { Validator } from 'jsonschema';
+import { Validator } from "../../../../../node_modules/jsonschema";
 import { UpgradeReturn } from '../v1_x/UpgradeV1_x'
 import { Event as EventV2_4 } from '../v2_4/AllModelInterfacesV2_4'
 import { EMRALD_Model as EMRALD_ModelV2_4 } from '../v2_4/AllModelInterfacesV2_4'
@@ -15,7 +16,6 @@ import { LogicNode } from './AllModelInterfacesV3_0'
 import { State } from './AllModelInterfacesV3_0'
 import { Diagram } from './AllModelInterfacesV3_0'
 import { StateEvalValue } from './AllModelInterfacesV3_0'
-import { Upgrade } from '../upgrade';
 
 
 
@@ -159,34 +159,35 @@ export function UpgradeV3_0(modelTxt: string): UpgradeReturn {
         }
     });
 
-    newModel.version = 3.0;
+    newModel.emraldVersion = 3.0;
+    newModel.version = 1.0; //set user version for first use of this property
     const retModel: UpgradeReturn = { newModel: JSON.stringify(newModel), errors: [] };
 
-    //to validate the new version against the schema
-    const schemaPath = './src/utils/Upgrades/v3_0/EMRALD_JsonSchemaV3_0.json';
-    // const schemaTxt = fs.readFileSync(schemaPath, 'utf-8').trim();    
+    // //to validate the new version against the schema
+    // const schemaPath = './src/utils/Upgrades/v3_0/EMRALD_JsonSchemaV3_0.json';
+    // // const schemaTxt = fs.readFileSync(schemaPath, 'utf-8').trim();    
     
-    fetch(schemaPath)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error("Failed to fetch schema text");
-            }
-            return response.text();
-        })
-        .then(schemaTxt => {
-            const schema = JSON.parse(schemaTxt);
-            const validator = new Validator();
-            const validationResult = validator.validate(newModel, schema);
-            if (validationResult.valid === false) {
-                validationResult.errors.forEach(error => {
-                    retModel.errors.push(error.instance + " - " + error.message + " : " + JSON.stringify(error.argument))
-                });
-            }
-        })
-        .catch(error => {
-            // handle error
-            // console.error(error);
-        });
+    // fetch(schemaPath)
+    //     .then(response => {
+    //         if (!response.ok) {
+    //             throw new Error("Failed to fetch schema text");
+    //         }
+    //         return response.text();
+    //     })
+    //     .then(schemaTxt => {
+    //         const schema = JSON.parse(schemaTxt);
+    //         const validator = new Validator();
+    //         const validationResult = validator.validate(newModel, schema);
+    //         if (validationResult.valid === false) {
+    //             validationResult.errors.forEach(error => {
+    //                 retModel.errors.push(error.instance + " - " + error.message + " : " + JSON.stringify(error.argument))
+    //             });
+    //         }
+    //     })
+    //     .catch(error => {
+    //         // handle error
+    //         // console.error(error);
+    //     });
 
     return retModel;
 }

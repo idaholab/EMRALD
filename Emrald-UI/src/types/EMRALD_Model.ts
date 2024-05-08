@@ -9,7 +9,7 @@ import {LogicNode} from './LogicNode'
 import {ChangeLog} from './ChangeLog'
 
 
-const EMRALD_SchemaVersion = 3.0;
+export const EMRALD_SchemaVersion : number = 3.0;
  /**
   * EMRALD model schema version 3.0
   */
@@ -27,9 +27,13 @@ const EMRALD_SchemaVersion = 3.0;
     */
    desc: string
    /**
-    * Version of the EMRALD model
-    */
+   * Users version of the model
+   */
    version: number
+   /**
+    * EMRALD Scema Version
+    */
+   emraldVersion: number
    /**
     * All the diagrams for the model
     */
@@ -69,7 +73,8 @@ const EMRALD_SchemaVersion = 3.0;
   return {
     name: '',
     desc: '',
-    version: EMRALD_SchemaVersion,
+    version: 1.0,
+    emraldVersion: EMRALD_SchemaVersion,
     DiagramList: [],
     ExtSimList: [],
     StateList: [],

@@ -18,7 +18,11 @@
         },
         "emraldVersion": {
             "type": "number",
-            "description": "Version of the EMRALD model"
+            "description": "Users version of this model model"
+        },
+		    "emraldVersion": {
+            "type": "number",
+            "description": "Version of the EMRALD model schema"
         },
         "version": {
             "type": "number",

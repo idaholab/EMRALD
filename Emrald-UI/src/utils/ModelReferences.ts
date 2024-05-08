@@ -2,7 +2,6 @@
 import jsonpath from 'jsonpath';
 import { appData } from '../hooks/useAppData';
 import { EMRALD_Model, CreateEmptyEMRALDModel} from '../types/EMRALD_Model.ts';
-import { EmbedHTMLAttributes } from 'react';
 import { Diagram } from '../types/Diagram.ts';
 import { State } from '../types/State.ts';
 import { Action } from '../types/Action.ts';
@@ -146,7 +145,7 @@ export const GetJSONPathUsingRefs = (itemType: MainItemTypes, lookupName : strin
   }
 
   //replace all the 'nameRef' items for the JSON Paths with the given previousName
-  return retArray.map((jsonPaths, index) => {
+  return retArray.map((jsonPaths) => {
     return [jsonPaths[0].replace(/nameRef/g, lookupName), jsonPaths[1]];
   });  
 };
@@ -181,7 +180,7 @@ export const GetJSONPathInRefs = (itemType: MainItemTypes, lookupName : string):
   }
 
   //replace all the 'nameRef' items for the JSON Paths with the given previousName
-  return retArray.map((jsonPaths, index) => {
+  return retArray.map((jsonPaths) => {
     return [jsonPaths[0].replace(/nameRef/g, lookupName), jsonPaths[1]];
   });  
 };
@@ -206,17 +205,16 @@ export const GetModelItemsReferencing = (
     var retRefModel: EMRALD_Model = CreateEmptyEMRALDModel();
   }
 
-  const emraldModel: EMRALD_Model = appData.value;  
   var jsonPathRefArray : Array<[string, MainItemTypes]> = GetJSONPathUsingRefs(itemType, itemName);
 
   jsonPathRefArray.forEach((jsonPathSet) => {
     jsonpath.paths(appData.value, jsonPathSet[0]).forEach((ref: any) => {
       var parentPath = ref.slice(0, -1);
-      var parent = jsonpath.value(emraldModel, parentPath.join('.'));
+      var parent = jsonpath.value(appData.value, parentPath.join('.'));
       while((parent.id == null) && (parentPath.length > 0))
       {
         parentPath = parentPath.slice(0, -1);
-        parent = jsonpath.value(emraldModel, parentPath.join('.'));
+        parent = jsonpath.value(appData.value, parentPath.join('.'));
       }
       if(parent.id != null)
       {
@@ -369,18 +367,6 @@ export const GetModelItemsReferencedBy = (
         });
       }
     }
-
-    // jsonPathRefArray.forEach((jsonPathSet) => {
-    //   const jPath = jsonPathSet[0]
-    //   jsonpath.paths(emraldModel, jPath).forEach((ref: any) => {
-    //     const path = ref.join('.');
-    //     var items = jsonpath.value(emraldModel, path);
-
-    //     items.forEach((item: any) => {
-    //       GetModelItemsReferencing(item, jsonPathSet[1], retRefModel);
-    //     })
-    //   });
-    // });    
   }
 
   return retRefModel;
