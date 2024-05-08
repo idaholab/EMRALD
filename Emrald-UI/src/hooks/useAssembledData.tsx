@@ -8,10 +8,8 @@ import { useStateContext } from '../contexts/StateContext';
 import { useVariableContext } from '../contexts/VariableContext';
 import { useWindowContext } from '../contexts/WindowContext';
 import { EMRALD_Model } from '../types/EMRALD_Model';
-import { Upgrade } from '../utils/Upgrades/upgrade';
+import { upgradeModel } from '../utils/Upgrades/upgrade';
 import { updateAppData } from './useAppData';
-// import { appData, useAppData } from './useAppData';
-// ... import other context hooks
 
 export function useAssembledData() {
   // const { updateAppData } = useAppData();
@@ -66,12 +64,11 @@ export function useAssembledData() {
         jsonData = jsonContent;
       }
 
-      const upgrade = new Upgrade(JSON.stringify(jsonData));
-      const upgradeSuccessful = upgrade.upgrade(3.0); // upgrade to version 3.0
+      const upgrade = upgradeModel(3.0, JSON.stringify(jsonData));
 
-      if (upgradeSuccessful) {
+      if (upgrade) {
         closeAllWindows(); // close all active windows when opening a new project
-        const openedModel: EMRALD_Model = JSON.parse(upgrade.newModelStr);
+        const openedModel: EMRALD_Model = upgrade;
         updateName(openedModel.name);
         updateDescription(openedModel.desc);
         updateVersion(openedModel.version);

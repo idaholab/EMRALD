@@ -8,10 +8,11 @@ import { EmraldContextWrapperProps } from './EmraldContextWrapper';
 import { Event } from '../types/Event';
 import { Action } from '../types/Action';
 import { appData, updateAppData } from '../hooks/useAppData';
-import { useComputed } from '@preact/signals-react';
+import { ReadonlySignal, useComputed } from '@preact/signals-react';
 
 interface StateContextType {
   states: State[];
+  statesList: ReadonlySignal<State[]>;
   createState: (newState: State) => void;
   updateState: (updatedState: State) => void;
   updateStateEvents: (stateName: string, event: Event) => void;
@@ -179,6 +180,7 @@ const StateContextProvider: React.FC<EmraldContextWrapperProps> = ({ children })
     <StateContext.Provider
       value={{
         states,
+        statesList,
         createState,
         updateState,
         updateStateEvents,

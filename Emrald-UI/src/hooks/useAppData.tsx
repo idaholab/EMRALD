@@ -1,16 +1,13 @@
 import { useEffect } from 'react';
 import emraldData from '../emraldData.json';
-import { Upgrade } from '../utils/Upgrades/upgrade';
-import { effect, signal } from '@preact/signals-react';
+import { upgradeModel } from '../utils/Upgrades/upgrade';
+import { signal } from '@preact/signals-react';
 import { EMRALD_Model } from '../types/EMRALD_Model';
 
 const storedData = sessionStorage.getItem('appData');
-const upgrade = new Upgrade(JSON.stringify(emraldData));
-upgrade.upgrade(3.0); // upgrade to version 3.0
-export const appData = signal<EMRALD_Model>(
-  storedData ? JSON.parse(storedData) : JSON.parse(upgrade.newModelStr),
-);
-console.log(appData);
+const upgrade = upgradeModel(3.0, JSON.stringify(emraldData));
+
+export const appData = signal<EMRALD_Model>(storedData ? JSON.parse(storedData) : upgrade);
 
 export const updateAppData = (newData: any, undoData?: any) => {
   let updatedData;

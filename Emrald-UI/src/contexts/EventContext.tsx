@@ -6,10 +6,11 @@ import React, {
 import { Event } from '../types/Event';
 import { EmraldContextWrapperProps } from './EmraldContextWrapper';
 import { appData } from '../hooks/useAppData';
-import { useComputed } from '@preact/signals-react';
+import { ReadonlySignal, useComputed } from '@preact/signals-react';
 
 interface EventContextType {
   events: Event[];
+  eventsList: ReadonlySignal<Event[]>;
   createEvent: (event: Event) => void;
   updateEvent: (event: Event) => void;
   deleteEvent: (eventId: string | undefined) => void;
@@ -79,6 +80,7 @@ const EventContextProvider: React.FC<EmraldContextWrapperProps> = ({ children })
     <EventContext.Provider
       value={{
         events,
+        eventsList,
         createEvent,
         updateEvent,
         deleteEvent,
