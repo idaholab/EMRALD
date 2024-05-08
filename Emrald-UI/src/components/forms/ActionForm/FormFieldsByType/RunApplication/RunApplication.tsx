@@ -14,7 +14,18 @@ import {
 import { useActionFormContext } from '../../ActionFormContext';
 import { useVariableContext } from '../../../../../contexts/VariableContext';
 import CodeVariables from '../../CodeVariables';
-import { useEffect, useState } from 'react';
+import { ReactElement, useEffect, useState } from 'react';
+import * as CustomForms from './CustomForms/index';
+import { startCase } from 'lodash';
+import React from 'react';
+
+// Define the type for the custom form components
+type CustomFormComponents = {
+  [key: string]: React.ComponentType<any>;
+}
+
+// Explicitly cast CustomForms to the defined type
+const customFormsTyped = CustomForms as CustomFormComponents;
 
 const RunApplication = () => {
   const [applicationType, setApplicationType] = useState('code');
@@ -30,13 +41,27 @@ const RunApplication = () => {
   } = useActionFormContext();
   const { variableList } = useVariableContext();
 
-  const [customFormType, setCustomFormType] = useState('');
+  const [customFormType, setCustomFormType] = useState<string>('');
   const [options, setOptions] = useState<string[]>([]);
-
+  const [selectedComponent, setSelectedComponent] = useState<ReactElement | null>(null);
 
   useEffect(() => {
-    console.log(window)
+    // Dynamically import components
+    const importComponents = async () => {
+      const components = await import('./CustomForms/index');
+      setOptions(Object.keys(components) as string[]);
+    };
+    importComponents();
   }, []);
+
+  useEffect(() => {
+    // Set selected component when customFormType changes
+    if (customFormType && customFormsTyped[customFormType]) {
+      setSelectedComponent(React.createElement(customFormsTyped[customFormType]));
+    } else {
+      setSelectedComponent(null);
+    }
+  }, [customFormType]);
 
   return (
     <>
@@ -110,7 +135,7 @@ const RunApplication = () => {
           />
         </Box>
       ) : (
-        <Box>
+        <Box display={'flex'} flexDirection={'column'}>
           <FormControl sx={{ mt: 2, minWidth: 120 }} size="small">
             <InputLabel id="demo-simple-select-label">
               Custom Application Type
@@ -123,13 +148,13 @@ const RunApplication = () => {
             >
               {options.map((option) => (
                 <MenuItem value={option} key={option}>
-                  <em>{option}</em>
+                  <em>{startCase(option)}</em>
                 </MenuItem>
               ))}
             </Select>
           </FormControl>
 
-          
+          {selectedComponent}
 
         </Box>
       )}
