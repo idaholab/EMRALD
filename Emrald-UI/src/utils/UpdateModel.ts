@@ -17,12 +17,13 @@ export const updateModelAndReferences = ( //Update the main appData EMRALD model
   itemType : MainItemTypes, //This is the type of the object that was updated
   //previousName: string, //old name of the item
   //newName: string //new name of the item
-) : EMRALD_Model => {
+) : Promise<EMRALD_Model> => {
+  return new Promise((resolve) => {
 
   //const updatedEMRALDModel: EMRALD_Model = {...appData.value};
   const updatedEMRALDModel: EMRALD_Model = JSON.parse(JSON.stringify(appData.value));
   
-  var jsonPathRefArray : Array<[string, MainItemTypes]> = GetJSONPathUsingRefs(itemType, item.name);
+  // var jsonPathRefArray : Array<[string, MainItemTypes]> = GetJSONPathUsingRefs(itemType, item.name);
   var itemArray: any[];
   var itemIdx = -1;
 
@@ -67,12 +68,8 @@ export const updateModelAndReferences = ( //Update the main appData EMRALD model
   //update the item with the new item data
   itemArray[itemIdx] = item;
     
-  if(item.name != previousName){  //name change so update all the references as well
-    
-    // //test
-    //var m = GetModelItemsReferencing('S-DGN-B', MainItemTypes.Diagram);
-    //var m2 = GetModelItemsReferencedBy('Test Diagram', MainItemTypes.Diagram, true);
-    
+  if(item.name !== previousName){  //name change so update all the references as well
+    var jsonPathRefArray : Array<[string, MainItemTypes]> = GetJSONPathUsingRefs(itemType, previousName);
 
     jsonPathRefArray.forEach((jsonPathSet) => {
       const jPath = jsonPathSet[0]
@@ -83,5 +80,6 @@ export const updateModelAndReferences = ( //Update the main appData EMRALD model
     });
   }
 
-  return updatedEMRALDModel;
+    resolve(updatedEMRALDModel);
+  })
 }

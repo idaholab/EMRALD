@@ -2,28 +2,31 @@ import React, {
   createContext,
   useContext,
   useEffect,
-  useMemo,
   useState,
 } from 'react';
 import { LogicNode } from '../types/LogicNode';
 import { EmraldContextWrapperProps } from './EmraldContextWrapper';
-import { v4 as uuidv4 } from 'uuid';
 import { appData, updateAppData } from '../hooks/useAppData';
+import { EMRALD_Model } from '../types/EMRALD_Model';
+import { updateModelAndReferences } from '../utils/UpdateModel';
+import { MainItemTypes } from '../types/ItemTypes';
+import { effect, ReadonlySignal, useComputed } from '@preact/signals-react';
 
 interface LogicNodeContextType {
+  logicNodeList: ReadonlySignal<LogicNode[]>;
   logicNodes: LogicNode[];
   createLogicNode: (logicNode: LogicNode) => void;
   updateLogicNode: (logicNode: LogicNode) => void;
   deleteLogicNode: (logicNodeId: string | undefined) => void;
-  getLogicNodeByName: (logicNodeName: string) => LogicNode;
+  getLogicNodeByName: (logicNodeName: string | undefined) => LogicNode;
   newLogicNodeList: (newLogicNodeList: LogicNode[]) => void;
   mergeLogicNodeList: (newLogicNodeList: LogicNode[]) => void;
   clearLogicNodeList: () => void;
 }
 
 export const emptyLogicNode: LogicNode = {
-  id: uuidv4(),
-  name: '',
+  id: '',
+  name: 'Gate 1',
   desc: '',
   isRoot: false,
   gateType: 'gtAnd',
@@ -48,33 +51,33 @@ export function useLogicNodeContext() {
 const LogicNodeContextProvider: React.FC<EmraldContextWrapperProps> = ({
   children,
 }) => {
-  const [logicNodes, setLogicNodes] = useState<LogicNode[]>(appData.value.LogicNodeList);
+  const [logicNodes, setLogicNodes] = useState<LogicNode[]>(appData.value.LogicNodeList.sort((a,b) => a.name.localeCompare(b.name)));
+  const logicNodeList = useComputed(() => appData.value.LogicNodeList);
+
 
   const createLogicNode = (newLogicNode: LogicNode) => {
-    const updatedLogicNodes = [...logicNodes, newLogicNode];
+    const updatedLogicNodes = [...appData.peek().LogicNodeList, newLogicNode];
+    updateAppData(JSON.parse(JSON.stringify({ ...appData.value, LogicNodeList: updatedLogicNodes })));
     setLogicNodes(updatedLogicNodes);
   };
 
-  const updateLogicNode = (updatedLogicNode: LogicNode) => {
-    const updatedLogicNodes = logicNodes.map((item) =>
-      item.id === updatedLogicNode.id
-        ? updatedLogicNode
-        : item,
-    );
-    setLogicNodes(updatedLogicNodes);
+  const updateLogicNode = async (updatedLogicNode: LogicNode) => {
+    var updatedModel: EMRALD_Model = await updateModelAndReferences(updatedLogicNode, MainItemTypes.LogicNode);
+    updateAppData(updatedModel);
+    setLogicNodes(updatedModel.LogicNodeList);
   };
 
   const deleteLogicNode = (logicNodeId: string | undefined) => {
     if (!logicNodeId) { return; }
-    const updatedLogicNodes = logicNodes.filter(
+    const updatedLogicNodes = logicNodeList.value.filter(
       (item) => item.id !== logicNodeId,
     );
-    updateAppData(appData.value);
+    updateAppData({ ...appData.value, LogicNodeList: updatedLogicNodes });
     setLogicNodes(updatedLogicNodes);
   };
 
-  const getLogicNodeByName = (logicNodeName: string) => {
-    return logicNodes.find((node) => node.name === logicNodeName) || emptyLogicNode;
+  const getLogicNodeByName = (logicNodeName: string | undefined) => {
+    return logicNodeList.value.find((node) => node.name === logicNodeName) || emptyLogicNode;
   };
 
   // Open New, Merge, and Clear Diagram List
@@ -93,6 +96,7 @@ const LogicNodeContextProvider: React.FC<EmraldContextWrapperProps> = ({
   return (
     <LogicNodeContext.Provider
       value={{
+        logicNodeList,
         logicNodes,
         createLogicNode,
         updateLogicNode,

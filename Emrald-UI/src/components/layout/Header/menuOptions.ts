@@ -1,4 +1,4 @@
-import { clearCacheData } from "../../../hooks/useAppData";
+import { appData, clearCacheData } from "../../../hooks/useAppData";
 
 export interface MenuOption {
   label: string;
@@ -86,9 +86,11 @@ export const projectOptions: MenuOption[] = [
   },
   {
     label: 'Save',
-    onClick: (assembledData: any) => {
+    onClick: () => {
       // Convert JSON data to a string
-      const jsonString = JSON.stringify(assembledData());
+      const jsonString = JSON.stringify(appData.value, null, 2);
+
+      //todo validate the appData from the latest emrald schema version in types
 
       // Create a Blob (Binary Large Object) with the JSON string
       const blob = new Blob([jsonString], { type: 'application/json' });
@@ -100,7 +102,7 @@ export const projectOptions: MenuOption[] = [
       const a = document.createElement('a');
       a.href = url;
       a.download = `${
-        assembledData.name ? assembledData.name : 'Untitled_EMRALD_Project'
+        appData.value.name ? appData.value.name : 'Untitled_EMRALD_Project'
       }.emrald`;
 
       // Trigger a click event on the <a> element to initiate the download

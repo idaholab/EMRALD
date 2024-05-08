@@ -4,7 +4,7 @@ $header-bottom-border-color: #e2e8f0;
 
 .tree-diagram .react-flow__node-custom {
   font-size: 10px;
-  width: 165px;
+  min-width: 165px;
   color: $font-color;
   box-shadow: 0 4px 6px -1px $shadow-color, 0 2px 4px -1px darken($shadow-color, 10%);
   border-radius: 2px;
@@ -14,7 +14,7 @@ $header-bottom-border-color: #e2e8f0;
   }
 
   .react-flow__handle-bottom {
-    top: 23px !important;
+    top: 45px !important;
   }
 
   .logic-icon {
@@ -23,6 +23,14 @@ $header-bottom-border-color: #e2e8f0;
     font-size: 31px;
     color: #b1b1b7;
     top: -1px;
+  }
+
+  .expanded-icon {
+    position: absolute;
+    font-size: 25px;
+    color: #b1b1b7;
+    top: 27px;
+    cursor: pointer;
   }
 
   .tree-node {
@@ -42,27 +50,16 @@ $header-bottom-border-color: #e2e8f0;
     background: #ddc462;
   }
 
-  .tree-node__control-bar {
-    display: flex;
-    justify-content: flex-end;
-    position: absolute;
-    right: 5px;
-    top: 2px;
-
-    .control-icon {
-      position: absolute;
-      left: 3px;
-      top: 3px;
-      height: 10px;
-      width: 10px;
+  .non-default {
+    background: #c09340;
+    .modified-icon {
+      height: 12px;
+      width: 12px;
     }
   }
   
   .tree-node__header {
     width: 100%; /* Make the header full width */
-    margin-top: 5px;
-    padding: 8px 10px 0 10px;
-    // border-bottom: 1px solid $header-bottom-border-color;
     font-size: 12px;
     display: flex;
     justify-content: center;
@@ -70,7 +67,7 @@ $header-bottom-border-color: #e2e8f0;
   
   .tree-node__body {
     padding: 10px;
-    flex-grow: 1; /* Allow body to grow and take remaining space */
+    flex-grow: 1;
   }
   
   .tree-node__immediate-actions {
@@ -91,5 +88,12 @@ $header-bottom-border-color: #e2e8f0;
     top: 0; 
     bottom: 0;
   }
+}
+
+.gate-icon {
+  font-size: 30px;
+  color: #b1b1b7;
+  transform: rotate(270deg);
+  margin: 0 10px;
 }
 

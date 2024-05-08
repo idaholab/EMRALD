@@ -79,6 +79,25 @@ export type DistributionType =
  */
 export type GateType = "gtAnd" | "gtOr" | "gtNot"
 /**
+ * Array of component diagram names and state values to use in evaluating if not using the default value.
+ */
+export type CompChild = {
+  /**
+   * Evaluate value if not the states default.
+   */
+  stateValues?: {
+    /**
+     * State name for the value.
+     */
+    stateName: string
+    stateValue: StateEvalValue
+  }[]
+  /**
+   * Name of the diagram to be evaluated
+   */
+  diagramName: string
+}
+/**
  * Context of use for the variable in the model.
  */
 export type VarScope = "gtDocLink" | "gtAccrual" | "gtGlobal" | "gt3DSim"
@@ -113,6 +132,10 @@ export interface EMRALD_Model {
   desc: string
   /**
    * Users version of the model
+   */
+  emraldVersion?: number
+  /**
+   * Version of the users model
    */
   version: number
   /**
@@ -491,25 +514,7 @@ export interface LogicNode {
    */
   desc: string
   gateType: GateType
-  /**
-   * Array of component diagram names and state values to use in evaluating if not using the default value.
-   */
-  compChildren: {
-    /**
-     * Evaluate value if not the states default.
-     */
-    stateValues?: {
-      /**
-       * State name for the value.
-       */
-      stateName: string
-      stateValue: StateEvalValue
-    }[]
-    /**
-     * Name of the diagram to be evaluated
-     */
-    diagramName: string
-  }[]
+  compChildren: CompChild[]
   /**
    * Array of logic node names that are children of this gate.
    */

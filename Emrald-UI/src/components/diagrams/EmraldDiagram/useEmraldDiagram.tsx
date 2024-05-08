@@ -27,12 +27,13 @@ import { useWindowContext } from '../../../contexts/WindowContext';
 import StateForm from '../../forms/StateForm/StateForm';
 import EventForm from '../../forms/EventForm/EventForm';
 import ActionForm from '../../forms/ActionForm/ActionForm';
+import ActionFormContextProvider from '../../forms/ActionForm/ActionFormContext';
 
 const useEmraldDiagram = () => {
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge[]>([]);
   const [loading, setLoading] = useState(true);
-  const { diagrams, getDiagramByDiagramName } = useDiagramContext();
+  const { diagramList, getDiagramByDiagramName } = useDiagramContext();
   const {
     getActionByActionId,
     getActionByActionName,
@@ -77,23 +78,35 @@ const useEmraldDiagram = () => {
   // Double Clicks
   const onNodeDoubleClick = (_event: any, node: Node) => {
     if (node.data.state) {
-      addWindow(`Edit State: ${node.data.state.name}`, <StateForm stateData={node.data.state} />);
+      addWindow(
+        `Edit State: ${node.data.state.name}`,
+        <StateForm stateData={node.data.state} />,
+      );
     }
-  }
+  };
 
   const onEventDoubleClick = (e: any, event: Event | undefined) => {
     e.preventDefault();
     e.stopPropagation();
-    if (!event) { return;}
+    if (!event) {
+      return;
+    }
     addWindow(`Edit Event: ${event.name}`, <EventForm eventData={event} />);
-  }
+  };
 
   const onActionDoubleClick = (e: any, action: Action) => {
     e.preventDefault();
     e.stopPropagation();
-    if (!action) { return; }
-    addWindow(`Edit Action: ${action.name}`, <ActionForm actionData={action} />);
-  }
+    if (!action) {
+      return;
+    }
+    addWindow(
+      `Edit Action: ${action.name}`,
+      <ActionFormContextProvider>
+        <ActionForm actionData={action} />
+      </ActionFormContextProvider>,
+    );
+  };
 
   // Add new edge connection to state
   const onConnect = useCallback(
@@ -102,10 +115,14 @@ const useEmraldDiagram = () => {
       const targetNode = nodes.find((node) => node.id === connection.target);
       const targetState = getStateByStateId(connection.target);
       const currentAction = getActionByActionId(connection.sourceHandle);
-      
-      if (!sourceNode || !targetNode) { return; }
+
+      if (!sourceNode || !targetNode) {
+        return;
+      }
       // Prevent a node from connecting to itself
-      if (sourceNode.data.label === targetNode.data.label) { return; }
+      if (sourceNode.data.label === targetNode.data.label) {
+        return;
+      }
 
       // Check if edge already exists and if so, don't add it.
       const existingEdge = edges.find(
@@ -114,7 +131,9 @@ const useEmraldDiagram = () => {
           edge.target === connection.target,
       );
 
-      if (existingEdge) { return; }
+      if (existingEdge) {
+        return;
+      }
 
       // Add new state to action
       addNewStateToAction(currentAction, {
@@ -158,12 +177,14 @@ const useEmraldDiagram = () => {
       const targetState = getStateByStateId(newConnection.target);
 
       // Prevent a node from connecting to itself
-      if (oldEdge.source === newConnection.target) { return; }
-      
+      if (oldEdge.source === newConnection.target) {
+        return;
+      }
+
       if (currentAction && currentAction.newStates) {
         // Remove the old newStates.toState with the new state we are connecting.
         currentAction.newStates = currentAction.newStates.filter(
-          (newState) => newState.toState !== oldState.name
+          (newState) => newState.toState !== oldState.name,
         );
         addNewStateToAction(currentAction, {
           toState: targetState?.name,
@@ -172,10 +193,10 @@ const useEmraldDiagram = () => {
           failDesc: '',
         });
 
-        setEdges((els) => updateEdge(oldEdge, newConnection, els))
+        setEdges((els) => updateEdge(oldEdge, newConnection, els));
       }
     },
-    []
+    [],
   );
 
   // Update the state node position
@@ -247,7 +268,7 @@ const useEmraldDiagram = () => {
   useEffect(() => {
     getStateNodes();
     setLoading(false);
-  }, [currentDiagram.value, diagrams]);
+  }, [currentDiagram.value, diagramList.value]);
 
   return {
     nodes,

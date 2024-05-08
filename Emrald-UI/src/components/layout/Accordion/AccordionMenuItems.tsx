@@ -9,16 +9,14 @@ import ExpandMore from '@mui/icons-material/ExpandMore';
 import FolderIcon from '@mui/icons-material/Folder';
 import FolderOpenIcon from '@mui/icons-material/FolderOpen';
 import DraggableItem from '../../drag-and-drop/DraggableItem';
-import { useWindowContext } from '../../../contexts/WindowContext';
 import { useDiagramContext } from '../../../contexts/DiagramContext';
 import Box from '@mui/material/Box';
 import { AccordionMenuItemType } from './types/AccordionMenuItems';
 import ItemWithContextMenu from './ItemWithContextMenu';
 // import DiagramForm from '../../features/DiagramForm/DiagramForm';
 import Typography from '@mui/material/Typography';
-// import TestD3Chart from '../../features/TestD3Chart';
-// import TreeDiagram from '../../features/TreeDiagram';
-// import ReactFlowTest from '../../features/ReactFlow/ReactFlowDiagram';
+import { MainItemTypes } from '../../../types/ItemTypes';
+
 export interface AccordionMenuListProps {
   item: AccordionMenuItemType;
   bothAccordionsOpen: boolean;
@@ -29,6 +27,7 @@ const AccordionMenuItems: React.FC<AccordionMenuListProps> = ({
   bothAccordionsOpen,
 }) => {
   const { diagrams } = useDiagramContext();
+  
   const [openIndex, setOpenIndex] = React.useState<number | null>(null); // Keeps track of the index of the open item
   const diagramTypes = [
     { name: 'Plant' },
@@ -77,7 +76,7 @@ const AccordionMenuItems: React.FC<AccordionMenuListProps> = ({
                     {diagrams.map((diagram) => (
                       <React.Fragment key={diagram.id}>
                         {diagram.diagramLabel === name && (
-                          <DraggableItem key={diagram.id} itemData={diagram}>
+                          <DraggableItem key={diagram.id} itemData={diagram} itemType={MainItemTypes.Diagram}>
                             <ListItemButton
                               sx={{ p: '0 0 0 3rem', width: '100%' }}
                             >
@@ -114,7 +113,7 @@ const AccordionMenuItems: React.FC<AccordionMenuListProps> = ({
                     key={option.id || index}
                     sx={{ p: '0 0 0 2rem' }}
                   >
-                    <DraggableItem itemData={option}>
+                    <DraggableItem key={option.id} itemData={option} itemType={MainItemTypes.LogicNode}>
                       <ItemWithContextMenu
                         itemData={option}
                         optionType={item.type}
@@ -134,7 +133,7 @@ const AccordionMenuItems: React.FC<AccordionMenuListProps> = ({
                     key={option.id || index}
                     sx={{ p: '0 0 0 2rem' }}
                   >
-                    <DraggableItem key={option.id} itemData={option}>
+                    <DraggableItem key={option.id} itemData={option} >
                       <ItemWithContextMenu
                         itemData={option}
                         optionType={item.type}

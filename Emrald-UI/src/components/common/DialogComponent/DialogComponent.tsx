@@ -11,8 +11,9 @@ interface DialogComponentProps {
   disabled?: boolean;
   children: React.ReactNode;
   submitText?: string;
-  onSubmit: () => void;
-  onClose: () => void;
+  cancelText?: string;
+  onSubmit?: () => void;
+  onClose?: () => void;
 }
 
 const DialogComponent: React.FC<DialogComponentProps> = ({
@@ -21,6 +22,7 @@ const DialogComponent: React.FC<DialogComponentProps> = ({
   disabled,
   children,
   submitText,
+  cancelText,
   onSubmit,
   onClose,
 }) => {
@@ -29,10 +31,14 @@ const DialogComponent: React.FC<DialogComponentProps> = ({
       {title && <DialogTitle>{title}</DialogTitle>}
       <DialogContent>{children}</DialogContent>
       <DialogActions sx={{ p: 3 }}>
-        <Button onClick={onClose}>Cancel</Button>
-        <Button onClick={onSubmit} variant="contained" disabled={disabled}>
-          {submitText ? submitText : 'Save'}
-        </Button>
+        {onClose && (
+          <Button onClick={onClose}>{cancelText ? cancelText : 'Cancel'}</Button>
+        )}
+        {onSubmit && (
+          <Button onClick={onSubmit} variant="contained" disabled={disabled}>
+            {submitText ? submitText : 'Save'}
+          </Button>
+        )}
       </DialogActions>
     </Dialog>
   );

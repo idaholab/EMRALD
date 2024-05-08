@@ -1,22 +1,20 @@
-import { useEffect, useState } from 'react';
+import React from 'react';
+import { useState } from 'react';
+import { useSignal } from '@preact/signals-react';
 import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
-import TextField from '@mui/material/TextField';
 import Box from '@mui/material/Box';
-import DropTargetComponent from '../../drag-and-drop/Droppable';
 import Typography from '@mui/material/Typography';
-import FormControl from '@mui/material/FormControl';
-import InputLabel from '@mui/material/InputLabel';
-import Select, { SelectChangeEvent } from '@mui/material/Select';
-import MenuItem from '@mui/material/MenuItem';
-import React from 'react';
-import { useWindowContext } from '../../../contexts/WindowContext';
-import { useDiagramContext } from '../../../contexts/DiagramContext';
-import { Diagram } from '../../../types/Diagram';
-import { useAssembledData } from '../../../hooks/useAssembledData';
-import { v4 as uuidv4 } from 'uuid';
 import MainDetailsForm from '../../forms/MainDetailsForm';
-import { DiagramType } from '../../../types/ItemTypes';
+import SingleValueGroups from './SingleValueGroups';
+import { v4 as uuidv4 } from 'uuid';
+import { Diagram } from '../../../types/Diagram';
+import { DiagramType, MainItemTypes } from '../../../types/ItemTypes';
+import {
+  emptyDiagram,
+  useDiagramContext,
+} from '../../../contexts/DiagramContext';
+import { useWindowContext } from '../../../contexts/WindowContext';
 
 interface DiagramFormProps {
   diagramData?: Diagram;
@@ -24,48 +22,37 @@ interface DiagramFormProps {
 
 const DiagramForm: React.FC<DiagramFormProps> = ({ diagramData }) => {
   const { handleClose, updateTitle } = useWindowContext();
-  const { diagrams, updateDiagram, createDiagram, getDiagramByDiagramName } = useDiagramContext();
-  const [diagramType, setDiagramType] = useState<DiagramType>(diagramData?.diagramType || 'dtSingle');
-  const [diagramLabel, setDiagramLabel] = useState<string>(diagramData?.diagramLabel || 'plant');
-  const [states, setStates] = useState<string[]>([]);
+  const { updateDiagram, createDiagram } = useDiagramContext();
+  const diagram = useSignal<Diagram>(diagramData || emptyDiagram);
   const [name, setName] = useState<string>(diagramData?.name || '');
   const [desc, setDesc] = useState<string>(diagramData?.desc || '');
-  const { assembledData } = useAssembledData();
+  const [diagramType, setDiagramType] = useState<DiagramType>(
+    diagramData?.diagramType || 'dtSingle',
+  );
+  const diagramTypeOptions = [
+    { value: 'dtSingle', label: 'Single' },
+    { value: 'dtMulti', label: 'Multi' },
+  ];
 
   const handleSave = () => {
     updateTitle(diagramData?.name || '', name);
-    const newDiagram = {
-      id: uuidv4(),
-      name,
-      desc,
-      diagramType,
-      diagramLabel,
-      states,
-    };
 
     diagramData
       ? updateDiagram({
-          id: diagramData.id,
+          ...diagram.value,
           name,
           desc,
-          diagramType,
-          diagramLabel,
-          states
+          diagramType
         })
-      : createDiagram(newDiagram);
+      : createDiagram({
+          ...diagram.value,
+          id: uuidv4(),
+          name,
+          desc,
+          diagramType
+        });
     handleClose();
   };
-
-  useEffect(() => {
-    const currentDiagram = getDiagramByDiagramName(diagramData?.name || '');
-    if (currentDiagram) {
-      setDiagramType(currentDiagram.diagramType || '');
-      setName(currentDiagram.name || '');
-      setDesc(currentDiagram.desc || '');
-      setStates(currentDiagram.states || []);
-      setDiagramLabel(currentDiagram.diagramLabel || 'plant');
-    }
-  }, [diagrams]);
 
   return (
     <Container maxWidth="sm">
@@ -73,18 +60,19 @@ const DiagramForm: React.FC<DiagramFormProps> = ({ diagramData }) => {
         {diagramData ? `Edit` : `Create`} Diagram
       </Typography>
       <form>
-        <MainDetailsForm 
+        <MainDetailsForm
+          itemType={MainItemTypes.Diagram}
           type={diagramType}
           setType={setDiagramType}
-          typeOptions={[
-            {value: 'dtSingle', label: 'Single'},
-            {value: 'dtMulti', label: 'Multi'},
-          ]}
+          typeOptions={diagramTypeOptions}
           name={name}
           setName={setName}
           desc={desc}
           setDesc={setDesc}
         />
+        {/* <Box>
+          <SingleValueGroups states={diagram.value.states} /> Maybe put back in the future
+        </Box> */}
         <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 5 }}>
           <Button
             variant="contained"
@@ -103,11 +91,6 @@ const DiagramForm: React.FC<DiagramFormProps> = ({ diagramData }) => {
           </Button>
         </Box>
       </form>
-
-      <Typography variant="h6" mt={5}>
-        Drop Components Here
-      </Typography>
-      {/* <DropTargetComponent /> */}
     </Container>
   );
 };

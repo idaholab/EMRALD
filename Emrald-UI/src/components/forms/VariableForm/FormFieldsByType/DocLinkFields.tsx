@@ -20,7 +20,7 @@ interface DocLinkFieldsProps {
   setDocLink: (docLink: string) => void;
   pathMustExist: boolean;
   setPathMustExist: (value: boolean) => void;
-  value: number;
+  value: number | string | boolean;
   setValue: (value: number) => void;
 }
 

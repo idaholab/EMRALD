@@ -1,17 +1,20 @@
 import { useActionContext } from '../contexts/ActionContext';
 import { useDiagramContext } from '../contexts/DiagramContext';
 import { useEventContext } from '../contexts/EventContext';
+import { useExtSimContext } from '../contexts/ExtSimContext';
 import { useLogicNodeContext } from '../contexts/LogicNodeContext';
 import { useModelDetailsContext } from '../contexts/ModelDetailsContext';
 import { useStateContext } from '../contexts/StateContext';
 import { useVariableContext } from '../contexts/VariableContext';
-import { upgradeModel } from '../utils/Upgrades/upgrade';
-import { appData, useAppData } from './useAppData';
-import { EMRALD_Model, EMRALD_SchemaVersion } from '../types/EMRALD_Model';
+import { useWindowContext } from '../contexts/WindowContext';
+import { EMRALD_Model } from '../types/EMRALD_Model';
+import { Upgrade } from '../utils/Upgrades/upgrade';
+import { updateAppData } from './useAppData';
+// import { appData, useAppData } from './useAppData';
 // ... import other context hooks
 
 export function useAssembledData() {
-  const { updateAppData } = useAppData();
+  // const { updateAppData } = useAppData();
   const {
     id,
     name,
@@ -31,10 +34,13 @@ export function useAssembledData() {
     newLogicNodeList,
     mergeLogicNodeList,
   } = useLogicNodeContext();
-  const { actions, clearActionList } = useActionContext();
+  const { actions, clearActionList, newActionList } = useActionContext();
   const { events, clearEventList, newEventList } = useEventContext();
-  const { states, clearStateList } = useStateContext();
-  const { variables, clearVariableList, newVariableList } = useVariableContext();
+  const { states, clearStateList, newStateList } = useStateContext();
+  const { variables, clearVariableList, newVariableList } =
+    useVariableContext();
+  const { newExtSimList } = useExtSimContext();
+  const { closeAllWindows } = useWindowContext();
   // ... get data from other contexts
 
   const newProject = () => {
@@ -49,39 +55,41 @@ export function useAssembledData() {
     clearStateList();
   };
 
-     // Function to replace data with imported data from the JSON file
-    const populateNewData = (jsonContent: string) => {
-      try {
-        let jsonData;
-    
-        if (typeof jsonContent === 'string') {
-          jsonData = JSON.parse(jsonContent);
-        } else {
-          jsonData = jsonContent;
-        }
-    
-        //const upgrade = new Upgrade(JSON.stringify(jsonData));
-        //const upgradeSuccessful = upgrade.upgrade(3.0); // upgrade to version 3.0
-        const newModel : EMRALD_Model | null = upgradeModel(EMRALD_SchemaVersion, JSON.stringify(jsonData));
-        if (newModel != null) {
-          appData.value = newModel as EMRALD_Model;
-          updateName(appData.value.name);
-          updateDescription(appData.value.desc);
-          updateVersion(appData.value.version);
-          newDiagramList(appData.value.DiagramList || []);
-          newLogicNodeList(appData.value.LogicNodeList || []);
-          newEventList(appData.value.EventList || []);
-          newVariableList(appData.value.VariableList || []);
-          // updateAppData(appData.value);
-        } else {
-          console.error('Error parsing JSON: Upgrade not successful');
-        }
+  // Function to replace data with imported data from the JSON file
+  const populateNewData = (jsonContent: string) => {
+    try {
+      let jsonData;
 
-      } catch (error) {
-        console.error('Error parsing JSON:', error);
+      if (typeof jsonContent === 'string') {
+        jsonData = JSON.parse(jsonContent);
+      } else {
+        jsonData = jsonContent;
       }
-    };
 
+      const upgrade = new Upgrade(JSON.stringify(jsonData));
+      const upgradeSuccessful = upgrade.upgrade(3.0); // upgrade to version 3.0
+
+      if (upgradeSuccessful) {
+        closeAllWindows(); // close all active windows when opening a new project
+        const openedModel: EMRALD_Model = JSON.parse(upgrade.newModelStr);
+        updateName(openedModel.name);
+        updateDescription(openedModel.desc);
+        updateVersion(openedModel.version);
+        newDiagramList(openedModel.DiagramList || []);
+        newLogicNodeList(openedModel.LogicNodeList || []);
+        newActionList(openedModel.ActionList || []);
+        newStateList(openedModel.StateList || []);
+        newEventList(openedModel.EventList || []);
+        newVariableList(openedModel.VariableList || []);
+        newExtSimList(openedModel.ExtSimList || []);
+        updateAppData(openedModel);
+      } else {
+        console.error('Error parsing JSON: Upgrade not successful');
+      }
+    } catch (error) {
+      console.error('Error parsing JSON:', error);
+    }
+  };
 
   // Function to merge data with imported data from the JSON file
   const mergeNewData = (jsonContent: string) => {
@@ -108,8 +116,8 @@ export function useAssembledData() {
       ActionList: actions,
       EventList: events,
       VariableList: variables,
-    }
-  }
+    };
+  };
 
   const assembledData = {
     id,

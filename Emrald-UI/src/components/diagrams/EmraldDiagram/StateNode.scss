@@ -5,7 +5,17 @@
     background: #f5f5f6;
     color: #222;
     box-shadow: 0 4px 6px -1px rgb(0 0 0 / 15%), 0 2px 4px -1px rgb(0 0 0 / 8%);
-    border-radius: 2px;
+    border-radius: 6px;
+  }
+
+  .failed-state {
+    background-color: rgba(255, 0, 4, 0.082);
+    border-radius: 6px;
+  }
+
+  .success-state {
+    background-color: rgba(0, 128, 0, 0.089);
+    border-radius: 6px;
   }
 
   .react-flow__handle-right {

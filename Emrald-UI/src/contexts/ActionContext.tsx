@@ -5,10 +5,15 @@ import React, {
 } from 'react';
 import { Action, NewState } from '../types/Action';
 import { EmraldContextWrapperProps } from './EmraldContextWrapper';
-import { appData } from '../hooks/useAppData';
+import { appData, updateAppData } from '../hooks/useAppData';
+import { ReadonlySignal, useComputed } from '@preact/signals-react';
+import { EMRALD_Model } from '../types/EMRALD_Model';
+import { MainItemTypes } from '../types/ItemTypes';
+import { updateModelAndReferences } from '../utils/UpdateModel';
 
 interface ActionContextType {
   actions: Action[];
+  actionsList: ReadonlySignal<Action[]>;
   createAction: (action: Action) => void;
   updateAction: (action: Action) => void;
   deleteAction: (actionId: string | undefined) => void;
@@ -16,11 +21,12 @@ interface ActionContextType {
   getActionByActionId: (actionId: string | null) => Action;
   getNewStatesByActionName: (actionName: string) => NewState[];
   addNewStateToAction: (action: Action, newState: NewState) => void;
+  newActionList: (newActionList: Action[]) => void;
   clearActionList: () => void;
 }
 
-const emptyAction: Action = {
-  id: 0,
+export const emptyAction: Action = {
+  id: "",
   name: '',
   desc: '',
   actType: 'atTransition',
@@ -40,35 +46,39 @@ export function useActionContext() {
 }
 
 const ActionContextProvider: React.FC<EmraldContextWrapperProps> = ({ children }) => {
-  const [actions, setActions] = useState<Action[]>(
-    appData.value.ActionList
-  );
+  const [actions, setActions] = useState<Action[]>(JSON.parse(JSON.stringify(appData.value.ActionList.sort((a,b) => a.name.localeCompare(b.name)))));
+  const actionsList = useComputed(() => appData.value.ActionList);
   
   const createAction = (newAction: Action) => {
-    const updatedActionList = [...actions, newAction ];
-    setActions(updatedActionList);
+    const updatedActions = [...actions, newAction ];
+    appData.value.ActionList = updatedActions;
+    updateAppData(appData.value);
+    setActions(updatedActions);
   };
 
-  const updateAction = (updatedAction: Action) => {
-    const updatedActionList = actions.map((item) =>
-      item.id === updatedAction.id ? updatedAction : item,
-    );
-    setActions(updatedActionList);
+  const updateAction = async (updatedAction: Action) => {
+    // const updatedActionList = actionsList.value.map((item) =>
+    //   item.id === updatedAction.id ? updatedAction : item,
+    // );
+
+    var updatedModel : EMRALD_Model = await updateModelAndReferences(updatedAction, MainItemTypes.Action);
+    updateAppData(JSON.parse(JSON.stringify(updatedModel)));
+    setActions(updatedModel.ActionList);
   };
 
   const deleteAction = (actionId: string | undefined) => {
     if (!actionId) { return; }
-    const updatedActionList = actions.filter(
+    const updatedActionList = actionsList.value.filter(
       (item) => item.id !== actionId,
     );
     setActions(updatedActionList);
   };
 
   const getActionByActionId = (actionId: string | null) => {
-    return actions.find((action) => action.id === actionId) || emptyAction;
+    return actionsList.value.find((action) => action.id === actionId) || emptyAction;
   };
   const getActionByActionName = (actionName: string) => {
-    return actions.find((action) => action.name === actionName) || emptyAction;
+    return actionsList.value.find((action) => action.name === actionName) || emptyAction;
   };
 
   const addNewStateToAction = (action: Action, newState: NewState) => {
@@ -79,11 +89,16 @@ const ActionContextProvider: React.FC<EmraldContextWrapperProps> = ({ children }
   }
 
   const getNewStatesByActionName = (actionName: string) => {
-    const action = actions.find((action) => action.name === actionName);
+    const action = actionsList.value.find((action) => action.name === actionName);
     if (action) {
       return action.newStates || [];
     }
     return [];
+  };
+
+  // Open New, Merge, and Clear Diagram List
+  const newActionList = (newActionList: Action[]) => {
+    setActions(newActionList);
   };
 
   const clearActionList = () => {
@@ -94,6 +109,7 @@ const ActionContextProvider: React.FC<EmraldContextWrapperProps> = ({ children }
     <ActionContext.Provider
       value={{
         actions,
+        actionsList,
         createAction,
         updateAction,
         deleteAction,
@@ -101,6 +117,7 @@ const ActionContextProvider: React.FC<EmraldContextWrapperProps> = ({ children }
         getActionByActionId,
         getNewStatesByActionName,
         addNewStateToAction,
+        newActionList,
         clearActionList
       }}
     >

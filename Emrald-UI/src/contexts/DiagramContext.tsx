@@ -1,23 +1,22 @@
 import React, {
   createContext,
   useContext,
-  useEffect,
   useState,
 } from 'react';
-import { computed, effect } from '@preact/signals';
+import { ReadonlySignal, useComputed } from '@preact/signals-react';
 import { Diagram } from '../types/Diagram';
 import { updateModelAndReferences } from '../utils/UpdateModel';
-import { GetModelItemsReferencedBy, GetModelItemsReferencing } from '../utils/ModelReferences';
 import { MainItemTypes } from '../types/ItemTypes';
 import { EmraldContextWrapperProps } from './EmraldContextWrapper';
 import { EMRALD_Model } from '../types/EMRALD_Model';
 import { v4 as uuidv4 } from 'uuid';
 import { appData, updateAppData } from '../hooks/useAppData';
 interface DiagramContextType {
+  diagramList: ReadonlySignal<Diagram[]>;
   diagrams: Diagram[];
   createDiagram: (newDiagram: Diagram) => void;
   updateDiagram: (updatedDiagram: Diagram) => void;
-  updateDiagramDetails: (updatedDiagram: Diagram) => void;
+  // updateDiagramDetails: (updatedDiagram: Diagram) => void;
   deleteDiagram: (diagramId: string | undefined) => void;
   getDiagramByDiagramName: (diagramName: string) => Diagram;
   getDiagramById: (diagramId: string) => Diagram;
@@ -31,7 +30,7 @@ export const emptyDiagram: Diagram = {
     name: '',
     desc: '',
     diagramType: 'dtSingle',
-    diagramLabel: "",
+    diagramLabel: "Component",
     states: [],
 }
 
@@ -48,31 +47,34 @@ export function useDiagramContext() {
 }
 
 const DiagramContextProvider: React.FC<EmraldContextWrapperProps> = ({ children }) => {
-  const [diagrams, setDiagrams] = useState<Diagram[]>(appData.value.DiagramList);
+  const [diagrams, setDiagrams] = useState<Diagram[]>(appData.value.DiagramList.sort((a,b) => a.name.localeCompare(b.name)));
+  const diagramList = useComputed(() => appData.value.DiagramList);
 
   // Create, Delete, Update individual diagrams
   const createDiagram = (newDiagram: Diagram) => {
     const updatedDiagrams = [...diagrams, newDiagram];
+    appData.value.DiagramList = updatedDiagrams;
+    updateAppData(appData.value);
     setDiagrams(updatedDiagrams);
   };
 
-  const updateDiagramDetails = (updatedDiagram: Diagram) => {
-    const updatedDiagrams = diagrams.map((diagram) =>
-      diagram.id === updatedDiagram.id
-        ? updatedDiagram
-        : diagram,
-    );
-    setDiagrams(updatedDiagrams);
-  };
+  // const updateDiagramDetails = (updatedDiagram: Diagram) => {
+  //   const updatedDiagrams = diagrams.map((diagram) =>
+  //     diagram.id === updatedDiagram.id
+  //       ? updatedDiagram
+  //       : diagram,
+  //   );
+  //   setDiagrams(updatedDiagrams);
+  // };
 
-  const updateDiagram = (updatedDiagram: Diagram) => {
+  const updateDiagram = async (updatedDiagram: Diagram) => {
     // Rest of your code to update the diagram list
     console.log(updatedDiagram);
     
-    var updatedModel : EMRALD_Model = updateModelAndReferences(updatedDiagram, MainItemTypes.Diagram);
-    
-    updateAppData(updatedModel);
-
+    var updatedModel : EMRALD_Model = await updateModelAndReferences(updatedDiagram, MainItemTypes.Diagram);
+    console.log("Calling update app data");
+    updateAppData(JSON.parse(JSON.stringify(updatedModel)));
+    console.log("Called update app data");
     setDiagrams(updatedModel.DiagramList);
   };
 
@@ -85,11 +87,11 @@ const DiagramContextProvider: React.FC<EmraldContextWrapperProps> = ({ children 
   };
 
   const getDiagramByDiagramName = (diagramName: string) => {
-    return diagrams.find((diagram) => diagram.name === diagramName) || emptyDiagram;
+    return diagramList.value.find((diagram) => diagram.name === diagramName) || emptyDiagram;
   }
 
   const getDiagramById = (diagramId: string) => {
-    return diagrams.find((diagram) => diagram.id === diagramId) || emptyDiagram;
+    return diagramList.value.find((diagram) => diagram.id === diagramId) || emptyDiagram;
   }
 
   // Open New, Merge, and Clear Diagram List
@@ -108,9 +110,10 @@ const DiagramContextProvider: React.FC<EmraldContextWrapperProps> = ({ children 
   return (
     <DiagramContext.Provider
       value={{
+        diagramList,
         diagrams,
         createDiagram,
-        updateDiagramDetails,
+        // updateDiagramDetails,
         updateDiagram,
         deleteDiagram,
         getDiagramByDiagramName,

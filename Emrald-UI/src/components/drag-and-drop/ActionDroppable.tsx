@@ -1,22 +1,29 @@
-// DropTargetComponent.tsx
-import React, { PropsWithChildren, useState } from 'react';
+import React from 'react';
 import { useDrop } from 'react-dnd';
-import { Action } from '../../types/Action';
+import { State } from '../../types/State';
+import { Box } from '@mui/material';
+import ActionToStateTable from '../forms/ActionForm/ActionToStateTable';
+import { NewStateItem } from '../forms/ActionForm/ActionForm';
+import { v4 as uuidv4 } from 'uuid';
+import { useActionFormContext } from '../forms/ActionForm/ActionFormContext';
 
-interface DroppedItem {
-  id: string;
-  itemData: any;
-}
 
-const DropTargetComponent: React.FC = () => {
-  const [droppedItems, setDroppedItems] = useState<DroppedItem[]>([]);
+const ActionDropTarget: React.FC = () => {
+  const { newStateItems, setNewStateItems, sortNewStates } = useActionFormContext();
 
   const [{ isOver }, drop] = useDrop({
-    accept: 'ACTION',
-    drop: (item: DroppedItem) => {
-      console.log(item);
-      if (!droppedItems.some((droppedItem) => droppedItem.id === item.id)) {
-        setDroppedItems([...droppedItems, item]);
+    accept: 'State',
+    drop: (item: State) => {
+      const newStateItem: NewStateItem = {
+        id: uuidv4(),
+        toState: item.name,
+        prob: 0,
+        failDesc: '',
+        remaining: false,
+        probType: 'fixed',
+      }
+      if (item) {
+        setNewStateItems(sortNewStates([...newStateItems, newStateItem]));
       }
     },
     collect: (monitor) => ({
@@ -27,33 +34,29 @@ const DropTargetComponent: React.FC = () => {
   const backgroundColor = isOver ? 'lightgreen' : 'white';
 
   return (
-    <div
+    <Box
       ref={drop}
+      sx={{mt: 3}}
       style={{
         height: '100%',
-        padding: '16px',
         backgroundColor,
       }}
     >
-      {droppedItems.length > 0 ? (
-        <div>
-          Dropped Items:
-          <ul>
-            {droppedItems.map((item) => (
-              <li
-                key={item.id}
-                style={{ overflowWrap: 'break-word', padding: 10 }}
-              >
-                {JSON.stringify(item)}
-              </li>
-            ))}
-          </ul>
-        </div>
+      {newStateItems.length > 0 ? (
+        <ActionToStateTable />
       ) : (
-        <div>Drop here</div>
+        <Box sx={{ 
+          border: '2px dashed gray', 
+          height: '75px', 
+          display: 'flex', 
+          justifyContent: 'center', 
+          alignItems: 'center', 
+          fontWeight: 'bold' }}>
+            Drop State Items here
+        </Box>
       )}
-    </div>
+    </Box>
   );
 };
 
-export default DropTargetComponent;
+export default ActionDropTarget;

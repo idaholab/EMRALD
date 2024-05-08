@@ -9,25 +9,26 @@ import ActionContextProvider from './ActionContext';
 import EventContextProvider from './EventContext';
 import StateContextProvider from './StateContext';
 import VariableContextProvider from './VariableContext';
+import ExtSimContextProvider from './ExtSimContext';
 
 export interface EmraldContextWrapperProps {
-  // appData: any;
-  // updateAppData: (newData: any) => void;
   children: React.ReactNode;
 }
 
-const EmraldContextWrapper: React.FC<EmraldContextWrapperProps> = ({ appData, updateAppData, children }) => {
+const EmraldContextWrapper: React.FC<EmraldContextWrapperProps> = ({ children }) => {
   return (
     <DndProvider backend={HTML5Backend}>
       <WindowProvider>
-        <ModelDetailsContextProvider appData={appData} updateAppData={updateAppData}>
-          <DiagramContextProvider appData={appData} updateAppData={updateAppData}>
-            <LogicNodeContextProvider appData={appData} updateAppData={updateAppData}>
-              <ActionContextProvider appData={appData} updateAppData={updateAppData}>
-                <EventContextProvider appData={appData} updateAppData={updateAppData}>
-                  <StateContextProvider appData={appData} updateAppData={updateAppData}>
-                    <VariableContextProvider appData={appData} updateAppData={updateAppData}>
-                      {children}
+        <ModelDetailsContextProvider>
+          <DiagramContextProvider>
+            <LogicNodeContextProvider>
+              <ActionContextProvider>
+                <EventContextProvider>
+                  <StateContextProvider>
+                    <VariableContextProvider>
+                      <ExtSimContextProvider>
+                        {children}
+                      </ExtSimContextProvider>
                     </VariableContextProvider>
                   </StateContextProvider>
                 </EventContextProvider>

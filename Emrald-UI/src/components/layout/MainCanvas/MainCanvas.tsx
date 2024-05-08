@@ -5,15 +5,17 @@ import {
   SpeedDialIcon,
   SpeedDialAction,
   Fab,
+  Button,
+  SvgIcon,
 } from '@mui/material';
 import UndoIcon from '@mui/icons-material/Undo';
 import WindowComponent from '../Window/Window';
-import SchemaIcon from '@mui/icons-material/Schema';
-import AccountTreeIcon from '@mui/icons-material/AccountTree';
-import EventIcon from '@mui/icons-material/Event';
-import CommitIcon from '@mui/icons-material/Commit';
-import ShapeLineIcon from '@mui/icons-material/ShapeLine';
-import PermDataSettingIcon from '@mui/icons-material/PermDataSetting';
+import { TbSchema } from "react-icons/tb";
+import { GrPerformance } from "react-icons/gr";
+import { VscSymbolEvent } from "react-icons/vsc";
+import { HiOutlineVariable } from "react-icons/hi";
+import { MdOutlineLocationSearching } from "react-icons/md";
+import { GiFamilyTree } from "react-icons/gi";
 import { useWindowContext } from '../../../contexts/WindowContext';
 import DiagramForm from '../../forms/DiagramForm/DiagramForm';
 import MinimizedWindows from '../Window/MinimizedWindows';
@@ -22,42 +24,37 @@ import ActionForm from '../../forms/ActionForm/ActionForm';
 import EventForm from '../../forms/EventForm/EventForm';
 import StateForm from '../../forms/StateForm/StateForm';
 import VariableForm from '../../forms/VariableForm/VariableForm';
-import emraldData from '../../../emraldData.json';
+import ActionFormContextProvider from '../../forms/ActionForm/ActionFormContext';
 
-interface MainCanvasProps {
-  appData: any;
-  updateAppData: (newData: any, undoData?: any) => void;
-}
-
-const MainCanvas: React.FC<MainCanvasProps> = ({ appData, updateAppData }) => {
+const MainCanvas: React.FC = () => {
   const actions = [
     {
-      icon: <SchemaIcon />,
+      icon: <SvgIcon><TbSchema /></SvgIcon>,
       name: 'New Diagram',
       content: <DiagramForm />,
     },
     {
-      icon: <AccountTreeIcon />,
+      icon: <SvgIcon sx={{ rotate: '180deg' }}><GiFamilyTree /></SvgIcon>,
       name: 'New Logic Tree',
       content: <LogicNodeForm />,
     },
     {
-      icon: <CommitIcon />,
+      icon:  <SvgIcon><GrPerformance /></SvgIcon>,
       name: 'New Action',
-      content: <ActionForm />,
+      content: <ActionFormContextProvider><ActionForm /></ActionFormContextProvider>,
     },
     {
-      icon: <EventIcon />,
+      icon: <SvgIcon><VscSymbolEvent /></SvgIcon>,
       name: 'New Event',
       content: <EventForm />,
     },
     {
-      icon: <ShapeLineIcon />,
+      icon: <SvgIcon><MdOutlineLocationSearching /></SvgIcon>,
       name: 'New State',
       content: <StateForm />,
     },
     {
-      icon: <PermDataSettingIcon />,
+      icon: <SvgIcon><HiOutlineVariable /></SvgIcon>,
       name: 'New Variable',
       content: <VariableForm />,
     },
@@ -65,17 +62,17 @@ const MainCanvas: React.FC<MainCanvasProps> = ({ appData, updateAppData }) => {
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
-  const storedHistory = JSON.parse(localStorage.getItem('dataHistory') || '[]');
+  const storedHistory = JSON.parse(sessionStorage.getItem('dataHistory') || '[]');
 
   const { addWindow } = useWindowContext();
 
-  const undoChange = () => {
-    if (storedHistory && storedHistory.length > 1) {
-      const newHistory = storedHistory.slice(0, storedHistory.length - 1); // Remove the last item in the array
-      localStorage.setItem('dataHistory', JSON.stringify(newHistory));
-      updateAppData(undefined, newHistory[newHistory.length - 1]);
-    }
-  };
+  // const undoChange = () => {
+  //   if (storedHistory && storedHistory.length > 1) {
+  //     const newHistory = storedHistory.slice(0, storedHistory.length - 1); // Remove the last item in the array
+  //     sessionStorage.setItem('dataHistory', JSON.stringify(newHistory));
+  //     updateAppData(undefined, newHistory[newHistory.length - 1]);
+  //   }
+  // };
 
   return (
     <Box

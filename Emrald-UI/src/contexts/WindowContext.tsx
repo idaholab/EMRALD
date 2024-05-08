@@ -22,6 +22,7 @@ interface WindowContextType {
   handleClose: (id?: string) => void;
   toggleMaximize: (windowToToggle: Window) => void;
   toggleMinimize: (windowToToggle: Window) => void;
+  closeAllWindows: () => void;
 }
 
 // Create a context for window management
@@ -90,7 +91,7 @@ export const WindowProvider: React.FC<WindowProviderProps> = ({ children }) => {
       id: uuidv4(),
       title,
       isOpen: true,
-      initialPosition: position || { x: 100, y: 50, width: 600, height: 700 },
+      initialPosition: position || { x: 100, y: 50, width: 1000, height: 700 },
       minimized: false,
       maximized: false,
       content,
@@ -135,6 +136,11 @@ export const WindowProvider: React.FC<WindowProviderProps> = ({ children }) => {
     setWindows(updatedWindows);
   };
 
+  const closeAllWindows = () => {
+    setWindows([]);
+    setActiveWindowId(null);
+  };
+
   // Context value to be provided
   const contextValue: WindowContextType = {
     windows,
@@ -144,6 +150,7 @@ export const WindowProvider: React.FC<WindowProviderProps> = ({ children }) => {
     handleClose,
     toggleMaximize,
     toggleMinimize,
+    closeAllWindows
   };
 
   // Provide the context to the children

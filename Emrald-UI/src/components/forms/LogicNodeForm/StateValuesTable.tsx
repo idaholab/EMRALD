@@ -12,8 +12,7 @@ import FormControl from '@mui/material/FormControl';
 import Paper from '@mui/material/Paper';
 import { useDiagramContext } from '../../../contexts/DiagramContext';
 import { StateEvalValue } from '../../../types/ItemTypes';
-import { LogicNode } from '../../../types/LogicNode';
-
+import { CompChild } from '../../../types/LogicNode';
 
 
 interface ComponentStateValue {
@@ -22,17 +21,14 @@ interface ComponentStateValue {
 }
 interface StateValuesTableProps {
   diagramName: string,
-  nodeDetails?: {
-    stateValues?: ComponentStateValue[],
-    diagramName: string
-  },
+  nodeDetails?: CompChild,
   setCompChildren?: React.Dispatch<React.SetStateAction<{
     stateValues?: ComponentStateValue[] | undefined;
     diagramName: string;
   }[]>>
 }
 
-const StateValuesTable: React.FC<StateValuesTableProps> = ({ diagramName, nodeDetails, setCompChildren }) => {
+const StateValuesTable: React.FC<StateValuesTableProps> = ({ diagramName, nodeDetails }) => {
   const { getDiagramByDiagramName } = useDiagramContext();
   const [stateValues, setStateValues] = useState<ComponentStateValue[]>([]);
 
@@ -68,11 +64,15 @@ const StateValuesTable: React.FC<StateValuesTableProps> = ({ diagramName, nodeDe
 
     setStateValues(updatedValues);
 
-    setCompChildren(prev => ({
-      ...prev,
-      stateValues: updatedValues,
-      diagramName
-    }));
+    if (nodeDetails) {
+      nodeDetails.stateValues = updatedValues;
+    }
+
+    // setCompChildren(prev => ({
+    //   ...prev,
+    //   stateValues: updatedValues,
+    //   diagramName
+    // }));
   };
 
   return (
@@ -81,7 +81,7 @@ const StateValuesTable: React.FC<StateValuesTableProps> = ({ diagramName, nodeDe
         <TableHead>
           <TableRow>
             <TableCell sx={{ fontWeight: 'bold', p: 2}}>State Name</TableCell>
-            <TableCell sx={{ fontWeight: 'bold'}}>Evaluation Value</TableCell>
+            <TableCell sx={{ fontWeight: 'bold'}}>Logic Evaluation Value</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>

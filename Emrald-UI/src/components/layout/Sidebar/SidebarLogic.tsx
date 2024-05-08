@@ -5,6 +5,7 @@ import { useActionContext } from '../../../contexts/ActionContext';
 import { useEventContext } from '../../../contexts/EventContext';
 import { useStateContext } from '../../../contexts/StateContext';
 import { useVariableContext } from '../../../contexts/VariableContext';
+import { useExtSimContext } from '../../../contexts/ExtSimContext';
 
 export function useSidebarLogic() {
   const { diagrams } = useDiagramContext();
@@ -13,6 +14,7 @@ export function useSidebarLogic() {
   const { events } = useEventContext();
   const { states } = useStateContext();
   const { variables } = useVariableContext();
+  const { extSims } = useExtSimContext();
   
   const [isDiagramAccordionOpen, setIsDiagramAccordionOpen] = useState(false);
   const [isComponentAccordionOpen, setIsComponentAccordionOpen] = useState(false);
@@ -22,7 +24,7 @@ export function useSidebarLogic() {
   const diagramPanels = [
     { type: 'Diagrams', data: diagrams },
     { type: 'Logic Tree', data: logicNodes },
-    { type: 'External Sims', data: [] },
+    { type: 'External Sims', data: extSims },
   ];
 
   const stateItems = useMemo(() => {
