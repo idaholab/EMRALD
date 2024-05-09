@@ -80,7 +80,10 @@ const useEmraldDiagram = () => {
     if (node.data.state) {
       addWindow(
         `Edit State: ${node.data.state.name}`,
-        <StateForm stateData={node.data.state} />,
+        <StateForm
+          stateData={node.data.state}
+          parentDiagram={currentDiagram.value}
+        />,
       );
     }
   };
