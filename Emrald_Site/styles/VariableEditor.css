@@ -24,6 +24,16 @@ textarea {
     width: auto;
 }
 
+.saveAsNewLabel {
+    width: auto;
+}
+
+.saveAsNewCheckbox {
+    display: inline-flex;
+    align-items: center;
+    margin-left: 15px;
+}
+
 label {
     display: table-cell;
     width: 75px;
