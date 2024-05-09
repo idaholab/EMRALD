@@ -11,6 +11,7 @@ import { Event } from '../../../types/Event';
 import { EventType, MainItemTypes } from '../../../types/ItemTypes';
 import { useWindowContext } from '../../../contexts/WindowContext';
 import { emptyEvent, useEventContext } from '../../../contexts/EventContext';
+import { ComponentLogic, Distribution, ExtSim, FailureRate, StateChange, Timer, VarCondition } from './FormFieldsByType';
 
 interface EventFormProps {
   eventData?: Event;
@@ -34,6 +35,17 @@ const EventForm: React.FC<EventFormProps> = ({ eventData }) => {
     { value: 'et3dSimEv', label: 'Ext Simulation' },
     { value: 'etDistribution', label: 'Distribution' },
   ];
+
+   // Map event types to their respective sub-components and props
+  const eventTypeToComponent: { [key in EventType]: { component: React.FC<any>, props: any } } = {
+    'etVarCond': { component: VarCondition, props: {} },
+    'etStateCng': { component: StateChange, props: {} },
+    'etComponentLogic': { component: ComponentLogic, props: {} },
+    'etTimer': { component: Timer, props: {} },
+    'etFailRate': { component: FailureRate, props: {} },
+    'et3dSimEv': { component: ExtSim, props: {} },
+    'etDistribution': { component: Distribution, props: {} },
+  };
 
   const handleSave = () => {
     eventData
@@ -77,6 +89,10 @@ const EventForm: React.FC<EventFormProps> = ({ eventData }) => {
           desc={desc}
           setDesc={setDesc}
         />
+
+        {/* Render the appropriate sub-component based on selected event type */}
+        {evType && React.createElement(eventTypeToComponent[evType].component, eventTypeToComponent[evType].props)}
+
         <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 5 }}>
           <Button
             variant="contained"

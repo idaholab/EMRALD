@@ -1,4 +1,12 @@
-import { Box, Checkbox, FormControl, FormControlLabel, InputLabel, MenuItem, Select } from '@mui/material';
+import {
+  Box,
+  Checkbox,
+  FormControl,
+  FormControlLabel,
+  InputLabel,
+  MenuItem,
+  Select,
+} from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import { sim3DMessageType, useActionFormContext } from '../ActionFormContext';
 import DurationControl from 'react-duration-control';
@@ -7,17 +15,19 @@ import { useExtSimContext } from '../../../../contexts/ExtSimContext';
 import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
 import { useVariableContext } from '../../../../contexts/VariableContext';
+import DurationComponent from '../../../common/DurationComponent';
+import { SelectComponent } from '../../../common';
 
 dayjs.extend(duration);
 
 const ExtSimulation: React.FC = () => {
-  const { 
+  const {
     sim3DMessage,
     extSim,
     openSimVarParams,
     sim3DModelRef,
     sim3DConfigData,
-    simEndTime, 
+    simEndTime,
     setSim3DMessage,
     setExtSim,
     setOpenSimVarParams,
@@ -27,7 +37,9 @@ const ExtSimulation: React.FC = () => {
   } = useActionFormContext();
   const { extSimList } = useExtSimContext();
   const { variableList } = useVariableContext();
-  const extSimVariables = variableList.value.filter((variable) => variable.varScope === 'gt3DSim');
+  const extSimVariables = variableList.value.filter(
+    (variable) => variable.varScope === 'gt3DSim',
+  );
   const simEndTimeDuration = dayjs.duration(simEndTime);
   const [milliseconds, setMilliseconds] = useState(0);
   const simTypeOptions = [
@@ -40,60 +52,40 @@ const ExtSimulation: React.FC = () => {
   useEffect(() => {
     const simEndTimeDuration = dayjs.duration(simEndTime);
     setMilliseconds(simEndTimeDuration.$ms);
-  }, [simEndTime])
+  }, [simEndTime]);
 
   const handleDurationChange = (value: number) => {
     setMilliseconds(value);
     setSimEndTime(dayjs.duration(value).toISOString());
-  }
+  };
 
   return (
     <Box display={'flex'} flexDirection={'column'}>
-      <FormControl sx={{ mt: 2, minWidth: 120 }} size="small">
-        <InputLabel id="demo-simple-select-label">Sim Action</InputLabel>
-        <Select
-          value={sim3DMessage}
-          onChange={(e) => setSim3DMessage(e.target.value as sim3DMessageType)}
-          label="Sim Action"
-          inputProps={{ 'aria-label': 'Without label' }}
-        >
-          {simTypeOptions.map((item, index) => (
-            <MenuItem value={item.value} key={index}>
-              <em>{item.label}</em>
-            </MenuItem>
-          ))}
-        </Select>
-      </FormControl>
-      <FormControl sx={{ mt: 2, minWidth: 120 }} size="small">
-        <InputLabel id="demo-simple-select-label">External Sim</InputLabel>
-        <Select
-          value={extSim}
-          onChange={(e) => setExtSim(e.target.value)}
-          label="External Sim"
-          inputProps={{ 'aria-label': 'Without label' }}
-        >
-          {extSimList.value.map((item) => (
-            <MenuItem value={item.name} key={item.id}>
-              <em>{item.name}</em>
-            </MenuItem>
-          ))}
-        </Select>
-      </FormControl>
+      <SelectComponent
+        value={sim3DMessage}
+        label="Sim Action"
+        setValue={setSim3DMessage}
+      >
+        {simTypeOptions.map((item, index) => (
+          <MenuItem value={item.value} key={index}>
+            <em>{item.label}</em>
+          </MenuItem>
+        ))}
+      </SelectComponent>
+      <SelectComponent value={extSim} label="External Sim" setValue={setExtSim}>
+        {extSimList.value.map((item) => (
+          <MenuItem value={item.name} key={item.id}>
+            <em>{item.name}</em>
+          </MenuItem>
+        ))}
+      </SelectComponent>
 
       {sim3DMessage === 'atOpenSim' ? (
         <Box mt={2} display={'flex'} flexDirection={'column'}>
-          <Box>
-            <DurationControl
-              className="custom-duration-control"
-              label="Duration"
-              pattern={
-                'Days {dddd} Hours {hh} Minutes {mm} Seconds {ss}'
-              }
-              value={milliseconds}
-              onChange={handleDurationChange}
-              hideSpinner
-            />
-          </Box>
+          <DurationComponent
+            milliseconds={milliseconds}
+            handleDurationChange={handleDurationChange}
+          />
           <FormControlLabel
             sx={{ mt: 2 }}
             control={
@@ -106,37 +98,29 @@ const ExtSimulation: React.FC = () => {
             label="Use variable for items below"
           />
 
-          <FormControl sx={{ mt: 2, minWidth: 120 }} size="small">
-            <InputLabel id="demo-simple-select-label">Model Reference (Optional)</InputLabel>
-            <Select
-              value={sim3DModelRef}
-              onChange={(e) => setSim3DModelRef(e.target.value)}
-              label="Model Reference (Optional)"
-              inputProps={{ 'aria-label': 'Without label' }}
-            >
-              {extSimVariables.map((item, index) => (
-                <MenuItem value={item.name} key={index}>
-                  <em>{item.name}</em>
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+          <SelectComponent
+            value={sim3DModelRef}
+            label="Model Reference (Optional)"
+            setValue={setSim3DModelRef}
+          >
+            {extSimVariables.map((item, index) => (
+              <MenuItem value={item.name} key={index}>
+                <em>{item.name}</em>
+              </MenuItem>
+            ))}
+          </SelectComponent>
 
-          <FormControl sx={{ mt: 2, minWidth: 120 }} size="small">
-            <InputLabel id="demo-simple-select-label">Config Data (Optional)</InputLabel>
-            <Select
-              value={sim3DConfigData}
-              onChange={(e) => setSim3DConfigData(e.target.value)}
-              label="Config Data (Optional)"
-              inputProps={{ 'aria-label': 'Without label' }}
-            >
-              {extSimVariables.map((item, index) => (
-                <MenuItem value={item.name} key={index}>
-                  <em>{item.name}</em>
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+          <SelectComponent
+            value={sim3DConfigData}
+            label="Config Data (Optional)"
+            setValue={setSim3DConfigData}
+          >
+            {extSimVariables.map((item, index) => (
+              <MenuItem value={item.name} key={index}>
+                <em>{item.name}</em>
+              </MenuItem>
+            ))}
+          </SelectComponent>
         </Box>
       ) : (
         <></>
