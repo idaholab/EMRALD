@@ -80,7 +80,7 @@ const StateContextProvider: React.FC<EmraldContextWrapperProps> = ({
 
   // Create, Delete, Update individual States
   const createState = (newState: State) => {
-    const updatedStates = [...appData.peek().StateList, newState];
+    const updatedStates = [...appData.value.StateList, newState];
     updateAppData(
       JSON.parse(
         JSON.stringify({ ...appData.value, StateList: updatedStates }),
@@ -228,7 +228,9 @@ const StateContextProvider: React.FC<EmraldContextWrapperProps> = ({
 
   const clearStateList = () => {
     setStates([]);
-    appData.value.StateList = [];
+    updateAppData(
+      JSON.parse(JSON.stringify({ ...appData.value, StateList: [] })),
+    );
   };
 
   return (

@@ -537,7 +537,6 @@ const useContextMenu = (
         (state) => state !== itemToDelete.name,
       );
       getStateNodes();
-      // updateDiagramDetails(currentDiagram.value);
       deleteState(itemToDelete.id);
     } else if (itemToDelete.id && stateToModify && isEvent(itemToDelete)) {
       const index = stateToModify.events.indexOf(itemToDelete.name);

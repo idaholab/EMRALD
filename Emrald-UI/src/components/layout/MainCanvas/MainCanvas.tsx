@@ -68,11 +68,6 @@ const MainCanvas: React.FC = () => {
       name: 'New Event',
       content: <EventForm />,
     },
-    // {
-    //   icon: <SvgIcon><MdOutlineLocationSearching /></SvgIcon>,
-    //   name: 'New State',
-    //   content: <StateForm />,
-    // },
     {
       icon: (
         <SvgIcon>

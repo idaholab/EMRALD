@@ -123,6 +123,7 @@ const StateForm: React.FC<StateFormProps> = ({
               Default Logic Tree Evaluation Value
             </FormLabel>
             <RadioGroup
+              sx={{ margin: '8px' }}
               aria-label="status-value"
               name="status-value"
               value={defaultSingleStateValue}
