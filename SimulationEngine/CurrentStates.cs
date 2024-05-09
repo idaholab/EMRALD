@@ -309,8 +309,11 @@ namespace SimulationTracking
       return finalStates;
     }
 
-    public void GetKeyStatePaths(EmraldModel model, Dictionary<string, SimulationEngine.KeyStateResult> keyResMap, Dictionary<string, SimulationEngine.ResultState> otherResMap, List<string> watchVars)
+    //return key state results, but add to all combined results and non key state results
+    public Dictionary<string, TimeSpan> GetKeyStatePaths(EmraldModel model, Dictionary<string, SimulationEngine.KeyStateResult> keyResMap, Dictionary<string, SimulationEngine.ResultState> otherResMap, List<string> watchVars)
     {
+      Dictionary<string, TimeSpan> retStateResults = new Dictionary<string, TimeSpan>();
+
       foreach (StatePath curStatePath in this.Values)
       {
         bool isKeyPath = (curStatePath.state.stateType == EnStateType.stKeyState);
@@ -444,6 +447,8 @@ namespace SimulationTracking
             addToRes = keyResMap[curStatePath.state.name].pathsLookup;
             //add the time for the key state overall result
             keyResMap[curStatePath.state.name].AddTime(curStatePath.times[curStatePath.times.Count - 1]);
+
+            retStateResults.Add(curStatePath.state.name, curStatePath.times[curStatePath.times.Count - 1]);
           }
 
           foreach (var item in curResDict.Values)
@@ -462,6 +467,8 @@ namespace SimulationTracking
           keyResMap[curStatePath.state.name].AssignResults();
         }
       }
+
+      return retStateResults;
     }
   }
 

@@ -189,6 +189,13 @@ function OnLoad(dataObj) {
     scope.dbID = variableData.dbID;
     scope.name = variableData.name;
     scope.desc = variableData.desc;
+
+    if (typeof variableData.canMonitor !== "undefined") {
+      scope.data.canMonitor = variableData.canMonitor;
+      scope.data.monitorInSim = variableData.monitorInSim;
+      scope.data.cumulativeStats = variableData.cumulativeStats;
+    }
+
     if (typeof variableData.resetOnRuns !== "undefined") {
       scope.data.resetOnRuns = variableData.resetOnRuns;
     }
@@ -310,6 +317,11 @@ function GetDataObject() {
   dataObj.name = scope.name;
   dataObj.desc = scope.desc;
   dataObj.varScope = scope.varScope.value;
+
+  dataObj.canMonitor = scope.data.canMonitor;
+  dataObj.monitorInSim = scope.data.monitorInSim;
+  dataObj.cumulativeStats = scope.data.cumulativeStats;
+  
   if (dataObj.varScope === "gtDocLink") {
     dataObj.value = scope.data.value;
     dataObj.docLink = scope.data.varLink;
@@ -473,6 +485,10 @@ variableModule.controller("variableController", ["$scope", function ($scope) {
     docType: $scope.docTypes[0],
     docPath: "",
     varLink: "",
+
+    canMonitor: true,
+    monitorInSim: false,
+    cumulativeStats: false,
     
     useRegExLine: false,
     regExLine: -1,
@@ -505,6 +521,11 @@ variableModule.controller("variableController", ["$scope", function ($scope) {
   $scope.$watch("data.value", function (newV, oldV) { if (newV !== oldV) validateValue(); });
   $scope.$watch("data.sim3DId", function (newV, oldV) { if (newV !== oldV) somethingChanged(); });
   $scope.$watch("data.docType", function (newV, oldV) { if (newV !== oldV) handleDocTypeChange(); });
+  $scope.$watch("data.canMonitor", function (newV) { 
+    if (newV === false) { 
+    $scope.data.monitorInSim = false; 
+    $scope.data.cumulativeStats = false; 
+  }});
 
   $scope.accrualScopeSelected= false;
   $scope.extSimVariableScopeSelected = false;
