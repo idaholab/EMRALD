@@ -170,36 +170,6 @@ const ActionToStateTable: React.FC = () => {
                           {calculateProb()}
                         </Typography>
                       ) : (
-                        // <StyledTextField
-                        //   value={item.prob}
-                        //   type="number"
-                        //   disabled={item.prob === -1}
-                        //   id="prob value"
-                        //   size="small"
-                        //   onChange={(e) => handleProbChange(e, item)}
-                        //   inputProps={{
-                        //     step: null,
-                        //     min: 0,
-                        //     max: 1,
-                        //     style: {
-                        //       WebkitTextFillColor:
-                        //         item.prob === -1 ? 'transparent' : 'black',
-                        //     }
-                        //   }}
-                        //   error={
-                        //     (!item.remaining &&
-                        //       (item.prob < 0 || item.prob > 1)) ||
-                        //     isNaN(item.prob)
-                        //   }
-                        //   helperText={
-                        //     !item.remaining && (item.prob < 0 || item.prob > 1)
-                        //       ? 'Invalid value'
-                        //       : isNaN(item.prob)
-                        //       ? 'Must have a value'
-                        //       : ''
-                        //   }
-                        // />
-
                         <StyledTextField
                         value={item.prob}
                         type="text" // Change type to text

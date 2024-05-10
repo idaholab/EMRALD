@@ -1,10 +1,11 @@
 import React from 'react'
 
-const MAAP = () => {
+const ExtSim = () => {
   return (
     <div>
+      ExtSim
     </div>
   )
 }
 
-export default MAAP;
+export default ExtSim

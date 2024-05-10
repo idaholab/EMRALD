@@ -1,18 +1,18 @@
 import { Box, FormGroup, FormControlLabel, Checkbox } from '@mui/material'
 import React from 'react'
-import { Variable } from '../../../types/Variable';
-import { ReadonlySignal } from '@preact/signals-react';
+import { Variable } from '../../types/Variable';
 
 interface CodeVariablesProps {
-  variableList: ReadonlySignal<Variable[]>;
+  variableList: Variable[];
   codeVariables: string[];
   addToUsedVariables: (variableName: string) => void
+  height?: string;
 }
-const CodeVariables: React.FC<CodeVariablesProps> = ({ variableList, codeVariables, addToUsedVariables }) => {
+const CodeVariables: React.FC<CodeVariablesProps> = ({ variableList, codeVariables, addToUsedVariables, height  }) => {
   return (
     <Box>
     <b>Variables used in code</b>
-    <Box sx={{ height: '530px', overflowY: 'auto', ml: 3 }}>
+    <Box sx={{ height: height ? height : '340px', overflowY: 'auto', ml: 3 }}>
       <FormGroup>
         <FormControlLabel
           control={
@@ -26,7 +26,7 @@ const CodeVariables: React.FC<CodeVariablesProps> = ({ variableList, codeVariabl
           }
           label={'RunIdx'}
         />
-        {variableList.value.map((variable) => (
+        {variableList.map((variable) => (
           <FormControlLabel
             key={variable.id}
             control={

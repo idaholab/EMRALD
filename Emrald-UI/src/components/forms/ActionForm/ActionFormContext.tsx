@@ -44,7 +44,8 @@ interface ActionFormContextType {
   openSimVarParams: boolean;
   makeInputFileCode: string;
   exePath: string;
-  processOutputFileCode: string
+  processOutputFileCode: string;
+  formData: any;
   hasError: boolean;
   actionTypeOptions: { value: string; label: string }[];
   setName: React.Dispatch<React.SetStateAction<string>>;
@@ -61,10 +62,12 @@ interface ActionFormContextType {
   setSimEndTime: React.Dispatch<React.SetStateAction<string>>;
   setOpenSimVarParams: React.Dispatch<React.SetStateAction<boolean>>;
   addToUsedVariables: (variableName: string) => void;
+  setCodeVariables: React.Dispatch<React.SetStateAction<string[]>>;
   setNewStateItems: React.Dispatch<React.SetStateAction<NewStateItem[]>>;
   setMakeInputFileCode: React.Dispatch<React.SetStateAction<string>>;
   setExePath: React.Dispatch<React.SetStateAction<string>>;
   setProcessOutputFileCode: React.Dispatch<React.SetStateAction<string>>;
+  setFormData: React.Dispatch<React.SetStateAction<any>>;
   setHasError: React.Dispatch<React.SetStateAction<boolean>>;
   handleChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   handleSave: () => void;
@@ -117,6 +120,7 @@ const ActionFormContextProvider: React.FC<PropsWithChildren> = ({ children }) =>
   const [makeInputFileCode, setMakeInputFileCode] = useState<string>('');
   const [exePath, setExePath] = useState<string>('');
   const [processOutputFileCode, setProcessOutputFileCode] = useState<string>('');
+  const [formData, setFormData] = useState<any>();
 
   const [hasError, setHasError] = useState(false);
   const actionTypeOptions = [
@@ -324,6 +328,7 @@ const ActionFormContextProvider: React.FC<PropsWithChildren> = ({ children }) =>
     setMakeInputFileCode(actionData?.makeInputFileCode || '');
     setExePath(actionData?.exePath || '');
     setProcessOutputFileCode(actionData?.processOutputFileCode || '');
+    setFormData(actionData?.formData || undefined);
 
     action.value = actionData || emptyAction;
   }
@@ -348,6 +353,7 @@ const ActionFormContextProvider: React.FC<PropsWithChildren> = ({ children }) =>
       makeInputFileCode,
       exePath,
       processOutputFileCode,
+      formData,
       hasError,
       actionTypeOptions,
       setName,
@@ -355,6 +361,7 @@ const ActionFormContextProvider: React.FC<PropsWithChildren> = ({ children }) =>
       setActType,
       setMutuallyExclusive,
       setVariableName,
+      setCodeVariables,
       setScriptCode,
       setSim3DMessage,
       setExtSim,
@@ -368,6 +375,7 @@ const ActionFormContextProvider: React.FC<PropsWithChildren> = ({ children }) =>
       setMakeInputFileCode,
       setExePath,
       setProcessOutputFileCode,
+      setFormData,
       setHasError,
       handleChange,
       handleSave,

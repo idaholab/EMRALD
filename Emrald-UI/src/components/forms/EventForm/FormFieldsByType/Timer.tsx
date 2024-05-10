@@ -1,10 +1,11 @@
 import React from 'react'
 
-const MAAP = () => {
+const Timer = () => {
   return (
     <div>
+      Timer
     </div>
   )
 }
 
-export default MAAP;
+export default Timer

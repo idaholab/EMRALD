@@ -7,11 +7,13 @@ import MainDetailsForm from '../MainDetailsForm';
 import { Action } from '../../../types/Action';
 import { useWindowContext } from '../../../contexts/WindowContext';
 import { useActionFormContext } from './ActionFormContext';
-import { MainItemTypes } from '../../../types/ItemTypes';
-import ChangeVarValue from './FormFieldsByType/ChangeVarValue';
-import RunApplication from './FormFieldsByType/RunApplication/RunApplication';
-import Transition from './FormFieldsByType/Transition';
-import ExtSimulation from './FormFieldsByType/ExtSimulation';
+import { ActionType, MainItemTypes } from '../../../types/ItemTypes';
+import {
+  Transition,
+  ChangeVarValue,
+  ExtSimulation,
+  RunApplication,
+} from './FormFieldsByType';
 
 interface ActionFormProps {
   actionData?: Action;
@@ -28,7 +30,7 @@ export interface NewStateItem {
 }
 
 const ActionForm: React.FC<ActionFormProps> = ({ actionData }) => {
-  const { 
+  const {
     name,
     desc,
     actType,
@@ -38,17 +40,27 @@ const ActionForm: React.FC<ActionFormProps> = ({ actionData }) => {
     setDesc,
     setActType,
     handleSave,
-    initializeForm
+    initializeForm,
   } = useActionFormContext();
 
   useEffect(() => {
     initializeForm(actionData);
-  },[]);
+  }, []);
 
   const { handleClose } = useWindowContext();
 
+  // Map action types to their respective sub-components and props
+  const actionTypeToComponent: {
+    [key in ActionType]: { component: React.FC<any>; props: any };
+  } = {
+    atTransition: { component: Transition, props: {} },
+    atCngVarVal: { component: ChangeVarValue, props: {} },
+    at3DSimMsg: { component: ExtSimulation, props: {} },
+    atRunExtApp: { component: RunApplication, props: {} },
+  };
+
   return (
-    <Box sx={{px: 3}}>
+    <Box sx={{ px: 3 }}>
       <Typography variant="h5" my={3}>
         {actionData ? `Edit` : `Create`} Action
       </Typography>
@@ -65,26 +77,13 @@ const ActionForm: React.FC<ActionFormProps> = ({ actionData }) => {
           setDesc={setDesc}
         />
 
-        {actType === 'atTransition' ? (
-          <Transition />
-        ) : (
-          <></>
-        )}
-        {actType === 'atCngVarVal' ? (
-          <ChangeVarValue />
-        ) : (
-          <></>
-        )}
-        {actType === 'at3DSimMsg' ? (
-          <ExtSimulation />
-        ) : (
-          <></>
-        )}
-        {actType === 'atRunExtApp' ? (
-          <RunApplication />
-        ) : (
-          <></>
-        )}
+        {/* Render the appropriate sub-component based on selected action type */}
+        {actType &&
+          React.createElement(
+            actionTypeToComponent[actType].component,
+            actionTypeToComponent[actType].props,
+          )}
+
         <Box sx={{ display: 'flex', justifyContent: 'flex-end', py: 5 }}>
           <Button
             variant="contained"

@@ -3,26 +3,25 @@ import {
   Box,
   Typography,
   FormControlLabel,
-  TextField,
   FormControl,
   Radio,
   RadioGroup,
-  InputLabel,
-  Select,
   MenuItem,
 } from '@mui/material';
 import { useActionFormContext } from '../../ActionFormContext';
 import { useVariableContext } from '../../../../../contexts/VariableContext';
-import CodeVariables from '../../CodeVariables';
+import CodeVariables from '../../../../common/CodeVariables';
 import { ReactElement, useEffect, useState } from 'react';
 import * as CustomForms from './CustomForms/index';
 import { startCase } from 'lodash';
 import React from 'react';
+import SelectComponent from '../../../../common/SelectComponent';
+import { TextFieldComponent } from '../../../../common';
 
 // Define the type for the custom form components
 type CustomFormComponents = {
   [key: string]: React.ComponentType<any>;
-}
+};
 
 // Explicitly cast CustomForms to the defined type
 const customFormsTyped = CustomForms as CustomFormComponents;
@@ -57,7 +56,9 @@ const RunApplication = () => {
   useEffect(() => {
     // Set selected component when customFormType changes
     if (customFormType && customFormsTyped[customFormType]) {
-      setSelectedComponent(React.createElement(customFormsTyped[customFormType]));
+      setSelectedComponent(
+        React.createElement(customFormsTyped[customFormType]),
+      );
     } else {
       setSelectedComponent(null);
     }
@@ -100,15 +101,10 @@ const RunApplication = () => {
                 }}
               />
 
-              <TextField
+              <TextFieldComponent
                 label="Executable Location"
-                margin="normal"
-                variant="outlined"
-                size="small"
                 value={exePath}
-                sx={{ my: 3 }}
-                onChange={(e) => setExePath(e.target.value)}
-                fullWidth
+                setValue={setExePath}
               />
 
               <Typography sx={{ mb: 1 }} fontWeight={600}>
@@ -129,33 +125,27 @@ const RunApplication = () => {
           </Box>
 
           <CodeVariables
-            variableList={variableList}
+            variableList={variableList.value}
             codeVariables={codeVariables}
             addToUsedVariables={addToUsedVariables}
+            height="540px"
           />
         </Box>
       ) : (
         <Box display={'flex'} flexDirection={'column'}>
-          <FormControl sx={{ mt: 2, minWidth: 120 }} size="small">
-            <InputLabel id="demo-simple-select-label">
-              Custom Application Type
-            </InputLabel>
-            <Select
-              value={customFormType}
-              onChange={(e) => setCustomFormType(e.target.value)}
-              label="Custom Application Type"
-              inputProps={{ 'aria-label': 'Without label' }}
-            >
-              {options.map((option) => (
-                <MenuItem value={option} key={option}>
-                  <em>{startCase(option)}</em>
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+          <SelectComponent
+            label="Custom Application Type"
+            value={customFormType}
+            setValue={setCustomFormType}
+          >
+            {options.map((option) => (
+              <MenuItem value={option} key={option}>
+                <em>{startCase(option)}</em>
+              </MenuItem>
+            ))}
+          </SelectComponent>
 
           {selectedComponent}
-
         </Box>
       )}
     </>

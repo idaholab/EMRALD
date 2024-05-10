@@ -14,10 +14,15 @@ body {
   }
 }
 
+// react-duration-input style overrides
 .custom-duration-control.focused >.react-duration-control-fieldset {
   border-color: #008080 !important;
 }
 
 .custom-duration-control.focused >.react-duration-control-fieldset>.react-duration-control-label {
   color: #008080 !important;
+}
+
+.react-duration-control-unit-text {
+  margin-right: 5px;
 }
