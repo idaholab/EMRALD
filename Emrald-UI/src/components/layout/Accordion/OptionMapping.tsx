@@ -41,7 +41,7 @@ export const useOptionsMapping = () => {
   const { deleteLogicNode } = useLogicNodeContext();
   const { deleteAction } = useActionContext();
   const { deleteEvent } = useEventContext();
-  const { deleteState } = useStateContext();
+  const { deleteState, getStateByStateName } = useStateContext();
   const { deleteVariable } = useVariableContext();
   const { deleteExtSim } = useExtSimContext();
 
@@ -68,7 +68,14 @@ export const useOptionsMapping = () => {
       },
       {
         label: 'Delete',
-        action: (diagram: Diagram) => deleteDiagram(diagram.id),
+        action: (diagram: Diagram) => {
+          // delete all states tied to the diagram
+          diagram.states.map((name) => {
+            const state = getStateByStateName(name);
+            deleteState(state.id);
+          });
+          deleteDiagram(diagram.id);
+        },
       },
       { label: 'Make Template', action: () => null },
       { label: 'Export', action: () => null },

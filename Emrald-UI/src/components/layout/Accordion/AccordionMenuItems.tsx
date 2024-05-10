@@ -27,13 +27,11 @@ const AccordionMenuItems: React.FC<AccordionMenuListProps> = ({
   bothAccordionsOpen,
 }) => {
   const { diagrams } = useDiagramContext();
-  
+
   const [openIndex, setOpenIndex] = React.useState<number | null>(null); // Keeps track of the index of the open item
-  const diagramTypes = [
-    { name: 'Plant' },
-    { name: 'Component' },
-    { name: 'System' },
-  ];
+  const diagramLabels = Array.from(
+    new Set(diagrams.map((diagram) => diagram.diagramLabel)),
+  );
 
   const handleClick = (index: number) => {
     setOpenIndex((prevIndex) => (prevIndex === index ? null : index));
@@ -52,47 +50,63 @@ const AccordionMenuItems: React.FC<AccordionMenuListProps> = ({
           aria-labelledby="nested-list-subheader"
         >
           <Box>
-            {diagramTypes.map(({ name }, index) => (
-              <React.Fragment key={name}>
-                <ListItemButton
-                  onClick={() => handleClick(index)}
-                  sx={{ py: '3px' }}
-                >
-                  <ListItemIcon sx={{ minWidth: '30px' }}>
-                    {openIndex === index ? <FolderOpenIcon /> : <FolderIcon />}
-                  </ListItemIcon>
-                  <ListItemText primary={name} />
-                  {openIndex === index ? <ExpandLess /> : <ExpandMore />}
-                </ListItemButton>
-                <Collapse in={openIndex === index} timeout="auto" unmountOnExit>
-                  <List
-                    component="div"
-                    disablePadding
-                    sx={{
-                      maxHeight: !bothAccordionsOpen ? '420px' : '210px',
-                      overflow: 'auto',
-                    }}
+            {diagramLabels.length > 0 ? (
+              diagramLabels.map((name, index) => (
+                <React.Fragment key={name}>
+                  <ListItemButton
+                    onClick={() => handleClick(index)}
+                    sx={{ py: '3px' }}
                   >
-                    {diagrams.map((diagram) => (
-                      <React.Fragment key={diagram.id}>
-                        {diagram.diagramLabel === name && (
-                          <DraggableItem key={diagram.id} itemData={diagram} itemType={MainItemTypes.Diagram}>
-                            <ListItemButton
-                              sx={{ p: '0 0 0 3rem', width: '100%' }}
+                    <ListItemIcon sx={{ minWidth: '30px' }}>
+                      {openIndex === index ? (
+                        <FolderOpenIcon />
+                      ) : (
+                        <FolderIcon />
+                      )}
+                    </ListItemIcon>
+                    <ListItemText primary={name} />
+                    {openIndex === index ? <ExpandLess /> : <ExpandMore />}
+                  </ListItemButton>
+                  <Collapse
+                    in={openIndex === index}
+                    timeout="auto"
+                    unmountOnExit
+                  >
+                    <List
+                      component="div"
+                      disablePadding
+                      sx={{
+                        maxHeight: !bothAccordionsOpen ? '420px' : '210px',
+                        overflow: 'auto',
+                      }}
+                    >
+                      {diagrams.map((diagram) => (
+                        <React.Fragment key={diagram.id}>
+                          {diagram.diagramLabel === name && (
+                            <DraggableItem
+                              key={diagram.id}
+                              itemData={diagram}
+                              itemType={MainItemTypes.Diagram}
                             >
-                              <ItemWithContextMenu
-                                itemData={diagram}
-                                optionType={item.type}
-                              />
-                            </ListItemButton>
-                          </DraggableItem>
-                        )}
-                      </React.Fragment>
-                    ))}
-                  </List>
-                </Collapse>
-              </React.Fragment>
-            ))}
+                              <ListItemButton
+                                sx={{ p: '0 0 0 3rem', width: '100%' }}
+                              >
+                                <ItemWithContextMenu
+                                  itemData={diagram}
+                                  optionType={item.type}
+                                />
+                              </ListItemButton>
+                            </DraggableItem>
+                          )}
+                        </React.Fragment>
+                      ))}
+                    </List>
+                  </Collapse>
+                </React.Fragment>
+              ))
+            ) : (
+              <Typography>N/A</Typography>
+            )}
           </Box>
         </List>
       ) : (
@@ -113,7 +127,11 @@ const AccordionMenuItems: React.FC<AccordionMenuListProps> = ({
                     key={option.id || index}
                     sx={{ p: '0 0 0 2rem' }}
                   >
-                    <DraggableItem key={option.id} itemData={option} itemType={MainItemTypes.LogicNode}>
+                    <DraggableItem
+                      key={option.id}
+                      itemData={option}
+                      itemType={MainItemTypes.LogicNode}
+                    >
                       <ItemWithContextMenu
                         itemData={option}
                         optionType={item.type}
@@ -133,7 +151,11 @@ const AccordionMenuItems: React.FC<AccordionMenuListProps> = ({
                     key={option.id || index}
                     sx={{ p: '0 0 0 2rem' }}
                   >
-                    <DraggableItem key={option.id} itemData={option} >
+                    <DraggableItem
+                      key={option.id}
+                      itemData={option}
+                      itemType={MainItemTypes.Diagram}
+                    >
                       <ItemWithContextMenu
                         itemData={option}
                         optionType={item.type}

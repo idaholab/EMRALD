@@ -10,12 +10,12 @@ import {
 } from '@mui/material';
 import UndoIcon from '@mui/icons-material/Undo';
 import WindowComponent from '../Window/Window';
-import { TbSchema } from "react-icons/tb";
-import { GrPerformance } from "react-icons/gr";
-import { VscSymbolEvent } from "react-icons/vsc";
-import { HiOutlineVariable } from "react-icons/hi";
-import { MdOutlineLocationSearching } from "react-icons/md";
-import { GiFamilyTree } from "react-icons/gi";
+import { TbSchema } from 'react-icons/tb';
+import { GrPerformance } from 'react-icons/gr';
+import { VscSymbolEvent } from 'react-icons/vsc';
+import { HiOutlineVariable } from 'react-icons/hi';
+import { MdOutlineLocationSearching } from 'react-icons/md';
+import { GiFamilyTree } from 'react-icons/gi';
 import { useWindowContext } from '../../../contexts/WindowContext';
 import DiagramForm from '../../forms/DiagramForm/DiagramForm';
 import MinimizedWindows from '../Window/MinimizedWindows';
@@ -29,32 +29,51 @@ import ActionFormContextProvider from '../../forms/ActionForm/ActionFormContext'
 const MainCanvas: React.FC = () => {
   const actions = [
     {
-      icon: <SvgIcon><TbSchema /></SvgIcon>,
+      icon: (
+        <SvgIcon>
+          <TbSchema />
+        </SvgIcon>
+      ),
       name: 'New Diagram',
       content: <DiagramForm />,
     },
     {
-      icon: <SvgIcon sx={{ rotate: '180deg' }}><GiFamilyTree /></SvgIcon>,
+      icon: (
+        <SvgIcon sx={{ rotate: '180deg' }}>
+          <GiFamilyTree />
+        </SvgIcon>
+      ),
       name: 'New Logic Tree',
       content: <LogicNodeForm />,
     },
     {
-      icon:  <SvgIcon><GrPerformance /></SvgIcon>,
+      icon: (
+        <SvgIcon>
+          <GrPerformance />
+        </SvgIcon>
+      ),
       name: 'New Action',
-      content: <ActionFormContextProvider><ActionForm /></ActionFormContextProvider>,
+      content: (
+        <ActionFormContextProvider>
+          <ActionForm />
+        </ActionFormContextProvider>
+      ),
     },
     {
-      icon: <SvgIcon><VscSymbolEvent /></SvgIcon>,
+      icon: (
+        <SvgIcon>
+          <VscSymbolEvent />
+        </SvgIcon>
+      ),
       name: 'New Event',
       content: <EventForm />,
     },
     {
-      icon: <SvgIcon><MdOutlineLocationSearching /></SvgIcon>,
-      name: 'New State',
-      content: <StateForm />,
-    },
-    {
-      icon: <SvgIcon><HiOutlineVariable /></SvgIcon>,
+      icon: (
+        <SvgIcon>
+          <HiOutlineVariable />
+        </SvgIcon>
+      ),
       name: 'New Variable',
       content: <VariableForm />,
     },
@@ -62,7 +81,9 @@ const MainCanvas: React.FC = () => {
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
-  const storedHistory = JSON.parse(sessionStorage.getItem('dataHistory') || '[]');
+  const storedHistory = JSON.parse(
+    sessionStorage.getItem('dataHistory') || '[]',
+  );
 
   const { addWindow } = useWindowContext();
 

@@ -15,6 +15,7 @@ import {
   useDiagramContext,
 } from '../../../contexts/DiagramContext';
 import { useWindowContext } from '../../../contexts/WindowContext';
+import { FormControl, TextField } from '@mui/material';
 
 interface DiagramFormProps {
   diagramData?: Diagram;
@@ -33,6 +34,9 @@ const DiagramForm: React.FC<DiagramFormProps> = ({ diagramData }) => {
     { value: 'dtSingle', label: 'Single' },
     { value: 'dtMulti', label: 'Multi' },
   ];
+  const [diagramLabel, setDiagramLabel] = useState<string>(
+    diagramData?.diagramLabel || '',
+  );
 
   const handleSave = () => {
     updateTitle(diagramData?.name || '', name);
@@ -42,14 +46,16 @@ const DiagramForm: React.FC<DiagramFormProps> = ({ diagramData }) => {
           ...diagram.value,
           name,
           desc,
-          diagramType
+          diagramType,
+          diagramLabel,
         })
       : createDiagram({
           ...diagram.value,
           id: uuidv4(),
           name,
           desc,
-          diagramType
+          diagramType,
+          diagramLabel: diagramLabel || 'Component',
         });
     handleClose();
   };
@@ -71,8 +77,27 @@ const DiagramForm: React.FC<DiagramFormProps> = ({ diagramData }) => {
           setDesc={setDesc}
         />
         {/* <Box>
-          <SingleValueGroups states={diagram.value.states} /> Maybe put back in the future
+          <SingleValueGroups states={diagram.value.states} /> Maybe put back in
+          the future
         </Box> */}
+        <FormControl
+          variant="outlined"
+          size="small"
+          sx={{ minWidth: 120, width: '100%' }}
+        >
+          <TextField
+            label="Diagram Label"
+            margin="normal"
+            variant="outlined"
+            size="small"
+            sx={{ mb: 0 }}
+            value={diagramLabel}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              setDiagramLabel(e.target.value)
+            }
+            fullWidth
+          />
+        </FormControl>
         <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 5 }}>
           <Button
             variant="contained"

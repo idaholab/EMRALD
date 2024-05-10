@@ -7,7 +7,6 @@ import { Option } from '../../layout/ContextMenu/ContextMenu';
 import { useStateContext } from '../../../contexts/StateContext';
 import { useEventContext } from '../../../contexts/EventContext';
 import { useActionContext } from '../../../contexts/ActionContext';
-import { useDiagramContext } from '../../../contexts/DiagramContext';
 import { currentDiagram } from './EmraldDiagram';
 import { useWindowContext } from '../../../contexts/WindowContext';
 import StateForm from '../../forms/StateForm/StateForm';
@@ -30,7 +29,6 @@ const useContextMenu = (
   const [stateToModify, setStateToModify] = useState<State | undefined>();
   const [actionTypeToModify, setActionTypeToModify] = useState<string>();
   const { addWindow } = useWindowContext();
-  const { updateDiagramDetails } = useDiagramContext();
   const { updateState, deleteState, getStateByStateId } = useStateContext();
   const { deleteEvent } = useEventContext();
   const { updateAction, deleteAction, getActionByActionId } =
@@ -66,7 +64,10 @@ const useContextMenu = (
       {
         label: 'New State',
         action: () => {
-          addWindow('New State', <StateForm />);
+          addWindow(
+            'New State',
+            <StateForm parentDiagram={currentDiagram.value} />,
+          );
           closeContextMenu();
         },
         isDivider: true,
@@ -96,18 +97,18 @@ const useContextMenu = (
       {
         label: 'State Properties',
         action: () => {
-          addWindow(state.name, <StateForm stateData={state} />);
+          addWindow(
+            state.name,
+            <StateForm
+              stateData={state}
+              parentDiagram={currentDiagram.value}
+            />,
+          );
           closeContextMenu();
         },
         isDivider: true,
       },
-      {
-        label: 'Remove State',
-        action: () => {
-          removeStateItem(state);
-          closeContextMenu();
-        },
-      },
+
       {
         label: 'Delete State',
         action: () => {
@@ -482,20 +483,6 @@ const useContextMenu = (
   /**
    **** Delete and Remove functions ****
    **/
-  // * Removes state from the diagram
-  const removeStateItem = (stateToRemove: State) => {
-    if (!stateToRemove) {
-      return;
-    }
-    if (stateToRemove.id && getStateNodes) {
-      currentDiagram.value.states = currentDiagram.value.states.filter(
-        (state) => state !== stateToRemove.name,
-      );
-      getStateNodes();
-      updateDiagramDetails(currentDiagram.value);
-    }
-  };
-
   // * Removes event from the diagram
   const removeEventItem = (eventToRemove: Event, state: State) => {
     if (!eventToRemove) {
@@ -550,7 +537,6 @@ const useContextMenu = (
         (state) => state !== itemToDelete.name,
       );
       getStateNodes();
-      updateDiagramDetails(currentDiagram.value);
       deleteState(itemToDelete.id);
     } else if (itemToDelete.id && stateToModify && isEvent(itemToDelete)) {
       const index = stateToModify.events.indexOf(itemToDelete.name);

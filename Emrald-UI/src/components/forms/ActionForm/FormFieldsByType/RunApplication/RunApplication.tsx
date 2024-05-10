@@ -3,12 +3,9 @@ import {
   Box,
   Typography,
   FormControlLabel,
-  TextField,
   FormControl,
   Radio,
   RadioGroup,
-  InputLabel,
-  Select,
   MenuItem,
 } from '@mui/material';
 import { useActionFormContext } from '../../ActionFormContext';
@@ -45,8 +42,7 @@ const RunApplication = () => {
 
   const [customFormType, setCustomFormType] = useState<string>('');
   const [options, setOptions] = useState<string[]>([]);
-  const [selectedComponent, setSelectedComponent] =
-    useState<ReactElement | null>(null);
+  const [selectedComponent, setSelectedComponent] = useState<ReactElement | null>(null);
 
   useEffect(() => {
     // Dynamically import components
