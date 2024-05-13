@@ -64,6 +64,7 @@ const angular = win.angular;
  * @property {MAAPForm} form - Reference to the form instance.
  * @property {(element: SourceElement) => string} extractName - Extracts the name from a complex object.
  * @property {Record<string, import('maap-par-parser').MAAPParParserOutput>} possibleInitiators - Initiator dropdown list options.
+ * @property {import('maap-inp-parser').Comment[]} comments - Comments in the INP file.
  */
 
 /**
@@ -74,6 +75,7 @@ const angular = win.angular;
  * @property {SourceElement[]} sections - File sections.
  * @property {VarLinkJSON[]} varLinks - Variable links.
  * @property {string[]} possibleInitiators - Initiator options.
+ * @property {import('maap-inp-parser').Comment[]} comments - Comments in the INP file.
  */
 
 /**
@@ -150,6 +152,7 @@ class MAAPForm extends ExternalExeForm {
       });
     });
     /** @type {RAFormData} */ const raFormData = {
+      comments: scope.comments,
       exePath: scope.exePath,
       inputPath: scope.inputPath,
       parameterPath: scope.parameterPath,
@@ -171,7 +174,13 @@ class MAAPForm extends ExternalExeForm {
     dataObj.raPreCode = `string exeLoc = @"${this.escape(scope.exePath)}";
       string paramLoc = @"${this.escape(scope.parameterPath)}";
       string inpLoc = @"${this.escape(scope.inputPath)}";
-      
+
+      if (!Path.IsPathRooted(paramLoc))
+        paramLoc = RootPath + paramLoc;
+
+      if (!Path.IsPathRooted(inpLoc))
+        inpLoc = RootPath + inpLoc;    
+
       string tempLoc = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\\EMRALD_MAAP\\";
       try {
         if (Directory.Exists(tempLoc)) {
@@ -185,6 +194,15 @@ class MAAPForm extends ExternalExeForm {
       if (File.Exists(inpLoc)) {
         File.Copy(inpLoc, tempLoc + Path.GetFileName(inpLoc));
       }
+
+      string ext = ".INC";
+      string[] filesToCopy = Directory.GetFiles(Path.GetDirectoryName(inpLoc), $"*{ext}");
+      foreach (string filePath in filesToCopy)
+      {
+        string destinationPath = Path.Combine(tempLoc, Path.GetFileName(filePath));
+        File.Copy(filePath, destinationPath, true);
+      }
+
       string exeName = Path.GetFileName(exeLoc);
       if(File.Exists(exeLoc)) {
         File.Copy(exeLoc, tempLoc + exeName);
@@ -199,7 +217,11 @@ class MAAPForm extends ExternalExeForm {
       System.IO.File.WriteAllText(tempLoc + Path.GetFileName(inpLoc), newInp);
       return tempLoc + exeName + " " + Path.GetFileName(inpLoc) + " " + Path.GetFileName(paramLoc);`;
     dataObj.raPostCode = `string inpLoc = @"${this.escape(scope.inputPath)}";
+    if (!Path.IsPathRooted(inpLoc))
+      inpLoc = RootPath + inpLoc;
     string docVarPath = @"${tempFilePath}"; //whatever you assigned the results variables to
+    if (!Path.IsPathRooted(docVarPath))
+      docVarPath = RootPath + docVarPath;
     string resLoc = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\\EMRALD_MAAP\\" + Path.GetFileNameWithoutExtension(inpLoc) + ".log";
     File.Copy(resLoc, docVarPath, true);`;
     /* eslint-enable max-len */
@@ -309,6 +331,8 @@ maapForm.controller('maapFormController', [
     );
     /** @type {RAFormData} */
     // eslint-disable-next-line prefer-destructuring
+
+    // Loads the existing data from the EMRALD project
     const raFormData = parentScope.data.raFormData;
     if (raFormData) {
       if (typeof raFormData.parameterPath === 'string') {
@@ -336,19 +360,24 @@ maapForm.controller('maapFormController', [
             new VarLink(varLink.target, form.findVariable(varLink.variable)),
         );
       }
+      if (raFormData.comments) {
+        $scope.comments = raFormData.comments;
+      }
       if (raFormData.sections) {
         $scope.sections = raFormData.sections;
-        raFormData.sections.forEach((section) => {
+        raFormData.sections.forEach((section, i) => {
           if (
             section.type === 'block' &&
             section.blockType === 'PARAMETER CHANGE'
           ) {
-            $scope.parameters = section.value.map((v) => {
-              if (v.useVariable) {
-                v.variable = form.findVariable(v.variable);
-              }
-              return v;
-            });
+            $scope.parameters = section.value
+              .filter((v) => v.type !== 'comment')
+              .map((v) => {
+                if (v.useVariable) {
+                  v.variable = form.findVariable(v.variable);
+                }
+                return v;
+              });
           } else if (
             section.type === 'block' &&
             section.blockType === 'INITIATORS'
@@ -372,6 +401,9 @@ maapForm.controller('maapFormController', [
                 });
             };
             bindBlockVars(section);
+            if ($scope.comments[i - 1]) {
+              $scope.blocks.push($scope.comments[i - 1]);
+            }
             $scope.blocks.push(section);
           }
         });
@@ -482,6 +514,8 @@ maapForm.controller('maapFormController', [
         $scope.parameters = [];
         $scope.initiators = [];
         $scope.blocks = [];
+        $scope.sections = [];
+        $scope.comments = [];
         /** @type {import('maap-inp-parser').MAAPInpParser} */
         const parser = maapInpParser.default;
         // Turning safeMode on will allow the file to fully parse even if there are syntax errors
@@ -493,13 +527,11 @@ maapForm.controller('maapFormController', [
           // TODO: Notify of parsing errors
         }
         /** @type {import('maap-inp-parser').Comment[]} */
-        const comments = [];
         parsed.output.value.forEach((sourceElement, i) => {
           if (sourceElement.type === 'comment') {
-            comments[i] = sourceElement;
-          } else {
-            $scope.sections.push(sourceElement);
+            $scope.comments[i] = sourceElement;
           }
+          $scope.sections.push(sourceElement);
           switch (sourceElement.type) {
             case 'block':
               if (sourceElement.blockType === 'PARAMETER CHANGE') {
@@ -532,8 +564,8 @@ maapForm.controller('maapFormController', [
               }
               break;
             case 'conditional_block':
-              if (comments[i - 1]) {
-                $scope.blocks.push(comments[i - 1]);
+              if ($scope.comments[i - 1]) {
+                $scope.blocks.push($scope.comments[i - 1]);
               }
               $scope.blocks.push(sourceElement);
               $scope.overrideSections.push({
