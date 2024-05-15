@@ -764,8 +764,7 @@
                     },
                     "dateTime": {
                         "type": "string",
-                        "description": "ISO 8601 date time format for the change",
-                        "format": "date-time"
+                        "description": "ISO 8601 date time format for the change"
                     },
                     "cngID": {
                         "type": "string"
