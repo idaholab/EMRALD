@@ -9,19 +9,21 @@ import {
 import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
-import React from 'react';
+import React, { Dispatch, SetStateAction } from 'react';
+import { DocVarType, VariableType } from '../../../../types/ItemTypes';
 
 interface DocLinkFieldsProps {
   docType: string;
-  setDocType: (docType: string) => void;
+  setDocType: Dispatch<SetStateAction<string | undefined>>;
   docPath: string;
   setDocPath: (docPath: string) => void;
   docLink: string;
   setDocLink: (docLink: string) => void;
-  pathMustExist: boolean;
+  pathMustExist: boolean | undefined;
   setPathMustExist: (value: boolean) => void;
   value: number | string | boolean;
-  setValue: (value: number) => void;
+  setValue: Function;
+  type: VariableType;
 }
 
 const DocLinkFields: React.FC<DocLinkFieldsProps> = ({
@@ -35,6 +37,7 @@ const DocLinkFields: React.FC<DocLinkFieldsProps> = ({
   setPathMustExist,
   value,
   setValue,
+  type,
 }) => {
   return (
     <>
@@ -49,7 +52,7 @@ const DocLinkFields: React.FC<DocLinkFieldsProps> = ({
           id="dec-=type"
           value={docType}
           onChange={(event: SelectChangeEvent<string>) =>
-            setDocType(event.target.value)
+            setDocType(event.target.value as DocVarType)
           }
           label="Doc Type"
         >
@@ -105,26 +108,59 @@ const DocLinkFields: React.FC<DocLinkFieldsProps> = ({
         label="Doc Path and Var Link must exist on startup"
         control={
           <Checkbox
-            checked={pathMustExist}
+            checked={pathMustExist ? true : false}
             onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
               setPathMustExist(e.target.checked)
             }
           />
         }
       />
-      <TextField
-        label="Default"
-        margin="normal"
-        variant="outlined"
-        type="number"
-        size="small"
-        value={value}
-        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-          setValue(Number(e.target.value))
-        }
-        fullWidth
-        sx={{ mb: 0 }}
-      />
+      {type === 'int' || type === 'double' ? (
+        <TextField
+          label="Default"
+          margin="normal"
+          variant="outlined"
+          type="number"
+          size="small"
+          value={value}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setValue(e)}
+          fullWidth
+          sx={{ mb: 0 }}
+        />
+      ) : type === 'bool' ? (
+        <FormControl
+          variant="outlined"
+          size="small"
+          sx={{ minWidth: 120, width: '100%', my: 1 }}
+        >
+          <InputLabel id="demo-simple-select-standard-label">
+            Default
+          </InputLabel>
+          <Select
+            labelId="value"
+            id="value"
+            value={value as string}
+            onChange={(event: SelectChangeEvent<string>) => setValue(event)}
+            label="Default"
+            fullWidth
+          >
+            <MenuItem value="true">True</MenuItem>
+            <MenuItem value="false">False</MenuItem>
+          </Select>
+        </FormControl>
+      ) : (
+        <TextField
+          label="Default"
+          margin="normal"
+          variant="outlined"
+          type="text"
+          size="small"
+          value={value}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setValue(e)}
+          sx={{ mb: 0 }}
+          fullWidth
+        />
+      )}
     </>
   );
 };
