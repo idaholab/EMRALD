@@ -96,7 +96,9 @@ const VariableFormContextProvider: React.FC<PropsWithChildren> = ({
   };
   const InitializeForm = (variableData?: Variable | undefined) => {
     if (variableData?.name) {
-      setName(variableData?.name);
+      setName(variableData.name);
+      const prefix: string = variableData.name.split('_')[0] + '_';
+      setNamePrefix(prefix);
     } else {
       setNamePrefix('Int_');
     }

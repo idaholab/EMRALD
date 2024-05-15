@@ -43,14 +43,13 @@ const VariableContextProvider: React.FC<EmraldContextWrapperProps> = ({
   );
   const variableList = useComputed(() => appData.value.VariableList);
 
-  const createVariable = (newVariable: Variable) => {
-    const updatedVariableList = [...variables, newVariable];
-    updateAppData(
-      JSON.parse(
-        JSON.stringify({ ...appData.value, VariableList: updatedVariableList }),
-      ),
+  const createVariable = async (newVariable: Variable) => {
+    var updatedModel: EMRALD_Model = await updateModelAndReferences(
+      newVariable,
+      MainItemTypes.Variable,
     );
-    setVariables(updatedVariableList);
+    updateAppData(updatedModel);
+    setVariables(updatedModel.VariableList);
   };
 
   const updateVariable = async (updatedVariable: Variable) => {
@@ -59,7 +58,7 @@ const VariableContextProvider: React.FC<EmraldContextWrapperProps> = ({
       MainItemTypes.Variable,
     );
 
-    updateAppData(JSON.parse(JSON.stringify(updatedModel)));
+    updateAppData(updatedModel);
     setVariables(updatedModel.VariableList);
   };
 
@@ -86,8 +85,9 @@ const VariableContextProvider: React.FC<EmraldContextWrapperProps> = ({
 
   const clearVariableList = () => {
     setVariables([]);
-
-    console.log(variables);
+    updateAppData(
+      JSON.parse(JSON.stringify({ ...appData.value, VariableList: [] })),
+    );
   };
 
   return (

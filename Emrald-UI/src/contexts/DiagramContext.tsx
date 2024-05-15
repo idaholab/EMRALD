@@ -50,11 +50,13 @@ const DiagramContextProvider: React.FC<EmraldContextWrapperProps> = ({
   const diagramList = useComputed(() => appData.value.DiagramList);
 
   // Create, Delete, Update individual diagrams
-  const createDiagram = (newDiagram: Diagram) => {
-    const updatedDiagrams = [...diagrams, newDiagram];
-    appData.value.DiagramList = updatedDiagrams;
-    updateAppData(appData.value);
-    setDiagrams(updatedDiagrams);
+  const createDiagram = async (newDiagram: Diagram) => {
+    var updatedModel: EMRALD_Model = await updateModelAndReferences(
+      newDiagram,
+      MainItemTypes.Diagram,
+    );
+    updateAppData(updatedModel);
+    setDiagrams(updatedModel.DiagramList);
   };
 
   const updateDiagram = async (updatedDiagram: Diagram) => {
