@@ -82,7 +82,6 @@ const useEmraldDiagram = () => {
         `Edit State: ${node.data.state.name}`,
         <StateForm
           stateData={node.data.state}
-          parentDiagram={currentDiagram.value}
         />,
       );
     }

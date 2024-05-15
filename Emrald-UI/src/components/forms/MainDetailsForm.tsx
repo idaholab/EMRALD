@@ -23,8 +23,11 @@ interface MainDetailsFormProps<T extends MainItemTypes> {
   typeDisabled?: boolean;
   name: string;
   setName: (name: string) => void;
+  handleNameChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
   desc: string;
   setDesc: (desc: string) => void;
+  error?: boolean;
+  errorMessage?: string;
 }
 
 const MainDetailsForm = <T extends MainItemTypes>({
@@ -35,8 +38,11 @@ const MainDetailsForm = <T extends MainItemTypes>({
   typeDisabled,
   name,
   setName,
+  handleNameChange,
   desc,
   setDesc,
+  error,
+  errorMessage
 }: MainDetailsFormProps<T>) => {
   return (
     <>
@@ -64,8 +70,10 @@ const MainDetailsForm = <T extends MainItemTypes>({
         size="small"
         sx={{ mb: 0 }}
         value={name}
-        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setName(e.target.value)}
+        onChange={handleNameChange ? handleNameChange : (e: React.ChangeEvent<HTMLInputElement>) => setName(e.target.value)}
         fullWidth
+        error={error}
+        helperText={errorMessage}
       />
       <TextField
         label="Description"
