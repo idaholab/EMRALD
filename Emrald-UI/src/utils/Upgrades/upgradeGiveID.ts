@@ -3,16 +3,8 @@ import { UpgradeV1_x } from "./v1_x/UpgradeV1_x"
 import { UpgradeV2_4 } from "./v2_4/UpgradeV2_4"
 import { UpgradeV3_0 } from "./v3_0/UpgradeV3_0"
 import { UpgradeReturn } from "./v1_x/UpgradeV1_x"
-import { Validator } from "jsonschema";
+import Ajv, {JSONSchemaType} from "ajv"
 
-
-//import { Validator } from "../../../node_modules/jsonschema/lib/index";
-//import { v4 as uuidv4 } from 'uuid';
-
-// interface UpgradeResult {
-//     newModel: string;
-//     errors: string;
-// }
 
 export class Upgrade
 {
@@ -20,7 +12,7 @@ export class Upgrade
     private _newModelTxt: string;
     private _newModel?: EMRALD_Model;
     private _emraldVersion : number; 
-    private _errors : string;
+    private _errors : string[];
 
 
 
@@ -99,14 +91,14 @@ export class Upgrade
         return JSON.stringify(this._newModel);
     }
 
-    get errorsStr (): string {
+    get errorsStr (): string[] {
         return this._errors;
     }
 
     // 
     
-    async validateModel(model: EMRALD_Model): Promise<string> {
-        this._errors = "";
+    async validateModel(model: EMRALD_Model): Promise<string[]> {
+        this._errors = [];
         const schemaPath = './src/utils/Upgrades/v3_0/EMRALD_JsonSchemaV3_0.json';
     
         try {
@@ -116,18 +108,26 @@ export class Upgrade
             }
             
             const schemaTxt = await response.text();
+            
+            // Create a new instance of Ajv
+            const ajv = new Ajv();
+
+            // Compile the JSON schema
             const schema = JSON.parse(schemaTxt);
-            const validator = new Validator();
-            const validationResult = validator.validate(model, schema);
-    
-            if (!validationResult.valid) {
-                validationResult.errors.forEach(error => {
-                    if (this._errors !== "") {
-                        this._errors += "\n";
-                    }
-                    this._errors = this._errors + error.instance + " - " + error.message + " : " + JSON.stringify(error.argument);
-                });
-            }
+            const validate = ajv.compile(schema);
+
+            
+            // Validate the data against the schema
+            const isValid = validate(model);
+
+            if (!isValid) {
+                validate.errors?.forEach(e=>{
+                    this._errors.push(`${e.message} - ${e.schemaPath}`);
+                }) 
+                    
+                
+            } 
+
         } catch (error) {
             this._errors = error.message;
         }

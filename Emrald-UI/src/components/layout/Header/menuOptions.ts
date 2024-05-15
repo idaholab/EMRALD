@@ -1,4 +1,5 @@
 import { appData, clearCacheData } from "../../../hooks/useAppData";
+import { validateModel } from "../../../utils/Upgrades/upgrade";
 
 export interface MenuOption {
   label: string;
@@ -87,6 +88,13 @@ export const projectOptions: MenuOption[] = [
   {
     label: 'Save',
     onClick: () => {
+      //validate the model
+      const errors = validateModel(appData.value);
+
+      //if error TODO
+      if(errors != "") {
+        //todo
+      }
       // Convert JSON data to a string
       const jsonString = JSON.stringify(appData.value, null, 2);
 
