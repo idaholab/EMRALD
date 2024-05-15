@@ -4,9 +4,7 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import React from 'react';
 import { Variable } from '../../../types/Variable';
-import { v4 as uuidv4 } from 'uuid';
 import MainDetailsForm from '../MainDetailsForm';
-import { useVariableContext } from '../../../contexts/VariableContext';
 import TextField from '@mui/material/TextField';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
@@ -31,9 +29,7 @@ interface VariableFormProps {
 
 const VariableForm: React.FC<VariableFormProps> = ({ variableData }) => {
   const {
-    accrualStatesData,
     name,
-    namePrefix,
     desc,
     type,
     varScope,
@@ -45,10 +41,7 @@ const VariableForm: React.FC<VariableFormProps> = ({ variableData }) => {
     docLink,
     pathMustExist,
     InitializeForm,
-    setNamePrefix,
-    setName,
     handleClose,
-    setValue,
     setType,
     setDesc,
     setResetOnRuns,
@@ -58,99 +51,18 @@ const VariableForm: React.FC<VariableFormProps> = ({ variableData }) => {
     setVarScope,
     setSim3DId,
     setPathMustExist,
+    handleTypeChange,
+    handleNameChange,
+    handleSave,
+    handleFloatValueChange,
+    handleBoolValueChange,
+    handleStringValueChange
   } = useVariableFormContext();
-
-  const { updateVariable, createVariable } = useVariableContext();
 
   useEffect(() => {
     InitializeForm(variableData);
   }, []);
 
-  // Maps 'type' values to their corresponding prefixes.
-  const PREFIXES: Record<string, string> = {
-    string: 'Str_',
-    double: 'Dbl_',
-    bool: 'Bool_',
-    default: 'Int_',
-  };
-
-  const handleTypeChange = (newType: VariableType) => {
-    // Determine the prefix based on the 'type' value, or use 'default' if not found.
-    const updatedPrefix: string = PREFIXES[newType] || PREFIXES.default;
-    setNamePrefix(updatedPrefix);
-
-    // Extract the part of the name after the prefix.
-    const nameWithoutPrefix: string = name ? name.split('_')[1] : '';
-
-    // Set the 'name' state variable with the updated prefix and the extracted part.
-    setName(`${updatedPrefix}${nameWithoutPrefix}`);
-
-    if (newType === 'bool') setValue('');
-  };
-
-  const handleNameChange = (updatedName: string) => {
-    // Check if the updated name already contains the prefix
-    if (namePrefix) {
-      const hasPrefix = updatedName.startsWith(namePrefix);
-
-      // Set the name with the appropriate prefix
-      setName(hasPrefix ? updatedName : `${namePrefix}${updatedName}`);
-    }
-  };
-
-  const handleSave = () => {
-    const newVariable = {
-      id: uuidv4(),
-      type,
-      name,
-      desc,
-      varScope,
-      sim3DId,
-      docType: docType as DocVarType,
-      docPath,
-      docLink,
-      pathMustExist,
-      value,
-      accrualStatesData,
-      resetOnRuns,
-    };
-
-    variableData
-      ? updateVariable({
-          id: variableData.id,
-          type,
-          name,
-          desc,
-          varScope,
-          sim3DId,
-          docType: docType as DocVarType,
-          docPath,
-          docLink,
-          pathMustExist,
-          value,
-          accrualStatesData,
-          resetOnRuns,
-        })
-      : createVariable(newVariable);
-    handleClose();
-  };
-
-  const handleFloatValueChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const parsedValue = parseFloat(e.target.value); // Convert string to number
-    // check if the value is a number
-    if (!isNaN(parsedValue)) {
-      setValue(parsedValue);
-    } else {
-      setValue('');
-    }
-  };
-  const handleBoolValueChange = (e: SelectChangeEvent<string>) => {
-    const boolValue: boolean = e.target.value === 'true';
-    setValue(boolValue);
-  };
-  const handleStringValueChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setValue(e.target.value);
-  };
   return (
     <Box mx={3}>
       <Typography variant="h5" my={3}>
@@ -300,7 +212,7 @@ const VariableForm: React.FC<VariableFormProps> = ({ variableData }) => {
             variant="contained"
             color="primary"
             sx={{ mr: 2 }}
-            onClick={() => handleSave()}
+            onClick={() => variableData ? handleSave(variableData) : handleSave()}
           >
             Save
           </Button>

@@ -1,12 +1,16 @@
 import { createContext, PropsWithChildren, useContext, useState } from 'react';
 import { useWindowContext } from '../../../contexts/WindowContext';
+import { v4 as uuidv4 } from 'uuid';
+import { useVariableContext } from '../../../contexts/VariableContext';
 
 import { Variable } from '../../../types/Variable';
 import {
   AccrualVarTableType,
+  DocVarType,
   VariableType,
   VarScope,
 } from '../../../types/ItemTypes';
+import { SelectChangeEvent } from '@mui/material';
 
 export interface AccrualStateItem {
   stateName: string;
@@ -48,6 +52,12 @@ interface VariableFormContextType {
   setVarScope: React.Dispatch<React.SetStateAction<VarScope>>;
   setSim3DId: React.Dispatch<React.SetStateAction<string | undefined>>;
   setPathMustExist: React.Dispatch<React.SetStateAction<boolean | undefined>>;
+  handleTypeChange: (newType: VariableType) => void;
+  handleNameChange: (updatedName: string) => void;
+  handleSave: (variableData?: Variable) => void;
+  handleFloatValueChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  handleBoolValueChange: (e: SelectChangeEvent<string>) => void;
+  handleStringValueChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 const VariableFormContext = createContext<VariableFormContextType | undefined>(
@@ -83,6 +93,8 @@ const VariableFormContextProvider: React.FC<PropsWithChildren> = ({
   const [docLink, setDocLink] = useState<string>();
   const [pathMustExist, setPathMustExist] = useState<boolean | undefined>();
 
+  const { updateVariable, createVariable } = useVariableContext();
+
   const sortNewStates = (newStateItems: AccrualStateItem[]) => {
     return newStateItems.sort((a, b) => {
       if (a.stateName && !b.stateName) {
@@ -116,6 +128,92 @@ const VariableFormContextProvider: React.FC<PropsWithChildren> = ({
       setAccrualStatesData(variableData.accrualStatesData);
   };
 
+    // Maps 'type' values to their corresponding prefixes.
+    const PREFIXES: Record<string, string> = {
+      string: 'Str_',
+      double: 'Dbl_',
+      bool: 'Bool_',
+      default: 'Int_',
+    };
+  
+    const handleTypeChange = (newType: VariableType) => {
+      // Determine the prefix based on the 'type' value, or use 'default' if not found.
+      const updatedPrefix: string = PREFIXES[newType] || PREFIXES.default;
+      setNamePrefix(updatedPrefix);
+  
+      // Extract the part of the name after the prefix.
+      const nameWithoutPrefix: string = name ? name.split('_')[1] : '';
+  
+      // Set the 'name' state variable with the updated prefix and the extracted part.
+      setName(`${updatedPrefix}${nameWithoutPrefix}`);
+  
+      if (newType === 'bool') setValue('');
+    };
+  
+    const handleNameChange = (updatedName: string) => {
+      // Check if the updated name already contains the prefix
+      if (namePrefix) {
+        const hasPrefix = updatedName.startsWith(namePrefix);
+  
+        // Set the name with the appropriate prefix
+        setName(hasPrefix ? updatedName : `${namePrefix}${updatedName}`);
+      }
+    };
+  
+    const handleSave = (variableData?: Variable) => {
+      const newVariable = {
+        id: uuidv4(),
+        type,
+        name,
+        desc,
+        varScope,
+        sim3DId,
+        docType: docType as DocVarType,
+        docPath,
+        docLink,
+        pathMustExist,
+        value,
+        accrualStatesData,
+        resetOnRuns,
+      };
+  
+      variableData
+        ? updateVariable({
+            id: variableData.id,
+            type,
+            name,
+            desc,
+            varScope,
+            sim3DId,
+            docType: docType as DocVarType,
+            docPath,
+            docLink,
+            pathMustExist,
+            value,
+            accrualStatesData,
+            resetOnRuns,
+          })
+        : createVariable(newVariable);
+      handleClose();
+    };
+  
+    const handleFloatValueChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      const parsedValue = parseFloat(e.target.value); // Convert string to number
+      // check if the value is a number
+      if (!isNaN(parsedValue)) {
+        setValue(parsedValue);
+      } else {
+        setValue('');
+      }
+    };
+    const handleBoolValueChange = (e: SelectChangeEvent<string>) => {
+      const boolValue: boolean = e.target.value === 'true';
+      setValue(boolValue);
+    };
+    const handleStringValueChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      setValue(e.target.value);
+    };
+
   return (
     <VariableFormContext.Provider
       value={{
@@ -148,6 +246,12 @@ const VariableFormContextProvider: React.FC<PropsWithChildren> = ({
         setVarScope,
         setSim3DId,
         setPathMustExist,
+        handleTypeChange,
+        handleNameChange,
+        handleSave,
+        handleFloatValueChange,
+        handleBoolValueChange,
+        handleStringValueChange
       }}
     >
       {children}
