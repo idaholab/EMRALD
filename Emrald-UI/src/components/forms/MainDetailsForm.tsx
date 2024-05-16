@@ -4,18 +4,29 @@ import MenuItem from '@mui/material/MenuItem';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import TextField from '@mui/material/TextField';
 import React, { Dispatch, SetStateAction } from 'react';
-import { ActionType, DiagramType, EventType, MainItemTypes, StateType, VariableType } from '../../types/ItemTypes';
+import {
+  ActionType,
+  DiagramType,
+  EventType,
+  MainItemTypes,
+  StateType,
+  VariableType,
+} from '../../types/ItemTypes';
 
-type ValueTypes<T extends MainItemTypes> =
-  T extends 'Diagram' ? DiagramType :
-  T extends 'State' ? StateType :
-  T extends 'Event' ? EventType :
-  T extends 'Action' ? ActionType :
-  T extends 'Variable' ? VariableType :
-  never;
+type ValueTypes<T extends MainItemTypes> = T extends 'Diagram'
+  ? DiagramType
+  : T extends 'State'
+  ? StateType
+  : T extends 'Event'
+  ? EventType
+  : T extends 'Action'
+  ? ActionType
+  : T extends 'Variable'
+  ? VariableType
+  : never;
 
 interface MainDetailsFormProps<T extends MainItemTypes> {
-  itemType: T
+  itemType: T;
   typeLabel?: string;
   type: ValueTypes<T>;
   setType: Dispatch<SetStateAction<ValueTypes<T>>>;
@@ -25,6 +36,7 @@ interface MainDetailsFormProps<T extends MainItemTypes> {
   setName: (name: string) => void;
   desc: string;
   setDesc: (desc: string) => void;
+  handleTypeChange?: (newType: VariableType) => void;
 }
 
 const MainDetailsForm = <T extends MainItemTypes>({
@@ -37,6 +49,7 @@ const MainDetailsForm = <T extends MainItemTypes>({
   setName,
   desc,
   setDesc,
+  handleTypeChange,
 }: MainDetailsFormProps<T>) => {
   return (
     <>
@@ -46,7 +59,10 @@ const MainDetailsForm = <T extends MainItemTypes>({
           labelId="type-select-label"
           id="type-select"
           value={type as string} // Cast type as string
-          onChange={(event: SelectChangeEvent<string>) => setType(event.target.value as ValueTypes<T>)} // Cast event.target.value as ValueTypes<T>
+          onChange={(event: SelectChangeEvent<string>) => {
+            setType(event.target.value as ValueTypes<T>);
+            handleTypeChange && handleTypeChange(event.target.value as VariableType);
+          }} // Cast event.target.value as ValueTypes<T>
           label={typeLabel ? typeLabel : 'Type'}
           disabled={typeDisabled}
         >
@@ -82,4 +98,3 @@ const MainDetailsForm = <T extends MainItemTypes>({
 };
 
 export default MainDetailsForm;
-

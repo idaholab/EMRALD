@@ -5,8 +5,11 @@ import React, {
 } from 'react';
 import { Event } from '../types/Event';
 import { EmraldContextWrapperProps } from './EmraldContextWrapper';
-import { appData } from '../hooks/useAppData';
+import { appData, updateAppData } from '../hooks/useAppData';
 import { ReadonlySignal, useComputed } from '@preact/signals-react';
+import { EMRALD_Model } from '../types/EMRALD_Model';
+import { updateModelAndReferences } from '../utils/UpdateModel';
+import { MainItemTypes } from '../types/ItemTypes';
 
 interface EventContextType {
   events: Event[];
@@ -43,9 +46,13 @@ const EventContextProvider: React.FC<EmraldContextWrapperProps> = ({ children })
   const [events, setEvents] = useState<Event[]>(JSON.parse(JSON.stringify(appData.value.EventList.sort((a,b) => a.name.localeCompare(b.name)))));
   const eventsList = useComputed(() => appData.value.EventList);
 
-  const createEvent = (newEvent: Event) => {
-    const updatedEventList = [...events, newEvent ];
-    setEvents(updatedEventList);
+  const createEvent = async (newEvent: Event) => {
+    var updatedModel: EMRALD_Model = await updateModelAndReferences(
+      newEvent,
+      MainItemTypes.Event,
+    );
+    updateAppData(updatedModel);
+    setEvents(updatedModel.EventList);
   };
 
   const updateEvent = (updatedEvent: Event) => {

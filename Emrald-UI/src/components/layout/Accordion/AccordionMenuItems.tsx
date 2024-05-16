@@ -31,7 +31,7 @@ const AccordionMenuItems: React.FC<AccordionMenuListProps> = ({
   const [openIndex, setOpenIndex] = React.useState<number | null>(null); // Keeps track of the index of the open item
   const diagramLabels = Array.from(
     new Set(diagrams.map((diagram) => diagram.diagramLabel)),
-  );
+  ).sort();
 
   const handleClick = (index: number) => {
     setOpenIndex((prevIndex) => (prevIndex === index ? null : index));

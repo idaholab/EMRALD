@@ -49,11 +49,13 @@ const ActionContextProvider: React.FC<EmraldContextWrapperProps> = ({ children }
   const [actions, setActions] = useState<Action[]>(JSON.parse(JSON.stringify(appData.value.ActionList.sort((a,b) => a.name.localeCompare(b.name)))));
   const actionsList = useComputed(() => appData.value.ActionList);
   
-  const createAction = (newAction: Action) => {
-    const updatedActions = [...actions, newAction ];
-    appData.value.ActionList = updatedActions;
-    updateAppData(appData.value);
-    setActions(updatedActions);
+  const createAction = async (newAction: Action) => {
+    var updatedModel: EMRALD_Model = await updateModelAndReferences(
+      newAction,
+      MainItemTypes.Action,
+    );
+    updateAppData(updatedModel);
+    setActions(updatedModel.ActionList);
   };
 
   const updateAction = async (updatedAction: Action) => {
