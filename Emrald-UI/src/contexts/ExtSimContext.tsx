@@ -7,6 +7,9 @@ import { EmraldContextWrapperProps } from './EmraldContextWrapper';
 import { appData, updateAppData } from '../hooks/useAppData';
 import { ReadonlySignal, useComputed } from '@preact/signals-react';
 import { ExtSim } from '../types/ExtSim';
+import { EMRALD_Model } from '../types/EMRALD_Model';
+import { updateModelAndReferences } from '../utils/UpdateModel';
+import { MainItemTypes } from '../types/ItemTypes';
 
 interface ExtSimContextType {
   extSims: ExtSim[];
@@ -42,11 +45,13 @@ const ExtSimContextProvider: React.FC<EmraldContextWrapperProps> = ({ children }
   const [extSims, setExtSims] = useState<ExtSim[]>(JSON.parse(JSON.stringify(appData.value.ExtSimList.sort((a,b) => a.name.localeCompare(b.name)))));
   const extSimList = useComputed(() => appData.value.ExtSimList);
 
-  const createExtSim = (newExtSim: ExtSim) => {
-    const updatedExtSimList = [...extSims, newExtSim];
-    appData.value.ExtSimList = updatedExtSimList;
-    updateAppData(appData.value);
-    setExtSims(updatedExtSimList);
+  const createExtSim = async (newExtSim: ExtSim) => {
+    var updatedModel: EMRALD_Model = await updateModelAndReferences(
+      newExtSim,
+      MainItemTypes.ExtSim,
+    );
+    updateAppData(updatedModel);
+    setExtSims(updatedModel.ExtSimList);
   };
 
   const updateExtSim = (updatedExtSim: ExtSim) => {

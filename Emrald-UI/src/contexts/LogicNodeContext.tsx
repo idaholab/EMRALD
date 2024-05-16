@@ -55,10 +55,14 @@ const LogicNodeContextProvider: React.FC<EmraldContextWrapperProps> = ({
   const logicNodeList = useComputed(() => appData.value.LogicNodeList);
 
 
-  const createLogicNode = (newLogicNode: LogicNode) => {
-    const updatedLogicNodes = [...appData.peek().LogicNodeList, newLogicNode];
-    updateAppData(JSON.parse(JSON.stringify({ ...appData.value, LogicNodeList: updatedLogicNodes })));
-    setLogicNodes(updatedLogicNodes);
+
+  const createLogicNode = async (newLogicNode: LogicNode) => {
+    var updatedModel: EMRALD_Model = await updateModelAndReferences(
+      newLogicNode,
+      MainItemTypes.LogicNode,
+    );
+    updateAppData(updatedModel);
+    setLogicNodes(updatedModel.LogicNodeList);
   };
 
   const updateLogicNode = async (updatedLogicNode: LogicNode) => {
