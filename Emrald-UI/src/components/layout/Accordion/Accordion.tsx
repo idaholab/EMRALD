@@ -72,7 +72,7 @@ const MenuAccordion: React.FC<MenuAccordionProps> = ({
               x: 75,
               y: 25,
               width: 1300,
-              height: 700,
+              height: 750,
             });
           }
         } catch (readError) {

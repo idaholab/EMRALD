@@ -26,13 +26,15 @@ import { useEventContext } from '../../../contexts/EventContext';
 import { useStateContext } from '../../../contexts/StateContext';
 import { useActionContext } from '../../../contexts/ActionContext';
 import { useVariableContext } from '../../../contexts/VariableContext';
+import { MainItemTypes } from '../../../types/ItemTypes';
 
 interface ImportDiagramFormProps {
   importedData: EMRALD_Model;
 }
 
-interface ConflictItem {
-  type: string;
+interface ImportedItem {
+  type: MainItemTypes;
+  displayType: string;
   locked: boolean;
   oldName: string;
   action: string;
@@ -43,7 +45,7 @@ interface ConflictItem {
 const ImportForm: React.FC<ImportDiagramFormProps> = ({ importedData }) => {
   const [findValue, setFindValue] = useState<string>('');
   const [replaceValue, setReplaceValue] = useState<string>('');
-  const [conflictItems, setConflictItems] = useState<ConflictItem[]>([]);
+  const [importedItems, setImportedItems] = useState<ImportedItem[]>([]);
   const { diagramList } = useDiagramContext();
   const { logicNodeList } = useLogicNodeContext();
   const { extSimList } = useExtSimContext();
@@ -53,11 +55,12 @@ const ImportForm: React.FC<ImportDiagramFormProps> = ({ importedData }) => {
   const { variableList } = useVariableContext();
 
   const convertModelToArray = (model: EMRALD_Model): ConflictItem[] => {
-    const items: ConflictItem[] = [];
+    const items: ImportedItem[] = [];
 
     for (const diagram of model.DiagramList) {
       items.push({
-        type: 'Diagram',
+        type: MainItemTypes.Diagram,
+        displayType: 'Diagram',
         locked: false,
         oldName: diagram.name,
         newName: diagram.name,
@@ -68,7 +71,8 @@ const ImportForm: React.FC<ImportDiagramFormProps> = ({ importedData }) => {
 
     for (const logicNode of model.LogicNodeList) {
       items.push({
-        type: 'Logic Node',
+        type: MainItemTypes.LogicNode,
+        displayType: 'Logic Node',
         locked: false,
         oldName: logicNode.name,
         newName: logicNode.name,
@@ -79,7 +83,8 @@ const ImportForm: React.FC<ImportDiagramFormProps> = ({ importedData }) => {
 
     for (const extSim of model.ExtSimList) {
       items.push({
-        type: 'External Sim',
+        type: MainItemTypes.ExtSim,
+        displayType: 'External Sim',
         locked: false,
         oldName: extSim.name,
         newName: extSim.name,
@@ -90,7 +95,8 @@ const ImportForm: React.FC<ImportDiagramFormProps> = ({ importedData }) => {
 
     for (const action of model.ActionList) {
       items.push({
-        type: 'Action',
+        type: MainItemTypes.Action,
+        displayType: 'Action',
         locked: false,
         oldName: action.name,
         newName: action.name,
@@ -101,7 +107,8 @@ const ImportForm: React.FC<ImportDiagramFormProps> = ({ importedData }) => {
 
     for (const event of model.EventList) {
       items.push({
-        type: 'Event',
+        type: MainItemTypes.Event,
+        displayType: 'Event',
         locked: false,
         oldName: event.name,
         newName: event.name,
@@ -112,7 +119,8 @@ const ImportForm: React.FC<ImportDiagramFormProps> = ({ importedData }) => {
 
     for (const state of model.StateList) {
       items.push({
-        type: 'State',
+        type: MainItemTypes.State,
+        displayType: 'State',
         locked: false,
         oldName: state.name,
         newName: state.name,
@@ -123,7 +131,8 @@ const ImportForm: React.FC<ImportDiagramFormProps> = ({ importedData }) => {
 
     for (const variable of model.VariableList) {
       items.push({
-        type: 'Variable',
+        type: MainItemTypes.Variable,
+        displayType: 'Variable',
         locked: false,
         oldName: variable.name,
         newName: variable.name,
@@ -136,24 +145,24 @@ const ImportForm: React.FC<ImportDiagramFormProps> = ({ importedData }) => {
   };
 
   useEffect(() => {
-    setConflictItems(convertModelToArray(importedData));
+    setImportedItems(convertModelToArray(importedData));
   }, [importedData]);
 
-  const checkForConflicts = (newName: string, type: string) => {
+  const checkForConflicts = (newName: string, type: MainItemTypes) => {
     switch(type) {
-      case 'Diagram':
+      case MainItemTypes.Diagram:
         return diagramList.value.some(item => item.name === newName);
-      case 'Logic Node':
+      case MainItemTypes.LogicNode:
         return logicNodeList.value.some(item => item.name === newName);
-      case 'External Sim':
+      case MainItemTypes.ExtSim:
         return extSimList.value.some(item => item.name === newName);
-      case 'Action':
+      case MainItemTypes.Action:
         return actionsList.value.some(item => item.name === newName);
-      case 'Event':
+      case MainItemTypes.Event:
         return eventsList.value.some(item => item.name === newName);
-      case 'State':
+      case MainItemTypes.State:
         return statesList.value.some(item => item.name === newName);
-      case 'Variable':
+      case MainItemTypes.Variable:
         return variableList.value.some(item => item.name === newName);
       default:
         return false;
@@ -161,68 +170,69 @@ const ImportForm: React.FC<ImportDiagramFormProps> = ({ importedData }) => {
   };
 
   const handleNewNameChange = (index: number, newName: string) => {
-    const updatedItems = [...conflictItems];
+    const updatedItems = [...importedItems];
     updatedItems[index].newName = newName;
     const hasConflict = checkForConflicts(newName, updatedItems[index].type);
     updatedItems[index].conflict = hasConflict;
-    setConflictItems(updatedItems);
+    setImportedItems(updatedItems);
   };
 
   const handleLockChange = (index: number, locked: boolean) => {
-    const updatedItems = [...conflictItems];
+    const updatedItems = [...importedItems];
     updatedItems[index].locked = locked;
-    setConflictItems(updatedItems);
+    setImportedItems(updatedItems);
   };
 
   const lockAll = () => {
-    const updatedItems = conflictItems.map((item) => {
+    const updatedItems = importedItems.map((item) => {
       return { ...item, locked: true };
     });
-    setConflictItems(updatedItems);
+    setImportedItems(updatedItems);
   };
 
   const unlockAll = () => {
-    const updatedItems = conflictItems.map((item) => {
+    const updatedItems = importedItems.map((item) => {
       return { ...item, locked: false };
     });
-    setConflictItems(updatedItems);
+    setImportedItems(updatedItems);
   };
 
   const updateAllUnlocked = (action: string) => {
-    const updatedItems = conflictItems.map((item) => {
+    const updatedItems = importedItems.map((item) => {
       if (!item.locked) {
         return { ...item, action: action };
       }
       return item;
     });
-    setConflictItems(updatedItems);
+    setImportedItems(updatedItems);
   };
 
   const handleActionChange = (index: number, action: string) => {
-    const updatedItems = [...conflictItems];
+    const updatedItems = [...importedItems];
     updatedItems[index].action = action;
-    setConflictItems(updatedItems);
+    setImportedItems(updatedItems);
   };
 
   const handleApply = () => {
-    const updatedItems = conflictItems.map((item) => {
+    const updatedItems = importedItems.map((item) => {
       if (item.newName.includes(findValue)) {
         return {
           ...item,
           newName: item.newName.replace(findValue, replaceValue),
+          conflict: checkForConflicts(item.newName.replace(findValue, replaceValue), item.type),
         };
       }
       return item;
     });
 
-    setConflictItems(updatedItems);
+    setImportedItems(updatedItems);
   };
 
   const handleSave = () => {
-    // Update importedData based on conflictItems
+    // Update importedData based on importedItems
     const updatedData = { ...importedData };
-    for (let i = 0; i < conflictItems.length; i++) {
-      const item = conflictItems[i];
+    for (let i = 0; i < importedItems.length; i++) {
+      const item = importedItems[i];
       // Update corresponding item in importedData
       if (item.type === 'Diagram') {
         let diagram = updatedData.DiagramList.find(
@@ -231,14 +241,14 @@ const ImportForm: React.FC<ImportDiagramFormProps> = ({ importedData }) => {
         if (diagram) {
           diagram.name = item.newName;
         }
-      } else if (item.type === 'Logic Node') {
+      } else if (item.type === 'LogicNode') {
         let logicNode = updatedData.LogicNodeList.find(
           (ln) => ln.name === item.oldName,
         );
         if (logicNode) {
           logicNode.name = item.newName;
         }
-      } else if (item.type === 'External Sim') {
+      } else if (item.type === 'ExtSim') {
         let extSim = updatedData.ExtSimList.find(
           (es) => es.name === item.oldName,
         );
@@ -371,7 +381,7 @@ const ImportForm: React.FC<ImportDiagramFormProps> = ({ importedData }) => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {conflictItems.map((row, index) => (
+            {importedItems.map((row, index) => (
               <TableRow
                 key={index}
                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
