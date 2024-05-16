@@ -35,17 +35,27 @@ export function useVariableContext() {
 }
 
 const VariableContextProvider: React.FC<EmraldContextWrapperProps> = ({ children }) => {
-  const [variables, setVariables] = useState<Variable[]>(JSON.parse(JSON.stringify(appData.value.VariableList.sort((a, b) => a.name.localeCompare(b.name)))));
+  const [variables, setVariables] = useState<Variable[]>(
+    JSON.parse(
+      JSON.stringify(appData.value.VariableList.sort((a, b) => a.name.localeCompare(b.name))),
+    ),
+  );
   const variableList = useComputed(() => appData.value.VariableList);
 
   const createVariable = async (newVariable: Variable) => {
-    var updatedModel: EMRALD_Model = await updateModelAndReferences(newVariable, MainItemTypes.Variable);
+    var updatedModel: EMRALD_Model = await updateModelAndReferences(
+      newVariable,
+      MainItemTypes.Variable,
+    );
     updateAppData(updatedModel);
     setVariables(updatedModel.VariableList);
   };
 
   const updateVariable = async (updatedVariable: Variable) => {
-    var updatedModel: EMRALD_Model = await updateModelAndReferences(updatedVariable, MainItemTypes.Variable);
+    var updatedModel: EMRALD_Model = await updateModelAndReferences(
+      updatedVariable,
+      MainItemTypes.Variable,
+    );
 
     updateAppData(updatedModel);
     setVariables(updatedModel.VariableList);
@@ -57,7 +67,9 @@ const VariableContextProvider: React.FC<EmraldContextWrapperProps> = ({ children
     }
     const updatedVariableList = variables.filter((item) => item.id !== VariableId);
 
-    updateAppData(JSON.parse(JSON.stringify({ ...appData.value, VariableList: updatedVariableList })));
+    updateAppData(
+      JSON.parse(JSON.stringify({ ...appData.value, VariableList: updatedVariableList })),
+    );
     setVariables(updatedVariableList);
   };
 

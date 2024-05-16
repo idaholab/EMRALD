@@ -53,22 +53,15 @@ const MainDetailsForm = <T extends MainItemTypes>({
 }: MainDetailsFormProps<T>) => {
   return (
     <>
-      <FormControl
-        variant="outlined"
-        size="small"
-        sx={{ minWidth: 120, width: '100%' }}
-      >
-        <InputLabel id="type-select-label">
-          {typeLabel ? typeLabel : 'Type'}
-        </InputLabel>
+      <FormControl variant="outlined" size="small" sx={{ minWidth: 120, width: '100%' }}>
+        <InputLabel id="type-select-label">{typeLabel ? typeLabel : 'Type'}</InputLabel>
         <Select
           labelId="type-select-label"
           id="type-select"
           value={type as string} // Cast type as string
           onChange={(event: SelectChangeEvent<string>) => {
             setType(event.target.value as ValueTypes<T>);
-            handleTypeChange &&
-              handleTypeChange(event.target.value as VariableType);
+            handleTypeChange && handleTypeChange(event.target.value as VariableType);
           }} // Cast event.target.value as ValueTypes<T>
           label={typeLabel ? typeLabel : 'Type'}
           disabled={typeDisabled}
@@ -87,9 +80,7 @@ const MainDetailsForm = <T extends MainItemTypes>({
         size="small"
         sx={{ mb: 0 }}
         value={name}
-        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-          setName(e.target.value)
-        }
+        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setName(e.target.value)}
         fullWidth
       />
       <TextField
@@ -100,9 +91,7 @@ const MainDetailsForm = <T extends MainItemTypes>({
         multiline
         margin="normal"
         value={desc}
-        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-          setDesc(e.target.value)
-        }
+        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setDesc(e.target.value)}
       />
     </>
   );

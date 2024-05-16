@@ -14,12 +14,7 @@ import Checkbox from '@mui/material/Checkbox';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import DocLinkFields from './FormFieldsByType/DocLinkFields';
 import ExtSimFields from './FormFieldsByType/ExtSimFields';
-import {
-  DocVarType,
-  MainItemTypes,
-  VarScope,
-  VariableType,
-} from '../../../types/ItemTypes';
+import { MainItemTypes, VarScope } from '../../../types/ItemTypes';
 import AccrualFields from './FormFieldsByType/AccrualFields';
 import { useVariableFormContext } from './VariableFormContext';
 
@@ -56,7 +51,7 @@ const VariableForm: React.FC<VariableFormProps> = ({ variableData }) => {
     handleSave,
     handleFloatValueChange,
     handleBoolValueChange,
-    handleStringValueChange
+    handleStringValueChange,
   } = useVariableFormContext();
 
   useEffect(() => {
@@ -86,11 +81,7 @@ const VariableForm: React.FC<VariableFormProps> = ({ variableData }) => {
           desc={desc}
           setDesc={setDesc}
         />
-        <FormControl
-          variant="outlined"
-          size="small"
-          sx={{ minWidth: 120, width: '100%', my: 1 }}
-        >
+        <FormControl variant="outlined" size="small" sx={{ minWidth: 120, width: '100%', my: 1 }}>
           <InputLabel id="demo-simple-select-standard-label">Scope</InputLabel>
           <Select
             labelId="var-scope"
@@ -122,9 +113,7 @@ const VariableForm: React.FC<VariableFormProps> = ({ variableData }) => {
                 type="number"
                 size="small"
                 value={value}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                  handleFloatValueChange(e)
-                }
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleFloatValueChange(e)}
                 fullWidth
               />
             ) : type == 'bool' ? (
@@ -133,16 +122,12 @@ const VariableForm: React.FC<VariableFormProps> = ({ variableData }) => {
                 size="small"
                 sx={{ minWidth: 120, width: '100%', my: 1 }}
               >
-                <InputLabel id="demo-simple-select-standard-label">
-                  Start Value
-                </InputLabel>
+                <InputLabel id="demo-simple-select-standard-label">Start Value</InputLabel>
                 <Select
                   labelId="value"
                   id="value"
                   value={value as string}
-                  onChange={(event: SelectChangeEvent<string>) =>
-                    handleBoolValueChange(event)
-                  }
+                  onChange={(event: SelectChangeEvent<string>) => handleBoolValueChange(event)}
                   label="Start Value"
                   fullWidth
                 >
@@ -158,9 +143,7 @@ const VariableForm: React.FC<VariableFormProps> = ({ variableData }) => {
                 type="string"
                 size="small"
                 value={value}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                  handleStringValueChange(e)
-                }
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleStringValueChange(e)}
                 fullWidth
               />
             )}
@@ -177,10 +160,7 @@ const VariableForm: React.FC<VariableFormProps> = ({ variableData }) => {
               }
             />
             {varScope === 'gt3DSim' && (
-              <ExtSimFields
-                sim3DId={sim3DId ? sim3DId : ''}
-                setSim3DId={setSim3DId}
-              />
+              <ExtSimFields sim3DId={sim3DId ? sim3DId : ''} setSim3DId={setSim3DId} />
             )}
           </>
         )}
@@ -212,15 +192,11 @@ const VariableForm: React.FC<VariableFormProps> = ({ variableData }) => {
             variant="contained"
             color="primary"
             sx={{ mr: 2 }}
-            onClick={() => variableData ? handleSave(variableData) : handleSave()}
+            onClick={() => (variableData ? handleSave(variableData) : handleSave())}
           >
             Save
           </Button>
-          <Button
-            variant="contained"
-            color="secondary"
-            onClick={() => handleClose()}
-          >
+          <Button variant="contained" color="secondary" onClick={() => handleClose()}>
             Cancel
           </Button>
         </Box>

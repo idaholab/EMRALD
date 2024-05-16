@@ -1,11 +1,4 @@
-import {
-  MenuItem,
-  TextField,
-  Typography,
-  Link,
-  FormControlLabel,
-  Checkbox,
-} from '@mui/material';
+import { MenuItem, TextField, Typography, Link, FormControlLabel, Checkbox } from '@mui/material';
 import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
@@ -41,11 +34,7 @@ const DocLinkFields: React.FC<DocLinkFieldsProps> = ({
 }) => {
   return (
     <>
-      <FormControl
-        variant="outlined"
-        size="small"
-        sx={{ minWidth: 120, width: '100%', my: 1 }}
-      >
+      <FormControl variant="outlined" size="small" sx={{ minWidth: 120, width: '100%', my: 1 }}>
         <InputLabel id="demo-simple-select-standard-label">Doc Type</InputLabel>
         <Select
           labelId="doc-type"
@@ -67,19 +56,13 @@ const DocLinkFields: React.FC<DocLinkFieldsProps> = ({
         variant="outlined"
         size="small"
         value={docPath}
-        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-          setDocPath(e.target.value)
-        }
+        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setDocPath(e.target.value)}
         fullWidth
         sx={{ mb: 0 }}
       />
       <Typography variant={'caption'}>
         {`Use ${
-          docType === 'dtXML'
-            ? 'XPath'
-            : docType === 'dtJSON'
-            ? 'JSONPath'
-            : 'Regular Expression'
+          docType === 'dtXML' ? 'XPath' : docType === 'dtJSON' ? 'JSONPath' : 'Regular Expression'
         } Syntax for the Var Link. `}
         <Link
           target="_blank"
@@ -98,9 +81,7 @@ const DocLinkFields: React.FC<DocLinkFieldsProps> = ({
         variant="outlined"
         size="small"
         value={docLink}
-        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-          setDocLink(e.target.value)
-        }
+        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setDocLink(e.target.value)}
         fullWidth
         sx={{ mb: 0 }}
       />
@@ -128,14 +109,8 @@ const DocLinkFields: React.FC<DocLinkFieldsProps> = ({
           sx={{ mb: 0 }}
         />
       ) : type === 'bool' ? (
-        <FormControl
-          variant="outlined"
-          size="small"
-          sx={{ minWidth: 120, width: '100%', my: 1 }}
-        >
-          <InputLabel id="demo-simple-select-standard-label">
-            Default
-          </InputLabel>
+        <FormControl variant="outlined" size="small" sx={{ minWidth: 120, width: '100%', my: 1 }}>
+          <InputLabel id="demo-simple-select-standard-label">Default</InputLabel>
           <Select
             labelId="value"
             id="value"
