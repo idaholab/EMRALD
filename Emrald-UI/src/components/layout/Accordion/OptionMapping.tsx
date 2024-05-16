@@ -24,9 +24,9 @@ import ActionFormContextProvider from '../../forms/ActionForm/ActionFormContext'
 import { ExtSim } from '../../../types/ExtSim';
 import ExtSimForm from '../../forms/ExtSimForm/ExtSimForm';
 import { useExtSimContext } from '../../../contexts/ExtSimContext';
-import { GetJSONPathUsingRefs, GetModelItemsReferencedBy, GetModelItemsReferencing } from '../../../utils/ModelReferences';
+import { GetModelItemsReferencedBy } from '../../../utils/ModelReferences';
 import { MainItemTypes } from '../../../types/ItemTypes';
-import ImportDiagramForm from '../../forms/ImportForm/ImportForm';
+import VariableFormContextProvider from '../../forms/VariableForm/VariableFormContext';
 
 // Define your Option and OptionsMapping types
 export interface Option {
@@ -172,7 +172,9 @@ export const useOptionsMapping = () => {
         action: (variable: Variable) =>
           addWindow(
             `Edit Properties: ${variable.name}`,
-            <VariableForm variableData={variable} />,
+            <VariableFormContextProvider>
+              <VariableForm variableData={variable} />
+            </VariableFormContextProvider>,
           ),
       },
       {

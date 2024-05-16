@@ -5,6 +5,9 @@ import { Event } from '../types/Event';
 import { Action } from '../types/Action';
 import { appData, updateAppData } from '../hooks/useAppData';
 import { ReadonlySignal, useComputed } from '@preact/signals-react';
+import { EMRALD_Model } from '../types/EMRALD_Model';
+import { updateModelAndReferences } from '../utils/UpdateModel';
+import { MainItemTypes } from '../types/ItemTypes';
 
 interface StateContextType {
   states: State[];
@@ -79,14 +82,13 @@ const StateContextProvider: React.FC<EmraldContextWrapperProps> = ({
   const statesList = useComputed(() => appData.value.StateList);
 
   // Create, Delete, Update individual States
-  const createState = (newState: State) => {
-    const updatedStates = [...appData.value.StateList, newState];
-    updateAppData(
-      JSON.parse(
-        JSON.stringify({ ...appData.value, StateList: updatedStates }),
-      ),
+  const createState = async (newState: State) => {
+    var updatedModel: EMRALD_Model = await updateModelAndReferences(
+      newState,
+      MainItemTypes.State,
     );
-    setStates(updatedStates);
+    updateAppData(updatedModel);
+    setStates(updatedModel.StateList);
   };
 
   const updateState = (updatedState: State) => {

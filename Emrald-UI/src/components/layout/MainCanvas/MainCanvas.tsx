@@ -25,6 +25,7 @@ import EventForm from '../../forms/EventForm/EventForm';
 import StateForm from '../../forms/StateForm/StateForm';
 import VariableForm from '../../forms/VariableForm/VariableForm';
 import ActionFormContextProvider from '../../forms/ActionForm/ActionFormContext';
+import VariableFormContextProvider from '../../forms/VariableForm/VariableFormContext';
 
 const MainCanvas: React.FC = () => {
   const actions = [
@@ -75,7 +76,11 @@ const MainCanvas: React.FC = () => {
         </SvgIcon>
       ),
       name: 'New Variable',
-      content: <VariableForm />,
+      content: (
+        <VariableFormContextProvider>
+          <VariableForm />
+        </VariableFormContextProvider>
+      ),
     },
   ];
   const [open, setOpen] = useState(false);
