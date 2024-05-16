@@ -20,6 +20,12 @@ import { TextFieldComponent } from '../../common';
 import { FaLock } from 'react-icons/fa6';
 import { FaLockOpen } from 'react-icons/fa6';
 import { useDiagramContext } from '../../../contexts/DiagramContext';
+import { useLogicNodeContext } from '../../../contexts/LogicNodeContext';
+import { useExtSimContext } from '../../../contexts/ExtSimContext';
+import { useEventContext } from '../../../contexts/EventContext';
+import { useStateContext } from '../../../contexts/StateContext';
+import { useActionContext } from '../../../contexts/ActionContext';
+import { useVariableContext } from '../../../contexts/VariableContext';
 
 interface ImportDiagramFormProps {
   importedData: EMRALD_Model;
@@ -31,12 +37,20 @@ interface ConflictItem {
   oldName: string;
   action: string;
   newName: string;
+  conflict: boolean;
 }
 
 const ImportForm: React.FC<ImportDiagramFormProps> = ({ importedData }) => {
   const [findValue, setFindValue] = useState<string>('');
   const [replaceValue, setReplaceValue] = useState<string>('');
   const [conflictItems, setConflictItems] = useState<ConflictItem[]>([]);
+  const { diagramList } = useDiagramContext();
+  const { logicNodeList } = useLogicNodeContext();
+  const { extSimList } = useExtSimContext();
+  const { eventsList } = useEventContext();
+  const { statesList } = useStateContext();
+  const { actionsList } = useActionContext();
+  const { variableList } = useVariableContext();
 
   const convertModelToArray = (model: EMRALD_Model): ConflictItem[] => {
     const items: ConflictItem[] = [];
@@ -44,10 +58,11 @@ const ImportForm: React.FC<ImportDiagramFormProps> = ({ importedData }) => {
     for (const diagram of model.DiagramList) {
       items.push({
         type: 'Diagram',
-        locked: true,
+        locked: false,
         oldName: diagram.name,
         newName: diagram.name,
         action: 'rename',
+        conflict: diagramList.value.some(item => item.name === diagram.name),
       });
     }
 
@@ -58,6 +73,7 @@ const ImportForm: React.FC<ImportDiagramFormProps> = ({ importedData }) => {
         oldName: logicNode.name,
         newName: logicNode.name,
         action: 'rename',
+        conflict: logicNodeList.value.some(item => item.name === logicNode.name),
       });
     }
 
@@ -68,6 +84,7 @@ const ImportForm: React.FC<ImportDiagramFormProps> = ({ importedData }) => {
         oldName: extSim.name,
         newName: extSim.name,
         action: 'rename',
+        conflict: extSimList.value.some(item => item.name === extSim.name),
       });
     }
 
@@ -78,6 +95,7 @@ const ImportForm: React.FC<ImportDiagramFormProps> = ({ importedData }) => {
         oldName: action.name,
         newName: action.name,
         action: 'rename',
+        conflict: actionsList.value.some(item => item.name === action.name),
       });
     }
 
@@ -88,6 +106,7 @@ const ImportForm: React.FC<ImportDiagramFormProps> = ({ importedData }) => {
         oldName: event.name,
         newName: event.name,
         action: 'rename',
+        conflict: eventsList.value.some(item => item.name === event.name),
       });
     }
 
@@ -98,6 +117,7 @@ const ImportForm: React.FC<ImportDiagramFormProps> = ({ importedData }) => {
         oldName: state.name,
         newName: state.name,
         action: 'rename',
+        conflict: statesList.value.some(item => item.name === state.name),
       });
     }
 
@@ -108,6 +128,7 @@ const ImportForm: React.FC<ImportDiagramFormProps> = ({ importedData }) => {
         oldName: variable.name,
         newName: variable.name,
         action: 'rename',
+        conflict: variableList.value.some(item => item.name === variable.name),
       });
     }
 
@@ -118,9 +139,32 @@ const ImportForm: React.FC<ImportDiagramFormProps> = ({ importedData }) => {
     setConflictItems(convertModelToArray(importedData));
   }, [importedData]);
 
+  const checkForConflicts = (newName: string, type: string) => {
+    switch(type) {
+      case 'Diagram':
+        return diagramList.value.some(item => item.name === newName);
+      case 'Logic Node':
+        return logicNodeList.value.some(item => item.name === newName);
+      case 'External Sim':
+        return extSimList.value.some(item => item.name === newName);
+      case 'Action':
+        return actionsList.value.some(item => item.name === newName);
+      case 'Event':
+        return eventsList.value.some(item => item.name === newName);
+      case 'State':
+        return statesList.value.some(item => item.name === newName);
+      case 'Variable':
+        return variableList.value.some(item => item.name === newName);
+      default:
+        return false;
+    }
+  };
+
   const handleNewNameChange = (index: number, newName: string) => {
     const updatedItems = [...conflictItems];
     updatedItems[index].newName = newName;
+    const hasConflict = checkForConflicts(newName, updatedItems[index].type);
+    updatedItems[index].conflict = hasConflict;
     setConflictItems(updatedItems);
   };
 
@@ -391,8 +435,8 @@ const ImportForm: React.FC<ImportDiagramFormProps> = ({ importedData }) => {
                   />
                 </TableCell>
                 <TableCell align="left">
-                  <Typography fontSize={14} color={'red'}>
-                    CONFLICTS!
+                  <Typography fontSize={14} color={row.conflict ? '#d32c38' : '#1b8f55'}>
+                    {row.conflict ? 'CONFLICTS' : 'NO CONFLICT'}
                   </Typography>
                 </TableCell>
               </TableRow>
