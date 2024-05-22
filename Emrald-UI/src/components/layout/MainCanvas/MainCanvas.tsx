@@ -26,6 +26,7 @@ import StateForm from '../../forms/StateForm/StateForm';
 import VariableForm from '../../forms/VariableForm/VariableForm';
 import ActionFormContextProvider from '../../forms/ActionForm/ActionFormContext';
 import VariableFormContextProvider from '../../forms/VariableForm/VariableFormContext';
+import EventFormContextProvider from '../../forms/EventForm/EventFormContext';
 
 const MainCanvas: React.FC = () => {
   const actions = [
@@ -67,7 +68,11 @@ const MainCanvas: React.FC = () => {
         </SvgIcon>
       ),
       name: 'New Event',
-      content: <EventForm />,
+      content: (
+        <EventFormContextProvider>
+          <EventForm />
+        </EventFormContextProvider>
+      ),
     },
     {
       icon: (
@@ -86,9 +91,7 @@ const MainCanvas: React.FC = () => {
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
-  const storedHistory = JSON.parse(
-    sessionStorage.getItem('dataHistory') || '[]',
-  );
+  const storedHistory = JSON.parse(sessionStorage.getItem('dataHistory') || '[]');
 
   const { addWindow } = useWindowContext();
 

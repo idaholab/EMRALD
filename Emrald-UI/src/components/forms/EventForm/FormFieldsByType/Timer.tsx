@@ -1,11 +1,16 @@
-import React from 'react'
+import React, { useState } from 'react';
+import { DurationComponent } from '../../../common';
+import { useEventFormContext } from '../EventFormContext';
+import dayjs from 'dayjs';
 
 const Timer = () => {
+  const { milliseconds, handleDurationChange } = useEventFormContext();
+
   return (
     <div>
-      Timer
+      <DurationComponent milliseconds={milliseconds} handleDurationChange={handleDurationChange} />
     </div>
-  )
-}
+  );
+};
 
-export default Timer
+export default Timer;

@@ -25,6 +25,7 @@ import { ExtSim } from '../../../types/ExtSim';
 import ExtSimForm from '../../forms/ExtSimForm/ExtSimForm';
 import { useExtSimContext } from '../../../contexts/ExtSimContext';
 import VariableFormContextProvider from '../../forms/VariableForm/VariableFormContext';
+import EventFormContextProvider from '../../forms/EventForm/EventFormContext';
 
 // Define your Option and OptionsMapping types
 export interface Option {
@@ -62,10 +63,7 @@ export const useOptionsMapping = () => {
       {
         label: 'Edit Properties',
         action: (diagram: Diagram) =>
-          addWindow(
-            `Edit Properties: ${diagram.name}`,
-            <DiagramForm diagramData={diagram} />,
-          ),
+          addWindow(`Edit Properties: ${diagram.name}`, <DiagramForm diagramData={diagram} />),
       },
       {
         label: 'Delete',
@@ -113,10 +111,7 @@ export const useOptionsMapping = () => {
       {
         label: 'Edit Properties',
         action: (extSim: ExtSim) =>
-          addWindow(
-            `Edit Properties: ${extSim.name}`,
-            <ExtSimForm ExtSimData={extSim} />,
-          ),
+          addWindow(`Edit Properties: ${extSim.name}`, <ExtSimForm ExtSimData={extSim} />),
       },
       {
         label: 'Delete',
@@ -144,7 +139,9 @@ export const useOptionsMapping = () => {
           console.log(event);
           addWindow(
             `Edit Properties: ${event.name}`,
-            <EventForm eventData={event} />,
+            <EventFormContextProvider>
+              <EventForm eventData={event} />
+            </EventFormContextProvider>,
           );
         },
       },
@@ -154,10 +151,7 @@ export const useOptionsMapping = () => {
       {
         label: 'Edit Properties',
         action: (state: State) =>
-          addWindow(
-            `Edit Properties: ${state.name}`,
-            <StateForm stateData={state} />,
-          ),
+          addWindow(`Edit Properties: ${state.name}`, <StateForm stateData={state} />),
       },
       { label: 'Delete', action: (state: State) => deleteState(state.id) },
     ],

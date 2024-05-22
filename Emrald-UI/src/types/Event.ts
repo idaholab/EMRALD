@@ -1,4 +1,4 @@
-import { EventType, VarChangeOptions, ExtEventMsgType, DistributionType, TimeVariableUnit } from './ItemTypes'
+import { EventType, VarChangeOptions, ExtEventMsgType, DistributionType, TimeVariableUnit, EventDistributionParameterName } from './ItemTypes'
 import { ChangeLog } from './ChangeLog'
 
 export interface Event {
@@ -82,35 +82,25 @@ export interface Event {
   /**
    * Optional. For event type of etDistribution this is an array of properties for the distribution calculation.
    */
-  parameters?: {
-    /**
-     * For event type of etDistribution this is the name of the distribution parameter.
-     */
-    name?:
-    | "Mean"
-    | "Standard Deviation"
-    | "Minimum"
-    | "Maximum"
-    | "Rate"
-    | "Shape"
-    | "Scale"
-    | "Peak"
-    | "Alpha"
-    | "Beta"
-    /**
-     * Optional. The value of the parameter if the useVariable flag is false. Can be a number or a string if in scientific notation.
-     */
-    value?: number | string
-    timeRate?: TimeVariableUnit
-    /**
-     * Flag to use the variable string vs the value item for the property
-     */
-    useVariable?: boolean
-    /**
-     * Optional. The reference name of the variable to use as the value of the parameter if the useVariable flag is true.
-     */
-    variable?: string
-  }[]
+  parameters?: EventDistributionParameter[]
   dfltTimeRate?: TimeVariableUnit
   changeLog?: ChangeLog
+}
+
+export interface EventDistributionParameter {
+  name?: EventDistributionParameterName
+  /**
+   * Optional. The value of the parameter if the useVariable flag is false. Can be a number or a string if in scientific notation.
+   */
+  value?: number | string
+  timeRate?: TimeVariableUnit
+  /**
+   * Flag to use the variable string vs the value item for the property
+   */
+  useVariable?: boolean
+  /**
+   * Optional. The reference name of the variable to use as the value of the parameter if the useVariable flag is true.
+   */
+  variable?: string
+  [k: string]: unknown
 }

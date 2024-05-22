@@ -10,7 +10,7 @@ interface DurationComponentProps {
 const DurationComponent: React.FC<DurationComponentProps> = ({
   milliseconds,
   handleDurationChange,
-  label
+  label,
 }) => {
   return (
     <Box>

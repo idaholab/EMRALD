@@ -7,6 +7,7 @@ interface SelectComponentProps<T> {
   label: string;
   setValue: (value: T) => void;
   children: React.ReactNode;
+  mt?: number;
 }
 
 const SelectComponent = <T,>({
@@ -14,9 +15,10 @@ const SelectComponent = <T,>({
   label,
   setValue,
   children,
+  mt,
 }: PropsWithChildren<SelectComponentProps<T>>) => {
   return (
-    <FormControl sx={{ mt: 2, minWidth: 120 }} size="small">
+    <FormControl sx={{ mt: mt !== undefined ? mt : 2, minWidth: 120 }} size="small">
       <InputLabel id={`${label}-select-label`}>{label}</InputLabel>
       <Select
         value={value}

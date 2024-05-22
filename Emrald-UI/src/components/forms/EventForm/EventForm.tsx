@@ -11,70 +11,37 @@ import { Event } from '../../../types/Event';
 import { EventType, MainItemTypes } from '../../../types/ItemTypes';
 import { useWindowContext } from '../../../contexts/WindowContext';
 import { emptyEvent, useEventContext } from '../../../contexts/EventContext';
-import { ComponentLogic, Distribution, ExtSim, FailureRate, StateChange, Timer, VarCondition } from './FormFieldsByType';
+import { useEventFormContext } from './EventFormContext';
+import { Checkbox, FormControlLabel } from '@mui/material';
+import { State } from '../../../types/State';
 
 interface EventFormProps {
   eventData?: Event;
+  state?: State;
 }
 
-const EventForm: React.FC<EventFormProps> = ({ eventData }) => {
-  const { handleClose } = useWindowContext();
-  const { updateEvent, createEvent } = useEventContext();
-  const event = useSignal<Event>(eventData || emptyEvent);
-  const [name, setName] = useState<string>(eventData?.name || '');
-  const [desc, setDesc] = useState<string>(eventData?.desc || '');
-  const [evType, setEvType] = useState<EventType>(
-    eventData?.evType || 'etStateCng',
-  );
-  const eventTypeOptions = [
-    { value: 'etVarCond', label: 'Var Condition' },
-    { value: 'etStateCng', label: 'State Change' },
-    { value: 'etComponentLogic', label: 'Component Logic' },
-    { value: 'etTimer', label: 'Timer' },
-    { value: 'etFailRate', label: 'Failure Rate' },
-    { value: 'et3dSimEv', label: 'Ext Simulation' },
-    { value: 'etDistribution', label: 'Distribution' },
-  ];
-
-   // Map event types to their respective sub-components and props
-  const eventTypeToComponent: { [key in EventType]: { component: React.FC<any>, props: any } } = {
-    'etVarCond': { component: VarCondition, props: {} },
-    'etStateCng': { component: StateChange, props: {} },
-    'etComponentLogic': { component: ComponentLogic, props: {} },
-    'etTimer': { component: Timer, props: {} },
-    'etFailRate': { component: FailureRate, props: {} },
-    'et3dSimEv': { component: ExtSim, props: {} },
-    'etDistribution': { component: Distribution, props: {} },
-  };
-
-  const handleSave = () => {
-    eventData
-      ? updateEvent({
-          ...event.value,
-          evType,
-          name,
-          desc,
-        })
-      : createEvent({
-          ...event.value,
-          id: uuidv4(),
-          evType,
-          name,
-          desc,
-        });
-    handleClose();
-  };
-
+const EventForm: React.FC<EventFormProps> = ({ eventData, state }) => {
+  const {
+    name,
+    desc,
+    eventTypeOptions,
+    eventTypeToComponent,
+    evType,
+    moveFromCurrent,
+    handleClose,
+    handleSave,
+    InitializeForm,
+    setDesc,
+    setEvType,
+    setMoveFromCurrent,
+    setName,
+  } = useEventFormContext();
   useEffect(() => {
-    if (eventData) {
-      setEvType(eventData.evType || '');
-      setName(eventData.name || '');
-      setDesc(eventData.desc || '');
-    }
-  }, [eventData]);
+    InitializeForm(eventData, state);
+  }, []);
 
   return (
-    <Container maxWidth="sm">
+    <Box mx={3}>
       <Typography variant="h5" my={3}>
         {eventData ? `Edit` : `Create`} Event
       </Typography>
@@ -90,28 +57,41 @@ const EventForm: React.FC<EventFormProps> = ({ eventData }) => {
           setDesc={setDesc}
         />
 
+        {state && (
+          <FormControlLabel
+            label="	Exit Parent state when event is Triggered"
+            value={moveFromCurrent}
+            control={
+              <Checkbox
+                checked={moveFromCurrent ? true : false}
+                onChange={(e) => setMoveFromCurrent(e.target.checked)}
+              />
+            }
+          />
+        )}
+
         {/* Render the appropriate sub-component based on selected event type */}
-        {evType && React.createElement(eventTypeToComponent[evType].component, eventTypeToComponent[evType].props)}
+        {evType &&
+          React.createElement(
+            eventTypeToComponent[evType].component,
+            eventTypeToComponent[evType].props,
+          )}
 
         <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 5 }}>
           <Button
             variant="contained"
             color="primary"
             sx={{ mr: 2 }}
-            onClick={() => handleSave()}
+            onClick={() => handleSave(eventData, state)}
           >
             Save
           </Button>
-          <Button
-            variant="contained"
-            color="secondary"
-            onClick={() => handleClose()}
-          >
+          <Button variant="contained" color="secondary" onClick={() => handleClose()}>
             Cancel
           </Button>
         </Box>
       </form>
-    </Container>
+    </Box>
   );
 };
 
