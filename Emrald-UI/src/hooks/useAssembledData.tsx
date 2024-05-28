@@ -53,6 +53,16 @@ export function useAssembledData() {
     clearStateList();
   };
 
+  const refreshWithNewData = (model: EMRALD_Model) => {
+    newDiagramList(model.DiagramList || []);
+    newLogicNodeList(model.LogicNodeList || []);
+    newActionList(model.ActionList || []);
+    newStateList(model.StateList || []);
+    newEventList(model.EventList || []);
+    newVariableList(model.VariableList || []);
+    newExtSimList(model.ExtSimList || []);
+  }
+
   // Function to replace data with imported data from the JSON file
   const populateNewData = (jsonContent: string) => {
     try {
@@ -132,6 +142,7 @@ export function useAssembledData() {
 
   return {
     newProject,
+    refreshWithNewData,
     populateNewData,
     mergeNewData,
     assembleData,
