@@ -1,8 +1,4 @@
-import React, {
-  createContext,
-  useContext,
-  useState,
-} from 'react';
+import React, { createContext, useContext, useState } from 'react';
 import { EmraldContextWrapperProps } from './EmraldContextWrapper';
 import { appData, updateAppData } from '../hooks/useAppData';
 import { ReadonlySignal, useComputed } from '@preact/signals-react';
@@ -22,27 +18,27 @@ interface ExtSimContextType {
 }
 
 export const emptyExtSim: ExtSim = {
-  id: "",
+  id: '',
   name: '',
   resourceName: '',
 };
 
-const ExtSimContext = createContext<ExtSimContextType | undefined>(
-  undefined,
-);
+const ExtSimContext = createContext<ExtSimContextType | undefined>(undefined);
 
 export function useExtSimContext() {
   const context = useContext(ExtSimContext);
   if (!context) {
-    throw new Error(
-      'useExtSimContext must be used within an ExtSimContextProvider',
-    );
+    throw new Error('useExtSimContext must be used within an ExtSimContextProvider');
   }
   return context;
 }
 
 const ExtSimContextProvider: React.FC<EmraldContextWrapperProps> = ({ children }) => {
-  const [extSims, setExtSims] = useState<ExtSim[]>(JSON.parse(JSON.stringify(appData.value.ExtSimList.sort((a,b) => a.name.localeCompare(b.name)))));
+  const [extSims, setExtSims] = useState<ExtSim[]>(
+    JSON.parse(
+      JSON.stringify(appData.value.ExtSimList.sort((a, b) => a.name.localeCompare(b.name))),
+    ),
+  );
   const extSimList = useComputed(() => appData.value.ExtSimList);
 
   const createExtSim = async (newExtSim: ExtSim) => {
@@ -54,20 +50,21 @@ const ExtSimContextProvider: React.FC<EmraldContextWrapperProps> = ({ children }
     setExtSims(updatedModel.ExtSimList);
   };
 
-  const updateExtSim = (updatedExtSim: ExtSim) => {
-    const updatedExtSimList = extSimList.value.map((item) =>
-      item.id === updatedExtSim.id
-        ? updatedExtSim
-        : item,
+  const updateExtSim = async (updatedExtSim: ExtSim) => {
+    var updatedModel: EMRALD_Model = await updateModelAndReferences(
+      updatedExtSim,
+      MainItemTypes.ExtSim,
     );
-    setExtSims(updatedExtSimList);
+    updateAppData(updatedModel);
+    setExtSims(updatedModel.ExtSimList);
   };
 
   const deleteExtSim = (extSimId: string | undefined) => {
-    if (!extSimId) { return; }
-    const updatedExtSimList = extSimList.value.filter(
-      (item) => item.id !== extSimId,
-    );
+    if (!extSimId) {
+      return;
+    }
+    const updatedExtSimList = extSimList.value.filter((item) => item.id !== extSimId);
+    updateAppData(JSON.parse(JSON.stringify({ ...appData.value, ExtSimList: updatedExtSimList })));
     setExtSims(updatedExtSimList);
   };
 
@@ -78,8 +75,7 @@ const ExtSimContextProvider: React.FC<EmraldContextWrapperProps> = ({ children }
 
   const clearExtSimList = () => {
     setExtSims([]);
-
-    console.log(extSims);
+    updateAppData({ ...appData.value, ExtSimList: [] });
   };
 
   return (

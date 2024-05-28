@@ -34,16 +34,12 @@ const DiagramContext = createContext<DiagramContextType | undefined>(undefined);
 export function useDiagramContext() {
   const context = useContext(DiagramContext);
   if (!context) {
-    throw new Error(
-      'useDiagramContext must be used within a DiagramContextProvider',
-    );
+    throw new Error('useDiagramContext must be used within a DiagramContextProvider');
   }
   return context;
 }
 
-const DiagramContextProvider: React.FC<EmraldContextWrapperProps> = ({
-  children,
-}) => {
+const DiagramContextProvider: React.FC<EmraldContextWrapperProps> = ({ children }) => {
   const [diagrams, setDiagrams] = useState<Diagram[]>(
     appData.value.DiagramList.sort((a, b) => a.name.localeCompare(b.name)),
   );
@@ -67,9 +63,7 @@ const DiagramContextProvider: React.FC<EmraldContextWrapperProps> = ({
       updatedDiagram,
       MainItemTypes.Diagram,
     );
-    console.log('Calling update app data');
-    updateAppData(JSON.parse(JSON.stringify(updatedModel)));
-    console.log('Called update app data');
+    updateAppData(updatedModel);
     setDiagrams(updatedModel.DiagramList);
   };
 
@@ -78,26 +72,16 @@ const DiagramContextProvider: React.FC<EmraldContextWrapperProps> = ({
       return;
     }
     const updatedDiagrams = diagrams.filter((item) => item.id !== diagramId);
-    updateAppData(
-      JSON.parse(
-        JSON.stringify({ ...appData.value, DiagramList: updatedDiagrams }),
-      ),
-    );
+    updateAppData(JSON.parse(JSON.stringify({ ...appData.value, DiagramList: updatedDiagrams })));
     setDiagrams(updatedDiagrams);
   };
 
   const getDiagramByDiagramName = (diagramName: string) => {
-    return (
-      diagramList.value.find((diagram) => diagram.name === diagramName) ||
-      emptyDiagram
-    );
+    return diagramList.value.find((diagram) => diagram.name === diagramName) || emptyDiagram;
   };
 
   const getDiagramById = (diagramId: string) => {
-    return (
-      diagramList.value.find((diagram) => diagram.id === diagramId) ||
-      emptyDiagram
-    );
+    return diagramList.value.find((diagram) => diagram.id === diagramId) || emptyDiagram;
   };
 
   // Open New, Merge, and Clear Diagram List
@@ -111,6 +95,7 @@ const DiagramContextProvider: React.FC<EmraldContextWrapperProps> = ({
 
   const clearDiagramList = () => {
     setDiagrams([]);
+    updateAppData(JSON.parse(JSON.stringify({ ...appData.value, DiagramList: [] })));
   };
 
   return (

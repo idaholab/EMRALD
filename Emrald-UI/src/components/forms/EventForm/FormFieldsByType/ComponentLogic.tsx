@@ -2,14 +2,20 @@ import { FormControlLabel, MenuItem, Radio, RadioGroup } from '@mui/material';
 import { useEventFormContext } from '../EventFormContext';
 import { SelectComponent } from '../../../common';
 import { appData } from '../../../../hooks/useAppData';
+import { useEffect } from 'react';
 
 const ComponentLogic = () => {
   const { onSuccess, setOnSuccess, triggerOnFalse, setTriggerOnFalse, logicTop, setLogicTop } =
     useEventFormContext();
+
+  useEffect(() => {
+    if (onSuccess === undefined) setOnSuccess(false);
+    if (triggerOnFalse === undefined) setTriggerOnFalse(false);
+  }, []);
   return (
     <div>
       <RadioGroup
-        value={onSuccess}
+        value={onSuccess || false}
         onChange={(e) => setOnSuccess(e.target.value === 'true' ? true : false)}
         sx={{ display: 'flex', flexDirection: 'row' }}
       >
@@ -27,7 +33,7 @@ const ComponentLogic = () => {
         />
       </RadioGroup>
       <RadioGroup
-        value={triggerOnFalse}
+        value={triggerOnFalse || false}
         onChange={(e) => setTriggerOnFalse(e.target.value === 'true' ? true : false)}
         sx={{ display: 'flex', flexDirection: 'row' }}
       >
@@ -44,7 +50,7 @@ const ComponentLogic = () => {
           checked={triggerOnFalse ? false : true}
         />
       </RadioGroup>
-      <SelectComponent value={logicTop} label={'LogicTop'} setValue={setLogicTop}>
+      <SelectComponent value={logicTop || ''} label={'LogicTop'} setValue={setLogicTop}>
         {appData.value.LogicNodeList.filter((node) => node.isRoot).map((node, index) => (
           <MenuItem key={index} value={node.name}>
             {node.name}

@@ -7,6 +7,7 @@ import { Variable } from '../../../types/Variable';
 import { AccrualVarTableType, DocVarType, VariableType, VarScope } from '../../../types/ItemTypes';
 import { SelectChangeEvent } from '@mui/material';
 import { useSignal } from '@preact/signals-react';
+import { FormError } from '../FormError';
 
 export interface AccrualStateItem {
   stateName: string;
@@ -18,7 +19,7 @@ export interface AccrualStateItem {
 
 interface VariableFormContextType {
   accrualStatesData?: AccrualStateItem[];
-
+  error: FormError | undefined;
   name: string;
   namePrefix: string | undefined;
   desc: string;
@@ -68,7 +69,7 @@ export const useVariableFormContext = (): VariableFormContextType => {
 const VariableFormContextProvider: React.FC<PropsWithChildren> = ({ children }) => {
   const [accrualStatesData, setAccrualStatesData] = useState<AccrualStateItem[]>();
   const { handleClose } = useWindowContext();
-  const [name, setName] = useState<string>('');
+  const [name, setName] = useState<string>('Int_');
   const [namePrefix, setNamePrefix] = useState<string>();
   const [desc, setDesc] = useState<string>('');
   const [type, setType] = useState<VariableType>('int');
@@ -80,7 +81,7 @@ const VariableFormContextProvider: React.FC<PropsWithChildren> = ({ children }) 
   const [docPath, setDocPath] = useState<string>();
   const [docLink, setDocLink] = useState<string>();
   const [pathMustExist, setPathMustExist] = useState<boolean | undefined>();
-
+  const [error, setError] = useState<FormError>();
   const variable = useSignal<Variable>(emptyVariable);
   const { updateVariable, createVariable } = useVariableContext();
 
@@ -143,8 +144,24 @@ const VariableFormContextProvider: React.FC<PropsWithChildren> = ({ children }) 
       setName(hasPrefix ? updatedName : `${namePrefix}${updatedName}`);
     }
   };
+  const validate = () => {
+    if (!name) {
+      setError({ error: true, message: 'Name is required' });
+      return false;
+    }
+    if (!varScope) {
+      setError({ error: true, message: 'Variable scope is required' });
+      return false;
+    }
+    if (!value) {
+      setError({ error: true, message: 'Value is required' });
+      return false;
+    }
+    return true;
+  };
 
   const handleSave = (variableData?: Variable) => {
+    if (!validate()) return;
     variable.value = {
       ...variable.value,
       id: variableData?.id || uuidv4(),
@@ -187,6 +204,7 @@ const VariableFormContextProvider: React.FC<PropsWithChildren> = ({ children }) 
     <VariableFormContext.Provider
       value={{
         accrualStatesData,
+        error,
         name,
         namePrefix,
         desc,

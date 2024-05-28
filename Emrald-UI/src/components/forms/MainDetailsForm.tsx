@@ -12,6 +12,9 @@ import {
   StateType,
   VariableType,
 } from '../../types/ItemTypes';
+import { Alert, Box, Button } from '@mui/material';
+import { useWindowContext } from '../../contexts/WindowContext';
+import { FormError } from './FormError';
 
 type ValueTypes<T extends MainItemTypes> = T extends 'Diagram'
   ? DiagramType
@@ -26,31 +29,40 @@ type ValueTypes<T extends MainItemTypes> = T extends 'Diagram'
   : never;
 
 interface MainDetailsFormProps<T extends MainItemTypes> {
-  itemType: T;
-  typeLabel?: string;
-  type: ValueTypes<T>;
-  setType: Dispatch<SetStateAction<ValueTypes<T>>>;
-  typeOptions: { value: string; label: string }[];
-  typeDisabled?: boolean;
-  name: string;
-  setName: (name: string) => void;
+  children?: React.ReactNode;
   desc: string;
-  setDesc: (desc: string) => void;
+  error?: FormError;
+  itemType: T;
+  name: string;
+  type: ValueTypes<T>;
+  typeDisabled?: boolean;
+  typeLabel?: string;
+  typeOptions: { value: string; label: string }[];
+
+  handleSave: () => void;
   handleTypeChange?: (newType: VariableType) => void;
+  setDesc: (desc: string) => void;
+  setName: (name: string) => void;
+  setType: Dispatch<SetStateAction<ValueTypes<T>>>;
 }
 
 const MainDetailsForm = <T extends MainItemTypes>({
-  typeLabel,
-  type,
-  setType,
-  typeOptions,
-  typeDisabled,
-  name,
-  setName,
+  children,
   desc,
-  setDesc,
+  error,
+  name,
+  type,
+  typeDisabled,
+  typeLabel,
+  typeOptions,
+
+  handleSave,
   handleTypeChange,
+  setDesc,
+  setName,
+  setType,
 }: MainDetailsFormProps<T>) => {
+  const { handleClose } = useWindowContext();
   return (
     <>
       <FormControl variant="outlined" size="small" sx={{ minWidth: 120, width: '100%' }}>
@@ -93,6 +105,16 @@ const MainDetailsForm = <T extends MainItemTypes>({
         value={desc}
         onChange={(e: React.ChangeEvent<HTMLInputElement>) => setDesc(e.target.value)}
       />
+      {children}
+      <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 5 }}>
+        <Button variant="contained" color="primary" sx={{ mr: 2 }} onClick={() => handleSave()}>
+          Save
+        </Button>
+        <Button variant="contained" color="secondary" onClick={() => handleClose()}>
+          Cancel
+        </Button>
+        {error?.error && <Alert severity="error">{error.message}</Alert>}
+      </Box>
     </>
   );
 };

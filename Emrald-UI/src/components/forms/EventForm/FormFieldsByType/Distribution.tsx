@@ -14,20 +14,21 @@ import { useEffect } from 'react';
 import { SelectComponent } from '../../../common';
 import { useEventFormContext } from '../EventFormContext';
 import { StyledTableCell, StyledTableRow } from '../../ActionForm/ActionToStateTable';
-import { DistributionType } from '../../../../types/ItemTypes';
+import { DistributionType, TimeVariableUnit } from '../../../../types/ItemTypes';
 import { appData } from '../../../../hooks/useAppData';
 import { EventDistributionParameter } from '../../../../types/Event';
+import VariableChangesPiece from './VariableChangesPiece';
 
 const Distribution = () => {
   const distConfig: Record<DistributionType, string[]> = {
-    dtNormal: ['Mu or Mean', 'Standard Deviation'],
-    dtExponential: ['Rate (Lambda)'],
-    dtWeibull: ['Shape (k)', 'Scale (Lambda)'],
+    dtNormal: ['Mean', 'Standard Deviation'],
+    dtExponential: ['Rate'],
+    dtWeibull: ['Shape', 'Scale'],
     dtLogNormal: ['Mean', 'Standard Deviation'],
     dtUniform: [],
     dtTriangular: ['Peak'],
-    dtGamma: ['Shape (Alpha)', 'Rate (inverse scale)'],
-    dtGompertz: ['Shape (eta)', 'Scale (beta)'],
+    dtGamma: ['Shape', 'Rate'],
+    dtGompertz: ['Shape', 'Scale'],
     dtBeta: [],
   };
   const getRowsForDistType = (type: DistributionType) => {
@@ -39,7 +40,6 @@ const Distribution = () => {
     allRows,
     dfltTimeRate,
     distType,
-    onVarChange,
     parameters,
     variableChecked,
     handleChange,
@@ -48,45 +48,88 @@ const Distribution = () => {
     setAllRows,
     setDfltTimeRate,
     setDistType,
-    setOnVarChange,
     setParameters,
-    setVariable,
+    setParameterVariable,
   } = useEventFormContext();
 
-  const rowsToDisplay = getRowsForDistType(distType);
+  const rowsToDisplay = getRowsForDistType(distType ? distType : 'dtNormal');
 
   useEffect(() => {
     setAllRows((prevAllRows) => {
       const updatedAllRows = { ...prevAllRows };
-      parameters.forEach((param: EventDistributionParameter) => {
-        if (param.name) {
-          updatedAllRows[param.name] = {
-            ...prevAllRows[param.name],
-            value: param.value,
-            timeRate: param.timeRate,
-            useVariable: param.useVariable,
-            variable: param.variable,
-          };
-        }
-      });
+      parameters &&
+        parameters.forEach((param: EventDistributionParameter) => {
+          if (param.name) {
+            updatedAllRows[param.name] = {
+              ...prevAllRows[param.name],
+              value: param.value,
+              timeRate: param.timeRate,
+              useVariable: param.useVariable,
+              variable: param.variable,
+            };
+          }
+        });
       return updatedAllRows;
     });
-  }, [parameters]);
+  }, [parameters, setAllRows]);
 
   useEffect(() => {
-    const filteredParameters = parameters.filter(
-      (param) => param.name && rowsToDisplay.includes(param.name),
-    );
+    const filteredParameters = parameters
+      ? parameters.filter((param) => param.name && rowsToDisplay.includes(param.name))
+      : [];
     setParameters(filteredParameters);
-  }, [distType, parameters, rowsToDisplay]);
+  }, [distType, parameters, rowsToDisplay, setParameters]);
 
-  const NoRate = ['Shape'];
+  const getSuffix = (row: string) => {
+    switch (distType) {
+      case 'dtExponential':
+        if (row === 'Rate') {
+          return '(Lambda)';
+        }
+        return;
+      case 'dtWeibull':
+        if (row === 'Shape') {
+          return '(k)';
+        }
+        if (row === 'Scale') {
+          return '(Lambda)';
+        }
+        return;
+      case 'dtGamma':
+        if (row === 'Shape') {
+          return '(Alpha)';
+        }
+        if (row === 'Rate') {
+          return '(inverse scale)';
+        }
+        return;
+      case 'dtGompertz':
+        if (row === 'Shape') {
+          return '(eta)';
+        }
+        if (row === 'Scale') {
+          return '(beta)';
+        }
+        return;
+    }
+  };
+
+  useEffect(() => {
+    if (!dfltTimeRate) {
+      setDfltTimeRate('trHours');
+    }
+  }, [dfltTimeRate]);
 
   return (
     <>
       <Box sx={{ display: 'flex', alignItems: 'center', my: 2 }}>
         <Typography mr={3}>Distribution Type: </Typography>
-        <SelectComponent value={distType} setValue={setDistType} label={'Distribution Type'} mt={0}>
+        <SelectComponent
+          value={distType || 'dtNormal'}
+          setValue={setDistType}
+          label={'Distribution Type'}
+          sx={{ mt: 0 }}
+        >
           <MenuItem value="dtNormal">Normal Distribution</MenuItem>
           <MenuItem value="dtExponential">Exp. Distribution</MenuItem>
           <MenuItem value="dtWeibull">Weibull Distribution</MenuItem>
@@ -98,10 +141,10 @@ const Distribution = () => {
         </SelectComponent>
         <Typography mx={3}>Default Rate: </Typography>
         <SelectComponent
-          value={dfltTimeRate}
+          value={dfltTimeRate || 'trHours'}
           setValue={setDfltTimeRate}
           label="Default Rate"
-          mt={0}
+          sx={{ mt: 0 }}
         >
           <MenuItem value="trSeconds">Second</MenuItem>
           <MenuItem value="trMinutes">Minute</MenuItem>
@@ -115,13 +158,15 @@ const Distribution = () => {
           <TableBody>
             {rowsToDisplay.map((row) => (
               <StyledTableRow key={row}>
-                <StyledTableCell>{row}</StyledTableCell>
+                <StyledTableCell>
+                  {row} {getSuffix(row)}
+                </StyledTableCell>
                 <StyledTableCell>
                   {allRows[row]?.useVariable ? (
                     <SelectComponent
                       label="Variable"
-                      value={allRows[row] ? allRows[row].variable : ''}
-                      setValue={(value) => setVariable(value, row)}
+                      value={allRows[row]?.variable || ''}
+                      setValue={(value) => setParameterVariable(value, row)}
                     >
                       {appData.value.VariableList.map((variable, idx) => (
                         <MenuItem key={idx} value={variable.name ? variable.name : ''}>
@@ -131,7 +176,7 @@ const Distribution = () => {
                     </SelectComponent>
                   ) : (
                     <TextField
-                      value={allRows[row] ? allRows[row].value : ''}
+                      value={allRows[row]?.value || ''}
                       onChange={(e) => handleChange(row, e.target.value)}
                       size="small"
                       label={row}
@@ -140,14 +185,14 @@ const Distribution = () => {
                   )}
                 </StyledTableCell>
                 <StyledTableCell>
-                  {!NoRate.includes(row) && (
+                  {!row.includes('Shape') && (
                     <SelectComponent
                       label="Time Rate"
-                      value={allRows[row] ? allRows[row].timeRate : dfltTimeRate}
+                      value={allRows[row]?.timeRate || ('default' as TimeVariableUnit)}
                       setValue={(value) => handleRateChange(row, value)}
-                      mt={0}
+                      sx={{ mt: 0 }}
                     >
-                      <MenuItem value={dfltTimeRate}>Default</MenuItem>
+                      <MenuItem value="default">Default</MenuItem>
                       <MenuItem value="trSeconds">Second</MenuItem>
                       <MenuItem value="trMinutes">Minute</MenuItem>
                       <MenuItem value="trHours">Hour</MenuItem>
@@ -159,10 +204,10 @@ const Distribution = () => {
                 <StyledTableCell>
                   <FormControlLabel
                     label="Use Variable"
-                    value={allRows[row] ? allRows[row].useVariable : false}
+                    value={allRows[row]?.useVariable || false}
                     control={
                       <Checkbox
-                        checked={allRows[row] ? allRows[row].useVariable : false}
+                        checked={allRows[row]?.useVariable || false}
                         onChange={(e) => handleUseVariableChange(e.target.checked, row)}
                       />
                     }
@@ -173,30 +218,7 @@ const Distribution = () => {
           </TableBody>
         </Table>
       </TableContainer>
-      {variableChecked && (
-        <Box
-          sx={{
-            display: 'flex',
-            alignItems: 'center',
-            mt: 4,
-          }}
-        >
-          <Typography sx={{ mr: 2 }}>If Variable Changes:</Typography>
-          <Box sx={{ mr: 2 }}>
-            <SelectComponent label="" value={onVarChange} setValue={setOnVarChange} mt={0}>
-              <MenuItem value="ocIgnore">Ignore</MenuItem>
-              <MenuItem value="ocResample">Resample</MenuItem>
-              <MenuItem value="ocAdjust">Adjust</MenuItem>
-            </SelectComponent>
-          </Box>
-          <Typography>
-            {onVarChange === 'ocIgnore' && 'keep the sampled event time.'}
-            {onVarChange === 'ocResample' && 'resample the event time.'}
-            {onVarChange === 'ocAdjust' &&
-              'use the new variable values to adjust the event time without resampling, if possible.'}
-          </Typography>
-        </Box>
-      )}
+      {variableChecked && <VariableChangesPiece />}
     </>
   );
 };

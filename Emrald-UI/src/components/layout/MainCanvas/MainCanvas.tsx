@@ -10,7 +10,7 @@ import {
 } from '@mui/material';
 import UndoIcon from '@mui/icons-material/Undo';
 import WindowComponent from '../Window/Window';
-import { TbSchema } from 'react-icons/tb';
+import { Tb3DCubeSphere, TbSchema } from 'react-icons/tb';
 import { GrPerformance } from 'react-icons/gr';
 import { VscSymbolEvent } from 'react-icons/vsc';
 import { HiOutlineVariable } from 'react-icons/hi';
@@ -27,6 +27,7 @@ import VariableForm from '../../forms/VariableForm/VariableForm';
 import ActionFormContextProvider from '../../forms/ActionForm/ActionFormContext';
 import VariableFormContextProvider from '../../forms/VariableForm/VariableFormContext';
 import EventFormContextProvider from '../../forms/EventForm/EventFormContext';
+import ExtSimForm from '../../forms/ExtSimForm/ExtSimForm';
 
 const MainCanvas: React.FC = () => {
   const actions = [
@@ -47,6 +48,15 @@ const MainCanvas: React.FC = () => {
       ),
       name: 'New Logic Tree',
       content: <LogicNodeForm />,
+    },
+    {
+      icon: (
+        <SvgIcon>
+          <Tb3DCubeSphere />
+        </SvgIcon>
+      ),
+      name: 'New External Sim',
+      content: <ExtSimForm />,
     },
     {
       icon: (

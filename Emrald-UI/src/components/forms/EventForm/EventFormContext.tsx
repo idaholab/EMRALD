@@ -7,6 +7,7 @@ import {
   DistributionType,
   EventDistributionParameterName,
   EventType,
+  ExtEventMsgType,
   TimeVariableUnit,
   VarChangeOptions,
 } from '../../../types/ItemTypes';
@@ -22,39 +23,48 @@ import {
 import { v4 as uuidv4 } from 'uuid';
 import { State } from '../../../types/State';
 import dayjs from 'dayjs';
+import { FormError } from '../FormError';
 
 interface EventFormContextType {
   allItems: boolean;
   allRows: RowType;
   name: string;
-  codeVariables: string[];
+  codeVariables: string[] | undefined;
   desc: string;
-  dfltTimeRate: TimeVariableUnit;
-  distType: DistributionType;
+  dfltTimeRate: TimeVariableUnit | undefined;
+  distType: DistributionType | undefined;
+  error: FormError | undefined;
   eventStateIndex: number;
   eventTypeOptions: { value: string; label: string }[];
   eventTypeToComponent: { [key: string]: { component: any; props: any } };
   evType: EventType;
-  ifInState: boolean;
+  extEventType: ExtEventMsgType | undefined | '';
+  failureRateMilliseconds: number | undefined;
+  fromSimStart: boolean | undefined;
+  ifInState: boolean | undefined;
   lambda: string | number | undefined;
-  logicTop: string;
-  milliseconds: number;
+  lambdaTimeRate: string | undefined;
+  logicTop: string | undefined;
+  timerMilliseconds: number | undefined;
   moveFromCurrent: boolean;
   onSuccess: boolean | undefined;
-  onVarChange: VarChangeOptions;
-  parameters: EventDistributionParameter[];
-  scriptCode: string;
+  onVarChange: VarChangeOptions | undefined | '';
+  parameters: EventDistributionParameter[] | undefined;
+  scriptCode: string | undefined;
   time: string | undefined;
+  timeVariableUnit: TimeVariableUnit | undefined;
   triggerOnFalse: boolean | undefined;
   triggerStates: string[];
   useDistVariable: boolean[];
   useVariable: boolean | undefined;
+  variable: string | undefined;
   variableChecked: boolean;
   variableName: string;
   addToUsedVariables: (variableName: string) => void;
   handleChange: (row: string, value: string | number) => void;
   handleClose: () => void;
-  handleDurationChange: (value: number) => void;
+  handleTimerDurationChange: (value: number) => void;
+  handleFailureRateDurationChange: (value: number) => void;
   handleRateChange: (row: string, value: TimeVariableUnit | undefined) => void;
   handleSave: (eventData?: Event, state?: State) => void;
   handleSetParameters: (
@@ -66,26 +76,33 @@ interface EventFormContextType {
   InitializeForm: (eventData?: Event | undefined, state?: State) => void;
   setAllItems: React.Dispatch<React.SetStateAction<boolean>>;
   setAllRows: React.Dispatch<React.SetStateAction<RowType>>;
+  setCodeVariables: React.Dispatch<React.SetStateAction<string[] | undefined>>;
   setDesc: React.Dispatch<React.SetStateAction<string>>;
-  setDfltTimeRate: React.Dispatch<React.SetStateAction<TimeVariableUnit>>;
-  setDistType: React.Dispatch<React.SetStateAction<DistributionType>>;
+  setDfltTimeRate: React.Dispatch<React.SetStateAction<TimeVariableUnit | undefined>>;
+  setDistType: React.Dispatch<React.SetStateAction<DistributionType | undefined>>;
   setEvType: React.Dispatch<React.SetStateAction<EventType>>;
-  setIfInState: React.Dispatch<React.SetStateAction<boolean>>;
+  setExtEventType: React.Dispatch<React.SetStateAction<ExtEventMsgType | undefined | ''>>;
+  setFailureRateMilliseconds: React.Dispatch<React.SetStateAction<number | undefined>>;
+  setFromSimStart: React.Dispatch<React.SetStateAction<boolean | undefined>>;
+  setIfInState: React.Dispatch<React.SetStateAction<boolean | undefined>>;
   setLambda: React.Dispatch<React.SetStateAction<string | number | undefined>>;
-  setLogicTop: React.Dispatch<React.SetStateAction<string>>;
+  setLambdaTimeRate: React.Dispatch<React.SetStateAction<string | undefined>>;
+  setLogicTop: React.Dispatch<React.SetStateAction<string | undefined>>;
   setName: React.Dispatch<React.SetStateAction<string>>;
-  setMilliseconds: React.Dispatch<React.SetStateAction<number>>;
   setMoveFromCurrent: React.Dispatch<React.SetStateAction<boolean>>;
   setOnSuccess: React.Dispatch<React.SetStateAction<boolean | undefined>>;
-  setOnVarChange: React.Dispatch<React.SetStateAction<VarChangeOptions>>;
-  setParameters: React.Dispatch<React.SetStateAction<EventDistributionParameter[]>>;
-  setScriptCode: React.Dispatch<React.SetStateAction<string>>;
+  setOnVarChange: React.Dispatch<React.SetStateAction<VarChangeOptions | undefined | ''>>;
+  setParameters: React.Dispatch<React.SetStateAction<EventDistributionParameter[] | undefined>>;
+  setScriptCode: React.Dispatch<React.SetStateAction<string | undefined>>;
   setTime: React.Dispatch<React.SetStateAction<string | undefined>>;
+  setTimerMilliseconds: React.Dispatch<React.SetStateAction<number | undefined>>;
+  setTimeVariableUnit: React.Dispatch<React.SetStateAction<TimeVariableUnit | undefined>>;
   setTriggerOnFalse: React.Dispatch<React.SetStateAction<boolean | undefined>>;
   setTriggerStates: React.Dispatch<React.SetStateAction<string[]>>;
   setUseDistVariable: React.Dispatch<React.SetStateAction<boolean[]>>;
   setUseVariable: React.Dispatch<React.SetStateAction<boolean | undefined>>;
-  setVariable: (value: string | undefined, row: string) => void;
+  setParameterVariable: (value: string | undefined, row: string) => void;
+  setVariable: React.Dispatch<React.SetStateAction<string | undefined>>;
   setVariableName: React.Dispatch<React.SetStateAction<string>>;
 }
 
@@ -103,14 +120,14 @@ type RowType = {
 };
 
 const EventFormContextProvider: React.FC<PropsWithChildren> = ({ children }) => {
-  const [codeVariables, setCodeVariables] = useState<string[]>([]);
-  const [scriptCode, setScriptCode] = useState<string>('');
+  const [codeVariables, setCodeVariables] = useState<string[] | undefined>([]);
+  const [scriptCode, setScriptCode] = useState<string>();
   const [variableName, setVariableName] = useState<string>('');
   const { handleClose } = useWindowContext();
   const [name, setName] = useState<string>('');
   const [desc, setDesc] = useState<string>('');
   const [evType, setEvType] = useState<EventType>('etStateCng');
-  const [ifInState, setIfInState] = useState<boolean>(false);
+  const [ifInState, setIfInState] = useState<boolean>();
   const [triggerStates, setTriggerStates] = useState<string[]>([]);
   const [moveFromCurrent, setMoveFromCurrent] = useState<boolean>(false);
   const [actions, setActions] = useState<string[]>([]);
@@ -118,17 +135,24 @@ const EventFormContextProvider: React.FC<PropsWithChildren> = ({ children }) => 
   const [allItems, setAllItems] = useState<boolean>(true);
   const [onSuccess, setOnSuccess] = useState<boolean>();
   const [triggerOnFalse, setTriggerOnFalse] = useState<boolean>();
-  const [logicTop, setLogicTop] = useState<string>('');
+  const [logicTop, setLogicTop] = useState<string>();
   const [time, setTime] = useState<string>();
-  const [milliseconds, setMilliseconds] = useState(0);
+  const [timerMilliseconds, setTimerMilliseconds] = useState<number>();
   const [useVariable, setUseVariable] = useState<boolean>();
   const [lambda, setLambda] = useState<string | number>();
-  const [onVarChange, setOnVarChange] = useState<VarChangeOptions>('ocIgnore');
-  const [distType, setDistType] = useState<DistributionType>('dtNormal');
-  const [parameters, setParameters] = useState<EventDistributionParameter[]>([]);
+  const [onVarChange, setOnVarChange] = useState<VarChangeOptions | ''>();
+  const [distType, setDistType] = useState<DistributionType>();
+  const [parameters, setParameters] = useState<EventDistributionParameter[]>();
   const [useDistVariable, setUseDistVariable] = useState<boolean[]>([]);
-  const [dfltTimeRate, setDfltTimeRate] = useState<TimeVariableUnit>('trHours');
+  const [dfltTimeRate, setDfltTimeRate] = useState<TimeVariableUnit>();
   const [allRows, setAllRows] = useState<RowType>({});
+  const [timeVariableUnit, setTimeVariableUnit] = useState<TimeVariableUnit>();
+  const [fromSimStart, setFromSimStart] = useState<boolean>();
+  const [failureRateMilliseconds, setFailureRateMilliseconds] = useState<number>();
+  const [lambdaTimeRate, setLambdaTimeRate] = useState<string>();
+  const [extEventType, setExtEventType] = useState<ExtEventMsgType | ''>();
+  const [variable, setVariable] = useState<string>();
+  const [error, setError] = useState<FormError>();
 
   const event = useSignal<Event>(emptyEvent);
 
@@ -169,23 +193,34 @@ const EventFormContextProvider: React.FC<PropsWithChildren> = ({ children }) => 
       eventData.logicTop && setLogicTop(eventData.logicTop);
       if (eventData.time) {
         setTime(eventData.time);
-        setMilliseconds(dayjs.duration(eventData.time).asMilliseconds());
+        setTimerMilliseconds(dayjs.duration(eventData.time).asMilliseconds());
       }
       eventData.useVariable && setUseVariable(eventData.useVariable);
       setLambda(eventData.lambda ? eventData.lambda : '');
-      setOnVarChange(eventData.onVarChange ? eventData.onVarChange : 'ocIgnore');
-      setDistType(eventData.distType ? eventData.distType : 'dtNormal');
+      eventData.onVarChange && setOnVarChange(eventData.onVarChange);
+      eventData.distType && setDistType(eventData.distType);
       eventData.parameters && setParameters(eventData.parameters);
-      setDfltTimeRate(eventData.dfltTimeRate ? eventData.dfltTimeRate : 'trHours');
+      eventData.dfltTimeRate && setDfltTimeRate(eventData.dfltTimeRate);
+      eventData.timeVariableUnit && setTimeVariableUnit(eventData.timeVariableUnit);
+      eventData.fromSimStart && setFromSimStart(eventData.fromSimStart);
+      if (eventData.lambdaTimeRate) {
+        setLambdaTimeRate(eventData.lambdaTimeRate);
+        setFailureRateMilliseconds(dayjs.duration(eventData.lambdaTimeRate).asMilliseconds());
+      }
+      eventData.extEventType && setExtEventType(eventData.extEventType);
+      eventData.variable && setVariable(eventData.variable);
     }
   };
 
   const addToUsedVariables = (variableName: string) => {
-    if (!codeVariables.includes(variableName)) {
-      setCodeVariables([...codeVariables, variableName]);
-    } else {
-      setCodeVariables(codeVariables.filter((item) => item !== variableName));
-    }
+    setCodeVariables((prevVariables) => {
+      const variables = prevVariables || [];
+      if (variables.includes(variableName)) {
+        return variables.filter((variable) => variable !== variableName);
+      } else {
+        return [...variables, variableName];
+      }
+    });
   };
 
   // Map event types to their respective sub-components and props
@@ -198,9 +233,13 @@ const EventFormContextProvider: React.FC<PropsWithChildren> = ({ children }) => 
     et3dSimEv: { component: ExtSim, props: {} },
     etDistribution: { component: Distribution, props: {} },
   };
-  const handleDurationChange = (value: number) => {
-    setMilliseconds(value);
+  const handleTimerDurationChange = (value: any) => {
+    setTimerMilliseconds(value);
     setTime(dayjs.duration(value).toISOString());
+  };
+  const handleFailureRateDurationChange = (value: number) => {
+    setFailureRateMilliseconds(value);
+    setLambdaTimeRate(dayjs.duration(value).toISOString());
   };
 
   const handleSetParameters = (
@@ -208,15 +247,20 @@ const EventFormContextProvider: React.FC<PropsWithChildren> = ({ children }) => 
     value: string | number | boolean | TimeVariableUnit | undefined,
     varName: string,
   ) => {
-    const newParameters = [...parameters];
+    const newParameters = parameters ? [...parameters] : [];
     let index = newParameters.findIndex((param) => param.name === row);
     if (index === -1) {
       const newParameter = {
         name: row as EventDistributionParameterName,
         value: varName === 'value' ? (value as string | number) : '',
-        timeRate: varName === 'timeRate' ? (value as TimeVariableUnit) : dfltTimeRate,
+        timeRate:
+          varName === 'timeRate'
+            ? value === 'default'
+              ? undefined
+              : (value as TimeVariableUnit)
+            : undefined,
         useVariable: varName === 'useVariable' ? (value as boolean) : false,
-        variable: varName === 'variable' ? (value as string) : '',
+        variable: varName === 'variable' ? (value as string) : undefined,
       };
       newParameters.push(newParameter);
       index = newParameters.length - 1;
@@ -224,12 +268,16 @@ const EventFormContextProvider: React.FC<PropsWithChildren> = ({ children }) => 
 
     newParameters[index] = {
       ...newParameters[index],
-      [varName]: value,
+      [varName]: varName === 'timeRate' && value === 'default' ? undefined : value,
     };
     setParameters(newParameters);
   };
   const isValidNumber = (value: string) => {
-    return !isNaN(Number(value.trim()));
+    const trimmedValue = value.trim();
+    if (trimmedValue === '') {
+      return false;
+    }
+    return !isNaN(Number(trimmedValue));
   };
 
   const updateRow = (
@@ -243,18 +291,29 @@ const EventFormContextProvider: React.FC<PropsWithChildren> = ({ children }) => 
         ...prevAllRows[row],
         value: varName === 'value' ? (value as string | number) : prevAllRows[row]?.value || '',
         timeRate:
-          varName === 'timeRate' ? (value as TimeVariableUnit) : prevAllRows[row]?.timeRate || '',
+          varName === 'timeRate'
+            ? value === 'default'
+              ? undefined
+              : (value as TimeVariableUnit)
+            : prevAllRows[row]?.timeRate || undefined,
         useVariable:
           varName === 'useVariable' ? (value as boolean) : prevAllRows[row]?.useVariable || false,
-        variable: varName === 'variable' ? (value as string) : prevAllRows[row]?.variable || '',
+        variable:
+          varName === 'variable' ? (value as string) : prevAllRows[row]?.variable || undefined,
       },
     }));
   };
 
+  const PositiveFields = ['Standard Deviation', 'Minimum', 'Maximum', 'Shape', 'Rate', 'Scale'];
+
   const handleChange = (row: string, value: string | number) => {
     if (isValidNumber(value as string)) {
       value = Number(value);
+      if (PositiveFields.includes(row)) {
+        value = Math.abs(value as number);
+      }
     }
+
     handleSetParameters(row, value, 'value');
     updateRow(row, value, 'value');
   };
@@ -269,12 +328,24 @@ const EventFormContextProvider: React.FC<PropsWithChildren> = ({ children }) => 
     updateRow(row, checked, 'useVariable');
   };
 
-  const setVariable = (value: string | undefined, row: string) => {
+  const setParameterVariable = (value: string | undefined, row: string) => {
     handleSetParameters(row, value, 'variable');
     updateRow(row, value, 'variable');
   };
+  const validate = () => {
+    if (!name) {
+      setError({ error: true, message: 'Event name is required' });
+      return false;
+    }
+    if (!evType) {
+      setError({ error: true, message: 'Event type is required' });
+      return false;
+    }
+    return true;
+  };
 
   const handleSave = (eventData?: Event, state?: State) => {
+    if (!validate()) return;
     event.value = {
       ...event.value,
       id: eventData?.id || uuidv4(),
@@ -290,12 +361,17 @@ const EventFormContextProvider: React.FC<PropsWithChildren> = ({ children }) => 
       triggerOnFalse,
       logicTop,
       time,
+      timeVariableUnit,
       useVariable,
       lambda: lambda ? lambda : undefined,
-      onVarChange,
+      onVarChange: onVarChange ? onVarChange : undefined,
       distType,
       parameters,
       dfltTimeRate,
+      fromSimStart,
+      lambdaTimeRate,
+      extEventType: extEventType ? extEventType : undefined,
+      variable,
     };
     eventData
       ? updateEvent(event.value, state, actions, moveFromCurrent, eventStateIndex)
@@ -313,30 +389,38 @@ const EventFormContextProvider: React.FC<PropsWithChildren> = ({ children }) => 
         desc,
         dfltTimeRate,
         distType,
+        error,
         eventStateIndex,
         eventTypeOptions,
         eventTypeToComponent,
         evType,
+        extEventType,
+        failureRateMilliseconds,
+        fromSimStart,
         ifInState,
         lambda,
+        lambdaTimeRate,
         logicTop,
-        milliseconds,
+        timerMilliseconds,
         moveFromCurrent,
         onSuccess,
         onVarChange,
         parameters,
         scriptCode,
         time,
+        timeVariableUnit,
         triggerOnFalse,
         triggerStates,
         useDistVariable,
         useVariable,
+        variable,
         variableChecked,
         variableName,
         addToUsedVariables,
         handleChange,
         handleClose,
-        handleDurationChange,
+        handleTimerDurationChange,
+        handleFailureRateDurationChange,
         handleRateChange,
         handleSave,
         handleSetParameters,
@@ -344,14 +428,20 @@ const EventFormContextProvider: React.FC<PropsWithChildren> = ({ children }) => 
         InitializeForm,
         setAllItems,
         setAllRows,
+        setCodeVariables,
         setDesc,
         setDfltTimeRate,
         setDistType,
         setEvType,
+        setExtEventType,
+        setFailureRateMilliseconds,
+        setFromSimStart,
         setIfInState,
         setLambda,
+        setLambdaTimeRate,
         setLogicTop,
-        setMilliseconds,
+        setParameterVariable,
+        setTimerMilliseconds,
         setMoveFromCurrent,
         setName,
         setOnSuccess,
@@ -359,6 +449,7 @@ const EventFormContextProvider: React.FC<PropsWithChildren> = ({ children }) => 
         setParameters,
         setScriptCode,
         setTime,
+        setTimeVariableUnit,
         setTriggerOnFalse,
         setTriggerStates,
         setUseDistVariable,

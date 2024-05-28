@@ -5,9 +5,9 @@ import React, { PropsWithChildren } from 'react';
 interface SelectComponentProps<T> {
   value: T;
   label: string;
-  setValue: (value: T) => void;
   children: React.ReactNode;
-  mt?: number;
+  sx?: object;
+  setValue: (value: T) => void;
 }
 
 const SelectComponent = <T,>({
@@ -15,10 +15,10 @@ const SelectComponent = <T,>({
   label,
   setValue,
   children,
-  mt,
+  sx,
 }: PropsWithChildren<SelectComponentProps<T>>) => {
   return (
-    <FormControl sx={{ mt: mt !== undefined ? mt : 2, minWidth: 120 }} size="small">
+    <FormControl sx={{ mt: 2, minWidth: 120, ...sx }} size="small">
       <InputLabel id={`${label}-select-label`}>{label}</InputLabel>
       <Select
         value={value}

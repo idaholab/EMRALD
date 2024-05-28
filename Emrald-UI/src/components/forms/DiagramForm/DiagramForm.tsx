@@ -10,12 +10,10 @@ import SingleValueGroups from './SingleValueGroups';
 import { v4 as uuidv4 } from 'uuid';
 import { Diagram } from '../../../types/Diagram';
 import { DiagramType, MainItemTypes } from '../../../types/ItemTypes';
-import {
-  emptyDiagram,
-  useDiagramContext,
-} from '../../../contexts/DiagramContext';
+import { emptyDiagram, useDiagramContext } from '../../../contexts/DiagramContext';
 import { useWindowContext } from '../../../contexts/WindowContext';
-import { FormControl, TextField } from '@mui/material';
+import { Alert, FormControl, TextField } from '@mui/material';
+import { FormError } from '../FormError';
 
 interface DiagramFormProps {
   diagramData?: Diagram;
@@ -30,15 +28,16 @@ const DiagramForm: React.FC<DiagramFormProps> = ({ diagramData }) => {
   const [diagramType, setDiagramType] = useState<DiagramType>(
     diagramData?.diagramType || 'dtSingle',
   );
+  const [error, setError] = useState<FormError>();
+
   const diagramTypeOptions = [
     { value: 'dtSingle', label: 'Single' },
     { value: 'dtMulti', label: 'Multi' },
   ];
-  const [diagramLabel, setDiagramLabel] = useState<string>(
-    diagramData?.diagramLabel || '',
-  );
+  const [diagramLabel, setDiagramLabel] = useState<string>(diagramData?.diagramLabel || '');
 
   const handleSave = () => {
+    if (!validate()) return;
     updateTitle(diagramData?.name || '', name);
 
     diagramData
@@ -59,7 +58,21 @@ const DiagramForm: React.FC<DiagramFormProps> = ({ diagramData }) => {
         });
     handleClose();
   };
-
+  const validate = () => {
+    if (!name) {
+      setError({ error: true, message: 'Name is required' });
+      return false;
+    }
+    if (!diagramType) {
+      setError({ error: true, message: 'Diagram type is required' });
+      return false;
+    }
+    if (!diagramLabel) {
+      setError({ error: true, message: 'Diagram label is required' });
+      return false;
+    }
+    return true;
+  };
   return (
     <Container maxWidth="sm">
       <Typography variant="h5" my={3}>
@@ -75,46 +88,26 @@ const DiagramForm: React.FC<DiagramFormProps> = ({ diagramData }) => {
           setName={setName}
           desc={desc}
           setDesc={setDesc}
-        />
-        {/* <Box>
+          handleSave={handleSave}
+          error={error}
+        >
+          {/* <Box>
           <SingleValueGroups states={diagram.value.states} /> Maybe put back in
           the future
         </Box> */}
-        <FormControl
-          variant="outlined"
-          size="small"
-          sx={{ minWidth: 120, width: '100%' }}
-        >
-          <TextField
-            label="Diagram Label"
-            margin="normal"
-            variant="outlined"
-            size="small"
-            sx={{ mb: 0 }}
-            value={diagramLabel}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-              setDiagramLabel(e.target.value)
-            }
-            fullWidth
-          />
-        </FormControl>
-        <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 5 }}>
-          <Button
-            variant="contained"
-            color="primary"
-            sx={{ mr: 2 }}
-            onClick={() => handleSave()}
-          >
-            Save
-          </Button>
-          <Button
-            variant="contained"
-            color="secondary"
-            onClick={() => handleClose()}
-          >
-            Cancel
-          </Button>
-        </Box>
+          <FormControl variant="outlined" size="small" sx={{ minWidth: 120, width: '100%' }}>
+            <TextField
+              label="Diagram Label"
+              margin="normal"
+              variant="outlined"
+              size="small"
+              sx={{ mb: 0 }}
+              value={diagramLabel}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setDiagramLabel(e.target.value)}
+              fullWidth
+            />
+          </FormControl>
+        </MainDetailsForm>
       </form>
     </Container>
   );

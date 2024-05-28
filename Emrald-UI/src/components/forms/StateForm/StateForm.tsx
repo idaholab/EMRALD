@@ -10,43 +10,31 @@ import { v4 as uuidv4 } from 'uuid';
 import MainDetailsForm from '../../forms/MainDetailsForm';
 import { emptyState, useStateContext } from '../../../contexts/StateContext';
 import { useSignal } from '@preact/signals-react';
-import {
-  DiagramType,
-  MainItemTypes,
-  StateEvalValue,
-  StateType,
-} from '../../../types/ItemTypes';
-import {
-  FormControl,
-  FormControlLabel,
-  FormLabel,
-  Radio,
-  RadioGroup,
-} from '@mui/material';
+import { DiagramType, MainItemTypes, StateEvalValue, StateType } from '../../../types/ItemTypes';
+import { Alert, FormControl, FormControlLabel, FormLabel, Radio, RadioGroup } from '@mui/material';
 import { useDiagramContext } from '../../../contexts/DiagramContext';
 import { Diagram } from '../../../types/Diagram';
+import { FormError } from '../FormError';
 
 interface StateFormProps {
   stateData?: State;
   parentDiagram?: Diagram;
 }
 
-const StateForm: React.FC<StateFormProps> = ({
-  stateData,
-  parentDiagram,
-}: StateFormProps) => {
+const StateForm: React.FC<StateFormProps> = ({ stateData, parentDiagram }: StateFormProps) => {
   const { handleClose } = useWindowContext();
   const { updateState, createState } = useStateContext();
   const { getDiagramByDiagramName, updateDiagram } = useDiagramContext();
   const state = useSignal<State>(stateData || emptyState);
   const [name, setName] = useState<string>(stateData?.name || '');
   const [desc, setDesc] = useState<string>(stateData?.desc || '');
-  const [stateType, setStateType] = useState<StateType>(
-    stateData?.stateType || 'stStandard',
-  );
+  const [stateType, setStateType] = useState<StateType>(stateData?.stateType || 'stStandard');
   const [diagramType, setDiagramType] = useState<DiagramType>('dtSingle');
-  const [defaultSingleStateValue, setDefaultSingleStateValue] =
-    useState<StateEvalValue>(stateData?.defaultSingleStateValue || 'Ignore');
+  const [defaultSingleStateValue, setDefaultSingleStateValue] = useState<StateEvalValue>(
+    stateData?.defaultSingleStateValue || 'Ignore',
+  );
+  const [error, setError] = useState<FormError>();
+
   const stateTypeOptions = [
     { value: 'stStart', label: 'Start' },
     { value: 'stStandard', label: 'Standard' },
@@ -55,6 +43,7 @@ const StateForm: React.FC<StateFormProps> = ({
   ];
 
   const handleSave = () => {
+    if (!validate()) return;
     if (stateData) {
       updateState({
         ...state.value,
@@ -73,12 +62,12 @@ const StateForm: React.FC<StateFormProps> = ({
         defaultSingleStateValue,
         diagramName: parentDiagram?.name || '',
       });
-      if (parentDiagram) {
-        updateDiagram({
-          ...parentDiagram,
-          states: [...parentDiagram.states, name],
-        });
-      }
+      // if (parentDiagram) {
+      //   updateDiagram({
+      //     ...parentDiagram,
+      //     states: [...parentDiagram.states, name],
+      //   });
+      // }
     }
     handleClose();
   };
@@ -86,12 +75,21 @@ const StateForm: React.FC<StateFormProps> = ({
   useEffect(() => {
     if (parentDiagram?.diagramType) setDiagramType(parentDiagram.diagramType);
     else if (stateData) {
-      const diagramType = getDiagramByDiagramName(
-        stateData.diagramName,
-      ).diagramType;
+      const diagramType = getDiagramByDiagramName(stateData.diagramName).diagramType;
       setDiagramType(diagramType);
     }
   }, []);
+  const validate = () => {
+    if (!name) {
+      setError({ error: true, message: 'Name is required' });
+      return false;
+    }
+    if (!stateType) {
+      setError({ error: true, message: 'State type is required' });
+      return false;
+    }
+    return true;
+  };
   return (
     <Container maxWidth="sm">
       <Typography variant="h5" my={3}>
@@ -107,62 +105,38 @@ const StateForm: React.FC<StateFormProps> = ({
           setName={setName}
           desc={desc}
           setDesc={setDesc}
-        />
-        {diagramType === 'dtSingle' && (
-          <FormControl
-            component="fieldset"
-            sx={{
-              minWidth: 120,
-              width: '100%',
-              border: 1,
-              p: 1,
-              borderRadius: 1,
-            }}
-          >
-            <FormLabel component="legend">
-              Default Logic Tree Evaluation Value
-            </FormLabel>
-            <RadioGroup
-              sx={{ margin: '8px' }}
-              aria-label="status-value"
-              name="status-value"
-              value={defaultSingleStateValue}
-              onChange={(event) =>
-                setDefaultSingleStateValue(event.target.value as StateEvalValue)
-              }
-              row
+          handleSave={handleSave}
+          error={error}
+        >
+          {diagramType === 'dtSingle' && (
+            <FormControl
+              component="fieldset"
+              sx={{
+                minWidth: 120,
+                width: '100%',
+                border: 1,
+                p: 1,
+                borderRadius: 1,
+              }}
             >
-              <FormControlLabel
-                value="Ignore"
-                control={<Radio />}
-                label="Unknown"
-              />
-              <FormControlLabel value="True" control={<Radio />} label="True" />
-              <FormControlLabel
-                value="False"
-                control={<Radio />}
-                label="False"
-              />
-            </RadioGroup>
-          </FormControl>
-        )}
-        <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 5 }}>
-          <Button
-            variant="contained"
-            color="primary"
-            sx={{ mr: 2 }}
-            onClick={() => handleSave()}
-          >
-            Save
-          </Button>
-          <Button
-            variant="contained"
-            color="secondary"
-            onClick={() => handleClose()}
-          >
-            Cancel
-          </Button>
-        </Box>
+              <FormLabel component="legend">Default Logic Tree Evaluation Value</FormLabel>
+              <RadioGroup
+                sx={{ margin: '8px' }}
+                aria-label="status-value"
+                name="status-value"
+                value={defaultSingleStateValue}
+                onChange={(event) =>
+                  setDefaultSingleStateValue(event.target.value as StateEvalValue)
+                }
+                row
+              >
+                <FormControlLabel value="Ignore" control={<Radio />} label="Unknown" />
+                <FormControlLabel value="True" control={<Radio />} label="True" />
+                <FormControlLabel value="False" control={<Radio />} label="False" />
+              </RadioGroup>
+            </FormControl>
+          )}
+        </MainDetailsForm>
       </form>
     </Container>
   );

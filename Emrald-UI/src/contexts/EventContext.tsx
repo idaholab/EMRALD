@@ -112,6 +112,7 @@ const EventContextProvider: React.FC<EmraldContextWrapperProps> = ({ children })
 
   const clearEventList = () => {
     setEvents([]);
+    updateAppData(JSON.parse(JSON.stringify({ ...appData.value, EventList: [] })));
   };
 
   return (

@@ -15,16 +15,9 @@ interface StateContextType {
   createState: (newState: State) => void;
   updateState: (updatedState: State) => void;
   updateStateEvents: (stateName: string, event: Event) => void;
-  updateStateEventActions: (
-    stateName: string,
-    eventName: string,
-    action: Action,
-  ) => void;
+  updateStateEventActions: (stateName: string, eventName: string, action: Action) => void;
   updateStateImmediateActions: (stateName: string, action: Action) => void;
-  updateStatePosition: (
-    state: State,
-    position: { x: number; y: number },
-  ) => void;
+  updateStatePosition: (state: State, position: { x: number; y: number }) => void;
   deleteState: (StateId: string | undefined) => void;
   getEventsByStateName: (stateName: string) => {
     events: string[];
@@ -62,45 +55,33 @@ const StateContext = createContext<StateContextType | undefined>(undefined);
 export function useStateContext() {
   const context = useContext(StateContext);
   if (!context) {
-    throw new Error(
-      'useStateContext must be used within a StateContextProvider',
-    );
+    throw new Error('useStateContext must be used within a StateContextProvider');
   }
   return context;
 }
 
-const StateContextProvider: React.FC<EmraldContextWrapperProps> = ({
-  children,
-}) => {
+const StateContextProvider: React.FC<EmraldContextWrapperProps> = ({ children }) => {
   const [states, setStates] = useState<State[]>(
     JSON.parse(
-      JSON.stringify(
-        appData.value.StateList.sort((a, b) => a.name.localeCompare(b.name)),
-      ),
+      JSON.stringify(appData.value.StateList.sort((a, b) => a.name.localeCompare(b.name))),
     ),
   );
   const statesList = useComputed(() => appData.value.StateList);
 
   // Create, Delete, Update individual States
   const createState = async (newState: State) => {
-    var updatedModel: EMRALD_Model = await updateModelAndReferences(
-      newState,
-      MainItemTypes.State,
-    );
+    var updatedModel: EMRALD_Model = await updateModelAndReferences(newState, MainItemTypes.State);
     updateAppData(updatedModel);
     setStates(updatedModel.StateList);
   };
 
-  const updateState = (updatedState: State) => {
-    const updatedStates = statesList.value.map((item) =>
-      item.id === updatedState.id ? updatedState : item,
+  const updateState = async (updatedState: State) => {
+    var updatedModel: EMRALD_Model = await updateModelAndReferences(
+      updatedState,
+      MainItemTypes.State,
     );
-    updateAppData(
-      JSON.parse(
-        JSON.stringify({ ...appData.value, StateList: updatedStates }),
-      ),
-    );
-    setStates(updatedStates);
+    updateAppData(updatedModel);
+    setStates(updatedModel.StateList);
   };
 
   const updateStateEvents = (stateName: string, event: Event) => {
@@ -114,11 +95,7 @@ const StateContextProvider: React.FC<EmraldContextWrapperProps> = ({
     }
   };
 
-  const updateStateEventActions = (
-    stateName: string,
-    eventName: string,
-    action: Action,
-  ) => {
+  const updateStateEventActions = (stateName: string, eventName: string, action: Action) => {
     const stateToUpdate = getStateByStateName(stateName);
     if (stateToUpdate) {
       const eventIndex = stateToUpdate?.events.indexOf(eventName);
@@ -128,9 +105,7 @@ const StateContextProvider: React.FC<EmraldContextWrapperProps> = ({
           actions: [action.name],
         });
       } else {
-        if (
-          stateToUpdate.eventActions[eventIndex].actions.includes(action.name)
-        ) {
+        if (stateToUpdate.eventActions[eventIndex].actions.includes(action.name)) {
           return;
         }
         stateToUpdate.eventActions[eventIndex].actions.push(action.name);
@@ -146,10 +121,7 @@ const StateContextProvider: React.FC<EmraldContextWrapperProps> = ({
       if (stateToUpdate.immediateActions.includes(action.name)) {
         return;
       }
-      stateToUpdate.immediateActions = [
-        ...stateToUpdate.immediateActions,
-        action.name,
-      ];
+      stateToUpdate.immediateActions = [...stateToUpdate.immediateActions, action.name];
       updateState(stateToUpdate);
     }
   };
@@ -158,28 +130,18 @@ const StateContextProvider: React.FC<EmraldContextWrapperProps> = ({
     if (!stateId) {
       return;
     }
-    const updatedStates = statesList.value.filter(
-      (item) => item.id !== stateId,
-    );
-    updateAppData(
-      JSON.parse(
-        JSON.stringify({ ...appData.value, StateList: updatedStates }),
-      ),
-    );
+    const updatedStates = statesList.value.filter((item) => item.id !== stateId);
+    updateAppData(JSON.parse(JSON.stringify({ ...appData.value, StateList: updatedStates })));
     setStates(updatedStates);
   };
 
   const getStateByStateId = (stateId: string | null): State => {
-    const state = statesList.value.find(
-      (stateItem) => stateItem.id === stateId,
-    );
+    const state = statesList.value.find((stateItem) => stateItem.id === stateId);
     return state || emptyState;
   };
 
   const getStateByStateName = (stateName: string): State => {
-    const state = statesList.value.find(
-      (stateItem) => stateItem.name === stateName,
-    );
+    const state = statesList.value.find((stateItem) => stateItem.name === stateName);
     return state || emptyState;
   };
 
@@ -203,10 +165,7 @@ const StateContextProvider: React.FC<EmraldContextWrapperProps> = ({
     };
   };
 
-  const updateStatePosition = (
-    state: State,
-    position: { x: number; y: number },
-  ) => {
+  const updateStatePosition = (state: State, position: { x: number; y: number }) => {
     if (state?.geometryInfo) {
       try {
         state.geometryInfo.x = position.x;
@@ -230,9 +189,7 @@ const StateContextProvider: React.FC<EmraldContextWrapperProps> = ({
 
   const clearStateList = () => {
     setStates([]);
-    updateAppData(
-      JSON.parse(JSON.stringify({ ...appData.value, StateList: [] })),
-    );
+    updateAppData(JSON.parse(JSON.stringify({ ...appData.value, StateList: [] })));
   };
 
   return (
