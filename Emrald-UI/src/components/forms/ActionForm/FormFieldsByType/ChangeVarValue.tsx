@@ -1,15 +1,8 @@
-import { Editor } from '@monaco-editor/react';
 import {
-  FormControl,
-  InputLabel,
-  Select,
   MenuItem,
-  Box,
-  Typography,
 } from '@mui/material';
 import { useActionFormContext } from '../ActionFormContext';
 import { useVariableContext } from '../../../../contexts/VariableContext';
-import CodeVariables from '../../../common/CodeVariables';
 import CodeEditorWithVariables from '../../../common/CodeEditorWithVariables';
 import SelectComponent from '../../../common/SelectComponent';
 

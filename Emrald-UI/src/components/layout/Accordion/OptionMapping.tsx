@@ -24,6 +24,8 @@ import ActionFormContextProvider from '../../forms/ActionForm/ActionFormContext'
 import { ExtSim } from '../../../types/ExtSim';
 import ExtSimForm from '../../forms/ExtSimForm/ExtSimForm';
 import { useExtSimContext } from '../../../contexts/ExtSimContext';
+import { GetModelItemsReferencedBy } from '../../../utils/ModelReferences';
+import { MainItemTypes } from '../../../types/ItemTypes';
 import VariableFormContextProvider from '../../forms/VariableForm/VariableFormContext';
 import EventFormContextProvider from '../../forms/EventForm/EventFormContext';
 
@@ -78,7 +80,10 @@ export const useOptionsMapping = () => {
       },
       { label: 'Make Template', action: () => null },
       { label: 'Export', action: () => null },
-      { label: 'Copy', action: () => null },
+      { label: 'Copy', action: (diagram: Diagram) => {
+        const copiedModel = GetModelItemsReferencedBy(diagram.name, MainItemTypes.Diagram, true)
+        navigator.clipboard.writeText(JSON.stringify(copiedModel, null, 2));
+      } },
     ],
     'Logic Tree': [
       {

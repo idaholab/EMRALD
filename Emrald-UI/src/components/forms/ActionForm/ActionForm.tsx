@@ -34,6 +34,7 @@ const ActionForm: React.FC<ActionFormProps> = ({ actionData }) => {
     hasError,
     error,
     setName,
+    handleNameChange,
     setDesc,
     setActType,
     handleSave,
@@ -70,19 +71,34 @@ const ActionForm: React.FC<ActionFormProps> = ({ actionData }) => {
           typeOptions={actionTypeOptions}
           name={name}
           setName={setName}
+          handleNameChange={handleNameChange}
           desc={desc}
           setDesc={setDesc}
-          handleSave={handleSave}
-          helperText={error?.message || ''}
-          reset={reset}
-        >
-          {/* Render the appropriate sub-component based on selected action type */}
-          {actType &&
-            React.createElement(
-              actionTypeToComponent[actType].component,
-              actionTypeToComponent[actType].props,
-            )}
-        </MainDetailsForm>
+          error={hasError}
+          errorMessage="An action with this name already exists."
+        />
+
+        {/* Render the appropriate sub-component based on selected action type */}
+        {actType &&
+          React.createElement(
+            actionTypeToComponent[actType].component,
+            actionTypeToComponent[actType].props,
+          )}
+
+        <Box sx={{ display: 'flex', justifyContent: 'flex-end', py: 5 }}>
+          <Button
+            variant="contained"
+            color="primary"
+            sx={{ mr: 2 }}
+            disabled={hasError}
+            onClick={() => handleSave()}
+          >
+            Save
+          </Button>
+          <Button variant="contained" color="secondary" onClick={() => handleClose()}>
+            Cancel
+          </Button>
+        </Box>
       </form>
     </Box>
   );

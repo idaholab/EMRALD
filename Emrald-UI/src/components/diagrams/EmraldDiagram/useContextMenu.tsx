@@ -59,7 +59,7 @@ const useContextMenu = (getStateNodes?: () => void, setEdges?: (edges: Edge[]) =
       {
         label: 'New State',
         action: () => {
-          addWindow('New State', <StateForm parentDiagram={currentDiagram.value} />);
+          addWindow('New State', <StateForm />);
           closeContextMenu();
         },
         isDivider: true,
@@ -89,10 +89,7 @@ const useContextMenu = (getStateNodes?: () => void, setEdges?: (edges: Edge[]) =
       {
         label: 'State Properties',
         action: () => {
-          addWindow(
-            state.name,
-            <StateForm stateData={state} parentDiagram={currentDiagram.value} />,
-          );
+          addWindow(state.name, <StateForm stateData={state} />);
           closeContextMenu();
         },
         isDivider: true,

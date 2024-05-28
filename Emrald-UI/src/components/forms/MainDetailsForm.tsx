@@ -31,16 +31,19 @@ type ValueTypes<T extends MainItemTypes> = T extends 'Diagram'
   : never;
 
 interface MainDetailsFormProps<T extends MainItemTypes> {
-  children?: React.ReactNode;
-  desc: string;
-  helperText: string;
   itemType: T;
-  name: string;
-  type: ValueTypes<T>;
   typeLabel?: string;
+  type: ValueTypes<T>;
+  setType: Dispatch<SetStateAction<ValueTypes<T>>>;
   typeOptions: { value: string; label: string }[];
-
-  handleSave: (eventData?: Event, variableData?: Variable) => void;
+  typeDisabled?: boolean;
+  name: string;
+  setName: (name: string) => void;
+  handleNameChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  desc: string;
+  setDesc: (desc: string) => void;
+  error?: boolean;
+  errorMessage?: string;
   handleTypeChange?: (newType: VariableType) => void;
   reset: () => void;
   setDesc: (desc: string) => void;
@@ -49,20 +52,19 @@ interface MainDetailsFormProps<T extends MainItemTypes> {
 }
 
 const MainDetailsForm = <T extends MainItemTypes>({
-  children,
-  desc,
-  helperText,
   name,
   type,
   typeLabel,
   typeOptions,
-
-  handleSave,
-  handleTypeChange,
-  reset,
-  setDesc,
+  typeDisabled,
+  desc,
+  error,
+  errorMessage,
   setName,
   setType,
+  setDesc,
+  handleNameChange,
+  handleTypeChange,
 }: MainDetailsFormProps<T>) => {
   const { handleClose } = useWindowContext();
   return (
@@ -94,9 +96,14 @@ const MainDetailsForm = <T extends MainItemTypes>({
         size="small"
         sx={{ mb: 0 }}
         value={name}
-        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setName(e.target.value)}
+        onChange={
+          handleNameChange
+            ? handleNameChange
+            : (e: React.ChangeEvent<HTMLInputElement>) => setName(e.target.value)
+        }
         fullWidth
-        helperText={helperText}
+        error={error}
+        helperText={errorMessage}
       />
       <TextField
         label="Description"

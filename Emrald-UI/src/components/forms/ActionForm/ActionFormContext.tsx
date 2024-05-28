@@ -65,6 +65,7 @@ interface ActionFormContextType {
   setFormData: React.Dispatch<React.SetStateAction<any>>;
   setHasError: React.Dispatch<React.SetStateAction<boolean>>;
   handleChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  handleNameChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   handleSave: () => void;
   handleSelectChange: (event: SelectChangeEvent, item: NewStateItem) => void;
   handleProbChange: (
@@ -92,7 +93,7 @@ export const useActionFormContext = (): ActionFormContextType => {
 
 const ActionFormContextProvider: React.FC<PropsWithChildren> = ({ children }) => {
   const { handleClose } = useWindowContext();
-  const { updateAction, createAction } = useActionContext();
+  const { actionsList, updateAction, createAction } = useActionContext();
   const [actionData, setActionData] = useState<Action | undefined>(undefined);
   const action = useSignal<Action>(emptyAction);
   //main items
@@ -131,6 +132,13 @@ const ActionFormContextProvider: React.FC<PropsWithChildren> = ({ children }) =>
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setMutuallyExclusive(event.target.checked);
+  };
+
+  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newName = e.target.value;
+    setHasError(actionsList.value.some((node) => node.name === newName));
+
+    setName(newName);
   };
 
   const handleSave = () => {
@@ -228,33 +236,10 @@ const ActionFormContextProvider: React.FC<PropsWithChildren> = ({ children }) =>
       });
       return updatedItems;
     });
-    // if (parseFloat(event.target.value) >= 1.0 || parseFloat(event.target.value) <= 0 || isNaN(parseFloat(event.target.value))) {
-    //   setHasError(true);
-    // } else {
-    //   setHasError(false);
-    // }
   };
 
   const handleProbBlur = (updatedItem: NewStateItem) => {
     const value = updatedItem.prob?.toString();
-    // const convertedValue = scientificToNumeric(value);
-
-    // if (convertedValue) {
-    //   setNewStateItems((prevItems) => {
-    //     const updatedItems = prevItems.map((item) => {
-    //       if (item.id === updatedItem.id) {
-    //         return {
-    //           ...item,
-    //           prob: convertedValue,
-    //         };
-    //       }
-    //       return item;
-    //     });
-    //     return updatedItems;
-    //   })
-    // } else {
-    //   setHasError(true);
-    // }
     const validInputRegex = /^[+\-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[Ee][+\-]?\d+)?$/;
     if (value && validInputRegex.test(value)) {
       setHasError(false);
@@ -403,7 +388,6 @@ const ActionFormContextProvider: React.FC<PropsWithChildren> = ({ children }) =>
         formData,
         hasError,
         actionTypeOptions,
-        error,
         setName,
         setDesc,
         setActType,
@@ -426,6 +410,7 @@ const ActionFormContextProvider: React.FC<PropsWithChildren> = ({ children }) =>
         setFormData,
         setHasError,
         handleChange,
+        handleNameChange,
         handleSave,
         handleSelectChange,
         handleProbChange,
@@ -435,7 +420,6 @@ const ActionFormContextProvider: React.FC<PropsWithChildren> = ({ children }) =>
         handleDeleteToStateItem,
         sortNewStates,
         initializeForm,
-        reset,
       }}
     >
       {children}

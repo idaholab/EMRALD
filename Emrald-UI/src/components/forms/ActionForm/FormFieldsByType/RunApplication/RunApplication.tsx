@@ -107,7 +107,7 @@ const RunApplication = () => {
                 setValue={setExePath}
               />
 
-              <Typography sx={{ mb: 1 }} fontWeight={600}>
+              <Typography sx={{ mt: 2, mb: 1 }} fontWeight={600}>
                 Postprocess Code (c#)
               </Typography>
               <Editor

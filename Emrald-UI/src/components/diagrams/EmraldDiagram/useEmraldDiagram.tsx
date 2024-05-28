@@ -72,10 +72,7 @@ const useEmraldDiagram = () => {
   // Double Clicks
   const onNodeDoubleClick = (_event: any, node: Node) => {
     if (node.data.state) {
-      addWindow(
-        `Edit State: ${node.data.state.name}`,
-        <StateForm stateData={node.data.state} parentDiagram={currentDiagram.value} />,
-      );
+      addWindow(`Edit State: ${node.data.state.name}`, <StateForm stateData={node.data.state} />);
     }
   };
 
