@@ -24,23 +24,22 @@ import {
   RadioGroup,
 } from '@mui/material';
 import { useDiagramContext } from '../../../contexts/DiagramContext';
-import { Diagram } from '../../../types/Diagram';
+import { currentDiagram } from '../../diagrams/EmraldDiagram/EmraldDiagram';
 
 interface StateFormProps {
   stateData?: State;
-  parentDiagram?: Diagram;
 }
 
 const StateForm: React.FC<StateFormProps> = ({
-  stateData,
-  parentDiagram,
+  stateData
 }: StateFormProps) => {
   const { handleClose } = useWindowContext();
-  const { updateState, createState } = useStateContext();
+  const { statesList, updateState, createState } = useStateContext();
   const { getDiagramByDiagramName, updateDiagram } = useDiagramContext();
   const state = useSignal<State>(stateData || emptyState);
   const [name, setName] = useState<string>(stateData?.name || '');
   const [desc, setDesc] = useState<string>(stateData?.desc || '');
+  const [error, setError] = useState<boolean>(false);
   const [stateType, setStateType] = useState<StateType>(
     stateData?.stateType || 'stStandard',
   );
@@ -53,6 +52,13 @@ const StateForm: React.FC<StateFormProps> = ({
     { value: 'stKeyState', label: 'Key State' },
     { value: 'stTerminal', label: 'Terminal' },
   ];
+
+  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newName = e.target.value;
+    setError(statesList.value.some(node => node.name === newName));
+
+    setName(newName);
+  };
 
   const handleSave = () => {
     if (stateData) {
@@ -71,12 +77,14 @@ const StateForm: React.FC<StateFormProps> = ({
         desc,
         stateType,
         defaultSingleStateValue,
-        diagramName: parentDiagram?.name || '',
+        diagramName: currentDiagram.value?.name || '',
       });
-      if (parentDiagram) {
+      if (currentDiagram.value) {
+        const { states } = currentDiagram.value;
+        currentDiagram.value.states = [...states, name];
         updateDiagram({
-          ...parentDiagram,
-          states: [...parentDiagram.states, name],
+          ...currentDiagram.value,
+          states: [...states, name],
         });
       }
     }
@@ -84,7 +92,7 @@ const StateForm: React.FC<StateFormProps> = ({
   };
 
   useEffect(() => {
-    if (parentDiagram?.diagramType) setDiagramType(parentDiagram.diagramType);
+    if (currentDiagram.value?.diagramType) setDiagramType(currentDiagram.value.diagramType);
     else if (stateData) {
       const diagramType = getDiagramByDiagramName(
         stateData.diagramName,
@@ -105,8 +113,11 @@ const StateForm: React.FC<StateFormProps> = ({
           typeOptions={stateTypeOptions}
           name={name}
           setName={setName}
+          handleNameChange={handleNameChange}
           desc={desc}
           setDesc={setDesc}
+          error={error}
+          errorMessage='A State with this name already exists.'
         />
         {diagramType === 'dtSingle' && (
           <FormControl
@@ -151,6 +162,7 @@ const StateForm: React.FC<StateFormProps> = ({
             variant="contained"
             color="primary"
             sx={{ mr: 2 }}
+            disabled={error}
             onClick={() => handleSave()}
           >
             Save

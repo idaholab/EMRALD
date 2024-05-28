@@ -37,6 +37,7 @@ const ActionForm: React.FC<ActionFormProps> = ({ actionData }) => {
     actionTypeOptions,
     hasError,
     setName,
+    handleNameChange,
     setDesc,
     setActType,
     handleSave,
@@ -73,8 +74,11 @@ const ActionForm: React.FC<ActionFormProps> = ({ actionData }) => {
           typeOptions={actionTypeOptions}
           name={name}
           setName={setName}
+          handleNameChange={handleNameChange}
           desc={desc}
           setDesc={setDesc}
+          error={hasError}
+          errorMessage='An action with this name already exists.'
         />
 
         {/* Render the appropriate sub-component based on selected action type */}

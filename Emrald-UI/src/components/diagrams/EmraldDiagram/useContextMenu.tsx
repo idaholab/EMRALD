@@ -66,7 +66,7 @@ const useContextMenu = (
         action: () => {
           addWindow(
             'New State',
-            <StateForm parentDiagram={currentDiagram.value} />,
+            <StateForm />,
           );
           closeContextMenu();
         },
@@ -101,7 +101,6 @@ const useContextMenu = (
             state.name,
             <StateForm
               stateData={state}
-              parentDiagram={currentDiagram.value}
             />,
           );
           closeContextMenu();
