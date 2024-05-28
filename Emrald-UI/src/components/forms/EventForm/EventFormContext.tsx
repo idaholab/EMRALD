@@ -23,17 +23,17 @@ import {
 import { v4 as uuidv4 } from 'uuid';
 import { State } from '../../../types/State';
 import dayjs from 'dayjs';
-import { FormError } from '../FormError';
+import { appData } from '../../../hooks/useAppData';
 
 interface EventFormContextType {
   allItems: boolean;
   allRows: RowType;
+  hasError: boolean;
   name: string;
   codeVariables: string[] | undefined;
   desc: string;
   dfltTimeRate: TimeVariableUnit | undefined;
   distType: DistributionType | undefined;
-  error: FormError | undefined;
   eventStateIndex: number;
   eventTypeOptions: { value: string; label: string }[];
   eventTypeToComponent: { [key: string]: { component: any; props: any } };
@@ -65,6 +65,7 @@ interface EventFormContextType {
   handleClose: () => void;
   handleTimerDurationChange: (value: number) => void;
   handleFailureRateDurationChange: (value: number) => void;
+  handleNameChange: (value: string) => void;
   handleRateChange: (row: string, value: TimeVariableUnit | undefined) => void;
   handleSave: (eventData?: Event, state?: State) => void;
   handleSetParameters: (
@@ -153,7 +154,7 @@ const EventFormContextProvider: React.FC<PropsWithChildren> = ({ children }) => 
   const [lambdaTimeRate, setLambdaTimeRate] = useState<string>();
   const [extEventType, setExtEventType] = useState<ExtEventMsgType | ''>();
   const [variable, setVariable] = useState<string>();
-  const [error, setError] = useState<FormError>();
+  const [hasError, setHasError] = useState<boolean>(false);
 
   const event = useSignal<Event>(emptyEvent);
 
@@ -333,16 +334,10 @@ const EventFormContextProvider: React.FC<PropsWithChildren> = ({ children }) => 
     handleSetParameters(row, value, 'variable');
     updateRow(row, value, 'variable');
   };
-  const validate = () => {
-    if (!name) {
-      setError({ error: true, message: 'Event name is required' });
-      return false;
-    }
-    if (!evType) {
-      setError({ error: true, message: 'Event type is required' });
-      return false;
-    }
-    return true;
+  const handleNameChange = (newName: string) => {
+    const events = appData.value.EventList;
+    setHasError(events.some((event) => event.name === newName));
+    setName(newName);
   };
 
   const reset = () => {
@@ -374,11 +369,10 @@ const EventFormContextProvider: React.FC<PropsWithChildren> = ({ children }) => 
     setLambdaTimeRate(undefined);
     setExtEventType(''); // Default value for extEventType
     setVariable(undefined);
-    setError(undefined);
+    setHasError(false);
   };
 
   const handleSave = (eventData?: Event, state?: State) => {
-    if (!validate()) return;
     event.value = {
       ...event.value,
       id: eventData?.id || uuidv4(),
@@ -417,12 +411,12 @@ const EventFormContextProvider: React.FC<PropsWithChildren> = ({ children }) => 
       value={{
         allItems,
         allRows,
+        hasError,
         name,
         codeVariables,
         desc,
         dfltTimeRate,
         distType,
-        error,
         eventStateIndex,
         eventTypeOptions,
         eventTypeToComponent,
@@ -454,6 +448,7 @@ const EventFormContextProvider: React.FC<PropsWithChildren> = ({ children }) => 
         handleClose,
         handleTimerDurationChange,
         handleFailureRateDurationChange,
+        handleNameChange,
         handleRateChange,
         handleSave,
         handleSetParameters,

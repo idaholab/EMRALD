@@ -24,7 +24,7 @@ interface VariableFormProps {
 
 const VariableForm: React.FC<VariableFormProps> = ({ variableData }) => {
   const {
-    error,
+    hasError,
     name,
     desc,
     type,
@@ -77,12 +77,14 @@ const VariableForm: React.FC<VariableFormProps> = ({ variableData }) => {
             { value: 'string', label: 'String' },
           ]}
           name={name}
-          setName={handleNameChange}
           desc={desc}
           setDesc={setDesc}
           handleSave={() => handleSave(variableData)}
-          helperText={error?.message || ''}
           reset={reset}
+          handleNameChange={handleNameChange}
+          error={hasError}
+          errorMessage="A variable with this name already exists."
+          reqPropsFilled={name && varScope && value ? true : false}
         >
           <FormControl variant="outlined" size="small" sx={{ minWidth: 120, width: '100%', my: 1 }}>
             <InputLabel id="demo-simple-select-standard-label">Scope</InputLabel>

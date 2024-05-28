@@ -15,9 +15,6 @@ import {
 import { Box, Button } from '@mui/material';
 import { useWindowContext } from '../../contexts/WindowContext';
 
-import { Event } from '../../types/Event';
-import { Variable } from '../../types/Variable';
-
 type ValueTypes<T extends MainItemTypes> = T extends 'Diagram'
   ? DiagramType
   : T extends 'State'
@@ -31,40 +28,41 @@ type ValueTypes<T extends MainItemTypes> = T extends 'Diagram'
   : never;
 
 interface MainDetailsFormProps<T extends MainItemTypes> {
+  children: React.ReactNode;
   itemType: T;
   typeLabel?: string;
   type: ValueTypes<T>;
-  setType: Dispatch<SetStateAction<ValueTypes<T>>>;
   typeOptions: { value: string; label: string }[];
   typeDisabled?: boolean;
   name: string;
-  setName: (name: string) => void;
-  handleNameChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
   desc: string;
-  setDesc: (desc: string) => void;
   error?: boolean;
   errorMessage?: string;
+  handleSave: () => void;
+  handleNameChange: (name: string) => void;
   handleTypeChange?: (newType: VariableType) => void;
   reset: () => void;
   setDesc: (desc: string) => void;
-  setName: (name: string) => void;
   setType: Dispatch<SetStateAction<ValueTypes<T>>>;
+  reqPropsFilled: boolean;
 }
 
 const MainDetailsForm = <T extends MainItemTypes>({
+  children,
   name,
   type,
   typeLabel,
   typeOptions,
-  typeDisabled,
   desc,
   error,
   errorMessage,
-  setName,
+  reqPropsFilled,
+  handleSave,
   setType,
   setDesc,
   handleNameChange,
   handleTypeChange,
+  reset,
 }: MainDetailsFormProps<T>) => {
   const { handleClose } = useWindowContext();
   return (
@@ -96,11 +94,7 @@ const MainDetailsForm = <T extends MainItemTypes>({
         size="small"
         sx={{ mb: 0 }}
         value={name}
-        onChange={
-          handleNameChange
-            ? handleNameChange
-            : (e: React.ChangeEvent<HTMLInputElement>) => setName(e.target.value)
-        }
+        onChange={(e) => handleNameChange(e.target.value)}
         fullWidth
         error={error}
         helperText={errorMessage}
@@ -117,7 +111,13 @@ const MainDetailsForm = <T extends MainItemTypes>({
       />
       {children}
       <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 5 }}>
-        <Button variant="contained" color="primary" sx={{ mr: 2 }} onClick={() => handleSave()}>
+        <Button
+          variant="contained"
+          color="primary"
+          sx={{ mr: 2 }}
+          onClick={() => handleSave()}
+          disabled={error || !reqPropsFilled}
+        >
           Save
         </Button>
         <Button variant="contained" color="secondary" onClick={() => handleClose()}>

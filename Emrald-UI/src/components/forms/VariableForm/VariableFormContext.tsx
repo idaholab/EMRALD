@@ -7,7 +7,7 @@ import { Variable } from '../../../types/Variable';
 import { AccrualVarTableType, DocVarType, VariableType, VarScope } from '../../../types/ItemTypes';
 import { SelectChangeEvent } from '@mui/material';
 import { useSignal } from '@preact/signals-react';
-import { FormError } from '../FormError';
+import { appData } from '../../../hooks/useAppData';
 
 export interface AccrualStateItem {
   stateName: string;
@@ -19,7 +19,7 @@ export interface AccrualStateItem {
 
 interface VariableFormContextType {
   accrualStatesData?: AccrualStateItem[];
-  error: FormError | undefined;
+  hasError: boolean;
   name: string;
   namePrefix: string | undefined;
   desc: string;
@@ -82,7 +82,7 @@ const VariableFormContextProvider: React.FC<PropsWithChildren> = ({ children }) 
   const [docPath, setDocPath] = useState<string>();
   const [docLink, setDocLink] = useState<string>();
   const [pathMustExist, setPathMustExist] = useState<boolean | undefined>();
-  const [error, setError] = useState<FormError>();
+  const [hasError, setHasError] = useState<boolean>(false);
   const variable = useSignal<Variable>(emptyVariable);
   const { updateVariable, createVariable } = useVariableContext();
 
@@ -138,27 +138,14 @@ const VariableFormContextProvider: React.FC<PropsWithChildren> = ({ children }) 
   };
 
   const handleNameChange = (updatedName: string) => {
+    const variables = appData.value.VariableList;
+    setHasError(variables.some((variable) => variable.name === updatedName));
     if (namePrefix) {
       const hasPrefix = updatedName.startsWith(namePrefix);
 
       // Set the name with the appropriate prefix
       setName(hasPrefix ? updatedName : `${namePrefix}${updatedName}`);
     }
-  };
-  const validate = () => {
-    if (!name) {
-      setError({ error: true, message: 'Name is required' });
-      return false;
-    }
-    if (!varScope) {
-      setError({ error: true, message: 'Variable scope is required' });
-      return false;
-    }
-    if (!value) {
-      setError({ error: true, message: 'Value is required' });
-      return false;
-    }
-    return true;
   };
 
   const reset = () => {
@@ -171,11 +158,10 @@ const VariableFormContextProvider: React.FC<PropsWithChildren> = ({ children }) 
     setDocPath(undefined); // Reset to undefined
     setDocLink(undefined); // Reset to undefined
     setPathMustExist(undefined); // Reset to undefined
-    setError(undefined); // Reset to undefined
+    setHasError(false); // Reset to undefined
   };
 
   const handleSave = (variableData?: Variable) => {
-    if (!validate()) return;
     variable.value = {
       ...variable.value,
       id: variableData?.id || uuidv4(),
@@ -218,7 +204,7 @@ const VariableFormContextProvider: React.FC<PropsWithChildren> = ({ children }) 
     <VariableFormContext.Provider
       value={{
         accrualStatesData,
-        error,
+        hasError,
         name,
         namePrefix,
         desc,

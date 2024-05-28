@@ -1,19 +1,16 @@
 import React from 'react';
 import { useState } from 'react';
 import { useSignal } from '@preact/signals-react';
-import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
-import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import MainDetailsForm from '../../forms/MainDetailsForm';
-import SingleValueGroups from './SingleValueGroups';
 import { v4 as uuidv4 } from 'uuid';
 import { Diagram } from '../../../types/Diagram';
 import { DiagramType, MainItemTypes } from '../../../types/ItemTypes';
 import { emptyDiagram, useDiagramContext } from '../../../contexts/DiagramContext';
 import { useWindowContext } from '../../../contexts/WindowContext';
-import { Alert, FormControl, TextField } from '@mui/material';
-import { FormError } from '../FormError';
+import { FormControl, TextField } from '@mui/material';
+import { useAppData } from '../../../hooks/useAppData';
 
 interface DiagramFormProps {
   diagramData?: Diagram;
@@ -28,17 +25,16 @@ const DiagramForm: React.FC<DiagramFormProps> = ({ diagramData }) => {
   const [diagramType, setDiagramType] = useState<DiagramType>(
     diagramData?.diagramType || 'dtSingle',
   );
-  const [error, setError] = useState<FormError>();
+  const [hasError, setHasError] = useState<boolean>(false);
 
   const diagramTypeOptions = [
     { value: 'dtSingle', label: 'Single' },
     { value: 'dtMulti', label: 'Multi' },
   ];
   const [diagramLabel, setDiagramLabel] = useState<string>(diagramData?.diagramLabel || '');
-  const { diagrams } = useDiagramContext();
+  const diagrams = useAppData().appData.value.DiagramList;
 
   const handleSave = () => {
-    if (!validate()) return;
     updateTitle(diagramData?.name || '', name);
 
     diagramData
@@ -59,22 +55,11 @@ const DiagramForm: React.FC<DiagramFormProps> = ({ diagramData }) => {
         });
     handleClose();
   };
-  const validate = () => {
-    if (!name) {
-      setError({ error: true, message: 'Name is required' });
-      return false;
-    }
-    if (!diagramType) {
-      setError({ error: true, message: 'Diagram type is required' });
-      return false;
-    }
-    if (!diagramLabel) {
-      setError({ error: true, message: 'Diagram label is required' });
-      return false;
-    }
-    return true;
-  };
   const reset = () => {};
+  const handleNameChange = (newName: string) => {
+    setHasError(diagrams.some((node) => node.name === newName));
+    setName(newName);
+  };
   return (
     <Container maxWidth="sm">
       <Typography variant="h5" my={3}>
@@ -87,18 +72,14 @@ const DiagramForm: React.FC<DiagramFormProps> = ({ diagramData }) => {
           setType={setDiagramType}
           typeOptions={diagramTypeOptions}
           name={name}
-          setName={setName}
           desc={desc}
           setDesc={setDesc}
           handleSave={handleSave}
           reset={reset}
-          helperText={`${
-            error
-              ? 'A Logic Node with this name already exists'
-              : name.length === 20
-              ? 'Maximum 20 characters'
-              : ''
-          }`}
+          handleNameChange={handleNameChange}
+          error={hasError}
+          errorMessage="A Diagram with this name already exists."
+          reqPropsFilled={name && diagramLabel ? true : false}
         >
           {/* <Box>
           <SingleValueGroups states={diagram.value.states} /> Maybe put back in

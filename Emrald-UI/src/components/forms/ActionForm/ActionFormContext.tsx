@@ -1,4 +1,11 @@
-import { ChangeEvent, createContext, PropsWithChildren, useContext, useState } from 'react';
+import {
+  ChangeEvent,
+  createContext,
+  PropsWithChildren,
+  useContext,
+  useEffect,
+  useState,
+} from 'react';
 import { Action, NewState } from '../../../types/Action';
 import { useWindowContext } from '../../../contexts/WindowContext';
 import { emptyAction, useActionContext } from '../../../contexts/ActionContext';
@@ -6,7 +13,6 @@ import { useSignal } from '@preact/signals-react';
 import { ActionType } from '../../../types/ItemTypes';
 import { v4 as uuidv4 } from 'uuid';
 import { SelectChangeEvent } from '@mui/material/Select';
-import { FormError } from '../FormError';
 
 export interface NewStateItem {
   id: string;
@@ -42,7 +48,6 @@ interface ActionFormContextType {
   formData: any;
   hasError: boolean;
   actionTypeOptions: { value: string; label: string }[];
-  error: FormError | undefined;
   setName: React.Dispatch<React.SetStateAction<string>>;
   setDesc: React.Dispatch<React.SetStateAction<string>>;
   setActType: React.Dispatch<React.SetStateAction<ActionType>>;
@@ -65,7 +70,7 @@ interface ActionFormContextType {
   setFormData: React.Dispatch<React.SetStateAction<any>>;
   setHasError: React.Dispatch<React.SetStateAction<boolean>>;
   handleChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  handleNameChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  handleNameChange: (newName: string) => void;
   handleSave: () => void;
   handleSelectChange: (event: SelectChangeEvent, item: NewStateItem) => void;
   handleProbChange: (
@@ -120,8 +125,8 @@ const ActionFormContextProvider: React.FC<PropsWithChildren> = ({ children }) =>
   const [exePath, setExePath] = useState<string>('');
   const [processOutputFileCode, setProcessOutputFileCode] = useState<string>('');
   const [formData, setFormData] = useState<any>();
-  const [error, setError] = useState<FormError>();
   const [hasError, setHasError] = useState(false);
+  const [reqPropsFilled, setReqPropsFilled] = useState(false);
 
   const actionTypeOptions = [
     { value: 'atTransition', label: 'Transition' },
@@ -134,15 +139,12 @@ const ActionFormContextProvider: React.FC<PropsWithChildren> = ({ children }) =>
     setMutuallyExclusive(event.target.checked);
   };
 
-  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newName = e.target.value;
+  const handleNameChange = (newName: string) => {
     setHasError(actionsList.value.some((node) => node.name === newName));
-
     setName(newName);
   };
 
   const handleSave = () => {
-    if (!validate()) return;
     const newStates: NewState[] = newStateItems.map((newStateItem): NewState => {
       return {
         toState: newStateItem.toState,
@@ -175,18 +177,6 @@ const ActionFormContextProvider: React.FC<PropsWithChildren> = ({ children }) =>
 
     actionData ? updateAction(action.value) : createAction(action.value);
     handleClose();
-  };
-
-  const validate = () => {
-    if (!name) {
-      setError({ error: true, message: 'Name is required' });
-      return false;
-    }
-    if (!actType) {
-      setError({ error: true, message: 'Action type is required' });
-      return false;
-    }
-    return true;
   };
 
   const sortNewStates = (newStateItems: NewStateItem[]) => {
@@ -318,7 +308,6 @@ const ActionFormContextProvider: React.FC<PropsWithChildren> = ({ children }) =>
     setExePath('');
     setProcessOutputFileCode('');
     setFormData(undefined); // Assuming formData can be undefined
-    setError(undefined); // Assuming error can be undefined
     setHasError(false); // Default value for hasError
   };
 
@@ -388,6 +377,7 @@ const ActionFormContextProvider: React.FC<PropsWithChildren> = ({ children }) =>
         formData,
         hasError,
         actionTypeOptions,
+        reset,
         setName,
         setDesc,
         setActType,

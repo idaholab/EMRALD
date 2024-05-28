@@ -20,20 +20,20 @@ interface EventFormProps {
 
 const EventForm: React.FC<EventFormProps> = ({ eventData, state }) => {
   const {
+    hasError,
     name,
     desc,
-    error,
     eventTypeOptions,
     eventTypeToComponent,
     evType,
     moveFromCurrent,
     handleSave,
+    handleNameChange,
     InitializeForm,
     reset,
     setDesc,
     setEvType,
     setMoveFromCurrent,
-    setName,
   } = useEventFormContext();
   useEffect(() => {
     InitializeForm(eventData, state);
@@ -51,12 +51,14 @@ const EventForm: React.FC<EventFormProps> = ({ eventData, state }) => {
           setType={setEvType}
           typeOptions={eventTypeOptions}
           name={name}
-          setName={setName}
           desc={desc}
           setDesc={setDesc}
           handleSave={() => handleSave(eventData)}
           reset={reset}
-          helperText={error?.message || ''}
+          handleNameChange={handleNameChange}
+          error={hasError}
+          errorMessage="An event with this name already exists."
+          reqPropsFilled={name && evType ? true : false}
         >
           {state && (
             <FormControlLabel
