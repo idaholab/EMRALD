@@ -6,6 +6,7 @@ interface SelectComponentProps<T> {
   value: T;
   label: string;
   children: React.ReactNode;
+  fullWidth?: boolean;
   sx?: object;
   setValue: (value: T) => void;
 }
@@ -13,12 +14,13 @@ interface SelectComponentProps<T> {
 const SelectComponent = <T,>({
   value,
   label,
+  fullWidth,
   setValue,
   children,
   sx,
 }: PropsWithChildren<SelectComponentProps<T>>) => {
   return (
-    <FormControl sx={{ mt: 2, minWidth: 120, ...sx }} size="small">
+    <FormControl sx={{ mt: 2, minWidth: 120, ...sx }} size="small" fullWidth={fullWidth}>
       <InputLabel id={`${label}-select-label`}>{label}</InputLabel>
       <Select
         value={value}

@@ -74,6 +74,7 @@ interface EventFormContextType {
   ) => void;
   handleUseVariableChange: (checked: boolean, row: string) => void;
   InitializeForm: (eventData?: Event | undefined, state?: State) => void;
+  reset: () => void;
   setAllItems: React.Dispatch<React.SetStateAction<boolean>>;
   setAllRows: React.Dispatch<React.SetStateAction<RowType>>;
   setCodeVariables: React.Dispatch<React.SetStateAction<string[] | undefined>>;
@@ -344,6 +345,38 @@ const EventFormContextProvider: React.FC<PropsWithChildren> = ({ children }) => 
     return true;
   };
 
+  const reset = () => {
+    setCodeVariables(undefined);
+    setScriptCode(undefined);
+    setVariableName('');
+    setIfInState(undefined);
+    setTriggerStates([]); // Default value for triggerStates
+    setMoveFromCurrent(false); // Default value for moveFromCurrent
+    setActions([]); // Default value for actions
+    setEventStateIndex(0); // Default value for eventStateIndex
+    setAllItems(true); // Default value for allItems
+    setOnSuccess(undefined);
+    setTriggerOnFalse(undefined);
+    setLogicTop(undefined);
+    setTime(undefined);
+    setTimerMilliseconds(undefined);
+    setUseVariable(undefined);
+    setLambda(undefined);
+    setOnVarChange('');
+    setDistType(undefined);
+    setParameters(undefined);
+    setUseDistVariable([]); // Default value for useDistVariable
+    setDfltTimeRate(undefined);
+    setAllRows({}); // Default value for allRows
+    setTimeVariableUnit(undefined);
+    setFromSimStart(undefined);
+    setFailureRateMilliseconds(undefined);
+    setLambdaTimeRate(undefined);
+    setExtEventType(''); // Default value for extEventType
+    setVariable(undefined);
+    setError(undefined);
+  };
+
   const handleSave = (eventData?: Event, state?: State) => {
     if (!validate()) return;
     event.value = {
@@ -426,6 +459,7 @@ const EventFormContextProvider: React.FC<PropsWithChildren> = ({ children }) => 
         handleSetParameters,
         handleUseVariableChange,
         InitializeForm,
+        reset,
         setAllItems,
         setAllRows,
         setCodeVariables,

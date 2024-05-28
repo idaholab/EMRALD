@@ -29,6 +29,7 @@ const EventForm: React.FC<EventFormProps> = ({ eventData, state }) => {
     moveFromCurrent,
     handleSave,
     InitializeForm,
+    reset,
     setDesc,
     setEvType,
     setMoveFromCurrent,
@@ -53,8 +54,9 @@ const EventForm: React.FC<EventFormProps> = ({ eventData, state }) => {
           setName={setName}
           desc={desc}
           setDesc={setDesc}
-          handleSave={handleSave}
-          error={error}
+          handleSave={() => handleSave(eventData)}
+          reset={reset}
+          helperText={error?.message || ''}
         >
           {state && (
             <FormControlLabel

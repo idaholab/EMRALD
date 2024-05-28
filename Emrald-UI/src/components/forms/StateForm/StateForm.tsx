@@ -62,12 +62,12 @@ const StateForm: React.FC<StateFormProps> = ({ stateData, parentDiagram }: State
         defaultSingleStateValue,
         diagramName: parentDiagram?.name || '',
       });
-      // if (parentDiagram) {
-      //   updateDiagram({
-      //     ...parentDiagram,
-      //     states: [...parentDiagram.states, name],
-      //   });
-      // }
+      if (parentDiagram) {
+        updateDiagram({
+          ...parentDiagram,
+          states: [...parentDiagram.states, name],
+        });
+      }
     }
     handleClose();
   };
@@ -90,6 +90,11 @@ const StateForm: React.FC<StateFormProps> = ({ stateData, parentDiagram }: State
     }
     return true;
   };
+  const reset = () => {
+    setDiagramType('dtSingle'); // Default value for diagramType
+    setDefaultSingleStateValue(stateData?.defaultSingleStateValue || 'Ignore'); // Default value for defaultSingleStateValue
+    setError(undefined); // Reset error to undefined
+  };
   return (
     <Container maxWidth="sm">
       <Typography variant="h5" my={3}>
@@ -106,7 +111,8 @@ const StateForm: React.FC<StateFormProps> = ({ stateData, parentDiagram }: State
           desc={desc}
           setDesc={setDesc}
           handleSave={handleSave}
-          error={error}
+          helperText={error?.message || ''}
+          reset={reset}
         >
           {diagramType === 'dtSingle' && (
             <FormControl

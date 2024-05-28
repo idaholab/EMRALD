@@ -27,18 +27,18 @@ const ExtSim = () => {
 
   return (
     <div>
-      <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
-        <Typography sx={{ mr: 2, minWidth: 160 }}>External Event Type: </Typography>
+      <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mb: 3 }}>
         <SelectComponent
           value={extEventType ? extEventType : ''}
           setValue={setExtEventType}
           label="External Event Type"
+          fullWidth
         >
           <MenuItem value="etCompEv">Variable Change</MenuItem>
           <MenuItem value="etEndSim">Simulation End</MenuItem>
           <MenuItem value="etStatus">Ping</MenuItem>
         </SelectComponent>
-        <Box sx={{ ml: 3 }}>
+        <Box sx={{ ml: 3, mt: 2 }}>
           {extEventType === 'etEndSim' && (
             <Typography>Trigger event when the external simulation has ended.</Typography>
           )}
@@ -51,11 +51,11 @@ const ExtSim = () => {
         {extEventType === 'etCompEv' && (
           <>
             <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
-              <Typography sx={{ mr: 2, minWidth: 160 }}>External Sim Variable: </Typography>
               <SelectComponent
                 value={variable ? variable : ''}
                 setValue={setVariable}
                 label="External Sim Variable"
+                fullWidth
               >
                 {appData.value.VariableList.filter(
                   (variable) => variable.varScope === 'gt3DSim',

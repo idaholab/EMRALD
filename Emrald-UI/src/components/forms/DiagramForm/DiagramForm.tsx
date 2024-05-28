@@ -35,6 +35,7 @@ const DiagramForm: React.FC<DiagramFormProps> = ({ diagramData }) => {
     { value: 'dtMulti', label: 'Multi' },
   ];
   const [diagramLabel, setDiagramLabel] = useState<string>(diagramData?.diagramLabel || '');
+  const { diagrams } = useDiagramContext();
 
   const handleSave = () => {
     if (!validate()) return;
@@ -73,6 +74,7 @@ const DiagramForm: React.FC<DiagramFormProps> = ({ diagramData }) => {
     }
     return true;
   };
+  const reset = () => {};
   return (
     <Container maxWidth="sm">
       <Typography variant="h5" my={3}>
@@ -89,7 +91,14 @@ const DiagramForm: React.FC<DiagramFormProps> = ({ diagramData }) => {
           desc={desc}
           setDesc={setDesc}
           handleSave={handleSave}
-          error={error}
+          reset={reset}
+          helperText={`${
+            error
+              ? 'A Logic Node with this name already exists'
+              : name.length === 20
+              ? 'Maximum 20 characters'
+              : ''
+          }`}
         >
           {/* <Box>
           <SingleValueGroups states={diagram.value.states} /> Maybe put back in

@@ -54,6 +54,7 @@ interface VariableFormContextType {
   handleFloatValueChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleBoolValueChange: (e: SelectChangeEvent<string>) => void;
   handleStringValueChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  reset: () => void;
 }
 
 const VariableFormContext = createContext<VariableFormContextType | undefined>(undefined);
@@ -160,6 +161,19 @@ const VariableFormContextProvider: React.FC<PropsWithChildren> = ({ children }) 
     return true;
   };
 
+  const reset = () => {
+    setAccrualStatesData(undefined); // Reset to undefined
+    setVarScope('gtGlobal'); // Default value for varScope
+    setValue(''); // Default value for value
+    setSim3DId(undefined); // Reset to undefined
+    setResetOnRuns(undefined); // Reset to undefined
+    setDocType(undefined); // Reset to undefined
+    setDocPath(undefined); // Reset to undefined
+    setDocLink(undefined); // Reset to undefined
+    setPathMustExist(undefined); // Reset to undefined
+    setError(undefined); // Reset to undefined
+  };
+
   const handleSave = (variableData?: Variable) => {
     if (!validate()) return;
     variable.value = {
@@ -239,6 +253,7 @@ const VariableFormContextProvider: React.FC<PropsWithChildren> = ({ children }) 
         handleFloatValueChange,
         handleBoolValueChange,
         handleStringValueChange,
+        reset,
       }}
     >
       {children}

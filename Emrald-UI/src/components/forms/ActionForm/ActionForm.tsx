@@ -38,6 +38,7 @@ const ActionForm: React.FC<ActionFormProps> = ({ actionData }) => {
     setActType,
     handleSave,
     initializeForm,
+    reset,
   } = useActionFormContext();
 
   useEffect(() => {
@@ -66,14 +67,14 @@ const ActionForm: React.FC<ActionFormProps> = ({ actionData }) => {
           itemType={MainItemTypes.Action}
           type={actType}
           setType={setActType}
-          typeDisabled={actionData?.actType !== undefined}
           typeOptions={actionTypeOptions}
           name={name}
           setName={setName}
           desc={desc}
           setDesc={setDesc}
           handleSave={handleSave}
-          error={error}
+          helperText={error?.message || ''}
+          reset={reset}
         >
           {/* Render the appropriate sub-component based on selected action type */}
           {actType &&

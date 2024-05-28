@@ -12,9 +12,11 @@ import {
   StateType,
   VariableType,
 } from '../../types/ItemTypes';
-import { Alert, Box, Button } from '@mui/material';
+import { Box, Button } from '@mui/material';
 import { useWindowContext } from '../../contexts/WindowContext';
-import { FormError } from './FormError';
+
+import { Event } from '../../types/Event';
+import { Variable } from '../../types/Variable';
 
 type ValueTypes<T extends MainItemTypes> = T extends 'Diagram'
   ? DiagramType
@@ -31,16 +33,16 @@ type ValueTypes<T extends MainItemTypes> = T extends 'Diagram'
 interface MainDetailsFormProps<T extends MainItemTypes> {
   children?: React.ReactNode;
   desc: string;
-  error?: FormError;
+  helperText: string;
   itemType: T;
   name: string;
   type: ValueTypes<T>;
-  typeDisabled?: boolean;
   typeLabel?: string;
   typeOptions: { value: string; label: string }[];
 
-  handleSave: () => void;
+  handleSave: (eventData?: Event, variableData?: Variable) => void;
   handleTypeChange?: (newType: VariableType) => void;
+  reset: () => void;
   setDesc: (desc: string) => void;
   setName: (name: string) => void;
   setType: Dispatch<SetStateAction<ValueTypes<T>>>;
@@ -49,15 +51,15 @@ interface MainDetailsFormProps<T extends MainItemTypes> {
 const MainDetailsForm = <T extends MainItemTypes>({
   children,
   desc,
-  error,
+  helperText,
   name,
   type,
-  typeDisabled,
   typeLabel,
   typeOptions,
 
   handleSave,
   handleTypeChange,
+  reset,
   setDesc,
   setName,
   setType,
@@ -74,9 +76,9 @@ const MainDetailsForm = <T extends MainItemTypes>({
           onChange={(event: SelectChangeEvent<string>) => {
             setType(event.target.value as ValueTypes<T>);
             handleTypeChange && handleTypeChange(event.target.value as VariableType);
+            reset();
           }} // Cast event.target.value as ValueTypes<T>
           label={typeLabel ? typeLabel : 'Type'}
-          disabled={typeDisabled}
         >
           {typeOptions.map((option) => (
             <MenuItem key={option.value} value={option.value}>
@@ -94,6 +96,7 @@ const MainDetailsForm = <T extends MainItemTypes>({
         value={name}
         onChange={(e: React.ChangeEvent<HTMLInputElement>) => setName(e.target.value)}
         fullWidth
+        helperText={helperText}
       />
       <TextField
         label="Description"
@@ -113,7 +116,6 @@ const MainDetailsForm = <T extends MainItemTypes>({
         <Button variant="contained" color="secondary" onClick={() => handleClose()}>
           Cancel
         </Button>
-        {error?.error && <Alert severity="error">{error.message}</Alert>}
       </Box>
     </>
   );

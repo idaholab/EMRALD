@@ -77,6 +77,7 @@ interface ActionFormContextType {
   handleDeleteToStateItem: (itemToDeleteId: string) => void;
   sortNewStates: (newStateItems: NewStateItem[]) => NewStateItem[];
   initializeForm: (actionData: Action | undefined) => void;
+  reset: () => void;
 }
 
 const ActionFormContext = createContext<ActionFormContextType | undefined>(undefined);
@@ -315,6 +316,26 @@ const ActionFormContextProvider: React.FC<PropsWithChildren> = ({ children }) =>
     const updatedItems = newStateItems.filter((item) => item.id !== itemToDeleteId);
     setNewStateItems(updatedItems);
   };
+  const reset = () => {
+    setMutuallyExclusive(false); // Default value for mutuallyExclusive
+    setNewStateItems([]); // Default value for newStateItems
+    setCodeVariables([]); // Default value for codeVariables
+    setVariableName('');
+    setScriptCode('');
+    setSim3DMessage('atCompModify'); // Default value for sim3DMessage
+    setExtSim('');
+    setSim3DId('');
+    setSim3DConfigData('');
+    setSim3DModelRef('');
+    setOpenSimVarParams(false); // Default value for openSimVarParams
+    setSimEndTime('');
+    setMakeInputFileCode('');
+    setExePath('');
+    setProcessOutputFileCode('');
+    setFormData(undefined); // Assuming formData can be undefined
+    setError(undefined); // Assuming error can be undefined
+    setHasError(false); // Default value for hasError
+  };
 
   const initializeForm = (actionData: Action | undefined) => {
     setActionData(actionData);
@@ -414,6 +435,7 @@ const ActionFormContextProvider: React.FC<PropsWithChildren> = ({ children }) =>
         handleDeleteToStateItem,
         sortNewStates,
         initializeForm,
+        reset,
       }}
     >
       {children}

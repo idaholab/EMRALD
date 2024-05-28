@@ -52,6 +52,7 @@ const VariableForm: React.FC<VariableFormProps> = ({ variableData }) => {
     handleFloatValueChange,
     handleBoolValueChange,
     handleStringValueChange,
+    reset,
   } = useVariableFormContext();
 
   useEffect(() => {
@@ -75,13 +76,13 @@ const VariableForm: React.FC<VariableFormProps> = ({ variableData }) => {
             { value: 'bool', label: 'Boolean' },
             { value: 'string', label: 'String' },
           ]}
-          typeDisabled={varScope === 'gtAccrual'}
           name={name}
           setName={handleNameChange}
           desc={desc}
           setDesc={setDesc}
-          handleSave={handleSave}
-          error={error}
+          handleSave={() => handleSave(variableData)}
+          helperText={error?.message || ''}
+          reset={reset}
         >
           <FormControl variant="outlined" size="small" sx={{ minWidth: 120, width: '100%', my: 1 }}>
             <InputLabel id="demo-simple-select-standard-label">Scope</InputLabel>

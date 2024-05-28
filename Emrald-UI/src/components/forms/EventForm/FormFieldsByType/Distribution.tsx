@@ -123,7 +123,6 @@ const Distribution = () => {
   return (
     <>
       <Box sx={{ display: 'flex', alignItems: 'center', my: 2 }}>
-        <Typography mr={3}>Distribution Type: </Typography>
         <SelectComponent
           value={distType || 'dtNormal'}
           setValue={setDistType}
@@ -139,12 +138,12 @@ const Distribution = () => {
           <MenuItem value="dtGamma">Gamma Distribution</MenuItem>
           <MenuItem value="dtGompertz">Gompertz Distribution</MenuItem>
         </SelectComponent>
-        <Typography mx={3}>Default Rate: </Typography>
+
         <SelectComponent
           value={dfltTimeRate || 'trHours'}
           setValue={setDfltTimeRate}
           label="Default Rate"
-          sx={{ mt: 0 }}
+          sx={{ mt: 0, ml: 3 }}
         >
           <MenuItem value="trSeconds">Second</MenuItem>
           <MenuItem value="trMinutes">Minute</MenuItem>
