@@ -65,7 +65,7 @@ const FailureRate = () => {
                     label="Lambda"
                     value={lambda as string}
                     setValue={setLambda}
-                    mt={0}
+                    sx={{ mt: 0 }}
                   >
                     {appData.value.VariableList.map((variable, index) => (
                       <MenuItem key={index} value={variable.name}>

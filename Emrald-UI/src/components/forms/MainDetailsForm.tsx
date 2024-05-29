@@ -97,7 +97,7 @@ const MainDetailsForm = <T extends MainItemTypes>({
         onChange={(e) => handleNameChange(e.target.value)}
         fullWidth
         error={error}
-        helperText={errorMessage}
+        helperText={error ? errorMessage : ''}
       />
       <TextField
         label="Description"

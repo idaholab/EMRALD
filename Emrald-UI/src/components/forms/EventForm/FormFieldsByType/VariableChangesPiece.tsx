@@ -18,7 +18,7 @@ const VariableChangesPiece = () => {
           label="Select"
           value={onVarChange ? onVarChange : ''}
           setValue={setOnVarChange}
-          mt={0}
+          sx={{ mt: 0 }}
         >
           <MenuItem value="ocIgnore">Ignore</MenuItem>
           <MenuItem value="ocResample">Resample</MenuItem>
