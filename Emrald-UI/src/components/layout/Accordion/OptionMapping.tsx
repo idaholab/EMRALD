@@ -83,8 +83,9 @@ export const useOptionsMapping = () => {
       { label: 'Make Template', action: () => null },
       { label: 'Export', action: () => null },
       { label: 'Copy', action: (diagram: Diagram) => {
-        const copiedModel = GetModelItemsReferencedBy(diagram.name, MainItemTypes.Diagram, true)
+        const copiedModel = GetModelItemsReferencedBy(diagram.name, MainItemTypes.Diagram, 1);
         navigator.clipboard.writeText(JSON.stringify(copiedModel, null, 2));
+
       } },
     ],
     'Logic Tree': [

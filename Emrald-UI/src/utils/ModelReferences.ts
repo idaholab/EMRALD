@@ -67,52 +67,55 @@ const UsingLogicNodeRefs: Array<[string, MainItemTypes]> = [
 
 
 
-//Items referenced by these types
+type DiagramRefsArray = Array<[string, MainItemTypes, string | null]>;
+//Items referenced by these types [JsonPath, ItemType, Linked array if any] - Last item in array is for 
+    //early stop of recursive search, we will remove any undefined references and this indicates if there 
+    //is another array that is a logical match to this one. For example State.Events has State.eventActions that must have a 1to1 relationship
 //Diagrams
-const InDiagramRefs: Array<[string, MainItemTypes]> = [
-  ["$.DiagramList[?(@.name == 'nameRef')].states", MainItemTypes.State],
+const InDiagramRefs: DiagramRefsArray = [
+  ["$.DiagramList[?(@.name == 'nameRef')].states", MainItemTypes.State, null],
 ];
 
 //States
-const InStateRefs: Array<[string, MainItemTypes]> = [
-  ["$.StateList[?(@.name == 'nameRef')].diagramName", MainItemTypes.Diagram],
-  ["$.StateList[?(@.name == 'nameRef')].events", MainItemTypes.Event],
-  ["$.StateList[?(@.name == 'nameRef')].immediateActions", MainItemTypes.Action],
-  ["$.StateList[?(@.name == 'nameRef')].eventActions[*].actions", MainItemTypes.Action],
+const InStateRefs: DiagramRefsArray = [
+  ["$.StateList[?(@.name == 'nameRef')].diagramName", MainItemTypes.Diagram, null],
+  ["$.StateList[?(@.name == 'nameRef')].events", MainItemTypes.Event, "eventActions"],
+  ["$.StateList[?(@.name == 'nameRef')].immediateActions", MainItemTypes.Action, null],
+  ["$.StateList[?(@.name == 'nameRef')].eventActions[*].actions", MainItemTypes.Action, null],
 ];
 
 //Events
-const InEventRefs: Array<[string, MainItemTypes]> = [
-  ["$.EventList[?(@.name == 'nameRef')].triggerStates", MainItemTypes.State],
-  ["$.EventList[?(@.name == 'nameRef')].varNames", MainItemTypes.Variable],
-  ["$.EventList[?(@.name == 'nameRef')].logicTop", MainItemTypes.LogicNode],
-  ["$.EventList[?(@.name == 'nameRef')].triggerStates", MainItemTypes.State],
-  ["$.EventList[?(@.name == 'nameRef')].variable", MainItemTypes.Variable],
-  ["$.EventList[?(@.name == 'nameRef')].parameters[*].variable", MainItemTypes.Variable],
+const InEventRefs: DiagramRefsArray = [
+  ["$.EventList[?(@.name == 'nameRef')].triggerStates", MainItemTypes.State, null],
+  ["$.EventList[?(@.name == 'nameRef')].varNames", MainItemTypes.Variable, null],
+  ["$.EventList[?(@.name == 'nameRef')].logicTop", MainItemTypes.LogicNode, null],
+  ["$.EventList[?(@.name == 'nameRef')].triggerStates", MainItemTypes.State, null],
+  ["$.EventList[?(@.name == 'nameRef')].variable", MainItemTypes.Variable, null],
+  ["$.EventList[?(@.name == 'nameRef')].parameters[*].variable", MainItemTypes.Variable, null],
 ];
 
 //Actions
-const InActionRefs: Array<[string, MainItemTypes]> = [
-  ["$.ActionList[?(@.name == 'nameRef')].newStates.toState", MainItemTypes.State],
-  ["$.ActionList[?(@.name == 'nameRef')].variableName", MainItemTypes.Variable],
-  ["$.ActionList[?(@.name == 'nameRef')].codeVariables[*]", MainItemTypes.Variable],
-  ["$.ActionList[?(@.name == 'nameRef')].extSim", MainItemTypes.ExtSim],
+const InActionRefs: DiagramRefsArray = [
+  ["$.ActionList[?(@.name == 'nameRef')].newStates.toState", MainItemTypes.State, null],
+  ["$.ActionList[?(@.name == 'nameRef')].variableName", MainItemTypes.Variable, null],
+  ["$.ActionList[?(@.name == 'nameRef')].codeVariables[*]", MainItemTypes.Variable, null],
+  ["$.ActionList[?(@.name == 'nameRef')].extSim", MainItemTypes.ExtSim, null],
 ];
 
 //Variables
-const InVariableRefs: Array<[string, MainItemTypes]> = [
-  ["$.VariableList[?(@.name == 'nameRef')].accrualStatesData[*].stateName", MainItemTypes.State]
+const InVariableRefs: DiagramRefsArray = [
+  ["$.VariableList[?(@.name == 'nameRef')].accrualStatesData[*].stateName", MainItemTypes.State, null]
 ];
 
 //ExtSim
-const InExtSimRefs: Array<[string, MainItemTypes]> = [ 
+const InExtSimRefs: DiagramRefsArray = [ 
 ];
 
 //LogicNodes
-const InLogicNodeRefs: Array<[string, MainItemTypes]> = [
-  ["$.LogicNodeList[?(@.name == 'nameRef')].compChildren[*].diagramName", MainItemTypes.Diagram],
-  ["$.LogicNodeList[?(@.name == 'nameRef')].compChildren[*].stateValues[*].stateName", MainItemTypes.State],
-  ["$.LogicNodeList[?(@.name == 'nameRef')].gateChildren", MainItemTypes.LogicNode],
+const InLogicNodeRefs: DiagramRefsArray = [
+  ["$.LogicNodeList[?(@.name == 'nameRef')].compChildren[*].diagramName", MainItemTypes.Diagram, null],
+  ["$.LogicNodeList[?(@.name == 'nameRef')].compChildren[*].stateValues[*].stateName", MainItemTypes.State, null],
+  ["$.LogicNodeList[?(@.name == 'nameRef')].gateChildren", MainItemTypes.LogicNode, null],
 ];
 
 export const GetJSONPathUsingRefs = (itemType: MainItemTypes, lookupName : string): Array<[string, MainItemTypes]> => {
@@ -150,8 +153,8 @@ export const GetJSONPathUsingRefs = (itemType: MainItemTypes, lookupName : strin
   });  
 };
 
-export const GetJSONPathInRefs = (itemType: MainItemTypes, lookupName : string): Array<[string, MainItemTypes]> => {
-  var retArray : Array<[string, MainItemTypes]>;
+export const GetJSONPathInRefs = (itemType: MainItemTypes, lookupName : string): DiagramRefsArray => {
+  var retArray : DiagramRefsArray;
   switch (itemType) {
     case MainItemTypes.Diagram:
       retArray = InDiagramRefs;
@@ -181,7 +184,7 @@ export const GetJSONPathInRefs = (itemType: MainItemTypes, lookupName : string):
 
   //replace all the 'nameRef' items for the JSON Paths with the given previousName
   return retArray.map((jsonPaths) => {
-    return [jsonPaths[0].replace(/nameRef/g, lookupName), jsonPaths[1]];
+    return [jsonPaths[0].replace(/nameRef/g, lookupName), jsonPaths[1], jsonPaths[2]];
   });  
 };
 
@@ -326,41 +329,104 @@ export const AddItemToModel = (
 export const GetModelItemsReferencedBy = ( 
   itemName : string, //Name of the item looking for references
   itemType : MainItemTypes, //This is the type of the item to look for references
-  recursive : boolean, //if true, will include references of the found references
+  levels : number = 0, //if < 1, will be recursive and give all levels of references. For copy or template use 1 for all items except Diagrams and 2 for Diagrams.
 ) : EMRALD_Model => { //returns a subset model of just the referenced items.
   
-  var refItems : Array<[string, MainItemTypes]> = [[itemName, itemType]];
+  var refItems : Array<[string, number, MainItemTypes]> = [[itemName, 0, itemType]];
   var retRefModel: EMRALD_Model = CreateEmptyEMRALDModel();
   //const emraldModel: EMRALD_Model = appData.value;  
   const processed: { [key: string]: boolean; } = { [itemName + '_' + itemType]: true };
-  var firstRound = true; //use to just get the first round of references if not recursive
-
+  
   while(refItems.length > 0)
   {  
     var curItemName : string = refItems[0][0];
-    var curItemType : MainItemTypes = refItems[0][1];
+    var curItemLevel : number = refItems[0][1];
+    var curItemType : MainItemTypes = refItems[0][2];
     refItems.shift(); //remove the item from the array
     
     var itemObj = GetItemByNameType(curItemName, curItemType);      
     if(itemObj != null){ //add to the reference subset model      
       AddItemToModel(itemObj, curItemType, retRefModel);    
 
-      //get all the references
-      if(firstRound || recursive)
-      {
-        //get the json paths for the references depending on the type
-        var jsonPathRefArray : Array<[string, MainItemTypes]> = GetJSONPathInRefs(curItemType, curItemName);
-        
+      
+      //get the json paths for the references depending on the type
+      var jsonPathRefArray : DiagramRefsArray = GetJSONPathInRefs(curItemType, curItemName);
+
+      //go through all the references if not at the cutoff level, add
+      if((curItemLevel < levels) || (levels < 1)){        
         jsonPathRefArray.forEach((jsonPathSet) => {    
           jsonpath.paths(appData.value, jsonPathSet[0]).forEach((jPath: any) => {
             var childNames = jsonpath.value(appData.value, jPath.join('.'));
-            //make sur eit is an array
+            //make sure it is an array
             childNames = Array.isArray(childNames) ? childNames : [childNames];
             childNames.forEach((childName: any) => {
               if(!processed[childName + '_' + jsonPathSet[1]])
               {
-                refItems.push([childName, jsonPathSet[1]]);
+                refItems.push([childName, curItemLevel + 1, jsonPathSet[1]]);
                 processed[childName + '_' + jsonPathSet[1]] = true; //mark as processed
+              }
+            })
+          });
+        });
+      }
+      else{ //remove references to other items. User will have to fix them.
+        jsonPathRefArray.forEach((jsonPathSet) => {    
+          jsonpath.paths(retRefModel, jsonPathSet[0]).forEach((jPath: any) => {
+            var childNames = jsonpath.value(retRefModel, jPath.join('.'));
+            //Keep track if it is an array origionally and then make it an array
+            var isArray = Array.isArray(childNames);
+            childNames = Array.isArray(childNames) ? childNames : [childNames];
+            childNames.forEach((childName: any) => {
+              if(!processed[childName + '_' + jsonPathSet[1]])
+              {
+                //get everything after the last. to use for criteria
+                const lastDotIndex = jsonPathSet[0].lastIndexOf('.');
+                const childItemSearchName = jsonPathSet[0].substring(lastDotIndex + 1);
+
+                // Find the position to insert the new condition
+                let insertPosition = jsonPathSet[0].indexOf(curItemName) + curItemName.length + 1;
+                // Insert the new condition at the correct position
+                let updatedJsonPath = [
+                  jsonPathSet[0].slice(0, insertPosition),
+                  " && @." + childItemSearchName + ".indexOf('" + childName + "') != -1",
+                  jsonPathSet[0].slice(insertPosition)
+                ].join('');
+
+
+                if(!isArray){
+                  //just set the item to empty string.
+                  jsonpath.paths(retRefModel, updatedJsonPath).forEach((ref: any) => {
+                    const path = ref.join('.');
+                    jsonpath.value(retRefModel, path, "");
+                  });
+                }
+                else{
+                  // Find the paths of the items to be removed
+                  const pathsToRemove = jsonpath.paths(retRefModel, updatedJsonPath);
+
+                  pathsToRemove.forEach((ref: any) => {
+                    // Find the parent array
+                    const itemPath = ref.join('.');
+                    const arrayIndex = ref[ref.length - 1];
+                    const itemArray = jsonpath.value(retRefModel, itemPath);
+                    
+                    if (Array.isArray(itemArray)) {
+                      // Remove the item from the parent array
+                      itemArray.splice(arrayIndex, 1);
+                    }
+
+                    if(jsonPathSet[2] != null) //remove linked array data if it exists
+                    {
+                      const parentPath = ref.slice(0, -2).join('.'); // Path to the parent array
+                      const parentIndex = ref[ref.length - 2];
+                      const parentObject = jsonpath.value(retRefModel, parentPath);
+                      if (parentObject[parentIndex] && parentObject[parentIndex][jsonPathSet[2]]) {
+                        //remove item
+                        parentObject[parentIndex][jsonPathSet[2]].splice(arrayIndex, 1);
+                      };
+                    }
+                  });                  
+                }
               }
             })
           });
