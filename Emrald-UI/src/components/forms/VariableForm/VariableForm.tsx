@@ -24,6 +24,7 @@ interface VariableFormProps {
 
 const VariableForm: React.FC<VariableFormProps> = ({ variableData }) => {
   const {
+    hasError,
     name,
     desc,
     type,
@@ -36,7 +37,6 @@ const VariableForm: React.FC<VariableFormProps> = ({ variableData }) => {
     docLink,
     pathMustExist,
     InitializeForm,
-    handleClose,
     setType,
     setDesc,
     setResetOnRuns,
@@ -52,6 +52,7 @@ const VariableForm: React.FC<VariableFormProps> = ({ variableData }) => {
     handleFloatValueChange,
     handleBoolValueChange,
     handleStringValueChange,
+    reset,
   } = useVariableFormContext();
 
   useEffect(() => {
@@ -75,131 +76,122 @@ const VariableForm: React.FC<VariableFormProps> = ({ variableData }) => {
             { value: 'bool', label: 'Boolean' },
             { value: 'string', label: 'String' },
           ]}
-          typeDisabled={varScope === 'gtAccrual'}
           name={name}
-          setName={handleNameChange}
           desc={desc}
           setDesc={setDesc}
-        />
-        <FormControl variant="outlined" size="small" sx={{ minWidth: 120, width: '100%', my: 1 }}>
-          <InputLabel id="demo-simple-select-standard-label">Scope</InputLabel>
-          <Select
-            labelId="var-scope"
-            id="var-scope"
-            value={varScope}
-            onChange={(event: SelectChangeEvent<string>) => {
-              setVarScope(event.target.value as VarScope);
-              if (event.target.value === 'gtAccrual') {
-                setType('double');
-                handleTypeChange('double');
-              }
-            }}
-            label="scope"
-          >
-            <MenuItem value="gtGlobal">Global</MenuItem>
-            <MenuItem value="gt3DSim">Ext. Sim Variable</MenuItem>
-            <MenuItem value="gtDocLink">Document Link</MenuItem>
-            <MenuItem value="gtAccrual">Accrual</MenuItem>
-          </Select>
-        </FormControl>
+          handleSave={() => handleSave(variableData)}
+          reset={reset}
+          handleNameChange={handleNameChange}
+          error={hasError}
+          errorMessage="A variable with this name already exists."
+          reqPropsFilled={name && varScope && value ? true : false}
+        >
+          <FormControl variant="outlined" size="small" sx={{ minWidth: 120, width: '100%', my: 1 }}>
+            <InputLabel id="demo-simple-select-standard-label">Scope</InputLabel>
+            <Select
+              labelId="var-scope"
+              id="var-scope"
+              value={varScope}
+              onChange={(event: SelectChangeEvent<string>) => {
+                setVarScope(event.target.value as VarScope);
+                if (event.target.value === 'gtAccrual') {
+                  setType('double');
+                  handleTypeChange('double');
+                }
+              }}
+              label="scope"
+            >
+              <MenuItem value="gtGlobal">Global</MenuItem>
+              <MenuItem value="gt3DSim">Ext. Sim Variable</MenuItem>
+              <MenuItem value="gtDocLink">Document Link</MenuItem>
+              <MenuItem value="gtAccrual">Accrual</MenuItem>
+            </Select>
+          </FormControl>
 
-        {(varScope === 'gtGlobal' || varScope === 'gt3DSim') && (
-          <>
-            {type == 'int' || type == 'double' ? (
-              <TextField
-                label="Value"
-                margin="normal"
-                variant="outlined"
-                type="number"
-                size="small"
-                value={value}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleFloatValueChange(e)}
-                fullWidth
-              />
-            ) : type == 'bool' ? (
-              <FormControl
-                variant="outlined"
-                size="small"
-                sx={{ minWidth: 120, width: '100%', my: 1 }}
-              >
-                <InputLabel id="demo-simple-select-standard-label">Start Value</InputLabel>
-                <Select
-                  labelId="value"
-                  id="value"
-                  value={value as string}
-                  onChange={(event: SelectChangeEvent<string>) => handleBoolValueChange(event)}
-                  label="Start Value"
+          {(varScope === 'gtGlobal' || varScope === 'gt3DSim') && (
+            <>
+              {type == 'int' || type == 'double' ? (
+                <TextField
+                  label="Value"
+                  margin="normal"
+                  variant="outlined"
+                  type="number"
+                  size="small"
+                  value={value}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleFloatValueChange(e)}
                   fullWidth
-                >
-                  <MenuItem value="true">True</MenuItem>
-                  <MenuItem value="false">False</MenuItem>
-                </Select>
-              </FormControl>
-            ) : (
-              <TextField
-                label="Value"
-                margin="normal"
-                variant="outlined"
-                type="string"
-                size="small"
-                value={value}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleStringValueChange(e)}
-                fullWidth
-              />
-            )}
-
-            <FormControlLabel
-              label="Reset to initial value for every simulation run"
-              control={
-                <Checkbox
-                  checked={resetOnRuns ? true : false}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                    setResetOnRuns(e.target.checked)
-                  }
                 />
+              ) : type == 'bool' ? (
+                <FormControl
+                  variant="outlined"
+                  size="small"
+                  sx={{ minWidth: 120, width: '100%', my: 1 }}
+                >
+                  <InputLabel id="demo-simple-select-standard-label">Start Value</InputLabel>
+                  <Select
+                    labelId="value"
+                    id="value"
+                    value={value as string}
+                    onChange={(event: SelectChangeEvent<string>) => handleBoolValueChange(event)}
+                    label="Start Value"
+                    fullWidth
+                  >
+                    <MenuItem value="true">True</MenuItem>
+                    <MenuItem value="false">False</MenuItem>
+                  </Select>
+                </FormControl>
+              ) : (
+                <TextField
+                  label="Value"
+                  margin="normal"
+                  variant="outlined"
+                  type="string"
+                  size="small"
+                  value={value}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleStringValueChange(e)}
+                  fullWidth
+                />
+              )}
+
+              <FormControlLabel
+                label="Reset to initial value for every simulation run"
+                control={
+                  <Checkbox
+                    checked={resetOnRuns ? true : false}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                      setResetOnRuns(e.target.checked)
+                    }
+                  />
+                }
+              />
+              {varScope === 'gt3DSim' && (
+                <ExtSimFields sim3DId={sim3DId ? sim3DId : ''} setSim3DId={setSim3DId} />
+              )}
+            </>
+          )}
+          {varScope === 'gtDocLink' && (
+            <DocLinkFields
+              docType={docType ? docType : ''}
+              setDocType={setDocType}
+              docPath={docPath ? docPath : ''}
+              setDocPath={setDocPath}
+              docLink={docLink ? docLink : ''}
+              setDocLink={setDocLink}
+              pathMustExist={pathMustExist}
+              setPathMustExist={setPathMustExist}
+              value={value}
+              type={type}
+              setValue={
+                type === 'int' || type === 'double'
+                  ? handleFloatValueChange
+                  : type == 'bool'
+                  ? handleBoolValueChange
+                  : handleStringValueChange
               }
             />
-            {varScope === 'gt3DSim' && (
-              <ExtSimFields sim3DId={sim3DId ? sim3DId : ''} setSim3DId={setSim3DId} />
-            )}
-          </>
-        )}
-        {varScope === 'gtDocLink' && (
-          <DocLinkFields
-            docType={docType ? docType : ''}
-            setDocType={setDocType}
-            docPath={docPath ? docPath : ''}
-            setDocPath={setDocPath}
-            docLink={docLink ? docLink : ''}
-            setDocLink={setDocLink}
-            pathMustExist={pathMustExist}
-            setPathMustExist={setPathMustExist}
-            value={value}
-            type={type}
-            setValue={
-              type === 'int' || type === 'double'
-                ? handleFloatValueChange
-                : type == 'bool'
-                ? handleBoolValueChange
-                : handleStringValueChange
-            }
-          />
-        )}
-        {varScope === 'gtAccrual' && <AccrualFields />}
-
-        <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 5 }}>
-          <Button
-            variant="contained"
-            color="primary"
-            sx={{ mr: 2 }}
-            onClick={() => (variableData ? handleSave(variableData) : handleSave())}
-          >
-            Save
-          </Button>
-          <Button variant="contained" color="secondary" onClick={() => handleClose()}>
-            Cancel
-          </Button>
-        </Box>
+          )}
+          {varScope === 'gtAccrual' && <AccrualFields />}
+        </MainDetailsForm>
       </form>
     </Box>
   );

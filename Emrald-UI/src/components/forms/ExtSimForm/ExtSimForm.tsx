@@ -8,6 +8,8 @@ import { useSignal } from '@preact/signals-react';
 import { ExtSim } from '../../../types/ExtSim';
 import { emptyExtSim, useExtSimContext } from '../../../contexts/ExtSimContext';
 import TextField from '@mui/material/TextField';
+import { FormError } from '../FormError';
+import { Alert } from '@mui/material';
 
 interface ExtSimFormProps {
   ExtSimData?: ExtSim;
@@ -18,11 +20,23 @@ const ExtSimForm: React.FC<ExtSimFormProps> = ({ ExtSimData }) => {
   const { updateExtSim, createExtSim } = useExtSimContext();
   const ExtSim = useSignal<ExtSim>(ExtSimData || emptyExtSim);
   const [name, setName] = useState<string>(ExtSimData?.name || '');
-  const [resourceName, setResourceName] = useState<string>(
-    ExtSimData?.name || '',
-  );
+  const [resourceName, setResourceName] = useState<string>(ExtSimData?.resourceName || '');
+  const [error, setError] = useState<FormError>();
+
+  const validate = () => {
+    if (!name) {
+      setError({ error: true, message: 'Sim name is required' });
+      return false;
+    }
+    if (!resourceName) {
+      setError({ error: true, message: 'Application name is required' });
+      return false;
+    }
+    return true;
+  };
 
   const handleSave = () => {
+    if (!validate()) return;
     ExtSimData
       ? updateExtSim({
           ...ExtSim.value,
@@ -39,7 +53,7 @@ const ExtSimForm: React.FC<ExtSimFormProps> = ({ ExtSimData }) => {
   };
 
   return (
-    <Box sx={{px: 3}}>
+    <Box sx={{ px: 3 }}>
       <Typography variant="h5" my={3}>
         {ExtSimData ? `Edit` : `Create`} ExtSim
       </Typography>
@@ -65,21 +79,13 @@ const ExtSimForm: React.FC<ExtSimFormProps> = ({ ExtSimData }) => {
           onChange={(e) => setResourceName(e.target.value)}
         />
         <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 5 }}>
-          <Button
-            variant="contained"
-            color="primary"
-            sx={{ mr: 2 }}
-            onClick={() => handleSave()}
-          >
+          <Button variant="contained" color="primary" sx={{ mr: 2 }} onClick={() => handleSave()}>
             Save
           </Button>
-          <Button
-            variant="contained"
-            color="secondary"
-            onClick={() => handleClose()}
-          >
+          <Button variant="contained" color="secondary" onClick={() => handleClose()}>
             Cancel
           </Button>
+          {error?.error && <Alert severity="error">{error.message}</Alert>}
         </Box>
       </form>
     </Box>

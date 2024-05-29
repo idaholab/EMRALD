@@ -10,8 +10,7 @@ import {
 } from '../forms/VariableForm/VariableFormContext';
 
 const StateDropTarget: React.FC = () => {
-  const { accrualStatesData, setAccrualStatesData, sortNewStates } =
-    useVariableFormContext();
+  const { accrualStatesData, setAccrualStatesData, sortNewStates } = useVariableFormContext();
 
   const [{ isOver }, drop] = useDrop({
     accept: 'State',
@@ -28,9 +27,7 @@ const StateDropTarget: React.FC = () => {
           (state) => state.stateName === newStateItem.stateName,
         );
         if (item && !exists) {
-          setAccrualStatesData(
-            sortNewStates([...accrualStatesData, newStateItem]),
-          );
+          setAccrualStatesData(sortNewStates([...accrualStatesData, newStateItem]));
         }
       } else {
         setAccrualStatesData(sortNewStates([newStateItem]));

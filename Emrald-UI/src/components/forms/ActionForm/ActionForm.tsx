@@ -1,19 +1,12 @@
 import React from 'react';
 import { useEffect } from 'react';
-import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import MainDetailsForm from '../MainDetailsForm';
 import { Action } from '../../../types/Action';
-import { useWindowContext } from '../../../contexts/WindowContext';
 import { useActionFormContext } from './ActionFormContext';
 import { ActionType, MainItemTypes } from '../../../types/ItemTypes';
-import {
-  Transition,
-  ChangeVarValue,
-  ExtSimulation,
-  RunApplication,
-} from './FormFieldsByType';
+import { Transition, ChangeVarValue, ExtSimulation, RunApplication } from './FormFieldsByType';
 
 interface ActionFormProps {
   actionData?: Action;
@@ -36,19 +29,17 @@ const ActionForm: React.FC<ActionFormProps> = ({ actionData }) => {
     actType,
     actionTypeOptions,
     hasError,
-    setName,
     handleNameChange,
     setDesc,
     setActType,
     handleSave,
     initializeForm,
+    reset,
   } = useActionFormContext();
 
   useEffect(() => {
     initializeForm(actionData);
   }, []);
-
-  const { handleClose } = useWindowContext();
 
   // Map action types to their respective sub-components and props
   const actionTypeToComponent: {
@@ -70,42 +61,24 @@ const ActionForm: React.FC<ActionFormProps> = ({ actionData }) => {
           itemType={MainItemTypes.Action}
           type={actType}
           setType={setActType}
-          typeDisabled={actionData?.actType !== undefined}
           typeOptions={actionTypeOptions}
           name={name}
-          setName={setName}
           handleNameChange={handleNameChange}
           desc={desc}
           setDesc={setDesc}
           error={hasError}
-          errorMessage='An action with this name already exists.'
-        />
-
-        {/* Render the appropriate sub-component based on selected action type */}
-        {actType &&
-          React.createElement(
-            actionTypeToComponent[actType].component,
-            actionTypeToComponent[actType].props,
-          )}
-
-        <Box sx={{ display: 'flex', justifyContent: 'flex-end', py: 5 }}>
-          <Button
-            variant="contained"
-            color="primary"
-            sx={{ mr: 2 }}
-            disabled={hasError}
-            onClick={() => handleSave()}
-          >
-            Save
-          </Button>
-          <Button
-            variant="contained"
-            color="secondary"
-            onClick={() => handleClose()}
-          >
-            Cancel
-          </Button>
-        </Box>
+          errorMessage="An action with this name already exists."
+          reset={reset}
+          handleSave={handleSave}
+          reqPropsFilled={name && actType ? true : false}
+        >
+          {/* Render the appropriate sub-component based on selected action type */}
+          {actType &&
+            React.createElement(
+              actionTypeToComponent[actType].component,
+              actionTypeToComponent[actType].props,
+            )}
+        </MainDetailsForm>
       </form>
     </Box>
   );

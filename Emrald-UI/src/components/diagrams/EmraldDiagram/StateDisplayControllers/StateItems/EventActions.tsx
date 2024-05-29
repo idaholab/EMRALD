@@ -22,7 +22,7 @@ const EventActions: React.FC<EventActionsProps> = ({ state }) => {
     getActionByActionName,
     updateStateEventActions,
     onEventDoubleClick,
-    onActionDoubleClick
+    onActionDoubleClick,
   } = useEmraldDiagram();
 
   const {
@@ -40,13 +40,9 @@ const EventActions: React.FC<EventActionsProps> = ({ state }) => {
   const events = state.events.map((event, index) => ({
     event: getEventByEventName(event),
     actions: state.eventActions[index]
-      ? state.eventActions[index].actions.map((action: string) =>
-          getActionByActionName(action),
-        )
+      ? state.eventActions[index].actions.map((action: string) => getActionByActionName(action))
       : [],
-    moveFromCurrent: state.eventActions[index]
-      ? state.eventActions[index].moveFromCurrent
-      : false,
+    moveFromCurrent: state.eventActions[index] ? state.eventActions[index].moveFromCurrent : false,
   }));
 
   return (
@@ -78,7 +74,7 @@ const EventActions: React.FC<EventActionsProps> = ({ state }) => {
               <EventTypeIcon type={item.event?.evType || 'etStateCng'} />
             </Box>
             <Box
-              onDoubleClick={(e) => onEventDoubleClick(e, item.event)}
+              onDoubleClick={(e) => onEventDoubleClick(e, item.event, state)}
               onContextMenu={(e) => onEventContextMenu(e, state, item.event)}
               sx={{
                 width: '100%',
@@ -133,9 +129,7 @@ const EventActions: React.FC<EventActionsProps> = ({ state }) => {
                 {item.actions.map((action) => (
                   <Box
                     onDoubleClick={(e) => onActionDoubleClick(e, action)}
-                    onContextMenu={(e) =>
-                      onActionContextMenu(e, state, action, 'event')
-                    }
+                    onContextMenu={(e) => onActionContextMenu(e, state, action, 'event')}
                     key={action?.id}
                     sx={{
                       position: 'relative',
@@ -169,10 +163,7 @@ const EventActions: React.FC<EventActionsProps> = ({ state }) => {
                             alignItems: 'center',
                           }}
                         >
-                          <Typography sx={{ fontSize: 10, ml: '5px' }}>
-                            {' '}
-                            {action?.name}
-                          </Typography>
+                          <Typography sx={{ fontSize: 10, ml: '5px' }}> {action?.name}</Typography>
                           {!isStateInCurrentDiagram(action) ? (
                             <FaLink
                               onClick={() => openDiagramFromNewState(action)}
@@ -191,19 +182,20 @@ const EventActions: React.FC<EventActionsProps> = ({ state }) => {
               </Box>
             </Box>
 
-            {
-            deleteConfirmation && (
-              <DialogComponent 
+            {deleteConfirmation && (
+              <DialogComponent
                 open={true}
                 title="Delete Confirmation"
                 submitText="delete"
                 onSubmit={() => deleteItem()}
                 onClose={() => closeDeleteConfirmation()}
               >
-                <Typography>Are you sure you want to delete {itemToDelete?.name}? It will be removed from all other places it is used.</Typography>
+                <Typography>
+                  Are you sure you want to delete {itemToDelete?.name}? It will be removed from all
+                  other places it is used.
+                </Typography>
               </DialogComponent>
-            )
-          }
+            )}
           </Box>
         ))}
     </>
