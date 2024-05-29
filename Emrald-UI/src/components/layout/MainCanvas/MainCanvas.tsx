@@ -10,7 +10,7 @@ import {
 } from '@mui/material';
 import UndoIcon from '@mui/icons-material/Undo';
 import WindowComponent from '../Window/Window';
-import { TbSchema } from 'react-icons/tb';
+import { Tb3DCubeSphere, TbSchema } from 'react-icons/tb';
 import { GrPerformance } from 'react-icons/gr';
 import { VscSymbolEvent } from 'react-icons/vsc';
 import { HiOutlineVariable } from 'react-icons/hi';
@@ -25,6 +25,9 @@ import EventForm from '../../forms/EventForm/EventForm';
 import StateForm from '../../forms/StateForm/StateForm';
 import VariableForm from '../../forms/VariableForm/VariableForm';
 import ActionFormContextProvider from '../../forms/ActionForm/ActionFormContext';
+import VariableFormContextProvider from '../../forms/VariableForm/VariableFormContext';
+import EventFormContextProvider from '../../forms/EventForm/EventFormContext';
+import ExtSimForm from '../../forms/ExtSimForm/ExtSimForm';
 
 const MainCanvas: React.FC = () => {
   const actions = [
@@ -49,6 +52,15 @@ const MainCanvas: React.FC = () => {
     {
       icon: (
         <SvgIcon>
+          <Tb3DCubeSphere />
+        </SvgIcon>
+      ),
+      name: 'New External Sim',
+      content: <ExtSimForm />,
+    },
+    {
+      icon: (
+        <SvgIcon>
           <GrPerformance />
         </SvgIcon>
       ),
@@ -66,7 +78,11 @@ const MainCanvas: React.FC = () => {
         </SvgIcon>
       ),
       name: 'New Event',
-      content: <EventForm />,
+      content: (
+        <EventFormContextProvider>
+          <EventForm />
+        </EventFormContextProvider>
+      ),
     },
     {
       icon: (
@@ -75,15 +91,17 @@ const MainCanvas: React.FC = () => {
         </SvgIcon>
       ),
       name: 'New Variable',
-      content: <VariableForm />,
+      content: (
+        <VariableFormContextProvider>
+          <VariableForm />
+        </VariableFormContextProvider>
+      ),
     },
   ];
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
-  const storedHistory = JSON.parse(
-    sessionStorage.getItem('dataHistory') || '[]',
-  );
+  const storedHistory = JSON.parse(sessionStorage.getItem('dataHistory') || '[]');
 
   const { addWindow } = useWindowContext();
 

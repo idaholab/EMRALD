@@ -4,40 +4,67 @@ import MenuItem from '@mui/material/MenuItem';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import TextField from '@mui/material/TextField';
 import React, { Dispatch, SetStateAction } from 'react';
-import { ActionType, DiagramType, EventType, MainItemTypes, StateType, VariableType } from '../../types/ItemTypes';
+import {
+  ActionType,
+  DiagramType,
+  EventType,
+  MainItemTypes,
+  StateType,
+  VariableType,
+} from '../../types/ItemTypes';
+import { Box, Button } from '@mui/material';
+import { useWindowContext } from '../../contexts/WindowContext';
 
-type ValueTypes<T extends MainItemTypes> =
-  T extends 'Diagram' ? DiagramType :
-  T extends 'State' ? StateType :
-  T extends 'Event' ? EventType :
-  T extends 'Action' ? ActionType :
-  T extends 'Variable' ? VariableType :
-  never;
+type ValueTypes<T extends MainItemTypes> = T extends 'Diagram'
+  ? DiagramType
+  : T extends 'State'
+  ? StateType
+  : T extends 'Event'
+  ? EventType
+  : T extends 'Action'
+  ? ActionType
+  : T extends 'Variable'
+  ? VariableType
+  : never;
 
 interface MainDetailsFormProps<T extends MainItemTypes> {
-  itemType: T
+  children: React.ReactNode;
+  itemType: T;
   typeLabel?: string;
   type: ValueTypes<T>;
-  setType: Dispatch<SetStateAction<ValueTypes<T>>>;
   typeOptions: { value: string; label: string }[];
   typeDisabled?: boolean;
   name: string;
-  setName: (name: string) => void;
   desc: string;
+  error?: boolean;
+  errorMessage?: string;
+  handleSave: () => void;
+  handleNameChange: (name: string) => void;
+  handleTypeChange?: (newType: VariableType) => void;
+  reset: () => void;
   setDesc: (desc: string) => void;
+  setType: Dispatch<SetStateAction<ValueTypes<T>>>;
+  reqPropsFilled: boolean;
 }
 
 const MainDetailsForm = <T extends MainItemTypes>({
-  typeLabel,
-  type,
-  setType,
-  typeOptions,
-  typeDisabled,
+  children,
   name,
-  setName,
+  type,
+  typeLabel,
+  typeOptions,
   desc,
+  error,
+  errorMessage,
+  reqPropsFilled,
+  handleSave,
+  setType,
   setDesc,
+  handleNameChange,
+  handleTypeChange,
+  reset,
 }: MainDetailsFormProps<T>) => {
+  const { handleClose } = useWindowContext();
   return (
     <>
       <FormControl variant="outlined" size="small" sx={{ minWidth: 120, width: '100%' }}>
@@ -46,9 +73,12 @@ const MainDetailsForm = <T extends MainItemTypes>({
           labelId="type-select-label"
           id="type-select"
           value={type as string} // Cast type as string
-          onChange={(event: SelectChangeEvent<string>) => setType(event.target.value as ValueTypes<T>)} // Cast event.target.value as ValueTypes<T>
+          onChange={(event: SelectChangeEvent<string>) => {
+            setType(event.target.value as ValueTypes<T>);
+            handleTypeChange && handleTypeChange(event.target.value as VariableType);
+            reset();
+          }} // Cast event.target.value as ValueTypes<T>
           label={typeLabel ? typeLabel : 'Type'}
-          disabled={typeDisabled}
         >
           {typeOptions.map((option) => (
             <MenuItem key={option.value} value={option.value}>
@@ -64,8 +94,10 @@ const MainDetailsForm = <T extends MainItemTypes>({
         size="small"
         sx={{ mb: 0 }}
         value={name}
-        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setName(e.target.value)}
+        onChange={(e) => handleNameChange(e.target.value)}
         fullWidth
+        error={error}
+        helperText={error ? errorMessage : ''}
       />
       <TextField
         label="Description"
@@ -77,9 +109,23 @@ const MainDetailsForm = <T extends MainItemTypes>({
         value={desc}
         onChange={(e: React.ChangeEvent<HTMLInputElement>) => setDesc(e.target.value)}
       />
+      {children}
+      <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 5 }}>
+        <Button
+          variant="contained"
+          color="primary"
+          sx={{ mr: 2 }}
+          onClick={() => handleSave()}
+          disabled={error || !reqPropsFilled}
+        >
+          Save
+        </Button>
+        <Button variant="contained" color="secondary" onClick={() => handleClose()}>
+          Cancel
+        </Button>
+      </Box>
     </>
   );
 };
 
 export default MainDetailsForm;
-

@@ -1,21 +1,16 @@
 import React from 'react';
 import { useState } from 'react';
 import { useSignal } from '@preact/signals-react';
-import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
-import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import MainDetailsForm from '../../forms/MainDetailsForm';
-import SingleValueGroups from './SingleValueGroups';
 import { v4 as uuidv4 } from 'uuid';
 import { Diagram } from '../../../types/Diagram';
 import { DiagramType, MainItemTypes } from '../../../types/ItemTypes';
-import {
-  emptyDiagram,
-  useDiagramContext,
-} from '../../../contexts/DiagramContext';
+import { emptyDiagram, useDiagramContext } from '../../../contexts/DiagramContext';
 import { useWindowContext } from '../../../contexts/WindowContext';
 import { FormControl, TextField } from '@mui/material';
+import { useAppData } from '../../../hooks/useAppData';
 
 interface DiagramFormProps {
   diagramData?: Diagram;
@@ -30,13 +25,14 @@ const DiagramForm: React.FC<DiagramFormProps> = ({ diagramData }) => {
   const [diagramType, setDiagramType] = useState<DiagramType>(
     diagramData?.diagramType || 'dtSingle',
   );
+  const [hasError, setHasError] = useState<boolean>(false);
+
   const diagramTypeOptions = [
     { value: 'dtSingle', label: 'Single' },
     { value: 'dtMulti', label: 'Multi' },
   ];
-  const [diagramLabel, setDiagramLabel] = useState<string>(
-    diagramData?.diagramLabel || '',
-  );
+  const [diagramLabel, setDiagramLabel] = useState<string>(diagramData?.diagramLabel || '');
+  const diagrams = useAppData().appData.value.DiagramList;
 
   const handleSave = () => {
     updateTitle(diagramData?.name || '', name);
@@ -59,7 +55,11 @@ const DiagramForm: React.FC<DiagramFormProps> = ({ diagramData }) => {
         });
     handleClose();
   };
-
+  const reset = () => {};
+  const handleNameChange = (newName: string) => {
+    setHasError(diagrams.some((node) => node.name === newName));
+    setName(newName);
+  };
   return (
     <Container maxWidth="sm">
       <Typography variant="h5" my={3}>
@@ -72,49 +72,32 @@ const DiagramForm: React.FC<DiagramFormProps> = ({ diagramData }) => {
           setType={setDiagramType}
           typeOptions={diagramTypeOptions}
           name={name}
-          setName={setName}
           desc={desc}
           setDesc={setDesc}
-        />
-        {/* <Box>
+          handleSave={handleSave}
+          reset={reset}
+          handleNameChange={handleNameChange}
+          error={hasError}
+          errorMessage="A Diagram with this name already exists."
+          reqPropsFilled={name && diagramLabel ? true : false}
+        >
+          {/* <Box>
           <SingleValueGroups states={diagram.value.states} /> Maybe put back in
           the future
         </Box> */}
-        <FormControl
-          variant="outlined"
-          size="small"
-          sx={{ minWidth: 120, width: '100%' }}
-        >
-          <TextField
-            label="Diagram Label"
-            margin="normal"
-            variant="outlined"
-            size="small"
-            sx={{ mb: 0 }}
-            value={diagramLabel}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-              setDiagramLabel(e.target.value)
-            }
-            fullWidth
-          />
-        </FormControl>
-        <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 5 }}>
-          <Button
-            variant="contained"
-            color="primary"
-            sx={{ mr: 2 }}
-            onClick={() => handleSave()}
-          >
-            Save
-          </Button>
-          <Button
-            variant="contained"
-            color="secondary"
-            onClick={() => handleClose()}
-          >
-            Cancel
-          </Button>
-        </Box>
+          <FormControl variant="outlined" size="small" sx={{ minWidth: 120, width: '100%' }}>
+            <TextField
+              label="Diagram Label"
+              margin="normal"
+              variant="outlined"
+              size="small"
+              sx={{ mb: 0 }}
+              value={diagramLabel}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setDiagramLabel(e.target.value)}
+              fullWidth
+            />
+          </FormControl>
+        </MainDetailsForm>
       </form>
     </Container>
   );

@@ -20,6 +20,7 @@
     "@mui/material": "^5.14.4",
     "@preact/signals": "^1.2.2",
     "@preact/signals-react": "^2.0.1",
+    "ajv": "^8.13.0",
     "d3": "^7.8.5",
     "d3-timer": "^3.0.1",
     "dayjs": "^1.11.11",

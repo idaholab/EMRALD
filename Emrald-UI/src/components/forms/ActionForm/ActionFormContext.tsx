@@ -1,14 +1,18 @@
-import { ChangeEvent, createContext, FocusEventHandler, PropsWithChildren, useContext, useEffect, useState } from "react";
-import { Action, NewState } from "../../../types/Action";
-import { useWindowContext } from "../../../contexts/WindowContext";
-import { emptyAction, useActionContext } from "../../../contexts/ActionContext";
-import { useSignal } from "@preact/signals-react";
-import { ActionType } from "../../../types/ItemTypes";
+import {
+  ChangeEvent,
+  createContext,
+  PropsWithChildren,
+  useContext,
+  useEffect,
+  useState,
+} from 'react';
+import { Action, NewState } from '../../../types/Action';
+import { useWindowContext } from '../../../contexts/WindowContext';
+import { emptyAction, useActionContext } from '../../../contexts/ActionContext';
+import { useSignal } from '@preact/signals-react';
+import { ActionType } from '../../../types/ItemTypes';
 import { v4 as uuidv4 } from 'uuid';
-import { SelectChangeEvent } from "@mui/material/Select";
-import { set } from "lodash";
-import { scientificToNumeric } from "../../../utils/util-functions";
-
+import { SelectChangeEvent } from '@mui/material/Select';
 
 export interface NewStateItem {
   id: string;
@@ -20,11 +24,7 @@ export interface NewStateItem {
   probType: string;
 }
 
-export type sim3DMessageType =
-| "atCompModify"
-| "atOpenSim"
-| "atCancelSim"
-| "atPing"
+export type sim3DMessageType = 'atCompModify' | 'atOpenSim' | 'atCancelSim' | 'atPing';
 
 interface ActionFormContextType {
   name: string;
@@ -70,15 +70,20 @@ interface ActionFormContextType {
   setFormData: React.Dispatch<React.SetStateAction<any>>;
   setHasError: React.Dispatch<React.SetStateAction<boolean>>;
   handleChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  handleNameChange: (newName: string) => void;
   handleSave: () => void;
   handleSelectChange: (event: SelectChangeEvent, item: NewStateItem) => void;
-  handleProbChange: (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, item: NewStateItem) => void;
+  handleProbChange: (
+    event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+    item: NewStateItem,
+  ) => void;
   handleProbBlur: (item: NewStateItem) => void;
   handleRemainingChange: (event: React.ChangeEvent<HTMLInputElement>, item: NewStateItem) => void;
   handleProbTypeChange: (event: React.ChangeEvent<HTMLInputElement>, item: NewStateItem) => void;
   handleDeleteToStateItem: (itemToDeleteId: string) => void;
   sortNewStates: (newStateItems: NewStateItem[]) => NewStateItem[];
   initializeForm: (actionData: Action | undefined) => void;
+  reset: () => void;
 }
 
 const ActionFormContext = createContext<ActionFormContextType | undefined>(undefined);
@@ -91,10 +96,9 @@ export const useActionFormContext = (): ActionFormContextType => {
   return context;
 };
 
-
 const ActionFormContextProvider: React.FC<PropsWithChildren> = ({ children }) => {
   const { handleClose } = useWindowContext();
-  const { updateAction, createAction } = useActionContext();
+  const { actionsList, updateAction, createAction } = useActionContext();
   const [actionData, setActionData] = useState<Action | undefined>(undefined);
   const action = useSignal<Action>(emptyAction);
   //main items
@@ -121,8 +125,9 @@ const ActionFormContextProvider: React.FC<PropsWithChildren> = ({ children }) =>
   const [exePath, setExePath] = useState<string>('');
   const [processOutputFileCode, setProcessOutputFileCode] = useState<string>('');
   const [formData, setFormData] = useState<any>();
-
   const [hasError, setHasError] = useState(false);
+  const [reqPropsFilled, setReqPropsFilled] = useState(false);
+
   const actionTypeOptions = [
     { value: 'atTransition', label: 'Transition' },
     { value: 'atCngVarVal', label: 'Change Var Value' },
@@ -134,15 +139,20 @@ const ActionFormContextProvider: React.FC<PropsWithChildren> = ({ children }) =>
     setMutuallyExclusive(event.target.checked);
   };
 
+  const handleNameChange = (newName: string) => {
+    setHasError(actionsList.value.some((node) => node.name === newName));
+    setName(newName);
+  };
+
   const handleSave = () => {
     const newStates: NewState[] = newStateItems.map((newStateItem): NewState => {
-      return { 
+      return {
         toState: newStateItem.toState,
         prob: Number(newStateItem.prob),
         failDesc: newStateItem.failDesc || '',
         varProb: newStateItem.varProb,
       };
-    })
+    });
     action.value = {
       ...action.value,
       id: actionData?.id || uuidv4(),
@@ -163,11 +173,9 @@ const ActionFormContextProvider: React.FC<PropsWithChildren> = ({ children }) =>
       exePath,
       processOutputFileCode,
       openSimVarParams,
-    }
+    };
 
-    actionData
-      ? updateAction(action.value)
-      : createAction(action.value);
+    actionData ? updateAction(action.value) : createAction(action.value);
     handleClose();
   };
 
@@ -181,7 +189,7 @@ const ActionFormContextProvider: React.FC<PropsWithChildren> = ({ children }) =>
       }
       return 0;
     });
-  }
+  };
 
   const addToUsedVariables = (variableName: string) => {
     if (!codeVariables.includes(variableName)) {
@@ -189,7 +197,7 @@ const ActionFormContextProvider: React.FC<PropsWithChildren> = ({ children }) =>
     } else {
       setCodeVariables(codeVariables.filter((item) => item !== variableName));
     }
-  }
+  };
 
   const handleSelectChange = (event: SelectChangeEvent, item: NewStateItem) => {
     const updatedItems = newStateItems.map((newItem) => {
@@ -201,7 +209,10 @@ const ActionFormContextProvider: React.FC<PropsWithChildren> = ({ children }) =>
     setNewStateItems(updatedItems);
   };
 
-  const handleProbChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, updatedItem: NewStateItem) => {
+  const handleProbChange = (
+    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+    updatedItem: NewStateItem,
+  ) => {
     setHasError(false);
     setNewStateItems((prevItems) => {
       const updatedItems = prevItems.map((item) => {
@@ -215,33 +226,10 @@ const ActionFormContextProvider: React.FC<PropsWithChildren> = ({ children }) =>
       });
       return updatedItems;
     });
-    // if (parseFloat(event.target.value) >= 1.0 || parseFloat(event.target.value) <= 0 || isNaN(parseFloat(event.target.value))) {
-    //   setHasError(true);
-    // } else {
-    //   setHasError(false);
-    // }
   };
 
   const handleProbBlur = (updatedItem: NewStateItem) => {
     const value = updatedItem.prob?.toString();
-    // const convertedValue = scientificToNumeric(value);
-
-    // if (convertedValue) {
-    //   setNewStateItems((prevItems) => {
-    //     const updatedItems = prevItems.map((item) => {
-    //       if (item.id === updatedItem.id) {
-    //         return {
-    //           ...item,
-    //           prob: convertedValue,
-    //         };
-    //       }
-    //       return item;
-    //     });
-    //     return updatedItems;
-    //   })
-    // } else {
-    //   setHasError(true);
-    // }
     const validInputRegex = /^[+\-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[Ee][+\-]?\d+)?$/;
     if (value && validInputRegex.test(value)) {
       setHasError(false);
@@ -265,17 +253,24 @@ const ActionFormContextProvider: React.FC<PropsWithChildren> = ({ children }) =>
           return item;
         });
         return updatedItems;
-      })
+      });
       // handleProbChange({ ...e, target: { ...e.target, value: roundedValue } }, item);
     } else {
       setHasError(true);
     }
   };
 
-  const handleRemainingChange = (event: React.ChangeEvent<HTMLInputElement>, item: NewStateItem) => {
+  const handleRemainingChange = (
+    event: React.ChangeEvent<HTMLInputElement>,
+    item: NewStateItem,
+  ) => {
     const updatedItems = newStateItems.map((newItem) => {
       if (newItem === item) {
-        return { ...newItem, remaining: event.target.checked, prob: event.target.checked ? -1 : 0.0 };
+        return {
+          ...newItem,
+          remaining: event.target.checked,
+          prob: event.target.checked ? -1 : 0.0,
+        };
       }
       return newItem;
     });
@@ -295,7 +290,26 @@ const ActionFormContextProvider: React.FC<PropsWithChildren> = ({ children }) =>
   const handleDeleteToStateItem = (itemToDeleteId: string) => {
     const updatedItems = newStateItems.filter((item) => item.id !== itemToDeleteId);
     setNewStateItems(updatedItems);
-  }
+  };
+  const reset = () => {
+    setMutuallyExclusive(false); // Default value for mutuallyExclusive
+    setNewStateItems([]); // Default value for newStateItems
+    setCodeVariables([]); // Default value for codeVariables
+    setVariableName('');
+    setScriptCode('');
+    setSim3DMessage('atCompModify'); // Default value for sim3DMessage
+    setExtSim('');
+    setSim3DId('');
+    setSim3DConfigData('');
+    setSim3DModelRef('');
+    setOpenSimVarParams(false); // Default value for openSimVarParams
+    setSimEndTime('');
+    setMakeInputFileCode('');
+    setExePath('');
+    setProcessOutputFileCode('');
+    setFormData(undefined); // Assuming formData can be undefined
+    setHasError(false); // Default value for hasError
+  };
 
   const initializeForm = (actionData: Action | undefined) => {
     setActionData(actionData);
@@ -305,19 +319,25 @@ const ActionFormContextProvider: React.FC<PropsWithChildren> = ({ children }) =>
     setActType(actionData?.actType || 'atTransition');
     //transition items
     setMutuallyExclusive(actionData?.mutExcl || true);
-    setNewStateItems(actionData?.newStates ? sortNewStates(actionData.newStates.map((state) => ({ 
-      ...state, 
-      id: uuidv4(),
-      remaining: state.prob === -1,
-      probType: 'fixed'
-    }))) : []);
+    setNewStateItems(
+      actionData?.newStates
+        ? sortNewStates(
+            actionData.newStates.map((state) => ({
+              ...state,
+              id: uuidv4(),
+              remaining: state.prob === -1,
+              probType: 'fixed',
+            })),
+          )
+        : [],
+    );
     //CngVarVal items
     setCodeVariables(actionData?.codeVariables || []);
     setVariableName(actionData?.variableName || '');
     setScriptCode(actionData?.scriptCode || '');
 
     //ExtSim items
-    setSim3DMessage(actionData?.sim3DMessage as sim3DMessageType || 'atCompModify');
+    setSim3DMessage((actionData?.sim3DMessage as sim3DMessageType) || 'atCompModify');
     setExtSim(actionData?.extSim || '');
     setOpenSimVarParams(actionData?.openSimVarParams || false);
     setSim3DModelRef(actionData?.sim3DModelRef || '');
@@ -331,63 +351,67 @@ const ActionFormContextProvider: React.FC<PropsWithChildren> = ({ children }) =>
     setFormData(actionData?.formData || undefined);
 
     action.value = actionData || emptyAction;
-  }
+  };
 
   return (
-    <ActionFormContext.Provider value={{ 
-      name,
-      desc,
-      actType,
-      newStateItems,
-      mutuallyExclusive,
-      variableName,
-      codeVariables,
-      scriptCode,
-      sim3DMessage,
-      extSim,
-      sim3DId,
-      openSimVarParams,
-      sim3DModelRef,
-      sim3DConfigData,
-      simEndTime,
-      makeInputFileCode,
-      exePath,
-      processOutputFileCode,
-      formData,
-      hasError,
-      actionTypeOptions,
-      setName,
-      setDesc,
-      setActType,
-      setMutuallyExclusive,
-      setVariableName,
-      setCodeVariables,
-      setScriptCode,
-      setSim3DMessage,
-      setExtSim,
-      setSim3DId,
-      setOpenSimVarParams,
-      setSim3DModelRef,
-      setSim3DConfigData,
-      setSimEndTime,
-      addToUsedVariables,
-      setNewStateItems,
-      setMakeInputFileCode,
-      setExePath,
-      setProcessOutputFileCode,
-      setFormData,
-      setHasError,
-      handleChange,
-      handleSave,
-      handleSelectChange,
-      handleProbChange,
-      handleProbBlur,
-      handleRemainingChange,
-      handleProbTypeChange,
-      handleDeleteToStateItem,
-      sortNewStates,
-      initializeForm
-    }}>
+    <ActionFormContext.Provider
+      value={{
+        name,
+        desc,
+        actType,
+        newStateItems,
+        mutuallyExclusive,
+        variableName,
+        codeVariables,
+        scriptCode,
+        sim3DMessage,
+        extSim,
+        sim3DId,
+        openSimVarParams,
+        sim3DModelRef,
+        sim3DConfigData,
+        simEndTime,
+        makeInputFileCode,
+        exePath,
+        processOutputFileCode,
+        formData,
+        hasError,
+        actionTypeOptions,
+        reset,
+        setName,
+        setDesc,
+        setActType,
+        setMutuallyExclusive,
+        setVariableName,
+        setCodeVariables,
+        setScriptCode,
+        setSim3DMessage,
+        setExtSim,
+        setSim3DId,
+        setOpenSimVarParams,
+        setSim3DModelRef,
+        setSim3DConfigData,
+        setSimEndTime,
+        addToUsedVariables,
+        setNewStateItems,
+        setMakeInputFileCode,
+        setExePath,
+        setProcessOutputFileCode,
+        setFormData,
+        setHasError,
+        handleChange,
+        handleNameChange,
+        handleSave,
+        handleSelectChange,
+        handleProbChange,
+        handleProbBlur,
+        handleRemainingChange,
+        handleProbTypeChange,
+        handleDeleteToStateItem,
+        sortNewStates,
+        initializeForm,
+      }}
+    >
       {children}
     </ActionFormContext.Provider>
   );

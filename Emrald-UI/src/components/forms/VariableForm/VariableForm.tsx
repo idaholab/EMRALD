@@ -1,14 +1,10 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import Button from '@mui/material/Button';
-import Container from '@mui/material/Container';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import React from 'react';
-import { useWindowContext } from '../../../contexts/WindowContext';
 import { Variable } from '../../../types/Variable';
-import { v4 as uuidv4 } from 'uuid';
 import MainDetailsForm from '../MainDetailsForm';
-import { useVariableContext } from '../../../contexts/VariableContext';
 import TextField from '@mui/material/TextField';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
@@ -18,102 +14,53 @@ import Checkbox from '@mui/material/Checkbox';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import DocLinkFields from './FormFieldsByType/DocLinkFields';
 import ExtSimFields from './FormFieldsByType/ExtSimFields';
-import { MainItemTypes, VariableType } from '../../../types/ItemTypes';
+import { MainItemTypes, VarScope } from '../../../types/ItemTypes';
+import AccrualFields from './FormFieldsByType/AccrualFields';
+import { useVariableFormContext } from './VariableFormContext';
 
 interface VariableFormProps {
   variableData?: Variable;
 }
 
 const VariableForm: React.FC<VariableFormProps> = ({ variableData }) => {
-  const { handleClose } = useWindowContext();
-  const { updateVariable, createVariable } = useVariableContext();
-  const [name, setName] = useState<string>(variableData?.name || 'Int_');
-  const [namePrefix, setNamePrefix] = useState<string>('');
-  const [desc, setDesc] = useState<string>(variableData?.desc || '');
-  const [type, setType] = useState<VariableType>(variableData?.type || 'int');
-  const [varScope, setVarScope] = useState<string>(
-    variableData?.varScope || 'gtGlobal',
-  );
-  const [value, setValue] = useState<number | string | boolean>(variableData?.value || 0);
-  const [sim3DId, setSim3DId] = useState<string>(variableData?.sim3DId || '');
-  const [resetOnRuns, setResetOnRuns] = useState<boolean>(
-    variableData?.resetOnRuns || true,
-  );
-  const [docType, setDocType] = useState<string>(variableData?.docType || '');
-  const [docPath, setDocPath] = useState<string>(variableData?.docPath || '');
-  const [docLink, setDocLink] = useState<string>(variableData?.docLink || '');
-  const [pathMustExist, setPathMustExist] = useState<boolean>(
-    variableData?.pathMustExist || true,
-  );
-
-  // Maps 'type' values to their corresponding prefixes.
-  const PREFIXES: Record<string, string> = {
-    string: 'Str_',
-    double: 'Dbl_',
-    bool: 'Bool_',
-    default: 'Int_',
-  };
-
-  // Handle changes to'type' and updates name prefix.
-  const handleTypeChange = () => {
-    // // Update the 'type' state variable.
-    // setType(updatedType);
-
-    // Determine the prefix based on the 'type' value, or use 'default' if not found.
-    const updatedPrefix: string = PREFIXES[type] || PREFIXES.default;
-    setNamePrefix(updatedPrefix)
-
-    // Extract the part of the name after the prefix.
-    const nameWithoutPrefix: string = name ? name.split('_')[1] : '';
-
-    // Set the 'name' state variable with the updated prefix and the extracted part.
-    setName(`${updatedPrefix}${nameWithoutPrefix}`);
-  };
-
-  const handleNameChange = (updatedName: string) => {
-    const nameWithoutPrefix: string = updatedName ? updatedName.split('_')[1] : '';
-    setName(`${namePrefix}${nameWithoutPrefix ? nameWithoutPrefix : ''}`);
-  }
-
-  const handleSave = () => {
-    const newVariable = {
-      id: uuidv4(),
-      type,
-      name,
-      desc,
-      varScope,
-      sim3DId,
-      docType,
-      docPath,
-      docLink,
-      pathMustExist,
-      value,
-    };
-
-    variableData
-      ? updateVariable({
-          id: variableData.id,
-          type,
-          name,
-          desc,
-          varScope,
-          sim3DId,
-          docType,
-          docPath,
-          docLink,
-          pathMustExist,
-          value,
-        })
-      : createVariable(newVariable);
-    handleClose();
-  };
+  const {
+    hasError,
+    name,
+    desc,
+    type,
+    varScope,
+    value,
+    sim3DId,
+    resetOnRuns,
+    docType,
+    docPath,
+    docLink,
+    pathMustExist,
+    InitializeForm,
+    setType,
+    setDesc,
+    setResetOnRuns,
+    setDocType,
+    setDocPath,
+    setDocLink,
+    setVarScope,
+    setSim3DId,
+    setPathMustExist,
+    handleTypeChange,
+    handleNameChange,
+    handleSave,
+    handleFloatValueChange,
+    handleBoolValueChange,
+    handleStringValueChange,
+    reset,
+  } = useVariableFormContext();
 
   useEffect(() => {
-    handleTypeChange();
-  }, [type, setType]);
+    InitializeForm(variableData);
+  }, []);
 
   return (
-    <Container maxWidth="md">
+    <Box mx={3}>
       <Typography variant="h5" my={3}>
         {variableData ? `Edit` : `Create`} Variable
       </Typography>
@@ -122,105 +69,131 @@ const VariableForm: React.FC<VariableFormProps> = ({ variableData }) => {
           itemType={MainItemTypes.Variable}
           type={type}
           setType={setType}
+          handleTypeChange={handleTypeChange}
           typeOptions={[
             { value: 'int', label: 'Int' },
             { value: 'double', label: 'Double' },
             { value: 'bool', label: 'Boolean' },
             { value: 'string', label: 'String' },
           ]}
-          typeDisabled={varScope === 'gtAccrual'}
           name={name}
-          setName={handleNameChange}
           desc={desc}
           setDesc={setDesc}
-        />
-        <FormControl
-          variant="outlined"
-          size="small"
-          sx={{ minWidth: 120, width: '100%', my: 1 }}
+          handleSave={() => handleSave(variableData)}
+          reset={reset}
+          handleNameChange={handleNameChange}
+          error={hasError}
+          errorMessage="A variable with this name already exists."
+          reqPropsFilled={name && varScope && value ? true : false}
         >
-          <InputLabel id="demo-simple-select-standard-label">Scope</InputLabel>
-          <Select
-            labelId="var-scope"
-            id="var-scope"
-            value={varScope}
-            onChange={(event: SelectChangeEvent<string>) => {
-              setVarScope(event.target.value);
-              if (event.target.value === 'gtAccrual') { setType('double') }
-            }}
-            label="scope"
-          >
-            <MenuItem value="gtGlobal">Global</MenuItem>
-            <MenuItem value="gt3DSim">Ext. Sim Variable</MenuItem>
-            <MenuItem value="gtDocLink">Document Link</MenuItem>
-            <MenuItem value="gtAccrual">Accrual</MenuItem>
-          </Select>
-        </FormControl>
+          <FormControl variant="outlined" size="small" sx={{ minWidth: 120, width: '100%', my: 1 }}>
+            <InputLabel id="demo-simple-select-standard-label">Scope</InputLabel>
+            <Select
+              labelId="var-scope"
+              id="var-scope"
+              value={varScope}
+              onChange={(event: SelectChangeEvent<string>) => {
+                setVarScope(event.target.value as VarScope);
+                if (event.target.value === 'gtAccrual') {
+                  setType('double');
+                  handleTypeChange('double');
+                }
+              }}
+              label="scope"
+            >
+              <MenuItem value="gtGlobal">Global</MenuItem>
+              <MenuItem value="gt3DSim">Ext. Sim Variable</MenuItem>
+              <MenuItem value="gtDocLink">Document Link</MenuItem>
+              <MenuItem value="gtAccrual">Accrual</MenuItem>
+            </Select>
+          </FormControl>
 
-        {(varScope === 'gtGlobal' || varScope === 'gt3DSim') && (
-          <>
-            <TextField
-              label="Value"
-              margin="normal"
-              variant="outlined"
-              type="number"
-              size="small"
-              value={value}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                setValue(Number(e.target.value))
-              }
-              fullWidth
-            />
-            <FormControlLabel
-              label="Reset to initial value for every simulation run"
-              control={
-                <Checkbox
-                  checked={resetOnRuns}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                    setResetOnRuns(e.target.checked)
-                  }
+          {(varScope === 'gtGlobal' || varScope === 'gt3DSim') && (
+            <>
+              {type == 'int' || type == 'double' ? (
+                <TextField
+                  label="Value"
+                  margin="normal"
+                  variant="outlined"
+                  type="number"
+                  size="small"
+                  value={value}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleFloatValueChange(e)}
+                  fullWidth
                 />
+              ) : type == 'bool' ? (
+                <FormControl
+                  variant="outlined"
+                  size="small"
+                  sx={{ minWidth: 120, width: '100%', my: 1 }}
+                >
+                  <InputLabel id="demo-simple-select-standard-label">Start Value</InputLabel>
+                  <Select
+                    labelId="value"
+                    id="value"
+                    value={value as string}
+                    onChange={(event: SelectChangeEvent<string>) => handleBoolValueChange(event)}
+                    label="Start Value"
+                    fullWidth
+                  >
+                    <MenuItem value="true">True</MenuItem>
+                    <MenuItem value="false">False</MenuItem>
+                  </Select>
+                </FormControl>
+              ) : (
+                <TextField
+                  label="Value"
+                  margin="normal"
+                  variant="outlined"
+                  type="string"
+                  size="small"
+                  value={value}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleStringValueChange(e)}
+                  fullWidth
+                />
+              )}
+
+              <FormControlLabel
+                label="Reset to initial value for every simulation run"
+                control={
+                  <Checkbox
+                    checked={resetOnRuns ? true : false}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                      setResetOnRuns(e.target.checked)
+                    }
+                  />
+                }
+              />
+              {varScope === 'gt3DSim' && (
+                <ExtSimFields sim3DId={sim3DId ? sim3DId : ''} setSim3DId={setSim3DId} />
+              )}
+            </>
+          )}
+          {varScope === 'gtDocLink' && (
+            <DocLinkFields
+              docType={docType ? docType : ''}
+              setDocType={setDocType}
+              docPath={docPath ? docPath : ''}
+              setDocPath={setDocPath}
+              docLink={docLink ? docLink : ''}
+              setDocLink={setDocLink}
+              pathMustExist={pathMustExist}
+              setPathMustExist={setPathMustExist}
+              value={value}
+              type={type}
+              setValue={
+                type === 'int' || type === 'double'
+                  ? handleFloatValueChange
+                  : type == 'bool'
+                  ? handleBoolValueChange
+                  : handleStringValueChange
               }
             />
-            {varScope === 'gt3DSim' && (
-              <ExtSimFields sim3DId={sim3DId} setSim3DId={setSim3DId} />
-            )}
-          </>
-        )}
-        {varScope === 'gtDocLink' && (
-          <DocLinkFields
-            docType={docType}
-            setDocType={setDocType}
-            docPath={docPath}
-            setDocPath={setDocPath}
-            docLink={docLink}
-            setDocLink={setDocLink}
-            pathMustExist={pathMustExist}
-            setPathMustExist={setPathMustExist}
-            value={value}
-            setValue={setValue}
-          />
-        )}
-
-        <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 5 }}>
-          <Button
-            variant="contained"
-            color="primary"
-            sx={{ mr: 2 }}
-            onClick={() => handleSave()}
-          >
-            Save
-          </Button>
-          <Button
-            variant="contained"
-            color="secondary"
-            onClick={() => handleClose()}
-          >
-            Cancel
-          </Button>
-        </Box>
+          )}
+          {varScope === 'gtAccrual' && <AccrualFields />}
+        </MainDetailsForm>
       </form>
-    </Container>
+    </Box>
   );
 };
 

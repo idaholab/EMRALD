@@ -62,9 +62,10 @@ export const updateSpecifiedModel = ( //Update the provided EMRALD model with al
         //find the index of the item in the array
         itemIdx = itemArray.findIndex(itemInArray => itemInArray.id === item.id);
         if (itemIdx < 0) {
-            //todo error not found
-            console.log("Error: item not found in array for updateModelAndReferences");
-            return updatedEMRALDModel;
+            itemArray.push(item)
+            // Resolve with the updated model
+            resolve(updatedEMRALDModel);
+            return; 
         }
         var previousName: string = itemArray[itemIdx].name; //old name of the item
 
@@ -90,8 +91,6 @@ export const updateSpecifiedModel = ( //Update the provided EMRALD model with al
 export const updateModelAndReferences = ( //Update the main appData EMRALD model with all the item changed in the model provided and references if the name changes
     item: Diagram | State | Action | Event | Variable | LogicNode | ExtSim, //It is assumed the the EMRALD item passed in has already been udpated with all the object changes
     itemType: MainItemTypes, //This is the type of the object that was updated
-    //previousName: string, //old name of the item
-    //newName: string //new name of the item
 ): Promise<EMRALD_Model> => {
     return new Promise((resolve) => {
 

@@ -14,7 +14,7 @@ import { EMRALD_Model } from "../../types/EMRALD_Model";
     }
 }
 
-export async function validateModel (eModel: EMRALD_Model): Promise<string> {
+export async function validateModel (eModel: EMRALD_Model): Promise<string[]> {
     const upgradeModel = new Upgrade("");
     await upgradeModel.validateModel(eModel); 
     return upgradeModel.errorsStr;
