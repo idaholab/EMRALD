@@ -18,10 +18,6 @@
         },
         "emraldVersion": {
             "type": "number",
-            "description": "Users version of this model model"
-        },
-		    "emraldVersion": {
-            "type": "number",
             "description": "Version of the EMRALD model schema"
         },
         "version": {
@@ -474,47 +470,7 @@
                     "type": "array",
                     "description": "Optional. For event type of etDistribution this is an array of properties for the distribution calculation.",
                     "items": {
-                        "type": "object",
-                        "properties": {
-                            "name": {
-                                "type": "string",
-                                "description": "For event type of etDistribution this is the name of the distribution parameter.",
-                                "enum": [
-                                    "Mean",
-                                    "Standard Deviation",
-                                    "Minimum",
-                                    "Maximum",
-                                    "Rate",
-                                    "Shape",
-                                    "Scale",
-                                    "Peak",
-                                    "Alpha",
-                                    "Beta"
-                                ]
-                            },
-                            "value": {
-                                "description": "Optional. The value of the parameter if the useVariable flag is false. Can be a number or a string if in scientific notation.",
-                                "anyOf": [
-                                    {
-                                        "type": "number"
-                                    },
-                                    {
-                                        "type": "string"
-                                    }
-                                ]
-                            },
-                            "timeRate": {
-                                "$ref": "#/definitions/TimeVariableUnit"
-                            },
-                            "useVariable": {
-                                "type": "boolean",
-                                "description": "Flag to use the variable string vs the value item for the property"
-                            },
-                            "variable": {
-                                "type": "string",
-                                "description": "Optional. The reference name of the variable to use as the value of the parameter if the useVariable flag is true."
-                            }
-                        },
+                        "$ref": "#/definitions/EventDistributionParameter",
                         "additionalProperties": false,
                         "required": []
                     }
@@ -874,6 +830,37 @@
                 "etVarCond"
             ]
         },
+        "EventDistributionParameter": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "$ref": "#/definitions/EventDistributionParameterName"
+               
+                },
+                "value": {
+                    "description": "Optional. The value of the parameter if the useVariable flag is false. Can be a number or a string if in scientific notation.",
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "string"
+                        }
+                    ]
+                },
+                "timeRate": {
+                    "$ref": "#/definitions/TimeVariableUnit"
+                },
+                "useVariable": {
+                    "type": "boolean",
+                    "description": "Flag to use the variable string vs the value item for the property"
+                },
+                "variable": {
+                    "type": "string",
+                    "description": "Optional. The reference name of the variable to use as the value of the parameter if the useVariable flag is true."
+                }
+            }
+        },
         "VarChangeOptions": {
             "type": "string",
             "description": "Optional. When an event uses a variable and that variable changes, this tells the code how to update the event.",
@@ -972,6 +959,22 @@
                 "True",
                 "False",
                 "Ignore"
+            ]
+        },
+        "EventDistributionParameterName" : {
+            "type": "string",
+            "description": "For event type of etDistribution this is the name of the distribution parameter.",
+            "enum": [
+                "Mean",
+                "Standard Deviation",
+                "Minimum",
+                "Maximum",
+                "Rate",
+                "Shape",
+                "Scale",
+                "Peak",
+                "Alpha",
+                "Beta"
             ]
         }
     }
