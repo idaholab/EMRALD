@@ -28,8 +28,8 @@ const DiagramForm: React.FC<DiagramFormProps> = ({ diagramData }) => {
   const [hasError, setHasError] = useState<boolean>(false);
 
   const diagramTypeOptions = [
-    { value: 'dtSingle', label: 'Single' },
-    { value: 'dtMulti', label: 'Multi' },
+    { value: 'dtSingle', label: 'Single State (Evaluation)' },
+    { value: 'dtMulti', label: 'Multi State' },
   ];
   const [diagramLabel, setDiagramLabel] = useState<string>(diagramData?.diagramLabel || '');
   const diagrams = useAppData().appData.value.DiagramList;
