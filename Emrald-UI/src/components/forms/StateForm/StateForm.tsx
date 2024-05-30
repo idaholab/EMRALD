@@ -60,7 +60,7 @@ const StateForm: React.FC<StateFormProps> = ({
     setName(newName);
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (stateData) {
       updateState({
         ...state.value,
@@ -70,7 +70,7 @@ const StateForm: React.FC<StateFormProps> = ({
         defaultSingleStateValue,
       });
     } else {
-      createState({
+      await createState({
         ...state.value,
         id: uuidv4(),
         name,

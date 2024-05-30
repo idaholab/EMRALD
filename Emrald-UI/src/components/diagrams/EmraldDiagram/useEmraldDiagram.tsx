@@ -122,9 +122,9 @@ const useEmraldDiagram = () => {
         return;
       }
       // Prevent a node from connecting to itself
-      if (sourceNode.data.label === targetNode.data.label) {
-        return;
-      }
+      // if (sourceNode.data.label === targetNode.data.label) {
+      //   return;
+      // }
 
       // Check if edge already exists and if so, don't add it.
       const existingEdge = edges.find(
@@ -165,9 +165,9 @@ const useEmraldDiagram = () => {
 
   const isValidConnection = (connection: Connection) => {
     // Check if source and target nodes are the same
-    if (connection.source === connection.target) {
-      return false; // Prevent the connection
-    }
+    // if (connection.source === connection.target) { //TODO: This needs to be revisited in the future. Currently, nodes can connect to themselves but its hard to tell with the react flow lines
+    //   return false; // Prevent the connection
+    // }
     return true; // Allow other connections
   };
 

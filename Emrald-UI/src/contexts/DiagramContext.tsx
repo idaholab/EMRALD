@@ -70,7 +70,7 @@ const DiagramContextProvider: React.FC<EmraldContextWrapperProps> = ({
     console.log('Calling update app data');
     updateAppData(JSON.parse(JSON.stringify(updatedModel)));
     console.log('Called update app data');
-    setDiagrams(updatedModel.DiagramList);
+    setDiagrams(updatedModel.DiagramList.sort((a, b) => a.name.localeCompare(b.name)));
   };
 
   const deleteDiagram = (diagramId: string | undefined) => {

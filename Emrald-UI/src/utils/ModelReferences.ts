@@ -348,6 +348,7 @@ export const GetModelItemsReferencedBy = (
       //get all the references
       if(firstRound || recursive)
       {
+        firstRound = false;
         //get the json paths for the references depending on the type
         var jsonPathRefArray : Array<[string, MainItemTypes]> = GetJSONPathInRefs(curItemType, curItemName);
         

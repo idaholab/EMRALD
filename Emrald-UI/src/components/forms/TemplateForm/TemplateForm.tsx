@@ -3,9 +3,16 @@ import { EMRALD_Model } from '../../../types/EMRALD_Model';
 import {
   Box,
   Button,
+  Collapse,
   FormControl,
   FormControlLabel,
   Icon,
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
+  ListSubheader,
   Radio,
   RadioGroup,
   Table,
@@ -19,13 +26,7 @@ import {
 import { TextFieldComponent } from '../../common';
 import { FaLock } from 'react-icons/fa6';
 import { FaLockOpen } from 'react-icons/fa6';
-import { useDiagramContext } from '../../../contexts/DiagramContext';
-import { useLogicNodeContext } from '../../../contexts/LogicNodeContext';
-import { useExtSimContext } from '../../../contexts/ExtSimContext';
-import { useEventContext } from '../../../contexts/EventContext';
-import { useStateContext } from '../../../contexts/StateContext';
-import { useActionContext } from '../../../contexts/ActionContext';
-import { useVariableContext } from '../../../contexts/VariableContext';
+
 import { MainItemTypes } from '../../../types/ItemTypes';
 import { State } from '../../../types/State';
 import { Event } from '../../../types/Event';
@@ -41,49 +42,142 @@ import { v4 as uuidv4 } from 'uuid';
 import { useWindowContext } from '../../../contexts/WindowContext';
 import { useAssembledData } from '../../../hooks/useAssembledData';
 
-interface ImportDiagramFormProps {
-  importedData: EMRALD_Model;
+import { StarBorder } from '@mui/icons-material';
+
+import FolderIcon from '@mui/icons-material/Folder';
+import FolderOpenIcon from '@mui/icons-material/FolderOpen';
+import ExpandLess from '@mui/icons-material/ExpandLess';
+import ExpandMore from '@mui/icons-material/ExpandMore';
+
+interface TemplateDiagramFormProps {
+  templatedData: EMRALD_Model;
 }
 
-interface ImportedItem {
+interface TemplatedItem {
   type: MainItemTypes;
   displayType: string;
   locked: boolean;
   oldName: string;
   action: string;
   newName: string;
-  conflict: boolean;
+  exclude: boolean;
+  requiredInImportingModel: boolean;
   emraldItem: Action | Diagram | LogicNode | ExtSim | Event | State | Variable;
 }
 
-const ImportForm: React.FC<ImportDiagramFormProps> = ({ importedData }) => {
+type Group = {
+  id: string;
+  name: string;
+  children?: Group[];
+};
+
+type GroupsState = Group[];
+
+const TemplateForm: React.FC<TemplateDiagramFormProps> = ({ templatedData }) => {
   const [findValue, setFindValue] = useState<string>('');
   const [replaceValue, setReplaceValue] = useState<string>('');
-  const [importedItems, setImportedItems] = useState<ImportedItem[]>([]);
-  const [hasConflicts, setHasConflicts] = useState<boolean>(true);
-  const { diagramList } = useDiagramContext();
-  const { logicNodeList } = useLogicNodeContext();
-  const { extSimList } = useExtSimContext();
-  const { eventsList } = useEventContext();
-  const { statesList } = useStateContext();
-  const { actionsList } = useActionContext();
-  const { variableList } = useVariableContext();
+  const [templatedItems, setTemplatedItems] = useState<TemplatedItem[]>([]);
+  const [templateName, setTemplateName] = useState<string>('');
+  const [templateDesc, setTemplateDesc] = useState<string>('');
+  const [selectedGroup, setSelectedGroup] = useState<string>('');
+  const [groups, setGroups] = useState<GroupsState>( [
+    {
+      id: uuidv4(),
+      name: "Group 1",
+      children: [
+        {
+          id: uuidv4(),
+          name: "Subgroup 1.1",
+          children: [
+            { id: uuidv4(), name: "Item 1.1.1", children: [
+              { id: uuidv4(), name: "Item 1.1.1.1", children: [
+                { id: uuidv4(), name: "Item 1.1.1.1.1", children: [
+                  { id: uuidv4(), name: "Item 1.1.1.1.1.1" },
+                ]},
+              ]},
+            ] },
+            { id: uuidv4(), name: "Item 1.1.2" },
+          ],
+        }
+      ],
+    },
+    {
+      id: uuidv4(),
+      name: "Group 2",
+      children: [
+        {
+          id: uuidv4(),
+          name: "Subgroup 2.1",
+          children: [
+            { id: uuidv4(), name: "Item 2.1.1" },
+            { id: uuidv4(), name: "Item 2.1.2" },
+          ],
+        }
+      ],
+    },
+  ]);
   const { handleClose } = useWindowContext();
   const { refreshWithNewData } = useAssembledData();
 
-  const convertModelToArray = (model: EMRALD_Model): ImportedItem[] => {
-    const items: ImportedItem[] = [];
+  const [open, setOpen] = React.useState(true);
+
+  const handleClick = () => {
+    setOpen(!open);
+  };
+
+  const [expanded, setExpanded] = useState(["Group 1"]);
+
+  const toggleExpand = (id: string) => {
+    setExpanded((prevExpanded) => {
+      const isExpanded = prevExpanded.includes(id);
+      if (isExpanded) {
+        return prevExpanded.filter((item) => item !== id);
+      } else {
+        return [...prevExpanded, id];
+      }
+    });
+  };
+  
+
+  // const addGroup = (name: string): void => {
+  //   setGroups((prevGroups) => [...prevGroups, { name }]);
+  // };
+
+  // const addSubgroup = (parentGroupIndex: number, name: string): void => {
+  //   setGroups((prevGroups) => {
+  //     const updatedGroups = [...prevGroups];
+  //     const parentGroup = updatedGroups[parentGroupIndex];
+  //     if (parentGroup) {
+  //       parentGroup.subGroups = parentGroup.subGroups || [];
+  //       parentGroup.subGroups.push({ name });
+  //     }
+  //     return updatedGroups;
+  //   });
+  // };
+
+  const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({});
+
+  const handleClickGroup = (groupName: string) => {
+    setOpenGroups((prevOpenGroups) => ({
+      ...prevOpenGroups,
+      [groupName]: !prevOpenGroups[groupName],
+    }));
+  };
+
+  const convertModelToArray = (model: EMRALD_Model): TemplatedItem[] => {
+    const items: TemplatedItem[] = [];
 
     for (const diagram of model.DiagramList) {
       items.push({
         type: MainItemTypes.Diagram,
         displayType: 'Diagram',
-        locked: !checkForConflicts(diagram.name, MainItemTypes.Diagram),
+        locked: false,
         oldName: diagram.name,
         newName: diagram.name,
         action: 'rename',
-        conflict: diagramList.value.some(item => item.name === diagram.name),
-        emraldItem: structuredClone(diagram),
+        exclude: false,
+        requiredInImportingModel: false,
+        emraldItem: diagram,
       });
     }
 
@@ -91,12 +185,13 @@ const ImportForm: React.FC<ImportDiagramFormProps> = ({ importedData }) => {
       items.push({
         type: MainItemTypes.LogicNode,
         displayType: 'Logic Node',
-        locked: !checkForConflicts(logicNode.name, MainItemTypes.LogicNode),
+        locked: false,
         oldName: logicNode.name,
         newName: logicNode.name,
         action: 'rename',
-        conflict: logicNodeList.value.some(item => item.name === logicNode.name),
-        emraldItem: structuredClone(logicNode),
+        exclude: false,
+        requiredInImportingModel: false,
+        emraldItem: logicNode,
       });
     }
 
@@ -104,12 +199,13 @@ const ImportForm: React.FC<ImportDiagramFormProps> = ({ importedData }) => {
       items.push({
         type: MainItemTypes.ExtSim,
         displayType: 'External Sim',
-        locked: !checkForConflicts(extSim.name, MainItemTypes.ExtSim),
+        locked: false,
         oldName: extSim.name,
         newName: extSim.name,
         action: 'rename',
-        conflict: extSimList.value.some(item => item.name === extSim.name),
-        emraldItem: structuredClone(extSim),
+        exclude: false,
+        requiredInImportingModel: false,
+        emraldItem: extSim,
       });
     }
 
@@ -117,12 +213,13 @@ const ImportForm: React.FC<ImportDiagramFormProps> = ({ importedData }) => {
       items.push({
         type: MainItemTypes.Action,
         displayType: 'Action',
-        locked: !checkForConflicts(action.name, MainItemTypes.Action),
+        locked: false,
         oldName: action.name,
         newName: action.name,
         action: 'rename',
-        conflict: actionsList.value.some(item => item.name === action.name),
-        emraldItem: structuredClone(action),
+        exclude: false,
+        requiredInImportingModel: false,
+        emraldItem: action,
       });
     }
 
@@ -130,12 +227,13 @@ const ImportForm: React.FC<ImportDiagramFormProps> = ({ importedData }) => {
       items.push({
         type: MainItemTypes.Event,
         displayType: 'Event',
-        locked: !checkForConflicts(event.name, MainItemTypes.Event),
+        locked: false,
         oldName: event.name,
         newName: event.name,
         action: 'rename',
-        conflict: eventsList.value.some(item => item.name === event.name),
-        emraldItem: structuredClone(event),
+        exclude: false,
+        requiredInImportingModel: false,
+        emraldItem: event,
       });
     }
 
@@ -143,12 +241,13 @@ const ImportForm: React.FC<ImportDiagramFormProps> = ({ importedData }) => {
       items.push({
         type: MainItemTypes.State,
         displayType: 'State',
-        locked: !checkForConflicts(state.name, MainItemTypes.State),
+        locked: false,
         oldName: state.name,
         newName: state.name,
         action: 'rename',
-        conflict: statesList.value.some(item => item.name === state.name),
-        emraldItem: structuredClone(state),
+        exclude: false,
+        requiredInImportingModel: false,
+        emraldItem: state,
       });
     }
 
@@ -156,12 +255,13 @@ const ImportForm: React.FC<ImportDiagramFormProps> = ({ importedData }) => {
       items.push({
         type: MainItemTypes.Variable,
         displayType: 'Variable',
-        locked: !checkForConflicts(variable.name, MainItemTypes.Variable),
+        locked: false,
         oldName: variable.name,
         newName: variable.name,
         action: 'rename',
-        conflict: variableList.value.some(item => item.name === variable.name),
-        emraldItem: structuredClone(variable),
+        exclude: false,
+        requiredInImportingModel: false,
+        emraldItem: variable,
       });
     }
 
@@ -169,117 +269,94 @@ const ImportForm: React.FC<ImportDiagramFormProps> = ({ importedData }) => {
   };
 
   useEffect(() => {
-    setImportedItems(convertModelToArray(importedData));
-  }, []);
-
-  useEffect(() => {
-    const hasConflicts = importedItems.some((item) => item.conflict);
-    setHasConflicts(hasConflicts);
-  }, [importedItems]);
-
-  const checkForConflicts = (newName: string, type: MainItemTypes) => {
-    switch(type) {
-      case MainItemTypes.Diagram:
-        return diagramList.value.some(item => item.name === newName);
-      case MainItemTypes.LogicNode:
-        return logicNodeList.value.some(item => item.name === newName);
-      case MainItemTypes.ExtSim:
-        return extSimList.value.some(item => item.name === newName);
-      case MainItemTypes.Action:
-        return actionsList.value.some(item => item.name === newName);
-      case MainItemTypes.Event:
-        return eventsList.value.some(item => item.name === newName);
-      case MainItemTypes.State:
-        return statesList.value.some(item => item.name === newName);
-      case MainItemTypes.Variable:
-        return variableList.value.some(item => item.name === newName);
-      default:
-        return false;
-    }
-  };
+    setTemplatedItems(convertModelToArray(templatedData));
+  }, [templatedData]);
 
   const handleNewNameChange = (index: number, newName: string) => {
-    const updatedItems = [...importedItems];
+    const updatedItems = [...templatedItems];
     updatedItems[index].newName = newName;
-    const hasConflict = checkForConflicts(newName, updatedItems[index].type);
-    updatedItems[index].conflict = hasConflict;
-    setImportedItems(updatedItems);
+    // const hasConflict = checkForConflicts(newName, updatedItems[index].type);
+    // updatedItems[index].conflict = hasConflict;
+    setTemplatedItems(updatedItems);
   };
 
   const handleLockChange = (index: number, locked: boolean) => {
-    const updatedItems = [...importedItems];
+    const updatedItems = [...templatedItems];
     updatedItems[index].locked = locked;
-    setImportedItems(updatedItems);
+    setTemplatedItems(updatedItems);
   };
 
   const lockAll = () => {
-    const updatedItems = importedItems.map((item) => {
+    const updatedItems = templatedItems.map((item) => {
       return { ...item, locked: true };
     });
-    setImportedItems(updatedItems);
+    setTemplatedItems(updatedItems);
   };
 
   const unlockAll = () => {
-    const updatedItems = importedItems.map((item) => {
+    const updatedItems = templatedItems.map((item) => {
       return { ...item, locked: false };
     });
-    setImportedItems(updatedItems);
+    setTemplatedItems(updatedItems);
   };
 
   const updateAllUnlocked = (action: string) => {
-    const updatedItems = importedItems.map((item) => {
+    const updatedItems = templatedItems.map((item) => {
       if (!item.locked) {
-        if (item.type === MainItemTypes.State && importedData.DiagramList.length > 0) {
+        if (item.type === MainItemTypes.State && templatedData.DiagramList.length > 0) {
           return { ...item, action: 'rename' };
         }
-        return { 
+        return {
           ...item,
           action: action,
-          conflict: action !== 'rename' ? false : checkForConflicts(item.newName, item.type),
+          // conflict: action !== 'rename' ? false : checkForConflicts(item.newName, item.type),
         };
       }
       return item;
     });
-    setImportedItems(updatedItems);
+    setTemplatedItems(updatedItems);
   };
 
   const handleActionChange = (index: number, action: string) => {
-    const updatedItems = [...importedItems];
+    const updatedItems = [...templatedItems];
     updatedItems[index].action = action;
     if (action !== 'rename') {
-      if (updatedItems[index].type === MainItemTypes.State && importedData.DiagramList.length > 0) {
+      if (
+        updatedItems[index].type === MainItemTypes.State &&
+        templatedData.DiagramList.length > 0
+      ) {
         updatedItems[index].action = 'rename';
       }
-      updatedItems[index].conflict = false;
+      // updatedItems[index].conflict = false;
     } else {
-      updatedItems[index].conflict = checkForConflicts(updatedItems[index].newName.replace(findValue, replaceValue), updatedItems[index].type);
+      // updatedItems[index].conflict = checkForConflicts(updatedItems[index].newName.replace(findValue, replaceValue), updatedItems[index].type);
     }
-    setImportedItems(updatedItems);
+    setTemplatedItems(updatedItems);
   };
 
   const handleApply = () => {
-    const updatedItems = importedItems.map((item) => {
+    const updatedItems = templatedItems.map((item) => {
       if (item.newName.includes(findValue)) {
         return {
           ...item,
           newName: item.newName.replace(findValue, replaceValue),
-          conflict: checkForConflicts(item.newName.replace(findValue, replaceValue), item.type),
+          // conflict: checkForConflicts(item.newName.replace(findValue, replaceValue), item.type),
         };
       }
       return item;
     });
 
-    setImportedItems(updatedItems);
+    setTemplatedItems(updatedItems);
   };
 
   const handleSave = async () => {
     // Go through all of the renamed items and update the pasted model
     let updatedModel: EMRALD_Model = { ...appData.value };
-    for (let i = 0; i < importedItems.length; i++) {
-      const item = importedItems[i];
+    for (let i = 0; i < templatedItems.length; i++) {
+      const item = templatedItems[i];
       if (item.action === 'rename') {
         item.emraldItem.name = item.newName;
-        updateSpecifiedModel(item.emraldItem, item.type, importedData, false);
+        updateSpecifiedModel(item.emraldItem, item.type, templatedData, false);
         item.emraldItem.id = uuidv4();
         updatedModel = await updateModelAndReferences(item.emraldItem, item.type);
         updateAppData(updatedModel);
@@ -298,8 +375,64 @@ const ImportForm: React.FC<ImportDiagramFormProps> = ({ importedData }) => {
     handleClose();
   };
 
+const renderListItems = (data: Group[], level: number = 1) => {
+  return data.map((item) => (
+    <React.Fragment key={item.id}>
+      <ListItemButton onClick={() => {toggleExpand(item.name); setSelectedGroup(item.name)}} sx={{ backgroundColor: item.name === selectedGroup ? 'lightgreen' : 'white'}}>
+        <ListItemIcon>
+          {expanded.includes(item.name) && item.children && item.children.length > 0 ? <FolderOpenIcon /> : <FolderIcon />}
+        </ListItemIcon>
+        <ListItemText primary={item.name} />
+        {
+          item.children && item.children.length > 0 && (
+            <>{expanded.includes(item.name) ? <ExpandLess /> : <ExpandMore />}</>
+          )
+        }
+      </ListItemButton>
+
+      {item.children && item.children.length > 0 && (
+        <Collapse
+          in={expanded.includes(item.name)}
+          timeout="auto"
+          unmountOnExit
+        >
+          <List
+            component="div"
+            disablePadding
+            sx={{
+              pl: 3
+            }}
+          >
+            {renderListItems(item.children, level + 1)}
+          </List>
+        </Collapse>
+      )}
+    </React.Fragment>
+  ));
+};
+
   return (
     <Box mx={3}>
+      <Box mt={2}>
+        <Typography variant="h5" fontWeight={'bold'}>
+          Create a Template
+        </Typography>
+
+        <TextFieldComponent label="Name" value={templateName} setValue={setTemplateName} />
+        <TextFieldComponent label="Description" value={templateDesc} setValue={setTemplateDesc} />
+        <Typography variant="subtitle1" mt={2}>
+          Assign this template to group: <span style={{ fontWeight: 'bold' }}>{selectedGroup}</span>
+        </Typography>
+        <Box>
+          <List
+            sx={{ width: '100%', maxWidth: 500, bgcolor: 'background.paper' }}
+            component="nav"
+            aria-labelledby="nested-list-subheader"
+          >
+            {renderListItems(groups)}
+          </List>
+        </Box>
+      </Box>
       <Box display={'flex'} alignItems={'center'}>
         <TextFieldComponent label="Find" value={findValue} setValue={setFindValue} sx={{ mr: 4 }} />
         <TextFieldComponent
@@ -354,15 +487,8 @@ const ImportForm: React.FC<ImportDiagramFormProps> = ({ importedData }) => {
           </Button>
         </Box>
       </Box>
-      {importedData.StateList.length > 0 && importedData.DiagramList.length > 0 ? (
-        <Typography variant="subtitle2" color="warning.main" sx={{ mt: 3 }}>
-          States cannot be used on multiple diagrams and must be renamed if conflicting.
-        </Typography>
-      ) : (
-        <></>
-      )}
 
-      <Box maxHeight={'400px'} overflow={'auto'}>
+      <Box mt={3} maxHeight={'400px'} overflow={'auto'}>
         <Table sx={{ minWidth: 650 }} size="small" stickyHeader>
           <TableHead>
             <TableRow>
@@ -381,13 +507,13 @@ const ImportForm: React.FC<ImportDiagramFormProps> = ({ importedData }) => {
               <TableCell align="left" sx={{ width: '30%' }}>
                 <b>New Name</b>
               </TableCell>
-              <TableCell align="left">
+              {/* <TableCell align="left">
                 <b>Conflict</b>
-              </TableCell>
+              </TableCell> */}
             </TableRow>
           </TableHead>
           <TableBody>
-            {importedItems.map((row, index) => (
+            {templatedItems.map((row, index) => (
               <TableRow key={index} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
                 <TableCell component="th" scope="row">
                   {row.type}
@@ -420,33 +546,21 @@ const ImportForm: React.FC<ImportDiagramFormProps> = ({ importedData }) => {
                       onChange={(e) => handleActionChange(index, e.target.value)}
                     >
                       <FormControlLabel
-                        value="ignore"
+                        value="keep"
                         control={
                           <Radio
                             disabled={
                               row.locked ||
-                              (row.type === 'State' && importedData.DiagramList.length > 0)
+                              (row.type === 'State' && templatedData.DiagramList.length > 0)
                             }
                           />
                         }
-                        label="Ignore"
-                      />
-                      <FormControlLabel
-                        value="replace"
-                        control={
-                          <Radio
-                            disabled={
-                              row.locked ||
-                              (row.type === 'State' && importedData.DiagramList.length > 0)
-                            }
-                          />
-                        }
-                        label="Replace"
+                        label="Keep Name"
                       />
                       <FormControlLabel
                         value="rename"
                         control={<Radio disabled={row.locked} />}
-                        label="New Name"
+                        label="Rename"
                       />
                     </RadioGroup>
                   </FormControl>
@@ -459,18 +573,18 @@ const ImportForm: React.FC<ImportDiagramFormProps> = ({ importedData }) => {
                     size="small"
                   />
                 </TableCell>
-                <TableCell align="left">
+                {/* <TableCell align="left">
                   <Typography fontSize={14} color={row.conflict ? '#d32c38' : '#1b8f55'}>
                     {row.conflict ? 'CONFLICTS' : 'NO CONFLICT'}
                   </Typography>
-                </TableCell>
+                </TableCell> */}
               </TableRow>
             ))}
           </TableBody>
         </Table>
       </Box>
       <Box mt={3} textAlign={'right'}>
-        <Button variant="contained" sx={{ mr: 2 }} onClick={handleSave} disabled={hasConflicts}>
+        <Button variant="contained" sx={{ mr: 2 }} onClick={handleSave}>
           Save Changes
         </Button>
         <Button variant="contained" color="secondary" onClick={() => handleClose()}>
@@ -481,4 +595,4 @@ const ImportForm: React.FC<ImportDiagramFormProps> = ({ importedData }) => {
   );
 };
 
-export default ImportForm;
+export default TemplateForm;

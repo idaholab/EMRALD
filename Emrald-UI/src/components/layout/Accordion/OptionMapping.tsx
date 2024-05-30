@@ -27,6 +27,7 @@ import { useExtSimContext } from '../../../contexts/ExtSimContext';
 import { GetModelItemsReferencedBy } from '../../../utils/ModelReferences';
 import { MainItemTypes } from '../../../types/ItemTypes';
 import VariableFormContextProvider from '../../forms/VariableForm/VariableFormContext';
+import TemplateForm from '../../forms/TemplateForm/TemplateForm';
 
 // Define your Option and OptionsMapping types
 export interface Option {
@@ -80,9 +81,21 @@ export const useOptionsMapping = () => {
           deleteDiagram(diagram.id);
         },
       },
-      { label: 'Make Template', action: () => null },
+      { label: 'Make Template', action: (diagram: Diagram) => {
+          const copiedModel = GetModelItemsReferencedBy(diagram.name, MainItemTypes.Diagram, true)
+          navigator.clipboard.writeText(JSON.stringify(copiedModel, null, 2));
+          addWindow(
+            `Create Template`,
+            <TemplateForm templatedData={copiedModel} />,
+          )
+        }
+      },
       { label: 'Export', action: () => null },
       { label: 'Copy', action: (diagram: Diagram) => {
+        const copiedModel = GetModelItemsReferencedBy(diagram.name, MainItemTypes.Diagram, false)
+        navigator.clipboard.writeText(JSON.stringify(copiedModel, null, 2));
+      } },
+      { label: 'Copy Recursive', action: (diagram: Diagram) => {
         const copiedModel = GetModelItemsReferencedBy(diagram.name, MainItemTypes.Diagram, true)
         navigator.clipboard.writeText(JSON.stringify(copiedModel, null, 2));
       } },

@@ -10,6 +10,9 @@ const theme = createTheme({
     secondary: {
       main: '#FFFFFF', // Customize your secondary color,
     },
+    warning: {
+      main: '#e5b81a', // Customize your warning color,
+    },
   },
   typography: {
     fontFamily: 'Arial, sans-serif', // Customize the default font family

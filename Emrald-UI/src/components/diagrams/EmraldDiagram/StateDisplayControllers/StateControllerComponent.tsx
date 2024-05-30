@@ -32,8 +32,8 @@ const StateControllerComponent: React.FC<StateControllerComponentProps> = ({
     <div className={`state-node__${type}-actions`}>
       <DiagramAccordion
         expanded={expandedPanel}
-        aria-controls="panel1a-content"
-        id="panel1a-header"
+        aria-controls={`panel-${state.name}-${type}-content`}
+        id={`panel-${state.name}-${type}-header`}
         onClick={() => setExpandedPanel(!expandedPanel)}
       >
         <DropTargetComponent
@@ -44,7 +44,7 @@ const StateControllerComponent: React.FC<StateControllerComponentProps> = ({
           updateStateImmediateActions={updateStateImmediateActions}
         >
           <DiagramAccordionSummary 
-            aria-controls={`panel1a-content`}
+            aria-controls={`action-summary-${state.name}-${type}`}
             onContextMenu={(e) => onActionsHeaderContextMenu(e, type)}>
             <Typography sx={{ fontSize: 11 }}>{`${capitalize(
               type,
