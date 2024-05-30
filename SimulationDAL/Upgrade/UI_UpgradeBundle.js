@@ -472,8 +472,6 @@ function UpgradeV3_0(modelTxt) {
     return retModel;
 }
 
-import Ajv from "ajv"
-//const Ajv = require('ajv');
 class Upgrade {
     constructor(modelTxt) {
         this._emraldVersion = 0.0;
@@ -489,7 +487,7 @@ class Upgrade {
         this._newModelTxt = "";
         this._newModel = undefined;
         this._emraldVersion = 0.0;
-        this._errors = "";
+        this._errors = [];
     }
     upgradeGiveID(toVersion, setIdFunction) {
         const badModel = "Invalid EMRALD model format ";
@@ -507,7 +505,7 @@ class Upgrade {
                 this._newModelTxt = upgraded.newModel;
                 this._newModel = JSON.parse(upgraded.newModel);
                 if (upgraded.errors.length > 0) {
-                    this._errors = `${badModel}v${upgrade.emraldVersion} - ${upgraded.errors}`;
+                    this._errors.push(`${badModel}v${upgrade.emraldVersion} - ${upgraded.errors}`);
                     return false;
                 }
                 this._emraldVersion = upgrade.emraldVersion;
@@ -539,34 +537,6 @@ class Upgrade {
         return JSON.stringify(this._newModel);
     }
     get errorsStr() {
-        return this._errors;
-    }
-    // 
-    async validateModel(model) {
-        this._errors = [];
-        const schemaPath = './src/utils/Upgrades/v3_0/EMRALD_JsonSchemaV3_0.json';
-        try {
-            const response = await fetch(schemaPath);
-            if (!response.ok) {
-                throw new Error("Failed to fetch schema text");
-            }
-            const schemaTxt = await response.text();
-            // Create a new instance of Ajv
-            const ajv = new Ajv();
-            // Compile the JSON schema
-            const schema = JSON.parse(schemaTxt);
-            const validate = ajv.compile(schema);
-            // Validate the data against the schema
-            const isValid = validate(model);
-            if (!isValid) {
-                validate.errors?.forEach(e => {
-                    this._errors.push(`${e.message} - ${e.schemaPath}`);
-                });
-            }
-        }
-        catch (error) {
-            this._errors = error.message;
-        }
         return this._errors;
     }
 }

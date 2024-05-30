@@ -1,5 +1,4 @@
-rem this .bat is called from c# project SimulationDAL on build, to bundle all the JS files used to upgrade a project to the lastest version, 
-rem into a sigle JS file and is copied to that project so it can be executed inside of c#
+rem this .bat is called from c# project SimulationDAL on build, to bundle all the JS files used to upgrade a project to the lastest version, into a sigle JS file and is copied to that project so it can be executed inside of c#
 
 @echo off
 cd /d "%~dp0" >nul

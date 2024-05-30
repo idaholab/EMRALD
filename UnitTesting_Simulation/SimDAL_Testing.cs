@@ -550,7 +550,7 @@ namespace UnitTesting_Simulation
       //for some items, if the item JSON references other items they will need to be added to the main model
       State state1 = new State();//State1
       State state2 = new State();//State2
-      Diagram diagram = new Diagram();//Diagram
+      Diagram diagram = new Diagram(EnDiagramType2.dtMulti);//Diagram
 
       act.DeserializeDerived(jsonObj, true, mainModel, false);
       diagram.DeserializeDerived(jsonObj3, true, mainModel, false);//Diagram
@@ -1038,7 +1038,7 @@ namespace UnitTesting_Simulation
       //for some items, if the item JSON references other items they will need to be added to the main model
       State state1 = new State();//State1
       State state2 = new State();//State2
-      Diagram diagram = new Diagram();//Diagram
+      Diagram diagram = new Diagram(EnDiagramType2.dtMulti);//Diagram
 
       diagram.DeserializeDerived(jsonObj3, true, mainModel, false);//Diagram
       state1.DeserializeDerived(jsonObj1, true, mainModel, false);//State1
@@ -1097,7 +1097,7 @@ namespace UnitTesting_Simulation
 
       //for some items, if the item JSON references other items they will need to be added to the main model
       State state1 = new State();//State1
-      Diagram diagram = new Diagram();//Diagram
+      Diagram diagram = new Diagram(EnDiagramType2.dtMulti);//Diagram
 
       diagram.DeserializeDerived(jsonObj3, true, mainModel, false);//Diagram
       state1.DeserializeDerived(jsonObj1, true, mainModel, false);//State1
