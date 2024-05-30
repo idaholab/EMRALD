@@ -65,12 +65,12 @@ export function UpgradeV1_x( modelTxt : string) : UpgradeReturn
           if (event.hasOwnProperty('evtType')) {
             delete event.evtType;
           }
-          if (event.hasOwnProperty('shape')) {
-            delete event.shape;
-          }
-          if (event.hasOwnProperty('scale')) {
-            delete event.scale;
-          }
+          // if (event.hasOwnProperty('shape')) {
+          //   delete event.shape;
+          // }
+          // if (event.hasOwnProperty('scale')) {
+          //   delete event.scale;
+          // }
           if (event.hasOwnProperty('ndMean')) {
             event.mean = event.ndMean;
             delete event.ndMean;

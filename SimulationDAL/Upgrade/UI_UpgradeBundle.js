@@ -60,12 +60,12 @@ function UpgradeV1_x(modelTxt) {
                 if (event.hasOwnProperty('evtType')) {
                     delete event.evtType;
                 }
-                if (event.hasOwnProperty('shape')) {
-                    delete event.shape;
-                }
-                if (event.hasOwnProperty('scale')) {
-                    delete event.scale;
-                }
+                // if (event.hasOwnProperty('shape')) {
+                //   delete event.shape;
+                // }
+                // if (event.hasOwnProperty('scale')) {
+                //   delete event.scale;
+                // }
                 if (event.hasOwnProperty('ndMean')) {
                     event.mean = event.ndMean;
                     delete event.ndMean;
@@ -469,46 +469,23 @@ function UpgradeV3_0(modelTxt) {
     newModel.emraldVersion = 3.0;
     newModel.version = 1.0; //set user version for first use of this property
     const retModel = { newModel: JSON.stringify(newModel), errors: [] };
-    // //to validate the new version against the schema
-    // const schemaPath = './src/utils/Upgrades/v3_0/EMRALD_JsonSchemaV3_0.json';
-    // // const schemaTxt = fs.readFileSync(schemaPath, 'utf-8').trim();    
-    // fetch(schemaPath)
-    //     .then(response => {
-    //         if (!response.ok) {
-    //             throw new Error("Failed to fetch schema text");
-    //         }
-    //         return response.text();
-    //     })
-    //     .then(schemaTxt => {
-    //         const schema = JSON.parse(schemaTxt);
-    //         const validator = new Validator();
-    //         const validationResult = validator.validate(newModel, schema);
-    //         if (validationResult.valid === false) {
-    //             validationResult.errors.forEach(error => {
-    //                 retModel.errors.push(error.instance + " - " + error.message + " : " + JSON.stringify(error.argument))
-    //             });
-    //         }
-    //     })
-    //     .catch(error => {
-    //         // handle error
-    //         // console.error(error);
-    //     });
     return retModel;
 }
 
-//import { v4 as uuidv4 } from 'uuid';
-// interface UpgradeResult {
-//     newModel: string;
-//     errors: string;
-// }
+import Ajv from "ajv"
+//const Ajv = require('ajv');
 class Upgrade {
     constructor(modelTxt) {
+        this._emraldVersion = 0.0;
         this._oldModelTxt = modelTxt;
-        const modelObj = JSON.parse(modelTxt);
-        //using emraldVersion for now
-        this._emraldVersion = ('schemaVerson' in modelObj) ? modelObj.emraldVersion : null;
-        if (this._emraldVersion == null) //if no emraldVersion use old version tag.
-            this._emraldVersion = ('verson' in modelObj) ? modelObj.version : 0.0;
+        let modelObj = null;
+        if (modelTxt != "") {
+            modelObj = JSON.parse(modelTxt);
+            //using emraldVersion for now
+            this._emraldVersion = ('schemaVerson' in modelObj) ? modelObj.emraldVersion : null;
+            if (this._emraldVersion == null) //if no emraldVersion use old version tag.
+                this._emraldVersion = ('verson' in modelObj) ? modelObj.version : 0.0;
+        }
         this._newModelTxt = "";
         this._newModel = undefined;
         this._emraldVersion = 0.0;
@@ -562,6 +539,34 @@ class Upgrade {
         return JSON.stringify(this._newModel);
     }
     get errorsStr() {
+        return this._errors;
+    }
+    // 
+    async validateModel(model) {
+        this._errors = [];
+        const schemaPath = './src/utils/Upgrades/v3_0/EMRALD_JsonSchemaV3_0.json';
+        try {
+            const response = await fetch(schemaPath);
+            if (!response.ok) {
+                throw new Error("Failed to fetch schema text");
+            }
+            const schemaTxt = await response.text();
+            // Create a new instance of Ajv
+            const ajv = new Ajv();
+            // Compile the JSON schema
+            const schema = JSON.parse(schemaTxt);
+            const validate = ajv.compile(schema);
+            // Validate the data against the schema
+            const isValid = validate(model);
+            if (!isValid) {
+                validate.errors?.forEach(e => {
+                    this._errors.push(`${e.message} - ${e.schemaPath}`);
+                });
+            }
+        }
+        catch (error) {
+            this._errors = error.message;
+        }
         return this._errors;
     }
 }

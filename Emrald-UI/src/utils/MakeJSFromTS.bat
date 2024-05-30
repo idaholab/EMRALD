@@ -11,4 +11,4 @@ rem Delete existing files in the target directory
 del /q "%target_directory%\*"
 
 rem Compile TypeScript files and continue even if there's an error
-tsc --target es2020 --outDir "%target_directory%" ExportForCSharp.ts >nul
+npx tsc --target es2020 --outDir "%target_directory%" ExportForCSharp.ts >nul

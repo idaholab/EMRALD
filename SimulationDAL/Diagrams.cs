@@ -310,7 +310,7 @@ namespace SimulationDAL
       if (_States.ContainsKey(stateID))
       {
         //return true for value of 1, and false for 0 or -1;
-        return (this._States[stateID].dfltStateValue == 1 ? true : false);
+        return (this._States[stateID].dfltStateValue == 0 ? true : false);
       }
       else
         return false;

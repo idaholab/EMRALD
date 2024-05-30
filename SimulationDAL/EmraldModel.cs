@@ -153,7 +153,7 @@ namespace SimulationDAL
         try
         {
           string upgraded = UpgradeModel.UpgradeJSON(jsonModel);
-          jsonObj = JsonConvert.DeserializeObject(jsonModel);
+          jsonObj = JsonConvert.DeserializeObject(upgraded);
         }
         catch (Exception ex)
         {
