@@ -26,7 +26,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
 
 const StateTable = () => {
-  const { accrualStatesData, setAccrualStatesData } = useVariableFormContext();
+  const { accrualStatesData, setAccrualStatesData, setValue } = useVariableFormContext();
   const [accrualMults, setAccrualMults] = useState<number[]>([]);
   const [multRates, setMultRates] = useState<string[]>([]);
   const [types, setTypes] = useState<string[]>([]);
@@ -60,6 +60,10 @@ const StateTable = () => {
       setAccrualTables(newAccrualTables);
     }
   }, [accrualStatesData, accrualTables]);
+
+  useEffect(() => {
+    setValue(0);
+  }, []);
 
   const handleStaticAccrualMultChange = (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,

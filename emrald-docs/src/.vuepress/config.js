@@ -72,7 +72,14 @@ module.exports = {
             'Modeling/solver',
             'Modeling/xmppProtocol',
             'Modeling/backendInfo',   
-            'Modeling/cmdLineOptions'
+            'Modeling/cmdLineOptions',
+          ]
+        },
+        {
+          title: 'Schema',
+          collapsable: false,
+          children: [
+            'Modeling/schema-md/emrald_jsonschemav3_0'
           ]
         }
       ],
