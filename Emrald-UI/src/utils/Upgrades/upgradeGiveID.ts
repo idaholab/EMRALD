@@ -3,7 +3,6 @@ import { UpgradeV1_x } from "./v1_x/UpgradeV1_x"
 import { UpgradeV2_4 } from "./v2_4/UpgradeV2_4"
 import { UpgradeV3_0 } from "./v3_0/UpgradeV3_0"
 import { UpgradeReturn } from "./v1_x/UpgradeV1_x"
-import Ajv, {JSONSchemaType} from "ajv"
 
 
 export class Upgrade
@@ -32,12 +31,12 @@ export class Upgrade
         this._newModelTxt = "";
         this._newModel = undefined;
         this._emraldVersion = 0.0;
-        this._errors = "";
+        this._errors = [];
     }
 
 
 
-    upgradeGiveID(toVersion: number, setIdFunction?: () => void): boolean {
+    upgradeGiveID(toVersion: number, setIdFunction?: () => string): boolean {
         const badModel = "Invalid EMRALD model format ";
         this._newModelTxt = this._oldModelTxt;
     
@@ -55,7 +54,7 @@ export class Upgrade
                 this._newModelTxt = upgraded.newModel;
                 this._newModel = JSON.parse(upgraded.newModel);
                 if (upgraded.errors.length > 0) {
-                  this._errors = `${badModel}v${upgrade.emraldVersion} - ${upgraded.errors}`;
+                  this._errors.push( `${badModel}v${upgrade.emraldVersion} - ${upgraded.errors}`);
                     return false;
                 }
               this._emraldVersion = upgrade.emraldVersion;
@@ -95,43 +94,5 @@ export class Upgrade
         return this._errors;
     }
 
-    // 
     
-    async validateModel(model: EMRALD_Model): Promise<string[]> {
-        this._errors = [];
-        const schemaPath = './src/utils/Upgrades/v3_0/EMRALD_JsonSchemaV3_0.json';
-    
-        try {
-            const response = await fetch(schemaPath);
-            if (!response.ok) {
-                throw new Error("Failed to fetch schema text");
-            }
-            
-            const schemaTxt = await response.text();
-            
-            // Create a new instance of Ajv
-            const ajv = new Ajv();
-
-            // Compile the JSON schema
-            const schema = JSON.parse(schemaTxt);
-            const validate = ajv.compile(schema);
-
-            
-            // Validate the data against the schema
-            const isValid = validate(model);
-
-            if (!isValid) {
-                validate.errors?.forEach(e=>{
-                    this._errors.push(`${e.message} - ${e.schemaPath}`);
-                }) 
-                    
-                
-            } 
-
-        } catch (error) {
-            this._errors = error.message;
-        }
-    
-        return this._errors;
-    }
 }
