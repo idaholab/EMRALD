@@ -1,18 +1,21 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { EMRALD_Model } from '../../../types/EMRALD_Model';
+// Material UI Components
 import {
   Box,
   Button,
+  Checkbox,
   Collapse,
+  Divider,
   FormControl,
   FormControlLabel,
-  Icon,
+  IconButton,
   List,
-  ListItem,
   ListItemButton,
   ListItemIcon,
   ListItemText,
-  ListSubheader,
+  Menu,
+  MenuItem,
   Radio,
   RadioGroup,
   Table,
@@ -23,393 +26,105 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import { TextFieldComponent } from '../../common';
+import { DialogComponent, TextFieldComponent } from '../../common';
+// Icons
 import { FaLock } from 'react-icons/fa6';
 import { FaLockOpen } from 'react-icons/fa6';
-
-import { MainItemTypes } from '../../../types/ItemTypes';
-import { State } from '../../../types/State';
-import { Event } from '../../../types/Event';
-import { Action } from '../../../types/Action';
-import { Diagram } from '../../../types/Diagram';
-import { LogicNode } from '../../../types/LogicNode';
-import { Variable } from '../../../types/Variable';
-import { ExtSim } from '../../../types/ExtSim';
-import { updateModelAndReferences, updateSpecifiedModel } from '../../../utils/UpdateModel';
-import { appData, updateAppData } from '../../../hooks/useAppData';
-import { GetItemByNameType } from '../../../utils/ModelReferences';
-import { v4 as uuidv4 } from 'uuid';
-import { useWindowContext } from '../../../contexts/WindowContext';
-import { useAssembledData } from '../../../hooks/useAssembledData';
-
-import { StarBorder } from '@mui/icons-material';
-
 import FolderIcon from '@mui/icons-material/Folder';
 import FolderOpenIcon from '@mui/icons-material/FolderOpen';
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
+// Hook
+import { Group, useTemplateForm } from './useTemplateForm';
 
 interface TemplateDiagramFormProps {
   templatedData: EMRALD_Model;
 }
 
-interface TemplatedItem {
-  type: MainItemTypes;
-  displayType: string;
-  locked: boolean;
-  oldName: string;
-  action: string;
-  newName: string;
-  exclude: boolean;
-  requiredInImportingModel: boolean;
-  emraldItem: Action | Diagram | LogicNode | ExtSim | Event | State | Variable;
-}
-
-type Group = {
-  id: string;
-  name: string;
-  children?: Group[];
-};
-
-type GroupsState = Group[];
-
 const TemplateForm: React.FC<TemplateDiagramFormProps> = ({ templatedData }) => {
-  const [findValue, setFindValue] = useState<string>('');
-  const [replaceValue, setReplaceValue] = useState<string>('');
-  const [templatedItems, setTemplatedItems] = useState<TemplatedItem[]>([]);
-  const [templateName, setTemplateName] = useState<string>('');
-  const [templateDesc, setTemplateDesc] = useState<string>('');
-  const [selectedGroup, setSelectedGroup] = useState<string>('');
-  const [groups, setGroups] = useState<GroupsState>( [
-    {
-      id: uuidv4(),
-      name: "Group 1",
-      children: [
-        {
-          id: uuidv4(),
-          name: "Subgroup 1.1",
-          children: [
-            { id: uuidv4(), name: "Item 1.1.1", children: [
-              { id: uuidv4(), name: "Item 1.1.1.1", children: [
-                { id: uuidv4(), name: "Item 1.1.1.1.1", children: [
-                  { id: uuidv4(), name: "Item 1.1.1.1.1.1" },
-                ]},
-              ]},
-            ] },
-            { id: uuidv4(), name: "Item 1.1.2" },
-          ],
-        }
-      ],
-    },
-    {
-      id: uuidv4(),
-      name: "Group 2",
-      children: [
-        {
-          id: uuidv4(),
-          name: "Subgroup 2.1",
-          children: [
-            { id: uuidv4(), name: "Item 2.1.1" },
-            { id: uuidv4(), name: "Item 2.1.2" },
-          ],
-        }
-      ],
-    },
-  ]);
-  const { handleClose } = useWindowContext();
-  const { refreshWithNewData } = useAssembledData();
+  const {
+    findValue,
+    replaceValue,
+    templatedItems,
+    templateName,
+    templateDesc,
+    anchorEl,
+    showGroupDialog,
+    groupType,
+    newGroupName,
+    selectedGroup,
+    currentGroup,
+    groups,
+    expanded,
+    duplicateNameError,
+    setFindValue,
+    setReplaceValue,
+    setTemplateName,
+    setTemplateDesc,
+    setNewGroupName,
+    setShowGroupDialog,
+    setCurrentGroup,
+    setSelectedGroup,
+    handleShowGroupDialog,
+    handleMenuClose,
+    handleContextMenu,
+    handleNewNameChange,
+    handleLockChange,
+    lockAll,
+    unlockAll,
+    updateAllUnlocked,
+    handleActionChange,
+    handleExcludeChange,
+    handleRequiredChange,
+    handleClose,
+    handleApply,
+    handleSave,
+    addNewGroup,
+    deleteGroup,
+    toggleExpand,
+    handleNewGroupNameChange
+  } = useTemplateForm(templatedData);
 
-  const [open, setOpen] = React.useState(true);
-
-  const handleClick = () => {
-    setOpen(!open);
-  };
-
-  const [expanded, setExpanded] = useState(["Group 1"]);
-
-  const toggleExpand = (id: string) => {
-    setExpanded((prevExpanded) => {
-      const isExpanded = prevExpanded.includes(id);
-      if (isExpanded) {
-        return prevExpanded.filter((item) => item !== id);
-      } else {
-        return [...prevExpanded, id];
-      }
-    });
-  };
-  
-
-  // const addGroup = (name: string): void => {
-  //   setGroups((prevGroups) => [...prevGroups, { name }]);
-  // };
-
-  // const addSubgroup = (parentGroupIndex: number, name: string): void => {
-  //   setGroups((prevGroups) => {
-  //     const updatedGroups = [...prevGroups];
-  //     const parentGroup = updatedGroups[parentGroupIndex];
-  //     if (parentGroup) {
-  //       parentGroup.subGroups = parentGroup.subGroups || [];
-  //       parentGroup.subGroups.push({ name });
-  //     }
-  //     return updatedGroups;
-  //   });
-  // };
-
-  const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({});
-
-  const handleClickGroup = (groupName: string) => {
-    setOpenGroups((prevOpenGroups) => ({
-      ...prevOpenGroups,
-      [groupName]: !prevOpenGroups[groupName],
-    }));
-  };
-
-  const convertModelToArray = (model: EMRALD_Model): TemplatedItem[] => {
-    const items: TemplatedItem[] = [];
-
-    for (const diagram of model.DiagramList) {
-      items.push({
-        type: MainItemTypes.Diagram,
-        displayType: 'Diagram',
-        locked: false,
-        oldName: diagram.name,
-        newName: diagram.name,
-        action: 'rename',
-        exclude: false,
-        requiredInImportingModel: false,
-        emraldItem: diagram,
-      });
-    }
-
-    for (const logicNode of model.LogicNodeList) {
-      items.push({
-        type: MainItemTypes.LogicNode,
-        displayType: 'Logic Node',
-        locked: false,
-        oldName: logicNode.name,
-        newName: logicNode.name,
-        action: 'rename',
-        exclude: false,
-        requiredInImportingModel: false,
-        emraldItem: logicNode,
-      });
-    }
-
-    for (const extSim of model.ExtSimList) {
-      items.push({
-        type: MainItemTypes.ExtSim,
-        displayType: 'External Sim',
-        locked: false,
-        oldName: extSim.name,
-        newName: extSim.name,
-        action: 'rename',
-        exclude: false,
-        requiredInImportingModel: false,
-        emraldItem: extSim,
-      });
-    }
-
-    for (const action of model.ActionList) {
-      items.push({
-        type: MainItemTypes.Action,
-        displayType: 'Action',
-        locked: false,
-        oldName: action.name,
-        newName: action.name,
-        action: 'rename',
-        exclude: false,
-        requiredInImportingModel: false,
-        emraldItem: action,
-      });
-    }
-
-    for (const event of model.EventList) {
-      items.push({
-        type: MainItemTypes.Event,
-        displayType: 'Event',
-        locked: false,
-        oldName: event.name,
-        newName: event.name,
-        action: 'rename',
-        exclude: false,
-        requiredInImportingModel: false,
-        emraldItem: event,
-      });
-    }
-
-    for (const state of model.StateList) {
-      items.push({
-        type: MainItemTypes.State,
-        displayType: 'State',
-        locked: false,
-        oldName: state.name,
-        newName: state.name,
-        action: 'rename',
-        exclude: false,
-        requiredInImportingModel: false,
-        emraldItem: state,
-      });
-    }
-
-    for (const variable of model.VariableList) {
-      items.push({
-        type: MainItemTypes.Variable,
-        displayType: 'Variable',
-        locked: false,
-        oldName: variable.name,
-        newName: variable.name,
-        action: 'rename',
-        exclude: false,
-        requiredInImportingModel: false,
-        emraldItem: variable,
-      });
-    }
-
-    return items;
-  };
-
-  useEffect(() => {
-    setTemplatedItems(convertModelToArray(templatedData));
-  }, [templatedData]);
-
-  const handleNewNameChange = (index: number, newName: string) => {
-    const updatedItems = [...templatedItems];
-    updatedItems[index].newName = newName;
-    // const hasConflict = checkForConflicts(newName, updatedItems[index].type);
-    // updatedItems[index].conflict = hasConflict;
-    setTemplatedItems(updatedItems);
-  };
-
-  const handleLockChange = (index: number, locked: boolean) => {
-    const updatedItems = [...templatedItems];
-    updatedItems[index].locked = locked;
-    setTemplatedItems(updatedItems);
-  };
-
-  const lockAll = () => {
-    const updatedItems = templatedItems.map((item) => {
-      return { ...item, locked: true };
-    });
-    setTemplatedItems(updatedItems);
-  };
-
-  const unlockAll = () => {
-    const updatedItems = templatedItems.map((item) => {
-      return { ...item, locked: false };
-    });
-    setTemplatedItems(updatedItems);
-  };
-
-  const updateAllUnlocked = (action: string) => {
-    const updatedItems = templatedItems.map((item) => {
-      if (!item.locked) {
-        if (item.type === MainItemTypes.State && templatedData.DiagramList.length > 0) {
-          return { ...item, action: 'rename' };
-        }
-        return {
-          ...item,
-          action: action,
-          // conflict: action !== 'rename' ? false : checkForConflicts(item.newName, item.type),
-        };
-      }
-      return item;
-    });
-    setTemplatedItems(updatedItems);
-  };
-
-  const handleActionChange = (index: number, action: string) => {
-    const updatedItems = [...templatedItems];
-    updatedItems[index].action = action;
-    if (action !== 'rename') {
-      if (
-        updatedItems[index].type === MainItemTypes.State &&
-        templatedData.DiagramList.length > 0
-      ) {
-        updatedItems[index].action = 'rename';
-      }
-      // updatedItems[index].conflict = false;
-    } else {
-      // updatedItems[index].conflict = checkForConflicts(updatedItems[index].newName.replace(findValue, replaceValue), updatedItems[index].type);
-    }
-    setTemplatedItems(updatedItems);
-  };
-
-  const handleApply = () => {
-    const updatedItems = templatedItems.map((item) => {
-      if (item.newName.includes(findValue)) {
-        return {
-          ...item,
-          newName: item.newName.replace(findValue, replaceValue),
-          // conflict: checkForConflicts(item.newName.replace(findValue, replaceValue), item.type),
-        };
-      }
-      return item;
-    });
-
-    setTemplatedItems(updatedItems);
-  };
-
-  const handleSave = async () => {
-    // Go through all of the renamed items and update the pasted model
-    let updatedModel: EMRALD_Model = { ...appData.value };
-    for (let i = 0; i < templatedItems.length; i++) {
-      const item = templatedItems[i];
-      if (item.action === 'rename') {
-        item.emraldItem.name = item.newName;
-        updateSpecifiedModel(item.emraldItem, item.type, templatedData, false);
-        item.emraldItem.id = uuidv4();
-        updatedModel = await updateModelAndReferences(item.emraldItem, item.type);
-        updateAppData(updatedModel);
-      }
-
-      if (item.action === 'replace') {
-        let currentEmraldItem = GetItemByNameType(item.oldName, item.type);
-        item.emraldItem.id = currentEmraldItem?.id;
-        updatedModel = await updateModelAndReferences(item.emraldItem, item.type);
-        updateAppData(updatedModel);
-      }
-    }
-
-    // Make it so the lists are refreshed with the new data
-    refreshWithNewData(updatedModel);
-    handleClose();
-  };
-
-const renderListItems = (data: Group[], level: number = 1) => {
-  return data.map((item) => (
-    <React.Fragment key={item.id}>
-      <ListItemButton onClick={() => {toggleExpand(item.name); setSelectedGroup(item.name)}} sx={{ backgroundColor: item.name === selectedGroup ? 'lightgreen' : 'white'}}>
-        <ListItemIcon>
-          {expanded.includes(item.name) && item.children && item.children.length > 0 ? <FolderOpenIcon /> : <FolderIcon />}
-        </ListItemIcon>
-        <ListItemText primary={item.name} />
-        {
-          item.children && item.children.length > 0 && (
-            <>{expanded.includes(item.name) ? <ExpandLess /> : <ExpandMore />}</>
-          )
-        }
-      </ListItemButton>
-
-      {item.children && item.children.length > 0 && (
-        <Collapse
-          in={expanded.includes(item.name)}
-          timeout="auto"
-          unmountOnExit
+  const renderListItems = (data: Group[], level: number = 1) => {
+    return data.map((item) => (
+      <React.Fragment key={item.name}>
+        <ListItemButton
+          onClick={() => {
+            toggleExpand(item.name);
+            setSelectedGroup(item.name);
+          }}
+          onContextMenu={(e) => handleContextMenu(e, item)}
+          sx={{ backgroundColor: item.name === selectedGroup ? 'lightgreen' : 'white' }}
         >
-          <List
-            component="div"
-            disablePadding
-            sx={{
-              pl: 3
-            }}
-          >
-            {renderListItems(item.children, level + 1)}
-          </List>
-        </Collapse>
-      )}
-    </React.Fragment>
-  ));
-};
+          <ListItemIcon>
+            {expanded.includes(item.name) && item.subgroup && item.subgroup.length > 0 ? (
+              <FolderOpenIcon />
+            ) : (
+              <FolderIcon />
+            )}
+          </ListItemIcon>
+          <ListItemText primary={item.name} />
+          {item.subgroup && item.subgroup.length > 0 && (
+            <>{expanded.includes(item.name) ? <ExpandLess /> : <ExpandMore />}</>
+          )}
+        </ListItemButton>
+
+        {item.subgroup && item.subgroup.length > 0 && (
+          <Collapse in={expanded.includes(item.name)} timeout="auto" unmountOnExit>
+            <List
+              component="div"
+              disablePadding
+              sx={{
+                pl: 3,
+              }}
+            >
+              {renderListItems(item.subgroup, level + 1)}
+            </List>
+          </Collapse>
+        )}
+      </React.Fragment>
+    ));
+  };
 
   return (
     <Box mx={3}>
@@ -420,9 +135,26 @@ const renderListItems = (data: Group[], level: number = 1) => {
 
         <TextFieldComponent label="Name" value={templateName} setValue={setTemplateName} />
         <TextFieldComponent label="Description" value={templateDesc} setValue={setTemplateDesc} />
-        <Typography variant="subtitle1" mt={2}>
-          Assign this template to group: <span style={{ fontWeight: 'bold' }}>{selectedGroup}</span>
-        </Typography>
+        <Box display={'flex'} alignItems={'center'} justifyContent={'space-between'} mt={3}>
+          <Typography variant="subtitle1">
+            {groups.length > 0 ? (
+              <span>
+                Assign this template to group:{' '}
+                <span style={{ fontWeight: 'bold' }}>{selectedGroup}</span>
+              </span>
+            ) : (
+              'Create a new group to assign this template'
+            )}
+          </Typography>
+          <Button
+            variant="contained"
+            onClick={() => {
+              handleShowGroupDialog('main');
+            }}
+          >
+            Add Main Group
+          </Button>
+        </Box>
         <Box>
           <List
             sx={{ width: '100%', maxWidth: 500, bgcolor: 'background.paper' }}
@@ -433,6 +165,7 @@ const renderListItems = (data: Group[], level: number = 1) => {
           </List>
         </Box>
       </Box>
+      <Divider sx={{ mt: 3 }} />
       <Box display={'flex'} alignItems={'center'}>
         <TextFieldComponent label="Find" value={findValue} setValue={setFindValue} sx={{ mr: 4 }} />
         <TextFieldComponent
@@ -468,22 +201,13 @@ const renderListItems = (data: Group[], level: number = 1) => {
 
       <Box display={'flex'} alignItems={'center'}>
         <Box mt={2} mr={2}>
-          <Button color="secondary" variant="contained" onClick={() => updateAllUnlocked('ignore')}>
-            Ignore Unlocked
-          </Button>
-        </Box>
-        <Box mt={2} mr={2}>
-          <Button
-            variant="contained"
-            color="secondary"
-            onClick={() => updateAllUnlocked('replace')}
-          >
-            Replace Unlocked
+          <Button color="secondary" variant="contained" onClick={() => updateAllUnlocked('keep')}>
+            Keep All
           </Button>
         </Box>
         <Box mt={2}>
           <Button variant="contained" color="secondary" onClick={() => updateAllUnlocked('rename')}>
-            Rename Unlocked
+            Rename All
           </Button>
         </Box>
       </Box>
@@ -501,41 +225,70 @@ const renderListItems = (data: Group[], level: number = 1) => {
               <TableCell align="left">
                 <b>Old Name</b>
               </TableCell>
-              <TableCell align="center" sx={{ width: '30%' }}>
+              <TableCell align="center" sx={{ width: '25%' }}>
                 <b>Action</b>
               </TableCell>
-              <TableCell align="left" sx={{ width: '30%' }}>
+              <TableCell align="left" sx={{ width: '20%' }}>
                 <b>New Name</b>
               </TableCell>
-              {/* <TableCell align="left">
-                <b>Conflict</b>
-              </TableCell> */}
+              <TableCell align="center">
+                <b>Exclude</b>
+              </TableCell>
+              <TableCell align="center">
+                <b>Required</b>
+              </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {templatedItems.map((row, index) => (
-              <TableRow key={index} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+              <TableRow
+                key={index}
+                sx={{
+                  '&:last-child td, &:last-child th': { border: 0 },
+                  position: 'relative',
+                  ...(row.requiredInImportingModel && (row.type === 'State' || row.type === 'Diagram') && {
+                    backgroundColor: '#f5f5f5',
+                  }),
+                  ...(row.exclude && {
+                    '&::after': {
+                      content: '""',
+                      position: 'absolute',
+                      top: '50%',
+                      backgroundColor: '#000',
+                      left: 0,
+                      right: 0,
+                      height: '1px',
+                      width: '80%',
+                      textDecoration: 'line-through',
+                    },
+                  }),
+                }}
+              >
                 <TableCell component="th" scope="row">
-                  {row.type}
+                  <Typography>{row.type}</Typography>
                 </TableCell>
                 <TableCell align="center">
                   {row.locked ? (
-                    <Icon
-                      style={{ color: '#1b8f55' }}
+                    <IconButton
+                      sx={{ color: '#1b8f55' }}
+                      disabled={row.exclude}
                       onClick={() => handleLockChange(index, false)}
                     >
                       <FaLock />
-                    </Icon>
+                    </IconButton>
                   ) : (
-                    <Icon
-                      style={{ color: '#d32c38' }}
+                    <IconButton
+                      sx={{ color: '#d32c38' }}
+                      disabled={row.exclude}
                       onClick={() => handleLockChange(index, true)}
                     >
                       <FaLockOpen />
-                    </Icon>
+                    </IconButton>
                   )}
                 </TableCell>
-                <TableCell align="left">{row.oldName}</TableCell>
+                <TableCell align="left">
+                  <Typography>{row.oldName}</Typography>
+                </TableCell>
                 <TableCell align="center">
                   <FormControl>
                     <RadioGroup
@@ -551,6 +304,7 @@ const renderListItems = (data: Group[], level: number = 1) => {
                           <Radio
                             disabled={
                               row.locked ||
+                              row.exclude ||
                               (row.type === 'State' && templatedData.DiagramList.length > 0)
                             }
                           />
@@ -559,7 +313,7 @@ const renderListItems = (data: Group[], level: number = 1) => {
                       />
                       <FormControlLabel
                         value="rename"
-                        control={<Radio disabled={row.locked} />}
+                        control={<Radio disabled={row.locked || row.exclude} />}
                         label="Rename"
                       />
                     </RadioGroup>
@@ -568,29 +322,105 @@ const renderListItems = (data: Group[], level: number = 1) => {
                 <TableCell align="left">
                   <TextField
                     value={row.action === 'rename' ? row.newName : ''}
-                    disabled={row.locked || row.action !== 'rename'}
+                    disabled={row.locked || row.action !== 'rename' || row.exclude}
                     onChange={(e) => handleNewNameChange(index, e.target.value)}
                     size="small"
                   />
                 </TableCell>
-                {/* <TableCell align="left">
-                  <Typography fontSize={14} color={row.conflict ? '#d32c38' : '#1b8f55'}>
-                    {row.conflict ? 'CONFLICTS' : 'NO CONFLICT'}
-                  </Typography>
-                </TableCell> */}
+                <TableCell align="center">
+                  {row.type !== 'Diagram' ? (
+                    <Checkbox
+                      checked={row.exclude}
+                      disabled={row.requiredInImportingModel}
+                      onChange={(e) => handleExcludeChange(index, e.target.checked)}
+                    />
+                  ) : (
+                    <></>
+                  )}
+                </TableCell>
+                <TableCell align="center">
+                  <Box
+                    sx={{
+                      position: 'relative',
+                      ...(row.exclude && {
+                        '&::after': {
+                          content: '""',
+                          position: 'absolute',
+                          top: '50%',
+                          backgroundColor: '#000',
+                          left: 0,
+                          right: 0,
+                          height: '1px',
+                          width: '80%',
+                          textDecoration: 'line-through',
+                        },
+                      }),
+                    }}
+                  >
+                    <Checkbox
+                      disabled={row.exclude || row.type === 'State' || row.type === 'Diagram'}
+                      checked={row.requiredInImportingModel}
+                      onChange={(e) => handleRequiredChange(index, e.target.checked)}
+                    />
+                  </Box>
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>
         </Table>
       </Box>
       <Box mt={3} textAlign={'right'}>
-        <Button variant="contained" sx={{ mr: 2 }} onClick={handleSave}>
+        <Button variant="contained" sx={{ mr: 2 }} disabled={!templateName || !templateDesc} onClick={handleSave}>
           Save Changes
         </Button>
         <Button variant="contained" color="secondary" onClick={() => handleClose()}>
           Cancel
         </Button>
       </Box>
+      <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleMenuClose}>
+        <MenuItem onClick={() => handleShowGroupDialog('sub')}>Add Sub Group</MenuItem>
+        <Divider />
+        <MenuItem onClick={() => handleShowGroupDialog('delete')}>Delete Group</MenuItem>
+      </Menu>
+      {showGroupDialog && (
+        <DialogComponent
+          open={true}
+          title={
+            groupType === 'sub'
+              ? 'Add Sub Group'
+              : groupType === 'main'
+              ? 'Add Main Group'
+              : 'Delete Group'
+          }
+          submitText={groupType === 'delete' ? 'Delete' : 'Save'}
+          disabled={duplicateNameError}
+          onSubmit={() => {
+            groupType === 'sub' || groupType === 'main' ? addNewGroup() : deleteGroup();
+          }}
+          onClose={() => {
+            setShowGroupDialog(false);
+            setCurrentGroup(undefined);
+            setNewGroupName('');
+          }}
+        >
+          {groupType === 'main' || groupType === 'sub' ? (
+            <TextField
+              label="New Group Name"
+              size='small'
+              value={newGroupName}
+              onChange={(e) => handleNewGroupNameChange(e.target.value)}
+              sx={{ width: 500, mt: 2 }}
+              error={duplicateNameError}
+              helperText={duplicateNameError ? 'A group with this name already exists' : ''}
+            />
+          ) : (
+            <Typography>
+              Are you sure you want to delete the group <b>{currentGroup?.name}</b>? All items under
+              this group will be deleted also.
+            </Typography>
+          )}
+        </DialogComponent>
+      )}
     </Box>
   );
 };

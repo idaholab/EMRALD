@@ -78,12 +78,12 @@ const ImportForm: React.FC<ImportDiagramFormProps> = ({ importedData }) => {
       items.push({
         type: MainItemTypes.Diagram,
         displayType: 'Diagram',
-        locked: !checkForConflicts(diagram.name, MainItemTypes.Diagram),
+        locked: false,
         oldName: diagram.name,
         newName: diagram.name,
         action: 'rename',
         conflict: diagramList.value.some(item => item.name === diagram.name),
-        emraldItem: structuredClone(diagram),
+        emraldItem: diagram,
       });
     }
 
@@ -91,12 +91,12 @@ const ImportForm: React.FC<ImportDiagramFormProps> = ({ importedData }) => {
       items.push({
         type: MainItemTypes.LogicNode,
         displayType: 'Logic Node',
-        locked: !checkForConflicts(logicNode.name, MainItemTypes.LogicNode),
+        locked: false,
         oldName: logicNode.name,
         newName: logicNode.name,
         action: 'rename',
         conflict: logicNodeList.value.some(item => item.name === logicNode.name),
-        emraldItem: structuredClone(logicNode),
+        emraldItem: logicNode,
       });
     }
 
@@ -104,12 +104,12 @@ const ImportForm: React.FC<ImportDiagramFormProps> = ({ importedData }) => {
       items.push({
         type: MainItemTypes.ExtSim,
         displayType: 'External Sim',
-        locked: !checkForConflicts(extSim.name, MainItemTypes.ExtSim),
+        locked: false,
         oldName: extSim.name,
         newName: extSim.name,
         action: 'rename',
         conflict: extSimList.value.some(item => item.name === extSim.name),
-        emraldItem: structuredClone(extSim),
+        emraldItem: extSim,
       });
     }
 
@@ -117,12 +117,12 @@ const ImportForm: React.FC<ImportDiagramFormProps> = ({ importedData }) => {
       items.push({
         type: MainItemTypes.Action,
         displayType: 'Action',
-        locked: !checkForConflicts(action.name, MainItemTypes.Action),
+        locked: false,
         oldName: action.name,
         newName: action.name,
         action: 'rename',
         conflict: actionsList.value.some(item => item.name === action.name),
-        emraldItem: structuredClone(action),
+        emraldItem: action,
       });
     }
 
@@ -130,12 +130,12 @@ const ImportForm: React.FC<ImportDiagramFormProps> = ({ importedData }) => {
       items.push({
         type: MainItemTypes.Event,
         displayType: 'Event',
-        locked: !checkForConflicts(event.name, MainItemTypes.Event),
+        locked: false,
         oldName: event.name,
         newName: event.name,
         action: 'rename',
         conflict: eventsList.value.some(item => item.name === event.name),
-        emraldItem: structuredClone(event),
+        emraldItem: event,
       });
     }
 
@@ -143,12 +143,12 @@ const ImportForm: React.FC<ImportDiagramFormProps> = ({ importedData }) => {
       items.push({
         type: MainItemTypes.State,
         displayType: 'State',
-        locked: !checkForConflicts(state.name, MainItemTypes.State),
+        locked: false,
         oldName: state.name,
         newName: state.name,
         action: 'rename',
         conflict: statesList.value.some(item => item.name === state.name),
-        emraldItem: structuredClone(state),
+        emraldItem: state,
       });
     }
 
@@ -156,12 +156,12 @@ const ImportForm: React.FC<ImportDiagramFormProps> = ({ importedData }) => {
       items.push({
         type: MainItemTypes.Variable,
         displayType: 'Variable',
-        locked: !checkForConflicts(variable.name, MainItemTypes.Variable),
+        locked: false,
         oldName: variable.name,
         newName: variable.name,
         action: 'rename',
         conflict: variableList.value.some(item => item.name === variable.name),
-        emraldItem: structuredClone(variable),
+        emraldItem: variable,
       });
     }
 
@@ -170,7 +170,7 @@ const ImportForm: React.FC<ImportDiagramFormProps> = ({ importedData }) => {
 
   useEffect(() => {
     setImportedItems(convertModelToArray(importedData));
-  }, []);
+  }, [importedData]);
 
   useEffect(() => {
     const hasConflicts = importedItems.some((item) => item.conflict);
@@ -301,7 +301,12 @@ const ImportForm: React.FC<ImportDiagramFormProps> = ({ importedData }) => {
   return (
     <Box mx={3}>
       <Box display={'flex'} alignItems={'center'}>
-        <TextFieldComponent label="Find" value={findValue} setValue={setFindValue} sx={{ mr: 4 }} />
+        <TextFieldComponent
+          label="Find"
+          value={findValue}
+          setValue={setFindValue}
+          sx={{ mr: 4 }}
+        />
         <TextFieldComponent
           label="Replace With"
           value={replaceValue}
@@ -335,7 +340,11 @@ const ImportForm: React.FC<ImportDiagramFormProps> = ({ importedData }) => {
 
       <Box display={'flex'} alignItems={'center'}>
         <Box mt={2} mr={2}>
-          <Button color="secondary" variant="contained" onClick={() => updateAllUnlocked('ignore')}>
+          <Button
+            color="secondary"
+            variant="contained"
+            onClick={() => updateAllUnlocked('ignore')}
+          >
             Ignore Unlocked
           </Button>
         </Box>
@@ -349,20 +358,17 @@ const ImportForm: React.FC<ImportDiagramFormProps> = ({ importedData }) => {
           </Button>
         </Box>
         <Box mt={2}>
-          <Button variant="contained" color="secondary" onClick={() => updateAllUnlocked('rename')}>
+          <Button
+            variant="contained"
+            color="secondary"
+            onClick={() => updateAllUnlocked('rename')}
+          >
             Rename Unlocked
           </Button>
         </Box>
       </Box>
-      {importedData.StateList.length > 0 && importedData.DiagramList.length > 0 ? (
-        <Typography variant="subtitle2" color="warning.main" sx={{ mt: 3 }}>
-          States cannot be used on multiple diagrams and must be renamed if conflicting.
-        </Typography>
-      ) : (
-        <></>
-      )}
 
-      <Box maxHeight={'400px'} overflow={'auto'}>
+      <Box mt={3} maxHeight={'400px'} overflow={'auto'}>
         <Table sx={{ minWidth: 650 }} size="small" stickyHeader>
           <TableHead>
             <TableRow>
@@ -388,7 +394,10 @@ const ImportForm: React.FC<ImportDiagramFormProps> = ({ importedData }) => {
           </TableHead>
           <TableBody>
             {importedItems.map((row, index) => (
-              <TableRow key={index} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+              <TableRow
+                key={index}
+                sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+              >
                 <TableCell component="th" scope="row">
                   {row.type}
                 </TableCell>
@@ -417,30 +426,18 @@ const ImportForm: React.FC<ImportDiagramFormProps> = ({ importedData }) => {
                       aria-labelledby="demo-row-radio-buttons-group-label"
                       name="row-radio-buttons-group"
                       value={row.action}
-                      onChange={(e) => handleActionChange(index, e.target.value)}
+                      onChange={(e) =>
+                        handleActionChange(index, e.target.value)
+                      }
                     >
                       <FormControlLabel
                         value="ignore"
-                        control={
-                          <Radio
-                            disabled={
-                              row.locked ||
-                              (row.type === 'State' && importedData.DiagramList.length > 0)
-                            }
-                          />
-                        }
+                        control={<Radio disabled={row.locked || (row.type === 'State' && importedData.DiagramList.length > 0)} />}
                         label="Ignore"
                       />
                       <FormControlLabel
                         value="replace"
-                        control={
-                          <Radio
-                            disabled={
-                              row.locked ||
-                              (row.type === 'State' && importedData.DiagramList.length > 0)
-                            }
-                          />
-                        }
+                        control={<Radio disabled={row.locked || (row.type === 'State' && importedData.DiagramList.length > 0)} />}
                         label="Replace"
                       />
                       <FormControlLabel

@@ -10,6 +10,7 @@ import EventContextProvider from './EventContext';
 import StateContextProvider from './StateContext';
 import VariableContextProvider from './VariableContext';
 import ExtSimContextProvider from './ExtSimContext';
+import TemplateContextProvider from './TemplateContext';
 
 export interface EmraldContextWrapperProps {
   children: React.ReactNode;
@@ -27,7 +28,9 @@ const EmraldContextWrapper: React.FC<EmraldContextWrapperProps> = ({ children })
                   <StateContextProvider>
                     <VariableContextProvider>
                       <ExtSimContextProvider>
-                        {children}
+                        <TemplateContextProvider>
+                          {children}
+                        </TemplateContextProvider>
                       </ExtSimContextProvider>
                     </VariableContextProvider>
                   </StateContextProvider>

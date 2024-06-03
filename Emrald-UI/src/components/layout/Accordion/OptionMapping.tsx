@@ -83,10 +83,10 @@ export const useOptionsMapping = () => {
       },
       { label: 'Make Template', action: (diagram: Diagram) => {
           const copiedModel = GetModelItemsReferencedBy(diagram.name, MainItemTypes.Diagram, true)
-          navigator.clipboard.writeText(JSON.stringify(copiedModel, null, 2));
           addWindow(
             `Create Template`,
             <TemplateForm templatedData={copiedModel} />,
+            { x: 75, y: 25, width: 1300, height: 700 },
           )
         }
       },

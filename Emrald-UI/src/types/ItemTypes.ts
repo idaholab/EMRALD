@@ -102,3 +102,8 @@ export enum MainItemTypes {
   * Type of accrual for the specified state.
   */
  export type AccrualVarTableType = "ctMultiplier" | "ctTable"
+
+ export type Group = {
+  name: string;
+  subgroup: Group[];
+};
