@@ -35,7 +35,9 @@ import FolderOpenIcon from '@mui/icons-material/FolderOpen';
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
 // Hook
-import { Group, useTemplateForm } from './useTemplateForm';
+import { useTemplateForm } from './useTemplateForm';
+// Types
+import { Group } from '../../../types/ItemTypes';
 
 interface TemplateDiagramFormProps {
   templatedData: EMRALD_Model;
