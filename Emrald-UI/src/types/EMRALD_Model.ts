@@ -6,7 +6,8 @@ import {ExtSim} from './ExtSim'
 import {Variable} from './Variable'
 import {State} from './State'
 import {LogicNode} from './LogicNode'
-import {ChangeLog} from './ChangeLog'
+import { ChangeLog } from './ChangeLog'
+import {Group} from './ItemTypes'
 
 
 export const EMRALD_SchemaVersion : number = 3.0;
@@ -65,8 +66,9 @@ export const EMRALD_SchemaVersion : number = 3.0;
    /**
     * Templates avaliable to make new diagrams in the model. These are basicly a small model all on there own.
     */
-   templates?: unknown[]
+   templates?: EMRALD_Model[]
    changeLog?: ChangeLog
+   group?: Group
  }
 
  export function CreateEmptyEMRALDModel(): EMRALD_Model {
