@@ -56,7 +56,7 @@ const TemplateForm: React.FC<TemplateDiagramFormProps> = ({ templatedData }) => 
     newGroupName,
     selectedGroup,
     currentGroup,
-    groups,
+    groupList,
     expanded,
     duplicateNameError,
     setFindValue,
@@ -139,7 +139,7 @@ const TemplateForm: React.FC<TemplateDiagramFormProps> = ({ templatedData }) => 
         <TextFieldComponent label="Description" value={templateDesc} setValue={setTemplateDesc} />
         <Box display={'flex'} alignItems={'center'} justifyContent={'space-between'} mt={3}>
           <Typography variant="subtitle1">
-            {groups.length > 0 ? (
+            {groupList.length > 0 ? (
               <span>
                 Assign this template to group:{' '}
                 <span style={{ fontWeight: 'bold' }}>{selectedGroup}</span>
@@ -163,7 +163,7 @@ const TemplateForm: React.FC<TemplateDiagramFormProps> = ({ templatedData }) => 
             component="nav"
             aria-labelledby="nested-list-subheader"
           >
-            {renderListItems(groups)}
+            {renderListItems(groupList)}
           </List>
         </Box>
       </Box>
