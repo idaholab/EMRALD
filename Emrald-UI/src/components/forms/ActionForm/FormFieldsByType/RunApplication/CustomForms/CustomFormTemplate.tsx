@@ -12,12 +12,7 @@ const CustomFormTemplate: React.FC = () => {
   const {
     formData,
     isValid,
-    diagrams,
-    logicNodes,
     variables,
-    states,
-    events,
-    actions,
     setFormData,
     ReturnPreCode,
     ReturnPostCode,

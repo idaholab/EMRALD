@@ -21,7 +21,6 @@ export function useAssembledData() {
     version,
     updateName,
     updateDescription,
-    updateEmraldVersion,
     updateVersion,
   } = useModelDetailsContext();
   const { diagrams, clearDiagramList, newDiagramList, mergeDiagramList } =
@@ -30,7 +29,6 @@ export function useAssembledData() {
     logicNodes,
     clearLogicNodeList,
     newLogicNodeList,
-    mergeLogicNodeList,
   } = useLogicNodeContext();
   const { actions, clearActionList, newActionList } = useActionContext();
   const { events, clearEventList, newEventList } = useEventContext();

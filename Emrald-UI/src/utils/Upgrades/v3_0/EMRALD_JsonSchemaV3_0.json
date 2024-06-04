@@ -1,5 +1,6 @@
 ﻿{
     "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "EMRALD_Model",
     "type": "object",
     "title": "EMRALD_Model",
     "description": "EMRALD model schema version 3.0",
@@ -103,6 +104,7 @@
     "definitions": {
         "Diagram": {
             "type": "object",
+            "title": "Diagram",
             "properties": {
                 "id": {
                     "type": "string",
@@ -129,6 +131,7 @@
                 },
                 "states": {
                     "type": "array",
+                    "title": "states",
                     "description": "Names of the states used in this diagram",
                     "items": {
                         "type": "string"
@@ -149,6 +152,7 @@
         },
         "ExtSim": {
             "type": "object",
+            "title": "ExtSim",
             "properties": {
                 "id": {
                     "type": "string",
@@ -171,6 +175,7 @@
         },
         "State": {
             "type": "object",
+            "title": "State",
             "properties": {
                 "id": {
                     "type": "string"
@@ -192,6 +197,7 @@
                 },
                 "immediateActions": {
                     "type": "array",
+                    "title": "immediateActions",
                     "description": "Array of name references for the immediate actions to be run when entering the state",
                     "items": {
                         "type": "string"
@@ -199,6 +205,7 @@
                 },
                 "events": {
                     "type": "array",
+                    "title": "events",
                     "description": "Array of name references to events. These event will be monitored for when in this state.",
                     "items": {
                         "type": "string"
@@ -206,12 +213,15 @@
                 },
                 "eventActions": {
                     "type": "array",
+                    "title": "eventActions",
                     "description": "actions for the events in sibling \"events\" array. One to one relationship.",
                     "items": {
                         "type": "object",
+                        "title": "items",
                         "properties": {
                             "actions": {
                                 "type": "array",
+                                "title": "actions",
                                 "description": "array of referenace names for actions of the associated event.",
                                 "items": {
                                     "type": "string"
@@ -251,6 +261,7 @@
         },
         "Action": {
             "type": "object",
+            "title": "Action",
             "properties": {
                 "id": {
                     "type": "string",
@@ -277,6 +288,7 @@
                 },
                 "newStates": {
                     "type": "array",
+                    "title": "newStates",
                     "description": "Optional. If this is a transition action then these are the states that it could be transitioned to.",
                     "items": {
                         "$ref": "#/definitions/NewState"
@@ -292,6 +304,7 @@
                 },
                 "codeVariables": {
                     "type": "array",
+                    "title": "codeVariables",
                     "description": "Optional. If action has a script, these are the variable name references for variables used in the script. All variables used in script must be in this list.",
                     "items": {
                         "type": "string"
@@ -342,11 +355,12 @@
                 },
                 "template": {
                     "type": "object",
+                    "title": "template",
                     "description": "Optional. For action type atRunExtApp. It is used for custom app form."
                 },
                 "returnProcess": {
                     "type": "string",
-                    "description": "Optional. For action type atRunExtApp. It is flag to indicate the type of return from the processOutputFileCode. If rtNone then it has no return, othrwise the C# script must return a List<string> with +/-[StateName] to shift out or into a state."
+                    "description": "Optional. For action type atRunExtApp. It is flag to indicate the type of return from the processOutputFileCode. If rtNone then it has no return, othrwise the C# script must return a List<string/> with +/-[StateName] to shift out or into a state."
                 },
                 "changeLog": {
                     "$ref": "#/definitions/ChangeLog"
@@ -357,6 +371,7 @@
                 },
                 "updateVariables": {
                     "type": "array",
+                    "title": "updateVariables",
                     "description": "Used for custom form, variables used in the form."
                 }
             },
@@ -370,6 +385,7 @@
         },
         "Event": {
             "type": "object",
+            "title": "Event",
             "properties": {
                 "id": {
                     "type": "string",
@@ -396,6 +412,7 @@
                 },
                 "triggerStates": {
                     "type": "array",
+                    "title": "triggerStates",
                     "description": "Optional. For event type etStateCng. List of state name references as part of the criteria needed to trigger the event. These are the states that need to be entered or exited to tirgger the event.",
                     "items": {
                         "type": "string"
@@ -403,6 +420,7 @@
                 },
                 "varNames": {
                     "type": "array",
+                    "title": "varNames",
                     "description": "Optional, Name references for all variables used in scripts if the event type uses scripts.",
                     "items": {
                         "type": "string"
@@ -473,49 +491,10 @@
                 },
                 "parameters": {
                     "type": "array",
+                    "title": "parameters",
                     "description": "Optional. For event type of etDistribution this is an array of properties for the distribution calculation.",
                     "items": {
-                        "type": "object",
-                        "properties": {
-                            "name": {
-                                "type": "string",
-                                "description": "For event type of etDistribution this is the name of the distribution parameter.",
-                                "enum": [
-                                    "Mean",
-                                    "Standard Deviation",
-                                    "Minimum",
-                                    "Maximum",
-                                    "Rate",
-                                    "Shape",
-                                    "Scale",
-                                    "Peak",
-                                    "Alpha",
-                                    "Beta"
-                                ]
-                            },
-                            "value": {
-                                "description": "Optional. The value of the parameter if the useVariable flag is false. Can be a number or a string if in scientific notation.",
-                                "anyOf": [
-                                    {
-                                        "type": "number"
-                                    },
-                                    {
-                                        "type": "string"
-                                    }
-                                ]
-                            },
-                            "timeRate": {
-                                "$ref": "#/definitions/TimeVariableUnit"
-                            },
-                            "useVariable": {
-                                "type": "boolean",
-                                "description": "Flag to use the variable string vs the value item for the property"
-                            },
-                            "variable": {
-                                "type": "string",
-                                "description": "Optional. The reference name of the variable to use as the value of the parameter if the useVariable flag is true."
-                            }
-                        },
+                        "$ref": "#/definitions/EventDistributionParameter",
                         "additionalProperties": false,
                         "required": []
                     }
@@ -537,6 +516,7 @@
         },
         "NewState": {
             "type": "object",
+            "title": "NewState",
             "properties": {
                 "toState": {
                     "type": "string",
@@ -567,6 +547,7 @@
         },
         "LogicNode": {
             "type": "object",
+            "title": "LogicNode",
             "properties": {
                 "id": {
                     "type": "string",
@@ -588,6 +569,7 @@
                 },
                 "gateChildren": {
                     "type": "array",
+                    "title": "gateChildren",
                     "description": "Array of logic node names that are children of this gate.",
                     "items": {
                         "type": "string"
@@ -613,6 +595,7 @@
         },
         "Variable": {
             "type": "object",
+            "title": "Variable",
             "properties": {
                 "id": {
                     "type": "string",
@@ -663,9 +646,11 @@
                 },
                 "accrualStatesData": {
                     "type": "array",
+                    "title": "accrualStatesData",
                     "description": "Optional. If the variable varScope is gtAccrual, then these are the states used for calculating the variables value over time.",
                     "items": {
                         "type": "object",
+                        "title": "items",
                         "properties": {
                             "stateName": {
                                 "type": "string",
@@ -684,9 +669,11 @@
                             },
                             "accrualTable": {
                                 "type": "array",
+                                "title": "accrualTable",
                                 "description": "Optional. If the type is ctTable then this is the array of values used in calculating this states contribution to the variable value. Example for the first hour the accrual multiplier is 0.5, for the second hour the accrual multiplier is 0.1",
                                 "items": {
                                     "type": "array",
+                                    "title": "items",
                                     "description": "Each row has the rate the time specified. First value is rate, second value is time.",
                                     "items": {
                                         "type": "integer",
@@ -755,9 +742,11 @@
         },
         "ChangeLog": {
             "type": "array",
+            "title": "ChangeLog",
             "description": "Type of the diagram.",
             "items": {
                 "type": "object",
+                "title": "items",
                 "properties": {
                     "cngDesc": {
                         "type": "string",
@@ -780,6 +769,7 @@
         },
         "GeometryInfo": {
             "type": "object",
+            "title": "GeometryInfo",
             "description": "position for the GUI",
             "properties": {
                 "x": {
@@ -798,15 +788,19 @@
         },
         "CompChild": {
             "type": "array",
+            "title": "CompChild",
             "description": "Array of component diagram names and state values to use in evaluating if not using the default value.",
             "items": {
                 "type": "object",
+                "title": "items",
                 "properties": {
                     "stateValues": {
                         "type": "array",
+                        "title": "stateValues",
                         "description": "Evaluate value if not the states default.",
                         "items": {
                             "type": "object",
+                            "title": "items",
                             "properties": {
                                 "stateName": {
                                     "type": "string",
@@ -895,6 +889,38 @@
                 "etDistribution",
                 "etVarCond"
             ]
+        },
+        "EventDistributionParameter": {
+            "type": "object",
+            "title": "EventDistributionParameter",
+            "properties": {
+                "name": {
+                    "$ref": "#/definitions/EventDistributionParameterName"
+               
+                },
+                "value": {
+                    "description": "Optional. The value of the parameter if the useVariable flag is false. Can be a number or a string if in scientific notation.",
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "string"
+                        }
+                    ]
+                },
+                "timeRate": {
+                    "$ref": "#/definitions/TimeVariableUnit"
+                },
+                "useVariable": {
+                    "type": "boolean",
+                    "description": "Flag to use the variable string vs the value item for the property"
+                },
+                "variable": {
+                    "type": "string",
+                    "description": "Optional. The reference name of the variable to use as the value of the parameter if the useVariable flag is true."
+                }
+            }
         },
         "VarChangeOptions": {
             "type": "string",
@@ -994,6 +1020,22 @@
                 "True",
                 "False",
                 "Ignore"
+            ]
+        },
+        "EventDistributionParameterName" : {
+            "type": "string",
+            "description": "For event type of etDistribution this is the name of the distribution parameter.",
+            "enum": [
+                "Mean",
+                "Standard Deviation",
+                "Minimum",
+                "Maximum",
+                "Rate",
+                "Shape",
+                "Scale",
+                "Peak",
+                "Alpha",
+                "Beta"
             ]
         }
     }

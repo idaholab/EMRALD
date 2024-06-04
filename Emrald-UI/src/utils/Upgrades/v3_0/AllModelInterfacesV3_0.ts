@@ -75,6 +75,20 @@ export type DistributionType =
   | "dtUniform"
   | "dtBeta"
 /**
+ * For event type of etDistribution this is the name of the distribution parameter.
+ */
+export type EventDistributionParameterName =
+  | "Mean"
+  | "Standard Deviation"
+  | "Minimum"
+  | "Maximum"
+  | "Rate"
+  | "Shape"
+  | "Scale"
+  | "Peak"
+  | "Alpha"
+  | "Beta"
+/**
  * Gate type for the logic node
  */
 export type GateType = "gtAnd" | "gtOr" | "gtNot"
@@ -465,37 +479,26 @@ export interface Event {
   /**
    * Optional. For event type of etDistribution this is an array of properties for the distribution calculation.
    */
-  parameters?: {
-    /**
-     * For event type of etDistribution this is the name of the distribution parameter.
-     */
-    name?:
-    | "Mean"
-    | "Standard Deviation"
-    | "Minimum"
-    | "Maximum"
-    | "Rate"
-    | "Shape"
-    | "Scale"
-    | "Peak"
-    | "Alpha"
-    | "Beta"
-    /**
-     * Optional. The value of the parameter if the useVariable flag is false. Can be a number or a string if in scientific notation.
-     */
-    value?: number | string
-    timeRate?: TimeVariableUnit
-    /**
-     * Flag to use the variable string vs the value item for the property
-     */
-    useVariable?: boolean
-    /**
-     * Optional. The reference name of the variable to use as the value of the parameter if the useVariable flag is true.
-     */
-    variable?: string
-  }[]
+  parameters?: EventDistributionParameter[]
   dfltTimeRate?: TimeVariableUnit
   changeLog?: ChangeLog
+}
+export interface EventDistributionParameter {
+  name?: EventDistributionParameterName
+  /**
+   * Optional. The value of the parameter if the useVariable flag is false. Can be a number or a string if in scientific notation.
+   */
+  value?: number | string
+  timeRate?: TimeVariableUnit
+  /**
+   * Flag to use the variable string vs the value item for the property
+   */
+  useVariable?: boolean
+  /**
+   * Optional. The reference name of the variable to use as the value of the parameter if the useVariable flag is true.
+   */
+  variable?: string
+  [k: string]: unknown
 }
 export interface LogicNode {
   /**

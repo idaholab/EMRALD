@@ -1,4 +1,4 @@
-import { Connection, Handle, Position } from 'reactflow';
+import { Handle, Position } from 'reactflow';
 import './StateNode.scss';
 import { NodeTypeIcon } from './IconTypes';
 import StateControllerComponent from './StateDisplayControllers/StateControllerComponent';

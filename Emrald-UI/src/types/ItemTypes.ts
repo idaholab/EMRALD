@@ -107,3 +107,17 @@ export enum MainItemTypes {
   name: string;
   subgroup: Group[];
 };
+/**
+ * For event type of etDistribution this is the name of the distribution parameter.
+ */
+export type EventDistributionParameterName =
+  | "Mean"
+  | "Standard Deviation"
+  | "Minimum"
+  | "Maximum"
+  | "Rate"
+  | "Shape"
+  | "Scale"
+  | "Peak"
+  | "Alpha"
+  | "Beta"

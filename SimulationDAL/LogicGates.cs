@@ -203,24 +203,22 @@ namespace SimulationDAL
       if (dynObj.compChildren != null)
       {
         _compChildren.Clear();
-        foreach (var stateName in dynObj.compChildren)
+        foreach (var child in dynObj.compChildren)
         {
           var compChild = new compChild();
-          EvalDiagram curChildComp = (EvalDiagram)lists.allDiagrams.FindByName((string)stateName);
+          EvalDiagram curChildComp = (EvalDiagram)lists.allDiagrams.FindByName((string)child.diagramName);
           if (curChildComp == null)
           {
-            throw new Exception("Deserialize Logic gate Failed to find child state - " + stateName);
+            throw new Exception("Deserialize Logic gate Failed to find child state - " + child);
           }
           compChild.diagram = curChildComp;
 
-          if (dynObj.compChildren.stateValues != null)
+          if (child.stateValues != null)
           {
-            //var nameDict = dynObj.compChildren.stateValues.ToObject<Dictionary<string, int>>();
-            //string s = kvp.Key;
-            // lists.allStates.FindByName("name").id;
-            foreach (var item in dynObj.compChildren.stateValues)
+            foreach (var item in child.stateValues)
             {
-              compChild.stateValues.Add(lists.allStates.FindByName(item.stateName).id, item.stateValue);
+              State state = lists.allStates.FindByName(item.name);
+              compChild.stateValues.Add(state.id, item.stateValues);
             }
           }
           

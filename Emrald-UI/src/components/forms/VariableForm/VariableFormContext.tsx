@@ -7,6 +7,7 @@ import { Variable } from '../../../types/Variable';
 import { AccrualVarTableType, DocVarType, VariableType, VarScope } from '../../../types/ItemTypes';
 import { SelectChangeEvent } from '@mui/material';
 import { useSignal } from '@preact/signals-react';
+import { appData } from '../../../hooks/useAppData';
 
 export interface AccrualStateItem {
   stateName: string;
@@ -18,7 +19,7 @@ export interface AccrualStateItem {
 
 interface VariableFormContextType {
   accrualStatesData?: AccrualStateItem[];
-
+  hasError: boolean;
   name: string;
   namePrefix: string | undefined;
   desc: string;
@@ -53,6 +54,7 @@ interface VariableFormContextType {
   handleFloatValueChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleBoolValueChange: (e: SelectChangeEvent<string>) => void;
   handleStringValueChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  reset: () => void;
 }
 
 const VariableFormContext = createContext<VariableFormContextType | undefined>(undefined);
@@ -68,7 +70,7 @@ export const useVariableFormContext = (): VariableFormContextType => {
 const VariableFormContextProvider: React.FC<PropsWithChildren> = ({ children }) => {
   const [accrualStatesData, setAccrualStatesData] = useState<AccrualStateItem[]>();
   const { handleClose } = useWindowContext();
-  const [name, setName] = useState<string>('');
+  const [name, setName] = useState<string>('Int_');
   const [namePrefix, setNamePrefix] = useState<string>();
   const [desc, setDesc] = useState<string>('');
   const [type, setType] = useState<VariableType>('int');
@@ -80,7 +82,7 @@ const VariableFormContextProvider: React.FC<PropsWithChildren> = ({ children }) 
   const [docPath, setDocPath] = useState<string>();
   const [docLink, setDocLink] = useState<string>();
   const [pathMustExist, setPathMustExist] = useState<boolean | undefined>();
-
+  const [hasError, setHasError] = useState<boolean>(false);
   const variable = useSignal<Variable>(emptyVariable);
   const { updateVariable, createVariable } = useVariableContext();
 
@@ -136,12 +138,27 @@ const VariableFormContextProvider: React.FC<PropsWithChildren> = ({ children }) 
   };
 
   const handleNameChange = (updatedName: string) => {
+    const variables = appData.value.VariableList;
+    setHasError(variables.some((variable) => variable.name === updatedName));
     if (namePrefix) {
       const hasPrefix = updatedName.startsWith(namePrefix);
 
       // Set the name with the appropriate prefix
       setName(hasPrefix ? updatedName : `${namePrefix}${updatedName}`);
     }
+  };
+
+  const reset = () => {
+    setAccrualStatesData(undefined); // Reset to undefined
+    setVarScope('gtGlobal'); // Default value for varScope
+    setValue(''); // Default value for value
+    setSim3DId(undefined); // Reset to undefined
+    setResetOnRuns(undefined); // Reset to undefined
+    setDocType(undefined); // Reset to undefined
+    setDocPath(undefined); // Reset to undefined
+    setDocLink(undefined); // Reset to undefined
+    setPathMustExist(undefined); // Reset to undefined
+    setHasError(false); // Reset to undefined
   };
 
   const handleSave = (variableData?: Variable) => {
@@ -187,6 +204,7 @@ const VariableFormContextProvider: React.FC<PropsWithChildren> = ({ children }) 
     <VariableFormContext.Provider
       value={{
         accrualStatesData,
+        hasError,
         name,
         namePrefix,
         desc,
@@ -221,6 +239,7 @@ const VariableFormContextProvider: React.FC<PropsWithChildren> = ({ children }) 
         handleFloatValueChange,
         handleBoolValueChange,
         handleStringValueChange,
+        reset,
       }}
     >
       {children}

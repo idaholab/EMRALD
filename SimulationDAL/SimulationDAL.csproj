@@ -29,7 +29,7 @@
 
   <ItemGroup>
     <None Update="Upgrade\UI_UpgradeBundle.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
 

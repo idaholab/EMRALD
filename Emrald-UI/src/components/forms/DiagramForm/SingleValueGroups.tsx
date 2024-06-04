@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -16,8 +16,6 @@ interface SingleValueGroupsProps {
 }
 
 const SingleValueGroups: React.FC<SingleValueGroupsProps> = ({ states }) => {
-  // const { getDiagramByDiagramName } = useDiagramContext();
-  // const [stateValues, setStateValues] = useState<ComponentStateValue[]>([]);
 
   return (
     <TableContainer component={Paper}>

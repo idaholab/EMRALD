@@ -1,19 +1,12 @@
 //import schema from './EMRALD_JsonSchemaV3_0.json';
 //import { Validator } from 'jsonschema';
 import { UpgradeReturn } from '../v1_x/UpgradeV1_x'
-import { Event as EventV2_4 } from '../v2_4/AllModelInterfacesV2_4'
 import { EMRALD_Model as EMRALD_ModelV2_4 } from '../v2_4/AllModelInterfacesV2_4'
 import { DiagramType as DiagramTypeV2_4 } from '../v2_4/AllModelInterfacesV2_4'
 import { Diagram as DiagramV2_4 } from '../v2_4/AllModelInterfacesV2_4'
-import { LogicNode as LogicNodeV2_4 } from '../v2_4/AllModelInterfacesV2_4'
 
-import { Event } from './AllModelInterfacesV3_0'
 import { EMRALD_Model } from './AllModelInterfacesV3_0'
-import { EventType } from './AllModelInterfacesV3_0'
 import { DiagramType, GeometryInfo } from './AllModelInterfacesV3_0'
-import { LogicNode } from './AllModelInterfacesV3_0'
-import { State } from './AllModelInterfacesV3_0'
-import { Diagram } from './AllModelInterfacesV3_0'
 import { StateEvalValue } from './AllModelInterfacesV3_0'
 
 
@@ -26,16 +19,21 @@ export function UpgradeV3_0(modelTxt: string): UpgradeReturn {
     //remove the extra layer between all the lists so we dont have items like - "EventList" : { "Event": {...}, "Event": {...}}
     const newModel: EMRALD_Model = {
         ...oldModel,
+        id: oldModel.id !== undefined ? String(oldModel.id) : undefined,
         DiagramList: oldModel.DiagramList ? oldModel.DiagramList.map(({ Diagram }) => {
-            const { diagramList, forceMerge, singleStates, ...rest } = Diagram; //exclude diagramList, forceMerge, singleStates
+            const { diagramList, forceMerge, singleStates, id, ...rest } = Diagram; //exclude diagramList, forceMerge, singleStates
             return {
                 ...rest, // Spread the rest of the properties
+                id: id !== undefined ? String(id) : undefined,
                 diagramType: mapDiagramType(Diagram.diagramType) // Add the mapped diagramType
             };
         }) : [],
         ExtSimList: oldModel.ExtSimList ? oldModel.ExtSimList.map(({ ExtSim }) => {
-            const { modelRef, states, configData, simMaxTime, varScope, value, resetOnRuns, type, sim3DId, ...rest } = ExtSim; //exclude
-            return rest;
+            const { modelRef, states, configData, simMaxTime, varScope, value, resetOnRuns, type, sim3DId, id, ...rest } = ExtSim; //exclude
+            return {
+                ...rest,                
+                id: id !== undefined ? String(id) : undefined,
+            };
         }) : [],
         // StateList: oldModel.StateList ? oldModel.StateList.map(({ State }) => ({ ...State })) : [],
         StateList: oldModel.StateList ? oldModel.StateList.map(({ State }) => {
@@ -44,40 +42,44 @@ export function UpgradeV3_0(modelTxt: string): UpgradeReturn {
             .replace(/'/g, '"'); // Replace single quotes with double quotes
             const parsedGeometry = JSON.parse(correctedString);
             var geometryInfo: GeometryInfo = parsedGeometry;
-            const { geometry, ...rest } = State; //exclude geometry
+            const { geometry, id, ...rest } = State; //exclude geometry
             return {
-                ...rest,
+                ...rest,                
+                id: id !== undefined ? String(id) : undefined,
                 geometryInfo
             };
         }) : [],
         ActionList: oldModel.ActionList ? oldModel.ActionList.map(({ Action }) => {
-            const { itemId, moveFromCurrent, ...rest } = Action; //exclude itemId and move from current
+            const { itemId, moveFromCurrent, id, ...rest } = Action; //exclude itemId and move from current
             var mainItem : boolean = Action.mainItem ? Action.mainItem : false;
             return {
                 ...rest,
+                id: id !== undefined ? String(id) : undefined,
                 mainItem
             };
         }) : [],
         EventList: oldModel.EventList ? oldModel.EventList.map(({ Event }) => {
-            const {...rest } = Event;
+            const {id, ...rest } = Event;
             var ifInState : boolean | undefined = Event.ifInState != null ?
                 (typeof Event.ifInState === 'string' ? Event.ifInState.toUpperCase() === 'TRUE' : Event.ifInState) :
                 undefined;
             return {
-                ...rest,
+                ...rest,                
+                id: id !== undefined ? String(id) : undefined,
                 ifInState
             };
 
         }) : [],
         LogicNodeList: oldModel.LogicNodeList ? oldModel.LogicNodeList.map(({ LogicNode }) => ({
             ...LogicNode,
+            id: LogicNode.id !== undefined ? String(LogicNode.id) : undefined,
             isRoot: LogicNode.isRoot !== undefined ? (LogicNode.isRoot || ((LogicNode.rootName != undefined) && (LogicNode.rootName === LogicNode.name))) : 
-                                                     (LogicNode.rootName == undefined ? false : (LogicNode.rootName === LogicNode.name)),
+                (LogicNode.rootName == undefined ? false : (LogicNode.rootName === LogicNode.name)),
             compChildren: mapLogicNode(LogicNode.compChildren)
         })): [],
         VariableList: oldModel.VariableList ? oldModel.VariableList.map(({ Variable }) => {
             // Destructure Variable, excluding modelRef, states, configData, and simMaxTime
-            const { modelRef=null, states, configData, simMaxTime, $$hashKey, ...rest } = Variable;
+            const { modelRef=null, states, configData, simMaxTime, $$hashKey, id, ...rest } = Variable;
             
             var regExpLine : number | undefined = undefined;
             if (Variable.regExpLine !== undefined){
@@ -106,6 +108,7 @@ export function UpgradeV3_0(modelTxt: string): UpgradeReturn {
         
             return {
                 ...rest, // Spread the rest of the properties
+                id: id !== undefined ? String(id) : undefined,
                 accrualStatesData, // Include mapped accrualStatesData
                 regExpLine,
                 begPosition
