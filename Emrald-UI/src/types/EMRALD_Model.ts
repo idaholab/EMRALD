@@ -66,6 +66,8 @@ export const EMRALD_SchemaVersion : number = 3.0;
     * Templates avaliable to make new diagrams in the model. These are basicly a small model all on there own.
     */
    templates?: unknown[]
+
+   group?: any;
    changeLog?: ChangeLog
  }
 

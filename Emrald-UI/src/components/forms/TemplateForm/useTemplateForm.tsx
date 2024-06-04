@@ -25,7 +25,7 @@ interface TemplatedItem {
 }
 
 export const useTemplateForm = (templatedData: EMRALD_Model) => {
-  const {templatesList, createTemplate} = useTemplateContext();
+  const {groups, templatesList, createTemplate} = useTemplateContext();
   const [findValue, setFindValue] = useState<string>('');
   const [replaceValue, setReplaceValue] = useState<string>('');
   const [templatedItems, setTemplatedItems] = useState<TemplatedItem[]>([]);
@@ -38,7 +38,7 @@ export const useTemplateForm = (templatedData: EMRALD_Model) => {
   const [newGroupName, setNewGroupName] = useState<string>('');
   const [currentGroup, setCurrentGroup] = useState<Group>();
   const [duplicateNameError, setDuplicateNameError] = useState<boolean>(false);
-  const [groups, setGroups] = useState<Group[]>(localStorage.getItem('templateGroups') ? JSON.parse(localStorage.getItem('templateGroups') as string) : []);
+  const [groupList, setGroupList] = useState<Group[]>(groups ? groups : []);
   const { handleClose } = useWindowContext();
   const [expanded, setExpanded] = useState(['Group 1']);
 
@@ -149,8 +149,16 @@ export const useTemplateForm = (templatedData: EMRALD_Model) => {
   };
 
   /** Manage groups **/
+  // useEffect(() => {
+  //   console.log(groups);
+  //   console.log(groupList);
+  //   setGroupList((prevGroups) => {
+  //     return [...prevGroups, ...groups];
+  //   });
+  // }, [groups])
+
   const addNewGroup = () => {
-    setGroups((prevGroups) => {
+    setGroupList((prevGroups) => {
       const newGroup: Group = {
         name: newGroupName,
         subgroup: [],
@@ -171,7 +179,7 @@ export const useTemplateForm = (templatedData: EMRALD_Model) => {
   };
 
   const deleteGroup = () => {
-    setGroups((prevGroups) => {
+    setGroupList((prevGroups) => {
       const updatedGroups = prevGroups
       .map((group) => deleteItem(group, currentGroup?.name || ''))
       .filter((group) => group !== null);
@@ -201,7 +209,7 @@ export const useTemplateForm = (templatedData: EMRALD_Model) => {
   // Function to check for duplicate name
   const checkDuplicateName = (name: string) => {
     const trimmedName = name.trim();
-    if (trimmedName && groups.some((group) => group.name.trim() === trimmedName)) {
+    if (trimmedName && groupList.some((group) => group.name.trim() === trimmedName)) {
       setDuplicateNameError(true);
       return true;
     } else {
@@ -338,7 +346,7 @@ export const useTemplateForm = (templatedData: EMRALD_Model) => {
     groupType,
     newGroupName,
     currentGroup,
-    groups,
+    groupList,
     expanded,
     duplicateNameError,
     setFindValue,
@@ -352,7 +360,6 @@ export const useTemplateForm = (templatedData: EMRALD_Model) => {
     setGroupType,
     setNewGroupName,
     setCurrentGroup,
-    setGroups,
     setExpanded,
     handleShowGroupDialog,
     handleMenuClose,
