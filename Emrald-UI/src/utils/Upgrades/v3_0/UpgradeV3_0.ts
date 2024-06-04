@@ -19,6 +19,7 @@ export function UpgradeV3_0(modelTxt: string): UpgradeReturn {
     //remove the extra layer between all the lists so we dont have items like - "EventList" : { "Event": {...}, "Event": {...}}
     const newModel: EMRALD_Model = {
         ...oldModel,
+        id: oldModel.id !== undefined ? String(oldModel.id) : undefined,
         DiagramList: oldModel.DiagramList ? oldModel.DiagramList.map(({ Diagram }) => {
             const { diagramList, forceMerge, singleStates, id, ...rest } = Diagram; //exclude diagramList, forceMerge, singleStates
             return {
@@ -28,7 +29,7 @@ export function UpgradeV3_0(modelTxt: string): UpgradeReturn {
             };
         }) : [],
         ExtSimList: oldModel.ExtSimList ? oldModel.ExtSimList.map(({ ExtSim }) => {
-            const { modelRef, states, configData, simMaxTime, varScope, value, resetOnRuns, type, sim3DId, id ...rest } = ExtSim; //exclude
+            const { modelRef, states, configData, simMaxTime, varScope, value, resetOnRuns, type, sim3DId, id, ...rest } = ExtSim; //exclude
             return {
                 ...rest,                
                 id: id !== undefined ? String(id) : undefined,
@@ -73,7 +74,7 @@ export function UpgradeV3_0(modelTxt: string): UpgradeReturn {
             ...LogicNode,
             id: LogicNode.id !== undefined ? String(LogicNode.id) : undefined,
             isRoot: LogicNode.isRoot !== undefined ? (LogicNode.isRoot || ((LogicNode.rootName != undefined) && (LogicNode.rootName === LogicNode.name))) : 
-                                                     (LogicNode.rootName == undefined ? false : (LogicNode.rootName === LogicNode.name)),
+                (LogicNode.rootName == undefined ? false : (LogicNode.rootName === LogicNode.name)),
             compChildren: mapLogicNode(LogicNode.compChildren)
         })): [],
         VariableList: oldModel.VariableList ? oldModel.VariableList.map(({ Variable }) => {
