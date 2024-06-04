@@ -96,7 +96,7 @@ export type CompChild = {
    * Name of the diagram to be evaluated
    */
   diagramName: string
-}
+}[]
 /**
  * Context of use for the variable in the model.
  */
@@ -115,7 +115,7 @@ export type VariableType = "bool" | "double" | "int" | "string"
 export type AccrualVarTableType = "ctMultiplier" | "ctTable"
 
 /**
- * EMRALD model schema version 2.4
+ * EMRALD model schema version 3.0
  */
 export interface EMRALD_Model {
   /**
@@ -131,17 +131,13 @@ export interface EMRALD_Model {
    */
   desc: string
   /**
-   * Users version of the model
+   * Version of the EMRALD model schema
    */
   emraldVersion?: number
   /**
    * Version of the users model
    */
   version: number
-  /**
-   * EMRALD Scema Version
-   */
-  emraldVersion: number
   /**
    * All the diagrams for the model
    */
@@ -173,8 +169,9 @@ export interface EMRALD_Model {
   /**
    * Templates avaliable to make new diagrams in the model. These are basicly a small model all on there own.
    */
-  templates?: unknown[]
+  templates?: EMRALD_Model[]
   changeLog?: ChangeLog
+  group?: Group
 }
 export interface Diagram {
   /**
@@ -473,16 +470,16 @@ export interface Event {
      * For event type of etDistribution this is the name of the distribution parameter.
      */
     name?:
-      | "Mean"
-      | "Standard Deviation"
-      | "Minimum"
-      | "Maximum"
-      | "Rate"
-      | "Shape"
-      | "Scale"
-      | "Peak"
-      | "Alpha"
-      | "Beta"
+    | "Mean"
+    | "Standard Deviation"
+    | "Minimum"
+    | "Maximum"
+    | "Rate"
+    | "Shape"
+    | "Scale"
+    | "Peak"
+    | "Alpha"
+    | "Beta"
     /**
      * Optional. The value of the parameter if the useVariable flag is false. Can be a number or a string if in scientific notation.
      */
@@ -514,7 +511,7 @@ export interface LogicNode {
    */
   desc: string
   gateType: GateType
-  compChildren: CompChild[]
+  compChildren: CompChild
   /**
    * Array of logic node names that are children of this gate.
    */
@@ -616,4 +613,8 @@ export interface Variable {
    * Flag to indicate if the variable can be monitored in the solver. This removes it from the solver UI if false. Must be true if monitorInSim is true.
    */
   canMonitor?: boolean
+}
+export interface Group {
+  name: string
+  subgroup?: EMRALD_Model[]
 }
