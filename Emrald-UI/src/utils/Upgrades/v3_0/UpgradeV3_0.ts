@@ -1,19 +1,12 @@
 //import schema from './EMRALD_JsonSchemaV3_0.json';
 //import { Validator } from 'jsonschema';
 import { UpgradeReturn } from '../v1_x/UpgradeV1_x'
-import { Event as EventV2_4 } from '../v2_4/AllModelInterfacesV2_4'
 import { EMRALD_Model as EMRALD_ModelV2_4 } from '../v2_4/AllModelInterfacesV2_4'
 import { DiagramType as DiagramTypeV2_4 } from '../v2_4/AllModelInterfacesV2_4'
 import { Diagram as DiagramV2_4 } from '../v2_4/AllModelInterfacesV2_4'
-import { LogicNode as LogicNodeV2_4 } from '../v2_4/AllModelInterfacesV2_4'
 
-import { Event } from './AllModelInterfacesV3_0'
 import { EMRALD_Model } from './AllModelInterfacesV3_0'
-import { EventType } from './AllModelInterfacesV3_0'
 import { DiagramType, GeometryInfo } from './AllModelInterfacesV3_0'
-import { LogicNode } from './AllModelInterfacesV3_0'
-import { State } from './AllModelInterfacesV3_0'
-import { Diagram } from './AllModelInterfacesV3_0'
 import { StateEvalValue } from './AllModelInterfacesV3_0'
 
 

@@ -4,17 +4,13 @@ import {
   SpeedDial,
   SpeedDialIcon,
   SpeedDialAction,
-  Fab,
-  Button,
   SvgIcon,
 } from '@mui/material';
-import UndoIcon from '@mui/icons-material/Undo';
 import WindowComponent from '../Window/Window';
 import { Tb3DCubeSphere, TbSchema } from 'react-icons/tb';
 import { GrPerformance } from 'react-icons/gr';
 import { VscSymbolEvent } from 'react-icons/vsc';
 import { HiOutlineVariable } from 'react-icons/hi';
-import { MdOutlineLocationSearching } from 'react-icons/md';
 import { GiFamilyTree } from 'react-icons/gi';
 import { useWindowContext } from '../../../contexts/WindowContext';
 import DiagramForm from '../../forms/DiagramForm/DiagramForm';
@@ -22,7 +18,6 @@ import MinimizedWindows from '../Window/MinimizedWindows';
 import LogicNodeForm from '../../forms/LogicNodeForm/LogicNodeForm';
 import ActionForm from '../../forms/ActionForm/ActionForm';
 import EventForm from '../../forms/EventForm/EventForm';
-import StateForm from '../../forms/StateForm/StateForm';
 import VariableForm from '../../forms/VariableForm/VariableForm';
 import ActionFormContextProvider from '../../forms/ActionForm/ActionFormContext';
 import VariableFormContextProvider from '../../forms/VariableForm/VariableFormContext';
@@ -101,7 +96,7 @@ const MainCanvas: React.FC = () => {
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
-  const storedHistory = JSON.parse(sessionStorage.getItem('dataHistory') || '[]');
+  // const storedHistory = JSON.parse(sessionStorage.getItem('dataHistory') || '[]');
 
   const { addWindow } = useWindowContext();
 

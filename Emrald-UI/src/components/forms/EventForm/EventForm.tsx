@@ -1,6 +1,5 @@
 import React from 'react';
 import { useEffect } from 'react';
-import Button from '@mui/material/Button';
 
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
@@ -10,7 +9,7 @@ import { Event } from '../../../types/Event';
 import { MainItemTypes } from '../../../types/ItemTypes';
 
 import { useEventFormContext } from './EventFormContext';
-import { Alert, Checkbox, FormControlLabel } from '@mui/material';
+import { Checkbox, FormControlLabel } from '@mui/material';
 import { State } from '../../../types/State';
 
 interface EventFormProps {

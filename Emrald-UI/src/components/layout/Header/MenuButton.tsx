@@ -6,7 +6,6 @@ import Box from '@mui/material/Box';
 import { startCase } from 'lodash';
 import { MenuOption } from './menuOptions';
 import { useAssembledData } from '../../../hooks/useAssembledData';
-import { useAppData } from '../../../hooks/useAppData';
 
 interface MenuButtonProps {
   id: number;

@@ -43,6 +43,7 @@ const Timer = () => {
             }
             setValue={setTime}
             label="Time Span"
+            sx={{ mr: 2}}
           >
             {appData.value.VariableList.filter((item) => item.type !== 'bool').map(
               (variable, index) => (
@@ -56,6 +57,7 @@ const Timer = () => {
             value={timeVariableUnit || ''}
             setValue={setTimeVariableUnit}
             label="Time Variable Unit"
+            sx={{ minWidth: 200}}
           >
             <MenuItem value="trSeconds">Second</MenuItem>
             <MenuItem value="trMinutes">Minute</MenuItem>

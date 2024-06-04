@@ -8,7 +8,6 @@ import {
   TableBody,
   TableContainer,
   TextField,
-  Typography,
 } from '@mui/material';
 import { useEffect } from 'react';
 import { SelectComponent } from '../../../common';
