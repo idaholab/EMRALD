@@ -153,7 +153,7 @@ namespace SimulationDAL
         try
         {
           string upgraded = UpgradeModel.UpgradeJSON(jsonModel);
-          jsonObj = JsonConvert.DeserializeObject(jsonModel);
+          jsonObj = JsonConvert.DeserializeObject(upgraded);
         }
         catch (Exception ex)
         {
@@ -226,16 +226,12 @@ namespace SimulationDAL
       //Event addEv;
 
       //all items going to have active state and failed state
-      State standbyState = new State(compName + "_Standby", EnStateType.stStart, addComp);
-      State activeState = new State(compName + "_Active", EnStateType.stStandard, addComp);
-      State failedState = new State(compName + "_Failed", EnStateType.stStandard, addComp);
+      State standbyState = new State(compName + "_Standby", EnStateType.stStart, addComp, -1);
+      State activeState = new State(compName + "_Active", EnStateType.stStandard, addComp, 1);
+      State failedState = new State(compName + "_Failed", EnStateType.stStandard, addComp, 0);
       allStates.Add(standbyState);
       allStates.Add(activeState);
       allStates.Add(failedState);
-      //addComp.Add(standbyState.id, true);
-      addComp.AddEvalVal(activeState.id, true);
-      addComp.AddEvalVal(failedState.id, false);
-
 
       //add event for a demand 
       StateCngEvent demandEv;
@@ -337,8 +333,8 @@ namespace SimulationDAL
       //Event addEv;
 
       //all items going to have active state and failed state
-      State standbyState = new State(compName + "_Standby", EnStateType.stStart, addComp);
-      State activeState = new State(compName + "_Active", EnStateType.stStandard, addComp);
+      State standbyState = new State(compName + "_Standby", EnStateType.stStart, addComp, -1);
+      State activeState = new State(compName + "_Active", EnStateType.stStandard, addComp, 1);
       allStates.Add(standbyState);
       allStates.Add(activeState);
       List<State> failStates = new List<State>();
@@ -346,13 +342,11 @@ namespace SimulationDAL
       State failedState = null;
       if (!sepFailStates)
       {
-        failedState = new State(compName + "_Failed", EnStateType.stStandard, addComp);
+        failedState = new State(compName + "_Failed", EnStateType.stStandard, addComp, 0);
         allStates.Add(failedState);
-        addComp.AddEvalVal(failedState.id, false);
         failStates.Add(failedState);
       }
       
-      addComp.AddEvalVal(activeState.id, true);
 
       //add event for a demand 
       StateCngEvent DemandEv;
@@ -372,9 +366,8 @@ namespace SimulationDAL
         {
           if (sepFailStates)
           {
-            failedState = new State(compName + "_Failed" + demandNames[i], EnStateType.stStandard, addComp);
+            failedState = new State(compName + "_Failed" + demandNames[i], EnStateType.stStandard, addComp, 0);
             allStates.Add(failedState);
-            addComp.AddEvalVal(failedState.id, false);
             failStates.Add(failedState);
           }
 
@@ -428,9 +421,8 @@ namespace SimulationDAL
         {
           if (sepFailStates)
           {
-            failedState = new State(compName + "_Failed" + rateNames[i], EnStateType.stStandard, addComp);
+            failedState = new State(compName + "_Failed" + rateNames[i], EnStateType.stStandard, addComp, 0);
             allStates.Add(failedState);
-            addComp.AddEvalVal(failedState.id, false);
             failStates.Add(failedState);
           }
 
@@ -449,9 +441,8 @@ namespace SimulationDAL
         {
           if (sepFailStates)
           {
-            failedState = new State(compName + "_Failed_3D", EnStateType.stStandard, addComp);
+            failedState = new State(compName + "_Failed_3D", EnStateType.stStandard, addComp, 0);
             allStates.Add(failedState);
-            addComp.AddEvalVal(failedState.id, false);
             failStates.Add(failedState);
           }
 
@@ -500,8 +491,8 @@ namespace SimulationDAL
       //Event addEv;
 
       //all items going to have active state and failed state
-      State standbyState = new State(compName + "_Standby", EnStateType.stStandard, addComp);
-      State activeState = new State(compName + "_Active", EnStateType.stStandard, addComp);
+      State standbyState = new State(compName + "_Standby", EnStateType.stStandard, addComp, -1);
+      State activeState = new State(compName + "_Active", EnStateType.stStandard, addComp, 1);
       allStates.Add(standbyState);
       allStates.Add(activeState);
       List<State> failStates = new List<State>();
@@ -509,13 +500,10 @@ namespace SimulationDAL
       State failedState = null;
       if (!sepFailStates)
       {
-        failedState = new State(compName + "_Failed", EnStateType.stStandard, addComp);
+        failedState = new State(compName + "_Failed", EnStateType.stStandard, addComp, 0);
         allStates.Add(failedState);
-        addComp.AddEvalVal(failedState.id, false);
         failStates.Add(failedState);
       }
-
-      addComp.AddEvalVal(activeState.id, true);
 
       //add event for a demand 
       TransitionAct gotoDemandEv = new TransitionAct("Start_" + compName + "_Demand");
@@ -543,9 +531,8 @@ namespace SimulationDAL
         {
           if (sepFailStates)
           {
-            failedState = new State(compName + "_Failed" + demandNames[i], EnStateType.stStandard, addComp);
+            failedState = new State(compName + "_Failed" + demandNames[i], EnStateType.stStandard, addComp, 0);
             allStates.Add(failedState);
-            addComp.AddEvalVal(failedState.id, false);
             failStates.Add(failedState);
           }
 
@@ -605,9 +592,8 @@ namespace SimulationDAL
         {
           if (sepFailStates)
           {
-            failedState = new State(compName + "_Failed" + rateNames[i], EnStateType.stStandard, addComp);
+            failedState = new State(compName + "_Failed" + rateNames[i], EnStateType.stStandard, addComp, 0);
             allStates.Add(failedState);
-            addComp.AddEvalVal(failedState.id, false);
             failStates.Add(failedState);
           }
 
@@ -626,9 +612,8 @@ namespace SimulationDAL
         {
           if (sepFailStates)
           {
-            failedState = new State(compName + "_Failed_3D", EnStateType.stStandard, addComp);
+            failedState = new State(compName + "_Failed_3D", EnStateType.stStandard, addComp, 0);
             allStates.Add(failedState);
-            addComp.AddEvalVal(failedState.id, false);
             failStates.Add(failedState);
           }
 
@@ -672,17 +657,15 @@ namespace SimulationDAL
       //Event addEv;
 
       //all items going to have active state and failed state
-      State standbyState = new State(compName + "_Standby", EnStateType.stStart, addComp);
-      State activeState = new State(compName + "_Active", EnStateType.stStandard, addComp);
+      State standbyState = new State(compName + "_Standby", EnStateType.stStart, addComp, -1);
+      State activeState = new State(compName + "_Active", EnStateType.stStandard, addComp, 1);
       allStates.Add(standbyState);
       allStates.Add(activeState);
       List<State> failStates = new List<State>();
 
-      State failedState = new State(compName + "_Failed", EnStateType.stStandard, addComp);
+      State failedState = new State(compName + "_Failed", EnStateType.stStandard, addComp, 0);
       allStates.Add(failedState);
-      addComp.AddEvalVal(failedState.id, false);
       failStates.Add(failedState);
-      addComp.AddEvalVal(activeState.id, true);
 
       //add event for a demand 
       StateCngEvent demandEv;
@@ -712,13 +695,12 @@ namespace SimulationDAL
                               setToVals[i], typeof(double), null);
         allActions.Add(setVarVal);
 
-        State tempState = new State(compName + "_Temp" + demandNames[i], EnStateType.stStandard, addComp); //"Joint_3_Temp_SIL1"
+        State tempState = new State(compName + "_Temp" + demandNames[i], EnStateType.stStandard, addComp, 0); //"Joint_3_Temp_SIL1"
         allStates.Add(tempState);
         tempState.AddImmediateAction(setVarVal);
         //tempState.AddImmediateAction(toFailedAct);
         tempState.AddEvent(nowEv, true, toFailedAct);
 
-        addComp.AddEvalVal(tempState.id, false);
         failStates.Add(tempState);
 
         demandAct.AddToState(tempState, demandFailVars[i], demandNames[i]);
@@ -761,14 +743,11 @@ namespace SimulationDAL
       allDiagrams.Add(addComp);
 
       //all items going to have active state and failed state
-      State activeState = new State(sysName + "_Active", EnStateType.stStandard, addComp);
-      State failedState = new State(sysName + "_Failed", EnStateType.stStandard, addComp);
+      State activeState = new State(sysName + "_Active", EnStateType.stStandard, addComp, 1);
+      State failedState = new State(sysName + "_Failed", EnStateType.stStandard, addComp, 0);
       allStates.Add(activeState);
       allStates.Add(failedState);
-      addComp.AddEvalVal(activeState.id, true);
-      addComp.AddEvalVal(failedState.id, false);
-
-
+      
       //add event to move from active to failed using the logicTop 
       ComponentLogicEvent evalEvent = new ComponentLogicEvent(sysName + "_Eval", logicTop, false);
       allEvents.Add(evalEvent);
@@ -812,13 +791,10 @@ namespace SimulationDAL
       allDiagrams.Add(addComp);
 
       //all items going to have active state and failed state
-      State activeState = new State(sysName + "_Active", EnStateType.stStandard, addComp);
-      State failedState = new State(sysName + "_Failed", EnStateType.stStandard, addComp);
+      State activeState = new State(sysName + "_Active", EnStateType.stStandard, addComp, 1);
+      State failedState = new State(sysName + "_Failed", EnStateType.stStandard, addComp, 0);
       allStates.Add(activeState);
       allStates.Add(failedState);
-      addComp.AddEvalVal(activeState.id, true);
-      addComp.AddEvalVal(failedState.id, false);
-
 
       //add event to move from active to failed using the logicTop 
       ComponentLogicEvent evalEvent = new ComponentLogicEvent(sysName + "_Eval", logicTop, false);

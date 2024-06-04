@@ -1,26 +1,9 @@
-import { Action, ActionList } from './Action';
-import { Diagram, DiagramList } from './Diagram';
-import { Event, EventList } from './Event';
-import { LogicNode, LogicNodeList } from './LogicNode';
-import { State, StateList } from './State';
-import { Variable, VariableList } from './Variable';
-
-export interface appDataRaw {
-  id: number;
-  name: string;
-  desc: string;
-  emraldVersion: number;
-  version: number;
-  DiagramList: DiagramList;
-  StateList: StateList;
-  VariableList: VariableList;
-  ActionList: ActionList;
-  EventList: EventList;
-  LogicNodeList: LogicNodeList;
-  ExtSimList: []
-  // Add other item types and their properties as needed
-}
-
+import { Action} from './Action';
+import { Diagram } from './Diagram';
+import { Event } from './Event';
+import { LogicNode } from './LogicNode';
+import { State } from './State';
+import { Variable } from './Variable';
 
 export interface appData {
   id: number;

@@ -1,6 +1,6 @@
 // DropTargetComponent.tsx
 import { Box } from '@mui/material';
-import React, { PropsWithChildren, useState } from 'react';
+import React, { PropsWithChildren } from 'react';
 import { useDrop } from 'react-dnd';
 import { NodeType } from '../diagrams/LogicTreeDiagram/useLogicTreeDiagram';
 import { LogicNode } from '../../types/LogicNode';
@@ -29,7 +29,7 @@ const LogicTreeNodeDropTarget: React.FC<
 > = ({ type, nodeType, node, children }) => {
   const { logicNodes, createLogicNode, updateLogicNode, getLogicNodeByName } = useLogicNodeContext();
   const newGateNode = useSignal<LogicNode>(emptyLogicNode);
-  const [compDiagram, setCompDiagram] = useState<boolean>(false);
+  // const [compDiagram, setCompDiagram] = useState<boolean>(false);
 
   const resetNewNode = () => {
     newGateNode.value = emptyLogicNode;
@@ -40,8 +40,8 @@ const LogicTreeNodeDropTarget: React.FC<
     drop: (item: LogicNode | Diagram) => {
       // If the item is a diagram, add its name to the compChildren of the dropped node
       if (isDiagram(item as Diagram)) {
-        const { name, diagramType } = item as Diagram;
-        setCompDiagram(diagramType === 'dtSingle');
+        const { name } = item as Diagram;
+        // setCompDiagram(diagramType === 'dtSingle');
         if (!node) { return; }
         const logicNode = getLogicNodeByName(node); // Get the info of the logic node to be updated
         if (logicNode.compChildren.some((child) => child.diagramName === item.name)) {

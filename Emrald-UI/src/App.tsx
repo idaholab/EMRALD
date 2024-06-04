@@ -5,7 +5,6 @@ import Sidebar from './components/layout/Sidebar/Sidebar';
 import theme from './theme';
 import MainCanvas from './components/layout/MainCanvas/MainCanvas';
 import EmraldContextWrapper from './contexts/EmraldContextWrapper';
-import { useAppData } from './hooks/useAppData';
 import { useEffect, useState } from 'react';
 
 function ErrorBoundary({ children }: { children: React.ReactNode }) {
@@ -32,16 +31,15 @@ function ErrorBoundary({ children }: { children: React.ReactNode }) {
 }
 
 function App() {
-  const { appData, updateAppData } = useAppData();
   return (
     <ErrorBoundary>
       <ThemeProvider theme={theme}>
-        <EmraldContextWrapper appData={appData} updateAppData={updateAppData}>
+        <EmraldContextWrapper>
           <Box sx={{ display: 'flex', height: '100%' }}>
             <CssBaseline />
             <Header />
             <Sidebar />
-            <MainCanvas appData={appData} updateAppData={updateAppData}/>
+            <MainCanvas/>
           </Box>
         </EmraldContextWrapper>
       </ThemeProvider>

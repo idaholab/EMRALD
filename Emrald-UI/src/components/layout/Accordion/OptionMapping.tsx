@@ -27,6 +27,7 @@ import { useExtSimContext } from '../../../contexts/ExtSimContext';
 import { GetModelItemsReferencedBy } from '../../../utils/ModelReferences';
 import { MainItemTypes } from '../../../types/ItemTypes';
 import VariableFormContextProvider from '../../forms/VariableForm/VariableFormContext';
+import EventFormContextProvider from '../../forms/EventForm/EventFormContext';
 import TemplateForm from '../../forms/TemplateForm/TemplateForm';
 
 // Define your Option and OptionsMapping types
@@ -65,10 +66,7 @@ export const useOptionsMapping = () => {
       {
         label: 'Edit Properties',
         action: (diagram: Diagram) =>
-          addWindow(
-            `Edit Properties: ${diagram.name}`,
-            <DiagramForm diagramData={diagram} />,
-          ),
+          addWindow(`Edit Properties: ${diagram.name}`, <DiagramForm diagramData={diagram} />),
       },
       {
         label: 'Delete',
@@ -82,7 +80,7 @@ export const useOptionsMapping = () => {
         },
       },
       { label: 'Make Template', action: (diagram: Diagram) => {
-          const copiedModel = GetModelItemsReferencedBy(diagram.name, MainItemTypes.Diagram, true)
+          const copiedModel = GetModelItemsReferencedBy(diagram.name, MainItemTypes.Diagram, 1)
           addWindow(
             `Create Template`,
             <TemplateForm templatedData={copiedModel} />,
@@ -92,11 +90,11 @@ export const useOptionsMapping = () => {
       },
       { label: 'Export', action: () => null },
       { label: 'Copy', action: (diagram: Diagram) => {
-        const copiedModel = GetModelItemsReferencedBy(diagram.name, MainItemTypes.Diagram, false)
+        const copiedModel = GetModelItemsReferencedBy(diagram.name, MainItemTypes.Diagram, 1)
         navigator.clipboard.writeText(JSON.stringify(copiedModel, null, 2));
       } },
       { label: 'Copy Recursive', action: (diagram: Diagram) => {
-        const copiedModel = GetModelItemsReferencedBy(diagram.name, MainItemTypes.Diagram, true)
+        const copiedModel = GetModelItemsReferencedBy(diagram.name, MainItemTypes.Diagram, 2)
         navigator.clipboard.writeText(JSON.stringify(copiedModel, null, 2));
       } },
     ],
@@ -131,10 +129,7 @@ export const useOptionsMapping = () => {
       {
         label: 'Edit Properties',
         action: (extSim: ExtSim) =>
-          addWindow(
-            `Edit Properties: ${extSim.name}`,
-            <ExtSimForm ExtSimData={extSim} />,
-          ),
+          addWindow(`Edit Properties: ${extSim.name}`, <ExtSimForm ExtSimData={extSim} />),
       },
       {
         label: 'Delete',
@@ -162,7 +157,9 @@ export const useOptionsMapping = () => {
           console.log(event);
           addWindow(
             `Edit Properties: ${event.name}`,
-            <EventForm eventData={event} />,
+            <EventFormContextProvider>
+              <EventForm eventData={event} />
+            </EventFormContextProvider>,
           );
         },
       },
@@ -172,10 +169,7 @@ export const useOptionsMapping = () => {
       {
         label: 'Edit Properties',
         action: (state: State) =>
-          addWindow(
-            `Edit Properties: ${state.name}`,
-            <StateForm stateData={state} />,
-          ),
+          addWindow(`Edit Properties: ${state.name}`, <StateForm stateData={state} />),
       },
       { label: 'Delete', action: (state: State) => deleteState(state.id) },
     ],

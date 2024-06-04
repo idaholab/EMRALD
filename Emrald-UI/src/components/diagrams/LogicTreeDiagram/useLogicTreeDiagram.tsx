@@ -10,7 +10,7 @@ import { useDiagramContext } from '../../../contexts/DiagramContext';
 import { Option } from '../../layout/ContextMenu/ContextMenu';
 import LogicNodeForm from '../../forms/LogicNodeForm/LogicNodeForm';
 import { MainItemTypes } from '../../../types/ItemTypes';
-import { GetItemByNameType, GetJSONPathUsingRefs, GetModelItemsReferencedBy, GetModelItemsReferencing } from '../../../utils/ModelReferences';
+import { GetModelItemsReferencing } from '../../../utils/ModelReferences';
 
 export type NodeType = 'root' | 'gate' | 'comp';
 
@@ -320,7 +320,7 @@ const useLogicNodeTreeDiagram = () => {
     }
   };
 
-  const handleDescriptionBlur = useCallback((type: string, label: string, nodes: Node[]) => {
+  const handleDescriptionBlur = useCallback((type: string, label: string) => {
     setEditingDescription(false);
     
     if (type === 'gate' || type === 'root') {
@@ -346,7 +346,7 @@ const useLogicNodeTreeDiagram = () => {
     setEditedDescription('');
   }, [nodes, getLogicNodeByName, getDiagramByDiagramName, updateLogicNode, updateDiagram, editedDescription]);
 
-  const handleTitleBlur = useCallback((type: string, label: string, nodes: Node[]) => {
+  const handleTitleBlur = useCallback((type: string, label: string) => {
     setEditingTitle(false);
 
     if (type === 'gate' || type === 'root') {

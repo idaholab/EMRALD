@@ -20,10 +20,7 @@ interface StateControllerComponentProps {
   state: State;
 }
 
-const StateControllerComponent: React.FC<StateControllerComponentProps> = ({
-  type,
-  state
-}) => {
+const StateControllerComponent: React.FC<StateControllerComponentProps> = ({ type, state }) => {
   const [expandedPanel, setExpandedPanel] = React.useState<boolean>(true);
   const { updateStateEvents, updateStateImmediateActions } = useEmraldDiagram();
   const { menu, menuOptions, onActionsHeaderContextMenu, closeContextMenu } = useContextMenu();
@@ -43,21 +40,16 @@ const StateControllerComponent: React.FC<StateControllerComponentProps> = ({
           updateStateEvents={updateStateEvents}
           updateStateImmediateActions={updateStateImmediateActions}
         >
-          <DiagramAccordionSummary 
-            aria-controls={`action-summary-${state.name}-${type}`}
-            onContextMenu={(e) => onActionsHeaderContextMenu(e, type)}>
-            <Typography sx={{ fontSize: 11 }}>{`${capitalize(
-              type,
-            )} actions`}</Typography>
+          <DiagramAccordionSummary
+            aria-controls={`panel1a-content`}
+            onContextMenu={(e) => onActionsHeaderContextMenu(e, type, state)}
+          >
+            <Typography sx={{ fontSize: 11 }}>{`${capitalize(type)} actions`}</Typography>
           </DiagramAccordionSummary>
         </DropTargetComponent>
 
         <DiagramAccordionDetails sx={{ p: 0 }}>
-          {type === 'event' ? (
-            <EventActions state={state} />
-          ) : (
-            <ImmediateActions state={state} />
-          )}
+          {type === 'event' ? <EventActions state={state} /> : <ImmediateActions state={state} />}
         </DiagramAccordionDetails>
       </DiagramAccordion>
 

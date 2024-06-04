@@ -1,11 +1,22 @@
-import React from 'react'
+import CodeEditorWithVariables from '../../../common/CodeEditorWithVariables';
+import { useEventFormContext } from '../EventFormContext';
+import { appData } from '../../../../hooks/useAppData';
 
 const VarCondition = () => {
-  return (
-    <div>
-      VarCondition
-    </div>
-  )
-}
+  const { codeVariables, scriptCode, addToUsedVariables, setScriptCode } = useEventFormContext();
 
-export default VarCondition
+  return (
+    <>
+      <CodeEditorWithVariables
+        scriptCode={scriptCode || ''}
+        setScriptCode={setScriptCode}
+        variableList={appData.value.VariableList}
+        codeVariables={codeVariables || []}
+        addToUsedVariables={addToUsedVariables}
+        heading={<span>Evaluate Code (c#) - Must return a boolean value!</span>}
+      />
+    </>
+  );
+};
+
+export default VarCondition;

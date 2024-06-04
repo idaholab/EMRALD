@@ -1,14 +1,14 @@
 // DropTargetComponent.tsx
 import { Box } from '@mui/material';
-import React, { PropsWithChildren, useState } from 'react';
+import React, { PropsWithChildren } from 'react';
 import { useDrop } from 'react-dnd';
 import { Action } from '../../types/Action';
 import { Event } from '../../types/Event';
 
-interface DroppedItem {
-  id: string;
-  itemData: Event | Action;
-}
+// interface DroppedItem {
+//   id: string;
+//   itemData: Event | Action;
+// }
 
 interface DroppableItemProps {
   type: 'Action' | 'Event' | 'DRAGGABLE_ITEM';
@@ -22,7 +22,6 @@ interface DroppableItemProps {
 }
 
 const DropTargetComponent: React.FC<PropsWithChildren<DroppableItemProps>> = ({type, state, event, children, actionType, updateStateEvents, updateStateEventActions, updateStateImmediateActions}) => {
-  const [droppedItems, setDroppedItems] = useState<DroppedItem[]>([]);
 
   const [{ isOver }, drop] = useDrop({
     accept: type,

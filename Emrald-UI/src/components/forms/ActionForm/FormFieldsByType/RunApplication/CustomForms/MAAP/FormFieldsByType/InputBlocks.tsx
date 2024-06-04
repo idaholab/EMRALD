@@ -5,7 +5,6 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import React from 'react';
 import { useVariableContext } from '../../../../../../../../contexts/VariableContext';
 
 const InputBlocks = () => {

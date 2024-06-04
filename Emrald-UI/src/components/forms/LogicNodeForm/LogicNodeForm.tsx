@@ -10,7 +10,6 @@ import {
   useLogicNodeContext,
 } from '../../../contexts/LogicNodeContext';
 import { v4 as uuidv4 } from 'uuid';
-import MainDetailsForm from '../../forms/MainDetailsForm';
 import { CompChild, LogicNode } from '../../../types/LogicNode';
 import { GateType, StateEvalValue } from '../../../types/ItemTypes';
 import FormControl from '@mui/material/FormControl';

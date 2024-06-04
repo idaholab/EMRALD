@@ -65,7 +65,7 @@ const ImportForm: React.FC<ImportDiagramFormProps> = ({ importedData }) => {
   const { logicNodeList } = useLogicNodeContext();
   const { extSimList } = useExtSimContext();
   const { eventsList } = useEventContext();
-  const { statesList } = useStateContext();
+  const { statesList} = useStateContext();
   const { actionsList } = useActionContext();
   const { variableList } = useVariableContext();
   const { handleClose } = useWindowContext();

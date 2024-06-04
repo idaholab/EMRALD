@@ -1,7 +1,5 @@
 import { useEffect, useState } from 'react';
-import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
-import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import React from 'react';
 import { useWindowContext } from '../../../contexts/WindowContext';
@@ -10,19 +8,8 @@ import { v4 as uuidv4 } from 'uuid';
 import MainDetailsForm from '../../forms/MainDetailsForm';
 import { emptyState, useStateContext } from '../../../contexts/StateContext';
 import { useSignal } from '@preact/signals-react';
-import {
-  DiagramType,
-  MainItemTypes,
-  StateEvalValue,
-  StateType,
-} from '../../../types/ItemTypes';
-import {
-  FormControl,
-  FormControlLabel,
-  FormLabel,
-  Radio,
-  RadioGroup,
-} from '@mui/material';
+import { DiagramType, MainItemTypes, StateEvalValue, StateType } from '../../../types/ItemTypes';
+import { FormControl, FormControlLabel, FormLabel, Radio, RadioGroup } from '@mui/material';
 import { useDiagramContext } from '../../../contexts/DiagramContext';
 import { currentDiagram } from '../../diagrams/EmraldDiagram/EmraldDiagram';
 
@@ -30,22 +17,20 @@ interface StateFormProps {
   stateData?: State;
 }
 
-const StateForm: React.FC<StateFormProps> = ({
-  stateData
-}: StateFormProps) => {
+const StateForm: React.FC<StateFormProps> = ({ stateData }: StateFormProps) => {
   const { handleClose } = useWindowContext();
   const { statesList, updateState, createState } = useStateContext();
   const { getDiagramByDiagramName, updateDiagram } = useDiagramContext();
   const state = useSignal<State>(stateData || emptyState);
   const [name, setName] = useState<string>(stateData?.name || '');
   const [desc, setDesc] = useState<string>(stateData?.desc || '');
-  const [error, setError] = useState<boolean>(false);
-  const [stateType, setStateType] = useState<StateType>(
-    stateData?.stateType || 'stStandard',
-  );
+  const [stateType, setStateType] = useState<StateType>(stateData?.stateType || 'stStandard');
   const [diagramType, setDiagramType] = useState<DiagramType>('dtSingle');
-  const [defaultSingleStateValue, setDefaultSingleStateValue] =
-    useState<StateEvalValue>(stateData?.defaultSingleStateValue || 'Ignore');
+  const [defaultSingleStateValue, setDefaultSingleStateValue] = useState<StateEvalValue>(
+    stateData?.defaultSingleStateValue || 'Ignore',
+  );
+  const [hasError, setHasError] = useState<boolean>(false);
+
   const stateTypeOptions = [
     { value: 'stStart', label: 'Start' },
     { value: 'stStandard', label: 'Standard' },
@@ -53,14 +38,12 @@ const StateForm: React.FC<StateFormProps> = ({
     { value: 'stTerminal', label: 'Terminal' },
   ];
 
-  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newName = e.target.value;
-    setError(statesList.value.some(node => node.name === newName));
-
+  const handleNameChange = (newName: string) => {
+    setHasError(statesList.value.some((node) => node.name === newName));
     setName(newName);
   };
 
-  const handleSave = async () => {
+  const handleSave = () => {
     if (stateData) {
       updateState({
         ...state.value,
@@ -94,12 +77,15 @@ const StateForm: React.FC<StateFormProps> = ({
   useEffect(() => {
     if (currentDiagram.value?.diagramType) setDiagramType(currentDiagram.value.diagramType);
     else if (stateData) {
-      const diagramType = getDiagramByDiagramName(
-        stateData.diagramName,
-      ).diagramType;
+      const diagramType = getDiagramByDiagramName(stateData.diagramName).diagramType;
       setDiagramType(diagramType);
     }
   }, []);
+  const reset = () => {
+    setDiagramType('dtSingle'); // Default value for diagramType
+    setDefaultSingleStateValue(stateData?.defaultSingleStateValue || 'Ignore'); // Default value for defaultSingleStateValue
+    setHasError(false); // Reset error to undefined
+  };
   return (
     <Container maxWidth="sm">
       <Typography variant="h5" my={3}>
@@ -112,69 +98,44 @@ const StateForm: React.FC<StateFormProps> = ({
           setType={setStateType}
           typeOptions={stateTypeOptions}
           name={name}
-          setName={setName}
           handleNameChange={handleNameChange}
           desc={desc}
           setDesc={setDesc}
-          error={error}
-          errorMessage='A State with this name already exists.'
-        />
-        {diagramType === 'dtSingle' && (
-          <FormControl
-            component="fieldset"
-            sx={{
-              minWidth: 120,
-              width: '100%',
-              border: 1,
-              p: 1,
-              borderRadius: 1,
-            }}
-          >
-            <FormLabel component="legend">
-              Default Logic Tree Evaluation Value
-            </FormLabel>
-            <RadioGroup
-              sx={{ margin: '8px' }}
-              aria-label="status-value"
-              name="status-value"
-              value={defaultSingleStateValue}
-              onChange={(event) =>
-                setDefaultSingleStateValue(event.target.value as StateEvalValue)
-              }
-              row
+          error={hasError}
+          errorMessage="A State with this name already exists."
+          reset={reset}
+          handleSave={handleSave}
+          reqPropsFilled={name && stateType ? true : false}
+        >
+          {diagramType === 'dtSingle' && (
+            <FormControl
+              component="fieldset"
+              sx={{
+                minWidth: 120,
+                width: '100%',
+                border: 1,
+                p: 1,
+                borderRadius: 1,
+              }}
             >
-              <FormControlLabel
-                value="Ignore"
-                control={<Radio />}
-                label="Unknown"
-              />
-              <FormControlLabel value="True" control={<Radio />} label="True" />
-              <FormControlLabel
-                value="False"
-                control={<Radio />}
-                label="False"
-              />
-            </RadioGroup>
-          </FormControl>
-        )}
-        <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 5 }}>
-          <Button
-            variant="contained"
-            color="primary"
-            sx={{ mr: 2 }}
-            disabled={error}
-            onClick={() => handleSave()}
-          >
-            Save
-          </Button>
-          <Button
-            variant="contained"
-            color="secondary"
-            onClick={() => handleClose()}
-          >
-            Cancel
-          </Button>
-        </Box>
+              <FormLabel component="legend">Default Logic Tree Evaluation Value</FormLabel>
+              <RadioGroup
+                sx={{ margin: '8px' }}
+                aria-label="status-value"
+                name="status-value"
+                value={defaultSingleStateValue}
+                onChange={(event) =>
+                  setDefaultSingleStateValue(event.target.value as StateEvalValue)
+                }
+                row
+              >
+                <FormControlLabel value="Ignore" control={<Radio />} label="Unknown" />
+                <FormControlLabel value="True" control={<Radio />} label="True" />
+                <FormControlLabel value="False" control={<Radio />} label="False" />
+              </RadioGroup>
+            </FormControl>
+          )}
+        </MainDetailsForm>
       </form>
     </Container>
   );

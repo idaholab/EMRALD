@@ -1,9 +1,6 @@
-
-import { Validator } from 'jsonschema';
 import { UpgradeReturn } from '../v1_x/UpgradeV1_x'
 import { EMRALD_Model as EMRALD_ModelV1_1} from '../v1_x/AllModelIterfacesV1_x'
 import { Event as EventV1_1} from '../v1_x/AllModelIterfacesV1_x'
-import { EventType as EventTypeV1_1} from '../v1_x/AllModelIterfacesV1_x'
 //import { EMRALD_Model as EMRALD_ModelV1_1} from '../v1_1/AllPieces'
 import { Event } from './AllModelInterfacesV2_4'
 import { EMRALD_Model } from './AllModelInterfacesV2_4'

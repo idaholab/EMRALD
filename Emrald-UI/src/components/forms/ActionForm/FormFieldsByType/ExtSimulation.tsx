@@ -1,15 +1,11 @@
 import {
   Box,
   Checkbox,
-  FormControl,
   FormControlLabel,
-  InputLabel,
   MenuItem,
-  Select,
 } from '@mui/material';
 import React, { useEffect, useState } from 'react';
-import { sim3DMessageType, useActionFormContext } from '../ActionFormContext';
-import DurationControl from 'react-duration-control';
+import { useActionFormContext } from '../ActionFormContext';
 import 'react-duration-control/dist/react-duration-control.css';
 import { useExtSimContext } from '../../../../contexts/ExtSimContext';
 import dayjs from 'dayjs';
@@ -40,7 +36,7 @@ const ExtSimulation: React.FC = () => {
   const extSimVariables = variableList.value.filter(
     (variable) => variable.varScope === 'gt3DSim',
   );
-  const simEndTimeDuration = dayjs.duration(simEndTime);
+  // const simEndTimeDuration = dayjs.duration(simEndTime);
   const [milliseconds, setMilliseconds] = useState(0);
   const simTypeOptions = [
     { value: 'atCompModify', label: 'Comp Modify' },
@@ -51,6 +47,7 @@ const ExtSimulation: React.FC = () => {
 
   useEffect(() => {
     const simEndTimeDuration = dayjs.duration(simEndTime);
+    // @ts-ignore: Ignore TypeScript error for the existence of `$ms` property
     setMilliseconds(simEndTimeDuration.$ms);
   }, [simEndTime]);
 

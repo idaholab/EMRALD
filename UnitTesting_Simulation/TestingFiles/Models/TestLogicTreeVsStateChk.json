@@ -2,7 +2,7 @@
   "id": 0,
   "name": "McCormick Reliability and Risk Analysis Example 6-4",
   "desc": "Problem 6-4 out of McCormick's textbook",
-  "version": 1.2,
+  "version": 1.3,
   "DiagramList": [
     {
       "Diagram": {
@@ -210,11 +210,11 @@
         "singleStates": [
           {
             "stateName": "SYSFT_WORKS",
-            "okState": "False"
+            "okState": "True"
           },
           {
             "stateName": "SYS_FAILS_FT",
-            "okState": "True"
+            "okState": "False"
           }
         ]
       }
@@ -520,7 +520,7 @@
             "moveFromCurrent": true
           }
         ],
-        "geometry": "{ x: 30.5, y: 30.5, width: 200, height: 350}"
+        "geometry": "{ x: 30.5, y: 30.5, width: 200, height: 300}"
       }
     },
     {
