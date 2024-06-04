@@ -7,7 +7,6 @@ import {
   TableContainer,
   TextField,
 } from '@mui/material';
-import React from 'react';
 import { useEventFormContext } from '../EventFormContext';
 import { DurationComponent, SelectComponent } from '../../../common';
 import { appData } from '../../../../hooks/useAppData';

@@ -1,4 +1,3 @@
-import React from 'react';
 import CodeEditorWithVariables from '../../../common/CodeEditorWithVariables';
 import { useEventFormContext } from '../EventFormContext';
 import { appData } from '../../../../hooks/useAppData';

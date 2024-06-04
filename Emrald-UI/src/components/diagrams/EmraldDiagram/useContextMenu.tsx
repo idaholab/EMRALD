@@ -525,10 +525,11 @@ const useContextMenu = (getStateNodes?: () => void, setEdges?: (edges: Edge[]) =
   // * Removes an edge connection
   const deleteEdge = (edge: Edge, edges: Edge[]) => {
     if (edge && edges && setEdges) {
-      const actionToUpdate = getActionByActionId(edge.sourceHandle?.split('-')[3]);
+      const actionId = edge.sourceHandle?.split('-')[3];
+      const actionToUpdate = actionId ? getActionByActionId(actionId) : undefined;
       const targetState = getStateByStateId(edge.target?.split('-')[1]);
 
-      if (!actionToUpdate.newStates) {
+      if (!actionToUpdate?.newStates) {
         return;
       }
       actionToUpdate.newStates = actionToUpdate.newStates.filter(

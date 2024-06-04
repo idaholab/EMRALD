@@ -3,7 +3,6 @@ import {
   createContext,
   PropsWithChildren,
   useContext,
-  useEffect,
   useState,
 } from 'react';
 import { Action, NewState } from '../../../types/Action';
@@ -126,7 +125,6 @@ const ActionFormContextProvider: React.FC<PropsWithChildren> = ({ children }) =>
   const [processOutputFileCode, setProcessOutputFileCode] = useState<string>('');
   const [formData, setFormData] = useState<any>();
   const [hasError, setHasError] = useState(false);
-  const [reqPropsFilled, setReqPropsFilled] = useState(false);
 
   const actionTypeOptions = [
     { value: 'atTransition', label: 'Transition' },

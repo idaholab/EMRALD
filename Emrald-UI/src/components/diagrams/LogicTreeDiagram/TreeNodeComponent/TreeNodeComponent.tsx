@@ -1,4 +1,4 @@
-import { Handle, Position, useNodes } from 'reactflow';
+import { Handle, Position } from 'reactflow';
 import './TreeNode.scss';
 import { Box, IconButton, TextField } from '@mui/material';
 import { FaLink } from 'react-icons/fa';
@@ -26,7 +26,7 @@ interface TreeNodeComponentProps {
   };
 }
 
-const TreeNodeComponent: React.FC<TreeNodeComponentProps> = ({ id, data }) => {
+const TreeNodeComponent: React.FC<TreeNodeComponentProps> = ({ data }) => {
   const {
     label,
     type,
@@ -38,7 +38,6 @@ const TreeNodeComponent: React.FC<TreeNodeComponentProps> = ({ id, data }) => {
     expandable,
   } = data;
   const { goToDiagram } = useLogicNodeTreeDiagram();
-  const nodes = useNodes();
   const {
     editingTitle,
     editingDescription,
@@ -87,7 +86,7 @@ const TreeNodeComponent: React.FC<TreeNodeComponentProps> = ({ id, data }) => {
             <TextField
               value={editedTitle}
               onChange={(event) => setEditedTitle(event.target.value)}
-              onBlur={() => handleTitleBlur(type, label, nodes)}
+              onBlur={() => handleTitleBlur(type, label)}
               multiline
               fullWidth
               variant="outlined"
@@ -151,7 +150,7 @@ const TreeNodeComponent: React.FC<TreeNodeComponentProps> = ({ id, data }) => {
             <TextField
               value={editedDescription}
               onChange={(event) => setEditedDescription(event.target.value)}
-              onBlur={() => handleDescriptionBlur(type, label, nodes)}
+              onBlur={() => handleDescriptionBlur(type, label)}
               multiline
               fullWidth
               variant="outlined"

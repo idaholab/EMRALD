@@ -61,13 +61,13 @@ const ImportForm: React.FC<ImportDiagramFormProps> = ({ importedData }) => {
   const [replaceValue, setReplaceValue] = useState<string>('');
   const [importedItems, setImportedItems] = useState<ImportedItem[]>([]);
   const [hasConflicts, setHasConflicts] = useState<boolean>(true);
-  const { diagramList, newDiagramList } = useDiagramContext();
-  const { logicNodeList, newLogicNodeList } = useLogicNodeContext();
-  const { extSimList, newExtSimList } = useExtSimContext();
-  const { eventsList, newEventList } = useEventContext();
-  const { statesList, newStateList } = useStateContext();
-  const { actionsList, newActionList } = useActionContext();
-  const { variableList, newVariableList } = useVariableContext();
+  const { diagramList } = useDiagramContext();
+  const { logicNodeList } = useLogicNodeContext();
+  const { extSimList } = useExtSimContext();
+  const { eventsList } = useEventContext();
+  const { statesList} = useStateContext();
+  const { actionsList } = useActionContext();
+  const { variableList } = useVariableContext();
   const { handleClose } = useWindowContext();
   const { refreshWithNewData } = useAssembledData();
 

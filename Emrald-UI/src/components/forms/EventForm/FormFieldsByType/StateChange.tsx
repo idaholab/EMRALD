@@ -8,11 +8,8 @@ import {
   TableBody,
   TableContainer,
   TableHead,
-  TableRow,
   Tooltip,
-  Typography,
 } from '@mui/material';
-import React from 'react';
 import { useEventFormContext } from '../EventFormContext';
 import { useDrop } from 'react-dnd';
 import { State } from '../../../../types/State';

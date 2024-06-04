@@ -1,19 +1,13 @@
 import React, { useEffect, useState } from 'react'
 import { useCustomForm } from '../useCustomForm';
-import { Box, Checkbox, Divider, FormControlLabel, MenuItem, Paper, Tab, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tabs, TextField, Typography } from '@mui/material';
-import { TextFieldComponent, SelectComponent, FileUploadComponent, TabPanel } from '../../../../../../common';
+import { Box, Divider, Tab, Tabs, Typography } from '@mui/material';
+import { TextFieldComponent, FileUploadComponent, TabPanel } from '../../../../../../common';
 import { Parameters, Initiators, InputBlocks, Outputs } from './FormFieldsByType';
 
 const MAAP = () => {
   const {
     formData,
     isValid,
-    diagrams,
-    logicNodes,
-    variables,
-    states,
-    events,
-    actions,
     setFormData,
     ReturnPreCode,
     ReturnPostCode,

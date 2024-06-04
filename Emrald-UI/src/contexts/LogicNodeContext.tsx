@@ -1,11 +1,11 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useState } from 'react';
 import { LogicNode } from '../types/LogicNode';
 import { EmraldContextWrapperProps } from './EmraldContextWrapper';
 import { appData, updateAppData } from '../hooks/useAppData';
 import { EMRALD_Model } from '../types/EMRALD_Model';
 import { updateModelAndReferences } from '../utils/UpdateModel';
 import { MainItemTypes } from '../types/ItemTypes';
-import { effect, ReadonlySignal, useComputed } from '@preact/signals-react';
+import { ReadonlySignal, useComputed } from '@preact/signals-react';
 
 interface LogicNodeContextType {
   logicNodeList: ReadonlySignal<LogicNode[]>;

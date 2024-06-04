@@ -4,7 +4,7 @@ import { EMRALD_Model } from "../../types/EMRALD_Model";
 import Ajv from "ajv"
 
 
- export function upgradeModel (toVersion: number, emraldData : string): EMRALD_Model | null{
+ export function upgradeModel (_toVersion: number, emraldData : string): EMRALD_Model | null{
     const upgradeModel = new Upgrade(emraldData);
     upgradeModel.upgradeGiveID(3.0, uuidv4); // upgrade to version 3.0 true;
     if((upgradeModel.errorsStr.length >  0) &&  (upgradeModel.errorsStr[0] != "")){
