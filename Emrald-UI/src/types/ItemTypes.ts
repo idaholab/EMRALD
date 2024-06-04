@@ -105,5 +105,5 @@ export enum MainItemTypes {
 
  export type Group = {
   name: string;
-  subgroup: Group[];
+  subgroup: Group[] | null;
 };

@@ -44,45 +44,56 @@ const TemplateContextProvider: React.FC<EmraldContextWrapperProps> = ({ children
   );
   const templatesList = useComputed(() => appData.value.templates || []);
   
-  const templateGroups = templates
-  .map((template) => template?.group)
-  .filter((group) => group !== null) as Group[];
+  // const hierarchicalGroups: Group[] = templates.reduce((accumulatedGroups, template) => {
+  //   return mergeGroupArrays(accumulatedGroups, template.group);
+  // }, []);
 
-function buildHierarchy(groups: Group[]): Group[] {
-  const groupMap = new Map<string, Group>();
-  console.log(groupMap);
+  const hierarchicalGroups: Group[] = templates
+  .filter(template => template.group !== null) // Filter out templates with null groups
+  .reduce((accumulatedGroups, template) => {
+    return combineGroups(accumulatedGroups, [template.group]);
+  }, []);
+  
 
-  function addGroup(name: string, subgroup: Group | Group[] | null) {
-    if (!groupMap.has(name)) {
-      groupMap.set(name, { name, subgroup: [] });
-    }
-    const group = groupMap.get(name)!;
+  // const templateGroups = templates
+  // .map((template) => template?.group)
+  // .filter((group) => group !== null) as Group[];
+
+// function buildHierarchy(groups: Group[]): Group[] {
+//   const groupMap = new Map<string, Group>();
+//   console.log(groupMap);
+
+//   function addGroup(name: string, subgroup: Group | Group[] | null) {
+//     if (!groupMap.has(name)) {
+//       groupMap.set(name, { name, subgroup: [] });
+//     }
+//     const group = groupMap.get(name)!;
     
-    if (Array.isArray(subgroup)) {
-      subgroup.forEach(sub => addGroup(sub.name, sub.subgroup));
-    } else if (subgroup) {
-      addGroup(subgroup.name, subgroup.subgroup);
-    }
+//     if (Array.isArray(subgroup)) {
+//       subgroup.forEach(sub => addGroup(sub.name, sub.subgroup));
+//     } else if (subgroup) {
+//       addGroup(subgroup.name, subgroup.subgroup);
+//     }
 
-    if (subgroup) {
-      const subgroupsToAdd = Array.isArray(subgroup) ? subgroup : [subgroup];
-      subgroupsToAdd.forEach(sub => {
-        if (!group.subgroup!.some(sg => sg.name === sub.name)) {
-          group.subgroup!.push(sub);
-        }
-      });
-    }
-  }
+//     if (subgroup) {
+//       const subgroupsToAdd = Array.isArray(subgroup) ? subgroup : [subgroup];
+//       subgroupsToAdd.forEach(sub => {
+//         if (!group.subgroup!.some(sg => sg.name === sub.name)) {
+//           group.subgroup!.push(sub);
+//         }
+//       });
+//     }
+//   }
 
-  groups.forEach(group => addGroup(group.name, group.subgroup));
+//   groups.forEach(group => addGroup(group.name, group.subgroup));
 
-  // Filtering out non-top-level groups
-  const topLevelGroups = Array.from(groupMap.values()).filter(group => 
-    !Array.from(groupMap.values()).some(g => g.subgroup!.some(sg => sg.name === group.name))
-  );
+//   // Filtering out non-top-level groups
+//   const topLevelGroups = Array.from(groupMap.values()).filter(group => 
+//     !Array.from(groupMap.values()).some(g => g.subgroup!.some(sg => sg.name === group.name))
+//   );
 
-  return topLevelGroups;
-}
+//   return topLevelGroups;
+// }
 
 /**
  * Merges two arrays of groups into one. If a group with the same name exists in both arrays,
@@ -92,55 +103,35 @@ function buildHierarchy(groups: Group[]): Group[] {
  * @param groups2 - The second array of groups to merge.
  * @returns The merged array of groups.
  */
-function mergeGroupArrays(groups1: Group[], groups2: Group[]): Group[] {
-  // Create a map to easily access groups by name
-  const groupMap: { [key: string]: Group } = {};
+function combineGroups(groups1: Group[], groups2: Group[]): Group[] {
+  const combinedGroups: Group[] = [];
 
-  // Helper function to merge subgroups
-  const mergeSubgroups = (subgroup1: Group[], subgroup2: Group[]): Group[] => {
-    const subgroupMap: { [key: string]: Group } = {};
-
-    // Add all subgroups from the first array to the map
-    for (const sub of subgroup1) {
-      subgroupMap[sub.name] = { ...sub };
-    }
-
-    // Merge or add subgroups from the second array
-    for (const sub of subgroup2) {
-      if (subgroupMap[sub.name]) {
-        // If a subgroup with the same name exists, merge them recursively
-        subgroupMap[sub.name] = mergeGroups(subgroupMap[sub.name], sub);
-      } else {
-        // If it doesn't exist, just add it
-        subgroupMap[sub.name] = { ...sub };
-      }
-    }
-
-    // Convert the map back to an array
-    return Object.values(subgroupMap);
+  // Helper function to find a group by name
+  const findGroupByName = (groups: Group[], name: string): Group | undefined => {
+    return groups.find(group => group.name === name);
   };
 
-  // Add all groups from the first array to the map
-  for (const group of groups1) {
-    groupMap[group.name] = { ...group };
-  }
-
-  // Merge or add groups from the second array
-  for (const group of groups2) {
-    if (groupMap[group.name]) {
-      // If a group with the same name exists, merge them recursively
-      groupMap[group.name] = {
-        name: group.name,
-        subgroup: mergeSubgroups(groupMap[group.name].subgroup, group.subgroup),
-      };
+  // Add all groups from the first array
+  for (const group1 of groups1) {
+    const matchingGroup = findGroupByName(groups2, group1.name);
+    if (matchingGroup) {
+      combinedGroups.push({
+        name: group1.name,
+        subgroup: combineGroups(group1.subgroup || [], matchingGroup.subgroup || [])
+      });
     } else {
-      // If it doesn't exist, just add it
-      groupMap[group.name] = { ...group };
+      combinedGroups.push(group1);
     }
   }
 
-  // Convert the map back to an array
-  return Object.values(groupMap);
+  // Add any remaining groups from the second array that were not in the first array
+  for (const group2 of groups2) {
+    if (!findGroupByName(combinedGroups, group2.name)) {
+      combinedGroups.push(group2);
+    }
+  }
+
+  return combinedGroups;
 }
 
 function convertNullSubgroupsToEmptyArray(groups: Group[]): Group[] {
@@ -150,7 +141,8 @@ function convertNullSubgroupsToEmptyArray(groups: Group[]): Group[] {
   }));
 }
 
-const hierarchicalGroups = buildHierarchy(templateGroups);
+
+//const hierarchicalGroups = buildHierarchy(templateGroups);
 const groups = convertNullSubgroupsToEmptyArray(hierarchicalGroups);
 // const groups = [];
 
@@ -158,7 +150,7 @@ useEffect(() => {
   const storedTemplates = JSON.parse(localStorage.getItem('templates') || '[]');
   localStorage.setItem('templates', JSON.stringify([...templates, ...storedTemplates]));
 
-  console.log(templateGroups);
+  console.log(hierarchicalGroups);
   console.log(groups);
 }, [templates]);
   
