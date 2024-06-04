@@ -20,15 +20,19 @@ export function UpgradeV3_0(modelTxt: string): UpgradeReturn {
     const newModel: EMRALD_Model = {
         ...oldModel,
         DiagramList: oldModel.DiagramList ? oldModel.DiagramList.map(({ Diagram }) => {
-            const { diagramList, forceMerge, singleStates, ...rest } = Diagram; //exclude diagramList, forceMerge, singleStates
+            const { diagramList, forceMerge, singleStates, id, ...rest } = Diagram; //exclude diagramList, forceMerge, singleStates
             return {
                 ...rest, // Spread the rest of the properties
+                id: id !== undefined ? String(id) : undefined,
                 diagramType: mapDiagramType(Diagram.diagramType) // Add the mapped diagramType
             };
         }) : [],
         ExtSimList: oldModel.ExtSimList ? oldModel.ExtSimList.map(({ ExtSim }) => {
-            const { modelRef, states, configData, simMaxTime, varScope, value, resetOnRuns, type, sim3DId, ...rest } = ExtSim; //exclude
-            return rest;
+            const { modelRef, states, configData, simMaxTime, varScope, value, resetOnRuns, type, sim3DId, id ...rest } = ExtSim; //exclude
+            return {
+                ...rest,                
+                id: id !== undefined ? String(id) : undefined,
+            };
         }) : [],
         // StateList: oldModel.StateList ? oldModel.StateList.map(({ State }) => ({ ...State })) : [],
         StateList: oldModel.StateList ? oldModel.StateList.map(({ State }) => {
@@ -37,40 +41,44 @@ export function UpgradeV3_0(modelTxt: string): UpgradeReturn {
             .replace(/'/g, '"'); // Replace single quotes with double quotes
             const parsedGeometry = JSON.parse(correctedString);
             var geometryInfo: GeometryInfo = parsedGeometry;
-            const { geometry, ...rest } = State; //exclude geometry
+            const { geometry, id, ...rest } = State; //exclude geometry
             return {
-                ...rest,
+                ...rest,                
+                id: id !== undefined ? String(id) : undefined,
                 geometryInfo
             };
         }) : [],
         ActionList: oldModel.ActionList ? oldModel.ActionList.map(({ Action }) => {
-            const { itemId, moveFromCurrent, ...rest } = Action; //exclude itemId and move from current
+            const { itemId, moveFromCurrent, id, ...rest } = Action; //exclude itemId and move from current
             var mainItem : boolean = Action.mainItem ? Action.mainItem : false;
             return {
                 ...rest,
+                id: id !== undefined ? String(id) : undefined,
                 mainItem
             };
         }) : [],
         EventList: oldModel.EventList ? oldModel.EventList.map(({ Event }) => {
-            const {...rest } = Event;
+            const {id, ...rest } = Event;
             var ifInState : boolean | undefined = Event.ifInState != null ?
                 (typeof Event.ifInState === 'string' ? Event.ifInState.toUpperCase() === 'TRUE' : Event.ifInState) :
                 undefined;
             return {
-                ...rest,
+                ...rest,                
+                id: id !== undefined ? String(id) : undefined,
                 ifInState
             };
 
         }) : [],
         LogicNodeList: oldModel.LogicNodeList ? oldModel.LogicNodeList.map(({ LogicNode }) => ({
             ...LogicNode,
+            id: LogicNode.id !== undefined ? String(LogicNode.id) : undefined,
             isRoot: LogicNode.isRoot !== undefined ? (LogicNode.isRoot || ((LogicNode.rootName != undefined) && (LogicNode.rootName === LogicNode.name))) : 
                                                      (LogicNode.rootName == undefined ? false : (LogicNode.rootName === LogicNode.name)),
             compChildren: mapLogicNode(LogicNode.compChildren)
         })): [],
         VariableList: oldModel.VariableList ? oldModel.VariableList.map(({ Variable }) => {
             // Destructure Variable, excluding modelRef, states, configData, and simMaxTime
-            const { modelRef=null, states, configData, simMaxTime, $$hashKey, ...rest } = Variable;
+            const { modelRef=null, states, configData, simMaxTime, $$hashKey, id, ...rest } = Variable;
             
             var regExpLine : number | undefined = undefined;
             if (Variable.regExpLine !== undefined){
@@ -99,6 +107,7 @@ export function UpgradeV3_0(modelTxt: string): UpgradeReturn {
         
             return {
                 ...rest, // Spread the rest of the properties
+                id: id !== undefined ? String(id) : undefined,
                 accrualStatesData, // Include mapped accrualStatesData
                 regExpLine,
                 begPosition
