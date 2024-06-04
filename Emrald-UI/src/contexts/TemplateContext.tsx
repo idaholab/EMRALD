@@ -84,6 +84,65 @@ function buildHierarchy(groups: Group[]): Group[] {
   return topLevelGroups;
 }
 
+/**
+ * Merges two arrays of groups into one. If a group with the same name exists in both arrays,
+ * their subgroups will be merged recursively.
+ * 
+ * @param groups1 - The first array of groups to merge.
+ * @param groups2 - The second array of groups to merge.
+ * @returns The merged array of groups.
+ */
+function mergeGroupArrays(groups1: Group[], groups2: Group[]): Group[] {
+  // Create a map to easily access groups by name
+  const groupMap: { [key: string]: Group } = {};
+
+  // Helper function to merge subgroups
+  const mergeSubgroups = (subgroup1: Group[], subgroup2: Group[]): Group[] => {
+    const subgroupMap: { [key: string]: Group } = {};
+
+    // Add all subgroups from the first array to the map
+    for (const sub of subgroup1) {
+      subgroupMap[sub.name] = { ...sub };
+    }
+
+    // Merge or add subgroups from the second array
+    for (const sub of subgroup2) {
+      if (subgroupMap[sub.name]) {
+        // If a subgroup with the same name exists, merge them recursively
+        subgroupMap[sub.name] = mergeGroups(subgroupMap[sub.name], sub);
+      } else {
+        // If it doesn't exist, just add it
+        subgroupMap[sub.name] = { ...sub };
+      }
+    }
+
+    // Convert the map back to an array
+    return Object.values(subgroupMap);
+  };
+
+  // Add all groups from the first array to the map
+  for (const group of groups1) {
+    groupMap[group.name] = { ...group };
+  }
+
+  // Merge or add groups from the second array
+  for (const group of groups2) {
+    if (groupMap[group.name]) {
+      // If a group with the same name exists, merge them recursively
+      groupMap[group.name] = {
+        name: group.name,
+        subgroup: mergeSubgroups(groupMap[group.name].subgroup, group.subgroup),
+      };
+    } else {
+      // If it doesn't exist, just add it
+      groupMap[group.name] = { ...group };
+    }
+  }
+
+  // Convert the map back to an array
+  return Object.values(groupMap);
+}
+
 function convertNullSubgroupsToEmptyArray(groups: Group[]): Group[] {
   return groups.map(group => ({
     ...group,
