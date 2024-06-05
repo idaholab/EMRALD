@@ -142,7 +142,8 @@
    /**
     * Templates avaliable to make new diagrams in the model. These are basicly a small model all on there own.
     */
-   templates?: unknown[][]
+   templates?: EMRALD_Model[],
+   group?: Group
  }
  export interface Diagram {
    /**
@@ -730,4 +731,9 @@
      [k: string]: unknown
    }
  }
+
+export interface Group {
+  name: string
+  subgroup?: Group
+}
  

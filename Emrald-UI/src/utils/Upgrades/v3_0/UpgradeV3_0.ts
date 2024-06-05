@@ -4,12 +4,21 @@ import { UpgradeReturn } from '../v1_x/UpgradeV1_x'
 import { EMRALD_Model as EMRALD_ModelV2_4 } from '../v2_4/AllModelInterfacesV2_4'
 import { DiagramType as DiagramTypeV2_4 } from '../v2_4/AllModelInterfacesV2_4'
 import { Diagram as DiagramV2_4 } from '../v2_4/AllModelInterfacesV2_4'
+import { Group as GroupV2_4 } from '../v2_4/AllModelInterfacesV2_4'
 
-import { EMRALD_Model } from './AllModelInterfacesV3_0'
+import { EMRALD_Model, Group } from './AllModelInterfacesV3_0'
 import { DiagramType, GeometryInfo } from './AllModelInterfacesV3_0'
 import { StateEvalValue } from './AllModelInterfacesV3_0'
 
+// export function UpgradeV3_0(modelTxt: string): UpgradeReturn {
+//     //var m : EMRALD_ModelV2_4;
+//     var oldModel: EMRALD_ModelV2_4 = JSON.parse(modelTxt);
+//     const newModel = UpgradeV3_0_Recursive(oldModel)
+//     const retModel: UpgradeReturn = { newModel: JSON.stringify(newModel), errors: [] };
+//     return retModel;
+// }
 
+// function UpgradeV3_0_Recursive(oldModel: EMRALD_ModelV2_4): EMRALD_Model {
 
 export function UpgradeV3_0(modelTxt: string): UpgradeReturn {
     //var m : EMRALD_ModelV2_4;
@@ -113,7 +122,23 @@ export function UpgradeV3_0(modelTxt: string): UpgradeReturn {
                 regExpLine,
                 begPosition
             };
-        }) : []
+        }) : [],
+        group: oldModel.group ? convertGroupV2_4ToGroup(oldModel.group) : undefined,
+        // group: oldModel.group ? oldModel.group.map(g => {
+        //     const {subgroup, ...rest } = g;
+        //     return {
+        //         ...rest,
+        //         group: typeof g.group === 'object' ? [g.group] : g.group
+        //     }
+        // }) : undefined,
+        // templates: oldModel.templates ? oldModel.templates.map( emraldModel => {
+        //     const { group, id, ...rest } = emraldModel; //exclude diagramList, forceMerge, singleStates
+        //     return {
+        //         ...rest, // Spread the rest of the properties
+        //         id: String(emraldModel.id),
+        //         groups: convertGroupV2_4ToGroup(emraldModel.group)
+        //     };
+        // }) : undefined
     }
 
 
@@ -133,6 +158,21 @@ export function UpgradeV3_0(modelTxt: string): UpgradeReturn {
                 return "dtMulti";
         }
     }
+
+    function convertGroupV2_4ToGroup(groupV2_4: GroupV2_4 | undefined): Group | undefined {
+        if (!groupV2_4) return undefined; // If input is null, return null
+        
+        const { name, subgroup } = groupV2_4;
+        
+        // Recursively convert subgroup if it exists
+        const convertedSubgroup = subgroup ? convertGroupV2_4ToGroup(subgroup) : undefined;
+        
+        return {
+            name,
+            subgroup: convertedSubgroup ? [convertedSubgroup] : undefined
+        };
+    }
+
 
     //Assign the state default values 
     //type D2 = DiagramV2_4;

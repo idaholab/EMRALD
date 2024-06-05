@@ -139,6 +139,9 @@
                 "items": {},
                 "additionalProperties": false
             }
+        },
+        "group": {
+            "$ref": "#/definitions/Group"
         }
     },
     "additionalProperties": false,
@@ -900,6 +903,24 @@
                 "varScope",
                 "value",
                 "type"
+            ]
+        },
+        "Group": {
+            "type": "object",
+            "description": "What catagory grouping this item belongs to. Used to indicate a group for and EMRALD model template",
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "description": "Name of the group",
+                },
+                "subgroup": {
+                        "$ref": "#/definitions/Group"
+                    }
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "name"
             ]
         },
         "DiagramType": {
