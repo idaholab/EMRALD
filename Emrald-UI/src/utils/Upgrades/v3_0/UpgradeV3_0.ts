@@ -10,19 +10,16 @@ import { EMRALD_Model, Group } from './AllModelInterfacesV3_0'
 import { DiagramType, GeometryInfo } from './AllModelInterfacesV3_0'
 import { StateEvalValue } from './AllModelInterfacesV3_0'
 
-// export function UpgradeV3_0(modelTxt: string): UpgradeReturn {
-//     //var m : EMRALD_ModelV2_4;
-//     var oldModel: EMRALD_ModelV2_4 = JSON.parse(modelTxt);
-//     const newModel = UpgradeV3_0_Recursive(oldModel)
-//     const retModel: UpgradeReturn = { newModel: JSON.stringify(newModel), errors: [] };
-//     return retModel;
-// }
-
-// function UpgradeV3_0_Recursive(oldModel: EMRALD_ModelV2_4): EMRALD_Model {
-
 export function UpgradeV3_0(modelTxt: string): UpgradeReturn {
     //var m : EMRALD_ModelV2_4;
     var oldModel: EMRALD_ModelV2_4 = JSON.parse(modelTxt);
+    const newModel = UpgradeV3_0_Recursive(oldModel)
+    const retModel: UpgradeReturn = { newModel: JSON.stringify(newModel), errors: [] };
+    return retModel;
+}
+
+
+function UpgradeV3_0_Recursive(oldModel: EMRALD_ModelV2_4): EMRALD_Model {
     
     //do upgrade steps for version change 2.4 to 3.0
     //remove the extra layer between all the lists so we dont have items like - "EventList" : { "Event": {...}, "Event": {...}}
@@ -124,20 +121,9 @@ export function UpgradeV3_0(modelTxt: string): UpgradeReturn {
             };
         }) : [],
         group: oldModel.group ? convertGroupV2_4ToGroup(oldModel.group) : undefined,
-        // group: oldModel.group ? oldModel.group.map(g => {
-        //     const {subgroup, ...rest } = g;
-        //     return {
-        //         ...rest,
-        //         group: typeof g.group === 'object' ? [g.group] : g.group
-        //     }
-        // }) : undefined,
-        // templates: oldModel.templates ? oldModel.templates.map( emraldModel => {
-        //     const { group, id, ...rest } = emraldModel; //exclude diagramList, forceMerge, singleStates
-        //     return {
-        //         ...rest, // Spread the rest of the properties
-        //         id: String(emraldModel.id),
-        //         groups: convertGroupV2_4ToGroup(emraldModel.group)
-        //     };
+        templates: undefined
+        // templates: oldModel.templates ? oldModel.templates.map( templateEmraldModel => {
+        //     UpgradeV3_0_Recursive(templateEmraldModel)
         // }) : undefined
     }
 
@@ -203,9 +189,5 @@ export function UpgradeV3_0(modelTxt: string): UpgradeReturn {
 
     newModel.emraldVersion = 3.0;
     newModel.version = 1.0; //set user version for first use of this property
-    const retModel: UpgradeReturn = { newModel: JSON.stringify(newModel), errors: [] };
-
-    
-
-    return retModel;
+    return newModel;
 }
