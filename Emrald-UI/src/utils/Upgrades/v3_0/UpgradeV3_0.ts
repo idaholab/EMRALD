@@ -121,10 +121,8 @@ function UpgradeV3_0_Recursive(oldModel: EMRALD_ModelV2_4): EMRALD_Model {
             };
         }) : [],
         group: oldModel.group ? convertGroupV2_4ToGroup(oldModel.group) : undefined,
-        templates: undefined
-        // templates: oldModel.templates ? oldModel.templates.map( templateEmraldModel => {
-        //     UpgradeV3_0_Recursive(templateEmraldModel)
-        // }) : undefined
+        //templates: undefined
+        templates: convertTemplates(oldModel.templates)
     }
 
 
@@ -143,6 +141,17 @@ function UpgradeV3_0_Recursive(oldModel: EMRALD_ModelV2_4): EMRALD_Model {
             default:
                 return "dtMulti";
         }
+    }
+
+    function convertTemplates(templates: EMRALD_ModelV2_4[] | undefined): EMRALD_Model[] | undefined {
+        if(!templates) return undefined;
+        const retModelArray : EMRALD_Model[] = [];
+        //convert each template to the new version
+        templates.forEach(element => {
+            retModelArray.push(UpgradeV3_0_Recursive(element));
+        });        
+
+        return retModelArray;
     }
 
     function convertGroupV2_4ToGroup(groupV2_4: GroupV2_4 | undefined): Group | undefined {
