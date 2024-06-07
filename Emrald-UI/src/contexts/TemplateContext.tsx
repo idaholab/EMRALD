@@ -44,56 +44,13 @@ const TemplateContextProvider: React.FC<EmraldContextWrapperProps> = ({ children
   );
   const templatesList = useComputed(() => appData.value.templates || []);
   
-  // const hierarchicalGroups: Group[] = templates.reduce((accumulatedGroups, template) => {
-  //   return mergeGroupArrays(accumulatedGroups, template.group);
-  // }, []);
-
+  //combine the single path template groups into a one treestucture
   const hierarchicalGroups: Group[] = templates
-  .filter(template => template.group !== null) // Filter out templates with null groups
+  .filter(template => template.group !== undefined) // Filter out templates with null groups
   .reduce((accumulatedGroups, template) => {
     return combineGroups(accumulatedGroups, [template.group]);
   }, []);
   
-
-  // const templateGroups = templates
-  // .map((template) => template?.group)
-  // .filter((group) => group !== null) as Group[];
-
-// function buildHierarchy(groups: Group[]): Group[] {
-//   const groupMap = new Map<string, Group>();
-//   console.log(groupMap);
-
-//   function addGroup(name: string, subgroup: Group | Group[] | null) {
-//     if (!groupMap.has(name)) {
-//       groupMap.set(name, { name, subgroup: [] });
-//     }
-//     const group = groupMap.get(name)!;
-    
-//     if (Array.isArray(subgroup)) {
-//       subgroup.forEach(sub => addGroup(sub.name, sub.subgroup));
-//     } else if (subgroup) {
-//       addGroup(subgroup.name, subgroup.subgroup);
-//     }
-
-//     if (subgroup) {
-//       const subgroupsToAdd = Array.isArray(subgroup) ? subgroup : [subgroup];
-//       subgroupsToAdd.forEach(sub => {
-//         if (!group.subgroup!.some(sg => sg.name === sub.name)) {
-//           group.subgroup!.push(sub);
-//         }
-//       });
-//     }
-//   }
-
-//   groups.forEach(group => addGroup(group.name, group.subgroup));
-
-//   // Filtering out non-top-level groups
-//   const topLevelGroups = Array.from(groupMap.values()).filter(group => 
-//     !Array.from(groupMap.values()).some(g => g.subgroup!.some(sg => sg.name === group.name))
-//   );
-
-//   return topLevelGroups;
-// }
 
 /**
  * Merges two arrays of groups into one. If a group with the same name exists in both arrays,
