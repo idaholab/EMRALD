@@ -43,7 +43,7 @@ const StateForm: React.FC<StateFormProps> = ({ stateData }: StateFormProps) => {
     setName(newName);
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (stateData) {
       updateState({
         ...state.value,
