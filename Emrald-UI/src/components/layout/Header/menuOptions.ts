@@ -1,5 +1,6 @@
-import { appData, clearCacheData } from "../../../hooks/useAppData";
-import { validateModel } from "../../../utils/Upgrades/upgrade";
+import { appData, clearCacheData } from '../../../hooks/useAppData';
+import { EMRALD_Model } from '../../../types/EMRALD_Model';
+import { validateModel } from '../../../utils/Upgrades/upgrade';
 
 export interface MenuOption {
   label: string;
@@ -89,10 +90,10 @@ export const projectOptions: MenuOption[] = [
     label: 'Save',
     onClick: async () => {
       //validate the model
-      const errors : string[] = await validateModel(appData.value);
+      const errors: string[] = await validateModel(appData.value);
 
       //if error TODO
-      if(errors.length > 0) {
+      if (errors.length > 0) {
         //todo let the user know the errors and report a bug to developers, provide the model if possible
       }
       // Convert JSON data to a string
@@ -109,9 +110,7 @@ export const projectOptions: MenuOption[] = [
       // Create an <a> element to trigger the download
       const a = document.createElement('a');
       a.href = url;
-      a.download = `${
-        appData.value.name ? appData.value.name : 'Untitled_EMRALD_Project'
-      }.emrald`;
+      a.download = `${appData.value.name ? appData.value.name : 'Untitled_EMRALD_Project'}.emrald`;
 
       // Trigger a click event on the <a> element to initiate the download
       a.click();
@@ -134,7 +133,97 @@ export const projectOptions: MenuOption[] = [
   },
   {
     label: 'Clear Cached Data',
-    onClick: () => {clearCacheData();}
+    onClick: () => {
+      clearCacheData();
+    },
+  },
+];
+
+export const templateSubMenuOptions: MenuOption[] = [
+  {
+    label: 'Import Templates',
+    onClick: (mergeTemplateList) => {
+      // Create a new file input element
+      const fileInput = document.createElement('input');
+      fileInput.type = 'file'; // Set input type to file
+      fileInput.accept = '.json'; // Specify accepted file types as JSON
+
+      // Function to handle file selection
+      const handleFileSelected = (event: Event) => {
+        const input = event.target as HTMLInputElement;
+        const selectedFile = input.files?.[0]; // Get the selected file
+
+        if (!selectedFile) return; // If no file is selected, exit
+
+        // Create a FileReader to read the file content
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const content = e.target?.result as string; // Get the file content as a string
+          try {
+            const parsedContent = JSON.parse(content);
+            if (
+              Array.isArray(parsedContent) &&
+              parsedContent.every((model) => {
+                return typeof model === 'object' && model !== null && 'group' in model;
+              })
+            ) {
+              console.log(parsedContent);
+              mergeTemplateList(parsedContent);
+              // You can now work with the JSON content here
+            } else {
+              console.error('Invalid JSON content');
+            }
+          } catch (error) {
+            console.error('Invalid JSON format');
+          }
+        };
+        reader.readAsText(selectedFile); // Read the file as text
+      };
+
+      // Add an event listener for when a file is selected
+      fileInput.addEventListener('change', handleFileSelected, false);
+
+      // Append the file input to the document body
+      document.body.appendChild(fileInput);
+
+      // Trigger a click on the file input to open the file dialog
+      fileInput.click();
+    },
+  },
+  {
+    label: 'Export Templates',
+    onClick: (templates) => {
+      console.log(templates);
+
+      if (templates.length === 0) {
+        return 'error';
+      }
+      // Convert JSON data to a string
+      const jsonString = JSON.stringify(templates, null, 2);
+
+      // Create a Blob (Binary Large Object) with the JSON string
+      const blob = new Blob([jsonString], { type: 'application/json' });
+
+      // Create a URL for the Blob
+      const url = URL.createObjectURL(blob);
+
+      // Create an <a> element to trigger the download
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${appData.value.name ? appData.value.name : 'Untitled_EMRALD_Project'}-templates.json`;
+
+      // Trigger a click event on the <a> element to initiate the download
+      a.click();
+
+      // Clean up by revoking the URL
+      URL.revokeObjectURL(url);
+    },
+  },
+  {
+    label: 'Clear Templates',
+    onClick: (clearTemplateList) => {
+      clearTemplateList();
+    },
   },
 ];
 
@@ -169,3 +258,7 @@ export const downloadOptions: MenuOption[] = [
     },
   },
 ];
+
+function isEmraldModel(data: EMRALD_Model): data is EMRALD_Model {
+  return (data as EMRALD_Model).emraldVersion !== undefined;
+}

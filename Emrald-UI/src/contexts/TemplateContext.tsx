@@ -21,6 +21,7 @@ interface TemplateContextType {
   // getTemplateByTemplateName: (TemplateName: string) => EMRALD_Model;
   // getTemplateByTemplateId: (TemplateId: string | null) => EMRALD_Model;
   newTemplateList: (newTemplateList: unknown[]) => void;
+  mergeTemplateList: (newTemplateList: unknown[]) => void;
   clearTemplateList: () => void;
 }
 
@@ -37,11 +38,7 @@ export function useTemplateContext() {
 }
 
 const TemplateContextProvider: React.FC<EmraldContextWrapperProps> = ({ children }) => {
-  const [templates, setTemplates] = useState<any[]>(
-    appData.value.templates
-      ? JSON.parse(JSON.stringify(appData.value.templates))
-      : []
-  );
+  const [templates, setTemplates] = useState<any[]>(appData.value.templates ? JSON.parse(JSON.stringify(appData.value.templates)) : []);
   const templatesList = useComputed(() => appData.value.templates || []);
   
   //combine the single path template groups into a one treestucture
@@ -147,7 +144,15 @@ useEffect(() => {
     setTemplates(newTemplateList);
   };
 
+  const mergeTemplateList = (newTemplates: any[]) => {
+    console.log(newTemplates);
+    // localStorage.setItem('templates', JSON.stringify([...templates, ...newTemplates]));
+    setTemplates([...templates, ...newTemplates]);
+  };
+
   const clearTemplateList = () => {
+    localStorage.removeItem('templates');
+    appData.value.templates = [];
     setTemplates([]);
   }
 
@@ -161,6 +166,7 @@ useEffect(() => {
         updateTemplate,
         deleteTemplate,
         newTemplateList,
+        mergeTemplateList,
         clearTemplateList
       }}
     >
@@ -170,40 +176,3 @@ useEffect(() => {
 };
 
 export default TemplateContextProvider;
-
-
-
-
-[
-  {
-      "name": "Group 1",
-      "subgroup": [
-          {
-              "name": "Group 1.1",
-              "subgroup": [
-                {
-                  name: "Group 1.1.1",
-                  subgroup: []
-                }
-              ]
-          },
-          {
-              "name": "Group 1.2",
-              "subgroup": []
-          }
-      ]
-  },
-  {
-      "name": "Group 2",
-      "subgroup": [
-          {
-              "name": "Group 2.1",
-              "subgroup": []
-          },
-          {
-            "name": "Group 2.2",
-            "subgroup": []
-        }
-      ]
-  }
-]
