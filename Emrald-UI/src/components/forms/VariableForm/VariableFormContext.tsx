@@ -32,6 +32,11 @@ interface VariableFormContextType {
   docPath?: string;
   docLink?: string;
   pathMustExist?: boolean;
+  regExpLine?: number;
+  begPosition?: number;
+  showRegExFields?: boolean;
+  showNumChars?: boolean;
+  numChars?: number;
   setAccrualStatesData: React.Dispatch<React.SetStateAction<AccrualStateItem[] | undefined>>;
   sortNewStates: (accrualStatesData: AccrualStateItem[]) => AccrualStateItem[];
   InitializeForm: (variableData?: Variable | undefined) => void;
@@ -54,6 +59,11 @@ interface VariableFormContextType {
   handleFloatValueChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleBoolValueChange: (e: SelectChangeEvent<string>) => void;
   handleStringValueChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  setRegExpLine: React.Dispatch<React.SetStateAction<number | undefined>>;
+  setBegPosition: React.Dispatch<React.SetStateAction<number | undefined>>;
+  setShowRegExFields: React.Dispatch<React.SetStateAction<boolean | undefined>>;
+  setShowNumChars: React.Dispatch<React.SetStateAction<boolean | undefined>>;
+  setNumChars: React.Dispatch<React.SetStateAction<number | undefined>>;
   reset: () => void;
 }
 
@@ -85,7 +95,11 @@ const VariableFormContextProvider: React.FC<PropsWithChildren> = ({ children }) 
   const [hasError, setHasError] = useState<boolean>(false);
   const variable = useSignal<Variable>(emptyVariable);
   const { updateVariable, createVariable } = useVariableContext();
-
+  const [regExpLine, setRegExpLine] = useState<number>();
+  const [begPosition, setBegPosition] = useState<number>();
+  const [showRegExFields, setShowRegExFields] = useState<boolean>();
+  const [showNumChars, setShowNumChars] = useState<boolean>();
+  const [numChars, setNumChars] = useState<number>();
   const sortNewStates = (newStateItems: AccrualStateItem[]) => {
     return newStateItems.sort((a, b) => {
       if (a.stateName && !b.stateName) {
@@ -116,6 +130,18 @@ const VariableFormContextProvider: React.FC<PropsWithChildren> = ({ children }) 
     variableData?.docLink && setDocLink(variableData.docLink);
     variableData?.pathMustExist && setPathMustExist(variableData.pathMustExist);
     variableData?.accrualStatesData && setAccrualStatesData(variableData.accrualStatesData);
+    if (variableData?.regExpLine) {
+      setShowRegExFields(true);
+      setRegExpLine(variableData.regExpLine);
+    }
+    if (variableData?.begPosition) {
+      setShowRegExFields(true);
+      setBegPosition(variableData.begPosition);
+    }
+    if (variableData?.numChars) {
+      setShowNumChars(true);
+      setNumChars(variableData.numChars);
+    }
   };
 
   // Maps 'type' values to their corresponding prefixes.
@@ -177,6 +203,9 @@ const VariableFormContextProvider: React.FC<PropsWithChildren> = ({ children }) 
       value,
       accrualStatesData,
       resetOnRuns,
+      regExpLine,
+      begPosition,
+      numChars,
     };
 
     variableData ? updateVariable(variable.value) : createVariable(variable.value);
@@ -217,6 +246,11 @@ const VariableFormContextProvider: React.FC<PropsWithChildren> = ({ children }) 
         docPath,
         docLink,
         pathMustExist,
+        regExpLine,
+        begPosition,
+        showRegExFields,
+        showNumChars,
+        numChars,
         setAccrualStatesData,
         sortNewStates,
         InitializeForm,
@@ -239,6 +273,11 @@ const VariableFormContextProvider: React.FC<PropsWithChildren> = ({ children }) 
         handleFloatValueChange,
         handleBoolValueChange,
         handleStringValueChange,
+        setRegExpLine,
+        setBegPosition,
+        setShowRegExFields,
+        setShowNumChars,
+        setNumChars,
         reset,
       }}
     >

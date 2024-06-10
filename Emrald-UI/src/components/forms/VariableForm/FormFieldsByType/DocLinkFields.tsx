@@ -17,6 +17,16 @@ interface DocLinkFieldsProps {
   value: number | string | boolean;
   setValue: Function;
   type: VariableType;
+  regExpLine: number;
+  setRegExpLine: Dispatch<SetStateAction<number | undefined>>;
+  begPosition: number;
+  setBegPosition: Dispatch<SetStateAction<number | undefined>>;
+  setShowRegExFields: Dispatch<SetStateAction<boolean | undefined>>;
+  showRegExFields: boolean | undefined;
+  numChars: number;
+  setNumChars: Dispatch<SetStateAction<number | undefined>>;
+  showNumChars: boolean | undefined;
+  setShowNumChars: Dispatch<SetStateAction<boolean | undefined>>;
 }
 
 const DocLinkFields: React.FC<DocLinkFieldsProps> = ({
@@ -31,6 +41,16 @@ const DocLinkFields: React.FC<DocLinkFieldsProps> = ({
   value,
   setValue,
   type,
+  regExpLine,
+  setRegExpLine,
+  begPosition,
+  setBegPosition,
+  showRegExFields,
+  setShowRegExFields,
+  numChars,
+  setNumChars,
+  showNumChars,
+  setShowNumChars,
 }) => {
   return (
     <>
@@ -96,6 +116,84 @@ const DocLinkFields: React.FC<DocLinkFieldsProps> = ({
           />
         }
       />
+      {docType === 'dtTextRegEx' && (
+        <>
+          <FormControlLabel
+            label="Line #"
+            control={
+              <Checkbox
+                checked={showRegExFields}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                  if (!e.target.checked) {
+                    setRegExpLine(undefined);
+                    setBegPosition(undefined);
+                    setNumChars(undefined);
+                    setShowNumChars(undefined);
+                  }
+                  setShowRegExFields(e.target.checked);
+                }}
+              />
+            }
+          />
+          {showRegExFields && (
+            <>
+              <FormControlLabel
+                label="Num Chars"
+                control={
+                  <Checkbox
+                    checked={showNumChars}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                      !e.target.checked && setNumChars(undefined);
+                      setShowNumChars(e.target.checked);
+                    }}
+                  />
+                }
+              />
+              <TextField
+                label="Line #"
+                margin="normal"
+                variant="outlined"
+                type="number"
+                size="small"
+                value={regExpLine}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                  setRegExpLine(parseInt(e.target.value))
+                }
+                fullWidth
+                sx={{ mb: 0 }}
+              />
+              <TextField
+                label="Beg Position"
+                margin="normal"
+                variant="outlined"
+                type="number"
+                size="small"
+                value={begPosition}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                  setBegPosition(parseInt(e.target.value))
+                }
+                fullWidth
+                sx={{ mb: 0 }}
+              />
+              {showNumChars && (
+                <TextField
+                  label="Num Chars"
+                  margin="normal"
+                  variant="outlined"
+                  type="number"
+                  size="small"
+                  value={numChars}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                    setNumChars(parseInt(e.target.value))
+                  }
+                  fullWidth
+                  sx={{ mb: 0 }}
+                />
+              )}
+            </>
+          )}
+        </>
+      )}
       {type === 'int' || type === 'double' ? (
         <TextField
           label="Default"
