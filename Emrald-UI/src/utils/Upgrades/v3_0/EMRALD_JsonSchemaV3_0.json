@@ -834,7 +834,7 @@
             "properties": {
                 "name": {
                     "type": "string",
-                    "description": "Name of the group",
+                    "description": "Name of the group"
                 },
                 "subgroup": {
                     "type": "array",

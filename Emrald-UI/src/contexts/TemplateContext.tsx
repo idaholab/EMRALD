@@ -38,15 +38,15 @@ export function useTemplateContext() {
 }
 
 const TemplateContextProvider: React.FC<EmraldContextWrapperProps> = ({ children }) => {
-  const [templates, setTemplates] = useState<any[]>(appData.value.templates ? JSON.parse(JSON.stringify(appData.value.templates)) : []);
+  const [templates, setTemplates] = useState<EMRALD_Model[]>(appData.value.templates ? JSON.parse(JSON.stringify(appData.value.templates)) : []);
   const templatesList = useComputed(() => appData.value.templates || []);
   
   //combine the single path template groups into a one treestucture
   const hierarchicalGroups: Group[] = templates
   .filter(template => template.group !== undefined) // Filter out templates with null groups
-  .reduce((accumulatedGroups, template) => {
-    return combineGroups(accumulatedGroups, [template.group]);
-  }, []);
+  .reduce((accumulatedGroups: Group[], template: EMRALD_Model) => {
+    return combineGroups(accumulatedGroups, [template.group!]);
+  }, [] as Group[]);
   
 
 /**
