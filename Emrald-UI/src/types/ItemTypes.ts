@@ -105,7 +105,7 @@ export enum MainItemTypes {
 
  export type Group = {
   name: string;
-  subgroup: Group[];
+  subgroup: Group[] | null;
 };
 /**
  * For event type of etDistribution this is the name of the distribution parameter.

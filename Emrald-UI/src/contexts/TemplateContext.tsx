@@ -41,44 +41,51 @@ const TemplateContextProvider: React.FC<EmraldContextWrapperProps> = ({ children
   const [templates, setTemplates] = useState<any[]>(appData.value.templates ? JSON.parse(JSON.stringify(appData.value.templates)) : []);
   const templatesList = useComputed(() => appData.value.templates || []);
   
-  const templateGroups = templates
-  .map((template) => template?.group)
-  .filter((group) => group !== null) as Group[];
+  //combine the single path template groups into a one treestucture
+  const hierarchicalGroups: Group[] = templates
+  .filter(template => template.group !== undefined) // Filter out templates with null groups
+  .reduce((accumulatedGroups, template) => {
+    return combineGroups(accumulatedGroups, [template.group]);
+  }, []);
+  
 
-function buildHierarchy(groups: Group[]): Group[] {
-  const groupMap = new Map<string, Group>();
-  console.log(groupMap);
+/**
+ * Merges two arrays of groups into one. If a group with the same name exists in both arrays,
+ * their subgroups will be merged recursively.
+ * 
+ * @param groups1 - The first array of groups to merge.
+ * @param groups2 - The second array of groups to merge.
+ * @returns The merged array of groups.
+ */
+function combineGroups(groups1: Group[], groups2: Group[]): Group[] {
+  const combinedGroups: Group[] = [];
 
-  function addGroup(name: string, subgroup: Group | Group[] | null) {
-    if (!groupMap.has(name)) {
-      groupMap.set(name, { name, subgroup: [] });
-    }
-    const group = groupMap.get(name)!;
-    
-    if (Array.isArray(subgroup)) {
-      subgroup.forEach(sub => addGroup(sub.name, sub.subgroup));
-    } else if (subgroup) {
-      addGroup(subgroup.name, subgroup.subgroup);
-    }
+  // Helper function to find a group by name
+  const findGroupByName = (groups: Group[], name: string): Group | undefined => {
+    return groups.find(group => group.name === name);
+  };
 
-    if (subgroup) {
-      const subgroupsToAdd = Array.isArray(subgroup) ? subgroup : [subgroup];
-      subgroupsToAdd.forEach(sub => {
-        if (!group.subgroup!.some(sg => sg.name === sub.name)) {
-          group.subgroup!.push(sub);
-        }
+  // Add all groups from the first array
+  for (const group1 of groups1) {
+    const matchingGroup = findGroupByName(groups2, group1.name);
+    if (matchingGroup) {
+      combinedGroups.push({
+        name: group1.name,
+        subgroup: combineGroups(group1.subgroup || [], matchingGroup.subgroup || [])
       });
+    } else {
+      combinedGroups.push(group1);
     }
   }
 
-  groups.forEach(group => addGroup(group.name, group.subgroup));
+  // Add any remaining groups from the second array that were not in the first array
+  for (const group2 of groups2) {
+    if (!findGroupByName(combinedGroups, group2.name)) {
+      combinedGroups.push(group2);
+    }
+  }
 
-  // Filtering out non-top-level groups
-  const topLevelGroups = Array.from(groupMap.values()).filter(group => 
-    !Array.from(groupMap.values()).some(g => g.subgroup!.some(sg => sg.name === group.name))
-  );
-
-  return topLevelGroups;
+  return combinedGroups;
 }
 
 function convertNullSubgroupsToEmptyArray(groups: Group[]): Group[] {
@@ -88,7 +95,8 @@ function convertNullSubgroupsToEmptyArray(groups: Group[]): Group[] {
   }));
 }
 
-const hierarchicalGroups = buildHierarchy(templateGroups);
+
+//const hierarchicalGroups = buildHierarchy(templateGroups);
 const groups = convertNullSubgroupsToEmptyArray(hierarchicalGroups);
 // const groups = [];
 
@@ -96,7 +104,7 @@ useEffect(() => {
   const storedTemplates = JSON.parse(localStorage.getItem('templates') || '[]');
   localStorage.setItem('templates', JSON.stringify([...templates, ...storedTemplates]));
 
-  console.log(templateGroups);
+  console.log(hierarchicalGroups);
   console.log(groups);
 }, [templates]);
   

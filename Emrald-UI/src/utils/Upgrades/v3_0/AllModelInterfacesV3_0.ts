@@ -619,5 +619,5 @@ export interface Variable {
 }
 export interface Group {
   name: string
-  subgroup?: EMRALD_Model[]
+  subgroup?: Group[]
 }
