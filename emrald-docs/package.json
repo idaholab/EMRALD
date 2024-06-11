@@ -10,7 +10,7 @@
   "repository": "/template",
   "scripts": {
     "dev": "vuepress dev src",
-    "build": "cross-env NODE_OPTIONS=--openssl-legacy-provider vuepress build src"
+    "build": "cross-env NODE_OPTIONS=--openssl-legacy-provider vuepress build src --dest dist"
   },
   "license": "MIT",
   "devDependencies": {
