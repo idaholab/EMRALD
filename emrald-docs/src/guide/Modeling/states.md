@@ -9,11 +9,11 @@
   In the diagram that you want your state to be added to, right-click anywhere in the diagram window (not on any objects) and click, "New State." <br>
   ![New State Step 1](/images/Modeling/states/NewState1.png)
 
-  Type in a state name, an optional description, and, if the diagram is a single state diagram, what the logic tree evaluation should be. Press "SAVE". The state will open up in the diagram window in the Modeling Area.<br> 
+  Type in a state name and press "OK". The state will open up in the diagram window in the Modeling Area.<br> 
   ![New State Step 2](/images/Modeling/states/NewState2.png)<br>
   ![New State Step 3](/images/Modeling/states/NewState3.png)<br>
 
-  This name cannot be the same as any existing state in the model. If it is, an error message will pop up to notify you to choose another name.<br>
+  This name cannot be the same as any existing state in the model. If it is, a window will pop up to notify you to choose another name.<br>
   ![New State Step 4](/images/Modeling/states/NewState4.png)<br>
 
 ## Editing a State
@@ -21,7 +21,7 @@
   On the Left Navigation Frame, click on the tab (All or Local) where your state is located. If you are not sure which tab, click on the All tab. Right-click on the state and click "Edit properties...".<br>
   <div style="width:200px">![Edit State Option 1](/images/Modeling/states/EditStateOpt1.png)</div><br>
 
-  The properties window will open up in the Modeling Area. Note that because you are accessing the state properties from the Left Navigation Frame, the boolean evaluation value will not appear even if one of the diagrams it belongs to is a single state diagram.<br> 
+  The properties window will open up in the Modeling Area. <br> 
   <div style="width:450px">![Edit State Option 2 Step 2](/images/Modeling/states/EditStateOpt1_2.png)</div>
 
 **Option 2:**<br>
@@ -32,9 +32,9 @@
   ![Edit State Option 2 Step 2](/images/Modeling/states/EditStateOpt2_2.png)
 
 ## State Properties
-  State properties depend on the type of diagram. All diagram states have lists of events in the "Event Actions" list, and associated with each event is a "Exit Parent State" property. This property tells the simulation to exit the state after the events actions are executed. This adds a door with arrow icon ( <img src="/images/Modeling/states/exit-icon.png" alt="Start" width="18"/> ) to the right of the event and any arrows going from the action will turn black. If there are no transition actions.<br>
+  State properties depend on the type of diagram. All diagram states have an "Exit" property for each of the events in the "Event Actions" list. This property tells the simulation to exit the state after the events actions are executed. This adds a door with arrow icon ( <img src="/images/Modeling/states/exit-icon.png" alt="Start" width="18"/> ) to the right of the event and any arrows going from the action will turn black. If there are no transition actions.<br>
   
-  Note that the exit property is set an edited in the event forms, not the state forms.
+  Note that the exit property can also be set when editing the event properties.
   <div style="width:450px">![Event Properties Exit Option](/images/Modeling/states/ExitPropertyInEventProperties.png)</div><br>
 
 ### Single State Diagrams (System, Component)
