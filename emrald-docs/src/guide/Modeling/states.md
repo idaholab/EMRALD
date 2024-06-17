@@ -17,24 +17,28 @@
   ![New State Step 4](/images/Modeling/states/NewState4.png)<br>
 
 ## Editing a State
+
 **Option 1:**<br>
-  On the Left Navigation Frame, click on the tab (All or Local) where your state is located. If you are not sure which tab, click on the All tab. Right-click on the state and click "Edit properties...".<br>
-  <div style="width:200px">![Edit State Option 1](/images/Modeling/states/EditStateOpt1.png)</div><br>
+On the Left Navigation Frame, click on the tab (All or Local) where your state is located. If you are not sure which tab, click on the All tab. Right-click on the state and click "Edit Properties".<br>
+<div style="width:200px">![Edit State Option 1](/images/Modeling/states/EditStateOpt1.png)</div><br>
 
-  The properties window will open up in the Modeling Area. Note that because you are accessing the state properties from the Left Navigation Frame, the boolean evaluation value will not appear even if one of the diagrams it belongs to is a single state diagram.<br> 
-  <div style="width:450px">![Edit State Option 2 Step 2](/images/Modeling/states/EditStateOpt1_2.png)</div>
+The properties window will open up in the Modeling Area. Note that because you are accessing the state properties from the Left Navigation Frame, the boolean evaluation value will not appear even if the diagram that the state belongs to is a single state diagram. Remember that states only evaluate to a boolean expression if the diagram it belongs to is a single state diagram. To view the boolean expression of the state, use [option two](#option-2) for editing states.<br>
+<div style="width:450px">![Edit State Option 2 Step 2](/images/Modeling/states/EditStateOpt1_2.png)</div>
 
-**Option 2:**<br>
-  In the diagram window, right-click in the middle of the state and click "State Properties...".<br>
-  ![Edit State Option 2](/images/Modeling/states/EditStateOpt2.png)<br>
+#### Option 2:<br>
+In the diagram window, right-click in the middle of the state and click "State Properties...".<br>
+![Edit State Option 2](/images/Modeling/states/EditStateOpt2.png)<br>
 
-  The properties window will open up in the diagram window. <br>
-  ![Edit State Option 2 Step 2](/images/Modeling/states/EditStateOpt2_2.png)
+The properties window will open up in the diagram window. <br>
+![Edit State Option 2 Step 2](/images/Modeling/states/EditStateOpt2_2.png)
+
+
+
 
 ## State Properties
   State properties depend on the type of diagram. All diagram states have lists of events in the "Event Actions" list, and associated with each event is a "Exit Parent State" property. This property tells the simulation to exit the state after the events actions are executed. This adds a door with arrow icon ( <img src="/images/Modeling/states/exit-icon.png" alt="Start" width="18"/> ) to the right of the event and any arrows going from the action will turn black. If there are no transition actions.<br>
   
-  Note that the exit property is set an edited in the event forms, not the state forms.
+  Note that the exit property is set and edited in the event forms, not the state forms.
   <div style="width:450px">![Event Properties Exit Option](/images/Modeling/states/ExitPropertyInEventProperties.png)</div><br>
 
 ### Single State Diagrams (System, Component)
@@ -58,23 +62,26 @@ The CCS_Sys_Failed State Properties window with "False" selected as the Status V
   On the Left Navigation Frame, click on the tab (All, Global, or Local) where your state is located. If you are not sure which tab, click on the All tab. Right-click on the state and click "Delete".<br>
   <div style="width:300px">![Delete State Option 1 Step 1](/images/Modeling/states/DeleteStateOpt1.png)</div>
 
-  A confirmation window will appear in the Modeling Area. Click "Yes."<br>
-  ![Delete State Option 1 Step 2](/images/Modeling/states/DeleteStateOpt1_2.png)<br>
+  A confirmation window will appear in the Modeling Area. Click "DELETE".<br>
+  ![Delete State Option 1 Step 2](/images/Modeling/states/DeleteStateWarn.png)<br>
 
   The state will be deleted and no longer listed in the Left Navigation Frame. <br>
   <div style="width:200px">![Delete State Option 1 Step 3](/images/Modeling/states/DeleteStateOpt1_3.png)</div><br>
 
 **Option 2:** <br> 
-  Open the Diagram containing the state and locate the state. Right-click on the state and click " Delete State". Use caution when deleting because no confirmation window will appear.<br>
+  Open the Diagram containing the state and locate the state. Right-click on the state and click " Delete State".<br>
   ![Edit State Option 2 Step 1](/images/Modeling/states/DeleteStateOpt2.png)
 
-  The state will no longer show in the diagram window no longer be listed in the Left Navigation Frame. <br>
+  A confirmation window will appear in the Modeling Area. Click "DELETE".<br>
+  ![Delete State Option 1 Step 2](/images/Modeling/states/DeleteStateWarn.png)<br>
+
+  The state will no longer show in the diagram window and no longer will be listed in the Left Navigation Frame. <br>
   ![Edit State Option 2 Step 2](/images/Modeling/states/DeleteStateOpt2_2.png)
 
 ## Types of States
 The type of state will be indicated by an icon in the header of the state. Those icons are included in the title of the respective section as well as in the [Icons: States](./icons.md#states) section.
 
-<h3>Start <img src="/images/Modeling/states/green-dot.gif" alt="Start" width="25"/></h3>
+<h3>Start <img src="/images/Modeling/states/start.png" alt="Start" width="25"/></h3>
 
 Start states are the states the model is in when the simulation begins. There must be at least one but can be more. All start states will be activated simultaneously.<br>
 <div style="width:220px">![Start State](/images/Modeling/states/StartState.png)</div>
@@ -99,7 +106,7 @@ A user-defined simulation stopping point. A terminal state is not required but t
   Immediate actions are actions that are executed upon entering the state in a simulation. The actions are performed in order, top to bottom.<br>
   ![Immediate Action Examples](/images/Modeling/states/ImmediateActionExample.png) 
 
-  An icon on the left of the action shows what type of action it is. Refer to the [Actions](./icons.md#Actions) section of the Icons page too see what icons are associated with each action type. 
+  An icon on the left of the action shows what type of action it is. Refer to the [Actions](./icons.md#Actions) section of the Icons page to see what icons are associated with each action type. 
   
   ::: tip Note 
   A Transition Action in Immediate Actions area can not exit the state (black arrow), but adds the "too" state as current state (dotted green arrow). See the [Elements of a Diagram: Arrows](./diagrams.md#arrows) section for more information.
@@ -143,7 +150,7 @@ To add an action to an event, you can either...<br>
 **Option 1:** Under the Event Actions header, right-click on the event you want to add the action to create a new Event Action or <br>
 ![New Event Action](/images/Modeling/states/AddNewEventAction.png)<br>
 
-**Option 2:** Drag and drop an existing action into the Immediate Action section.<br>
+**Option 2:** Drag and drop an existing action into the Event Action section.<br>
 ![Add an Existing Action 1](/images/Modeling/actions/AddExistingAction1.png)
 
 See [Creating a New Action](./actions.md#creating-a-new-action) for detailed instructions for Option 1. See [Adding an Existing Action](./actions.md#adding-an-existing-action) for detailed instructions for Option 2.

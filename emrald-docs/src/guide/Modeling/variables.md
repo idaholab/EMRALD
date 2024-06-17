@@ -1,21 +1,24 @@
 # Variables
-Variables define a value that can be evaluated or modified by user defied scripts in some events and actions. External variables are linked to an external code and can be modified or evaluated by either.
+Variables define a value that can be evaluated or modified by user defined scripts in some events and actions. External variables are linked to an external code and can be modified or evaluated by either.
 
 ## Creating a New Variable
-
+<ins>Option 1:</ins><br>
 On the Left Navigation Frame, right-click on the variable label and click "New Variable". This can be done from either the All tab or the Global tab.<br> 
-
 <div style="width:300px">![New Variable Step 1](/images/Modeling/variables/NewVar1.png)</div>
 
+<ins>Option 2:</ins><br>
+In the right side drop down menu, click "New Variable"
+<div style="width:300px">![New Variable Step 1](/images/Modeling/variables/NewVar1_1.png)</div>
+
+<ins>Continued for both:</ins><br>
 Fill out the dialogue box and press "OK". Each field is described in detail below.<br>
 <div style="width:500px">![New Variable Step 2](/images/Modeling/variables/NewVar2.png)</div>
-- **Name:** The name of the variable, how it will be listed in the Left Navigation Frame and be used in code.
+
+- **Variable Type (Var Type):** Click the field to define the variable as an integer, double, boolean, or string.
+- **Name:** The name of the variable, how it will be listed in the Left Navigation Frame and be used in code. Must be unique to other variable names.
 - **Description (Desc):** Optional description of the variable.
 - **Scope:** Click the field to define the variable as a Global variable or an External Simulation variable.
-- **Variable Type (Var Type):** Click the field to define the variable as an integer, double, boolean, or string.
-
 - **Value:** The initial value of the variable. It can also accept values in the form: 0E+/-00.
-
 - **Reset to initial value for every simulation run:** Check the box to have the variable reset to the initial value at the beginning of every simulation run.
 
 It will be listed in the Left Navigation Frame.<br>
@@ -25,14 +28,8 @@ It will be listed in the Left Navigation Frame.<br>
 On the Left Navigation Frame, click on the tab (All or Global), External Sim Variables will not show up in the Global tab. If you are not sure which tab, click on the All tab. Right-click on the variable and click "Edit properties".<br>
 <div style="width:300px">![Edit Variable Step 1](/images/Modeling/variables/EditVar1.png)</div>
 
-The variable properties dialogue box will appear in the modeling area. Edit your properties as needed and press "OK" to save the changes.<br>
+The variable properties dialogue box will appear in the modeling area. Edit your properties as needed and press "SAVE" to save the changes.<br>
 <div style="width:500px">![Edit Variable Step 2](/images/Modeling/variables/EditVar2.png)</div>
-
-If you would like to create a new variable based on this one, check the box "Save As New." Then after you are done editing the variable, click the "Save As New" button which was previously the "OK" button.<br>
-<div style="width:500px">![Edit Variable Step 3](/images/Modeling/variables/EditVar3.png)</div>
-
-It will be listed in the Left Navigation Frame.<br>
-<div style="width:300px">![Edit Variable Step 4](/images/Modeling/variables/EditVar4.png)</div>
 
 ## Deleting a Variable
   On the Left Navigation Frame, click on the tab (All or Global) where your variable is located. If you are not sure which tab, click on the All tab. Right-click on the variable and click "Delete".<br>
@@ -53,7 +50,7 @@ Whether you're identifying or adding variables to a Variable Condition Event or 
 |---|---|
 |<div style="width:300px">![Variable Condition Options](/images/Modeling/events/VarConditionOptions.png)</div>|<div style="width:330px">![Change Variable Value Options](/images/Modeling/actions/ChangeVarValueOptions.png)</div>|
 
-This list will not include pre-existing variables such as CurTime. See [Dynamic Scripts](./backendInfo.md#dynamic-scripts) for more information. It will include the all of the variables that you create and are listed in the "All" Tab of the Left Navigation Frame. Check the box(es) to identify which variables are used in the code.
+This list will include pre-existing variables such as CurTime. See [Dynamic Scripts](./backendInfo.md#dynamic-scripts) for more information. It will also include the all of the variables that you create and are listed in the "All" Tab of the Left Navigation Frame. Check the box(es) to identify which variables are used in the code.
 
 See Variable Condition Event under [Conditional Events](./events.md#conditional-events) and Change Variable Value Action under [Types of Actions](./actions.md#types-of-actions) for more information on those respective topics.
 
@@ -70,13 +67,13 @@ Seen as "Ext Sim Variable" in the drop down menu. An external simulation variabl
 
 When using an external simulation variable, it is required to provide the 3DSim ID or the name or identifier of the variable you which to use from the external simulation. This field will appear when the scope is changed to Ext Sim Variable.<br/>
 
-<img src="/images/Modeling/variables/ExtSimVarEdit.png" alt="External Simulation Variable Editor Window" width="500"/>
+<img src="/images/Modeling/variables/ExtSimVarEdit.png" alt="External Simulation Variable Editor Window"/>
 
 ### Document Link Variable 
 <!-- TODO: check this part for accuracy, need to add description for "Doc Path and Var Link must exist on startup" -->
 A document link variable is referring to or setting the value of a variable in an external file or document. This can be used in situations where you want to use and store values in a separate document for use in multiple EMRALD models or if you want to draw data from output files created by an external executable. The editor window for a document link variable has additional fields which are shown and explained below.<br/>
 
-<img src="/images/Modeling/variables/DocLinkVarEdit.png" alt="Document Link Variable Editor Window" width="500"/>
+<img src="/images/Modeling/variables/DocLinkVarEdit.png" alt="Document Link Variable Editor Window" />
 
 - **Document Type (Doc Type):** Click the dropdown menu and select one of three options for the document type that your variable is in: XML, JSON, and Text RegEx (text file using regular expression). Make sure to change this document type before proceeding to fill out any of the other fields as this will change the Tester link to be discussed in that following bullet point.
 - **Document Path (Doc Path):** Type or copy and paste the path to the document. For example, C:\Projects\EMRALDVariables\DocLink.json.
@@ -95,64 +92,50 @@ An accrual variable allows the user to easily adjust a variable depending on how
 The initial editor screen when changing the scope to Accrual immediately changes and locks the variable type as a double. It also shows a blank table of State Accrual Variables. These are the states that will influence the value of the variable depending on how long the state is occupied.</br>
 <div style="width:400px">![Accrual Variable Editor Window 1](/images/Modeling/variables/Accrual_1.png)</div>
 
-To add a state to the tabulated list, click and drag the state of interest from the Left Navigation Frame to the area where it says Drag States Here. Release your mouse once a small plus sign appears. </br>
+To add a state to the tabulated list, click and drag the state of interest from the Left Navigation Frame to the area where it says Drag States Here. Release your mouse once the row appears green. </br>
 ![Accrual Variable Editor Window 2](/images/Modeling/variables/Accrual_2.png)
 
 The state should also appear in the table. You will have the option to make it either a Static or Dynamic response. The default is Static which means that the Accrual Rate is constant. The Accrual Rate is the rate at which the variable increases based on the time spent in the state. The value input is the amount the variable will accrue per the time unit on the right. The unit can be changed as seen in the dropdown menu between days, hours, minute, and seconds. </br>
 <div style="width:400px">![Accrual Variable Editor Window Static](/images/Modeling/variables/Accrual_Static.png)</div>
 
 To switch to the Dynamic type, select the radio button for "Dynamic." The Dynamic type means that the accrual rate will vary with respect to the simulation time passed. For example, if you want the accrual rate to change after the first ten hours of simulation time, you can define the rate for the first ten hours then the rate for the remaining time. The simulation time is the time at which the accrual rate changes to the value input. This rate will carry out for the rest of the simulation time unless otherwise specified. Like in the Static type, the unit can be changed for both the simulation time and accrual rate. When the unit is changed for one, it will change it for both. They must be the same unit. </br>
-
 <div style="width:600px">![Accrual Variable Editor Window Dynamic Units](/images/Modeling/variables/Accrual_Dyn_Unit.png)</div>
 
 As you can see, there is no area immediately present to add values in for the rate. Click the button "Add Row" to add a row for entering the rate. </br>
 <div style="width:600px">![Accrual Variable Editor Window First Row Add](/images/Modeling/variables/Accrual_Dyn_1.png)</div>
 
-To add additional rows, click the [+] button on the right-hand side of the accrual rate field or the same "Add Row" button. Either method will add another row right below the first row. </br>
+To add additional rows, click the [+] button on the right-hand side of the accrual rate field or the same "Add Row" button. The [+] button will add an additional row immediately underneath that row. The "Add Row" button will add a row to the bottom of the grid. </br>
 <div style="width:600px">![Accrual Variable Editor Window Second Row Add](/images/Modeling/variables/Accrual_Dyn_2.png)</div>
 
 To delete a row, click the [X] button on the right-hand side of the the [+] button.
 
-To collapse the rows for the state, click the "Minimize Table" button. </br>
+To collapse the rows for the state, click the "HIDE TABLE" button. </br>
 <div style="width:600px">![Accrual Variable Editor Window Minimize](/images/Modeling/variables/Accrual_Dyn_Min.png)</div>
 
 The button will change to an "Expand Table" button. Click it again to show all of the table rows. 
 
-To remove the state from the list entirely, click the "Remove This State" button under the name of the state. The window will look like the same as when the Accrual scope was chosen with an empty table.
-
-<!-- This was original text from somewhwere but it doesn't seem to match UI options.
-There are different options for accrual variables:
-
-Time
-The time option simply accrues the time in the listed states.
-
-Multiplier
-The multiplier option multiplies the time in the listed states by a specified multiplier value which can be different for each state.
-
-Table
-The Table option multiplies the time in the listed states by multiplier value which changes according to the time specified in the table. 
-This can also be different for each state. -->
+To remove the state from the list entirely, click the trash can icon in the "Command" column on the far right.The entire state and ajoining table will be removed from the list.
 
 ## Variable Types
 
  ### Integer
 In the dropdown menu for Var Type, integer variables are listed as, "int." To input a value, it can be typed or it can be incremented or decremented by one using the arrows on the right side of the field. These arrows appear when you mouse over the right end of the field. </br>
-<div style="width:500px">![Integer Variable](/images/Modeling/variables/IntVar.png)</div>
+<div>![Integer Variable](/images/Modeling/variables/IntVar.png)</div>
 
  ### Double
 To input the value of a double, it can be typed or it can be incremented or decremented by one using the arrows on the right side of the field. These arrows appear when you mouse over the right end of the field. </br>
-<div style="width:500px">![Double Variable](/images/Modeling/variables/DoubleVar.png)</div>
+<div >![Double Variable](/images/Modeling/variables/DoubleVar.png)</div>
 
  ### Boolean
 In the dropdown menu for Var Type, boolean variables are listed as, "bool." To input the value, a true or false value can be selected from the dropdown menu next to Value. </br>
-<div style="width:500px">![Boolean Variable](/images/Modeling/variables/BoolVar.png)</div>
+<div>![Boolean Variable](/images/Modeling/variables/BoolVar.png)</div>
 
  ### String
 To input a value of a string, a value should be typed into the text field next to Value. </br>
-<div style="width:500px">![String Variable](/images/Modeling/variables/StringVar.png)</div>
+<div>![String Variable](/images/Modeling/variables/StringVar.png)</div>
 
- ### Error
+ <!-- ### Error
 If you type in a value that is not of the variable type selected, it will display an error. This error will also display if no value is put. <br/>
-<div style="width:500px">![Variable Type Error](/images/Modeling/variables/VarTypeError.png)</div>
+<div style="width:500px">![Variable Type Error](/images/Modeling/variables/VarTypeError.png)</div> -->
 
 <!--Copyright 2021 Battelle Energy Alliance-->

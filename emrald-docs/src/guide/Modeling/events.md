@@ -15,17 +15,19 @@
   
 
 **Continued for both options**<br>
-  Fill out the dialogue box with the name, description, and type. Once a type has been chosen and the event saved, the type cannot be changed.
-  Depending on the type selected, different user options will be shown, see [Types of Events](#types-of-events) below. 
-  Once the required and desired fields are filled out press "OK".<br>
+  Fill out the dialogue box with the name, description, and type.
+  Depending on the type selected, different user options will be shown, see [Types of Events](#types-of-events) below. You can come back and change the event type later, but by changing the event type, all previous data saved for the event will be erased. 
+  Once the required and desired fields are filled out press "SAVE".<br>
+
   ![New Event Step 2](/images/Modeling/events/NewEvent2.png)<br>
 
   The name cannot be the same as any existing event in the model. If it is, a window will pop up to notify you to choose another name.<br>
+
   ![New Event Step 3](/images/Modeling/events/NewEvent3.png)<br>
 
 
 ## Adding an Existing Event
-  In the Left Navigation Frame, locate the event you would like to re-use. Click and hold on to the event and drag it to the Event Actions section until a plus symbol shows and release your mouse.<br>
+  In the Left Navigation Frame, locate the event you would like to re-use. Click and hold on to the event and drag it to the Event Actions section until it hightlights green. Release your mouse.<br>
 
   ::: tip Note
   Use the tabs to more easily find the desired event.
@@ -42,26 +44,26 @@
 
 ## Editing an Event
 **Option 1:** <br> 
-  On the Left Navigation Frame, click on the tab (All, Global, or Local) where your event is located. If you are not sure which tab, click on the All tab. Right-click on the event and click "Edit properties...".<br>
+  On the Left Navigation Frame, click on the tab (All, Global, or Local) where your event is located. If you are not sure which tab, click on the All tab. Right-click on the event and click "Edit properties".<br>
   <div style="width:200px">![Edit State Option 1 Step 1](/images/Modeling/events/EditEventOpt1.png)</div>
 
-  The Event Editor window will open up in the Modeling Area. <br>
+  The Event Editor window will open up in the Modeling Area. Make any necessary changes and click "SAVE"<br>
   <div style="width:450px">![Edit State Option 1 Step 2](/images/Modeling/events/EditEventOpt1_2.png)</div><br>
 
 **Option 2:** <br> 
-  Open the Diagram containing the event and locate the event. Right-click on the event and click "Event Properties...".<br>
+  Open the Diagram containing the event and locate the event. Right-click on the event and click "Event Properties".<br>
   ![Edit State Option 2 Step 1](/images/Modeling/events/EditEventOpt2.png)
 
-  The Event Editor window will open up in the diagram window. <br>
+  The Event Editor window will open up in the modeling area. <br>
   ![Edit State Option 2 Step 2](/images/Modeling/events/EditEventOpt2_2.png)
 
 **Continued for both options:**<br>
   In the Event Editor window, the common fields amongst all event types are Name, Description, Type, and the option to Exit Parent state when event is triggered. Each will be described below.
   - **Name:** Type the name of your event. This is how it will be shown and identified in the Left Navigation Frame and in diagrams. This is required.
   - **Desc:** Type a description of your event. This is not required.
-  - **Exit Parent state when event is Triggered:**  Check the box to indicate if the state is to be exited after the event has been processed. If a state is exited then it no longer watches for the other events in the state. This field, if selected, is shown in the graphic by an icon on the right side of the event by a door with exit arrow. Arrows exiting actions under the event will be solid black if it is selected and dashed green if it is not exiting. This option will appear in the editor window only when editing in a Diagram (Option 2) since you may want the state behavior to be different in different diagrams. </br>
+  - **Exit Parent state when event is Triggered:**  Check the box to indicate if the state is to be exited after the event has been processed. If a state is exited then it no longer watches for the other events in the state. This field, if selected, is shown in the graphic by an icon on the right side of the event by a door with exit arrow. Arrows exiting actions under the event will be solid black if it is selected and dashed green if it is not exiting. This option will appear in the editor window only when editing in a Diagram (Option 2). </br>
   <div style="width:500px">![Exit Parent State](/images/Modeling/events/ExitParentState.png)</div>
-  - **Type:** Choosing the event type can only be done while creating the event. Once it is saved, the "Type:" field cannot be changed and will be grayed out. See [Types of Events](#types-of-events) for more information.
+  - **Type:** If you decide to change the event type, the event data - besides the name and description - will be lost. The form will erase all stored data each time the event type is changed and saved. See [Types of Events](#types-of-events) for more information.
 
 ## Removing an Event
   To remove an event from a particular state, but leave it in all others, right-click on the event and select "Remove Event". <br>
@@ -72,17 +74,21 @@
   On the Left Navigation Frame, click on the tab (All, Global, or Local) where your event is located. If you are not sure which tab, click on the All tab. Right-click on the event and click "Delete".<br>
   <div style="width:250px">![Delete Event Option 1 Step 1](/images/Modeling/events/DeleteEventOpt1.png)</div>
 
-  A confirmation window will appear in the Modeling Area. Click "Yes."<br>
-  ![Delete Event Option 1 Step 2](/images/Modeling/events/DeleteEventOpt1_2.png)<br>
+  A confirmation window will appear in the Modeling Area. Click "DELETE".<br>
+  ![Delete Event Option 1 Step 2](/images/Modeling/events/DeleteEventNotification.png)<br>
 
   The event will be deleted from the entire model and no longer be listed in the Left Navigation Frame. To only remove it from this state, use "[Remove Event](#removing-an-event)" instead. <br>
   <div style="width:200px">![Delete Event Option 1 Step 3](/images/Modeling/events/DeleteEventOpt1_3.png)</div><br>
 
 **Option 2:** <br> 
-  Open the Diagram containing the event and locate the event. Right-click on the event and click "Delete Event". Use caution when deleting because no confirmation window will appear.<br>
+  Open the Diagram containing the event and locate the event. Right-click on the event and click "Delete Event".<br>
   ![Delete Event Option 2 Step 1](/images/Modeling/events/DeleteEventOpt2.png)<br>  
+
+  A confirmation window will appear in the Modeling Area. Click "Delete"<br>
+  ![Delete Event Option 1 Step 2](/images/Modeling/events/DeleteEventNotification.png)<br>
+
   ![Delete Event Option 2 Step 2](/images/Modeling/events/DeleteEventOpt2_2.png)<br>
-  The event will no longer be listed in the state, will be deleted from the entire model, and no longer be listed in the Left Navigation Frame. To only remove it from this state, use "[Remove Event](#removing-an-event)" instead. <br>
+  The event will no longer be listed in the state, will be deleted from the entire model, and no longer will be listed in the Left Navigation Frame. To only remove it from this state, use "[Remove Event](#removing-an-event)" instead. <br>
   
   
 ## Types of Events
@@ -92,8 +98,7 @@
   To define the type of event, click the dropdown menu in the Event Editor then click the desired event type.<br> 
   <div style="width:500px">![Event Type Dropdown Menu](/images/Modeling/events/EventTypeDropdownMenu.png)</div> 
   
-  The options and fields below will change accordingly. The options and fields specific to each event type will be explained in their respective section below. Note that choosing the event type can only be done while creating the event. Once it is saved, the "Type:" field cannot be changed and will be grayed out.<br>
-  <div style="width:500px">![Event Type Grayed](/images/Modeling/events/EventTypeGrayed.png)</div>
+  The options and fields below will change accordingly. The options and fields specific to each event type will be explained in their respective section below. Note that you can come back to edit the event and change the event type, but it will clear all data associated with the event besides the name and description. <br>
 
 ## Conditional Events
 <h3>Variable Condition <img src="/images/Modeling/events/varCond.png" alt="Variable Condition" width="25"/></h3>  
@@ -109,11 +114,11 @@
 
 <img src="/images/Modeling/events/StateChangeOptions.png" alt="State Change Options" width="500"/>
 
-  - **Enter State/Exit State:** Select "Enter state" if you would like the event to be triggered when the states listed in the event are entered. Select "Exit state" if you would like the event to be triggered when the states listed in the event are exited.
+  - **Enter State/Exit State:** Select "On Enter State/s" if you would like the event to be triggered when the states listed in the event are entered. Select "On Exit State/s" if you would like the event to be triggered when the states listed in the event are exited.
   - **All Items:** Check this box to require all states listed to be entered or exited in order for the event to trigger. Leave it unchecked if entering or exiting only one of the states is required to trigger the event.
   - **States:** The list of states that you would like to monitor. To populate the list, drag existing states from the Left Navigation Frame to this list.
 
-  In the Left Navigation Frame, locate the state you would like to monitor. Click and hold on to the event and drag it to the States list title until a plus symbol shows and release your mouse.<br> 
+  In the Left Navigation Frame, locate the state you would like to monitor. Click and hold on to the event and drag it to the States list title until the row highlights green and release your mouse.<br> 
   ![Add a State to the list Step 1](/images/Modeling/events/StateToStateChangeEvent1.png)
 
   The event will appear in the States list.<br>
@@ -124,7 +129,8 @@
   
   <img src="/images/Modeling/events/ComponentLogicOptions.png" alt="Component Logic Options" width="500"/>
 
-  - **On Success:** Check this box if you want to trigger the event upon success of the Logic Tree evaluation, default is failure of the logic tree. 
+  - **Success Tree:** Success Tree or Failure Tree selection indicates whether to treat the tree linked to the event as a success tree or failure tree. (For failure trees Boolean values for states are swapped)
+  - **Trigger on False:** This indicates whether the event should trigger on true or false.
   - **Logic Top:** Click the field to expand the dropdown menu containing all of your Logic Trees. Click on the Logic Tree you would like evaluated when the event is triggered.
   
 <h3>External Simulation <img src="/images/Modeling/events/ExtInput.png" alt="External Simulation" width="25"/></h3>
@@ -146,7 +152,7 @@
   #### Static Value Timer
   <img src="/images/Modeling/events/TimerStaticOptions.png" alt="Timer Static Options" width="500"/>
 
-  - **Time Span:** Enter the amount of model time to pass after entering this state before the event actions are triggered. The first box is the number of days, the second is the number of hours, the third is the number of minutes, and the fourth is the number of seconds. Values can only be integers.
+  - **Duration:** Enter the amount of model time to pass after entering this state before the event actions are triggered. The first box is the number of days, the second is the number of hours, the third is the number of minutes, and the fourth is the number of seconds. Values can only be integers.
 
   #### Variable Value Timer
   <img src="/images/Modeling/events/TimerVarOptions1.png" alt="Timer Variable Options 1" width="500"/>
@@ -166,20 +172,20 @@
   - **Lambda/Freq:** The frequency (instances) of this event occurring per the time rate defined. Likely a decimal value like 0.0003. If you choose to have it as a static value, checkbox unchecked, type in the value into the field. If you choose to have it as a variable value, checkbox checked, click the field to reveal the dropdown menu of variables available in your model and click the variable to set it.
   - **Time Rate:** Enter the time rate that the frequency is sampled over. The first box is the number of days, the second is the number of hours, the third is the number of minutes, and the fourth is the number of seconds. Values can only be integers.
 
-
-<h3>Normal Distribution <img src="/images/Modeling/events/dist.png" alt="Normal Distribution" width="25"/></h3>
-  Listed as Norm. Distribution in the dropdown menu. Samples a normal distribution according to user specified parameters for when this event will occur from the time entering the state.<br>
-  
+<h3>Distribution <img src="/images/Modeling/events/dist.png" alt="Normal Distribution" width="25"/></h3>
+Depending on the type of distribution selected, parameters are set to determine a variable, which in turn will determine when the event occurs. For each required parameter, there is a box for the time rate next to it. You can choose the time units for the parameter, or you can leave it on default, and use the default time unit. The default time rate is also changeable. 
+<h4>Normal Distribution </h4>
+  Listed as Normal Distribution in the Distribution Type dropdown menu. Samples a normal distribution according to user specified parameters for when this event will occur from the time entering the state
+  <br><br>
   <img src="/images/Modeling/events/NormalDistributionOptions.png" alt="Normal Distribution Options" width="500"/>
 <br>
-  To the right of each value is a dropdown menu which includes various time units. Click the dropdown menu to expand it and click the unit you would like to use for that value. It can be unique for each value. This is the case for all of the following distribution events with time units.
 
   - **Mean:** Enter the value of the mean.
   - **Standard Deviation:** Enter the value of the standard deviation.
   - **Minimum:** Enter the minimum value of the function, if a sampling returns a value less than this, then this time will be used. (Typically zero as you can't take no time to do something.)
   - **Maximum:** Enter the maximum value of the function, if a sampling returns a value greater than this, then this time will be used. 
 
-<h3>Exponential Distribution <img src="/images/Modeling/events/dist.png" alt="Exponential Distribution" width="25"/></h3>
+<h4>Exponential Distribution </h4>
   Samples an exponential distribution according to user specified parameters to generate a value for when this event will occur from the time entering the state.<br>
   
   <img src="/images/Modeling/events/ExponentialDistributionOptions.png" alt="Exponential Distribution Options" width="500"/>
@@ -187,7 +193,7 @@
 
   - **Rate:** Enter the value of the rate. To the right of the value is a dropdown menu which includes various time units. Click the dropdown menu to expand it and click the unit you would like to use for that value.
 
-<h3>Weibull Distribution <img src="/images/Modeling/events/dist.png" alt="Weibull Distribution" width="25"/></h3>
+<h4>Weibull Distribution</h4>
   Samples a Weibull distribution according to user specified parameters to generate a value for when this event will occur from the time entering the state.<br>
 
 <img src="/images/Modeling/events/WeibullDistributionOptions.png" alt="Weibull Distribution Options" width="500"/>
@@ -197,7 +203,7 @@
   - **Time Scale:** Click the dropdown menu to expand it and click the unit you would like to use for this distribution. 
 
 
-<h3> Log Normal Distribution <img src="/images/Modeling/events/dist.png" alt="Normal Distribution" width="25"/></h3>
+<h4>Log Normal Distribution </h4>
 
   Listed as LogNorm. Distribution in the dropdown menu. Samples a log-normal distribution according to user specified parameters to generate a value for when this event will occur from the time entering the state.<br>
   
@@ -208,5 +214,46 @@
   - **Standard Deviation:** Enter the value of the standard deviation.
   - **Minimum:** Enter the minimum value of the function, if a sampling returns a value less than this, then this time will be used. (Typically zero as you can't take no time to do something.)
   - **Maximum:** Enter the maximum value of the function, if a sampling returns a value greater than this, then this time will be used. 
+
+<h4>Uniform Distribution</h4>
+  This option samples a uniform distribution. It is listed as Uniform Distribution in the drop down menu.<br>
+  <br>
+
+  <img src="/images/Modeling/events/UniformDistributionOptions.png" alt="Uniform Distribution Options" width="500">
+  <br>
+
+  - **Minimum:** Enter the minimum value of the function, if a sampling returns a value less than this, then this time will be used. (Typically zero as you can't take no time to do something.)
+  - **Maximum:** Enter the maximum value of the function, if a sampling returns a value greater than this, then this time will be used. 
+
+<h4>Triangular Distribution </h4>
+  <p>This option samples a triangular distribution given a peak, minimum, and maximum values to generate a value of when the event occurs.</p>
+
+  <img src="/images/Modeling/events/TriangularDistributionOptions.png" alt="Uniform Distribution Options" width="500">
+
+  - **Peak:** Enter the value of the peak (mode) of the distribution. This is the most likely value that can be sampled.
+  - **Minimum:** Enter the minimum value of the function. If a sampling returns a value less than this, then this time will be used.
+  - **Maximum:** Enter the maximum value of the function. If a sampling returns a value greater than this, then this time will be used.
+
+
+<h4>Gamma Distribution </h4>
+  <p>This option samples a gamma distribution given an indicated shape, rate, minimu
+  m, and maximum values to generate a value of when the event occurs.</p>
+
+  <img src="/images/Modeling/events/GammaDistributionOptions.png" alt="Uniform Distribution Options" width="500">
+
+  - **Shape (Alpha):** Enter the value of the shape parameter (alpha), which determines the shape of the distribution.
+  - **Rate (Inverse Scale):** Enter the value of the rate parameter (beta), which is the inverse of the scale. This parameter affects the spread of the distribution.
+  - **Minimum:** Enter the minimum value of the function. If a sampling returns a value less than this, then this time will be used.
+  - **Maximum:** Enter the maximum value of the function. If a sampling returns a value greater than this, then this time will be used.
+
+<h4>Gompertz Distribution </h4>
+  <p>This option samples a Gompertz distribution given a shape, scale, minimum, and maximum values to generate a value of when the event occurs.</p>
+
+  <img src="/images/Modeling/events/GompertzDistributionOptions.png" alt="Uniform Distribution Options" width="500">
+
+  - **Shape (Eta):** Enter the value of the shape parameter (eta), which determines the growth rate of the distribution.
+  - **Scale (Beta):** Enter the value of the scale parameter (beta), which affects the spread of the distribution.
+  - **Minimum:** Enter the minimum value of the function. If a sampling returns a value less than this, then this time will be used.
+  - **Maximum:** Enter the maximum value of the function. If a sampling returns a value greater than this, then this time will be used.
 
 <!--Copyright 2021 Battelle Energy Alliance-->

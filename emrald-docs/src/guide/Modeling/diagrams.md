@@ -8,6 +8,10 @@
   In the right drop down menu, click "New Diagram". <br>
   <div style="width:300px">![Right Click for New Diagram](/images/Modeling/diagrams/NewDiagram1.png)</div>
 
+  Or select "New Diagram" from the right side drop down menu. 
+  <div style="width:300px">![Click New Diagram](/images/Modeling/diagrams/NewDiagram1_1.png)</div>
+
+
   There are two options, both seen in the properties window.
 	<div style="width:500px">![New Diagram Dialogue Box](/images/Modeling/diagrams/NewDiagram2.png)</div>
 
@@ -75,15 +79,15 @@
   See [Actions](/guide/Modeling/actions.md) for more information.
 
 ### Arrows
-  Arrows indicate movement from one state to another. **Solid black arrows** indicate that the state exits the current state and moves to the new state upon completion of the action. <span style="color:green">**Dotted green arrows**</span> indicate that the simulation will not exit the current state, but will add the new state as a "Current State" in the model. <br>
+  Arrows indicate movement from one state to another. <span style="color:gray">Solid Gray arrows</span> indicate that the state exits the current state and moves to the new state upon completion of the action. <span style="color:green">**Dotted green arrows**</span> indicate that the simulation will not exit the current state, but will add the new state as a "Current State" in the model. <br>
 
 ## Types of Diagrams
   The following diagram types correspond with traditional PRA modeling. The key difference in the types of diagrams is if the diagram can only be in a single state or multiple states concurrently and the ability to evaluate for a boolean value.
 
 ### Multi State
   Multi State diagrams, also known as Plant or Plant Response diagrams, are the main scenarios to be evaluated, similar to Event Trees in traditional PRA. 
-  These diagrams are "Multiple State" capable meaning that you can be in multiple states at the same time.
-  They typically have a starting state such as Normal Operations shown in this diagram. Other states can do general evaluation and movement or can be a key end state. Here the user defines the various states and events that drive the simulation from an initiating event to a desired key state or ending of the simulation.
+  These diagrams are "Multiple State" capable, meaning that you can be in multiple states at the same time.
+  They typically have a starting state such as "Normal Operations" shown in this diagram. Other states can do general evaluation and movement or can be a key end state. Here the user defines the various states and events that drive the simulation from an initiating event to a desired key state or ending of the simulation.
    
   ![SamplePlantDiagram](/images/Modeling/diagrams/SamplePlantDiagram.png)
   In this example we are looking for the key states of "Small_Release" and "Large_Release". (See Key States under [States](/guide/Modeling/states.md) for more information) The model starts in "Normal_Operations" and waits for a loss of offsite power "LOSP". When in "LOSP" three things can happen, ECS can fail, CCS and ECS can fail, or 24 hours can pass. These events cause the transition to the corresponding states and then the simulation will terminate.
@@ -100,13 +104,13 @@
 #### Key Points
   * PRA Basic Events are captured as events in the single state diagram states.
   * Events can be shared between different single state diagrams (common cause).
-  * Singel state diagrams are diagrams in which the simulation can only be in one of those states at any given time.
+  * Single state diagrams are diagrams in which the simulation can only be in one of those states at any given time.
   * Each State has a Boolean evaluation value, which can represent things like OK or Failed.
 
 #### System and Component Diagrams
   Two main types of single state diagrams are Component and System diagrams. A component diagram is a traditional single state diagram that can always be evaluated as a boolean depending on the active state. System diagrams function just like a component diagram, but with some unique characteristics, however both component and system diagrams are Single State Diagrams and have a boolean evaluation.<br>
   
-  A system a diagram only needs two states, an active and failed. The work is done using a "Component Logic" event that evaluates a model of the components for the system.
+  A system diagram only needs two states, an active and failed. The work is done using a "Component Logic" event that evaluates a model of the components for the system.
   See [Logic Tree](/guide/Modeling/logicTree.md) for more information.
   ![SampleSystemDiagram](/images/Modeling/diagrams/SampleSystemDiagram.png)
   In this example, the CCS system has two states, active and failed. The associated boolean logic tree is evaluated whenever a change is made and if the tree evaluates to a "0," it moves to the failed state.
