@@ -12,10 +12,10 @@ Actions that are triggered immediately are listed in the **Immediate Actions** s
 Open the Diagram you would like your action to be in. Locate the State you would like to add the action to and either right-click on the immediate action label or on the event you would like to add it to. Click "New Action". <br>
 ![New Action 1_1](/images/Modeling/actions/NewAction1.png)
 
-Fill out the dialogue box and press "OK". A description is optional.
+Fill out the dialogue box and press "SAVE". A description is optional.
 ![New Action 2](/images/Modeling/actions/NewAction2.png) See [Types of Actions](#types-of-actions) for detailed description of dialogue box options for each type of action.
 
-This name cannot be the same as any existing action in the model. If it is, a window will pop up to notify you to choose another name.<br>
+The action name cannot be the same as any existing action in the model. If it is, an error message will appear notifying you to choose another name.<br>
 ![New Action 3](/images/Modeling/actions/NewAction3.png)<br>
 
 The action will appear in the Immediate Actions list or Event that you initially clicked in. <br>
@@ -28,7 +28,7 @@ Click on the Global tab in the Left Navigation Frame Modeling Pieces Tabs. The d
 Then right click on Global Actions. A dropdown menu will appear, click on "New Action". <br>
 ![New Action 2_2](/images/Modeling/actions/NewAction2_2.png)
 
-Fill out the dialogue box and press "OK". A description is optional.
+Fill out the dialogue box and press "SAVE". A description is optional.
 ![New Action 3_2](/images/Modeling/actions/NewAction3_2.png) 
 
 See [Types of Actions](#types-of-actions) for detailed description of dialogue box options for each type of action.
@@ -48,14 +48,14 @@ You can also add an action in this way to the Immediate Actions section. You wou
 
 ## Editing an Action
 **Option 1:** <br>
-On the Left Navigation Frame, click on the tab (All, Global, or Local) where your action is located. If you are not sure which tab, click on the All tab. Right-click on the action and click "Edit Properties...".<br>
+On the Left Navigation Frame, click on the tab (All, Global, or Local) where your action is located. If you are not sure which tab, click on the All tab. Right-click on the action and click "Edit Properties".<br>
 <div style="width:300px">![Edit an Action Option 1](/images/Modeling/actions/EditActionOpt1.png)</div>
 
-The Action Properties widnow should appear in the Modeling Area.<br>
+The Action Properties window should appear in the Modeling Area.<br>
 <div style="width:500px">![Edit an Action Option 1 Step 2](/images/Modeling/actions/EditActionOpt1_2.png)</div>
 
 **Option 2:** <br>
-Open the Diagram containing the action and locate the action. Right-click on the action and click "Action Properties...".<br>
+Open the Diagram containing the action and locate the action. Right-click on the action and click "Action Properties".<br>
 ![Edit an Action Option 2](/images/Modeling/actions/EditActionOpt2.png)
 
 The Action Properties window should appear in the Diagram Window.<br>
@@ -71,10 +71,10 @@ The action will no longer be listed in the state but will still be listed in the
 
 ## Deleting an Action
 **Option 1:** <br>
-On the Left Navigation Frame, click on the tab (All, Global, or Local) where your event is located. If you are not sure which tab, click on the All tab. Right-click on the action and click "Delete Action".<br> 
+On the Left Navigation Frame, click on the tab (All, Global, or Local) where your event is located. If you are not sure which tab, click on the All tab. Right-click on the action and click "Delete".<br> 
 <div style="width:300px">![Deleting an Action in the Navigation Frame](/images/Modeling/actions/DeleteActionInList.png)</div><br>
 
-A confirmation window will appear in the Modeling Area. Click "Yes." <br>
+A confirmation window will appear in the Modeling Area. Click "DELETE." <br>
 ![Delete Action Option 1 Step 2](/images/Modeling/actions/DeleteActionInList_2.png)<br>
 
 The action will be deleted from the entire model and no longer be listed in the Left Navigation Frame. <br>
@@ -82,8 +82,11 @@ The action will be deleted from the entire model and no longer be listed in the 
 
 **Option 2:**
 
- Open the Diagram containing the action and locate the action. Right-click on the action and click "Delete Action". Use caution when deleting because no confirmation window will appear. <br>
+ Open the Diagram containing the action and locate the action. Right-click on the action and click "Delete Action".<br>
 ![Deleting an Action in a State](/images/Modeling/actions/DeleteActionInState.png)
+
+A confirmation window will appear in the Modeling Area. Click "DELETE." <br>
+![Delete Action Option 1 Step 2](/images/Modeling/actions/DeleteActionInList_2.png)<br>
 
 The action will no longer be listed in the state and will no longer be listed in the Left Navigation Frame. <br>
 ![Delete an Action in a State Step 2](/images/Modeling/actions/DeleteActionInState_2.png)</br>
@@ -126,7 +129,8 @@ same type as the assigned variable or an error will occur. Other variables from 
 - **Variables used in code:** A list of variables available in the model. Pre-existing variables such as CurTime are auto checked and always available. See [Dynamic Scripts](./backendInfo.md#dynamic-scripts) for more information. It will include all of the variables that you create and are listed in the "All" Tab of the Left Navigation Frame. Click the check box to identify which variables are used in the code. Do not click the check box for the variable that is being updated even if it is used in the code. It only needs to be selected from the "Variable" dropdown menu.
 
 <h3>External Simulation Message <img src="/images/Modeling/actions/extSim.png" alt="External Simulation Message" width="25"/></h3>  
-Listed as "Ext. Sim Message" in the dropdown menu. This action sends a message to an external code through coupled communication messaging protocol. See [XMPP communication protocol](/guide/Modeling/xmppProtocol.md) for details on coupling code to EMRALD.
+
+Listed as "Ext. Sim Message" in the dropdown menu. This action sends a message to an external code through coupled communication messaging protocol. See [XMPP Protocol](./xmppProtocol.md#xmpp-protocol) for details on coupling code to EMRALD.
 
 <img src="/images/Modeling/actions/ExtSimMessageOptions.png" alt="External Simulation Message Options" width="500"/>
 
@@ -159,8 +163,9 @@ Below is a table of icons that either identify the type of action (left hand sid
 |![Run Application](/images/Modeling/actions/cogwheel.png)|Run Application Action|
 |**Status Icons**| |
 |![Arrow Icon](/images/Modeling/actions/connector.gif)|This click and drag from this icon to connect the action to a state.|
-|<div style="width:20px">![Missing Information Action Icon](/images/Modeling/actions/questionOrange.png)</div>|This icon appears when the action is not fully defined|
-|![Red X Icon](/images/Modeling/actions/delete2.png)|This icon appears when there is an error with the item. Hover over name (not the X) to see a description of the error.|
 |![Link Icon](/images/Modeling/actions/link.png)|This icon appears instead of an arrow, when the transition goes to a state not in the current diagram.|
 
+
+<!-- |<div style="width:20px">![Missing Information Action Icon](/images/Modeling/actions/questionOrange.png)</div>|This icon appears when the action is not fully defined|
+|![Red X Icon](/images/Modeling/actions/delete2.png)|This icon appears when there is an error with the item. Hover over name (not the X) to see a description of the error.| -->
 <!--Copyright 2021 Battelle Energy Alliance-->
