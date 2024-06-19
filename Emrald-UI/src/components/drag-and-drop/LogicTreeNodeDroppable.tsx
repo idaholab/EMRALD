@@ -37,7 +37,7 @@ const LogicTreeNodeDropTarget: React.FC<
 
   const [{ isOver, canDrop }, drop] = useDrop({
     accept: type,
-    drop: (item: LogicNode | Diagram) => {
+    drop: async (item: LogicNode | Diagram) => {
       // If the item is a diagram, add its name to the compChildren of the dropped node
       if (isDiagram(item as Diagram)) {
         const { name } = item as Diagram;
@@ -73,7 +73,7 @@ const LogicTreeNodeDropTarget: React.FC<
         const newGateNumber = largestNumber + 1; // Increment the largest number to get the new gate number
 
         const logicNode = getLogicNodeByName(node); // Get the info of the logic node to be updated
-        createLogicNode({
+        await createLogicNode({
           // Create a new logic node with the gate type being the type of the dropped item
           ...newGateNode.value,
           id: uuidv4(),
@@ -84,7 +84,7 @@ const LogicTreeNodeDropTarget: React.FC<
           ...logicNode.gateChildren,
           `${`Gate ${newGateNumber}`}`,
         ]; // Add the new gate node's name to the gateChildren of the parent logic node
-        updateLogicNode(logicNode); // Update the dropped node with the new gateChildren
+        await updateLogicNode(logicNode); // Update the dropped node with the new gateChildren
         resetNewNode(); // Reset the new gate node to its empty state
       }
     },

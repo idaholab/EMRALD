@@ -121,7 +121,7 @@ The bottom half of the Left Navigation Frame allows you to access your Actions, 
 
 | <div style="width:150px">All</div>                     | <div style="width:500px">Global</div>                                                                                                                                                       | <div style="width:150px">Local</div>                             |
 | ------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------- |
-| ![All Tab](/images/Modeling/webUIOverview/AllTabs.png) | ![Global Tab](/images/Modeling/webUIOverview/GlobalTabs.png)![Global Tab](/images/Modeling/webUIOverview/GlobalTabOptions.png)                                                              | ![Local Tab](/images/Modeling/webUIOverview/LocalTabs.png)       |
+| ![All Tab](/images/Modeling/webUIOverview/AllTabs.png) | ![Global Tab](/images/Modeling/webUIOverview/GlobalTabs.png)  ![Global Tab](/images/Modeling/webUIOverview/GlobalTabOptions.png)                                                              | ![Local Tab](/images/Modeling/webUIOverview/LocalTabs.png)       |
 | Items from every diagram in the project.               | Shows items can be used in any diagram. New Global items must be created through the right-click option of the selected type. Items created in a specific diagram are local to that diagram | Items present in the diagram currently open and being worked on. |
 
 **Actions**<br>

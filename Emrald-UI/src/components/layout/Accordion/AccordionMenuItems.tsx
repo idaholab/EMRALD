@@ -16,22 +16,31 @@ import ItemWithContextMenu from './ItemWithContextMenu';
 // import DiagramForm from '../../features/DiagramForm/DiagramForm';
 import Typography from '@mui/material/Typography';
 import { MainItemTypes } from '../../../types/ItemTypes';
+import { Diagram } from '../../../types/Diagram';
+import { LogicNode } from '../../../types/LogicNode';
+import { ExtSim } from '../../../types/ExtSim';
+import { Action } from '../../../types/Action';
+import { State } from '../../../types/State';
+import { Variable } from '../../../types/Variable';
+import { Event } from '../../../types/Event';
 
 export interface AccordionMenuListProps {
   item: AccordionMenuItemType;
   bothAccordionsOpen: boolean;
+  onDiagramChange: (diagram: Diagram) => void;
+  handleDelete?: (itemToDelete: Diagram | LogicNode | ExtSim | Action | Event | State | Variable, itemToDeleteType: MainItemTypes) => void;
 }
 
 const AccordionMenuItems: React.FC<AccordionMenuListProps> = ({
   item,
   bothAccordionsOpen,
+  onDiagramChange,
+  handleDelete,
 }) => {
   const { diagrams } = useDiagramContext();
 
   const [openIndex, setOpenIndex] = React.useState<number | null>(null); // Keeps track of the index of the open item
-  const diagramLabels = Array.from(
-    new Set(diagrams.map((diagram) => diagram.diagramLabel)),
-  ).sort();
+  const diagramLabels = Array.from(new Set(diagrams.map((diagram) => diagram.diagramLabel))).sort();
 
   const handleClick = (index: number) => {
     setOpenIndex((prevIndex) => (prevIndex === index ? null : index));
@@ -53,16 +62,9 @@ const AccordionMenuItems: React.FC<AccordionMenuListProps> = ({
             {diagramLabels.length > 0 ? (
               diagramLabels.map((name, index) => (
                 <React.Fragment key={name}>
-                  <ListItemButton
-                    onClick={() => handleClick(index)}
-                    sx={{ py: '3px' }}
-                  >
+                  <ListItemButton onClick={() => handleClick(index)} sx={{ py: '3px' }}>
                     <ListItemIcon sx={{ minWidth: '30px' }}>
-                      {openIndex === index ? (
-                        <FolderOpenIcon />
-                      ) : (
-                        <FolderIcon />
-                      )}
+                      {openIndex === index ? <FolderOpenIcon /> : <FolderIcon />}
                     </ListItemIcon>
                     <ListItemText primary={name} />
                     {openIndex === index ? <ExpandLess /> : <ExpandMore />}
@@ -94,6 +96,8 @@ const AccordionMenuItems: React.FC<AccordionMenuListProps> = ({
                                 <ItemWithContextMenu
                                   itemData={diagram}
                                   optionType={item.type}
+                                  onDiagramChange={onDiagramChange}
+                                  handleDelete={handleDelete}
                                 />
                               </ListItemButton>
                             </DraggableItem>
@@ -135,6 +139,8 @@ const AccordionMenuItems: React.FC<AccordionMenuListProps> = ({
                       <ItemWithContextMenu
                         itemData={option}
                         optionType={item.type}
+                        onDiagramChange={onDiagramChange}
+                        handleDelete={handleDelete}
                       />
                     </DraggableItem>
                   </ListItemButton>
@@ -159,6 +165,8 @@ const AccordionMenuItems: React.FC<AccordionMenuListProps> = ({
                       <ItemWithContextMenu
                         itemData={option}
                         optionType={item.type}
+                        onDiagramChange={onDiagramChange}
+                        handleDelete={handleDelete}
                       />
                     </DraggableItem>
                   </ListItemButton>

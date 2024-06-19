@@ -2,12 +2,6 @@ import { useWindowContext } from '../../../contexts/WindowContext';
 import { Diagram } from '../../../types/Diagram';
 import { Action } from '../../../types/Action';
 import DiagramForm from '../../forms/DiagramForm/DiagramForm';
-import { useDiagramContext } from '../../../contexts/DiagramContext';
-import { useLogicNodeContext } from '../../../contexts/LogicNodeContext';
-import { useActionContext } from '../../../contexts/ActionContext';
-import { useEventContext } from '../../../contexts/EventContext';
-import { useStateContext } from '../../../contexts/StateContext';
-import { useVariableContext } from '../../../contexts/VariableContext';
 import { LogicNode } from '../../../types/LogicNode';
 import { Variable } from '../../../types/Variable';
 import { Event } from '../../../types/Event';
@@ -23,7 +17,6 @@ import { ReactFlowProvider } from 'reactflow';
 import ActionFormContextProvider from '../../forms/ActionForm/ActionFormContext';
 import { ExtSim } from '../../../types/ExtSim';
 import ExtSimForm from '../../forms/ExtSimForm/ExtSimForm';
-import { useExtSimContext } from '../../../contexts/ExtSimContext';
 import { GetModelItemsReferencedBy } from '../../../utils/ModelReferences';
 import { MainItemTypes } from '../../../types/ItemTypes';
 import VariableFormContextProvider from '../../forms/VariableForm/VariableFormContext';
@@ -32,7 +25,7 @@ import EventFormContextProvider from '../../forms/EventForm/EventFormContext';
 // Define your Option and OptionsMapping types
 export interface Option {
   label: string;
-  action: (content: any) => void; // Pass context values as parameters
+  action: (content: any, handleDelete?: any) => void; // Pass context values as parameters
 }
 
 interface OptionsMapping {
@@ -41,14 +34,6 @@ interface OptionsMapping {
 
 export const useOptionsMapping = () => {
   const { addWindow } = useWindowContext();
-  const { deleteDiagram } = useDiagramContext();
-  const { deleteLogicNode } = useLogicNodeContext();
-  const { deleteAction } = useActionContext();
-  const { deleteEvent } = useEventContext();
-  const { deleteState, getStateByStateName } = useStateContext();
-  const { deleteVariable } = useVariableContext();
-  const { deleteExtSim } = useExtSimContext();
-
   const optionsMapping: OptionsMapping = {
     Diagrams: [
       {
@@ -69,22 +54,22 @@ export const useOptionsMapping = () => {
       },
       {
         label: 'Delete',
-        action: (diagram: Diagram) => {
-          // delete all states tied to the diagram
-          diagram.states.map((name) => {
-            const state = getStateByStateName(name);
-            deleteState(state.id);
-          });
-          deleteDiagram(diagram.id);
+        action: (
+          diagram: Diagram,
+          handleDelete: (itemToDelete: Diagram, itemToDeleteType: MainItemTypes) => void,
+        ) => {
+          handleDelete(diagram, MainItemTypes.Diagram);
         },
       },
       { label: 'Make Template', action: () => null },
       { label: 'Export', action: () => null },
-      { label: 'Copy', action: (diagram: Diagram) => {
-        const copiedModel = GetModelItemsReferencedBy(diagram.name, MainItemTypes.Diagram, 1);
-        navigator.clipboard.writeText(JSON.stringify(copiedModel, null, 2));
-
-      } },
+      {
+        label: 'Copy',
+        action: (diagram: Diagram) => {
+          const copiedModel = GetModelItemsReferencedBy(diagram.name, MainItemTypes.Diagram, 1);
+          navigator.clipboard.writeText(JSON.stringify(copiedModel, null, 2));
+        },
+      },
     ],
     'Logic Tree': [
       {
@@ -110,7 +95,10 @@ export const useOptionsMapping = () => {
       },
       {
         label: 'Delete',
-        action: (logicNode: LogicNode) => deleteLogicNode(logicNode.id),
+        action: (
+          logicNode: LogicNode,
+          handleDelete: (itemToDelete: LogicNode, itemToDeleteType: MainItemTypes) => void,
+        ) => handleDelete(logicNode, MainItemTypes.LogicNode),
       },
     ],
     'External Sims': [
@@ -121,7 +109,10 @@ export const useOptionsMapping = () => {
       },
       {
         label: 'Delete',
-        action: (extSim: ExtSim) => deleteExtSim(extSim.id),
+        action: (
+          extSim: ExtSim,
+          handleDelete: (itemToDelete: ExtSim, itemToDeleteType: MainItemTypes) => void,
+        ) => handleDelete(extSim, MainItemTypes.ExtSim),
       },
     ],
     Actions: [
@@ -136,7 +127,13 @@ export const useOptionsMapping = () => {
           );
         },
       },
-      { label: 'Delete', action: (action: Action) => deleteAction(action.id) },
+      {
+        label: 'Delete',
+        action: (
+          action: Action,
+          handleDelete: (itemToDelete: Action, itemToDeleteType: MainItemTypes) => void,
+        ) => handleDelete(action, MainItemTypes.Action),
+      },
     ],
     Events: [
       {
@@ -151,7 +148,13 @@ export const useOptionsMapping = () => {
           );
         },
       },
-      { label: 'Delete', action: (event: Event) => deleteEvent(event.id) },
+      {
+        label: 'Delete',
+        action: (
+          event: Event,
+          handleDelete: (itemToDelete: Event, itemToDeleteType: MainItemTypes) => void,
+        ) => handleDelete(event, MainItemTypes.Event),
+      },
     ],
     States: [
       {
@@ -159,7 +162,13 @@ export const useOptionsMapping = () => {
         action: (state: State) =>
           addWindow(`Edit Properties: ${state.name}`, <StateForm stateData={state} />),
       },
-      { label: 'Delete', action: (state: State) => deleteState(state.id) },
+      {
+        label: 'Delete',
+        action: (
+          state: State,
+          handleDelete: (itemToDelete: State, itemToDeleteType: MainItemTypes) => void,
+        ) => handleDelete(state, MainItemTypes.State),
+      },
     ],
     Variables: [
       {
@@ -174,7 +183,10 @@ export const useOptionsMapping = () => {
       },
       {
         label: 'Delete',
-        action: (variable: Variable) => deleteVariable(variable.id),
+        action: (
+          variable: Variable,
+          handleDelete: (itemToDelete: Variable, itemToDeleteType: MainItemTypes) => void,
+        ) => handleDelete(variable, MainItemTypes.Variable),
       },
     ],
   };

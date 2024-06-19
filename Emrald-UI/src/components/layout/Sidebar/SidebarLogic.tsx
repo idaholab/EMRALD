@@ -6,6 +6,13 @@ import { useEventContext } from '../../../contexts/EventContext';
 import { useStateContext } from '../../../contexts/StateContext';
 import { useVariableContext } from '../../../contexts/VariableContext';
 import { useExtSimContext } from '../../../contexts/ExtSimContext';
+import { currentDiagram } from '../../diagrams/EmraldDiagram/EmraldDiagram';
+import { GetModelItemsReferencedBy } from '../../../utils/ModelReferences';
+import { MainItemTypes } from '../../../types/ItemTypes';
+import { Diagram } from '../../../types/Diagram';
+import { State } from '../../../types/State';
+import { Action } from '../../../types/Action';
+import { Event } from '../../../types/Event';
 
 export function useSidebarLogic() {
   const { diagrams } = useDiagramContext();
@@ -15,11 +22,26 @@ export function useSidebarLogic() {
   const { states } = useStateContext();
   const { variables } = useVariableContext();
   const { extSims } = useExtSimContext();
-  
+
   const [isDiagramAccordionOpen, setIsDiagramAccordionOpen] = useState(false);
   const [isComponentAccordionOpen, setIsComponentAccordionOpen] = useState(false);
-
   const [componentGroup, setComponentGroup] = useState('all');
+  const [currDiagram, setCurrDiagram] = useState<Diagram>(currentDiagram.value);
+  const [deleteConfirmation, setDeleteConfirmation] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState<Event | State | Action | Diagram | undefined>();
+  const [itemToDeleteType, setItemToDeleteType] = useState<MainItemTypes>();
+  const { deleteState, getStateByStateName } = useStateContext();
+  const { deleteDiagram } = useDiagramContext();
+  const { deleteLogicNode } = useLogicNodeContext();
+  const { deleteExtSim } = useExtSimContext();
+  const { deleteAction } = useActionContext();
+  const { deleteEvent } = useEventContext();
+  const { deleteVariable } = useVariableContext();
+
+  const onDiagramChange = (newDiagram: Diagram) => {
+    // Update currDiagram state
+    setCurrDiagram(newDiagram);
+  };
 
   const diagramPanels = [
     { type: 'Diagrams', data: diagrams },
@@ -30,10 +52,13 @@ export function useSidebarLogic() {
   const stateItems = useMemo(() => {
     if (componentGroup === 'all') {
       return states;
+    } else if (componentGroup === 'local') {
+      const copyModel = GetModelItemsReferencedBy(currDiagram.name, MainItemTypes.Diagram, 2);
+      return copyModel.StateList;
     } else {
-      return states // TODO: Add condition for what to show when states are local
+      return states; // TODO: Add condition for what to show when states are local
     }
-  }, [componentGroup, states]);
+  }, [componentGroup, states, currDiagram]);
 
   const variableItems = useMemo(() => {
     if (componentGroup === 'all') {
@@ -48,29 +73,35 @@ export function useSidebarLogic() {
       return actions;
     } else if (componentGroup === 'global') {
       return actions.filter((item) => item.mainItem === true);
+    } else if (componentGroup === 'local') {
+      const copyModel = GetModelItemsReferencedBy(currDiagram.name, MainItemTypes.Diagram, 2);
+      return copyModel.ActionList;
     } else {
       return [];
     }
-  }, [componentGroup, actions]);
+  }, [componentGroup, actions, currDiagram]);
 
   const eventItems = useMemo(() => {
     if (componentGroup === 'all') {
       return events;
     } else if (componentGroup === 'global') {
       return events.filter((item) => item.mainItem === true);
+    } else if (componentGroup === 'local') {
+      const copyModel = GetModelItemsReferencedBy(currDiagram.name, MainItemTypes.Diagram, 2);
+      return copyModel.EventList;
     } else {
       return [];
     }
-  }, [componentGroup, events]);
+  }, [componentGroup, events, currDiagram]);
 
   const componentPanels = useMemo(() => {
     if (componentGroup === 'global') {
       return [
         { type: 'Actions', data: actionItems },
         { type: 'Events', data: eventItems },
-        { type: 'Variables', data: variableItems },      ];
-    }
-    else if (componentGroup === 'local') {
+        { type: 'Variables', data: variableItems },
+      ];
+    } else if (componentGroup === 'local') {
       return [
         { type: 'Actions', data: actionItems },
         { type: 'Events', data: eventItems },
@@ -83,7 +114,7 @@ export function useSidebarLogic() {
       { type: 'States', data: stateItems },
       { type: 'Variables', data: variableItems },
     ];
-  }, [componentGroup, actions, events, variables, states]);
+  }, [componentGroup, actionItems, eventItems, variables, stateItems]);
 
   const bothAccordionsOpen = useMemo(() => {
     return isDiagramAccordionOpen && isComponentAccordionOpen;
@@ -97,24 +128,12 @@ export function useSidebarLogic() {
 
   const handleMouseDown = () => {
     document.addEventListener('mouseup', handleMouseUp as EventListener, true);
-    document.addEventListener(
-      'mousemove',
-      handleMouseMove as EventListener,
-      true,
-    );
+    document.addEventListener('mousemove', handleMouseMove as EventListener, true);
   };
 
   const handleMouseUp = () => {
-    document.removeEventListener(
-      'mouseup',
-      handleMouseUp as EventListener,
-      true,
-    );
-    document.removeEventListener(
-      'mousemove',
-      handleMouseMove as EventListener,
-      true,
-    );
+    document.removeEventListener('mouseup', handleMouseUp as EventListener, true);
+    document.removeEventListener('mousemove', handleMouseMove as EventListener, true);
   };
 
   const handleMouseMove = useCallback(
@@ -126,16 +145,66 @@ export function useSidebarLogic() {
     },
     [minDrawerWidth, maxDrawerWidth],
   );
+  const closeDeleteConfirmation = () => {
+    // * Closes the confirmation dialog and resets the state items
+    setDeleteConfirmation(false);
+    setItemToDelete(undefined);
+  };
+  const deleteItem = () => {
+    // delete all states tied to the diagram
+    if (!itemToDelete) return;
+    if (itemToDeleteType === MainItemTypes.Diagram) {
+      // @ts-ignore
+      itemToDelete.states.map((name: string) => {
+        const state = getStateByStateName(name);
+        deleteState(state.id);
+      });
+      deleteDiagram(itemToDelete.id);
+      closeDeleteConfirmation();
+    }
+    if (itemToDeleteType === MainItemTypes.LogicNode) {
+      deleteLogicNode(itemToDelete.id);
+    }
+    if (itemToDeleteType === MainItemTypes.ExtSim) {
+      deleteExtSim(itemToDelete.id);
+    }
+    if (itemToDeleteType === MainItemTypes.Action) {
+      deleteAction(itemToDelete.id);
+    }
+    if (itemToDeleteType === MainItemTypes.Event) {
+      deleteEvent(itemToDelete.id);
+    }
+    if (itemToDeleteType === MainItemTypes.State) {
+      deleteState(itemToDelete.id);
+    }
+    if (itemToDeleteType === MainItemTypes.Variable) {
+      deleteVariable(itemToDelete.id);
+    }
+    setDeleteConfirmation(false);
+  };
+  const handleDelete = (itemToDelete: any, itemType: MainItemTypes) => {
+    setDeleteConfirmation(true);
+    setItemToDelete(itemToDelete);
+    setItemToDeleteType(itemType);
+  };
 
   return {
-    setIsDiagramAccordionOpen,
-    setIsComponentAccordionOpen,
     componentGroup,
-    setComponentGroup,
     bothAccordionsOpen,
     drawerWidth,
-    handleMouseDown,
     diagramPanels,
-    componentPanels
+    componentPanels,
+    deleteConfirmation,
+    itemToDelete,
+    setDeleteConfirmation,
+    setItemToDelete,
+    closeDeleteConfirmation,
+    deleteItem,
+    handleDelete,
+    setIsDiagramAccordionOpen,
+    setIsComponentAccordionOpen,
+    setComponentGroup,
+    handleMouseDown,
+    onDiagramChange,
   };
 }
