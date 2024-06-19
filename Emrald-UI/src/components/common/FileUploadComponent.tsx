@@ -30,8 +30,6 @@ const FileUploadComponent: React.FC<FileUploadComponentProps> = ({
   setFile,
   disabled
 }) => {
-  const [content, setContent] = React.useState<any>();
-
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files ? e.target.files[0] : null;
     if (file) {
@@ -40,8 +38,6 @@ const FileUploadComponent: React.FC<FileUploadComponentProps> = ({
         if (event.target && typeof event.target.result === 'string') {
           try {
             console.log(event.target.result);
-            const jsonContent = JSON.parse(event.target.result);
-            setContent(jsonContent);  // Update JSON content state
           } catch (error) {
             console.error("Error parsing JSON file:", error);
           }
@@ -50,13 +46,11 @@ const FileUploadComponent: React.FC<FileUploadComponentProps> = ({
       reader.readAsText(file);
       setFile(file);
     } else {
-      setContent(null);
       setFile(null);
     }
   };
 
   const handleClear = () => {
-    setContent(null);
     setFile(null);
   };
 

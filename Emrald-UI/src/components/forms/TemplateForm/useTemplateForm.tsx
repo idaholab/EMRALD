@@ -173,10 +173,10 @@ export const useTemplateForm = (templatedData: EMRALD_Model) => {
   const deleteGroup = () => {
     setGroupList((prevGroups) => {
       const updatedGroups = prevGroups
-      .map((group) => deleteItem(group, currentGroup?.name || ''))
-      .filter((group) => group !== null);
+        .map((group) => deleteItem(group, currentGroup?.name || ''))
+        .filter((group): group is Group => group !== null);
       localStorage.setItem('templateGroups', JSON.stringify(updatedGroups));
-      return updatedGroups
+      return updatedGroups;
     });
     setCurrentGroup(undefined);
     setShowGroupDialog(false);
@@ -188,7 +188,7 @@ export const useTemplateForm = (templatedData: EMRALD_Model) => {
     } else if (item.subgroup) {
       const newChildren = item.subgroup
         .map((child) => deleteItem(child, name))
-        .filter((child) => child !== null); // Filter out null values from children array
+        .filter((child): child is Group => child !== null); // Type guard to filter out null values
       return {
         ...item,
         subgroup: newChildren,

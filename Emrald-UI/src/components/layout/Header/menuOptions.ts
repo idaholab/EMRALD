@@ -1,5 +1,4 @@
 import { appData, clearCacheData } from '../../../hooks/useAppData';
-import { EMRALD_Model } from '../../../types/EMRALD_Model';
 import { upgradeModel, validateModel } from '../../../utils/Upgrades/upgrade';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -287,7 +286,3 @@ export const downloadOptions: MenuOption[] = [
     },
   },
 ];
-
-function isEmraldModel(data: EMRALD_Model): data is EMRALD_Model {
-  return (data as EMRALD_Model).emraldVersion !== undefined;
-}
