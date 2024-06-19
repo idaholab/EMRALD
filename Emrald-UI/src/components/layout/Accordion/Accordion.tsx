@@ -12,6 +12,7 @@ import { Menu, MenuItem } from '@mui/material';
 import { EMRALD_Model } from '../../../types/EMRALD_Model';
 import { useWindowContext } from '../../../contexts/WindowContext';
 import ImportForm from '../../forms/ImportForm/ImportForm';
+import { upgradeModel } from '../../../utils/Upgrades/upgrade';
 
 interface MenuAccordionProps {
   panels: AccordionMenuItemType[];
@@ -31,17 +32,20 @@ const MenuAccordion: React.FC<MenuAccordionProps> = ({
   const [notValidModel, setNotValidModel] = useState<boolean>(false);
   const [pastedModel, setPastedModel] = useState<EMRALD_Model>({} as EMRALD_Model);
 
-  const isEmraldModel = (model: any): model is EMRALD_Model => {
-    if (typeof model !== 'string') {
+  const isEmraldModel = (clipboardData: any): clipboardData is EMRALD_Model => {
+    if (typeof clipboardData !== 'string') {
       return false;
     }
+    
     try {
-      //TODO: Add check here using Steve's validateModel to make sure its a valid emrald model.
-      const parsedModel = JSON.parse(model);
-      if (parsedModel.hasOwnProperty('emraldVersion')) {
+      const parsedModel = JSON.parse(clipboardData);
+      const upgradedModel = upgradeModel(clipboardData);
+      if (parsedModel && parsedModel.hasOwnProperty('emraldVersion') || !upgradedModel) {
         setPastedModel(parsedModel);
+      } else {
+        setPastedModel(upgradedModel);
       }
-      return parsedModel.hasOwnProperty('emraldVersion');
+      return parsedModel.hasOwnProperty('emraldVersion') || (upgradedModel && upgradedModel.hasOwnProperty('emraldVersion'));
     } catch (error) {
       return false;
     }

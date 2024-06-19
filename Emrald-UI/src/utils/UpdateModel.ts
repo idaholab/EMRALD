@@ -52,8 +52,9 @@ export const updateSpecifiedModel = ( //Update the provided EMRALD model with al
             case MainItemTypes.LogicNode:
                 itemArray = updatedEMRALDModel.LogicNodeList;
                 break;
-            case MainItemTypes.LogicNode:
-                itemArray = updatedEMRALDModel.templates != undefined ? updatedEMRALDModel.templates : [];
+            case MainItemTypes.Template:
+                updatedEMRALDModel.templates = updatedEMRALDModel.templates !== undefined ? updatedEMRALDModel.templates : [];
+                itemArray = updatedEMRALDModel.templates;
                 break;
             default:
                 //error not a valid type
@@ -92,7 +93,7 @@ export const updateSpecifiedModel = ( //Update the provided EMRALD model with al
 }
 
 export const updateModelAndReferences = ( //Update the main appData EMRALD model with all the item changed in the model provided and references if the name changes
-    item: Diagram | State | Action | Event | Variable | LogicNode | ExtSim, //It is assumed the the EMRALD item passed in has already been udpated with all the object changes
+    item: Diagram | State | Action | Event | Variable | LogicNode | ExtSim | EMRALD_Model, //It is assumed the the EMRALD item passed in has already been udpated with all the object changes
     itemType: MainItemTypes, //This is the type of the object that was updated
 ): Promise<EMRALD_Model> => {
     return new Promise((resolve) => {

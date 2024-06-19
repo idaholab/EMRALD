@@ -5,15 +5,10 @@ import {
   Box,
   Button,
   Checkbox,
-  Collapse,
   Divider,
   FormControl,
   FormControlLabel,
   IconButton,
-  List,
-  ListItemButton,
-  ListItemIcon,
-  ListItemText,
   Menu,
   MenuItem,
   Radio,
@@ -30,14 +25,10 @@ import { DialogComponent, TextFieldComponent } from '../../common';
 // Icons
 import { FaLock } from 'react-icons/fa6';
 import { FaLockOpen } from 'react-icons/fa6';
-import FolderIcon from '@mui/icons-material/Folder';
-import FolderOpenIcon from '@mui/icons-material/FolderOpen';
-import ExpandLess from '@mui/icons-material/ExpandLess';
-import ExpandMore from '@mui/icons-material/ExpandMore';
 // Hook
 import { useTemplateForm } from './useTemplateForm';
 // Types
-import { Group } from '../../../types/ItemTypes';
+import GroupListItems from '../../common/GroupListItems';
 
 interface TemplateDiagramFormProps {
   templatedData: EMRALD_Model;
@@ -57,7 +48,6 @@ const TemplateForm: React.FC<TemplateDiagramFormProps> = ({ templatedData }) => 
     selectedGroup,
     currentGroup,
     groupList,
-    expanded,
     duplicateNameError,
     setFindValue,
     setReplaceValue,
@@ -83,53 +73,11 @@ const TemplateForm: React.FC<TemplateDiagramFormProps> = ({ templatedData }) => 
     handleSave,
     addNewGroup,
     deleteGroup,
-    toggleExpand,
     handleNewGroupNameChange
   } = useTemplateForm(templatedData);
 
-  const renderListItems = (data: Group[], level: number = 1) => {
-    return data.map((item) => (
-      <React.Fragment key={item.name}>
-        <ListItemButton
-          onClick={() => {
-            toggleExpand(item.name);
-            setSelectedGroup(item.name);
-          }}
-          onContextMenu={(e) => handleContextMenu(e, item)}
-          sx={{ backgroundColor: item.name === selectedGroup ? 'lightgreen' : 'white' }}
-        >
-          <ListItemIcon>
-            {expanded.includes(item.name) && item.subgroup && item.subgroup.length > 0 ? (
-              <FolderOpenIcon />
-            ) : (
-              <FolderIcon />
-            )}
-          </ListItemIcon>
-          <ListItemText primary={item.name} />
-          {item.subgroup && item.subgroup.length > 0 && (
-            <>{expanded.includes(item.name) ? <ExpandLess /> : <ExpandMore />}</>
-          )}
-        </ListItemButton>
-
-        {item.subgroup && item.subgroup.length > 0 && (
-          <Collapse in={expanded.includes(item.name)} timeout="auto" unmountOnExit>
-            <List
-              component="div"
-              disablePadding
-              sx={{
-                pl: 3,
-              }}
-            >
-              {renderListItems(item.subgroup, level + 1)}
-            </List>
-          </Collapse>
-        )}
-      </React.Fragment>
-    ));
-  };
-
   return (
-    <Box mx={3}>
+    <Box mx={3} pb={3}>
       <Box mt={2}>
         <Typography variant="h5" fontWeight={'bold'}>
           Create a Template
@@ -158,13 +106,12 @@ const TemplateForm: React.FC<TemplateDiagramFormProps> = ({ templatedData }) => 
           </Button>
         </Box>
         <Box>
-          <List
-            sx={{ width: '100%', maxWidth: 500, bgcolor: 'background.paper' }}
-            component="nav"
-            aria-labelledby="nested-list-subheader"
-          >
-            {renderListItems(groupList)}
-          </List>
+          <GroupListItems 
+            selectedGroup={selectedGroup} 
+            setSelectedGroup={setSelectedGroup} 
+            handleContextMenu={handleContextMenu}
+            highlightSelectedGroup={true}
+          />
         </Box>
       </Box>
       <Divider sx={{ mt: 3 }} />
@@ -248,9 +195,6 @@ const TemplateForm: React.FC<TemplateDiagramFormProps> = ({ templatedData }) => 
                 sx={{
                   '&:last-child td, &:last-child th': { border: 0 },
                   position: 'relative',
-                  ...(row.requiredInImportingModel && (row.type === 'State' || row.type === 'Diagram') && {
-                    backgroundColor: '#f5f5f5',
-                  }),
                   ...(row.exclude && {
                     '&::after': {
                       content: '""',
@@ -372,7 +316,7 @@ const TemplateForm: React.FC<TemplateDiagramFormProps> = ({ templatedData }) => 
         </Table>
       </Box>
       <Box mt={3} textAlign={'right'}>
-        <Button variant="contained" sx={{ mr: 2 }} disabled={!templateName || !templateDesc} onClick={handleSave}>
+        <Button variant="contained" sx={{ mr: 2 }} disabled={!templateName} onClick={handleSave}>
           Save Changes
         </Button>
         <Button variant="contained" color="secondary" onClick={() => handleClose()}>
@@ -384,6 +328,7 @@ const TemplateForm: React.FC<TemplateDiagramFormProps> = ({ templatedData }) => 
         <Divider />
         <MenuItem onClick={() => handleShowGroupDialog('delete')}>Delete Group</MenuItem>
       </Menu>
+
       {showGroupDialog && (
         <DialogComponent
           open={true}

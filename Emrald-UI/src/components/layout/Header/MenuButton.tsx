@@ -23,7 +23,7 @@ const MenuButton: React.FC<MenuButtonProps> = ({
   handleClick,
 }) => {
   const { assembleData, newProject, mergeNewData, populateNewData } = useAssembledData();
-  const { templatesList, mergeTemplateList, clearTemplateList } = useTemplateContext();
+  const { templatesList, mergeTemplateToList, clearTemplateList } = useTemplateContext();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [subAnchorEl, setSubAnchorEl] = useState<null | HTMLElement>(null);
   const [open, setOpen] = useState<boolean>(false);
@@ -97,7 +97,7 @@ const MenuButton: React.FC<MenuButtonProps> = ({
     let content; // Declare the variable outside the if statement
     switch (option.label) {
       case 'Import Templates':
-        option.onClick(mergeTemplateList);
+        option.onClick(mergeTemplateToList);
         break;
       case 'Export Templates':
         content = option.onClick(templatesList.value);

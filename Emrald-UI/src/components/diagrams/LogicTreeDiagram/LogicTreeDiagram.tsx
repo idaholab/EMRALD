@@ -102,6 +102,7 @@ const LogicNodeTreeDiagram: React.FC<LogicNodeTreeDiagramProps> = ({ logicNode }
               nodesDraggable={false}
               nodesConnectable={false}
               zoomOnDoubleClick={false}
+              proOptions={{ hideAttribution: true }}
             >
               <Panel position="top-left">
                 <Box sx={{background: '#fff', p: 1}}>

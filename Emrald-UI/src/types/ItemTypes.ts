@@ -5,7 +5,8 @@ export enum MainItemTypes {
   Event = "Event",
   ExtSim = "ExtSim",
   LogicNode = "LogicNode",
-  Variable = "Variable"
+  Variable = "Variable",
+  Template = "Template",
 }
 
 /**

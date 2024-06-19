@@ -34,6 +34,8 @@ interface MainDetailsFormProps<T extends MainItemTypes> {
   type: ValueTypes<T>;
   typeOptions: { value: string; label: string }[];
   typeDisabled?: boolean;
+  nameDisabled?: boolean;
+  descDisabled?: boolean;
   name: string;
   desc: string;
   error?: boolean;
@@ -53,6 +55,9 @@ const MainDetailsForm = <T extends MainItemTypes>({
   type,
   typeLabel,
   typeOptions,
+  typeDisabled,
+  nameDisabled,
+  descDisabled,
   desc,
   error,
   errorMessage,
@@ -73,6 +78,7 @@ const MainDetailsForm = <T extends MainItemTypes>({
           labelId="type-select-label"
           id="type-select"
           value={type as string} // Cast type as string
+          disabled={typeDisabled}
           onChange={(event: SelectChangeEvent<string>) => {
             setType(event.target.value as ValueTypes<T>);
             handleTypeChange && handleTypeChange(event.target.value as VariableType);
@@ -92,6 +98,7 @@ const MainDetailsForm = <T extends MainItemTypes>({
         margin="normal"
         variant="outlined"
         size="small"
+        disabled={nameDisabled}
         sx={{ mb: 0 }}
         value={name}
         onChange={(e) => handleNameChange(e.target.value)}
@@ -103,6 +110,7 @@ const MainDetailsForm = <T extends MainItemTypes>({
         label="Description"
         variant="outlined"
         size="small"
+        disabled={descDisabled}
         fullWidth
         multiline
         margin="normal"

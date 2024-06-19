@@ -29,6 +29,7 @@ import { MainItemTypes } from '../../../types/ItemTypes';
 import VariableFormContextProvider from '../../forms/VariableForm/VariableFormContext';
 import EventFormContextProvider from '../../forms/EventForm/EventFormContext';
 import TemplateForm from '../../forms/TemplateForm/TemplateForm';
+import { EMRALD_SchemaVersion } from '../../../types/EMRALD_Model';
 
 // Define your Option and OptionsMapping types
 export interface Option {
@@ -80,7 +81,7 @@ export const useOptionsMapping = () => {
         },
       },
       { label: 'Make Template', action: (diagram: Diagram) => {
-          const copiedModel = GetModelItemsReferencedBy(diagram.name, MainItemTypes.Diagram, 1)
+          const copiedModel = GetModelItemsReferencedBy(diagram.name, MainItemTypes.Diagram, 2)
           addWindow(
             `Create Template`,
             <TemplateForm templatedData={copiedModel} />,
@@ -90,11 +91,17 @@ export const useOptionsMapping = () => {
       },
       { label: 'Export', action: () => null },
       { label: 'Copy', action: (diagram: Diagram) => {
-        const copiedModel = GetModelItemsReferencedBy(diagram.name, MainItemTypes.Diagram, 1)
+        const copiedModel = GetModelItemsReferencedBy(diagram.name, MainItemTypes.Diagram, 2)
+        console.log(copiedModel);
+        copiedModel.name = diagram.name;
+        copiedModel.emraldVersion = EMRALD_SchemaVersion;
         navigator.clipboard.writeText(JSON.stringify(copiedModel, null, 2));
       } },
       { label: 'Copy Recursive', action: (diagram: Diagram) => {
-        const copiedModel = GetModelItemsReferencedBy(diagram.name, MainItemTypes.Diagram, 2)
+        const copiedModel = GetModelItemsReferencedBy(diagram.name, MainItemTypes.Diagram, 0)
+        console.log(copiedModel);
+        copiedModel.name = diagram.name;
+        copiedModel.emraldVersion = EMRALD_SchemaVersion;
         navigator.clipboard.writeText(JSON.stringify(copiedModel, null, 2));
       } },
     ],

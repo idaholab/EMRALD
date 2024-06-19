@@ -16,7 +16,8 @@ interface Window {
 
 interface WindowContextType {
   windows: Window[];
-  addWindow: (title: string, content: React.ReactNode, initialPosition?: WindowPosition) => void;
+  activeWindowId: string | null;
+  addWindow: (title: string, content: React.ReactNode, position?: WindowPosition, windowId?: string | null, closePrevWindowId?: string) => void;
   updateTitle: (currentTitle: string, newTitle: string) => void;
   bringToFront: (window: Window) => void;
   handleClose: (id?: string) => void;
@@ -73,7 +74,7 @@ export const WindowProvider: React.FC<WindowProviderProps> = ({ children }) => {
       }
     }
   };
-  const addWindow = (title: string, content: React.ReactNode, position?: WindowPosition, windowId?: string,): void => {
+  const addWindow = (title: string, content: React.ReactNode, position?: WindowPosition, windowId?: string | null, closePrevWindowId?: string): void => {
     const existingWindow = windows.find((window) => window.title === title || window.id === windowId);
 
     if (existingWindow) {
@@ -96,8 +97,13 @@ export const WindowProvider: React.FC<WindowProviderProps> = ({ children }) => {
       maximized: false,
       content,
     };
-  
-    setWindows([...windows, newWindow]);
+    const updatedWindows = [...windows, newWindow];
+    // Close the previous window if closePrevWindowId is provided
+    if (closePrevWindowId) {
+      setWindows(updatedWindows.filter((window) => window.id !== closePrevWindowId));
+    } else {
+      setWindows(updatedWindows);
+    }
     setActiveWindowId(newWindow.id); // Set the active window ID to the newly added window
     setNextWindowId(nextWindowId + 1);
   };
@@ -106,8 +112,6 @@ export const WindowProvider: React.FC<WindowProviderProps> = ({ children }) => {
   const updateTitle = (currentTitle: string, newTitle: string): void => {
     const windowToUpdate = windows.find((window) => window.title === currentTitle);
     if (windowToUpdate) {
-      console.log(windowToUpdate.content);
-      console.log(windowToUpdate.initialPosition);
       addWindow(newTitle, windowToUpdate.content, windowToUpdate.initialPosition, windowToUpdate.id);
     }
   };
@@ -144,6 +148,7 @@ export const WindowProvider: React.FC<WindowProviderProps> = ({ children }) => {
   // Context value to be provided
   const contextValue: WindowContextType = {
     windows,
+    activeWindowId,
     addWindow,
     updateTitle,
     bringToFront,

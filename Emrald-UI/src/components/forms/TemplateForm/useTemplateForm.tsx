@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { EMRALD_Model } from '../../../types/EMRALD_Model';
-// import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuidv4 } from 'uuid';
 import { useWindowContext } from '../../../contexts/WindowContext';
 import { Action } from '../../../types/Action';
 import { Event } from '../../../types/Event';
@@ -11,6 +11,7 @@ import { LogicNode } from '../../../types/LogicNode';
 import { Variable } from '../../../types/Variable';
 import { ExtSim } from '../../../types/ExtSim';
 import { useTemplateContext } from '../../../contexts/TemplateContext';
+import { updateSpecifiedModel } from '../../../utils/UpdateModel';
 
 interface TemplatedItem {
   type: MainItemTypes;
@@ -25,7 +26,7 @@ interface TemplatedItem {
 }
 
 export const useTemplateForm = (templatedData: EMRALD_Model) => {
-  const {groups, templatesList, createTemplate} = useTemplateContext();
+  const {groups, templatesList, temporaryTemplates, createTemplate, findGroupHierarchyByGroupName} = useTemplateContext();
   const [findValue, setFindValue] = useState<string>('');
   const [replaceValue, setReplaceValue] = useState<string>('');
   const [templatedItems, setTemplatedItems] = useState<TemplatedItem[]>([]);
@@ -147,15 +148,6 @@ export const useTemplateForm = (templatedData: EMRALD_Model) => {
     }
     return items.sort((a, b) => (a.requiredInImportingModel > b.requiredInImportingModel ? -1 : 1));  
   };
-
-  /** Manage groups **/
-  // useEffect(() => {
-  //   console.log(groups);
-  //   console.log(groupList);
-  //   setGroupList((prevGroups) => {
-  //     return [...prevGroups, ...groups];
-  //   });
-  // }, [groups])
 
   const addNewGroup = () => {
     setGroupList((prevGroups) => {
@@ -315,25 +307,44 @@ export const useTemplateForm = (templatedData: EMRALD_Model) => {
     updatedItems[index].requiredInImportingModel = required;
     setTemplatedItems(updatedItems);
   };
-
+  
   const handleApply = () => {
-    const updatedItems = templatedItems.map((item) => {
-      if (item.newName.includes(findValue)) {
-        return {
-          ...item,
-          newName: item.newName.replace(findValue, replaceValue),
-        };
-      }
-      return item;
+    setTemplatedItems((prevItems) => {
+      const updatedItems = prevItems.map((item) => {
+        if (item.newName.includes(findValue) && !item.locked) {
+          const newName = item.newName.replace(new RegExp(findValue, 'g'), replaceValue);
+          console.log(`Changing "${item.newName}" to "${newName}"`);
+          return {
+            ...item,
+            newName: newName,
+          };
+        }
+        return item;
+      });
+      return updatedItems;
     });
-
-    setTemplatedItems(updatedItems);
   };
 
   const handleSave = () => {
+    templatedData.id = uuidv4();
+    templatedData.name = templateName;
+    templatedData.desc = templateDesc;
+    templatedData.group = findGroupHierarchyByGroupName(groups, selectedGroup);
+  
+    // Go through all of the renamed items and update the pasted model
+    for (let i = 0; i < templatedItems.length; i++) {
+      const item = templatedItems[i];
+      if (item.action === 'rename') {
+        const itemCopy = structuredClone(item.emraldItem);
+        itemCopy.name = item.newName;
+        updateSpecifiedModel(itemCopy, item.type, templatedData, false);
+        item.emraldItem.id = uuidv4();
+      }
+    }
+    // Proceed with creating the template and closing the window
+    createTemplate(templatedData);
     handleClose();
   };
-
   return {
     findValue,
     replaceValue,
@@ -347,6 +358,7 @@ export const useTemplateForm = (templatedData: EMRALD_Model) => {
     newGroupName,
     currentGroup,
     groupList,
+    temporaryTemplates,
     expanded,
     duplicateNameError,
     setFindValue,
