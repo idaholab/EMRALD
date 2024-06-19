@@ -144,7 +144,6 @@ const TemplateContextProvider: React.FC<EmraldContextWrapperProps> = ({ children
   }, [groups]);
 
   const addTemplateToModel = async (newTemplate: EMRALD_Model) => {
-    // const templateToAdd = getTemplateByTemplateId(newTemplateId);
     if (!newTemplate) { return; }
     var updatedModel: EMRALD_Model = await updateModelAndReferences(
       newTemplate,
