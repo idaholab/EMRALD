@@ -20,18 +20,24 @@ export class Upgrade
         this._emraldVersion = 0.0;
         this._oldModelTxt = modelTxt;
         let modelObj = null;
-        if(modelTxt != ""){
-            modelObj = JSON.parse(modelTxt);
-        
-            //using emraldVersion for now
-            this._emraldVersion = ('schemaVerson' in modelObj) ? modelObj.emraldVersion : null;
-            if (this._emraldVersion == null) //if no emraldVersion use old version tag.
-                this._emraldVersion = ('verson' in modelObj) ? modelObj.version : 0.0;
-        }
+
         this._newModelTxt = "";
         this._newModel = undefined;
         this._emraldVersion = 0.0;
         this._errors = [];
+        if(modelTxt != ""){
+            modelObj = JSON.parse(modelTxt);
+
+            //using emraldVersion for now
+            try {
+                this._emraldVersion = ('emraldVersion' in modelObj) ? modelObj.emraldVersion : null;
+                if (this._emraldVersion == null) //if no emraldVersion use old version tag.
+                    this._emraldVersion = ('version' in modelObj) ? modelObj.version : 0.0;
+            } catch {
+                this._errors.push("Invalid JSON format");
+            }   
+        }
+
     }
 
 

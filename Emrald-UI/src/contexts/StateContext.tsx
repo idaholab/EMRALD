@@ -12,7 +12,7 @@ import { MainItemTypes } from '../types/ItemTypes';
 interface StateContextType {
   states: State[];
   statesList: ReadonlySignal<State[]>;
-  createState: (newState: State) => void;
+  createState: (newState: State) => Promise<void>;
   updateState: (updatedState: State) => void;
   updateStateEvents: (stateName: string, event: Event) => void;
   updateStateEventActions: (stateName: string, eventName: string, action: Action) => void;

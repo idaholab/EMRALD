@@ -5,7 +5,7 @@ import { signal } from '@preact/signals-react';
 import { EMRALD_Model } from '../types/EMRALD_Model';
 
 const storedData = sessionStorage.getItem('appData');
-const upgrade = upgradeModel(3.0, JSON.stringify(emraldData));
+const upgrade = upgradeModel(JSON.stringify(emraldData));
 
 export const appData = signal<EMRALD_Model>(storedData ? JSON.parse(storedData) : upgrade);
 
@@ -41,6 +41,7 @@ export const updateAppData = (newData: any, undoData?: any) => {
 
 export const clearCacheData = () => {
   sessionStorage.clear();
+  localStorage.clear();
 };
 
 export const useAppData = () => {

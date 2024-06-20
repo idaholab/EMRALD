@@ -76,6 +76,7 @@ const EmraldDiagram: React.FC<EmraldDiagramProps> = ({ diagram }) => {
             connectionLineComponent={CustomConnectionLine}
             onNodeDragStop={onNodeDragStop}
             isValidConnection={isValidConnection}
+            proOptions={{ hideAttribution: true }}
             fitView
             nodeTypes={nodeTypes}
           >

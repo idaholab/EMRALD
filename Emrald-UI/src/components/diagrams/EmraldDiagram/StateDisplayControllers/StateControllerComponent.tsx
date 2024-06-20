@@ -29,8 +29,8 @@ const StateControllerComponent: React.FC<StateControllerComponentProps> = ({ typ
     <div className={`state-node__${type}-actions`}>
       <DiagramAccordion
         expanded={expandedPanel}
-        aria-controls="panel1a-content"
-        id="panel1a-header"
+        aria-controls={`panel-${state.name}-${type}-content`}
+        id={`panel-${state.name}-${type}-header`}
         onClick={() => setExpandedPanel(!expandedPanel)}
       >
         <DropTargetComponent

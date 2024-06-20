@@ -5,7 +5,8 @@ export enum MainItemTypes {
   Event = "Event",
   ExtSim = "ExtSim",
   LogicNode = "LogicNode",
-  Variable = "Variable"
+  Variable = "Variable",
+  Template = "Template",
 }
 
 /**
@@ -103,6 +104,10 @@ export enum MainItemTypes {
   */
  export type AccrualVarTableType = "ctMultiplier" | "ctTable"
 
+ export type Group = {
+  name: string;
+  subgroup: Group[] | null;
+};
 /**
  * For event type of etDistribution this is the name of the distribution parameter.
  */

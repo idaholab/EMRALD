@@ -13,7 +13,7 @@ import { ExtSim } from '../types/ExtSim.ts';
 
 
 export const updateSpecifiedModel = ( //Update the provided EMRALD model with all the item changed in the model provided and references if the name changes
-    item: Diagram | State | Action | Event | Variable | LogicNode | ExtSim, //It is assumed the the EMRALD item passed in has already been udpated with all the object changes
+    item: Diagram | State | Action | Event | Variable | LogicNode | ExtSim| EMRALD_Model, //It is assumed the the EMRALD item passed in has already been udpated with all the object changes
     itemType: MainItemTypes, //This is the type of the object that was updated
     model: EMRALD_Model, //model to update
     useCopy: boolean //true - make a copy of the model and return the copy. false - Modify the passed in model directly
@@ -52,6 +52,10 @@ export const updateSpecifiedModel = ( //Update the provided EMRALD model with al
             case MainItemTypes.LogicNode:
                 itemArray = updatedEMRALDModel.LogicNodeList;
                 break;
+            case MainItemTypes.Template:
+                updatedEMRALDModel.templates = updatedEMRALDModel.templates !== undefined ? updatedEMRALDModel.templates : [];
+                itemArray = updatedEMRALDModel.templates;
+                break;
             default:
                 //error not a valid type
                 console.log("Error: Invalid type for updateModelAndReferences");
@@ -89,7 +93,7 @@ export const updateSpecifiedModel = ( //Update the provided EMRALD model with al
 }
 
 export const updateModelAndReferences = ( //Update the main appData EMRALD model with all the item changed in the model provided and references if the name changes
-    item: Diagram | State | Action | Event | Variable | LogicNode | ExtSim, //It is assumed the the EMRALD item passed in has already been udpated with all the object changes
+    item: Diagram | State | Action | Event | Variable | LogicNode | ExtSim | EMRALD_Model, //It is assumed the the EMRALD item passed in has already been udpated with all the object changes
     itemType: MainItemTypes, //This is the type of the object that was updated
 ): Promise<EMRALD_Model> => {
     return new Promise((resolve) => {

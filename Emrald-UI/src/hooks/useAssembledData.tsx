@@ -5,38 +5,26 @@ import { useExtSimContext } from '../contexts/ExtSimContext';
 import { useLogicNodeContext } from '../contexts/LogicNodeContext';
 import { useModelDetailsContext } from '../contexts/ModelDetailsContext';
 import { useStateContext } from '../contexts/StateContext';
+import { useTemplateContext } from '../contexts/TemplateContext';
 import { useVariableContext } from '../contexts/VariableContext';
 import { useWindowContext } from '../contexts/WindowContext';
 import { EMRALD_Model } from '../types/EMRALD_Model';
-import { upgradeModel } from '../utils/Upgrades/upgrade';
 import { updateAppData } from './useAppData';
+import ImportForm from '../components/forms/ImportForm/ImportForm';
 
 export function useAssembledData() {
   // const { updateAppData } = useAppData();
-  const {
-    id,
-    name,
-    desc,
-    emraldVersion,
-    version,
-    updateName,
-    updateDescription,
-    updateVersion,
-  } = useModelDetailsContext();
-  const { diagrams, clearDiagramList, newDiagramList, mergeDiagramList } =
-    useDiagramContext();
-  const {
-    logicNodes,
-    clearLogicNodeList,
-    newLogicNodeList,
-  } = useLogicNodeContext();
+  const { id, name, desc, emraldVersion, version, updateName, updateDescription, updateVersion } =
+    useModelDetailsContext();
+  const { diagrams, clearDiagramList, newDiagramList } = useDiagramContext();
+  const { logicNodes, clearLogicNodeList, newLogicNodeList } = useLogicNodeContext();
   const { actions, clearActionList, newActionList } = useActionContext();
   const { events, clearEventList, newEventList } = useEventContext();
   const { states, clearStateList, newStateList } = useStateContext();
-  const { variables, clearVariableList, newVariableList } =
-    useVariableContext();
-  const { newExtSimList } = useExtSimContext();
-  const { closeAllWindows } = useWindowContext();
+  const { variables, clearVariableList, newVariableList } = useVariableContext();
+  const { newExtSimList, clearExtSimList } = useExtSimContext();
+  const { newTemplateList, clearTemplateList, mergeTemplateToList } = useTemplateContext();
+  const { addWindow, closeAllWindows } = useWindowContext();
   // ... get data from other contexts
 
   const newProject = () => {
@@ -49,6 +37,8 @@ export function useAssembledData() {
     clearEventList();
     clearVariableList();
     clearStateList();
+    clearTemplateList();
+    clearExtSimList();
   };
 
   const refreshWithNewData = (model: EMRALD_Model) => {
@@ -59,24 +49,13 @@ export function useAssembledData() {
     newEventList(model.EventList || []);
     newVariableList(model.VariableList || []);
     newExtSimList(model.ExtSimList || []);
-  }
+  };
 
   // Function to replace data with imported data from the JSON file
-  const populateNewData = (jsonContent: string) => {
+  const populateNewData = (openedModel: EMRALD_Model) => {
     try {
-      let jsonData;
-
-      if (typeof jsonContent === 'string') {
-        jsonData = JSON.parse(jsonContent);
-      } else {
-        jsonData = jsonContent;
-      }
-
-      const upgrade = upgradeModel(3.0, JSON.stringify(jsonData));
-
-      if (upgrade) {
+      if (openedModel) {
         closeAllWindows(); // close all active windows when opening a new project
-        const openedModel: EMRALD_Model = upgrade;
         updateName(openedModel.name);
         updateDescription(openedModel.desc);
         updateVersion(openedModel.version);
@@ -87,6 +66,7 @@ export function useAssembledData() {
         newEventList(openedModel.EventList || []);
         newVariableList(openedModel.VariableList || []);
         newExtSimList(openedModel.ExtSimList || []);
+        newTemplateList(openedModel.templates || []);
         updateAppData(openedModel);
       } else {
         console.error('Error parsing JSON: Upgrade not successful');
@@ -97,15 +77,28 @@ export function useAssembledData() {
   };
 
   // Function to merge data with imported data from the JSON file
-  const mergeNewData = (jsonContent: string) => {
-    try {
-      const jsonData = JSON.parse(jsonContent);
-      mergeDiagramList(jsonData.DiagramList || []);
-    } catch (error) {
-      console.error('Error parsing JSON:', error);
+  const mergeNewData = (newModel: EMRALD_Model) => {
+    // Merge templates if there are any in the new model.
+    if (newModel.templates && newModel.templates.length > 0) {
+      newModel.templates.forEach((template) => {
+        mergeTemplateToList(template);
+      })
     }
-  };
 
+    // Open import window to make sure conflicts are resolved before merging.
+    addWindow(
+      `Merge Model: ${newModel.name}`,
+      <ImportForm importedData={newModel} fromTemplate={true}/>,
+      {
+        x: 75,
+        y: 25,
+        width: 1300,
+        height: 750,
+      },
+      null,
+    );
+  };
+  
   const assembleData = () => {
     updateVersion(parseFloat((version + 0.1).toFixed(1)));
 

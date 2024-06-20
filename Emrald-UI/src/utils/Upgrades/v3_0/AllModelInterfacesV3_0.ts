@@ -183,8 +183,9 @@ export interface EMRALD_Model {
   /**
    * Templates avaliable to make new diagrams in the model. These are basicly a small model all on there own.
    */
-  templates?: unknown[]
+  templates?: EMRALD_Model[]
   changeLog?: ChangeLog
+  group?: Group
 }
 export interface Diagram {
   /**
@@ -615,4 +616,8 @@ export interface Variable {
    * Flag to indicate if the variable can be monitored in the solver. This removes it from the solver UI if false. Must be true if monitorInSim is true.
    */
   canMonitor?: boolean
+}
+export interface Group {
+  name: string
+  subgroup?: Group[]
 }

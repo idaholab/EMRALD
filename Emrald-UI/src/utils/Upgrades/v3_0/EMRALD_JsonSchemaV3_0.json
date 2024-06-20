@@ -77,10 +77,15 @@
         "templates": {
             "type": "array",
             "description": "Templates avaliable to make new diagrams in the model. These are basicly a small model all on there own.",
-            "items": {}
+            "items": {
+                "$ref": "#"
+            }
         },
         "changeLog": {
             "$ref": "#/definitions/ChangeLog"
+        },
+        "group": {
+            "$ref": "#/definitions/Group"
         }
     },
     "additionalProperties": false,
@@ -822,6 +827,27 @@
                     "diagramName"
                 ]
             }
+        },
+        "Group": {
+            "type": "object",
+            "description": "What catagory grouping this item belongs to. Used to indicate a group for and EMRALD model template",
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "description": "Name of the group"
+                },
+                "subgroup": {
+                    "type": "array",
+                    "description": "Sub group tree path",
+                    "items": {
+                        "$ref": "#/definitions/Group"
+                    }
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "name"
+            ]
         },
         "DiagramType": {
             "type": "string",

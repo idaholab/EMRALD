@@ -9,8 +9,7 @@
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
     "format": "prettier --write ./src",
-    "test": "vitest",
-    "prepare": "npx jsonschema2md -o ../emrald-docs/src/guide/Modeling/schema-md -d src/utils/Upgrades/v3_0/ -e json"
+    "test": "vitest"
   },
   "dependencies": {
     "@dagrejs/dagre": "^1.0.4",
@@ -21,7 +20,7 @@
     "@mui/material": "^5.14.4",
     "@preact/signals": "^1.2.2",
     "@preact/signals-react": "^2.0.1",
-    "ajv": "^8.13.0",
+    "ajv": "^8.16.0",
     "d3": "^7.8.5",
     "d3-timer": "^3.0.1",
     "dayjs": "^1.11.11",

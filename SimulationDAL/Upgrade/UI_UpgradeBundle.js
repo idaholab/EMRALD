@@ -343,20 +343,30 @@ function UpgradeV2_4(modelTxt) {
 function UpgradeV3_0(modelTxt) {
     //var m : EMRALD_ModelV2_4;
     var oldModel = JSON.parse(modelTxt);
+    const newModel = UpgradeV3_0_Recursive(oldModel);
+    const retModel = { newModel: JSON.stringify(newModel), errors: [] };
+    return retModel;
+}
+function UpgradeV3_0_Recursive(oldModel) {
     //do upgrade steps for version change 2.4 to 3.0
     //remove the extra layer between all the lists so we dont have items like - "EventList" : { "Event": {...}, "Event": {...}}
     const newModel = {
         ...oldModel,
+        id: oldModel.id !== undefined ? String(oldModel.id) : undefined,
         DiagramList: oldModel.DiagramList ? oldModel.DiagramList.map(({ Diagram }) => {
-            const { diagramList, forceMerge, singleStates, ...rest } = Diagram; //exclude diagramList, forceMerge, singleStates
+            const { diagramList, forceMerge, singleStates, id, ...rest } = Diagram; //exclude diagramList, forceMerge, singleStates
             return {
                 ...rest, // Spread the rest of the properties
+                id: id !== undefined ? String(id) : undefined,
                 diagramType: mapDiagramType(Diagram.diagramType) // Add the mapped diagramType
             };
         }) : [],
         ExtSimList: oldModel.ExtSimList ? oldModel.ExtSimList.map(({ ExtSim }) => {
-            const { modelRef, states, configData, simMaxTime, varScope, value, resetOnRuns, type, sim3DId, ...rest } = ExtSim; //exclude
-            return rest;
+            const { modelRef, states, configData, simMaxTime, varScope, value, resetOnRuns, type, sim3DId, id, ...rest } = ExtSim; //exclude
+            return {
+                ...rest,
+                id: id !== undefined ? String(id) : undefined,
+            };
         }) : [],
         // StateList: oldModel.StateList ? oldModel.StateList.map(({ State }) => ({ ...State })) : [],
         StateList: oldModel.StateList ? oldModel.StateList.map(({ State }) => {
@@ -365,39 +375,43 @@ function UpgradeV3_0(modelTxt) {
                 .replace(/'/g, '"'); // Replace single quotes with double quotes
             const parsedGeometry = JSON.parse(correctedString);
             var geometryInfo = parsedGeometry;
-            const { geometry, ...rest } = State; //exclude geometry
+            const { geometry, id, ...rest } = State; //exclude geometry
             return {
                 ...rest,
+                id: id !== undefined ? String(id) : undefined,
                 geometryInfo
             };
         }) : [],
         ActionList: oldModel.ActionList ? oldModel.ActionList.map(({ Action }) => {
-            const { itemId, moveFromCurrent, ...rest } = Action; //exclude itemId and move from current
+            const { itemId, moveFromCurrent, id, ...rest } = Action; //exclude itemId and move from current
             var mainItem = Action.mainItem ? Action.mainItem : false;
             return {
                 ...rest,
+                id: id !== undefined ? String(id) : undefined,
                 mainItem
             };
         }) : [],
         EventList: oldModel.EventList ? oldModel.EventList.map(({ Event }) => {
-            const { ...rest } = Event;
+            const { id, ...rest } = Event;
             var ifInState = Event.ifInState != null ?
                 (typeof Event.ifInState === 'string' ? Event.ifInState.toUpperCase() === 'TRUE' : Event.ifInState) :
                 undefined;
             return {
                 ...rest,
+                id: id !== undefined ? String(id) : undefined,
                 ifInState
             };
         }) : [],
         LogicNodeList: oldModel.LogicNodeList ? oldModel.LogicNodeList.map(({ LogicNode }) => ({
             ...LogicNode,
+            id: LogicNode.id !== undefined ? String(LogicNode.id) : undefined,
             isRoot: LogicNode.isRoot !== undefined ? (LogicNode.isRoot || ((LogicNode.rootName != undefined) && (LogicNode.rootName === LogicNode.name))) :
                 (LogicNode.rootName == undefined ? false : (LogicNode.rootName === LogicNode.name)),
             compChildren: mapLogicNode(LogicNode.compChildren)
         })) : [],
         VariableList: oldModel.VariableList ? oldModel.VariableList.map(({ Variable }) => {
             // Destructure Variable, excluding modelRef, states, configData, and simMaxTime
-            const { modelRef = null, states, configData, simMaxTime, $$hashKey, ...rest } = Variable;
+            const { modelRef = null, states, configData, simMaxTime, $$hashKey, id, ...rest } = Variable;
             var regExpLine = undefined;
             if (Variable.regExpLine !== undefined) {
                 if (typeof Variable.regExpLine === 'string')
@@ -421,11 +435,15 @@ function UpgradeV3_0(modelTxt) {
                 });
             return {
                 ...rest, // Spread the rest of the properties
+                id: id !== undefined ? String(id) : undefined,
                 accrualStatesData, // Include mapped accrualStatesData
                 regExpLine,
                 begPosition
             };
-        }) : []
+        }) : [],
+        group: oldModel.group ? convertGroupV2_4ToGroup(oldModel.group) : undefined,
+        //templates: undefined
+        templates: convertTemplates(oldModel.templates)
     };
     //function to map changed diagram type
     function mapLogicNode(childNames) {
@@ -441,6 +459,27 @@ function UpgradeV3_0(modelTxt) {
             default:
                 return "dtMulti";
         }
+    }
+    function convertTemplates(templates) {
+        if (!templates)
+            return undefined;
+        const retModelArray = [];
+        //convert each template to the new version
+        templates.forEach(element => {
+            retModelArray.push(UpgradeV3_0_Recursive(element));
+        });
+        return retModelArray;
+    }
+    function convertGroupV2_4ToGroup(groupV2_4) {
+        if (!groupV2_4)
+            return undefined; // If input is null, return null
+        const { name, subgroup } = groupV2_4;
+        // Recursively convert subgroup if it exists
+        const convertedSubgroup = subgroup ? convertGroupV2_4ToGroup(subgroup) : undefined;
+        return {
+            name,
+            subgroup: convertedSubgroup ? [convertedSubgroup] : undefined
+        };
     }
     //Assign the state default values 
     //type D2 = DiagramV2_4;
@@ -468,8 +507,7 @@ function UpgradeV3_0(modelTxt) {
     });
     newModel.emraldVersion = 3.0;
     newModel.version = 1.0; //set user version for first use of this property
-    const retModel = { newModel: JSON.stringify(newModel), errors: [] };
-    return retModel;
+    return newModel;
 }
 
 class Upgrade {

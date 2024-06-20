@@ -21,6 +21,8 @@ import { GetModelItemsReferencedBy } from '../../../utils/ModelReferences';
 import { MainItemTypes } from '../../../types/ItemTypes';
 import VariableFormContextProvider from '../../forms/VariableForm/VariableFormContext';
 import EventFormContextProvider from '../../forms/EventForm/EventFormContext';
+import TemplateForm from '../../forms/TemplateForm/TemplateForm';
+import { EMRALD_SchemaVersion } from '../../../types/EMRALD_Model';
 
 // Define your Option and OptionsMapping types
 export interface Option {
@@ -61,15 +63,28 @@ export const useOptionsMapping = () => {
           handleDelete(diagram, MainItemTypes.Diagram);
         },
       },
-      { label: 'Make Template', action: () => null },
-      { label: 'Export', action: () => null },
-      {
-        label: 'Copy',
-        action: (diagram: Diagram) => {
-          const copiedModel = GetModelItemsReferencedBy(diagram.name, MainItemTypes.Diagram, 1);
-          navigator.clipboard.writeText(JSON.stringify(copiedModel, null, 2));
-        },
+      { label: 'Make Template', action: (diagram: Diagram) => {
+          const copiedModel = GetModelItemsReferencedBy(diagram.name, MainItemTypes.Diagram, 2)
+          addWindow(
+            `Create Template`,
+            <TemplateForm templatedData={copiedModel} />,
+            { x: 75, y: 25, width: 1300, height: 700 },
+          )
+        }
       },
+      { label: 'Export', action: () => null },
+      { label: 'Copy', action: (diagram: Diagram) => {
+        const copiedModel = GetModelItemsReferencedBy(diagram.name, MainItemTypes.Diagram, 2)
+        copiedModel.name = diagram.name;
+        copiedModel.emraldVersion = EMRALD_SchemaVersion;
+        navigator.clipboard.writeText(JSON.stringify(copiedModel, null, 2));
+      } },
+      { label: 'Copy Recursive', action: (diagram: Diagram) => {
+        const copiedModel = GetModelItemsReferencedBy(diagram.name, MainItemTypes.Diagram, 0)
+        copiedModel.name = diagram.name;
+        copiedModel.emraldVersion = EMRALD_SchemaVersion;
+        navigator.clipboard.writeText(JSON.stringify(copiedModel, null, 2));
+      } },
     ],
     'Logic Tree': [
       {

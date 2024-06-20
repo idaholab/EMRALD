@@ -4,16 +4,22 @@ import { UpgradeReturn } from '../v1_x/UpgradeV1_x'
 import { EMRALD_Model as EMRALD_ModelV2_4 } from '../v2_4/AllModelInterfacesV2_4'
 import { DiagramType as DiagramTypeV2_4 } from '../v2_4/AllModelInterfacesV2_4'
 import { Diagram as DiagramV2_4 } from '../v2_4/AllModelInterfacesV2_4'
+import { Group as GroupV2_4 } from '../v2_4/AllModelInterfacesV2_4'
 
-import { EMRALD_Model } from './AllModelInterfacesV3_0'
+import { EMRALD_Model, Group } from './AllModelInterfacesV3_0'
 import { DiagramType, GeometryInfo } from './AllModelInterfacesV3_0'
 import { StateEvalValue } from './AllModelInterfacesV3_0'
-
-
 
 export function UpgradeV3_0(modelTxt: string): UpgradeReturn {
     //var m : EMRALD_ModelV2_4;
     var oldModel: EMRALD_ModelV2_4 = JSON.parse(modelTxt);
+    const newModel = UpgradeV3_0_Recursive(oldModel)
+    const retModel: UpgradeReturn = { newModel: JSON.stringify(newModel), errors: [] };
+    return retModel;
+}
+
+
+function UpgradeV3_0_Recursive(oldModel: EMRALD_ModelV2_4): EMRALD_Model {
     
     //do upgrade steps for version change 2.4 to 3.0
     //remove the extra layer between all the lists so we dont have items like - "EventList" : { "Event": {...}, "Event": {...}}
@@ -113,7 +119,9 @@ export function UpgradeV3_0(modelTxt: string): UpgradeReturn {
                 regExpLine,
                 begPosition
             };
-        }) : []
+        }) : [],
+        group: oldModel.group ? convertGroupV2_4ToGroup(oldModel.group) : undefined,
+        templates: convertTemplates(oldModel.templates)
     }
 
 
@@ -133,6 +141,32 @@ export function UpgradeV3_0(modelTxt: string): UpgradeReturn {
                 return "dtMulti";
         }
     }
+
+    function convertTemplates(templates: EMRALD_ModelV2_4[] | undefined): EMRALD_Model[] | undefined {
+        if(!templates) return undefined;
+        const retModelArray : EMRALD_Model[] = [];
+        //convert each template to the new version
+        templates.forEach(element => {
+            retModelArray.push(UpgradeV3_0_Recursive(element));
+        });        
+
+        return retModelArray;
+    }
+
+    function convertGroupV2_4ToGroup(groupV2_4: GroupV2_4 | undefined): Group | undefined {
+        if (!groupV2_4) return undefined; // If input is null, return null
+        
+        const { name, subgroup } = groupV2_4;
+        
+        // Recursively convert subgroup if it exists
+        const convertedSubgroup = subgroup ? convertGroupV2_4ToGroup(subgroup) : undefined;
+        
+        return {
+            name,
+            subgroup: convertedSubgroup ? [convertedSubgroup] : undefined
+        };
+    }
+
 
     //Assign the state default values 
     //type D2 = DiagramV2_4;
@@ -163,9 +197,5 @@ export function UpgradeV3_0(modelTxt: string): UpgradeReturn {
 
     newModel.emraldVersion = 3.0;
     newModel.version = 1.0; //set user version for first use of this property
-    const retModel: UpgradeReturn = { newModel: JSON.stringify(newModel), errors: [] };
-
-    
-
-    return retModel;
+    return newModel;
 }
