@@ -60,7 +60,7 @@ export default function Header() {
         <Box display="flex" alignItems="center" flexGrow={1} ml={5}>
           <MenuButton id={1} title="Project" options={projectOptions}/>
           <MenuButton id={2} title="Download" options={downloadOptions}/>
-          <MenuButton id={3} title="Help" handleClick={() => window.open("https://emraldapp.inl.gov/docs/")}/>
+          <MenuButton id={3} title="Help" handleClick={() => window.open("http://emrald3-docs.acc.inl.gov/")}/>
           <MenuButton id={4} title="About" handleClick={() => window.open("https://emrald.inl.gov/SitePages/Overview.aspx")}/>
         </Box>
 

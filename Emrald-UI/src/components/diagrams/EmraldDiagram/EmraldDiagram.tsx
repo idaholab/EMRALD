@@ -76,11 +76,12 @@ const EmraldDiagram: React.FC<EmraldDiagramProps> = ({ diagram }) => {
             connectionLineComponent={CustomConnectionLine}
             onNodeDragStop={onNodeDragStop}
             isValidConnection={isValidConnection}
+            proOptions={{ hideAttribution: true }}
             fitView
             nodeTypes={nodeTypes}
           >
             <Controls />
-            <MiniMap />
+            <MiniMap pannable/>
             <Background variant={BackgroundVariant.Dots} gap={12} size={1} />
           </ReactFlow>
           {menu && (

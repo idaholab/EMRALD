@@ -156,7 +156,7 @@ const useEmraldDiagram = () => {
     [edges],
   );
 
-  const isValidConnection = (connection: Connection) => {
+  const isValidConnection = (_connection: Connection) => {
     // Check if source and target nodes are the same
     // if (connection.source === connection.target) { //TODO: This needs to be revisited in the future. Currently, nodes can connect to themselves but its hard to tell with the react flow lines
     //   return false; // Prevent the connection

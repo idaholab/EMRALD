@@ -17,9 +17,9 @@ const MAAP = () => {
 
 
   const [exePath, setExePath] = useState(formData?.exePath || '');
-  const [parameterFile, setParameterFile] = useState('');
+  const [parameterFile, setParameterFile] = useState<File | null>();
   const [parameterPath, setParameterPath] = useState(formData?.parameterPath || '');
-  const [inputFile, setInputFile] = useState('');
+  const [inputFile, setInputFile] = useState<File | null>();
   const [inputPath, setInputPath] = useState(formData?.inputPath || '');
   const [currentTab, setCurrentTab] = React.useState(0);
 
@@ -64,7 +64,7 @@ const MAAP = () => {
             setValue={setExePath} 
           />
 
-          <FileUploadComponent label="Parameter File" file={parameterFile} setFile={setParameterFile}/>
+          <FileUploadComponent label="Parameter File" setFile={setParameterFile}/>
 
           <TextFieldComponent 
             value={parameterPath} 
@@ -72,7 +72,7 @@ const MAAP = () => {
             setValue={setParameterPath} 
           />
 
-          <FileUploadComponent label="Input File" file={inputFile} setFile={setInputFile}/>
+          <FileUploadComponent label="Input File" setFile={setInputFile}/>
 
           <TextFieldComponent 
             value={inputPath} 

@@ -9,8 +9,7 @@
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
     "format": "prettier --write ./src",
-    "test": "vitest",
-    "prepare": "npx jsonschema2md -o ../emrald-docs/src/guide/Modeling/schema-md -d src/utils/Upgrades/v3_0/ -e json"
+    "test": "vitest"
   },
   "dependencies": {
     "@dagrejs/dagre": "^1.0.4",

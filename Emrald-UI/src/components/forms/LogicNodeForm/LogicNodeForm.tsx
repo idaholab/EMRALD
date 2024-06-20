@@ -30,6 +30,7 @@ interface LogicNodeFormProps {
   gateType?: GateType;
   component?: string;
   editing?: boolean;
+  isRoot?: boolean;
 }
 
 const LogicNodeForm: React.FC<LogicNodeFormProps> = ({
@@ -39,13 +40,14 @@ const LogicNodeForm: React.FC<LogicNodeFormProps> = ({
   component,
   editing,
   parentNodeName,
+  isRoot,
 }) => {
   const { handleClose, updateTitle } = useWindowContext();
   const { logicNodeList, createLogicNode, updateLogicNode } = useLogicNodeContext();
   const { diagrams } = useDiagramContext();
   const parentNode = logicNodeList.value.find((node) => node.name === parentNodeName);
-  const logicNode = useSignal<LogicNode>(logicNodeData || parentNode || emptyLogicNode);
-  const newLogicNode = useSignal<LogicNode>(emptyLogicNode);
+  const logicNode = useSignal<LogicNode>(logicNodeData || parentNode || structuredClone(emptyLogicNode));
+  const newLogicNode = useSignal<LogicNode>(structuredClone(emptyLogicNode));
   const compChildren = useSignal<CompChild[]>(logicNode.value.compChildren || []);
   const componentDiagrams =
     editing && component
@@ -131,9 +133,8 @@ const LogicNodeForm: React.FC<LogicNodeFormProps> = ({
   // Save logic node
   const handleSave = () => {
     updateTitle(logicNodeData?.name || '', logicNode.value.name);
-
     handleAddNewCompChild();
-
+    if (isRoot) newLogicNode.value.isRoot = true;
     // Reset the stateValues if the defaultValues checkbox is checked
     if (defaultValues === true && currentNode && (currentNode?.stateValues?.length ?? 0) > 0) {
       currentNode.stateValues = [];
@@ -151,6 +152,7 @@ const LogicNodeForm: React.FC<LogicNodeFormProps> = ({
       logicNode.value.gateChildren = [...logicNode.value.gateChildren, newLogicNode.value.name];
       updateLogicNode(logicNode.value);
     } else {
+      newLogicNode.value.id = uuidv4();
       createLogicNode(newLogicNode.value);
     }
     resetForm();

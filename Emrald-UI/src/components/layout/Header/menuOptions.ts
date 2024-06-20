@@ -1,6 +1,7 @@
 import { appData, clearCacheData } from '../../../hooks/useAppData';
-import { EMRALD_Model } from '../../../types/EMRALD_Model';
-import { validateModel } from '../../../utils/Upgrades/upgrade';
+import { upgradeModel, validateModel } from '../../../utils/Upgrades/upgrade';
+import { v4 as uuidv4 } from 'uuid';
+
 
 export interface MenuOption {
   label: string;
@@ -21,6 +22,7 @@ export const projectOptions: MenuOption[] = [
       const fileInput = document.createElement('input');
       fileInput.type = 'file'; // Set input type to file
       fileInput.accept = '.json'; // Specify accepted file types as JSON
+      fileInput.style.display = 'none'; // Hide the file input element
 
       // Function to handle file selection
       const handleFileSelected = (event: Event) => {
@@ -33,9 +35,21 @@ export const projectOptions: MenuOption[] = [
         const reader = new FileReader();
         reader.onload = (e) => {
           const content = e.target?.result as string; // Get the file content as a string
-          populateNewData(content);
 
-          // You can now work with the JSON content here
+          try {
+            const parsedContent = JSON.parse(content);
+              if (parsedContent && parsedContent.hasOwnProperty('emraldVersion')) {
+                populateNewData(content);
+              } else {
+                const upgradedModel = upgradeModel(content);
+                if (upgradedModel) {
+                  upgradedModel.id = uuidv4();
+                  populateNewData(upgradedModel);
+                }
+              }
+          } catch (error) {
+            console.error('Invalid JSON format');
+          }
         };
         reader.readAsText(selectedFile); // Read the file as text
       };
@@ -57,6 +71,7 @@ export const projectOptions: MenuOption[] = [
       const fileInput = document.createElement('input');
       fileInput.type = 'file'; // Set input type to file
       fileInput.accept = '.json'; // Specify accepted file types as JSON
+      fileInput.style.display = 'none'; // Hide the file input element
 
       // Function to handle file selection
       const handleFileSelected = (event: Event) => {
@@ -69,8 +84,21 @@ export const projectOptions: MenuOption[] = [
         const reader = new FileReader();
         reader.onload = (e) => {
           const content = e.target?.result as string; // Get the file content as a string
-          mergeNewData(content);
-
+          //TODO: Make sure there is no duplicates when merging. If there are show the import form to resolve conflicts.
+          try {
+            const parsedContent = JSON.parse(content);
+              if (parsedContent && parsedContent.hasOwnProperty('emraldVersion')) {
+                mergeNewData(content);
+              } else {
+                const upgradedModel = upgradeModel(content);
+                if (upgradedModel) {
+                  upgradedModel.id = uuidv4();
+                  mergeNewData(upgradedModel);
+                }
+              }
+          } catch (error) {
+            console.error('Invalid JSON format');
+          }
           // You can now work with the JSON content here
         };
         reader.readAsText(selectedFile); // Read the file as text
@@ -142,11 +170,12 @@ export const projectOptions: MenuOption[] = [
 export const templateSubMenuOptions: MenuOption[] = [
   {
     label: 'Import Templates',
-    onClick: (mergeTemplateList) => {
+    onClick: (mergeTemplateToList) => {
       // Create a new file input element
       const fileInput = document.createElement('input');
       fileInput.type = 'file'; // Set input type to file
       fileInput.accept = '.json'; // Specify accepted file types as JSON
+      fileInput.style.display = 'none'; // Ensure the file input is not visible
 
       // Function to handle file selection
       const handleFileSelected = (event: Event) => {
@@ -161,18 +190,17 @@ export const templateSubMenuOptions: MenuOption[] = [
           const content = e.target?.result as string; // Get the file content as a string
           try {
             const parsedContent = JSON.parse(content);
-            if (
-              Array.isArray(parsedContent) &&
-              parsedContent.every((model) => {
-                return typeof model === 'object' && model !== null && 'group' in model;
-              })
-            ) {
-              console.log(parsedContent);
-              mergeTemplateList(parsedContent);
-              // You can now work with the JSON content here
-            } else {
-              console.error('Invalid JSON content');
-            }
+            parsedContent.forEach((model: any) => {
+              if (model && model.hasOwnProperty('emraldVersion')) {
+                mergeTemplateToList(model);
+              } else {
+                const upgradedModel = upgradeModel(JSON.stringify(model));
+                if (upgradedModel) {
+                  upgradedModel.id = uuidv4();
+                  mergeTemplateToList(upgradedModel);
+                }
+              }
+            })
           } catch (error) {
             console.error('Invalid JSON format');
           }
@@ -193,7 +221,6 @@ export const templateSubMenuOptions: MenuOption[] = [
   {
     label: 'Export Templates',
     onClick: (templates) => {
-      console.log(templates);
 
       if (templates.length === 0) {
         return 'error';
@@ -234,7 +261,7 @@ export const downloadOptions: MenuOption[] = [
       var link = document.createElement('a');
       link.target = '_blank';
       link.href =
-        'https://github.com/idaholab/EMRALD/releases/latest/download/EMRALD_SimEngine.zip'; //The file to download.
+        'https://github.com/idaholab/EMRALD/releases/latest/download/EMRALD_SimEngine.3_0.zip'; //The file to download.
       link.click();
     },
   },
@@ -258,7 +285,3 @@ export const downloadOptions: MenuOption[] = [
     },
   },
 ];
-
-function isEmraldModel(data: EMRALD_Model): data is EMRALD_Model {
-  return (data as EMRALD_Model).emraldVersion !== undefined;
-}

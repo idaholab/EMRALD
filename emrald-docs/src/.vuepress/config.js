@@ -79,6 +79,7 @@ module.exports = {
           title: 'Schema',
           collapsable: false,
           children: [
+            'Modeling/schema-intro',
             'Modeling/schema-md/emrald_jsonschemav3_0'
           ]
         }

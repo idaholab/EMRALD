@@ -40,9 +40,11 @@ import { GetItemByNameType } from '../../../utils/ModelReferences';
 import { v4 as uuidv4 } from 'uuid';
 import { useWindowContext } from '../../../contexts/WindowContext';
 import { useAssembledData } from '../../../hooks/useAssembledData';
+import { useTemplateContext } from '../../../contexts/TemplateContext';
 
 interface ImportDiagramFormProps {
   importedData: EMRALD_Model;
+  fromTemplate?: boolean;
 }
 
 interface ImportedItem {
@@ -56,7 +58,7 @@ interface ImportedItem {
   emraldItem: Action | Diagram | LogicNode | ExtSim | Event | State | Variable;
 }
 
-const ImportForm: React.FC<ImportDiagramFormProps> = ({ importedData }) => {
+const ImportForm: React.FC<ImportDiagramFormProps> = ({ importedData, fromTemplate }) => {
   const [findValue, setFindValue] = useState<string>('');
   const [replaceValue, setReplaceValue] = useState<string>('');
   const [importedItems, setImportedItems] = useState<ImportedItem[]>([]);
@@ -69,6 +71,7 @@ const ImportForm: React.FC<ImportDiagramFormProps> = ({ importedData }) => {
   const { actionsList } = useActionContext();
   const { variableList } = useVariableContext();
   const { handleClose } = useWindowContext();
+  const { addTemplateToModel } = useTemplateContext();
   const { refreshWithNewData } = useAssembledData();
 
   const convertModelToArray = (model: EMRALD_Model): ImportedItem[] => {
@@ -78,7 +81,7 @@ const ImportForm: React.FC<ImportDiagramFormProps> = ({ importedData }) => {
       items.push({
         type: MainItemTypes.Diagram,
         displayType: 'Diagram',
-        locked: false,
+        locked: !diagramList.value.some(item => item.name === diagram.name),
         oldName: diagram.name,
         newName: diagram.name,
         action: 'rename',
@@ -91,7 +94,7 @@ const ImportForm: React.FC<ImportDiagramFormProps> = ({ importedData }) => {
       items.push({
         type: MainItemTypes.LogicNode,
         displayType: 'Logic Node',
-        locked: false,
+        locked: !logicNodeList.value.some(item => item.name === logicNode.name),
         oldName: logicNode.name,
         newName: logicNode.name,
         action: 'rename',
@@ -104,7 +107,7 @@ const ImportForm: React.FC<ImportDiagramFormProps> = ({ importedData }) => {
       items.push({
         type: MainItemTypes.ExtSim,
         displayType: 'External Sim',
-        locked: false,
+        locked: !extSimList.value.some(item => item.name === extSim.name),
         oldName: extSim.name,
         newName: extSim.name,
         action: 'rename',
@@ -117,7 +120,7 @@ const ImportForm: React.FC<ImportDiagramFormProps> = ({ importedData }) => {
       items.push({
         type: MainItemTypes.Action,
         displayType: 'Action',
-        locked: false,
+        locked: !actionsList.value.some(item => item.name === action.name),
         oldName: action.name,
         newName: action.name,
         action: 'rename',
@@ -130,7 +133,7 @@ const ImportForm: React.FC<ImportDiagramFormProps> = ({ importedData }) => {
       items.push({
         type: MainItemTypes.Event,
         displayType: 'Event',
-        locked: false,
+        locked: !eventsList.value.some(item => item.name === event.name),
         oldName: event.name,
         newName: event.name,
         action: 'rename',
@@ -143,7 +146,7 @@ const ImportForm: React.FC<ImportDiagramFormProps> = ({ importedData }) => {
       items.push({
         type: MainItemTypes.State,
         displayType: 'State',
-        locked: false,
+        locked: !statesList.value.some(item => item.name === state.name),
         oldName: state.name,
         newName: state.name,
         action: 'rename',
@@ -156,7 +159,7 @@ const ImportForm: React.FC<ImportDiagramFormProps> = ({ importedData }) => {
       items.push({
         type: MainItemTypes.Variable,
         displayType: 'Variable',
-        locked: false,
+        locked: !variableList.value.some(item => item.name === variable.name),
         oldName: variable.name,
         newName: variable.name,
         action: 'rename',
@@ -259,7 +262,7 @@ const ImportForm: React.FC<ImportDiagramFormProps> = ({ importedData }) => {
 
   const handleApply = () => {
     const updatedItems = importedItems.map((item) => {
-      if (item.newName.includes(findValue)) {
+      if (item.newName.includes(findValue) && !item.locked) {
         return {
           ...item,
           newName: item.newName.replace(findValue, replaceValue),
@@ -275,24 +278,40 @@ const ImportForm: React.FC<ImportDiagramFormProps> = ({ importedData }) => {
   const handleSave = async () => {
     // Go through all of the renamed items and update the pasted model
     let updatedModel: EMRALD_Model = { ...appData.value };
+  
+    // Rename loop
     for (let i = 0; i < importedItems.length; i++) {
       const item = importedItems[i];
       if (item.action === 'rename') {
-        item.emraldItem.name = item.newName;
-        updateSpecifiedModel(item.emraldItem, item.type, importedData, false);
+        const itemCopy = structuredClone(item.emraldItem);
+        itemCopy.name = item.newName;
+        await updateSpecifiedModel(itemCopy, item.type, importedData, false);
+        const updatedItems = convertModelToArray(importedData);
+        item.emraldItem = updatedItems[i].emraldItem;
         item.emraldItem.id = uuidv4();
-        updatedModel = await updateModelAndReferences(item.emraldItem, item.type);
-        updateAppData(updatedModel);
       }
-
+    }
+  
+    // Update loop
+    for (let i = 0; i < importedItems.length; i++) {
+      const item = importedItems[i];
       if (item.action === 'replace') {
         let currentEmraldItem = GetItemByNameType(item.oldName, item.type);
         item.emraldItem.id = currentEmraldItem?.id;
         updatedModel = await updateModelAndReferences(item.emraldItem, item.type);
         updateAppData(updatedModel);
+        return;
+      } else {
+        updatedModel = await updateModelAndReferences(item.emraldItem, item.type);
+        updateAppData(updatedModel);
       }
     }
 
+    // If from template, add it to the model
+    if (fromTemplate) {
+      addTemplateToModel(importedData);
+    }
+  
     // Make it so the lists are refreshed with the new data
     refreshWithNewData(updatedModel);
     handleClose();

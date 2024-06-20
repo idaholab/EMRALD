@@ -37,6 +37,7 @@ const WindowComponent: React.FC = () => {
               position: 'relative',
               boxShadow: '0 3px 6px rgba(0, 0, 0, 0.16)',
               zIndex: window.id === windows[windows.length - 1].id ? 2 : 1,
+              paddingBottom: '0px',  // Ensure no padding at the bottom
             }}
           >
             <Box
@@ -99,7 +100,9 @@ const WindowComponent: React.FC = () => {
               </Box>
             </Box>
             <CardContent
-              sx={{ height: 'calc(100% - 55px)', overflow: 'auto', p: 0 }}
+              sx={{ height: 'calc(100% - 55px)', overflow: 'auto', p: 0, '&:last-child': {
+                paddingBottom: '0px',
+              } }}
             >
               <Box
                 sx={{ height: '96%', width: '100%' }}
