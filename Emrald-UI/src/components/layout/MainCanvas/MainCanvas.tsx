@@ -42,7 +42,7 @@ const MainCanvas: React.FC = () => {
         </SvgIcon>
       ),
       name: 'New Logic Tree',
-      content: <LogicNodeForm />,
+      content: <LogicNodeForm isRoot/>,
     },
     {
       icon: (

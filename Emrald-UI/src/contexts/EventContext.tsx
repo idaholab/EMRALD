@@ -59,15 +59,13 @@ const EventContextProvider: React.FC<EmraldContextWrapperProps> = ({ children })
   ) => {
     var updatedModel: EMRALD_Model = await updateModelAndReferences(newEvent, MainItemTypes.Event);
     updateAppData(updatedModel);
-    setEvents(updatedModel.EventList);
-
-    // update the state eventActions array
     if (state && actions) {
       state.events.push(newEvent.name);
       state.eventActions.push({ actions, moveFromCurrent });
       var updatedModel: EMRALD_Model = await updateModelAndReferences(state, MainItemTypes.State);
       updateAppData(updatedModel);
     }
+    setEvents(updatedModel.EventList);
   };
 
   const updateEvent = async (

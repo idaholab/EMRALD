@@ -399,6 +399,7 @@ const EventFormContextProvider: React.FC<PropsWithChildren> = ({ children }) => 
       lambdaTimeRate,
       extEventType: extEventType ? extEventType : undefined,
       variable,
+      mainItem: true,
     };
     eventData
       ? updateEvent(event.value, state, actions, moveFromCurrent, eventStateIndex)

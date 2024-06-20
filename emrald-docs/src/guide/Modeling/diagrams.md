@@ -5,7 +5,7 @@
   Single State diagrams can also be evaluated to a Boolean depending on which state they are currently in. This is a main feature that when combined with a Component Logic Event, can greatly simplify a model. Unlike the more general Multi State diagrams, these diagrams are restricted to only be in one state at a time, in order to execute the evaluation process.
 
 ## Creating a New Diagram
-  In the right drop down menu, click "New Diagram". <br>
+  In the left Navigation Frame, right click on "Diagrams" and select "New Diagram" from the drop down menu. <br>
   <div style="width:300px">![Right Click for New Diagram](/images/Modeling/diagrams/NewDiagram1.png)</div>
 
   Or select "New Diagram" from the right side drop down menu. 
