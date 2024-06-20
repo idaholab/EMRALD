@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import Button from '@mui/material/Button/Button';
 import FileUploadIcon from '@mui/icons-material/FileUpload';
 import { styled } from '@mui/material/styles';
@@ -19,39 +19,34 @@ const VisuallyHiddenInput = styled('input')({
 
 interface FileUploadComponentProps {
   label: string;
-  file: any;
-  setFile: (value: any) => void;
   disabled?: boolean;
+  setFile: (value: File | null) => void;
+  clearFile?: () => void;
 }
 
 const FileUploadComponent: React.FC<FileUploadComponentProps> = ({
   label,
-  file,
+  disabled,
   setFile,
-  disabled
+  clearFile
 }) => {
+  const [uploadedContent, setUploadedContent] = React.useState<File | null>();
+  const inputRef = useRef<HTMLInputElement | null>(null);
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files ? e.target.files[0] : null;
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        if (event.target && typeof event.target.result === 'string') {
-          try {
-            console.log(event.target.result);
-          } catch (error) {
-            console.error("Error parsing JSON file:", error);
-          }
-        }
-      };
-      reader.readAsText(file);
-      setFile(file);
-    } else {
-      setFile(null);
-    }
+    setFile(file);
+    setUploadedContent(file);
   };
 
   const handleClear = () => {
     setFile(null);
+    setUploadedContent(null);
+    if (clearFile) {
+      clearFile();
+    }
+    if (inputRef.current) {
+      inputRef.current.value = '';
+    }
   };
 
   return (
@@ -67,15 +62,16 @@ const FileUploadComponent: React.FC<FileUploadComponentProps> = ({
       >
         {label}
         <VisuallyHiddenInput
+          ref={inputRef}
           type="file"
           onChange={handleFileChange}
         />
       </Button>
-      {file && (
-        <Typography sx={{ ml: 3, fontSize: 18 }}>{file.name}</Typography>
+      {uploadedContent && (
+        <Typography sx={{ ml: 3, fontSize: 18 }}>{uploadedContent.name}</Typography>
       )}
       {
-        file && (
+        uploadedContent && (
           <IconButton
             aria-label="close"
             onClick={handleClear}
