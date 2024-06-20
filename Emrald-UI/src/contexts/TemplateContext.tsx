@@ -154,7 +154,6 @@ const TemplateContextProvider: React.FC<EmraldContextWrapperProps> = ({ children
 
   const createTemplate = async (newTemplate: EMRALD_Model) => {
     temporaryTemplates.value = [...temporaryTemplates.value, newTemplate];
-    console.log(temporaryTemplates.value);
     localStorage.setItem('templates', JSON.stringify(temporaryTemplates.value));
     setTemplates(temporaryTemplates.value as EMRALD_Model[]);
   };

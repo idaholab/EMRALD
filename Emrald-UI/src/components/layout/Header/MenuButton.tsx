@@ -71,7 +71,6 @@ const MenuButton: React.FC<MenuButtonProps> = ({
   };
 
   const handleMenuItemClick = (option: MenuOption) => {
-    console.log(option);
     switch (option.label) {
       case 'New':
         option.onClick(newProject);
@@ -93,7 +92,6 @@ const MenuButton: React.FC<MenuButtonProps> = ({
   };
 
   const handleSubMenuItemClick = async (option: MenuOption) => {
-    console.log(option);
     let content; // Declare the variable outside the if statement
     switch (option.label) {
       case 'Import Templates':

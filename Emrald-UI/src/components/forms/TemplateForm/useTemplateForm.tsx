@@ -44,13 +44,8 @@ export const useTemplateForm = (templatedData: EMRALD_Model) => {
   const [expanded, setExpanded] = useState(['Group 1']);
 
   useEffect(() => {
-    console.log(templatedData);
     setTemplatedItems(convertModelToArray(templatedData));
   }, [templatedData]);
-
-  useEffect(() => {
-    console.log(templatesList.value);
-  }, [templatesList]);
 
   /** Build out the templated items array **/
   const convertModelToArray = (model: EMRALD_Model): TemplatedItem[] => {

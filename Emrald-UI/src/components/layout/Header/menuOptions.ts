@@ -221,7 +221,6 @@ export const templateSubMenuOptions: MenuOption[] = [
   {
     label: 'Export Templates',
     onClick: (templates) => {
-      console.log(templates);
 
       if (templates.length === 0) {
         return 'error';
