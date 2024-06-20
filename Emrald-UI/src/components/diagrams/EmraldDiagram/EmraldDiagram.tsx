@@ -81,7 +81,7 @@ const EmraldDiagram: React.FC<EmraldDiagramProps> = ({ diagram }) => {
             nodeTypes={nodeTypes}
           >
             <Controls />
-            <MiniMap />
+            <MiniMap pannable/>
             <Background variant={BackgroundVariant.Dots} gap={12} size={1} />
           </ReactFlow>
           {menu && (

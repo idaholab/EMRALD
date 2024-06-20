@@ -3,9 +3,10 @@ import Toolbar from '@mui/material/Toolbar';
 import Box from '@mui/material/Box';
 import MenuAccordion from '../Accordion/Accordion';
 import { styled } from '@mui/material/styles';
-import { Divider } from '@mui/material';
+import { Divider, Typography } from '@mui/material';
 import ButtonGroupComponent from '../../common/ButtonGroupComponent/ButtonGroupComponent';
 import { useSidebarLogic } from './SidebarLogic';
+import { DialogComponent } from '../../common';
 
 const ResizeHandle = styled('div')({
   width: '6px',
@@ -28,6 +29,12 @@ const Sidebar = () => {
     handleMouseDown,
     diagramPanels,
     componentPanels,
+    onDiagramChange,
+    deleteConfirmation,
+    itemToDelete,
+    handleDelete,
+    closeDeleteConfirmation,
+    deleteItem,
   } = useSidebarLogic();
 
   return (
@@ -46,17 +53,15 @@ const Sidebar = () => {
       }}
     >
       <Toolbar />
-      <ResizeHandle
-        onMouseDown={(_event: React.MouseEvent<HTMLElement>) =>
-          handleMouseDown()
-        }
-      />
+      <ResizeHandle onMouseDown={(_event: React.MouseEvent<HTMLElement>) => handleMouseDown()} />
       <Box sx={{ overflow: 'hidden' }}>
         <MenuAccordion
           panels={diagramPanels}
           group="diagrams"
           setAccordionGroupOpen={setIsDiagramAccordionOpen}
           bothAccordionsOpen={bothAccordionsOpen}
+          onDiagramChange={onDiagramChange}
+          handleDelete={handleDelete}
         />
 
         <Divider sx={{ borderColor: '#fff', mx: 2 }} />
@@ -71,8 +76,25 @@ const Sidebar = () => {
           group="components"
           setAccordionGroupOpen={setIsComponentAccordionOpen}
           bothAccordionsOpen={bothAccordionsOpen}
+          onDiagramChange={onDiagramChange}
+          componentGroup={componentGroup}
+          handleDelete={handleDelete}
         />
       </Box>
+      {deleteConfirmation && (
+        <DialogComponent
+          open={true}
+          title="Delete Confirmation"
+          submitText="delete"
+          onSubmit={() => deleteItem()}
+          onClose={() => closeDeleteConfirmation()}
+        >
+          <Typography>
+            Are you sure you want to delete {itemToDelete?.name}? It will be removed from all other
+            places it is used.
+          </Typography>
+        </DialogComponent>
+      )}
     </Drawer>
   );
 };

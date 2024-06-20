@@ -52,7 +52,7 @@ const EventForm: React.FC<EventFormProps> = ({ eventData, state }) => {
           name={name}
           desc={desc}
           setDesc={setDesc}
-          handleSave={() => handleSave(eventData)}
+          handleSave={() => handleSave(eventData, state)}
           reset={reset}
           handleNameChange={handleNameChange}
           error={hasError}

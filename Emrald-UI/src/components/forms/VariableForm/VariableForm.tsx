@@ -35,6 +35,11 @@ const VariableForm: React.FC<VariableFormProps> = ({ variableData }) => {
     docPath,
     docLink,
     pathMustExist,
+    regExpLine,
+    begPosition,
+    showRegExFields,
+    showNumChars,
+    numChars,
     InitializeForm,
     setType,
     setDesc,
@@ -52,6 +57,11 @@ const VariableForm: React.FC<VariableFormProps> = ({ variableData }) => {
     handleBoolValueChange,
     handleStringValueChange,
     reset,
+    setRegExpLine,
+    setBegPosition,
+    setShowRegExFields,
+    setShowNumChars,
+    setNumChars,
   } = useVariableFormContext();
 
   useEffect(() => {
@@ -178,6 +188,16 @@ const VariableForm: React.FC<VariableFormProps> = ({ variableData }) => {
               setDocLink={setDocLink}
               pathMustExist={pathMustExist}
               setPathMustExist={setPathMustExist}
+              regExpLine={regExpLine || 0}
+              begPosition={begPosition || 0}
+              setRegExpLine={setRegExpLine}
+              setBegPosition={setBegPosition}
+              setShowRegExFields={setShowRegExFields}
+              showRegExFields={showRegExFields || false}
+              numChars={numChars || 0}
+              setNumChars={setNumChars}
+              showNumChars={showNumChars || false}
+              setShowNumChars={setShowNumChars}
               value={value}
               type={type}
               setValue={

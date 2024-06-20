@@ -33,3 +33,7 @@ Installation can be found here: [Liquid Studio](https://www.liquid-technologies.
 - Copy the section -- or interface -- of `AllModelInterfacesV3_0.ts` that was edited.
 - Paste it into its matching section in the `types` directory. For example, if you edited the structure of the `Diagram` type,
   copy the entire `Diagram` interface from `AllModelInterfacesV3_0.ts` and paste it into the `Diagram.ts` file in the `types` directory.
+
+### Step 6: Update Documentation
+
+- Once you are in the Emrald-UI directory, run the script `npm run prepare` to regenerate the documentation for the schema with your saved changes.
