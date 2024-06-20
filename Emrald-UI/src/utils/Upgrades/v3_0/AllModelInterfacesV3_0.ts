@@ -1,25 +1,44 @@
 /**
+ * EMRALD model schema version 3.0
+ */
+export type EMRALD_Model = Main_Model & {
+  /**
+   * Templates available to make new diagrams in the model. These are basically small models all on their own.
+   */
+  templates?: Main_Model[]
+}
+/**
  * Type of the diagram. dtSingle - means you can only be in one state of the diagram at a time and states evaluate to a value. dtMulti - means you can be in multiple states at a time, but cant evaluate the diagram
  */
 export type DiagramType = "dtSingle" | "dtMulti"
 /**
+ * Names of the states used in this diagram
+ */
+export type States = string[]
+/**
  * Type of the diagram.
  */
-export type ChangeLog = {
-  /**
-   * Description of the change.
-   */
-  cngDesc: string
-  /**
-   * ISO 8601 date time format for the change
-   */
-  dateTime: string
-  cngID?: string
-}[]
+export type ChangeLog = Items[]
 /**
  * Type of the state
  */
 export type StateType = "stStart" | "stKeyState" | "stStandard" | "stTerminal"
+/**
+ * Array of name references for the immediate actions to be run when entering the state
+ */
+export type ImmediateActions = string[]
+/**
+ * Array of name references to events. These event will be monitored for when in this state.
+ */
+export type Events = string[]
+/**
+ * array of referenace names for actions of the associated event.
+ */
+export type Actions = string[]
+/**
+ * actions for the events in sibling "events" array. One to one relationship.
+ */
+export type EventActions = Items1[]
 /**
  * For single state diagrams. Boolean value for the diagram when evaluated in a logic tree. Ignore - removes that item from the logic calculation.
  */
@@ -33,6 +52,18 @@ export type ActionType =
   | "at3DSimMsg"
   | "atRunExtApp"
 /**
+ * Optional. If this is a transition action then these are the states that it could be transitioned to.
+ */
+export type NewStates = NewState[]
+/**
+ * Optional. If action has a script, these are the variable name references for variables used in the script. All variables used in script must be in this list.
+ */
+export type CodeVariables = string[]
+/**
+ * Used for custom form, variables used in the form.
+ */
+export type UpdateVariables = unknown[]
+/**
  * Type of the event
  */
 export type EventType =
@@ -43,6 +74,14 @@ export type EventType =
   | "et3dSimEv"
   | "etDistribution"
   | "etVarCond"
+/**
+ * Optional. For event type etStateCng. List of state name references as part of the criteria needed to trigger the event. These are the states that need to be entered or exited to tirgger the event.
+ */
+export type TriggerStates = string[]
+/**
+ * Optional, Name references for all variables used in scripts if the event type uses scripts.
+ */
+export type VarNames = string[]
 /**
  * Optional. When an event uses a variable and that variable changes, this tells the code how to update the event.
  */
@@ -89,28 +128,25 @@ export type EventDistributionParameterName =
   | "Alpha"
   | "Beta"
 /**
+ * Optional. For event type of etDistribution this is an array of properties for the distribution calculation.
+ */
+export type Parameters = EventDistributionParameter[]
+/**
  * Gate type for the logic node
  */
 export type GateType = "gtAnd" | "gtOr" | "gtNot"
 /**
+ * Evaluate value if not the states default.
+ */
+export type StateValues = Items3[]
+/**
  * Array of component diagram names and state values to use in evaluating if not using the default value.
  */
-export type CompChild = {
-  /**
-   * Evaluate value if not the states default.
-   */
-  stateValues?: {
-    /**
-     * State name for the value.
-     */
-    stateName: string
-    stateValue: StateEvalValue
-  }[]
-  /**
-   * Name of the diagram to be evaluated
-   */
-  diagramName: string
-}[]
+export type CompChild = Items2[]
+/**
+ * Array of logic node names that are children of this gate.
+ */
+export type GateChildren = string[]
 /**
  * Context of use for the variable in the model.
  */
@@ -127,11 +163,23 @@ export type VariableType = "bool" | "double" | "int" | "string"
  * Type of accrual for the specified state.
  */
 export type AccrualVarTableType = "ctMultiplier" | "ctTable"
+/**
+ * Each row has the rate the time specified. First value is rate, second value is time.
+ */
+export type Items5 = number[]
+/**
+ * Optional. If the type is ctTable then this is the array of values used in calculating this states contribution to the variable value. Example for the first hour the accrual multiplier is 0.5, for the second hour the accrual multiplier is 0.1
+ */
+export type AccrualTable = Items5[]
+/**
+ * Optional. If the variable varScope is gtAccrual, then these are the states used for calculating the variables value over time.
+ */
+export type AccrualStatesData = Items4[]
 
 /**
  * EMRALD model schema version 3.0
  */
-export interface EMRALD_Model {
+export interface Main_Model {
   /**
    * Temporary, only used internally for some identification or uniqueness needs
    */
@@ -180,10 +228,6 @@ export interface EMRALD_Model {
    * All the variables used in the model
    */
   VariableList: Variable[]
-  /**
-   * Templates avaliable to make new diagrams in the model. These are basicly a small model all on there own.
-   */
-  templates?: EMRALD_Model[]
   changeLog?: ChangeLog
   group?: Group
 }
@@ -209,11 +253,19 @@ export interface Diagram {
    * Name of grouping in the UI for this diagram
    */
   diagramLabel: string
-  /**
-   * Names of the states used in this diagram
-   */
-  states: string[]
+  states: States
   changeLog?: ChangeLog
+}
+export interface Items {
+  /**
+   * Description of the change.
+   */
+  cngDesc: string
+  /**
+   * ISO 8601 date time format for the change
+   */
+  dateTime: string
+  cngID?: string
 }
 export interface ExtSim {
   /**
@@ -244,27 +296,16 @@ export interface State {
    * Diagram the state belongs to, A state can only be in one diagram.
    */
   diagramName: string
-  /**
-   * Array of name references for the immediate actions to be run when entering the state
-   */
-  immediateActions: string[]
-  /**
-   * Array of name references to events. These event will be monitored for when in this state.
-   */
-  events: string[]
-  /**
-   * actions for the events in sibling "events" array. One to one relationship.
-   */
-  eventActions: {
-    /**
-     * array of referenace names for actions of the associated event.
-     */
-    actions: string[]
-    moveFromCurrent: boolean
-  }[]
+  immediateActions: ImmediateActions
+  events: Events
+  eventActions: EventActions
   geometry?: GeometryInfo
   changeLog?: ChangeLog
   defaultSingleStateValue?: StateEvalValue
+}
+export interface Items1 {
+  actions: Actions
+  moveFromCurrent: boolean
 }
 /**
  * position for the GUI
@@ -298,10 +339,7 @@ export interface Action {
    * Optional. Only one action may be taken so the probability determines if this action is taken vs another in the EventAction list. If false then the probability is used to sample if this action occured and multiple or no actions could happen when the event is triggered.
    */
   mutExcl?: boolean
-  /**
-   * Optional. If this is a transition action then these are the states that it could be transitioned to.
-   */
-  newStates?: NewState[]
+  newStates?: NewStates
   /**
    * Optionsl. Script code to be executed if the action type has a script
    */
@@ -310,10 +348,7 @@ export interface Action {
    * Optional. For change var value actions, the result of the script is assigned to this variable name reference.
    */
   variableName?: string
-  /**
-   * Optional. If action has a script, these are the variable name references for variables used in the script. All variables used in script must be in this list.
-   */
-  codeVariables?: string[]
+  codeVariables?: CodeVariables
   /**
    * Optional. For action type at3DSimMsg, this is the message to be sent to the coupled external simulation.
    */
@@ -360,14 +395,9 @@ export interface Action {
   formData?: {
     [k: string]: unknown
   }
+  template?: Template
   /**
-   * Optional. For action type atRunExtApp. It is used for custom app form.
-   */
-  template?: {
-    [k: string]: unknown
-  }
-  /**
-   * Optional. For action type atRunExtApp. It is flag to indicate the type of return from the processOutputFileCode. If rtNone then it has no return, othrwise the C# script must return a List<string> with +/-[StateName] to shift out or into a state.
+   * Optional. For action type atRunExtApp. It is flag to indicate the type of return from the processOutputFileCode. If rtNone then it has no return, othrwise the C# script must return a List<string/> with +/-[StateName] to shift out or into a state.
    */
   returnProcess?: string
   changeLog?: ChangeLog
@@ -375,10 +405,7 @@ export interface Action {
    * String for the run application action, only for UI used. Options depend on the custom UI forms made. "code" means default user defined pre and post execution code is used.
    */
   raType?: string
-  /**
-   * Used for custom form, variables used in the form.
-   */
-  updateVariables?: unknown[]
+  updateVariables?: UpdateVariables
 }
 export interface NewState {
   /**
@@ -397,6 +424,12 @@ export interface NewState {
    * Optional, if used  then the a variable is used for the probability. This is the name of that variable
    */
   varProb?: null | string
+}
+/**
+ * Optional. For action type atRunExtApp. It is used for custom app form.
+ */
+export interface Template {
+  [k: string]: unknown
 }
 export interface Event {
   /**
@@ -420,14 +453,8 @@ export interface Event {
    * Optional. For event type etStateCng. Flag to indicate if all the items in the triggerStates need to occure as specified or just one of them.
    */
   allItems?: boolean
-  /**
-   * Optional. For event type etStateCng. List of state name references as part of the criteria needed to trigger the event. These are the states that need to be entered or exited to tirgger the event.
-   */
-  triggerStates?: string[]
-  /**
-   * Optional, Name references for all variables used in scripts if the event type uses scripts.
-   */
-  varNames?: string[]
+  triggerStates?: TriggerStates
+  varNames?: VarNames
   /**
    * Optional. For event type etStateCng, flag to indicate that event is triggired when entering or exiting states listed in triggerStates array. On Enter State/s or On Exit State/s
    */
@@ -476,10 +503,7 @@ export interface Event {
    */
   code?: string
   distType?: DistributionType
-  /**
-   * Optional. For event type of etDistribution this is an array of properties for the distribution calculation.
-   */
-  parameters?: EventDistributionParameter[]
+  parameters?: Parameters
   dfltTimeRate?: TimeVariableUnit
   changeLog?: ChangeLog
 }
@@ -498,7 +522,6 @@ export interface EventDistributionParameter {
    * Optional. The reference name of the variable to use as the value of the parameter if the useVariable flag is true.
    */
   variable?: string
-  [k: string]: unknown
 }
 export interface LogicNode {
   /**
@@ -515,15 +538,26 @@ export interface LogicNode {
   desc: string
   gateType: GateType
   compChildren: CompChild
-  /**
-   * Array of logic node names that are children of this gate.
-   */
-  gateChildren: string[]
+  gateChildren: GateChildren
   /**
    * Flag indicating that this is to be displayed as a tree top in the UI and can be used in an evaluate logic tree event.
    */
   isRoot: boolean
   changeLog?: ChangeLog
+}
+export interface Items2 {
+  stateValues?: StateValues
+  /**
+   * Name of the diagram to be evaluated
+   */
+  diagramName: string
+}
+export interface Items3 {
+  /**
+   * State name for the value.
+   */
+  stateName: string
+  stateValue: StateEvalValue
 }
 export interface Variable {
   /**
@@ -557,28 +591,7 @@ export interface Variable {
    */
   pathMustExist?: boolean
   type: VariableType
-  /**
-   * Optional. If the variable varScope is gtAccrual, then these are the states used for calculating the variables value over time.
-   */
-  accrualStatesData?: {
-    /**
-     * Reference name to the state contributiong to the accrual calculation.
-     */
-    stateName: string
-    type: AccrualVarTableType
-    /**
-     * Optional. If type is ctMultiplier then this is the multiplier value for every time increment, specified by the multRate, spent in the state.
-     */
-    accrualMult: number
-    /**
-     * This is the time rate for the accrualMult in calculating the value for the variable.
-     */
-    multRate: string
-    /**
-     * Optional. If the type is ctTable then this is the array of values used in calculating this states contribution to the variable value. Example for the first hour the accrual multiplier is 0.5, for the second hour the accrual multiplier is 0.1
-     */
-    accrualTable: number[][]
-  }[]
+  accrualStatesData?: AccrualStatesData
   /**
    * Optional. For variable varScope of gtDocLink, docType dtTxtRegExp, this is the regular expression string.
    */
@@ -617,7 +630,32 @@ export interface Variable {
    */
   canMonitor?: boolean
 }
+export interface Items4 {
+  /**
+   * Reference name to the state contributiong to the accrual calculation.
+   */
+  stateName: string
+  type: AccrualVarTableType
+  /**
+   * Optional. If type is ctMultiplier then this is the multiplier value for every time increment, specified by the multRate, spent in the state.
+   */
+  accrualMult: number
+  /**
+   * This is the time rate for the accrualMult in calculating the value for the variable.
+   */
+  multRate: string
+  accrualTable: AccrualTable
+}
+/**
+ * What catagory grouping this item belongs to. Used to indicate a group for and EMRALD model template
+ */
 export interface Group {
+  /**
+   * Name of the group
+   */
   name: string
+  /**
+   * Sub group tree path
+   */
   subgroup?: Group[]
 }
