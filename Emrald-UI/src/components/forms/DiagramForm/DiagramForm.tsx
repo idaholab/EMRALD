@@ -28,6 +28,7 @@ import { useTemplateContext } from '../../../contexts/TemplateContext';
 import { FileUploadComponent, TabPanel } from '../../common';
 import CloseIcon from '@mui/icons-material/Close';
 import ImportForm from '../ImportForm/ImportForm';
+import { upgradeModel } from '../../../utils/Upgrades/upgrade';
 
 interface DiagramFormProps {
   diagramData?: Diagram;
@@ -44,6 +45,7 @@ const DiagramForm: React.FC<DiagramFormProps> = ({ diagramData }) => {
     diagramData?.diagramType || 'dtSingle',
   );
   const [hasError, setHasError] = useState<boolean>(false);
+  const [alertMessage, setAlertMessage] = useState<string>('');
 
   const diagramTypeOptions = [
     { value: 'dtSingle', label: 'Single State (Evaluation)' },
@@ -62,7 +64,7 @@ const DiagramForm: React.FC<DiagramFormProps> = ({ diagramData }) => {
     if (selectedTemplate && formWindowId) {
       addWindow(
         `Import Diagram: ${selectedTemplate.name}`,
-        <ImportForm importedData={selectedTemplate} fromTemplate={true}/>,
+        <ImportForm importedData={selectedTemplate} fromTemplate={true} />,
         {
           x: 75,
           y: 25,
@@ -72,7 +74,19 @@ const DiagramForm: React.FC<DiagramFormProps> = ({ diagramData }) => {
         null,
         formWindowId,
       );
-    } else if (importDiagram) {
+    } else if (importDiagram && formWindowId) {
+      addWindow(
+        `Import Diagram: ${importDiagram.name}`,
+        <ImportForm importedData={importDiagram} fromTemplate={true} />,
+        {
+          x: 75,
+          y: 25,
+          width: 1300,
+          height: 750,
+        },
+        null,
+        formWindowId,
+      );
     } else {
       updateTitle(diagramData?.name || '', name);
 
@@ -105,11 +119,40 @@ const DiagramForm: React.FC<DiagramFormProps> = ({ diagramData }) => {
     setDiagramLabel(diagramData?.diagramLabel || '');
   };
 
-  const handleImport = (model: EMRALD_Model) => {
-    setImportDiagram(model);
+  const handleImport = (model: File | null) => {
+    setHasError(false);
+    setAlertMessage('');
+    if (model) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const content = e.target?.result as string;
+        try {
+          const parsedContent = JSON.parse(content);
+          const importedModel = parsedContent?.emraldVersion
+            ? parsedContent
+            : upgradeModel(content);
+          if (importedModel && importedModel.DiagramList.length === 1 && formWindowId) {
+            importedModel.id = uuidv4();
+            importedModel.name = importedModel.DiagramList[0].name;
+            setImportDiagram(importedModel);
+          } else {
+            setHasError(true);
+            setAlertMessage(
+              'The imported item is not a valid EMRALD model or contains multiple diagrams.',
+            );
+            setImportDiagram(undefined);
+          }
+        } catch (error) {
+          console.error('Invalid JSON format');
+        }
+      };
+      reader.readAsText(model);
+    }
+
     setSelectedTemplate(undefined);
     reset();
   };
+
   const handleNameChange = (newName: string) => {
     setHasError(diagrams.some((node) => node.name === newName));
     setName(newName);
@@ -185,18 +228,26 @@ const DiagramForm: React.FC<DiagramFormProps> = ({ diagramData }) => {
       </TabPanel>
       <TabPanel value={currentTab} index={1}>
         <Box>
-          {selectedTemplate ? (
+          {selectedTemplate || hasError ? (
             <Alert sx={{ mb: 3 }} severity="warning" variant="outlined">
-              The selected template will be ignored when using an imported diagram.
+              {alertMessage
+                ? alertMessage
+                : 'The selected template will be ignored when using an imported diagram.'}
             </Alert>
           ) : (
             <></>
           )}
           <Box ml={3}>
-            <FileUploadComponent label="Choose File" file={importDiagram} setFile={handleImport} />
+            <FileUploadComponent label="Choose File" setFile={handleImport} clearFile={() => setImportDiagram(undefined)}/>
           </Box>
           <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 5 }}>
-            <Button variant="contained" color="primary" sx={{ mr: 2 }} onClick={() => handleSave()}>
+            <Button
+              variant="contained"
+              color="primary"
+              sx={{ mr: 2 }}
+              disabled={hasError}
+              onClick={() => handleSave()}
+            >
               Save
             </Button>
             <Button variant="contained" color="secondary" onClick={() => handleClose()}>
@@ -253,9 +304,11 @@ const DiagramForm: React.FC<DiagramFormProps> = ({ diagramData }) => {
 
           <Box display="flex">
             <Box ml={3} flex={1}>
+              <Typography variant="subtitle1" fontWeight={'bold'}>Group List</Typography>
               <GroupListItems selectedGroup={selectedGroup} setSelectedGroup={setSelectedGroup} />
             </Box>
             <Box ml={3} flex={1}>
+            <Typography variant="subtitle1" fontWeight={'bold'}>Template List</Typography>
               <List
                 sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}
                 aria-label="contacts"

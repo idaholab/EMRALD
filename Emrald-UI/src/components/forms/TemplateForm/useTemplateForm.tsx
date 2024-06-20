@@ -26,7 +26,7 @@ interface TemplatedItem {
 }
 
 export const useTemplateForm = (templatedData: EMRALD_Model) => {
-  const {groups, templatesList, temporaryTemplates, createTemplate, findGroupHierarchyByGroupName} = useTemplateContext();
+  const {groups, temporaryTemplates, createTemplate, findGroupHierarchyByGroupName} = useTemplateContext();
   const [findValue, setFindValue] = useState<string>('');
   const [replaceValue, setReplaceValue] = useState<string>('');
   const [templatedItems, setTemplatedItems] = useState<TemplatedItem[]>([]);

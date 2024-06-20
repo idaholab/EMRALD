@@ -81,7 +81,7 @@ const ImportForm: React.FC<ImportDiagramFormProps> = ({ importedData, fromTempla
       items.push({
         type: MainItemTypes.Diagram,
         displayType: 'Diagram',
-        locked: false,
+        locked: !diagramList.value.some(item => item.name === diagram.name),
         oldName: diagram.name,
         newName: diagram.name,
         action: 'rename',
@@ -94,7 +94,7 @@ const ImportForm: React.FC<ImportDiagramFormProps> = ({ importedData, fromTempla
       items.push({
         type: MainItemTypes.LogicNode,
         displayType: 'Logic Node',
-        locked: false,
+        locked: !logicNodeList.value.some(item => item.name === logicNode.name),
         oldName: logicNode.name,
         newName: logicNode.name,
         action: 'rename',
@@ -107,7 +107,7 @@ const ImportForm: React.FC<ImportDiagramFormProps> = ({ importedData, fromTempla
       items.push({
         type: MainItemTypes.ExtSim,
         displayType: 'External Sim',
-        locked: false,
+        locked: !extSimList.value.some(item => item.name === extSim.name),
         oldName: extSim.name,
         newName: extSim.name,
         action: 'rename',
@@ -120,7 +120,7 @@ const ImportForm: React.FC<ImportDiagramFormProps> = ({ importedData, fromTempla
       items.push({
         type: MainItemTypes.Action,
         displayType: 'Action',
-        locked: false,
+        locked: !actionsList.value.some(item => item.name === action.name),
         oldName: action.name,
         newName: action.name,
         action: 'rename',
@@ -133,7 +133,7 @@ const ImportForm: React.FC<ImportDiagramFormProps> = ({ importedData, fromTempla
       items.push({
         type: MainItemTypes.Event,
         displayType: 'Event',
-        locked: false,
+        locked: !eventsList.value.some(item => item.name === event.name),
         oldName: event.name,
         newName: event.name,
         action: 'rename',
@@ -146,7 +146,7 @@ const ImportForm: React.FC<ImportDiagramFormProps> = ({ importedData, fromTempla
       items.push({
         type: MainItemTypes.State,
         displayType: 'State',
-        locked: false,
+        locked: !statesList.value.some(item => item.name === state.name),
         oldName: state.name,
         newName: state.name,
         action: 'rename',
@@ -159,7 +159,7 @@ const ImportForm: React.FC<ImportDiagramFormProps> = ({ importedData, fromTempla
       items.push({
         type: MainItemTypes.Variable,
         displayType: 'Variable',
-        locked: false,
+        locked: !variableList.value.some(item => item.name === variable.name),
         oldName: variable.name,
         newName: variable.name,
         action: 'rename',
