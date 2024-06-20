@@ -188,11 +188,13 @@ export const GetJSONPathInRefs = (itemType: MainItemTypes, lookupName : string):
   });  
 };
 
+
 /**
- * Retrieves a subset model of items that reference a specific item.
+ * Retrieves a subset model of items that reference/use the specific item.
  *
  * @param {string} itemName - The name of the item to get the references for.
  * @param {MainItemTypes} itemType - The type of the item to look for references.
+ * @addToModel {EMRALD_Model} - If assigned then items are added to this model.
  * @return {EMRALD_Model} - A subset model of just the referenced items.
  */
 export const GetModelItemsReferencing = ( 
@@ -325,7 +327,14 @@ export const AddItemToModel = (
     }
 }
 
-
+/**
+ * Retrieves a subset model of items that the  specific item uses/references up to the specified level.
+ *
+ * @param {string} itemName - The name of the item to get the references for.
+ * @param {MainItemTypes} itemType - The type of the item to look for references.
+ * @levels {number} - If < 1, will be recursive and give all levels of references. For copy or template use 1 for all items except Diagrams and 2 for Diagrams.
+ * @return {EMRALD_Model} - A subset model of just the referenced items.
+ */
 export const GetModelItemsReferencedBy = ( 
   itemName : string, //Name of the item looking for references
   itemType : MainItemTypes, //This is the type of the item to look for references
