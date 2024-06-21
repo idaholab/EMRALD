@@ -41,32 +41,34 @@ export function useLogicNodeContext() {
 
 const LogicNodeContextProvider: React.FC<EmraldContextWrapperProps> = ({ children }) => {
   const [logicNodes, setLogicNodes] = useState<LogicNode[]>(
-    JSON.parse(JSON.stringify(appData.value.LogicNodeList.sort((a, b) => a.name.localeCompare(b.name)))),
+    JSON.parse(
+      JSON.stringify(appData.value.LogicNodeList.sort((a, b) => a.name.localeCompare(b.name))),
+    ),
   );
   const logicNodeList = useComputed(() => appData.value.LogicNodeList);
 
   const createLogicNode = (newLogicNode: LogicNode) => {
-  return new Promise<void>(async (resolve) => {
-    var updatedModel: EMRALD_Model = await updateModelAndReferences(
-      newLogicNode,
-      MainItemTypes.LogicNode,
-    );
-    updateAppData(updatedModel);
-    setLogicNodes(updatedModel.LogicNodeList);
-    resolve()
-   })
+    return new Promise<void>(async (resolve) => {
+      var updatedModel: EMRALD_Model = await updateModelAndReferences(
+        newLogicNode,
+        MainItemTypes.LogicNode,
+      );
+      updateAppData(updatedModel);
+      setLogicNodes(updatedModel.LogicNodeList);
+      resolve();
+    });
   };
 
   const updateLogicNode = async (updatedLogicNode: LogicNode) => {
-  return new Promise<void>(async (resolve) => {
-    var updatedModel: EMRALD_Model = await updateModelAndReferences(
-      updatedLogicNode,
-      MainItemTypes.LogicNode,
-    );
-    updateAppData(updatedModel);
-    setLogicNodes(updatedModel.LogicNodeList);
-    resolve()
-    })
+    return new Promise<void>(async (resolve) => {
+      var updatedModel: EMRALD_Model = await updateModelAndReferences(
+        updatedLogicNode,
+        MainItemTypes.LogicNode,
+      );
+      updateAppData(updatedModel);
+      setLogicNodes(updatedModel.LogicNodeList);
+      resolve();
+    });
   };
 
   const deleteLogicNode = (logicNodeId: string | undefined) => {
