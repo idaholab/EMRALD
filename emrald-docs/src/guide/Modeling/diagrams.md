@@ -12,22 +12,26 @@
   <div style="width:300px">![Click New Diagram](/images/Modeling/diagrams/NewDiagram1_1.png)</div>
 
 
-  There are two options, both seen in the properties window.
+  There are three options, all seen in the properties window.
 	<div style="width:500px">![New Diagram Dialogue Box](/images/Modeling/diagrams/NewDiagram2.png)</div>
 
-  **Option 1 (Top Half):**
+  **Option 1 (Create Diagram):**
   Fill out the dialogue box. A description is optional. Click the Type dropdown menu to select the type of diagram you would like to create. The different types are Single State and Multi State. More information on these types are in the [Types of Diagrams](#types-of-diagrams) section. Ensure the correct type of diagram is selected as switching between diagram types can sometimes cause errors due to the differing modeling options. <br>
   After entering the diagram type, name, and optional description, you must enter the diagram label. This is the group the diagram will be under in the Left Navigation Frame. If you want your diagram to be part of an existing group, then  enter the existing group name for the label exactly as it appears in the Left Navigation Frame. If you want your diagram to be in a new group in the Left Navigation Frame, then enter a unique name for the diagram label. <br>
-  <div style="width:500px">![New Diagram Dialogue Box](/images/Modeling/diagrams/NewDiagram_New.png)</div>
+  <div style="width:500px">![New Diagram Dialogue Box](/images/Modeling/diagrams/NewDiagram2_1.png)</div>
 
-  **Option 2 (Bottom Half):**
-  Click "Choose File" to import an existing diagram from another project. See the detials for Merge in the [Top Menu Bar](./webUIOverview.md#top-menu-bar) section for instructions on how to resolve conflicts if there are any. Diagrams can only be imported from project files that have only one diagram in it. If you would like to import more than one diagram at a time, see the detials for Merge in the [Top Menu Bar](./webUIOverview.md#top-menu-bar) section.
+  **Option 2 (Import Diagram):**
+  Click "Choose File" to import an existing diagram from another project. See the details for Merge in the [Top Menu Bar](./webUIOverview.md#top-menu-bar) section for instructions on how to resolve conflicts if there are any. Note that when importing a diagram, you will be directed to a conflict resolution screen even if there are no conflicts. Diagrams can only be imported from project files that have only one diagram in it. If you would like to import more than one diagram at a time, see the details for Merge in the [Top Menu Bar](./webUIOverview.md#top-menu-bar) section.
   <div style="width:500px">![New Diagram Dialogue Box](/images/Modeling/diagrams/NewDiagram_Import.png)</div>
-  
-  **Continued for Both Options:**
-  Once you have completed filling the fields, press "SAVE". The diagram should open in the Modeling Area. The diagram name should also appear in the Left Navigation Frame. <br>
 
-  <!-- ![New Diagram Created](/images/Modeling/diagrams/NewDiagram3.png) -->
+  **Option 3 (From Template):**
+  Click "From Template" to create a diagram that is modeled off of a previously built template. Click one of the created templats shown on the right hand side and click "Save". For more information on creating and using templates, go to the [Templates](/guide/Modeling/templates.md) section. 
+  <div style="width:500px">![New Diagram Dialogue Box](/images/Modeling/diagrams/NewDiagram_FromTemplate.png)</div>
+
+  **Continued for All Options:**
+  Once you have completed filling the fields, press "SAVE". The diagram will appear in the left navigation frame. If the diagram was created from a template, it will be in the same category as the diagram it was made from was in. <br>
+
+  ![New Diagram Created](/images/Modeling/diagrams/NewDiagram3.png)
 
   
 
