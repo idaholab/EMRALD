@@ -158,11 +158,7 @@
    VariableList: {
      Variable: Variable
    }[]
-   /**
-    * Templates avaliable to make new diagrams in the model. These are basicly a small model all on there own.
-    */
-   templates?: unknown[][]
-						
+   						
  }
  export interface Diagram {
   /**
