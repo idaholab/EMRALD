@@ -493,8 +493,8 @@ const ImportForm: React.FC<ImportDiagramFormProps> = ({ importedData, fromTempla
                   />
                 </TableCell>
                 <TableCell align="left">
-                  <Typography fontSize={14} color={row.conflict ? '#d32c38' : '#1b8f55'}>
-                    {row.conflict ? 'CONFLICTS' : 'NO CONFLICT'}
+                  <Typography fontSize={14} color={row.conflict || row.required ? '#d32c38' : '#1b8f55'}>
+                    {row.conflict && !row.required ? 'CONFLICTS' : (row.conflict && row.required) || row.required ? 'MUST EXIST' : 'NO CONFLICT'}
                   </Typography>
                 </TableCell>
               </TableRow>

@@ -62,6 +62,7 @@ const TemplateForm: React.FC<TemplateDiagramFormProps> = ({ templatedData }) => 
     handleContextMenu,
     handleNewNameChange,
     handleLockChange,
+    checkIfDiagramDirectState,
     lockAll,
     unlockAll,
     updateAllUnlocked,
@@ -277,7 +278,7 @@ const TemplateForm: React.FC<TemplateDiagramFormProps> = ({ templatedData }) => 
                   {row.type !== 'Diagram' ? (
                     <Checkbox
                       checked={row.exclude}
-                      disabled={row.required || row.displayType === 'State' || row.displayType === 'Diagram'}
+                      disabled={row.required || (row.displayType === 'State' && checkIfDiagramDirectState(row.oldName)) || row.displayType === 'Diagram'}
                       onChange={(e) => handleExcludeChange(index, e.target.checked)}
                     />
                   ) : (
