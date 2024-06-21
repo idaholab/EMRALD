@@ -48,6 +48,7 @@ export const emptyState: State = {
   eventActions: [],
   immediateActions: [],
   geometryInfo: { x: 0, y: 0, width: 0, height: 0 },
+  required: false
 };
 
 const StateContext = createContext<StateContextType | undefined>(undefined);

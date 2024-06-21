@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo, useEffect } from 'react';
 import { useDiagramContext } from '../../../contexts/DiagramContext';
 import { useLogicNodeContext } from '../../../contexts/LogicNodeContext';
 import { useActionContext } from '../../../contexts/ActionContext';
@@ -13,9 +13,10 @@ import { Diagram } from '../../../types/Diagram';
 import { State } from '../../../types/State';
 import { Action } from '../../../types/Action';
 import { Event } from '../../../types/Event';
+import { useWindowContext } from '../../../contexts/WindowContext';
 
 export function useSidebarLogic() {
-  const { diagrams } = useDiagramContext();
+  const { diagrams, getDiagramByDiagramName } = useDiagramContext();
   const { logicNodes } = useLogicNodeContext();
   const { actions } = useActionContext();
   const { events } = useEventContext();
@@ -37,11 +38,21 @@ export function useSidebarLogic() {
   const { deleteAction } = useActionContext();
   const { deleteEvent } = useEventContext();
   const { deleteVariable } = useVariableContext();
+  const { activeWindowId, getWindowTitleById } = useWindowContext();
 
   const onDiagramChange = (newDiagram: Diagram) => {
     // Update currDiagram state
     setCurrDiagram(newDiagram);
   };
+
+  // Set the current diagram to the one corresponding to the active window
+  useEffect(() => {
+    // Get the title of the active window
+    const activeWindowTitle = getWindowTitleById(activeWindowId) || '';
+
+    // Set the current diagram to the one corresponding to the active window title
+    setCurrDiagram(getDiagramByDiagramName(activeWindowTitle));
+  }, [activeWindowId]);
 
   const diagramPanels = [
     { type: 'Diagrams', data: diagrams },

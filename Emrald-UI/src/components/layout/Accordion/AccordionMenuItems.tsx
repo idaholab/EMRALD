@@ -109,7 +109,7 @@ const AccordionMenuItems: React.FC<AccordionMenuListProps> = ({
                 </React.Fragment>
               ))
             ) : (
-              <Typography>N/A</Typography>
+              <Typography sx={{ pl: 3 }}>No Diagrams</Typography>
             )}
           </Box>
         </List>
@@ -172,7 +172,7 @@ const AccordionMenuItems: React.FC<AccordionMenuListProps> = ({
                   </ListItemButton>
                 ))
               ) : (
-                <Typography>N/A</Typography>
+                <Typography sx={{ pl: 3, py: 1 }}>No {item.type}</Typography>
               )}
             </>
           )}

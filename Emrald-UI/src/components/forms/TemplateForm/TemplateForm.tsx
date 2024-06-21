@@ -277,7 +277,7 @@ const TemplateForm: React.FC<TemplateDiagramFormProps> = ({ templatedData }) => 
                   {row.type !== 'Diagram' ? (
                     <Checkbox
                       checked={row.exclude}
-                      disabled={row.requiredInImportingModel}
+                      disabled={row.required || row.displayType === 'State' || row.displayType === 'Diagram'}
                       onChange={(e) => handleExcludeChange(index, e.target.checked)}
                     />
                   ) : (
@@ -305,7 +305,7 @@ const TemplateForm: React.FC<TemplateDiagramFormProps> = ({ templatedData }) => 
                   >
                     <Checkbox
                       disabled={row.exclude || row.type === 'State' || row.type === 'Diagram'}
-                      checked={row.requiredInImportingModel}
+                      checked={row.required}
                       onChange={(e) => handleRequiredChange(index, e.target.checked)}
                     />
                   </Box>

@@ -94,7 +94,6 @@ const useContextMenu = (getStateNodes?: () => void, setEdges?: (edges: Edge[]) =
         },
         isDivider: true,
       },
-
       {
         label: 'Delete State',
         action: () => {
@@ -228,6 +227,24 @@ const useContextMenu = (getStateNodes?: () => void, setEdges?: (edges: Edge[]) =
         isDivider: true,
       },
       {
+        label: 'Copy Event',
+        action: () => {
+          navigator.clipboard.writeText(JSON.stringify(event, null, 2));
+          closeContextMenu();
+        },      
+      },
+      {
+        label: 'Paste Event',
+        action: async () => {
+          const pastedData = await navigator.clipboard.readText();
+          if(isEvent(JSON.parse(pastedData))) {
+            console.log('pasted Event:', JSON.parse(pastedData));
+          };
+          closeContextMenu();
+        },
+        isDivider: true,
+      },
+      {
         label: 'Remove Event',
         action: () => {
           removeEventItem(event, state);
@@ -305,6 +322,24 @@ const useContextMenu = (getStateNodes?: () => void, setEdges?: (edges: Edge[]) =
         isDivider: true,
       },
       {
+        label: 'Copy Action',
+        action: () => {
+          navigator.clipboard.writeText(JSON.stringify(action, null, 2));
+          closeContextMenu();
+        },      
+      },
+      {
+        label: 'Paste Action',
+        action: async () => {
+          const pastedData = await navigator.clipboard.readText();
+          if(isAction(JSON.parse(pastedData))) {
+            console.log('pasted action:', JSON.parse(pastedData));
+          };
+          closeContextMenu();
+        },
+        isDivider: true,
+      },
+      {
         label: 'Remove Action',
         action: () => {
           removeActionItem(action, type, state);
@@ -354,6 +389,19 @@ const useContextMenu = (getStateNodes?: () => void, setEdges?: (edges: Edge[]) =
     }
 
     setMenuOptions(menuOptions);
+  };
+
+    /**
+   **** Move Event and Action functions ****
+   **/
+   const addEvent = (state: State, event: Event) => {
+    if (!event) {
+      return;
+    }
+
+    state.events = [...state.events, event.name];
+
+    updateState(state);
   };
 
   /**

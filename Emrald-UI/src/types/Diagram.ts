@@ -29,5 +29,8 @@ export interface Diagram {
    * Names of the states used in this diagram
    */
   states: string[]
+  
   changeLog?: ChangeLog
+    
+  required: boolean
 }

@@ -55,6 +55,7 @@ interface ImportedItem {
   action: string;
   newName: string;
   conflict: boolean;
+  required: boolean;
   emraldItem: Action | Diagram | LogicNode | ExtSim | Event | State | Variable;
 }
 
@@ -77,6 +78,8 @@ const ImportForm: React.FC<ImportDiagramFormProps> = ({ importedData, fromTempla
   const convertModelToArray = (model: EMRALD_Model): ImportedItem[] => {
     const items: ImportedItem[] = [];
 
+    console.log(model);
+
     for (const diagram of model.DiagramList) {
       items.push({
         type: MainItemTypes.Diagram,
@@ -84,8 +87,9 @@ const ImportForm: React.FC<ImportDiagramFormProps> = ({ importedData, fromTempla
         locked: !diagramList.value.some(item => item.name === diagram.name),
         oldName: diagram.name,
         newName: diagram.name,
-        action: 'rename',
+        action: diagram.required ? 'ignore' : 'rename',
         conflict: diagramList.value.some(item => item.name === diagram.name),
+        required: diagram.required,
         emraldItem: diagram,
       });
     }
@@ -99,6 +103,7 @@ const ImportForm: React.FC<ImportDiagramFormProps> = ({ importedData, fromTempla
         newName: logicNode.name,
         action: 'rename',
         conflict: logicNodeList.value.some(item => item.name === logicNode.name),
+        required: false,
         emraldItem: logicNode,
       });
     }
@@ -112,6 +117,7 @@ const ImportForm: React.FC<ImportDiagramFormProps> = ({ importedData, fromTempla
         newName: extSim.name,
         action: 'rename',
         conflict: extSimList.value.some(item => item.name === extSim.name),
+        required: false,
         emraldItem: extSim,
       });
     }
@@ -123,8 +129,9 @@ const ImportForm: React.FC<ImportDiagramFormProps> = ({ importedData, fromTempla
         locked: !actionsList.value.some(item => item.name === action.name),
         oldName: action.name,
         newName: action.name,
-        action: 'rename',
+        action: action.required ? 'ignore' : 'rename',
         conflict: actionsList.value.some(item => item.name === action.name),
+        required: action.required,
         emraldItem: action,
       });
     }
@@ -136,8 +143,9 @@ const ImportForm: React.FC<ImportDiagramFormProps> = ({ importedData, fromTempla
         locked: !eventsList.value.some(item => item.name === event.name),
         oldName: event.name,
         newName: event.name,
-        action: 'rename',
+        action: event.required ? 'ignore' : 'rename',
         conflict: eventsList.value.some(item => item.name === event.name),
+        required: event.required,
         emraldItem: event,
       });
     }
@@ -149,8 +157,9 @@ const ImportForm: React.FC<ImportDiagramFormProps> = ({ importedData, fromTempla
         locked: !statesList.value.some(item => item.name === state.name),
         oldName: state.name,
         newName: state.name,
-        action: 'rename',
+        action: state.required ? 'ignore' : 'rename',
         conflict: statesList.value.some(item => item.name === state.name),
+        required: state.required,
         emraldItem: state,
       });
     }
@@ -164,11 +173,19 @@ const ImportForm: React.FC<ImportDiagramFormProps> = ({ importedData, fromTempla
         newName: variable.name,
         action: 'rename',
         conflict: variableList.value.some(item => item.name === variable.name),
+        required: false,
         emraldItem: variable,
       });
     }
 
-    return items;
+    console.log(items);
+    return items.sort((a, b) => {
+      if (a.type === MainItemTypes.Diagram) return -1;
+      if (a.type === MainItemTypes.State && b.type !== MainItemTypes.Diagram) return -1;
+      if (a.type === MainItemTypes.Event && b.type !== MainItemTypes.Diagram && b.type !== MainItemTypes.State) return -1;
+      if (a.type === MainItemTypes.Action && b.type !== MainItemTypes.Diagram && b.type !== MainItemTypes.State && b.type !== MainItemTypes.Event) return -1;
+      return 1;
+    });
   };
 
   useEffect(() => {
@@ -451,17 +468,17 @@ const ImportForm: React.FC<ImportDiagramFormProps> = ({ importedData, fromTempla
                     >
                       <FormControlLabel
                         value="ignore"
-                        control={<Radio disabled={row.locked || (row.type === 'State' && importedData.DiagramList.length > 0)} />}
+                        control={<Radio disabled={row.locked || row.required || (row.type === 'State' && importedData.DiagramList.length > 0)} />}
                         label="Ignore"
                       />
                       <FormControlLabel
                         value="replace"
-                        control={<Radio disabled={row.locked || (row.type === 'State' && importedData.DiagramList.length > 0)} />}
+                        control={<Radio disabled={row.locked || row.required || (row.type === 'State' && importedData.DiagramList.length > 0)} />}
                         label="Replace"
                       />
                       <FormControlLabel
                         value="rename"
-                        control={<Radio disabled={row.locked} />}
+                        control={<Radio disabled={row.locked || row.required} />}
                         label="New Name"
                       />
                     </RadioGroup>

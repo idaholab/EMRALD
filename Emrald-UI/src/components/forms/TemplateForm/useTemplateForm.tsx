@@ -21,7 +21,7 @@ interface TemplatedItem {
   action: string;
   newName: string;
   exclude: boolean;
-  requiredInImportingModel: boolean;
+  required: boolean;
   emraldItem: Action | Diagram | LogicNode | ExtSim | Event | State | Variable;
 }
 
@@ -59,7 +59,7 @@ export const useTemplateForm = (templatedData: EMRALD_Model) => {
         newName: diagram.name,
         action: 'rename',
         exclude: false,
-        requiredInImportingModel: true,
+        required: false,
         emraldItem: diagram,
       });
     }
@@ -72,7 +72,7 @@ export const useTemplateForm = (templatedData: EMRALD_Model) => {
         newName: logicNode.name,
         action: 'rename',
         exclude: false,
-        requiredInImportingModel: false,
+        required: false,
         emraldItem: logicNode,
       });
     }
@@ -85,7 +85,7 @@ export const useTemplateForm = (templatedData: EMRALD_Model) => {
         newName: extSim.name,
         action: 'rename',
         exclude: false,
-        requiredInImportingModel: false,
+        required: false,
         emraldItem: extSim,
       });
     }
@@ -98,7 +98,7 @@ export const useTemplateForm = (templatedData: EMRALD_Model) => {
         newName: action.name,
         action: 'rename',
         exclude: false,
-        requiredInImportingModel: false,
+        required: false,
         emraldItem: action,
       });
     }
@@ -111,7 +111,7 @@ export const useTemplateForm = (templatedData: EMRALD_Model) => {
         newName: event.name,
         action: 'rename',
         exclude: false,
-        requiredInImportingModel: false,
+        required: false,
         emraldItem: event,
       });
     }
@@ -124,7 +124,7 @@ export const useTemplateForm = (templatedData: EMRALD_Model) => {
         newName: state.name,
         action: 'rename',
         exclude: false,
-        requiredInImportingModel: true,
+        required: false,
         emraldItem: state,
       });
     }
@@ -137,11 +137,17 @@ export const useTemplateForm = (templatedData: EMRALD_Model) => {
         newName: variable.name,
         action: 'rename',
         exclude: false,
-        requiredInImportingModel: false,
+        required: false,
         emraldItem: variable,
       });
     }
-    return items.sort((a, b) => (a.requiredInImportingModel > b.requiredInImportingModel ? -1 : 1));  
+    return items.sort((a, b) => {
+      if (a.type === MainItemTypes.Diagram) return -1;
+      if (a.type === MainItemTypes.State && b.type !== MainItemTypes.Diagram) return -1;
+      if (a.type === MainItemTypes.Event && b.type !== MainItemTypes.Diagram && b.type !== MainItemTypes.State) return -1;
+      if (a.type === MainItemTypes.Action && b.type !== MainItemTypes.Diagram && b.type !== MainItemTypes.State && b.type !== MainItemTypes.Event) return -1;
+      return 1;
+    });
   };
 
   const addNewGroup = () => {
@@ -299,7 +305,10 @@ export const useTemplateForm = (templatedData: EMRALD_Model) => {
 
   const handleRequiredChange = (index: number, required: boolean) => {
     const updatedItems = [...templatedItems];
-    updatedItems[index].requiredInImportingModel = required;
+    updatedItems[index].required = required;
+    if ('required' in updatedItems[index].emraldItem) {
+      (updatedItems[index].emraldItem as any).required = required;
+    }
     setTemplatedItems(updatedItems);
   };
   
@@ -308,7 +317,6 @@ export const useTemplateForm = (templatedData: EMRALD_Model) => {
       const updatedItems = prevItems.map((item) => {
         if (item.newName.includes(findValue) && !item.locked) {
           const newName = item.newName.replace(new RegExp(findValue, 'g'), replaceValue);
-          console.log(`Changing "${item.newName}" to "${newName}"`);
           return {
             ...item,
             newName: newName,
@@ -325,6 +333,26 @@ export const useTemplateForm = (templatedData: EMRALD_Model) => {
     templatedData.name = templateName;
     templatedData.desc = templateDesc;
     templatedData.group = findGroupHierarchyByGroupName(groups, selectedGroup);
+
+    // Go through all of the renamed items and update the pasted model
+    for (let i = 0; i < templatedItems.length; i++) {
+      const item = templatedItems[i];
+      if (item.action === 'rename') {
+        if (item.exclude) {
+          templatedData.DiagramList = templatedData.DiagramList.filter((d) => !templatedItems.find((ti) => ti.type === MainItemTypes.Diagram && ti.exclude && d.name === ti.newName));
+          templatedData.LogicNodeList = templatedData.LogicNodeList.filter((d) => !templatedItems.find((ti) => ti.type === MainItemTypes.LogicNode && ti.exclude && d.name === ti.newName));
+          templatedData.ExtSimList = templatedData.ExtSimList.filter((d) => !templatedItems.find((ti) => ti.type === MainItemTypes.ExtSim && ti.exclude && d.name === ti.newName));
+          templatedData.ActionList = templatedData.ActionList.filter((d) => !templatedItems.find((ti) => ti.type === MainItemTypes.Action && ti.exclude && d.name === ti.newName));
+          templatedData.EventList = templatedData.EventList.filter((d) => !templatedItems.find((ti) => ti.type === MainItemTypes.Event && ti.exclude && d.name === ti.newName));
+          templatedData.StateList = templatedData.StateList.filter((d) => !templatedItems.find((ti) => ti.type === MainItemTypes.State && ti.exclude && d.name === ti.newName));
+          templatedData.VariableList = templatedData.VariableList.filter((d) => !templatedItems.find((ti) => ti.type === MainItemTypes.Variable && ti.exclude && d.name === ti.newName));
+        }
+        const itemCopy = structuredClone(item.emraldItem);
+        itemCopy.name = item.newName;
+        updateSpecifiedModel(itemCopy, item.type, templatedData, true);
+        item.emraldItem.id = uuidv4();
+      }
+    }
   
     // Go through all of the renamed items and update the pasted model
     for (let i = 0; i < templatedItems.length; i++) {
@@ -340,6 +368,7 @@ export const useTemplateForm = (templatedData: EMRALD_Model) => {
     createTemplate(templatedData);
     handleClose();
   };
+
   return {
     findValue,
     replaceValue,
