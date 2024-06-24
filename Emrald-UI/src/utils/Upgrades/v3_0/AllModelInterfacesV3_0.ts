@@ -40,14 +40,6 @@ export type EMRALD_Model = Main_Model & {
    */
   export type ImmediateActions = string[]
   /**
-   * Array of name references to events. These event will be monitored for when in this state.
-   */
-  export type Events = string[]
-  /**
-   * array of referenace names for actions of the associated event.
-   */
-  export type Actions = string[]
-  /**
    * actions for the events in sibling "events" array. One to one relationship.
    */
   export type EventActions = Items1[]
@@ -64,18 +56,6 @@ export type EMRALD_Model = Main_Model & {
     | "at3DSimMsg"
     | "atRunExtApp"
   /**
-   * Optional. If this is a transition action then these are the states that it could be transitioned to.
-   */
-  export type NewStates = NewState[]
-  /**
-   * Optional. If action has a script, these are the variable name references for variables used in the script. All variables used in script must be in this list.
-   */
-  export type CodeVariables = string[]
-  /**
-   * Used for custom form, variables used in the form.
-   */
-  export type UpdateVariables = unknown[]
-  /**
    * Type of the event
    */
   export type EventType =
@@ -86,14 +66,6 @@ export type EMRALD_Model = Main_Model & {
     | "et3dSimEv"
     | "etDistribution"
     | "etVarCond"
-  /**
-   * Optional. For event type etStateCng. List of state name references as part of the criteria needed to trigger the event. These are the states that need to be entered or exited to tirgger the event.
-   */
-  export type TriggerStates = string[]
-  /**
-   * Optional, Name references for all variables used in scripts if the event type uses scripts.
-   */
-  export type VarNames = string[]
   /**
    * Optional. When an event uses a variable and that variable changes, this tells the code how to update the event.
    */
@@ -155,10 +127,6 @@ export type EMRALD_Model = Main_Model & {
    * Array of component diagram names and state values to use in evaluating if not using the default value.
    */
   export type CompChild = Items2[]
-  /**
-   * Array of logic node names that are children of this gate.
-   */
-  export type GateChildren = string[]
   /**
    * Context of use for the variable in the model.
    */
@@ -321,7 +289,10 @@ export type EMRALD_Model = Main_Model & {
      */
     diagramName: string
     immediateActions: ImmediateActions
-    events: Events
+    /**
+     * Array of name references to events. These event will be monitored for when in this state.
+     */
+    events: string[]
     eventActions: EventActions
     geometry?: GeometryInfo
     changeLog?: ChangeLog
@@ -332,7 +303,10 @@ export type EMRALD_Model = Main_Model & {
     required?: boolean
   }
   export interface Items1 {
-    actions: Actions
+    /**
+     * array of referenace names for actions of the associated event.
+     */
+    actions: string[]
     moveFromCurrent: boolean
   }
   /**
@@ -368,7 +342,10 @@ export type EMRALD_Model = Main_Model & {
      * Optional. Only one action may be taken so the probability determines if this action is taken vs another in the EventAction list. If false then the probability is used to sample if this action occured and multiple or no actions could happen when the event is triggered.
      */
     mutExcl?: boolean
-    newStates?: NewStates
+    /**
+     * Optional. If this is a transition action then these are the states that it could be transitioned to.
+     */
+    newStates?: NewState[]
     /**
      * Optionsl. Script code to be executed if the action type has a script
      */
@@ -377,7 +354,10 @@ export type EMRALD_Model = Main_Model & {
      * Optional. For change var value actions, the result of the script is assigned to this variable name reference.
      */
     variableName?: string
-    codeVariables?: CodeVariables
+    /**
+     * Optional. If action has a script, these are the variable name references for variables used in the script. All variables used in script must be in this list.
+     */
+    codeVariables?: string[]
     /**
      * Optional. For action type at3DSimMsg, this is the message to be sent to the coupled external simulation.
      */
@@ -424,7 +404,12 @@ export type EMRALD_Model = Main_Model & {
     formData?: {
       [k: string]: unknown
     }
-    template?: Template
+    /**
+     * Optional. For action type atRunExtApp. It is used for custom app form.
+     */
+    template?: {
+      [k: string]: unknown
+    }
     /**
      * Optional. For action type atRunExtApp. It is flag to indicate the type of return from the processOutputFileCode. If rtNone then it has no return, othrwise the C# script must return a List<string/> with +/-[StateName] to shift out or into a state.
      */
@@ -434,7 +419,10 @@ export type EMRALD_Model = Main_Model & {
      * String for the run application action, only for UI used. Options depend on the custom UI forms made. "code" means default user defined pre and post execution code is used.
      */
     raType?: string
-    updateVariables?: UpdateVariables
+    /**
+     * Used for custom form, variables used in the form.
+     */
+    updateVariables?: unknown[]
     /**
      * If this is a template then it indicates the item must exist in the current model before using the template.
      */
@@ -457,12 +445,6 @@ export type EMRALD_Model = Main_Model & {
      * Optional, if used  then the a variable is used for the probability. This is the name of that variable
      */
     varProb?: null | string
-  }
-  /**
-   * Optional. For action type atRunExtApp. It is used for custom app form.
-   */
-  export interface Template {
-    [k: string]: unknown
   }
   export interface Event {
     /**
@@ -487,8 +469,14 @@ export type EMRALD_Model = Main_Model & {
      * Optional. For event type etStateCng. Flag to indicate if all the items in the triggerStates need to occure as specified or just one of them.
      */
     allItems?: boolean
-    triggerStates?: TriggerStates
-    varNames?: VarNames
+    /**
+     * Optional. For event type etStateCng. List of state name references as part of the criteria needed to trigger the event. These are the states that need to be entered or exited to tirgger the event.
+     */
+    triggerStates?: string[]
+    /**
+     * Optional, Name references for all variables used in scripts if the event type uses scripts.
+     */
+    varNames?: string[]
     /**
      * Optional. For event type etStateCng, flag to indicate that event is triggired when entering or exiting states listed in triggerStates array. On Enter State/s or On Exit State/s
      */
@@ -577,7 +565,10 @@ export type EMRALD_Model = Main_Model & {
     desc: string
     gateType: GateType
     compChildren: CompChild
-    gateChildren: GateChildren
+    /**
+     * Array of logic node names that are children of this gate.
+     */
+    gateChildren: string[]
     /**
      * Flag indicating that this is to be displayed as a tree top in the UI and can be used in an evaluate logic tree event.
      */
