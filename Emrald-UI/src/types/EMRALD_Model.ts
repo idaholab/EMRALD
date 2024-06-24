@@ -14,7 +14,15 @@ export const EMRALD_SchemaVersion : number = 3.0;
  /**
   * EMRALD model schema version 3.0
   */
- export interface EMRALD_Model {
+
+ export type EMRALD_Model = Main_Model & {
+  /**
+   * Templates available to make new diagrams in the model. These are basically small models all on their own.
+   */
+  templates?: Main_Model[]
+}
+
+ export interface Main_Model {
    /**
     * Temporary, only used internally for some identification or uniqueness needs
     */

@@ -4,104 +4,119 @@
     "type": "object",
     "title": "EMRALD_Model",
     "description": "EMRALD model schema version 3.0",
-    "properties": {
-        "id": {
-            "type": "string",
-            "description": "Temporary, only used internally for some identification or uniqueness needs"
+    "allOf": [
+        {
+            "$ref": "#/definitions/MainModel"
         },
-        "name": {
-            "type": "string",
-            "description": "Name of the EMRALD model"
-        },
-        "desc": {
-            "type": "string",
-            "description": "description of the EMRALD model"
-        },
-        "emraldVersion": {
-            "type": "number",
-            "description": "Version of the EMRALD model schema"
-        },
-        "version": {
-            "type": "number",
-            "description": "Version of the users model"
-        },
-        "DiagramList": {
-            "type": "array",
-            "description": "All the diagrams for the model",
-            "items": {
-                "$ref": "#/definitions/Diagram"
-            }
-        },
-        "ExtSimList": {
-            "type": "array",
-            "description": "All the external simulation links for the mdoel",
-            "items": {
-                "$ref": "#/definitions/ExtSim"
-            }
-        },
-        "StateList": {
-            "type": "array",
-            "description": "All of the states for the different diagrams of the model",
-            "items": {
-                "$ref": "#/definitions/State"
-            }
-        },
-        "ActionList": {
-            "type": "array",
-            "description": "All the actions that can be used in the model",
-            "items": {
-                "$ref": "#/definitions/Action"
-            }
-        },
-        "EventList": {
-            "type": "array",
-            "description": "All the events that are used in the model.",
-            "items": {
-                "$ref": "#/definitions/Event"
-            }
-        },
-        "LogicNodeList": {
-            "type": "array",
-            "description": "All the logic nodes to make the logic trees in the model",
-            "items": {
-                "$ref": "#/definitions/LogicNode"
-            }
-        },
-        "VariableList": {
-            "type": "array",
-            "description": "All the variables used in the model",
-            "items": {
-                "$ref": "#/definitions/Variable"
-            }
-        },
-        "templates": {
-            "type": "array",
-            "description": "Templates avaliable to make new diagrams in the model. These are basicly a small model all on there own.",
-            "items": {
-                "$ref": "#"
-            }
-        },
-        "changeLog": {
-            "$ref": "#/definitions/ChangeLog"
-        },
-        "group": {
-            "$ref": "#/definitions/Group"
+        {
+            "properties": {
+                "templates": {
+                    "type": "array",
+                    "description": "Templates available to make new diagrams in the model. These are basically small models all on their own.",
+                    "items": {
+                        "$ref": "#/definitions/MainModel"
+                    }
+                }
+            },
+            "additionalProperties": false
         }
-    },
-    "additionalProperties": false,
-    "required": [
-        "name",
-        "desc",
-        "version",
-        "DiagramList",
-        "ExtSimList",
-        "StateList",
-        "ActionList",
-        "EventList",
-        "LogicNodeList",
-        "VariableList"
     ],
     "definitions": {
+        "MainModel": {
+            "type": "object",
+            "title": "Main_Model",
+            "description": "EMRALD model schema version 3.0",
+            "properties": {
+                "id": {
+                    "type": "string",
+                    "description": "Temporary, only used internally for some identification or uniqueness needs"
+                },
+                "name": {
+                    "type": "string",
+                    "description": "Name of the EMRALD model"
+                },
+                "desc": {
+                    "type": "string",
+                    "description": "description of the EMRALD model"
+                },
+                "emraldVersion": {
+                    "type": "number",
+                    "description": "Version of the EMRALD model schema"
+                },
+                "version": {
+                    "type": "number",
+                    "description": "Version of the users model"
+                },
+                "DiagramList": {
+                    "type": "array",
+                    "description": "All the diagrams for the model",
+                    "items": {
+                        "$ref": "#/definitions/Diagram"
+                    }
+                },
+                "ExtSimList": {
+                    "type": "array",
+                    "description": "All the external simulation links for the mdoel",
+                    "items": {
+                        "$ref": "#/definitions/ExtSim"
+                    }
+                },
+                "StateList": {
+                    "type": "array",
+                    "description": "All of the states for the different diagrams of the model",
+                    "items": {
+                        "$ref": "#/definitions/State"
+                    }
+                },
+                "ActionList": {
+                    "type": "array",
+                    "description": "All the actions that can be used in the model",
+                    "items": {
+                        "$ref": "#/definitions/Action"
+                    }
+                },
+                "EventList": {
+                    "type": "array",
+                    "description": "All the events that are used in the model.",
+                    "items": {
+                        "$ref": "#/definitions/Event"
+                    }
+                },
+                "LogicNodeList": {
+                    "type": "array",
+                    "description": "All the logic nodes to make the logic trees in the model",
+                    "items": {
+                        "$ref": "#/definitions/LogicNode"
+                    }
+                },
+                "VariableList": {
+                    "type": "array",
+                    "description": "All the variables used in the model",
+                    "items": {
+                        "$ref": "#/definitions/Variable"
+                    }
+                },
+                "changeLog": {
+                    "$ref": "#/definitions/ChangeLog"
+                },
+                "group": {
+                    "$ref": "#/definitions/Group"
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "name",
+                "desc",
+                "version",
+                "DiagramList",
+                "ExtSimList",
+                "StateList",
+                "ActionList",
+                "EventList",
+                "LogicNodeList",
+                "VariableList"
+            ]
+        },
         "Diagram": {
             "type": "object",
             "title": "Diagram",
@@ -896,7 +911,6 @@
             "properties": {
                 "name": {
                     "$ref": "#/definitions/EventDistributionParameterName"
-               
                 },
                 "value": {
                     "description": "Optional. The value of the parameter if the useVariable flag is false. Can be a number or a string if in scientific notation.",
@@ -1022,7 +1036,7 @@
                 "Ignore"
             ]
         },
-        "EventDistributionParameterName" : {
+        "EventDistributionParameterName": {
             "type": "string",
             "description": "For event type of etDistribution this is the name of the distribution parameter.",
             "enum": [

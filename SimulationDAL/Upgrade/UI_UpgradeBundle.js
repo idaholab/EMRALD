@@ -180,7 +180,8 @@ function UpgradeV2_4(modelTxt) {
     //do upgrade steps for version change 1.2 to 2_4. Convert old distribution events
     const newModel = {
         ...oldModel,
-        EventList: oldModel.EventList ? oldModel.EventList.map(({ Event }) => ({ Event: mapEvent(Event) })) : []
+        EventList: oldModel.EventList ? oldModel.EventList.map(({ Event }) => ({ Event: mapEvent(Event) })) : [],
+        templates: undefined,
     };
     function mapEvent(oldEv) {
         var allItems = oldEv.allItems != null ?
@@ -442,7 +443,6 @@ function UpgradeV3_0_Recursive(oldModel) {
             };
         }) : [],
         group: oldModel.group ? convertGroupV2_4ToGroup(oldModel.group) : undefined,
-        //templates: undefined
         templates: convertTemplates(oldModel.templates)
     };
     //function to map changed diagram type
@@ -515,17 +515,22 @@ class Upgrade {
         this._emraldVersion = 0.0;
         this._oldModelTxt = modelTxt;
         let modelObj = null;
-        if (modelTxt != "") {
-            modelObj = JSON.parse(modelTxt);
-            //using emraldVersion for now
-            this._emraldVersion = ('schemaVerson' in modelObj) ? modelObj.emraldVersion : null;
-            if (this._emraldVersion == null) //if no emraldVersion use old version tag.
-                this._emraldVersion = ('verson' in modelObj) ? modelObj.version : 0.0;
-        }
         this._newModelTxt = "";
         this._newModel = undefined;
         this._emraldVersion = 0.0;
         this._errors = [];
+        if (modelTxt != "") {
+            modelObj = JSON.parse(modelTxt);
+            //using emraldVersion for now
+            try {
+                this._emraldVersion = ('emraldVersion' in modelObj) ? modelObj.emraldVersion : null;
+                if (this._emraldVersion == null) //if no emraldVersion use old version tag.
+                    this._emraldVersion = ('version' in modelObj) ? modelObj.version : 0.0;
+            }
+            catch {
+                this._errors.push("Invalid JSON format");
+            }
+        }
     }
     upgradeGiveID(toVersion, setIdFunction) {
         const badModel = "Invalid EMRALD model format ";
