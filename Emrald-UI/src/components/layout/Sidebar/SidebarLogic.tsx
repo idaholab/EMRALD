@@ -19,7 +19,7 @@ import useLogicNodeTreeDiagram from '../../diagrams/LogicTreeDiagram/useLogicTre
 
 export function useSidebarLogic() {
   const { diagrams } = useDiagramContext();
-  const { logicNodes, getLogicNodeByName } = useLogicNodeContext();
+  const { logicNodes } = useLogicNodeContext();
   const { actions } = useActionContext();
   const { events } = useEventContext();
   const { states } = useStateContext();
@@ -41,7 +41,7 @@ export function useSidebarLogic() {
   const { deleteEvent } = useEventContext();
   const { deleteVariable } = useVariableContext();
   const { closeAllWindows } = useWindowContext();
-  const { canDeleteNode, removeNode } = useLogicNodeTreeDiagram();
+  const { canDeleteNode, recurseChildren } = useLogicNodeTreeDiagram();
 
   const onDiagramChange = (newDiagram: Diagram) => {
     // Update currDiagram state
@@ -194,23 +194,6 @@ export function useSidebarLogic() {
     setDeleteConfirmation(false);
     closeAllWindows();
   };
-
-  const recurseChildren = (node: LogicNode, parentNode?: LogicNode) => {
-    if (!node) return;
-    if (!canDeleteNode(node.name)) return;
-    node.gateChildren.forEach((gateChildName) => {
-      const gateChildNode = getLogicNodeByName(gateChildName);
-      if (gateChildNode) {
-        if (!canDeleteNode(gateChildNode.name)) {
-          if (parentNode) removeNode(parentNode.name, node.name, "gate")
-          return;
-        } else {
-          recurseChildren(gateChildNode, node);
-          deleteLogicNode(gateChildNode.id);
-        }
-      }
-    });
-  }
 
   const handleDelete = (itemToDelete: any, itemType: MainItemTypes) => {
     setDeleteConfirmation(true);

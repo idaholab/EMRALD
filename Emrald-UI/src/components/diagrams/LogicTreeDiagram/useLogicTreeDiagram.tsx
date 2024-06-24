@@ -201,12 +201,13 @@ const useLogicNodeTreeDiagram = () => {
   };
   const removeNode = (parentNode: string, nodeName: string, type: NodeType) => {
     const parentLogicNode = getLogicNodeByName(parentNode);
+    const nodeToDelete = getLogicNodeByName(nodeName);
     if (type === 'gate') {
       parentLogicNode.gateChildren = parentLogicNode.gateChildren.filter(
         (child) => child !== nodeName,
       );
+      recurseChildren(nodeToDelete, parentLogicNode);
       if(canDeleteNode(nodeName)) {
-        const nodeToDelete = getLogicNodeByName(nodeName);
         deleteLogicNode(nodeToDelete.id);
       }
     }
@@ -217,6 +218,22 @@ const useLogicNodeTreeDiagram = () => {
     }
     updateLogicNode(parentLogicNode);
   };
+  const recurseChildren = (node: LogicNode, parentNode?: LogicNode) => {
+    if (!node) return;
+    if (!canDeleteNode(node.name)) return;
+    node.gateChildren.forEach((gateChildName) => {
+      const gateChildNode = getLogicNodeByName(gateChildName);
+      if (gateChildNode) {
+        if (!canDeleteNode(gateChildNode.name)) {
+          if (parentNode) removeNode(parentNode.name, node.name, "gate")
+          return;
+        } else {
+          recurseChildren(gateChildNode, node);
+          deleteLogicNode(gateChildNode.id);
+        }
+      }
+    });
+  }
 
   const canDeleteNode = (nodeName: string) => {
     const currentReferences = GetModelItemsReferencing(nodeName, MainItemTypes.LogicNode);
@@ -231,6 +248,7 @@ const useLogicNodeTreeDiagram = () => {
   const DeleteNode = (parentNode: string, nodeName: string) => {
     const parentLogicNode = getLogicNodeByName(parentNode);
     const nodeToDelete = getLogicNodeByName(nodeName);
+    recurseChildren(nodeToDelete, parentLogicNode);
     deleteLogicNode(nodeToDelete.id);
 
     parentLogicNode.gateChildren = parentLogicNode.gateChildren.filter(
@@ -367,7 +385,7 @@ const useLogicNodeTreeDiagram = () => {
         node.gateChildren = [...node.gateChildren, newNode.name];
       } else {
         const pastedNodeName = pastedObject.LogicNodeList[0].name;
-        if (node.gateChildren.includes(pastedNodeName)) {
+        if (node.name === pastedNodeName || getAllGateChildren(node).includes(pastedNodeName)) {
           setNodeExistsAlert(true);
           return;
         }
@@ -376,6 +394,21 @@ const useLogicNodeTreeDiagram = () => {
       updateLogicNode(node);
     }
   };
+  const getAllGateChildren = (node: LogicNode): string[] => {
+    let gateChildrenNames: string[] = [];
+    let queue: LogicNode[] = [node];
+    while (queue.length > 0) {
+      const currentNode = queue.pop();
+      currentNode?.gateChildren.forEach((childName) => {
+        const childNode = getLogicNodeByName(childName);
+        if (childNode) {
+          gateChildrenNames.push(childName);
+          queue.push(childNode);
+        }
+      })
+    }
+    return gateChildrenNames;
+  }
 
   const handleDoubleClick = (type: string, text: string) => {
     if (type === 'description') {
@@ -503,6 +536,7 @@ const useLogicNodeTreeDiagram = () => {
     editedTitle,
     nodeExistsAlert,
     canDeleteNode,
+    recurseChildren,
     setNodes,
     setEdges,
     onNodesChange,
