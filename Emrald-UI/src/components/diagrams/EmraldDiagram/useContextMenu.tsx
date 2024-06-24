@@ -391,19 +391,6 @@ const useContextMenu = (getStateNodes?: () => void, setEdges?: (edges: Edge[]) =
     setMenuOptions(menuOptions);
   };
 
-    /**
-   **** Move Event and Action functions ****
-   **/
-   const addEvent = (state: State, event: Event) => {
-    if (!event) {
-      return;
-    }
-
-    state.events = [...state.events, event.name];
-
-    updateState(state);
-  };
-
   /**
    **** Move Event and Action functions ****
    **/
