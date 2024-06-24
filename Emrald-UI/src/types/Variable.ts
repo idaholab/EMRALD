@@ -92,4 +92,6 @@ import {ChangeLog} from './ChangeLog'
      * Flag to indicate if the variable can be monitored in the solver. This removes it from the solver UI if false. Must be true if monitorInSim is true.
      */
     canMonitor?: boolean
+
+    required?: boolean
   }

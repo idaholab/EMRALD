@@ -7,11 +7,12 @@ import { EMRALD_Model } from '../types/EMRALD_Model';
 import { MainItemTypes } from '../types/ItemTypes';
 import { updateModelAndReferences } from '../utils/UpdateModel';
 import { State } from '../types/State';
+import { Event } from '../types/Event';
 
 interface ActionContextType {
   actions: Action[];
   actionsList: ReadonlySignal<Action[]>;
-  createAction: (action: Action, state?: State) => void;
+  createAction: (action: Action, event?: Event, state?: State) => void;
   updateAction: (action: Action) => void;
   deleteAction: (actionId: string | undefined) => void;
   getActionByActionName: (actionName: string) => Action;
@@ -49,13 +50,18 @@ const ActionContextProvider: React.FC<EmraldContextWrapperProps> = ({ children }
   );
   const actionsList = useComputed(() => appData.value.ActionList);
 
-  const createAction = async (newAction: Action, state?: State) => {
+  const createAction = async (newAction: Action, event?: Event, state?: State) => {
     var updatedModel: EMRALD_Model = await updateModelAndReferences(
       newAction,
       MainItemTypes.Action,
     );
     updateAppData(updatedModel);
-    if (state){
+    if (event && state) {
+      const eventIndex = state.events.indexOf(event.name);
+        state.eventActions[eventIndex].actions.push(newAction.name); 
+      var updatedModel: EMRALD_Model = await updateModelAndReferences(state, MainItemTypes.State);
+        updateAppData(updatedModel);
+    } else if (state) {
       state.immediateActions.push(newAction.name);
       var updatedModel: EMRALD_Model = await updateModelAndReferences(state, MainItemTypes.State);
         updateAppData(updatedModel);

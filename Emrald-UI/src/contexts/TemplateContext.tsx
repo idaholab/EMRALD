@@ -17,7 +17,6 @@ interface TemplateContextType {
   setGroups: (groups: Group[]) => void;
   addTemplateToModel: (newTemplate: EMRALD_Model) => void;
   createTemplate: (template: EMRALD_Model) => void;
-  updateTemplate: (template: EMRALD_Model) => void;
   deleteTemplate: (templateId: string) => void;
   newTemplateList: (newTemplateList: unknown[]) => void;
   mergeTemplateToList: (newTemplate: EMRALD_Model) => void;
@@ -158,19 +157,6 @@ const TemplateContextProvider: React.FC<EmraldContextWrapperProps> = ({ children
     setTemplates(temporaryTemplates.value as EMRALD_Model[]);
   };
 
-  const updateTemplate = async (updatedTemplate: EMRALD_Model) => {
-    const updatedTemplateList = templatesList.value.map((item) =>
-      item.id === updatedTemplate.id ? updatedTemplate : item,
-    );
-
-    var updatedModel: EMRALD_Model = {
-      ...appData.value,
-      templates: updatedTemplateList,
-    };
-    updateAppData(JSON.parse(JSON.stringify(updatedModel)));
-    setTemplates(updatedModel.templates as EMRALD_Model[]);
-  };
-
   const deleteTemplate = (templateId: string) => {
     if (!templateId) {
       return;
@@ -182,10 +168,6 @@ const TemplateContextProvider: React.FC<EmraldContextWrapperProps> = ({ children
     });
     setTemplates(updatedTemplateList);
   };
-
-  // const getTemplateByTemplateId = (templateId: string) => {
-  //   return templatesList.value.find((template) => template.id === templateId);
-  // };
 
   const findGroupHierarchyByGroupName = (groups: Group[], groupName: string): Group | undefined => {
     for (const group of groups) {
@@ -297,7 +279,6 @@ const TemplateContextProvider: React.FC<EmraldContextWrapperProps> = ({ children
         setGroups,
         addTemplateToModel,
         createTemplate,
-        updateTemplate,
         deleteTemplate,
         newTemplateList,
         mergeTemplateToList,

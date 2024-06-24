@@ -46,5 +46,5 @@ export interface State {
     changeLog?: ChangeLog
     defaultSingleStateValue?: StateEvalValue
       
-    required: boolean
+    required?: boolean
   }

@@ -28,6 +28,7 @@ export interface LogicNode {
      */
     isRoot: boolean
     changeLog?: ChangeLog
+    required?: boolean
   }
 
   export type CompChild = {

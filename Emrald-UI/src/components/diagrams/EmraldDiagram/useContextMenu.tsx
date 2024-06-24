@@ -204,7 +204,7 @@ const useContextMenu = (getStateNodes?: () => void, setEdges?: (edges: Edge[]) =
           addWindow(
             'New Action',
             <ActionFormContextProvider>
-              <ActionForm />
+              <ActionForm event={event} state={state}/>
             </ActionFormContextProvider>,
           );
           closeContextMenu();

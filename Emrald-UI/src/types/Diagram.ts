@@ -32,5 +32,5 @@ export interface Diagram {
   
   changeLog?: ChangeLog
     
-  required: boolean
+  required?: boolean
 }

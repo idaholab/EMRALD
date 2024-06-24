@@ -353,36 +353,7 @@ export const useTemplateForm = (templatedData: EMRALD_Model) => {
     templatedData.name = templateName;
     templatedData.desc = templateDesc;
     templatedData.group = findGroupHierarchyByGroupName(groups, selectedGroup);
-    await removeExcludedItems();
-
-    //  // Rename loop
-    //  for (let i = 0; i < importedItems.length; i++) {
-    //   const item = importedItems[i];
-    //   if (item.action === 'rename') {
-    //     const itemCopy = structuredClone(item.emraldItem);
-    //     itemCopy.name = item.newName;
-    //     await updateSpecifiedModel(itemCopy, item.type, importedData, false);
-    //     const updatedItems = convertModelToArray(importedData);
-    //     item.emraldItem = updatedItems[i].emraldItem;
-    //     item.emraldItem.id = uuidv4();
-    //   }
-    // }
-  
-    // // Update loop
-    // for (let i = 0; i < importedItems.length; i++) {
-    //   const item = importedItems[i];
-    //   if (item.action === 'replace') {
-    //     let currentEmraldItem = GetItemByNameType(item.oldName, item.type);
-    //     item.emraldItem.id = currentEmraldItem?.id;
-    //     updatedModel = await updateModelAndReferences(item.emraldItem, item.type);
-    //     updateAppData(updatedModel);
-    //     return;
-    //   } else {
-    //     updatedModel = await updateModelAndReferences(item.emraldItem, item.type);
-    //     updateAppData(updatedModel);
-    //   }
-    // }
-
+    await removeExcludedItems(); // Remove excluded items before building the template
 
     // Go through all of the renamed items and update the pasted model
     for (let i = 0; i < templatedItems.length; i++) {
@@ -394,7 +365,7 @@ export const useTemplateForm = (templatedData: EMRALD_Model) => {
         }
         await updateSpecifiedModel(itemCopy, item.type, templatedData, false);
         const updatedItems = convertModelToArray(templatedData);
-        if (updatedItems[i].emraldItem) {          
+        if (updatedItems[i]?.emraldItem) {          
           item.emraldItem = updatedItems[i].emraldItem;
           item.emraldItem.id = uuidv4();
         }

@@ -105,7 +105,7 @@ export interface Action {
    */
   updateVariables?: unknown[]
   
-  required: boolean
+  required?: boolean
 }
 
 export interface NewState {
