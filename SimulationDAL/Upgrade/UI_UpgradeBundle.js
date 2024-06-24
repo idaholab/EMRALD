@@ -354,11 +354,13 @@ function UpgradeV3_0_Recursive(oldModel) {
     const newModel = {
         ...oldModel,
         id: oldModel.id !== undefined ? String(oldModel.id) : undefined,
+        objType: "EMRALD_Model",
         DiagramList: oldModel.DiagramList ? oldModel.DiagramList.map(({ Diagram }) => {
             const { diagramList, forceMerge, singleStates, id, ...rest } = Diagram; //exclude diagramList, forceMerge, singleStates
             return {
                 ...rest, // Spread the rest of the properties
                 id: id !== undefined ? String(id) : undefined,
+                objType: "Diagram",
                 diagramType: mapDiagramType(Diagram.diagramType) // Add the mapped diagramType
             };
         }) : [],
@@ -366,6 +368,7 @@ function UpgradeV3_0_Recursive(oldModel) {
             const { modelRef, states, configData, simMaxTime, varScope, value, resetOnRuns, type, sim3DId, id, ...rest } = ExtSim; //exclude
             return {
                 ...rest,
+                objType: "ExtSim",
                 id: id !== undefined ? String(id) : undefined,
             };
         }) : [],
@@ -380,6 +383,7 @@ function UpgradeV3_0_Recursive(oldModel) {
             return {
                 ...rest,
                 id: id !== undefined ? String(id) : undefined,
+                objType: "State",
                 geometryInfo
             };
         }) : [],
@@ -389,6 +393,7 @@ function UpgradeV3_0_Recursive(oldModel) {
             return {
                 ...rest,
                 id: id !== undefined ? String(id) : undefined,
+                objType: "Action",
                 mainItem
             };
         }) : [],
@@ -400,12 +405,14 @@ function UpgradeV3_0_Recursive(oldModel) {
             return {
                 ...rest,
                 id: id !== undefined ? String(id) : undefined,
+                objType: "Event",
                 ifInState
             };
         }) : [],
         LogicNodeList: oldModel.LogicNodeList ? oldModel.LogicNodeList.map(({ LogicNode }) => ({
             ...LogicNode,
             id: LogicNode.id !== undefined ? String(LogicNode.id) : undefined,
+            objType: "LogicNode",
             isRoot: LogicNode.isRoot !== undefined ? (LogicNode.isRoot || ((LogicNode.rootName != undefined) && (LogicNode.rootName === LogicNode.name))) :
                 (LogicNode.rootName == undefined ? false : (LogicNode.rootName === LogicNode.name)),
             compChildren: mapLogicNode(LogicNode.compChildren)
@@ -437,6 +444,7 @@ function UpgradeV3_0_Recursive(oldModel) {
             return {
                 ...rest, // Spread the rest of the properties
                 id: id !== undefined ? String(id) : undefined,
+                objType: "Variable",
                 accrualStatesData, // Include mapped accrualStatesData
                 regExpLine,
                 begPosition
