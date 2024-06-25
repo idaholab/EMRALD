@@ -208,7 +208,7 @@ const useLogicNodeTreeDiagram = () => {
   }
 
   const checkToDeleteNode = (nodeName: string) => {
-    const currentReferences = GetModelItemsReferencing(nodeName, MainItemTypes.LogicNode);
+    const currentReferences = GetModelItemsReferencing(nodeName, MainItemTypes.LogicNode, 1);
     console.log(currentReferences);
     const nodeToDelete = getLogicNodeByName(nodeName);
     if (currentReferences.LogicNodeList.length === 1) {
