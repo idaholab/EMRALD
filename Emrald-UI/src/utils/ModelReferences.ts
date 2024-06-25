@@ -246,28 +246,33 @@ const GetModelItemsReferencingRecursive = (
   const nextLevelItems: SearchNameTypePairList = []; //add to this list for the next recursive level to search.
 
   while (currentSearchItems.length > 0) {
-    var curItemName : string = currentSearchItems[0][0];
-    var curItemType : MainItemTypes = currentSearchItems[0][1];
+    let curItemName : string = currentSearchItems[0][0];
+    let curItemType : MainItemTypes = currentSearchItems[0][1];
     currentSearchItems.shift(); //remove the item from the array
+    //only do items that have not been done yet.
+    if(processed[curItemName + '_' + curItemType]){
+      return;
+    }
+    else{
+      processed[curItemName + '_' + curItemType] = true; //mark as processed
+    }
     
-    var jsonPathRefArray : Array<[string, MainItemTypes]> = GetJSONPathUsingRefs(curItemType, curItemName);
+    let jsonPathRefArray : Array<[string, MainItemTypes]> = GetJSONPathUsingRefs(curItemType, curItemName);
 
     jsonPathRefArray.forEach((jsonPathSet) => {
-      const foundName : string = jsonPathSet[0];
-      const foundType : MainItemTypes = jsonPathSet[1];
-      jsonpath.paths(appData.value, foundName).forEach((ref: any) => {
-        var parentPath = ref.slice(0, -1);
-        var parent = jsonpath.value(appData.value, parentPath.join('.'));
+      jsonpath.paths(appData.value, jsonPathSet[0]).forEach((ref: any) => {
+        let parentPath = ref.slice(0, -1);
+        let parent = jsonpath.value(appData.value, parentPath.join('.'));
         while((parent.id == null) && (parentPath.length > 0))
         {
           parentPath = parentPath.slice(0, -1);
           parent = jsonpath.value(appData.value, parentPath.join('.'));
         }
-        if((parent.id != null) && (includeTypes.has(foundType)))
+        if((parent.id != null) && (includeTypes.has(parent.objType)))
         {
-          nextLevelItems.push([foundName, foundType]);
+          nextLevelItems.push([parent.name, parent.objType]);
 
-          switch(foundType)
+          switch(parent.objType)
           {
             case MainItemTypes.Action:
               addToModel.ActionList.push(parent);
@@ -385,31 +390,31 @@ export const GetModelItemsReferencedBy = (
   includeTypes : MainItemTypeSet = allMainItemTypes, //is a set of items to include in the search 
 ) : EMRALD_Model => { //returns a subset model of just the referenced items.
   
-  var refItems : Array<[string, number, MainItemTypes]> = [[itemName, 0, itemType]];
-  var retRefModel: EMRALD_Model = CreateEmptyEMRALDModel();
+  let refItems : Array<[string, number, MainItemTypes]> = [[itemName, 0, itemType]];
+  let retRefModel: EMRALD_Model = CreateEmptyEMRALDModel();
   //const emraldModel: EMRALD_Model = appData.value;  
   const processed: { [key: string]: boolean; } = { [itemName + '_' + itemType]: true };
   
   while(refItems.length > 0)
   {  
-    var curItemName : string = refItems[0][0];
-    var curItemLevel : number = refItems[0][1];
-    var curItemType : MainItemTypes = refItems[0][2];
+    let curItemName : string = refItems[0][0];
+    let curItemLevel : number = refItems[0][1];
+    let curItemType : MainItemTypes = refItems[0][2];
     refItems.shift(); //remove the item from the array
     
-    var itemObj = GetItemByNameType(curItemName, curItemType);      
+    let itemObj = GetItemByNameType(curItemName, curItemType);      
     if((itemObj != null) && (itemObj.objType in includeTypes)){ //add to the reference subset model      
       AddItemToModel(itemObj, curItemType, retRefModel);    
 
       
       //get the json paths for the references depending on the type
-      var jsonPathRefArray : DiagramRefsArray = GetJSONPathInRefs(curItemType, curItemName);
+      let jsonPathRefArray : DiagramRefsArray = GetJSONPathInRefs(curItemType, curItemName);
 
       //go through all the references if not at the cutoff level, add
       if((curItemLevel < levels) || (levels < 1)){        
         jsonPathRefArray.forEach((jsonPathSet) => {    
           jsonpath.paths(appData.value, jsonPathSet[0]).forEach((jPath: any) => {
-            var childNames = jsonpath.value(appData.value, jPath.join('.'));
+            let childNames = jsonpath.value(appData.value, jPath.join('.'));
             //make sure it is an array
             childNames = Array.isArray(childNames) ? childNames : [childNames];
             childNames.forEach((childName: any) => {
@@ -425,9 +430,9 @@ export const GetModelItemsReferencedBy = (
       else{ //remove references to other items. User will have to fix them.
         jsonPathRefArray.forEach((jsonPathSet) => {    
           jsonpath.paths(retRefModel, jsonPathSet[0]).forEach((jPath: any) => {
-            var childNames = jsonpath.value(retRefModel, jPath.join('.'));
+            let childNames = jsonpath.value(retRefModel, jPath.join('.'));
             //Keep track if it is an array origionally and then make it an array
-            var isArray = Array.isArray(childNames);
+            let isArray = Array.isArray(childNames);
             childNames = Array.isArray(childNames) ? childNames : [childNames];
             childNames.forEach((childName: any) => {
               if(!processed[childName + '_' + jsonPathSet[1]])

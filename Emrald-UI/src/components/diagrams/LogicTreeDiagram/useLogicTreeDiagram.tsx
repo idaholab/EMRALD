@@ -11,6 +11,7 @@ import { Option } from '../../layout/ContextMenu/ContextMenu';
 import LogicNodeForm from '../../forms/LogicNodeForm/LogicNodeForm';
 import { MainItemTypes } from '../../../types/ItemTypes';
 import {
+  GetModelItemsReferencedBy,
   GetModelItemsReferencing,
 } from '../../../utils/ModelReferences';
 
@@ -236,7 +237,7 @@ const useLogicNodeTreeDiagram = () => {
   }
 
   const canDeleteNode = (nodeName: string) => {
-    const currentReferences = GetModelItemsReferencing(nodeName, MainItemTypes.LogicNode);
+    const currentReferences = GetModelItemsReferencing(nodeName, MainItemTypes.LogicNode, 1);
     let referenceNodes = currentReferences.LogicNodeList.filter((item) => item.name !== nodeName);
     if (referenceNodes.length > 1) {
       return false;
@@ -308,8 +309,8 @@ const useLogicNodeTreeDiagram = () => {
             {
               label: 'Copy',
               action: () => {
-                const copiedModel = GetModelItemsReferencing(label, MainItemTypes.LogicNode);
-                navigator.clipboard.writeText(JSON.stringify(copiedModel, null, 2));
+                //const copiedModel = GetModelItemsReferencedBy(label, MainItemTypes.LogicNode, 1, new Set<MainItemTypes>([MainItemTypes.LogicNode]));
+                navigator.clipboard.writeText(JSON.stringify(node.data.logicNode, null, 2));
               },
             },
             { label: 'Paste', action: () => pasteNode(label) },
@@ -352,6 +353,10 @@ const useLogicNodeTreeDiagram = () => {
   };
 
   const pasteNode = async (nodeToUpdate: string, type?: string) => {
+    if (!document.hasFocus()) {
+      alert('Please click on the document to focus before reading the clipboard.');
+      return;
+  }
     const pastedData = await navigator.clipboard.readText();
     // Parse the pasted data
     let pastedObject;
@@ -364,9 +369,8 @@ const useLogicNodeTreeDiagram = () => {
     const node = getLogicNodeByName(nodeToUpdate);
     if (node) {
       if (type === 'new') {
-        const pastedNode = pastedObject.LogicNodeList[0];
         const gateNodes = logicNodeList.value.filter((node) =>
-          new RegExp(`^Copy of ${pastedNode.name}`).test(node.name),
+          new RegExp(`^Copy of ${pastedObject.name}`).test(node.name),
         ); // Find all existing logic nodes with the name
         let newGateNumber = 1;
         if (gateNodes.length > 0) {
@@ -377,14 +381,14 @@ const useLogicNodeTreeDiagram = () => {
           newGateNumber = Math.max(...existingNumbers) + 1;
         }
         const newNode: LogicNode = {
-          ...pastedNode,
+          ...pastedObject,
           id: uuidv4(),
-          name: `Copy of ${pastedNode.name} (${newGateNumber})`,
+          name: `Copy of ${pastedObject.name} (${newGateNumber})`,
         };
         await createLogicNode(newNode);
         node.gateChildren = [...node.gateChildren, newNode.name];
       } else {
-        const pastedNodeName = pastedObject.LogicNodeList[0].name;
+        const pastedNodeName = pastedObject.name;
         if (node.name === pastedNodeName || getAllGateChildren(node).includes(pastedNodeName) || getAncestors(node).includes(pastedNodeName)) {
           setNodeExistsAlert(true);
           return;
@@ -397,7 +401,7 @@ const useLogicNodeTreeDiagram = () => {
 
   const getAncestors = (node: LogicNode): string[] => {
     let ancestors: string[] = [];
-    const copiedModel = GetModelItemsReferencing(node.name, MainItemTypes.LogicNode);
+    const copiedModel = GetModelItemsReferencing(node.name, MainItemTypes.LogicNode, -1, undefined, new Set<MainItemTypes>([MainItemTypes.LogicNode]));
     copiedModel.LogicNodeList.forEach((node) => {
       ancestors.push(node.name);
     })
