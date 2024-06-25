@@ -313,8 +313,8 @@ export const useTemplateForm = (templatedData: EMRALD_Model) => {
     const updatedItems = [...templatedItems];
     updatedItems[index].required = required;
     if ('required' in updatedItems[index].emraldItem) {
-    (updatedItems[index].emraldItem as any).required = required;
-  }
+      (updatedItems[index].emraldItem as Action | Diagram | LogicNode | ExtSim | Event | State | Variable).required = required;
+    }
     setTemplatedItems(updatedItems);
   };
   
