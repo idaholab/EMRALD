@@ -1,4 +1,4 @@
-﻿import { MainItemTypes } from '../types/ItemTypes.ts';
+﻿import { MainItemType, MainItemTypes } from '../types/ItemTypes.ts';
 import jsonpath from 'jsonpath';
 import { appData } from '../hooks/useAppData';
 import { EMRALD_Model, CreateEmptyEMRALDModel} from '../types/EMRALD_Model.ts';
@@ -118,6 +118,18 @@ const InLogicNodeRefs: DiagramRefsArray = [
   ["$.LogicNodeList[?(@.name == 'nameRef')].gateChildren", MainItemTypes.LogicNode, null],
 ];
 
+export type MainItemTypeSet = Set<MainItemType>;
+const allMainItemTypes: MainItemTypeSet = new Set<MainItemType>([
+  "Diagram",
+  "State",
+  "Action",
+  "Event",
+  "ExtSim",
+  "LogicNode",
+  "Variable",
+  "EMRALD_Model"
+]);
+
 export const GetJSONPathUsingRefs = (itemType: MainItemTypes, lookupName : string): Array<[string, MainItemTypes]> => {
   var retArray : Array<[string, MainItemTypes]>;
   switch (itemType) {
@@ -188,71 +200,111 @@ const GetJSONPathInRefs = (itemType: MainItemTypes, lookupName : string): Diagra
   });  
 };
 
+
 /**
  * Retrieves a subset model of items that reference a specific item.
  *
  * @param {string} itemName - The name of the item to get the references for.
  * @param {MainItemTypes} itemType - The type of the item to look for references.
+ * @param {boolean} recursive - How many levels up to search. If <1 then the search is recursive.
  * @return {EMRALD_Model} - A subset model of just the referenced items.
  */
 export const GetModelItemsReferencing = ( 
   itemName : string, //Name of the item to get the references for
   itemType : MainItemTypes, //This is the type of the item to look for references
+  levelsUp : number, //if <1 then the search is recursive
   addToModel? : EMRALD_Model, //if assigned then items are added to this model.
+  includeTypes : MainItemTypeSet = allMainItemTypes, //is a set of items to include in the search
 ) : EMRALD_Model => { //returns a subset model of just the referenced items.
-
-  var retRefModel: EMRALD_Model
+  
+  let retRefModel: EMRALD_Model
   if(addToModel){
     retRefModel = addToModel;
   }else{ //use an empty model
-    var retRefModel: EMRALD_Model = CreateEmptyEMRALDModel();
+    retRefModel = CreateEmptyEMRALDModel();
   }
 
-  var jsonPathRefArray : Array<[string, MainItemTypes]> = GetJSONPathUsingRefs(itemType, itemName);
-
-  jsonPathRefArray.forEach((jsonPathSet) => {
-    jsonpath.paths(appData.value, jsonPathSet[0]).forEach((ref: any) => {
-      var parentPath = ref.slice(0, -1);
-      var parent = jsonpath.value(appData.value, parentPath.join('.'));
-      while((parent.id == null) && (parentPath.length > 0))
-      {
-        parentPath = parentPath.slice(0, -1);
-        parent = jsonpath.value(appData.value, parentPath.join('.'));
-      }
-      if(parent.id != null)
-      {
-        switch(jsonPathSet[1])
-        {
-          case MainItemTypes.Action:
-            retRefModel.ActionList.push(parent);
-            break;
-          case MainItemTypes.Event:
-            retRefModel.EventList.push(parent);
-            break;
-          case MainItemTypes.ExtSim:
-            retRefModel.ExtSimList.push(parent);
-            break;
-          case MainItemTypes.Variable:
-            retRefModel.VariableList.push(parent);
-            break;
-          case MainItemTypes.LogicNode:
-            retRefModel.LogicNodeList.push(parent);
-            break;
-          case MainItemTypes.State:
-            retRefModel.StateList.push(parent);
-            break;
-          case MainItemTypes.Diagram:
-            retRefModel.DiagramList.push(parent);
-            break;
-          default:
-            //todo error not a valid type
-            break;
-        }
-      }
-    });
-  });
+  GetModelItemsReferencingRecursive([[itemName, itemType]], levelsUp, retRefModel, includeTypes, {});
 
   return retRefModel;
+};
+
+type SearchNameTypePairList = Array<[string, MainItemTypes]>;
+
+const GetModelItemsReferencingRecursive = ( 
+  currentSearchItems : SearchNameTypePairList, //list of items on this recursive level to search for
+  levelsUp : number, //if <0 then the search is recursive
+  addToModel : EMRALD_Model, //if assigned then items are added to this model.
+  includeTypes : MainItemTypeSet = allMainItemTypes, //is a set of items to include in the search
+  processed : { [key: string]: boolean; } //items already done to prevent looping
+)  => { //returns a subset model of just the referenced items.
+ 
+  if(levelsUp == 0){ //-1 is recursive 0 means stop requested levels are done
+    return;
+  }
+
+  const nextLevelItems: SearchNameTypePairList = []; //add to this list for the next recursive level to search.
+
+  while (currentSearchItems.length > 0) {
+    var curItemName : string = currentSearchItems[0][0];
+    var curItemType : MainItemTypes = currentSearchItems[0][1];
+    currentSearchItems.shift(); //remove the item from the array
+    
+    var jsonPathRefArray : Array<[string, MainItemTypes]> = GetJSONPathUsingRefs(curItemType, curItemName);
+
+    jsonPathRefArray.forEach((jsonPathSet) => {
+      const foundName : string = jsonPathSet[0];
+      const foundType : MainItemTypes = jsonPathSet[1];
+      jsonpath.paths(appData.value, foundName).forEach((ref: any) => {
+        var parentPath = ref.slice(0, -1);
+        var parent = jsonpath.value(appData.value, parentPath.join('.'));
+        while((parent.id == null) && (parentPath.length > 0))
+        {
+          parentPath = parentPath.slice(0, -1);
+          parent = jsonpath.value(appData.value, parentPath.join('.'));
+        }
+        if((parent.id != null) && (includeTypes.has(foundType)))
+        {
+          nextLevelItems.push([foundName, foundType]);
+
+          switch(foundType)
+          {
+            case MainItemTypes.Action:
+              addToModel.ActionList.push(parent);
+              break;
+            case MainItemTypes.Event:
+              addToModel.EventList.push(parent);
+              break;
+            case MainItemTypes.ExtSim:
+              addToModel.ExtSimList.push(parent);
+              break;
+            case MainItemTypes.Variable:
+              addToModel.VariableList.push(parent);
+              break;
+            case MainItemTypes.LogicNode:
+              addToModel.LogicNodeList.push(parent);
+              break;
+            case MainItemTypes.State:
+              addToModel.StateList.push(parent);
+              break;
+            case MainItemTypes.Diagram:
+              addToModel.DiagramList.push(parent);
+              break;
+            default:
+              //todo error not a valid type
+              break;
+          }
+        }
+      });
+    
+    });
+  }  
+
+  if(levelsUp > 0) //if not fully recursive reduce levels 
+    --levelsUp;
+
+  GetModelItemsReferencingRecursive(nextLevelItems, levelsUp, addToModel, includeTypes, processed);
+
 }
 
 export const GetItemByNameType = (
@@ -330,7 +382,7 @@ export const GetModelItemsReferencedBy = (
   itemName : string, //Name of the item looking for references
   itemType : MainItemTypes, //This is the type of the item to look for references
   levels : number = 0, //if < 1, will be recursive and give all levels of references. For copy or template use 1 for all items except Diagrams and 2 for Diagrams.
-  //alowedTypes : 
+  includeTypes : MainItemTypeSet = allMainItemTypes, //is a set of items to include in the search 
 ) : EMRALD_Model => { //returns a subset model of just the referenced items.
   
   var refItems : Array<[string, number, MainItemTypes]> = [[itemName, 0, itemType]];
@@ -346,7 +398,7 @@ export const GetModelItemsReferencedBy = (
     refItems.shift(); //remove the item from the array
     
     var itemObj = GetItemByNameType(curItemName, curItemType);      
-    if(itemObj != null){ //add to the reference subset model      
+    if((itemObj != null) && (itemObj.objType in includeTypes)){ //add to the reference subset model      
       AddItemToModel(itemObj, curItemType, retRefModel);    
 
       
