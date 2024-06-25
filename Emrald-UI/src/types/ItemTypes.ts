@@ -13,15 +13,18 @@ export enum MainItemTypes {
 
 
 
+/**
+ * For event type of etDistribution this is the name of the distribution parameter.
+ */
 export type MainItemType =
-    | "Diagram"
-    | "State"
-    | "Action"
-    | "Event"
-    | "ExtSim"
-    | "LogicNode"
-    | "Variable"
-    | "EMRALD_Model"
+  | "Diagram"
+  | "State"
+  | "Action"
+  | "Event"
+  | "ExtSim"
+  | "LogicNode"
+  | "Variable"
+  | "EMRALD_Model"
 
 /**
  * Type of the diagram. dtSingle - means you can only be in one state of the diagram at a time and states evaluate to a value. dtMulti - means you can be in multiple states at a time, but cant evaluate the diagram

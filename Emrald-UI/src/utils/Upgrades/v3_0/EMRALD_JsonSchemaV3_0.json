@@ -9,8 +9,9 @@
             "$ref": "#/definitions/MainModel"
         },
         {
+            "title": "Templates",
             "properties": {
-                "templates": {
+                "templates": {       
                     "type": "array",
                     "description": "Templates available to make new diagrams in the model. These are basically small models all on their own.",
                     "items": {
@@ -153,7 +154,6 @@
                 },
                 "states": {
                     "type": "array",
-                    "title": "states",
                     "description": "Names of the states used in this diagram",
                     "items": {
                         "type": "string"
@@ -235,7 +235,6 @@
                 },
                 "immediateActions": {
                     "type": "array",
-                    "title": "immediateActions",
                     "description": "Array of name references for the immediate actions to be run when entering the state",
                     "items": {
                         "type": "string"
@@ -254,7 +253,7 @@
                     "description": "actions for the events in sibling \"events\" array. One to one relationship.",
                     "items": {
                         "type": "object",
-                        "title": "items",
+                        "title": "EventActionItems",
                         "properties": {
                             "actions": {
                                 "type": "array",
@@ -680,7 +679,7 @@
                     "description": "Optional. If the variable varScope is gtAccrual, then these are the states used for calculating the variables value over time.",
                     "items": {
                         "type": "object",
-                        "title": "items",
+                        "title": "accrualStatesDataItems",
                         "properties": {
                             "stateName": {
                                 "type": "string",
@@ -703,7 +702,6 @@
                                 "description": "Optional. If the type is ctTable then this is the array of values used in calculating this states contribution to the variable value. Example for the first hour the accrual multiplier is 0.5, for the second hour the accrual multiplier is 0.1",
                                 "items": {
                                     "type": "array",
-                                    "title": "items",
                                     "description": "Each row has the rate the time specified. First value is rate, second value is time.",
                                     "items": {
                                         "type": "integer",
@@ -812,7 +810,7 @@
             "description": "Type of the diagram.",
             "items": {
                 "type": "object",
-                "title": "items",
+                "title": "ChangeLogItems",
                 "properties": {
                     "cngDesc": {
                         "type": "string",
@@ -858,7 +856,7 @@
             "description": "Array of component diagram names and state values to use in evaluating if not using the default value.",
             "items": {
                 "type": "object",
-                "title": "items",
+                "title": "CompChildItems",
                 "properties": {
                     "stateValues": {
                         "type": "array",
@@ -866,7 +864,7 @@
                         "description": "Evaluate value if not the states default.",
                         "items": {
                             "type": "object",
-                            "title": "items",
+                            "title": "StateValuesItems",
                             "properties": {
                                 "stateName": {
                                     "type": "string",

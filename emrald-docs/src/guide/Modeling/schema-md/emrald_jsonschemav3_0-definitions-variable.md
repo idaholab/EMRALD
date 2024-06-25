@@ -6,39 +6,41 @@ EMRALD_Model#/definitions/Variable
 
 
 
-| Abstract            | Extensible | Status         | Identifiable | Custom Properties | Additional Properties | Access Restrictions | Defined In                                                                                                    |
-| :------------------ | :--------- | :------------- | :----------- | :---------------- | :-------------------- | :------------------ | :------------------------------------------------------------------------------------------------------------ |
-| Can be instantiated | No         | Unknown status | No           | Forbidden         | Forbidden             | none                | [EMRALD_JsonSchemaV3_0.json*](../../../../../Emrald-UI/out/EMRALD_JsonSchemaV3_0.json "open original schema") |
+| Abstract            | Extensible | Status         | Identifiable | Custom Properties | Additional Properties | Access Restrictions | Defined In                                                                                          |
+| :------------------ | :--------- | :------------- | :----------- | :---------------- | :-------------------- | :------------------ | :-------------------------------------------------------------------------------------------------- |
+| Can be instantiated | No         | Unknown status | No           | Forbidden         | Forbidden             | none                | [EMRALD\_JsonSchemaV3\_0.json\*](../../../../out/EMRALD_JsonSchemaV3_0.json "open original schema") |
 
 ## Variable Type
 
-`object` ([Variable](emrald_jsonschemav3\_0-definitions-variable.md))
+`object` ([Variable](emrald_jsonschemav3_0-definitions-variable.md))
 
 # Variable Properties
 
-| Property                                | Type      | Required | Nullable       | Defined by                                                                                                                                                   |
-| :-------------------------------------- | :-------- | :------- | :------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [id](#id)                               | `string`  | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_0-definitions-variable-properties-id.md "EMRALD_Model#/definitions/Variable/properties/id")                               |
-| [name](#name)                           | `string`  | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_0-definitions-variable-properties-name.md "EMRALD_Model#/definitions/Variable/properties/name")                           |
-| [desc](#desc)                           | `string`  | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_0-definitions-variable-properties-desc.md "EMRALD_Model#/definitions/Variable/properties/desc")                           |
-| [varScope](#varscope)                   | `string`  | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_0-definitions-variable-properties-varscope.md "EMRALD_Model#/definitions/Variable/properties/varScope")                   |
-| [value](#value)                         | Merged    | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_0-definitions-variable-properties-value.md "EMRALD_Model#/definitions/Variable/properties/value")                         |
-| [docLink](#doclink)                     | `string`  | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_0-definitions-variable-properties-doclink.md "EMRALD_Model#/definitions/Variable/properties/docLink")                     |
-| [docType](#doctype)                     | `string`  | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_0-definitions-variable-properties-doctype.md "EMRALD_Model#/definitions/Variable/properties/docType")                     |
-| [docPath](#docpath)                     | `string`  | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_0-definitions-variable-properties-docpath.md "EMRALD_Model#/definitions/Variable/properties/docPath")                     |
-| [pathMustExist](#pathmustexist)         | `boolean` | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_0-definitions-variable-properties-pathmustexist.md "EMRALD_Model#/definitions/Variable/properties/pathMustExist")         |
-| [type](#type)                           | `string`  | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_0-definitions-variable-properties-type.md "EMRALD_Model#/definitions/Variable/properties/type")                           |
-| [accrualStatesData](#accrualstatesdata) | `array`   | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_0-definitions-variable-properties-accrualstatesdata.md "EMRALD_Model#/definitions/Variable/properties/accrualStatesData") |
-| [regExpLine](#regexpline)               | `integer` | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_0-definitions-variable-properties-regexpline.md "EMRALD_Model#/definitions/Variable/properties/regExpLine")               |
-| [begPosition](#begposition)             | `integer` | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_0-definitions-variable-properties-begposition.md "EMRALD_Model#/definitions/Variable/properties/begPosition")             |
-| [numChars](#numchars)                   | `integer` | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_0-definitions-variable-properties-numchars.md "EMRALD_Model#/definitions/Variable/properties/numChars")                   |
-| [resetOnRuns](#resetonruns)             | `boolean` | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_0-definitions-variable-properties-resetonruns.md "EMRALD_Model#/definitions/Variable/properties/resetOnRuns")             |
-| [resourceName](#resourcename)           | `string`  | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_0-definitions-variable-properties-resourcename.md "EMRALD_Model#/definitions/Variable/properties/resourceName")           |
-| [sim3DId](#sim3did)                     | `string`  | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_0-definitions-variable-properties-sim3did.md "EMRALD_Model#/definitions/Variable/properties/sim3DId")                     |
-| [changeLog](#changelog)                 | `array`   | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_0-definitions-changelog.md "EMRALD_Model#/definitions/Variable/properties/changeLog")                                     |
-| [cumulativeStats](#cumulativestats)     | `boolean` | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_0-definitions-variable-properties-cumulativestats.md "EMRALD_Model#/definitions/Variable/properties/cumulativeStats")     |
-| [monitorInSim](#monitorinsim)           | `boolean` | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_0-definitions-variable-properties-monitorinsim.md "EMRALD_Model#/definitions/Variable/properties/monitorInSim")           |
-| [canMonitor](#canmonitor)               | `boolean` | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_0-definitions-variable-properties-canmonitor.md "EMRALD_Model#/definitions/Variable/properties/canMonitor")               |
+| Property                                | Type      | Required | Nullable       | Defined by                                                                                                                                                    |
+| :-------------------------------------- | :-------- | :------- | :------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| [id](#id)                               | `string`  | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_0-definitions-variable-properties-id.md "EMRALD_Model#/definitions/Variable/properties/id")                               |
+| [objType](#objtype)                     | `string`  | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_0-definitions-variable-properties-objtype.md "EMRALD_Model#/definitions/Variable/properties/objType")                     |
+| [name](#name)                           | `string`  | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_0-definitions-variable-properties-name.md "EMRALD_Model#/definitions/Variable/properties/name")                           |
+| [desc](#desc)                           | `string`  | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_0-definitions-variable-properties-desc.md "EMRALD_Model#/definitions/Variable/properties/desc")                           |
+| [varScope](#varscope)                   | `string`  | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_0-definitions-variable-properties-varscope.md "EMRALD_Model#/definitions/Variable/properties/varScope")                   |
+| [value](#value)                         | Merged    | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_0-definitions-variable-properties-value.md "EMRALD_Model#/definitions/Variable/properties/value")                         |
+| [docLink](#doclink)                     | `string`  | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_0-definitions-variable-properties-doclink.md "EMRALD_Model#/definitions/Variable/properties/docLink")                     |
+| [docType](#doctype)                     | `string`  | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_0-definitions-variable-properties-doctype.md "EMRALD_Model#/definitions/Variable/properties/docType")                     |
+| [docPath](#docpath)                     | `string`  | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_0-definitions-variable-properties-docpath.md "EMRALD_Model#/definitions/Variable/properties/docPath")                     |
+| [pathMustExist](#pathmustexist)         | `boolean` | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_0-definitions-variable-properties-pathmustexist.md "EMRALD_Model#/definitions/Variable/properties/pathMustExist")         |
+| [type](#type)                           | `string`  | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_0-definitions-variable-properties-type.md "EMRALD_Model#/definitions/Variable/properties/type")                           |
+| [accrualStatesData](#accrualstatesdata) | `array`   | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_0-definitions-variable-properties-accrualstatesdata.md "EMRALD_Model#/definitions/Variable/properties/accrualStatesData") |
+| [regExpLine](#regexpline)               | `integer` | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_0-definitions-variable-properties-regexpline.md "EMRALD_Model#/definitions/Variable/properties/regExpLine")               |
+| [begPosition](#begposition)             | `integer` | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_0-definitions-variable-properties-begposition.md "EMRALD_Model#/definitions/Variable/properties/begPosition")             |
+| [numChars](#numchars)                   | `integer` | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_0-definitions-variable-properties-numchars.md "EMRALD_Model#/definitions/Variable/properties/numChars")                   |
+| [resetOnRuns](#resetonruns)             | `boolean` | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_0-definitions-variable-properties-resetonruns.md "EMRALD_Model#/definitions/Variable/properties/resetOnRuns")             |
+| [resourceName](#resourcename)           | `string`  | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_0-definitions-variable-properties-resourcename.md "EMRALD_Model#/definitions/Variable/properties/resourceName")           |
+| [sim3DId](#sim3did)                     | `string`  | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_0-definitions-variable-properties-sim3did.md "EMRALD_Model#/definitions/Variable/properties/sim3DId")                     |
+| [changeLog](#changelog)                 | `array`   | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_0-definitions-changelog.md "EMRALD_Model#/definitions/Variable/properties/changeLog")                                     |
+| [cumulativeStats](#cumulativestats)     | `boolean` | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_0-definitions-variable-properties-cumulativestats.md "EMRALD_Model#/definitions/Variable/properties/cumulativeStats")     |
+| [monitorInSim](#monitorinsim)           | `boolean` | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_0-definitions-variable-properties-monitorinsim.md "EMRALD_Model#/definitions/Variable/properties/monitorInSim")           |
+| [canMonitor](#canmonitor)               | `boolean` | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_0-definitions-variable-properties-canmonitor.md "EMRALD_Model#/definitions/Variable/properties/canMonitor")               |
+| [required](#required)                   | `boolean` | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_0-definitions-variable-properties-required.md "EMRALD_Model#/definitions/Variable/properties/required")                   |
 
 ## id
 
@@ -46,17 +48,50 @@ Optional, internal use only.
 
 `id`
 
-*   is optional
+* is optional
 
-*   Type: `string`
+* Type: `string`
 
-*   cannot be null
+* cannot be null
 
-*   defined in: [EMRALD_Model](emrald_jsonschemav3\_0-definitions-variable-properties-id.md "EMRALD_Model#/definitions/Variable/properties/id")
+* defined in: [EMRALD\_Model](emrald_jsonschemav3_0-definitions-variable-properties-id.md "EMRALD_Model#/definitions/Variable/properties/id")
 
 ### id Type
 
 `string`
+
+## objType
+
+For event type of etDistribution this is the name of the distribution parameter.
+
+`objType`
+
+* is required
+
+* Type: `string`
+
+* cannot be null
+
+* defined in: [EMRALD\_Model](emrald_jsonschemav3_0-definitions-variable-properties-objtype.md "EMRALD_Model#/definitions/Variable/properties/objType")
+
+### objType Type
+
+`string`
+
+### objType Constraints
+
+**enum**: the value of this property must be equal to one of the following values:
+
+| Value            | Explanation |
+| :--------------- | :---------- |
+| `"Diagram"`      |             |
+| `"State"`        |             |
+| `"Action"`       |             |
+| `"Event"`        |             |
+| `"ExtSim"`       |             |
+| `"LogicNode"`    |             |
+| `"Variable"`     |             |
+| `"EMRALD_Model"` |             |
 
 ## name
 
@@ -64,13 +99,13 @@ referenace name in the model for the variable
 
 `name`
 
-*   is required
+* is required
 
-*   Type: `string`
+* Type: `string`
 
-*   cannot be null
+* cannot be null
 
-*   defined in: [EMRALD_Model](emrald_jsonschemav3\_0-definitions-variable-properties-name.md "EMRALD_Model#/definitions/Variable/properties/name")
+* defined in: [EMRALD\_Model](emrald_jsonschemav3_0-definitions-variable-properties-name.md "EMRALD_Model#/definitions/Variable/properties/name")
 
 ### name Type
 
@@ -82,13 +117,13 @@ User entered description of the variable
 
 `desc`
 
-*   is optional
+* is optional
 
-*   Type: `string`
+* Type: `string`
 
-*   cannot be null
+* cannot be null
 
-*   defined in: [EMRALD_Model](emrald_jsonschemav3\_0-definitions-variable-properties-desc.md "EMRALD_Model#/definitions/Variable/properties/desc")
+* defined in: [EMRALD\_Model](emrald_jsonschemav3_0-definitions-variable-properties-desc.md "EMRALD_Model#/definitions/Variable/properties/desc")
 
 ### desc Type
 
@@ -100,13 +135,13 @@ Context of use for the variable in the model.
 
 `varScope`
 
-*   is required
+* is required
 
-*   Type: `string`
+* Type: `string`
 
-*   cannot be null
+* cannot be null
 
-*   defined in: [EMRALD_Model](emrald_jsonschemav3\_0-definitions-variable-properties-varscope.md "EMRALD_Model#/definitions/Variable/properties/varScope")
+* defined in: [EMRALD\_Model](emrald_jsonschemav3_0-definitions-variable-properties-varscope.md "EMRALD_Model#/definitions/Variable/properties/varScope")
 
 ### varScope Type
 
@@ -129,25 +164,25 @@ The default value for the variable.
 
 `value`
 
-*   is required
+* is required
 
-*   Type: merged type ([Details](emrald_jsonschemav3\_0-definitions-variable-properties-value.md))
+* Type: merged type ([Details](emrald_jsonschemav3_0-definitions-variable-properties-value.md))
 
-*   cannot be null
+* cannot be null
 
-*   defined in: [EMRALD_Model](emrald_jsonschemav3\_0-definitions-variable-properties-value.md "EMRALD_Model#/definitions/Variable/properties/value")
+* defined in: [EMRALD\_Model](emrald_jsonschemav3_0-definitions-variable-properties-value.md "EMRALD_Model#/definitions/Variable/properties/value")
 
 ### value Type
 
-merged type ([Details](emrald_jsonschemav3\_0-definitions-variable-properties-value.md))
+merged type ([Details](emrald_jsonschemav3_0-definitions-variable-properties-value.md))
 
 any of
 
-*   [Untitled number in EMRALD_Model](emrald_jsonschemav3_0-definitions-variable-properties-value-anyof-0.md "check type definition")
+* [Untitled number in EMRALD_Model](emrald_jsonschemav3_0-definitions-variable-properties-value-anyof-0.md "check type definition")
 
-*   [Untitled string in EMRALD_Model](emrald_jsonschemav3_0-definitions-variable-properties-value-anyof-1.md "check type definition")
+* [Untitled string in EMRALD_Model](emrald_jsonschemav3_0-definitions-variable-properties-value-anyof-1.md "check type definition")
 
-*   [Untitled boolean in EMRALD_Model](emrald_jsonschemav3_0-definitions-variable-properties-value-anyof-2.md "check type definition")
+* [Untitled boolean in EMRALD_Model](emrald_jsonschemav3_0-definitions-variable-properties-value-anyof-2.md "check type definition")
 
 ## docLink
 
@@ -155,13 +190,13 @@ If the varScope is gtDocLink then this is the expression defining path in the do
 
 `docLink`
 
-*   is optional
+* is optional
 
-*   Type: `string`
+* Type: `string`
 
-*   cannot be null
+* cannot be null
 
-*   defined in: [EMRALD_Model](emrald_jsonschemav3\_0-definitions-variable-properties-doclink.md "EMRALD_Model#/definitions/Variable/properties/docLink")
+* defined in: [EMRALD\_Model](emrald_jsonschemav3_0-definitions-variable-properties-doclink.md "EMRALD_Model#/definitions/Variable/properties/docLink")
 
 ### docLink Type
 
@@ -173,13 +208,13 @@ If the varScope is gtDocLink then this the type of document the variable can be 
 
 `docType`
 
-*   is optional
+* is optional
 
-*   Type: `string`
+* Type: `string`
 
-*   cannot be null
+* cannot be null
 
-*   defined in: [EMRALD_Model](emrald_jsonschemav3\_0-definitions-variable-properties-doctype.md "EMRALD_Model#/definitions/Variable/properties/docType")
+* defined in: [EMRALD\_Model](emrald_jsonschemav3_0-definitions-variable-properties-doctype.md "EMRALD_Model#/definitions/Variable/properties/docType")
 
 ### docType Type
 
@@ -201,13 +236,13 @@ If the varScope is gtDocLink then this is the path to the document the variable 
 
 `docPath`
 
-*   is optional
+* is optional
 
-*   Type: `string`
+* Type: `string`
 
-*   cannot be null
+* cannot be null
 
-*   defined in: [EMRALD_Model](emrald_jsonschemav3\_0-definitions-variable-properties-docpath.md "EMRALD_Model#/definitions/Variable/properties/docPath")
+* defined in: [EMRALD\_Model](emrald_jsonschemav3_0-definitions-variable-properties-docpath.md "EMRALD_Model#/definitions/Variable/properties/docPath")
 
 ### docPath Type
 
@@ -219,13 +254,13 @@ Flag, if true then the file in the docPath must exist when the simulation starts
 
 `pathMustExist`
 
-*   is optional
+* is optional
 
-*   Type: `boolean`
+* Type: `boolean`
 
-*   cannot be null
+* cannot be null
 
-*   defined in: [EMRALD_Model](emrald_jsonschemav3\_0-definitions-variable-properties-pathmustexist.md "EMRALD_Model#/definitions/Variable/properties/pathMustExist")
+* defined in: [EMRALD\_Model](emrald_jsonschemav3_0-definitions-variable-properties-pathmustexist.md "EMRALD_Model#/definitions/Variable/properties/pathMustExist")
 
 ### pathMustExist Type
 
@@ -237,13 +272,13 @@ This is the type of the variable, Bool, double, int, string
 
 `type`
 
-*   is required
+* is required
 
-*   Type: `string`
+* Type: `string`
 
-*   cannot be null
+* cannot be null
 
-*   defined in: [EMRALD_Model](emrald_jsonschemav3\_0-definitions-variable-properties-type.md "EMRALD_Model#/definitions/Variable/properties/type")
+* defined in: [EMRALD\_Model](emrald_jsonschemav3_0-definitions-variable-properties-type.md "EMRALD_Model#/definitions/Variable/properties/type")
 
 ### type Type
 
@@ -266,17 +301,17 @@ Optional. If the variable varScope is gtAccrual, then these are the states used 
 
 `accrualStatesData`
 
-*   is optional
+* is optional
 
-*   Type: `object[]` ([items](emrald_jsonschemav3\_0-definitions-variable-properties-accrualstatesdata-items.md))
+* Type: `object[]` ([accrualStatesDataItems](emrald_jsonschemav3_0-definitions-variable-properties-accrualstatesdata-accrualstatesdataitems.md))
 
-*   cannot be null
+* cannot be null
 
-*   defined in: [EMRALD_Model](emrald_jsonschemav3\_0-definitions-variable-properties-accrualstatesdata.md "EMRALD_Model#/definitions/Variable/properties/accrualStatesData")
+* defined in: [EMRALD\_Model](emrald_jsonschemav3_0-definitions-variable-properties-accrualstatesdata.md "EMRALD_Model#/definitions/Variable/properties/accrualStatesData")
 
 ### accrualStatesData Type
 
-`object[]` ([items](emrald_jsonschemav3\_0-definitions-variable-properties-accrualstatesdata-items.md))
+`object[]` ([accrualStatesDataItems](emrald_jsonschemav3_0-definitions-variable-properties-accrualstatesdata-accrualstatesdataitems.md))
 
 ## regExpLine
 
@@ -284,13 +319,13 @@ Optional. For variable varScope of gtDocLink, docType dtTxtRegExp, this is the r
 
 `regExpLine`
 
-*   is optional
+* is optional
 
-*   Type: `integer`
+* Type: `integer`
 
-*   cannot be null
+* cannot be null
 
-*   defined in: [EMRALD_Model](emrald_jsonschemav3\_0-definitions-variable-properties-regexpline.md "EMRALD_Model#/definitions/Variable/properties/regExpLine")
+* defined in: [EMRALD\_Model](emrald_jsonschemav3_0-definitions-variable-properties-regexpline.md "EMRALD_Model#/definitions/Variable/properties/regExpLine")
 
 ### regExpLine Type
 
@@ -302,13 +337,13 @@ Optional. For variable varScope of gtDocLink, docType dtTxtRegExp, this the star
 
 `begPosition`
 
-*   is optional
+* is optional
 
-*   Type: `integer`
+* Type: `integer`
 
-*   cannot be null
+* cannot be null
 
-*   defined in: [EMRALD_Model](emrald_jsonschemav3\_0-definitions-variable-properties-begposition.md "EMRALD_Model#/definitions/Variable/properties/begPosition")
+* defined in: [EMRALD\_Model](emrald_jsonschemav3_0-definitions-variable-properties-begposition.md "EMRALD_Model#/definitions/Variable/properties/begPosition")
 
 ### begPosition Type
 
@@ -320,13 +355,13 @@ Optional. For variable varScope of gtDocLink, docType dtTxtRegExp, this how many
 
 `numChars`
 
-*   is optional
+* is optional
 
-*   Type: `integer`
+* Type: `integer`
 
-*   cannot be null
+* cannot be null
 
-*   defined in: [EMRALD_Model](emrald_jsonschemav3\_0-definitions-variable-properties-numchars.md "EMRALD_Model#/definitions/Variable/properties/numChars")
+* defined in: [EMRALD\_Model](emrald_jsonschemav3_0-definitions-variable-properties-numchars.md "EMRALD_Model#/definitions/Variable/properties/numChars")
 
 ### numChars Type
 
@@ -338,13 +373,13 @@ Optional, this specifies if the value of the variable is to be reset to the defa
 
 `resetOnRuns`
 
-*   is optional
+* is optional
 
-*   Type: `boolean`
+* Type: `boolean`
 
-*   cannot be null
+* cannot be null
 
-*   defined in: [EMRALD_Model](emrald_jsonschemav3\_0-definitions-variable-properties-resetonruns.md "EMRALD_Model#/definitions/Variable/properties/resetOnRuns")
+* defined in: [EMRALD\_Model](emrald_jsonschemav3_0-definitions-variable-properties-resetonruns.md "EMRALD_Model#/definitions/Variable/properties/resetOnRuns")
 
 ### resetOnRuns Type
 
@@ -356,13 +391,13 @@ Optional. If the variable varScope is gt3DSim, this is the name reference to the
 
 `resourceName`
 
-*   is optional
+* is optional
 
-*   Type: `string`
+* Type: `string`
 
-*   cannot be null
+* cannot be null
 
-*   defined in: [EMRALD_Model](emrald_jsonschemav3\_0-definitions-variable-properties-resourcename.md "EMRALD_Model#/definitions/Variable/properties/resourceName")
+* defined in: [EMRALD\_Model](emrald_jsonschemav3_0-definitions-variable-properties-resourcename.md "EMRALD_Model#/definitions/Variable/properties/resourceName")
 
 ### resourceName Type
 
@@ -374,13 +409,13 @@ Optional. For variables of varScope gt3DSim, this is the external simulations na
 
 `sim3DId`
 
-*   is optional
+* is optional
 
-*   Type: `string`
+* Type: `string`
 
-*   cannot be null
+* cannot be null
 
-*   defined in: [EMRALD_Model](emrald_jsonschemav3\_0-definitions-variable-properties-sim3did.md "EMRALD_Model#/definitions/Variable/properties/sim3DId")
+* defined in: [EMRALD\_Model](emrald_jsonschemav3_0-definitions-variable-properties-sim3did.md "EMRALD_Model#/definitions/Variable/properties/sim3DId")
 
 ### sim3DId Type
 
@@ -392,17 +427,17 @@ Type of the diagram.
 
 `changeLog`
 
-*   is optional
+* is optional
 
-*   Type: `object[]` ([items](emrald_jsonschemav3\_0-definitions-changelog-items.md))
+* Type: `object[]` ([ChangeLogItems](emrald_jsonschemav3_0-definitions-changelog-changelogitems.md))
 
-*   cannot be null
+* cannot be null
 
-*   defined in: [EMRALD_Model](emrald_jsonschemav3\_0-definitions-changelog.md "EMRALD_Model#/definitions/Variable/properties/changeLog")
+* defined in: [EMRALD\_Model](emrald_jsonschemav3_0-definitions-changelog.md "EMRALD_Model#/definitions/Variable/properties/changeLog")
 
 ### changeLog Type
 
-`object[]` ([items](emrald_jsonschemav3\_0-definitions-changelog-items.md))
+`object[]` ([ChangeLogItems](emrald_jsonschemav3_0-definitions-changelog-changelogitems.md))
 
 ## cumulativeStats
 
@@ -410,13 +445,13 @@ Flag to indicate the user want to do cumulative statistics in the results.
 
 `cumulativeStats`
 
-*   is optional
+* is optional
 
-*   Type: `boolean`
+* Type: `boolean`
 
-*   cannot be null
+* cannot be null
 
-*   defined in: [EMRALD_Model](emrald_jsonschemav3\_0-definitions-variable-properties-cumulativestats.md "EMRALD_Model#/definitions/Variable/properties/cumulativeStats")
+* defined in: [EMRALD\_Model](emrald_jsonschemav3_0-definitions-variable-properties-cumulativestats.md "EMRALD_Model#/definitions/Variable/properties/cumulativeStats")
 
 ### cumulativeStats Type
 
@@ -428,13 +463,13 @@ Flag to have the monitor variable check box checked in the solver by default.
 
 `monitorInSim`
 
-*   is optional
+* is optional
 
-*   Type: `boolean`
+* Type: `boolean`
 
-*   cannot be null
+* cannot be null
 
-*   defined in: [EMRALD_Model](emrald_jsonschemav3\_0-definitions-variable-properties-monitorinsim.md "EMRALD_Model#/definitions/Variable/properties/monitorInSim")
+* defined in: [EMRALD\_Model](emrald_jsonschemav3_0-definitions-variable-properties-monitorinsim.md "EMRALD_Model#/definitions/Variable/properties/monitorInSim")
 
 ### monitorInSim Type
 
@@ -446,14 +481,32 @@ Flag to indicate if the variable can be monitored in the solver. This removes it
 
 `canMonitor`
 
-*   is optional
+* is optional
 
-*   Type: `boolean`
+* Type: `boolean`
 
-*   cannot be null
+* cannot be null
 
-*   defined in: [EMRALD_Model](emrald_jsonschemav3\_0-definitions-variable-properties-canmonitor.md "EMRALD_Model#/definitions/Variable/properties/canMonitor")
+* defined in: [EMRALD\_Model](emrald_jsonschemav3_0-definitions-variable-properties-canmonitor.md "EMRALD_Model#/definitions/Variable/properties/canMonitor")
 
 ### canMonitor Type
+
+`boolean`
+
+## required
+
+If this is a template then it indicates the item must exist in the current model before using the template.
+
+`required`
+
+* is optional
+
+* Type: `boolean`
+
+* cannot be null
+
+* defined in: [EMRALD\_Model](emrald_jsonschemav3_0-definitions-variable-properties-required.md "EMRALD_Model#/definitions/Variable/properties/required")
+
+### required Type
 
 `boolean`
