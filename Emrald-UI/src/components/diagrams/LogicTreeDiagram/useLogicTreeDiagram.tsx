@@ -385,7 +385,7 @@ const useLogicNodeTreeDiagram = () => {
         node.gateChildren = [...node.gateChildren, newNode.name];
       } else {
         const pastedNodeName = pastedObject.LogicNodeList[0].name;
-        if (node.name === pastedNodeName || getAllGateChildren(node).includes(pastedNodeName)) {
+        if (node.name === pastedNodeName || getAllGateChildren(node).includes(pastedNodeName) || getAncestors(node).includes(pastedNodeName)) {
           setNodeExistsAlert(true);
           return;
         }
@@ -394,6 +394,15 @@ const useLogicNodeTreeDiagram = () => {
       updateLogicNode(node);
     }
   };
+
+  const getAncestors = (node: LogicNode): string[] => {
+    let ancestors: string[] = [];
+    const copiedModel = GetModelItemsReferencing(node.name, MainItemTypes.LogicNode);
+    copiedModel.LogicNodeList.forEach((node) => {
+      ancestors.push(node.name);
+    })
+    return ancestors;
+  }
   const getAllGateChildren = (node: LogicNode): string[] => {
     let gateChildrenNames: string[] = [];
     let queue: LogicNode[] = [node];
