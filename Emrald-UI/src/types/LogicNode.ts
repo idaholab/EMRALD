@@ -1,7 +1,7 @@
 import {GateType, MainItemType, StateEvalValue} from './ItemTypes'
 import {ChangeLog} from './ChangeLog'
 
-type CompChild = CompChildItems[]
+export type CompChild = CompChildItems[]
 type StateValues = StateValuesItems[]
 
 export interface LogicNode {
@@ -35,7 +35,7 @@ export interface LogicNode {
   required?: boolean
 }
 
-interface CompChildItems {
+export interface CompChildItems {
   stateValues?: StateValues
   /**
    * Name of the diagram to be evaluated

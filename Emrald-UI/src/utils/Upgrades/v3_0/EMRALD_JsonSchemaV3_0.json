@@ -273,7 +273,7 @@
                         ]
                     }
                 },
-                "geometry": {
+                "geometryInfo": {
                     "$ref": "#/definitions/GeometryInfo"
                 },
                 "changeLog": {

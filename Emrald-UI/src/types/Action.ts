@@ -111,7 +111,7 @@ export interface Action {
   required?: boolean
 }
 
-interface NewState {
+export interface NewState {
   /**
    * reference name of the state to transition to.
    */

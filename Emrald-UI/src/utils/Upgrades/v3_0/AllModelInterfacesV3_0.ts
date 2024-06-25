@@ -1,12 +1,7 @@
 /**
  * EMRALD model schema version 3.0
  */
-export type EMRALD_Model = Main_Model & {
-  /**
-   * Templates available to make new diagrams in the model. These are basically small models all on their own.
-   */
-  templates?: Main_Model[]
-}
+export type EMRALD_Model = Main_Model & Templates
 /**
  * For event type of etDistribution this is the name of the distribution parameter.
  */
@@ -288,7 +283,7 @@ export interface State {
    */
   events: string[]
   eventActions: EventActions
-  geometry?: GeometryInfo
+  geometryInfo?: GeometryInfo
   changeLog?: ChangeLog
   defaultSingleStateValue?: StateEvalValue
   /**
@@ -691,4 +686,10 @@ export interface Group {
    * Sub group tree path
    */
   subgroup?: Group[]
+}
+export interface Templates {
+  /**
+   * Templates available to make new diagrams in the model. These are basically small models all on their own.
+   */
+  templates?: Main_Model[]
 }

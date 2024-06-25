@@ -31,6 +31,7 @@ export const emptyEvent: Event = {
   desc: '',
   evType: 'etStateCng',
   mainItem: false,
+  objType: "Event",
 };
 
 const EventContext = createContext<EventContextType | undefined>(undefined);

@@ -11,7 +11,6 @@ import { Option } from '../../layout/ContextMenu/ContextMenu';
 import LogicNodeForm from '../../forms/LogicNodeForm/LogicNodeForm';
 import { MainItemTypes } from '../../../types/ItemTypes';
 import {
-  GetModelItemsReferencedBy,
   GetModelItemsReferencing,
 } from '../../../utils/ModelReferences';
 
@@ -309,7 +308,6 @@ const useLogicNodeTreeDiagram = () => {
             {
               label: 'Copy',
               action: () => {
-                //const copiedModel = GetModelItemsReferencedBy(label, MainItemTypes.LogicNode, 1, new Set<MainItemTypes>([MainItemTypes.LogicNode]));
                 navigator.clipboard.writeText(JSON.stringify(node.data.logicNode, null, 2));
               },
             },

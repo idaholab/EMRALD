@@ -50,7 +50,7 @@ export interface State {
    */
   events: string[]
   eventActions: EventActions
-  geometry?: GeometryInfo
+  geometryInfo?: GeometryInfo
   changeLog?: ChangeLog
   defaultSingleStateValue?: StateEvalValue
   /**

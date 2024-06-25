@@ -48,6 +48,7 @@ export const emptyState: State = {
   eventActions: [],
   immediateActions: [],
   geometryInfo: { x: 0, y: 0, width: 0, height: 0 },
+  objType: "State",
 };
 
 const StateContext = createContext<StateContextType | undefined>(undefined);
@@ -67,6 +68,7 @@ const StateContextProvider: React.FC<EmraldContextWrapperProps> = ({ children })
     ),
   );
   const statesList = useComputed(() => appData.value.StateList);
+  const defaultgeometryInfo = { x: 0, y: 0, width: 0, height: 0 };
 
   // Create, Delete, Update individual States
   const createState = async (newState: State) => {
@@ -153,7 +155,12 @@ const StateContextProvider: React.FC<EmraldContextWrapperProps> = ({ children })
         events: state.events || [],
         eventActions: state.eventActions || [],
         immediateActions: state.immediateActions || [],
-        geometryInfo: state.geometryInfo || { x: 0, y: 0, width: 0, height: 0 },
+        geometryInfo: {
+          x: state.geometryInfo?.x ?? defaultgeometryInfo.x,
+          y: state.geometryInfo?.y ?? defaultgeometryInfo.y,
+          width: state.geometryInfo?.width ?? defaultgeometryInfo.width,
+          height: state.geometryInfo?.height ?? defaultgeometryInfo.height,
+        },
       };
     }
     return {
@@ -172,7 +179,7 @@ const StateContextProvider: React.FC<EmraldContextWrapperProps> = ({ children })
         state.geometryInfo.y = position.y;
         updateState(state);
       } catch (error) {
-        console.error('Error updating geometry:', error);
+        console.error('Error updating geometryInfo:', error);
       }
     }
     return;
