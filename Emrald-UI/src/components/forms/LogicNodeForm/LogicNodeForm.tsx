@@ -5,10 +5,7 @@ import Container from '@mui/material/Container';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import { useWindowContext } from '../../../contexts/WindowContext';
-import {
-  emptyLogicNode,
-  useLogicNodeContext,
-} from '../../../contexts/LogicNodeContext';
+import { emptyLogicNode, useLogicNodeContext } from '../../../contexts/LogicNodeContext';
 import { v4 as uuidv4 } from 'uuid';
 import { CompChild, LogicNode } from '../../../types/LogicNode';
 import { GateType, StateEvalValue } from '../../../types/ItemTypes';
@@ -46,30 +43,27 @@ const LogicNodeForm: React.FC<LogicNodeFormProps> = ({
   const { logicNodeList, createLogicNode, updateLogicNode } = useLogicNodeContext();
   const { diagrams } = useDiagramContext();
   const parentNode = logicNodeList.value.find((node) => node.name === parentNodeName);
-  const logicNode = useSignal<LogicNode>(logicNodeData || parentNode || structuredClone(emptyLogicNode));
+  const logicNode = useSignal<LogicNode>(
+    logicNodeData || parentNode || structuredClone(emptyLogicNode),
+  );
   const newLogicNode = useSignal<LogicNode>(structuredClone(emptyLogicNode));
   const compChildren = useSignal<CompChild[]>(logicNode.value.compChildren || []);
   const componentDiagrams =
     editing && component
       ? diagrams.filter(
-          (diagram) =>
-            diagram.diagramType === 'dtSingle' && diagram.name === component,
+          (diagram) => diagram.diagramType === 'dtSingle' && diagram.name === component,
         )
       : diagrams.filter(
           (diagram) =>
             diagram.diagramType === 'dtSingle' &&
-            !logicNode.value.compChildren.find(
-              (child) => child.diagramName === diagram.name,
-            ),
+            !logicNode.value.compChildren.find((child) => child.diagramName === diagram.name),
         );
 
   const currentNode = logicNode.value.compChildren.find((child) => child.diagramName === component);
   const [leafNodeType, setLeafNodeType] = useState<string | undefined>(nodeType);
   const [compDiagram, setCompDiagram] = useState<string>(component || '');
   const [defaultValues, setDefaultValues] = useState<boolean>(
-    currentNode?.stateValues && currentNode.stateValues.length > 0
-      ? false
-      : true,
+    currentNode?.stateValues && currentNode.stateValues.length > 0 ? false : true,
   );
   const [newCompChild, setNewCompChild] = useState<
     | {
@@ -84,9 +78,9 @@ const LogicNodeForm: React.FC<LogicNodeFormProps> = ({
   const [error, setError] = useState<boolean>(false);
 
   const gateTypeOptions = [
-    {label: 'And', value: 'gtAnd'},
-    {label: 'Or', value: 'gtOr'},
-    {label: 'Not', value: 'gtNot'},
+    { label: 'And', value: 'gtAnd' },
+    { label: 'Or', value: 'gtOr' },
+    { label: 'Not', value: 'gtNot' },
   ];
 
   // Add new comp child
@@ -98,28 +92,45 @@ const LogicNodeForm: React.FC<LogicNodeFormProps> = ({
     }
   };
 
-
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newName = e.target.value;
-    setError(logicNodeList.value.some(node => node.name === newName));
+    setError(logicNodeList.value.some((node) => node.name === newName));
 
     editing ? (logicNode.value.name = newName) : (newLogicNode.value.name = newName);
     setNameValue(newName);
   };
 
   const handleDescriptionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    editing ? logicNode.value.desc = e.target.value : newLogicNode.value.desc = e.target.value;
+    editing ? (logicNode.value.desc = e.target.value) : (newLogicNode.value.desc = e.target.value);
     setDescValue(e.target.value);
   };
 
-  const handleGateTypeChange = (e: SelectChangeEvent<"gtAnd" | "gtOr" | "gtNot">) => {
-    editing ? logicNode.value.gateType = e.target.value as GateType : newLogicNode.value.gateType = e.target.value as GateType;
+  const handleGateTypeChange = (e: SelectChangeEvent<'gtAnd' | 'gtOr' | 'gtNot'>) => {
+    editing
+      ? (logicNode.value.gateType = e.target.value as GateType)
+      : (newLogicNode.value.gateType = e.target.value as GateType);
     setGateTypeValue(e.target.value as GateType);
   };
 
   const resetForm = () => {
-    logicNode.value = {id: '', name: '', desc: '', gateType: 'gtAnd', compChildren: [], gateChildren: [], isRoot: false};
-    newLogicNode.value = {id: '', name: '', desc: '', gateType: 'gtAnd', compChildren: [], gateChildren: [], isRoot: false};
+    logicNode.value = {
+      id: '',
+      name: '',
+      desc: '',
+      gateType: 'gtAnd',
+      compChildren: [],
+      gateChildren: [],
+      isRoot: false,
+    };
+    newLogicNode.value = {
+      id: '',
+      name: '',
+      desc: '',
+      gateType: 'gtAnd',
+      compChildren: [],
+      gateChildren: [],
+      isRoot: false,
+    };
     setLeafNodeType('');
     setCompDiagram('');
     setDefaultValues(true);
@@ -131,7 +142,7 @@ const LogicNodeForm: React.FC<LogicNodeFormProps> = ({
   };
 
   // Save logic node
-  const handleSave = () => {
+  const handleSave = async () => {
     updateTitle(logicNodeData?.name || '', logicNode.value.name);
     handleAddNewCompChild();
     if (isRoot) newLogicNode.value.isRoot = true;
@@ -145,12 +156,12 @@ const LogicNodeForm: React.FC<LogicNodeFormProps> = ({
         ...logicNode.value,
         gateType: gateTypeValue,
         compChildren: compChildren.value,
-      })
+      });
     } else if (!editing && nodeType === 'gate' && parentNodeName) {
       newLogicNode.value.id = uuidv4();
-      createLogicNode(newLogicNode.value);
+      await createLogicNode(newLogicNode.value);
       logicNode.value.gateChildren = [...logicNode.value.gateChildren, newLogicNode.value.name];
-      updateLogicNode(logicNode.value);
+      await updateLogicNode(logicNode.value);
     } else {
       newLogicNode.value.id = uuidv4();
       createLogicNode(newLogicNode.value);
@@ -161,8 +172,7 @@ const LogicNodeForm: React.FC<LogicNodeFormProps> = ({
   return (
     <Container maxWidth="sm">
       <Typography variant="h5" my={3}>
-        {logicNodeData ? 'Edit' : 'Create New'}{' '}
-        {leafNodeType === 'comp' ? 'Component' : 'Gate'}
+        {logicNodeData ? 'Edit' : 'Create New'} {leafNodeType === 'comp' ? 'Component' : 'Gate'}
       </Typography>
       <form>
         {nodeType ? (
@@ -256,24 +266,15 @@ const LogicNodeForm: React.FC<LogicNodeFormProps> = ({
               <></>
             )}
             {!defaultValues ? (
-              <StateValuesTable
-                diagramName={compDiagram}
-                nodeDetails={currentNode}
-              />
+              <StateValuesTable diagramName={compDiagram} nodeDetails={currentNode} />
             ) : (
               <></>
             )}
           </>
         ) : (
           <>
-            <FormControl
-              variant="outlined"
-              size="small"
-              sx={{ minWidth: 120, width: '100%' }}
-            >
-              <InputLabel id="demo-simple-select-standard-label">
-                Type
-              </InputLabel>
+            <FormControl variant="outlined" size="small" sx={{ minWidth: 120, width: '100%' }}>
+              <InputLabel id="demo-simple-select-standard-label">Type</InputLabel>
               <Select
                 labelId="type-select"
                 id="type-select"
@@ -281,10 +282,10 @@ const LogicNodeForm: React.FC<LogicNodeFormProps> = ({
                 onChange={handleGateTypeChange}
                 label={'Type'}
               >
-              {gateTypeOptions.map((option) => (
-                <MenuItem key={option.value} value={option.value}>
-                  {option.label}
-                </MenuItem>
+                {gateTypeOptions.map((option) => (
+                  <MenuItem key={option.value} value={option.value}>
+                    {option.label}
+                  </MenuItem>
                 ))}
               </Select>
             </FormControl>
@@ -298,7 +299,13 @@ const LogicNodeForm: React.FC<LogicNodeFormProps> = ({
               onChange={handleNameChange}
               fullWidth
               error={error}
-              helperText={`${ error ? "A Logic Node with this name already exists" : nameValue.length === 20 ? "Maximum 20 characters" : ""}`}
+              helperText={`${
+                error
+                  ? 'A Logic Node with this name already exists'
+                  : nameValue.length === 20
+                  ? 'Maximum 20 characters'
+                  : ''
+              }`}
             />
             <TextField
               label="Description"
@@ -322,11 +329,7 @@ const LogicNodeForm: React.FC<LogicNodeFormProps> = ({
           >
             Save
           </Button>
-          <Button
-            variant="contained"
-            color="secondary"
-            onClick={() => handleClose()}
-          >
+          <Button variant="contained" color="secondary" onClick={() => handleClose()}>
             Cancel
           </Button>
         </Box>

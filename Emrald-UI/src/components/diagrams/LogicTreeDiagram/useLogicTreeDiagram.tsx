@@ -10,7 +10,9 @@ import { useDiagramContext } from '../../../contexts/DiagramContext';
 import { Option } from '../../layout/ContextMenu/ContextMenu';
 import LogicNodeForm from '../../forms/LogicNodeForm/LogicNodeForm';
 import { MainItemTypes } from '../../../types/ItemTypes';
-import { GetModelItemsReferencing } from '../../../utils/ModelReferences';
+import {
+  GetModelItemsReferencing,
+} from '../../../utils/ModelReferences';
 
 export type NodeType = 'root' | 'gate' | 'comp';
 
@@ -20,14 +22,14 @@ const useLogicNodeTreeDiagram = () => {
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge[]>([]);
   const [loading, setLoading] = useState(true);
   const [editingDescription, setEditingDescription] = useState(false);
-  const [editedDescription, setEditedDescription] = useState("");
-  const [copiedNode, setCopiedNode] = useState("");
+  const [editedDescription, setEditedDescription] = useState('');
   const [nodeExistsAlert, setNodeExistsAlert] = useState(false);
   const [editingTitle, setEditingTitle] = useState(false);
-  const [editedTitle, setEditedTitle] = useState("");
-  const [menu, setMenu] = useState<{ mouseX: number; mouseY: number; } | null>(null);
+  const [editedTitle, setEditedTitle] = useState('');
+  const [menu, setMenu] = useState<{ mouseX: number; mouseY: number } | null>(null);
   const [menuOptions, setMenuOptions] = useState<Option[]>();
-  const { logicNodeList, getLogicNodeByName, updateLogicNode, createLogicNode, deleteLogicNode } = useLogicNodeContext();
+  const { logicNodeList, getLogicNodeByName, updateLogicNode, createLogicNode, deleteLogicNode } =
+    useLogicNodeContext();
   const { getDiagramByDiagramName, updateDiagram } = useDiagramContext();
   const { addWindow } = useWindowContext();
 
@@ -38,125 +40,128 @@ const useLogicNodeTreeDiagram = () => {
   const nodeHeight = 130;
 
   // Build the logic tree
-  const buildLogicTree = useCallback((logicNode: LogicNode) => {
-    const nodeMap = new Map<string, Node>(); // Map to store nodes by their IDs
-    const edges: Edge[] = [];
-    setRootNode(logicNode);
-  
-    // Create the root node with the logic node name as the label
-    const rootNodeId = 'root';
-    const rootNode: Node = {
-      id: rootNodeId,
-      position: { x: 0, y: 0 },
-      type: 'custom',
-      data: {
-        label: logicNode.name,
-        logicNode: logicNode,
-        isRoot: logicNode.isRoot,
-        parent: null,
-        parentName: '',
-        type: 'root',
-        gateType: logicNode.gateType,
-        description: logicNode.desc,
-        compChildren: [],
-        gateChildren: logicNode.gateChildren,
-        expanded: true
-      },
-    };
-  
-    // Add the root node to the node map
-    nodeMap.set(rootNodeId, rootNode);
-  
-    // Recursive function to process nodes
-    const processNode = (node: LogicNode, parentId: string, parentName: string) => {
-      const gateNode: Node = {
-        id: uuidv4(),
+  const buildLogicTree = useCallback(
+    (logicNode: LogicNode) => {
+      const nodeMap = new Map<string, Node>(); // Map to store nodes by their IDs
+      const edges: Edge[] = [];
+      setRootNode(logicNode);
+
+      // Create the root node with the logic node name as the label
+      const rootNodeId = 'root';
+      const rootNode: Node = {
+        id: rootNodeId,
         position: { x: 0, y: 0 },
         type: 'custom',
         data: {
-          label: node.name,
-          logicNode: node,
-          isRoot: node.isRoot,
-          parent: parentId,
-          parentName: parentName,
-          type: 'gate',
-          gateType: node.gateType,
-          description: node.desc,
-          compChildren: node.compChildren,
-          gateChildren: node.gateChildren,
-          expanded: true
+          label: logicNode.name,
+          logicNode: logicNode,
+          isRoot: logicNode.isRoot,
+          parent: null,
+          parentName: '',
+          type: 'root',
+          gateType: logicNode.gateType,
+          description: logicNode.desc,
+          compChildren: [],
+          gateChildren: logicNode.gateChildren,
+          expanded: true,
         },
       };
-  
-      nodeMap.set(gateNode.id, gateNode);
-  
-      edges.push({
-        id: uuidv4(),
-        source: parentId, // Use parentId as the source for edges
-        target: gateNode.id,
-        ariaLabel: node.name,
-        type: 'smoothstep',
-        style: {
-          strokeWidth: 3
-        }
-      });
-  
-      // Process the gate children
-      node.gateChildren.forEach((childId) => {
-        const childNode = getLogicNodeByName(childId); // Get the child logic node details
+
+      // Add the root node to the node map
+      nodeMap.set(rootNodeId, rootNode);
+
+      // Recursive function to process nodes
+      const processNode = (node: LogicNode, parentId: string, parentName: string) => {
+        const gateNode: Node = {
+          id: uuidv4(),
+          position: { x: 0, y: 0 },
+          type: 'custom',
+          data: {
+            label: node.name,
+            logicNode: node,
+            isRoot: node.isRoot,
+            parent: parentId,
+            parentName: parentName,
+            type: 'gate',
+            gateType: node.gateType,
+            description: node.desc,
+            compChildren: node.compChildren,
+            gateChildren: node.gateChildren,
+            expanded: true,
+          },
+        };
+
+        nodeMap.set(gateNode.id, gateNode);
+
+        edges.push({
+          id: uuidv4(),
+          source: parentId, // Use parentId as the source for edges
+          target: gateNode.id,
+          ariaLabel: node.name,
+          type: 'smoothstep',
+          style: {
+            strokeWidth: 3,
+          },
+        });
+
+        // Process the gate children
+        node.gateChildren.forEach((childId) => {
+          const childNode = getLogicNodeByName(childId); // Get the child logic node details
+          if (childNode) {
+            processNode(childNode, gateNode.id, gateNode.data.label);
+          }
+        });
+
+        // Process the comp children
+        node.compChildren.forEach((child) => {
+          const childNode = child.diagramName;
+          const diagram = getDiagramByDiagramName(child.diagramName);
+          if (childNode) {
+            const compNode: Node = {
+              id: uuidv4(),
+              position: { x: 0, y: 0 },
+              type: 'custom',
+              data: {
+                label: `${childNode}`,
+                parent: gateNode.id,
+                parentName: gateNode.data.label,
+                type: 'comp',
+                description: diagram.desc,
+                diagram: diagram,
+                defaultStateValues:
+                  child.stateValues && child.stateValues.length > 0 ? false : true,
+              },
+            };
+            nodeMap.set(compNode.id, compNode);
+            edges.push({
+              id: uuidv4(),
+              source: gateNode.id,
+              target: compNode.id,
+              ariaLabel: `${gateNode.data.label}-${childNode}`,
+              type: 'smoothstep',
+              style: {
+                strokeWidth: 3,
+              },
+            });
+          }
+        });
+      };
+
+      // Process the gate children of the root node
+      logicNode.gateChildren.forEach((childId) => {
+        const childNode = getLogicNodeByName(childId);
         if (childNode) {
-          processNode(childNode, gateNode.id, gateNode.data.label);
+          processNode(childNode, rootNodeId, rootNode.data.label);
         }
       });
-  
-      // Process the comp children
-      node.compChildren.forEach((child) => {
-        const childNode = child.diagramName;
-        const diagram = getDiagramByDiagramName(child.diagramName);
-        if (childNode) {
-          const compNode: Node = {
-            id: uuidv4(),
-            position: { x: 0, y: 0 },
-            type: 'custom',
-            data: {
-              label: `${childNode}`,
-              parent: gateNode.id,
-              parentName: gateNode.data.label,
-              type: 'comp',
-              description: diagram.desc,
-              diagram: diagram,
-              defaultStateValues: child.stateValues && child.stateValues.length > 0 ? false : true
-            },
-          };
-          nodeMap.set(compNode.id, compNode);
-          edges.push({
-            id: uuidv4(),
-            source: gateNode.id,
-            target: compNode.id,
-            ariaLabel: `${gateNode.data.label}-${childNode}`,
-            type: 'smoothstep',
-            style: {
-              strokeWidth: 3
-            }
-          });
-        }
-      });
-    };
-  
-    // Process the gate children of the root node
-    logicNode.gateChildren.forEach((childId) => {
-      const childNode = getLogicNodeByName(childId);
-      if (childNode) {
-        processNode(childNode, rootNodeId, rootNode.data.label);
-      }
-    });
-  
-    const formattedNodes = Array.from(nodeMap.values()); // Convert the node map to an array of nodes
-    setNodes(formattedNodes); // Update the nodes state
-    setEdges(edges); // Update the edges state
-    setLoading(false); // Set loading to false after setting nodes
-  }, [getLogicNodeByName, setNodes, setEdges]); 
-  
+
+      const formattedNodes = Array.from(nodeMap.values()); // Convert the node map to an array of nodes
+      setNodes(formattedNodes); // Update the nodes state
+      setEdges(edges); // Update the edges state
+      setLoading(false); // Set loading to false after setting nodes
+    },
+    [getLogicNodeByName, setNodes, setEdges],
+  );
 
   const dagreFormatNodes = (nodes: Node[], edges: Edge[], direction = 'TB') => {
     dagreGraph.setGraph({ rankdir: direction }); // Create a new directed graph
@@ -193,38 +198,65 @@ const useLogicNodeTreeDiagram = () => {
       width: 1300,
       height: 700,
     });
-  }
-
+  };
   const removeNode = (parentNode: string, nodeName: string, type: NodeType) => {
     const parentLogicNode = getLogicNodeByName(parentNode);
+    const nodeToDelete = getLogicNodeByName(nodeName);
     if (type === 'gate') {
-      parentLogicNode.gateChildren = parentLogicNode.gateChildren.filter((child) => child !== nodeName);
-      checkToDeleteNode(nodeName);
+      parentLogicNode.gateChildren = parentLogicNode.gateChildren.filter(
+        (child) => child !== nodeName,
+      );
+      recurseChildren(nodeToDelete, parentLogicNode);
+      if(canDeleteNode(nodeName)) {
+        deleteLogicNode(nodeToDelete.id);
+      }
     }
     if (type === 'comp') {
-      parentLogicNode.compChildren = parentLogicNode.compChildren.filter((child) => child.diagramName !== nodeName);
+      parentLogicNode.compChildren = parentLogicNode.compChildren.filter(
+        (child) => child.diagramName !== nodeName,
+      );
     }
     updateLogicNode(parentLogicNode);
+  };
+  const recurseChildren = (node: LogicNode, parentNode?: LogicNode) => {
+    if (!node) return;
+    if (!canDeleteNode(node.name)) return;
+    node.gateChildren.forEach((gateChildName) => {
+      const gateChildNode = getLogicNodeByName(gateChildName);
+      if (gateChildNode) {
+        if (!canDeleteNode(gateChildNode.name)) {
+          if (parentNode) removeNode(parentNode.name, node.name, "gate")
+          return;
+        } else {
+          recurseChildren(gateChildNode, node);
+          deleteLogicNode(gateChildNode.id);
+        }
+      }
+    });
   }
 
-  const checkToDeleteNode = (nodeName: string) => {
+  const canDeleteNode = (nodeName: string) => {
     const currentReferences = GetModelItemsReferencing(nodeName, MainItemTypes.LogicNode);
-    console.log(currentReferences);
-    const nodeToDelete = getLogicNodeByName(nodeName);
-    if (currentReferences.LogicNodeList.length === 1) {
-      deleteLogicNode(nodeToDelete.id);
+    let referenceNodes = currentReferences.LogicNodeList.filter((item) => item.name !== nodeName);
+    if (referenceNodes.length > 1) {
+      return false;
     }
-  }
+    return true;
+  };
+
 
   const DeleteNode = (parentNode: string, nodeName: string) => {
     const parentLogicNode = getLogicNodeByName(parentNode);
     const nodeToDelete = getLogicNodeByName(nodeName);
+    recurseChildren(nodeToDelete, parentLogicNode);
     deleteLogicNode(nodeToDelete.id);
 
-    parentLogicNode.gateChildren = parentLogicNode.gateChildren.filter((child) => child !== nodeName);
+    parentLogicNode.gateChildren = parentLogicNode.gateChildren.filter(
+      (child) => child !== nodeName,
+    );
     updateLogicNode(parentLogicNode);
-  }
-  
+  };
+
   // * Context menu
 
   const closeContextMenu = () => setMenu(null); // Close the context menu
@@ -237,52 +269,105 @@ const useLogicNodeTreeDiagram = () => {
       mouseX: e.clientX,
       mouseY: e.clientY,
     });
-  
+
     let options: Option[] = [];
-  
+
     switch (node.data.type) {
-      case "root":
-      case "gate":
+      case 'root':
+      case 'gate':
         options = [
-          { label: 'Add Gate', action: () => addWindow(`New Node`, <LogicNodeForm parentNodeName={logicNode.name} nodeType='gate' gateType="gtAnd" />)  },
-          { label: 'Add Component', action: () => addWindow(`New Node`, <LogicNodeForm parentNodeName={logicNode.name} nodeType='comp' />), isDivider: true },
-          { label: 'Edit Gate Node', action: () => addWindow(`Edit Gate Node: ${label}`, <LogicNodeForm logicNodeData={logicNode} editing={true}/> ) , isDivider: true  },
+          {
+            label: 'Add Gate',
+            action: () =>
+              addWindow(
+                `New Node`,
+                <LogicNodeForm parentNodeName={logicNode.name} nodeType="gate" gateType="gtAnd" />,
+              ),
+          },
+          {
+            label: 'Add Component',
+            action: () =>
+              addWindow(
+                `New Node`,
+                <LogicNodeForm parentNodeName={logicNode.name} nodeType="comp" />,
+              ),
+            isDivider: true,
+          },
+          {
+            label: 'Edit Gate Node',
+            action: () =>
+              addWindow(
+                `Edit Gate Node: ${label}`,
+                <LogicNodeForm logicNodeData={logicNode} editing={true} />,
+              ),
+            isDivider: true,
+          },
         ];
-        if (node.data.type === "gate") {
+        if (node.data.type === 'gate') {
           options.push(
-            { label: 'Copy', action: () => setCopiedNode(label) },
-            { label: 'Paste', action: () => pasteNode(copiedNode, label), disabled: !copiedNode  },
-            { label: 'Paste (as new)', action: () => pasteNode(copiedNode, label, 'new'), disabled: !copiedNode, isDivider: true  },
-            { label: 'Remove Gate', action: () => removeNode(parentName, label, 'gate')},
-            { label: 'Delete Gate', action: () => DeleteNode(parentName, label)}
+            {
+              label: 'Copy',
+              action: () => {
+                const copiedModel = GetModelItemsReferencing(label, MainItemTypes.LogicNode);
+                navigator.clipboard.writeText(JSON.stringify(copiedModel, null, 2));
+              },
+            },
+            { label: 'Paste', action: () => pasteNode(label) },
+            {
+              label: 'Paste (as new)',
+              action: () => pasteNode(label, 'new'),
+              isDivider: true,
+            },
+            { label: 'Remove Gate', action: () => removeNode(parentName, label, 'gate') },
+            { label: 'Delete Gate', action: () => DeleteNode(parentName, label) },
           );
         }
         break;
-  
-      case "comp":
+
+      case 'comp':
         options = [
-          { label: 'Edit Component Node', action: () => addWindow(`Edit Component Node: ${label}`, <LogicNodeForm logicNodeData={parentNode} component={label} nodeType='comp' editing={true}/>)  },
+          {
+            label: 'Edit Component Node',
+            action: () =>
+              addWindow(
+                `Edit Component Node: ${label}`,
+                <LogicNodeForm
+                  logicNodeData={parentNode}
+                  component={label}
+                  nodeType="comp"
+                  editing={true}
+                />,
+              ),
+          },
           { label: 'Go to Diagram', action: () => goToDiagram(node.data.label), isDivider: true },
           { label: 'Remove Component', action: () => removeNode(parentName, label, 'comp') },
         ];
         break;
-  
+
       default:
         break;
     }
-  
+
     setMenuOptions(options);
   };
 
-  const pasteNode = (pasteNode: string, nodeToUpdate: string, type?: string) => {
+  const pasteNode = async (nodeToUpdate: string, type?: string) => {
+    const pastedData = await navigator.clipboard.readText();
+    // Parse the pasted data
+    let pastedObject;
+    try {
+      pastedObject = JSON.parse(pastedData);
+    } catch (error) {
+      console.error('Failed to parse pasted data:', error);
+      return;
+    }
     const node = getLogicNodeByName(nodeToUpdate);
     if (node) {
       if (type === 'new') {
-        const pastedNode = getLogicNodeByName(pasteNode);
+        const pastedNode = pastedObject.LogicNodeList[0];
         const gateNodes = logicNodeList.value.filter((node) =>
-          new RegExp(`^Copy of ${pastedNode.name}`).test(node.name)
+          new RegExp(`^Copy of ${pastedNode.name}`).test(node.name),
         ); // Find all existing logic nodes with the name
-    
         let newGateNumber = 1;
         if (gateNodes.length > 0) {
           const existingNumbers = gateNodes.map((node) => {
@@ -291,24 +376,48 @@ const useLogicNodeTreeDiagram = () => {
           });
           newGateNumber = Math.max(...existingNumbers) + 1;
         }
-
         const newNode: LogicNode = {
           ...pastedNode,
           id: uuidv4(),
           name: `Copy of ${pastedNode.name} (${newGateNumber})`,
-        }
-        createLogicNode(newNode);
+        };
+        await createLogicNode(newNode);
         node.gateChildren = [...node.gateChildren, newNode.name];
       } else {
-        if (node.gateChildren.includes(pasteNode)) {
+        const pastedNodeName = pastedObject.LogicNodeList[0].name;
+        if (node.name === pastedNodeName || getAllGateChildren(node).includes(pastedNodeName) || getAncestors(node).includes(pastedNodeName)) {
           setNodeExistsAlert(true);
           return;
         }
-        node.gateChildren = [...node.gateChildren, pasteNode];
+        node.gateChildren = [...node.gateChildren, pastedNodeName];
       }
       updateLogicNode(node);
     }
   };
+
+  const getAncestors = (node: LogicNode): string[] => {
+    let ancestors: string[] = [];
+    const copiedModel = GetModelItemsReferencing(node.name, MainItemTypes.LogicNode);
+    copiedModel.LogicNodeList.forEach((node) => {
+      ancestors.push(node.name);
+    })
+    return ancestors;
+  }
+  const getAllGateChildren = (node: LogicNode): string[] => {
+    let gateChildrenNames: string[] = [];
+    let queue: LogicNode[] = [node];
+    while (queue.length > 0) {
+      const currentNode = queue.pop();
+      currentNode?.gateChildren.forEach((childName) => {
+        const childNode = getLogicNodeByName(childName);
+        if (childNode) {
+          gateChildrenNames.push(childName);
+          queue.push(childNode);
+        }
+      })
+    }
+    return gateChildrenNames;
+  }
 
   const handleDoubleClick = (type: string, text: string) => {
     if (type === 'description') {
@@ -320,58 +429,78 @@ const useLogicNodeTreeDiagram = () => {
     }
   };
 
-  const handleDescriptionBlur = useCallback((type: string, label: string) => {
-    setEditingDescription(false);
-    
-    if (type === 'gate' || type === 'root') {
-      const updatedLogicNode = getLogicNodeByName(label);
-      if (updatedLogicNode) {
-        updateLogicNode({
-          ...updatedLogicNode,
-          desc: editedDescription
-        });
-      }
-    }
+  const handleDescriptionBlur = useCallback(
+    (type: string, label: string) => {
+      setEditingDescription(false);
 
-    if (type === 'comp') {
-      const diagramToUpdate = getDiagramByDiagramName(label);
-      if (diagramToUpdate) {
-        updateDiagram({
-          ...diagramToUpdate,
-          desc: editedDescription
-        });
+      if (type === 'gate' || type === 'root') {
+        const updatedLogicNode = getLogicNodeByName(label);
+        if (updatedLogicNode) {
+          updateLogicNode({
+            ...updatedLogicNode,
+            desc: editedDescription,
+          });
+        }
       }
-    }
 
-    setEditedDescription('');
-  }, [nodes, getLogicNodeByName, getDiagramByDiagramName, updateLogicNode, updateDiagram, editedDescription]);
-
-  const handleTitleBlur = useCallback((type: string, label: string) => {
-    setEditingTitle(false);
-
-    if (type === 'gate' || type === 'root') {
-      const LogicNodeToUpdate = getLogicNodeByName(label);
-      console.log(LogicNodeToUpdate)
-      if (LogicNodeToUpdate) {
-        updateLogicNode({
-          ...LogicNodeToUpdate,
-          name: editedTitle
-        });
+      if (type === 'comp') {
+        const diagramToUpdate = getDiagramByDiagramName(label);
+        if (diagramToUpdate) {
+          updateDiagram({
+            ...diagramToUpdate,
+            desc: editedDescription,
+          });
+        }
       }
-    }
-    
-    if (type === 'comp') {
-      const diagramToUpdate = getDiagramByDiagramName(label);
-      if (diagramToUpdate) {
-        updateDiagram({
-          ...diagramToUpdate,
-          name: editedTitle
-        });
+
+      setEditedDescription('');
+    },
+    [
+      nodes,
+      getLogicNodeByName,
+      getDiagramByDiagramName,
+      updateLogicNode,
+      updateDiagram,
+      editedDescription,
+    ],
+  );
+
+  const handleTitleBlur = useCallback(
+    (type: string, label: string) => {
+      setEditingTitle(false);
+
+      if (type === 'gate' || type === 'root') {
+        const LogicNodeToUpdate = getLogicNodeByName(label);
+        console.log(LogicNodeToUpdate);
+        if (LogicNodeToUpdate) {
+          updateLogicNode({
+            ...LogicNodeToUpdate,
+            name: editedTitle,
+          });
+        }
       }
-    }
-    
-    setEditedTitle('');
-  }, [nodes, getLogicNodeByName, getDiagramByDiagramName, updateLogicNode, updateDiagram, editedTitle]);
+
+      if (type === 'comp') {
+        const diagramToUpdate = getDiagramByDiagramName(label);
+        if (diagramToUpdate) {
+          updateDiagram({
+            ...diagramToUpdate,
+            name: editedTitle,
+          });
+        }
+      }
+
+      setEditedTitle('');
+    },
+    [
+      nodes,
+      getLogicNodeByName,
+      getDiagramByDiagramName,
+      updateLogicNode,
+      updateDiagram,
+      editedTitle,
+    ],
+  );
 
   useEffect(() => {
     if (nodes && !loading) {
@@ -381,7 +510,9 @@ const useLogicNodeTreeDiagram = () => {
   }, [nodes, loading]);
 
   useEffect(() => {
-    if (!rootNode) { return ;}
+    if (!rootNode) {
+      return;
+    }
     const updatedLogicNode = getLogicNodeByName(rootNode.name);
     if (updatedLogicNode) {
       buildLogicTree(updatedLogicNode);
@@ -393,7 +524,7 @@ const useLogicNodeTreeDiagram = () => {
       const timer = setTimeout(() => {
         setNodeExistsAlert(false);
       }, 5000); // 5 seconds
-  
+
       return () => clearTimeout(timer);
     }
   }, [nodeExistsAlert]);
@@ -413,6 +544,8 @@ const useLogicNodeTreeDiagram = () => {
     editingTitle,
     editedTitle,
     nodeExistsAlert,
+    canDeleteNode,
+    recurseChildren,
     setNodes,
     setEdges,
     onNodesChange,
@@ -428,7 +561,7 @@ const useLogicNodeTreeDiagram = () => {
     closeContextMenu,
     goToDiagram,
     removeNode,
-    setNodeExistsAlert
+    setNodeExistsAlert,
   };
 };
 
