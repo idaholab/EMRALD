@@ -15,6 +15,10 @@ import ActionForm from '../../forms/ActionForm/ActionForm';
 import DiagramForm from '../../forms/DiagramForm/DiagramForm';
 import ActionFormContextProvider from '../../forms/ActionForm/ActionFormContext';
 import EventFormContextProvider from '../../forms/EventForm/EventFormContext';
+import { EMRALD_Model } from '../../../types/EMRALD_Model';
+import { updateModelAndReferences } from '../../../utils/UpdateModel';
+import { MainItemTypes } from '../../../types/ItemTypes';
+import { updateAppData } from '../../../hooks/useAppData';
 
 const useContextMenu = (getStateNodes?: () => void, setEdges?: (edges: Edge[]) => void) => {
   // Get state nodes function is needed if deleting or removing a state, set edges function is needed if deleting or removing an edge
@@ -147,6 +151,21 @@ const useContextMenu = (getStateNodes?: () => void, setEdges?: (edges: Edge[]) =
           );
           closeContextMenu();
         },
+        isDivider: true,
+      },
+      {
+        label: 'Paste Event',
+        action: async () => {
+          const pastedData = await navigator.clipboard.readText();
+          if(isEvent(JSON.parse(pastedData))) {
+            state.events.push(JSON.parse(pastedData).name);
+            state.eventActions.push({moveFromCurrent: false, actions: []});
+            updateState(state);
+            var updatedModel: EMRALD_Model = await updateModelAndReferences(state, MainItemTypes.State);
+            updateAppData(updatedModel);
+          };
+          closeContextMenu();
+        }
       },
       {
         label: 'New Action',
@@ -159,6 +178,20 @@ const useContextMenu = (getStateNodes?: () => void, setEdges?: (edges: Edge[]) =
           );
           closeContextMenu();
         },
+        isDivider: true,
+      },
+      {
+        label: 'Paste Action',
+        action: async () => {
+          const pastedData = await navigator.clipboard.readText();
+          if(isAction(JSON.parse(pastedData))) {
+            state.immediateActions.push(JSON.parse(pastedData).name);
+            updateState(state);
+            var updatedModel: EMRALD_Model = await updateModelAndReferences(state, MainItemTypes.State);
+            updateAppData(updatedModel);
+          };
+          closeContextMenu();
+        }
       },
     ];
 
@@ -167,14 +200,14 @@ const useContextMenu = (getStateNodes?: () => void, setEdges?: (edges: Edge[]) =
     if (type === 'event') {
       menuOptions = menuOptions.filter((option) => option.label !== 'New Action');
     } else {
-      menuOptions = menuOptions.filter((option) => option.label !== 'New Event');
+      menuOptions = menuOptions.filter((option) => option.label !== 'New Event' && option.label !== 'Paste Event');
     }
 
     setMenuOptions(menuOptions);
   };
 
   // * Context menu for event items
-  const onEventContextMenu = (e: React.MouseEvent, state: State, event?: Event) => {
+  const onEventContextMenu = async (e: React.MouseEvent, state: State, event?: Event) => {
     if (!event) {
       return;
     }
@@ -234,15 +267,25 @@ const useContextMenu = (getStateNodes?: () => void, setEdges?: (edges: Edge[]) =
         },      
       },
       {
-        label: 'Paste Event',
+        label: 'Paste Action',
         action: async () => {
           const pastedData = await navigator.clipboard.readText();
-          if(isEvent(JSON.parse(pastedData))) {
-            console.log('pasted Event:', JSON.parse(pastedData));
+          if(isAction(JSON.parse(pastedData))) {
+              const eventIndex = state.events.indexOf(event.name);
+              if (!state.eventActions[eventIndex]) {
+                const eventActionsLength = state.eventActions.length;
+                state.eventActions[eventActionsLength].actions.push(JSON.parse(pastedData).name);
+              } else {
+                state.eventActions[eventIndex].actions.push(JSON.parse(pastedData).name); 
+              }
+              updateState(state);
+              var updatedModel: EMRALD_Model = await updateModelAndReferences(state, MainItemTypes.State);
+              updateAppData(updatedModel);
           };
           closeContextMenu();
-        },
+        }, 
         isDivider: true,
+        disabled: false
       },
       {
         label: 'Remove Event',
@@ -326,18 +369,8 @@ const useContextMenu = (getStateNodes?: () => void, setEdges?: (edges: Edge[]) =
         action: () => {
           navigator.clipboard.writeText(JSON.stringify(action, null, 2));
           closeContextMenu();
-        },      
-      },
-      {
-        label: 'Paste Action',
-        action: async () => {
-          const pastedData = await navigator.clipboard.readText();
-          if(isAction(JSON.parse(pastedData))) {
-            console.log('pasted action:', JSON.parse(pastedData));
-          };
-          closeContextMenu();
-        },
-        isDivider: true,
+        },   
+        isDivider: true,   
       },
       {
         label: 'Remove Action',
