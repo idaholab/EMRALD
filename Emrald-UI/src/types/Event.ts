@@ -1,11 +1,14 @@
-import { EventType, VarChangeOptions, ExtEventMsgType, DistributionType, TimeVariableUnit, EventDistributionParameterName } from './ItemTypes'
+import { EventType, VarChangeOptions, ExtEventMsgType, DistributionType, TimeVariableUnit, EventDistributionParameterName, MainItemType } from './ItemTypes'
 import { ChangeLog } from './ChangeLog'
+
+type Parameters = EventDistributionParameter[]
 
 export interface Event {
   /**
    * Optional, internal use only.
    */
   id?: string
+  objType: MainItemType
   /**
    * referenace name in the event in the model.
    */
@@ -79,12 +82,13 @@ export interface Event {
    */
   code?: string
   distType?: DistributionType
-  /**
-   * Optional. For event type of etDistribution this is an array of properties for the distribution calculation.
-   */
-  parameters?: EventDistributionParameter[]
+  parameters?: Parameters
   dfltTimeRate?: TimeVariableUnit
   changeLog?: ChangeLog
+  /**
+   * If this is a template then it indicates the item must exist in the current model before using the template.
+   */
+  required?: boolean
 }
 
 export interface EventDistributionParameter {
@@ -102,5 +106,4 @@ export interface EventDistributionParameter {
    * Optional. The reference name of the variable to use as the value of the parameter if the useVariable flag is true.
    */
   variable?: string
-  [k: string]: unknown
 }

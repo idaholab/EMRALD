@@ -6,44 +6,46 @@ EMRALD_Model#/definitions/Event
 
 
 
-| Abstract            | Extensible | Status         | Identifiable | Custom Properties | Additional Properties | Access Restrictions | Defined In                                                                                                    |
-| :------------------ | :--------- | :------------- | :----------- | :---------------- | :-------------------- | :------------------ | :------------------------------------------------------------------------------------------------------------ |
-| Can be instantiated | No         | Unknown status | No           | Forbidden         | Forbidden             | none                | [EMRALD_JsonSchemaV3_0.json*](../../../../../Emrald-UI/out/EMRALD_JsonSchemaV3_0.json "open original schema") |
+| Abstract            | Extensible | Status         | Identifiable | Custom Properties | Additional Properties | Access Restrictions | Defined In                                                                                          |
+| :------------------ | :--------- | :------------- | :----------- | :---------------- | :-------------------- | :------------------ | :-------------------------------------------------------------------------------------------------- |
+| Can be instantiated | No         | Unknown status | No           | Forbidden         | Forbidden             | none                | [EMRALD\_JsonSchemaV3\_0.json\*](../../../../out/EMRALD_JsonSchemaV3_0.json "open original schema") |
 
 ## Event Type
 
-`object` ([Event](emrald_jsonschemav3\_0-definitions-event.md))
+`object` ([Event](emrald_jsonschemav3_0-definitions-event.md))
 
 # Event Properties
 
-| Property                              | Type      | Required | Nullable       | Defined by                                                                                                                                           |
-| :------------------------------------ | :-------- | :------- | :------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [id](#id)                             | `string`  | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_0-definitions-event-properties-id.md "EMRALD_Model#/definitions/Event/properties/id")                             |
-| [name](#name)                         | `string`  | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_0-definitions-event-properties-name.md "EMRALD_Model#/definitions/Event/properties/name")                         |
-| [desc](#desc)                         | `string`  | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_0-definitions-event-properties-desc.md "EMRALD_Model#/definitions/Event/properties/desc")                         |
-| [mainItem](#mainitem)                 | `boolean` | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_0-definitions-event-properties-mainitem.md "EMRALD_Model#/definitions/Event/properties/mainItem")                 |
-| [evType](#evtype)                     | `string`  | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_0-definitions-event-properties-evtype.md "EMRALD_Model#/definitions/Event/properties/evType")                     |
-| [allItems](#allitems)                 | `boolean` | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_0-definitions-event-properties-allitems.md "EMRALD_Model#/definitions/Event/properties/allItems")                 |
-| [triggerStates](#triggerstates)       | `array`   | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_0-definitions-event-properties-triggerstates.md "EMRALD_Model#/definitions/Event/properties/triggerStates")       |
-| [varNames](#varnames)                 | `array`   | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_0-definitions-event-properties-varnames.md "EMRALD_Model#/definitions/Event/properties/varNames")                 |
-| [ifInState](#ifinstate)               | `boolean` | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_0-definitions-event-properties-ifinstate.md "EMRALD_Model#/definitions/Event/properties/ifInState")               |
-| [onSuccess](#onsuccess)               | `boolean` | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_0-definitions-event-properties-onsuccess.md "EMRALD_Model#/definitions/Event/properties/onSuccess")               |
-| [triggerOnFalse](#triggeronfalse)     | `boolean` | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_0-definitions-event-properties-triggeronfalse.md "EMRALD_Model#/definitions/Event/properties/triggerOnFalse")     |
-| [logicTop](#logictop)                 | `string`  | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_0-definitions-event-properties-logictop.md "EMRALD_Model#/definitions/Event/properties/logicTop")                 |
-| [lambda](#lambda)                     | Merged    | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_0-definitions-event-properties-lambda.md "EMRALD_Model#/definitions/Event/properties/lambda")                     |
-| [lambdaTimeRate](#lambdatimerate)     | `string`  | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_0-definitions-event-properties-lambdatimerate.md "EMRALD_Model#/definitions/Event/properties/lambdaTimeRate")     |
-| [useVariable](#usevariable)           | `boolean` | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_0-definitions-event-properties-usevariable.md "EMRALD_Model#/definitions/Event/properties/useVariable")           |
-| [onVarChange](#onvarchange)           | `string`  | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_0-definitions-event-properties-onvarchange.md "EMRALD_Model#/definitions/Event/properties/onVarChange")           |
-| [time](#time)                         | `string`  | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_0-definitions-event-properties-time.md "EMRALD_Model#/definitions/Event/properties/time")                         |
-| [timeVariableUnit](#timevariableunit) | `string`  | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_0-definitions-event-properties-timevariableunit.md "EMRALD_Model#/definitions/Event/properties/timeVariableUnit") |
-| [fromSimStart](#fromsimstart)         | `boolean` | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_0-definitions-event-properties-fromsimstart.md "EMRALD_Model#/definitions/Event/properties/fromSimStart")         |
-| [extEventType](#exteventtype)         | `string`  | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_0-definitions-event-properties-exteventtype.md "EMRALD_Model#/definitions/Event/properties/extEventType")         |
-| [variable](#variable)                 | `string`  | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_0-definitions-event-properties-variable.md "EMRALD_Model#/definitions/Event/properties/variable")                 |
-| [code](#code)                         | `string`  | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_0-definitions-event-properties-code.md "EMRALD_Model#/definitions/Event/properties/code")                         |
-| [distType](#disttype)                 | `string`  | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_0-definitions-event-properties-disttype.md "EMRALD_Model#/definitions/Event/properties/distType")                 |
-| [parameters](#parameters)             | `array`   | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_0-definitions-event-properties-parameters.md "EMRALD_Model#/definitions/Event/properties/parameters")             |
-| [dfltTimeRate](#dflttimerate)         | `string`  | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_0-definitions-event-properties-dflttimerate.md "EMRALD_Model#/definitions/Event/properties/dfltTimeRate")         |
-| [changeLog](#changelog)               | `array`   | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_0-definitions-changelog.md "EMRALD_Model#/definitions/Event/properties/changeLog")                                |
+| Property                              | Type      | Required | Nullable       | Defined by                                                                                                                                            |
+| :------------------------------------ | :-------- | :------- | :------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [id](#id)                             | `string`  | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_0-definitions-event-properties-id.md "EMRALD_Model#/definitions/Event/properties/id")                             |
+| [objType](#objtype)                   | `string`  | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_0-definitions-event-properties-objtype.md "EMRALD_Model#/definitions/Event/properties/objType")                   |
+| [name](#name)                         | `string`  | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_0-definitions-event-properties-name.md "EMRALD_Model#/definitions/Event/properties/name")                         |
+| [desc](#desc)                         | `string`  | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_0-definitions-event-properties-desc.md "EMRALD_Model#/definitions/Event/properties/desc")                         |
+| [mainItem](#mainitem)                 | `boolean` | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_0-definitions-event-properties-mainitem.md "EMRALD_Model#/definitions/Event/properties/mainItem")                 |
+| [evType](#evtype)                     | `string`  | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_0-definitions-event-properties-evtype.md "EMRALD_Model#/definitions/Event/properties/evType")                     |
+| [allItems](#allitems)                 | `boolean` | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_0-definitions-event-properties-allitems.md "EMRALD_Model#/definitions/Event/properties/allItems")                 |
+| [triggerStates](#triggerstates)       | `array`   | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_0-definitions-event-properties-triggerstates.md "EMRALD_Model#/definitions/Event/properties/triggerStates")       |
+| [varNames](#varnames)                 | `array`   | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_0-definitions-event-properties-varnames.md "EMRALD_Model#/definitions/Event/properties/varNames")                 |
+| [ifInState](#ifinstate)               | `boolean` | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_0-definitions-event-properties-ifinstate.md "EMRALD_Model#/definitions/Event/properties/ifInState")               |
+| [onSuccess](#onsuccess)               | `boolean` | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_0-definitions-event-properties-onsuccess.md "EMRALD_Model#/definitions/Event/properties/onSuccess")               |
+| [triggerOnFalse](#triggeronfalse)     | `boolean` | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_0-definitions-event-properties-triggeronfalse.md "EMRALD_Model#/definitions/Event/properties/triggerOnFalse")     |
+| [logicTop](#logictop)                 | `string`  | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_0-definitions-event-properties-logictop.md "EMRALD_Model#/definitions/Event/properties/logicTop")                 |
+| [lambda](#lambda)                     | Merged    | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_0-definitions-event-properties-lambda.md "EMRALD_Model#/definitions/Event/properties/lambda")                     |
+| [lambdaTimeRate](#lambdatimerate)     | `string`  | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_0-definitions-event-properties-lambdatimerate.md "EMRALD_Model#/definitions/Event/properties/lambdaTimeRate")     |
+| [useVariable](#usevariable)           | `boolean` | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_0-definitions-event-properties-usevariable.md "EMRALD_Model#/definitions/Event/properties/useVariable")           |
+| [onVarChange](#onvarchange)           | `string`  | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_0-definitions-event-properties-onvarchange.md "EMRALD_Model#/definitions/Event/properties/onVarChange")           |
+| [time](#time)                         | `string`  | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_0-definitions-event-properties-time.md "EMRALD_Model#/definitions/Event/properties/time")                         |
+| [timeVariableUnit](#timevariableunit) | `string`  | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_0-definitions-event-properties-timevariableunit.md "EMRALD_Model#/definitions/Event/properties/timeVariableUnit") |
+| [fromSimStart](#fromsimstart)         | `boolean` | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_0-definitions-event-properties-fromsimstart.md "EMRALD_Model#/definitions/Event/properties/fromSimStart")         |
+| [extEventType](#exteventtype)         | `string`  | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_0-definitions-event-properties-exteventtype.md "EMRALD_Model#/definitions/Event/properties/extEventType")         |
+| [variable](#variable)                 | `string`  | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_0-definitions-event-properties-variable.md "EMRALD_Model#/definitions/Event/properties/variable")                 |
+| [code](#code)                         | `string`  | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_0-definitions-event-properties-code.md "EMRALD_Model#/definitions/Event/properties/code")                         |
+| [distType](#disttype)                 | `string`  | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_0-definitions-event-properties-disttype.md "EMRALD_Model#/definitions/Event/properties/distType")                 |
+| [parameters](#parameters)             | `array`   | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_0-definitions-event-properties-parameters.md "EMRALD_Model#/definitions/Event/properties/parameters")             |
+| [dfltTimeRate](#dflttimerate)         | `string`  | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_0-definitions-event-properties-dflttimerate.md "EMRALD_Model#/definitions/Event/properties/dfltTimeRate")         |
+| [changeLog](#changelog)               | `array`   | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_0-definitions-changelog.md "EMRALD_Model#/definitions/Event/properties/changeLog")                                |
+| [required](#required)                 | `boolean` | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_0-definitions-event-properties-required.md "EMRALD_Model#/definitions/Event/properties/required")                 |
 
 ## id
 
@@ -51,17 +53,50 @@ Optional, internal use only.
 
 `id`
 
-*   is optional
+* is optional
 
-*   Type: `string`
+* Type: `string`
 
-*   cannot be null
+* cannot be null
 
-*   defined in: [EMRALD_Model](emrald_jsonschemav3\_0-definitions-event-properties-id.md "EMRALD_Model#/definitions/Event/properties/id")
+* defined in: [EMRALD\_Model](emrald_jsonschemav3_0-definitions-event-properties-id.md "EMRALD_Model#/definitions/Event/properties/id")
 
 ### id Type
 
 `string`
+
+## objType
+
+For event type of etDistribution this is the name of the distribution parameter.
+
+`objType`
+
+* is required
+
+* Type: `string`
+
+* cannot be null
+
+* defined in: [EMRALD\_Model](emrald_jsonschemav3_0-definitions-event-properties-objtype.md "EMRALD_Model#/definitions/Event/properties/objType")
+
+### objType Type
+
+`string`
+
+### objType Constraints
+
+**enum**: the value of this property must be equal to one of the following values:
+
+| Value            | Explanation |
+| :--------------- | :---------- |
+| `"Diagram"`      |             |
+| `"State"`        |             |
+| `"Action"`       |             |
+| `"Event"`        |             |
+| `"ExtSim"`       |             |
+| `"LogicNode"`    |             |
+| `"Variable"`     |             |
+| `"EMRALD_Model"` |             |
 
 ## name
 
@@ -69,13 +104,13 @@ referenace name in the event in the model.
 
 `name`
 
-*   is required
+* is required
 
-*   Type: `string`
+* Type: `string`
 
-*   cannot be null
+* cannot be null
 
-*   defined in: [EMRALD_Model](emrald_jsonschemav3\_0-definitions-event-properties-name.md "EMRALD_Model#/definitions/Event/properties/name")
+* defined in: [EMRALD\_Model](emrald_jsonschemav3_0-definitions-event-properties-name.md "EMRALD_Model#/definitions/Event/properties/name")
 
 ### name Type
 
@@ -87,13 +122,13 @@ User entered description of the event.
 
 `desc`
 
-*   is required
+* is required
 
-*   Type: `string`
+* Type: `string`
 
-*   cannot be null
+* cannot be null
 
-*   defined in: [EMRALD_Model](emrald_jsonschemav3\_0-definitions-event-properties-desc.md "EMRALD_Model#/definitions/Event/properties/desc")
+* defined in: [EMRALD\_Model](emrald_jsonschemav3_0-definitions-event-properties-desc.md "EMRALD_Model#/definitions/Event/properties/desc")
 
 ### desc Type
 
@@ -105,13 +140,13 @@ Is this a global item to show up in the global list, If false it showes up in lo
 
 `mainItem`
 
-*   is required
+* is required
 
-*   Type: `boolean`
+* Type: `boolean`
 
-*   cannot be null
+* cannot be null
 
-*   defined in: [EMRALD_Model](emrald_jsonschemav3\_0-definitions-event-properties-mainitem.md "EMRALD_Model#/definitions/Event/properties/mainItem")
+* defined in: [EMRALD\_Model](emrald_jsonschemav3_0-definitions-event-properties-mainitem.md "EMRALD_Model#/definitions/Event/properties/mainItem")
 
 ### mainItem Type
 
@@ -123,13 +158,13 @@ Type of the event
 
 `evType`
 
-*   is required
+* is required
 
-*   Type: `string`
+* Type: `string`
 
-*   cannot be null
+* cannot be null
 
-*   defined in: [EMRALD_Model](emrald_jsonschemav3\_0-definitions-event-properties-evtype.md "EMRALD_Model#/definitions/Event/properties/evType")
+* defined in: [EMRALD\_Model](emrald_jsonschemav3_0-definitions-event-properties-evtype.md "EMRALD_Model#/definitions/Event/properties/evType")
 
 ### evType Type
 
@@ -155,13 +190,13 @@ Optional. For event type etStateCng. Flag to indicate if all the items in the tr
 
 `allItems`
 
-*   is optional
+* is optional
 
-*   Type: `boolean`
+* Type: `boolean`
 
-*   cannot be null
+* cannot be null
 
-*   defined in: [EMRALD_Model](emrald_jsonschemav3\_0-definitions-event-properties-allitems.md "EMRALD_Model#/definitions/Event/properties/allItems")
+* defined in: [EMRALD\_Model](emrald_jsonschemav3_0-definitions-event-properties-allitems.md "EMRALD_Model#/definitions/Event/properties/allItems")
 
 ### allItems Type
 
@@ -173,13 +208,13 @@ Optional. For event type etStateCng. List of state name references as part of th
 
 `triggerStates`
 
-*   is optional
+* is optional
 
-*   Type: `string[]`
+* Type: `string[]`
 
-*   cannot be null
+* cannot be null
 
-*   defined in: [EMRALD_Model](emrald_jsonschemav3\_0-definitions-event-properties-triggerstates.md "EMRALD_Model#/definitions/Event/properties/triggerStates")
+* defined in: [EMRALD\_Model](emrald_jsonschemav3_0-definitions-event-properties-triggerstates.md "EMRALD_Model#/definitions/Event/properties/triggerStates")
 
 ### triggerStates Type
 
@@ -191,13 +226,13 @@ Optional, Name references for all variables used in scripts if the event type us
 
 `varNames`
 
-*   is optional
+* is optional
 
-*   Type: `string[]`
+* Type: `string[]`
 
-*   cannot be null
+* cannot be null
 
-*   defined in: [EMRALD_Model](emrald_jsonschemav3\_0-definitions-event-properties-varnames.md "EMRALD_Model#/definitions/Event/properties/varNames")
+* defined in: [EMRALD\_Model](emrald_jsonschemav3_0-definitions-event-properties-varnames.md "EMRALD_Model#/definitions/Event/properties/varNames")
 
 ### varNames Type
 
@@ -209,13 +244,13 @@ Optional. For event type etStateCng, flag to indicate that event is triggired wh
 
 `ifInState`
 
-*   is optional
+* is optional
 
-*   Type: `boolean`
+* Type: `boolean`
 
-*   cannot be null
+* cannot be null
 
-*   defined in: [EMRALD_Model](emrald_jsonschemav3\_0-definitions-event-properties-ifinstate.md "EMRALD_Model#/definitions/Event/properties/ifInState")
+* defined in: [EMRALD\_Model](emrald_jsonschemav3_0-definitions-event-properties-ifinstate.md "EMRALD_Model#/definitions/Event/properties/ifInState")
 
 ### ifInState Type
 
@@ -227,13 +262,13 @@ Optional. For event type etStateCng, flag to indicate that event is triggering n
 
 `onSuccess`
 
-*   is optional
+* is optional
 
-*   Type: `boolean`
+* Type: `boolean`
 
-*   cannot be null
+* cannot be null
 
-*   defined in: [EMRALD_Model](emrald_jsonschemav3\_0-definitions-event-properties-onsuccess.md "EMRALD_Model#/definitions/Event/properties/onSuccess")
+* defined in: [EMRALD\_Model](emrald_jsonschemav3_0-definitions-event-properties-onsuccess.md "EMRALD_Model#/definitions/Event/properties/onSuccess")
 
 ### onSuccess Type
 
@@ -245,13 +280,13 @@ Optional. For event type etComponentLogic, flag to indicate that event is trigge
 
 `triggerOnFalse`
 
-*   is optional
+* is optional
 
-*   Type: `boolean`
+* Type: `boolean`
 
-*   cannot be null
+* cannot be null
 
-*   defined in: [EMRALD_Model](emrald_jsonschemav3\_0-definitions-event-properties-triggeronfalse.md "EMRALD_Model#/definitions/Event/properties/triggerOnFalse")
+* defined in: [EMRALD\_Model](emrald_jsonschemav3_0-definitions-event-properties-triggeronfalse.md "EMRALD_Model#/definitions/Event/properties/triggerOnFalse")
 
 ### triggerOnFalse Type
 
@@ -263,13 +298,13 @@ Optional. For event type etComponentLogic, this is the logic tree name to be eva
 
 `logicTop`
 
-*   is optional
+* is optional
 
-*   Type: `string`
+* Type: `string`
 
-*   cannot be null
+* cannot be null
 
-*   defined in: [EMRALD_Model](emrald_jsonschemav3\_0-definitions-event-properties-logictop.md "EMRALD_Model#/definitions/Event/properties/logicTop")
+* defined in: [EMRALD\_Model](emrald_jsonschemav3_0-definitions-event-properties-logictop.md "EMRALD_Model#/definitions/Event/properties/logicTop")
 
 ### logicTop Type
 
@@ -281,23 +316,23 @@ Optional. Parameter for a event with type of etFailRate. It is either a number o
 
 `lambda`
 
-*   is optional
+* is optional
 
-*   Type: merged type ([Details](emrald_jsonschemav3\_0-definitions-event-properties-lambda.md))
+* Type: merged type ([Details](emrald_jsonschemav3_0-definitions-event-properties-lambda.md))
 
-*   cannot be null
+* cannot be null
 
-*   defined in: [EMRALD_Model](emrald_jsonschemav3\_0-definitions-event-properties-lambda.md "EMRALD_Model#/definitions/Event/properties/lambda")
+* defined in: [EMRALD\_Model](emrald_jsonschemav3_0-definitions-event-properties-lambda.md "EMRALD_Model#/definitions/Event/properties/lambda")
 
 ### lambda Type
 
-merged type ([Details](emrald_jsonschemav3\_0-definitions-event-properties-lambda.md))
+merged type ([Details](emrald_jsonschemav3_0-definitions-event-properties-lambda.md))
 
 any of
 
-*   [Untitled string in EMRALD_Model](emrald_jsonschemav3_0-definitions-event-properties-lambda-anyof-0.md "check type definition")
+* [Untitled string in EMRALD_Model](emrald_jsonschemav3_0-definitions-event-properties-lambda-anyof-0.md "check type definition")
 
-*   [Untitled number in EMRALD_Model](emrald_jsonschemav3_0-definitions-event-properties-lambda-anyof-1.md "check type definition")
+* [Untitled number in EMRALD_Model](emrald_jsonschemav3_0-definitions-event-properties-lambda-anyof-1.md "check type definition")
 
 ## lambdaTimeRate
 
@@ -305,13 +340,13 @@ Optional. arameter for a event with type of etFailRate. It is the lambda value t
 
 `lambdaTimeRate`
 
-*   is optional
+* is optional
 
-*   Type: `string`
+* Type: `string`
 
-*   cannot be null
+* cannot be null
 
-*   defined in: [EMRALD_Model](emrald_jsonschemav3\_0-definitions-event-properties-lambdatimerate.md "EMRALD_Model#/definitions/Event/properties/lambdaTimeRate")
+* defined in: [EMRALD\_Model](emrald_jsonschemav3_0-definitions-event-properties-lambdatimerate.md "EMRALD_Model#/definitions/Event/properties/lambdaTimeRate")
 
 ### lambdaTimeRate Type
 
@@ -323,13 +358,13 @@ Optional. Indicates that variables can be used for the fields
 
 `useVariable`
 
-*   is optional
+* is optional
 
-*   Type: `boolean`
+* Type: `boolean`
 
-*   cannot be null
+* cannot be null
 
-*   defined in: [EMRALD_Model](emrald_jsonschemav3\_0-definitions-event-properties-usevariable.md "EMRALD_Model#/definitions/Event/properties/useVariable")
+* defined in: [EMRALD\_Model](emrald_jsonschemav3_0-definitions-event-properties-usevariable.md "EMRALD_Model#/definitions/Event/properties/useVariable")
 
 ### useVariable Type
 
@@ -341,13 +376,13 @@ Optional. When an event uses a variable and that variable changes, this tells th
 
 `onVarChange`
 
-*   is optional
+* is optional
 
-*   Type: `string`
+* Type: `string`
 
-*   cannot be null
+* cannot be null
 
-*   defined in: [EMRALD_Model](emrald_jsonschemav3\_0-definitions-event-properties-onvarchange.md "EMRALD_Model#/definitions/Event/properties/onVarChange")
+* defined in: [EMRALD\_Model](emrald_jsonschemav3_0-definitions-event-properties-onvarchange.md "EMRALD_Model#/definitions/Event/properties/onVarChange")
 
 ### onVarChange Type
 
@@ -369,13 +404,13 @@ Optional, For events of type etTimer. This is a time or variable that indicates 
 
 `time`
 
-*   is optional
+* is optional
 
-*   Type: `string`
+* Type: `string`
 
-*   cannot be null
+* cannot be null
 
-*   defined in: [EMRALD_Model](emrald_jsonschemav3\_0-definitions-event-properties-time.md "EMRALD_Model#/definitions/Event/properties/time")
+* defined in: [EMRALD\_Model](emrald_jsonschemav3_0-definitions-event-properties-time.md "EMRALD_Model#/definitions/Event/properties/time")
 
 ### time Type
 
@@ -387,13 +422,13 @@ Optional, For events of type etTimer. This is a time unit if a variable is used 
 
 `timeVariableUnit`
 
-*   is optional
+* is optional
 
-*   Type: `string`
+* Type: `string`
 
-*   cannot be null
+* cannot be null
 
-*   defined in: [EMRALD_Model](emrald_jsonschemav3\_0-definitions-event-properties-timevariableunit.md "EMRALD_Model#/definitions/Event/properties/timeVariableUnit")
+* defined in: [EMRALD\_Model](emrald_jsonschemav3_0-definitions-event-properties-timevariableunit.md "EMRALD_Model#/definitions/Event/properties/timeVariableUnit")
 
 ### timeVariableUnit Type
 
@@ -418,13 +453,13 @@ Optional, For time based events, is the time from the beginning of the simulatio
 
 `fromSimStart`
 
-*   is optional
+* is optional
 
-*   Type: `boolean`
+* Type: `boolean`
 
-*   cannot be null
+* cannot be null
 
-*   defined in: [EMRALD_Model](emrald_jsonschemav3\_0-definitions-event-properties-fromsimstart.md "EMRALD_Model#/definitions/Event/properties/fromSimStart")
+* defined in: [EMRALD\_Model](emrald_jsonschemav3_0-definitions-event-properties-fromsimstart.md "EMRALD_Model#/definitions/Event/properties/fromSimStart")
 
 ### fromSimStart Type
 
@@ -436,13 +471,13 @@ Optional. For events of type et3dSimEv. This the type of message being sent to t
 
 `extEventType`
 
-*   is optional
+* is optional
 
-*   Type: `string`
+* Type: `string`
 
-*   cannot be null
+* cannot be null
 
-*   defined in: [EMRALD_Model](emrald_jsonschemav3\_0-definitions-event-properties-exteventtype.md "EMRALD_Model#/definitions/Event/properties/extEventType")
+* defined in: [EMRALD\_Model](emrald_jsonschemav3_0-definitions-event-properties-exteventtype.md "EMRALD_Model#/definitions/Event/properties/extEventType")
 
 ### extEventType Type
 
@@ -464,13 +499,13 @@ Optional. For event type et3dSimEv and extEventType etCompEv. It is the referenc
 
 `variable`
 
-*   is optional
+* is optional
 
-*   Type: `string`
+* Type: `string`
 
-*   cannot be null
+* cannot be null
 
-*   defined in: [EMRALD_Model](emrald_jsonschemav3\_0-definitions-event-properties-variable.md "EMRALD_Model#/definitions/Event/properties/variable")
+* defined in: [EMRALD\_Model](emrald_jsonschemav3_0-definitions-event-properties-variable.md "EMRALD_Model#/definitions/Event/properties/variable")
 
 ### variable Type
 
@@ -482,13 +517,13 @@ Optional. For event type et3dSimEv and extEventType etCompEv. It is the referenc
 
 `code`
 
-*   is optional
+* is optional
 
-*   Type: `string`
+* Type: `string`
 
-*   cannot be null
+* cannot be null
 
-*   defined in: [EMRALD_Model](emrald_jsonschemav3\_0-definitions-event-properties-code.md "EMRALD_Model#/definitions/Event/properties/code")
+* defined in: [EMRALD\_Model](emrald_jsonschemav3_0-definitions-event-properties-code.md "EMRALD_Model#/definitions/Event/properties/code")
 
 ### code Type
 
@@ -500,13 +535,13 @@ Optional. For event type of etDistribution this is the type of distribution the 
 
 `distType`
 
-*   is optional
+* is optional
 
-*   Type: `string`
+* Type: `string`
 
-*   cannot be null
+* cannot be null
 
-*   defined in: [EMRALD_Model](emrald_jsonschemav3\_0-definitions-event-properties-disttype.md "EMRALD_Model#/definitions/Event/properties/distType")
+* defined in: [EMRALD\_Model](emrald_jsonschemav3_0-definitions-event-properties-disttype.md "EMRALD_Model#/definitions/Event/properties/distType")
 
 ### distType Type
 
@@ -534,17 +569,17 @@ Optional. For event type of etDistribution this is an array of properties for th
 
 `parameters`
 
-*   is optional
+* is optional
 
-*   Type: `object[]` ([EventDistributionParameter](emrald_jsonschemav3\_0-definitions-eventdistributionparameter.md))
+* Type: `object[]` ([EventDistributionParameter](emrald_jsonschemav3_0-definitions-eventdistributionparameter.md))
 
-*   cannot be null
+* cannot be null
 
-*   defined in: [EMRALD_Model](emrald_jsonschemav3\_0-definitions-event-properties-parameters.md "EMRALD_Model#/definitions/Event/properties/parameters")
+* defined in: [EMRALD\_Model](emrald_jsonschemav3_0-definitions-event-properties-parameters.md "EMRALD_Model#/definitions/Event/properties/parameters")
 
 ### parameters Type
 
-`object[]` ([EventDistributionParameter](emrald_jsonschemav3\_0-definitions-eventdistributionparameter.md))
+`object[]` ([EventDistributionParameter](emrald_jsonschemav3_0-definitions-eventdistributionparameter.md))
 
 ## dfltTimeRate
 
@@ -552,13 +587,13 @@ Optional, For events of type etTimer. This is a time unit if a variable is used 
 
 `dfltTimeRate`
 
-*   is optional
+* is optional
 
-*   Type: `string`
+* Type: `string`
 
-*   cannot be null
+* cannot be null
 
-*   defined in: [EMRALD_Model](emrald_jsonschemav3\_0-definitions-event-properties-dflttimerate.md "EMRALD_Model#/definitions/Event/properties/dfltTimeRate")
+* defined in: [EMRALD\_Model](emrald_jsonschemav3_0-definitions-event-properties-dflttimerate.md "EMRALD_Model#/definitions/Event/properties/dfltTimeRate")
 
 ### dfltTimeRate Type
 
@@ -583,14 +618,32 @@ Type of the diagram.
 
 `changeLog`
 
-*   is optional
+* is optional
 
-*   Type: `object[]` ([items](emrald_jsonschemav3\_0-definitions-changelog-items.md))
+* Type: `object[]` ([ChangeLogItems](emrald_jsonschemav3_0-definitions-changelog-changelogitems.md))
 
-*   cannot be null
+* cannot be null
 
-*   defined in: [EMRALD_Model](emrald_jsonschemav3\_0-definitions-changelog.md "EMRALD_Model#/definitions/Event/properties/changeLog")
+* defined in: [EMRALD\_Model](emrald_jsonschemav3_0-definitions-changelog.md "EMRALD_Model#/definitions/Event/properties/changeLog")
 
 ### changeLog Type
 
-`object[]` ([items](emrald_jsonschemav3\_0-definitions-changelog-items.md))
+`object[]` ([ChangeLogItems](emrald_jsonschemav3_0-definitions-changelog-changelogitems.md))
+
+## required
+
+If this is a template then it indicates the item must exist in the current model before using the template.
+
+`required`
+
+* is optional
+
+* Type: `boolean`
+
+* cannot be null
+
+* defined in: [EMRALD\_Model](emrald_jsonschemav3_0-definitions-event-properties-required.md "EMRALD_Model#/definitions/Event/properties/required")
+
+### required Type
+
+`boolean`

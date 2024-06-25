@@ -1,6 +1,30 @@
 import {StateType, StateEvalValue, MainItemType} from './ItemTypes'
 import {ChangeLog} from './ChangeLog'
 
+/**
+ * actions for the events in sibling "events" array. One to one relationship.
+ */
+type EventActions = EventActionItems[]
+
+interface EventActionItems {
+  /**
+   * array of referenace names for actions of the associated event.
+   */
+  actions: string[]
+  moveFromCurrent: boolean
+}
+
+/**
+ * position for the GUI
+ */
+export interface GeometryInfo {
+  x?: number
+  y?: number
+  width?: number
+  height?: number
+  [k: string]: unknown
+}
+
 export interface State {
   id?: string
   objType: MainItemType
@@ -17,8 +41,14 @@ export interface State {
    * Diagram the state belongs to, A state can only be in one diagram.
    */
   diagramName: string
-  immediateActions: ImmediateActions
-  events: Events
+  /**
+   * Array of name references for the immediate actions to be run when entering the state
+   */
+  immediateActions: string[]
+  /**
+   * Array of name references to events. These event will be monitored for when in this state.
+   */
+  events: string[]
   eventActions: EventActions
   geometry?: GeometryInfo
   changeLog?: ChangeLog

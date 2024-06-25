@@ -6,29 +6,31 @@ EMRALD_Model#/definitions/State
 
 
 
-| Abstract            | Extensible | Status         | Identifiable | Custom Properties | Additional Properties | Access Restrictions | Defined In                                                                                                    |
-| :------------------ | :--------- | :------------- | :----------- | :---------------- | :-------------------- | :------------------ | :------------------------------------------------------------------------------------------------------------ |
-| Can be instantiated | No         | Unknown status | No           | Forbidden         | Forbidden             | none                | [EMRALD_JsonSchemaV3_0.json*](../../../../../Emrald-UI/out/EMRALD_JsonSchemaV3_0.json "open original schema") |
+| Abstract            | Extensible | Status         | Identifiable | Custom Properties | Additional Properties | Access Restrictions | Defined In                                                                                          |
+| :------------------ | :--------- | :------------- | :----------- | :---------------- | :-------------------- | :------------------ | :-------------------------------------------------------------------------------------------------- |
+| Can be instantiated | No         | Unknown status | No           | Forbidden         | Forbidden             | none                | [EMRALD\_JsonSchemaV3\_0.json\*](../../../../out/EMRALD_JsonSchemaV3_0.json "open original schema") |
 
 ## State Type
 
-`object` ([State](emrald_jsonschemav3\_0-definitions-state.md))
+`object` ([State](emrald_jsonschemav3_0-definitions-state.md))
 
 # State Properties
 
-| Property                                            | Type     | Required | Nullable       | Defined by                                                                                                                                                         |
-| :-------------------------------------------------- | :------- | :------- | :------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [id](#id)                                           | `string` | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_0-definitions-state-properties-id.md "EMRALD_Model#/definitions/State/properties/id")                                           |
-| [name](#name)                                       | `string` | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_0-definitions-state-properties-name.md "EMRALD_Model#/definitions/State/properties/name")                                       |
-| [desc](#desc)                                       | `string` | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_0-definitions-state-properties-desc.md "EMRALD_Model#/definitions/State/properties/desc")                                       |
-| [stateType](#statetype)                             | `string` | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_0-definitions-state-properties-statetype.md "EMRALD_Model#/definitions/State/properties/stateType")                             |
-| [diagramName](#diagramname)                         | `string` | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_0-definitions-state-properties-diagramname.md "EMRALD_Model#/definitions/State/properties/diagramName")                         |
-| [immediateActions](#immediateactions)               | `array`  | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_0-definitions-state-properties-immediateactions.md "EMRALD_Model#/definitions/State/properties/immediateActions")               |
-| [events](#events)                                   | `array`  | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_0-definitions-state-properties-events.md "EMRALD_Model#/definitions/State/properties/events")                                   |
-| [eventActions](#eventactions)                       | `array`  | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_0-definitions-state-properties-eventactions.md "EMRALD_Model#/definitions/State/properties/eventActions")                       |
-| [geometry](#geometry)                               | `object` | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_0-definitions-geometryinfo.md "EMRALD_Model#/definitions/State/properties/geometry")                                            |
-| [changeLog](#changelog)                             | `array`  | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_0-definitions-changelog.md "EMRALD_Model#/definitions/State/properties/changeLog")                                              |
-| [defaultSingleStateValue](#defaultsinglestatevalue) | `string` | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_0-definitions-state-properties-defaultsinglestatevalue.md "EMRALD_Model#/definitions/State/properties/defaultSingleStateValue") |
+| Property                                            | Type      | Required | Nullable       | Defined by                                                                                                                                                          |
+| :-------------------------------------------------- | :-------- | :------- | :------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| [id](#id)                                           | `string`  | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_0-definitions-state-properties-id.md "EMRALD_Model#/definitions/State/properties/id")                                           |
+| [objType](#objtype)                                 | `string`  | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_0-definitions-state-properties-objtype.md "EMRALD_Model#/definitions/State/properties/objType")                                 |
+| [name](#name)                                       | `string`  | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_0-definitions-state-properties-name.md "EMRALD_Model#/definitions/State/properties/name")                                       |
+| [desc](#desc)                                       | `string`  | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_0-definitions-state-properties-desc.md "EMRALD_Model#/definitions/State/properties/desc")                                       |
+| [stateType](#statetype)                             | `string`  | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_0-definitions-state-properties-statetype.md "EMRALD_Model#/definitions/State/properties/stateType")                             |
+| [diagramName](#diagramname)                         | `string`  | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_0-definitions-state-properties-diagramname.md "EMRALD_Model#/definitions/State/properties/diagramName")                         |
+| [immediateActions](#immediateactions)               | `array`   | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_0-definitions-state-properties-immediateactions.md "EMRALD_Model#/definitions/State/properties/immediateActions")               |
+| [events](#events)                                   | `array`   | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_0-definitions-state-properties-events.md "EMRALD_Model#/definitions/State/properties/events")                                   |
+| [eventActions](#eventactions)                       | `array`   | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_0-definitions-state-properties-eventactions.md "EMRALD_Model#/definitions/State/properties/eventActions")                       |
+| [geometry](#geometry)                               | `object`  | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_0-definitions-geometryinfo.md "EMRALD_Model#/definitions/State/properties/geometry")                                            |
+| [changeLog](#changelog)                             | `array`   | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_0-definitions-changelog.md "EMRALD_Model#/definitions/State/properties/changeLog")                                              |
+| [defaultSingleStateValue](#defaultsinglestatevalue) | `string`  | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_0-definitions-state-properties-defaultsinglestatevalue.md "EMRALD_Model#/definitions/State/properties/defaultSingleStateValue") |
+| [required](#required)                               | `boolean` | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_0-definitions-state-properties-required.md "EMRALD_Model#/definitions/State/properties/required")                               |
 
 ## id
 
@@ -36,17 +38,50 @@ EMRALD_Model#/definitions/State
 
 `id`
 
-*   is optional
+* is optional
 
-*   Type: `string`
+* Type: `string`
 
-*   cannot be null
+* cannot be null
 
-*   defined in: [EMRALD_Model](emrald_jsonschemav3\_0-definitions-state-properties-id.md "EMRALD_Model#/definitions/State/properties/id")
+* defined in: [EMRALD\_Model](emrald_jsonschemav3_0-definitions-state-properties-id.md "EMRALD_Model#/definitions/State/properties/id")
 
 ### id Type
 
 `string`
+
+## objType
+
+For event type of etDistribution this is the name of the distribution parameter.
+
+`objType`
+
+* is required
+
+* Type: `string`
+
+* cannot be null
+
+* defined in: [EMRALD\_Model](emrald_jsonschemav3_0-definitions-state-properties-objtype.md "EMRALD_Model#/definitions/State/properties/objType")
+
+### objType Type
+
+`string`
+
+### objType Constraints
+
+**enum**: the value of this property must be equal to one of the following values:
+
+| Value            | Explanation |
+| :--------------- | :---------- |
+| `"Diagram"`      |             |
+| `"State"`        |             |
+| `"Action"`       |             |
+| `"Event"`        |             |
+| `"ExtSim"`       |             |
+| `"LogicNode"`    |             |
+| `"Variable"`     |             |
+| `"EMRALD_Model"` |             |
 
 ## name
 
@@ -54,13 +89,13 @@ referenace name in the model for state
 
 `name`
 
-*   is required
+* is required
 
-*   Type: `string`
+* Type: `string`
 
-*   cannot be null
+* cannot be null
 
-*   defined in: [EMRALD_Model](emrald_jsonschemav3\_0-definitions-state-properties-name.md "EMRALD_Model#/definitions/State/properties/name")
+* defined in: [EMRALD\_Model](emrald_jsonschemav3_0-definitions-state-properties-name.md "EMRALD_Model#/definitions/State/properties/name")
 
 ### name Type
 
@@ -72,13 +107,13 @@ User entered description of the state
 
 `desc`
 
-*   is required
+* is required
 
-*   Type: `string`
+* Type: `string`
 
-*   cannot be null
+* cannot be null
 
-*   defined in: [EMRALD_Model](emrald_jsonschemav3\_0-definitions-state-properties-desc.md "EMRALD_Model#/definitions/State/properties/desc")
+* defined in: [EMRALD\_Model](emrald_jsonschemav3_0-definitions-state-properties-desc.md "EMRALD_Model#/definitions/State/properties/desc")
 
 ### desc Type
 
@@ -90,13 +125,13 @@ Type of the state
 
 `stateType`
 
-*   is required
+* is required
 
-*   Type: `string`
+* Type: `string`
 
-*   cannot be null
+* cannot be null
 
-*   defined in: [EMRALD_Model](emrald_jsonschemav3\_0-definitions-state-properties-statetype.md "EMRALD_Model#/definitions/State/properties/stateType")
+* defined in: [EMRALD\_Model](emrald_jsonschemav3_0-definitions-state-properties-statetype.md "EMRALD_Model#/definitions/State/properties/stateType")
 
 ### stateType Type
 
@@ -119,13 +154,13 @@ Diagram the state belongs to, A state can only be in one diagram.
 
 `diagramName`
 
-*   is required
+* is required
 
-*   Type: `string`
+* Type: `string`
 
-*   cannot be null
+* cannot be null
 
-*   defined in: [EMRALD_Model](emrald_jsonschemav3\_0-definitions-state-properties-diagramname.md "EMRALD_Model#/definitions/State/properties/diagramName")
+* defined in: [EMRALD\_Model](emrald_jsonschemav3_0-definitions-state-properties-diagramname.md "EMRALD_Model#/definitions/State/properties/diagramName")
 
 ### diagramName Type
 
@@ -137,13 +172,13 @@ Array of name references for the immediate actions to be run when entering the s
 
 `immediateActions`
 
-*   is required
+* is required
 
-*   Type: `string[]`
+* Type: `string[]`
 
-*   cannot be null
+* cannot be null
 
-*   defined in: [EMRALD_Model](emrald_jsonschemav3\_0-definitions-state-properties-immediateactions.md "EMRALD_Model#/definitions/State/properties/immediateActions")
+* defined in: [EMRALD\_Model](emrald_jsonschemav3_0-definitions-state-properties-immediateactions.md "EMRALD_Model#/definitions/State/properties/immediateActions")
 
 ### immediateActions Type
 
@@ -155,13 +190,13 @@ Array of name references to events. These event will be monitored for when in th
 
 `events`
 
-*   is required
+* is required
 
-*   Type: `string[]`
+* Type: `string[]`
 
-*   cannot be null
+* cannot be null
 
-*   defined in: [EMRALD_Model](emrald_jsonschemav3\_0-definitions-state-properties-events.md "EMRALD_Model#/definitions/State/properties/events")
+* defined in: [EMRALD\_Model](emrald_jsonschemav3_0-definitions-state-properties-events.md "EMRALD_Model#/definitions/State/properties/events")
 
 ### events Type
 
@@ -173,17 +208,17 @@ actions for the events in sibling "events" array. One to one relationship.
 
 `eventActions`
 
-*   is required
+* is required
 
-*   Type: `object[]` ([items](emrald_jsonschemav3\_0-definitions-state-properties-eventactions-items.md))
+* Type: `object[]` ([EventActionItems](emrald_jsonschemav3_0-definitions-state-properties-eventactions-eventactionitems.md))
 
-*   cannot be null
+* cannot be null
 
-*   defined in: [EMRALD_Model](emrald_jsonschemav3\_0-definitions-state-properties-eventactions.md "EMRALD_Model#/definitions/State/properties/eventActions")
+* defined in: [EMRALD\_Model](emrald_jsonschemav3_0-definitions-state-properties-eventactions.md "EMRALD_Model#/definitions/State/properties/eventActions")
 
 ### eventActions Type
 
-`object[]` ([items](emrald_jsonschemav3\_0-definitions-state-properties-eventactions-items.md))
+`object[]` ([EventActionItems](emrald_jsonschemav3_0-definitions-state-properties-eventactions-eventactionitems.md))
 
 ## geometry
 
@@ -191,17 +226,17 @@ position for the GUI
 
 `geometry`
 
-*   is optional
+* is optional
 
-*   Type: `object` ([GeometryInfo](emrald_jsonschemav3\_0-definitions-geometryinfo.md))
+* Type: `object` ([GeometryInfo](emrald_jsonschemav3_0-definitions-geometryinfo.md))
 
-*   cannot be null
+* cannot be null
 
-*   defined in: [EMRALD_Model](emrald_jsonschemav3\_0-definitions-geometryinfo.md "EMRALD_Model#/definitions/State/properties/geometry")
+* defined in: [EMRALD\_Model](emrald_jsonschemav3_0-definitions-geometryinfo.md "EMRALD_Model#/definitions/State/properties/geometry")
 
 ### geometry Type
 
-`object` ([GeometryInfo](emrald_jsonschemav3\_0-definitions-geometryinfo.md))
+`object` ([GeometryInfo](emrald_jsonschemav3_0-definitions-geometryinfo.md))
 
 ## changeLog
 
@@ -209,17 +244,17 @@ Type of the diagram.
 
 `changeLog`
 
-*   is optional
+* is optional
 
-*   Type: `object[]` ([items](emrald_jsonschemav3\_0-definitions-changelog-items.md))
+* Type: `object[]` ([ChangeLogItems](emrald_jsonschemav3_0-definitions-changelog-changelogitems.md))
 
-*   cannot be null
+* cannot be null
 
-*   defined in: [EMRALD_Model](emrald_jsonschemav3\_0-definitions-changelog.md "EMRALD_Model#/definitions/State/properties/changeLog")
+* defined in: [EMRALD\_Model](emrald_jsonschemav3_0-definitions-changelog.md "EMRALD_Model#/definitions/State/properties/changeLog")
 
 ### changeLog Type
 
-`object[]` ([items](emrald_jsonschemav3\_0-definitions-changelog-items.md))
+`object[]` ([ChangeLogItems](emrald_jsonschemav3_0-definitions-changelog-changelogitems.md))
 
 ## defaultSingleStateValue
 
@@ -227,13 +262,13 @@ For single state diagrams. Boolean value for the diagram when evaluated in a log
 
 `defaultSingleStateValue`
 
-*   is optional
+* is optional
 
-*   Type: `string`
+* Type: `string`
 
-*   cannot be null
+* cannot be null
 
-*   defined in: [EMRALD_Model](emrald_jsonschemav3\_0-definitions-state-properties-defaultsinglestatevalue.md "EMRALD_Model#/definitions/State/properties/defaultSingleStateValue")
+* defined in: [EMRALD\_Model](emrald_jsonschemav3_0-definitions-state-properties-defaultsinglestatevalue.md "EMRALD_Model#/definitions/State/properties/defaultSingleStateValue")
 
 ### defaultSingleStateValue Type
 
@@ -248,3 +283,21 @@ For single state diagrams. Boolean value for the diagram when evaluated in a log
 | `"True"`   |             |
 | `"False"`  |             |
 | `"Ignore"` |             |
+
+## required
+
+If this is a template then it indicates the item must exist in the current model before using the template.
+
+`required`
+
+* is optional
+
+* Type: `boolean`
+
+* cannot be null
+
+* defined in: [EMRALD\_Model](emrald_jsonschemav3_0-definitions-state-properties-required.md "EMRALD_Model#/definitions/State/properties/required")
+
+### required Type
+
+`boolean`
