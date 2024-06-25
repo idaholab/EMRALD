@@ -67,6 +67,7 @@ module.exports = {
             'Modeling/actions',
             'Modeling/variables',
             'Modeling/logicTree',
+            'Modeling/templates',
             'Modeling/externalSims',
             'Modeling/icons', 
             'Modeling/solver',

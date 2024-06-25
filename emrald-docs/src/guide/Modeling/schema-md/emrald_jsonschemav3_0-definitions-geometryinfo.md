@@ -6,22 +6,22 @@ EMRALD_Model#/definitions/GeometryInfo
 
 position for the GUI
 
-| Abstract            | Extensible | Status         | Identifiable | Custom Properties | Additional Properties | Access Restrictions | Defined In                                                                                                    |
-| :------------------ | :--------- | :------------- | :----------- | :---------------- | :-------------------- | :------------------ | :------------------------------------------------------------------------------------------------------------ |
-| Can be instantiated | No         | Unknown status | No           | Forbidden         | Allowed               | none                | [EMRALD_JsonSchemaV3_0.json*](../../../../../Emrald-UI/out/EMRALD_JsonSchemaV3_0.json "open original schema") |
+| Abstract            | Extensible | Status         | Identifiable | Custom Properties | Additional Properties | Access Restrictions | Defined In                                                                                          |
+| :------------------ | :--------- | :------------- | :----------- | :---------------- | :-------------------- | :------------------ | :-------------------------------------------------------------------------------------------------- |
+| Can be instantiated | No         | Unknown status | No           | Forbidden         | Allowed               | none                | [EMRALD\_JsonSchemaV3\_0.json\*](../../../../out/EMRALD_JsonSchemaV3_0.json "open original schema") |
 
 ## GeometryInfo Type
 
-`object` ([GeometryInfo](emrald_jsonschemav3\_0-definitions-geometryinfo.md))
+`object` ([GeometryInfo](emrald_jsonschemav3_0-definitions-geometryinfo.md))
 
 # GeometryInfo Properties
 
-| Property          | Type      | Required | Nullable       | Defined by                                                                                                                                     |
-| :---------------- | :-------- | :------- | :------------- | :--------------------------------------------------------------------------------------------------------------------------------------------- |
-| [x](#x)           | `integer` | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_0-definitions-geometryinfo-properties-x.md "EMRALD_Model#/definitions/GeometryInfo/properties/x")           |
-| [y](#y)           | `integer` | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_0-definitions-geometryinfo-properties-y.md "EMRALD_Model#/definitions/GeometryInfo/properties/y")           |
-| [width](#width)   | `integer` | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_0-definitions-geometryinfo-properties-width.md "EMRALD_Model#/definitions/GeometryInfo/properties/width")   |
-| [height](#height) | `integer` | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_0-definitions-geometryinfo-properties-height.md "EMRALD_Model#/definitions/GeometryInfo/properties/height") |
+| Property          | Type      | Required | Nullable       | Defined by                                                                                                                                      |
+| :---------------- | :-------- | :------- | :------------- | :---------------------------------------------------------------------------------------------------------------------------------------------- |
+| [x](#x)           | `integer` | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_0-definitions-geometryinfo-properties-x.md "EMRALD_Model#/definitions/GeometryInfo/properties/x")           |
+| [y](#y)           | `integer` | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_0-definitions-geometryinfo-properties-y.md "EMRALD_Model#/definitions/GeometryInfo/properties/y")           |
+| [width](#width)   | `integer` | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_0-definitions-geometryinfo-properties-width.md "EMRALD_Model#/definitions/GeometryInfo/properties/width")   |
+| [height](#height) | `integer` | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_0-definitions-geometryinfo-properties-height.md "EMRALD_Model#/definitions/GeometryInfo/properties/height") |
 
 ## x
 
@@ -29,13 +29,13 @@ position for the GUI
 
 `x`
 
-*   is optional
+* is optional
 
-*   Type: `integer`
+* Type: `integer`
 
-*   cannot be null
+* cannot be null
 
-*   defined in: [EMRALD_Model](emrald_jsonschemav3\_0-definitions-geometryinfo-properties-x.md "EMRALD_Model#/definitions/GeometryInfo/properties/x")
+* defined in: [EMRALD\_Model](emrald_jsonschemav3_0-definitions-geometryinfo-properties-x.md "EMRALD_Model#/definitions/GeometryInfo/properties/x")
 
 ### x Type
 
@@ -47,13 +47,13 @@ position for the GUI
 
 `y`
 
-*   is optional
+* is optional
 
-*   Type: `integer`
+* Type: `integer`
 
-*   cannot be null
+* cannot be null
 
-*   defined in: [EMRALD_Model](emrald_jsonschemav3\_0-definitions-geometryinfo-properties-y.md "EMRALD_Model#/definitions/GeometryInfo/properties/y")
+* defined in: [EMRALD\_Model](emrald_jsonschemav3_0-definitions-geometryinfo-properties-y.md "EMRALD_Model#/definitions/GeometryInfo/properties/y")
 
 ### y Type
 
@@ -65,13 +65,13 @@ position for the GUI
 
 `width`
 
-*   is optional
+* is optional
 
-*   Type: `integer`
+* Type: `integer`
 
-*   cannot be null
+* cannot be null
 
-*   defined in: [EMRALD_Model](emrald_jsonschemav3\_0-definitions-geometryinfo-properties-width.md "EMRALD_Model#/definitions/GeometryInfo/properties/width")
+* defined in: [EMRALD\_Model](emrald_jsonschemav3_0-definitions-geometryinfo-properties-width.md "EMRALD_Model#/definitions/GeometryInfo/properties/width")
 
 ### width Type
 
@@ -83,13 +83,13 @@ position for the GUI
 
 `height`
 
-*   is optional
+* is optional
 
-*   Type: `integer`
+* Type: `integer`
 
-*   cannot be null
+* cannot be null
 
-*   defined in: [EMRALD_Model](emrald_jsonschemav3\_0-definitions-geometryinfo-properties-height.md "EMRALD_Model#/definitions/GeometryInfo/properties/height")
+* defined in: [EMRALD\_Model](emrald_jsonschemav3_0-definitions-geometryinfo-properties-height.md "EMRALD_Model#/definitions/GeometryInfo/properties/height")
 
 ### height Type
 

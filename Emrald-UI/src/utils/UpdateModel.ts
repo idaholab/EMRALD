@@ -26,7 +26,6 @@ export const updateSpecifiedModel = ( //Update the provided EMRALD model with al
         else
             updatedEMRALDModel = model;
 
-        // var jsonPathRefArray : Array<[string, MainItemTypes]> = GetJSONPathUsingRefs(itemType, item.name);
         var itemArray: any[];
         var itemIdx = -1;
 
@@ -52,7 +51,7 @@ export const updateSpecifiedModel = ( //Update the provided EMRALD model with al
             case MainItemTypes.LogicNode:
                 itemArray = updatedEMRALDModel.LogicNodeList;
                 break;
-            case MainItemTypes.Template:
+            case MainItemTypes.EMRALD_Model:
                 updatedEMRALDModel.templates = updatedEMRALDModel.templates !== undefined ? updatedEMRALDModel.templates : [];
                 itemArray = updatedEMRALDModel.templates;
                 break;

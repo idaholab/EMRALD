@@ -13,6 +13,9 @@ import { Diagram } from '../../../types/Diagram';
 import { State } from '../../../types/State';
 import { Action } from '../../../types/Action';
 import { Event } from '../../../types/Event';
+import { LogicNode } from '../../../types/LogicNode';
+import { useWindowContext } from '../../../contexts/WindowContext';
+import useLogicNodeTreeDiagram from '../../diagrams/LogicTreeDiagram/useLogicTreeDiagram';
 
 export function useSidebarLogic() {
   const { diagrams } = useDiagramContext();
@@ -37,6 +40,8 @@ export function useSidebarLogic() {
   const { deleteAction } = useActionContext();
   const { deleteEvent } = useEventContext();
   const { deleteVariable } = useVariableContext();
+  const { closeAllWindows } = useWindowContext();
+  const { canDeleteNode, recurseChildren } = useLogicNodeTreeDiagram();
 
   const onDiagramChange = (newDiagram: Diagram) => {
     // Update currDiagram state
@@ -163,7 +168,13 @@ export function useSidebarLogic() {
       closeDeleteConfirmation();
     }
     if (itemToDeleteType === MainItemTypes.LogicNode) {
-      deleteLogicNode(itemToDelete.id);
+      let nodeToDelete = itemToDelete as unknown as LogicNode;
+      if (!canDeleteNode(itemToDelete.name)) {
+        nodeToDelete.isRoot = false;
+      } else {
+        recurseChildren(nodeToDelete);
+        deleteLogicNode(nodeToDelete.id);
+      }
     }
     if (itemToDeleteType === MainItemTypes.ExtSim) {
       deleteExtSim(itemToDelete.id);
@@ -181,7 +192,9 @@ export function useSidebarLogic() {
       deleteVariable(itemToDelete.id);
     }
     setDeleteConfirmation(false);
+    closeAllWindows();
   };
+
   const handleDelete = (itemToDelete: any, itemType: MainItemTypes) => {
     setDeleteConfirmation(true);
     setItemToDelete(itemToDelete);
