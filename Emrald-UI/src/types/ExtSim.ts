@@ -11,4 +11,5 @@ export interface ExtSim {
      * name of resource type to connect to in MsgServer, not unique if more than one simulation of the same tool
      */
     resourceName: string
+    required?: boolean
   }

@@ -27,6 +27,7 @@ export const emptyDiagram: Diagram = {
   diagramType: 'dtSingle',
   diagramLabel: 'Component',
   states: [],
+  required: false
 };
 
 const DiagramContext = createContext<DiagramContextType | undefined>(undefined);

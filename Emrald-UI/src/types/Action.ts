@@ -104,6 +104,8 @@ export interface Action {
    * Used for custom form, variables used in the form.
    */
   updateVariables?: unknown[]
+  
+  required?: boolean
 }
 
 export interface NewState {

@@ -13,6 +13,7 @@ import { ActionType } from '../../../types/ItemTypes';
 import { v4 as uuidv4 } from 'uuid';
 import { SelectChangeEvent } from '@mui/material/Select';
 import { State } from '../../../types/State';
+import { Event } from '../../../types/Event';
 
 export interface NewStateItem {
   id: string;
@@ -71,7 +72,7 @@ interface ActionFormContextType {
   setHasError: React.Dispatch<React.SetStateAction<boolean>>;
   handleChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   handleNameChange: (newName: string) => void;
-  handleSave: (state?: State) => void;
+  handleSave: (event?: Event, state?: State) => void;
   handleSelectChange: (event: SelectChangeEvent, item: NewStateItem) => void;
   handleProbChange: (
     event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -143,7 +144,7 @@ const ActionFormContextProvider: React.FC<PropsWithChildren> = ({ children }) =>
     setName(newName);
   };
 
-  const handleSave = (state?: State) => {
+  const handleSave = (event?: Event, state?: State) => {
     const newStates: NewState[] = newStateItems.map((newStateItem): NewState => {
       return {
         toState: newStateItem.toState,
@@ -175,7 +176,7 @@ const ActionFormContextProvider: React.FC<PropsWithChildren> = ({ children }) =>
       mainItem: true
     };
 
-    actionData ? updateAction(action.value) : createAction(action.value, state);
+    actionData ? updateAction(action.value) : createAction(action.value, event, state);
     handleClose();
   };
 

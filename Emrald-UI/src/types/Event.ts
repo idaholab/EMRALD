@@ -85,6 +85,8 @@ export interface Event {
   parameters?: EventDistributionParameter[]
   dfltTimeRate?: TimeVariableUnit
   changeLog?: ChangeLog
+    
+  required?: boolean
 }
 
 export interface EventDistributionParameter {
