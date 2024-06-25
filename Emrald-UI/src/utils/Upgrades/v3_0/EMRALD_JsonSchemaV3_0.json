@@ -904,7 +904,7 @@
                     "type": "array",
                     "description": "Sub group tree path",
                     "items": {
-                        
+                        "$ref": "#/definitions/Group"
                     }
                 }
             },
