@@ -10,7 +10,8 @@
   "repository": "/template",
   "scripts": {
     "dev": "vuepress dev src",
-    "build": "cross-env NODE_OPTIONS=--openssl-legacy-provider vuepress build src --dest dist"
+    "build": "cross-env NODE_OPTIONS=--openssl-legacy-provider vuepress build src --dest dist",
+    "prepare": "npx jsonschema2md -o src/guide/Modeling/schema-md -d ../Emrald-UI/src/utils/Upgrades/v3_0/ -e json"
   },
   "license": "MIT",
   "devDependencies": {

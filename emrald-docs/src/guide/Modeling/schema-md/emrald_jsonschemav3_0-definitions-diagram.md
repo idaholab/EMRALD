@@ -6,26 +6,28 @@ EMRALD_Model#/definitions/Diagram
 
 
 
-| Abstract            | Extensible | Status         | Identifiable | Custom Properties | Additional Properties | Access Restrictions | Defined In                                                                                                    |
-| :------------------ | :--------- | :------------- | :----------- | :---------------- | :-------------------- | :------------------ | :------------------------------------------------------------------------------------------------------------ |
-| Can be instantiated | No         | Unknown status | No           | Forbidden         | Forbidden             | none                | [EMRALD_JsonSchemaV3_0.json*](../../../../../Emrald-UI/out/EMRALD_JsonSchemaV3_0.json "open original schema") |
+| Abstract            | Extensible | Status         | Identifiable | Custom Properties | Additional Properties | Access Restrictions | Defined In                                                                                          |
+| :------------------ | :--------- | :------------- | :----------- | :---------------- | :-------------------- | :------------------ | :-------------------------------------------------------------------------------------------------- |
+| Can be instantiated | No         | Unknown status | No           | Forbidden         | Forbidden             | none                | [EMRALD\_JsonSchemaV3\_0.json\*](../../../../out/EMRALD_JsonSchemaV3_0.json "open original schema") |
 
 ## Diagram Type
 
-`object` ([Diagram](emrald_jsonschemav3\_0-definitions-diagram.md))
+`object` ([Diagram](emrald_jsonschemav3_0-definitions-diagram.md))
 
 # Diagram Properties
 
-| Property                            | Type     | Required | Nullable       | Defined by                                                                                                                                             |
-| :---------------------------------- | :------- | :------- | :------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [id](#id)                           | `string` | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_0-definitions-diagram-properties-id.md "EMRALD_Model#/definitions/Diagram/properties/id")                           |
-| [name](#name)                       | `string` | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_0-definitions-diagram-properties-name.md "EMRALD_Model#/definitions/Diagram/properties/name")                       |
-| [desc](#desc)                       | `string` | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_0-definitions-diagram-properties-desc.md "EMRALD_Model#/definitions/Diagram/properties/desc")                       |
-| [diagramType](#diagramtype)         | `string` | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_0-definitions-diagram-properties-diagramtype.md "EMRALD_Model#/definitions/Diagram/properties/diagramType")         |
-| [diagramTemplate](#diagramtemplate) | `string` | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_0-definitions-diagram-properties-diagramtemplate.md "EMRALD_Model#/definitions/Diagram/properties/diagramTemplate") |
-| [diagramLabel](#diagramlabel)       | `string` | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_0-definitions-diagram-properties-diagramlabel.md "EMRALD_Model#/definitions/Diagram/properties/diagramLabel")       |
-| [states](#states)                   | `array`  | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_0-definitions-diagram-properties-states.md "EMRALD_Model#/definitions/Diagram/properties/states")                   |
-| [changeLog](#changelog)             | `array`  | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_0-definitions-changelog.md "EMRALD_Model#/definitions/Diagram/properties/changeLog")                                |
+| Property                            | Type      | Required | Nullable       | Defined by                                                                                                                                              |
+| :---------------------------------- | :-------- | :------- | :------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| [id](#id)                           | `string`  | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_0-definitions-diagram-properties-id.md "EMRALD_Model#/definitions/Diagram/properties/id")                           |
+| [objType](#objtype)                 | `string`  | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_0-definitions-diagram-properties-objtype.md "EMRALD_Model#/definitions/Diagram/properties/objType")                 |
+| [name](#name)                       | `string`  | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_0-definitions-diagram-properties-name.md "EMRALD_Model#/definitions/Diagram/properties/name")                       |
+| [desc](#desc)                       | `string`  | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_0-definitions-diagram-properties-desc.md "EMRALD_Model#/definitions/Diagram/properties/desc")                       |
+| [diagramType](#diagramtype)         | `string`  | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_0-definitions-diagram-properties-diagramtype.md "EMRALD_Model#/definitions/Diagram/properties/diagramType")         |
+| [diagramTemplate](#diagramtemplate) | `string`  | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_0-definitions-diagram-properties-diagramtemplate.md "EMRALD_Model#/definitions/Diagram/properties/diagramTemplate") |
+| [diagramLabel](#diagramlabel)       | `string`  | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_0-definitions-diagram-properties-diagramlabel.md "EMRALD_Model#/definitions/Diagram/properties/diagramLabel")       |
+| [states](#states)                   | `array`   | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_0-definitions-diagram-properties-states.md "EMRALD_Model#/definitions/Diagram/properties/states")                   |
+| [changeLog](#changelog)             | `array`   | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_0-definitions-changelog.md "EMRALD_Model#/definitions/Diagram/properties/changeLog")                                |
+| [required](#required)               | `boolean` | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_0-definitions-diagram-properties-required.md "EMRALD_Model#/definitions/Diagram/properties/required")               |
 
 ## id
 
@@ -33,17 +35,50 @@ Optional. Only used for internal processing needs.
 
 `id`
 
-*   is optional
+* is optional
 
-*   Type: `string`
+* Type: `string`
 
-*   cannot be null
+* cannot be null
 
-*   defined in: [EMRALD_Model](emrald_jsonschemav3\_0-definitions-diagram-properties-id.md "EMRALD_Model#/definitions/Diagram/properties/id")
+* defined in: [EMRALD\_Model](emrald_jsonschemav3_0-definitions-diagram-properties-id.md "EMRALD_Model#/definitions/Diagram/properties/id")
 
 ### id Type
 
 `string`
+
+## objType
+
+For event type of etDistribution this is the name of the distribution parameter.
+
+`objType`
+
+* is required
+
+* Type: `string`
+
+* cannot be null
+
+* defined in: [EMRALD\_Model](emrald_jsonschemav3_0-definitions-diagram-properties-objtype.md "EMRALD_Model#/definitions/Diagram/properties/objType")
+
+### objType Type
+
+`string`
+
+### objType Constraints
+
+**enum**: the value of this property must be equal to one of the following values:
+
+| Value            | Explanation |
+| :--------------- | :---------- |
+| `"Diagram"`      |             |
+| `"State"`        |             |
+| `"Action"`       |             |
+| `"Event"`        |             |
+| `"ExtSim"`       |             |
+| `"LogicNode"`    |             |
+| `"Variable"`     |             |
+| `"EMRALD_Model"` |             |
 
 ## name
 
@@ -51,13 +86,13 @@ Name of the diagram
 
 `name`
 
-*   is required
+* is required
 
-*   Type: `string`
+* Type: `string`
 
-*   cannot be null
+* cannot be null
 
-*   defined in: [EMRALD_Model](emrald_jsonschemav3\_0-definitions-diagram-properties-name.md "EMRALD_Model#/definitions/Diagram/properties/name")
+* defined in: [EMRALD\_Model](emrald_jsonschemav3_0-definitions-diagram-properties-name.md "EMRALD_Model#/definitions/Diagram/properties/name")
 
 ### name Type
 
@@ -69,13 +104,13 @@ description of the diagram
 
 `desc`
 
-*   is required
+* is required
 
-*   Type: `string`
+* Type: `string`
 
-*   cannot be null
+* cannot be null
 
-*   defined in: [EMRALD_Model](emrald_jsonschemav3\_0-definitions-diagram-properties-desc.md "EMRALD_Model#/definitions/Diagram/properties/desc")
+* defined in: [EMRALD\_Model](emrald_jsonschemav3_0-definitions-diagram-properties-desc.md "EMRALD_Model#/definitions/Diagram/properties/desc")
 
 ### desc Type
 
@@ -87,13 +122,13 @@ Type of the diagram. dtSingle - means you can only be in one state of the diagra
 
 `diagramType`
 
-*   is required
+* is required
 
-*   Type: `string`
+* Type: `string`
 
-*   cannot be null
+* cannot be null
 
-*   defined in: [EMRALD_Model](emrald_jsonschemav3\_0-definitions-diagram-properties-diagramtype.md "EMRALD_Model#/definitions/Diagram/properties/diagramType")
+* defined in: [EMRALD\_Model](emrald_jsonschemav3_0-definitions-diagram-properties-diagramtype.md "EMRALD_Model#/definitions/Diagram/properties/diagramType")
 
 ### diagramType Type
 
@@ -114,13 +149,13 @@ name of template used to make this diagram
 
 `diagramTemplate`
 
-*   is optional
+* is optional
 
-*   Type: `string`
+* Type: `string`
 
-*   cannot be null
+* cannot be null
 
-*   defined in: [EMRALD_Model](emrald_jsonschemav3\_0-definitions-diagram-properties-diagramtemplate.md "EMRALD_Model#/definitions/Diagram/properties/diagramTemplate")
+* defined in: [EMRALD\_Model](emrald_jsonschemav3_0-definitions-diagram-properties-diagramtemplate.md "EMRALD_Model#/definitions/Diagram/properties/diagramTemplate")
 
 ### diagramTemplate Type
 
@@ -132,13 +167,13 @@ Name of grouping in the UI for this diagram
 
 `diagramLabel`
 
-*   is required
+* is required
 
-*   Type: `string`
+* Type: `string`
 
-*   cannot be null
+* cannot be null
 
-*   defined in: [EMRALD_Model](emrald_jsonschemav3\_0-definitions-diagram-properties-diagramlabel.md "EMRALD_Model#/definitions/Diagram/properties/diagramLabel")
+* defined in: [EMRALD\_Model](emrald_jsonschemav3_0-definitions-diagram-properties-diagramlabel.md "EMRALD_Model#/definitions/Diagram/properties/diagramLabel")
 
 ### diagramLabel Type
 
@@ -150,13 +185,13 @@ Names of the states used in this diagram
 
 `states`
 
-*   is required
+* is required
 
-*   Type: `string[]`
+* Type: `string[]`
 
-*   cannot be null
+* cannot be null
 
-*   defined in: [EMRALD_Model](emrald_jsonschemav3\_0-definitions-diagram-properties-states.md "EMRALD_Model#/definitions/Diagram/properties/states")
+* defined in: [EMRALD\_Model](emrald_jsonschemav3_0-definitions-diagram-properties-states.md "EMRALD_Model#/definitions/Diagram/properties/states")
 
 ### states Type
 
@@ -168,14 +203,32 @@ Type of the diagram.
 
 `changeLog`
 
-*   is optional
+* is optional
 
-*   Type: `object[]` ([items](emrald_jsonschemav3\_0-definitions-changelog-items.md))
+* Type: `object[]` ([ChangeLogItems](emrald_jsonschemav3_0-definitions-changelog-changelogitems.md))
 
-*   cannot be null
+* cannot be null
 
-*   defined in: [EMRALD_Model](emrald_jsonschemav3\_0-definitions-changelog.md "EMRALD_Model#/definitions/Diagram/properties/changeLog")
+* defined in: [EMRALD\_Model](emrald_jsonschemav3_0-definitions-changelog.md "EMRALD_Model#/definitions/Diagram/properties/changeLog")
 
 ### changeLog Type
 
-`object[]` ([items](emrald_jsonschemav3\_0-definitions-changelog-items.md))
+`object[]` ([ChangeLogItems](emrald_jsonschemav3_0-definitions-changelog-changelogitems.md))
+
+## required
+
+If this is a template then it indicates the item must exist in the current model before using the template.
+
+`required`
+
+* is optional
+
+* Type: `boolean`
+
+* cannot be null
+
+* defined in: [EMRALD\_Model](emrald_jsonschemav3_0-definitions-diagram-properties-required.md "EMRALD_Model#/definitions/Diagram/properties/required")
+
+### required Type
+
+`boolean`
