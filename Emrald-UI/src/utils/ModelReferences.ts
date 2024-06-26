@@ -202,11 +202,12 @@ const GetJSONPathInRefs = (itemType: MainItemTypes, lookupName : string): Diagra
 
 
 /**
- * Retrieves a subset model of items that reference a specific item.
+ * Retrieves a subset model of items that reference the item specific item name and type. Result does NOT include the item itself. Can be recursive.
  *
  * @param {string} itemName - The name of the item to get the references for.
  * @param {MainItemTypes} itemType - The type of the item to look for references.
- * @param {boolean} recursive - How many levels up to search. If <1 then the search is recursive.
+ * @param {boolean} levelsUp - How many levels up to search. If <1 then the search is recursive.
+ * @includeTypes {MainItemTypeSet} - is a set of items to include in the search
  * @return {EMRALD_Model} - A subset model of just the referenced items.
  */
 export const GetModelItemsReferencing = ( 
@@ -249,11 +250,7 @@ const GetModelItemsReferencingRecursive = (
     let curItemName : string = currentSearchItems[0][0];
     let curItemType : MainItemTypes = currentSearchItems[0][1];
     currentSearchItems.shift(); //remove the item from the array
-    //only do items that have not been done yet.
-    // if(!processed[curItemName + '_' + curItemType]){ 
-    //   processed[curItemName + '_' + curItemType] = true; //mark as processed
-    
-    
+        
       let jsonPathRefArray : Array<[string, MainItemTypes]> = GetJSONPathUsingRefs(curItemType, curItemName);
 
       jsonPathRefArray.forEach((jsonPathSet) => {
@@ -384,6 +381,15 @@ const AddItemToModel = (
 }
 
 
+/**
+ * Retrieves a subset model of items that the given item uses/references. It can be recursive or limited to specific types. The subset model includes the provided item.
+ *
+ * @param {string} itemName - The name of the item to get the references for.
+ * @param {MainItemTypes} itemType - The type of the item to look for references.
+ * @param {boolean} levels - How many levels up to search. If <1 then the search is recursive.
+ * @includeTypes {MainItemTypeSet} - is a set of items to include in the search
+ * @return {EMRALD_Model} - A subset model of just the referenced items. 
+ */
 export const GetModelItemsReferencedBy = ( 
   itemName : string, //Name of the item looking for references
   itemType : MainItemTypes, //This is the type of the item to look for references
