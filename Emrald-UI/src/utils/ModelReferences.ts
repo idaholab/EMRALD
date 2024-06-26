@@ -386,7 +386,7 @@ const AddItemToModel = (
  *
  * @param {string} itemName - The name of the item to get the references for.
  * @param {MainItemTypes} itemType - The type of the item to look for references.
- * @param {boolean} levels - How many levels up to search. If <1 then the search is recursive.
+ * @param {number} levels - How many levels up to search. If <1 then the search is recursive.
  * @includeTypes {MainItemTypeSet} - is a set of items to include in the search
  * @return {EMRALD_Model} - A subset model of just the referenced items. 
  */
