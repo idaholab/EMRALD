@@ -21,6 +21,7 @@ interface WindowContextType {
   updateTitle: (currentTitle: string, newTitle: string) => void;
   bringToFront: (window: Window) => void;
   handleClose: (id?: string) => void;
+  getWindowTitleById: (id: string | null) => string | undefined;
   toggleMaximize: (windowToToggle: Window) => void;
   toggleMinimize: (windowToToggle: Window) => void;
   closeAllWindows: () => void;
@@ -108,6 +109,9 @@ export const WindowProvider: React.FC<WindowProviderProps> = ({ children }) => {
     setNextWindowId(nextWindowId + 1);
   };
 
+  const getWindowTitleById = (id: string | null): string | undefined => {
+    return windows.find((window) => window.id === id)?.title;
+  };
   
   const updateTitle = (currentTitle: string, newTitle: string): void => {
     const windowToUpdate = windows.find((window) => window.title === currentTitle);
@@ -153,6 +157,7 @@ export const WindowProvider: React.FC<WindowProviderProps> = ({ children }) => {
     updateTitle,
     bringToFront,
     handleClose,
+    getWindowTitleById,
     toggleMaximize,
     toggleMinimize,
     closeAllWindows

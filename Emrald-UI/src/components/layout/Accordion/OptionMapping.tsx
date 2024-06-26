@@ -64,7 +64,7 @@ export const useOptionsMapping = () => {
         },
       },
       { label: 'Make Template', action: (diagram: Diagram) => {
-          const copiedModel = GetModelItemsReferencedBy(diagram.name, MainItemTypes.Diagram, 2)
+          const copiedModel = structuredClone(GetModelItemsReferencedBy(diagram.name, MainItemTypes.Diagram, 3));
           addWindow(
             `Create Template`,
             <TemplateForm templatedData={copiedModel} />,

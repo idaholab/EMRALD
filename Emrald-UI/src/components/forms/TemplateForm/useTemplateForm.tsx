@@ -21,7 +21,7 @@ interface TemplatedItem {
   action: string;
   newName: string;
   exclude: boolean;
-  requiredInImportingModel: boolean;
+  required: boolean;
   emraldItem: Action | Diagram | LogicNode | ExtSim | Event | State | Variable;
 }
 
@@ -42,6 +42,7 @@ export const useTemplateForm = (templatedData: EMRALD_Model) => {
   const [groupList, setGroupList] = useState<Group[]>(groups ? groups : []);
   const { handleClose } = useWindowContext();
   const [expanded, setExpanded] = useState(['Group 1']);
+  const [diagramStates, setDiagramStates] = useState<string[]>(templatedData.DiagramList[0].states);
 
   useEffect(() => {
     setTemplatedItems(convertModelToArray(templatedData));
@@ -57,11 +58,12 @@ export const useTemplateForm = (templatedData: EMRALD_Model) => {
         locked: true,
         oldName: diagram.name,
         newName: diagram.name,
-        action: 'rename',
+        action: 'keep',
         exclude: false,
-        requiredInImportingModel: true,
+        required: false,
         emraldItem: diagram,
       });
+      setDiagramStates(diagram.states);
     }
     for (const logicNode of model.LogicNodeList) {
       items.push({
@@ -70,9 +72,9 @@ export const useTemplateForm = (templatedData: EMRALD_Model) => {
         locked: false,
         oldName: logicNode.name,
         newName: logicNode.name,
-        action: 'rename',
+        action: 'keep',
         exclude: false,
-        requiredInImportingModel: false,
+        required: false,
         emraldItem: logicNode,
       });
     }
@@ -83,9 +85,9 @@ export const useTemplateForm = (templatedData: EMRALD_Model) => {
         locked: false,
         oldName: extSim.name,
         newName: extSim.name,
-        action: 'rename',
+        action: 'keep',
         exclude: false,
-        requiredInImportingModel: false,
+        required: false,
         emraldItem: extSim,
       });
     }
@@ -96,9 +98,9 @@ export const useTemplateForm = (templatedData: EMRALD_Model) => {
         locked: false,
         oldName: action.name,
         newName: action.name,
-        action: 'rename',
+        action: 'keep',
         exclude: false,
-        requiredInImportingModel: false,
+        required: false,
         emraldItem: action,
       });
     }
@@ -109,9 +111,9 @@ export const useTemplateForm = (templatedData: EMRALD_Model) => {
         locked: false,
         oldName: event.name,
         newName: event.name,
-        action: 'rename',
+        action: 'keep',
         exclude: false,
-        requiredInImportingModel: false,
+        required: false,
         emraldItem: event,
       });
     }
@@ -122,9 +124,9 @@ export const useTemplateForm = (templatedData: EMRALD_Model) => {
         locked: true,
         oldName: state.name,
         newName: state.name,
-        action: 'rename',
-        exclude: false,
-        requiredInImportingModel: true,
+        action: 'keep',
+        exclude: !checkIfDiagramDirectState(state.name),
+        required: false,
         emraldItem: state,
       });
     }
@@ -135,14 +137,24 @@ export const useTemplateForm = (templatedData: EMRALD_Model) => {
         locked: false,
         oldName: variable.name,
         newName: variable.name,
-        action: 'rename',
+        action: 'keep',
         exclude: false,
-        requiredInImportingModel: false,
+        required: false,
         emraldItem: variable,
       });
     }
-    return items.sort((a, b) => (a.requiredInImportingModel > b.requiredInImportingModel ? -1 : 1));  
+    return items.sort((a, b) => {
+      if (a.type === MainItemTypes.Diagram) return -1;
+      if (a.type === MainItemTypes.State && b.type !== MainItemTypes.Diagram) return -1;
+      if (a.type === MainItemTypes.Event && b.type !== MainItemTypes.Diagram && b.type !== MainItemTypes.State) return -1;
+      if (a.type === MainItemTypes.Action && b.type !== MainItemTypes.Diagram && b.type !== MainItemTypes.State && b.type !== MainItemTypes.Event) return -1;
+      return 1;
+    });
   };
+
+  const checkIfDiagramDirectState = (stateName: string) => {
+    return diagramStates.includes(stateName);
+  }
 
   const addNewGroup = () => {
     setGroupList((prevGroups) => {
@@ -299,7 +311,10 @@ export const useTemplateForm = (templatedData: EMRALD_Model) => {
 
   const handleRequiredChange = (index: number, required: boolean) => {
     const updatedItems = [...templatedItems];
-    updatedItems[index].requiredInImportingModel = required;
+    updatedItems[index].required = required;
+    if ('required' in updatedItems[index].emraldItem) {
+      (updatedItems[index].emraldItem as Action | Diagram | LogicNode | ExtSim | Event | State | Variable).required = required;
+    }
     setTemplatedItems(updatedItems);
   };
   
@@ -308,7 +323,6 @@ export const useTemplateForm = (templatedData: EMRALD_Model) => {
       const updatedItems = prevItems.map((item) => {
         if (item.newName.includes(findValue) && !item.locked) {
           const newName = item.newName.replace(new RegExp(findValue, 'g'), replaceValue);
-          console.log(`Changing "${item.newName}" to "${newName}"`);
           return {
             ...item,
             newName: newName,
@@ -320,22 +334,44 @@ export const useTemplateForm = (templatedData: EMRALD_Model) => {
     });
   };
 
-  const handleSave = () => {
+  const removeExcludedItems = () => {
+    return new Promise<void>((resolve) => {
+      templatedData.DiagramList = templatedData.DiagramList.filter((d) => !templatedItems.find((ti) => ti.type === MainItemTypes.Diagram && ti.exclude && d.name === ti.newName));
+      templatedData.LogicNodeList = templatedData.LogicNodeList.filter((d) => !templatedItems.find((ti) => ti.type === MainItemTypes.LogicNode && ti.exclude && d.name === ti.newName));
+      templatedData.ActionList = templatedData.ActionList.filter((d) => !templatedItems.find((ti) => ti.type === MainItemTypes.Action && ti.exclude && d.name === ti.newName));
+      templatedData.ExtSimList = templatedData.ExtSimList.filter((d) => !templatedItems.find((ti) => ti.type === MainItemTypes.ExtSim && ti.exclude && d.name === ti.newName));
+      templatedData.EventList = templatedData.EventList.filter((d) => !templatedItems.find((ti) => ti.type === MainItemTypes.Event && ti.exclude && d.name === ti.newName));
+      templatedData.StateList = templatedData.StateList.filter((d) => !templatedItems.find((ti) => ti.type === MainItemTypes.State && ti.exclude && d.name === ti.newName));
+      templatedData.VariableList = templatedData.VariableList.filter((d) => !templatedItems.find((ti) => ti.type === MainItemTypes.Variable && ti.exclude && d.name === ti.newName));
+
+      resolve();
+    })
+  }
+
+  const handleSave = async () => {
     templatedData.id = uuidv4();
     templatedData.name = templateName;
     templatedData.desc = templateDesc;
     templatedData.group = findGroupHierarchyByGroupName(groups, selectedGroup);
-  
+    await removeExcludedItems(); // Remove excluded items before building the template
+
     // Go through all of the renamed items and update the pasted model
     for (let i = 0; i < templatedItems.length; i++) {
       const item = templatedItems[i];
-      if (item.action === 'rename') {
+      if (!item.exclude) {
         const itemCopy = structuredClone(item.emraldItem);
-        itemCopy.name = item.newName;
-        updateSpecifiedModel(itemCopy, item.type, templatedData, false);
-        item.emraldItem.id = uuidv4();
+        if (item.action === 'rename') {
+          itemCopy.name = item.newName;
+        }
+        await updateSpecifiedModel(itemCopy, item.type, templatedData, false);
+        const updatedItems = convertModelToArray(templatedData);
+        if (updatedItems[i]?.emraldItem) {          
+          item.emraldItem = updatedItems[i].emraldItem;
+          item.emraldItem.id = uuidv4();
+        }
       }
     }
+  
     // Proceed with creating the template and closing the window
     createTemplate(templatedData);
     handleClose();
@@ -356,6 +392,7 @@ export const useTemplateForm = (templatedData: EMRALD_Model) => {
     temporaryTemplates,
     expanded,
     duplicateNameError,
+    checkIfDiagramDirectState,
     setFindValue,
     setReplaceValue,
     setTemplatedItems,

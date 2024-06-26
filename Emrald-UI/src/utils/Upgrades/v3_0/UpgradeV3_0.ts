@@ -33,7 +33,8 @@ function UpgradeV3_0_Recursive(oldModel: EMRALD_ModelV2_4): EMRALD_Model {
                 ...rest, // Spread the rest of the properties
                 id: id !== undefined ? String(id) : undefined,
                 objType: "Diagram",
-                diagramType: mapDiagramType(Diagram.diagramType) // Add the mapped diagramType
+                diagramType: mapDiagramType(Diagram.diagramType), // Add the mapped diagramType
+                required: false,
             };
         }) : [],
         ExtSimList: oldModel.ExtSimList ? oldModel.ExtSimList.map(({ ExtSim }) => {
