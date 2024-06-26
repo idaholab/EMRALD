@@ -894,7 +894,7 @@
         },
         "Group": {
             "type": "object",
-            "description": "What catagory grouping this item belongs to. Used to indicate a group for and EMRALD model template",
+            "description": "What catagory grouping this item belongs to. Used to indicate a group for and EMRALD model template.",
             "properties": {
                 "name": {
                     "type": "string",
@@ -903,6 +903,7 @@
                 "subgroup": {
                     "type": "array",
                     "description": "Sub group tree path",
+                    "devNote": "make this an any type when building the documentation to get rid of the recursive error",
                     "items": {
                         
                     }

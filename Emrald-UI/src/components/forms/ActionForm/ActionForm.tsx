@@ -8,9 +8,11 @@ import { useActionFormContext } from './ActionFormContext';
 import { ActionType, MainItemTypes } from '../../../types/ItemTypes';
 import { Transition, ChangeVarValue, ExtSimulation, RunApplication } from './FormFieldsByType';
 import { State } from '../../../types/State';
+import { Event } from '../../../types/Event';
 
 interface ActionFormProps {
   actionData?: Action;
+  event?: Event;
   state?: State;
 }
 
@@ -24,7 +26,7 @@ export interface NewStateItem {
   probType: string;
 }
 
-const ActionForm: React.FC<ActionFormProps> = ({ actionData, state }) => {
+const ActionForm: React.FC<ActionFormProps> = ({ actionData, event, state }) => {
   const {
     name,
     desc,
@@ -71,7 +73,7 @@ const ActionForm: React.FC<ActionFormProps> = ({ actionData, state }) => {
           error={hasError}
           errorMessage="An action with this name already exists."
           reset={reset}
-          handleSave={() => handleSave(state)}
+          handleSave={() => handleSave(event, state)}
           reqPropsFilled={name && actType ? true : false}
         >
           {/* Render the appropriate sub-component based on selected action type */}
