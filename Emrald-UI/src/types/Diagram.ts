@@ -1,6 +1,6 @@
 import './ItemTypes'
 import './ChangeLog'
-import { DiagramType } from './ItemTypes'
+import { DiagramType, MainItemType } from './ItemTypes'
 import { ChangeLog } from './ChangeLog'
 
 export interface Diagram {
@@ -8,6 +8,7 @@ export interface Diagram {
    * Optional. Only used for internal processing needs.
    */
   id?: string
+  objType: MainItemType
   /**
    * Name of the diagram
    */
@@ -29,8 +30,9 @@ export interface Diagram {
    * Names of the states used in this diagram
    */
   states: string[]
-  
   changeLog?: ChangeLog
-    
+  /**
+   * If this is a template then it indicates the item must exist in the current model before using the template.
+   */
   required?: boolean
 }

@@ -26,19 +26,22 @@ function UpgradeV3_0_Recursive(oldModel: EMRALD_ModelV2_4): EMRALD_Model {
     const newModel: EMRALD_Model = {
         ...oldModel,
         id: oldModel.id !== undefined ? String(oldModel.id) : undefined,
+        objType: "EMRALD_Model",
         DiagramList: oldModel.DiagramList ? oldModel.DiagramList.map(({ Diagram }) => {
             const { diagramList, forceMerge, singleStates, id, ...rest } = Diagram; //exclude diagramList, forceMerge, singleStates
             return {
                 ...rest, // Spread the rest of the properties
                 id: id !== undefined ? String(id) : undefined,
+                objType: "Diagram",
                 diagramType: mapDiagramType(Diagram.diagramType), // Add the mapped diagramType
-                required: false
+                required: false,
             };
         }) : [],
         ExtSimList: oldModel.ExtSimList ? oldModel.ExtSimList.map(({ ExtSim }) => {
             const { modelRef, states, configData, simMaxTime, varScope, value, resetOnRuns, type, sim3DId, id, ...rest } = ExtSim; //exclude
             return {
-                ...rest,                
+                ...rest, 
+                objType: "ExtSim",               
                 id: id !== undefined ? String(id) : undefined,
             };
         }) : [],
@@ -53,8 +56,8 @@ function UpgradeV3_0_Recursive(oldModel: EMRALD_ModelV2_4): EMRALD_Model {
             return {
                 ...rest,                
                 id: id !== undefined ? String(id) : undefined,
-                geometryInfo,
-                required: false
+                objType: "State",
+                geometryInfo
             };
         }) : [],
         ActionList: oldModel.ActionList ? oldModel.ActionList.map(({ Action }) => {
@@ -63,8 +66,8 @@ function UpgradeV3_0_Recursive(oldModel: EMRALD_ModelV2_4): EMRALD_Model {
             return {
                 ...rest,
                 id: id !== undefined ? String(id) : undefined,
-                mainItem,
-                required: false
+                objType: "Action",
+                mainItem
             };
         }) : [],
         EventList: oldModel.EventList ? oldModel.EventList.map(({ Event }) => {
@@ -75,14 +78,15 @@ function UpgradeV3_0_Recursive(oldModel: EMRALD_ModelV2_4): EMRALD_Model {
             return {
                 ...rest,                
                 id: id !== undefined ? String(id) : undefined,
-                ifInState,
-                required: false
+                objType: "Event",
+                ifInState
             };
 
         }) : [],
         LogicNodeList: oldModel.LogicNodeList ? oldModel.LogicNodeList.map(({ LogicNode }) => ({
             ...LogicNode,
             id: LogicNode.id !== undefined ? String(LogicNode.id) : undefined,
+            objType: "LogicNode",
             isRoot: LogicNode.isRoot !== undefined ? (LogicNode.isRoot || ((LogicNode.rootName != undefined) && (LogicNode.rootName === LogicNode.name))) : 
                 (LogicNode.rootName == undefined ? false : (LogicNode.rootName === LogicNode.name)),
             compChildren: mapLogicNode(LogicNode.compChildren)
@@ -119,13 +123,14 @@ function UpgradeV3_0_Recursive(oldModel: EMRALD_ModelV2_4): EMRALD_Model {
             return {
                 ...rest, // Spread the rest of the properties
                 id: id !== undefined ? String(id) : undefined,
+                objType: "Variable",
                 accrualStatesData, // Include mapped accrualStatesData
                 regExpLine,
                 begPosition
             };
         }) : [],
         group: oldModel.group ? convertGroupV2_4ToGroup(oldModel.group) : undefined,
-        templates: convertTemplates(oldModel.templates)
+        templates: convertTemplates(oldModel.templates as EMRALD_ModelV2_4[])
     }
 
 

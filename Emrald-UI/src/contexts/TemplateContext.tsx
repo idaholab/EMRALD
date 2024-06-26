@@ -146,7 +146,7 @@ const TemplateContextProvider: React.FC<EmraldContextWrapperProps> = ({ children
     if (!newTemplate) { return; }
     var updatedModel: EMRALD_Model = await updateModelAndReferences(
       newTemplate,
-      MainItemTypes.Template,
+      MainItemTypes.EMRALD_Model,
     );
     updateAppData(updatedModel);
   };

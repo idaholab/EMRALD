@@ -229,7 +229,7 @@ const useEmraldDiagram = () => {
     if (currentDiagram.value.states) {
       let stateNodes = currentDiagram.value.states.map((state) => {
         let stateDetails = getStateByStateName(state);
-        const { x, y } = stateDetails.geometryInfo || { x: 0, y: 0 };
+        const {x, y} = {x: stateDetails.geometryInfo?.x || 0, y: stateDetails.geometryInfo?.y || 0}
         return {
           id: `${stateDetails.id}`,
           position: { x, y },

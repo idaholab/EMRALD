@@ -135,10 +135,7 @@
         "templates": {
             "type": "array",
             "description": "Templates avaliable to make new diagrams in the model. These are basicly a small model all on there own.",
-            "items": {
-                "items": {},
-                "additionalProperties": false
-            }
+            "items": {}
         },
         "group": {
             "$ref": "#/definitions/Group"
@@ -911,9 +908,12 @@
             "properties": {
                 "name": {
                     "type": "string",
-                    "description": "Name of the group",
+                    "description": "Name of the group"
                 },
                 "subgroup": {
+                    "type": "array",
+                    "description": "Sub group tree path",
+                    "items": {
                         "$ref": "#/definitions/Group"
                     }
                 }

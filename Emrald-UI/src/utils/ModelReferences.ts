@@ -1,4 +1,4 @@
-﻿import { MainItemTypes } from '../types/ItemTypes.ts';
+﻿import { MainItemType, MainItemTypes } from '../types/ItemTypes.ts';
 import jsonpath from 'jsonpath';
 import { appData } from '../hooks/useAppData';
 import { EMRALD_Model, CreateEmptyEMRALDModel} from '../types/EMRALD_Model.ts';
@@ -118,6 +118,18 @@ const InLogicNodeRefs: DiagramRefsArray = [
   ["$.LogicNodeList[?(@.name == 'nameRef')].gateChildren", MainItemTypes.LogicNode, null],
 ];
 
+export type MainItemTypeSet = Set<MainItemType>;
+const allMainItemTypes: MainItemTypeSet = new Set<MainItemType>([
+  "Diagram",
+  "State",
+  "Action",
+  "Event",
+  "ExtSim",
+  "LogicNode",
+  "Variable",
+  "EMRALD_Model"
+]);
+
 export const GetJSONPathUsingRefs = (itemType: MainItemTypes, lookupName : string): Array<[string, MainItemTypes]> => {
   var retArray : Array<[string, MainItemTypes]>;
   switch (itemType) {
@@ -153,7 +165,7 @@ export const GetJSONPathUsingRefs = (itemType: MainItemTypes, lookupName : strin
   });  
 };
 
-export const GetJSONPathInRefs = (itemType: MainItemTypes, lookupName : string): DiagramRefsArray => {
+const GetJSONPathInRefs = (itemType: MainItemTypes, lookupName : string): DiagramRefsArray => {
   var retArray : DiagramRefsArray;
   switch (itemType) {
     case MainItemTypes.Diagram:
@@ -190,71 +202,112 @@ export const GetJSONPathInRefs = (itemType: MainItemTypes, lookupName : string):
 
 
 /**
- * Retrieves a subset model of items that reference/use the specific item.
+ * Retrieves a subset model of items that reference the item specific item name and type. Result does NOT include the item itself. Can be recursive.
  *
  * @param {string} itemName - The name of the item to get the references for.
  * @param {MainItemTypes} itemType - The type of the item to look for references.
- * @addToModel {EMRALD_Model} - If assigned then items are added to this model.
+ * @param {boolean} levelsUp - How many levels up to search. If <1 then the search is recursive.
+ * @includeTypes {MainItemTypeSet} - is a set of items to include in the search
  * @return {EMRALD_Model} - A subset model of just the referenced items.
  */
 export const GetModelItemsReferencing = ( 
   itemName : string, //Name of the item to get the references for
   itemType : MainItemTypes, //This is the type of the item to look for references
+  levelsUp : number, //if <1 then the search is recursive
   addToModel? : EMRALD_Model, //if assigned then items are added to this model.
+  includeTypes : MainItemTypeSet = allMainItemTypes, //is a set of items to include in the search
 ) : EMRALD_Model => { //returns a subset model of just the referenced items.
-
-  var retRefModel: EMRALD_Model
+  
+  let retRefModel: EMRALD_Model
   if(addToModel){
     retRefModel = addToModel;
   }else{ //use an empty model
-    var retRefModel: EMRALD_Model = CreateEmptyEMRALDModel();
+    retRefModel = CreateEmptyEMRALDModel();
   }
 
-  var jsonPathRefArray : Array<[string, MainItemTypes]> = GetJSONPathUsingRefs(itemType, itemName);
-
-  jsonPathRefArray.forEach((jsonPathSet) => {
-    jsonpath.paths(appData.value, jsonPathSet[0]).forEach((ref: any) => {
-      var parentPath = ref.slice(0, -1);
-      var parent = jsonpath.value(appData.value, parentPath.join('.'));
-      while((parent.id == null) && (parentPath.length > 0))
-      {
-        parentPath = parentPath.slice(0, -1);
-        parent = jsonpath.value(appData.value, parentPath.join('.'));
-      }
-      if(parent.id != null)
-      {
-        switch(jsonPathSet[1])
-        {
-          case MainItemTypes.Action:
-            retRefModel.ActionList.push(parent);
-            break;
-          case MainItemTypes.Event:
-            retRefModel.EventList.push(parent);
-            break;
-          case MainItemTypes.ExtSim:
-            retRefModel.ExtSimList.push(parent);
-            break;
-          case MainItemTypes.Variable:
-            retRefModel.VariableList.push(parent);
-            break;
-          case MainItemTypes.LogicNode:
-            retRefModel.LogicNodeList.push(parent);
-            break;
-          case MainItemTypes.State:
-            retRefModel.StateList.push(parent);
-            break;
-          case MainItemTypes.Diagram:
-            retRefModel.DiagramList.push(parent);
-            break;
-          default:
-            //todo error not a valid type
-            break;
-        }
-      }
-    });
-  });
+  GetModelItemsReferencingRecursive([[itemName, itemType]], levelsUp, retRefModel, includeTypes, {[itemName + "_" + itemType]: true});
 
   return retRefModel;
+};
+
+type SearchNameTypePairList = Array<[string, MainItemTypes]>;
+
+const GetModelItemsReferencingRecursive = ( 
+  currentSearchItems : SearchNameTypePairList, //list of items on this recursive level to search for
+  levelsUp : number, //if <0 then the search is recursive
+  addToModel : EMRALD_Model, //if assigned then items are added to this model.
+  includeTypes : MainItemTypeSet = allMainItemTypes, //is a set of items to include in the search
+  processed : { [key: string]: boolean; } //items already done to prevent looping
+)  => { //returns a subset model of just the referenced items.
+ 
+  if((levelsUp == 0) || (currentSearchItems.length == 0)){ //-1 is recursive 0 means stop requested levels are done
+    return;
+  }
+
+  const nextLevelItems: SearchNameTypePairList = []; //add to this list for the next recursive level to search.
+
+  while (currentSearchItems.length > 0) {
+    let curItemName : string = currentSearchItems[0][0];
+    let curItemType : MainItemTypes = currentSearchItems[0][1];
+    currentSearchItems.shift(); //remove the item from the array
+        
+      let jsonPathRefArray : Array<[string, MainItemTypes]> = GetJSONPathUsingRefs(curItemType, curItemName);
+
+      jsonPathRefArray.forEach((jsonPathSet) => {
+        jsonpath.paths(appData.value, jsonPathSet[0]).forEach((ref: any) => {
+          let parentPath = ref.slice(0, -1);
+          let parent = jsonpath.value(appData.value, parentPath.join('.'));
+          while((parent.id == null) && (parentPath.length > 0))
+          {
+            parentPath = parentPath.slice(0, -1);
+            parent = jsonpath.value(appData.value, parentPath.join('.'));
+          }
+          if((parent.id != null) && (includeTypes.has(parent.objType)))
+          {
+            if(!processed[parent.name + '_' + parent.objType]){
+              processed[parent.name + '_' + parent.objType] = true;
+              nextLevelItems.push([parent.name, parent.objType]);
+
+              switch(parent.objType)
+              {
+                case MainItemTypes.Action:
+                  addToModel.ActionList.push(parent);
+                  break;
+                case MainItemTypes.Event:
+                  addToModel.EventList.push(parent);
+                  break;
+                case MainItemTypes.ExtSim:
+                  addToModel.ExtSimList.push(parent);
+                  break;
+                case MainItemTypes.Variable:
+                  addToModel.VariableList.push(parent);
+                  break;
+                case MainItemTypes.LogicNode:
+                  addToModel.LogicNodeList.push(parent);
+                  break;
+                case MainItemTypes.State:
+                  addToModel.StateList.push(parent);
+                  break;
+                case MainItemTypes.Diagram:
+                  addToModel.DiagramList.push(parent);
+                  break;
+                default:
+                  //todo error not a valid type
+                  break;
+              }
+            }
+          }
+        });
+      
+      });
+  //}
+  }  
+
+  if(levelsUp > 0) //if not fully recursive reduce levels 
+    --levelsUp;
+
+  GetModelItemsReferencingRecursive(nextLevelItems, levelsUp, addToModel, includeTypes, processed);
+
 }
 
 export const GetItemByNameType = (
@@ -294,7 +347,7 @@ export const GetItemByNameType = (
     return retItem;
 }
 
-export const AddItemToModel = (
+const AddItemToModel = (
   itemObj : Diagram | State | Action | Event | ExtSim | Variable | LogicNode, 
   itemType : MainItemTypes,
   model : EMRALD_Model) => {
@@ -327,45 +380,48 @@ export const AddItemToModel = (
     }
 }
 
+
 /**
- * Retrieves a subset model of items that the  specific item uses/references up to the specified level.
+ * Retrieves a subset model of items that the given item uses/references. It can be recursive or limited to specific types. The subset model includes the provided item.
  *
  * @param {string} itemName - The name of the item to get the references for.
  * @param {MainItemTypes} itemType - The type of the item to look for references.
- * @levels {number} - If < 1, will be recursive and give all levels of references. For copy or template use 1 for all items except Diagrams and 2 for Diagrams.
- * @return {EMRALD_Model} - A subset model of just the referenced items.
+ * @param {number} levels - How many levels up to search. If <1 then the search is recursive.
+ * @includeTypes {MainItemTypeSet} - is a set of items to include in the search
+ * @return {EMRALD_Model} - A subset model of just the referenced items. 
  */
 export const GetModelItemsReferencedBy = ( 
   itemName : string, //Name of the item looking for references
   itemType : MainItemTypes, //This is the type of the item to look for references
   levels : number = 0, //if < 1, will be recursive and give all levels of references. For copy or template use 1 for all items except Diagrams and 2 for Diagrams.
+  includeTypes : MainItemTypeSet = allMainItemTypes, //is a set of items to include in the search 
 ) : EMRALD_Model => { //returns a subset model of just the referenced items.
   
-  var refItems : Array<[string, number, MainItemTypes]> = [[itemName, 0, itemType]];
-  var retRefModel: EMRALD_Model = CreateEmptyEMRALDModel();
+  let refItems : Array<[string, number, MainItemTypes]> = [[itemName, 0, itemType]];
+  let retRefModel: EMRALD_Model = CreateEmptyEMRALDModel();
   //const emraldModel: EMRALD_Model = appData.value;  
   const processed: { [key: string]: boolean; } = { [itemName + '_' + itemType]: true };
   
   while(refItems.length > 0)
   {  
-    var curItemName : string = refItems[0][0];
-    var curItemLevel : number = refItems[0][1];
-    var curItemType : MainItemTypes = refItems[0][2];
+    let curItemName : string = refItems[0][0];
+    let curItemLevel : number = refItems[0][1];
+    let curItemType : MainItemTypes = refItems[0][2];
     refItems.shift(); //remove the item from the array
     
-    var itemObj = GetItemByNameType(curItemName, curItemType);      
-    if(itemObj != null){ //add to the reference subset model      
+    let itemObj = GetItemByNameType(curItemName, curItemType);      
+    if((itemObj != null) && (itemObj.objType in includeTypes)){ //add to the reference subset model      
       AddItemToModel(itemObj, curItemType, retRefModel);    
 
       
       //get the json paths for the references depending on the type
-      var jsonPathRefArray : DiagramRefsArray = GetJSONPathInRefs(curItemType, curItemName);
+      let jsonPathRefArray : DiagramRefsArray = GetJSONPathInRefs(curItemType, curItemName);
 
       //go through all the references if not at the cutoff level, add
       if((curItemLevel < levels) || (levels < 1)){        
         jsonPathRefArray.forEach((jsonPathSet) => {    
           jsonpath.paths(appData.value, jsonPathSet[0]).forEach((jPath: any) => {
-            var childNames = jsonpath.value(appData.value, jPath.join('.'));
+            let childNames = jsonpath.value(appData.value, jPath.join('.'));
             //make sure it is an array
             childNames = Array.isArray(childNames) ? childNames : [childNames];
             childNames.forEach((childName: any) => {
@@ -381,9 +437,9 @@ export const GetModelItemsReferencedBy = (
       else{ //remove references to other items. User will have to fix them.
         jsonPathRefArray.forEach((jsonPathSet) => {    
           jsonpath.paths(retRefModel, jsonPathSet[0]).forEach((jPath: any) => {
-            var childNames = jsonpath.value(retRefModel, jPath.join('.'));
+            let childNames = jsonpath.value(retRefModel, jPath.join('.'));
             //Keep track if it is an array origionally and then make it an array
-            var isArray = Array.isArray(childNames);
+            let isArray = Array.isArray(childNames);
             childNames = Array.isArray(childNames) ? childNames : [childNames];
             childNames.forEach((childName: any) => {
               if(!processed[childName + '_' + jsonPathSet[1]])

@@ -110,7 +110,7 @@ export function UpgradeV2_4( modelTxt : string) : UpgradeReturn
     const newModel: EMRALD_Model = {
       ...oldModel,
       EventList: oldModel.EventList ? oldModel.EventList.map(({ Event }) => ({ Event: mapEvent(Event) })) : [],
-      templates: undefined,
+      templates: oldModel.templates ? oldModel.templates : undefined,
     };
 
 

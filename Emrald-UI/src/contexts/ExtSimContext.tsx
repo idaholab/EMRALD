@@ -21,6 +21,7 @@ export const emptyExtSim: ExtSim = {
   id: '',
   name: '',
   resourceName: '',
+  objType: "ExtSim",
 };
 
 const ExtSimContext = createContext<ExtSimContextType | undefined>(undefined);

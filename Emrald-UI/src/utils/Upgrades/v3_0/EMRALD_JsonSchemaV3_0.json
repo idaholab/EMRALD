@@ -9,8 +9,9 @@
             "$ref": "#/definitions/MainModel"
         },
         {
+            "title": "Templates",
             "properties": {
-                "templates": {
+                "templates": {       
                     "type": "array",
                     "description": "Templates available to make new diagrams in the model. These are basically small models all on their own.",
                     "items": {
@@ -30,6 +31,9 @@
                 "id": {
                     "type": "string",
                     "description": "Temporary, only used internally for some identification or uniqueness needs"
+                },
+                "objType": {
+                    "$ref": "#/definitions/MainItemType"
                 },
                 "name": {
                     "type": "string",
@@ -106,6 +110,7 @@
             "additionalProperties": false,
             "required": [
                 "name",
+                "objType",
                 "desc",
                 "version",
                 "DiagramList",
@@ -124,6 +129,9 @@
                 "id": {
                     "type": "string",
                     "description": "Optional. Only used for internal processing needs."
+                },
+                "objType": {
+                    "$ref": "#/definitions/MainItemType"
                 },
                 "name": {
                     "type": "string",
@@ -146,7 +154,6 @@
                 },
                 "states": {
                     "type": "array",
-                    "title": "states",
                     "description": "Names of the states used in this diagram",
                     "items": {
                         "type": "string"
@@ -154,11 +161,16 @@
                 },
                 "changeLog": {
                     "$ref": "#/definitions/ChangeLog"
+                },
+                "required": {
+                    "type": "boolean",
+                    "description": "If this is a template then it indicates the item must exist in the current model before using the template."
                 }
             },
             "additionalProperties": false,
             "required": [
                 "name",
+                "objType",
                 "desc",
                 "diagramType",
                 "diagramLabel",
@@ -173,6 +185,9 @@
                     "type": "string",
                     "description": "Optional, internal use only."
                 },
+                "objType": {
+                    "$ref": "#/definitions/MainItemType"
+                },
                 "name": {
                     "type": "string",
                     "description": "referenace name in the model for the external simulation"
@@ -180,11 +195,16 @@
                 "resourceName": {
                     "type": "string",
                     "description": "name of resource type to connect to in MsgServer, not unique if more than one simulation of the same tool"
+                },
+                "required": {
+                    "type": "boolean",
+                    "description": "If this is a template then it indicates the item must exist in the current model before using the template."
                 }
             },
             "additionalProperties": false,
             "required": [
                 "name",
+                "objType",
                 "resourceName"
             ]
         },
@@ -194,6 +214,9 @@
             "properties": {
                 "id": {
                     "type": "string"
+                },
+                "objType": {
+                    "$ref": "#/definitions/MainItemType"
                 },
                 "name": {
                     "type": "string",
@@ -212,7 +235,6 @@
                 },
                 "immediateActions": {
                     "type": "array",
-                    "title": "immediateActions",
                     "description": "Array of name references for the immediate actions to be run when entering the state",
                     "items": {
                         "type": "string"
@@ -220,7 +242,6 @@
                 },
                 "events": {
                     "type": "array",
-                    "title": "events",
                     "description": "Array of name references to events. These event will be monitored for when in this state.",
                     "items": {
                         "type": "string"
@@ -232,11 +253,10 @@
                     "description": "actions for the events in sibling \"events\" array. One to one relationship.",
                     "items": {
                         "type": "object",
-                        "title": "items",
+                        "title": "EventActionItems",
                         "properties": {
                             "actions": {
                                 "type": "array",
-                                "title": "actions",
                                 "description": "array of referenace names for actions of the associated event.",
                                 "items": {
                                     "type": "string"
@@ -253,7 +273,7 @@
                         ]
                     }
                 },
-                "geometry": {
+                "geometryInfo": {
                     "$ref": "#/definitions/GeometryInfo"
                 },
                 "changeLog": {
@@ -261,11 +281,16 @@
                 },
                 "defaultSingleStateValue": {
                     "$ref": "#/definitions/StateEvalValue"
+                },
+                "required": {
+                    "type": "boolean",
+                    "description": "If this is a template then it indicates the item must exist in the current model before using the template."
                 }
             },
             "additionalProperties": false,
             "required": [
                 "name",
+                "objType",
                 "desc",
                 "stateType",
                 "diagramName",
@@ -281,6 +306,9 @@
                 "id": {
                     "type": "string",
                     "description": "Optional, internal use only."
+                },
+                "objType": {
+                    "$ref": "#/definitions/MainItemType"
                 },
                 "name": {
                     "type": "string",
@@ -303,7 +331,6 @@
                 },
                 "newStates": {
                     "type": "array",
-                    "title": "newStates",
                     "description": "Optional. If this is a transition action then these are the states that it could be transitioned to.",
                     "items": {
                         "$ref": "#/definitions/NewState"
@@ -319,7 +346,6 @@
                 },
                 "codeVariables": {
                     "type": "array",
-                    "title": "codeVariables",
                     "description": "Optional. If action has a script, these are the variable name references for variables used in the script. All variables used in script must be in this list.",
                     "items": {
                         "type": "string"
@@ -370,7 +396,6 @@
                 },
                 "template": {
                     "type": "object",
-                    "title": "template",
                     "description": "Optional. For action type atRunExtApp. It is used for custom app form."
                 },
                 "returnProcess": {
@@ -386,13 +411,17 @@
                 },
                 "updateVariables": {
                     "type": "array",
-                    "title": "updateVariables",
                     "description": "Used for custom form, variables used in the form."
+                },
+                "required": {
+                    "type": "boolean",
+                    "description": "If this is a template then it indicates the item must exist in the current model before using the template."
                 }
             },
             "additionalProperties": false,
             "required": [
                 "name",
+                "objType",
                 "desc",
                 "actType",
                 "mainItem"
@@ -405,6 +434,9 @@
                 "id": {
                     "type": "string",
                     "description": "Optional, internal use only."
+                },
+                "objType": {
+                    "$ref": "#/definitions/MainItemType"
                 },
                 "name": {
                     "type": "string",
@@ -427,7 +459,6 @@
                 },
                 "triggerStates": {
                     "type": "array",
-                    "title": "triggerStates",
                     "description": "Optional. For event type etStateCng. List of state name references as part of the criteria needed to trigger the event. These are the states that need to be entered or exited to tirgger the event.",
                     "items": {
                         "type": "string"
@@ -435,7 +466,6 @@
                 },
                 "varNames": {
                     "type": "array",
-                    "title": "varNames",
                     "description": "Optional, Name references for all variables used in scripts if the event type uses scripts.",
                     "items": {
                         "type": "string"
@@ -519,45 +549,19 @@
                 },
                 "changeLog": {
                     "$ref": "#/definitions/ChangeLog"
+                },
+                "required": {
+                    "type": "boolean",
+                    "description": "If this is a template then it indicates the item must exist in the current model before using the template."
                 }
             },
             "additionalProperties": false,
             "required": [
                 "name",
+                "objType",
                 "desc",
                 "mainItem",
                 "evType"
-            ]
-        },
-        "NewState": {
-            "type": "object",
-            "title": "NewState",
-            "properties": {
-                "toState": {
-                    "type": "string",
-                    "description": "reference name of the state to transtion to."
-                },
-                "prob": {
-                    "type": "number",
-                    "description": "probability that this state will be transtioned to."
-                },
-                "failDesc": {
-                    "type": "string",
-                    "description": "The description from the user for output if tthis transition takes place."
-                },
-                "varProb": {
-                    "type": [
-                        "null",
-                        "string"
-                    ],
-                    "description": "Optional, if used  then the a variable is used for the probability. This is the name of that variable"
-                }
-            },
-            "additionalProperties": false,
-            "required": [
-                "toState",
-                "prob",
-                "failDesc"
             ]
         },
         "LogicNode": {
@@ -567,6 +571,9 @@
                 "id": {
                     "type": "string",
                     "description": "Optional, internal use only."
+                },
+                "objType": {
+                    "$ref": "#/definitions/MainItemType"
                 },
                 "name": {
                     "type": "string",
@@ -584,7 +591,6 @@
                 },
                 "gateChildren": {
                     "type": "array",
-                    "title": "gateChildren",
                     "description": "Array of logic node names that are children of this gate.",
                     "items": {
                         "type": "string"
@@ -596,11 +602,16 @@
                 },
                 "changeLog": {
                     "$ref": "#/definitions/ChangeLog"
+                },
+                "required": {
+                    "type": "boolean",
+                    "description": "If this is a template then it indicates the item must exist in the current model before using the template."
                 }
             },
             "additionalProperties": false,
             "required": [
                 "name",
+                "objType",
                 "desc",
                 "gateType",
                 "compChildren",
@@ -615,6 +626,9 @@
                 "id": {
                     "type": "string",
                     "description": "Optional, internal use only."
+                },
+                "objType": {
+                    "$ref": "#/definitions/MainItemType"
                 },
                 "name": {
                     "type": "string",
@@ -665,7 +679,7 @@
                     "description": "Optional. If the variable varScope is gtAccrual, then these are the states used for calculating the variables value over time.",
                     "items": {
                         "type": "object",
-                        "title": "items",
+                        "title": "accrualStatesDataItems",
                         "properties": {
                             "stateName": {
                                 "type": "string",
@@ -688,7 +702,6 @@
                                 "description": "Optional. If the type is ctTable then this is the array of values used in calculating this states contribution to the variable value. Example for the first hour the accrual multiplier is 0.5, for the second hour the accrual multiplier is 0.1",
                                 "items": {
                                     "type": "array",
-                                    "title": "items",
                                     "description": "Each row has the rate the time specified. First value is rate, second value is time.",
                                     "items": {
                                         "type": "integer",
@@ -745,14 +758,50 @@
                 "canMonitor": {
                     "type": "boolean",
                     "description": "Flag to indicate if the variable can be monitored in the solver. This removes it from the solver UI if false. Must be true if monitorInSim is true."
+                },
+                "required": {
+                    "type": "boolean",
+                    "description": "If this is a template then it indicates the item must exist in the current model before using the template."
                 }
             },
             "additionalProperties": false,
             "required": [
                 "name",
+                "objType",
                 "varScope",
                 "value",
                 "type"
+            ]
+        },
+        "NewState": {
+            "type": "object",
+            "title": "NewState",
+            "properties": {
+                "toState": {
+                    "type": "string",
+                    "description": "reference name of the state to transtion to."
+                },
+                "prob": {
+                    "type": "number",
+                    "description": "probability that this state will be transtioned to."
+                },
+                "failDesc": {
+                    "type": "string",
+                    "description": "The description from the user for output if tthis transition takes place."
+                },
+                "varProb": {
+                    "type": [
+                        "null",
+                        "string"
+                    ],
+                    "description": "Optional, if used  then the a variable is used for the probability. This is the name of that variable"
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "toState",
+                "prob",
+                "failDesc"
             ]
         },
         "ChangeLog": {
@@ -761,7 +810,7 @@
             "description": "Type of the diagram.",
             "items": {
                 "type": "object",
-                "title": "items",
+                "title": "ChangeLogItems",
                 "properties": {
                     "cngDesc": {
                         "type": "string",
@@ -807,7 +856,7 @@
             "description": "Array of component diagram names and state values to use in evaluating if not using the default value.",
             "items": {
                 "type": "object",
-                "title": "items",
+                "title": "CompChildItems",
                 "properties": {
                     "stateValues": {
                         "type": "array",
@@ -815,7 +864,7 @@
                         "description": "Evaluate value if not the states default.",
                         "items": {
                             "type": "object",
-                            "title": "items",
+                            "title": "StateValuesItems",
                             "properties": {
                                 "stateName": {
                                     "type": "string",
@@ -845,7 +894,7 @@
         },
         "Group": {
             "type": "object",
-            "description": "What catagory grouping this item belongs to. Used to indicate a group for and EMRALD model template",
+            "description": "What catagory grouping this item belongs to. Used to indicate a group for and EMRALD model template.",
             "properties": {
                 "name": {
                     "type": "string",
@@ -854,6 +903,7 @@
                 "subgroup": {
                     "type": "array",
                     "description": "Sub group tree path",
+                    "devNote": "make this an any type when building the documentation to get rid of the recursive error",
                     "items": {
                         "$ref": "#/definitions/Group"
                     }
@@ -1050,6 +1100,20 @@
                 "Peak",
                 "Alpha",
                 "Beta"
+            ]
+        },
+        "MainItemType": {
+            "type": "string",
+            "description": "For event type of etDistribution this is the name of the distribution parameter.",
+            "enum": [
+                "Diagram",
+                "State",
+                "Action",
+                "Event",
+                "ExtSim",
+                "LogicNode",
+                "Variable",
+                "EMRALD_Model"
             ]
         }
     }

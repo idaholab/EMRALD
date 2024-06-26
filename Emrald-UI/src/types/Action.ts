@@ -1,4 +1,4 @@
-import { ActionType } from './ItemTypes'
+import { ActionType, MainItemType } from './ItemTypes'
 import { ChangeLog } from './ChangeLog'
 
 export interface Action {
@@ -6,8 +6,9 @@ export interface Action {
    * Optional, internal use only.
    */
   id?: string
+  objType: MainItemType
   /**
-   * reference name in the model for the action
+   * referenace name in the model for the action
    */
   name: string
   /**
@@ -104,7 +105,9 @@ export interface Action {
    * Used for custom form, variables used in the form.
    */
   updateVariables?: unknown[]
-  
+  /**
+   * If this is a template then it indicates the item must exist in the current model before using the template.
+   */
   required?: boolean
 }
 

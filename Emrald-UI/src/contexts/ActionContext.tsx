@@ -29,6 +29,7 @@ export const emptyAction: Action = {
   desc: '',
   actType: 'atTransition',
   mainItem: false,
+  objType: MainItemTypes.Action,
   required: false
 };
 

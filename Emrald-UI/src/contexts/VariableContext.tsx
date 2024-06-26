@@ -22,6 +22,7 @@ export const emptyVariable: Variable = {
   varScope: 'gtGlobal',
   value: '',
   type: 'int',
+  objType: "Variable",
 };
 
 const VariableContext = createContext<VariableContextType | undefined>(undefined);
