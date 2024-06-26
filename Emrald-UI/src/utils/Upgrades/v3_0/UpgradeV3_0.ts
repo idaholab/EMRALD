@@ -129,7 +129,7 @@ function UpgradeV3_0_Recursive(oldModel: EMRALD_ModelV2_4): EMRALD_Model {
             };
         }) : [],
         group: oldModel.group ? convertGroupV2_4ToGroup(oldModel.group) : undefined,
-        templates: convertTemplates(oldModel.templates)
+        templates: convertTemplates(oldModel.templates as EMRALD_ModelV2_4[])
     }
 
 
