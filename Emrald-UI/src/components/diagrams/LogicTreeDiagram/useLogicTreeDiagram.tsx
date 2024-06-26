@@ -280,8 +280,8 @@ const useLogicNodeTreeDiagram = () => {
     const parentLogicNode = getLogicNodeByName(parentNode);
     const nodeToDelete = getLogicNodeByName(nodeName);
     let gateChildren = getAllGateChildren(nodeToDelete);
-    deleteChildNodes(gateChildren.map((node) => node.id || ''));
-    deleteLogicNode(nodeToDelete.id);
+    await deleteChildNodes(gateChildren.map((node) => node.id || ''));
+    await deleteLogicNode(nodeToDelete.id);
 
     parentLogicNode.gateChildren = parentLogicNode.gateChildren.filter(
       (child) => child !== nodeName,
