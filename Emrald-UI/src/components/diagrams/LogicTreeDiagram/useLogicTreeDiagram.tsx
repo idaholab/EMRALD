@@ -10,9 +10,7 @@ import { useDiagramContext } from '../../../contexts/DiagramContext';
 import { Option } from '../../layout/ContextMenu/ContextMenu';
 import LogicNodeForm from '../../forms/LogicNodeForm/LogicNodeForm';
 import { MainItemTypes } from '../../../types/ItemTypes';
-import {
-  GetModelItemsReferencing,
-} from '../../../utils/ModelReferences';
+import { GetModelItemsReferencing } from '../../../utils/ModelReferences';
 
 export type NodeType = 'root' | 'gate' | 'comp';
 
@@ -199,56 +197,90 @@ const useLogicNodeTreeDiagram = () => {
       height: 700,
     });
   };
-  const removeNode = (parentNode: string, nodeName: string, type: NodeType) => {
-    const parentLogicNode = getLogicNodeByName(parentNode);
-    const nodeToDelete = getLogicNodeByName(nodeName);
-    if (type === 'gate') {
-      parentLogicNode.gateChildren = parentLogicNode.gateChildren.filter(
-        (child) => child !== nodeName,
-      );
-      recurseChildren(nodeToDelete, parentLogicNode);
-      if(canDeleteNode(nodeName)) {
-        deleteLogicNode(nodeToDelete.id);
+  const removeNode = async (parentNode: string, nodeName: string, type: NodeType) => {
+    return new Promise<void>(async (resolve) => {
+      const parentLogicNode = getLogicNodeByName(parentNode);
+      const nodeToRemove = getLogicNodeByName(nodeName);
+      if (type === 'gate') {
+        if (nodeToRemove.gateChildren.length > 0) {
+          await recurseAndDeleteChildren(nodeToRemove);
+        }
+        if (canDeleteNode(nodeName)) {
+          await deleteLogicNode(nodeToRemove.id);
+        }
+        parentLogicNode.gateChildren = parentLogicNode.gateChildren.filter(
+          (child) => child !== nodeName,
+        );
+      }
+      if (type === 'comp') {
+        parentLogicNode.compChildren = parentLogicNode.compChildren.filter(
+          (child) => child.diagramName !== nodeName,
+        );
+      }
+      await updateLogicNode(parentLogicNode);
+      resolve();
+    });
+  };
+  const removeChildNodes = async (nodesToRemove: { nodeName: string; parentName: string }[]) => {
+    if (nodesToRemove && nodesToRemove.length > 0) {
+      for (const node of nodesToRemove) {
+        await removeNode(node.parentName, node.nodeName, 'gate');
       }
     }
-    if (type === 'comp') {
-      parentLogicNode.compChildren = parentLogicNode.compChildren.filter(
-        (child) => child.diagramName !== nodeName,
-      );
-    }
-    updateLogicNode(parentLogicNode);
   };
-  const recurseChildren = (node: LogicNode, parentNode?: LogicNode) => {
+
+  const deleteChildNodes = async (nodesToDelete: string[]) => {
+    if (nodesToDelete && nodesToDelete.length > 0) {
+      for (const nodeID of nodesToDelete) {
+        await deleteLogicNode(nodeID);
+      }
+    }
+  };
+
+  const recurseAndDeleteChildren = async (node: LogicNode) => {
+    return new Promise<void>(async (resolve) => {
+      const result = recurseChildren(node);
+      if (result) {
+        const { nodesToDelete, nodesToRemove } = result;
+        await removeChildNodes(nodesToRemove);
+        await deleteChildNodes(nodesToDelete);
+      }
+      resolve();
+    });
+  };
+  const recurseChildren = (
+    node: LogicNode,
+    nodesToRemove: { nodeName: string; parentName: string }[] = [],
+    nodesToDelete: string[] = [],
+  ) => {
     if (!node) return;
     if (!canDeleteNode(node.name)) return;
-    node.gateChildren.forEach((gateChildName) => {
+    node.gateChildren.forEach(async (gateChildName) => {
       const gateChildNode = getLogicNodeByName(gateChildName);
       if (gateChildNode) {
         if (!canDeleteNode(gateChildNode.name)) {
-          if (parentNode) removeNode(parentNode.name, node.name, "gate")
-          return;
+          nodesToRemove.push({ nodeName: gateChildNode.name, parentName: node.name });
         } else {
-          recurseChildren(gateChildNode, node);
-          deleteLogicNode(gateChildNode.id);
+          if (gateChildNode.id) {
+            nodesToDelete.push(gateChildNode.id);
+          }
+          recurseChildren(gateChildNode, nodesToRemove, nodesToDelete);
         }
       }
     });
-  }
+    return { nodesToDelete, nodesToRemove };
+  };
 
   const canDeleteNode = (nodeName: string) => {
     const currentReferences = GetModelItemsReferencing(nodeName, MainItemTypes.LogicNode, 1);
-    let referenceNodes = currentReferences.LogicNodeList.filter((item) => item.name !== nodeName);
-    if (referenceNodes.length > 1) {
-      return false;
-    }
-    return true;
+    return currentReferences.LogicNodeList.length > 1 ? false : true;
   };
 
-
-  const DeleteNode = (parentNode: string, nodeName: string) => {
+  const DeleteNode = async (parentNode: string, nodeName: string) => {
     const parentLogicNode = getLogicNodeByName(parentNode);
     const nodeToDelete = getLogicNodeByName(nodeName);
-    recurseChildren(nodeToDelete, parentLogicNode);
+    let gateChildren = getAllGateChildren(nodeToDelete);
+    deleteChildNodes(gateChildren.map((node) => node.id || ''));
     deleteLogicNode(nodeToDelete.id);
 
     parentLogicNode.gateChildren = parentLogicNode.gateChildren.filter(
@@ -354,7 +386,7 @@ const useLogicNodeTreeDiagram = () => {
     if (!document.hasFocus()) {
       alert('Please click on the document to focus before reading the clipboard.');
       return;
-  }
+    }
     const pastedData = await navigator.clipboard.readText();
     // Parse the pasted data
     let pastedObject;
@@ -387,7 +419,11 @@ const useLogicNodeTreeDiagram = () => {
         node.gateChildren = [...node.gateChildren, newNode.name];
       } else {
         const pastedNodeName = pastedObject.name;
-        if (node.name === pastedNodeName || getAllGateChildren(node).includes(pastedNodeName) || getAncestors(node).includes(pastedNodeName)) {
+        if (
+          node.name === pastedNodeName ||
+          getAllGateChildrenNames(node).includes(pastedNodeName) ||
+          getAncestors(node).includes(pastedNodeName)
+        ) {
           setNodeExistsAlert(true);
           return;
         }
@@ -399,27 +435,38 @@ const useLogicNodeTreeDiagram = () => {
 
   const getAncestors = (node: LogicNode): string[] => {
     let ancestors: string[] = [];
-    const copiedModel = GetModelItemsReferencing(node.name, MainItemTypes.LogicNode, -1, undefined, new Set<MainItemTypes>([MainItemTypes.LogicNode]));
+    const copiedModel = GetModelItemsReferencing(
+      node.name,
+      MainItemTypes.LogicNode,
+      -1,
+      undefined,
+      new Set<MainItemTypes>([MainItemTypes.LogicNode]),
+    );
     copiedModel.LogicNodeList.forEach((node) => {
       ancestors.push(node.name);
-    })
+    });
     return ancestors;
-  }
-  const getAllGateChildren = (node: LogicNode): string[] => {
-    let gateChildrenNames: string[] = [];
+  };
+  const getAllGateChildren = (node: LogicNode): LogicNode[] => {
+    let gateChildren: LogicNode[] = [];
     let queue: LogicNode[] = [node];
     while (queue.length > 0) {
       const currentNode = queue.pop();
       currentNode?.gateChildren.forEach((childName) => {
         const childNode = getLogicNodeByName(childName);
         if (childNode) {
-          gateChildrenNames.push(childName);
+          gateChildren.push(childNode);
           queue.push(childNode);
         }
-      })
+      });
     }
+    return gateChildren;
+  };
+
+  const getAllGateChildrenNames = (node: LogicNode): string[] => {
+    let gateChildrenNames = getAllGateChildren(node).map((node) => node.name);
     return gateChildrenNames;
-  }
+  };
 
   const handleDoubleClick = (type: string, text: string) => {
     if (type === 'description') {
@@ -547,7 +594,7 @@ const useLogicNodeTreeDiagram = () => {
     editedTitle,
     nodeExistsAlert,
     canDeleteNode,
-    recurseChildren,
+    recurseAndDeleteChildren,
     setNodes,
     setEdges,
     onNodesChange,
