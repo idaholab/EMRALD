@@ -224,7 +224,7 @@ export const GetModelItemsReferencing = (
     retRefModel = CreateEmptyEMRALDModel();
   }
 
-  GetModelItemsReferencingRecursive([[itemName, itemType]], levelsUp, retRefModel, includeTypes, {});
+  GetModelItemsReferencingRecursive([[itemName, itemType]], levelsUp, retRefModel, includeTypes, {[itemName + "_" + itemType]: true});
 
   return retRefModel;
 };
@@ -239,7 +239,7 @@ const GetModelItemsReferencingRecursive = (
   processed : { [key: string]: boolean; } //items already done to prevent looping
 )  => { //returns a subset model of just the referenced items.
  
-  if(levelsUp == 0){ //-1 is recursive 0 means stop requested levels are done
+  if((levelsUp == 0) || (currentSearchItems.length == 0)){ //-1 is recursive 0 means stop requested levels are done
     return;
   }
 
@@ -250,59 +250,60 @@ const GetModelItemsReferencingRecursive = (
     let curItemType : MainItemTypes = currentSearchItems[0][1];
     currentSearchItems.shift(); //remove the item from the array
     //only do items that have not been done yet.
-    if(processed[curItemName + '_' + curItemType]){
-      return;
-    }
-    else{
-      processed[curItemName + '_' + curItemType] = true; //mark as processed
-    }
+    // if(!processed[curItemName + '_' + curItemType]){ 
+    //   processed[curItemName + '_' + curItemType] = true; //mark as processed
     
-    let jsonPathRefArray : Array<[string, MainItemTypes]> = GetJSONPathUsingRefs(curItemType, curItemName);
+    
+      let jsonPathRefArray : Array<[string, MainItemTypes]> = GetJSONPathUsingRefs(curItemType, curItemName);
 
-    jsonPathRefArray.forEach((jsonPathSet) => {
-      jsonpath.paths(appData.value, jsonPathSet[0]).forEach((ref: any) => {
-        let parentPath = ref.slice(0, -1);
-        let parent = jsonpath.value(appData.value, parentPath.join('.'));
-        while((parent.id == null) && (parentPath.length > 0))
-        {
-          parentPath = parentPath.slice(0, -1);
-          parent = jsonpath.value(appData.value, parentPath.join('.'));
-        }
-        if((parent.id != null) && (includeTypes.has(parent.objType)))
-        {
-          nextLevelItems.push([parent.name, parent.objType]);
-
-          switch(parent.objType)
+      jsonPathRefArray.forEach((jsonPathSet) => {
+        jsonpath.paths(appData.value, jsonPathSet[0]).forEach((ref: any) => {
+          let parentPath = ref.slice(0, -1);
+          let parent = jsonpath.value(appData.value, parentPath.join('.'));
+          while((parent.id == null) && (parentPath.length > 0))
           {
-            case MainItemTypes.Action:
-              addToModel.ActionList.push(parent);
-              break;
-            case MainItemTypes.Event:
-              addToModel.EventList.push(parent);
-              break;
-            case MainItemTypes.ExtSim:
-              addToModel.ExtSimList.push(parent);
-              break;
-            case MainItemTypes.Variable:
-              addToModel.VariableList.push(parent);
-              break;
-            case MainItemTypes.LogicNode:
-              addToModel.LogicNodeList.push(parent);
-              break;
-            case MainItemTypes.State:
-              addToModel.StateList.push(parent);
-              break;
-            case MainItemTypes.Diagram:
-              addToModel.DiagramList.push(parent);
-              break;
-            default:
-              //todo error not a valid type
-              break;
+            parentPath = parentPath.slice(0, -1);
+            parent = jsonpath.value(appData.value, parentPath.join('.'));
           }
-        }
+          if((parent.id != null) && (includeTypes.has(parent.objType)))
+          {
+            if(!processed[parent.name + '_' + parent.objType]){
+              processed[parent.name + '_' + parent.objType] = true;
+              nextLevelItems.push([parent.name, parent.objType]);
+
+              switch(parent.objType)
+              {
+                case MainItemTypes.Action:
+                  addToModel.ActionList.push(parent);
+                  break;
+                case MainItemTypes.Event:
+                  addToModel.EventList.push(parent);
+                  break;
+                case MainItemTypes.ExtSim:
+                  addToModel.ExtSimList.push(parent);
+                  break;
+                case MainItemTypes.Variable:
+                  addToModel.VariableList.push(parent);
+                  break;
+                case MainItemTypes.LogicNode:
+                  addToModel.LogicNodeList.push(parent);
+                  break;
+                case MainItemTypes.State:
+                  addToModel.StateList.push(parent);
+                  break;
+                case MainItemTypes.Diagram:
+                  addToModel.DiagramList.push(parent);
+                  break;
+                default:
+                  //todo error not a valid type
+                  break;
+              }
+            }
+          }
+        });
+      
       });
-    
-    });
+  //}
   }  
 
   if(levelsUp > 0) //if not fully recursive reduce levels 
