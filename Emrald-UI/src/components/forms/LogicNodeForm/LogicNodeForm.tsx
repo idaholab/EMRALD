@@ -47,7 +47,7 @@ const LogicNodeForm: React.FC<LogicNodeFormProps> = ({
     logicNodeData || parentNode || structuredClone(emptyLogicNode),
   );
   const newLogicNode = useSignal<LogicNode>(structuredClone(emptyLogicNode));
-  const compChildren = useSignal<CompChild[]>(logicNode.value.compChildren || []);
+  const compChildren = useSignal<CompChild>(logicNode.value.compChildren || []);
   const componentDiagrams =
     editing && component
       ? diagrams.filter(
@@ -121,6 +121,7 @@ const LogicNodeForm: React.FC<LogicNodeFormProps> = ({
       compChildren: [],
       gateChildren: [],
       isRoot: false,
+      objType: 'LogicNode',
     };
     newLogicNode.value = {
       id: '',
@@ -130,6 +131,7 @@ const LogicNodeForm: React.FC<LogicNodeFormProps> = ({
       compChildren: [],
       gateChildren: [],
       isRoot: false,
+      objType: 'LogicNode',
     };
     setLeafNodeType('');
     setCompDiagram('');

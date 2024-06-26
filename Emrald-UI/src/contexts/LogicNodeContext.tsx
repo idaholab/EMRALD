@@ -27,6 +27,7 @@ export const emptyLogicNode: LogicNode = {
   gateType: 'gtAnd',
   compChildren: [],
   gateChildren: [],
+  objType: "LogicNode",
 };
 
 const LogicNodeContext = createContext<LogicNodeContextType | undefined>(undefined);

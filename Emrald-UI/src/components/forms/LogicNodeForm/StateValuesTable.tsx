@@ -12,7 +12,7 @@ import FormControl from '@mui/material/FormControl';
 import Paper from '@mui/material/Paper';
 import { useDiagramContext } from '../../../contexts/DiagramContext';
 import { StateEvalValue } from '../../../types/ItemTypes';
-import { CompChild } from '../../../types/LogicNode';
+import { CompChildItems } from '../../../types/LogicNode';
 
 
 interface ComponentStateValue {
@@ -21,7 +21,7 @@ interface ComponentStateValue {
 }
 interface StateValuesTableProps {
   diagramName: string,
-  nodeDetails?: CompChild,
+  nodeDetails?: CompChildItems,
   setCompChildren?: React.Dispatch<React.SetStateAction<{
     stateValues?: ComponentStateValue[] | undefined;
     diagramName: string;

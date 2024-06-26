@@ -38,7 +38,7 @@ const ModelDetailsContextProvider: React.FC<EmraldContextWrapperProps> = ({
   const id = appData.value.id;
   const [name, setName] = useState(appData.value.name);
   const [desc, setDesc] = useState(appData.value.desc);
-  const [emraldVersion, setEmraldVersion] = useState(appData.value.emraldVersion);
+  const [emraldVersion, setEmraldVersion] = useState(appData.value.emraldVersion || 0);
   const [version, setVersion] = useState(appData.value.version);
 
   const updateName = (updatedName: string) => {
