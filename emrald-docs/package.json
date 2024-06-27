@@ -15,6 +15,7 @@
   },
   "license": "MIT",
   "devDependencies": {
+    "@adobe/jsonschema2md": "^6.0.0",
     "cross-env": "^7.0.3",
     "vuepress": "^1.5.3"
   }
