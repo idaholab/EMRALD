@@ -120,14 +120,14 @@ const InLogicNodeRefs: DiagramRefsArray = [
 
 export type MainItemTypeSet = Set<MainItemType>;
 const allMainItemTypes: MainItemTypeSet = new Set<MainItemType>([
-  "Diagram",
-  "State",
-  "Action",
-  "Event",
-  "ExtSim",
-  "LogicNode",
-  "Variable",
-  "EMRALD_Model"
+  MainItemTypes.Diagram,
+  MainItemTypes.State,
+  MainItemTypes.Action,
+  MainItemTypes.Event,
+  MainItemTypes.ExtSim,
+  MainItemTypes.LogicNode,
+  MainItemTypes.Variable,
+  MainItemTypes.EMRALD_Model
 ]);
 
 export const GetJSONPathUsingRefs = (itemType: MainItemTypes, lookupName : string): Array<[string, MainItemTypes]> => {
@@ -410,7 +410,7 @@ export const GetModelItemsReferencedBy = (
     refItems.shift(); //remove the item from the array
     
     let itemObj = GetItemByNameType(curItemName, curItemType);      
-    if((itemObj != null) && (itemObj.objType in includeTypes)){ //add to the reference subset model      
+    if((itemObj != null) && (includeTypes.has(itemObj.objType))){ //add to the reference subset model      
       AddItemToModel(itemObj, curItemType, retRefModel);    
 
       
