@@ -905,7 +905,7 @@
                     "description": "Sub group tree path",
                     "devNote": "make this an any type when building the documentation to get rid of the recursive error",
                     "items": {
-                        "$ref": "#/definitions/Group"
+                        
                     }
                 }
             },
