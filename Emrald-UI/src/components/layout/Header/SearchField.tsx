@@ -91,29 +91,29 @@ const SearchField = () => {
         value={value}
         onChange={(e) => setValue(e.target.value)}
         size="small"
-        sx={{ mr: 3 }}
+        InputProps={{ style: {marginRight: '50px', borderRadius: '15px'}  }}
         onKeyDown={handleKeyDown}
       />
       <DialogComponent open={openSearchDialog} title="Search Results" onClose={handleClose}>
-        <Typography variant="h3">Diagrams</Typography>
+        <Typography variant="h4">Diagrams</Typography>
         {diagrams.map((diagram) => (
           <Typography key={diagram.id} variant="h6">
             {diagram.name}
           </Typography>
         ))}
-        <Typography variant="h3">States</Typography>
+        <Typography variant="h4">States</Typography>
         {states.map((state) => (
           <Typography key={state.id} variant="h6">
             {state.name}
           </Typography>
         ))}
-        <Typography variant="h3">Actions</Typography>
+        <Typography variant="h4">Actions</Typography>
         {actions.map((action) => (
           <Typography key={action.id} variant="h6">
             {action.name}
           </Typography>
         ))}
-        <Typography variant="h3">Events</Typography>
+        <Typography variant="h4">Events</Typography>
         {events.map((event) => (
           <Typography key={event.id} variant="h6">
             {event.name}
