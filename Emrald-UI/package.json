@@ -39,7 +39,6 @@
     "uuid": "^9.0.0"
   },
   "devDependencies": {
-    "@adobe/jsonschema2md": "^6.0.0",
     "@rollup/plugin-node-resolve": "^15.2.3",
     "@testing-library/jest-dom": "^6.0.0",
     "@testing-library/react": "^14.0.0",
