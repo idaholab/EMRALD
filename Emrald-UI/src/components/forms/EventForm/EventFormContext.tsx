@@ -132,7 +132,6 @@ const EventFormContextProvider: React.FC<PropsWithChildren> = ({ children }) => 
   const [ifInState, setIfInState] = useState<boolean>();
   const [triggerStates, setTriggerStates] = useState<string[]>([]);
   const [moveFromCurrent, setMoveFromCurrent] = useState<boolean>(false);
-  const [actions, setActions] = useState<string[]>([]);
   const [eventStateIndex, setEventStateIndex] = useState<number>(0);
   const [allItems, setAllItems] = useState<boolean>(true);
   const [onSuccess, setOnSuccess] = useState<boolean>();
@@ -347,7 +346,6 @@ const EventFormContextProvider: React.FC<PropsWithChildren> = ({ children }) => 
     setIfInState(undefined);
     setTriggerStates([]); // Default value for triggerStates
     setMoveFromCurrent(false); // Default value for moveFromCurrent
-    setActions([]); // Default value for actions
     setEventStateIndex(0); // Default value for eventStateIndex
     setAllItems(true); // Default value for allItems
     setOnSuccess(undefined);
@@ -402,8 +400,8 @@ const EventFormContextProvider: React.FC<PropsWithChildren> = ({ children }) => 
       mainItem: true,
     };
     eventData
-      ? updateEvent(event.value, state, actions, moveFromCurrent, eventStateIndex)
-      : createEvent(event.value, state, actions, moveFromCurrent);
+      ? updateEvent(event.value, state, moveFromCurrent)
+      : createEvent(event.value, state, moveFromCurrent);
     handleClose();
   };
 
