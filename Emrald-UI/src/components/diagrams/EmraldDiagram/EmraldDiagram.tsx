@@ -1,4 +1,4 @@
-import React, { useMemo, useRef } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
 import ReactFlow, {
   MiniMap,
   Controls,
@@ -38,6 +38,7 @@ const EmraldDiagram: React.FC<EmraldDiagramProps> = ({ diagram }) => {
     onNodeDoubleClick,
     onEdgeUpdate,
     isValidConnection,
+    setTopDiagram,
   } = useEmraldDiagram();
   const {
     menu,
@@ -51,7 +52,10 @@ const EmraldDiagram: React.FC<EmraldDiagramProps> = ({ diagram }) => {
     onNodeContextMenu,
     onEdgeContextMenu,
   } = useContextMenu(getStateNodes, setEdges);
-
+  
+  useEffect(()=> {
+    setTopDiagram(diagram)
+  }, [])
   const nodeTypes = useMemo(() => ({ custom: StateNode }), []);
   const ref = useRef<HTMLDivElement>(null);
 
