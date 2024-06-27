@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useNodesState, useEdgesState, Edge, Node, Connection, updateEdge } from 'reactflow';
 import EmraldDiagram from './EmraldDiagram';
-import { currentDiagram } from './EmraldDiagram';
 import { v4 as uuidv4 } from 'uuid';
 // Edges
 import getEventActionEdges from './Edges/EventActionEdge';
@@ -11,7 +10,7 @@ import { State } from '../../../types/State';
 import { Action } from '../../../types/Action';
 import { Event } from '../../../types/Event';
 // Contexts
-import { useDiagramContext } from '../../../contexts/DiagramContext';
+import { emptyDiagram, useDiagramContext } from '../../../contexts/DiagramContext';
 import { useStateContext } from '../../../contexts/StateContext';
 import { useActionContext } from '../../../contexts/ActionContext';
 import { useEventContext } from '../../../contexts/EventContext';
@@ -22,11 +21,13 @@ import EventForm from '../../forms/EventForm/EventForm';
 import ActionForm from '../../forms/ActionForm/ActionForm';
 import ActionFormContextProvider from '../../forms/ActionForm/ActionFormContext';
 import EventFormContextProvider from '../../forms/EventForm/EventFormContext';
+import { Diagram } from '../../../types/Diagram';
 
 const useEmraldDiagram = () => {
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge[]>([]);
   const [loading, setLoading] = useState(true);
+  const [topDiagram, setTopDiagram] = useState<Diagram>(emptyDiagram);
   const { diagramList, getDiagramByDiagramName } = useDiagramContext();
   const {
     getActionByActionId,
@@ -205,7 +206,7 @@ const useEmraldDiagram = () => {
   const isStateInCurrentDiagram = (action: Action) => {
     if (!action) return false;
     const newStates = getActionNewStates(action);
-    return newStates.every((newState) => currentDiagram.value.states?.includes(newState));
+    return newStates.every((newState) => topDiagram.states?.includes(newState));
   };
 
   // Find and open window for diagram that has new states
@@ -226,8 +227,8 @@ const useEmraldDiagram = () => {
 
   // Build the state nodes
   const getStateNodes = () => {
-    if (currentDiagram.value.states) {
-      let stateNodes = currentDiagram.value.states.map((state) => {
+    if (topDiagram.states) {
+      let stateNodes = topDiagram.states.map((state) => {
         let stateDetails = getStateByStateName(state);
         const {x, y} = {x: stateDetails.geometryInfo?.x || 0, y: stateDetails.geometryInfo?.y || 0}
         return {
@@ -255,7 +256,7 @@ const useEmraldDiagram = () => {
   useEffect(() => {
     getStateNodes();
     setLoading(false);
-  }, [currentDiagram.value, diagramList.value]);
+  }, [topDiagram, diagramList.value]);
 
   return {
     nodes,
@@ -278,6 +279,7 @@ const useEmraldDiagram = () => {
     getActionByActionName,
     getStateNodes,
     getActionNewStates,
+    setTopDiagram,
     updateStatePosition,
     updateStateEvents,
     updateStateEventActions,
