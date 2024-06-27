@@ -41,7 +41,7 @@ export function useSidebarLogic() {
   const { deleteEvent } = useEventContext();
   const { deleteVariable } = useVariableContext();
   const { closeAllWindows } = useWindowContext();
-  const { canDeleteNode, recurseChildren } = useLogicNodeTreeDiagram();
+  const { canDeleteNode, recurseAndDeleteChildren } = useLogicNodeTreeDiagram();
   const { activeWindowId, getWindowTitleById } = useWindowContext();
 
   const onDiagramChange = (newDiagram: Diagram) => {
@@ -165,7 +165,7 @@ export function useSidebarLogic() {
     setDeleteConfirmation(false);
     setItemToDelete(undefined);
   };
-  const deleteItem = () => {
+  const deleteItem = async () => {
     // delete all states tied to the diagram
     if (!itemToDelete) return;
     if (itemToDeleteType === MainItemTypes.Diagram) {
@@ -182,7 +182,7 @@ export function useSidebarLogic() {
       if (!canDeleteNode(itemToDelete.name)) {
         nodeToDelete.isRoot = false;
       } else {
-        recurseChildren(nodeToDelete);
+        await recurseAndDeleteChildren(nodeToDelete);
         deleteLogicNode(nodeToDelete.id);
       }
     }
