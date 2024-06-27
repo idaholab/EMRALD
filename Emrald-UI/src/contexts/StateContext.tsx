@@ -92,9 +92,14 @@ const StateContextProvider: React.FC<EmraldContextWrapperProps> = ({ children })
     if (stateToUpdate) {
       if (stateToUpdate.events.includes(event.name)) {
         return;
+      } else {
+        stateToUpdate.events = [...stateToUpdate.events, event.name];
+        stateToUpdate.eventActions.push({
+          moveFromCurrent: false,
+          actions: [],
+        })
+        updateState(stateToUpdate);
       }
-      stateToUpdate.events = [...stateToUpdate.events, event.name];
-      updateState(stateToUpdate);
     }
   };
 

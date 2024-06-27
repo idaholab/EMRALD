@@ -11,13 +11,11 @@ import { State } from '../types/State';
 interface EventContextType {
   events: Event[];
   eventsList: ReadonlySignal<Event[]>;
-  createEvent: (event: Event, state?: State, actions?: string[], moveFromCurrent?: boolean) => void;
+  createEvent: (event: Event, state?: State, moveFromCurrent?: boolean) => void;
   updateEvent: (
     event: Event,
     state?: State,
-    actions?: string[],
     moveFromCurrent?: boolean,
-    eventStateIndex?: number,
   ) => void;
   deleteEvent: (eventId: string | undefined) => void;
   getEventByEventName: (eventName: string) => Event | undefined;
@@ -56,14 +54,13 @@ const EventContextProvider: React.FC<EmraldContextWrapperProps> = ({ children })
   const createEvent = async (
     newEvent: Event,
     state?: State,
-    actions?: string[],
     moveFromCurrent: boolean = false,
   ) => {
     var updatedModel: EMRALD_Model = await updateModelAndReferences(newEvent, MainItemTypes.Event);
     updateAppData(updatedModel);
-    if (state && actions) {
+    if (state) {
       state.events.push(newEvent.name);
-      state.eventActions.push({ actions, moveFromCurrent });
+      state.eventActions.push({ moveFromCurrent, actions: [] });
       var updatedModel: EMRALD_Model = await updateModelAndReferences(state, MainItemTypes.State);
       updateAppData(updatedModel);
     }
@@ -73,9 +70,7 @@ const EventContextProvider: React.FC<EmraldContextWrapperProps> = ({ children })
   const updateEvent = async (
     updatedEvent: Event,
     state?: State,
-    actions?: string[],
     moveFromCurrent: boolean = false,
-    eventStateIndex?: number,
   ) => {
     var updatedModel: EMRALD_Model = await updateModelAndReferences(
       updatedEvent,
@@ -85,7 +80,8 @@ const EventContextProvider: React.FC<EmraldContextWrapperProps> = ({ children })
     setEvents(updatedModel.EventList);
 
     //update the state "moveFromCurrent" boolean
-    if (state && actions && eventStateIndex) {
+    if (state) {
+      const eventStateIndex = state.events.indexOf(updatedEvent.name);
       state.eventActions[eventStateIndex].moveFromCurrent = moveFromCurrent;
       var updatedModel: EMRALD_Model = await updateModelAndReferences(state, MainItemTypes.State);
       updateAppData(updatedModel);
