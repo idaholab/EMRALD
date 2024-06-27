@@ -7,7 +7,7 @@ import {
   SvgIcon,
 } from '@mui/material';
 import WindowComponent from '../Window/Window';
-import { Tb3DCubeSphere, TbSchema } from 'react-icons/tb';
+import { TbCube3dSphere , TbSchema } from 'react-icons/tb';
 import { GrPerformance } from 'react-icons/gr';
 import { VscSymbolEvent } from 'react-icons/vsc';
 import { HiOutlineVariable } from 'react-icons/hi';
@@ -47,7 +47,7 @@ const MainCanvas: React.FC = () => {
     {
       icon: (
         <SvgIcon>
-          <Tb3DCubeSphere />
+          <TbCube3dSphere />
         </SvgIcon>
       ),
       name: 'New External Sim',

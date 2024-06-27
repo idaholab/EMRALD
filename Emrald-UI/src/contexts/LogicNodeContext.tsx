@@ -12,7 +12,7 @@ interface LogicNodeContextType {
   logicNodes: LogicNode[];
   createLogicNode: (logicNode: LogicNode) => Promise<void>;
   updateLogicNode: (logicNode: LogicNode) => Promise<void>;
-  deleteLogicNode: (logicNodeId: string | undefined) => void;
+  deleteLogicNode: (logicNodeId: string | undefined) => Promise<void>;
   getLogicNodeByName: (logicNodeName: string | undefined) => LogicNode;
   newLogicNodeList: (newLogicNodeList: LogicNode[]) => void;
   mergeLogicNodeList: (newLogicNodeList: LogicNode[]) => void;
@@ -27,7 +27,7 @@ export const emptyLogicNode: LogicNode = {
   gateType: 'gtAnd',
   compChildren: [],
   gateChildren: [],
-  objType: "LogicNode",
+  objType: 'LogicNode',
 };
 
 const LogicNodeContext = createContext<LogicNodeContextType | undefined>(undefined);
@@ -73,12 +73,22 @@ const LogicNodeContextProvider: React.FC<EmraldContextWrapperProps> = ({ childre
   };
 
   const deleteLogicNode = (logicNodeId: string | undefined) => {
-    if (!logicNodeId) {
-      return;
-    }
-    const updatedLogicNodes = logicNodeList.value.filter((item) => item.id !== logicNodeId);
-    updateAppData({ ...appData.value, LogicNodeList: updatedLogicNodes });
-    setLogicNodes(updatedLogicNodes);
+    return new Promise<void>(async (resolve) => {
+      let nodeName = logicNodeList.value.find((node) => node.id === logicNodeId)?.name;
+      const updatedLogicNodes = logicNodeList.value.filter((item) => item.id !== logicNodeId);
+      if (nodeName) {
+        updatedLogicNodes.forEach((node) => {
+          if (node.gateChildren.includes(nodeName)) {
+            node.gateChildren = node.gateChildren.filter((name) => name !== nodeName);
+          }
+        });
+      }
+      updateAppData(
+        JSON.parse(JSON.stringify({ ...appData.value, LogicNodeList: updatedLogicNodes })),
+      );
+      setLogicNodes(logicNodeList.value);
+      resolve();
+    });
   };
 
   const getLogicNodeByName = (logicNodeName: string | undefined) => {

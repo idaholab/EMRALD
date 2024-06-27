@@ -72,7 +72,32 @@ export const useOptionsMapping = () => {
           )
         }
       },
-      { label: 'Export', action: () => null },
+      { label: 'Export', action: (diagram: Diagram) => {
+        const copiedModel = GetModelItemsReferencedBy(diagram.name, MainItemTypes.Diagram, 2)
+        copiedModel.name = diagram.name;
+        copiedModel.emraldVersion = EMRALD_SchemaVersion;
+
+        // Convert JSON data to a string
+        const jsonString = JSON.stringify(copiedModel, null, 2);
+  
+        // Create a Blob (Binary Large Object) with the JSON string
+        const blob = new Blob([jsonString], { type: 'application/json' });
+  
+        // Create a URL for the Blob
+        const url = URL.createObjectURL(blob);
+  
+        // Create an <a> element to trigger the download
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${copiedModel.name ? copiedModel.name : 'exported-diagram'}.json`;
+  
+        // Trigger a click event on the <a> element to initiate the download
+        a.click();
+  
+        // Clean up by revoking the URL
+        URL.revokeObjectURL(url);
+        } 
+      },
       { label: 'Copy', action: (diagram: Diagram) => {
         const copiedModel = GetModelItemsReferencedBy(diagram.name, MainItemTypes.Diagram, 2)
         copiedModel.name = diagram.name;

@@ -42,7 +42,7 @@ export const useTemplateForm = (templatedData: EMRALD_Model) => {
   const [groupList, setGroupList] = useState<Group[]>(groups ? groups : []);
   const { handleClose } = useWindowContext();
   const [expanded, setExpanded] = useState(['Group 1']);
-  const [diagramStates, setDiagramStates] = useState<string[]>(templatedData.DiagramList[0].states);
+  const [diagramStates, setDiagramStates] = useState<string[]>(templatedData.DiagramList[0]?.states);
 
   useEffect(() => {
     setTemplatedItems(convertModelToArray(templatedData));

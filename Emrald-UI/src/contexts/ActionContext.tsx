@@ -30,7 +30,7 @@ export const emptyAction: Action = {
   actType: 'atTransition',
   mainItem: false,
   objType: MainItemTypes.Action,
-  required: false
+  required: false,
 };
 
 const ActionContext = createContext<ActionContextType | undefined>(undefined);
@@ -59,14 +59,14 @@ const ActionContextProvider: React.FC<EmraldContextWrapperProps> = ({ children }
     updateAppData(updatedModel);
     if (event && state) {
       const eventIndex = state.events.indexOf(event.name);
-        state.eventActions[eventIndex].actions.push(newAction.name); 
+      state.eventActions[eventIndex].actions.push(newAction.name);
       var updatedModel: EMRALD_Model = await updateModelAndReferences(state, MainItemTypes.State);
-        updateAppData(updatedModel);
+      updateAppData(updatedModel);
     } else if (state) {
       state.immediateActions.push(newAction.name);
       var updatedModel: EMRALD_Model = await updateModelAndReferences(state, MainItemTypes.State);
-        updateAppData(updatedModel);
-    } 
+      updateAppData(updatedModel);
+    }
     setActions(updatedModel.ActionList);
   };
 
