@@ -359,7 +359,7 @@ export const useImportForm = (importedData: EMRALD_Model, fromTemplate?: boolean
       }
       updatedItems[index].conflict = false;
     } else {
-      updatedItems[index].conflict = checkForConflicts(updatedItems[index].newName.replace(findValue, replaceValue), updatedItems[index].type);
+      updatedItems[index].conflict = hasConflict(updatedItems[index].newName, updatedItems[index].type, updatedItems[index].required);
     }
     setImportedItems(updatedItems);
   };
@@ -369,11 +369,11 @@ export const useImportForm = (importedData: EMRALD_Model, fromTemplate?: boolean
  */
   const handleApply = () => {
     const updatedItems = importedItems.map((item) => {
-      if (item.newName.includes(findValue) && !item.locked) {
+      if (item.newName.includes(findValue) && !item.locked && item.action === 'rename') {
         return {
           ...item,
           newName: item.newName.replace(findValue, replaceValue),
-          conflict: checkForConflicts(item.newName.replace(findValue, replaceValue), item.type),
+          conflict: hasConflict(item.newName.replace(findValue, replaceValue), item.type, item.required),
         };
       }
       return item;
