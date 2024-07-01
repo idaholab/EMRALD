@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { EMRALD_Model } from '../../../types/EMRALD_Model';
 import { v4 as uuidv4 } from 'uuid';
 import { useWindowContext } from '../../../contexts/WindowContext';
@@ -80,7 +80,7 @@ export const useImportForm = (importedData: EMRALD_Model, fromTemplate?: boolean
       items.push({
         type: MainItemTypes.LogicNode,
         displayType: 'Logic Node',
-        locked: !logicNodeList.value.some(item => item.name === logicNode.name),
+        locked: logicNodeList.value.some(item => item.name === logicNode.name),
         oldName: logicNode.name,
         newName: logicNode.name,
         action: 'rename',
@@ -94,7 +94,7 @@ export const useImportForm = (importedData: EMRALD_Model, fromTemplate?: boolean
       items.push({
         type: MainItemTypes.ExtSim,
         displayType: 'External Sim',
-        locked: !extSimList.value.some(item => item.name === extSim.name),
+        locked: extSimList.value.some(item => item.name === extSim.name),
         oldName: extSim.name,
         newName: extSim.name,
         action: 'rename',
@@ -108,10 +108,10 @@ export const useImportForm = (importedData: EMRALD_Model, fromTemplate?: boolean
       items.push({
         type: MainItemTypes.Action,
         displayType: 'Action',
-        locked: !actionsList.value.some(item => item.name === action.name) || action.required !== false,
+        locked: actionsList.value.some(item => item.name === action.name),
         oldName: action.name,
         newName: action.name,
-        action: action.required ? 'ignore' : 'rename',
+        action: action.required || actionsList.value.some(item => item.name === action.name) ? 'ignore' : 'rename',
         conflict: hasConflict(action.name, MainItemTypes.Action, action.required),
         required: action.required ? action.required : false,
         emraldItem: action,
@@ -122,10 +122,10 @@ export const useImportForm = (importedData: EMRALD_Model, fromTemplate?: boolean
       items.push({
         type: MainItemTypes.Event,
         displayType: 'Event',
-        locked: !eventsList.value.some(item => item.name === event.name),
+        locked: eventsList.value.some(item => item.name === event.name),
         oldName: event.name,
         newName: event.name,
-        action: event.required ? 'ignore' : 'rename',
+        action: event.required || eventsList.value.some(item => item.name === event.name) ? 'ignore' : 'rename',
         conflict: hasConflict(event.name, MainItemTypes.Event, event.required),
         required: event.required ? event.required : false,
         emraldItem: event,
@@ -139,7 +139,7 @@ export const useImportForm = (importedData: EMRALD_Model, fromTemplate?: boolean
         locked: !statesList.value.some(item => item.name === state.name),
         oldName: state.name,
         newName: state.name,
-        action: state.required ? 'ignore' : 'rename',
+        action: state.required  ? 'ignore' : 'rename',
         conflict: hasConflict(state.name, MainItemTypes.State, state.required),
         required: state.required ? state.required : false,
         emraldItem: state,
@@ -150,7 +150,7 @@ export const useImportForm = (importedData: EMRALD_Model, fromTemplate?: boolean
       items.push({
         type: MainItemTypes.Variable,
         displayType: 'Variable',
-        locked: !variableList.value.some(item => item.name === variable.name),
+        locked: variableList.value.some(item => item.name === variable.name),
         oldName: variable.name,
         newName: variable.name,
         action: 'rename',
@@ -175,7 +175,7 @@ export const useImportForm = (importedData: EMRALD_Model, fromTemplate?: boolean
 
   // set has conflicts
   useEffect(() => {
-    const hasConflicts = importedItems.some((item) => hasConflict(item.newName, item.type, item.required));
+    const hasConflicts = importedItems.some((item) => item.action === 'rename' && hasConflict(item.newName, item.type, item.required));
     setHasConflicts(hasConflicts);
     
   }, [importedItems]);
@@ -246,8 +246,11 @@ export const useImportForm = (importedData: EMRALD_Model, fromTemplate?: boolean
    *          - 'MUST EXIST': The imported item is required but does not exist.
    *          - 'NO CONFLICT': The imported item does not conflict with any other item.
    */
-  function getConflictStatus(item: ImportedItem) {
-    const { conflict, required, newName, type } = item;
+  const getConflictStatus = useCallback((item: ImportedItem) => {
+    const { action, conflict, required, newName, type } = item;
+    if (action === "ignore") {
+      return 'NO CONFLICT';
+    }
     if (conflict && !required) {
       return 'CONFLICTS';
     } else if (conflict && required && !checkIfRequiredItemExists(newName, type)) {
@@ -257,7 +260,7 @@ export const useImportForm = (importedData: EMRALD_Model, fromTemplate?: boolean
     } else {
       return 'NO CONFLICT';
     }
-  }
+  }, [importedItems]);
 
   function hasConflict(name: string, type: MainItemTypes, required?: boolean): boolean {
     if (checkIfRequiredItemExists(name, type) && !required) {
@@ -386,12 +389,12 @@ export const useImportForm = (importedData: EMRALD_Model, fromTemplate?: boolean
   const handleSave = async () => {
     // Go through all of the renamed items and update the pasted model
     let updatedModel: EMRALD_Model = { ...appData.value };
-  
+    const importedDataCopy = structuredClone(importedData); // Deep copy of importedData so it doesn't get changed
+    
     // Rename loop
     for (let i = 0; i < importedItems.length; i++) {
       const item = importedItems[i];
       if (item.action === 'rename') {
-        const importedDataCopy = structuredClone(importedData); // Deep copy of importedData so it doesn't get changed
         const itemCopy = structuredClone(item.emraldItem);
         itemCopy.name = item.newName;
         await updateSpecifiedModel(itemCopy, item.type, importedDataCopy, false);
