@@ -395,12 +395,13 @@ export const useImportForm = (importedData: EMRALD_Model, fromTemplate?: boolean
     for (let i = 0; i < importedItems.length; i++) {
       const item = importedItems[i];
       if (item.action === 'rename') {
-        const itemCopy = structuredClone(item.emraldItem);
-        itemCopy.name = item.newName;
-        await updateSpecifiedModel(itemCopy, item.type, importedDataCopy, false);
-        const updatedItems = convertModelToArray(importedDataCopy);
-        item.emraldItem = updatedItems[i].emraldItem;
-        item.emraldItem.id = uuidv4();
+        const itemCopy = structuredClone(GetItemByNameType(item.oldName, item.type, importedDataCopy)); //get the item from the importedDataCopy as it may be changed on other items being updated
+        if (itemCopy) {
+          itemCopy.name = item.newName;
+          await updateSpecifiedModel(itemCopy, item.type, importedDataCopy, false);
+          itemCopy.id = uuidv4();
+          item.emraldItem = itemCopy;
+        }
       }
     }
   
