@@ -7,7 +7,10 @@ import { State } from '../../../types/State';
 import { Action } from '../../../types/Action';
 import { Event } from '../../../types/Event';
 import SearchIcon from '@mui/icons-material/Search';
-import { GetModelItemsReferencing } from '../../../utils/ModelReferences';
+import {
+  GetModelItemsReferencedBy,
+  GetModelItemsReferencing,
+} from '../../../utils/ModelReferences';
 import ItemTypeMenuResults from './ItemTypeMenuResults';
 import { EMRALD_Model } from '../../../types/EMRALD_Model';
 import { ExtSim } from '../../../types/ExtSim';
@@ -42,27 +45,29 @@ const SearchField = () => {
   const [variables, setVariables] = useState<Variable[]>([]);
 
   const { addWindow } = useWindowContext();
+
   const onSubmit = () => {
+    let tempAppData = structuredClone(appData.value);
     // search through diagrams
-    let tempDiagrams = getItemList(appData.value.DiagramList);
+    let tempDiagrams = getItemList(tempAppData.DiagramList);
     setDiagrams(tempDiagrams);
     // search through states
-    let tempStates = getItemList(appData.value.StateList);
+    let tempStates = getItemList(tempAppData.StateList);
     setStates(tempStates);
     // search through actions
-    let tempActions = getItemList(appData.value.ActionList);
+    let tempActions = getItemList(tempAppData.ActionList);
     setActions(tempActions);
     // search through events
-    let tempEvents = getItemList(appData.value.EventList);
+    let tempEvents = getItemList(tempAppData.EventList);
     setEvents(tempEvents);
     // search through ext sims
-    let tempExtSims = getItemList(appData.value.ExtSimList);
+    let tempExtSims = getItemList(tempAppData.ExtSimList);
     setExtSims(tempExtSims);
     //search for logic nodes
-    let tempLogicNodes = getItemList(appData.value.LogicNodeList);
+    let tempLogicNodes = getItemList(tempAppData.LogicNodeList);
     setLogicNodes(tempLogicNodes);
     // search for variables
-    let tempVariables = getItemList(appData.value.VariableList);
+    let tempVariables = getItemList(tempAppData.VariableList);
     setVariables(tempVariables);
     setOpenSearchDialog(true);
   };
@@ -74,7 +79,7 @@ const SearchField = () => {
         item.name.toLowerCase().includes(value.toLowerCase()) ||
         item.desc?.toLowerCase().includes(value.toLowerCase())
       ) {
-        items.push(item);
+        items.push(structuredClone(item));
       }
     });
     return items;
@@ -86,19 +91,69 @@ const SearchField = () => {
     }
   };
 
-  const getModel = (item: Diagram | State | Action | Event, direction: any): ReactNode => {
+  const getModel = (
+    item: Diagram | State | Action | Event | ExtSim | LogicNode | Variable,
+    direction: typeof GetModelItemsReferencing | typeof GetModelItemsReferencedBy,
+  ): ReactNode => {
     const [expandedItem, setExpandedItem] = useState<string | null>(null);
     const [nestedModel, setNestedModel] = useState<EMRALD_Model>();
     const ButtonString = direction === GetModelItemsReferencing ? 'Used by' : 'Using';
 
-    const handleExpand = (item: Diagram | State | Action | Event) => {
+    const handleExpand = (
+      item: Diagram | State | Action | Event | ExtSim | LogicNode | Variable,
+    ) => {
       if (expandedItem === item.id) {
         setExpandedItem(null);
         return;
       }
-      let tempModel = direction(item.name, item.objType, 1);
+      let tempModel = direction(item.name, item.objType as MainItemTypes, 1);
+      tempModel = filterItemFromModel(tempModel, item);
       setNestedModel(tempModel);
       setExpandedItem(item.id || null);
+    };
+    const filterItemFromModel = (
+      model: EMRALD_Model,
+      item: Diagram | State | Action | Event | ExtSim | LogicNode | Variable,
+    ): EMRALD_Model => {
+      switch (item.objType) {
+        case 'Diagram':
+          return {
+            ...model,
+            DiagramList: model.DiagramList?.filter((diagram) => diagram.id !== item.id),
+          };
+        case 'State':
+          return {
+            ...model,
+            StateList: model.StateList?.filter((state) => state.id !== item.id),
+          };
+        case 'Action':
+          return {
+            ...model,
+            ActionList: model.ActionList?.filter((action) => action.id !== item.id),
+          };
+        case 'Event':
+          return {
+            ...model,
+            EventList: model.EventList?.filter((event) => event.id !== item.id),
+          };
+        case 'ExtSim':
+          return {
+            ...model,
+            ExtSimList: model.ExtSimList?.filter((extSim) => extSim.id !== item.id),
+          };
+        case 'LogicNode':
+          return {
+            ...model,
+            LogicNodeList: model.LogicNodeList?.filter((logicNode) => logicNode.id !== item.id),
+          };
+        case 'Variable':
+          return {
+            ...model,
+            VariableList: model.VariableList?.filter((variable) => variable.id !== item.id),
+          };
+        default:
+          return model;
+      }
     };
 
     return (

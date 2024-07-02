@@ -1,10 +1,5 @@
 import React, { useEffect, useMemo, useRef } from 'react';
-import ReactFlow, {
-  MiniMap,
-  Controls,
-  Background,
-  BackgroundVariant,
-} from 'reactflow';
+import ReactFlow, { MiniMap, Controls, Background, BackgroundVariant } from 'reactflow';
 import 'reactflow/dist/style.css';
 import { Box, Typography } from '@mui/material';
 import StateNode from '../EmraldDiagram/StateNodeComponent';
@@ -38,7 +33,7 @@ const EmraldDiagram: React.FC<EmraldDiagramProps> = ({ diagram }) => {
     onNodeDoubleClick,
     onEdgeUpdate,
     isValidConnection,
-    setTopDiagram,
+    // setTopDiagram,
   } = useEmraldDiagram();
   const {
     menu,
@@ -52,10 +47,10 @@ const EmraldDiagram: React.FC<EmraldDiagramProps> = ({ diagram }) => {
     onNodeContextMenu,
     onEdgeContextMenu,
   } = useContextMenu(getStateNodes, setEdges);
-  
-  useEffect(()=> {
-    setTopDiagram(diagram)
-  }, [])
+
+  // useEffect(()=> {
+  //   setTopDiagram(diagram)
+  // }, [])
   const nodeTypes = useMemo(() => ({ custom: StateNode }), []);
   const ref = useRef<HTMLDivElement>(null);
 
@@ -85,7 +80,7 @@ const EmraldDiagram: React.FC<EmraldDiagramProps> = ({ diagram }) => {
             nodeTypes={nodeTypes}
           >
             <Controls />
-            <MiniMap pannable/>
+            <MiniMap pannable />
             <Background variant={BackgroundVariant.Dots} gap={12} size={1} />
           </ReactFlow>
           {menu && (
@@ -96,19 +91,20 @@ const EmraldDiagram: React.FC<EmraldDiagramProps> = ({ diagram }) => {
               options={menuOptions}
             />
           )}
-          {
-            deleteConfirmation && (
-              <DialogComponent 
-                open={true}
-                title="Delete Confirmation"
-                submitText="delete"
-                onSubmit={() => deleteItem()}
-                onClose={() => closeDeleteConfirmation()}
-              >
-                <Typography>Are you sure you want to delete {itemToDelete?.name}? It will be removed from all other places it is used.</Typography>
-              </DialogComponent>
-            )
-          }
+          {deleteConfirmation && (
+            <DialogComponent
+              open={true}
+              title="Delete Confirmation"
+              submitText="delete"
+              onSubmit={() => deleteItem()}
+              onClose={() => closeDeleteConfirmation()}
+            >
+              <Typography>
+                Are you sure you want to delete {itemToDelete?.name}? It will be removed from all
+                other places it is used.
+              </Typography>
+            </DialogComponent>
+          )}
         </div>
       )}
     </Box>
