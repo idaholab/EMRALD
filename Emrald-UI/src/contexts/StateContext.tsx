@@ -97,7 +97,7 @@ const StateContextProvider: React.FC<EmraldContextWrapperProps> = ({ children })
         stateToUpdate.eventActions.push({
           moveFromCurrent: false,
           actions: [],
-        })
+        });
         updateState(stateToUpdate);
       }
     }
