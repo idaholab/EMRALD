@@ -295,6 +295,10 @@ export const useImportForm = (importedData: EMRALD_Model, fromTemplate?: boolean
   const handleLockChange = (index: number, locked: boolean) => {
     const updatedItems = [...importedItems];
     updatedItems[index].locked = locked;
+    if (!locked) {
+      updatedItems[index].action = 'rename';
+      updatedItems[index].conflict = hasConflict(updatedItems[index].newName, updatedItems[index].type, updatedItems[index].required);
+    }
     setImportedItems(updatedItems);
   };
 
@@ -314,7 +318,7 @@ export const useImportForm = (importedData: EMRALD_Model, fromTemplate?: boolean
   const unlockAll = () => {
     const updatedItems = importedItems.map((item) => {
       if (!item.required) {
-        return { ...item, locked: false };
+        return { ...item, locked: false, action: 'rename' };
       } else {
         return item;
       }
