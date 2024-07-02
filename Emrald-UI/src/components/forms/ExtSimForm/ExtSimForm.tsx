@@ -8,8 +8,6 @@ import { useSignal } from '@preact/signals-react';
 import { ExtSim } from '../../../types/ExtSim';
 import { emptyExtSim, useExtSimContext } from '../../../contexts/ExtSimContext';
 import TextField from '@mui/material/TextField';
-import { FormError } from '../FormError';
-import { Alert } from '@mui/material';
 
 interface ExtSimFormProps {
   ExtSimData?: ExtSim;
@@ -21,22 +19,15 @@ const ExtSimForm: React.FC<ExtSimFormProps> = ({ ExtSimData }) => {
   const ExtSim = useSignal<ExtSim>(ExtSimData || emptyExtSim);
   const [name, setName] = useState<string>(ExtSimData?.name || '');
   const [resourceName, setResourceName] = useState<string>(ExtSimData?.resourceName || '');
-  const [error, setError] = useState<FormError>();
+  const [hasError, setHasError] = useState<boolean>(false);
+  const { extSimList } = useExtSimContext();
 
-  const validate = () => {
-    if (!name) {
-      setError({ error: true, message: 'Sim name is required' });
-      return false;
-    }
-    if (!resourceName) {
-      setError({ error: true, message: 'Application name is required' });
-      return false;
-    }
-    return true;
+  const handleNameChange = (newName: string) => {
+    setHasError(extSimList.value.some((extSim) => extSim.name === newName));
+    setName(newName);
   };
 
   const handleSave = () => {
-    if (!validate()) return;
     ExtSimData
       ? updateExtSim({
           ...ExtSim.value,
@@ -65,8 +56,10 @@ const ExtSimForm: React.FC<ExtSimFormProps> = ({ ExtSimData }) => {
           size="small"
           inputProps={{ maxLength: 20 }}
           value={name}
-          onChange={(e) => setName(e.target.value)}
+          onChange={(e) => handleNameChange(e.target.value)}
           fullWidth
+          error={hasError}
+          helperText={hasError ? 'Name already exists' : ''}
         />
         <TextField
           label="Application Name"
@@ -85,7 +78,6 @@ const ExtSimForm: React.FC<ExtSimFormProps> = ({ ExtSimData }) => {
           <Button variant="contained" color="secondary" onClick={() => handleClose()}>
             Cancel
           </Button>
-          {error?.error && <Alert severity="error">{error.message}</Alert>}
         </Box>
       </form>
     </Box>

@@ -63,53 +63,66 @@ export const useOptionsMapping = () => {
           handleDelete(diagram, MainItemTypes.Diagram);
         },
       },
-      { label: 'Make Template', action: (diagram: Diagram) => {
-          const copiedModel = structuredClone(GetModelItemsReferencedBy(diagram.name, MainItemTypes.Diagram, 3));
-          addWindow(
-            `Create Template`,
-            <TemplateForm templatedData={copiedModel} />,
-            { x: 75, y: 25, width: 1300, height: 700 },
-          )
-        }
+      {
+        label: 'Make Template',
+        action: (diagram: Diagram) => {
+          const copiedModel = structuredClone(
+            GetModelItemsReferencedBy(diagram.name, MainItemTypes.Diagram, 3),
+          );
+          addWindow(`Create Template`, <TemplateForm templatedData={copiedModel} />, {
+            x: 75,
+            y: 25,
+            width: 1300,
+            height: 700,
+          });
+        },
       },
-      { label: 'Export', action: (diagram: Diagram) => {
-        const copiedModel = GetModelItemsReferencedBy(diagram.name, MainItemTypes.Diagram, 2)
-        copiedModel.name = diagram.name;
-        copiedModel.emraldVersion = EMRALD_SchemaVersion;
+      {
+        label: 'Export',
+        action: (diagram: Diagram) => {
+          const copiedModel = GetModelItemsReferencedBy(diagram.name, MainItemTypes.Diagram, 2);
+          copiedModel.name = diagram.name;
+          copiedModel.emraldVersion = EMRALD_SchemaVersion;
 
-        // Convert JSON data to a string
-        const jsonString = JSON.stringify(copiedModel, null, 2);
-  
-        // Create a Blob (Binary Large Object) with the JSON string
-        const blob = new Blob([jsonString], { type: 'application/json' });
-  
-        // Create a URL for the Blob
-        const url = URL.createObjectURL(blob);
-  
-        // Create an <a> element to trigger the download
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `${copiedModel.name ? copiedModel.name : 'exported-diagram'}.json`;
-  
-        // Trigger a click event on the <a> element to initiate the download
-        a.click();
-  
-        // Clean up by revoking the URL
-        URL.revokeObjectURL(url);
-        } 
+          // Convert JSON data to a string
+          const jsonString = JSON.stringify(copiedModel, null, 2);
+
+          // Create a Blob (Binary Large Object) with the JSON string
+          const blob = new Blob([jsonString], { type: 'application/json' });
+
+          // Create a URL for the Blob
+          const url = URL.createObjectURL(blob);
+
+          // Create an <a> element to trigger the download
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `${copiedModel.name ? copiedModel.name : 'exported-diagram'}.json`;
+
+          // Trigger a click event on the <a> element to initiate the download
+          a.click();
+
+          // Clean up by revoking the URL
+          URL.revokeObjectURL(url);
+        },
       },
-      { label: 'Copy', action: (diagram: Diagram) => {
-        const copiedModel = GetModelItemsReferencedBy(diagram.name, MainItemTypes.Diagram, 2)
-        copiedModel.name = diagram.name;
-        copiedModel.emraldVersion = EMRALD_SchemaVersion;
-        navigator.clipboard.writeText(JSON.stringify(copiedModel, null, 2));
-      } },
-      { label: 'Copy Recursive', action: (diagram: Diagram) => {
-        const copiedModel = GetModelItemsReferencedBy(diagram.name, MainItemTypes.Diagram, 0)
-        copiedModel.name = diagram.name;
-        copiedModel.emraldVersion = EMRALD_SchemaVersion;
-        navigator.clipboard.writeText(JSON.stringify(copiedModel, null, 2));
-      } },
+      {
+        label: 'Copy',
+        action: (diagram: Diagram) => {
+          const copiedModel = GetModelItemsReferencedBy(diagram.name, MainItemTypes.Diagram, 2);
+          copiedModel.name = diagram.name;
+          copiedModel.emraldVersion = EMRALD_SchemaVersion;
+          navigator.clipboard.writeText(JSON.stringify(copiedModel, null, 2));
+        },
+      },
+      {
+        label: 'Copy Recursive',
+        action: (diagram: Diagram) => {
+          const copiedModel = GetModelItemsReferencedBy(diagram.name, MainItemTypes.Diagram, 0);
+          copiedModel.name = diagram.name;
+          copiedModel.emraldVersion = EMRALD_SchemaVersion;
+          navigator.clipboard.writeText(JSON.stringify(copiedModel, null, 2));
+        },
+      },
     ],
     'Logic Tree': [
       {
@@ -129,7 +142,7 @@ export const useOptionsMapping = () => {
         action: (logicNode: LogicNode) => {
           addWindow(
             `Edit Properties: ${logicNode.name}`,
-            <LogicNodeForm logicNodeData={logicNode} />,
+            <LogicNodeForm logicNodeData={logicNode} editing />,
           );
         },
       },

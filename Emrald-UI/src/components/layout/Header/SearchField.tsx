@@ -13,6 +13,18 @@ import { EMRALD_Model } from '../../../types/EMRALD_Model';
 import { ExtSim } from '../../../types/ExtSim';
 import { LogicNode } from '../../../types/LogicNode';
 import { Variable } from '../../../types/Variable';
+import { useWindowContext } from '../../../contexts/WindowContext';
+import EventFormContextProvider from '../../forms/EventForm/EventFormContext';
+import EventForm from '../../forms/EventForm/EventForm';
+import StateForm from '../../forms/StateForm/StateForm';
+import ActionFormContextProvider from '../../forms/ActionForm/ActionFormContext';
+import ActionForm from '../../forms/ActionForm/ActionForm';
+import DiagramForm from '../../forms/DiagramForm/DiagramForm';
+import ExtSimForm from '../../forms/ExtSimForm/ExtSimForm';
+import LogicNodeForm from '../../forms/LogicNodeForm/LogicNodeForm';
+import VariableFormContextProvider from '../../forms/VariableForm/VariableFormContext';
+import VariableForm from '../../forms/VariableForm/VariableForm';
+import { MainItemTypes } from '../../../types/ItemTypes';
 
 const SearchField = () => {
   const [value, setValue] = useState<string>('');
@@ -22,41 +34,36 @@ const SearchField = () => {
   const [actions, setActions] = useState<Action[]>([]);
   const [events, setEvents] = useState<Event[]>([]);
   const [anchorEl, setAnchorEl] = useState<any>(null);
-  const [selectedItem, setSelectedItem] = useState<Diagram | State | Action | Event | null>(null);
+  const [selectedItem, setSelectedItem] = useState<
+    Diagram | State | Action | Event | ExtSim | LogicNode | Variable | null
+  >(null);
   const [extSims, setExtSims] = useState<ExtSim[]>([]);
   const [logicNodes, setLogicNodes] = useState<LogicNode[]>([]);
   const [variables, setVariables] = useState<Variable[]>([]);
 
+  const { addWindow } = useWindowContext();
   const onSubmit = () => {
-    console.log('Search submitted:', value);
     // search through diagrams
     let tempDiagrams = getItemList(appData.value.DiagramList);
     setDiagrams(tempDiagrams);
-
     // search through states
     let tempStates = getItemList(appData.value.StateList);
     setStates(tempStates);
-
     // search through actions
     let tempActions = getItemList(appData.value.ActionList);
     setActions(tempActions);
-
     // search through events
     let tempEvents = getItemList(appData.value.EventList);
     setEvents(tempEvents);
-
     // search through ext sims
     let tempExtSims = getItemList(appData.value.ExtSimList);
     setExtSims(tempExtSims);
-
     //search for logic nodes
     let tempLogicNodes = getItemList(appData.value.LogicNodeList);
     setLogicNodes(tempLogicNodes);
-
     // search for variables
     let tempVariables = getItemList(appData.value.VariableList);
     setVariables(tempVariables);
-
     setOpenSearchDialog(true);
   };
 
@@ -65,7 +72,7 @@ const SearchField = () => {
     list.forEach((item) => {
       if (
         item.name.toLowerCase().includes(value.toLowerCase()) ||
-        item.desc.toLowerCase().includes(value.toLowerCase())
+        item.desc?.toLowerCase().includes(value.toLowerCase())
       ) {
         items.push(item);
       }
@@ -120,6 +127,40 @@ const SearchField = () => {
     event.preventDefault();
     setAnchorEl(event.currentTarget);
     setSelectedItem(item);
+  };
+  const goToEditProperties = () => {
+    const componentMap: Record<
+      MainItemTypes,
+      (data: Diagram | State | Action | Event | ExtSim | LogicNode | Variable) => JSX.Element
+    > = {
+      Diagram: (data) => <DiagramForm diagramData={data as Diagram} />,
+      State: (data) => <StateForm stateData={data as State} />,
+      Action: (data) => (
+        <ActionFormContextProvider>
+          <ActionForm actionData={data as Action} />
+        </ActionFormContextProvider>
+      ),
+      Event: (data) => (
+        <EventFormContextProvider>
+          <EventForm eventData={data as Event} />
+        </EventFormContextProvider>
+      ),
+      ExtSim: (data) => <ExtSimForm ExtSimData={data as ExtSim} />,
+      LogicNode: (data) => <LogicNodeForm logicNodeData={data as LogicNode} editing />,
+      Variable: (data) => (
+        <VariableFormContextProvider>
+          <VariableForm variableData={data as Variable} />
+        </VariableFormContextProvider>
+      ),
+      EMRALD_Model: () => <></>,
+    };
+
+    if (selectedItem?.objType && componentMap[selectedItem.objType]) {
+      addWindow(`Edit ${selectedItem?.name}`, componentMap[selectedItem.objType](selectedItem));
+    }
+
+    handleMenuClose();
+    handleClose();
   };
   const handleMenuClose = () => {
     setAnchorEl(null);
@@ -177,8 +218,7 @@ const SearchField = () => {
         />
       </DialogComponent>
       <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleMenuClose}>
-        <MenuItem onClick={() => {}}>Edit Properties</MenuItem>
-        <MenuItem onClick={() => {}}>Go to {selectedItem?.objType}</MenuItem>
+        <MenuItem onClick={goToEditProperties}>Edit Properties</MenuItem>
       </Menu>
     </>
   );
