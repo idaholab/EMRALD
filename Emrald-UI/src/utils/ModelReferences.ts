@@ -312,32 +312,37 @@ const GetModelItemsReferencingRecursive = (
 
 export const GetItemByNameType = (
   itemName : string, 
-  itemType : MainItemTypes) : Diagram | State | Action | Event | ExtSim | Variable | LogicNode | undefined => {
+  itemType : MainItemTypes,
+  searchModel? : EMRALD_Model, //if not assigned appData.value is used
+  ) : Diagram | State | Action | Event | ExtSim | Variable | LogicNode | undefined => {
+
+    if(searchModel == undefined)
+      searchModel = appData.value;
 
     var retItem: Diagram | State | Action | Event | ExtSim | Variable | LogicNode | undefined = undefined;
 
     switch(itemType)
     {
       case MainItemTypes.Action:
-        retItem = appData.value.ActionList.find(item => item.name === itemName);
+        retItem = searchModel.ActionList.find(item => item.name === itemName);
         break;
       case MainItemTypes.Event:
-        retItem = appData.value.EventList.find(item => item.name === itemName);
+        retItem = searchModel.EventList.find(item => item.name === itemName);
         break;
       case MainItemTypes.ExtSim:
-        retItem = appData.value.ExtSimList.find(item => item.name === itemName);
+        retItem = searchModel.ExtSimList.find(item => item.name === itemName);
         break;
       case MainItemTypes.Variable:
-        retItem = appData.value.VariableList.find(item => item.name === itemName);
+        retItem = searchModel.VariableList.find(item => item.name === itemName);
         break;
       case MainItemTypes.LogicNode:
-        retItem = appData.value.LogicNodeList.find(item => item.name === itemName);
+        retItem = searchModel.LogicNodeList.find(item => item.name === itemName);
         break;
       case MainItemTypes.State:
-        retItem = appData.value.StateList.find(item => item.name === itemName);
+        retItem = searchModel.StateList.find(item => item.name === itemName);
         break;
       case MainItemTypes.Diagram:
-        retItem = appData.value.DiagramList.find(item => item.name === itemName);
+        retItem = searchModel.DiagramList.find(item => item.name === itemName);
         break;
       default:
         retItem = undefined;
@@ -502,4 +507,3 @@ export const GetModelItemsReferencedBy = (
 
   return retRefModel;
 }
-
