@@ -33,7 +33,7 @@ const EmraldDiagram: React.FC<EmraldDiagramProps> = ({ diagram }) => {
     onNodeDoubleClick,
     onEdgeUpdate,
     isValidConnection,
-    // setTopDiagram,
+    setTopDiagram,
   } = useEmraldDiagram();
   const {
     menu,
@@ -48,9 +48,9 @@ const EmraldDiagram: React.FC<EmraldDiagramProps> = ({ diagram }) => {
     onEdgeContextMenu,
   } = useContextMenu(getStateNodes, setEdges);
 
-  // useEffect(()=> {
-  //   setTopDiagram(diagram)
-  // }, [])
+  useEffect(() => {
+    setTopDiagram(diagram);
+  }, []);
   const nodeTypes = useMemo(() => ({ custom: StateNode }), []);
   const ref = useRef<HTMLDivElement>(null);
 
