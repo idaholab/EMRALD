@@ -317,7 +317,7 @@ export const GetItemByNameType = (
   ) : Diagram | State | Action | Event | ExtSim | Variable | LogicNode | undefined => {
 
     if(searchModel == undefined)
-      searchModel = appData.value;
+      searchModel = structuredClone(appData.value);
 
     var retItem: Diagram | State | Action | Event | ExtSim | Variable | LogicNode | undefined = undefined;
 
