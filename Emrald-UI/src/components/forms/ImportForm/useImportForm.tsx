@@ -395,14 +395,12 @@ export const useImportForm = (importedData: EMRALD_Model, fromTemplate?: boolean
     // Go through all of the renamed items and update the pasted model
     let updatedModel: EMRALD_Model = { ...appData.value };
     const importedDataCopy = structuredClone(importedData); // Deep copy of importedData so it doesn't get changed
-
+    
     // Rename loop
     for (let i = 0; i < importedItems.length; i++) {
       const item = importedItems[i];
       if (item.action === 'rename') {
-        const itemCopy = structuredClone(
-          GetItemByNameType(item.oldName, item.type, importedDataCopy),
-        ); //get the item from the importedDataCopy as it may be changed on other items being updated
+        const itemCopy = structuredClone(GetItemByNameType(item.oldName, item.type, importedDataCopy)); //get the item from the importedDataCopy as it may be changed on other items being updated
         if (itemCopy) {
           itemCopy.name = item.newName;
           await updateSpecifiedModel(itemCopy, item.type, importedDataCopy, false);
