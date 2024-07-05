@@ -21,7 +21,7 @@ interface LogicNodeContextType {
 
 export const emptyLogicNode: LogicNode = {
   id: '',
-  name: 'Gate 1',
+  name: '',
   desc: '',
   isRoot: false,
   gateType: 'gtAnd',
