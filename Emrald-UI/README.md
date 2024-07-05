@@ -1,27 +1,31 @@
-# React + TypeScript + Vite
+# EMRALD V3
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Introduction
 
-Currently, two official plugins are available:
+The Event Modeling Risk Assessment using Linked Diagrams **(EMRALD V3)** is a React-based application developed at INL for researching the capabilities of dynamic PRA (Probabilistic Risk Assessment). It is a front-end only application, meaning there is no backend server required to run it. Users of EMRALD can craft their models and save them as JSON files, which can then be used to generate results.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Running the Project
 
-## Expanding the ESLint configuration
+To run EMRALD, follow these steps:
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
-
-- Configure the top-level `parserOptions` property like this:
-
-```js
-   parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module',
-    project: ['./tsconfig.json', './tsconfig.node.json'],
-    tsconfigRootDir: __dirname,
-   },
+1. Clone the repository from GitHub using the following command:
+```
+git clone https://github.com/idaholab/EMRALD.git
 ```
 
-- Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
-- Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
+2. Navigate to the project directory and cd into the **Emrald-UI** folder and install the required dependencies by running the following command:
+```
+npm install
+```
+
+3. Start the development server by running the following command:
+```
+npm run dev
+```
+
+4. Open your web browser and navigate to [http://localhost:3000](http://localhost:3000) to see the application running.
+
+## Usage
+
+Once the application is running, you can start crafting your models and saving them as JSON files.
+Everything you need to know about learning the software can be found here: [EMRALD Docs](https://emraldapp.inl.gov/docs/)

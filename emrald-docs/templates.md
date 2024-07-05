@@ -1,0 +1,21 @@
+# Template
+Name of C# Test Method: Template_ValidationCase_Test()
+
+## Description
+This is a template for a Validation Case page.
+
+## How To Use this Template
+1. Create a new Markdown (md) file with a relevant name for the test case within this folder: emrald-docs\src\validation\cases\.
+2. Add a menu link to the file by adding a new item to the Validation Cases children array in emrald-docs\src\.vuepress\config.js
+    - A new item should use this format: 'cases/{filename}'
+        - Be sure to add the necessary comma on the previous line or the new line, depending on item placement in the array.
+        - Do not include the .md file extension in the filename.
+        - Do not include curly braces ({}) in the new item. They appear in the format merely to indicate what should be changed.
+3. Copy and paste this template (emrald-docs\src\validation\cases\template.md) into the new file.
+4. Replace "Template" on the first line with the name of the test case.
+5. Fill in a description.
+6. Fill in all other details and create new headers as is necessary, using the Markdown Syntax(opens new window)
+
+# Validation Process
+Explain the validation process here and how the comparison data was determined to be correct. Any references can be linked using this syntax: [Reference Title](https://www.google.com)
+

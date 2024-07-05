@@ -219,7 +219,7 @@ const ImportForm: React.FC<ImportDiagramFormProps> = ({ importedData, fromTempla
       </Box>
       <Box mt={3} textAlign={'right'}>
         <Button variant="contained" sx={{ mr: 2 }} onClick={handleSave} disabled={hasConflicts}>
-          Save Changes
+          Create
         </Button>
         <Button variant="contained" color="secondary" onClick={() => handleClose()}>
           Cancel
