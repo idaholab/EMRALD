@@ -22,6 +22,7 @@ import { useAssembledData } from '../../../hooks/useAssembledData';
 import { useVariableContext } from '../../../contexts/VariableContext';
 import { GetItemByNameType } from '../../../utils/ModelReferences';
 import { appData, updateAppData } from '../../../hooks/useAppData';
+import EmraldDiagram from '../../diagrams/EmraldDiagram/EmraldDiagram';
 
 interface ImportedItem {
   type: MainItemTypes;
@@ -47,7 +48,7 @@ export const useImportForm = (importedData: EMRALD_Model, fromTemplate?: boolean
   const { statesList} = useStateContext();
   const { actionsList } = useActionContext();
   const { variableList } = useVariableContext();
-  const { handleClose } = useWindowContext();
+  const { handleClose, addWindow, activeWindowId } = useWindowContext();
   const { addTemplateToModel } = useTemplateContext();
   const { refreshWithNewData } = useAssembledData();
   const originalTemplate = structuredClone(importedData);
@@ -295,6 +296,10 @@ export const useImportForm = (importedData: EMRALD_Model, fromTemplate?: boolean
   const handleLockChange = (index: number, locked: boolean) => {
     const updatedItems = [...importedItems];
     updatedItems[index].locked = locked;
+    if (!locked) {
+      updatedItems[index].action = 'rename';
+      updatedItems[index].conflict = hasConflict(updatedItems[index].newName, updatedItems[index].type, updatedItems[index].required);
+    }
     setImportedItems(updatedItems);
   };
 
@@ -314,7 +319,7 @@ export const useImportForm = (importedData: EMRALD_Model, fromTemplate?: boolean
   const unlockAll = () => {
     const updatedItems = importedItems.map((item) => {
       if (!item.required) {
-        return { ...item, locked: false };
+        return { ...item, locked: false, action: 'rename' };
       } else {
         return item;
       }
@@ -404,7 +409,7 @@ export const useImportForm = (importedData: EMRALD_Model, fromTemplate?: boolean
         }
       }
     }
-  
+
     // Update loop
     for (let i = 0; i < importedItems.length; i++) {
       const item = importedItems[i];
@@ -424,10 +429,24 @@ export const useImportForm = (importedData: EMRALD_Model, fromTemplate?: boolean
     if (fromTemplate) {
       addTemplateToModel(originalTemplate);
     }
-  
+
     // Make it so the lists are refreshed with the new data
     refreshWithNewData(updatedModel);
-    handleClose();
+
+    if (activeWindowId) {
+      addWindow(
+        importedDataCopy.DiagramList[0].name,
+        <EmraldDiagram diagram={importedDataCopy.DiagramList[0]} />,
+        {
+          x: 75,
+          y: 25,
+          width: 1300,
+          height: 700,
+        },
+        null,
+        activeWindowId,
+      );
+    }
   };
   return {
     findValue,
