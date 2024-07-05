@@ -400,7 +400,7 @@
                 },
                 "returnProcess": {
                     "type": "string",
-                    "description": "Optional. For action type atRunExtApp. It is flag to indicate the type of return from the processOutputFileCode. If rtNone then it has no return, othrwise the C# script must return a List<string/> with +/-[StateName] to shift out or into a state."
+                    "description": "Optional. For action type atRunExtApp. It is flag to indicate the type of return from the processOutputFileCode. If rtNone then it has no return, othrwise the C# script must return a List of strings with +/-[StateName] to shift out or into a state."
                 },
                 "changeLog": {
                     "$ref": "#/definitions/ChangeLog"

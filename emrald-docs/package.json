@@ -8,15 +8,14 @@
     "email": ""
   },
   "repository": "/template",
-  "scripts": {
-    "dev": "vuepress dev src",
-    "build": "cross-env NODE_OPTIONS=--openssl-legacy-provider vuepress build src --dest dist",
-    "prepare": "npx jsonschema2md -o src/guide/Modeling/schema-md -d ../Emrald-UI/src/utils/Upgrades/v3_0/ -e json"
-  },
   "license": "MIT",
+  "scripts": {
+    "dev": "vitepress dev",
+    "build": "vitepress build",
+    "preview": "vitepress preview",
+    "prepare": "npx jsonschema2md -o Modeling/schema-md -d ../Emrald-UI/src/utils/Upgrades/v3_0/ -e json"
+  },
   "devDependencies": {
-    "@adobe/jsonschema2md": "^6.0.0",
-    "cross-env": "^7.0.3",
-    "vuepress": "^1.5.3"
+    "@adobe/jsonschema2md": "^8.0.0"
   }
 }

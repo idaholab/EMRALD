@@ -31,7 +31,8 @@
     "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-jsdoc": "^39.2.9",
     "eslint-plugin-sort-class-members": "^1.14.1",
-    "nyc": "^15.1.0"
+    "nyc": "^15.1.0",
+    "vitepress": "^1.2.3"
   },
   "dependencies": {
     "angular": "^1.8.3"
