@@ -16,6 +16,7 @@
     "prepare": "npx jsonschema2md -o Modeling/schema-md -d ../Emrald-UI/src/utils/Upgrades/v3_0/ -e json"
   },
   "devDependencies": {
-    "@adobe/jsonschema2md": "^8.0.0"
+    "@adobe/jsonschema2md": "^8.0.0",
+    "vitepress": "^1.2.3"
   }
 }
