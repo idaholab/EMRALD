@@ -11,7 +11,7 @@ import Box from '@mui/material/Box';
 import theme from '../../../theme';
 import { projectOptions, downloadOptions } from './menuOptions';
 import MenuButton from './MenuButton';
-import SearchField from './SearchField';
+import SearchField from './SearchBar/SearchField';
 
 const EmraldLogo = styled('img')(({ theme }) => ({
   marginRight: theme.spacing(2),
@@ -19,8 +19,7 @@ const EmraldLogo = styled('img')(({ theme }) => ({
 }));
 
 export default function Header() {
-  const { name, desc, updateName, updateDescription } =
-    useModelDetailsContext();
+  const { name, desc, updateName, updateDescription } = useModelDetailsContext();
   const [openDialog, setOpenDialog] = useState(false);
   const [updatedName, setUpdatedName] = useState(name);
   const [updatedDesc, setUpdatedDesc] = useState(desc);
@@ -49,20 +48,22 @@ export default function Header() {
     >
       <Toolbar>
         <EmraldLogo src={Logo} alt="Logo" />
-        <Typography
-          variant="h4"
-          noWrap
-          color="primary"
-          fontSize="2em"
-          fontWeight="bold"
-        >
+        <Typography variant="h4" noWrap color="primary" fontSize="2em" fontWeight="bold">
           Model Editor
         </Typography>
         <Box display="flex" alignItems="center" flexGrow={1} ml={5}>
-          <MenuButton id={1} title="Project" options={projectOptions}/>
-          <MenuButton id={2} title="Download" options={downloadOptions}/>
-          <MenuButton id={3} title="Help" handleClick={() => window.open("http://emrald3-docs.acc.inl.gov/")}/>
-          <MenuButton id={4} title="About" handleClick={() => window.open("https://emrald.inl.gov/SitePages/Overview.aspx")}/>
+          <MenuButton id={1} title="Project" options={projectOptions} />
+          <MenuButton id={2} title="Download" options={downloadOptions} />
+          <MenuButton
+            id={3}
+            title="Help"
+            handleClick={() => window.open('http://emrald3-docs.acc.inl.gov/')}
+          />
+          <MenuButton
+            id={4}
+            title="About"
+            handleClick={() => window.open('https://emrald.inl.gov/SitePages/Overview.aspx')}
+          />
         </Box>
         <SearchField />
         <Typography

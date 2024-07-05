@@ -1,16 +1,16 @@
-import { Accordion, AccordionDetails, AccordionSummary, Box, Typography } from '@mui/material';
-import { Diagram } from '../../../types/Diagram';
-import { State } from '../../../types/State';
-import { Action } from '../../../types/Action';
-import { Event } from '../../../types/Event';
+import { Accordion, AccordionDetails, AccordionSummary, Box } from '@mui/material';
+import { Diagram } from '../../../../types/Diagram';
+import { State } from '../../../../types/State';
+import { Action } from '../../../../types/Action';
+import { Event } from '../../../../types/Event';
 import { ReactNode } from 'react';
 import {
   GetModelItemsReferencedBy,
   GetModelItemsReferencing,
-} from '../../../utils/ModelReferences';
-import { ExtSim } from '../../../types/ExtSim';
-import { LogicNode } from '../../../types/LogicNode';
-import { Variable } from '../../../types/Variable';
+} from '../../../../utils/ModelReferences';
+import { ExtSim } from '../../../../types/ExtSim';
+import { LogicNode } from '../../../../types/LogicNode';
+import { Variable } from '../../../../types/Variable';
 
 interface ItemTypeMenuResultsProps {
   diagrams: Diagram[];

@@ -1,33 +1,33 @@
 import { Button, IconButton, InputAdornment, Menu, MenuItem, TextField } from '@mui/material';
 import { ReactNode, useState } from 'react';
-import { DialogComponent } from '../../common';
-import { appData } from '../../../hooks/useAppData';
-import { Diagram } from '../../../types/Diagram';
-import { State } from '../../../types/State';
-import { Action } from '../../../types/Action';
-import { Event } from '../../../types/Event';
+import { DialogComponent } from '../../../common';
+import { appData } from '../../../../hooks/useAppData';
+import { Diagram } from '../../../../types/Diagram';
+import { State } from '../../../../types/State';
+import { Action } from '../../../../types/Action';
+import { Event } from '../../../../types/Event';
 import SearchIcon from '@mui/icons-material/Search';
 import {
   GetModelItemsReferencedBy,
   GetModelItemsReferencing,
-} from '../../../utils/ModelReferences';
+} from '../../../../utils/ModelReferences';
 import ItemTypeMenuResults from './ItemTypeMenuResults';
-import { EMRALD_Model } from '../../../types/EMRALD_Model';
-import { ExtSim } from '../../../types/ExtSim';
-import { LogicNode } from '../../../types/LogicNode';
-import { Variable } from '../../../types/Variable';
-import { useWindowContext } from '../../../contexts/WindowContext';
-import EventFormContextProvider from '../../forms/EventForm/EventFormContext';
-import EventForm from '../../forms/EventForm/EventForm';
-import StateForm from '../../forms/StateForm/StateForm';
-import ActionFormContextProvider from '../../forms/ActionForm/ActionFormContext';
-import ActionForm from '../../forms/ActionForm/ActionForm';
-import DiagramForm from '../../forms/DiagramForm/DiagramForm';
-import ExtSimForm from '../../forms/ExtSimForm/ExtSimForm';
-import LogicNodeForm from '../../forms/LogicNodeForm/LogicNodeForm';
-import VariableFormContextProvider from '../../forms/VariableForm/VariableFormContext';
-import VariableForm from '../../forms/VariableForm/VariableForm';
-import { MainItemTypes } from '../../../types/ItemTypes';
+import { EMRALD_Model } from '../../../../types/EMRALD_Model';
+import { ExtSim } from '../../../../types/ExtSim';
+import { LogicNode } from '../../../../types/LogicNode';
+import { Variable } from '../../../../types/Variable';
+import { useWindowContext } from '../../../../contexts/WindowContext';
+import EventFormContextProvider from '../../../forms/EventForm/EventFormContext';
+import EventForm from '../../../forms/EventForm/EventForm';
+import StateForm from '../../../forms/StateForm/StateForm';
+import ActionFormContextProvider from '../../../forms/ActionForm/ActionFormContext';
+import ActionForm from '../../../forms/ActionForm/ActionForm';
+import DiagramForm from '../../../forms/DiagramForm/DiagramForm';
+import ExtSimForm from '../../../forms/ExtSimForm/ExtSimForm';
+import LogicNodeForm from '../../../forms/LogicNodeForm/LogicNodeForm';
+import VariableFormContextProvider from '../../../forms/VariableForm/VariableFormContext';
+import VariableForm from '../../../forms/VariableForm/VariableForm';
+import { MainItemTypes } from '../../../../types/ItemTypes';
 
 const SearchField = () => {
   const [value, setValue] = useState<string>('');
@@ -274,6 +274,9 @@ const SearchField = () => {
       </DialogComponent>
       <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleMenuClose}>
         <MenuItem onClick={goToEditProperties}>Edit Properties</MenuItem>
+        {selectedItem?.objType === 'Diagram' && (
+          <MenuItem onClick={goToEditProperties}>Go To Diagram</MenuItem>
+        )}
       </Menu>
     </>
   );
