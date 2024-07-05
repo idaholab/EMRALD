@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useNodesState, useEdgesState, Edge, Node, Position, ReactFlowInstance } from 'reactflow';
 import { useLogicNodeContext } from '../../../contexts/LogicNodeContext';
-import { LogicNode } from '../../../types/LogicNode';
+import { CompChildItems, LogicNode } from '../../../types/LogicNode';
 import { v4 as uuidv4 } from 'uuid';
 import dagre from '@dagrejs/dagre';
 import EmraldDiagram from '../EmraldDiagram/EmraldDiagram';
@@ -31,6 +31,8 @@ const useLogicNodeTreeDiagram = () => {
   const { getDiagramByDiagramName, updateDiagram } = useDiagramContext();
   const { addWindow } = useWindowContext();
 
+  const { handleClose } = useWindowContext();
+
   const dagreGraph = new dagre.graphlib.Graph();
   dagreGraph.setDefaultEdgeLabel(() => ({}));
 
@@ -43,9 +45,8 @@ const useLogicNodeTreeDiagram = () => {
       const nodeMap = new Map<string, Node>(); // Map to store nodes by their IDs
       const edges: Edge[] = [];
       setRootNode(logicNode);
-
+      const rootNodeId = logicNode.id || 'root';
       // Create the root node with the logic node name as the label
-      const rootNodeId = 'root';
       const rootNode: Node = {
         id: rootNodeId,
         position: { x: 0, y: 0 },
@@ -112,36 +113,7 @@ const useLogicNodeTreeDiagram = () => {
 
         // Process the comp children
         node.compChildren.forEach((child) => {
-          const childNode = child.diagramName;
-          const diagram = getDiagramByDiagramName(child.diagramName);
-          if (childNode) {
-            const compNode: Node = {
-              id: uuidv4(),
-              position: { x: 0, y: 0 },
-              type: 'custom',
-              data: {
-                label: `${childNode}`,
-                parent: gateNode.id,
-                parentName: gateNode.data.label,
-                type: 'comp',
-                description: diagram.desc,
-                diagram: diagram,
-                defaultStateValues:
-                  child.stateValues && child.stateValues.length > 0 ? false : true,
-              },
-            };
-            nodeMap.set(compNode.id, compNode);
-            edges.push({
-              id: uuidv4(),
-              source: gateNode.id,
-              target: compNode.id,
-              ariaLabel: `${gateNode.data.label}-${childNode}`,
-              type: 'smoothstep',
-              style: {
-                strokeWidth: 3,
-              },
-            });
-          }
+          setCompChildren(child, gateNode, nodeMap, edges);
         });
       };
 
@@ -153,6 +125,10 @@ const useLogicNodeTreeDiagram = () => {
         }
       });
 
+      logicNode.compChildren.forEach((child) => {
+        setCompChildren(child, logicNode, nodeMap, edges);
+      });
+
       const formattedNodes = Array.from(nodeMap.values()); // Convert the node map to an array of nodes
       setNodes(formattedNodes); // Update the nodes state
       setEdges(edges); // Update the edges state
@@ -160,6 +136,46 @@ const useLogicNodeTreeDiagram = () => {
     },
     [getLogicNodeByName, setNodes, setEdges],
   );
+  const setCompChildren = (
+    child: CompChildItems,
+    gateNode: Node | LogicNode,
+    nodeMap: Map<string, Node>,
+    edges: Edge[] = [],
+  ) => {
+    const childNode = child.diagramName;
+    const diagram = getDiagramByDiagramName(child.diagramName);
+    if (childNode) {
+      const compNode: Node = {
+        id: uuidv4(),
+        position: { x: 0, y: 0 },
+        type: 'custom',
+        data: {
+          label: `${childNode}`,
+          parent: gateNode.id,
+          parentName: isNode(gateNode) ? gateNode.data.label : gateNode.name,
+          type: 'comp',
+          description: diagram.desc,
+          diagram: diagram,
+          defaultStateValues: child.stateValues && child.stateValues.length > 0 ? false : true,
+        },
+      };
+      nodeMap.set(compNode.id, compNode);
+      edges.push({
+        id: uuidv4(),
+        source: gateNode.id || '',
+        target: compNode.id,
+        ariaLabel: `${isNode(gateNode) ? gateNode.data.label : gateNode.name}-${childNode}`,
+        type: 'smoothstep',
+        style: {
+          strokeWidth: 3,
+        },
+      });
+    }
+  };
+
+  const isNode = (node: Node | LogicNode): node is Node => {
+    return (node as Node).data !== undefined;
+  };
 
   const dagreFormatNodes = (nodes: Node[], edges: Edge[], direction = 'TB') => {
     dagreGraph.setGraph({ rankdir: direction }); // Create a new directed graph
@@ -208,16 +224,21 @@ const useLogicNodeTreeDiagram = () => {
         if (canDeleteNode(nodeName)) {
           await deleteLogicNode(nodeToRemove.id);
         }
-        parentLogicNode.gateChildren = parentLogicNode.gateChildren.filter(
-          (child) => child !== nodeName,
-        );
+        if (parentNode) {
+          parentLogicNode.gateChildren = parentLogicNode.gateChildren.filter(
+            (child) => child !== nodeName,
+          );
+        }
       }
-      if (type === 'comp') {
+      if (type === 'comp' && parentNode) {
         parentLogicNode.compChildren = parentLogicNode.compChildren.filter(
           (child) => child.diagramName !== nodeName,
         );
       }
       await updateLogicNode(parentLogicNode);
+      if (nodeToRemove === rootNode) {
+        handleClose();
+      }
       resolve();
     });
   };
@@ -272,6 +293,10 @@ const useLogicNodeTreeDiagram = () => {
   };
 
   const canDeleteNode = (nodeName: string) => {
+    const nodeInQuestion = getLogicNodeByName(nodeName);
+    if (nodeInQuestion.isRoot && nodeInQuestion !== rootNode) {
+      return false;
+    }
     const currentReferences = GetModelItemsReferencing(nodeName, MainItemTypes.LogicNode, 1);
     return currentReferences.LogicNodeList.length > 1 ? false : true;
   };
@@ -280,12 +305,24 @@ const useLogicNodeTreeDiagram = () => {
     const parentLogicNode = getLogicNodeByName(parentNode);
     const nodeToDelete = getLogicNodeByName(nodeName);
     let gateChildren = getAllGateChildren(nodeToDelete);
-    await deleteChildNodes(gateChildren.map((node) => node.id || ''));
+    await deleteChildNodes(
+      gateChildren.map((node) => {
+        if (canDeleteNode(node.name)) {
+          return node.id || '';
+        }
+        return '';
+      }),
+    );
     await deleteLogicNode(nodeToDelete.id);
 
-    parentLogicNode.gateChildren = parentLogicNode.gateChildren.filter(
-      (child) => child !== nodeName,
-    );
+    if (parentNode) {
+      parentLogicNode.gateChildren = parentLogicNode.gateChildren.filter(
+        (child) => child !== nodeName,
+      );
+    }
+    if (rootNode === nodeToDelete) {
+      handleClose();
+    }
     updateLogicNode(parentLogicNode);
   };
 
@@ -335,24 +372,23 @@ const useLogicNodeTreeDiagram = () => {
             isDivider: true,
           },
         ];
-        if (node.data.type === 'gate') {
-          options.push(
-            {
-              label: 'Copy',
-              action: () => {
-                navigator.clipboard.writeText(JSON.stringify(node.data.logicNode, null, 2));
-              },
+        options.push(
+          {
+            label: 'Copy',
+            action: () => {
+              navigator.clipboard.writeText(JSON.stringify(node.data.logicNode, null, 2));
             },
-            { label: 'Paste', action: () => pasteNode(label) },
-            {
-              label: 'Paste (as new)',
-              action: () => pasteNode(label, 'new'),
-              isDivider: true,
-            },
-            { label: 'Remove Gate', action: () => removeNode(parentName, label, 'gate') },
-            { label: 'Delete Gate', action: () => DeleteNode(parentName, label) },
-          );
-        }
+          },
+          { label: 'Paste', action: () => pasteNode(label) },
+          {
+            label: 'Paste (as new)',
+            action: () => pasteNode(label, 'new'),
+            isDivider: true,
+          },
+          { label: 'Remove Gate', action: () => removeNode(parentName, label, 'gate') },
+          { label: 'Delete Gate', action: () => DeleteNode(parentName, label) },
+        );
+
         break;
 
       case 'comp':
