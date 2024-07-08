@@ -223,6 +223,7 @@ const SearchField = () => {
     handleMenuClose();
   };
   const goToDiagramStateorLogictree = () => {
+    let name = selectedItem?.name || '';
     const componentMap: Record<
       MainItemTypes.LogicNode | MainItemTypes.Diagram | MainItemTypes.State,
       (data: Diagram | State | LogicNode) => JSX.Element
@@ -231,6 +232,7 @@ const SearchField = () => {
       State: (data) => {
         const d = data as State;
         const stateDiagram = getDiagramByDiagramName(d.diagramName);
+        name = stateDiagram.name;
         return <EmraldDiagram diagram={stateDiagram as Diagram} />;
       },
       LogicNode: (data) => (
@@ -245,7 +247,7 @@ const SearchField = () => {
         selectedItem as Diagram | State | LogicNode,
       );
 
-      addWindow(selectedItem.name, component, {
+      addWindow(name, component, {
         x: 75,
         y: 25,
         width: 1300,
