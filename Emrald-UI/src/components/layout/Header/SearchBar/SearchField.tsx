@@ -31,6 +31,7 @@ import EmraldDiagram from '../../../diagrams/EmraldDiagram/EmraldDiagram';
 import { useDiagramContext } from '../../../../contexts/DiagramContext';
 import LogicNodeTreeDiagram from '../../../diagrams/LogicTreeDiagram/LogicTreeDiagram';
 import SearchResultForm from '../../../forms/SearchResultForm/SearchResultForm';
+import { ReactFlowProvider } from 'reactflow';
 
 const SearchField = () => {
   const [value, setValue] = useState<string>('');
@@ -232,7 +233,11 @@ const SearchField = () => {
         const stateDiagram = getDiagramByDiagramName(d.diagramName);
         return <EmraldDiagram diagram={stateDiagram as Diagram} />;
       },
-      LogicNode: (data) => <LogicNodeTreeDiagram logicNode={data as LogicNode} />,
+      LogicNode: (data) => (
+        <ReactFlowProvider>
+          <LogicNodeTreeDiagram logicNode={data as LogicNode} />
+        </ReactFlowProvider>
+      ),
     };
 
     if (selectedItem?.objType) {
@@ -284,7 +289,7 @@ const SearchField = () => {
         {(selectedItem?.objType === 'Diagram' ||
           selectedItem?.objType === 'State' ||
           selectedItem?.objType === 'LogicNode') && (
-          <MenuItem onClick={goToDiagramStateorLogictree}>Go To: {selectedItem?.name}</MenuItem>
+          <MenuItem onClick={goToDiagramStateorLogictree}>View: {selectedItem?.name}</MenuItem>
         )}
       </Menu>
     </>
