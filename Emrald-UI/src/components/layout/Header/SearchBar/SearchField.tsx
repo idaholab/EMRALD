@@ -30,7 +30,7 @@ import { MainItemTypes } from '../../../../types/ItemTypes';
 import EmraldDiagram from '../../../diagrams/EmraldDiagram/EmraldDiagram';
 import { useDiagramContext } from '../../../../contexts/DiagramContext';
 import LogicNodeTreeDiagram from '../../../diagrams/LogicTreeDiagram/LogicTreeDiagram';
-import SearchResultForm from '../../../forms/SearchResultForm/searchResultForm';
+import SearchResultForm from '../../../forms/SearchResultForm/SearchResultForm';
 
 const SearchField = () => {
   const [value, setValue] = useState<string>('');
@@ -236,20 +236,17 @@ const SearchField = () => {
     };
 
     if (selectedItem?.objType) {
-      addWindow(
-        selectedItem.name,
-        componentMap[selectedItem.objType as 'Diagram' | 'State' | 'LogicNode'](
-          selectedItem as any,
-        ),
-        {
-          x: 75,
-          y: 25,
-          width: 1300,
-          height: 700,
-        },
+      const component = componentMap[selectedItem.objType as 'Diagram' | 'State' | 'LogicNode'](
+        selectedItem as Diagram | State | LogicNode,
       );
+
+      addWindow(selectedItem.name, component, {
+        x: 75,
+        y: 25,
+        width: 1300,
+        height: 700,
+      });
       handleMenuClose();
-      handleClose();
     }
   };
 
@@ -284,7 +281,9 @@ const SearchField = () => {
       />
       <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleMenuClose}>
         <MenuItem onClick={goToEditProperties}>Edit Properties</MenuItem>
-        {(selectedItem?.objType === 'Diagram' || selectedItem?.objType === 'State') && (
+        {(selectedItem?.objType === 'Diagram' ||
+          selectedItem?.objType === 'State' ||
+          selectedItem?.objType === 'LogicNode') && (
           <MenuItem onClick={goToDiagramStateorLogictree}>Go To: {selectedItem?.name}</MenuItem>
         )}
       </Menu>
