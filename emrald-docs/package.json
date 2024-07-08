@@ -12,6 +12,7 @@
   "scripts": {
     "dev": "vitepress dev",
     "build": "vitepress build",
+    "postbuild": "mv .vitepress/dist ./dist",
     "preview": "vitepress preview"
   },
   "devDependencies": {

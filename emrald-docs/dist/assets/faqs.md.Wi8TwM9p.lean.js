@@ -1,0 +1,1 @@
+import{_ as a,c as e,o as t,a2 as o}from"./chunks/framework.BLHWSx9w.js";const u=JSON.parse('{"title":"EMRALD FAQs","description":"","frontmatter":{},"headers":[],"relativePath":"faqs.md","filePath":"faqs.md"}'),s={name:"faqs.md"},r=o("",5),n=[r];function c(i,d,l,h,m,f){return t(),e("div",null,n)}const A=a(s,[["render",c]]);export{u as __pageData,A as default};
