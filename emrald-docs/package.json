@@ -12,11 +12,12 @@
   "scripts": {
     "dev": "vitepress dev",
     "build": "vitepress build",
-    "postbuild": "mv .vitepress/dist ./dist",
+    "postbuild": "shx mv .vitepress/dist ./dist",
     "preview": "vitepress preview"
   },
   "devDependencies": {
     "@adobe/jsonschema2md": "^8.0.0",
-    "vitepress": "^1.3.0"
+    "vitepress": "^1.3.0",
+    "shx": "^0.3.3"
   }
 }
