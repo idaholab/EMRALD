@@ -50,8 +50,8 @@ Diagram elements are tabulated by States, Events, Actions, and Arrows in the fol
 ## Arrows
   |<div style="width:100px">Icon</div>|<div style="width:300px">Description</div>|
   |---|---|
-  |<div style="width:150px">![Green Arrow](/images/Modeling/icons/GreenArrow.png)</div>|Indicates movement from one state to another|
-  |<div style="width:150px">![Black Arrow](/images/Modeling/icons/GrayArrow.png)</div>|Indicates forced exit from one state to another|
+  |<div style="width:150px">![Green Arrow](/images/Modeling/icons/GreenArrow.png)</div>|Indicates a split or adding a new state to the "current states" list when the action is executed, while staying in the state with the event that occured.|
+  |<div style="width:150px">![Black Arrow](/images/Modeling/icons/GrayArrow.png)</div>|Indicates forced exititing from one state to another when the action is executed.|
 
   See [Arrows](./diagrams.md#arrows) on the Diagrams page for more information.
 
