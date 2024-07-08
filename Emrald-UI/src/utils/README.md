@@ -36,4 +36,4 @@ Installation can be found here: [Liquid Studio](https://www.liquid-technologies.
 
 ### Step 6: Update Documentation
 
-- Once you are in the Emrald-UI directory, run the script `npm run prepare` to regenerate the documentation for the schema with your saved changes.
+- Once you are in the emrald-docs directory, run the command `npx jsonschema2md -o Modeling/schema-md -d ../Emrald-UI/src/utils/Upgrades/v3_0/ -e json` to regenerate the documentation for the schema with your saved changes.
