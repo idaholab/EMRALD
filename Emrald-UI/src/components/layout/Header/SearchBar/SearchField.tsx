@@ -1,6 +1,5 @@
 import { Button, IconButton, InputAdornment, Menu, MenuItem, TextField } from '@mui/material';
 import { ReactNode, useState } from 'react';
-import { DialogComponent } from '../../../common';
 import { appData } from '../../../../hooks/useAppData';
 import { Diagram } from '../../../../types/Diagram';
 import { State } from '../../../../types/State';
@@ -28,48 +27,54 @@ import LogicNodeForm from '../../../forms/LogicNodeForm/LogicNodeForm';
 import VariableFormContextProvider from '../../../forms/VariableForm/VariableFormContext';
 import VariableForm from '../../../forms/VariableForm/VariableForm';
 import { MainItemTypes } from '../../../../types/ItemTypes';
+import EmraldDiagram from '../../../diagrams/EmraldDiagram/EmraldDiagram';
+import { useDiagramContext } from '../../../../contexts/DiagramContext';
+import LogicNodeTreeDiagram from '../../../diagrams/LogicTreeDiagram/LogicTreeDiagram';
+import SearchResultForm from '../../../forms/SearchResultForm/searchResultForm';
 
 const SearchField = () => {
   const [value, setValue] = useState<string>('');
-  const [openSearchDialog, setOpenSearchDialog] = useState<boolean>(false);
-  const [diagrams, setDiagrams] = useState<Diagram[]>([]);
-  const [states, setStates] = useState<State[]>([]);
-  const [actions, setActions] = useState<Action[]>([]);
-  const [events, setEvents] = useState<Event[]>([]);
   const [anchorEl, setAnchorEl] = useState<any>(null);
   const [selectedItem, setSelectedItem] = useState<
     Diagram | State | Action | Event | ExtSim | LogicNode | Variable | null
   >(null);
-  const [extSims, setExtSims] = useState<ExtSim[]>([]);
-  const [logicNodes, setLogicNodes] = useState<LogicNode[]>([]);
-  const [variables, setVariables] = useState<Variable[]>([]);
+  const { getDiagramByDiagramName } = useDiagramContext();
 
   const { addWindow } = useWindowContext();
 
   const onSubmit = () => {
     let tempAppData = structuredClone(appData.value);
     // search through diagrams
-    let tempDiagrams = getItemList(tempAppData.DiagramList);
-    setDiagrams(tempDiagrams);
+    let diagrams = getItemList(tempAppData.DiagramList);
+
     // search through states
-    let tempStates = getItemList(tempAppData.StateList);
-    setStates(tempStates);
+    let states = getItemList(tempAppData.StateList);
     // search through actions
-    let tempActions = getItemList(tempAppData.ActionList);
-    setActions(tempActions);
+    let actions = getItemList(tempAppData.ActionList);
     // search through events
-    let tempEvents = getItemList(tempAppData.EventList);
-    setEvents(tempEvents);
+    let events = getItemList(tempAppData.EventList);
     // search through ext sims
-    let tempExtSims = getItemList(tempAppData.ExtSimList);
-    setExtSims(tempExtSims);
+    let extSims = getItemList(tempAppData.ExtSimList);
     //search for logic nodes
-    let tempLogicNodes = getItemList(tempAppData.LogicNodeList);
-    setLogicNodes(tempLogicNodes);
+    let logicNodes = getItemList(tempAppData.LogicNodeList);
     // search for variables
-    let tempVariables = getItemList(tempAppData.VariableList);
-    setVariables(tempVariables);
-    setOpenSearchDialog(true);
+    let variables = getItemList(tempAppData.VariableList);
+    // setOpenSearchDialog(true);
+    addWindow(
+      `Search Results for: ${value}`,
+      <SearchResultForm
+        diagrams={diagrams}
+        states={states}
+        actions={actions}
+        events={events}
+        extSims={extSims}
+        logicNodes={logicNodes}
+        variables={variables}
+        handleItemClick={handleItemClick}
+        getModel={getModel}
+      />,
+    );
+    handleClose();
   };
 
   const getItemList = (list: any[]) => {
@@ -215,22 +220,45 @@ const SearchField = () => {
     }
 
     handleMenuClose();
-    handleClose();
   };
+  const goToDiagramStateorLogictree = () => {
+    const componentMap: Record<
+      MainItemTypes.LogicNode | MainItemTypes.Diagram | MainItemTypes.State,
+      (data: Diagram | State | LogicNode) => JSX.Element
+    > = {
+      Diagram: (data): JSX.Element => <EmraldDiagram diagram={data as Diagram} />,
+      State: (data) => {
+        const d = data as State;
+        const stateDiagram = getDiagramByDiagramName(d.diagramName);
+        return <EmraldDiagram diagram={stateDiagram as Diagram} />;
+      },
+      LogicNode: (data) => <LogicNodeTreeDiagram logicNode={data as LogicNode} />,
+    };
+
+    if (selectedItem?.objType) {
+      addWindow(
+        selectedItem.name,
+        componentMap[selectedItem.objType as 'Diagram' | 'State' | 'LogicNode'](
+          selectedItem as any,
+        ),
+        {
+          x: 75,
+          y: 25,
+          width: 1300,
+          height: 700,
+        },
+      );
+      handleMenuClose();
+      handleClose();
+    }
+  };
+
   const handleMenuClose = () => {
     setAnchorEl(null);
     setSelectedItem(null);
   };
   const handleClose = () => {
-    setOpenSearchDialog(false);
     setValue('');
-    setDiagrams([]);
-    setStates([]);
-    setActions([]);
-    setEvents([]);
-    setExtSims([]);
-    setLogicNodes([]);
-    setVariables([]);
   };
 
   return (
@@ -254,28 +282,10 @@ const SearchField = () => {
         }}
         onKeyDown={handleKeyDown}
       />
-      <DialogComponent
-        open={openSearchDialog}
-        title={`Search Results for: ${value}`}
-        onClose={handleClose}
-        sx={{ width: '700px', fontWeight: 'bold' }}
-      >
-        <ItemTypeMenuResults
-          diagrams={diagrams}
-          states={states}
-          actions={actions}
-          events={events}
-          handleItemClick={handleItemClick}
-          getModel={getModel}
-          extSims={extSims}
-          logicNodes={logicNodes}
-          variables={variables}
-        />
-      </DialogComponent>
       <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleMenuClose}>
         <MenuItem onClick={goToEditProperties}>Edit Properties</MenuItem>
-        {selectedItem?.objType === 'Diagram' && (
-          <MenuItem onClick={goToEditProperties}>Go To Diagram</MenuItem>
+        {(selectedItem?.objType === 'Diagram' || selectedItem?.objType === 'State') && (
+          <MenuItem onClick={goToDiagramStateorLogictree}>Go To: {selectedItem?.name}</MenuItem>
         )}
       </Menu>
     </>
