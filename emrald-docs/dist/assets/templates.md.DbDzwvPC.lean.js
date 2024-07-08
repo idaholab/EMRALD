@@ -1,0 +1,1 @@
+import{_ as e,c as a,o as t,a2 as i}from"./chunks/framework.BLHWSx9w.js";const f=JSON.parse('{"title":"Template","description":"","frontmatter":{},"headers":[],"relativePath":"templates.md","filePath":"templates.md"}'),l={name:"templates.md"},o=i("",8),n=[o];function s(r,d,h,c,p,m){return t(),a("div",null,n)}const _=e(l,[["render",s]]);export{f as __pageData,_ as default};
