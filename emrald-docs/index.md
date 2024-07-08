@@ -3,11 +3,14 @@
 layout: home
 
 hero:
-  name: "EMRALD Documentation"
-  text: "The official documentation for the EMRALD application"
+  name: 'EMRALD Documentation'
+  text: 'The official documentation for the EMRALD application'
+  image:
+    src: 'images/emrald.png'
+    alt: 'EMRALD'
   actions:
     - theme: brand
-      text: Documentation
+      text: Go to Documentation
       link: '/Modeling/Introduction'
 
 features:
@@ -18,4 +21,3 @@ features:
   - title: Powerful
     details: Providing the sequence and timing of events that lead to the specified outcomes when calculating results
 ---
-
