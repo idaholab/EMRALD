@@ -32,6 +32,7 @@ import { useDiagramContext } from '../../../../contexts/DiagramContext';
 import LogicNodeTreeDiagram from '../../../diagrams/LogicTreeDiagram/LogicTreeDiagram';
 import SearchResultForm from '../../../forms/SearchResultForm/SearchResultForm';
 import { ReactFlowProvider } from 'reactflow';
+import { emptyLogicNode } from '../../../../contexts/LogicNodeContext';
 
 const SearchField = () => {
   const [value, setValue] = useState<string>('');
@@ -235,11 +236,19 @@ const SearchField = () => {
         name = stateDiagram.name;
         return <EmraldDiagram diagram={stateDiagram as Diagram} />;
       },
-      LogicNode: (data) => (
-        <ReactFlowProvider>
-          <LogicNodeTreeDiagram logicNode={data as LogicNode} />
-        </ReactFlowProvider>
-      ),
+      LogicNode: (data) => {
+        const logicNode = data as LogicNode;
+        let parentNode = logicNode;
+        if (!logicNode.isRoot) {
+          parentNode = findParentNode(logicNode);
+          name = parentNode.name;
+        }
+        return (
+          <ReactFlowProvider>
+            <LogicNodeTreeDiagram logicNode={parentNode} />
+          </ReactFlowProvider>
+        );
+      },
     };
 
     if (selectedItem?.objType) {
@@ -255,6 +264,19 @@ const SearchField = () => {
       });
       handleMenuClose();
     }
+  };
+  const findParentNode = (logicNode: LogicNode): LogicNode => {
+    let tempModel = GetModelItemsReferencing(logicNode.name, MainItemTypes.LogicNode, 1);
+    let nodes = tempModel.LogicNodeList;
+    if (nodes.length === 0) return emptyLogicNode;
+    for (let i = 0; i < nodes.length; i++) {
+      if (nodes[i].isRoot) {
+        return nodes[i];
+      } else {
+        return findParentNode(nodes[i]);
+      }
+    }
+    return emptyLogicNode;
   };
 
   const handleMenuClose = () => {
