@@ -256,7 +256,7 @@ export const templateSubMenuOptions: MenuOption[] = [
 
 export const downloadOptions: MenuOption[] = [
   {
-    label: 'Solver Engine',
+    label: 'Solve Engine',
     onClick: () => {
       var link = document.createElement('a');
       link.target = '_blank';
