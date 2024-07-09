@@ -46,8 +46,18 @@ const StateChange = () => {
         onChange={(e) => setIfInState(e.target.value === 'true' ? true : false)}
         sx={{ display: 'flex', flexDirection: 'row' }}
       >
-        <FormControlLabel value="true" control={<Radio />} label="On Enter State/s" />
-        <FormControlLabel value="false" control={<Radio />} label="On Exit State/s" />
+        <FormControlLabel
+          value="true"
+          control={<Radio />}
+          label="On Enter State/s"
+          checked={ifInState}
+        />
+        <FormControlLabel
+          value="false"
+          control={<Radio />}
+          label="On Exit State/s"
+          checked={!ifInState}
+        />
       </RadioGroup>
 
       <FormControlLabel
