@@ -2,6 +2,10 @@ import { appData, clearCacheData } from '../../../hooks/useAppData';
 import { upgradeModel, validateModel } from '../../../utils/Upgrades/upgrade';
 import { v4 as uuidv4 } from 'uuid';
 
+const solveEngineUrl = import.meta.env.VITE_EMRALD_SOLVE_ENGINE_URL;
+const clientTesterUrl = import.meta.env.VITE_EMRALD_CLIENT_TESTER_URL;
+const clientTesterSourceUrl = import.meta.env.VITE_EMRALD_CLIENT_TESTER_SOURCE_URL;
+
 
 export interface MenuOption {
   label: string;
@@ -260,8 +264,7 @@ export const downloadOptions: MenuOption[] = [
     onClick: () => {
       var link = document.createElement('a');
       link.target = '_blank';
-      link.href =
-        'https://github.com/idaholab/EMRALD/releases/latest/download/EMRALD_SimEngine.3_0.zip'; //The file to download.
+      link.href = solveEngineUrl; //The file to download.
       link.click();
     },
   },
@@ -270,8 +273,7 @@ export const downloadOptions: MenuOption[] = [
     onClick: () => {
       var link = document.createElement('a');
       link.target = '_blank';
-      link.href =
-        'https://github.com/idaholab/EMRALD/releases/latest/download/XMPPClientTester.zip'; //The file to download.
+      link.href = clientTesterUrl; //The file to download.
       link.click();
     },
   },
@@ -280,7 +282,7 @@ export const downloadOptions: MenuOption[] = [
     onClick: () => {
       var link = document.createElement('a');
       link.target = '_blank';
-      link.href = 'https://github.com/idaholab/EMRALD/tree/main/XmppClient'; //The file to download.
+      link.href = clientTesterSourceUrl; //The file to download.
       link.click();
     },
   },
