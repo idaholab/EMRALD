@@ -13,8 +13,21 @@ import { projectOptions, downloadOptions } from './menuOptions';
 import MenuButton from './MenuButton';
 import SearchField from './SearchBar/SearchField';
 
-const emraldDocsUrl = import.meta.env.VITE_EMRALD_DOCS_URL;
-const emraldOverviewUrl = import.meta.env.VITE_EMRALD_OVERVIEW_URL;
+const url: string = window.location.href;
+let emraldDocsUrl: string = 'http://emrald3-docs.inl.gov/'; // Default URL
+
+const urlEnvMappings: { [key: string]: string } = {
+  dev: 'http://emrald3-docs.dev.inl.gov/',
+  acc: 'http://emrald3-docs.acc.inl.gov/',
+  scan: 'http://emrald3-docs.scan.inl.gov/',
+};
+
+// Loop through the mappings and set the URL if a match is found
+Object.keys(urlEnvMappings).forEach((key: string) => {
+  if (url.includes(key)) {
+    emraldDocsUrl = urlEnvMappings[key];
+  }
+});
 
 const EmraldLogo = styled('img')(({ theme }) => ({
   marginRight: theme.spacing(2),
@@ -65,7 +78,7 @@ export default function Header() {
           <MenuButton
             id={4}
             title="About"
-            handleClick={() => window.open(emraldOverviewUrl)}
+            handleClick={() => window.open("https://emrald.inl.gov/SitePages/Overview.aspx")}
           />
         </Box>
         <SearchField />
