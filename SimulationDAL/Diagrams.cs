@@ -330,15 +330,12 @@ namespace SimulationDAL
         // See if the user has specified a different value for the state than the default
         if (!changedStateValues.TryGetValue(s.id, out retValue))
         {
-          found = true;
           // No specified value so use the default one or ignore
           if (curStates[s.id])
           {
+            found = true;
             retValue = s.dfltStateValue;
-          }
-          else // Ignore
-          {
-            return -1; // Return -1 if state is not found
+            break;
           }
         }
       }
@@ -347,6 +344,7 @@ namespace SimulationDAL
       {
         NLog.Logger logger = NLog.LogManager.GetLogger("logfile");
         logger.Error("Logic Error - Did not evaluate " + this.name + " as the simulation is not in any of the diagrams states at this time of the simulation. This node is ignored in the logic tree evaluation.");
+        retValue = -1;
       }
 
       // Check if retValue needs to be inverted for onFailure evaluation

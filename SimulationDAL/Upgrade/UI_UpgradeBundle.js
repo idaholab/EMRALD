@@ -181,7 +181,7 @@ function UpgradeV2_4(modelTxt) {
     const newModel = {
         ...oldModel,
         EventList: oldModel.EventList ? oldModel.EventList.map(({ Event }) => ({ Event: mapEvent(Event) })) : [],
-        templates: undefined,
+        templates: oldModel.templates ? oldModel.templates : undefined,
     };
     function mapEvent(oldEv) {
         var allItems = oldEv.allItems != null ?
@@ -361,7 +361,8 @@ function UpgradeV3_0_Recursive(oldModel) {
                 ...rest, // Spread the rest of the properties
                 id: id !== undefined ? String(id) : undefined,
                 objType: "Diagram",
-                diagramType: mapDiagramType(Diagram.diagramType) // Add the mapped diagramType
+                diagramType: mapDiagramType(Diagram.diagramType), // Add the mapped diagramType
+                required: false,
             };
         }) : [],
         ExtSimList: oldModel.ExtSimList ? oldModel.ExtSimList.map(({ ExtSim }) => {

@@ -37,6 +37,7 @@ namespace EMRALD_Sim
       defaultLoadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       saveStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+      recentToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       openModel = new System.Windows.Forms.OpenFileDialog();
       tabXMPP = new System.Windows.Forms.TabPage();
       panel1 = new System.Windows.Forms.Panel();
@@ -161,7 +162,6 @@ namespace EMRALD_Sim
       saveFileDialog2 = new System.Windows.Forms.SaveFileDialog();
       toolTip1 = new System.Windows.Forms.ToolTip(components);
       sdSaveModel = new System.Windows.Forms.SaveFileDialog();
-      recentToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       menuStrip1.SuspendLayout();
       tabXMPP.SuspendLayout();
       panel1.SuspendLayout();
@@ -219,14 +219,14 @@ namespace EMRALD_Sim
       // openToolStripMenuItem
       // 
       openToolStripMenuItem.Name = "openToolStripMenuItem";
-      openToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+      openToolStripMenuItem.Size = new System.Drawing.Size(138, 22);
       openToolStripMenuItem.Text = "Open";
       openToolStripMenuItem.Click += openToolStripMenuItem_Click;
       // 
       // defaultLoadToolStripMenuItem
       // 
       defaultLoadToolStripMenuItem.Name = "defaultLoadToolStripMenuItem";
-      defaultLoadToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+      defaultLoadToolStripMenuItem.Size = new System.Drawing.Size(138, 22);
       defaultLoadToolStripMenuItem.Text = "DefaultLoad";
       defaultLoadToolStripMenuItem.Visible = false;
       defaultLoadToolStripMenuItem.Click += defaultLoadToolStripMenuItem_Click;
@@ -234,20 +234,26 @@ namespace EMRALD_Sim
       // saveStripMenuItem
       // 
       saveStripMenuItem.Name = "saveStripMenuItem";
-      saveStripMenuItem.Size = new System.Drawing.Size(180, 22);
+      saveStripMenuItem.Size = new System.Drawing.Size(138, 22);
       saveStripMenuItem.Text = "Save";
       saveStripMenuItem.Click += saveStripMenuItem_Click;
       // 
       // toolStripMenuItem1
       // 
       toolStripMenuItem1.Name = "toolStripMenuItem1";
-      toolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
+      toolStripMenuItem1.Size = new System.Drawing.Size(138, 22);
       toolStripMenuItem1.Text = "Save As";
       toolStripMenuItem1.Click += toolStripMenuItem1_Click;
       // 
+      // recentToolStripMenuItem
+      // 
+      recentToolStripMenuItem.Name = "recentToolStripMenuItem";
+      recentToolStripMenuItem.Size = new System.Drawing.Size(138, 22);
+      recentToolStripMenuItem.Text = "Recent";
+      // 
       // openModel
       // 
-      openModel.Filter = "JSON Files (*.json)|*.json";
+      openModel.Filter = "EMRALD Files (*.emrald)|*.emrald|JSON Files (*.json)|*.json";
       // 
       // tabXMPP
       // 
@@ -1588,12 +1594,6 @@ namespace EMRALD_Sim
       // 
       sdSaveModel.Filter = "JSON Files (*.json)|*.json";
       sdSaveModel.FileOk += sdSaveModel_FileOk;
-      // 
-      // recentToolStripMenuItem
-      // 
-      recentToolStripMenuItem.Name = "recentToolStripMenuItem";
-      recentToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-      recentToolStripMenuItem.Text = "Recent";
       // 
       // FormMain
       // 

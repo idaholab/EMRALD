@@ -139,7 +139,12 @@ namespace SimulationDAL
           throw new Exception("Failed to Upgrade old model to v" + SCHEMA_VERSION + ex.Message);
         }
       }
-      return "";
+      else if(jsonObj.emraldVersion > SCHEMA_VERSION)
+      {
+        throw new Exception("EMRALD solver version to old to solve this model. Upgrade to v" + jsonObj.emraldVersion);
+      }
+     
+      return jsonModel;
     }
 
     public bool DeserializeJSON(string jsonModel, string modelPath) 
