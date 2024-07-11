@@ -139,7 +139,7 @@ namespace SimulationDAL
           throw new Exception("Failed to Upgrade old model to v" + SCHEMA_VERSION + ex.Message);
         }
       }
-      return "";
+      return jsonModel;
     }
 
     public bool DeserializeJSON(string jsonModel, string modelPath) 

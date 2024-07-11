@@ -951,8 +951,10 @@ namespace EMRALD_Sim
         txtMStatus.Text = errorStr;
         Console.Write(errorStr);
       }
-
-      ValidateModelAndUpdateUI();
+      else
+      {
+        ValidateModelAndUpdateUI();
+      }
 
       Cursor.Current = saveCurs;
     }

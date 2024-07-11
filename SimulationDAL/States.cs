@@ -238,6 +238,7 @@ namespace SimulationDAL
             this._dfltStateValue = 0;
             break;
           case "Unknown":
+          case "Ignore":
             this._dfltStateValue = -1;
             break;
         }
