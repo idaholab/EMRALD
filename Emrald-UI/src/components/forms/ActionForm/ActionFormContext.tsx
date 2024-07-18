@@ -240,19 +240,18 @@ const ActionFormContextProvider: React.FC<PropsWithChildren> = ({ children }) =>
       if (isScientificNotation) {
         console.log('value is in scientific notation: ', value);
         numericValue = parseFloat(value);
-        const [integerPart, exponentPart] = value.split(/[Ee]/);
+        const [_, exponentPart] = value.split(/[Ee]/);
         const exponent = Math.abs(Number(exponentPart));
         if (exponent >= 4) {
           // If it has 4 or more decimal places, keep it in scientific notation
           numericValue = value;
         }
       } else {
-        console.log('value is not in scientific notation: ', value);
         numericValue = parseFloat(value);
       }
 
       if (isNaN(Number(numericValue)) || Number(numericValue) > 1.0 || Number(numericValue) < 0) {
-        console.log('Invalid probability value up top: ', Number(numericValue));
+        console.log('Invalid probability value: ', Number(numericValue));
         setHasError(true);
       }
 
