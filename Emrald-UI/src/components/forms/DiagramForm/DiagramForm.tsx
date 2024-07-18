@@ -10,6 +10,7 @@ import { emptyDiagram, useDiagramContext } from '../../../contexts/DiagramContex
 import { useWindowContext } from '../../../contexts/WindowContext';
 import {
   Alert,
+  Autocomplete,
   Box,
   Button,
   FormControl,
@@ -53,6 +54,8 @@ const DiagramForm: React.FC<DiagramFormProps> = ({ diagramData }) => {
   ];
   const [diagramLabel, setDiagramLabel] = useState<string>(diagramData?.diagramLabel || '');
   const diagrams = useAppData().appData.value.DiagramList;
+  const diagramLabelsSet = new Set(diagrams.map((d) => d.diagramLabel));
+  const diagramLabels = Array.from(diagramLabelsSet);
   const [importDiagram, setImportDiagram] = useState<EMRALD_Model>();
   const [selectedGroup, setSelectedGroup] = useState<string>('');
   const [selectedTemplate, setSelectedTemplate] = useState<EMRALD_Model>();
@@ -93,7 +96,7 @@ const DiagramForm: React.FC<DiagramFormProps> = ({ diagramData }) => {
       if (diagramData) {
         updateDiagram({
           ...diagram.value,
-          name,
+          name: name.trim(),
           desc,
           diagramType,
           diagramLabel,
@@ -102,7 +105,7 @@ const DiagramForm: React.FC<DiagramFormProps> = ({ diagramData }) => {
         createDiagram({
           ...diagram.value,
           id: uuidv4(),
-          name,
+          name: name.trim(),
           desc,
           diagramType,
           diagramLabel: diagramLabel || 'Component',
@@ -154,7 +157,19 @@ const DiagramForm: React.FC<DiagramFormProps> = ({ diagramData }) => {
   };
 
   const handleNameChange = (newName: string) => {
-    setHasError(diagrams.some((node) => node.name === newName));
+    // Trim leading and trailing whitespace
+    const trimmedName = newName.trim();
+
+    // Check if the name already exists
+    const nameExists = diagrams.some((node) => node.name === trimmedName);
+
+    // Check for invalid characters (allowing spaces, hyphens, and underscores)
+    const hasInvalidChars = /[^a-zA-Z0-9-_ ]/.test(trimmedName);
+
+    // Set the error state
+    setHasError(nameExists || hasInvalidChars);
+
+    // Set the name (trimmed version)
     setName(newName);
   };
 
@@ -203,26 +218,24 @@ const DiagramForm: React.FC<DiagramFormProps> = ({ diagramData }) => {
             reset={reset}
             handleNameChange={handleNameChange}
             error={hasError}
-            errorMessage="A Diagram with this name already exists."
+            errorMessage="A Diagram with this name already exists, or this name contains special characters."
             reqPropsFilled={
               name && diagramLabel && !selectedTemplate && !importDiagram ? true : false
             }
           >
-            <FormControl variant="outlined" size="small" sx={{ minWidth: 120, width: '100%' }}>
-              <TextField
-                label="Diagram Label"
-                margin="normal"
-                variant="outlined"
-                size="small"
-                disabled={!!selectedTemplate || !!importDiagram}
-                sx={{ mb: 0 }}
-                value={diagramLabel}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                  setDiagramLabel(e.target.value)
-                }
-                fullWidth
-              />
-            </FormControl>
+            <Autocomplete
+              freeSolo
+              disabled={!!selectedTemplate || !!importDiagram}
+              id="combo-box-demo"
+              options={diagramLabels}
+              renderInput={(params) => <TextField {...params} label="Daigram Label" />}
+              onChange={(event, newValue) => setDiagramLabel(newValue as string)}
+              onInputChange={(event, newInputValue) => setDiagramLabel(newInputValue)}
+              value={diagramLabel}
+              fullWidth
+              size="small"
+              sx={{ mt: 1 }}
+            />
           </MainDetailsForm>
         </form>
       </TabPanel>
@@ -238,7 +251,11 @@ const DiagramForm: React.FC<DiagramFormProps> = ({ diagramData }) => {
             <></>
           )}
           <Box ml={3}>
-            <FileUploadComponent label="Choose File" setFile={handleImport} clearFile={() => setImportDiagram(undefined)}/>
+            <FileUploadComponent
+              label="Choose File"
+              setFile={handleImport}
+              clearFile={() => setImportDiagram(undefined)}
+            />
           </Box>
           <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 5 }}>
             <Button
@@ -304,11 +321,15 @@ const DiagramForm: React.FC<DiagramFormProps> = ({ diagramData }) => {
 
           <Box display="flex">
             <Box ml={3} flex={1}>
-              <Typography variant="subtitle1" fontWeight={'bold'}>Group List</Typography>
+              <Typography variant="subtitle1" fontWeight={'bold'}>
+                Group List
+              </Typography>
               <GroupListItems selectedGroup={selectedGroup} setSelectedGroup={setSelectedGroup} />
             </Box>
             <Box ml={3} flex={1}>
-            <Typography variant="subtitle1" fontWeight={'bold'}>Template List</Typography>
+              <Typography variant="subtitle1" fontWeight={'bold'}>
+                Template List
+              </Typography>
               <List
                 sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}
                 aria-label="contacts"

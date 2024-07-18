@@ -23,7 +23,10 @@ const ExtSimForm: React.FC<ExtSimFormProps> = ({ ExtSimData }) => {
   const { extSimList } = useExtSimContext();
 
   const handleNameChange = (newName: string) => {
-    setHasError(extSimList.value.some((extSim) => extSim.name === newName));
+    const trimmedName = newName.trim();
+    const nameExists = extSimList.value.some((extSim) => extSim.name === trimmedName);
+    const hasInvalidChars = /[^a-zA-Z0-9-_ ]/.test(trimmedName);
+    setHasError(nameExists || hasInvalidChars);
     setName(newName);
   };
 
@@ -31,13 +34,13 @@ const ExtSimForm: React.FC<ExtSimFormProps> = ({ ExtSimData }) => {
     ExtSimData
       ? updateExtSim({
           ...ExtSim.value,
-          name,
+          name: name.trim(),
           resourceName,
         })
       : createExtSim({
           ...ExtSim.value,
           id: uuidv4(),
-          name,
+          name: name.trim(),
           resourceName,
         });
     handleClose();
@@ -59,7 +62,7 @@ const ExtSimForm: React.FC<ExtSimFormProps> = ({ ExtSimData }) => {
           onChange={(e) => handleNameChange(e.target.value)}
           fullWidth
           error={hasError}
-          helperText={hasError ? 'Name already exists' : ''}
+          helperText={hasError ? 'Name already exists or contains an invalid character' : ''}
         />
         <TextField
           label="Application Name"

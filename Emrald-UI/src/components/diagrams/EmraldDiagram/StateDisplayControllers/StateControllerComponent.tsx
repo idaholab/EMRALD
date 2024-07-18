@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import '../StateNode.scss';
 import { Typography } from '@mui/material';
 import {
@@ -7,6 +7,7 @@ import {
   DiagramAccordionSummary,
 } from '../DiagramAccordion';
 import { capitalize } from 'lodash';
+import debounce from 'lodash.debounce';
 import DropTargetComponent from '../../../drag-and-drop/Droppable';
 import { State } from '../../../../types/State';
 import EventActions from './StateItems/EventActions';
@@ -25,13 +26,20 @@ const StateControllerComponent: React.FC<StateControllerComponentProps> = ({ typ
   const { updateStateEvents, updateStateImmediateActions } = useEmraldDiagram();
   const { menu, menuOptions, onActionsHeaderContextMenu, closeContextMenu } = useContextMenu();
 
+  const handleAccordionChange = useCallback(
+    debounce(() => {
+      setExpandedPanel((prev) => !prev);
+    }, 30), // Adjust the debounce delay as needed
+    [],
+  );
+
   return (
     <div className={`state-node__${type}-actions`}>
       <DiagramAccordion
         expanded={expandedPanel}
         aria-controls={`panel-${state.name}-${type}-content`}
         id={`panel-${state.name}-${type}-header`}
-        onClick={() => setExpandedPanel(!expandedPanel)}
+        onChange={handleAccordionChange}
       >
         <DropTargetComponent
           type={type === 'event' ? 'Event' : 'Action'}

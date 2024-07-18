@@ -8,16 +8,43 @@ interface EventAction {
 }
 
 export const showRemainingValues = (action: Action, newState: { toState: string, prob: number }) => {
-  if (action.newStates && action.newStates.length > 1) {
+  const formatProb = (num: number) => {
+    const numStr = num.toString();
+    const decimalIndex = numStr.indexOf('.');
+    const isScientificNotation = /[Ee]/.test(numStr);
+  
+    if (isScientificNotation || (decimalIndex !== -1 && numStr.length - decimalIndex -1 > 4)) {
+      // Convert to scientific notation first, then multiply by 100
+      const scientificStr = isScientificNotation ? numStr : num.toExponential();
+      const [base, exponent] = scientificStr.split('e');
+      const [front, decimal] = base.split('.');
+      let adjExponent = Number(exponent) +2;
+      const scientificResult = front + (decimal ? '.' + decimal.substring(0, 3) : '') + (adjExponent !== 0 ? 'e' + adjExponent : '' ) 
+      return `${scientificResult} %`;
+    }
+    
+    // For numbers with less than 4 decimal places, multiply by 100 then remove any trailing zeros
+    let result = (num * 100).toFixed(3)
+    let [front, decimal] = result.split('.');
+    for (let i =2; i>=0; i--) {
+      if (decimal[i] !== '0') {
+        break;
+      } 
+      decimal = decimal.slice(0, i);
+    }
+    return `${front + (decimal ? '.' + decimal : '')} %`;
+  };
+  
+  if (action.newStates && action.newStates.length > 1) { 
     if (newState.prob === -1) {
       return 'Remaining';
     }
     else {
-      return `${newState.prob * 100}%`;
+      return formatProb(newState.prob);;
     }
   } else {
     if (newState.prob > 0 && newState.prob !== Number.NEGATIVE_INFINITY) {
-      return `${newState.prob * 100}%`;
+      return formatProb(newState.prob);
     }
   }
 };

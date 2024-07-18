@@ -335,7 +335,10 @@ const EventFormContextProvider: React.FC<PropsWithChildren> = ({ children }) => 
   };
   const handleNameChange = (newName: string) => {
     const events = appData.value.EventList;
-    setHasError(events.some((event) => event.name === newName));
+    const trimmedName = newName.trim();
+    const nameExists = events.some((event) => event.name === trimmedName);
+    const hasInvalidChars = /[^a-zA-Z0-9-_ ]/.test(trimmedName);
+    setHasError(nameExists || hasInvalidChars);
     setName(newName);
   };
 
@@ -375,7 +378,7 @@ const EventFormContextProvider: React.FC<PropsWithChildren> = ({ children }) => 
       ...event.value,
       id: eventData?.id || uuidv4(),
       evType,
-      name,
+      name: name.trim(),
       desc,
       code: scriptCode,
       varNames: codeVariables,
