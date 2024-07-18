@@ -94,7 +94,10 @@ const LogicNodeForm: React.FC<LogicNodeFormProps> = ({
 
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newName = e.target.value;
-    setError(logicNodeList.value.some((node) => node.name === newName));
+    const trimmedName = newName.trim();
+    const nameExists = logicNodeList.value.some((node) => node.name === trimmedName);
+    const hasInvalidChars = /[^a-zA-Z0-9-_ ]/.test(trimmedName);
+    setError(nameExists || hasInvalidChars);
 
     editing ? (logicNode.value.name = newName) : (newLogicNode.value.name = newName);
     setNameValue(newName);
@@ -303,7 +306,7 @@ const LogicNodeForm: React.FC<LogicNodeFormProps> = ({
               error={error}
               helperText={`${
                 error
-                  ? 'A Logic Node with this name already exists'
+                  ? 'A Logic Node with this name already exists or contains an invalid character'
                   : nameValue.length === 20
                   ? 'Maximum 20 characters'
                   : ''

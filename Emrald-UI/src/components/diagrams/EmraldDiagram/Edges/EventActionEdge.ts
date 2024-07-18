@@ -8,16 +8,33 @@ interface EventAction {
 }
 
 export const showRemainingValues = (action: Action, newState: { toState: string, prob: number }) => {
-  if (action.newStates && action.newStates.length > 1) {
+  const formatProb = (num: number) => {
+    const numStr = num.toString();
+    const decimalIndex = numStr.indexOf('.');
+  
+    if (decimalIndex !== -1 && numStr.length - decimalIndex - 1 >= 4) {
+      // Convert to scientific notation first, then multiply by 100
+      const scientificStr = num.toExponential();
+      const [base, exponent] = scientificStr.split('e');
+      const [front, decimal] = base.split('.');
+      const scientificResult = front + (decimal ? '.' + decimal.substring(0, 3) : '') + 'e' + (Number(exponent) +2);
+      return `${scientificResult} %`;
+    }
+  
+    // For numbers with less than 4 decimal places, multiply by 100
+    return `${(num * 100).toFixed(3)} %`;
+  };
+  
+  if (action.newStates && action.newStates.length > 1) {  //  .012
     if (newState.prob === -1) {
       return 'Remaining';
     }
     else {
-      return `${newState.prob * 100}%`;
+      return formatProb(newState.prob);;
     }
   } else {
     if (newState.prob > 0 && newState.prob !== Number.NEGATIVE_INFINITY) {
-      return `${newState.prob * 100}%`;
+      return formatProb(newState.prob);
     }
   }
 };

@@ -165,7 +165,10 @@ const VariableFormContextProvider: React.FC<PropsWithChildren> = ({ children }) 
 
   const handleNameChange = (updatedName: string) => {
     const variables = appData.value.VariableList;
-    setHasError(variables.some((variable) => variable.name === updatedName));
+    const trimmedName = updatedName.trim();
+    const duplicateExists = variables.some((variable) => variable.name === trimmedName);
+    const hasInvalidChars = /[^a-zA-Z0-9-_ ]/.test(trimmedName);
+    setHasError(duplicateExists || hasInvalidChars);
     if (namePrefix) {
       const hasPrefix = updatedName.startsWith(namePrefix);
 
@@ -192,7 +195,7 @@ const VariableFormContextProvider: React.FC<PropsWithChildren> = ({ children }) 
       ...variable.value,
       id: variableData?.id || uuidv4(),
       type,
-      name,
+      name: name.trim(),
       desc,
       varScope,
       sim3DId,

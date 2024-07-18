@@ -8,31 +8,18 @@ import {
   TextField,
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
-
-function createData(name: string) {
-  return { name };
-}
-
-const rows = [
-  createData('Manual SCRAM'),
-  createData('Main FW is lost'),
-  createData('MCPs (RCPs) off'),
-  createData('HPI forced off'),
-  createData('LPI forced off'),
-];
-
-const options = [
-  { label: 'test'},
-]
-
+import { useActionFormContext } from '../../../../../ActionFormContext';
 const Initiators = () => {
+  const { formData } = useActionFormContext();
   return (
     <>
       <Autocomplete
-        size='small'
+        size="small"
         disablePortal
         id="combo-box-demo"
-        options={options}
+        options={
+          formData?.possibleInitiators?.map((initiator: { desc: string }) => initiator.desc) || []
+        }
         sx={{ width: 300 }}
         renderInput={(params) => <TextField {...params} label="Add Initiator" />}
       />
@@ -48,13 +35,10 @@ const Initiators = () => {
           </TableRow>
         </TableHead>
         <TableBody>
-          {rows.map((row) => (
-            <TableRow
-              key={row.name}
-              sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-            >
+          {formData.initiators?.map((row: any, idx: number) => (
+            <TableRow key={idx} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
               <TableCell component="th" scope="row">
-                {row.name}
+                {row.type === 'assignment' ? row.target.value.value : row.value}
               </TableCell>
               <TableCell align="center">
                 <DeleteIcon />

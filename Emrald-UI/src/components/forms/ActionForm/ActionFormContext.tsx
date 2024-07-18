@@ -1,10 +1,4 @@
-import {
-  ChangeEvent,
-  createContext,
-  PropsWithChildren,
-  useContext,
-  useState,
-} from 'react';
+import { ChangeEvent, createContext, PropsWithChildren, useContext, useState } from 'react';
 import { Action, NewState } from '../../../types/Action';
 import { useWindowContext } from '../../../contexts/WindowContext';
 import { emptyAction, useActionContext } from '../../../contexts/ActionContext';
@@ -140,7 +134,10 @@ const ActionFormContextProvider: React.FC<PropsWithChildren> = ({ children }) =>
   };
 
   const handleNameChange = (newName: string) => {
-    setHasError(actionsList.value.some((node) => node.name === newName));
+    const trimmedName = newName.trim();
+    const nameExists = actionsList.value.some((node) => node.name === trimmedName); // Check for invalid characters (allowing spaces, hyphens, and underscores)
+    const hasInvalidChars = /[^a-zA-Z0-9-_ ]/.test(trimmedName);
+    setHasError(nameExists || hasInvalidChars);
     setName(newName);
   };
 
@@ -156,7 +153,7 @@ const ActionFormContextProvider: React.FC<PropsWithChildren> = ({ children }) =>
     action.value = {
       ...action.value,
       id: actionData?.id || uuidv4(),
-      name,
+      name: name.trim(),
       desc,
       actType,
       newStates,
@@ -173,7 +170,8 @@ const ActionFormContextProvider: React.FC<PropsWithChildren> = ({ children }) =>
       exePath,
       processOutputFileCode,
       openSimVarParams,
-      mainItem: true
+      mainItem: true,
+      formData,
     };
 
     actionData ? updateAction(action.value) : createAction(action.value, event, state);
@@ -232,14 +230,29 @@ const ActionFormContextProvider: React.FC<PropsWithChildren> = ({ children }) =>
   const handleProbBlur = (updatedItem: NewStateItem) => {
     const value = updatedItem.prob?.toString();
     const validInputRegex = /^[+\-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[Ee][+\-]?\d+)?$/;
+
     if (value && validInputRegex.test(value)) {
       setHasError(false);
-      // Convert scientific notation to numeric value
-      const numericValue = parseFloat(value);
-      // Round up to 10 decimal places
-      const roundedValue = Math.round(numericValue * 1e10) / 1e10;
 
-      if (roundedValue >= 1.0 || roundedValue <= 0 || isNaN(roundedValue)) {
+      // Check if the value is in scientific notation
+      const isScientificNotation = /[Ee]/.test(value);
+      let numericValue;
+      if (isScientificNotation) {
+        console.log('value is in scientific notation: ', value);
+        numericValue = parseFloat(value);
+        const [integerPart, exponentPart] = value.split(/[Ee]/);
+        const exponent = Math.abs(Number(exponentPart));
+        if (exponent >= 4) {
+          // If it has 4 or more decimal places, keep it in scientific notation
+          numericValue = value;
+        }
+      } else {
+        console.log('value is not in scientific notation: ', value);
+        numericValue = parseFloat(value);
+      }
+
+      if (isNaN(Number(numericValue)) || Number(numericValue) > 1.0 || Number(numericValue) < 0) {
+        console.log('Invalid probability value up top: ', Number(numericValue));
         setHasError(true);
       }
 
@@ -248,15 +261,15 @@ const ActionFormContextProvider: React.FC<PropsWithChildren> = ({ children }) =>
           if (item.id === updatedItem.id) {
             return {
               ...item,
-              prob: roundedValue,
+              prob: numericValue,
             };
           }
           return item;
         });
         return updatedItems;
       });
-      // handleProbChange({ ...e, target: { ...e.target, value: roundedValue } }, item);
     } else {
+      console.log('Invalid probability value: ', value);
       setHasError(true);
     }
   };
@@ -312,6 +325,16 @@ const ActionFormContextProvider: React.FC<PropsWithChildren> = ({ children }) =>
     setHasError(false); // Default value for hasError
   };
 
+  const toScientificIfNeeded = (num: number) => {
+    const numStr = num.toString();
+    const decimalIndex = numStr.indexOf('.');
+
+    if (decimalIndex !== -1 && numStr.length - decimalIndex - 1 >= 4) {
+      return num.toExponential();
+    }
+    return num;
+  };
+
   const initializeForm = (actionData: Action | undefined) => {
     setActionData(actionData);
     //Main info
@@ -328,6 +351,7 @@ const ActionFormContextProvider: React.FC<PropsWithChildren> = ({ children }) =>
               id: uuidv4(),
               remaining: state.prob === -1,
               probType: 'fixed',
+              prob: toScientificIfNeeded(state.prob),
             })),
           )
         : [],
