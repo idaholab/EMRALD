@@ -5,25 +5,40 @@ import { TextFieldComponent, FileUploadComponent, TabPanel } from '../../../../.
 import { Parameters, Initiators, InputBlocks, Outputs } from './FormFieldsByType';
 import { parse as InputParse } from './Parser/maap-inp-parser.ts';
 import { parse as parameterParser } from './Parser/maap-par-parser.ts';
+import { v4 as uuid } from 'uuid';
 
-export interface Parameter {
-  desc: string;
-  index: number;
-  value: Value;
+export interface ParameterOG {
+  location: any;
   target: Target;
+  value: Value;
+  type: string;
 }
 export interface Target {
+  location: any;
   value: Value | string;
   type: string;
 }
 
 export interface Value {
+  type: string;
   value: string | number;
+  units?: string;
 }
 export interface Initiator {
   desc: string;
   value: string;
   index: number;
+  type: string;
+  target: Target;
+}
+export interface Parameter {
+  useVariable: boolean;
+  id: string;
+  location: any;
+  target: Target;
+  value: Value;
+  type: string;
+  variable?: string;
 }
 
 const MAAP = () => {
@@ -37,11 +52,11 @@ const MAAP = () => {
     ReturnExePath,
   } = useCustomForm();
 
-  const [exePath, setExePath] = useState(formData?.exePath || '');
+  const [exePath, setExePath] = useState('');
   const [parameterFile, setParameterFile] = useState<File | null>();
-  const [parameterPath, setParameterPath] = useState(formData?.parameterPath || '');
+  const [parameterPath, setParameterPath] = useState('');
   const [inputFile, setInputFile] = useState<File | null>();
-  const [inputPath, setInputPath] = useState(formData?.inputPath || '');
+  const [inputPath, setInputPath] = useState('');
   const [currentTab, setCurrentTab] = React.useState(0);
   const [count, setCount] = useState<{ [key: string]: number }>({});
 
@@ -52,6 +67,12 @@ const MAAP = () => {
   const createPreProcessCode = () => {
     return `string inpLoc = @"${inputPath}";`;
   };
+
+  useEffect(() => {
+    setParameterPath(formData?.parameterPath || '');
+    setExePath(formData?.exePath || '');
+    setInputPath(formData?.inputPath || '');
+  }, []);
 
   useEffect(() => {
     ReturnPreCode(createPreProcessCode());
@@ -77,70 +98,101 @@ const MAAP = () => {
   }, [exePath, inputPath, parameterFile, parameterPath]);
 
   useEffect(() => {
-    handleParameterFileChange();
-  }, [parameterFile]);
+    if (parameterFile) {
+      const possibleInitiators: Initiator[] = [];
+      const allData: any[] = [];
+      parameterFile.text().then((lineData) => {
+        const lines = lineData.split(/\n/);
+        for (const line of lines) {
+          if (/^[0-9]{3}/.test(line)) {
+            try {
+              const data: any = parameterParser(line, {
+                locations: true,
+              });
+              allData.push(data);
+              if (data.value === 'T') {
+                possibleInitiators.push(data);
+              }
+            } catch (err) {
+              console.log('Error parsing line:', line, ' err is: ', err);
+            }
+          }
+        }
+      });
+      setFormData((prevFormData: any) => ({
+        ...prevFormData,
+        possibleInitiators,
+      }));
+      console.log('parameter file data: ', allData);
+    }
+  }, [parameterFile, setParameterFile]);
 
   useEffect(() => {
-    handleInputFileChange();
-  }, [inputFile]);
+    const handleInputFileChange = async () => {
+      if (inputFile) {
+        const fileString = await inputFile.text();
 
-  const handleInputFileChange = async () => {
-    if (inputFile) {
-      const fileString = await inputFile.text();
+        try {
+          const data = InputParse(fileString, {
+            locations: true,
+          });
 
-      try {
-        const data = InputParse(fileString, {
-          locations: true,
-        });
+          console.log('input file data: ', data.value);
 
-        console.log('input file data: ', data.value);
+          let comments: any = [];
+          let sections: any = [];
+          let parameters: any = [];
+          let initiators: any = [];
 
-        let comments: any = [];
-        let sections: any = [];
-        let parameters: any = [];
-        let initiators: any = [];
+          data.value.forEach((sourceElement: any, i: any) => {
+            if (sourceElement.type === 'comment') {
+              comments.push(sourceElement);
+            } else {
+              sections.push(sourceElement);
+            }
 
-        data.value.forEach((sourceElement: any, i: any) => {
-          if (sourceElement.type === 'comment') {
-            comments.push(sourceElement);
-          } else {
-            sections.push(sourceElement);
-          }
+            switch (sourceElement.type) {
+              case 'block':
+                if (sourceElement.blockType === 'PARAMETER CHANGE') {
+                  sourceElement.value.forEach((innerElement: any) => {
+                    if (innerElement.type === 'assignment') {
+                      parameters.push(innerElement);
+                    } else {
+                      // Handle other types if needed
+                    }
+                  });
+                } else if (sourceElement.blockType === 'INITIATORS') {
+                  sourceElement.value.forEach((innerElement: any) => {
+                    initiators.push(innerElement);
+                  });
+                }
+                break;
+              default:
+                break;
+            }
+          });
 
-          switch (sourceElement.type) {
-            case 'block':
-              if (sourceElement.blockType === 'PARAMETER CHANGE') {
-                sourceElement.value.forEach((innerElement: any) => {
-                  if (innerElement.type === 'assignment') {
-                    parameters.push(innerElement);
-                  } else {
-                    // Handle other types if needed
-                  }
-                });
-              } else if (sourceElement.blockType === 'INITIATORS') {
-                sourceElement.value.forEach((innerElement: any) => {
-                  initiators.push(innerElement);
-                });
-              }
-              break;
-            default:
-              break;
-          }
-        });
-
-        // Set state variables or perform other actions with comments, sections, and parameters
-        // setComments(comments);
-        parameters = editParameterNames(parameters);
-        setFormData((prevFormData: any) => ({
-          ...prevFormData,
-          parameters,
-          initiators,
-        }));
-      } catch (err) {
-        console.log('Error parsing file:', err);
+          // Set state variables or perform other actions with comments, sections, and parameters
+          // setComments(comments);
+          parameters = editParameterNames(parameters);
+          const newParameters: Parameter[] = parameters.map((param: ParameterOG) => ({
+            ...param,
+            id: uuid(),
+            useVariable: false,
+          }));
+          setFormData((prevFormData: any) => ({
+            ...prevFormData,
+            parametersOG: parameters, // storing original parameters without any added properties just in case
+            parameters: newParameters,
+            initiators,
+          }));
+        } catch (err) {
+          console.log('Error parsing file:', err);
+        }
       }
-    }
-  };
+    };
+    handleInputFileChange();
+  }, [inputFile, setInputFile]);
 
   const editParameterNames = (parameters: Parameter[]) => {
     let names: string[] = [];
@@ -168,34 +220,6 @@ const MAAP = () => {
     });
     setCount(updatedCount);
     return parameters;
-  };
-
-  const handleParameterFileChange = async () => {
-    if (parameterFile) {
-      const possibleInitiators: Initiator[] = [];
-      const allData: any[] = [];
-      const lines = (await parameterFile.text()).split(/\n/);
-      for (const line of lines) {
-        if (/^[0-9]{3}/.test(line)) {
-          try {
-            const data: any = parameterParser(line, {
-              locations: true,
-            });
-            allData.push(data);
-            if (data.value === 'T') {
-              possibleInitiators.push(data);
-            }
-          } catch (err) {
-            console.log('Error parsing line:', line, ' err is: ', err);
-          }
-        }
-      }
-      setFormData((prevFormData: any) => ({
-        ...prevFormData,
-        possibleInitiators,
-      }));
-      console.log('parameter file data: ', allData);
-    }
   };
   return (
     <>

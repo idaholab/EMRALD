@@ -9,15 +9,54 @@ import {
   MenuItem,
 } from '@mui/material';
 import { Parameter, Value } from '../maap';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { SelectComponent } from '../../../../../../../common';
 import { appData } from '../../../../../../../../hooks/useAppData';
 import { useActionFormContext } from '../../../../../ActionFormContext';
 
 const Parameters = () => {
-  const { formData } = useActionFormContext();
-  const [useVariable, setUseVariable] = useState<{ [key: number]: boolean }>({});
+  const { formData, setFormData } = useActionFormContext();
+  const [useVariable, setUseVariable] = useState<{ [key: string]: boolean }>({});
   const [variable, setVariable] = useState<{ [key: string]: string }>({});
+  const [parameters, setParameters] = useState<Parameter[]>([]);
+
+  useEffect(() => {
+    setUseVariable(
+      formData?.parameters?.reduce((accumulator: { [key: string]: boolean }, param: Parameter) => {
+        accumulator[param.id] = param.useVariable;
+        return accumulator;
+      }, {}) || {},
+    );
+    setVariable(
+      formData?.parameters?.reduce((accumulator: { [key: string]: string }, param: Parameter) => {
+        accumulator[param.id] = param.variable || '';
+        return accumulator;
+      }, {}) || {},
+    );
+  }, []);
+
+  useEffect(() => {
+    setParameters(formData?.parameters || []);
+  }, [formData?.parameters]);
+
+  const handleSetVariable = (variableName: string, row: Parameter) => {
+    setVariable((prev) => ({ ...prev, [row.id]: variableName }));
+    const updatedParameters = parameters.map((param) =>
+      param.id === row.id ? { ...param, variable: variableName } : param,
+    );
+    setParameters(updatedParameters);
+    setFormData((prevFormData: any) => ({ ...prevFormData, parameters: updatedParameters }));
+  };
+
+  const handleCheckbox = (row: Parameter) => {
+    const value = !useVariable[row.id];
+    setUseVariable((prev) => ({ ...prev, [row.id]: value }));
+    const updatedParameters = parameters.map((param) =>
+      param.id === row.id ? { ...param, useVariable: value } : param,
+    );
+    setParameters(updatedParameters);
+    setFormData((prevFormData: any) => ({ ...prevFormData, parameters: updatedParameters }));
+  };
   return (
     <Table sx={{ minWidth: 650 }} size="small">
       <TableHead>
@@ -25,7 +64,7 @@ const Parameters = () => {
           <TableCell sx={{ width: '40%' }}>
             <b>Parameter</b>
           </TableCell>
-          <TableCell sx={{ width: '40%' }} align="left">
+          <TableCell sx={{ width: '40%' }}>
             <b>Value</b>
           </TableCell>
           <TableCell align="center">
@@ -34,34 +73,36 @@ const Parameters = () => {
         </TableRow>
       </TableHead>
       <TableBody>
-        {formData?.parameters?.map((row: Parameter, id: number) => (
-          <TableRow key={id} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+        {parameters?.map((row: Parameter, idx: number) => (
+          <TableRow key={idx} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
             <TableCell component="th" scope="row">
               {row.target.type === 'call_expression'
                 ? ((row.target.value as Value).value as string)
                 : (row.target.value as string)}
             </TableCell>
-            {useVariable[id] ? (
-              <SelectComponent
-                value={variable[id]}
-                label={'EMRALD Variable'}
-                setValue={(e) => setVariable((prev) => ({ ...prev, [id]: e }))}
-                sx={{ width: 225, ml: '15px', mb: '20px' }}
-              >
-                {appData.value.VariableList.map((variable) => (
-                  <MenuItem value={variable.name}>{variable.name}</MenuItem>
-                ))}
-              </SelectComponent>
-            ) : (
-              <TableCell align="left">
+            <TableCell>
+              {useVariable[row.id] ? (
+                <SelectComponent
+                  value={variable[row.id] || ''}
+                  label={'EMRALD Variable'}
+                  setValue={(e) => handleSetVariable(e, row)}
+                  sx={{ width: 223, mt: 0 }}
+                >
+                  {appData.value.VariableList.map((variable) => (
+                    <MenuItem key={variable.name} value={variable.name}>
+                      {variable.name}
+                    </MenuItem>
+                  ))}
+                </SelectComponent>
+              ) : (
                 <TextField size="small" value={row.value.value} />
-              </TableCell>
-            )}
+              )}
+            </TableCell>
             <TableCell align="center">
               <Checkbox
-                checked={useVariable[id]}
-                value={useVariable[id]}
-                onChange={() => setUseVariable((prev) => ({ ...prev, [id]: !prev[id] }))}
+                checked={useVariable[row.id] || false}
+                value={useVariable[row.id] || false}
+                onChange={() => handleCheckbox(row)}
               />
             </TableCell>
           </TableRow>

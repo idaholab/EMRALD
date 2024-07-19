@@ -43,6 +43,7 @@ interface ActionFormContextType {
   formData: any;
   hasError: boolean;
   actionTypeOptions: { value: string; label: string }[];
+  raType: string;
   setName: React.Dispatch<React.SetStateAction<string>>;
   setDesc: React.Dispatch<React.SetStateAction<string>>;
   setActType: React.Dispatch<React.SetStateAction<ActionType>>;
@@ -79,6 +80,7 @@ interface ActionFormContextType {
   sortNewStates: (newStateItems: NewStateItem[]) => NewStateItem[];
   initializeForm: (actionData: Action | undefined) => void;
   reset: () => void;
+  setRaType: React.Dispatch<React.SetStateAction<string>>;
 }
 
 const ActionFormContext = createContext<ActionFormContextType | undefined>(undefined);
@@ -121,6 +123,7 @@ const ActionFormContextProvider: React.FC<PropsWithChildren> = ({ children }) =>
   const [processOutputFileCode, setProcessOutputFileCode] = useState<string>('');
   const [formData, setFormData] = useState<any>();
   const [hasError, setHasError] = useState(false);
+  const [raType, setRaType] = useState('');
 
   const actionTypeOptions = [
     { value: 'atTransition', label: 'Transition' },
@@ -172,6 +175,7 @@ const ActionFormContextProvider: React.FC<PropsWithChildren> = ({ children }) =>
       openSimVarParams,
       mainItem: true,
       formData,
+      raType,
     };
 
     actionData ? updateAction(action.value) : createAction(action.value, event, state);
@@ -322,6 +326,7 @@ const ActionFormContextProvider: React.FC<PropsWithChildren> = ({ children }) =>
     setProcessOutputFileCode('');
     setFormData(undefined); // Assuming formData can be undefined
     setHasError(false); // Default value for hasError
+    setRaType('');
   };
 
   const toScientificIfNeeded = (num: number) => {
@@ -373,7 +378,7 @@ const ActionFormContextProvider: React.FC<PropsWithChildren> = ({ children }) =>
     setExePath(actionData?.exePath || '');
     setProcessOutputFileCode(actionData?.processOutputFileCode || '');
     setFormData(actionData?.formData || undefined);
-
+    setRaType(actionData?.raType || '');
     action.value = actionData || emptyAction;
   };
 
@@ -401,6 +406,7 @@ const ActionFormContextProvider: React.FC<PropsWithChildren> = ({ children }) =>
         formData,
         hasError,
         actionTypeOptions,
+        raType,
         reset,
         setName,
         setDesc,
@@ -434,6 +440,7 @@ const ActionFormContextProvider: React.FC<PropsWithChildren> = ({ children }) =>
         handleDeleteToStateItem,
         sortNewStates,
         initializeForm,
+        setRaType,
       }}
     >
       {children}

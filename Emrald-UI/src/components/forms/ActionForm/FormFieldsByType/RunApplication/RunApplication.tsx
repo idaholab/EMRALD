@@ -27,20 +27,23 @@ type CustomFormComponents = {
 const customFormsTyped = CustomForms as CustomFormComponents;
 
 const RunApplication = () => {
-  const [applicationType, setApplicationType] = useState('code');
   const {
     codeVariables,
     makeInputFileCode,
     exePath,
     processOutputFileCode,
+    raType,
+    formData,
     addToUsedVariables,
     setMakeInputFileCode,
     setExePath,
     setProcessOutputFileCode,
+    setRaType,
+    setFormData,
   } = useActionFormContext();
   const { variableList } = useVariableContext();
-
-  const [customFormType, setCustomFormType] = useState<string>('');
+  const [applicationType, setApplicationType] = useState(raType || 'custom');
+  const [customFormType, setCustomFormType] = useState<string>(formData?.caType || '');
   const [options, setOptions] = useState<string[]>([]);
   const [selectedComponent, setSelectedComponent] = useState<ReactElement | null>(null);
 
@@ -56,13 +59,21 @@ const RunApplication = () => {
   useEffect(() => {
     // Set selected component when customFormType changes
     if (customFormType && customFormsTyped[customFormType]) {
-      setSelectedComponent(
-        React.createElement(customFormsTyped[customFormType]),
-      );
+      setSelectedComponent(React.createElement(customFormsTyped[customFormType]));
     } else {
       setSelectedComponent(null);
     }
   }, [customFormType]);
+
+  const handleSetCustomFormType = (value: string) => {
+    setCustomFormType(value);
+    setFormData((prev: any) => ({ ...prev, caType: value }));
+  };
+
+  const handleApplicationTypeChange = (value: string) => {
+    setApplicationType(value);
+    setRaType(value);
+  };
 
   return (
     <>
@@ -71,15 +82,11 @@ const RunApplication = () => {
           aria-labelledby="demo-controlled-radio-buttons-group"
           name="controlled-radio-buttons-group"
           value={applicationType}
-          onChange={(e) => setApplicationType(e.target.value)}
+          onChange={(e) => handleApplicationTypeChange(e.target.value)}
           row
         >
           <FormControlLabel value="code" control={<Radio />} label="Use Code" />
-          <FormControlLabel
-            value="custom"
-            control={<Radio />}
-            label="Use Custom Application"
-          />
+          <FormControlLabel value="custom" control={<Radio />} label="Use Custom Application" />
         </RadioGroup>
       </FormControl>
       {applicationType === 'code' ? (
@@ -136,7 +143,7 @@ const RunApplication = () => {
           <SelectComponent
             label="Custom Application Type"
             value={customFormType}
-            setValue={setCustomFormType}
+            setValue={(name) => handleSetCustomFormType(name)}
           >
             {options.map((option) => (
               <MenuItem value={option} key={option}>
