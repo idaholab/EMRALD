@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useNodesState, useEdgesState, Edge, Node, Connection, updateEdge } from 'reactflow';
-import EmraldDiagram from './EmraldDiagram';
+import EmraldDiagram, { currentDiagram } from './EmraldDiagram';
 import { v4 as uuidv4 } from 'uuid';
 // Edges
 import getEventActionEdges from './Edges/EventActionEdge';
@@ -206,7 +206,7 @@ const useEmraldDiagram = () => {
   const isStateInCurrentDiagram = (action: Action) => {
     if (!action) return false;
     const newStates = getActionNewStates(action);
-    return newStates.every((newState) => topDiagram.states?.includes(newState));
+    return newStates.every((newState) => currentDiagram.value.states.includes(newState));
   };
 
   // Find and open window for diagram that has new states
