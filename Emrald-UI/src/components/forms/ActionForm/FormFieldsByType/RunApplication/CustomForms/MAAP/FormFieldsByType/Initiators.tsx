@@ -59,19 +59,25 @@ const Initiators = () => {
         </TableHead>
         <TableBody>
           {initiators.map((row: Initiator, idx: number) => (
-            <TableRow key={idx} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-              <TableCell component="th" scope="row">
-                {row.type === 'assignment' ? (row.target.value as Value).value : row.value}
-              </TableCell>
-              <TableCell align="center">
-                <Tooltip title="Remove Initiator">
-                  <DeleteIcon
-                    sx={{ cursor: 'pointer', ml: 3 }}
-                    onClick={() => removeInitiator(row)}
-                  />
-                </Tooltip>
-              </TableCell>
-            </TableRow>
+            <Tooltip key={idx} title={row.desc} arrow>
+              <TableRow key={idx} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                <TableCell component="th" scope="row">
+                  <div style={{ display: 'flex', flexDirection: 'column' }}>
+                    {row.type === 'assignment' ? (row.target.value as Value).value : row.value}
+                    <br />
+                    {row.desc && <>{row.desc}</>}
+                  </div>
+                </TableCell>
+                <TableCell align="center">
+                  <Tooltip title="Remove Initiator">
+                    <DeleteIcon
+                      sx={{ cursor: 'pointer', ml: 3 }}
+                      onClick={() => removeInitiator(row)}
+                    />
+                  </Tooltip>
+                </TableCell>
+              </TableRow>
+            </Tooltip>
           ))}
         </TableBody>
       </Table>
