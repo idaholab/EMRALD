@@ -7,6 +7,7 @@ import { Action } from '../../../../types/Action';
 import { Event } from '../../../../types/Event';
 import SearchIcon from '@mui/icons-material/Search';
 import {
+  allMainItemTypes,
   GetModelItemsReferencedBy,
   GetModelItemsReferencing,
 } from '../../../../utils/ModelReferences';
@@ -117,7 +118,13 @@ const SearchField = () => {
       if (direction === GetModelItemsReferencing) {
         tempModel = GetModelItemsReferencing(item.name, item.objType as MainItemTypes, 1);
       } else {
-        tempModel = GetModelItemsReferencedBy(item.name, item.objType as MainItemTypes, 1);
+        tempModel = GetModelItemsReferencedBy(
+          item.name,
+          item.objType as MainItemTypes,
+          1,
+          allMainItemTypes,
+          false,
+        );
       }
       tempModel = filterItemFromModel(tempModel, item);
       setNestedModel(tempModel);

@@ -119,7 +119,7 @@ const InLogicNodeRefs: DiagramRefsArray = [
 ];
 
 export type MainItemTypeSet = Set<MainItemType>;
-const allMainItemTypes: MainItemTypeSet = new Set<MainItemType>([
+export const allMainItemTypes: MainItemTypeSet = new Set<MainItemType>([
   MainItemTypes.Diagram,
   MainItemTypes.State,
   MainItemTypes.Action,
