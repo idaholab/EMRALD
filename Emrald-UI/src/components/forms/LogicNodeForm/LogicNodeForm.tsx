@@ -270,11 +270,7 @@ const LogicNodeForm: React.FC<LogicNodeFormProps> = ({
             ) : (
               <></>
             )}
-            {!defaultValues ? (
-              <StateValuesTable diagramName={compDiagram} nodeDetails={currentNode} />
-            ) : (
-              <></>
-            )}
+            {!defaultValues ? <StateValuesTable diagramName={compDiagram} /> : <></>}
           </>
         ) : (
           <>
