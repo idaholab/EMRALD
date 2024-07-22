@@ -101,11 +101,10 @@ const SearchField = () => {
 
   const getModel = (
     item: Diagram | State | Action | Event | ExtSim | LogicNode | Variable,
-    direction: typeof GetModelItemsReferencing | typeof GetModelItemsReferencedBy,
+    buttonDirection: string,
   ): ReactNode => {
     const [expandedItem, setExpandedItem] = useState<string | null>(null);
     const [nestedModel, setNestedModel] = useState<EMRALD_Model>();
-    const ButtonString = direction === GetModelItemsReferencing ? 'Used by' : 'Using';
 
     const handleExpand = (
       item: Diagram | State | Action | Event | ExtSim | LogicNode | Variable,
@@ -115,7 +114,7 @@ const SearchField = () => {
         return;
       }
       let tempModel: EMRALD_Model;
-      if (direction === GetModelItemsReferencing) {
+      if (buttonDirection === 'Used By') {
         tempModel = GetModelItemsReferencing(item.name, item.objType as MainItemTypes, 1);
       } else {
         tempModel = GetModelItemsReferencedBy(
@@ -178,7 +177,7 @@ const SearchField = () => {
     return (
       <>
         <Button onClick={() => handleExpand(item)} variant="contained">
-          {expandedItem === item.id ? `Collapse ${ButtonString}` : `Expand ${ButtonString}`}
+          {expandedItem === item.id ? `Collapse ${buttonDirection}` : `Expand ${buttonDirection}`}
         </Button>
         {expandedItem === item.id && nestedModel && (
           <ItemTypeMenuResults

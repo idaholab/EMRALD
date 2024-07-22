@@ -68,7 +68,7 @@ export function useSidebarLogic() {
     if (componentGroup === 'all') {
       return states;
     } else if (componentGroup === 'local') {
-      const copyModel = GetModelItemsReferencedBy(currDiagram.name, MainItemTypes.Diagram, 2);
+      const copyModel = GetModelItemsReferencedBy(currDiagram.name, MainItemTypes.Diagram, 1);
       return copyModel.StateList;
     } else {
       return states; // TODO: Add condition for what to show when states are local
