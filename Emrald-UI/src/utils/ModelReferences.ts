@@ -393,6 +393,7 @@ const AddItemToModel = (
  * @param {MainItemTypes} itemType - The type of the item to look for references.
  * @param {number} levels - How many levels up to search. If <1 then the search is recursive.
  * @includeTypes {MainItemTypeSet} - is a set of items to include in the search
+ * @removeNotIncludedRefs {boolean} - if true then referenceds that are not included in the model are removed.
  * @return {EMRALD_Model} - A subset model of just the referenced items. 
  */
 export const GetModelItemsReferencedBy = ( 
@@ -400,6 +401,7 @@ export const GetModelItemsReferencedBy = (
   itemType : MainItemTypes, //This is the type of the item to look for references
   levels : number = 0, //if < 1, will be recursive and give all levels of references. For copy or template use 1 for all items except Diagrams and 2 for Diagrams.
   includeTypes : MainItemTypeSet = allMainItemTypes, //is a set of items to include in the search 
+  removeNotIncludedRefs : boolean = true, //if true then referenceds that are not included in the model are removed.
 ) : EMRALD_Model => { //returns a subset model of just the referenced items.
   
   let refItems : Array<[string, number, MainItemTypes]> = [[itemName, 0, itemType]];
@@ -439,7 +441,7 @@ export const GetModelItemsReferencedBy = (
           });
         });
       }
-      else{ //remove references to other items. User will have to fix them.
+      else if (removeNotIncludedRefs){ //remove references to other items for things like copy or template. User will have to fix any errors.
         jsonPathRefArray.forEach((jsonPathSet) => {    
           jsonpath.paths(retRefModel, jsonPathSet[0]).forEach((jPath: any) => {
             let childNames = jsonpath.value(retRefModel, jPath.join('.'));
