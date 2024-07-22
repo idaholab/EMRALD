@@ -57,6 +57,16 @@ const Parameters = () => {
     setParameters(updatedParameters);
     setFormData((prevFormData: any) => ({ ...prevFormData, parameters: updatedParameters }));
   };
+  const getParameterName = (row: Parameter) => {
+    let name =
+      row.target.type === 'call_expression'
+        ? ((row.target.value as Value).value as string)
+        : (row.target.value as string);
+    if (row.target?.arguments && row.target.arguments.length > 0) {
+      name = name + ` (${String(row.target.arguments[0].value)})`;
+    }
+    return name;
+  };
   return (
     <Table sx={{ minWidth: 650 }} size="small">
       <TableHead>
@@ -76,9 +86,7 @@ const Parameters = () => {
         {parameters?.map((row: Parameter, idx: number) => (
           <TableRow key={idx} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
             <TableCell component="th" scope="row">
-              {row.target.type === 'call_expression'
-                ? ((row.target.value as Value).value as string)
-                : (row.target.value as string)}
+              {getParameterName(row)}
             </TableCell>
             <TableCell>
               {useVariable[row.id] ? (

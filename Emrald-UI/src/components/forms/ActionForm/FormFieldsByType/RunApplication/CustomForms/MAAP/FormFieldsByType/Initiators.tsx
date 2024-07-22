@@ -11,13 +11,15 @@ import {
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useActionFormContext } from '../../../../../ActionFormContext';
 import { useEffect, useState } from 'react';
-import { Initiator, Value } from '../maap';
+import { getInitiatorName, Initiator } from '../maap';
 const Initiators = () => {
   const { formData, setFormData } = useActionFormContext();
   const [initiators, setInitiators] = useState<any[]>([]);
+  const [comments, setComments] = useState<{ [key: string]: string }>({});
 
   useEffect(() => {
     setInitiators(formData?.initiators || []);
+    setComments(formData?.comments || {});
   }, [formData]);
 
   const removeInitiator = (row: any) => {
@@ -33,6 +35,12 @@ const Initiators = () => {
       setFormData((prevFormData: any) => ({ ...prevFormData, initiators: updatedInitiators }));
     }
   };
+  const getInitiatorRow = (row: Initiator) => {
+    const name = getInitiatorName(row);
+    const comment = comments[name];
+    return name + (comment ? ` - ${comment}` : '');
+  };
+
   return (
     <>
       <Autocomplete
@@ -59,25 +67,21 @@ const Initiators = () => {
         </TableHead>
         <TableBody>
           {initiators.map((row: Initiator, idx: number) => (
-            <Tooltip key={idx} title={row.desc} arrow>
-              <TableRow key={idx} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                <TableCell component="th" scope="row">
-                  <div style={{ display: 'flex', flexDirection: 'column' }}>
-                    {row.type === 'assignment' ? (row.target.value as Value).value : row.value}
-                    <br />
-                    {row.desc && <>{row.desc}</>}
-                  </div>
-                </TableCell>
-                <TableCell align="center">
-                  <Tooltip title="Remove Initiator">
-                    <DeleteIcon
-                      sx={{ cursor: 'pointer', ml: 3 }}
-                      onClick={() => removeInitiator(row)}
-                    />
-                  </Tooltip>
-                </TableCell>
-              </TableRow>
-            </Tooltip>
+            <TableRow key={idx} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+              <TableCell component="th" scope="row">
+                <div style={{ display: 'flex', flexDirection: 'column' }}>
+                  {getInitiatorRow(row)}
+                </div>
+              </TableCell>
+              <TableCell align="center">
+                <Tooltip title="Remove Initiator">
+                  <DeleteIcon
+                    sx={{ cursor: 'pointer', ml: 3 }}
+                    onClick={() => removeInitiator(row)}
+                  />
+                </Tooltip>
+              </TableCell>
+            </TableRow>
           ))}
         </TableBody>
       </Table>

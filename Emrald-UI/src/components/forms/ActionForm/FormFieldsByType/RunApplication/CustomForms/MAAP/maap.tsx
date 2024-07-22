@@ -17,6 +17,13 @@ export interface Target {
   location: any;
   value: Value | string;
   type: string;
+  arguments?: argument[];
+}
+
+export interface argument {
+  value: string | number;
+  type: string;
+  units?: string;
 }
 
 export interface Value {
@@ -40,6 +47,30 @@ export interface Parameter {
   type: string;
   variable?: string;
 }
+export interface InputBlock {
+  test: Test;
+}
+interface Test {
+  value: InputValue;
+}
+interface InputValue {
+  left: Value | Target;
+  right: Value;
+  op: string;
+}
+
+export const getInitiatorName = (row: Initiator): string | number => {
+  let name =
+    row.type === 'assignment'
+      ? row.target.type === 'identifier'
+        ? (row.target.value as string | number)
+        : ((row.target.value as Value).value as string | number)
+      : (row.desc as string);
+  if (row.target?.arguments && row.target.arguments.length > 0) {
+    name = name + ` (${String(row.target.arguments[0].value)})`;
+  }
+  return name;
+};
 
 const MAAP = () => {
   const {
@@ -139,14 +170,16 @@ const MAAP = () => {
 
           console.log('input file data: ', data.value);
 
-          let comments: any = [];
+          let docComments: any = [];
+          let comments: any = {};
           let sections: any = [];
           let parameters: any = [];
           let initiators: any = [];
+          let inputBlocks: any = [];
 
           data.value.forEach((sourceElement: any, i: any) => {
             if (sourceElement.type === 'comment') {
-              comments.push(sourceElement);
+              docComments.push(sourceElement);
             } else {
               sections.push(sourceElement);
             }
@@ -162,10 +195,19 @@ const MAAP = () => {
                     }
                   });
                 } else if (sourceElement.blockType === 'INITIATORS') {
-                  sourceElement.value.forEach((innerElement: any) => {
-                    initiators.push(innerElement);
-                  });
+                  const initiatorData = sourceElement.value;
+                  for (let i = 0; i < initiatorData.length; i++) {
+                    if (initiatorData[i].type === 'comment') {
+                      if (i === 0) continue;
+                      comments[getInitiatorName(initiatorData[i - 1])] = initiatorData[i].value;
+                    } else {
+                      initiators.push(initiatorData[i]);
+                    }
+                  }
                 }
+                break;
+              case 'conditional_block':
+                inputBlocks.push(sourceElement);
                 break;
               default:
                 break;
@@ -174,7 +216,6 @@ const MAAP = () => {
 
           // Set state variables or perform other actions with comments, sections, and parameters
           // setComments(comments);
-          parameters = editParameterNames(parameters);
           const newParameters: Parameter[] = parameters.map((param: ParameterOG) => ({
             ...param,
             id: uuid(),
@@ -185,6 +226,9 @@ const MAAP = () => {
             parametersOG: parameters, // storing original parameters without any added properties just in case
             parameters: newParameters,
             initiators,
+            comments,
+            docComments,
+            inputBlocks,
           }));
         } catch (err) {
           console.log('Error parsing file:', err);
@@ -194,33 +238,6 @@ const MAAP = () => {
     handleInputFileChange();
   }, [inputFile, setInputFile]);
 
-  const editParameterNames = (parameters: Parameter[]) => {
-    let names: string[] = [];
-    let updatedCount = { ...count };
-    parameters.forEach((parameter) => {
-      let name: string;
-      if (parameter.target.type === 'call_expression') {
-        name = (parameter.target.value as Value).value as string;
-      } else {
-        name = parameter.target.value as string;
-      }
-      if (names.includes(name)) {
-        let nameCount = updatedCount[name];
-        updatedCount[name] = nameCount + 1;
-        name = name + `(${nameCount + 1})`;
-        if (parameter.target.type === 'call_expression') {
-          (parameter.target.value as Value).value = name;
-        } else {
-          parameter.target.value = name;
-        }
-      } else {
-        names.push(name);
-        updatedCount[name] = 1;
-      }
-    });
-    setCount(updatedCount);
-    return parameters;
-  };
   return (
     <>
       {isValid ? (
