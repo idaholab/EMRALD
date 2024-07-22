@@ -113,7 +113,12 @@ const SearchField = () => {
         setExpandedItem(null);
         return;
       }
-      let tempModel = direction(item.name, item.objType as MainItemTypes, 1);
+      let tempModel: EMRALD_Model;
+      if (direction === GetModelItemsReferencing) {
+        tempModel = GetModelItemsReferencing(item.name, item.objType as MainItemTypes, 1);
+      } else {
+        tempModel = GetModelItemsReferencedBy(item.name, item.objType as MainItemTypes, 1);
+      }
       tempModel = filterItemFromModel(tempModel, item);
       setNestedModel(tempModel);
       setExpandedItem(item.id || null);
