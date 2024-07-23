@@ -47,16 +47,28 @@ export interface Parameter {
   type: string;
   variable?: string;
 }
+interface InputBlockOG {
+  test: Test;
+  value: InputResultValue[];
+}
 export interface InputBlock {
   test: Test;
+  value: InputResultValue[];
+  id: string;
 }
-interface Test {
+export interface Test {
   value: InputValue;
 }
-interface InputValue {
-  left: Value | Target;
-  right: Value;
+export interface InputValue {
+  left: Value | Target | Test;
+  right: Value | Target | Test;
   op: string;
+}
+export interface InputResultValue {
+  location: any;
+  target: Target;
+  type: string;
+  value: Value | Test;
 }
 
 export const getInitiatorName = (row: Initiator): string | number => {
@@ -221,6 +233,10 @@ const MAAP = () => {
             id: uuid(),
             useVariable: false,
           }));
+          const newInputBlocks: InputBlock[] = inputBlocks.map((block: InputBlockOG) => ({
+            ...block,
+            id: uuid(),
+          }));
           setFormData((prevFormData: any) => ({
             ...prevFormData,
             parametersOG: parameters, // storing original parameters without any added properties just in case
@@ -228,7 +244,8 @@ const MAAP = () => {
             initiators,
             comments,
             docComments,
-            inputBlocks,
+            inputBlocksOG: inputBlocks, // storing original input blocks without any added properties just in case
+            inputBlocks: newInputBlocks,
           }));
         } catch (err) {
           console.log('Error parsing file:', err);
