@@ -1,16 +1,15 @@
 import { Autocomplete, Box, Divider, TextField, Typography } from '@mui/material';
-import { useVariableContext } from '../../../../../../../../contexts/VariableContext';
 import { useEffect, useState } from 'react';
 import { useCustomForm } from '../../useCustomForm';
 import { InputBlock, InputResultValue, Target, Test, Value } from '../maap';
+import { appData } from '../../../../../../../../hooks/useAppData';
 
 const InputBlocks = () => {
-  const { variableList } = useVariableContext();
   const [inputBlocks, setInputBlocks] = useState<InputBlock[]>([]);
   const [numBooleanExpressions, setNumBooleanExpressions] = useState<{ [key: string]: number }>({});
-  const [results, setResults] = useState<{ [key: string]: string[] }>({});
+  const [results, setResults] = useState<{ [key: string]: { [key: string]: string }[] }>({});
   const { formData, setFormData } = useCustomForm();
-  const variables = variableList.value.map(({ name }) => name);
+  const variables = appData.value.VariableList.map(({ name }) => name);
 
   useEffect(() => {
     formData.inputBlocks?.forEach((block: InputBlock) => {
@@ -30,8 +29,8 @@ const InputBlocks = () => {
                 ? result.target.value
                 : (result.target.value as Value).value;
             const args = result.target.arguments ? result.target.arguments[0].value : '';
-            const fullName = args ? `${name} (${String(args)})` : name;
-            items.push(`${fullName} = ${getResultValue(result)}`);
+            const fullName = args ? `${name} (${String(args)})` : String(name);
+            items.push({ [fullName]: getResultValue(result) });
           }
         }
       });
@@ -165,7 +164,19 @@ const InputBlocks = () => {
                     {results[block.id] &&
                       results[block.id].map((result, idx) => (
                         <Typography key={idx} m={4}>
-                          {result}
+                          {Object.keys(result).map((key) => (
+                            <div key={key} style={{ display: 'flex', flexDirection: 'row' }}>
+                              <Autocomplete
+                                defaultValue={key}
+                                size="small"
+                                options={variables}
+                                renderInput={(params) => <TextField {...params} />}
+                                sx={{ width: 200, m: 2 }}
+                              />{' '}
+                              <Typography sx={{ margin: 2 }}>=</Typography>{' '}
+                              <TextField value={result[key]} size="small" sx={{ margin: 2 }} />
+                            </div>
+                          ))}
                         </Typography>
                       ))}
                     <Divider sx={{ my: 2 }} />
