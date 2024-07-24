@@ -7,6 +7,7 @@ import { Action } from '../../../../types/Action';
 import { Event } from '../../../../types/Event';
 import SearchIcon from '@mui/icons-material/Search';
 import {
+  allMainItemTypes,
   GetModelItemsReferencedBy,
   GetModelItemsReferencing,
 } from '../../../../utils/ModelReferences';
@@ -100,11 +101,10 @@ const SearchField = () => {
 
   const getModel = (
     item: Diagram | State | Action | Event | ExtSim | LogicNode | Variable,
-    direction: typeof GetModelItemsReferencing | typeof GetModelItemsReferencedBy,
+    buttonDirection: string,
   ): ReactNode => {
     const [expandedItem, setExpandedItem] = useState<string | null>(null);
     const [nestedModel, setNestedModel] = useState<EMRALD_Model>();
-    const ButtonString = direction === GetModelItemsReferencing ? 'Used by' : 'Using';
 
     const handleExpand = (
       item: Diagram | State | Action | Event | ExtSim | LogicNode | Variable,
@@ -113,7 +113,18 @@ const SearchField = () => {
         setExpandedItem(null);
         return;
       }
-      let tempModel = direction(item.name, item.objType as MainItemTypes, 1);
+      let tempModel: EMRALD_Model;
+      if (buttonDirection === 'Used By') {
+        tempModel = GetModelItemsReferencing(item.name, item.objType as MainItemTypes, 1);
+      } else {
+        tempModel = GetModelItemsReferencedBy(
+          item.name,
+          item.objType as MainItemTypes,
+          1,
+          allMainItemTypes,
+          false,
+        );
+      }
       tempModel = filterItemFromModel(tempModel, item);
       setNestedModel(tempModel);
       setExpandedItem(item.id || null);
@@ -166,7 +177,7 @@ const SearchField = () => {
     return (
       <>
         <Button onClick={() => handleExpand(item)} variant="contained">
-          {expandedItem === item.id ? `Collapse ${ButtonString}` : `Expand ${ButtonString}`}
+          {expandedItem === item.id ? `Collapse ${buttonDirection}` : `Expand ${buttonDirection}`}
         </Button>
         {expandedItem === item.id && nestedModel && (
           <ItemTypeMenuResults
