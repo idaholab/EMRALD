@@ -1,4 +1,4 @@
-import { Button, IconButton, InputAdornment, Menu, MenuItem, TextField } from '@mui/material';
+import { Button, IconButton, InputAdornment, Menu, MenuItem, TextField, useMediaQuery, useTheme } from '@mui/material';
 import { ReactNode, useState } from 'react';
 import { appData } from '../../../../hooks/useAppData';
 import { Diagram } from '../../../../types/Diagram';
@@ -36,6 +36,8 @@ import { ReactFlowProvider } from 'reactflow';
 import { emptyLogicNode } from '../../../../contexts/LogicNodeContext';
 
 const SearchField = () => {
+  const theme = useTheme();
+  const isMediumScreen = useMediaQuery(theme.breakpoints.between('sm', 'lg'));
   const [value, setValue] = useState<string>('');
   const [anchorEl, setAnchorEl] = useState<any>(null);
   const [selectedItem, setSelectedItem] = useState<
@@ -315,7 +317,10 @@ const SearchField = () => {
               </IconButton>
             </InputAdornment>
           ),
-          style: { marginRight: '50px', borderRadius: '15px' },
+          style: { 
+            marginRight: isMediumScreen ? '15px' : '50px', 
+            maxWidth: isMediumScreen ? '150px' : '200px',
+            borderRadius: '15px' },
         }}
         onKeyDown={handleKeyDown}
       />
