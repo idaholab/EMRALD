@@ -30,31 +30,30 @@ const LogicNodeTreeDiagram: React.FC<LogicNodeTreeDiagramProps> = ({ logicNode }
   const [showMap, setShowMap] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const reactFlowInstance = useReactFlow();
-  const { 
+  const {
     nodes,
     edges,
     loading,
     menu,
     menuOptions,
     nodeExistsAlert,
+    setNodeExistsAlert,
     onNodeContextMenu,
     closeContextMenu,
     buildLogicTree,
-    onNodesChange, 
+    onNodesChange,
     onEdgesChange,
     handleLoad,
     setNodes,
-    setNodeExistsAlert
   } = useLogicNodeTreeDiagram();
 
   const treeWidth = 180;
   const treeHeight = 140;
 
-  const { nodes: visibleNodes, edges: visibleEdges } = useExpandCollapse(
-    nodes,
-    edges,
-    { treeWidth, treeHeight }
-  );
+  const { nodes: visibleNodes, edges: visibleEdges } = useExpandCollapse(nodes, edges, {
+    treeWidth,
+    treeHeight,
+  });
 
   const onNodeClick: NodeMouseHandler = useCallback(
     async (_, node) => {
@@ -73,11 +72,11 @@ const LogicNodeTreeDiagram: React.FC<LogicNodeTreeDiagramProps> = ({ logicNode }
           return updatedNodes;
         });
       });
-  
+
       // Fit view after node click
       reactFlowInstance && reactFlowInstance.fitView({ nodes: nodes, padding: 0.75 });
     },
-    [setNodes, reactFlowInstance, visibleNodes]
+    [setNodes, reactFlowInstance, visibleNodes],
   );
 
   useEffect(() => {
@@ -87,49 +86,53 @@ const LogicNodeTreeDiagram: React.FC<LogicNodeTreeDiagramProps> = ({ logicNode }
   const nodeTypes = useMemo(() => ({ custom: TreeNodeComponent }), []);
 
   return (
-      <Box sx={{ width: '100%', height: '100%' }}>
-        {loading ? (
-          <p>Loading...</p>
-        ) : (
-          <div className="tree-diagram" ref={ref} style={{ width: '100%', height: '100%' }}>
-            <ReactFlow
-              nodes={visibleNodes}
-              edges={visibleEdges}
-              onNodesChange={onNodesChange}
-              onNodeClick={onNodeClick}
-              onNodeContextMenu={onNodeContextMenu}
-              onEdgesChange={onEdgesChange}
-              nodeTypes={nodeTypes}
-              connectionLineType={ConnectionLineType.SmoothStep}
-              onInit={handleLoad}
-              nodesDraggable={false}
-              nodesConnectable={false}
-              zoomOnDoubleClick={false}
-              proOptions={{ hideAttribution: true }}
-            >
-              <Panel position="top-left">
-                <Box sx={{background: '#fff', p: 1}}>
-                  <Typography variant="subtitle1" sx={{ml: 2}}>Drag and Drop Gates</Typography>
-                  <Box sx={{display: 'flex', padding: '10px'}}>
-                    <DraggableItem itemType='Gate' itemData={{gateType: 'gtAnd'}}><TbLogicAnd className='gate-icon'/></DraggableItem>
-                    <DraggableItem itemType='Gate' itemData={{gateType: 'gtOr'}}><TbLogicOr className='gate-icon'/></DraggableItem>
-                    <DraggableItem itemType='Gate' itemData={{gateType: 'gtNot'}}><TbLogicNot className='gate-icon'/></DraggableItem>
-                  </Box>
+    <Box sx={{ width: '100%', height: '100%' }}>
+      {loading ? (
+        <p>Loading...</p>
+      ) : (
+        <div className="tree-diagram" ref={ref} style={{ width: '100%', height: '100%' }}>
+          <ReactFlow
+            nodes={visibleNodes}
+            edges={visibleEdges}
+            onNodesChange={onNodesChange}
+            onNodeClick={onNodeClick}
+            onNodeContextMenu={onNodeContextMenu}
+            onEdgesChange={onEdgesChange}
+            nodeTypes={nodeTypes}
+            connectionLineType={ConnectionLineType.SmoothStep}
+            onInit={handleLoad}
+            nodesDraggable={false}
+            nodesConnectable={false}
+            zoomOnDoubleClick={false}
+            proOptions={{ hideAttribution: true }}
+          >
+            <Panel position="top-left">
+              <Box sx={{ background: '#fff', p: 1 }}>
+                <Typography variant="subtitle1" sx={{ ml: 2 }}>
+                  Drag and Drop Gates
+                </Typography>
+                <Box sx={{ display: 'flex', padding: '10px' }}>
+                  <DraggableItem itemType="Gate" itemData={{ gateType: 'gtAnd' }}>
+                    <TbLogicAnd className="gate-icon" />
+                  </DraggableItem>
+                  <DraggableItem itemType="Gate" itemData={{ gateType: 'gtOr' }}>
+                    <TbLogicOr className="gate-icon" />
+                  </DraggableItem>
+                  <DraggableItem itemType="Gate" itemData={{ gateType: 'gtNot' }}>
+                    <TbLogicNot className="gate-icon" />
+                  </DraggableItem>
                 </Box>
-              </Panel>
-              <Controls>
-                <ControlButton onClick={() => setShowMap(!showMap)}>
-                  <TbMap />
-                </ControlButton>  
-              </Controls>
-              {
-                showMap && (
-                  <MiniMap pannable />
-                )
-              }
-              <Background variant={BackgroundVariant.Dots} gap={12} size={1} />
-            </ReactFlow>
-            {menu && (
+              </Box>
+            </Panel>
+            <Controls>
+              <ControlButton onClick={() => setShowMap(!showMap)}>
+                <TbMap />
+              </ControlButton>
+            </Controls>
+            {showMap && <MiniMap pannable />}
+            <Background variant={BackgroundVariant.Dots} gap={12} size={1} />
+          </ReactFlow>
+          {menu && (
             <ContextMenu
               mouseX={menu.mouseX}
               mouseY={menu.mouseY}
@@ -137,17 +140,23 @@ const LogicNodeTreeDiagram: React.FC<LogicNodeTreeDiagramProps> = ({ logicNode }
               options={menuOptions}
             />
           )}
-            <Alert 
-              severity="warning" 
-              sx={{ position: 'absolute', top: '35px', right: 0, zIndex: 9999, opacity: nodeExistsAlert ? 1 : 0,
-              transition: 'opacity 0.4s ease-in-out', }} 
-              onClose={() => setNodeExistsAlert(false)}
-            >
-              Node already exists within the current gate
-            </Alert>
-          </div>
-        )}
-      </Box>
+          <Alert
+            severity="warning"
+            sx={{
+              position: 'absolute',
+              top: '35px',
+              right: 0,
+              zIndex: 9999,
+              opacity: nodeExistsAlert ? 1 : 0,
+              transition: 'opacity 0.4s ease-in-out',
+            }}
+            onClose={() => setNodeExistsAlert(false)}
+          >
+            Node already exists within the current gate
+          </Alert>
+        </div>
+      )}
+    </Box>
   );
 };
 

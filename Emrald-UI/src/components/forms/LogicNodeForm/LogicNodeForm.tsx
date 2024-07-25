@@ -27,7 +27,7 @@ interface LogicNodeFormProps {
   gateType?: GateType;
   component?: string;
   editing?: boolean;
-  isRoot?: boolean;
+  setAsRoot?: boolean;
 }
 
 const LogicNodeForm: React.FC<LogicNodeFormProps> = ({
@@ -37,7 +37,7 @@ const LogicNodeForm: React.FC<LogicNodeFormProps> = ({
   component,
   editing,
   parentNodeName,
-  isRoot,
+  setAsRoot,
 }) => {
   const { handleClose, updateTitle } = useWindowContext();
   const { logicNodeList, createLogicNode, updateLogicNode } = useLogicNodeContext();
@@ -76,6 +76,7 @@ const LogicNodeForm: React.FC<LogicNodeFormProps> = ({
   const [nameValue, setNameValue] = useState<string>(editing ? logicNode.value.name : '');
   const [descValue, setDescValue] = useState<string>(editing ? logicNode.value.desc : '');
   const [error, setError] = useState<boolean>(false);
+  const [isRoot, setIsRoot] = useState<boolean>(logicNodeData?.isRoot || false);
 
   const gateTypeOptions = [
     { label: 'And', value: 'gtAnd' },
@@ -150,7 +151,8 @@ const LogicNodeForm: React.FC<LogicNodeFormProps> = ({
   const handleSave = async () => {
     updateTitle(logicNodeData?.name || '', logicNode.value.name);
     handleAddNewCompChild();
-    if (isRoot) newLogicNode.value.isRoot = true;
+    newLogicNode.value.isRoot = isRoot || setAsRoot || false;
+    logicNode.value.isRoot = isRoot || setAsRoot || false;
     // Reset the stateValues if the defaultValues checkbox is checked
     if (defaultValues === true && currentNode && (currentNode?.stateValues?.length ?? 0) > 0) {
       currentNode.stateValues = [];
@@ -317,6 +319,15 @@ const LogicNodeForm: React.FC<LogicNodeFormProps> = ({
               margin="normal"
               value={descValue}
               onChange={handleDescriptionChange}
+            />
+            <FormControlLabel
+              label="Set as a Root Node"
+              control={
+                <Checkbox
+                  checked={isRoot ? true : false}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setIsRoot(e.target.checked)}
+                />
+              }
             />
           </>
         )}
