@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useRef } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import ReactFlow, {
   ConnectionLineType,
   Background,
@@ -7,6 +7,8 @@ import ReactFlow, {
   Panel,
   NodeMouseHandler,
   useReactFlow,
+  ControlButton,
+  MiniMap,
 } from 'reactflow';
 
 import 'reactflow/dist/style.css';
@@ -15,7 +17,7 @@ import useLogicNodeTreeDiagram from './useLogicTreeDiagram.js';
 import Box from '@mui/material/Box';
 import TreeNodeComponent from './TreeNodeComponent/TreeNodeComponent.js';
 import ContextMenu from '../../layout/ContextMenu/ContextMenu.js';
-import { TbLogicAnd, TbLogicNot, TbLogicOr } from 'react-icons/tb';
+import { TbLogicAnd, TbLogicNot, TbLogicOr, TbMap } from 'react-icons/tb';
 import DraggableItem from '../../drag-and-drop/DraggableItem.js';
 import { Alert, Typography } from '@mui/material';
 import useExpandCollapse from './useExpandCollapse.js';
@@ -25,6 +27,7 @@ interface LogicNodeTreeDiagramProps {
 }
 
 const LogicNodeTreeDiagram: React.FC<LogicNodeTreeDiagramProps> = ({ logicNode }) => {
+  const [showMap, setShowMap] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const reactFlowInstance = useReactFlow();
   const {
@@ -121,8 +124,12 @@ const LogicNodeTreeDiagram: React.FC<LogicNodeTreeDiagramProps> = ({ logicNode }
                 </Box>
               </Box>
             </Panel>
-            <Controls />
-            {/* <MiniMap /> */}
+            <Controls>
+              <ControlButton onClick={() => setShowMap(!showMap)}>
+                <TbMap />
+              </ControlButton>
+            </Controls>
+            {showMap && <MiniMap pannable />}
             <Background variant={BackgroundVariant.Dots} gap={12} size={1} />
           </ReactFlow>
           {menu && (

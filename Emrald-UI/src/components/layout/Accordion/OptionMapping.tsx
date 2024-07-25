@@ -23,6 +23,8 @@ import VariableFormContextProvider from '../../forms/VariableForm/VariableFormCo
 import EventFormContextProvider from '../../forms/EventForm/EventFormContext';
 import TemplateForm from '../../forms/TemplateForm/TemplateForm';
 import { EMRALD_SchemaVersion } from '../../../types/EMRALD_Model';
+import { useTheme } from '@mui/material/styles';
+import useMediaQuery from '@mui/material/useMediaQuery';
 
 // Define your Option and OptionsMapping types
 export interface Option {
@@ -35,6 +37,8 @@ interface OptionsMapping {
 }
 
 export const useOptionsMapping = () => {
+  const theme = useTheme();
+  const isMediumScreen = useMediaQuery(theme.breakpoints.between('sm', 'xl'));
   const { addWindow } = useWindowContext();
   const optionsMapping: OptionsMapping = {
     Diagrams: [
@@ -44,8 +48,8 @@ export const useOptionsMapping = () => {
           addWindow(diagram.name, <EmraldDiagram diagram={diagram} />, {
             x: 75,
             y: 25,
-            width: 1300,
-            height: 700,
+            width: isMediumScreen ? 600 : 1000,
+            height: isMediumScreen ? 400 : 500
           });
         },
       },
@@ -72,8 +76,8 @@ export const useOptionsMapping = () => {
           addWindow(`Create Template`, <TemplateForm templatedData={copiedModel} />, {
             x: 75,
             y: 25,
-            width: 1300,
-            height: 700,
+            width: isMediumScreen ? 600 : 1000,
+            height: isMediumScreen ? 400 : 500
           });
         },
       },
@@ -133,7 +137,11 @@ export const useOptionsMapping = () => {
             <ReactFlowProvider>
               <LogicNodeTreeDiagram logicNode={logicNode} />
             </ReactFlowProvider>,
-            { x: 75, y: 25, width: 1300, height: 700 },
+            { x: 75, 
+              y: 25,  
+              width: isMediumScreen ? 600 : 1000,
+              height: isMediumScreen ? 400 : 500 
+            },
           );
         },
       },

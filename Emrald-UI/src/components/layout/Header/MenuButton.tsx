@@ -8,12 +8,15 @@ import { MenuOption, templateSubMenuOptions } from './menuOptions';
 import { useAssembledData } from '../../../hooks/useAssembledData';
 import { useTemplateContext } from '../../../contexts/TemplateContext';
 import Alert from '@mui/material/Alert';
+import { SxProps, useTheme } from '@mui/material/styles';
+import useMediaQuery from '@mui/material/useMediaQuery';
 
 interface MenuButtonProps {
   id: number;
   title: string;
   options?: MenuOption[];
   handleClick?: (args: any) => void;
+  sx?: SxProps;
 }
 
 const MenuButton: React.FC<MenuButtonProps> = ({
@@ -21,6 +24,7 @@ const MenuButton: React.FC<MenuButtonProps> = ({
   title,
   options,
   handleClick,
+  sx
 }) => {
   const { assembleData, newProject, mergeNewData, populateNewData } = useAssembledData();
   const { templatesList, mergeTemplateToList, clearTemplateList } = useTemplateContext();
@@ -31,6 +35,8 @@ const MenuButton: React.FC<MenuButtonProps> = ({
   const [hoverTimeout, setHoverTimeout] = useState<NodeJS.Timeout | null>(null);
   const [showAlert, setShowAlert] = useState<boolean>(false);
   const [alertMessage, setAlertMessage] = useState<string>('');
+  const theme = useTheme();
+  const isMediumScreen = useMediaQuery(theme.breakpoints.between('sm', 'lg'));
 
   const handleMouseEnter = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -128,9 +134,11 @@ const MenuButton: React.FC<MenuButtonProps> = ({
           borderRight: '2px solid #bbb',
           borderRadius: 0,
           p: 0,
-          pr: 2,
-          ml: 2,
+          pr: isMediumScreen ? '10px' : 2,
+          ml: isMediumScreen ? '10px' : 2,
           cursor: 'pointer',
+          fontSize: isMediumScreen ? '0.725rem' : '0.875rem',
+          ...sx
         }}
       >
         {title}

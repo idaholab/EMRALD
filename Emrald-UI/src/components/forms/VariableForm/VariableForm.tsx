@@ -69,7 +69,7 @@ const VariableForm: React.FC<VariableFormProps> = ({ variableData }) => {
   }, []);
 
   return (
-    <Box mx={3}>
+    <Box mx={3} pb={3}>
       <Typography variant="h5" my={3}>
         {variableData ? `Edit` : `Create`} Variable
       </Typography>

@@ -47,7 +47,7 @@ const ExtSimForm: React.FC<ExtSimFormProps> = ({ ExtSimData }) => {
   };
 
   return (
-    <Box sx={{ px: 3 }}>
+    <Box mx={3} pb={3}>
       <Typography variant="h5" my={3}>
         {ExtSimData ? `Edit` : `Create`} ExtSim
       </Typography>

@@ -48,7 +48,7 @@ const ImportForm: React.FC<ImportDiagramFormProps> = ({ importedData, fromTempla
   } = useImportForm(importedData, fromTemplate);
 
   return (
-    <Box mx={3}>
+    <Box mx={3} pb={3}>
       <Box display={'flex'} alignItems={'center'}>
         <TextFieldComponent label="Find" value={findValue} setValue={setFindValue} sx={{ mr: 4 }} />
         <TextFieldComponent

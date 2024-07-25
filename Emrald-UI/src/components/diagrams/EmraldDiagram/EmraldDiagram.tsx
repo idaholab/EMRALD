@@ -1,5 +1,5 @@
-import React, { useEffect, useMemo, useRef } from 'react';
-import ReactFlow, { MiniMap, Controls, Background, BackgroundVariant } from 'reactflow';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import ReactFlow, { MiniMap, Controls, Background, BackgroundVariant, ControlButton } from 'reactflow';
 import 'reactflow/dist/style.css';
 import { Box, Typography } from '@mui/material';
 import StateNode from '../EmraldDiagram/StateNodeComponent';
@@ -11,6 +11,7 @@ import DialogComponent from '../../common/DialogComponent/DialogComponent';
 import useContextMenu from './useContextMenu';
 import { signal } from '@preact/signals';
 import { emptyDiagram } from '../../../contexts/DiagramContext';
+import { TbMap } from "react-icons/tb";
 
 interface EmraldDiagramProps {
   diagram: Diagram;
@@ -19,6 +20,7 @@ interface EmraldDiagramProps {
 export const currentDiagram = signal<Diagram>(emptyDiagram);
 
 const EmraldDiagram: React.FC<EmraldDiagramProps> = ({ diagram }) => {
+  const [showMap, setShowMap] = useState(true);
   currentDiagram.value = diagram;
   const {
     nodes,
@@ -79,8 +81,16 @@ const EmraldDiagram: React.FC<EmraldDiagramProps> = ({ diagram }) => {
             fitView
             nodeTypes={nodeTypes}
           >
-            <Controls />
-            <MiniMap pannable />
+            <Controls>
+              <ControlButton onClick={() => setShowMap(!showMap)}>
+                <TbMap />
+              </ControlButton>  
+            </Controls>
+            {
+              showMap && (
+                <MiniMap pannable />
+              )
+            }
             <Background variant={BackgroundVariant.Dots} gap={12} size={1} />
           </ReactFlow>
           {menu && (
