@@ -56,7 +56,7 @@ const EventForm: React.FC<EventFormProps> = ({ eventData, state }) => {
           reset={reset}
           handleNameChange={handleNameChange}
           error={hasError}
-          errorMessage="An event with this name already exists."
+          errorMessage="An event with this name already exists, or the name includes an invalid character."
           reqPropsFilled={name && evType ? true : false}
         >
           {state && (

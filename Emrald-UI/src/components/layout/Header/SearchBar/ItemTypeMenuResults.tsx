@@ -40,8 +40,8 @@ const ItemTypeMenuResults: React.FC<React.PropsWithChildren<ItemTypeMenuResultsP
   const DisplayButtonOrModel = (item: Diagram | State | Action | Event): ReactNode => {
     return (
       <Box>
-        <div>{getModel(item, GetModelItemsReferencing)}</div>
-        <div style={{ marginTop: 10 }}>{getModel(item, GetModelItemsReferencedBy)}</div>
+        <div>{getModel(item, 'Used By')}</div>
+        <div style={{ marginTop: 10 }}>{getModel(item, 'Using')}</div>
       </Box>
     );
   };

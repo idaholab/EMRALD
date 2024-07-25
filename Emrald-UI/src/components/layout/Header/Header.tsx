@@ -15,12 +15,12 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
 
 const url: string = window.location.href;
-let emraldDocsUrl: string = 'http://emrald3-docs.inl.gov/'; // Default URL
+let emraldDocsUrl: string = 'https://emrald3-docs.inl.gov/'; // Default URL
 
 const urlEnvMappings: { [key: string]: string } = {
-  dev: 'http://emrald3-docs.dev.inl.gov/',
-  acc: 'http://emrald3-docs.acc.inl.gov/',
-  scan: 'http://emrald3-docs.scan.inl.gov/',
+  dev: 'https://emrald3-docs.dev.inl.gov/',
+  acc: 'https://emrald3-docs.acc.inl.gov/',
+  scan: 'https://emrald3-docs.scan.inl.gov/',
 };
 
 // Loop through the mappings and set the URL if a match is found

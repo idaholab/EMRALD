@@ -71,7 +71,7 @@ const ActionForm: React.FC<ActionFormProps> = ({ actionData, event, state }) => 
           desc={desc}
           setDesc={setDesc}
           error={hasError}
-          errorMessage="An action with this name already exists."
+          errorMessage="An action with this name already exists, or includes an invalid character."
           reset={reset}
           handleSave={() => handleSave(event, state)}
           reqPropsFilled={name && actType ? true : false}

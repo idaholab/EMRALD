@@ -5,26 +5,20 @@ import Sidebar from './components/layout/Sidebar/Sidebar';
 import theme from './theme';
 import MainCanvas from './components/layout/MainCanvas/MainCanvas';
 import EmraldContextWrapper from './contexts/EmraldContextWrapper';
-import { useEffect, useState } from 'react';
+import { ReactNode } from 'react';
+import useErrorBoundary from './hooks/useErrorBoundary';
 
-function ErrorBoundary({ children }: { children: React.ReactNode }) {
-  const [hasError, setHasError] = useState(false);
-
-  useEffect(() => {
-    const handleWindowError = () => {
-      setHasError(true);
-    };
-
-    window.addEventListener('error', handleWindowError);
-
-    return () => {
-      window.removeEventListener('error', handleWindowError);
-    };
-  }, []);
+function ErrorBoundary({ children }: { children: ReactNode }) {
+  const { hasError, errorMessage } = useErrorBoundary();
 
   if (hasError) {
-    // You can render a custom error UI here
-    return <h1>Something went wrong.</h1>;
+    return (
+      <>
+        <h1>Something went wrong.</h1>
+        <h2>Please reload the page.</h2>
+        {errorMessage && <p>Error: {errorMessage}</p>}
+      </>
+    );
   }
 
   return <>{children}</>;
@@ -39,7 +33,7 @@ function App() {
             <CssBaseline />
             <Header />
             <Sidebar />
-            <MainCanvas/>
+            <MainCanvas />
           </Box>
         </EmraldContextWrapper>
       </ThemeProvider>

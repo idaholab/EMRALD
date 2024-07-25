@@ -30,6 +30,7 @@ const StateForm: React.FC<StateFormProps> = ({ stateData }: StateFormProps) => {
     stateData?.defaultSingleStateValue || 'Ignore',
   );
   const [hasError, setHasError] = useState<boolean>(false);
+  const [originalName] = useState<string>(stateData?.name || '');
 
   const stateTypeOptions = [
     { value: 'stStart', label: 'Start' },
@@ -39,24 +40,34 @@ const StateForm: React.FC<StateFormProps> = ({ stateData }: StateFormProps) => {
   ];
 
   const handleNameChange = (newName: string) => {
-    setHasError(statesList.value.some((node) => node.name === newName));
+    const trimmedName = newName.trim();
+    const duplicateName = statesList.value.some((node) => node.name === trimmedName);
+    const hasInvalidChars = /[^a-zA-Z0-9-_ ]/.test(trimmedName);
+    setHasError(duplicateName || hasInvalidChars);
     setName(newName);
   };
 
   const handleSave = async () => {
     if (stateData) {
-      updateState({
+      await updateState({
         ...state.value,
         stateType,
-        name,
+        name: name.trim(),
         desc,
         defaultSingleStateValue,
       });
+      if (name !== originalName) {
+        const newList = currentDiagram.value.states.filter((state) => state !== originalName);
+        currentDiagram.value.states = [...newList, name];
+        updateDiagram({
+          ...currentDiagram.value,
+        });
+      }
     } else {
       await createState({
         ...state.value,
         id: uuidv4(),
-        name,
+        name: name.trim(),
         desc,
         stateType,
         defaultSingleStateValue,
@@ -102,7 +113,7 @@ const StateForm: React.FC<StateFormProps> = ({ stateData }: StateFormProps) => {
           desc={desc}
           setDesc={setDesc}
           error={hasError}
-          errorMessage="A State with this name already exists."
+          errorMessage="A State with this name already exists, or the name contains an invalid character."
           reset={reset}
           handleSave={handleSave}
           reqPropsFilled={name && stateType ? true : false}

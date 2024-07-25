@@ -11,9 +11,7 @@ export const scientificToNumeric = (value: string | undefined): number | undefin
     if (value && validInputRegex.test(value)) {
       // Convert scientific notation to numeric value
       const numericValue = parseFloat(value);
-      // Round up to 10 decimal places
-      const roundedValue = Math.round(numericValue * 1e10) / 1e10;
-      return roundedValue;
+      return numericValue;
     }
   } catch (error) {
     // Handle any errors (e.g., invalid input)

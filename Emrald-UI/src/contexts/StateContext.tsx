@@ -13,7 +13,7 @@ interface StateContextType {
   states: State[];
   statesList: ReadonlySignal<State[]>;
   createState: (newState: State) => Promise<void>;
-  updateState: (updatedState: State) => void;
+  updateState: (updatedState: State) => Promise<void>;
   updateStateEvents: (stateName: string, event: Event) => void;
   updateStateEventActions: (stateName: string, eventName: string, action: Action) => void;
   updateStateImmediateActions: (stateName: string, action: Action) => void;
@@ -79,12 +79,15 @@ const StateContextProvider: React.FC<EmraldContextWrapperProps> = ({ children })
   };
 
   const updateState = async (updatedState: State) => {
-    var updatedModel: EMRALD_Model = await updateModelAndReferences(
-      updatedState,
-      MainItemTypes.State,
-    );
-    updateAppData(updatedModel);
-    setStates(updatedModel.StateList);
+    return new Promise<void>(async (resolve) => {
+      var updatedModel: EMRALD_Model = await updateModelAndReferences(
+        updatedState,
+        MainItemTypes.State,
+      );
+      updateAppData(updatedModel);
+      setStates(updatedModel.StateList);
+      resolve();
+    });
   };
 
   const updateStateEvents = (stateName: string, event: Event) => {
