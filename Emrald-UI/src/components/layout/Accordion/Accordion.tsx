@@ -34,7 +34,10 @@ interface MenuAccordionProps {
   bothAccordionsOpen: boolean;
   onDiagramChange: (diagram: Diagram) => void;
   componentGroup?: string;
-  handleDelete?: (itemToDelete: Diagram | LogicNode | ExtSim | Action | Event | State | Variable, itemToDeleteType: MainItemTypes) => void;
+  handleDelete?: (
+    itemToDelete: Diagram | LogicNode | ExtSim | Action | Event | State | Variable,
+    itemToDeleteType: MainItemTypes,
+  ) => void;
 }
 
 const MenuAccordion: React.FC<MenuAccordionProps> = ({
@@ -56,16 +59,19 @@ const MenuAccordion: React.FC<MenuAccordionProps> = ({
     if (typeof clipboardData !== 'string') {
       return false;
     }
-    
+
     try {
       const parsedModel = JSON.parse(clipboardData);
       const upgradedModel = upgradeModel(clipboardData);
-      if (parsedModel && parsedModel.hasOwnProperty('emraldVersion') || !upgradedModel) {
+      if ((parsedModel && parsedModel.hasOwnProperty('emraldVersion')) || !upgradedModel) {
         setPastedModel(parsedModel);
       } else {
         setPastedModel(upgradedModel);
       }
-      return parsedModel.hasOwnProperty('emraldVersion') || (upgradedModel && upgradedModel.hasOwnProperty('emraldVersion'));
+      return (
+        parsedModel.hasOwnProperty('emraldVersion') ||
+        (upgradedModel && upgradedModel.hasOwnProperty('emraldVersion'))
+      );
     } catch (error) {
       return false;
     }
@@ -84,7 +90,7 @@ const MenuAccordion: React.FC<MenuAccordionProps> = ({
       componentGroup !== 'global' &&
       panel !== 'Diagrams' &&
       panel !== 'Logic Tree' &&
-      panel !== 'External Sims' && 
+      panel !== 'External Sims' &&
       panel !== 'Variables'
     )
       return;
@@ -119,7 +125,7 @@ const MenuAccordion: React.FC<MenuAccordionProps> = ({
         addWindow('New Diagram', <DiagramForm />);
       }
     } else if (accordionPanel === 'Logic Tree') {
-      addWindow('New Logic Tree', <LogicNodeForm isRoot/>);
+      addWindow('New Logic Tree', <LogicNodeForm setAsRoot />);
     } else if (accordionPanel === 'External Sims') {
       addWindow('New External Sim', <ExtSimForm />);
     } else if (accordionPanel === 'Actions') {

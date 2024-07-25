@@ -57,11 +57,7 @@ const TreeNodeComponent: React.FC<TreeNodeComponentProps> = ({ data }) => {
         ${type === 'comp' ? 'tree-node__comp' : 'tree-node__gate'}
         ${type === 'comp' && !defaultStateValues ? 'non-default' : ''}`}
     >
-      <LogicTreeNodeDropTarget
-        type={['Gate', 'Diagram']}
-        nodeType={type}
-        node={label}
-      >
+      <LogicTreeNodeDropTarget type={['Gate', 'Diagram', 'LogicNode']} nodeType={type} node={label}>
         <Box
           sx={{
             display: 'flex',
@@ -72,9 +68,7 @@ const TreeNodeComponent: React.FC<TreeNodeComponentProps> = ({ data }) => {
           onClick={(event) => event.stopPropagation()}
         >
           {/* Left container with icon */}
-          <Box
-            sx={{ display: 'flex', alignItems: 'center', marginRight: '15px' }}
-          >
+          <Box sx={{ display: 'flex', alignItems: 'center', marginRight: '15px' }}>
             {type === 'comp' && !defaultStateValues ? (
               <PiNotePencilDuotone className="modified-icon" />
             ) : (
@@ -136,16 +130,18 @@ const TreeNodeComponent: React.FC<TreeNodeComponentProps> = ({ data }) => {
           </Box>
         </Box>
 
-        <Box onClick={(event) => event.stopPropagation()}
-        sx={{
-          maxWidth: '220px',
-          maxHeight: '73px',
-          overflow: 'hidden',
-          textOverflow: 'ellipsis',
-          display: '-webkit-box',
-          WebkitLineClamp: '4',
-          WebkitBoxOrient: 'vertical',
-        }}>
+        <Box
+          onClick={(event) => event.stopPropagation()}
+          sx={{
+            maxWidth: '220px',
+            maxHeight: '73px',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            display: '-webkit-box',
+            WebkitLineClamp: '4',
+            WebkitBoxOrient: 'vertical',
+          }}
+        >
           {editingDescription ? (
             <TextField
               value={editedDescription}
@@ -165,20 +161,14 @@ const TreeNodeComponent: React.FC<TreeNodeComponentProps> = ({ data }) => {
           ) : (
             <Box
               className="tree-node__body"
-              onDoubleClick={() =>
-                handleDoubleClick('description', description)
-              }
+              onDoubleClick={() => handleDoubleClick('description', description)}
             >
               {editedDescription ? editedDescription : description}
             </Box>
           )}
         </Box>
 
-        {type !== 'root' ? (
-          <Handle type="target" position={Position.Top} />
-        ) : (
-          <></>
-        )}
+        {type !== 'root' ? <Handle type="target" position={Position.Top} /> : <></>}
         {type !== 'comp' ? (
           <Box
             sx={{
@@ -190,14 +180,7 @@ const TreeNodeComponent: React.FC<TreeNodeComponentProps> = ({ data }) => {
           >
             <Handle type="source" position={Position.Bottom} />
             <GateTypeIcon type={gateType} className="logic-icon" />
-            {expandable ? (
-              <ExpandedIcon
-                expanded={expanded}
-                className="expanded-icon"
-              />
-            ) : (
-              <></>
-            )}
+            {expandable ? <ExpandedIcon expanded={expanded} className="expanded-icon" /> : <></>}
           </Box>
         ) : (
           <></>

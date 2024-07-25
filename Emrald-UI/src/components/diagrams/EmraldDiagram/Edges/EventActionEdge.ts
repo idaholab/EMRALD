@@ -1,4 +1,4 @@
-import { Edge, Node, MarkerType } from 'reactflow';
+import { Edge, Node, MarkerType, addEdge } from 'reactflow';
 import { Action } from '../../../../types/Action';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -53,44 +53,43 @@ const getEventActionEdges = (
   stateId: string,
   nodes: Node[],
   eventActions: EventAction[],
+  events: string[],
   setEdges: React.Dispatch<React.SetStateAction<Edge[]>>,
   getActionByActionName: (actionName: string) => Action,
   getNewStatesByActionName: (actionName: string) => { toState: string, prob: number }[],
 ) => {
-  eventActions.forEach((action) => {
+  eventActions.forEach((action, index) => {
     if (action.actions) {
       action.actions.forEach((actionName: string) => {
       const newStates = getNewStatesByActionName(actionName);
       const currentAction = getActionByActionName(actionName);
-
+      const eventName = events[index];
       newStates.forEach((newState) => {
         const moveToState = nodes.find(
           (node) => node.data.label === newState.toState,
         );
 
         if (moveToState) {
-          setEdges((prevEdges) => [
-            ...prevEdges,
-            {
-              id: uuidv4(),
-              source: stateId,
-              target: moveToState.id,
-              label: showRemainingValues(currentAction, newState),
-              targetHandle: 'event-action-target',
-              sourceHandle: `${currentAction?.id}`,
-              updatable: 'target',
-              style: {
-                stroke: `${action.moveFromCurrent ? '#b1b1b7' : 'green'}`,
-                strokeDasharray: `${action.moveFromCurrent ? '' : 5}`
-              },
-              markerEnd: { 
-                type: MarkerType.ArrowClosed, 
-                width: 25, 
-                height: 25, 
-                color: `${action.moveFromCurrent ? '#b1b1b7' : 'green'}` 
-              },
+          const connection =  {
+            id: uuidv4(),
+            source: stateId,
+            target: moveToState.id,
+            label: showRemainingValues(currentAction, newState),
+            targetHandle: 'event-action-target',
+            sourceHandle: `${eventName}-${currentAction?.id}`,
+            updatable: 'target',
+            style: {
+              stroke: `${action.moveFromCurrent ? '#b1b1b7' : 'green'}`,
+              strokeDasharray: `${action.moveFromCurrent ? '' : 5}`
             },
-          ]);
+            markerEnd: { 
+              type: MarkerType.ArrowClosed, 
+              width: 25, 
+              height: 25, 
+              color: `${action.moveFromCurrent ? '#b1b1b7' : 'green'}` 
+            },
+          }
+          setEdges((prevEdges) => addEdge(connection, prevEdges));
         }
       });
       })

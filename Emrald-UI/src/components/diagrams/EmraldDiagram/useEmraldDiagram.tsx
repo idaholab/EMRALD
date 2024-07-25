@@ -55,6 +55,7 @@ const useEmraldDiagram = () => {
         stateNode.id,
         nodes,
         state.eventActions,
+        state.events,
         setEdges,
         getActionByActionName,
         getNewStatesByActionName,

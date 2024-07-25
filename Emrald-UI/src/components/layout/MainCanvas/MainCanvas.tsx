@@ -1,13 +1,7 @@
 import { useState } from 'react';
-import {
-  Box,
-  SpeedDial,
-  SpeedDialIcon,
-  SpeedDialAction,
-  SvgIcon,
-} from '@mui/material';
+import { Box, SpeedDial, SpeedDialIcon, SpeedDialAction, SvgIcon } from '@mui/material';
 import WindowComponent from '../Window/Window';
-import { TbCube3dSphere , TbSchema } from 'react-icons/tb';
+import { TbCube3dSphere, TbSchema } from 'react-icons/tb';
 import { GrPerformance } from 'react-icons/gr';
 import { VscSymbolEvent } from 'react-icons/vsc';
 import { HiOutlineVariable } from 'react-icons/hi';
@@ -42,7 +36,7 @@ const MainCanvas: React.FC = () => {
         </SvgIcon>
       ),
       name: 'New Logic Tree',
-      content: <LogicNodeForm isRoot/>,
+      content: <LogicNodeForm setAsRoot />,
     },
     {
       icon: (

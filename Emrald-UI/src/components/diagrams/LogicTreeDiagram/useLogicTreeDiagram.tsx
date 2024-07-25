@@ -455,11 +455,7 @@ const useLogicNodeTreeDiagram = () => {
         node.gateChildren = [...node.gateChildren, newNode.name];
       } else {
         const pastedNodeName = pastedObject.name;
-        if (
-          node.name === pastedNodeName ||
-          getAllGateChildrenNames(node).includes(pastedNodeName) ||
-          getAncestors(node).includes(pastedNodeName)
-        ) {
+        if (couldCreateInifinteLoop(node, pastedNodeName)) {
           setNodeExistsAlert(true);
           return;
         }
@@ -467,6 +463,13 @@ const useLogicNodeTreeDiagram = () => {
       }
       updateLogicNode(node);
     }
+  };
+  const couldCreateInifinteLoop = (parentNode: LogicNode, newNodeName: string): boolean => {
+    return (
+      parentNode.name === newNodeName ||
+      getAllGateChildrenNames(parentNode).includes(newNodeName) ||
+      getAncestors(parentNode).includes(newNodeName)
+    );
   };
 
   const getAncestors = (node: LogicNode): string[] => {
@@ -647,6 +650,7 @@ const useLogicNodeTreeDiagram = () => {
     goToDiagram,
     removeNode,
     setNodeExistsAlert,
+    couldCreateInifinteLoop,
   };
 };
 
