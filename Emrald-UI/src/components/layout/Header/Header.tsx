@@ -8,10 +8,11 @@ import { useModelDetailsContext } from '../../../contexts/ModelDetailsContext';
 import DialogComponent from '../../common/DialogComponent/DialogComponent';
 import TextField from '@mui/material/TextField';
 import Box from '@mui/material/Box';
-import theme from '../../../theme';
 import { projectOptions, downloadOptions } from './menuOptions';
 import MenuButton from './MenuButton';
 import SearchField from './SearchBar/SearchField';
+import useMediaQuery from '@mui/material/useMediaQuery';
+import { useTheme } from '@mui/material/styles';
 
 const url: string = window.location.href;
 let emraldDocsUrl: string = 'http://emrald3-docs.inl.gov/'; // Default URL
@@ -35,6 +36,9 @@ const EmraldLogo = styled('img')(({ theme }) => ({
 }));
 
 export default function Header() {
+  const theme = useTheme();
+  const isMediumScreen = useMediaQuery(theme.breakpoints.between('sm', 'lg'));
+  
   const { name, desc, updateName, updateDescription } = useModelDetailsContext();
   const [openDialog, setOpenDialog] = useState(false);
   const [updatedName, setUpdatedName] = useState(name);
@@ -63,8 +67,9 @@ export default function Header() {
       }}
     >
       <Toolbar>
-        <EmraldLogo src={Logo} alt="Logo" />
-        <Typography variant="h4" noWrap color="primary" fontSize="2em" fontWeight="bold">
+        <EmraldLogo src={Logo} alt="Logo"  sx={{ height: isMediumScreen ? '45px' : '65px'}}/>
+        <Typography variant="h4" noWrap color="primary" fontSize="2em" fontWeight="bold"
+        sx={{ fontSize: isMediumScreen ? '1.2em' : '1.4em'}}>
           Model Editor
         </Typography>
         <Box display="flex" alignItems="center" flexGrow={1} ml={5}>
@@ -79,6 +84,7 @@ export default function Header() {
             id={4}
             title="About"
             handleClick={() => window.open("https://emrald.inl.gov/SitePages/Overview.aspx")}
+            sx={{ mr: 3 }}
           />
         </Box>
         <SearchField />
@@ -87,7 +93,7 @@ export default function Header() {
           noWrap
           color="primary"
           fontWeight="bold"
-          sx={{ cursor: 'pointer' }}
+          sx={{ cursor: 'pointer', fontSize: isMediumScreen ? '1em' : '1.2em' }}
           onClick={() => setOpenDialog(true)}
         >
           {name ? name : 'Click Here to Name Project'}

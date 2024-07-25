@@ -9,7 +9,7 @@ import MainDetailsForm from '../../forms/MainDetailsForm';
 import { emptyState, useStateContext } from '../../../contexts/StateContext';
 import { useSignal } from '@preact/signals-react';
 import { DiagramType, MainItemTypes, StateEvalValue, StateType } from '../../../types/ItemTypes';
-import { FormControl, FormControlLabel, FormLabel, Radio, RadioGroup } from '@mui/material';
+import { Box, FormControl, FormControlLabel, FormLabel, Radio, RadioGroup } from '@mui/material';
 import { useDiagramContext } from '../../../contexts/DiagramContext';
 import { currentDiagram } from '../../diagrams/EmraldDiagram/EmraldDiagram';
 
@@ -87,7 +87,7 @@ const StateForm: React.FC<StateFormProps> = ({ stateData }: StateFormProps) => {
     setHasError(false); // Reset error to undefined
   };
   return (
-    <Container maxWidth="sm">
+    <Box mx={3} pb={3}>
       <Typography variant="h5" my={3}>
         {stateData ? `Edit` : `Create`} State
       </Typography>
@@ -137,7 +137,7 @@ const StateForm: React.FC<StateFormProps> = ({ stateData }: StateFormProps) => {
           )}
         </MainDetailsForm>
       </form>
-    </Container>
+    </Box>
   );
 };
 

@@ -1,3 +1,5 @@
+import { useTheme } from '@mui/material/styles';
+import useMediaQuery from '@mui/material/useMediaQuery';
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -46,6 +48,8 @@ interface WindowProviderProps {
 
 // Provider component to manage windows
 export const WindowProvider: React.FC<WindowProviderProps> = ({ children }) => {
+  const theme = useTheme();
+  const isMediumScreen = useMediaQuery(theme.breakpoints.between('sm', 'lg'));
   const [windows, setWindows] = useState<Window[]>([]);
   const [nextWindowId, setNextWindowId] = useState<number>(1);
   const [activeWindowId, setActiveWindowId] = useState<string | null>(null);
@@ -93,7 +97,7 @@ export const WindowProvider: React.FC<WindowProviderProps> = ({ children }) => {
       id: uuidv4(),
       title,
       isOpen: true,
-      initialPosition: position || { x: 100, y: 50, width: 1000, height: 700 },
+      initialPosition: position || { x: 100, y: 50, width: isMediumScreen ? 700 : 900, height: isMediumScreen ? 400 : 500 },
       minimized: false,
       maximized: false,
       content,

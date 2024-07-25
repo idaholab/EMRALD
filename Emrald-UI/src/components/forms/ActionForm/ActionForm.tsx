@@ -56,7 +56,7 @@ const ActionForm: React.FC<ActionFormProps> = ({ actionData, event, state }) => 
   };
 
   return (
-    <Box sx={{ px: 3 }}>
+    <Box mx={3} pb={3}>
       <Typography variant="h5" my={3}>
         {actionData ? `Edit` : `Create`} Action
       </Typography>
