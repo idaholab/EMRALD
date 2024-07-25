@@ -175,7 +175,7 @@ const LogicNodeForm: React.FC<LogicNodeFormProps> = ({
   };
 
   return (
-    <Container maxWidth="sm">
+    <Box mx={3} pb={3}>
       <Typography variant="h5" my={3}>
         {logicNodeData ? 'Edit' : 'Create New'} {leafNodeType === 'comp' ? 'Component' : 'Gate'}
       </Typography>
@@ -270,11 +270,7 @@ const LogicNodeForm: React.FC<LogicNodeFormProps> = ({
             ) : (
               <></>
             )}
-            {!defaultValues ? (
-              <StateValuesTable diagramName={compDiagram} nodeDetails={currentNode} />
-            ) : (
-              <></>
-            )}
+            {!defaultValues ? <StateValuesTable diagramName={compDiagram} /> : <></>}
           </>
         ) : (
           <>
@@ -339,7 +335,7 @@ const LogicNodeForm: React.FC<LogicNodeFormProps> = ({
           </Button>
         </Box>
       </form>
-    </Container>
+    </Box>
   );
 };
 

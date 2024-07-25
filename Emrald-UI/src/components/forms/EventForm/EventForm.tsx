@@ -39,7 +39,7 @@ const EventForm: React.FC<EventFormProps> = ({ eventData, state }) => {
   }, []);
 
   return (
-    <Box mx={3}>
+    <Box mx={3} pb={3}>
       <Typography variant="h5" my={3}>
         {eventData ? `Edit` : `Create`} Event
       </Typography>

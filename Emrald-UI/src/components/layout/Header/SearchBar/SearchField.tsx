@@ -1,4 +1,4 @@
-import { Button, IconButton, InputAdornment, Menu, MenuItem, TextField } from '@mui/material';
+import { Button, IconButton, InputAdornment, Menu, MenuItem, TextField, useMediaQuery, useTheme } from '@mui/material';
 import { ReactNode, useState } from 'react';
 import { appData } from '../../../../hooks/useAppData';
 import { Diagram } from '../../../../types/Diagram';
@@ -7,6 +7,7 @@ import { Action } from '../../../../types/Action';
 import { Event } from '../../../../types/Event';
 import SearchIcon from '@mui/icons-material/Search';
 import {
+  allMainItemTypes,
   GetModelItemsReferencedBy,
   GetModelItemsReferencing,
 } from '../../../../utils/ModelReferences';
@@ -35,6 +36,8 @@ import { ReactFlowProvider } from 'reactflow';
 import { emptyLogicNode } from '../../../../contexts/LogicNodeContext';
 
 const SearchField = () => {
+  const theme = useTheme();
+  const isMediumScreen = useMediaQuery(theme.breakpoints.between('sm', 'lg'));
   const [value, setValue] = useState<string>('');
   const [anchorEl, setAnchorEl] = useState<any>(null);
   const [selectedItem, setSelectedItem] = useState<
@@ -100,11 +103,10 @@ const SearchField = () => {
 
   const getModel = (
     item: Diagram | State | Action | Event | ExtSim | LogicNode | Variable,
-    direction: typeof GetModelItemsReferencing | typeof GetModelItemsReferencedBy,
+    buttonDirection: string,
   ): ReactNode => {
     const [expandedItem, setExpandedItem] = useState<string | null>(null);
     const [nestedModel, setNestedModel] = useState<EMRALD_Model>();
-    const ButtonString = direction === GetModelItemsReferencing ? 'Used by' : 'Using';
 
     const handleExpand = (
       item: Diagram | State | Action | Event | ExtSim | LogicNode | Variable,
@@ -113,7 +115,18 @@ const SearchField = () => {
         setExpandedItem(null);
         return;
       }
-      let tempModel = direction(item.name, item.objType as MainItemTypes, 1);
+      let tempModel: EMRALD_Model;
+      if (buttonDirection === 'Used By') {
+        tempModel = GetModelItemsReferencing(item.name, item.objType as MainItemTypes, 1);
+      } else {
+        tempModel = GetModelItemsReferencedBy(
+          item.name,
+          item.objType as MainItemTypes,
+          1,
+          allMainItemTypes,
+          false,
+        );
+      }
       tempModel = filterItemFromModel(tempModel, item);
       setNestedModel(tempModel);
       setExpandedItem(item.id || null);
@@ -166,7 +179,7 @@ const SearchField = () => {
     return (
       <>
         <Button onClick={() => handleExpand(item)} variant="contained">
-          {expandedItem === item.id ? `Collapse ${ButtonString}` : `Expand ${ButtonString}`}
+          {expandedItem === item.id ? `Collapse ${buttonDirection}` : `Expand ${buttonDirection}`}
         </Button>
         {expandedItem === item.id && nestedModel && (
           <ItemTypeMenuResults
@@ -304,7 +317,10 @@ const SearchField = () => {
               </IconButton>
             </InputAdornment>
           ),
-          style: { marginRight: '50px', borderRadius: '15px' },
+          style: { 
+            marginRight: isMediumScreen ? '15px' : '50px', 
+            maxWidth: isMediumScreen ? '150px' : '200px',
+            borderRadius: '15px' },
         }}
         onKeyDown={handleKeyDown}
       />
