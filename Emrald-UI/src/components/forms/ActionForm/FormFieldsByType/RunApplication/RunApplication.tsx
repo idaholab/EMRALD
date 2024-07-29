@@ -44,7 +44,7 @@ const RunApplication = () => {
   const { variableList } = useVariableContext();
   const [applicationType, setApplicationType] = useState(raType || 'custom');
   const [customFormType, setCustomFormType] = useState<string>(formData?.caType || '');
-  const [options, setOptions] = useState<string[]>([]);
+  const [options, setOptions] = useState<string[]>(['CustomFormTemplate', 'MAAP']);
   const [selectedComponent, setSelectedComponent] = useState<ReactElement | null>(null);
 
   useEffect(() => {
@@ -142,7 +142,7 @@ const RunApplication = () => {
         <Box display={'flex'} flexDirection={'column'}>
           <SelectComponent
             label="Custom Application Type"
-            value={customFormType}
+            value={customFormType || ''}
             setValue={(name) => handleSetCustomFormType(name)}
           >
             {options.map((option) => (

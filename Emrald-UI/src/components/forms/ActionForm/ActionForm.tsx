@@ -33,6 +33,7 @@ const ActionForm: React.FC<ActionFormProps> = ({ actionData, event, state }) => 
     actType,
     actionTypeOptions,
     hasError,
+    reqPropsFilled,
     handleNameChange,
     setDesc,
     setActType,
@@ -74,7 +75,7 @@ const ActionForm: React.FC<ActionFormProps> = ({ actionData, event, state }) => 
           errorMessage="An action with this name already exists, or includes an invalid character."
           reset={reset}
           handleSave={() => handleSave(event, state)}
-          reqPropsFilled={name && actType ? true : false}
+          reqPropsFilled={reqPropsFilled}
         >
           {/* Render the appropriate sub-component based on selected action type */}
           {actType &&

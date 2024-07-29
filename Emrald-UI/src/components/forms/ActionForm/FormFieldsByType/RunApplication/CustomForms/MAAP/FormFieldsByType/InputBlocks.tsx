@@ -8,6 +8,9 @@ const InputBlocks = () => {
   const [inputBlocks, setInputBlocks] = useState<InputBlock[]>([]);
   const [numBooleanExpressions, setNumBooleanExpressions] = useState<{ [key: string]: number }>({});
   const [results, setResults] = useState<{ [key: string]: { [key: string]: string }[] }>({});
+  const [leftExpressionNames, setLeftExpressionNames] = useState<string[][]>([]);
+  const [rightExpressionNames, setRightExpressionNames] = useState<string[][]>([]);
+  const [operators, setOperators] = useState<{ [key: string]: string[] }>({});
   const { formData, setFormData } = useCustomForm();
   const variables = appData.value.VariableList.map(({ name }) => name);
 
@@ -16,8 +19,22 @@ const InputBlocks = () => {
       if (!numBooleanExpressions[block.id]) {
         const count = getNumBooleanCount(block);
         setNumBooleanExpressions((prev) => ({ ...prev, [block.id]: count }));
-      }
 
+        const leftNames: string[] = [];
+        const rightNames: string[] = [];
+        for (let i = 0; i < count; i++) {
+          const leftName = getLeftOrRightName(block, true, i);
+          const rightName = getLeftOrRightName(block, false, i);
+
+          leftNames.push(leftName);
+          rightNames.push(rightName);
+        }
+
+        setLeftExpressionNames((prev) => [...prev, leftNames]);
+        setRightExpressionNames((prev) => [...prev, rightNames]);
+      }
+      let blockOperators = getAllItems(block, 'operators');
+      setOperators((prev) => ({ ...prev, [block.id]: blockOperators }));
       let items = results[block.id] || [];
       block.value.forEach((result: InputResultValue) => {
         if (result.type === 'comment') {
@@ -37,7 +54,7 @@ const InputBlocks = () => {
       setResults((prev) => ({ ...prev, [block.id]: items }));
     });
     setInputBlocks(formData?.inputBlocks || []);
-  }, [formData, setFormData]);
+  }, []);
 
   const getResultValue = (result: InputResultValue): string => {
     if ((result.value as Value).type === 'expression') {
@@ -87,103 +104,171 @@ const InputBlocks = () => {
     return String(item.value) || '';
   };
 
-  const handleAutocompleteChange = (block: any, newValue: string, isLeft: boolean) => {
+  const handleAutocompleteChange = (
+    block: any,
+    newValue: string,
+    isLeft: boolean,
+    isProperty = false,
+    propertyIndex = 0,
+  ) => {
     const updatedBlocks = inputBlocks.map((b) => {
       if (b === block) {
         const updatedBlock = { ...b };
-        if (isLeft) {
-          updatedBlock.test.value.left.value = newValue;
-          (updatedBlock.test.value.left as Value).type = 'identifier';
+
+        if (isProperty) {
+          let properties = updatedBlock.value.filter((item) => item.type !== 'comment');
+          properties[propertyIndex].value.value = newValue;
         } else {
-          updatedBlock.test.value.right.value = newValue;
-          (updatedBlock.test.value.right as Value).type = 'identifier';
+          // handle left or right side property change here based on propertyIndex
+          let current: any = updatedBlock.test.value;
+          for (let i = 0; i < propertyIndex; i++) {
+            current = current.right.value.right.value;
+          }
+          if (isLeft) {
+            current.left.value = newValue;
+            current.left.type = 'identifier';
+          } else {
+            current.right.value = newValue;
+            current.right.type = 'identifier';
+          }
         }
         return updatedBlock;
       }
       return b;
     });
+
     setInputBlocks(updatedBlocks);
     setFormData((prevFormData: any) => ({ ...prevFormData, inputBlocks: updatedBlocks }));
   };
 
-  const getOperator = (block: InputBlock, count = 0): string => {
-    let operators = getAllItems(block, 'operators');
-    operators = operators.filter((op) => op !== 'AND' && op !== 'OR');
-    return operators[count];
-  };
-  const getBooleanOperator = (block: InputBlock, count = 0): string => {
-    let operators = getAllItems(block, 'operators');
-    operators = operators.filter((op) => op === 'AND' || op === 'OR');
-    return operators[count];
+  const getOperator = (block: InputBlock, isBoolean: boolean, count = 0): string => {
+    let tempOperators = operators[block.id];
+    tempOperators = isBoolean
+      ? tempOperators.filter((op) => op === 'AND' || op === 'OR')
+      : tempOperators.filter((op) => op !== 'AND' && op !== 'OR');
+    return tempOperators[count];
   };
 
   return (
     <>
-      {inputBlocks.map((block) => {
+      {inputBlocks.map((block, blockInd) => {
         const count = numBooleanExpressions[block.id] || 0;
+        let itemIndexes = [];
+        for (let i = 0; i < count; i++) {
+          itemIndexes.push(i);
+        }
         return (
           <Box key={block.id}>
-            {Array.from({ length: count }).map((_, index) => (
-              <Box key={index}>
-                <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                  <Typography fontWeight={600} fontSize={18} mr={2}>
-                    When
-                  </Typography>
-                  <Autocomplete
-                    size="small"
-                    disablePortal
-                    options={variables}
-                    defaultValue={getLeftOrRightName(block, true, index)}
-                    onChange={(_, newValue) => {
-                      if (newValue) handleAutocompleteChange(block, newValue, true);
-                    }}
-                    sx={{ width: 300 }}
-                    renderInput={(params) => <TextField {...params} />}
-                  />
-                  <Typography fontWeight={600} fontSize={18} sx={{ px: 3 }}>
-                    {getOperator(block, index)}
-                  </Typography>
-                  <Autocomplete
-                    size="small"
-                    disablePortal
-                    options={variables}
-                    defaultValue={getLeftOrRightName(block, false, index)}
-                    onChange={(_, newValue) => {
-                      if (newValue) handleAutocompleteChange(block, newValue, false);
-                    }}
-                    sx={{ width: 300 }}
-                    renderInput={(params) => <TextField {...params} />}
-                  />
+            {itemIndexes.map((index) => {
+              const leftName = leftExpressionNames[blockInd][index];
+              const rightName = rightExpressionNames[blockInd][index];
+              const leftNameOptions = variables.includes(leftName)
+                ? variables
+                : [...variables, leftName];
+              const rightNameOptions = variables.includes(rightName)
+                ? variables
+                : [...variables, rightName];
+              return (
+                <Box key={index}>
+                  <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                    <Typography fontWeight={600} fontSize={18} mr={2}>
+                      When
+                    </Typography>
+                    <Autocomplete
+                      size="small"
+                      disablePortal
+                      options={leftNameOptions}
+                      defaultValue={leftName}
+                      onChange={(_, newValue) => {
+                        if (newValue) handleAutocompleteChange(block, newValue, true, false, index);
+                      }}
+                      sx={{ width: 300 }}
+                      renderInput={(params) => <TextField {...params} />}
+                    />
+                    <Typography fontWeight={600} fontSize={18} sx={{ px: 3 }}>
+                      {getOperator(block, false, index)}
+                    </Typography>
+                    <Autocomplete
+                      size="small"
+                      disablePortal
+                      options={rightNameOptions}
+                      defaultValue={rightName}
+                      onChange={(_, newValue) => {
+                        if (newValue)
+                          handleAutocompleteChange(block, newValue, false, false, index);
+                      }}
+                      sx={{ width: 300 }}
+                      renderInput={(params) => <TextField {...params} />}
+                    />
+                  </Box>
+                  {count > 1 && index !== count - 1 ? (
+                    <Typography sx={{ fontWeight: 'bold' }}>{getOperator(block, true)}</Typography>
+                  ) : (
+                    <>
+                      {results[block.id] &&
+                        results[block.id].map((result, idx) => {
+                          return (
+                            <Typography key={idx} m={4}>
+                              {Object.keys(result).map((key) => {
+                                let combinedLeftOptions: string[] = variables.includes(String(key))
+                                  ? variables
+                                  : [...variables, String(key)];
+                                let combinedRightOptions: string[] = variables.includes(
+                                  String(result[key]),
+                                )
+                                  ? variables
+                                  : [...variables, String(result[key])];
+                                return (
+                                  <div key={key} style={{ display: 'flex', flexDirection: 'row' }}>
+                                    <Autocomplete
+                                      defaultValue={String(key)}
+                                      size="small"
+                                      options={combinedLeftOptions}
+                                      renderInput={(params) => (
+                                        <TextField {...params} value={params} />
+                                      )}
+                                      sx={{ width: 200, m: 2 }}
+                                      onChange={(_, newValue) =>
+                                        handleAutocompleteChange(
+                                          block,
+                                          newValue || '',
+                                          true,
+                                          true,
+                                          idx,
+                                        )
+                                      }
+                                    />{' '}
+                                    <Typography sx={{ margin: 2 }}>=</Typography>{' '}
+                                    <Autocomplete
+                                      defaultValue={String(result[key])}
+                                      size="small"
+                                      sx={{ width: 200, m: 2 }}
+                                      options={combinedRightOptions}
+                                      renderInput={(params) => (
+                                        <TextField {...params} value={params} />
+                                      )}
+                                      onChange={(_, newValue) =>
+                                        handleAutocompleteChange(
+                                          block,
+                                          newValue || '',
+                                          false,
+                                          true,
+                                          idx,
+                                        )
+                                      }
+                                    />
+                                  </div>
+                                );
+                              })}
+                            </Typography>
+                          );
+                        })}
+                      <Divider sx={{ my: 2 }} />
+                    </>
+                  )}
                 </Box>
-                {count > 1 && index !== count - 1 ? (
-                  <Typography sx={{ fontWeight: 'bold' }}>
-                    {getBooleanOperator(block, index)}
-                  </Typography>
-                ) : (
-                  <>
-                    {results[block.id] &&
-                      results[block.id].map((result, idx) => (
-                        <Typography key={idx} m={4}>
-                          {Object.keys(result).map((key) => (
-                            <div key={key} style={{ display: 'flex', flexDirection: 'row' }}>
-                              <Autocomplete
-                                defaultValue={key}
-                                size="small"
-                                options={variables}
-                                renderInput={(params) => <TextField {...params} />}
-                                sx={{ width: 200, m: 2 }}
-                              />{' '}
-                              <Typography sx={{ margin: 2 }}>=</Typography>{' '}
-                              <TextField value={result[key]} size="small" sx={{ margin: 2 }} />
-                            </div>
-                          ))}
-                        </Typography>
-                      ))}
-                    <Divider sx={{ my: 2 }} />
-                  </>
-                )}
-              </Box>
-            ))}
+              );
+            })}
           </Box>
         );
       })}

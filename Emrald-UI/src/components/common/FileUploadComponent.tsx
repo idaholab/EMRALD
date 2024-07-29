@@ -22,13 +22,15 @@ interface FileUploadComponentProps {
   disabled?: boolean;
   setFile: (value: File | null) => void;
   clearFile?: () => void;
+  fileName?: string;
 }
 
 const FileUploadComponent: React.FC<FileUploadComponentProps> = ({
   label,
   disabled,
+  fileName,
   setFile,
-  clearFile
+  clearFile,
 }) => {
   const [uploadedContent, setUploadedContent] = React.useState<File | null>();
   const inputRef = useRef<HTMLInputElement | null>(null);
@@ -61,29 +63,25 @@ const FileUploadComponent: React.FC<FileUploadComponentProps> = ({
         startIcon={<FileUploadIcon />}
       >
         {label}
-        <VisuallyHiddenInput
-          ref={inputRef}
-          type="file"
-          onChange={handleFileChange}
-        />
+        <VisuallyHiddenInput ref={inputRef} type="file" onChange={handleFileChange} />
       </Button>
+
+      <Typography sx={{ ml: 3, fontSize: 18 }}>
+        {uploadedContent?.name || fileName || ''}
+      </Typography>
+
       {uploadedContent && (
-        <Typography sx={{ ml: 3, fontSize: 18 }}>{uploadedContent.name}</Typography>
+        <IconButton
+          aria-label="close"
+          onClick={handleClear}
+          sx={{
+            color: (theme) => theme.palette.grey[500],
+            ml: 6,
+          }}
+        >
+          <CloseIcon />
+        </IconButton>
       )}
-      {
-        uploadedContent && (
-          <IconButton
-            aria-label="close"
-            onClick={handleClear}
-            sx={{
-              color: (theme) => theme.palette.grey[500],
-              ml: 6,
-            }}
-          >
-            <CloseIcon />
-          </IconButton>
-        )
-      }
     </Box>
   );
 };

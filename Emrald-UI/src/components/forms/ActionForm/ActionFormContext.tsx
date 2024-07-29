@@ -1,4 +1,11 @@
-import { ChangeEvent, createContext, PropsWithChildren, useContext, useState } from 'react';
+import {
+  ChangeEvent,
+  createContext,
+  PropsWithChildren,
+  useContext,
+  useEffect,
+  useState,
+} from 'react';
 import { Action, NewState } from '../../../types/Action';
 import { useWindowContext } from '../../../contexts/WindowContext';
 import { emptyAction, useActionContext } from '../../../contexts/ActionContext';
@@ -44,6 +51,8 @@ interface ActionFormContextType {
   hasError: boolean;
   actionTypeOptions: { value: string; label: string }[];
   raType: string;
+  reqPropsFilled: boolean;
+  setReqPropsFilled: React.Dispatch<React.SetStateAction<boolean>>;
   setName: React.Dispatch<React.SetStateAction<string>>;
   setDesc: React.Dispatch<React.SetStateAction<string>>;
   setActType: React.Dispatch<React.SetStateAction<ActionType>>;
@@ -124,6 +133,7 @@ const ActionFormContextProvider: React.FC<PropsWithChildren> = ({ children }) =>
   const [formData, setFormData] = useState<any>();
   const [hasError, setHasError] = useState(false);
   const [raType, setRaType] = useState('');
+  const [reqPropsFilled, setReqPropsFilled] = useState<boolean>(false);
 
   const actionTypeOptions = [
     { value: 'atTransition', label: 'Transition' },
@@ -131,6 +141,10 @@ const ActionFormContextProvider: React.FC<PropsWithChildren> = ({ children }) =>
     { value: 'at3DSimMsg', label: 'Ext. Sim Message' },
     { value: 'atRunExtApp', label: 'Run Application' },
   ];
+
+  useEffect(() => {
+    setReqPropsFilled(!!name && !!actType);
+  }, [name, actType]);
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setMutuallyExclusive(event.target.checked);
@@ -407,6 +421,8 @@ const ActionFormContextProvider: React.FC<PropsWithChildren> = ({ children }) =>
         hasError,
         actionTypeOptions,
         raType,
+        reqPropsFilled,
+        setReqPropsFilled,
         reset,
         setName,
         setDesc,

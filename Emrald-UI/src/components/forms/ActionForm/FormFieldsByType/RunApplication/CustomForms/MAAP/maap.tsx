@@ -6,6 +6,7 @@ import { Parameters, Initiators, InputBlocks, Outputs } from './FormFieldsByType
 import { parse as InputParse } from './Parser/maap-inp-parser.ts';
 import { parse as parameterParser } from './Parser/maap-par-parser.ts';
 import { v4 as uuid } from 'uuid';
+import { useActionFormContext } from '../../../../ActionFormContext.tsx';
 
 export interface ParameterOG {
   location: any;
@@ -88,20 +89,28 @@ const MAAP = () => {
   const {
     formData,
     isValid,
+    parameterPath,
+    inputPath,
+    exePath,
+    setExePath,
+    setInputPath,
     setFormData,
     ReturnPreCode,
     ReturnPostCode,
     ReturnUsedVariables,
     ReturnExePath,
+    setParameterPath,
   } = useCustomForm();
-
-  const [exePath, setExePath] = useState('');
+  const { setReqPropsFilled } = useActionFormContext();
   const [parameterFile, setParameterFile] = useState<File | null>();
-  const [parameterPath, setParameterPath] = useState('');
+
   const [inputFile, setInputFile] = useState<File | null>();
-  const [inputPath, setInputPath] = useState('');
+
   const [currentTab, setCurrentTab] = React.useState(0);
-  const [count, setCount] = useState<{ [key: string]: number }>({});
+
+  useEffect(() => {
+    setReqPropsFilled(!!exePath && !!parameterPath && !!inputPath);
+  }, [exePath, parameterPath, inputPath]);
 
   const handleTabChange = (_event: React.SyntheticEvent, tabValue: number) => {
     setCurrentTab(tabValue);
@@ -142,6 +151,10 @@ const MAAP = () => {
 
   useEffect(() => {
     if (parameterFile) {
+      const parameterFileName = parameterFile.name;
+      if (!parameterPath) {
+        setParameterPath(parameterFileName);
+      }
       const possibleInitiators: Initiator[] = [];
       const allData: any[] = [];
       parameterFile.text().then((lineData) => {
@@ -165,6 +178,7 @@ const MAAP = () => {
       setFormData((prevFormData: any) => ({
         ...prevFormData,
         possibleInitiators,
+        parameterFileName,
       }));
       console.log('parameter file data: ', allData);
     }
@@ -173,8 +187,11 @@ const MAAP = () => {
   useEffect(() => {
     const handleInputFileChange = async () => {
       if (inputFile) {
+        const inputFileName = inputFile.name;
+        if (!inputPath) {
+          setInputPath(inputFileName);
+        }
         const fileString = await inputFile.text();
-
         try {
           const data = InputParse(fileString, {
             locations: true,
@@ -246,6 +263,7 @@ const MAAP = () => {
             docComments,
             inputBlocksOG: inputBlocks, // storing original input blocks without any added properties just in case
             inputBlocks: newInputBlocks,
+            inputFileName,
           }));
         } catch (err) {
           console.log('Error parsing file:', err);
@@ -261,7 +279,11 @@ const MAAP = () => {
         <Box display={'flex'} flexDirection={'column'}>
           <TextFieldComponent value={exePath} label="Executable Path" setValue={setExePath} />
 
-          <FileUploadComponent label="Parameter File" setFile={setParameterFile} />
+          <FileUploadComponent
+            label="Parameter File"
+            setFile={setParameterFile}
+            fileName={formData.parameterFileName}
+          />
 
           <TextFieldComponent
             value={parameterPath}
@@ -269,7 +291,11 @@ const MAAP = () => {
             setValue={setParameterPath}
           />
 
-          <FileUploadComponent label="Input File" setFile={setInputFile} />
+          <FileUploadComponent
+            label="Input File"
+            setFile={setInputFile}
+            fileName={formData.inputFileName}
+          />
 
           <TextFieldComponent value={inputPath} label="Input File Path" setValue={setInputPath} />
 
