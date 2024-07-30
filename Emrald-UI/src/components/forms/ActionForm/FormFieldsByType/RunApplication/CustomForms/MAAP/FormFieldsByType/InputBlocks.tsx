@@ -163,11 +163,11 @@ const InputBlocks = () => {
               const leftName = leftExpressionNames[blockInd][index];
               const rightName = rightExpressionNames[blockInd][index];
               const leftNameOptions = variables.includes(leftName)
-                ? variables
-                : [...variables, leftName];
+                ? [leftName, ...variables.filter((v) => v !== leftName)]
+                : [leftName, ...variables];
               const rightNameOptions = variables.includes(rightName)
-                ? variables
-                : [...variables, rightName];
+                ? [rightName, ...variables.filter((v) => v !== rightName)]
+                : [rightName, ...variables];
               return (
                 <Box key={index}>
                   <Box sx={{ display: 'flex', alignItems: 'center' }}>
@@ -184,6 +184,22 @@ const InputBlocks = () => {
                       }}
                       sx={{ width: 300 }}
                       renderInput={(params) => <TextField {...params} />}
+                      renderOption={(props, option) => (
+                        <>
+                          {option === leftName ? (
+                            <>
+                              <Box component="li" {...props}>
+                                {option}
+                              </Box>
+                              <Divider />
+                            </>
+                          ) : (
+                            <Box component="li" {...props}>
+                              {option}
+                            </Box>
+                          )}
+                        </>
+                      )}
                     />
                     <Typography fontWeight={600} fontSize={18} sx={{ px: 3 }}>
                       {getOperator(block, false, index)}
@@ -199,6 +215,22 @@ const InputBlocks = () => {
                       }}
                       sx={{ width: 300 }}
                       renderInput={(params) => <TextField {...params} />}
+                      renderOption={(props, option) => (
+                        <>
+                          {option === rightName ? (
+                            <>
+                              <Box component="li" {...props}>
+                                {option}
+                              </Box>
+                              <Divider />
+                            </>
+                          ) : (
+                            <Box component="li" {...props}>
+                              {option}
+                            </Box>
+                          )}
+                        </>
+                      )}
                     />
                   </Box>
                   {count > 1 && index !== count - 1 ? (
@@ -211,13 +243,16 @@ const InputBlocks = () => {
                             <Typography key={idx} m={4}>
                               {Object.keys(result).map((key) => {
                                 let combinedLeftOptions: string[] = variables.includes(String(key))
-                                  ? variables
-                                  : [...variables, String(key)];
+                                  ? [String(key), ...variables.filter((v) => v !== String(key))]
+                                  : [String(key), ...variables];
                                 let combinedRightOptions: string[] = variables.includes(
                                   String(result[key]),
                                 )
-                                  ? variables
-                                  : [...variables, String(result[key])];
+                                  ? [
+                                      String(result[key]),
+                                      ...variables.filter((v) => v !== String(result[key])),
+                                    ]
+                                  : [String(result[key]), ...variables];
                                 return (
                                   <div key={key} style={{ display: 'flex', flexDirection: 'row' }}>
                                     <Autocomplete
@@ -237,8 +272,26 @@ const InputBlocks = () => {
                                           idx,
                                         )
                                       }
+                                      renderOption={(props, option) => (
+                                        <>
+                                          {option === String(key) ? (
+                                            <>
+                                              <Box component="li" {...props}>
+                                                {option}
+                                              </Box>
+                                              <Divider />
+                                            </>
+                                          ) : (
+                                            <Box component="li" {...props}>
+                                              {option}
+                                            </Box>
+                                          )}
+                                        </>
+                                      )}
                                     />{' '}
-                                    <Typography sx={{ margin: 2 }}>=</Typography>{' '}
+                                    <Typography sx={{ margin: 3, fontWeight: 'bold' }}>
+                                      =
+                                    </Typography>{' '}
                                     <Autocomplete
                                       defaultValue={String(result[key])}
                                       size="small"
@@ -256,6 +309,22 @@ const InputBlocks = () => {
                                           idx,
                                         )
                                       }
+                                      renderOption={(props, option) => (
+                                        <>
+                                          {option === String(result[key]) ? (
+                                            <>
+                                              <Box component="li" {...props}>
+                                                {option}
+                                              </Box>
+                                              <Divider />
+                                            </>
+                                          ) : (
+                                            <Box component="li" {...props}>
+                                              {option}
+                                            </Box>
+                                          )}
+                                        </>
+                                      )}
                                     />
                                   </div>
                                 );

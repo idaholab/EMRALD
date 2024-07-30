@@ -153,7 +153,12 @@ const MAAP = () => {
     if (parameterFile) {
       const parameterFileName = parameterFile.name;
       if (!parameterPath) {
-        setParameterPath(parameterFileName);
+        setParameterPath('./' + parameterFileName);
+      } else {
+        let tempPath = parameterPath;
+        let sections = tempPath.split('/');
+        sections[sections.length - 1] = parameterFileName;
+        setParameterPath(sections.join('/'));
       }
       const possibleInitiators: Initiator[] = [];
       const allData: any[] = [];
@@ -277,7 +282,7 @@ const MAAP = () => {
     <>
       {isValid ? (
         <Box display={'flex'} flexDirection={'column'}>
-          <TextFieldComponent value={exePath} label="Executable Path" setValue={setExePath} />
+          <TextFieldComponent value={exePath} label="MAAP Executable Path" setValue={setExePath} />
 
           <FileUploadComponent
             label="Parameter File"
