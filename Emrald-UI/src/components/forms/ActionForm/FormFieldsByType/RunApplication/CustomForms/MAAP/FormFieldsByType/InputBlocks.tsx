@@ -4,14 +4,45 @@ import { useCustomForm } from '../../useCustomForm';
 import { InputBlock, InputResultValue, Target, Test, Value } from '../maap';
 import { appData } from '../../../../../../../../hooks/useAppData';
 
+/** goes through the test portion of a conditional block and returns an array of each name in the block test */
+export const getAllItems = (block: InputBlock, returnType = 'items'): any[] => {
+  let allItems = [];
+  let operators = [];
+  let iterator = block.test;
+  while (isTest(iterator as Test)) {
+    allItems.push(iterator.value.left);
+    operators.push(iterator.value.op);
+    if (!isTest(iterator.value.right as Test)) {
+      allItems.push(iterator.value.right);
+      break;
+    } else {
+      iterator = iterator.value.right as Test;
+    }
+  }
+  return returnType === 'items' ? allItems : operators;
+};
+
+export const isTest = (test: Test): boolean => {
+  return !!test?.value?.left && !!test?.value?.right;
+};
+
+export const returnInputBlockItemNameInTest = (item: any): string => {
+  if ((item as Value).type === 'call_expression') {
+    const value = (item.value as Value).value;
+    const args = (item as Target).arguments;
+    return args ? `${value}(${String(args[0].value)})` : String(value);
+  }
+
+  return String(item.value) || '';
+};
+
 const InputBlocks = () => {
   const [inputBlocks, setInputBlocks] = useState<InputBlock[]>([]);
   const [numBooleanExpressions, setNumBooleanExpressions] = useState<{ [key: string]: number }>({});
-  const [results, setResults] = useState<{ [key: string]: { [key: string]: string }[] }>({});
   const [leftExpressionNames, setLeftExpressionNames] = useState<string[][]>([]);
   const [rightExpressionNames, setRightExpressionNames] = useState<string[][]>([]);
   const [operators, setOperators] = useState<{ [key: string]: string[] }>({});
-  const { formData, setFormData } = useCustomForm();
+  const { formData, results, getResults, setFormData } = useCustomForm();
   const variables = appData.value.VariableList.map(({ name }) => name);
 
   useEffect(() => {
@@ -35,59 +66,14 @@ const InputBlocks = () => {
       }
       let blockOperators = getAllItems(block, 'operators');
       setOperators((prev) => ({ ...prev, [block.id]: blockOperators }));
-      let items = results[block.id] || [];
-      block.value.forEach((result: InputResultValue) => {
-        if (result.type === 'comment') {
-          // handle comments here
-        } else {
-          if (result.target && result.target.type) {
-            const name =
-              result.target.type === 'identifier'
-                ? result.target.value
-                : (result.target.value as Value).value;
-            const args = result.target.arguments ? result.target.arguments[0].value : '';
-            const fullName = args ? `${name} (${String(args)})` : String(name);
-            items.push({ [fullName]: getResultValue(result) });
-          }
-        }
-      });
-      setResults((prev) => ({ ...prev, [block.id]: items }));
+      getResults(block);
     });
     setInputBlocks(formData?.inputBlocks || []);
   }, []);
 
-  const getResultValue = (result: InputResultValue): string => {
-    if ((result.value as Value).type === 'expression') {
-      return `${(result.value as Test).value.left.value} ${(result.value as Test).value.op} ${
-        (result.value as Test).value.right.value
-      }`;
-    }
-    return result.value.value as string;
-  };
-
   const getNumBooleanCount = (block: InputBlock): number => {
     const allItems = getAllItems(block);
     return allItems.length / 2;
-  };
-
-  const isTest = (test: Test): boolean => {
-    return !!test?.value?.left && !!test?.value?.right;
-  };
-  const getAllItems = (block: InputBlock, returnType = 'items'): any[] => {
-    let allItems = [];
-    let operators = [];
-    let iterator = block.test;
-    while (isTest(iterator as Test)) {
-      allItems.push(iterator.value.left);
-      operators.push(iterator.value.op);
-      if (!isTest(iterator.value.right as Test)) {
-        allItems.push(iterator.value.right);
-        break;
-      } else {
-        iterator = iterator.value.right as Test;
-      }
-    }
-    return returnType === 'items' ? allItems : operators;
   };
 
   const getLeftOrRightName = (block: InputBlock, isLeft: boolean, count = 0): string => {
@@ -95,13 +81,7 @@ const InputBlocks = () => {
     let allItems = getAllItems(block);
     const item = allItems[targetIndex];
 
-    if ((item as Value).type === 'call_expression') {
-      const value = (item.value as Value).value;
-      const args = (item as Target).arguments;
-      return args ? `${value} (${String(args[0].value)})` : String(value);
-    }
-
-    return String(item.value) || '';
+    return returnInputBlockItemNameInTest(item);
   };
 
   const handleAutocompleteChange = (
@@ -117,7 +97,13 @@ const InputBlocks = () => {
 
         if (isProperty) {
           let properties = updatedBlock.value.filter((item) => item.type !== 'comment');
-          properties[propertyIndex].value.value = newValue;
+          let property = properties[propertyIndex];
+          if (isLeft) {
+            (property.target.value as Value).value = newValue;
+            if (property.target.arguments) property.target.arguments = undefined;
+          } else {
+            property.value.value = newValue;
+          }
         } else {
           // handle left or right side property change here based on propertyIndex
           let current: any = updatedBlock.test.value;
@@ -237,101 +223,86 @@ const InputBlocks = () => {
                     <Typography sx={{ fontWeight: 'bold' }}>{getOperator(block, true)}</Typography>
                   ) : (
                     <>
-                      {results[block.id] &&
-                        results[block.id].map((result, idx) => {
-                          return (
-                            <Typography key={idx} m={4}>
-                              {Object.keys(result).map((key) => {
-                                let combinedLeftOptions: string[] = variables.includes(String(key))
-                                  ? [String(key), ...variables.filter((v) => v !== String(key))]
-                                  : [String(key), ...variables];
-                                let combinedRightOptions: string[] = variables.includes(
-                                  String(result[key]),
-                                )
-                                  ? [
-                                      String(result[key]),
-                                      ...variables.filter((v) => v !== String(result[key])),
-                                    ]
-                                  : [String(result[key]), ...variables];
-                                return (
-                                  <div key={key} style={{ display: 'flex', flexDirection: 'row' }}>
-                                    <Autocomplete
-                                      defaultValue={String(key)}
-                                      size="small"
-                                      options={combinedLeftOptions}
-                                      renderInput={(params) => (
-                                        <TextField {...params} value={params} />
-                                      )}
-                                      sx={{ width: 200, m: 2 }}
-                                      onChange={(_, newValue) =>
-                                        handleAutocompleteChange(
-                                          block,
-                                          newValue || '',
-                                          true,
-                                          true,
-                                          idx,
-                                        )
-                                      }
-                                      renderOption={(props, option) => (
+                      <Box sx={{ backgroundColor: '#f5f5f5', m: 3 }}>
+                        {results[block.id] &&
+                          Array.from(results[block.id].entries()).map(([key, value], idx) => (
+                            <Box key={idx} m={4}>
+                              <div key={key} style={{ display: 'flex', flexDirection: 'row' }}>
+                                <Autocomplete
+                                  defaultValue={String(key)}
+                                  size="small"
+                                  options={
+                                    variables.includes(String(key))
+                                      ? [String(key), ...variables.filter((v) => v !== String(key))]
+                                      : [String(key), ...variables]
+                                  }
+                                  renderInput={(params) => <TextField {...params} value={params} />}
+                                  sx={{ width: 200, m: 2 }}
+                                  onChange={(_, newValue) =>
+                                    handleAutocompleteChange(block, newValue || '', true, true, idx)
+                                  }
+                                  renderOption={(props, option) => (
+                                    <>
+                                      {option === String(key) ? (
                                         <>
-                                          {option === String(key) ? (
-                                            <>
-                                              <Box component="li" {...props}>
-                                                {option}
-                                              </Box>
-                                              <Divider />
-                                            </>
-                                          ) : (
-                                            <Box component="li" {...props}>
-                                              {option}
-                                            </Box>
-                                          )}
+                                          <Box component="li" {...props}>
+                                            {option}
+                                          </Box>
+                                          <Divider />
                                         </>
+                                      ) : (
+                                        <Box component="li" {...props}>
+                                          {option}
+                                        </Box>
                                       )}
-                                    />{' '}
-                                    <Typography sx={{ margin: 3, fontWeight: 'bold' }}>
-                                      =
-                                    </Typography>{' '}
-                                    <Autocomplete
-                                      defaultValue={String(result[key])}
-                                      size="small"
-                                      sx={{ width: 200, m: 2 }}
-                                      options={combinedRightOptions}
-                                      renderInput={(params) => (
-                                        <TextField {...params} value={params} />
-                                      )}
-                                      onChange={(_, newValue) =>
-                                        handleAutocompleteChange(
-                                          block,
-                                          newValue || '',
-                                          false,
-                                          true,
-                                          idx,
-                                        )
-                                      }
-                                      renderOption={(props, option) => (
+                                    </>
+                                  )}
+                                />{' '}
+                                <Typography sx={{ margin: 3, fontWeight: 'bold' }}>=</Typography>{' '}
+                                <Autocomplete
+                                  defaultValue={String(value)}
+                                  size="small"
+                                  sx={{ width: 200, m: 2 }}
+                                  options={
+                                    variables.includes(String(value))
+                                      ? [
+                                          String(value),
+                                          ...variables.filter((v) => v !== String(value)),
+                                        ]
+                                      : [String(value), ...variables]
+                                  }
+                                  renderInput={(params) => <TextField {...params} value={params} />}
+                                  onChange={(_, newValue) =>
+                                    handleAutocompleteChange(
+                                      block,
+                                      newValue || '',
+                                      false,
+                                      true,
+                                      idx,
+                                    )
+                                  }
+                                  renderOption={(props, option) => (
+                                    <>
+                                      {option === String(value) ? (
                                         <>
-                                          {option === String(result[key]) ? (
-                                            <>
-                                              <Box component="li" {...props}>
-                                                {option}
-                                              </Box>
-                                              <Divider />
-                                            </>
-                                          ) : (
-                                            <Box component="li" {...props}>
-                                              {option}
-                                            </Box>
-                                          )}
+                                          <Box component="li" {...props}>
+                                            {option}
+                                          </Box>
+                                          <Divider />
                                         </>
+                                      ) : (
+                                        <Box component="li" {...props}>
+                                          {option}
+                                        </Box>
                                       )}
-                                    />
-                                  </div>
-                                );
-                              })}
-                            </Typography>
-                          );
-                        })}
+                                    </>
+                                  )}
+                                />
+                              </div>
+                            </Box>
+                          ))}
+                      </Box>
+
                       <Divider sx={{ my: 2 }} />
                     </>
                   )}

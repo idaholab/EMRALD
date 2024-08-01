@@ -14,6 +14,17 @@ import { SelectComponent } from '../../../../../../../common';
 import { appData } from '../../../../../../../../hooks/useAppData';
 import { useActionFormContext } from '../../../../../ActionFormContext';
 
+export const getParameterName = (row: Parameter) => {
+  let name =
+    row.target.type === 'call_expression'
+      ? ((row.target.value as Value).value as string)
+      : (row.target.value as string);
+  if (row.target?.arguments && row.target.arguments.length > 0) {
+    name = name + `(${String(row.target.arguments[0].value)})`;
+  }
+  return name;
+};
+
 const Parameters = () => {
   const { formData, setFormData } = useActionFormContext();
   const [useVariable, setUseVariable] = useState<{ [key: string]: boolean }>({});
@@ -57,16 +68,7 @@ const Parameters = () => {
     setParameters(updatedParameters);
     setFormData((prevFormData: any) => ({ ...prevFormData, parameters: updatedParameters }));
   };
-  const getParameterName = (row: Parameter) => {
-    let name =
-      row.target.type === 'call_expression'
-        ? ((row.target.value as Value).value as string)
-        : (row.target.value as string);
-    if (row.target?.arguments && row.target.arguments.length > 0) {
-      name = name + ` (${String(row.target.arguments[0].value)})`;
-    }
-    return name;
-  };
+
   return (
     <Table sx={{ minWidth: 650 }} size="small">
       <TableHead>

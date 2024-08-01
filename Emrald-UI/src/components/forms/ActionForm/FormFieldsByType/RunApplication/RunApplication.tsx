@@ -17,6 +17,7 @@ import { startCase } from 'lodash';
 import React from 'react';
 import SelectComponent from '../../../../common/SelectComponent';
 import { TextFieldComponent } from '../../../../common';
+import { useCustomForm } from './CustomForms/useCustomForm';
 
 // Define the type for the custom form components
 type CustomFormComponents = {
@@ -41,6 +42,7 @@ const RunApplication = () => {
     setRaType,
     setFormData,
   } = useActionFormContext();
+  const { ReturnPreCode } = useCustomForm();
   const { variableList } = useVariableContext();
   const [applicationType, setApplicationType] = useState(raType || 'custom');
   const [customFormType, setCustomFormType] = useState<string>(formData?.caType || '');
@@ -65,6 +67,10 @@ const RunApplication = () => {
     }
   }, [customFormType]);
 
+  useEffect(() => {
+    ReturnPreCode();
+  });
+
   const handleSetCustomFormType = (value: string) => {
     setCustomFormType(value);
     setFormData((prev: any) => ({ ...prev, caType: value }));
@@ -73,6 +79,7 @@ const RunApplication = () => {
   const handleApplicationTypeChange = (value: string) => {
     setApplicationType(value);
     setRaType(value);
+    ReturnPreCode();
   };
 
   return (

@@ -8,12 +8,6 @@ import { parse as parameterParser } from './Parser/maap-par-parser.ts';
 import { v4 as uuid } from 'uuid';
 import { useActionFormContext } from '../../../../ActionFormContext.tsx';
 
-export interface ParameterOG {
-  location: any;
-  target: Target;
-  value: Value;
-  type: string;
-}
 export interface Target {
   location: any;
   value: Value | string;
@@ -48,10 +42,6 @@ export interface Parameter {
   type: string;
   variable?: string;
 }
-interface InputBlockOG {
-  test: Test;
-  value: InputResultValue[];
-}
 export interface InputBlock {
   test: Test;
   value: InputResultValue[];
@@ -70,6 +60,11 @@ export interface InputResultValue {
   target: Target;
   type: string;
   value: Value | Test;
+}
+
+export interface Alias {
+  target: Target;
+  value: Value;
 }
 
 export const getInitiatorName = (row: Initiator): string | number => {
@@ -116,10 +111,6 @@ const MAAP = () => {
     setCurrentTab(tabValue);
   };
 
-  const createPreProcessCode = () => {
-    return `string inpLoc = @"${inputPath}";`;
-  };
-
   useEffect(() => {
     setParameterPath(formData?.parameterPath || '');
     setExePath(formData?.exePath || '');
@@ -127,7 +118,7 @@ const MAAP = () => {
   }, []);
 
   useEffect(() => {
-    ReturnPreCode(createPreProcessCode());
+    ReturnPreCode();
     ReturnExePath(exePath);
     ReturnPostCode(`string inpLoc = @"${inputPath}";
     if (!Path.IsPathRooted(inpLoc))
@@ -194,7 +185,12 @@ const MAAP = () => {
       if (inputFile) {
         const inputFileName = inputFile.name;
         if (!inputPath) {
-          setInputPath(inputFileName);
+          setInputPath('./' + inputFileName);
+        } else {
+          let tempPath = inputPath;
+          let sections = tempPath.split('/');
+          sections[sections.length - 1] = inputFileName;
+          setInputPath(sections.join('/'));
         }
         const fileString = await inputFile.text();
         try {
@@ -210,6 +206,9 @@ const MAAP = () => {
           let parameters: any = [];
           let initiators: any = [];
           let inputBlocks: any = [];
+          let title: string;
+          let fileRefs: any = [];
+          let aliasList: any[] = [];
 
           data.value.forEach((sourceElement: any, i: any) => {
             if (sourceElement.type === 'comment') {
@@ -219,6 +218,19 @@ const MAAP = () => {
             }
 
             switch (sourceElement.type) {
+              case 'title':
+                title = sourceElement.value;
+                break;
+              case 'file':
+                if (sourceElement.fileType) {
+                  fileRefs.push(sourceElement.value);
+                }
+                break;
+              case 'alias':
+                sourceElement.value.forEach((element: any) => {
+                  aliasList.push(element);
+                });
+                break;
               case 'block':
                 if (sourceElement.blockType === 'PARAMETER CHANGE') {
                   sourceElement.value.forEach((innerElement: any) => {
@@ -250,25 +262,26 @@ const MAAP = () => {
 
           // Set state variables or perform other actions with comments, sections, and parameters
           // setComments(comments);
-          const newParameters: Parameter[] = parameters.map((param: ParameterOG) => ({
+          const newParameters: Parameter[] = parameters.map((param: Parameter) => ({
             ...param,
             id: uuid(),
             useVariable: false,
           }));
-          const newInputBlocks: InputBlock[] = inputBlocks.map((block: InputBlockOG) => ({
+          const newInputBlocks: InputBlock[] = inputBlocks.map((block: InputBlock) => ({
             ...block,
             id: uuid(),
           }));
           setFormData((prevFormData: any) => ({
             ...prevFormData,
-            parametersOG: parameters, // storing original parameters without any added properties just in case
             parameters: newParameters,
             initiators,
             comments,
             docComments,
-            inputBlocksOG: inputBlocks, // storing original input blocks without any added properties just in case
             inputBlocks: newInputBlocks,
             inputFileName,
+            title,
+            fileRefs,
+            aliasList,
           }));
         } catch (err) {
           console.log('Error parsing file:', err);

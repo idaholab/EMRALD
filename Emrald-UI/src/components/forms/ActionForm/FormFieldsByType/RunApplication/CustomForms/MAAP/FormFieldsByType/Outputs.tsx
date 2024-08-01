@@ -10,12 +10,30 @@ import {
 } from '@mui/material';
 import { useVariableContext } from '../../../../../../../../contexts/VariableContext';
 import DeleteIcon from '@mui/icons-material/Delete';
+import { useEffect, useState } from 'react';
+import { useCustomForm } from '../../useCustomForm';
 
 const Outputs = () => {
+  const [docLinkVariable, setDocLinkVariable] = useState<string>('');
+  const [output, setOutput] = useState<string>('');
   const { variableList } = useVariableContext();
+  const { formData, setFormData } = useCustomForm();
   const docLinkVariables = variableList.value
-    .filter(({ varScope }) => varScope === 'gtDocLink')
+    .filter(({ varScope, docType }) => varScope === 'gtDocLink' && docType === 'dtXML')
     .map(({ name }) => name);
+
+  useEffect(() => {
+    setDocLinkVariable(formData.docLinkVariable || '');
+    setOutput(formData.output || '');
+  }, []);
+
+  useEffect(() => {
+    setFormData((prevFormData: any) => ({
+      ...prevFormData,
+      docLinkVariable: docLinkVariable,
+      output: output,
+    }));
+  }, [docLinkVariable, output]);
 
   return (
     <Box>
@@ -26,13 +44,13 @@ const Outputs = () => {
       <Box>
         <Box display={'flex'} alignItems={'center'}>
           <FormControl sx={{ m: 1, minWidth: 200 }} size="small">
-            <InputLabel id="doc-link-variables-label">
-              Doc Link Variables
-            </InputLabel>
+            <InputLabel id="doc-link-variables-label">Doc Link Variables</InputLabel>
             <Select
               labelId="doc-link-variables-label"
               id="doc-link-variables"
               label="Doc Link Variables"
+              value={docLinkVariable}
+              onChange={(event) => setDocLinkVariable(event.target.value)}
               MenuProps={{
                 PaperProps: {
                   style: {
@@ -50,10 +68,16 @@ const Outputs = () => {
           </FormControl>
           <FormControl sx={{ m: 1, minWidth: 200 }} size="small">
             <InputLabel id="output-label">Output</InputLabel>
-            <Select labelId="output-label" id="output-variables" label="Output">
+            <Select
+              labelId="output-label"
+              id="output-variables"
+              label="Output"
+              value={output}
+              onChange={(event) => setOutput(event.target.value)}
+            >
               <MenuItem value="true">Core Uncovery</MenuItem>
-              <MenuItem value="false">Vessel Failure</MenuItem> 
-              <MenuItem value="none">Containment Failure</MenuItem> 
+              <MenuItem value="false">Vessel Failure</MenuItem>
+              <MenuItem value="none">Containment Failure</MenuItem>
             </Select>
           </FormControl>
 
