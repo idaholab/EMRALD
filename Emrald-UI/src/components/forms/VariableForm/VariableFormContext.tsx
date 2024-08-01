@@ -122,7 +122,7 @@ const VariableFormContextProvider: React.FC<PropsWithChildren> = ({ children }) 
     setDesc(variableData?.desc || '');
     setType(variableData?.type || 'int');
     setVarScope(variableData?.varScope || 'gtGlobal');
-    variableData?.value && setValue(String(variableData.value));
+    variableData?.value !== undefined && setValue(String(variableData.value));
     variableData?.sim3DId && setSim3DId(variableData.sim3DId);
     variableData?.resetOnRuns && setResetOnRuns(variableData.resetOnRuns);
     variableData?.docType && setDocType(variableData.docType);
