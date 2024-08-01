@@ -13,7 +13,6 @@ import {
   Autocomplete,
   Box,
   Button,
-  FormControl,
   IconButton,
   List,
   ListItem,
@@ -215,7 +214,6 @@ const DiagramForm: React.FC<DiagramFormProps> = ({ diagramData }) => {
             desc={desc}
             setDesc={setDesc}
             handleSave={handleSave}
-            reset={reset}
             handleNameChange={handleNameChange}
             error={hasError}
             errorMessage="A Diagram with this name already exists, or this name contains special characters."

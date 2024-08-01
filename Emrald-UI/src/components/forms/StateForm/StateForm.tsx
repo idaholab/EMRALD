@@ -92,11 +92,6 @@ const StateForm: React.FC<StateFormProps> = ({ stateData }: StateFormProps) => {
       setDiagramType(diagramType);
     }
   }, []);
-  const reset = () => {
-    setDiagramType('dtSingle'); // Default value for diagramType
-    setDefaultSingleStateValue(stateData?.defaultSingleStateValue || 'Ignore'); // Default value for defaultSingleStateValue
-    setHasError(false); // Reset error to undefined
-  };
   return (
     <Box mx={3} pb={3}>
       <Typography variant="h5" my={3}>
@@ -114,7 +109,6 @@ const StateForm: React.FC<StateFormProps> = ({ stateData }: StateFormProps) => {
           setDesc={setDesc}
           error={hasError}
           errorMessage="A State with this name already exists, or the name contains an invalid character."
-          reset={reset}
           handleSave={handleSave}
           reqPropsFilled={name && stateType ? true : false}
         >
