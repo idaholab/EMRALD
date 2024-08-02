@@ -81,6 +81,7 @@ const VariableFormContextProvider: React.FC<PropsWithChildren> = ({ children }) 
   const [accrualStatesData, setAccrualStatesData] = useState<AccrualStateItem[]>();
   const { handleClose } = useWindowContext();
   const [name, setName] = useState<string>('Int_');
+  const [originalName, setOriginalName] = useState<string>();
   const [namePrefix, setNamePrefix] = useState<string>();
   const [desc, setDesc] = useState<string>('');
   const [type, setType] = useState<VariableType>('int');
@@ -114,7 +115,10 @@ const VariableFormContextProvider: React.FC<PropsWithChildren> = ({ children }) 
   const InitializeForm = (variableData?: Variable | undefined) => {
     if (variableData?.name) {
       setName(variableData.name);
-      const prefix: string = variableData.name.split('_')[0] + '_';
+      setOriginalName(variableData.name);
+      const prefix: string = variableData.name.split('_')[1]
+        ? variableData.name.split('_')[0] + '_'
+        : '';
       setNamePrefix(prefix);
     } else {
       setNamePrefix('Int_');
@@ -156,7 +160,7 @@ const VariableFormContextProvider: React.FC<PropsWithChildren> = ({ children }) 
     const updatedPrefix: string = PREFIXES[newType] || PREFIXES.default;
     setNamePrefix(updatedPrefix);
 
-    const nameWithoutPrefix: string = name ? name.split('_')[1] : '';
+    const nameWithoutPrefix: string = name.split('_')[1] ? name.split('_')[1] : name;
 
     setName(`${updatedPrefix}${nameWithoutPrefix}`);
 
@@ -166,7 +170,9 @@ const VariableFormContextProvider: React.FC<PropsWithChildren> = ({ children }) 
   const handleNameChange = (updatedName: string) => {
     const variables = appData.value.VariableList;
     const trimmedName = updatedName.trim();
-    const duplicateExists = variables.some((variable) => variable.name === trimmedName);
+    const duplicateExists = variables
+      .filter((variable) => variable.name !== originalName)
+      .some((variable) => variable.name === trimmedName);
     const hasInvalidChars = /[^a-zA-Z0-9-_ ]/.test(trimmedName);
     setHasError(duplicateExists || hasInvalidChars);
     setName(updatedName);

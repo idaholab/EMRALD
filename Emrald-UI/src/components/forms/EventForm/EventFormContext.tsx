@@ -154,6 +154,7 @@ const EventFormContextProvider: React.FC<PropsWithChildren> = ({ children }) => 
   const [extEventType, setExtEventType] = useState<ExtEventMsgType | ''>();
   const [variable, setVariable] = useState<string>();
   const [hasError, setHasError] = useState<boolean>(false);
+  const [originalName, setOriginalName] = useState<string>();
 
   const event = useSignal<Event>(emptyEvent);
 
@@ -176,6 +177,7 @@ const EventFormContextProvider: React.FC<PropsWithChildren> = ({ children }) => 
   const InitializeForm = (eventData?: Event | undefined, state?: State) => {
     if (eventData) {
       setName(eventData.name);
+      setOriginalName(eventData.name);
       setDesc(eventData.desc);
       setEvType(eventData.evType);
       eventData.code && setScriptCode(eventData.code);
@@ -336,7 +338,9 @@ const EventFormContextProvider: React.FC<PropsWithChildren> = ({ children }) => 
   const handleNameChange = (newName: string) => {
     const events = appData.value.EventList;
     const trimmedName = newName.trim();
-    const nameExists = events.some((event) => event.name === trimmedName);
+    const nameExists = events
+      .filter((event) => event.name !== originalName)
+      .some((event) => event.name === trimmedName);
     const hasInvalidChars = /[^a-zA-Z0-9-_ ]/.test(trimmedName);
     setHasError(nameExists || hasInvalidChars);
     setName(newName);

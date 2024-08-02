@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import React from 'react';
 import { useWindowContext } from '../../../contexts/WindowContext';
@@ -41,7 +40,9 @@ const StateForm: React.FC<StateFormProps> = ({ stateData }: StateFormProps) => {
 
   const handleNameChange = (newName: string) => {
     const trimmedName = newName.trim();
-    const duplicateName = statesList.value.some((node) => node.name === trimmedName);
+    const duplicateName = statesList.value
+      .filter((state) => state.name !== originalName)
+      .some((node) => node.name === trimmedName);
     const hasInvalidChars = /[^a-zA-Z0-9-_ ]/.test(trimmedName);
     setHasError(duplicateName || hasInvalidChars);
     setName(newName);

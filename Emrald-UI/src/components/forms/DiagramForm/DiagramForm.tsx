@@ -40,6 +40,7 @@ const DiagramForm: React.FC<DiagramFormProps> = ({ diagramData }) => {
   const { findTemplatesByGroupName } = useTemplateContext();
   const diagram = useSignal<Diagram>(diagramData || emptyDiagram);
   const [name, setName] = useState<string>(diagramData?.name || '');
+  const [originalName] = useState(diagramData?.name);
   const [desc, setDesc] = useState<string>(diagramData?.desc || '');
   const [diagramType, setDiagramType] = useState<DiagramType>(
     diagramData?.diagramType || 'dtSingle',
@@ -159,8 +160,10 @@ const DiagramForm: React.FC<DiagramFormProps> = ({ diagramData }) => {
     // Trim leading and trailing whitespace
     const trimmedName = newName.trim();
 
-    // Check if the name already exists
-    const nameExists = diagrams.some((node) => node.name === trimmedName);
+    // Check if the name already exists -- filtering out the original name
+    const nameExists = diagrams
+      .filter((diagram) => diagram.name !== originalName)
+      .some((node) => node.name === trimmedName);
 
     // Check for invalid characters (allowing spaces, hyphens, and underscores)
     const hasInvalidChars = /[^a-zA-Z0-9-_ ]/.test(trimmedName);
