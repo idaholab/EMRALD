@@ -169,12 +169,7 @@ const VariableFormContextProvider: React.FC<PropsWithChildren> = ({ children }) 
     const duplicateExists = variables.some((variable) => variable.name === trimmedName);
     const hasInvalidChars = /[^a-zA-Z0-9-_ ]/.test(trimmedName);
     setHasError(duplicateExists || hasInvalidChars);
-    if (namePrefix) {
-      const hasPrefix = updatedName.startsWith(namePrefix);
-
-      // Set the name with the appropriate prefix
-      setName(hasPrefix ? updatedName : `${namePrefix}${updatedName}`);
-    }
+    setName(updatedName);
   };
 
   const reset = () => {
