@@ -92,7 +92,7 @@ const VariableForm: React.FC<VariableFormProps> = ({ variableData }) => {
           reset={reset}
           handleNameChange={handleNameChange}
           error={hasError}
-          errorMessage="A variable with this name already exists, or the name contains an invalide character."
+          errorMessage="A variable with this name already exists, or the name contains an invalid character."
           reqPropsFilled={name && varScope && value !== '' ? true : false}
         >
           <FormControl variant="outlined" size="small" sx={{ minWidth: 120, width: '100%', my: 1 }}>
