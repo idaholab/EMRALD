@@ -122,7 +122,7 @@ const VariableFormContextProvider: React.FC<PropsWithChildren> = ({ children }) 
     setDesc(variableData?.desc || '');
     setType(variableData?.type || 'int');
     setVarScope(variableData?.varScope || 'gtGlobal');
-    variableData?.value && setValue(String(variableData.value));
+    variableData?.value !== undefined && setValue(String(variableData.value));
     variableData?.sim3DId && setSim3DId(variableData.sim3DId);
     variableData?.resetOnRuns && setResetOnRuns(variableData.resetOnRuns);
     variableData?.docType && setDocType(variableData.docType);
@@ -169,12 +169,7 @@ const VariableFormContextProvider: React.FC<PropsWithChildren> = ({ children }) 
     const duplicateExists = variables.some((variable) => variable.name === trimmedName);
     const hasInvalidChars = /[^a-zA-Z0-9-_ ]/.test(trimmedName);
     setHasError(duplicateExists || hasInvalidChars);
-    if (namePrefix) {
-      const hasPrefix = updatedName.startsWith(namePrefix);
-
-      // Set the name with the appropriate prefix
-      setName(hasPrefix ? updatedName : `${namePrefix}${updatedName}`);
-    }
+    setName(updatedName);
   };
 
   const reset = () => {
