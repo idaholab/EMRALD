@@ -154,9 +154,11 @@ export function useCustomForm() {
     // Get the existing Map or initialize a new one for the block.id
     let items = results[block.id] || new Map<string, string>();
 
-    block.value.forEach((result: InputResultValue) => {
+    block.value.forEach((result: InputResultValue, i: number) => {
       if (result.type === 'comment') {
         // Handle comments here if necessary
+        let previousResult = block.value[i - 1];
+        previousResult.comment = result.value as string;
       } else {
         if (result.target && result.target.type) {
           const name =
@@ -188,7 +190,7 @@ export function useCustomForm() {
         (result.value as Test).value.right.value
       }`;
     }
-    return result.value.value as string;
+    return (result.value as Value).value as string;
   };
   const getFinalStatements = () => {
     return '';

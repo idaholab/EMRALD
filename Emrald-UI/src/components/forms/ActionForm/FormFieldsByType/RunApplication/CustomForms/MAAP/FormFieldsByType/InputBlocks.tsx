@@ -102,7 +102,7 @@ const InputBlocks = () => {
             (property.target.value as Value).value = newValue;
             if (property.target.arguments) property.target.arguments = undefined;
           } else {
-            property.value.value = newValue;
+            (property.value as Value).value = newValue;
           }
         } else {
           // handle left or right side property change here based on propertyIndex
@@ -145,6 +145,7 @@ const InputBlocks = () => {
         }
         return (
           <Box key={block.id}>
+            <Typography m={2}>{formData.docComments[block.id]?.value}</Typography>
             {itemIndexes.map((index) => {
               const leftName = leftExpressionNames[blockInd][index];
               const rightName = rightExpressionNames[blockInd][index];
@@ -298,11 +299,17 @@ const InputBlocks = () => {
                                     </>
                                   )}
                                 />
+                                {block.value[idx].comment && (
+                                  <Box
+                                    sx={{ flex: '1 1 40%', display: 'flex', alignItems: 'center' }}
+                                  >
+                                    <Typography m={2}>{block.value[idx].comment}</Typography>
+                                  </Box>
+                                )}
                               </div>
                             </Box>
                           ))}
                       </Box>
-
                       <Divider sx={{ my: 2 }} />
                     </>
                   )}

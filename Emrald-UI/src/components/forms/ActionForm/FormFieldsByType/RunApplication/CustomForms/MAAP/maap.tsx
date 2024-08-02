@@ -59,7 +59,8 @@ export interface InputResultValue {
   location: any;
   target: Target;
   type: string;
-  value: Value | Test;
+  value: Value | Test | string;
+  comment?: string;
 }
 
 export interface Alias {
@@ -200,19 +201,27 @@ const MAAP = () => {
 
           console.log('input file data: ', data.value);
 
-          let docComments: any = [];
+          let docComments: { [key: string]: InputBlock } = {};
           let comments: any = {};
           let sections: any = [];
           let parameters: any = [];
           let initiators: any = [];
-          let inputBlocks: any = [];
+          let inputBlocks: InputBlock[] = [];
           let title: string;
           let fileRefs: any = [];
           let aliasList: any[] = [];
 
           data.value.forEach((sourceElement: any, i: any) => {
             if (sourceElement.type === 'comment') {
-              docComments.push(sourceElement);
+              // get following source element and see if it is a conditional block
+              let nextElement = data.value[i + 1];
+              if (nextElement && nextElement.type === 'conditional_block') {
+                if (!inputBlocks.includes(nextElement)) {
+                  nextElement.id = uuid();
+                  inputBlocks.push(nextElement);
+                }
+                docComments[nextElement.id] = sourceElement;
+              }
             } else {
               sections.push(sourceElement);
             }
@@ -253,7 +262,10 @@ const MAAP = () => {
                 }
                 break;
               case 'conditional_block':
-                inputBlocks.push(sourceElement);
+                if (!inputBlocks.includes(sourceElement)) {
+                  sourceElement.id = uuid();
+                  inputBlocks.push(sourceElement);
+                }
                 break;
               default:
                 break;
@@ -267,17 +279,13 @@ const MAAP = () => {
             id: uuid(),
             useVariable: false,
           }));
-          const newInputBlocks: InputBlock[] = inputBlocks.map((block: InputBlock) => ({
-            ...block,
-            id: uuid(),
-          }));
           setFormData((prevFormData: any) => ({
             ...prevFormData,
             parameters: newParameters,
             initiators,
             comments,
             docComments,
-            inputBlocks: newInputBlocks,
+            inputBlocks,
             inputFileName,
             title,
             fileRefs,
