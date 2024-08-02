@@ -121,6 +121,7 @@ const ActionFormContextProvider: React.FC<PropsWithChildren> = ({ children }) =>
   const [processOutputFileCode, setProcessOutputFileCode] = useState<string>('');
   const [formData, setFormData] = useState<any>();
   const [hasError, setHasError] = useState(false);
+  const [originalName, setOriginalName] = useState<string>();
 
   const actionTypeOptions = [
     { value: 'atTransition', label: 'Transition' },
@@ -135,7 +136,9 @@ const ActionFormContextProvider: React.FC<PropsWithChildren> = ({ children }) =>
 
   const handleNameChange = (newName: string) => {
     const trimmedName = newName.trim();
-    const nameExists = actionsList.value.some((node) => node.name === trimmedName); // Check for invalid characters (allowing spaces, hyphens, and underscores)
+    const nameExists = actionsList.value
+      .filter((action) => action.name !== originalName)
+      .some((node) => node.name === trimmedName); // Check for invalid characters (allowing spaces, hyphens, and underscores)
     const hasInvalidChars = /[^a-zA-Z0-9-_ ]/.test(trimmedName);
     setHasError(nameExists || hasInvalidChars);
     setName(newName);
@@ -338,6 +341,7 @@ const ActionFormContextProvider: React.FC<PropsWithChildren> = ({ children }) =>
     setActionData(actionData);
     //Main info
     setName(actionData?.name || '');
+    setOriginalName(actionData?.name);
     setDesc(actionData?.desc || '');
     setActType(actionData?.actType || 'atTransition');
     //transition items

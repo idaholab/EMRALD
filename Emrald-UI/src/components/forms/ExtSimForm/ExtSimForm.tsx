@@ -18,13 +18,16 @@ const ExtSimForm: React.FC<ExtSimFormProps> = ({ ExtSimData }) => {
   const { updateExtSim, createExtSim } = useExtSimContext();
   const ExtSim = useSignal<ExtSim>(ExtSimData || emptyExtSim);
   const [name, setName] = useState<string>(ExtSimData?.name || '');
+  const [originalName] = useState<string | undefined>(ExtSimData?.name);
   const [resourceName, setResourceName] = useState<string>(ExtSimData?.resourceName || '');
   const [hasError, setHasError] = useState<boolean>(false);
   const { extSimList } = useExtSimContext();
 
   const handleNameChange = (newName: string) => {
     const trimmedName = newName.trim();
-    const nameExists = extSimList.value.some((extSim) => extSim.name === trimmedName);
+    const nameExists = extSimList.value
+      .filter((extSim) => extSim.name !== originalName)
+      .some((extSim) => extSim.name === trimmedName);
     const hasInvalidChars = /[^a-zA-Z0-9-_ ]/.test(trimmedName);
     setHasError(nameExists || hasInvalidChars);
     setName(newName);

@@ -74,6 +74,7 @@ const LogicNodeForm: React.FC<LogicNodeFormProps> = ({
   >();
   const [gateTypeValue, setGateTypeValue] = useState<GateType>(gateType || 'gtAnd');
   const [nameValue, setNameValue] = useState<string>(editing ? logicNode.value.name : '');
+  const [originalName] = useState<string | undefined>(logicNode.value.name);
   const [descValue, setDescValue] = useState<string>(editing ? logicNode.value.desc : '');
   const [error, setError] = useState<boolean>(false);
   const [isRoot, setIsRoot] = useState<boolean>(logicNodeData?.isRoot || false);
@@ -96,7 +97,9 @@ const LogicNodeForm: React.FC<LogicNodeFormProps> = ({
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newName = e.target.value;
     const trimmedName = newName.trim();
-    const nameExists = logicNodeList.value.some((node) => node.name === trimmedName);
+    const nameExists = logicNodeList.value
+      .filter((node) => node.name !== originalName)
+      .some((node) => node.name === trimmedName);
     const hasInvalidChars = /[^a-zA-Z0-9-_ ]/.test(trimmedName);
     setError(nameExists || hasInvalidChars);
 

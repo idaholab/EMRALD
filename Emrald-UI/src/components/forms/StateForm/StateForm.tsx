@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import React from 'react';
 import { useWindowContext } from '../../../contexts/WindowContext';
@@ -41,7 +40,9 @@ const StateForm: React.FC<StateFormProps> = ({ stateData }: StateFormProps) => {
 
   const handleNameChange = (newName: string) => {
     const trimmedName = newName.trim();
-    const duplicateName = statesList.value.some((node) => node.name === trimmedName);
+    const duplicateName = statesList.value
+      .filter((state) => state.name !== originalName)
+      .some((node) => node.name === trimmedName);
     const hasInvalidChars = /[^a-zA-Z0-9-_ ]/.test(trimmedName);
     setHasError(duplicateName || hasInvalidChars);
     setName(newName);
@@ -92,11 +93,6 @@ const StateForm: React.FC<StateFormProps> = ({ stateData }: StateFormProps) => {
       setDiagramType(diagramType);
     }
   }, []);
-  const reset = () => {
-    setDiagramType('dtSingle'); // Default value for diagramType
-    setDefaultSingleStateValue(stateData?.defaultSingleStateValue || 'Ignore'); // Default value for defaultSingleStateValue
-    setHasError(false); // Reset error to undefined
-  };
   return (
     <Box mx={3} pb={3}>
       <Typography variant="h5" my={3}>
@@ -114,7 +110,6 @@ const StateForm: React.FC<StateFormProps> = ({ stateData }: StateFormProps) => {
           setDesc={setDesc}
           error={hasError}
           errorMessage="A State with this name already exists, or the name contains an invalid character."
-          reset={reset}
           handleSave={handleSave}
           reqPropsFilled={name && stateType ? true : false}
         >
