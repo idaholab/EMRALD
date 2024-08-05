@@ -1,4 +1,5 @@
 import {
+  Autocomplete,
   Box,
   Divider,
   FormControl,
@@ -6,16 +7,30 @@ import {
   InputLabel,
   MenuItem,
   Select,
+  TextField,
   Typography,
 } from '@mui/material';
 import { useVariableContext } from '../../../../../../../../contexts/VariableContext';
 import DeleteIcon from '@mui/icons-material/Delete';
+import { useEffect, useState } from 'react';
+import { useCustomForm } from '../../useCustomForm';
 
 const Outputs = () => {
+  const { formData, setFormData } = useCustomForm();
+  const [docLinkVariable, setDocLinkVariable] = useState<string>(formData.docLinkVariable || '');
+  const [output, setOutput] = useState<string>(formData.output || '');
   const { variableList } = useVariableContext();
   const docLinkVariables = variableList.value
     .filter(({ varScope }) => varScope === 'gtDocLink')
     .map(({ name }) => name);
+
+  useEffect(() => {
+    setFormData((prevFormData: any) => ({
+      ...prevFormData,
+      docLinkVariable: docLinkVariable,
+      output: output,
+    }));
+  }, [docLinkVariable, output]);
 
   return (
     <Box>
@@ -25,35 +40,27 @@ const Outputs = () => {
 
       <Box>
         <Box display={'flex'} alignItems={'center'}>
-          <FormControl sx={{ m: 1, minWidth: 200 }} size="small">
-            <InputLabel id="doc-link-variables-label">
-              Doc Link Variables
-            </InputLabel>
-            <Select
-              labelId="doc-link-variables-label"
-              id="doc-link-variables"
-              label="Doc Link Variables"
-              MenuProps={{
-                PaperProps: {
-                  style: {
-                    maxHeight: 350,
-                  },
-                },
-              }}
-            >
-              {docLinkVariables.map((variable, index) => (
-                <MenuItem key={index} value={variable}>
-                  {variable}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+          <Autocomplete
+            freeSolo
+            options={docLinkVariables}
+            defaultValue={formData.docLinkVariable || ''}
+            renderInput={(params) => <TextField {...params} label="Doc Link Variables" />}
+            onChange={(_, event) => setDocLinkVariable(event || '')}
+            sx={{ width: '250px' }}
+            size="small"
+          />
           <FormControl sx={{ m: 1, minWidth: 200 }} size="small">
             <InputLabel id="output-label">Output</InputLabel>
-            <Select labelId="output-label" id="output-variables" label="Output">
+            <Select
+              labelId="output-label"
+              id="output-variables"
+              label="Output"
+              value={output}
+              onChange={(event) => setOutput(event.target.value)}
+            >
               <MenuItem value="true">Core Uncovery</MenuItem>
-              <MenuItem value="false">Vessel Failure</MenuItem> 
-              <MenuItem value="none">Containment Failure</MenuItem> 
+              <MenuItem value="false">Vessel Failure</MenuItem>
+              <MenuItem value="none">Containment Failure</MenuItem>
             </Select>
           </FormControl>
 

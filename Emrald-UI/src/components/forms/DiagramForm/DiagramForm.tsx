@@ -21,7 +21,6 @@ import {
   Tabs,
   TextField,
 } from '@mui/material';
-import { useAppData } from '../../../hooks/useAppData';
 import GroupListItems from '../../common/GroupListItems';
 import { EMRALD_Model } from '../../../types/EMRALD_Model';
 import { useTemplateContext } from '../../../contexts/TemplateContext';
@@ -29,6 +28,7 @@ import { FileUploadComponent, TabPanel } from '../../common';
 import CloseIcon from '@mui/icons-material/Close';
 import ImportForm from '../ImportForm/ImportForm';
 import { upgradeModel } from '../../../utils/Upgrades/upgrade';
+import { appData } from '../../../hooks/useAppData';
 
 interface DiagramFormProps {
   diagramData?: Diagram;
@@ -53,7 +53,7 @@ const DiagramForm: React.FC<DiagramFormProps> = ({ diagramData }) => {
     { value: 'dtMulti', label: 'Multi State' },
   ];
   const [diagramLabel, setDiagramLabel] = useState<string>(diagramData?.diagramLabel || '');
-  const diagrams = useAppData().appData.value.DiagramList;
+  const diagrams = appData.value.DiagramList;
   const diagramLabelsSet = new Set(diagrams.map((d) => d.diagramLabel));
   const diagramLabels = Array.from(diagramLabelsSet);
   const [importDiagram, setImportDiagram] = useState<EMRALD_Model>();

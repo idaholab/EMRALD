@@ -134,7 +134,7 @@ const VariableFormContextProvider: React.FC<PropsWithChildren> = ({ children }) 
     variableData?.docLink && setDocLink(variableData.docLink);
     variableData?.pathMustExist && setPathMustExist(variableData.pathMustExist);
     variableData?.accrualStatesData && setAccrualStatesData(variableData.accrualStatesData);
-    if (variableData?.regExpLine) {
+    if (variableData?.regExpLine !== undefined) {
       setShowRegExFields(true);
       setRegExpLine(variableData.regExpLine);
     }
