@@ -15,6 +15,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { SelectChangeEvent } from '@mui/material/Select';
 import { State } from '../../../types/State';
 import { Event } from '../../../types/Event';
+import { useVariableContext } from '../../../contexts/VariableContext';
 
 export interface NewStateItem {
   id: string;
@@ -128,13 +129,13 @@ const ActionFormContextProvider: React.FC<PropsWithChildren> = ({ children }) =>
   const [simEndTime, setSimEndTime] = useState<string>('');
   //runExtApp items
   const [makeInputFileCode, setMakeInputFileCode] = useState<string>('');
-  const [exePath, setExePath] = useState<string>('');
   const [processOutputFileCode, setProcessOutputFileCode] = useState<string>('');
   const [formData, setFormData] = useState<any>();
   const [hasError, setHasError] = useState(false);
   const [raType, setRaType] = useState('');
   const [reqPropsFilled, setReqPropsFilled] = useState<boolean>(false);
   const [originalName, setOriginalName] = useState<string>();
+  const [exePath, setExePath] = useState<string>(formData?.exePath || '');
 
   const actionTypeOptions = [
     { value: 'atTransition', label: 'Transition' },
@@ -194,9 +195,31 @@ const ActionFormContextProvider: React.FC<PropsWithChildren> = ({ children }) =>
       formData,
       raType,
     };
+    checkFormData();
 
     actionData ? updateAction(action.value) : createAction(action.value, event, state);
     handleClose();
+  };
+
+  const checkFormData = () => {
+    if (formData.docLinkVariable !== undefined) {
+      let { variableList } = useVariableContext();
+      let docLinkVariables = variableList.value.filter(({ varScope }) => varScope === 'gtDocLink');
+      if (docLinkVariables.map(({ name }) => name).includes(formData.docLinkVariable)) {
+        let variable = docLinkVariables.find(({ name }) => name === formData.docLinkVariable);
+        if (variable) {
+          variable.docType = 'dtTextRegEx';
+          variable.docLink = 'CORE UNCOVERY';
+          variable.pathMustExist = false;
+          variable.numChars = 11;
+          variable.begPosition = 28;
+          variable.regExpLine = 0;
+        }
+        //TODO update app data with the new variable information
+      } else {
+        //TODO create a new variable with the new information
+      }
+    }
   };
 
   const sortNewStates = (newStateItems: NewStateItem[]) => {

@@ -146,7 +146,7 @@ const useContextMenu = (getStateNodes?: () => void, setEdges?: (edges: Edge[]) =
       validAction = isAction(JSON.parse(pastedData));
       validEvent = isEvent(JSON.parse(pastedData));
     } catch (e) {
-      console.log("Not valid JSON");
+      console.log('Not valid JSON');
     }
 
     const defaultOptions = [
@@ -167,20 +167,23 @@ const useContextMenu = (getStateNodes?: () => void, setEdges?: (edges: Edge[]) =
         label: 'Paste Event',
         action: async () => {
           const pastedData = await navigator.clipboard.readText();
-          if(isEvent(JSON.parse(pastedData))) {
+          if (isEvent(JSON.parse(pastedData))) {
             if (!state.events.includes(JSON.parse(pastedData).name)) {
               state.events.push(JSON.parse(pastedData).name);
-              state.eventActions.push({moveFromCurrent: false, actions: []});
+              state.eventActions.push({ moveFromCurrent: false, actions: [] });
               updateState(state);
-              var updatedModel: EMRALD_Model = await updateModelAndReferences(state, MainItemTypes.State);
+              var updatedModel: EMRALD_Model = await updateModelAndReferences(
+                state,
+                MainItemTypes.State,
+              );
               updateAppData(updatedModel);
             } else {
-              console.warn("Event already exists");
+              console.warn('Event already exists');
             }
-          };
+          }
           closeContextMenu();
         },
-        disabled: !validEvent
+        disabled: !validEvent,
       },
       {
         label: 'New Action',
@@ -188,40 +191,47 @@ const useContextMenu = (getStateNodes?: () => void, setEdges?: (edges: Edge[]) =
           addWindow(
             'New Action',
             <ActionFormContextProvider>
-              <ActionForm state={state}/>
+              <ActionForm state={state} />
             </ActionFormContextProvider>,
           );
           closeContextMenu();
         },
-        isDivider: true
+        isDivider: true,
       },
       {
         label: 'Paste Action',
         action: async () => {
           const pastedData = await navigator.clipboard.readText();
-          if(isAction(JSON.parse(pastedData))) {
+          if (isAction(JSON.parse(pastedData))) {
             const actionName = JSON.parse(pastedData).name;
             if (!state.immediateActions.includes(actionName)) {
               state.immediateActions.push(actionName);
               updateState(state);
-              var updatedModel: EMRALD_Model = await updateModelAndReferences(state, MainItemTypes.State);
+              var updatedModel: EMRALD_Model = await updateModelAndReferences(
+                state,
+                MainItemTypes.State,
+              );
               updateAppData(updatedModel);
             } else {
-              console.warn("Action already exists");
+              console.warn('Action already exists');
             }
           }
           closeContextMenu();
         },
-        disabled: !validAction
-      },   
+        disabled: !validAction,
+      },
     ];
 
     let menuOptions = [...defaultOptions];
 
     if (type === 'event') {
-      menuOptions = menuOptions.filter((option) => option.label !== 'New Action' && option.label !== 'Paste Action');
+      menuOptions = menuOptions.filter(
+        (option) => option.label !== 'New Action' && option.label !== 'Paste Action',
+      );
     } else {
-      menuOptions = menuOptions.filter((option) => option.label !== 'New Event' && option.label !== 'Paste Event');
+      menuOptions = menuOptions.filter(
+        (option) => option.label !== 'New Event' && option.label !== 'Paste Event',
+      );
     }
 
     setMenuOptions(menuOptions);
@@ -244,7 +254,7 @@ const useContextMenu = (getStateNodes?: () => void, setEdges?: (edges: Edge[]) =
       const pastedData = await navigator.clipboard.readText();
       validAction = isAction(JSON.parse(pastedData));
     } catch (e) {
-      console.log("Not valid JSON");
+      console.log('Not valid JSON');
     }
 
     const defaultOptions = [
@@ -266,7 +276,7 @@ const useContextMenu = (getStateNodes?: () => void, setEdges?: (edges: Edge[]) =
           addWindow(
             'New Action',
             <ActionFormContextProvider>
-              <ActionForm event={event} state={state}/>
+              <ActionForm event={event} state={state} />
             </ActionFormContextProvider>,
           );
           closeContextMenu();
@@ -293,7 +303,7 @@ const useContextMenu = (getStateNodes?: () => void, setEdges?: (edges: Edge[]) =
         action: () => {
           navigator.clipboard.writeText(JSON.stringify(event, null, 2));
           closeContextMenu();
-        },      
+        },
       },
       {
         label: 'Paste Action',
@@ -302,18 +312,21 @@ const useContextMenu = (getStateNodes?: () => void, setEdges?: (edges: Edge[]) =
           if (isAction(JSON.parse(pastedData))) {
             const eventIndex = state.events.indexOf(event.name);
             const eventActions = state.eventActions[eventIndex]?.actions || [];
-        
+
             if (!eventActions.includes(JSON.parse(pastedData).name)) {
-                eventActions.push(JSON.parse(pastedData).name);
-                updateState(state);
-                var updatedModel: EMRALD_Model = await updateModelAndReferences(state, MainItemTypes.State);
-                updateAppData(updatedModel);
+              eventActions.push(JSON.parse(pastedData).name);
+              updateState(state);
+              var updatedModel: EMRALD_Model = await updateModelAndReferences(
+                state,
+                MainItemTypes.State,
+              );
+              updateAppData(updatedModel);
             }
-        }
+          }
           closeContextMenu();
-        }, 
+        },
         isDivider: true,
-        disabled: !validAction
+        disabled: !validAction,
       },
       {
         label: 'Remove Event',
@@ -397,8 +410,8 @@ const useContextMenu = (getStateNodes?: () => void, setEdges?: (edges: Edge[]) =
         action: () => {
           navigator.clipboard.writeText(JSON.stringify(action, null, 2));
           closeContextMenu();
-        },   
-        isDivider: true,   
+        },
+        isDivider: true,
       },
       {
         label: 'Remove Action',

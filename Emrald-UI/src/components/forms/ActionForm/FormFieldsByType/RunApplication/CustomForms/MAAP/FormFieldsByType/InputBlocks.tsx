@@ -1,40 +1,9 @@
 import { Autocomplete, Box, Divider, TextField, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useCustomForm } from '../../useCustomForm';
-import { InputBlock, InputResultValue, Target, Test, Value } from '../maap';
+import useRunApplication from '../../../useRunApplication';
+import { InputBlock, Value } from '../../../CustomApplicationTypes';
 import { appData } from '../../../../../../../../hooks/useAppData';
-
-/** goes through the test portion of a conditional block and returns an array of each name in the block test */
-export const getAllItems = (block: InputBlock, returnType = 'items'): any[] => {
-  let allItems = [];
-  let operators = [];
-  let iterator = block.test;
-  while (isTest(iterator as Test)) {
-    allItems.push(iterator.value.left);
-    operators.push(iterator.value.op);
-    if (!isTest(iterator.value.right as Test)) {
-      allItems.push(iterator.value.right);
-      break;
-    } else {
-      iterator = iterator.value.right as Test;
-    }
-  }
-  return returnType === 'items' ? allItems : operators;
-};
-
-export const isTest = (test: Test): boolean => {
-  return !!test?.value?.left && !!test?.value?.right;
-};
-
-export const returnInputBlockItemNameInTest = (item: any): string => {
-  if ((item as Value).type === 'call_expression') {
-    const value = (item.value as Value).value;
-    const args = (item as Target).arguments;
-    return args ? `${value}(${String(args[0].value)})` : String(value);
-  }
-
-  return String(item.value) || '';
-};
 
 const InputBlocks = () => {
   const [inputBlocks, setInputBlocks] = useState<InputBlock[]>([]);
@@ -42,7 +11,8 @@ const InputBlocks = () => {
   const [leftExpressionNames, setLeftExpressionNames] = useState<string[][]>([]);
   const [rightExpressionNames, setRightExpressionNames] = useState<string[][]>([]);
   const [operators, setOperators] = useState<{ [key: string]: string[] }>({});
-  const { formData, results, getResults, setFormData } = useCustomForm();
+  const { formData, setFormData } = useCustomForm();
+  const { results, getResults, getAllItems, returnInputBlockItemNameInTest } = useRunApplication();
   const variables = appData.value.VariableList.map(({ name }) => name);
 
   useEffect(() => {
@@ -96,13 +66,21 @@ const InputBlocks = () => {
         const updatedBlock = { ...b };
 
         if (isProperty) {
-          let properties = updatedBlock.value.filter((item) => item.type !== 'comment');
+          let properties = updatedBlock.value.filter((item: any) => item.type !== 'comment');
           let property = properties[propertyIndex];
           if (isLeft) {
             (property.target.value as Value).value = newValue;
             if (property.target.arguments) property.target.arguments = undefined;
           } else {
-            (property.value as Value).value = newValue;
+            if ((property.value as Value).type !== 'expression') {
+              (property.value as Value).value = newValue;
+            } else {
+              const value: Value = {
+                type: 'variable',
+                value: newValue,
+              };
+              property.value = value;
+            }
           }
         } else {
           // handle left or right side property change here based on propertyIndex

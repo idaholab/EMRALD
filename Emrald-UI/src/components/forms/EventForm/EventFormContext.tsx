@@ -199,7 +199,7 @@ const EventFormContextProvider: React.FC<PropsWithChildren> = ({ children }) => 
         setTimerMilliseconds(dayjs.duration(eventData.time).asMilliseconds());
       }
       eventData.useVariable && setUseVariable(eventData.useVariable);
-      setLambda(eventData.lambda ? eventData.lambda : '');
+      setLambda(eventData.lambda !== undefined ? eventData.lambda : '');
       eventData.onVarChange && setOnVarChange(eventData.onVarChange);
       eventData.distType && setDistType(eventData.distType);
       eventData.parameters && setParameters(eventData.parameters);
@@ -395,7 +395,7 @@ const EventFormContextProvider: React.FC<PropsWithChildren> = ({ children }) => 
       time,
       timeVariableUnit,
       useVariable,
-      lambda: lambda ? lambda : undefined,
+      lambda,
       onVarChange: onVarChange ? onVarChange : undefined,
       distType,
       parameters,

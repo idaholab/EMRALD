@@ -7,102 +7,32 @@ import { parse as InputParse } from './Parser/maap-inp-parser.ts';
 import { parse as parameterParser } from './Parser/maap-par-parser.ts';
 import { v4 as uuid } from 'uuid';
 import { useActionFormContext } from '../../../../ActionFormContext.tsx';
-
-export interface Target {
-  location: any;
-  value: Value | string;
-  type: string;
-  arguments?: argument[];
-}
-
-export interface argument {
-  value: string | number;
-  type: string;
-  units?: string;
-}
-
-export interface Value {
-  type: string;
-  value: string | number;
-  units?: string;
-}
-export interface Initiator {
-  desc: string;
-  value: string;
-  index: number;
-  type: string;
-  target: Target;
-}
-export interface Parameter {
-  useVariable: boolean;
-  id: string;
-  location: any;
-  target: Target;
-  value: Value;
-  type: string;
-  variable?: string;
-}
-export interface InputBlock {
-  test: Test;
-  value: InputResultValue[];
-  id: string;
-}
-export interface Test {
-  value: InputValue;
-}
-export interface InputValue {
-  left: Value | Target | Test;
-  right: Value | Target | Test;
-  op: string;
-}
-export interface InputResultValue {
-  location: any;
-  target: Target;
-  type: string;
-  value: Value | Test | string;
-  comment?: string;
-}
-
-export interface Alias {
-  target: Target;
-  value: Value;
-}
-
-export const getInitiatorName = (row: Initiator): string | number => {
-  let name =
-    row.type === 'assignment'
-      ? row.target.type === 'identifier'
-        ? (row.target.value as string | number)
-        : ((row.target.value as Value).value as string | number)
-      : (row.desc as string);
-  if (row.target?.arguments && row.target.arguments.length > 0) {
-    name = name + ` (${String(row.target.arguments[0].value)})`;
-  }
-  return name;
-};
+import { Initiator, InputBlock, Parameter } from '../../CustomApplicationTypes.ts';
+import useRunApplication from '../../useRunApplication.tsx';
 
 const MAAP = () => {
   const {
     formData,
     isValid,
-    parameterPath,
-    inputPath,
     exePath,
     setExePath,
-    setInputPath,
     setFormData,
-    ReturnPreCode,
     ReturnPostCode,
     ReturnUsedVariables,
     ReturnExePath,
-    setParameterPath,
   } = useCustomForm();
   const { setReqPropsFilled } = useActionFormContext();
-  const [parameterFile, setParameterFile] = useState<File | null>();
-
-  const [inputFile, setInputFile] = useState<File | null>();
-
-  const [currentTab, setCurrentTab] = React.useState(0);
+  const [parameterFile, setParameterFile] = useState<File | null>(null);
+  const [inputFile, setInputFile] = useState<File | null>(null);
+  const [currentTab, setCurrentTab] = useState(0);
+  const {
+    parameterPath,
+    inputPath,
+    getInitiatorName,
+    ReturnPreCode,
+    setParameterPath,
+    setInputPath,
+  } = useRunApplication();
 
   useEffect(() => {
     setReqPropsFilled(!!exePath && !!parameterPath && !!inputPath);
@@ -111,12 +41,6 @@ const MAAP = () => {
   const handleTabChange = (_event: React.SyntheticEvent, tabValue: number) => {
     setCurrentTab(tabValue);
   };
-
-  useEffect(() => {
-    setParameterPath(formData?.parameterPath || '');
-    setExePath(formData?.exePath || '');
-    setInputPath(formData?.inputPath || '');
-  }, []);
 
   useEffect(() => {
     ReturnPreCode();
@@ -301,68 +225,53 @@ const MAAP = () => {
 
   return (
     <>
-      {isValid ? (
-        <Box display={'flex'} flexDirection={'column'}>
-          <TextFieldComponent value={exePath} label="MAAP Executable Path" setValue={setExePath} />
+      <Box display={'flex'} flexDirection={'column'}>
+        <TextFieldComponent value={exePath} label="MAAP Executable Path" setValue={setExePath} />
 
-          <FileUploadComponent
-            label="Parameter File"
-            setFile={setParameterFile}
-            fileName={formData.parameterFileName}
-          />
+        <FileUploadComponent
+          label="Parameter File"
+          setFile={setParameterFile}
+          fileName={formData.parameterFileName}
+        />
 
-          <TextFieldComponent
-            value={parameterPath}
-            label="Parameter File Path"
-            setValue={setParameterPath}
-          />
+        <TextFieldComponent
+          value={parameterPath}
+          label="Parameter File Path"
+          setValue={setParameterPath}
+        />
 
-          <FileUploadComponent
-            label="Input File"
-            setFile={setInputFile}
-            fileName={formData.inputFileName}
-          />
+        <FileUploadComponent
+          label="Input File"
+          setFile={setInputFile}
+          fileName={formData.inputFileName}
+        />
 
-          <TextFieldComponent value={inputPath} label="Input File Path" setValue={setInputPath} />
+        <TextFieldComponent value={inputPath} label="Input File Path" setValue={setInputPath} />
 
-          <Divider sx={{ my: 3 }} />
+        <Divider sx={{ my: 3 }} />
 
-          <Box>
-            <Tabs value={currentTab} onChange={handleTabChange} aria-label="basic tabs example">
-              <Tab label="Parameters" />
-              <Tab label="Initiators" />
-              <Tab label="Input Blocks" />
-              <Tab label="Outputs" />
-            </Tabs>
-          </Box>
-
-          <TabPanel value={currentTab} index={0}>
-            <Parameters />
-          </TabPanel>
-          <TabPanel value={currentTab} index={1}>
-            <Initiators />
-          </TabPanel>
-          <TabPanel value={currentTab} index={2}>
-            <InputBlocks />
-          </TabPanel>
-          <TabPanel value={currentTab} index={3}>
-            <Outputs />
-          </TabPanel>
+        <Box>
+          <Tabs value={currentTab} onChange={handleTabChange} aria-label="basic tabs example">
+            <Tab label="Parameters" />
+            <Tab label="Initiators" />
+            <Tab label="Input Blocks" />
+            <Tab label="Outputs" />
+          </Tabs>
         </Box>
-      ) : (
-        <Box
-          sx={{
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            height: 150,
-          }}
-        >
-          <Typography variant="subtitle1" fontWeight={600}>
-            This Custom Form is missing required functionality.
-          </Typography>
-        </Box>
-      )}
+
+        <TabPanel value={currentTab} index={0}>
+          <Parameters />
+        </TabPanel>
+        <TabPanel value={currentTab} index={1}>
+          <Initiators />
+        </TabPanel>
+        <TabPanel value={currentTab} index={2}>
+          <InputBlocks />
+        </TabPanel>
+        <TabPanel value={currentTab} index={3}>
+          <Outputs />
+        </TabPanel>
+      </Box>
     </>
   );
 };

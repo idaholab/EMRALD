@@ -11,11 +11,13 @@ import {
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useActionFormContext } from '../../../../../ActionFormContext';
 import { useEffect, useState } from 'react';
-import { getInitiatorName, Initiator } from '../maap';
+import { Initiator } from '../../../CustomApplicationTypes';
+import useRunApplication from '../../../useRunApplication';
 const Initiators = () => {
   const { formData, setFormData } = useActionFormContext();
   const [initiators, setInitiators] = useState<any[]>([]);
   const [comments, setComments] = useState<{ [key: string]: string }>({});
+  const { getInitiatorName } = useRunApplication();
 
   useEffect(() => {
     setInitiators(formData?.initiators || []);
