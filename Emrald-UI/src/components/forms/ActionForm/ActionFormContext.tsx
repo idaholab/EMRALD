@@ -1,4 +1,11 @@
-import { ChangeEvent, createContext, PropsWithChildren, useContext, useState } from 'react';
+import {
+  ChangeEvent,
+  createContext,
+  PropsWithChildren,
+  useContext,
+  useEffect,
+  useState,
+} from 'react';
 import { Action, NewState } from '../../../types/Action';
 import { useWindowContext } from '../../../contexts/WindowContext';
 import { emptyAction, useActionContext } from '../../../contexts/ActionContext';
@@ -8,6 +15,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { SelectChangeEvent } from '@mui/material/Select';
 import { State } from '../../../types/State';
 import { Event } from '../../../types/Event';
+import { useVariableContext } from '../../../contexts/VariableContext';
 
 export interface NewStateItem {
   id: string;
@@ -43,6 +51,9 @@ interface ActionFormContextType {
   formData: any;
   hasError: boolean;
   actionTypeOptions: { value: string; label: string }[];
+  raType: string;
+  reqPropsFilled: boolean;
+  setReqPropsFilled: React.Dispatch<React.SetStateAction<boolean>>;
   setName: React.Dispatch<React.SetStateAction<string>>;
   setDesc: React.Dispatch<React.SetStateAction<string>>;
   setActType: React.Dispatch<React.SetStateAction<ActionType>>;
@@ -79,6 +90,7 @@ interface ActionFormContextType {
   sortNewStates: (newStateItems: NewStateItem[]) => NewStateItem[];
   initializeForm: (actionData: Action | undefined) => void;
   reset: () => void;
+  setRaType: React.Dispatch<React.SetStateAction<string>>;
 }
 
 const ActionFormContext = createContext<ActionFormContextType | undefined>(undefined);
@@ -117,11 +129,13 @@ const ActionFormContextProvider: React.FC<PropsWithChildren> = ({ children }) =>
   const [simEndTime, setSimEndTime] = useState<string>('');
   //runExtApp items
   const [makeInputFileCode, setMakeInputFileCode] = useState<string>('');
-  const [exePath, setExePath] = useState<string>('');
   const [processOutputFileCode, setProcessOutputFileCode] = useState<string>('');
   const [formData, setFormData] = useState<any>();
   const [hasError, setHasError] = useState(false);
+  const [raType, setRaType] = useState('');
+  const [reqPropsFilled, setReqPropsFilled] = useState<boolean>(false);
   const [originalName, setOriginalName] = useState<string>();
+  const [exePath, setExePath] = useState<string>(formData?.exePath || '');
 
   const actionTypeOptions = [
     { value: 'atTransition', label: 'Transition' },
@@ -129,6 +143,10 @@ const ActionFormContextProvider: React.FC<PropsWithChildren> = ({ children }) =>
     { value: 'at3DSimMsg', label: 'Ext. Sim Message' },
     { value: 'atRunExtApp', label: 'Run Application' },
   ];
+
+  useEffect(() => {
+    setReqPropsFilled(!!name && !!actType);
+  }, [name, actType]);
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setMutuallyExclusive(event.target.checked);
@@ -175,10 +193,33 @@ const ActionFormContextProvider: React.FC<PropsWithChildren> = ({ children }) =>
       openSimVarParams,
       mainItem: true,
       formData,
+      raType,
     };
+    checkFormData();
 
     actionData ? updateAction(action.value) : createAction(action.value, event, state);
     handleClose();
+  };
+
+  const checkFormData = () => {
+    if (formData.docLinkVariable !== undefined) {
+      let { variableList } = useVariableContext();
+      let docLinkVariables = variableList.value.filter(({ varScope }) => varScope === 'gtDocLink');
+      if (docLinkVariables.map(({ name }) => name).includes(formData.docLinkVariable)) {
+        let variable = docLinkVariables.find(({ name }) => name === formData.docLinkVariable);
+        if (variable) {
+          variable.docType = 'dtTextRegEx';
+          variable.docLink = 'CORE UNCOVERY';
+          variable.pathMustExist = false;
+          variable.numChars = 11;
+          variable.begPosition = 28;
+          variable.regExpLine = 0;
+        }
+        //TODO update app data with the new variable information
+      } else {
+        //TODO create a new variable with the new information
+      }
+    }
   };
 
   const sortNewStates = (newStateItems: NewStateItem[]) => {
@@ -325,6 +366,7 @@ const ActionFormContextProvider: React.FC<PropsWithChildren> = ({ children }) =>
     setProcessOutputFileCode('');
     setFormData(undefined); // Assuming formData can be undefined
     setHasError(false); // Default value for hasError
+    setRaType('');
   };
 
   const toScientificIfNeeded = (num: number) => {
@@ -377,7 +419,7 @@ const ActionFormContextProvider: React.FC<PropsWithChildren> = ({ children }) =>
     setExePath(actionData?.exePath || '');
     setProcessOutputFileCode(actionData?.processOutputFileCode || '');
     setFormData(actionData?.formData || undefined);
-
+    setRaType(actionData?.raType || '');
     action.value = actionData || emptyAction;
   };
 
@@ -405,6 +447,9 @@ const ActionFormContextProvider: React.FC<PropsWithChildren> = ({ children }) =>
         formData,
         hasError,
         actionTypeOptions,
+        raType,
+        reqPropsFilled,
+        setReqPropsFilled,
         reset,
         setName,
         setDesc,
@@ -438,6 +483,7 @@ const ActionFormContextProvider: React.FC<PropsWithChildren> = ({ children }) =>
         handleDeleteToStateItem,
         sortNewStates,
         initializeForm,
+        setRaType,
       }}
     >
       {children}

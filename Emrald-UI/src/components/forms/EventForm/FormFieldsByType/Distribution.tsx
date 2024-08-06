@@ -174,7 +174,7 @@ const Distribution = () => {
                     </SelectComponent>
                   ) : (
                     <TextField
-                      value={allRows[row]?.value || ''}
+                      value={allRows[row]?.value !== undefined ? allRows[row]?.value : ''}
                       onChange={(e) => handleChange(row, e.target.value)}
                       size="small"
                       label={row}

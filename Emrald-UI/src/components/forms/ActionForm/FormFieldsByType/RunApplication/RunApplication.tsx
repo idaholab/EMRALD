@@ -17,6 +17,7 @@ import { startCase } from 'lodash';
 import React from 'react';
 import SelectComponent from '../../../../common/SelectComponent';
 import { TextFieldComponent } from '../../../../common';
+import useRunApplication from './useRunApplication';
 
 // Define the type for the custom form components
 type CustomFormComponents = {
@@ -27,21 +28,26 @@ type CustomFormComponents = {
 const customFormsTyped = CustomForms as CustomFormComponents;
 
 const RunApplication = () => {
-  const [applicationType, setApplicationType] = useState('code');
   const {
     codeVariables,
     makeInputFileCode,
     exePath,
     processOutputFileCode,
+    raType,
+    formData,
     addToUsedVariables,
     setMakeInputFileCode,
     setExePath,
     setProcessOutputFileCode,
+    setRaType,
+    setFormData,
   } = useActionFormContext();
-  const { variableList } = useVariableContext();
 
-  const [customFormType, setCustomFormType] = useState<string>('');
-  const [options, setOptions] = useState<string[]>([]);
+  const { ReturnPreCode } = useRunApplication();
+  const { variableList } = useVariableContext();
+  const [applicationType, setApplicationType] = useState(raType || 'custom');
+  const [customFormType, setCustomFormType] = useState<string>(formData?.caType || '');
+  const [options, setOptions] = useState<string[]>(['CustomFormTemplate', 'MAAP']);
   const [selectedComponent, setSelectedComponent] = useState<ReactElement | null>(null);
 
   useEffect(() => {
@@ -54,15 +60,28 @@ const RunApplication = () => {
   }, []);
 
   useEffect(() => {
-    // Set selected component when customFormType changes
+    //  Set selected component when customFormType changes
     if (customFormType && customFormsTyped[customFormType]) {
-      setSelectedComponent(
-        React.createElement(customFormsTyped[customFormType]),
-      );
+      setSelectedComponent(React.createElement(customFormsTyped[customFormType]));
     } else {
       setSelectedComponent(null);
     }
   }, [customFormType]);
+
+  useEffect(() => {
+    ReturnPreCode();
+  });
+
+  const handleSetCustomFormType = (value: string) => {
+    setCustomFormType(value);
+    setFormData((prev: any) => ({ ...prev, caType: value }));
+  };
+
+  const handleApplicationTypeChange = (value: string) => {
+    setApplicationType(value);
+    setRaType(value);
+    ReturnPreCode();
+  };
 
   return (
     <>
@@ -71,15 +90,11 @@ const RunApplication = () => {
           aria-labelledby="demo-controlled-radio-buttons-group"
           name="controlled-radio-buttons-group"
           value={applicationType}
-          onChange={(e) => setApplicationType(e.target.value)}
+          onChange={(e) => handleApplicationTypeChange(e.target.value)}
           row
         >
           <FormControlLabel value="code" control={<Radio />} label="Use Code" />
-          <FormControlLabel
-            value="custom"
-            control={<Radio />}
-            label="Use Custom Application"
-          />
+          <FormControlLabel value="custom" control={<Radio />} label="Use Custom Application" />
         </RadioGroup>
       </FormControl>
       {applicationType === 'code' ? (
@@ -135,8 +150,8 @@ const RunApplication = () => {
         <Box display={'flex'} flexDirection={'column'}>
           <SelectComponent
             label="Custom Application Type"
-            value={customFormType}
-            setValue={setCustomFormType}
+            value={customFormType || ''}
+            setValue={(name) => handleSetCustomFormType(name)}
           >
             {options.map((option) => (
               <MenuItem value={option} key={option}>
