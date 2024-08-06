@@ -67,7 +67,7 @@ const UsingLogicNodeRefs: Array<[string, MainItemTypes]> = [
 
 
 
-type DiagramRefsArray = Array<[string, MainItemTypes, string | null]>;
+export type DiagramRefsArray = Array<[string, MainItemTypes, string | null]>;
 //Items referenced by these types [JsonPath, ItemType, Linked array if any] - Last item in array is for 
     //early stop of recursive search, we will remove any undefined references and this indicates if there 
     //is another array that is a logical match to this one. For example State.Events has State.eventActions that must have a 1to1 relationship
@@ -165,7 +165,7 @@ export const GetJSONPathUsingRefs = (itemType: MainItemTypes, lookupName : strin
   });  
 };
 
-const GetJSONPathInRefs = (itemType: MainItemTypes, lookupName : string): DiagramRefsArray => {
+export const GetJSONPathInRefs = (itemType: MainItemTypes, lookupName : string): DiagramRefsArray => {
   var retArray : DiagramRefsArray;
   switch (itemType) {
     case MainItemTypes.Diagram:
