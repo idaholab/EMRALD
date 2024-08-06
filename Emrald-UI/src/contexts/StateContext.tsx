@@ -6,7 +6,7 @@ import { Action } from '../types/Action';
 import { appData, updateAppData } from '../hooks/useAppData';
 import { ReadonlySignal, useComputed } from '@preact/signals-react';
 import { EMRALD_Model } from '../types/EMRALD_Model';
-import { updateModelAndReferences } from '../utils/UpdateModel';
+import { DeleteItemAndRefsInSpecifiedModel, updateModelAndReferences } from '../utils/UpdateModel';
 import { MainItemTypes } from '../types/ItemTypes';
 
 interface StateContextType {
@@ -141,8 +141,13 @@ const StateContextProvider: React.FC<EmraldContextWrapperProps> = ({ children })
     if (!stateId) {
       return;
     }
+    const stateToDelete = getStateByStateId(stateId);
     const updatedStates = statesList.value.filter((item) => item.id !== stateId);
     updateAppData(JSON.parse(JSON.stringify({ ...appData.value, StateList: updatedStates })));
+    if (stateToDelete) {
+      const updatedEMRALDModel: EMRALD_Model = JSON.parse(JSON.stringify(appData.value));
+      DeleteItemAndRefsInSpecifiedModel(stateToDelete, updatedEMRALDModel, false);
+    }
     setStates(updatedStates);
   };
 

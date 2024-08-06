@@ -140,7 +140,7 @@ const EventActions: React.FC<EventActionsProps> = ({ state }) => {
                       py: '5px',
                     }}
                   >
-                    {action ? (
+                    {action && (
                       <>
                         {action.actType === 'atTransition' ? (
                           <Handle
@@ -174,8 +174,6 @@ const EventActions: React.FC<EventActionsProps> = ({ state }) => {
                           )}
                         </Box>
                       </>
-                    ) : (
-                      <></>
                     )}
                   </Box>
                 ))}

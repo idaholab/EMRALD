@@ -4,7 +4,7 @@ import { EmraldContextWrapperProps } from './EmraldContextWrapper';
 import { appData, updateAppData } from '../hooks/useAppData';
 import { ReadonlySignal, useComputed } from '@preact/signals-react';
 import { MainItemTypes } from '../types/ItemTypes';
-import { updateModelAndReferences } from '../utils/UpdateModel';
+import { DeleteItemAndRefsInSpecifiedModel, updateModelAndReferences } from '../utils/UpdateModel';
 import { EMRALD_Model } from '../types/EMRALD_Model';
 
 interface VariableContextType {
@@ -22,7 +22,7 @@ export const emptyVariable: Variable = {
   varScope: 'gtGlobal',
   value: '',
   type: 'int',
-  objType: "Variable",
+  objType: 'Variable',
 };
 
 const VariableContext = createContext<VariableContextType | undefined>(undefined);
@@ -66,11 +66,16 @@ const VariableContextProvider: React.FC<EmraldContextWrapperProps> = ({ children
     if (!VariableId) {
       return;
     }
+    const variableToDelete = variables.find((variable) => variable.id === VariableId);
     const updatedVariableList = variables.filter((item) => item.id !== VariableId);
 
     updateAppData(
       JSON.parse(JSON.stringify({ ...appData.value, VariableList: updatedVariableList })),
     );
+    if (variableToDelete) {
+      const updatedEMRALDModel: EMRALD_Model = JSON.parse(JSON.stringify(appData.value));
+      DeleteItemAndRefsInSpecifiedModel(variableToDelete, updatedEMRALDModel, false);
+    }
     setVariables(updatedVariableList);
   };
 
