@@ -202,7 +202,7 @@ const ActionFormContextProvider: React.FC<PropsWithChildren> = ({ children }) =>
   };
 
   const checkFormData = () => {
-    if (formData.docLinkVariable !== undefined) {
+    if (formData && formData.docLinkVariable !== undefined) {
       let { variableList } = useVariableContext();
       let docLinkVariables = variableList.value.filter(({ varScope }) => varScope === 'gtDocLink');
       if (docLinkVariables.map(({ name }) => name).includes(formData.docLinkVariable)) {

@@ -593,7 +593,7 @@ const useContextMenu = (getStateNodes?: () => void, setEdges?: (edges: Edge[]) =
   };
 
   // * Removes the item from the diagram and also deletes it from the project
-  const deleteItem = () => {
+  const deleteItem = async () => {
     if (!itemToDelete) {
       return;
     }
@@ -608,7 +608,7 @@ const useContextMenu = (getStateNodes?: () => void, setEdges?: (edges: Edge[]) =
       const index = stateToModify.events.indexOf(itemToDelete.name);
       stateToModify.events = stateToModify.events.filter((event) => event !== itemToDelete.name);
       stateToModify.eventActions.splice(index, 1);
-      updateState(stateToModify);
+      await updateState(stateToModify);
       deleteEvent(itemToDelete.id);
     } else if (itemToDelete.id && stateToModify && actionTypeToModify && isAction(itemToDelete)) {
       if (actionTypeToModify === 'event') {

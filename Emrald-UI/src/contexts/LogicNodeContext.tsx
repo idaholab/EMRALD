@@ -3,7 +3,7 @@ import { LogicNode } from '../types/LogicNode';
 import { EmraldContextWrapperProps } from './EmraldContextWrapper';
 import { appData, updateAppData } from '../hooks/useAppData';
 import { EMRALD_Model } from '../types/EMRALD_Model';
-import { updateModelAndReferences } from '../utils/UpdateModel';
+import { DeleteItemAndRefsInSpecifiedModel, updateModelAndReferences } from '../utils/UpdateModel';
 import { MainItemTypes } from '../types/ItemTypes';
 import { ReadonlySignal, useComputed } from '@preact/signals-react';
 
@@ -74,18 +74,21 @@ const LogicNodeContextProvider: React.FC<EmraldContextWrapperProps> = ({ childre
 
   const deleteLogicNode = (logicNodeId: string | undefined) => {
     return new Promise<void>(async (resolve) => {
-      let nodeName = logicNodeList.value.find((node) => node.id === logicNodeId)?.name;
+      let nodeToDelete = logicNodeList.value.find((node) => node.id === logicNodeId);
       const updatedLogicNodes = logicNodeList.value.filter((item) => item.id !== logicNodeId);
-      if (nodeName) {
+      if (nodeToDelete) {
         updatedLogicNodes.forEach((node) => {
-          if (node.gateChildren.includes(nodeName)) {
-            node.gateChildren = node.gateChildren.filter((name) => name !== nodeName);
+          if (node.gateChildren.includes(nodeToDelete.name)) {
+            node.gateChildren = node.gateChildren.filter((name) => name !== nodeToDelete.name);
           }
         });
+        const updatedEMRALDModel: EMRALD_Model = JSON.parse(JSON.stringify(appData.value));
+        DeleteItemAndRefsInSpecifiedModel(nodeToDelete, updatedEMRALDModel, false);
       }
       updateAppData(
         JSON.parse(JSON.stringify({ ...appData.value, LogicNodeList: updatedLogicNodes })),
       );
+
       setLogicNodes(logicNodeList.value);
       resolve();
     });
