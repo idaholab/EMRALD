@@ -79,8 +79,8 @@ const DiagramContextProvider: React.FC<EmraldContextWrapperProps> = ({ children 
     if (diagramToDelete) {
       const updatedEMRALDModel: EMRALD_Model = JSON.parse(JSON.stringify(appData.value));
       DeleteItemAndRefsInSpecifiedModel(diagramToDelete, updatedEMRALDModel, false);
-      updateAppData(JSON.parse(JSON.stringify({ ...appData.value, DiagramList: updatedDiagrams })));
     }
+    updateAppData(JSON.parse(JSON.stringify({ ...appData.value, DiagramList: updatedDiagrams })));
     setDiagrams(updatedDiagrams);
   };
 

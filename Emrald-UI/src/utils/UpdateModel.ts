@@ -164,9 +164,6 @@ export const DeleteItemAndRefsInSpecifiedModel = ( //remove the item and referen
         }
         var previousName: string = itemArray[itemIdx].name; //old name of the item
 
-        //update the item with the new item data
-        itemArray[itemIdx] = item;
-        const processed: { [key: string]: boolean; } = { [item.name + '_' + item.objType]: true };
         const mainItemTypesEnumValue = MainItemTypes[item.objType as keyof typeof MainItemTypes];
 
         // Find the paths of the items to be removed
