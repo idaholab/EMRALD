@@ -10,8 +10,8 @@ import { EMRALD_Model } from '../types/EMRALD_Model';
 interface VariableContextType {
   variables: Variable[];
   variableList: ReadonlySignal<Variable[]>;
-  createVariable: (Variable: Variable) => void;
-  updateVariable: (Variable: Variable) => void;
+  createVariable: (Variable: Variable) => Promise<void>;
+  updateVariable: (Variable: Variable) => Promise<void>;
   deleteVariable: (VariableId: string | undefined) => void;
   newVariableList: (newVariableList: Variable[]) => void;
   clearVariableList: () => void;
@@ -44,22 +44,27 @@ const VariableContextProvider: React.FC<EmraldContextWrapperProps> = ({ children
   const variableList = useComputed(() => appData.value.VariableList);
 
   const createVariable = async (newVariable: Variable) => {
-    var updatedModel: EMRALD_Model = await updateModelAndReferences(
-      newVariable,
-      MainItemTypes.Variable,
-    );
-    updateAppData(updatedModel);
-    setVariables(updatedModel.VariableList);
+    return new Promise<void>(async (resolve) => {
+      var updatedModel: EMRALD_Model = await updateModelAndReferences(
+        newVariable,
+        MainItemTypes.Variable,
+      );
+      updateAppData(updatedModel);
+      setVariables(updatedModel.VariableList);
+      resolve();
+    });
   };
 
   const updateVariable = async (updatedVariable: Variable) => {
-    var updatedModel: EMRALD_Model = await updateModelAndReferences(
-      updatedVariable,
-      MainItemTypes.Variable,
-    );
-
-    updateAppData(updatedModel);
-    setVariables(updatedModel.VariableList);
+    return new Promise<void>(async (resolve) => {
+      var updatedModel: EMRALD_Model = await updateModelAndReferences(
+        updatedVariable,
+        MainItemTypes.Variable,
+      );
+      updateAppData(updatedModel);
+      setVariables(updatedModel.VariableList);
+      resolve();
+    });
   };
 
   const deleteVariable = (VariableId: string | undefined) => {

@@ -1,4 +1,5 @@
 export interface Target {
+    useVariable: boolean;
     location: any;
     value: Value | string;
     type: string;
@@ -12,6 +13,7 @@ export interface Target {
   }
   
   export interface Value {
+    useVariable?: boolean;
     type: string;
     value: string | number;
     units?: string;

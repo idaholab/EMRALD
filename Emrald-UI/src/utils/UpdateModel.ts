@@ -173,7 +173,7 @@ export const DeleteItemAndRefsInSpecifiedModel = ( //remove the item and referen
             // Find the parent array
             const itemPath = ref.join('.');
             const arrayIndex = ref[ref.length - 1];
-            const itemArray = jsonpath.value(updatedEMRALDModel, itemPath);
+            const itemArray = jsonpath.value(updatedEMRALDModel, itemPath); //! this line breaks
 
             if (Array.isArray(itemArray)) {
                 // Remove the item from the parent array

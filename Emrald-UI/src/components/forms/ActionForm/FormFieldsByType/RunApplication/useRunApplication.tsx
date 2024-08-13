@@ -96,7 +96,7 @@ const useRunApplication = () => {
   };
   const createMaapFile = (): string => {
     return `
-    TITLE\n\t${formData?.title}\nEND\nPARAMETER CHANGE\n${getParameterStrings()}END\nALIAS\n${getAliasStrings()}END\nINITIATORS\n${getInitiatorStrings()}END\n${getInputBlockStrings()}${getFinalStatements()}END`;
+    TITLE\n\t${formData?.title}\nEND\nPARAMETER CHANGE\n${getParameterStrings()}END\nALIAS\n${getAliasStrings()}END\nINITIATORS\n${getInitiatorStrings()}END\n${getInputBlockStrings()}\n${getIsExpressions()}\n${getPlotFil()}\nEND`;
   };
   const ReturnPreCode = () => {
     setMakeInputFileCode(createPreProcessCode());
@@ -178,7 +178,7 @@ const useRunApplication = () => {
     for (let i = 0; i < allItems.length; i++) {
       testString =
         testString +
-        returnInputBlockItemNameInTest(allItems[i]) +
+        returnInputBlockItemNameInTest(allItems[i], true) +
         ' ' +
         (i !== allItems.length - 1 ? allOperators[i] : '') +
         ' ';
@@ -187,13 +187,13 @@ const useRunApplication = () => {
   };
   const getInputBlockResults = (inputBlock: InputBlock) => {
     let resultsString = '';
-    const resultList = getResults(inputBlock);
+    const resultList = getResults(inputBlock, true);
     for (const [key, value] of resultList) {
       resultsString = resultsString + `\t${key} = ${value}\n`;
     }
     return resultsString;
   };
-  const getResults = (block: InputBlock) => {
+  const getResults = (block: InputBlock, forCode?: boolean) => {
     // Get the existing Map or initialize a new one for the block.id
     let items = results[block.id] || new Map<string, string>();
 
@@ -204,15 +204,18 @@ const useRunApplication = () => {
         previousResult.comment = result.value as string;
       } else {
         if (result.target && result.target.type) {
-          const name =
-            result.target.type === 'identifier'
-              ? result.target.value
-              : (result.target.value as Value).value;
+          const target =
+            result.target.type === 'identifier' ? result.target : (result.target.value as Value);
+          const name = target.value;
+          const useVariable = target.useVariable;
           const args = result.target.arguments ? result.target.arguments[0].value : '';
-          const fullName = args ? `${name}(${String(args)})` : String(name);
+          let fullName = args ? `${name}(${String(args)})` : String(name);
+          if (forCode && useVariable) {
+            fullName = `" + ${fullName} + @"`;
+          }
 
           // Get the value associated with the result
-          const value = getResultValue(result);
+          const value = getResultValue(result, forCode);
 
           // Add the key-value pair to the Map if it doesn't already exist
           if (!items.has(fullName) || items.get(fullName) !== value) {
@@ -226,16 +229,45 @@ const useRunApplication = () => {
     setResults((prev) => ({ ...prev, [block.id]: new Map(items) }));
     return items;
   };
-  const getResultValue = (result: InputResultValue): string => {
+  const getResultValue = (result: InputResultValue, forCode?: boolean): string => {
     if ((result.value as Value).type === 'expression') {
       return `${(result.value as Test).value.left.value} ${(result.value as Test).value.op} ${
         (result.value as Test).value.right.value
       }`;
     }
-    return (result.value as Value).value as string;
+    let toReturn = (result.value as Value).value as string;
+    if (forCode && (result.value as Value).useVariable) {
+      toReturn = `" + ${toReturn} + @"`;
+    }
+    return toReturn;
   };
-  const getFinalStatements = () => {
-    return '';
+  const getIsExpressions = (): string => {
+    let toReturn = '';
+    const isExpressions = formData?.isExpressions;
+    if (isExpressions) {
+      for (const expression of isExpressions) {
+        toReturn = toReturn + expression.target.value + ' IS ' + expression.value.value + '\n\t';
+      }
+    }
+    return toReturn;
+  };
+  const getPlotFil = (): string => {
+    let toReturn = '';
+    const plotFil = formData?.plotFil;
+    if (plotFil) {
+      toReturn = 'PLOTFIL ' + plotFil.n + '\n';
+      for (const row of plotFil.value) {
+        for (const element of row) {
+          toReturn =
+            toReturn +
+            (element.type !== 'call_expression'
+              ? element.value
+              : element.value.value + (element.arguments && `(${element.arguments[0].value})`)) +
+            '\n'; // fix this because it wont work with all of them -- ZWDC2SG(1)
+        }
+      }
+    }
+    return toReturn;
   };
   /** goes through the test portion of a conditional block and returns an array of each name in the block test */
   const getAllItems = (block: InputBlock, returnType = 'items'): any[] => {
@@ -259,14 +291,17 @@ const useRunApplication = () => {
     return !!test?.value?.left && !!test?.value?.right;
   };
 
-  const returnInputBlockItemNameInTest = (item: any): string => {
+  const returnInputBlockItemNameInTest = (item: any, forCode?: boolean): string => {
     if ((item as Value).type === 'call_expression') {
       const value = (item.value as Value).value;
       const args = (item as Target).arguments;
       return args ? `${value}(${String(args[0].value)})` : String(value);
     }
+    if (forCode && item.useVariable) {
+      return `" + ${String(item.value)} + @"`;
+    }
 
-    return String(item.value) || '';
+    return String(item.value);
   };
   return {
     preCodeUsed,

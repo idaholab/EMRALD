@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useCustomForm } from '../useCustomForm';
-import { Box, Divider, Tab, Tabs, Typography } from '@mui/material';
+import { Box, Divider, Tab, Tabs } from '@mui/material';
 import { TextFieldComponent, FileUploadComponent, TabPanel } from '../../../../../../common';
 import { Parameters, Initiators, InputBlocks, Outputs } from './FormFieldsByType';
 import { parse as InputParse } from './Parser/maap-inp-parser.ts';
@@ -13,7 +13,6 @@ import useRunApplication from '../../useRunApplication.tsx';
 const MAAP = () => {
   const {
     formData,
-    isValid,
     exePath,
     setExePath,
     setFormData,
@@ -46,13 +45,13 @@ const MAAP = () => {
     ReturnPreCode();
     ReturnExePath(exePath);
     ReturnPostCode(`string inpLoc = @"${inputPath}";
-    if (!Path.IsPathRooted(inpLoc))
-          inpLoc = RootPath + inpLoc;
-      string docVarPath = @".\\MAAP\\temp.log";
-    if (!Path.IsPathRooted(docVarPath))
-          docVarPath = RootPath + docVarPath;
-    string resLoc = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\EMRALD_MAAP\" + Path.GetFileNameWithoutExtension(inpLoc) + ".log";
-    File.Copy(resLoc, docVarPath, true);`);
+  if (!Path.IsPathRooted(inpLoc))
+        inpLoc = RootPath + inpLoc;
+    string docVarPath = @".\\MAAP\\temp.log";
+  if (!Path.IsPathRooted(docVarPath))
+        docVarPath = RootPath + docVarPath;
+  string resLoc = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\EMRALD_MAAP\" + Path.GetFileNameWithoutExtension(inpLoc) + ".log";
+  File.Copy(resLoc, docVarPath, true);`);
     ReturnUsedVariables('');
 
     setFormData({
@@ -63,7 +62,7 @@ const MAAP = () => {
       parameterFile,
       parameterPath,
     });
-  }, [exePath, inputPath, parameterFile, parameterPath]);
+  }, [inputPath, parameterFile, parameterPath]);
 
   useEffect(() => {
     if (parameterFile) {
@@ -83,9 +82,7 @@ const MAAP = () => {
         for (const line of lines) {
           if (/^[0-9]{3}/.test(line)) {
             try {
-              const data: any = parameterParser(line, {
-                locations: true,
-              });
+              const data: any = parameterParser(line, {});
               allData.push(data);
               if (data.value === 'T') {
                 possibleInitiators.push(data);
@@ -119,9 +116,7 @@ const MAAP = () => {
         }
         const fileString = await inputFile.text();
         try {
-          const data = InputParse(fileString, {
-            locations: true,
-          });
+          const data = InputParse(fileString, {});
 
           console.log('input file data: ', data.value);
 
@@ -134,6 +129,8 @@ const MAAP = () => {
           let title: string;
           let fileRefs: any = [];
           let aliasList: any[] = [];
+          let isExpressions: any = [];
+          let plotFil: any;
 
           data.value.forEach((sourceElement: any, i: any) => {
             if (sourceElement.type === 'comment') {
@@ -191,6 +188,12 @@ const MAAP = () => {
                   inputBlocks.push(sourceElement);
                 }
                 break;
+              case 'is_expression':
+                isExpressions.push(sourceElement);
+                break;
+              case 'plotfil':
+                plotFil = sourceElement;
+                break;
               default:
                 break;
             }
@@ -214,6 +217,8 @@ const MAAP = () => {
             title,
             fileRefs,
             aliasList,
+            isExpressions,
+            plotFil,
           }));
         } catch (err) {
           console.log('Error parsing file:', err);

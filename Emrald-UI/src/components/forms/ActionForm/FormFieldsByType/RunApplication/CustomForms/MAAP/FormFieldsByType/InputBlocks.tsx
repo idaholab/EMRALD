@@ -61,6 +61,7 @@ const InputBlocks = () => {
     isProperty = false,
     propertyIndex = 0,
   ) => {
+    const useVariable = variables.includes(newValue);
     const updatedBlocks = inputBlocks.map((b) => {
       if (b === block) {
         const updatedBlock = { ...b };
@@ -69,15 +70,23 @@ const InputBlocks = () => {
           let properties = updatedBlock.value.filter((item: any) => item.type !== 'comment');
           let property = properties[propertyIndex];
           if (isLeft) {
-            (property.target.value as Value).value = newValue;
+            if (property.target.type === 'identifier') {
+              property.target.value = newValue;
+              property.target.useVariable = useVariable;
+            } else {
+              (property.target.value as Value).value = newValue;
+              (property.target.value as Value).useVariable = useVariable;
+            }
             if (property.target.arguments) property.target.arguments = undefined;
           } else {
             if ((property.value as Value).type !== 'expression') {
               (property.value as Value).value = newValue;
+              (property.value as Value).useVariable = useVariable;
             } else {
               const value: Value = {
                 type: 'variable',
                 value: newValue,
+                useVariable: useVariable,
               };
               property.value = value;
             }
@@ -91,9 +100,11 @@ const InputBlocks = () => {
           if (isLeft) {
             current.left.value = newValue;
             current.left.type = 'identifier';
+            current.left.useVariable = useVariable;
           } else {
             current.right.value = newValue;
             current.right.type = 'identifier';
+            current.right.useVariable = useVariable;
           }
         }
         return updatedBlock;

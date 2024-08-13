@@ -38,8 +38,9 @@ const EmraldLogo = styled('img')(({ theme }) => ({
 export default function Header() {
   const theme = useTheme();
   const isMediumScreen = useMediaQuery(theme.breakpoints.between('sm', 'lg'));
-  
-  const { name, desc, updateName, updateDescription } = useModelDetailsContext();
+
+  const { name, desc, fileName, updateFileName, updateName, updateDescription } =
+    useModelDetailsContext();
   const [openDialog, setOpenDialog] = useState(false);
   const [updatedName, setUpdatedName] = useState(name);
   const [updatedDesc, setUpdatedDesc] = useState(desc);
@@ -67,37 +68,42 @@ export default function Header() {
       }}
     >
       <Toolbar>
-        <EmraldLogo src={Logo} alt="Logo"  sx={{ height: isMediumScreen ? '45px' : '65px'}}/>
-        <Typography variant="h4" noWrap color="primary" fontSize="2em" fontWeight="bold"
-        sx={{ fontSize: isMediumScreen ? '1.2em' : '1.4em'}}>
+        <EmraldLogo src={Logo} alt="Logo" sx={{ height: isMediumScreen ? '45px' : '65px' }} />
+        <Typography
+          variant="h4"
+          noWrap
+          color="primary"
+          fontSize="2em"
+          fontWeight="bold"
+          sx={{ fontSize: isMediumScreen ? '1.2em' : '1.4em' }}
+        >
           Model Editor
         </Typography>
         <Box display="flex" alignItems="center" flexGrow={1} ml={5}>
-          <MenuButton id={1} title="Project" options={projectOptions} />
+          <MenuButton id={1} title="Project" options={projectOptions(updateFileName)} />
           <MenuButton id={2} title="Download" options={downloadOptions} />
-          <MenuButton
-            id={3}
-            title="Help"
-            handleClick={() => window.open(emraldDocsUrl)}
-          />
+          <MenuButton id={3} title="Help" handleClick={() => window.open(emraldDocsUrl)} />
           <MenuButton
             id={4}
             title="About"
-            handleClick={() => window.open("https://emrald.inl.gov/SitePages/Overview.aspx")}
+            handleClick={() => window.open('https://emrald.inl.gov/SitePages/Overview.aspx')}
             sx={{ mr: 3 }}
           />
         </Box>
         <SearchField />
-        <Typography
-          variant="h5"
-          noWrap
-          color="primary"
-          fontWeight="bold"
-          sx={{ cursor: 'pointer', fontSize: isMediumScreen ? '1em' : '1.2em' }}
-          onClick={() => setOpenDialog(true)}
-        >
-          {name ? name : 'Click Here to Name Project'}
-        </Typography>
+        <Box>
+          <Typography
+            variant="h5"
+            noWrap
+            color="primary"
+            fontWeight="bold"
+            sx={{ cursor: 'pointer', fontSize: isMediumScreen ? '1em' : '1.2em' }}
+            onClick={() => setOpenDialog(true)}
+          >
+            {name ? name : 'Click Here to Name Project'}
+          </Typography>
+          <Typography>{fileName ? fileName : ''}</Typography>
+        </Box>
       </Toolbar>
 
       {/* Dialog for project updating name and description */}
