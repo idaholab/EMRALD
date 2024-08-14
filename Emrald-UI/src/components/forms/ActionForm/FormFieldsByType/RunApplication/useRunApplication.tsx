@@ -3,9 +3,11 @@ import { useActionFormContext } from '../../ActionFormContext';
 import {
   Alias,
   Initiator,
+  InitiatorOG,
   InputBlock,
   InputResultValue,
   Parameter,
+  ParameterOG,
   Target,
   Test,
   Value,
@@ -18,7 +20,8 @@ const useRunApplication = () => {
   const [inputPath, setInputPath] = useState(formData?.inputPath || '');
   const [results, setResults] = useState<{ [key: string]: Map<string, string> }>({});
 
-  const getParameterName = (row: Parameter) => {
+  const getParameterName = (row: ParameterOG) => {
+    if (!row.target) return;
     let name =
       row.target.type === 'call_expression'
         ? ((row.target.value as Value).value as string)
@@ -104,14 +107,12 @@ const useRunApplication = () => {
   };
   const getParameterStrings = (): string => {
     let parameterString = '';
-    const parameters = formData?.parameters;
+    const parameters: Parameter[] = formData?.parameters;
     if (parameters) {
       for (const parameter of parameters) {
-        parameterString =
-          parameterString +
-          `\t${getParameterName(parameter)} = ${
-            parameter.useVariable ? `" + ${parameter.variable} + @"` : parameter.value.value
-          }\n`;
+        parameterString += `\t${parameter.name} = ${
+          parameter.useVariable ? `" + ${parameter.variable} + @"` : parameter.value
+        }${parameter.comment ? ` // ${parameter.comment}` : ''}\n`;
       }
     }
     return parameterString;
@@ -138,16 +139,19 @@ const useRunApplication = () => {
   };
   const getInitiatorStrings = () => {
     let initiatorString = '';
-    const initiators = formData?.initiators;
+    const initiators: Initiator[] = formData?.initiators;
     if (initiators) {
       for (const initiator of initiators) {
         initiatorString =
-          initiatorString + `\t${getInitiatorName(initiator)} = ${initiator.value.value}\n`;
+          initiatorString +
+          `\t${initiator.name} = ${initiator.value} ${
+            initiator.comment ? ` // ${initiator.comment}` : ''
+          }\n`;
       }
     }
     return initiatorString;
   };
-  const getInitiatorName = (row: Initiator): string | number => {
+  const getInitiatorName = (row: InitiatorOG): string | number => {
     let name =
       row.type === 'assignment'
         ? row.target.type === 'identifier'
@@ -155,18 +159,21 @@ const useRunApplication = () => {
           : ((row.target.value as Value).value as string | number)
         : (row.desc as string);
     if (row.target?.arguments && row.target.arguments.length > 0) {
-      name = name + ` (${String(row.target.arguments[0].value)})`;
+      name = name + `(${String(row.target.arguments[0].value)})`;
     }
     return name;
   };
   const getInputBlockStrings = () => {
     let inputBlockString = '';
-    const inputBlocks = formData?.inputBlocks;
+    const inputBlocks: InputBlock[] = formData?.inputBlocks;
     if (inputBlocks) {
       for (const inputBlock of inputBlocks) {
+        const comment = formData.docComments[inputBlock.id]?.value;
         inputBlockString =
           inputBlockString +
-          `\nWHEN ${getInputBlockTest(inputBlock)}\n${getInputBlockResults(inputBlock)}END\n`;
+          `\n${comment ? `// ${comment}\n` : ''}WHEN ${getInputBlockTest(
+            inputBlock,
+          )}\n${getInputBlockResults(inputBlock)}END\n`;
       }
     }
     return inputBlockString;
@@ -188,8 +195,14 @@ const useRunApplication = () => {
   const getInputBlockResults = (inputBlock: InputBlock) => {
     let resultsString = '';
     const resultList = getResults(inputBlock, true);
+    let idx = 0;
     for (const [key, value] of resultList) {
-      resultsString = resultsString + `\t${key} = ${value}\n`;
+      resultsString =
+        resultsString +
+        `\t${key} = ${value} ${
+          inputBlock.value[idx].comment ? ` // ${inputBlock.value[idx].comment} ` : ''
+        }\n`;
+      idx += 1;
     }
     return resultsString;
   };

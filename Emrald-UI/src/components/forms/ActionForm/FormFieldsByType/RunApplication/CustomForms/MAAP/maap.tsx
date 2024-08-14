@@ -7,7 +7,14 @@ import { parse as InputParse } from './Parser/maap-inp-parser.ts';
 import { parse as parameterParser } from './Parser/maap-par-parser.ts';
 import { v4 as uuid } from 'uuid';
 import { useActionFormContext } from '../../../../ActionFormContext.tsx';
-import { Initiator, InputBlock, Parameter } from '../../CustomApplicationTypes.ts';
+import {
+  Initiator,
+  InitiatorOG,
+  InputBlock,
+  Parameter,
+  ParameterOG,
+  Value,
+} from '../../CustomApplicationTypes.ts';
 import useRunApplication from '../../useRunApplication.tsx';
 
 const MAAP = () => {
@@ -27,6 +34,7 @@ const MAAP = () => {
   const {
     parameterPath,
     inputPath,
+    getParameterName,
     getInitiatorName,
     ReturnPreCode,
     setParameterPath,
@@ -121,7 +129,6 @@ const MAAP = () => {
           console.log('input file data: ', data.value);
 
           let docComments: { [key: string]: InputBlock } = {};
-          let comments: any = {};
           let sections: any = [];
           let parameters: any = [];
           let initiators: any = [];
@@ -164,21 +171,12 @@ const MAAP = () => {
               case 'block':
                 if (sourceElement.blockType === 'PARAMETER CHANGE') {
                   sourceElement.value.forEach((innerElement: any) => {
-                    if (innerElement.type === 'assignment') {
-                      parameters.push(innerElement);
-                    } else {
-                      // Handle other types if needed
-                    }
+                    parameters.push(innerElement);
                   });
                 } else if (sourceElement.blockType === 'INITIATORS') {
                   const initiatorData = sourceElement.value;
                   for (let i = 0; i < initiatorData.length; i++) {
-                    if (initiatorData[i].type === 'comment') {
-                      if (i === 0) continue;
-                      comments[getInitiatorName(initiatorData[i - 1])] = initiatorData[i].value;
-                    } else {
-                      initiators.push(initiatorData[i]);
-                    }
+                    initiators.push(initiatorData[i]);
                   }
                 }
                 break;
@@ -201,16 +199,37 @@ const MAAP = () => {
 
           // Set state variables or perform other actions with comments, sections, and parameters
           // setComments(comments);
-          const newParameters: Parameter[] = parameters.map((param: Parameter) => ({
-            ...param,
-            id: uuid(),
-            useVariable: false,
-          }));
+          const newParameters: Parameter[] = [];
+          parameters.forEach((param: ParameterOG) => {
+            if (param.type === 'comment') {
+              newParameters[newParameters.length - 1].comment = param.value as unknown as string;
+            } else {
+              newParameters.push({
+                name: getParameterName(param) || '',
+                id: uuid(),
+                useVariable: false,
+                value: param.value.value,
+                variable: '',
+              });
+            }
+          });
+          const newInitiators: Initiator[] = [];
+          initiators.forEach((init: InitiatorOG) => {
+            if (init.type === 'comment') {
+              newInitiators[newInitiators.length - 1].comment = init.value as string;
+            } else {
+              newInitiators.push({
+                name: String(getInitiatorName(init)),
+                id: uuid(),
+                comment: '',
+                value: (init.value as Value).value,
+              });
+            }
+          });
           setFormData((prevFormData: any) => ({
             ...prevFormData,
             parameters: newParameters,
-            initiators,
-            comments,
+            initiators: newInitiators,
             docComments,
             inputBlocks,
             inputFileName,

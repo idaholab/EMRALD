@@ -11,17 +11,14 @@ import {
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useActionFormContext } from '../../../../../ActionFormContext';
 import { useEffect, useState } from 'react';
-import { Initiator } from '../../../CustomApplicationTypes';
-import useRunApplication from '../../../useRunApplication';
+import { Initiator, InitiatorOG } from '../../../CustomApplicationTypes';
+import { v4 as uuid } from 'uuid';
 const Initiators = () => {
   const { formData, setFormData } = useActionFormContext();
   const [initiators, setInitiators] = useState<any[]>([]);
-  const [comments, setComments] = useState<{ [key: string]: string }>({});
-  const { getInitiatorName } = useRunApplication();
 
   useEffect(() => {
     setInitiators(formData?.initiators || []);
-    setComments(formData?.comments || {});
   }, [formData]);
 
   const removeInitiator = (row: any) => {
@@ -30,17 +27,18 @@ const Initiators = () => {
     setFormData((prevFormData: any) => ({ ...prevFormData, initiators: updatedInitiators }));
   };
   const addInitiator = (desc: string) => {
-    const initiator = formData?.possibleInitiators?.find((init: Initiator) => init.desc === desc);
+    const initiator = formData?.possibleInitiators?.find((init: InitiatorOG) => init.desc === desc);
     if (initiator && !initiators.includes(initiator)) {
-      const updatedInitiators = [...initiators, initiator];
+      const newInitiator = {
+        name: initiator.desc,
+        comment: '',
+        id: uuid(),
+        value: initiator.value,
+      };
+      const updatedInitiators = [...initiators, newInitiator];
       setInitiators(updatedInitiators);
       setFormData((prevFormData: any) => ({ ...prevFormData, initiators: updatedInitiators }));
     }
-  };
-  const getInitiatorRow = (row: Initiator) => {
-    const name = getInitiatorName(row);
-    const comment = comments[name];
-    return name + (comment ? ` - ${comment}` : '');
   };
 
   return (
@@ -72,7 +70,7 @@ const Initiators = () => {
             <TableRow key={idx} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
               <TableCell component="th" scope="row">
                 <div style={{ display: 'flex', flexDirection: 'column' }}>
-                  {getInitiatorRow(row)}
+                  {row.name} {row.comment ? ` - ${row.comment}` : ''}
                 </div>
               </TableCell>
               <TableCell align="center">

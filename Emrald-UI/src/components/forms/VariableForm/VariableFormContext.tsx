@@ -158,12 +158,14 @@ const VariableFormContextProvider: React.FC<PropsWithChildren> = ({ children }) 
   };
 
   const handleTypeChange = (newType: VariableType) => {
-    const updatedPrefix: string = PREFIXES[newType] || PREFIXES.default;
-    setNamePrefix(updatedPrefix);
+    if (!!name.split('_')[1]) {
+      const updatedPrefix: string = PREFIXES[newType] || PREFIXES.default;
+      setNamePrefix(updatedPrefix);
 
-    const nameWithoutPrefix: string = name.split('_')[1] ? name.split('_')[1] : name;
+      const nameWithoutPrefix: string = name.split('_')[1] ? name.split('_')[1] : name;
 
-    setName(`${updatedPrefix}${nameWithoutPrefix}`);
+      setName(`${updatedPrefix}${nameWithoutPrefix}`);
+    }
 
     if (newType === 'bool') setValue('');
   };
@@ -174,7 +176,7 @@ const VariableFormContextProvider: React.FC<PropsWithChildren> = ({ children }) 
     const duplicateExists = variables
       .filter((variable) => variable.name !== originalName)
       .some((variable) => variable.name === trimmedName);
-    const hasInvalidChars = /[^a-zA-Z0-9-_ ]/.test(trimmedName);
+    const hasInvalidChars = /[^a-zA-Z0-9-_]/.test(trimmedName);
     setHasError(duplicateExists || hasInvalidChars);
     setName(updatedName);
   };

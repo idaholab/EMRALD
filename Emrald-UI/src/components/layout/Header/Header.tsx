@@ -102,7 +102,9 @@ export default function Header() {
           >
             {name ? name : 'Click Here to Name Project'}
           </Typography>
-          <Typography>{fileName ? fileName : ''}</Typography>
+          <Typography sx={{ fontSize: isMediumScreen ? '0.625em' : '0.75em' }}>
+            {fileName ? fileName : ''}
+          </Typography>
         </Box>
       </Toolbar>
 
