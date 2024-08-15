@@ -14,6 +14,7 @@ interface ModelDetailsContextType {
   updateDescription: (desc: string) => void;
   updateEmraldVersion: (version: number) => void;
   updateVersion: (version: number) => void;
+  clearFileName: () => void;
 }
 
 const ModelDetailsContext = createContext<ModelDetailsContextType | undefined>(undefined);
@@ -49,6 +50,9 @@ const ModelDetailsContextProvider: React.FC<EmraldContextWrapperProps> = ({ chil
   const updateFileName = (updatedName: string) => {
     setFileName(updatedName);
   };
+  const clearFileName = () => {
+    setFileName('');
+  };
 
   return (
     <ModelDetailsContext.Provider
@@ -64,6 +68,7 @@ const ModelDetailsContextProvider: React.FC<EmraldContextWrapperProps> = ({ chil
         updateDescription,
         updateEmraldVersion,
         updateVersion,
+        clearFileName,
       }}
     >
       {children}
