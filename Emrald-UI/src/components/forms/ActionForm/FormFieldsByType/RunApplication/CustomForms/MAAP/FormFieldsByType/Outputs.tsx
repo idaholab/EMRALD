@@ -30,7 +30,7 @@ const Outputs = () => {
       docLinkVariable: docLinkVariable,
       output: output,
     }));
-  }, [docLinkVariable, output]);
+  }, [docLinkVariable, output, setDocLinkVariable, setOutput]);
 
   return (
     <Box>
@@ -43,9 +43,10 @@ const Outputs = () => {
           <Autocomplete
             freeSolo
             options={docLinkVariables}
-            defaultValue={formData.docLinkVariable || ''}
+            value={docLinkVariable}
             renderInput={(params) => <TextField {...params} label="Doc Link Variables" />}
             onChange={(_, event) => setDocLinkVariable(event || '')}
+            onInputChange={(_, newInputValue) => setDocLinkVariable(newInputValue)}
             sx={{ width: '250px' }}
             size="small"
           />
@@ -55,12 +56,16 @@ const Outputs = () => {
               labelId="output-label"
               id="output-variables"
               label="Output"
-              value={output}
+              value={output || ''}
               onChange={(event) => setOutput(event.target.value)}
             >
               <MenuItem value="true">Core Uncovery</MenuItem>
-              <MenuItem value="false">Vessel Failure</MenuItem>
-              <MenuItem value="none">Containment Failure</MenuItem>
+              <MenuItem value="false" disabled>
+                Vessel Failure
+              </MenuItem>
+              <MenuItem value="none" disabled>
+                Containment Failure
+              </MenuItem>
             </Select>
           </FormControl>
 

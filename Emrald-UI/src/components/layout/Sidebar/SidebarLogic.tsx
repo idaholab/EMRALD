@@ -34,7 +34,7 @@ export function useSidebarLogic() {
   const [itemToDelete, setItemToDelete] = useState<Event | State | Action | Diagram | undefined>();
   const [itemToDeleteType, setItemToDeleteType] = useState<MainItemTypes>();
   const { deleteState, getStateByStateName } = useStateContext();
-  const { deleteDiagram } = useDiagramContext();
+  const { deleteDiagram, updateDiagram } = useDiagramContext();
   const { deleteLogicNode } = useLogicNodeContext();
   const { deleteExtSim } = useExtSimContext();
   const { deleteAction } = useActionContext();
@@ -179,12 +179,8 @@ export function useSidebarLogic() {
     }
     if (itemToDeleteType === MainItemTypes.LogicNode) {
       let nodeToDelete = itemToDelete as unknown as LogicNode;
-      if (!canDeleteNode(itemToDelete.name)) {
-        nodeToDelete.isRoot = false;
-      } else {
-        await recurseAndDeleteChildren(nodeToDelete);
-        deleteLogicNode(nodeToDelete.id);
-      }
+      await recurseAndDeleteChildren(nodeToDelete);
+      deleteLogicNode(nodeToDelete.id);
     }
     if (itemToDeleteType === MainItemTypes.ExtSim) {
       deleteExtSim(itemToDelete.id);
@@ -196,6 +192,10 @@ export function useSidebarLogic() {
       deleteEvent(itemToDelete.id);
     }
     if (itemToDeleteType === MainItemTypes.State) {
+      let diagram = getDiagramByDiagramName((itemToDelete as State).diagramName);
+      const updatedStates = diagram.states.filter((stateName) => stateName !== itemToDelete.name);
+      diagram.states = updatedStates;
+      await updateDiagram(diagram);
       deleteState(itemToDelete.id);
     }
     if (itemToDeleteType === MainItemTypes.Variable) {

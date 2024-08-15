@@ -14,8 +14,17 @@ import ImportForm from '../components/forms/ImportForm/ImportForm';
 
 export function useAssembledData() {
   // const { updateAppData } = useAppData();
-  const { id, name, desc, emraldVersion, version, updateName, updateDescription, updateVersion } =
-    useModelDetailsContext();
+  const {
+    id,
+    name,
+    desc,
+    emraldVersion,
+    version,
+    clearFileName,
+    updateName,
+    updateDescription,
+    updateVersion,
+  } = useModelDetailsContext();
   const { diagrams, clearDiagramList, newDiagramList } = useDiagramContext();
   const { logicNodes, clearLogicNodeList, newLogicNodeList } = useLogicNodeContext();
   const { actions, clearActionList, newActionList } = useActionContext();
@@ -30,7 +39,7 @@ export function useAssembledData() {
   const newProject = () => {
     updateName('');
     updateDescription('');
-    updateVersion(1.3);
+    updateVersion(1);
     clearDiagramList();
     clearLogicNodeList();
     clearActionList();
@@ -39,6 +48,7 @@ export function useAssembledData() {
     clearStateList();
     clearTemplateList();
     clearExtSimList();
+    clearFileName();
   };
 
   const refreshWithNewData = (model: EMRALD_Model) => {
@@ -82,13 +92,13 @@ export function useAssembledData() {
     if (newModel.templates && newModel.templates.length > 0) {
       newModel.templates.forEach((template) => {
         mergeTemplateToList(template);
-      })
+      });
     }
 
     // Open import window to make sure conflicts are resolved before merging.
     addWindow(
       `Merge Model: ${newModel.name}`,
-      <ImportForm importedData={newModel} fromTemplate={true}/>,
+      <ImportForm importedData={newModel} fromTemplate={true} />,
       {
         x: 75,
         y: 25,
@@ -98,7 +108,7 @@ export function useAssembledData() {
       null,
     );
   };
-  
+
   const assembleData = () => {
     updateVersion(parseFloat((version + 0.1).toFixed(1)));
 

@@ -5,7 +5,7 @@ import { appData, updateAppData } from '../hooks/useAppData';
 import { ReadonlySignal, useComputed } from '@preact/signals-react';
 import { EMRALD_Model } from '../types/EMRALD_Model';
 import { MainItemTypes } from '../types/ItemTypes';
-import { updateModelAndReferences } from '../utils/UpdateModel';
+import { DeleteItemAndRefsInSpecifiedModel, updateModelAndReferences } from '../utils/UpdateModel';
 import { State } from '../types/State';
 import { Event } from '../types/Event';
 
@@ -87,7 +87,13 @@ const ActionContextProvider: React.FC<EmraldContextWrapperProps> = ({ children }
     if (!actionId) {
       return;
     }
+    const actionToDelete = actionsList.value.find((action) => action.id === actionId);
+    if (actionToDelete) {
+      const updatedEMRALDModel: EMRALD_Model = JSON.parse(JSON.stringify(appData.value));
+      DeleteItemAndRefsInSpecifiedModel(actionToDelete, updatedEMRALDModel, false);
+    }
     const updatedActionList = actionsList.value.filter((item) => item.id !== actionId);
+    updateAppData(JSON.parse(JSON.stringify({ ...appData.value, ActionList: updatedActionList })));
     setActions(updatedActionList);
   };
 

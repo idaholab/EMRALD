@@ -17,6 +17,9 @@ export const updateAppData = (newData: any, undoData?: any) => {
   } else {
     updatedData = {
       ...newData,
+      name: newData.name,
+      desc: newData.desc,
+      version: newData.version,
       DiagramList: newData.DiagramList,
       StateList: newData.StateList,
       VariableList: newData.VariableList,

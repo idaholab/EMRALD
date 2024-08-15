@@ -88,7 +88,7 @@ const VariableFormContextProvider: React.FC<PropsWithChildren> = ({ children }) 
   const [varScope, setVarScope] = useState<VarScope>('gtGlobal');
   const [value, setValue] = useState<number | string | boolean>('');
   const [sim3DId, setSim3DId] = useState<string>();
-  const [resetOnRuns, setResetOnRuns] = useState<boolean>();
+  const [resetOnRuns, setResetOnRuns] = useState<boolean | undefined>(true);
   const [docType, setDocType] = useState<string>();
   const [docPath, setDocPath] = useState<string>();
   const [docLink, setDocLink] = useState<string>();
@@ -113,7 +113,8 @@ const VariableFormContextProvider: React.FC<PropsWithChildren> = ({ children }) 
     });
   };
   const InitializeForm = (variableData?: Variable | undefined) => {
-    if (variableData?.name) {
+    if (!variableData) return;
+    if (variableData.name) {
       setName(variableData.name);
       setOriginalName(variableData.name);
       const prefix: string = variableData.name.split('_')[1]
@@ -123,12 +124,12 @@ const VariableFormContextProvider: React.FC<PropsWithChildren> = ({ children }) 
     } else {
       setNamePrefix('Int_');
     }
-    setDesc(variableData?.desc || '');
-    setType(variableData?.type || 'int');
+    setDesc(variableData.desc || '');
+    setType(variableData.type || 'int');
     setVarScope(variableData?.varScope || 'gtGlobal');
     variableData?.value !== undefined && setValue(String(variableData.value));
     variableData?.sim3DId && setSim3DId(variableData.sim3DId);
-    variableData?.resetOnRuns && setResetOnRuns(variableData.resetOnRuns);
+    setResetOnRuns(variableData.resetOnRuns || false);
     variableData?.docType && setDocType(variableData.docType);
     variableData?.docPath && setDocPath(variableData.docPath);
     variableData?.docLink && setDocLink(variableData.docLink);
@@ -157,12 +158,14 @@ const VariableFormContextProvider: React.FC<PropsWithChildren> = ({ children }) 
   };
 
   const handleTypeChange = (newType: VariableType) => {
-    const updatedPrefix: string = PREFIXES[newType] || PREFIXES.default;
-    setNamePrefix(updatedPrefix);
+    if (!!name.split('_')[1]) {
+      const updatedPrefix: string = PREFIXES[newType] || PREFIXES.default;
+      setNamePrefix(updatedPrefix);
 
-    const nameWithoutPrefix: string = name.split('_')[1] ? name.split('_')[1] : name;
+      const nameWithoutPrefix: string = name.split('_')[1] ? name.split('_')[1] : name;
 
-    setName(`${updatedPrefix}${nameWithoutPrefix}`);
+      setName(`${updatedPrefix}${nameWithoutPrefix}`);
+    }
 
     if (newType === 'bool') setValue('');
   };
@@ -173,7 +176,7 @@ const VariableFormContextProvider: React.FC<PropsWithChildren> = ({ children }) 
     const duplicateExists = variables
       .filter((variable) => variable.name !== originalName)
       .some((variable) => variable.name === trimmedName);
-    const hasInvalidChars = /[^a-zA-Z0-9-_ ]/.test(trimmedName);
+    const hasInvalidChars = /[^a-zA-Z0-9-_]/.test(trimmedName);
     setHasError(duplicateExists || hasInvalidChars);
     setName(updatedName);
   };

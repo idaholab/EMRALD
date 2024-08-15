@@ -210,7 +210,7 @@ const DiagramForm: React.FC<DiagramFormProps> = ({ diagramData }) => {
             type={diagramType}
             setType={setDiagramType}
             typeOptions={diagramTypeOptions}
-            typeDisabled={!!selectedTemplate || !!importDiagram}
+            typeDisabled={!!selectedTemplate || !!importDiagram || !!diagramData}
             nameDisabled={!!selectedTemplate || !!importDiagram}
             descDisabled={!!selectedTemplate || !!importDiagram}
             name={name}

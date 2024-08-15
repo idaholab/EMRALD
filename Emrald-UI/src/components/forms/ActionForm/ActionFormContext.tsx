@@ -16,6 +16,7 @@ import { SelectChangeEvent } from '@mui/material/Select';
 import { State } from '../../../types/State';
 import { Event } from '../../../types/Event';
 import { useVariableContext } from '../../../contexts/VariableContext';
+import { appData } from '../../../hooks/useAppData';
 
 export interface NewStateItem {
   id: string;
@@ -136,6 +137,7 @@ const ActionFormContextProvider: React.FC<PropsWithChildren> = ({ children }) =>
   const [reqPropsFilled, setReqPropsFilled] = useState<boolean>(false);
   const [originalName, setOriginalName] = useState<string>();
   const [exePath, setExePath] = useState<string>(formData?.exePath || '');
+  const { updateVariable, createVariable } = useVariableContext();
 
   const actionTypeOptions = [
     { value: 'atTransition', label: 'Transition' },
@@ -162,7 +164,7 @@ const ActionFormContextProvider: React.FC<PropsWithChildren> = ({ children }) =>
     setName(newName);
   };
 
-  const handleSave = (event?: Event, state?: State) => {
+  const handleSave = async (event?: Event, state?: State) => {
     const newStates: NewState[] = newStateItems.map((newStateItem): NewState => {
       return {
         toState: newStateItem.toState,
@@ -195,31 +197,54 @@ const ActionFormContextProvider: React.FC<PropsWithChildren> = ({ children }) =>
       formData,
       raType,
     };
-    checkFormData();
+    await checkFormData();
 
     actionData ? updateAction(action.value) : createAction(action.value, event, state);
     handleClose();
   };
 
-  const checkFormData = () => {
-    if (formData.docLinkVariable !== undefined) {
-      let { variableList } = useVariableContext();
-      let docLinkVariables = variableList.value.filter(({ varScope }) => varScope === 'gtDocLink');
-      if (docLinkVariables.map(({ name }) => name).includes(formData.docLinkVariable)) {
-        let variable = docLinkVariables.find(({ name }) => name === formData.docLinkVariable);
-        if (variable) {
-          variable.docType = 'dtTextRegEx';
-          variable.docLink = 'CORE UNCOVERY';
-          variable.pathMustExist = false;
-          variable.numChars = 11;
-          variable.begPosition = 28;
-          variable.regExpLine = 0;
+  const checkFormData = async () => {
+    return new Promise<void>(async (resolve) => {
+      if (formData && formData.docLinkVariable !== undefined) {
+        let variableList = structuredClone(appData.value.VariableList);
+        let docLinkVariables = variableList.filter(({ varScope }) => varScope === 'gtDocLink');
+        if (docLinkVariables.map(({ name }) => name).includes(formData.docLinkVariable)) {
+          let variable = docLinkVariables.find(({ name }) => name === formData.docLinkVariable);
+          if (variable) {
+            variable.docType = 'dtTextRegEx';
+            variable.docLink = 'CORE UNCOVERY';
+            variable.pathMustExist = false;
+            variable.numChars = 11;
+            variable.begPosition = 28;
+            variable.regExpLine = 0;
+            //update app data with the new variable information
+            await updateVariable(variable);
+          }
+        } else {
+          //create a new variable with the new information
+          if (!variableList.find(({ name }) => name === formData.docLinkVariable)) {
+            await createVariable({
+              name: formData.docLinkVariable || 'maapDocLink',
+              desc: 'Link to CoreUncoveryTime from MAAP (hours)',
+              id: uuidv4(),
+              docType: 'dtTextRegEx',
+              objType: 'Variable',
+              varScope: 'gtDocLink',
+              docPath: 'C:/testSimanij_FLEX/temp.log',
+              value: 0,
+              type: 'double',
+              docLink: 'CORE UNCOVERY',
+              pathMustExist: false,
+              numChars: 11,
+              begPosition: 28,
+              regExpLine: 0,
+            });
+          }
+          formData.docLinkVariable = formData.docLinkVariable || 'maapDocLink';
         }
-        //TODO update app data with the new variable information
-      } else {
-        //TODO create a new variable with the new information
       }
-    }
+      resolve();
+    });
   };
 
   const sortNewStates = (newStateItems: NewStateItem[]) => {

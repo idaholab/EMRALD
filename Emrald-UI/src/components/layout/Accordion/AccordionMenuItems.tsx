@@ -28,7 +28,10 @@ export interface AccordionMenuListProps {
   item: AccordionMenuItemType;
   bothAccordionsOpen: boolean;
   onDiagramChange: (diagram: Diagram) => void;
-  handleDelete?: (itemToDelete: Diagram | LogicNode | ExtSim | Action | Event | State | Variable, itemToDeleteType: MainItemTypes) => void;
+  handleDelete?: (
+    itemToDelete: Diagram | LogicNode | ExtSim | Action | Event | State | Variable,
+    itemToDeleteType: MainItemTypes,
+  ) => void;
 }
 
 const AccordionMenuItems: React.FC<AccordionMenuListProps> = ({
@@ -38,7 +41,6 @@ const AccordionMenuItems: React.FC<AccordionMenuListProps> = ({
   handleDelete,
 }) => {
   const { diagrams } = useDiagramContext();
-
   const [openIndex, setOpenIndex] = React.useState<number | null>(null); // Keeps track of the index of the open item
   const diagramLabels = Array.from(new Set(diagrams.map((diagram) => diagram.diagramLabel))).sort();
 
@@ -69,16 +71,13 @@ const AccordionMenuItems: React.FC<AccordionMenuListProps> = ({
                     <ListItemText primary={name} />
                     {openIndex === index ? <ExpandLess /> : <ExpandMore />}
                   </ListItemButton>
-                  <Collapse
-                    in={openIndex === index}
-                    timeout="auto"
-                    unmountOnExit
-                  >
+                  <Collapse in={openIndex === index} timeout="auto" unmountOnExit>
                     <List
                       component="div"
                       disablePadding
                       sx={{
-                        maxHeight: !bothAccordionsOpen ? '420px' : '210px',
+                        maxHeight:
+                          bothAccordionsOpen || window.innerHeight < 765 ? '210px' : '420px',
                         overflow: 'auto',
                       }}
                     >
@@ -90,9 +89,7 @@ const AccordionMenuItems: React.FC<AccordionMenuListProps> = ({
                               itemData={diagram}
                               itemType={MainItemTypes.Diagram}
                             >
-                              <ListItemButton
-                                sx={{ p: '0 0 0 3rem', width: '100%' }}
-                              >
+                              <ListItemButton sx={{ p: '0 0 0 3rem', width: '100%' }}>
                                 <ItemWithContextMenu
                                   itemData={diagram}
                                   optionType={item.type}
@@ -119,7 +116,7 @@ const AccordionMenuItems: React.FC<AccordionMenuListProps> = ({
           sx={{
             width: '100%',
             bgcolor: 'background.paper',
-            maxHeight: !bothAccordionsOpen ? '420px' : '210px',
+            maxHeight: bothAccordionsOpen || window.innerHeight < 765 ? '210px' : '420px',
             overflow: 'auto',
           }}
         >
@@ -127,10 +124,7 @@ const AccordionMenuItems: React.FC<AccordionMenuListProps> = ({
             item.data.map((option, index) => (
               <React.Fragment key={option.id || index}>
                 {option.isRoot ? ( // Only show logic tree items that are root
-                  <ListItemButton
-                    key={option.id || index}
-                    sx={{ p: '0 0 0 2rem' }}
-                  >
+                  <ListItemButton key={option.id || index} sx={{ p: '0 0 0 2rem' }}>
                     <DraggableItem
                       key={option.id}
                       itemData={option}
@@ -153,10 +147,7 @@ const AccordionMenuItems: React.FC<AccordionMenuListProps> = ({
             <>
               {item.data.length > 0 ? (
                 item.data.map((option, index) => (
-                  <ListItemButton
-                    key={option.id || index}
-                    sx={{ p: '0 0 0 2rem' }}
-                  >
+                  <ListItemButton key={option.id || index} sx={{ p: '0 0 0 2rem' }}>
                     <DraggableItem
                       key={option.id}
                       itemData={option}

@@ -1,4 +1,5 @@
 export interface Target {
+    useVariable: boolean;
     location: any;
     value: Value | string;
     type: string;
@@ -12,18 +13,25 @@ export interface Target {
   }
   
   export interface Value {
+    useVariable?: boolean;
     type: string;
     value: string | number;
     units?: string;
   }
-  export interface Initiator {
+  export interface InitiatorOG {
     desc: string;
-    value: string;
+    value: Value | string;
     index: number;
     type: string;
     target: Target;
   }
-  export interface Parameter {
+  export interface Initiator {
+    name: string;
+    comment: string;
+    id: string;
+    value: string | number;
+  }
+  export interface ParameterOG {
     useVariable: boolean;
     id: string;
     location: any;
@@ -31,6 +39,14 @@ export interface Target {
     value: Value;
     type: string;
     variable?: string;
+  }
+  export interface Parameter {
+    id: string;
+    name: string;
+    value: string | number;
+    useVariable: boolean;
+    variable: string;
+    comment?: string;
   }
   export interface InputBlock {
     test: Test;

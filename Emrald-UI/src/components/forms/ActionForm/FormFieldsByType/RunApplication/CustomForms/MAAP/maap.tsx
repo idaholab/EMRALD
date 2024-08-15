@@ -1,19 +1,25 @@
 import React, { useEffect, useState } from 'react';
 import { useCustomForm } from '../useCustomForm';
-import { Box, Divider, Tab, Tabs, Typography } from '@mui/material';
+import { Box, Divider, Tab, Tabs } from '@mui/material';
 import { TextFieldComponent, FileUploadComponent, TabPanel } from '../../../../../../common';
 import { Parameters, Initiators, InputBlocks, Outputs } from './FormFieldsByType';
 import { parse as InputParse } from './Parser/maap-inp-parser.ts';
 import { parse as parameterParser } from './Parser/maap-par-parser.ts';
 import { v4 as uuid } from 'uuid';
 import { useActionFormContext } from '../../../../ActionFormContext.tsx';
-import { Initiator, InputBlock, Parameter } from '../../CustomApplicationTypes.ts';
+import {
+  Initiator,
+  InitiatorOG,
+  InputBlock,
+  Parameter,
+  ParameterOG,
+  Value,
+} from '../../CustomApplicationTypes.ts';
 import useRunApplication from '../../useRunApplication.tsx';
 
 const MAAP = () => {
   const {
     formData,
-    isValid,
     exePath,
     setExePath,
     setFormData,
@@ -28,6 +34,7 @@ const MAAP = () => {
   const {
     parameterPath,
     inputPath,
+    getParameterName,
     getInitiatorName,
     ReturnPreCode,
     setParameterPath,
@@ -46,13 +53,13 @@ const MAAP = () => {
     ReturnPreCode();
     ReturnExePath(exePath);
     ReturnPostCode(`string inpLoc = @"${inputPath}";
-    if (!Path.IsPathRooted(inpLoc))
-          inpLoc = RootPath + inpLoc;
-      string docVarPath = @".\\MAAP\\temp.log";
-    if (!Path.IsPathRooted(docVarPath))
-          docVarPath = RootPath + docVarPath;
-    string resLoc = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\EMRALD_MAAP\" + Path.GetFileNameWithoutExtension(inpLoc) + ".log";
-    File.Copy(resLoc, docVarPath, true);`);
+  if (!Path.IsPathRooted(inpLoc))
+        inpLoc = RootPath + inpLoc;
+    string docVarPath = @".\\MAAP\\temp.log";
+  if (!Path.IsPathRooted(docVarPath))
+        docVarPath = RootPath + docVarPath;
+  string resLoc = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\EMRALD_MAAP\" + Path.GetFileNameWithoutExtension(inpLoc) + ".log";
+  File.Copy(resLoc, docVarPath, true);`);
     ReturnUsedVariables('');
 
     setFormData({
@@ -63,7 +70,7 @@ const MAAP = () => {
       parameterFile,
       parameterPath,
     });
-  }, [exePath, inputPath, parameterFile, parameterPath]);
+  }, [inputPath, parameterFile, parameterPath]);
 
   useEffect(() => {
     if (parameterFile) {
@@ -83,9 +90,7 @@ const MAAP = () => {
         for (const line of lines) {
           if (/^[0-9]{3}/.test(line)) {
             try {
-              const data: any = parameterParser(line, {
-                locations: true,
-              });
+              const data: any = parameterParser(line, {});
               allData.push(data);
               if (data.value === 'T') {
                 possibleInitiators.push(data);
@@ -119,14 +124,11 @@ const MAAP = () => {
         }
         const fileString = await inputFile.text();
         try {
-          const data = InputParse(fileString, {
-            locations: true,
-          });
+          const data = InputParse(fileString, {});
 
           console.log('input file data: ', data.value);
 
           let docComments: { [key: string]: InputBlock } = {};
-          let comments: any = {};
           let sections: any = [];
           let parameters: any = [];
           let initiators: any = [];
@@ -134,6 +136,8 @@ const MAAP = () => {
           let title: string;
           let fileRefs: any = [];
           let aliasList: any[] = [];
+          let isExpressions: any = [];
+          let plotFil: any;
 
           data.value.forEach((sourceElement: any, i: any) => {
             if (sourceElement.type === 'comment') {
@@ -167,21 +171,12 @@ const MAAP = () => {
               case 'block':
                 if (sourceElement.blockType === 'PARAMETER CHANGE') {
                   sourceElement.value.forEach((innerElement: any) => {
-                    if (innerElement.type === 'assignment') {
-                      parameters.push(innerElement);
-                    } else {
-                      // Handle other types if needed
-                    }
+                    parameters.push(innerElement);
                   });
                 } else if (sourceElement.blockType === 'INITIATORS') {
                   const initiatorData = sourceElement.value;
                   for (let i = 0; i < initiatorData.length; i++) {
-                    if (initiatorData[i].type === 'comment') {
-                      if (i === 0) continue;
-                      comments[getInitiatorName(initiatorData[i - 1])] = initiatorData[i].value;
-                    } else {
-                      initiators.push(initiatorData[i]);
-                    }
+                    initiators.push(initiatorData[i]);
                   }
                 }
                 break;
@@ -191,6 +186,12 @@ const MAAP = () => {
                   inputBlocks.push(sourceElement);
                 }
                 break;
+              case 'is_expression':
+                isExpressions.push(sourceElement);
+                break;
+              case 'plotfil':
+                plotFil = sourceElement;
+                break;
               default:
                 break;
             }
@@ -198,22 +199,45 @@ const MAAP = () => {
 
           // Set state variables or perform other actions with comments, sections, and parameters
           // setComments(comments);
-          const newParameters: Parameter[] = parameters.map((param: Parameter) => ({
-            ...param,
-            id: uuid(),
-            useVariable: false,
-          }));
+          const newParameters: Parameter[] = [];
+          parameters.forEach((param: ParameterOG) => {
+            if (param.type === 'comment') {
+              newParameters[newParameters.length - 1].comment = param.value as unknown as string;
+            } else {
+              newParameters.push({
+                name: getParameterName(param) || '',
+                id: uuid(),
+                useVariable: false,
+                value: param.value.value,
+                variable: '',
+              });
+            }
+          });
+          const newInitiators: Initiator[] = [];
+          initiators.forEach((init: InitiatorOG) => {
+            if (init.type === 'comment') {
+              newInitiators[newInitiators.length - 1].comment = init.value as string;
+            } else {
+              newInitiators.push({
+                name: String(getInitiatorName(init)),
+                id: uuid(),
+                comment: '',
+                value: (init.value as Value).value,
+              });
+            }
+          });
           setFormData((prevFormData: any) => ({
             ...prevFormData,
             parameters: newParameters,
-            initiators,
-            comments,
+            initiators: newInitiators,
             docComments,
             inputBlocks,
             inputFileName,
             title,
             fileRefs,
             aliasList,
+            isExpressions,
+            plotFil,
           }));
         } catch (err) {
           console.log('Error parsing file:', err);

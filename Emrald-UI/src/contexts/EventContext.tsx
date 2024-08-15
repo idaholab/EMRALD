@@ -4,7 +4,7 @@ import { EmraldContextWrapperProps } from './EmraldContextWrapper';
 import { appData, updateAppData } from '../hooks/useAppData';
 import { ReadonlySignal, useComputed } from '@preact/signals-react';
 import { EMRALD_Model } from '../types/EMRALD_Model';
-import { updateModelAndReferences } from '../utils/UpdateModel';
+import { DeleteItemAndRefsInSpecifiedModel, updateModelAndReferences } from '../utils/UpdateModel';
 import { MainItemTypes } from '../types/ItemTypes';
 import { State } from '../types/State';
 
@@ -12,11 +12,7 @@ interface EventContextType {
   events: Event[];
   eventsList: ReadonlySignal<Event[]>;
   createEvent: (event: Event, state?: State, moveFromCurrent?: boolean) => void;
-  updateEvent: (
-    event: Event,
-    state?: State,
-    moveFromCurrent?: boolean,
-  ) => void;
+  updateEvent: (event: Event, state?: State, moveFromCurrent?: boolean) => void;
   deleteEvent: (eventId: string | undefined) => void;
   getEventByEventName: (eventName: string) => Event | undefined;
   newEventList: (newEventList: Event[]) => void;
@@ -51,11 +47,7 @@ const EventContextProvider: React.FC<EmraldContextWrapperProps> = ({ children })
   );
   const eventsList = useComputed(() => appData.value.EventList);
 
-  const createEvent = async (
-    newEvent: Event,
-    state?: State,
-    moveFromCurrent: boolean = false,
-  ) => {
+  const createEvent = async (newEvent: Event, state?: State, moveFromCurrent: boolean = false) => {
     var updatedModel: EMRALD_Model = await updateModelAndReferences(newEvent, MainItemTypes.Event);
     updateAppData(updatedModel);
     if (state) {
@@ -92,9 +84,15 @@ const EventContextProvider: React.FC<EmraldContextWrapperProps> = ({ children })
     if (!eventId) {
       return;
     }
+    const eventToDelete = eventsList.value.find((eventItem) => eventItem.id === eventId);
     const updatedEventList = eventsList.value.filter((item) => item.id !== eventId);
     updateAppData(JSON.parse(JSON.stringify({ ...appData.value, EventList: updatedEventList })));
     setEvents(updatedEventList);
+
+    if (eventToDelete) {
+      const updatedEMRALDModel: EMRALD_Model = JSON.parse(JSON.stringify(appData.value));
+      DeleteItemAndRefsInSpecifiedModel(eventToDelete, updatedEMRALDModel, false);
+    }
   };
 
   const getEventByEventName = (eventName: string) => {

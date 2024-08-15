@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Button from '@mui/material/Button';
@@ -19,13 +19,7 @@ interface MenuButtonProps {
   sx?: SxProps;
 }
 
-const MenuButton: React.FC<MenuButtonProps> = ({
-  id,
-  title,
-  options,
-  handleClick,
-  sx
-}) => {
+const MenuButton: React.FC<MenuButtonProps> = ({ id, title, options, handleClick, sx }) => {
   const { assembleData, newProject, mergeNewData, populateNewData } = useAssembledData();
   const { templatesList, mergeTemplateToList, clearTemplateList } = useTemplateContext();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -38,6 +32,8 @@ const MenuButton: React.FC<MenuButtonProps> = ({
   const theme = useTheme();
   const isMediumScreen = useMediaQuery(theme.breakpoints.between('sm', 'lg'));
 
+  const subMenuRef = useRef<HTMLDivElement | null>(null);
+
   const handleMouseEnter = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
     setOpen(true);
@@ -49,7 +45,7 @@ const MenuButton: React.FC<MenuButtonProps> = ({
   };
 
   const handleSubMenuMouseEnter = (event: React.MouseEvent<HTMLElement>, option: string) => {
-    if (option === 'Templates') { 
+    if (option === 'Templates') {
       const templateMenuEl = event.currentTarget;
       const timeout = setTimeout(() => {
         setSubAnchorEl(templateMenuEl);
@@ -89,7 +85,7 @@ const MenuButton: React.FC<MenuButtonProps> = ({
         break;
       case 'Save':
         option.onClick(assembleData);
-        break; 
+        break;
       // Add cases for other menu items as needed
       default:
         option.onClick(); // Call the onClick function without arguments by default
@@ -122,6 +118,24 @@ const MenuButton: React.FC<MenuButtonProps> = ({
     handleMouseLeave();
   };
 
+  useEffect(() => {
+    const handleClickOutside = (event: any) => {
+      if (subMenuRef.current && !(subMenuRef.current.title === event.target.title)) {
+        closeMenus();
+      }
+    };
+
+    if (subMenuOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    } else {
+      document.removeEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [subMenuOpen]);
+
   return (
     <Box>
       <Button
@@ -138,7 +152,7 @@ const MenuButton: React.FC<MenuButtonProps> = ({
           ml: isMediumScreen ? '10px' : 2,
           cursor: 'pointer',
           fontSize: isMediumScreen ? '0.725rem' : '0.875rem',
-          ...sx
+          ...sx,
         }}
       >
         {title}
@@ -183,28 +197,37 @@ const MenuButton: React.FC<MenuButtonProps> = ({
                     vertical: 'top',
                     horizontal: 'left',
                   }}
+                  title="Templates Menu"
+                  ref={subMenuRef}
                 >
-                  {
-                    templateSubMenuOptions.map((option, index) => (
-                      <MenuItem
-                        key={index}
-                        onClick={() => {handleSubMenuItemClick(option); closeMenus();}}
-                      >
-                        {startCase(option.label)}
-                      </MenuItem>
-                    ))
-                  }
+                  {templateSubMenuOptions.map((option, index) => (
+                    <MenuItem
+                      key={index}
+                      onClick={() => {
+                        handleSubMenuItemClick(option);
+                        closeMenus();
+                      }}
+                    >
+                      {startCase(option.label)}
+                    </MenuItem>
+                  ))}
                 </Menu>
               )}
             </MenuItem>
           ))}
         </Menu>
       )}
-      <Alert 
-        severity="error" 
+      <Alert
+        severity="error"
         variant="filled"
-        sx={{ position: 'absolute', top: 35, right: 15, zIndex: 9999, opacity: showAlert ? 1 : 0,
-        transition: 'opacity 0.4s ease-in-out', }}
+        sx={{
+          position: 'absolute',
+          top: 35,
+          right: 15,
+          zIndex: 9999,
+          opacity: showAlert ? 1 : 0,
+          transition: 'opacity 0.4s ease-in-out',
+        }}
       >
         {alertMessage}
       </Alert>

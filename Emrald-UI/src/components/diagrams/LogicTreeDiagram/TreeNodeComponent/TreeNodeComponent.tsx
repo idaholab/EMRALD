@@ -81,7 +81,6 @@ const TreeNodeComponent: React.FC<TreeNodeComponentProps> = ({ data }) => {
               value={editedTitle}
               onChange={(event) => setEditedTitle(event.target.value)}
               onBlur={() => handleTitleBlur(type, label)}
-              multiline
               fullWidth
               variant="outlined"
               inputProps={{ maxLength: 20, style: { fontSize: '12px' } }}
@@ -92,6 +91,7 @@ const TreeNodeComponent: React.FC<TreeNodeComponentProps> = ({ data }) => {
               }}
               autoFocus
               size="small"
+              maxRows={1}
             />
           ) : (
             <Box

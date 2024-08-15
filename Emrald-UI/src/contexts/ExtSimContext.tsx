@@ -4,7 +4,7 @@ import { appData, updateAppData } from '../hooks/useAppData';
 import { ReadonlySignal, useComputed } from '@preact/signals-react';
 import { ExtSim } from '../types/ExtSim';
 import { EMRALD_Model } from '../types/EMRALD_Model';
-import { updateModelAndReferences } from '../utils/UpdateModel';
+import { DeleteItemAndRefsInSpecifiedModel, updateModelAndReferences } from '../utils/UpdateModel';
 import { MainItemTypes } from '../types/ItemTypes';
 
 interface ExtSimContextType {
@@ -21,7 +21,7 @@ export const emptyExtSim: ExtSim = {
   id: '',
   name: '',
   resourceName: '',
-  objType: "ExtSim",
+  objType: 'ExtSim',
 };
 
 const ExtSimContext = createContext<ExtSimContextType | undefined>(undefined);
@@ -64,7 +64,12 @@ const ExtSimContextProvider: React.FC<EmraldContextWrapperProps> = ({ children }
     if (!extSimId) {
       return;
     }
+    const extSimToDelete = extSims.find((extSim) => extSim.id === extSimId);
     const updatedExtSimList = extSimList.value.filter((item) => item.id !== extSimId);
+    if (extSimToDelete) {
+      const updatedEMRALDModel: EMRALD_Model = JSON.parse(JSON.stringify(appData.value));
+      DeleteItemAndRefsInSpecifiedModel(extSimToDelete, updatedEMRALDModel, false);
+    }
     updateAppData(JSON.parse(JSON.stringify({ ...appData.value, ExtSimList: updatedExtSimList })));
     setExtSims(updatedExtSimList);
   };

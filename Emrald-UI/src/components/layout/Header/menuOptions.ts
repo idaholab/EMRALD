@@ -7,7 +7,7 @@ export interface MenuOption {
   onClick: (args?: any) => void;
 }
 
-export const projectOptions: MenuOption[] = [
+export const projectOptions = (setFileName?: (name: string) => void): MenuOption[] => [
   {
     label: 'New',
     onClick: (newProject) => {
@@ -29,7 +29,8 @@ export const projectOptions: MenuOption[] = [
         const selectedFile = input.files?.[0]; // Get the selected file
 
         if (!selectedFile) return; // If no file is selected, exit
-
+        const fileName = selectedFile.name; // Get the filename
+        setFileName && setFileName(fileName);
         // Create a FileReader to read the file content
         const reader = new FileReader();
         reader.onload = (e) => {

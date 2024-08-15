@@ -17,7 +17,8 @@ export default defineConfig({
       { text: 'Documentation', link: '/Modeling/Introduction' },
       { text: 'Validation Cases', link: 'validation-cases' },
       { text: 'FAQ', link: 'faqs' },
-      { text: 'EMRALD', link: 'https://emraldapp.inl.gov/' }
+      {text: 'Video Tutorials', link: 'https://www.youtube.com/playlist?list=PLX2nBoWRisnXWhC2LD9j4jV0iFzQbRcFX'},
+      { text: 'EMRALD', link: 'https://emrald3app.inl.gov/' }
     ],
 
     sidebar: [

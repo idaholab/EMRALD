@@ -13,15 +13,11 @@ import { SelectComponent } from '../../../../../../../common';
 import { appData } from '../../../../../../../../hooks/useAppData';
 import { useActionFormContext } from '../../../../../ActionFormContext';
 import { Parameter } from '../../../CustomApplicationTypes';
-import useRunApplication from '../../../useRunApplication';
-
 const Parameters = () => {
   const { formData, setFormData } = useActionFormContext();
   const [useVariable, setUseVariable] = useState<{ [key: string]: boolean }>({});
   const [variable, setVariable] = useState<{ [key: string]: string }>({});
   const [parameters, setParameters] = useState<Parameter[]>([]);
-  const { getParameterName } = useRunApplication();
-
   useEffect(() => {
     setUseVariable(
       formData?.parameters?.reduce((accumulator: { [key: string]: boolean }, param: Parameter) => {
@@ -79,7 +75,7 @@ const Parameters = () => {
         {parameters?.map((row: Parameter, idx: number) => (
           <TableRow key={idx} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
             <TableCell component="th" scope="row">
-              {getParameterName(row)}
+              {row.name}
             </TableCell>
             <TableCell>
               {useVariable[row.id] ? (
@@ -96,7 +92,7 @@ const Parameters = () => {
                   ))}
                 </SelectComponent>
               ) : (
-                <TextField size="small" value={row.value.value} />
+                <TextField size="small" value={row.value} />
               )}
             </TableCell>
             <TableCell align="center">

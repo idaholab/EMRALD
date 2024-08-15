@@ -47,7 +47,7 @@ const RunApplication = () => {
   const { variableList } = useVariableContext();
   const [applicationType, setApplicationType] = useState(raType || 'custom');
   const [customFormType, setCustomFormType] = useState<string>(formData?.caType || '');
-  const [options, setOptions] = useState<string[]>(['CustomFormTemplate', 'MAAP']);
+  const [options, setOptions] = useState<string[]>(['MAAP']);
   const [selectedComponent, setSelectedComponent] = useState<ReactElement | null>(null);
 
   useEffect(() => {
