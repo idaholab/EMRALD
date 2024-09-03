@@ -76,10 +76,9 @@ const StateForm: React.FC<StateFormProps> = ({ stateData }: StateFormProps) => {
       });
       if (currentDiagram.value) {
         const { states } = currentDiagram.value;
-        currentDiagram.value.states = [...states, name];
+        currentDiagram.value.states = [...states, name.trim()];
         updateDiagram({
-          ...currentDiagram.value,
-          states: [...states, name],
+          ...currentDiagram.value
         });
       }
     }

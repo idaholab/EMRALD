@@ -88,7 +88,7 @@ const MainCanvas: React.FC = () => {
     },
   ];
   const [open, setOpen] = useState(false);
-  const handleOpen = () => setOpen(true);
+  const handleOpen = () => setOpen(!open);
   const handleClose = () => setOpen(false);
   // const storedHistory = JSON.parse(sessionStorage.getItem('dataHistory') || '[]');
 
@@ -135,8 +135,7 @@ const MainCanvas: React.FC = () => {
           ariaLabel="SpeedDial tooltip example"
           sx={{ position: 'absolute', right: 16 }}
           icon={<SpeedDialIcon />}
-          onClose={handleClose}
-          onOpen={handleOpen}
+          onClick={handleOpen}
           open={open}
           direction="down"
         >
@@ -145,7 +144,7 @@ const MainCanvas: React.FC = () => {
               key={action.name}
               icon={action.icon}
               tooltipTitle={action.name}
-              onClick={() => addWindow(action.name, action.content)}
+              onClick={() => { addWindow(action.name, action.content); handleClose(); }}
             />
           ))}
         </SpeedDial>

@@ -54,7 +54,7 @@ const Sidebar = () => {
     >
       <Toolbar />
       <ResizeHandle onMouseDown={(_event: React.MouseEvent<HTMLElement>) => handleMouseDown()} />
-      <Box sx={{ overflow: 'hidden' }}>
+      <Box sx={{ overflow: 'auto' }}>
         <MenuAccordion
           panels={diagramPanels}
           group="diagrams"

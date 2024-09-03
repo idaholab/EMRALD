@@ -10,6 +10,8 @@ import { useTemplateContext } from '../../../contexts/TemplateContext';
 import Alert from '@mui/material/Alert';
 import { SxProps, useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
+import DialogComponent from '../../common/DialogComponent/DialogComponent';
+import Typography from '@mui/material/Typography';
 
 interface MenuButtonProps {
   id: number;
@@ -31,6 +33,8 @@ const MenuButton: React.FC<MenuButtonProps> = ({ id, title, options, handleClick
   const [alertMessage, setAlertMessage] = useState<string>('');
   const theme = useTheme();
   const isMediumScreen = useMediaQuery(theme.breakpoints.between('sm', 'lg'));
+  const [showNewProjectDialog, setShowNewProjectDialog] = useState<boolean>(false);
+  const [currentOption, setCurrentOption] = useState<MenuOption>();
 
   const subMenuRef = useRef<HTMLDivElement | null>(null);
 
@@ -72,10 +76,16 @@ const MenuButton: React.FC<MenuButtonProps> = ({ id, title, options, handleClick
     setSubMenuOpen(false);
   };
 
+  const createNewProject = () => {
+    currentOption?.onClick(newProject);
+    setShowNewProjectDialog(false);
+  };
+
   const handleMenuItemClick = (option: MenuOption) => {
     switch (option.label) {
       case 'New':
-        option.onClick(newProject);
+        setCurrentOption(option);
+        setShowNewProjectDialog(true);
         break;
       case 'Open':
         option.onClick(populateNewData);
@@ -90,7 +100,7 @@ const MenuButton: React.FC<MenuButtonProps> = ({ id, title, options, handleClick
       default:
         option.onClick(); // Call the onClick function without arguments by default
     }
-    handleMouseLeave();
+    // handleMouseLeave();
   };
 
   const handleSubMenuItemClick = async (option: MenuOption) => {
@@ -143,13 +153,14 @@ const MenuButton: React.FC<MenuButtonProps> = ({ id, title, options, handleClick
         aria-controls={`menu-${id}`} // Use the id prop
         aria-haspopup="true"
         onClick={options ? handleMouseEnter : handleClick}
-        onMouseEnter={options && handleMouseEnter}
+        // onMouseEnter={options && handleMouseEnter}
         sx={{
           borderRight: '2px solid #bbb',
           borderRadius: 0,
+          height: 30,
           p: 0,
           pr: isMediumScreen ? '10px' : 2,
-          ml: isMediumScreen ? '10px' : 2,
+          pl: isMediumScreen ? '10px' : 2,
           cursor: 'pointer',
           fontSize: isMediumScreen ? '0.725rem' : '0.875rem',
           ...sx,
@@ -165,6 +176,9 @@ const MenuButton: React.FC<MenuButtonProps> = ({ id, title, options, handleClick
           open={open}
           onClose={handleMouseLeave}
           MenuListProps={{ onMouseLeave: handleMouseLeave }}
+          sx={{
+            mt: 3,
+          }}
           anchorOrigin={{
             vertical: 'top',
             horizontal: 'left',
@@ -231,6 +245,21 @@ const MenuButton: React.FC<MenuButtonProps> = ({ id, title, options, handleClick
       >
         {alertMessage}
       </Alert>
+
+      {showNewProjectDialog && (
+        <DialogComponent
+          open={true}
+          title="Create New Project?"
+          submitText="Yes"
+          cancelText='No'
+          onSubmit={() => createNewProject()}
+          onClose={() => setShowNewProjectDialog(false)}
+        >
+          <Typography>
+            Are you sure you want to create a new project? Any unsaved changes will be lost.
+          </Typography>
+        </DialogComponent>
+      )}
     </Box>
   );
 };
