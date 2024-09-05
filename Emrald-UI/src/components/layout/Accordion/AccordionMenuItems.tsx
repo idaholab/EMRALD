@@ -77,7 +77,7 @@ const AccordionMenuItems: React.FC<AccordionMenuListProps> = ({
                       disablePadding
                       sx={{
                         maxHeight:
-                          bothAccordionsOpen || window.innerHeight < 765 ? '210px' : '420px',
+                          bothAccordionsOpen || window.innerHeight < 765 ? '160px' : '340px',
                         overflow: 'auto',
                       }}
                     >
@@ -116,7 +116,7 @@ const AccordionMenuItems: React.FC<AccordionMenuListProps> = ({
           sx={{
             width: '100%',
             bgcolor: 'background.paper',
-            maxHeight: bothAccordionsOpen || window.innerHeight < 765 ? '210px' : '420px',
+            maxHeight: bothAccordionsOpen || window.innerHeight < 765 ? '160px' : '340px',
             overflow: 'auto',
           }}
         >
