@@ -112,7 +112,12 @@ const useEmraldDiagram = () => {
       const sourceNode = nodes.find((node) => node.id === connection.source);
       const targetNode = nodes.find((node) => node.id === connection.target);
       const targetState = getStateByStateId(connection.target);
-      const currentAction = getActionByActionId(connection.sourceHandle);
+      let currentAction: Action | undefined;
+      if (connection.sourceHandle && connection.sourceHandle.includes('*')) {
+        currentAction = getActionByActionId(connection.sourceHandle?.split('*')[1]);
+      } else {
+        currentAction = getActionByActionId(connection.sourceHandle);
+      }
 
       if (!sourceNode || !targetNode) {
         return;
