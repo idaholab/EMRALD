@@ -13,31 +13,25 @@ import Paper from '@mui/material/Paper';
 import { useDiagramContext } from '../../../contexts/DiagramContext';
 import { StateEvalValue } from '../../../types/ItemTypes';
 import { useStateContext } from '../../../contexts/StateContext';
+import { CompChildItems } from '../../../types/LogicNode';
 
-interface ComponentStateValue {
+export interface ComponentStateValue {
   stateName: string;
   stateValue: StateEvalValue;
 }
 interface StateValuesTableProps {
-  diagramName: string;
-  setCompChildren?: React.Dispatch<
-    React.SetStateAction<
-      {
-        stateValues?: ComponentStateValue[] | undefined;
-        diagramName: string;
-      }[]
-    >
-  >;
+  componentNode: CompChildItems | undefined;
+  setCurrentNodeStateValues?: React.Dispatch<React.SetStateAction<ComponentStateValue[]>>
 }
 
-const StateValuesTable: React.FC<StateValuesTableProps> = ({ diagramName }) => {
+const StateValuesTable: React.FC<StateValuesTableProps> = ({ componentNode, setCurrentNodeStateValues }) => {
   const { getDiagramByDiagramName } = useDiagramContext();
   const [stateValues, setStateValues] = useState<ComponentStateValue[]>([]);
-  const { getStateByStateName, updateState } = useStateContext();
+  const { getStateByStateName } = useStateContext();
 
   useEffect(() => {
-    const diagramStates = getDiagramByDiagramName(diagramName)?.states;
-    if (diagramStates) {
+    const diagramStates = getDiagramByDiagramName(componentNode?.diagramName || '')?.states;
+    if (diagramStates && componentNode?.stateValues && componentNode.stateValues.length === 0) {
       setStateValues(
         diagramStates.map((stateName) => {
           const state = getStateByStateName(stateName);
@@ -47,8 +41,10 @@ const StateValuesTable: React.FC<StateValuesTableProps> = ({ diagramName }) => {
           };
         }),
       );
+    } else {
+      setStateValues(componentNode?.stateValues || []);
     }
-  }, [diagramName, getDiagramByDiagramName]);
+  }, [componentNode, getDiagramByDiagramName]);
 
   const handleChange = (
     event: React.ChangeEvent<HTMLInputElement>,
@@ -56,9 +52,6 @@ const StateValuesTable: React.FC<StateValuesTableProps> = ({ diagramName }) => {
   ) => {
     const { stateName } = updatedStateValue;
     const value = event.target.value as StateEvalValue;
-    const state = getStateByStateName(stateName);
-    state.defaultSingleStateValue = value;
-    updateState(state);
     const updatedValues = stateValues.map((stateValue) => {
       if (stateValue.stateName === stateName) {
         return { ...stateValue, stateValue: value };
@@ -66,6 +59,9 @@ const StateValuesTable: React.FC<StateValuesTableProps> = ({ diagramName }) => {
       return stateValue;
     });
 
+    if (setCurrentNodeStateValues) {
+      setCurrentNodeStateValues(updatedValues);
+    }
     setStateValues(updatedValues);
   };
 

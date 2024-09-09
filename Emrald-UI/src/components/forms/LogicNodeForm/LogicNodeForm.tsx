@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { useSignal } from '@preact/signals-react';
 import Button from '@mui/material/Button';
-import Container from '@mui/material/Container';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import { useWindowContext } from '../../../contexts/WindowContext';
@@ -17,7 +16,7 @@ import Divider from '@mui/material/Divider';
 import { useDiagramContext } from '../../../contexts/DiagramContext';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
-import StateValuesTable from './StateValuesTable';
+import StateValuesTable, { ComponentStateValue } from './StateValuesTable';
 import TextField from '@mui/material/TextField';
 
 interface LogicNodeFormProps {
@@ -60,6 +59,7 @@ const LogicNodeForm: React.FC<LogicNodeFormProps> = ({
         );
 
   const currentNode = logicNode.value.compChildren.find((child) => child.diagramName === component);
+  const [currentNodeStateValues, setCurrentNodeStateValues] = useState<ComponentStateValue[]>(currentNode?.stateValues || []);
   const [leafNodeType, setLeafNodeType] = useState<string | undefined>(nodeType);
   const [compDiagram, setCompDiagram] = useState<string>(component || '');
   const [defaultValues, setDefaultValues] = useState<boolean>(
@@ -157,9 +157,11 @@ const LogicNodeForm: React.FC<LogicNodeFormProps> = ({
     newLogicNode.value.isRoot = isRoot || setAsRoot || false;
     logicNode.value.isRoot = isRoot || setAsRoot || false;
     // Reset the stateValues if the defaultValues checkbox is checked
-    if (defaultValues === true && currentNode && (currentNode?.stateValues?.length ?? 0) > 0) {
+    if (defaultValues === true && currentNode) {
       currentNode.stateValues = [];
-    }
+    } else if (currentNode && currentNode.stateValues && defaultValues === false) {
+      currentNode.stateValues = currentNodeStateValues;
+    } 
 
     if (editing || nodeType === 'comp') {
       updateLogicNode({
@@ -275,7 +277,7 @@ const LogicNodeForm: React.FC<LogicNodeFormProps> = ({
             ) : (
               <></>
             )}
-            {!defaultValues ? <StateValuesTable diagramName={compDiagram} /> : <></>}
+            {!defaultValues ? <StateValuesTable componentNode={currentNode} setCurrentNodeStateValues={setCurrentNodeStateValues}/> : <></>}
           </>
         ) : (
           <>
