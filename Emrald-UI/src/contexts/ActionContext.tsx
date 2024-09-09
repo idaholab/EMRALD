@@ -75,7 +75,6 @@ const ActionContextProvider: React.FC<EmraldContextWrapperProps> = ({ children }
       var updatedModel: EMRALD_Model = await updateModelAndReferences(state, MainItemTypes.State);
       updateAppData(updatedModel);
     }
-    setActions(updatedModel.ActionList);
   };
 
   const updateAction = async (updatedAction: Action) => {
@@ -88,7 +87,6 @@ const ActionContextProvider: React.FC<EmraldContextWrapperProps> = ({ children }
       MainItemTypes.Action,
     );
     updateAppData(JSON.parse(JSON.stringify(updatedModel)));
-    setActions(updatedModel.ActionList);
   };
 
   const deleteAction = (actionId: string | undefined) => {
@@ -99,9 +97,8 @@ const ActionContextProvider: React.FC<EmraldContextWrapperProps> = ({ children }
     if (actionToDelete) {
       return new Promise<void>(async (resolve) => {
         var updatedModel: EMRALD_Model = await DeleteItemAndRefs(actionToDelete);
-      
         updateAppData(updatedModel);
-        setActions(updatedModel.ActionList);
+        resolve();
       });
     }
     //todo else error, no action to delete   

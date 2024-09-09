@@ -83,7 +83,6 @@ const StateContextProvider: React.FC<EmraldContextWrapperProps> = ({ children })
   const createState = async (newState: State) => {
     var updatedModel: EMRALD_Model = await updateModelAndReferences(newState, MainItemTypes.State);
     updateAppData(updatedModel);
-    setStates(updatedModel.StateList);
   };
 
   const updateState = async (updatedState: State) => {
@@ -93,7 +92,6 @@ const StateContextProvider: React.FC<EmraldContextWrapperProps> = ({ children })
         MainItemTypes.State,
       );
       updateAppData(updatedModel);
-      setStates(updatedModel.StateList);
       resolve();
     });
   };
@@ -153,9 +151,8 @@ const StateContextProvider: React.FC<EmraldContextWrapperProps> = ({ children })
     if (stateToDelete) {
       return new Promise<void>(async (resolve) => {
         var updatedModel: EMRALD_Model = await DeleteItemAndRefs(stateToDelete);
-      
         updateAppData(updatedModel);
-        setStates(updatedModel.StateList);
+        resolve();
       });
     }
     //todo else error, no state to delete   
@@ -219,7 +216,6 @@ const StateContextProvider: React.FC<EmraldContextWrapperProps> = ({ children })
   };
 
   const clearStateList = () => {
-    setStates([]);
     updateAppData(JSON.parse(JSON.stringify({ ...appData.value, StateList: [] })));
   };
 

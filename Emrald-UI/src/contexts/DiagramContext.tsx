@@ -62,7 +62,6 @@ const DiagramContextProvider: React.FC<EmraldContextWrapperProps> = ({ children 
       MainItemTypes.Diagram,
     );
     updateAppData(updatedModel);
-    setDiagrams(updatedModel.DiagramList);
   };
 
   const updateDiagram = async (updatedDiagram: Diagram) => {
@@ -73,7 +72,6 @@ const DiagramContextProvider: React.FC<EmraldContextWrapperProps> = ({ children 
         MainItemTypes.Diagram,
       );
       updateAppData(updatedModel);
-      setDiagrams(updatedModel.DiagramList);
       resolve();
     });
   };
@@ -86,9 +84,8 @@ const DiagramContextProvider: React.FC<EmraldContextWrapperProps> = ({ children 
     if (diagramToDelete) {
       return new Promise<void>(async (resolve) => {
         var updatedModel: EMRALD_Model = await DeleteItemAndRefs(diagramToDelete);
-      
         updateAppData(updatedModel);
-        setDiagrams(updatedModel.DiagramList);
+        resolve();
       });
     }
     //todo else error, not diagram to delete    
@@ -112,7 +109,6 @@ const DiagramContextProvider: React.FC<EmraldContextWrapperProps> = ({ children 
   };
 
   const clearDiagramList = () => {
-    setDiagrams([]);
     updateAppData(JSON.parse(JSON.stringify({ ...appData.value, DiagramList: [] })));
   };
 

@@ -55,7 +55,6 @@ const ExtSimContextProvider: React.FC<EmraldContextWrapperProps> = ({ children }
       MainItemTypes.ExtSim,
     );
     updateAppData(updatedModel);
-    setExtSims(updatedModel.ExtSimList);
   };
 
   const updateExtSim = async (updatedExtSim: ExtSim) => {
@@ -64,7 +63,6 @@ const ExtSimContextProvider: React.FC<EmraldContextWrapperProps> = ({ children }
       MainItemTypes.ExtSim,
     );
     updateAppData(updatedModel);
-    setExtSims(updatedModel.ExtSimList);
   };
 
   const deleteExtSim = (extSimId: string | undefined) => {
@@ -75,9 +73,8 @@ const ExtSimContextProvider: React.FC<EmraldContextWrapperProps> = ({ children }
     if (extSimToDelete) {
       return new Promise<void>(async (resolve) => {
         var updatedModel: EMRALD_Model = await DeleteItemAndRefs(extSimToDelete);
-      
         updateAppData(updatedModel);
-        setExtSims(updatedModel.ExtSimList);
+        resolve();
       });
     }
     //todo else error, no event to delete 
@@ -89,7 +86,6 @@ const ExtSimContextProvider: React.FC<EmraldContextWrapperProps> = ({ children }
   };
 
   const clearExtSimList = () => {
-    setExtSims([]);
     updateAppData({ ...appData.value, ExtSimList: [] });
   };
 

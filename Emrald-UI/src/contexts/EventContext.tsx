@@ -64,7 +64,6 @@ const EventContextProvider: React.FC<EmraldContextWrapperProps> = ({ children })
       var updatedModel: EMRALD_Model = await updateModelAndReferences(state, MainItemTypes.State);
       updateAppData(updatedModel);
     }
-    setEvents(updatedModel.EventList);
   };
 
   const updateEvent = async (
@@ -77,7 +76,6 @@ const EventContextProvider: React.FC<EmraldContextWrapperProps> = ({ children })
       MainItemTypes.Event,
     );
     updateAppData(updatedModel);
-    setEvents(updatedModel.EventList);
 
     //update the state "moveFromCurrent" boolean
     if (state) {
@@ -96,9 +94,8 @@ const EventContextProvider: React.FC<EmraldContextWrapperProps> = ({ children })
     if (eventToDelete) {
       return new Promise<void>(async (resolve) => {
         var updatedModel: EMRALD_Model = await DeleteItemAndRefs(eventToDelete);
-      
         updateAppData(updatedModel);
-        setEvents(updatedModel.EventList);
+        resolve();
       });
     }
     //todo else error, no event to delete   
@@ -115,7 +112,6 @@ const EventContextProvider: React.FC<EmraldContextWrapperProps> = ({ children })
   };
 
   const clearEventList = () => {
-    setEvents([]);
     updateAppData(JSON.parse(JSON.stringify({ ...appData.value, EventList: [] })));
   };
 

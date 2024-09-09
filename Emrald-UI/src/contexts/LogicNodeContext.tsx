@@ -63,7 +63,6 @@ const LogicNodeContextProvider: React.FC<EmraldContextWrapperProps> = ({ childre
         MainItemTypes.LogicNode,
       );
       updateAppData(updatedModel);
-      setLogicNodes(updatedModel.LogicNodeList);
       resolve();
     });
   };
@@ -75,7 +74,6 @@ const LogicNodeContextProvider: React.FC<EmraldContextWrapperProps> = ({ childre
         MainItemTypes.LogicNode,
       );
       updateAppData(updatedModel);
-      setLogicNodes(updatedModel.LogicNodeList);
       resolve();
     });
   };
@@ -94,12 +92,11 @@ const LogicNodeContextProvider: React.FC<EmraldContextWrapperProps> = ({ childre
         return new Promise<void>(async (resolve) => {
           var updatedModel: EMRALD_Model = await DeleteItemAndRefs(nodeToDelete);
           updatedModel.LogicNodeList = updatedLogicNodes;
-        
           updateAppData(updatedModel);
+          resolve();
         });
       }
 
-      setLogicNodes(logicNodeList.value);
       resolve();
     });
   };
@@ -118,7 +115,6 @@ const LogicNodeContextProvider: React.FC<EmraldContextWrapperProps> = ({ childre
   };
 
   const clearLogicNodeList = () => {
-    setLogicNodes([]);
     updateAppData({ ...appData.value, LogicNodeList: [] });
   };
 
