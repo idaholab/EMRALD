@@ -5,7 +5,7 @@ import { appData, updateAppData } from '../hooks/useAppData';
 import { EMRALD_Model } from '../types/EMRALD_Model';
 import { DeleteItemAndRefs, updateModelAndReferences } from '../utils/UpdateModel';
 import { MainItemTypes } from '../types/ItemTypes';
-import { ReadonlySignal, useComputed } from '@preact/signals-react';
+import { effect, ReadonlySignal, useComputed } from '@preact/signals-react';
 
 interface LogicNodeContextType {
   logicNodeList: ReadonlySignal<LogicNode[]>;
@@ -47,6 +47,14 @@ const LogicNodeContextProvider: React.FC<EmraldContextWrapperProps> = ({ childre
     ),
   );
   const logicNodeList = useComputed(() => appData.value.LogicNodeList);
+  
+  effect(() => {
+    if (JSON.stringify(logicNodes) !== JSON.stringify(appData.value.LogicNodeList.sort((a, b) => a.name.localeCompare(b.name)))) {
+      setLogicNodes(appData.value.LogicNodeList.sort((a, b) => a.name.localeCompare(b.name)));
+      return;
+    }
+    return;
+  });
 
   const createLogicNode = (newLogicNode: LogicNode) => {
     return new Promise<void>(async (resolve) => {

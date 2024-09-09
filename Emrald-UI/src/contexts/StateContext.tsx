@@ -4,7 +4,7 @@ import { EmraldContextWrapperProps } from './EmraldContextWrapper';
 import { Event } from '../types/Event';
 import { Action } from '../types/Action';
 import { appData, updateAppData } from '../hooks/useAppData';
-import { ReadonlySignal, useComputed } from '@preact/signals-react';
+import { effect, ReadonlySignal, useComputed } from '@preact/signals-react';
 import { EMRALD_Model } from '../types/EMRALD_Model';
 import { DeleteItemAndRefs, updateModelAndReferences } from '../utils/UpdateModel';
 import { MainItemTypes } from '../types/ItemTypes';
@@ -69,11 +69,15 @@ const StateContextProvider: React.FC<EmraldContextWrapperProps> = ({ children })
     ),
   );
   const statesList = useComputed(() => appData.value.StateList);
-  const defaultgeometryInfo = { x: 0, y: 0, width: 0, height: 0 };
+  const defaultGeometryInfo = { x: 0, y: 0, width: 0, height: 0 };
 
-  useEffect(() => {
-    console.log(statesList.value);
-  }, [statesList.value])
+  effect(() => {
+    if (JSON.stringify(states) !== JSON.stringify(appData.value.StateList.sort((a, b) => a.name.localeCompare(b.name)))) {
+      setStates(appData.value.StateList.sort((a, b) => a.name.localeCompare(b.name)));
+      return;
+    }
+    return;
+  });
 
   // Create, Delete, Update individual States
   const createState = async (newState: State) => {
@@ -176,10 +180,10 @@ const StateContextProvider: React.FC<EmraldContextWrapperProps> = ({ children })
         eventActions: state.eventActions || [],
         immediateActions: state.immediateActions || [],
         geometryInfo: {
-          x: state.geometryInfo?.x ?? defaultgeometryInfo.x,
-          y: state.geometryInfo?.y ?? defaultgeometryInfo.y,
-          width: state.geometryInfo?.width ?? defaultgeometryInfo.width,
-          height: state.geometryInfo?.height ?? defaultgeometryInfo.height,
+          x: state.geometryInfo?.x ?? defaultGeometryInfo.x,
+          y: state.geometryInfo?.y ?? defaultGeometryInfo.y,
+          width: state.geometryInfo?.width ?? defaultGeometryInfo.width,
+          height: state.geometryInfo?.height ?? defaultGeometryInfo.height,
         },
       };
     }

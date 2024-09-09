@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState } from 'react';
 import { EmraldContextWrapperProps } from './EmraldContextWrapper';
 import { appData, updateAppData } from '../hooks/useAppData';
-import { ReadonlySignal, useComputed } from '@preact/signals-react';
+import { effect, ReadonlySignal, useComputed } from '@preact/signals-react';
 import { ExtSim } from '../types/ExtSim';
 import { EMRALD_Model } from '../types/EMRALD_Model';
 import { DeleteItemAndRefs, updateModelAndReferences } from '../utils/UpdateModel';
@@ -41,6 +41,13 @@ const ExtSimContextProvider: React.FC<EmraldContextWrapperProps> = ({ children }
     ),
   );
   const extSimList = useComputed(() => appData.value.ExtSimList);
+
+  effect(() => {
+    if (JSON.stringify(extSims) !== JSON.stringify(appData.value.ExtSimList.sort((a, b) => a.name.localeCompare(b.name)))) {
+      setExtSims(appData.value.ExtSimList.sort((a, b) => a.name.localeCompare(b.name)));
+    }
+    return;
+  });
 
   const createExtSim = async (newExtSim: ExtSim) => {
     var updatedModel: EMRALD_Model = await updateModelAndReferences(

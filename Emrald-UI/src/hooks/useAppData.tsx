@@ -4,9 +4,9 @@ import { signal } from '@preact/signals-react';
 import { EMRALD_Model } from '../types/EMRALD_Model';
 
 const storedData = sessionStorage.getItem('appData');
-//const upgrade = upgradeModel(JSON.stringify(emraldData)); //should still be able do this, but the debugger gets stuck here when using a v3 model and still trying to upgrade it.
+const upgrade = upgradeModel(JSON.stringify(emraldData)); 
 
-export const appData = signal<EMRALD_Model>(storedData ? JSON.parse(storedData) : emraldData);
+export const appData = signal<EMRALD_Model>(storedData ? JSON.parse(storedData) : upgrade);
 
 export const updateAppData = (newData: any, undoData?: any) => {
   let updatedData;

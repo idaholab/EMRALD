@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState } from 'react';
-import { ReadonlySignal, useComputed } from '@preact/signals-react';
+import { effect, ReadonlySignal, useComputed } from '@preact/signals-react';
 import { Diagram } from '../types/Diagram';
 import { DeleteItemAndRefs, updateModelAndReferences } from '../utils/UpdateModel';
 import { MainItemTypes } from '../types/ItemTypes';
@@ -46,6 +46,14 @@ const DiagramContextProvider: React.FC<EmraldContextWrapperProps> = ({ children 
     appData.value.DiagramList.sort((a, b) => a.name.localeCompare(b.name)),
   );
   const diagramList = useComputed(() => appData.value.DiagramList);
+
+  effect(() => {
+    if (JSON.stringify(diagrams) !== JSON.stringify(appData.value.DiagramList.sort((a, b) => a.name.localeCompare(b.name)))) {
+      setDiagrams(appData.value.DiagramList.sort((a, b) => a.name.localeCompare(b.name)));
+      return;
+    }
+    return;
+  });
 
   // Create, Delete, Update individual diagrams
   const createDiagram = async (newDiagram: Diagram) => {

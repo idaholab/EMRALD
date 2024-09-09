@@ -2,7 +2,7 @@ import React, { createContext, useContext, useState } from 'react';
 import { Event } from '../types/Event';
 import { EmraldContextWrapperProps } from './EmraldContextWrapper';
 import { appData, updateAppData } from '../hooks/useAppData';
-import { ReadonlySignal, useComputed } from '@preact/signals-react';
+import { effect, ReadonlySignal, useComputed } from '@preact/signals-react';
 import { EMRALD_Model } from '../types/EMRALD_Model';
 import { DeleteItemAndRefs, updateModelAndReferences } from '../utils/UpdateModel';
 import { MainItemTypes } from '../types/ItemTypes';
@@ -46,6 +46,14 @@ const EventContextProvider: React.FC<EmraldContextWrapperProps> = ({ children })
     ),
   );
   const eventsList = useComputed(() => appData.value.EventList);
+  
+  effect(() => {
+    if (JSON.stringify(events) !== JSON.stringify(appData.value.EventList.sort((a, b) => a.name.localeCompare(b.name)))) {
+      setEvents(appData.value.EventList.sort((a, b) => a.name.localeCompare(b.name)));
+      return;
+    }
+    return;
+  });
 
   const createEvent = async (newEvent: Event, state?: State, moveFromCurrent: boolean = false) => {
     var updatedModel: EMRALD_Model = await updateModelAndReferences(newEvent, MainItemTypes.Event);
