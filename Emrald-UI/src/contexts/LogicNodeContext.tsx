@@ -3,7 +3,7 @@ import { LogicNode } from '../types/LogicNode';
 import { EmraldContextWrapperProps } from './EmraldContextWrapper';
 import { appData, updateAppData } from '../hooks/useAppData';
 import { EMRALD_Model } from '../types/EMRALD_Model';
-import { DeleteItemAndRefsInSpecifiedModel, updateModelAndReferences } from '../utils/UpdateModel';
+import { DeleteItemAndRefs, updateModelAndReferences } from '../utils/UpdateModel';
 import { MainItemTypes } from '../types/ItemTypes';
 import { ReadonlySignal, useComputed } from '@preact/signals-react';
 
@@ -82,12 +82,14 @@ const LogicNodeContextProvider: React.FC<EmraldContextWrapperProps> = ({ childre
             node.gateChildren = node.gateChildren.filter((name) => name !== nodeToDelete.name);
           }
         });
-        const updatedEMRALDModel: EMRALD_Model = JSON.parse(JSON.stringify(appData.value));
-        DeleteItemAndRefsInSpecifiedModel(nodeToDelete, updatedEMRALDModel, false);
+
+        return new Promise<void>(async (resolve) => {
+          var updatedModel: EMRALD_Model = await DeleteItemAndRefs(nodeToDelete);
+          updatedModel.LogicNodeList = updatedLogicNodes;
+        
+          updateAppData(updatedModel);
+        });
       }
-      updateAppData(
-        JSON.parse(JSON.stringify({ ...appData.value, LogicNodeList: updatedLogicNodes })),
-      );
 
       setLogicNodes(logicNodeList.value);
       resolve();

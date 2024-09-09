@@ -4,7 +4,7 @@ import { EmraldContextWrapperProps } from './EmraldContextWrapper';
 import { appData, updateAppData } from '../hooks/useAppData';
 import { ReadonlySignal, useComputed } from '@preact/signals-react';
 import { EMRALD_Model } from '../types/EMRALD_Model';
-import { DeleteItemAndRefsInSpecifiedModel, updateModelAndReferences } from '../utils/UpdateModel';
+import { DeleteItemAndRefs, updateModelAndReferences } from '../utils/UpdateModel';
 import { MainItemTypes } from '../types/ItemTypes';
 import { State } from '../types/State';
 
@@ -85,14 +85,16 @@ const EventContextProvider: React.FC<EmraldContextWrapperProps> = ({ children })
       return;
     }
     const eventToDelete = eventsList.value.find((eventItem) => eventItem.id === eventId);
-    const updatedEventList = eventsList.value.filter((item) => item.id !== eventId);
-    updateAppData(JSON.parse(JSON.stringify({ ...appData.value, EventList: updatedEventList })));
-    setEvents(updatedEventList);
-
     if (eventToDelete) {
-      const updatedEMRALDModel: EMRALD_Model = JSON.parse(JSON.stringify(appData.value));
-      DeleteItemAndRefsInSpecifiedModel(eventToDelete, updatedEMRALDModel, false);
+      return new Promise<void>(async (resolve) => {
+        var updatedModel: EMRALD_Model = await DeleteItemAndRefs(eventToDelete);
+      
+        updateAppData(updatedModel);
+        setEvents(updatedModel.EventList);
+      });
     }
+    //todo else error, no event to delete   
+
   };
 
   const getEventByEventName = (eventName: string) => {

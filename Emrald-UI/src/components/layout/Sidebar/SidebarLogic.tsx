@@ -170,10 +170,10 @@ export function useSidebarLogic() {
     if (!itemToDelete) return;
     if (itemToDeleteType === MainItemTypes.Diagram) {
       // @ts-ignore
-      itemToDelete.states.map((name: string) => {
-        const state = getStateByStateName(name);
-        deleteState(state.id);
-      });
+      // itemToDelete.states.map((name: string) => {
+      //   const state = getStateByStateName(name);
+      //   deleteState(state.id);
+      // });
       deleteDiagram(itemToDelete.id);
       closeDeleteConfirmation();
     }

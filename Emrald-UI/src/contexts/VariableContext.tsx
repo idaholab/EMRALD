@@ -4,7 +4,7 @@ import { EmraldContextWrapperProps } from './EmraldContextWrapper';
 import { appData, updateAppData } from '../hooks/useAppData';
 import { ReadonlySignal, useComputed } from '@preact/signals-react';
 import { MainItemTypes } from '../types/ItemTypes';
-import { DeleteItemAndRefsInSpecifiedModel, updateModelAndReferences } from '../utils/UpdateModel';
+import { DeleteItemAndRefs, updateModelAndReferences } from '../utils/UpdateModel';
 import { EMRALD_Model } from '../types/EMRALD_Model';
 
 interface VariableContextType {
@@ -72,16 +72,19 @@ const VariableContextProvider: React.FC<EmraldContextWrapperProps> = ({ children
       return;
     }
     const variableToDelete = variables.find((variable) => variable.id === VariableId);
-    const updatedVariableList = variables.filter((item) => item.id !== VariableId);
-
-    updateAppData(
-      JSON.parse(JSON.stringify({ ...appData.value, VariableList: updatedVariableList })),
-    );
+    
     if (variableToDelete) {
       const updatedEMRALDModel: EMRALD_Model = JSON.parse(JSON.stringify(appData.value));
-      DeleteItemAndRefsInSpecifiedModel(variableToDelete, updatedEMRALDModel, false);
+      if (variableToDelete) {
+        return new Promise<void>(async (resolve) => {
+          var updatedModel: EMRALD_Model = await DeleteItemAndRefs(variableToDelete);
+        
+          updateAppData(updatedModel);
+          setVariables(updatedModel.VariableList);
+        });
+      }
+      //todo else error, no variable to delete
     }
-    setVariables(updatedVariableList);
   };
 
   // Open New, Merge, and Clear Event List

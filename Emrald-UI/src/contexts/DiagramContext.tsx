@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState } from 'react';
 import { ReadonlySignal, useComputed } from '@preact/signals-react';
 import { Diagram } from '../types/Diagram';
-import { DeleteItemAndRefsInSpecifiedModel, updateModelAndReferences } from '../utils/UpdateModel';
+import { DeleteItemAndRefs, updateModelAndReferences } from '../utils/UpdateModel';
 import { MainItemTypes } from '../types/ItemTypes';
 import { EmraldContextWrapperProps } from './EmraldContextWrapper';
 import { EMRALD_Model } from '../types/EMRALD_Model';
@@ -74,14 +74,16 @@ const DiagramContextProvider: React.FC<EmraldContextWrapperProps> = ({ children 
     if (!diagramId) {
       return;
     }
-    const updatedDiagrams = diagrams.filter((item) => item.id !== diagramId);
     const diagramToDelete = getDiagramById(diagramId);
     if (diagramToDelete) {
-      const updatedEMRALDModel: EMRALD_Model = JSON.parse(JSON.stringify(appData.value));
-      DeleteItemAndRefsInSpecifiedModel(diagramToDelete, updatedEMRALDModel, false);
+      return new Promise<void>(async (resolve) => {
+        var updatedModel: EMRALD_Model = await DeleteItemAndRefs(diagramToDelete);
+      
+        updateAppData(updatedModel);
+        setDiagrams(updatedModel.DiagramList);
+      });
     }
-    updateAppData(JSON.parse(JSON.stringify({ ...appData.value, DiagramList: updatedDiagrams })));
-    setDiagrams(updatedDiagrams);
+    //todo else error, not diagram to delete    
   };
 
   const getDiagramByDiagramName = (diagramName: string) => {

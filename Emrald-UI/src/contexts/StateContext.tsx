@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState } from 'react';
 import { State } from '../types/State';
 import { EmraldContextWrapperProps } from './EmraldContextWrapper';
 import { Event } from '../types/Event';
@@ -6,7 +6,7 @@ import { Action } from '../types/Action';
 import { appData, updateAppData } from '../hooks/useAppData';
 import { ReadonlySignal, useComputed } from '@preact/signals-react';
 import { EMRALD_Model } from '../types/EMRALD_Model';
-import { DeleteItemAndRefsInSpecifiedModel, updateModelAndReferences } from '../utils/UpdateModel';
+import { DeleteItemAndRefs, updateModelAndReferences } from '../utils/UpdateModel';
 import { MainItemTypes } from '../types/ItemTypes';
 
 interface StateContextType {
@@ -70,6 +70,10 @@ const StateContextProvider: React.FC<EmraldContextWrapperProps> = ({ children })
   );
   const statesList = useComputed(() => appData.value.StateList);
   const defaultgeometryInfo = { x: 0, y: 0, width: 0, height: 0 };
+
+  useEffect(() => {
+    console.log(statesList.value);
+  }, [statesList.value])
 
   // Create, Delete, Update individual States
   const createState = async (newState: State) => {
@@ -142,13 +146,15 @@ const StateContextProvider: React.FC<EmraldContextWrapperProps> = ({ children })
       return;
     }
     const stateToDelete = getStateByStateId(stateId);
-    const updatedStates = statesList.value.filter((item) => item.id !== stateId);
-    updateAppData(JSON.parse(JSON.stringify({ ...appData.value, StateList: updatedStates })));
     if (stateToDelete) {
-      const updatedEMRALDModel: EMRALD_Model = JSON.parse(JSON.stringify(appData.value));
-      DeleteItemAndRefsInSpecifiedModel(stateToDelete, updatedEMRALDModel, false);
+      return new Promise<void>(async (resolve) => {
+        var updatedModel: EMRALD_Model = await DeleteItemAndRefs(stateToDelete);
+      
+        updateAppData(updatedModel);
+        setStates(updatedModel.StateList);
+      });
     }
-    setStates(updatedStates);
+    //todo else error, no state to delete   
   };
 
   const getStateByStateId = (stateId: string | null): State => {
