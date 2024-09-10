@@ -2,9 +2,9 @@ import React, { createContext, useContext, useState } from 'react';
 import { Variable } from '../types/Variable';
 import { EmraldContextWrapperProps } from './EmraldContextWrapper';
 import { appData, updateAppData } from '../hooks/useAppData';
-import { ReadonlySignal, useComputed } from '@preact/signals-react';
+import { effect, ReadonlySignal, useComputed } from '@preact/signals-react';
 import { MainItemTypes } from '../types/ItemTypes';
-import { DeleteItemAndRefsInSpecifiedModel, updateModelAndReferences } from '../utils/UpdateModel';
+import { DeleteItemAndRefs, updateModelAndReferences } from '../utils/UpdateModel';
 import { EMRALD_Model } from '../types/EMRALD_Model';
 
 interface VariableContextType {
@@ -42,6 +42,14 @@ const VariableContextProvider: React.FC<EmraldContextWrapperProps> = ({ children
     ),
   );
   const variableList = useComputed(() => appData.value.VariableList);
+  
+  effect(() => {
+    if (JSON.stringify(variables) !== JSON.stringify(appData.value.VariableList.sort((a, b) => a.name.localeCompare(b.name)))) {
+      setVariables(appData.value.VariableList.sort((a, b) => a.name.localeCompare(b.name)));
+      return;
+    }
+    return;
+  });
 
   const createVariable = async (newVariable: Variable) => {
     return new Promise<void>(async (resolve) => {
@@ -50,7 +58,6 @@ const VariableContextProvider: React.FC<EmraldContextWrapperProps> = ({ children
         MainItemTypes.Variable,
       );
       updateAppData(updatedModel);
-      setVariables(updatedModel.VariableList);
       resolve();
     });
   };
@@ -62,7 +69,6 @@ const VariableContextProvider: React.FC<EmraldContextWrapperProps> = ({ children
         MainItemTypes.Variable,
       );
       updateAppData(updatedModel);
-      setVariables(updatedModel.VariableList);
       resolve();
     });
   };
@@ -72,16 +78,13 @@ const VariableContextProvider: React.FC<EmraldContextWrapperProps> = ({ children
       return;
     }
     const variableToDelete = variables.find((variable) => variable.id === VariableId);
-    const updatedVariableList = variables.filter((item) => item.id !== VariableId);
-
-    updateAppData(
-      JSON.parse(JSON.stringify({ ...appData.value, VariableList: updatedVariableList })),
-    );
     if (variableToDelete) {
-      const updatedEMRALDModel: EMRALD_Model = JSON.parse(JSON.stringify(appData.value));
-      DeleteItemAndRefsInSpecifiedModel(variableToDelete, updatedEMRALDModel, false);
+      return new Promise<void>(async (resolve) => {
+        var updatedModel: EMRALD_Model = await DeleteItemAndRefs(variableToDelete);
+        updateAppData(updatedModel);
+        resolve();
+      });
     }
-    setVariables(updatedVariableList);
   };
 
   // Open New, Merge, and Clear Event List
@@ -90,7 +93,6 @@ const VariableContextProvider: React.FC<EmraldContextWrapperProps> = ({ children
   };
 
   const clearVariableList = () => {
-    setVariables([]);
     updateAppData(JSON.parse(JSON.stringify({ ...appData.value, VariableList: [] })));
   };
 

@@ -76,12 +76,12 @@ const MAAP = () => {
     if (parameterFile) {
       const parameterFileName = parameterFile.name;
       if (!parameterPath) {
-        setParameterPath('./' + parameterFileName);
+        setParameterPath('.\\' + parameterFileName);
       } else {
         let tempPath = parameterPath;
-        let sections = tempPath.split('/');
+        let sections = tempPath.split(/[\\/]/);
         sections[sections.length - 1] = parameterFileName;
-        setParameterPath(sections.join('/'));
+        setParameterPath(sections.join('\\'));
       }
       const possibleInitiators: Initiator[] = [];
       const allData: any[] = [];
@@ -115,12 +115,12 @@ const MAAP = () => {
       if (inputFile) {
         const inputFileName = inputFile.name;
         if (!inputPath) {
-          setInputPath('./' + inputFileName);
+          setInputPath('.\\' + inputFileName);
         } else {
           let tempPath = inputPath;
-          let sections = tempPath.split('/');
+          let sections = tempPath.split(/[\\/]/);
           sections[sections.length - 1] = inputFileName;
-          setInputPath(sections.join('/'));
+          setInputPath(sections.join('\\'));
         }
         const fileString = await inputFile.text();
         try {
@@ -255,7 +255,11 @@ const MAAP = () => {
         <FileUploadComponent
           label="Parameter File"
           setFile={setParameterFile}
-          fileName={formData.parameterFileName}
+          fileName={parameterFile?.name}
+          accept='.par'
+          clearFile={() => {
+            setParameterFile(null);
+          }}
         />
 
         <TextFieldComponent
@@ -267,7 +271,11 @@ const MAAP = () => {
         <FileUploadComponent
           label="Input File"
           setFile={setInputFile}
-          fileName={formData.inputFileName}
+          fileName={inputFile?.name}
+          accept='.inp'
+          clearFile={() => {
+            setInputFile(null);
+          }}
         />
 
         <TextFieldComponent value={inputPath} label="Input File Path" setValue={setInputPath} />

@@ -67,6 +67,10 @@ export class Upgrade
             }
         }
     
+        if(!this.newModel) {
+            this._newModel = JSON.parse(this._newModelTxt);
+        }
+        
         // Reset IDs if requested
         if (setIdFunction && this._newModel) {
             const lists = [

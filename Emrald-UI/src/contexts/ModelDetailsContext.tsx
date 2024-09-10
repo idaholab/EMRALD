@@ -28,6 +28,7 @@ export function useModelDetailsContext() {
 }
 
 const ModelDetailsContextProvider: React.FC<EmraldContextWrapperProps> = ({ children }) => {
+  // const { newDiagramList } = useDiagramContext();
   const id = appData.value.id;
   const [name, setName] = useState(appData.value.name);
   const [desc, setDesc] = useState(appData.value.desc);

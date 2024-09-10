@@ -1,3480 +1,4082 @@
 {
-  "id": 0,
+  "id": "0",
   "name": "",
   "desc": "",
-  "version": 1.0,
+  "version": 1,
   "DiagramList": [
     {
-      "Diagram": {
-        "id": 1,
-        "name": "Test Diagram",
-        "desc": "",
-        "diagramType": "dtPlant",
-        "states": [
-          "Large_Release",
-          "LOSP",
-          "Mission_Time_Up",
-          "Normal_Operations",
-          "Small_Release",
-          "Start_Systems",
-          "Stop_Systems",
-          "Terminate"
-        ],
-        "diagramLabel": "Plant"
-      }
+      "name": "C-CKV-A",
+      "desc": "",
+      "diagramType": "dtSingle",
+      "states": [
+        "C-CKV-A_Active",
+        "C-CKV-A_Failed",
+        "C-CKV-A_Standby"
+      ],
+      "diagramLabel": "Component",
+      "id": "9093c1ed-1a65-4b2e-acf1-78d2117b4eb2",
+      "objType": "Diagram",
+      "required": false
     },
     {
-      "Diagram": {
-        "id": 2,
-        "name": "C-CKV-A",
-        "desc": "",
-        "diagramType": "dtComponent",
-        "states": ["C-CKV-A_Active", "C-CKV-A_Failed", "C-CKV-A_Standby"],
-        "singleStates": [
-          {
-            "stateName": "C-CKV-A_Active",
-            "okState": "True"
-          },
-          {
-            "stateName": "C-CKV-A_Failed",
-            "okState": "False"
-          }
-        ],
-        "diagramLabel": "Component"
-      }
+      "name": "C-CKV-B",
+      "desc": "",
+      "diagramType": "dtSingle",
+      "states": [
+        "C-CKV-B_Active",
+        "C-CKV-B_Failed",
+        "C-CKV-B_Standby"
+      ],
+      "diagramLabel": "Component",
+      "id": "70476084-3a26-4f26-b65a-cf3653d6f4b2",
+      "objType": "Diagram",
+      "required": false
     },
     {
-      "Diagram": {
-        "id": 3,
-        "name": "C-CKV-B",
-        "desc": "",
-        "diagramType": "dtComponent",
-        "states": ["C-CKV-B_Active", "C-CKV-B_Failed", "C-CKV-B_Standby"],
-        "singleStates": [
-          {
-            "stateName": "C-CKV-B_Active",
-            "okState": "True"
-          },
-          {
-            "stateName": "C-CKV-B_Failed",
-            "okState": "False"
-          }
-        ],
-        "diagramLabel": "Component"
-      }
+      "name": "C-MOV-1",
+      "desc": "",
+      "diagramType": "dtSingle",
+      "states": [
+        "C-MOV-1_Active",
+        "C-MOV-1_Failed",
+        "C-MOV-1_Standby"
+      ],
+      "diagramLabel": "Component",
+      "id": "25bc43dc-5954-48d1-bff3-9916fcbaab68",
+      "objType": "Diagram",
+      "required": false
     },
     {
-      "Diagram": {
-        "id": 4,
-        "name": "C-MOV-1",
-        "desc": "",
-        "diagramType": "dtComponent",
-        "states": ["C-MOV-1_Active", "C-MOV-1_Failed", "C-MOV-1_Standby"],
-        "singleStates": [
-          {
-            "stateName": "C-MOV-1_Active",
-            "okState": "True"
-          },
-          {
-            "stateName": "C-MOV-1_Failed",
-            "okState": "False"
-          }
-        ],
-        "diagramLabel": "Component"
-      }
+      "name": "C-MOV-A",
+      "desc": "",
+      "diagramType": "dtSingle",
+      "states": [
+        "C-MOV-A_Active",
+        "C-MOV-A_Failed",
+        "C-MOV-A_Standby"
+      ],
+      "diagramLabel": "Component",
+      "id": "9d340be7-1dbe-46ec-90f0-a21875e4ca4e",
+      "objType": "Diagram",
+      "required": false
     },
     {
-      "Diagram": {
-        "id": 5,
-        "name": "C-MOV-A",
-        "desc": "",
-        "diagramType": "dtComponent",
-        "states": ["C-MOV-A_Active", "C-MOV-A_Failed", "C-MOV-A_Standby"],
-        "singleStates": [
-          {
-            "stateName": "C-MOV-A_Active",
-            "okState": "True"
-          },
-          {
-            "stateName": "C-MOV-A_Failed",
-            "okState": "False"
-          }
-        ],
-        "diagramLabel": "Component"
-      }
+      "name": "C-MOV-B",
+      "desc": "",
+      "diagramType": "dtSingle",
+      "states": [
+        "C-MOV-B_Active",
+        "C-MOV-B_Failed",
+        "C-MOV-B_Standby"
+      ],
+      "diagramLabel": "Component",
+      "id": "fcc036cf-9e9d-487b-b529-5d4a68b94ef6",
+      "objType": "Diagram",
+      "required": false
     },
     {
-      "Diagram": {
-        "id": 6,
-        "name": "C-MOV-B",
-        "desc": "",
-        "diagramType": "dtComponent",
-        "states": ["C-MOV-B_Active", "C-MOV-B_Failed", "C-MOV-B_Standby"],
-        "singleStates": [
-          {
-            "stateName": "C-MOV-B_Active",
-            "okState": "True"
-          },
-          {
-            "stateName": "C-MOV-B_Failed",
-            "okState": "False"
-          }
-        ],
-        "diagramLabel": "Component"
-      }
+      "name": "C-PMP-A",
+      "desc": "",
+      "diagramType": "dtSingle",
+      "states": [
+        "C-PMP-A_Active",
+        "C-PMP-A_Failed",
+        "C-PMP-A_Standby"
+      ],
+      "diagramLabel": "Component",
+      "id": "a74f699c-ed80-4502-b8cf-131909b56773",
+      "objType": "Diagram",
+      "required": false
     },
     {
-      "Diagram": {
-        "id": 7,
-        "name": "C-PMP-A",
-        "desc": "",
-        "diagramType": "dtComponent",
-        "states": ["C-PMP-A_Active", "C-PMP-A_Failed", "C-PMP-A_Standby"],
-        "singleStates": [
-          {
-            "stateName": "C-PMP-A_Active",
-            "okState": "True"
-          },
-          {
-            "stateName": "C-PMP-A_Failed",
-            "okState": "False"
-          }
-        ],
-        "diagramLabel": "Component"
-      }
+      "name": "C-PMP-B",
+      "desc": "",
+      "diagramType": "dtSingle",
+      "states": [
+        "C-PMP-B_Active",
+        "C-PMP-B_Failed",
+        "C-PMP-B_Standby"
+      ],
+      "diagramLabel": "Component",
+      "id": "ef9d7d08-ad78-4bc2-b035-068b688b30d2",
+      "objType": "Diagram",
+      "required": false
     },
     {
-      "Diagram": {
-        "id": 8,
-        "name": "C-PMP-B",
-        "desc": "",
-        "diagramType": "dtComponent",
-        "states": ["C-PMP-B_Active", "C-PMP-B_Failed", "C-PMP-B_Standby"],
-        "singleStates": [
-          {
-            "stateName": "C-PMP-B_Active",
-            "okState": "True"
-          },
-          {
-            "stateName": "C-PMP-B_Failed",
-            "okState": "False"
-          }
-        ],
-        "diagramLabel": "Component"
-      }
+      "name": "CCS_Sys",
+      "desc": "CCS",
+      "diagramType": "dtSingle",
+      "states": [
+        "CCS_Sys_Active",
+        "CCS_Sys_Failed"
+      ],
+      "diagramLabel": "System",
+      "id": "3fcdf189-0018-48be-87d0-4f7a4bca8051",
+      "objType": "Diagram",
+      "required": false
     },
     {
-      "Diagram": {
-        "id": 9,
-        "name": "E-CKV-A",
-        "desc": "",
-        "diagramType": "dtComponent",
-        "states": ["E-CKV-A_Active", "E-CKV-A_Failed", "E-CKV-A_Standby"],
-        "singleStates": [
-          {
-            "stateName": "E-CKV-A_Active",
-            "okState": "True"
-          },
-          {
-            "stateName": "E-CKV-A_Failed",
-            "okState": "False"
-          }
-        ],
-        "diagramLabel": "Component"
-      }
+      "name": "E-CKV-A",
+      "desc": "",
+      "diagramType": "dtSingle",
+      "states": [
+        "E-CKV-A_Active",
+        "E-CKV-A_Failed",
+        "E-CKV-A_Standby"
+      ],
+      "diagramLabel": "Component",
+      "id": "f65d68e2-0f15-455f-83a0-590fdce5e7d8",
+      "objType": "Diagram",
+      "required": false
     },
     {
-      "Diagram": {
-        "id": 10,
-        "name": "E-CKV-B",
-        "desc": "",
-        "diagramType": "dtComponent",
-        "states": ["E-CKV-B_Active", "E-CKV-B_Failed", "E-CKV-B_Standby"],
-        "singleStates": [
-          {
-            "stateName": "E-CKV-B_Active",
-            "okState": "True"
-          },
-          {
-            "stateName": "E-CKV-B_Failed",
-            "okState": "False"
-          }
-        ],
-        "diagramLabel": "Component"
-      }
+      "name": "E-CKV-B",
+      "desc": "",
+      "diagramType": "dtSingle",
+      "states": [
+        "E-CKV-B_Active",
+        "E-CKV-B_Failed",
+        "E-CKV-B_Standby"
+      ],
+      "diagramLabel": "Component",
+      "id": "ba7a97b3-c6a9-42b5-a59d-13cf4cbc0659",
+      "objType": "Diagram",
+      "required": false
     },
     {
-      "Diagram": {
-        "id": 11,
-        "name": "E-MOV-1",
-        "desc": "",
-        "diagramType": "dtComponent",
-        "states": ["E-MOV-1_Active", "E-MOV-1_Failed", "E-MOV-1_Standby"],
-        "singleStates": [
-          {
-            "stateName": "E-MOV-1_Active",
-            "okState": "True"
-          },
-          {
-            "stateName": "E-MOV-1_Failed",
-            "okState": "False"
-          }
-        ],
-        "diagramLabel": "Component"
-      }
+      "name": "E-MOV-1",
+      "desc": "",
+      "diagramType": "dtSingle",
+      "states": [
+        "E-MOV-1_Active",
+        "E-MOV-1_Failed",
+        "E-MOV-1_Standby"
+      ],
+      "diagramLabel": "Component",
+      "id": "9650a4da-0e60-47e6-83c7-8ba3b3c3c478",
+      "objType": "Diagram",
+      "required": false
     },
     {
-      "Diagram": {
-        "id": 12,
-        "name": "E-MOV-A",
-        "desc": "",
-        "diagramType": "dtComponent",
-        "states": ["E-MOV-A_Active", "E-MOV-A_Failed", "E-MOV-A_Standby"],
-        "singleStates": [
-          {
-            "stateName": "E-MOV-A_Active",
-            "okState": "True"
-          },
-          {
-            "stateName": "E-MOV-A_Failed",
-            "okState": "False"
-          }
-        ],
-        "diagramLabel": "Component"
-      }
+      "name": "E-MOV-A",
+      "desc": "",
+      "diagramType": "dtSingle",
+      "states": [
+        "E-MOV-A_Active",
+        "E-MOV-A_Failed",
+        "E-MOV-A_Standby"
+      ],
+      "diagramLabel": "Component",
+      "id": "21113fc2-2409-47ea-b6de-bfa1e868f9ee",
+      "objType": "Diagram",
+      "required": false
     },
     {
-      "Diagram": {
-        "id": 13,
-        "name": "E-MOV-B",
-        "desc": "",
-        "diagramType": "dtComponent",
-        "states": ["E-MOV-B_Active", "E-MOV-B_Failed", "E-MOV-B_Standby"],
-        "singleStates": [
-          {
-            "stateName": "E-MOV-B_Active",
-            "okState": "True"
-          },
-          {
-            "stateName": "E-MOV-B_Failed",
-            "okState": "False"
-          }
-        ],
-        "diagramLabel": "Component"
-      }
+      "name": "E-MOV-B",
+      "desc": "",
+      "diagramType": "dtSingle",
+      "states": [
+        "E-MOV-B_Active",
+        "E-MOV-B_Failed",
+        "E-MOV-B_Standby"
+      ],
+      "diagramLabel": "Component",
+      "id": "164ea8d5-6339-4b99-9440-a1e41b338187",
+      "objType": "Diagram",
+      "required": false
     },
     {
-      "Diagram": {
-        "id": 14,
-        "name": "E-PMP-A",
-        "desc": "",
-        "diagramType": "dtComponent",
-        "states": ["E-PMP-A_Active", "E-PMP-A_Failed", "E-PMP-A_Standby"],
-        "singleStates": [
-          {
-            "stateName": "E-PMP-A_Active",
-            "okState": "True"
-          },
-          {
-            "stateName": "E-PMP-A_Failed",
-            "okState": "False"
-          }
-        ],
-        "diagramLabel": "Component"
-      }
+      "name": "E-PMP-A",
+      "desc": "",
+      "diagramType": "dtSingle",
+      "states": [
+        "E-PMP-A_Active",
+        "E-PMP-A_Failed",
+        "E-PMP-A_Standby"
+      ],
+      "diagramLabel": "Component",
+      "id": "90d92ddb-bad9-418f-9a3a-171a8c956b61",
+      "objType": "Diagram",
+      "required": false
     },
     {
-      "Diagram": {
-        "id": 15,
-        "name": "E-PMP-B",
-        "desc": "",
-        "diagramType": "dtComponent",
-        "states": ["E-PMP-B_Active", "E-PMP-B_Failed", "E-PMP-B_Standby"],
-        "singleStates": [
-          {
-            "stateName": "E-PMP-B_Active",
-            "okState": "True"
-          },
-          {
-            "stateName": "E-PMP-B_Failed",
-            "okState": "False"
-          }
-        ],
-        "diagramLabel": "Component"
-      }
+      "name": "E-PMP-B",
+      "desc": "",
+      "diagramType": "dtSingle",
+      "states": [
+        "E-PMP-B_Active",
+        "E-PMP-B_Failed",
+        "E-PMP-B_Standby"
+      ],
+      "diagramLabel": "Component",
+      "id": "56864794-810f-414a-b345-2d67c221217d",
+      "objType": "Diagram",
+      "required": false
     },
     {
-      "Diagram": {
-        "id": 16,
-        "name": "S-DGN-A",
-        "desc": "",
-        "diagramType": "dtComponent",
-        "states": ["S-DGN-A_Active", "S-DGN-A_Failed", "S-DGN-A_Standby"],
-        "singleStates": [
-          {
-            "stateName": "S-DGN-A_Active",
-            "okState": "True"
-          },
-          {
-            "stateName": "S-DGN-A_Failed",
-            "okState": "False"
-          }
-        ],
-        "diagramLabel": "Component"
-      }
+      "name": "ECS_Sys",
+      "desc": "ECS",
+      "diagramType": "dtSingle",
+      "states": [
+        "ECS_Sys_Active",
+        "ECS_Sys_Failed"
+      ],
+      "diagramLabel": "System",
+      "id": "b36c2773-85f5-49b3-a224-2971e35baf73",
+      "objType": "Diagram",
+      "required": false
     },
     {
-      "Diagram": {
-        "id": 17,
-        "name": "S-DGN-B",
-        "desc": "",
-        "diagramType": "dtComponent",
-        "states": ["S-DGN-B_Active", "S-DGN-B_Failed", "S-DGN-B_Standby"],
-        "singleStates": [
-          {
-            "stateName": "S-DGN-B_Active",
-            "okState": "True"
-          },
-          {
-            "stateName": "S-DGN-B_Failed",
-            "okState": "False"
-          }
-        ],
-        "diagramLabel": "Component"
-      }
+      "name": "S-DGN-A",
+      "desc": "",
+      "diagramType": "dtSingle",
+      "states": [
+        "S-DGN-A_Active",
+        "S-DGN-A_Failed",
+        "S-DGN-A_Standby"
+      ],
+      "diagramLabel": "Component",
+      "id": "4ee347df-aacc-441e-bd2e-04d0548daa69",
+      "objType": "Diagram",
+      "required": false
     },
     {
-      "Diagram": {
-        "id": 18,
-        "name": "S-TNK-T1",
-        "desc": "",
-        "diagramType": "dtComponent",
-        "states": ["S-TNK-T1_Active", "S-TNK-T1_Failed", "S-TNK-T1_Standby"],
-        "singleStates": [
-          {
-            "stateName": "S-TNK-T1_Active",
-            "okState": "True"
-          },
-          {
-            "stateName": "S-TNK-T1_Failed",
-            "okState": "False"
-          }
-        ],
-        "diagramLabel": "Component"
-      }
+      "name": "S-DGN-B",
+      "desc": "",
+      "diagramType": "dtSingle",
+      "states": [
+        "S-DGN-B_Active",
+        "S-DGN-B_Failed",
+        "S-DGN-B_Standby"
+      ],
+      "diagramLabel": "Component",
+      "id": "f7e866d5-20ae-4101-a617-73bd70bcd5ac",
+      "objType": "Diagram",
+      "required": false
     },
     {
-      "Diagram": {
-        "id": 19,
-        "name": "ECS_Sys",
-        "desc": "ECS",
-        "diagramType": "dtSystem",
-        "states": ["ECS_Sys_Active", "ECS_Sys_Failed"],
-        "singleStates": [
-          {
-            "stateName": "ECS_Sys_Active",
-            "okState": "True"
-          },
-          {
-            "stateName": "ECS_Sys_Failed",
-            "okState": "False"
-          }
-        ],
-        "diagramLabel": "System"
-      }
+      "name": "S-TNK-T1",
+      "desc": "",
+      "diagramType": "dtSingle",
+      "states": [
+        "S-TNK-T1_Active",
+        "S-TNK-T1_Failed",
+        "S-TNK-T1_Standby"
+      ],
+      "diagramLabel": "Component",
+      "id": "4750512c-2c37-4283-978f-cdbed983a16c",
+      "objType": "Diagram",
+      "required": false
     },
     {
-      "Diagram": {
-        "id": 20,
-        "name": "CCS_Sys",
-        "desc": "CCS",
-        "diagramType": "dtSystem",
-        "states": ["CCS_Sys_Active", "CCS_Sys_Failed"],
-        "singleStates": [
-          {
-            "stateName": "CCS_Sys_Active",
-            "okState": "True"
-          },
-          {
-            "stateName": "CCS_Sys_Failed",
-            "okState": "False"
-          }
-        ],
-        "diagramLabel": "System"
-      }
+      "name": "Test Diagram",
+      "desc": "",
+      "diagramType": "dtMulti",
+      "states": [
+        "Large_Release",
+        "LOSP",
+        "Mission_Time_Up",
+        "Normal_Operations",
+        "Small_Release",
+        "Start_Systems",
+        "Stop_Systems",
+        "Terminate"
+      ],
+      "diagramLabel": "Plant",
+      "id": "6df94c2a-0964-4042-9598-f46662a91264",
+      "objType": "Diagram",
+      "required": false
     }
   ],
   "StateList": [
     {
-      "State": {
-        "id": 1,
-        "name": "Start_Systems",
-        "desc": "",
-        "stateType": "stStandard",
-        "diagramName": "Test Diagram",
-        "geometry": "{ x: 770, y: 50, width: 200, height: 140}",
-        "immediateActions": ["_Goto_ECS_Sys_Active", "_Goto_CCS_Sys_Active"],
-        "events": ["TempStateExit"],
-        "eventActions": [
-          {
-            "moveFromCurrent": true,
-            "actions": []
-          }
-        ]
+      "name": "C-CKV-A_Active",
+      "desc": "",
+      "stateType": "stStandard",
+      "diagramName": "C-CKV-A",
+      "immediateActions": [],
+      "events": [
+        "C-CKV-A_Stop"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "Goto_C-CKV-A_Off"
+          ]
+        }
+      ],
+      "id": "9fa12884-6478-4e1f-9b18-9375eec48aa6",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 330,
+        "y": 170,
+        "width": 200,
+        "height": 130
+      },
+      "defaultSingleStateValue": "True"
+    },
+    {
+      "name": "C-CKV-A_Failed",
+      "desc": "",
+      "stateType": "stStandard",
+      "diagramName": "C-CKV-A",
+      "immediateActions": [],
+      "events": [
+        "C-CKV-A_Stop"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "Goto_C-CKV-A_Off"
+          ]
+        }
+      ],
+      "id": "c8f7d0ad-730c-4507-be0c-9fa0f7b9cde0",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 30,
+        "y": 20,
+        "width": 200,
+        "height": 130
+      },
+      "defaultSingleStateValue": "False"
+    },
+    {
+      "name": "C-CKV-A_Standby",
+      "desc": "",
+      "stateType": "stStart",
+      "diagramName": "C-CKV-A",
+      "immediateActions": [],
+      "events": [
+        "C-CKV-A_Demand"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "Goto_C-CKV-A_ActOrFail"
+          ]
+        }
+      ],
+      "id": "e9e0ad10-b432-456d-97a7-3b0352fd9937",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 20,
+        "y": 200,
+        "width": 200,
+        "height": 130
+      },
+      "defaultSingleStateValue": "Ignore"
+    },
+    {
+      "name": "C-CKV-B_Active",
+      "desc": "",
+      "stateType": "stStandard",
+      "diagramName": "C-CKV-B",
+      "immediateActions": [],
+      "events": [
+        "C-CKV-B_Stop"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "Goto_C-CKV-B_Off"
+          ]
+        }
+      ],
+      "id": "a9614cd2-416c-4792-8672-fff950ea3112",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 310,
+        "y": 20,
+        "width": 200,
+        "height": 130
+      },
+      "defaultSingleStateValue": "True"
+    },
+    {
+      "name": "C-CKV-B_Failed",
+      "desc": "",
+      "stateType": "stStandard",
+      "diagramName": "C-CKV-B",
+      "immediateActions": [],
+      "events": [
+        "C-CKV-B_Stop"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "Goto_C-CKV-B_Off"
+          ]
+        }
+      ],
+      "id": "f6e4f66f-6369-49ba-b775-078341849a74",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 320,
+        "y": 190,
+        "width": 200,
+        "height": 130
+      },
+      "defaultSingleStateValue": "False"
+    },
+    {
+      "name": "C-CKV-B_Standby",
+      "desc": "",
+      "stateType": "stStart",
+      "diagramName": "C-CKV-B",
+      "immediateActions": [],
+      "events": [
+        "C-CKV-B_Demand"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "Goto_C-CKV-B_ActOrFail"
+          ]
+        }
+      ],
+      "id": "fc65d95b-7981-4dc3-adf9-6561be75a3e4",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 10,
+        "y": 80,
+        "width": 200,
+        "height": 130
+      },
+      "defaultSingleStateValue": "Ignore"
+    },
+    {
+      "name": "C-MOV-1_Active",
+      "desc": "",
+      "stateType": "stStandard",
+      "diagramName": "C-MOV-1",
+      "immediateActions": [],
+      "events": [
+        "C-MOV-1_Stop"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "Goto_C-MOV-1_Off"
+          ]
+        }
+      ],
+      "id": "2e8e5d9d-e8e9-4c95-96b3-439278bf4fc2",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 320,
+        "y": 20,
+        "width": 200,
+        "height": 130
+      },
+      "defaultSingleStateValue": "True"
+    },
+    {
+      "name": "C-MOV-1_Failed",
+      "desc": "",
+      "stateType": "stStandard",
+      "diagramName": "C-MOV-1",
+      "immediateActions": [],
+      "events": [
+        "C-MOV-1_Stop"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "Goto_C-MOV-1_Off"
+          ]
+        }
+      ],
+      "id": "4c84cf01-aab8-4f9b-98b4-e2e3476be091",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 320,
+        "y": 180,
+        "width": 200,
+        "height": 130
+      },
+      "defaultSingleStateValue": "False"
+    },
+    {
+      "name": "C-MOV-1_Standby",
+      "desc": "",
+      "stateType": "stStart",
+      "diagramName": "C-MOV-1",
+      "immediateActions": [],
+      "events": [
+        "C-MOV-1_Demand"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "Goto_C-MOV-1_ActOrFail"
+          ]
+        }
+      ],
+      "id": "837bd774-be4b-47b5-994b-5df8fd52fe56",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 20,
+        "y": 90,
+        "width": 200,
+        "height": 130
+      },
+      "defaultSingleStateValue": "Ignore"
+    },
+    {
+      "name": "C-MOV-A_Active",
+      "desc": "",
+      "stateType": "stStandard",
+      "diagramName": "C-MOV-A",
+      "immediateActions": [],
+      "events": [
+        "C-MOV-A_Stop"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "Goto_C-MOV-A_Off"
+          ]
+        }
+      ],
+      "id": "436494d1-2668-4838-8a8e-81194a0257f8",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 330,
+        "y": 20,
+        "width": 200,
+        "height": 130
+      },
+      "defaultSingleStateValue": "True"
+    },
+    {
+      "name": "C-MOV-A_Failed",
+      "desc": "",
+      "stateType": "stStandard",
+      "diagramName": "C-MOV-A",
+      "immediateActions": [],
+      "events": [
+        "C-MOV-A_Stop"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "Goto_C-MOV-A_Off"
+          ]
+        }
+      ],
+      "id": "f0567465-fe29-4fe6-a8a0-437452d99d45",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 330,
+        "y": 190,
+        "width": 200,
+        "height": 130
+      },
+      "defaultSingleStateValue": "False"
+    },
+    {
+      "name": "C-MOV-A_Standby",
+      "desc": "",
+      "stateType": "stStart",
+      "diagramName": "C-MOV-A",
+      "immediateActions": [],
+      "events": [
+        "C-MOV-A_Demand"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "Goto_C-MOV-A_ActOrFail"
+          ]
+        }
+      ],
+      "id": "a95662b0-eca7-42ca-acd0-b993e9060eda",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 20,
+        "y": 50,
+        "width": 200,
+        "height": 130
+      },
+      "defaultSingleStateValue": "Ignore"
+    },
+    {
+      "name": "C-MOV-B_Active",
+      "desc": "",
+      "stateType": "stStandard",
+      "diagramName": "C-MOV-B",
+      "immediateActions": [],
+      "events": [
+        "C-MOV-B_Stop"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "Goto_C-MOV-B_Off"
+          ]
+        }
+      ],
+      "id": "929f6181-292c-4f6a-9d34-2d354b3cb28f",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 320,
+        "y": 20,
+        "width": 200,
+        "height": 130
+      },
+      "defaultSingleStateValue": "True"
+    },
+    {
+      "name": "C-MOV-B_Failed",
+      "desc": "",
+      "stateType": "stStandard",
+      "diagramName": "C-MOV-B",
+      "immediateActions": [],
+      "events": [
+        "C-MOV-B_Stop"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "Goto_C-MOV-B_Off"
+          ]
+        }
+      ],
+      "id": "939a010b-618d-4857-9164-49fe22eaffa4",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 320,
+        "y": 180,
+        "width": 200,
+        "height": 130
+      },
+      "defaultSingleStateValue": "False"
+    },
+    {
+      "name": "C-MOV-B_Standby",
+      "desc": "",
+      "stateType": "stStart",
+      "diagramName": "C-MOV-B",
+      "immediateActions": [],
+      "events": [
+        "C-MOV-B_Demand"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "Goto_C-MOV-B_ActOrFail"
+          ]
+        }
+      ],
+      "id": "72ea3531-f86d-4c4b-8631-35c1168f996c",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 20,
+        "y": 70,
+        "width": 200,
+        "height": 130
+      },
+      "defaultSingleStateValue": "Ignore"
+    },
+    {
+      "name": "C-PMP-A_Active",
+      "desc": "",
+      "stateType": "stStandard",
+      "diagramName": "C-PMP-A",
+      "immediateActions": [],
+      "events": [
+        "C-PMP-A_Stop",
+        "C-PMP-A_FR"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "Goto_C-PMP-A_Off"
+          ]
+        },
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "Goto_C-PMP-A_Failed"
+          ]
+        }
+      ],
+      "id": "51e471df-1ba4-409b-b4b4-e75436ce743a",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 320,
+        "y": 20,
+        "width": 200,
+        "height": 170
+      },
+      "defaultSingleStateValue": "True"
+    },
+    {
+      "name": "C-PMP-A_Failed",
+      "desc": "",
+      "stateType": "stStandard",
+      "diagramName": "C-PMP-A",
+      "immediateActions": [],
+      "events": [
+        "C-PMP-A_Stop"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "Goto_C-PMP-A_Off"
+          ]
+        }
+      ],
+      "id": "d0e64e08-9e64-4549-a599-4702b57e19ee",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 320,
+        "y": 210,
+        "width": 200,
+        "height": 130
+      },
+      "defaultSingleStateValue": "False"
+    },
+    {
+      "name": "C-PMP-A_Standby",
+      "desc": "",
+      "stateType": "stStart",
+      "diagramName": "C-PMP-A",
+      "immediateActions": [],
+      "events": [
+        "C-PMP-A_Demand"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "Goto_C-PMP-A_ActOrFail"
+          ]
+        }
+      ],
+      "id": "2700f776-3eee-4239-bca9-50ef34e28f9a",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 20,
+        "y": 90,
+        "width": 200,
+        "height": 130
+      },
+      "defaultSingleStateValue": "Ignore"
+    },
+    {
+      "name": "C-PMP-B_Active",
+      "desc": "",
+      "stateType": "stStandard",
+      "diagramName": "C-PMP-B",
+      "immediateActions": [],
+      "events": [
+        "C-PMP-B_Stop",
+        "C-PMP-B_FR"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "Goto_C-PMP-B_Off"
+          ]
+        },
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "Goto_C-PMP-B_Failed"
+          ]
+        }
+      ],
+      "id": "af74be5b-a3e3-4b78-a1e9-155f90ad79dc",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 340,
+        "y": 20,
+        "width": 200,
+        "height": 170
+      },
+      "defaultSingleStateValue": "True"
+    },
+    {
+      "name": "C-PMP-B_Failed",
+      "desc": "",
+      "stateType": "stStandard",
+      "diagramName": "C-PMP-B",
+      "immediateActions": [],
+      "events": [
+        "C-PMP-B_Stop"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "Goto_C-PMP-B_Off"
+          ]
+        }
+      ],
+      "id": "3dba9d01-971b-4540-b680-d252bb4600d0",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 340,
+        "y": 210,
+        "width": 200,
+        "height": 130
+      },
+      "defaultSingleStateValue": "False"
+    },
+    {
+      "name": "C-PMP-B_Standby",
+      "desc": "",
+      "stateType": "stStart",
+      "diagramName": "C-PMP-B",
+      "immediateActions": [],
+      "events": [
+        "C-PMP-B_Demand"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "Goto_C-PMP-B_ActOrFail"
+          ]
+        }
+      ],
+      "id": "d243391e-30b7-4b04-8bf1-5702e62f5503",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 40,
+        "y": 110,
+        "width": 200,
+        "height": 130
+      },
+      "defaultSingleStateValue": "Ignore"
+    },
+    {
+      "name": "CCS_Sys_Active",
+      "desc": "",
+      "stateType": "stStandard",
+      "diagramName": "CCS_Sys",
+      "immediateActions": [],
+      "events": [
+        "CCS_Sys_Eval",
+        "CCS_Sys_Stop"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "_Goto_CCS_Sys_Failed"
+          ]
+        },
+        {
+          "moveFromCurrent": true,
+          "actions": []
+        }
+      ],
+      "id": "11df9060-eb5b-48e9-8646-e40e0a760fca",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 30,
+        "y": 40,
+        "width": 200,
+        "height": 160
+      },
+      "defaultSingleStateValue": "True"
+    },
+    {
+      "name": "CCS_Sys_Failed",
+      "desc": "",
+      "stateType": "stStandard",
+      "diagramName": "CCS_Sys",
+      "immediateActions": [],
+      "events": [
+        "CCS_Sys_Stop"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": []
+        }
+      ],
+      "id": "a0c1e8db-6c48-41ec-a6f6-cb9c3fc5a2e6",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 310,
+        "y": 40,
+        "width": 200,
+        "height": 110
+      },
+      "defaultSingleStateValue": "False"
+    },
+    {
+      "name": "E-CKV-A_Active",
+      "desc": "",
+      "stateType": "stStandard",
+      "diagramName": "E-CKV-A",
+      "immediateActions": [],
+      "events": [
+        "E-CKV-A_Stop"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "Goto_E-CKV-A_Off"
+          ]
+        }
+      ],
+      "id": "6d8ba15b-41a5-4843-88bc-3bcdfafd5d33",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 330,
+        "y": 20,
+        "width": 200,
+        "height": 130
+      },
+      "defaultSingleStateValue": "True"
+    },
+    {
+      "name": "E-CKV-A_Failed",
+      "desc": "",
+      "stateType": "stStandard",
+      "diagramName": "E-CKV-A",
+      "immediateActions": [],
+      "events": [
+        "E-CKV-A_Stop"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "Goto_E-CKV-A_Off"
+          ]
+        }
+      ],
+      "id": "97a7a511-cdf6-41c4-92d1-652b51c21a8a",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 330,
+        "y": 170,
+        "width": 200,
+        "height": 130
+      },
+      "defaultSingleStateValue": "False"
+    },
+    {
+      "name": "E-CKV-A_Standby",
+      "desc": "",
+      "stateType": "stStart",
+      "diagramName": "E-CKV-A",
+      "immediateActions": [],
+      "events": [
+        "E-CKV-A_Demand"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "Goto_E-CKV-A_ActOrFail"
+          ]
+        }
+      ],
+      "id": "8415f91c-d20f-4df0-ad76-a3a58fdfed3b",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 20,
+        "y": 60,
+        "width": 200,
+        "height": 130
+      },
+      "defaultSingleStateValue": "Ignore"
+    },
+    {
+      "name": "E-CKV-B_Active",
+      "desc": "",
+      "stateType": "stStandard",
+      "diagramName": "E-CKV-B",
+      "immediateActions": [],
+      "events": [
+        "E-CKV-B_Stop"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "Goto_E-CKV-B_Off"
+          ]
+        }
+      ],
+      "id": "6ebd3772-9aa0-441a-a1b5-182d667a2547",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 310,
+        "y": 20,
+        "width": 200,
+        "height": 130
+      },
+      "defaultSingleStateValue": "True"
+    },
+    {
+      "name": "E-CKV-B_Failed",
+      "desc": "",
+      "stateType": "stStandard",
+      "diagramName": "E-CKV-B",
+      "immediateActions": [],
+      "events": [
+        "E-CKV-B_Stop"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "Goto_E-CKV-B_Off"
+          ]
+        }
+      ],
+      "id": "655329f7-0a00-48cb-a886-58cde39a0cc2",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 310,
+        "y": 180,
+        "width": 200,
+        "height": 130
+      },
+      "defaultSingleStateValue": "False"
+    },
+    {
+      "name": "E-CKV-B_Standby",
+      "desc": "",
+      "stateType": "stStart",
+      "diagramName": "E-CKV-B",
+      "immediateActions": [],
+      "events": [
+        "E-CKV-B_Demand"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "Goto_E-CKV-B_ActOrFail"
+          ]
+        }
+      ],
+      "id": "2d4458f9-759a-4e52-b37b-6ef025c676f6",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 20,
+        "y": 70,
+        "width": 200,
+        "height": 130
+      },
+      "defaultSingleStateValue": "Ignore"
+    },
+    {
+      "name": "E-MOV-1_Active",
+      "desc": "",
+      "stateType": "stStandard",
+      "diagramName": "E-MOV-1",
+      "immediateActions": [],
+      "events": [
+        "E-MOV-1_Stop"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "Goto_E-MOV-1_Off"
+          ]
+        }
+      ],
+      "id": "ab4d2d69-f051-42f7-9a75-30191c4c9d89",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 300,
+        "y": 20,
+        "width": 200,
+        "height": 130
+      },
+      "defaultSingleStateValue": "True"
+    },
+    {
+      "name": "E-MOV-1_Failed",
+      "desc": "",
+      "stateType": "stStandard",
+      "diagramName": "E-MOV-1",
+      "immediateActions": [],
+      "events": [
+        "E-MOV-1_Stop"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "Goto_E-MOV-1_Off"
+          ]
+        }
+      ],
+      "id": "9c33d36f-41c0-4231-a15a-d6d768282299",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 300,
+        "y": 170,
+        "width": 200,
+        "height": 130
+      },
+      "defaultSingleStateValue": "False"
+    },
+    {
+      "name": "E-MOV-1_Standby",
+      "desc": "",
+      "stateType": "stStart",
+      "diagramName": "E-MOV-1",
+      "immediateActions": [],
+      "events": [
+        "E-MOV-1_Demand"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "Goto_E-MOV-1_ActOrFail"
+          ]
+        }
+      ],
+      "id": "3a9ed399-ce3d-4dba-a2e2-04516301d754",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 20,
+        "y": 80,
+        "width": 200,
+        "height": 130
+      },
+      "defaultSingleStateValue": "Ignore"
+    },
+    {
+      "name": "E-MOV-A_Active",
+      "desc": "",
+      "stateType": "stStandard",
+      "diagramName": "E-MOV-A",
+      "immediateActions": [],
+      "events": [
+        "E-MOV-A_Stop"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "Goto_E-MOV-A_Off"
+          ]
+        }
+      ],
+      "id": "b54ec467-3a0c-4c87-b5a8-1d9b188bd246",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 320,
+        "y": 20,
+        "width": 200,
+        "height": 130
+      },
+      "defaultSingleStateValue": "True"
+    },
+    {
+      "name": "E-MOV-A_Failed",
+      "desc": "",
+      "stateType": "stStandard",
+      "diagramName": "E-MOV-A",
+      "immediateActions": [],
+      "events": [
+        "E-MOV-A_Stop"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "Goto_E-MOV-A_Off"
+          ]
+        }
+      ],
+      "id": "5ea936fa-6a18-442f-8f78-c54f9eec08d9",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 320,
+        "y": 170,
+        "width": 200,
+        "height": 130
+      },
+      "defaultSingleStateValue": "False"
+    },
+    {
+      "name": "E-MOV-A_Standby",
+      "desc": "",
+      "stateType": "stStart",
+      "diagramName": "E-MOV-A",
+      "immediateActions": [],
+      "events": [
+        "E-MOV-A_Demand"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "Goto_E-MOV-A_ActOrFail"
+          ]
+        }
+      ],
+      "id": "6fe53d19-bd18-453d-8f06-7d52bfae51c3",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 20,
+        "y": 80,
+        "width": 200,
+        "height": 130
+      },
+      "defaultSingleStateValue": "Ignore"
+    },
+    {
+      "name": "E-MOV-B_Active",
+      "desc": "",
+      "stateType": "stStandard",
+      "diagramName": "E-MOV-B",
+      "immediateActions": [],
+      "events": [
+        "E-MOV-B_Stop"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "Goto_E-MOV-B_Off"
+          ]
+        }
+      ],
+      "id": "db710181-5e8f-4b06-8f7d-4601726d69ca",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 310,
+        "y": 20,
+        "width": 200,
+        "height": 130
+      },
+      "defaultSingleStateValue": "True"
+    },
+    {
+      "name": "E-MOV-B_Failed",
+      "desc": "",
+      "stateType": "stStandard",
+      "diagramName": "E-MOV-B",
+      "immediateActions": [],
+      "events": [
+        "E-MOV-B_Stop"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "Goto_E-MOV-B_Off"
+          ]
+        }
+      ],
+      "id": "bd82d8f1-57d1-4b00-b14e-31edc79fd918",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 310,
+        "y": 180,
+        "width": 200,
+        "height": 130
+      },
+      "defaultSingleStateValue": "False"
+    },
+    {
+      "name": "E-MOV-B_Standby",
+      "desc": "",
+      "stateType": "stStart",
+      "diagramName": "E-MOV-B",
+      "immediateActions": [],
+      "events": [
+        "E-MOV-B_Demand"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "Goto_E-MOV-B_ActOrFail"
+          ]
+        }
+      ],
+      "id": "f87b57a2-eebb-4fe5-90a4-c2f1e006d219",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 30,
+        "y": 100,
+        "width": 200,
+        "height": 130
+      },
+      "defaultSingleStateValue": "Ignore"
+    },
+    {
+      "name": "E-PMP-A_Active",
+      "desc": "",
+      "stateType": "stStandard",
+      "diagramName": "E-PMP-A",
+      "immediateActions": [],
+      "events": [
+        "E-PMP-A_Stop",
+        "E-PMP-A_FR"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "Goto_E-PMP-A_Off"
+          ]
+        },
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "Goto_E-PMP-A_Failed"
+          ]
+        }
+      ],
+      "id": "bc87b862-a339-49f4-961b-c46e5a927422",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 310,
+        "y": 20,
+        "width": 200,
+        "height": 170
+      },
+      "defaultSingleStateValue": "True"
+    },
+    {
+      "name": "E-PMP-A_Failed",
+      "desc": "",
+      "stateType": "stStandard",
+      "diagramName": "E-PMP-A",
+      "immediateActions": [],
+      "events": [
+        "E-PMP-A_Stop"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "Goto_E-PMP-A_Off"
+          ]
+        }
+      ],
+      "id": "3a04510b-2d03-42d0-b6d6-fe4f16edf65b",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 310,
+        "y": 210,
+        "width": 200,
+        "height": 130
+      },
+      "defaultSingleStateValue": "False"
+    },
+    {
+      "name": "E-PMP-A_Standby",
+      "desc": "",
+      "stateType": "stStart",
+      "diagramName": "E-PMP-A",
+      "immediateActions": [],
+      "events": [
+        "E-PMP-A_Demand"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "Goto_E-PMP-A_ActOrFail"
+          ]
+        }
+      ],
+      "id": "e7d7f44c-bfba-4646-b38e-5b125a90767e",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 20,
+        "y": 70,
+        "width": 200,
+        "height": 130
+      },
+      "defaultSingleStateValue": "Ignore"
+    },
+    {
+      "name": "E-PMP-B_Active",
+      "desc": "",
+      "stateType": "stStandard",
+      "diagramName": "E-PMP-B",
+      "immediateActions": [],
+      "events": [
+        "E-PMP-B_Stop",
+        "E-PMP-B_FR"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "Goto_E-PMP-B_Off"
+          ]
+        },
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "Goto_E-PMP-B_Failed"
+          ]
+        }
+      ],
+      "id": "50667940-69ef-407b-978d-d1f631166359",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 320,
+        "y": 20,
+        "width": 200,
+        "height": 170
+      },
+      "defaultSingleStateValue": "True"
+    },
+    {
+      "name": "E-PMP-B_Failed",
+      "desc": "",
+      "stateType": "stStandard",
+      "diagramName": "E-PMP-B",
+      "immediateActions": [],
+      "events": [
+        "E-PMP-B_Stop"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "Goto_E-PMP-B_Off"
+          ]
+        }
+      ],
+      "id": "970e4ffd-b3a6-43ed-8343-0f8aba5c296c",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 320,
+        "y": 210,
+        "width": 200,
+        "height": 130
+      },
+      "defaultSingleStateValue": "False"
+    },
+    {
+      "name": "E-PMP-B_Standby",
+      "desc": "",
+      "stateType": "stStart",
+      "diagramName": "E-PMP-B",
+      "immediateActions": [],
+      "events": [
+        "E-PMP-B_Demand"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "Goto_E-PMP-B_ActOrFail"
+          ]
+        }
+      ],
+      "id": "f50f3dd2-7e3a-4332-988a-697145146d8d",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 20,
+        "y": 80,
+        "width": 200,
+        "height": 130
+      },
+      "defaultSingleStateValue": "Ignore"
+    },
+    {
+      "name": "ECS_Sys_Active",
+      "desc": "",
+      "stateType": "stStandard",
+      "diagramName": "ECS_Sys",
+      "immediateActions": [],
+      "events": [
+        "ECS_Sys_Eval",
+        "ECS_Sys_Stop"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "_Goto_ECS_Sys_Failed"
+          ]
+        },
+        {
+          "moveFromCurrent": true,
+          "actions": []
+        }
+      ],
+      "id": "7d615723-3343-41f2-8053-3111c7fc48d1",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 20,
+        "y": 20,
+        "width": 200,
+        "height": 160
+      },
+      "defaultSingleStateValue": "True"
+    },
+    {
+      "name": "ECS_Sys_Failed",
+      "desc": "",
+      "stateType": "stStandard",
+      "diagramName": "ECS_Sys",
+      "immediateActions": [],
+      "events": [
+        "ECS_Sys_Stop"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": []
+        }
+      ],
+      "id": "b00581bd-9f07-4299-864f-b3e2c9053dcf",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 300,
+        "y": 40,
+        "width": 200,
+        "height": 110
+      },
+      "defaultSingleStateValue": "False"
+    },
+    {
+      "name": "Large_Release",
+      "desc": "",
+      "stateType": "stKeyState",
+      "diagramName": "Test Diagram",
+      "immediateActions": [
+        "Goto_Terminate"
+      ],
+      "events": [],
+      "eventActions": [],
+      "id": "5b011298-d6cb-461e-89d5-86d181ae8510",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 770,
+        "y": 410,
+        "width": 200,
+        "height": 100
       }
     },
     {
-      "State": {
-        "id": 2,
-        "name": "Stop_Systems",
-        "desc": "",
-        "stateType": "stStandard",
-        "diagramName": "Test Diagram",
-        "geometry": "{ x: 500, y: 40, width: 200, height: 110}",
-        "immediateActions": [],
-        "events": ["TempStateExit"],
-        "eventActions": [
-          {
-            "moveFromCurrent": true,
-            "actions": []
-          }
-        ]
+      "name": "LOSP",
+      "desc": "",
+      "stateType": "stStandard",
+      "diagramName": "Test Diagram",
+      "immediateActions": [
+        "Goto_StartSystems"
+      ],
+      "events": [
+        "ECS_Failed",
+        "CCS_and_ECS_Failed",
+        "24H_Mission_Time"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": false,
+          "actions": [
+            "Goto_Small_Release"
+          ]
+        },
+        {
+          "moveFromCurrent": false,
+          "actions": [
+            "Goto_Large_Release"
+          ]
+        },
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "Goto_Mission_Time_Up"
+          ]
+        }
+      ],
+      "id": "4bcb7708-d0a3-483c-a4a2-fccbf5adc3c8",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 500,
+        "y": 180,
+        "width": 200,
+        "height": 240
       }
     },
     {
-      "State": {
-        "id": 3,
-        "name": "C-CKV-A_Standby",
-        "desc": "",
-        "stateType": "stStart",
-        "diagramName": "C-CKV-A",
-        "geometry": "{ x: 20, y: 200, width: 200, height: 130}",
-        "immediateActions": [],
-        "events": ["C-CKV-A_Demand"],
-        "eventActions": [
-          {
-            "moveFromCurrent": true,
-            "actions": ["Goto_C-CKV-A_ActOrFail"]
-          }
-        ]
+      "name": "Mission_Time_Up",
+      "desc": "",
+      "stateType": "stStandard",
+      "diagramName": "Test Diagram",
+      "immediateActions": [],
+      "events": [
+        "No_Sm_Rel",
+        "Had_Sm_Rel"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "Goto_Normal_Operations"
+          ]
+        },
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "Goto_Terminate"
+          ]
+        }
+      ],
+      "id": "4c7ed3ca-ecc0-4a07-87ea-68ee07b5bde1",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 170,
+        "y": 340,
+        "width": 200,
+        "height": 170
       }
     },
     {
-      "State": {
-        "id": 4,
-        "name": "C-CKV-A_Active",
-        "desc": "",
-        "stateType": "stStandard",
-        "diagramName": "C-CKV-A",
-        "geometry": "{ x: 330, y: 170, width: 200, height: 130}",
-        "immediateActions": [],
-        "events": ["C-CKV-A_Stop"],
-        "eventActions": [
-          {
-            "moveFromCurrent": true,
-            "actions": ["Goto_C-CKV-A_Off"]
-          }
-        ]
+      "name": "Normal_Operations",
+      "desc": "",
+      "stateType": "stStart",
+      "diagramName": "Test Diagram",
+      "immediateActions": [
+        "Goto_StopSystems"
+      ],
+      "events": [
+        "LOSP"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "Goto_LOSP"
+          ]
+        }
+      ],
+      "id": "8d50fd48-6f37-4ccb-a6b4-5b3826e76280",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 170,
+        "y": 130,
+        "width": 200,
+        "height": 150
       }
     },
     {
-      "State": {
-        "id": 5,
-        "name": "C-CKV-A_Failed",
-        "desc": "",
-        "stateType": "stStandard",
-        "diagramName": "C-CKV-A",
-        "geometry": "{ x: 30, y: 20, width: 200, height: 130}",
-        "immediateActions": [],
-        "events": ["C-CKV-A_Stop"],
-        "eventActions": [
-          {
-            "moveFromCurrent": true,
-            "actions": ["Goto_C-CKV-A_Off"]
-          }
-        ]
+      "name": "S-DGN-A_Active",
+      "desc": "",
+      "stateType": "stStandard",
+      "diagramName": "S-DGN-A",
+      "immediateActions": [],
+      "events": [
+        "S-DGN-A_Stop",
+        "S-DGN-A_FR"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "Goto_S-DGN-A_Off"
+          ]
+        },
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "Goto_S-DGN-A_Failed"
+          ]
+        }
+      ],
+      "id": "83a59216-9558-4458-9ae9-aa9d0d634290",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 320,
+        "y": 20,
+        "width": 200,
+        "height": 170
+      },
+      "defaultSingleStateValue": "True"
+    },
+    {
+      "name": "S-DGN-A_Failed",
+      "desc": "",
+      "stateType": "stStandard",
+      "diagramName": "S-DGN-A",
+      "immediateActions": [],
+      "events": [
+        "S-DGN-A_Stop"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "Goto_S-DGN-A_Off"
+          ]
+        }
+      ],
+      "id": "5c7ccb0b-c6de-4e6a-b5f1-0eced6368318",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 320,
+        "y": 210,
+        "width": 200,
+        "height": 130
+      },
+      "defaultSingleStateValue": "False"
+    },
+    {
+      "name": "S-DGN-A_Standby",
+      "desc": "",
+      "stateType": "stStart",
+      "diagramName": "S-DGN-A",
+      "immediateActions": [],
+      "events": [
+        "S-DGN-A_Demand"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "Goto_S-DGN-A_ActOrFail"
+          ]
+        }
+      ],
+      "id": "7d3d6b36-5054-47e3-8715-9fff82bb2dd6",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 20,
+        "y": 70,
+        "width": 200,
+        "height": 130
+      },
+      "defaultSingleStateValue": "Ignore"
+    },
+    {
+      "name": "S-DGN-B_Active",
+      "desc": "",
+      "stateType": "stStandard",
+      "diagramName": "S-DGN-B",
+      "immediateActions": [],
+      "events": [
+        "S-DGN-B_Stop",
+        "S-DGN-B_FR"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "Goto_S-DGN-B_Off"
+          ]
+        },
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "Goto_S-DGN-B_Failed"
+          ]
+        }
+      ],
+      "id": "edad9321-08f4-4736-a8b0-b49007554d00",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 340,
+        "y": 20,
+        "width": 200,
+        "height": 170
+      },
+      "defaultSingleStateValue": "True"
+    },
+    {
+      "name": "S-DGN-B_Failed",
+      "desc": "",
+      "stateType": "stStandard",
+      "diagramName": "S-DGN-B",
+      "immediateActions": [],
+      "events": [
+        "S-DGN-B_Stop"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "Goto_S-DGN-B_Off"
+          ]
+        }
+      ],
+      "id": "fc5fc97d-c630-4067-a21e-989a7eda099b",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 340,
+        "y": 210,
+        "width": 200,
+        "height": 130
+      },
+      "defaultSingleStateValue": "False"
+    },
+    {
+      "name": "S-DGN-B_Standby",
+      "desc": "",
+      "stateType": "stStart",
+      "diagramName": "S-DGN-B",
+      "immediateActions": [],
+      "events": [
+        "S-DGN-B_Demand"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "Goto_S-DGN-B_ActOrFail"
+          ]
+        }
+      ],
+      "id": "f5f9c3c6-24e5-4fa0-b8a9-8311c59dcb58",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 20,
+        "y": 90,
+        "width": 200,
+        "height": 130
+      },
+      "defaultSingleStateValue": "Ignore"
+    },
+    {
+      "name": "S-TNK-T1_Active",
+      "desc": "",
+      "stateType": "stStandard",
+      "diagramName": "S-TNK-T1",
+      "immediateActions": [],
+      "events": [
+        "S-TNK-T1_Stop",
+        "S-TNK-T1_FR"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "Goto_S-TNK-T1_Off"
+          ]
+        },
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "Goto_S-TNK-T1_Failed"
+          ]
+        }
+      ],
+      "id": "f7484a5d-1abb-4dec-92ad-ade31d67dcb1",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 330,
+        "y": 20,
+        "width": 200,
+        "height": 170
+      },
+      "defaultSingleStateValue": "True"
+    },
+    {
+      "name": "S-TNK-T1_Failed",
+      "desc": "",
+      "stateType": "stStandard",
+      "diagramName": "S-TNK-T1",
+      "immediateActions": [],
+      "events": [
+        "S-TNK-T1_Stop"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "Goto_S-TNK-T1_Off"
+          ]
+        }
+      ],
+      "id": "ce9da703-9771-4b62-8c97-ccc33c88331f",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 330,
+        "y": 210,
+        "width": 200,
+        "height": 130
+      },
+      "defaultSingleStateValue": "False"
+    },
+    {
+      "name": "S-TNK-T1_Standby",
+      "desc": "",
+      "stateType": "stStart",
+      "diagramName": "S-TNK-T1",
+      "immediateActions": [],
+      "events": [
+        "S-TNK-T1_Demand"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "Goto_S-TNK-T1_Active"
+          ]
+        }
+      ],
+      "id": "a0f9252d-0aec-47ef-b059-a2adb10fa142",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 30,
+        "y": 90,
+        "width": 200,
+        "height": 130
+      },
+      "defaultSingleStateValue": "Ignore"
+    },
+    {
+      "name": "Small_Release",
+      "desc": "",
+      "stateType": "stKeyState",
+      "diagramName": "Test Diagram",
+      "immediateActions": [],
+      "events": [
+        "Had_Lg_Rel"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": []
+        }
+      ],
+      "id": "76f2f56e-e1d0-4344-b09c-ec1c73d7be8a",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 770,
+        "y": 260,
+        "width": 200,
+        "height": 110
       }
     },
     {
-      "State": {
-        "id": 6,
-        "name": "C-CKV-B_Standby",
-        "desc": "",
-        "stateType": "stStart",
-        "diagramName": "C-CKV-B",
-        "geometry": "{ x: 10, y: 80, width: 200, height: 130}",
-        "immediateActions": [],
-        "events": ["C-CKV-B_Demand"],
-        "eventActions": [
-          {
-            "moveFromCurrent": true,
-            "actions": ["Goto_C-CKV-B_ActOrFail"]
-          }
-        ]
+      "name": "Start_Systems",
+      "desc": "",
+      "stateType": "stStandard",
+      "diagramName": "Test Diagram",
+      "immediateActions": [
+        "_Goto_ECS_Sys_Active",
+        "_Goto_CCS_Sys_Active"
+      ],
+      "events": [
+        "TempStateExit"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": []
+        }
+      ],
+      "id": "42aa389e-8d54-472b-950b-3b6f40884ef3",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 770,
+        "y": 50,
+        "width": 200,
+        "height": 140
       }
     },
     {
-      "State": {
-        "id": 7,
-        "name": "C-CKV-B_Active",
-        "desc": "",
-        "stateType": "stStandard",
-        "diagramName": "C-CKV-B",
-        "geometry": "{ x: 310, y: 20, width: 200, height: 130}",
-        "immediateActions": [],
-        "events": ["C-CKV-B_Stop"],
-        "eventActions": [
-          {
-            "moveFromCurrent": true,
-            "actions": ["Goto_C-CKV-B_Off"]
-          }
-        ]
+      "name": "Stop_Systems",
+      "desc": "",
+      "stateType": "stStandard",
+      "diagramName": "Test Diagram",
+      "immediateActions": [],
+      "events": [
+        "TempStateExit"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": []
+        }
+      ],
+      "id": "8ba02a3d-8cfe-4815-9b4a-904f352c144a",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 500,
+        "y": 40,
+        "width": 200,
+        "height": 110
       }
     },
     {
-      "State": {
-        "id": 8,
-        "name": "C-CKV-B_Failed",
-        "desc": "",
-        "stateType": "stStandard",
-        "diagramName": "C-CKV-B",
-        "geometry": "{ x: 320, y: 190, width: 200, height: 130}",
-        "immediateActions": [],
-        "events": ["C-CKV-B_Stop"],
-        "eventActions": [
-          {
-            "moveFromCurrent": true,
-            "actions": ["Goto_C-CKV-B_Off"]
-          }
-        ]
-      }
-    },
-    {
-      "State": {
-        "id": 9,
-        "name": "C-MOV-1_Standby",
-        "desc": "",
-        "stateType": "stStart",
-        "diagramName": "C-MOV-1",
-        "geometry": "{ x: 20, y: 90, width: 200, height: 130}",
-        "immediateActions": [],
-        "events": ["C-MOV-1_Demand"],
-        "eventActions": [
-          {
-            "moveFromCurrent": true,
-            "actions": ["Goto_C-MOV-1_ActOrFail"]
-          }
-        ]
-      }
-    },
-    {
-      "State": {
-        "id": 10,
-        "name": "C-MOV-1_Active",
-        "desc": "",
-        "stateType": "stStandard",
-        "diagramName": "C-MOV-1",
-        "geometry": "{ x: 320, y: 20, width: 200, height: 130}",
-        "immediateActions": [],
-        "events": ["C-MOV-1_Stop"],
-        "eventActions": [
-          {
-            "moveFromCurrent": true,
-            "actions": ["Goto_C-MOV-1_Off"]
-          }
-        ]
-      }
-    },
-    {
-      "State": {
-        "id": 11,
-        "name": "C-MOV-1_Failed",
-        "desc": "",
-        "stateType": "stStandard",
-        "diagramName": "C-MOV-1",
-        "geometry": "{ x: 320, y: 180, width: 200, height: 130}",
-        "immediateActions": [],
-        "events": ["C-MOV-1_Stop"],
-        "eventActions": [
-          {
-            "moveFromCurrent": true,
-            "actions": ["Goto_C-MOV-1_Off"]
-          }
-        ]
-      }
-    },
-    {
-      "State": {
-        "id": 12,
-        "name": "C-MOV-A_Standby",
-        "desc": "",
-        "stateType": "stStart",
-        "diagramName": "C-MOV-A",
-        "geometry": "{ x: 20, y: 50, width: 200, height: 130}",
-        "immediateActions": [],
-        "events": ["C-MOV-A_Demand"],
-        "eventActions": [
-          {
-            "moveFromCurrent": true,
-            "actions": ["Goto_C-MOV-A_ActOrFail"]
-          }
-        ]
-      }
-    },
-    {
-      "State": {
-        "id": 13,
-        "name": "C-MOV-A_Active",
-        "desc": "",
-        "stateType": "stStandard",
-        "diagramName": "C-MOV-A",
-        "geometry": "{ x: 330, y: 20, width: 200, height: 130}",
-        "immediateActions": [],
-        "events": ["C-MOV-A_Stop"],
-        "eventActions": [
-          {
-            "moveFromCurrent": true,
-            "actions": ["Goto_C-MOV-A_Off"]
-          }
-        ]
-      }
-    },
-    {
-      "State": {
-        "id": 14,
-        "name": "C-MOV-A_Failed",
-        "desc": "",
-        "stateType": "stStandard",
-        "diagramName": "C-MOV-A",
-        "geometry": "{ x: 330, y: 190, width: 200, height: 130}",
-        "immediateActions": [],
-        "events": ["C-MOV-A_Stop"],
-        "eventActions": [
-          {
-            "moveFromCurrent": true,
-            "actions": ["Goto_C-MOV-A_Off"]
-          }
-        ]
-      }
-    },
-    {
-      "State": {
-        "id": 15,
-        "name": "C-MOV-B_Standby",
-        "desc": "",
-        "stateType": "stStart",
-        "diagramName": "C-MOV-B",
-        "geometry": "{ x: 20, y: 70, width: 200, height: 130}",
-        "immediateActions": [],
-        "events": ["C-MOV-B_Demand"],
-        "eventActions": [
-          {
-            "moveFromCurrent": true,
-            "actions": ["Goto_C-MOV-B_ActOrFail"]
-          }
-        ]
-      }
-    },
-    {
-      "State": {
-        "id": 16,
-        "name": "C-MOV-B_Active",
-        "desc": "",
-        "stateType": "stStandard",
-        "diagramName": "C-MOV-B",
-        "geometry": "{ x: 320, y: 20, width: 200, height: 130}",
-        "immediateActions": [],
-        "events": ["C-MOV-B_Stop"],
-        "eventActions": [
-          {
-            "moveFromCurrent": true,
-            "actions": ["Goto_C-MOV-B_Off"]
-          }
-        ]
-      }
-    },
-    {
-      "State": {
-        "id": 17,
-        "name": "C-MOV-B_Failed",
-        "desc": "",
-        "stateType": "stStandard",
-        "diagramName": "C-MOV-B",
-        "geometry": "{ x: 320, y: 180, width: 200, height: 130}",
-        "immediateActions": [],
-        "events": ["C-MOV-B_Stop"],
-        "eventActions": [
-          {
-            "moveFromCurrent": true,
-            "actions": ["Goto_C-MOV-B_Off"]
-          }
-        ]
-      }
-    },
-    {
-      "State": {
-        "id": 18,
-        "name": "C-PMP-A_Standby",
-        "desc": "",
-        "stateType": "stStart",
-        "diagramName": "C-PMP-A",
-        "geometry": "{ x: 20, y: 90, width: 200, height: 130}",
-        "immediateActions": [],
-        "events": ["C-PMP-A_Demand"],
-        "eventActions": [
-          {
-            "moveFromCurrent": true,
-            "actions": ["Goto_C-PMP-A_ActOrFail"]
-          }
-        ]
-      }
-    },
-    {
-      "State": {
-        "id": 19,
-        "name": "C-PMP-A_Active",
-        "desc": "",
-        "stateType": "stStandard",
-        "diagramName": "C-PMP-A",
-        "geometry": "{ x: 320, y: 20, width: 200, height: 170}",
-        "immediateActions": [],
-        "events": ["C-PMP-A_Stop", "C-PMP-A_FR"],
-        "eventActions": [
-          {
-            "moveFromCurrent": true,
-            "actions": ["Goto_C-PMP-A_Off"]
-          },
-          {
-            "moveFromCurrent": true,
-            "actions": ["Goto_C-PMP-A_Failed"]
-          }
-        ]
-      }
-    },
-    {
-      "State": {
-        "id": 20,
-        "name": "C-PMP-A_Failed",
-        "desc": "",
-        "stateType": "stStandard",
-        "diagramName": "C-PMP-A",
-        "geometry": "{ x: 320, y: 210, width: 200, height: 130}",
-        "immediateActions": [],
-        "events": ["C-PMP-A_Stop"],
-        "eventActions": [
-          {
-            "moveFromCurrent": true,
-            "actions": ["Goto_C-PMP-A_Off"]
-          }
-        ]
-      }
-    },
-    {
-      "State": {
-        "id": 21,
-        "name": "C-PMP-B_Standby",
-        "desc": "",
-        "stateType": "stStart",
-        "diagramName": "C-PMP-B",
-        "geometry": "{ x: 40, y: 110, width: 200, height: 130}",
-        "immediateActions": [],
-        "events": ["C-PMP-B_Demand"],
-        "eventActions": [
-          {
-            "moveFromCurrent": true,
-            "actions": ["Goto_C-PMP-B_ActOrFail"]
-          }
-        ]
-      }
-    },
-    {
-      "State": {
-        "id": 22,
-        "name": "C-PMP-B_Active",
-        "desc": "",
-        "stateType": "stStandard",
-        "diagramName": "C-PMP-B",
-        "geometry": "{ x: 340, y: 20, width: 200, height: 170}",
-        "immediateActions": [],
-        "events": ["C-PMP-B_Stop", "C-PMP-B_FR"],
-        "eventActions": [
-          {
-            "moveFromCurrent": true,
-            "actions": ["Goto_C-PMP-B_Off"]
-          },
-          {
-            "moveFromCurrent": true,
-            "actions": ["Goto_C-PMP-B_Failed"]
-          }
-        ]
-      }
-    },
-    {
-      "State": {
-        "id": 23,
-        "name": "C-PMP-B_Failed",
-        "desc": "",
-        "stateType": "stStandard",
-        "diagramName": "C-PMP-B",
-        "geometry": "{ x: 340, y: 210, width: 200, height: 130}",
-        "immediateActions": [],
-        "events": ["C-PMP-B_Stop"],
-        "eventActions": [
-          {
-            "moveFromCurrent": true,
-            "actions": ["Goto_C-PMP-B_Off"]
-          }
-        ]
-      }
-    },
-    {
-      "State": {
-        "id": 24,
-        "name": "E-CKV-A_Standby",
-        "desc": "",
-        "stateType": "stStart",
-        "diagramName": "E-CKV-A",
-        "geometry": "{ x: 20, y: 60, width: 200, height: 130}",
-        "immediateActions": [],
-        "events": ["E-CKV-A_Demand"],
-        "eventActions": [
-          {
-            "moveFromCurrent": true,
-            "actions": ["Goto_E-CKV-A_ActOrFail"]
-          }
-        ]
-      }
-    },
-    {
-      "State": {
-        "id": 25,
-        "name": "E-CKV-A_Active",
-        "desc": "",
-        "stateType": "stStandard",
-        "diagramName": "E-CKV-A",
-        "geometry": "{ x: 330, y: 20, width: 200, height: 130}",
-        "immediateActions": [],
-        "events": ["E-CKV-A_Stop"],
-        "eventActions": [
-          {
-            "moveFromCurrent": true,
-            "actions": ["Goto_E-CKV-A_Off"]
-          }
-        ]
-      }
-    },
-    {
-      "State": {
-        "id": 26,
-        "name": "E-CKV-A_Failed",
-        "desc": "",
-        "stateType": "stStandard",
-        "diagramName": "E-CKV-A",
-        "geometry": "{ x: 330, y: 170, width: 200, height: 130}",
-        "immediateActions": [],
-        "events": ["E-CKV-A_Stop"],
-        "eventActions": [
-          {
-            "moveFromCurrent": true,
-            "actions": ["Goto_E-CKV-A_Off"]
-          }
-        ]
-      }
-    },
-    {
-      "State": {
-        "id": 27,
-        "name": "E-CKV-B_Standby",
-        "desc": "",
-        "stateType": "stStart",
-        "diagramName": "E-CKV-B",
-        "geometry": "{ x: 20, y: 70, width: 200, height: 130}",
-        "immediateActions": [],
-        "events": ["E-CKV-B_Demand"],
-        "eventActions": [
-          {
-            "moveFromCurrent": true,
-            "actions": ["Goto_E-CKV-B_ActOrFail"]
-          }
-        ]
-      }
-    },
-    {
-      "State": {
-        "id": 28,
-        "name": "E-CKV-B_Active",
-        "desc": "",
-        "stateType": "stStandard",
-        "diagramName": "E-CKV-B",
-        "geometry": "{ x: 310, y: 20, width: 200, height: 130}",
-        "immediateActions": [],
-        "events": ["E-CKV-B_Stop"],
-        "eventActions": [
-          {
-            "moveFromCurrent": true,
-            "actions": ["Goto_E-CKV-B_Off"]
-          }
-        ]
-      }
-    },
-    {
-      "State": {
-        "id": 29,
-        "name": "E-CKV-B_Failed",
-        "desc": "",
-        "stateType": "stStandard",
-        "diagramName": "E-CKV-B",
-        "geometry": "{ x: 310, y: 180, width: 200, height: 130}",
-        "immediateActions": [],
-        "events": ["E-CKV-B_Stop"],
-        "eventActions": [
-          {
-            "moveFromCurrent": true,
-            "actions": ["Goto_E-CKV-B_Off"]
-          }
-        ]
-      }
-    },
-    {
-      "State": {
-        "id": 30,
-        "name": "E-MOV-1_Standby",
-        "desc": "",
-        "stateType": "stStart",
-        "diagramName": "E-MOV-1",
-        "geometry": "{ x: 20, y: 80, width: 200, height: 130}",
-        "immediateActions": [],
-        "events": ["E-MOV-1_Demand"],
-        "eventActions": [
-          {
-            "moveFromCurrent": true,
-            "actions": ["Goto_E-MOV-1_ActOrFail"]
-          }
-        ]
-      }
-    },
-    {
-      "State": {
-        "id": 31,
-        "name": "E-MOV-1_Active",
-        "desc": "",
-        "stateType": "stStandard",
-        "diagramName": "E-MOV-1",
-        "geometry": "{ x: 300, y: 20, width: 200, height: 130}",
-        "immediateActions": [],
-        "events": ["E-MOV-1_Stop"],
-        "eventActions": [
-          {
-            "moveFromCurrent": true,
-            "actions": ["Goto_E-MOV-1_Off"]
-          }
-        ]
-      }
-    },
-    {
-      "State": {
-        "id": 32,
-        "name": "E-MOV-1_Failed",
-        "desc": "",
-        "stateType": "stStandard",
-        "diagramName": "E-MOV-1",
-        "geometry": "{ x: 300, y: 170, width: 200, height: 130}",
-        "immediateActions": [],
-        "events": ["E-MOV-1_Stop"],
-        "eventActions": [
-          {
-            "moveFromCurrent": true,
-            "actions": ["Goto_E-MOV-1_Off"]
-          }
-        ]
-      }
-    },
-    {
-      "State": {
-        "id": 33,
-        "name": "E-MOV-A_Standby",
-        "desc": "",
-        "stateType": "stStart",
-        "diagramName": "E-MOV-A",
-        "geometry": "{ x: 20, y: 80, width: 200, height: 130}",
-        "immediateActions": [],
-        "events": ["E-MOV-A_Demand"],
-        "eventActions": [
-          {
-            "moveFromCurrent": true,
-            "actions": ["Goto_E-MOV-A_ActOrFail"]
-          }
-        ]
-      }
-    },
-    {
-      "State": {
-        "id": 34,
-        "name": "E-MOV-A_Active",
-        "desc": "",
-        "stateType": "stStandard",
-        "diagramName": "E-MOV-A",
-        "geometry": "{ x: 320, y: 20, width: 200, height: 130}",
-        "immediateActions": [],
-        "events": ["E-MOV-A_Stop"],
-        "eventActions": [
-          {
-            "moveFromCurrent": true,
-            "actions": ["Goto_E-MOV-A_Off"]
-          }
-        ]
-      }
-    },
-    {
-      "State": {
-        "id": 35,
-        "name": "E-MOV-A_Failed",
-        "desc": "",
-        "stateType": "stStandard",
-        "diagramName": "E-MOV-A",
-        "geometry": "{ x: 320, y: 170, width: 200, height: 130}",
-        "immediateActions": [],
-        "events": ["E-MOV-A_Stop"],
-        "eventActions": [
-          {
-            "moveFromCurrent": true,
-            "actions": ["Goto_E-MOV-A_Off"]
-          }
-        ]
-      }
-    },
-    {
-      "State": {
-        "id": 36,
-        "name": "E-MOV-B_Standby",
-        "desc": "",
-        "stateType": "stStart",
-        "diagramName": "E-MOV-B",
-        "geometry": "{ x: 30, y: 100, width: 200, height: 130}",
-        "immediateActions": [],
-        "events": ["E-MOV-B_Demand"],
-        "eventActions": [
-          {
-            "moveFromCurrent": true,
-            "actions": ["Goto_E-MOV-B_ActOrFail"]
-          }
-        ]
-      }
-    },
-    {
-      "State": {
-        "id": 37,
-        "name": "E-MOV-B_Active",
-        "desc": "",
-        "stateType": "stStandard",
-        "diagramName": "E-MOV-B",
-        "geometry": "{ x: 310, y: 20, width: 200, height: 130}",
-        "immediateActions": [],
-        "events": ["E-MOV-B_Stop"],
-        "eventActions": [
-          {
-            "moveFromCurrent": true,
-            "actions": ["Goto_E-MOV-B_Off"]
-          }
-        ]
-      }
-    },
-    {
-      "State": {
-        "id": 38,
-        "name": "E-MOV-B_Failed",
-        "desc": "",
-        "stateType": "stStandard",
-        "diagramName": "E-MOV-B",
-        "geometry": "{ x: 310, y: 180, width: 200, height: 130}",
-        "immediateActions": [],
-        "events": ["E-MOV-B_Stop"],
-        "eventActions": [
-          {
-            "moveFromCurrent": true,
-            "actions": ["Goto_E-MOV-B_Off"]
-          }
-        ]
-      }
-    },
-    {
-      "State": {
-        "id": 39,
-        "name": "E-PMP-A_Standby",
-        "desc": "",
-        "stateType": "stStart",
-        "diagramName": "E-PMP-A",
-        "geometry": "{ x: 20, y: 70, width: 200, height: 130}",
-        "immediateActions": [],
-        "events": ["E-PMP-A_Demand"],
-        "eventActions": [
-          {
-            "moveFromCurrent": true,
-            "actions": ["Goto_E-PMP-A_ActOrFail"]
-          }
-        ]
-      }
-    },
-    {
-      "State": {
-        "id": 40,
-        "name": "E-PMP-A_Active",
-        "desc": "",
-        "stateType": "stStandard",
-        "diagramName": "E-PMP-A",
-        "geometry": "{ x: 310, y: 20, width: 200, height: 170}",
-        "immediateActions": [],
-        "events": ["E-PMP-A_Stop", "E-PMP-A_FR"],
-        "eventActions": [
-          {
-            "moveFromCurrent": true,
-            "actions": ["Goto_E-PMP-A_Off"]
-          },
-          {
-            "moveFromCurrent": true,
-            "actions": ["Goto_E-PMP-A_Failed"]
-          }
-        ]
-      }
-    },
-    {
-      "State": {
-        "id": 41,
-        "name": "E-PMP-A_Failed",
-        "desc": "",
-        "stateType": "stStandard",
-        "diagramName": "E-PMP-A",
-        "geometry": "{ x: 310, y: 210, width: 200, height: 130}",
-        "immediateActions": [],
-        "events": ["E-PMP-A_Stop"],
-        "eventActions": [
-          {
-            "moveFromCurrent": true,
-            "actions": ["Goto_E-PMP-A_Off"]
-          }
-        ]
-      }
-    },
-    {
-      "State": {
-        "id": 42,
-        "name": "E-PMP-B_Standby",
-        "desc": "",
-        "stateType": "stStart",
-        "diagramName": "E-PMP-B",
-        "geometry": "{ x: 20, y: 80, width: 200, height: 130}",
-        "immediateActions": [],
-        "events": ["E-PMP-B_Demand"],
-        "eventActions": [
-          {
-            "moveFromCurrent": true,
-            "actions": ["Goto_E-PMP-B_ActOrFail"]
-          }
-        ]
-      }
-    },
-    {
-      "State": {
-        "id": 43,
-        "name": "E-PMP-B_Active",
-        "desc": "",
-        "stateType": "stStandard",
-        "diagramName": "E-PMP-B",
-        "geometry": "{ x: 320, y: 20, width: 200, height: 170}",
-        "immediateActions": [],
-        "events": ["E-PMP-B_Stop", "E-PMP-B_FR"],
-        "eventActions": [
-          {
-            "moveFromCurrent": true,
-            "actions": ["Goto_E-PMP-B_Off"]
-          },
-          {
-            "moveFromCurrent": true,
-            "actions": ["Goto_E-PMP-B_Failed"]
-          }
-        ]
-      }
-    },
-    {
-      "State": {
-        "id": 44,
-        "name": "E-PMP-B_Failed",
-        "desc": "",
-        "stateType": "stStandard",
-        "diagramName": "E-PMP-B",
-        "geometry": "{ x: 320, y: 210, width: 200, height: 130}",
-        "immediateActions": [],
-        "events": ["E-PMP-B_Stop"],
-        "eventActions": [
-          {
-            "moveFromCurrent": true,
-            "actions": ["Goto_E-PMP-B_Off"]
-          }
-        ]
-      }
-    },
-    {
-      "State": {
-        "id": 45,
-        "name": "S-DGN-A_Standby",
-        "desc": "",
-        "stateType": "stStart",
-        "diagramName": "S-DGN-A",
-        "geometry": "{ x: 20, y: 70, width: 200, height: 130}",
-        "immediateActions": [],
-        "events": ["S-DGN-A_Demand"],
-        "eventActions": [
-          {
-            "moveFromCurrent": true,
-            "actions": ["Goto_S-DGN-A_ActOrFail"]
-          }
-        ]
-      }
-    },
-    {
-      "State": {
-        "id": 46,
-        "name": "S-DGN-A_Active",
-        "desc": "",
-        "stateType": "stStandard",
-        "diagramName": "S-DGN-A",
-        "geometry": "{ x: 320, y: 20, width: 200, height: 170}",
-        "immediateActions": [],
-        "events": ["S-DGN-A_Stop", "S-DGN-A_FR"],
-        "eventActions": [
-          {
-            "moveFromCurrent": true,
-            "actions": ["Goto_S-DGN-A_Off"]
-          },
-          {
-            "moveFromCurrent": true,
-            "actions": ["Goto_S-DGN-A_Failed"]
-          }
-        ]
-      }
-    },
-    {
-      "State": {
-        "id": 47,
-        "name": "S-DGN-A_Failed",
-        "desc": "",
-        "stateType": "stStandard",
-        "diagramName": "S-DGN-A",
-        "geometry": "{ x: 320, y: 210, width: 200, height: 130}",
-        "immediateActions": [],
-        "events": ["S-DGN-A_Stop"],
-        "eventActions": [
-          {
-            "moveFromCurrent": true,
-            "actions": ["Goto_S-DGN-A_Off"]
-          }
-        ]
-      }
-    },
-    {
-      "State": {
-        "id": 48,
-        "name": "S-DGN-B_Standby",
-        "desc": "",
-        "stateType": "stStart",
-        "diagramName": "S-DGN-B",
-        "geometry": "{ x: 20, y: 90, width: 200, height: 130}",
-        "immediateActions": [],
-        "events": ["S-DGN-B_Demand"],
-        "eventActions": [
-          {
-            "moveFromCurrent": true,
-            "actions": ["Goto_S-DGN-B_ActOrFail"]
-          }
-        ]
-      }
-    },
-    {
-      "State": {
-        "id": 49,
-        "name": "S-DGN-B_Active",
-        "desc": "",
-        "stateType": "stStandard",
-        "diagramName": "S-DGN-B",
-        "geometry": "{ x: 340, y: 20, width: 200, height: 170}",
-        "immediateActions": [],
-        "events": ["S-DGN-B_Stop", "S-DGN-B_FR"],
-        "eventActions": [
-          {
-            "moveFromCurrent": true,
-            "actions": ["Goto_S-DGN-B_Off"]
-          },
-          {
-            "moveFromCurrent": true,
-            "actions": ["Goto_S-DGN-B_Failed"]
-          }
-        ]
-      }
-    },
-    {
-      "State": {
-        "id": 50,
-        "name": "S-DGN-B_Failed",
-        "desc": "",
-        "stateType": "stStandard",
-        "diagramName": "S-DGN-B",
-        "geometry": "{ x: 340, y: 210, width: 200, height: 130}",
-        "immediateActions": [],
-        "events": ["S-DGN-B_Stop"],
-        "eventActions": [
-          {
-            "moveFromCurrent": true,
-            "actions": ["Goto_S-DGN-B_Off"]
-          }
-        ]
-      }
-    },
-    {
-      "State": {
-        "id": 51,
-        "name": "S-TNK-T1_Standby",
-        "desc": "",
-        "stateType": "stStart",
-        "diagramName": "S-TNK-T1",
-        "geometry": "{ x: 30, y: 90, width: 200, height: 130}",
-        "immediateActions": [],
-        "events": ["S-TNK-T1_Demand"],
-        "eventActions": [
-          {
-            "moveFromCurrent": true,
-            "actions": ["Goto_S-TNK-T1_Active"]
-          }
-        ]
-      }
-    },
-    {
-      "State": {
-        "id": 52,
-        "name": "S-TNK-T1_Active",
-        "desc": "",
-        "stateType": "stStandard",
-        "diagramName": "S-TNK-T1",
-        "geometry": "{ x: 330, y: 20, width: 200, height: 170}",
-        "immediateActions": [],
-        "events": ["S-TNK-T1_Stop", "S-TNK-T1_FR"],
-        "eventActions": [
-          {
-            "moveFromCurrent": true,
-            "actions": ["Goto_S-TNK-T1_Off"]
-          },
-          {
-            "moveFromCurrent": true,
-            "actions": ["Goto_S-TNK-T1_Failed"]
-          }
-        ]
-      }
-    },
-    {
-      "State": {
-        "id": 53,
-        "name": "S-TNK-T1_Failed",
-        "desc": "",
-        "stateType": "stStandard",
-        "diagramName": "S-TNK-T1",
-        "geometry": "{ x: 330, y: 210, width: 200, height: 130}",
-        "immediateActions": [],
-        "events": ["S-TNK-T1_Stop"],
-        "eventActions": [
-          {
-            "moveFromCurrent": true,
-            "actions": ["Goto_S-TNK-T1_Off"]
-          }
-        ]
-      }
-    },
-    {
-      "State": {
-        "id": 54,
-        "name": "ECS_Sys_Active",
-        "desc": "",
-        "stateType": "stStandard",
-        "diagramName": "ECS_Sys",
-        "geometry": "{ x: 20, y: 20, width: 200, height: 160}",
-        "immediateActions": [],
-        "events": ["ECS_Sys_Eval", "ECS_Sys_Stop"],
-        "eventActions": [
-          {
-            "moveFromCurrent": true,
-            "actions": ["_Goto_ECS_Sys_Failed"]
-          },
-          {
-            "moveFromCurrent": true,
-            "actions": []
-          }
-        ]
-      }
-    },
-    {
-      "State": {
-        "id": 55,
-        "name": "ECS_Sys_Failed",
-        "desc": "",
-        "stateType": "stStandard",
-        "diagramName": "ECS_Sys",
-        "geometry": "{ x: 300, y: 40, width: 200, height: 110}",
-        "immediateActions": [],
-        "events": ["ECS_Sys_Stop"],
-        "eventActions": [
-          {
-            "moveFromCurrent": true,
-            "actions": []
-          }
-        ]
-      }
-    },
-    {
-      "State": {
-        "id": 56,
-        "name": "CCS_Sys_Active",
-        "desc": "",
-        "stateType": "stStandard",
-        "diagramName": "CCS_Sys",
-        "geometry": "{ x: 30, y: 40, width: 200, height: 160}",
-        "immediateActions": [],
-        "events": ["CCS_Sys_Eval", "CCS_Sys_Stop"],
-        "eventActions": [
-          {
-            "moveFromCurrent": true,
-            "actions": ["_Goto_CCS_Sys_Failed"]
-          },
-          {
-            "moveFromCurrent": true,
-            "actions": []
-          }
-        ]
-      }
-    },
-    {
-      "State": {
-        "id": 57,
-        "name": "CCS_Sys_Failed",
-        "desc": "",
-        "stateType": "stStandard",
-        "diagramName": "CCS_Sys",
-        "geometry": "{ x: 310, y: 40, width: 200, height: 110}",
-        "immediateActions": [],
-        "events": ["CCS_Sys_Stop"],
-        "eventActions": [
-          {
-            "moveFromCurrent": true,
-            "actions": []
-          }
-        ]
-      }
-    },
-    {
-      "State": {
-        "id": 58,
-        "name": "Normal_Operations",
-        "desc": "",
-        "stateType": "stStart",
-        "diagramName": "Test Diagram",
-        "geometry": "{ x: 170, y: 130, width: 200, height: 150}",
-        "immediateActions": ["Goto_StopSystems"],
-        "events": ["LOSP"],
-        "eventActions": [
-          {
-            "moveFromCurrent": true,
-            "actions": ["Goto_LOSP"]
-          }
-        ]
-      }
-    },
-    {
-      "State": {
-        "id": 59,
-        "name": "LOSP",
-        "desc": "",
-        "stateType": "stStandard",
-        "diagramName": "Test Diagram",
-        "geometry": "{ x: 500, y: 180, width: 200, height: 240}",
-        "immediateActions": ["Goto_StartSystems"],
-        "events": ["ECS_Failed", "CCS_and_ECS_Failed", "24H_Mission_Time"],
-        "eventActions": [
-          {
-            "moveFromCurrent": false,
-            "actions": ["Goto_Small_Release"]
-          },
-          {
-            "moveFromCurrent": false,
-            "actions": ["Goto_Large_Release"]
-          },
-          {
-            "moveFromCurrent": true,
-            "actions": ["Goto_Mission_Time_Up"]
-          }
-        ]
-      }
-    },
-    {
-      "State": {
-        "id": 60,
-        "name": "Mission_Time_Up",
-        "desc": "",
-        "stateType": "stStandard",
-        "diagramName": "Test Diagram",
-        "geometry": "{ x: 170, y: 340, width: 200, height: 170}",
-        "immediateActions": [],
-        "events": ["No_Sm_Rel", "Had_Sm_Rel"],
-        "eventActions": [
-          {
-            "moveFromCurrent": true,
-            "actions": ["Goto_Normal_Operations"]
-          },
-          {
-            "moveFromCurrent": true,
-            "actions": ["Goto_Terminate"]
-          }
-        ]
-      }
-    },
-    {
-      "State": {
-        "id": 61,
-        "name": "Large_Release",
-        "desc": "",
-        "stateType": "stKeyState",
-        "diagramName": "Test Diagram",
-        "geometry": "{ x: 770, y: 410, width: 200, height: 100}",
-        "immediateActions": ["Goto_Terminate"],
-        "events": [],
-        "eventActions": []
-      }
-    },
-    {
-      "State": {
-        "id": 62,
-        "name": "Small_Release",
-        "desc": "",
-        "stateType": "stKeyState",
-        "diagramName": "Test Diagram",
-        "geometry": "{ x: 770, y: 260, width: 200, height: 110}",
-        "immediateActions": [],
-        "events": ["Had_Lg_Rel"],
-        "eventActions": [
-          {
-            "moveFromCurrent": true,
-            "actions": []
-          }
-        ]
-      }
-    },
-    {
-      "State": {
-        "id": 63,
-        "name": "Terminate",
-        "desc": "",
-        "stateType": "stTerminal",
-        "diagramName": "Test Diagram",
-        "geometry": "{ x: 500, y: 450, width: 200, height: 80}",
-        "immediateActions": [],
-        "events": [],
-        "eventActions": []
+      "name": "Terminate",
+      "desc": "",
+      "stateType": "stTerminal",
+      "diagramName": "Test Diagram",
+      "immediateActions": [],
+      "events": [],
+      "eventActions": [],
+      "id": "56dc406e-5048-4d41-8a70-8b226d950e6d",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 500,
+        "y": 450,
+        "width": 200,
+        "height": 80
       }
     }
   ],
   "ActionList": [
     {
-      "Action": {
-        "id": 1,
-        "name": "Goto_C-CKV-A_ActOrFail",
-        "desc": "",
-        "actType": "atTransition",
-        "mainItem": false,
-        "mutExcl": "True",
-        "newStates": [
-          {
-            "toState": "C-CKV-A_Failed",
-            "prob": 0.0001,
-            "varProb": "null",
-            "failDesc": ""
-          },
-          {
-            "toState": "C-CKV-A_Active",
-            "prob": -1,
-            "varProb": "null",
-            "failDesc": ""
-          }
-        ]
-      }
+      "name": "_Goto_CCS_Sys_Active",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "CCS_Sys_Active",
+          "prob": -1,
+          "varProb": "null",
+          "failDesc": ""
+        }
+      ],
+      "id": "695c6ce3-2ee3-46b4-aa4c-f9e64e252878",
+      "objType": "Action"
     },
     {
-      "Action": {
-        "id": 2,
-        "name": "Goto_C-CKV-A_Off",
-        "desc": "",
-        "actType": "atTransition",
-        "mainItem": false,
-        "mutExcl": "True",
-        "newStates": [
-          {
-            "toState": "C-CKV-A_Standby",
-            "prob": -1,
-            "varProb": "null",
-            "failDesc": ""
-          }
-        ]
-      }
+      "name": "_Goto_CCS_Sys_Failed",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "CCS_Sys_Failed",
+          "prob": -1,
+          "varProb": "null",
+          "failDesc": ""
+        }
+      ],
+      "id": "60e2986e-669b-4fe6-ab25-55c2a0ebb870",
+      "objType": "Action"
     },
     {
-      "Action": {
-        "id": 3,
-        "name": "Goto_C-CKV-B_ActOrFail",
-        "desc": "",
-        "actType": "atTransition",
-        "mainItem": false,
-        "mutExcl": "True",
-        "newStates": [
-          {
-            "toState": "C-CKV-B_Failed",
-            "prob": 0.0001,
-            "varProb": "null",
-            "failDesc": ""
-          },
-          {
-            "toState": "C-CKV-B_Active",
-            "prob": -1,
-            "varProb": "null",
-            "failDesc": ""
-          }
-        ]
-      }
+      "name": "_Goto_ECS_Sys_Active",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "ECS_Sys_Active",
+          "prob": -1,
+          "varProb": null,
+          "failDesc": ""
+        }
+      ],
+      "id": "bd79d1a6-dff9-4d4d-959f-968408b7ed56",
+      "objType": "Action"
     },
     {
-      "Action": {
-        "id": 4,
-        "name": "Goto_C-CKV-B_Off",
-        "desc": "",
-        "actType": "atTransition",
-        "mainItem": false,
-        "mutExcl": "True",
-        "newStates": [
-          {
-            "toState": "C-CKV-B_Standby",
-            "prob": -1,
-            "varProb": "null",
-            "failDesc": ""
-          }
-        ]
-      }
+      "name": "_Goto_ECS_Sys_Failed",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "ECS_Sys_Failed",
+          "prob": -1,
+          "varProb": "null",
+          "failDesc": ""
+        }
+      ],
+      "id": "a3ea115a-d1fd-4220-8e00-00a83a7624ff",
+      "objType": "Action"
     },
     {
-      "Action": {
-        "id": 5,
-        "name": "Goto_C-MOV-1_ActOrFail",
-        "desc": "",
-        "actType": "atTransition",
-        "mainItem": false,
-        "mutExcl": "True",
-        "newStates": [
-          {
-            "toState": "C-MOV-1_Failed",
-            "prob": 0.001,
-            "varProb": null,
-            "failDesc": ""
-          },
-          {
-            "toState": "C-MOV-1_Active",
-            "prob": -1,
-            "varProb": null,
-            "failDesc": ""
-          }
-        ]
-      }
+      "name": "Goto_C-CKV-A_ActOrFail",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "C-CKV-A_Failed",
+          "prob": 0.0001,
+          "varProb": "null",
+          "failDesc": ""
+        },
+        {
+          "toState": "C-CKV-A_Active",
+          "prob": -1,
+          "varProb": "null",
+          "failDesc": ""
+        }
+      ],
+      "id": "0670dffa-4e0b-4edc-89fa-01bb8e2c5b10",
+      "objType": "Action"
     },
     {
-      "Action": {
-        "id": 6,
-        "name": "Goto_C-MOV-1_Off",
-        "desc": "",
-        "actType": "atTransition",
-        "mainItem": false,
-        "mutExcl": "True",
-        "newStates": [
-          {
-            "toState": "C-MOV-1_Standby",
-            "prob": -1,
-            "varProb": "null",
-            "failDesc": ""
-          }
-        ]
-      }
+      "name": "Goto_C-CKV-A_Off",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "C-CKV-A_Standby",
+          "prob": -1,
+          "varProb": "null",
+          "failDesc": ""
+        }
+      ],
+      "id": "5c5050d7-6739-4144-a677-24536fcb9eb2",
+      "objType": "Action"
     },
     {
-      "Action": {
-        "id": 7,
-        "name": "Goto_C-MOV-A_ActOrFail",
-        "desc": "",
-        "actType": "atTransition",
-        "mainItem": false,
-        "mutExcl": "True",
-        "newStates": [
-          {
-            "toState": "C-MOV-A_Failed",
-            "prob": 0.0002,
-            "varProb": "null",
-            "failDesc": ""
-          },
-          {
-            "toState": "C-MOV-A_Active",
-            "prob": -1,
-            "varProb": "null",
-            "failDesc": ""
-          }
-        ]
-      }
+      "name": "Goto_C-CKV-B_ActOrFail",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "C-CKV-B_Failed",
+          "prob": 0.0001,
+          "varProb": "null",
+          "failDesc": ""
+        },
+        {
+          "toState": "C-CKV-B_Active",
+          "prob": -1,
+          "varProb": "null",
+          "failDesc": ""
+        }
+      ],
+      "id": "2e8726e2-5303-4936-83b2-ff7954b466f3",
+      "objType": "Action"
     },
     {
-      "Action": {
-        "id": 8,
-        "name": "Goto_C-MOV-A_Off",
-        "desc": "",
-        "actType": "atTransition",
-        "mainItem": false,
-        "mutExcl": "True",
-        "newStates": [
-          {
-            "toState": "C-MOV-A_Standby",
-            "prob": -1,
-            "varProb": "null",
-            "failDesc": ""
-          }
-        ]
-      }
+      "name": "Goto_C-CKV-B_Off",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "C-CKV-B_Standby",
+          "prob": -1,
+          "varProb": "null",
+          "failDesc": ""
+        }
+      ],
+      "id": "8b4d5860-7448-42d8-970d-ff9f76a6bb87",
+      "objType": "Action"
     },
     {
-      "Action": {
-        "id": 9,
-        "name": "Goto_C-MOV-B_ActOrFail",
-        "desc": "",
-        "actType": "atTransition",
-        "mainItem": false,
-        "mutExcl": "True",
-        "newStates": [
-          {
-            "toState": "C-MOV-B_Failed",
-            "prob": 0.0002,
-            "varProb": null,
-            "failDesc": ""
-          },
-          {
-            "toState": "C-MOV-B_Active",
-            "prob": -1,
-            "varProb": null,
-            "failDesc": ""
-          }
-        ]
-      }
+      "name": "Goto_C-MOV-1_ActOrFail",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "C-MOV-1_Failed",
+          "prob": 0.001,
+          "varProb": null,
+          "failDesc": ""
+        },
+        {
+          "toState": "C-MOV-1_Active",
+          "prob": -1,
+          "varProb": null,
+          "failDesc": ""
+        }
+      ],
+      "id": "339c59dc-dbf5-40a3-b6ed-7230635acff7",
+      "objType": "Action"
     },
     {
-      "Action": {
-        "id": 10,
-        "name": "Goto_C-MOV-B_Off",
-        "desc": "",
-        "actType": "atTransition",
-        "mainItem": false,
-        "mutExcl": "True",
-        "newStates": [
-          {
-            "toState": "C-MOV-B_Standby",
-            "prob": -1,
-            "varProb": "null",
-            "failDesc": ""
-          }
-        ]
-      }
+      "name": "Goto_C-MOV-1_Off",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "C-MOV-1_Standby",
+          "prob": -1,
+          "varProb": "null",
+          "failDesc": ""
+        }
+      ],
+      "id": "6663a44f-a9f8-4890-a7a4-5ac19602f30e",
+      "objType": "Action"
     },
     {
-      "Action": {
-        "id": 11,
-        "name": "Goto_C-PMP-A_ActOrFail",
-        "desc": "",
-        "actType": "atTransition",
-        "mainItem": false,
-        "mutExcl": "True",
-        "newStates": [
-          {
-            "toState": "C-PMP-A_Failed",
-            "prob": 0.0012,
-            "varProb": "null",
-            "failDesc": ""
-          },
-          {
-            "toState": "C-PMP-A_Active",
-            "prob": -1,
-            "varProb": "null",
-            "failDesc": ""
-          }
-        ]
-      }
+      "name": "Goto_C-MOV-A_ActOrFail",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "C-MOV-A_Failed",
+          "prob": 0.0002,
+          "varProb": "null",
+          "failDesc": ""
+        },
+        {
+          "toState": "C-MOV-A_Active",
+          "prob": -1,
+          "varProb": "null",
+          "failDesc": ""
+        }
+      ],
+      "id": "f9045e2b-9602-4db0-b654-651e4b020403",
+      "objType": "Action"
     },
     {
-      "Action": {
-        "id": 12,
-        "name": "Goto_C-PMP-A_Off",
-        "desc": "",
-        "actType": "atTransition",
-        "mainItem": false,
-        "mutExcl": "True",
-        "newStates": [
-          {
-            "toState": "C-PMP-A_Standby",
-            "prob": -1,
-            "varProb": "null",
-            "failDesc": ""
-          }
-        ]
-      }
+      "name": "Goto_C-MOV-A_Off",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "C-MOV-A_Standby",
+          "prob": -1,
+          "varProb": "null",
+          "failDesc": ""
+        }
+      ],
+      "id": "1e2f4cd3-b9f4-44ae-bdc9-64fb93cdbcd5",
+      "objType": "Action"
     },
     {
-      "Action": {
-        "id": 13,
-        "name": "Goto_C-PMP-A_Failed",
-        "desc": "",
-        "actType": "atTransition",
-        "mainItem": false,
-        "mutExcl": "True",
-        "newStates": [
-          {
-            "toState": "C-PMP-A_Failed",
-            "prob": -1,
-            "varProb": "null",
-            "failDesc": ""
-          }
-        ]
-      }
+      "name": "Goto_C-MOV-B_ActOrFail",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "C-MOV-B_Failed",
+          "prob": 0.0002,
+          "varProb": null,
+          "failDesc": ""
+        },
+        {
+          "toState": "C-MOV-B_Active",
+          "prob": -1,
+          "varProb": null,
+          "failDesc": ""
+        }
+      ],
+      "id": "29029bdd-e401-4d66-bb57-40ded96fd9cd",
+      "objType": "Action"
     },
     {
-      "Action": {
-        "id": 14,
-        "name": "Goto_C-PMP-B_ActOrFail",
-        "desc": "",
-        "actType": "atTransition",
-        "mainItem": false,
-        "mutExcl": "True",
-        "newStates": [
-          {
-            "toState": "C-PMP-B_Failed",
-            "prob": 0.0012,
-            "varProb": "null",
-            "failDesc": ""
-          },
-          {
-            "toState": "C-PMP-B_Active",
-            "prob": -1,
-            "varProb": "null",
-            "failDesc": ""
-          }
-        ]
-      }
+      "name": "Goto_C-MOV-B_Off",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "C-MOV-B_Standby",
+          "prob": -1,
+          "varProb": "null",
+          "failDesc": ""
+        }
+      ],
+      "id": "fdae2475-4479-4a57-bb17-6d4df27d0d29",
+      "objType": "Action"
     },
     {
-      "Action": {
-        "id": 15,
-        "name": "Goto_C-PMP-B_Off",
-        "desc": "",
-        "actType": "atTransition",
-        "mainItem": false,
-        "mutExcl": "True",
-        "newStates": [
-          {
-            "toState": "C-PMP-B_Standby",
-            "prob": -1,
-            "varProb": "null",
-            "failDesc": ""
-          }
-        ]
-      }
+      "name": "Goto_C-PMP-A_ActOrFail",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "C-PMP-A_Failed",
+          "prob": 0.0012,
+          "varProb": "null",
+          "failDesc": ""
+        },
+        {
+          "toState": "C-PMP-A_Active",
+          "prob": -1,
+          "varProb": "null",
+          "failDesc": ""
+        }
+      ],
+      "id": "f5b9aa0c-0a79-4bf0-b5ba-c08565223274",
+      "objType": "Action"
     },
     {
-      "Action": {
-        "id": 16,
-        "name": "Goto_C-PMP-B_Failed",
-        "desc": "",
-        "actType": "atTransition",
-        "mainItem": false,
-        "mutExcl": "True",
-        "newStates": [
-          {
-            "toState": "C-PMP-B_Failed",
-            "prob": -1,
-            "varProb": "null",
-            "failDesc": ""
-          }
-        ]
-      }
+      "name": "Goto_C-PMP-A_Failed",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "C-PMP-A_Failed",
+          "prob": -1,
+          "varProb": "null",
+          "failDesc": ""
+        }
+      ],
+      "id": "8d4a777b-bb49-46ee-bc16-2c003e4241e8",
+      "objType": "Action"
     },
     {
-      "Action": {
-        "id": 17,
-        "name": "Goto_E-CKV-A_ActOrFail",
-        "desc": "",
-        "actType": "atTransition",
-        "mainItem": false,
-        "mutExcl": "True",
-        "newStates": [
-          {
-            "toState": "E-CKV-A_Failed",
-            "prob": 0.0001,
-            "varProb": "null",
-            "failDesc": ""
-          },
-          {
-            "toState": "E-CKV-A_Active",
-            "prob": -1,
-            "varProb": "null",
-            "failDesc": ""
-          }
-        ]
-      }
+      "name": "Goto_C-PMP-A_Off",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "C-PMP-A_Standby",
+          "prob": -1,
+          "varProb": "null",
+          "failDesc": ""
+        }
+      ],
+      "id": "fcbc3581-cbc5-4584-bc03-76d7e772d714",
+      "objType": "Action"
     },
     {
-      "Action": {
-        "id": 18,
-        "name": "Goto_E-CKV-A_Off",
-        "desc": "",
-        "actType": "atTransition",
-        "mainItem": false,
-        "mutExcl": "True",
-        "newStates": [
-          {
-            "toState": "E-CKV-A_Standby",
-            "prob": -1,
-            "varProb": "null",
-            "failDesc": ""
-          }
-        ]
-      }
+      "name": "Goto_C-PMP-B_ActOrFail",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "C-PMP-B_Failed",
+          "prob": 0.0012,
+          "varProb": "null",
+          "failDesc": ""
+        },
+        {
+          "toState": "C-PMP-B_Active",
+          "prob": -1,
+          "varProb": "null",
+          "failDesc": ""
+        }
+      ],
+      "id": "7491201b-9c25-4d83-b93f-e87d7895f584",
+      "objType": "Action"
     },
     {
-      "Action": {
-        "id": 19,
-        "name": "Goto_E-CKV-B_ActOrFail",
-        "desc": "",
-        "actType": "atTransition",
-        "mainItem": false,
-        "mutExcl": "True",
-        "newStates": [
-          {
-            "toState": "E-CKV-B_Failed",
-            "prob": 0.0001,
-            "varProb": "null",
-            "failDesc": ""
-          },
-          {
-            "toState": "E-CKV-B_Active",
-            "prob": -1,
-            "varProb": "null",
-            "failDesc": ""
-          }
-        ]
-      }
+      "name": "Goto_C-PMP-B_Failed",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "C-PMP-B_Failed",
+          "prob": -1,
+          "varProb": "null",
+          "failDesc": ""
+        }
+      ],
+      "id": "c1038848-d816-4c5d-b065-9d22938a7267",
+      "objType": "Action"
     },
     {
-      "Action": {
-        "id": 20,
-        "name": "Goto_E-CKV-B_Off",
-        "desc": "",
-        "actType": "atTransition",
-        "mainItem": false,
-        "mutExcl": "True",
-        "newStates": [
-          {
-            "toState": "E-CKV-B_Standby",
-            "prob": -1,
-            "varProb": "null",
-            "failDesc": ""
-          }
-        ]
-      }
+      "name": "Goto_C-PMP-B_Off",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "C-PMP-B_Standby",
+          "prob": -1,
+          "varProb": "null",
+          "failDesc": ""
+        }
+      ],
+      "id": "f92f26fd-d5be-4416-8315-6477d7c32470",
+      "objType": "Action"
     },
     {
-      "Action": {
-        "id": 21,
-        "name": "Goto_E-MOV-1_ActOrFail",
-        "desc": "",
-        "actType": "atTransition",
-        "mainItem": false,
-        "mutExcl": "True",
-        "newStates": [
-          {
-            "toState": "E-MOV-1_Failed",
-            "prob": 0.001,
-            "varProb": "null",
-            "failDesc": ""
-          },
-          {
-            "toState": "E-MOV-1_Active",
-            "prob": -1,
-            "varProb": "null",
-            "failDesc": ""
-          }
-        ]
-      }
+      "name": "Goto_Crew_Task1",
+      "desc": "",
+      "actType": "atTransition",
+      "mutExcl": true,
+      "newStates": [],
+      "mainItem": false,
+      "id": "418b5303-c9a0-4ecc-ab53-cef713047957",
+      "objType": "Action"
     },
     {
-      "Action": {
-        "id": 22,
-        "name": "Goto_E-MOV-1_Off",
-        "desc": "",
-        "actType": "atTransition",
-        "mainItem": false,
-        "mutExcl": "True",
-        "newStates": [
-          {
-            "toState": "E-MOV-1_Standby",
-            "prob": -1,
-            "varProb": "null",
-            "failDesc": ""
-          }
-        ]
-      }
+      "name": "Goto_Crew_Task2",
+      "desc": "",
+      "actType": "atTransition",
+      "mutExcl": true,
+      "newStates": [],
+      "mainItem": false,
+      "id": "ac4d202f-2d58-4313-9fff-20469676c4e9",
+      "objType": "Action"
     },
     {
-      "Action": {
-        "id": 23,
-        "name": "Goto_E-MOV-A_ActOrFail",
-        "desc": "",
-        "actType": "atTransition",
-        "mainItem": false,
-        "mutExcl": "True",
-        "newStates": [
-          {
-            "toState": "E-MOV-A_Failed",
-            "prob": 0.0002,
-            "varProb": "null",
-            "failDesc": ""
-          },
-          {
-            "toState": "E-MOV-A_Active",
-            "prob": -1,
-            "varProb": "null",
-            "failDesc": ""
-          }
-        ]
-      }
+      "name": "Goto_E-CKV-A_ActOrFail",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "E-CKV-A_Failed",
+          "prob": 0.0001,
+          "varProb": "null",
+          "failDesc": ""
+        },
+        {
+          "toState": "E-CKV-A_Active",
+          "prob": -1,
+          "varProb": "null",
+          "failDesc": ""
+        }
+      ],
+      "id": "42caf64b-51a9-4ed0-8533-259a81b02e3c",
+      "objType": "Action"
     },
     {
-      "Action": {
-        "id": 24,
-        "name": "Goto_E-MOV-A_Off",
-        "desc": "",
-        "actType": "atTransition",
-        "mainItem": false,
-        "mutExcl": "True",
-        "newStates": [
-          {
-            "toState": "E-MOV-A_Standby",
-            "prob": -1,
-            "varProb": "null",
-            "failDesc": ""
-          }
-        ]
-      }
+      "name": "Goto_E-CKV-A_Off",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "E-CKV-A_Standby",
+          "prob": -1,
+          "varProb": "null",
+          "failDesc": ""
+        }
+      ],
+      "id": "61073af4-1330-4c95-a254-6c8cb17a2d8d",
+      "objType": "Action"
     },
     {
-      "Action": {
-        "id": 25,
-        "name": "Goto_E-MOV-B_ActOrFail",
-        "desc": "",
-        "actType": "atTransition",
-        "mainItem": false,
-        "mutExcl": "True",
-        "newStates": [
-          {
-            "toState": "E-MOV-B_Failed",
-            "prob": 0.0002,
-            "varProb": "null",
-            "failDesc": ""
-          },
-          {
-            "toState": "E-MOV-B_Active",
-            "prob": -1,
-            "varProb": "null",
-            "failDesc": ""
-          }
-        ]
-      }
+      "name": "Goto_E-CKV-B_ActOrFail",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "E-CKV-B_Failed",
+          "prob": 0.0001,
+          "varProb": "null",
+          "failDesc": ""
+        },
+        {
+          "toState": "E-CKV-B_Active",
+          "prob": -1,
+          "varProb": "null",
+          "failDesc": ""
+        }
+      ],
+      "id": "2e3b1d08-1bc7-4805-a646-adf3351fe9ad",
+      "objType": "Action"
     },
     {
-      "Action": {
-        "id": 26,
-        "name": "Goto_E-MOV-B_Off",
-        "desc": "",
-        "actType": "atTransition",
-        "mainItem": false,
-        "mutExcl": "True",
-        "newStates": [
-          {
-            "toState": "E-MOV-B_Standby",
-            "prob": -1,
-            "varProb": "null",
-            "failDesc": ""
-          }
-        ]
-      }
+      "name": "Goto_E-CKV-B_Off",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "E-CKV-B_Standby",
+          "prob": -1,
+          "varProb": "null",
+          "failDesc": ""
+        }
+      ],
+      "id": "e86dc798-1fcf-40f4-b892-94907acc9ede",
+      "objType": "Action"
     },
     {
-      "Action": {
-        "id": 27,
-        "name": "Goto_E-PMP-A_ActOrFail",
-        "desc": "",
-        "actType": "atTransition",
-        "mainItem": false,
-        "mutExcl": "True",
-        "newStates": [
-          {
-            "toState": "E-PMP-A_Failed",
-            "prob": 0.0012,
-            "varProb": "null",
-            "failDesc": ""
-          },
-          {
-            "toState": "E-PMP-A_Active",
-            "prob": -1,
-            "varProb": "null",
-            "failDesc": ""
-          }
-        ]
-      }
+      "name": "Goto_E-MOV-1_ActOrFail",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "E-MOV-1_Failed",
+          "prob": 0.001,
+          "varProb": "null",
+          "failDesc": ""
+        },
+        {
+          "toState": "E-MOV-1_Active",
+          "prob": -1,
+          "varProb": "null",
+          "failDesc": ""
+        }
+      ],
+      "id": "69d83495-ccfe-411b-bb48-39c369f142c4",
+      "objType": "Action"
     },
     {
-      "Action": {
-        "id": 28,
-        "name": "Goto_E-PMP-A_Off",
-        "desc": "",
-        "actType": "atTransition",
-        "mainItem": false,
-        "mutExcl": "True",
-        "newStates": [
-          {
-            "toState": "E-PMP-A_Standby",
-            "prob": -1,
-            "varProb": "null",
-            "failDesc": ""
-          }
-        ]
-      }
+      "name": "Goto_E-MOV-1_Off",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "E-MOV-1_Standby",
+          "prob": -1,
+          "varProb": "null",
+          "failDesc": ""
+        }
+      ],
+      "id": "ed4e2c79-d162-403f-b7d3-1e314cb9626b",
+      "objType": "Action"
     },
     {
-      "Action": {
-        "id": 29,
-        "name": "Goto_E-PMP-A_Failed",
-        "desc": "",
-        "actType": "atTransition",
-        "mainItem": false,
-        "mutExcl": "True",
-        "newStates": [
-          {
-            "toState": "E-PMP-A_Failed",
-            "prob": -1,
-            "varProb": "null",
-            "failDesc": ""
-          }
-        ]
-      }
+      "name": "Goto_E-MOV-A_ActOrFail",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "E-MOV-A_Failed",
+          "prob": 0.0002,
+          "varProb": "null",
+          "failDesc": ""
+        },
+        {
+          "toState": "E-MOV-A_Active",
+          "prob": -1,
+          "varProb": "null",
+          "failDesc": ""
+        }
+      ],
+      "id": "d1231e2a-c7a4-404b-a8b6-b0853a7fca1e",
+      "objType": "Action"
     },
     {
-      "Action": {
-        "id": 30,
-        "name": "Goto_E-PMP-B_ActOrFail",
-        "desc": "",
-        "actType": "atTransition",
-        "mainItem": false,
-        "mutExcl": "True",
-        "newStates": [
-          {
-            "toState": "E-PMP-B_Failed",
-            "prob": 0.0012,
-            "varProb": "null",
-            "failDesc": ""
-          },
-          {
-            "toState": "E-PMP-B_Active",
-            "prob": -1,
-            "varProb": "null",
-            "failDesc": ""
-          }
-        ]
-      }
+      "name": "Goto_E-MOV-A_Off",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "E-MOV-A_Standby",
+          "prob": -1,
+          "varProb": "null",
+          "failDesc": ""
+        }
+      ],
+      "id": "33ad14d8-d392-4b82-8bf7-a8cbf8b8772f",
+      "objType": "Action"
     },
     {
-      "Action": {
-        "id": 31,
-        "name": "Goto_E-PMP-B_Off",
-        "desc": "",
-        "actType": "atTransition",
-        "mainItem": false,
-        "mutExcl": "True",
-        "newStates": [
-          {
-            "toState": "E-PMP-B_Standby",
-            "prob": -1,
-            "varProb": "null",
-            "failDesc": ""
-          }
-        ]
-      }
+      "name": "Goto_E-MOV-B_ActOrFail",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "E-MOV-B_Failed",
+          "prob": 0.0002,
+          "varProb": "null",
+          "failDesc": ""
+        },
+        {
+          "toState": "E-MOV-B_Active",
+          "prob": -1,
+          "varProb": "null",
+          "failDesc": ""
+        }
+      ],
+      "id": "84fa74cf-8b12-42f1-b3d2-acae419cd73a",
+      "objType": "Action"
     },
     {
-      "Action": {
-        "id": 32,
-        "name": "Goto_E-PMP-B_Failed",
-        "desc": "",
-        "actType": "atTransition",
-        "mainItem": false,
-        "mutExcl": "True",
-        "newStates": [
-          {
-            "toState": "E-PMP-B_Failed",
-            "prob": -1,
-            "varProb": "null",
-            "failDesc": ""
-          }
-        ]
-      }
+      "name": "Goto_E-MOV-B_Off",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "E-MOV-B_Standby",
+          "prob": -1,
+          "varProb": "null",
+          "failDesc": ""
+        }
+      ],
+      "id": "9b07c8e0-2c4f-4552-beb7-6cb7a03a5421",
+      "objType": "Action"
     },
     {
-      "Action": {
-        "id": 33,
-        "name": "Goto_S-DGN-A_ActOrFail",
-        "desc": "",
-        "actType": "atTransition",
-        "mainItem": false,
-        "mutExcl": "True",
-        "newStates": [
-          {
-            "toState": "S-DGN-A_Failed",
-            "prob": 0.004,
-            "varProb": "null",
-            "failDesc": ""
-          },
-          {
-            "toState": "S-DGN-A_Active",
-            "prob": -1,
-            "varProb": "null",
-            "failDesc": ""
-          }
-        ]
-      }
+      "name": "Goto_E-PMP-A_ActOrFail",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "E-PMP-A_Failed",
+          "prob": 0.0012,
+          "varProb": "null",
+          "failDesc": ""
+        },
+        {
+          "toState": "E-PMP-A_Active",
+          "prob": -1,
+          "varProb": "null",
+          "failDesc": ""
+        }
+      ],
+      "id": "fd3b6c14-261b-4a43-97f6-a135325357ae",
+      "objType": "Action"
     },
     {
-      "Action": {
-        "id": 34,
-        "name": "Goto_S-DGN-A_Off",
-        "desc": "",
-        "actType": "atTransition",
-        "mainItem": false,
-        "mutExcl": "True",
-        "newStates": [
-          {
-            "toState": "S-DGN-A_Standby",
-            "prob": -1,
-            "varProb": "null",
-            "failDesc": ""
-          }
-        ]
-      }
+      "name": "Goto_E-PMP-A_Failed",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "E-PMP-A_Failed",
+          "prob": -1,
+          "varProb": "null",
+          "failDesc": ""
+        }
+      ],
+      "id": "e4e387d6-fc24-45cc-96bd-0a63ee4fba26",
+      "objType": "Action"
     },
     {
-      "Action": {
-        "id": 35,
-        "name": "Goto_S-DGN-A_Failed",
-        "desc": "",
-        "actType": "atTransition",
-        "mainItem": false,
-        "mutExcl": "True",
-        "newStates": [
-          {
-            "toState": "S-DGN-A_Failed",
-            "prob": -1,
-            "varProb": "null",
-            "failDesc": ""
-          }
-        ]
-      }
+      "name": "Goto_E-PMP-A_Off",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "E-PMP-A_Standby",
+          "prob": -1,
+          "varProb": "null",
+          "failDesc": ""
+        }
+      ],
+      "id": "0bda0b7f-035f-4a08-bf8b-2934983a7cdf",
+      "objType": "Action"
     },
     {
-      "Action": {
-        "id": 36,
-        "name": "Goto_S-DGN-B_ActOrFail",
-        "desc": "",
-        "actType": "atTransition",
-        "mainItem": false,
-        "mutExcl": "True",
-        "newStates": [
-          {
-            "toState": "S-DGN-B_Failed",
-            "prob": 0.004,
-            "varProb": "null",
-            "failDesc": ""
-          },
-          {
-            "toState": "S-DGN-B_Active",
-            "prob": -1,
-            "varProb": "null",
-            "failDesc": ""
-          }
-        ]
-      }
+      "name": "Goto_E-PMP-B_ActOrFail",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "E-PMP-B_Failed",
+          "prob": 0.0012,
+          "varProb": "null",
+          "failDesc": ""
+        },
+        {
+          "toState": "E-PMP-B_Active",
+          "prob": -1,
+          "varProb": "null",
+          "failDesc": ""
+        }
+      ],
+      "id": "4c8bf149-b756-412d-8fdd-5abcde573a64",
+      "objType": "Action"
     },
     {
-      "Action": {
-        "id": 37,
-        "name": "Goto_S-DGN-B_Off",
-        "desc": "",
-        "actType": "atTransition",
-        "mainItem": false,
-        "mutExcl": "True",
-        "newStates": [
-          {
-            "toState": "S-DGN-B_Standby",
-            "prob": -1,
-            "varProb": "null",
-            "failDesc": ""
-          }
-        ]
-      }
+      "name": "Goto_E-PMP-B_Failed",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "E-PMP-B_Failed",
+          "prob": -1,
+          "varProb": "null",
+          "failDesc": ""
+        }
+      ],
+      "id": "4721a8c3-9aaa-428b-a331-278d39a3dd8f",
+      "objType": "Action"
     },
     {
-      "Action": {
-        "id": 38,
-        "name": "Goto_S-DGN-B_Failed",
-        "desc": "",
-        "actType": "atTransition",
-        "mainItem": false,
-        "mutExcl": "True",
-        "newStates": [
-          {
-            "toState": "S-DGN-B_Failed",
-            "prob": -1,
-            "varProb": "null",
-            "failDesc": ""
-          }
-        ]
-      }
+      "name": "Goto_E-PMP-B_Off",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "E-PMP-B_Standby",
+          "prob": -1,
+          "varProb": "null",
+          "failDesc": ""
+        }
+      ],
+      "id": "3ac238ef-86b2-4a43-8b79-d6c23ad048fd",
+      "objType": "Action"
     },
     {
-      "Action": {
-        "id": 39,
-        "name": "Goto_S-TNK-T1_Active",
-        "desc": "",
-        "actType": "atTransition",
-        "mainItem": false,
-        "mutExcl": "True",
-        "newStates": [
-          {
-            "toState": "S-TNK-T1_Active",
-            "prob": -1,
-            "varProb": "null",
-            "failDesc": ""
-          }
-        ]
-      }
+      "name": "Goto_Large_Release",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "Large_Release",
+          "prob": -1,
+          "failDesc": ""
+        }
+      ],
+      "id": "011f3645-0436-4eac-a3c2-fe1c4bea86ae",
+      "objType": "Action"
     },
     {
-      "Action": {
-        "id": 40,
-        "name": "Goto_S-TNK-T1_Off",
-        "desc": "",
-        "actType": "atTransition",
-        "mainItem": false,
-        "mutExcl": "True",
-        "newStates": [
-          {
-            "toState": "S-TNK-T1_Standby",
-            "prob": -1,
-            "varProb": "null",
-            "failDesc": ""
-          }
-        ]
-      }
+      "name": "Goto_LOSP",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "LOSP",
+          "prob": -1,
+          "varProb": "null",
+          "failDesc": ""
+        }
+      ],
+      "id": "dfeeb1e2-9022-4e10-96d2-151ceaae903e",
+      "objType": "Action"
     },
     {
-      "Action": {
-        "id": 41,
-        "name": "Goto_S-TNK-T1_Failed",
-        "desc": "",
-        "actType": "atTransition",
-        "mainItem": false,
-        "mutExcl": "True",
-        "newStates": [
-          {
-            "toState": "S-TNK-T1_Failed",
-            "prob": -1,
-            "varProb": "null",
-            "failDesc": ""
-          }
-        ]
-      }
+      "name": "Goto_Mission_Time_Up",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "Mission_Time_Up",
+          "prob": -1,
+          "varProb": "null",
+          "failDesc": ""
+        }
+      ],
+      "id": "5da87ceb-ae25-47e1-81f2-baa8695ab660",
+      "objType": "Action"
     },
     {
-      "Action": {
-        "id": 42,
-        "name": "_Goto_ECS_Sys_Active",
-        "desc": "",
-        "actType": "atTransition",
-        "mainItem": false,
-        "mutExcl": "True",
-        "newStates": [
-          {
-            "toState": "ECS_Sys_Active",
-            "prob": -1,
-            "varProb": null,
-            "failDesc": ""
-          }
-        ]
-      }
+      "name": "Goto_Normal_Operations",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "Normal_Operations",
+          "prob": -1,
+          "varProb": "null",
+          "failDesc": ""
+        }
+      ],
+      "id": "21b97fbc-1efa-4341-a042-ab7f911e2181",
+      "objType": "Action"
     },
     {
-      "Action": {
-        "id": 43,
-        "name": "_Goto_ECS_Sys_Failed",
-        "desc": "",
-        "actType": "atTransition",
-        "mainItem": false,
-        "mutExcl": "True",
-        "newStates": [
-          {
-            "toState": "ECS_Sys_Failed",
-            "prob": -1,
-            "varProb": "null",
-            "failDesc": ""
-          }
-        ]
-      }
+      "name": "Goto_PowerRestored",
+      "desc": "",
+      "actType": "atTransition",
+      "mutExcl": true,
+      "newStates": [],
+      "mainItem": false,
+      "id": "3d701d90-a430-4962-aceb-6a8c69afc038",
+      "objType": "Action"
     },
     {
-      "Action": {
-        "id": 44,
-        "name": "_Goto_CCS_Sys_Active",
-        "desc": "",
-        "actType": "atTransition",
-        "mainItem": false,
-        "mutExcl": "True",
-        "newStates": [
-          {
-            "toState": "CCS_Sys_Active",
-            "prob": -1,
-            "varProb": "null",
-            "failDesc": ""
-          }
-        ]
-      }
+      "name": "Goto_S-DGN-A_ActOrFail",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "S-DGN-A_Failed",
+          "prob": 0.004,
+          "varProb": "null",
+          "failDesc": ""
+        },
+        {
+          "toState": "S-DGN-A_Active",
+          "prob": -1,
+          "varProb": "null",
+          "failDesc": ""
+        }
+      ],
+      "id": "f364e78d-9bc8-4fc7-8da1-64697474dd66",
+      "objType": "Action"
     },
     {
-      "Action": {
-        "id": 45,
-        "name": "_Goto_CCS_Sys_Failed",
-        "desc": "",
-        "actType": "atTransition",
-        "mainItem": false,
-        "mutExcl": "True",
-        "newStates": [
-          {
-            "toState": "CCS_Sys_Failed",
-            "prob": -1,
-            "varProb": "null",
-            "failDesc": ""
-          }
-        ]
-      }
+      "name": "Goto_S-DGN-A_Failed",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "S-DGN-A_Failed",
+          "prob": -1,
+          "varProb": "null",
+          "failDesc": ""
+        }
+      ],
+      "id": "52b9a309-a34f-4608-bc36-47147d40c0fe",
+      "objType": "Action"
     },
     {
-      "Action": {
-        "id": 46,
-        "name": "Goto_LOSP",
-        "desc": "",
-        "actType": "atTransition",
-        "mainItem": false,
-        "mutExcl": "True",
-        "newStates": [
-          {
-            "toState": "LOSP",
-            "prob": -1,
-            "varProb": "null",
-            "failDesc": ""
-          }
-        ]
-      }
+      "name": "Goto_S-DGN-A_Off",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "S-DGN-A_Standby",
+          "prob": -1,
+          "varProb": "null",
+          "failDesc": ""
+        }
+      ],
+      "id": "1fcd35f5-5003-4923-ba03-8a1732ed2c82",
+      "objType": "Action"
     },
     {
-      "Action": {
-        "id": 47,
-        "name": "Goto_Terminate",
-        "desc": "",
-        "actType": "atTransition",
-        "mainItem": false,
-        "mutExcl": "True",
-        "newStates": [
-          {
-            "toState": "Terminate",
-            "prob": -1,
-            "varProb": "null",
-            "failDesc": ""
-          }
-        ]
-      }
+      "name": "Goto_S-DGN-B_ActOrFail",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "S-DGN-B_Failed",
+          "prob": 0.004,
+          "varProb": "null",
+          "failDesc": ""
+        },
+        {
+          "toState": "S-DGN-B_Active",
+          "prob": -1,
+          "varProb": "null",
+          "failDesc": ""
+        }
+      ],
+      "id": "cc7c1929-7dbc-46d6-a83b-c0b80d11ad93",
+      "objType": "Action"
     },
     {
-      "Action": {
-        "id": 48,
-        "name": "Goto_StartSystems",
-        "desc": "",
-        "actType": "atTransition",
-        "mainItem": false,
-        "mutExcl": "True",
-        "newStates": [
-          {
-            "toState": "Start_Systems",
-            "prob": -1,
-            "varProb": "null",
-            "failDesc": ""
-          }
-        ]
-      }
+      "name": "Goto_S-DGN-B_Failed",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "S-DGN-B_Failed",
+          "prob": -1,
+          "varProb": "null",
+          "failDesc": ""
+        }
+      ],
+      "id": "352b94c0-1abb-4924-8a8b-ef323f626d1e",
+      "objType": "Action"
     },
     {
-      "Action": {
-        "id": 49,
-        "name": "Goto_StopSystems",
-        "desc": "",
-        "actType": "atTransition",
-        "mainItem": false,
-        "mutExcl": "True",
-        "newStates": [
-          {
-            "toState": "Stop_Systems",
-            "prob": -1,
-            "varProb": "null",
-            "failDesc": ""
-          }
-        ]
-      }
+      "name": "Goto_S-DGN-B_Off",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "S-DGN-B_Standby",
+          "prob": -1,
+          "varProb": "null",
+          "failDesc": ""
+        }
+      ],
+      "id": "0b4312df-eda8-402e-80ae-467c6a3ea18d",
+      "objType": "Action"
     },
     {
-      "Action": {
-        "id": 50,
-        "name": "Goto_Normal_Operations",
-        "desc": "",
-        "actType": "atTransition",
-        "mainItem": false,
-        "mutExcl": "True",
-        "newStates": [
-          {
-            "toState": "Normal_Operations",
-            "prob": -1,
-            "varProb": "null",
-            "failDesc": ""
-          }
-        ]
-      }
+      "name": "Goto_S-TNK-T1_Active",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "S-TNK-T1_Active",
+          "prob": -1,
+          "varProb": "null",
+          "failDesc": ""
+        }
+      ],
+      "id": "feec4359-71db-4f38-b588-930a92dd8f52",
+      "objType": "Action"
     },
     {
-      "Action": {
-        "id": 53,
-        "name": "Goto_Mission_Time_Up",
-        "desc": "",
-        "actType": "atTransition",
-        "mainItem": false,
-        "mutExcl": "True",
-        "newStates": [
-          {
-            "toState": "Mission_Time_Up",
-            "prob": -1,
-            "varProb": "null",
-            "failDesc": ""
-          }
-        ]
-      }
+      "name": "Goto_S-TNK-T1_Failed",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "S-TNK-T1_Failed",
+          "prob": -1,
+          "varProb": "null",
+          "failDesc": ""
+        }
+      ],
+      "id": "94e00197-3c5a-406e-b23d-118a3c041092",
+      "objType": "Action"
     },
     {
-      "Action": {
-        "id": 54,
-        "name": "Goto_StartOver",
-        "desc": "",
-        "actType": "atTransition",
-        "mainItem": false,
-        "mutExcl": "True",
-        "newStates": []
-      }
+      "name": "Goto_S-TNK-T1_Off",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "S-TNK-T1_Standby",
+          "prob": -1,
+          "varProb": "null",
+          "failDesc": ""
+        }
+      ],
+      "id": "4229caa4-44d9-4b06-a191-c2519a1c650c",
+      "objType": "Action"
     },
     {
-      "Action": {
-        "id": 55,
-        "name": "Goto_Crew_Task1",
-        "desc": "",
-        "actType": "atTransition",
-        "mutExcl": "True",
-        "newStates": []
-      }
+      "name": "Goto_Small_Release",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "Small_Release",
+          "prob": -1,
+          "varProb": null,
+          "failDesc": ""
+        }
+      ],
+      "id": "482475b5-12fd-4468-b1e9-fbbf041b5ceb",
+      "objType": "Action"
     },
     {
-      "Action": {
-        "id": 56,
-        "name": "Goto_Crew_Task2",
-        "desc": "",
-        "actType": "atTransition",
-        "mutExcl": "True",
-        "newStates": [],
-        "itemId": 0
-      }
+      "name": "Goto_StartOver",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [],
+      "id": "fc33522d-e897-44fb-a335-c046c406349d",
+      "objType": "Action"
     },
     {
-      "Action": {
-        "id": 57,
-        "name": "Goto_PowerRestored",
-        "desc": "",
-        "actType": "atTransition",
-        "mutExcl": "True",
-        "newStates": [],
-        "itemId": 0
-      }
+      "name": "Goto_StartSystems",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "Start_Systems",
+          "prob": -1,
+          "varProb": "null",
+          "failDesc": ""
+        }
+      ],
+      "id": "9471cd92-b10b-4850-8c08-10ad48218508",
+      "objType": "Action"
     },
     {
-      "Action": {
-        "id": 58,
-        "name": "Goto_Small_Release",
-        "desc": "",
-        "actType": "atTransition",
-        "mainItem": false,
-        "mutExcl": "True",
-        "newStates": [
-          {
-            "toState": "Small_Release",
-            "prob": -1,
-            "varProb": null,
-            "failDesc": ""
-          }
-        ],
-        "itemId": 58,
-        "moveFromCurrent": false
-      }
+      "name": "Goto_StopSystems",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "Stop_Systems",
+          "prob": -1,
+          "varProb": "null",
+          "failDesc": ""
+        }
+      ],
+      "id": "65443521-fd4e-41b3-bb4d-6d2aa9717427",
+      "objType": "Action"
     },
     {
-      "Action": {
-        "id": 59,
-        "name": "Goto_Large_Release",
-        "desc": "",
-        "actType": "atTransition",
-        "mainItem": false,
-        "mutExcl": "True",
-        "newStates": [
-          {
-            "toState": "Large_Release",
-            "prob": -1,
-            "failDesc": ""
-          }
-        ],
-        "moveFromCurrent": false,
-        "itemId": 1
-      }
+      "name": "Goto_Terminate",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "Terminate",
+          "prob": -1,
+          "varProb": "null",
+          "failDesc": ""
+        }
+      ],
+      "id": "92e63166-a231-44d6-aa08-d618aef535d0",
+      "objType": "Action"
     }
   ],
   "EventList": [
     {
-      "Event": {
-        "id": 1,
-        "name": "TempStateExit",
-        "desc": "",
-        "mainItem": false,
-        "evType": "etTimer",
-        "time": "PT0S"
-      }
+      "name": "24H_Mission_Time",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etTimer",
+      "time": "P1D",
+      "id": "d0ea6e35-a69c-466a-ad49-310c70f26117",
+      "objType": "Event"
     },
     {
-      "Event": {
-        "id": 2,
-        "name": "C-CKV-A_Demand",
-        "desc": "",
-        "mainItem": false,
-        "evType": "etStateCng",
-        "ifInState": "true",
-        "allItems": "false",
-        "triggerStates": ["Start_Systems"]
-      }
+      "name": "C-CKV-A_Demand",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etStateCng",
+      "ifInState": true,
+      "allItems": false,
+      "triggerStates": [
+        "Start_Systems"
+      ],
+      "id": "1e1aee05-6909-478c-b163-39b4bd256a5a",
+      "objType": "Event"
     },
     {
-      "Event": {
-        "id": 3,
-        "name": "C-CKV-A_Stop",
-        "desc": "",
-        "mainItem": false,
-        "evType": "etStateCng",
-        "ifInState": "false",
-        "allItems": "true",
-        "triggerStates": ["Stop_Systems"]
-      }
+      "name": "C-CKV-A_Stop",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etStateCng",
+      "ifInState": false,
+      "allItems": true,
+      "triggerStates": [
+        "Stop_Systems"
+      ],
+      "id": "c8775173-40fc-41fb-b322-bb9caf2381ef",
+      "objType": "Event"
     },
     {
-      "Event": {
-        "id": 4,
-        "name": "C-CKV-B_Demand",
-        "desc": "",
-        "mainItem": false,
-        "evType": "etStateCng",
-        "ifInState": "true",
-        "allItems": "false",
-        "triggerStates": ["Start_Systems"]
-      }
+      "name": "C-CKV-B_Demand",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etStateCng",
+      "ifInState": true,
+      "allItems": false,
+      "triggerStates": [
+        "Start_Systems"
+      ],
+      "id": "d47cdc58-4f5f-4c07-9fda-0870db3dfa82",
+      "objType": "Event"
     },
     {
-      "Event": {
-        "id": 5,
-        "name": "C-CKV-B_Stop",
-        "desc": "",
-        "mainItem": false,
-        "evType": "etStateCng",
-        "ifInState": "false",
-        "allItems": "true",
-        "triggerStates": ["Stop_Systems"]
-      }
+      "name": "C-CKV-B_Stop",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etStateCng",
+      "ifInState": false,
+      "allItems": true,
+      "triggerStates": [
+        "Stop_Systems"
+      ],
+      "id": "eff37a10-b764-4684-b267-9b5055ad6880",
+      "objType": "Event"
     },
     {
-      "Event": {
-        "id": 6,
-        "name": "C-MOV-1_Demand",
-        "desc": "",
-        "mainItem": false,
-        "evType": "etStateCng",
-        "ifInState": "true",
-        "allItems": "false",
-        "triggerStates": ["Start_Systems"]
-      }
+      "name": "C-MOV-1_Demand",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etStateCng",
+      "ifInState": true,
+      "allItems": false,
+      "triggerStates": [
+        "Start_Systems"
+      ],
+      "id": "2d038798-9a8c-4d3f-ab04-ba084f493246",
+      "objType": "Event"
     },
     {
-      "Event": {
-        "id": 7,
-        "name": "C-MOV-1_Stop",
-        "desc": "",
-        "mainItem": false,
-        "evType": "etStateCng",
-        "ifInState": "false",
-        "allItems": "true",
-        "triggerStates": ["Stop_Systems"]
-      }
+      "name": "C-MOV-1_Stop",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etStateCng",
+      "ifInState": false,
+      "allItems": true,
+      "triggerStates": [
+        "Stop_Systems"
+      ],
+      "id": "cdeda3df-dc6b-4798-93e0-95d13a7f6512",
+      "objType": "Event"
     },
     {
-      "Event": {
-        "id": 8,
-        "name": "C-MOV-A_Demand",
-        "desc": "",
-        "mainItem": false,
-        "evType": "etStateCng",
-        "ifInState": "true",
-        "allItems": "false",
-        "triggerStates": ["Start_Systems"]
-      }
+      "name": "C-MOV-A_Demand",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etStateCng",
+      "ifInState": true,
+      "allItems": false,
+      "triggerStates": [
+        "Start_Systems"
+      ],
+      "id": "cfe12096-e954-441d-b25d-0b3ece7ca463",
+      "objType": "Event"
     },
     {
-      "Event": {
-        "id": 9,
-        "name": "C-MOV-A_Stop",
-        "desc": "",
-        "mainItem": false,
-        "evType": "etStateCng",
-        "ifInState": "false",
-        "allItems": "true",
-        "triggerStates": ["Stop_Systems"]
-      }
+      "name": "C-MOV-A_Stop",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etStateCng",
+      "ifInState": false,
+      "allItems": true,
+      "triggerStates": [
+        "Stop_Systems"
+      ],
+      "id": "3e860db8-d1c7-407b-b5ec-70745a45ebac",
+      "objType": "Event"
     },
     {
-      "Event": {
-        "id": 10,
-        "name": "C-MOV-B_Demand",
-        "desc": "",
-        "mainItem": false,
-        "evType": "etStateCng",
-        "ifInState": "true",
-        "allItems": "false",
-        "triggerStates": ["Start_Systems"]
-      }
+      "name": "C-MOV-B_Demand",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etStateCng",
+      "ifInState": true,
+      "allItems": false,
+      "triggerStates": [
+        "Start_Systems"
+      ],
+      "id": "f8897efc-d00d-4abc-b6e9-c760382b141f",
+      "objType": "Event"
     },
     {
-      "Event": {
-        "id": 11,
-        "name": "C-MOV-B_Stop",
-        "desc": "",
-        "mainItem": false,
-        "evType": "etStateCng",
-        "ifInState": "false",
-        "allItems": "true",
-        "triggerStates": ["Stop_Systems"]
-      }
+      "name": "C-MOV-B_Stop",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etStateCng",
+      "ifInState": false,
+      "allItems": true,
+      "triggerStates": [
+        "Stop_Systems"
+      ],
+      "id": "924cbc3a-7b15-441c-9ec1-663e9ea181ef",
+      "objType": "Event"
     },
     {
-      "Event": {
-        "id": 12,
-        "name": "C-PMP-A_Demand",
-        "desc": "",
-        "mainItem": false,
-        "evType": "etStateCng",
-        "ifInState": "true",
-        "allItems": "false",
-        "triggerStates": ["Start_Systems"]
-      }
+      "name": "C-PMP-A_Demand",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etStateCng",
+      "ifInState": true,
+      "allItems": false,
+      "triggerStates": [
+        "Start_Systems"
+      ],
+      "id": "0501ed6f-cc1c-4db2-953c-eabdf1cdeb13",
+      "objType": "Event"
     },
     {
-      "Event": {
-        "id": 13,
-        "name": "C-PMP-A_Stop",
-        "desc": "",
-        "mainItem": false,
-        "evType": "etStateCng",
-        "ifInState": "false",
-        "allItems": "true",
-        "triggerStates": ["Stop_Systems"],
-        "logicError": "missing state for something"
-      }
+      "name": "C-PMP-A_FR",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etFailRate",
+      "lambda": 0.000021,
+      "lambdaTimeRate": "PT1H",
+      "id": "56468ad5-c1d7-40d6-be82-0d1036445ac3",
+      "objType": "Event"
     },
     {
-      "Event": {
-        "id": 14,
-        "name": "C-PMP-A_FR",
-        "desc": "",
-        "mainItem": false,
-        "evType": "etFailRate",
-        "lambda": 0.000021,
-        "lambdaTimeRate": "PT1H",
-        "missionTime": "P1D"
-      }
+      "name": "C-PMP-A_Stop",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etStateCng",
+      "ifInState": false,
+      "allItems": true,
+      "triggerStates": [
+        "Stop_Systems"
+      ],
+      "logicError": "missing state for something",
+      "id": "449ab772-c9a5-44ac-bdd7-4ca2853bf845",
+      "objType": "Event"
     },
     {
-      "Event": {
-        "id": 15,
-        "name": "C-PMP-B_Demand",
-        "desc": "",
-        "mainItem": false,
-        "evType": "etStateCng",
-        "ifInState": "true",
-        "allItems": "false",
-        "triggerStates": ["Start_Systems"]
-      }
+      "name": "C-PMP-B_Demand",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etStateCng",
+      "ifInState": true,
+      "allItems": false,
+      "triggerStates": [
+        "Start_Systems"
+      ],
+      "id": "032f6696-393a-49e7-8754-f61464137fbd",
+      "objType": "Event"
     },
     {
-      "Event": {
-        "id": 16,
-        "name": "C-PMP-B_Stop",
-        "desc": "",
-        "mainItem": false,
-        "evType": "etStateCng",
-        "ifInState": "false",
-        "allItems": "true",
-        "triggerStates": ["Stop_Systems"]
-      }
+      "name": "C-PMP-B_FR",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etFailRate",
+      "lambda": 0.000021,
+      "lambdaTimeRate": "PT1H",
+      "id": "d0a97d1a-9b7b-4dbb-b1f3-8624e3d66bd9",
+      "objType": "Event"
     },
     {
-      "Event": {
-        "id": 17,
-        "name": "C-PMP-B_FR",
-        "desc": "",
-        "mainItem": false,
-        "evType": "etFailRate",
-        "lambda": 0.000021,
-        "lambdaTimeRate": "PT1H",
-        "missionTime": "P1D"
-      }
+      "name": "C-PMP-B_Stop",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etStateCng",
+      "ifInState": false,
+      "allItems": true,
+      "triggerStates": [
+        "Stop_Systems"
+      ],
+      "id": "6b17ed14-00ec-4211-96d9-490c6abd3cd5",
+      "objType": "Event"
     },
     {
-      "Event": {
-        "id": 18,
-        "name": "E-CKV-A_Demand",
-        "desc": "",
-        "mainItem": false,
-        "evType": "etStateCng",
-        "ifInState": "true",
-        "allItems": "false",
-        "triggerStates": ["Start_Systems"]
-      }
+      "name": "CCS_and_ECS_Failed",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etStateCng",
+      "ifInState": true,
+      "allItems": true,
+      "triggerStates": [
+        "CCS_Sys_Failed",
+        "ECS_Sys_Failed"
+      ],
+      "id": "463eefdf-90a1-4fd2-a964-9e8ad7470904",
+      "objType": "Event"
     },
     {
-      "Event": {
-        "id": 19,
-        "name": "E-CKV-A_Stop",
-        "desc": "",
-        "mainItem": false,
-        "evType": "etStateCng",
-        "ifInState": "false",
-        "allItems": "true",
-        "triggerStates": ["Stop_Systems"]
-      }
+      "name": "CCS_Sys_Eval",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etComponentLogic",
+      "onSuccess": false,
+      "logicTop": "CCS_TOP",
+      "id": "1816ada3-4c0c-403b-977e-9303e5db28a4",
+      "objType": "Event"
     },
     {
-      "Event": {
-        "id": 20,
-        "name": "E-CKV-B_Demand",
-        "desc": "",
-        "mainItem": false,
-        "evType": "etStateCng",
-        "ifInState": "true",
-        "allItems": "false",
-        "triggerStates": ["Start_Systems"]
-      }
+      "name": "CCS_Sys_Stop",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etStateCng",
+      "ifInState": true,
+      "allItems": false,
+      "triggerStates": [
+        "Stop_Systems"
+      ],
+      "id": "9e072fee-db35-43d1-a24b-2f425aa9570b",
+      "objType": "Event"
     },
     {
-      "Event": {
-        "id": 21,
-        "name": "E-CKV-B_Stop",
-        "desc": "",
-        "mainItem": false,
-        "evType": "etStateCng",
-        "ifInState": "false",
-        "allItems": "true",
-        "triggerStates": ["Stop_Systems"]
-      }
+      "name": "CrewReady",
+      "desc": "",
+      "allItems": true,
+      "triggerStates": [],
+      "evType": "etDistribution",
+      "mainItem": false,
+      "distType": "dtNormal",
+      "parameters": [
+        {
+          "name": "Mean",
+          "useVariable": false,
+          "value": 24
+        },
+        {
+          "name": "Standard Deviation",
+          "useVariable": false,
+          "value": 1
+        },
+        {
+          "name": "Minimum",
+          "useVariable": false,
+          "value": 0
+        },
+        {
+          "name": "Maximum",
+          "useVariable": false,
+          "value": 24
+        }
+      ],
+      "dfltTimeRate": "trHours",
+      "id": "2734bf6b-fc2b-4dd3-975c-d9ae4d454303",
+      "objType": "Event"
     },
     {
-      "Event": {
-        "id": 22,
-        "name": "E-MOV-1_Demand",
-        "desc": "",
-        "mainItem": false,
-        "evType": "etStateCng",
-        "ifInState": "true",
-        "allItems": "false",
-        "triggerStates": ["Start_Systems"]
-      }
+      "name": "Do_Soon",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etTimer",
+      "time": "PT1S",
+      "id": "1de336c9-3d94-4c43-8933-123bd4e2d65b",
+      "objType": "Event"
     },
     {
-      "Event": {
-        "id": 23,
-        "name": "E-MOV-1_Stop",
-        "desc": "",
-        "mainItem": false,
-        "evType": "etStateCng",
-        "ifInState": "false",
-        "allItems": "true",
-        "triggerStates": ["Stop_Systems"]
-      }
+      "name": "Done",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etTimer",
+      "time": "PT0S",
+      "id": "f7d7af40-6556-4a1e-839e-ef21cb399f8f",
+      "objType": "Event"
     },
     {
-      "Event": {
-        "id": 24,
-        "name": "E-MOV-A_Demand",
-        "desc": "",
-        "mainItem": false,
-        "evType": "etStateCng",
-        "ifInState": "true",
-        "allItems": "false",
-        "triggerStates": ["Start_Systems"]
-      }
+      "name": "E-CKV-A_Demand",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etStateCng",
+      "ifInState": true,
+      "allItems": false,
+      "triggerStates": [
+        "Start_Systems"
+      ],
+      "id": "9f7a1d26-29d7-4a72-b2d5-6f224ec53559",
+      "objType": "Event"
     },
     {
-      "Event": {
-        "id": 25,
-        "name": "E-MOV-A_Stop",
-        "desc": "",
-        "mainItem": false,
-        "evType": "etStateCng",
-        "ifInState": "false",
-        "allItems": "true",
-        "triggerStates": ["Stop_Systems"]
-      }
+      "name": "E-CKV-A_Stop",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etStateCng",
+      "ifInState": false,
+      "allItems": true,
+      "triggerStates": [
+        "Stop_Systems"
+      ],
+      "id": "65c33e72-1ee4-4134-9b78-32bf20538944",
+      "objType": "Event"
     },
     {
-      "Event": {
-        "id": 26,
-        "name": "E-MOV-B_Demand",
-        "desc": "",
-        "mainItem": false,
-        "evType": "etStateCng",
-        "ifInState": "true",
-        "allItems": "false",
-        "triggerStates": ["Start_Systems"]
-      }
+      "name": "E-CKV-B_Demand",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etStateCng",
+      "ifInState": true,
+      "allItems": false,
+      "triggerStates": [
+        "Start_Systems"
+      ],
+      "id": "78c7a44a-6c62-4e10-bf81-a5d4b6df60e5",
+      "objType": "Event"
     },
     {
-      "Event": {
-        "id": 27,
-        "name": "E-MOV-B_Stop",
-        "desc": "",
-        "mainItem": false,
-        "evType": "etStateCng",
-        "ifInState": "false",
-        "allItems": "true",
-        "triggerStates": ["Stop_Systems"]
-      }
+      "name": "E-CKV-B_Stop",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etStateCng",
+      "ifInState": false,
+      "allItems": true,
+      "triggerStates": [
+        "Stop_Systems"
+      ],
+      "id": "82e6f743-78e2-4f55-afd4-f7c439df6657",
+      "objType": "Event"
     },
     {
-      "Event": {
-        "id": 28,
-        "name": "E-PMP-A_Demand",
-        "desc": "",
-        "mainItem": false,
-        "evType": "etStateCng",
-        "ifInState": "true",
-        "allItems": "false",
-        "triggerStates": ["Start_Systems"]
-      }
+      "name": "E-MOV-1_Demand",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etStateCng",
+      "ifInState": true,
+      "allItems": false,
+      "triggerStates": [
+        "Start_Systems"
+      ],
+      "id": "01fd31c9-168c-4f8b-9d87-f1ffa09e4f5d",
+      "objType": "Event"
     },
     {
-      "Event": {
-        "id": 29,
-        "name": "E-PMP-A_Stop",
-        "desc": "",
-        "mainItem": false,
-        "evType": "etStateCng",
-        "ifInState": "false",
-        "allItems": "true",
-        "triggerStates": ["Stop_Systems"]
-      }
+      "name": "E-MOV-1_Stop",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etStateCng",
+      "ifInState": false,
+      "allItems": true,
+      "triggerStates": [
+        "Stop_Systems"
+      ],
+      "id": "fd0b3277-a192-4a21-97d3-28f4ef26dd46",
+      "objType": "Event"
     },
     {
-      "Event": {
-        "id": 30,
-        "name": "E-PMP-A_FR",
-        "desc": "",
-        "mainItem": false,
-        "evType": "etFailRate",
-        "lambda": 0.000021,
-        "lambdaTimeRate": "PT1H",
-        "missionTime": "P1D"
-      }
+      "name": "E-MOV-A_Demand",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etStateCng",
+      "ifInState": true,
+      "allItems": false,
+      "triggerStates": [
+        "Start_Systems"
+      ],
+      "id": "f64ba00d-f8f6-45f2-a462-f16cde4ebdef",
+      "objType": "Event"
     },
     {
-      "Event": {
-        "id": 31,
-        "name": "E-PMP-B_Demand",
-        "desc": "",
-        "mainItem": false,
-        "evType": "etStateCng",
-        "ifInState": "true",
-        "allItems": "false",
-        "triggerStates": ["Start_Systems"]
-      }
+      "name": "E-MOV-A_Stop",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etStateCng",
+      "ifInState": false,
+      "allItems": true,
+      "triggerStates": [
+        "Stop_Systems"
+      ],
+      "id": "4ba7d4d2-f473-48ea-a975-0aec462597de",
+      "objType": "Event"
     },
     {
-      "Event": {
-        "id": 32,
-        "name": "E-PMP-B_Stop",
-        "desc": "",
-        "mainItem": false,
-        "evType": "etStateCng",
-        "ifInState": "false",
-        "allItems": "true",
-        "triggerStates": ["Stop_Systems"]
-      }
+      "name": "E-MOV-B_Demand",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etStateCng",
+      "ifInState": true,
+      "allItems": false,
+      "triggerStates": [
+        "Start_Systems"
+      ],
+      "id": "b0408adb-042e-4874-a68d-1ba526ef9c0b",
+      "objType": "Event"
     },
     {
-      "Event": {
-        "id": 33,
-        "name": "E-PMP-B_FR",
-        "desc": "",
-        "mainItem": false,
-        "evType": "etFailRate",
-        "lambda": 0.000021,
-        "lambdaTimeRate": "PT1H",
-        "missionTime": "P1D"
-      }
+      "name": "E-MOV-B_Stop",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etStateCng",
+      "ifInState": false,
+      "allItems": true,
+      "triggerStates": [
+        "Stop_Systems"
+      ],
+      "id": "8d1d5ad2-c473-4160-bde2-4c761e36835d",
+      "objType": "Event"
     },
     {
-      "Event": {
-        "id": 34,
-        "name": "S-DGN-A_Demand",
-        "desc": "",
-        "mainItem": false,
-        "evType": "etStateCng",
-        "ifInState": "true",
-        "allItems": "false",
-        "triggerStates": ["Start_Systems"]
-      }
+      "name": "E-PMP-A_Demand",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etStateCng",
+      "ifInState": true,
+      "allItems": false,
+      "triggerStates": [
+        "Start_Systems"
+      ],
+      "id": "2dd4099b-94b1-42ae-bbee-3c504b0b3feb",
+      "objType": "Event"
     },
     {
-      "Event": {
-        "id": 35,
-        "name": "S-DGN-A_Stop",
-        "desc": "",
-        "mainItem": false,
-        "evType": "etStateCng",
-        "ifInState": "false",
-        "allItems": "true",
-        "triggerStates": ["Stop_Systems"]
-      }
+      "name": "E-PMP-A_FR",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etFailRate",
+      "lambda": 0.000021,
+      "lambdaTimeRate": "PT1H",
+      "id": "c41a79a9-2df9-4ab4-8d50-d5dcdfa95df8",
+      "objType": "Event"
     },
     {
-      "Event": {
-        "id": 36,
-        "name": "S-DGN-A_FR",
-        "desc": "",
-        "mainItem": false,
-        "evType": "etFailRate",
-        "lambda": 0.00089,
-        "lambdaTimeRate": "PT1H",
-        "missionTime": "P1D"
-      }
+      "name": "E-PMP-A_Stop",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etStateCng",
+      "ifInState": false,
+      "allItems": true,
+      "triggerStates": [
+        "Stop_Systems"
+      ],
+      "id": "e1b97d88-5d57-4b5d-984b-13240ac6a1f2",
+      "objType": "Event"
     },
     {
-      "Event": {
-        "id": 37,
-        "name": "S-DGN-B_Demand",
-        "desc": "",
-        "mainItem": false,
-        "evType": "etStateCng",
-        "ifInState": "true",
-        "allItems": "false",
-        "triggerStates": ["Start_Systems"]
-      }
+      "name": "E-PMP-B_Demand",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etStateCng",
+      "ifInState": true,
+      "allItems": false,
+      "triggerStates": [
+        "Start_Systems"
+      ],
+      "id": "bbce1008-9795-410d-81bf-2114bb8ae412",
+      "objType": "Event"
     },
     {
-      "Event": {
-        "id": 38,
-        "name": "S-DGN-B_Stop",
-        "desc": "",
-        "mainItem": false,
-        "evType": "etStateCng",
-        "ifInState": "false",
-        "allItems": "true",
-        "triggerStates": ["Stop_Systems"]
-      }
+      "name": "E-PMP-B_FR",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etFailRate",
+      "lambda": 0.000021,
+      "lambdaTimeRate": "PT1H",
+      "id": "5fc57447-4e35-4c7b-9c94-f67e2a8549bd",
+      "objType": "Event"
     },
     {
-      "Event": {
-        "id": 39,
-        "name": "S-DGN-B_FR",
-        "desc": "",
-        "mainItem": false,
-        "evType": "etFailRate",
-        "lambda": 0.00089,
-        "lambdaTimeRate": "PT1H",
-        "missionTime": "P1D"
-      }
+      "name": "E-PMP-B_Stop",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etStateCng",
+      "ifInState": false,
+      "allItems": true,
+      "triggerStates": [
+        "Stop_Systems"
+      ],
+      "id": "08b819ba-e216-4963-8302-81244e40b1d9",
+      "objType": "Event"
     },
     {
-      "Event": {
-        "id": 40,
-        "name": "S-TNK-T1_Demand",
-        "desc": "",
-        "mainItem": false,
-        "evType": "etStateCng",
-        "ifInState": "true",
-        "allItems": "false",
-        "triggerStates": ["Start_Systems"]
-      }
+      "name": "ECS_Failed",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etStateCng",
+      "ifInState": true,
+      "allItems": true,
+      "triggerStates": [
+        "ECS_Sys_Failed"
+      ],
+      "id": "b14e007b-e9f9-4d07-b4e3-6d45f061a729",
+      "objType": "Event"
     },
     {
-      "Event": {
-        "id": 41,
-        "name": "S-TNK-T1_Stop",
-        "desc": "",
-        "mainItem": false,
-        "evType": "etStateCng",
-        "ifInState": "false",
-        "allItems": "true",
-        "triggerStates": ["Stop_Systems"]
-      }
+      "name": "ECS_Sys_Eval",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etComponentLogic",
+      "onSuccess": false,
+      "logicTop": "ECS_TOP",
+      "id": "7d8916f0-1f49-431d-a87c-f863f3c4479e",
+      "objType": "Event"
     },
     {
-      "Event": {
-        "id": 42,
-        "name": "S-TNK-T1_FR",
-        "desc": "",
-        "mainItem": false,
-        "evType": "etFailRate",
-        "lambda": 1e-7,
-        "lambdaTimeRate": "PT1H",
-        "missionTime": "P1D"
-      }
+      "name": "ECS_Sys_Stop",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etStateCng",
+      "ifInState": true,
+      "allItems": false,
+      "triggerStates": [
+        "Stop_Systems"
+      ],
+      "id": "b7ef0df3-bc80-4d09-8f38-4d4f5dfe2d89",
+      "objType": "Event"
     },
     {
-      "Event": {
-        "id": 43,
-        "name": "ECS_Sys_Eval",
-        "desc": "",
-        "mainItem": false,
-        "evType": "etComponentLogic",
-        "onSuccess": "false",
-        "logicTop": "ECS_TOP"
-      }
+      "name": "Had_Lg_Rel",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etStateCng",
+      "ifInState": true,
+      "allItems": false,
+      "triggerStates": [
+        "Large_Release"
+      ],
+      "id": "febd4e45-c889-484e-8075-2f443ab41db2",
+      "objType": "Event"
     },
     {
-      "Event": {
-        "id": 44,
-        "name": "ECS_Sys_Stop",
-        "desc": "",
-        "mainItem": false,
-        "evType": "etStateCng",
-        "ifInState": "true",
-        "allItems": "false",
-        "triggerStates": ["Stop_Systems"]
-      }
+      "name": "Had_Sm_Rel",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etStateCng",
+      "ifInState": true,
+      "allItems": true,
+      "triggerStates": [
+        "Small_Release"
+      ],
+      "id": "437a1708-d202-436d-9df2-b2cb999100fe",
+      "objType": "Event"
     },
     {
-      "Event": {
-        "id": 45,
-        "name": "CCS_Sys_Eval",
-        "desc": "",
-        "mainItem": false,
-        "evType": "etComponentLogic",
-        "onSuccess": "false",
-        "logicTop": "CCS_TOP"
-      }
+      "name": "LOSP",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etFailRate",
+      "lambda": 2.3,
+      "lambdaTimeRate": "P365D",
+      "id": "2245f553-062e-4b66-b9c7-b4067aa3d532",
+      "objType": "Event"
     },
     {
-      "Event": {
-        "id": 46,
-        "name": "CCS_Sys_Stop",
-        "desc": "",
-        "mainItem": false,
-        "evType": "etStateCng",
-        "ifInState": "true",
-        "allItems": "false",
-        "triggerStates": ["Stop_Systems"]
-      }
+      "name": "No_Sm_Rel",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etStateCng",
+      "ifInState": false,
+      "allItems": true,
+      "triggerStates": [
+        "Small_Release"
+      ],
+      "id": "fcb8bd72-ccbe-4d87-ae68-8373192dd7f2",
+      "objType": "Event"
     },
     {
-      "Event": {
-        "id": 47,
-        "name": "LOSP",
-        "desc": "",
-        "mainItem": false,
-        "evType": "etFailRate",
-        "lambda": 2.3,
-        "lambdaTimeRate": "P365D",
-        "missionTime": "P365D"
-      }
+      "name": "S-DGN-A_Demand",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etStateCng",
+      "ifInState": true,
+      "allItems": false,
+      "triggerStates": [
+        "Start_Systems"
+      ],
+      "id": "67860ce9-3a20-432c-b539-3a3dee7702a2",
+      "objType": "Event"
     },
     {
-      "Event": {
-        "id": 48,
-        "name": "ECS_Failed",
-        "desc": "",
-        "mainItem": false,
-        "evType": "etStateCng",
-        "ifInState": "true",
-        "allItems": "true",
-        "triggerStates": ["ECS_Sys_Failed"]
-      }
+      "name": "S-DGN-A_FR",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etFailRate",
+      "lambda": 0.00089,
+      "lambdaTimeRate": "PT1H",
+      "id": "13a0b6cc-9e8c-4235-b5f3-63091c41fc65",
+      "objType": "Event"
     },
     {
-      "Event": {
-        "id": 49,
-        "name": "CCS_and_ECS_Failed",
-        "desc": "",
-        "mainItem": false,
-        "evType": "etStateCng",
-        "ifInState": "true",
-        "allItems": "true",
-        "triggerStates": ["CCS_Sys_Failed", "ECS_Sys_Failed"]
-      }
+      "name": "S-DGN-A_Stop",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etStateCng",
+      "ifInState": false,
+      "allItems": true,
+      "triggerStates": [
+        "Stop_Systems"
+      ],
+      "id": "f2712059-085f-46e5-a05c-9e9fc87a26cb",
+      "objType": "Event"
     },
     {
-      "Event": {
-        "id": 50,
-        "name": "Done",
-        "desc": "",
-        "mainItem": false,
-        "evType": "etTimer",
-        "time": "PT0S"
-      }
+      "name": "S-DGN-B_Demand",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etStateCng",
+      "ifInState": true,
+      "allItems": false,
+      "triggerStates": [
+        "Start_Systems"
+      ],
+      "id": "0de922d5-234c-47fa-8b9b-638768df774f",
+      "objType": "Event"
     },
     {
-      "Event": {
-        "id": 51,
-        "name": "24H_Mission_Time",
-        "desc": "",
-        "mainItem": false,
-        "evType": "etTimer",
-        "time": "P1D"
-      }
+      "name": "S-DGN-B_FR",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etFailRate",
+      "lambda": 0.00089,
+      "lambdaTimeRate": "PT1H",
+      "id": "67d7de6a-6e89-4322-aa9c-33d22004bf2f",
+      "objType": "Event"
     },
     {
-      "Event": {
-        "id": 52,
-        "name": "Had_Lg_Rel",
-        "desc": "",
-        "mainItem": false,
-        "evType": "etStateCng",
-        "ifInState": "true",
-        "allItems": "false",
-        "triggerStates": ["Large_Release"]
-      }
+      "name": "S-DGN-B_Stop",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etStateCng",
+      "ifInState": false,
+      "allItems": true,
+      "triggerStates": [
+        "Stop_Systems"
+      ],
+      "id": "5f932cf8-886b-43bb-affd-255a85ea4b63",
+      "objType": "Event"
     },
     {
-      "Event": {
-        "id": 53,
-        "name": "Had_Sm_Rel",
-        "desc": "",
-        "mainItem": false,
-        "evType": "etStateCng",
-        "ifInState": "true",
-        "allItems": "true",
-        "triggerStates": ["Small_Release"]
-      }
+      "name": "S-TNK-T1_Demand",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etStateCng",
+      "ifInState": true,
+      "allItems": false,
+      "triggerStates": [
+        "Start_Systems"
+      ],
+      "id": "a241d18b-692f-419e-87ca-858d6f29f4fe",
+      "objType": "Event"
     },
     {
-      "Event": {
-        "id": 54,
-        "name": "No_Sm_Rel",
-        "desc": "",
-        "mainItem": false,
-        "evType": "etStateCng",
-        "ifInState": "false",
-        "allItems": "true",
-        "triggerStates": ["Small_Release"]
-      }
+      "name": "S-TNK-T1_FR",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etFailRate",
+      "lambda": 1e-7,
+      "lambdaTimeRate": "PT1H",
+      "id": "c0e444d3-9c59-4202-a58b-2bddd560f798",
+      "objType": "Event"
     },
     {
-      "Event": {
-        "id": 55,
-        "name": "Do_Soon",
-        "desc": "",
-        "mainItem": false,
-        "evType": "etTimer",
-        "time": "PT1S"
-      }
+      "name": "S-TNK-T1_Stop",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etStateCng",
+      "ifInState": false,
+      "allItems": true,
+      "triggerStates": [
+        "Stop_Systems"
+      ],
+      "id": "4505024e-bf73-42cc-9990-792d8cadf105",
+      "objType": "Event"
     },
     {
-      "Event": {
-        "id": 56,
-        "name": "CrewReady",
-        "desc": "",
-        "evtType": "etStateCng",
-        "allItems": true,
-        "triggerStates": [],
-        "evType": "etNormalDist",
-        "ndMean": 24,
-        "ndStdDev": 1,
-        "ndMin": 0,
-        "ndMax": 24
-      }
+      "name": "Task1_Done",
+      "desc": "",
+      "allItems": true,
+      "triggerStates": [],
+      "evType": "etDistribution",
+      "mainItem": false,
+      "distType": "dtNormal",
+      "parameters": [
+        {
+          "name": "Mean",
+          "useVariable": false,
+          "value": 24
+        },
+        {
+          "name": "Standard Deviation",
+          "useVariable": false,
+          "value": 1
+        },
+        {
+          "name": "Minimum",
+          "useVariable": false,
+          "value": 0
+        },
+        {
+          "name": "Maximum",
+          "useVariable": false,
+          "value": 24
+        }
+      ],
+      "dfltTimeRate": "trHours",
+      "id": "27759eaf-93e1-49bb-840e-a182c70ecbff",
+      "objType": "Event"
     },
     {
-      "Event": {
-        "id": 57,
-        "name": "Task1_Done",
-        "desc": "",
-        "evtType": "etStateCng",
-        "allItems": true,
-        "triggerStates": [],
-        "evType": "etNormalDist",
-        "ndMean": 24,
-        "ndStdDev": 1,
-        "ndMin": 0,
-        "ndMax": 24
-      }
+      "name": "Task2_Done",
+      "desc": "",
+      "allItems": true,
+      "triggerStates": [],
+      "evType": "etDistribution",
+      "mainItem": false,
+      "distType": "dtNormal",
+      "parameters": [
+        {
+          "name": "Mean",
+          "useVariable": false,
+          "value": 24
+        },
+        {
+          "name": "Standard Deviation",
+          "useVariable": false,
+          "value": 1
+        },
+        {
+          "name": "Minimum",
+          "useVariable": false,
+          "value": 0
+        },
+        {
+          "name": "Maximum",
+          "useVariable": false,
+          "value": 24
+        }
+      ],
+      "dfltTimeRate": "trHours",
+      "id": "a66f3158-1bff-4911-b712-a1f8ff912ec5",
+      "objType": "Event"
     },
     {
-      "Event": {
-        "id": 58,
-        "name": "Task2_Done",
-        "desc": "",
-        "evtType": "etStateCng",
-        "allItems": true,
-        "triggerStates": [],
-        "evType": "etNormalDist",
-        "ndMean": 24,
-        "ndStdDev": 1,
-        "ndMin": 0,
-        "ndMax": 24
-      }
+      "name": "TempStateExit",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etTimer",
+      "time": "PT0S",
+      "id": "1f1c1f8c-a83b-4e26-80b8-894f7ba9ddfd",
+      "objType": "Event"
     }
   ],
   "LogicNodeList": [
     {
-      "LogicNode": {
-        "id": 1,
-        "name": "CCS_TOP",
-        "desc": "",
-        "gateType": "gtOr",
-        "rootName": "CCS_TOP",
-        "compChildren": [],
-        "gateChildren": ["CCS-Trains", "CCS-Supply"]
-      }
+      "id": "3b58b53f-fcb9-4dd8-b0ea-90286ebac14f",
+      "name": "CCS_TOP",
+      "desc": "",
+      "gateType": "gtOr",
+      "rootName": "CCS_TOP",
+      "compChildren": [],
+      "gateChildren": [
+        "CCS-Trains",
+        "CCS-Supply"
+      ],
+      "objType": "LogicNode",
+      "isRoot": true
     },
     {
-      "LogicNode": {
-        "id": 2,
-        "name": "CCS-Supply",
-        "desc": "",
-        "gateType": "gtOr",
-        "rootName": "CCS_TOP",
-        "compChildren": ["S-DGN-B", "C-MOV-1", "S-TNK-T1"],
-        "gateChildren": []
-      }
+      "id": "deb59f03-e400-4f58-b03f-8e623f8cad3d",
+      "name": "CCS-Supply",
+      "desc": "",
+      "gateType": "gtOr",
+      "rootName": "CCS_TOP",
+      "compChildren": [
+        {
+          "diagramName": "S-DGN-B",
+          "stateValues": []
+        },
+        {
+          "diagramName": "C-MOV-1",
+          "stateValues": []
+        },
+        {
+          "diagramName": "S-TNK-T1",
+          "stateValues": []
+        }
+      ],
+      "gateChildren": [],
+      "objType": "LogicNode",
+      "isRoot": false
     },
     {
-      "LogicNode": {
-        "id": 3,
-        "name": "CCS-Train-A",
-        "desc": "",
-        "gateType": "gtOr",
-        "rootName": "CCS_TOP",
-        "compChildren": ["C-PMP-A", "S-DGN-A", "C-CKV-A", "C-MOV-A"],
-        "gateChildren": []
-      }
+      "id": "b7211c62-4992-4abf-93eb-e9e24fdc3d77",
+      "name": "CCS-Train-A",
+      "desc": "",
+      "gateType": "gtOr",
+      "rootName": "CCS_TOP",
+      "compChildren": [
+        {
+          "diagramName": "C-PMP-A",
+          "stateValues": []
+        },
+        {
+          "diagramName": "S-DGN-A",
+          "stateValues": []
+        },
+        {
+          "diagramName": "C-CKV-A",
+          "stateValues": []
+        },
+        {
+          "diagramName": "C-MOV-A",
+          "stateValues": []
+        }
+      ],
+      "gateChildren": [],
+      "objType": "LogicNode",
+      "isRoot": false
+    },
+	{
+      "id": "b7211c62-4992-4abf-93eb-e9e24fdc3d77",
+      "name": "CCS-Train-B",
+      "desc": "",
+      "gateType": "gtOr",
+      "rootName": "CCS_TOP",
+      "compChildren": [
+        {
+          "diagramName": "C-PMP-B",
+          "stateValues": []
+        },
+        {
+          "diagramName": "S-DGN-B",
+          "stateValues": []
+        },
+        {
+          "diagramName": "C-CKV-B",
+          "stateValues": []
+        },
+        {
+          "diagramName": "C-MOV-B",
+          "stateValues": []
+        }
+      ],
+      "gateChildren": [],
+      "objType": "LogicNode",
+      "isRoot": false
     },
     {
-      "LogicNode": {
-        "id": 4,
-        "name": "CCS-Trains",
-        "desc": "",
-        "gateType": "gtOr",
-        "rootName": "CCS_TOP",
-        "compChildren": ["C-PMP-B", "S-DGN-B", "C-CKV-B", "C-MOV-B"],
-        "gateChildren": []
-      }
+      "id": "f5fcf960-8863-4966-915b-16c2f38015c2",
+      "name": "CCS-Trains",
+      "desc": "",
+      "gateType": "gtOr",
+      "rootName": "CCS_TOP",
+      "compChildren": [],
+      "gateChildren": [
+        "CCS-Train-A",
+        "CCS-Train-B"
+      ],
+      "objType": "LogicNode",
+      "isRoot": false
     },
     {
-      "LogicNode": {
-        "id": 7,
-        "name": "ECS-Supply",
-        "desc": "",
-        "gateType": "gtOr",
-        "rootName": "ECS_TOP",
-        "compChildren": ["S-DGN-A", "E-MOV-1", "S-TNK-T1"],
-        "gateChildren": []
-      }
+      "id": "ceab8f09-0c96-472b-897c-4d3fc2d9d0a1",
+      "name": "ECS_TOP",
+      "desc": "",
+      "gateType": "gtOr",
+      "rootName": "ECS_TOP",
+      "compChildren": [],
+      "gateChildren": [
+        "ECS-Trains",
+        "ECS-Supply"
+      ],
+      "objType": "LogicNode",
+      "isRoot": true
     },
     {
-      "LogicNode": {
-        "id": 8,
-        "name": "ECS-Train-A",
-        "desc": "",
-        "gateType": "gtOr",
-        "rootName": "ECS_TOP",
-        "compChildren": ["E-PMP-A", "S-DGN-A", "E-CKV-A", "E-MOV-A"],
-        "gateChildren": []
-      }
+      "id": "4ff42c7c-6b55-42d6-b833-02d0f2ac1016",
+      "name": "ECS-Supply",
+      "desc": "",
+      "gateType": "gtOr",
+      "rootName": "ECS_TOP",
+      "compChildren": [
+        {
+          "diagramName": "S-DGN-A",
+          "stateValues": []
+        },
+        {
+          "diagramName": "E-MOV-1",
+          "stateValues": []
+        },
+        {
+          "diagramName": "S-TNK-T1",
+          "stateValues": []
+        }
+      ],
+      "gateChildren": [],
+      "objType": "LogicNode",
+      "isRoot": false
     },
     {
-      "LogicNode": {
-        "id": 9,
-        "name": "ECS-Train-B",
-        "desc": "",
-        "gateType": "gtOr",
-        "rootName": "ECS_TOP",
-        "compChildren": ["E-PMP-B", "S-DGN-B", "E-CKV-B", "E-MOV-B"],
-        "gateChildren": []
-      }
+      "id": "f80d2557-741c-456f-b4d8-f8e88689421f",
+      "name": "ECS-Train-A",
+      "desc": "",
+      "gateType": "gtOr",
+      "rootName": "ECS_TOP",
+      "compChildren": [
+        {
+          "diagramName": "E-PMP-A",
+          "stateValues": []
+        },
+        {
+          "diagramName": "S-DGN-A",
+          "stateValues": []
+        },
+        {
+          "diagramName": "E-CKV-A",
+          "stateValues": []
+        },
+        {
+          "diagramName": "E-MOV-A",
+          "stateValues": []
+        }
+      ],
+      "gateChildren": [],
+      "objType": "LogicNode",
+      "isRoot": false
     },
     {
-      "LogicNode": {
-        "id": 10,
-        "name": "ECS-Trains",
-        "desc": "",
-        "gateType": "gtAnd",
-        "rootName": "ECS_TOP",
-        "compChildren": [],
-        "gateChildren": ["ECS-Train-A", "ECS-Train-B"]
-      }
+      "id": "b8acdc68-94ca-4bbf-977a-2c8830ee729e",
+      "name": "ECS-Train-B",
+      "desc": "",
+      "gateType": "gtOr",
+      "rootName": "ECS_TOP",
+      "compChildren": [
+        {
+          "diagramName": "E-PMP-B",
+          "stateValues": []
+        },
+        {
+          "diagramName": "S-DGN-B",
+          "stateValues": []
+        },
+        {
+          "diagramName": "E-CKV-B",
+          "stateValues": []
+        },
+        {
+          "diagramName": "E-MOV-B",
+          "stateValues": []
+        }
+      ],
+      "gateChildren": [],
+      "objType": "LogicNode",
+      "isRoot": false
     },
     {
-      "LogicNode": {
-        "id": 6,
-        "name": "ECS_TOP",
-        "desc": "",
-        "gateType": "gtOr",
-        "rootName": "ECS_TOP",
-        "compChildren": [],
-        "gateChildren": ["ECS-Trains", "ECS-Supply"]
-      }
+      "id": "7e83e264-8d8c-49a9-a83b-867297068960",
+      "name": "ECS-Trains",
+      "desc": "",
+      "gateType": "gtAnd",
+      "rootName": "ECS_TOP",
+      "compChildren": [],
+      "gateChildren": [
+        "ECS-Train-A",
+        "ECS-Train-B"
+      ],
+      "objType": "LogicNode",
+      "isRoot": false
     }
   ],
   "VariableList": [],
-  "ExtSimList": []
+  "ExtSimList": [],
+  "objType": "EMRALD_Model",
+  "emraldVersion": 3
 }
