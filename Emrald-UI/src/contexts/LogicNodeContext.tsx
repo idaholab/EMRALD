@@ -89,17 +89,17 @@ const LogicNodeContextProvider: React.FC<EmraldContextWrapperProps> = ({ childre
           }
         });
 
-        return new Promise<void>(async (resolve) => {
-          var updatedModel: EMRALD_Model = await DeleteItemAndRefs(nodeToDelete);
-          updatedModel.LogicNodeList = updatedLogicNodes;
-          updateAppData(updatedModel);
-          resolve();
-        });
+        //there is nothing referencing nodes except other nodes and the this takes care of that, so no need to call DeleteItemAndRefs
       }
-
+      updateAppData(
+        JSON.parse(JSON.stringify({ ...appData.value, LogicNodeList: updatedLogicNodes })),
+      );
+  
+      setLogicNodes(logicNodeList.value);
       resolve();
     });
   };
+
 
   const getLogicNodeByName = (logicNodeName: string | undefined) => {
     return logicNodeList.value.find((node) => node.name === logicNodeName) || emptyLogicNode;

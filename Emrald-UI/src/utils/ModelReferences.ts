@@ -225,7 +225,9 @@ export const GetJSONPathInRefs = (itemType: MainItemTypes, lookupName : string):
  * @param {string} itemName - The name of the item to get the references for.
  * @param {MainItemTypes} itemType - The type of the item to look for references.
  * @param {boolean} levelsUp - How many levels up to search. If <1 then the search is recursive.
+ * @param <{EMRALD_Model}> addToModel - If assigned then items are added to this model.
  * @includeTypes {MainItemTypeSet} - is a set of items to include in the search
+ * @param {EMRALD_Model} searchModel - The model to search if not assigned appdata.value is used.
  * @return {EMRALD_Model} - A subset model of just the referenced items.
  */
 export const GetModelItemsReferencing = ( 

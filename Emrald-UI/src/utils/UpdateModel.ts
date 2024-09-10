@@ -1,7 +1,7 @@
 import { EMRALD_Model, } from '../types/EMRALD_Model.ts';
 import jsonpath from 'jsonpath';
 import { MainItemType, MainItemTypes } from '../types/ItemTypes.ts';
-import { AdjustJsonPathRef, allMainItemTypes, GetModelItemsReferencedBy, MainItemTypeSet, ItemReferencesArray, GetJSONPathInRefs, GetJSONPathUsingRefs } from './ModelReferences.ts';
+import { AdjustJsonPathRef, allMainItemTypes, GetModelItemsReferencing, GetModelItemsReferencedBy, MainItemTypeSet, ItemReferencesArray, GetJSONPathInRefs, GetJSONPathUsingRefs } from './ModelReferences.ts';
 import { appData } from '../hooks/useAppData';
 import { Diagram } from '../types/Diagram.ts';
 import { State } from '../types/State.ts';
@@ -10,7 +10,6 @@ import { Event } from '../types/Event.ts';
 import { Variable } from '../types/Variable.ts';
 import { LogicNode } from '../types/LogicNode.ts';
 import { ExtSim } from '../types/ExtSim.ts';
-import { forEach } from 'lodash';
 
 
 export const updateSpecifiedModel = ( //Update the provided EMRALD model with all the item changed in the model provided and references if the name changes
@@ -117,7 +116,7 @@ export const DeleteItemAndRefsInSpecifiedModel = ( //remove the item and referen
         //remove any references to this item
         //depending on the type go through all usedByItItems and usesItItems and determine if they need to be deleted also.
         //Diagrams (Delete)
-          //States - all, Logic Nodes- all.
+          //States - all
         //States (Delete)
           //Actions- if not referenced by other events/diagrams, Events- if not referenced by other diagrams 
         //Events (Delete)
@@ -285,7 +284,7 @@ export const DeleteItemAndRefsInSpecifiedModel = ( //remove the item and referen
                     item = updatedEMRALDModel.EventList.find(item => item.name === delNameAndType[0]);
                     //see if should be deleted
                     if(item && (item.mainItem == false)){
-                        let refs = GetModelItemsReferencedBy(item.name, item.objType as MainItemTypes, 1, allMainItemTypes, false,  updatedEMRALDModel);
+                        let refs = GetModelItemsReferencing(item.name, item.objType as MainItemTypes, 1, undefined, allMainItemTypes, updatedEMRALDModel);
                         if(refs.StateList.length != 0){
                             //used by other states so don't delete
                             item = undefined;
@@ -296,18 +295,12 @@ export const DeleteItemAndRefsInSpecifiedModel = ( //remove the item and referen
                     item = updatedEMRALDModel.ActionList.find(item => item.name === delNameAndType[0]);
                     //see if item should be delted
                     if(item && (item.mainItem == false)){
-                        let refs = GetModelItemsReferencedBy(item.name, item.objType as MainItemTypes, 1, allMainItemTypes, false,  updatedEMRALDModel);
+                        let refs = GetModelItemsReferencing(item.name, item.objType as MainItemTypes, 1, undefined, allMainItemTypes, updatedEMRALDModel);
                         if((refs.StateList.length != 0) || (refs.EventList.length != 0)){
                             //used by other states or events, so don't delete
                             item = undefined;
                         }
                     }
-                    break;
-                case MainItemTypes.LogicNode:
-                    item = model.LogicNodeList.find(item => item.name === delNameAndType[0]);
-                    //always delete logic nodes if here because it was from a diagram that was deleted
-                    break;
-                default:
                     break;
             }
 
