@@ -1,10 +1,10 @@
 import React, { createContext, useContext, useState } from 'react';
 import { EmraldContextWrapperProps } from './EmraldContextWrapper';
 import { appData, updateAppData } from '../hooks/useAppData';
-import { ReadonlySignal, useComputed } from '@preact/signals-react';
+import { effect, ReadonlySignal, useComputed } from '@preact/signals-react';
 import { ExtSim } from '../types/ExtSim';
 import { EMRALD_Model } from '../types/EMRALD_Model';
-import { DeleteItemAndRefsInSpecifiedModel, updateModelAndReferences } from '../utils/UpdateModel';
+import { DeleteItemAndRefs, updateModelAndReferences } from '../utils/UpdateModel';
 import { MainItemTypes } from '../types/ItemTypes';
 
 interface ExtSimContextType {
@@ -42,13 +42,19 @@ const ExtSimContextProvider: React.FC<EmraldContextWrapperProps> = ({ children }
   );
   const extSimList = useComputed(() => appData.value.ExtSimList);
 
+  effect(() => {
+    if (JSON.stringify(extSims) !== JSON.stringify(appData.value.ExtSimList.sort((a, b) => a.name.localeCompare(b.name)))) {
+      setExtSims(appData.value.ExtSimList.sort((a, b) => a.name.localeCompare(b.name)));
+    }
+    return;
+  });
+
   const createExtSim = async (newExtSim: ExtSim) => {
     var updatedModel: EMRALD_Model = await updateModelAndReferences(
       newExtSim,
       MainItemTypes.ExtSim,
     );
     updateAppData(updatedModel);
-    setExtSims(updatedModel.ExtSimList);
   };
 
   const updateExtSim = async (updatedExtSim: ExtSim) => {
@@ -57,7 +63,6 @@ const ExtSimContextProvider: React.FC<EmraldContextWrapperProps> = ({ children }
       MainItemTypes.ExtSim,
     );
     updateAppData(updatedModel);
-    setExtSims(updatedModel.ExtSimList);
   };
 
   const deleteExtSim = (extSimId: string | undefined) => {
@@ -65,13 +70,14 @@ const ExtSimContextProvider: React.FC<EmraldContextWrapperProps> = ({ children }
       return;
     }
     const extSimToDelete = extSims.find((extSim) => extSim.id === extSimId);
-    const updatedExtSimList = extSimList.value.filter((item) => item.id !== extSimId);
     if (extSimToDelete) {
-      const updatedEMRALDModel: EMRALD_Model = JSON.parse(JSON.stringify(appData.value));
-      DeleteItemAndRefsInSpecifiedModel(extSimToDelete, updatedEMRALDModel, false);
+      return new Promise<void>(async (resolve) => {
+        var updatedModel: EMRALD_Model = await DeleteItemAndRefs(extSimToDelete);
+        updateAppData(updatedModel);
+        resolve();
+      });
     }
-    updateAppData(JSON.parse(JSON.stringify({ ...appData.value, ExtSimList: updatedExtSimList })));
-    setExtSims(updatedExtSimList);
+    //todo else error, no event to delete 
   };
 
   // Open New, Merge, and Clear Event List
@@ -80,7 +86,6 @@ const ExtSimContextProvider: React.FC<EmraldContextWrapperProps> = ({ children }
   };
 
   const clearExtSimList = () => {
-    setExtSims([]);
     updateAppData({ ...appData.value, ExtSimList: [] });
   };
 

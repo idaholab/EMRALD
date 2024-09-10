@@ -1,12 +1,12 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState } from 'react';
 import { State } from '../types/State';
 import { EmraldContextWrapperProps } from './EmraldContextWrapper';
 import { Event } from '../types/Event';
 import { Action } from '../types/Action';
 import { appData, updateAppData } from '../hooks/useAppData';
-import { ReadonlySignal, useComputed } from '@preact/signals-react';
+import { effect, ReadonlySignal, useComputed } from '@preact/signals-react';
 import { EMRALD_Model } from '../types/EMRALD_Model';
-import { DeleteItemAndRefsInSpecifiedModel, updateModelAndReferences } from '../utils/UpdateModel';
+import { DeleteItemAndRefs, updateModelAndReferences } from '../utils/UpdateModel';
 import { MainItemTypes } from '../types/ItemTypes';
 
 interface StateContextType {
@@ -69,13 +69,20 @@ const StateContextProvider: React.FC<EmraldContextWrapperProps> = ({ children })
     ),
   );
   const statesList = useComputed(() => appData.value.StateList);
-  const defaultgeometryInfo = { x: 0, y: 0, width: 0, height: 0 };
+  const defaultGeometryInfo = { x: 0, y: 0, width: 0, height: 0 };
+
+  effect(() => {
+    if (JSON.stringify(states) !== JSON.stringify(appData.value.StateList.sort((a, b) => a.name.localeCompare(b.name)))) {
+      setStates(appData.value.StateList.sort((a, b) => a.name.localeCompare(b.name)));
+      return;
+    }
+    return;
+  });
 
   // Create, Delete, Update individual States
   const createState = async (newState: State) => {
     var updatedModel: EMRALD_Model = await updateModelAndReferences(newState, MainItemTypes.State);
     updateAppData(updatedModel);
-    setStates(updatedModel.StateList);
   };
 
   const updateState = async (updatedState: State) => {
@@ -85,7 +92,6 @@ const StateContextProvider: React.FC<EmraldContextWrapperProps> = ({ children })
         MainItemTypes.State,
       );
       updateAppData(updatedModel);
-      setStates(updatedModel.StateList);
       resolve();
     });
   };
@@ -142,13 +148,14 @@ const StateContextProvider: React.FC<EmraldContextWrapperProps> = ({ children })
       return;
     }
     const stateToDelete = getStateByStateId(stateId);
-    const updatedStates = statesList.value.filter((item) => item.id !== stateId);
-    updateAppData(JSON.parse(JSON.stringify({ ...appData.value, StateList: updatedStates })));
     if (stateToDelete) {
-      const updatedEMRALDModel: EMRALD_Model = JSON.parse(JSON.stringify(appData.value));
-      DeleteItemAndRefsInSpecifiedModel(stateToDelete, updatedEMRALDModel, false);
+      return new Promise<void>(async (resolve) => {
+        var updatedModel: EMRALD_Model = await DeleteItemAndRefs(stateToDelete);
+        updateAppData(updatedModel);
+        resolve();
+      });
     }
-    setStates(updatedStates);
+    //todo else error, no state to delete   
   };
 
   const getStateByStateId = (stateId: string | null): State => {
@@ -170,10 +177,10 @@ const StateContextProvider: React.FC<EmraldContextWrapperProps> = ({ children })
         eventActions: state.eventActions || [],
         immediateActions: state.immediateActions || [],
         geometryInfo: {
-          x: state.geometryInfo?.x ?? defaultgeometryInfo.x,
-          y: state.geometryInfo?.y ?? defaultgeometryInfo.y,
-          width: state.geometryInfo?.width ?? defaultgeometryInfo.width,
-          height: state.geometryInfo?.height ?? defaultgeometryInfo.height,
+          x: state.geometryInfo?.x ?? defaultGeometryInfo.x,
+          y: state.geometryInfo?.y ?? defaultGeometryInfo.y,
+          width: state.geometryInfo?.width ?? defaultGeometryInfo.width,
+          height: state.geometryInfo?.height ?? defaultGeometryInfo.height,
         },
       };
     }
@@ -209,7 +216,6 @@ const StateContextProvider: React.FC<EmraldContextWrapperProps> = ({ children })
   };
 
   const clearStateList = () => {
-    setStates([]);
     updateAppData(JSON.parse(JSON.stringify({ ...appData.value, StateList: [] })));
   };
 

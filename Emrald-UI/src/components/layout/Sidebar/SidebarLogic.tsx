@@ -166,14 +166,8 @@ export function useSidebarLogic() {
     setItemToDelete(undefined);
   };
   const deleteItem = async () => {
-    // delete all states tied to the diagram
     if (!itemToDelete) return;
     if (itemToDeleteType === MainItemTypes.Diagram) {
-      // @ts-ignore
-      itemToDelete.states.map((name: string) => {
-        const state = getStateByStateName(name);
-        deleteState(state.id);
-      });
       deleteDiagram(itemToDelete.id);
       closeDeleteConfirmation();
     }
@@ -192,6 +186,7 @@ export function useSidebarLogic() {
       deleteEvent(itemToDelete.id);
     }
     if (itemToDeleteType === MainItemTypes.State) {
+      //not sure why the next 4 lines are needed, but if not then the diagram containin ght state has a ghost state left in it when you open it
       let diagram = getDiagramByDiagramName((itemToDelete as State).diagramName);
       const updatedStates = diagram.states.filter((stateName) => stateName !== itemToDelete.name);
       diagram.states = updatedStates;

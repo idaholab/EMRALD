@@ -69,13 +69,6 @@ export function useAssembledData() {
         updateName(openedModel.name);
         updateDescription(openedModel.desc);
         updateVersion(openedModel.version);
-        newDiagramList(openedModel.DiagramList || []);
-        newLogicNodeList(openedModel.LogicNodeList || []);
-        newActionList(openedModel.ActionList || []);
-        newStateList(openedModel.StateList || []);
-        newEventList(openedModel.EventList || []);
-        newVariableList(openedModel.VariableList || []);
-        newExtSimList(openedModel.ExtSimList || []);
         newTemplateList(openedModel.templates || []);
         updateAppData(openedModel);
       } else {
