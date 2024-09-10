@@ -255,6 +255,8 @@ const DiagramForm: React.FC<DiagramFormProps> = ({ diagramData }) => {
             <FileUploadComponent
               label="Choose File"
               setFile={handleImport}
+              fileName={importDiagram ? importDiagram.name : undefined}
+              accept=".json, .emrald"
               clearFile={() => setImportDiagram(undefined)}
             />
           </Box>
@@ -263,7 +265,7 @@ const DiagramForm: React.FC<DiagramFormProps> = ({ diagramData }) => {
               variant="contained"
               color="primary"
               sx={{ mr: 2 }}
-              disabled={hasError}
+              disabled={hasError || !importDiagram}
               onClick={() => handleSave()}
             >
               Save
