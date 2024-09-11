@@ -1,8 +1,10 @@
 import React from 'react';
 import { EMRALD_Model } from '../../../types/EMRALD_Model';
 import {
+  Backdrop,
   Box,
   Button,
+  CircularProgress,
   FormControl,
   FormControlLabel,
   Icon,
@@ -33,6 +35,7 @@ const ImportForm: React.FC<ImportDiagramFormProps> = ({ importedData, fromTempla
     replaceValue,
     importedItems,
     hasConflicts,
+    loading,
     getConflictStatus,
     setFindValue,
     setReplaceValue,
@@ -49,6 +52,12 @@ const ImportForm: React.FC<ImportDiagramFormProps> = ({ importedData, fromTempla
 
   return (
     <Box mx={3} pb={3}>
+      <Backdrop
+        sx={{ color: '#008080', zIndex: (theme) => theme.zIndex.drawer + 1, position: 'absolute', top: '35px' }}
+        open={loading}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
       <Box display={'flex'} alignItems={'center'}>
         <TextFieldComponent label="Find" value={findValue} setValue={setFindValue} sx={{ mr: 4 }} />
         <TextFieldComponent
@@ -218,7 +227,7 @@ const ImportForm: React.FC<ImportDiagramFormProps> = ({ importedData, fromTempla
         </Table>
       </Box>
       <Box mt={3} textAlign={'right'}>
-        <Button variant="contained" sx={{ mr: 2 }} onClick={handleSave} disabled={hasConflicts}>
+        <Button variant="contained" sx={{ mr: 2 }} onClick={handleSave} disabled={hasConflicts || loading}>
           Create
         </Button>
         <Button variant="contained" color="secondary" onClick={() => handleClose()}>
