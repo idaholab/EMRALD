@@ -41,6 +41,7 @@ export const useImportForm = (importedData: EMRALD_Model, fromTemplate?: boolean
   const [replaceValue, setReplaceValue] = useState<string>('');
   const [importedItems, setImportedItems] = useState<ImportedItem[]>([]);
   const [hasConflicts, setHasConflicts] = useState<boolean>(true);
+  const [loading, setLoading] = useState(false);
   const { diagramList } = useDiagramContext();
   const { logicNodeList } = useLogicNodeContext();
   const { extSimList } = useExtSimContext();
@@ -392,6 +393,12 @@ export const useImportForm = (importedData: EMRALD_Model, fromTemplate?: boolean
    * After any names are updated, update the model to include the new items.
    */
   const handleSave = async () => {
+    setLoading(true);
+    await new Promise<void>((resolve) => { // Wait for loading to begin before continuing
+      setTimeout(() => {
+          resolve();
+      }, 100);
+    });
     // Go through all of the renamed items and update the pasted model
     let updatedModel: EMRALD_Model = { ...appData.value };
     const importedDataCopy = structuredClone(importedData); // Deep copy of importedData so it doesn't get changed
@@ -432,7 +439,7 @@ export const useImportForm = (importedData: EMRALD_Model, fromTemplate?: boolean
 
     // Make it so the lists are refreshed with the new data
     refreshWithNewData(updatedModel);
-
+    setLoading(false);
     if (activeWindowId) {
       addWindow(
         importedDataCopy.DiagramList[0].name,
@@ -448,14 +455,17 @@ export const useImportForm = (importedData: EMRALD_Model, fromTemplate?: boolean
       );
     }
   };
+  
   return {
     findValue,
     replaceValue,
     importedItems,
     hasConflicts,
+    loading,
     getConflictStatus,
     setFindValue,
     setReplaceValue,
+    setLoading,
     lockAll,
     unlockAll,
     updateAllUnlocked,

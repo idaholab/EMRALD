@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import ReactFlow, { MiniMap, Controls, Background, BackgroundVariant, ControlButton } from 'reactflow';
 import 'reactflow/dist/style.css';
-import { Box, Typography } from '@mui/material';
+import { Box, CircularProgress, Typography } from '@mui/material';
 import StateNode from '../EmraldDiagram/StateNodeComponent';
 import { Diagram } from '../../../types/Diagram';
 import useEmraldDiagram from './useEmraldDiagram';
@@ -59,7 +59,10 @@ const EmraldDiagram: React.FC<EmraldDiagramProps> = ({ diagram }) => {
   return (
     <Box sx={{ width: '100%', height: '100%' }}>
       {loading ? (
-        <p>Loading...</p>
+        <Box sx={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+          <CircularProgress />
+          <h4>Loading Diagram</h4>
+        </Box>
       ) : (
         <div className="emrald-diagram" ref={ref} style={{ width: '100%', height: '100%' }}>
           <ReactFlow
