@@ -420,7 +420,7 @@ const ActionFormContextProvider: React.FC<PropsWithChildren> = ({ children }) =>
               ...state,
               id: uuidv4(),
               remaining: state.prob === -1,
-              probType: 'fixed',
+              probType: state.varProb ? 'variable' : 'fixed',
               prob: toScientificIfNeeded(state.prob),
             })),
           )
