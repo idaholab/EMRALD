@@ -79,7 +79,6 @@ interface ActionFormContextType {
   setFormData: React.Dispatch<React.SetStateAction<any>>;
   setHasError: React.Dispatch<React.SetStateAction<boolean>>;
   checkForDuplicateNames: () => boolean;
-  checkProbability: (item: NewStateItem) => boolean;
   handleChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   handleNameChange: (newName: string) => void;
   handleSave: (event?: Event, state?: State) => void;
@@ -191,7 +190,7 @@ const ActionFormContextProvider: React.FC<PropsWithChildren> = ({ children }) =>
     return nameExists;
   };
 
-  const checkProbability = (updatedItem: NewStateItem, updatedMutuallyExclusive?: boolean) => {
+  const checkProbability = (updatedItem: NewStateItem, updatedMutuallyExclusive?: boolean, updatedRemaining?: boolean | undefined) => {
     if (!updatedItem.prob) {
       setErrorIds((prevErrorItemIds) => new Set([...prevErrorItemIds, updatedItem.id]));
       setErrorMessage('Must contain a value');
@@ -200,12 +199,19 @@ const ActionFormContextProvider: React.FC<PropsWithChildren> = ({ children }) =>
   
     if (updatedMutuallyExclusive !== undefined ? updatedMutuallyExclusive : mutuallyExclusive) {
       const totalProb = newStateItems.reduce((acc, item) => {
-        return item.prob === -1 ? acc : acc + Number(item.prob);
-      }, 0);
-  
-      if (totalProb > 1) {
+          return item.prob === -1 ? acc : acc + Number(item.prob);
+        }, 0);
+        let remainingProb: number;
+
+        if (updatedRemaining !== undefined && updatedRemaining === true) {
+          remainingProb = 1 - totalProb;
+        } else {
+          remainingProb = 0;
+        }
+
+      if (totalProb !== 1 && (remainingProb + totalProb) !== 1) {
         setErrorIds((prevErrorItemIds) => new Set([...prevErrorItemIds, updatedItem.id]));
-        setErrorMessage('Combined mutually exclusive probabilities must not exceed 1');
+        setErrorMessage('Combined mutually exclusive probabilities must equal 1');
         setHasError(true);
       } else {
         setErrorIds((prevErrorItemIds) => new Set([...prevErrorItemIds].filter((id) => id !== updatedItem.id)));
@@ -216,7 +222,7 @@ const ActionFormContextProvider: React.FC<PropsWithChildren> = ({ children }) =>
       const probValue = Number(updatedItem.prob);
       if (probValue > 1) {
         setErrorIds((prevErrorItemIds) => new Set([...prevErrorItemIds, updatedItem.id]));
-        setErrorMessage('Probabilities must not exceed 1');
+        setErrorMessage('Probabilities must be greater than 0 andnot exceed 1');
         setHasError(true);
       } else {
         setErrorIds((prevErrorItemIds) => new Set([...prevErrorItemIds].filter((id) => id !== updatedItem.id)));
@@ -350,7 +356,7 @@ const ActionFormContextProvider: React.FC<PropsWithChildren> = ({ children }) =>
           
           return {
             ...item,
-            prob: event.target.value,
+            prob: Number(event.target.value) < 0 ? 0 : event.target.value,
           };
         }
         return item;
@@ -396,13 +402,15 @@ const ActionFormContextProvider: React.FC<PropsWithChildren> = ({ children }) =>
         checkProbability(updatedItem);
         return updatedItems;
       });
-    } else {
-      console.log('Invalid probability value: ', value);
+    } 
+    else {
+      setErrorIds((prevErrorItemIds) => new Set([...prevErrorItemIds, updatedItem.id]));
+      setErrorMessage('Must contain a value');
       setHasError(true);
     }
   };
 
-  const handleRemainingChange = (
+  const handleRemainingChange = async (
     event: React.ChangeEvent<HTMLInputElement>,
     item: NewStateItem,
   ) => {
@@ -417,6 +425,11 @@ const ActionFormContextProvider: React.FC<PropsWithChildren> = ({ children }) =>
       return newItem;
     });
     setNewStateItems(sortNewStates(updatedItems));
+    checkProbability({
+      ...item,
+      remaining: event.target.checked,
+      prob: event.target.checked ? -1 : 0.0,
+    }, undefined, event.target.checked);
   };
 
   const handleProbTypeChange = (event: React.ChangeEvent<HTMLInputElement>, item: NewStateItem) => {
@@ -560,7 +573,6 @@ const ActionFormContextProvider: React.FC<PropsWithChildren> = ({ children }) =>
         setFormData,
         setHasError,
         checkForDuplicateNames,
-        checkProbability,
         handleChange,
         handleNameChange,
         handleSave,

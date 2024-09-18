@@ -58,7 +58,6 @@ const ActionToStateTable: React.FC = () => {
     errorMessage,
     errorItemIds,
     hasError,
-    checkProbability,
     handleProbChange,
     handleProbBlur,
     handleProbTypeChange,
