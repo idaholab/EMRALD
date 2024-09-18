@@ -38,6 +38,7 @@ interface MainDetailsFormProps<T extends MainItemTypes> {
   descDisabled?: boolean;
   name: string;
   desc: string;
+  nameError?: boolean;
   error?: boolean;
   errorMessage?: string;
   handleSave: () => void;
@@ -59,6 +60,7 @@ const MainDetailsForm = <T extends MainItemTypes>({
   nameDisabled,
   descDisabled,
   desc,
+  nameError,
   error,
   errorMessage,
   reqPropsFilled,
@@ -103,8 +105,8 @@ const MainDetailsForm = <T extends MainItemTypes>({
         value={name}
         onChange={(e) => handleNameChange(e.target.value)}
         fullWidth
-        error={error}
-        helperText={error ? errorMessage : ''}
+        error={nameError}
+        helperText={nameError ? errorMessage : ''}
       />
       <TextField
         label="Description"

@@ -55,7 +55,10 @@ const ActionToStateTable: React.FC = () => {
   const {
     newStateItems,
     mutuallyExclusive,
+    errorMessage,
+    errorItemIds,
     hasError,
+    checkProbability,
     handleProbChange,
     handleProbBlur,
     handleProbTypeChange,
@@ -183,8 +186,8 @@ const ActionToStateTable: React.FC = () => {
                             WebkitTextFillColor: item.prob === -1 ? 'transparent' : 'black',
                           },
                         }}
-                        error={hasError}
-                        helperText={hasError ? 'Invalid value' : ''}
+                        error={hasError && errorItemIds.has(item.id)}
+                        helperText={errorItemIds.has(item.id) && errorMessage ? errorMessage : ''}
                         />
                       )}
                     </Box>

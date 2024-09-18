@@ -9,7 +9,7 @@ import { useActionFormContext } from '../ActionFormContext';
 const Transition = () => {
   const {
     mutuallyExclusive,
-    setMutuallyExclusive
+    handleMutuallyExclusiveChange
   } = useActionFormContext();
   return (
     <Box>
@@ -26,7 +26,7 @@ const Transition = () => {
           control={
             <Checkbox
               checked={mutuallyExclusive}
-              onChange={() => setMutuallyExclusive(!mutuallyExclusive)}
+              onChange={() => handleMutuallyExclusiveChange(!mutuallyExclusive)}
             />
           }
         />

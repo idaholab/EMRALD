@@ -218,6 +218,7 @@ const DiagramForm: React.FC<DiagramFormProps> = ({ diagramData }) => {
             setDesc={setDesc}
             handleSave={handleSave}
             handleNameChange={handleNameChange}
+            nameError={hasError}
             error={hasError}
             errorMessage="A Diagram with this name already exists, or this name contains special characters."
             reqPropsFilled={
@@ -230,8 +231,8 @@ const DiagramForm: React.FC<DiagramFormProps> = ({ diagramData }) => {
               id="combo-box-demo"
               options={diagramLabels}
               renderInput={(params) => <TextField {...params} label="Daigram Label" />}
-              onChange={(event, newValue) => setDiagramLabel(newValue as string)}
-              onInputChange={(event, newInputValue) => setDiagramLabel(newInputValue)}
+              onChange={(_event, newValue) => setDiagramLabel(newValue as string)}
+              onInputChange={(_event, newInputValue) => setDiagramLabel(newInputValue)}
               value={diagramLabel}
               fullWidth
               size="small"
