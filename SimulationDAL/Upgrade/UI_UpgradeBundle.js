@@ -563,6 +563,9 @@ class Upgrade {
                 this._emraldVersion = upgrade.emraldVersion;
             }
         }
+        if (!this.newModel) {
+            this._newModel = JSON.parse(this._newModelTxt);
+        }
         // Reset IDs if requested
         if (setIdFunction && this._newModel) {
             const lists = [

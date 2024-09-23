@@ -43,7 +43,7 @@ const DiagramForm: React.FC<DiagramFormProps> = ({ diagramData }) => {
   const [originalName] = useState(diagramData?.name);
   const [desc, setDesc] = useState<string>(diagramData?.desc || '');
   const [diagramType, setDiagramType] = useState<DiagramType>(
-    diagramData?.diagramType || 'dtSingle',
+    diagramData?.diagramType || 'dtMulti',
   );
   const [hasError, setHasError] = useState<boolean>(false);
   const [alertMessage, setAlertMessage] = useState<string>('');
@@ -230,7 +230,7 @@ const DiagramForm: React.FC<DiagramFormProps> = ({ diagramData }) => {
               disabled={!!selectedTemplate || !!importDiagram}
               id="combo-box-demo"
               options={diagramLabels}
-              renderInput={(params) => <TextField {...params} label="Daigram Label" />}
+              renderInput={(params) => <TextField {...params} label="Diagram Group Label" />}
               onChange={(_event, newValue) => setDiagramLabel(newValue as string)}
               onInputChange={(_event, newInputValue) => setDiagramLabel(newInputValue)}
               value={diagramLabel}
