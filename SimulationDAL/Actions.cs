@@ -250,6 +250,28 @@ namespace SimulationDAL
           _failDesc.Add((string)curToObj.failDesc);
         }
 
+        if ((_newStateIDs.Count < 1) || (_newStateIDs.Count != _toStateProb.Count))
+        {
+          throw new Exception("Either no to State for this Transition or missing one." );
+        }
+
+        double probSum = _toStateProb.Sum();
+        if (mutExcl && ((probSum > 1.0) || ((probSum < 1.0) && (_toStateProb[_toStateProb.Count - 1] > 0))))
+        {
+          throw new Exception("Mutually exclusive transition probabilities don't add up to 1.0 or no default final value");
+
+        }
+        if(!mutExcl)
+        {
+          foreach(var val in _toStateProb)
+          {
+            if((val > 1) || (val < 0))
+            {
+              throw new Exception("Transition and probabilities must be between 0 and 1");
+            }
+          }
+        }
+
         //RecalcBoundBoxes();
       }
 
@@ -459,12 +481,7 @@ namespace SimulationDAL
       double probSum = _toStateProb.Sum();
       if (mutExcl && (probSum > 0) && (probSum < 1.0) && (_toStateProb[_toStateProb.Count - 1] > 0))
       {
-#if DEBUG
         throw new Exception("For action " + this.name + " Transition and probabilities don't add up to 1.0 or no default value");
-#else
-        System.Diagnostics.Debug.Write("No default state entered for " + this.name + " Transition and proabilites don't add up to 1.0");
-        return retStateIDs;
-#endif
       }
       else if (_toStateProb.Count == 0)
         throw new Exception(this.name + " has no _toSateProbs in list - no TO state added to the action.");

@@ -140,7 +140,7 @@ const useEmraldDiagram = () => {
       // Add new state to action
       addNewStateToAction(currentAction, {
         toState: targetState?.name,
-        prob: -1,
+        prob: 0,
         varProb: null,
         failDesc: '',
       });

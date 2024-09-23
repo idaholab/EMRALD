@@ -97,7 +97,7 @@ interface EventFormContextType {
   setParameters: React.Dispatch<React.SetStateAction<EventDistributionParameter[] | undefined>>;
   setScriptCode: React.Dispatch<React.SetStateAction<string | undefined>>;
   setTime: React.Dispatch<React.SetStateAction<string | undefined>>;
-  setTimerMilliseconds: React.Dispatch<React.SetStateAction<number | undefined>>;
+  setTimerMilliseconds: React.Dispatch<React.SetStateAction<number>>;
   setTimeVariableUnit: React.Dispatch<React.SetStateAction<TimeVariableUnit | undefined>>;
   setTriggerOnFalse: React.Dispatch<React.SetStateAction<boolean | undefined>>;
   setTriggerStates: React.Dispatch<React.SetStateAction<string[]>>;
@@ -138,7 +138,7 @@ const EventFormContextProvider: React.FC<PropsWithChildren> = ({ children }) => 
   const [triggerOnFalse, setTriggerOnFalse] = useState<boolean>();
   const [logicTop, setLogicTop] = useState<string>();
   const [time, setTime] = useState<string>();
-  const [timerMilliseconds, setTimerMilliseconds] = useState<number>();
+  const [timerMilliseconds, setTimerMilliseconds] = useState<number>(0);
   const [useVariable, setUseVariable] = useState<boolean>();
   const [lambda, setLambda] = useState<string | number>();
   const [onVarChange, setOnVarChange] = useState<VarChangeOptions | ''>();
@@ -359,7 +359,7 @@ const EventFormContextProvider: React.FC<PropsWithChildren> = ({ children }) => 
     setTriggerOnFalse(undefined);
     setLogicTop(undefined);
     setTime(undefined);
-    setTimerMilliseconds(undefined);
+    setTimerMilliseconds(0);
     setUseVariable(undefined);
     setLambda(undefined);
     setOnVarChange('');
@@ -392,7 +392,7 @@ const EventFormContextProvider: React.FC<PropsWithChildren> = ({ children }) => 
       onSuccess,
       triggerOnFalse,
       logicTop,
-      time,
+      time: time ? time : dayjs.duration(0).toISOString(),
       timeVariableUnit,
       useVariable,
       lambda,
