@@ -107,6 +107,7 @@ const StateForm: React.FC<StateFormProps> = ({ stateData }: StateFormProps) => {
           handleNameChange={handleNameChange}
           desc={desc}
           setDesc={setDesc}
+          nameError={hasError}
           error={hasError}
           errorMessage="A State with this name already exists, or the name contains an invalid character."
           handleSave={handleSave}
