@@ -32,8 +32,9 @@ const ActionForm: React.FC<ActionFormProps> = ({ actionData, event, state }) => 
     desc,
     actType,
     actionTypeOptions,
-    hasError,
     reqPropsFilled,
+    hasError,
+    checkForDuplicateNames,
     handleNameChange,
     setDesc,
     setActType,
@@ -71,6 +72,7 @@ const ActionForm: React.FC<ActionFormProps> = ({ actionData, event, state }) => 
           handleNameChange={handleNameChange}
           desc={desc}
           setDesc={setDesc}
+          nameError={checkForDuplicateNames()}
           error={hasError}
           errorMessage="An action with this name already exists, or includes an invalid character."
           reset={reset}

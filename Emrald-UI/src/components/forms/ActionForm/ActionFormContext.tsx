@@ -51,9 +51,11 @@ interface ActionFormContextType {
   processOutputFileCode: string;
   formData: any;
   hasError: boolean;
+  errorMessage: string;
   actionTypeOptions: { value: string; label: string }[];
   raType: string;
   reqPropsFilled: boolean;
+  errorItemIds: Set<string>;
   setReqPropsFilled: React.Dispatch<React.SetStateAction<boolean>>;
   setName: React.Dispatch<React.SetStateAction<string>>;
   setDesc: React.Dispatch<React.SetStateAction<string>>;
@@ -76,6 +78,7 @@ interface ActionFormContextType {
   setProcessOutputFileCode: React.Dispatch<React.SetStateAction<string>>;
   setFormData: React.Dispatch<React.SetStateAction<any>>;
   setHasError: React.Dispatch<React.SetStateAction<boolean>>;
+  checkForDuplicateNames: () => boolean;
   handleChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   handleNameChange: (newName: string) => void;
   handleSave: (event?: Event, state?: State) => void;
@@ -87,6 +90,7 @@ interface ActionFormContextType {
   handleProbBlur: (item: NewStateItem) => void;
   handleRemainingChange: (event: React.ChangeEvent<HTMLInputElement>, item: NewStateItem) => void;
   handleProbTypeChange: (event: React.ChangeEvent<HTMLInputElement>, item: NewStateItem) => void;
+  handleMutuallyExclusiveChange: (value: boolean) => void;
   handleDeleteToStateItem: (itemToDeleteId: string) => void;
   sortNewStates: (newStateItems: NewStateItem[]) => NewStateItem[];
   initializeForm: (actionData: Action | undefined) => void;
@@ -133,11 +137,14 @@ const ActionFormContextProvider: React.FC<PropsWithChildren> = ({ children }) =>
   const [processOutputFileCode, setProcessOutputFileCode] = useState<string>('');
   const [formData, setFormData] = useState<any>();
   const [hasError, setHasError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string>('');
   const [raType, setRaType] = useState('');
   const [reqPropsFilled, setReqPropsFilled] = useState<boolean>(false);
   const [originalName, setOriginalName] = useState<string>();
   const [exePath, setExePath] = useState<string>(formData?.exePath || '');
   const { updateVariable, createVariable } = useVariableContext();
+  // const [errorItemIds, setErrorIds] = useState<string[]>([]);
+  const [errorItemIds, setErrorIds] = useState<Set<string>>(new Set());
 
   const actionTypeOptions = [
     { value: 'atTransition', label: 'Transition' },
@@ -150,6 +157,18 @@ const ActionFormContextProvider: React.FC<PropsWithChildren> = ({ children }) =>
     setReqPropsFilled(!!name && !!actType);
   }, [name, actType]);
 
+  const handleMutuallyExclusiveChange = (value: boolean) => {
+    newStateItems.forEach((newStateItem) => {
+      checkProbability(newStateItem, value);
+      if (value === false) {
+        if (newStateItem.prob === -1) {
+          newStateItem.remaining = false;
+          newStateItem.prob = 0;
+        }
+      }
+    });
+    setMutuallyExclusive(value);
+  };
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setMutuallyExclusive(event.target.checked);
   };
@@ -162,6 +181,55 @@ const ActionFormContextProvider: React.FC<PropsWithChildren> = ({ children }) =>
     const hasInvalidChars = /[^a-zA-Z0-9-_ ]/.test(trimmedName);
     setHasError(nameExists || hasInvalidChars);
     setName(newName);
+  };
+
+  const checkForDuplicateNames = () => {
+    const nameExists = actionsList.value
+      .filter((action) => action.name !== originalName)
+      .some((node) => node.name === name.trim());
+    return nameExists;
+  };
+
+  const checkProbability = (updatedItem: NewStateItem, updatedMutuallyExclusive?: boolean, updatedRemaining?: boolean | undefined) => {
+    if (!updatedItem.prob) {
+      setErrorIds((prevErrorItemIds) => new Set([...prevErrorItemIds, updatedItem.id]));
+      setErrorMessage('Must contain a value');
+      setHasError(true);
+    }
+  
+    if (updatedMutuallyExclusive !== undefined ? updatedMutuallyExclusive : mutuallyExclusive) {
+      const totalProb = newStateItems.reduce((acc, item) => {
+          return item.prob === -1 ? acc : acc + Number(item.prob);
+        }, 0);
+        let remainingProb: number;
+
+        if (updatedRemaining !== undefined && updatedRemaining === true) {
+          remainingProb = 1 - totalProb;
+        } else {
+          remainingProb = 0;
+        }
+
+      if (totalProb !== 1 && (remainingProb + totalProb) !== 1) {
+        setErrorIds((prevErrorItemIds) => new Set([...prevErrorItemIds, updatedItem.id]));
+        setErrorMessage('Combined mutually exclusive probabilities must equal 1');
+        setHasError(true);
+      } else {
+        setErrorIds((prevErrorItemIds) => new Set([...prevErrorItemIds].filter((id) => id !== updatedItem.id)));
+        setHasError(false);
+        setErrorMessage('');
+      }
+    } else {
+      const probValue = Number(updatedItem.prob);
+      if (probValue > 1) {
+        setErrorIds((prevErrorItemIds) => new Set([...prevErrorItemIds, updatedItem.id]));
+        setErrorMessage('Probabilities must be greater than 0 andnot exceed 1');
+        setHasError(true);
+      } else {
+        setErrorIds((prevErrorItemIds) => new Set([...prevErrorItemIds].filter((id) => id !== updatedItem.id)));
+        setErrorMessage('');
+        setHasError(false);
+      }
+    }
   };
 
   const handleSave = async (event?: Event, state?: State) => {
@@ -285,9 +353,10 @@ const ActionFormContextProvider: React.FC<PropsWithChildren> = ({ children }) =>
     setNewStateItems((prevItems) => {
       const updatedItems = prevItems.map((item) => {
         if (item.id === updatedItem.id) {
+          
           return {
             ...item,
-            prob: event.target.value,
+            prob: Number(event.target.value) < 0 ? 0 : event.target.value,
           };
         }
         return item;
@@ -319,11 +388,6 @@ const ActionFormContextProvider: React.FC<PropsWithChildren> = ({ children }) =>
         numericValue = parseFloat(value);
       }
 
-      if (isNaN(Number(numericValue)) || Number(numericValue) > 1.0 || Number(numericValue) < 0) {
-        console.log('Invalid probability value: ', Number(numericValue));
-        setHasError(true);
-      }
-
       setNewStateItems((prevItems) => {
         const updatedItems = prevItems.map((item) => {
           if (item.id === updatedItem.id) {
@@ -334,15 +398,19 @@ const ActionFormContextProvider: React.FC<PropsWithChildren> = ({ children }) =>
           }
           return item;
         });
+
+        checkProbability(updatedItem);
         return updatedItems;
       });
-    } else {
-      console.log('Invalid probability value: ', value);
+    } 
+    else {
+      setErrorIds((prevErrorItemIds) => new Set([...prevErrorItemIds, updatedItem.id]));
+      setErrorMessage('Must contain a value');
       setHasError(true);
     }
   };
 
-  const handleRemainingChange = (
+  const handleRemainingChange = async (
     event: React.ChangeEvent<HTMLInputElement>,
     item: NewStateItem,
   ) => {
@@ -357,6 +425,11 @@ const ActionFormContextProvider: React.FC<PropsWithChildren> = ({ children }) =>
       return newItem;
     });
     setNewStateItems(sortNewStates(updatedItems));
+    checkProbability({
+      ...item,
+      remaining: event.target.checked,
+      prob: event.target.checked ? -1 : 0.0,
+    }, undefined, event.target.checked);
   };
 
   const handleProbTypeChange = (event: React.ChangeEvent<HTMLInputElement>, item: NewStateItem) => {
@@ -471,9 +544,11 @@ const ActionFormContextProvider: React.FC<PropsWithChildren> = ({ children }) =>
         processOutputFileCode,
         formData,
         hasError,
+        errorMessage,
         actionTypeOptions,
         raType,
         reqPropsFilled,
+        errorItemIds,
         setReqPropsFilled,
         reset,
         setName,
@@ -497,6 +572,7 @@ const ActionFormContextProvider: React.FC<PropsWithChildren> = ({ children }) =>
         setProcessOutputFileCode,
         setFormData,
         setHasError,
+        checkForDuplicateNames,
         handleChange,
         handleNameChange,
         handleSave,
@@ -506,6 +582,7 @@ const ActionFormContextProvider: React.FC<PropsWithChildren> = ({ children }) =>
         handleRemainingChange,
         handleProbTypeChange,
         handleDeleteToStateItem,
+        handleMutuallyExclusiveChange,
         sortNewStates,
         initializeForm,
         setRaType,
