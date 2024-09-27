@@ -406,18 +406,6 @@
     },
     {
       "Action": {
-        "id": 2,
-        "name": "Goto_Occured",
-        "desc": "",
-        "actType": "atTransition",
-        "mainItem": false,
-        "mutExcl": true,
-        "newStates": [],
-        "itemId": 3
-      }
-    },
-    {
-      "Action": {
         "id": 4,
         "name": "Goto_C1Running",
         "desc": "",
