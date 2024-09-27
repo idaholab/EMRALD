@@ -722,31 +722,6 @@
     },
     {
       "Action": {
-        "id": 9,
-        "name": "Goto_SYSFailed_FT",
-        "desc": "",
-        "actType": "atTransition",
-        "mainItem": false,
-        "mutExcl": true,
-        "newStates": [],
-        "itemId": 10
-      }
-    },
-    {
-      "Action": {
-        "id": 10,
-        "name": "Goto_SYSFTFailed",
-        "desc": "Transition to the failed state.",
-        "actType": "atTransition",
-        "mainItem": false,
-        "mutExcl": true,
-        "newStates": [],
-        "itemId": 0,
-        "moveFromCurrent": true
-      }
-    },
-    {
-      "Action": {
         "id": 11,
         "name": "Goto_SYSFTFailed_FT",
         "desc": "",

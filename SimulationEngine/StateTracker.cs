@@ -791,6 +791,7 @@ namespace SimulationTracking
       this.Reset();
       terminated = false;
       this.allLists.curRunIdx++;
+      List<int> retResults = null;
 
       //reset variables that are marked that way
       foreach (var v in this.allLists.allVariables)
@@ -805,7 +806,8 @@ namespace SimulationTracking
       if (!InitializeEventLists())
       {
         //hit terminal state upon initialization. Possible but strange
-        return curStates.GetFinalStateList();
+        retResults = curStates.GetFinalStateList();
+        terminated = true;
       }
 
       bool ranXMPPSim = false;
@@ -830,7 +832,7 @@ namespace SimulationTracking
 
 
       //do the process while there are still time events in the que and a terminal state is not met
-      while (timeEvList.cnt > 0)
+      while ((timeEvList.cnt > 0) && !terminated)
       {
         if (PopNextTimeEvent())
         {
@@ -838,11 +840,12 @@ namespace SimulationTracking
           //run through all the stuff until it needs a new timed event or it hits a terminal state
           if (!ProcessActiveLoop())
           {
-            return curStates.GetFinalStateList();
+            retResults = curStates.GetFinalStateList();
+            terminated = true;
           }
 
           ranXMPPSim = false;
-          while (this.emraldStopping3D || this.extSimStarting || this.extSimRunning || inProcessingLoop)
+          while (!terminated && (this.emraldStopping3D || this.extSimStarting || this.extSimRunning || inProcessingLoop))
           {
             //Application.DoEvents();
             ranXMPPSim = true;
@@ -1147,6 +1150,11 @@ namespace SimulationTracking
           ProcessEvent(processEventList[0]);
           processEventList.RemoveAt(0);
           change = changedItems.HasChange();
+          //See if any new events occured because of this events actions.
+          if (change)
+          {
+            ScanCondEvList();
+          }
         }
 
         //while there are items in the Next State Queue, process them.
