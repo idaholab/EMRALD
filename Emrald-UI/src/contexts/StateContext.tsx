@@ -18,7 +18,7 @@ interface StateContextType {
   updateStateEventActions: (stateName: string, eventName: string, action: Action) => void;
   updateStateImmediateActions: (stateName: string, action: Action) => void;
   updateStatePosition: (state: State, position: { x: number; y: number }) => void;
-  deleteState: (StateId: string | undefined) => void;
+  deleteState: (StateId: string | undefined) => Promise<void>;
   getEventsByStateName: (stateName: string) => {
     events: string[];
     type: string;
@@ -72,7 +72,10 @@ const StateContextProvider: React.FC<EmraldContextWrapperProps> = ({ children })
   const defaultGeometryInfo = { x: 0, y: 0, width: 0, height: 0 };
 
   effect(() => {
-    if (JSON.stringify(states) !== JSON.stringify(appData.value.StateList.sort((a, b) => a.name.localeCompare(b.name)))) {
+    if (
+      JSON.stringify(states) !==
+      JSON.stringify(appData.value.StateList.sort((a, b) => a.name.localeCompare(b.name)))
+    ) {
       setStates(appData.value.StateList.sort((a, b) => a.name.localeCompare(b.name)));
       return;
     }
@@ -143,19 +146,25 @@ const StateContextProvider: React.FC<EmraldContextWrapperProps> = ({ children })
     }
   };
 
-  const deleteState = (stateId: string | undefined) => {
-    if (!stateId) {
-      return;
-    }
-    const stateToDelete = getStateByStateId(stateId);
-    if (stateToDelete) {
-      return new Promise<void>(async (resolve) => {
+  const deleteState = async (stateId: string | undefined) => {
+    return new Promise<void>(async (resolve, reject) => {
+      if (!stateId) {
+        reject(new Error('No stateId provided'));
+        return;
+      }
+      const stateToDelete = getStateByStateId(stateId);
+      if (!stateToDelete) {
+        reject(new Error('State not found'));
+        return;
+      }
+      try {
         var updatedModel: EMRALD_Model = await DeleteItemAndRefs(stateToDelete);
         updateAppData(updatedModel);
         resolve();
-      });
-    }
-    //todo else error, no state to delete   
+      } catch (error) {
+        reject(error);
+      }
+    });
   };
 
   const getStateByStateId = (stateId: string | null): State => {
