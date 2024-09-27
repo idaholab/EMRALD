@@ -19,6 +19,7 @@ import { EMRALD_Model } from '../../../types/EMRALD_Model';
 import { updateModelAndReferences } from '../../../utils/UpdateModel';
 import { MainItemTypes } from '../../../types/ItemTypes';
 import { updateAppData } from '../../../hooks/useAppData';
+import { useDiagramContext } from '../../../contexts/DiagramContext';
 
 const useContextMenu = (getStateNodes?: () => void, setEdges?: (edges: Edge[]) => void) => {
   // Get state nodes function is needed if deleting or removing a state, set edges function is needed if deleting or removing an edge
@@ -30,6 +31,7 @@ const useContextMenu = (getStateNodes?: () => void, setEdges?: (edges: Edge[]) =
   const [actionTypeToModify, setActionTypeToModify] = useState<string>();
   const { addWindow } = useWindowContext();
   const { updateState, deleteState, getStateByStateId } = useStateContext();
+  const { updateDiagram } = useDiagramContext();
   const { deleteEvent } = useEventContext();
   const { updateAction, deleteAction, getActionByActionId } = useActionContext();
 
@@ -602,6 +604,7 @@ const useContextMenu = (getStateNodes?: () => void, setEdges?: (edges: Edge[]) =
       currentDiagram.value.states = currentDiagram.value.states.filter(
         (state) => state !== itemToDelete.name,
       );
+      await updateDiagram(currentDiagram.value);
       getStateNodes();
       deleteState(itemToDelete.id);
     } else if (itemToDelete.id && stateToModify && isEvent(itemToDelete)) {
