@@ -33,6 +33,33 @@ const FailureRate = () => {
       setLambda(0);
     }
   };
+
+  const handleLambdaValueChange = (value: string) => {
+    setLambda(value);
+  };
+
+  const validInputRegex = /^[+\-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[Ee][+\-]?\d+)?$/;
+
+  const handleLambdaValueBlur = (value: string) => {
+    if (value && validInputRegex.test(value)) {
+      // Check if the value is in scientific notation
+      const isScientificNotation = /[Ee]/.test(value);
+      let numericValue;
+      if (isScientificNotation) {
+        numericValue = parseFloat(value);
+        const [_, exponentPart] = value.split(/[Ee]/);
+        const exponent = Math.abs(Number(exponentPart));
+        if (exponent >= 4) {
+          // If it has 4 or more decimal places, keep it in scientific notation
+          numericValue = value;
+        }
+      } else {
+        numericValue = parseFloat(value);
+      }
+      setLambda(numericValue);
+    }
+  };
+
   return (
     <>
       <FormControlLabel
@@ -54,9 +81,10 @@ const FailureRate = () => {
                 {!useVariable ? (
                   <TextField
                     label="Lambda"
-                    value={lambda as number}
-                    type="number"
-                    onChange={(e) => setLambda(Number(e.target.value))}
+                    value={lambda}
+                    type="text"
+                    onChange={(e) => handleLambdaValueChange(e.target.value)}
+                    onBlur={() => handleLambdaValueBlur(String(lambda))}
                     size="small"
                   />
                 ) : (
