@@ -605,8 +605,8 @@ const useContextMenu = (getStateNodes?: () => void, setEdges?: (edges: Edge[]) =
         (state) => state !== itemToDelete.name,
       );
       await updateDiagram(currentDiagram.value);
+      await deleteState(itemToDelete.id);
       getStateNodes();
-      deleteState(itemToDelete.id);
     } else if (itemToDelete.id && stateToModify && isEvent(itemToDelete)) {
       const index = stateToModify.events.indexOf(itemToDelete.name);
       stateToModify.events = stateToModify.events.filter((event) => event !== itemToDelete.name);
