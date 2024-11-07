@@ -605,7 +605,7 @@ namespace SimulationEngine
           var lastItem = keyPaths.Last();
           foreach (var item in keyPaths)
           {
-            streamwriter.WriteLine(item.Key + " Occurred " + item.Value.count.ToString() + " times, Rate =" + (item.Value.count / (double)runCnt).ToString() +
+            streamwriter.WriteLine(item.Key + " Occurred " + item.Value.count.ToString() + " times, Probability =" + (item.Value.count / (double)runCnt).ToString() +
               ", MeanTime = " + item.Value.timeMean.ToString(@"dd\.hh\:mm\:ss") + " +/- " + item.Value.timeStdDeviation.ToString(@"dd\.hh\:mm\:ss\.ff"));
             //write the failed components and times.
             if (logFailedComps && keyFailedItems.ContainsKey(item.Key))
@@ -621,7 +621,7 @@ namespace SimulationEngine
                 names.Sort();
                 double csPercent = ((double)cs.Value / item.Value.count) * 100;
 
-                string csLine = "(" + cs.Value.ToString() + ")[" + csPercent.ToString() + "]" + string.Join(", ", names);
+                string csLine = "(" + cs.Value.ToString() + ")[" + csPercent.ToString("N3") + "%]" + string.Join(", ", names);
 
                 streamwriter.WriteLine(csLine);
               }
