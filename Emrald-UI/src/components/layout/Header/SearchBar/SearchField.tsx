@@ -14,7 +14,7 @@ import {
 import ItemTypeMenuResults from './ItemTypeMenuResults';
 import { EMRALD_Model } from '../../../../types/EMRALD_Model';
 import { ExtSim } from '../../../../types/ExtSim';
-import { LogicNode } from '../../../../types/LogicNode';
+import { CompChildItems, LogicNode } from '../../../../types/LogicNode';
 import { Variable } from '../../../../types/Variable';
 import { useWindowContext } from '../../../../contexts/WindowContext';
 import EventFormContextProvider from '../../../forms/EventForm/EventFormContext';
@@ -90,6 +90,13 @@ const SearchField = () => {
         item.desc?.toLowerCase().includes(value.toLowerCase())
       ) {
         items.push(structuredClone(item));
+      }
+      if (item.objType === 'LogicNode') {
+        item.compChildren.forEach((compItem: CompChildItems) => {
+          if (compItem.diagramName.toLowerCase().includes(value.toLowerCase())) {
+            items.push(structuredClone(item));
+          }
+        });
       }
     });
     return items;
