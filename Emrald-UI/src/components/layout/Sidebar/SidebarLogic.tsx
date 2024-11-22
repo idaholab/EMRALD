@@ -41,7 +41,7 @@ export function useSidebarLogic() {
   const { deleteEvent } = useEventContext();
   const { deleteVariable } = useVariableContext();
   const { closeAllWindows } = useWindowContext();
-  const { canDeleteNode, recurseAndDeleteChildren } = useLogicNodeTreeDiagram();
+  const { recurseAndDeleteChildren } = useLogicNodeTreeDiagram();
   const { activeWindowId, getWindowTitleById } = useWindowContext();
 
   const onDiagramChange = (newDiagram: Diagram) => {
