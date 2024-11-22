@@ -7,7 +7,7 @@ import { useWindowContext } from '../../../contexts/WindowContext';
 import { emptyLogicNode, useLogicNodeContext } from '../../../contexts/LogicNodeContext';
 import { v4 as uuidv4 } from 'uuid';
 import { CompChild, LogicNode } from '../../../types/LogicNode';
-import { GateType, StateEvalValue } from '../../../types/ItemTypes';
+import { GateType, MainItemTypes, StateEvalValue } from '../../../types/ItemTypes';
 import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
@@ -18,6 +18,7 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
 import StateValuesTable, { ComponentStateValue } from './StateValuesTable';
 import TextField from '@mui/material/TextField';
+import { GetModelItemsReferencing } from '../../../utils/ModelReferences';
 
 interface LogicNodeFormProps {
   logicNodeData?: LogicNode;
@@ -84,6 +85,12 @@ const LogicNodeForm: React.FC<LogicNodeFormProps> = ({
     { label: 'Or', value: 'gtOr' },
     { label: 'Not', value: 'gtNot' },
   ];
+
+  const availableAsTopOrSubtree = () => {
+    const currentReferences = GetModelItemsReferencing(logicNode.value.name, MainItemTypes.LogicNode, 1);
+    if (currentReferences.LogicNodeList.length >= 1) { return false; }
+    if (logicNode.value.isRoot && parentNode === undefined) { return true; }
+  };
 
   // Add new comp child
   const handleAddNewCompChild = () => {
@@ -325,15 +332,21 @@ const LogicNodeForm: React.FC<LogicNodeFormProps> = ({
               value={descValue}
               onChange={handleDescriptionChange}
             />
-            <FormControlLabel
-              label="Set as a Root Node"
-              control={
-                <Checkbox
-                  checked={isRoot ? true : false}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setIsRoot(e.target.checked)}
+            {
+              !setAsRoot && (
+                <FormControlLabel
+                  label="Make available as Top or Subtree"
+                  disabled={availableAsTopOrSubtree()}
+                  control={
+                    <Checkbox
+                      checked={isRoot ? true : false}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => setIsRoot(e.target.checked)}
+                    />
+                  }
                 />
-              }
-            />
+              )
+            }
+            
           </>
         )}
         <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 5 }}>
