@@ -1,3 +1,5 @@
+import dayjs from "dayjs";
+
 /**
  * Converts a string in scientific notation to a numeric value rounded to 10 decimal places.
  * If the input is not in scientific notation, or if there is an error, this function will return undefined.
@@ -20,6 +22,38 @@ export const scientificToNumeric = (value: string | undefined): number | undefin
   }
 };
 
+/**
+ * Converts a numeric value representing a duration to an ISO 8601 duration string.
+ * If the input is not a number or if there is an error, this function will return undefined.
+ * @param {number} value - The numeric value to convert to an ISO 8601 duration string
+ * @returns {string|undefined} The ISO 8601 duration string
+ */
+export const convertToISOString = (value: number): string => {
+  try {
+    const dur = dayjs.duration(value);
+
+    const totalDays = Math.floor(dur.asDays());
+    const remainingTime = dur.subtract(totalDays, 'days');
+    const remainingHours = remainingTime.hours();
+    const remainingMinutes = remainingTime.minutes();
+    const remainingSeconds = remainingTime.seconds();
+
+    let isoString = `P${totalDays}D`;
+
+    if (remainingHours || remainingMinutes || remainingSeconds) {
+      isoString += 'T';
+      if (remainingHours) isoString += `${remainingHours}H`;
+      if (remainingMinutes) isoString += `${remainingMinutes}M`;
+      if (remainingSeconds) isoString += `${remainingSeconds}S`;
+    }
+    console.log(isoString);
+    return isoString;
+  } catch (error) {
+    // Handle any errors (e.g., invalid input)
+    console.error('Error converting duration to ISO string'); // Log error to console
+    return ''; // Return undefined to indicate that there was an error
+  }
+};
 
 function isNumeric(stringOrNumber: string | number): boolean {
   return typeof stringOrNumber === 'number' 
