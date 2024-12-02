@@ -1145,16 +1145,20 @@ namespace SimulationTracking
       {
         change = false;
         //process all the events in the list before processing the next state
+
         while ((!terminated) && (processEventList.Count > 0))
-        {
-          ProcessEvent(processEventList[0]);
-          processEventList.RemoveAt(0);
-          change = changedItems.HasChange();
-          //See if any new events occured because of this events actions.
-          if (change)
+        {      
+          //process the event list in batches
+          while ((!terminated) && (processEventList.Count > 0))
           {
-            ScanCondEvList();
+            ProcessEvent(processEventList[0]);
+            processEventList.RemoveAt(0);
+            change = change || changedItems.HasChange();
+            //See if any new events occured because of this events actions.
           }
+
+          //get the next batch of condition events to process
+          ScanCondEvList();          
         }
 
         //while there are items in the Next State Queue, process them.

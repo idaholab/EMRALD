@@ -13,6 +13,7 @@ import duration from 'dayjs/plugin/duration';
 import { useVariableContext } from '../../../../contexts/VariableContext';
 import DurationComponent from '../../../common/DurationComponent';
 import { SelectComponent } from '../../../common';
+import { convertToISOString } from '../../../../utils/util-functions';
 
 dayjs.extend(duration);
 
@@ -48,12 +49,12 @@ const ExtSimulation: React.FC = () => {
   useEffect(() => {
     const simEndTimeDuration = dayjs.duration(simEndTime);
     // @ts-ignore: Ignore TypeScript error for the existence of `$ms` property
-    setMilliseconds(simEndTimeDuration.$ms);
+    setMilliseconds(simEndTimeDuration.$ms || 0);
   }, [simEndTime]);
 
   const handleDurationChange = (value: number) => {
     setMilliseconds(value);
-    setSimEndTime(dayjs.duration(value).toISOString());
+    setSimEndTime(convertToISOString(value));
   };
 
   return (

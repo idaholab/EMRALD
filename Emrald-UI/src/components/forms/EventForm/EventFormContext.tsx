@@ -24,6 +24,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { State } from '../../../types/State';
 import dayjs from 'dayjs';
 import { appData } from '../../../hooks/useAppData';
+import { convertToISOString } from '../../../utils/util-functions';
 
 interface EventFormContextType {
   allItems: boolean;
@@ -62,6 +63,7 @@ interface EventFormContextType {
   variableName: string;
   addToUsedVariables: (variableName: string) => void;
   handleChange: (row: string, value: string | number) => void;
+  handleBlur: (row: string, value: string | number) => void;
   handleClose: () => void;
   handleTimerDurationChange: (value: number) => void;
   handleFailureRateDurationChange: (value: number) => void;
@@ -236,13 +238,15 @@ const EventFormContextProvider: React.FC<PropsWithChildren> = ({ children }) => 
     et3dSimEv: { component: ExtSim, props: {} },
     etDistribution: { component: Distribution, props: {} },
   };
+
   const handleTimerDurationChange = (value: any) => {
     setTimerMilliseconds(value);
-    setTime(dayjs.duration(value).toISOString());
+    setTime(convertToISOString(value));
   };
+  
   const handleFailureRateDurationChange = (value: number) => {
     setFailureRateMilliseconds(value);
-    setLambdaTimeRate(dayjs.duration(value).toISOString());
+    setLambdaTimeRate(convertToISOString(value));
   };
 
   const handleSetParameters = (
@@ -310,15 +314,38 @@ const EventFormContextProvider: React.FC<PropsWithChildren> = ({ children }) => 
   const PositiveFields = ['Standard Deviation', 'Minimum', 'Maximum', 'Shape', 'Rate', 'Scale'];
 
   const handleChange = (row: string, value: string | number) => {
-    if (isValidNumber(value as string)) {
-      value = Number(value);
-      if (PositiveFields.includes(row)) {
-        value = Math.abs(value as number);
-      }
-    }
+    // if (isValidNumber(value as string)) {
+    //   value = Number(value);
+    //   if (PositiveFields.includes(row)) {
+    //     value = Math.abs(value as number);
+    //   }
+    // }
 
     handleSetParameters(row, value, 'value');
     updateRow(row, value, 'value');
+  };
+
+  const handleBlur = (row: string, value: string | number) => {
+    const stringValue = String(value);
+    const validInputRegex = /^[+\-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[Ee][+\-]?\d+)?$/;
+    if (value && validInputRegex.test(stringValue)) {
+      // Check if the value is in scientific notation
+      const isScientificNotation = /[Ee]/.test(stringValue);
+      let numericValue;
+      if (isScientificNotation) {
+        numericValue = parseFloat(stringValue);
+        const [_, exponentPart] = stringValue.split(/[Ee]/);
+        const exponent = Math.abs(Number(exponentPart));
+        if (exponent >= 4) {
+          // If it has 4 or more decimal places, keep it in scientific notation
+          numericValue = value;
+        }
+      } else {
+        numericValue = parseFloat(stringValue);
+      }
+      handleSetParameters(row, numericValue, 'value');
+      updateRow(row, numericValue, 'value');
+    }
   };
 
   const handleRateChange = (row: string, value: TimeVariableUnit | undefined) => {
@@ -451,6 +478,7 @@ const EventFormContextProvider: React.FC<PropsWithChildren> = ({ children }) => 
         variableName,
         addToUsedVariables,
         handleChange,
+        handleBlur,
         handleClose,
         handleTimerDurationChange,
         handleFailureRateDurationChange,

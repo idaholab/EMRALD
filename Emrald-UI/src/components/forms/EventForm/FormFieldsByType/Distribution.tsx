@@ -42,6 +42,7 @@ const Distribution = () => {
     parameters,
     variableChecked,
     handleChange,
+    handleBlur,
     handleRateChange,
     handleUseVariableChange,
     setAllRows,
@@ -176,6 +177,7 @@ const Distribution = () => {
                     <TextField
                       value={allRows[row]?.value !== undefined ? allRows[row]?.value : ''}
                       onChange={(e) => handleChange(row, e.target.value)}
+                      onBlur={(e) => handleBlur(row, e.target.value)}
                       size="small"
                       label={row}
                       type="text"
