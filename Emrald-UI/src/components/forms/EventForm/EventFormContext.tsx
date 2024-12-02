@@ -24,6 +24,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { State } from '../../../types/State';
 import dayjs from 'dayjs';
 import { appData } from '../../../hooks/useAppData';
+import { convertToISOString } from '../../../utils/util-functions';
 
 interface EventFormContextType {
   allItems: boolean;
@@ -237,13 +238,15 @@ const EventFormContextProvider: React.FC<PropsWithChildren> = ({ children }) => 
     et3dSimEv: { component: ExtSim, props: {} },
     etDistribution: { component: Distribution, props: {} },
   };
+
   const handleTimerDurationChange = (value: any) => {
     setTimerMilliseconds(value);
-    setTime(dayjs.duration(value).toISOString());
+    setTime(convertToISOString(value));
   };
+  
   const handleFailureRateDurationChange = (value: number) => {
     setFailureRateMilliseconds(value);
-    setLambdaTimeRate(dayjs.duration(value).toISOString());
+    setLambdaTimeRate(convertToISOString(value));
   };
 
   const handleSetParameters = (
