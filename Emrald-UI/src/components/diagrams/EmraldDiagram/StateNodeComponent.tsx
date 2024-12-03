@@ -27,9 +27,12 @@ const StateNode: React.FC<StateNodeComponentProps> = ({ id, data }) => {
       const newWidth = startWidth + moveEvent.clientX - startX;
       const newHeight = startHeight + moveEvent.clientY - startY;
 
+      console.log(moveEvent.clientY)
+      console.log(newHeight)
+
       setSize({
-        width: Math.max(100, Math.min(newWidth, 800)),
-        height: Math.max(100, Math.min(newHeight, 400)),
+        width: Math.max(250, Math.min(newWidth, 800)),
+        height: Math.max(150, Math.min(newHeight, 600)),
       });
     };
 
@@ -59,7 +62,11 @@ const StateNode: React.FC<StateNodeComponentProps> = ({ id, data }) => {
     >
       <div>
         <div className="state-node__header" id={id}>
-          <strong>{state.name}</strong> <NodeTypeIcon type={state.stateType} />
+          <Box sx={{direction: 'flex', flexDirection: 'column'}} mr={1}>
+            <Box><strong>{state.name}</strong> </Box>
+            {state.desc && (<Box sx={{fontSize: '10px'}}>{state.desc}</Box>)}
+          </Box>
+          <NodeTypeIcon type={state.stateType} />
         </div>
         <div className="state-node__body">
           <Handle
