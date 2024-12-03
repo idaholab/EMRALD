@@ -27,9 +27,6 @@ const StateNode: React.FC<StateNodeComponentProps> = ({ id, data }) => {
       const newWidth = startWidth + moveEvent.clientX - startX;
       const newHeight = startHeight + moveEvent.clientY - startY;
 
-      console.log(moveEvent.clientY)
-      console.log(newHeight)
-
       setSize({
         width: Math.max(250, Math.min(newWidth, 800)),
         height: Math.max(150, Math.min(newHeight, 600)),
