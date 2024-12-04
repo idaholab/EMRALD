@@ -170,13 +170,13 @@ const LogicNodeForm: React.FC<LogicNodeFormProps> = ({
       currentNode.stateValues = currentNodeStateValues;
     } 
 
-    if (editing || nodeType === 'comp') {
+    if (editing || leafNodeType === 'comp') {
       updateLogicNode({
         ...logicNode.value,
         gateType: gateTypeValue,
         compChildren: compChildren.value,
       });
-    } else if (!editing && nodeType === 'gate' && parentNodeName) {
+    } else if (!editing && leafNodeType === 'gate' && parentNodeName) {
       newLogicNode.value.id = uuidv4();
       await createLogicNode(newLogicNode.value);
       logicNode.value.gateChildren = [...logicNode.value.gateChildren, newLogicNode.value.name];
@@ -194,7 +194,7 @@ const LogicNodeForm: React.FC<LogicNodeFormProps> = ({
         {logicNodeData ? 'Edit' : 'Create New'} {leafNodeType === 'comp' ? 'Component' : 'Gate'}
       </Typography>
       <form>
-        {nodeType ? (
+        {leafNodeType ? (
           <>
             {!editing ? (
               <>
@@ -231,7 +231,7 @@ const LogicNodeForm: React.FC<LogicNodeFormProps> = ({
           <></>
         )}
 
-        {nodeType === 'comp' ? (
+        {leafNodeType === 'comp' ? (
           <>
             <FormControl
               variant="outlined"

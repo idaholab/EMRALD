@@ -3915,7 +3915,7 @@
       "id": "6c94298e-e12e-413a-a96b-a5c248178bbb",
       "name": "CCS-Trains",
       "desc": "",
-      "gateType": "gtOr",
+      "gateType": "gtAnd",
       "rootName": "CCS_TOP",
       "compChildren": [],
       "gateChildren": [

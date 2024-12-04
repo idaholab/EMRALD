@@ -113,7 +113,7 @@ const ImportForm: React.FC<ImportDiagramFormProps> = ({ importedData, fromTempla
         </Box>
       </Box>
 
-      <Box mt={3} maxHeight={'400px'} overflow={'auto'}>
+      <Box mt={3}>
         <Table sx={{ minWidth: 650 }} size="small" stickyHeader>
           <TableHead>
             <TableRow>

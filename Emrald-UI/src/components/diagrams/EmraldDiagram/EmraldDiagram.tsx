@@ -13,7 +13,7 @@ import { signal } from '@preact/signals';
 import { emptyDiagram } from '../../../contexts/DiagramContext';
 import { TbMap } from "react-icons/tb";
 import { PiDotsNine } from 'react-icons/pi';
-import DownloadButton from './DownloadButton';
+import DownloadButton from '../DownloadButton';
 
 interface EmraldDiagramProps {
   diagram: Diagram;
@@ -23,7 +23,7 @@ export const currentDiagram = signal<Diagram>(emptyDiagram);
 
 const EmraldDiagram: React.FC<EmraldDiagramProps> = ({ diagram }) => {
   const [showMap, setShowMap] = useState(true);
-  const [showBackgroundDots, setShowBackgroundDots] = useState(true)
+  const [showBackgroundDots, setShowBackgroundDots] = useState(true);
   currentDiagram.value = diagram;
   const {
     nodes,
@@ -94,7 +94,7 @@ const EmraldDiagram: React.FC<EmraldDiagramProps> = ({ diagram }) => {
               <ControlButton onClick={() => setShowBackgroundDots(!showBackgroundDots)}>
                 <PiDotsNine />
               </ControlButton>  
-              <DownloadButton />
+              <DownloadButton diagramName={diagram.name}/>
             </Controls>
             {
               showMap && (
