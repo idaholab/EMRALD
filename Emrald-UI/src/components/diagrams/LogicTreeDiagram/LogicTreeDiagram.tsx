@@ -21,6 +21,8 @@ import { TbLogicAnd, TbLogicNot, TbLogicOr, TbMap } from 'react-icons/tb';
 import DraggableItem from '../../drag-and-drop/DraggableItem.js';
 import { Alert, Typography } from '@mui/material';
 import useExpandCollapse from './useExpandCollapse.js';
+import DownloadButton from '../DownloadButton.js';
+import { PiDotsNine } from 'react-icons/pi';
 
 interface LogicNodeTreeDiagramProps {
   logicNode: LogicNode;
@@ -28,6 +30,7 @@ interface LogicNodeTreeDiagramProps {
 
 const LogicNodeTreeDiagram: React.FC<LogicNodeTreeDiagramProps> = ({ logicNode }) => {
   const [showMap, setShowMap] = useState(false);
+  const [showBackgroundDots, setShowBackgroundDots] = useState(true);
   const ref = useRef<HTMLDivElement>(null);
   const reactFlowInstance = useReactFlow();
   const {
@@ -128,9 +131,13 @@ const LogicNodeTreeDiagram: React.FC<LogicNodeTreeDiagramProps> = ({ logicNode }
               <ControlButton onClick={() => setShowMap(!showMap)}>
                 <TbMap />
               </ControlButton>
+              <ControlButton onClick={() => setShowBackgroundDots(!showBackgroundDots)}>
+                <PiDotsNine />
+              </ControlButton>
+              <DownloadButton diagramName={logicNode.name}/>
             </Controls>
             {showMap && <MiniMap pannable />}
-            <Background variant={BackgroundVariant.Dots} gap={12} size={1} />
+            {showBackgroundDots && <Background variant={BackgroundVariant.Dots} gap={12} size={1} />}
           </ReactFlow>
           {menu && (
             <ContextMenu
