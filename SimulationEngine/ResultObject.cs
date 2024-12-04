@@ -332,9 +332,9 @@ namespace SimulationEngine
         if (_count <= 1)
           return TimeSpan.Zero;
 
-        double mean = timeMean.TotalMinutes;
-        double sumDiffSq = 0; //sum of difference squared;
-        foreach (var t in this._times)
+        double mean = timeMean.TotalMinutes; //total time divided by number of times and convert to minutes
+        double sumDiffSq = 0; //sum of difference squared for all the times;
+        foreach (var t in this._times) //for each time subtract the mean and square it add it to the sumDiffSq
         {
           sumDiffSq += Math.Pow(((t.TotalMinutes) - mean), 2);
         }
