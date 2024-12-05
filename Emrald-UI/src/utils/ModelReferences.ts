@@ -345,7 +345,7 @@ export const AdjustJsonPathRef = (
     if (current === '.') {
       const next = adjustment.shift(); // Get the next item
       if (next !== undefined) {
-        retArray.push(current);
+        retArray.pop();
         retArray.push(next); // Only push if `next` is not undefined
       }
     } else if (current === '^') {
