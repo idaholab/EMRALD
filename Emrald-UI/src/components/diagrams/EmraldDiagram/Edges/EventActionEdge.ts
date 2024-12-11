@@ -82,9 +82,6 @@ const getEventActionEdges = (
               stroke: `${action.moveFromCurrent ? '#b1b1b7' : 'green'}`,
               strokeDasharray: `${action.moveFromCurrent ? '' : 5}`
             },
-            // labelStyle: {
-            //   transform: `translateY(${index % 2 === 0 ? '-20px' : '0px'})`,
-            // },
             markerEnd: { 
               type: MarkerType.ArrowClosed, 
               width: 25, 
