@@ -157,7 +157,58 @@ export const projectOptions = (setFileName?: (name: string) => void): MenuOption
   },
   {
     label: 'Load Results',
-    onClick: () => {},
+    onClick: (addWindow) => {
+      // Create a new file input element
+      const fileInput = document.createElement('input');
+      fileInput.type = 'file'; // Set input type to file
+      fileInput.accept = '.json'; // Specify accepted file types as JSON
+      fileInput.style.display = 'none'; // Hide the file input element
+
+      // Function to handle file selection
+      const handleFileSelected = (event: Event) => {
+        const input = event.target as HTMLInputElement;
+        const selectedFile = input.files?.[0]; // Get the selected file
+
+        if (!selectedFile) return; // If no file is selected, exit
+
+        // Create a FileReader to read the file content
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const content = e.target?.result as string; // Get the file content as a string
+          //TODO: Make sure there is no duplicates when merging. If there are show the import form to resolve conflicts.
+          try {
+            const parsedContent = JSON.parse(content);
+            console.log(parsedContent);
+            addWindow(`${parsedContent.name} - Results View`, <div style={{
+              width: '100%',
+              height: '100%',
+              position: 'relative',
+            }}>
+              <>
+              {/* TODO: ADD REACT SANKEY TIMELINE COMPONENT HERE */}
+              Sankey Timeline goes here
+              </>
+            </div>)
+
+            console.log('Sending data to iframe:', parsedContent); // Add logging here
+            window?.postMessage(parsedContent, '*');
+          } catch (error) {
+            console.error('Invalid JSON format or other error:', error); // Add logging here
+          }
+          // You can now work with the JSON content here
+        };
+        reader.readAsText(selectedFile); // Read the file as text
+      };
+
+      // Add an event listener for when a file is selected
+      fileInput.addEventListener('change', handleFileSelected, false);
+
+      // Append the file input to the document body
+      document.body.appendChild(fileInput);
+
+      // Trigger a click on the file input to open the file dialog
+      fileInput.click();
+    },
   },
   {
     label: 'Clear Cached Data',
