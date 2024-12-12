@@ -151,10 +151,10 @@ export const projectOptions = (setFileName?: (name: string) => void): MenuOption
     label: 'Templates',
     onClick: () => {},
   },
-  {
-    label: 'Load Demo',
-    onClick: () => {},
-  },
+  // {
+  //   label: 'Load Demo',
+  //   onClick: () => {},
+  // },
   {
     label: 'Load Results',
     onClick: (addWindow) => {
