@@ -52,7 +52,7 @@ type Link = {
 };
 
 type TimelineOptions = {
-  fileName: string;
+  name: string;
   keyStates: {
     name: string;
     paths: Node[];
@@ -74,6 +74,8 @@ type SankeyTimelineProps = {
 let nodes: Record<string, Node> = {};
 let links: Record<string, Record<string, Link>> = {};
 const nodeIdMap: Record<number, string> = {};
+const timeline = new SankeyTimeline();
+let renderer: Renderer | null = null;
 
 /**
  * Renders or re-renders the timeline.
@@ -97,8 +99,6 @@ function render(
       keyStates.push(name);
     }
   });
-
-  const timeline = new SankeyTimeline();
 
   /**
    * Preprocesses path results for the selected key states.
@@ -173,7 +173,7 @@ function render(
 
   nodes = mergeNodeLayouts(nodes, processed[0]);
   links = processed[1];
-  const renderer = new Renderer(timeline, svgRef);
+  renderer = new Renderer(timeline, svgRef);
   renderer.options.height = window.innerHeight;
   renderer.options.width = window.innerWidth;
   renderer.options.dynamicNodeHeight = true;
@@ -332,7 +332,6 @@ function render(
   }
 
   renderer.on('positionChanged', (node, x, y) => {
-    console.log(`Updating position of ${nodeIdMap[node]} to ${x},${y}`);
     const name = nodeIdMap[node];
     if (nodes[name].layout) {
       if (options.layout === 'default') {
@@ -470,7 +469,6 @@ export const SankeyTimelineDiagram: React.FC<SankeyTimelineProps> = ({ data }) =
       </Button>
       <Button
         onClick={() => {
-          /*
           const pathResults = data;
           pathResults.keyStates.forEach((path, k) => {
             path.paths.forEach((state, s) => {
@@ -480,22 +478,23 @@ export const SankeyTimelineDiagram: React.FC<SankeyTimelineProps> = ({ data }) =
               delete pathResults.keyStates[k].paths[s].timelineNode;
             });
           });
+          if (renderer !== null) {
           pathResults.options = {
             customColors,
             fontSize: renderer.options.fontSize,
-            lastEditedNode: lastEditedNode,
+            // lastEditedNode: lastEditedNode,
             maxNodeHeight: renderer.options.maxNodeHeight,
             maxLinkWidth: renderer.options.maxLinkWidth,
           };
+        }
           const link = document.createElement('a');
           const file = new Blob([JSON.stringify(pathResults)], {
             type: 'text/plain',
           });
           link.href = URL.createObjectURL(file);
-          link.download = data.fileName;
+          link.download = data.name;
           link.click();
           URL.revokeObjectURL(link.href);
-          */
         }}
       >
         Save

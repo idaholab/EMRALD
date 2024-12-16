@@ -179,7 +179,7 @@ export const projectOptions = (setFileName?: (name: string) => void): MenuOption
           //TODO: Make sure there is no duplicates when merging. If there are show the import form to resolve conflicts.
           try {
             const parsedContent = JSON.parse(content);
-            console.log(parsedContent);
+            parsedContent.name = selectedFile.name;
             addWindow(`${parsedContent.name} - Results View`, <div style={{
               width: '100%',
               height: '100%',
@@ -187,9 +187,6 @@ export const projectOptions = (setFileName?: (name: string) => void): MenuOption
             }}>
               <SankeyTimelineDiagram data={parsedContent} />
             </div>)
-
-            console.log('Sending data to iframe:', parsedContent); // Add logging here
-            window?.postMessage(parsedContent, '*');
           } catch (error) {
             console.error('Invalid JSON format or other error:', error); // Add logging here
           }
