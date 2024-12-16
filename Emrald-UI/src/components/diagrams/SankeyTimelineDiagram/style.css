@@ -1,0 +1,10 @@
+#color-options, #color-custom-options {
+    display: flex;
+}
+
+.color-option {
+    flex: 1;
+    height: 50px;
+    cursor: pointer;
+    min-width: 50px;
+}
