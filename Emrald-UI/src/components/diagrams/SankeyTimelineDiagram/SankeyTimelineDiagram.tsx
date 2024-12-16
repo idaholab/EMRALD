@@ -73,6 +73,7 @@ type SankeyTimelineProps = {
 
 let nodes: Record<string, Node> = {};
 let links: Record<string, Record<string, Link>> = {};
+const nodeIdMap: Record<number, string> = {};
 
 /**
  * Renders or re-renders the timeline.
@@ -81,7 +82,7 @@ function render(
   data: TimelineOptions,
   svgRef: RefObject<SVGSVGElement>,
   options: {
-    layout: string;
+    layout: 'default' | 'timeline';
     fontSize: number;
     borderWidth: number;
     labelFontSize: number;
@@ -155,7 +156,22 @@ function render(
   }
 
   const processed = preprocess(data, keyStates);
-  nodes = processed[0];
+
+  /**
+   * Ensures the dragged node positions persist through re-rendering.
+   * @param oldNodes - The old node dictionary.
+   * @param newNodes - The new node dictionary.
+   */
+  function mergeNodeLayouts(oldNodes: Record<string, Node>, newNodes: Record<string, Node>) {
+    Object.entries(oldNodes).forEach(([name, node]) => {
+      if (newNodes[name]) {
+        newNodes[name].layout = node.layout;
+      }
+    });
+    return newNodes;
+  }
+
+  nodes = mergeNodeLayouts(nodes, processed[0]);
   links = processed[1];
   const renderer = new Renderer(timeline, svgRef);
   renderer.options.height = window.innerHeight;
@@ -293,6 +309,7 @@ function render(
         timelineNode.persist = node.layout;
       }
       nodes[n].timelineNode = timelineNode;
+      nodeIdMap[timelineNode.id] = n;
     });
     Object.keys(nodes).forEach((n) => {
       if (links[n]) {
@@ -313,6 +330,20 @@ function render(
   if (data.options?.lastEditedNode) {
     lastEditedNode = data.options.lastEditedNode;
   }
+
+  renderer.on('positionChanged', (node, x, y) => {
+    console.log(`Updating position of ${nodeIdMap[node]} to ${x},${y}`);
+    const name = nodeIdMap[node];
+    if (nodes[name].layout) {
+      if (options.layout === 'default') {
+        nodes[name].layout.default = { x, y };
+      } else {
+        nodes[name].layout.timeline = { y };
+      }
+    } else {
+      nodes[name].layout = { default: { x, y }, timeline: { y } };
+    }
+  });
 
   renderer.render();
 }
@@ -378,7 +409,7 @@ export const SankeyTimelineDiagram: React.FC<SankeyTimelineProps> = ({ data }) =
 
   return (
     <div>
-      <FormGroup>
+      <FormGroup row>
         <FormControlLabel
           label="Show Timeline"
           control={
@@ -470,9 +501,8 @@ export const SankeyTimelineDiagram: React.FC<SankeyTimelineProps> = ({ data }) =
         Save
       </Button>
       <svg ref={svgRef}></svg>
-      <FormGroup>
+      <FormGroup row>
         {allKeyStates.map((name) => {
-          // TODO - these checkboxes are buggy
           return (
             <FormControlLabel
               key={name}

@@ -4,6 +4,7 @@ import { drag } from 'd3-drag';
 import { easeCubicIn } from 'd3-ease';
 import { type BaseType, select, selectAll, type Selection } from 'd3-selection';
 import { type Transition, transition } from 'd3-transition';
+import { EventEmitter } from 'ee-ts';
 import colors from './colors';
 import type SankeyTimeline from './SankeyTimeline';
 import type TimelineLink from './TimelineLink';
@@ -14,7 +15,9 @@ import { hasDist } from './util';
 /**
  * Renders the chart using D3.
  */
-export default class Renderer {
+export default class Renderer extends EventEmitter<{
+  positionChanged(node: number, x: number, y: number): void;
+}> {
   private graph: TimelineGraph = {
     links: [],
     nodes: [],
@@ -52,8 +55,7 @@ export default class Renderer {
       borderWidth: 6,
     },
     layout: 'default',
-    linkTitle: (d: TimelineLink) =>
-      `${d.source.label} → ${d.target.label}\n${d.flow}`,
+    linkTitle: (d: TimelineLink) => `${d.source.label} → ${d.target.label}\n${d.flow}`,
     margin: 60,
     maxLinkWidth: 50,
     maxNodeHeight: 100,
@@ -84,10 +86,8 @@ export default class Renderer {
     private timeline: SankeyTimeline,
     svgRef: React.RefObject<SVGSVGElement>,
   ) {
-    this.range = [
-      this.options.margin,
-      this.options.width - this.options.margin,
-    ];
+    super();
+    this.range = [this.options.margin, this.options.width - this.options.margin];
     this.container = select<BaseType, HTMLElement>(svgRef.current);
   }
 
@@ -193,17 +193,14 @@ export default class Renderer {
           node.layout.y = node.persist.default.y;
         } else {
           node.layout.x = colXs[node.layout.column];
-          node.layout.y =
-            (node.layout.row / (maxRow + 1)) * this.options.height;
+          node.layout.y = (node.layout.row / (maxRow + 1)) * this.options.height;
         }
       } else if (this.options.layout === 'timeline') {
-        node.layout.x =
-          this.getTimeX(node.times.meanTime) - node.layout.width / 2;
+        node.layout.x = this.getTimeX(node.times.meanTime) - node.layout.width / 2;
         if (node.persist) {
           node.layout.y = node.persist.timeline.y;
         } else {
-          node.layout.y =
-            (node.layout.row / (maxRow + 1)) * this.options.height;
+          node.layout.y = (node.layout.row / (maxRow + 1)) * this.options.height;
         }
       }
       if (node.layout.x + node.layout.width > this.maxRight) {
@@ -231,19 +228,11 @@ export default class Renderer {
         if (hasDist(node.times) && this.options.distributions) {
           node.layout.distribution = [
             {
-              x:
-                shift +
-                this.getTimeX(
-                  node.times.meanTime - (node.times.stdDeviation || 0),
-                ),
+              x: shift + this.getTimeX(node.times.meanTime - (node.times.stdDeviation || 0)),
               y: node.layout.y,
             },
             {
-              x:
-                shift +
-                this.getTimeX(
-                  node.times.meanTime + (node.times.stdDeviation || 0),
-                ),
+              x: shift + this.getTimeX(node.times.meanTime + (node.times.stdDeviation || 0)),
               y: node.layout.y,
             },
           ];
@@ -308,10 +297,7 @@ export default class Renderer {
    */
   public render() {
     this.graph = this.timeline.graph;
-    this.range = [
-      this.options.margin,
-      this.options.width - this.options.margin,
-    ];
+    this.range = [this.options.margin, this.options.width - this.options.margin];
     this.container
       .style('background', this.options.background)
       .style('width', Math.max(this.options.width, this.maxRight))
@@ -352,11 +338,7 @@ export default class Renderer {
     const tickInterval = Math.round(
       (this.timeline.maxTime - this.timeline.minTime) / this.options.ticks,
     );
-    for (
-      let i = this.timeline.minTime;
-      i <= this.timeline.maxTime + 1;
-      i += 1
-    ) {
+    for (let i = this.timeline.minTime; i <= this.timeline.maxTime + 1; i += 1) {
       if (i % tickInterval === 0) {
         const x = this.getTimeX(i);
         const renderer = this;
@@ -369,16 +351,11 @@ export default class Renderer {
           })
           .attr(
             'y',
-            this.options.axis.height +
-              this.options.axis.tick.height +
-              this.options.axis.margin,
+            this.options.axis.height + this.options.axis.tick.height + this.options.axis.margin,
           );
         axisContainer
           .append('rect')
-          .style(
-            'height',
-            this.options.axis.tick.height - this.options.axis.height,
-          )
+          .style('height', this.options.axis.tick.height - this.options.axis.height)
           .style('width', this.options.axis.tick.width)
           .attr('x', this.shift + x)
           .attr('y', this.options.axis.height)
@@ -397,9 +374,7 @@ export default class Renderer {
       .selectAll('g')
       .data(this.graph.links)
       .join('g')
-      .attr('stroke', (d: TimelineLink) =>
-        (color(d.source.layout.color) as RGBColor).toString(),
-      )
+      .attr('stroke', (d: TimelineLink) => (color(d.source.layout.color) as RGBColor).toString())
       .attr('class', 'link')
       .style('mix-blend-mode', 'multiply');
 
@@ -464,9 +439,7 @@ export default class Renderer {
           .duration(options.transitionSpeed)
           .ease(easeCubicIn) as any as TransitionType;
         selectAll('.node, .link').transition(fade).style('opacity', 1);
-        selectAll('.distHandle')
-          .transition(fade)
-          .style('opacity', options.fadeOpacity);
+        selectAll('.distHandle').transition(fade).style('opacity', options.fadeOpacity);
       })
       .call(
         drag<any, TimelineNode>()
@@ -511,9 +484,7 @@ export default class Renderer {
             }
           })
           .on('drag.update', () => {
-            selectAll<BaseType, TimelineNode>('.node').each(function (
-              d: TimelineNode,
-            ) {
+            selectAll<BaseType, TimelineNode>('.node').each(function (d: TimelineNode) {
               const element = select<BaseType, TimelineNode>(this);
               element
                 .select('.nodeFill')
@@ -530,10 +501,7 @@ export default class Renderer {
               element
                 .select('.labelBox')
                 .attr('x', () => d.layout.x)
-                .attr(
-                  'y',
-                  () => d.layout.y + d.layout.height / 2 - d.textHeight / 2,
-                );
+                .attr('y', () => d.layout.y + d.layout.height / 2 - d.textHeight / 2);
               selectAll<BaseType, TimelineLink>('.link').each(function (l) {
                 l.layout.path = renderer.getCurvePath(l);
                 const current = select(this);
@@ -545,19 +513,15 @@ export default class Renderer {
                   .attr('y', function () {
                     let y = midpoint.y;
                     if (l.isSelfLinking) {
-                      y =
-                        y -
-                        renderer.options.curve.height +
-                        this.getBBox().height / 2;
+                      y = y - renderer.options.curve.height + this.getBBox().height / 2;
                     }
                     return y;
                   });
               });
               element.select('.distHandleLeft').attr('y', () => d.layout.y);
-              element
-                .select('.distHandleCenter')
-                .attr('y', () => d.layout.y + d.layout.height / 2);
+              element.select('.distHandleCenter').attr('y', () => d.layout.y + d.layout.height / 2);
               element.select('.distHandleRight').attr('y', () => d.layout.y);
+              renderer.emit('positionChanged', d.id, d.layout.x, d.layout.y);
             });
           }),
       );
@@ -685,10 +649,7 @@ export default class Renderer {
       .attr('y', (d: TimelineNode) => d.layout.y - this.options.meanBar.width)
       .attr('class', 'meanValue')
       .attr('width', this.options.meanBar.width)
-      .attr(
-        'height',
-        (d: TimelineNode) => d.layout.height + this.options.meanBar.width * 2,
-      )
+      .attr('height', (d: TimelineNode) => d.layout.height + this.options.meanBar.width * 2)
       .attr('fill', this.options.meanBar.color);
   }
 
@@ -813,9 +774,9 @@ export default class Renderer {
     if (link.isSelfLinking) {
       path = `M${curve[0][0] - 5},${curve[0][1]}C${curve[1][0]},${
         curve[1][1] - this.options.curve.height
-      },${curve[2][0]},${curve[2][1] - this.options.curve.height},${
-        curve[3][0] + 5
-      },${curve[3][1]}`;
+      },${curve[2][0]},${curve[2][1] - this.options.curve.height},${curve[3][0] + 5},${
+        curve[3][1]
+      }`;
     }
     return path;
   }
@@ -828,8 +789,7 @@ export default class Renderer {
    */
   private getTimeX(time: number): number {
     return (
-      (this.range[1] - this.range[0]) *
-        (time / (this.timeline.maxTime - this.timeline.minTime)) +
+      (this.range[1] - this.range[0]) * (time / (this.timeline.maxTime - this.timeline.minTime)) +
       this.range[0]
     );
   }
@@ -842,9 +802,6 @@ export default class Renderer {
    */
   public setNodeColor(targetNode: number, color: string) {
     this.timeline.setNodeColor(targetNode, color);
-    selectAll<BaseType, TimelineNode>('.nodeFill').attr(
-      'fill',
-      (d) => d.layout.color,
-    );
+    selectAll<BaseType, TimelineNode>('.nodeFill').attr('fill', (d) => d.layout.color);
   }
 }
