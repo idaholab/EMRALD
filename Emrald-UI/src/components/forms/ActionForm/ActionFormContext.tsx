@@ -159,7 +159,7 @@ const ActionFormContextProvider: React.FC<PropsWithChildren> = ({ children }) =>
 
   const handleMutuallyExclusiveChange = (value: boolean) => {
     newStateItems.forEach((newStateItem) => {
-      checkProbability(newStateItem, value);
+      checkProbability(newStateItem, newStateItems, value);
       if (value === false) {
         if (newStateItem.prob === -1) {
           newStateItem.remaining = false;
@@ -190,7 +190,7 @@ const ActionFormContextProvider: React.FC<PropsWithChildren> = ({ children }) =>
     return nameExists;
   };
 
-  const checkProbability = (updatedItem: NewStateItem, updatedMutuallyExclusive?: boolean, updatedRemaining?: boolean | undefined) => {
+  const checkProbability = (updatedItem: NewStateItem, updateItems: NewStateItem[], updatedMutuallyExclusive?: boolean, updatedRemaining?: boolean | undefined) => {
     if (!updatedItem.prob) {
       setErrorIds((prevErrorItemIds) => new Set([...prevErrorItemIds, updatedItem.id]));
       setErrorMessage('Must contain a value');
@@ -198,12 +198,14 @@ const ActionFormContextProvider: React.FC<PropsWithChildren> = ({ children }) =>
     }
   
     if (updatedMutuallyExclusive !== undefined ? updatedMutuallyExclusive : mutuallyExclusive) {
-      const totalProb = newStateItems.reduce((acc, item) => {
+      const totalProb = updateItems.reduce((acc, item) => {
           return item.prob === -1 ? acc : acc + Number(item.prob);
         }, 0);
         let remainingProb: number;
 
-        if (updatedRemaining !== undefined && updatedRemaining === true) {
+        const hasRemainingTrue = updateItems.some((item) => item.remaining === true);
+
+        if (updatedRemaining!== undefined && updatedRemaining === true || hasRemainingTrue) {
           remainingProb = 1 - totalProb;
         } else {
           remainingProb = 0;
@@ -222,7 +224,7 @@ const ActionFormContextProvider: React.FC<PropsWithChildren> = ({ children }) =>
       const probValue = Number(updatedItem.prob);
       if (probValue > 1) {
         setErrorIds((prevErrorItemIds) => new Set([...prevErrorItemIds, updatedItem.id]));
-        setErrorMessage('Probabilities must be greater than 0 andnot exceed 1');
+        setErrorMessage('Probabilities must be greater than 0 and not exceed 1');
         setHasError(true);
       } else {
         setErrorIds((prevErrorItemIds) => new Set([...prevErrorItemIds].filter((id) => id !== updatedItem.id)));
@@ -399,7 +401,7 @@ const ActionFormContextProvider: React.FC<PropsWithChildren> = ({ children }) =>
           return item;
         });
 
-        checkProbability(updatedItem);
+        checkProbability(updatedItem, updatedItems);
         return updatedItems;
       });
     } 
@@ -429,7 +431,7 @@ const ActionFormContextProvider: React.FC<PropsWithChildren> = ({ children }) =>
       ...item,
       remaining: event.target.checked,
       prob: event.target.checked ? -1 : 0.0,
-    }, undefined, event.target.checked);
+    }, updatedItems);
   };
 
   const handleProbTypeChange = (event: React.ChangeEvent<HTMLInputElement>, item: NewStateItem) => {

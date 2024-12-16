@@ -33,6 +33,8 @@ const EmraldDiagram: React.FC<EmraldDiagramProps> = ({ diagram }) => {
     getStateNodes,
     onNodesChange,
     onEdgesChange,
+    onEdgeClick,
+    onPaneClick,
     onNodeDragStop,
     onConnect,
     onNodeDoubleClick,
@@ -73,13 +75,14 @@ const EmraldDiagram: React.FC<EmraldDiagramProps> = ({ diagram }) => {
             edges={edges}
             onNodesChange={onNodesChange}
             onEdgesChange={onEdgesChange}
+            onEdgeClick={onEdgeClick}
             onConnect={onConnect}
             onPaneContextMenu={onPaneContextMenu}
             onNodeContextMenu={onNodeContextMenu}
             onNodeDoubleClick={onNodeDoubleClick}
             onEdgeContextMenu={(event, edge) => onEdgeContextMenu(event, edge, edges)}
             onEdgeUpdate={onEdgeUpdate}
-            onPaneClick={() => closeContextMenu()}
+            onPaneClick={(e) => { closeContextMenu(); onPaneClick(e); }}
             connectionLineComponent={CustomConnectionLine}
             onNodeDragStop={onNodeDragStop}
             isValidConnection={isValidConnection}
