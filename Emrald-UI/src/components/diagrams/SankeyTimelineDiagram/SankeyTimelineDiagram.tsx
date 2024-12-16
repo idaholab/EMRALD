@@ -71,7 +71,6 @@ type SankeyTimelineProps = {
   data: TimelineOptions;
 };
 
-let initialized = false;
 let nodes: Record<string, Node> = {};
 let links: Record<string, Record<string, Link>> = {};
 
@@ -89,9 +88,15 @@ function render(
     maxNodeHeight: number;
     maxLinkWidth: number;
   },
-  keyStates: string[],
+  keyStatesRecord: Record<string, boolean>,
 ) {
-  console.log(nodes);
+  const keyStates: string[] = [];
+  Object.entries(keyStatesRecord).forEach(([name, enabled]) => {
+    if (enabled) {
+      keyStates.push(name);
+    }
+  });
+
   const timeline = new SankeyTimeline();
 
   /**
@@ -149,11 +154,9 @@ function render(
     return [nodes, links];
   }
 
-  if (!initialized) {
-    const processed = preprocess(data, keyStates);
-    nodes = processed[0];
-    links = processed[1];
-  }
+  const processed = preprocess(data, keyStates);
+  nodes = processed[0];
+  links = processed[1];
   const renderer = new Renderer(timeline, svgRef);
   renderer.options.height = window.innerHeight;
   renderer.options.width = window.innerWidth;
@@ -312,7 +315,6 @@ function render(
   }
 
   renderer.render();
-  initialized = true;
 }
 
 export const SankeyTimelineDiagram: React.FC<SankeyTimelineProps> = ({ data }) => {
@@ -320,8 +322,22 @@ export const SankeyTimelineDiagram: React.FC<SankeyTimelineProps> = ({ data }) =
   let customColors: string[] = [];
 
   const allKeyStates = data.keyStates.map((state) => state.name);
+  const ksRecord: Record<string, boolean> = {};
+  allKeyStates.forEach((state) => {
+    ksRecord[state] = true;
+  });
 
-  const [state, setState] = useState({
+  const [state, setState] = useState<{
+    otherStates: boolean;
+    timelineMode: boolean;
+    layout: 'default' | 'timeline';
+    fontSize: number;
+    borderWidth: number;
+    labelFontSize: number;
+    maxNodeHeight: number;
+    maxLinkWidth: number;
+    keyStates: Record<string, boolean>;
+  }>({
     otherStates: false,
     timelineMode: false,
     layout: 'default',
@@ -330,7 +346,7 @@ export const SankeyTimelineDiagram: React.FC<SankeyTimelineProps> = ({ data }) =
     labelFontSize: 1,
     maxNodeHeight: data.options ? data.options.maxNodeHeight : window.innerHeight / 7,
     maxLinkWidth: data.options ? data.options.maxLinkWidth : window.innerHeight / 7 / 2,
-    keyStates: allKeyStates,
+    keyStates: ksRecord,
   });
 
   const {
@@ -463,14 +479,14 @@ export const SankeyTimelineDiagram: React.FC<SankeyTimelineProps> = ({ data }) =
               label={name}
               control={
                 <Checkbox
+                  checked={keyStates[name]}
                   onChange={(e, value) => {
-                    const tempKeyStates = [...keyStates];
-                    if (!value) {
-                      tempKeyStates.splice(tempKeyStates.indexOf(name, 1));
-                    }
                     setState({
                       ...state,
-                      keyStates: tempKeyStates,
+                      keyStates: {
+                        ...keyStates,
+                        [name]: value,
+                      },
                     });
                   }}
                 />
