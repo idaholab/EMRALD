@@ -1,6 +1,7 @@
 import { appData, clearCacheData } from '../../../hooks/useAppData';
 import { upgradeModel, validateModel } from '../../../utils/Upgrades/upgrade';
 import { v4 as uuidv4 } from 'uuid';
+import { SankeyTimelineDiagram } from '../../diagrams/SankeyTimelineDiagram/SankeyTimelineDiagram';
 
 export interface MenuOption {
   label: string;
@@ -184,10 +185,7 @@ export const projectOptions = (setFileName?: (name: string) => void): MenuOption
               height: '100%',
               position: 'relative',
             }}>
-              <>
-              {/* TODO: ADD REACT SANKEY TIMELINE COMPONENT HERE */}
-              Sankey Timeline goes here
-              </>
+              <SankeyTimelineDiagram data={parsedContent} />
             </div>)
 
             console.log('Sending data to iframe:', parsedContent); // Add logging here

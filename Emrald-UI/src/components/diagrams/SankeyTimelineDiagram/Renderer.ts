@@ -73,6 +73,8 @@ export default class Renderer {
 
   private shift = 0;
 
+  private container!: Selection<BaseType, HTMLElement, BaseType, any>;
+
   /**
    * Constructs Renderer.
    * @param timeline - The timeline to render.
@@ -80,12 +82,13 @@ export default class Renderer {
    */
   public constructor(
     private timeline: SankeyTimeline,
-    private container: Selection<BaseType, unknown, HTMLElement, any>,
+    svgRef: React.RefObject<SVGSVGElement>,
   ) {
     this.range = [
       this.options.margin,
       this.options.width - this.options.margin,
     ];
+    this.container = select<BaseType, HTMLElement>(svgRef.current);
   }
 
   /**
@@ -333,6 +336,7 @@ export default class Renderer {
     }
     this.createNodeLabels();
     this.createLinkLabels();
+    return this.container;
   }
 
   /**

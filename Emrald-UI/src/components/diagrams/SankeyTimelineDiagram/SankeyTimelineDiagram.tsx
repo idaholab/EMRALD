@@ -1,9 +1,11 @@
+import React, { useRef, useState } from 'react';
 import { select, selectAll } from 'd3-selection';
-import '../style.css';
 import colors from './colors';
 import type TimelineNode from './TimelineNode';
-import * as sankeyTimeline from './index';
 import TimelineLink from './TimelineLink';
+import SankeyTimeline from './SankeyTimeline';
+import { Button, Checkbox, FormControl, FormControlLabel, FormGroup } from '@mui/material';
+import Renderer from './Renderer';
 
 type Node = {
   count: number;
@@ -76,14 +78,20 @@ function toggleKeyState(stateName: string) {
   }
 }
 
-/**
- * Reads the data & displays the Sankey diagram.
- */
-export default function main() {
-  let timeline = new sankeyTimeline.SankeyTimeline();
-  const data: TimelineOptions = (window as any).data;
-  const keyStateOptions = document.getElementById('keyStateOptions');
+type SankeyTimelineProps = {
+  data: TimelineOptions;
+};
+
+export const SankeyTimelineDiagram: React.FC<SankeyTimelineProps> = ({ data }) => {
+  const svgRef = useRef<SVGSVGElement>(null);
+  const [state, setState] = useState({
+    otherStates: false,
+    timelineMode: false,
+  });
+
+  const timeline = new SankeyTimeline();
   let customColors: string[] = [];
+
   /**
    * Preprocesses path results for the selected key states.
    *
@@ -114,13 +122,9 @@ export default function main() {
           } else {
             nodes[path.name].count += path.count;
             nodes[path.name].combined.c.push(path.count);
-            nodes[path.name].combined.n.push(
-              path.count / path.contributionRate,
-            );
+            nodes[path.name].combined.n.push(path.count / path.contributionRate);
             nodes[path.name].combined.x.push(timestampToSeconds(path.timeMean));
-            nodes[path.name].combined.s.push(
-              timestampToSeconds(path.timeStdDeviation),
-            );
+            nodes[path.name].combined.s.push(timestampToSeconds(path.timeStdDeviation));
           }
           path.exits.forEach((link) => {
             if (!links[path.name]) {
@@ -142,31 +146,18 @@ export default function main() {
       });
     return [nodes, links];
   }
+
   let nodes: Record<string, Node> = {};
   let links: Record<string, Record<string, Link>> = {};
   data.keyStates.forEach((keyState) => {
     // TODO: are key state names unique?
     keyStates.push(keyState.name);
-    const checkbox = document.createElement('input');
-    checkbox.type = 'checkbox';
-    checkbox.checked = true;
-    checkbox.setAttribute('data-state', keyState.name);
-    checkbox.addEventListener('change', function handleCheck() {
-      toggleKeyState(this.getAttribute('data-state') as string);
-      const newData = preprocess(data, keyStates);
-      nodes = newData[0];
-      links = newData[1];
-      createPaths();
-      reRender();
-    });
-    const label = document.createTextNode(keyState.name);
-    keyStateOptions?.appendChild(checkbox);
-    keyStateOptions?.appendChild(label);
   });
+
   const processed = preprocess(data, keyStates);
   nodes = processed[0];
   links = processed[1];
-  const renderer = new sankeyTimeline.Renderer(timeline, select('svg'));
+  const renderer = new Renderer(timeline, svgRef);
   renderer.options.height = window.innerHeight;
   renderer.options.width = window.innerWidth;
   renderer.options.dynamicNodeHeight = true;
@@ -262,13 +253,11 @@ export default function main() {
       combined5th95th(d.data)[0]
     }\nRate 95th: ${combined5th95th(d.data)[1]}\nContribution Rate: ${
       d.data.contributionRate
-    }\nMin Time: ${d.data.timeMin}\nMax Time: ${
-      d.data.timeMax
-    }\nMean Time: ${secondsToTimestamp(
+    }\nMin Time: ${d.data.timeMin}\nMax Time: ${d.data.timeMax}\nMean Time: ${secondsToTimestamp(
       combinedMean(d.data),
-    )}\nStandard Deviation: ${secondsToTimestamp(combinedStd(d.data))}\nRow: ${
-      d.layout.row
-    },Col: ${d.layout.column}`;
+    )}\nStandard Deviation: ${secondsToTimestamp(combinedStd(d.data))}\nRow: ${d.layout.row},Col: ${
+      d.layout.column
+    }`;
   renderer.options.linkTitle = (d: TimelineLink) =>
     `${d.data.name}\n${d.data.desc}\nAction Description: ${d.data.actDesc}\nEvent Description: ${d.data.evDesc}\nCount: ${d.data.count}`;
 
@@ -336,77 +325,114 @@ export default function main() {
    * Forcibly re-renders the diagram.
    */
   function reRender() {
-    selectAll('svg > *').remove();
+    select(svgRef.current).selectChildren().remove();
     renderer.render();
   }
 
-  (window as any).toggleTimelineMode = (value: boolean) => {
-    if (value) {
-      renderer.options.layout = 'default';
-    } else {
-      renderer.options.layout = 'timeline';
-    }
-    reRender();
-  };
+  const { timelineMode, otherStates } = state;
 
-  (window as any).toggleOtherStatesMode = (value: boolean) => {
-    createPaths(value);
-    reRender();
-  };
-
-  (window as any).zoomIn = () => {
-    renderer.options.fontSize *= 1.1;
-    renderer.options.labels.borderWidth *= 1.1;
-    renderer.options.labels.fontSize *= 1.1;
-    renderer.options.maxNodeHeight *= 1.1;
-    renderer.options.maxLinkWidth *= 1.1;
-    reRender();
-  };
-
-  (window as any).zoomOut = () => {
-    renderer.options.fontSize *= 0.9;
-    renderer.options.labels.borderWidth *= 0.9;
-    renderer.options.labels.fontSize *= 0.9;
-    renderer.options.maxNodeHeight *= 0.9;
-    renderer.options.maxLinkWidth *= 0.9;
-    reRender();
-  };
-
-  (window as any).saveDiagram = () => {
-    const pathResults = data;
-    pathResults.keyStates.forEach((path, k) => {
-      path.paths.forEach((state, s) => {
-        const n = timeline.getNodesByLabel(state.name)[0];
-        pathResults.keyStates[k].paths[s].layout = n.persist;
-        pathResults.keyStates[k].paths[s].color = n.color;
-        delete pathResults.keyStates[k].paths[s].timelineNode;
-      });
-    });
-    pathResults.options = {
-      customColors,
-      fontSize: renderer.options.fontSize,
-      lastEditedNode: lastEditedNode,
-      maxNodeHeight: renderer.options.maxNodeHeight,
-      maxLinkWidth: renderer.options.maxLinkWidth,
-    };
-    const link = document.createElement('a');
-    const file = new Blob([JSON.stringify(pathResults)], {
-      type: 'text/plain',
-    });
-    link.href = URL.createObjectURL(file);
-    link.download = data.fileName;
-    link.click();
-    URL.revokeObjectURL(link.href);
-  };
-
-  /**
-   * Helper function to select an element by ID with correct typing.
-   * @param id - The ID of the element to get.
-   * @returns The element, cast as an HTMLElement.
-   */
-  function $<T extends HTMLElement>(id: string) {
-    return document.getElementById(id) as T;
-  }
+  return (
+    <div>
+      <FormGroup>
+        <FormControlLabel
+          label="Show Timeline"
+          control={
+            <Checkbox
+              checked={timelineMode}
+              onChange={(e, value) => {
+                if (timelineMode) {
+                  renderer.options.layout = 'default';
+                } else {
+                  renderer.options.layout = 'timeline';
+                }
+                reRender();
+                setState({
+                  ...state,
+                  timelineMode: value,
+                });
+              }}
+            />
+          }
+        ></FormControlLabel>
+        <FormControlLabel
+          label="Show Other State Paths"
+          control={
+            <Checkbox
+              checked={otherStates}
+              onChange={(e, value) => {
+                createPaths(value);
+                reRender();
+                setState({
+                  ...state,
+                  otherStates: value,
+                });
+              }}
+            />
+          }
+        ></FormControlLabel>
+      </FormGroup>
+      <Button
+        onClick={() => {
+          renderer.options.fontSize *= 1.1;
+          renderer.options.labels.borderWidth *= 1.1;
+          renderer.options.labels.fontSize *= 1.1;
+          renderer.options.maxNodeHeight *= 1.1;
+          renderer.options.maxLinkWidth *= 1.1;
+          reRender();
+        }}
+      >
+        Zoom In
+      </Button>
+      <Button
+        onClick={() => {
+          renderer.options.fontSize *= 0.9;
+          renderer.options.labels.borderWidth *= 0.9;
+          renderer.options.labels.fontSize *= 0.9;
+          renderer.options.maxNodeHeight *= 0.9;
+          renderer.options.maxLinkWidth *= 0.9;
+          reRender();
+        }}
+      >
+        Zoom Out
+      </Button>
+      <Button
+        onClick={() => {
+          const pathResults = data;
+          pathResults.keyStates.forEach((path, k) => {
+            path.paths.forEach((state, s) => {
+              const n = timeline.getNodesByLabel(state.name)[0];
+              pathResults.keyStates[k].paths[s].layout = n.persist;
+              pathResults.keyStates[k].paths[s].color = n.color;
+              delete pathResults.keyStates[k].paths[s].timelineNode;
+            });
+          });
+          pathResults.options = {
+            customColors,
+            fontSize: renderer.options.fontSize,
+            lastEditedNode: lastEditedNode,
+            maxNodeHeight: renderer.options.maxNodeHeight,
+            maxLinkWidth: renderer.options.maxLinkWidth,
+          };
+          const link = document.createElement('a');
+          const file = new Blob([JSON.stringify(pathResults)], {
+            type: 'text/plain',
+          });
+          link.href = URL.createObjectURL(file);
+          link.download = data.fileName;
+          link.click();
+          URL.revokeObjectURL(link.href);
+        }}
+      >
+        Save
+      </Button>
+      <svg ref={svgRef}></svg>
+      <FormGroup>
+        {keyStates.map((name) => {
+          return <FormControlLabel key={name} label={name} control={<Checkbox />} />;
+        })}
+      </FormGroup>
+    </div>
+  );
 
   /**
    * Helper function to populate the color pickers.
@@ -414,12 +440,8 @@ export default function main() {
    * @param parent - The node to creat the options in.
    * @param colors - The colors to create options for.
    * @param targetNode - The node to update when a color is picked.
-   */
-  function createColorOptions(
-    parent: HTMLDivElement,
-    colors: string[],
-    targetNode: TimelineNode,
-  ) {
+   *
+  function createColorOptions(parent: HTMLDivElement, colors: string[], targetNode: TimelineNode) {
     parent.innerHTML = '';
     colors.forEach((color) => {
       const option = document.createElement('div');
@@ -438,20 +460,12 @@ export default function main() {
   /**
    * Selects which node to edit when the dropdown is changed.
    * @param id - The selected ID.
-   */
+   *
   function selectNodeToEdit(id: string) {
     lastEditedNode = id;
     (document.getElementById('node-options') as HTMLSelectElement).value = id;
-    createColorOptions(
-      $('color-options'),
-      colors,
-      timeline.getNode(Number(id)),
-    );
-    createColorOptions(
-      $('color-custom-options'),
-      customColors,
-      timeline.getNode(Number(id)),
-    );
+    createColorOptions($('color-options'), colors, timeline.getNode(Number(id)));
+    createColorOptions($('color-custom-options'), customColors, timeline.getNode(Number(id)));
     $('set-custom-color').onclick = () => {
       const color = colorInput.value;
       renderer.setNodeColor(Number(id), color);
@@ -481,12 +495,9 @@ export default function main() {
         $('node-options').appendChild(option);
       });
     selectNodeToEdit(lastEditedNode);
-    $<HTMLSelectElement>('node-options').addEventListener(
-      'change',
-      function () {
-        selectNodeToEdit(this.value);
-      },
-    );
+    $<HTMLSelectElement>('node-options').addEventListener('change', function () {
+      selectNodeToEdit(this.value);
+    });
   };
 
   colorInput.addEventListener('keyup', () => {
@@ -503,7 +514,7 @@ export default function main() {
    * Adapted from https://www.w3schools.com/howto/howto_js_draggable.asp.
    *
    * @param elmnt - The element to drag.
-   */
+   *
   function dragElement(elmnt: HTMLDivElement) {
     var pos1 = 0,
       pos2 = 0,
@@ -547,13 +558,5 @@ export default function main() {
     }
   }
   dragElement($('node-menu'));
-
-  window.addEventListener('resize', () => {
-    renderer.options.width = window.innerWidth;
-    renderer.options.height = window.innerHeight;
-    renderer.options.maxNodeHeight = window.innerHeight / 7;
-    renderer.options.maxLinkWidth = renderer.options.maxNodeHeight / 2;
-    renderer.options.fontSize = 25;
-    reRender();
-  });
-}
+  */
+};
