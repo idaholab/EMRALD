@@ -180,6 +180,7 @@ export const projectOptions = (setFileName?: (name: string) => void): MenuOption
           try {
             const parsedContent = JSON.parse(content);
             parsedContent.name = selectedFile.name;
+            // TODO - Opening a results file with a different results file already open displays the same file in both windows
             addWindow(`${parsedContent.name} - Results View`, <div style={{
               width: '100%',
               height: '100%',

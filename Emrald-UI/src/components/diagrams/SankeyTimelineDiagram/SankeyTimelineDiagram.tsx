@@ -95,6 +95,7 @@ let links: Record<string, Record<string, Link>> = {};
 const nodeIdMap: Record<number, string> = {};
 const timeline = new SankeyTimeline();
 let renderer: Renderer | null = null;
+let nodeCache: Record<string, Node> = {};
 
 /**
  * Renders or re-renders the timeline.
@@ -111,6 +112,8 @@ function render(
     maxLinkWidth: number;
   },
   keyStatesRecord: Record<string, boolean>,
+  width: number,
+  height: number,
 ) {
   const keyStates: string[] = [];
   Object.entries(keyStatesRecord).forEach(([name, enabled]) => {
@@ -182,11 +185,14 @@ function render(
    * @param newNodes - The new node dictionary.
    */
   function mergeNodeLayouts(oldNodes: Record<string, Node>, newNodes: Record<string, Node>) {
-    Object.entries(oldNodes).forEach(([name, node]) => {
+    const allNodes = Object.entries(nodeCache).concat(Object.entries(oldNodes));
+    nodeCache = {};
+    allNodes.forEach(([name, node]) => {
       if (newNodes[name]) {
-        console.log(`${name} - ${node.color}`);
         newNodes[name].layout = node.layout;
         newNodes[name].color = node.color;
+      } else {
+        nodeCache[name] = node;
       }
     });
     return newNodes;
@@ -195,8 +201,8 @@ function render(
   nodes = mergeNodeLayouts(nodes, processed[0]);
   links = processed[1];
   renderer = new Renderer(timeline, svgRef);
-  renderer.options.height = window.innerHeight;
-  renderer.options.width = window.innerWidth;
+  renderer.options.height = height;
+  renderer.options.width = width;
   renderer.options.dynamicNodeHeight = true;
   renderer.options.layout = options.layout;
   renderer.options.fontSize = options.fontSize;
@@ -379,7 +385,7 @@ const PaperComponent: React.FC<PaperProps> = (props) => {
 
 export const SankeyTimelineDiagram: React.FC<SankeyTimelineProps> = ({ data }) => {
   const svgRef = useRef<SVGSVGElement>(null);
-  const nodeMenuRef = useRef<HTMLDivElement>(null);
+  const containerElement = useRef<HTMLDivElement>(null);
   let customColors: string[] = [];
   if (data.options) {
     customColors = data.options.customColors;
@@ -437,23 +443,27 @@ export const SankeyTimelineDiagram: React.FC<SankeyTimelineProps> = ({ data }) =
     customColorInput,
   } = state;
 
-  select(svgRef.current).selectChildren().remove();
-  render(
-    data,
-    svgRef,
-    {
-      layout,
-      fontSize,
-      borderWidth,
-      labelFontSize,
-      maxNodeHeight,
-      maxLinkWidth,
-    },
-    keyStates,
-  );
+  useEffect(() => {
+    select(svgRef.current).selectChildren().remove();
+    render(
+      data,
+      svgRef,
+      {
+        layout,
+        fontSize,
+        borderWidth,
+        labelFontSize,
+        maxNodeHeight,
+        maxLinkWidth,
+      },
+      keyStates,
+      containerElement.current?.offsetWidth || window.innerWidth,
+      containerElement.current?.offsetHeight || window.innerHeight,
+    );
+  });
 
   return (
-    <div>
+    <div ref={containerElement}>
       <FormGroup row>
         <FormControlLabel
           label="Show Timeline"
@@ -518,7 +528,10 @@ export const SankeyTimelineDiagram: React.FC<SankeyTimelineProps> = ({ data }) =
           const pathResults = data;
           pathResults.keyStates.forEach((path, k) => {
             path.paths.forEach((state, s) => {
-              const n = timeline.getNodesByLabel(state.name)[0];
+              let n = timeline.getNodesByLabel(state.name)[0];
+              if (!n) {
+                n = nodeCache[state.name].timelineNode as TimelineNode;
+              }
               pathResults.keyStates[k].paths[s].layout = n.persist;
               pathResults.keyStates[k].paths[s].color = n.color;
               delete pathResults.keyStates[k].paths[s].timelineNode;

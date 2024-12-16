@@ -71,6 +71,8 @@ export default class Renderer extends EventEmitter<{
 
   private maxRight = 0;
 
+  private maxY = 0;
+
   private range: [number, number];
 
   private shift = 0;
@@ -206,6 +208,9 @@ export default class Renderer extends EventEmitter<{
       if (node.layout.x + node.layout.width > this.maxRight) {
         this.maxRight = node.layout.x + node.layout.width;
       }
+      if (node.layout.y + node.layout.height > this.maxY) {
+        this.maxY = node.layout.y + node.layout.height;
+      }
     });
   }
 
@@ -298,10 +303,9 @@ export default class Renderer extends EventEmitter<{
   public render() {
     this.graph = this.timeline.graph;
     this.range = [this.options.margin, this.options.width - this.options.margin];
+    console.log(`${this.options.height}, ${this.maxY}`);
     this.container
       .style('background', this.options.background)
-      .style('width', Math.max(this.options.width, this.maxRight))
-      .style('height', this.options.height)
       .style('top', '23px')
       .style('position', 'relative');
     this.calculateLabelSizes();
@@ -322,6 +326,9 @@ export default class Renderer extends EventEmitter<{
     }
     this.createNodeLabels();
     this.createLinkLabels();
+    this.container
+      .style('width', Math.max(this.options.width, this.maxRight))
+      .style('height', Math.max(this.options.height, this.maxY));
     return this.container;
   }
 
