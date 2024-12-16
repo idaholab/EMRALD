@@ -21,7 +21,8 @@ import {
   Typography,
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { useActionFormContext } from './ActionFormContext';
+import { NewStateItem, useActionFormContext } from './ActionFormContext';
+import { scientificToNumeric } from '../../../utils/util-functions';
 
 export const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -76,19 +77,26 @@ const ActionToStateTable: React.FC = () => {
       return 'Calculated at runtime';
     } else {
       // Check if all prob values are valid numbers
-      const allProbValuesAreNumbers = newStateItems.every(
-        (item) => typeof item.prob === 'number' && !isNaN(item.prob)
+      const convertedProbValues = newStateItems.map((item: NewStateItem) => {
+          if (typeof item.prob === 'string') {
+            return scientificToNumeric(item.prob);
+          } else {
+            return item.prob
+          }
+        }
+      )
+      const allProbValuesAreNumbers = convertedProbValues.every(
+        (item) => typeof item === 'number' && !isNaN(item)
       );
   
       if (!allProbValuesAreNumbers) {
         return 'Unable to calculate';
       }
+      const sumOfProbs = convertedProbValues
+        .filter((item) => item !== -1)
+        .reduce((acc: number, item) => acc + (item as number), 0);
   
-      const sumOfProbs = newStateItems
-        .filter((item) => typeof item.prob === 'number' && item.prob !== -1)
-        .reduce((acc, item) => acc + (item.prob as number), 0);
-  
-      const remainingProb = 1 - sumOfProbs;
+      let remainingProb = 1 - sumOfProbs;
       if (remainingProb > 1) { 
         return 'Invalid Probability';
       }

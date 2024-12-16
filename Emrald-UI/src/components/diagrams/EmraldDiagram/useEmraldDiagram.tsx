@@ -71,6 +71,32 @@ const useEmraldDiagram = () => {
     });
   };
 
+  const onEdgeClick = (_event: any, edge: Edge) => {
+    // Highlight selected edge so its easier to see its connection and label
+    setEdges((eds) =>
+      eds.map((e) => {
+        if (e.id === edge.id) {
+          return {
+            ...e,
+            style: { ...e.style, stroke: '#e3961c' },
+            labelStyle: { ...e.labelStyle, fill: '#e3961c', fontWeight: 'bold', transform: 'translateY(-10px)' },
+          };
+        } else {
+          return {
+            ...e,
+            style: { ...e.style, stroke: '#b1b1b7' },
+            labelStyle: { ...e.labelStyle, fill: 'transparent' },
+          };
+        }
+      })
+    );
+  };
+
+  const onPaneClick = (_event: any) => {
+    // reset edge color when the user clicks away
+    getEdges(nodes);
+  };
+
   // Double Clicks
   const onNodeDoubleClick = (_event: any, node: Node) => {
     if (node.data.state) {
@@ -276,6 +302,8 @@ const useEmraldDiagram = () => {
     onNodesChange,
     onEdgesChange,
     onEdgeUpdate,
+    onEdgeClick,
+    onPaneClick,
     onConnect,
     onNodeDoubleClick,
     onEventDoubleClick,
