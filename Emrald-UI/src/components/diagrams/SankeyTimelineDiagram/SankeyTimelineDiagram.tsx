@@ -105,6 +105,7 @@ function render(
   svgRef: RefObject<SVGSVGElement>,
   options: {
     layout: 'default' | 'timeline';
+    distributions: boolean;
     fontSize: number;
     borderWidth: number;
     labelFontSize: number;
@@ -210,6 +211,7 @@ function render(
   renderer.options.labels.fontSize = options.labelFontSize;
   renderer.options.maxNodeHeight = options.maxNodeHeight;
   renderer.options.maxLinkWidth = options.maxLinkWidth;
+  renderer.options.distributions = options.distributions;
 
   /**
    * Converts the timestamp string from the data into a number of seconds since the start.
@@ -400,6 +402,7 @@ export const SankeyTimelineDiagram: React.FC<SankeyTimelineProps> = ({ data }) =
   const [state, setState] = useState<{
     otherStates: boolean;
     timelineMode: boolean;
+    distributions: boolean;
     layout: 'default' | 'timeline';
     fontSize: number;
     borderWidth: number;
@@ -414,6 +417,7 @@ export const SankeyTimelineDiagram: React.FC<SankeyTimelineProps> = ({ data }) =
   }>({
     otherStates: false,
     timelineMode: false,
+    distributions: false,
     layout: 'default',
     fontSize: data.options ? data.options.fontSize : 20,
     borderWidth: 6,
@@ -430,6 +434,7 @@ export const SankeyTimelineDiagram: React.FC<SankeyTimelineProps> = ({ data }) =
   const {
     timelineMode,
     otherStates,
+    distributions,
     layout,
     fontSize,
     borderWidth,
@@ -450,6 +455,7 @@ export const SankeyTimelineDiagram: React.FC<SankeyTimelineProps> = ({ data }) =
       svgRef,
       {
         layout,
+        distributions,
         fontSize,
         borderWidth,
         labelFontSize,
@@ -494,6 +500,24 @@ export const SankeyTimelineDiagram: React.FC<SankeyTimelineProps> = ({ data }) =
             />
           }
         ></FormControlLabel>
+        {layout === 'timeline' ? (
+          <FormControlLabel
+            label="Show Distributions"
+            control={
+              <Checkbox
+                checked={distributions}
+                onChange={(e, value) => {
+                  setState({
+                    ...state,
+                    distributions: value,
+                  });
+                }}
+              />
+            }
+          ></FormControlLabel>
+        ) : (
+          <div></div>
+        )}
       </FormGroup>
       <Button
         onClick={() => {

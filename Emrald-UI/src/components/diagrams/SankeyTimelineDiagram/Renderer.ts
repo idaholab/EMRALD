@@ -43,7 +43,7 @@ export default class Renderer extends EventEmitter<{
       color: 'rgb(0,0,0)',
       width: 3,
     },
-    distributions: true,
+    distributions: false,
     dynamicLinkWidth: true,
     dynamicNodeHeight: false,
     fadeOpacity: 0.3,
@@ -204,6 +204,18 @@ export default class Renderer extends EventEmitter<{
         } else {
           node.layout.y = (node.layout.row / (maxRow + 1)) * this.options.height;
         }
+        if (hasDist(node.times) && this.options.distributions) {
+          node.layout.distribution = [
+            {
+              x: this.getTimeX(node.times.meanTime - (node.times.stdDeviation || 0)),
+              y: node.layout.y,
+            },
+            {
+              x: this.getTimeX(node.times.meanTime + (node.times.stdDeviation || 0)),
+              y: node.layout.y,
+            },
+          ];
+        }
       }
       if (node.layout.x + node.layout.width > this.maxRight) {
         this.maxRight = node.layout.x + node.layout.width;
@@ -303,7 +315,6 @@ export default class Renderer extends EventEmitter<{
   public render() {
     this.graph = this.timeline.graph;
     this.range = [this.options.margin, this.options.width - this.options.margin];
-    console.log(`${this.options.height}, ${this.maxY}`);
     this.container
       .style('background', this.options.background)
       .style('top', '23px')
@@ -583,71 +594,73 @@ export default class Renderer extends EventEmitter<{
    */
   private createDistributionHandles() {
     const nodes = selectAll<BaseType, TimelineNode>('.node');
-    // Left handle
-    nodes
-      .append('rect')
-      .attr('x', (d: TimelineNode) => {
-        if (d.layout.distribution) {
-          return d.layout.distribution[0].x;
-        }
-        return 0;
-      })
-      .attr('y', (d: TimelineNode) => {
-        if (d.layout.distribution) {
-          return d.layout.distribution[0].y;
-        }
-        return 0;
-      })
-      .attr('class', 'distHandle distHandleLeft')
-      .attr('height', (d: TimelineNode) => d.layout.height)
-      .attr('width', () => this.options.distHandle.width)
-      .attr('fill', this.options.distHandle.color)
-      .style('opacity', this.options.fadeOpacity);
-    // Right handle
-    nodes
-      .append('rect')
-      .attr('x', (d: TimelineNode) => {
-        if (d.layout.distribution) {
-          return d.layout.distribution[1].x;
-        }
-        return 0;
-      })
-      .attr('y', (d: TimelineNode) => {
-        if (d.layout.distribution) {
-          return d.layout.distribution[1].y;
-        }
-        return 0;
-      })
-      .attr('class', 'distHandle distHandleRight')
-      .attr('height', (d: TimelineNode) => d.layout.height)
-      .attr('width', () => this.options.distHandle.width)
-      .attr('fill', this.options.distHandle.color)
-      .style('opacity', this.options.fadeOpacity);
-    // Center line
-    nodes
-      .append('rect')
-      .attr('x', (d: TimelineNode) => {
-        if (d.layout.distribution) {
-          return d.layout.distribution[0].x;
-        }
-        return 0;
-      })
-      .attr('y', (d: TimelineNode) => {
-        if (d.layout.distribution) {
-          return d.layout.y + d.layout.height / 2;
-        }
-        return 0;
-      })
-      .attr('class', 'distHandle distHandleCenter')
-      .attr('height', () => this.options.distHandle.width)
-      .attr('width', (d: TimelineNode) => {
-        if (d.layout.distribution) {
-          return d.layout.distribution[1].x - d.layout.distribution[0].x;
-        }
-        return 0;
-      })
-      .attr('fill', this.options.distHandle.color)
-      .style('opacity', this.options.fadeOpacity);
+    if (this.options.distributions) {
+      // Left handle
+      nodes
+        .append('rect')
+        .attr('x', (d: TimelineNode) => {
+          if (d.layout.distribution) {
+            return d.layout.distribution[0].x;
+          }
+          return 0;
+        })
+        .attr('y', (d: TimelineNode) => {
+          if (d.layout.distribution) {
+            return d.layout.distribution[0].y;
+          }
+          return 0;
+        })
+        .attr('class', 'distHandle distHandleLeft')
+        .attr('height', (d: TimelineNode) => d.layout.height)
+        .attr('width', () => this.options.distHandle.width)
+        .attr('fill', this.options.distHandle.color)
+        .style('opacity', this.options.fadeOpacity);
+      // Right handle
+      nodes
+        .append('rect')
+        .attr('x', (d: TimelineNode) => {
+          if (d.layout.distribution) {
+            return d.layout.distribution[1].x;
+          }
+          return 0;
+        })
+        .attr('y', (d: TimelineNode) => {
+          if (d.layout.distribution) {
+            return d.layout.distribution[1].y;
+          }
+          return 0;
+        })
+        .attr('class', 'distHandle distHandleRight')
+        .attr('height', (d: TimelineNode) => d.layout.height)
+        .attr('width', () => this.options.distHandle.width)
+        .attr('fill', this.options.distHandle.color)
+        .style('opacity', this.options.fadeOpacity);
+      // Center line
+      nodes
+        .append('rect')
+        .attr('x', (d: TimelineNode) => {
+          if (d.layout.distribution) {
+            return d.layout.distribution[0].x;
+          }
+          return 0;
+        })
+        .attr('y', (d: TimelineNode) => {
+          if (d.layout.distribution) {
+            return d.layout.y + d.layout.height / 2;
+          }
+          return 0;
+        })
+        .attr('class', 'distHandle distHandleCenter')
+        .attr('height', () => this.options.distHandle.width)
+        .attr('width', (d: TimelineNode) => {
+          if (d.layout.distribution) {
+            return d.layout.distribution[1].x - d.layout.distribution[0].x;
+          }
+          return 0;
+        })
+        .attr('fill', this.options.distHandle.color)
+        .style('opacity', this.options.fadeOpacity);
+    }
 
     // Mean value bar
     nodes
