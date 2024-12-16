@@ -1,10 +1,10 @@
-import React, { useRef, useState } from 'react';
+import React, { RefObject, useEffect, useRef, useState } from 'react';
 import { select, selectAll } from 'd3-selection';
 import colors from './colors';
 import type TimelineNode from './TimelineNode';
 import TimelineLink from './TimelineLink';
 import SankeyTimeline from './SankeyTimeline';
-import { Button, Checkbox, FormControl, FormControlLabel, FormGroup } from '@mui/material';
+import { Button, Checkbox, FormControlLabel, FormGroup } from '@mui/material';
 import Renderer from './Renderer';
 
 type Node = {
@@ -67,30 +67,32 @@ type TimelineOptions = {
   otherStatePaths: Node[];
 };
 
-const keyStates: string[] = [];
-
-function toggleKeyState(stateName: string) {
-  const idx = keyStates.indexOf(stateName);
-  if (idx < 0) {
-    keyStates.push(stateName);
-  } else {
-    keyStates.splice(idx, 1);
-  }
-}
-
 type SankeyTimelineProps = {
   data: TimelineOptions;
 };
 
-export const SankeyTimelineDiagram: React.FC<SankeyTimelineProps> = ({ data }) => {
-  const svgRef = useRef<SVGSVGElement>(null);
-  const [state, setState] = useState({
-    otherStates: false,
-    timelineMode: false,
-  });
+let initialized = false;
+let nodes: Record<string, Node> = {};
+let links: Record<string, Record<string, Link>> = {};
 
+/**
+ * Renders or re-renders the timeline.
+ */
+function render(
+  data: TimelineOptions,
+  svgRef: RefObject<SVGSVGElement>,
+  options: {
+    layout: string;
+    fontSize: number;
+    borderWidth: number;
+    labelFontSize: number;
+    maxNodeHeight: number;
+    maxLinkWidth: number;
+  },
+  keyStates: string[],
+) {
+  console.log(nodes);
   const timeline = new SankeyTimeline();
-  let customColors: string[] = [];
 
   /**
    * Preprocesses path results for the selected key states.
@@ -147,30 +149,21 @@ export const SankeyTimelineDiagram: React.FC<SankeyTimelineProps> = ({ data }) =
     return [nodes, links];
   }
 
-  let nodes: Record<string, Node> = {};
-  let links: Record<string, Record<string, Link>> = {};
-  data.keyStates.forEach((keyState) => {
-    // TODO: are key state names unique?
-    keyStates.push(keyState.name);
-  });
-
-  const processed = preprocess(data, keyStates);
-  nodes = processed[0];
-  links = processed[1];
+  if (!initialized) {
+    const processed = preprocess(data, keyStates);
+    nodes = processed[0];
+    links = processed[1];
+  }
   const renderer = new Renderer(timeline, svgRef);
   renderer.options.height = window.innerHeight;
   renderer.options.width = window.innerWidth;
   renderer.options.dynamicNodeHeight = true;
-  renderer.options.layout = 'default';
-  if (data.options) {
-    customColors = data.options.customColors;
-    renderer.options.fontSize = data.options.fontSize;
-    renderer.options.maxNodeHeight = data.options.maxNodeHeight;
-    renderer.options.maxLinkWidth = data.options.maxLinkWidth;
-  } else {
-    renderer.options.maxNodeHeight = window.innerHeight / 7;
-    renderer.options.maxLinkWidth = renderer.options.maxNodeHeight / 2;
-  }
+  renderer.options.layout = options.layout;
+  renderer.options.fontSize = options.fontSize;
+  renderer.options.labels.borderWidth = options.borderWidth;
+  renderer.options.labels.fontSize = options.labelFontSize;
+  renderer.options.maxNodeHeight = options.maxNodeHeight;
+  renderer.options.maxLinkWidth = options.maxLinkWidth;
 
   /**
    * Converts the timestamp string from the data into a number of seconds since the start.
@@ -263,10 +256,8 @@ export const SankeyTimelineDiagram: React.FC<SankeyTimelineProps> = ({ data }) =
 
   /**
    * Creates the node and link objects.
-   *
-   * @param otherStates If true, otherStatePaths will be included.
    */
-  function createPaths(otherStates = false) {
+  function createPaths() {
     /*
     TODO: fix this
     if (otherStates) {
@@ -319,17 +310,55 @@ export const SankeyTimelineDiagram: React.FC<SankeyTimelineProps> = ({ data }) =
   if (data.options?.lastEditedNode) {
     lastEditedNode = data.options.lastEditedNode;
   }
+
   renderer.render();
+  initialized = true;
+}
 
-  /**
-   * Forcibly re-renders the diagram.
-   */
-  function reRender() {
-    select(svgRef.current).selectChildren().remove();
-    renderer.render();
-  }
+export const SankeyTimelineDiagram: React.FC<SankeyTimelineProps> = ({ data }) => {
+  const svgRef = useRef<SVGSVGElement>(null);
+  let customColors: string[] = [];
 
-  const { timelineMode, otherStates } = state;
+  const allKeyStates = data.keyStates.map((state) => state.name);
+
+  const [state, setState] = useState({
+    otherStates: false,
+    timelineMode: false,
+    layout: 'default',
+    fontSize: data.options ? data.options.fontSize : 20,
+    borderWidth: 6,
+    labelFontSize: 1,
+    maxNodeHeight: data.options ? data.options.maxNodeHeight : window.innerHeight / 7,
+    maxLinkWidth: data.options ? data.options.maxLinkWidth : window.innerHeight / 7 / 2,
+    keyStates: allKeyStates,
+  });
+
+  const {
+    timelineMode,
+    otherStates,
+    layout,
+    fontSize,
+    borderWidth,
+    labelFontSize,
+    maxNodeHeight,
+    maxLinkWidth,
+    keyStates,
+  } = state;
+
+  select(svgRef.current).selectChildren().remove();
+  render(
+    data,
+    svgRef,
+    {
+      layout,
+      fontSize,
+      borderWidth,
+      labelFontSize,
+      maxNodeHeight,
+      maxLinkWidth,
+    },
+    keyStates,
+  );
 
   return (
     <div>
@@ -340,15 +369,10 @@ export const SankeyTimelineDiagram: React.FC<SankeyTimelineProps> = ({ data }) =
             <Checkbox
               checked={timelineMode}
               onChange={(e, value) => {
-                if (timelineMode) {
-                  renderer.options.layout = 'default';
-                } else {
-                  renderer.options.layout = 'timeline';
-                }
-                reRender();
                 setState({
                   ...state,
                   timelineMode: value,
+                  layout: value ? 'timeline' : 'default',
                 });
               }}
             />
@@ -360,8 +384,6 @@ export const SankeyTimelineDiagram: React.FC<SankeyTimelineProps> = ({ data }) =
             <Checkbox
               checked={otherStates}
               onChange={(e, value) => {
-                createPaths(value);
-                reRender();
                 setState({
                   ...state,
                   otherStates: value,
@@ -373,30 +395,35 @@ export const SankeyTimelineDiagram: React.FC<SankeyTimelineProps> = ({ data }) =
       </FormGroup>
       <Button
         onClick={() => {
-          renderer.options.fontSize *= 1.1;
-          renderer.options.labels.borderWidth *= 1.1;
-          renderer.options.labels.fontSize *= 1.1;
-          renderer.options.maxNodeHeight *= 1.1;
-          renderer.options.maxLinkWidth *= 1.1;
-          reRender();
+          setState({
+            ...state,
+            fontSize: fontSize * 1.1,
+            borderWidth: borderWidth * 1.1,
+            labelFontSize: labelFontSize * 1.1,
+            maxNodeHeight: maxNodeHeight * 1.1,
+            maxLinkWidth: maxLinkWidth * 1.1,
+          });
         }}
       >
         Zoom In
       </Button>
       <Button
         onClick={() => {
-          renderer.options.fontSize *= 0.9;
-          renderer.options.labels.borderWidth *= 0.9;
-          renderer.options.labels.fontSize *= 0.9;
-          renderer.options.maxNodeHeight *= 0.9;
-          renderer.options.maxLinkWidth *= 0.9;
-          reRender();
+          setState({
+            ...state,
+            fontSize: fontSize * 0.9,
+            borderWidth: borderWidth * 0.9,
+            labelFontSize: labelFontSize * 0.9,
+            maxNodeHeight: maxNodeHeight * 0.9,
+            maxLinkWidth: maxLinkWidth * 0.9,
+          });
         }}
       >
         Zoom Out
       </Button>
       <Button
         onClick={() => {
+          /*
           const pathResults = data;
           pathResults.keyStates.forEach((path, k) => {
             path.paths.forEach((state, s) => {
@@ -421,14 +448,35 @@ export const SankeyTimelineDiagram: React.FC<SankeyTimelineProps> = ({ data }) =
           link.download = data.fileName;
           link.click();
           URL.revokeObjectURL(link.href);
+          */
         }}
       >
         Save
       </Button>
       <svg ref={svgRef}></svg>
       <FormGroup>
-        {keyStates.map((name) => {
-          return <FormControlLabel key={name} label={name} control={<Checkbox />} />;
+        {allKeyStates.map((name) => {
+          // TODO - these checkboxes are buggy
+          return (
+            <FormControlLabel
+              key={name}
+              label={name}
+              control={
+                <Checkbox
+                  onChange={(e, value) => {
+                    const tempKeyStates = [...keyStates];
+                    if (!value) {
+                      tempKeyStates.splice(tempKeyStates.indexOf(name, 1));
+                    }
+                    setState({
+                      ...state,
+                      keyStates: tempKeyStates,
+                    });
+                  }}
+                />
+              }
+            />
+          );
         })}
       </FormGroup>
     </div>
