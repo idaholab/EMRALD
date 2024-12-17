@@ -39,8 +39,8 @@
       }
     }
   },
-  "productName": "emrald_site",
-  "mainBinaryName": "emrald_site",
+  "productName": "emrald_modeler",
+  "mainBinaryName": "emrald_modeler",
   "version": "3.0.0",
   "identifier": "gov.inl.emrald",
   "plugins": {},
