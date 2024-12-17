@@ -253,8 +253,8 @@ export default class Renderer extends EventEmitter<{
               y: node.layout.y,
             },
           ];
+          right = (this.graph.nodes[n].layout.distribution as Coordinate[])[1].x;
         }
-        right = (this.graph.nodes[n].layout.distribution as Coordinate[])[1].x;
         if (right > this.maxRight) {
           this.maxRight = node.layout.x + node.layout.width;
         }
@@ -318,7 +318,8 @@ export default class Renderer extends EventEmitter<{
     this.container
       .style('background', this.options.background)
       .style('top', '23px')
-      .style('position', 'relative');
+      .style('position', 'relative')
+      .style('margin-bottom', '2px');
     this.calculateLabelSizes();
     this.initializeLayout();
     this.calculateLayout();
@@ -422,7 +423,7 @@ export default class Renderer extends EventEmitter<{
       .attr('height', (d: TimelineNode) => d.layout.height)
       .attr('width', (d: TimelineNode) => d.layout.width)
       .attr('class', 'node')
-      .on('mouseover', function (event: DragEvent, d: TimelineNode) {
+      .on('mouseover', function (_event: DragEvent, d: TimelineNode) {
         const fade = transition()
           .duration(options.transitionSpeed)
           .ease(easeCubicIn) as any as TransitionType;
@@ -452,7 +453,7 @@ export default class Renderer extends EventEmitter<{
           }
         });
       })
-      .on('mouseleave', function (e) {
+      .on('mouseleave', function () {
         const fade = transition()
           .duration(options.transitionSpeed)
           .ease(easeCubicIn) as any as TransitionType;

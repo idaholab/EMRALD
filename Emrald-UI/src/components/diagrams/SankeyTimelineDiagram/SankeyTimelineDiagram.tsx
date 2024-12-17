@@ -1,6 +1,6 @@
 import React, { RefObject, useEffect, useRef, useState } from 'react';
 import Draggable from 'react-draggable';
-import { select, selectAll } from 'd3-selection';
+import { select } from 'd3-selection';
 import colors from './colors';
 import type TimelineNode from './TimelineNode';
 import TimelineLink from './TimelineLink';
@@ -90,15 +90,29 @@ type SankeyTimelineProps = {
   data: TimelineOptions;
 };
 
+// Nodes & link currently being displayed in the timeline
 let nodes: Record<string, Node> = {};
 let links: Record<string, Record<string, Link>> = {};
+
+// Maps the IDs for nodes assigned by Renderer to the name of the node
 const nodeIdMap: Record<number, string> = {};
+
+// The timeline & renderer
 const timeline = new SankeyTimeline();
 let renderer: Renderer | null = null;
+
+// Stores nodes that exist in the results file but are not currently displayed in the timeline to preverse their positions & colors
 let nodeCache: Record<string, Node> = {};
 
 /**
  * Renders or re-renders the timeline.
+ *
+ * @param data - The path results data.
+ * @param svgRef - The SVG element to render in.
+ * @param options - User-controlled rendering options.
+ * @param keyStatesRecord - A record of enabled key states.
+ * @param width - The width of the rendering area.
+ * @param height - The height of the rendering area.
  */
 function render(
   data: TimelineOptions,
@@ -116,6 +130,7 @@ function render(
   width: number,
   height: number,
 ) {
+  // An array of enabled key states
   const keyStates: string[] = [];
   Object.entries(keyStatesRecord).forEach(([name, enabled]) => {
     if (enabled) {
@@ -137,8 +152,10 @@ function render(
     const nodes: Record<string, Node> = {};
     const links: Record<string, Record<string, Link>> = {};
     input.keyStates
+      // Consider only the key states that have been enabled by the user
       .filter((keyState) => selectedKeyStates.indexOf(keyState.name) >= 0)
       .forEach((keyState) => {
+        // This section looks at every path leading to an enabled key state and creates nodes and links to represent those paths
         keyState.paths.forEach((path) => {
           if (!nodes[path.name]) {
             nodes[path.name] = {
@@ -178,8 +195,6 @@ function render(
     return [nodes, links];
   }
 
-  const processed = preprocess(data, keyStates);
-
   /**
    * Ensures the dragged node positions persist through re-rendering.
    * @param oldNodes - The old node dictionary.
@@ -199,10 +214,14 @@ function render(
     return newNodes;
   }
 
+  // Process the path results file data into records of links and nodes
+  const processed = preprocess(data, keyStates);
   nodes = mergeNodeLayouts(nodes, processed[0]);
   links = processed[1];
+
+  // Create & configure the renderer
   renderer = new Renderer(timeline, svgRef);
-  renderer.options.height = height;
+  renderer.options.height = height - 86; // 86 is subtracted to compensate for the height of the controls
   renderer.options.width = width;
   renderer.options.dynamicNodeHeight = true;
   renderer.options.layout = options.layout;
@@ -214,10 +233,10 @@ function render(
   renderer.options.distributions = options.distributions;
 
   /**
-   * Converts the timestamp string from the data into a number of seconds since the start.
+   * Converts a timestamp string into a number of seconds since the start of the simulation.
    *
    * @param timestamp - The timestamp to convert.
-   * @returns The number of seconds since 0 of the timestamp.
+   * @returns The number of seconds.
    */
   function timestampToSeconds(timestamp: string) {
     const t = timestamp.split(':').map((x) => Number(x));
@@ -289,6 +308,7 @@ function render(
     return [cRate5th, cRate95th];
   }
 
+  // Set the title that displays when nodes and links are hovered over
   renderer.options.nodeTitle = (d: TimelineNode) =>
     `Name: ${d.label}\nCount: ${d.data.count}\nRate 5th: ${
       combined5th95th(d.data)[0]
@@ -303,7 +323,7 @@ function render(
     `${d.data.name}\n${d.data.desc}\nAction Description: ${d.data.actDesc}\nEvent Description: ${d.data.evDesc}\nCount: ${d.data.count}`;
 
   /**
-   * Creates the node and link objects.
+   * Takes the records of nodes and links and links them together using the SankeyTimeline class.
    */
   function createPaths() {
     /*
@@ -355,11 +375,8 @@ function render(
   }
 
   createPaths();
-  let lastEditedNode = `${timeline.graph.nodes[0].id}`;
-  if (data.options?.lastEditedNode) {
-    lastEditedNode = data.options.lastEditedNode;
-  }
 
+  // Listen for nodes being dragged and ensure their positions are saved
   renderer.on('positionChanged', (node, x, y) => {
     const name = nodeIdMap[node];
     if (nodes[name].layout) {
@@ -373,9 +390,13 @@ function render(
     }
   });
 
+  // Render the timeline
   renderer.render();
 }
 
+/**
+ * Enables dragging on the node properties menu.
+ */
 const PaperComponent: React.FC<PaperProps> = (props) => {
   const nodeRef = useRef<HTMLDivElement>(null);
   return (
@@ -385,14 +406,20 @@ const PaperComponent: React.FC<PaperProps> = (props) => {
   );
 };
 
+/**
+ * A component to display the Sankey Timeline diagram and its controls.
+ * @param param0.data - The contents of the path results file.
+ */
 export const SankeyTimelineDiagram: React.FC<SankeyTimelineProps> = ({ data }) => {
   const svgRef = useRef<SVGSVGElement>(null);
   const containerElement = useRef<HTMLDivElement>(null);
+
   let customColors: string[] = [];
   if (data.options) {
     customColors = data.options.customColors;
   }
 
+  // Creates a record of key states for control via checkboxes
   const allKeyStates = data.keyStates.map((state) => state.name);
   const ksRecord: Record<string, boolean> = {};
   allKeyStates.forEach((state) => {
@@ -476,7 +503,7 @@ export const SankeyTimelineDiagram: React.FC<SankeyTimelineProps> = ({ data }) =
           control={
             <Checkbox
               checked={timelineMode}
-              onChange={(e, value) => {
+              onChange={(_e, value) => {
                 setState({
                   ...state,
                   timelineMode: value,
@@ -491,7 +518,7 @@ export const SankeyTimelineDiagram: React.FC<SankeyTimelineProps> = ({ data }) =
           control={
             <Checkbox
               checked={otherStates}
-              onChange={(e, value) => {
+              onChange={(_e, value) => {
                 setState({
                   ...state,
                   otherStates: value,
@@ -506,7 +533,7 @@ export const SankeyTimelineDiagram: React.FC<SankeyTimelineProps> = ({ data }) =
             control={
               <Checkbox
                 checked={distributions}
-                onChange={(e, value) => {
+                onChange={(_e, value) => {
                   setState({
                     ...state,
                     distributions: value,
@@ -550,6 +577,8 @@ export const SankeyTimelineDiagram: React.FC<SankeyTimelineProps> = ({ data }) =
       <Button
         onClick={() => {
           const pathResults = data;
+
+          // For each key state, make sure user-set properties are set in the JSON and delete circular references
           pathResults.keyStates.forEach((path, k) => {
             path.paths.forEach((state, s) => {
               let n = timeline.getNodesByLabel(state.name)[0];
@@ -561,6 +590,8 @@ export const SankeyTimelineDiagram: React.FC<SankeyTimelineProps> = ({ data }) =
               delete pathResults.keyStates[k].paths[s].timelineNode;
             });
           });
+
+          // Save user preferences to the JSON
           if (renderer !== null) {
             pathResults.options = {
               customColors,
@@ -602,7 +633,7 @@ export const SankeyTimelineDiagram: React.FC<SankeyTimelineProps> = ({ data }) =
               control={
                 <Checkbox
                   checked={keyStates[name]}
-                  onChange={(e, value) => {
+                  onChange={(_e, value) => {
                     setState({
                       ...state,
                       keyStates: {
@@ -649,7 +680,11 @@ export const SankeyTimelineDiagram: React.FC<SankeyTimelineProps> = ({ data }) =
               }}
             >
               {Object.values(nodes).map((node) => {
-                return <MenuItem value={node.timelineNode?.id}>{node.name}</MenuItem>;
+                return (
+                  <MenuItem key={node.name} value={node.timelineNode?.id}>
+                    {node.name}
+                  </MenuItem>
+                );
               })}
             </Select>
           </FormControl>
@@ -661,6 +696,7 @@ export const SankeyTimelineDiagram: React.FC<SankeyTimelineProps> = ({ data }) =
                 {colorOptions.map((color) => {
                   return (
                     <div
+                      key={color}
                       className="color-option"
                       style={{ backgroundColor: color }}
                       title={color}
