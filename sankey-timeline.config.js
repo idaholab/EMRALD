@@ -1,18 +1,15 @@
-/* eslint-disable import/no-extraneous-dependencies */
-const CopyPlugin = require('copy-webpack-plugin');
 const path = require('path');
 
 module.exports = {
   entry: {
-    '../EMRALD_Sim/sankey/emrald-sankey-timeline': path.resolve(
+    'emrald-sankey-timeline': path.resolve(
       __dirname,
+      'Emrald-UI',
       'src',
-      'emrald.ts',
-    ),
-    '../Emrald_Site/sankey/emrald-sankey-timeline': path.resolve(
-      __dirname,
-      'src',
-      'emrald.ts',
+      'components',
+      'diagrams',
+      'SankeyTimelineDiagram',
+      'standalone.tsx',
     ),
   },
   mode: 'production',
@@ -23,6 +20,9 @@ module.exports = {
         use: [
           {
             loader: 'ts-loader',
+            options: {
+              transpileOnly: true,
+            },
           },
         ],
       },
@@ -34,23 +34,8 @@ module.exports = {
   },
   output: {
     filename: '[name].js',
-    library: 'sankeyTimeline',
-    path: path.resolve(__dirname),
+    path: path.join(__dirname, 'EMRALD_Sim', 'sankey'),
   },
-  plugins: [
-    new CopyPlugin({
-      patterns: [
-        {
-          from: './emrald-sankey-timeline.html',
-          to: '../Emrald_Site/sankey/emrald-sankey-timeline.html',
-        },
-        {
-          from: './emrald-sankey-timeline.html',
-          to: '../EMRALD_Sim/sankey/emrald-sankey-timeline.html',
-        },
-      ],
-    }),
-  ],
   resolve: {
     extensions: ['.js', '.ts', '.tsx'],
     fallback: {},
