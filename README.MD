@@ -40,6 +40,17 @@ Event Modeling Risk Assessment using Linked Diagrams (EMRALD) is a software tool
 		4. Install Node.js & NPM from [https://nodejs.org/en/](https://nodejs.org/en/)
 		5. Build dependencies by running `npm install` in the root directory
 		6. Build the executable by running `npm run build` in the root directory
+		- If you are behind a firewall, the tauri build may fail to fetch some requirements. If this happens, the requirements can be manually downloaded.
+			1.	Create a folder called “tauri” in AppData/Local
+			2.	Download wix314-binaries.zip from https://github.com/wixtoolset/wix3/releases
+			3.	Create a folder called “WixTools314” in AppData/Local/tauri
+			4.	Extract the contents of wix314-binaries.zip into the WixTools314 folder
+			5.	Download https://github.com/tauri-apps/binary-releases/releases/download/nsis-3/nsis-3.zip
+			6.	Create a folder called “NSIS” in AppData/Local/tauri
+			7.	Extract the contents of the folder in nsis-3.zip into the NSIS folder, so that the
+			NSIS folder contains the nsis.exe file at the top level.
+			8.	Download https://github.com/tauri-apps/nsis-tauri-utils/releases/download/nsis_tauri_utils-v0.4.1/nsis_tauri_utils.dll
+			9.	Move nsis_tauri_utils.dll into AppData/Local/tauri/NSIS/Plugins/x86-unicode 
     - To run JavaScript unit tests:
 		1. Install Node.js & NPM from [https://nodejs.org/en/](https://nodejs.org/en/)
 		2. Build dependencies by running `npm install` in the root directory
