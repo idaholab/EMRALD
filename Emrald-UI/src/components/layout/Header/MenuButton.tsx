@@ -12,6 +12,7 @@ import { SxProps, useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import DialogComponent from '../../common/DialogComponent/DialogComponent';
 import Typography from '@mui/material/Typography';
+import { useWindowContext } from '../../../contexts/WindowContext';
 
 interface MenuButtonProps {
   id: number;
@@ -24,6 +25,7 @@ interface MenuButtonProps {
 const MenuButton: React.FC<MenuButtonProps> = ({ id, title, options, handleClick, sx }) => {
   const { assembleData, newProject, mergeNewData, populateNewData } = useAssembledData();
   const { templatesList, mergeTemplateToList, clearTemplateList } = useTemplateContext();
+  const { addWindow } = useWindowContext();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [subAnchorEl, setSubAnchorEl] = useState<null | HTMLElement>(null);
   const [open, setOpen] = useState<boolean>(false);
@@ -95,6 +97,9 @@ const MenuButton: React.FC<MenuButtonProps> = ({ id, title, options, handleClick
         break;
       case 'Save':
         option.onClick(assembleData);
+        break;
+      case 'Load Results':
+        option.onClick(addWindow);
         break;
       // Add cases for other menu items as needed
       default:
