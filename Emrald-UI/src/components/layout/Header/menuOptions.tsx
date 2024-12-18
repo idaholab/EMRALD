@@ -39,15 +39,15 @@ export const projectOptions = (setFileName?: (name: string) => void): MenuOption
 
           try {
             const parsedContent = JSON.parse(content);
-              if (parsedContent && parsedContent.hasOwnProperty('emraldVersion')) {
-                populateNewData(parsedContent);
-              } else {
-                const upgradedModel = upgradeModel(content);
-                if (upgradedModel) {
-                  upgradedModel.id = uuidv4();
-                  populateNewData(upgradedModel);
-                }
+            if (parsedContent && parsedContent.hasOwnProperty('emraldVersion')) {
+              populateNewData(parsedContent);
+            } else {
+              const upgradedModel = upgradeModel(content);
+              if (upgradedModel) {
+                upgradedModel.id = uuidv4();
+                populateNewData(upgradedModel);
               }
+            }
           } catch (error) {
             console.error('Invalid JSON format');
           }
@@ -88,15 +88,15 @@ export const projectOptions = (setFileName?: (name: string) => void): MenuOption
           //TODO: Make sure there is no duplicates when merging. If there are show the import form to resolve conflicts.
           try {
             const parsedContent = JSON.parse(content);
-              if (parsedContent && parsedContent.hasOwnProperty('emraldVersion')) {
-                mergeNewData(content);
-              } else {
-                const upgradedModel = upgradeModel(content);
-                if (upgradedModel) {
-                  upgradedModel.id = uuidv4();
-                  mergeNewData(upgradedModel);
-                }
+            if (parsedContent && parsedContent.hasOwnProperty('emraldVersion')) {
+              mergeNewData(content);
+            } else {
+              const upgradedModel = upgradeModel(content);
+              if (upgradedModel) {
+                upgradedModel.id = uuidv4();
+                mergeNewData(upgradedModel);
               }
+            }
           } catch (error) {
             console.error('Invalid JSON format');
           }
@@ -247,7 +247,7 @@ export const templateSubMenuOptions: MenuOption[] = [
                   mergeTemplateToList(upgradedModel);
                 }
               }
-            })
+            });
           } catch (error) {
             console.error('Invalid JSON format');
           }
@@ -268,7 +268,6 @@ export const templateSubMenuOptions: MenuOption[] = [
   {
     label: 'Export Templates',
     onClick: (templates) => {
-
       if (templates.length === 0) {
         return 'error';
       }
@@ -284,7 +283,9 @@ export const templateSubMenuOptions: MenuOption[] = [
       // Create an <a> element to trigger the download
       const a = document.createElement('a');
       a.href = url;
-      a.download = `${appData.value.name ? appData.value.name : 'Untitled_EMRALD_Project'}-templates.json`;
+      a.download = `${
+        appData.value.name ? appData.value.name : 'Untitled_EMRALD_Project'
+      }-templates.json`;
 
       // Trigger a click event on the <a> element to initiate the download
       a.click();
@@ -307,7 +308,8 @@ export const downloadOptions: MenuOption[] = [
     onClick: () => {
       var link = document.createElement('a');
       link.target = '_blank';
-      link.href = "https://github.com/idaholab/EMRALD/releases/latest/download/EMRALD_SimEngine.3_0.zip"; //The file to download.
+      link.href =
+        'https://github.com/idaholab/EMRALD/releases/latest/download/EMRALD_SimEngine.3_0.zip'; //The file to download.
       link.click();
     },
   },
@@ -316,7 +318,8 @@ export const downloadOptions: MenuOption[] = [
     onClick: () => {
       var link = document.createElement('a');
       link.target = '_blank';
-      link.href = "https://github.com/idaholab/EMRALD/releases/latest/download/XMPPClientTester.zip"; //The file to download.
+      link.href =
+        'https://github.com/idaholab/EMRALD/releases/latest/download/XMPPClientTester.zip'; //The file to download.
       link.click();
     },
   },
@@ -325,7 +328,16 @@ export const downloadOptions: MenuOption[] = [
     onClick: () => {
       var link = document.createElement('a');
       link.target = '_blank';
-      link.href = "https://github.com/idaholab/EMRALD/tree/main/XmppClient"; //The file to download.
+      link.href = 'https://github.com/idaholab/EMRALD/tree/main/XmppClient'; //The file to download.
+      link.click();
+    },
+  },
+  {
+    label: 'Desktop Model Editor',
+    onClick: () => {
+      var link = document.createElement('a');
+      link.target = '_blank';
+      link.href = 'https://github.com/idaholab/EMRALD/releases/latest/download/emrald_modeler.exe';
       link.click();
     },
   },
