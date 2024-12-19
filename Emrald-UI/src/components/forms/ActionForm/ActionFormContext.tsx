@@ -481,7 +481,6 @@ const ActionFormContextProvider: React.FC<PropsWithChildren> = ({ children }) =>
   };
 
   const initializeForm = (actionData: Action | undefined) => {
-    console.log(actionData);
     setActionData(actionData);
     //Main info
     setName(actionData?.name || '');
