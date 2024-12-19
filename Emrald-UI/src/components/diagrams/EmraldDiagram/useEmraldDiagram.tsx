@@ -166,7 +166,7 @@ const useEmraldDiagram = () => {
       // Add new state to action
       addNewStateToAction(currentAction, {
         toState: targetState?.name,
-        prob: 0,
+        prob: currentAction.newStates && currentAction.newStates.length >= 1 ? 0 : -1, // If only a single newState default to -1
         varProb: null,
         failDesc: '',
       });
