@@ -647,6 +647,10 @@ const useContextMenu = (getStateNodes?: () => void, setEdges?: (edges: Edge[]) =
       actionToUpdate.newStates = actionToUpdate.newStates.filter(
         (state) => state.toState !== targetState?.name,
       );
+      // If only one newState remains make it so it is set to -1
+      if (actionToUpdate.newStates.length === 1) {
+        actionToUpdate.newStates[0].prob = -1
+      }
       updateAction(actionToUpdate);
       const newEdges = edges.filter((edgeToRemove) => edgeToRemove.id !== edge.id);
       setEdges(newEdges);

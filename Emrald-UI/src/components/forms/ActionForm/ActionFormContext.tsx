@@ -235,6 +235,7 @@ const ActionFormContextProvider: React.FC<PropsWithChildren> = ({ children }) =>
   };
 
   const handleSave = async (event?: Event, state?: State) => {
+
     const newStates: NewState[] = newStateItems.map((newStateItem): NewState => {
       return {
         toState: newStateItem.toState,
@@ -487,7 +488,7 @@ const ActionFormContextProvider: React.FC<PropsWithChildren> = ({ children }) =>
     setDesc(actionData?.desc || '');
     setActType(actionData?.actType || 'atTransition');
     //transition items
-    setMutuallyExclusive(actionData?.mutExcl || true);
+    setMutuallyExclusive(actionData?.mutExcl || false);
     setNewStateItems(
       actionData?.newStates
         ? sortNewStates(
