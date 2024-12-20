@@ -186,7 +186,6 @@ const EventFormContextProvider: React.FC<PropsWithChildren> = ({ children }) => 
       setOriginalName(eventData.name);
       setDesc(eventData.desc);
       setEvType(eventData.evType);
-      setInvalidValues(new Set());
       eventData.code && setScriptCode(eventData.code);
       eventData.varNames && setCodeVariables(eventData.varNames);
       eventData.ifInState && setIfInState(eventData.ifInState);
