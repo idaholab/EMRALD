@@ -43,7 +43,7 @@ interface MainDetailsFormProps<T extends MainItemTypes> {
   errorMessage?: string;
   handleSave: () => void;
   handleNameChange: (name: string) => void;
-  handleTypeChange?: (newType: VariableType) => void;
+  handleTypeChange?: (newType: ValueTypes<T>) => void;
   reset?: () => void;
   setDesc: (desc: string) => void;
   setType: Dispatch<SetStateAction<ValueTypes<T>>>;
@@ -83,7 +83,7 @@ const MainDetailsForm = <T extends MainItemTypes>({
           disabled={typeDisabled}
           onChange={(event: SelectChangeEvent<string>) => {
             setType(event.target.value as ValueTypes<T>);
-            handleTypeChange && handleTypeChange(event.target.value as VariableType);
+            handleTypeChange && handleTypeChange(event.target.value as ValueTypes<T>);
             reset && reset();
           }} // Cast event.target.value as ValueTypes<T>
           label={typeLabel ? typeLabel : 'Type'}

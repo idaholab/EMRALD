@@ -26,8 +26,10 @@ const EventForm: React.FC<EventFormProps> = ({ eventData, state }) => {
     eventTypeToComponent,
     evType,
     moveFromCurrent,
+    invalidValues,
     handleSave,
     handleNameChange,
+    handleChangeEventType,
     InitializeForm,
     reset,
     setDesc,
@@ -48,6 +50,7 @@ const EventForm: React.FC<EventFormProps> = ({ eventData, state }) => {
           itemType={MainItemTypes.Event}
           type={evType}
           setType={setEvType}
+          handleTypeChange={handleChangeEventType}
           typeOptions={eventTypeOptions}
           name={name}
           desc={desc}
@@ -56,7 +59,7 @@ const EventForm: React.FC<EventFormProps> = ({ eventData, state }) => {
           reset={reset}
           handleNameChange={handleNameChange}
           nameError={hasError}
-          error={hasError}
+          error={hasError || invalidValues.size > 0}
           errorMessage="An event with this name already exists, or the name includes an invalid character."
           reqPropsFilled={name && evType ? true : false}
         >
