@@ -9,7 +9,7 @@
       "cRate95th": 1.0,
       "count": 100,
       "timeMean": "1.00:04:37.1552042",
-      "timeStdDeviation": "01:31:31.7523466",
+      "timeStdDeviation": "01:04:45.3835611",
       "timeMin": "21:07:28.2271363",
       "timeMax": "1.02:22:27.4269141",
       "watchVariables": {
@@ -454,7 +454,7 @@
           "cRate95th": 1.0,
           "count": 100,
           "timeMean": "1.00:04:37.1552042",
-          "timeStdDeviation": "01:31:31.7523466",
+          "timeStdDeviation": "01:04:45.3835611",
           "timeMin": "21:07:28.2271363",
           "timeMax": "1.02:22:27.4269141",
           "watchVariables": {
