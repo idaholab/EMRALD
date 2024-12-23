@@ -997,6 +997,7 @@ namespace EMRALD_Sim
       tbSavePath.Text = _currentModelSettings.BasicResultsLocation;
       tbSavePath2.Text = _currentModelSettings.PathResultsLocation;
       tbSeed.Text = _currentModelSettings.Seed;
+      LoadLib.SetSeed(tbSeed.Text);
       tbLogRunStart.Text = _currentModelSettings.DebugFromRun.ToString();
       tbLogRunEnd.Text = _currentModelSettings.DebugToRun.ToString();
 

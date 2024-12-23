@@ -289,8 +289,7 @@ namespace SimulationEngine
     [JsonProperty(Order = 7)]
     public TimeSpan timeStdDeviation 
     { 
-      get { return GetTimeStdDev(); } 
-      set { _stdDev = value; }
+      get { return GetTimeStdDev(); }
     }
     [JsonProperty(Order = 8)]
     public TimeSpan timeMin { get { return _timeMin; } set { _timeMin = value; } }
@@ -401,6 +400,7 @@ namespace SimulationEngine
       this._totalTime = TimeSpan.FromSeconds(0);
       this._timeMin = TimeSpan.FromSeconds(0);
       this._timeMax = TimeSpan.FromSeconds(0);
+      this._stdDev = null;
 
       this.AddTime(newTime);
     }
@@ -455,6 +455,7 @@ namespace SimulationEngine
       _rate95th = toCopy._rate95th;
       _timeMin = toCopy._timeMin;
       _timeMax = toCopy._timeMax;
+      _stdDev = null;
     }
 
     public virtual void Merge(ResultStateBase other, int totCnt)
