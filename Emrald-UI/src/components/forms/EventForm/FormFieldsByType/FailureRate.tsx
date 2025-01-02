@@ -18,10 +18,10 @@ const FailureRate = () => {
     useVariable,
     lambda,
     failureRateMilliseconds,
-
+    invalidValues,
     handleFailureRateDurationChange,
     setLambda,
-
+    setInvalidValues,
     setUseVariable,
   } = useEventFormContext();
 
@@ -42,6 +42,11 @@ const FailureRate = () => {
 
   const handleLambdaValueBlur = (value: string) => {
     if (value && validInputRegex.test(value)) {
+      setInvalidValues((prev) => {
+        const newInvalidValue = new Set(prev);
+        newInvalidValue.delete('Lambda');
+        return newInvalidValue;
+      });
       // Check if the value is in scientific notation
       const isScientificNotation = /[Ee]/.test(value);
       let numericValue;
@@ -57,6 +62,12 @@ const FailureRate = () => {
         numericValue = parseFloat(value);
       }
       setLambda(numericValue);
+    } else {
+      setInvalidValues((prev) => {
+        const newInvalidValue = new Set(prev);
+        newInvalidValue.add('Lambda');
+        return newInvalidValue;
+      });
     }
   };
 
@@ -86,6 +97,8 @@ const FailureRate = () => {
                     onChange={(e) => handleLambdaValueChange(e.target.value)}
                     onBlur={() => handleLambdaValueBlur(String(lambda))}
                     size="small"
+                    error={invalidValues.has('Lambda')}
+                    helperText={invalidValues.has('Lambda') ? 'Invalid value' : ''}
                   />
                 ) : (
                   <SelectComponent

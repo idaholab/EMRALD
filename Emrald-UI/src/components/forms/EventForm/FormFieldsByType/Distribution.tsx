@@ -41,6 +41,7 @@ const Distribution = () => {
     distType,
     parameters,
     variableChecked,
+    invalidValues,
     handleChange,
     handleBlur,
     handleRateChange,
@@ -181,6 +182,8 @@ const Distribution = () => {
                       size="small"
                       label={row}
                       type="text"
+                      error={invalidValues.has(row)}
+                      helperText={invalidValues.has(row) ? 'Invalid value' : ''}
                     />
                   )}
                 </StyledTableCell>
