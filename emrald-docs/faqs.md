@@ -11,7 +11,9 @@ Dynamic PRA modeling and simulation.
 
 <details>
 <summary>Answer</summary>
-For access to EMRALD, sign up for a <a href="https://safety.inl.gov/">Safety Portal</a> account, select Steven.Prescott@inl.gov as the group admin,
-and include "access to EMRALD" for the reason.  
+A user interface for the EMRALD modeling tool is hosted by INL: <a href="https://emrald3app.inl.gov/">EMRALD Website</a>.
+
+It is also open source can be downloaded from GitHub and run locally: <a href="https://github.com/idaholab/EMRALD"> EMRALD GitHub</a>.
+
 For more information, contact <a href="mailto:Steven.Prescott@inl.gov">Steven.Prescott@inl.gov</a>.
 </details>

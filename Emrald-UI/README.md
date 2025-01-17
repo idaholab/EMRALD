@@ -29,3 +29,11 @@ npm run dev
 
 Once the application is running, you can start crafting your models and saving them as JSON files.
 Everything you need to know about learning the software can be found here: [EMRALD Docs](https://emraldapp.inl.gov/docs/)
+
+INL release (v3 while old version is still avaliable)
+Go to Pipelines click EMRALD_V3 and run "new Pipeline" 
+Go to Releases click "Azure - EMRALD_v3 App New" and Create release
+Put "master" in for Azure_ARM and AzureScripts and run
+Test in acceptance
+Release to Scan
+Send email for Scan and push to producion
