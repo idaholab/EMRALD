@@ -24,7 +24,6 @@ const MAAP = () => {
     setExePath,
     setFormData,
     ReturnPostCode,
-    ReturnUsedVariables,
     ReturnExePath,
   } = useCustomForm();
   const { setReqPropsFilled } = useActionFormContext();
@@ -60,7 +59,6 @@ const MAAP = () => {
         docVarPath = RootPath + docVarPath;
   string resLoc = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\EMRALD_MAAP\" + Path.GetFileNameWithoutExtension(inpLoc) + ".log";
   File.Copy(resLoc, docVarPath, true);`);
-    ReturnUsedVariables('');
 
     setFormData({
       ...formData,
