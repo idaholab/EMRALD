@@ -1,7 +1,7 @@
 Simulation = TestTimers
 Runtime = 00.00:00:00
 Runs = 1 of 1
-Key Occurred 1 times, Rate =1, MeanTime = 00.00:07:00 +/- 00.00:00:00.00
+Key Occurred 1 times, Probability =1, MeanTime = 00.00:07:00 +/- 00.00:00:00.00
 ---------------------------
 - End Sim Variable Values -
 ---------------------------
