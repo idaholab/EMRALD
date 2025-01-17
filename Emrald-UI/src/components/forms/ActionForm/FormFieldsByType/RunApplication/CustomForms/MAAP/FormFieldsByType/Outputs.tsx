@@ -16,7 +16,7 @@ import { useEffect, useState } from 'react';
 import { useCustomForm } from '../../useCustomForm';
 
 const Outputs = () => {
-  const { formData, setFormData } = useCustomForm();
+  const { formData, setFormData, setVariableName } = useCustomForm();
   const [docLinkVariable, setDocLinkVariable] = useState<string>(formData.docLinkVariable || '');
   const [output, setOutput] = useState<string>(formData.output || '');
   const { variableList } = useVariableContext();
@@ -30,6 +30,8 @@ const Outputs = () => {
       docLinkVariable: docLinkVariable,
       output: output,
     }));
+
+    setVariableName(docLinkVariable);
   }, [docLinkVariable, output, setDocLinkVariable, setOutput]);
 
   return (

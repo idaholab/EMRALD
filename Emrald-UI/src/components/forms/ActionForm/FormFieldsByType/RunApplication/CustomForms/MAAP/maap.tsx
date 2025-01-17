@@ -23,6 +23,7 @@ const MAAP = () => {
     exePath,
     setExePath,
     setFormData,
+    setReturnProcess,
     ReturnPostCode,
     ReturnExePath,
   } = useCustomForm();
@@ -59,6 +60,8 @@ const MAAP = () => {
         docVarPath = RootPath + docVarPath;
   string resLoc = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\EMRALD_MAAP\" + Path.GetFileNameWithoutExtension(inpLoc) + ".log";
   File.Copy(resLoc, docVarPath, true);`);
+
+    setReturnProcess('rtVar');
 
     setFormData({
       ...formData,
@@ -254,7 +257,7 @@ const MAAP = () => {
           label="Parameter File"
           setFile={setParameterFile}
           fileName={parameterFile?.name}
-          accept='.par'
+          accept=".par"
           clearFile={() => {
             setParameterFile(null);
           }}
@@ -270,7 +273,7 @@ const MAAP = () => {
           label="Input File"
           setFile={setInputFile}
           fileName={inputFile?.name}
-          accept='.inp'
+          accept=".inp"
           clearFile={() => {
             setInputFile(null);
           }}

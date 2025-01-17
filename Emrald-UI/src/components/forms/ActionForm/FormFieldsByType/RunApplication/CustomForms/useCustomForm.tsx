@@ -33,6 +33,8 @@ export function useCustomForm() {
     setExePath,
     setProcessOutputFileCode,
     setCodeVariables,
+    setReturnProcess,
+    setVariableName,
   } = useActionFormContext();
 
   const ReturnPostCode = (postCode: string) => {
@@ -62,6 +64,8 @@ export function useCustomForm() {
     exePath,
     setExePath,
     setFormData,
+    setReturnProcess,
+    setVariableName,
     ReturnPostCode,
     ReturnExePath,
     ReturnUsedVariables,
