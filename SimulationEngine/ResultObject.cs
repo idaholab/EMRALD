@@ -290,6 +290,7 @@ namespace SimulationEngine
     public TimeSpan timeStdDeviation 
     { 
       get { return GetTimeStdDev(); }
+      set { _stdDev = value; }
     }
     [JsonProperty(Order = 8)]
     public TimeSpan timeMin { get { return _timeMin; } set { _timeMin = value; } }
