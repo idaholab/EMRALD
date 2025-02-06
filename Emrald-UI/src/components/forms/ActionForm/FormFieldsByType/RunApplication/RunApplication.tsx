@@ -75,7 +75,11 @@ const RunApplication = () => {
   useEffect(() => {
     if (!hasInitialCode) {
       setHasInitialCode(true);
-      setLocalPreCode(makeInputFileCode);
+      if (makeInputFileCode.length === 0) {
+        setLocalPreCode('return ""; // return executable parameters');
+      } else {
+        setLocalPreCode(makeInputFileCode);
+      }
     }
   });
 
