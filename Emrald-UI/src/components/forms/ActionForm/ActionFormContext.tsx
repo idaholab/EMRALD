@@ -30,7 +30,7 @@ export interface NewStateItem {
 
 export type sim3DMessageType = 'atCompModify' | 'atOpenSim' | 'atCancelSim' | 'atPing';
 
-export type ReturnProcessType = 'rtVar' | 'rtNone' | 'rtStateList';
+export type ReturnProcessType = 'rtNone' | 'rtStateList';
 
 interface ActionFormContextType {
   name: string;
@@ -56,6 +56,7 @@ interface ActionFormContextType {
   errorMessage: string;
   actionTypeOptions: { value: string; label: string }[];
   raType: string;
+  returnProcess: ReturnProcessType;
   reqPropsFilled: boolean;
   errorItemIds: Set<string>;
   setReqPropsFilled: React.Dispatch<React.SetStateAction<boolean>>;
@@ -526,6 +527,7 @@ const ActionFormContextProvider: React.FC<PropsWithChildren> = ({ children }) =>
     setProcessOutputFileCode(actionData?.processOutputFileCode || '');
     setFormData(actionData?.formData || undefined);
     setRaType(actionData?.raType || '');
+    setReturnProcess((actionData?.returnProcess as ReturnProcessType) || 'rtNone')
     action.value = actionData || emptyAction;
   };
 
@@ -555,6 +557,7 @@ const ActionFormContextProvider: React.FC<PropsWithChildren> = ({ children }) =>
         errorMessage,
         actionTypeOptions,
         raType,
+        returnProcess,
         reqPropsFilled,
         errorItemIds,
         setReqPropsFilled,
