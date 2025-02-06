@@ -17,7 +17,6 @@ import { startCase } from 'lodash';
 import React from 'react';
 import SelectComponent from '../../../../common/SelectComponent';
 import { TextFieldComponent } from '../../../../common';
-import useRunApplication from './useRunApplication';
 
 // Define the type for the custom form components
 type CustomFormComponents = {
@@ -43,12 +42,13 @@ const RunApplication = () => {
     setFormData,
   } = useActionFormContext();
 
-  const { ReturnPreCode } = useRunApplication();
   const { variableList } = useVariableContext();
-  const [applicationType, setApplicationType] = useState(raType || 'custom');
+  const [applicationType, setApplicationType] = useState(raType || 'code');
   const [customFormType, setCustomFormType] = useState<string>(formData?.caType || '');
   const [options, setOptions] = useState<string[]>(['MAAP']);
   const [selectedComponent, setSelectedComponent] = useState<ReactElement | null>(null);
+  const [localPreCode, setLocalPreCode] = useState('');
+  const [hasInitialCode, setHasInitialCode] = useState(false);
 
   useEffect(() => {
     // Dynamically import components
@@ -69,7 +69,10 @@ const RunApplication = () => {
   }, [customFormType]);
 
   useEffect(() => {
-    ReturnPreCode();
+    if (!hasInitialCode) {
+      setHasInitialCode(true);
+      setLocalPreCode(makeInputFileCode);
+    }
   });
 
   const handleSetCustomFormType = (value: string) => {
@@ -80,7 +83,6 @@ const RunApplication = () => {
   const handleApplicationTypeChange = (value: string) => {
     setApplicationType(value);
     setRaType(value);
-    ReturnPreCode();
   };
 
   return (
@@ -108,7 +110,7 @@ const RunApplication = () => {
                 height="300px"
                 defaultLanguage="csharp"
                 language="csharp"
-                value={makeInputFileCode}
+                value={localPreCode}
                 onChange={(value) => setMakeInputFileCode(value || '')}
                 options={{
                   minimap: { enabled: false },
