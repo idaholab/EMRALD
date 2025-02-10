@@ -30,7 +30,7 @@ export interface NewStateItem {
 
 export type sim3DMessageType = 'atCompModify' | 'atOpenSim' | 'atCancelSim' | 'atPing';
 
-export type ReturnProcessType = 'rtNone' | 'rtStateList';
+export type ReturnProcessType = 'rtVar' | 'rtNone' | 'rtStateList';
 
 interface ActionFormContextType {
   name: string;

@@ -37,6 +37,7 @@ const RunApplication = () => {
     raType,
     returnProcess,
     formData,
+    variableName,
     addToUsedVariables,
     setMakeInputFileCode,
     setExePath,
@@ -44,6 +45,7 @@ const RunApplication = () => {
     setRaType,
     setFormData,
     setReturnProcess,
+    setVariableName,
   } = useActionFormContext();
 
   const { variableList } = useVariableContext();
@@ -142,7 +144,14 @@ const RunApplication = () => {
                     setReturnProcess(rtType); // TODO: propgate the selected type to the action JSON
                     switch (rtType) {
                       case 'rtStateList':
-                        setProcessOutputFileCode('List<String> retStates = new List<String>();\n//add states to exit or enter into the retStates list\n//retStates.Add("-ExitStateName");\n//retStates.Add("NewStateName");\nreturn retStates;');
+                        setProcessOutputFileCode(
+                          'List<String> retStates = new List<String>();\n//add states to exit or enter into the retStates list\n//retStates.Add("-ExitStateName");\n//retStates.Add("NewStateName");\nreturn retStates;',
+                        );
+                        break;
+                      case 'rtVar':
+                        setProcessOutputFileCode(
+                          '// Return value must be the same type as the selected variable.\nreturn ; // the value to be assigned to the variable',
+                        );
                         break;
                       // add template codes for other return types here
                       default:
@@ -151,8 +160,28 @@ const RunApplication = () => {
                 >
                   <MenuItem value="rtNone">None</MenuItem>
                   <MenuItem value="rtStateList">State List</MenuItem>
+                  <MenuItem value="rtVar">Variable</MenuItem>
                 </Select>
               </FormControl>
+
+              {returnProcess == 'rtVar' ? (
+                <SelectComponent
+                  value={variableName}
+                  setValue={setVariableName}
+                  label="Target Variable"
+                  fullWidth
+                >
+                  {variableList.value.map((variable, index) => {
+                    return (
+                      <MenuItem value={variable.name} key={index}>
+                        {variable.name}
+                      </MenuItem>
+                    );
+                  })}
+                </SelectComponent>
+              ) : (
+                <div></div>
+              )}
 
               {returnProcess != 'rtNone' ? (
                 <div>
