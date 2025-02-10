@@ -61,7 +61,7 @@ const MAAP = () => {
   string resLoc = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\EMRALD_MAAP\" + Path.GetFileNameWithoutExtension(inpLoc) + ".log";
   File.Copy(resLoc, docVarPath, true);`);
 
-    setReturnProcess('rtVar');
+    setReturnProcess('rtNone');
 
     setFormData({
       ...formData,

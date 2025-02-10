@@ -46,8 +46,8 @@ const CustomFormTemplate: React.FC = () => {
     ReturnPreCode(createPreProcessCode()); // <-- Call a function instead of a string.
     ReturnExePath(exePath);
     ReturnPostCode(`string inpLoc = @"${inputPath}"; 
-    string docVarPath = @".\MAAP\temp.log"; //whatever you assigned the results variables to
-    string resLoc = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\EMRALD_MAAP\" + Path.GetFileNameWithoutExtension(inpLoc) + ".log";
+    string docVarPath = @"./MAAP/temp.log"; //whatever you assigned the results variables to
+    string resLoc = Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "EMRALD_MAAP", Path.GetFileNameWithoutExtension(inpLoc) + ".log");
     File.Copy(resLoc, docVarPath, true);`); // <-- Create a string and replace the values with what is needed
     ReturnUsedVariables(includedVariable); // <-- Must return an array of valid variable names. For example: ['var1', 'var2']
 
