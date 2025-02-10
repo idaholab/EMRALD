@@ -42,58 +42,59 @@ const useRunApplication = () => {
     
     if (!Path.IsPathRooted(exeLoc))
     {
-      exeLoc = System.IO.Directory.GetCurrentDirectory() + exeLoc;
+      exeLoc = Path.Join(Directory.GetCurrentDirectory(), exeLoc);
     }
     if (!Path.IsPathRooted(paramLoc))
     {
-      paramLoc = System.IO.Directory.GetCurrentDirectory() + paramLoc;
+      paramLoc = Path.Join(Directory.GetCurrentDirectory(), paramLoc);
     }
     if (!Path.IsPathRooted(inpLoc))
     {
-      inpLoc = System.IO.Directory.GetCurrentDirectory() + inpLoc;
+      inpLoc = Path.Join(Directory.GetCurrentDirectory(), inpLoc);
     }
     
-    string tempLoc = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\EMRALD_MAAP\";
+    string tempLoc = Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "EMRALD_MAAP");
     try
     {
       if (Directory.Exists(tempLoc))
       {
-    Directory.Delete(tempLoc, true);
+        Directory.Delete(tempLoc, true);
       }
       Directory.CreateDirectory(tempLoc);
     }
     catch { }
     if (File.Exists(paramLoc))
     {
-      File.Copy(paramLoc, tempLoc + Path.GetFileName(paramLoc));
+      File.Copy(paramLoc, Path.Join(tempLoc, Path.GetFileName(paramLoc)));
     }
     
     string paramFileName = Path.GetFileName(paramLoc);
-    string inpLocPath = Path.GetDirectoryName(inpLoc) + Path.DirectorySeparatorChar;
+    string inpLocPath = Path.GetDirectoryName(inpLoc);
     foreach (string fileRef in fileRefsList)
     {
-      if (File.Exists(inpLocPath + fileRef))
+      string fileRefPath = Path.Join(inpLocPath, fileRef);
+      if (File.Exists(fileRefPath))
       {
-    if(fileRef != paramFileName)
-      File.Copy(inpLocPath + fileRef, tempLoc + fileRef);
+        if (fileRef != paramFileName)
+        File.Copy(fileRefPath, Path.Join(tempLoc, fileRef));
       }
       else
       {
-    Console.WriteLine("Missing MAAP referenced file - " + inpLocPath + fileRef);
+        Console.WriteLine("Missing MAAP referenced file - " + Path.Join(inpLocPath, fileRef));
       }
     }
     string exeName = Path.GetFileName(exeLoc);
     if (File.Exists(exeLoc))
     {
-      File.Copy(exeLoc, tempLoc + exeName);
+      File.Copy(exeLoc, Path.Join(tempLoc, exeName));
     }
-    string dllPath = Path.GetDirectoryName(exeLoc) + @"\" + exeName.Substring(0, exeName.Length - 7) + ".dll";
+    string dllPath = Path.Join(Path.GetDirectoryName(exeLoc), exeName[..^7] + ".dll");
     if (File.Exists(dllPath))
     {
-      File.Copy(dllPath, tempLoc + Path.GetFileName(dllPath));
+      File.Copy(dllPath, Path.Join(tempLoc, Path.GetFileName(dllPath)));
     }
     
-    System.IO.File.WriteAllText(tempLoc + Path.GetFileName(inpLoc), newInp);
+    System.IO.File.WriteAllText(Path.Join(tempLoc, Path.GetFileName(inpLoc)), newInp);
     return tempLoc + exeName + " " + Path.GetFileName(inpLoc) + " " + Path.GetFileName(paramLoc);
     `;
   };
