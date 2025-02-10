@@ -35,7 +35,7 @@ const DraggableItem: React.FC<PropsWithChildren<DraggableItemProps>> = ({
   });
 
   return (
-    <Box ref={drag} sx={{ cursor: 'grab' }}>
+    <Box ref={drag} sx={{ cursor: 'grab', width: '100%' }}>
       {children}
     </Box>
   );
