@@ -1,8 +1,11 @@
 import {
   Box,
   Checkbox,
+  FormControl,
   FormControlLabel,
+  FormLabel,
   MenuItem,
+  TextField,
 } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import { useActionFormContext } from '../ActionFormContext';
@@ -35,7 +38,7 @@ const ExtSimulation: React.FC = () => {
   const { extSimList } = useExtSimContext();
   const { variableList } = useVariableContext();
   const extSimVariables = variableList.value.filter(
-    (variable) => variable.varScope === 'gt3DSim',
+    (variable) => variable.varScope === 'gt3DSim' && variable.type === 'string',
   );
   // const simEndTimeDuration = dayjs.duration(simEndTime);
   const [milliseconds, setMilliseconds] = useState(0);
@@ -59,11 +62,7 @@ const ExtSimulation: React.FC = () => {
 
   return (
     <Box display={'flex'} flexDirection={'column'}>
-      <SelectComponent
-        value={sim3DMessage}
-        label="Sim Action"
-        setValue={setSim3DMessage}
-      >
+      <SelectComponent value={sim3DMessage} label="Sim Action" setValue={setSim3DMessage}>
         {simTypeOptions.map((item, index) => (
           <MenuItem value={item.value} key={index}>
             <em>{item.label}</em>
@@ -96,29 +95,56 @@ const ExtSimulation: React.FC = () => {
             label="Use variable for items below"
           />
 
-          <SelectComponent
-            value={sim3DModelRef}
-            label="Model Reference (Optional)"
-            setValue={setSim3DModelRef}
-          >
-            {extSimVariables.map((item, index) => (
-              <MenuItem value={item.name} key={index}>
-                <em>{item.name}</em>
-              </MenuItem>
-            ))}
-          </SelectComponent>
-
-          <SelectComponent
-            value={sim3DConfigData}
-            label="Config Data (Optional)"
-            setValue={setSim3DConfigData}
-          >
-            {extSimVariables.map((item, index) => (
-              <MenuItem value={item.name} key={index}>
-                <em>{item.name}</em>
-              </MenuItem>
-            ))}
-          </SelectComponent>
+          {openSimVarParams ? (
+            <div>
+              <SelectComponent
+                value={sim3DModelRef}
+                label="Model Reference (Optional)"
+                setValue={setSim3DModelRef}
+                fullWidth
+              >
+                {extSimVariables.map((item, index) => (
+                  <MenuItem value={item.name} key={index}>
+                    <em>{item.name}</em>
+                  </MenuItem>
+                ))}
+              </SelectComponent>
+              <SelectComponent
+                value={sim3DConfigData}
+                label="Config Data (Optional)"
+                setValue={setSim3DConfigData}
+                fullWidth
+              >
+                {extSimVariables.map((item, index) => (
+                  <MenuItem value={item.name} key={index}>
+                    <em>{item.name}</em>
+                  </MenuItem>
+                ))}
+              </SelectComponent>
+            </div>
+          ) : (
+            <div>
+              <FormControl>
+                <FormLabel>Model Reference (Optional)</FormLabel>
+                <TextField
+                  value={sim3DModelRef}
+                  size="small"
+                  fullWidth
+                  onChange={(e) => setSim3DModelRef(e.target.value)}
+                ></TextField>
+              </FormControl>
+              <br />
+              <FormControl>
+                <FormLabel>Config Data (Optional)</FormLabel>
+                <TextField
+                  value={sim3DConfigData}
+                  size="small"
+                  fullWidth
+                  onChange={(e) => setSim3DConfigData(e.target.value)}
+                ></TextField>
+              </FormControl>
+            </div>
+          )}
         </Box>
       ) : (
         <></>
