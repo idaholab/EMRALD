@@ -190,7 +190,7 @@ function expressionBlockToString(expressionBlock: t.ExpressionBlock): string {
  * @param expressionType - The object to compile.
  * @returns The compiled code.
  */
-function expressionTypeToString(expressionType: t.ExpressionType): string {
+export function expressionTypeToString(expressionType: t.ExpressionType): string {
   if (expressionType.type === 'call_expression') {
     return callExpressionToString(expressionType);
   }
@@ -246,7 +246,7 @@ function asExpressionToString(asExpression: t.AsExpression): string {
  * @param expression - The object to compile.
  * @returns The compiled code.
  */
-function expressionToString(expression: t.Expression): string {
+export function expressionToString(expression: t.Expression): string {
   switch (expression.type) {
     case 'is_expression':
       return isExpressionToString(expression);
@@ -476,7 +476,7 @@ function lookupToString(lookupStatement: t.LookupStatement): string {
  * @param sourceElement - The object to compile.
  * @returns The compiled code.
  */
-function sourceElementToString(sourceElement: t.SourceElement | t.Comment): string {
+export function sourceElementToString(sourceElement: t.SourceElement | t.Comment): string {
   if (sourceElement.type === 'comment') {
     return `// ${sourceElement.value}`;
   }
@@ -530,6 +530,8 @@ export function MAAPToString(
       return identifierToString(input);
     case 'parameter_name':
       return parameterNameToString(input);
+    case 'comment':
+      return sourceElementToString(input);
     default:
       throw new Error(`Unexpected input type: ${input.type}`);
   }

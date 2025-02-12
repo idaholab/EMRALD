@@ -196,7 +196,8 @@ declare module 'maap-inp-parser' {
     | ExpressionBlock
     | ParameterName
     | Literal
-    | Identifier;
+    | Identifier
+    | Comment;
 
   export type MAAPInpParserOutput = {
     errors: PEG.parser.SyntaxError[];

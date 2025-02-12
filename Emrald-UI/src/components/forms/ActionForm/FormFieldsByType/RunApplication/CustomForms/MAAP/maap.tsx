@@ -9,7 +9,13 @@ import { v4 as uuid } from 'uuid';
 import { useActionFormContext } from '../../../../ActionFormContext.tsx';
 import { Initiator, InitiatorOG, InputBlock, Parameter, ParameterOG, Value } from './MAAPTypes.ts';
 import useRunApplication from '../../useRunApplication.tsx';
-import { MAAPToString } from './Parser/maap-to-string.ts';
+import {
+  expressionToString,
+  expressionTypeToString,
+  MAAPToString,
+  sourceElementToString,
+} from './Parser/maap-to-string.ts';
+import { Expression, ExpressionType, SourceElement } from 'maap-inp-parser';
 
 const MAAP = () => {
   const {
@@ -70,13 +76,59 @@ const MAAP = () => {
 
   function createMaapFile() {
     if (formData.sourceElements) {
-      console.log(formData);
-      const code = MAAPToString({
-        type: 'program',
-        value: formData.sourceElements,
+      let inpFile = '';
+      let block = 0;
+      formData.sourceElements.forEach((sourceElement: SourceElement) => {
+        if (sourceElement.type === 'block') {
+          if (sourceElement.blockType === 'PARAMETER CHANGE') {
+            inpFile += 'PARAMETER CHANGE\n';
+            formData.parameters.forEach((parameter: Parameter) => {
+              inpFile += `${parameter.name} = `;
+              if (parameter.useVariable) {
+                inpFile += `" + ${parameter.variable} + @"`;
+              } else {
+                inpFile += `${parameter.value}`;
+                if (parameter.unit) {
+                  inpFile += ` ${parameter.unit}`;
+                }
+              }
+              inpFile += '\n';
+            });
+            inpFile += 'END\n';
+          } else if (sourceElement.blockType === 'INITIATORS') {
+            inpFile += 'INITIATORS\n';
+            formData.initiators.forEach((initiator: Initiator) => {
+              inpFile += `${initiator.name} = `;
+              if (typeof initiator.value === 'boolean') {
+                inpFile += initiator.value ? 'T' : 'F';
+              } else {
+                inpFile += initiator.value;
+              }
+              inpFile += '\n';
+            });
+            inpFile += 'END\n';
+          }
+        } else if (sourceElement.type === 'conditional_block') {
+          const cblock = formData.inputBlocks[block] as InputBlock;
+          inpFile += `${cblock.blockType} `;
+          if ((cblock.test.value.right as Value).useVariable) {
+            // TODO: This may not work for every possible case
+            inpFile += `${expressionTypeToString(
+              cblock.test.value.left as ExpressionType,
+            )} ${cblock.test.value.op} " + ${cblock.test.value.right.value} + @"\n`;
+          } else {
+            inpFile += `${expressionToString(cblock.test as Expression)}\n`;
+          }
+          inpFile += `${cblock.value
+            .map((se) => sourceElementToString(se as SourceElement))
+            .join('\n')}\nEND\n`;
+          block += 1;
+        } else {
+          inpFile += `${MAAPToString(sourceElement)}\n`;
+        }
       });
-      console.log(code);
-      return code;
+      console.log(inpFile);
+      return inpFile;
     }
     return '';
   }
@@ -303,6 +355,7 @@ const MAAP = () => {
                 name: getParameterName(param) || '',
                 id: uuid(),
                 useVariable: false,
+                unit: param.value.units,
                 value: param.value.value,
                 variable: '',
               });
