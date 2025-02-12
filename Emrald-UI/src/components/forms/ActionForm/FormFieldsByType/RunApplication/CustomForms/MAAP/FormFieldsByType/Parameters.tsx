@@ -12,7 +12,7 @@ import { useEffect, useState } from 'react';
 import { SelectComponent } from '../../../../../../../common';
 import { appData } from '../../../../../../../../hooks/useAppData';
 import { useActionFormContext } from '../../../../../ActionFormContext';
-import { Parameter } from '../../../CustomApplicationTypes';
+import { Parameter } from '../MAAPTypes';
 const Parameters = () => {
   const { formData, setFormData } = useActionFormContext();
   const [useVariable, setUseVariable] = useState<{ [key: string]: boolean }>({});

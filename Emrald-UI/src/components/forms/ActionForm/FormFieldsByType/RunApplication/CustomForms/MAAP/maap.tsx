@@ -7,15 +7,9 @@ import { parse as InputParse } from './Parser/maap-inp-parser.ts';
 import { parse as parameterParser } from './Parser/maap-par-parser.ts';
 import { v4 as uuid } from 'uuid';
 import { useActionFormContext } from '../../../../ActionFormContext.tsx';
-import {
-  Initiator,
-  InitiatorOG,
-  InputBlock,
-  Parameter,
-  ParameterOG,
-  Value,
-} from '../../CustomApplicationTypes.ts';
+import { Initiator, InitiatorOG, InputBlock, Parameter, ParameterOG, Value } from './MAAPTypes.ts';
 import useRunApplication from '../../useRunApplication.tsx';
+import { MAAPToString } from './Parser/maap-to-string.ts';
 
 const MAAP = () => {
   const {
@@ -31,15 +25,9 @@ const MAAP = () => {
   const [parameterFile, setParameterFile] = useState<File | null>(null);
   const [inputFile, setInputFile] = useState<File | null>(null);
   const [currentTab, setCurrentTab] = useState(0);
-  const {
-    parameterPath,
-    inputPath,
-    getParameterName,
-    getInitiatorName,
-    ReturnPreCode,
-    setParameterPath,
-    setInputPath,
-  } = useRunApplication();
+  const [parameterPath, setParameterPath] = useState(formData?.parameterPath || '');
+  const [inputPath, setInputPath] = useState(formData?.inputPath || '');
+  const { ReturnPreCode } = useRunApplication();
 
   useEffect(() => {
     setReqPropsFilled(!!exePath && !!parameterPath && !!inputPath);
@@ -49,8 +37,114 @@ const MAAP = () => {
     setCurrentTab(tabValue);
   };
 
+  const getParameterName = (row: ParameterOG) => {
+    if (!row.target) return;
+    let name =
+      row.target.type === 'call_expression'
+        ? ((row.target.value as Value).value as string)
+        : (row.target.value as string);
+    if (row.target?.arguments && row.target.arguments.length > 0) {
+      name = name + `(${String(row.target.arguments[0].value)})`;
+    }
+    return name;
+  };
+
+  const getInitiatorName = (row: InitiatorOG): string | number => {
+    let name = '';
+    if (row.type === 'assignment') {
+      if (row.target.type === 'identifier') {
+        name = `${row.target.value}`;
+      } else {
+        name = `${(row.target.value as Value).value}`;
+      }
+    } else if (row.type === 'parameter_name') {
+      name = `${row.value}`;
+    } else {
+      name = row.desc;
+    }
+    if (row.target?.arguments && row.target.arguments.length > 0) {
+      name = name + `(${String(row.target.arguments[0].value)})`;
+    }
+    return name;
+  };
+
+  function createMaapFile() {
+    if (formData.sourceElements) {
+      console.log(formData);
+      const code = MAAPToString({
+        type: 'program',
+        value: formData.sourceElements,
+      });
+      console.log(code);
+      return code;
+    }
+    return '';
+  }
+
   useEffect(() => {
-    ReturnPreCode();
+    ReturnPreCode(`string exeLoc = "${exePath}";
+        string paramLoc = "${parameterPath}";
+        string inpLoc = "${inputPath}";
+        string newInp = @"${createMaapFile()}";
+        string fileRefs = "${formData?.fileRefs}"; //example "PVGS_502.par, test.txt";
+        string[] fileRefsList = fileRefs.Split(',');
+        
+        if (!Path.IsPathRooted(exeLoc))
+        {
+          exeLoc = Path.Join(Directory.GetCurrentDirectory(), exeLoc);
+        }
+        if (!Path.IsPathRooted(paramLoc))
+        {
+          paramLoc = Path.Join(Directory.GetCurrentDirectory(), paramLoc);
+        }
+        if (!Path.IsPathRooted(inpLoc))
+        {
+          inpLoc = Path.Join(Directory.GetCurrentDirectory(), inpLoc);
+        }
+        
+        string tempLoc = Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "EMRALD_MAAP");
+        try
+        {
+          if (Directory.Exists(tempLoc))
+          {
+            Directory.Delete(tempLoc, true);
+          }
+          Directory.CreateDirectory(tempLoc);
+        }
+        catch { }
+        if (File.Exists(paramLoc))
+        {
+          File.Copy(paramLoc, Path.Join(tempLoc, Path.GetFileName(paramLoc)));
+        }
+        
+        string paramFileName = Path.GetFileName(paramLoc);
+        string inpLocPath = Path.GetDirectoryName(inpLoc);
+        foreach (string fileRef in fileRefsList)
+        {
+          string fileRefPath = Path.Join(inpLocPath, fileRef);
+          if (File.Exists(fileRefPath))
+          {
+            if (fileRef != paramFileName)
+            File.Copy(fileRefPath, Path.Join(tempLoc, fileRef));
+          }
+          else
+          {
+            Console.WriteLine("Missing MAAP referenced file - " + Path.Join(inpLocPath, fileRef));
+          }
+        }
+        string exeName = Path.GetFileName(exeLoc);
+        if (File.Exists(exeLoc))
+        {
+          File.Copy(exeLoc, Path.Join(tempLoc, exeName));
+        }
+        string dllPath = Path.Join(Path.GetDirectoryName(exeLoc), exeName[..^7] + ".dll");
+        if (File.Exists(dllPath))
+        {
+          File.Copy(dllPath, Path.Join(tempLoc, Path.GetFileName(dllPath)));
+        }
+        
+        System.IO.File.WriteAllText(Path.Join(tempLoc, Path.GetFileName(inpLoc)), newInp);
+        return tempLoc + exeName + " " + Path.GetFileName(inpLoc) + " " + Path.GetFileName(paramLoc);`);
     ReturnExePath(exePath);
     ReturnPostCode(`string inpLoc = @"${inputPath}";
   if (!Path.IsPathRooted(inpLoc))
@@ -239,6 +333,7 @@ const MAAP = () => {
             aliasList,
             isExpressions,
             plotFil,
+            sourceElements: data.value,
           }));
         } catch (err) {
           console.log('Error parsing file:', err);

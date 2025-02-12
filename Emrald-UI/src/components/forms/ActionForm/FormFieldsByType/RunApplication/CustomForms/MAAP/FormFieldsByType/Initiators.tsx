@@ -11,7 +11,7 @@ import {
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useActionFormContext } from '../../../../../ActionFormContext';
 import { useEffect, useState } from 'react';
-import { Initiator, InitiatorOG } from '../../../CustomApplicationTypes';
+import { Initiator, InitiatorOG } from '../MAAPTypes';
 import { v4 as uuid } from 'uuid';
 const Initiators = () => {
   const { formData, setFormData } = useActionFormContext();

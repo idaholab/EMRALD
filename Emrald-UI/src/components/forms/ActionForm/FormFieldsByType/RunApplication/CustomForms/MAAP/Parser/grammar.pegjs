@@ -16,11 +16,12 @@
     }
 }
 
-Start = __ program:Program __ {
+Start = preamble:__ program:Program __ {
+	program.value = preamble.concat(program.value);
+    
 	// Switch the comments on the following lines to disable locations for debugging
-
 	return program;
-	// return stripLocations(program);
+	//return stripLocations(program);
 }
 
 /* Lexical Grammar */
@@ -29,12 +30,18 @@ FreeCharacter = !LineTerminator SourceCharacter
 WhiteSpace = "\t" / "\v" / "\f" / " " / "\u00A0" / "\uFEFF"
 LineTerminator = [\n\r\u2028\u2029]
 LineTerminatorSequence = "\n" / "\r\n" / "\r" / "\u2028" / "\u2029"
-Comment = SingleLineComment
+Comment = EnclosedComment / SingleLineComment
 CommentIndicator = "//" / "!" / "C " / "**"
 SingleLineComment = CommentIndicator v:FreeCharacter* {
 	return {
     	type: "comment",
         value: extractList(v,1).join(''),
+    }
+}
+EnclosedComment = "****" v:[^*]+ "****" {
+	return {
+    	type: "comment",
+        value: v.join(''),
     }
 }
 IdentifierStart = [a-zA-Z] / "$" / "_" / "\\"
