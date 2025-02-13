@@ -17,6 +17,9 @@ import {
 } from './Parser/maap-to-string.ts';
 import { Expression, ExpressionType, SourceElement } from 'maap-inp-parser';
 
+// TODO: INP file is still missing SENSITIVITY ON if it is not on a new line
+// TODO: The code does not update every time the form is saved
+
 const MAAP = () => {
   const {
     formData,
@@ -27,7 +30,7 @@ const MAAP = () => {
     ReturnPostCode,
     ReturnExePath,
   } = useCustomForm();
-  const { setReqPropsFilled } = useActionFormContext();
+  const { setReqPropsFilled, setCodeVariables } = useActionFormContext();
   const [parameterFile, setParameterFile] = useState<File | null>(null);
   const [inputFile, setInputFile] = useState<File | null>(null);
   const [currentTab, setCurrentTab] = useState(0);
@@ -78,6 +81,7 @@ const MAAP = () => {
     if (formData.sourceElements) {
       let inpFile = '';
       let block = 0;
+      let variables: string[] = [];
       formData.sourceElements.forEach((sourceElement: SourceElement) => {
         if (sourceElement.type === 'block') {
           if (sourceElement.blockType === 'PARAMETER CHANGE') {
@@ -86,6 +90,9 @@ const MAAP = () => {
               inpFile += `${parameter.name} = `;
               if (parameter.useVariable) {
                 inpFile += `" + ${parameter.variable} + @"`;
+                if (variables.indexOf(parameter.variable) < 0) {
+                  variables.push(parameter.variable);
+                }
               } else {
                 inpFile += `${parameter.value}`;
                 if (parameter.unit) {
@@ -113,9 +120,12 @@ const MAAP = () => {
           inpFile += `${cblock.blockType} `;
           if ((cblock.test.value.right as Value).useVariable) {
             // TODO: This may not work for every possible case
-            inpFile += `${expressionTypeToString(
-              cblock.test.value.left as ExpressionType,
-            )} ${cblock.test.value.op} " + ${cblock.test.value.right.value} + @"\n`;
+            inpFile += `${expressionTypeToString(cblock.test.value.left as ExpressionType)} ${
+              cblock.test.value.op
+            } " + ${cblock.test.value.right.value} + @"\n`;
+            if (variables.indexOf(cblock.test.value.right.value as string) < 0) {
+              variables.push(cblock.test.value.right.value as string);
+            }
           } else {
             inpFile += `${expressionToString(cblock.test as Expression)}\n`;
           }
@@ -127,16 +137,21 @@ const MAAP = () => {
           inpFile += `${MAAPToString(sourceElement)}\n`;
         }
       });
-      console.log(inpFile);
+      setCodeVariables(variables);
       return inpFile;
     }
     return '';
   }
 
   useEffect(() => {
-    ReturnPreCode(`string exeLoc = "${exePath}";
-        string paramLoc = "${parameterPath}";
-        string inpLoc = "${inputPath}";
+    const getCleanPath = (path: string) =>
+      path.replace(/\\/g, '/').replace(/^\"/, '').replace(/\"$/, '');
+    const cleanExePath = getCleanPath(exePath);
+    const cleanParameterPath = getCleanPath(parameterPath);
+    const cleanInputPath = getCleanPath(inputPath);
+    ReturnPreCode(`string exeLoc = "${cleanExePath}";
+        string paramLoc = "${cleanParameterPath}";
+        string inpLoc = "${cleanInputPath}";
         string newInp = @"${createMaapFile()}";
         string fileRefs = "${formData?.fileRefs}"; //example "PVGS_502.par, test.txt";
         string[] fileRefsList = fileRefs.Split(',');
@@ -197,25 +212,25 @@ const MAAP = () => {
         
         System.IO.File.WriteAllText(Path.Join(tempLoc, Path.GetFileName(inpLoc)), newInp);
         return tempLoc + exeName + " " + Path.GetFileName(inpLoc) + " " + Path.GetFileName(paramLoc);`);
-    ReturnExePath(exePath);
-    ReturnPostCode(`string inpLoc = @"${inputPath}";
+    ReturnExePath(cleanExePath);
+    ReturnPostCode(`string inpLoc = @"${cleanInputPath}";
   if (!Path.IsPathRooted(inpLoc))
         inpLoc = RootPath + inpLoc;
-    string docVarPath = @".\\MAAP\\temp.log";
+    string docVarPath = @"./MAAP/temp.log";
   if (!Path.IsPathRooted(docVarPath))
         docVarPath = RootPath + docVarPath;
-  string resLoc = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\EMRALD_MAAP\" + Path.GetFileNameWithoutExtension(inpLoc) + ".log";
+  string resLoc = Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "EMRALD_MAAP", Path.GetFileNameWithoutExtension(inpLoc) + ".log");
   File.Copy(resLoc, docVarPath, true);`);
 
     setReturnProcess('rtNone');
 
     setFormData({
       ...formData,
-      exePath,
+      exePath: cleanExePath,
       inputFile,
-      inputPath,
+      inputPath: cleanInputPath,
       parameterFile,
-      parameterPath,
+      parameterPath: cleanParameterPath,
     });
   }, [inputPath, parameterFile, parameterPath]);
 
@@ -411,7 +426,11 @@ const MAAP = () => {
           }}
         />
 
-        <TextFieldComponent value={inputPath} label="Full Input File Path" setValue={setInputPath} />
+        <TextFieldComponent
+          value={inputPath}
+          label="Full Input File Path"
+          setValue={setInputPath}
+        />
 
         <Divider sx={{ my: 3 }} />
 
