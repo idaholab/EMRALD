@@ -222,14 +222,6 @@ const MAAP = () => {
   useEffect(() => {
     if (parameterFile) {
       const parameterFileName = parameterFile.name;
-      if (!parameterPath) {
-        setParameterPath('.\\' + parameterFileName);
-      } else {
-        let tempPath = parameterPath;
-        let sections = tempPath.split(/[\\/]/);
-        sections[sections.length - 1] = parameterFileName;
-        setParameterPath(sections.join('\\'));
-      }
       const possibleInitiators: Initiator[] = [];
       const allData: any[] = [];
       parameterFile.text().then((lineData) => {
@@ -261,14 +253,6 @@ const MAAP = () => {
     const handleInputFileChange = async () => {
       if (inputFile) {
         const inputFileName = inputFile.name;
-        if (!inputPath) {
-          setInputPath('.\\' + inputFileName);
-        } else {
-          let tempPath = inputPath;
-          let sections = tempPath.split(/[\\/]/);
-          sections[sections.length - 1] = inputFileName;
-          setInputPath(sections.join('\\'));
-        }
         const fileString = await inputFile.text();
         try {
           const data = InputParse(fileString, {});
@@ -413,7 +397,7 @@ const MAAP = () => {
 
         <TextFieldComponent
           value={parameterPath}
-          label="Parameter File Path"
+          label="Full Parameter File Path"
           setValue={setParameterPath}
         />
 
@@ -427,7 +411,7 @@ const MAAP = () => {
           }}
         />
 
-        <TextFieldComponent value={inputPath} label="Input File Path" setValue={setInputPath} />
+        <TextFieldComponent value={inputPath} label="Full Input File Path" setValue={setInputPath} />
 
         <Divider sx={{ my: 3 }} />
 
