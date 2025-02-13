@@ -208,7 +208,7 @@ const MAAP = () => {
         }
         
         System.IO.File.WriteAllText(Path.Join(tempLoc, Path.GetFileName(inpLoc)), newInp);
-        return tempLoc + exeName + " " + Path.GetFileName(inpLoc) + " " + Path.GetFileName(paramLoc);`);
+        return Path.Join(tempLoc, exeName) + ".exe " + Path.GetFileName(inpLoc) + " " + Path.GetFileName(paramLoc);`);
     ReturnExePath(cleanExePath);
     ReturnPostCode(`string inpLoc = @"${cleanInputPath}";
   if (!Path.IsPathRooted(inpLoc))
