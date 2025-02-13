@@ -17,9 +17,6 @@ import {
 } from './Parser/maap-to-string.ts';
 import { Expression, ExpressionType, SourceElement } from 'maap-inp-parser';
 
-// TODO: INP file is still missing SENSITIVITY ON if it is not on a new line
-// TODO: The code does not update every time the form is saved
-
 const MAAP = () => {
   const {
     formData,
@@ -232,7 +229,7 @@ const MAAP = () => {
       parameterFile,
       parameterPath: cleanParameterPath,
     });
-  }, [inputPath, parameterFile, parameterPath]);
+  }, [inputPath, parameterFile, parameterPath, formData]);
 
   useEffect(() => {
     if (parameterFile) {
