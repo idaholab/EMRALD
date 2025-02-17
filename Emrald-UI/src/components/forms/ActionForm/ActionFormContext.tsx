@@ -122,7 +122,7 @@ const ActionFormContextProvider: React.FC<PropsWithChildren> = ({ children }) =>
   const [desc, setDesc] = useState<string>('');
   const [actType, setActType] = useState<ActionType>('atTransition');
   //transition items
-  const [mutuallyExclusive, setMutuallyExclusive] = useState(false);
+  const [mutuallyExclusive, setMutuallyExclusive] = useState(true);
   const [newStateItems, setNewStateItems] = useState<NewStateItem[]>([]);
   //cngVarVal items
   const [codeVariables, setCodeVariables] = useState<string[]>([]);
@@ -456,7 +456,7 @@ const ActionFormContextProvider: React.FC<PropsWithChildren> = ({ children }) =>
     setNewStateItems(updatedItems);
   };
   const reset = () => {
-    setMutuallyExclusive(false); // Default value for mutuallyExclusive
+    setMutuallyExclusive(true); // Default value for mutuallyExclusive
     setNewStateItems([]); // Default value for newStateItems
     setCodeVariables([]); // Default value for codeVariables
     setVariableName('');
@@ -494,7 +494,7 @@ const ActionFormContextProvider: React.FC<PropsWithChildren> = ({ children }) =>
     setDesc(actionData?.desc || '');
     setActType(actionData?.actType || 'atTransition');
     //transition items
-    setMutuallyExclusive(actionData?.mutExcl || false);
+    setMutuallyExclusive(actionData?.mutExcl || true);
     setNewStateItems(
       actionData?.newStates
         ? sortNewStates(
