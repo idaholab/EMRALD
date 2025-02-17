@@ -446,7 +446,7 @@ namespace SimulationTracking
 
             addToRes = keyResMap[curStatePath.state.name].pathsLookup;
             //add the time for the key state overall result
-            keyResMap[curStatePath.state.name].AddTime(curStatePath.times[curStatePath.times.Count - 1]);
+            //keyResMap[curStatePath.state.name].AddTime(curStatePath.times[curStatePath.times.Count - 1]);
 
             retStateResults.Add(curStatePath.state.name, curStatePath.times[curStatePath.times.Count - 1]);
           }

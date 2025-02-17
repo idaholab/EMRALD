@@ -1,8 +1,8 @@
 Simulation = NormDistTest
-Runtime = 00.00:00:03
+Runtime = 00.00:00:04
 Runs = 100000 of 100000
-AboveMean Occurred 49987 times, Rate =0.49987, MeanTime = 01.00:08:01 +/- 00.00:08:34.71
-UnderFifth Occurred 5047 times, Rate =0.05047, MeanTime = 00.23:39:13 +/- 00.00:05:18.46
+AboveMean Occurred 49987 times, Probability =0.49987, MeanTime = 01.00:08:01 +/- 00.00:06:03.95
+UnderFifth Occurred 5047 times, Probability =0.05047, MeanTime = 00.23:39:13 +/- 00.00:03:45.19
 ---------------------------
 - End Sim Variable Values -
 ---------------------------

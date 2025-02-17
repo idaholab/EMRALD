@@ -30,6 +30,8 @@ export interface NewStateItem {
 
 export type sim3DMessageType = 'atCompModify' | 'atOpenSim' | 'atCancelSim' | 'atPing';
 
+export type ReturnProcessType = 'rtVar' | 'rtNone' | 'rtStateList';
+
 interface ActionFormContextType {
   name: string;
   desc: string;
@@ -54,6 +56,7 @@ interface ActionFormContextType {
   errorMessage: string;
   actionTypeOptions: { value: string; label: string }[];
   raType: string;
+  returnProcess: ReturnProcessType;
   reqPropsFilled: boolean;
   errorItemIds: Set<string>;
   setReqPropsFilled: React.Dispatch<React.SetStateAction<boolean>>;
@@ -96,6 +99,7 @@ interface ActionFormContextType {
   initializeForm: (actionData: Action | undefined) => void;
   reset: () => void;
   setRaType: React.Dispatch<React.SetStateAction<string>>;
+  setReturnProcess: React.Dispatch<React.SetStateAction<ReturnProcessType>>;
 }
 
 const ActionFormContext = createContext<ActionFormContextType | undefined>(undefined);
@@ -143,6 +147,7 @@ const ActionFormContextProvider: React.FC<PropsWithChildren> = ({ children }) =>
   const [originalName, setOriginalName] = useState<string>();
   const [exePath, setExePath] = useState<string>(formData?.exePath || '');
   const { updateVariable, createVariable } = useVariableContext();
+  const [returnProcess, setReturnProcess] = useState<ReturnProcessType>('rtNone');
   // const [errorItemIds, setErrorIds] = useState<string[]>([]);
   const [errorItemIds, setErrorIds] = useState<Set<string>>(new Set());
 
@@ -267,6 +272,7 @@ const ActionFormContextProvider: React.FC<PropsWithChildren> = ({ children }) =>
       mainItem: true,
       formData,
       raType,
+      returnProcess,
     };
     await checkFormData();
 
@@ -521,6 +527,7 @@ const ActionFormContextProvider: React.FC<PropsWithChildren> = ({ children }) =>
     setProcessOutputFileCode(actionData?.processOutputFileCode || '');
     setFormData(actionData?.formData || undefined);
     setRaType(actionData?.raType || '');
+    setReturnProcess((actionData?.returnProcess as ReturnProcessType) || 'rtNone')
     action.value = actionData || emptyAction;
   };
 
@@ -550,6 +557,7 @@ const ActionFormContextProvider: React.FC<PropsWithChildren> = ({ children }) =>
         errorMessage,
         actionTypeOptions,
         raType,
+        returnProcess,
         reqPropsFilled,
         errorItemIds,
         setReqPropsFilled,
@@ -589,6 +597,7 @@ const ActionFormContextProvider: React.FC<PropsWithChildren> = ({ children }) =>
         sortNewStates,
         initializeForm,
         setRaType,
+        setReturnProcess,
       }}
     >
       {children}

@@ -341,4 +341,13 @@ export const downloadOptions: MenuOption[] = [
       link.click();
     },
   },
+  {
+    label: 'Source Code',
+    onClick: () => {
+      var link = document.createElement('a');
+      link.target = '_blank';
+      link.href = 'https://github.com/idaholab/EMRALD';
+      link.click();
+    },
+  },
 ];

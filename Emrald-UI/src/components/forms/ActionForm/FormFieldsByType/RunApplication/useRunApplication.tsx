@@ -152,12 +152,18 @@ const useRunApplication = () => {
     return initiatorString;
   };
   const getInitiatorName = (row: InitiatorOG): string | number => {
-    let name =
-      row.type === 'assignment'
-        ? row.target.type === 'identifier'
-          ? (row.target.value as string | number)
-          : ((row.target.value as Value).value as string | number)
-        : (row.desc as string);
+    let name = '';
+    if (row.type === 'assignment') {
+      if (row.target.type === 'identifier') {
+        name = `${row.target.value}`;
+      } else {
+        name = `${(row.target.value as Value).value}`;
+      }
+    } else if (row.type === 'parameter_name') {
+      name = `${row.value}`;
+    } else {
+      name = row.desc;
+    }
     if (row.target?.arguments && row.target.arguments.length > 0) {
       name = name + `(${String(row.target.arguments[0].value)})`;
     }
@@ -305,6 +311,9 @@ const useRunApplication = () => {
   };
 
   const returnInputBlockItemNameInTest = (item: any, forCode?: boolean): string => {
+    if (item === undefined) {
+      return '';
+    }
     if ((item as Value).type === 'call_expression') {
       const value = (item.value as Value).value;
       const args = (item as Target).arguments;

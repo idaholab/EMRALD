@@ -58,6 +58,7 @@ interface EventFormContextType {
   triggerStates: string[];
   useDistVariable: boolean[];
   useVariable: boolean | undefined;
+  invalidValues: Set<string>;
   variable: string | undefined;
   variableChecked: boolean;
   variableName: string;
@@ -75,6 +76,7 @@ interface EventFormContextType {
     value: string | number | boolean | TimeVariableUnit | undefined,
     varName: string,
   ) => void;
+  handleChangeEventType: (string: EventType) => void;
   handleUseVariableChange: (checked: boolean, row: string) => void;
   InitializeForm: (eventData?: Event | undefined, state?: State) => void;
   reset: () => void;
@@ -108,6 +110,7 @@ interface EventFormContextType {
   setParameterVariable: (value: string | undefined, row: string) => void;
   setVariable: React.Dispatch<React.SetStateAction<string | undefined>>;
   setVariableName: React.Dispatch<React.SetStateAction<string>>;
+  setInvalidValues: React.Dispatch<React.SetStateAction<Set<string>>>;
 }
 
 const EventFormContext = createContext<EventFormContextType | undefined>(undefined);
@@ -157,6 +160,7 @@ const EventFormContextProvider: React.FC<PropsWithChildren> = ({ children }) => 
   const [variable, setVariable] = useState<string>();
   const [hasError, setHasError] = useState<boolean>(false);
   const [originalName, setOriginalName] = useState<string>();
+  const [invalidValues, setInvalidValues] = useState<Set<string>>(() => new Set());
 
   const event = useSignal<Event>(emptyEvent);
 
@@ -249,6 +253,21 @@ const EventFormContextProvider: React.FC<PropsWithChildren> = ({ children }) => 
     setLambdaTimeRate(convertToISOString(value));
   };
 
+  const handleChangeEventType = (value: EventType) => {
+    setEvType(value);
+    setInvalidValues((prevInvalidValues) => {
+      const newInvalidValues = new Set(prevInvalidValues);
+      newInvalidValues.clear();
+      if (value === 'etFailRate') {
+        newInvalidValues.add('Lambda');
+      } else if (value === 'etDistribution') {
+        newInvalidValues.add('Mean').add('Standard Deviation').add('Minimum').add('Maximum');
+      }
+      return newInvalidValues;
+    });
+    
+  }
+
   const handleSetParameters = (
     row: string,
     value: string | number | boolean | TimeVariableUnit | undefined,
@@ -279,13 +298,13 @@ const EventFormContextProvider: React.FC<PropsWithChildren> = ({ children }) => 
     };
     setParameters(newParameters);
   };
-  const isValidNumber = (value: string) => {
-    const trimmedValue = value.trim();
-    if (trimmedValue === '') {
-      return false;
-    }
-    return !isNaN(Number(trimmedValue));
-  };
+  // const isValidNumber = (value: string) => {
+  //   const trimmedValue = value.trim();
+  //   if (trimmedValue === '') {
+  //     return false;
+  //   }
+  //   return !isNaN(Number(trimmedValue));
+  // };
 
   const updateRow = (
     row: string,
@@ -311,7 +330,7 @@ const EventFormContextProvider: React.FC<PropsWithChildren> = ({ children }) => 
     }));
   };
 
-  const PositiveFields = ['Standard Deviation', 'Minimum', 'Maximum', 'Shape', 'Rate', 'Scale'];
+  // const PositiveFields = ['Standard Deviation', 'Minimum', 'Maximum', 'Shape', 'Rate', 'Scale'];
 
   const handleChange = (row: string, value: string | number) => {
     // if (isValidNumber(value as string)) {
@@ -329,6 +348,11 @@ const EventFormContextProvider: React.FC<PropsWithChildren> = ({ children }) => 
     const stringValue = String(value);
     const validInputRegex = /^[+\-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[Ee][+\-]?\d+)?$/;
     if (value && validInputRegex.test(stringValue)) {
+      setInvalidValues((prev) => {
+        const newInvalidValue = new Set(prev);
+        newInvalidValue.delete(row);
+        return newInvalidValue;
+      });
       // Check if the value is in scientific notation
       const isScientificNotation = /[Ee]/.test(stringValue);
       let numericValue;
@@ -345,6 +369,8 @@ const EventFormContextProvider: React.FC<PropsWithChildren> = ({ children }) => 
       }
       handleSetParameters(row, numericValue, 'value');
       updateRow(row, numericValue, 'value');
+    } else {
+      setInvalidValues(invalidValues.add(row));
     }
   };
 
@@ -473,6 +499,7 @@ const EventFormContextProvider: React.FC<PropsWithChildren> = ({ children }) => 
         triggerStates,
         useDistVariable,
         useVariable,
+        invalidValues,
         variable,
         variableChecked,
         variableName,
@@ -487,6 +514,7 @@ const EventFormContextProvider: React.FC<PropsWithChildren> = ({ children }) => 
         handleSave,
         handleSetParameters,
         handleUseVariableChange,
+        handleChangeEventType,
         InitializeForm,
         reset,
         setAllItems,
@@ -519,6 +547,7 @@ const EventFormContextProvider: React.FC<PropsWithChildren> = ({ children }) => 
         setUseVariable,
         setVariable,
         setVariableName,
+        setInvalidValues
       }}
     >
       {children}
