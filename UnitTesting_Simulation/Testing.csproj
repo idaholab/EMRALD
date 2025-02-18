@@ -27,11 +27,14 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="TestingFiles\CompareFiles\Validations\" />
+    <Folder Include="TestingFiles\UserVerifiedCompareFiles\" />
     <Folder Include="TestingFiles\EMRALDTests\ValidationCases\" />
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="ManualTestPrompt.exe">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="sankey\emrald-sankey-timeline.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

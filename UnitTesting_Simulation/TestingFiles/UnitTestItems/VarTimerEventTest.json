@@ -1,0 +1,12 @@
+﻿    {
+      "Event": {
+        "id": 1,
+        "name": "TimerEv",
+        "desc": "",
+        "mainItem": true,
+        "evType": "etTimer",
+        "useVariable": true,
+        "time": "FailProb",
+        "timeVariableUnit": "trHours"
+      }
+    }

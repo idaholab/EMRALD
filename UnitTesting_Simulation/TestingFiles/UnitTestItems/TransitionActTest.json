@@ -1,0 +1,11 @@
+    {
+      "Action": {
+        "id": 1,
+        "name": "TransitionAct",
+        "desc": "",
+        "actType": "atTransition",
+        "mainItem": true,
+        "mutExcl": true,
+        "newStates": []
+      }
+    }
