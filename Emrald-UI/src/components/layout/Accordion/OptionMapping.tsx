@@ -84,7 +84,7 @@ export const useOptionsMapping = () => {
             });
           } catch(error) {
             console.error(error);
-            showAlert('Unable to make template', 'error')
+            showAlert('Unable to make template, Please report the issue on the GitHub repo so we can address this problem.', 'error')
           }
         },
       },
@@ -117,7 +117,7 @@ export const useOptionsMapping = () => {
             URL.revokeObjectURL(url);
           } catch(error) {
             console.error(error);
-            showAlert(`Unable to export ${diagram.name}`, 'error')
+            showAlert(`Unable to export ${diagram.name}, Please report the issue on the GitHub repo so we can address this problem.`, 'error')
           }
         },
       },
@@ -131,7 +131,7 @@ export const useOptionsMapping = () => {
             navigator.clipboard.writeText(JSON.stringify(copiedModel, null, 2));
           } catch (error) {
             console.error('Error occurred:', error);
-            showAlert(`Unable to copy ${diagram.name}`, 'error');
+            showAlert(`Unable to copy ${diagram.name}, Please report the issue on the GitHub repo so we can address this problem.`, 'error');
           }
         },
       },
@@ -145,7 +145,7 @@ export const useOptionsMapping = () => {
             navigator.clipboard.writeText(JSON.stringify(copiedModel, null, 2));
           } catch(error) {
             console.error(error);
-            showAlert(`Unable to copy recursive ${diagram.name}`, 'error')
+            showAlert(`Unable to copy recursive ${diagram.name}, Please report the issue on the GitHub repo so we can address this problem.`, 'error')
           }
         },
       },
