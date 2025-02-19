@@ -323,7 +323,7 @@
         "newStates": [],
         "scriptCode": "return Int_A + Int_B;",
         "variableName": "DllRes",
-        "libPath": "..\\..\\..\\UnitTesting_Simulation\\TestingFiles\\Other\\Add_CDLL.dll",
+        "libPath": "..\\..\\..\\VandV_Testing\\TestingFiles\\Other\\Add_CDLL.dll",
         "functionName": "Add",
         "callParams": [
           {
