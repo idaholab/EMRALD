@@ -116,7 +116,7 @@ const InEventRefs: ItemReferencesArray = [
 const InActionRefs: ItemReferencesArray = [
   ["$.ActionList[?(@.name == 'nameRef')].newStates.toState", MainItemTypes.State, null],
   ["$.ActionList[?(@.name == 'nameRef')].variableName", MainItemTypes.Variable, null],
-  ["$.ActionList[?(@.name == 'nameRef')].codeVariables[*]", MainItemTypes.Variable, null],
+  ["$.ActionList[?(@.name == 'nameRef')].codeVariables", MainItemTypes.Variable, null],
   ["$.ActionList[?(@.name == 'nameRef')].extSim", MainItemTypes.ExtSim, null],
 ];
 

@@ -11,6 +11,7 @@ import StateContextProvider from './StateContext';
 import VariableContextProvider from './VariableContext';
 import ExtSimContextProvider from './ExtSimContext';
 import TemplateContextProvider from './TemplateContext';
+import { AlertProvider } from './AlertContext';
 
 export interface EmraldContextWrapperProps {
   children: React.ReactNode;
@@ -20,25 +21,27 @@ const EmraldContextWrapper: React.FC<EmraldContextWrapperProps> = ({ children })
   return (
     <DndProvider backend={HTML5Backend}>
       <WindowProvider>
-        <ModelDetailsContextProvider>
-          <DiagramContextProvider>
-            <LogicNodeContextProvider>
-              <ActionContextProvider>
-                <EventContextProvider>
-                  <StateContextProvider>
-                    <VariableContextProvider>
-                      <ExtSimContextProvider>
-                        <TemplateContextProvider>
-                          {children}
-                        </TemplateContextProvider>
-                      </ExtSimContextProvider>
-                    </VariableContextProvider>
-                  </StateContextProvider>
-                </EventContextProvider>
-              </ActionContextProvider>
-            </LogicNodeContextProvider>
-          </DiagramContextProvider>
-        </ModelDetailsContextProvider>
+        <AlertProvider>
+          <ModelDetailsContextProvider>
+            <DiagramContextProvider>
+              <LogicNodeContextProvider>
+                <ActionContextProvider>
+                  <EventContextProvider>
+                    <StateContextProvider>
+                      <VariableContextProvider>
+                        <ExtSimContextProvider>
+                          <TemplateContextProvider>
+                            {children}
+                          </TemplateContextProvider>
+                        </ExtSimContextProvider>
+                      </VariableContextProvider>
+                    </StateContextProvider>
+                  </EventContextProvider>
+                </ActionContextProvider>
+              </LogicNodeContextProvider>
+            </DiagramContextProvider>
+          </ModelDetailsContextProvider>
+        </AlertProvider>
       </WindowProvider>
     </DndProvider>
   );

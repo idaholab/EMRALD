@@ -25,6 +25,7 @@ import TemplateForm from '../../forms/TemplateForm/TemplateForm';
 import { EMRALD_SchemaVersion } from '../../../types/EMRALD_Model';
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
+import { useAlertContext } from '../../../contexts/AlertContext';
 
 // Define your Option and OptionsMapping types
 export interface Option {
@@ -40,6 +41,7 @@ export const useOptionsMapping = () => {
   const theme = useTheme();
   const isMediumScreen = useMediaQuery(theme.breakpoints.between('sm', 'xl'));
   const { addWindow } = useWindowContext();
+  const { showAlert } = useAlertContext();
   const optionsMapping: OptionsMapping = {
     Diagrams: [
       {
@@ -70,61 +72,81 @@ export const useOptionsMapping = () => {
       {
         label: 'Make Template',
         action: (diagram: Diagram) => {
-          const copiedModel = structuredClone(
-            GetModelItemsReferencedBy(diagram.name, MainItemTypes.Diagram, 3),
-          );
-          addWindow(`Create Template`, <TemplateForm templatedData={copiedModel} />, {
-            x: 75,
-            y: 25,
-            width: isMediumScreen ? 600 : 1000,
-            height: isMediumScreen ? 400 : 500
-          });
+          try {
+            const copiedModel = structuredClone(
+              GetModelItemsReferencedBy(diagram.name, MainItemTypes.Diagram, 3),
+            );
+            addWindow(`Create Template`, <TemplateForm templatedData={copiedModel} />, {
+              x: 75,
+              y: 25,
+              width: isMediumScreen ? 600 : 1000,
+              height: isMediumScreen ? 400 : 500
+            });
+          } catch(error) {
+            console.error(error);
+            showAlert('Unable to make template', 'error')
+          }
         },
       },
       {
         label: 'Export',
         action: (diagram: Diagram) => {
-          const copiedModel = GetModelItemsReferencedBy(diagram.name, MainItemTypes.Diagram, 2);
-          copiedModel.name = diagram.name;
-          copiedModel.emraldVersion = EMRALD_SchemaVersion;
-
-          // Convert JSON data to a string
-          const jsonString = JSON.stringify(copiedModel, null, 2);
-
-          // Create a Blob (Binary Large Object) with the JSON string
-          const blob = new Blob([jsonString], { type: 'application/json' });
-
-          // Create a URL for the Blob
-          const url = URL.createObjectURL(blob);
-
-          // Create an <a> element to trigger the download
-          const a = document.createElement('a');
-          a.href = url;
-          a.download = `${copiedModel.name ? copiedModel.name : 'exported-diagram'}.json`;
-
-          // Trigger a click event on the <a> element to initiate the download
-          a.click();
-
-          // Clean up by revoking the URL
-          URL.revokeObjectURL(url);
+          try {
+            const copiedModel = GetModelItemsReferencedBy(diagram.name, MainItemTypes.Diagram, 2);
+            copiedModel.name = diagram.name;
+            copiedModel.emraldVersion = EMRALD_SchemaVersion;
+  
+            // Convert JSON data to a string
+            const jsonString = JSON.stringify(copiedModel, null, 2);
+  
+            // Create a Blob (Binary Large Object) with the JSON string
+            const blob = new Blob([jsonString], { type: 'application/json' });
+  
+            // Create a URL for the Blob
+            const url = URL.createObjectURL(blob);
+  
+            // Create an <a> element to trigger the download
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${copiedModel.name ? copiedModel.name : 'exported-diagram'}.json`;
+  
+            // Trigger a click event on the <a> element to initiate the download
+            a.click();
+  
+            // Clean up by revoking the URL
+            URL.revokeObjectURL(url);
+          } catch(error) {
+            console.error(error);
+            showAlert(`Unable to export ${diagram.name}`, 'error')
+          }
         },
       },
       {
         label: 'Copy',
         action: (diagram: Diagram) => {
-          const copiedModel = GetModelItemsReferencedBy(diagram.name, MainItemTypes.Diagram, 2);
-          copiedModel.name = diagram.name;
-          copiedModel.emraldVersion = EMRALD_SchemaVersion;
-          navigator.clipboard.writeText(JSON.stringify(copiedModel, null, 2));
+          try {
+            const copiedModel = GetModelItemsReferencedBy(diagram.name, MainItemTypes.Diagram, 2);
+            copiedModel.name = diagram.name;
+            copiedModel.emraldVersion = EMRALD_SchemaVersion;
+            navigator.clipboard.writeText(JSON.stringify(copiedModel, null, 2));
+          } catch (error) {
+            console.error('Error occurred:', error);
+            showAlert(`Unable to copy ${diagram.name}`, 'error');
+          }
         },
       },
       {
         label: 'Copy Recursive',
         action: (diagram: Diagram) => {
-          const copiedModel = GetModelItemsReferencedBy(diagram.name, MainItemTypes.Diagram, 0);
-          copiedModel.name = diagram.name;
-          copiedModel.emraldVersion = EMRALD_SchemaVersion;
-          navigator.clipboard.writeText(JSON.stringify(copiedModel, null, 2));
+          try {
+            const copiedModel = GetModelItemsReferencedBy(diagram.name, MainItemTypes.Diagram, 0);
+            copiedModel.name = diagram.name;
+            copiedModel.emraldVersion = EMRALD_SchemaVersion;
+            navigator.clipboard.writeText(JSON.stringify(copiedModel, null, 2));
+          } catch(error) {
+            console.error(error);
+            showAlert(`Unable to copy recursive ${diagram.name}`, 'error')
+          }
         },
       },
     ],

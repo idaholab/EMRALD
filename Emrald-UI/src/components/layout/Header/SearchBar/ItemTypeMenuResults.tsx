@@ -4,10 +4,6 @@ import { State } from '../../../../types/State';
 import { Action } from '../../../../types/Action';
 import { Event } from '../../../../types/Event';
 import { ReactNode } from 'react';
-import {
-  GetModelItemsReferencedBy,
-  GetModelItemsReferencing,
-} from '../../../../utils/ModelReferences';
 import { ExtSim } from '../../../../types/ExtSim';
 import { LogicNode } from '../../../../types/LogicNode';
 import { Variable } from '../../../../types/Variable';
