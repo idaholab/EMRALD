@@ -299,7 +299,7 @@ namespace SimulationEngine
 
     [JsonProperty(Order = 10)]
 
-    public Dictionary<string, List<string>> watchVariables = new Dictionary<string, List<string>>();
+    public Dictionary<string, Dictionary<string, string>> watchVariables = new Dictionary<string, Dictionary<string, string>>();
     [JsonIgnore]
     public Dictionary<string, EnterExitCause> enterDict { get; set; } = new Dictionary<string, EnterExitCause>(); //key will be from state, event, and action 
     [JsonIgnore]
@@ -437,7 +437,26 @@ namespace SimulationEngine
       //add the variables
       foreach (var v in include.watchVariables)
       {
-        this.watchVariables[v.Key].Add(v.Value[0]);
+        if (!this.watchVariables.ContainsKey(v.Key))
+          this.watchVariables.Add(v.Key, new Dictionary<string, string>());
+
+        var curWatchVar = this.watchVariables[v.Key];
+        //add all the run values for the variables 
+        foreach (var vVal in v.Value)
+        {
+          string runIdKey = v.Key;
+          //if we are 
+          if (curWatchVar.ContainsKey(runIdKey))
+          {
+            int sub = 1;
+            while (curWatchVar.ContainsKey(runIdKey + "_" + sub.ToString()))
+              sub++;
+
+            runIdKey += "_" + sub.ToString();
+          }
+
+          curWatchVar.Add(runIdKey, vVal.Value);
+        }
       }
     }
 
@@ -480,15 +499,28 @@ namespace SimulationEngine
       _timeMin = _timeMin <= other._timeMin ? _timeMin : other._timeMin;
       _timeMax = _timeMax >= other._timeMax ? _timeMax : other._timeMax;
 
-      foreach(var i in other.watchVariables)
+      //add the variables
+      foreach (var v in other.watchVariables)
       {
-        if (this.watchVariables.ContainsKey(i.Key))
+        if (!this.watchVariables.ContainsKey(v.Key))
+          this.watchVariables.Add(v.Key, new Dictionary<string, string>());
+
+        var curWatchVar = this.watchVariables[v.Key];
+        //add all the run values for the variables 
+        foreach (var vVal in v.Value)
         {
-          this.watchVariables[i.Key].AddRange(i.Value);
-        }
-        else
-        {
-          this.watchVariables.Add(i.Key, i.Value);
+          string runIdKey = v.Key;
+          //if we are 
+          if (curWatchVar.ContainsKey(runIdKey))
+          {
+            int sub = 1;
+            while (curWatchVar.ContainsKey(runIdKey + "_" + sub.ToString()))
+              sub++;
+
+            runIdKey += "_" + sub.ToString();
+          }
+
+          curWatchVar.Add(runIdKey, vVal.Value);
         }
       }
 
