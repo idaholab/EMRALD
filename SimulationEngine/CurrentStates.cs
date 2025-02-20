@@ -374,7 +374,10 @@ namespace SimulationTracking
               if (curStatePath.varValues.ContainsKey(vName))
               {
                 //assign to most current variable value for that state
-                curResState.watchVariables[vName].Add(curRunIdx.ToString(),  Convert.ToString(curStatePath.varValues[vName][i]));
+                if (curResState.watchVariables[vName].ContainsKey(curRunIdx.ToString()))
+                  curResState.watchVariables[vName][curRunIdx.ToString()] = Convert.ToString(curStatePath.varValues[vName][i]);
+                else
+                  curResState.watchVariables[vName].Add(curRunIdx.ToString(),  Convert.ToString(curStatePath.varValues[vName][i]));
               }                
             }
 

@@ -1,6 +1,7 @@
 Simulation = StatVarTest
 Runtime = 00.00:00:00
 Runs = 100 of 100
+
 Done Occurred 100 times, Probability =1, MeanTime = 01.00:04:37 +/- 00.01:04:45.38
 - Variable Values - 
 Run Idx, Accrual_Save, SumCurTime

@@ -1,7 +1,9 @@
 Simulation = UnitTestActions
-Runtime = 00.00:00:02
+Runtime = 00.00:00:03
 Runs = 10 of 10
+
 OK Occurred 5 times, Probability =0.5, MeanTime = 00.00:00:10 +/- 00.00:00:00.00
+
 Fail Occurred 5 times, Probability =0.5, MeanTime = 00.00:00:10 +/- 00.00:00:00.00
 ---------------------------
 - End Sim Variable Values -

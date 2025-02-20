@@ -1,5 +1,5 @@
 Simulation = Test
-Runtime = 00.00:00:47
+Runtime = 00.00:00:00
 Runs = 1 of 1
 ---------------------------
 - End Sim Variable Values -

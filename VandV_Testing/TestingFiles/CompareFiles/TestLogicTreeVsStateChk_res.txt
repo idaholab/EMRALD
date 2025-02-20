@@ -1,6 +1,7 @@
 Simulation = McCormick Reliability and Risk Analysis Example 6-4
 Runtime = 00.00:00:01
 Runs = 10000 of 10000
+
 SYS_FAILS_FT Occurred 8535 times, Probability =0.8535, MeanTime = 01.21:25:44 +/- 01.00:38:38.06
 (146)[1.711%]D_Failed, E_Failed, F_Failed, SYS_FAILS, SYS_FAILS_FT
 (219)[2.566%]B_Failed, D_Failed, E_Failed, F_Failed, SYS_FAILS, SYS_FAILS_FT
@@ -46,6 +47,7 @@ SYS_FAILS_FT Occurred 8535 times, Probability =0.8535, MeanTime = 01.21:25:44 +/
 (121)[1.418%]C_Failed, D_Failed, E_Failed, SYS_FAILS, SYS_FAILS_FT
 (67)[0.785%]B_Failed, E_Failed, SYS_FAILS, SYS_FAILS_FT
 (65)[0.762%]C_Failed, D_Failed, SYS_FAILS, SYS_FAILS_FT
+
 E_Failed Occurred 6399 times, Probability =0.6399, MeanTime = 01.17:59:38 +/- 01.04:09:10.40
 (146)[2.282%]D_Failed, E_Failed, F_Failed, SYS_FAILS, SYS_FAILS_FT
 (219)[3.422%]B_Failed, D_Failed, E_Failed, F_Failed, SYS_FAILS, SYS_FAILS_FT
@@ -79,6 +81,7 @@ E_Failed Occurred 6399 times, Probability =0.6399, MeanTime = 01.17:59:38 +/- 01
 (136)[2.125%]C_Failed, E_Failed, F_Failed, SYS_FAILS, SYS_FAILS_FT
 (121)[1.891%]C_Failed, D_Failed, E_Failed, SYS_FAILS, SYS_FAILS_FT
 (67)[1.047%]B_Failed, E_Failed, SYS_FAILS, SYS_FAILS_FT
+
 F_Failed Occurred 6259 times, Probability =0.6259, MeanTime = 01.18:11:59 +/- 01.04:13:51.60
 (146)[2.333%]D_Failed, E_Failed, F_Failed, SYS_FAILS, SYS_FAILS_FT
 (219)[3.499%]B_Failed, D_Failed, E_Failed, F_Failed, SYS_FAILS, SYS_FAILS_FT
@@ -112,6 +115,7 @@ F_Failed Occurred 6259 times, Probability =0.6259, MeanTime = 01.18:11:59 +/- 01
 (35)[0.559%]F_Failed
 (136)[2.173%]C_Failed, E_Failed, F_Failed, SYS_FAILS, SYS_FAILS_FT
 (61)[0.975%]A_Failed, F_Failed
+
 SYS_FAILS Occurred 8535 times, Probability =0.8535, MeanTime = 01.21:25:44 +/- 01.00:38:38.06
 (146)[1.711%]D_Failed, E_Failed, F_Failed, SYS_FAILS, SYS_FAILS_FT
 (219)[2.566%]B_Failed, D_Failed, E_Failed, F_Failed, SYS_FAILS, SYS_FAILS_FT
@@ -157,6 +161,7 @@ SYS_FAILS Occurred 8535 times, Probability =0.8535, MeanTime = 01.21:25:44 +/- 0
 (121)[1.418%]C_Failed, D_Failed, E_Failed, SYS_FAILS, SYS_FAILS_FT
 (67)[0.785%]B_Failed, E_Failed, SYS_FAILS, SYS_FAILS_FT
 (65)[0.762%]C_Failed, D_Failed, SYS_FAILS, SYS_FAILS_FT
+
 D_Failed Occurred 6321 times, Probability =0.6321, MeanTime = 01.18:04:42 +/- 01.04:10:22.88
 (146)[2.310%]D_Failed, E_Failed, F_Failed, SYS_FAILS, SYS_FAILS_FT
 (219)[3.465%]B_Failed, D_Failed, E_Failed, F_Failed, SYS_FAILS, SYS_FAILS_FT
@@ -190,6 +195,7 @@ D_Failed Occurred 6321 times, Probability =0.6321, MeanTime = 01.18:04:42 +/- 01
 (121)[1.914%]C_Failed, D_Failed, E_Failed, SYS_FAILS, SYS_FAILS_FT
 (76)[1.202%]A_Failed, D_Failed
 (65)[1.028%]C_Failed, D_Failed, SYS_FAILS, SYS_FAILS_FT
+
 B_Failed Occurred 6307 times, Probability =0.6307, MeanTime = 01.18:01:53 +/- 01.04:22:08.66
 (219)[3.472%]B_Failed, D_Failed, E_Failed, F_Failed, SYS_FAILS, SYS_FAILS_FT
 (75)[1.189%]B_Failed, D_Failed
@@ -223,6 +229,7 @@ B_Failed Occurred 6307 times, Probability =0.6307, MeanTime = 01.18:01:53 +/- 01
 (82)[1.300%]A_Failed, B_Failed, SYS_FAILS, SYS_FAILS_FT
 (75)[1.189%]B_Failed, C_Failed, SYS_FAILS, SYS_FAILS_FT
 (67)[1.062%]B_Failed, E_Failed, SYS_FAILS, SYS_FAILS_FT
+
 A_Failed Occurred 6347 times, Probability =0.6347, MeanTime = 01.17:12:53 +/- 01.04:01:21.73
 (113)[1.780%]A_Failed, B_Failed, C_Failed, SYS_FAILS, SYS_FAILS_FT
 (252)[3.970%]A_Failed, B_Failed, C_Failed, E_Failed, SYS_FAILS, SYS_FAILS_FT
@@ -256,6 +263,7 @@ A_Failed Occurred 6347 times, Probability =0.6347, MeanTime = 01.17:12:53 +/- 01
 (76)[1.197%]A_Failed, D_Failed
 (67)[1.056%]A_Failed, C_Failed
 (61)[0.961%]A_Failed, F_Failed
+
 C_Failed Occurred 6275 times, Probability =0.6275, MeanTime = 01.17:48:30 +/- 01.04:06:08.24
 (113)[1.801%]A_Failed, B_Failed, C_Failed, SYS_FAILS, SYS_FAILS_FT
 (252)[4.016%]A_Failed, B_Failed, C_Failed, E_Failed, SYS_FAILS, SYS_FAILS_FT

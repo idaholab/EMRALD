@@ -20,6 +20,7 @@ using NLog.Config;
 using JsonDiffPatchDotNet;
 using Matrix.Xmpp.PubSub;
 using Testing;
+using Matrix.Xmpp.XData;
 //using System.Windows.Forms;
 
 namespace IntegrationTesting_Simulation 
@@ -728,16 +729,13 @@ namespace IntegrationTesting_Simulation
       double th5 = results.cRate5th;
       double t95 = results.cRate95th;
       double timeStd = results.GetTimeStdDev().TotalHours;
-      
+
+      Assert.False(Math.Abs(mean - 12.1133333) > 0.00001);
+      Assert.False(Math.Abs(th5 + 0.0095) > 0.00001);
+      Assert.False(Math.Abs(t95 - 0.0295) > 0.00001);
+      Assert.False(Math.Abs(timeStd - 7.72339) > 0.00001);
 
 
-
-
-      //Uncomment to update the validation files after they verified correct
-      //CopyToValidated(dir, testName, optionsJ);
-
-      //compare the test result and optionally the paths and json if assigned
-      //Compare(dir, testName, optionsJ);
     }
 
 

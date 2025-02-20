@@ -1,6 +1,7 @@
 Simulation = Sim1
 Runtime = 00.00:00:00
 Runs = 10 of 10
+
 Occured Occurred 10 times, Probability =1, MeanTime = 01.06:00:00 +/- 00.00:00:00.00
 ---------------------------
 - End Sim Variable Values -
