@@ -1,6 +1,7 @@
 Simulation = Template_ValidationCase_Test
 Runtime = 00.00:00:00
 Runs = 1 of 1
+
 Failed Occurred 1 times, Probability =1, MeanTime = 00.01:00:00 +/- 00.00:00:00.00
 ---------------------------
 - End Sim Variable Values -

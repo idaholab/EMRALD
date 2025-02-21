@@ -298,7 +298,7 @@ namespace SimulationEngine
     public TimeSpan timeMax { get { return _timeMax; } set { _timeMax = value; } }
 
     [JsonProperty(Order = 10)]
-
+    [JsonConverter(typeof(ResultsDictionaryConverter))]
     public Dictionary<string, Dictionary<string, string>> watchVariables = new Dictionary<string, Dictionary<string, string>>();
     [JsonIgnore]
     public Dictionary<string, EnterExitCause> enterDict { get; set; } = new Dictionary<string, EnterExitCause>(); //key will be from state, event, and action 
@@ -444,15 +444,15 @@ namespace SimulationEngine
         //add all the run values for the variables 
         foreach (var vVal in v.Value)
         {
-          string runIdKey = v.Key;
+          string runIdKey = vVal.Key;
           //if we are 
           if (curWatchVar.ContainsKey(runIdKey))
           {
             int sub = 1;
-            while (curWatchVar.ContainsKey(runIdKey + "_" + sub.ToString()))
+            while (curWatchVar.ContainsKey(runIdKey + "." + sub.ToString()))
               sub++;
 
-            runIdKey += "_" + sub.ToString();
+            runIdKey += "." + sub.ToString();
           }
 
           curWatchVar.Add(runIdKey, vVal.Value);
@@ -509,15 +509,15 @@ namespace SimulationEngine
         //add all the run values for the variables 
         foreach (var vVal in v.Value)
         {
-          string runIdKey = v.Key;
+          string runIdKey = vVal.Key;
           //if we are 
           if (curWatchVar.ContainsKey(runIdKey))
           {
             int sub = 1;
-            while (curWatchVar.ContainsKey(runIdKey + "_" + sub.ToString()))
+            while (curWatchVar.ContainsKey(runIdKey + "." + sub.ToString()))
               sub++;
 
-            runIdKey += "_" + sub.ToString();
+            runIdKey += "." + sub.ToString();
           }
 
           curWatchVar.Add(runIdKey, vVal.Value);
@@ -579,6 +579,58 @@ namespace SimulationEngine
         this.key = this.name + "->" + otherState;
     }
   }
-  
+
+
+
+  public class ResultsDictionaryConverter : JsonConverter<Dictionary<string, Dictionary<string, string>>>
+  {
+    public override void WriteJson(JsonWriter writer, Dictionary<string, Dictionary<string, string>> value, JsonSerializer serializer)
+    {
+      JObject jObject = new JObject();
+
+      foreach (var outerKvp in value)
+      {
+        var sortedInnerDict = outerKvp.Value.OrderBy(kvp => ParseKey(kvp.Key))
+                                            .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+
+        JObject innerObject = new JObject();
+        foreach (var innerKvp in sortedInnerDict)
+        {
+          innerObject.Add(innerKvp.Key, JToken.FromObject(innerKvp.Value, serializer));
+        }
+
+        jObject.Add(outerKvp.Key, innerObject);
+      }
+
+      jObject.WriteTo(writer);
+    }
+
+    public override Dictionary<string, Dictionary<string, string>> ReadJson(JsonReader reader, Type objectType, Dictionary<string, Dictionary<string, string>> existingValue, bool hasExistingValue, JsonSerializer serializer)
+    {
+      JObject jObject = JObject.Load(reader);
+      var dictionary = jObject.ToObject<Dictionary<string, Dictionary<string, string>>>();
+      return dictionary;
+    }
+
+    private double ParseKey(string key)
+    {
+      double result;
+      if (double.TryParse(key, out result))
+      {
+        return result;
+      }
+      // Handle keys with multiple dots (e.g., "1.1.1")
+      var parts = key.Split('.').Select(part => double.TryParse(part, out result) ? result : 0).ToArray();
+      double factor = 1;
+      double sum = 0;
+      for (int i = parts.Length - 1; i >= 0; i--)
+      {
+        sum += parts[i] * factor;
+        factor /= 1000;
+      }
+      return sum;
+    }
+  }
+
 
 }
