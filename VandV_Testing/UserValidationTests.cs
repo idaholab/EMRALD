@@ -30,7 +30,7 @@ namespace UserTesting
 
     protected override string TestFolder()
     {
-      return "UserValidationResults" + Path.DirectorySeparatorChar;
+      return "UserValidationRuns" + Path.DirectorySeparatorChar;
     }
 
     protected override string ModelFolder()
