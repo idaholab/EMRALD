@@ -17,6 +17,7 @@ import ActionFormContextProvider from '../../forms/ActionForm/ActionFormContext'
 import VariableFormContextProvider from '../../forms/VariableForm/VariableFormContext';
 import EventFormContextProvider from '../../forms/EventForm/EventFormContext';
 import ExtSimForm from '../../forms/ExtSimForm/ExtSimForm';
+import LogicNodeFormContextProvider from '../../forms/LogicNodeForm/LogicNodeFormContext';
 
 const MainCanvas: React.FC = () => {
   const actions = [
@@ -36,7 +37,10 @@ const MainCanvas: React.FC = () => {
         </SvgIcon>
       ),
       name: 'New Logic Tree',
-      content: <LogicNodeForm setAsRoot />,
+      content: 
+      <LogicNodeFormContextProvider>
+        <LogicNodeForm setAsRoot />
+      </LogicNodeFormContextProvider>,
     },
     {
       icon: (

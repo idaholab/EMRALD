@@ -11,6 +11,7 @@ import { Option } from '../../layout/ContextMenu/ContextMenu';
 import LogicNodeForm from '../../forms/LogicNodeForm/LogicNodeForm';
 import { MainItemTypes } from '../../../types/ItemTypes';
 import { GetModelItemsReferencing } from '../../../utils/ModelReferences';
+import LogicNodeFormContextProvider from '../../forms/LogicNodeForm/LogicNodeFormContext';
 
 export type NodeType = 'root' | 'gate' | 'comp';
 
@@ -350,7 +351,10 @@ const useLogicNodeTreeDiagram = () => {
             action: () =>
               addWindow(
                 `New Node`,
-                <LogicNodeForm parentNodeName={logicNode.name} nodeType="gate" gateType="gtAnd" />,
+                <LogicNodeFormContextProvider>
+                  <LogicNodeForm parentNodeName={logicNode.name} nodeType="gate" gateType="gtAnd" />
+                </LogicNodeFormContextProvider>
+                ,
               ),
           },
           {
@@ -358,7 +362,9 @@ const useLogicNodeTreeDiagram = () => {
             action: () =>
               addWindow(
                 `New Node`,
-                <LogicNodeForm parentNodeName={logicNode.name} nodeType="comp" />,
+                <LogicNodeFormContextProvider>
+                  <LogicNodeForm parentNodeName={logicNode.name} nodeType="comp" />
+                </LogicNodeFormContextProvider>,
               ),
             isDivider: true,
           },
@@ -367,7 +373,9 @@ const useLogicNodeTreeDiagram = () => {
             action: () =>
               addWindow(
                 `Edit Gate Node: ${label}`,
-                <LogicNodeForm logicNodeData={logicNode} gateType={logicNode.gateType} editing={true} />,
+                <LogicNodeFormContextProvider>
+                  <LogicNodeForm logicNodeData={logicNode} gateType={logicNode.gateType} editing={true} />
+                </LogicNodeFormContextProvider>,
               ),
             isDivider: true,
           },
@@ -398,12 +406,14 @@ const useLogicNodeTreeDiagram = () => {
             action: () =>
               addWindow(
                 `Edit Component Node: ${label}`,
-                <LogicNodeForm
-                  logicNodeData={parentNode}
-                  component={label}
-                  nodeType="comp"
-                  editing={true}
-                />,
+                <LogicNodeFormContextProvider>
+                  <LogicNodeForm
+                    logicNodeData={parentNode}
+                    component={label}
+                    nodeType="comp"
+                    editing={true}
+                  />
+                </LogicNodeFormContextProvider>,
               ),
           },
           { label: 'Go to Diagram', action: () => goToDiagram(node.data.label), isDivider: true },
