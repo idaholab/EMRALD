@@ -35,6 +35,7 @@ import SearchResultForm from '../../../forms/SearchResultForm/SearchResultForm';
 import { ReactFlowProvider } from 'reactflow';
 import { emptyLogicNode } from '../../../../contexts/LogicNodeContext';
 import { useAlertContext } from '../../../../contexts/AlertContext';
+import LogicNodeFormContextProvider from '../../../forms/LogicNodeForm/LogicNodeFormContext';
 
 const SearchField = () => {
   const theme = useTheme();
@@ -235,7 +236,10 @@ const SearchField = () => {
         </EventFormContextProvider>
       ),
       ExtSim: (data) => <ExtSimForm ExtSimData={data as ExtSim} />,
-      LogicNode: (data) => <LogicNodeForm logicNodeData={data as LogicNode} editing />,
+      LogicNode: (data) => 
+      <LogicNodeFormContextProvider>
+        <LogicNodeForm logicNodeData={data as LogicNode} editing />
+      </LogicNodeFormContextProvider>,
       Variable: (data) => (
         <VariableFormContextProvider>
           <VariableForm variableData={data as Variable} />

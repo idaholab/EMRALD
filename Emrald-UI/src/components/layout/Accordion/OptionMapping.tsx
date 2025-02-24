@@ -26,6 +26,7 @@ import { EMRALD_SchemaVersion } from '../../../types/EMRALD_Model';
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useAlertContext } from '../../../contexts/AlertContext';
+import LogicNodeFormContextProvider from '../../forms/LogicNodeForm/LogicNodeFormContext';
 
 // Define your Option and OptionsMapping types
 export interface Option {
@@ -172,7 +173,9 @@ export const useOptionsMapping = () => {
         action: (logicNode: LogicNode) => {
           addWindow(
             `Edit Properties: ${logicNode.name}`,
-            <LogicNodeForm logicNodeData={logicNode} editing />,
+            <LogicNodeFormContextProvider>
+              <LogicNodeForm logicNodeData={logicNode} editing />
+            </LogicNodeFormContextProvider>,
           );
         },
       },
