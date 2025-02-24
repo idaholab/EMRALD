@@ -386,6 +386,9 @@ const EventFormContextProvider: React.FC<PropsWithChildren> = ({ children }) => 
   const handleUseVariableChange = (checked: boolean, row: string) => {
     handleSetParameters(row, checked, 'useVariable');
     updateRow(row, checked, 'useVariable');
+    if (typeof onVarChange !== 'string' || onVarChange.length === 0) {
+      setOnVarChange('ocIgnore');
+    }
   };
 
   const handleVariableChange = (row: string) => {

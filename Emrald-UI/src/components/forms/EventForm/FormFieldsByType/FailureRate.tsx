@@ -23,12 +23,17 @@ const FailureRate = () => {
     setLambda,
     setInvalidValues,
     setUseVariable,
+    onVarChange,
+    setOnVarChange,
   } = useEventFormContext();
 
   const handleUseVariableChange = (checked: boolean) => {
     setUseVariable(checked);
     if (checked) {
       setLambda('');
+      if (typeof onVarChange !== 'string' || onVarChange.length === 0) {
+        setOnVarChange('ocIgnore');
+      }
     } else {
       setLambda(0);
     }
