@@ -1,0 +1,172 @@
+{
+  "id": 0,
+  "name": "DistEvTest1",
+  "desc": "",
+  "version": 1.2,
+  "DiagramList": [
+    {
+      "Diagram": {
+        "id": 1,
+        "name": "Main",
+        "desc": "",
+        "diagramType": "dtPlant",
+        "diagramTemplate": "",
+        "diagramLabel": "Plant",
+        "states": [
+          "Start",
+          "Event",
+          "Done"
+        ]
+      }
+    }
+  ],
+  "StateList": [
+    {
+      "State": {
+        "id": 1,
+        "name": "Start",
+        "desc": "",
+        "stateType": "stStart",
+        "diagramName": "Main",
+        "immediateActions": [],
+        "events": [
+          "ExponentialDist"
+        ],
+        "eventActions": [
+          {
+            "actions": [
+              "Goto_Event"
+            ],
+            "moveFromCurrent": true
+          }
+        ],
+        "geometry": "{ x: 20, y: 20.5, width: 200, height: 130}"
+      }
+    },
+    {
+      "State": {
+        "id": 2,
+        "name": "Event",
+        "desc": "",
+        "stateType": "stKeyState",
+        "diagramName": "Main",
+        "immediateActions": [
+          "Goto_Done"
+        ],
+        "events": [],
+        "eventActions": [],
+        "geometry": "{ x: 330, y: 160.5, width: 200, height: 100}"
+      }
+    },
+    {
+      "State": {
+        "id": 3,
+        "name": "Done",
+        "desc": "",
+        "stateType": "stTerminal",
+        "diagramName": "Main",
+        "immediateActions": [],
+        "events": [],
+        "eventActions": [],
+        "geometry": "{ x: 640, y: 340.5, width: 200, height: 80}"
+      }
+    }
+  ],
+  "ActionList": [
+    {
+      "Action": {
+        "id": 1,
+        "name": "Goto_Event",
+        "desc": "",
+        "actType": "atTransition",
+        "mainItem": false,
+        "mutExcl": true,
+        "newStates": [
+          {
+            "toState": "Event",
+            "prob": -1,
+            "failDesc": ""
+          }
+        ],
+        "itemId": 2
+      }
+    },
+    {
+      "Action": {
+        "id": 2,
+        "name": "Goto_Done",
+        "desc": "",
+        "actType": "atTransition",
+        "mainItem": false,
+        "mutExcl": true,
+        "newStates": [
+          {
+            "toState": "Done",
+            "prob": -1,
+            "failDesc": ""
+          }
+        ],
+        "itemId": 0
+      }
+    }
+  ],
+  "EventList": [
+    {
+      "Event": {
+        "id": 1,
+        "name": "ExponentialDist",
+        "desc": "",
+        "mainItem": false,
+        "evType": "etDistribution",
+        "allItems": true,
+        "triggerStates": [],
+        "moveFromCurrent": true,
+        "varNames": [],
+        "distType": "dtExponential",
+        "parameters": [
+          {
+            "name": "Rate",
+            "value": "0.1",
+            "timeRate": "trDays",
+            "useVariable": false
+          },
+          {
+            "value": "0",
+            "timeRate": "trDays"
+          },
+          {
+            "value": "5000",
+            "timeRate": "trDays"
+          }
+        ],
+        "dfltTimeRate": "trHours",
+        "onVarChange": "ocResample"
+      }
+    }
+  ],
+  "LogicNodeList": [],
+  "VariableList": [
+    {
+      "Variable": {
+        "id": 1,
+        "name": "Dbl_STD",
+        "desc": "",
+        "varScope": "gtGlobal",
+        "value": 1,
+        "resetOnRuns": true,
+        "type": "double"
+      }
+    },
+    {
+      "Variable": {
+        "id": 2,
+        "name": "Dbl_Mean",
+        "desc": "",
+        "varScope": "gtGlobal",
+        "value": 12,
+        "resetOnRuns": true,
+        "type": "double"
+      }
+    }
+  ]
+}

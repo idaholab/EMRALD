@@ -1,8 +1,0 @@
-Simulation = EventsTest
-Runtime = 00.00:00:00
-Runs = 100 of 100
-MoveInDetected Occurred 100 times, Probability =1, MeanTime = 00.00:05:00 +/- 00.00:00:00.00
-MoveOutDetected Occurred 100 times, Probability =1, MeanTime = 00.00:10:00 +/- 00.00:00:00.00
----------------------------
-- End Sim Variable Values -
----------------------------

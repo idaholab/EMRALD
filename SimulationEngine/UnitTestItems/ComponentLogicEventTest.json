@@ -1,0 +1,11 @@
+    {
+      "Event": {
+        "id": 1,
+        "name": "Input_Eval_Fail",
+        "desc": "",
+        "mainItem": false,
+        "evType": "etComponentLogic",
+        "onSuccess": false,
+        "logicTop": "Input Processor"
+      }
+    }

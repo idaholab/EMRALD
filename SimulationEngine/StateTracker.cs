@@ -1765,7 +1765,7 @@ namespace SimulationTracking
     /// <returns>return the key paths for the current simulation run</returns>
     public Dictionary<string, TimeSpan> GetKeyPaths(Dictionary<string, SimulationEngine.KeyStateResult> resMap, Dictionary<string, SimulationEngine.ResultState> otherResMap, List<string> watchVars)
     {
-      return curStates.GetKeyStatePaths(allLists, resMap, otherResMap, watchVars);
+      return curStates.GetKeyStatePaths(allLists, resMap, otherResMap, watchVars, this.allLists.curRunIdx);
     }
 
     /// <summary>

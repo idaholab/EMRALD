@@ -1,0 +1,17 @@
+{
+      "LogicNode": {
+        "id": 1,
+        "name": "Input Processor",
+        "desc": "",
+        "gateType": "gtOr",
+        "rootName": "Input Processor",
+        "compChildren": [
+          "Input_Processor"
+        ],
+        "gateChildren": [
+          "gate_1",
+          "gate_2",
+          "gate_3"
+        ]
+      }
+    }

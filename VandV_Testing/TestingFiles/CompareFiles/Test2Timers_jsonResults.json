@@ -1,0 +1,147 @@
+{
+  "name": "Sim1",
+  "numRuns": 100,
+  "keyStates": [
+    {
+      "name": "C1Failed",
+      "contributionRate": 1.0,
+      "cRate5th": 1.0,
+      "cRate95th": 1.0,
+      "count": 100,
+      "timeMean": "00:05:00",
+      "timeStdDeviation": "00:00:00",
+      "timeMin": "00:05:00",
+      "timeMax": "00:05:00",
+      "watchVariables": {},
+      "paths": [
+        {
+          "name": "Start",
+          "contributionRate": 1.0,
+          "cRate5th": 1.0,
+          "cRate95th": 1.0,
+          "count": 100,
+          "timeMean": "00:00:00",
+          "timeStdDeviation": "00:00:00",
+          "timeMin": "00:00:00",
+          "timeMax": "00:00:00",
+          "watchVariables": {},
+          "entries": [],
+          "exits": [
+            {
+              "desc": "Event [Immediate Action] occured and caused the action - Goto_c1Normal",
+              "name": "Immediate Action & Goto_c1Normal",
+              "evDesc": "",
+              "actDesc": "",
+              "otherState": "C1Normal",
+              "cnt": 100
+            }
+          ]
+        },
+        {
+          "name": "C1Normal",
+          "contributionRate": 1.0,
+          "cRate5th": 1.0,
+          "cRate95th": 1.0,
+          "count": 100,
+          "timeMean": "00:00:00",
+          "timeStdDeviation": "00:00:00",
+          "timeMin": "00:00:00",
+          "timeMax": "00:00:00",
+          "watchVariables": {},
+          "entries": [
+            {
+              "desc": "Event [Immediate Action] occured and caused the action - Goto_c1Normal",
+              "name": "Immediate Action & Goto_c1Normal",
+              "evDesc": "",
+              "actDesc": "",
+              "otherState": "Start",
+              "cnt": 100
+            }
+          ],
+          "exits": [
+            {
+              "desc": "Event [FiveMinNorm] occured and caused the action - Goto_C1Running",
+              "name": "FiveMinNorm & Goto_C1Running",
+              "evDesc": "",
+              "actDesc": "",
+              "otherState": "C1Running",
+              "cnt": 52
+            },
+            {
+              "desc": "Event [timer1] occured and caused the action - Goto_C1Failed",
+              "name": "timer1 & Goto_C1Failed",
+              "evDesc": "",
+              "actDesc": "",
+              "otherState": "C1Failed",
+              "cnt": 48
+            }
+          ]
+        },
+        {
+          "name": "C1Running",
+          "contributionRate": 0.52,
+          "cRate5th": 0.42207843,
+          "cRate95th": 0.61792157,
+          "count": 52,
+          "timeMean": "00:04:13.8901086",
+          "timeStdDeviation": "00:00:35.6649278",
+          "timeMin": "00:02:30.6585219",
+          "timeMax": "00:04:55.6899752",
+          "watchVariables": {},
+          "entries": [
+            {
+              "desc": "Event [FiveMinNorm] occured and caused the action - Goto_C1Running",
+              "name": "FiveMinNorm & Goto_C1Running",
+              "evDesc": "",
+              "actDesc": "",
+              "otherState": "C1Normal",
+              "cnt": 52
+            }
+          ],
+          "exits": [
+            {
+              "desc": "Event [timer1] occured and caused the action - Goto_C1Failed",
+              "name": "timer1 & Goto_C1Failed",
+              "evDesc": "",
+              "actDesc": "",
+              "otherState": "C1Failed",
+              "cnt": 52
+            }
+          ]
+        },
+        {
+          "name": "C1Failed",
+          "contributionRate": 1.0,
+          "cRate5th": 1.0,
+          "cRate95th": 1.0,
+          "count": 100,
+          "timeMean": "00:05:00",
+          "timeStdDeviation": "00:00:00",
+          "timeMin": "00:05:00",
+          "timeMax": "00:05:00",
+          "watchVariables": {},
+          "entries": [
+            {
+              "desc": "Event [timer1] occured and caused the action - Goto_C1Failed",
+              "name": "timer1 & Goto_C1Failed",
+              "evDesc": "",
+              "actDesc": "",
+              "otherState": "C1Running",
+              "cnt": 52
+            },
+            {
+              "desc": "Event [timer1] occured and caused the action - Goto_C1Failed",
+              "name": "timer1 & Goto_C1Failed",
+              "evDesc": "",
+              "actDesc": "",
+              "otherState": "C1Normal",
+              "cnt": 48
+            }
+          ],
+          "exits": []
+        }
+      ]
+    }
+  ],
+  "otherStatePaths": []
+}

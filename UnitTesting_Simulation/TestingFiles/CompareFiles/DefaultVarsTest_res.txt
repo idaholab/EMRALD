@@ -1,8 +1,0 @@
-Simulation = DefaultVars
-Runtime = 00.00:00:00
-Runs = 10 of 10
-CntGood Occurred 10 times, Probability =1, MeanTime = 00.01:00:00 +/- 00.00:00:00.00
-CurTimeGood Occurred 10 times, Probability =1, MeanTime = 00.01:00:00 +/- 00.00:00:00.00
----------------------------
-- End Sim Variable Values -
----------------------------

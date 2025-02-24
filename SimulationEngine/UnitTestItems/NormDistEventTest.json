@@ -1,0 +1,17 @@
+    {
+      "Event": {
+        "id": 1,
+        "name": "NormDist",
+        "desc": "",
+        "mainItem": true,
+        "evType": "etNormalDist",
+        "mean": 12,
+        "std": 1,
+        "min": 0,
+        "max": 24,
+        "meanTimeRate": "trHours",
+        "stdTimeRate": "trHours",
+        "minTimeRate": "trHours",
+        "maxTimeRate": "trHours"
+      }
+	}

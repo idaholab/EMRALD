@@ -1,0 +1,67 @@
+{
+  "name": "Sim1",
+  "numRuns": 10,
+  "keyStates": [
+    {
+      "name": "Occured",
+      "contributionRate": 1.0,
+      "cRate5th": 1.0,
+      "cRate95th": 1.0,
+      "count": 10,
+      "timeMean": "1.06:00:00",
+      "timeStdDeviation": "00:00:00",
+      "timeMin": "1.06:00:00",
+      "timeMax": "1.06:00:00",
+      "watchVariables": {},
+      "paths": [
+        {
+          "name": "Start",
+          "contributionRate": 1.0,
+          "cRate5th": 1.0,
+          "cRate95th": 1.0,
+          "count": 10,
+          "timeMean": "00:00:00",
+          "timeStdDeviation": "00:00:00",
+          "timeMin": "00:00:00",
+          "timeMax": "00:00:00",
+          "watchVariables": {},
+          "entries": [],
+          "exits": [
+            {
+              "desc": "Event [timer1] occured and caused the action - Goto_Occured",
+              "name": "timer1 & Goto_Occured",
+              "evDesc": "",
+              "actDesc": "",
+              "otherState": "Occured",
+              "cnt": 10
+            }
+          ]
+        },
+        {
+          "name": "Occured",
+          "contributionRate": 1.0,
+          "cRate5th": 1.0,
+          "cRate95th": 1.0,
+          "count": 10,
+          "timeMean": "1.06:00:00",
+          "timeStdDeviation": "00:00:00",
+          "timeMin": "1.06:00:00",
+          "timeMax": "1.06:00:00",
+          "watchVariables": {},
+          "entries": [
+            {
+              "desc": "Event [timer1] occured and caused the action - Goto_Occured",
+              "name": "timer1 & Goto_Occured",
+              "evDesc": "",
+              "actDesc": "",
+              "otherState": "Start",
+              "cnt": 10
+            }
+          ],
+          "exits": []
+        }
+      ]
+    }
+  ],
+  "otherStatePaths": []
+}
