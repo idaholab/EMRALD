@@ -26,6 +26,7 @@ import { Action } from '../../../types/Action';
 import { State } from '../../../types/State';
 import { Variable } from '../../../types/Variable';
 import { Event } from '../../../types/Event';
+import { useAlertContext } from '../../../contexts/AlertContext';
 
 interface MenuAccordionProps {
   panels: AccordionMenuItemType[];
@@ -49,6 +50,7 @@ const MenuAccordion: React.FC<MenuAccordionProps> = ({
   handleDelete,
 }) => {
   const { addWindow } = useWindowContext();
+  const { showAlert } = useAlertContext();
   const [expandedPanel, setExpandedPanel] = useState<string>('');
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [notValidModel, setNotValidModel] = useState<boolean>(false);
@@ -119,7 +121,7 @@ const MenuAccordion: React.FC<MenuAccordionProps> = ({
           }
         } catch (readError) {
           console.error('Error reading from clipboard:', readError);
-          alert('Failed to read from clipboard. Please try again.');
+          showAlert('Failed to read from clipboard. Please try again.', 'error');
         }
       } else {
         addWindow('New Diagram', <DiagramForm />);

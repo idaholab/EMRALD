@@ -16,6 +16,7 @@ import { Event } from '../../../types/Event';
 import { LogicNode } from '../../../types/LogicNode';
 import { useWindowContext } from '../../../contexts/WindowContext';
 import useLogicNodeTreeDiagram from '../../diagrams/LogicTreeDiagram/useLogicTreeDiagram';
+import { useAlertContext } from '../../../contexts/AlertContext';
 
 export function useSidebarLogic() {
   const { diagrams, getDiagramByDiagramName } = useDiagramContext();
@@ -43,6 +44,7 @@ export function useSidebarLogic() {
   const { closeAllWindows } = useWindowContext();
   const { recurseAndDeleteChildren } = useLogicNodeTreeDiagram();
   const { activeWindowId, getWindowTitleById } = useWindowContext();
+  const { showAlert } = useAlertContext();
 
   const onDiagramChange = (newDiagram: Diagram) => {
     // Update currDiagram state
@@ -68,8 +70,13 @@ export function useSidebarLogic() {
     if (componentGroup === 'all') {
       return states;
     } else if (componentGroup === 'local') {
-      const copyModel = GetModelItemsReferencedBy(currDiagram.name, MainItemTypes.Diagram, 1);
-      return copyModel.StateList;
+      try {
+        const copyModel = GetModelItemsReferencedBy(currDiagram.name, MainItemTypes.Diagram, 1);
+        return copyModel.StateList;
+      } catch(error) {
+        console.error("Error Message:", error);
+        showAlert('Unable to get referenced StateList items', 'error');
+      }
     } else {
       return states; // TODO: Add condition for what to show when states are local
     }
@@ -89,8 +96,13 @@ export function useSidebarLogic() {
     } else if (componentGroup === 'global') {
       return actions.filter((item) => item.mainItem === true);
     } else if (componentGroup === 'local') {
-      const copyModel = GetModelItemsReferencedBy(currDiagram.name, MainItemTypes.Diagram, 2);
-      return copyModel.ActionList;
+      try {
+        const copyModel = GetModelItemsReferencedBy(currDiagram.name, MainItemTypes.Diagram, 2);
+        return copyModel.ActionList;
+      } catch(error) {
+        console.error("Error Message:", error);
+        showAlert('Unable to get referenced ActionList items', 'error');
+      }
     } else {
       return [];
     }
@@ -102,8 +114,13 @@ export function useSidebarLogic() {
     } else if (componentGroup === 'global') {
       return events.filter((item) => item.mainItem === true);
     } else if (componentGroup === 'local') {
-      const copyModel = GetModelItemsReferencedBy(currDiagram.name, MainItemTypes.Diagram, 2);
-      return copyModel.EventList;
+      try {
+        const copyModel = GetModelItemsReferencedBy(currDiagram.name, MainItemTypes.Diagram, 2);
+        return copyModel.EventList;
+      } catch(error) {
+        console.error("Error Message:", error);
+        showAlert('Unable to get referenced EventList items', 'error');
+      }
     } else {
       return [];
     }
