@@ -25,7 +25,7 @@ const FailureRate = () => {
     setUseVariable,
   } = useEventFormContext();
 
-  const handleVariableChange = (checked: boolean) => {
+  const handleUseVariableChange = (checked: boolean) => {
     setUseVariable(checked);
     if (checked) {
       setLambda('');
@@ -79,7 +79,7 @@ const FailureRate = () => {
         control={
           <Checkbox
             checked={useVariable ? true : false}
-            onChange={(e) => handleVariableChange(e.target.checked)}
+            onChange={(e) => handleUseVariableChange(e.target.checked)}
           />
         }
       />
@@ -104,7 +104,14 @@ const FailureRate = () => {
                   <SelectComponent
                     label="Lambda"
                     value={lambda as string}
-                    setValue={setLambda}
+                    setValue={(value) => {
+                      setLambda(value);
+                      setInvalidValues((prev) => {
+                        const newInvalidValue = new Set(prev);
+                        newInvalidValue.delete('Lambda');
+                        return newInvalidValue;
+                      });
+                    }}
                     sx={{ mt: 0 }}
                   >
                     {appData.value.VariableList.map((variable, index) => (
