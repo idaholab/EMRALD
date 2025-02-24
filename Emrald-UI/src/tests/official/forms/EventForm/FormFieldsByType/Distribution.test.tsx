@@ -7,8 +7,11 @@ import EventForm from '../../../../../components/forms/EventForm/EventForm';
 import { render } from '../../../../test-utils';
 import { EMRALD_Model } from '../../../../../types/EMRALD_Model';
 import { Event } from '../../../../../types/Event';
+import { Variable } from '../../../../../types/Variable';
+import { updateAppData } from '../../../../../hooks/useAppData';
+import { act } from 'react';
 
-describe('Distributions', () => {
+describe('Distribution Events', () => {
   beforeEach(() => {
     sessionStorage.clear();
     localStorage.clear();
@@ -197,11 +200,15 @@ describe('Distributions', () => {
     await user.type(await screen.findByLabelText('Maximum'), '100');
 
     // Change Standard Deviation time rate to seconds
-    await user.click(await findByRole((await screen.findAllByLabelText('Time Rate'))[1], 'combobox'));
+    await user.click(
+      await findByRole((await screen.findAllByLabelText('Time Rate'))[1], 'combobox'),
+    );
     await user.click(await screen.findByRole('option', { name: 'Second' }));
 
     // Change Maximum time rate to days
-    await user.click(await findByRole((await screen.findAllByLabelText('Time Rate'))[3], 'combobox'));
+    await user.click(
+      await findByRole((await screen.findAllByLabelText('Time Rate'))[3], 'combobox'),
+    );
     await user.click(await screen.findByRole('option', { name: 'Day' }));
 
     expect(screen.queryAllByText('Save')).not.toBeNull();
@@ -253,6 +260,105 @@ describe('Distributions', () => {
     }
   });
 
+  it('uses variables', async () => {
+    const name = 'uses variables';
+    render(
+      <EventContextProvider>
+        <EventFormContextProvider>
+          <EventForm
+            eventData={{
+              objType: 'Event',
+              name,
+              desc: '',
+              mainItem: false,
+              evType: 'etDistribution',
+              distType: 'dtNormal',
+              parameters: [],
+            }}
+          ></EventForm>
+        </EventFormContextProvider>
+      </EventContextProvider>,
+    );
+    const user = userEvent.setup();
+
+    await user.type(await screen.findByLabelText('Mean'), '1');
+    await user.type(await screen.findByLabelText('Standard Deviation'), '5');
+    await user.type(await screen.findByLabelText('Maximum'), '100');
+
+    // Add a variable to the model
+    expect(screen.queryAllByText('Save')).not.toBeNull();
+    await user.click(await screen.findByText('Save'));
+    let appData = sessionStorage.getItem('appData');
+    expect(appData).not.toBeNull();
+    if (appData) {
+      const model = JSON.parse(appData) as EMRALD_Model;
+      const variable: Variable = {
+        objType: 'Variable',
+        name: 'Test Variable',
+        varScope: 'gtGlobal',
+        value: 1,
+        type: 'int',
+      };
+      model.VariableList.push(variable);
+      act(() => updateAppData(model));
+    }
+
+    // Set minimum value to use variable
+    await user.click((await screen.findAllByLabelText('Use Variable'))[2]);
+    await user.click(await findByRole(await screen.findByLabelText('Variable'), 'combobox'));
+    expect(screen.queryByRole('option', { name: 'Test Variable' })).not.toBeNull();
+    await user.click(await screen.findByRole('option', { name: 'Test Variable' }));
+    await user.click(await findByRole(await screen.findByLabelText('Select'), 'combobox'));
+    await user.click(await screen.findByRole('option', { name: 'Resample' }));
+
+    await user.click(await screen.findByText('Save'));
+    appData = sessionStorage.getItem('appData');
+    expect(appData).not.toBeNull();
+    if (appData) {
+      const model = JSON.parse(appData) as EMRALD_Model;
+      const event = model.EventList.filter((e) => e.name === name)[1];
+      expect(event).not.toBeUndefined();
+      if (event) {
+        const expected: Event = {
+          id: event.id,
+          objType: 'Event',
+          name,
+          desc: '',
+          mainItem: true,
+          evType: 'etDistribution',
+          distType: 'dtNormal',
+          dfltTimeRate: 'trHours',
+          required: false,
+          onVarChange: 'ocResample',
+          parameters: [
+            {
+              name: 'Mean',
+              value: 1,
+              useVariable: false,
+            },
+            {
+              name: 'Standard Deviation',
+              value: 5,
+              useVariable: false,
+            },
+            {
+              name: 'Maximum',
+              value: 100,
+              useVariable: false,
+            },
+            {
+              name: 'Minimum',
+              value: '',
+              useVariable: true,
+              variable: 'Test Variable'
+            },
+          ],
+        };
+        expect(event).toEqual(expected);
+      }
+    }
+  });
+
   it('changes distribution type', async () => {
     const name = 'changes distribution type';
     render(
@@ -275,9 +381,11 @@ describe('Distributions', () => {
     const user = userEvent.setup();
 
     // Change type to Weibull distribution
-    await user.click(await findByRole(await screen.findByLabelText('Distribution Type'), 'combobox'));
+    await user.click(
+      await findByRole(await screen.findByLabelText('Distribution Type'), 'combobox'),
+    );
     await user.click(await screen.findByRole('option', { name: 'Weibull Distribution' }));
-    
+
     await user.type(await screen.findByLabelText('Shape'), '1');
     await user.type(await screen.findByLabelText('Scale'), '5');
     await user.type(await screen.findByLabelText('Minimum'), '0');
