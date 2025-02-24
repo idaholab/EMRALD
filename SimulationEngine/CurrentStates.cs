@@ -1,4 +1,5 @@
 ﻿using MyStuff.Collections;
+using Newtonsoft.Json.Schema.Generation;
 using SimulationDAL;
 using System;
 using System.Collections.Generic;
@@ -310,7 +311,7 @@ namespace SimulationTracking
     }
 
     //return key state results, but add to all combined results and non key state results
-    public Dictionary<string, TimeSpan> GetKeyStatePaths(EmraldModel model, Dictionary<string, SimulationEngine.KeyStateResult> keyResMap, Dictionary<string, SimulationEngine.ResultState> otherResMap, List<string> watchVars)
+    public Dictionary<string, TimeSpan> GetKeyStatePaths(EmraldModel model, Dictionary<string, SimulationEngine.KeyStateResult> keyResMap, Dictionary<string, SimulationEngine.ResultState> otherResMap, List<string> watchVars, int curRunIdx)
     {
       Dictionary<string, TimeSpan> retStateResults = new Dictionary<string, TimeSpan>();
 
@@ -367,14 +368,16 @@ namespace SimulationTracking
               if (!curResState.watchVariables.ContainsKey(vName))
               {
                 //create initial unknown value
-                curResState.watchVariables.Add(vName, new List<string>());
-                curResState.watchVariables[vName].Add("Unknown");
+                curResState.watchVariables.Add(vName, new Dictionary<string, string>());
               }
 
               if (curStatePath.varValues.ContainsKey(vName))
               {
                 //assign to most current variable value for that state
-                curResState.watchVariables[vName][0] = Convert.ToString(curStatePath.varValues[vName][i]);
+                if (curResState.watchVariables[vName].ContainsKey(curRunIdx.ToString()))
+                  curResState.watchVariables[vName][curRunIdx.ToString()] = Convert.ToString(curStatePath.varValues[vName][i]);
+                else
+                  curResState.watchVariables[vName].Add(curRunIdx.ToString(),  Convert.ToString(curStatePath.varValues[vName][i]));
               }                
             }
 

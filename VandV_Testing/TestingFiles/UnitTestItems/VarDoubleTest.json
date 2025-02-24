@@ -1,0 +1,11 @@
+﻿{
+  "Variable": {
+    "id": 1,
+    "name": "FailProb",
+    "desc": "",
+    "varScope": "gtGlobal",
+    "value": 0.003,
+    "resetOnRuns": true,
+    "type": "double"
+  }
+}

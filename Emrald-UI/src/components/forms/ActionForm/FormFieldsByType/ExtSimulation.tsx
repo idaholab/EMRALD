@@ -12,13 +12,10 @@ import { useActionFormContext } from '../ActionFormContext';
 import 'react-duration-control/dist/react-duration-control.css';
 import { useExtSimContext } from '../../../../contexts/ExtSimContext';
 import dayjs from 'dayjs';
-import duration from 'dayjs/plugin/duration';
 import { useVariableContext } from '../../../../contexts/VariableContext';
 import DurationComponent from '../../../common/DurationComponent';
 import { SelectComponent } from '../../../common';
 import { convertToISOString } from '../../../../utils/util-functions';
-
-dayjs.extend(duration);
 
 const ExtSimulation: React.FC = () => {
   const {

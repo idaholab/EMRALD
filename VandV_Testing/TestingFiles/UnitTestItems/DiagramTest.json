@@ -1,0 +1,14 @@
+    {
+      "Diagram": {
+        "id": 1,
+        "name": "Main",
+        "desc": "",
+        "diagramType": "dtMulti",
+        "diagramTemplate": "",
+        "diagramLabel": "Plant",
+        "states": [
+          "State1",
+          "State2"
+        ]
+      }
+    }
