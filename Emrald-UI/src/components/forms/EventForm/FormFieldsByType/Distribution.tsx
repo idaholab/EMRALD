@@ -46,6 +46,7 @@ const Distribution = () => {
     handleBlur,
     handleRateChange,
     handleUseVariableChange,
+    handleVariableChange,
     setAllRows,
     setDfltTimeRate,
     setDistType,
@@ -79,7 +80,7 @@ const Distribution = () => {
       ? parameters.filter((param) => param.name && rowsToDisplay.includes(param.name))
       : [];
     setParameters(filteredParameters);
-  }, [distType, parameters, rowsToDisplay, setParameters]);
+  }, [distType, JSON.stringify(parameters), JSON.stringify(rowsToDisplay), setParameters]);
 
   const getSuffix = (row: string) => {
     switch (distType) {
@@ -166,7 +167,10 @@ const Distribution = () => {
                     <SelectComponent
                       label="Variable"
                       value={allRows[row]?.variable || ''}
-                      setValue={(value) => setParameterVariable(value, row)}
+                      setValue={(value) => {
+                        setParameterVariable(value, row);
+                        handleVariableChange(row);
+                      }}
                     >
                       {appData.value.VariableList.map((variable, idx) => (
                         <MenuItem key={idx} value={variable.name ? variable.name : ''}>
