@@ -1310,6 +1310,15 @@ namespace SimulationDAL
 
       try
       {
+        //make sure the default values are set
+        foreach (var p in dynObj.parameters)
+        {
+          if (p.timeRate == null)
+          {
+            p.timeRate = dfltTimeRate.ToString();
+          }
+        }
+
         string paramsStr = Convert.ToString(dynObj.parameters);
         _dParams = JsonConvert.DeserializeObject<List<DistribParams>>(paramsStr);
       }
