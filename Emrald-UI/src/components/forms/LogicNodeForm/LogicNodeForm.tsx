@@ -12,7 +12,6 @@ import Divider from '@mui/material/Divider';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
 import StateValuesTable from './StateValuesTable';
-import TextField from '@mui/material/TextField';
 import { useLogicNodeFormContext } from './LogicNodeFormContext';
 import MainDetailsForm from '../MainDetailsForm';
 
@@ -33,7 +32,6 @@ const LogicNodeForm: React.FC<LogicNodeFormProps> = ({
   component,
   editing,
   parentNodeName,
-  setAsRoot,
 }) => {
   const {
     name,
@@ -47,6 +45,7 @@ const LogicNodeForm: React.FC<LogicNodeFormProps> = ({
     gateTypeOptions,
     isRoot,
     hasError,
+    reqPropsFilled,
     setDesc,
     setLeafNodeType,
     setCompDiagram,
@@ -64,8 +63,8 @@ const LogicNodeForm: React.FC<LogicNodeFormProps> = ({
   } = useLogicNodeFormContext();
 
   useEffect(() => {
-      initializeForm(logicNodeData, editing, component, parentNodeName, nodeType, gateType);
-    }, []);
+    initializeForm(logicNodeData, editing, component, parentNodeName, nodeType, gateType);
+  }, []);
 
   return (
     <Box mx={3} pb={3}>
@@ -163,7 +162,14 @@ const LogicNodeForm: React.FC<LogicNodeFormProps> = ({
             ) : (
               <></>
             )}
-            {!defaultValues ? <StateValuesTable componentNode={currentNode} setCurrentNodeStateValues={setCurrentNodeStateValues}/> : <></>}
+            {!defaultValues ? (
+              <StateValuesTable
+                componentNode={currentNode}
+                setCurrentNodeStateValues={setCurrentNodeStateValues}
+              />
+            ) : (
+              <></>
+            )}
 
             <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 5 }}>
               <Button
@@ -181,40 +187,32 @@ const LogicNodeForm: React.FC<LogicNodeFormProps> = ({
             </Box>
           </>
         ) : (
-          <>
-            <MainDetailsForm
-              itemType={MainItemTypes.LogicNode}
-              type={gateTypeValue}
-              setType={setGateTypeValue as Dispatch<SetStateAction<GateType>>}
-              typeOptions={gateTypeOptions}
-              name={name}
-              handleNameChange={handleNameChange}
-              desc={desc}
-              setDesc={setDesc}
-              nameError={checkForDuplicateNames()}
-              error={hasError}
-              errorMessage="An node with this name already exists, or includes an invalid character."
-              handleSave={() => handleSave()}
-              reqPropsFilled={name && gateType ? true : false}
-            >
-              <>
-              {
-              !setAsRoot && (
-                <FormControlLabel
-                  label="Make available as Top or Subtree"
-                  disabled={availableAsTopOrSubtree()}
-                  control={
-                    <Checkbox
-                      checked={isRoot ? true : false}
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => setIsRoot(e.target.checked)}
-                    />
-                  }
+          <MainDetailsForm
+            itemType={MainItemTypes.LogicNode}
+            type={gateTypeValue}
+            setType={setGateTypeValue as Dispatch<SetStateAction<GateType>>}
+            typeOptions={gateTypeOptions}
+            name={name}
+            handleNameChange={handleNameChange}
+            desc={desc}
+            setDesc={setDesc}
+            nameError={checkForDuplicateNames()}
+            error={hasError}
+            errorMessage="An node with this name already exists, or includes an invalid character."
+            handleSave={() => handleSave()}
+            reqPropsFilled={reqPropsFilled}
+          >
+            <FormControlLabel
+              label="Make available as Top or Subtree"
+              disabled={availableAsTopOrSubtree()}
+              control={
+                <Checkbox
+                  checked={isRoot ? true : false}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setIsRoot(e.target.checked)}
                 />
-              )
-            }
-              </>
-            </MainDetailsForm>
-          </>
+              }
+            />
+          </MainDetailsForm>
         )}
       </form>
     </Box>
