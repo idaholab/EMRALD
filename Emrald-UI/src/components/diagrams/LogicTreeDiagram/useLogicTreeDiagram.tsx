@@ -384,7 +384,8 @@ const useLogicNodeTreeDiagram = () => {
           {
             label: 'Copy',
             action: () => {
-              navigator.clipboard.writeText(JSON.stringify(node.data.logicNode, null, 2));
+              const copiedNodeData = JSON.stringify(structuredClone(node.data.logicNode), null, 2);
+              navigator.clipboard.writeText(copiedNodeData);
             },
           },
           { label: 'Paste', action: () => pasteNode(label) },
@@ -444,7 +445,13 @@ const useLogicNodeTreeDiagram = () => {
     }
     const node = getLogicNodeByName(nodeToUpdate);
     if (node) {
-      if (type === 'new') {
+      // Run this check to always make sure there is no circular references.
+      if (couldCreateInfiniteLoop(node, pastedObject.name)) {
+        setNodeExistsAlert(true);
+        return;
+      }
+      // If the node was deleted after copying it this will handle the recreation of it.
+      if (type === 'new' || !logicNodeList.value.some((node) => node.name === pastedObject.name)) {
         const gateNodes = logicNodeList.value.filter((node) =>
           new RegExp(`^Copy of ${pastedObject.name}`).test(node.name),
         ); // Find all existing logic nodes with the name
@@ -458,23 +465,22 @@ const useLogicNodeTreeDiagram = () => {
         }
         const newNode: LogicNode = {
           ...pastedObject,
-          id: uuidv4(),
-          name: `Copy of ${pastedObject.name} (${newGateNumber})`,
+          ...(type === 'new' && {
+            id: uuidv4(),
+            name: `Copy of ${pastedObject.name} (${newGateNumber})`,
+          }),
         };
         await createLogicNode(newNode);
         node.gateChildren = [...node.gateChildren, newNode.name];
       } else {
         const pastedNodeName = pastedObject.name;
-        if (couldCreateInifinteLoop(node, pastedNodeName)) {
-          setNodeExistsAlert(true);
-          return;
-        }
         node.gateChildren = [...node.gateChildren, pastedNodeName];
       }
       updateLogicNode(node);
     }
   };
-  const couldCreateInifinteLoop = (parentNode: LogicNode, newNodeName: string): boolean => {
+
+  const couldCreateInfiniteLoop = (parentNode: LogicNode, newNodeName: string): boolean => {
     return (
       parentNode.name === newNodeName ||
       getAllGateChildrenNames(parentNode).includes(newNodeName) ||
@@ -660,7 +666,7 @@ const useLogicNodeTreeDiagram = () => {
     goToDiagram,
     removeNode,
     setNodeExistsAlert,
-    couldCreateInifinteLoop,
+    couldCreateInfiniteLoop,
   };
 };
 
