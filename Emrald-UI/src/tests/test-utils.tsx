@@ -1,15 +1,21 @@
-import { render, RenderOptions } from '@testing-library/react';
+import { fireEvent, render, RenderOptions } from '@testing-library/react';
 import 'jest-extended';
 import EmraldContextWrapper from '../contexts/EmraldContextWrapper';
 import React, { act } from 'react';
 import { EMRALD_Model } from '../types/EMRALD_Model';
 import { updateAppData } from '../hooks/useAppData';
+import Sidebar from '../components/layout/Sidebar/Sidebar';
 
 const customRender = (ui: React.ReactNode, options?: RenderOptions) => {
-  render(ui, {
-    wrapper: EmraldContextWrapper,
-    ...options,
-  });
+  render(
+    <EmraldContextWrapper>
+      <Sidebar />
+      {ui}
+    </EmraldContextWrapper>,
+    {
+      ...options,
+    },
+  );
 };
 
 export { customRender as render };
@@ -47,4 +53,16 @@ export function getEvent(name: string) {
   } else {
     throw new Error('No EMRALD model present in sessionStorage.');
   }
+}
+
+/**
+ * Helper function for simulating dragging and dropping.
+ * @param from - The element to start dragging from.
+ * @param to - The element to drop to.
+ */
+export function drag(from: HTMLElement, to: HTMLElement) {
+  fireEvent.dragStart(from);
+  fireEvent.dragEnter(from);
+  fireEvent.dragOver(from);
+  fireEvent.drop(to, from);
 }

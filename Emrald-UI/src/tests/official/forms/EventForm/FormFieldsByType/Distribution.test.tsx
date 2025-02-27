@@ -36,7 +36,7 @@ describe('Distribution Events', () => {
     await user.type(await screen.findByLabelText('Maximum'), '100');
 
     await user.click(await screen.findByText('Save'));
-    expect(getEvent(name)).toEqual(expected['sets parameters']);
+    expect(getEvent(name)).toEqual(expected[name]);
   });
 
   test('sets default time rate', async () => {
@@ -72,7 +72,7 @@ describe('Distribution Events', () => {
 
     expect(screen.queryAllByText('Save')).not.toBeNull();
     await user.click(await screen.findByText('Save'));
-    expect(getEvent(name)).toEqual(expected['sets default time rate']);
+    expect(getEvent(name)).toEqual(expected[name]);
   });
 
   test('sets individual time rates', async () => {
@@ -116,7 +116,7 @@ describe('Distribution Events', () => {
 
     expect(screen.queryAllByText('Save')).not.toBeNull();
     await user.click(await screen.findByText('Save'));
-    expect(getEvent(name)).toEqual(expected['sets individual time rates']);
+    expect(getEvent(name)).toEqual(expected[name]);
   });
 
   test('uses variables', async () => {
@@ -167,7 +167,7 @@ describe('Distribution Events', () => {
     await user.click(await screen.findByRole('option', { name: 'Resample' }));
 
     await user.click(await screen.findByText('Save'));
-    expect(getEvent(name)).toEqual(expected['uses variables']);
+    expect(getEvent(name)).toEqual(expected[name]);
   });
 
   test('changes distribution type', async () => {
@@ -212,6 +212,6 @@ describe('Distribution Events', () => {
 
     expect(screen.queryAllByText('Save')).not.toBeNull();
     await user.click(await screen.findByText('Save'));
-    expect(getEvent(name)).toEqual(expected['changes distribution type']);
+    expect(getEvent(name)).toEqual(expected[name]);
   });
 });
