@@ -30,9 +30,13 @@ const Distribution = () => {
     dtGompertz: ['Shape', 'Scale'],
     dtBeta: [],
   };
-  const getRowsForDistType = (type: DistributionType) => {
+
+  const getRowsForDistType = (type?: DistributionType) => {
     const commonRows = ['Minimum', 'Maximum'];
-    return distConfig[type] ? [...distConfig[type], ...commonRows] : commonRows;
+    if (type) {
+      return distConfig[type] ? [...distConfig[type], ...commonRows] : commonRows;
+    }
+    return commonRows;
   };
 
   const {
@@ -52,9 +56,23 @@ const Distribution = () => {
     setDistType,
     setParameters,
     setParameterVariable,
+    setInvalidValues,
   } = useEventFormContext();
 
   const rowsToDisplay = getRowsForDistType(distType ? distType : 'dtNormal');
+
+  const handleDistTypeChange = (newDistType?: DistributionType) => {
+    setDistType(newDistType);
+    setInvalidValues(() => {
+      const newInvalidValues = new Set<string>();
+      getRowsForDistType(newDistType).forEach((row) => {
+        if (!allRows[row] || typeof allRows[row].value !== 'number') {
+          newInvalidValues.add(row);
+        }
+      });
+      return newInvalidValues;
+    });
+  };
 
   useEffect(() => {
     setAllRows((prevAllRows) => {
@@ -127,7 +145,7 @@ const Distribution = () => {
       <Box sx={{ display: 'flex', alignItems: 'center', my: 2 }}>
         <SelectComponent
           value={distType || 'dtNormal'}
-          setValue={setDistType}
+          setValue={handleDistTypeChange}
           label={'Distribution Type'}
           sx={{ mt: 0 }}
         >

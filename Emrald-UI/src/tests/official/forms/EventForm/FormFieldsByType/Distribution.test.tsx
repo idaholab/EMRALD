@@ -1,6 +1,6 @@
 import { findByRole, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, test } from 'vitest';
 import EventFormContextProvider from '../../../../../components/forms/EventForm/EventFormContext';
 import EventContextProvider from '../../../../../contexts/EventContext';
 import EventForm from '../../../../../components/forms/EventForm/EventForm';
@@ -8,7 +8,7 @@ import { getEvent, render, updateModel } from '../../../../test-utils';
 import expected from './Distribution.expected.json';
 
 describe('Distribution Events', () => {
-  it('sets parameters', async () => {
+  test('sets parameters', async () => {
     const name = 'sets parameters';
     render(
       <EventContextProvider>
@@ -39,7 +39,7 @@ describe('Distribution Events', () => {
     expect(getEvent(name)).toEqual(expected['sets parameters']);
   });
 
-  it('sets default time rate', async () => {
+  test('sets default time rate', async () => {
     const name = 'sets default time rate';
     render(
       <EventContextProvider>
@@ -75,7 +75,7 @@ describe('Distribution Events', () => {
     expect(getEvent(name)).toEqual(expected['sets default time rate']);
   });
 
-  it('sets individual time rates', async () => {
+  test('sets individual time rates', async () => {
     const name = 'sets individual time rates';
     render(
       <EventContextProvider>
@@ -119,7 +119,7 @@ describe('Distribution Events', () => {
     expect(getEvent(name)).toEqual(expected['sets individual time rates']);
   });
 
-  it('uses variables', async () => {
+  test('uses variables', async () => {
     const name = 'uses variables';
     render(
       <EventContextProvider>
@@ -170,7 +170,7 @@ describe('Distribution Events', () => {
     expect(getEvent(name)).toEqual(expected['uses variables']);
   });
 
-  it('changes distribution type', async () => {
+  test('changes distribution type', async () => {
     const name = 'changes distribution type';
     render(
       <EventContextProvider>
@@ -198,10 +198,17 @@ describe('Distribution Events', () => {
     await user.click(await screen.findByRole('option', { name: 'Weibull Distribution' }));
 
     // Enter values for distribution parameters
+    expect(screen.queryByLabelText('Shape')).not.toBeNull();
+    expect(screen.queryByLabelText('Scale')).not.toBeNull();
+    expect(screen.queryByLabelText('Minimum')).not.toBeNull();
+    expect(screen.queryByLabelText('Maximum')).not.toBeNull();
     await user.type(await screen.findByLabelText('Shape'), '1');
     await user.type(await screen.findByLabelText('Scale'), '5');
     await user.type(await screen.findByLabelText('Minimum'), '0');
     await user.type(await screen.findByLabelText('Maximum'), '100');
+
+    // Trigger blur event to make sure invalid values are updated
+    await user.click(await screen.findByLabelText('Shape'));
 
     expect(screen.queryAllByText('Save')).not.toBeNull();
     await user.click(await screen.findByText('Save'));
