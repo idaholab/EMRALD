@@ -468,7 +468,7 @@ const EventFormContextProvider: React.FC<PropsWithChildren> = ({ children }) => 
       useVariable,
       lambda,
       onVarChange: onVarChange ? onVarChange : undefined,
-      distType: evType === 'etDistribution' && distType ? distType : 'dtNormal',
+      distType: evType === 'etDistribution' ? (distType ? distType : 'dtNormal') : undefined,
       parameters,
       dfltTimeRate,
       fromSimStart,
