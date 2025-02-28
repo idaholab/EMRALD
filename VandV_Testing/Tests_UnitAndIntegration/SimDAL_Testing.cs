@@ -23,22 +23,14 @@ using Testing;
 
 //using System.Windows.Forms;
 
-namespace UnitTesting_Simulation
+namespace UnitAndIntegrationTesting
 {
   // Do not run multiple test classes in parallel, as it can cause some tests to fail: https://tsuyoshiushio.medium.com/controlling-the-serial-and-parallel-test-on-xunit-6174326da196
   [Collection("Serial")]
   //construct each of the types of model objects from JSON and then get the JSON back and compare.
   public class SimDAL_Testing : TestingBaseClass
   {
-
-    //private string RootDir()
-    //{
-    //  return Directory.GetParent(System.IO.Directory.GetCurrentDirectory()).Parent.Parent.FullName;
-    //}
-    //private string MainTestDir()
-    //{
-    //  return RootDir() + Path.DirectorySeparatorChar + "TestingFiles" + Path.DirectorySeparatorChar;
-    //}
+    #region Setup Code
 
     protected override string CompareFilesDir()
     {
@@ -108,12 +100,14 @@ namespace UnitTesting_Simulation
 
       File.WriteAllText(path, resText);
     }
+    #endregion
 
     /// //////////////
     // Event Tests
     //////////////////
 
     [Fact]
+    [Description("Test to verify that the state change event loads from the model correctly")]
     public void StateCngEventTest()
     {
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
@@ -133,20 +127,17 @@ namespace UnitTesting_Simulation
       //for some items, if the item JSON references other items they will need to be added to the main model
       ev.DeserializeDerived(jsonObj, true, mainModel, false);
 
-      //Is there a way to easily test the triggering of the event 
-      //test for true
-      //Assert.True(ev.EventTriggered());
-      //test for false
-      //Assert.False(ev.EventTriggered());
-
-      //Reference any regression tests in SimEngineTests that covers this.  
-
       //make sure the JSON returned for the item is good 
       string retJsonStr = ev.GetJSON(true, mainModel);
+
+      //Uncomment to update the validation files after they verified correct
+      //CopyToValidated(compRes, retJsonStr);
+
       Assert.True(CompareJSON(retJsonStr, jsonModel));
     }
 
     [Fact]
+    [Description("Test to verify that the logic event loads from the model correctly")]
     public void ComponentLogicEventTest()
     {
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
@@ -175,21 +166,18 @@ namespace UnitTesting_Simulation
       logicTop.DeserializeDerived(jsonObj2, true, mainModel, false);
       ev.DeserializeDerived(jsonObj, true, mainModel, false);
       ev.LoadObjLinks(jsonObj, true, mainModel);
-
-      //Is there a way to easily test the triggering of the event or other functions of the event
-      //test for true
-      //Assert.True(ev.EventTriggered());
-      //test for false
-      //Assert.False(ev.EventTriggered());
-
-      //Reference any regression tests in SimEngineTests that covers this.  
-
+           
       //make sure the JSON returned for the item is good 
       string retJsonStr = ev.GetJSON(true, mainModel);
+
+      //Uncomment to update the validation files after they verified correct
+      //CopyToValidated(compRes, retJsonStr);
+
       Assert.True(CompareJSON(retJsonStr, jsonModel));
     }
 
     [Fact]
+    [Description("Test to verify that the failure rate event loads from the model correctly")]
     public void FailRateEventTest()
     {
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
@@ -209,21 +197,18 @@ namespace UnitTesting_Simulation
       //for some items, if the item JSON references other items they will need to be added to the main model
       ev.DeserializeDerived(jsonObj, true, mainModel, false);
 
-      //Is there a way to easily test the triggering of the event 
-      //test for true
-      TimeSpan s = ev.NextTime(TimeSpan.FromSeconds(0));
-      Assert.True(s.TotalMilliseconds == 77730.9248);
-      //test for false
-      //Assert.False(ev.EventTriggered());
-
-      //Reference any regression tests in SimEngineTests that covers this.  
-
+      
       //make sure the JSON returned for the item is good 
       string retJsonStr = ev.GetJSON(true, mainModel);
+
+      //Uncomment to update the validation files after they verified correct
+      //CopyToValidated(compRes, retJsonStr);
+
       Assert.True(CompareJSON(retJsonStr, jsonModel));
     }
 
     [Fact]
+    [Description("Test to verify that the timer event loads from the model correctly")]
     public void TimerEventTest()
     {
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
@@ -243,21 +228,17 @@ namespace UnitTesting_Simulation
       //for some items, if the item JSON references other items they will need to be added to the main model
       ev.DeserializeDerived(jsonObj, true, mainModel, false);
 
-      //Is there a way to easily test the triggering of the event 
-      //test for true
-      TimeSpan s = ev.NextTime(TimeSpan.FromSeconds(0));
-      Assert.True((s.TotalMilliseconds - 60000) < 1);
-      //test for false
-      //Assert.False(ev.EventTriggered());
-
-      //Reference any regression tests in SimEngineTests that covers this.  
-
       //make sure the JSON returned for the item is good 
       string retJsonStr = ev.GetJSON(true, mainModel);
+
+      //Uncomment to update the validation files after they verified correct
+      //CopyToValidated(compRes, retJsonStr);
+
       Assert.True(CompareJSON(retJsonStr, jsonModel));
     }
 
     [Fact]
+    [Description("Test to verify that the var condition event loads from the model correctly")]
     public void VarCondEventTest()
     {
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
@@ -277,89 +258,17 @@ namespace UnitTesting_Simulation
       //for some items, if the item JSON references other items they will need to be added to the main model
       ev.DeserializeDerived(jsonObj, true, mainModel, false);
 
-      //Is there a way to easily test the triggering of the event 
-      //test for true
-      //Assert.True(ev.EventTriggered());
-      //test for false
-      //Assert.False(ev.EventTriggered());
-
-      //Reference any regression tests in SimEngineTests that covers this.  
-
       //make sure the JSON returned for the item is good 
       string retJsonStr = ev.GetJSON(true, mainModel);
+
+      //Uncomment to update the validation files after they verified correct
+      //CopyToValidated(compRes, retJsonStr);
+
       Assert.True(CompareJSON(retJsonStr, jsonModel));
     }
 
     [Fact]
-    public void ExpDistEventTest()
-    {
-      string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
-      EmraldModel mainModel = new EmraldModel();
-      SetupTheTest(testName, mainModel);
-
-      ExponentialDistEvent ev = new ExponentialDistEvent();
-      //use a sample JSON piece to set the values
-      string fileLoc = MainTestDir() + ModelFolder() + testName + ".json";
-      string jsonModel = "";
-      if (File.Exists(fileLoc))
-        jsonModel = File.ReadAllText(fileLoc);
-      else
-        throw new Exception("Failed to find create json file for " + testName);
-
-      dynamic jsonObj = JsonConvert.DeserializeObject(jsonModel);
-      //for some items, if the item JSON references other items they will need to be added to the main model
-      ev.DeserializeDerived(jsonObj, true, mainModel, false);
-
-      //Is there a way to easily test the triggering of the event 
-      //test for true
-      TimeSpan s = ev.NextTime(TimeSpan.FromSeconds(0));
-      Assert.True(s.TotalMilliseconds == 2303065.7113);
-      //test for false
-      //Assert.False(ev.EventTriggered());
-
-      //Reference any regression tests in SimEngineTests that covers this.  
-
-      //make sure the JSON returned for the item is good 
-      string retJsonStr = ev.GetJSON(true, mainModel);
-      Assert.True(CompareJSON(retJsonStr, jsonModel));
-    }
-
-
-    [Fact]
-    public void NormDistEventTest()
-    {
-      string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
-      EmraldModel mainModel = new EmraldModel();
-      SetupTheTest(testName, mainModel);
-
-      NormalDistEvent ev = new NormalDistEvent();
-      //use a sample JSON piece to set the values
-      string fileLoc = MainTestDir() + ModelFolder() + testName + ".json";
-      string jsonModel = "";
-      if (File.Exists(fileLoc))
-        jsonModel = File.ReadAllText(fileLoc);
-      else
-        throw new Exception("Failed to find create json file for " + testName);
-
-      dynamic jsonObj = JsonConvert.DeserializeObject(jsonModel);
-      //for some items, if the item JSON references other items they will need to be added to the main model
-      ev.DeserializeDerived(jsonObj, true, mainModel, false);
-
-      //Is there a way to easily test the triggering of the event 
-      //test for true
-      Assert.True(ev.NextTime(TimeSpan.FromSeconds(0)).TotalMilliseconds == 45286473.5153);
-      //test for false
-      //Assert.False(ev.EventTriggered());
-
-      //Reference any regression tests in SimEngineTests that covers this.  
-      //...\UnitTesting\Models\NormDistTestFINAL.json
-
-      //make sure the JSON returned for the item is good 
-      string retJsonStr = ev.GetJSON(true, mainModel);
-      Assert.True(CompareJSON(retJsonStr, jsonModel));
-    }
-
-    [Fact]
+    [Description("Test to verify that the Distribution event loads from the model correctly")]
     public void DistEventTest()
     {
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
@@ -384,86 +293,12 @@ namespace UnitTesting_Simulation
       ev.DeserializeDerived(jsonObj, true, mainModel, false);
       ev.LoadObjLinks(jsonObj, true, mainModel);
 
-      //Is there a way to easily test the triggering of the event 
-      //test for true
-      //Assert.True(ev.EventTriggered());
-      //test for false
-      //Assert.False(ev.EventTriggered());
-
-      //Reference any regression tests in SimEngineTests that covers this.  
-      //...\UnitTesting\Models\NormDistTestFINAL.json
-
       //make sure the JSON returned for the item is good 
       string retJsonStr = ev.GetJSON(true, mainModel);
-      Assert.True(CompareJSON(retJsonStr, jsonModel));
-    }
 
-    [Fact]
-    public void WeibDistEventTest()
-    {
-      string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
-      EmraldModel mainModel = new EmraldModel();
-      SetupTheTest(testName, mainModel);
+      //Uncomment to update the validation files after they verified correct
+      //CopyToValidated(compRes, retJsonStr);
 
-      WeibullDistEvent ev = new WeibullDistEvent();
-      //use a sample JSON piece to set the values
-      string fileLoc = MainTestDir() + ModelFolder() + testName + ".json";
-      string jsonModel = "";
-      if (File.Exists(fileLoc))
-        jsonModel = File.ReadAllText(fileLoc);
-      else
-        throw new Exception("Failed to find create json file for " + testName);
-
-      dynamic jsonObj = JsonConvert.DeserializeObject(jsonModel);
-      //for some items, if the item JSON references other items they will need to be added to the main model
-      ev.DeserializeDerived(jsonObj, true, mainModel, false);
-
-      //Is there a way to easily test the triggering of the event 
-      //test for true
-      TimeSpan s = ev.NextTime(TimeSpan.FromSeconds(0));
-      Assert.True(s.TotalMilliseconds == 1151532.8556);
-      //test for false
-      //Assert.False(ev.EventTriggered());
-
-      //Reference any regression tests in SimEngineTests that covers this.  
-      //...\UnitTesting\Models\WeibDistTestFINAL.json
-
-      //make sure the JSON returned for the item is good 
-      string retJsonStr = ev.GetJSON(true, mainModel);
-      Assert.True(CompareJSON(retJsonStr, jsonModel));
-    }
-
-
-    [Fact]
-    public void LogNormDistEventTest()
-    {
-      string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
-      EmraldModel mainModel = new EmraldModel();
-      SetupTheTest(testName, mainModel);
-
-      LogNormalDistEvent ev = new LogNormalDistEvent();
-      //use a sample JSON piece to set the values
-      string fileLoc = MainTestDir() + ModelFolder() + testName + ".json";
-      string jsonModel = "";
-      if (File.Exists(fileLoc))
-        jsonModel = File.ReadAllText(fileLoc);
-      else
-        throw new Exception("Failed to find create json file for " + testName);
-
-      dynamic jsonObj = JsonConvert.DeserializeObject(jsonModel);
-      //for some items, if the item JSON references other items they will need to be added to the main model
-      ev.DeserializeDerived(jsonObj, true, mainModel, false);
-
-      //Is there a way to easily test the triggering of the event 
-      //test for true
-      Assert.True(ev.NextTime(TimeSpan.FromSeconds(0)).TotalMilliseconds == 29869832.9832);
-      //test for false
-      //Assert.False(ev.EventTriggered());
-
-      //Reference any regression tests in SimEngineTests that covers this.  
-
-      //make sure the JSON returned for the item is good 
-      string retJsonStr = ev.GetJSON(true, mainModel);
       Assert.True(CompareJSON(retJsonStr, jsonModel));
     }
 
@@ -473,6 +308,7 @@ namespace UnitTesting_Simulation
 
 
     [Fact]
+    [Description("Test to verify that the transition action loads from the model correctly")]
     public void TransitionActTest()
     {
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
@@ -492,20 +328,17 @@ namespace UnitTesting_Simulation
       //for some items, if the item JSON references other items they will need to be added to the main model
       act.DeserializeDerived(jsonObj, true, mainModel, false);
 
-      //Is there a way to easily test the triggering of the event 
-      //test for true
-      //Assert.True(ev.EventTriggered());
-      //test for false
-      //Assert.False(ev.EventTriggered());
-
-      //Reference any regression tests in SimEngineTests that covers this.  
-
       //make sure the JSON returned for the item is good 
       string retJsonStr = act.GetJSON(true, mainModel);
+
+      //Uncomment to update the validation files after they verified correct
+      //CopyToValidated(compRes, retJsonStr);
+
       Assert.True(CompareJSON(retJsonStr, jsonModel));
     }
 
     [Fact]
+    [Description("Another test to verify that the transition action loads from the model correctly")]
     public void TransitionActTest2() //test WhichToState, different probabilities for each test
     {
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
@@ -558,20 +391,17 @@ namespace UnitTesting_Simulation
       state2.DeserializeDerived(jsonObj2, true, mainModel, false);//State2
       act.LoadObjLinks(jsonObj, true, mainModel);
 
-      //Is there a way to easily test the triggering of the event 
-      //test for true
-      //Assert.True(ev.EventTriggered());
-      //test for false
-      //Assert.False(ev.EventTriggered());
-
-      //Reference any regression tests in SimEngineTests that covers this.  
-
       //make sure the JSON returned for the item is good 
       string retJsonStr = act.GetJSON(true, mainModel);
+
+      //Uncomment to update the validation files after they verified correct
+      //CopyToValidated(compRes, retJsonStr);
+
       Assert.True(CompareJSON(retJsonStr, jsonModel));
     }
 
     [Fact]
+    [Description("Test to verify that the Run exe action loads from the model correctly")]
     public void RunAppActTest()
     {
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
@@ -609,20 +439,17 @@ namespace UnitTesting_Simulation
       Assert.True(act.CompileMakeInputFileCode(mainModel));
       Assert.True(act.CompileProcessOutputFileCode(mainModel));
 
-      //Is there a way to easily test functions of the action
-      //test for true
-      //Assert.True(ev.EventTriggered());
-      //test for false
-      //Assert.False(ev.EventTriggered());
-
-      //Reference any regression tests in SimEngineTests that covers this.  
-
       //make sure the JSON returned for the item is good 
       string retJsonStr = act.GetJSON(true, mainModel);
+
+      //Uncomment to update the validation files after they verified correct
+      //CopyToValidated(compRes, retJsonStr);
+
       Assert.True(CompareJSON(retJsonStr, jsonModel));
     }
 
     [Fact]
+    [Description("Test to verify that the Ext Sim action loads from the model correctly")]
     public void ExtSimMsgActTest()
     {
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
@@ -665,20 +492,17 @@ namespace UnitTesting_Simulation
       act.DeserializeDerived(jsonObj, true, mainModel, false);
       act.LoadObjLinks(jsonObj, true, mainModel);
 
-      //Is there a way to easily test the triggering of the event 
-      //test for true
-      //Assert.True(ev.EventTriggered());
-      //test for false
-      //Assert.False(ev.EventTriggered());
-
-      //Reference any regression tests in SimEngineTests that covers this.  
-
       //make sure the JSON returned for the item is good 
       string retJsonStr = act.GetJSON(true, mainModel);
+
+      //Uncomment to update the validation files after they verified correct
+      //CopyToValidated(compRes, retJsonStr);
+
       Assert.True(CompareJSON(retJsonStr, jsonModel));
     }
 
     [Fact]
+    [Description("Test to verify that the Change Variable Value action loads from the model correctly")]
     public void ChangeVarValActTest()
     {
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
@@ -712,16 +536,13 @@ namespace UnitTesting_Simulation
       act.LoadObjLinks(jsonObj, true, mainModel);
 
       Assert.True(act.CompileCode(mainModel.allVariables));
-     
-      //Is there a way to easily test the triggering of the event 
-      //test for true
-      //test for false
-      //Assert.False(ev.EventTriggered());
-
-      //Reference any regression tests in SimEngineTests that covers this.  
 
       //make sure the JSON returned for the item is good 
       string retJsonStr = act.GetJSON(true, mainModel);
+
+      //Uncomment to update the validation files after they verified correct
+      //CopyToValidated(compRes, retJsonStr);
+
       Assert.True(CompareJSON(retJsonStr, jsonModel));
     }
 
@@ -730,6 +551,7 @@ namespace UnitTesting_Simulation
     //////////////////
 
     [Fact]
+    [Description("Test to verify that the int variable loads from the model correctly")]
     public void VarIntTest()
     {
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
@@ -749,20 +571,17 @@ namespace UnitTesting_Simulation
       //for some items, if the item JSON references other items they will need to be added to the main model
       var.DeserializeDerived(jsonObj, true, mainModel, false);
 
-      //Is there a way to easily test the triggering of the event 
-      //test for true
-      //Assert.True(ev.EventTriggered());
-      //test for false
-      //Assert.False(ev.EventTriggered());
-
-      //Reference any regression tests in SimEngineTests that covers this.  
-
       //make sure the JSON returned for the item is good 
       string retJsonStr = var.GetJSON(true, mainModel);
+
+      //Uncomment to update the validation files after they verified correct
+      //CopyToValidated(compRes, retJsonStr);
+
       Assert.True(CompareJSON(retJsonStr, jsonModel));
     }
 
     [Fact]
+    [Description("Test to verify that the double variable loads from the model correctly")]
     public void VarDoubleTest()
     {
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
@@ -780,22 +599,19 @@ namespace UnitTesting_Simulation
 
       dynamic jsonObj = JsonConvert.DeserializeObject(jsonModel);
       //for some items, if the item JSON references other items they will need to be added to the main model
-      var.DeserializeDerived(jsonObj, true, mainModel, false);
-
-      //Is there a way to easily test the triggering of the event 
-      //test for true
-      //Assert.True(ev.EventTriggered());
-      //test for false
-      //Assert.False(ev.EventTriggered());
-
-      //Reference any regression tests in SimEngineTests that covers this.  
+      var.DeserializeDerived(jsonObj, true, mainModel, false);  
 
       //make sure the JSON returned for the item is good 
       string retJsonStr = var.GetJSON(true, mainModel);
+
+      //Uncomment to update the validation files after they verified correct
+      //CopyToValidated(compRes, retJsonStr);
+
       Assert.True(CompareJSON(retJsonStr, jsonModel));
     }
 
     [Fact]
+    [Description("Test to verify that the boolean variable loads from the model correctly")]
     public void VarBoolTest()
     {
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
@@ -813,22 +629,19 @@ namespace UnitTesting_Simulation
 
       dynamic jsonObj = JsonConvert.DeserializeObject(jsonModel);
       //for some items, if the item JSON references other items they will need to be added to the main model
-      var.DeserializeDerived(jsonObj, true, mainModel, false);
-
-      //Is there a way to easily test the triggering of the event 
-      //test for true
-      //Assert.True(ev.EventTriggered());
-      //test for false
-      //Assert.False(ev.EventTriggered());
-
-      //Reference any regression tests in SimEngineTests that covers this.  
+      var.DeserializeDerived(jsonObj, true, mainModel, false); 
 
       //make sure the JSON returned for the item is good 
       string retJsonStr = var.GetJSON(true, mainModel);
+
+      //Uncomment to update the validation files after they verified correct
+      //CopyToValidated(compRes, retJsonStr);
+
       Assert.True(CompareJSON(retJsonStr, jsonModel));
     }
 
     [Fact]
+    [Description("Test to verify that the string variable loads from the model correctly")]
     public void VarStringTest()
     {
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
@@ -848,20 +661,17 @@ namespace UnitTesting_Simulation
       //for some items, if the item JSON references other items they will need to be added to the main model
       var.DeserializeDerived(jsonObj, true, mainModel, false);
 
-      //Is there a way to easily test the triggering of the event 
-      //test for true
-      //Assert.True(ev.EventTriggered());
-      //test for false
-      //Assert.False(ev.EventTriggered());
-
-      //Reference any regression tests in SimEngineTests that covers this.  
-
       //make sure the JSON returned for the item is good 
       string retJsonStr = var.GetJSON(true, mainModel);
+
+      //Uncomment to update the validation files after they verified correct
+      //CopyToValidated(compRes, retJsonStr);
+
       Assert.True(CompareJSON(retJsonStr, jsonModel));
     }
 
     [Fact]
+    [Description("Test to verify that the 3D simulation variable loads from the model correctly")]
     public void Var3DSimTest()
     {
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
@@ -879,22 +689,19 @@ namespace UnitTesting_Simulation
 
       dynamic jsonObj = JsonConvert.DeserializeObject(jsonModel);
       //for some items, if the item JSON references other items they will need to be added to the main model
-      var.DeserializeDerived(jsonObj, true, mainModel, false);
-
-      //Is there a way to easily test the triggering of the event 
-      //test for true
-      //Assert.True(ev.EventTriggered());
-      //test for false
-      //Assert.False(ev.EventTriggered());
-
-      //Reference any regression tests in SimEngineTests that covers this.  
+      var.DeserializeDerived(jsonObj, true, mainModel, false); 
 
       //make sure the JSON returned for the item is good 
       string retJsonStr = var.GetJSON(true, mainModel);
+
+      //Uncomment to update the validation files after they verified correct
+      //CopyToValidated(compRes, retJsonStr);
+
       Assert.True(CompareJSON(retJsonStr, jsonModel));
     }
 
     [Fact]
+    [Description("Test to verify that the document regular expression variable loads from the model correctly")]
     public void VarDocRegExTest()
     {
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
@@ -914,20 +721,17 @@ namespace UnitTesting_Simulation
       //for some items, if the item JSON references other items they will need to be added to the main model
       var.DeserializeDerived(jsonObj, true, mainModel, false);
 
-      //Is there a way to easily test the triggering of the event 
-      //test for true
-      //Assert.True(ev.EventTriggered());
-      //test for false
-      //Assert.False(ev.EventTriggered());
-
-      //Reference any regression tests in SimEngineTests that covers this.  
-
       //make sure the JSON returned for the item is good 
       string retJsonStr = var.GetJSON(true, mainModel);
+
+      //Uncomment to update the validation files after they verified correct
+      //CopyToValidated(compRes, retJsonStr);
+
       Assert.True(CompareJSON(retJsonStr, jsonModel));
     }
 
     [Fact]
+    [Description("Test to verify that the document JSON variable loads from the model correctly")]
     public void VarDocJsonTest()
     {
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
@@ -947,20 +751,17 @@ namespace UnitTesting_Simulation
       //for some items, if the item JSON references other items they will need to be added to the main model
       var.DeserializeDerived(jsonObj, true, mainModel, false);
 
-      //Is there a way to easily test the triggering of the event 
-      //test for true
-      //Assert.True(ev.EventTriggered());
-      //test for false
-      //Assert.False(ev.EventTriggered());
-
-      //Reference any regression tests in SimEngineTests that covers this.  
-
       //make sure the JSON returned for the item is good 
       string retJsonStr = var.GetJSON(true, mainModel);
+
+      //Uncomment to update the validation files after they verified correct
+      //CopyToValidated(compRes, retJsonStr);
+
       Assert.True(CompareJSON(retJsonStr, jsonModel));
     }
 
     [Fact]
+    [Description("Test to verify that the docuement XML variable loads from the model correctly")]
     public void VarDocXmlTest()
     {
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
@@ -980,20 +781,17 @@ namespace UnitTesting_Simulation
       //for some items, if the item JSON references other items they will need to be added to the main model
       var.DeserializeDerived(jsonObj, true, mainModel, false);
 
-      //Is there a way to easily test the triggering of the event 
-      //test for true
-      //Assert.True(ev.EventTriggered());
-      //test for false
-      //Assert.False(ev.EventTriggered());
-
-      //Reference any regression tests in SimEngineTests that covers this.  
-
       //make sure the JSON returned for the item is good 
       string retJsonStr = var.GetJSON(true, mainModel);
+
+      //Uncomment to update the validation files after they verified correct
+      //CopyToValidated(compRes, retJsonStr);
+
       Assert.True(CompareJSON(retJsonStr, jsonModel));
     }
 
     [Fact]
+    [Description("Test to verify that the accrual variable loads from the model correctly")]
     public void VarAccrTest()
     {
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
@@ -1046,22 +844,19 @@ namespace UnitTesting_Simulation
       var.DeserializeDerived(jsonObj, true, mainModel, false);
       var.LoadObjLinks(jsonObj, true, mainModel);
 
-      //Is there a way to easily test the triggering of the event 
-      //test for true
-      //Assert.True(ev.EventTriggered());
-      //test for false
-      //Assert.False(ev.EventTriggered());
-
-      //Reference any regression tests in SimEngineTests that covers this.  
-
       //make sure the JSON returned for the item is good 
       string retJsonStr = var.GetJSON(true, mainModel);
+
+      //Uncomment to update the validation files after they verified correct
+      //CopyToValidated(compRes, retJsonStr);
+
       Assert.True(CompareJSON(retJsonStr, jsonModel));
     }
 
    
 
     [Fact]
+    [Description("Test to verify that the accrual static variable loads from the model correctly")]
     public void VarAccrStaticTest()
     {
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
@@ -1104,20 +899,17 @@ namespace UnitTesting_Simulation
       var.DeserializeDerived(jsonObj, true, mainModel, false);
       var.LoadObjLinks(jsonObj, true, mainModel);
 
-      //Is there a way to easily test the triggering of the event 
-      //test for true
-      //Assert.True(ev.EventTriggered());
-      //test for false
-      //Assert.False(ev.EventTriggered());
-
-      //Reference any regression tests in SimEngineTests that covers this.  
-
       //make sure the JSON returned for the item is good 
       string retJsonStr = var.GetJSON(true, mainModel);
+
+      //Uncomment to update the validation files after they verified correct
+      //CopyToValidated(compRes, retJsonStr);
+
       Assert.True(CompareJSON(retJsonStr, jsonModel));
     }
 
     [Fact]
+    
     public void JoinPathResultsTest()
     {
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
@@ -1144,6 +936,32 @@ namespace UnitTesting_Simulation
         throw new Exception("Failed to find comparison file for " + testName);
 
       Assert.True(CompareJSON(compResStr, combinedResStr));
+    }
+
+    [Fact]
+    [Description("/Make sure StdDev Calculation is working")]
+    public void ResultsCalcTest()
+    {
+       //set up fake result info for testing
+      ResultStateBase results = new ResultStateBase("test", true);
+      results.AddTime(TimeSpan.FromMinutes(581.1));
+      results.AddTime(TimeSpan.FromMinutes(274.2));
+      results.AddTime(TimeSpan.FromMinutes(1290.8));
+      results.AddTime(TimeSpan.FromMinutes(959.8));
+      results.AddTime(TimeSpan.FromMinutes(1295.2));
+      results.AddTime(TimeSpan.FromMinutes(152.6));
+      results.AddTime(TimeSpan.FromMinutes(533.9));
+
+      results.CalcStats(100);
+      double mean = results.timeMean.TotalHours;
+      double th5 = results.cRate5th;
+      double t95 = results.cRate95th;
+      double timeStd = results.GetTimeStdDev().TotalHours;
+
+      Assert.False(Math.Abs(mean - 12.1133333) > 0.00001);
+      Assert.False(Math.Abs(th5 + 0.0095) > 0.00001);
+      Assert.False(Math.Abs(t95 - 0.0295) > 0.00001);
+      Assert.False(Math.Abs(timeStd - 7.72339) > 0.00001);
     }
 
   }

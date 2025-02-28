@@ -1,0 +1,42 @@
+{
+  "Event": {
+    "id": 1,
+    "name": "LogNorm",
+    "desc": "",
+    "mainItem": false,
+    "evType": "etDistribution",
+    "allItems": true,
+    "triggerStates": [],
+    "moveFromCurrent": true,
+    "varNames": [],
+    "distType": "dtLogNormal",
+    "parameters": [
+      {
+        "name": "Mean",
+        "value": "6",
+        "timeRate": "trHours",
+        "useVariable": false
+      },
+      {
+        "name": "Standard Deviation",
+        "value": 1,
+        "timeRate": "trHours",
+        "useVariable": false
+      },
+      {
+        "name": "Minimum",
+        "value": 0,
+        "timeRate": "trHours",
+        "useVariable": false
+      },
+      {
+        "name": "Maximum",
+        "value": 10000,
+        "timeRate": "trHours",
+        "useVariable": false
+      }
+    ],
+    "dfltTimeRate": "trHours",
+    "onVarChange": "ocResample"
+  }
+}
