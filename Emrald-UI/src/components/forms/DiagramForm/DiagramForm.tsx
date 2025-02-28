@@ -63,7 +63,7 @@ const DiagramForm: React.FC<DiagramFormProps> = ({ diagramData }) => {
   const [currentTab, setCurrentTab] = React.useState(0);
   const [formWindowId] = useState<string | null>(activeWindowId);
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (selectedTemplate && formWindowId) {
       addWindow(
         `Import Diagram: ${selectedTemplate.name}`,
@@ -91,7 +91,7 @@ const DiagramForm: React.FC<DiagramFormProps> = ({ diagramData }) => {
         formWindowId,
       );
     } else {
-      updateTitle(diagramData?.name || '', name);
+      await updateTitle(diagramData?.name || '', name);
 
       if (diagramData) {
         updateDiagram({

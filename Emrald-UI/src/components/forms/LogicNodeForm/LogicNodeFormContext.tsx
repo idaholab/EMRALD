@@ -44,6 +44,7 @@ interface LogicNodeFormContextType {
   setCurrentNodeStateValues: React.Dispatch<React.SetStateAction<ComponentStateValue[]>>;
   handleSave: () => void;
   handleClose: () => void;
+  updateTitle: (currentTitle: string, newName: string) => void;
   handleNameChange: (newName: string) => void;
   checkForDuplicateNames: () => boolean;
   availableAsTopOrSubtree: () => boolean | undefined;
@@ -68,7 +69,7 @@ export const useLogicNodeFormContext = (): LogicNodeFormContextType => {
 };
 
 const LogicNodeFormContextProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { handleClose } = useWindowContext();
+  const { handleClose, updateTitle } = useWindowContext();
   const { logicNodeList, createLogicNode, updateLogicNode } = useLogicNodeContext();
   const { diagrams } = useDiagramContext();
   // Signals
@@ -221,6 +222,10 @@ const LogicNodeFormContextProvider: React.FC<{ children: React.ReactNode }> = ({
       compChildren: compChildren.value,
     };
 
+    if (logicNodeData?.isRoot) {
+      await updateTitle(logicNodeData?.name || '', name)
+    }
+
     if (editing || leafNodeType === 'comp') {
       await updateLogicNode(logicNode.value);
     } else if (!editing && leafNodeType === 'gate' && parentNode?.name) {
@@ -230,7 +235,7 @@ const LogicNodeFormContextProvider: React.FC<{ children: React.ReactNode }> = ({
     } else {
       createLogicNode(logicNode.value);
     }
-    handleClose();
+    await handleClose();
   };
 
   return (
@@ -259,6 +264,7 @@ const LogicNodeFormContextProvider: React.FC<{ children: React.ReactNode }> = ({
         handleNameChange,
         handleSave,
         handleClose,
+        updateTitle,
         checkForDuplicateNames,
         availableAsTopOrSubtree,
         initializeForm,
