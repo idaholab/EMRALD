@@ -467,7 +467,7 @@ const useLogicNodeTreeDiagram = () => {
         };
 
       // make sure there is no circular references.
-      if (couldCreateInfiniteLoop(node, newNode.name)) {
+      if (couldCreateInfiniteLoop(node, newNode)) {
         setNodeExistsAlert(true);
         return;
       }
@@ -475,7 +475,7 @@ const useLogicNodeTreeDiagram = () => {
         node.gateChildren = [...node.gateChildren, newNode.name];
       } else {
         // make sure there is no circular references.
-        if (couldCreateInfiniteLoop(node, pastedObject.name)) {
+        if (couldCreateInfiniteLoop(node, pastedObject)) {
           setNodeExistsAlert(true);
           return;
         }
@@ -485,32 +485,69 @@ const useLogicNodeTreeDiagram = () => {
       updateLogicNode(node);
     }
   };
-
-  const couldCreateInfiniteLoop = (parentNode: LogicNode, newNodeName: string): boolean => {
+  
+  const couldCreateInfiniteLoop = (parentNode: LogicNode, newNode: LogicNode): boolean => {
+    const currentTreeNodes = logicNodeList.value.filter((n) => n.rootName === parentNode.rootName);;
+    const currentTreeNodeNames = currentTreeNodes.map((n) => n.name);
+  
     // Check if the new node is the parent node itself, or if it is already a child of the parent node.
-    if (parentNode.name === newNodeName || getAllGateChildrenNames(parentNode).includes(newNodeName)) {
+    if (parentNode.name === newNode.name || parentNode.gateChildren.includes(newNode.name)) {
       return true;
     }
+  
     // Check if the new node is an ancestor of the parent node.
-    return getAncestors(parentNode).includes(newNodeName);
+    if (getAncestors(parentNode, currentTreeNodes).includes(newNode.name)) {
+      return true;
+    }
+  
+    // Check if the new node has any children that are already in the tree.
+    const newNodeDescendants = getDescendants(newNode, currentTreeNodes);  
+    for (const descendant of newNodeDescendants) {
+      if (currentTreeNodeNames.includes(descendant)) {
+        return true;
+      }
+    }
+  
+    return false;
   };
-
-  const getAncestors = (node: LogicNode): string[] => {
+  
+  const getDescendants = (node: LogicNode, currentTreeNodes: LogicNode[]): string[] => {
+    let descendants: string[] = [];
+  
+    // Recursively get all descendants
+    const collectDescendants = (currentNodeName: string) => {
+      const currentNode = currentTreeNodes.find((n) => n.name === currentNodeName);
+      if (currentNode) {
+        for (const childName of currentNode.gateChildren) {
+          descendants.push(childName);
+          collectDescendants(childName);
+        }
+      }
+    };
+  
+    // descendants from the input node's children
+    for (const childName of node.gateChildren) {
+      descendants.push(childName);
+      collectDescendants(childName);
+    }
+  
+    // Return the list of descendant node names
+    return descendants;
+  };
+  
+  const getAncestors = (node: LogicNode, currentTreeNodes: LogicNode[]): string[] => {
     let ancestors: string[] = [];
   
-    // Get all nodes in the tree that have the same rootName as the input node
-    const currentTreeNodes = logicNodeList.value.filter((n) => n.rootName === node.rootName);
-  
-    // keeps track of processed nodes
+    // Keeps track of processed nodes
     const processed = new Set<string>();
   
-    // Initialize search list with the name of the input node
-    let searchList = [node.name];
+    // Initialize queue with the name of the input node
+    let queue: string[] = [node.name];
   
     // Loop until there are no more nodes to process in the search list
-    while (searchList.length > 0) {
+    while (queue.length > 0) {
       // Remove the first node name from the search list
-      const currentNodeName = searchList.shift();
+      const currentNodeName = queue.shift();
   
       // If the current node name is valid and has not been processed yet
       if (currentNodeName && !processed.has(currentNodeName)) {
@@ -525,7 +562,7 @@ const useLogicNodeTreeDiagram = () => {
         // Add the parent nodes to the search list if they have not been processed yet
         for (const parentNode of parentNodes) {
           if (!processed.has(parentNode.name)) {
-            searchList.push(parentNode.name);
+            queue.push(parentNode.name);
           }
         }
       }
@@ -536,7 +573,7 @@ const useLogicNodeTreeDiagram = () => {
   
     // Return the list of ancestor node names
     return ancestors;
-  };
+  }; 
 
   const getAllGateChildren = (node: LogicNode): LogicNode[] => {
     let gateChildren: LogicNode[] = [];
