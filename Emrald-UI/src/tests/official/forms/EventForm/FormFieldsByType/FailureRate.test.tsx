@@ -44,6 +44,42 @@ describe('FailureRate Events', () => {
     expect(getEvent(name)).toEqual(expected[name]);
   });
 
+  test('uses scientific notation', async () => {
+    const name = 'uses scientific notation';
+    render(
+      <EventContextProvider>
+        <EventFormContextProvider>
+          <EventForm
+            eventData={{
+              objType: 'Event',
+              name,
+              desc: '',
+              mainItem: true,
+              evType: 'etFailRate',
+            }}
+          ></EventForm>
+        </EventFormContextProvider>
+      </EventContextProvider>,
+    );
+    const user = userEvent.setup();
+
+    // Enter lambda value
+    await user.type(await screen.findByLabelText('Lambda'), '1e5');
+
+    // Enter duration
+    await user.click(await screen.findByLabelText('Days'));
+    await user.type(await screen.findByLabelText('Days'), '1');
+    await user.click(await screen.findByLabelText('Hours'));
+    await user.type(await screen.findByLabelText('Hours'), '2');
+    await user.click(await screen.findByLabelText('Minutes'));
+    await user.type(await screen.findByLabelText('Minutes'), '3');
+    await user.click(await screen.findByLabelText('Seconds'));
+    await user.type(await screen.findByLabelText('Seconds'), '4');
+
+    await user.click(await screen.findByText('Save'));
+    expect(getEvent(name)).toEqual(expected[name]);
+  });
+
   test('uses variable frequency', async () => {
     const name = 'uses variable frequency';
     render(

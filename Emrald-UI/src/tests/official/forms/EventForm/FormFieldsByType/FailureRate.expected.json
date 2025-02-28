@@ -9,6 +9,16 @@
     "lambda": 1,
     "lambdaTimeRate": "P1DT2H3M4S"
   },
+  "uses scientific notation": {
+    "objType": "Event",
+    "name": "uses scientific notation",
+    "desc": "",
+    "mainItem": true,
+    "required": false,
+    "evType": "etFailRate",
+    "lambda": "1e5",
+    "lambdaTimeRate": "P1DT2H3M4S"
+  },
   "uses variable frequency": {
     "objType": "Event",
     "name": "uses variable frequency",
