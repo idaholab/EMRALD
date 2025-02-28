@@ -33,6 +33,7 @@ export interface LogicNode {
    * If this is a template then it indicates the item must exist in the current model before using the template.
    */
   required?: boolean
+  rootName?: string
 }
 
 export interface CompChildItems {

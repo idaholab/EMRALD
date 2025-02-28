@@ -445,11 +445,6 @@ const useLogicNodeTreeDiagram = () => {
     }
     const node = getLogicNodeByName(nodeToUpdate);
     if (node) {
-      // Run this check to always make sure there is no circular references.
-      if (couldCreateInfiniteLoop(node, pastedObject.name)) {
-        setNodeExistsAlert(true);
-        return;
-      }
       // If the node was deleted after copying it this will handle the recreation of it.
       if (type === 'new' || !logicNodeList.value.some((node) => node.name === pastedObject.name)) {
         const gateNodes = logicNodeList.value.filter((node) =>
@@ -470,9 +465,20 @@ const useLogicNodeTreeDiagram = () => {
             name: `Copy of ${pastedObject.name} (${newGateNumber})`,
           }),
         };
+
+      // make sure there is no circular references.
+      if (couldCreateInfiniteLoop(node, newNode.name)) {
+        setNodeExistsAlert(true);
+        return;
+      }
         await createLogicNode(newNode);
         node.gateChildren = [...node.gateChildren, newNode.name];
       } else {
+        // make sure there is no circular references.
+        if (couldCreateInfiniteLoop(node, pastedObject.name)) {
+          setNodeExistsAlert(true);
+          return;
+        }
         const pastedNodeName = pastedObject.name;
         node.gateChildren = [...node.gateChildren, pastedNodeName];
       }
@@ -481,27 +487,57 @@ const useLogicNodeTreeDiagram = () => {
   };
 
   const couldCreateInfiniteLoop = (parentNode: LogicNode, newNodeName: string): boolean => {
-    return (
-      parentNode.name === newNodeName ||
-      getAllGateChildrenNames(parentNode).includes(newNodeName) ||
-      getAncestors(parentNode).includes(newNodeName)
-    );
+    // Check if the new node is the parent node itself, or if it is already a child of the parent node.
+    if (parentNode.name === newNodeName || getAllGateChildrenNames(parentNode).includes(newNodeName)) {
+      return true;
+    }
+    // Check if the new node is an ancestor of the parent node.
+    return getAncestors(parentNode).includes(newNodeName);
   };
 
   const getAncestors = (node: LogicNode): string[] => {
     let ancestors: string[] = [];
-    const copiedModel = GetModelItemsReferencing(
-      node.name,
-      MainItemTypes.LogicNode,
-      -1,
-      undefined,
-      new Set<MainItemTypes>([MainItemTypes.LogicNode]),
-    );
-    copiedModel.LogicNodeList.forEach((node) => {
-      ancestors.push(node.name);
-    });
+  
+    // Get all nodes in the tree that have the same rootName as the input node
+    const currentTreeNodes = logicNodeList.value.filter((n) => n.rootName === node.rootName);
+  
+    // keeps track of processed nodes
+    const processed = new Set<string>();
+  
+    // Initialize search list with the name of the input node
+    let searchList = [node.name];
+  
+    // Loop until there are no more nodes to process in the search list
+    while (searchList.length > 0) {
+      // Remove the first node name from the search list
+      const currentNodeName = searchList.shift();
+  
+      // If the current node name is valid and has not been processed yet
+      if (currentNodeName && !processed.has(currentNodeName)) {
+        processed.add(currentNodeName);
+        ancestors.push(currentNodeName);
+  
+        // Find all parent nodes in the current tree that have the current node as a child
+        const parentNodes = currentTreeNodes.filter((n) =>
+          n.gateChildren.includes(currentNodeName)
+        );
+  
+        // Add the parent nodes to the search list if they have not been processed yet
+        for (const parentNode of parentNodes) {
+          if (!processed.has(parentNode.name)) {
+            searchList.push(parentNode.name);
+          }
+        }
+      }
+    }
+  
+    // Remove the original node name from the ancestors list if it exists
+    ancestors = ancestors.filter((ancestor) => ancestor !== node.name);
+  
+    // Return the list of ancestor node names
     return ancestors;
   };
+
   const getAllGateChildren = (node: LogicNode): LogicNode[] => {
     let gateChildren: LogicNode[] = [];
     let queue: LogicNode[] = [node];
