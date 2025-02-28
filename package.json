@@ -5,7 +5,7 @@
   "main": "EMRALD_Site/app.js",
   "private": true,
   "scripts": {
-    "coverage": "npx nyc instrument Emrald_Site instrumented && node ./Emrald_Site/tests/index.js --coverage",
+    "coverage": "cd Emrald-UI && npm run coverage",
     "tauri": "tauri",
     "test": "cd Emrald-UI && npm run test",
     "build": "npm run tauri build",

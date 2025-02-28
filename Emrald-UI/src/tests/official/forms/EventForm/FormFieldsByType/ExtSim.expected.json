@@ -1,0 +1,22 @@
+{
+  "selects event type": {
+    "objType": "Event",
+    "name": "selects event type",
+    "desc": "",
+    "mainItem": true,
+    "required": false,
+    "evType": "et3dSimEv",
+    "extEventType": "etEndSim"
+  },
+  "sets variable change": {
+    "objType": "Event",
+    "name": "sets variable change",
+    "desc": "",
+    "mainItem": true,
+    "required": false,
+    "evType": "et3dSimEv",
+    "extEventType": "etCompEv",
+    "varNames": ["Test ExtSim Variable"],
+    "variable": "Test ExtSim Variable"
+  }
+}
