@@ -16,6 +16,12 @@ import LogicNodeFormContextProvider from '../../forms/LogicNodeForm/LogicNodeFor
 export type NodeType = 'root' | 'gate' | 'comp';
 
 const useLogicNodeTreeDiagram = () => {
+  // Contexts
+  const { logicNodeList, getLogicNodeByName, updateLogicNode, createLogicNode, deleteLogicNode } =
+    useLogicNodeContext();
+  const { getDiagramByDiagramName, updateDiagram } = useDiagramContext();
+  const { handleClose, addWindow, updateTitle } = useWindowContext();
+  // States
   const [rootNode, setRootNode] = useState<LogicNode | null>(null);
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge[]>([]);
@@ -27,12 +33,6 @@ const useLogicNodeTreeDiagram = () => {
   const [editedTitle, setEditedTitle] = useState('');
   const [menu, setMenu] = useState<{ mouseX: number; mouseY: number } | null>(null);
   const [menuOptions, setMenuOptions] = useState<Option[]>();
-  const { logicNodeList, getLogicNodeByName, updateLogicNode, createLogicNode, deleteLogicNode } =
-    useLogicNodeContext();
-  const { getDiagramByDiagramName, updateDiagram } = useDiagramContext();
-  const { addWindow } = useWindowContext();
-
-  const { handleClose } = useWindowContext();
 
   const dagreGraph = new dagre.graphlib.Graph();
   dagreGraph.setDefaultEdgeLabel(() => ({}));
@@ -536,27 +536,28 @@ const useLogicNodeTreeDiagram = () => {
   const handleDescriptionBlur = useCallback(
     (type: string, label: string) => {
       setEditingDescription(false);
-
-      if (type === 'gate' || type === 'root') {
-        const updatedLogicNode = getLogicNodeByName(label);
-        if (updatedLogicNode) {
-          updateLogicNode({
-            ...updatedLogicNode,
-            desc: editedDescription,
-          });
+      setTimeout(async () => {
+        if (type === 'gate' || type === 'root') {
+          const updatedLogicNode = getLogicNodeByName(label);
+          if (updatedLogicNode) {
+            updateLogicNode({
+              ...updatedLogicNode,
+              desc: editedDescription,
+            });
+          }
         }
-      }
-
-      if (type === 'comp') {
-        const diagramToUpdate = getDiagramByDiagramName(label);
-        if (diagramToUpdate) {
-          updateDiagram({
-            ...diagramToUpdate,
-            desc: editedDescription,
-          });
+  
+        if (type === 'comp') {
+          const diagramToUpdate = getDiagramByDiagramName(label);
+          if (diagramToUpdate) {
+            updateDiagram({
+              ...diagramToUpdate,
+              desc: editedDescription,
+            });
+          }
         }
-      }
-
+      }, 100)
+      
       setEditedDescription('');
     },
     [
@@ -570,30 +571,32 @@ const useLogicNodeTreeDiagram = () => {
   );
 
   const handleTitleBlur = useCallback(
-    (type: string, label: string) => {
+    async (type: string, label: string) => {
       setEditingTitle(false);
-
-      if (type === 'gate' || type === 'root') {
-        const LogicNodeToUpdate = getLogicNodeByName(label);
-        console.log(LogicNodeToUpdate);
-        if (LogicNodeToUpdate) {
-          updateLogicNode({
-            ...LogicNodeToUpdate,
-            name: editedTitle,
-          });
+      setTimeout(async () => {
+        if (type === 'gate' || type === 'root') {
+          const LogicNodeToUpdate = getLogicNodeByName(label);
+          if (type === 'root') {
+            await updateTitle(LogicNodeToUpdate.name, editedTitle);
+          }
+          if (LogicNodeToUpdate) {
+            await updateLogicNode({
+              ...LogicNodeToUpdate,
+              name: editedTitle,
+            });
+          }
         }
-      }
 
-      if (type === 'comp') {
-        const diagramToUpdate = getDiagramByDiagramName(label);
-        if (diagramToUpdate) {
-          updateDiagram({
-            ...diagramToUpdate,
-            name: editedTitle,
-          });
+        if (type === 'comp') {
+          const diagramToUpdate = getDiagramByDiagramName(label);
+          if (diagramToUpdate) {
+            await updateDiagram({
+              ...diagramToUpdate,
+              name: editedTitle,
+            });
+          }
         }
-      }
-
+      }, 100);
       setEditedTitle('');
     },
     [
@@ -614,13 +617,14 @@ const useLogicNodeTreeDiagram = () => {
   }, [nodes, loading]);
 
   useEffect(() => {
-    if (!rootNode) {
-      return;
-    }
-    const updatedLogicNode = getLogicNodeByName(rootNode.name);
-    if (updatedLogicNode) {
-      buildLogicTree(updatedLogicNode);
-    }
+      if (!rootNode) {
+        return;
+      }
+      const updatedRoot = logicNodeList.value.find((node) => node.id === rootNode.id);
+      const updatedLogicNode = getLogicNodeByName(updatedRoot ? updatedRoot.name : rootNode.name);
+      if (updatedLogicNode) {
+        buildLogicTree(updatedLogicNode);
+      }
   }, [logicNodeList.value]);
 
   useEffect(() => {
