@@ -20,9 +20,9 @@ interface WindowContextType {
   windows: Window[];
   activeWindowId: string | null;
   addWindow: (title: string, content: React.ReactNode, position?: WindowPosition, windowId?: string | null, closePrevWindowId?: string) => void;
-  updateTitle: (currentTitle: string, newTitle: string) => void;
+  updateTitle: (currentTitle: string, newTitle: string) => Promise<void>;
   bringToFront: (window: Window) => void;
-  handleClose: (id?: string) => void;
+  handleClose: (id?: string) => Promise<void>;
   getWindowTitleById: (id: string | null) => string | undefined;
   toggleMaximize: (windowToToggle: Window) => void;
   toggleMinimize: (windowToToggle: Window) => void;
@@ -69,7 +69,8 @@ export const WindowProvider: React.FC<WindowProviderProps> = ({ children }) => {
     }
   };
 
-  const handleClose = (id?: string) => {
+  const handleClose = async (id?: string) => {
+    return new Promise<void>((resolve) => {
     const windowIdToClose = id || activeWindowId; // Use activeWindowId if id is not provided
     if (windowIdToClose) {
       const filteredWindows = windows.filter((window) => window.id !== windowIdToClose);
@@ -78,7 +79,10 @@ export const WindowProvider: React.FC<WindowProviderProps> = ({ children }) => {
         setActiveWindowId(null); // Reset activeWindowId if the closed window was active
       }
     }
+    resolve();
+    })
   };
+
   const addWindow = (title: string, content: React.ReactNode, position?: WindowPosition, windowId?: string | null, closePrevWindowId?: string): void => {
     const existingWindow = windows.find((window) => window.title === title || window.id === windowId);
 
@@ -117,11 +121,19 @@ export const WindowProvider: React.FC<WindowProviderProps> = ({ children }) => {
     return windows.find((window) => window.id === id)?.title;
   };
   
-  const updateTitle = (currentTitle: string, newTitle: string): void => {
-    const windowToUpdate = windows.find((window) => window.title === currentTitle);
-    if (windowToUpdate) {
-      addWindow(newTitle, windowToUpdate.content, windowToUpdate.initialPosition, windowToUpdate.id);
-    }
+  const updateTitle = (currentTitle: string, newTitle: string): Promise<void> => {
+    return new Promise<void>(async (resolve) => {
+      const windowToUpdate = windows.find((window) => window.title === currentTitle);
+      if (windowToUpdate) {
+        addWindow(
+          newTitle,
+          windowToUpdate.content,
+          windowToUpdate.initialPosition,
+          windowToUpdate.id,
+        );
+      }
+      resolve();
+    });
   };
 
   const toggleMaximize = (windowToToggle: Window) => {
