@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState } from 'react';
 import { useWindowContext } from '../../../contexts/WindowContext';
 import { emptyLogicNode, useLogicNodeContext } from '../../../contexts/LogicNodeContext';
 import { useSignal } from '@preact/signals-react';
@@ -25,6 +25,7 @@ interface LogicNodeFormContextType {
     value: string;
   }[];
   hasError: boolean;
+  reqPropsFilled: boolean;
   setDesc: React.Dispatch<React.SetStateAction<string>>;
   setGateTypeValue: React.Dispatch<React.SetStateAction<GateType>>;
   setIsRoot: React.Dispatch<React.SetStateAction<boolean>>;
@@ -97,6 +98,11 @@ const LogicNodeFormContextProvider: React.FC<{ children: React.ReactNode }> = ({
   const [gateTypeValue, setGateTypeValue] = useState<GateType>('gtAnd' as GateType);
   const [originalName, setOriginalName] = useState<string | undefined>();
   const [isRoot, setIsRoot] = useState<boolean>(false);
+  const [reqPropsFilled, setReqPropsFilled] = useState<boolean>(false);
+
+  useEffect(() => {
+    setReqPropsFilled(!!name && !!gateTypeValue);
+  }, [name, gateTypeValue]);
 
   const gateTypeOptions = [
     { label: 'And', value: 'gtAnd' },
@@ -241,6 +247,7 @@ const LogicNodeFormContextProvider: React.FC<{ children: React.ReactNode }> = ({
         gateTypeOptions,
         isRoot,
         hasError,
+        reqPropsFilled,
         setDesc,
         setGateTypeValue,
         setLeafNodeType,
