@@ -182,6 +182,7 @@ const MAAP = () => {
         }
         
         string paramFileName = Path.GetFileName(paramLoc);
+        string inpFileName = Path.GetFileName(inpLoc);
         string inpLocPath = Path.GetDirectoryName(inpLoc);
         foreach (string fileRef in fileRefsList)
         {
@@ -207,9 +208,9 @@ const MAAP = () => {
           File.Copy(dllPath, Path.Join(tempLoc, Path.GetFileName(dllPath)));
         }
         
-        string newInpLoc = Path.Join(tempLoc, Path.GetFileName(inpLoc));
+        string newInpLoc = Path.Join(tempLoc, inpFileName);
         System.IO.File.WriteAllText(newInpLoc, newInp);
-        return Path.Join(tempLoc, exeName) + ".exe " + newInpLoc + " " + paramLoc;`);
+        return $"{Path.Join(tempLoc, exeName)} {inpFileName} {paramFileName}";`);
     ReturnExePath(cleanExePath);
     ReturnPostCode(`string inpLoc = @"${cleanInputPath}";
   if (!Path.IsPathRooted(inpLoc))
