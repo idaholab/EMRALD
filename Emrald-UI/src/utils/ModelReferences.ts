@@ -80,7 +80,8 @@ const RefsToExtSimItem: ItemReferencesArray = [
 const RefsToLogicNodeItem: ItemReferencesArray = [
   ["$.LogicNodeList[?(@.name == 'nameRef')].name", MainItemTypes.LogicNode, null],
   ["$.EventList[?(@.logicTop == 'nameRef')].logicTop", MainItemTypes.Event, null],
-  ["$.LogicNodeList[*].gateChildren[?(@ == 'nameRef')]", MainItemTypes.LogicNode, null]
+  ["$.LogicNodeList[*].gateChildren[?(@ == 'nameRef')]", MainItemTypes.LogicNode, null],
+  ["$.LogicNodeList[?(@.rootName == 'nameRef')].rootName", MainItemTypes.LogicNode, null]
 ];
 
 
