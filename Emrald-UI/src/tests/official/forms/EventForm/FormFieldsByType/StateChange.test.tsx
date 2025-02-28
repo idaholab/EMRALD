@@ -27,7 +27,7 @@ describe('StateChange Events', () => {
     );
     const user = userEvent.setup();
 
-    // Add a state to the model
+    // Add two states to the model
     await user.click(await screen.findByText('Save'));
     updateModel((model) => {
       model.StateList.push({
@@ -40,15 +40,32 @@ describe('StateChange Events', () => {
         events: [],
         eventActions: [],
       });
+      model.StateList.push({
+        name: 'Test State 2',
+        objType: 'State',
+        desc: '',
+        stateType: 'stStandard',
+        diagramName: 'Test Diagram',
+        immediateActions: [],
+        events: [],
+        eventActions: [],
+      });
       return model;
     });
 
-    // Drag the state to the event form
+    // Drag the first state to the event form
     await user.click(await screen.findByText('States'));
-    drag(await screen.findByText('Test State'), await screen.findByText('Drop State Items Here'));
+    const dropArea = (await screen.findByText('Drop State Items Here')).parentElement;
+    expect(dropArea).not.toBeNull();
+    if (dropArea) {
+      drag(await screen.findByText('Test State'), dropArea);
 
-    await user.click(await screen.findByText("Save"));
-    expect(getEvent(name)).toEqual(expected[name]);
+      // Drag the second state to the event form
+      drag(await screen.findByText('Test State 2'), dropArea);
+
+      await user.click(await screen.findByText('Save'));
+      expect(getEvent(name)).toEqual(expected[name]);
+    }
   });
 
   test('sets all items', async () => {
@@ -77,7 +94,7 @@ describe('StateChange Events', () => {
     // Check "All Items"
     await user.click(await screen.findByLabelText('All Items'));
 
-    await user.click(await screen.findByText("Save"));
+    await user.click(await screen.findByText('Save'));
     expect(getEvent(name)).toEqual(expected[name]);
   });
 
@@ -107,7 +124,7 @@ describe('StateChange Events', () => {
     // Select "On Enter States"
     await user.click(await screen.findByLabelText('On Enter State/s'));
 
-    await user.click(await screen.findByText("Save"));
+    await user.click(await screen.findByText('Save'));
     expect(getEvent(name)).toEqual(expected[name]);
   });
 
@@ -137,7 +154,7 @@ describe('StateChange Events', () => {
     // Delete the state that was just added
     await user.click(await screen.findByLabelText('Delete Row'));
 
-    await user.click(await screen.findByText("Save"));
+    await user.click(await screen.findByText('Save'));
     expect(getEvent(name)).toEqual(expected[name]);
-  })
+  });
 });

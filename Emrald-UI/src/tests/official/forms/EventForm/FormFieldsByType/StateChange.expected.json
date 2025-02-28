@@ -5,7 +5,7 @@
     "objType": "Event",
     "mainItem": true,
     "evType": "etStateCng",
-    "triggerStates": ["Test State"],
+    "triggerStates": ["Test State", "Test State 2"],
     "required": false
   },
   "sets all items": {

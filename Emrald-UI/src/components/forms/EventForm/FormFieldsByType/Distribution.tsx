@@ -31,12 +31,9 @@ const Distribution = () => {
     dtBeta: [],
   };
 
-  const getRowsForDistType = (type?: DistributionType) => {
+  const getRowsForDistType = (type: DistributionType) => {
     const commonRows = ['Minimum', 'Maximum'];
-    if (type) {
-      return distConfig[type] ? [...distConfig[type], ...commonRows] : commonRows;
-    }
-    return commonRows;
+    return distConfig[type] ? [...distConfig[type], ...commonRows] : commonRows;
   };
 
   const {
@@ -61,7 +58,7 @@ const Distribution = () => {
 
   const rowsToDisplay = getRowsForDistType(distType ? distType : 'dtNormal');
 
-  const handleDistTypeChange = (newDistType?: DistributionType) => {
+  const handleDistTypeChange = (newDistType: DistributionType) => {
     setDistType(newDistType);
     setInvalidValues(() => {
       const newInvalidValues = new Set<string>();
@@ -94,44 +91,31 @@ const Distribution = () => {
   }, [parameters, setAllRows]);
 
   useEffect(() => {
-    const filteredParameters = parameters
-      ? parameters.filter((param) => param.name && rowsToDisplay.includes(param.name))
-      : [];
-    setParameters(filteredParameters);
+    setParameters(parameters?.filter((param) => param.name && rowsToDisplay.includes(param.name)));
   }, [distType, JSON.stringify(parameters), JSON.stringify(rowsToDisplay), setParameters]);
 
   const getSuffix = (row: string) => {
-    switch (distType) {
-      case 'dtExponential':
-        if (row === 'Rate') {
-          return '(Lambda)';
-        }
-        return;
-      case 'dtWeibull':
-        if (row === 'Shape') {
-          return '(k)';
-        }
-        if (row === 'Scale') {
-          return '(Lambda)';
-        }
-        return;
-      case 'dtGamma':
-        if (row === 'Shape') {
-          return '(Alpha)';
-        }
-        if (row === 'Rate') {
-          return '(inverse scale)';
-        }
-        return;
-      case 'dtGompertz':
-        if (row === 'Shape') {
-          return '(eta)';
-        }
-        if (row === 'Scale') {
-          return '(beta)';
-        }
-        return;
+    const suffixes: Partial<Record<DistributionType, Record<string, string>>> = {
+      dtExponential: {
+        Rate: '(Lambda)',
+      },
+      dtWeibull: {
+        Shape: '(k)',
+        Scale: '(Lambda)',
+      },
+      dtGamma: {
+        Shape: '(Alpha)',
+        Rate: '(inverse scale)',
+      },
+      dtGompertz: {
+        Shape: '(eta)',
+        Scale: '(beta)',
+      },
+    };
+    if (distType && suffixes[distType] && suffixes[distType][row]) {
+      return suffixes[distType][row];
     }
+    return;
   };
 
   useEffect(() => {
