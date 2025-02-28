@@ -1,0 +1,24 @@
+{
+  "sets values": {
+    "objType": "Event",
+    "name": "sets values",
+    "desc": "",
+    "mainItem": true,
+    "required": false,
+    "evType": "etFailRate",
+    "lambda": 1,
+    "lambdaTimeRate": "P1DT2H3M4S"
+  },
+  "uses variable frequency": {
+    "objType": "Event",
+    "name": "uses variable frequency",
+    "desc": "",
+    "mainItem": true,
+    "required": false,
+    "evType": "etFailRate",
+    "lambda": "Test Variable",
+    "lambdaTimeRate": "P1DT2H3M4S",
+    "useVariable": true,
+    "onVarChange": "ocResample"
+  }
+}
