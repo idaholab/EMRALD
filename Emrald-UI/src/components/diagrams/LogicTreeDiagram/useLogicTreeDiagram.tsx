@@ -597,10 +597,10 @@ const useLogicNodeTreeDiagram = () => {
     return gateChildren;
   };
 
-  const getAllGateChildrenNames = (node: LogicNode): string[] => {
-    let gateChildrenNames = getAllGateChildren(node).map((node) => node.name);
-    return gateChildrenNames;
-  };
+  // const getAllGateChildrenNames = (node: LogicNode): string[] => {
+  //   let gateChildrenNames = getAllGateChildren(node).map((node) => node.name);
+  //   return gateChildrenNames;
+  // };
 
   const handleDoubleClick = (type: string, text: string) => {
     if (type === 'description') {
