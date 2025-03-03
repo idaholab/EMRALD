@@ -1,10 +1,10 @@
 import { describe, expect, test } from 'vitest';
-import { getEvent, render, updateModel } from '../../../../test-utils';
+import { getEvent, render, selectOption, updateModel } from '../../../../test-utils';
 import EventContextProvider from '../../../../../contexts/EventContext';
 import EventFormContextProvider from '../../../../../components/forms/EventForm/EventFormContext';
 import EventForm from '../../../../../components/forms/EventForm/EventForm';
 import userEvent from '@testing-library/user-event';
-import { findByRole, screen } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import expected from './FailureRate.expected.json';
 
 describe('FailureRate Events', () => {
@@ -116,8 +116,7 @@ describe('FailureRate Events', () => {
     });
 
     // Select the variable for lambda
-    await user.click(await findByRole(await screen.findByLabelText('Lambda'), 'combobox'));
-    await user.click(await screen.findByRole('option', { name: 'Test Variable' }));
+    await selectOption(user, 'Lambda', 'Test Variable');
 
     // Enter duration
     await user.click(await screen.findByLabelText('Days'));
@@ -130,8 +129,7 @@ describe('FailureRate Events', () => {
     await user.type(await screen.findByLabelText('Seconds'), '4');
 
     // Select on variable change
-    await user.click(await findByRole(await screen.findByLabelText('Select'), 'combobox'));
-    await user.click(await screen.findByRole('option', { name: 'Resample' }));
+    await selectOption(user, 'Select', 'Resample');
 
     await user.click(await screen.findByText('Save'));
     expect(getEvent(name)).toEqual(expected[name]);

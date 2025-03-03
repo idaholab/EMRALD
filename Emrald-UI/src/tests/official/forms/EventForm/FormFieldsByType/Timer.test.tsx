@@ -5,11 +5,11 @@ import EventFormContextProvider from '../../../../../components/forms/EventForm/
 import EventForm from '../../../../../components/forms/EventForm/EventForm';
 import userEvent from '@testing-library/user-event';
 import { screen } from '@testing-library/react';
-import expected from './ExtSim.expected.json';
+import expected from './Timer.expected.json';
 
-describe('ExtSim Events', () => {
-  test('selects event type', async () => {
-    const name = 'selects event type';
+describe('Timer Events', () => {
+  test('sets duration', async () => {
+    const name = 'sets duration';
     render(
       <EventContextProvider>
         <EventFormContextProvider>
@@ -19,7 +19,7 @@ describe('ExtSim Events', () => {
               name,
               desc: '',
               mainItem: true,
-              evType: 'et3dSimEv',
+              evType: 'etTimer',
             }}
           ></EventForm>
         </EventFormContextProvider>
@@ -27,15 +27,22 @@ describe('ExtSim Events', () => {
     );
     const user = userEvent.setup();
 
-    // Select an event type
-    await selectOption(user, 'External Event Type', 'Simulation End');
+    // Enter duration
+    await user.click(await screen.findByLabelText('Days'));
+    await user.type(await screen.findByLabelText('Days'), '1');
+    await user.click(await screen.findByLabelText('Hours'));
+    await user.type(await screen.findByLabelText('Hours'), '2');
+    await user.click(await screen.findByLabelText('Minutes'));
+    await user.type(await screen.findByLabelText('Minutes'), '3');
+    await user.click(await screen.findByLabelText('Seconds'));
+    await user.type(await screen.findByLabelText('Seconds'), '4');
 
     await user.click(await screen.findByText('Save'));
     expect(getEvent(name)).toEqual(expected[name]);
   });
 
-  test('sets variable change', async () => {
-    const name = 'sets variable change';
+  test('uses variable', async () => {
+    const name = 'uses variable';
     render(
       <EventContextProvider>
         <EventFormContextProvider>
@@ -45,7 +52,7 @@ describe('ExtSim Events', () => {
               name,
               desc: '',
               mainItem: true,
-              evType: 'et3dSimEv',
+              evType: 'etTimer',
             }}
           ></EventForm>
         </EventFormContextProvider>
@@ -53,31 +60,33 @@ describe('ExtSim Events', () => {
     );
     const user = userEvent.setup();
 
-    // Select variable change type
-    await selectOption(user, 'External Event Type', 'Variable Change');
+    // Check use variable
+    await user.click(await screen.findByLabelText('Use Variable?'));
 
-    // Add an external sim variable to the model
+    // Add a variable to the model
     await user.click(await screen.findByText('Save'));
     updateModel((model) => {
       model.VariableList.push({
+        name: 'Test Variable',
         objType: 'Variable',
-        name: 'Test ExtSim Variable',
-        varScope: 'gt3DSim',
+        varScope: 'gtGlobal',
         value: '',
         type: 'string',
       });
       return model;
     });
 
-    // Select the ext sim variable
-    await selectOption(user, 'External Sim Variable', 'Test ExtSim Variable');
+    // Select the variable as the time span
+    await selectOption(user, 'Time Span', 'Test Variable');
 
-    // Type in code
-    // TODO: The Monaco editor apparently can't be tested using JSDOM, so the "code" property is currently untested
-    //await user.type(await screen.findByRole('code'), 'return "";');
+    // Select time variable unit
+    await selectOption(user, 'Time Variable Unit', 'Hour');
 
-    // Check the ext sim variable as being used in the code
-    await user.click(await screen.findByLabelText('Test ExtSim Variable'));
+    // Select if variable changes
+    await selectOption(user, 'Select', 'Adjust');
+
+    // Check from sim start
+    await user.click(await screen.findByLabelText('From Sim Start'));
 
     await user.click(await screen.findByText('Save'));
     expect(getEvent(name)).toEqual(expected[name]);

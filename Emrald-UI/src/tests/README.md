@@ -31,7 +31,7 @@ To save the model and check against expected values, it is necessary to simulate
 await user.click(await screen.findByText('Save'));
 ```
 
-Interacting with MUI's combobox components can be accomplished by using the following snippet:
+Interacting with MUI's combobox components can be done by using the `selectOption` helper method in test-utils.tsx, or by using the following snippet:
 ```
 await user.click(await findByRole(await screen.findByLabelText('<Combobox Label>'), 'combobox'));
 await user.click(await screen.findByRole('option', { name: '<Option to select>' }));

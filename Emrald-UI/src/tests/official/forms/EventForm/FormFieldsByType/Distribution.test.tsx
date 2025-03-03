@@ -4,7 +4,7 @@ import { describe, expect, test } from 'vitest';
 import EventFormContextProvider from '../../../../../components/forms/EventForm/EventFormContext';
 import EventContextProvider from '../../../../../contexts/EventContext';
 import EventForm from '../../../../../components/forms/EventForm/EventForm';
-import { getEvent, render, updateModel } from '../../../../test-utils';
+import { getEvent, render, selectOption, updateModel } from '../../../../test-utils';
 import expected from './Distribution.expected.json';
 
 describe('Distribution Events', () => {
@@ -67,8 +67,7 @@ describe('Distribution Events', () => {
     await user.type(await screen.findByLabelText('Maximum'), '100');
 
     // Change default time rate to seconds
-    await user.click(await findByRole(await screen.findByLabelText('Default Rate'), 'combobox'));
-    await user.click(await screen.findByRole('option', { name: 'Second' }));
+    await selectOption(user, 'Default Rate', 'Second');
 
     expect(screen.queryAllByText('Save')).not.toBeNull();
     await user.click(await screen.findByText('Save'));
@@ -160,11 +159,8 @@ describe('Distribution Events', () => {
 
     // Set minimum value to use variable
     await user.click((await screen.findAllByLabelText('Use Variable'))[2]);
-    await user.click(await findByRole(await screen.findByLabelText('Variable'), 'combobox'));
-    expect(screen.queryByRole('option', { name: 'Test Variable' })).not.toBeNull();
-    await user.click(await screen.findByRole('option', { name: 'Test Variable' }));
-    await user.click(await findByRole(await screen.findByLabelText('Select'), 'combobox'));
-    await user.click(await screen.findByRole('option', { name: 'Resample' }));
+    await selectOption(user, 'Variable', 'Test Variable');
+    await selectOption(user, 'Select', 'Resample');
 
     await user.click(await screen.findByText('Save'));
     expect(getEvent(name)).toEqual(expected[name]);
@@ -192,10 +188,7 @@ describe('Distribution Events', () => {
     const user = userEvent.setup();
 
     // Change type to Weibull distribution
-    await user.click(
-      await findByRole(await screen.findByLabelText('Distribution Type'), 'combobox'),
-    );
-    await user.click(await screen.findByRole('option', { name: 'Weibull Distribution' }));
+    await selectOption(user, 'Distribution Type', 'Weibull Distribution');
 
     // Enter values for distribution parameters
     expect(screen.queryByLabelText('Shape')).not.toBeNull();

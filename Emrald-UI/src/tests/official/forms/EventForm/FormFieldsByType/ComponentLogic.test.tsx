@@ -1,7 +1,7 @@
 import { describe, expect, test } from 'vitest';
 import userEvent from '@testing-library/user-event';
-import { findByRole, screen } from '@testing-library/react';
-import { getEvent, render, updateModel } from '../../../../test-utils';
+import { screen } from '@testing-library/react';
+import { getEvent, render, selectOption, updateModel } from '../../../../test-utils';
 import EventContextProvider from '../../../../../contexts/EventContext';
 import EventFormContextProvider from '../../../../../components/forms/EventForm/EventFormContext';
 import EventForm from '../../../../../components/forms/EventForm/EventForm';
@@ -118,8 +118,7 @@ describe('Component Logic Events', () => {
     });
 
     // Select the logic node
-    await user.click(await findByRole(await screen.findByLabelText('LogicTop'), 'combobox'));
-    await user.click(await screen.findByRole('option', { name: 'Test Logic Node' }));
+    await selectOption(user, 'LogicTop', 'Test Logic Node');
 
     await user.click(await screen.findByText('Save'));
     expect(getEvent(name)).toEqual(expected[name]);

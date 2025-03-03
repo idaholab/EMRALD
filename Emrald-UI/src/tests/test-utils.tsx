@@ -1,10 +1,11 @@
-import { fireEvent, render, RenderOptions } from '@testing-library/react';
+import { findByRole, fireEvent, render, RenderOptions, screen } from '@testing-library/react';
 import 'jest-extended';
 import EmraldContextWrapper from '../contexts/EmraldContextWrapper';
 import React, { act } from 'react';
 import { EMRALD_Model } from '../types/EMRALD_Model';
 import { updateAppData } from '../hooks/useAppData';
 import Sidebar from '../components/layout/Sidebar/Sidebar';
+import { UserEvent } from '@testing-library/user-event';
 
 const customRender = (ui: React.ReactNode, options?: RenderOptions) => {
   render(
@@ -65,4 +66,15 @@ export function drag(from: HTMLElement, to: HTMLElement) {
   fireEvent.dragEnter(from);
   fireEvent.dragOver(from);
   fireEvent.drop(to, from);
+}
+
+/**
+ * Helper function for selecting options in MUI's combobox components.
+ * @param user - The test's user event instance.
+ * @param label - The label of the target combobox.
+ * @param option - The name of the option to select.
+ */
+export async function selectOption(user: UserEvent, label: string, option: string) {
+  await user.click(await findByRole(await screen.findByLabelText(label), 'combobox'));
+  await user.click(await screen.findByRole('option', { name: option }));
 }
