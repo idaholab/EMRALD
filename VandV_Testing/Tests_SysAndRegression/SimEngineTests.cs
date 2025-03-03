@@ -75,44 +75,6 @@ namespace SysAndRegressionTesting
     }
 
     
-
-   
-
-    
-
-    
-
-
-    //todo [Fact]
-    //Test the JSON variable 
-    public void DllValueTest()
-    {
-      string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
-
-      //Setup directory for unit test 
-      string dir = SetupTestDir(testName);
-      //initial options, and optional results to save/test
-      JObject optionsJ = SetupJSON(dir, testName);
-
-      //Change the default settings as needed for the test seed default set to 0 for testing.
-      optionsJ["inpfile"] = MainTestDir() + ModelFolder() + testName + ".json";
-
-      optionsJ["runct"] = 1;
-      JSONRun testRun = new JSONRun(optionsJ.ToString());
-      Assert.True(TestRunSim(testRun));
-
-      //Uncomment to update the validation files after they verified correct
-      CopyToValidated(dir, testName, optionsJ);
-
-      //compare the test result and optionally the paths and json if assigned
-      Compare(dir, testName, optionsJ);
-    }
-
-   
-
-    
-
-
     
 
   }

@@ -144,6 +144,69 @@ namespace SysAndRegressionTesting
       Compare(dir, testName, optionsJ);
     }
 
-    //TODO add other actiontests.
+    [Fact(Skip = "TODO")]
+    [Description("Test XML document Link variable to make sure it is reading an writing correctly")]
+    public void XMLDocLinkTest()
+    {
+      //FYI - model must have the XML document using relative path to ..\..\..\UnitTesting_Simulation\TestingFiles\Other\
+      //Save the XML document in that folder
+      string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
+
+      //Setup directory for unit test 
+      string dir = SetupTestDir(testName);
+      //initial options, and optional results to save/test
+      JObject optionsJ = SetupJSON(dir, testName, false);
+
+      SimulationEngine.Options options = optionsJ.ToObject<SimulationEngine.Options>();
+      //Change the default settings as needed for the test seed default set to 0 for testing.
+      options.inpfile = MainTestDir() + ModelFolder() + testName + ".json";
+      options.runct = 1;
+      options.runtime = "0.01:00:00";
+      //todo set variables to watch initial doc link var value and then after it is set.
+      //options.variables = new List<string>() { "State1", "state2" };
+      JSONRun testRun = new JSONRun(options);
+      Assert.True(TestRunSim(testRun));
+
+      //Uncomment to update the validation files after they verified correct
+      //CopyToValidated(dir, testName, optionsJ);
+
+      //compare the test result and optionally the paths and json if assigned
+      Compare(dir, testName, optionsJ);
+    }
+
+    
+
+    [Fact(Skip = "TODO")]
+    [Description("Test JSON document Link variable to make sure it is reading an writing correctly")]
+    public void RegExDocLinkTest()
+    {
+      //FYI - model must have the Text document for the RegEx using relative path to ..\..\..\UnitTesting_Simulation\TestingFiles\Other\
+      //Save the text document in that folder
+
+      string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
+
+      //Setup directory for unit test 
+      string dir = SetupTestDir(testName);
+      //initial options, and optional results to save/test
+      JObject optionsJ = SetupJSON(dir, testName, false);
+
+      SimulationEngine.Options options = optionsJ.ToObject<SimulationEngine.Options>();
+      //Change the default settings as needed for the test seed default set to 0 for testing.
+      options.inpfile = MainTestDir() + ModelFolder() + testName + ".json";
+      options.runct = 1;
+      options.runtime = "0.01:00:00";
+      //todo set variables to watch initial RegEx link var value and then after it is set.
+      //options.variables = new List<string>() { "State1", "state2" };
+      JSONRun testRun = new JSONRun(options);
+      Assert.True(TestRunSim(testRun));
+
+      //Uncomment to update the validation files after they verified correct
+      //CopyToValidated(dir, testName, optionsJ);
+
+      //compare the test result and optionally the paths and json if assigned
+      Compare(dir, testName, optionsJ);
+    }
   }
+
+
 }

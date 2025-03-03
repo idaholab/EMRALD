@@ -34,10 +34,9 @@ namespace SysAndRegressionTesting
 
 
     [Fact]
-    [Description("General test of several actions single option transition action, Change Var value action, and run application action.")]
-    public void ActionsTest()
+    [Description("Test to verify self loops in a diagram work properly.")]
+    public void SelfLoopTest()
     {
-
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
 
       //Setup directory for unit test 
@@ -45,10 +44,13 @@ namespace SysAndRegressionTesting
       //initial options, and optional results to save/test
       JObject optionsJ = SetupJSON(dir, testName, true);
 
+      SimulationEngine.Options options = optionsJ.ToObject<SimulationEngine.Options>();
       //Change the default settings as needed for the test seed default set to 0 for testing.
-      optionsJ["inpfile"] = MainTestDir() + ModelFolder() + testName + ".json";
-      optionsJ["runct"] = 10;
-      JSONRun testRun = new JSONRun(optionsJ.ToString());
+      options.inpfile = MainTestDir() + ModelFolder() + testName + ".json";
+      options.runct = 1;
+      options.variables = new List<string>() { "Int_Cnt" };
+      //optionsJ["variables"] = JsonConvert.SerializeObject(args);
+      JSONRun testRun = new JSONRun(options);
       Assert.True(TestRunSim(testRun));
 
       //Uncomment to update the validation files after they verified correct
@@ -58,12 +60,37 @@ namespace SysAndRegressionTesting
       Compare(dir, testName, optionsJ);
     }
 
-    [Fact]
-    [Description("Test to verify self loops in a diagram work properly.")]
-    public void SelfLoopTest()
+    [Fact(Skip = "TODO")]
+    [Description("Test to verify paths to key states are comming out correct.")]
+    public void KeyStatePathTest()
     {
-      //make sure that a distribution using a variable correctly adds the event if it is resampled and inside the mission time
+      string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
 
+      //Setup directory for unit test 
+      string dir = SetupTestDir(testName);
+      //initial options, and optional results to save/test
+      JObject optionsJ = SetupJSON(dir, testName, true);
+
+      SimulationEngine.Options options = optionsJ.ToObject<SimulationEngine.Options>();
+      //Change the default settings as needed for the test seed default set to 0 for testing.
+      options.inpfile = MainTestDir() + ModelFolder() + testName + ".json";
+      options.runct = 100;
+      options.variables = new List<string>() { "Int_Cnt" };
+      //optionsJ["variables"] = JsonConvert.SerializeObject(args);
+      JSONRun testRun = new JSONRun(options);
+      Assert.True(TestRunSim(testRun));
+
+      //Uncomment to update the validation files after they verified correct
+      //CopyToValidated(dir, testName, optionsJ);
+
+      //compare the test result and optionally the paths and json if assigned
+      Compare(dir, testName, optionsJ);
+    }
+
+    [Fact(Skip = "TODO")]
+    [Description("Test to verify single state diagram boolean values are correct.")]
+    public void SingleStateDiagramValueTest()
+    {
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
 
       //Setup directory for unit test 
