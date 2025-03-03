@@ -44,7 +44,6 @@ interface LogicNodeFormContextType {
   setCurrentNodeStateValues: React.Dispatch<React.SetStateAction<ComponentStateValue[]>>;
   handleSave: () => void;
   handleClose: () => void;
-  updateTitle: (currentTitle: string, newName: string) => void;
   handleNameChange: (newName: string) => void;
   checkForDuplicateNames: () => boolean;
   availableAsTopOrSubtree: () => boolean | undefined;
@@ -264,7 +263,6 @@ const LogicNodeFormContextProvider: React.FC<{ children: React.ReactNode }> = ({
         handleNameChange,
         handleSave,
         handleClose,
-        updateTitle,
         checkForDuplicateNames,
         availableAsTopOrSubtree,
         initializeForm,
