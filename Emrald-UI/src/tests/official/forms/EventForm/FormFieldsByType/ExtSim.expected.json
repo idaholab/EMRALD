@@ -8,6 +8,15 @@
     "evType": "et3dSimEv",
     "extEventType": "etEndSim"
   },
+  "selects status event type": {
+    "objType": "Event",
+    "name": "selects status event type",
+    "desc": "",
+    "mainItem": true,
+    "required": false,
+    "evType": "et3dSimEv",
+    "extEventType": "etStatus"
+  },
   "sets variable change": {
     "objType": "Event",
     "name": "sets variable change",

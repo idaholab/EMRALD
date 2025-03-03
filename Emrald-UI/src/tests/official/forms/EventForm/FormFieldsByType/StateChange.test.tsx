@@ -128,6 +128,39 @@ describe('StateChange Events', () => {
     expect(getEvent(name)).toEqual(expected[name]);
   });
 
+  test('unsets if in state', async () => {
+    const name = 'unsets if in state';
+    render(
+      <EventContextProvider>
+        <EventFormContextProvider>
+          <EventForm
+            eventData={{
+              name,
+              objType: 'Event',
+              desc: '',
+              mainItem: true,
+              evType: 'etStateCng',
+            }}
+          ></EventForm>
+        </EventFormContextProvider>
+      </EventContextProvider>,
+    );
+    const user = userEvent.setup();
+
+    // Drag the state to the event form
+    await user.click(await screen.findByText('States'));
+    drag(await screen.findByText('Test State'), await screen.findByText('Drop State Items Here'));
+
+    // Select "On Enter States"
+    await user.click(await screen.findByLabelText('On Enter State/s'));
+
+    // Change back to "On Exit States"
+    await user.click(await screen.findByLabelText('On Exit State/s'));
+
+    await user.click(await screen.findByText('Save'));
+    expect(getEvent(name)).toEqual(expected[name]);
+  });
+
   test('removes a state', async () => {
     const name = 'removes a state';
     render(

@@ -28,6 +28,16 @@
     "required": false,
     "ifInState": true
   },
+  "unsets if in state": {
+    "name": "unsets if in state",
+    "desc": "",
+    "objType": "Event",
+    "mainItem": true,
+    "evType": "etStateCng",
+    "triggerStates": ["Test State"],
+    "required": false,
+    "ifInState": false
+  },
   "removes a state": {
     "name": "removes a state",
     "desc": "",

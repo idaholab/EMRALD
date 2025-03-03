@@ -20,7 +20,6 @@ describe('Distribution Events', () => {
               desc: '',
               mainItem: true,
               evType: 'etDistribution',
-              distType: 'dtNormal',
               parameters: [],
             }}
           ></EventForm>

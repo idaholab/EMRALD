@@ -34,6 +34,32 @@ describe('ExtSim Events', () => {
     expect(getEvent(name)).toEqual(expected[name]);
   });
 
+  test('selects status event type', async () => {
+    const name = 'selects status event type';
+    render(
+      <EventContextProvider>
+        <EventFormContextProvider>
+          <EventForm
+            eventData={{
+              objType: 'Event',
+              name,
+              desc: '',
+              mainItem: true,
+              evType: 'et3dSimEv',
+            }}
+          ></EventForm>
+        </EventFormContextProvider>
+      </EventContextProvider>,
+    );
+    const user = userEvent.setup();
+
+    // Select an event type
+    await selectOption(user, 'External Event Type', 'Ping');
+
+    await user.click(await screen.findByText('Save'));
+    expect(getEvent(name)).toEqual(expected[name]);
+  });
+
   test('sets variable change', async () => {
     const name = 'sets variable change';
     render(

@@ -134,4 +134,40 @@ describe('FailureRate Events', () => {
     await user.click(await screen.findByText('Save'));
     expect(getEvent(name)).toEqual(expected[name]);
   });
+
+  test('disallows invalid lambda', async () => {
+    const name = 'uses variable frequency';
+    render(
+      <EventContextProvider>
+        <EventFormContextProvider>
+          <EventForm
+            eventData={{
+              objType: 'Event',
+              name,
+              desc: '',
+              mainItem: true,
+              evType: 'etFailRate',
+            }}
+          ></EventForm>
+        </EventFormContextProvider>
+      </EventContextProvider>,
+    );
+    const user = userEvent.setup();
+
+    // Enter non-numeric value into lambda field
+    await user.type(await screen.findByLabelText('Lambda'), 'abc');
+
+    // Enter duration
+    await user.click(await screen.findByLabelText('Days'));
+    await user.type(await screen.findByLabelText('Days'), '1');
+    await user.click(await screen.findByLabelText('Hours'));
+    await user.type(await screen.findByLabelText('Hours'), '2');
+    await user.click(await screen.findByLabelText('Minutes'));
+    await user.type(await screen.findByLabelText('Minutes'), '3');
+    await user.click(await screen.findByLabelText('Seconds'));
+    await user.type(await screen.findByLabelText('Seconds'), '4');
+
+    // The Save button should not be clickable
+    await expect(async () => await user.click(await screen.findByText('Save'))).rejects.toThrowError();
+  });
 });
