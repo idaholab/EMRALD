@@ -9,7 +9,8 @@
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
     "format": "prettier --write ./src",
-    "test": "vitest"
+    "test": "vitest",
+    "coverage": "vitest run --coverage"
   },
   "dependencies": {
     "@dagrejs/dagre": "^1.0.4",
@@ -63,6 +64,7 @@
     "@typescript-eslint/eslint-plugin": "^6.0.0",
     "@typescript-eslint/parser": "^6.0.0",
     "@vitejs/plugin-react-swc": "^3.3.2",
+    "@vitest/coverage-v8": "^3.0.7",
     "eslint": "^8.2.0",
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-import": "^2.25.3",
@@ -77,7 +79,7 @@
     "rollup": "^4.14.2",
     "sass": "^1.65.1",
     "typescript": "^5.0.2",
-    "vite": "^4.4.5",
-    "vitest": "^0.34.1"
+    "vite": "^6.2.0",
+    "vitest": "^3.0.7"
   }
 }

@@ -1,24 +1,14 @@
 import { findByRole, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { describe, expect, test } from 'vitest';
 import EventFormContextProvider from '../../../../../components/forms/EventForm/EventFormContext';
 import EventContextProvider from '../../../../../contexts/EventContext';
 import EventForm from '../../../../../components/forms/EventForm/EventForm';
-import { render } from '../../../../test-utils';
-import { EMRALD_Model } from '../../../../../types/EMRALD_Model';
-import { Event } from '../../../../../types/Event';
-import { Variable } from '../../../../../types/Variable';
-import { updateAppData } from '../../../../../hooks/useAppData';
-import { act } from 'react';
+import { getEvent, render, updateModel } from '../../../../test-utils';
+import expected from './Distribution.expected.json';
 
 describe('Distribution Events', () => {
-  beforeEach(() => {
-    sessionStorage.clear();
-    localStorage.clear();
-    vi.clearAllMocks();
-  });
-
-  it('sets parameters', async () => {
+  test('sets parameters', async () => {
     const name = 'sets parameters';
     render(
       <EventContextProvider>
@@ -39,64 +29,17 @@ describe('Distribution Events', () => {
     );
     const user = userEvent.setup();
 
-    expect(screen.queryByLabelText('Mean')).not.toBeNull();
-    expect(screen.queryByLabelText('Standard Deviation')).not.toBeNull();
-    expect(screen.queryByLabelText('Minimum')).not.toBeNull();
-    expect(screen.queryByLabelText('Maximum')).not.toBeNull();
-
+    // Enter values for distribution parameters
     await user.type(await screen.findByLabelText('Mean'), '1');
     await user.type(await screen.findByLabelText('Standard Deviation'), '5');
     await user.type(await screen.findByLabelText('Minimum'), '0');
     await user.type(await screen.findByLabelText('Maximum'), '100');
 
-    expect(screen.queryAllByText('Save')).not.toBeNull();
     await user.click(await screen.findByText('Save'));
-    const appData = sessionStorage.getItem('appData');
-    expect(appData).not.toBeNull();
-    if (appData) {
-      const model = JSON.parse(appData) as EMRALD_Model;
-      const event = model.EventList.find((e) => e.name === name);
-      expect(event).not.toBeUndefined();
-      if (event) {
-        const expected: Event = {
-          id: event.id,
-          objType: 'Event',
-          name,
-          desc: '',
-          mainItem: true,
-          evType: 'etDistribution',
-          distType: 'dtNormal',
-          dfltTimeRate: 'trHours',
-          required: false,
-          parameters: [
-            {
-              name: 'Mean',
-              value: 1,
-              useVariable: false,
-            },
-            {
-              name: 'Standard Deviation',
-              value: 5,
-              useVariable: false,
-            },
-            {
-              name: 'Minimum',
-              value: 0,
-              useVariable: false,
-            },
-            {
-              name: 'Maximum',
-              value: 100,
-              useVariable: false,
-            },
-          ],
-        };
-        expect(event).toEqual(expected);
-      }
-    }
+    expect(getEvent(name)).toEqual(expected[name]);
   });
 
-  it('sets default time rate', async () => {
+  test('sets default time rate', async () => {
     const name = 'sets default time rate';
     render(
       <EventContextProvider>
@@ -117,6 +60,7 @@ describe('Distribution Events', () => {
     );
     const user = userEvent.setup();
 
+    // Enter values for distribution parameters
     await user.type(await screen.findByLabelText('Mean'), '1');
     await user.type(await screen.findByLabelText('Standard Deviation'), '5');
     await user.type(await screen.findByLabelText('Minimum'), '0');
@@ -128,52 +72,10 @@ describe('Distribution Events', () => {
 
     expect(screen.queryAllByText('Save')).not.toBeNull();
     await user.click(await screen.findByText('Save'));
-    const appData = sessionStorage.getItem('appData');
-    expect(appData).not.toBeNull();
-    if (appData) {
-      const model = JSON.parse(appData) as EMRALD_Model;
-      const event = model.EventList.find((e) => e.name === name);
-      expect(event).not.toBeUndefined();
-      if (event) {
-        const expected: Event = {
-          id: event.id,
-          objType: 'Event',
-          name,
-          desc: '',
-          mainItem: true,
-          evType: 'etDistribution',
-          distType: 'dtNormal',
-          dfltTimeRate: 'trSeconds',
-          required: false,
-          parameters: [
-            {
-              name: 'Mean',
-              value: 1,
-              useVariable: false,
-            },
-            {
-              name: 'Standard Deviation',
-              value: 5,
-              useVariable: false,
-            },
-            {
-              name: 'Minimum',
-              value: 0,
-              useVariable: false,
-            },
-            {
-              name: 'Maximum',
-              value: 100,
-              useVariable: false,
-            },
-          ],
-        };
-        expect(event).toEqual(expected);
-      }
-    }
+    expect(getEvent(name)).toEqual(expected[name]);
   });
 
-  it('sets individual time rates', async () => {
+  test('sets individual time rates', async () => {
     const name = 'sets individual time rates';
     render(
       <EventContextProvider>
@@ -194,6 +96,7 @@ describe('Distribution Events', () => {
     );
     const user = userEvent.setup();
 
+    // Enter values for distribution parameters
     await user.type(await screen.findByLabelText('Mean'), '1');
     await user.type(await screen.findByLabelText('Standard Deviation'), '5');
     await user.type(await screen.findByLabelText('Minimum'), '0');
@@ -213,54 +116,10 @@ describe('Distribution Events', () => {
 
     expect(screen.queryAllByText('Save')).not.toBeNull();
     await user.click(await screen.findByText('Save'));
-    const appData = sessionStorage.getItem('appData');
-    expect(appData).not.toBeNull();
-    if (appData) {
-      const model = JSON.parse(appData) as EMRALD_Model;
-      const event = model.EventList.find((e) => e.name === name);
-      expect(event).not.toBeUndefined();
-      if (event) {
-        const expected: Event = {
-          id: event.id,
-          objType: 'Event',
-          name,
-          desc: '',
-          mainItem: true,
-          evType: 'etDistribution',
-          distType: 'dtNormal',
-          dfltTimeRate: 'trHours',
-          required: false,
-          parameters: [
-            {
-              name: 'Mean',
-              value: 1,
-              useVariable: false,
-            },
-            {
-              name: 'Standard Deviation',
-              timeRate: 'trSeconds',
-              value: 5,
-              useVariable: false,
-            },
-            {
-              name: 'Minimum',
-              value: 0,
-              useVariable: false,
-            },
-            {
-              name: 'Maximum',
-              timeRate: 'trDays',
-              value: 100,
-              useVariable: false,
-            },
-          ],
-        };
-        expect(event).toEqual(expected);
-      }
-    }
+    expect(getEvent(name)).toEqual(expected[name]);
   });
 
-  it('uses variables', async () => {
+  test('uses variables', async () => {
     const name = 'uses variables';
     render(
       <EventContextProvider>
@@ -288,20 +147,16 @@ describe('Distribution Events', () => {
     // Add a variable to the model
     expect(screen.queryAllByText('Save')).not.toBeNull();
     await user.click(await screen.findByText('Save'));
-    let appData = sessionStorage.getItem('appData');
-    expect(appData).not.toBeNull();
-    if (appData) {
-      const model = JSON.parse(appData) as EMRALD_Model;
-      const variable: Variable = {
+    updateModel((model) => {
+      model.VariableList.push({
         objType: 'Variable',
         name: 'Test Variable',
         varScope: 'gtGlobal',
         value: 1,
         type: 'int',
-      };
-      model.VariableList.push(variable);
-      act(() => updateAppData(model));
-    }
+      });
+      return model;
+    });
 
     // Set minimum value to use variable
     await user.click((await screen.findAllByLabelText('Use Variable'))[2]);
@@ -312,54 +167,10 @@ describe('Distribution Events', () => {
     await user.click(await screen.findByRole('option', { name: 'Resample' }));
 
     await user.click(await screen.findByText('Save'));
-    appData = sessionStorage.getItem('appData');
-    expect(appData).not.toBeNull();
-    if (appData) {
-      const model = JSON.parse(appData) as EMRALD_Model;
-      const event = model.EventList.filter((e) => e.name === name)[1];
-      expect(event).not.toBeUndefined();
-      if (event) {
-        const expected: Event = {
-          id: event.id,
-          objType: 'Event',
-          name,
-          desc: '',
-          mainItem: true,
-          evType: 'etDistribution',
-          distType: 'dtNormal',
-          dfltTimeRate: 'trHours',
-          required: false,
-          onVarChange: 'ocResample',
-          parameters: [
-            {
-              name: 'Mean',
-              value: 1,
-              useVariable: false,
-            },
-            {
-              name: 'Standard Deviation',
-              value: 5,
-              useVariable: false,
-            },
-            {
-              name: 'Maximum',
-              value: 100,
-              useVariable: false,
-            },
-            {
-              name: 'Minimum',
-              value: '',
-              useVariable: true,
-              variable: 'Test Variable'
-            },
-          ],
-        };
-        expect(event).toEqual(expected);
-      }
-    }
+    expect(getEvent(name)).toEqual(expected[name]);
   });
 
-  it('changes distribution type', async () => {
+  test('changes distribution type', async () => {
     const name = 'changes distribution type';
     render(
       <EventContextProvider>
@@ -386,55 +197,21 @@ describe('Distribution Events', () => {
     );
     await user.click(await screen.findByRole('option', { name: 'Weibull Distribution' }));
 
+    // Enter values for distribution parameters
+    expect(screen.queryByLabelText('Shape')).not.toBeNull();
+    expect(screen.queryByLabelText('Scale')).not.toBeNull();
+    expect(screen.queryByLabelText('Minimum')).not.toBeNull();
+    expect(screen.queryByLabelText('Maximum')).not.toBeNull();
     await user.type(await screen.findByLabelText('Shape'), '1');
     await user.type(await screen.findByLabelText('Scale'), '5');
     await user.type(await screen.findByLabelText('Minimum'), '0');
     await user.type(await screen.findByLabelText('Maximum'), '100');
 
+    // Trigger blur event to make sure invalid values are updated
+    await user.click(await screen.findByLabelText('Shape'));
+
     expect(screen.queryAllByText('Save')).not.toBeNull();
     await user.click(await screen.findByText('Save'));
-    const appData = sessionStorage.getItem('appData');
-    expect(appData).not.toBeNull();
-    if (appData) {
-      const model = JSON.parse(appData) as EMRALD_Model;
-      const event = model.EventList.find((e) => e.name === name);
-      expect(event).not.toBeUndefined();
-      if (event) {
-        const expected: Event = {
-          id: event.id,
-          objType: 'Event',
-          name,
-          desc: '',
-          mainItem: true,
-          evType: 'etDistribution',
-          distType: 'dtWeibull',
-          dfltTimeRate: 'trHours',
-          required: false,
-          parameters: [
-            {
-              name: 'Shape',
-              value: 1,
-              useVariable: false,
-            },
-            {
-              name: 'Scale',
-              value: 5,
-              useVariable: false,
-            },
-            {
-              name: 'Minimum',
-              value: 0,
-              useVariable: false,
-            },
-            {
-              name: 'Maximum',
-              value: 100,
-              useVariable: false,
-            },
-          ],
-        };
-        expect(event).toEqual(expected);
-      }
-    }
+    expect(getEvent(name)).toEqual(expected[name]);
   });
 });
