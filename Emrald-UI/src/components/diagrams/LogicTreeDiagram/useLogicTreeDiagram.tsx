@@ -374,7 +374,7 @@ const useLogicNodeTreeDiagram = () => {
               addWindow(
                 `Edit Gate Node: ${label}`,
                 <LogicNodeFormContextProvider>
-                  <LogicNodeForm logicNodeData={logicNode} gateType={logicNode.gateType} editing={true} />
+                  <LogicNodeForm logicNodeData={logicNode} parentNodeName={parentName} gateType={logicNode.gateType} editing={true} />
                 </LogicNodeFormContextProvider>,
               ),
             isDivider: true,
