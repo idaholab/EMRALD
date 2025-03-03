@@ -1,57 +1,50 @@
 import userEvent from '@testing-library/user-event';
 import { screen } from '@testing-library/react';
 import { describe, expect, test } from 'vitest';
-import { drag, getEvent, render, updateModel } from '../../../../test-utils';
-import EventContextProvider from '../../../../../contexts/EventContext';
-import EventFormContextProvider from '../../../../../components/forms/EventForm/EventFormContext';
+import { drag, ensureState, getEvent, renderEventForm } from '../../../../test-utils';
 import EventForm from '../../../../../components/forms/EventForm/EventForm';
 import expected from './StateChange.expected.json';
 
 describe('StateChange Events', () => {
+  test('loads event data', async () => {
+    const name = 'loads event data';
+    renderEventForm(
+      <EventForm
+        eventData={{
+          name,
+          objType: 'Event',
+          desc: '',
+          mainItem: true,
+          evType: 'etStateCng',
+          allItems: true,
+        }}
+      />,
+    );
+    const user = userEvent.setup();
+
+    await user.click(await screen.findByText('Save'));
+    expect(getEvent(name)).toEqual(expected[name]);
+  });
+
   test('sets default values', async () => {
     const name = 'sets default values';
-    render(
-      <EventContextProvider>
-        <EventFormContextProvider>
-          <EventForm
-            eventData={{
-              name,
-              objType: 'Event',
-              desc: '',
-              mainItem: true,
-              evType: 'etStateCng',
-            }}
-          ></EventForm>
-        </EventFormContextProvider>
-      </EventContextProvider>,
+    renderEventForm(
+      <EventForm
+        eventData={{
+          name,
+          objType: 'Event',
+          desc: '',
+          mainItem: true,
+          evType: 'etStateCng',
+        }}
+      />,
     );
     const user = userEvent.setup();
 
     // Add two states to the model
     await user.click(await screen.findByText('Save'));
-    updateModel((model) => {
-      model.StateList.push({
-        name: 'Test State',
-        objType: 'State',
-        desc: '',
-        stateType: 'stStandard',
-        diagramName: 'Test Diagram',
-        immediateActions: [],
-        events: [],
-        eventActions: [],
-      });
-      model.StateList.push({
-        name: 'Test State 2',
-        objType: 'State',
-        desc: '',
-        stateType: 'stStandard',
-        diagramName: 'Test Diagram',
-        immediateActions: [],
-        events: [],
-        eventActions: [],
-      });
-      return model;
-    });
+    ensureState('Test State');
+    ensureState('Test State 2');
 
     // Drag the first state to the event form
     await user.click(await screen.findByText('States'));
@@ -70,20 +63,16 @@ describe('StateChange Events', () => {
 
   test('sets all items', async () => {
     const name = 'sets all items';
-    render(
-      <EventContextProvider>
-        <EventFormContextProvider>
-          <EventForm
-            eventData={{
-              name,
-              objType: 'Event',
-              desc: '',
-              mainItem: true,
-              evType: 'etStateCng',
-            }}
-          ></EventForm>
-        </EventFormContextProvider>
-      </EventContextProvider>,
+    renderEventForm(
+      <EventForm
+        eventData={{
+          name,
+          objType: 'Event',
+          desc: '',
+          mainItem: true,
+          evType: 'etStateCng',
+        }}
+      />,
     );
     const user = userEvent.setup();
 
@@ -100,20 +89,16 @@ describe('StateChange Events', () => {
 
   test('sets if in state', async () => {
     const name = 'sets if in state';
-    render(
-      <EventContextProvider>
-        <EventFormContextProvider>
-          <EventForm
-            eventData={{
-              name,
-              objType: 'Event',
-              desc: '',
-              mainItem: true,
-              evType: 'etStateCng',
-            }}
-          ></EventForm>
-        </EventFormContextProvider>
-      </EventContextProvider>,
+    renderEventForm(
+      <EventForm
+        eventData={{
+          name,
+          objType: 'Event',
+          desc: '',
+          mainItem: true,
+          evType: 'etStateCng',
+        }}
+      />,
     );
     const user = userEvent.setup();
 
@@ -130,20 +115,16 @@ describe('StateChange Events', () => {
 
   test('unsets if in state', async () => {
     const name = 'unsets if in state';
-    render(
-      <EventContextProvider>
-        <EventFormContextProvider>
-          <EventForm
-            eventData={{
-              name,
-              objType: 'Event',
-              desc: '',
-              mainItem: true,
-              evType: 'etStateCng',
-            }}
-          ></EventForm>
-        </EventFormContextProvider>
-      </EventContextProvider>,
+    renderEventForm(
+      <EventForm
+        eventData={{
+          name,
+          objType: 'Event',
+          desc: '',
+          mainItem: true,
+          evType: 'etStateCng',
+        }}
+      />,
     );
     const user = userEvent.setup();
 
@@ -163,20 +144,16 @@ describe('StateChange Events', () => {
 
   test('removes a state', async () => {
     const name = 'removes a state';
-    render(
-      <EventContextProvider>
-        <EventFormContextProvider>
-          <EventForm
-            eventData={{
-              name,
-              objType: 'Event',
-              desc: '',
-              mainItem: true,
-              evType: 'etStateCng',
-            }}
-          ></EventForm>
-        </EventFormContextProvider>
-      </EventContextProvider>,
+    renderEventForm(
+      <EventForm
+        eventData={{
+          name,
+          objType: 'Event',
+          desc: '',
+          mainItem: true,
+          evType: 'etStateCng',
+        }}
+      />,
     );
     const user = userEvent.setup();
 

@@ -123,6 +123,7 @@ export const useEventFormContext = (): EventFormContextType => {
   }
   return context;
 };
+
 type RowType = {
   [key: string]: EventDistributionParameter;
 };

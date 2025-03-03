@@ -1,24 +1,33 @@
 {
-    "sets duration": {
-        "name": "sets duration",
-        "desc": "",
-        "objType": "Event",
-        "evType": "etTimer",
-        "mainItem": true,
-        "required": false,
-        "time": "P1DT2H3M4S"
-    },
-    "uses variable": {
-        "name": "uses variable",
-        "desc": "",
-        "objType": "Event",
-        "evType": "etTimer",
-        "mainItem": true,
-        "required": false,
-        "useVariable": true,
-        "time": "Test Variable",
-        "timeVariableUnit": "trHours",
-        "fromSimStart": true,
-        "onVarChange": "ocAdjust"
-    }
+  "loads event data": {
+    "objType": "Event",
+    "name": "loads event data",
+    "desc": "",
+    "mainItem": true,
+    "evType": "etTimer",
+    "time": "P1DT2H3M4S",
+    "required": false
+  },
+  "sets duration": {
+    "name": "sets duration",
+    "desc": "",
+    "objType": "Event",
+    "evType": "etTimer",
+    "mainItem": true,
+    "required": false,
+    "time": "P1DT2H3M4S"
+  },
+  "uses variable": {
+    "name": "uses variable",
+    "desc": "",
+    "objType": "Event",
+    "evType": "etTimer",
+    "mainItem": true,
+    "required": false,
+    "useVariable": true,
+    "time": "Test Variable",
+    "timeVariableUnit": "trHours",
+    "fromSimStart": true,
+    "onVarChange": "ocAdjust"
+  }
 }

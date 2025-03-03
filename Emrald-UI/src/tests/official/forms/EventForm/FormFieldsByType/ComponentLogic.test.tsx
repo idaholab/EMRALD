@@ -1,29 +1,23 @@
 import { describe, expect, test } from 'vitest';
 import userEvent from '@testing-library/user-event';
 import { screen } from '@testing-library/react';
-import { getEvent, render, selectOption, updateModel } from '../../../../test-utils';
-import EventContextProvider from '../../../../../contexts/EventContext';
-import EventFormContextProvider from '../../../../../components/forms/EventForm/EventFormContext';
+import { ensureLogicNode, getEvent, renderEventForm, selectOption } from '../../../../test-utils';
 import EventForm from '../../../../../components/forms/EventForm/EventForm';
 import expected from './ComponentLogic.expected.json';
 
 describe('Component Logic Events', () => {
   test('sets default values', async () => {
     const name = 'sets default values';
-    render(
-      <EventContextProvider>
-        <EventFormContextProvider>
-          <EventForm
-            eventData={{
-              objType: 'Event',
-              name,
-              desc: '',
-              mainItem: true,
-              evType: 'etComponentLogic',
-            }}
-          ></EventForm>
-        </EventFormContextProvider>
-      </EventContextProvider>,
+    renderEventForm(
+      <EventForm
+        eventData={{
+          objType: 'Event',
+          name,
+          desc: '',
+          mainItem: true,
+          evType: 'etComponentLogic',
+        }}
+      />,
     );
     const user = userEvent.setup();
 
@@ -33,20 +27,16 @@ describe('Component Logic Events', () => {
 
   test('sets on success', async () => {
     const name = 'sets on success';
-    render(
-      <EventContextProvider>
-        <EventFormContextProvider>
-          <EventForm
-            eventData={{
-              objType: 'Event',
-              name,
-              desc: '',
-              mainItem: true,
-              evType: 'etComponentLogic',
-            }}
-          ></EventForm>
-        </EventFormContextProvider>
-      </EventContextProvider>,
+    renderEventForm(
+      <EventForm
+        eventData={{
+          objType: 'Event',
+          name,
+          desc: '',
+          mainItem: true,
+          evType: 'etComponentLogic',
+        }}
+      />,
     );
     const user = userEvent.setup();
 
@@ -59,20 +49,16 @@ describe('Component Logic Events', () => {
 
   test('sets trigger on false', async () => {
     const name = 'sets trigger on false';
-    render(
-      <EventContextProvider>
-        <EventFormContextProvider>
-          <EventForm
-            eventData={{
-              objType: 'Event',
-              name,
-              desc: '',
-              mainItem: true,
-              evType: 'etComponentLogic',
-            }}
-          ></EventForm>
-        </EventFormContextProvider>
-      </EventContextProvider>,
+    renderEventForm(
+      <EventForm
+        eventData={{
+          objType: 'Event',
+          name,
+          desc: '',
+          mainItem: true,
+          evType: 'etComponentLogic',
+        }}
+      />,
     );
     const user = userEvent.setup();
 
@@ -85,37 +71,22 @@ describe('Component Logic Events', () => {
 
   test('sets logic top', async () => {
     const name = 'sets logic top';
-    render(
-      <EventContextProvider>
-        <EventFormContextProvider>
-          <EventForm
-            eventData={{
-              objType: 'Event',
-              name,
-              desc: '',
-              mainItem: true,
-              evType: 'etComponentLogic',
-            }}
-          ></EventForm>
-        </EventFormContextProvider>
-      </EventContextProvider>,
+    renderEventForm(
+      <EventForm
+        eventData={{
+          objType: 'Event',
+          name,
+          desc: '',
+          mainItem: true,
+          evType: 'etComponentLogic',
+        }}
+      />,
     );
     const user = userEvent.setup();
 
     // Add a logic node to the model
     await user.click(await screen.findByText('Save'));
-    updateModel((model) => {
-      model.LogicNodeList.push({
-        objType: 'LogicNode',
-        name: 'Test Logic Node',
-        desc: '',
-        gateType: 'gtAnd',
-        compChildren: [],
-        gateChildren: [],
-        isRoot: true,
-      });
-      return model;
-    });
+    ensureLogicNode('Test Logic Node');
 
     // Select the logic node
     await selectOption(user, 'LogicTop', 'Test Logic Node');

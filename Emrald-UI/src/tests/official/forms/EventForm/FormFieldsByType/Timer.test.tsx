@@ -1,29 +1,43 @@
 import { describe, expect, test } from 'vitest';
-import { getEvent, render, selectOption, updateModel } from '../../../../test-utils';
-import EventContextProvider from '../../../../../contexts/EventContext';
-import EventFormContextProvider from '../../../../../components/forms/EventForm/EventFormContext';
+import { ensureVariable, getEvent, renderEventForm, selectOption } from '../../../../test-utils';
 import EventForm from '../../../../../components/forms/EventForm/EventForm';
 import userEvent from '@testing-library/user-event';
 import { screen } from '@testing-library/react';
 import expected from './Timer.expected.json';
 
 describe('Timer Events', () => {
+  test('loads event data', async () => {
+    const name = 'loads event data';
+    renderEventForm(
+      <EventForm
+        eventData={{
+          objType: 'Event',
+          name,
+          desc: '',
+          mainItem: true,
+          evType: 'etTimer',
+          time: 'P1DT2H3M4S',
+        }}
+      />,
+    );
+    const user = userEvent.setup();
+
+    await user.click(await screen.findByText('Save'));
+    expect(getEvent(name)).toEqual(expected[name]);
+  });
+
   test('sets duration', async () => {
     const name = 'sets duration';
-    render(
-      <EventContextProvider>
-        <EventFormContextProvider>
-          <EventForm
-            eventData={{
-              objType: 'Event',
-              name,
-              desc: '',
-              mainItem: true,
-              evType: 'etTimer',
-            }}
-          ></EventForm>
-        </EventFormContextProvider>
-      </EventContextProvider>,
+    renderEventForm(
+      <EventForm
+        eventData={{
+          objType: 'Event',
+          name,
+          desc: '',
+          mainItem: true,
+          evType: 'etTimer',
+        }}
+      />,
     );
     const user = userEvent.setup();
 
@@ -43,20 +57,16 @@ describe('Timer Events', () => {
 
   test('uses variable', async () => {
     const name = 'uses variable';
-    render(
-      <EventContextProvider>
-        <EventFormContextProvider>
-          <EventForm
-            eventData={{
-              objType: 'Event',
-              name,
-              desc: '',
-              mainItem: true,
-              evType: 'etTimer',
-            }}
-          ></EventForm>
-        </EventFormContextProvider>
-      </EventContextProvider>,
+    renderEventForm(
+      <EventForm
+        eventData={{
+          objType: 'Event',
+          name,
+          desc: '',
+          mainItem: true,
+          evType: 'etTimer',
+        }}
+      />,
     );
     const user = userEvent.setup();
 
@@ -65,16 +75,7 @@ describe('Timer Events', () => {
 
     // Add a variable to the model
     await user.click(await screen.findByText('Save'));
-    updateModel((model) => {
-      model.VariableList.push({
-        name: 'Test Variable',
-        objType: 'Variable',
-        varScope: 'gtGlobal',
-        value: '',
-        type: 'string',
-      });
-      return model;
-    });
+    ensureVariable('Test Variable');
 
     // Select the variable as the time span
     await selectOption(user, 'Time Span', 'Test Variable');

@@ -1,29 +1,44 @@
 import { describe, expect, test } from 'vitest';
-import { getEvent, render, selectOption, updateModel } from '../../../../test-utils';
-import EventContextProvider from '../../../../../contexts/EventContext';
-import EventFormContextProvider from '../../../../../components/forms/EventForm/EventFormContext';
+import { ensureVariable, getEvent, renderEventForm, selectOption } from '../../../../test-utils';
 import EventForm from '../../../../../components/forms/EventForm/EventForm';
 import userEvent from '@testing-library/user-event';
 import { screen } from '@testing-library/react';
 import expected from './FailureRate.expected.json';
 
 describe('FailureRate Events', () => {
+  test('loads event data', async () => {
+    const name = 'loads event data';
+    renderEventForm(
+      <EventForm
+        eventData={{
+          objType: 'Event',
+          name,
+          desc: '',
+          mainItem: true,
+          evType: 'etFailRate',
+          lambda: 1,
+          lambdaTimeRate: 'P1DT2H3M4S',
+        }}
+      />,
+    );
+    const user = userEvent.setup();
+
+    await user.click(await screen.findByText('Save'));
+    expect(getEvent(name)).toEqual(expected[name]);
+  });
+
   test('sets values', async () => {
     const name = 'sets values';
-    render(
-      <EventContextProvider>
-        <EventFormContextProvider>
-          <EventForm
-            eventData={{
-              objType: 'Event',
-              name,
-              desc: '',
-              mainItem: true,
-              evType: 'etFailRate',
-            }}
-          ></EventForm>
-        </EventFormContextProvider>
-      </EventContextProvider>,
+    renderEventForm(
+      <EventForm
+        eventData={{
+          objType: 'Event',
+          name,
+          desc: '',
+          mainItem: true,
+          evType: 'etFailRate',
+        }}
+      />,
     );
     const user = userEvent.setup();
 
@@ -46,20 +61,16 @@ describe('FailureRate Events', () => {
 
   test('uses scientific notation', async () => {
     const name = 'uses scientific notation';
-    render(
-      <EventContextProvider>
-        <EventFormContextProvider>
-          <EventForm
-            eventData={{
-              objType: 'Event',
-              name,
-              desc: '',
-              mainItem: true,
-              evType: 'etFailRate',
-            }}
-          ></EventForm>
-        </EventFormContextProvider>
-      </EventContextProvider>,
+    renderEventForm(
+      <EventForm
+        eventData={{
+          objType: 'Event',
+          name,
+          desc: '',
+          mainItem: true,
+          evType: 'etFailRate',
+        }}
+      />,
     );
     const user = userEvent.setup();
 
@@ -82,20 +93,16 @@ describe('FailureRate Events', () => {
 
   test('uses variable frequency', async () => {
     const name = 'uses variable frequency';
-    render(
-      <EventContextProvider>
-        <EventFormContextProvider>
-          <EventForm
-            eventData={{
-              objType: 'Event',
-              name,
-              desc: '',
-              mainItem: true,
-              evType: 'etFailRate',
-            }}
-          ></EventForm>
-        </EventFormContextProvider>
-      </EventContextProvider>,
+    renderEventForm(
+      <EventForm
+        eventData={{
+          objType: 'Event',
+          name,
+          desc: '',
+          mainItem: true,
+          evType: 'etFailRate',
+        }}
+      />,
     );
     const user = userEvent.setup();
 
@@ -104,16 +111,7 @@ describe('FailureRate Events', () => {
 
     // Create a variable to select
     await user.click(await screen.findByText('Save'));
-    updateModel((model) => {
-      model.VariableList.push({
-        objType: 'Variable',
-        name: 'Test Variable',
-        varScope: 'gt3DSim',
-        value: '',
-        type: 'string',
-      });
-      return model;
-    });
+    ensureVariable('Test Variable');
 
     // Select the variable for lambda
     await selectOption(user, 'Lambda', 'Test Variable');
@@ -137,20 +135,16 @@ describe('FailureRate Events', () => {
 
   test('disallows invalid lambda', async () => {
     const name = 'uses variable frequency';
-    render(
-      <EventContextProvider>
-        <EventFormContextProvider>
-          <EventForm
-            eventData={{
-              objType: 'Event',
-              name,
-              desc: '',
-              mainItem: true,
-              evType: 'etFailRate',
-            }}
-          ></EventForm>
-        </EventFormContextProvider>
-      </EventContextProvider>,
+    renderEventForm(
+      <EventForm
+        eventData={{
+          objType: 'Event',
+          name,
+          desc: '',
+          mainItem: true,
+          evType: 'etFailRate',
+        }}
+      />,
     );
     const user = userEvent.setup();
 
@@ -168,6 +162,8 @@ describe('FailureRate Events', () => {
     await user.type(await screen.findByLabelText('Seconds'), '4');
 
     // The Save button should not be clickable
-    await expect(async () => await user.click(await screen.findByText('Save'))).rejects.toThrowError();
+    await expect(
+      async () => await user.click(await screen.findByText('Save')),
+    ).rejects.toThrowError();
   });
 });

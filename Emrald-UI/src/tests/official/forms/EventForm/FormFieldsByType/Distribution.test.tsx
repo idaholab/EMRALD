@@ -1,30 +1,24 @@
 import { findByRole, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, test } from 'vitest';
-import EventFormContextProvider from '../../../../../components/forms/EventForm/EventFormContext';
-import EventContextProvider from '../../../../../contexts/EventContext';
 import EventForm from '../../../../../components/forms/EventForm/EventForm';
-import { getEvent, render, selectOption, updateModel } from '../../../../test-utils';
+import { ensureVariable, getEvent, renderEventForm, selectOption } from '../../../../test-utils';
 import expected from './Distribution.expected.json';
 
 describe('Distribution Events', () => {
   test('sets parameters', async () => {
     const name = 'sets parameters';
-    render(
-      <EventContextProvider>
-        <EventFormContextProvider>
-          <EventForm
-            eventData={{
-              objType: 'Event',
-              name,
-              desc: '',
-              mainItem: true,
-              evType: 'etDistribution',
-              parameters: [],
-            }}
-          ></EventForm>
-        </EventFormContextProvider>
-      </EventContextProvider>,
+    renderEventForm(
+      <EventForm
+        eventData={{
+          objType: 'Event',
+          name,
+          desc: '',
+          mainItem: true,
+          evType: 'etDistribution',
+          parameters: [],
+        }}
+      />,
     );
     const user = userEvent.setup();
 
@@ -38,24 +32,46 @@ describe('Distribution Events', () => {
     expect(getEvent(name)).toEqual(expected[name]);
   });
 
+  test('uses scientific notation', async () => {
+    const name = 'uses scientific notation';
+    renderEventForm(
+      <EventForm
+        eventData={{
+          objType: 'Event',
+          name,
+          desc: '',
+          mainItem: true,
+          evType: 'etDistribution',
+          parameters: [],
+        }}
+      />,
+    );
+    const user = userEvent.setup();
+
+    // Enter values for distribution parameters using scientific notation
+    await user.type(await screen.findByLabelText('Mean'), '1e1');
+    await user.type(await screen.findByLabelText('Standard Deviation'), '5e2');
+    await user.type(await screen.findByLabelText('Minimum'), '1e3');
+    await user.type(await screen.findByLabelText('Maximum'), '1e4');
+
+    await user.click(await screen.findByText('Save'));
+    expect(getEvent(name)).toEqual(expected[name]);
+  });
+
   test('sets default time rate', async () => {
     const name = 'sets default time rate';
-    render(
-      <EventContextProvider>
-        <EventFormContextProvider>
-          <EventForm
-            eventData={{
-              objType: 'Event',
-              name,
-              desc: '',
-              mainItem: false,
-              evType: 'etDistribution',
-              distType: 'dtNormal',
-              parameters: [],
-            }}
-          ></EventForm>
-        </EventFormContextProvider>
-      </EventContextProvider>,
+    renderEventForm(
+      <EventForm
+        eventData={{
+          objType: 'Event',
+          name,
+          desc: '',
+          mainItem: false,
+          evType: 'etDistribution',
+          distType: 'dtNormal',
+          parameters: [],
+        }}
+      />,
     );
     const user = userEvent.setup();
 
@@ -75,22 +91,18 @@ describe('Distribution Events', () => {
 
   test('sets individual time rates', async () => {
     const name = 'sets individual time rates';
-    render(
-      <EventContextProvider>
-        <EventFormContextProvider>
-          <EventForm
-            eventData={{
-              objType: 'Event',
-              name,
-              desc: '',
-              mainItem: false,
-              evType: 'etDistribution',
-              distType: 'dtNormal',
-              parameters: [],
-            }}
-          ></EventForm>
-        </EventFormContextProvider>
-      </EventContextProvider>,
+    renderEventForm(
+      <EventForm
+        eventData={{
+          objType: 'Event',
+          name,
+          desc: '',
+          mainItem: false,
+          evType: 'etDistribution',
+          distType: 'dtNormal',
+          parameters: [],
+        }}
+      />,
     );
     const user = userEvent.setup();
 
@@ -117,24 +129,60 @@ describe('Distribution Events', () => {
     expect(getEvent(name)).toEqual(expected[name]);
   });
 
+  test('clears time rate property', async () => {
+    const name = 'clears time rate property';
+    renderEventForm(
+      <EventForm
+        eventData={{
+          objType: 'Event',
+          name,
+          desc: '',
+          mainItem: false,
+          evType: 'etDistribution',
+          distType: 'dtNormal',
+          parameters: [],
+        }}
+      />,
+    );
+    const user = userEvent.setup();
+
+    // Enter values for distribution parameters
+    await user.type(await screen.findByLabelText('Mean'), '1');
+    await user.type(await screen.findByLabelText('Standard Deviation'), '5');
+    await user.type(await screen.findByLabelText('Minimum'), '0');
+    await user.type(await screen.findByLabelText('Maximum'), '100');
+
+    // Change Standard Deviation time rate to seconds
+    await user.click(
+      await findByRole((await screen.findAllByLabelText('Time Rate'))[1], 'combobox'),
+    );
+    await user.click(await screen.findByRole('option', { name: 'Second' }));
+
+    // Change Standard Deviation time rate back to default
+    await user.click(
+      await findByRole((await screen.findAllByLabelText('Time Rate'))[1], 'combobox'),
+    );
+    await user.click(await screen.findByRole('option', { name: 'Default' }));
+
+    expect(screen.queryAllByText('Save')).not.toBeNull();
+    await user.click(await screen.findByText('Save'));
+    expect(getEvent(name)).toEqual(expected[name]);
+  });
+
   test('uses variables', async () => {
     const name = 'uses variables';
-    render(
-      <EventContextProvider>
-        <EventFormContextProvider>
-          <EventForm
-            eventData={{
-              objType: 'Event',
-              name,
-              desc: '',
-              mainItem: false,
-              evType: 'etDistribution',
-              distType: 'dtNormal',
-              parameters: [],
-            }}
-          ></EventForm>
-        </EventFormContextProvider>
-      </EventContextProvider>,
+    renderEventForm(
+      <EventForm
+        eventData={{
+          objType: 'Event',
+          name,
+          desc: '',
+          mainItem: false,
+          evType: 'etDistribution',
+          distType: 'dtNormal',
+          parameters: [],
+        }}
+      />,
     );
     const user = userEvent.setup();
 
@@ -145,16 +193,7 @@ describe('Distribution Events', () => {
     // Add a variable to the model
     expect(screen.queryAllByText('Save')).not.toBeNull();
     await user.click(await screen.findByText('Save'));
-    updateModel((model) => {
-      model.VariableList.push({
-        objType: 'Variable',
-        name: 'Test Variable',
-        varScope: 'gtGlobal',
-        value: 1,
-        type: 'int',
-      });
-      return model;
-    });
+    ensureVariable('Test Variable');
 
     // Set minimum value to use variable
     await user.click((await screen.findAllByLabelText('Use Variable'))[2]);
@@ -167,22 +206,18 @@ describe('Distribution Events', () => {
 
   test('changes distribution type', async () => {
     const name = 'changes distribution type';
-    render(
-      <EventContextProvider>
-        <EventFormContextProvider>
-          <EventForm
-            eventData={{
-              objType: 'Event',
-              name,
-              desc: '',
-              mainItem: false,
-              evType: 'etDistribution',
-              distType: 'dtNormal',
-              parameters: [],
-            }}
-          ></EventForm>
-        </EventFormContextProvider>
-      </EventContextProvider>,
+    renderEventForm(
+      <EventForm
+        eventData={{
+          objType: 'Event',
+          name,
+          desc: '',
+          mainItem: false,
+          evType: 'etDistribution',
+          distType: 'dtNormal',
+          parameters: [],
+        }}
+      />,
     );
     const user = userEvent.setup();
 

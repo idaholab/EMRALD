@@ -1,4 +1,14 @@
 {
+  "loads event data": {
+    "objType": "Event",
+    "name": "loads event data",
+    "desc": "",
+    "mainItem": true,
+    "evType": "etFailRate",
+    "lambda": 1,
+    "lambdaTimeRate": "P1DT2H3M4S",
+    "required": false
+  },
   "sets values": {
     "objType": "Event",
     "name": "sets values",

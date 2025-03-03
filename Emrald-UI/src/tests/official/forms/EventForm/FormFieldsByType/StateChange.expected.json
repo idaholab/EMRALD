@@ -1,4 +1,13 @@
 {
+  "loads event data": {
+    "name": "loads event data",
+    "objType": "Event",
+    "desc": "",
+    "mainItem": true,
+    "evType": "etStateCng",
+    "allItems": true,
+    "required": false
+  },
   "sets default values": {
     "name": "sets default values",
     "desc": "",

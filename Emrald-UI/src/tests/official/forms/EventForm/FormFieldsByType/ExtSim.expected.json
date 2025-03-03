@@ -27,5 +27,16 @@
     "extEventType": "etCompEv",
     "varNames": ["Test ExtSim Variable"],
     "variable": "Test ExtSim Variable"
+  },
+  "removes code variable": {
+    "objType": "Event",
+    "name": "removes code variable",
+    "desc": "",
+    "mainItem": true,
+    "required": false,
+    "evType": "et3dSimEv",
+    "extEventType": "etCompEv",
+    "varNames": [],
+    "variable": "Test ExtSim Variable"
   }
 }
