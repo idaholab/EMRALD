@@ -403,6 +403,7 @@ const EventFormContextProvider: React.FC<PropsWithChildren> = ({ children }) => 
     handleSetParameters(row, value, 'variable');
     updateRow(row, value, 'variable');
   };
+
   const handleNameChange = (newName: string) => {
     const events = appData.value.EventList;
     const trimmedName = newName.trim();
@@ -467,7 +468,7 @@ const EventFormContextProvider: React.FC<PropsWithChildren> = ({ children }) => 
       useVariable,
       lambda,
       onVarChange: onVarChange ? onVarChange : undefined,
-      distType: evType === 'etDistribution' && distType ? distType : 'dtNormal',
+      distType: evType === 'etDistribution' ? (distType ? distType : 'dtNormal') : undefined,
       parameters,
       dfltTimeRate,
       fromSimStart,

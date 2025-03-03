@@ -119,7 +119,7 @@ const StateChange = () => {
               fontWeight: 'bold',
             }}
           >
-            Drop State Items here
+            Drop State Items Here
           </Box>
         )}
       </Box>
