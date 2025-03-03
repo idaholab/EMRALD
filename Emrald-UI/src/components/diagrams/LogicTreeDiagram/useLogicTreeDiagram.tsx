@@ -463,6 +463,7 @@ const useLogicNodeTreeDiagram = () => {
           ...(type === 'new' && {
             id: uuidv4(),
             name: `Copy of ${pastedObject.name} (${newGateNumber})`,
+            rootName: rootNode?.name ?? ''
           }),
         };
 
@@ -499,15 +500,22 @@ const useLogicNodeTreeDiagram = () => {
     if (getAncestors(parentNode, currentTreeNodes).includes(newNode.name)) {
       return true;
     }
-  
+
     // Check if the new node has any children that are already in the tree.
-    const newNodeDescendants = getDescendants(newNode, currentTreeNodes);  
+    const newNodeDescendants = getDescendants(newNode, currentTreeNodes).map(descendant => descendant.trim());
+
+    console.log("New Node Descendants:", newNodeDescendants);
+    console.log("Current Tree Node Names:", currentTreeNodeNames);
+
     for (const descendant of newNodeDescendants) {
-      if (currentTreeNodeNames.includes(descendant)) {
-        return true;
+      for (const currentName of currentTreeNodeNames) {
+        console.log(`Comparing "${descendant}" with "${currentName}"`);
+        if (descendant === currentName) {
+          return true;
+        }
       }
     }
-  
+
     return false;
   };
   
