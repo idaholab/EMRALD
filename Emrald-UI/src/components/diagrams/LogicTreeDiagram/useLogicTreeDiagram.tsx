@@ -248,7 +248,7 @@ const useLogicNodeTreeDiagram = () => {
       resolve();
     });
   };
-  
+
   const removeChildNodes = async (nodesToRemove: { nodeName: string; parentName: string }[]) => {
     if (nodesToRemove && nodesToRemove.length > 0) {
       for (const node of nodesToRemove) {
@@ -493,23 +493,20 @@ const useLogicNodeTreeDiagram = () => {
     }
   };
   
-  const couldCreateInfiniteLoop = (parentNode: LogicNode, newNode: LogicNode): boolean => {
-    //TODO: If a node is set to a root and it used as a child in another tree this needs to able to account for that.
-    const currentTreeNodes = logicNodeList.value.filter((n) => n.rootName === parentNode.rootName);
-  
+  const couldCreateInfiniteLoop = (parentNode: LogicNode, newNode: LogicNode): boolean => {  
     // Check if the new node is the parent node itself, or if it is already a child of the parent node.
     if (parentNode.name === newNode.name || parentNode.gateChildren.includes(newNode.name)) {
       return true;
     }
   
     // Check if the new node is an ancestor of the parent node.
-    if (getAncestors(parentNode, currentTreeNodes).includes(newNode.name)) {
+    if (getAncestors(parentNode, logicNodeList.value).includes(newNode.name)) {
       return true;
     }
 
     // Check if the new node has any children that are already in the tree.
-    const newNodeDescendants = getDescendants(newNode, currentTreeNodes).map(descendant => descendant.trim());
-    const pastedNodeDescendants = getDescendants(parentNode, currentTreeNodes).map(descendant => descendant.trim());
+    const newNodeDescendants = getDescendants(newNode, logicNodeList.value).map(descendant => descendant.trim());
+    const pastedNodeDescendants = getDescendants(parentNode, logicNodeList.value).map(descendant => descendant.trim());
 
     for (const descendant of newNodeDescendants) {
       for (const currentName of pastedNodeDescendants) {
@@ -602,11 +599,6 @@ const useLogicNodeTreeDiagram = () => {
     }
     return gateChildren;
   };
-
-  // const getAllGateChildrenNames = (node: LogicNode): string[] => {
-  //   let gateChildrenNames = getAllGateChildren(node).map((node) => node.name);
-  //   return gateChildrenNames;
-  // };
 
   const handleDoubleClick = (type: string, text: string) => {
     if (type === 'description') {
