@@ -39,7 +39,7 @@ interface ActionFormContextType {
   newStateItems?: NewStateItem[];
   mutuallyExclusive?: boolean;
   variableName?: string;
-  codeVariables?: string[];
+  codeVariables: string[];
   scriptCode?: string;
   sim3DMessage?: sim3DMessageType;
   extSim?: string;
@@ -74,7 +74,7 @@ interface ActionFormContextType {
   setSimEndTime: React.Dispatch<React.SetStateAction<string | undefined>>;
   setOpenSimVarParams: React.Dispatch<React.SetStateAction<boolean | undefined>>;
   addToUsedVariables: (variableName: string) => void;
-  setCodeVariables: React.Dispatch<React.SetStateAction<string[] | undefined>>;
+  setCodeVariables: React.Dispatch<React.SetStateAction<string[]>>;
   setNewStateItems: React.Dispatch<React.SetStateAction<NewStateItem[] | undefined>>;
   setMakeInputFileCode: React.Dispatch<React.SetStateAction<string | undefined>>;
   setExePath: React.Dispatch<React.SetStateAction<string | undefined>>;
@@ -82,7 +82,6 @@ interface ActionFormContextType {
   setFormData: React.Dispatch<React.SetStateAction<any>>;
   setHasError: React.Dispatch<React.SetStateAction<boolean>>;
   checkForDuplicateNames: () => boolean;
-  handleChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   handleNameChange: (newName: string) => void;
   handleSave: (event?: Event, state?: State) => void;
   handleSelectChange: (event: SelectChangeEvent, item: NewStateItem) => void;
@@ -125,7 +124,7 @@ const ActionFormContextProvider: React.FC<PropsWithChildren> = ({ children }) =>
   const [mutuallyExclusive, setMutuallyExclusive] = useState<boolean | undefined>();
   const [newStateItems, setNewStateItems] = useState<NewStateItem[] | undefined>();
   //cngVarVal items
-  const [codeVariables, setCodeVariables] = useState<string[] | undefined>();
+  const [codeVariables, setCodeVariables] = useState<string[]>([]);
   const [variableName, setVariableName] = useState<string | undefined>();
   const [scriptCode, setScriptCode] = useState<string | undefined>();
   //extSimMsg items
@@ -174,9 +173,6 @@ const ActionFormContextProvider: React.FC<PropsWithChildren> = ({ children }) =>
     });
     setMutuallyExclusive(value);
   };
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setMutuallyExclusive(event.target.checked);
-  };
 
   const handleNameChange = (newName: string) => {
     const trimmedName = newName.trim();
@@ -208,9 +204,10 @@ const ActionFormContextProvider: React.FC<PropsWithChildren> = ({ children }) =>
     }
 
     if (updatedMutuallyExclusive !== undefined ? updatedMutuallyExclusive : mutuallyExclusive) {
-      const totalProb = updateItems?.reduce((acc, item) => {
-        return item.prob === -1 ? acc : acc + Number(item.prob);
-      }, 0) || 0;
+      const totalProb =
+        updateItems?.reduce((acc, item) => {
+          return item.prob === -1 ? acc : acc + Number(item.prob);
+        }, 0) || 0;
       let remainingProb: number;
 
       const hasRemainingTrue = updateItems?.some((item) => item.remaining === true);
@@ -268,7 +265,7 @@ const ActionFormContextProvider: React.FC<PropsWithChildren> = ({ children }) =>
           })
         : undefined,
       mutExcl: mutuallyExclusive,
-      codeVariables,
+      codeVariables: actType === 'atCngVarVal' ? codeVariables : undefined,
       variableName,
       scriptCode,
       sim3DMessage,
@@ -292,47 +289,44 @@ const ActionFormContextProvider: React.FC<PropsWithChildren> = ({ children }) =>
   };
 
   const checkFormData = async () => {
-    return new Promise<void>(async (resolve) => {
-      if (formData && formData.docLinkVariable !== undefined) {
-        let variableList = structuredClone(appData.value.VariableList);
-        let docLinkVariables = variableList.filter(({ varScope }) => varScope === 'gtDocLink');
-        if (docLinkVariables.map(({ name }) => name).includes(formData.docLinkVariable)) {
-          let variable = docLinkVariables.find(({ name }) => name === formData.docLinkVariable);
-          if (variable) {
-            variable.docType = 'dtTextRegEx';
-            variable.docLink = 'CORE UNCOVERY';
-            variable.pathMustExist = false;
-            variable.numChars = 11;
-            variable.begPosition = 28;
-            variable.regExpLine = 0;
-            //update app data with the new variable information
-            await updateVariable(variable);
-          }
-        } else {
-          //create a new variable with the new information
-          if (!variableList.find(({ name }) => name === formData.docLinkVariable)) {
-            await createVariable({
-              name: formData.docLinkVariable || 'maapDocLink',
-              desc: 'Link to CoreUncoveryTime from MAAP (hours)',
-              id: uuidv4(),
-              docType: 'dtTextRegEx',
-              objType: 'Variable',
-              varScope: 'gtDocLink',
-              docPath: 'C:/testSimanij_FLEX/temp.log',
-              value: 0,
-              type: 'double',
-              docLink: 'CORE UNCOVERY',
-              pathMustExist: false,
-              numChars: 11,
-              begPosition: 28,
-              regExpLine: 0,
-            });
-          }
-          formData.docLinkVariable = formData.docLinkVariable || 'maapDocLink';
+    if (formData && formData.docLinkVariable !== undefined) {
+      let variableList = structuredClone(appData.value.VariableList);
+      let docLinkVariables = variableList.filter(({ varScope }) => varScope === 'gtDocLink');
+      if (docLinkVariables.map(({ name }) => name).includes(formData.docLinkVariable)) {
+        let variable = docLinkVariables.find(({ name }) => name === formData.docLinkVariable);
+        if (variable) {
+          variable.docType = 'dtTextRegEx';
+          variable.docLink = 'CORE UNCOVERY';
+          variable.pathMustExist = false;
+          variable.numChars = 11;
+          variable.begPosition = 28;
+          variable.regExpLine = 0;
+          //update app data with the new variable information
+          await updateVariable(variable);
         }
+      } else {
+        //create a new variable with the new information
+        if (!variableList.find(({ name }) => name === formData.docLinkVariable)) {
+          await createVariable({
+            name: formData.docLinkVariable || 'maapDocLink',
+            desc: 'Link to CoreUncoveryTime from MAAP (hours)',
+            id: uuidv4(),
+            docType: 'dtTextRegEx',
+            objType: 'Variable',
+            varScope: 'gtDocLink',
+            docPath: 'C:/testSimanij_FLEX/temp.log',
+            value: 0,
+            type: 'double',
+            docLink: 'CORE UNCOVERY',
+            pathMustExist: false,
+            numChars: 11,
+            begPosition: 28,
+            regExpLine: 0,
+          });
+        }
+        formData.docLinkVariable = formData.docLinkVariable || 'maapDocLink';
       }
-      resolve();
-    });
+    }
   };
 
   const sortNewStates = (newStateItems?: NewStateItem[]) => {
@@ -348,7 +342,7 @@ const ActionFormContextProvider: React.FC<PropsWithChildren> = ({ children }) =>
   };
 
   const addToUsedVariables = (variableName: string) => {
-    if (codeVariables && !codeVariables?.includes(variableName)) {
+    if (!codeVariables?.includes(variableName)) {
       setCodeVariables([...codeVariables, variableName]);
     } else {
       setCodeVariables(codeVariables?.filter((item) => item !== variableName));
@@ -395,7 +389,6 @@ const ActionFormContextProvider: React.FC<PropsWithChildren> = ({ children }) =>
       const isScientificNotation = /[Ee]/.test(value);
       let numericValue;
       if (isScientificNotation) {
-        console.log('value is in scientific notation: ', value);
         numericValue = parseFloat(value);
         const [_, exponentPart] = value.split(/[Ee]/);
         const exponent = Math.abs(Number(exponentPart));
@@ -467,11 +460,11 @@ const ActionFormContextProvider: React.FC<PropsWithChildren> = ({ children }) =>
     const updatedItems = newStateItems?.filter((item) => item.id !== itemToDeleteId);
     setNewStateItems(updatedItems);
   };
-  
+
   const reset = () => {
     setMutuallyExclusive(undefined);
     setNewStateItems(undefined);
-    setCodeVariables(undefined);
+    setCodeVariables([]);
     setVariableName(undefined);
     setScriptCode(undefined);
     setSim3DMessage(undefined);
@@ -522,7 +515,7 @@ const ActionFormContextProvider: React.FC<PropsWithChildren> = ({ children }) =>
         : undefined,
     );
     //CngVarVal items
-    setCodeVariables(actionData?.codeVariables);
+    setCodeVariables(actionData?.codeVariables || []);
     setVariableName(actionData?.variableName);
     setScriptCode(actionData?.scriptCode);
 
@@ -597,7 +590,6 @@ const ActionFormContextProvider: React.FC<PropsWithChildren> = ({ children }) =>
         setFormData,
         setHasError,
         checkForDuplicateNames,
-        handleChange,
         handleNameChange,
         handleSave,
         handleSelectChange,

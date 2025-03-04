@@ -7,5 +7,14 @@
     "variableName": "Test Variable",
     "codeVariables": ["Test Variable"],
     "actType": "atCngVarVal"
+  },
+  "deselects variables": {
+    "objType": "Action",
+    "name": "deselects variables",
+    "desc": "",
+    "mainItem": true,
+    "variableName": "Test Variable",
+    "codeVariables": [],
+    "actType": "atCngVarVal"
   }
 }

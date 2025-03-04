@@ -9,5 +9,59 @@
       { "toState": "Test State 1", "prob": 0.4, "failDesc": "" },
       { "toState": "Test State 2", "prob": 0, "failDesc": "" }
     ]
+  },
+  "uses scientific notation": {
+    "objType": "Action",
+    "name": "uses scientific notation",
+    "desc": "",
+    "mainItem": true,
+    "actType": "atTransition",
+    "newStates": [
+      { "toState": "Test State 1", "prob": 0.00002, "failDesc": "" }
+    ]
+  },
+  "uses remaining probability": {
+    "objType": "Action",
+    "name": "uses remaining probability",
+    "desc": "",
+    "mainItem": true,
+    "actType": "atTransition",
+    "newStates": [
+      { "toState": "Test State 1", "prob": 0.4, "failDesc": "" },
+      { "toState": "Test State 2", "prob": -1, "failDesc": "" }
+    ],
+    "mutExcl": true
+  },
+  "uses variables": {
+    "objType": "Action",
+    "name": "uses variables",
+    "desc": "",
+    "mainItem": true,
+    "actType": "atTransition",
+    "newStates": [
+      { "toState": "Test State 1", "prob": 0, "failDesc": "", "varProb": "Test Variable" }
+    ]
+  },
+  "unchecks mutually exclusive": {
+    "objType": "Action",
+    "name": "unchecks mutually exclusive",
+    "desc": "",
+    "mainItem": true,
+    "actType": "atTransition",
+    "newStates": [
+      { "toState": "Test State 1", "prob": 0.4, "failDesc": "" },
+      { "toState": "Test State 2", "prob": 0, "failDesc": "" }
+    ],
+    "mutExcl": false
+  },
+  "removes a state": {
+    "objType": "Action",
+    "name": "removes a state",
+    "desc": "",
+    "mainItem": true,
+    "actType": "atTransition",
+    "newStates": [
+      { "toState": "Test State 2", "prob": 0, "failDesc": "" }
+    ]
   }
 }

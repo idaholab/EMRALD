@@ -5,7 +5,7 @@ import CodeVariables from './CodeVariables';
 import { Variable } from '../../types/Variable';
 
 interface CodeEditorWithVariablesProps {
-  scriptCode: string;
+  scriptCode?: string;
   setScriptCode: (value: string) => void;
   variableList: Variable[];
   codeVariables: string[];

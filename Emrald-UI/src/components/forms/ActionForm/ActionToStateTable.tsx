@@ -12,7 +12,16 @@ import MenuItem from '@mui/material/MenuItem';
 import { useVariableContext } from '../../../contexts/VariableContext';
 import { styled } from '@mui/material/styles';
 import TextField from '@mui/material/TextField';
-import { Box, Checkbox, FormControlLabel, Radio, RadioGroup, Typography } from '@mui/material';
+import {
+  Box,
+  Checkbox,
+  FormControlLabel,
+  InputLabel,
+  Radio,
+  RadioGroup,
+  Tooltip,
+  Typography,
+} from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { NewStateItem, useActionFormContext } from './ActionFormContext';
 import { scientificToNumeric } from '../../../utils/util-functions';
@@ -61,6 +70,7 @@ const ActionToStateTable: React.FC = () => {
   } = useActionFormContext();
   const { variableList } = useVariableContext();
   const hasRemainingItem = newStateItems?.some((item) => item.remaining);
+
   const calculateProb = () => {
     const hasVarProb = newStateItems?.some((item) => item.probType === 'variable');
 
@@ -75,7 +85,7 @@ const ActionToStateTable: React.FC = () => {
           return item.prob;
         }
       });
-      
+
       const allProbValuesAreNumbers = convertedProbValues?.every(
         (item) => typeof item === 'number' && !isNaN(item),
       );
@@ -112,7 +122,7 @@ const ActionToStateTable: React.FC = () => {
           </StyledTableRow>
         </TableHead>
         <TableBody>
-          {newStateItems?.map((item) => (
+          {newStateItems?.map((item, i) => (
             <StyledTableRow key={item.id}>
               <StyledTableCell component="th" scope="row">
                 {item.toState}
@@ -185,15 +195,14 @@ const ActionToStateTable: React.FC = () => {
                   </>
                 ) : (
                   <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
+                    <InputLabel id={`variable-${i}-label`}>Select Variable</InputLabel>
                     <Select
+                      aria-labelledby={`variable-${i}-label`}
+                      label="Select Variable"
                       value={item.varProb || ''}
                       onChange={(e) => handleSelectChange(e, item)}
                       displayEmpty
-                      inputProps={{ 'aria-label': 'Without label' }}
                     >
-                      <MenuItem value={''}>
-                        <em>Not Assigned</em>
-                      </MenuItem>
                       {variableList.value.map((variable) => (
                         <MenuItem value={variable.name} key={variable.id}>
                           {variable.name}
@@ -204,10 +213,12 @@ const ActionToStateTable: React.FC = () => {
                 )}
               </StyledTableCell>
               <StyledTableCell>
-                <DeleteIcon
-                  sx={{ cursor: 'pointer', ml: 3 }}
-                  onClick={() => handleDeleteToStateItem(item.id)}
-                />
+                <Tooltip title="Delete Row">
+                  <DeleteIcon
+                    sx={{ cursor: 'pointer', ml: 3 }}
+                    onClick={() => handleDeleteToStateItem(item.id)}
+                  />
+                </Tooltip>
               </StyledTableCell>
             </StyledTableRow>
           ))}

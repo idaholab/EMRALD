@@ -32,10 +32,10 @@ const ChangeVarValue = () => {
       </SelectComponent>
 
       <CodeEditorWithVariables
-        scriptCode={scriptCode || ''}
+        scriptCode={scriptCode}
         setScriptCode={setScriptCode}
         variableList={variableList.value}
-        codeVariables={codeVariables || []}
+        codeVariables={codeVariables as string[]}
         addToUsedVariables={addToUsedVariables}
         heading={
           <span>

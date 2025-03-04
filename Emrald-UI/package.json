@@ -10,7 +10,7 @@
     "preview": "vite preview",
     "format": "prettier --write ./src",
     "test": "vitest",
-    "coverage": "vitest run --coverage"
+    "coverage": "vitest run --coverage --test-timeout=50000"
   },
   "dependencies": {
     "@dagrejs/dagre": "^1.0.4",

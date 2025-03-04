@@ -1,7 +1,7 @@
-import { findByRole, fireEvent, render, RenderOptions, screen } from '@testing-library/react';
+import { findByRole, fireEvent, render, RenderOptions, screen, act } from '@testing-library/react';
 import 'jest-extended';
 import EmraldContextWrapper from '../contexts/EmraldContextWrapper';
-import React, { act } from 'react';
+import React from 'react';
 import { EMRALD_Model } from '../types/EMRALD_Model';
 import { updateAppData } from '../hooks/useAppData';
 import Sidebar from '../components/layout/Sidebar/Sidebar';

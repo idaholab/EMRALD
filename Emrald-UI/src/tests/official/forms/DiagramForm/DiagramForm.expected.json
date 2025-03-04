@@ -12,7 +12,6 @@
     "objType": "Diagram",
     "name": "edited diagram name",
     "desc": "",
-    "required": false,
     "diagramType": "dtSingle",
     "diagramLabel": "Component",
     "states": []

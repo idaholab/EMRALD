@@ -25,7 +25,7 @@ const SelectComponent = <T,>({
       <InputLabel id={labelId}>{label}</InputLabel>
       <Select
         aria-labelledby={labelId}
-        value={value}
+        value={value || ''}
         onChange={(e) => setValue(e.target.value as T)}
         label={label}
         inputProps={{ 'aria-label': 'Without label' }}

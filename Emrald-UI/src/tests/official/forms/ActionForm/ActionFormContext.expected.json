@@ -1,0 +1,9 @@
+{
+  "changes action name": {
+    "objType": "Action",
+    "name": "changed action name",
+    "desc": "",
+    "mainItem": true,
+    "actType": "atTransition"
+  }
+}
