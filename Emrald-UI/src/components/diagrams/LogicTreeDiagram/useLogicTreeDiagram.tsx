@@ -229,6 +229,11 @@ const useLogicNodeTreeDiagram = () => {
           parentLogicNode.gateChildren = parentLogicNode.gateChildren.filter(
             (child) => child !== nodeName,
           );
+          if (parentLogicNode.gateChildren.length === 0) {
+            // Signal doesn't re-render because the references are the same. Having an emptied array doesn't create a new reference. 
+            // This sets a temp value to trigger a re-render and then is updated to the correct value at the end of the function.
+            await updateLogicNode({...parentLogicNode, gateChildren: ['_TEMP_']}); 
+          }
         }
       }
       if (type === 'comp' && parentNode) {
@@ -236,13 +241,14 @@ const useLogicNodeTreeDiagram = () => {
           (child) => child.diagramName !== nodeName,
         );
       }
-      await updateLogicNode(parentLogicNode);
+      await updateLogicNode({...parentLogicNode, gateChildren: [...parentLogicNode.gateChildren]});
       if (nodeToRemove === rootNode) {
         handleClose();
       }
       resolve();
     });
   };
+  
   const removeChildNodes = async (nodesToRemove: { nodeName: string; parentName: string }[]) => {
     if (nodesToRemove && nodesToRemove.length > 0) {
       for (const node of nodesToRemove) {
