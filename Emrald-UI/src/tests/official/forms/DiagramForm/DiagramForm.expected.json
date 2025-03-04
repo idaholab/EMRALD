@@ -1,0 +1,20 @@
+{
+  "creates a diagram": {
+    "objType": "Diagram",
+    "name": "creates a diagram",
+    "desc": "Desc",
+    "required": false,
+    "diagramType": "dtMulti",
+    "diagramLabel": "Component",
+    "states": []
+  },
+  "edits existing diagram": {
+    "objType": "Diagram",
+    "name": "edited diagram name",
+    "desc": "",
+    "required": false,
+    "diagramType": "dtSingle",
+    "diagramLabel": "Component",
+    "states": []
+  }
+}

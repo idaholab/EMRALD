@@ -1,7 +1,7 @@
 import { describe, expect, test } from 'vitest';
 import userEvent from '@testing-library/user-event';
 import { screen } from '@testing-library/react';
-import { ensureLogicNode, getEvent, renderEventForm, selectOption } from '../../../../test-utils';
+import { ensureLogicNode, getEvent, renderEventForm, save, selectOption } from '../../../../test-utils';
 import EventForm from '../../../../../components/forms/EventForm/EventForm';
 import expected from './ComponentLogic.expected.json';
 
@@ -19,9 +19,8 @@ describe('Component Logic Events', () => {
         }}
       />,
     );
-    const user = userEvent.setup();
 
-    await user.click(await screen.findByText('Save'));
+    await save();
     expect(getEvent(name)).toEqual(expected[name]);
   });
 
@@ -43,7 +42,7 @@ describe('Component Logic Events', () => {
     // Select "Success Tree"
     await user.click(await screen.findByLabelText('Success Tree'));
 
-    await user.click(await screen.findByText('Save'));
+    await save();
     expect(getEvent(name)).toEqual(expected[name]);
   });
 
@@ -65,7 +64,7 @@ describe('Component Logic Events', () => {
     // Select "Trigger on False"
     await user.click(await screen.findByLabelText('Trigger on False'));
 
-    await user.click(await screen.findByText('Save'));
+    await save();
     expect(getEvent(name)).toEqual(expected[name]);
   });
 
@@ -82,16 +81,14 @@ describe('Component Logic Events', () => {
         }}
       />,
     );
-    const user = userEvent.setup();
 
     // Add a logic node to the model
-    await user.click(await screen.findByText('Save'));
-    ensureLogicNode('Test Logic Node');
+    await ensureLogicNode('Test Logic Node');
 
     // Select the logic node
-    await selectOption(user, 'LogicTop', 'Test Logic Node');
+    await selectOption('LogicTop', 'Test Logic Node');
 
-    await user.click(await screen.findByText('Save'));
+    await save();
     expect(getEvent(name)).toEqual(expected[name]);
   });
 });

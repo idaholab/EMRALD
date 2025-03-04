@@ -1,9 +1,7 @@
 import {
   Box,
   Checkbox,
-  FormControl,
   FormControlLabel,
-  FormLabel,
   MenuItem,
   TextField,
 } from '@mui/material';
@@ -47,9 +45,11 @@ const ExtSimulation: React.FC = () => {
   ];
 
   useEffect(() => {
-    const simEndTimeDuration = dayjs.duration(simEndTime);
-    // @ts-ignore: Ignore TypeScript error for the existence of `$ms` property
-    setMilliseconds(simEndTimeDuration.$ms || 0);
+    if (simEndTime) {
+      const simEndTimeDuration = dayjs.duration(simEndTime);
+      // @ts-ignore: Ignore TypeScript error for the existence of `$ms` property
+      setMilliseconds(simEndTimeDuration.$ms || 0);
+    }
   }, [simEndTime]);
 
   const handleDurationChange = (value: number) => {
@@ -62,14 +62,14 @@ const ExtSimulation: React.FC = () => {
       <SelectComponent value={sim3DMessage} label="Sim Action" setValue={setSim3DMessage}>
         {simTypeOptions.map((item, index) => (
           <MenuItem value={item.value} key={index}>
-            <em>{item.label}</em>
+            {item.label}
           </MenuItem>
         ))}
       </SelectComponent>
       <SelectComponent value={extSim} label="External Sim" setValue={setExtSim}>
         {extSimList.value.map((item) => (
           <MenuItem value={item.name} key={item.id}>
-            <em>{item.name}</em>
+            {item.name}
           </MenuItem>
         ))}
       </SelectComponent>
@@ -121,25 +121,23 @@ const ExtSimulation: React.FC = () => {
             </div>
           ) : (
             <div>
-              <FormControl>
-                <FormLabel>Model Reference (Optional)</FormLabel>
-                <TextField
-                  value={sim3DModelRef}
-                  size="small"
-                  fullWidth
-                  onChange={(e) => setSim3DModelRef(e.target.value)}
-                ></TextField>
-              </FormControl>
               <br />
-              <FormControl>
-                <FormLabel>Config Data (Optional)</FormLabel>
-                <TextField
-                  value={sim3DConfigData}
-                  size="small"
-                  fullWidth
-                  onChange={(e) => setSim3DConfigData(e.target.value)}
-                ></TextField>
-              </FormControl>
+              <TextField
+                label="Model Reference (Optional)"
+                value={sim3DModelRef}
+                size="small"
+                fullWidth
+                onChange={(e) => setSim3DModelRef(e.target.value)}
+              ></TextField>
+              <br />
+              <br />
+              <TextField
+                label="Config Data (Optional)"
+                value={sim3DConfigData}
+                size="small"
+                fullWidth
+                onChange={(e) => setSim3DConfigData(e.target.value)}
+              ></TextField>
             </div>
           )}
         </Box>

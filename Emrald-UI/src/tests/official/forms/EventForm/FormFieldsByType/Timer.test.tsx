@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest';
-import { ensureVariable, getEvent, renderEventForm, selectOption } from '../../../../test-utils';
+import { ensureVariable, getEvent, renderEventForm, save, selectOption } from '../../../../test-utils';
 import EventForm from '../../../../../components/forms/EventForm/EventForm';
 import userEvent from '@testing-library/user-event';
 import { screen } from '@testing-library/react';
@@ -20,9 +20,8 @@ describe('Timer Events', () => {
         }}
       />,
     );
-    const user = userEvent.setup();
-
-    await user.click(await screen.findByText('Save'));
+    
+    await save();
     expect(getEvent(name)).toEqual(expected[name]);
   });
 
@@ -51,7 +50,7 @@ describe('Timer Events', () => {
     await user.click(await screen.findByLabelText('Seconds'));
     await user.type(await screen.findByLabelText('Seconds'), '4');
 
-    await user.click(await screen.findByText('Save'));
+    await save();
     expect(getEvent(name)).toEqual(expected[name]);
   });
 
@@ -74,22 +73,21 @@ describe('Timer Events', () => {
     await user.click(await screen.findByLabelText('Use Variable?'));
 
     // Add a variable to the model
-    await user.click(await screen.findByText('Save'));
-    ensureVariable('Test Variable');
+    await ensureVariable('Test Variable');
 
     // Select the variable as the time span
-    await selectOption(user, 'Time Span', 'Test Variable');
+    await selectOption('Time Span', 'Test Variable');
 
     // Select time variable unit
-    await selectOption(user, 'Time Variable Unit', 'Hour');
+    await selectOption('Time Variable Unit', 'Hour');
 
     // Select if variable changes
-    await selectOption(user, 'Select', 'Adjust');
+    await selectOption('Select', 'Adjust');
 
     // Check from sim start
     await user.click(await screen.findByLabelText('From Sim Start'));
 
-    await user.click(await screen.findByText('Save'));
+    await save();
     expect(getEvent(name)).toEqual(expected[name]);
   });
 });

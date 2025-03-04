@@ -5,12 +5,15 @@ import React, { act } from 'react';
 import { EMRALD_Model } from '../types/EMRALD_Model';
 import { updateAppData } from '../hooks/useAppData';
 import Sidebar from '../components/layout/Sidebar/Sidebar';
-import { UserEvent } from '@testing-library/user-event';
+import userEvent from '@testing-library/user-event';
 import { Variable } from '../types/Variable';
 import { State } from '../types/State';
 import { LogicNode } from '../types/LogicNode';
 import EventContextProvider from '../contexts/EventContext';
 import EventFormContextProvider from '../components/forms/EventForm/EventFormContext';
+import ActionContextProvider from '../contexts/ActionContext';
+import ActionFormContextProvider from '../components/forms/ActionForm/ActionFormContext';
+import { ExtSim } from '../types/ExtSim';
 
 const customRender = (ui: React.ReactNode, options?: RenderOptions) => {
   render(
@@ -39,10 +42,23 @@ export const renderEventForm = (ui: React.ReactNode, options?: RenderOptions) =>
 };
 
 /**
+ * Shortcut function to render the ActionForm component with all the required context provider wrappers.
+ */
+export const renderActionForm = (ui: React.ReactNode, options?: RenderOptions) => {
+  customRender(
+    <ActionContextProvider>
+      <ActionFormContextProvider>{ui}</ActionFormContextProvider>
+    </ActionContextProvider>,
+    options,
+  );
+};
+
+/**
  * Helper function to manually apply a change to the EMRALD model.
  * @param fn - A function to apply the change to the model.
  */
-export function updateModel(fn: (model: EMRALD_Model) => EMRALD_Model) {
+export async function updateModel(fn: (model: EMRALD_Model) => EMRALD_Model) {
+  await save();
   const appData = sessionStorage.getItem('appData');
   if (appData) {
     let model = JSON.parse(appData) as EMRALD_Model;
@@ -57,11 +73,11 @@ export function updateModel(fn: (model: EMRALD_Model) => EMRALD_Model) {
  * @param name - The name of the variable.
  * @param data - Additional variable data, if necessary.
  */
-export function ensureVariable(name: string, data?: Partial<Variable>) {
+export async function ensureVariable(name: string, data?: Partial<Variable>) {
   try {
     getVariable(name);
   } catch (err) {
-    updateModel((model) => {
+    await updateModel((model) => {
       let v: Variable = {
         objType: 'Variable',
         name,
@@ -86,11 +102,11 @@ export function ensureVariable(name: string, data?: Partial<Variable>) {
  * @param name - The name of the state.
  * @param data - Additional state data, if necessary.
  */
-export function ensureState(name: string, data?: Partial<State>) {
+export async function ensureState(name: string, data?: Partial<State>) {
   try {
     getState(name);
   } catch (err) {
-    updateModel((model) => {
+    await updateModel((model) => {
       let s: State = {
         objType: 'State',
         name,
@@ -118,11 +134,11 @@ export function ensureState(name: string, data?: Partial<State>) {
  * @param name - The name of the logic node.
  * @param data - Additional logic node data, if necessary.
  */
-export function ensureLogicNode(name: string, data?: Partial<LogicNode>) {
+export async function ensureLogicNode(name: string, data?: Partial<LogicNode>) {
   try {
     getLogicNode(name);
   } catch (err) {
-    updateModel((model) => {
+    await updateModel((model) => {
       let n: LogicNode = {
         objType: 'LogicNode',
         name,
@@ -139,6 +155,33 @@ export function ensureLogicNode(name: string, data?: Partial<LogicNode>) {
         };
       }
       model.LogicNodeList.push(n);
+      return model;
+    });
+  }
+}
+
+/**
+ * Helper function to ensure an external sim exists in the model.
+ * @param name - The name of the external sim.
+ * @param data - Additional external sim data, if necessary.
+ */
+export async function ensureExtSim(name: string, data?: Partial<ExtSim>) {
+  try {
+    getExtSim(name);
+  } catch (err) {
+    await updateModel((model) => {
+      let e: ExtSim = {
+        objType: 'ExtSim',
+        name,
+        resourceName: '',
+      };
+      if (data) {
+        e = {
+          ...e,
+          ...data,
+        };
+      }
+      model.ExtSimList.push(e);
       return model;
     });
   }
@@ -229,6 +272,69 @@ export function getLogicNode(name: string) {
 }
 
 /**
+ * Gets a diagram from the EMRALD model.
+ * @param name - The name of the diagram to get.
+ * @returns The most recently added diagram with the given name, with the ID property removed.
+ */
+export function getDiagram(name: string) {
+  const appData = sessionStorage.getItem('appData');
+  if (appData) {
+    let model = JSON.parse(appData) as EMRALD_Model;
+    const matches = model.DiagramList.filter((e) => e.name === name);
+    if (matches.length === 0) {
+      throw new Error(`Could not find diagram ${name} in model.`);
+    }
+    const diagram = matches[matches.length - 1];
+    delete diagram.id;
+    return diagram;
+  } else {
+    throw new Error('No EMRALD model present in sessionStorage.');
+  }
+}
+
+/**
+ * Gets an external sim from the EMRALD model.
+ * @param name - The name of the external sim to get.
+ * @returns The most recently added external sim with the given name, with the ID property removed.
+ */
+export function getExtSim(name: string) {
+  const appData = sessionStorage.getItem('appData');
+  if (appData) {
+    let model = JSON.parse(appData) as EMRALD_Model;
+    const matches = model.ExtSimList.filter((e) => e.name === name);
+    if (matches.length === 0) {
+      throw new Error(`Could not find ext sim ${name} in model.`);
+    }
+    const extSim = matches[matches.length - 1];
+    delete extSim.id;
+    return extSim;
+  } else {
+    throw new Error('No EMRALD model present in sessionStorage.');
+  }
+}
+
+/**
+ * Gets an action from the EMRALD model.
+ * @param name - The name of the action to get.
+ * @returns The most recently added action with the given name, with the ID property removed.
+ */
+export function getAction(name: string) {
+  const appData = sessionStorage.getItem('appData');
+  if (appData) {
+    let model = JSON.parse(appData) as EMRALD_Model;
+    const matches = model.ActionList.filter((e) => e.name === name);
+    if (matches.length === 0) {
+      throw new Error(`Could not find action ${name} in model.`);
+    }
+    const action = matches[matches.length - 1];
+    delete action.id;
+    return action;
+  } else {
+    throw new Error('No EMRALD model present in sessionStorage.');
+  }
+}
+
+/**
  * Helper function for simulating dragging and dropping.
  * @param from - The element to start dragging from.
  * @param to - The element to drop to.
@@ -242,11 +348,20 @@ export function drag(from: HTMLElement, to: HTMLElement) {
 
 /**
  * Helper function for selecting options in MUI's combobox components.
- * @param user - The test's user event instance.
  * @param label - The label of the target combobox.
  * @param option - The name of the option to select.
  */
-export async function selectOption(user: UserEvent, label: string, option: string) {
+export async function selectOption(label: string, option: string) {
+  const user = userEvent.setup();
   await user.click(await findByRole(await screen.findByLabelText(label), 'combobox'));
   await user.click(await screen.findByRole('option', { name: option }));
+}
+
+/**
+ * Shortcut for saving the model.
+ * @param user - The test's user event instance.
+ */
+export async function save() {
+  const user = userEvent.setup();
+  await user.click(await screen.findByText('Save'));
 }

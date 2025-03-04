@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest';
-import { ensureVariable, getEvent, renderEventForm, selectOption } from '../../../../test-utils';
+import { ensureVariable, getEvent, renderEventForm, save, selectOption } from '../../../../test-utils';
 import EventForm from '../../../../../components/forms/EventForm/EventForm';
 import userEvent from '@testing-library/user-event';
 import { screen } from '@testing-library/react';
@@ -21,9 +21,8 @@ describe('FailureRate Events', () => {
         }}
       />,
     );
-    const user = userEvent.setup();
-
-    await user.click(await screen.findByText('Save'));
+    
+    await save();
     expect(getEvent(name)).toEqual(expected[name]);
   });
 
@@ -55,7 +54,7 @@ describe('FailureRate Events', () => {
     await user.click(await screen.findByLabelText('Seconds'));
     await user.type(await screen.findByLabelText('Seconds'), '4');
 
-    await user.click(await screen.findByText('Save'));
+    await save();
     expect(getEvent(name)).toEqual(expected[name]);
   });
 
@@ -87,7 +86,7 @@ describe('FailureRate Events', () => {
     await user.click(await screen.findByLabelText('Seconds'));
     await user.type(await screen.findByLabelText('Seconds'), '4');
 
-    await user.click(await screen.findByText('Save'));
+    await save();
     expect(getEvent(name)).toEqual(expected[name]);
   });
 
@@ -110,11 +109,10 @@ describe('FailureRate Events', () => {
     await user.click(await screen.findByLabelText('Use Variable Lambda/Frequency?'));
 
     // Create a variable to select
-    await user.click(await screen.findByText('Save'));
-    ensureVariable('Test Variable');
+    await ensureVariable('Test Variable');
 
     // Select the variable for lambda
-    await selectOption(user, 'Lambda', 'Test Variable');
+    await selectOption('Lambda', 'Test Variable');
 
     // Enter duration
     await user.click(await screen.findByLabelText('Days'));
@@ -127,9 +125,9 @@ describe('FailureRate Events', () => {
     await user.type(await screen.findByLabelText('Seconds'), '4');
 
     // Select on variable change
-    await selectOption(user, 'Select', 'Resample');
+    await selectOption('Select', 'Resample');
 
-    await user.click(await screen.findByText('Save'));
+    await save();
     expect(getEvent(name)).toEqual(expected[name]);
   });
 

@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest';
-import { getEvent, getState, render } from '../../../test-utils';
+import { getEvent, getState, render, save } from '../../../test-utils';
 import EventContextProvider from '../../../../contexts/EventContext';
 import EventFormContextProvider from '../../../../components/forms/EventForm/EventFormContext';
 import EventForm from '../../../../components/forms/EventForm/EventForm';
@@ -125,7 +125,7 @@ describe('Event Form Context', () => {
     await user.clear(await screen.findByLabelText('Name'));
     await user.type(await screen.findByLabelText('Name'), 'changed event name');
 
-    await user.click(await screen.findByText('Save'));
+    await save();
     expect(getEvent('changed event name')).toEqual(expected[name]);
   });
 
@@ -146,7 +146,7 @@ describe('Event Form Context', () => {
     // Enter a name for the event
     await user.type(await screen.findByLabelText('Name'), name);
 
-    await user.click(await screen.findByText('Save'));
+    await save();
     expect(getEvent(name)).toEqual(expected[name]);
   });
 });

@@ -26,16 +26,16 @@ const ChangeVarValue = () => {
       >
         {variableList.value.map((variable) => (
           <MenuItem value={variable.name} key={variable.id}>
-            <em>{variable.name}</em>
+            {variable.name}
           </MenuItem>
         ))}
       </SelectComponent>
 
       <CodeEditorWithVariables
-        scriptCode={scriptCode}
+        scriptCode={scriptCode || ''}
         setScriptCode={setScriptCode}
         variableList={variableList.value}
-        codeVariables={codeVariables}
+        codeVariables={codeVariables || []}
         addToUsedVariables={addToUsedVariables}
         heading={
           <span>

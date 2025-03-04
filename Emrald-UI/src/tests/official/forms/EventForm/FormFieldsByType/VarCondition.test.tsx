@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest';
-import { ensureVariable, getEvent, renderEventForm } from '../../../../test-utils';
+import { ensureVariable, getEvent, renderEventForm, save } from '../../../../test-utils';
 import EventForm from '../../../../../components/forms/EventForm/EventForm';
 import userEvent from '@testing-library/user-event';
 import { screen } from '@testing-library/react';
@@ -22,13 +22,12 @@ describe('VarCondition Events', () => {
     const user = userEvent.setup();
 
     // Add a variable to the model
-    await user.click(await screen.findByText('Save'));
-    ensureVariable('Test Variable');
+    await ensureVariable('Test Variable');
 
     // Check the added variable
     await user.click(await screen.findByLabelText('Test Variable'));
 
-    await user.click(await screen.findByText('Save'));
+    await save();
     expect(getEvent(name)).toEqual(expected[name]);
   });
 });

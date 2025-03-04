@@ -2,7 +2,7 @@ import { findByRole, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, test } from 'vitest';
 import EventForm from '../../../../../components/forms/EventForm/EventForm';
-import { ensureVariable, getEvent, renderEventForm, selectOption } from '../../../../test-utils';
+import { ensureVariable, getEvent, renderEventForm, save, selectOption } from '../../../../test-utils';
 import expected from './Distribution.expected.json';
 
 describe('Distribution Events', () => {
@@ -28,7 +28,7 @@ describe('Distribution Events', () => {
     await user.type(await screen.findByLabelText('Minimum'), '0');
     await user.type(await screen.findByLabelText('Maximum'), '100');
 
-    await user.click(await screen.findByText('Save'));
+    await save();
     expect(getEvent(name)).toEqual(expected[name]);
   });
 
@@ -54,7 +54,7 @@ describe('Distribution Events', () => {
     await user.type(await screen.findByLabelText('Minimum'), '1e3');
     await user.type(await screen.findByLabelText('Maximum'), '1e4');
 
-    await user.click(await screen.findByText('Save'));
+    await save();
     expect(getEvent(name)).toEqual(expected[name]);
   });
 
@@ -82,10 +82,9 @@ describe('Distribution Events', () => {
     await user.type(await screen.findByLabelText('Maximum'), '100');
 
     // Change default time rate to seconds
-    await selectOption(user, 'Default Rate', 'Second');
+    await selectOption('Default Rate', 'Second');
 
-    expect(screen.queryAllByText('Save')).not.toBeNull();
-    await user.click(await screen.findByText('Save'));
+    await save();
     expect(getEvent(name)).toEqual(expected[name]);
   });
 
@@ -124,8 +123,7 @@ describe('Distribution Events', () => {
     );
     await user.click(await screen.findByRole('option', { name: 'Day' }));
 
-    expect(screen.queryAllByText('Save')).not.toBeNull();
-    await user.click(await screen.findByText('Save'));
+    await save();
     expect(getEvent(name)).toEqual(expected[name]);
   });
 
@@ -164,8 +162,7 @@ describe('Distribution Events', () => {
     );
     await user.click(await screen.findByRole('option', { name: 'Default' }));
 
-    expect(screen.queryAllByText('Save')).not.toBeNull();
-    await user.click(await screen.findByText('Save'));
+    await save();
     expect(getEvent(name)).toEqual(expected[name]);
   });
 
@@ -192,15 +189,14 @@ describe('Distribution Events', () => {
 
     // Add a variable to the model
     expect(screen.queryAllByText('Save')).not.toBeNull();
-    await user.click(await screen.findByText('Save'));
-    ensureVariable('Test Variable');
+    await ensureVariable('Test Variable');
 
     // Set minimum value to use variable
     await user.click((await screen.findAllByLabelText('Use Variable'))[2]);
-    await selectOption(user, 'Variable', 'Test Variable');
-    await selectOption(user, 'Select', 'Resample');
+    await selectOption('Variable', 'Test Variable');
+    await selectOption('Select', 'Resample');
 
-    await user.click(await screen.findByText('Save'));
+    await save();
     expect(getEvent(name)).toEqual(expected[name]);
   });
 
@@ -222,7 +218,7 @@ describe('Distribution Events', () => {
     const user = userEvent.setup();
 
     // Change type to Weibull distribution
-    await selectOption(user, 'Distribution Type', 'Weibull Distribution');
+    await selectOption('Distribution Type', 'Weibull Distribution');
 
     // Enter values for distribution parameters
     expect(screen.queryByLabelText('Shape')).not.toBeNull();
@@ -237,8 +233,7 @@ describe('Distribution Events', () => {
     // Trigger blur event to make sure invalid values are updated
     await user.click(await screen.findByLabelText('Shape'));
 
-    expect(screen.queryAllByText('Save')).not.toBeNull();
-    await user.click(await screen.findByText('Save'));
+    await save();
     expect(getEvent(name)).toEqual(expected[name]);
   });
 });

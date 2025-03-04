@@ -1,0 +1,13 @@
+{
+  "sets values": {
+    "objType": "Action",
+    "name": "sets values",
+    "desc": "",
+    "mainItem": true,
+    "actType": "atTransition",
+    "newStates": [
+      { "toState": "Test State 1", "prob": 0.4, "failDesc": "" },
+      { "toState": "Test State 2", "prob": 0, "failDesc": "" }
+    ]
+  }
+}

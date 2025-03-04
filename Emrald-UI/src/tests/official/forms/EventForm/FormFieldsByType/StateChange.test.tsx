@@ -1,7 +1,7 @@
 import userEvent from '@testing-library/user-event';
 import { screen } from '@testing-library/react';
 import { describe, expect, test } from 'vitest';
-import { drag, ensureState, getEvent, renderEventForm } from '../../../../test-utils';
+import { drag, ensureState, getEvent, renderEventForm, save } from '../../../../test-utils';
 import EventForm from '../../../../../components/forms/EventForm/EventForm';
 import expected from './StateChange.expected.json';
 
@@ -20,9 +20,8 @@ describe('StateChange Events', () => {
         }}
       />,
     );
-    const user = userEvent.setup();
-
-    await user.click(await screen.findByText('Save'));
+    
+    await save();
     expect(getEvent(name)).toEqual(expected[name]);
   });
 
@@ -42,9 +41,8 @@ describe('StateChange Events', () => {
     const user = userEvent.setup();
 
     // Add two states to the model
-    await user.click(await screen.findByText('Save'));
-    ensureState('Test State');
-    ensureState('Test State 2');
+    await ensureState('Test State');
+    await ensureState('Test State 2');
 
     // Drag the first state to the event form
     await user.click(await screen.findByText('States'));
@@ -56,7 +54,7 @@ describe('StateChange Events', () => {
       // Drag the second state to the event form
       drag(await screen.findByText('Test State 2'), dropArea);
 
-      await user.click(await screen.findByText('Save'));
+      await save();
       expect(getEvent(name)).toEqual(expected[name]);
     }
   });
@@ -83,7 +81,7 @@ describe('StateChange Events', () => {
     // Check "All Items"
     await user.click(await screen.findByLabelText('All Items'));
 
-    await user.click(await screen.findByText('Save'));
+    await save();
     expect(getEvent(name)).toEqual(expected[name]);
   });
 
@@ -109,7 +107,7 @@ describe('StateChange Events', () => {
     // Select "On Enter States"
     await user.click(await screen.findByLabelText('On Enter State/s'));
 
-    await user.click(await screen.findByText('Save'));
+    await save();
     expect(getEvent(name)).toEqual(expected[name]);
   });
 
@@ -138,7 +136,7 @@ describe('StateChange Events', () => {
     // Change back to "On Exit States"
     await user.click(await screen.findByLabelText('On Exit State/s'));
 
-    await user.click(await screen.findByText('Save'));
+    await save();
     expect(getEvent(name)).toEqual(expected[name]);
   });
 
@@ -164,7 +162,7 @@ describe('StateChange Events', () => {
     // Delete the state that was just added
     await user.click(await screen.findByLabelText('Delete Row'));
 
-    await user.click(await screen.findByText('Save'));
+    await save();
     expect(getEvent(name)).toEqual(expected[name]);
   });
 });

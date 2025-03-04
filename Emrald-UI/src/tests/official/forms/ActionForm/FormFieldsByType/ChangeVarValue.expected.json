@@ -1,0 +1,11 @@
+{
+  "selects variables": {
+    "objType": "Action",
+    "name": "selects variables",
+    "desc": "",
+    "mainItem": true,
+    "variableName": "Test Variable",
+    "codeVariables": ["Test Variable"],
+    "actType": "atCngVarVal"
+  }
+}
