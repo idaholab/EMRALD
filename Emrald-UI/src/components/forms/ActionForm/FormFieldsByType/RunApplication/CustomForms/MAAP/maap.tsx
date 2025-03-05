@@ -7,83 +7,244 @@ import { parse as InputParse } from './Parser/maap-inp-parser.ts';
 import { parse as parameterParser } from './Parser/maap-par-parser.ts';
 import { v4 as uuid } from 'uuid';
 import { useActionFormContext } from '../../../../ActionFormContext.tsx';
-import {
-  Initiator,
-  InitiatorOG,
-  InputBlock,
-  Parameter,
-  ParameterOG,
-  Value,
-} from '../../CustomApplicationTypes.ts';
+import { Initiator, InitiatorOG, InputBlock, Parameter, ParameterOG, Value } from './MAAPTypes.ts';
 import useRunApplication from '../../useRunApplication.tsx';
+import {
+  expressionToString,
+  expressionTypeToString,
+  MAAPToString,
+  sourceElementToString,
+} from './Parser/maap-to-string.ts';
+import { Expression, ExpressionType, SourceElement } from 'maap-inp-parser';
+
+type MAAPFormData = undefined | {
+  exePath: string;
+  sourceElements?: SourceElement[];
+  parameters?: Parameter[];
+  initiators?: Initiator[];
+  inputBlocks?: Record<string, InputBlock>;
+  fileRefs?: string[];
+  inputFile: File | null;
+  inputPath: string;
+  parameterFile: File | null;
+  parameterPath: string;
+};
 
 const MAAP = () => {
-  const {
-    formData,
-    exePath,
-    setExePath,
-    setFormData,
-    setReturnProcess,
-    ReturnPostCode,
-    ReturnExePath,
-  } = useCustomForm();
-  const { setReqPropsFilled } = useActionFormContext();
+  const { formData, setFormData, setReturnProcess, ReturnPostCode, ReturnExePath } =
+    useCustomForm();
+  const { setReqPropsFilled, setCodeVariables } = useActionFormContext();
   const [parameterFile, setParameterFile] = useState<File | null>(null);
   const [inputFile, setInputFile] = useState<File | null>(null);
   const [currentTab, setCurrentTab] = useState(0);
-  const {
-    parameterPath,
-    inputPath,
-    getParameterName,
-    getInitiatorName,
-    ReturnPreCode,
-    setParameterPath,
-    setInputPath,
-  } = useRunApplication();
+  const [parameterPath, setParameterPath] = useState(formData?.parameterPath || '');
+  const [inputPath, setInputPath] = useState(formData?.inputPath || '');
+  const { ReturnPreCode } = useRunApplication();
+
+  const maapForm = formData as MAAPFormData;
 
   useEffect(() => {
-    setReqPropsFilled(!!exePath && !!parameterPath && !!inputPath);
-  }, [exePath, parameterPath, inputPath]);
+    setReqPropsFilled(!!maapForm?.exePath && !!parameterPath && !!inputPath);
+  }, [formData.exePath, parameterPath, inputPath]);
 
   const handleTabChange = (_event: React.SyntheticEvent, tabValue: number) => {
     setCurrentTab(tabValue);
   };
 
+  const getParameterName = (row: ParameterOG) => {
+    if (!row.target) return;
+    let name =
+      row.target.type === 'call_expression'
+        ? ((row.target.value as Value).value as string)
+        : (row.target.value as string);
+    if (row.target?.arguments && row.target.arguments.length > 0) {
+      name = name + `(${String(row.target.arguments[0].value)})`;
+    }
+    return name;
+  };
+
+  const getInitiatorName = (row: InitiatorOG): string | number => {
+    let name = '';
+    if (row.type === 'assignment') {
+      if (row.target.type === 'identifier') {
+        name = `${row.target.value}`;
+      } else {
+        name = `${(row.target.value as Value).value}`;
+      }
+    } else if (row.type === 'parameter_name') {
+      name = `${row.value}`;
+    } else {
+      name = row.desc;
+    }
+    if (row.target?.arguments && row.target.arguments.length > 0) {
+      name = name + `(${String(row.target.arguments[0].value)})`;
+    }
+    return name;
+  };
+
+  function createMaapFile() {
+    if (maapForm?.sourceElements) {
+      let inpFile = '';
+      let block = 0;
+      let variables: string[] = [];
+      maapForm.sourceElements.forEach((sourceElement) => {
+        if (sourceElement.type === 'block') {
+          if (sourceElement.blockType === 'PARAMETER CHANGE') {
+            inpFile += 'PARAMETER CHANGE\n';
+            maapForm.parameters?.forEach((parameter) => {
+              inpFile += `${parameter.name} = `;
+              if (parameter.useVariable) {
+                inpFile += `" + ${parameter.variable} + @"`;
+                if (variables.indexOf(parameter.variable) < 0) {
+                  variables.push(parameter.variable);
+                }
+              } else {
+                inpFile += `${parameter.value}`;
+                if (parameter.unit) {
+                  inpFile += ` ${parameter.unit}`;
+                }
+              }
+              inpFile += '\n';
+            });
+            inpFile += 'END\n';
+          } else if (sourceElement.blockType === 'INITIATORS') {
+            inpFile += 'INITIATORS\n';
+            maapForm.initiators?.forEach((initiator) => {
+              inpFile += `${initiator.name} = `;
+              if (typeof initiator.value === 'boolean') {
+                inpFile += initiator.value ? 'T' : 'F';
+              } else {
+                inpFile += initiator.value;
+              }
+              inpFile += '\n';
+            });
+            inpFile += 'END\n';
+          }
+        } else if (sourceElement.type === 'conditional_block' && maapForm.inputBlocks !== undefined) {
+          const cblock = maapForm.inputBlocks[block];
+          inpFile += `${cblock.blockType} `;
+          if ((cblock.test.value.right as Value).useVariable) {
+            // TODO: This may not work for every possible case
+            inpFile += `${expressionTypeToString(cblock.test.value.left as ExpressionType)} ${
+              cblock.test.value.op
+            } " + ${cblock.test.value.right.value} + @"\n`;
+            if (variables.indexOf(cblock.test.value.right.value as string) < 0) {
+              variables.push(cblock.test.value.right.value as string);
+            }
+          } else {
+            inpFile += `${expressionToString(cblock.test as Expression)}\n`;
+          }
+          inpFile += `${cblock.value
+            .map((se) => sourceElementToString(se as SourceElement))
+            .join('\n')}\nEND\n`;
+          block += 1;
+        } else {
+          inpFile += `${MAAPToString(sourceElement)}\n`;
+        }
+      });
+      setCodeVariables(variables);
+      return inpFile;
+    }
+    return '';
+  }
+
   useEffect(() => {
-    ReturnPreCode();
-    ReturnExePath(exePath);
-    ReturnPostCode(`string inpLoc = @"${inputPath}";
+    const getCleanPath = (path: string) =>
+      path.replace(/\\/g, '/').replace(/^\"/, '').replace(/\"$/, '');
+    const cleanExePath = getCleanPath(maapForm?.exePath || '');
+    const cleanParameterPath = getCleanPath(parameterPath);
+    const cleanInputPath = getCleanPath(inputPath);
+    ReturnPreCode(`string exeLoc = "${cleanExePath}";
+        string paramLoc = "${cleanParameterPath}";
+        string inpLoc = "${cleanInputPath}";
+        string newInp = @"${createMaapFile()}";
+        string fileRefs = "${maapForm?.fileRefs}"; //example "PVGS_502.par, test.txt";
+        string[] fileRefsList = fileRefs.Split(',');
+        
+        if (!Path.IsPathRooted(exeLoc))
+        {
+          exeLoc = Path.Join(Directory.GetCurrentDirectory(), exeLoc);
+        }
+        if (!Path.IsPathRooted(paramLoc))
+        {
+          paramLoc = Path.Join(Directory.GetCurrentDirectory(), paramLoc);
+        }
+        if (!Path.IsPathRooted(inpLoc))
+        {
+          inpLoc = Path.Join(Directory.GetCurrentDirectory(), inpLoc);
+        }
+        
+        string tempLoc = Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "EMRALD_MAAP");
+        try
+        {
+          if (Directory.Exists(tempLoc))
+          {
+            Directory.Delete(tempLoc, true);
+          }
+          Directory.CreateDirectory(tempLoc);
+        }
+        catch { }
+        if (File.Exists(paramLoc))
+        {
+          File.Copy(paramLoc, Path.Join(tempLoc, Path.GetFileName(paramLoc)));
+        }
+        
+        string paramFileName = Path.GetFileName(paramLoc);
+        string inpFileName = Path.GetFileName(inpLoc);
+        string inpLocPath = Path.GetDirectoryName(inpLoc);
+        foreach (string fileRef in fileRefsList)
+        {
+          string fileRefPath = Path.Join(inpLocPath, fileRef);
+          if (File.Exists(fileRefPath))
+          {
+            if (fileRef != paramFileName)
+            File.Copy(fileRefPath, Path.Join(tempLoc, fileRef));
+          }
+          else
+          {
+            Console.WriteLine("Missing MAAP referenced file - " + Path.Join(inpLocPath, fileRef));
+          }
+        }
+        string exeName = Path.GetFileName(exeLoc);
+        if (File.Exists(exeLoc))
+        {
+          File.Copy(exeLoc, Path.Join(tempLoc, exeName));
+        }
+        string dllPath = Path.Join(Path.GetDirectoryName(exeLoc), exeName[..^7] + ".dll");
+        if (File.Exists(dllPath))
+        {
+          File.Copy(dllPath, Path.Join(tempLoc, Path.GetFileName(dllPath)));
+        }
+        
+        string newInpLoc = Path.Join(tempLoc, inpFileName);
+        System.IO.File.WriteAllText(newInpLoc, newInp);
+        return $"{Path.Join(tempLoc, exeName)} {inpFileName} {paramFileName}";`);
+    ReturnExePath('');
+    ReturnPostCode(`string inpLoc = @"${cleanInputPath}";
   if (!Path.IsPathRooted(inpLoc))
         inpLoc = RootPath + inpLoc;
-    string docVarPath = @".\\MAAP\\temp.log";
+    string docVarPath = @"./MAAP/temp.log";
   if (!Path.IsPathRooted(docVarPath))
         docVarPath = RootPath + docVarPath;
-  string resLoc = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\EMRALD_MAAP\" + Path.GetFileNameWithoutExtension(inpLoc) + ".log";
+  string resLoc = Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "EMRALD_MAAP", Path.GetFileNameWithoutExtension(inpLoc) + ".log");
   File.Copy(resLoc, docVarPath, true);`);
 
-    setReturnProcess('rtVar');
+    setReturnProcess('rtNone');
 
-    setFormData({
-      ...formData,
-      exePath,
+    const newFormdata: MAAPFormData = {
+      ...maapForm,
+      exePath: cleanExePath,
       inputFile,
-      inputPath,
+      inputPath: cleanInputPath,
       parameterFile,
-      parameterPath,
-    });
-  }, [inputPath, parameterFile, parameterPath]);
+      parameterPath: cleanParameterPath,
+    }
+    setFormData(newFormdata);
+  }, [inputPath, parameterFile, parameterPath, formData]);
 
   useEffect(() => {
     if (parameterFile) {
       const parameterFileName = parameterFile.name;
-      if (!parameterPath) {
-        setParameterPath('.\\' + parameterFileName);
-      } else {
-        let tempPath = parameterPath;
-        let sections = tempPath.split(/[\\/]/);
-        sections[sections.length - 1] = parameterFileName;
-        setParameterPath(sections.join('\\'));
-      }
       const possibleInitiators: Initiator[] = [];
       const allData: any[] = [];
       parameterFile.text().then((lineData) => {
@@ -115,21 +276,13 @@ const MAAP = () => {
     const handleInputFileChange = async () => {
       if (inputFile) {
         const inputFileName = inputFile.name;
-        if (!inputPath) {
-          setInputPath('.\\' + inputFileName);
-        } else {
-          let tempPath = inputPath;
-          let sections = tempPath.split(/[\\/]/);
-          sections[sections.length - 1] = inputFileName;
-          setInputPath(sections.join('\\'));
-        }
         const fileString = await inputFile.text();
         try {
           const data = InputParse(fileString, {});
 
           console.log('input file data: ', data.value);
 
-          let docComments: { [key: string]: InputBlock } = {};
+          let docComments: Record<string, InputBlock> = {};
           let sections: any = [];
           let parameters: any = [];
           let initiators: any = [];
@@ -209,6 +362,7 @@ const MAAP = () => {
                 name: getParameterName(param) || '',
                 id: uuid(),
                 useVariable: false,
+                unit: param.value.units,
                 value: param.value.value,
                 variable: '',
               });
@@ -239,6 +393,7 @@ const MAAP = () => {
             aliasList,
             isExpressions,
             plotFil,
+            sourceElements: data.value,
           }));
         } catch (err) {
           console.log('Error parsing file:', err);
@@ -251,7 +406,16 @@ const MAAP = () => {
   return (
     <>
       <Box display={'flex'} flexDirection={'column'}>
-        <TextFieldComponent value={exePath} label="MAAP Executable Path" setValue={setExePath} />
+        <TextFieldComponent
+          value={formData.exePath}
+          label="MAAP Executable Path"
+          setValue={(value) => {
+            setFormData({
+              ...formData,
+              exePath: value,
+            });
+          }}
+        />
 
         <FileUploadComponent
           label="Parameter File"
@@ -265,7 +429,7 @@ const MAAP = () => {
 
         <TextFieldComponent
           value={parameterPath}
-          label="Parameter File Path"
+          label="Full Parameter File Path"
           setValue={setParameterPath}
         />
 
@@ -279,7 +443,11 @@ const MAAP = () => {
           }}
         />
 
-        <TextFieldComponent value={inputPath} label="Input File Path" setValue={setInputPath} />
+        <TextFieldComponent
+          value={inputPath}
+          label="Full Input File Path"
+          setValue={setInputPath}
+        />
 
         <Divider sx={{ my: 3 }} />
 

@@ -2,7 +2,7 @@ import { Autocomplete, Box, Divider, TextField, Typography } from '@mui/material
 import { useEffect, useState } from 'react';
 import { useCustomForm } from '../../useCustomForm';
 import useRunApplication from '../../../useRunApplication';
-import { InputBlock, Value } from '../../../CustomApplicationTypes';
+import { InputBlock, InputResultValue, Target, Test, Value } from '../MAAPTypes';
 import { appData } from '../../../../../../../../hooks/useAppData';
 
 const InputBlocks = () => {
@@ -12,8 +12,95 @@ const InputBlocks = () => {
   const [rightExpressionNames, setRightExpressionNames] = useState<string[][]>([]);
   const [operators, setOperators] = useState<{ [key: string]: string[] }>({});
   const { formData, setFormData } = useCustomForm();
-  const { results, getResults, getAllItems, returnInputBlockItemNameInTest } = useRunApplication();
+  const { results, setResults } = useRunApplication();
   const variables = appData.value.VariableList.map(({ name }) => name);
+
+  const getResults = (block: InputBlock, forCode?: boolean) => {
+    // Get the existing Map or initialize a new one for the block.id
+    let items = results[block.id] || new Map<string, string>();
+
+    block.value.forEach((result: InputResultValue, i: number) => {
+      if (result.type === 'comment') {
+        // Handle comments here if necessary
+        let previousResult = block.value[i - 1];
+        previousResult.comment = result.value as string;
+      } else {
+        if (result.target && result.target.type) {
+          const target =
+            result.target.type === 'identifier' ? result.target : (result.target.value as Value);
+          const name = target.value;
+          const useVariable = target.useVariable;
+          const args = result.target.arguments ? result.target.arguments[0].value : '';
+          let fullName = args ? `${name}(${String(args)})` : String(name);
+          if (forCode && useVariable) {
+            fullName = `" + ${fullName} + @"`;
+          }
+
+          // Get the value associated with the result
+          const value = getResultValue(result, forCode);
+
+          // Add the key-value pair to the Map if it doesn't already exist
+          if (!items.has(fullName) || items.get(fullName) !== value) {
+            items.set(fullName, value);
+          }
+        }
+      }
+    });
+
+    // Update the state with the new Map
+    setResults((prev) => ({ ...prev, [block.id]: new Map(items) }));
+    return items;
+  };
+
+  const getResultValue = (result: InputResultValue, forCode?: boolean): string => {
+    if ((result.value as Value).type === 'expression') {
+      return `${(result.value as Test).value.left.value} ${(result.value as Test).value.op} ${
+        (result.value as Test).value.right.value
+      }`;
+    }
+    let toReturn = (result.value as Value).value as string;
+    if (forCode && (result.value as Value).useVariable) {
+      toReturn = `" + ${toReturn} + @"`;
+    }
+    return toReturn;
+  };
+
+  /** goes through the test portion of a conditional block and returns an array of each name in the block test */
+  const getAllItems = (block: InputBlock, returnType = 'items'): any[] => {
+    let allItems = [];
+    let operators = [];
+    let iterator = block.test;
+    while (isTest(iterator as Test)) {
+      allItems.push(iterator.value.left);
+      operators.push(iterator.value.op);
+      if (!isTest(iterator.value.right as Test)) {
+        allItems.push(iterator.value.right);
+        break;
+      } else {
+        iterator = iterator.value.right as Test;
+      }
+    }
+    return returnType === 'items' ? allItems : operators;
+  };
+
+  const isTest = (test: Test): boolean => {
+    return !!test?.value?.left && !!test?.value?.right;
+  };
+
+  const returnInputBlockItemNameInTest = (item: any, forCode?: boolean): string => {
+    if (item === undefined) {
+      return '';
+    }
+    if ((item as Value).type === 'call_expression') {
+      const value = (item.value as Value).value;
+      const args = (item as Target).arguments;
+      return args ? `${value}(${String(args[0].value)})` : String(value);
+    }
+    if (forCode && item.useVariable) {
+      return `" + ${String(item.value)} + @"`;
+    }
+    return String(item.value);
+  };
 
   useEffect(() => {
     formData.inputBlocks?.forEach((block: InputBlock) => {

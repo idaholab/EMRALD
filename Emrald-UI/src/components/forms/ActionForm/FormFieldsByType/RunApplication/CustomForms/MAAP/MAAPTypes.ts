@@ -44,11 +44,13 @@ export interface Target {
     id: string;
     name: string;
     value: string | number;
+    unit?: string;
     useVariable: boolean;
     variable: string;
     comment?: string;
   }
   export interface InputBlock {
+    blockType: string;
     test: Test;
     value: InputResultValue[];
     id: string;
