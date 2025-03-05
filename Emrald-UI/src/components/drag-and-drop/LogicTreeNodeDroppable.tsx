@@ -62,7 +62,7 @@ const LogicTreeNodeDropTarget: React.FC<PropsWithChildren<LogicNodeDroppableItem
         updateLogicNode(logicNode); // Update the dropped node with the new compChildren
       } else if (item.objType === 'LogicNode') {
         const logicNode = getLogicNodeByName(node); // Get the info of the logic node to be updated
-        if (couldCreateInfiniteLoop(logicNode, item.name)) {
+        if (couldCreateInfiniteLoop(logicNode, item as LogicNode)) {
           console.log('Alert: This node is already in the logic tree either as a child or parent');
           return;
         }
@@ -90,6 +90,7 @@ const LogicTreeNodeDropTarget: React.FC<PropsWithChildren<LogicNodeDroppableItem
           id: uuidv4(),
           name: `Gate ${newGateNumber}`,
           gateType: gateType as GateType,
+          rootName: logicNode.rootName
         });
         logicNode.gateChildren = [...logicNode.gateChildren, `${`Gate ${newGateNumber}`}`]; // Add the new gate node's name to the gateChildren of the parent logic node
         await updateLogicNode(logicNode); // Update the dropped node with the new gateChildren
