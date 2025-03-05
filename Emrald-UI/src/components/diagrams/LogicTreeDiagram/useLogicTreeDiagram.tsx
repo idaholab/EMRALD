@@ -374,7 +374,7 @@ const useLogicNodeTreeDiagram = () => {
               addWindow(
                 `Edit Gate Node: ${label}`,
                 <LogicNodeFormContextProvider>
-                  <LogicNodeForm logicNodeData={logicNode} gateType={logicNode.gateType} editing={true} />
+                  <LogicNodeForm logicNodeData={logicNode} parentNodeName={parentName} gateType={logicNode.gateType} editing={true} />
                 </LogicNodeFormContextProvider>,
               ),
             isDivider: true,
@@ -463,7 +463,7 @@ const useLogicNodeTreeDiagram = () => {
           ...(type === 'new' && {
             id: uuidv4(),
             name: `Copy of ${pastedObject.name} (${newGateNumber})`,
-            rootName: rootNode?.name ?? ''
+            rootName: node?.rootName ?? ''
           }),
         };
 
@@ -488,8 +488,8 @@ const useLogicNodeTreeDiagram = () => {
   };
   
   const couldCreateInfiniteLoop = (parentNode: LogicNode, newNode: LogicNode): boolean => {
-    const currentTreeNodes = logicNodeList.value.filter((n) => n.rootName === parentNode.rootName);;
-    const currentTreeNodeNames = currentTreeNodes.map((n) => n.name);
+    //TODO: If a node is set to a root and it used as a child in another tree this needs to able to account for that.
+    const currentTreeNodes = logicNodeList.value.filter((n) => n.rootName === parentNode.rootName);
   
     // Check if the new node is the parent node itself, or if it is already a child of the parent node.
     if (parentNode.name === newNode.name || parentNode.gateChildren.includes(newNode.name)) {
@@ -503,12 +503,10 @@ const useLogicNodeTreeDiagram = () => {
 
     // Check if the new node has any children that are already in the tree.
     const newNodeDescendants = getDescendants(newNode, currentTreeNodes).map(descendant => descendant.trim());
-
-    console.log("New Node Descendants:", newNodeDescendants);
-    console.log("Current Tree Node Names:", currentTreeNodeNames);
+    const pastedNodeDescendants = getDescendants(parentNode, currentTreeNodes).map(descendant => descendant.trim());
 
     for (const descendant of newNodeDescendants) {
-      for (const currentName of currentTreeNodeNames) {
+      for (const currentName of pastedNodeDescendants) {
         console.log(`Comparing "${descendant}" with "${currentName}"`);
         if (descendant === currentName) {
           return true;
@@ -599,10 +597,10 @@ const useLogicNodeTreeDiagram = () => {
     return gateChildren;
   };
 
-  const getAllGateChildrenNames = (node: LogicNode): string[] => {
-    let gateChildrenNames = getAllGateChildren(node).map((node) => node.name);
-    return gateChildrenNames;
-  };
+  // const getAllGateChildrenNames = (node: LogicNode): string[] => {
+  //   let gateChildrenNames = getAllGateChildren(node).map((node) => node.name);
+  //   return gateChildrenNames;
+  // };
 
   const handleDoubleClick = (type: string, text: string) => {
     if (type === 'description') {
