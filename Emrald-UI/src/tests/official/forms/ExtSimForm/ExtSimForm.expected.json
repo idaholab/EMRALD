@@ -1,0 +1,12 @@
+{
+  "creates ext sim": {
+    "objType": "ExtSim",
+    "name": "creates ext sim",
+    "resourceName": "Application Name"
+  },
+  "updates existing": {
+    "objType": "ExtSim",
+    "name": "changed name",
+    "resourceName": "changed app name"
+  }
+}
