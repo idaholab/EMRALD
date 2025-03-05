@@ -159,7 +159,7 @@ const LogicNodeTreeDiagram: React.FC<LogicNodeTreeDiagramProps> = ({ logicNode }
             }}
             onClose={() => setNodeExistsAlert(false)}
           >
-            Node already exists within the current gate
+            Pasting this node will create a circular reference. Please review the node structure.
           </Alert>
         </div>
       )}

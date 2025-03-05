@@ -34,6 +34,8 @@ import LogicNodeTreeDiagram from '../../../diagrams/LogicTreeDiagram/LogicTreeDi
 import SearchResultForm from '../../../forms/SearchResultForm/SearchResultForm';
 import { ReactFlowProvider } from 'reactflow';
 import { emptyLogicNode } from '../../../../contexts/LogicNodeContext';
+import { useAlertContext } from '../../../../contexts/AlertContext';
+import LogicNodeFormContextProvider from '../../../forms/LogicNodeForm/LogicNodeFormContext';
 
 const SearchField = () => {
   const theme = useTheme();
@@ -114,6 +116,7 @@ const SearchField = () => {
   ): ReactNode => {
     const [expandedItem, setExpandedItem] = useState<string | null>(null);
     const [nestedModel, setNestedModel] = useState<EMRALD_Model>();
+    const { showAlert } = useAlertContext();
 
     const handleExpand = (
       item: Diagram | State | Action | Event | ExtSim | LogicNode | Variable,
@@ -123,20 +126,25 @@ const SearchField = () => {
         return;
       }
       let tempModel: EMRALD_Model;
-      if (buttonDirection === 'Used By') {
-        tempModel = GetModelItemsReferencing(item.name, item.objType as MainItemTypes, 1);
-      } else {
-        tempModel = GetModelItemsReferencedBy(
-          item.name,
-          item.objType as MainItemTypes,
-          1,
-          allMainItemTypes,
-          false,
-        );
+      try {
+        if (buttonDirection === 'Used By') {
+          tempModel = GetModelItemsReferencing(item.name, item.objType as MainItemTypes, 1);
+        } else {
+          tempModel = GetModelItemsReferencedBy(
+            item.name,
+            item.objType as MainItemTypes,
+            1,
+            allMainItemTypes,
+            false,
+          );
+        }
+        tempModel = filterItemFromModel(tempModel, item);
+        setNestedModel(tempModel);
+        setExpandedItem(item.id || null);
+      } catch(error) {
+        console.error('Error Message:', error);
+        showAlert('An error occurred getting the search items', 'error');
       }
-      tempModel = filterItemFromModel(tempModel, item);
-      setNestedModel(tempModel);
-      setExpandedItem(item.id || null);
     };
     const filterItemFromModel = (
       model: EMRALD_Model,
@@ -228,7 +236,10 @@ const SearchField = () => {
         </EventFormContextProvider>
       ),
       ExtSim: (data) => <ExtSimForm ExtSimData={data as ExtSim} />,
-      LogicNode: (data) => <LogicNodeForm logicNodeData={data as LogicNode} editing />,
+      LogicNode: (data) => 
+      <LogicNodeFormContextProvider>
+        <LogicNodeForm logicNodeData={data as LogicNode} editing />
+      </LogicNodeFormContextProvider>,
       Variable: (data) => (
         <VariableFormContextProvider>
           <VariableForm variableData={data as Variable} />

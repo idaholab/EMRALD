@@ -97,7 +97,7 @@ namespace SimulationEngine
     public Dictionary<string, FailedItems> keyFailedItems = new Dictionary<string, FailedItems>(); //key = StateName, value = cut sets
     public Dictionary<string, KeyStateResult> keyPaths = new Dictionary<string, KeyStateResult>();
     public Dictionary<string, ResultState> otherPaths = new Dictionary<string, ResultState>();
-    private Dictionary<string, Dictionary<string, List<string>>> _variableVals = new Dictionary<string, Dictionary<string, List<string>>>();
+    private Dictionary<string, Dictionary<string, Dictionary<string, string>>> _variableVals = new Dictionary<string, Dictionary<string, Dictionary<string, string>>>();
     public TProgressCallBack progressCallback;
     public List<string> logVarVals = new List<string>();
 
@@ -292,20 +292,21 @@ namespace SimulationEngine
               }
             }
 
+            //add all of the variable values for each run to the _variableVals results if in the curKeyState for that run
             foreach (SimulationEngine.ResultStateBase path in keyPaths.Values)
             {
               string keyStateName = path.name;
 
               if (logVarVals.Count > 0)
               {
-                Dictionary<string, List<string>> varDict;
+                Dictionary<string, Dictionary<string, string>> varDict;
                 if (!_variableVals.TryGetValue(keyStateName, out varDict))
                 {
-                  varDict = new Dictionary<string, List<string>>();
+                  varDict = new Dictionary<string, Dictionary<string, string>>();
                   _variableVals.Add(keyStateName, varDict);
                 }
 
-                List<string> varVals;
+                Dictionary<string, string> varVals;
 
                 foreach (string varName in logVarVals)
                 {
@@ -318,11 +319,13 @@ namespace SimulationEngine
 
                   if (!varDict.TryGetValue(varName, out varVals))
                   {
-                    varVals = new List<string>();
+                    varVals = new Dictionary<string, string>();
                     varDict.Add(varName, varVals);
                   }
 
-                  varVals.Add(curVar.strValue);
+                  //if the state is in the current Key states then add the variable value
+                  if (curKeyStates.ContainsKey(keyStateName))
+                    varVals.Add(i.ToString(), curVar.strValue);
                 }
               }
             }
@@ -605,7 +608,7 @@ namespace SimulationEngine
           var lastItem = keyPaths.Last();
           foreach (var item in keyPaths)
           {
-            streamwriter.WriteLine(item.Key + " Occurred " + item.Value.count.ToString() + " times, Probability =" + (item.Value.count / (double)runCnt).ToString() +
+            streamwriter.WriteLine(Environment.NewLine + item.Key + " Occurred " + item.Value.count.ToString() + " times, Probability =" + (item.Value.count / (double)runCnt).ToString() +
               ", MeanTime = " + item.Value.timeMean.ToString(@"dd\.hh\:mm\:ss") + " +/- " + item.Value.timeStdDeviation.ToString(@"dd\.hh\:mm\:ss\.ff"));
             //write the failed components and times.
             if (logFailedComps && keyFailedItems.ContainsKey(item.Key))
@@ -626,7 +629,7 @@ namespace SimulationEngine
                 streamwriter.WriteLine(csLine);
               }
             }
-            Dictionary<string, List<string>> varDict;
+            Dictionary<string, Dictionary<string, string>> varDict;
             if (_variableVals.TryGetValue(item.Key, out varDict))
             {
               streamwriter.WriteLine("- Variable Values - ");
@@ -636,20 +639,21 @@ namespace SimulationEngine
 
               for (int row = 0; row < runCnt; row++)
               {
+                bool hasRunValue = false;
                 string varValues = (row + 1).ToString();
                 foreach (var varValItem in varDict.Values)
                 {
-                  //get the value for each variable in a row
-                  if (varValItem.Count > row)
-                  {
-                    varValues = varValues + ", " + varValItem[row];
+                  //get the value for each variable in a row if has a value
+                  string key = (row + 1).ToString();
+                  if (varValItem.ContainsKey(key))
+                  { 
+                    varValues = varValues + ", " + varValItem[key];
+                    hasRunValue = true;
                   }
-                  else
-                  {
-                    varValues = varValues + ", " + "unkown";
-                  }
+                  
                 }
-               streamwriter.WriteLine(varValues);
+                if(hasRunValue)
+                  streamwriter.WriteLine(varValues);
               }
             }
           }

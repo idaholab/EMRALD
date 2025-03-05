@@ -3,9 +3,10 @@ import { LogicNode } from '../types/LogicNode';
 import { EmraldContextWrapperProps } from './EmraldContextWrapper';
 import { appData, updateAppData } from '../hooks/useAppData';
 import { EMRALD_Model } from '../types/EMRALD_Model';
-import { DeleteItemAndRefs, updateModelAndReferences } from '../utils/UpdateModel';
+import { updateModelAndReferences } from '../utils/UpdateModel';
 import { MainItemTypes } from '../types/ItemTypes';
 import { effect, ReadonlySignal, useComputed } from '@preact/signals-react';
+import { v4 as uuidv4 } from 'uuid';
 
 interface LogicNodeContextType {
   logicNodeList: ReadonlySignal<LogicNode[]>;
@@ -20,7 +21,7 @@ interface LogicNodeContextType {
 }
 
 export const emptyLogicNode: LogicNode = {
-  id: '',
+  id: uuidv4(),
   name: '',
   desc: '',
   isRoot: false,

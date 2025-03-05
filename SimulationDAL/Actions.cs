@@ -267,7 +267,7 @@ namespace SimulationDAL
           {
             if((val > 1) || (val < 0))
             {
-              throw new Exception("Transition and probabilities must be between 0 and 1");
+              throw new Exception("Non Mutually exclusive transition probabilities must be between 0 and 1 or a variable");
             }
           }
         }
@@ -471,20 +471,26 @@ namespace SimulationDAL
     public List<IdxAndStr> WhichToState()
     {
       if (hasVarProbs)
+      {
         for (int i = 0; i < _toStateVarProb.Count; ++i)
         {
           if (_toStateVarProb[i] != null)
+          {
+            if (_toStateVarProb[i].dblValue < 0.0)
+              throw new Exception(this.name + " - Invalid variable value used for a transition % [" + _toStateVarProb[i].name + "] = " + _toStateVarProb[i].dblValue);
             _toStateProb[i] = _toStateVarProb[i].dblValue;
+          }
         }
+      }
 
       List<IdxAndStr> retStateIDs = new List<IdxAndStr> { };
       double probSum = _toStateProb.Sum();
-      if (mutExcl && (probSum > 0) && (probSum < 1.0) && (_toStateProb[_toStateProb.Count - 1] > 0))
-      {
-        throw new Exception("For action " + this.name + " Transition and probabilities don't add up to 1.0 or no default value");
-      }
-      else if (_toStateProb.Count == 0)
+      if (_toStateProb.Count == 0)
         throw new Exception(this.name + " has no _toSateProbs in list - no TO state added to the action.");
+      else if (mutExcl && (probSum > 0) && (probSum < 1.0) && (_toStateProb[_toStateProb.Count - 1] > 0))
+      {
+        throw new Exception("For action " + this.name + " Mutually Exclusive Transition and probabilities don't add up to 1.0 or no default path");
+      }
       //      else if (mutExcl && (_toStateProb[_toStateProb.Count - 1] != -1) && (_toStateProb[_toStateProb.Count - 1] != 1))
       //      {
       //#if DEBUG

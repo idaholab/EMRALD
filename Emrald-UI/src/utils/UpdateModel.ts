@@ -1,7 +1,7 @@
 import { EMRALD_Model, } from '../types/EMRALD_Model.ts';
 import jsonpath from 'jsonpath';
 import { MainItemType, MainItemTypes } from '../types/ItemTypes.ts';
-import { AdjustJsonPathRef, allMainItemTypes, GetModelItemsReferencing, GetModelItemsReferencedBy, MainItemTypeSet, ItemReferencesArray, GetJSONPathInRefs, GetJSONPathUsingRefs } from './ModelReferences.ts';
+import { AdjustJsonPathRef, allMainItemTypes, GetModelItemsReferencing, MainItemTypeSet, ItemReferencesArray, GetJSONPathInRefs, GetJSONPathUsingRefs } from './ModelReferences.ts';
 import { appData } from '../hooks/useAppData';
 import { Diagram } from '../types/Diagram.ts';
 import { State } from '../types/State.ts';

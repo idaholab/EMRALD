@@ -23,7 +23,9 @@ const StateChange = () => {
   const [{ isOver }, drop] = useDrop({
     accept: 'State',
     drop: (item: State) => {
-      if (!triggerStates.includes(item.name)) {
+      if (!triggerStates) {
+        setTriggerStates([item.name]);
+      } else if (!triggerStates.includes(item.name)) {
         setTriggerStates([...triggerStates, item.name]);
       }
     },
@@ -34,8 +36,10 @@ const StateChange = () => {
   const backgroundColor = isOver ? 'lightgreen' : 'white';
   const removeTriggerState = (name: string) => {
     var newTriggerStates = triggerStates;
-    newTriggerStates = newTriggerStates.filter((state) => state !== name);
-    setTriggerStates(newTriggerStates);
+    if (newTriggerStates) {
+      newTriggerStates = newTriggerStates.filter((state) => state !== name);
+      setTriggerStates(newTriggerStates);
+    }
   };
   return (
     <div>
@@ -78,7 +82,7 @@ const StateChange = () => {
           backgroundColor,
         }}
       >
-        {triggerStates.length > 0 ? (
+        {triggerStates && triggerStates.length > 0 ? (
           <TableContainer>
             <Table>
               <TableHead>
@@ -115,7 +119,7 @@ const StateChange = () => {
               fontWeight: 'bold',
             }}
           >
-            Drop State Items here
+            Drop State Items Here
           </Box>
         )}
       </Box>

@@ -8,6 +8,7 @@ import {
   ActionType,
   DiagramType,
   EventType,
+  GateType,
   MainItemTypes,
   StateType,
   VariableType,
@@ -17,6 +18,8 @@ import { useWindowContext } from '../../contexts/WindowContext';
 
 type ValueTypes<T extends MainItemTypes> = T extends 'Diagram'
   ? DiagramType
+  : T extends 'LogicNode'
+  ? GateType
   : T extends 'State'
   ? StateType
   : T extends 'Event'
@@ -79,13 +82,13 @@ const MainDetailsForm = <T extends MainItemTypes>({
         <Select
           labelId="type-select-label"
           id="type-select"
-          value={type as string} // Cast type as string
+          value={type as ValueTypes<T>}
           disabled={typeDisabled}
-          onChange={(event: SelectChangeEvent<string>) => {
+          onChange={(event: SelectChangeEvent<ValueTypes<T>>) => {
             setType(event.target.value as ValueTypes<T>);
             handleTypeChange && handleTypeChange(event.target.value as ValueTypes<T>);
             reset && reset();
-          }} // Cast event.target.value as ValueTypes<T>
+          }}
           label={typeLabel ? typeLabel : 'Type'}
         >
           {typeOptions.map((option) => (

@@ -26,6 +26,8 @@ import { Action } from '../../../types/Action';
 import { State } from '../../../types/State';
 import { Variable } from '../../../types/Variable';
 import { Event } from '../../../types/Event';
+import { useAlertContext } from '../../../contexts/AlertContext';
+import LogicNodeFormContextProvider from '../../forms/LogicNodeForm/LogicNodeFormContext';
 
 interface MenuAccordionProps {
   panels: AccordionMenuItemType[];
@@ -49,6 +51,7 @@ const MenuAccordion: React.FC<MenuAccordionProps> = ({
   handleDelete,
 }) => {
   const { addWindow } = useWindowContext();
+  const { showAlert } = useAlertContext();
   const [expandedPanel, setExpandedPanel] = useState<string>('');
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [notValidModel, setNotValidModel] = useState<boolean>(false);
@@ -119,13 +122,16 @@ const MenuAccordion: React.FC<MenuAccordionProps> = ({
           }
         } catch (readError) {
           console.error('Error reading from clipboard:', readError);
-          alert('Failed to read from clipboard. Please try again.');
+          showAlert('Failed to read from clipboard. Please try again.', 'error');
         }
       } else {
         addWindow('New Diagram', <DiagramForm />);
       }
     } else if (accordionPanel === 'Logic Tree') {
-      addWindow('New Logic Tree', <LogicNodeForm setAsRoot />);
+      addWindow('New Logic Tree', 
+      <LogicNodeFormContextProvider>
+        <LogicNodeForm setAsRoot />
+      </LogicNodeFormContextProvider>);
     } else if (accordionPanel === 'External Sims') {
       addWindow('New External Sim', <ExtSimForm />);
     } else if (accordionPanel === 'Actions') {

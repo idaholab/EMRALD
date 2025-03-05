@@ -33,7 +33,7 @@ const LogicTreeNodeDropTarget: React.FC<PropsWithChildren<LogicNodeDroppableItem
     useLogicNodeContext();
   const newGateNode = useSignal<LogicNode>(emptyLogicNode);
   // const [compDiagram, setCompDiagram] = useState<boolean>(false);
-  const { couldCreateInifinteLoop } = useLogicNodeTreeDiagram();
+  const { couldCreateInfiniteLoop } = useLogicNodeTreeDiagram();
   const resetNewNode = () => {
     newGateNode.value = emptyLogicNode;
   };
@@ -62,7 +62,7 @@ const LogicTreeNodeDropTarget: React.FC<PropsWithChildren<LogicNodeDroppableItem
         updateLogicNode(logicNode); // Update the dropped node with the new compChildren
       } else if (item.objType === 'LogicNode') {
         const logicNode = getLogicNodeByName(node); // Get the info of the logic node to be updated
-        if (couldCreateInifinteLoop(logicNode, item.name)) {
+        if (couldCreateInfiniteLoop(logicNode, item.name)) {
           console.log('Alert: This node is already in the logic tree either as a child or parent');
           return;
         }

@@ -13,7 +13,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimulationEngine", "Simulat
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EMRALD_Sim", "EMRALD_Sim\EMRALD_Sim.csproj", "{B6F47973-B227-4825-BB2D-B995F5FE2E9C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Testing", "UnitTesting_Simulation\Testing.csproj", "{43990779-63AB-4896-8AEE-7B06F7BC6B0B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Testing", "VandV_Testing\Testing.csproj", "{43990779-63AB-4896-8AEE-7B06F7BC6B0B}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "XmppClient", "XmppClient\XmppClient.csproj", "{8846DEF8-E1EB-408E-9316-D85E273E7E09}"
 EndProject

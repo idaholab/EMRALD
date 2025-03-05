@@ -1,0 +1,40 @@
+{
+  "sets default values": {
+    "name": "sets default values",
+    "desc": "",
+    "objType": "Event",
+    "mainItem": true,
+    "evType": "etStateCng",
+    "triggerStates": ["Test State", "Test State 2"],
+    "required": false
+  },
+  "sets all items": {
+    "name": "sets all items",
+    "desc": "",
+    "objType": "Event",
+    "mainItem": true,
+    "evType": "etStateCng",
+    "triggerStates": ["Test State"],
+    "required": false,
+    "allItems": true
+  },
+  "sets if in state": {
+    "name": "sets if in state",
+    "desc": "",
+    "objType": "Event",
+    "mainItem": true,
+    "evType": "etStateCng",
+    "triggerStates": ["Test State"],
+    "required": false,
+    "ifInState": true
+  },
+  "removes a state": {
+    "name": "removes a state",
+    "desc": "",
+    "objType": "Event",
+    "mainItem": true,
+    "evType": "etStateCng",
+    "triggerStates": [],
+    "required": false
+  }
+}

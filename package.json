@@ -7,7 +7,7 @@
   "scripts": {
     "coverage": "npx nyc instrument Emrald_Site instrumented && node ./Emrald_Site/tests/index.js --coverage",
     "tauri": "tauri",
-    "test": "node ./Emrald_Site/tests/index.js",
+    "test": "cd Emrald-UI && npm run test",
     "build": "npm run tauri build",
     "build:dev": "npm run tauri dev"
   },
@@ -16,7 +16,6 @@
     "url": "git+https://github.com/idaholab/EMRALD.git"
   },
   "author": "idaholab",
-  "license": "MIT",
   "bugs": {
     "url": "https://github.com/idaholab/EMRALD/issues"
   },
