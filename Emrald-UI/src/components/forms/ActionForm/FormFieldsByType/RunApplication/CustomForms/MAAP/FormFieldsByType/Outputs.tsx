@@ -14,22 +14,27 @@ import { useVariableContext } from '../../../../../../../../contexts/VariableCon
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useEffect, useState } from 'react';
 import { useCustomForm } from '../../useCustomForm';
+import { MAAPFormData } from '../maap';
 
 const Outputs = () => {
   const { formData, setFormData, setVariableName } = useCustomForm();
   const [docLinkVariable, setDocLinkVariable] = useState<string>(formData.docLinkVariable || '');
   const [output, setOutput] = useState<string>(formData.output || '');
   const { variableList } = useVariableContext();
+
   const docLinkVariables = variableList.value
     .filter(({ varScope }) => varScope === 'gtDocLink')
     .map(({ name }) => name);
 
   useEffect(() => {
-    setFormData((prevFormData: any) => ({
-      ...prevFormData,
-      docLinkVariable: docLinkVariable,
-      output: output,
-    }));
+    setFormData((prevFormData: MAAPFormData) => {
+      const data: MAAPFormData = {
+        ...prevFormData,
+        docLinkVariable: docLinkVariable,
+        output: output,
+      };
+      return data;
+    });
 
     setVariableName(docLinkVariable);
   }, [docLinkVariable, output, setDocLinkVariable, setOutput]);

@@ -11,33 +11,43 @@ import {
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useActionFormContext } from '../../../../../ActionFormContext';
 import { useEffect, useState } from 'react';
-import { Initiator, InitiatorOG } from '../MAAPTypes';
 import { v4 as uuid } from 'uuid';
+import { MAAPFormData } from '../maap';
+import { Initiator } from '../MAAPTypes';
+
 const Initiators = () => {
   const { formData, setFormData } = useActionFormContext();
-  const [initiators, setInitiators] = useState<any[]>([]);
+  const [initiators, setInitiators] = useState<Initiator[]>([]);
+
+  const maapForm = formData as MAAPFormData;
 
   useEffect(() => {
-    setInitiators(formData?.initiators || []);
+    setInitiators(maapForm?.initiators || []);
   }, [formData]);
 
   const removeInitiator = (row: any) => {
     const updatedInitiators = initiators.filter((initiator) => initiator !== row);
     setInitiators(updatedInitiators);
-    setFormData((prevFormData: any) => ({ ...prevFormData, initiators: updatedInitiators }));
+    setFormData((prevFormData: MAAPFormData) => {
+      const data: MAAPFormData = { ...prevFormData, initiators: updatedInitiators };
+      return data;
+    });
   };
   const addInitiator = (desc: string) => {
-    const initiator = formData?.possibleInitiators?.find((init: InitiatorOG) => init.desc === desc);
+    const initiator = maapForm?.possibleInitiators?.find((init) => init.name === desc);
     if (initiator && !initiators.includes(initiator)) {
       const newInitiator = {
-        name: initiator.desc,
+        name: initiator.name,
         comment: '',
         id: uuid(),
         value: initiator.value,
       };
       const updatedInitiators = [...initiators, newInitiator];
       setInitiators(updatedInitiators);
-      setFormData((prevFormData: any) => ({ ...prevFormData, initiators: updatedInitiators }));
+      setFormData((prevFormData: MAAPFormData) => {
+        const data = { ...prevFormData, initiators: updatedInitiators };
+        return data;
+    });
     }
   };
 
@@ -48,7 +58,7 @@ const Initiators = () => {
         disablePortal
         id="combo-box-demo"
         options={
-          formData?.possibleInitiators?.map((initiator: { desc: string }) => initiator.desc) || []
+          maapForm?.possibleInitiators?.map((initiator) => initiator.name) || []
         }
         onChange={(e) => addInitiator(e.currentTarget.innerHTML)}
         sx={{ width: 300 }}
@@ -66,7 +76,7 @@ const Initiators = () => {
           </TableRow>
         </TableHead>
         <TableBody>
-          {initiators.map((row: Initiator, idx: number) => (
+          {initiators.map((row, idx) => (
             <TableRow key={idx} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
               <TableCell component="th" scope="row">
                 <div style={{ display: 'flex', flexDirection: 'column' }}>

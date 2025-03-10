@@ -1,6 +1,14 @@
 declare module 'maap-inp-parser' {
   import type { LocationRange, ParserOptions } from 'peggy';
 
+  type WithComment<T> = {
+    comment?: string;
+  } & T;
+
+  type WithVariable<T> = {
+    useVariable?: boolean;
+  } & T;
+
   type Location = {
     location?: LocationRange;
   };
@@ -23,10 +31,12 @@ declare module 'maap-inp-parser' {
     value: boolean;
   };
 
-  export type Identifier = Location & {
-    type: 'identifier';
-    value: string;
-  };
+  export type Identifier = WithVariable<
+    Location & {
+      type: 'identifier';
+      value: string;
+    }
+  >;
 
   export type ParameterName = Location & {
     type: 'parameter_name';
@@ -55,33 +65,39 @@ declare module 'maap-inp-parser' {
 
   export type ExpressionOperator = '**' | '*' | '/' | '>=' | '<=' | '>' | '<' | '+' | '-';
 
-  export type PureExpression = Location & {
-    type: 'expression';
-    value: {
-      left: ExpressionType;
-      op: ExpressionOperator;
-      right: PureExpression | ExpressionType;
-    };
-  };
+  export type PureExpression = WithVariable<
+    Location & {
+      type: 'expression';
+      value: {
+        left: ExpressionType;
+        op: ExpressionOperator;
+        right: PureExpression | ExpressionType;
+      };
+    }
+  >;
 
   export type ExpressionBlock = Location & {
     type: 'expression_block';
     value: PureExpression;
   };
 
-  export type ExpressionType = CallExpression | ExpressionBlock | Variable;
+  export type ExpressionType = WithVariable<CallExpression | ExpressionBlock | Variable>;
 
-  export type Assignment = Location & {
-    target: CallExpression | Identifier;
-    type: 'assignment';
-    value: Expression;
-  };
+  export type Assignment = WithComment<
+    Location & {
+      target: CallExpression | Identifier;
+      type: 'assignment';
+      value: Expression;
+    }
+  >;
 
-  export type IsExpression = Location & {
-    target: Variable;
-    type: 'is_expression';
-    value: Expression;
-  };
+  export type IsExpression = WithVariable<
+    Location & {
+      target: Variable;
+      type: 'is_expression';
+      value: Expression;
+    }
+  >;
 
   export type AsExpression = Location & {
     target: Variable;
@@ -187,7 +203,7 @@ declare module 'maap-inp-parser' {
     value: (SourceElement | Comment)[];
   };
 
-  export type SourceElement =
+  export type SourceElement = WithComment<
     | Statement
     | Assignment
     | AsExpression
@@ -198,7 +214,8 @@ declare module 'maap-inp-parser' {
     | ParameterName
     | Literal
     | Identifier
-    | Comment;
+    | Comment
+  >;
 
   export type MAAPInpParserOutput = {
     errors: PEG.parser.SyntaxError[];
@@ -210,5 +227,13 @@ declare module 'maap-inp-parser' {
     options: WrapperOptions;
     parse(input: string, options?: WrapperOptions): MAAPInpParserOutput;
     toString(input: Program | UserEvtElement | Literal | Identifier): string;
+  };
+}
+
+declare module 'maap-par-parser' {
+  export type MAAPParameter = {
+    desc: string;
+    index: number;
+    value: 'T' | 'F';
   };
 }
