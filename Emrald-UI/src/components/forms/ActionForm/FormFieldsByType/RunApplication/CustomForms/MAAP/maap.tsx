@@ -184,7 +184,7 @@ const MAAP = () => {
           Directory.CreateDirectory(tempLoc);
         }
         catch { }
-        if (File.Exists(paramLoc))
+        if (File.Exists(paramLoc) && !File.Exists(Path.Join(tempLoc, Path.GetFileName(paramLoc))))
         {
           File.Copy(paramLoc, Path.Join(tempLoc, Path.GetFileName(paramLoc)));
         }
@@ -195,7 +195,7 @@ const MAAP = () => {
         foreach (string fileRef in fileRefsList)
         {
           string fileRefPath = Path.Join(inpLocPath, fileRef);
-          if (File.Exists(fileRefPath))
+          if (File.Exists(fileRefPath) && !File.Exists(Path.Join(tempLoc, fileRef)))
           {
             if (fileRef != paramFileName)
             File.Copy(fileRefPath, Path.Join(tempLoc, fileRef));
@@ -206,12 +206,12 @@ const MAAP = () => {
           }
         }
         string exeName = Path.GetFileName(exeLoc);
-        if (File.Exists(exeLoc))
+        if (File.Exists(exeLoc) && !File.Exists(Path.Join(tempLoc, exeName)))
         {
           File.Copy(exeLoc, Path.Join(tempLoc, exeName));
         }
         string dllPath = Path.Join(Path.GetDirectoryName(exeLoc), exeName[..^7] + ".dll");
-        if (File.Exists(dllPath))
+        if (File.Exists(dllPath) && !File.Exists(Path.Join(tempLoc, Path.GetFileName(dllPath))))
         {
           File.Copy(dllPath, Path.Join(tempLoc, Path.GetFileName(dllPath)));
         }
