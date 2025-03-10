@@ -77,7 +77,7 @@ const RunApplication = () => {
   useEffect(() => {
     if (!hasInitialCode) {
       setHasInitialCode(true);
-      if (makeInputFileCode.length === 0) {
+      if (!makeInputFileCode || makeInputFileCode.length === 0) {
         setLocalPreCode('return ""; // return executable parameters');
       } else {
         setLocalPreCode(makeInputFileCode);
@@ -130,7 +130,7 @@ const RunApplication = () => {
 
               <TextFieldComponent
                 label="Executable Location"
-                value={exePath}
+                value={exePath || ''}
                 setValue={setExePath}
               />
               <br />
@@ -222,7 +222,7 @@ const RunApplication = () => {
           >
             {options.map((option) => (
               <MenuItem value={option} key={option}>
-                <em>{startCase(option)}</em>
+                {startCase(option)}
               </MenuItem>
             ))}
           </SelectComponent>

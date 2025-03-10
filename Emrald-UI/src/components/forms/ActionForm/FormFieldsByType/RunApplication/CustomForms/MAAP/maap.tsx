@@ -3,7 +3,7 @@ import { useCustomForm } from '../useCustomForm';
 import { Box, Divider, Tab, Tabs } from '@mui/material';
 import { TextFieldComponent, FileUploadComponent, TabPanel } from '../../../../../../common';
 import { Parameters, Initiators, InputBlocks, Outputs } from './FormFieldsByType';
-import { parse as InputParse } from './Parser/maap-inp-parser.ts';
+import InputParse from './Parser';
 import { parse as parameterParser } from './Parser/maap-par-parser.ts';
 import { v4 as uuid } from 'uuid';
 import { useActionFormContext } from '../../../../ActionFormContext.tsx';
@@ -14,21 +14,29 @@ import {
   expressionTypeToString,
   MAAPToString,
   sourceElementToString,
-} from './Parser/maap-to-string.ts';
-import { Expression, ExpressionType, SourceElement } from 'maap-inp-parser';
+} from './Parser/toString.ts';
+import {
+  ConditionalBlockStatement,
+  Expression,
+  ExpressionType,
+  SourceElement,
+  Comment,
+} from 'maap-inp-parser';
 
-type MAAPFormData = undefined | {
-  exePath: string;
-  sourceElements?: SourceElement[];
-  parameters?: Parameter[];
-  initiators?: Initiator[];
-  inputBlocks?: Record<string, InputBlock>;
-  fileRefs?: string[];
-  inputFile: File | null;
-  inputPath: string;
-  parameterFile: File | null;
-  parameterPath: string;
-};
+export type MAAPFormData =
+  | undefined
+  | {
+      exePath: string;
+      sourceElements?: SourceElement[];
+      parameters?: Parameter[];
+      initiators?: Initiator[];
+      inputBlocks?: Record<string, InputBlock>;
+      fileRefs?: string[];
+      inputFile: File | null;
+      inputPath: string;
+      parameterFile: File | null;
+      parameterPath: string;
+    };
 
 const MAAP = () => {
   const { formData, setFormData, setReturnProcess, ReturnPostCode, ReturnExePath } =
@@ -93,7 +101,7 @@ const MAAP = () => {
             inpFile += 'PARAMETER CHANGE\n';
             maapForm.parameters?.forEach((parameter) => {
               inpFile += `${parameter.name} = `;
-              if (parameter.useVariable) {
+              if (parameter.useVariable && typeof parameter.variable === 'string') {
                 inpFile += `" + ${parameter.variable} + @"`;
                 if (variables.indexOf(parameter.variable) < 0) {
                   variables.push(parameter.variable);
@@ -120,7 +128,10 @@ const MAAP = () => {
             });
             inpFile += 'END\n';
           }
-        } else if (sourceElement.type === 'conditional_block' && maapForm.inputBlocks !== undefined) {
+        } else if (
+          sourceElement.type === 'conditional_block' &&
+          maapForm.inputBlocks !== undefined
+        ) {
           const cblock = maapForm.inputBlocks[block];
           inpFile += `${cblock.blockType} `;
           if ((cblock.test.value.right as Value).useVariable) {
@@ -238,9 +249,9 @@ const MAAP = () => {
       inputPath: cleanInputPath,
       parameterFile,
       parameterPath: cleanParameterPath,
-    }
+    };
     setFormData(newFormdata);
-  }, [inputPath, parameterFile, parameterPath, formData]);
+  }, [inputPath, parameterFile, parameterPath, JSON.stringify(formData)]);
 
   useEffect(() => {
     if (parameterFile) {
@@ -278,22 +289,17 @@ const MAAP = () => {
         const inputFileName = inputFile.name;
         const fileString = await inputFile.text();
         try {
-          const data = InputParse(fileString, {});
+          const data = InputParse.parse(fileString, { locations: false }).output;
 
-          console.log('input file data: ', data.value);
-
-          let docComments: Record<string, InputBlock> = {};
+          let docComments: Record<string, Comment> = {};
           let sections: any = [];
           let parameters: any = [];
           let initiators: any = [];
-          let inputBlocks: InputBlock[] = [];
+          let inputBlocks: ConditionalBlockStatement[] = [];
           let title: string;
           let fileRefs: any = [];
-          let aliasList: any[] = [];
-          let isExpressions: any = [];
-          let plotFil: any;
 
-          data.value.forEach((sourceElement: any, i: any) => {
+          data.value.forEach((sourceElement, i) => {
             if (sourceElement.type === 'comment') {
               // get following source element and see if it is a conditional block
               let nextElement = data.value[i + 1];
@@ -302,7 +308,7 @@ const MAAP = () => {
                   nextElement.id = uuid();
                   inputBlocks.push(nextElement);
                 }
-                docComments[nextElement.id] = sourceElement;
+                docComments[nextElement.id as string] = sourceElement;
               }
             } else {
               sections.push(sourceElement);
@@ -310,17 +316,12 @@ const MAAP = () => {
 
             switch (sourceElement.type) {
               case 'title':
-                title = sourceElement.value;
+                title = sourceElement.value || '';
                 break;
               case 'file':
                 if (sourceElement.fileType) {
                   fileRefs.push(sourceElement.value);
                 }
-                break;
-              case 'alias':
-                sourceElement.value.forEach((element: any) => {
-                  aliasList.push(element);
-                });
                 break;
               case 'block':
                 if (sourceElement.blockType === 'PARAMETER CHANGE') {
@@ -340,12 +341,6 @@ const MAAP = () => {
                   inputBlocks.push(sourceElement);
                 }
                 break;
-              case 'is_expression':
-                isExpressions.push(sourceElement);
-                break;
-              case 'plotfil':
-                plotFil = sourceElement;
-                break;
               default:
                 break;
             }
@@ -364,7 +359,6 @@ const MAAP = () => {
                 useVariable: false,
                 unit: param.value.units,
                 value: param.value.value,
-                variable: '',
               });
             }
           });
@@ -390,9 +384,6 @@ const MAAP = () => {
             inputFileName,
             title,
             fileRefs,
-            aliasList,
-            isExpressions,
-            plotFil,
             sourceElements: data.value,
           }));
         } catch (err) {

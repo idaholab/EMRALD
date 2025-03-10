@@ -28,7 +28,7 @@ export interface Target {
   export interface Initiator {
     name: string;
     comment: string;
-    id: string;
+    id?: string;
     value: string | number;
   }
   export interface ParameterOG {
@@ -41,19 +41,19 @@ export interface Target {
     variable?: string;
   }
   export interface Parameter {
-    id: string;
+    id?: string;
     name: string;
     value: string | number;
     unit?: string;
     useVariable: boolean;
-    variable: string;
+    variable?: string;
     comment?: string;
   }
   export interface InputBlock {
     blockType: string;
     test: Test;
     value: InputResultValue[];
-    id: string;
+    id?: string;
   }
   export interface Test {
     value: InputValue;

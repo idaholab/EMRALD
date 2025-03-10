@@ -133,6 +133,7 @@ declare module 'maap-inp-parser' {
     test: Expression;
     type: 'conditional_block';
     value: SourceElement[];
+    id?: string;
   };
 
   export type AliasStatement = Location & {
