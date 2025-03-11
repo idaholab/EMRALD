@@ -99,7 +99,6 @@ const RunApplication = () => {
     <>
       <FormControl>
         <RadioGroup
-          aria-labelledby="demo-controlled-radio-buttons-group"
           name="controlled-radio-buttons-group"
           value={applicationType}
           onChange={(e) => handleApplicationTypeChange(e.target.value)}

@@ -44,7 +44,6 @@ const StateChange = () => {
   return (
     <div>
       <RadioGroup
-        aria-labelledby="demo-radio-buttons-group-label"
         name="radio-buttons-group"
         value={ifInState}
         onChange={(e) => setIfInState(e.target.value === 'true' ? true : false)}

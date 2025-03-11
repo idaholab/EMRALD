@@ -5,6 +5,7 @@
   "main": "EMRALD_Site/app.js",
   "private": true,
   "scripts": {
+    "dev": "cd Emrald-UI && npm run dev",
     "coverage": "cd Emrald-UI && npm run coverage",
     "tauri": "tauri",
     "test": "cd Emrald-UI && npm run test",

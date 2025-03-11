@@ -8,7 +8,7 @@ const upgrade = upgradeModel(JSON.stringify(emraldData));
 
 export const appData = signal<EMRALD_Model>(storedData ? JSON.parse(storedData) : upgrade);
 
-export const updateAppData = (newData: any, undoData?: any) => {
+export const updateAppData = (newData: EMRALD_Model, undoData?: any) => {
   let updatedData;
   const dataHistory = JSON.parse(sessionStorage.getItem('dataHistory') || '[]');
 

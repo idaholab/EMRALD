@@ -166,7 +166,6 @@ const ImportForm: React.FC<ImportDiagramFormProps> = ({ importedData, fromTempla
                   <FormControl>
                     <RadioGroup
                       row
-                      aria-labelledby="demo-row-radio-buttons-group-label"
                       name="row-radio-buttons-group"
                       value={row.action}
                       onChange={(e) => handleActionChange(index, e.target.value)}
@@ -200,13 +199,14 @@ const ImportForm: React.FC<ImportDiagramFormProps> = ({ importedData, fromTempla
                       <FormControlLabel
                         value="rename"
                         control={<Radio disabled={row.locked || row.required} />}
-                        label="New Name"
+                        label="Rename"
                       />
                     </RadioGroup>
                   </FormControl>
                 </TableCell>
                 <TableCell align="left">
                   <TextField
+                    label="New Name"
                     value={row.action === 'rename' ? row.newName : ''}
                     disabled={row.locked || row.action !== 'rename'}
                     onChange={(e) => handleNewNameChange(index, e.target.value)}

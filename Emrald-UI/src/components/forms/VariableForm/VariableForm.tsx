@@ -97,7 +97,7 @@ const VariableForm: React.FC<VariableFormProps> = ({ variableData }) => {
           reqPropsFilled={name && varScope && value !== '' ? true : false}
         >
           <FormControl variant="outlined" size="small" sx={{ minWidth: 120, width: '100%', my: 1 }}>
-            <InputLabel id="demo-simple-select-standard-label">Scope</InputLabel>
+            <InputLabel>Scope</InputLabel>
             <Select
               labelId="var-scope"
               id="var-scope"
@@ -137,7 +137,7 @@ const VariableForm: React.FC<VariableFormProps> = ({ variableData }) => {
                   size="small"
                   sx={{ minWidth: 120, width: '100%', my: 1 }}
                 >
-                  <InputLabel id="demo-simple-select-standard-label">Start Value</InputLabel>
+                  <InputLabel>Start Value</InputLabel>
                   <Select
                     labelId="value"
                     id="value"

@@ -55,7 +55,7 @@ const DocLinkFields: React.FC<DocLinkFieldsProps> = ({
   return (
     <>
       <FormControl variant="outlined" size="small" sx={{ minWidth: 120, width: '100%', my: 1 }}>
-        <InputLabel id="demo-simple-select-standard-label">Doc Type</InputLabel>
+        <InputLabel>Doc Type</InputLabel>
         <Select
           labelId="doc-type"
           id="dec-=type"
@@ -208,7 +208,7 @@ const DocLinkFields: React.FC<DocLinkFieldsProps> = ({
         />
       ) : type === 'bool' ? (
         <FormControl variant="outlined" size="small" sx={{ minWidth: 120, width: '100%', my: 1 }}>
-          <InputLabel id="demo-simple-select-standard-label">Default</InputLabel>
+          <InputLabel>Default</InputLabel>
           <Select
             labelId="value"
             id="value"
