@@ -228,7 +228,6 @@ const DiagramForm: React.FC<DiagramFormProps> = ({ diagramData }) => {
             <Autocomplete
               freeSolo
               disabled={!!selectedTemplate || !!importDiagram}
-              id="combo-box-demo"
               options={diagramLabels}
               renderInput={(params) => <TextField {...params} label="Diagram Group Label" />}
               onChange={(_event, newValue) => setDiagramLabel(newValue as string)}

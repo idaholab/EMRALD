@@ -1,0 +1,19 @@
+** Tests conditional block statements **
+
+C When default
+WHEN VARIABLE IS TRUE
+VARNAME = 1000
+END
+
+C When empty
+WHEN VARIABLE IS TRUE
+END
+
+C If default
+IF VARIABLE IS TRUE
+VARNAME = 1000
+END
+
+C If empty
+IF VARIABLE IS TRUE
+END

@@ -39,6 +39,7 @@ function removeIds(action: Action) {
     }
     if (formData.sourceElements) {
       for (let i = 0; i < formData.sourceElements.length; i += 1) {
+        // @ts-ignore
         delete formData.sourceElements[i].id;
       }
     }
@@ -47,7 +48,14 @@ function removeIds(action: Action) {
   return action;
 }
 
-describe('MAAP Form', () => {
+describe('MAAP Form', async () => {
+  const TestPAR = new File([await fs.readFile(path.join(__dirname, 'Test.PAR'))], 'Test.PAR', {
+    type: 'text/plain',
+  });
+  const TestINP = new File([await fs.readFile(path.join(__dirname, 'Test.INP'))], 'Test.INP', {
+    type: 'text',
+  });
+
   test('loads and parses files', async () => {
     const name = 'loads and parses files';
     renderActionForm(
@@ -73,20 +81,10 @@ describe('MAAP Form', () => {
     await user.type(await screen.findByLabelText('Full Input File Path'), 'C:\\Test.INP');
 
     // Upload parameter file
-    await user.upload(
-      await screen.findByLabelText('Parameter File'),
-      new File(['test'], 'Test.PAR', {
-        type: 'text/plain',
-      }),
-    );
+    await user.upload(await screen.findByLabelText('Parameter File'), TestPAR);
 
     // Upload INP file
-    await user.upload(
-      await screen.findByLabelText('Input File'),
-      new File([await fs.readFile(path.join(__dirname, 'Test.INP'))], 'Test.INP', {
-        type: 'text',
-      }),
-    );
+    await user.upload(await screen.findByLabelText('Input File'), TestINP);
 
     await save();
     expect(removeIds(getAction(name))).toEqual(expected[name]);
@@ -117,20 +115,10 @@ describe('MAAP Form', () => {
     await user.type(await screen.findByLabelText('Full Input File Path'), 'C:\\Test.INP');
 
     // Upload parameter file
-    await user.upload(
-      await screen.findByLabelText('Parameter File'),
-      new File(['test'], 'Test.PAR', {
-        type: 'text/plain',
-      }),
-    );
+    await user.upload(await screen.findByLabelText('Parameter File'), TestPAR);
 
     // Upload INP file
-    await user.upload(
-      await screen.findByLabelText('Input File'),
-      new File([await fs.readFile(path.join(__dirname, 'Test.INP'))], 'Test.INP', {
-        type: 'text',
-      }),
-    );
+    await user.upload(await screen.findByLabelText('Input File'), TestINP);
 
     // Add a variable to the model
     await ensureVariable('Test Variable');
@@ -147,6 +135,98 @@ describe('MAAP Form', () => {
 
     // Select the variable in the WHEN block body
     await selectOption('Assignment Right Hand Side', 'Test Variable');
+
+    await save();
+    expect(removeIds(getAction(name))).toEqual(expected[name]);
+  });
+
+  test('modifies initiators', async () => {
+    const name = 'modifies initiators';
+    renderActionForm(
+      <ActionForm
+        actionData={{
+          name,
+          desc: '',
+          objType: 'Action',
+          mainItem: true,
+          actType: 'atRunExtApp',
+        }}
+      ></ActionForm>,
+    );
+    const user = userEvent.setup();
+
+    // Load the MAAP form
+    await user.click(await screen.findByLabelText('Use Custom Application'));
+    await selectOption('Custom Application Type', 'MAAP');
+
+    // Enter file paths
+    await user.type(await screen.findByLabelText('MAAP Executable Path'), 'C:\\MAAP.exe');
+    await user.type(await screen.findByLabelText('Full Parameter File Path'), 'C:\\Test.PAR');
+    await user.type(await screen.findByLabelText('Full Input File Path'), 'C:\\Test.INP');
+
+    // Upload parameter file
+    await user.upload(await screen.findByLabelText('Parameter File'), TestPAR);
+
+    // Upload INP file
+    await user.upload(await screen.findByLabelText('Input File'), TestINP);
+
+    // Switch to initiators tab
+    await user.click(await screen.findByText('Initiators'));
+
+    // Add an initiator
+    await user.type(await screen.findByLabelText('Add Initiator'), 'P');
+    await user.click(await screen.findByRole('option', { name: 'PARAM1' }));
+
+    // Remove an initiator
+    await user.click((await screen.findAllByLabelText('Remove Initiator'))[1]);
+
+    await save();
+    expect(removeIds(getAction(name))).toEqual(expected[name]);
+  });
+
+  test('sets outputs', async () => {
+    const name = 'sets output';
+    renderActionForm(
+      <ActionForm
+        actionData={{
+          name,
+          desc: '',
+          objType: 'Action',
+          mainItem: true,
+          actType: 'atRunExtApp',
+        }}
+      ></ActionForm>,
+    );
+    const user = userEvent.setup();
+
+    // Load the MAAP form
+    await user.click(await screen.findByLabelText('Use Custom Application'));
+    await selectOption('Custom Application Type', 'MAAP');
+
+    // Enter file paths
+    await user.type(await screen.findByLabelText('MAAP Executable Path'), 'C:\\MAAP.exe');
+    await user.type(await screen.findByLabelText('Full Parameter File Path'), 'C:\\Test.PAR');
+    await user.type(await screen.findByLabelText('Full Input File Path'), 'C:\\Test.INP');
+
+    // Upload parameter file
+    await user.upload(await screen.findByLabelText('Parameter File'), TestPAR);
+
+    // Upload INP file
+    await user.upload(await screen.findByLabelText('Input File'), TestINP);
+
+    // Create a doc link variable
+    await ensureVariable('Test DocLink Variable', {
+      varScope: 'gtDocLink',
+    });
+
+    // Switch to outputs tab
+    await user.click(await screen.findByText('Outputs'));
+
+    // Add an output
+    await user.click(await screen.findByLabelText('Doc Link Variables'));
+    await user.click(await screen.findByRole('option', { name: 'Test DocLink Variable' }));
+    await user.click(await screen.findByLabelText('Output'));
+    await user.click(await screen.findByRole('option', { name: 'Core Uncovery' }));
 
     await save();
     expect(removeIds(getAction(name))).toEqual(expected[name]);

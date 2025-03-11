@@ -56,7 +56,6 @@ const Initiators = () => {
       <Autocomplete
         size="small"
         disablePortal
-        id="combo-box-demo"
         options={
           maapForm?.possibleInitiators?.map((initiator) => initiator.name) || []
         }

@@ -1,0 +1,33 @@
+** Tests block statements **
+
+C Default
+PARAMETER CHANGE
+VarName(1) = 1
+END
+
+C Empty
+PARAMETER CHANGE
+END
+
+C With nested source elements
+PARAMETER CHANGE
+IF VarName(1) IS 1
+SET TIMER #1
+END
+END
+
+C Default
+INITIATORS
+VarName(1) = 1
+END
+
+C Empty
+INITIATORS
+END
+
+C With nested source elements
+INITIATORS
+IF VarName(1) IS 1
+SET TIMER #1
+END
+END

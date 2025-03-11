@@ -1,0 +1,10 @@
+// Invalid item in block
+INITIATORS
+A VALID INITIATOR
+ANOTHER VALID INITIATOR
+IS NOT VALID
+END
+
+// Invalid block
+PLOTFIL
+END

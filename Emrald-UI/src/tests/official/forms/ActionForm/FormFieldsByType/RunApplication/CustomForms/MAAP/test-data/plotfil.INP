@@ -1,0 +1,8 @@
+** Tests plotfil statements **
+
+C Default
+PLOTFIL 3
+A,B,C
+D,E,F
+G,H,I(J)
+END
