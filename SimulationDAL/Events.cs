@@ -267,8 +267,6 @@ namespace SimulationDAL
         changed = new MyBitArray(curStates.Length);
       }
       
-      //changed.OrApply(((ChangedIDs)otherData).stateIDs_BS);
-
       
       if (_relatedIDsBitSet.Length < curStates.Length)
         _relatedIDsBitSet.Length = curStates.Length;
@@ -277,32 +275,25 @@ namespace SimulationDAL
       {
         changed = new MyBitArray(curStates.Length);
       }
-      //MyBitArray changed = new MyBitArray(_relatedIDsBitSet);
+      
+      //find the changed items that are appicable for entry or exit
       if (!ifInState)
       {
-        //find in changed and not in current (xor then and with origional)
-        MyBitArray compareBits = ((ChangedIDs)otherData).stateIDs_BS.Xor(curStates).And(((ChangedIDs)otherData).stateIDs_BS);
-        changed.OrApply(compareBits);
+        //find in changed and not in current
+        changed = ((ChangedIDs)otherData).stateIDs_BS.And(curStates.Not());
       }
-      else
-        changed.OrApply(((ChangedIDs)otherData).stateIDs_BS);
+      else //in the specified state
+      {
+        //find if in changedID and in current states
+        changed = ((ChangedIDs)otherData).stateIDs_BS.And(curStates);
+      }
 
+      //make changed are also in the related items
       MyBitArray cngAndRelated = changed.And(_relatedIDsBitSet);
       if (this.allItems)
         return (cngAndRelated.BitCount() == relatedIDs.Count());
       else
         return cngAndRelated.BitCount() > 0;
-
-      //if (ifInState) //We are looking for an item in the list to trigger us       
-      //{
-      //  //curStates must contain all of the items in relatedIDs
-      //  return (both.BitCount() == _relatedIDsBitSet.BitCount());
-      //}
-      //else //Don't want to be in the specified states
-      //{
-      //  //curStates must contain none of the items in relatedIDs
-      //  return (both.BitCount() == 0);
-      //}
     }
 
     public override void LookupRelatedItems(EmraldModel all, EmraldModel addToList)
