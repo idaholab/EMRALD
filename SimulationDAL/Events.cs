@@ -261,39 +261,37 @@ namespace SimulationDAL
 
     public override bool EventTriggered(MyBitArray curStates, object otherData, TimeSpan curSimTime, TimeSpan start3DTime, TimeSpan nextEvTime, int runIdx)
     {
-      //do a bitset operation to keep track of changed items that are related
+      //make a bitset for the changed item and do operations that are needed for a match
       if (changed == null)
       {
         changed = new MyBitArray(curStates.Length);
       }
-      
-      
       if (_relatedIDsBitSet.Length < curStates.Length)
         _relatedIDsBitSet.Length = curStates.Length;
 
-      if (changed == null)
+      changed = ((ChangedIDs)otherData).stateIDs_BS;
+
+      //are there related items that have changed
+      if (changed.And(_relatedIDsBitSet).Count == 0)
+        return false;
+
+      //find the items that are appicable for entry or exit
+      if (ifInState)
       {
-        changed = new MyBitArray(curStates.Length);
+        //get all the states we are current in and are in the realted IDS.
+        changed = _relatedIDsBitSet.And(curStates);
       }
-      
-      //find the changed items that are appicable for entry or exit
-      if (!ifInState)
+      else //in the specified state/s
       {
-        //find in changed and not in current
-        changed = ((ChangedIDs)otherData).stateIDs_BS.And(curStates.Not());
-      }
-      else //in the specified state
-      {
-        //find if in changedID and in current states
-        changed = ((ChangedIDs)otherData).stateIDs_BS.And(curStates);
+        //get all the states we are not in current states and are in the realted IDS.
+        changed = _relatedIDsBitSet.And(curStates.Not());
       }
 
-      //make changed are also in the related items
-      MyBitArray cngAndRelated = changed.And(_relatedIDsBitSet);
+      //return if in one of or all the states as specified
       if (this.allItems)
-        return (cngAndRelated.BitCount() == relatedIDs.Count());
+        return (changed.BitCount() == relatedIDs.Count());
       else
-        return cngAndRelated.BitCount() > 0;
+        return changed.BitCount() > 0;
     }
 
     public override void LookupRelatedItems(EmraldModel all, EmraldModel addToList)
