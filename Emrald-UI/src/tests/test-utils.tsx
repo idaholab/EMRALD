@@ -1,9 +1,9 @@
-import { findByRole, fireEvent, render, RenderOptions, screen, act } from '@testing-library/react';
+import { findByRole, fireEvent, render, RenderOptions, screen } from '@testing-library/react';
 import 'jest-extended';
 import EmraldContextWrapper from '../contexts/EmraldContextWrapper';
-import React from 'react';
+import React, { act } from 'react';
 import { EMRALD_Model } from '../types/EMRALD_Model';
-import { updateAppData } from '../hooks/useAppData';
+import { appData, updateAppData } from '../hooks/useAppData';
 import Sidebar from '../components/layout/Sidebar/Sidebar';
 import userEvent from '@testing-library/user-event';
 import { Variable } from '../types/Variable';
@@ -14,6 +14,8 @@ import EventFormContextProvider from '../components/forms/EventForm/EventFormCon
 import ActionContextProvider from '../contexts/ActionContext';
 import ActionFormContextProvider from '../components/forms/ActionForm/ActionFormContext';
 import { ExtSim } from '../types/ExtSim';
+import VariableContextProvider from '../contexts/VariableContext';
+import VariableFormContextProvider from '../components/forms/VariableForm/VariableFormContext';
 
 const customRender = (ui: React.ReactNode, options?: RenderOptions) => {
   render(
@@ -54,11 +56,46 @@ export const renderActionForm = (ui: React.ReactNode, options?: RenderOptions) =
 };
 
 /**
+ * Shortcut function to render the VariableForm component with all the required context provider wrappers.
+ */
+export const renderVariableForm = (ui: React.ReactNode, options?: RenderOptions) => {
+  customRender(
+    <VariableContextProvider>
+      <VariableFormContextProvider>{ui}</VariableFormContextProvider>
+    </VariableContextProvider>,
+    options,
+  );
+};
+
+/**
+ * Helper function to create/reset the model in sessionStorage.
+ */
+export function ensureModel() {
+  if (sessionStorage.getItem('appData') === null) {
+    act(() => {
+      updateAppData({
+        objType: 'EMRALD_Model',
+        name: 'Test Model',
+        desc: '',
+        version: 1,
+        DiagramList: [],
+        ExtSimList: [],
+        StateList: [],
+        ActionList: [],
+        EventList: [],
+        LogicNodeList: [],
+        VariableList: [],
+      });
+    });
+  }
+}
+
+/**
  * Helper function to manually apply a change to the EMRALD model.
  * @param fn - A function to apply the change to the model.
  */
 export async function updateModel(fn: (model: EMRALD_Model) => EMRALD_Model) {
-  await save();
+  ensureModel();
   const appData = sessionStorage.getItem('appData');
   if (appData) {
     let model = JSON.parse(appData) as EMRALD_Model;
@@ -193,19 +230,13 @@ export async function ensureExtSim(name: string, data?: Partial<ExtSim>) {
  * @returns The most recently added event with the given name, with the ID property removed.
  */
 export function getEvent(name: string) {
-  const appData = sessionStorage.getItem('appData');
-  if (appData) {
-    let model = JSON.parse(appData) as EMRALD_Model;
-    const matches = model.EventList.filter((e) => e.name === name);
-    if (matches.length === 0) {
-      throw new Error(`Could not find event ${name} in model.`);
-    }
-    const event = matches[matches.length - 1];
-    delete event.id;
-    return event;
-  } else {
-    throw new Error('No EMRALD model present in sessionStorage.');
+  const matches = appData.value.EventList.filter((e) => e.name === name);
+  if (matches.length === 0) {
+    throw new Error(`Could not find event ${name} in model.`);
   }
+  const event = matches[matches.length - 1];
+  delete event.id;
+  return event;
 }
 
 /**
@@ -214,19 +245,13 @@ export function getEvent(name: string) {
  * @returns The most recently added state with the given name, with the ID property removed.
  */
 export function getState(name: string) {
-  const appData = sessionStorage.getItem('appData');
-  if (appData) {
-    let model = JSON.parse(appData) as EMRALD_Model;
-    const matches = model.StateList.filter((e) => e.name === name);
-    if (matches.length === 0) {
-      throw new Error(`Could not find state ${name} in model.`);
-    }
-    const state = matches[matches.length - 1];
-    delete state.id;
-    return state;
-  } else {
-    throw new Error('No EMRALD model present in sessionStorage.');
+  const matches = appData.value.StateList.filter((e) => e.name === name);
+  if (matches.length === 0) {
+    throw new Error(`Could not find state ${name} in model.`);
   }
+  const state = matches[matches.length - 1];
+  delete state.id;
+  return state;
 }
 
 /**
@@ -235,19 +260,13 @@ export function getState(name: string) {
  * @returns The most recently added variable with the given name, with the ID property removed.
  */
 export function getVariable(name: string) {
-  const appData = sessionStorage.getItem('appData');
-  if (appData) {
-    let model = JSON.parse(appData) as EMRALD_Model;
-    const matches = model.VariableList.filter((e) => e.name === name);
-    if (matches.length === 0) {
-      throw new Error(`Could not find variable ${name} in model.`);
-    }
-    const variable = matches[matches.length - 1];
-    delete variable.id;
-    return variable;
-  } else {
-    throw new Error('No EMRALD model present in sessionStorage.');
+  const matches = appData.value.VariableList.filter((e) => e.name === name);
+  if (matches.length === 0) {
+    throw new Error(`Could not find variable ${name} in model.`);
   }
+  const variable = matches[matches.length - 1];
+  delete variable.id;
+  return variable;
 }
 
 /**
@@ -256,19 +275,13 @@ export function getVariable(name: string) {
  * @returns The most recently added logic node with the given name, with the ID property removed.
  */
 export function getLogicNode(name: string) {
-  const appData = sessionStorage.getItem('appData');
-  if (appData) {
-    let model = JSON.parse(appData) as EMRALD_Model;
-    const matches = model.LogicNodeList.filter((e) => e.name === name);
-    if (matches.length === 0) {
-      throw new Error(`Could not find logic node ${name} in model.`);
-    }
-    const node = matches[matches.length - 1];
-    delete node.id;
-    return node;
-  } else {
-    throw new Error('No EMRALD model present in sessionStorage.');
+  const matches = appData.value.LogicNodeList.filter((e) => e.name === name);
+  if (matches.length === 0) {
+    throw new Error(`Could not find logic node ${name} in model.`);
   }
+  const node = matches[matches.length - 1];
+  delete node.id;
+  return node;
 }
 
 /**
@@ -277,19 +290,13 @@ export function getLogicNode(name: string) {
  * @returns The most recently added diagram with the given name, with the ID property removed.
  */
 export function getDiagram(name: string) {
-  const appData = sessionStorage.getItem('appData');
-  if (appData) {
-    let model = JSON.parse(appData) as EMRALD_Model;
-    const matches = model.DiagramList.filter((e) => e.name === name);
-    if (matches.length === 0) {
-      throw new Error(`Could not find diagram ${name} in model.`);
-    }
-    const diagram = matches[matches.length - 1];
-    delete diagram.id;
-    return diagram;
-  } else {
-    throw new Error('No EMRALD model present in sessionStorage.');
+  const matches = appData.value.DiagramList.filter((e) => e.name === name);
+  if (matches.length === 0) {
+    throw new Error(`Could not find diagram ${name} in model.`);
   }
+  const diagram = matches[matches.length - 1];
+  delete diagram.id;
+  return diagram;
 }
 
 /**
@@ -298,19 +305,13 @@ export function getDiagram(name: string) {
  * @returns The most recently added external sim with the given name, with the ID property removed.
  */
 export function getExtSim(name: string) {
-  const appData = sessionStorage.getItem('appData');
-  if (appData) {
-    let model = JSON.parse(appData) as EMRALD_Model;
-    const matches = model.ExtSimList.filter((e) => e.name === name);
-    if (matches.length === 0) {
-      throw new Error(`Could not find ext sim ${name} in model.`);
-    }
-    const extSim = matches[matches.length - 1];
-    delete extSim.id;
-    return extSim;
-  } else {
-    throw new Error('No EMRALD model present in sessionStorage.');
+  const matches = appData.value.ExtSimList.filter((e) => e.name === name);
+  if (matches.length === 0) {
+    throw new Error(`Could not find ext sim ${name} in model.`);
   }
+  const extSim = matches[matches.length - 1];
+  delete extSim.id;
+  return extSim;
 }
 
 /**
@@ -319,19 +320,13 @@ export function getExtSim(name: string) {
  * @returns The most recently added action with the given name, with the ID property removed.
  */
 export function getAction(name: string) {
-  const appData = sessionStorage.getItem('appData');
-  if (appData) {
-    let model = JSON.parse(appData) as EMRALD_Model;
-    const matches = model.ActionList.filter((e) => e.name === name);
-    if (matches.length === 0) {
-      throw new Error(`Could not find action ${name} in model.`);
-    }
-    const action = matches[matches.length - 1];
-    delete action.id;
-    return action;
-  } else {
-    throw new Error('No EMRALD model present in sessionStorage.');
+  const matches = appData.value.ActionList.filter((e) => e.name === name);
+  if (matches.length === 0) {
+    throw new Error(`Could not find action ${name} in model.`);
   }
+  const action = matches[matches.length - 1];
+  delete action.id;
+  return action;
 }
 
 /**

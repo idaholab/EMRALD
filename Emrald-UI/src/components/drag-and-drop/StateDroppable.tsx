@@ -62,7 +62,7 @@ const StateDropTarget: React.FC = () => {
             fontWeight: 'bold',
           }}
         >
-          Drop State Items here
+          Drop State Items Here
         </Box>
       )}
     </Box>

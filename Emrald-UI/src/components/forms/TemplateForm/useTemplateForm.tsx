@@ -26,7 +26,8 @@ interface TemplatedItem {
 }
 
 export const useTemplateForm = (templatedData: EMRALD_Model) => {
-  const {groups, temporaryTemplates, createTemplate, findGroupHierarchyByGroupName} = useTemplateContext();
+  const { groups, temporaryTemplates, createTemplate, findGroupHierarchyByGroupName } =
+    useTemplateContext();
   const [findValue, setFindValue] = useState<string>('');
   const [replaceValue, setReplaceValue] = useState<string>('');
   const [templatedItems, setTemplatedItems] = useState<TemplatedItem[]>([]);
@@ -42,7 +43,9 @@ export const useTemplateForm = (templatedData: EMRALD_Model) => {
   const [groupList, setGroupList] = useState<Group[]>(groups ? groups : []);
   const { handleClose } = useWindowContext();
   const [expanded, setExpanded] = useState(['Group 1']);
-  const [diagramStates, setDiagramStates] = useState<string[]>(templatedData.DiagramList[0]?.states);
+  const [diagramStates, setDiagramStates] = useState<string[]>(
+    templatedData.DiagramList[0]?.states,
+  );
 
   useEffect(() => {
     setTemplatedItems(convertModelToArray(templatedData));
@@ -146,15 +149,26 @@ export const useTemplateForm = (templatedData: EMRALD_Model) => {
     return items.sort((a, b) => {
       if (a.type === MainItemTypes.Diagram) return -1;
       if (a.type === MainItemTypes.State && b.type !== MainItemTypes.Diagram) return -1;
-      if (a.type === MainItemTypes.Event && b.type !== MainItemTypes.Diagram && b.type !== MainItemTypes.State) return -1;
-      if (a.type === MainItemTypes.Action && b.type !== MainItemTypes.Diagram && b.type !== MainItemTypes.State && b.type !== MainItemTypes.Event) return -1;
+      if (
+        a.type === MainItemTypes.Event &&
+        b.type !== MainItemTypes.Diagram &&
+        b.type !== MainItemTypes.State
+      )
+        return -1;
+      if (
+        a.type === MainItemTypes.Action &&
+        b.type !== MainItemTypes.Diagram &&
+        b.type !== MainItemTypes.State &&
+        b.type !== MainItemTypes.Event
+      )
+        return -1;
       return 1;
     });
   };
 
   const checkIfDiagramDirectState = (stateName: string) => {
     return diagramStates.includes(stateName);
-  }
+  };
 
   const addNewGroup = () => {
     setGroupList((prevGroups) => {
@@ -220,7 +234,7 @@ export const useTemplateForm = (templatedData: EMRALD_Model) => {
   const handleNewGroupNameChange = (name: string) => {
     setNewGroupName(name);
     checkDuplicateName(name);
-  }
+  };
 
   const handleShowGroupDialog = (type: string) => {
     setGroupType(type);
@@ -313,11 +327,20 @@ export const useTemplateForm = (templatedData: EMRALD_Model) => {
     const updatedItems = [...templatedItems];
     updatedItems[index].required = required;
     if ('required' in updatedItems[index].emraldItem) {
-      (updatedItems[index].emraldItem as Action | Diagram | LogicNode | ExtSim | Event | State | Variable).required = required;
+      (
+        updatedItems[index].emraldItem as
+          | Action
+          | Diagram
+          | LogicNode
+          | ExtSim
+          | Event
+          | State
+          | Variable
+      ).required = required;
     }
     setTemplatedItems(updatedItems);
   };
-  
+
   const handleApply = () => {
     setTemplatedItems((prevItems) => {
       const updatedItems = prevItems.map((item) => {
@@ -334,19 +357,50 @@ export const useTemplateForm = (templatedData: EMRALD_Model) => {
     });
   };
 
-  const removeExcludedItems = () => {
-    return new Promise<void>((resolve) => {
-      templatedData.DiagramList = templatedData.DiagramList.filter((d) => !templatedItems.find((ti) => ti.type === MainItemTypes.Diagram && ti.exclude && d.name === ti.newName));
-      templatedData.LogicNodeList = templatedData.LogicNodeList.filter((d) => !templatedItems.find((ti) => ti.type === MainItemTypes.LogicNode && ti.exclude && d.name === ti.newName));
-      templatedData.ActionList = templatedData.ActionList.filter((d) => !templatedItems.find((ti) => ti.type === MainItemTypes.Action && ti.exclude && d.name === ti.newName));
-      templatedData.ExtSimList = templatedData.ExtSimList.filter((d) => !templatedItems.find((ti) => ti.type === MainItemTypes.ExtSim && ti.exclude && d.name === ti.newName));
-      templatedData.EventList = templatedData.EventList.filter((d) => !templatedItems.find((ti) => ti.type === MainItemTypes.Event && ti.exclude && d.name === ti.newName));
-      templatedData.StateList = templatedData.StateList.filter((d) => !templatedItems.find((ti) => ti.type === MainItemTypes.State && ti.exclude && d.name === ti.newName));
-      templatedData.VariableList = templatedData.VariableList.filter((d) => !templatedItems.find((ti) => ti.type === MainItemTypes.Variable && ti.exclude && d.name === ti.newName));
-
-      resolve();
-    })
-  }
+  const removeExcludedItems = async () => {
+    templatedData.DiagramList = templatedData.DiagramList.filter(
+      (d) =>
+        !templatedItems.find(
+          (ti) => ti.type === MainItemTypes.Diagram && ti.exclude && d.name === ti.newName,
+        ),
+    );
+    templatedData.LogicNodeList = templatedData.LogicNodeList.filter(
+      (d) =>
+        !templatedItems.find(
+          (ti) => ti.type === MainItemTypes.LogicNode && ti.exclude && d.name === ti.newName,
+        ),
+    );
+    templatedData.ActionList = templatedData.ActionList.filter(
+      (d) =>
+        !templatedItems.find(
+          (ti) => ti.type === MainItemTypes.Action && ti.exclude && d.name === ti.newName,
+        ),
+    );
+    templatedData.ExtSimList = templatedData.ExtSimList.filter(
+      (d) =>
+        !templatedItems.find(
+          (ti) => ti.type === MainItemTypes.ExtSim && ti.exclude && d.name === ti.newName,
+        ),
+    );
+    templatedData.EventList = templatedData.EventList.filter(
+      (d) =>
+        !templatedItems.find(
+          (ti) => ti.type === MainItemTypes.Event && ti.exclude && d.name === ti.newName,
+        ),
+    );
+    templatedData.StateList = templatedData.StateList.filter(
+      (d) =>
+        !templatedItems.find(
+          (ti) => ti.type === MainItemTypes.State && ti.exclude && d.name === ti.newName,
+        ),
+    );
+    templatedData.VariableList = templatedData.VariableList.filter(
+      (d) =>
+        !templatedItems.find(
+          (ti) => ti.type === MainItemTypes.Variable && ti.exclude && d.name === ti.newName,
+        ),
+    );
+  };
 
   const handleSave = async () => {
     templatedData.id = uuidv4();
@@ -365,13 +419,13 @@ export const useTemplateForm = (templatedData: EMRALD_Model) => {
         }
         await updateSpecifiedModel(itemCopy, item.type, templatedData, false);
         const updatedItems = convertModelToArray(templatedData);
-        if (updatedItems[i]?.emraldItem) {          
+        if (updatedItems[i]?.emraldItem) {
           item.emraldItem = updatedItems[i].emraldItem;
           item.emraldItem.id = uuidv4();
         }
       }
     }
-  
+
     // Proceed with creating the template and closing the window
     createTemplate(templatedData);
     handleClose();
@@ -424,6 +478,6 @@ export const useTemplateForm = (templatedData: EMRALD_Model) => {
     deleteItem,
     toggleExpand,
     handleNewGroupNameChange,
-    checkDuplicateName
+    checkDuplicateName,
   };
 };

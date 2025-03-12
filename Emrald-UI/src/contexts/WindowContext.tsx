@@ -4,7 +4,10 @@ import React, { createContext, useContext, useState, ReactNode } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 
 interface WindowPosition {
-  x: number, y: number, width: number, height: number
+  x: number;
+  y: number;
+  width: number;
+  height: number;
 }
 interface Window {
   id: string;
@@ -19,7 +22,13 @@ interface Window {
 interface WindowContextType {
   windows: Window[];
   activeWindowId: string | null;
-  addWindow: (title: string, content: React.ReactNode, position?: WindowPosition, windowId?: string | null, closePrevWindowId?: string) => void;
+  addWindow: (
+    title: string,
+    content: React.ReactNode,
+    position?: WindowPosition,
+    windowId?: string | null,
+    closePrevWindowId?: string,
+  ) => void;
   updateTitle: (currentTitle: string, newTitle: string) => Promise<void>;
   bringToFront: (window: Window) => void;
   handleClose: (id?: string) => Promise<void>;
@@ -54,12 +63,9 @@ export const WindowProvider: React.FC<WindowProviderProps> = ({ children }) => {
   const [nextWindowId, setNextWindowId] = useState<number>(1);
   const [activeWindowId, setActiveWindowId] = useState<string | null>(null);
 
-
   // Bring a window to the front
   const bringToFront = (selectedWindow: Window) => {
-    const windowIndex = windows.findIndex(
-      (window) => window.id === selectedWindow.id,
-    );
+    const windowIndex = windows.findIndex((window) => window.id === selectedWindow.id);
     if (windowIndex !== -1) {
       const updatedWindows = [...windows];
       updatedWindows.splice(windowIndex, 1);
@@ -70,7 +76,6 @@ export const WindowProvider: React.FC<WindowProviderProps> = ({ children }) => {
   };
 
   const handleClose = async (id?: string) => {
-    return new Promise<void>((resolve) => {
     const windowIdToClose = id || activeWindowId; // Use activeWindowId if id is not provided
     if (windowIdToClose) {
       const filteredWindows = windows.filter((window) => window.id !== windowIdToClose);
@@ -79,12 +84,18 @@ export const WindowProvider: React.FC<WindowProviderProps> = ({ children }) => {
         setActiveWindowId(null); // Reset activeWindowId if the closed window was active
       }
     }
-    resolve();
-    })
   };
 
-  const addWindow = (title: string, content: React.ReactNode, position?: WindowPosition, windowId?: string | null, closePrevWindowId?: string): void => {
-    const existingWindow = windows.find((window) => window.title === title || window.id === windowId);
+  const addWindow = (
+    title: string,
+    content: React.ReactNode,
+    position?: WindowPosition,
+    windowId?: string | null,
+    closePrevWindowId?: string,
+  ): void => {
+    const existingWindow = windows.find(
+      (window) => window.title === title || window.id === windowId,
+    );
 
     if (existingWindow) {
       if (existingWindow.title !== title) {
@@ -96,12 +107,16 @@ export const WindowProvider: React.FC<WindowProviderProps> = ({ children }) => {
       return;
     }
 
-
     const newWindow: Window = {
       id: uuidv4(),
       title,
       isOpen: true,
-      initialPosition: position || { x: 100, y: 50, width: isMediumScreen ? 700 : 900, height: isMediumScreen ? 400 : 500 },
+      initialPosition: position || {
+        x: 100,
+        y: 50,
+        width: isMediumScreen ? 700 : 900,
+        height: isMediumScreen ? 400 : 500,
+      },
       minimized: false,
       maximized: false,
       content,
@@ -120,20 +135,17 @@ export const WindowProvider: React.FC<WindowProviderProps> = ({ children }) => {
   const getWindowTitleById = (id: string | null): string | undefined => {
     return windows.find((window) => window.id === id)?.title;
   };
-  
-  const updateTitle = (currentTitle: string, newTitle: string): Promise<void> => {
-    return new Promise<void>(async (resolve) => {
-      const windowToUpdate = windows.find((window) => window.title === currentTitle);
-      if (windowToUpdate) {
-        addWindow(
-          newTitle,
-          windowToUpdate.content,
-          windowToUpdate.initialPosition,
-          windowToUpdate.id,
-        );
-      }
-      resolve();
-    });
+
+  const updateTitle = async (currentTitle: string, newTitle: string): Promise<void> => {
+    const windowToUpdate = windows.find((window) => window.title === currentTitle);
+    if (windowToUpdate) {
+      addWindow(
+        newTitle,
+        windowToUpdate.content,
+        windowToUpdate.initialPosition,
+        windowToUpdate.id,
+      );
+    }
   };
 
   const toggleMaximize = (windowToToggle: Window) => {
@@ -151,12 +163,12 @@ export const WindowProvider: React.FC<WindowProviderProps> = ({ children }) => {
         ? { ...window, minimized: !window.minimized, maximized: false }
         : window,
     );
-    
+
     // If the window is being un-minimized, bring it to the front
     if (!windowToToggle.minimized) {
       bringToFront(windowToToggle);
     }
-    
+
     setWindows(updatedWindows);
   };
 
@@ -176,13 +188,9 @@ export const WindowProvider: React.FC<WindowProviderProps> = ({ children }) => {
     getWindowTitleById,
     toggleMaximize,
     toggleMinimize,
-    closeAllWindows
+    closeAllWindows,
   };
 
   // Provide the context to the children
-  return (
-    <WindowContext.Provider value={contextValue}>
-      {children}
-    </WindowContext.Provider>
-  );
+  return <WindowContext.Provider value={contextValue}>{children}</WindowContext.Provider>;
 };

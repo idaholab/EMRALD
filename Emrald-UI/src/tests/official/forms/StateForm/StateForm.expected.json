@@ -1,0 +1,13 @@
+{
+  "sets logic tree eval": {
+    "objType": "State",
+    "name": "sets logic tree eval",
+    "desc": "",
+    "stateType": "stStart",
+    "diagramName": "",
+    "immediateActions": [],
+    "events": [],
+    "eventActions": [],
+    "defaultSingleStateValue": "False"
+  }
+}

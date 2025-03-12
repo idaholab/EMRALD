@@ -89,15 +89,15 @@ const VariableFormContextProvider: React.FC<PropsWithChildren> = ({ children }) 
   const [value, setValue] = useState<number | string | boolean>('');
   const [sim3DId, setSim3DId] = useState<string>();
   const [resetOnRuns, setResetOnRuns] = useState<boolean | undefined>(true);
-  const [docType, setDocType] = useState<string>();
-  const [docPath, setDocPath] = useState<string>();
-  const [docLink, setDocLink] = useState<string>();
+  const [docType, setDocType] = useState<string | undefined>();
+  const [docPath, setDocPath] = useState<string | undefined>();
+  const [docLink, setDocLink] = useState<string | undefined>();
   const [pathMustExist, setPathMustExist] = useState<boolean | undefined>();
   const [hasError, setHasError] = useState<boolean>(false);
   const variable = useSignal<Variable>(emptyVariable);
   const { updateVariable, createVariable } = useVariableContext();
   const [regExpLine, setRegExpLine] = useState<number>();
-  const [begPosition, setBegPosition] = useState<number>();
+  const [begPosition, setBegPosition] = useState<number | undefined>();
   const [showRegExFields, setShowRegExFields] = useState<boolean>();
   const [showNumChars, setShowNumChars] = useState<boolean>();
   const [numChars, setNumChars] = useState<number>();
@@ -129,7 +129,7 @@ const VariableFormContextProvider: React.FC<PropsWithChildren> = ({ children }) 
     setVarScope(variableData?.varScope || 'gtGlobal');
     variableData?.value !== undefined && setValue(String(variableData.value));
     variableData?.sim3DId && setSim3DId(variableData.sim3DId);
-    setResetOnRuns(variableData.resetOnRuns || false);
+    setResetOnRuns(variableData.resetOnRuns || true);
     variableData?.docType && setDocType(variableData.docType);
     variableData?.docPath && setDocPath(variableData.docPath);
     variableData?.docLink && setDocLink(variableData.docLink);
@@ -186,7 +186,7 @@ const VariableFormContextProvider: React.FC<PropsWithChildren> = ({ children }) 
     setVarScope('gtGlobal'); // Default value for varScope
     setValue(''); // Default value for value
     setSim3DId(undefined); // Reset to undefined
-    setResetOnRuns(undefined); // Reset to undefined
+    setResetOnRuns(true); // Reset to true
     setDocType(undefined); // Reset to undefined
     setDocPath(undefined); // Reset to undefined
     setDocLink(undefined); // Reset to undefined
@@ -214,6 +214,12 @@ const VariableFormContextProvider: React.FC<PropsWithChildren> = ({ children }) 
       begPosition,
       numChars,
     };
+    // Remove undefined properties from the JSON
+    Object.keys(variable.value).forEach((key) =>
+      variable.value[key as keyof Variable] === undefined
+        ? delete variable.value[key as keyof Variable]
+        : {},
+    );
 
     variableData ? updateVariable(variable.value) : createVariable(variable.value);
     handleClose();

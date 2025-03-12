@@ -72,6 +72,7 @@ describe('ExtSim Events', () => {
     });
 
     // Select the ext sim variable
+    console.log((await screen.findByLabelText('External Sim Variable')).children);
     await selectOption('External Sim Variable', 'Test ExtSim Variable');
 
     // Type in code

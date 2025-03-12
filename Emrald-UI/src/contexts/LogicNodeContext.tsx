@@ -13,7 +13,7 @@ interface LogicNodeContextType {
   logicNodes: LogicNode[];
   createLogicNode: (logicNode: LogicNode) => Promise<void>;
   updateLogicNode: (logicNode: LogicNode) => Promise<void>;
-  deleteLogicNode: (logicNodeId: string | undefined) => Promise<void>;
+  deleteLogicNode: (logicNodeId: string | undefined) => void;
   getLogicNodeByName: (logicNodeName: string | undefined) => LogicNode;
   newLogicNodeList: (newLogicNodeList: LogicNode[]) => void;
   mergeLogicNodeList: (newLogicNodeList: LogicNode[]) => void;
@@ -48,59 +48,52 @@ const LogicNodeContextProvider: React.FC<EmraldContextWrapperProps> = ({ childre
     ),
   );
   const logicNodeList = useComputed(() => appData.value.LogicNodeList);
-  
+
   effect(() => {
-    if (JSON.stringify(logicNodes) !== JSON.stringify(appData.value.LogicNodeList.sort((a, b) => a.name.localeCompare(b.name)))) {
+    if (
+      JSON.stringify(logicNodes) !==
+      JSON.stringify(appData.value.LogicNodeList.sort((a, b) => a.name.localeCompare(b.name)))
+    ) {
       setLogicNodes(appData.value.LogicNodeList.sort((a, b) => a.name.localeCompare(b.name)));
       return;
     }
     return;
   });
 
-  const createLogicNode = (newLogicNode: LogicNode) => {
-    return new Promise<void>(async (resolve) => {
-      var updatedModel: EMRALD_Model = await updateModelAndReferences(
-        newLogicNode,
-        MainItemTypes.LogicNode,
-      );
-      updateAppData(updatedModel);
-      resolve();
-    });
+  const createLogicNode = async (newLogicNode: LogicNode) => {
+    var updatedModel: EMRALD_Model = await updateModelAndReferences(
+      newLogicNode,
+      MainItemTypes.LogicNode,
+    );
+    updateAppData(updatedModel);
   };
 
   const updateLogicNode = async (updatedLogicNode: LogicNode) => {
-    return new Promise<void>(async (resolve) => {
-      var updatedModel: EMRALD_Model = await updateModelAndReferences(
-        updatedLogicNode,
-        MainItemTypes.LogicNode,
-      );
-      updateAppData(updatedModel);
-      resolve();
-    });
+    var updatedModel: EMRALD_Model = await updateModelAndReferences(
+      updatedLogicNode,
+      MainItemTypes.LogicNode,
+    );
+    updateAppData(updatedModel);
   };
 
   const deleteLogicNode = (logicNodeId: string | undefined) => {
-    return new Promise<void>(async (resolve) => {
-      let nodeToDelete = logicNodeList.value.find((node) => node.id === logicNodeId);
-      const updatedLogicNodes = logicNodeList.value.filter((item) => item.id !== logicNodeId);
-      if (nodeToDelete) {
-        updatedLogicNodes.forEach((node) => {
-          if (node.gateChildren.includes(nodeToDelete.name)) {
-            node.gateChildren = node.gateChildren.filter((name) => name !== nodeToDelete.name);
-          }
-        });
+    let nodeToDelete = logicNodeList.value.find((node) => node.id === logicNodeId);
+    const updatedLogicNodes = logicNodeList.value.filter((item) => item.id !== logicNodeId);
+    if (nodeToDelete) {
+      updatedLogicNodes.forEach((node) => {
+        if (node.gateChildren.includes(nodeToDelete.name)) {
+          node.gateChildren = node.gateChildren.filter((name) => name !== nodeToDelete.name);
+        }
+      });
 
-        //there is nothing referencing nodes except other nodes and the this takes care of that, so no need to call DeleteItemAndRefs
-      }
-      updateAppData(
-        JSON.parse(JSON.stringify({ ...appData.value, LogicNodeList: updatedLogicNodes })),
-      );
-  
-      setLogicNodes(logicNodeList.value);
-      resolve();
-    });
+      //there is nothing referencing nodes except other nodes and the this takes care of that, so no need to call DeleteItemAndRefs
+    }
+    updateAppData(
+      JSON.parse(JSON.stringify({ ...appData.value, LogicNodeList: updatedLogicNodes })),
+    );
+
+    setLogicNodes(logicNodeList.value);
   };
-
 
   const getLogicNodeByName = (logicNodeName: string | undefined) => {
     return logicNodeList.value.find((node) => node.name === logicNodeName) || emptyLogicNode;

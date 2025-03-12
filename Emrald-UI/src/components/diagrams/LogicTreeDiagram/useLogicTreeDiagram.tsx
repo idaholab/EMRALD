@@ -215,33 +215,30 @@ const useLogicNodeTreeDiagram = () => {
     });
   };
   const removeNode = async (parentNode: string, nodeName: string, type: NodeType) => {
-    return new Promise<void>(async (resolve) => {
-      const parentLogicNode = getLogicNodeByName(parentNode);
-      const nodeToRemove = getLogicNodeByName(nodeName);
-      if (type === 'gate') {
-        if (nodeToRemove.gateChildren.length > 0) {
-          await recurseAndDeleteChildren(nodeToRemove);
-        }
-        if (canDeleteNode(nodeName)) {
-          await deleteLogicNode(nodeToRemove.id);
-        }
-        if (parentNode) {
-          parentLogicNode.gateChildren = parentLogicNode.gateChildren.filter(
-            (child) => child !== nodeName,
-          );
-        }
+    const parentLogicNode = getLogicNodeByName(parentNode);
+    const nodeToRemove = getLogicNodeByName(nodeName);
+    if (type === 'gate') {
+      if (nodeToRemove.gateChildren.length > 0) {
+        await recurseAndDeleteChildren(nodeToRemove);
       }
-      if (type === 'comp' && parentNode) {
-        parentLogicNode.compChildren = parentLogicNode.compChildren.filter(
-          (child) => child.diagramName !== nodeName,
+      if (canDeleteNode(nodeName)) {
+        await deleteLogicNode(nodeToRemove.id);
+      }
+      if (parentNode) {
+        parentLogicNode.gateChildren = parentLogicNode.gateChildren.filter(
+          (child) => child !== nodeName,
         );
       }
-      await updateLogicNode(parentLogicNode);
-      if (nodeToRemove === rootNode) {
-        handleClose();
-      }
-      resolve();
-    });
+    }
+    if (type === 'comp' && parentNode) {
+      parentLogicNode.compChildren = parentLogicNode.compChildren.filter(
+        (child) => child.diagramName !== nodeName,
+      );
+    }
+    await updateLogicNode(parentLogicNode);
+    if (nodeToRemove === rootNode) {
+      handleClose();
+    }
   };
   const removeChildNodes = async (nodesToRemove: { nodeName: string; parentName: string }[]) => {
     if (nodesToRemove && nodesToRemove.length > 0) {
@@ -260,15 +257,12 @@ const useLogicNodeTreeDiagram = () => {
   };
 
   const recurseAndDeleteChildren = async (node: LogicNode) => {
-    return new Promise<void>(async (resolve) => {
-      const result = recurseChildren(node);
-      if (result) {
-        const { nodesToDelete, nodesToRemove } = result;
-        await removeChildNodes(nodesToRemove);
-        await deleteChildNodes(nodesToDelete);
-      }
-      resolve();
-    });
+    const result = recurseChildren(node);
+    if (result) {
+      const { nodesToDelete, nodesToRemove } = result;
+      await removeChildNodes(nodesToRemove);
+      await deleteChildNodes(nodesToDelete);
+    }
   };
   const recurseChildren = (
     node: LogicNode,
@@ -353,8 +347,7 @@ const useLogicNodeTreeDiagram = () => {
                 `New Node`,
                 <LogicNodeFormContextProvider>
                   <LogicNodeForm parentNodeName={logicNode.name} nodeType="gate" gateType="gtAnd" />
-                </LogicNodeFormContextProvider>
-                ,
+                </LogicNodeFormContextProvider>,
               ),
           },
           {
@@ -374,7 +367,11 @@ const useLogicNodeTreeDiagram = () => {
               addWindow(
                 `Edit Gate Node: ${label}`,
                 <LogicNodeFormContextProvider>
-                  <LogicNodeForm logicNodeData={logicNode} gateType={logicNode.gateType} editing={true} />
+                  <LogicNodeForm
+                    logicNodeData={logicNode}
+                    gateType={logicNode.gateType}
+                    editing={true}
+                  />
                 </LogicNodeFormContextProvider>,
               ),
             isDivider: true,
@@ -463,15 +460,15 @@ const useLogicNodeTreeDiagram = () => {
           ...(type === 'new' && {
             id: uuidv4(),
             name: `Copy of ${pastedObject.name} (${newGateNumber})`,
-            rootName: rootNode?.name ?? ''
+            rootName: rootNode?.name ?? '',
           }),
         };
 
-      // make sure there is no circular references.
-      if (couldCreateInfiniteLoop(node, newNode)) {
-        setNodeExistsAlert(true);
-        return;
-      }
+        // make sure there is no circular references.
+        if (couldCreateInfiniteLoop(node, newNode)) {
+          setNodeExistsAlert(true);
+          return;
+        }
         await createLogicNode(newNode);
         node.gateChildren = [...node.gateChildren, newNode.name];
       } else {
@@ -486,26 +483,28 @@ const useLogicNodeTreeDiagram = () => {
       updateLogicNode(node);
     }
   };
-  
+
   const couldCreateInfiniteLoop = (parentNode: LogicNode, newNode: LogicNode): boolean => {
-    const currentTreeNodes = logicNodeList.value.filter((n) => n.rootName === parentNode.rootName);;
+    const currentTreeNodes = logicNodeList.value.filter((n) => n.rootName === parentNode.rootName);
     const currentTreeNodeNames = currentTreeNodes.map((n) => n.name);
-  
+
     // Check if the new node is the parent node itself, or if it is already a child of the parent node.
     if (parentNode.name === newNode.name || parentNode.gateChildren.includes(newNode.name)) {
       return true;
     }
-  
+
     // Check if the new node is an ancestor of the parent node.
     if (getAncestors(parentNode, currentTreeNodes).includes(newNode.name)) {
       return true;
     }
 
     // Check if the new node has any children that are already in the tree.
-    const newNodeDescendants = getDescendants(newNode, currentTreeNodes).map(descendant => descendant.trim());
+    const newNodeDescendants = getDescendants(newNode, currentTreeNodes).map((descendant) =>
+      descendant.trim(),
+    );
 
-    console.log("New Node Descendants:", newNodeDescendants);
-    console.log("Current Tree Node Names:", currentTreeNodeNames);
+    console.log('New Node Descendants:', newNodeDescendants);
+    console.log('Current Tree Node Names:', currentTreeNodeNames);
 
     for (const descendant of newNodeDescendants) {
       for (const currentName of currentTreeNodeNames) {
@@ -518,10 +517,10 @@ const useLogicNodeTreeDiagram = () => {
 
     return false;
   };
-  
+
   const getDescendants = (node: LogicNode, currentTreeNodes: LogicNode[]): string[] => {
     let descendants: string[] = [];
-  
+
     // Recursively get all descendants
     const collectDescendants = (currentNodeName: string) => {
       const currentNode = currentTreeNodes.find((n) => n.name === currentNodeName);
@@ -532,41 +531,41 @@ const useLogicNodeTreeDiagram = () => {
         }
       }
     };
-  
+
     // descendants from the input node's children
     for (const childName of node.gateChildren) {
       descendants.push(childName);
       collectDescendants(childName);
     }
-  
+
     // Return the list of descendant node names
     return descendants;
   };
-  
+
   const getAncestors = (node: LogicNode, currentTreeNodes: LogicNode[]): string[] => {
     let ancestors: string[] = [];
-  
+
     // Keeps track of processed nodes
     const processed = new Set<string>();
-  
+
     // Initialize queue with the name of the input node
     let queue: string[] = [node.name];
-  
+
     // Loop until there are no more nodes to process in the search list
     while (queue.length > 0) {
       // Remove the first node name from the search list
       const currentNodeName = queue.shift();
-  
+
       // If the current node name is valid and has not been processed yet
       if (currentNodeName && !processed.has(currentNodeName)) {
         processed.add(currentNodeName);
         ancestors.push(currentNodeName);
-  
+
         // Find all parent nodes in the current tree that have the current node as a child
         const parentNodes = currentTreeNodes.filter((n) =>
-          n.gateChildren.includes(currentNodeName)
+          n.gateChildren.includes(currentNodeName),
         );
-  
+
         // Add the parent nodes to the search list if they have not been processed yet
         for (const parentNode of parentNodes) {
           if (!processed.has(parentNode.name)) {
@@ -575,13 +574,13 @@ const useLogicNodeTreeDiagram = () => {
         }
       }
     }
-  
+
     // Remove the original node name from the ancestors list if it exists
     ancestors = ancestors.filter((ancestor) => ancestor !== node.name);
-  
+
     // Return the list of ancestor node names
     return ancestors;
-  }; 
+  };
 
   const getAllGateChildren = (node: LogicNode): LogicNode[] => {
     let gateChildren: LogicNode[] = [];
@@ -597,11 +596,6 @@ const useLogicNodeTreeDiagram = () => {
       });
     }
     return gateChildren;
-  };
-
-  const getAllGateChildrenNames = (node: LogicNode): string[] => {
-    let gateChildrenNames = getAllGateChildren(node).map((node) => node.name);
-    return gateChildrenNames;
   };
 
   const handleDoubleClick = (type: string, text: string) => {
@@ -627,7 +621,7 @@ const useLogicNodeTreeDiagram = () => {
             });
           }
         }
-  
+
         if (type === 'comp') {
           const diagramToUpdate = getDiagramByDiagramName(label);
           if (diagramToUpdate) {
@@ -637,8 +631,8 @@ const useLogicNodeTreeDiagram = () => {
             });
           }
         }
-      }, 100)
-      
+      }, 100);
+
       setEditedDescription('');
     },
     [
@@ -698,14 +692,14 @@ const useLogicNodeTreeDiagram = () => {
   }, [nodes, loading]);
 
   useEffect(() => {
-      if (!rootNode) {
-        return;
-      }
-      const updatedRoot = logicNodeList.value.find((node) => node.id === rootNode.id);
-      const updatedLogicNode = getLogicNodeByName(updatedRoot ? updatedRoot.name : rootNode.name);
-      if (updatedLogicNode) {
-        buildLogicTree(updatedLogicNode);
-      }
+    if (!rootNode) {
+      return;
+    }
+    const updatedRoot = logicNodeList.value.find((node) => node.id === rootNode.id);
+    const updatedLogicNode = getLogicNodeByName(updatedRoot ? updatedRoot.name : rootNode.name);
+    if (updatedLogicNode) {
+      buildLogicTree(updatedLogicNode);
+    }
   }, [logicNodeList.value]);
 
   useEffect(() => {
