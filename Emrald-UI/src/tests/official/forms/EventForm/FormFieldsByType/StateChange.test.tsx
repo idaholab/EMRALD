@@ -6,6 +6,7 @@ import EventForm from '../../../../../components/forms/EventForm/EventForm';
 import expected from './StateChange.expected.json';
 
 // Exit parent state when event is trigger should be checked
+// Check that if in state is saving false
 
 describe('StateChange Events', () => {
   test('loads event data', async () => {
