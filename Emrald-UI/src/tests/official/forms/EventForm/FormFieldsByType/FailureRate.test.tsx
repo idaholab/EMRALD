@@ -109,7 +109,7 @@ describe('FailureRate Events', () => {
     await user.click(await screen.findByLabelText('Use Variable Lambda/Frequency?'));
 
     // Create a variable to select
-    await ensureVariable('Test Variable');
+    ensureVariable('Test Variable');
 
     // Select the variable for lambda
     await selectOption('Lambda', 'Test Variable');

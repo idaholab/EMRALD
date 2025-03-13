@@ -121,7 +121,7 @@ describe('MAAP Form', async () => {
     await user.upload(await screen.findByLabelText('Input File'), TestINP);
 
     // Add a variable to the model
-    await ensureVariable('Test Variable');
+    ensureVariable('Test Variable');
 
     // Check "use variable" for PARAM1 & select the variable
     await user.click((await screen.findAllByLabelText('Use Variable'))[0]);
@@ -215,7 +215,7 @@ describe('MAAP Form', async () => {
     await user.upload(await screen.findByLabelText('Input File'), TestINP);
 
     // Create a doc link variable
-    await ensureVariable('Test DocLink Variable', {
+    ensureVariable('Test DocLink Variable', {
       varScope: 'gtDocLink',
     });
 

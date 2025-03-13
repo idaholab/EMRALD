@@ -11,6 +11,8 @@ import userEvent from '@testing-library/user-event';
 import { screen } from '@testing-library/react';
 import expected from './ChangeVarValue.expected.json';
 
+// Require a variable to be set to close the form
+
 describe('Change Var Value Actions', () => {
   test('selects variables', async () => {
     const name = 'selects variables';
@@ -28,7 +30,7 @@ describe('Change Var Value Actions', () => {
     const user = userEvent.setup();
 
     // Add a variable to the model
-    await ensureVariable('Test Variable');
+    ensureVariable('Test Variable');
 
     // Select the variable
     await selectOption('Variable', 'Test Variable');
@@ -56,7 +58,7 @@ describe('Change Var Value Actions', () => {
     const user = userEvent.setup();
 
     // Add a variable to the model
-    await ensureVariable('Test Variable');
+    ensureVariable('Test Variable');
 
     // Select the variable
     await selectOption('Variable', 'Test Variable');

@@ -83,7 +83,7 @@ describe('Component Logic Events', () => {
     );
 
     // Add a logic node to the model
-    await ensureLogicNode('Test Logic Node');
+    ensureLogicNode('Test Logic Node');
 
     // Select the logic node
     await selectOption('LogicTop', 'Test Logic Node');

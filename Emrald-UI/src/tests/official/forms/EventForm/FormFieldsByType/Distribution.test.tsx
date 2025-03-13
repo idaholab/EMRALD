@@ -189,7 +189,7 @@ describe('Distribution Events', () => {
 
     // Add a variable to the model
     expect(screen.queryAllByText('Save')).not.toBeNull();
-    await ensureVariable('Test Variable');
+    ensureVariable('Test Variable');
 
     // Set minimum value to use variable
     await user.click((await screen.findAllByLabelText('Use Variable'))[2]);

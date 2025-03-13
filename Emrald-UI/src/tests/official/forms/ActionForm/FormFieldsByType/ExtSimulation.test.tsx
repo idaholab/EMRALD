@@ -31,7 +31,7 @@ describe('Ext. Sim Message Actions', () => {
     await selectOption('Sim Action', 'Cancel Sim');
 
     // Create an external sim in the model
-    await ensureExtSim('Test ExtSim');
+    ensureExtSim('Test ExtSim');
 
     // Select the external sim
     await selectOption('External Sim', 'Test ExtSim');
@@ -59,7 +59,7 @@ describe('Ext. Sim Message Actions', () => {
     await selectOption('Sim Action', 'Open Sim');
 
     // Create an external sim in the model
-    await ensureExtSim('Test ExtSim');
+    ensureExtSim('Test ExtSim');
 
     // Select the external sim
     await selectOption('External Sim', 'Test ExtSim');
@@ -103,7 +103,7 @@ describe('Ext. Sim Message Actions', () => {
     await selectOption('Sim Action', 'Open Sim');
 
     // Create an external sim in the model
-    await ensureExtSim('Test ExtSim');
+    ensureExtSim('Test ExtSim');
 
     // Select the external sim
     await selectOption('External Sim', 'Test ExtSim');
@@ -122,7 +122,7 @@ describe('Ext. Sim Message Actions', () => {
     await user.click(await screen.findByLabelText('Use variable for items below'));
 
     // Add a variable to the model
-    await ensureVariable('Test ExtSim Variable', {
+    ensureVariable('Test ExtSim Variable', {
       varScope: 'gt3DSim'
     });
 

@@ -22,7 +22,7 @@ describe('VarCondition Events', () => {
     const user = userEvent.setup();
 
     // Add a variable to the model
-    await ensureVariable('Test Variable');
+    ensureVariable('Test Variable');
 
     // Check the added variable
     await user.click(await screen.findByLabelText('Test Variable'));

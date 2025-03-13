@@ -5,6 +5,8 @@ import { drag, ensureState, getEvent, renderEventForm, save } from '../../../../
 import EventForm from '../../../../../components/forms/EventForm/EventForm';
 import expected from './StateChange.expected.json';
 
+// Exit parent state when event is trigger should be checked
+
 describe('StateChange Events', () => {
   test('loads event data', async () => {
     const name = 'loads event data';
@@ -41,8 +43,8 @@ describe('StateChange Events', () => {
     const user = userEvent.setup();
 
     // Add two states to the model
-    await ensureState('Test State');
-    await ensureState('Test State 2');
+    ensureState('Test State');
+    ensureState('Test State 2');
 
     // Drag the first state to the event form
     await user.click(await screen.findByText('States'));

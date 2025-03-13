@@ -5,6 +5,8 @@ import userEvent from '@testing-library/user-event';
 import { screen } from '@testing-library/react';
 import expected from './Timer.expected.json';
 
+// Check saving default values
+
 describe('Timer Events', () => {
   test('loads event data', async () => {
     const name = 'loads event data';
@@ -73,7 +75,7 @@ describe('Timer Events', () => {
     await user.click(await screen.findByLabelText('Use Variable?'));
 
     // Add a variable to the model
-    await ensureVariable('Test Variable');
+    ensureVariable('Test Variable');
 
     // Select the variable as the time span
     await selectOption('Time Span', 'Test Variable');

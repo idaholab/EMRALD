@@ -15,5 +15,13 @@
     "diagramType": "dtSingle",
     "diagramLabel": "Component",
     "states": []
+  },
+  "uses a template": {
+    "objType": "Diagram",
+    "name": "uses a template",
+    "desc": "",
+    "diagramType": "dtSingle",
+    "diagramLabel": "Component",
+    "states": []
   }
 }

@@ -41,8 +41,8 @@ describe('Variable Form', () => {
     const user = userEvent.setup();
 
     // Create states in the model
-    await ensureState('Test State');
-    await ensureState('Test State 2');
+    ensureState('Test State');
+    ensureState('Test State 2');
 
     // Drag the states to the form
     await user.click(await screen.findByText('States'));

@@ -94,7 +94,7 @@ export function ensureModel() {
  * Helper function to manually apply a change to the EMRALD model.
  * @param fn - A function to apply the change to the model.
  */
-export async function updateModel(fn: (model: EMRALD_Model) => EMRALD_Model) {
+export function updateModel(fn: (model: EMRALD_Model) => EMRALD_Model) {
   ensureModel();
   const appData = sessionStorage.getItem('appData');
   if (appData) {
@@ -110,11 +110,11 @@ export async function updateModel(fn: (model: EMRALD_Model) => EMRALD_Model) {
  * @param name - The name of the variable.
  * @param data - Additional variable data, if necessary.
  */
-export async function ensureVariable(name: string, data?: Partial<Variable>) {
+export function ensureVariable(name: string, data?: Partial<Variable>) {
   try {
     getVariable(name);
   } catch (err) {
-    await updateModel((model) => {
+    updateModel((model) => {
       let v: Variable = {
         objType: 'Variable',
         name,
@@ -139,11 +139,11 @@ export async function ensureVariable(name: string, data?: Partial<Variable>) {
  * @param name - The name of the state.
  * @param data - Additional state data, if necessary.
  */
-export async function ensureState(name: string, data?: Partial<State>) {
+export function ensureState(name: string, data?: Partial<State>) {
   try {
     getState(name);
   } catch (err) {
-    await updateModel((model) => {
+    updateModel((model) => {
       let s: State = {
         objType: 'State',
         name,
@@ -171,11 +171,11 @@ export async function ensureState(name: string, data?: Partial<State>) {
  * @param name - The name of the logic node.
  * @param data - Additional logic node data, if necessary.
  */
-export async function ensureLogicNode(name: string, data?: Partial<LogicNode>) {
+export function ensureLogicNode(name: string, data?: Partial<LogicNode>) {
   try {
     getLogicNode(name);
   } catch (err) {
-    await updateModel((model) => {
+    updateModel((model) => {
       let n: LogicNode = {
         objType: 'LogicNode',
         name,
@@ -202,11 +202,11 @@ export async function ensureLogicNode(name: string, data?: Partial<LogicNode>) {
  * @param name - The name of the external sim.
  * @param data - Additional external sim data, if necessary.
  */
-export async function ensureExtSim(name: string, data?: Partial<ExtSim>) {
+export function ensureExtSim(name: string, data?: Partial<ExtSim>) {
   try {
     getExtSim(name);
   } catch (err) {
-    await updateModel((model) => {
+    updateModel((model) => {
       let e: ExtSim = {
         objType: 'ExtSim',
         name,

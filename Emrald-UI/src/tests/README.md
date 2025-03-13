@@ -36,3 +36,10 @@ Interacting with MUI's combobox components can be done by using the `selectOptio
 await user.click(await findByRole(await screen.findByLabelText('<Combobox Label>'), 'combobox'));
 await user.click(await screen.findByRole('option', { name: '<Option to select>' }));
 ```
+
+## Not Yet Tested
+- Diagram templates: Adding templates to the model directly doesn't propagate the changes into the GroupListItems component, so the option to select a template doesn't show up in the testing environment. Using the createTemplates method causes an infinite loop somewhere.
+    - Relevant files: components/common/GroupListItems.tsx, forms/DiagramForm
+- EMRALD Diagrams (state diagrams)
+- Logic Tree Diagrams
+- Sankey Timeline Diagrams

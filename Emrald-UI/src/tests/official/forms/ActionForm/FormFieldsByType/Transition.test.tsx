@@ -30,8 +30,8 @@ describe('Transition Actions', () => {
     const user = userEvent.setup();
 
     // Add states to the model
-    await ensureState('Test State 1');
-    await ensureState('Test State 2');
+    ensureState('Test State 1');
+    ensureState('Test State 2');
 
     // Drag the states to the form
     await user.click(await screen.findByText('States'));
@@ -64,7 +64,7 @@ describe('Transition Actions', () => {
     const user = userEvent.setup();
 
     // Add states to the model
-    await ensureState('Test State 1');
+    ensureState('Test State 1');
 
     // Drag the states to the form
     await user.click(await screen.findByText('States'));
@@ -93,7 +93,7 @@ describe('Transition Actions', () => {
     const user = userEvent.setup();
 
     // Add states to the model
-    await ensureState('Test State 1');
+    ensureState('Test State 1');
 
     // Drag the states to the form
     await user.click(await screen.findByText('States'));
@@ -126,8 +126,8 @@ describe('Transition Actions', () => {
     const user = userEvent.setup();
 
     // Add states to the model
-    await ensureState('Test State 1');
-    await ensureState('Test State 2');
+    ensureState('Test State 1');
+    ensureState('Test State 2');
 
     // Drag the states to the form
     await user.click(await screen.findByText('States'));
@@ -170,14 +170,14 @@ describe('Transition Actions', () => {
     const user = userEvent.setup();
 
     // Add states to the model
-    await ensureState('Test State 1');
+    ensureState('Test State 1');
 
     // Drag the states to the form
     await user.click(await screen.findByText('States'));
     drag(await screen.findByText('Test State 1'), await screen.findByText('Drop State Items Here'));
 
     // Add a variable to the model
-    await ensureVariable('Test Variable');
+    ensureVariable('Test Variable');
 
     // Select variable probability
     await user.click(await screen.findByLabelText("Variable"));
@@ -205,8 +205,8 @@ describe('Transition Actions', () => {
     const user = userEvent.setup();
 
     // Add states to the model
-    await ensureState('Test State 1');
-    await ensureState('Test State 2');
+    ensureState('Test State 1');
+    ensureState('Test State 2');
 
     // Drag the states to the form
     await user.click(await screen.findByText('States'));
@@ -256,8 +256,8 @@ describe('Transition Actions', () => {
     const user = userEvent.setup();
 
     // Add states to the model
-    await ensureState('Test State 1');
-    await ensureState('Test State 2');
+    ensureState('Test State 1');
+    ensureState('Test State 2');
 
     // Drag the states to the form
     await user.click(await screen.findByText('States'));

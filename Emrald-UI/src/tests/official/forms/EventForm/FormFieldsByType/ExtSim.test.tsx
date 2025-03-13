@@ -67,7 +67,7 @@ describe('ExtSim Events', () => {
     await selectOption('External Event Type', 'Variable Change');
 
     // Add an external sim variable to the model
-    await ensureVariable('Test ExtSim Variable', {
+    ensureVariable('Test ExtSim Variable', {
       varScope: 'gt3DSim',
     });
 
@@ -105,7 +105,7 @@ describe('ExtSim Events', () => {
     await selectOption('External Event Type', 'Variable Change');
 
     // Add an external sim variable to the model
-    await ensureVariable('Test ExtSim Variable', {
+    ensureVariable('Test ExtSim Variable', {
       varScope: 'gt3DSim',
     });
 

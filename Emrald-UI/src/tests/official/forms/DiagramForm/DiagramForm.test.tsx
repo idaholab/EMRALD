@@ -32,21 +32,23 @@ describe('Diagram Form', () => {
     const name = 'edits existing diagram';
     render(
       <DiagramContextProvider>
-        <DiagramForm diagramData={{
-          objType: "Diagram",
-          name,
-          desc: "",
-          diagramType: "dtSingle",
-          diagramLabel: "Component",
-          states: [],
-        }}></DiagramForm>
+        <DiagramForm
+          diagramData={{
+            objType: 'Diagram',
+            name,
+            desc: '',
+            diagramType: 'dtSingle',
+            diagramLabel: 'Component',
+            states: [],
+          }}
+        ></DiagramForm>
       </DiagramContextProvider>,
     );
     const user = userEvent.setup();
 
     // Enter new name
-    await user.clear(await screen.findByLabelText("Name"));
-    await user.type(await screen.findByLabelText('Name'), "edited diagram name");
+    await user.clear(await screen.findByLabelText('Name'));
+    await user.type(await screen.findByLabelText('Name'), 'edited diagram name');
 
     await save();
     expect(getDiagram('edited diagram name')).toEqual(expected[name]);
