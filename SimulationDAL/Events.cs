@@ -276,15 +276,21 @@ namespace SimulationDAL
         return false;
 
       //find the items that are appicable for entry or exit
-      if (ifInState)
+      if (ifInState) //in the specified state/s
       {
         //get all the states we are current in and are in the realted IDS.
-        changed = _relatedIDsBitSet.And(curStates);
+        if (!this.allItems) //can only use ones we just entered
+          changed = _relatedIDsBitSet.And(curStates.And(changed));
+        else
+          changed = _relatedIDsBitSet.And(curStates);
       }
-      else //in the specified state/s
+      else //exiting the specified state/s
       {
         //get all the states we are not in current states and are in the realted IDS.
-        changed = _relatedIDsBitSet.And(curStates.Not());
+        if (!this.allItems) //can only use ones we just exited
+          changed = _relatedIDsBitSet.And(curStates.Not().And(changed));
+        else
+          changed = _relatedIDsBitSet.And(curStates.Not());
       }
 
       //return if in one of or all the states as specified
@@ -323,6 +329,8 @@ namespace SimulationDAL
     public bool successSpace = true;
     public bool triggerOnFalse = false;
     private LogicNode logicTop = null;
+    private Dictionary<int, bool?> lastEvalVal = new Dictionary<int, bool?>(); //what value did the tree have last time it was evaluated for the given state (hash is state ID)
+    //private bool? lastEvalVal = null; //what value did the tree have last time it was evaluated
 
     //protected override EnModifiableTypes GetModType() { return EnModifiableTypes.mtState; } //the modified items concerned about for component logic are states.
 
@@ -418,6 +426,17 @@ namespace SimulationDAL
         evalBool =  false;
       }
       //else should be 1 so value is true
+
+      //Just because an item changes doesn't mean we trigger the event.
+      //we don't trigger unless the tree evaluates to something different and it meets the condition, so it doesn't trigger repeatedly
+      int curState = (int)otherData;
+      if (!lastEvalVal.ContainsKey(curState))
+        lastEvalVal[curState] = null;
+
+      if ((lastEvalVal[curState] != null) && (evalBool == lastEvalVal[curState]))
+        return false;
+      else
+        lastEvalVal[curState] = evalBool;
 
       if (triggerOnFalse)
         return !evalBool;

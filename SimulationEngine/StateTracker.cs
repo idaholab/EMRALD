@@ -213,6 +213,7 @@ namespace SimulationTracking
 
               case EnEventType.etComponentLogic:
                 curIDType = EnModifiableTypes.mtState;
+                otherData = item.eventStateActions.statesAndActions.Keys.First();
                 break;
 
               default:
