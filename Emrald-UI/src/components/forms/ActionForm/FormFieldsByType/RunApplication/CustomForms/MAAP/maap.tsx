@@ -227,6 +227,7 @@ const MAAP = () => {
   if (!Path.IsPathRooted(docVarPath))
         docVarPath = RootPath + docVarPath;
   string resLoc = Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "EMRALD_MAAP", Path.GetFileNameWithoutExtension(inpLoc) + ".log");
+  Directory.CreateDirectory(Path.GetDirectoryName(docVarPath));
   File.Copy(resLoc, docVarPath, true);`);
 
     setReturnProcess('rtNone');
