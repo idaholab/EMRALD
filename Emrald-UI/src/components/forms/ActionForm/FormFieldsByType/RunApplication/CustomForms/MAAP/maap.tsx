@@ -3,32 +3,45 @@ import { useCustomForm } from '../useCustomForm';
 import { Box, Divider, Tab, Tabs } from '@mui/material';
 import { TextFieldComponent, FileUploadComponent, TabPanel } from '../../../../../../common';
 import { Parameters, Initiators, InputBlocks, Outputs } from './FormFieldsByType';
-import { parse as InputParse } from './Parser/maap-inp-parser.ts';
+import InputParse from './Parser';
 import { parse as parameterParser } from './Parser/maap-par-parser.ts';
 import { v4 as uuid } from 'uuid';
 import { useActionFormContext } from '../../../../ActionFormContext.tsx';
-import { Initiator, InitiatorOG, InputBlock, Parameter, ParameterOG, Value } from './MAAPTypes.ts';
+import { Initiator, Parameter } from './MAAPTypes.ts';
 import useRunApplication from '../../useRunApplication.tsx';
 import {
+  callExpressionToString,
   expressionToString,
   expressionTypeToString,
+  identifierToString,
   MAAPToString,
   sourceElementToString,
 } from './Parser/maap-to-string.ts';
-import { Expression, ExpressionType, SourceElement } from 'maap-inp-parser';
+import {
+  ConditionalBlockStatement,
+  SourceElement,
+  Comment,
+} from 'maap-inp-parser';
+import { MAAPParameter } from 'maap-par-parser';
 
-type MAAPFormData = undefined | {
-  exePath: string;
-  sourceElements?: SourceElement[];
-  parameters?: Parameter[];
-  initiators?: Initiator[];
-  inputBlocks?: Record<string, InputBlock>;
-  fileRefs?: string[];
-  inputFile: File | null;
-  inputPath: string;
-  parameterFile: File | null;
-  parameterPath: string;
-};
+export type MAAPFormData =
+  | undefined
+  | {
+      exePath?: string;
+      sourceElements?: SourceElement[];
+      parameters?: Parameter[];
+      initiators?: Initiator[];
+      inputBlocks?: ConditionalBlockStatement[];
+      fileRefs?: string[];
+      inputFile?: File | null;
+      inputPath?: string;
+      parameterFile?: File | null;
+      parameterPath?: string;
+      possibleInitiators?: Initiator[];
+      docComments?: Record<string, Comment>;
+      docLinkVariable?: string;
+      output?: string;
+    };
 
 const MAAP = () => {
   const { formData, setFormData, setReturnProcess, ReturnPostCode, ReturnExePath } =
@@ -51,35 +64,14 @@ const MAAP = () => {
     setCurrentTab(tabValue);
   };
 
-  const getParameterName = (row: ParameterOG) => {
-    if (!row.target) return;
-    let name =
-      row.target.type === 'call_expression'
-        ? ((row.target.value as Value).value as string)
-        : (row.target.value as string);
-    if (row.target?.arguments && row.target.arguments.length > 0) {
-      name = name + `(${String(row.target.arguments[0].value)})`;
-    }
-    return name;
-  };
-
-  const getInitiatorName = (row: InitiatorOG): string | number => {
-    let name = '';
+  const getParameterName = (row: SourceElement) => {
     if (row.type === 'assignment') {
-      if (row.target.type === 'identifier') {
-        name = `${row.target.value}`;
-      } else {
-        name = `${(row.target.value as Value).value}`;
+      if (row.target.type ==='call_expression') {
+        return callExpressionToString(row.target);
       }
-    } else if (row.type === 'parameter_name') {
-      name = `${row.value}`;
-    } else {
-      name = row.desc;
+      return identifierToString(row.target);
     }
-    if (row.target?.arguments && row.target.arguments.length > 0) {
-      name = name + `(${String(row.target.arguments[0].value)})`;
-    }
-    return name;
+    return '';
   };
 
   function createMaapFile() {
@@ -93,7 +85,7 @@ const MAAP = () => {
             inpFile += 'PARAMETER CHANGE\n';
             maapForm.parameters?.forEach((parameter) => {
               inpFile += `${parameter.name} = `;
-              if (parameter.useVariable) {
+              if (parameter.useVariable && typeof parameter.variable === 'string') {
                 inpFile += `" + ${parameter.variable} + @"`;
                 if (variables.indexOf(parameter.variable) < 0) {
                   variables.push(parameter.variable);
@@ -120,23 +112,38 @@ const MAAP = () => {
             });
             inpFile += 'END\n';
           }
-        } else if (sourceElement.type === 'conditional_block' && maapForm.inputBlocks !== undefined) {
+        } else if (
+          sourceElement.type === 'conditional_block' &&
+          maapForm.inputBlocks !== undefined
+        ) {
           const cblock = maapForm.inputBlocks[block];
           inpFile += `${cblock.blockType} `;
-          if ((cblock.test.value.right as Value).useVariable) {
-            // TODO: This may not work for every possible case
-            inpFile += `${expressionTypeToString(cblock.test.value.left as ExpressionType)} ${
-              cblock.test.value.op
-            } " + ${cblock.test.value.right.value} + @"\n`;
-            if (variables.indexOf(cblock.test.value.right.value as string) < 0) {
-              variables.push(cblock.test.value.right.value as string);
+          if (cblock.test.type === 'expression') {
+            if (cblock.test.value.right.useVariable && typeof cblock.test.value.right.value === 'string') {
+              // TODO: This may not work for every possible case
+              inpFile += `${expressionTypeToString(cblock.test.value.left)} ${
+                cblock.test.value.op
+              } " + ${cblock.test.value.right.value} + @"\n`;
+              if (variables.indexOf(cblock.test.value.right.value) < 0) {
+                variables.push(cblock.test.value.right.value);
+              }
+            } else {
+              inpFile += `${expressionToString(cblock.test)}\n`;
             }
-          } else {
-            inpFile += `${expressionToString(cblock.test as Expression)}\n`;
           }
-          inpFile += `${cblock.value
-            .map((se) => sourceElementToString(se as SourceElement))
-            .join('\n')}\nEND\n`;
+          cblock.value.forEach((se) => {
+            if (se.type === 'assignment' && se.value.useVariable) {
+              if (se.target.type === 'call_expression') {
+                inpFile += callExpressionToString(se.target);
+              } else {
+                inpFile += identifierToString(se.target);
+              }
+              inpFile += ` = \" + ${se.value.value} + @\"`;
+            } else {
+              inpFile += sourceElementToString(se);
+            }
+          });
+          inpFile += `\nEND\n`;
           block += 1;
         } else {
           inpFile += `${MAAPToString(sourceElement)}\n`;
@@ -239,24 +246,25 @@ const MAAP = () => {
       inputPath: cleanInputPath,
       parameterFile,
       parameterPath: cleanParameterPath,
-    }
+    };
     setFormData(newFormdata);
-  }, [inputPath, parameterFile, parameterPath, formData]);
+  }, [inputPath, parameterFile, parameterPath, JSON.stringify(formData)]);
 
   useEffect(() => {
     if (parameterFile) {
-      const parameterFileName = parameterFile.name;
       const possibleInitiators: Initiator[] = [];
-      const allData: any[] = [];
       parameterFile.text().then((lineData) => {
         const lines = lineData.split(/\n/);
         for (const line of lines) {
           if (/^[0-9]{3}/.test(line)) {
             try {
-              const data: any = parameterParser(line, {});
-              allData.push(data);
+              const data = parameterParser(line, {}) as MAAPParameter;
               if (data.value === 'T') {
-                possibleInitiators.push(data);
+                possibleInitiators.push({
+                  name: data.desc,
+                  comment: '',
+                  value: true,
+                });
               }
             } catch (err) {
               console.log('Error parsing line:', line, ' err is: ', err);
@@ -264,37 +272,30 @@ const MAAP = () => {
           }
         }
       });
-      setFormData((prevFormData: any) => ({
-        ...prevFormData,
-        possibleInitiators,
-        parameterFileName,
-      }));
-      console.log('parameter file data: ', allData);
+      setFormData((prevFormData: MAAPFormData) => {
+        const newData: MAAPFormData = {
+          ...prevFormData,
+          possibleInitiators,
+        };
+        return newData;
+      });
     }
   }, [parameterFile, setParameterFile]);
 
   useEffect(() => {
     const handleInputFileChange = async () => {
       if (inputFile) {
-        const inputFileName = inputFile.name;
         const fileString = await inputFile.text();
         try {
-          const data = InputParse(fileString, {});
+          const data = InputParse.parse(fileString, { locations: false }).output;
 
-          console.log('input file data: ', data.value);
+          let docComments: Record<string, Comment> = {};
+          let parameters: SourceElement[] = [];
+          let initiators: SourceElement[] = [];
+          let inputBlocks: ConditionalBlockStatement[] = [];
+          let fileRefs: string[] = [];
 
-          let docComments: Record<string, InputBlock> = {};
-          let sections: any = [];
-          let parameters: any = [];
-          let initiators: any = [];
-          let inputBlocks: InputBlock[] = [];
-          let title: string;
-          let fileRefs: any = [];
-          let aliasList: any[] = [];
-          let isExpressions: any = [];
-          let plotFil: any;
-
-          data.value.forEach((sourceElement: any, i: any) => {
+          data.value.forEach((sourceElement, i) => {
             if (sourceElement.type === 'comment') {
               // get following source element and see if it is a conditional block
               let nextElement = data.value[i + 1];
@@ -303,29 +304,19 @@ const MAAP = () => {
                   nextElement.id = uuid();
                   inputBlocks.push(nextElement);
                 }
-                docComments[nextElement.id] = sourceElement;
+                docComments[nextElement.id as string] = sourceElement;
               }
-            } else {
-              sections.push(sourceElement);
             }
 
             switch (sourceElement.type) {
-              case 'title':
-                title = sourceElement.value;
-                break;
               case 'file':
                 if (sourceElement.fileType) {
                   fileRefs.push(sourceElement.value);
                 }
                 break;
-              case 'alias':
-                sourceElement.value.forEach((element: any) => {
-                  aliasList.push(element);
-                });
-                break;
               case 'block':
                 if (sourceElement.blockType === 'PARAMETER CHANGE') {
-                  sourceElement.value.forEach((innerElement: any) => {
+                  sourceElement.value.forEach((innerElement) => {
                     parameters.push(innerElement);
                   });
                 } else if (sourceElement.blockType === 'INITIATORS') {
@@ -341,12 +332,6 @@ const MAAP = () => {
                   inputBlocks.push(sourceElement);
                 }
                 break;
-              case 'is_expression':
-                isExpressions.push(sourceElement);
-                break;
-              case 'plotfil':
-                plotFil = sourceElement;
-                break;
               default:
                 break;
             }
@@ -355,47 +340,60 @@ const MAAP = () => {
           // Set state variables or perform other actions with comments, sections, and parameters
           // setComments(comments);
           const newParameters: Parameter[] = [];
-          parameters.forEach((param: ParameterOG) => {
+          parameters.forEach((param) => {
             if (param.type === 'comment') {
               newParameters[newParameters.length - 1].comment = param.value as unknown as string;
             } else {
+              let unit = '';
+              let value: string | number | boolean = '';
+              if (typeof param.value === "object" && !Array.isArray(param.value) && param.type === 'assignment') {
+                if (param.value.type === 'number') {
+                  value = param.value.value;
+                  unit = param.value.units || '';
+                }
+              }
               newParameters.push({
-                name: getParameterName(param) || '',
+                name: getParameterName(param),
                 id: uuid(),
                 useVariable: false,
-                unit: param.value.units,
-                value: param.value.value,
-                variable: '',
+                unit,
+                value,
               });
             }
           });
           const newInitiators: Initiator[] = [];
-          initiators.forEach((init: InitiatorOG) => {
+          initiators.forEach((init) => {
             if (init.type === 'comment') {
               newInitiators[newInitiators.length - 1].comment = init.value as string;
-            } else {
+            } else if (init.type === 'assignment') {
+              let value: string | number | boolean = '';
+              if (init.value.type === 'boolean') {
+                value = init.value.value;
+              } else if (init.value.type === 'number') {
+                value = init.value.value;
+              } else {
+                value = expressionToString(init.value);
+              }
               newInitiators.push({
-                name: String(getInitiatorName(init)),
+                name: getParameterName(init),
                 id: uuid(),
                 comment: '',
-                value: (init.value as Value).value,
+                value,
               });
             }
           });
-          setFormData((prevFormData: any) => ({
-            ...prevFormData,
-            parameters: newParameters,
-            initiators: newInitiators,
-            docComments,
-            inputBlocks,
-            inputFileName,
-            title,
-            fileRefs,
-            aliasList,
-            isExpressions,
-            plotFil,
-            sourceElements: data.value,
-          }));
+          setFormData((prevFormData: MAAPFormData) => {
+            const newData: MAAPFormData = {
+              ...prevFormData,
+              parameters: newParameters,
+              initiators: newInitiators,
+              docComments,
+              inputBlocks,
+              fileRefs,
+              sourceElements: data.value,
+            };
+            return newData;
+          });
         } catch (err) {
           console.log('Error parsing file:', err);
         }

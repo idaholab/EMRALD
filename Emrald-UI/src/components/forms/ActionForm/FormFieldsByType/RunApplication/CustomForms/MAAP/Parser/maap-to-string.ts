@@ -97,7 +97,7 @@ function literalToString(literal: t.Literal): string {
  * @param identifier - The object to compile.
  * @returns The compiled code.
  */
-function identifierToString(identifier: t.Identifier): string {
+export function identifierToString(identifier: t.Identifier): string {
   return identifier.value;
 }
 
@@ -150,7 +150,7 @@ function argumentsToString(args: t.Arguments): string {
  * @param callExpression - The object to compile.
  * @returns The compiled code.
  */
-function callExpressionToString(callExpression: t.CallExpression): string {
+export function callExpressionToString(callExpression: t.CallExpression): string {
   return `${identifierToString(callExpression.value)}(${argumentsToString(
     callExpression.arguments,
   )})`;

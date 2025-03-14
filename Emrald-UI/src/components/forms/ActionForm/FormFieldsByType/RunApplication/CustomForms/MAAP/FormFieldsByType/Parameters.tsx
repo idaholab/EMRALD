@@ -7,53 +7,65 @@ import {
   TextField,
   Checkbox,
   MenuItem,
+  FormControlLabel,
 } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { SelectComponent } from '../../../../../../../common';
 import { appData } from '../../../../../../../../hooks/useAppData';
 import { useActionFormContext } from '../../../../../ActionFormContext';
 import { Parameter } from '../MAAPTypes';
+import { MAAPFormData } from '../maap';
+
 const Parameters = () => {
   const { formData, setFormData } = useActionFormContext();
   const [useVariable, setUseVariable] = useState<{ [key: string]: boolean }>({});
   const [variable, setVariable] = useState<{ [key: string]: string }>({});
   const [parameters, setParameters] = useState<Parameter[]>([]);
+
+  const maapForm = formData as MAAPFormData;
+
   useEffect(() => {
     setUseVariable(
-      formData?.parameters?.reduce((accumulator: { [key: string]: boolean }, param: Parameter) => {
-        accumulator[param.id] = param.useVariable;
+      maapForm?.parameters?.reduce((accumulator: Record<string, boolean>, param) => {
+        accumulator[param.id as string] = param.useVariable;
         return accumulator;
       }, {}) || {},
     );
     setVariable(
-      formData?.parameters?.reduce((accumulator: { [key: string]: string }, param: Parameter) => {
-        accumulator[param.id] = param.variable || '';
+      maapForm?.parameters?.reduce((accumulator: Record<string, string>, param) => {
+        accumulator[param.id as string] = param.variable || '';
         return accumulator;
       }, {}) || {},
     );
   }, []);
 
   useEffect(() => {
-    setParameters(formData?.parameters || []);
+    setParameters(maapForm?.parameters || []);
   }, [formData?.parameters]);
 
   const handleSetVariable = (variableName: string, row: Parameter) => {
-    setVariable((prev) => ({ ...prev, [row.id]: variableName }));
+    setVariable((prev) => ({ ...prev, [row.id as string]: variableName }));
     const updatedParameters = parameters.map((param) =>
       param.id === row.id ? { ...param, variable: variableName } : param,
     );
     setParameters(updatedParameters);
-    setFormData((prevFormData: any) => ({ ...prevFormData, parameters: updatedParameters }));
+    setFormData((prevFormData: MAAPFormData) => {
+      const data: MAAPFormData = { ...prevFormData, parameters: updatedParameters };
+      return data;
+    });
   };
 
   const handleCheckbox = (row: Parameter) => {
-    const value = !useVariable[row.id];
-    setUseVariable((prev) => ({ ...prev, [row.id]: value }));
+    const value = !useVariable[row.id as string];
+    setUseVariable((prev) => ({ ...prev, [row.id as string]: value }));
     const updatedParameters = parameters.map((param) =>
       param.id === row.id ? { ...param, useVariable: value } : param,
     );
     setParameters(updatedParameters);
-    setFormData((prevFormData: any) => ({ ...prevFormData, parameters: updatedParameters }));
+    setFormData((prevFormData: MAAPFormData) => {
+      const data: MAAPFormData = { ...prevFormData, parameters: updatedParameters };
+      return data;
+    });
   };
 
   return (
@@ -66,9 +78,7 @@ const Parameters = () => {
           <TableCell sx={{ width: '40%' }}>
             <b>Value</b>
           </TableCell>
-          <TableCell align="center">
-            <b>Use Variable</b>
-          </TableCell>
+          <TableCell align="center"></TableCell>
         </TableRow>
       </TableHead>
       <TableBody>
@@ -78,9 +88,9 @@ const Parameters = () => {
               {row.name}
             </TableCell>
             <TableCell>
-              {useVariable[row.id] ? (
+              {useVariable[row.id as string] ? (
                 <SelectComponent
-                  value={variable[row.id] || ''}
+                  value={variable[row.id as string] || ''}
                   label={'EMRALD Variable'}
                   setValue={(e) => handleSetVariable(e, row)}
                   sx={{ width: 223, mt: 0 }}
@@ -96,10 +106,15 @@ const Parameters = () => {
               )}
             </TableCell>
             <TableCell align="center">
-              <Checkbox
-                checked={useVariable[row.id] || false}
-                value={useVariable[row.id] || false}
-                onChange={() => handleCheckbox(row)}
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={useVariable[row.id as string] || false}
+                    value={useVariable[row.id as string] || false}
+                    onChange={() => handleCheckbox(row)}
+                  />
+                }
+                label="Use Variable"
               />
             </TableCell>
           </TableRow>
