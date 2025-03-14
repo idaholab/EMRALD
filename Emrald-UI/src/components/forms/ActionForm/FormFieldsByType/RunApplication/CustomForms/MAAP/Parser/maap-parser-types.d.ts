@@ -235,5 +235,6 @@ declare module 'maap-par-parser' {
     desc: string;
     index: number;
     value: 'T' | 'F';
+    comment?: string;
   };
 }

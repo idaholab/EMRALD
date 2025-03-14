@@ -17,11 +17,7 @@ import {
   MAAPToString,
   sourceElementToString,
 } from './Parser/maap-to-string.ts';
-import {
-  ConditionalBlockStatement,
-  SourceElement,
-  Comment,
-} from 'maap-inp-parser';
+import { ConditionalBlockStatement, SourceElement, Comment } from 'maap-inp-parser';
 import { MAAPParameter } from 'maap-par-parser';
 
 export type MAAPFormData =
@@ -37,7 +33,7 @@ export type MAAPFormData =
       inputPath?: string;
       parameterFile?: File | null;
       parameterPath?: string;
-      possibleInitiators?: Initiator[];
+      possibleInitiators?: MAAPParameter[];
       docComments?: Record<string, Comment>;
       docLinkVariable?: string;
       output?: string;
@@ -66,7 +62,7 @@ const MAAP = () => {
 
   const getParameterName = (row: SourceElement) => {
     if (row.type === 'assignment') {
-      if (row.target.type ==='call_expression') {
+      if (row.target.type === 'call_expression') {
         return callExpressionToString(row.target);
       }
       return identifierToString(row.target);
@@ -119,7 +115,10 @@ const MAAP = () => {
           const cblock = maapForm.inputBlocks[block];
           inpFile += `${cblock.blockType} `;
           if (cblock.test.type === 'expression') {
-            if (cblock.test.value.right.useVariable && typeof cblock.test.value.right.value === 'string') {
+            if (
+              cblock.test.value.right.useVariable &&
+              typeof cblock.test.value.right.value === 'string'
+            ) {
               // TODO: This may not work for every possible case
               inpFile += `${expressionTypeToString(cblock.test.value.left)} ${
                 cblock.test.value.op
@@ -252,7 +251,7 @@ const MAAP = () => {
 
   useEffect(() => {
     if (parameterFile) {
-      const possibleInitiators: Initiator[] = [];
+      const possibleInitiators: MAAPParameter[] = [];
       parameterFile.text().then((lineData) => {
         const lines = lineData.split(/\n/);
         for (const line of lines) {
@@ -261,9 +260,10 @@ const MAAP = () => {
               const data = parameterParser(line, {}) as MAAPParameter;
               if (data.value === 'T') {
                 possibleInitiators.push({
-                  name: data.desc,
-                  comment: '',
-                  value: true,
+                  index: data.index,
+                  desc: data.desc,
+                  comment: data.comment,
+                  value: data.value,
                 });
               }
             } catch (err) {
@@ -346,7 +346,11 @@ const MAAP = () => {
             } else {
               let unit = '';
               let value: string | number | boolean = '';
-              if (typeof param.value === "object" && !Array.isArray(param.value) && param.type === 'assignment') {
+              if (
+                typeof param.value === 'object' &&
+                !Array.isArray(param.value) &&
+                param.type === 'assignment'
+              ) {
                 if (param.value.type === 'number') {
                   value = param.value.value;
                   unit = param.value.units || '';
