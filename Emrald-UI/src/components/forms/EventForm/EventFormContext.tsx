@@ -463,7 +463,7 @@ const EventFormContextProvider: React.FC<PropsWithChildren> = ({ children }) => 
       onSuccess,
       triggerOnFalse,
       logicTop,
-      time,
+      time: evType === 'etTimer' ? (time === undefined ? 'P0DT0S' : time) : undefined,
       timeVariableUnit,
       useVariable,
       lambda,
