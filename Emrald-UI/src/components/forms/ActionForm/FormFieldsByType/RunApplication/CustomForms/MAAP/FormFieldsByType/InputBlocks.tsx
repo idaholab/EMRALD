@@ -28,8 +28,7 @@ const InputBlocks = () => {
         let previousResult = block.value[i - 1];
         previousResult.comment = result.value as string;
       } else if (result.type === 'assignment') {
-        const target =
-          result.target.type === 'identifier' ? result.target : result.target.value;
+        const target = result.target.type === 'identifier' ? result.target : result.target.value;
         const name = target.value;
         const useVariable = target.useVariable;
         const args =

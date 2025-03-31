@@ -240,6 +240,7 @@ const useLogicNodeTreeDiagram = () => {
       handleClose();
     }
   };
+
   const removeChildNodes = async (nodesToRemove: { nodeName: string; parentName: string }[]) => {
     if (nodesToRemove && nodesToRemove.length > 0) {
       for (const node of nodesToRemove) {
@@ -367,11 +368,7 @@ const useLogicNodeTreeDiagram = () => {
               addWindow(
                 `Edit Gate Node: ${label}`,
                 <LogicNodeFormContextProvider>
-                  <LogicNodeForm
-                    logicNodeData={logicNode}
-                    gateType={logicNode.gateType}
-                    editing={true}
-                  />
+                  <LogicNodeForm logicNodeData={logicNode} parentNodeName={parentName} gateType={logicNode.gateType} editing={true} />
                 </LogicNodeFormContextProvider>,
               ),
             isDivider: true,
@@ -460,7 +457,7 @@ const useLogicNodeTreeDiagram = () => {
           ...(type === 'new' && {
             id: uuidv4(),
             name: `Copy of ${pastedObject.name} (${newGateNumber})`,
-            rootName: rootNode?.name ?? '',
+            rootName: node?.rootName ?? ''
           }),
         };
 
@@ -494,7 +491,7 @@ const useLogicNodeTreeDiagram = () => {
     }
 
     // Check if the new node is an ancestor of the parent node.
-    if (getAncestors(parentNode, currentTreeNodes).includes(newNode.name)) {
+    if (getAncestors(parentNode, logicNodeList.value).includes(newNode.name)) {
       return true;
     }
 
@@ -507,7 +504,7 @@ const useLogicNodeTreeDiagram = () => {
     console.log('Current Tree Node Names:', currentTreeNodeNames);
 
     for (const descendant of newNodeDescendants) {
-      for (const currentName of currentTreeNodeNames) {
+      for (const currentName of pastedNodeDescendants) {
         console.log(`Comparing "${descendant}" with "${currentName}"`);
         if (descendant === currentName) {
           return true;

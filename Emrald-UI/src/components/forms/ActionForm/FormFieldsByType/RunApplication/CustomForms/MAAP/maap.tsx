@@ -16,12 +16,8 @@ import {
   identifierToString,
   MAAPToString,
   sourceElementToString,
-} from './Parser/toString.ts';
-import {
-  ConditionalBlockStatement,
-  SourceElement,
-  Comment,
-} from 'maap-inp-parser';
+} from './Parser/maap-to-string.ts';
+import { ConditionalBlockStatement, SourceElement, Comment } from 'maap-inp-parser';
 import { MAAPParameter } from 'maap-par-parser';
 
 export type MAAPFormData =
@@ -37,7 +33,7 @@ export type MAAPFormData =
       inputPath?: string;
       parameterFile?: File | null;
       parameterPath?: string;
-      possibleInitiators?: Initiator[];
+      possibleInitiators?: MAAPParameter[];
       docComments?: Record<string, Comment>;
       docLinkVariable?: string;
       output?: string;
@@ -66,7 +62,7 @@ const MAAP = () => {
 
   const getParameterName = (row: SourceElement) => {
     if (row.type === 'assignment') {
-      if (row.target.type ==='call_expression') {
+      if (row.target.type === 'call_expression') {
         return callExpressionToString(row.target);
       }
       return identifierToString(row.target);
@@ -119,7 +115,10 @@ const MAAP = () => {
           const cblock = maapForm.inputBlocks[block];
           inpFile += `${cblock.blockType} `;
           if (cblock.test.type === 'expression') {
-            if (cblock.test.value.right.useVariable && typeof cblock.test.value.right.value === 'string') {
+            if (
+              cblock.test.value.right.useVariable &&
+              typeof cblock.test.value.right.value === 'string'
+            ) {
               // TODO: This may not work for every possible case
               inpFile += `${expressionTypeToString(cblock.test.value.left)} ${
                 cblock.test.value.op
@@ -191,7 +190,7 @@ const MAAP = () => {
           Directory.CreateDirectory(tempLoc);
         }
         catch { }
-        if (File.Exists(paramLoc))
+        if (File.Exists(paramLoc) && !File.Exists(Path.Join(tempLoc, Path.GetFileName(paramLoc))))
         {
           File.Copy(paramLoc, Path.Join(tempLoc, Path.GetFileName(paramLoc)));
         }
@@ -202,7 +201,7 @@ const MAAP = () => {
         foreach (string fileRef in fileRefsList)
         {
           string fileRefPath = Path.Join(inpLocPath, fileRef);
-          if (File.Exists(fileRefPath))
+          if (File.Exists(fileRefPath) && !File.Exists(Path.Join(tempLoc, fileRef)))
           {
             if (fileRef != paramFileName)
             File.Copy(fileRefPath, Path.Join(tempLoc, fileRef));
@@ -213,12 +212,12 @@ const MAAP = () => {
           }
         }
         string exeName = Path.GetFileName(exeLoc);
-        if (File.Exists(exeLoc))
+        if (File.Exists(exeLoc) && !File.Exists(Path.Join(tempLoc, exeName)))
         {
           File.Copy(exeLoc, Path.Join(tempLoc, exeName));
         }
         string dllPath = Path.Join(Path.GetDirectoryName(exeLoc), exeName[..^7] + ".dll");
-        if (File.Exists(dllPath))
+        if (File.Exists(dllPath) && !File.Exists(Path.Join(tempLoc, Path.GetFileName(dllPath))))
         {
           File.Copy(dllPath, Path.Join(tempLoc, Path.GetFileName(dllPath)));
         }
@@ -234,6 +233,7 @@ const MAAP = () => {
   if (!Path.IsPathRooted(docVarPath))
         docVarPath = RootPath + docVarPath;
   string resLoc = Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "EMRALD_MAAP", Path.GetFileNameWithoutExtension(inpLoc) + ".log");
+  Directory.CreateDirectory(Path.GetDirectoryName(docVarPath));
   File.Copy(resLoc, docVarPath, true);`);
 
     setReturnProcess('rtNone');
@@ -251,7 +251,7 @@ const MAAP = () => {
 
   useEffect(() => {
     if (parameterFile) {
-      const possibleInitiators: Initiator[] = [];
+      const possibleInitiators: MAAPParameter[] = [];
       parameterFile.text().then((lineData) => {
         const lines = lineData.split(/\n/);
         for (const line of lines) {
@@ -260,9 +260,10 @@ const MAAP = () => {
               const data = parameterParser(line, {}) as MAAPParameter;
               if (data.value === 'T') {
                 possibleInitiators.push({
-                  name: data.desc,
-                  comment: '',
-                  value: true,
+                  index: data.index,
+                  desc: data.desc,
+                  comment: data.comment,
+                  value: data.value,
                 });
               }
             } catch (err) {
@@ -345,7 +346,11 @@ const MAAP = () => {
             } else {
               let unit = '';
               let value: string | number | boolean = '';
-              if (typeof param.value === "object" && !Array.isArray(param.value) && param.type === 'assignment') {
+              if (
+                typeof param.value === 'object' &&
+                !Array.isArray(param.value) &&
+                param.type === 'assignment'
+              ) {
                 if (param.value.type === 'number') {
                   value = param.value.value;
                   unit = param.value.units || '';

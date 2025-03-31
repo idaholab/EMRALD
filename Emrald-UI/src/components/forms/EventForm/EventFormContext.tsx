@@ -136,7 +136,7 @@ const EventFormContextProvider: React.FC<PropsWithChildren> = ({ children }) => 
   const [name, setName] = useState<string>('');
   const [desc, setDesc] = useState<string>('');
   const [evType, setEvType] = useState<EventType>('etStateCng');
-  const [ifInState, setIfInState] = useState<boolean>();
+  const [ifInState, setIfInState] = useState<boolean | undefined>(false);
   const [triggerStates, setTriggerStates] = useState<string[] | undefined>();
   const [moveFromCurrent, setMoveFromCurrent] = useState<boolean>(false);
   const [eventStateIndex, setEventStateIndex] = useState<number>(0);
@@ -393,12 +393,12 @@ const EventFormContextProvider: React.FC<PropsWithChildren> = ({ children }) => 
   };
 
   const handleVariableChange = (row: string) => {
-      setInvalidValues((prev) => {
-        const newInvalidValue = new Set(prev);
-        newInvalidValue.delete(row);
-        return newInvalidValue;
-      });
-  }
+    setInvalidValues((prev) => {
+      const newInvalidValue = new Set(prev);
+      newInvalidValue.delete(row);
+      return newInvalidValue;
+    });
+  };
 
   const setParameterVariable = (value: string | undefined, row: string) => {
     handleSetParameters(row, value, 'variable');
@@ -420,7 +420,6 @@ const EventFormContextProvider: React.FC<PropsWithChildren> = ({ children }) => 
     setCodeVariables(undefined);
     setScriptCode(undefined);
     setVariableName('');
-    setIfInState(undefined);
     setTriggerStates([]); // Default value for triggerStates
     setMoveFromCurrent(false); // Default value for moveFromCurrent
     setEventStateIndex(0); // Default value for eventStateIndex
@@ -446,6 +445,7 @@ const EventFormContextProvider: React.FC<PropsWithChildren> = ({ children }) => 
     setHasError(false);
     if (evType === 'etStateCng') {
       setAllItems(true); // Default value for allItems
+      setIfInState(false);
     }
   };
 
@@ -459,12 +459,12 @@ const EventFormContextProvider: React.FC<PropsWithChildren> = ({ children }) => 
       code: scriptCode,
       varNames: codeVariables,
       triggerStates,
-      ifInState,
+      ifInState: evType === 'etStateCng' ? ifInState : undefined,
       allItems,
       onSuccess,
       triggerOnFalse,
       logicTop,
-      time,
+      time: evType === 'etTimer' ? (time === undefined ? 'P0DT0S' : time) : undefined,
       timeVariableUnit,
       useVariable,
       lambda,

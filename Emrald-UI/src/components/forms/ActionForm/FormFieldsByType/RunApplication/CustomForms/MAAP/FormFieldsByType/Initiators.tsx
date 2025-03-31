@@ -34,8 +34,8 @@ const Initiators = () => {
     });
   };
   const addInitiator = (desc: string) => {
-    const initiator = maapForm?.possibleInitiators?.find((init) => init.name === desc);
-    if (initiator && !initiators.includes(initiator)) {
+    const initiator = maapForm?.possibleInitiators?.find((init) => init.desc === desc);
+    if (initiator && !initiators.find((init) => init.name === initiator.desc)) {
       const newInitiator = {
         name: initiator.name,
         comment: '',
@@ -47,7 +47,7 @@ const Initiators = () => {
       setFormData((prevFormData: MAAPFormData) => {
         const data = { ...prevFormData, initiators: updatedInitiators };
         return data;
-    });
+      });
     }
   };
 
@@ -56,9 +56,7 @@ const Initiators = () => {
       <Autocomplete
         size="small"
         disablePortal
-        options={
-          maapForm?.possibleInitiators?.map((initiator) => initiator.name) || []
-        }
+        options={maapForm?.possibleInitiators?.map((initiator) => initiator.desc) || []}
         onChange={(e) => addInitiator(e.currentTarget.innerHTML)}
         sx={{ width: 300 }}
         renderInput={(params) => <TextField {...params} label="Add Initiator" />}
