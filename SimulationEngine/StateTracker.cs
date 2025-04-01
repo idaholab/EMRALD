@@ -57,6 +57,22 @@ namespace SimulationTracking
     { }
   }
 
+  public class StateTransition
+  {
+    public int StateId { get; set; }
+    public int FromStateId { get; set; }
+    public string ActionName { get; set; }
+    public string AdditionalInfo { get; set; }
+
+    public StateTransition(int stateId, int fromStateId, string actionName, string additionalInfo)
+    {
+      StateId = stateId;
+      FromStateId = fromStateId;
+      ActionName = actionName;
+      AdditionalInfo = additionalInfo;
+    }
+  }
+
   public class ConditionMoveEvent : EventListData
   {
     public ConditionMoveEvent(String name, EventStatesAndActions inStEvID, Event inEventData)
@@ -177,7 +193,7 @@ namespace SimulationTracking
       return retBool;
     }
 
-    public List<ConditionMoveEvent> GetMatchedCondMoveEvents(ChangedIDs changedItems, Dictionary<string, SimEventType> lastExtEvTypes, TimeSpan curTime, TimeSpan start3DTime, TimeSpan nextEvTime, int runIdx)
+    public List<ConditionMoveEvent> GetMatchedCondMoveEvents(ChangedIDs changedItems, Dictionary<string, SimEventType> lastExtEvTypes, TimeSpan curTime, TimeSpan start3DTime, TimeSpan nextEvTime, int runIdx, MyBitArray toStates)
     {
       List<ConditionMoveEvent> retList = new List<ConditionMoveEvent>();
       if (curStates.Count == 0)
@@ -252,9 +268,14 @@ namespace SimulationTracking
                   break;
 
                 default:
-                  if ((item.eventData.relatedIDsBitSet != null) && (changedItems.HasApplicableItems(curIDType, item.eventData.relatedIDsBitSet)) &&
-                      ((item.eventData as CondBasedEvent).EventTriggered(curStatesBS, otherData, curTime, start3DTime, nextEvTime, runIdx)))
-                    retList.Add(item);
+                  //if logic we need to make sure if we not evauating if we are about to move into a new state that is in the logic tree component evaluation
+                  if ((item.eventData.evType != EnEventType.etComponentLogic) || (item.eventData.relatedIDsBitSet.And(toStates).BitCount() == 0)) 
+                  {
+                    if ((item.eventData.relatedIDsBitSet != null) && (changedItems.HasApplicableItems(curIDType, item.eventData.relatedIDsBitSet)) &&
+                          ((item.eventData as CondBasedEvent).EventTriggered(curStatesBS, otherData, curTime, start3DTime, nextEvTime, runIdx)))
+                      retList.Add(item);
+                  }
+                  
                   break;
               }
             }
@@ -668,7 +689,7 @@ namespace SimulationTracking
     /// <summary>
     /// ids of states to process and add to current state list, second int is the ID of the from state, string is the name of the action that brought us to that state
     /// </summary>
-    private List<Tuple<int, int, string, string>> nextStateQue = new List<Tuple<int, int, string, string>>();
+    private List<StateTransition> nextStateQue = new List<StateTransition>();
     /// <summary>
     /// bitsets tracking items that have changed, used to determine what events need to be reevaluated.
     /// </summary>
@@ -1204,7 +1225,7 @@ namespace SimulationTracking
         if (curState.stateType == EnStateType.stStart)
         {
           hadStartState = true;
-          if (!ProcessState(Tuple.Create(curState.id, -1, "", "")))
+          if (!ProcessState(new StateTransition(curState.id, -1, "", "")))
           {
             return false;
           }
@@ -1266,13 +1287,13 @@ namespace SimulationTracking
     /// </summary>
     /// <param name="stateID">info of the state to process Tuple(ToState, FromState, action string)/></param>
     /// <returns></returns>
-    private bool ProcessState(Tuple<int, int, string, string> stateID) //<ToState, FromState, event name, action name,>
+    private bool ProcessState(StateTransition stateID) //<ToState, FromState, event name, action name,>
     {
       //lookup the state from the ID
       State curState;
       try
       {
-        curState = allLists.allStates[stateID.Item1];
+        curState = allLists.allStates[stateID.StateId];
       }
       catch (Exception)
       {
@@ -1284,8 +1305,8 @@ namespace SimulationTracking
       curState.ResetEventCriteria();
 
       //TransitionAct tAct = allLists.allActions.FindByName(stateID.Item3) as TransitionAct;
-      curStates.Add(this.allLists, curState, stateID.Item2, this.curTime, stateID.Item3, stateID.Item4);
-      changedItems.AddChangedID(EnModifiableTypes.mtState, stateID.Item1);
+      curStates.Add(this.allLists, curState, stateID.FromStateId, this.curTime, stateID.ActionName, stateID.AdditionalInfo);
+      changedItems.AddChangedID(EnModifiableTypes.mtState, stateID.StateId);
 
       //do all the immediate actions for the state
       ProcessActions(curState.GetImmediateActions(), curState.id, null, false);
@@ -1344,14 +1365,20 @@ namespace SimulationTracking
     /// </summary>
     private void ScanCondEvList()
     {
+      MyBitArray toStateIDsBS = new MyBitArray(32);
+      foreach(var nextState in nextStateQue)
+      {
+        toStateIDsBS.Set(nextState.StateId, true);
+      }
+      
       List<ConditionMoveEvent> matchedEvs = null;
       //Look for events that now meet conditions and add them to the processEventList
       TimeMoveEvent nextItem = timeEvList.LookNextTimedEvent();
       if (nextItem != null)
-        matchedEvs = condEvList.GetMatchedCondMoveEvents(this.changedItems, this.lastExtEvTypes, curTime, sim3DStartTime, nextItem.time, this.allLists.curRunIdx);
+        matchedEvs = condEvList.GetMatchedCondMoveEvents(this.changedItems, this.lastExtEvTypes, curTime, sim3DStartTime, nextItem.time, this.allLists.curRunIdx, toStateIDsBS);
         //matchedEvs = condEvList.GetMatchedCondMoveEvents(this.changedItems, curTime, sim3DStartTime, nextItem.time, this.allLists.curRunIdx);
       else
-        matchedEvs = condEvList.GetMatchedCondMoveEvents(this.changedItems, this.lastExtEvTypes, curTime, sim3DStartTime, TimeSpan.FromHours(0), this.allLists.curRunIdx);
+        matchedEvs = condEvList.GetMatchedCondMoveEvents(this.changedItems, this.lastExtEvTypes, curTime, sim3DStartTime, TimeSpan.FromHours(0), this.allLists.curRunIdx, toStateIDsBS);
         //matchedEvs = condEvList.GetMatchedCondMoveEvents(this.changedItems, curTime, sim3DStartTime, TimeSpan.FromHours(0), this.allLists.curRunIdx);
       this.processEventList.AddRange(matchedEvs);
       changedItems.Clear();
@@ -1392,8 +1419,8 @@ namespace SimulationTracking
                  (inStateAlready && (ownerStateID != cur.idx)))
                 // if(curStates.ContainsKey(cur.idx))
                 logger.Debug("No Transition, already in state: " + curState.name);
-              else if (nextStateQue.Where(t => t.Item1 == cur.idx).FirstOrDefault() == null)
-                nextStateQue.Add(Tuple.Create(cur.idx, ownerStateID, causeEvent == null ? "immediate action" : causeEvent.name, curAct.name));
+              else if (nextStateQue.Where(t => t.StateId == cur.idx).FirstOrDefault() == null)
+                nextStateQue.Add(new StateTransition(cur.idx, ownerStateID, causeEvent == null ? "immediate action" : causeEvent.name, curAct.name));
             }
             break;
 
@@ -1533,8 +1560,8 @@ namespace SimulationTracking
             foreach (int id in addStates)
             {
               var toAdd = Tuple.Create(id, ownerStateID, curAct.name);
-              if (nextStateQue.Where(t => t.Item1 == id).FirstOrDefault() == null)
-                nextStateQue.Add(Tuple.Create(id, ownerStateID, causeEvent == null ? "immediate action" : causeEvent.name, curAct.name));
+              if (nextStateQue.Where(t => t.StateId == id).FirstOrDefault() == null)
+                nextStateQue.Add(new StateTransition(id, ownerStateID, causeEvent == null ? "immediate action" : causeEvent.name, curAct.name));
             }
 
 
