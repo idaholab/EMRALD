@@ -20,7 +20,9 @@
     "desc": "",
     "mainItem": true,
     "required": false,
-    "evType": "etStateCng"
+    "evType": "etStateCng",
+    "allItems": true,
+    "ifInState": false
   },
   "creates a new event": {
     "objType": "Event",
@@ -28,6 +30,8 @@
     "desc": "",
     "mainItem": true,
     "required": false,
-    "evType": "etStateCng"
+    "evType": "etStateCng",
+    "allItems": true,
+    "ifInState": false
   }
 }

@@ -88,7 +88,7 @@ interface EventFormContextType {
   setDfltTimeRate: React.Dispatch<React.SetStateAction<TimeVariableUnit | undefined>>;
   setDistType: React.Dispatch<React.SetStateAction<DistributionType | undefined>>;
   setEvType: React.Dispatch<React.SetStateAction<EventType>>;
-  setExtEventType: React.Dispatch<React.SetStateAction<ExtEventMsgType | undefined | ''>>;
+  setExtEventType: React.Dispatch<React.SetStateAction<ExtEventMsgType | undefined>>;
   setFailureRateMilliseconds: React.Dispatch<React.SetStateAction<number | undefined>>;
   setFromSimStart: React.Dispatch<React.SetStateAction<boolean | undefined>>;
   setIfInState: React.Dispatch<React.SetStateAction<boolean | undefined>>;
@@ -98,7 +98,7 @@ interface EventFormContextType {
   setName: React.Dispatch<React.SetStateAction<string>>;
   setMoveFromCurrent: React.Dispatch<React.SetStateAction<boolean>>;
   setOnSuccess: React.Dispatch<React.SetStateAction<boolean | undefined>>;
-  setOnVarChange: React.Dispatch<React.SetStateAction<VarChangeOptions | undefined | ''>>;
+  setOnVarChange: React.Dispatch<React.SetStateAction<VarChangeOptions | undefined>>;
   setParameters: React.Dispatch<React.SetStateAction<EventDistributionParameter[] | undefined>>;
   setScriptCode: React.Dispatch<React.SetStateAction<string | undefined>>;
   setTime: React.Dispatch<React.SetStateAction<string | undefined>>;
@@ -148,7 +148,7 @@ const EventFormContextProvider: React.FC<PropsWithChildren> = ({ children }) => 
   const [timerMilliseconds, setTimerMilliseconds] = useState<number>(0);
   const [useVariable, setUseVariable] = useState<boolean>();
   const [lambda, setLambda] = useState<string | number>();
-  const [onVarChange, setOnVarChange] = useState<VarChangeOptions | ''>();
+  const [onVarChange, setOnVarChange] = useState<VarChangeOptions | undefined>();
   const [distType, setDistType] = useState<DistributionType>();
   const [parameters, setParameters] = useState<EventDistributionParameter[]>();
   const [useDistVariable, setUseDistVariable] = useState<boolean[]>([]);
@@ -158,7 +158,7 @@ const EventFormContextProvider: React.FC<PropsWithChildren> = ({ children }) => 
   const [fromSimStart, setFromSimStart] = useState<boolean>();
   const [failureRateMilliseconds, setFailureRateMilliseconds] = useState<number>();
   const [lambdaTimeRate, setLambdaTimeRate] = useState<string>();
-  const [extEventType, setExtEventType] = useState<ExtEventMsgType | ''>();
+  const [extEventType, setExtEventType] = useState<ExtEventMsgType | undefined>();
   const [variable, setVariable] = useState<string>();
   const [hasError, setHasError] = useState<boolean>(false);
   const [originalName, setOriginalName] = useState<string>();
@@ -430,7 +430,7 @@ const EventFormContextProvider: React.FC<PropsWithChildren> = ({ children }) => 
     setTimerMilliseconds(0);
     setUseVariable(undefined);
     setLambda(undefined);
-    setOnVarChange('');
+    setOnVarChange(undefined);
     setDistType(undefined);
     setParameters(undefined);
     setUseDistVariable([]); // Default value for useDistVariable
@@ -440,7 +440,7 @@ const EventFormContextProvider: React.FC<PropsWithChildren> = ({ children }) => 
     setFromSimStart(undefined);
     setFailureRateMilliseconds(undefined);
     setLambdaTimeRate(undefined);
-    setExtEventType(''); // Default value for extEventType
+    setExtEventType(undefined);
     setVariable(undefined);
     setHasError(false);
     if (evType === 'etStateCng') {
@@ -456,28 +456,58 @@ const EventFormContextProvider: React.FC<PropsWithChildren> = ({ children }) => 
       evType,
       name: name.trim(),
       desc,
-      code: scriptCode,
-      varNames: codeVariables,
-      triggerStates,
-      ifInState: evType === 'etStateCng' ? ifInState : undefined,
-      allItems,
-      onSuccess,
-      triggerOnFalse,
-      logicTop,
-      time: evType === 'etTimer' ? (time === undefined ? 'P0DT0S' : time) : undefined,
-      timeVariableUnit,
-      useVariable,
-      lambda,
-      onVarChange: onVarChange ? onVarChange : undefined,
-      distType: evType === 'etDistribution' ? (distType ? distType : 'dtNormal') : undefined,
-      parameters,
-      dfltTimeRate,
-      fromSimStart,
-      lambdaTimeRate,
-      extEventType: extEventType ? extEventType : undefined,
-      variable,
       mainItem: true,
     };
+    if (evType === 'et3dSimEv') {
+      event.value.extEventType = extEventType;
+      if (extEventType === 'etCompEv') {
+        event.value = {
+          ...event.value,
+          code: scriptCode,
+          varNames: codeVariables,
+          variable,
+        }
+      }
+    } else if (evType === 'etStateCng') {
+      event.value = {
+        ...event.value,
+        ifInState: ifInState === undefined ? false : ifInState,
+        allItems: allItems === undefined ? true : allItems,
+        onSuccess,
+        triggerStates,
+      };
+    } else if (evType === 'etTimer') {
+      event.value = {
+        ...event.value,
+        time: time === undefined ? 'P0DT0S' : time,
+        dfltTimeRate,
+        fromSimStart,
+        onVarChange,
+        timeVariableUnit,
+        useVariable,
+      };
+    } else if (evType === 'etDistribution') {
+      event.value = {
+        ...event.value,
+        distType: distType ? distType : 'dtNormal',
+        onVarChange,
+        parameters,
+      };
+    } else if (evType === 'etFailRate') {
+      event.value = {
+        ...event.value,
+        lambda,
+        lambdaTimeRate,
+        onVarChange,
+        useVariable,
+      };
+    } else if (evType === 'etComponentLogic') {
+      event.value = {
+        ...event.value,
+        logicTop,
+        triggerOnFalse,
+      }
+    }
     eventData
       ? updateEvent(event.value, state, moveFromCurrent)
       : createEvent(event.value, state, moveFromCurrent);
