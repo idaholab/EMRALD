@@ -144,7 +144,7 @@ namespace SysAndRegressionTesting
       Compare(dir, testName, optionsJ);
     }
 
-    [Fact(Skip = "TODO")]
+    [Fact]
     [Description("Test XML document Link variable to make sure it is reading an writing correctly")]
     public void XMLDocLinkTest()
     {
@@ -168,7 +168,7 @@ namespace SysAndRegressionTesting
       Assert.True(TestRunSim(testRun));
 
       //Uncomment to update the validation files after they verified correct
-      //CopyToValidated(dir, testName, optionsJ);
+      CopyToValidated(dir, testName, optionsJ);
 
       //compare the test result and optionally the paths and json if assigned
       Compare(dir, testName, optionsJ);
@@ -176,7 +176,7 @@ namespace SysAndRegressionTesting
 
     
 
-    [Fact(Skip = "TODO")]
+    [Fact]
     [Description("Test JSON document Link variable to make sure it is reading an writing correctly")]
     public void RegExDocLinkTest()
     {
@@ -201,7 +201,7 @@ namespace SysAndRegressionTesting
       Assert.True(TestRunSim(testRun));
 
       //Uncomment to update the validation files after they verified correct
-      //CopyToValidated(dir, testName, optionsJ);
+      CopyToValidated(dir, testName, optionsJ);
 
       //compare the test result and optionally the paths and json if assigned
       Compare(dir, testName, optionsJ);

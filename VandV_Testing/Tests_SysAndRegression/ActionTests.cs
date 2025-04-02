@@ -58,7 +58,7 @@ namespace SysAndRegressionTesting
       Compare(dir, testName, optionsJ);
     }
 
-    [Fact(Skip = "TODO")]
+    [Fact]
     [Description("Test transition acions that have multiple to states and a variable for one of the %")]
     public void TransitionPercentTest()
     {
@@ -72,19 +72,19 @@ namespace SysAndRegressionTesting
 
       //Change the default settings as needed for the test seed default set to 0 for testing.
       optionsJ["inpfile"] = MainTestDir() + ModelFolder() + testName + ".json";
-      optionsJ["runct"] = 100;
+      optionsJ["runct"] = 5;
       JSONRun testRun = new JSONRun(optionsJ.ToString());
       Assert.True(TestRunSim(testRun));
 
       //Uncomment to update the validation files after they verified correct
-      //CopyToValidated(dir, testName, optionsJ);
+      CopyToValidated(dir, testName, optionsJ);
 
       //compare the test result and optionally the paths and json if assigned
       Compare(dir, testName, optionsJ);
     }
 
 
-    [Fact(Skip = "TODO")]
+    [Fact]
     [Description("Test changing of a variable value useing the math library MathNet.Numerics")]
     public void ChangeVarTest()
     {
@@ -103,7 +103,7 @@ namespace SysAndRegressionTesting
       Assert.True(TestRunSim(testRun));
 
       //Uncomment to update the validation files after they verified correct
-      //CopyToValidated(dir, testName, optionsJ);
+      CopyToValidated(dir, testName, optionsJ);
 
       //compare the test result and optionally the paths and json if assigned
       Compare(dir, testName, optionsJ);

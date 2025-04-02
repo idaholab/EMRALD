@@ -1,0 +1,249 @@
+{
+  "id": "0",
+  "name": "XMLDocLinkClientSide",
+  "desc": "",
+  "version": 1,
+  "DiagramList": [
+    {
+      "id": "ff8f059c-4321-4aad-8c33-b768908003c0",
+      "name": "Start",
+      "desc": "",
+      "diagramType": "dtMulti",
+      "diagramLabel": "Test",
+      "states": [
+        "Start",
+        "Standard",
+        "Key",
+        "Term"
+      ],
+      "required": false,
+      "objType": "Diagram"
+    }
+  ],
+  "StateList": [
+    {
+      "id": "eac55642-38b7-49d2-abb9-57f52c772c5c",
+      "name": "Key",
+      "desc": "",
+      "diagramName": "Start",
+      "stateType": "stKeyState",
+      "events": [],
+      "eventActions": [],
+      "immediateActions": [
+        "GoTerm"
+      ],
+      "geometryInfo": {
+        "x": 428.5821700806746,
+        "y": 93.14229550234319,
+        "width": 0,
+        "height": 0
+      },
+      "required": false,
+      "objType": "State",
+      "defaultSingleStateValue": "Ignore"
+    },
+    {
+      "id": "236d6507-747a-49c1-b2f1-a441630d3e3d",
+      "name": "Standard",
+      "desc": "",
+      "diagramName": "Start",
+      "stateType": "stStandard",
+      "events": [
+        "TimerXML"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": false,
+          "actions": [
+            "GoKey"
+          ]
+        }
+      ],
+      "immediateActions": [],
+      "geometryInfo": {
+        "x": 155.07427792459976,
+        "y": 76.96278978480134,
+        "width": 0,
+        "height": 0
+      },
+      "required": false,
+      "objType": "State",
+      "defaultSingleStateValue": "Ignore"
+    },
+    {
+      "id": "193dc414-e6ee-4f3a-9af1-f3074f8a58a4",
+      "name": "Start",
+      "desc": "",
+      "diagramName": "Start",
+      "stateType": "stStart",
+      "events": [],
+      "eventActions": [],
+      "immediateActions": [
+        "Go Standard"
+      ],
+      "geometryInfo": {
+        "x": -142.75173718157959,
+        "y": 88.66313990073274,
+        "width": 0,
+        "height": 0
+      },
+      "required": false,
+      "objType": "State",
+      "defaultSingleStateValue": "Ignore"
+    },
+    {
+      "id": "c45261f9-13c1-4e25-8ae3-06617543b613",
+      "name": "Term",
+      "desc": "",
+      "diagramName": "Start",
+      "stateType": "stTerminal",
+      "events": [],
+      "eventActions": [],
+      "immediateActions": [],
+      "geometryInfo": {
+        "x": 695.1165164642221,
+        "y": 100.59885735022533,
+        "width": 0,
+        "height": 0
+      },
+      "required": false,
+      "objType": "State",
+      "defaultSingleStateValue": "Ignore"
+    }
+  ],
+  "ActionList": [
+    {
+      "id": "a31b2107-2955-4cb5-a6a9-d54554ca4956",
+      "name": "Go Standard",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": true,
+      "objType": "Action",
+      "required": false,
+      "newStates": [
+        {
+          "toState": "Standard",
+          "prob": 0,
+          "failDesc": "",
+          "varProb": null
+        }
+      ],
+      "mutExcl": true,
+      "codeVariables": [],
+      "variableName": "",
+      "scriptCode": "",
+      "sim3DMessage": "atCompModify",
+      "extSim": "",
+      "sim3DConfigData": "",
+      "sim3DModelRef": "",
+      "simEndTime": "",
+      "makeInputFileCode": "",
+      "exePath": "",
+      "processOutputFileCode": "",
+      "openSimVarParams": false,
+      "raType": "",
+      "returnProcess": "rtNone"
+    },
+    {
+      "id": "0ed457bf-64e6-4f8f-a49d-f282a70dd072",
+      "name": "GoKey",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": true,
+      "objType": "Action",
+      "required": false,
+      "newStates": [
+        {
+          "toState": "Key",
+          "prob": -1,
+          "varProb": null,
+          "failDesc": ""
+        }
+      ],
+      "mutExcl": true,
+      "codeVariables": [],
+      "variableName": "",
+      "scriptCode": "",
+      "sim3DMessage": "atCompModify",
+      "extSim": "",
+      "sim3DConfigData": "",
+      "sim3DModelRef": "",
+      "simEndTime": "",
+      "makeInputFileCode": "",
+      "exePath": "",
+      "processOutputFileCode": "",
+      "openSimVarParams": false,
+      "raType": "",
+      "returnProcess": "rtNone"
+    },
+    {
+      "id": "99278160-8137-4b02-b85c-368f1662e1c6",
+      "name": "GoTerm",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": true,
+      "objType": "Action",
+      "required": false,
+      "newStates": [
+        {
+          "toState": "Term",
+          "prob": -1,
+          "varProb": null,
+          "failDesc": ""
+        }
+      ],
+      "mutExcl": true,
+      "codeVariables": [],
+      "variableName": "",
+      "scriptCode": "",
+      "sim3DMessage": "atCompModify",
+      "extSim": "",
+      "sim3DConfigData": "",
+      "sim3DModelRef": "",
+      "simEndTime": "",
+      "makeInputFileCode": "",
+      "exePath": "",
+      "processOutputFileCode": "",
+      "openSimVarParams": false,
+      "raType": "",
+      "returnProcess": "rtNone"
+    }
+  ],
+  "EventList": [
+    {
+      "id": "cfa2c258-48f9-4da5-aa35-fc56dd03f1e6",
+      "name": "TimerXML",
+      "desc": "",
+      "evType": "etTimer",
+      "mainItem": true,
+      "required": false,
+      "objType": "Event",
+      "triggerStates": [],
+      "allItems": true,
+      "time": "XMLDouble",
+      "timeVariableUnit": "trMinutes",
+      "useVariable": true,
+      "onVarChange": "ocResample"
+    }
+  ],
+  "LogicNodeList": [],
+  "VariableList": [
+    {
+      "name": "XMLDouble",
+      "varScope": "gtDocLink",
+      "value": "12",
+      "type": "string",
+      "objType": "Variable",
+      "id": "604ef82c-7d19-4b7f-b76a-07cb87130365",
+      "desc": "",
+      "docType": "dtXML",
+      "docPath": "C:\\Users\\JOHNAE2\\Projects\\EMRALD\\VandV_Testing\\TestingFiles\\Other\\TestVar5.xml",
+      "docLink": "/Value/text()",
+      "resetOnRuns": false
+    }
+  ],
+  "ExtSimList": [],
+  "objType": "EMRALD_Model",
+  "emraldVersion": 3,
+  "templates": []
+}

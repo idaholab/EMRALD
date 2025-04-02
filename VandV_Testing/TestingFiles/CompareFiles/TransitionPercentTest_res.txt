@@ -1,0 +1,10 @@
+Simulation = TransitionPercentTest
+Runtime = 00.00:00:00
+Runs = 5 of 5
+
+S6 Occurred 3 times, Probability =0.6, MeanTime = 00.00:00:15 +/- 00.00:00:00.00
+
+S4 Occurred 2 times, Probability =0.4, MeanTime = 00.00:00:10 +/- 00.00:00:00.00
+---------------------------
+- End Sim Variable Values -
+---------------------------
