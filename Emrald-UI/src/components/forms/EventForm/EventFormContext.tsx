@@ -268,6 +268,8 @@ const EventFormContextProvider: React.FC<PropsWithChildren> = ({ children }) => 
         newInvalidValues.add('Lambda');
       } else if (value === 'etDistribution') {
         newInvalidValues.add('Mean').add('Standard Deviation').add('Minimum').add('Maximum');
+      } else if (value === 'etComponentLogic') {
+        newInvalidValues.add('LogicTop');
       }
       return newInvalidValues;
     });
