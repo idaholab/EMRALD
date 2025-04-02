@@ -18,7 +18,7 @@ const ChangeVarValue = () => {
   const { variableList } = useVariableContext();
 
   useEffect(() => {
-    setHasError(variableName.length === 0);
+    setHasError(variableName === undefined || variableName.length === 0);
   });
 
   return (

@@ -468,14 +468,13 @@ const EventFormContextProvider: React.FC<PropsWithChildren> = ({ children }) => 
           code: scriptCode,
           varNames: codeVariables,
           variable,
-        }
+        };
       }
     } else if (evType === 'etStateCng') {
       event.value = {
         ...event.value,
         ifInState: ifInState === undefined ? false : ifInState,
         allItems: allItems === undefined ? true : allItems,
-        onSuccess,
         triggerStates,
       };
     } else if (evType === 'etTimer') {
@@ -492,9 +491,21 @@ const EventFormContextProvider: React.FC<PropsWithChildren> = ({ children }) => 
       event.value = {
         ...event.value,
         distType: distType ? distType : 'dtNormal',
-        onVarChange,
-        parameters,
+        dfltTimeRate: dfltTimeRate,
+        parameters: parameters?.map((p) => {
+          const parameter = { ...p };
+          if (parameter.timeRate === undefined) {
+            delete parameter.timeRate;
+          }
+          if (parameter.variable === undefined) {
+            delete parameter.variable;
+          }
+          return parameter;
+        }),
       };
+      if (onVarChange !== undefined) {
+        event.value.onVarChange = onVarChange;
+      }
     } else if (evType === 'etFailRate') {
       event.value = {
         ...event.value,
@@ -508,7 +519,10 @@ const EventFormContextProvider: React.FC<PropsWithChildren> = ({ children }) => 
         ...event.value,
         logicTop,
         triggerOnFalse,
-      }
+        onSuccess,
+      };
+    } else if (evType === 'etVarCond') {
+      event.value.varNames = codeVariables;
     }
     eventData
       ? updateEvent(event.value, state, moveFromCurrent)
