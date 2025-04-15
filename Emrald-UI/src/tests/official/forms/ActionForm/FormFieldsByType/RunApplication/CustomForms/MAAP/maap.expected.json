@@ -594,7 +594,7 @@
         {
           "comment": "",
           "name": "PARAM1",
-          "value": true
+          "value": "T"
         }
       ],
       "inputBlocks": [

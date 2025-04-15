@@ -37,7 +37,7 @@ const Initiators = () => {
     const initiator = maapForm?.possibleInitiators?.find((init) => init.desc === desc);
     if (initiator && !initiators.find((init) => init.name === initiator.desc)) {
       const newInitiator = {
-        name: initiator.name,
+        name: initiator.desc,
         comment: '',
         id: uuid(),
         value: initiator.value,
