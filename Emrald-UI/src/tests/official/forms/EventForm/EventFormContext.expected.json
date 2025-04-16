@@ -1,0 +1,37 @@
+{
+  "initializes with state": {
+    "objType": "State",
+    "name": "initializes with state",
+    "desc": "",
+    "stateType": "stStart",
+    "diagramName": "",
+    "immediateActions": [],
+    "events": ["initializes with state"],
+    "eventActions": [
+      {
+        "actions": [],
+        "moveFromCurrent": false
+      }
+    ]
+  },
+  "changes event name": {
+    "objType": "Event",
+    "name": "changed event name",
+    "desc": "",
+    "mainItem": true,
+    "required": false,
+    "evType": "etStateCng",
+    "allItems": true,
+    "ifInState": false
+  },
+  "creates a new event": {
+    "objType": "Event",
+    "name": "creates a new event",
+    "desc": "",
+    "mainItem": true,
+    "required": false,
+    "evType": "etStateCng",
+    "allItems": true,
+    "ifInState": false
+  }
+}

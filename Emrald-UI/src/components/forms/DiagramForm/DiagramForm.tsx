@@ -183,11 +183,11 @@ const DiagramForm: React.FC<DiagramFormProps> = ({ diagramData }) => {
     <Box mx={3} pb={3} height={'100%'}>
       <Box mt={3}>
         {diagramData ? (
-          <Tabs value={currentTab} onChange={handleTabChange} aria-label="basic tabs example">
+          <Tabs value={currentTab} onChange={handleTabChange}>
             <Tab label={`${diagramData ? 'Edit' : 'Create'} Diagram`} />
           </Tabs>
         ) : (
-          <Tabs value={currentTab} onChange={handleTabChange} aria-label="basic tabs example">
+          <Tabs value={currentTab} onChange={handleTabChange}>
             <Tab label={`${diagramData ? 'Edit' : 'Create'} Diagram`} />
             <Tab label="Import Diagram" />
             <Tab label="From Template" />
@@ -228,7 +228,6 @@ const DiagramForm: React.FC<DiagramFormProps> = ({ diagramData }) => {
             <Autocomplete
               freeSolo
               disabled={!!selectedTemplate || !!importDiagram}
-              id="combo-box-demo"
               options={diagramLabels}
               renderInput={(params) => <TextField {...params} label="Diagram Group Label" />}
               onChange={(_event, newValue) => setDiagramLabel(newValue as string)}

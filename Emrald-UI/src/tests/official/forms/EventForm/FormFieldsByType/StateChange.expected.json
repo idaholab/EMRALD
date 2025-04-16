@@ -1,4 +1,14 @@
 {
+  "loads event data": {
+    "name": "loads event data",
+    "objType": "Event",
+    "desc": "",
+    "mainItem": true,
+    "evType": "etStateCng",
+    "allItems": true,
+    "required": false,
+    "ifInState": false
+  },
   "sets default values": {
     "name": "sets default values",
     "desc": "",
@@ -6,7 +16,9 @@
     "mainItem": true,
     "evType": "etStateCng",
     "triggerStates": ["Test State", "Test State 2"],
-    "required": false
+    "required": false,
+    "ifInState": false,
+    "allItems": true
   },
   "sets all items": {
     "name": "sets all items",
@@ -16,7 +28,8 @@
     "evType": "etStateCng",
     "triggerStates": ["Test State"],
     "required": false,
-    "allItems": true
+    "allItems": true,
+    "ifInState": false
   },
   "sets if in state": {
     "name": "sets if in state",
@@ -26,7 +39,19 @@
     "evType": "etStateCng",
     "triggerStates": ["Test State"],
     "required": false,
-    "ifInState": true
+    "ifInState": true,
+    "allItems": true
+  },
+  "unsets if in state": {
+    "name": "unsets if in state",
+    "desc": "",
+    "objType": "Event",
+    "mainItem": true,
+    "evType": "etStateCng",
+    "triggerStates": ["Test State"],
+    "required": false,
+    "ifInState": false,
+    "allItems": true
   },
   "removes a state": {
     "name": "removes a state",
@@ -35,6 +60,8 @@
     "mainItem": true,
     "evType": "etStateCng",
     "triggerStates": [],
-    "required": false
+    "required": false,
+    "ifInState": false,
+    "allItems": true
   }
 }

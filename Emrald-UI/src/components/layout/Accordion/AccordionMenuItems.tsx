@@ -58,7 +58,6 @@ const AccordionMenuItems: React.FC<AccordionMenuListProps> = ({
             bgcolor: 'background.paper',
           }}
           component="nav"
-          aria-labelledby="nested-list-subheader"
         >
           <Box>
             {diagramLabels.length > 0 ? (

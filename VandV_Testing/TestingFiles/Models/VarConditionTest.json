@@ -1,0 +1,322 @@
+{
+  "id": "0",
+  "name": "VarConds",
+  "desc": "",
+  "version": 1,
+  "DiagramList": [
+    {
+      "id": "3e9758e6-6b9d-4ea4-8ffd-6dc401a9a824",
+      "name": "VarCondTest",
+      "desc": "",
+      "diagramType": "dtMulti",
+      "diagramLabel": "Test",
+      "states": [
+        "Start",
+        "Terminal",
+        "VarCondTest",
+        "WrongKey",
+        "CorrectKey"
+      ],
+      "required": false,
+      "objType": "Diagram"
+    }
+  ],
+  "StateList": [
+    {
+      "id": "46e0ab43-822d-4b5f-b68f-7e7047453a9c",
+      "name": "CorrectKey",
+      "desc": "",
+      "diagramName": "VarCondTest",
+      "stateType": "stKeyState",
+      "events": [],
+      "eventActions": [],
+      "immediateActions": [
+        "GoTerm"
+      ],
+      "geometryInfo": {
+        "x": 220.2803261721582,
+        "y": 82.44738100330085,
+        "width": 0,
+        "height": 0
+      },
+      "required": false,
+      "objType": "State",
+      "defaultSingleStateValue": "Ignore"
+    },
+    {
+      "id": "bceefc45-916e-4829-8f7d-e662e2a1ab02",
+      "name": "Start",
+      "desc": "",
+      "diagramName": "VarCondTest",
+      "stateType": "stStart",
+      "events": [],
+      "eventActions": [],
+      "immediateActions": [
+        "GoTest"
+      ],
+      "geometryInfo": {
+        "x": -402.948043877645,
+        "y": -100.1098492469664,
+        "width": 0,
+        "height": 0
+      },
+      "required": false,
+      "objType": "State",
+      "defaultSingleStateValue": "Ignore"
+    },
+    {
+      "id": "ca487da6-12ab-4910-a838-e82533e3e828",
+      "name": "Terminal",
+      "desc": "",
+      "diagramName": "VarCondTest",
+      "stateType": "stTerminal",
+      "events": [],
+      "eventActions": [],
+      "immediateActions": [],
+      "geometryInfo": {
+        "x": 474.9033214154092,
+        "y": -9.434559556607894,
+        "width": 0,
+        "height": 0
+      },
+      "required": false,
+      "objType": "State",
+      "defaultSingleStateValue": "Ignore"
+    },
+    {
+      "id": "ef909aca-84e5-4cfb-a1c3-984bfa7d75e4",
+      "name": "VarCondTest",
+      "desc": "",
+      "diagramName": "VarCondTest",
+      "stateType": "stStandard",
+      "events": [
+        "VarCondFalse",
+        "VarCondTrue"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": false,
+          "actions": [
+            "GoKeyFalse"
+          ]
+        },
+        {
+          "moveFromCurrent": false,
+          "actions": [
+            "GoKeyTrue"
+          ]
+        }
+      ],
+      "immediateActions": [],
+      "geometryInfo": {
+        "x": -92.86918283968424,
+        "y": -42.96504824984011,
+        "width": 0,
+        "height": 0
+      },
+      "required": false,
+      "objType": "State",
+      "defaultSingleStateValue": "Ignore"
+    },
+    {
+      "id": "ed9905d7-71bb-436a-a45e-545a3b921741",
+      "name": "WrongKey",
+      "desc": "",
+      "diagramName": "VarCondTest",
+      "stateType": "stKeyState",
+      "events": [],
+      "eventActions": [],
+      "immediateActions": [
+        "GoTerm"
+      ],
+      "geometryInfo": {
+        "x": 215.22751812085443,
+        "y": -77.99963230291704,
+        "width": 0,
+        "height": 0
+      },
+      "required": false,
+      "objType": "State",
+      "defaultSingleStateValue": "Ignore"
+    }
+  ],
+  "ActionList": [
+    {
+      "id": "f287da3b-bc73-4f16-beab-1072daeeffcb",
+      "name": "GoKeyFalse",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": true,
+      "objType": "Action",
+      "required": false,
+      "newStates": [
+        {
+          "toState": "WrongKey",
+          "prob": -1,
+          "failDesc": "",
+          "varProb": null
+        }
+      ],
+      "mutExcl": true,
+      "codeVariables": [],
+      "variableName": "",
+      "scriptCode": "",
+      "sim3DMessage": "atCompModify",
+      "extSim": "",
+      "sim3DConfigData": "",
+      "sim3DModelRef": "",
+      "simEndTime": "",
+      "makeInputFileCode": "",
+      "exePath": "",
+      "processOutputFileCode": "",
+      "openSimVarParams": false,
+      "raType": "",
+      "returnProcess": "rtNone"
+    },
+    {
+      "id": "4eaee05c-0b02-4ea2-b060-886117cb65be",
+      "name": "GoKeyTrue",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": true,
+      "objType": "Action",
+      "required": false,
+      "newStates": [
+        {
+          "toState": "CorrectKey",
+          "prob": -1,
+          "varProb": null,
+          "failDesc": ""
+        }
+      ],
+      "mutExcl": true,
+      "codeVariables": [],
+      "variableName": "",
+      "scriptCode": "",
+      "sim3DMessage": "atCompModify",
+      "extSim": "",
+      "sim3DConfigData": "",
+      "sim3DModelRef": "",
+      "simEndTime": "",
+      "makeInputFileCode": "",
+      "exePath": "",
+      "processOutputFileCode": "",
+      "openSimVarParams": false,
+      "raType": "",
+      "returnProcess": "rtNone"
+    },
+    {
+      "id": "6563d5f5-2ebf-4330-8e2d-6e5401b3c91d",
+      "name": "GoTerm",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": true,
+      "objType": "Action",
+      "required": false,
+      "newStates": [
+        {
+          "toState": "Terminal",
+          "prob": -1,
+          "varProb": null,
+          "failDesc": ""
+        }
+      ],
+      "mutExcl": true,
+      "codeVariables": [],
+      "variableName": "",
+      "scriptCode": "",
+      "sim3DMessage": "atCompModify",
+      "extSim": "",
+      "sim3DConfigData": "",
+      "sim3DModelRef": "",
+      "simEndTime": "",
+      "makeInputFileCode": "",
+      "exePath": "",
+      "processOutputFileCode": "",
+      "openSimVarParams": false,
+      "raType": "",
+      "returnProcess": "rtNone"
+    },
+    {
+      "id": "70dfa316-bb70-4005-b4e4-a7c7894a9231",
+      "name": "GoTest",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": true,
+      "objType": "Action",
+      "required": false,
+      "newStates": [
+        {
+          "toState": "VarCondTest",
+          "prob": -1,
+          "failDesc": "",
+          "varProb": null
+        }
+      ],
+      "mutExcl": true,
+      "codeVariables": [],
+      "variableName": "",
+      "scriptCode": "",
+      "sim3DMessage": "atCompModify",
+      "extSim": "",
+      "sim3DConfigData": "",
+      "sim3DModelRef": "",
+      "simEndTime": "",
+      "makeInputFileCode": "",
+      "exePath": "",
+      "processOutputFileCode": "",
+      "openSimVarParams": false,
+      "raType": "",
+      "returnProcess": "rtNone"
+    }
+  ],
+  "EventList": [
+    {
+      "id": "f1d43b65-4d41-468f-9372-3c65dcff3804",
+      "name": "VarCondFalse",
+      "desc": "",
+      "evType": "etVarCond",
+      "mainItem": true,
+      "required": false,
+      "objType": "Event",
+      "code": "return Int_ == 1;",
+      "varNames": [
+        "Int_"
+      ],
+      "triggerStates": [],
+      "allItems": true
+    },
+    {
+      "id": "596b622e-de3b-4e38-b17e-61b062436f38",
+      "name": "VarCondTrue",
+      "desc": "",
+      "evType": "etVarCond",
+      "mainItem": true,
+      "required": false,
+      "objType": "Event",
+      "code": "return Int_ == 5;\r\n ",
+      "varNames": [
+        "Int_"
+      ],
+      "triggerStates": [],
+      "allItems": true
+    }
+  ],
+  "LogicNodeList": [],
+  "VariableList": [
+    {
+      "name": "Int_",
+      "varScope": "gtGlobal",
+      "value": 5,
+      "type": "int",
+      "objType": "Variable",
+      "id": "8ee94aea-ce60-4bf2-a56e-368af510fffa",
+      "desc": "",
+      "resetOnRuns": true
+    }
+  ],
+  "ExtSimList": [],
+  "objType": "EMRALD_Model",
+  "emraldVersion": 3,
+  "templates": []
+}

@@ -11,6 +11,17 @@ using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
+[AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
+public class DescriptionAttribute : Attribute
+{
+  public string Text { get; }
+
+  public DescriptionAttribute(string text)
+  {
+    Text = text;
+  }
+}
+
 namespace Testing
 {
   public abstract class TestingBaseClass

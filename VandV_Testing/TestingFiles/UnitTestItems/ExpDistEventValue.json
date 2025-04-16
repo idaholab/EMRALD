@@ -1,0 +1,33 @@
+{
+  "Event": {
+    "id": 1,
+    "name": "ExponentialDist",
+    "desc": "",
+    "mainItem": false,
+    "evType": "etDistribution",
+    "allItems": true,
+    "triggerStates": [],
+    "moveFromCurrent": true,
+    "varNames": [],
+    "distType": "dtExponential",
+    "parameters": [
+      {
+        "name": "Rate",
+        "value": "0.1",
+        "timeRate": "trDays",
+        "useVariable": false
+      },
+      {
+        "value": "0",
+        "timeRate": "trDays"
+      },
+      {
+        "value": "5000",
+        "timeRate": "trDays"
+      }
+    ],
+    "dfltTimeRate": "trHours",
+    "onVarChange": "ocResample"
+  }
+}
+    

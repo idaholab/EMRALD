@@ -1,3 +1,6 @@
+# Running Component Tests
+To run the component tests, run the command `npm run test` in the EMRALD or Emrald-UI directories.
+
 # Creating Component Tests
 
 To create a new component test suite, create a file called (Component).test.tsx in the tests/contributed folder, with a path matching the component's path in src/components. A test suite corresponds to a single component, and is created by using the `describe` function imported from `vitest`. The function takes the name of the test suite, and a function containing individual tests.
@@ -31,8 +34,15 @@ To save the model and check against expected values, it is necessary to simulate
 await user.click(await screen.findByText('Save'));
 ```
 
-Interacting with MUI's combobox components can be accomplished by using the following snippet:
+Interacting with MUI's combobox components can be done by using the `selectOption` helper method in test-utils.tsx, or by using the following snippet:
 ```
 await user.click(await findByRole(await screen.findByLabelText('<Combobox Label>'), 'combobox'));
 await user.click(await screen.findByRole('option', { name: '<Option to select>' }));
 ```
+
+## Not Yet Tested
+- Diagram templates: Adding templates to the model directly doesn't propagate the changes into the GroupListItems component, so the option to select a template doesn't show up in the testing environment. Using the createTemplates method causes an infinite loop somewhere.
+    - Relevant files: components/common/GroupListItems.tsx, forms/DiagramForm
+- EMRALD Diagrams (state diagrams)
+- Logic Tree Diagrams
+- Sankey Timeline Diagrams

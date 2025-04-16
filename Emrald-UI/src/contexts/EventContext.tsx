@@ -46,9 +46,12 @@ const EventContextProvider: React.FC<EmraldContextWrapperProps> = ({ children })
     ),
   );
   const eventsList = useComputed(() => appData.value.EventList);
-  
+
   effect(() => {
-    if (JSON.stringify(events) !== JSON.stringify(appData.value.EventList.sort((a, b) => a.name.localeCompare(b.name)))) {
+    if (
+      JSON.stringify(events) !==
+      JSON.stringify(appData.value.EventList.sort((a, b) => a.name.localeCompare(b.name)))
+    ) {
       setEvents(appData.value.EventList.sort((a, b) => a.name.localeCompare(b.name)));
       return;
     }
@@ -86,20 +89,16 @@ const EventContextProvider: React.FC<EmraldContextWrapperProps> = ({ children })
     }
   };
 
-  const deleteEvent = (eventId: string | undefined) => {
+  const deleteEvent = async (eventId: string | undefined) => {
     if (!eventId) {
       return;
     }
     const eventToDelete = eventsList.value.find((eventItem) => eventItem.id === eventId);
     if (eventToDelete) {
-      return new Promise<void>(async (resolve) => {
-        var updatedModel: EMRALD_Model = await DeleteItemAndRefs(eventToDelete);
-        updateAppData(updatedModel);
-        resolve();
-      });
+      var updatedModel: EMRALD_Model = await DeleteItemAndRefs(eventToDelete);
+      updateAppData(updatedModel);
     }
-    //todo else error, no event to delete   
-
+    //todo else error, no event to delete
   };
 
   const getEventByEventName = (eventName: string) => {

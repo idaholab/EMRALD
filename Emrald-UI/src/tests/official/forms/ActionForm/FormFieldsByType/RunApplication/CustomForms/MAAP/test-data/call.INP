@@ -1,0 +1,13 @@
+** Tests call expressions **
+
+C No arguments
+Name()
+
+C One argument
+Name(1)
+
+C Many arguments
+Name(1,2,3)
+
+C Nested calls
+Name(Of(A(Function())))

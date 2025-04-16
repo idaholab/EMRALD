@@ -65,7 +65,7 @@ const FileUploadComponent: React.FC<FileUploadComponentProps> = ({
         startIcon={<FileUploadIcon />}
       >
         {label}
-        <VisuallyHiddenInput ref={inputRef} type="file" accept={accept} onChange={handleFileChange} />
+        <VisuallyHiddenInput aria-label={label} ref={inputRef} type="file" accept={accept} onChange={handleFileChange} />
       </Button>
 
       <Typography sx={{ ml: 3, fontSize: 18 }}>

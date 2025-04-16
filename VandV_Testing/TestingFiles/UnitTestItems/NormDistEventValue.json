@@ -1,0 +1,41 @@
+{
+  "Event": {
+    "id": 1,
+    "name": "NormalDist",
+    "desc": "",
+    "mainItem": false,
+    "evType": "etDistribution",
+    "allItems": true,
+    "triggerStates": [],
+    "moveFromCurrent": true,
+    "varNames": [],
+    "distType": "dtNormal",
+    "parameters": [
+      {
+        "name": "Mean",
+        "value": "12",
+        "timeRate": "trHours",
+        "useVariable": false
+      },
+      {
+        "name": "Standard Deviation",
+        "value": 1,
+        "timeRate": "trHours",
+        "useVariable": false
+      },
+      {
+        "name": "Minimum",
+        "value": 0,
+        "timeRate": "trHours",
+        "useVariable": false
+      },
+      {
+        "name": "Maximum",
+        "value": 24,
+        "timeRate": "trHours",
+        "useVariable": false
+      }
+    ],
+    "dfltTimeRate": "trHours"
+  }
+}

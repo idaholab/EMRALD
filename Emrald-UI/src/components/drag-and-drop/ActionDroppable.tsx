@@ -7,7 +7,6 @@ import { NewStateItem } from '../forms/ActionForm/ActionForm';
 import { v4 as uuidv4 } from 'uuid';
 import { useActionFormContext } from '../forms/ActionForm/ActionFormContext';
 
-
 const ActionDropTarget: React.FC = () => {
   const { newStateItems, setNewStateItems, sortNewStates } = useActionFormContext();
 
@@ -21,9 +20,13 @@ const ActionDropTarget: React.FC = () => {
         failDesc: '',
         remaining: false,
         probType: 'fixed',
-      }
+      };
       if (item) {
-        setNewStateItems(sortNewStates([...newStateItems, newStateItem]));
+        if (newStateItems) {
+          setNewStateItems(sortNewStates([...newStateItems, newStateItem]));
+        } else {
+          setNewStateItems([newStateItem]);
+        }
       }
     },
     collect: (monitor) => ({
@@ -36,23 +39,26 @@ const ActionDropTarget: React.FC = () => {
   return (
     <Box
       ref={drop}
-      sx={{mt: 3}}
+      sx={{ mt: 3 }}
       style={{
         height: '100%',
         backgroundColor,
       }}
     >
-      {newStateItems.length > 0 ? (
+      {newStateItems && newStateItems.length > 0 ? (
         <ActionToStateTable />
       ) : (
-        <Box sx={{ 
-          border: '2px dashed gray', 
-          height: '75px', 
-          display: 'flex', 
-          justifyContent: 'center', 
-          alignItems: 'center', 
-          fontWeight: 'bold' }}>
-            Drop State Items here
+        <Box
+          sx={{
+            border: '2px dashed gray',
+            height: '75px',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            fontWeight: 'bold',
+          }}
+        >
+          Drop State Items Here
         </Box>
       )}
     </Box>

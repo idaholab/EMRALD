@@ -15,31 +15,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EMRALD_Sim", "EMRALD_Sim\EM
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "XmppClient", "XmppClient\XmppClient.csproj", "{8846DEF8-E1EB-408E-9316-D85E273E7E09}"
 EndProject
-Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "Emrald_Site", "Emrald_Site\", "{6A02BDBB-CBDA-4ADF-81DA-4499666F7C2B}"
-	ProjectSection(WebsiteProperties) = preProject
-		SccProjectName = "SAK"
-		SccAuxPath = "SAK"
-		SccLocalPath = "SAK"
-		SccProvider = "SAK"
-		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.5.2"
-		Debug.AspNetCompiler.VirtualPath = "/localhost_56455"
-		Debug.AspNetCompiler.PhysicalPath = "Emrald_Site\"
-		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_56455\"
-		Debug.AspNetCompiler.Updateable = "true"
-		Debug.AspNetCompiler.ForceOverwrite = "true"
-		Debug.AspNetCompiler.FixedNames = "false"
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.VirtualPath = "/localhost_56455"
-		Release.AspNetCompiler.PhysicalPath = "Emrald_Site\"
-		Release.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_56455\"
-		Release.AspNetCompiler.Updateable = "true"
-		Release.AspNetCompiler.ForceOverwrite = "true"
-		Release.AspNetCompiler.FixedNames = "false"
-		Release.AspNetCompiler.Debug = "False"
-		VWDPort = "56455"
-		SlnRelativePath = "Emrald_Site\"
-	EndProjectSection
-EndProject
 Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "Emrald-UI", "Emrald-UI\", "{DBFECD62-5F5A-4A30-BCC9-63FA05E10638}"
 	ProjectSection(WebsiteProperties) = preProject
 		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.8"
@@ -93,10 +68,6 @@ Global
 		{8846DEF8-E1EB-408E-9316-D85E273E7E09}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8846DEF8-E1EB-408E-9316-D85E273E7E09}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8846DEF8-E1EB-408E-9316-D85E273E7E09}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6A02BDBB-CBDA-4ADF-81DA-4499666F7C2B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6A02BDBB-CBDA-4ADF-81DA-4499666F7C2B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6A02BDBB-CBDA-4ADF-81DA-4499666F7C2B}.Release|Any CPU.ActiveCfg = Debug|Any CPU
-		{6A02BDBB-CBDA-4ADF-81DA-4499666F7C2B}.Release|Any CPU.Build.0 = Debug|Any CPU
 		{DBFECD62-5F5A-4A30-BCC9-63FA05E10638}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{DBFECD62-5F5A-4A30-BCC9-63FA05E10638}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DBFECD62-5F5A-4A30-BCC9-63FA05E10638}.Release|Any CPU.ActiveCfg = Debug|Any CPU
