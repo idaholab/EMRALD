@@ -8,7 +8,7 @@ Event Modeling Risk Assessment using Linked Diagrams (EMRALD) is a software tool
  - Providing the sequence and timing of events that lead to the specified outcomes when calculating results.
  - Traditional aspects of components with basic events, fault trees, and event trees are all captured in a dynamic framework of state diagrams, which are displayed.
 
-## SETUP
+## SETUP FOR WINDOWS
 1. Clone this repository to your machine using `git clone https://github.com/idaholab/EMRALD.git`
 	- To avoid unexpected problems during setup, it is strongly recommended to NOT use Visual Studio to clone the repository
 2. When the cloning is complete, open "EMRALD.sln" in Visual Studio.
@@ -57,6 +57,20 @@ Event Modeling Risk Assessment using Linked Diagrams (EMRALD) is a software tool
 		2. Install Yarn by running `corepack enable` in the root directory
 		3. In the d3-sankey-timeline directory, run `yarn build` to compile the project
 
+##LINUX BUILD in Visual Studio
+1. From the solution explorer, right-click the project you want to build and select "Publish..."
+2. Choose the target as Folder
+3. Choose the Folder Location
+4. Click Finish
+	1. This will create a FolderProfile.pubxml which can be used again later
+5. Close the window and now you should have a new window with publish options available.
+6. Click the "Show all settings" text
+7. A new window should pop up with "Profile settings"
+	1. Change the "Target runtime" to the desired value
+		1. Depending on the "Target runtime" you may have additional "File publish options" available, such as "Produce single file"
+	2. You can change other options as needed.
+	3. Click "Save"
+8. Click "Publish"
 
 
 ## EMRALD Projects
