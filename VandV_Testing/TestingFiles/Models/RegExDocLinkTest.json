@@ -237,7 +237,7 @@
       "id": "604ef82c-7d19-4b7f-b76a-07cb87130365",
       "desc": "",
       "docType": "dtJSON",
-      "docPath": "C:\\Users\\JOHNAE2\\Projects\\EMRALD\\VandV_Testing\\TestingFiles\\Other\\TestVar1.json",
+      "docPath": "..\\Other\\TestVar1.json",
       "docLink": "$.['Value']",
       "resetOnRuns": false
     }
