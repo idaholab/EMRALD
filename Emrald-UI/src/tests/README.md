@@ -1,3 +1,6 @@
+# Running Component Tests
+To run the component tests, run the command `npm run test` in the EMRALD or Emrald-UI directories.
+
 # Creating Component Tests
 
 To create a new component test suite, create a file called (Component).test.tsx in the tests/contributed folder, with a path matching the component's path in src/components. A test suite corresponds to a single component, and is created by using the `describe` function imported from `vitest`. The function takes the name of the test suite, and a function containing individual tests.
