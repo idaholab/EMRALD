@@ -1,0 +1,11 @@
+{
+  "sets code variables": {
+    "objType": "Event",
+    "name": "sets code variables",
+    "desc": "",
+    "mainItem": true,
+    "required": false,
+    "evType": "etVarCond",
+    "varNames": ["Test Variable"]
+  }
+}

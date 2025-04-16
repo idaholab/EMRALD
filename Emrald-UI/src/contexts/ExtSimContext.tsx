@@ -43,7 +43,10 @@ const ExtSimContextProvider: React.FC<EmraldContextWrapperProps> = ({ children }
   const extSimList = useComputed(() => appData.value.ExtSimList);
 
   effect(() => {
-    if (JSON.stringify(extSims) !== JSON.stringify(appData.value.ExtSimList.sort((a, b) => a.name.localeCompare(b.name)))) {
+    if (
+      JSON.stringify(extSims) !==
+      JSON.stringify(appData.value.ExtSimList.sort((a, b) => a.name.localeCompare(b.name)))
+    ) {
       setExtSims(appData.value.ExtSimList.sort((a, b) => a.name.localeCompare(b.name)));
     }
     return;
@@ -65,19 +68,16 @@ const ExtSimContextProvider: React.FC<EmraldContextWrapperProps> = ({ children }
     updateAppData(updatedModel);
   };
 
-  const deleteExtSim = (extSimId: string | undefined) => {
+  const deleteExtSim = async (extSimId: string | undefined) => {
     if (!extSimId) {
       return;
     }
     const extSimToDelete = extSims.find((extSim) => extSim.id === extSimId);
     if (extSimToDelete) {
-      return new Promise<void>(async (resolve) => {
-        var updatedModel: EMRALD_Model = await DeleteItemAndRefs(extSimToDelete);
-        updateAppData(updatedModel);
-        resolve();
-      });
+      var updatedModel: EMRALD_Model = await DeleteItemAndRefs(extSimToDelete);
+      updateAppData(updatedModel);
     }
-    //todo else error, no event to delete 
+    //todo else error, no event to delete
   };
 
   // Open New, Merge, and Clear Event List

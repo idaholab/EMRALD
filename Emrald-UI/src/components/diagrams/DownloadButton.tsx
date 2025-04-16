@@ -20,29 +20,26 @@ interface DownloadButtonProps {
 const DownloadButton: React.FC<DownloadButtonProps> = ({ diagramName }) => {
   const { getNodes } = useReactFlow();
 
-  const onClick = () => {
+  const onClick = async () => {
     const nodesBounds = getNodesBounds(getNodes() as Node[]);
     const viewport = getViewportForBounds(nodesBounds, imageWidth, imageHeight, 0.5, 2);
     const reactFlowViewport = document.querySelector('.react-flow__viewport') as HTMLElement;
     if (reactFlowViewport) {
-      toPng(reactFlowViewport, {
-        backgroundColor: '#ffffff',
-        width: imageWidth,
-        height: imageHeight,
-        style: {
-          width: String(imageWidth),
-          height: String(imageHeight),
-          transform: `translate(${viewport.x}px, ${viewport.y}px) scale(${viewport.zoom})`,
-        },
-      })
-        .then((dataUrl) => {
-          return new Promise((resolve) => {
-            resolve(downloadImage(dataUrl, diagramName));
-          });
-        })
-        .catch((error) => {
-          console.error('Error generating image:', error);
+      try {
+        const dataUrl = await toPng(reactFlowViewport, {
+          backgroundColor: '#ffffff',
+          width: imageWidth,
+          height: imageHeight,
+          style: {
+            width: String(imageWidth),
+            height: String(imageHeight),
+            transform: `translate(${viewport.x}px, ${viewport.y}px) scale(${viewport.zoom})`,
+          },
         });
+        downloadImage(dataUrl, diagramName);
+      } catch (error) {
+        console.error('Error generating image:', error);
+      }
     } else {
       console.error('React Flow viewport element not found');
     }

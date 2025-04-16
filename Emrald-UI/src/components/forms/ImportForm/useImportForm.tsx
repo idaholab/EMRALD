@@ -394,11 +394,6 @@ export const useImportForm = (importedData: EMRALD_Model, fromTemplate?: boolean
    */
   const handleSave = async () => {
     setLoading(true);
-    await new Promise<void>((resolve) => { // Wait for loading to begin before continuing
-      setTimeout(() => {
-          resolve();
-      }, 100);
-    });
     // Go through all of the renamed items and update the pasted model
     let updatedModel: EMRALD_Model = { ...appData.value };
     const importedDataCopy = structuredClone(importedData); // Deep copy of importedData so it doesn't get changed

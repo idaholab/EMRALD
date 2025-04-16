@@ -1,0 +1,62 @@
+{
+  "creates_a_global_variable": {
+    "objType": "Variable",
+    "name": "creates_a_global_variable",
+    "desc": "Desc",
+    "resetOnRuns": false,
+    "type": "int",
+    "value": 1,
+    "varScope": "gtGlobal"
+  },
+  "accrual_variable": {
+    "objType": "Variable",
+    "name": "accrual_variable",
+    "desc": "",
+    "resetOnRuns": true,
+    "type": "double",
+    "value": 0,
+    "varScope": "gtAccrual",
+    "accrualStatesData": [
+      {
+        "accrualMult": 12,
+        "accrualTable": [],
+        "multRate": "trDays",
+        "stateName": "Test State",
+        "type": "ctMultiplier"
+      },
+      {
+        "accrualMult": 1,
+        "accrualTable": [
+          [1, 2],
+          [3, 4]
+        ],
+        "multRate": "trHours",
+        "stateName": "Test State 2",
+        "type": "ctTable"
+      }
+    ]
+  },
+  "ext_sim_variable": {
+    "objType": "Variable",
+    "name": "ext_sim_variable",
+    "desc": "",
+    "resetOnRuns": true,
+    "type": "string",
+    "value": "Test",
+    "varScope": "gt3DSim",
+    "sim3DId": "1234"
+  },
+  "doc_link_variable": {
+    "objType": "Variable",
+    "name": "doc_link_variable",
+    "desc": "",
+    "resetOnRuns": true,
+    "type": "string",
+    "value": "Default",
+    "varScope": "gtDocLink",
+    "docLink": "Test",
+    "docPath": "C:/",
+    "docType": "dtJSON",
+    "pathMustExist": true
+  }
+}

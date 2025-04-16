@@ -97,10 +97,9 @@ const VariableForm: React.FC<VariableFormProps> = ({ variableData }) => {
           reqPropsFilled={name && varScope && value !== '' ? true : false}
         >
           <FormControl variant="outlined" size="small" sx={{ minWidth: 120, width: '100%', my: 1 }}>
-            <InputLabel id="demo-simple-select-standard-label">Scope</InputLabel>
+            <InputLabel id="scope-label">Scope</InputLabel>
             <Select
-              labelId="var-scope"
-              id="var-scope"
+              aria-labelledby='scope-label'
               value={varScope}
               onChange={(event: SelectChangeEvent<string>) => {
                 setVarScope(event.target.value as VarScope);
@@ -109,7 +108,7 @@ const VariableForm: React.FC<VariableFormProps> = ({ variableData }) => {
                   handleTypeChange('double');
                 }
               }}
-              label="scope"
+              label="Scope"
             >
               <MenuItem value="gtGlobal">Global</MenuItem>
               <MenuItem value="gt3DSim">Ext. Sim Variable</MenuItem>
@@ -137,7 +136,7 @@ const VariableForm: React.FC<VariableFormProps> = ({ variableData }) => {
                   size="small"
                   sx={{ minWidth: 120, width: '100%', my: 1 }}
                 >
-                  <InputLabel id="demo-simple-select-standard-label">Start Value</InputLabel>
+                  <InputLabel>Start Value</InputLabel>
                   <Select
                     labelId="value"
                     id="value"
@@ -162,7 +161,6 @@ const VariableForm: React.FC<VariableFormProps> = ({ variableData }) => {
                   fullWidth
                 />
               )}
-
               <FormControlLabel
                 label="Reset to initial value for every simulation run"
                 control={

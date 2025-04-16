@@ -46,7 +46,6 @@ export const convertToISOString = (value: number): string => {
       if (remainingMinutes) isoString += `${remainingMinutes}M`;
       if (remainingSeconds) isoString += `${remainingSeconds}S`;
     }
-    console.log(isoString);
     return isoString;
   } catch (error) {
     // Handle any errors (e.g., invalid input)

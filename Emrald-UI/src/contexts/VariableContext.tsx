@@ -42,9 +42,12 @@ const VariableContextProvider: React.FC<EmraldContextWrapperProps> = ({ children
     ),
   );
   const variableList = useComputed(() => appData.value.VariableList);
-  
+
   effect(() => {
-    if (JSON.stringify(variables) !== JSON.stringify(appData.value.VariableList.sort((a, b) => a.name.localeCompare(b.name)))) {
+    if (
+      JSON.stringify(variables) !==
+      JSON.stringify(appData.value.VariableList.sort((a, b) => a.name.localeCompare(b.name)))
+    ) {
       setVariables(appData.value.VariableList.sort((a, b) => a.name.localeCompare(b.name)));
       return;
     }
@@ -52,38 +55,29 @@ const VariableContextProvider: React.FC<EmraldContextWrapperProps> = ({ children
   });
 
   const createVariable = async (newVariable: Variable) => {
-    return new Promise<void>(async (resolve) => {
-      var updatedModel: EMRALD_Model = await updateModelAndReferences(
-        newVariable,
-        MainItemTypes.Variable,
-      );
-      updateAppData(updatedModel);
-      resolve();
-    });
+    var updatedModel: EMRALD_Model = await updateModelAndReferences(
+      newVariable,
+      MainItemTypes.Variable,
+    );
+    updateAppData(updatedModel);
   };
 
   const updateVariable = async (updatedVariable: Variable) => {
-    return new Promise<void>(async (resolve) => {
-      var updatedModel: EMRALD_Model = await updateModelAndReferences(
-        updatedVariable,
-        MainItemTypes.Variable,
-      );
-      updateAppData(updatedModel);
-      resolve();
-    });
+    var updatedModel: EMRALD_Model = await updateModelAndReferences(
+      updatedVariable,
+      MainItemTypes.Variable,
+    );
+    updateAppData(updatedModel);
   };
 
-  const deleteVariable = (VariableId: string | undefined) => {
+  const deleteVariable = async (VariableId: string | undefined) => {
     if (!VariableId) {
       return;
     }
     const variableToDelete = variables.find((variable) => variable.id === VariableId);
     if (variableToDelete) {
-      return new Promise<void>(async (resolve) => {
-        var updatedModel: EMRALD_Model = await DeleteItemAndRefs(variableToDelete);
-        updateAppData(updatedModel);
-        resolve();
-      });
+      var updatedModel: EMRALD_Model = await DeleteItemAndRefs(variableToDelete);
+      updateAppData(updatedModel);
     }
   };
 

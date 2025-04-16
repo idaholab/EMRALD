@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useState } from 'react';
 import { State } from '../types/State';
 import { EmraldContextWrapperProps } from './EmraldContextWrapper';
 import { Event } from '../types/Event';
@@ -89,14 +89,11 @@ const StateContextProvider: React.FC<EmraldContextWrapperProps> = ({ children })
   };
 
   const updateState = async (updatedState: State) => {
-    return new Promise<void>(async (resolve) => {
-      var updatedModel: EMRALD_Model = await updateModelAndReferences(
-        updatedState,
-        MainItemTypes.State,
-      );
-      updateAppData(updatedModel);
-      resolve();
-    });
+    var updatedModel: EMRALD_Model = await updateModelAndReferences(
+      updatedState,
+      MainItemTypes.State,
+    );
+    updateAppData(updatedModel);
   };
 
   const updateStateEvents = (stateName: string, event: Event) => {
@@ -147,24 +144,15 @@ const StateContextProvider: React.FC<EmraldContextWrapperProps> = ({ children })
   };
 
   const deleteState = async (stateId: string | undefined) => {
-    return new Promise<void>(async (resolve, reject) => {
-      if (!stateId) {
-        reject(new Error('No stateId provided'));
-        return;
-      }
-      const stateToDelete = getStateByStateId(stateId);
-      if (!stateToDelete) {
-        reject(new Error('State not found'));
-        return;
-      }
-      try {
-        var updatedModel: EMRALD_Model = await DeleteItemAndRefs(stateToDelete);
-        updateAppData(updatedModel);
-        resolve();
-      } catch (error) {
-        reject(error);
-      }
-    });
+    if (!stateId) {
+      throw new Error('No stateId provided');
+    }
+    const stateToDelete = getStateByStateId(stateId);
+    if (!stateToDelete) {
+      throw new Error('State not found');
+    }
+    var updatedModel: EMRALD_Model = await DeleteItemAndRefs(stateToDelete);
+    updateAppData(updatedModel);
   };
 
   const getStateByStateId = (stateId: string | null): State => {

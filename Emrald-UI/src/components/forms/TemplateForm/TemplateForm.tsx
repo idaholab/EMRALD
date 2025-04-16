@@ -240,7 +240,6 @@ const TemplateForm: React.FC<TemplateDiagramFormProps> = ({ templatedData }) => 
                   <FormControl>
                     <RadioGroup
                       row
-                      aria-labelledby="demo-row-radio-buttons-group-label"
                       name="row-radio-buttons-group"
                       value={row.action}
                       onChange={(e) => handleActionChange(index, e.target.value)}

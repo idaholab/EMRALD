@@ -1,0 +1,11 @@
+** Tests sensitivity statements **
+
+C Default
+SENSITIVITY ON
+
+C Alternate value
+SENSITIVITY OFF
+
+C No value
+C Should parse as an identifier, not a sensitivity statement
+SENSITIVITY

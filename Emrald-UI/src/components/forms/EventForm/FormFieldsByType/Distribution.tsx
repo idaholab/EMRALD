@@ -31,10 +31,10 @@ const Distribution = () => {
     dtBeta: [],
   };
 
-  const getRowsForDistType = (type: DistributionType) => {
-    const commonRows = ['Minimum', 'Maximum'];
-    return distConfig[type] ? [...distConfig[type], ...commonRows] : commonRows;
-  };
+  const getRowsForDistType = (type: DistributionType) => [
+    ...distConfig[type],
+    ...['Minimum', 'Maximum'],
+  ];
 
   const {
     allRows,
@@ -175,7 +175,7 @@ const Distribution = () => {
                       }}
                     >
                       {appData.value.VariableList.map((variable, idx) => (
-                        <MenuItem key={idx} value={variable.name ? variable.name : ''}>
+                        <MenuItem key={idx} value={variable.name}>
                           {variable.name}
                         </MenuItem>
                       ))}

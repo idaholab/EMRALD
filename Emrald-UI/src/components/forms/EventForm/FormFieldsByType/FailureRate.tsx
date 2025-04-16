@@ -31,11 +31,9 @@ const FailureRate = () => {
     setUseVariable(checked);
     if (checked) {
       setLambda('');
-      if (typeof onVarChange !== 'string' || onVarChange.length === 0) {
+      if (typeof onVarChange !== 'string') {
         setOnVarChange('ocIgnore');
       }
-    } else {
-      setLambda(0);
     }
   };
 

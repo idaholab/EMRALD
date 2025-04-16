@@ -1,0 +1,10 @@
+** Tests alias statements **
+
+C Default
+ALIAS
+VARNAME as Value
+END
+
+C Empty
+ALIAS
+END

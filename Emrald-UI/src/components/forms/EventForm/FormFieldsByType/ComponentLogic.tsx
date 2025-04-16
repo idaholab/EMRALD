@@ -5,8 +5,15 @@ import { appData } from '../../../../hooks/useAppData';
 import { useEffect } from 'react';
 
 const ComponentLogic = () => {
-  const { onSuccess, setOnSuccess, triggerOnFalse, setTriggerOnFalse, logicTop, setLogicTop } =
-    useEventFormContext();
+  const {
+    onSuccess,
+    setOnSuccess,
+    triggerOnFalse,
+    setTriggerOnFalse,
+    logicTop,
+    setLogicTop,
+    setInvalidValues,
+  } = useEventFormContext();
 
   useEffect(() => {
     if (onSuccess === undefined) setOnSuccess(false);
@@ -50,7 +57,19 @@ const ComponentLogic = () => {
           checked={triggerOnFalse ? false : true}
         />
       </RadioGroup>
-      <SelectComponent value={logicTop || ''} label={'LogicTop'} setValue={setLogicTop}>
+      <SelectComponent
+        value={logicTop || ''}
+        label={'LogicTop'}
+        setValue={(value) => {
+          setLogicTop(value);
+          if (value.length > 0) {
+            setInvalidValues((prevInvalidValues) => {
+              prevInvalidValues.delete('LogicTop');
+              return prevInvalidValues;
+            });
+          }
+        }}
+      >
         {appData.value.LogicNodeList.filter((node) => node.isRoot).map((node, index) => (
           <MenuItem key={index} value={node.name}>
             {node.name}

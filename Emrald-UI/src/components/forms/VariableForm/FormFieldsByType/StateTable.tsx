@@ -47,7 +47,12 @@ const StateTable = () => {
       const defaultAccrualTables = accrualStatesData.map((state) => state.accrualTable || []);
       setAccrualTables(defaultAccrualTables);
     }
-  }, [accrualStatesData, multRates, types, accrualTables]);
+  }, [
+    accrualStatesData,
+    JSON.stringify(multRates),
+    JSON.stringify(types),
+    JSON.stringify(accrualTables),
+  ]);
 
   useEffect(() => {
     const newAccrualTables = [...accrualTables];
@@ -59,7 +64,7 @@ const StateTable = () => {
       }
       setAccrualTables(newAccrualTables);
     }
-  }, [accrualStatesData, accrualTables]);
+  }, [accrualStatesData, JSON.stringify(accrualTables)]);
 
   useEffect(() => {
     setValue(0);
@@ -158,12 +163,9 @@ const StateTable = () => {
             my: 1,
           }}
         >
-          <InputLabel id="demo-simple-select-standard-label">
-            {min ? 'Rate' : 'Multiplication Rate'}
-          </InputLabel>
+          <InputLabel id="rate-label">{min ? 'Rate' : 'Multiplication Rate'}</InputLabel>
           <Select
-            labelId="rate"
-            id="rate"
+            aria-labelledby='rate-label'
             defaultValue={multRates[index]}
             value={multRates[index]}
             onChange={(event: SelectChangeEvent<string>) => handleMultRateChange(event, index)}
@@ -270,6 +272,7 @@ const StateTable = () => {
                               <StyledTableRow key={idx}>
                                 <StyledTableCell>
                                   <TextField
+                                    label="Simulation Time"
                                     variant="outlined"
                                     size="small"
                                     margin="normal"
@@ -283,6 +286,7 @@ const StateTable = () => {
                                 </StyledTableCell>
                                 <StyledTableCell sx={{ display: 'flex' }}>
                                   <TextField
+                                    label="Accrual Rate"
                                     variant="outlined"
                                     size="small"
                                     margin="normal"

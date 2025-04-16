@@ -18,7 +18,7 @@ const ChangeVarValue = () => {
   const { variableList } = useVariableContext();
 
   useEffect(() => {
-    setHasError(variableName.length === 0);
+    setHasError(variableName === undefined || variableName.length === 0);
   });
 
   return (
@@ -26,7 +26,7 @@ const ChangeVarValue = () => {
       <SelectComponent label="Variable" value={variableName} setValue={setVariableName}>
         {variableList.value.map((variable) => (
           <MenuItem value={variable.name} key={variable.id}>
-            <em>{variable.name}</em>
+            {variable.name}
           </MenuItem>
         ))}
       </SelectComponent>
@@ -35,7 +35,7 @@ const ChangeVarValue = () => {
         scriptCode={scriptCode}
         setScriptCode={setScriptCode}
         variableList={variableList.value}
-        codeVariables={codeVariables}
+        codeVariables={codeVariables as string[]}
         addToUsedVariables={addToUsedVariables}
         heading={
           <span>

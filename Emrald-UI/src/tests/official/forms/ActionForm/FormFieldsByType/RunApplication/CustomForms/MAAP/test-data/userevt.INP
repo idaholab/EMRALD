@@ -1,0 +1,24 @@
+** Tests userevt statements **
+** Also special blocks that appear only in USEREVT: Parameter, Action
+
+C Default
+USEREVT
+
+C Parameter with T/F value
+100 T Parameter Name
+
+C Parameter without T/F value
+102 Parameter 2
+
+C Action
+ACTION #1
+103 Parameter 3
+ACTION #2
+END
+END
+
+C Any other source element
+IF VALUE IS TRUE
+END
+
+END

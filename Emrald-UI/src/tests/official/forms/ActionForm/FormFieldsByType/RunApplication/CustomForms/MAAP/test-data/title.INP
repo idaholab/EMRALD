@@ -1,0 +1,17 @@
+** Tests title statements **
+
+C Default
+TITLE
+Valid Title
+END
+
+C Many lines
+TITLE
+A title that
+extends onto
+multiple lines
+END
+
+C Empty title
+TITLE
+END
