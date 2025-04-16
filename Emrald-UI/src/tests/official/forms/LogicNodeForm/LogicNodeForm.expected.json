@@ -1,0 +1,12 @@
+{
+  "creates a logic node": {
+    "objType": "LogicNode",
+    "name": "creates a logic node",
+    "desc": "Desc",
+    "gateType": "gtOr",
+    "gateChildren": [],
+    "compChildren": [],
+    "isRoot": true,
+    "rootName": "creates a logic node"
+  }
+}

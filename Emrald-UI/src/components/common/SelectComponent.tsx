@@ -19,13 +19,13 @@ const SelectComponent = <T,>({
   children,
   sx,
 }: PropsWithChildren<SelectComponentProps<T>>) => {
-  const labelId = `${label.replace(/\s/g, '-')}-select-label`;
+  const labelId = `${label.replace(/[^A-z]/g, '-')}-select-label`;
   return (
     <FormControl sx={{ mt: 2, minWidth: 120, ...sx }} size="small" fullWidth={fullWidth}>
       <InputLabel id={labelId}>{label}</InputLabel>
       <Select
         aria-labelledby={labelId}
-        value={value}
+        value={value || ''}
         onChange={(e) => setValue(e.target.value as T)}
         label={label}
         inputProps={{ 'aria-label': 'Without label' }}

@@ -1,0 +1,11 @@
+{
+  "imports diagram": {
+    "objType": "Diagram",
+    "name": "C-CKV-A2",
+    "desc": "",
+    "diagramLabel": "Component",
+    "diagramType": "dtSingle",
+    "required": false,
+    "states": ["C-CKV-A_Active2", "C-CKV-A_Failed2", "C-CKV-A_Standby2"]
+  }
+}

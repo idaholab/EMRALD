@@ -16,8 +16,10 @@ import {
   Box,
   Checkbox,
   FormControlLabel,
+  InputLabel,
   Radio,
   RadioGroup,
+  Tooltip,
   Typography,
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -67,37 +69,37 @@ const ActionToStateTable: React.FC = () => {
     handleDeleteToStateItem,
   } = useActionFormContext();
   const { variableList } = useVariableContext();
-  const hasRemainingItem = newStateItems.some((item) => item.remaining);
+  const hasRemainingItem = newStateItems?.some((item) => item.remaining);
+
   const calculateProb = () => {
-    const hasVarProb = newStateItems.some(
-      (item) => item.probType === 'variable',
-    );
-  
+    const hasVarProb = newStateItems?.some((item) => item.probType === 'variable');
+
     if (hasVarProb) {
       return 'Calculated at runtime';
     } else {
       // Check if all prob values are valid numbers
-      const convertedProbValues = newStateItems.map((item: NewStateItem) => {
-          if (typeof item.prob === 'string') {
-            return scientificToNumeric(item.prob);
-          } else {
-            return item.prob
-          }
+      const convertedProbValues = newStateItems?.map((item: NewStateItem) => {
+        if (typeof item.prob === 'string') {
+          return scientificToNumeric(item.prob);
+        } else {
+          return item.prob;
         }
-      )
-      const allProbValuesAreNumbers = convertedProbValues.every(
-        (item) => typeof item === 'number' && !isNaN(item)
+      });
+
+      const allProbValuesAreNumbers = convertedProbValues?.every(
+        (item) => typeof item === 'number' && !isNaN(item),
       );
-  
+
       if (!allProbValuesAreNumbers) {
         return 'Unable to calculate';
       }
-      const sumOfProbs = convertedProbValues
-        .filter((item) => item !== -1)
-        .reduce((acc: number, item) => acc + (item as number), 0);
-  
+      const sumOfProbs =
+        convertedProbValues
+          ?.filter((item) => item !== -1)
+          .reduce((acc: number, item) => acc + (item as number), 0) || 0;
+
       let remainingProb = 1 - sumOfProbs;
-      if (remainingProb > 1) { 
+      if (remainingProb > 1) {
         return 'Invalid Probability';
       }
       const roundedProb = Math.round(remainingProb * 1e10) / 1e10;
@@ -113,20 +115,14 @@ const ActionToStateTable: React.FC = () => {
       <Table aria-label="Action To State Table">
         <TableHead>
           <StyledTableRow>
-            <StyledTableCell sx={{ fontWeight: 'bold', p: 2 }}>
-              To State
-            </StyledTableCell>
-            <StyledTableCell sx={{ fontWeight: 'bold' }}>
-              Fixed Value or Variable
-            </StyledTableCell>
+            <StyledTableCell sx={{ fontWeight: 'bold', p: 2 }}>To State</StyledTableCell>
+            <StyledTableCell sx={{ fontWeight: 'bold' }}>Fixed Value or Variable</StyledTableCell>
             <StyledTableCell sx={{ fontWeight: 'bold' }}>Probability</StyledTableCell>
-            <StyledTableCell sx={{ fontWeight: 'bold' }}>
-              Command
-            </StyledTableCell>
+            <StyledTableCell sx={{ fontWeight: 'bold' }}>Command</StyledTableCell>
           </StyledTableRow>
         </TableHead>
         <TableBody>
-          {newStateItems.map((item) => (
+          {newStateItems?.map((item, i) => (
             <StyledTableRow key={item.id}>
               <StyledTableCell component="th" scope="row">
                 {item.toState}
@@ -160,8 +156,7 @@ const ActionToStateTable: React.FC = () => {
                   <>
                     <Box sx={{ display: 'flex', flexDirection: 'column' }}>
                       {mutuallyExclusive &&
-                      ((hasRemainingItem && item.remaining) ||
-                        !hasRemainingItem) ? (
+                      ((hasRemainingItem && item.remaining) || !hasRemainingItem) ? (
                         <FormControlLabel
                           control={
                             <Checkbox
@@ -176,43 +171,41 @@ const ActionToStateTable: React.FC = () => {
                         <></>
                       )}
                       {item.remaining ? (
-                        <Typography sx={{ ml: 2 }}>
-                          {calculateProb()}
-                        </Typography>
+                        <Typography sx={{ ml: 2 }}>{calculateProb()}</Typography>
                       ) : (
                         <StyledTextField
-                        value={item.prob}
-                        type="text" // Change type to text
-                        disabled={item.prob === -1}
-                        id="prob value"
-                        size="small"
-                        onChange={(e) => handleProbChange(e, item)}
-                        onBlur={() => handleProbBlur(item)}
-                        inputProps={{
-                          style: {
-                            WebkitTextFillColor: item.prob === -1 ? 'transparent' : 'black',
-                          },
-                        }}
-                        error={hasError && errorItemIds.has(item.id)}
-                        helperText={errorItemIds.has(item.id) && errorMessage ? errorMessage : ''}
+                          label="Probability"
+                          value={item.prob}
+                          type="text" // Change type to text
+                          disabled={item.prob === -1}
+                          id="prob value"
+                          size="small"
+                          onChange={(e) => handleProbChange(e, item)}
+                          onBlur={() => handleProbBlur(item)}
+                          inputProps={{
+                            style: {
+                              WebkitTextFillColor: item.prob === -1 ? 'transparent' : 'black',
+                            },
+                          }}
+                          error={hasError && errorItemIds.has(item.id)}
+                          helperText={errorItemIds.has(item.id) && errorMessage ? errorMessage : ''}
                         />
                       )}
                     </Box>
                   </>
                 ) : (
                   <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
+                    <InputLabel id={`variable-${i}-label`}>Select Variable</InputLabel>
                     <Select
+                      aria-labelledby={`variable-${i}-label`}
+                      label="Select Variable"
                       value={item.varProb || ''}
                       onChange={(e) => handleSelectChange(e, item)}
                       displayEmpty
-                      inputProps={{ 'aria-label': 'Without label' }}
                     >
-                      <MenuItem value={''}>
-                        <em>Not Assigned</em>
-                      </MenuItem>
                       {variableList.value.map((variable) => (
                         <MenuItem value={variable.name} key={variable.id}>
-                          <em>{variable.name}</em>
+                          {variable.name}
                         </MenuItem>
                       ))}
                     </Select>
@@ -220,10 +213,12 @@ const ActionToStateTable: React.FC = () => {
                 )}
               </StyledTableCell>
               <StyledTableCell>
-                <DeleteIcon
-                  sx={{ cursor: 'pointer', ml: 3 }}
-                  onClick={() => handleDeleteToStateItem(item.id)}
-                />
+                <Tooltip title="Delete Row">
+                  <DeleteIcon
+                    sx={{ cursor: 'pointer', ml: 3 }}
+                    onClick={() => handleDeleteToStateItem(item.id)}
+                  />
+                </Tooltip>
               </StyledTableCell>
             </StyledTableRow>
           ))}

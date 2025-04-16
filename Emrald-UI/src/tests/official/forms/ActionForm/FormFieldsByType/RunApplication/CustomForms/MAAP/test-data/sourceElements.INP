@@ -1,0 +1,13 @@
+** Tests SourceElements **
+
+C Statement
+SENSITIVITY ON
+
+C Assignment
+Identifier = 1 HR
+
+C Expression
+Function()
+
+C As Expression
+Identifier AS Value

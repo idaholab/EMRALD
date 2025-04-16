@@ -9,7 +9,7 @@ import { useActionFormContext } from '../ActionFormContext';
 const Transition = () => {
   const {
     mutuallyExclusive,
-    handleMutuallyExclusiveChange
+    handleMutuallyExclusiveChange,
   } = useActionFormContext();
   return (
     <Box>
@@ -25,7 +25,7 @@ const Transition = () => {
           label="Mutually Exclusive (Transitions to one and only one of the states)"
           control={
             <Checkbox
-              checked={mutuallyExclusive}
+              checked={mutuallyExclusive || false}
               onChange={() => handleMutuallyExclusiveChange(!mutuallyExclusive)}
             />
           }

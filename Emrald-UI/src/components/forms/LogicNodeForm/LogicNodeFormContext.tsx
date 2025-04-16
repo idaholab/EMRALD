@@ -68,12 +68,11 @@ export const useLogicNodeFormContext = (): LogicNodeFormContextType => {
 };
 
 const LogicNodeFormContextProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { handleClose } = useWindowContext();
+  const { handleClose, updateTitle } = useWindowContext();
   const { logicNodeList, createLogicNode, updateLogicNode } = useLogicNodeContext();
   const { diagrams } = useDiagramContext();
   // Signals
   const logicNode = useSignal<LogicNode>(structuredClone(emptyLogicNode));
-  const newLogicNode = useSignal<LogicNode>(structuredClone(emptyLogicNode));
   const compChildren = useSignal<CompChild>([]);
   // States
   const [logicNodeData, setLogicNodeData] = useState<LogicNode | undefined>(undefined);
@@ -201,7 +200,6 @@ const LogicNodeFormContextProvider: React.FC<{ children: React.ReactNode }> = ({
   // Save logic node
   const handleSave = async () => {
     handleAddNewCompChild();
-    newLogicNode.value.isRoot = isRoot || false;
     logicNode.value.isRoot = isRoot || false;
     // Reset the stateValues if the defaultValues checkbox is checked
     if (defaultValues === true && currentNode) {
@@ -217,9 +215,14 @@ const LogicNodeFormContextProvider: React.FC<{ children: React.ReactNode }> = ({
         name: name.trim(),
         desc,
         gateType: gateTypeValue || 'gtAnd',
+        rootName: isRoot ? name.trim() : parentNode?.rootName
       }),
       compChildren: compChildren.value,
     };
+
+    if (logicNodeData?.isRoot) {
+      await updateTitle(logicNodeData?.name || '', name)
+    }
 
     if (editing || leafNodeType === 'comp') {
       await updateLogicNode(logicNode.value);
@@ -230,7 +233,7 @@ const LogicNodeFormContextProvider: React.FC<{ children: React.ReactNode }> = ({
     } else {
       createLogicNode(logicNode.value);
     }
-    handleClose();
+    await handleClose();
   };
 
   return (

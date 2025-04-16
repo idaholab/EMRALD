@@ -1,0 +1,9 @@
+** Tests IS expressions **
+
+C Default
+VARNAME IS Value
+
+C Special IS expressions
+START TIME IS 0.
+END TIME IS 144000.
+PRINT INTERVAL IS 5000.

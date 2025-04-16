@@ -1,0 +1,232 @@
+{
+  "upgrade v1.2": {
+    "name": "upgrade v1.2",
+    "desc": "",
+    "emraldVersion": 3,
+    "objType": "EMRALD_Model",
+    "version": 1,
+    "DiagramList": [],
+    "ExtSimList": [],
+    "StateList": [],
+    "ActionList": [
+      {
+        "objType": "Action",
+        "name": "Action1",
+        "desc": "",
+        "actType": "atCngVarVal",
+        "mainItem": false,
+        "mutExcl": true
+      },
+      {
+        "objType": "Action",
+        "name": "Action2",
+        "desc": "",
+        "actType": "atCngVarVal",
+        "mainItem": true
+      }
+    ],
+    "EventList": [
+      {
+        "objType": "Event",
+        "name": "Event1",
+        "desc": "",
+        "evType": "et3dSimEv",
+        "mainItem": false,
+        "allItems": true,
+        "onSuccess": true
+      },
+      {
+        "objType": "Event",
+        "name": "Event2",
+        "desc": "",
+        "evType": "et3dSimEv",
+        "mainItem": true
+      }
+    ],
+    "LogicNodeList": [],
+    "VariableList": []
+  },
+  "upgrade v2.4": {
+    "name": "upgrade v2.4",
+    "desc": "",
+    "emraldVersion": 3,
+    "objType": "EMRALD_Model",
+    "version": 1,
+    "DiagramList": [
+      {
+        "objType": "Diagram",
+        "name": "Diagram1",
+        "desc": "",
+        "diagramType": "dtSingle",
+        "diagramLabel": "Component",
+        "states": [],
+        "required": false
+      }
+    ],
+    "ExtSimList": [],
+    "StateList": [
+      {
+        "objType": "State",
+        "name": "State1",
+        "desc": "",
+        "stateType": "stKeyState",
+        "diagramName": "Diagram1",
+        "immediateActions": [],
+        "events": [],
+        "eventActions": [],
+        "geometryInfo": {
+          "x": 1,
+          "y": 2
+        }
+      }
+    ],
+    "ActionList": [
+      {
+        "objType": "Action",
+        "name": "Action1",
+        "desc": "",
+        "actType": "atCngVarVal",
+        "mainItem": false,
+        "mutExcl": true
+      }
+    ],
+    "EventList": [
+      {
+        "objType": "Event",
+        "name": "Event1",
+        "desc": "",
+        "evType": "etDistribution",
+        "mainItem": false,
+        "allItems": true,
+        "onSuccess": true,
+        "ifInState": true,
+        "distType": "dtNormal",
+        "parameters": [
+          {
+            "name": "Mean",
+            "useVariable": false,
+            "value": 1
+          },
+          {
+            "name": "Standard Deviation",
+            "useVariable": false,
+            "value": 2
+          },
+          {
+            "name": "Minimum",
+            "useVariable": false,
+            "value": 3
+          },
+          {
+            "name": "Maximum",
+            "useVariable": false,
+            "value": 4
+          }
+        ],
+        "dfltTimeRate": "trHours"
+      }
+    ],
+    "LogicNodeList": [],
+    "VariableList": [
+      {
+        "objType": "Variable",
+        "name": "Variable1",
+        "varScope": "gtGlobal",
+        "value": 1,
+        "type": "int"
+      }
+    ]
+  },
+  "upgrade v3.0": {
+    "name": "upgrade v3.0",
+    "desc": "",
+    "emraldVersion": 3,
+    "objType": "EMRALD_Model",
+    "version": 1,
+    "DiagramList": [
+      {
+        "objType": "Diagram",
+        "name": "Diagram1",
+        "desc": "",
+        "diagramType": "dtSingle",
+        "diagramLabel": "Component",
+        "states": [],
+        "required": false
+      }
+    ],
+    "ExtSimList": [
+      {
+        "objType": "ExtSim",
+        "name": "ExtSim1",
+        "resourceName": ""
+      }
+    ],
+    "StateList": [
+      {
+        "objType": "State",
+        "name": "State1",
+        "desc": "",
+        "stateType": "stKeyState",
+        "diagramName": "Diagram1",
+        "immediateActions": [],
+        "events": [],
+        "eventActions": [],
+        "geometryInfo": {
+          "x": 1,
+          "y": 2
+        }
+      }
+    ],
+    "ActionList": [
+      {
+        "objType": "Action",
+        "name": "Action1",
+        "desc": "",
+        "actType": "atCngVarVal",
+        "mainItem": false
+      }
+    ],
+    "EventList": [
+      {
+        "objType": "Event",
+        "name": "Event1",
+        "desc": "",
+        "evType": "et3dSimEv",
+        "mainItem": true,
+        "ifInState": true
+      }
+    ],
+    "LogicNodeList": [
+      {
+        "objType": "LogicNode",
+        "name": "LogicNode1",
+        "desc": "",
+        "gateType": "gtAnd",
+        "gateChildren": [],
+        "compChildren": [],
+        "isRoot": true,
+        "rootName": "LogicNode1"
+      }
+    ],
+    "VariableList": [
+      {
+        "objType": "Variable",
+        "name": "Variable1",
+        "varScope": "gtGlobal",
+        "value": 1,
+        "type": "int",
+        "regExpLine": 1,
+        "begPosition": 1,
+        "accrualStatesData": [
+          {
+            "stateName": "State1",
+            "type": "ctMultiplier",
+            "accrualMult": 1,
+            "multRate": "1",
+            "accrualTable": [[1, 2]]
+          }
+        ]
+      }
+    ]
+  }
+}

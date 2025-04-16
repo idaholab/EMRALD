@@ -1,0 +1,36 @@
+{
+  "sets external sim": {
+    "objType": "Action",
+    "name": "sets external sim",
+    "desc": "",
+    "mainItem": true,
+    "actType": "at3DSimMsg",
+    "sim3DMessage": "atCancelSim",
+    "extSim": "Test ExtSim"
+  },
+  "sets open sim action": {
+    "objType": "Action",
+    "name": "sets open sim action",
+    "desc": "",
+    "mainItem": true,
+    "actType": "at3DSimMsg",
+    "sim3DMessage": "atOpenSim",
+    "extSim": "Test ExtSim",
+    "simEndTime": "P1DT2H3M4S",
+    "sim3DModelRef": "ModelRef",
+    "sim3DConfigData": "ConfigData"
+  },
+  "uses variables": {
+    "objType": "Action",
+    "name": "uses variables",
+    "desc": "",
+    "mainItem": true,
+    "actType": "at3DSimMsg",
+    "sim3DMessage": "atOpenSim",
+    "extSim": "Test ExtSim",
+    "simEndTime": "P1DT2H3M4S",
+    "sim3DModelRef": "Test ExtSim Variable",
+    "sim3DConfigData": "Test ExtSim Variable",
+    "openSimVarParams": true
+  }
+}

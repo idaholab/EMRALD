@@ -1,0 +1,9 @@
+** Tests boolean literals **
+
+C Main
+TRUE
+FALSE
+
+C Shorthand
+T
+F

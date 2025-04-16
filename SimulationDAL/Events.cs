@@ -261,48 +261,43 @@ namespace SimulationDAL
 
     public override bool EventTriggered(MyBitArray curStates, object otherData, TimeSpan curSimTime, TimeSpan start3DTime, TimeSpan nextEvTime, int runIdx)
     {
-      //do a bitset operation to keep track of changed items that are related
+      //make a bitset for the changed item and do operations that are needed for a match
       if (changed == null)
       {
         changed = new MyBitArray(curStates.Length);
       }
-      
-      //changed.OrApply(((ChangedIDs)otherData).stateIDs_BS);
-
-      
       if (_relatedIDsBitSet.Length < curStates.Length)
         _relatedIDsBitSet.Length = curStates.Length;
 
-      if (changed == null)
-      {
-        changed = new MyBitArray(curStates.Length);
-      }
-      //MyBitArray changed = new MyBitArray(_relatedIDsBitSet);
-      if (!ifInState)
-      {
-        //find in changed and not in current (xor then and with origional)
-        MyBitArray compareBits = ((ChangedIDs)otherData).stateIDs_BS.Xor(curStates).And(((ChangedIDs)otherData).stateIDs_BS);
-        changed.OrApply(compareBits);
-      }
-      else
-        changed.OrApply(((ChangedIDs)otherData).stateIDs_BS);
+      changed = ((ChangedIDs)otherData).stateIDs_BS;
 
-      MyBitArray cngAndRelated = changed.And(_relatedIDsBitSet);
+      //are there related items that have changed
+      if (changed.And(_relatedIDsBitSet).Count == 0)
+        return false;
+
+      //find the items that are appicable for entry or exit
+      if (ifInState) //in the specified state/s
+      {
+        //get all the states we are current in and are in the realted IDS.
+        if (!this.allItems) //can only use ones we just entered
+          changed = _relatedIDsBitSet.And(curStates.And(changed));
+        else
+          changed = _relatedIDsBitSet.And(curStates);
+      }
+      else //exiting the specified state/s
+      {
+        //get all the states we are not in current states and are in the realted IDS.
+        if (!this.allItems) //can only use ones we just exited
+          changed = _relatedIDsBitSet.And(curStates.Not().And(changed));
+        else
+          changed = _relatedIDsBitSet.And(curStates.Not());
+      }
+
+      //return if in one of or all the states as specified
       if (this.allItems)
-        return (cngAndRelated.BitCount() == relatedIDs.Count());
+        return (changed.BitCount() == relatedIDs.Count());
       else
-        return cngAndRelated.BitCount() > 0;
-
-      //if (ifInState) //We are looking for an item in the list to trigger us       
-      //{
-      //  //curStates must contain all of the items in relatedIDs
-      //  return (both.BitCount() == _relatedIDsBitSet.BitCount());
-      //}
-      //else //Don't want to be in the specified states
-      //{
-      //  //curStates must contain none of the items in relatedIDs
-      //  return (both.BitCount() == 0);
-      //}
+        return changed.BitCount() > 0;
     }
 
     public override void LookupRelatedItems(EmraldModel all, EmraldModel addToList)
@@ -334,6 +329,8 @@ namespace SimulationDAL
     public bool successSpace = true;
     public bool triggerOnFalse = false;
     private LogicNode logicTop = null;
+    private Dictionary<int, bool?> lastEvalVal = new Dictionary<int, bool?>(); //what value did the tree have last time it was evaluated for the given state (hash is state ID)
+    //private bool? lastEvalVal = null; //what value did the tree have last time it was evaluated
 
     //protected override EnModifiableTypes GetModType() { return EnModifiableTypes.mtState; } //the modified items concerned about for component logic are states.
 
@@ -429,6 +426,17 @@ namespace SimulationDAL
         evalBool =  false;
       }
       //else should be 1 so value is true
+
+      //Just because an item changes doesn't mean we trigger the event.
+      //we don't trigger unless the tree evaluates to something different and it meets the condition, so it doesn't trigger repeatedly
+      int curState = (int)otherData;
+      if (!lastEvalVal.ContainsKey(curState))
+        lastEvalVal[curState] = null;
+
+      if ((lastEvalVal[curState] != null) && (evalBool == lastEvalVal[curState]))
+        return false;
+      else
+        lastEvalVal[curState] = evalBool;
 
       if (triggerOnFalse)
         return !evalBool;

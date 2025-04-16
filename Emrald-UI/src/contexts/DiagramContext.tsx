@@ -48,7 +48,10 @@ const DiagramContextProvider: React.FC<EmraldContextWrapperProps> = ({ children 
   const diagramList = useComputed(() => appData.value.DiagramList);
 
   effect(() => {
-    if (JSON.stringify(diagrams) !== JSON.stringify(appData.value.DiagramList.sort((a, b) => a.name.localeCompare(b.name)))) {
+    if (
+      JSON.stringify(diagrams) !==
+      JSON.stringify(appData.value.DiagramList.sort((a, b) => a.name.localeCompare(b.name)))
+    ) {
       setDiagrams(appData.value.DiagramList.sort((a, b) => a.name.localeCompare(b.name)));
       return;
     }
@@ -65,30 +68,23 @@ const DiagramContextProvider: React.FC<EmraldContextWrapperProps> = ({ children 
   };
 
   const updateDiagram = async (updatedDiagram: Diagram) => {
-    // Rest of your code to update the diagram list
-    return new Promise<void>(async (resolve) => {
-      var updatedModel: EMRALD_Model = await updateModelAndReferences(
-        updatedDiagram,
-        MainItemTypes.Diagram,
-      );
-      updateAppData(updatedModel);
-      resolve();
-    });
+    var updatedModel: EMRALD_Model = await updateModelAndReferences(
+      updatedDiagram,
+      MainItemTypes.Diagram,
+    );
+    updateAppData(updatedModel);
   };
 
-  const deleteDiagram = (diagramId: string | undefined) => {
+  const deleteDiagram = async (diagramId: string | undefined) => {
     if (!diagramId) {
       return;
     }
     const diagramToDelete = getDiagramById(diagramId);
     if (diagramToDelete) {
-      return new Promise<void>(async (resolve) => {
-        var updatedModel: EMRALD_Model = await DeleteItemAndRefs(diagramToDelete);
-        updateAppData(updatedModel);
-        resolve();
-      });
+      var updatedModel: EMRALD_Model = await DeleteItemAndRefs(diagramToDelete);
+      updateAppData(updatedModel);
     }
-    //todo else error, not diagram to delete    
+    //todo else error, not diagram to delete
   };
 
   const getDiagramByDiagramName = (diagramName: string) => {

@@ -71,7 +71,7 @@ export const projectOptions = (setFileName?: (name: string) => void): MenuOption
       // Create a new file input element
       const fileInput = document.createElement('input');
       fileInput.type = 'file'; // Set input type to file
-      fileInput.accept = '.json'; // Specify accepted file types as JSON
+      fileInput.accept = '.json,.emrald'; // Specify accepted file types as JSON
       fileInput.style.display = 'none'; // Hide the file input element
 
       // Function to handle file selection
@@ -89,7 +89,7 @@ export const projectOptions = (setFileName?: (name: string) => void): MenuOption
           try {
             const parsedContent = JSON.parse(content);
             if (parsedContent && parsedContent.hasOwnProperty('emraldVersion')) {
-              mergeNewData(content);
+              mergeNewData(parsedContent);
             } else {
               const upgradedModel = upgradeModel(content);
               if (upgradedModel) {

@@ -787,7 +787,7 @@
                 },
                 "failDesc": {
                     "type": "string",
-                    "description": "The description from the user for output if tthis transition takes place."
+                    "description": "The description from the user for output if this transition takes place."
                 },
                 "varProb": {
                     "type": [

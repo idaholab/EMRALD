@@ -50,9 +50,12 @@ const ActionContextProvider: React.FC<EmraldContextWrapperProps> = ({ children }
     ),
   );
   const actionsList = useComputed(() => appData.value.ActionList);
-  
+
   effect(() => {
-    if (JSON.stringify(actions) !== JSON.stringify(appData.value.ActionList.sort((a, b) => a.name.localeCompare(b.name)))) {
+    if (
+      JSON.stringify(actions) !==
+      JSON.stringify(appData.value.ActionList.sort((a, b) => a.name.localeCompare(b.name)))
+    ) {
       setActions(appData.value.ActionList.sort((a, b) => a.name.localeCompare(b.name)));
       return;
     }
@@ -89,19 +92,16 @@ const ActionContextProvider: React.FC<EmraldContextWrapperProps> = ({ children }
     updateAppData(JSON.parse(JSON.stringify(updatedModel)));
   };
 
-  const deleteAction = (actionId: string | undefined) => {
+  const deleteAction = async (actionId: string | undefined) => {
     if (!actionId) {
       return;
     }
     const actionToDelete = actionsList.value.find((action) => action.id === actionId);
     if (actionToDelete) {
-      return new Promise<void>(async (resolve) => {
-        var updatedModel: EMRALD_Model = await DeleteItemAndRefs(actionToDelete);
-        updateAppData(updatedModel);
-        resolve();
-      });
+      var updatedModel: EMRALD_Model = await DeleteItemAndRefs(actionToDelete);
+      updateAppData(updatedModel);
     }
-    //todo else error, no action to delete   
+    //todo else error, no action to delete
   };
 
   const getActionByActionId = (actionId: string | null) => {
