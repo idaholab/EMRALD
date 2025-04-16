@@ -1,0 +1,17 @@
+{
+  "Event": {
+    "id": 1,
+    "name": "T1",
+    "desc": "",
+    "mainItem": false,
+    "evType": "etTimer",
+    "allItems": true,
+    "triggerStates": [],
+    "moveFromCurrent": true,
+    "varNames": [],
+    "useVariable": false,
+    "time": "PT5M",
+    "timeVariableUnit": "",
+    "fromSimStart": false
+  }
+}

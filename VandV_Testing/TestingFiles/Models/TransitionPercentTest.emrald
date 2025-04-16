@@ -1,0 +1,418 @@
+{
+  "id": "7f6fab2e-2670-49d2-8e43-4c681fe0f4cb",
+  "name": "TransitionPercentTest",
+  "desc": "",
+  "DiagramList": [
+    {
+      "name": "Main",
+      "desc": "",
+      "diagramType": "dtMulti",
+      "diagramTemplate": "",
+      "diagramLabel": "Plant",
+      "states": [
+        "Start",
+        "S2",
+        "S3",
+        "S4",
+        "S5",
+        "S6",
+        "Go End"
+      ],
+      "id": "deeb797e-6dc4-48b6-8cd4-d17f4ef7b6d2",
+      "objType": "Diagram",
+      "required": false
+    }
+  ],
+  "StateList": [
+    {
+      "id": "e498c0b1-c743-475d-97f8-5bb9cccaf344",
+      "name": "Go End",
+      "desc": "",
+      "diagramName": "Main",
+      "stateType": "stTerminal",
+      "events": [],
+      "eventActions": [],
+      "immediateActions": [],
+      "geometryInfo": {
+        "x": 1541.2000000000003,
+        "y": 220,
+        "width": 0,
+        "height": 0
+      },
+      "required": false,
+      "objType": "State",
+      "defaultSingleStateValue": "Ignore"
+    },
+    {
+      "name": "S2",
+      "desc": "",
+      "stateType": "stStandard",
+      "diagramName": "Main",
+      "immediateActions": [],
+      "events": [
+        "FiveSec"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "Goto_S3 or S4"
+          ]
+        }
+      ],
+      "id": "f762fe15-3949-4edb-8fd9-f65a2d3a47a1",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 394,
+        "y": 152,
+        "width": 200,
+        "height": 180
+      }
+    },
+    {
+      "name": "S3",
+      "desc": "",
+      "stateType": "stStandard",
+      "diagramName": "Main",
+      "immediateActions": [
+        "New V2"
+      ],
+      "events": [
+        "FiveSec"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": false,
+          "actions": [
+            "Go S5 or S6"
+          ]
+        }
+      ],
+      "id": "15f6f975-75c3-4d08-ac48-5ae52fadb6e2",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 710.9158764749177,
+        "y": 62.99026958200932,
+        "width": 200,
+        "height": 100
+      },
+      "defaultSingleStateValue": "Ignore"
+    },
+    {
+      "id": "de3e24cd-c0ed-4da5-978e-af10a3919c19",
+      "name": "S4",
+      "desc": "",
+      "diagramName": "Main",
+      "stateType": "stKeyState",
+      "events": [],
+      "eventActions": [],
+      "immediateActions": [
+        "End"
+      ],
+      "geometryInfo": {
+        "x": 1030.5515274885859,
+        "y": 434.3723989296272,
+        "width": 0,
+        "height": 0
+      },
+      "required": false,
+      "objType": "State",
+      "defaultSingleStateValue": "Ignore"
+    },
+    {
+      "id": "f1a31b19-a03c-4ddd-b4ad-1ea17edc1c6a",
+      "name": "S5",
+      "desc": "",
+      "diagramName": "Main",
+      "stateType": "stKeyState",
+      "events": [
+        "FiveSec"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": false,
+          "actions": [
+            "End"
+          ]
+        }
+      ],
+      "immediateActions": [
+        "Reset V2"
+      ],
+      "geometryInfo": {
+        "x": 1034,
+        "y": -34,
+        "width": 0,
+        "height": 0
+      },
+      "required": false,
+      "objType": "State",
+      "defaultSingleStateValue": "Ignore"
+    },
+    {
+      "id": "d4255eea-f5cd-43b4-8c2f-9dc9a3a7def8",
+      "name": "S6",
+      "desc": "",
+      "diagramName": "Main",
+      "stateType": "stKeyState",
+      "events": [
+        "FiveSec"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": false,
+          "actions": [
+            "End"
+          ]
+        }
+      ],
+      "immediateActions": [
+        "Reset V2"
+      ],
+      "geometryInfo": {
+        "x": 1035.8834831011163,
+        "y": 205.89571377075015,
+        "width": 0,
+        "height": 0
+      },
+      "required": false,
+      "objType": "State",
+      "defaultSingleStateValue": "Ignore"
+    },
+    {
+      "name": "Start",
+      "desc": "",
+      "stateType": "stStart",
+      "diagramName": "Main",
+      "immediateActions": [],
+      "events": [
+        "FiveSec"
+      ],
+      "eventActions": [
+        {
+          "actions": [
+            "Goto_S2"
+          ],
+          "moveFromCurrent": true
+        }
+      ],
+      "id": "59688c3e-aa06-4bac-ad78-d2f0c4831816",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 84,
+        "y": 159,
+        "width": 200,
+        "height": 130
+      }
+    }
+  ],
+  "ActionList": [
+    {
+      "id": "5f8e3fdd-6673-4aef-b59a-c1bfb2494a66",
+      "name": "End",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": true,
+      "objType": "Action",
+      "required": false,
+      "newStates": [
+        {
+          "toState": "Go End",
+          "prob": -1,
+          "varProb": null,
+          "failDesc": ""
+        }
+      ],
+      "mutExcl": true,
+      "codeVariables": [],
+      "variableName": "",
+      "scriptCode": "",
+      "sim3DMessage": "atCompModify",
+      "extSim": "",
+      "sim3DConfigData": "",
+      "sim3DModelRef": "",
+      "simEndTime": "",
+      "makeInputFileCode": "",
+      "exePath": "",
+      "processOutputFileCode": "",
+      "openSimVarParams": false,
+      "raType": "",
+      "returnProcess": "rtNone"
+    },
+    {
+      "id": "6eeaa2fd-8a1c-4fa0-a915-76c4130089af",
+      "name": "Go S5 or S6",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": true,
+      "objType": "Action",
+      "required": false,
+      "newStates": [
+        {
+          "toState": "S5",
+          "prob": 0,
+          "failDesc": "",
+          "varProb": "V2_Dbl"
+        },
+        {
+          "toState": "S6",
+          "prob": -1,
+          "failDesc": "",
+          "varProb": null
+        }
+      ],
+      "mutExcl": true,
+      "codeVariables": [],
+      "variableName": "",
+      "scriptCode": "",
+      "sim3DMessage": "atCompModify",
+      "extSim": "",
+      "sim3DConfigData": "",
+      "sim3DModelRef": "",
+      "simEndTime": "",
+      "makeInputFileCode": "",
+      "exePath": "",
+      "processOutputFileCode": "",
+      "openSimVarParams": false,
+      "raType": "",
+      "returnProcess": "rtNone"
+    },
+    {
+      "name": "Goto_S2",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "S2",
+          "prob": -1,
+          "failDesc": ""
+        }
+      ],
+      "id": "fc934d3f-3e50-4d5c-b98b-ef4e299c9332",
+      "objType": "Action"
+    },
+    {
+      "name": "Goto_S3 or S4",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": true,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "S4",
+          "prob": 0,
+          "failDesc": "",
+          "varProb": "V2_Dbl"
+        },
+        {
+          "toState": "S3",
+          "prob": -1,
+          "failDesc": ""
+        }
+      ],
+      "id": "e6110d5e-1e38-4ed9-a137-90cb9f7b75cc",
+      "objType": "Action",
+      "codeVariables": [],
+      "variableName": "",
+      "scriptCode": "",
+      "sim3DMessage": "atCompModify",
+      "extSim": "",
+      "sim3DConfigData": "",
+      "sim3DModelRef": "",
+      "simEndTime": "",
+      "makeInputFileCode": "",
+      "exePath": "",
+      "processOutputFileCode": "",
+      "openSimVarParams": false,
+      "raType": "",
+      "returnProcess": "rtNone"
+    },
+    {
+      "id": "33640769-f751-4e8f-b5e9-f980f327ee56",
+      "name": "New V2",
+      "desc": "",
+      "actType": "atCngVarVal",
+      "mainItem": true,
+      "objType": "Action",
+      "required": false,
+      "newStates": [],
+      "mutExcl": true,
+      "codeVariables": [
+        "V2_Dbl"
+      ],
+      "variableName": "V2_Dbl",
+      "scriptCode": "return .25;\r\n",
+      "sim3DMessage": "atCompModify",
+      "extSim": "",
+      "sim3DConfigData": "",
+      "sim3DModelRef": "",
+      "simEndTime": "",
+      "makeInputFileCode": "",
+      "exePath": "",
+      "processOutputFileCode": "",
+      "openSimVarParams": false,
+      "raType": "",
+      "returnProcess": "rtNone"
+    },
+    {
+      "id": "dad4a981-9647-4dcd-bdfa-fbfecabcda35",
+      "name": "Reset V2",
+      "desc": "",
+      "actType": "atCngVarVal",
+      "mainItem": true,
+      "objType": "Action",
+      "required": false,
+      "newStates": [],
+      "mutExcl": true,
+      "codeVariables": [
+        "V2_Dbl"
+      ],
+      "variableName": "V2_Dbl",
+      "scriptCode": "return .5;",
+      "sim3DMessage": "atCompModify",
+      "extSim": "",
+      "sim3DConfigData": "",
+      "sim3DModelRef": "",
+      "simEndTime": "",
+      "makeInputFileCode": "",
+      "exePath": "",
+      "processOutputFileCode": "",
+      "openSimVarParams": false,
+      "raType": "",
+      "returnProcess": "rtNone"
+    }
+  ],
+  "EventList": [
+    {
+      "name": "FiveSec",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etTimer",
+      "allItems": true,
+      "triggerStates": [],
+      "varNames": [],
+      "time": "PT5S",
+      "id": "06b0c7e3-b0f2-474d-8b51-62f4720b955d",
+      "objType": "Event"
+    }
+  ],
+  "LogicNodeList": [],
+  "VariableList": [
+    {
+      "name": "V2_Dbl",
+      "varScope": "gtGlobal",
+      "value": "0.5",
+      "type": "double",
+      "objType": "Variable",
+      "id": "575b8f55-bc15-40dc-b70c-7117ba0a5370",
+      "desc": "",
+      "resetOnRuns": false
+    }
+  ],
+  "version": 1,
+  "objType": "EMRALD_Model",
+  "ExtSimList": [],
+  "emraldVersion": 3
+}

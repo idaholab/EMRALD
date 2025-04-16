@@ -238,8 +238,6 @@ namespace SimulationDAL
         return EnEventType.etFailRate;
       else if (evItem is TimerEvent)
         return EnEventType.etTimer;
-      else if (evItem is NormalDistEvent)
-        return EnEventType.etNormalDist;
 
       else
         throw new Exception("Missing conversion to EnEventType from class object");
