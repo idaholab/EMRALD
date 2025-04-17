@@ -1,23 +1,13 @@
 ﻿// Copyright 2021 Battelle Energy Alliance
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using SimulationDAL;
 using Xunit;
 using System.IO;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using SimulationEngine;
-using MathNet.Numerics;
-//using Ewk.Math.Numerics;
-using System.Reflection;
-using System.Diagnostics;
-using NLog;
-using NLog.Config;
-using SimulationDAL;
+//using MathNet.Numerics;
 using JsonDiffPatchDotNet;
 using Testing;
 
@@ -921,7 +911,7 @@ namespace UnitAndIntegrationTesting
       string fileLoc1 = MainTestDir() + ModelFolder() + testName + "1.json";
       string fileLoc2 = MainTestDir() + ModelFolder() + testName + "2.json";
       string compRes = CompareFilesDir() + testName + "_res.json";
-      string pathRes1 = "";
+      //string pathRes1 = ""; // Notused
      
 
       string combinedResStr = OverallResults.CombineResultFiles(fileLoc1, fileLoc2);

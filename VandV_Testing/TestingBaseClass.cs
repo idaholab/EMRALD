@@ -64,8 +64,6 @@ namespace Testing
       {
         return false;
       }
-
-      return false;
     }
 
     protected string RootDir()
