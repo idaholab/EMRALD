@@ -6,7 +6,7 @@ hero:
   name: 'EMRALD Documentation'
   text: 'The official documentation for the EMRALD application'
   image:
-    src: 'images/emrald.png'
+    src: 'EMRALD-logo.png'
     alt: 'EMRALD'
   actions:
     - theme: brand

@@ -290,7 +290,6 @@ EMRALD_Site/tests/temp
 instrumented
 .nyc_output
 /Emrald_Site/package-lock.json
-/emrald-docs/package-lock.json
 /emrald-docs/yarn.lock
 /Emrald-UI/src/utils/out
 /VandV_Testing/TestingFiles/UserValidationRuns/Template_ValidationCase_Test
