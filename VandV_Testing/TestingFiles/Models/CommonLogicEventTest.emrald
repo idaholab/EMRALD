@@ -1,0 +1,617 @@
+{
+  "id": "0",
+  "name": "CommonLogicEventTest",
+  "desc": "Tests the same event in two states currently in that evaluate a logic tree. Both should be triggered.",
+  "version": 1,
+  "DiagramList": [
+    {
+      "name": "Comp_A",
+      "desc": "Component A",
+      "diagramType": "dtSingle",
+      "diagramTemplate": "",
+      "diagramLabel": "Component",
+      "states": [
+        "A_Working",
+        "A_Failed"
+      ],
+      "id": "0a30cdf1-728e-49e7-be4f-f25770d9326d",
+      "objType": "Diagram",
+      "required": false
+    },
+    {
+      "name": "Comp_B",
+      "desc": "Component A",
+      "diagramType": "dtSingle",
+      "diagramTemplate": "",
+      "diagramLabel": "Component",
+      "states": [
+        "B_Working",
+        "B_Failed"
+      ],
+      "id": "24929b4d-9421-4427-b473-952cc80e3718",
+      "objType": "Diagram",
+      "required": false
+    },
+    {
+      "id": "137de05e-7d9f-4106-8ec0-7714e1b23204",
+      "name": "EvalStates",
+      "desc": "",
+      "diagramType": "dtMulti",
+      "diagramLabel": "Main",
+      "states": [
+        "Start",
+        "StateEval_Fail",
+        "Eval1",
+        "Eval2",
+        "StateEval_Fail2"
+      ],
+      "required": false,
+      "objType": "Diagram"
+    }
+  ],
+  "StateList": [
+    {
+      "name": "A_Failed",
+      "desc": "",
+      "stateType": "stStandard",
+      "diagramName": "Comp_A",
+      "immediateActions": [],
+      "events": [
+        "AFixed"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "goto_A_Working"
+          ]
+        }
+      ],
+      "id": "9a9c4ec2-c9c3-4097-8302-9dcb8e45d07e",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 316.0423175000002,
+        "y": 27.908000000000015,
+        "width": 200,
+        "height": 80
+      },
+      "defaultSingleStateValue": "False"
+    },
+    {
+      "name": "A_Working",
+      "desc": "",
+      "stateType": "stStart",
+      "diagramName": "Comp_A",
+      "immediateActions": [],
+      "events": [
+        "A_FTR"
+      ],
+      "eventActions": [
+        {
+          "actions": [
+            "Goto_A_Failed"
+          ],
+          "moveFromCurrent": true
+        }
+      ],
+      "id": "a1b47af8-7974-4baa-b503-1a52a75b2b1a",
+      "objType": "State",
+      "geometryInfo": {
+        "x": -34.399,
+        "y": 22.992999999999995,
+        "width": 200,
+        "height": 130
+      },
+      "defaultSingleStateValue": "True"
+    },
+    {
+      "name": "B_Failed",
+      "desc": "",
+      "stateType": "stStandard",
+      "diagramName": "Comp_B",
+      "immediateActions": [],
+      "events": [
+        "BFix"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "goto_B_Working"
+          ]
+        }
+      ],
+      "id": "b34d9b35-919c-45e9-9c18-6d5c2e7aade8",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 289.18629999999996,
+        "y": -22.22919999999999,
+        "width": 200,
+        "height": 80
+      },
+      "defaultSingleStateValue": "False"
+    },
+    {
+      "name": "B_Working",
+      "desc": "",
+      "stateType": "stStart",
+      "diagramName": "Comp_B",
+      "immediateActions": [],
+      "events": [
+        "B_FTR"
+      ],
+      "eventActions": [
+        {
+          "actions": [
+            "Goto_B_Failed"
+          ],
+          "moveFromCurrent": true
+        }
+      ],
+      "id": "0d186667-372d-4057-b4e9-91fe235b359d",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 1.5,
+        "y": -14.5,
+        "width": 200,
+        "height": 130
+      },
+      "defaultSingleStateValue": "True"
+    },
+    {
+      "id": "78f44dca-53cb-4a70-8942-d6abca0d0f20",
+      "name": "Eval1",
+      "desc": "",
+      "diagramName": "EvalStates",
+      "stateType": "stStandard",
+      "events": [
+        "EvalLogic"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "Goto_Failed"
+          ]
+        }
+      ],
+      "immediateActions": [],
+      "geometryInfo": {
+        "x": 76.21754716294083,
+        "y": -194.77817608307112,
+        "width": 0,
+        "height": 0
+      },
+      "required": false,
+      "objType": "State",
+      "defaultSingleStateValue": "Ignore"
+    },
+    {
+      "id": "dced5a75-6f9a-4a7c-925c-52d786f59c9d",
+      "name": "Eval2",
+      "desc": "",
+      "diagramName": "EvalStates",
+      "stateType": "stStandard",
+      "events": [
+        "EvalLogic"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "goto_StateEval_Fail2"
+          ]
+        }
+      ],
+      "immediateActions": [],
+      "geometryInfo": {
+        "x": 77.27612420687069,
+        "y": -16.937232702875747,
+        "width": 0,
+        "height": 0
+      },
+      "required": false,
+      "objType": "State",
+      "defaultSingleStateValue": "Ignore"
+    },
+    {
+      "id": "053a3667-2127-47a5-8792-f4dc6cd06fcd",
+      "name": "Start",
+      "desc": "",
+      "diagramName": "EvalStates",
+      "stateType": "stStart",
+      "events": [],
+      "eventActions": [],
+      "immediateActions": [
+        "goto_Eval1",
+        "goto_Eval2"
+      ],
+      "geometryInfo": {
+        "x": -320.5346257880885,
+        "y": -210.09487547180703,
+        "width": 0,
+        "height": 0
+      },
+      "required": false,
+      "objType": "State",
+      "defaultSingleStateValue": "Ignore"
+    },
+    {
+      "id": "4e27d2eb-d5a8-4132-b239-68bbd86b989a",
+      "name": "StateEval_Fail",
+      "desc": "",
+      "diagramName": "EvalStates",
+      "stateType": "stKeyState",
+      "events": [],
+      "eventActions": [],
+      "immediateActions": [],
+      "geometryInfo": {
+        "x": 479.31838928866523,
+        "y": -202.7466302858041,
+        "width": 0,
+        "height": 0
+      },
+      "required": false,
+      "objType": "State",
+      "defaultSingleStateValue": "Ignore"
+    },
+    {
+      "id": "2d13c930-6550-473e-a0d2-042fb86573c4",
+      "name": "StateEval_Fail2",
+      "desc": "",
+      "diagramName": "EvalStates",
+      "stateType": "stKeyState",
+      "events": [],
+      "eventActions": [],
+      "immediateActions": [],
+      "geometryInfo": {
+        "x": 481.2058119714278,
+        "y": 56.92223650987256,
+        "width": 0,
+        "height": 0
+      },
+      "required": false,
+      "objType": "State",
+      "defaultSingleStateValue": "Ignore"
+    }
+  ],
+  "ActionList": [
+    {
+      "name": "Goto_A_Failed",
+      "desc": "A has failed",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "A_Failed",
+          "prob": -1,
+          "failDesc": ""
+        }
+      ],
+      "id": "dd9097cd-3405-4a60-ba18-29db2e87261c",
+      "objType": "Action"
+    },
+    {
+      "id": "4d3274ce-dffd-4411-b5be-9c3453dd4752",
+      "name": "goto_A_Working",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": true,
+      "objType": "Action",
+      "required": false,
+      "newStates": [
+        {
+          "toState": "A_Working",
+          "prob": -1,
+          "varProb": null,
+          "failDesc": ""
+        }
+      ],
+      "mutExcl": true,
+      "codeVariables": [],
+      "variableName": "",
+      "scriptCode": "",
+      "sim3DMessage": "atCompModify",
+      "extSim": "",
+      "sim3DConfigData": "",
+      "sim3DModelRef": "",
+      "simEndTime": "",
+      "makeInputFileCode": "",
+      "exePath": "",
+      "processOutputFileCode": "",
+      "openSimVarParams": false,
+      "raType": "",
+      "returnProcess": "rtNone"
+    },
+    {
+      "name": "Goto_B_Failed",
+      "desc": "A has failed",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "B_Failed",
+          "prob": -1,
+          "failDesc": ""
+        }
+      ],
+      "id": "73fd4973-3d81-41d7-b286-a812fea57d2f",
+      "objType": "Action"
+    },
+    {
+      "id": "719e6dd5-a49c-4120-9088-32b7af05b623",
+      "name": "goto_B_Working",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": true,
+      "objType": "Action",
+      "required": false,
+      "newStates": [
+        {
+          "toState": "B_Working",
+          "prob": -1,
+          "varProb": null,
+          "failDesc": ""
+        }
+      ],
+      "mutExcl": true,
+      "codeVariables": [],
+      "variableName": "",
+      "scriptCode": "",
+      "sim3DMessage": "atCompModify",
+      "extSim": "",
+      "sim3DConfigData": "",
+      "sim3DModelRef": "",
+      "simEndTime": "",
+      "makeInputFileCode": "",
+      "exePath": "",
+      "processOutputFileCode": "",
+      "openSimVarParams": false,
+      "raType": "",
+      "returnProcess": "rtNone"
+    },
+    {
+      "id": "ea20a862-1501-46ae-8448-dd2e8515cc7d",
+      "name": "goto_Eval1",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": true,
+      "objType": "Action",
+      "required": false,
+      "newStates": [
+        {
+          "toState": "Eval1",
+          "prob": -1,
+          "failDesc": "",
+          "varProb": null
+        }
+      ],
+      "mutExcl": true,
+      "codeVariables": [],
+      "variableName": "",
+      "scriptCode": "",
+      "sim3DMessage": "atCompModify",
+      "extSim": "",
+      "sim3DConfigData": "",
+      "sim3DModelRef": "",
+      "simEndTime": "",
+      "makeInputFileCode": "",
+      "exePath": "",
+      "processOutputFileCode": "",
+      "openSimVarParams": false,
+      "raType": ""
+    },
+    {
+      "id": "b03c66be-5b1a-4dd3-ad1b-9dd7a43bc0a0",
+      "name": "goto_Eval2",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": true,
+      "objType": "Action",
+      "required": false,
+      "newStates": [
+        {
+          "toState": "Eval2",
+          "prob": -1,
+          "failDesc": "",
+          "varProb": null
+        }
+      ],
+      "mutExcl": true,
+      "codeVariables": [],
+      "variableName": "",
+      "scriptCode": "",
+      "sim3DMessage": "atCompModify",
+      "extSim": "",
+      "sim3DConfigData": "",
+      "sim3DModelRef": "",
+      "simEndTime": "",
+      "makeInputFileCode": "",
+      "exePath": "",
+      "processOutputFileCode": "",
+      "openSimVarParams": false,
+      "raType": ""
+    },
+    {
+      "id": "e8d6e6a8-cfd7-4e23-8f43-576902954487",
+      "name": "Goto_Failed",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": true,
+      "objType": "Action",
+      "required": false,
+      "newStates": [
+        {
+          "toState": "StateEval_Fail",
+          "prob": -1,
+          "failDesc": "",
+          "varProb": null
+        }
+      ],
+      "mutExcl": true,
+      "codeVariables": [],
+      "variableName": "",
+      "scriptCode": "",
+      "sim3DMessage": "atCompModify",
+      "extSim": "",
+      "sim3DConfigData": "",
+      "sim3DModelRef": "",
+      "simEndTime": "",
+      "makeInputFileCode": "",
+      "exePath": "",
+      "processOutputFileCode": "",
+      "openSimVarParams": false,
+      "raType": "",
+      "returnProcess": "rtNone"
+    },
+    {
+      "id": "bb3432a2-bd06-4742-828f-310c3da544eb",
+      "name": "goto_StateEval_Fail2",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": true,
+      "objType": "Action",
+      "required": false,
+      "newStates": [
+        {
+          "toState": "StateEval_Fail2",
+          "prob": -1,
+          "failDesc": "",
+          "varProb": null
+        }
+      ],
+      "mutExcl": true,
+      "codeVariables": [],
+      "variableName": "",
+      "scriptCode": "",
+      "sim3DMessage": "atCompModify",
+      "extSim": "",
+      "sim3DConfigData": "",
+      "sim3DModelRef": "",
+      "simEndTime": "",
+      "makeInputFileCode": "",
+      "exePath": "",
+      "processOutputFileCode": "",
+      "openSimVarParams": false,
+      "raType": "",
+      "returnProcess": "rtNone"
+    }
+  ],
+  "EventList": [
+    {
+      "id": "4db2e6f4-d376-4463-a46e-5156bcd80813",
+      "name": "A_FTR",
+      "desc": "A fails to run",
+      "evType": "etTimer",
+      "mainItem": true,
+      "required": false,
+      "objType": "Event",
+      "triggerStates": [],
+      "allItems": true,
+      "time": "P0DT5H1S"
+    },
+    {
+      "id": "32f43aad-3ef1-4169-afb2-c35b8fcfdf91",
+      "name": "AFixed",
+      "desc": "",
+      "evType": "etTimer",
+      "mainItem": true,
+      "required": false,
+      "objType": "Event",
+      "triggerStates": [],
+      "allItems": true,
+      "time": "P0DT5H"
+    },
+    {
+      "id": "6d5c3ac6-7847-4247-9040-a643b9d434f8",
+      "name": "B_FTR",
+      "desc": "A fails to run",
+      "evType": "etTimer",
+      "mainItem": true,
+      "required": false,
+      "objType": "Event",
+      "triggerStates": [],
+      "allItems": true,
+      "time": "P0DT5H"
+    },
+    {
+      "id": "d1b84fad-f6ca-48e7-be89-a633bd4b6cb7",
+      "name": "BFix",
+      "desc": "",
+      "evType": "etTimer",
+      "mainItem": true,
+      "required": false,
+      "objType": "Event",
+      "triggerStates": [],
+      "allItems": true,
+      "time": "P0DT5H"
+    },
+    {
+      "id": "ae0f1802-870c-4368-b414-8fedd67c7b1f",
+      "name": "EvalLogic",
+      "desc": "",
+      "evType": "etComponentLogic",
+      "mainItem": true,
+      "required": false,
+      "objType": "Event",
+      "varNames": [],
+      "triggerStates": [],
+      "allItems": true,
+      "onSuccess": false,
+      "triggerOnFalse": false,
+      "logicTop": "TreeTest",
+      "time": "P0D",
+      "lambda": ""
+    },
+    {
+      "id": "26d0eab7-5a8a-45b9-aafb-7199dd458646",
+      "name": "ExitNow",
+      "desc": "",
+      "evType": "etTimer",
+      "mainItem": true,
+      "required": false,
+      "objType": "Event",
+      "varNames": [],
+      "triggerStates": [],
+      "allItems": true,
+      "time": "P0DT0S"
+    }
+  ],
+  "LogicNodeList": [
+    {
+      "id": "f71ed5d3-b7ab-4857-91b3-3238d40cd38b",
+      "name": "Tree",
+      "desc": "",
+      "isRoot": false,
+      "gateType": "gtAnd",
+      "compChildren": [],
+      "gateChildren": [],
+      "objType": "LogicNode"
+    },
+    {
+      "id": "0d855ea2-174e-4207-b245-0f8390dbd9ad",
+      "name": "TreeTest",
+      "desc": "",
+      "isRoot": true,
+      "gateType": "gtAnd",
+      "compChildren": [
+        {
+          "diagramName": "Comp_A"
+        },
+        {
+          "diagramName": "Comp_B"
+        }
+      ],
+      "gateChildren": [],
+      "objType": "LogicNode",
+      "rootName": "TreeTest"
+    }
+  ],
+  "VariableList": [],
+  "ExtSimList": [],
+  "objType": "EMRALD_Model",
+  "emraldVersion": 3,
+  "templates": []
+}

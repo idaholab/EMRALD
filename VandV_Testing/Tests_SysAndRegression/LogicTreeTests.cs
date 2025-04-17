@@ -59,6 +59,59 @@ namespace SysAndRegressionTesting
       Compare(dir, testName, optionsJ);
     }
 
-    //TODO add other actiontests.
+    [Fact]
+    [Description("Test that an evaluation used in two differnt states triggeres the actions for both events.")]
+    public void CommonLogicEventTest()
+    {
+      string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
+
+      //Setup directory for unit test 
+      string dir = SetupTestDir(testName);
+      //initial options, and optional results to save/test
+      JObject optionsJ = SetupJSON(dir, testName, true);
+
+      SimulationEngine.Options options = optionsJ.ToObject<SimulationEngine.Options>();
+      //Change the default settings as needed for the test seed default set to 0 for testing.
+      options.inpfile = MainTestDir() + ModelFolder() + testName + ".emrald";
+      options.runct = 20;
+      //options.variables = new List<string>() { "Int_Cnt" };
+      //optionsJ["variables"] = JsonConvert.SerializeObject(args);
+      JSONRun testRun = new JSONRun(options);
+      Assert.True(TestRunSim(testRun));
+
+      //Uncomment to update the validation files after they verified correct
+      //CopyToValidated(dir, testName, optionsJ);
+
+      //compare the test result and optionally the paths and json if assigned
+      Compare(dir, testName, optionsJ);
+    }
+
+    [Fact]
+    [Description("Test that an evaluation of a logic tree for both success and fail matches the equivolent of using state change events.")]
+    public void LogicAndStateCheckCommonRefs()
+    {
+      string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
+
+      //Setup directory for unit test 
+      string dir = SetupTestDir(testName);
+      //initial options, and optional results to save/test
+      JObject optionsJ = SetupJSON(dir, testName, true);
+
+      SimulationEngine.Options options = optionsJ.ToObject<SimulationEngine.Options>();
+      //Change the default settings as needed for the test seed default set to 0 for testing.
+      options.inpfile = MainTestDir() + ModelFolder() + testName + ".emrald";
+      options.variables = new List<string>() { "Int_FTFailCnt", "Int_FTFixCnt", "Int_StateFailCnt", "Int_StateFixCnt" };
+      options.runct = 50;
+      JSONRun testRun = new JSONRun(options);
+      Assert.True(TestRunSim(testRun));
+
+      //Uncomment to update the validation files after they verified correct
+      //CopyToValidated(dir, testName, optionsJ);
+
+      //compare the test result and optionally the paths and json if assigned
+      Compare(dir, testName, optionsJ);
+    }
+
+
   }
 }

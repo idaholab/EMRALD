@@ -1,0 +1,12 @@
+Simulation = CommonLogicEventTest
+Runtime = 00.00:00:01
+Runs = 20 of 20
+
+StateEval_Fail2 Occurred 20 times, Probability =1, MeanTime = 00.05:00:01 +/- 00.00:00:00.00
+(20)[100.000%]A_Failed, B_Failed
+
+StateEval_Fail Occurred 20 times, Probability =1, MeanTime = 00.05:00:01 +/- 00.00:00:00.00
+(20)[100.000%]A_Failed, B_Failed
+---------------------------
+- End Sim Variable Values -
+---------------------------
