@@ -4,13 +4,13 @@ import { defineConfig } from 'vitepress'
 export default defineConfig({
   title: "EMRALD Documentation",
   description: "The official documentation for the EMRALD application",
-  head: [['link', { rel: 'icon', href: '/images/EMRALD-logo.png' }],  ['link', { rel: 'stylesheet', href: '/custom.css' }] ],
   vite: {
     resolve: {
       preserveSymlinks: true
     }
   },
   themeConfig: {
+    logo: '/EMRALD-logo.png',
     // https://vitepress.dev/reference/default-theme-config
     nav: [
       { text: 'Home', link: '/' },

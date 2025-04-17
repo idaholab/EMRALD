@@ -11,4 +11,5 @@ dist
 config.local.js
 basement_dist
 .vitepress/cache
+docs/.vitepress/cache
 out
