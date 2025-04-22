@@ -1366,6 +1366,12 @@ namespace SimulationTracking
     private void ScanCondEvList()
     {
       MyBitArray toStateIDsBS = new MyBitArray(32);
+      if (nextStateQue.Count > 0)
+      {
+        int maxID = nextStateQue.Max(st => st.StateId);
+        toStateIDsBS = new MyBitArray(maxID+1); // store a bitset of the items that will be transitioned into
+      }
+      
       foreach(var nextState in nextStateQue)
       {
         toStateIDsBS.Set(nextState.StateId, true);
