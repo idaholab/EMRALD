@@ -102,8 +102,7 @@ namespace SysAndRegressionTesting
       //Change the default settings as needed for the test seed default set to 0 for testing.
       options.inpfile = MainTestDir() + ModelFolder() + testName + ".emrald";
       options.variables = new List<string>() { "Int_FTFailCnt", "Int_FTFixCnt", "Int_StateFailCnt", "Int_StateFixCnt" };
-      options.runct = 1;
-      options.runtime = "";
+      options.runct = 100;
       JSONRun testRun = new JSONRun(options);
       Assert.True(TestRunSim(testRun));
 

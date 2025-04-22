@@ -1,6 +1,6 @@
 Simulation = LogicAndStateCheckCommonRefs
-Runtime = 00.00:00:00
-Runs = 1 of 1
+Runtime = 00.00:00:11
+Runs = 100 of 100
 ---------------------------
 - End Sim Variable Values -
 ---------------------------
