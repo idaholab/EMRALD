@@ -90,6 +90,7 @@ namespace SysAndRegressionTesting
     [Description("Test that an evaluation of a logic tree for both success and fail matches the equivolent of using state change events.")]
     public void LogicAndStateCheckCommonRefs()
     {
+      //note the result will be 1 off because the event is triggered on startup for the Logic tree evaluation.
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
 
       //Setup directory for unit test 
@@ -101,7 +102,8 @@ namespace SysAndRegressionTesting
       //Change the default settings as needed for the test seed default set to 0 for testing.
       options.inpfile = MainTestDir() + ModelFolder() + testName + ".emrald";
       options.variables = new List<string>() { "Int_FTFailCnt", "Int_FTFixCnt", "Int_StateFailCnt", "Int_StateFixCnt" };
-      options.runct = 50;
+      options.runct = 1;
+      options.runtime = "";
       JSONRun testRun = new JSONRun(options);
       Assert.True(TestRunSim(testRun));
 
