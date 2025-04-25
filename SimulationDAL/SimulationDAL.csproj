@@ -1,19 +1,19 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Ewk.Math.Numerics" Version="1.0.4807.29504" />
     <PackageReference Include="MathNet.Numerics" Version="5.0.0" />
-    <PackageReference Include="Microsoft.ClearScript.V8" Version="7.4.5" />
-    <PackageReference Include="Microsoft.ClearScript.V8.Native.win-x64" Version="7.4.5" />
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="4.3.1" />
+    <PackageReference Include="Microsoft.ClearScript.V8" Version="7.5.0" />
+    <PackageReference Include="Microsoft.ClearScript.V8.Native.win-x64" Version="7.5.0" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="4.13.0" />
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-    <PackageReference Include="Newtonsoft.Json.Schema" Version="3.0.14" />
-    <PackageReference Include="NLog" Version="5.0.4" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="Newtonsoft.Json.Schema" Version="4.0.1" />
+    <PackageReference Include="NLog" Version="5.4.0" />
     <PackageReference Include="System.Xml.XPath" Version="4.3.0" />
   </ItemGroup>
 

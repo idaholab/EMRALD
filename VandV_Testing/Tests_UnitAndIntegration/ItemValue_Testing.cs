@@ -1,24 +1,10 @@
 ﻿// Copyright 2021 Battelle Energy Alliance
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using SimulationDAL;
 using Xunit;
 using System.IO;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using SimulationEngine;
-using MathNet.Numerics;
-//using Ewk.Math.Numerics;
-using System.Reflection;
-using System.Diagnostics;
-using NLog;
-using NLog.Config;
-using SimulationDAL;
-using JsonDiffPatchDotNet;
 using Testing;
 
 //using System.Windows.Forms;

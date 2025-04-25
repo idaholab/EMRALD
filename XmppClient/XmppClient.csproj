@@ -2,9 +2,11 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net6.0-windows</TargetFramework>
+    <TargetFramework>net8.0-windows10.0.26100.0</TargetFramework>
     <UseWindowsForms>true</UseWindowsForms>
     <UserSecretsId>1cf829bb-4144-4f00-bf28-b878578d0090</UserSecretsId>
+    <SupportedOSPlatformVersion>7.0</SupportedOSPlatformVersion>
+    <ApplicationIcon>favicon.ico</ApplicationIcon>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -17,8 +19,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Include="favicon.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="MatriX" Version="2.1.0.8" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="6.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="9.0.4" />
   </ItemGroup>
 
   <ItemGroup>
