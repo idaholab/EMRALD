@@ -38,6 +38,8 @@ namespace SysAndRegressionTesting
 
     public void Event_1TransitionInOutTest()
     {
+      //note the result will be 1 off because the event is triggered on startup for the Logic tree evaluation.
+
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
 
       //Setup directory for unit test 

@@ -217,6 +217,7 @@ namespace SimulationTracking
           throw new Exception("Already in a state for the diagram " + toState.diagram.name + " can't add go into another one.");
         //return;
 #else
+          logger.Info("Already in a state for the diagram " + toState.diagram.name + " can't add go into another one.");
           return;
 #endif
       }

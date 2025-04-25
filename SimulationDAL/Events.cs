@@ -272,7 +272,7 @@ namespace SimulationDAL
       changed = ((ChangedIDs)otherData).stateIDs_BS;
 
       //are there related items that have changed
-      if (changed.And(_relatedIDsBitSet).Count == 0)
+      if (changed.And(_relatedIDsBitSet).BitCount() == 0)
         return false;
 
       //find the items that are appicable for entry or exit
