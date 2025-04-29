@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import Box from '@mui/material/Box/Box';
+import Box from '@mui/material/Box';
 
 interface DurationComponentProps {
   milliseconds: number;

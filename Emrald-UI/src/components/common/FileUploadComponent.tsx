@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import Button from '@mui/material/Button/Button';
+import Button from '@mui/material/Button';
 import FileUploadIcon from '@mui/icons-material/FileUpload';
 import { styled } from '@mui/material/styles';
 import { Box, IconButton, Typography } from '@mui/material';
