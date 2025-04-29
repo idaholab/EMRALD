@@ -87,7 +87,6 @@ namespace SimulationEngine
     private string _jsonResultPaths;
     private volatile bool _stop = false;
     private bool _logFailedComps = false;
-    private string _keyPathsOutput = "";
     public bool batchSuccess = false;
     private Progress _progress = null;
     private int _pathResultsInterval = -1;
@@ -100,6 +99,7 @@ namespace SimulationEngine
     private Dictionary<string, Dictionary<string, Dictionary<string, string>>> _variableVals = new Dictionary<string, Dictionary<string, Dictionary<string, string>>>();
     public TProgressCallBack progressCallback;
     public List<string> logVarVals = new List<string>();
+    public Dictionary<string, string> initVarVals = new Dictionary<string, string>();
 
     //public List<Tuple<string, double>> 
     public TimeSpan runtime = TimeSpan.FromMilliseconds(0);
@@ -189,11 +189,10 @@ namespace SimulationEngine
       }     
     }
 
-    public void SetupBatch(int numRuns, bool logFailedComps = false, string keyPathsOutput = "")
+    public void SetupBatch(int numRuns, bool logFailedComps = false)
     {
       _numRuns = numRuns;
       _logFailedComps = logFailedComps;
-      _keyPathsOutput = keyPathsOutput;
     }
 
     public void AssignProgress(Progress progress)
@@ -215,6 +214,21 @@ namespace SimulationEngine
         logger.Error(this.error); 
       }
 
+      //Reassign any initial variable values specified by the user.
+      foreach(var v in initVarVals)
+      {
+        var varItem = this._lists.allVariables.FindByName(v.Key);
+        if (varItem == null)
+        {
+          this._error = "User wanted to assign inital value to variable " + v.Key + " but it doesn't exist in the model";
+          logger.Error(this.error);
+          return;
+        }
+
+        varItem.InitValue(v.Value);
+      }
+      
+
 
       batchSuccess = false;
       _stop = false;
@@ -226,10 +240,6 @@ namespace SimulationEngine
       int curI = 0;
       if (_pathResultsInterval < 1)
         _pathResultsInterval = _numRuns;
-
-      StreamWriter pathOutputFile = null;
-      if (!string.IsNullOrEmpty(_keyPathsOutput)) 
-        pathOutputFile = new StreamWriter(_keyPathsOutput, append: false);
 
       //if user defined the seed then reset random so that seed is used.
       if ((ConfigData.seed != null) && (ConfigData.seed >= 0))
@@ -270,11 +280,6 @@ namespace SimulationEngine
 
             if (_logFailedComps)
               failedComps = trackSim.GetFailedComponents();
-
-            if (pathOutputFile != null)
-            {
-              pathOutputFile.WriteLine("Run - " + i.ToString());
-            }
 
             //get the key paths
             var curKeyStates = trackSim.GetKeyPaths(keyPaths, otherPaths, logVarVals);
@@ -389,8 +394,7 @@ namespace SimulationEngine
       }
 
       stopWatch.Stop();      
-      if(pathOutputFile != null)
-        pathOutputFile.Close();
+      
       progressCallback(stopWatch.Elapsed, actRuns, _logFailedComps);
 
       MakePathResults(curI, true);

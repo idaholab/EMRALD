@@ -122,7 +122,7 @@ namespace Testing
 
     protected JObject SetupJSON(string loc, string testName, bool jsonResults = false)
     {
-      Options ops = new Options();
+      Options_cur ops = new Options_cur();
       ops.resout = loc + testName + resName;
       if (jsonResults)
         ops.jsonRes = loc + testName + jsonResultsName;

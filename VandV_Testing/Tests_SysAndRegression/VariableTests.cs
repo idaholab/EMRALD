@@ -100,7 +100,7 @@ namespace SysAndRegressionTesting
       JObject optionsJ = SetupJSON(dir, testName, true);
 
       //Change the default settings as needed for the test seed default set to 0 for testing.
-      SimulationEngine.Options options = optionsJ.ToObject<SimulationEngine.Options>();
+      SimulationEngine.Options_cur options = optionsJ.ToObject<SimulationEngine.Options_cur>();
       options.inpfile = MainTestDir() + ModelFolder() + testName + ".json";
       options.runct = 100;
       //options.variables = new List<string>() { "SumCurTime", "Accrual_Save" };
@@ -128,7 +128,7 @@ namespace SysAndRegressionTesting
       //initial options, and optional results to save/test
       JObject optionsJ = SetupJSON(dir, testName, false);
 
-      SimulationEngine.Options options = optionsJ.ToObject<SimulationEngine.Options>();
+      SimulationEngine.Options_cur options = optionsJ.ToObject<SimulationEngine.Options_cur>();
       //Change the default settings as needed for the test seed default set to 0 for testing.
       options.inpfile = MainTestDir() + ModelFolder() + testName + ".json";
       options.runct = 1;
@@ -157,7 +157,7 @@ namespace SysAndRegressionTesting
       //initial options, and optional results to save/test
       JObject optionsJ = SetupJSON(dir, testName, false);
 
-      SimulationEngine.Options options = optionsJ.ToObject<SimulationEngine.Options>();
+      SimulationEngine.Options_cur options = optionsJ.ToObject<SimulationEngine.Options_cur>();
       //Change the default settings as needed for the test seed default set to 0 for testing.
       options.inpfile = MainTestDir() + ModelFolder() + testName + ".json";
       options.runct = 1;
@@ -190,7 +190,7 @@ namespace SysAndRegressionTesting
       //initial options, and optional results to save/test
       JObject optionsJ = SetupJSON(dir, testName, false);
 
-      SimulationEngine.Options options = optionsJ.ToObject<SimulationEngine.Options>();
+      SimulationEngine.Options_cur options = optionsJ.ToObject<SimulationEngine.Options_cur>();
       //Change the default settings as needed for the test seed default set to 0 for testing.
       options.inpfile = MainTestDir() + ModelFolder() + testName + ".json";
       options.runct = 1;
@@ -206,7 +206,34 @@ namespace SysAndRegressionTesting
       //compare the test result and optionally the paths and json if assigned
       Compare(dir, testName, optionsJ);
     }
+
+
+    [Fact]
+    [Description("Test the ability to assign initial variable values from the options file")]
+    public void SimRunVarInitTest()
+    {
+      string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
+
+      //Setup directory for unit test 
+      string dir = SetupTestDir(testName);
+      //initial options, and optional results to save/test
+      JObject optionsJ = SetupJSON(dir, testName, false);
+
+      SimulationEngine.Options_cur options = optionsJ.ToObject<SimulationEngine.Options_cur>();
+      //Change the default settings as needed for the test seed default set to 0 for testing.
+      options.inpfile = MainTestDir() + ModelFolder() + testName + ".EMRALD";
+      options.runct = 1;
+      options.runtime = "0.01:00:00";
+      options.initVars.Add(new VarInitValue { varName = "Int_TestV", value = "2" });
+
+      JSONRun testRun = new JSONRun(options);
+      Assert.True(TestRunSim(testRun));
+
+      //Uncomment to update the validation files after they verified correct
+      //CopyToValidated(dir, testName, optionsJ);
+
+      //compare the test result and optionally the paths and json if assigned
+      Compare(dir, testName, optionsJ);
+    }
   }
-
-
 }
