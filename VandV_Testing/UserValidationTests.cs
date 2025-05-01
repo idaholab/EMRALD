@@ -78,5 +78,39 @@ namespace UserTesting
       //compare the test result and optionally the paths and json if assigned, causes an assert if not equiovolent
       Compare(dir, testName, optionsJ);
     }
+
+
+
+    [Fact] 
+    public void Single_Component_Repair()
+    {
+      //Description 
+      //[describe the test]
+
+      //Validation Document
+      //[name of validation document in TestingFiles/UserValidationDocs see Template_ValidationCase_Doc.docx]
+
+      //////////////////////////////
+      ///Don't change the following
+      //////////////////////////////
+      string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
+      //Setup directory for unit test 
+      string dir = SetupTestDir(testName);
+      //initial options, and optional results to save/test
+      JObject optionsJ = SetupJSON(dir, testName);
+      /////////////////////////////////
+
+      /////////////
+      optionsJ["inpfile"] = MainTestDir() + ModelFolder() + testName + ".json";
+      optionsJ["runct"] = 100000;
+      JSONRun testRun = new JSONRun(optionsJ.ToString());
+      Assert.True(TestRunSim(testRun));
+
+      //Uncomment to update the validation files after they verified correct
+      CopyToValidated(dir, testName, optionsJ);
+
+      //compare the test result and optionally the paths and json if assigned
+      Compare(dir, testName, optionsJ);
+    }
   }
 }

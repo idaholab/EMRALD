@@ -1,0 +1,8 @@
+Simulation = CCF
+Runtime = 00.00:00:05
+Runs = 100000 of 100000
+Failed Occurred 74790 times, Rate =0.7479, MeanTime = 166.08:55:03 +/- 145.22:42:59.33
+(74790)[100]C1 Failed, C2 Failed
+---------------------------
+- End Sim Variable Values -
+---------------------------

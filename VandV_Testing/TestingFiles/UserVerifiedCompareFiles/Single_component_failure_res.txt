@@ -1,0 +1,7 @@
+Simulation = Single Component Failure
+Runtime = 00.00:00:02
+Runs = 100000 of 100000
+Failed Occurred 63431 times, Rate =0.63431, MeanTime = 153.01:18:03 +/- 145.10:07:51.55
+---------------------------
+- End Sim Variable Values -
+---------------------------
