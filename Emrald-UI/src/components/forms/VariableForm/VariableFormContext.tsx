@@ -209,7 +209,7 @@ const VariableFormContextProvider: React.FC<PropsWithChildren> = ({ children }) 
       pathMustExist,
       value,
       accrualStatesData,
-      resetOnRuns,
+      resetOnRuns: resetOnRuns === undefined ? true : resetOnRuns,
       regExpLine,
       begPosition,
       numChars,
