@@ -11,6 +11,8 @@ using System.Diagnostics;
 using NLog;
 using NLog.Config;
 using Testing;
+using Matrix.Xmpp.Jingle;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 //////////////////////////////////////////
 ///See the readMe for adding 
@@ -57,7 +59,7 @@ namespace UserTesting
       string dir = SetupTestDir(testName);
       //initial options, and optional results to save/test
       JObject optionsJ = SetupJSON(dir, testName);
-      optionsJ["inpfile"] = MainTestDir() + ModelFolder() + testName + ".emrald";
+      optionsJ["inpfile"] = MainTestDir() + ModelFolder() + testName + ".emrald"; //or .json
       /////////////////////////////////
 
       /////////////
@@ -78,14 +80,11 @@ namespace UserTesting
       //compare the test result and optionally the paths and json if assigned, causes an assert if not equiovolent
       Compare(dir, testName, optionsJ);
     }
-
-
-
     [Fact] 
     public void Single_Component_Repair()
     {
       //Description 
-      //[describe the test]
+      //test the failure probability and mean time to failure(MTTF) of a single component given the mission time and failure rate
 
       //Validation Document
       //[name of validation document in TestingFiles/UserValidationDocs see Template_ValidationCase_Doc.docx]
@@ -98,16 +97,438 @@ namespace UserTesting
       string dir = SetupTestDir(testName);
       //initial options, and optional results to save/test
       JObject optionsJ = SetupJSON(dir, testName);
+      optionsJ["inpfile"] = MainTestDir() + ModelFolder() + testName + ".json";
       /////////////////////////////////
 
       /////////////
-      optionsJ["inpfile"] = MainTestDir() + ModelFolder() + testName + ".json";
       optionsJ["runct"] = 100000;
       JSONRun testRun = new JSONRun(optionsJ.ToString());
       Assert.True(TestRunSim(testRun));
 
       //Uncomment to update the validation files after they verified correct
-      CopyToValidated(dir, testName, optionsJ);
+      //CopyToValidated(dir, testName, optionsJ);
+
+      //compare the test result and optionally the paths and json if assigned
+      Compare(dir, testName, optionsJ);
+    }
+
+    [Fact]
+    public void Single_component_failure()
+    {
+      //Description 
+      //[describe the test]
+
+      //Validation Document
+      //[name of validation document in TestingFiles/UserValidationDocs see Template_ValidationCase_Doc.docx]
+
+      //////////////////////////////
+      ///Don't change the following
+      //////////////////////////////
+      string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
+      //Sets up directory for unit test 
+      string dir = SetupTestDir(testName);
+      //initial options, and optional results to save/test
+      JObject optionsJ = SetupJSON(dir, testName);
+      optionsJ["inpfile"] = MainTestDir() + ModelFolder() + testName + ".json";
+      /////////////////////////////////
+
+      /////////////
+      optionsJ["runct"] = 100000;
+      JSONRun testRun = new JSONRun(optionsJ.ToString());
+      Assert.True(TestRunSim(testRun));
+
+      //Uncomment to update the validation files after they verified correct
+      //CopyToValidated(dir, testName, optionsJ);
+
+      //compare the test result and optionally the paths and json if assigned
+      Compare(dir, testName, optionsJ);
+    }
+
+    [Fact]
+    public void Single_Component_Repair_With_Timer()
+    {
+      //Description 
+      //[describe the test]
+
+      //Validation Document
+      //[name of validation document in TestingFiles/UserValidationDocs see Template_ValidationCase_Doc.docx]
+
+      //////////////////////////////
+      ///Don't change the following
+      //////////////////////////////
+      string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
+      //Sets up directory for unit test 
+      string dir = SetupTestDir(testName);
+      //initial options, and optional results to save/test
+      JObject optionsJ = SetupJSON(dir, testName);
+      optionsJ["inpfile"] = MainTestDir() + ModelFolder() + testName + ".json";
+      /////////////////////////////////
+
+      /////////////
+      optionsJ["runct"] = 100000;
+      JSONRun testRun = new JSONRun(optionsJ.ToString());
+      Assert.True(TestRunSim(testRun));
+
+      //Uncomment to update the validation files after they verified correct
+      //CopyToValidated(dir, testName, optionsJ);
+
+      //compare the test result and optionally the paths and json if assigned
+      Compare(dir, testName, optionsJ);
+    }
+
+    [Fact]
+    public void Two_Components_Fail_in_Parallel_Rate()
+    {
+      //Description 
+      //[describe the test]
+
+      //Validation Document
+      //[name of validation document in TestingFiles/UserValidationDocs see Template_ValidationCase_Doc.docx]
+
+      //////////////////////////////
+      ///Don't change the following
+      //////////////////////////////
+      string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
+      //Sets up directory for unit test 
+      string dir = SetupTestDir(testName);
+      //initial options, and optional results to save/test
+      JObject optionsJ = SetupJSON(dir, testName);
+      optionsJ["inpfile"] = MainTestDir() + ModelFolder() + testName + ".json";
+      /////////////////////////////////
+
+      /////////////
+      optionsJ["runct"] = 100000;
+      JSONRun testRun = new JSONRun(optionsJ.ToString());
+      Assert.True(TestRunSim(testRun));
+
+      //Uncomment to update the validation files after they verified correct
+      //CopyToValidated(dir, testName, optionsJ);
+
+      //compare the test result and optionally the paths and json if assigned
+      Compare(dir, testName, optionsJ);
+    }
+
+    [Fact]
+    public void Two_Components_Fail_in_Parallel()
+    {
+      //Description 
+      //[describe the test]
+
+      //Validation Document
+      //[name of validation document in TestingFiles/UserValidationDocs see Template_ValidationCase_Doc.docx]
+
+      //////////////////////////////
+      ///Don't change the following
+      //////////////////////////////
+      string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
+      //Sets up directory for unit test 
+      string dir = SetupTestDir(testName);
+      //initial options, and optional results to save/test
+      JObject optionsJ = SetupJSON(dir, testName);
+      optionsJ["inpfile"] = MainTestDir() + ModelFolder() + testName + ".json";
+      /////////////////////////////////
+
+      /////////////
+      optionsJ["runct"] = 100000;
+      JSONRun testRun = new JSONRun(optionsJ.ToString());
+      Assert.True(TestRunSim(testRun));
+
+      //Uncomment to update the validation files after they verified correct
+      //CopyToValidated(dir, testName, optionsJ);
+
+      //compare the test result and optionally the paths and json if assigned
+      Compare(dir, testName, optionsJ);
+    }
+
+    [Fact]
+    public void Two_Components_Fail_in_Series()
+    {
+      //Description 
+      //[describe the test]
+
+      //Validation Document
+      //[name of validation document in TestingFiles/UserValidationDocs see Template_ValidationCase_Doc.docx]
+
+      //////////////////////////////
+      ///Don't change the following
+      //////////////////////////////
+      string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
+      //Sets up directory for unit test 
+      string dir = SetupTestDir(testName);
+      //initial options, and optional results to save/test
+      JObject optionsJ = SetupJSON(dir, testName);
+      optionsJ["inpfile"] = MainTestDir() + ModelFolder() + testName + ".json";
+      /////////////////////////////////
+
+      /////////////
+      optionsJ["runct"] = 100000;
+      JSONRun testRun = new JSONRun(optionsJ.ToString());
+      Assert.True(TestRunSim(testRun));
+
+      //Uncomment to update the validation files after they verified correct
+      //CopyToValidated(dir, testName, optionsJ);
+
+      //compare the test result and optionally the paths and json if assigned
+      Compare(dir, testName, optionsJ);
+    }
+
+    [Fact]
+    public void Two_Components_Fail_in_Series_Rate()
+    {
+      //Description 
+      //[describe the test]
+
+      //Validation Document
+      //[name of validation document in TestingFiles/UserValidationDocs see Template_ValidationCase_Doc.docx]
+
+      //////////////////////////////
+      ///Don't change the following
+      //////////////////////////////
+      string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
+      //Sets up directory for unit test 
+      string dir = SetupTestDir(testName);
+      //initial options, and optional results to save/test
+      JObject optionsJ = SetupJSON(dir, testName);
+      optionsJ["inpfile"] = MainTestDir() + ModelFolder() + testName + ".json";
+      /////////////////////////////////
+
+      /////////////
+      optionsJ["runct"] = 100000;
+      JSONRun testRun = new JSONRun(optionsJ.ToString());
+      Assert.True(TestRunSim(testRun));
+
+      //Uncomment to update the validation files after they verified correct
+      //CopyToValidated(dir, testName, optionsJ);
+
+      //compare the test result and optionally the paths and json if assigned
+      Compare(dir, testName, optionsJ);
+    }
+
+    [Fact]
+    public void CCF()
+    {
+      //Description 
+      //[describe the test]
+
+      //Validation Document
+      //[name of validation document in TestingFiles/UserValidationDocs see Template_ValidationCase_Doc.docx]
+
+      //////////////////////////////
+      ///Don't change the following
+      //////////////////////////////
+      string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
+      //Sets up directory for unit test 
+      string dir = SetupTestDir(testName);
+      //initial options, and optional results to save/test
+      JObject optionsJ = SetupJSON(dir, testName);
+      optionsJ["inpfile"] = MainTestDir() + ModelFolder() + testName + ".json";
+      /////////////////////////////////
+
+      /////////////
+      optionsJ["runct"] = 100000;
+      JSONRun testRun = new JSONRun(optionsJ.ToString());
+      Assert.True(TestRunSim(testRun));
+
+      //Uncomment to update the validation files after they verified correct
+      //CopyToValidated(dir, testName, optionsJ);
+
+      //compare the test result and optionally the paths and json if assigned
+      Compare(dir, testName, optionsJ);
+    }
+
+    [Fact]
+    public void Two_Components_Fail_In_Parallel_And_Undergo_Repair()
+    {
+      //Description 
+      //[describe the test]
+
+      //Validation Document
+      //[name of validation document in TestingFiles/UserValidationDocs see Template_ValidationCase_Doc.docx]
+
+      //////////////////////////////
+      ///Don't change the following
+      //////////////////////////////
+      string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
+      //Sets up directory for unit test 
+      string dir = SetupTestDir(testName);
+      //initial options, and optional results to save/test
+      JObject optionsJ = SetupJSON(dir, testName);
+      optionsJ["inpfile"] = MainTestDir() + ModelFolder() + testName + ".json";
+      /////////////////////////////////
+
+      /////////////
+      optionsJ["runct"] = 100000;
+      optionsJ["runtime"] = "1000.00:00:00";
+      JSONRun testRun = new JSONRun(optionsJ.ToString());
+      Assert.True(TestRunSim(testRun));
+
+      //Uncomment to update the validation files after they verified correct
+      //CopyToValidated(dir, testName, optionsJ);
+
+      //compare the test result and optionally the paths and json if assigned
+      Compare(dir, testName, optionsJ);
+    }
+
+    [Fact]
+    public void Two_Components_In_Series_Fail_Get_Repaired_Two_Repairmen_Available()
+    {
+      //Description 
+      //[describe the test]
+
+      //Validation Document
+      //[name of validation document in TestingFiles/UserValidationDocs see Template_ValidationCase_Doc.docx]
+
+      //////////////////////////////
+      ///Don't change the following
+      //////////////////////////////
+      string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
+      //Sets up directory for unit test 
+      string dir = SetupTestDir(testName);
+      //initial options, and optional results to save/test
+      JObject optionsJ = SetupJSON(dir, testName);
+      optionsJ["inpfile"] = MainTestDir() + ModelFolder() + testName + ".json";
+      /////////////////////////////////
+
+      /////////////
+      optionsJ["runct"] = 100000;
+      optionsJ["runtime"] = "1000.00:00:00";
+      JSONRun testRun = new JSONRun(optionsJ.ToString());
+      Assert.True(TestRunSim(testRun));
+
+      //Uncomment to update the validation files after they verified correct
+      //CopyToValidated(dir, testName, optionsJ);
+
+      //compare the test result and optionally the paths and json if assigned
+      Compare(dir, testName, optionsJ);
+    }
+
+    [Fact]
+    public void Two_Components_In_Parallel_One_In_Standby_Fail_Get_Repaired_Two_Repairmen()
+    {
+      //Description 
+      //[describe the test]
+
+      //Validation Document
+      //[name of validation document in TestingFiles/UserValidationDocs see Template_ValidationCase_Doc.docx]
+
+      //////////////////////////////
+      ///Don't change the following
+      //////////////////////////////
+      string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
+      //Sets up directory for unit test 
+      string dir = SetupTestDir(testName);
+      //initial options, and optional results to save/test
+      JObject optionsJ = SetupJSON(dir, testName);
+      optionsJ["inpfile"] = MainTestDir() + ModelFolder() + testName + ".json";
+      /////////////////////////////////
+
+      /////////////
+      optionsJ["runct"] = 100000;
+      optionsJ["runtime"] = "1000.00:00:00";
+      JSONRun testRun = new JSONRun(optionsJ.ToString());
+      Assert.True(TestRunSim(testRun));
+
+      //Uncomment to update the validation files after they verified correct
+      //CopyToValidated(dir, testName, optionsJ);
+
+      //compare the test result and optionally the paths and json if assigned
+      Compare(dir, testName, optionsJ);
+    }
+
+    [Fact]
+    public void Basic_Event_Tree()
+    {
+      //Description 
+      //[describe the test]
+
+      //Validation Document
+      //[name of validation document in TestingFiles/UserValidationDocs see Template_ValidationCase_Doc.docx]
+
+      //////////////////////////////
+      ///Don't change the following
+      //////////////////////////////
+      string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
+      //Sets up directory for unit test 
+      string dir = SetupTestDir(testName);
+      //initial options, and optional results to save/test
+      JObject optionsJ = SetupJSON(dir, testName);
+      optionsJ["inpfile"] = MainTestDir() + ModelFolder() + testName + ".json";
+      /////////////////////////////////
+
+      /////////////
+      optionsJ["runct"] = 100000;
+      optionsJ["runtime"] = "1000.00:00:00";
+      JSONRun testRun = new JSONRun(optionsJ.ToString());
+      Assert.True(TestRunSim(testRun));
+
+      //Uncomment to update the validation files after they verified correct
+      //CopyToValidated(dir, testName, optionsJ);
+
+      //compare the test result and optionally the paths and json if assigned
+      Compare(dir, testName, optionsJ);
+    }
+
+    [Fact]
+    public void Basic_Event_Tree_With_Two_Components_In_Parallel()
+    {
+      //Description 
+      //[describe the test]
+
+      //Validation Document
+      //[name of validation document in TestingFiles/UserValidationDocs see Template_ValidationCase_Doc.docx]
+
+      //////////////////////////////
+      ///Don't change the following
+      //////////////////////////////
+      string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
+      //Sets up directory for unit test 
+      string dir = SetupTestDir(testName);
+      //initial options, and optional results to save/test
+      JObject optionsJ = SetupJSON(dir, testName);
+      optionsJ["inpfile"] = MainTestDir() + ModelFolder() + testName + ".json";
+      /////////////////////////////////
+
+      /////////////
+      optionsJ["runct"] = 100000;
+      optionsJ["runtime"] = "1000.00:00:00";
+      JSONRun testRun = new JSONRun(optionsJ.ToString());
+      Assert.True(TestRunSim(testRun));
+
+      //Uncomment to update the validation files after they verified correct
+      //CopyToValidated(dir, testName, optionsJ);
+
+      //compare the test result and optionally the paths and json if assigned
+      Compare(dir, testName, optionsJ);
+    }
+
+    [Fact]
+    public void Basic_Event_Tree_With_Two_Components_In_Series()
+    {
+      //Description 
+      //[describe the test]
+
+      //Validation Document
+      //[name of validation document in TestingFiles/UserValidationDocs see Template_ValidationCase_Doc.docx]
+
+      //////////////////////////////
+      ///Don't change the following
+      //////////////////////////////
+      string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
+      //Sets up directory for unit test 
+      string dir = SetupTestDir(testName);
+      //initial options, and optional results to save/test
+      JObject optionsJ = SetupJSON(dir, testName);
+      optionsJ["inpfile"] = MainTestDir() + ModelFolder() + testName + ".json";
+      /////////////////////////////////
+
+      /////////////
+      optionsJ["runct"] = 100000;
+      optionsJ["runtime"] = "1000.00:00:00";
+      JSONRun testRun = new JSONRun(optionsJ.ToString());
+      Assert.True(TestRunSim(testRun));
+
+      //Uncomment to update the validation files after they verified correct
+      //CopyToValidated(dir, testName, optionsJ);
 
       //compare the test result and optionally the paths and json if assigned
       Compare(dir, testName, optionsJ);

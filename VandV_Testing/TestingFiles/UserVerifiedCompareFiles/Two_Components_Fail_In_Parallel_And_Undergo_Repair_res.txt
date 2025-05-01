@@ -1,10 +1,11 @@
 Simulation = Two Components Fail in Parallel and Undergo Repair
-Runtime = 00.00:05:38
+Runtime = 00.00:05:25
 Runs = 100000 of 100000
-Mission Time  Occurred 100000 times, Rate =1, MeanTime = 00.00:00:00 +/- 00.00:00:00.00
-(8173)[8.173]C1_Failed
-(811)[0.8109999999999999]C1_Failed, C2_Failed
-(8264)[8.264000000000001]C2_Failed
+
+Mission Time  Occurred 100000 times, Probability =1, MeanTime = 00.00:00:00 +/- 00.00:00:00.00
+(8157)[8.157%]C2_Failed
+(816)[0.816%]C1_Failed, C2_Failed
+(8306)[8.306%]C1_Failed
 ---------------------------
 - End Sim Variable Values -
 ---------------------------

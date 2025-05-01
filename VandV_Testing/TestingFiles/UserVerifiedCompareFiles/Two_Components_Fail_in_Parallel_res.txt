@@ -1,12 +1,15 @@
 Simulation = Two Components Fail in Parallel
-Runtime = 00.00:00:05
+Runtime = 00.00:00:02
 Runs = 100000 of 100000
-C1 Failed Occurred 100000 times, Rate =1, MeanTime = 09.23:57:22 +/- 14.05:06:17.50
-(100000)[100]C1 Failed, C2 Failed
-C2 Failed Occurred 100000 times, Rate =1, MeanTime = 09.23:35:33 +/- 14.02:11:29.80
-(100000)[100]C1 Failed, C2 Failed
-Failed Occurred 100000 times, Rate =1, MeanTime = 14.23:45:16 +/- 15.20:08:30.03
-(100000)[100]C1 Failed, C2 Failed
+
+C1 Failed Occurred 100000 times, Probability =1, MeanTime = 09.23:57:22 +/- 10.01:11:51.40
+(100000)[100.000%]C1 Failed, C2 Failed
+
+C2 Failed Occurred 100000 times, Probability =1, MeanTime = 09.23:35:33 +/- 09.23:08:16.36
+(100000)[100.000%]C1 Failed, C2 Failed
+
+Failed Occurred 100000 times, Probability =1, MeanTime = 14.23:45:16 +/- 11.04:48:02.80
+(100000)[100.000%]C1 Failed, C2 Failed
 ---------------------------
 - End Sim Variable Values -
 ---------------------------

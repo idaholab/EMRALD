@@ -1,10 +1,11 @@
 Simulation = Two Components in Series Fail, get repaired, two repairmen available
-Runtime = 00.00:12:11
+Runtime = 00.00:02:52
 Runs = 100000 of 100000
-Mission Time  Occurred 100000 times, Rate =1, MeanTime = 00.00:00:00 +/- 00.00:00:00.00
-(8186)[8.186]C2_Failed
-(821)[0.8210000000000001]C1_Failed, C2_Failed
-(8259)[8.259]C1_Failed
+
+Mission Time  Occurred 100000 times, Probability =1, MeanTime = 00.00:00:00 +/- 00.00:00:00.00
+(8186)[8.186%]C2_Failed
+(821)[0.821%]C1_Failed, C2_Failed
+(8259)[8.259%]C1_Failed
 ---------------------------
 - End Sim Variable Values -
 ---------------------------
