@@ -129,7 +129,7 @@ const VariableFormContextProvider: React.FC<PropsWithChildren> = ({ children }) 
     setVarScope(variableData?.varScope || 'gtGlobal');
     variableData?.value !== undefined && setValue(String(variableData.value));
     variableData?.sim3DId && setSim3DId(variableData.sim3DId);
-    setResetOnRuns(variableData.resetOnRuns || true);
+    setResetOnRuns(variableData.resetOnRuns);
     variableData?.docType && setDocType(variableData.docType);
     variableData?.docPath && setDocPath(variableData.docPath);
     variableData?.docLink && setDocLink(variableData.docLink);
@@ -209,7 +209,7 @@ const VariableFormContextProvider: React.FC<PropsWithChildren> = ({ children }) 
       pathMustExist,
       value,
       accrualStatesData,
-      resetOnRuns,
+      resetOnRuns: resetOnRuns === undefined ? true : resetOnRuns,
       regExpLine,
       begPosition,
       numChars,
