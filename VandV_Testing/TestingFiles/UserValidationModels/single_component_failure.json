@@ -1,132 +1,166 @@
 {
-  "id": 0,
-  "name": "Single Component Failure",
-  "desc": "",
-  "version": 1.3,
-  "DiagramList": [
-    {
-      "Diagram": {
-        "id": 1,
-        "name": "Component A",
-        "desc": "",
-        "diagramType": "dtComponent",
-        "diagramTemplate": "",
-        "diagramLabel": "Component",
-        "forceMerge": false,
-        "states": [
-          "Running ",
-          "Failed"
-        ],
-        "singleStates": [
-          {
-            "stateName": "Running ",
-            "okState": "False"
-          },
-          {
-            "stateName": "Failed",
-            "okState": "True"
-          }
-        ]
-      }
-    }
-  ],
-  "StateList": [
-    {
-      "State": {
-        "id": 1,
-        "name": "Running ",
-        "desc": "",
-        "stateType": "stStart",
-        "diagramName": "Component A",
-        "immediateActions": [],
-        "events": [
-          "Failure Rate"
-        ],
-        "eventActions": [
-          {
-            "actions": [
-              "Goto_Failed"
+    "id": "7f25365d-e2d6-4441-bd88-293a1e380198",
+    "name": "Single Component Failure",
+    "desc": "",
+    "version": 1,
+    "DiagramList": [
+        {
+            "name": "Component A",
+            "desc": "",
+            "diagramType": "dtMulti",
+            "diagramTemplate": "",
+            "diagramLabel": "Component",
+            "states": [
+                "Running ",
+                "Failed",
+                "Terminal"
             ],
-            "moveFromCurrent": true
-          }
-        ],
-        "geometry": "{ x: 470.20001220703125, y: 149.8000030517578, width: 200, height: 130}"
-      }
-    },
-    {
-      "State": {
-        "id": 2,
-        "name": "Failed",
-        "desc": "",
-        "stateType": "stKeyState",
-        "diagramName": "Component A",
-        "immediateActions": [],
-        "events": [],
-        "eventActions": [],
-        "geometry": "{ x: 735, y: 201.40000915527344, width: 200, height: 80}"
-      }
-    }
-  ],
-  "ActionList": [
-    {
-      "Action": {
-        "id": 1,
-        "name": "Goto_Failed",
-        "desc": "",
-        "actType": "atTransition",
-        "mainItem": false,
-        "mutExcl": true,
-        "newStates": [
-          {
-            "toState": "Failed",
-            "prob": -1,
-            "failDesc": ""
-          }
-        ],
-        "itemId": 2
-      }
-    }
-  ],
-  "EventList": [
-    {
-      "Event": {
-        "id": 1,
-        "name": "Failure Rate",
-        "desc": "",
-        "mainItem": false,
-        "evType": "etFailRate",
-        "allItems": true,
-        "triggerStates": [],
-        "moveFromCurrent": true,
-        "varNames": [],
-        "lambda": 1,
-        "lambdaTimeRate": "P365D",
-        "useVariable": false
-      }
-    }
-  ],
-  "LogicNodeList": [],
-  "VariableList": [
-    {
-      "Variable": {
-        "id": 1,
-        "name": "Time_spent_in_failed",
-        "desc": "",
-        "varScope": "gtAccrual",
-        "value": 0,
-        "accrualStatesData": [
-          {
-            "stateName": "Failed",
-            "type": "ctMultiplier",
-            "accrualMult": 1,
-            "multRate": "trHours",
-            "accrualTable": [],
-            "$$hashKey": "009"
-          }
-        ],
-        "type": "double"
-      }
-    }
-  ],
-  "templates": []
+            "id": "9ee52fba-9bae-42b7-b8bb-f42aa9969eed",
+            "objType": "Diagram",
+            "required": false
+        }
+    ],
+    "StateList": [
+        {
+            "name": "Failed",
+            "desc": "",
+            "stateType": "stKeyState",
+            "diagramName": "Component A",
+            "immediateActions": [
+                "Goto_Terminate"
+            ],
+            "events": [],
+            "eventActions": [],
+            "id": "8a14ede1-b63c-46a7-b3d8-884127b19606",
+            "objType": "State",
+            "geometryInfo": {
+                "x": 290.1718942382811,
+                "y": 218.20584643554687,
+                "width": 200,
+                "height": 100
+            },
+            "defaultSingleStateValue": "True"
+        },
+        {
+            "name": "Running ",
+            "desc": "",
+            "stateType": "stStart",
+            "diagramName": "Component A",
+            "immediateActions": [],
+            "events": [
+                "Failure Rate"
+            ],
+            "eventActions": [
+                {
+                    "actions": [
+                        "Goto_Failed"
+                    ],
+                    "moveFromCurrent": true
+                }
+            ],
+            "id": "49086def-9b29-4f59-93a7-5540c0286998",
+            "objType": "State",
+            "geometryInfo": {
+                "x": 30.20001220703125,
+                "y": 69.80000305175781,
+                "width": 200,
+                "height": 130
+            },
+            "defaultSingleStateValue": "False"
+        },
+        {
+            "name": "Terminal",
+            "desc": "",
+            "stateType": "stTerminal",
+            "diagramName": "Component A",
+            "immediateActions": [],
+            "events": [],
+            "eventActions": [],
+            "id": "6b8e698b-d078-410d-ae47-cce41566b100",
+            "objType": "State",
+            "geometryInfo": {
+                "x": 553.0295142578125,
+                "y": 91.64658525390621,
+                "width": 200,
+                "height": 80
+            },
+            "defaultSingleStateValue": "False"
+        }
+    ],
+    "ActionList": [
+        {
+            "name": "Goto_Failed",
+            "desc": "",
+            "actType": "atTransition",
+            "mainItem": false,
+            "mutExcl": true,
+            "newStates": [
+                {
+                    "toState": "Failed",
+                    "prob": -1,
+                    "failDesc": ""
+                }
+            ],
+            "id": "51dfe957-1d10-46d7-9494-ef5c0fabdfaf",
+            "objType": "Action"
+        },
+        {
+            "name": "Goto_Terminate",
+            "desc": "",
+            "actType": "atTransition",
+            "mainItem": false,
+            "mutExcl": true,
+            "newStates": [
+                {
+                    "toState": "Terminal",
+                    "prob": -1,
+                    "failDesc": ""
+                }
+            ],
+            "id": "e6118908-add9-4ac1-a8e5-6e1c0efdfa4e",
+            "objType": "Action"
+        }
+    ],
+    "EventList": [
+        {
+            "name": "Failure Rate",
+            "desc": "",
+            "mainItem": false,
+            "evType": "etFailRate",
+            "allItems": true,
+            "triggerStates": [],
+            "varNames": [],
+            "lambda": 1,
+            "lambdaTimeRate": "P365D",
+            "useVariable": false,
+            "id": "2b21fa7b-5954-4822-98e3-2eebdc498032",
+            "objType": "Event"
+        }
+    ],
+    "LogicNodeList": [],
+    "VariableList": [
+        {
+            "name": "Time_Spent_In_Running",
+            "varScope": "gtAccrual",
+            "value": 0,
+            "type": "double",
+            "objType": "Variable",
+            "id": "59a587df-7679-448d-b90c-93923d1ce883",
+            "desc": "",
+            "accrualStatesData": [
+                {
+                    "stateName": "Running ",
+                    "type": "ctMultiplier",
+                    "accrualMult": 1,
+                    "multRate": "trHours",
+                    "accrualTable": []
+                }
+            ],
+            "resetOnRuns": false
+        }
+    ],
+    "templates": [],
+    "objType": "EMRALD_Model",
+    "ExtSimList": [],
+    "emraldVersion": 3
 }

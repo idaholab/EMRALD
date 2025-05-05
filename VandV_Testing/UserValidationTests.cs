@@ -84,10 +84,10 @@ namespace UserTesting
     public void Single_Component_Repair()
     {
       //Description 
-      //test the failure probability and mean time to failure(MTTF) of a single component given the mission time and failure rate
+      //test the failure and repair of a single component given the failure rate, repair rate or time, and mission time
 
       //Validation Document
-      //[name of validation document in TestingFiles/UserValidationDocs see Template_ValidationCase_Doc.docx]
+      //TestingFiles/UserValidationDocs see Numaricalcases.docx, Single Component Failure and Repair Test 1]
 
       //////////////////////////////
       ///Don't change the following
@@ -102,6 +102,7 @@ namespace UserTesting
 
       /////////////
       optionsJ["runct"] = 100000;
+      optionsJ["runtime"] = "365.00:00:00";
       JSONRun testRun = new JSONRun(optionsJ.ToString());
       Assert.True(TestRunSim(testRun));
 
@@ -116,10 +117,10 @@ namespace UserTesting
     public void Single_component_failure()
     {
       //Description 
-      //[describe the test]
+      //test the failure probability of a single component given the mission time and failure rate
 
       //Validation Document
-      //[name of validation document in TestingFiles/UserValidationDocs see Template_ValidationCase_Doc.docx]
+      //TestingFiles/UserValidationDocs see Numaricalcases.docx, Single Component Failure, Test 2]
 
       //////////////////////////////
       ///Don't change the following
@@ -134,6 +135,7 @@ namespace UserTesting
 
       /////////////
       optionsJ["runct"] = 100000;
+      optionsJ["runtime"] = "365.00:00:00";
       JSONRun testRun = new JSONRun(optionsJ.ToString());
       Assert.True(TestRunSim(testRun));
 
@@ -148,10 +150,10 @@ namespace UserTesting
     public void Single_Component_Repair_With_Timer()
     {
       //Description 
-      //[describe the test]
+      //test the failure and repair of a single component given the failure rate, repair rate or time, and mission time.
 
       //Validation Document
-      //[name of validation document in TestingFiles/UserValidationDocs see Template_ValidationCase_Doc.docx]
+      //TestingFiles/UserValidationDocs see NumaricalCases.docx, Single Component Failure and Repair, Test 2]
 
       //////////////////////////////
       ///Don't change the following
@@ -180,10 +182,10 @@ namespace UserTesting
     public void Two_Components_Fail_in_Parallel_Rate()
     {
       //Description 
-      //[describe the test]
+      //test the failure probability of two identical components in parallel
 
       //Validation Document
-      //[name of validation document in TestingFiles/UserValidationDocs see Template_ValidationCase_Doc.docx]
+      //in TestingFiles/UserValidationDocs see Numaricalcases.docx, Two Identical Components in Parallel Configuration, Test 1
 
       //////////////////////////////
       ///Don't change the following
@@ -212,10 +214,10 @@ namespace UserTesting
     public void Two_Components_Fail_in_Parallel()
     {
       //Description 
-      //[describe the test]
+      //test the MTTF of two identical components in parallel
 
       //Validation Document
-      //[name of validation document in TestingFiles/UserValidationDocs see Template_ValidationCase_Doc.docx]
+      //in TestingFiles/UserValidationDocs see Numaricalcases.docx, Two Identical Components in Parallel Configuration, Test 1
 
       //////////////////////////////
       ///Don't change the following
@@ -244,10 +246,10 @@ namespace UserTesting
     public void Two_Components_Fail_in_Series()
     {
       //Description 
-      //[describe the test]
+      //test the failure probability of two identical components in series in EMRALD, as shown in Figure 9, we can use SAPHIRE as shown in Figure 10 and analytical calculations as given in Equation  (4). 
 
       //Validation Document
-      //[name of validation document in TestingFiles/UserValidationDocs see Template_ValidationCase_Doc.docx]
+      //in TestingFiles/UserValidationDocs see Numaricalcases.docx, 2.2.4	Two Identical Components in Series Configuration, Test 1
 
       //////////////////////////////
       ///Don't change the following
@@ -266,7 +268,7 @@ namespace UserTesting
       Assert.True(TestRunSim(testRun));
 
       //Uncomment to update the validation files after they verified correct
-      //CopyToValidated(dir, testName, optionsJ);
+      CopyToValidated(dir, testName, optionsJ);
 
       //compare the test result and optionally the paths and json if assigned
       Compare(dir, testName, optionsJ);
@@ -276,10 +278,10 @@ namespace UserTesting
     public void Two_Components_Fail_in_Series_Rate()
     {
       //Description 
-      //[describe the test]
+      //test the MTTF of two identical components in series in EMRALD, as shown in Figure 9, we can use SAPHIRE as shown in Figure 10 and analytical calculations as given in Equation  (4). 
 
       //Validation Document
-      //[name of validation document in TestingFiles/UserValidationDocs see Template_ValidationCase_Doc.docx]
+      //in TestingFiles/UserValidationDocs see Numaricalcases.docx, 2.2.4	Two Identical Components in Series Configuration, Test 1
 
       //////////////////////////////
       ///Don't change the following
@@ -294,11 +296,12 @@ namespace UserTesting
 
       /////////////
       optionsJ["runct"] = 100000;
+      optionsJ["runtime"] = "10000.00:00:00";
       JSONRun testRun = new JSONRun(optionsJ.ToString());
       Assert.True(TestRunSim(testRun));
 
       //Uncomment to update the validation files after they verified correct
-      //CopyToValidated(dir, testName, optionsJ);
+      CopyToValidated(dir, testName, optionsJ);
 
       //compare the test result and optionally the paths and json if assigned
       Compare(dir, testName, optionsJ);
@@ -429,7 +432,7 @@ namespace UserTesting
       Assert.True(TestRunSim(testRun));
 
       //Uncomment to update the validation files after they verified correct
-      //CopyToValidated(dir, testName, optionsJ);
+      CopyToValidated(dir, testName, optionsJ);
 
       //compare the test result and optionally the paths and json if assigned
       Compare(dir, testName, optionsJ);
