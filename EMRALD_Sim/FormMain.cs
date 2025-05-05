@@ -21,6 +21,8 @@ using System.Threading;
 using XmppServer;
 using Microsoft.Extensions.Options;
 using static EMRALD_Sim.UISettings;
+using Matrix.Xmpp.Bytestreams;
+using System.Diagnostics;
 
 namespace EMRALD_Sim
 {
@@ -41,6 +43,7 @@ namespace EMRALD_Sim
     private string _XMPP_Password = "secret";
     private int _pathResultsInterval = -1;
     private ModelSettings _currentModelSettings = null;
+    private Options_cur jsonOptions = null; //if the user has passed in JSON options
 
     [DllImport("kernel32.dll")]
     static extern bool AttachConsole(int dwProcessId);
@@ -71,6 +74,81 @@ namespace EMRALD_Sim
       bool execute = false;
       string model = null;
       //SimulationDAL.Globals.simID = 1;
+      if (args.Length > 0) // Loop through array
+      {
+        string argument = args[0].ToLower();
+        bool isJSON = false;
+        try
+        {
+          isJSON = Path.GetExtension(argument).Equals(".json", StringComparison.OrdinalIgnoreCase);
+        }
+        catch { };
+
+        if (isJSON)
+        {
+          //jsonOptions =  LoadFromJSON(args[0]);
+          OptionsRunWithNotify(args[0]);
+        }
+        else
+        {
+          execute = LoadFromArgs(args);
+        }
+      }
+
+      if (model != null)
+      {
+        OpenModel(model);
+
+        tcMain.SelectedTab = tabSimulate;
+
+        //check the monitor values
+        for (int idx = 0; idx < lbMonitorVars.Items.Count; idx++)
+        {
+          if (monitor.Contains(lbMonitorVars.Items[idx].ToString()))
+          {
+            lbMonitorVars.SetItemChecked(idx, true);
+          }
+        }
+
+        //assign the xmpp connections if any
+        for (int idx = 0; idx < _xmppLink.Count; idx++)
+        {
+          AssignServer(); //make sure it has been assigned
+          var extSimLink = _sim.allExtSims.FindByName(_xmppLink[idx][0], false);
+          if (extSimLink == null)
+          {
+            Console.Write("Bad -c first input. No external link in model named - " + _xmppLink[idx][0]);
+          }
+          else
+          {
+            extSimLink.resourceName = _xmppLink[idx][1] + " - " + _xmppLink[idx][2].ToLower();
+            extSimLink.verified = false;
+            extSimLink.timeout = int.Parse(_xmppLink[idx][3]);
+            //check the UI
+            var itemIdx = lbExtSimLinks.FindStringExact(_xmppLink[idx][0]);
+            lbExtSimLinks.SetItemChecked(itemIdx, true);
+          }
+        }
+
+
+        if (execute)
+        {
+          btnStartSims_Click(this, null);
+        }
+      }
+    }
+
+
+    /// <summary>
+    /// Load the settings from the arguments passed in
+    /// </summary>
+    /// <param name="args"></param>
+    /// <returns>return if to execute the model</returns>
+    private bool LoadFromArgs(string[] args)
+    {
+      bool execute = false;
+      string model = null;
+      //SimulationDAL.Globals.simID = 1;
       for (int i = 0; i < args.Length; i++) // Loop through array
       {
         string argument = args[i].ToLower();
@@ -89,7 +167,7 @@ namespace EMRALD_Sim
               if (!File.Exists(filePath))
               {
                 Console.Write("invalid input file path - " + filePath);
-                return;
+                return false;
               }
               else
               {
@@ -99,19 +177,8 @@ namespace EMRALD_Sim
               break;
             }
 
-
-          //case "-c": //code load of project
-          //  {
-          //    sim = new LookupLists("Test", "Desc");
-          //    sim.TestNRCFlooding2();
-          //    //sim.TestLoop(); 
-          //    break;
-          //  }
-
           case "-r": //path to output file
             {
-
-              //tabSimulate_Enter(this, null);
               tbSavePath.Text = args[i + 1];
               ++i;
               break;
@@ -290,7 +357,7 @@ namespace EMRALD_Sim
                   if (!arg.EndsWith("]"))
                   {
                     Console.Write("invalid option for debug range. Use [startIndex endIndex]");
-                    return;
+                    return false;
                   }
                   arg = arg.TrimEnd(']');
                   ConfigData.debugRunEnd = int.Parse(arg);
@@ -313,18 +380,18 @@ namespace EMRALD_Sim
             if (args.Length < (i + 4))
             {
               Console.Write("Invalid option, must have two result file paths and a destination file path after -mergeresults.");
-              return;
+              return false;
             }
             string mergePath1 = _statsFile = args[i + 1];
             string mergePath2 = _statsFile = args[i + 2];
             string resPath = _statsFile = args[i + 3];
-            
+
             try
             {
               if (SimulationEngine.OverallResults.CombineResultFiles(mergePath1, mergePath2, resPath) == "")
               {
                 Console.Write("Failed to load files, must have two valid file paths after -mergeresults.");
-                return;
+                return false;
               }
 
               //all went well so be done
@@ -336,7 +403,11 @@ namespace EMRALD_Sim
             break;
 
           case "-help":
+          case "-h":
+          case "-H":
+          case "-HELP":
             {
+              Console.WriteLine("Pass in a Options JSON file or use the following command line options.");
               Console.WriteLine("-n \"run count\"");
               Console.WriteLine("-i \"input model path\"");
               Console.WriteLine("-r \"results output file\"");
@@ -353,7 +424,9 @@ namespace EMRALD_Sim
                                 "    Example: -d basic [10 20]");
               Console.WriteLine("-rIntrv \"how often to save the path results, every X number of runs. No value or <1 will result in saving only after all runs are complete.\"");
               Console.WriteLine("-mergeResults \"merge two json path result files into one. Estimates the 5th and 95th. Example: -mergeResults c:/temp/PathResultsBatch1.json c:/temp/PathResultsBatch2.json c:/temp/PathResultsCombined.json\"");
-
+              Console.WriteLine("Options JSON file - ");
+              Console.WriteLine(Options_cur.CmdJSON_OptionsExample);
+              Environment.Exit(0);
               break;
             }
 
@@ -380,48 +453,73 @@ namespace EMRALD_Sim
         }
       }
 
-      if (model != null)
+      return execute;
+    }
+
+    private void OptionsRunWithNotify(string jsonPath)
+    {
+      if (!File.Exists(jsonPath))
       {
-        OpenModel(model);
+        Console.Write("Invalid path for JSON options load.");
+        return;
+      }
+      string optionsJsonStr = File.ReadAllText(jsonPath);
 
-        tcMain.SelectedTab = tabSimulate;
+      // Create a new form to act as a notification
+      Form notificationForm = new Form
+      {
+        Text = "Processing",
+        Size = new System.Drawing.Size(300, 100),
+        StartPosition = FormStartPosition.CenterScreen
+      };
 
-        //check the monitor values
-        for (int idx = 0; idx < lbMonitorVars.Items.Count; idx++)
+      // Add a label to the form to display the message
+      Label label = new Label
+      {
+        Text = "Processing, please wait...",
+        AutoSize = true,
+        TextAlign = System.Drawing.ContentAlignment.MiddleCenter,
+        Dock = DockStyle.Fill
+      };
+      notificationForm.Controls.Add(label);
+
+      // Show the notification form
+      Task.Run(() =>
+      {
+        notificationForm.ShowDialog();
+      });
+
+      // Handle the arguments asynchronously
+      Task.Run(() =>
+      {
+        OptionsRun(optionsJsonStr);
+
+        // Close the notification form once processing is complete
+        notificationForm.Invoke(new System.Action(() => notificationForm.Close()));
+
+        // Exit the application
+        Environment.Exit(0);
+      });
+    }
+
+    private void OptionsRun(string optionsJsonStr)
+    {
+      JSONRun simRun = new JSONRun(optionsJsonStr);
+      if (simRun.error != "")
+      {
+        Console.Write(simRun.error);
+      }
+      else
+      {
+        string res = simRun.RunSim();
+        if (res != "")
         {
-          if (monitor.Contains(lbMonitorVars.Items[idx].ToString()))
-          {
-            lbMonitorVars.SetItemChecked(idx, true);
-          }
-        }
-
-        //assign the xmpp connections if any
-        for (int idx = 0; idx < _xmppLink.Count; idx++)
-        {
-          AssignServer(); //make sure it has been assigned
-          var extSimLink = _sim.allExtSims.FindByName(_xmppLink[idx][0], false);
-          if (extSimLink == null)
-          {
-            Console.Write("Bad -c first input. No external link in model named - " + _xmppLink[idx][0]);
-          }
-          else
-          {
-            extSimLink.resourceName = _xmppLink[idx][1] + " - " + _xmppLink[idx][2].ToLower();
-            extSimLink.verified = false;
-            extSimLink.timeout = int.Parse(_xmppLink[idx][3]);
-            //check the UI
-            var itemIdx = lbExtSimLinks.FindStringExact(_xmppLink[idx][0]);
-            lbExtSimLinks.SetItemChecked(itemIdx, true);
-          }
-        }
-
-
-        if (execute)
-        {
-          btnStartSims_Click(this, null);
+          Console.Write("Invalid path for JSON options load.");
         }
       }
     }
+
+    
 
     public void Clear()
     {
@@ -896,7 +994,7 @@ namespace EMRALD_Sim
         if (!rbJsonPaths.Checked)
           simplePathRes = tbSavePath2.Text;
 
-        simRuns.SetupBatch(int.Parse(tbRunCnt.Text), true, simplePathRes);
+        simRuns.SetupBatch(int.Parse(tbRunCnt.Text), true);
         ThreadStart tStarter = new ThreadStart(simRuns.RunBatch);
         //run this when the thread is done.
         tStarter += () =>
