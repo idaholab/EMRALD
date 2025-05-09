@@ -1,8 +1,10 @@
 Simulation = Basic Event Tree
-Runtime = 00.00:00:00
-Runs = 100000 of 100000
-ESF Actuated Occurred 190 times, Rate =0.0019, MeanTime = 183.00:00:15 +/- 154.15:39:27.06
-Core Damage  Occurred 334 times, Rate =0.00334, MeanTime = 346.03:55:10 +/- 204.02:46:21.46
+Runtime = 00.00:00:02
+Runs = 1000000 of 1000000
+
+ESF Actuated Occurred 3099 times, Probability =0.003099, MeanTime = 213.08:23:23 +/- 102.15:49:22.84
+
+Core Damage  Occurred 1804 times, Probability =0.001804, MeanTime = 235.11:22:04 +/- 87.10:22:37.25
 ---------------------------
 - End Sim Variable Values -
 ---------------------------

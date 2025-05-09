@@ -1,22 +1,22 @@
 Simulation = Basic Event Tree
-Runtime = 00.00:00:03
-Runs = 100000 of 100000
-C1 Failed Occurred 63491 times, Rate =0.63491, MeanTime = 153.08:34:44 +/- 146.02:52:05.47
-(40037)[63.05933124379833]C1 Failed, C2 Failed
-(23454)[36.94066875620167]C1 Failed
-(23205)[36.54848718716038]C2 Failed
-C2 Failed Occurred 63242 times, Rate =0.63242, MeanTime = 153.04:35:50 +/- 145.17:28:23.06
-(40037)[63.30761202998008]C1 Failed, C2 Failed
-(23454)[37.08611365864457]C1 Failed
-(23205)[36.69238797001992]C2 Failed
-ESF Actuated Occurred 295 times, Rate =0.00295, MeanTime = 186.11:08:09 +/- 144.18:01:02.55
-(23188)[7860.338983050848]C2 Failed
-(40010)[13562.71186440678]C1 Failed, C2 Failed
-(23429)[7942.033898305085]C1 Failed
-Core Damage  Occurred 217 times, Rate =0.00217, MeanTime = 260.06:21:23 +/- 109.13:41:37.50
-(39215)[18071.428571428572]C1 Failed, C2 Failed
-(22743)[10480.645161290324]C2 Failed
-(22970)[10585.253456221199]C1 Failed
+Runtime = 00.00:00:00
+Runs = 10000 of 10000
+
+C1 Failed Occurred 6374 times, Probability =0.6374, MeanTime = 152.10:52:33 +/- 102.14:23:01.40
+(3998)[62.724%]C1 Failed, C2 Failed
+(2376)[37.276%]C1 Failed
+
+C2 Failed Occurred 6266 times, Probability =0.6266, MeanTime = 152.23:32:20 +/- 103.04:39:10.75
+(3998)[63.805%]C1 Failed, C2 Failed
+(2268)[36.195%]C2 Failed
+
+ESF Actuated Occurred 35 times, Probability =0.0035, MeanTime = 209.10:39:15 +/- 88.03:26:11.26
+(10)[28.571%]C1 Failed
+(9)[25.714%]C2 Failed
+(7)[20.000%]C1 Failed, C2 Failed
+
+Core Damage  Occurred 22 times, Probability =0.0022, MeanTime = 257.01:34:30 +/- 82.22:52:21.42
+(22)[100.000%]C1 Failed, C2 Failed
 ---------------------------
 - End Sim Variable Values -
 ---------------------------

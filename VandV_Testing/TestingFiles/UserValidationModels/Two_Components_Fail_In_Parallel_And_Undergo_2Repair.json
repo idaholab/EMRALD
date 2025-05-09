@@ -13,7 +13,7 @@
             "states": [
                 "C1_Running",
                 "C1_Failed",
-                "C1_Repair "
+                "C1_Repair"
             ],
             "id": "862c49a3-a6d6-4e79-8416-197734369889",
             "objType": "Diagram",
@@ -80,12 +80,12 @@
             "defaultSingleStateValue": "False"
         },
         {
-            "name": "C1_Repair ",
+            "name": "C1_Repair",
             "desc": "",
             "stateType": "stStandard",
             "diagramName": "Component 1",
             "immediateActions": [
-                "set_repair_crew_false"
+                "Dec_repair_crew"
             ],
             "events": [
                 "C1_Repair_Rate"
@@ -93,7 +93,7 @@
             "eventActions": [
                 {
                     "actions": [
-                        "set_repair_crew_to _true",
+                        "Inc_repair_crew",
                         "Goto_C1_Running"
                     ],
                     "moveFromCurrent": true
@@ -103,7 +103,7 @@
             "objType": "State",
             "geometryInfo": {
                 "x": 350,
-                "y": 240,
+                "y": 238.86908665105386,
                 "width": 200,
                 "height": 170
             },
@@ -143,14 +143,14 @@
             "diagramName": "Component 2",
             "immediateActions": [],
             "events": [
-                "C2_Failed"
+                "Repair Crew Available"
             ],
             "eventActions": [
                 {
+                    "moveFromCurrent": true,
                     "actions": [
                         "Goto_Repair_C2"
-                    ],
-                    "moveFromCurrent": true
+                    ]
                 }
             ],
             "id": "6d49e97d-62a0-4429-ae8f-e717d6717c5d",
@@ -169,7 +169,7 @@
             "stateType": "stStandard",
             "diagramName": "Component 2",
             "immediateActions": [
-                "set_repair_crew_false"
+                "Dec_repair_crew"
             ],
             "events": [
                 "C2_Repair Rate"
@@ -177,7 +177,7 @@
             "eventActions": [
                 {
                     "actions": [
-                        "set_repair_crew_to _true",
+                        "Inc_repair_crew",
                         "Goto_C2_Running"
                     ],
                     "moveFromCurrent": true
@@ -186,8 +186,8 @@
             "id": "b9d58399-c256-428c-bd40-b01eaac5efeb",
             "objType": "State",
             "geometryInfo": {
-                "x": 320.3999938964844,
-                "y": 220.30001831054688,
+                "x": 88.3863457314477,
+                "y": 310.10168687345083,
                 "width": 200,
                 "height": 170
             },
@@ -321,6 +321,21 @@
     ],
     "ActionList": [
         {
+            "name": "Dec_repair_crew",
+            "desc": "",
+            "actType": "atCngVarVal",
+            "mainItem": true,
+            "mutExcl": true,
+            "newStates": [],
+            "scriptCode": "return (Int_crew - 1);",
+            "variableName": "Int_crew",
+            "codeVariables": [
+                "Int_crew"
+            ],
+            "id": "46d763d7-6b5d-4e1b-a7dc-011d0e7573b1",
+            "objType": "Action"
+        },
+        {
             "name": "Goto_C1_Failed",
             "desc": "",
             "actType": "atTransition",
@@ -344,7 +359,7 @@
             "mutExcl": true,
             "newStates": [
                 {
-                    "toState": "C1_Repair ",
+                    "toState": "C1_Repair",
                     "prob": -1,
                     "failDesc": ""
                 }
@@ -513,31 +528,16 @@
             "objType": "Action"
         },
         {
-            "name": "set_repair_crew_false",
+            "name": "Inc_repair_crew",
             "desc": "",
             "actType": "atCngVarVal",
-            "mainItem": false,
+            "mainItem": true,
             "mutExcl": true,
             "newStates": [],
-            "scriptCode": "return false;",
-            "variableName": "repair_crew_available",
+            "scriptCode": "return (Int_crew + 1);",
+            "variableName": "Int_crew",
             "codeVariables": [
-                "repair_crew_available"
-            ],
-            "id": "46d763d7-6b5d-4e1b-a7dc-011d0e7573b1",
-            "objType": "Action"
-        },
-        {
-            "name": "set_repair_crew_to _true",
-            "desc": "",
-            "actType": "atCngVarVal",
-            "mainItem": false,
-            "mutExcl": true,
-            "newStates": [],
-            "scriptCode": "return true;",
-            "variableName": "repair_crew_available",
-            "codeVariables": [
-                "repair_crew_available"
+                "Int_crew"
             ],
             "id": "8441f04d-029f-4863-b739-674d92abf513",
             "objType": "Action"
@@ -584,20 +584,6 @@
             "lambdaTimeRate": "P1D",
             "useVariable": false,
             "id": "cd5f4b10-9ed8-41b5-98c2-435dfb619bab",
-            "objType": "Event"
-        },
-        {
-            "name": "C2_Failed",
-            "desc": "",
-            "mainItem": false,
-            "evType": "etVarCond",
-            "allItems": true,
-            "triggerStates": [],
-            "varNames": [
-                "repair_crew_available"
-            ],
-            "code": "return repair_crew_available;",
-            "id": "914a536c-55e7-46f9-a0da-ac4b576d5605",
             "objType": "Event"
         },
         {
@@ -658,18 +644,17 @@
             "objType": "Event"
         },
         {
+            "id": "33ccf2c5-fe51-4597-9003-64aa64264980",
             "name": "Repair Crew Available",
             "desc": "",
-            "mainItem": false,
             "evType": "etVarCond",
-            "allItems": true,
-            "triggerStates": [],
+            "mainItem": true,
+            "required": false,
+            "objType": "Event",
             "varNames": [
-                "repair_crew_available"
+                "Int_crew"
             ],
-            "code": "return repair_crew_available;",
-            "id": "33ccf2c5-fe51-4597-9003-64aa64264980",
-            "objType": "Event"
+            "code": "return Int_crew > 0;"
         },
         {
             "name": "success",
@@ -729,14 +714,14 @@
             "resetOnRuns": false
         },
         {
-            "name": "repair_crew_available",
-            "desc": "",
+            "name": "Int_crew",
             "varScope": "gtGlobal",
-            "value": true,
-            "resetOnRuns": true,
-            "type": "bool",
+            "value": 2,
+            "type": "int",
+            "objType": "Variable",
             "id": "2ab2c752-bf75-489e-a4ef-e88470eecbb7",
-            "objType": "Variable"
+            "desc": "",
+            "resetOnRuns": true
         },
         {
             "name": "Unavail_PerHour",
