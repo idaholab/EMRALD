@@ -44,7 +44,7 @@ namespace SysAndRegressionTesting
       //initial options, and optional results to save/test
       JObject optionsJ = SetupJSON(dir, testName, true);
 
-      SimulationEngine.Options options = optionsJ.ToObject<SimulationEngine.Options>();
+      SimulationEngine.Options_cur options = optionsJ.ToObject<SimulationEngine.Options_cur>();
       //Change the default settings as needed for the test seed default set to 0 for testing.
       options.inpfile = MainTestDir() + ModelFolder() + testName + ".json";
       options.runct = 1;
@@ -71,7 +71,7 @@ namespace SysAndRegressionTesting
       //initial options, and optional results to save/test
       JObject optionsJ = SetupJSON(dir, testName, true);
 
-      SimulationEngine.Options options = optionsJ.ToObject<SimulationEngine.Options>();
+      SimulationEngine.Options_cur options = optionsJ.ToObject<SimulationEngine.Options_cur>();
       //Change the default settings as needed for the test seed default set to 0 for testing.
       options.inpfile = MainTestDir() + ModelFolder() + testName + ".json";
       options.runct = 100;
@@ -99,7 +99,7 @@ namespace SysAndRegressionTesting
       //initial options, and optional results to save/test
       JObject optionsJ = SetupJSON(dir, testName, true);
 
-      SimulationEngine.Options options = optionsJ.ToObject<SimulationEngine.Options>();
+      SimulationEngine.Options_cur options = optionsJ.ToObject<SimulationEngine.Options_cur>();
       //Change the default settings as needed for the test seed default set to 0 for testing.
       options.inpfile = MainTestDir() + ModelFolder() + testName + ".json";
       options.runct = 1;
