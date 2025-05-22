@@ -750,7 +750,7 @@ namespace EMRALD_Sim
       // 
       lblSendManualMsg.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
       lblSendManualMsg.AutoSize = true;
-      lblSendManualMsg.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+      lblSendManualMsg.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold);
       lblSendManualMsg.Location = new System.Drawing.Point(271, 1);
       lblSendManualMsg.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
       lblSendManualMsg.Name = "lblSendManualMsg";
@@ -1479,6 +1479,7 @@ namespace EMRALD_Sim
       lbMonitorVars.Name = "lbMonitorVars";
       lbMonitorVars.Size = new System.Drawing.Size(198, 263);
       lbMonitorVars.TabIndex = 1;
+      lbMonitorVars.Leave += lbMonitorVars_Leave;
       // 
       // panel14
       // 
