@@ -1538,5 +1538,21 @@ namespace EMRALD_Sim
     {
       SaveUISettingsToJson();
     }
+    private void btn_DebugOpen_Click(object sender, EventArgs e)
+    {
+      string appDirectory = Application.StartupPath;
+      string filePath = Path.Combine(appDirectory, "debugLog.txt");
+
+      try
+      {
+        // Open the file in the default text viewer
+        Process.Start(new ProcessStartInfo(filePath) { UseShellExecute = true });
+      }
+      catch (Exception ex)
+      {
+        // Handle any errors that may occur
+        MessageBox.Show($"An error occurred while trying to open the file: {ex.Message}");
+      }
+    }
   }
 }
