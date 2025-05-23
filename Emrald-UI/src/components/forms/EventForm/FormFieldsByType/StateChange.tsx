@@ -12,7 +12,7 @@ import {
 } from '@mui/material';
 import { useEventFormContext } from '../EventFormContext';
 import { useDrop } from 'react-dnd';
-import { State } from '../../../../types/State';
+import { State } from '../../../../types/EMRALD_Model';
 import { StyledTableCell, StyledTableRow } from '../../ActionForm/ActionToStateTable';
 import DeleteIcon from '@mui/icons-material/Delete';
 

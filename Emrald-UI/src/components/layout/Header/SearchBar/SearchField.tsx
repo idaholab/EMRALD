@@ -1,10 +1,6 @@
 import { Button, IconButton, InputAdornment, Menu, MenuItem, TextField, useMediaQuery, useTheme } from '@mui/material';
-import { ReactNode, useState } from 'react';
+import { JSX, ReactNode, useState } from 'react';
 import { appData } from '../../../../hooks/useAppData';
-import { Diagram } from '../../../../types/Diagram';
-import { State } from '../../../../types/State';
-import { Action } from '../../../../types/Action';
-import { Event } from '../../../../types/Event';
 import SearchIcon from '@mui/icons-material/Search';
 import {
   allMainItemTypes,
@@ -12,10 +8,7 @@ import {
   GetModelItemsReferencing,
 } from '../../../../utils/ModelReferences';
 import ItemTypeMenuResults from './ItemTypeMenuResults';
-import { EMRALD_Model } from '../../../../types/EMRALD_Model';
-import { ExtSim } from '../../../../types/ExtSim';
-import { CompChildItems, LogicNode } from '../../../../types/LogicNode';
-import { Variable } from '../../../../types/Variable';
+import { EMRALD_Model, Diagram, State, Action, Event, ExtSim, CompChildItems, LogicNode, Variable, MainItemType } from '../../../../types/EMRALD_Model';
 import { useWindowContext } from '../../../../contexts/WindowContext';
 import EventFormContextProvider from '../../../forms/EventForm/EventFormContext';
 import EventForm from '../../../forms/EventForm/EventForm';
@@ -27,7 +20,6 @@ import ExtSimForm from '../../../forms/ExtSimForm/ExtSimForm';
 import LogicNodeForm from '../../../forms/LogicNodeForm/LogicNodeForm';
 import VariableFormContextProvider from '../../../forms/VariableForm/VariableFormContext';
 import VariableForm from '../../../forms/VariableForm/VariableForm';
-import { MainItemTypes } from '../../../../types/ItemTypes';
 import EmraldDiagram from '../../../diagrams/EmraldDiagram/EmraldDiagram';
 import { useDiagramContext } from '../../../../contexts/DiagramContext';
 import LogicNodeTreeDiagram from '../../../diagrams/LogicTreeDiagram/LogicTreeDiagram';
@@ -128,11 +120,11 @@ const SearchField = () => {
       let tempModel: EMRALD_Model;
       try {
         if (buttonDirection === 'Used By') {
-          tempModel = GetModelItemsReferencing(item.name, item.objType as MainItemTypes, 1);
+          tempModel = GetModelItemsReferencing(item.name, item.objType as MainItemType, 1);
         } else {
           tempModel = GetModelItemsReferencedBy(
             item.name,
-            item.objType as MainItemTypes,
+            item.objType as MainItemType,
             1,
             allMainItemTypes,
             false,
@@ -220,7 +212,7 @@ const SearchField = () => {
   };
   const goToEditProperties = () => {
     const componentMap: Record<
-      MainItemTypes,
+      MainItemType,
       (data: Diagram | State | Action | Event | ExtSim | LogicNode | Variable) => JSX.Element
     > = {
       Diagram: (data) => <DiagramForm diagramData={data as Diagram} />,
@@ -256,10 +248,7 @@ const SearchField = () => {
   };
   const goToDiagramStateorLogictree = () => {
     let name = selectedItem?.name || '';
-    const componentMap: Record<
-      MainItemTypes.LogicNode | MainItemTypes.Diagram | MainItemTypes.State,
-      (data: Diagram | State | LogicNode) => JSX.Element
-    > = {
+    const componentMap: Record<Extract<MainItemType, 'LogicNode' | 'Diagram' | 'State'>, (data: Diagram | State | LogicNode) => JSX.Element> = {
       Diagram: (data): JSX.Element => <EmraldDiagram diagram={data as Diagram} />,
       State: (data) => {
         const d = data as State;
@@ -297,7 +286,7 @@ const SearchField = () => {
     }
   };
   const findParentNode = (logicNode: LogicNode): LogicNode => {
-    let tempModel = GetModelItemsReferencing(logicNode.name, MainItemTypes.LogicNode, 1);
+    let tempModel = GetModelItemsReferencing(logicNode.name, 'LogicNode', 1);
     let nodes = tempModel.LogicNodeList;
     if (nodes.length === 0) return emptyLogicNode;
     for (let i = 0; i < nodes.length; i++) {

@@ -1,5 +1,5 @@
 import { TbLogicAnd, TbLogicOr, TbLogicNot } from "react-icons/tb";
-import { GateType } from "../../../../types/ItemTypes";
+import { GateType } from "../../../../types/EMRALD_Model";
 
 const GateTypeIcon = ({ type, className }: { type: GateType, className?: string }) => {
   switch (type) {

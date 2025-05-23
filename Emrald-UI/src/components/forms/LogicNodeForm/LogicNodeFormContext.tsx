@@ -2,12 +2,10 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import { useWindowContext } from '../../../contexts/WindowContext';
 import { emptyLogicNode, useLogicNodeContext } from '../../../contexts/LogicNodeContext';
 import { useSignal } from '@preact/signals-react';
-import { CompChild, CompChildItems, LogicNode } from '../../../types/LogicNode';
-import { GateType, MainItemTypes, StateEvalValue } from '../../../types/ItemTypes';
+import { CompChild, CompChildItems, LogicNode, Diagram, GateType, StateEvalValue } from '../../../types/EMRALD_Model';
 import { v4 as uuidv4 } from 'uuid';
 import { ComponentStateValue } from './StateValuesTable';
 import { useDiagramContext } from '../../../contexts/DiagramContext';
-import { Diagram } from '../../../types/Diagram';
 import { GetModelItemsReferencing } from '../../../utils/ModelReferences';
 
 interface LogicNodeFormContextType {
@@ -160,7 +158,7 @@ const LogicNodeFormContextProvider: React.FC<{ children: React.ReactNode }> = ({
   const availableAsTopOrSubtree = () => {
     const currentReferences = GetModelItemsReferencing(
       logicNode.value.name,
-      MainItemTypes.LogicNode,
+      'LogicNode',
       1,
     );
     if (currentReferences.LogicNodeList.length >= 1) {
@@ -215,7 +213,6 @@ const LogicNodeFormContextProvider: React.FC<{ children: React.ReactNode }> = ({
         name: name.trim(),
         desc,
         gateType: gateTypeValue || 'gtAnd',
-        rootName: isRoot ? name.trim() : parentNode?.rootName
       }),
       compChildren: compChildren.value,
     };

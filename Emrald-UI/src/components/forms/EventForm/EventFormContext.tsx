@@ -1,16 +1,18 @@
 import { createContext, PropsWithChildren, useContext, useState } from 'react';
-import { Event, EventDistributionParameter } from '../../../types/Event';
-import { useWindowContext } from '../../../contexts/WindowContext';
-import { emptyEvent, useEventContext } from '../../../contexts/EventContext';
-import { useSignal } from '@preact/signals-react';
 import {
+  Event,
+  EventDistributionParameter,
+  State,
   DistributionType,
   EventDistributionParameterName,
   EventType,
   ExtEventMsgType,
   TimeVariableUnit,
   VarChangeOptions,
-} from '../../../types/ItemTypes';
+} from '../../../types/EMRALD_Model';
+import { useWindowContext } from '../../../contexts/WindowContext';
+import { emptyEvent, useEventContext } from '../../../contexts/EventContext';
+import { useSignal } from '@preact/signals-react';
 import {
   ComponentLogic,
   Distribution,
@@ -21,7 +23,6 @@ import {
   VarCondition,
 } from './FormFieldsByType';
 import { v4 as uuidv4 } from 'uuid';
-import { State } from '../../../types/State';
 import dayjs from 'dayjs';
 import { appData } from '../../../hooks/useAppData';
 import { convertToISOString } from '../../../utils/util-functions';

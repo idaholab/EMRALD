@@ -5,12 +5,10 @@ import { useDrop } from 'react-dnd';
 import useLogicNodeTreeDiagram, {
   NodeType,
 } from '../diagrams/LogicTreeDiagram/useLogicTreeDiagram';
-import { LogicNode } from '../../types/LogicNode';
-import { Diagram } from '../../types/Diagram';
+import { LogicNode, Diagram, GateType } from '../../types/EMRALD_Model';
 import { emptyLogicNode, useLogicNodeContext } from '../../contexts/LogicNodeContext';
 import { useSignal } from '@preact/signals-react';
 import { v4 as uuidv4 } from 'uuid';
-import { GateType } from '../../types/ItemTypes';
 
 interface LogicNodeDroppableItemProps {
   type: ('Gate' | 'Diagram' | 'LogicNode')[];
@@ -90,7 +88,6 @@ const LogicTreeNodeDropTarget: React.FC<PropsWithChildren<LogicNodeDroppableItem
           id: uuidv4(),
           name: `Gate ${newGateNumber}`,
           gateType: gateType as GateType,
-          rootName: logicNode.rootName
         });
         logicNode.gateChildren = [...logicNode.gateChildren, `${`Gate ${newGateNumber}`}`]; // Add the new gate node's name to the gateChildren of the parent logic node
         await updateLogicNode(logicNode); // Update the dropped node with the new gateChildren

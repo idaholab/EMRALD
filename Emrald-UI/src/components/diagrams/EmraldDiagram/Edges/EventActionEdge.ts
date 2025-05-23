@@ -1,5 +1,5 @@
 import { Edge, Node, MarkerType, addEdge } from 'reactflow';
-import { Action } from '../../../../types/Action';
+import { Action } from '../../../../types/EMRALD_Model';
 import { v4 as uuidv4 } from 'uuid';
 
 interface EventAction {

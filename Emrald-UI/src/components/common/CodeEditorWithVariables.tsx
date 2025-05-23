@@ -2,7 +2,7 @@ import React from 'react';
 import { Editor } from '@monaco-editor/react';
 import { Box, Typography } from '@mui/material';
 import CodeVariables from './CodeVariables';
-import { Variable } from '../../types/Variable';
+import { Variable } from '../../types/EMRALD_Model';
 
 interface CodeEditorWithVariablesProps {
   scriptCode?: string;

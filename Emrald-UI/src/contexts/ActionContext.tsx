@@ -1,13 +1,9 @@
 import React, { createContext, useContext, useState } from 'react';
-import { Action, NewState } from '../types/Action';
 import { EmraldContextWrapperProps } from './EmraldContextWrapper';
 import { appData, updateAppData } from '../hooks/useAppData';
 import { effect, ReadonlySignal, useComputed } from '@preact/signals-react';
-import { EMRALD_Model } from '../types/EMRALD_Model';
-import { MainItemTypes } from '../types/ItemTypes';
+import { EMRALD_Model, Action, NewState, State, Event } from '../types/EMRALD_Model';
 import { DeleteItemAndRefs, updateModelAndReferences } from '../utils/UpdateModel';
-import { State } from '../types/State';
-import { Event } from '../types/Event';
 
 interface ActionContextType {
   actions: Action[];
@@ -29,7 +25,7 @@ export const emptyAction: Action = {
   desc: '',
   actType: 'atTransition',
   mainItem: false,
-  objType: MainItemTypes.Action,
+  objType: 'Action',
   required: false,
 };
 
@@ -65,17 +61,17 @@ const ActionContextProvider: React.FC<EmraldContextWrapperProps> = ({ children }
   const createAction = async (newAction: Action, event?: Event, state?: State) => {
     var updatedModel: EMRALD_Model = await updateModelAndReferences(
       newAction,
-      MainItemTypes.Action,
+      'Action',
     );
     updateAppData(updatedModel);
     if (event && state) {
       const eventIndex = state.events.indexOf(event.name);
       state.eventActions[eventIndex].actions.push(newAction.name);
-      var updatedModel: EMRALD_Model = await updateModelAndReferences(state, MainItemTypes.State);
+      var updatedModel: EMRALD_Model = await updateModelAndReferences(state, 'State');
       updateAppData(updatedModel);
     } else if (state) {
       state.immediateActions.push(newAction.name);
-      var updatedModel: EMRALD_Model = await updateModelAndReferences(state, MainItemTypes.State);
+      var updatedModel: EMRALD_Model = await updateModelAndReferences(state, 'State');
       updateAppData(updatedModel);
     }
   };
@@ -87,7 +83,7 @@ const ActionContextProvider: React.FC<EmraldContextWrapperProps> = ({ children }
 
     var updatedModel: EMRALD_Model = await updateModelAndReferences(
       updatedAction,
-      MainItemTypes.Action,
+      'Action',
     );
     updateAppData(JSON.parse(JSON.stringify(updatedModel)));
   };

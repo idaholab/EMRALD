@@ -20,7 +20,7 @@ import {
 } from '@mui/material';
 import { StyledTableCell, StyledTableRow } from '../../ActionForm/ActionToStateTable';
 import { useVariableFormContext } from '../VariableFormContext';
-import { AccrualVarTableType } from '../../../../types/ItemTypes';
+import { AccrualVarTableType } from '../../../../types/EMRALD_Model';
 import { ChangeEvent, useEffect, useState } from 'react';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';

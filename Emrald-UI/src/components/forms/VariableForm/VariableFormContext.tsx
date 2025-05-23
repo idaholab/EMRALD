@@ -3,8 +3,7 @@ import { useWindowContext } from '../../../contexts/WindowContext';
 import { v4 as uuidv4 } from 'uuid';
 import { emptyVariable, useVariableContext } from '../../../contexts/VariableContext';
 
-import { Variable } from '../../../types/Variable';
-import { AccrualVarTableType, DocVarType, VariableType, VarScope } from '../../../types/ItemTypes';
+import { Variable, AccrualVarTableType, DocVarType, VariableType, VarScope } from '../../../types/EMRALD_Model';
 import { SelectChangeEvent } from '@mui/material';
 import { useSignal } from '@preact/signals-react';
 import { appData } from '../../../hooks/useAppData';

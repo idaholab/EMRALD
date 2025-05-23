@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useNodesState, useEdgesState, Edge, Node, Position, ReactFlowInstance } from 'reactflow';
 import { useLogicNodeContext } from '../../../contexts/LogicNodeContext';
-import { CompChildItems, LogicNode } from '../../../types/LogicNode';
+import { CompChildItems, LogicNode } from '../../../types/EMRALD_Model';
 import { v4 as uuidv4 } from 'uuid';
 import dagre from '@dagrejs/dagre';
 import EmraldDiagram from '../EmraldDiagram/EmraldDiagram';
@@ -9,7 +9,6 @@ import { useWindowContext } from '../../../contexts/WindowContext';
 import { useDiagramContext } from '../../../contexts/DiagramContext';
 import { Option } from '../../layout/ContextMenu/ContextMenu';
 import LogicNodeForm from '../../forms/LogicNodeForm/LogicNodeForm';
-import { MainItemTypes } from '../../../types/ItemTypes';
 import { GetModelItemsReferencing } from '../../../utils/ModelReferences';
 import LogicNodeFormContextProvider from '../../forms/LogicNodeForm/LogicNodeFormContext';
 
@@ -307,7 +306,7 @@ const useLogicNodeTreeDiagram = () => {
     if (nodeInQuestion.isRoot && nodeInQuestion !== rootNode) {
       return false;
     }
-    const currentReferences = GetModelItemsReferencing(nodeName, MainItemTypes.LogicNode, 1);
+    const currentReferences = GetModelItemsReferencing(nodeName, 'LogicNode', 1);
     return currentReferences.LogicNodeList.length > 1 ? false : true;
   };
 
@@ -476,7 +475,6 @@ const useLogicNodeTreeDiagram = () => {
           ...(type === 'new' && {
             id: uuidv4(),
             name: `Copy of ${pastedObject.name} (${newGateNumber})`,
-            rootName: node?.rootName ?? '',
           }),
         };
 

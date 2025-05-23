@@ -6,7 +6,7 @@ import {
 } from 'react-icons/pi';
 import { HiOutlineVariable } from 'react-icons/hi';
 import { FaCog } from 'react-icons/fa';
-import { ActionType } from '../../../../types/ItemTypes';
+import { ActionType } from '../../../../types/EMRALD_Model';
 
 const ActionTypeIcon = ({ type }: { type: ActionType }) => {
   switch (type) {

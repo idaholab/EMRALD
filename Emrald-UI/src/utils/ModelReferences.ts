@@ -1,18 +1,9 @@
-﻿import { MainItemType, MainItemTypes } from '../types/ItemTypes.ts';
-import jsonpath from 'jsonpath';
+﻿import jsonpath from 'jsonpath';
 import { appData } from '../hooks/useAppData';
-import { EMRALD_Model, CreateEmptyEMRALDModel} from '../types/EMRALD_Model.ts';
-import { Diagram } from '../types/Diagram.ts';
-import { State } from '../types/State.ts';
-import { Action } from '../types/Action.ts';
-import { Event } from '../types/Event.ts';
-import { Variable } from '../types/Variable.ts';
-import { LogicNode } from '../types/LogicNode.ts';
-import { ExtSim } from '../types/ExtSim.ts';
-import { forEach } from 'lodash';
+import { EMRALD_Model, MainItemType, Diagram, State, Action, Event, Variable, LogicNode, ExtSim } from '../types/EMRALD_Model';
+import { CreateEmptyEMRALDModel } from '../types/ModelUtils';
 
-
-export type ItemReferencesArray = Array<[string, MainItemTypes, string[] | null]>;
+export type ItemReferencesArray = Array<[string, MainItemType, string[] | null]>;
 // Items referenced by the specified item [JsonPath, ItemType, Linked array if any]
     //First item in array is the JsonPath
     //Second item in array is the types returned and used for early stop of recursive search.
@@ -31,57 +22,57 @@ export type ItemReferencesArray = Array<[string, MainItemTypes, string[] | null]
 
 //Diagrams (items using specified diagram)
 const RefsToDiagramItem: ItemReferencesArray = [
-  ["$.DiagramList[?(@.name == 'nameRef')].name", MainItemTypes.Diagram, null],
-  ["$.StateList[?(@.diagramName == 'nameRef')].diagramName", MainItemTypes.State, null],
-  ["$.LogicNodeList[*].compChildren[?(@.diagramName == 'nameRef')].diagramName", MainItemTypes.LogicNode, ["^"]]
+  ["$.DiagramList[?(@.name == 'nameRef')].name", 'Diagram', null],
+  ["$.StateList[?(@.diagramName == 'nameRef')].diagramName", 'State', null],
+  ["$.LogicNodeList[*].compChildren[?(@.diagramName == 'nameRef')].diagramName", 'LogicNode', ["^"]]
 ];
 
 //States (items using specified state)
 const RefsToStateItem: ItemReferencesArray = [
-  ["$.StateList[?(@.name == 'nameRef')].name", MainItemTypes.State, null],
-  ["$.DiagramList[*].states[?(@ == 'nameRef')]", MainItemTypes.Diagram, null],
-  ["$.ActionList[*].newStates[?(@.toState == 'nameRef')].toState", MainItemTypes.Action, null],
-  ["$.EventList[*].triggerStates[?(@ == 'nameRef')]", MainItemTypes.Event, null],
-  ["$.LogicNodeList[*].compChildren[*].stateValues[?(@.stateName == 'nameRef')].stateName", MainItemTypes.LogicNode, null],
-  ["$.VariableList[*].accrualStatesData[?(@.stateName == 'nameRef')]", MainItemTypes.Variable, null]
+  ["$.StateList[?(@.name == 'nameRef')].name", 'State', null],
+  ["$.DiagramList[*].states[?(@ == 'nameRef')]", 'Diagram', null],
+  ["$.ActionList[*].newStates[?(@.toState == 'nameRef')].toState", 'Action', null],
+  ["$.EventList[*].triggerStates[?(@ == 'nameRef')]", 'Event', null],
+  ["$.LogicNodeList[*].compChildren[*].stateValues[?(@.stateName == 'nameRef')].stateName", 'LogicNode', null],
+  ["$.VariableList[*].accrualStatesData[?(@.stateName == 'nameRef')]", 'Variable', null]
 ];
 
 //Events (items using specified event)
 const RefsToEventItem: ItemReferencesArray = [
-  ["$.EventList[?(@.name == 'nameRef')].name", MainItemTypes.Event, null],
-  ["$.StateList[*].events[?(@ == 'nameRef')]", MainItemTypes.State, null]
+  ["$.EventList[?(@.name == 'nameRef')].name", 'Event', null],
+  ["$.StateList[*].events[?(@ == 'nameRef')]", 'State', null]
 ];
 
 //Actions (items using specified action)
 const RefsToActionItem: ItemReferencesArray = [
-  ["$.ActionList[?(@.name == 'nameRef')].name", MainItemTypes.Action, null],
-  ["$.StateList[*].immediateActions[?(@ == 'nameRef')]", MainItemTypes.State, null],
-  ["$.StateList[*].eventActions[*].actions[?(@ == 'nameRef')]", MainItemTypes.State, null]
+  ["$.ActionList[?(@.name == 'nameRef')].name", 'Action', null],
+  ["$.StateList[*].immediateActions[?(@ == 'nameRef')]", 'State', null],
+  ["$.StateList[*].eventActions[*].actions[?(@ == 'nameRef')]", 'State', null]
 ];
 
 //Variables (items using specified variable)
 const RefsToVariableItem: ItemReferencesArray = [
-  ["$.VariableList[?(@.name == 'nameRef')].name", MainItemTypes.Variable, null],
-  ["$.ActionList[*].newStates[?(@.varProb == 'nameRef')].varProb", MainItemTypes.Action, null],
-  ["$.ActionList[?(@.variableName == 'nameRef')].variableName", MainItemTypes.Action, null],
-  ["$.ActionList[*].codeVariables[?(@ == 'nameRef')]", MainItemTypes.Action, null],
-  ["$.EventList[*].varNames[?(@ == 'nameRef')]", MainItemTypes.Event, null],
-  ["$.EventList[?(@.variable == 'nameRef')].variable", MainItemTypes.Event, null],
-  ["$.EventList[*].parameters[?(@.variable == 'nameRef')].variable", MainItemTypes.Event, null]
+  ["$.VariableList[?(@.name == 'nameRef')].name", 'Variable', null],
+  ["$.ActionList[*].newStates[?(@.varProb == 'nameRef')].varProb", 'Action', null],
+  ["$.ActionList[?(@.variableName == 'nameRef')].variableName", 'Action', null],
+  ["$.ActionList[*].codeVariables[?(@ == 'nameRef')]", 'Action', null],
+  ["$.EventList[*].varNames[?(@ == 'nameRef')]", 'Event', null],
+  ["$.EventList[?(@.variable == 'nameRef')].variable", 'Event', null],
+  ["$.EventList[*].parameters[?(@.variable == 'nameRef')].variable", 'Event', null]
 ];
 
 //ExtSim (items using specified ExtSim)
 const RefsToExtSimItem: ItemReferencesArray = [
-  ["$.ExtSimList[?(@.name == 'nameRef')].name", MainItemTypes.ExtSim, null],
-  ["$.ActionList[?(@.extSim == 'nameRef')].name", MainItemTypes.Action, null]
+  ["$.ExtSimList[?(@.name == 'nameRef')].name", 'ExtSim', null],
+  ["$.ActionList[?(@.extSim == 'nameRef')].name", 'Action', null]
 ];
 
 //LogicNodes (items using specified LogicNode)
 const RefsToLogicNodeItem: ItemReferencesArray = [
-  ["$.LogicNodeList[?(@.name == 'nameRef')].name", MainItemTypes.LogicNode, null],
-  ["$.EventList[?(@.logicTop == 'nameRef')].logicTop", MainItemTypes.Event, null],
-  ["$.LogicNodeList[*].gateChildren[?(@ == 'nameRef')]", MainItemTypes.LogicNode, null],
-  ["$.LogicNodeList[?(@.rootName == 'nameRef')].rootName", MainItemTypes.LogicNode, null]
+  ["$.LogicNodeList[?(@.name == 'nameRef')].name", 'LogicNode', null],
+  ["$.EventList[?(@.logicTop == 'nameRef')].logicTop", 'Event', null],
+  ["$.LogicNodeList[*].gateChildren[?(@ == 'nameRef')]", 'LogicNode', null],
+  ["$.LogicNodeList[?(@.rootName == 'nameRef')].rootName", 'LogicNode', null]
 ];
 
 
@@ -92,38 +83,38 @@ const RefsToLogicNodeItem: ItemReferencesArray = [
 
 //Diagrams (items the specified diagram uses)
 const InDiagramRefs: ItemReferencesArray = [
-  ["$.DiagramList[?(@.name == 'nameRef')].states", MainItemTypes.State, null],
+  ["$.DiagramList[?(@.name == 'nameRef')].states", 'State', null],
 ];
 
 //States (items the specified state uses)
 const InStateRefs: ItemReferencesArray = [
-  ["$.StateList[?(@.name == 'nameRef')].diagramName", MainItemTypes.Diagram, null],
-  ["$.StateList[?(@.name == 'nameRef')].events", MainItemTypes.Event, [".", "eventActions"]],
-  ["$.StateList[?(@.name == 'nameRef')].immediateActions", MainItemTypes.Action, null],
-  ["$.StateList[?(@.name == 'nameRef')].eventActions[*].actions", MainItemTypes.Action, null],
+  ["$.StateList[?(@.name == 'nameRef')].diagramName", 'Diagram', null],
+  ["$.StateList[?(@.name == 'nameRef')].events", 'Event', [".", "eventActions"]],
+  ["$.StateList[?(@.name == 'nameRef')].immediateActions", 'Action', null],
+  ["$.StateList[?(@.name == 'nameRef')].eventActions[*].actions", 'Action', null],
 ];
 
 //Events (items the specified event uses)
 const InEventRefs: ItemReferencesArray = [
-  ["$.EventList[?(@.name == 'nameRef')].triggerStates", MainItemTypes.State, null],
-  ["$.EventList[?(@.name == 'nameRef')].varNames", MainItemTypes.Variable, null],
-  ["$.EventList[?(@.name == 'nameRef')].logicTop", MainItemTypes.LogicNode, null],
-  ["$.EventList[?(@.name == 'nameRef')].triggerStates", MainItemTypes.State, null],
-  ["$.EventList[?(@.name == 'nameRef')].variable", MainItemTypes.Variable, null],
-  ["$.EventList[?(@.name == 'nameRef')].parameters[*].variable", MainItemTypes.Variable, null],
+  ["$.EventList[?(@.name == 'nameRef')].triggerStates", 'State', null],
+  ["$.EventList[?(@.name == 'nameRef')].varNames", 'Variable', null],
+  ["$.EventList[?(@.name == 'nameRef')].logicTop", 'LogicNode', null],
+  ["$.EventList[?(@.name == 'nameRef')].triggerStates", 'State', null],
+  ["$.EventList[?(@.name == 'nameRef')].variable", 'Variable', null],
+  ["$.EventList[?(@.name == 'nameRef')].parameters[*].variable", 'Variable', null],
 ];
 
 //Actions (items the specified action uses)
 const InActionRefs: ItemReferencesArray = [
-  ["$.ActionList[?(@.name == 'nameRef')].newStates.toState", MainItemTypes.State, null],
-  ["$.ActionList[?(@.name == 'nameRef')].variableName", MainItemTypes.Variable, null],
-  ["$.ActionList[?(@.name == 'nameRef')].codeVariables", MainItemTypes.Variable, null],
-  ["$.ActionList[?(@.name == 'nameRef')].extSim", MainItemTypes.ExtSim, null],
+  ["$.ActionList[?(@.name == 'nameRef')].newStates.toState", 'State', null],
+  ["$.ActionList[?(@.name == 'nameRef')].variableName", 'Variable', null],
+  ["$.ActionList[?(@.name == 'nameRef')].codeVariables", 'Variable', null],
+  ["$.ActionList[?(@.name == 'nameRef')].extSim", 'ExtSim', null],
 ];
 
 //Variables (items the specified variable uses)
 const InVariableRefs: ItemReferencesArray = [
-  ["$.VariableList[?(@.name == 'nameRef')].accrualStatesData[*].stateName", MainItemTypes.State, null]
+  ["$.VariableList[?(@.name == 'nameRef')].accrualStatesData[*].stateName", 'State', null]
 ];
 
 //ExtSim (items the specified extSim uses)
@@ -132,45 +123,45 @@ const InExtSimRefs: ItemReferencesArray = [
 
 //LogicNodes (items the specified logicNode uses)
 const InLogicNodeRefs: ItemReferencesArray = [
-  ["$.LogicNodeList[?(@.name == 'nameRef')].compChildren[*].diagramName", MainItemTypes.Diagram, null],
-  ["$.LogicNodeList[?(@.name == 'nameRef')].compChildren[*].stateValues[*].stateName", MainItemTypes.State, null],
-  ["$.LogicNodeList[?(@.name == 'nameRef')].gateChildren", MainItemTypes.LogicNode, null],
+  ["$.LogicNodeList[?(@.name == 'nameRef')].compChildren[*].diagramName", 'Diagram', null],
+  ["$.LogicNodeList[?(@.name == 'nameRef')].compChildren[*].stateValues[*].stateName", 'State', null],
+  ["$.LogicNodeList[?(@.name == 'nameRef')].gateChildren", 'LogicNode', null],
 ];
 
 export type MainItemTypeSet = Set<MainItemType>;
 export const allMainItemTypes: MainItemTypeSet = new Set<MainItemType>([
-  MainItemTypes.Diagram,
-  MainItemTypes.State,
-  MainItemTypes.Action,
-  MainItemTypes.Event,
-  MainItemTypes.ExtSim,
-  MainItemTypes.LogicNode,
-  MainItemTypes.Variable,
-  MainItemTypes.EMRALD_Model
+  'Diagram',
+  'State',
+  'Action',
+  'Event',
+  'ExtSim',
+  'LogicNode',
+  'Variable',
+  'EMRALD_Model'
 ]);
 
-export const GetJSONPathUsingRefs = (itemType: MainItemTypes, lookupName : string): ItemReferencesArray => {
+export const GetJSONPathUsingRefs = (itemType: MainItemType, lookupName : string): ItemReferencesArray => {
   var retArray : ItemReferencesArray;
   switch (itemType) {
-    case MainItemTypes.Diagram:
+    case 'Diagram':
       retArray = RefsToDiagramItem;
       break;
-    case MainItemTypes.State:
+    case 'State':
       retArray =  RefsToStateItem;
       break;
-    case MainItemTypes.Action:
+    case 'Action':
       retArray =  RefsToActionItem;
       break;
-    case MainItemTypes.Event:
+    case 'Event':
       retArray =  RefsToEventItem;
       break;
-    case MainItemTypes.ExtSim:
+    case 'ExtSim':
       retArray =  RefsToExtSimItem;
       break;
-    case MainItemTypes.Variable:
+    case 'Variable':
       retArray =  RefsToVariableItem;
       break;
-    case MainItemTypes.LogicNode:
+    case 'LogicNode':
       retArray =  RefsToLogicNodeItem;
       break;
     default:
@@ -184,28 +175,28 @@ export const GetJSONPathUsingRefs = (itemType: MainItemTypes, lookupName : strin
   });  
 };
 
-export const GetJSONPathInRefs = (itemType: MainItemTypes, lookupName : string): ItemReferencesArray => {
+export const GetJSONPathInRefs = (itemType: MainItemType, lookupName : string): ItemReferencesArray => {
   var retArray : ItemReferencesArray;
   switch (itemType) {
-    case MainItemTypes.Diagram:
+    case 'Diagram':
       retArray = InDiagramRefs;
       break;
-    case MainItemTypes.State:
+    case 'State':
       retArray =  InStateRefs;
       break;
-    case MainItemTypes.Action:
+    case 'Action':
       retArray =  InActionRefs;
       break;
-    case MainItemTypes.Event:
+    case 'Event':
       retArray =  InEventRefs;
       break;
-    case MainItemTypes.ExtSim:
+    case 'ExtSim':
       retArray =  InExtSimRefs;
       break;
-    case MainItemTypes.Variable:
+    case 'Variable':
       retArray =  InVariableRefs;
       break;
-    case MainItemTypes.LogicNode:
+    case 'LogicNode':
       retArray =  InLogicNodeRefs;
       break;
     default:
@@ -233,7 +224,7 @@ export const GetJSONPathInRefs = (itemType: MainItemTypes, lookupName : string):
  */
 export const GetModelItemsReferencing = ( 
   itemName : string, //Name of the item to get the references for
-  itemType : MainItemTypes, //This is the type of the item to look for references
+  itemType : MainItemType, //This is the type of the item to look for references
   levelsUp : number, //if <1 then the search is recursive
   addToModel? : EMRALD_Model, //if assigned then items are added to this model.
   includeTypes : MainItemTypeSet = allMainItemTypes, //is a set of items to include in the search
@@ -252,7 +243,7 @@ export const GetModelItemsReferencing = (
   return retRefModel;
 };
 
-type SearchNameTypePairList = Array<[string, MainItemTypes]>;
+type SearchNameTypePairList = Array<[string, MainItemType]>;
 
 
 const GetModelItemsReferencingRecursive = ( 
@@ -272,7 +263,7 @@ const GetModelItemsReferencingRecursive = (
 
   while (currentSearchItems.length > 0) {
     let curItemName : string = currentSearchItems[0][0];
-    let curItemType : MainItemTypes = currentSearchItems[0][1];
+    let curItemType : MainItemType = currentSearchItems[0][1];
     currentSearchItems.shift(); //remove the item from the array
         
       let jsonPathRefArray : ItemReferencesArray = GetJSONPathUsingRefs(curItemType, curItemName);
@@ -294,25 +285,25 @@ const GetModelItemsReferencingRecursive = (
 
               switch(parent.objType)
               {
-                case MainItemTypes.Action:
+                case 'Action':
                   addToModel.ActionList.push(parent);
                   break;
-                case MainItemTypes.Event:
+                case 'Event':
                   addToModel.EventList.push(parent);
                   break;
-                case MainItemTypes.ExtSim:
+                case 'ExtSim':
                   addToModel.ExtSimList.push(parent);
                   break;
-                case MainItemTypes.Variable:
+                case 'Variable':
                   addToModel.VariableList.push(parent);
                   break;
-                case MainItemTypes.LogicNode:
+                case 'LogicNode':
                   addToModel.LogicNodeList.push(parent);
                   break;
-                case MainItemTypes.State:
+                case 'State':
                   addToModel.StateList.push(parent);
                   break;
-                case MainItemTypes.Diagram:
+                case 'Diagram':
                   addToModel.DiagramList.push(parent);
                   break;
                 default:
@@ -359,7 +350,7 @@ export const AdjustJsonPathRef = (
 
 export const GetItemByNameType = (
   itemName : string, 
-  itemType : MainItemTypes,
+  itemType : MainItemType,
   searchModel? : EMRALD_Model, //if not assigned appData.value is used
   ) : Diagram | State | Action | Event | ExtSim | Variable | LogicNode | undefined => {
 
@@ -370,25 +361,25 @@ export const GetItemByNameType = (
 
     switch(itemType)
     {
-      case MainItemTypes.Action:
+      case 'Action':
         retItem = searchModel.ActionList.find(item => item.name === itemName);
         break;
-      case MainItemTypes.Event:
+      case 'Event':
         retItem = searchModel.EventList.find(item => item.name === itemName);
         break;
-      case MainItemTypes.ExtSim:
+      case 'ExtSim':
         retItem = searchModel.ExtSimList.find(item => item.name === itemName);
         break;
-      case MainItemTypes.Variable:
+      case 'Variable':
         retItem = searchModel.VariableList.find(item => item.name === itemName);
         break;
-      case MainItemTypes.LogicNode:
+      case 'LogicNode':
         retItem = searchModel.LogicNodeList.find(item => item.name === itemName);
         break;
-      case MainItemTypes.State:
+      case 'State':
         retItem = searchModel.StateList.find(item => item.name === itemName);
         break;
-      case MainItemTypes.Diagram:
+      case 'Diagram':
         retItem = searchModel.DiagramList.find(item => item.name === itemName);
         break;
       default:
@@ -401,29 +392,29 @@ export const GetItemByNameType = (
 
 const AddItemToModel = (
   itemObj : Diagram | State | Action | Event | ExtSim | Variable | LogicNode, 
-  itemType : MainItemTypes,
+  itemType : MainItemType,
   model : EMRALD_Model) => {
     switch(itemType)
     {
-      case MainItemTypes.Action:
+      case 'Action':
         model.ActionList.push(itemObj as Action);
         break;
-      case MainItemTypes.Event:
+      case 'Event':
         model.EventList.push(itemObj as Event);
         break;
-      case MainItemTypes.ExtSim:
+      case 'ExtSim':
         model.ExtSimList.push(itemObj as ExtSim);
         break;
-      case MainItemTypes.Variable:
+      case 'Variable':
         model.VariableList.push(itemObj as Variable);
         break;
-      case MainItemTypes.LogicNode:
+      case 'LogicNode':
         model.LogicNodeList.push(itemObj as LogicNode);
         break;
-      case MainItemTypes.State:
+      case 'State':
         model.StateList.push(itemObj as State);
         break;
-      case MainItemTypes.Diagram:
+      case 'Diagram':
         model.DiagramList.push(itemObj as Diagram);
         break;
       default:
@@ -445,14 +436,14 @@ const AddItemToModel = (
  */
 export const GetModelItemsReferencedBy = ( 
   itemName : string, //Name of the item looking for references
-  itemType : MainItemTypes, //This is the type of the item to look for references
+  itemType : MainItemType, //This is the type of the item to look for references
   levels : number = 0, //if < 1, will be recursive and give all levels of references. For copy or template use 1 for all items except Diagrams and 2 for Diagrams.
   includeTypes : MainItemTypeSet = allMainItemTypes, //is a set of items to include in the search 
   removeNotIncludedRefs : boolean = true, //if true then references that are not included in the model are removed.
   searchModel : EMRALD_Model = appData.value, //if not assigned appData.value is used
 ) : EMRALD_Model => { //returns a subset model of just the referenced items.
   
-  let refItems : Array<[string, number, MainItemTypes]> = [[itemName, 0, itemType]];
+  let refItems : Array<[string, number, MainItemType]> = [[itemName, 0, itemType]];
   let retRefModel: EMRALD_Model = CreateEmptyEMRALDModel();
   const processed: { [key: string]: boolean; } = { [itemName + '_' + itemType]: true };
   
@@ -460,7 +451,7 @@ export const GetModelItemsReferencedBy = (
   {  
     let curItemName : string = refItems[0][0];
     let curItemLevel : number = refItems[0][1];
-    let curItemType : MainItemTypes = refItems[0][2];
+    let curItemType : MainItemType = refItems[0][2];
     refItems.shift(); //remove the item from the array
     
     let itemObj = GetItemByNameType(curItemName, curItemType);      

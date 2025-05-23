@@ -1,10 +1,10 @@
 import { describe, expect, test } from 'vitest';
 import { upgradeModel } from '../../utils/Upgrades/upgrade';
-import { EMRALD_Model as ModelV3 } from '../../utils/Upgrades/v2_4/AllModelInterfacesV2_4';
+import { EMRALD_Model as ModelV2_4 } from '../../utils/Upgrades/v2_4/AllModelInterfacesV2_4';
+import { EMRALD_Model as ModelV3_0 } from '../../utils/Upgrades/v3_0/AllModelInterfacesV3_0';
 import expected from './upgrade.expected.json';
-import { EMRALD_Model } from '../../types/EMRALD_Model';
 
-function removeIds(model: EMRALD_Model) {
+function removeIds(model: ModelV3_0) {
   for (let i = 0; i < model.ActionList.length; i += 1) {
     delete model.ActionList[i].id;
   }
@@ -190,7 +190,7 @@ describe('Model Upgrade', () => {
 
   test('upgrade v3.0', async () => {
     const name = 'upgrade v3.0';
-    const model: ModelV3 = {
+    const model: ModelV2_4 = {
       version: 2.4,
       name,
       desc: '',
@@ -279,7 +279,7 @@ describe('Model Upgrade', () => {
             gateType: 'gtAnd',
             gateChildren: [],
             compChildren: [],
-            rootName: 'LogicNode1',
+            isRoot: true
           },
         },
       ],

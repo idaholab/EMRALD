@@ -2,18 +2,14 @@ import { findByRole, fireEvent, render, RenderOptions, screen } from '@testing-l
 import 'jest-extended';
 import EmraldContextWrapper from '../contexts/EmraldContextWrapper';
 import React, { act } from 'react';
-import { EMRALD_Model } from '../types/EMRALD_Model';
+import { EMRALD_Model, Variable, State, LogicNode, ExtSim } from '../types/EMRALD_Model';
 import { appData, updateAppData } from '../hooks/useAppData';
 import Sidebar from '../components/layout/Sidebar/Sidebar';
 import userEvent from '@testing-library/user-event';
-import { Variable } from '../types/Variable';
-import { State } from '../types/State';
-import { LogicNode } from '../types/LogicNode';
 import EventContextProvider from '../contexts/EventContext';
 import EventFormContextProvider from '../components/forms/EventForm/EventFormContext';
 import ActionContextProvider from '../contexts/ActionContext';
 import ActionFormContextProvider from '../components/forms/ActionForm/ActionFormContext';
-import { ExtSim } from '../types/ExtSim';
 import VariableContextProvider from '../contexts/VariableContext';
 import VariableFormContextProvider from '../components/forms/VariableForm/VariableFormContext';
 

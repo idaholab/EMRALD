@@ -2,8 +2,7 @@
 import { Box } from '@mui/material';
 import React, { PropsWithChildren } from 'react';
 import { useDrop } from 'react-dnd';
-import { Action } from '../../types/Action';
-import { Event } from '../../types/Event';
+import { Action, Event } from '../../types/EMRALD_Model';
 
 // interface DroppedItem {
 //   id: string;

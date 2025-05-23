@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react';
-import { describe, expect, test, vi } from 'vitest';
+import { describe, expect, test } from 'vitest';
 import App from '../../../../App';
 import userEvent from '@testing-library/user-event';
 import { appData } from '../../../../hooks/useAppData';

@@ -1,7 +1,6 @@
 import type SankeyTimeline from './SankeyTimeline';
 import type TimelineLink from './TimelineLink';
 import { NodeLayout, NodeTimes } from './types';
-import { sum } from './util';
 
 /**
  * Represents a node in the timeline.

@@ -2,8 +2,7 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import { EmraldContextWrapperProps } from './EmraldContextWrapper';
 import { appData, updateAppData } from '../hooks/useAppData';
 import { ReadonlySignal, useComputed, useSignal } from '@preact/signals-react';
-import { EMRALD_Model } from '../types/EMRALD_Model';
-import { Group, MainItemTypes } from '../types/ItemTypes';
+import { EMRALD_Model, Group } from '../types/EMRALD_Model';
 import { updateModelAndReferences } from '../utils/UpdateModel';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -146,7 +145,7 @@ const TemplateContextProvider: React.FC<EmraldContextWrapperProps> = ({ children
     if (!newTemplate) { return; }
     var updatedModel: EMRALD_Model = await updateModelAndReferences(
       newTemplate,
-      MainItemTypes.EMRALD_Model,
+      'EMRALD_Model',
     );
     updateAppData(updatedModel);
   };

@@ -6,15 +6,12 @@ import {
   useEffect,
   useState,
 } from 'react';
-import { Action, NewState } from '../../../types/Action';
+import { Action, NewState, State, Event, ActionType } from '../../../types/EMRALD_Model';
 import { useWindowContext } from '../../../contexts/WindowContext';
 import { emptyAction, useActionContext } from '../../../contexts/ActionContext';
 import { useSignal } from '@preact/signals-react';
-import { ActionType } from '../../../types/ItemTypes';
 import { v4 as uuidv4 } from 'uuid';
 import { SelectChangeEvent } from '@mui/material/Select';
-import { State } from '../../../types/State';
-import { Event } from '../../../types/Event';
 import { useVariableContext } from '../../../contexts/VariableContext';
 import { appData } from '../../../hooks/useAppData';
 

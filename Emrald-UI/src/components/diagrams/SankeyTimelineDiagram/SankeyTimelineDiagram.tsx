@@ -70,7 +70,7 @@ type Link = {
   name: string;
 };
 
-type TimelineOptions = {
+export type TimelineOptions = {
   name: string;
   keyStates: {
     name: string;
@@ -400,7 +400,7 @@ function render(
 const PaperComponent: React.FC<PaperProps> = (props) => {
   const nodeRef = useRef<HTMLDivElement>(null);
   return (
-    <Draggable nodeRef={nodeRef} handle="#node-menu-title">
+    <Draggable nodeRef={nodeRef as unknown as RefObject<HTMLDivElement>} handle="#node-menu-title">
       <Paper {...props} ref={nodeRef}></Paper>
     </Draggable>
   );
@@ -479,7 +479,7 @@ export const SankeyTimelineDiagram: React.FC<SankeyTimelineProps> = ({ data }) =
     select(svgRef.current).selectChildren().remove();
     render(
       data,
-      svgRef,
+      svgRef as unknown as RefObject<SVGSVGElement>,
       {
         layout,
         distributions,

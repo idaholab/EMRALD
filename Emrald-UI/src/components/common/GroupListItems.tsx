@@ -5,7 +5,7 @@ import FolderIcon from '@mui/icons-material/Folder';
 import FolderOpenIcon from '@mui/icons-material/FolderOpen';
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
-import { Group } from '../../types/ItemTypes';
+import { Group } from '../../types/EMRALD_Model';
 
 interface GroupListItemsProps {
 

@@ -13,8 +13,7 @@ import ActionForm from '../../../../../../../../components/forms/ActionForm/Acti
 import userEvent from '@testing-library/user-event';
 import { screen } from '@testing-library/react';
 import expected from './maap.expected.json';
-import { Action } from '../../../../../../../../types/Action';
-import { MAAPFormData } from '../../../../../../../../components/forms/ActionForm/FormFieldsByType/RunApplication/CustomForms/MAAP/maap';
+import { Action, MAAPFormData } from '../../../../../../../../types/EMRALD_Model';
 
 /**
  * Removes the dynamically assigned IDs from form data elements for expected comparison.

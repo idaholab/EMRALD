@@ -2,7 +2,7 @@ import { Handle, Position } from 'reactflow';
 import './StateNode.scss';
 import { NodeTypeIcon } from './IconTypes';
 import StateControllerComponent from './StateDisplayControllers/StateControllerComponent';
-import { State } from '../../../types/State';
+import { State } from '../../../types/EMRALD_Model';
 import Box from '@mui/material/Box';
 import { useState } from 'react';
 import { PiResizeFill } from 'react-icons/pi';

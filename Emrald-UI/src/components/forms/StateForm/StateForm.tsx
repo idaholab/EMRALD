@@ -2,12 +2,11 @@ import { useEffect, useState } from 'react';
 import Typography from '@mui/material/Typography';
 import React from 'react';
 import { useWindowContext } from '../../../contexts/WindowContext';
-import { State } from '../../../types/State';
+import { State, DiagramType, StateEvalValue, StateType } from '../../../types/EMRALD_Model';
 import { v4 as uuidv4 } from 'uuid';
 import MainDetailsForm from '../../forms/MainDetailsForm';
 import { emptyState, useStateContext } from '../../../contexts/StateContext';
 import { useSignal } from '@preact/signals-react';
-import { DiagramType, MainItemTypes, StateEvalValue, StateType } from '../../../types/ItemTypes';
 import { Box, FormControl, FormControlLabel, FormLabel, Radio, RadioGroup } from '@mui/material';
 import { useDiagramContext } from '../../../contexts/DiagramContext';
 import { currentDiagram } from '../../diagrams/EmraldDiagram/EmraldDiagram';
@@ -99,7 +98,7 @@ const StateForm: React.FC<StateFormProps> = ({ stateData }: StateFormProps) => {
       </Typography>
       <form>
         <MainDetailsForm
-          itemType={MainItemTypes.State}
+          itemType={'State'}
           type={stateType}
           setType={setStateType}
           typeOptions={stateTypeOptions}

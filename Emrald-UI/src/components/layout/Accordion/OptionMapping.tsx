@@ -1,11 +1,5 @@
 import { useWindowContext } from '../../../contexts/WindowContext';
-import { Diagram } from '../../../types/Diagram';
-import { Action } from '../../../types/Action';
 import DiagramForm from '../../forms/DiagramForm/DiagramForm';
-import { LogicNode } from '../../../types/LogicNode';
-import { Variable } from '../../../types/Variable';
-import { Event } from '../../../types/Event';
-import { State } from '../../../types/State';
 import ActionForm from '../../forms/ActionForm/ActionForm';
 import EventForm from '../../forms/EventForm/EventForm';
 import VariableForm from '../../forms/VariableForm/VariableForm';
@@ -15,14 +9,13 @@ import LogicNodeTreeDiagram from '../../diagrams/LogicTreeDiagram/LogicTreeDiagr
 import LogicNodeForm from '../../forms/LogicNodeForm/LogicNodeForm';
 import { ReactFlowProvider } from 'reactflow';
 import ActionFormContextProvider from '../../forms/ActionForm/ActionFormContext';
-import { ExtSim } from '../../../types/ExtSim';
 import ExtSimForm from '../../forms/ExtSimForm/ExtSimForm';
 import { GetModelItemsReferencedBy } from '../../../utils/ModelReferences';
-import { MainItemTypes } from '../../../types/ItemTypes';
 import VariableFormContextProvider from '../../forms/VariableForm/VariableFormContext';
 import EventFormContextProvider from '../../forms/EventForm/EventFormContext';
 import TemplateForm from '../../forms/TemplateForm/TemplateForm';
-import { EMRALD_SchemaVersion } from '../../../types/EMRALD_Model';
+import { Diagram, Action, LogicNode, Variable, Event, State, ExtSim, MainItemType } from '../../../types/EMRALD_Model';
+import { EMRALD_SchemaVersion } from '../../../types/ModelUtils';
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useAlertContext } from '../../../contexts/AlertContext';
@@ -65,9 +58,9 @@ export const useOptionsMapping = () => {
         label: 'Delete',
         action: (
           diagram: Diagram,
-          handleDelete: (itemToDelete: Diagram, itemToDeleteType: MainItemTypes) => void,
+          handleDelete: (itemToDelete: Diagram, itemToDeleteType: MainItemType) => void,
         ) => {
-          handleDelete(diagram, MainItemTypes.Diagram);
+          handleDelete(diagram, 'Diagram');
         },
       },
       {
@@ -75,7 +68,7 @@ export const useOptionsMapping = () => {
         action: (diagram: Diagram) => {
           try {
             const copiedModel = structuredClone(
-              GetModelItemsReferencedBy(diagram.name, MainItemTypes.Diagram, 3),
+              GetModelItemsReferencedBy(diagram.name, 'Diagram', 3),
             );
             addWindow(`Create Template`, <TemplateForm templatedData={copiedModel} />, {
               x: 75,
@@ -93,7 +86,7 @@ export const useOptionsMapping = () => {
         label: 'Export',
         action: (diagram: Diagram) => {
           try {
-            const copiedModel = GetModelItemsReferencedBy(diagram.name, MainItemTypes.Diagram, 2);
+            const copiedModel = GetModelItemsReferencedBy(diagram.name, 'Diagram', 2);
             copiedModel.name = diagram.name;
             copiedModel.emraldVersion = EMRALD_SchemaVersion;
   
@@ -126,7 +119,7 @@ export const useOptionsMapping = () => {
         label: 'Copy',
         action: (diagram: Diagram) => {
           try {
-            const copiedModel = GetModelItemsReferencedBy(diagram.name, MainItemTypes.Diagram, 2);
+            const copiedModel = GetModelItemsReferencedBy(diagram.name, 'Diagram', 2);
             copiedModel.name = diagram.name;
             copiedModel.emraldVersion = EMRALD_SchemaVersion;
             navigator.clipboard.writeText(JSON.stringify(copiedModel, null, 2));
@@ -140,7 +133,7 @@ export const useOptionsMapping = () => {
         label: 'Copy Recursive',
         action: (diagram: Diagram) => {
           try {
-            const copiedModel = GetModelItemsReferencedBy(diagram.name, MainItemTypes.Diagram, 0);
+            const copiedModel = GetModelItemsReferencedBy(diagram.name, 'Diagram', 0);
             copiedModel.name = diagram.name;
             copiedModel.emraldVersion = EMRALD_SchemaVersion;
             navigator.clipboard.writeText(JSON.stringify(copiedModel, null, 2));
@@ -183,8 +176,8 @@ export const useOptionsMapping = () => {
         label: 'Delete',
         action: (
           logicNode: LogicNode,
-          handleDelete: (itemToDelete: LogicNode, itemToDeleteType: MainItemTypes) => void,
-        ) => handleDelete(logicNode, MainItemTypes.LogicNode),
+          handleDelete: (itemToDelete: LogicNode, itemToDeleteType: MainItemType) => void,
+        ) => handleDelete(logicNode, 'LogicNode'),
       },
     ],
     'External Sims': [
@@ -197,8 +190,8 @@ export const useOptionsMapping = () => {
         label: 'Delete',
         action: (
           extSim: ExtSim,
-          handleDelete: (itemToDelete: ExtSim, itemToDeleteType: MainItemTypes) => void,
-        ) => handleDelete(extSim, MainItemTypes.ExtSim),
+          handleDelete: (itemToDelete: ExtSim, itemToDeleteType: MainItemType) => void,
+        ) => handleDelete(extSim, 'ExtSim'),
       },
     ],
     Actions: [
@@ -217,8 +210,8 @@ export const useOptionsMapping = () => {
         label: 'Delete',
         action: (
           action: Action,
-          handleDelete: (itemToDelete: Action, itemToDeleteType: MainItemTypes) => void,
-        ) => handleDelete(action, MainItemTypes.Action),
+          handleDelete: (itemToDelete: Action, itemToDeleteType: MainItemType) => void,
+        ) => handleDelete(action, 'Action'),
       },
     ],
     Events: [
@@ -238,8 +231,8 @@ export const useOptionsMapping = () => {
         label: 'Delete',
         action: (
           event: Event,
-          handleDelete: (itemToDelete: Event, itemToDeleteType: MainItemTypes) => void,
-        ) => handleDelete(event, MainItemTypes.Event),
+          handleDelete: (itemToDelete: Event, itemToDeleteType: MainItemType) => void,
+        ) => handleDelete(event, 'Event'),
       },
     ],
     States: [
@@ -252,8 +245,8 @@ export const useOptionsMapping = () => {
         label: 'Delete',
         action: (
           state: State,
-          handleDelete: (itemToDelete: State, itemToDeleteType: MainItemTypes) => void,
-        ) => handleDelete(state, MainItemTypes.State),
+          handleDelete: (itemToDelete: State, itemToDeleteType: MainItemType) => void,
+        ) => handleDelete(state, 'State'),
       },
     ],
     Variables: [
@@ -271,8 +264,8 @@ export const useOptionsMapping = () => {
         label: 'Delete',
         action: (
           variable: Variable,
-          handleDelete: (itemToDelete: Variable, itemToDeleteType: MainItemTypes) => void,
-        ) => handleDelete(variable, MainItemTypes.Variable),
+          handleDelete: (itemToDelete: Variable, itemToDeleteType: MainItemType) => void,
+        ) => handleDelete(variable, 'Variable'),
       },
     ],
   };

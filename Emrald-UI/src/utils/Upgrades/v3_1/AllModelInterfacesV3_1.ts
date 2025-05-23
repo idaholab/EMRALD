@@ -44,6 +44,7 @@ export type ActionType =
   | "atRunExtApp"
 export type MAAPSourceElement = {
   comment?: string
+  [k: string]: unknown
 } & (
   | MAAPStatement
   | MAAPAssignment
@@ -73,12 +74,15 @@ export type MAAPExpression =
   | MAAPIsExpression
   | MAAPPureExpression
   | MAAPExpressionType
-export type MAAPVariable = {
-  useVariable?: boolean
-} & (MAAPCallExpression | MAAPLiteral | MAAPParameterName | MAAPIdentifier)
-export type MAAPExpressionType = {
-  useVariable?: boolean
-} & (MAAPCallExpression | MAAPExpressionBlock | MAAPVariable)
+export type MAAPVariable =
+  | MAAPCallExpression
+  | MAAPLiteral
+  | MAAPParameterName
+  | MAAPIdentifier
+export type MAAPExpressionType =
+  | MAAPCallExpression
+  | MAAPExpressionBlock
+  | MAAPVariable
 export type MAAPExpressionOperator =
   | "**"
   | "*"
@@ -527,7 +531,7 @@ export interface MAAPFormData {
   /**
    * The paths to other files referenced by the .inp and .par files
    */
-  fileRefs?: string[]
+  fileRefs?: unknown[]
   /**
    * The full path to the .inp file on the user's machine
    */
@@ -539,12 +543,29 @@ export interface MAAPFormData {
   /**
    * A list of possible initiators extracted from the .par file
    */
-  possibleInitiators?: MAAPParameter[]
+  possibleInitiators?: {
+    /**
+     * The initiator description
+     */
+    desc: string
+    /**
+     * The initiator value
+     */
+    value: string
+    [k: string]: unknown
+  }[]
   /**
    * A list of doc comments extracted from the .inp file
    */
   docComments?: {
-    [k: string]: MAAPComment
+    /**
+     * This interface was referenced by `undefined`'s JSON-Schema definition
+     * via the `patternProperty` "*".
+     */
+    [k: string]: {
+      value: string
+      [k: string]: unknown
+    }
   }
   /**
    * The doc link variable used to store the results
@@ -559,20 +580,24 @@ export interface MAAPFormData {
 export interface MAAPSensitivityStatement {
   type: "sensitivity"
   value: "ON" | "OFF"
+  [k: string]: unknown
 }
 export interface MAAPTitleStatement {
   type: "title"
   value?: string
+  [k: string]: unknown
 }
 export interface MAAPFileStatement {
   fileType: "PARAMETER FILE" | "INCLUDE"
   type: "file"
   value: string
+  [k: string]: unknown
 }
 export interface MAAPBlockStatement {
   blockType: "PARAMETER CHANGE" | "INITIATORS"
   type: "block"
   value: MAAPSourceElement[]
+  [k: string]: unknown
 }
 export interface MAAPConditionalBlockStatement {
   blockType: "IF" | "WHEN"
@@ -580,21 +605,24 @@ export interface MAAPConditionalBlockStatement {
   type: "conditional_block"
   value: MAAPSourceElement[]
   id?: string
+  [k: string]: unknown
 }
 export interface MAAPIsExpression {
   target: MAAPVariable
   type: "is_expression"
   value: MAAPExpression
-  useVariable?: boolean
+  [k: string]: unknown
 }
 export interface MAAPCallExpression {
   arguments: MAAPExpressionType[]
   type: "call_expression"
   value: MAAPIdentifier
+  [k: string]: unknown
 }
 export interface MAAPExpressionBlock {
   type: "expression_block"
   value: MAAPPureExpression
+  [k: string]: unknown
 }
 export interface MAAPPureExpression {
   type: "expression"
@@ -604,96 +632,120 @@ export interface MAAPPureExpression {
     right: MAAPPureExpression | MAAPExpressionType
     [k: string]: unknown
   }
-  useVariable?: boolean
+  [k: string]: unknown
 }
 export interface MAAPIdentifier {
   type: "identifier"
   value: string
-  useVariable?: boolean
+  [k: string]: unknown
 }
 export interface MAAPBooleanLiteral {
   type: "boolean"
   value: boolean
+  [k: string]: unknown
 }
 export interface MAAPNumericLiteral {
   type: "number"
   units?: string
   value: number
+  [k: string]: unknown
 }
 export interface MAAPTimerLiteral {
   type: "timer"
   value: number
+  [k: string]: unknown
 }
 export interface MAAPParameterName {
   type: "parameter_name"
   value: string
+  [k: string]: unknown
 }
 export interface MAAPAliasStatement {
   type: "alias"
   value: MAAPAsExpression[]
+  [k: string]: unknown
 }
 export interface MAAPAsExpression {
   target: MAAPVariable
   type: "as_expression"
   value: MAAPIdentifier
+  [k: string]: unknown
 }
 export interface MAAPPlotFilStatement {
   n: number
   type: "plotfil"
   value: MAAPVariable[][]
+  [k: string]: unknown
 }
 export interface MAAPUserEvtStatement {
   type: "user_evt"
   value: MAAPUserEvtElement[]
+  [k: string]: unknown
 }
 export interface MAAPParameter {
   /**
    * An ID assigned to the parameter by the form
    */
   id?: string
-  flag?: MAAPBooleanLiteral
-  index?: number
-  type?: "parameter"
-  value: MAAPExpression | MAAPParameterName | string
-  comment?: string
-  name?: string
-  useVariable?: boolean
+  /**
+   * The name of the parameter
+   */
+  name: string
+  /**
+   * The parameter value
+   */
+  value?: string | number | boolean
+  /**
+   * The parameter value unit
+   */
   unit?: string
+  /**
+   * If the value of the parameter is using an EMRALD variable
+   */
+  useVariable: boolean
+  /**
+   * The EMRALD variable to use for the parameter value
+   */
   variable?: string
-  desc?: string
+  /**
+   * The doc comment describing the parameter
+   */
+  comment?: string
+  [k: string]: unknown
 }
 export interface MAAPActionStatement {
   index: number
   type: "action"
   value: MAAPUserEvtElement[]
+  [k: string]: unknown
 }
 export interface MAAPFunctionStatement {
   name: MAAPIdentifier
   type: "function"
   value: MAAPExpression
+  [k: string]: unknown
 }
 export interface MAAPTimerStatement {
   type: "set_timer"
   value: MAAPTimerLiteral
+  [k: string]: unknown
 }
 export interface MAAPLookupStatement {
   name: MAAPVariable
   type: "lookup_variable"
   value: string[]
+  [k: string]: unknown
 }
 export interface MAAPAssignment {
   target: MAAPCallExpression | MAAPIdentifier
   type: "assignment"
   value: MAAPExpression
-  comment?: string
+  [k: string]: unknown
 }
-/**
- * This interface was referenced by `undefined`'s JSON-Schema definition
- * via the `patternProperty` "*".
- */
 export interface MAAPComment {
   type: "comment"
   value: string
+  [k: string]: unknown
 }
 export interface MAAPInitiator {
   /**
@@ -712,6 +764,7 @@ export interface MAAPInitiator {
    * The value of the initiator
    */
   value: string | number | boolean
+  [k: string]: unknown
 }
 export interface Event {
   /**

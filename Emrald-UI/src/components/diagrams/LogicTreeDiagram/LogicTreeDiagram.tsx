@@ -12,16 +12,16 @@ import ReactFlow, {
 } from 'reactflow';
 
 import 'reactflow/dist/style.css';
-import { LogicNode } from '../../../types/LogicNode.js';
-import useLogicNodeTreeDiagram from './useLogicTreeDiagram.js';
+import { LogicNode } from '../../../types/EMRALD_Model';
+import useLogicNodeTreeDiagram from './useLogicTreeDiagram';
 import Box from '@mui/material/Box';
-import TreeNodeComponent from './TreeNodeComponent/TreeNodeComponent.js';
-import ContextMenu from '../../layout/ContextMenu/ContextMenu.js';
+import TreeNodeComponent from './TreeNodeComponent/TreeNodeComponent';
+import ContextMenu from '../../layout/ContextMenu/ContextMenu';
 import { TbLogicAnd, TbLogicNot, TbLogicOr, TbMap } from 'react-icons/tb';
-import DraggableItem from '../../drag-and-drop/DraggableItem.js';
+import DraggableItem from '../../drag-and-drop/DraggableItem';
 import { Alert, Typography } from '@mui/material';
-import useExpandCollapse from './useExpandCollapse.js';
-import DownloadButton from '../DownloadButton.js';
+import useExpandCollapse from './useExpandCollapse';
+import DownloadButton from '../DownloadButton';
 import { PiDotsNine } from 'react-icons/pi';
 
 interface LogicNodeTreeDiagramProps {
