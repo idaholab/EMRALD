@@ -12,12 +12,11 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import { useActionFormContext } from '../../../../../ActionFormContext';
 import { useEffect, useState } from 'react';
 import { v4 as uuid } from 'uuid';
-import { MAAPFormData } from '../maap';
-import { Initiator } from '../MAAPTypes';
+import { MAAPFormData, MAAPInitiator } from '../../../../../../../../types/EMRALD_Model';
 
 const Initiators = () => {
   const { formData, setFormData } = useActionFormContext();
-  const [initiators, setInitiators] = useState<Initiator[]>([]);
+  const [initiators, setInitiators] = useState<MAAPInitiator[]>([]);
 
   const maapForm = formData as MAAPFormData;
 
@@ -29,24 +28,32 @@ const Initiators = () => {
     const updatedInitiators = initiators.filter((initiator) => initiator !== row);
     setInitiators(updatedInitiators);
     setFormData((prevFormData: MAAPFormData) => {
-      const data: MAAPFormData = { ...prevFormData, initiators: updatedInitiators };
-      return data;
+      return { ...prevFormData, initiators: updatedInitiators };
     });
   };
   const addInitiator = (desc: string) => {
     const initiator = maapForm?.possibleInitiators?.find((init) => init.desc === desc);
     if (initiator && !initiators.find((init) => init.name === initiator.desc)) {
-      const newInitiator = {
-        name: initiator.desc,
-        comment: '',
-        id: uuid(),
-        value: initiator.value,
-      };
-      const updatedInitiators = [...initiators, newInitiator];
+      let value = '';
+      if (typeof initiator.value === 'string') {
+        value = initiator.value;
+      } else if (initiator.value.type === 'parameter_name') {
+        value = initiator.value.value;
+      } else {
+        value = initiator.value.value.toString();
+      }
+      const updatedInitiators = [
+        ...initiators,
+        {
+          name: initiator.desc || '',
+          comment: '',
+          id: uuid(),
+          value,
+        },
+      ];
       setInitiators(updatedInitiators);
       setFormData((prevFormData: MAAPFormData) => {
-        const data = { ...prevFormData, initiators: updatedInitiators };
-        return data;
+        return { ...prevFormData, initiators: updatedInitiators };
       });
     }
   };

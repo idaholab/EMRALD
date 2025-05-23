@@ -13,21 +13,20 @@ import { useEffect, useState } from 'react';
 import { SelectComponent } from '../../../../../../../common';
 import { appData } from '../../../../../../../../hooks/useAppData';
 import { useActionFormContext } from '../../../../../ActionFormContext';
-import { Parameter } from '../MAAPTypes';
-import { MAAPFormData } from '../maap';
+import { MAAPFormData, MAAPParameter } from '../../../../../../../../types/EMRALD_Model';
 
 const Parameters = () => {
   const { formData, setFormData } = useActionFormContext();
   const [useVariable, setUseVariable] = useState<{ [key: string]: boolean }>({});
   const [variable, setVariable] = useState<{ [key: string]: string }>({});
-  const [parameters, setParameters] = useState<Parameter[]>([]);
+  const [parameters, setParameters] = useState<MAAPParameter[]>([]);
 
   const maapForm = formData as MAAPFormData;
 
   useEffect(() => {
     setUseVariable(
       maapForm?.parameters?.reduce((accumulator: Record<string, boolean>, param) => {
-        accumulator[param.id as string] = param.useVariable;
+        accumulator[param.id as string] = param.useVariable === true;
         return accumulator;
       }, {}) || {},
     );
@@ -43,7 +42,7 @@ const Parameters = () => {
     setParameters(maapForm?.parameters || []);
   }, [formData?.parameters]);
 
-  const handleSetVariable = (variableName: string, row: Parameter) => {
+  const handleSetVariable = (variableName: string, row: MAAPParameter) => {
     setVariable((prev) => ({ ...prev, [row.id as string]: variableName }));
     const updatedParameters = parameters.map((param) =>
       param.id === row.id ? { ...param, variable: variableName } : param,
@@ -55,7 +54,7 @@ const Parameters = () => {
     });
   };
 
-  const handleCheckbox = (row: Parameter) => {
+  const handleCheckbox = (row: MAAPParameter) => {
     const value = !useVariable[row.id as string];
     setUseVariable((prev) => ({ ...prev, [row.id as string]: value }));
     const updatedParameters = parameters.map((param) =>
@@ -82,7 +81,7 @@ const Parameters = () => {
         </TableRow>
       </TableHead>
       <TableBody>
-        {parameters?.map((row: Parameter, idx: number) => (
+        {parameters?.map((row, idx) => (
           <TableRow key={idx} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
             <TableCell component="th" scope="row">
               {row.name}

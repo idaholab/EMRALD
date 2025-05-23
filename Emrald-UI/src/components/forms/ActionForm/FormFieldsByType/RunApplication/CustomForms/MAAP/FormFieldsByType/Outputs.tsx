@@ -14,7 +14,7 @@ import { useVariableContext } from '../../../../../../../../contexts/VariableCon
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useEffect, useState } from 'react';
 import { useCustomForm } from '../../useCustomForm';
-import { MAAPFormData } from '../maap';
+import { MAAPFormData } from '../../../../../../../../types/EMRALD_Model';
 
 const Outputs = () => {
   const { formData, setFormData, setVariableName } = useCustomForm();

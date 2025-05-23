@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
 import * as t from 'maap-inp-parser';
+import { MAAPActionStatement, MAAPAssignment, MAAPComment, MAAPExpression, MAAPExpressionType, MAAPFunctionStatement, MAAPLiteral, MAAPLookupStatement, MAAPParameter, MAAPSourceElement, MAAPStatement, MAAPTimerStatement, MAAPUserEvtElement, MAAPVariable } from '../../../../../../../../types/EMRALD_Model';
 
 /**
  * Checks if a type is a literal.
@@ -79,7 +80,7 @@ function timerToString(timerLiteral: t.TimerLiteral): string {
  * @param literal - The object to compile.
  * @returns The compiled code.
  */
-function literalToString(literal: t.Literal): string {
+function literalToString(literal: MAAPLiteral): string {
   switch (literal.type) {
     case 'number':
       return numberToString(literal);
@@ -117,7 +118,7 @@ function parameterNameToString(parameterName: t.ParameterName): string {
  * @param parameter - The object to compile.
  * @returns The compiled code.
  */
-function parameterToString(parameter: t.Parameter): string {
+function parameterToString(parameter: MAAPParameter): string {
   let re = `${parameter.index} `;
   if (parameter.flag) {
     re += `${booleanToString(parameter.flag)} `;
@@ -190,7 +191,7 @@ function expressionBlockToString(expressionBlock: t.ExpressionBlock): string {
  * @param expressionType - The object to compile.
  * @returns The compiled code.
  */
-export function expressionTypeToString(expressionType: t.ExpressionType): string {
+export function expressionTypeToString(expressionType: MAAPExpressionType): string {
   if (expressionType.type === 'call_expression') {
     return callExpressionToString(expressionType);
   }
@@ -206,7 +207,7 @@ export function expressionTypeToString(expressionType: t.ExpressionType): string
  * @param assignment - The object to compile.
  * @returns The compiled code.
  */
-function assignmentToString(assignment: t.Assignment): string {
+function assignmentToString(assignment: MAAPAssignment): string {
   let target = '';
   if (assignment.target.type === 'call_expression') {
     target = callExpressionToString(assignment.target);
@@ -246,7 +247,7 @@ function asExpressionToString(asExpression: t.AsExpression): string {
  * @param expression - The object to compile.
  * @returns The compiled code.
  */
-export function expressionToString(expression: t.Expression): string {
+export function expressionToString(expression: MAAPExpression): string {
   switch (expression.type) {
     case 'is_expression':
       return isExpressionToString(expression);
@@ -263,11 +264,11 @@ export function expressionToString(expression: t.Expression): string {
  * @param variable - The object to compile.
  * @returns The compiled code.
  */
-function variableToString(variable: t.Variable) {
+function variableToString(variable: MAAPVariable) {
   if (variable.type === 'call_expression') {
     return callExpressionToString(variable);
   } else if (isLiteral(variable.type)) {
-    return literalToString(variable as t.Literal);
+    return literalToString(variable as MAAPLiteral);
   } else if (variable.type === 'parameter_name') {
     return parameterNameToString(variable);
   }
@@ -280,7 +281,7 @@ function variableToString(variable: t.Variable) {
  * @param statement - The object to compile.
  * @returns The compiled code.
  */
-function statementToString(statement: t.Statement): string {
+function statementToString(statement: MAAPStatement): string {
   switch (statement.type) {
     case 'sensitivity':
       return sensitivityToString(statement);
@@ -410,7 +411,7 @@ function userEvtToString(userEvtStatement: t.UserEvtStatement) {
  * @param userEvtBody - The object to compile.
  * @returns The compiled code.
  */
-function userEvtBodyToString(userEvtBody: t.UserEvtElement[]): string {
+function userEvtBodyToString(userEvtBody: MAAPUserEvtElement[]): string {
   return userEvtBody
     .map((userEvtElement) => {
       if (userEvtElement.type === 'parameter') {
@@ -430,7 +431,7 @@ function userEvtBodyToString(userEvtBody: t.UserEvtElement[]): string {
  * @param actionStatement - The object to compile.
  * @returns The compiled code.
  */
-function actionToString(actionStatement: t.ActionStatement): string {
+function actionToString(actionStatement: MAAPActionStatement): string {
   return `ACTION #${actionStatement.index}\n${userEvtBodyToString(
     actionStatement.value,
   )}\nEND`;
@@ -442,7 +443,7 @@ function actionToString(actionStatement: t.ActionStatement): string {
  * @param functionStatement - The object to compile.
  * @returns The compiled code.
  */
-function functionToString(functionStatement: t.FunctionStatement): string {
+function functionToString(functionStatement: MAAPFunctionStatement): string {
   return `FUNCTION ${identifierToString(
     functionStatement.name,
   )} = ${expressionToString(functionStatement.value)}`;
@@ -454,7 +455,7 @@ function functionToString(functionStatement: t.FunctionStatement): string {
  * @param timerStatement - The object to compile.
  * @returns The compiled code.
  */
-function setTimerToString(timerStatement: t.TimerStatement): string {
+function setTimerToString(timerStatement: MAAPTimerStatement): string {
   return `SET ${timerToString(timerStatement.value)}`;
 }
 
@@ -464,7 +465,7 @@ function setTimerToString(timerStatement: t.TimerStatement): string {
  * @param lookupStatement - The object to compile.
  * @returns The compiled code.
  */
-function lookupToString(lookupStatement: t.LookupStatement): string {
+function lookupToString(lookupStatement: MAAPLookupStatement): string {
   return `LOOKUP VARIABLE ${variableToString(
     lookupStatement.name,
   )}\n${lookupStatement.value.join('\n')}\nEND`;
@@ -476,12 +477,12 @@ function lookupToString(lookupStatement: t.LookupStatement): string {
  * @param sourceElement - The object to compile.
  * @returns The compiled code.
  */
-export function sourceElementToString(sourceElement: t.SourceElement | t.Comment): string {
+export function sourceElementToString(sourceElement: MAAPSourceElement | MAAPComment): string {
   if (sourceElement.type === 'comment') {
     return `// ${sourceElement.value}`;
   }
   if (isStatement(sourceElement.type)) {
-    return statementToString(sourceElement as t.Statement);
+    return statementToString(sourceElement as MAAPStatement);
   }
   if (sourceElement.type === 'assignment') {
     return assignmentToString(sourceElement);
@@ -489,7 +490,7 @@ export function sourceElementToString(sourceElement: t.SourceElement | t.Comment
   if (sourceElement.type === 'as_expression') {
     return asExpressionToString(sourceElement);
   }
-  return expressionToString(sourceElement as t.Expression);
+  return expressionToString(sourceElement as MAAPExpression);
 }
 
 /**
@@ -499,13 +500,13 @@ export function sourceElementToString(sourceElement: t.SourceElement | t.Comment
  * @returns The compiled program.
  */
 export function MAAPToString(
-  input: t.Program | t.UserEvtElement | t.Literal | t.Identifier,
+  input: t.Program | MAAPUserEvtElement | MAAPLiteral | t.Identifier,
 ): string {
   if (isStatement(input.type)) {
-    return statementToString(input as t.Statement);
+    return statementToString(input as MAAPStatement);
   }
   if (isLiteral(input.type)) {
-    return literalToString(input as t.Literal);
+    return literalToString(input as MAAPLiteral);
   }
   switch (input.type) {
     case 'program':

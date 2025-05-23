@@ -4,11 +4,10 @@ import { Box, Divider, Tab, Tabs } from '@mui/material';
 import { TextFieldComponent, FileUploadComponent, TabPanel } from '../../../../../../common';
 import { Parameters, Initiators, InputBlocks, Outputs } from './FormFieldsByType';
 import InputParse from './Parser';
-import { parse as parameterParser } from './Parser/maap-par-parser.ts';
+import { parse as parameterParser } from './Parser/maap-par-parser';
 import { v4 as uuid } from 'uuid';
-import { useActionFormContext } from '../../../../ActionFormContext.tsx';
-import { Initiator, Parameter } from './MAAPTypes.ts';
-import useRunApplication from '../../useRunApplication.tsx';
+import { useActionFormContext } from '../../../../ActionFormContext';
+import useRunApplication from '../../useRunApplication';
 import {
   callExpressionToString,
   expressionToString,
@@ -16,28 +15,15 @@ import {
   identifierToString,
   MAAPToString,
   sourceElementToString,
-} from './Parser/maap-to-string.ts';
-import { ConditionalBlockStatement, SourceElement, Comment } from 'maap-inp-parser';
-import { MAAPParameter } from 'maap-par-parser';
-
-export type MAAPFormData =
-  | undefined
-  | {
-      exePath?: string;
-      sourceElements?: SourceElement[];
-      parameters?: Parameter[];
-      initiators?: Initiator[];
-      inputBlocks?: ConditionalBlockStatement[];
-      fileRefs?: string[];
-      inputFile?: File | null;
-      inputPath?: string;
-      parameterFile?: File | null;
-      parameterPath?: string;
-      possibleInitiators?: MAAPParameter[];
-      docComments?: Record<string, Comment>;
-      docLinkVariable?: string;
-      output?: string;
-    };
+} from './Parser/maap-to-string';
+import {
+  MAAPFormData,
+  MAAPParameter,
+  MAAPConditionalBlockStatement,
+  MAAPSourceElement,
+  MAAPComment,
+  MAAPInitiator,
+} from '../../../../../../../types/EMRALD_Model';
 
 const MAAP = () => {
   const { formData, setFormData, setReturnProcess, ReturnPostCode, ReturnExePath } =
@@ -60,7 +46,7 @@ const MAAP = () => {
     setCurrentTab(tabValue);
   };
 
-  const getParameterName = (row: SourceElement) => {
+  const getParameterName = (row: MAAPSourceElement) => {
     if (row.type === 'assignment') {
       if (row.target.type === 'call_expression') {
         return callExpressionToString(row.target);
@@ -262,7 +248,7 @@ const MAAP = () => {
                 possibleInitiators.push({
                   index: data.index,
                   desc: data.desc,
-                  comment: data.comment,
+                  comment: data.comment || '',
                   value: data.value,
                 });
               }
@@ -289,10 +275,10 @@ const MAAP = () => {
         try {
           const data = InputParse.parse(fileString, { locations: false }).output;
 
-          let docComments: Record<string, Comment> = {};
-          let parameters: SourceElement[] = [];
-          let initiators: SourceElement[] = [];
-          let inputBlocks: ConditionalBlockStatement[] = [];
+          let docComments: Record<string, MAAPComment> = {};
+          let parameters: MAAPSourceElement[] = [];
+          let initiators: MAAPSourceElement[] = [];
+          let inputBlocks: MAAPConditionalBlockStatement[] = [];
           let fileRefs: string[] = [];
 
           data.value.forEach((sourceElement, i) => {
@@ -339,20 +325,20 @@ const MAAP = () => {
 
           // Set state variables or perform other actions with comments, sections, and parameters
           // setComments(comments);
-          const newParameters: Parameter[] = [];
+          const newParameters: MAAPParameter[] = [];
           parameters.forEach((param) => {
             if (param.type === 'comment') {
               newParameters[newParameters.length - 1].comment = param.value as unknown as string;
             } else {
               let unit = '';
-              let value: string | number | boolean = '';
+              let value = '';
               if (
                 typeof param.value === 'object' &&
                 !Array.isArray(param.value) &&
                 param.type === 'assignment'
               ) {
                 if (param.value.type === 'number') {
-                  value = param.value.value;
+                  value = param.value.value.toString();
                   unit = param.value.units || '';
                 }
               }
@@ -365,7 +351,7 @@ const MAAP = () => {
               });
             }
           });
-          const newInitiators: Initiator[] = [];
+          const newInitiators: MAAPInitiator[] = [];
           initiators.forEach((init) => {
             if (init.type === 'comment') {
               newInitiators[newInitiators.length - 1].comment = init.value as string;

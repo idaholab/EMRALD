@@ -3,11 +3,10 @@ import { useEffect, useState } from 'react';
 import { useCustomForm } from '../../useCustomForm';
 import useRunApplication from '../../../useRunApplication';
 import { appData } from '../../../../../../../../hooks/useAppData';
-import { MAAPFormData } from '../maap';
-import { Assignment, ConditionalBlockStatement, Identifier } from 'maap-inp-parser';
+import { MAAPFormData, MAAPConditionalBlockStatement, MAAPAssignment, MAAPIdentifier } from '../../../../../../../../types/EMRALD_Model';
 
 const InputBlocks = () => {
-  const [inputBlocks, setInputBlocks] = useState<ConditionalBlockStatement[]>([]);
+  const [inputBlocks, setInputBlocks] = useState<MAAPConditionalBlockStatement[]>([]);
   const [numBooleanExpressions, setNumBooleanExpressions] = useState<{ [key: string]: number }>({});
   const [leftExpressionNames, setLeftExpressionNames] = useState<string[][]>([]);
   const [rightExpressionNames, setRightExpressionNames] = useState<string[][]>([]);
@@ -18,7 +17,7 @@ const InputBlocks = () => {
   const maapForm = formData as MAAPFormData;
   const variables = appData.value.VariableList.map(({ name }) => name);
 
-  const getResults = (block: ConditionalBlockStatement, forCode?: boolean) => {
+  const getResults = (block: MAAPConditionalBlockStatement, forCode?: boolean) => {
     // Get the existing Map or initialize a new one for the block.id
     let items = results[block.id as string] || new Map<string, string>();
 
@@ -53,7 +52,7 @@ const InputBlocks = () => {
     return items;
   };
 
-  const getResultValue = (result: Assignment, forCode?: boolean): string => {
+  const getResultValue = (result: MAAPAssignment, forCode?: boolean): string => {
     if (result.value.type === 'expression') {
       return `${result.value.value.left.value} ${result.value.value.op} ${result.value.value.right.value}`;
     }
@@ -65,7 +64,7 @@ const InputBlocks = () => {
   };
 
   /** goes through the test portion of a conditional block and returns an array of each name in the block test */
-  const getAllItems = (block: ConditionalBlockStatement, returnType = 'items'): any[] => {
+  const getAllItems = (block: MAAPConditionalBlockStatement, returnType = 'items'): any[] => {
     let allItems = [];
     let operators = [];
     let iterator = block.test;
@@ -123,13 +122,13 @@ const InputBlocks = () => {
     setInputBlocks(maapForm?.inputBlocks || []);
   }, []);
 
-  const getNumBooleanCount = (block: ConditionalBlockStatement): number => {
+  const getNumBooleanCount = (block: MAAPConditionalBlockStatement): number => {
     const allItems = getAllItems(block);
     return allItems.length / 2;
   };
 
   const getLeftOrRightName = (
-    block: ConditionalBlockStatement,
+    block: MAAPConditionalBlockStatement,
     isLeft: boolean,
     count = 0,
   ): string => {
@@ -164,7 +163,7 @@ const InputBlocks = () => {
               property.target.value.useVariable = useVariable;
             }
           } else {
-            const value: Identifier = {
+            const value: MAAPIdentifier = {
               type: 'identifier',
               value: newValue,
               useVariable: useVariable,
@@ -199,7 +198,7 @@ const InputBlocks = () => {
     });
   };
 
-  const getOperator = (block: ConditionalBlockStatement, isBoolean: boolean, count = 0): string => {
+  const getOperator = (block: MAAPConditionalBlockStatement, isBoolean: boolean, count = 0): string => {
     let tempOperators = operators[block.id as string];
     tempOperators = isBoolean
       ? tempOperators.filter((op) => op === 'AND' || op === 'OR')
