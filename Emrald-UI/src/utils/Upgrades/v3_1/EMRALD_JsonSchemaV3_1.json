@@ -1334,7 +1334,8 @@
               ]
             }
           },
-          "required": ["left", "op", "right"]
+          "required": ["left", "op", "right"],
+          "additionalProperties": false
         },
         "useVariable": {
           "type": "boolean"

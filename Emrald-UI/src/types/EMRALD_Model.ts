@@ -602,7 +602,6 @@ export interface MAAPPureExpression {
     left: MAAPExpressionType
     op: MAAPExpressionOperator
     right: MAAPPureExpression | MAAPExpressionType
-    [k: string]: unknown
   }
   useVariable?: boolean
 }
