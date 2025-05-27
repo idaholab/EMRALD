@@ -270,7 +270,7 @@ export interface Diagram {
    * Optional. Only used for internal processing needs.
    */
   id?: string
-  objType: MainItemType
+  objType: "Diagram"
   /**
    * Name of the diagram
    */
@@ -314,7 +314,7 @@ export interface ExtSim {
    * Optional, internal use only.
    */
   id?: string
-  objType: MainItemType
+  objType: "ExtSim"
   /**
    * referenace name in the model for the external simulation
    */
@@ -330,7 +330,7 @@ export interface ExtSim {
 }
 export interface State {
   id?: string
-  objType: MainItemType
+  objType: "State"
   /**
    * referenace name in the model for state
    */
@@ -383,7 +383,7 @@ export interface Action {
    * Optional, internal use only.
    */
   id?: string
-  objType: MainItemType
+  objType: "Action"
   /**
    * referenace name in the model for the action
    */
@@ -461,9 +461,7 @@ export interface Action {
   /**
    * Optional. For action type atRunExtApp. It is used for custom app form.
    */
-  template?: {
-    [k: string]: unknown
-  }
+  template?: Record<string, unknown>
   /**
    * Optional. For action type atRunExtApp. It is flag to indicate the type of return from the processOutputFileCode. If rtNone then it has no return, othrwise the C# script must return a List of strings with +/-[StateName] to shift out or into a state.
    */
@@ -543,9 +541,7 @@ export interface MAAPFormData {
   /**
    * A list of doc comments extracted from the .inp file
    */
-  docComments?: {
-    [k: string]: MAAPComment
-  }
+  docComments?: Record<string, MAAPComment>
   /**
    * The doc link variable used to store the results
    */
@@ -717,7 +713,7 @@ export interface Event {
    * Optional, internal use only.
    */
   id?: string
-  objType: MainItemType
+  objType: "Event"
   /**
    * referenace name in the event in the model.
    */
@@ -820,7 +816,7 @@ export interface LogicNode {
    * Optional, internal use only.
    */
   id?: string
-  objType: MainItemType
+  objType: "LogicNode"
   /**
    * referenace name in the logic node
    */
@@ -864,7 +860,7 @@ export interface Variable {
    * Optional, internal use only.
    */
   id?: string
-  objType: MainItemType
+  objType: "Variable"
   /**
    * referenace name in the model for the variable
    */
@@ -962,7 +958,7 @@ export interface Group {
   /**
    * Sub group tree path
    */
-  subgroup: Group[]
+  subgroup?: Group[]
 }
 export interface Templates {
   /**

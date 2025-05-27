@@ -16,9 +16,9 @@ import { useTheme } from '@mui/material/styles';
 import { appData, updateAppData } from '../../../hooks/useAppData';
 
 const url: string = window.location.href;
-let emraldDocsUrl: string = 'https://emrald3-docs.inl.gov/'; // Default URL
+let emraldDocsUrl = 'https://emrald3-docs.inl.gov/'; // Default URL
 
-const urlEnvMappings: { [key: string]: string } = {
+const urlEnvMappings: Record<string, string> = {
   dev: 'https://emrald3-docs.dev.inl.gov/',
   acc: 'https://emrald3-docs.acc.inl.gov/',
   scan: 'https://emrald3-docs.scan.inl.gov/',
@@ -46,7 +46,6 @@ export default function Header() {
     fileName,
     version,
     updateVersion,
-    updateFileName,
     updateName,
     updateDescription,
   } = useModelDetailsContext();
@@ -111,7 +110,7 @@ export default function Header() {
           Model Editor
         </Typography>
         <Box display="flex" alignItems="center" flexGrow={1} ml={5}>
-          <MenuButton id={1} title="Project" options={projectOptions(updateFileName)} />
+          <MenuButton id={1} title="Project" options={projectOptions} />
           <MenuButton id={2} title="Download" options={downloadOptions} />
           <MenuButton id={3} title="Help" handleClick={() => window.open(emraldDocsUrl)} />
           <MenuButton
@@ -129,7 +128,7 @@ export default function Header() {
             color="primary"
             fontWeight="bold"
             sx={{ cursor: 'pointer', fontSize: isMediumScreen ? '1em' : '1.2em' }}
-            onClick={() => setOpenDialog(true)}
+            onClick={() => { setOpenDialog(true); }}
           >
             {name ? name : 'Click Here to Name Project'}
           </Typography>
@@ -156,7 +155,7 @@ export default function Header() {
           variant="outlined"
           size="small"
           value={updatedName}
-          onChange={(e) => setUpdatedName(e.target.value)}
+          onChange={(e) => { setUpdatedName(e.target.value); }}
         />
         <TextField
           margin="dense"
@@ -167,7 +166,7 @@ export default function Header() {
           variant="outlined"
           size="small"
           value={updatedDesc}
-          onChange={(e) => setUpdatedDesc(e.target.value)}
+          onChange={(e) => { setUpdatedDesc(e.target.value); }}
         />
         <TextField
           margin="dense"
@@ -178,7 +177,7 @@ export default function Header() {
           variant="outlined"
           size="small"
           value={updatedVersion}
-          onChange={(e) => handleChange(e.target.value)}
+          onChange={(e) => { handleChange(e.target.value); }}
           error={!version}
           helperText={version !== undefined ? '' : 'must have a version number'}
         />

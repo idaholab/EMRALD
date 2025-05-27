@@ -44,7 +44,6 @@ export type ActionType =
   | "atRunExtApp"
 export type MAAPSourceElement = {
   comment?: string
-  [k: string]: unknown
 } & (
   | MAAPStatement
   | MAAPAssignment
@@ -74,15 +73,12 @@ export type MAAPExpression =
   | MAAPIsExpression
   | MAAPPureExpression
   | MAAPExpressionType
-export type MAAPVariable =
-  | MAAPCallExpression
-  | MAAPLiteral
-  | MAAPParameterName
-  | MAAPIdentifier
-export type MAAPExpressionType =
-  | MAAPCallExpression
-  | MAAPExpressionBlock
-  | MAAPVariable
+export type MAAPVariable = {
+  useVariable?: boolean
+} & (MAAPCallExpression | MAAPLiteral | MAAPParameterName | MAAPIdentifier)
+export type MAAPExpressionType = {
+  useVariable?: boolean
+} & (MAAPCallExpression | MAAPExpressionBlock | MAAPVariable)
 export type MAAPExpressionOperator =
   | "**"
   | "*"
@@ -274,7 +270,7 @@ export interface Diagram {
    * Optional. Only used for internal processing needs.
    */
   id?: string
-  objType: MainItemType
+  objType: "Diagram"
   /**
    * Name of the diagram
    */
@@ -318,7 +314,7 @@ export interface ExtSim {
    * Optional, internal use only.
    */
   id?: string
-  objType: MainItemType
+  objType: "ExtSim"
   /**
    * referenace name in the model for the external simulation
    */
@@ -334,7 +330,7 @@ export interface ExtSim {
 }
 export interface State {
   id?: string
-  objType: MainItemType
+  objType: "State"
   /**
    * referenace name in the model for state
    */
@@ -387,7 +383,7 @@ export interface Action {
    * Optional, internal use only.
    */
   id?: string
-  objType: MainItemType
+  objType: "Action"
   /**
    * referenace name in the model for the action
    */
@@ -465,9 +461,7 @@ export interface Action {
   /**
    * Optional. For action type atRunExtApp. It is used for custom app form.
    */
-  template?: {
-    [k: string]: unknown
-  }
+  template?: Record<string, unknown>
   /**
    * Optional. For action type atRunExtApp. It is flag to indicate the type of return from the processOutputFileCode. If rtNone then it has no return, othrwise the C# script must return a List of strings with +/-[StateName] to shift out or into a state.
    */
@@ -531,7 +525,7 @@ export interface MAAPFormData {
   /**
    * The paths to other files referenced by the .inp and .par files
    */
-  fileRefs?: unknown[]
+  fileRefs?: string[]
   /**
    * The full path to the .inp file on the user's machine
    */
@@ -543,30 +537,11 @@ export interface MAAPFormData {
   /**
    * A list of possible initiators extracted from the .par file
    */
-  possibleInitiators?: {
-    /**
-     * The initiator description
-     */
-    desc: string
-    /**
-     * The initiator value
-     */
-    value: string
-    [k: string]: unknown
-  }[]
+  possibleInitiators?: MAAPParameter[]
   /**
    * A list of doc comments extracted from the .inp file
    */
-  docComments?: {
-    /**
-     * This interface was referenced by `undefined`'s JSON-Schema definition
-     * via the `patternProperty` "*".
-     */
-    [k: string]: {
-      value: string
-      [k: string]: unknown
-    }
-  }
+  docComments?: Record<string, MAAPComment>
   /**
    * The doc link variable used to store the results
    */
@@ -580,24 +555,20 @@ export interface MAAPFormData {
 export interface MAAPSensitivityStatement {
   type: "sensitivity"
   value: "ON" | "OFF"
-  [k: string]: unknown
 }
 export interface MAAPTitleStatement {
   type: "title"
   value?: string
-  [k: string]: unknown
 }
 export interface MAAPFileStatement {
   fileType: "PARAMETER FILE" | "INCLUDE"
   type: "file"
   value: string
-  [k: string]: unknown
 }
 export interface MAAPBlockStatement {
   blockType: "PARAMETER CHANGE" | "INITIATORS"
   type: "block"
   value: MAAPSourceElement[]
-  [k: string]: unknown
 }
 export interface MAAPConditionalBlockStatement {
   blockType: "IF" | "WHEN"
@@ -605,24 +576,21 @@ export interface MAAPConditionalBlockStatement {
   type: "conditional_block"
   value: MAAPSourceElement[]
   id?: string
-  [k: string]: unknown
 }
 export interface MAAPIsExpression {
   target: MAAPVariable
   type: "is_expression"
   value: MAAPExpression
-  [k: string]: unknown
+  useVariable?: boolean
 }
 export interface MAAPCallExpression {
   arguments: MAAPExpressionType[]
   type: "call_expression"
   value: MAAPIdentifier
-  [k: string]: unknown
 }
 export interface MAAPExpressionBlock {
   type: "expression_block"
   value: MAAPPureExpression
-  [k: string]: unknown
 }
 export interface MAAPPureExpression {
   type: "expression"
@@ -630,122 +598,97 @@ export interface MAAPPureExpression {
     left: MAAPExpressionType
     op: MAAPExpressionOperator
     right: MAAPPureExpression | MAAPExpressionType
-    [k: string]: unknown
   }
-  [k: string]: unknown
+  useVariable?: boolean
 }
 export interface MAAPIdentifier {
   type: "identifier"
   value: string
-  [k: string]: unknown
+  useVariable?: boolean
 }
 export interface MAAPBooleanLiteral {
   type: "boolean"
   value: boolean
-  [k: string]: unknown
 }
 export interface MAAPNumericLiteral {
   type: "number"
   units?: string
   value: number
-  [k: string]: unknown
 }
 export interface MAAPTimerLiteral {
   type: "timer"
   value: number
-  [k: string]: unknown
 }
 export interface MAAPParameterName {
   type: "parameter_name"
   value: string
-  [k: string]: unknown
 }
 export interface MAAPAliasStatement {
   type: "alias"
   value: MAAPAsExpression[]
-  [k: string]: unknown
 }
 export interface MAAPAsExpression {
   target: MAAPVariable
   type: "as_expression"
   value: MAAPIdentifier
-  [k: string]: unknown
 }
 export interface MAAPPlotFilStatement {
   n: number
   type: "plotfil"
   value: MAAPVariable[][]
-  [k: string]: unknown
 }
 export interface MAAPUserEvtStatement {
   type: "user_evt"
   value: MAAPUserEvtElement[]
-  [k: string]: unknown
 }
 export interface MAAPParameter {
   /**
    * An ID assigned to the parameter by the form
    */
   id?: string
-  /**
-   * The name of the parameter
-   */
-  name: string
-  /**
-   * The parameter value
-   */
-  value?: string | number | boolean
-  /**
-   * The parameter value unit
-   */
-  unit?: string
-  /**
-   * If the value of the parameter is using an EMRALD variable
-   */
-  useVariable: boolean
-  /**
-   * The EMRALD variable to use for the parameter value
-   */
-  variable?: string
-  /**
-   * The doc comment describing the parameter
-   */
+  flag?: MAAPBooleanLiteral
+  index?: number
+  type?: "parameter"
+  value: MAAPExpression | MAAPParameterName | string
   comment?: string
-  [k: string]: unknown
+  name?: string
+  useVariable?: boolean
+  unit?: string
+  variable?: string
+  desc?: string
 }
 export interface MAAPActionStatement {
   index: number
   type: "action"
   value: MAAPUserEvtElement[]
-  [k: string]: unknown
 }
 export interface MAAPFunctionStatement {
   name: MAAPIdentifier
   type: "function"
   value: MAAPExpression
-  [k: string]: unknown
 }
 export interface MAAPTimerStatement {
   type: "set_timer"
   value: MAAPTimerLiteral
-  [k: string]: unknown
 }
 export interface MAAPLookupStatement {
   name: MAAPVariable
   type: "lookup_variable"
   value: string[]
-  [k: string]: unknown
 }
 export interface MAAPAssignment {
   target: MAAPCallExpression | MAAPIdentifier
   type: "assignment"
   value: MAAPExpression
-  [k: string]: unknown
+  comment?: string
 }
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema definition
+ * via the `patternProperty` "*".
+ */
 export interface MAAPComment {
   type: "comment"
   value: string
-  [k: string]: unknown
 }
 export interface MAAPInitiator {
   /**
@@ -764,14 +707,13 @@ export interface MAAPInitiator {
    * The value of the initiator
    */
   value: string | number | boolean
-  [k: string]: unknown
 }
 export interface Event {
   /**
    * Optional, internal use only.
    */
   id?: string
-  objType: MainItemType
+  objType: "Event"
   /**
    * referenace name in the event in the model.
    */
@@ -874,7 +816,7 @@ export interface LogicNode {
    * Optional, internal use only.
    */
   id?: string
-  objType: MainItemType
+  objType: "LogicNode"
   /**
    * referenace name in the logic node
    */
@@ -918,7 +860,7 @@ export interface Variable {
    * Optional, internal use only.
    */
   id?: string
-  objType: MainItemType
+  objType: "Variable"
   /**
    * referenace name in the model for the variable
    */
@@ -1016,7 +958,7 @@ export interface Group {
   /**
    * Sub group tree path
    */
-  subgroup: Group[]
+  subgroup?: Group[]
 }
 export interface Templates {
   /**

@@ -1,8 +1,8 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { EmraldContextWrapperProps } from './EmraldContextWrapper';
+import type { EmraldContextWrapperProps } from './EmraldContextWrapper';
 import { appData, updateAppData } from '../hooks/useAppData';
-import { ReadonlySignal, useComputed, useSignal } from '@preact/signals-react';
-import { EMRALD_Model, Group } from '../types/EMRALD_Model';
+import { type ReadonlySignal, useComputed, useSignal } from '@preact/signals-react';
+import type { EMRALD_Model, Group, Main_Model } from '../types/EMRALD_Model';
 import { updateModelAndReferences } from '../utils/UpdateModel';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -14,10 +14,10 @@ interface TemplateContextType {
   findGroupHierarchyByGroupName: (groups: Group[], groupName: string) => Group | undefined;
   findTemplatesByGroupName: (groupName: string) => EMRALD_Model[];
   setGroups: (groups: Group[]) => void;
-  addTemplateToModel: (newTemplate: EMRALD_Model) => void;
+  addTemplateToModel: (newTemplate: EMRALD_Model) => Promise<void>;
   createTemplate: (template: EMRALD_Model) => void;
   deleteTemplate: (templateId: string) => void;
-  newTemplateList: (newTemplateList: unknown[]) => void;
+  newTemplateList: (newTemplateList: Main_Model[]) => void;
   mergeTemplateToList: (newTemplate: EMRALD_Model) => void;
   clearTemplateList: () => void;
 }
@@ -34,18 +34,27 @@ export function useTemplateContext() {
 
 const TemplateContextProvider: React.FC<EmraldContextWrapperProps> = ({ children }) => {
   const [templates, setTemplates] = useState<EMRALD_Model[]>(
-    appData.value.templates ? JSON.parse(JSON.stringify(appData.value.templates.map((template) => ({ ...template, id: uuidv4() })))) : [],
+    appData.value.templates
+      ? (JSON.parse(
+          JSON.stringify(
+            appData.value.templates.map((template) => ({ ...template, id: uuidv4() })),
+          ),
+        ) as EMRALD_Model[])
+      : [],
   );
   
   const temporaryTemplates = useSignal<EMRALD_Model[]>(templates);
-  const templatesList = useComputed(() => appData.value.templates || []);
+  const templatesList = useComputed(() => appData.value.templates ?? []);
 
   //combine the single path template groups into a one tree structure
   const hierarchicalGroups: Group[] = templates
     .filter((template) => template.group !== undefined) // Filter out templates with null groups
-    .reduce((accumulatedGroups: Group[], template: EMRALD_Model) => {
-      return combineGroups(accumulatedGroups, [template.group!]);
-    }, [] as Group[]);
+    .reduce<Group[]>((accumulatedGroups: Group[], template: EMRALD_Model) => {
+      if (template.group) {
+        return combineGroups(accumulatedGroups, [template.group]);
+      }
+      return [];
+    }, []);
 
   const [groups, setGroups] = useState<Group[]>(convertNullSubgroupsToEmptyArray(hierarchicalGroups));
 
@@ -63,7 +72,7 @@ const TemplateContextProvider: React.FC<EmraldContextWrapperProps> = ({ children
     // Helper function to find a group by name
     const findGroupByName = (groups: Group[], name: string | null): Group | null => {
       const foundGroup = groups.find((group) => group.name === name);
-      return foundGroup ? foundGroup : null;
+      return foundGroup ?? null;
     };
 
     // Add all groups from the first array
@@ -72,7 +81,7 @@ const TemplateContextProvider: React.FC<EmraldContextWrapperProps> = ({ children
       if (matchingGroup) {
         combinedGroups.push({
           name: group1.name,
-          subgroup: combineGroups(group1.subgroup || [], matchingGroup.subgroup || []),
+          subgroup: combineGroups(group1.subgroup ?? [], matchingGroup.subgroup ?? []),
         });
       } else {
         combinedGroups.push(group1);
@@ -99,7 +108,7 @@ const TemplateContextProvider: React.FC<EmraldContextWrapperProps> = ({ children
   // const groups = convertNullSubgroupsToEmptyArray(hierarchicalGroups);
 
   useEffect(() => {
-    const storedTemplates = JSON.parse(localStorage.getItem('templates') || '[]');
+    const storedTemplates = JSON.parse(localStorage.getItem('templates') ?? '[]') as EMRALD_Model[];
 
     // Create a set of existing template IDs to avoid duplicates
     const storedTemplateIds = new Set(storedTemplates.map((template: EMRALD_Model) => template.name));
@@ -114,7 +123,7 @@ const TemplateContextProvider: React.FC<EmraldContextWrapperProps> = ({ children
 
     // Update the groups if templates are added or imported. Make sure to include groups from session storage.
     const groupsFromTemplates = convertNullSubgroupsToEmptyArray(hierarchicalGroups);
-    const storedGroups: Group[] = JSON.parse(localStorage.getItem('templateGroups') || '[]');
+    const storedGroups = JSON.parse(localStorage.getItem('templateGroups') ?? '[]') as Group[];
     const storedGroupNames = new Set(storedGroups.map(group => group.name));
     
     const newGroups = groupsFromTemplates.filter(group => !storedGroupNames.has(group.name));
@@ -125,14 +134,14 @@ const TemplateContextProvider: React.FC<EmraldContextWrapperProps> = ({ children
 
   // Load initial groups from local storage when the component mounts
   useEffect(() => {
-    const storedGroups = JSON.parse(localStorage.getItem('templateGroups') || '[]');
-    temporaryTemplates.value = JSON.parse(localStorage.getItem('templates') || '[]');
+    const storedGroups = JSON.parse(localStorage.getItem('templateGroups') ?? '[]') as Group[];
+    temporaryTemplates.value = JSON.parse(localStorage.getItem('templates') ?? '[]') as EMRALD_Model[];
     setGroups(storedGroups);
   }, []);
 
   // Effect to store groups in local storage whenever groups state changes
   useEffect(() => {
-    const storedGroups: Group[] = JSON.parse(localStorage.getItem('templateGroups') || '[]');
+    const storedGroups = JSON.parse(localStorage.getItem('templateGroups') ?? '[]') as Group[];
     const storedGroupNames = new Set(storedGroups.map(group => group.name));
     
     const newGroups = groups.filter(group => !storedGroupNames.has(group.name));
@@ -141,19 +150,19 @@ const TemplateContextProvider: React.FC<EmraldContextWrapperProps> = ({ children
     localStorage.setItem('templateGroups', JSON.stringify(mergedGroups));
   }, [groups]);
 
-  const addTemplateToModel = async (newTemplate: EMRALD_Model) => {
+  const addTemplateToModel = async (newTemplate?: EMRALD_Model) => {
     if (!newTemplate) { return; }
-    var updatedModel: EMRALD_Model = await updateModelAndReferences(
+    const updatedModel: EMRALD_Model = await updateModelAndReferences(
       newTemplate,
       'EMRALD_Model',
     );
     updateAppData(updatedModel);
   };
 
-  const createTemplate = async (newTemplate: EMRALD_Model) => {
+  const createTemplate = (newTemplate: EMRALD_Model) => {
     temporaryTemplates.value = [...temporaryTemplates.value, newTemplate];
     localStorage.setItem('templates', JSON.stringify(temporaryTemplates.value));
-    setTemplates(temporaryTemplates.value as EMRALD_Model[]);
+    setTemplates(temporaryTemplates.value);
   };
 
   const deleteTemplate = (templateId: string) => {
@@ -221,7 +230,7 @@ const TemplateContextProvider: React.FC<EmraldContextWrapperProps> = ({ children
    * 
    * @param newTemplateList - The new list of templates to merge into temporaryTemplates.
    */
-  const newTemplateList = (newTemplateList: any[]): void => {
+  const newTemplateList = (newTemplateList: Main_Model[]): void => {
     // Spread the current and new templates into a new array
     temporaryTemplates.value = [...temporaryTemplates.value, ...newTemplateList];
     // Update the state with the new merged list of templates
@@ -247,9 +256,12 @@ const TemplateContextProvider: React.FC<EmraldContextWrapperProps> = ({ children
     // by combining all the groups in temporaryTemplates
     const hierarchicalGroups: Group[] = temporaryTemplates.value
     .filter((template) => template.group !== undefined) // Filter out templates with null groups
-    .reduce((accumulatedGroups: Group[], template: EMRALD_Model) => {
-      return combineGroups(accumulatedGroups, [template.group!]);
-    }, [] as Group[]);
+    .reduce<Group[]>((accumulatedGroups: Group[], template: EMRALD_Model) => {
+      if (template.group) {
+        return combineGroups(accumulatedGroups, [template.group]);
+      }
+      return [];
+    }, []);
 
     // Update the groups list with the new template's group structure
     setGroups(convertNullSubgroupsToEmptyArray(hierarchicalGroups));

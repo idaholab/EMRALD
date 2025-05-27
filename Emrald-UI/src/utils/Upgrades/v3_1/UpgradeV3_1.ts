@@ -1,7 +1,6 @@
-import { MAAPFormData } from '../../../components/forms/ActionForm/FormFieldsByType/RunApplication/CustomForms/MAAP/maap';
-import { UpgradeReturn } from '../v1_x/UpgradeV1_x';
-import { EMRALD_Model as EMRALD_ModelV3_0, Action as ActionV3_0 } from '../v3_0/AllModelInterfacesV3_0';
-import { EMRALD_Model } from './AllModelInterfacesV3_1';
+import type { UpgradeReturn } from '../v1_x/UpgradeV1_x';
+import type { EMRALD_Model as EMRALD_ModelV3_0, Action as ActionV3_0 } from '../v3_0/AllModelInterfacesV3_0';
+import type { EMRALD_Model, MAAPFormData } from './AllModelInterfacesV3_1';
 
 export function UpgradeV3_1(modelTxt: string): UpgradeReturn {
   return {
@@ -20,7 +19,6 @@ function UpgradeV3_1_Recursive(oldModel: EMRALD_ModelV3_0): EMRALD_Model {
     action.formData.exePath = action.formData.exePath.replace(/\\/g, '/').replace(/^\"/, '').replace(/\"$/, '');
     delete action.formData.inputFile;
     delete action.formData.parameterFile;
-    delete action.formData.
   }
 
   return {

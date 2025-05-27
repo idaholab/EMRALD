@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Event-Modeled Risk Assessment using Linked Diagrams (EMRALD)",
   "main": "EMRALD_Site/app.js",
+  "module": "esnext",
   "private": true,
   "scripts": {
     "dev": "cd Emrald-UI && npm run dev",

@@ -138,7 +138,7 @@
           "description": "Optional. Only used for internal processing needs."
         },
         "objType": {
-          "$ref": "#/definitions/MainItemType"
+          "const": "Diagram"
         },
         "name": {
           "type": "string",
@@ -186,7 +186,7 @@
           "description": "Optional, internal use only."
         },
         "objType": {
-          "$ref": "#/definitions/MainItemType"
+          "const": "ExtSim"
         },
         "name": {
           "type": "string",
@@ -212,7 +212,7 @@
           "type": "string"
         },
         "objType": {
-          "$ref": "#/definitions/MainItemType"
+          "const": "State"
         },
         "name": {
           "type": "string",
@@ -301,7 +301,7 @@
           "description": "Optional, internal use only."
         },
         "objType": {
-          "$ref": "#/definitions/MainItemType"
+          "const": "Action"
         },
         "name": {
           "type": "string",
@@ -424,7 +424,7 @@
           "description": "Optional, internal use only."
         },
         "objType": {
-          "$ref": "#/definitions/MainItemType"
+          "const": "Event"
         },
         "name": {
           "type": "string",
@@ -555,7 +555,7 @@
           "description": "Optional, internal use only."
         },
         "objType": {
-          "$ref": "#/definitions/MainItemType"
+          "const": "LogicNode"
         },
         "name": {
           "type": "string",
@@ -602,7 +602,7 @@
           "description": "Optional, internal use only."
         },
         "objType": {
-          "$ref": "#/definitions/MainItemType"
+          "const": "Variable"
         },
         "name": {
           "type": "string",
@@ -857,7 +857,7 @@
         }
       },
       "additionalProperties": false,
-      "required": ["name", "subgroup"]
+      "required": ["name"]
     },
     "DiagramType": {
       "type": "string",
