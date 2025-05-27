@@ -1,12 +1,13 @@
 import { Upgrade } from "./upgradeGiveID";
 import { v4 as uuidv4 } from 'uuid';
-import { EMRALD_Model, EMRALD_SchemaVersion } from "../../types/EMRALD_Model";
+import type { EMRALD_Model } from "../../types/EMRALD_Model";
+import { EMRALD_SchemaVersion } from "../../types/ModelUtils";
 import Ajv from "ajv"
 
 
  export function upgradeModel (emraldData : string, toVersion?: number): EMRALD_Model | null {
     const upgradeModel = new Upgrade(emraldData);
-    upgradeModel.upgradeGiveID(toVersion ? toVersion : EMRALD_SchemaVersion, uuidv4); // upgrade to version 3.0 true;
+    upgradeModel.upgradeGiveID(toVersion ?? EMRALD_SchemaVersion, uuidv4); // upgrade to version 3.0 true;
     if((upgradeModel.errorsStr.length >  0) &&  (upgradeModel.errorsStr[0] != "")){
         console.log(upgradeModel.errorsStr);
         return null;
@@ -22,7 +23,7 @@ import Ajv from "ajv"
 //}
 
 export async function validateModel(model: EMRALD_Model): Promise < string[] > {
-  var _errors = [];
+  const _errors = [];
   const schemaPath = './src/utils/Upgrades/v3_0/EMRALD_JsonSchemaV3_0.json';
 
   try {
@@ -34,18 +35,18 @@ export async function validateModel(model: EMRALD_Model): Promise < string[] > {
     // Create a new instance of Ajv
     const ajv = new Ajv();
     // Compile the JSON schema
-    const schema = JSON.parse(schemaTxt);
+    const schema = JSON.parse(schemaTxt) as EMRALD_Model;
     const validate = ajv.compile(schema);
     // Validate the data against the schema
     const isValid = validate(model);
     if (!isValid) {
         validate.errors?.forEach(e => {
-            _errors.push(`${e.message} - ${e.schemaPath}`);
+            _errors.push(`${e.message ?? ''} - ${e.schemaPath}`);
         });
     }
   }
-  catch (error : any) {
-      _errors = error.message;
+  catch (error) {
+      _errors.push((error as Error).message);
   }
   return _errors;
 }

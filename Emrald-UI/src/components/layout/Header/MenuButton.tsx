@@ -5,7 +5,7 @@ import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
 import type { SystemStyleObject } from '@mui/system/styleFunctionSx';
 import { startCase } from 'lodash';
-import { type downloadOptions, projectOptions, templateSubMenuOptions } from './menuOptions';
+import { downloadOptions, projectOptions, templateSubMenuOptions } from './menuOptions';
 import { useAssembledData } from '../../../hooks/useAssembledData';
 import { useTemplateContext } from '../../../contexts/TemplateContext';
 import Alert from '@mui/material/Alert';
@@ -15,6 +15,8 @@ import DialogComponent from '../../common/DialogComponent/DialogComponent';
 import Typography from '@mui/material/Typography';
 import { useWindowContext } from '../../../contexts/WindowContext';
 import { useModelDetailsContext } from '../../../contexts/ModelDetailsContext';
+
+type MenuOption = keyof typeof projectOptions | keyof typeof downloadOptions;
 
 interface MenuButtonProps {
   id: number;
@@ -52,7 +54,7 @@ const MenuButton: React.FC<MenuButtonProps> = ({ id, title, options, handleClick
     setOpen(false);
   };
 
-  const handleSubMenuMouseEnter = (event: React.MouseEvent<HTMLElement>, option: string) => {
+  const handleSubMenuMouseEnter = (event: React.MouseEvent<HTMLElement>, option: MenuOption) => {
     if (option === 'Templates') {
       const templateMenuEl = event.currentTarget;
       const timeout = setTimeout(() => {
@@ -85,7 +87,7 @@ const MenuButton: React.FC<MenuButtonProps> = ({ id, title, options, handleClick
     setShowNewProjectDialog(false);
   };
 
-  const handleMenuItemClick = async (option: string) => {
+  const handleMenuItemClick = async (option: MenuOption) => {
     switch (option) {
       case 'New':
         setShowNewProjectDialog(true);
@@ -103,10 +105,14 @@ const MenuButton: React.FC<MenuButtonProps> = ({ id, title, options, handleClick
         projectOptions['Load Results'](addWindow);
         break;
       // Add cases for other menu items as needed
+      case 'Templates':
+      case 'Clear Cached Data':
+        projectOptions[option]();
+        break;
       default:
-        // The default case is currently used for the download menu, which doesn't take any arguments for any of it's functions
-        if (handleClick) {
-          handleClick(); // Call the onClick function without arguments by default
+        // The default case currently handles all download menu options which don't take any arguments
+        if (options) {
+          downloadOptions[option]();
         }
     }
     // handleMouseLeave();
@@ -196,7 +202,7 @@ const MenuButton: React.FC<MenuButtonProps> = ({ id, title, options, handleClick
             horizontal: 'left',
           }}
         >
-          {options && Object.keys(options).map((option) => option).map((option, index) => (
+          {options && Object.keys(options).map((option) => option as MenuOption).map((option, index) => (
             <MenuItem
               key={index}
               onClick={() => { void handleMenuItemClick(option); }}
