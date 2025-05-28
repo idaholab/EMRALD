@@ -36,7 +36,7 @@ namespace EMRALD_Sim
     private string _modelPath = "";
     //private bool _cancel = false;
     private string _statsFile = "";
-    private ProcessSimBatch simRuns = null;
+    private List<ProcessSimBatch> simRuns = new List<ProcessSimBatch>();
     private string curDir = "c:\\temp";
     private List<string> monitor = new List<string>();
     private List<List<string>> _xmppLink = new List<List<string>>();
@@ -935,9 +935,11 @@ namespace EMRALD_Sim
         MethodInvoker ButtonEnableDelegate = delegate ()
         {
           btnStartSims.Enabled = true;
-
-          if (simRuns.error != "")
-            lbl_ResultHeader.Text = simRuns.error;
+          foreach (var simBatch in simRuns)
+          {
+            if (simBatch.error != "")
+              lbl_ResultHeader.Text = "Thread-" + simBatch.threadNum.ToString() + " " + simBatch.error;
+          }
         };
 
 
@@ -975,41 +977,76 @@ namespace EMRALD_Sim
         lblRunTime.Visible = true;
         lbl_ResultHeader.Visible = true;
 
-        //do the JSON path statistics ?
-        if (rbJsonPaths.Checked)
-          _statsFile = tbSavePath2.Text;
-        else
-          _statsFile = "";
+        _statsFile = tbSavePath2.Text;
+        int runsDiv = int.Parse(tbRunCnt.Text) / (int)ConfigData.threads;
 
+        List<Thread> threads = new List<Thread>();
 
-        simRuns = new ProcessSimBatch(_sim, maxTime, tbSavePath.Text, _statsFile, _pathResultsInterval);
-
-        simRuns.progressCallback = DispResults;
-        if (_server != null)
+        for (int i = 0; i < ConfigData.threads; i++)
         {
-          simRuns.AddExtSimulationData(_server, 100, "", _XMPP_Password);
+          //set up the simBatch, only set threads if more than one.
+          simRuns.Add(new ProcessSimBatch(_sim, maxTime, tbSavePath.Text, _statsFile, _pathResultsInterval, ConfigData.threads <= 1 ? null : i));
+
+          simRuns[i].progressCallback = DispResults;
+          if (_server != null)
+          {
+            simRuns[i].AddExtSimulationData(_server, 100, "", _XMPP_Password);
+          }
+
+          foreach (var varItem in lbMonitorVars.CheckedItems)
+          {
+            simRuns[i].logVarVals.Add(varItem.ToString());
+          }
+
+          if (i == 0) //add extra runs on the first one
+            simRuns[i].SetupBatch(runsDiv + (int.Parse(tbRunCnt.Text) % (int)ConfigData.threads), true);
+          else
+            simRuns[i].SetupBatch(runsDiv, true);
+
+          ThreadStart tStarter = new ThreadStart(simRuns[i].RunBatch);
+          //run this when the thread is done.
+          int locIdx = i;
+          tStarter += () =>
+          {
+            simRuns[locIdx].GetVarValues(simRuns[locIdx].logVarVals, true);
+            //InvokeUIUpdate(ButtonEnableDelegate);
+          };
+
+          //int locIdx = i;
+
+          //ThreadStart tStarter = () =>
+          //{
+          //  simRuns[locIdx].RunBatch(locIdx);
+          //  //run this when the runs are done.
+          //  simRuns[locIdx].GetVarValues(simRuns[locIdx].logVarVals, true);
+          //};
+
+          Thread simThread = new Thread(tStarter);
+          simThread.Start();
+          threads.Add(simThread);
         }
 
-        foreach (var varItem in lbMonitorVars.CheckedItems)
+        Task.Run(() =>
         {
-          simRuns.logVarVals.Add(varItem.ToString());
-        }
+          // Wait for all threads to complete
+          foreach (var thread in threads)
+          {
+            thread.Join();
+          }
 
-        string simplePathRes = "";
-        if (!rbJsonPaths.Checked)
-          simplePathRes = tbSavePath2.Text;
-
-        simRuns.SetupBatch(int.Parse(tbRunCnt.Text), true);
-        ThreadStart tStarter = new ThreadStart(simRuns.RunBatch);
-        //run this when the thread is done.
-        tStarter += () =>
-        {
-          simRuns.GetVarValues(simRuns.logVarVals, true);
+          // Once all threads are done, update the UI
           InvokeUIUpdate(ButtonEnableDelegate);
-        };
+        });
 
-        Thread simThread = new Thread(tStarter);
-        simThread.Start();
+        //// Wait for all threads to complete
+        //foreach (var thread in threads)
+        //{
+        //  thread.Join();
+        //}
+
+        //InvokeUIUpdate(ButtonEnableDelegate);
+        ////todo combine the results and update the UI.
+
       }
       catch (Exception err)
       {
@@ -1075,6 +1112,7 @@ namespace EMRALD_Sim
         _currentModelSettings.DebugToRun = tbLogRunEnd.Text;
 
         _currentModelSettings.CheckedVars.Clear();
+        _currentModelSettings.Threads = tbThreads.Text;
         foreach (var item in lbMonitorVars.CheckedItems)
         {
           _currentModelSettings.CheckedVars.Add(item.ToString());
@@ -1109,6 +1147,7 @@ namespace EMRALD_Sim
       tbSavePath2.Text = _currentModelSettings.PathResultsLocation;
       tbSeed.Text = _currentModelSettings.Seed;
       LoadLib.SetSeed(tbSeed.Text);
+      LoadLib.SetThreads(tbThreads.Text);
       tbLogRunStart.Text = _currentModelSettings.DebugFromRun.ToString();
       tbLogRunEnd.Text = _currentModelSettings.DebugToRun.ToString();
 
@@ -1141,6 +1180,9 @@ namespace EMRALD_Sim
           lbMonitorVars.SetItemChecked(i, true);
         }
       }
+      tbThreads.Text = _currentModelSettings.Threads;
+      if ((_currentModelSettings.Threads != "") && (_currentModelSettings.Threads != "1"))
+        cbMultiThreaded.Checked = true;
 
       _populatingSettings = false;
 
@@ -1158,7 +1200,7 @@ namespace EMRALD_Sim
 
     private void ValidateModelAndUpdateUI()
     {
-      txtMStatus.Text = LoadLib.ValidateModel(ref _sim, teModel.Text, Path.GetDirectoryName(_modelPath));
+      txtMStatus.Text = LoadLib.ValidateModel(ref _sim, teModel.Text, _modelPath);
       _validSim = txtMStatus.Text == "";
       if (txtMStatus.Text != "")
       {
@@ -1217,11 +1259,15 @@ namespace EMRALD_Sim
     {
       MethodInvoker methodInvokerDelegate = delegate ()
       {
+        int curT = 0;
+        if (cbMultiThreaded.Checked)
+          curT = cbCurThread.SelectedIndex;
+
         lbl_ResultHeader.Text = _sim.name + " " + runCnt.ToString() + " of " + tbRunCnt.Text + " runs.";// Time - " + runTime.ToString();
         lblRunTime.Text = runTime.ToString("g");
         lvResults.Items.Clear();
 
-        foreach (var item in simRuns.keyPaths)
+        foreach (var item in simRuns[curT].keyPaths)
         {
           string[] lvCols = new string[4];
           lvCols[0] = item.Key;
@@ -1231,9 +1277,9 @@ namespace EMRALD_Sim
           lvResults.Items.Add(new ListViewItem(lvCols));
 
           //write the failed components and times.
-          if (simRuns.keyFailedItems.ContainsKey(item.Key))
+          if (simRuns[curT].keyFailedItems.ContainsKey(item.Key))
           {
-            foreach (var cs in simRuns.keyFailedItems[item.Key].compFailSets)
+            foreach (var cs in simRuns[curT].keyFailedItems[item.Key].compFailSets)
             {
               string[] lvCols2 = new string[4];
 
@@ -1256,9 +1302,9 @@ namespace EMRALD_Sim
         }
 
         lvVarValues.Items.Clear();
-        List<string> values = simRuns.GetVarValues(simRuns.logVarVals);
+        List<string> values = simRuns[curT].GetVarValues(simRuns[curT].logVarVals);
         int i = 0;
-        foreach (var simVar in simRuns.logVarVals)
+        foreach (var simVar in simRuns[curT].logVarVals)
         {
           string[] lvCols = new string[2];
           lvCols[0] = simVar;
@@ -1272,7 +1318,7 @@ namespace EMRALD_Sim
 
         if (tbSavePath.Text != "")
         {
-          simRuns.LogResults(runTime, runCnt, logFailedComps);
+          simRuns[curT].LogResults(runTime, runCnt, logFailedComps);
         }
 
       };
@@ -1282,7 +1328,11 @@ namespace EMRALD_Sim
 
     private void btn_Stop_Click(object sender, EventArgs e)
     {
-      simRuns.StopSims();
+      int curT = 0;
+      if (cbMultiThreaded.Checked)
+        curT = cbCurThread.SelectedIndex;
+
+      simRuns[curT].StopSims();
     }
 
     private void lbExtSimLinks_Click(object sender, EventArgs e)
@@ -1465,14 +1515,6 @@ namespace EMRALD_Sim
       SaveUISettingsToJson();
     }
 
-    private void rbSimplePath_CheckedChanged(object sender, EventArgs e)
-    {
-      if (rbSimplePath.Checked)
-        tbSavePath2.Text = Path.GetDirectoryName(tbSavePath2.Text) + "\\" + Path.GetFileNameWithoutExtension(tbSavePath2.Text) + ".text";
-      else
-        tbSavePath2.Text = Path.GetDirectoryName(tbSavePath2.Text) + "\\" + Path.GetFileNameWithoutExtension(tbSavePath2.Text) + ".json";
-    }
-
     private void teModel_TextChanged(object sender, EventArgs e)
     {
       _validSim = false;
@@ -1553,6 +1595,66 @@ namespace EMRALD_Sim
         // Handle any errors that may occur
         MessageBox.Show($"An error occurred while trying to open the file: {ex.Message}");
       }
+    }
+
+    private void cbMultiThreaded_CheckedChanged(object sender, EventArgs e)
+    {
+      if (cbMultiThreaded.Checked == false)
+      {
+        tbThreads.Text = "1";
+      }
+      else
+      {
+        tbSeed.Text = "";
+        //make sure the model can be multithreaded.
+        List<string> issueItems = this._sim.CanMutiThread();
+        if (issueItems.Count > 0)
+        {
+          //TODO bring up the form for the user to see/edit the path references and what to adjust or copy. Pass in the models.multiThreadInfo and the issues to highlight.
+
+
+
+        }
+      }
+
+      tbThreads.Visible = cbMultiThreaded.Checked;
+      lblThreads.Visible = cbMultiThreaded.Checked;
+      chkLog.Checked = !cbMultiThreaded.Checked;
+      chkLog.Enabled = !cbMultiThreaded.Checked;
+      tbSeed.Enabled = !cbMultiThreaded.Checked;
+      lbl_CurThread.Visible = cbMultiThreaded.Checked;
+      cbCurThread.Visible = cbMultiThreaded.Checked;
+      bttnPathRefs.Visible = cbMultiThreaded.Checked;
+
+      tbThreads_Leave(sender, e);//update cur thread stuff.
+    }
+
+    private void tbThreads_Leave(object sender, EventArgs e)
+    {
+      {
+        if (!LoadLib.SetThreads(tbThreads.Text))
+        {
+          MessageBox.Show("Invalid Thread Cnt, must be a number");
+          tbSeed.Text = "1";
+        }
+        else
+        {
+          cbCurThread.Items.Clear();
+          for (int i = 0; i < ConfigData.threads; i++)
+            cbCurThread.Items.Add($"{i}");
+          cbCurThread.SelectedIndex = 0;
+
+          if (cbCurThread.SelectedIndex < 1)
+            cbCurThread.SelectedIndex = 0;
+
+          SaveUISettingsToJson();
+        }
+      }
+    }
+
+    private void bttnPathRefs_Click(object sender, EventArgs e)
+    {
+      //TODO bring up the form for the user to see/edit the path references and what to adjust or copy. Pass in the models.multiThreadInfo
     }
   }
 }

@@ -260,7 +260,7 @@ namespace SimulationDAL
       return true;
     }
 
-     //public virtual void LookupRelatedItems(LookupLists all, LookupLists addToList)
+    //public virtual void LookupRelatedItems(LookupLists all, LookupLists addToList)
     //{
 
     //  if (addToList.allVariables.ContainsKey(this.id))
@@ -270,6 +270,12 @@ namespace SimulationDAL
 
     //  addToList.allVariables.Add(this);
     //}
+
+    public virtual List<ScanForReturnItem> ScanFor(ScanForTypes scanType)
+    {
+      //override in the different types if it is possible that the item has something for the scanType 
+      return new List<ScanForReturnItem>();
+    }
   }
 
   public class SimGlobVariable : SimVariable
@@ -805,6 +811,23 @@ namespace SimulationDAL
       {
         throw new Exception("Failed to initialize variable, not the correct type. " + e.Message);
       }
+    }
+
+    public override List<ScanForReturnItem> ScanFor(ScanForTypes scanType)
+    {
+      var itemList = new List<ScanForReturnItem>();
+
+      if (scanType == ScanForTypes.sfMultiThreadIssues)
+      {
+        //see if there are any file references.  
+        itemList.Add(new ScanForRefsItem(this.id,
+                                        this.name,
+                                        EnIDTypes.itVar,
+                                        "Document Variable[" + this.name + "] has a non relative file path reference: " + _docPath,
+                                        _docPath));
+      }
+
+      return itemList;
     }
   }
 
@@ -1642,6 +1665,18 @@ namespace SimulationDAL
       }
 
       return true;
+    }
+
+    public List<ScanForReturnItem> ScanFor(ScanForTypes scanType, EmraldModel lists)
+    {
+      var foundList = new List<ScanForReturnItem>();
+      
+      foreach (var curItem in this.Values)
+      {
+        foundList.AddRange(curItem.ScanFor(scanType));
+      }
+
+      return foundList;
     }
   }
 }

@@ -2,14 +2,16 @@
 
 using System;
 using System.Collections.Generic;
-using MyStuff.Collections;
-using ScriptEngineNS;
-using System.Xml;
 using System.Collections.ObjectModel;
-using MathNet.Numerics.Distributions;
-using MessageDefLib;
-using Newtonsoft.Json;
+using System.IO;
 using System.Linq;
+using System.Xml;
+using MathNet.Numerics.Distributions;
+using MathNet.Numerics.LinearAlgebra;
+using MessageDefLib;
+using MyStuff.Collections;
+using Newtonsoft.Json;
+using ScriptEngineNS;
 
 namespace SimulationDAL
 {
@@ -19,6 +21,7 @@ namespace SimulationDAL
     protected List<int> _relatedIDs = new List<int>(); //IDs of items used to evaluate this event. 
     protected MyBitArray _relatedIDsBitSet = null;
     public bool mainItem = false;
+    public string rootPath = "";
     //protected virtual EnModifiableTypes GetModType() { return EnModifiableTypes.mtNone; }
 
     public ReadOnlyCollection<int> relatedIDs { get { return _relatedIDs.AsReadOnly(); } }
@@ -126,6 +129,11 @@ namespace SimulationDAL
     public virtual void Reset()
     {
       //stub to do in classes if needed
+    }
+    public virtual List<ScanForReturnItem> ScanFor(ScanForTypes scanType)
+    {
+      //override in the different types if it is possible that the item has something for the scanType 
+      return new List<ScanForReturnItem>();
     }
   }
 
@@ -602,6 +610,8 @@ namespace SimulationDAL
       compiledComp.AddVariable("RunIdx", typeof(int));
       compiledComp.AddVariable("ExtSimStartTime", typeof(double));
       compiledComp.AddVariable("NextEvTime", typeof(double));
+      compiledComp.AddVariable("RootPath", typeof(string));
+      
 
       if (varList != null)
       {
@@ -611,7 +621,8 @@ namespace SimulationDAL
           if ((varItem.Value.name != "CurTime") &&
               (varItem.Value.name != "RunIdx") &&
               (varItem.Value.name != "ExtSimStartTime") &&
-              (varItem.Value.name != "NextEvTime"))
+              (varItem.Value.name != "NextEvTime") &&
+              (varItem.Value.name != "RootPath"))
           {
             compiledComp.AddVariable(varItem.Value.name, varItem.Value.dType);
           }
@@ -643,6 +654,7 @@ namespace SimulationDAL
       compiledComp.SetVariable("RunIdx", typeof(int), runIdx);
       compiledComp.SetVariable("ExtSimStartTime", typeof(double), start3DTime.TotalHours);
       compiledComp.SetVariable("NextEvTime", typeof(double), nextEvTime.TotalHours);//NextEvTime
+      compiledComp.SetVariable("RootPath", typeof(string), rootPath);
 
       if (varList != null) //assign the values to the variables if assigned
       {
@@ -685,6 +697,27 @@ namespace SimulationDAL
 
       //SimVariable varItem = all.allVariables[this.relatedIDs[0]];
       //varItem.LookupRelatedItems(all, addToList);
+    }
+
+    public override List<ScanForReturnItem> ScanFor(ScanForTypes scanType)
+    {
+      var itemList = new List<ScanForReturnItem>();
+
+      if (scanType == ScanForTypes.sfMultiThreadIssues)
+      {
+        //see if there are any file references in the code.         
+        var paths = CommonFunctions.FindFilePathReferences(compCode);
+        foreach (var path in paths)
+        {
+          itemList.Add(new ScanForRefsItem(this.id,
+                                          this.name,
+                                          EnIDTypes.itEvent,
+                                          "Event [" + this.name + "] has a file path reference script: " + path + ". If there could be a multi thread issue, assign files to copy.",
+                                          path));
+        }
+      }
+
+      return itemList;
     }
   }
 
@@ -829,6 +862,22 @@ namespace SimulationDAL
         return base.CompileCompCode();
       else
         return true;
+    }
+
+    public override List<ScanForReturnItem> ScanFor(ScanForTypes scanType)
+    {
+      var itemList = new List<ScanForReturnItem>();
+
+      if (scanType == ScanForTypes.sfMultiThreadIssues)
+      {
+        itemList.Add(new ScanForRefsItem(this.id,
+                                          this.name,
+                                          EnIDTypes.itEvent,
+                                          "External Simulation Events currently can't be used with multiThreading Event [" + this.name + "]",
+                                          ""));
+      }
+
+      return itemList;
     }
   }
 
@@ -1814,6 +1863,19 @@ namespace SimulationDAL
       {
         item.Reset();
       }
+    }
+
+    public List<ScanForReturnItem> ScanFor(ScanForTypes scanType, EmraldModel lists)
+    {
+      var foundList = new List<ScanForReturnItem>();
+      
+      foreach (var curItem in this.Values)
+      {
+        curItem.rootPath = lists.rootPath;
+        foundList.AddRange(curItem.ScanFor(scanType));
+      }
+
+      return foundList;
     }
 
     //void LoadIfNot()

@@ -1,14 +1,15 @@
 ﻿// Copyright 2021 Battelle Energy Alliance
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-//using System.Collections;
-using System.Data.SqlClient;
 //using System.Windows.Forms;
 using System.Data;
+//using System.Collections;
+using System.Data.SqlClient;
 using System.IO;
+using System.Linq;
+using System.Text;
 using MessageDefLib;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Schema;
@@ -47,7 +48,11 @@ namespace SimulationDAL
     //public ComponentsList allComponents = new ComponentsList();
     public LogicNodeList allLogicNodes = new LogicNodeList();
     public Dictionary<int, List<AccrualVariable>> AccrualVars = new Dictionary<int, List<AccrualVariable>>();
-    public string rootPath = "";
+    public MultiThreadInfo multiThreadInfo = null;
+
+    public string fileName { get; set; } = "";
+    public string rootPath { get; set; } = "";
+    public string modelTxt { get; set; } = "";
 
     //public int dbID = 0;
     public int curRunIdx = 0; //current run index.
@@ -147,10 +152,12 @@ namespace SimulationDAL
       return jsonModel;
     }
 
-    public bool DeserializeJSON(string jsonModel, string modelPath) 
+    public bool DeserializeJSON(string jsonModel, string modelPath, string fileName) 
     {
       SingleNextIDs.Instance.Reset();
       this.rootPath = modelPath;
+      this.modelTxt = jsonModel;
+      this.fileName = fileName;
       dynamic jsonObj = JsonConvert.DeserializeObject(jsonModel);
       //update the model if needed
       if((jsonObj.emraldVersion == null) || (jsonObj.emraldVersion < SCHEMA_VERSION) ) 
@@ -174,6 +181,12 @@ namespace SimulationDAL
 
       if (!base.DeserializeDerived((object)dynObj, false, lists, useGivenIDs))
         return false;
+
+      // Deserialize multiThreadInfo if present
+      if (dynObj.multiThreadInfo != null)
+      {
+        this.multiThreadInfo = JsonConvert.DeserializeObject<MultiThreadInfo>(Convert.ToString(dynObj.multiThreadInfo));
+      }
 
       //construct all the objects
       this.allActions.DeserializeJSON(dynObj.ActionList, this, useGivenIDs);
@@ -209,7 +222,68 @@ namespace SimulationDAL
       return true;
     }
 
- 
+    /// <summary>
+    /// if result cout is > 0 there are issues
+    /// </summary>
+    /// <returns>description of issues if there are any</returns>
+    public List<string> CanMutiThread()
+    {
+      var ModelRefsList = new List<ScanForReturnItem>();
+
+      //Return any issues that actions could have with reference when multithreading
+      ModelRefsList.AddRange(allDiagrams.ScanFor(ScanForTypes.sfMultiThreadIssues, this));
+      ModelRefsList.AddRange(allStates.ScanFor(ScanForTypes.sfMultiThreadIssues, this));
+      ModelRefsList.AddRange(allEvents.ScanFor(ScanForTypes.sfMultiThreadIssues, this));
+      ModelRefsList.AddRange(allActions.ScanFor(ScanForTypes.sfMultiThreadIssues, this));
+      ModelRefsList.AddRange(allExtSims.ScanFor(ScanForTypes.sfMultiThreadIssues, this));
+      ModelRefsList.AddRange(allVariables.ScanFor(ScanForTypes.sfMultiThreadIssues, this));
+      ModelRefsList.AddRange(allLogicNodes.ScanFor(ScanForTypes.sfMultiThreadIssues, this));
+
+      //go through each of the found items and look for hem in the multiThreadInfo or put in a new list.
+      var notAccountedFor = new List<String>();
+      Dictionary<string, ToCopyForRef> curMutiThreadItems = new Dictionary<string, ToCopyForRef>();
+      foreach (var item in multiThreadInfo.ToCopyForRefs)
+      {
+        curMutiThreadItems.Add(item.ItemName, item);
+      }
+
+      foreach (var modelRef in ModelRefsList)
+      {
+        var mPathRef = (modelRef as ScanForRefsItem);
+        if (curMutiThreadItems.ContainsKey(modelRef.itemName))
+        {
+          var curI = curMutiThreadItems[modelRef.itemName];
+          if(curI.RelPath == "") //this should have been added before if it exists.
+          {
+            throw new Exception("missing RelPath for " + modelRef.itemName);
+          }
+
+          if (curI.RefPath != mPathRef.Path) //this should have been added before if it exists.
+          {
+            // "missing RerPath for " + modelRef.itemName);
+            curI.RefPath = mPathRef.Path;
+            notAccountedFor.Add(curI.ItemName);
+          }
+        }
+        else
+        {
+          var addI = new ToCopyForRef(mPathRef.itemName, mPathRef.itemType, mPathRef.Path, null, "");
+
+          if (Path.IsPathRooted(mPathRef.Path))
+          {
+            addI.RelPath = mPathRef.Path;
+            addI.ToCopy.Add(Path.Combine(rootPath, mPathRef.Path));
+          }
+
+          multiThreadInfo.ToCopyForRefs.Add(addI);
+          notAccountedFor.Add(addI.ItemName);
+
+        }
+      }
+      
+
+      return notAccountedFor;
+    }
 
    
 //The following code sections are for constructing a model through code

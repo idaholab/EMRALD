@@ -2,22 +2,24 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
-using System.Diagnostics;
+using System.Xml.Linq;
+using MathNet.Numerics.Statistics;
+using Matrix.Xmpp.PubSub;
+using Matrix.Xmpp.StreamInitiation;
+using Matrix.Xmpp.XHtmlIM;
 using MyStuff.Collections;
-using System.IO;
+using Newtonsoft.Json;
+using NLog;
+using SimulationDAL;
 using SimulationTracking;
 //using System.Windows.Forms;
 using XmppMessageServer;
-using NLog;
-using SimulationDAL;
-using Newtonsoft.Json;
-using MathNet.Numerics.Statistics;
-using System.Threading;
-using Matrix.Xmpp.XHtmlIM;
-using System.Xml.Linq;
 
 namespace SimulationEngine
 {
@@ -91,6 +93,7 @@ namespace SimulationEngine
     private Progress _progress = null;
     private int _pathResultsInterval = -1; //how often to save the path results to the file
     private Dictionary<string, List<double>> finalVarValueList = new Dictionary<string, List<double>>();
+    private int? _threadNum = 0;
 
     //public Dictionary<string, double> variableVals { get { return _variableVals; } }
     public Dictionary<string, FailedItems> keyFailedItems = new Dictionary<string, FailedItems>(); //key = StateName, value = cut sets
@@ -105,15 +108,50 @@ namespace SimulationEngine
     public TimeSpan runtime = TimeSpan.FromMilliseconds(0);
     private string _error = "";
     public string error { get { return _error; } }
+    public int? threadNum { get { return _threadNum; } }
 
-    public ProcessSimBatch(EmraldModel lists, TimeSpan endtime, string resultFile, string jsonResPaths, int pathResultsInterval)
+    public ProcessSimBatch(EmraldModel lists, TimeSpan endtime, string resultFile, string jsonResPaths, int pathResultsInterval, int? threadNum = null)
     {
-      this._lists = lists;
+      this._threadNum = threadNum;
       this._endTime = endtime;
-      this._resultFile = resultFile;
-      this._jsonResultPaths = jsonResPaths;
       this._pathResultsInterval = pathResultsInterval;
       this.progressCallback = LogResults;
+      
+
+      //if this is mutithreaded then it needs a temp work area for the model and results.
+      if (_threadNum != null)
+      {
+        string appDataFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), @"EMRALD\" + lists.fileName + "_T" + ((int)_threadNum).ToString());
+        // Ensure the directory exists
+        if (!Directory.Exists(appDataFolder))
+        {
+          Directory.CreateDirectory(appDataFolder);
+        }
+
+        //If there is a folder with the same name as the model file, copy it
+        string copyFolder = lists.rootPath + lists.fileName;
+        if (Directory.Exists(copyFolder))
+        {
+          CommonFunctions.CopyDirectory(copyFolder, appDataFolder, true);
+        }
+       
+
+        //make a copy of the model from the origional 
+        var origModel = lists;
+        this._lists = new EmraldModel();
+        this._lists.DeserializeJSON(origModel.modelTxt, appDataFolder, lists.fileName);
+
+
+        // Set the file paths with the rootPath
+        this._resultFile = Path.Combine(this._lists.rootPath, Path.GetFileName(resultFile));
+        this._jsonResultPaths = Path.Combine(this._lists.rootPath, Path.GetFileName(jsonResPaths));
+      }
+      else
+      {
+        this._resultFile = resultFile;
+        this._jsonResultPaths = jsonResPaths;
+        this._lists = lists;
+      }      
     }
 
     //public void Add3DSimulationData(HoudiniSimClient sim3DHandler, double frameRate, string sim3DPath)//, HoudiniSimClient.TLogEvCallBack viewNotifications)
@@ -207,6 +245,7 @@ namespace SimulationEngine
 
     public void RunBatch()
     {
+
       //if there were any xmpp connections specified in the perams not set by the user, connect here
       if (!AutoConnectExtSim())
       {

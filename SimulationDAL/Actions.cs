@@ -1,25 +1,28 @@
 ﻿// Copyright 2021 Battelle Energy Alliance
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.CodeDom.Compiler;
-using ScriptEngineNS;
+using System.Collections;
+using System.Collections.Generic;
 //using System.Windows.Forms;
 using System.Data;
 //using System.Web.Helpers;
 using System.Diagnostics;
 //using SimulationTracking;
 using System.IO;
-using System.Threading;
-using Newtonsoft.Json.Linq;
-using MessageDefLib;
-using System.Xml;
-using Newtonsoft.Json.Schema.Generation;
-using Newtonsoft.Json;
-using System.Security.Principal;
+using System.Linq;
+using System.Reflection.Emit;
 using System.Runtime.InteropServices;
+using System.Security.Principal;
+using System.Text;
+using System.Threading;
+using System.Xml;
+using MessageDefLib;
+using Microsoft.CodeAnalysis.Scripting;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Schema.Generation;
+using ScriptEngineNS;
 
 namespace SimulationDAL
 {
@@ -106,6 +109,12 @@ namespace SimulationDAL
       }
 
       addToList.allActions.Add(this, false);
+    }
+
+    public virtual List<ScanForReturnItem> ScanFor(ScanForTypes scanType)
+    {
+      //override in the different types if it is possible that the item has something for the scanType 
+      return new List<ScanForReturnItem>();
     }
   }
 
@@ -659,7 +668,9 @@ namespace SimulationDAL
         {
           if (!codeVariables.Contains((string)varName))
           {
-            if (((string)varName != "CurTime") && ((string)varName != "RunIdx"))
+            if (((string)varName != "CurTime") && 
+                ((string)varName != "RunIdx") &&
+                ((string)varName != "RootPath"))
             {
               SimVariable curVar = lists.allVariables.FindByName((string)varName, false);
               if (curVar == null)
@@ -688,6 +699,7 @@ namespace SimulationDAL
       scriptRunner.AddVariable("CurTime", typeof(double));
       scriptRunner.AddVariable("RunIdx", typeof(int));
       scriptRunner.AddVariable("ExtSimStartTime", typeof(double));
+      scriptRunner.AddVariable("RootPath", typeof(double));
 
       //add all the variables needed
       if (codeVariables != null)
@@ -701,7 +713,8 @@ namespace SimulationDAL
 
           if ((varName != "CurTime") &&
               (varName != "ExtSimStartTime") &&
-              (varName != "RunIdx"))
+              (varName != "RunIdx") &&
+              (varName != "RootPath"))
           {
             scriptRunner.AddVariable(varName, var.dType);
           }
@@ -718,6 +731,30 @@ namespace SimulationDAL
       }
 
       return this.compiled;
+    }
+
+    public override List<ScanForReturnItem> ScanFor(ScanForTypes scanType)
+    {
+      var listItems = new List<ScanForReturnItem>();
+
+      if (scanType == ScanForTypes.sfMultiThreadIssues)
+      {
+        //see if there are any file references in the code.         
+        var paths = CommonFunctions.FindFilePathReferences(scriptCode);
+        foreach (var path in paths)
+        {
+          //if (!Path.IsPathRooted(path)) //todo, allow relative paths, but change to model path relative
+
+          listItems.Add(new ScanForRefsItem( this.id,
+                                          this.name,
+                                          EnIDTypes.itAction, 
+                                          "Action [" + this.name + "] has a file path reference script: " + path + ". If there could be a multi thread issue, assign files to copy.",
+                                          path));
+
+        }
+      }
+
+      return listItems;
     }
   }
 
@@ -1004,7 +1041,9 @@ namespace SimulationDAL
         if (p.emraldVar)
         {
           
-          if ((p.value != "CurTime") && (p.value != "RunIdx"))
+          if ((p.value != "CurTime") && 
+              (p.value != "RunIdx") &&
+              (p.value != "RootPath"))
           {
             SimVariable curVar = lists.allVariables.FindByName(p.name, false);
             if (curVar == null)
@@ -1048,6 +1087,9 @@ namespace SimulationDAL
 
       return true;
     }
+
+    //public override List<ScanForReturnItem> ScanFor(ScanForTypes scanType) lib Path is OK because it is a DLL and can be loaded from many different threads.
+
   }
 
   public class JumpToTimeAct : VarValueAct //atJumpToTime
@@ -1093,6 +1135,7 @@ namespace SimulationDAL
       scriptRunner.SetVariable("CurTime", typeof(double), curSimTime.TotalHours);
       scriptRunner.SetVariable("RunIdx", typeof(int), runIdx);
       scriptRunner.SetVariable("ExtSimStartTime", typeof(double), start3DTime.TotalHours);
+      scriptRunner.SetVariable("RootPath", typeof(string), lists.rootPath);
 
       if (codeVariables != null)
       {
@@ -1417,7 +1460,7 @@ namespace SimulationDAL
       makeInputFileCompEval.AddVariable("RunIdx", typeof(int));
       makeInputFileCompEval.AddVariable("ExePath", typeof(string));
       makeInputFileCompEval.AddVariable("RootPath", typeof(string));
-      
+
 
       //add all the variables needed
       if (codeVariables != null)
@@ -1785,6 +1828,37 @@ namespace SimulationDAL
         default: //do nothing
           break;
       }
+    }
+
+    public override List<ScanForReturnItem> ScanFor(ScanForTypes scanType)
+    {
+      var listItems = new List<ScanForReturnItem>();
+
+      if (scanType == ScanForTypes.sfMultiThreadIssues)
+      {
+        //see if there are any file references in the code.         
+        var paths = CommonFunctions.FindFilePathReferences(makeInputFileCode);
+        foreach (var path in paths)
+        {
+          listItems.Add(new ScanForRefsItem(this.id,
+                                          this.name,
+                                          EnIDTypes.itAction,
+                                          "Run Exe Action[" + this.name + "] has a file path reference in the pre - process code: " + path + ".If there could be a multi thread issue, assign files to copy.",
+                                          path));
+          }
+
+        paths = CommonFunctions.FindFilePathReferences(processOutputFileCode);
+        foreach (var path in paths)
+        {
+          listItems.Add(new ScanForRefsItem(this.id,
+                                          this.name,
+                                          EnIDTypes.itAction,
+                                          "Run Exe Action [" + this.name + "] has a file path reference in the post-process code: " + path + ".If there could be a multi thread issue, assign files to copy.",
+                                          path));
+        }
+      }
+
+      return listItems;
     }
   }
 
@@ -2293,6 +2367,18 @@ namespace SimulationDAL
       }
     }
 
+    public List<ScanForReturnItem> ScanFor(ScanForTypes scanType, EmraldModel lists)
+    {
+      var foundList = new List<ScanForReturnItem>();
+      //Return any listItems that actions could have with reference when multithreading
+
+      foreach (var curItem in this.Values)
+      {
+        foundList.AddRange(curItem.ScanFor(scanType));        
+      }
+
+      return foundList;
+    }
   }
 
 }

@@ -104,6 +104,7 @@ namespace SimulationEngine
     public int pathResultsInterval { get; set; } = -1;
     public string xmppPassword { get; set; } = "secret";
     public List<List<string>> xmppLinks = new List<List<string>>();
+    public int threads { get; set; } = 1;
   }
 
   public class VarInitValue
@@ -216,12 +217,13 @@ namespace SimulationEngine
       ConfigData.debugRunStart = options.debugStartIdx;
       ConfigData.debugRunEnd = options.debugEndIdx;
       ConfigData.seed = options.seed;
+      ConfigData.threads = options.threads;
 
 
       // Create a new ProcessSimBatch object
       // This is where the maxTime and outfile_path attributes are used
       bool done = false;
-      _simRuns = new ProcessSimBatch(_model, TimeSpan.Parse(options.runtime), options.resout, options.jsonRes, options.pathResultsInterval);
+      _simRuns = new ProcessSimBatch(_model, TimeSpan.Parse(options.runtime), options.resout, options.jsonRes, options.pathResultsInterval, 0);
       _simRuns.SetupBatch(options.runct, true);
       _simRuns.AssignProgress(progress);
       foreach(var v in _model.allVariables.Values)
@@ -239,10 +241,11 @@ namespace SimulationEngine
         _simRuns.initVarVals.Add(varItem.varName, varItem.value);
       }
 
-      ThreadStart tStarter = new ThreadStart(_simRuns.RunBatch);
+      //ThreadStart tStarter = new ThreadStart();
       //run this when the thread is done.
-      tStarter += () =>
+      ThreadStart tStarter = () =>
       {
+        _simRuns.RunBatch();
         _simRuns.GetVarValues(_simRuns.logVarVals, true);
         _error = _simRuns.error;
         done = true;
@@ -405,7 +408,7 @@ namespace SimulationEngine
         // Create a new EmraldModel object called sim
         _model = new EmraldModel();
         // Deserialize the json string into sim
-        _model.DeserializeJSON(_modelJsonStr, Path.GetDirectoryName(options.inpfile));
+        _model.DeserializeJSON(_modelJsonStr, Path.GetDirectoryName(options.inpfile), Path.GetFileNameWithoutExtension(options.inpfile));
       }
       // If there is an error in deserialization, create an error message
       catch (Exception error)

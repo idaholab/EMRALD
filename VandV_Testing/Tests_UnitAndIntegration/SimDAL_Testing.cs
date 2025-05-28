@@ -451,7 +451,7 @@ namespace UnitAndIntegrationTesting
       string fileLoc = MainTestDir() + ModelFolder() + testName + ".json";
       string fileLoc2 = MainTestDir() + ModelFolder() + "ExtSimObjTest.json";//for the 3dsim link
       string fileLoc3 = MainTestDir() + ModelFolder() + "Var3DSimTest.json";//for the 3dsim var
-      string jsonModel = "";//for the Ext Sim Msg action
+      string jsonModel = "";//for the Ext Sim msg action
       if (File.Exists(fileLoc))
         jsonModel = File.ReadAllText(fileLoc);
       else
@@ -503,7 +503,7 @@ namespace UnitAndIntegrationTesting
       //use a sample JSON piece to set the values
       string fileLoc = MainTestDir() + ModelFolder() + testName + ".json";
       string fileLoc2 = MainTestDir() + ModelFolder() + testName + "2.json";//for the variable
-      string jsonModel = "";//for the Ext Sim Msg action
+      string jsonModel = "";//for the Ext Sim msg action
       if (File.Exists(fileLoc))
         jsonModel = File.ReadAllText(fileLoc);
       else

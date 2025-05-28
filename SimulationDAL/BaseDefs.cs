@@ -3,12 +3,14 @@
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
+using System.IO;
+using System.Linq;
+using System.Text.RegularExpressions;
+using MessageDefLib;
+using Newtonsoft.Json;
 //using System.Data.EntityClient;
 using Newtonsoft.Json.Converters;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using MessageDefLib;
-using System.Linq;
 using NLog;
 
 namespace SimulationDAL
@@ -38,7 +40,7 @@ namespace SimulationDAL
     etExponentialDist,
     etLogNormalDist,
     etDistribution
-    };
+  };
 
   //public enum EnDiagramType { dtComponent = 0, dtSystem, dtPlant, dtOther };
   public enum EnDiagramType2 { dtSingle = 0, dtMulti };
@@ -62,7 +64,7 @@ namespace SimulationDAL
   //  //  "Models sequences and scenarios of concern with key end states. (multiple active states)" ,
   //  //  "Other" };
 
-  //  //private static readonly string[] EnActionTypeName = { "Transition", "Change Var Value", "External Sim Msg"};
+  //  //private static readonly string[] EnActionTypeName = { "Transition", "Change Var Value", "External Sim msg"};
   //  //private static readonly string[] EnActionTypeDesc = {
   //  //  "Move from the current state to new one or add a new state to the active ones.",
   //  //  "Evaluate a script and change the value of a the assigned variable to the result.",
@@ -86,9 +88,11 @@ namespace SimulationDAL
   //  //public static string EventTypeName(EnEventType dType) { return EnActionTypeName[(int)dType]; }
   //  //public static string EventTypeDesc(EnEventType dType) { return EnActionTypeName[(int)dType]; }
   //}
+  public enum ScanForTypes { sfMultiThreadIssues = 0};
 
   public static class ConfigData
   {
+    static public int threads = 1;
     static public int? seed = null;
     static public LogLevel debugLev = LogLevel.Off;
     static public int? debugRunStart = null;
@@ -205,6 +209,14 @@ namespace SimulationDAL
     void DeserializeJSON(object obj, EmraldModel lists, bool useGivenIDs);
     bool LoadLinks(object obj, EmraldModel lists); //load any links to other objects after initial lists are loaded.
     void SetProcessed(bool value);
+
+    /// <summary>
+    /// Look for issues or anything else that might be in the different item lists. Add a new scanType and implement ScanFor in each derived item type
+    /// </summary>
+    /// <param name="scanType">What is being looked for</param>
+    /// <returns></returns>
+    List<ScanForReturnItem> ScanFor(ScanForTypes scanType, EmraldModel model);
+    
 
     //void LoadIfNot();
   }
@@ -604,6 +616,124 @@ namespace SimulationDAL
       }
 
       return (JObject)root;
+    }
+  }
+
+  public class CommonFunctions
+  {
+    public static List<string> FindFilePathReferences(string code)
+    {
+      // Define a regular expression pattern to match file paths
+      string pattern = @"([a-zA-Z]:\\|\\|\/)(?:[\w\s\.-]+\\)*(?:[\w\s\.-]+)";
+
+      // Create a regex object with the defined pattern
+      Regex regex = new Regex(pattern, RegexOptions.IgnoreCase);
+
+      // Find matches in the provided code string
+      MatchCollection matches = regex.Matches(code);
+
+      // Create a list to store the found file paths
+      List<string> filePaths = new List<string>();
+
+      // Iterate through the matches and add them to the list
+      foreach (Match match in matches)
+      {
+        filePaths.Add(match.Value);
+      }
+
+      return filePaths;
+    }
+
+    public static void CopyDirectory(string sourceDir, string destinationDir, bool recursive)
+    {
+      // Get information about the source directory
+      var dir = new DirectoryInfo(sourceDir);
+
+      // Check if the source directory exists
+      if (!dir.Exists)
+        throw new DirectoryNotFoundException($"Source directory not found: {dir.FullName}");
+
+      // Cache directories before we start copying
+      DirectoryInfo[] dirs = dir.GetDirectories();
+
+      // Create the destination directory
+      Directory.CreateDirectory(destinationDir);
+
+      // Get the files in the source directory and copy to the destination directory
+      foreach (FileInfo file in dir.GetFiles())
+      {
+        string targetFilePath = Path.Combine(destinationDir, file.Name);
+        file.CopyTo(targetFilePath);
+      }
+
+      // If recursive and copying subdirectories, recursively call this method
+      if (recursive)
+      {
+        foreach (DirectoryInfo subDir in dirs)
+        {
+          string newDestinationDir = Path.Combine(destinationDir, subDir.Name);
+          CopyDirectory(subDir.FullName, newDestinationDir, true);
+        }
+      }
+    }
+  }
+
+  public class MultiThreadInfo
+  {
+    public List<ToCopyForRef> ToCopyForRefs { get; set; }
+  }
+
+  public class ToCopyForRef
+  {
+    public string ItemName { get; set; }
+    public string ItemType { get; set; }
+    public string RefPath { get; set; }
+    public List<string> ToCopy { get; set; }
+    public string RelPath { get; set; }
+
+    // Constructor to initialize all properties
+    public ToCopyForRef(string itemName, EnIDTypes itemType, string refPath, List<string> toCopy, string relPath)
+    {
+      ItemName = itemName;
+      ItemType = itemType.ToString().Substring(2);
+      RefPath = refPath;
+      
+      if(toCopy != null)
+        ToCopy = toCopy;
+      else 
+        ToCopy = new List<string>();
+
+      RelPath = relPath;
+    }
+  }
+
+  public class ScanForReturnItem
+  {
+    public int itemID { get; set; }
+    public string itemName { get; set; }
+    public EnIDTypes itemType { get; set; }
+    public string msg { get; set; }
+
+    // Constructor
+    public ScanForReturnItem(int itemId, string itemName, EnIDTypes itemType, string msg)
+    {
+      this.itemID = itemId;
+      this.itemName = itemName;
+      this.itemType = itemType;
+      this.msg = msg;
+    }
+
+  }
+
+  public class ScanForRefsItem : ScanForReturnItem
+  {
+    public string Path { get; set; }
+
+    // ConstructorI t
+    public ScanForRefsItem(int itemId, string itemName, EnIDTypes itemType, string msg, string path)
+        : base(itemId, itemName, itemType, msg)
+    {
+      this.Path = path;
     }
   }
 

@@ -49,7 +49,7 @@ namespace EMRALD_Sim
         {
           sim = new EmraldModel();
         }
-        sim.DeserializeJSON(modelText, modelDir); //throws and exception of failed
+        sim.DeserializeJSON(modelText, Path.GetDirectoryName(modelDir), Path.GetFileNameWithoutExtension(modelDir)); //throws and exception of failed
         return "";
       }
       catch (Exception error)
@@ -90,6 +90,27 @@ namespace EMRALD_Sim
         else
         {
           ConfigData.seed = inSeed;
+        }
+      }
+
+      return true;
+    }
+
+    public static bool SetThreads(string threadCnt)
+    {
+      int inThreads = 0;
+      if (threadCnt == "")
+        ConfigData.threads = 1;
+      else
+      {
+        if (!Int32.TryParse(threadCnt, out inThreads))
+        {
+          Console.Write("invalid data for random number seed, must be an integer - " + threadCnt);
+          return false;
+        }
+        else
+        {
+          ConfigData.threads = inThreads;
         }
       }
 
