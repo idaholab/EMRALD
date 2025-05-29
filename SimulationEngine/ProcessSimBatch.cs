@@ -119,32 +119,27 @@ namespace SimulationEngine
       
 
       //if this is mutithreaded then it needs a temp work area for the model and results.
-      if (_threadNum != null)
+      if (threadNum != null)
       {
-        string appDataFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), @"EMRALD\" + lists.fileName + "_T" + ((int)_threadNum).ToString());
-        // Ensure the directory exists
-        if (!Directory.Exists(appDataFolder))
+        try
         {
-          Directory.CreateDirectory(appDataFolder);
+          if (threadNum > 0)
+          {
+            //make a copy of the model from the origional 
+            var origModel = lists;
+            this._lists = new EmraldModel();
+            this._lists.DeserializeJSON(origModel.modelTxt, origModel.rootPath, lists.fileName);
+          }
+          this._lists.ApplyMultiThreadChangs((int)_threadNum);
+
+          // Set the file paths with the rootPath
+          this._resultFile = Path.Combine(this._lists.rootPath, Path.GetFileName(resultFile));
+          this._jsonResultPaths = Path.Combine(this._lists.rootPath, Path.GetFileName(jsonResPaths));
         }
-
-        //If there is a folder with the same name as the model file, copy it
-        string copyFolder = lists.rootPath + lists.fileName;
-        if (Directory.Exists(copyFolder))
-        {
-          CommonFunctions.CopyDirectory(copyFolder, appDataFolder, true);
+        catch (Exception e)
+        { 
+          _error = "Failed to prep for Multi Threading: " + e.Message;
         }
-       
-
-        //make a copy of the model from the origional 
-        var origModel = lists;
-        this._lists = new EmraldModel();
-        this._lists.DeserializeJSON(origModel.modelTxt, appDataFolder, lists.fileName);
-
-
-        // Set the file paths with the rootPath
-        this._resultFile = Path.Combine(this._lists.rootPath, Path.GetFileName(resultFile));
-        this._jsonResultPaths = Path.Combine(this._lists.rootPath, Path.GetFileName(jsonResPaths));
       }
       else
       {

@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using MessageDefLib;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Newtonsoft.Json;
 //using System.Data.EntityClient;
 using Newtonsoft.Json.Converters;
@@ -53,7 +54,7 @@ namespace SimulationDAL
   [JsonConverter(typeof(StringEnumConverter))]
   public enum EnTimeRate { trYears, trDays, trHours, trMinutes, trSeconds}
 
-  public enum EnIDTypes { itVar = 0, itComp, itState, itEvent, itAction, itTreeNode, itTimer, itPacket, itDiagram, itExtSim };
+  public enum EnIDTypes { itVar = 0, itComp, itState, itEvent, itAction, itTreeNode, itTimer, itDiagram, itExtSim };
   public enum EnDistType { dtNormal, dtWeibull, dtExponential, dtLogNormal, dtUniform, dtTriangular, dtGamma, dtGompertz};
   //public class ModelTypesInfo
   //{
@@ -676,11 +677,76 @@ namespace SimulationDAL
         }
       }
     }
+
+    public static string FindClosestParentFolder(List<string> filePaths)
+    {
+      if (filePaths == null || filePaths.Count == 0)
+      {
+        throw new ArgumentException("File paths list cannot be null or empty");
+      }
+
+      if (filePaths.Count == 1)
+      {
+        // If there is only one file path, return its parent directory
+        return Path.GetDirectoryName(Path.GetFullPath(filePaths[0])).Replace('\\', '/');
+      }
+
+      // Split the file paths into directory parts
+      List<string[]> pathParts = filePaths
+          .Select(path => Path.GetFullPath(path).Replace('\\', '/').Split(new char[] { '/' }, StringSplitOptions.RemoveEmptyEntries))
+          .ToList();
+
+      // Find the minimum length of the path parts
+      int minLength = pathParts.Min(parts => parts.Length);
+
+      // Find the common parts among all file paths
+      List<string> commonParts = new List<string>();
+      for (int i = 0; i < minLength; i++)
+      {
+        string currentPart = pathParts[0][i];
+        if (pathParts.All(parts => parts[i] == currentPart))
+        {
+          commonParts.Add(currentPart);
+        }
+        else
+        {
+          break;
+        }
+      }
+
+      // Combine the common parts into the closest parent directory
+      string closestParent = string.Join("/", commonParts);
+      return closestParent;
+    }
+
+    public static string GetRemainingPath(string parentFolder, string filePath)
+    {
+      // Ensure the parent folder and file path are in a consistent format
+      string normalizedParentFolder = Path.GetFullPath(parentFolder).Replace('\\', '/');
+      string normalizedFilePath = Path.GetFullPath(filePath).Replace('\\', '/');
+
+      // Check if the file path starts with the parent folder path
+      if (!normalizedFilePath.StartsWith(normalizedParentFolder, StringComparison.OrdinalIgnoreCase))
+      {
+        throw new ArgumentException("The file path does not start with the provided parent folder path.");
+      }
+
+      // Get the remaining path after the parent folder
+      string remainingPath = normalizedFilePath.Substring(normalizedParentFolder.Length).TrimStart('/');
+      return remainingPath;
+    }
+
+
   }
 
   public class MultiThreadInfo
   {
     public List<ToCopyForRef> ToCopyForRefs { get; set; }
+
+    public MultiThreadInfo() 
+    {
+      ToCopyForRefs = new List<ToCopyForRef>();
+    }  
   }
 
   public class ToCopyForRef
@@ -704,6 +770,18 @@ namespace SimulationDAL
         ToCopy = new List<string>();
 
       RelPath = relPath;
+    }
+
+    public EnIDTypes GetEnumType()
+    {
+      foreach (EnIDTypes type in Enum.GetValues(typeof(EnIDTypes)))
+      {
+        if (type.ToString().Substring(2).Equals(this.ItemType, StringComparison.OrdinalIgnoreCase))
+        {
+          return type;
+        }
+      }
+      throw new ArgumentException($"Invalid item type string: {this.ItemType}");
     }
   }
 

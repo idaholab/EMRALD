@@ -10,9 +10,12 @@ using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
 using System.Text;
+using MathNet.Numerics.LinearAlgebra;
 using MessageDefLib;
+using Microsoft.VisualBasic;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Schema;
+using Sop.Collections.BTree;
 
 
 namespace SimulationDAL
@@ -36,6 +39,8 @@ namespace SimulationDAL
   //[DataContract]
   public class EmraldModel : BaseObjInfo
   {
+    private Boolean _multiThreadReady = false;
+    private int _threadNumber = 0;
     public const double SCHEMA_VERSION = 3.0;
     //public dSimulation _Sim = null;
     //protected Diagram _Diagram = null; //TODO remove was added for testing.
@@ -57,6 +62,8 @@ namespace SimulationDAL
     //public int dbID = 0;
     public int curRunIdx = 0; //current run index.
     public int totRunsReq = 0; //total runs requested
+    public bool multiThreadReady { get { return _multiThreadReady; } }
+    public int threadNum { get { return _threadNumber; } }
     
     //public Dictionary<int, Formula> allFormulas = new Dictionary<int, Formula>();
     //public Diagram curDiagram { get { return _Diagram; } set { _Diagram = value; } }
@@ -187,9 +194,13 @@ namespace SimulationDAL
       {
         this.multiThreadInfo = JsonConvert.DeserializeObject<MultiThreadInfo>(Convert.ToString(dynObj.multiThreadInfo));
       }
+      else
+      {
+        this.multiThreadInfo = new MultiThreadInfo();
+      }
 
-      //construct all the objects
-      this.allActions.DeserializeJSON(dynObj.ActionList, this, useGivenIDs);
+        //construct all the objects
+        this.allActions.DeserializeJSON(dynObj.ActionList, this, useGivenIDs);
       this.allDiagrams.DeserializeJSON(dynObj.DiagramList, this, useGivenIDs);
       this.allVariables.DeserializeJSON(dynObj.VariableList, this, useGivenIDs);
       var evs = dynObj.EventList;
@@ -269,10 +280,10 @@ namespace SimulationDAL
         {
           var addI = new ToCopyForRef(mPathRef.itemName, mPathRef.itemType, mPathRef.Path, null, "");
 
-          if (Path.IsPathRooted(mPathRef.Path))
+          if (!Path.IsPathRooted(mPathRef.Path) && (mPathRef.Path[0] == '.'))
           {
             addI.RelPath = mPathRef.Path;
-            addI.ToCopy.Add(Path.Combine(rootPath, mPathRef.Path));
+            addI.ToCopy.Add(Path.GetFullPath(Path.Combine(rootPath, mPathRef.Path))); //combine and normalize the path.
           }
 
           multiThreadInfo.ToCopyForRefs.Add(addI);
@@ -286,6 +297,90 @@ namespace SimulationDAL
     }
 
    
+    public bool ApplyMultiThreadChangs(int threadNum)
+    {
+      if (!this.multiThreadReady)
+      {
+        
+        this._threadNumber = threadNum;
+
+        this.rootPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), @"EMRALD\" + this.fileName + "_T" + ((int)_threadNumber).ToString());
+        // Ensure the directory exists and is empty
+        if (Directory.Exists(this.rootPath))
+        {
+          Directory.Delete(this.rootPath, true);
+        }
+        Directory.CreateDirectory(this.rootPath);
+
+        if (threadNum != 0) //if not the first thread then just copy the first one's files.
+        {
+          string firstRootPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), @"EMRALD\" + this.fileName + "_T0");
+          CommonFunctions.CopyDirectory(firstRootPath, this.rootPath, true);
+
+        }
+
+        foreach (var item in multiThreadInfo.ToCopyForRefs)
+        {
+          if ((threadNum == 0) && (item.ToCopy.Count > 0)) //if the first thread then make sure to figure out all the files needed.
+          {
+            string commonFolder = CommonFunctions.FindClosestParentFolder(item.ToCopy);
+            foreach (var copyItem in item.ToCopy)
+            {
+              //copy the items needed
+              if (File.Exists(copyItem))
+              {
+                string remainingPath = CommonFunctions.GetRemainingPath(commonFolder, copyItem);
+                string copyTo = Path.GetFullPath(Path.Combine(rootPath, remainingPath));
+                File.Copy(copyItem, copyTo);
+              }
+            }
+          }
+
+
+          //update items so that they will work with multi threading.
+          var iType = item.GetEnumType();
+          switch (iType)
+          {
+            case EnIDTypes.itVar:
+              //only DocVariable
+              var simItem = this.allVariables.FindByName(item.ItemName);
+              if (!(simItem is DocVariable))
+                throw new Exception("Broken path reference edit " + item.ItemName + " is not a document variable.");
+
+              (simItem as DocVariable).UpdatePathRefs(item.RefPath, item.RelPath);
+              break;
+            case EnIDTypes.itComp:
+              Console.WriteLine("Handling itComp");
+              break;
+            case EnIDTypes.itState:
+              Console.WriteLine("Handling itState");
+              break;
+            case EnIDTypes.itEvent:
+              Console.WriteLine("Handling itEvent");
+              break;
+            case EnIDTypes.itAction:
+              Console.WriteLine("Handling itAction");
+              break;
+            case EnIDTypes.itTreeNode:
+              Console.WriteLine("Handling itTreeNode");
+              break;
+            case EnIDTypes.itTimer:
+              Console.WriteLine("Handling itTimer");
+              break;
+            case EnIDTypes.itDiagram:
+              Console.WriteLine("Handling itDiagram");
+              break;
+            case EnIDTypes.itExtSim:
+              Console.WriteLine("Handling itExtSim");
+              break;
+            default:
+              throw new ArgumentOutOfRangeException(nameof(EnIDTypes), iType, null);
+          }
+
+        }
+      }
+      return true;
+    }
 //The following code sections are for constructing a model through code
       
     public void AutoItemsForNewComponent(string compName, 

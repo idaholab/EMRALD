@@ -1612,8 +1612,9 @@ namespace EMRALD_Sim
         {
           //TODO bring up the form for the user to see/edit the path references and what to adjust or copy. Pass in the models.multiThreadInfo and the issues to highlight.
 
-
-
+          
+          //TODO - Save the model so that the mitiThreadInfo is saved.
+          
         }
       }
 

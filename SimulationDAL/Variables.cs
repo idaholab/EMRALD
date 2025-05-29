@@ -823,11 +823,21 @@ namespace SimulationDAL
         itemList.Add(new ScanForRefsItem(this.id,
                                         this.name,
                                         EnIDTypes.itVar,
-                                        "Document Variable[" + this.name + "] has a non relative file path reference: " + _docPath,
+                                        "Document Variable[" + this.name + "] has a file path reference: " + _docPath,
                                         _docPath));
       }
 
       return itemList;
+    }
+
+    
+    public void UpdatePathRefs(string oldRef, string newRef)
+    {
+      if (_docPath == oldRef)
+        _docPath = newRef;
+      else
+        throw new Exception("Current document reference does not match request to change.");
+           
     }
   }
 
