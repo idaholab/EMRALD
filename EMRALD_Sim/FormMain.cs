@@ -46,6 +46,7 @@ namespace EMRALD_Sim
     private Options_cur jsonOptions = null; //if the user has passed in JSON options
     private bool _populatingSettings = false; //Flag that UI settings are being populated programatically, don't save on changes if true
 
+
     [DllImport("kernel32.dll")]
     static extern bool AttachConsole(int dwProcessId);
     private const int ATTACH_PARENT_PROCESS = -1;
@@ -83,8 +84,7 @@ namespace EMRALD_Sim
         {
           isJSON = Path.GetExtension(argument).Equals(".json", StringComparison.OrdinalIgnoreCase);
         }
-        catch { }
-        ;
+        catch { };
 
         if (isJSON)
         {
@@ -521,8 +521,6 @@ namespace EMRALD_Sim
         }
       }
     }
-
-
 
     public void Clear()
     {

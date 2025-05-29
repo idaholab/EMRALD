@@ -17,7 +17,7 @@
   },
   "devDependencies": {
     "@adobe/jsonschema2md": "^8.0.0",
-    "shx": "^0.3.3",
+    "shx": "^0.4.0",
     "vitepress": "^1.6.3"
   }
 }
