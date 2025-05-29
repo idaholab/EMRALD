@@ -120,6 +120,7 @@
         "objType",
         "desc",
         "version",
+        "versionHistory",
         "DiagramList",
         "ExtSimList",
         "StateList",

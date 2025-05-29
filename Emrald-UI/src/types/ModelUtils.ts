@@ -1,6 +1,6 @@
-import { Action, Diagram, EMRALD_Model, ExtSim, LogicNode, State, Variable } from "./EMRALD_Model";
+import type { Action, Diagram, EMRALD_Model, ExtSim, LogicNode, State, Variable, Event } from "./EMRALD_Model";
 
-export const EMRALD_SchemaVersion: number = 3.0;
+export const EMRALD_SchemaVersion = 3.1;
 
 export function CreateEmptyEMRALDModel(): EMRALD_Model {
   return {
@@ -8,6 +8,7 @@ export function CreateEmptyEMRALDModel(): EMRALD_Model {
     name: '',
     desc: '',
     version: 1.0,
+    versionHistory: [],
     emraldVersion: EMRALD_SchemaVersion,
     DiagramList: [],
     ExtSimList: [],

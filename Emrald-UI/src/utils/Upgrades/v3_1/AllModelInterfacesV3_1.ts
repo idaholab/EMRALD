@@ -222,7 +222,7 @@ export interface Main_Model {
   /**
    * The user's model version history and change descriptions
    */
-  versionHistory?: VersionHistory[]
+  versionHistory: VersionHistory[]
   /**
    * All the diagrams for the model
    */
