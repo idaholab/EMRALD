@@ -1655,7 +1655,8 @@ namespace EMRALD_Sim
 
     private void bttnPathRefs_Click(object sender, EventArgs e)
     {
-      //TODO bring up the form for the user to see/edit the path references and what to adjust or copy. Pass in the models.multiThreadInfo
+      //TODO bring up the form for the user to see/edit the path references and what to adjust or copy. Pass in the this._sim.multiThreadInfo
+      
     }
   }
 }
