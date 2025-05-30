@@ -757,6 +757,7 @@ namespace SimulationDAL
     public List<string> ToCopy { get; set; }
     public string RelPath { get; set; }
 
+    [JsonIgnore]
     // Constructor to initialize all properties
     public ToCopyForRef(string itemName, EnIDTypes itemType, string refPath, List<string> toCopy, string relPath)
     {
@@ -772,6 +773,7 @@ namespace SimulationDAL
       RelPath = relPath;
     }
 
+    [JsonIgnore]
     public EnIDTypes GetEnumType()
     {
       foreach (EnIDTypes type in Enum.GetValues(typeof(EnIDTypes)))

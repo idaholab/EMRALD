@@ -10,10 +10,12 @@ using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Nodes;
 using MathNet.Numerics.LinearAlgebra;
 using MessageDefLib;
 using Microsoft.VisualBasic;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Schema;
 using Sop.Collections.BTree;
 
@@ -199,8 +201,8 @@ namespace SimulationDAL
         this.multiThreadInfo = new MultiThreadInfo();
       }
 
-        //construct all the objects
-        this.allActions.DeserializeJSON(dynObj.ActionList, this, useGivenIDs);
+      //construct all the objects
+      this.allActions.DeserializeJSON(dynObj.ActionList, this, useGivenIDs);
       this.allDiagrams.DeserializeJSON(dynObj.DiagramList, this, useGivenIDs);
       this.allVariables.DeserializeJSON(dynObj.VariableList, this, useGivenIDs);
       var evs = dynObj.EventList;
@@ -291,7 +293,26 @@ namespace SimulationDAL
 
         }
       }
-      
+
+      //put the multiTheadInfo back onto the model JSON string
+      dynamic jsonObj = JsonConvert.DeserializeObject(this.modelTxt);
+      string multiThreadInfoJson = JsonConvert.SerializeObject(multiThreadInfo);
+      JToken multiThreadInfoToken = JToken.Parse(multiThreadInfoJson);
+
+      // Check if the "multiThreadInfo" property exists
+      if (jsonObj.multiThreadInfo != null)
+      {
+        // Replace the existing value
+        jsonObj.multiThreadInfo = multiThreadInfoToken;
+      }
+      else
+      {
+        // Add the new property and value
+        ((JObject)jsonObj).Add("multiThreadInfo", multiThreadInfoToken);
+      }
+
+      // Serialize the modified object back into a JSON string
+      this.modelTxt = JsonConvert.SerializeObject(jsonObj, Formatting.Indented);
 
       return notAccountedFor;
     }

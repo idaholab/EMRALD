@@ -110,8 +110,11 @@ namespace SimulationEngine
     public string error { get { return _error; } }
     public int? threadNum { get { return _threadNum; } }
 
-    public ProcessSimBatch(EmraldModel lists, TimeSpan endtime, string resultFile, string jsonResPaths, int pathResultsInterval, int? threadNum = null)
+    public ProcessSimBatch(EmraldModel origModel, TimeSpan endtime, string resultFile, string jsonResPaths, int pathResultsInterval, int? threadNum = null)
     {
+      //make a new model so that we don't have issues if they run multiple batches or for mutli thraded 
+      this._lists = new EmraldModel();
+      this._lists.DeserializeJSON(origModel.modelTxt, origModel.rootPath, origModel.fileName);
       this._threadNum = threadNum;
       this._endTime = endtime;
       this._pathResultsInterval = pathResultsInterval;
@@ -123,13 +126,6 @@ namespace SimulationEngine
       {
         try
         {
-          if (threadNum > 0)
-          {
-            //make a copy of the model from the origional 
-            var origModel = lists;
-            this._lists = new EmraldModel();
-            this._lists.DeserializeJSON(origModel.modelTxt, origModel.rootPath, lists.fileName);
-          }
           this._lists.ApplyMultiThreadChangs((int)_threadNum);
 
           // Set the file paths with the rootPath
@@ -145,7 +141,6 @@ namespace SimulationEngine
       {
         this._resultFile = resultFile;
         this._jsonResultPaths = jsonResPaths;
-        this._lists = lists;
       }      
     }
 
@@ -261,7 +256,12 @@ namespace SimulationEngine
 
         varItem.InitValue(v.Value);
       }
-      
+
+      keyFailedItems.Clear();
+      keyPaths.Clear();
+      otherPaths.Clear();
+      _variableVals.Clear();
+
 
 
       batchSuccess = false;
