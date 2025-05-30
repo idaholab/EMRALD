@@ -681,6 +681,11 @@ namespace SimulationDAL
   public class MultiThreadInfo
   {
     public List<ToCopyForRef> ToCopyForRefs { get; set; }
+    
+    public MultiThreadInfo()
+    {
+      ToCopyForRefs = new List<ToCopyForRef>();
+    }
   }
 
   public class ToCopyForRef
