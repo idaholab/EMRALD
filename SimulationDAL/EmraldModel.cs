@@ -275,13 +275,19 @@ namespace SimulationDAL
         }
         else
         {
-          var addI = new ToCopyForRef(mPathRef.itemName, mPathRef.itemType, mPathRef.Path, null, "");
+          var toCopyList = new List<string>();
+          if (!string.IsNullOrEmpty(mPathRef.Path))
+            toCopyList.Add(mPathRef.Path);
+
+          var addI = new ToCopyForRef(mPathRef.itemName, mPathRef.itemType, mPathRef.Path, toCopyList, "");
+
           if (Path.IsPathRooted(mPathRef.Path))
           {
             addI.RelPath = mPathRef.Path;
-            addI.ToCopy.Add(Path.Combine(rootPath, mPathRef.Path));
+            // Optionally add absolute copy path if needed
+            // addI.ToCopy.Add(Path.Combine(rootPath, mPathRef.Path));
           }
-          // If not rooted, RelPath may be empty, which will be reported as an issue
+
           multiThreadInfo.ToCopyForRefs.Add(addI);
           notAccountedFor.Add(addI.ItemName);
         }
