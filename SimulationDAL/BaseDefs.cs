@@ -746,7 +746,7 @@ namespace SimulationDAL
     public MultiThreadInfo() 
     {
       ToCopyForRefs = new List<ToCopyForRef>();
-    }  
+    }
   }
 
   public class ToCopyForRef
@@ -759,6 +759,9 @@ namespace SimulationDAL
 
     //[JsonIgnore]
     // Constructor to initialize all properties
+
+    public ToCopyForRef() { }
+
     public ToCopyForRef(string itemName, EnIDTypes itemType, string refPath, List<string> toCopy, string relPath)
     {
       ItemName = itemName;

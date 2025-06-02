@@ -114,7 +114,7 @@ namespace SimulationEngine
     {
       //make a new model so that we don't have issues if they run multiple batches or for mutli thraded 
       this._lists = new EmraldModel();
-      this._lists.DeserializeJSON(origModel.modelTxt, origModel.rootPath, origModel.fileName);
+      this._lists.DeserializeJSON(origModel.modelTxt, origModel.rootPath, origModel.fileName, threadNum);
       this._threadNum = threadNum;
       this._endTime = endtime;
       this._pathResultsInterval = pathResultsInterval;
@@ -126,8 +126,6 @@ namespace SimulationEngine
       {
         try
         {
-          this._lists.ApplyMultiThreadChangs((int)_threadNum);
-
           // Set the file paths with the rootPath
           this._resultFile = Path.Combine(this._lists.rootPath, Path.GetFileName(resultFile));
           this._jsonResultPaths = Path.Combine(this._lists.rootPath, Path.GetFileName(jsonResPaths));
@@ -431,7 +429,9 @@ namespace SimulationEngine
       
       progressCallback(stopWatch.Elapsed, actRuns, _logFailedComps);
 
+      //if not threaded make results
       MakePathResults(curI, true);
+
 
       
       
@@ -535,8 +535,8 @@ namespace SimulationEngine
           //File.WriteAllText(_jsonResultPaths, output);
           WriteToFileThreadSafe(_jsonResultPaths, output);
 
-          //set up the sankey file to view results
-          if (makeSankey)
+          //set up the sankey file to view results if not a thread one.
+          if (!this._threadNum.HasValue && makeSankey)
           {
             string tempLoc = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\\EMRALD_SANKEY\\";
             try
