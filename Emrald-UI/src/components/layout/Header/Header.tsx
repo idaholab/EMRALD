@@ -16,12 +16,12 @@ import { useTheme } from '@mui/material/styles';
 import { appData, updateAppData } from '../../../hooks/useAppData';
 
 const url: string = window.location.href;
-let emraldDocsUrl = 'https://emrald3-docs.inl.gov/'; // Default URL
+let emraldDocsUrl = 'https://emrald-docs.inl.gov/'; // Default URL
 
 const urlEnvMappings: Record<string, string> = {
-  dev: 'https://emrald3-docs.dev.inl.gov/',
-  acc: 'https://emrald3-docs.acc.inl.gov/',
-  scan: 'https://emrald3-docs.scan.inl.gov/',
+  dev: 'https://emrald-docs.dev.inl.gov/',
+  acc: 'https://emrald-docs.acc.inl.gov/',
+  scan: 'https://emrald-docs.scan.inl.gov/',
 };
 
 // Loop through the mappings and set the URL if a match is found
