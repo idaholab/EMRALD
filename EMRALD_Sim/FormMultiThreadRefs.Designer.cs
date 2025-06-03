@@ -124,7 +124,7 @@
             this.lblToCopy.Name = "lblToCopy";
             this.lblToCopy.Size = new System.Drawing.Size(111, 17);
             this.lblToCopy.TabIndex = 103;
-            this.lblToCopy.Text = "Files/Folders List";
+            this.lblToCopy.Text = "Items to copy";
             // 
             // btnAddCopy
             // 
@@ -153,6 +153,7 @@
             this.btnOK.Size = new System.Drawing.Size(90, 35);
             this.btnOK.TabIndex = 6;
             this.btnOK.Text = "OK";
+            this.btnOK.Enabled = false;
             this.btnOK.UseVisualStyleBackColor = true;
             this.btnOK.Click += new System.EventHandler(this.btnOK_Click);
             // 

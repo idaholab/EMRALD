@@ -24,16 +24,25 @@ namespace EMRALD_Sim
         
         private void FormMultiThreadRefs_Load(object sender, EventArgs e)
         {
-            lstItems.Items.Clear();
-            if (_multiThreadInfo?.ToCopyForRefs == null) return;
-            foreach (var item in _multiThreadInfo.ToCopyForRefs)
-            {
-                // Highlight issue items with asterisk
-                bool isIssue = _issueItems.Contains((string)item.ItemName);
-                lstItems.Items.Add(isIssue ? $"{item.ItemName} *" : item.ItemName);
-            }
-            if (lstItems.Items.Count > 0)
-                lstItems.SelectedIndex = 0;
+          lstItems.Items.Clear();
+          if (_multiThreadInfo?.ToCopyForRefs == null) return;
+    
+    
+          foreach (var item in _multiThreadInfo.ToCopyForRefs)
+          {
+            // Create display text with ItemType and ItemName
+            string displayText = $"{item.ItemType}: {item.ItemName}";
+        
+            // Highlight issue items with asterisk
+            bool isIssue = _issueItems.Contains((string)item.ItemName);
+            if (isIssue)
+              displayText += " *";
+            
+            lstItems.Items.Add(displayText);
+          }
+    
+          if (lstItems.Items.Count > 0)
+            lstItems.SelectedIndex = 0;
         }
 
         private void lstItems_SelectedIndexChanged(object sender, EventArgs e)
@@ -49,6 +58,8 @@ namespace EMRALD_Sim
                 foreach (var path in item.ToCopy)
                     lstToCopy.Items.Add(path);
             }
+            
+            UpdateOKButtonState();
         }
 
         private void btnAddCopy_Click(object sender, EventArgs e)
@@ -73,6 +84,7 @@ namespace EMRALD_Sim
                     UpdateRelPath();
                 }
             }
+            UpdateOKButtonState();
         }
 
         private void btnRemoveCopy_Click(object sender, EventArgs e)
@@ -86,6 +98,7 @@ namespace EMRALD_Sim
                 lstToCopy.Items.RemoveAt(idx);
                 UpdateRelPath();
             }
+            UpdateOKButtonState();
         }
 
         private void btnOK_Click(object sender, EventArgs e)
@@ -146,5 +159,24 @@ namespace EMRALD_Sim
             }
             return common.Count > 0 ? string.Join(Path.DirectorySeparatorChar.ToString(), common) : "";
         }
+        
+        private void UpdateOKButtonState()
+        {
+          // Enable OK button only if at least one item has something in its ToCopy list
+          bool hasItemsToCopy = false;
+    
+          // Check if any of the ToCopyForRef items has items in their ToCopy list
+          foreach (var item in _multiThreadInfo.ToCopyForRefs)
+          {
+            if (item.ToCopy != null && item.ToCopy.Count > 0)
+            {
+              hasItemsToCopy = true;
+              break;
+            }
+          }
+    
+          btnOK.Enabled = hasItemsToCopy;
+        }
+      
     }
 }
