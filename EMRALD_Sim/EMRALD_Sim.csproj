@@ -28,6 +28,9 @@
 
   <ItemGroup>
     <Compile Include="..\EMRALD_Sim\**\*.cs" />
+    <Compile Update="FormMultiThreadRefs.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <!--<EmbeddedResource Include="..\EMRALD_Sim\**\*.resx" />-->
   </ItemGroup>
 

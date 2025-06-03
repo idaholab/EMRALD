@@ -1,0 +1,150 @@
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Windows.Forms;
+
+namespace EMRALD_Sim
+{
+    public partial class FormMultiThreadRefs : Form
+    {
+        // Use the actual type if possible, but keep as dynamic if required by calling code
+        private dynamic _multiThreadInfo; // Your multiThreadInfo object
+        private List<string> _issueItems; // Items to highlight (strings matching ItemName)
+        private int _currentItemIndex = -1;
+
+        public dynamic EditedMultiThreadInfo => _multiThreadInfo;
+
+        public FormMultiThreadRefs(dynamic multiThreadInfo, List<string> issueItems)
+        {
+            InitializeComponent();
+            _multiThreadInfo = multiThreadInfo;
+            _issueItems = issueItems ?? new List<string>();
+        }
+        
+        private void FormMultiThreadRefs_Load(object sender, EventArgs e)
+        {
+            lstItems.Items.Clear();
+            if (_multiThreadInfo?.ToCopyForRefs == null) return;
+            foreach (var item in _multiThreadInfo.ToCopyForRefs)
+            {
+                // Highlight issue items with asterisk
+                bool isIssue = _issueItems.Contains((string)item.ItemName);
+                lstItems.Items.Add(isIssue ? $"{item.ItemName} *" : item.ItemName);
+            }
+            if (lstItems.Items.Count > 0)
+                lstItems.SelectedIndex = 0;
+        }
+
+        private void lstItems_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            _currentItemIndex = lstItems.SelectedIndex;
+            if (_currentItemIndex < 0) return;
+            var item = _multiThreadInfo.ToCopyForRefs[_currentItemIndex];
+            txtRefPath.Text = item.RefPath ?? "";
+            txtRelPath.Text = item.RelPath ?? "";
+            lstToCopy.Items.Clear();
+            if (item.ToCopy != null)
+            {
+                foreach (var path in item.ToCopy)
+                    lstToCopy.Items.Add(path);
+            }
+        }
+
+        private void btnAddCopy_Click(object sender, EventArgs e)
+        {
+            if (_currentItemIndex < 0) return;
+            using (var ofd = new OpenFileDialog())
+            {
+                ofd.Title = "Select file(s) to copy";
+                ofd.Multiselect = true;
+                if (ofd.ShowDialog() == DialogResult.OK)
+                {
+                    var item = _multiThreadInfo.ToCopyForRefs[_currentItemIndex];
+                    if (item.ToCopy == null) item.ToCopy = new List<string>();
+                    foreach (var file in ofd.FileNames)
+                    {
+                        if (!item.ToCopy.Contains(file))
+                        {
+                            item.ToCopy.Add(file);
+                            lstToCopy.Items.Add(file);
+                        }
+                    }
+                    UpdateRelPath();
+                }
+            }
+        }
+
+        private void btnRemoveCopy_Click(object sender, EventArgs e)
+        {
+            if (_currentItemIndex < 0 || lstToCopy.SelectedIndex < 0) return;
+            var item = _multiThreadInfo.ToCopyForRefs[_currentItemIndex];
+            int idx = lstToCopy.SelectedIndex;
+            if (item.ToCopy != null && idx < item.ToCopy.Count)
+            {
+                item.ToCopy.RemoveAt(idx);
+                lstToCopy.Items.RemoveAt(idx);
+                UpdateRelPath();
+            }
+        }
+
+        private void btnOK_Click(object sender, EventArgs e)
+        {
+            DialogResult = DialogResult.OK;
+            Close();
+        }
+
+        private void btnCancel_Click(object sender, EventArgs e)
+        {
+            DialogResult = DialogResult.Cancel;
+            Close();
+        }
+
+        private void UpdateRelPath()
+        {
+            if (_currentItemIndex < 0) return;
+            var item = _multiThreadInfo.ToCopyForRefs[_currentItemIndex];
+            string refPath = item.RefPath ?? "";
+            List<string> toCopy = item.ToCopy != null
+                ? ((IEnumerable<string>)item.ToCopy).ToList()
+                : new List<string>();
+            item.RelPath = CalculateRelPath(refPath, toCopy);
+            txtRelPath.Text = item.RelPath;
+        }
+
+        private string CalculateRelPath(string refPath, List<string> toCopy)
+        {
+            if (string.IsNullOrEmpty(refPath) || toCopy.Count == 0)
+                return "";
+            string parent = GetClosestParent(toCopy);
+            if (string.IsNullOrEmpty(parent))
+                return "";
+            try
+            {
+                string rel = Path.GetRelativePath(Path.GetDirectoryName(refPath) ?? "", parent);
+                return Path.Combine(".", rel).Replace('\\', '/');
+            }
+            catch
+            {
+                return "";
+            }
+        }
+
+        private string GetClosestParent(IEnumerable<string> paths)
+        {
+            if (!paths.Any()) return "";
+            var separated = paths.Select(p => p.Split(Path.DirectorySeparatorChar)).ToList();
+            int minLen = separated.Min(x => x.Length);
+            List<string> common = new List<string>();
+            for (int i = 0; i < minLen; i++)
+            {
+                var part = separated[0][i];
+                if (separated.All(x => x[i] == part))
+                    common.Add(part);
+                else
+                    break;
+            }
+            return common.Count > 0 ? string.Join(Path.DirectorySeparatorChar.ToString(), common) : "";
+        }
+    }
+}

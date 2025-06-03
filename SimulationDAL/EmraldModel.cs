@@ -300,6 +300,14 @@ namespace SimulationDAL
     /// <returns>description of issues if there are any</returns>
     public List<string> CanMutiThread()
     {
+      // Ensure multiThreadInfo and its ToCopyForRefs list are initialized before use.
+      // This prevents NullReferenceExceptions if either the multiThreadInfo object or its ToCopyForRefs property
+      // have not been set (such as after deserialization, or if not initialized elsewhere in the code).
+      if (multiThreadInfo == null)
+        multiThreadInfo = new MultiThreadInfo();
+      if (multiThreadInfo.ToCopyForRefs == null)
+        multiThreadInfo.ToCopyForRefs = new List<ToCopyForRef>();
+      
       var ModelRefsList = new List<ScanForReturnItem>();
 
       //Return any issues that actions could have with reference when multithreading
@@ -310,7 +318,7 @@ namespace SimulationDAL
       ModelRefsList.AddRange(allExtSims.ScanFor(ScanForTypes.sfMultiThreadIssues, this));
       ModelRefsList.AddRange(allVariables.ScanFor(ScanForTypes.sfMultiThreadIssues, this));
       ModelRefsList.AddRange(allLogicNodes.ScanFor(ScanForTypes.sfMultiThreadIssues, this));
-
+      
       //go through each of the found items and look for hem in the multiThreadInfo or put in a new list.
       var notAccountedFor = new List<String>();
       Dictionary<string, ToCopyForRef> curMutiThreadItems = new Dictionary<string, ToCopyForRef>();
@@ -326,20 +334,24 @@ namespace SimulationDAL
         if (curMutiThreadItems.ContainsKey(modelRef.itemName)) 
         {
           var curI = curMutiThreadItems[modelRef.itemName];
-          if(curI.RelPath == "") //this should have been added before if it exists.
+          if (string.IsNullOrEmpty(curI.RelPath))
           {
-            throw new Exception("missing RelPath for " + modelRef.itemName);
+            // Accumulate the issue, do not throw
+            notAccountedFor.Add($"{modelRef.itemName} missing RelPath");
+            continue;
           }
-
-          if (curI.RefPath != mPathRef.Path) //path not what was expected so something changed need to update
+          if (curI.RefPath != mPathRef.Path)
           {
-            // "missing RerPath for " + modelRef.itemName);
             curI.RefPath = mPathRef.Path;
             notAccountedFor.Add(curI.ItemName);
           }
         }
         else //not in the saved items so add it 
         {
+          //var toCopyList = new List<string>();
+          //if (!string.IsNullOrEmpty(mPathRef.Path))
+          //  toCopyList.Add(mPathRef.Path);
+
           var addI = new ToCopyForRef(mPathRef.itemName, mPathRef.itemType, mPathRef.Path, null, "");
 
           //if it as a relative reference add it to the copy list
@@ -347,6 +359,10 @@ namespace SimulationDAL
           {
             addI.RelPath = mPathRef.Path;
             addI.ToCopy.Add(Path.GetFullPath(Path.Combine(rootPath, mPathRef.Path))); //combine and normalize the path.
+          }
+          else //it is a full path
+          {
+            addI.ToCopy.Add(mPathRef.Path);
           }
 
           multiThreadInfo.ToCopyForRefs.Add(addI);

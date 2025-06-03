@@ -200,6 +200,11 @@ namespace EMRALD_Sim
       panel10.SuspendLayout();
       tabLog.SuspendLayout();
       SuspendLayout();
+      //
+      // Def visibility for refs btn
+      //
+      bttnPathRefs.Visible = false;
+      //
       // 
       // menuStrip1
       // 

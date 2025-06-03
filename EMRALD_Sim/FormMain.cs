@@ -1599,6 +1599,16 @@ namespace EMRALD_Sim
 
     private void cbMultiThreaded_CheckedChanged(object sender, EventArgs e)
     {
+      if (_sim == null)
+      {
+        MessageBox.Show("You must load a model before enabling multi-threaded mode.", "No Model Loaded", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        cbMultiThreaded.Checked = false;
+        return;
+      }
+
+      if (_sim.multiThreadInfo == null)
+        _sim.multiThreadInfo = new MultiThreadInfo();
+
       if (cbMultiThreaded.Checked == false)
       {
         tbThreads.Text = "1";
@@ -1606,15 +1616,28 @@ namespace EMRALD_Sim
       else
       {
         tbSeed.Text = "";
-        //make sure the model can be multithreaded.
-        List<string> issueItems = this._sim.CanMutiThread();
+
+        // Always get issues (if any) for highlighting, but always show the editor form (Option B)
+        List<string> issueItems = _sim.CanMutiThread();
         if (issueItems.Count > 0)
         {
-          //TODO bring up the form for the user to see/edit the path references and what to adjust or copy. Pass in the models.multiThreadInfo and the issues to highlight.
-
-          
-          //TODO - Save the model so that the mitiThreadInfo is saved.
-          
+          using (var frm = new FormMultiThreadRefs(_sim.multiThreadInfo, issueItems))
+          {
+            var result = frm.ShowDialog();
+            if (result == DialogResult.OK)
+            {
+              _sim.multiThreadInfo = frm.EditedMultiThreadInfo;
+              teModel.Text = _sim.modelTxt;
+              //save the multithread stuff.
+              saveStripMenuItem_Click(sender, e);
+            }
+            else
+            {
+              // User cancelled, revert checkbox and exit
+              cbMultiThreaded.Checked = false;
+              return;
+            }
+          }
         }
       }
 
@@ -1627,7 +1650,7 @@ namespace EMRALD_Sim
       cbCurThread.Visible = cbMultiThreaded.Checked;
       bttnPathRefs.Visible = cbMultiThreaded.Checked;
 
-      tbThreads_Leave(sender, e);//update cur thread stuff.
+      tbThreads_Leave(sender, e); // update cur thread stuff
     }
 
     private void tbThreads_Leave(object sender, EventArgs e)
@@ -1655,8 +1678,36 @@ namespace EMRALD_Sim
 
     private void bttnPathRefs_Click(object sender, EventArgs e)
     {
-      //TODO bring up the form for the user to see/edit the path references and what to adjust or copy. Pass in the this._sim.multiThreadInfo
-      
+      if (_sim == null)
+      {
+        MessageBox.Show("You must load a model before editing multi-thread variable references.", "No Model Loaded", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        return;
+      }
+
+      // Ensure multiThreadInfo is initialized
+      if (_sim.multiThreadInfo == null)
+        _sim.multiThreadInfo = new MultiThreadInfo();
+
+      // Get issues (if any) for multi-threading.
+      List<string> issueItems = _sim.CanMutiThread();
+
+      // Always show the form, regardless of issue count
+      using (var frm = new FormMultiThreadRefs(_sim.multiThreadInfo, issueItems))
+      {
+        var result = frm.ShowDialog();
+        if (result == DialogResult.OK)
+        {
+          _sim.multiThreadInfo = frm.EditedMultiThreadInfo;
+          teModel.Text = _sim.modelTxt;
+          //save the multithread stuff.
+          saveStripMenuItem_Click(sender, e);
+        }
+        else
+        {
+          // User cancelled, do not update anything or throw
+          // (Optional: add code here if you want to revert UI or warn the user)
+        }
+      }      
     }
   }
 }
