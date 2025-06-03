@@ -1023,6 +1023,10 @@
         }
       }
     },
+    "CustomFormType": {
+      "title": "CustomFormType",
+      "enum": ["MAAP"]
+    },
     "MAAPFormData": {
       "type": "object",
       "title": "MAAPFormData",
@@ -1098,8 +1102,12 @@
         "output": {
           "type": "string",
           "description": "The MAAP output variable to store in the doc link variable"
+        },
+        "caType": {
+          "$ref": "#/definitions/CustomFormType"
         }
-      }
+      },
+      "required": ["caType"]
     },
     "MAAPInitiator": {
       "type": "object",

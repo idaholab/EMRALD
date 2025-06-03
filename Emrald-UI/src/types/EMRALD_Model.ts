@@ -97,6 +97,7 @@ export type MAAPUserEvtElement =
   | MAAPParameter
   | MAAPActionStatement
   | MAAPSourceElement
+export type CustomFormType = "MAAP"
 /**
  * Type of the event
  */
@@ -550,6 +551,7 @@ export interface MAAPFormData {
    * The MAAP output variable to store in the doc link variable
    */
   output?: string
+  caType: CustomFormType
   [k: string]: unknown
 }
 export interface MAAPSensitivityStatement {
