@@ -1,4 +1,4 @@
-import { MAAPInpParserOutput, Program, WrapperOptions } from 'maap-inp-parser';
+import type { MAAPInpParserOutput, Program, WrapperOptions } from './maap-parser-types';
 
 /**
  * Attempts to avoid parsing errors by commenting out problematic lines and re-parsing.
@@ -23,12 +23,14 @@ export default function safeMode(
        *
        * @param o - The object to clean.
        */
-      const stripLocations = (o: any) => {
+      const stripLocations = (o?: object) => {
         if (o) {
           delete o.location;
         }
         if (typeof o === 'object') {
-          Object.values(o).forEach((v) => stripLocations(v));
+          Object.values(o).forEach((v) => {
+            stripLocations(v);
+          });
         }
       };
       stripLocations(output);
@@ -40,7 +42,7 @@ export default function safeMode(
     };
   } catch (err) {
     const syntaxError = err as PEG.parser.SyntaxError;
-    if (syntaxError.location && options?.safeMode !== false) {
+    if (options?.safeMode !== false) {
       const inputLines = input.split('\n');
       const line = syntaxError.location.start.line - 1;
       inputLines[line] = `// ${inputLines[line]}`;

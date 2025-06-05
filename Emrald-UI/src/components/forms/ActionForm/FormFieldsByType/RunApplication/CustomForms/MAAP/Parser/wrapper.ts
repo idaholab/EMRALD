@@ -1,4 +1,4 @@
-import { MAAPInpParser, Program, WrapperOptions } from './maap-parser-types';
+import type { MAAPInpParser, Program, WrapperOptions } from './maap-parser-types';
 import safeMode from './safeMode';
 import { MAAPToString } from './maap-to-string';
 

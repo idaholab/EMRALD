@@ -1176,7 +1176,7 @@
           "type": "string"
         }
       },
-      "required": ["value"],
+      "required": ["value", "type", "id"],
       "additionalProperties": false
     },
     "MAAPConditionalBlockStatement": {
@@ -1203,7 +1203,7 @@
           "type": "string"
         }
       },
-      "required": ["blockType", "test", "type", "value"],
+      "required": ["blockType", "test", "type", "value", "id"],
       "additionalProperties": false
     },
     "MAAPExpression": {

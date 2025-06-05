@@ -12,27 +12,27 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import { useActionFormContext } from '../../../../../ActionFormContext';
 import { useEffect, useState } from 'react';
 import { v4 as uuid } from 'uuid';
-import { MAAPFormData, MAAPInitiator } from '../../../../../../../../types/EMRALD_Model';
+import type { MAAPInitiator } from '../../../../../../../../types/EMRALD_Model';
+import { expressionToString } from '../Parser/maap-to-string';
 
 const Initiators = () => {
   const { formData, setFormData } = useActionFormContext();
   const [initiators, setInitiators] = useState<MAAPInitiator[]>([]);
 
-  const maapForm = formData as MAAPFormData;
-
   useEffect(() => {
-    setInitiators(maapForm?.initiators || []);
+    setInitiators(formData?.initiators ?? []);
   }, [formData]);
 
-  const removeInitiator = (row: any) => {
+  const removeInitiator = (row: MAAPInitiator) => {
     const updatedInitiators = initiators.filter((initiator) => initiator !== row);
     setInitiators(updatedInitiators);
-    setFormData((prevFormData: MAAPFormData) => {
-      return { ...prevFormData, initiators: updatedInitiators };
-    });
+    setFormData((prevFormData) =>
+      prevFormData ? { ...prevFormData, initiators: updatedInitiators } : undefined,
+    );
   };
+
   const addInitiator = (desc: string) => {
-    const initiator = maapForm?.possibleInitiators?.find((init) => init.desc === desc);
+    const initiator = formData?.possibleInitiators?.find((init) => init.desc === desc);
     if (initiator && !initiators.find((init) => init.name === initiator.desc)) {
       let value = '';
       if (typeof initiator.value === 'string') {
@@ -40,21 +40,21 @@ const Initiators = () => {
       } else if (initiator.value.type === 'parameter_name') {
         value = initiator.value.value;
       } else {
-        value = initiator.value.value.toString();
+        value = expressionToString(initiator.value);
       }
       const updatedInitiators = [
         ...initiators,
         {
-          name: initiator.desc || '',
+          name: initiator.desc ?? '',
           comment: '',
           id: uuid(),
           value,
         },
       ];
       setInitiators(updatedInitiators);
-      setFormData((prevFormData: MAAPFormData) => {
-        return { ...prevFormData, initiators: updatedInitiators };
-      });
+      setFormData((prevFormData) =>
+        prevFormData ? { ...prevFormData, initiators: updatedInitiators } : undefined,
+      );
     }
   };
 
@@ -63,8 +63,10 @@ const Initiators = () => {
       <Autocomplete
         size="small"
         disablePortal
-        options={maapForm?.possibleInitiators?.map((initiator) => initiator.desc) || []}
-        onChange={(e) => addInitiator(e.currentTarget.innerHTML)}
+        options={formData?.possibleInitiators?.map((initiator) => initiator.desc) ?? []}
+        onChange={(e) => {
+          addInitiator(e.currentTarget.innerHTML);
+        }}
         sx={{ width: 300 }}
         renderInput={(params) => <TextField {...params} label="Add Initiator" />}
       />
@@ -91,7 +93,9 @@ const Initiators = () => {
                 <Tooltip title="Remove Initiator">
                   <DeleteIcon
                     sx={{ cursor: 'pointer', ml: 3 }}
-                    onClick={() => removeInitiator(row)}
+                    onClick={() => {
+                      removeInitiator(row);
+                    }}
                   />
                 </Tooltip>
               </TableCell>

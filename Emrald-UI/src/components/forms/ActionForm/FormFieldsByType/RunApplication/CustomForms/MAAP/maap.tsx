@@ -16,8 +16,7 @@ import {
   MAAPToString,
   sourceElementToString,
 } from './Parser/maap-to-string';
-import {
-  MAAPFormData,
+import type {
   MAAPParameter,
   MAAPConditionalBlockStatement,
   MAAPSourceElement,
@@ -32,15 +31,13 @@ const MAAP = () => {
   const [parameterFile, setParameterFile] = useState<File | null>(null);
   const [inputFile, setInputFile] = useState<File | null>(null);
   const [currentTab, setCurrentTab] = useState(0);
-  const [parameterPath, setParameterPath] = useState(formData?.parameterPath || '');
-  const [inputPath, setInputPath] = useState(formData?.inputPath || '');
+  const [parameterPath, setParameterPath] = useState(formData?.parameterPath ?? '');
+  const [inputPath, setInputPath] = useState(formData?.inputPath ?? '');
   const { ReturnPreCode } = useRunApplication();
 
-  const maapForm = formData as MAAPFormData;
-
   useEffect(() => {
-    setReqPropsFilled(!!maapForm?.exePath && !!parameterPath && !!inputPath);
-  }, [formData.exePath, parameterPath, inputPath]);
+    setReqPropsFilled(!!formData?.exePath && !!parameterPath && !!inputPath);
+  }, [formData?.exePath, parameterPath, inputPath]);
 
   const handleTabChange = (_event: React.SyntheticEvent, tabValue: number) => {
     setCurrentTab(tabValue);
@@ -57,23 +54,29 @@ const MAAP = () => {
   };
 
   function createMaapFile() {
-    if (maapForm?.sourceElements) {
+    if (formData?.sourceElements) {
       let inpFile = '';
       let block = 0;
-      let variables: string[] = [];
-      maapForm.sourceElements.forEach((sourceElement) => {
+      const variables: string[] = [];
+      formData.sourceElements.forEach((sourceElement) => {
         if (sourceElement.type === 'block') {
           if (sourceElement.blockType === 'PARAMETER CHANGE') {
             inpFile += 'PARAMETER CHANGE\n';
-            maapForm.parameters?.forEach((parameter) => {
-              inpFile += `${parameter.name} = `;
+            formData.parameters?.forEach((parameter) => {
+              inpFile += `${parameter.name ?? ''} = `;
               if (parameter.useVariable && typeof parameter.variable === 'string') {
                 inpFile += `" + ${parameter.variable} + @"`;
-                if (variables.indexOf(parameter.variable) < 0) {
+                if (!variables.includes(parameter.variable)) {
                   variables.push(parameter.variable);
                 }
               } else {
-                inpFile += `${parameter.value}`;
+                if (typeof parameter.value === 'string') {
+                  inpFile += parameter.value;
+                } else if (parameter.value.type === 'parameter_name') {
+                  inpFile += parameter.value.value;
+                } else {
+                  inpFile += expressionToString(parameter.value);
+                }
                 if (parameter.unit) {
                   inpFile += ` ${parameter.unit}`;
                 }
@@ -81,14 +84,14 @@ const MAAP = () => {
               inpFile += '\n';
             });
             inpFile += 'END\n';
-          } else if (sourceElement.blockType === 'INITIATORS') {
+          } else {
             inpFile += 'INITIATORS\n';
-            maapForm.initiators?.forEach((initiator) => {
+            formData.initiators?.forEach((initiator) => {
               inpFile += `${initiator.name} = `;
               if (typeof initiator.value === 'boolean') {
                 inpFile += initiator.value ? 'T' : 'F';
               } else {
-                inpFile += initiator.value;
+                inpFile += initiator.value.toString();
               }
               inpFile += '\n';
             });
@@ -96,9 +99,9 @@ const MAAP = () => {
           }
         } else if (
           sourceElement.type === 'conditional_block' &&
-          maapForm.inputBlocks !== undefined
+          formData.inputBlocks !== undefined
         ) {
-          const cblock = maapForm.inputBlocks[block];
+          const cblock = formData.inputBlocks[block];
           inpFile += `${cblock.blockType} `;
           if (cblock.test.type === 'expression') {
             if (
@@ -109,7 +112,7 @@ const MAAP = () => {
               inpFile += `${expressionTypeToString(cblock.test.value.left)} ${
                 cblock.test.value.op
               } " + ${cblock.test.value.right.value} + @"\n`;
-              if (variables.indexOf(cblock.test.value.right.value) < 0) {
+              if (!variables.includes(cblock.test.value.right.value)) {
                 variables.push(cblock.test.value.right.value);
               }
             } else {
@@ -123,7 +126,7 @@ const MAAP = () => {
               } else {
                 inpFile += identifierToString(se.target);
               }
-              inpFile += ` = \" + ${se.value.value} + @\"`;
+              inpFile += ` = " + ${expressionToString(se.value)} + @"`;
             } else {
               inpFile += sourceElementToString(se);
             }
@@ -142,15 +145,15 @@ const MAAP = () => {
 
   useEffect(() => {
     const getCleanPath = (path: string) =>
-      path.replace(/\\/g, '/').replace(/^\"/, '').replace(/\"$/, '');
-    const cleanExePath = getCleanPath(maapForm?.exePath || '');
+      path.replace(/\\/g, '/').replace(/^"/, '').replace(/"$/, '');
+    const cleanExePath = getCleanPath(formData?.exePath ?? '');
     const cleanParameterPath = getCleanPath(parameterPath);
     const cleanInputPath = getCleanPath(inputPath);
     ReturnPreCode(`string exeLoc = "${cleanExePath}";
         string paramLoc = "${cleanParameterPath}";
         string inpLoc = "${cleanInputPath}";
         string newInp = @"${createMaapFile()}";
-        string fileRefs = "${maapForm?.fileRefs}"; //example "PVGS_502.par, test.txt";
+        string fileRefs = "${(formData?.fileRefs ?? []).join(',')}"; //example "PVGS_502.par, test.txt";
         string[] fileRefsList = fileRefs.Split(',');
         
         if (!Path.IsPathRooted(exeLoc))
@@ -223,22 +226,26 @@ const MAAP = () => {
   File.Copy(resLoc, docVarPath, true);`);
 
     setReturnProcess('rtNone');
-
-    const newFormdata: MAAPFormData = {
-      ...maapForm,
-      exePath: cleanExePath,
-      inputFile,
-      inputPath: cleanInputPath,
-      parameterFile,
-      parameterPath: cleanParameterPath,
-    };
-    setFormData(newFormdata);
+    setFormData(
+      formData
+        ? {
+            ...formData,
+            exePath: cleanExePath,
+            inputFile,
+            inputPath: cleanInputPath,
+            parameterFile,
+            parameterPath: cleanParameterPath,
+          }
+        : undefined,
+    );
   }, [inputPath, parameterFile, parameterPath, JSON.stringify(formData)]);
 
   useEffect(() => {
-    if (parameterFile) {
-      const possibleInitiators: MAAPParameter[] = [];
-      parameterFile.text().then((lineData) => {
+    const handleParameterFileChange = async () => {
+      if (parameterFile) {
+        const possibleInitiators: MAAPParameter[] = [];
+
+        const lineData = await parameterFile.text();
         const lines = lineData.split(/\n/);
         for (const line of lines) {
           if (/^[0-9]{3}/.test(line)) {
@@ -248,8 +255,10 @@ const MAAP = () => {
                 possibleInitiators.push({
                   index: data.index,
                   desc: data.desc,
-                  comment: data.comment || '',
+                  comment: data.comment ?? '',
                   value: data.value,
+                  type: 'parameter',
+                  id: uuid(),
                 });
               }
             } catch (err) {
@@ -257,15 +266,17 @@ const MAAP = () => {
             }
           }
         }
-      });
-      setFormData((prevFormData: MAAPFormData) => {
-        const newData: MAAPFormData = {
-          ...prevFormData,
-          possibleInitiators,
-        };
-        return newData;
-      });
-    }
+        setFormData((prevFormData) =>
+          prevFormData
+            ? {
+                ...prevFormData,
+                possibleInitiators,
+              }
+            : undefined,
+        );
+      }
+    };
+    void handleParameterFileChange();
   }, [parameterFile, setParameterFile]);
 
   useEffect(() => {
@@ -275,41 +286,36 @@ const MAAP = () => {
         try {
           const data = InputParse.parse(fileString, { locations: false }).output;
 
-          let docComments: Record<string, MAAPComment> = {};
-          let parameters: MAAPSourceElement[] = [];
+          const docComments: Record<string, MAAPComment> = {};
+          const parameters: MAAPSourceElement[] = [];
           let initiators: MAAPSourceElement[] = [];
-          let inputBlocks: MAAPConditionalBlockStatement[] = [];
-          let fileRefs: string[] = [];
+          const inputBlocks: MAAPConditionalBlockStatement[] = [];
+          const fileRefs: string[] = [];
 
           data.value.forEach((sourceElement, i) => {
             if (sourceElement.type === 'comment') {
               // get following source element and see if it is a conditional block
-              let nextElement = data.value[i + 1];
+              const nextElement = data.value[i + 1] as MAAPComment | MAAPSourceElement | undefined;
               if (nextElement && nextElement.type === 'conditional_block') {
                 if (!inputBlocks.includes(nextElement)) {
                   nextElement.id = uuid();
                   inputBlocks.push(nextElement);
                 }
-                docComments[nextElement.id as string] = sourceElement;
+                docComments[nextElement.id] = sourceElement;
               }
             }
 
             switch (sourceElement.type) {
               case 'file':
-                if (sourceElement.fileType) {
-                  fileRefs.push(sourceElement.value);
-                }
+                fileRefs.push(sourceElement.value);
                 break;
               case 'block':
                 if (sourceElement.blockType === 'PARAMETER CHANGE') {
                   sourceElement.value.forEach((innerElement) => {
                     parameters.push(innerElement);
                   });
-                } else if (sourceElement.blockType === 'INITIATORS') {
-                  const initiatorData = sourceElement.value;
-                  for (let i = 0; i < initiatorData.length; i++) {
-                    initiators.push(initiatorData[i]);
-                  }
+                } else {
+                  initiators = initiators.concat(sourceElement.value);
                 }
                 break;
               case 'conditional_block':
@@ -339,7 +345,7 @@ const MAAP = () => {
               ) {
                 if (param.value.type === 'number') {
                   value = param.value.value.toString();
-                  unit = param.value.units || '';
+                  unit = param.value.units ?? '';
                 }
               }
               newParameters.push({
@@ -348,13 +354,14 @@ const MAAP = () => {
                 useVariable: false,
                 unit,
                 value,
+                type: 'parameter',
               });
             }
           });
           const newInitiators: MAAPInitiator[] = [];
           initiators.forEach((init) => {
             if (init.type === 'comment') {
-              newInitiators[newInitiators.length - 1].comment = init.value as string;
+              newInitiators[newInitiators.length - 1].comment = init.value;
             } else if (init.type === 'assignment') {
               let value: string | number | boolean = '';
               if (init.value.type === 'boolean') {
@@ -372,37 +379,42 @@ const MAAP = () => {
               });
             }
           });
-          setFormData((prevFormData: MAAPFormData) => {
-            const newData: MAAPFormData = {
-              ...prevFormData,
-              parameters: newParameters,
-              initiators: newInitiators,
-              docComments,
-              inputBlocks,
-              fileRefs,
-              sourceElements: data.value,
-            };
-            return newData;
-          });
+          setFormData((prevFormData) =>
+            prevFormData
+              ? {
+                  ...prevFormData,
+                  parameters: newParameters,
+                  initiators: newInitiators,
+                  docComments,
+                  inputBlocks,
+                  fileRefs,
+                  sourceElements: data.value,
+                }
+              : undefined,
+          );
         } catch (err) {
           console.log('Error parsing file:', err);
         }
       }
     };
-    handleInputFileChange();
+    void handleInputFileChange();
   }, [inputFile, setInputFile]);
 
   return (
     <>
       <Box display={'flex'} flexDirection={'column'}>
         <TextFieldComponent
-          value={formData.exePath}
+          value={formData?.exePath ?? ''}
           label="MAAP Executable Path"
           setValue={(value) => {
-            setFormData({
-              ...formData,
-              exePath: value,
-            });
+            setFormData(
+              formData
+                ? {
+                    ...formData,
+                    exePath: value,
+                  }
+                : undefined,
+            );
           }}
         />
 

@@ -13,58 +13,54 @@ import { useEffect, useState } from 'react';
 import { SelectComponent } from '../../../../../../../common';
 import { appData } from '../../../../../../../../hooks/useAppData';
 import { useActionFormContext } from '../../../../../ActionFormContext';
-import { MAAPFormData, MAAPParameter } from '../../../../../../../../types/EMRALD_Model';
+import type { MAAPParameter } from '../../../../../../../../types/EMRALD_Model';
 
 const Parameters = () => {
   const { formData, setFormData } = useActionFormContext();
-  const [useVariable, setUseVariable] = useState<{ [key: string]: boolean }>({});
-  const [variable, setVariable] = useState<{ [key: string]: string }>({});
+  const [useVariable, setUseVariable] = useState<Record<string, boolean>>({});
+  const [variable, setVariable] = useState<Record<string, string>>({});
   const [parameters, setParameters] = useState<MAAPParameter[]>([]);
-
-  const maapForm = formData as MAAPFormData;
 
   useEffect(() => {
     setUseVariable(
-      maapForm?.parameters?.reduce((accumulator: Record<string, boolean>, param) => {
-        accumulator[param.id as string] = param.useVariable === true;
+      formData?.parameters?.reduce((accumulator: Record<string, boolean>, param) => {
+        accumulator[param.id] = param.useVariable === true;
         return accumulator;
-      }, {}) || {},
+      }, {}) ?? {},
     );
     setVariable(
-      maapForm?.parameters?.reduce((accumulator: Record<string, string>, param) => {
-        accumulator[param.id as string] = param.variable || '';
+      formData?.parameters?.reduce((accumulator: Record<string, string>, param) => {
+        accumulator[param.id] = param.variable ?? '';
         return accumulator;
-      }, {}) || {},
+      }, {}) ?? {},
     );
   }, []);
 
   useEffect(() => {
-    setParameters(maapForm?.parameters || []);
+    setParameters(formData?.parameters ?? []);
   }, [formData?.parameters]);
 
   const handleSetVariable = (variableName: string, row: MAAPParameter) => {
-    setVariable((prev) => ({ ...prev, [row.id as string]: variableName }));
+    setVariable((prev) => ({ ...prev, [row.id]: variableName }));
     const updatedParameters = parameters.map((param) =>
       param.id === row.id ? { ...param, variable: variableName } : param,
     );
     setParameters(updatedParameters);
-    setFormData((prevFormData: MAAPFormData) => {
-      const data: MAAPFormData = { ...prevFormData, parameters: updatedParameters };
-      return data;
-    });
+    setFormData((prevFormData) =>
+      prevFormData ? { ...prevFormData, parameters: updatedParameters } : undefined,
+    );
   };
 
   const handleCheckbox = (row: MAAPParameter) => {
-    const value = !useVariable[row.id as string];
-    setUseVariable((prev) => ({ ...prev, [row.id as string]: value }));
+    const value = !useVariable[row.id];
+    setUseVariable((prev) => ({ ...prev, [row.id]: value }));
     const updatedParameters = parameters.map((param) =>
       param.id === row.id ? { ...param, useVariable: value } : param,
     );
     setParameters(updatedParameters);
-    setFormData((prevFormData: MAAPFormData) => {
-      const data: MAAPFormData = { ...prevFormData, parameters: updatedParameters };
-      return data;
-    });
+    setFormData((prevFormData) =>
+      prevFormData ? { ...prevFormData, parameters: updatedParameters } : undefined,
+    );
   };
 
   return (
@@ -81,17 +77,19 @@ const Parameters = () => {
         </TableRow>
       </TableHead>
       <TableBody>
-        {parameters?.map((row, idx) => (
+        {parameters.map((row, idx) => (
           <TableRow key={idx} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
             <TableCell component="th" scope="row">
               {row.name}
             </TableCell>
             <TableCell>
-              {useVariable[row.id as string] ? (
+              {useVariable[row.id] ? (
                 <SelectComponent
-                  value={variable[row.id as string] || ''}
+                  value={variable[row.id] || ''}
                   label={'EMRALD Variable'}
-                  setValue={(e) => handleSetVariable(e, row)}
+                  setValue={(e) => {
+                    handleSetVariable(e, row);
+                  }}
                   sx={{ width: 223, mt: 0 }}
                 >
                   {appData.value.VariableList.map((variable) => (
@@ -108,9 +106,11 @@ const Parameters = () => {
               <FormControlLabel
                 control={
                   <Checkbox
-                    checked={useVariable[row.id as string] || false}
-                    value={useVariable[row.id as string] || false}
-                    onChange={() => handleCheckbox(row)}
+                    checked={useVariable[row.id] || false}
+                    value={useVariable[row.id] || false}
+                    onChange={() => {
+                      handleCheckbox(row);
+                    }}
                   />
                 }
                 label="Use Variable"

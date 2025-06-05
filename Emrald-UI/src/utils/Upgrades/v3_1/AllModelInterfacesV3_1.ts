@@ -577,7 +577,7 @@ export interface MAAPConditionalBlockStatement {
   test: MAAPExpression
   type: "conditional_block"
   value: MAAPSourceElement[]
-  id?: string
+  id: string
 }
 export interface MAAPIsExpression {
   target: MAAPVariable
@@ -647,10 +647,10 @@ export interface MAAPParameter {
   /**
    * An ID assigned to the parameter by the form
    */
-  id?: string
+  id: string
   flag?: MAAPBooleanLiteral
   index?: number
-  type?: "parameter"
+  type: "parameter"
   value: MAAPExpression | MAAPParameterName | string
   comment?: string
   name?: string
