@@ -1,7 +1,8 @@
+/* eslint-disable @typescript-eslint/prefer-for-of */
 import { describe, expect, test } from 'vitest';
 import { upgradeModel } from '../../utils/Upgrades/upgrade';
-import { EMRALD_Model as ModelV2_4 } from '../../utils/Upgrades/v2_4/AllModelInterfacesV2_4';
-import { EMRALD_Model as ModelV3_0 } from '../../utils/Upgrades/v3_0/AllModelInterfacesV3_0';
+import type { EMRALD_Model as ModelV2_4 } from '../../utils/Upgrades/v2_4/AllModelInterfacesV2_4';
+import type { EMRALD_Model as ModelV3_0 } from '../../utils/Upgrades/v3_0/AllModelInterfacesV3_0';
 import expected from './upgrade.expected.json';
 
 function removeIds(model: ModelV3_0) {
@@ -30,7 +31,7 @@ function removeIds(model: ModelV3_0) {
 }
 
 describe('Model Upgrade', () => {
-  test('upgrade v1.2', async () => {
+  test('upgrade v1.2', () => {
     const name = 'upgrade v1.2';
     const model = {
       name,
@@ -97,7 +98,7 @@ describe('Model Upgrade', () => {
     }
   });
 
-  test('upgrade v2.4', async () => {
+  test('upgrade v2.4', () => {
     const name = 'upgrade v2.4';
     const model = {
       name,
@@ -188,7 +189,7 @@ describe('Model Upgrade', () => {
     }
   });
 
-  test('upgrade v3.0', async () => {
+  test('upgrade v3.0', () => {
     const name = 'upgrade v3.0';
     const model: ModelV2_4 = {
       version: 2.4,

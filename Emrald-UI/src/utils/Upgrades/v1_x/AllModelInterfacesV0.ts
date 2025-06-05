@@ -1,39 +1,11 @@
 /**
- * EMRALD model schema version 3.0
- */
-export type EMRALD_Model = Main_Model & Templates
-/**
- * For event type of etDistribution this is the name of the distribution parameter.
- */
-export type MainItemType =
-  | "Diagram"
-  | "State"
-  | "Action"
-  | "Event"
-  | "ExtSim"
-  | "LogicNode"
-  | "Variable"
-  | "EMRALD_Model"
-/**
- * Type of the diagram. dtSingle - means you can only be in one state of the diagram at a time and states evaluate to a value. dtMulti - means you can be in multiple states at a time, but cant evaluate the diagram
- */
-export type DiagramType = "dtSingle" | "dtMulti"
-/**
  * Type of the diagram.
  */
-export type ChangeLog = ChangeLogItems[]
+export type DiagramType = "dtPlant" | "dtComponent" | "dtSystem" | "dtOther"
 /**
  * Type of the state
  */
 export type StateType = "stStart" | "stKeyState" | "stStandard" | "stTerminal"
-/**
- * actions for the events in sibling "events" array. One to one relationship.
- */
-export type EventActions = EventActionItems[]
-/**
- * For single state diagrams. Boolean value for the diagram when evaluated in a logic tree. Ignore - removes that item from the logic calculation.
- */
-export type StateEvalValue = "True" | "False" | "Ignore"
 /**
  * The type of action
  */
@@ -53,6 +25,10 @@ export type EventType =
   | "et3dSimEv"
   | "etDistribution"
   | "etVarCond"
+  | "etNormalDist"
+  | "etLogNormalDist"
+  | "etExponentialDist"
+  | "etWeibullDist"
 /**
  * Optional. When an event uses a variable and that variable changes, this tells the code how to update the event.
  */
@@ -61,16 +37,15 @@ export type VarChangeOptions = "ocIgnore" | "ocResample" | "ocAdjust"
  * Optional, For events of type etTimer. This is a time unit if a variable is used for the time. Example X min.
  */
 export type TimeVariableUnit =
-  | ""
-  | "trYears"
   | "trDays"
   | "trHours"
   | "trMinutes"
   | "trSeconds"
+  | "trYears"
 /**
  * Optional. For events of type et3dSimEv. This the type of message being sent to the external simulation. See the external messeage JSON schema.
  */
-export type ExtEventMsgType = "etCompEv" | "etEndSim" | "etStatus"
+export type ExtEventMsgType = "etCompEv" | "etEndSim"
 /**
  * Optional. For event type of etDistribution this is the type of distribution the user selected.
  */
@@ -82,38 +57,10 @@ export type DistributionType =
   | "dtTriangular"
   | "dtGamma"
   | "dtGompertz"
-  | "dtUniform"
-  | "dtBeta"
-/**
- * For event type of etDistribution this is the name of the distribution parameter.
- */
-export type EventDistributionParameterName =
-  | "Mean"
-  | "Standard Deviation"
-  | "Minimum"
-  | "Maximum"
-  | "Rate"
-  | "Shape"
-  | "Scale"
-  | "Peak"
-  | "Alpha"
-  | "Beta"
-/**
- * Optional. For event type of etDistribution this is an array of properties for the distribution calculation.
- */
-export type Parameters = EventDistributionParameter[]
 /**
  * Gate type for the logic node
  */
 export type GateType = "gtAnd" | "gtOr" | "gtNot"
-/**
- * Evaluate value if not the states default.
- */
-export type StateValues = StateValuesItems[]
-/**
- * Array of component diagram names and state values to use in evaluating if not using the default value.
- */
-export type CompChild = CompChildItems[]
 /**
  * Context of use for the variable in the model.
  */
@@ -130,24 +77,15 @@ export type VariableType = "bool" | "double" | "int" | "string"
  * Type of accrual for the specified state.
  */
 export type AccrualVarTableType = "ctMultiplier" | "ctTable"
-/**
- * Optional. If the type is ctTable then this is the array of values used in calculating this states contribution to the variable value. Example for the first hour the accrual multiplier is 0.5, for the second hour the accrual multiplier is 0.1
- */
-export type AccrualTable = number[][]
-/**
- * Optional. If the variable varScope is gtAccrual, then these are the states used for calculating the variables value over time.
- */
-export type AccrualStatesData = AccrualStatesDataItems[]
 
 /**
- * EMRALD model schema version 3.0
+ * EMRALD model schema pre version 1
  */
-export interface Main_Model {
+export interface EMRALD_Model {
   /**
    * Temporary, only used internally for some identification or uniqueness needs
    */
-  id?: string
-  objType: MainItemType
+  id?: number
   /**
    * Name of the EMRALD model
    */
@@ -157,50 +95,62 @@ export interface Main_Model {
    */
   desc: string
   /**
-   * Version of the EMRALD model schema
+   * Version of the EMRALD model
    */
-  emraldVersion?: number
-  /**
-   * Version of the users model
-   */
-  version: number
+  version?: number
   /**
    * All the diagrams for the model
    */
-  DiagramList: Diagram[]
+  DiagramList: {
+    Diagram: Diagram
+  }[]
   /**
    * All the external simulation links for the mdoel
    */
-  ExtSimList: ExtSim[]
+  ExtSimList: {
+    ExtSim: ExtSim
+  }[]
   /**
    * All of the states for the different diagrams of the model
    */
-  StateList: State[]
+  StateList: {
+    State: State
+  }[]
   /**
    * All the actions that can be used in the model
    */
-  ActionList: Action[]
+  ActionList?: {
+    Action: Action
+  }[]
   /**
    * All the events that are used in the model.
    */
-  EventList: Event[]
+  EventList?: {
+    Event: Event
+  }[]
   /**
    * All the logic nodes to make the logic trees in the model
    */
-  LogicNodeList: LogicNode[]
+  LogicNodeList: {
+    LogicNode: LogicNode
+  }[]
   /**
    * All the variables used in the model
    */
-  VariableList: Variable[]
-  changeLog?: ChangeLog
+  VariableList: {
+    Variable: Variable
+  }[]
+  /**
+   * Templates avaliable to make new diagrams in the model. These are basicly a small model all on there own.
+   */
+  templates?: unknown[]
   group?: Group
 }
 export interface Diagram {
   /**
    * Optional. Only used for internal processing needs.
    */
-  id?: string
-  objType: MainItemType
+  id?: number
   /**
    * Name of the diagram
    */
@@ -222,29 +172,33 @@ export interface Diagram {
    * Names of the states used in this diagram
    */
   states: string[]
-  changeLog?: ChangeLog
   /**
-   * If this is a template then it indicates the item must exist in the current model before using the template.
+   * If a single state diagram, then this lists the states that have a boolean value assigned to them
+   */
+  singleStates?: {
+    /**
+     * Name of state for the value.
+     */
+    stateName: string
+    /**
+     * value of the state to be used in logic evaluation.
+     */
+    okState: "True" | "False"
+  }[]
+  /**
+   * Deprecated
    */
   required?: boolean
-}
-export interface ChangeLogItems {
   /**
-   * Description of the change.
+   * Deprecated
    */
-  cngDesc: string
-  /**
-   * ISO 8601 date time format for the change
-   */
-  dateTime: string
-  cngID?: string
+  diagramLabels?: string[]
 }
 export interface ExtSim {
   /**
    * Optional, internal use only.
    */
-  id?: string
-  objType: MainItemType
+  id?: number
   /**
    * referenace name in the model for the external simulation
    */
@@ -253,14 +207,9 @@ export interface ExtSim {
    * name of resource type to connect to in MsgServer, not unique if more than one simulation of the same tool
    */
   resourceName: string
-  /**
-   * If this is a template then it indicates the item must exist in the current model before using the template.
-   */
-  required?: boolean
 }
 export interface State {
-  id?: string
-  objType: MainItemType
+  id?: number
   /**
    * referenace name in the model for state
    */
@@ -282,38 +231,30 @@ export interface State {
    * Array of name references to events. These event will be monitored for when in this state.
    */
   events: string[]
-  eventActions: EventActions
-  geometryInfo?: GeometryInfo
-  changeLog?: ChangeLog
-  defaultSingleStateValue?: StateEvalValue
   /**
-   * If this is a template then it indicates the item must exist in the current model before using the template.
+   * actions for the events in sibling "events" array. One to one relationship.
+   */
+  eventActions: {
+    /**
+     * array of referenace names for actions of the associated event.
+     */
+    actions: string[]
+    moveFromCurrent: boolean
+  }[]
+  /**
+   * possition for the GUI
+   */
+  geometry: string
+  /**
+   * Deprecated
    */
   required?: boolean
-}
-export interface EventActionItems {
-  /**
-   * array of referenace names for actions of the associated event.
-   */
-  actions: string[]
-  moveFromCurrent: boolean
-}
-/**
- * position for the GUI
- */
-export interface GeometryInfo {
-  x?: number
-  y?: number
-  width?: number
-  height?: number
-  [k: string]: unknown
 }
 export interface Action {
   /**
    * Optional, internal use only.
    */
-  id?: string
-  objType: MainItemType
+  id?: number
   /**
    * referenace name in the model for the action
    */
@@ -326,15 +267,28 @@ export interface Action {
   /**
    * Is this a global item to show up in the global list, If false it showes up in local or all list.
    */
-  mainItem: boolean
+  mainItem?: boolean | string;
   /**
    * Optional. Only one action may be taken so the probability determines if this action is taken vs another in the EventAction list. If false then the probability is used to sample if this action occured and multiple or no actions could happen when the event is triggered.
    */
-  mutExcl?: boolean
+  mutExcl?: boolean | string
   /**
    * Optional. If this is a transition action then these are the states that it could be transitioned to.
    */
-  newStates?: NewState[]
+  newStates?: {
+    /**
+     * reference name of the state to transtion to.
+     */
+    toState: string
+    /**
+     * probability that this state will be transtioned to.
+     */
+    prob: number
+    /**
+     * The description from the user for output if tthis transition takes place.
+     */
+    failDesc: string
+  }[]
   /**
    * Optionsl. Script code to be executed if the action type has a script
    */
@@ -376,6 +330,10 @@ export interface Action {
    */
   simEndTime?: string
   /**
+   * Deprecated
+   */
+  simEndtime?: string
+  /**
    * Optional. For action type atRunExtApp. It is the C# script to be executed and the result strig  passed as a parameter to the executable to be run.
    */
   makeInputFileCode?: string
@@ -396,47 +354,19 @@ export interface Action {
    */
   template?: Record<string, unknown>
   /**
-   * Optional. For action type atRunExtApp. It is flag to indicate the type of return from the processOutputFileCode. If rtNone then it has no return, othrwise the C# script must return a List<string/> with +/-[StateName] to shift out or into a state.
+   * Optional. For action type atRunExtApp. It is flag to indicate the type of return from the processOutputFileCode. If rtNone then it has no return, othrwise the C# script must return a List<string> with +/-[StateName] to shift out or into a state.
    */
   returnProcess?: string
-  changeLog?: ChangeLog
   /**
-   * String for the run application action, only for UI used. Options depend on the custom UI forms made. "code" means default user defined pre and post execution code is used.
-   */
-  raType?: string
-  /**
-   * Used for custom form, variables used in the form.
-   */
-  updateVariables?: unknown[]
-  /**
-   * If this is a template then it indicates the item must exist in the current model before using the template.
+   * Deprecated
    */
   required?: boolean
-}
-export interface NewState {
-  /**
-   * reference name of the state to transtion to.
-   */
-  toState: string
-  /**
-   * probability that this state will be transtioned to.
-   */
-  prob: number
-  /**
-   * The description from the user for output if tthis transition takes place.
-   */
-  failDesc: string
-  /**
-   * Optional, if used  then the a variable is used for the probability. This is the name of that variable
-   */
-  varProb?: null | string
 }
 export interface Event {
   /**
    * Optional, internal use only.
    */
-  id?: string
-  objType: MainItemType
+  id?: number
   /**
    * referenace name in the event in the model.
    */
@@ -448,16 +378,20 @@ export interface Event {
   /**
    * Is this a global item to show up in the global list, If false it showes up in local or all list.
    */
-  mainItem: boolean
-  evType: EventType
+  mainItem?: boolean | string
+  evType?: EventType
   /**
    * Optional. For event type etStateCng. Flag to indicate if all the items in the triggerStates need to occure as specified or just one of them.
    */
-  allItems?: boolean
+  allItems?: boolean | string
   /**
    * Optional. For event type etStateCng. List of state name references as part of the criteria needed to trigger the event. These are the states that need to be entered or exited to tirgger the event.
    */
   triggerStates?: string[]
+  /**
+   * Depricated, This is stored in the states eventActions property.
+   */
+  moveFromCurrent?: unknown[]
   /**
    * Optional, Name references for all variables used in scripts if the event type uses scripts.
    */
@@ -465,11 +399,11 @@ export interface Event {
   /**
    * Optional. For event type etStateCng, flag to indicate that event is triggired when entering or exiting states listed in triggerStates array. On Enter State/s or On Exit State/s
    */
-  ifInState?: boolean
+  ifInState?: boolean | string
   /**
    * Optional. For event type etStateCng, flag to indicate that event is triggering needs all the items or just one or rmore from the states listed in triggerStates array. checkbox - All Items
    */
-  onSuccess?: boolean
+  onSuccess?: boolean | string
   /**
    * Optional. For event type etComponentLogic, flag to indicate that event is triggered if logic tree evaluates to a False, otherwise it triggeres on true.
    */
@@ -510,36 +444,117 @@ export interface Event {
    */
   code?: string
   distType?: DistributionType
-  parameters?: Parameters
-  dfltTimeRate?: TimeVariableUnit
-  changeLog?: ChangeLog
   /**
-   * If this is a template then it indicates the item must exist in the current model before using the template.
+   * Optional. For event type of etDistribution this is an array of properties for the distribution calculation.
+   */
+  parameters?: {
+    /**
+     * For event type of etDistribution this is the name of the distribution parameter.
+     */
+    name:
+      | "Mean"
+      | "Standard Deviation"
+      | "Minimum"
+      | "Maximum"
+      | "Rate"
+      | "Shape"
+      | "Scale"
+      | "Peak"
+    /**
+     * Optional. The value of the parameter if the useVariable flag is false. Can be a number or a string if in scientific notation.
+     */
+    value?: number | string
+    timeRate?: TimeVariableUnit
+    /**
+     * Flag to use the variable string vs the value item for the property
+     */
+    useVariable: boolean
+    /**
+     * Optional. The reference name of the variable to use as the value of the parameter if the useVariable flag is true.
+     */
+    variable?: string
+  }[]
+  timeRate?: TimeVariableUnit
+  rate?: number
+  mean?: number
+  std?: number
+  min?: number
+  max?: number
+  shape?: number
+  scale?: number
+  meanTimeRate?: TimeVariableUnit
+  stdTimeRate?: TimeVariableUnit
+  minTimeRate?: TimeVariableUnit
+  maxTimeRate?: TimeVariableUnit
+  /**
+   * Deprecated
+   */
+  Code?: string
+  /**
+   * Deprecated
+   */
+  sim3dID?: string
+  /**
+   * Deprecated
+   */
+  ndMean?: number
+  /**
+   * Deprecated
+   */
+  ndStdDev?: number
+  /**
+   * Deprecated
+   */
+  ndMin?: number
+  /**
+   * Deprecated
+   */
+  ndMax?: number
+  /**
+   * Deprecated
+   */
+  evalCurOnInitial?: boolean
+  /**
+   * Deprecated
    */
   required?: boolean
-}
-export interface EventDistributionParameter {
-  name?: EventDistributionParameterName
   /**
-   * Optional. The value of the parameter if the useVariable flag is false. Can be a number or a string if in scientific notation.
+   * Deprecated
    */
-  value?: number | string
-  timeRate?: TimeVariableUnit
+  missionTime?: number
   /**
-   * Flag to use the variable string vs the value item for the property
+   * Type of the event
    */
-  useVariable?: boolean
+  evtType?:
+    | "etStateCng"
+    | "etComponentLogic"
+    | "etFailRate"
+    | "etTimer"
+    | "et3dSimEv"
+    | "etDistribution"
+    | "etVarCond"
+    | "etNormalDist"
+    | "etLogNormalDist"
+    | "etExponentialDist"
+    | "etWeibullDist"
   /**
-   * Optional. The reference name of the variable to use as the value of the parameter if the useVariable flag is true.
+   * Deprecated
    */
-  variable?: string
+  stdv?: number
+  /**
+   * Deprecated
+   */
+  tempLogicTopList?: string[];
+  /**
+   * Deprecated
+   */
+  tempVariableList?: string[];
 }
 export interface LogicNode {
   /**
    * Optional, internal use only.
    */
-  id?: string
-  objType: MainItemType
+  id?: number
   /**
    * referenace name in the logic node
    */
@@ -549,7 +564,14 @@ export interface LogicNode {
    */
   desc: string
   gateType: GateType
-  compChildren: CompChild
+  /**
+   * Depricated, dont use
+   */
+  rootName?: string
+  /**
+   * Array of component diagram names that are children of this gate.
+   */
+  compChildren: string[]
   /**
    * Array of logic node names that are children of this gate.
    */
@@ -558,33 +580,12 @@ export interface LogicNode {
    * Flag indicating that this is to be displayed as a tree top in the UI and can be used in an evaluate logic tree event.
    */
   isRoot: boolean
-  changeLog?: ChangeLog
-  /**
-   * If this is a template then it indicates the item must exist in the current model before using the template.
-   */
-  required?: boolean
-  rootName?: string
-}
-export interface CompChildItems {
-  stateValues?: StateValues
-  /**
-   * Name of the diagram to be evaluated
-   */
-  diagramName: string
-}
-export interface StateValuesItems {
-  /**
-   * State name for the value.
-   */
-  stateName: string
-  stateValue: StateEvalValue
 }
 export interface Variable {
   /**
    * Optional, internal use only.
    */
-  id?: string
-  objType: MainItemType
+  id?: number
   /**
    * referenace name in the model for the variable
    */
@@ -597,7 +598,7 @@ export interface Variable {
   /**
    * The default value for the variable.
    */
-  value: number | string | boolean
+  value: boolean | number | string
   /**
    * If the varScope is gtDocLink then this is the expression defining path in the document to the variable is linked to. XPath for XML, JSONPath for JSON, or a RegularExpression for txt
    */
@@ -612,7 +613,28 @@ export interface Variable {
    */
   pathMustExist?: boolean
   type: VariableType
-  accrualStatesData?: AccrualStatesData
+  /**
+   * Optional. If the variable varScope is gtAccrual, then these are the states used for calculating the variables value over time.
+   */
+  accrualStatesData?: {
+    /**
+     * Reference name to the state contributiong to the accrual calculation.
+     */
+    stateName: string
+    type: AccrualVarTableType
+    /**
+     * Optional. If type is ctMultiplier then this is the multiplier value for every time increment, specified by the multRate, spent in the state.
+     */
+    accrualMult: number
+    /**
+     * This is the time rate for the accrualMult in calculating the value for the variable.
+     */
+    multRate: string
+    /**
+     * Optional. If the type is ctTable then this is the array of values used in calculating this states contribution to the variable value. Example for the first hour the accrual multiplier is 0.5, for the second hour the accrual multiplier is 0.1
+     */
+    accrualTable: number[][]
+  }[]
   /**
    * Optional. For variable varScope of gtDocLink, docType dtTxtRegExp, this is the regular expression string.
    */
@@ -637,39 +659,10 @@ export interface Variable {
    * Optional. For variables of varScope gt3DSim, this is the external simulations name of the variable. It is used in sending a message to the external simulation.
    */
   sim3DId?: string
-  changeLog?: ChangeLog
   /**
-   * Flag to indicate the user want to do cumulative statistics in the results.
-   */
-  cumulativeStats?: boolean
-  /**
-   * Flag to have the monitor variable check box checked in the solver by default.
-   */
-  monitorInSim?: boolean
-  /**
-   * Flag to indicate if the variable can be monitored in the solver. This removes it from the solver UI if false. Must be true if monitorInSim is true.
-   */
-  canMonitor?: boolean
-  /**
-   * If this is a template then it indicates the item must exist in the current model before using the template.
+   * Deprecated
    */
   required?: boolean
-}
-export interface AccrualStatesDataItems {
-  /**
-   * Reference name to the state contributiong to the accrual calculation.
-   */
-  stateName: string
-  type: AccrualVarTableType
-  /**
-   * Optional. If type is ctMultiplier then this is the multiplier value for every time increment, specified by the multRate, spent in the state.
-   */
-  accrualMult: number
-  /**
-   * This is the time rate for the accrualMult in calculating the value for the variable.
-   */
-  multRate: string
-  accrualTable: AccrualTable
 }
 /**
  * What catagory grouping this item belongs to. Used to indicate a group for and EMRALD model template
@@ -683,10 +676,4 @@ export interface Group {
    * Sub group tree path
    */
   subgroup?: Group[]
-}
-export interface Templates {
-  /**
-   * Templates available to make new diagrams in the model. These are basically small models all on their own.
-   */
-  templates?: Main_Model[]
 }
