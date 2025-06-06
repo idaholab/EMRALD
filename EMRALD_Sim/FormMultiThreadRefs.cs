@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
+using SimulationDAL;
 
 namespace EMRALD_Sim
 {
@@ -127,38 +128,30 @@ namespace EMRALD_Sim
 
         private string CalculateRelPath(string refPath, List<string> toCopy)
         {
-            if (string.IsNullOrEmpty(refPath) || toCopy.Count == 0)
-                return "";
-            string parent = GetClosestParent(toCopy);
-            if (string.IsNullOrEmpty(parent))
-                return "";
-            try
-            {
-                string rel = Path.GetRelativePath(Path.GetDirectoryName(refPath) ?? "", parent);
-                return Path.Combine(".", rel).Replace('\\', '/');
-            }
-            catch
-            {
-                return "";
-            }
-        }
+          if (string.IsNullOrEmpty(refPath) || toCopy.Count == 0)
+            return "";
 
-        private string GetClosestParent(IEnumerable<string> paths)
-        {
-            if (!paths.Any()) return "";
-            var separated = paths.Select(p => p.Split(Path.DirectorySeparatorChar)).ToList();
-            int minLen = separated.Min(x => x.Length);
-            List<string> common = new List<string>();
-            for (int i = 0; i < minLen; i++)
-            {
-                var part = separated[0][i];
-                if (separated.All(x => x[i] == part))
-                    common.Add(part);
-                else
-                    break;
-            }
-            return common.Count > 0 ? string.Join(Path.DirectorySeparatorChar.ToString(), common) : "";
+          // Find common parent (absolute path)
+          string commonParent = CommonFunctions.FindClosestParentFolder(toCopy);
+          if (string.IsNullOrEmpty(commonParent))
+            return "";
+
+          string absCommonParent = Path.GetFullPath(commonParent);
+
+          // RefPath might be relative or absolute
+          string absRefPath = Path.IsPathRooted(refPath)
+            ? Path.GetFullPath(refPath)
+            : Path.GetFullPath(Path.Combine(absCommonParent, refPath));
+
+          // Always show ref path relative to the common parent
+          string relPath = Path.GetRelativePath(absCommonParent, absRefPath);
+
+          // Standardize for display: prefix with ./
+          relPath = "./" + relPath.Replace('\\', '/');
+
+          return relPath;
         }
+        
         
         private void UpdateOKButtonState()
         {
