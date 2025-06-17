@@ -265,7 +265,7 @@ const ActionFormContextProvider: React.FC<PropsWithChildren> = ({ children }) =>
           })
         : undefined,
       mutExcl: mutuallyExclusive,
-      codeVariables: actType === 'atCngVarVal' ? codeVariables : undefined,
+      codeVariables: ['atCngVarVal', 'atRunExtApp'].includes(actType) ? codeVariables : undefined,
       variableName,
       scriptCode,
       sim3DMessage,
