@@ -1,11 +1,9 @@
 import React, { createContext, useContext, useState } from 'react';
-import { Variable } from '../types/Variable';
 import { EmraldContextWrapperProps } from './EmraldContextWrapper';
 import { appData, updateAppData } from '../hooks/useAppData';
 import { effect, ReadonlySignal, useComputed } from '@preact/signals-react';
-import { MainItemTypes } from '../types/ItemTypes';
 import { DeleteItemAndRefs, updateModelAndReferences } from '../utils/UpdateModel';
-import { EMRALD_Model } from '../types/EMRALD_Model';
+import { EMRALD_Model, Variable } from '../types/EMRALD_Model';
 
 interface VariableContextType {
   variables: Variable[];
@@ -57,7 +55,7 @@ const VariableContextProvider: React.FC<EmraldContextWrapperProps> = ({ children
   const createVariable = async (newVariable: Variable) => {
     var updatedModel: EMRALD_Model = await updateModelAndReferences(
       newVariable,
-      MainItemTypes.Variable,
+      'Variable',
     );
     updateAppData(updatedModel);
   };
@@ -65,7 +63,7 @@ const VariableContextProvider: React.FC<EmraldContextWrapperProps> = ({ children
   const updateVariable = async (updatedVariable: Variable) => {
     var updatedModel: EMRALD_Model = await updateModelAndReferences(
       updatedVariable,
-      MainItemTypes.Variable,
+      'Variable',
     );
     updateAppData(updatedModel);
   };

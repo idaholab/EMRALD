@@ -2,8 +2,7 @@ import { Dispatch, SetStateAction, useEffect } from 'react';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
-import { LogicNode } from '../../../types/LogicNode';
-import { GateType, MainItemTypes } from '../../../types/ItemTypes';
+import { LogicNode, GateType } from '../../../types/EMRALD_Model';
 import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
@@ -188,7 +187,7 @@ const LogicNodeForm: React.FC<LogicNodeFormProps> = ({
           </>
         ) : (
           <MainDetailsForm
-            itemType={MainItemTypes.LogicNode}
+            itemType={'LogicNode'}
             type={gateTypeValue}
             setType={setGateTypeValue as Dispatch<SetStateAction<GateType>>}
             typeOptions={gateTypeOptions}

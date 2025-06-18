@@ -1,12 +1,9 @@
 import React, { createContext, useContext, useState } from 'react';
-import { Event } from '../types/Event';
 import { EmraldContextWrapperProps } from './EmraldContextWrapper';
 import { appData, updateAppData } from '../hooks/useAppData';
 import { effect, ReadonlySignal, useComputed } from '@preact/signals-react';
-import { EMRALD_Model } from '../types/EMRALD_Model';
+import { EMRALD_Model, Event, State } from '../types/EMRALD_Model';
 import { DeleteItemAndRefs, updateModelAndReferences } from '../utils/UpdateModel';
-import { MainItemTypes } from '../types/ItemTypes';
-import { State } from '../types/State';
 
 interface EventContextType {
   events: Event[];
@@ -26,7 +23,7 @@ export const emptyEvent: Event = {
   evType: 'etStateCng',
   mainItem: false,
   required: false,
-  objType: MainItemTypes.Event,
+  objType: 'Event',
 };
 
 const EventContext = createContext<EventContextType | undefined>(undefined);
@@ -59,12 +56,12 @@ const EventContextProvider: React.FC<EmraldContextWrapperProps> = ({ children })
   });
 
   const createEvent = async (newEvent: Event, state?: State, moveFromCurrent: boolean = false) => {
-    var updatedModel: EMRALD_Model = await updateModelAndReferences(newEvent, MainItemTypes.Event);
+    var updatedModel: EMRALD_Model = await updateModelAndReferences(newEvent, 'Event');
     updateAppData(updatedModel);
     if (state) {
       state.events.push(newEvent.name);
       state.eventActions.push({ moveFromCurrent, actions: [] });
-      var updatedModel: EMRALD_Model = await updateModelAndReferences(state, MainItemTypes.State);
+      var updatedModel: EMRALD_Model = await updateModelAndReferences(state, 'State');
       updateAppData(updatedModel);
     }
   };
@@ -76,7 +73,7 @@ const EventContextProvider: React.FC<EmraldContextWrapperProps> = ({ children })
   ) => {
     var updatedModel: EMRALD_Model = await updateModelAndReferences(
       updatedEvent,
-      MainItemTypes.Event,
+      'Event',
     );
     updateAppData(updatedModel);
 
@@ -84,7 +81,7 @@ const EventContextProvider: React.FC<EmraldContextWrapperProps> = ({ children })
     if (state) {
       const eventStateIndex = state.events.indexOf(updatedEvent.name);
       state.eventActions[eventStateIndex].moveFromCurrent = moveFromCurrent;
-      var updatedModel: EMRALD_Model = await updateModelAndReferences(state, MainItemTypes.State);
+      var updatedModel: EMRALD_Model = await updateModelAndReferences(state, 'State');
       updateAppData(updatedModel);
     }
   };

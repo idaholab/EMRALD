@@ -1,6 +1,5 @@
-import { EMRALD_Model } from '../types/EMRALD_Model.ts';
+import { EMRALD_Model, MainItemType, Diagram, State, Action, Event, Variable, LogicNode, ExtSim } from '../types/EMRALD_Model';
 import jsonpath from 'jsonpath';
-import { MainItemType, MainItemTypes } from '../types/ItemTypes.ts';
 import {
   AdjustJsonPathRef,
   allMainItemTypes,
@@ -9,20 +8,13 @@ import {
   ItemReferencesArray,
   GetJSONPathInRefs,
   GetJSONPathUsingRefs,
-} from './ModelReferences.ts';
+} from './ModelReferences';
 import { appData } from '../hooks/useAppData';
-import { Diagram } from '../types/Diagram.ts';
-import { State } from '../types/State.ts';
-import { Action } from '../types/Action.ts';
-import { Event } from '../types/Event.ts';
-import { Variable } from '../types/Variable.ts';
-import { LogicNode } from '../types/LogicNode.ts';
-import { ExtSim } from '../types/ExtSim.ts';
 
 export const updateSpecifiedModel = async (
   //Update the provided EMRALD model with all the item changed in the model provided and references if the name changes
   item: Diagram | State | Action | Event | Variable | LogicNode | ExtSim | EMRALD_Model, //It is assumed the the EMRALD item passed in has already been udpated with all the object changes
-  itemType: MainItemTypes, //This is the type of the object that was updated
+  itemType: MainItemType, //This is the type of the object that was updated
   model: EMRALD_Model, //model to update
   useCopy: boolean, //true - make a copy of the model and return the copy. false - Modify the passed in model directly
 ): Promise<EMRALD_Model> => {
@@ -34,28 +26,28 @@ export const updateSpecifiedModel = async (
   var itemIdx = -1;
 
   switch (itemType) {
-    case MainItemTypes.Diagram:
+    case 'Diagram':
       itemArray = updatedEMRALDModel.DiagramList;
       break;
-    case MainItemTypes.State:
+    case 'State':
       itemArray = updatedEMRALDModel.StateList;
       break;
-    case MainItemTypes.Action:
+    case 'Action':
       itemArray = updatedEMRALDModel.ActionList;
       break;
-    case MainItemTypes.Event:
+    case 'Event':
       itemArray = updatedEMRALDModel.EventList;
       break;
-    case MainItemTypes.ExtSim:
+    case 'ExtSim':
       itemArray = updatedEMRALDModel.ExtSimList;
       break;
-    case MainItemTypes.Variable:
+    case 'Variable':
       itemArray = updatedEMRALDModel.VariableList;
       break;
-    case MainItemTypes.LogicNode:
+    case 'LogicNode':
       itemArray = updatedEMRALDModel.LogicNodeList;
       break;
-    case MainItemTypes.EMRALD_Model:
+    case 'EMRALD_Model':
       updatedEMRALDModel.templates =
         updatedEMRALDModel.templates !== undefined ? updatedEMRALDModel.templates : [];
       itemArray = updatedEMRALDModel.templates;
@@ -98,7 +90,7 @@ export const updateSpecifiedModel = async (
 export const updateModelAndReferences = async (
   //Update the main appData EMRALD model with all the item changed in the model provided and references if the name changes
   item: Diagram | State | Action | Event | Variable | LogicNode | ExtSim | EMRALD_Model, //It is assumed the the EMRALD item passed in has already been udpated with all the object changes
-  itemType: MainItemTypes, //This is the type of the object that was updated
+  itemType: MainItemType, //This is the type of the object that was updated
 ): Promise<EMRALD_Model> => {
   const updatedEMRALDModel: EMRALD_Model = JSON.parse(JSON.stringify(appData.value));
   updateSpecifiedModel(item, itemType, updatedEMRALDModel, false);
@@ -133,40 +125,40 @@ export const DeleteItemAndRefsInSpecifiedModel = async (
   let referencedByTheToDel_Types: MainItemTypeSet; //types that may need deleted because they are referenced by this item
 
   switch (item.objType) {
-    case MainItemTypes.Diagram:
+    case 'Diagram':
       itemArray = updatedEMRALDModel.DiagramList;
-      referencedByTheToDel_Types = new Set<MainItemType>([MainItemTypes.State]);
+      referencedByTheToDel_Types = new Set<MainItemType>(['State']);
       referencingTheToDel_Types = new Set<MainItemType>([]);
       break;
-    case MainItemTypes.State:
+    case 'State':
       itemArray = updatedEMRALDModel.StateList;
       referencedByTheToDel_Types = new Set<MainItemType>([
-        MainItemTypes.Action,
-        MainItemTypes.Event,
+        'Action',
+        'Event',
       ]);
       referencingTheToDel_Types = new Set<MainItemType>([]);
       break;
-    case MainItemTypes.Action:
+    case 'Action':
       itemArray = updatedEMRALDModel.ActionList;
       referencedByTheToDel_Types = new Set<MainItemType>([]);
       referencingTheToDel_Types = new Set<MainItemType>([]);
       break;
-    case MainItemTypes.Event:
+    case 'Event':
       itemArray = updatedEMRALDModel.EventList;
-      referencedByTheToDel_Types = new Set<MainItemType>([MainItemTypes.Action]);
+      referencedByTheToDel_Types = new Set<MainItemType>(['Action']);
       referencingTheToDel_Types = new Set<MainItemType>([]);
       break;
-    case MainItemTypes.ExtSim:
+    case 'ExtSim':
       itemArray = updatedEMRALDModel.ExtSimList;
       referencedByTheToDel_Types = new Set<MainItemType>([]);
       referencingTheToDel_Types = new Set<MainItemType>([]);
       break;
-    case MainItemTypes.Variable:
+    case 'Variable':
       itemArray = updatedEMRALDModel.VariableList;
       referencedByTheToDel_Types = new Set<MainItemType>([]);
       referencingTheToDel_Types = new Set<MainItemType>([]);
       break;
-    case MainItemTypes.LogicNode:
+    case 'LogicNode':
       itemArray = updatedEMRALDModel.LogicNodeList;
       referencedByTheToDel_Types = new Set<MainItemType>([]);
       referencingTheToDel_Types = new Set<MainItemType>([]);
@@ -184,11 +176,11 @@ export const DeleteItemAndRefsInSpecifiedModel = async (
   }
 
   //Items that may need deleted.
-  let refPossibleDelete: Array<[string, MainItemTypes]> = [];
+  let refPossibleDelete: Array<[string, MainItemType]> = [];
 
   //get all the items that reference this item, remove references and save items that may need deleted
   var jsonPathUsesRefArray: ItemReferencesArray = GetJSONPathUsingRefs(
-    item.objType as MainItemTypes,
+    item.objType as MainItemType,
     item.name,
   );
   jsonPathUsesRefArray.forEach((jsonPathSet) => {
@@ -214,7 +206,7 @@ export const DeleteItemAndRefsInSpecifiedModel = async (
       }
 
       // Clear the reference value at that path if it isn't the item we are deleting
-      if (item.objType != jsonPathSet[1] || jsonPathSet[1] == MainItemTypes.LogicNode) {
+      if (item.objType != jsonPathSet[1] || jsonPathSet[1] == 'LogicNode') {
         const path = ref.join('.');
         jsonpath.value(updatedEMRALDModel, path, '');
 
@@ -243,7 +235,7 @@ export const DeleteItemAndRefsInSpecifiedModel = async (
   if (referencedByTheToDel_Types.size > 0) {
     //Get all the items that this item references.
     let jsonPathRefArray: ItemReferencesArray = GetJSONPathInRefs(
-      item.objType as MainItemTypes,
+      item.objType as MainItemType,
       item.name,
     );
 
@@ -276,17 +268,17 @@ export const DeleteItemAndRefsInSpecifiedModel = async (
   refPossibleDelete.forEach((delNameAndType) => {
     let item: State | Event | Action | LogicNode | undefined;
     switch (delNameAndType[1]) {
-      case MainItemTypes.State:
+      case 'State':
         item = updatedEMRALDModel.StateList.find((item) => item.name === delNameAndType[0]);
         //allways delete states if here because it was from a diagram that was deleted
         break;
-      case MainItemTypes.Event:
+      case 'Event':
         item = updatedEMRALDModel.EventList.find((item) => item.name === delNameAndType[0]);
         //see if should be deleted
         if (item && item.mainItem == false) {
           let refs = GetModelItemsReferencing(
             item.name,
-            item.objType as MainItemTypes,
+            item.objType as MainItemType,
             1,
             undefined,
             allMainItemTypes,
@@ -298,13 +290,13 @@ export const DeleteItemAndRefsInSpecifiedModel = async (
           }
         }
         break;
-      case MainItemTypes.Action:
+      case 'Action':
         item = updatedEMRALDModel.ActionList.find((item) => item.name === delNameAndType[0]);
         //see if item should be delted
         if (item && item.mainItem == false) {
           let refs = GetModelItemsReferencing(
             item.name,
-            item.objType as MainItemTypes,
+            item.objType as MainItemType,
             1,
             undefined,
             allMainItemTypes,

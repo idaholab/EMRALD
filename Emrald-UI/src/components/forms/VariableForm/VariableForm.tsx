@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import React from 'react';
-import { Variable } from '../../../types/Variable';
+import { Variable, VarScope } from '../../../types/EMRALD_Model';
 import MainDetailsForm from '../MainDetailsForm';
 import TextField from '@mui/material/TextField';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
@@ -13,7 +13,6 @@ import Checkbox from '@mui/material/Checkbox';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import DocLinkFields from './FormFieldsByType/DocLinkFields';
 import ExtSimFields from './FormFieldsByType/ExtSimFields';
-import { MainItemTypes, VarScope } from '../../../types/ItemTypes';
 import AccrualFields from './FormFieldsByType/AccrualFields';
 import { useVariableFormContext } from './VariableFormContext';
 
@@ -75,7 +74,7 @@ const VariableForm: React.FC<VariableFormProps> = ({ variableData }) => {
       </Typography>
       <form>
         <MainDetailsForm
-          itemType={MainItemTypes.Variable}
+          itemType={'Variable'}
           type={type}
           setType={setType}
           handleTypeChange={handleTypeChange}

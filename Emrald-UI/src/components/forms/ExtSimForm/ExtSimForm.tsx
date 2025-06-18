@@ -5,7 +5,7 @@ import React, { useState } from 'react';
 import { useWindowContext } from '../../../contexts/WindowContext';
 import { v4 as uuidv4 } from 'uuid';
 import { useSignal } from '@preact/signals-react';
-import { ExtSim } from '../../../types/ExtSim';
+import { ExtSim } from '../../../types/EMRALD_Model';
 import { emptyExtSim, useExtSimContext } from '../../../contexts/ExtSimContext';
 import TextField from '@mui/material/TextField';
 

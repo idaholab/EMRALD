@@ -1,9 +1,9 @@
-import React, { RefObject, useEffect, useRef, useState } from 'react';
+import React, { type RefObject, useEffect, useRef, useState } from 'react';
 import Draggable from 'react-draggable';
 import { select } from 'd3-selection';
 import colors from './colors';
 import type TimelineNode from './TimelineNode';
-import TimelineLink from './TimelineLink';
+import type TimelineLink from './TimelineLink';
 import SankeyTimeline from './SankeyTimeline';
 import {
   Button,
@@ -19,14 +19,14 @@ import {
   InputLabel,
   MenuItem,
   Paper,
-  PaperProps,
+  type PaperProps,
   Select,
   TextField,
 } from '@mui/material';
 import Renderer from './Renderer';
 import './style.css';
 
-type Node = {
+export interface Node {
   count: number;
   contributionRate: number;
   entries: {
@@ -60,17 +60,19 @@ type Node = {
     s: number[];
   };
   color?: string;
-};
+  timeMin?: number;
+  timeMax?: number;
+}
 
-type Link = {
+export interface Link {
   actDesc: string;
   count: number;
   desc: string;
   evDesc: string;
   name: string;
-};
+}
 
-type TimelineOptions = {
+export interface TimelineOptions {
   name: string;
   keyStates: {
     name: string;
@@ -84,11 +86,11 @@ type TimelineOptions = {
     maxLinkWidth: number;
   };
   otherStatePaths: Node[];
-};
+}
 
-type SankeyTimelineProps = {
+interface SankeyTimelineProps {
   data: TimelineOptions;
-};
+}
 
 // Nodes & link currently being displayed in the timeline
 let nodes: Record<string, Node> = {};
@@ -153,11 +155,11 @@ function render(
     const links: Record<string, Record<string, Link>> = {};
     input.keyStates
       // Consider only the key states that have been enabled by the user
-      .filter((keyState) => selectedKeyStates.indexOf(keyState.name) >= 0)
+      .filter((keyState) => selectedKeyStates.includes(keyState.name))
       .forEach((keyState) => {
         // This section looks at every path leading to an enabled key state and creates nodes and links to represent those paths
         keyState.paths.forEach((path) => {
-          if (!nodes[path.name]) {
+          if (!Object.prototype.hasOwnProperty.call(nodes, path.name)) {
             nodes[path.name] = {
               ...path,
               combined: {
@@ -175,10 +177,10 @@ function render(
             nodes[path.name].combined.s.push(timestampToSeconds(path.timeStdDeviation));
           }
           path.exits.forEach((link) => {
-            if (!links[path.name]) {
+            if (!Object.prototype.hasOwnProperty.call(links, path.name)) {
               links[path.name] = {};
             }
-            if (!links[path.name][link.otherState]) {
+            if (!Object.prototype.hasOwnProperty.call(links[path.name], link.otherState)) {
               links[path.name][link.otherState] = {
                 actDesc: link.actDesc,
                 count: link.cnt,
@@ -204,7 +206,7 @@ function render(
     const allNodes = Object.entries(nodeCache).concat(Object.entries(oldNodes));
     nodeCache = {};
     allNodes.forEach(([name, node]) => {
-      if (newNodes[name]) {
+      if (Object.prototype.hasOwnProperty.call(newNodes, name)) {
         newNodes[name].layout = node.layout;
         newNodes[name].color = node.color;
       } else {
@@ -278,7 +280,7 @@ function render(
   function combinedStd(node: Node) {
     let weighedSum = 0;
     let nTotal = 0;
-    let count = node.combined.n.length;
+    const count = node.combined.n.length;
     node.combined.n.forEach((n, i) => {
       weighedSum += (n - 1) * node.combined.s[i] ** 2;
       nTotal += n;
@@ -310,17 +312,17 @@ function render(
 
   // Set the title that displays when nodes and links are hovered over
   renderer.options.nodeTitle = (d: TimelineNode) =>
-    `Name: ${d.label}\nCount: ${d.data.count}\nRate 5th: ${
-      combined5th95th(d.data)[0]
-    }\nRate 95th: ${combined5th95th(d.data)[1]}\nContribution Rate: ${
-      d.data.contributionRate
-    }\nMin Time: ${d.data.timeMin}\nMax Time: ${d.data.timeMax}\nMean Time: ${secondsToTimestamp(
+    `Name: ${d.label}\nCount: ${d.data.count.toString()}\nRate 5th: ${
+      combined5th95th(d.data)[0].toString()
+    }\nRate 95th: ${combined5th95th(d.data)[1].toString()}\nContribution Rate: ${
+      d.data.contributionRate.toString()
+    }\nMin Time: ${d.data.timeMin?.toString() ?? ''}\nMax Time: ${d.data.timeMax?.toString() ?? ''}\nMean Time: ${secondsToTimestamp(
       combinedMean(d.data),
-    )}\nStandard Deviation: ${secondsToTimestamp(combinedStd(d.data))}\nRow: ${d.layout.row},Col: ${
-      d.layout.column
+    )}\nStandard Deviation: ${secondsToTimestamp(combinedStd(d.data))}\nRow: ${d.layout.row.toString()},Col: ${
+      d.layout.column.toString()
     }`;
   renderer.options.linkTitle = (d: TimelineLink) =>
-    `${d.data.name}\n${d.data.desc}\nAction Description: ${d.data.actDesc}\nEvent Description: ${d.data.evDesc}\nCount: ${d.data.count}`;
+    `${d.data.name}\n${d.data.desc}\nAction Description: ${d.data.actDesc}\nEvent Description: ${d.data.evDesc}\nCount: ${d.data.count.toString()}`;
 
   /**
    * Takes the records of nodes and links and links them together using the SankeyTimeline class.
@@ -361,14 +363,16 @@ function render(
       nodeIdMap[timelineNode.id] = n;
     });
     Object.keys(nodes).forEach((n) => {
-      if (links[n]) {
+      if (Object.prototype.hasOwnProperty.call(links, n)) {
         Object.entries(links[n]).forEach(([otherState, data]) => {
-          const timelineLink = timeline.createLink(
-            nodes[n].timelineNode as TimelineNode,
-            nodes[otherState].timelineNode as TimelineNode,
-            data.count,
-          );
-          timelineLink.data = data;
+          if (nodes[n].timelineNode !== undefined && nodes[otherState].timelineNode !== undefined) {
+            const timelineLink = timeline.createLink(
+              nodes[n].timelineNode,
+              nodes[otherState].timelineNode,
+              data.count,
+            );
+            timelineLink.data = data;
+          }
         });
       }
     });
@@ -400,7 +404,7 @@ function render(
 const PaperComponent: React.FC<PaperProps> = (props) => {
   const nodeRef = useRef<HTMLDivElement>(null);
   return (
-    <Draggable nodeRef={nodeRef} handle="#node-menu-title">
+    <Draggable nodeRef={nodeRef as unknown as RefObject<HTMLDivElement>} handle="#node-menu-title">
       <Paper {...props} ref={nodeRef}></Paper>
     </Draggable>
   );
@@ -479,7 +483,7 @@ export const SankeyTimelineDiagram: React.FC<SankeyTimelineProps> = ({ data }) =
     select(svgRef.current).selectChildren().remove();
     render(
       data,
-      svgRef,
+      svgRef as unknown as RefObject<SVGSVGElement>,
       {
         layout,
         distributions,
@@ -490,8 +494,8 @@ export const SankeyTimelineDiagram: React.FC<SankeyTimelineProps> = ({ data }) =
         maxLinkWidth,
       },
       keyStates,
-      containerElement.current?.offsetWidth || window.innerWidth,
-      containerElement.current?.offsetHeight || window.innerHeight,
+      containerElement.current?.offsetWidth ?? window.innerWidth,
+      containerElement.current?.offsetHeight ?? window.innerHeight,
     );
   });
 
@@ -581,10 +585,8 @@ export const SankeyTimelineDiagram: React.FC<SankeyTimelineProps> = ({ data }) =
           // For each key state, make sure user-set properties are set in the JSON and delete circular references
           pathResults.keyStates.forEach((path, k) => {
             path.paths.forEach((state, s) => {
-              let n = timeline.getNodesByLabel(state.name)[0];
-              if (!n) {
-                n = nodeCache[state.name].timelineNode as TimelineNode;
-              }
+              const n =
+                timeline.getNodesByLabel(state.name)[0] ?? nodeCache[state.name].timelineNode;
               pathResults.keyStates[k].paths[s].layout = n.persist;
               pathResults.keyStates[k].paths[s].color = n.color;
               delete pathResults.keyStates[k].paths[s].timelineNode;

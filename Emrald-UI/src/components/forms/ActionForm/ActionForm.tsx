@@ -3,13 +3,9 @@ import { useEffect } from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import MainDetailsForm from '../MainDetailsForm';
-import { Action } from '../../../types/Action';
+import { Action, State, Event, ActionType } from '../../../types/EMRALD_Model';
 import { useActionFormContext } from './ActionFormContext';
-import { ActionType, MainItemTypes } from '../../../types/ItemTypes';
 import { Transition, ChangeVarValue, ExtSimulation, RunApplication } from './FormFieldsByType';
-import { State } from '../../../types/State';
-import { Event } from '../../../types/Event';
-
 interface ActionFormProps {
   actionData?: Action;
   event?: Event;
@@ -64,7 +60,7 @@ const ActionForm: React.FC<ActionFormProps> = ({ actionData, event, state }) => 
       </Typography>
       <form>
         <MainDetailsForm
-          itemType={MainItemTypes.Action}
+          itemType={'Action'}
           type={actType}
           setType={setActType}
           typeOptions={actionTypeOptions}

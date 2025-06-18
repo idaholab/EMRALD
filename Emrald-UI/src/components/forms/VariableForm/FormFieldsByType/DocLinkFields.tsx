@@ -3,7 +3,7 @@ import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import React, { Dispatch, SetStateAction } from 'react';
-import { DocVarType, VariableType } from '../../../../types/ItemTypes';
+import { DocVarType, VariableType } from '../../../../types/EMRALD_Model';
 
 interface DocLinkFieldsProps {
   docType: string;

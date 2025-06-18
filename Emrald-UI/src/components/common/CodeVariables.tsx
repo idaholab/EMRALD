@@ -1,6 +1,6 @@
 import { Box, FormGroup, FormControlLabel, Checkbox } from '@mui/material'
 import React from 'react'
-import { Variable } from '../../types/Variable';
+import { Variable } from '../../types/EMRALD_Model';
 
 interface CodeVariablesProps {
   variableList: Variable[];

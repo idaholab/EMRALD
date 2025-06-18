@@ -2,10 +2,8 @@ import React, { createContext, useContext, useState } from 'react';
 import { EmraldContextWrapperProps } from './EmraldContextWrapper';
 import { appData, updateAppData } from '../hooks/useAppData';
 import { effect, ReadonlySignal, useComputed } from '@preact/signals-react';
-import { ExtSim } from '../types/ExtSim';
-import { EMRALD_Model } from '../types/EMRALD_Model';
+import { EMRALD_Model, ExtSim } from '../types/EMRALD_Model';
 import { DeleteItemAndRefs, updateModelAndReferences } from '../utils/UpdateModel';
-import { MainItemTypes } from '../types/ItemTypes';
 
 interface ExtSimContextType {
   extSims: ExtSim[];
@@ -55,7 +53,7 @@ const ExtSimContextProvider: React.FC<EmraldContextWrapperProps> = ({ children }
   const createExtSim = async (newExtSim: ExtSim) => {
     var updatedModel: EMRALD_Model = await updateModelAndReferences(
       newExtSim,
-      MainItemTypes.ExtSim,
+      'ExtSim',
     );
     updateAppData(updatedModel);
   };
@@ -63,7 +61,7 @@ const ExtSimContextProvider: React.FC<EmraldContextWrapperProps> = ({ children }
   const updateExtSim = async (updatedExtSim: ExtSim) => {
     var updatedModel: EMRALD_Model = await updateModelAndReferences(
       updatedExtSim,
-      MainItemTypes.ExtSim,
+      'ExtSim',
     );
     updateAppData(updatedModel);
   };

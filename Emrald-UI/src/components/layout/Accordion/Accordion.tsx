@@ -5,13 +5,10 @@ import { AccordionMenuItemType } from './types/AccordionMenuItems';
 import { Accordion, AccordionDetails, AccordionSummary } from './StyledComponents/StyledComponents';
 import List from '@mui/material/List';
 import { Menu, MenuItem } from '@mui/material';
-import { EMRALD_Model } from '../../../types/EMRALD_Model';
+import { EMRALD_Model, Diagram } from '../../../types/EMRALD_Model';
 import { useWindowContext } from '../../../contexts/WindowContext';
 import ImportForm from '../../forms/ImportForm/ImportForm';
 import { upgradeModel } from '../../../utils/Upgrades/upgrade';
-import { Diagram } from '../../../types/Diagram';
-import { LogicNode } from '../../../types/LogicNode';
-import { ExtSim } from '../../../types/ExtSim';
 import LogicNodeForm from '../../forms/LogicNodeForm/LogicNodeForm';
 import ExtSimForm from '../../forms/ExtSimForm/ExtSimForm';
 import ActionForm from '../../forms/ActionForm/ActionForm';
@@ -20,14 +17,10 @@ import VariableForm from '../../forms/VariableForm/VariableForm';
 import VariableFormContextProvider from '../../forms/VariableForm/VariableFormContext';
 import EventFormContextProvider from '../../forms/EventForm/EventFormContext';
 import ActionFormContextProvider from '../../forms/ActionForm/ActionFormContext';
-import { MainItemTypes } from '../../../types/ItemTypes';
 import DiagramForm from '../../forms/DiagramForm/DiagramForm';
-import { Action } from '../../../types/Action';
-import { State } from '../../../types/State';
-import { Variable } from '../../../types/Variable';
-import { Event } from '../../../types/Event';
 import { useAlertContext } from '../../../contexts/AlertContext';
 import LogicNodeFormContextProvider from '../../forms/LogicNodeForm/LogicNodeFormContext';
+import { ModelItem } from '../../../types/ModelUtils';
 
 interface MenuAccordionProps {
   panels: AccordionMenuItemType[];
@@ -36,10 +29,7 @@ interface MenuAccordionProps {
   bothAccordionsOpen: boolean;
   onDiagramChange: (diagram: Diagram) => void;
   componentGroup?: string;
-  handleDelete?: (
-    itemToDelete: Diagram | LogicNode | ExtSim | Action | Event | State | Variable,
-    itemToDeleteType: MainItemTypes,
-  ) => void;
+  handleDelete?: (itemToDelete: ModelItem) => void;
 }
 
 const MenuAccordion: React.FC<MenuAccordionProps> = ({

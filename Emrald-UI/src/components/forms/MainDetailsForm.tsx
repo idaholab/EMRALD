@@ -9,14 +9,14 @@ import {
   DiagramType,
   EventType,
   GateType,
-  MainItemTypes,
+  MainItemType,
   StateType,
   VariableType,
-} from '../../types/ItemTypes';
+} from '../../types/EMRALD_Model';
 import { Box, Button } from '@mui/material';
 import { useWindowContext } from '../../contexts/WindowContext';
 
-type ValueTypes<T extends MainItemTypes> = T extends 'Diagram'
+type ValueTypes<T extends MainItemType> = T extends 'Diagram'
   ? DiagramType
   : T extends 'LogicNode'
   ? GateType
@@ -30,7 +30,7 @@ type ValueTypes<T extends MainItemTypes> = T extends 'Diagram'
   ? VariableType
   : never;
 
-interface MainDetailsFormProps<T extends MainItemTypes> {
+interface MainDetailsFormProps<T extends MainItemType> {
   children: React.ReactNode;
   itemType: T;
   typeLabel?: string;
@@ -53,7 +53,7 @@ interface MainDetailsFormProps<T extends MainItemTypes> {
   reqPropsFilled: boolean;
 }
 
-const MainDetailsForm = <T extends MainItemTypes>({
+const MainDetailsForm = <T extends MainItemType>({
   children,
   name,
   type,

@@ -1,13 +1,9 @@
 import React, { createContext, useContext, useState } from 'react';
-import { State } from '../types/State';
 import { EmraldContextWrapperProps } from './EmraldContextWrapper';
-import { Event } from '../types/Event';
-import { Action } from '../types/Action';
 import { appData, updateAppData } from '../hooks/useAppData';
 import { effect, ReadonlySignal, useComputed } from '@preact/signals-react';
-import { EMRALD_Model } from '../types/EMRALD_Model';
+import { EMRALD_Model, State, Event, Action } from '../types/EMRALD_Model';
 import { DeleteItemAndRefs, updateModelAndReferences } from '../utils/UpdateModel';
-import { MainItemTypes } from '../types/ItemTypes';
 
 interface StateContextType {
   states: State[];
@@ -49,7 +45,7 @@ export const emptyState: State = {
   immediateActions: [],
   geometryInfo: { x: 0, y: 0, width: 0, height: 0 },
   required: false,
-  objType: MainItemTypes.State,
+  objType: 'State',
 };
 
 const StateContext = createContext<StateContextType | undefined>(undefined);
@@ -84,14 +80,14 @@ const StateContextProvider: React.FC<EmraldContextWrapperProps> = ({ children })
 
   // Create, Delete, Update individual States
   const createState = async (newState: State) => {
-    var updatedModel: EMRALD_Model = await updateModelAndReferences(newState, MainItemTypes.State);
+    var updatedModel: EMRALD_Model = await updateModelAndReferences(newState, 'State');
     updateAppData(updatedModel);
   };
 
   const updateState = async (updatedState: State) => {
     var updatedModel: EMRALD_Model = await updateModelAndReferences(
       updatedState,
-      MainItemTypes.State,
+      'State',
     );
     updateAppData(updatedModel);
   };

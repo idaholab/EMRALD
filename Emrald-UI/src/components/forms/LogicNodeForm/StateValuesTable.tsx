@@ -11,9 +11,8 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import FormControl from '@mui/material/FormControl';
 import Paper from '@mui/material/Paper';
 import { useDiagramContext } from '../../../contexts/DiagramContext';
-import { StateEvalValue } from '../../../types/ItemTypes';
 import { useStateContext } from '../../../contexts/StateContext';
-import { CompChildItems } from '../../../types/LogicNode';
+import { CompChildItems, StateEvalValue } from '../../../types/EMRALD_Model';
 
 export interface ComponentStateValue {
   stateName: string;

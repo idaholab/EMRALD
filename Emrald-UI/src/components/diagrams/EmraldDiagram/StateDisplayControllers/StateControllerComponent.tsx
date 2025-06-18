@@ -9,7 +9,7 @@ import {
 import { capitalize } from 'lodash';
 import debounce from 'lodash.debounce';
 import DropTargetComponent from '../../../drag-and-drop/Droppable';
-import { State } from '../../../../types/State';
+import { State } from '../../../../types/EMRALD_Model';
 import EventActions from './StateItems/EventActions';
 import ImmediateActions from './StateItems/ImmediateActions';
 import useEmraldDiagram from '../useEmraldDiagram';

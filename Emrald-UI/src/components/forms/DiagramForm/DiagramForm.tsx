@@ -4,8 +4,6 @@ import { useSignal } from '@preact/signals-react';
 import Typography from '@mui/material/Typography';
 import MainDetailsForm from '../../forms/MainDetailsForm';
 import { v4 as uuidv4 } from 'uuid';
-import { Diagram } from '../../../types/Diagram';
-import { DiagramType, MainItemTypes } from '../../../types/ItemTypes';
 import { emptyDiagram, useDiagramContext } from '../../../contexts/DiagramContext';
 import { useWindowContext } from '../../../contexts/WindowContext';
 import {
@@ -22,7 +20,7 @@ import {
   TextField,
 } from '@mui/material';
 import GroupListItems from '../../common/GroupListItems';
-import { EMRALD_Model } from '../../../types/EMRALD_Model';
+import { EMRALD_Model, Diagram, DiagramType } from '../../../types/EMRALD_Model';
 import { useTemplateContext } from '../../../contexts/TemplateContext';
 import { FileUploadComponent, TabPanel } from '../../common';
 import CloseIcon from '@mui/icons-material/Close';
@@ -206,7 +204,7 @@ const DiagramForm: React.FC<DiagramFormProps> = ({ diagramData }) => {
         )}
         <form>
           <MainDetailsForm
-            itemType={MainItemTypes.Diagram}
+            itemType={'Diagram'}
             type={diagramType}
             setType={setDiagramType}
             typeOptions={diagramTypeOptions}

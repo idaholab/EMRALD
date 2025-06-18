@@ -1,15 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
-import { EMRALD_Model } from '../../../types/EMRALD_Model';
+import { EMRALD_Model, Action, Event, State, Diagram, LogicNode, Variable, ExtSim, MainItemType } from '../../../types/EMRALD_Model';
 import { v4 as uuidv4 } from 'uuid';
 import { useWindowContext } from '../../../contexts/WindowContext';
-import { Action } from '../../../types/Action';
-import { Event } from '../../../types/Event';
-import { State } from '../../../types/State';
-import { Diagram } from '../../../types/Diagram';
-import { MainItemTypes } from '../../../types/ItemTypes';
-import { LogicNode } from '../../../types/LogicNode';
-import { Variable } from '../../../types/Variable';
-import { ExtSim } from '../../../types/ExtSim';
 import { useTemplateContext } from '../../../contexts/TemplateContext';
 import { updateModelAndReferences, updateSpecifiedModel } from '../../../utils/UpdateModel';
 import { useDiagramContext } from '../../../contexts/DiagramContext';
@@ -25,7 +17,7 @@ import { appData, updateAppData } from '../../../hooks/useAppData';
 import EmraldDiagram from '../../diagrams/EmraldDiagram/EmraldDiagram';
 
 interface ImportedItem {
-  type: MainItemTypes;
+  type: MainItemType;
   displayType: string;
   locked: boolean;
   oldName: string;
@@ -66,13 +58,13 @@ export const useImportForm = (importedData: EMRALD_Model, fromTemplate?: boolean
 
     for (const diagram of model.DiagramList) {
       items.push({
-        type: MainItemTypes.Diagram,
+        type: 'Diagram',
         displayType: 'Diagram',
         locked: !diagramList.value.some(item => item.name === diagram.name),
         oldName: diagram.name,
         newName: diagram.name,
         action: diagram.required ? 'ignore' : 'rename',
-        conflict: hasConflict(diagram.name, MainItemTypes.Diagram, diagram.required),
+        conflict: hasConflict(diagram.name, 'Diagram', diagram.required),
         required: diagram.required ? diagram.required : false,
         emraldItem: diagram,
       });
@@ -80,13 +72,13 @@ export const useImportForm = (importedData: EMRALD_Model, fromTemplate?: boolean
 
     for (const logicNode of model.LogicNodeList) {
       items.push({
-        type: MainItemTypes.LogicNode,
+        type: 'LogicNode',
         displayType: 'Logic Node',
         locked: logicNodeList.value.some(item => item.name === logicNode.name),
         oldName: logicNode.name,
         newName: logicNode.name,
         action: 'rename',
-        conflict: hasConflict(logicNode.name, MainItemTypes.LogicNode, logicNode.required),
+        conflict: hasConflict(logicNode.name, 'LogicNode', logicNode.required),
         required: logicNode.required ? logicNode.required : false,
         emraldItem: logicNode,
       });
@@ -94,13 +86,13 @@ export const useImportForm = (importedData: EMRALD_Model, fromTemplate?: boolean
 
     for (const extSim of model.ExtSimList) {
       items.push({
-        type: MainItemTypes.ExtSim,
+        type: 'ExtSim',
         displayType: 'External Sim',
         locked: extSimList.value.some(item => item.name === extSim.name),
         oldName: extSim.name,
         newName: extSim.name,
         action: 'rename',
-        conflict: hasConflict(extSim.name, MainItemTypes.ExtSim, extSim.required),
+        conflict: hasConflict(extSim.name, 'ExtSim', extSim.required),
         required: extSim.required ? extSim.required : false,
         emraldItem: extSim,
       });
@@ -108,13 +100,13 @@ export const useImportForm = (importedData: EMRALD_Model, fromTemplate?: boolean
 
     for (const action of model.ActionList) {
       items.push({
-        type: MainItemTypes.Action,
+        type: 'Action',
         displayType: 'Action',
         locked: actionsList.value.some(item => item.name === action.name),
         oldName: action.name,
         newName: action.name,
         action: action.required || actionsList.value.some(item => item.name === action.name) ? 'ignore' : 'rename',
-        conflict: hasConflict(action.name, MainItemTypes.Action, action.required),
+        conflict: hasConflict(action.name, 'Action', action.required),
         required: action.required ? action.required : false,
         emraldItem: action,
       });
@@ -122,13 +114,13 @@ export const useImportForm = (importedData: EMRALD_Model, fromTemplate?: boolean
 
     for (const event of model.EventList) {
       items.push({
-        type: MainItemTypes.Event,
+        type: 'Event',
         displayType: 'Event',
         locked: eventsList.value.some(item => item.name === event.name),
         oldName: event.name,
         newName: event.name,
         action: event.required || eventsList.value.some(item => item.name === event.name) ? 'ignore' : 'rename',
-        conflict: hasConflict(event.name, MainItemTypes.Event, event.required),
+        conflict: hasConflict(event.name, 'Event', event.required),
         required: event.required ? event.required : false,
         emraldItem: event,
       });
@@ -136,13 +128,13 @@ export const useImportForm = (importedData: EMRALD_Model, fromTemplate?: boolean
 
     for (const state of model.StateList) {
       items.push({
-        type: MainItemTypes.State,
+        type: 'State',
         displayType: 'State',
         locked: !statesList.value.some(item => item.name === state.name),
         oldName: state.name,
         newName: state.name,
         action: state.required  ? 'ignore' : 'rename',
-        conflict: hasConflict(state.name, MainItemTypes.State, state.required),
+        conflict: hasConflict(state.name, 'State', state.required),
         required: state.required ? state.required : false,
         emraldItem: state,
       });
@@ -150,22 +142,22 @@ export const useImportForm = (importedData: EMRALD_Model, fromTemplate?: boolean
 
     for (const variable of model.VariableList) {
       items.push({
-        type: MainItemTypes.Variable,
+        type: 'Variable',
         displayType: 'Variable',
         locked: variableList.value.some(item => item.name === variable.name),
         oldName: variable.name,
         newName: variable.name,
         action: 'rename',
-        conflict: hasConflict(variable.name, MainItemTypes.Variable, variable.required),
+        conflict: hasConflict(variable.name, 'Variable', variable.required),
         required: variable.required ? variable.required : false,
         emraldItem: variable,
       });
     }
     return items.sort((a, b) => {
-      if (a.type === MainItemTypes.Diagram) return -1;
-      if (a.type === MainItemTypes.State && b.type !== MainItemTypes.Diagram) return -1;
-      if (a.type === MainItemTypes.Event && b.type !== MainItemTypes.Diagram && b.type !== MainItemTypes.State) return -1;
-      if (a.type === MainItemTypes.Action && b.type !== MainItemTypes.Diagram && b.type !== MainItemTypes.State && b.type !== MainItemTypes.Event) return -1;
+      if (a.type === 'Diagram') return -1;
+      if (a.type === 'State' && b.type !== 'Diagram') return -1;
+      if (a.type === 'Event' && b.type !== 'Diagram' && b.type !== 'State') return -1;
+      if (a.type === 'Action' && b.type !== 'Diagram' && b.type !== 'State' && b.type !== 'Event') return -1;
       return 1;
     });
   };
@@ -189,21 +181,21 @@ export const useImportForm = (importedData: EMRALD_Model, fromTemplate?: boolean
    * @param {MainItemTypes} type - The type of the item to check for conflicts.
    * @return {boolean} True if a conflict exists, false otherwise.
    */
-  const checkForConflicts = (newName: string, type: MainItemTypes): boolean => {
+  const checkForConflicts = (newName: string, type: MainItemType): boolean => {
     switch(type) {
-      case MainItemTypes.Diagram:
+      case 'Diagram':
         return diagramList.value.some(item => item.name === newName);
-      case MainItemTypes.LogicNode:
+      case 'LogicNode':
         return logicNodeList.value.some(item => item.name === newName);
-      case MainItemTypes.ExtSim:
+      case 'ExtSim':
         return extSimList.value.some(item => item.name === newName);
-      case MainItemTypes.Action:
+      case 'Action':
         return actionsList.value.some(item => item.name === newName);
-      case MainItemTypes.Event:
+      case 'Event':
         return eventsList.value.some(item => item.name === newName);
-      case MainItemTypes.State:
+      case 'State':
         return statesList.value.some(item => item.name === newName);
-      case MainItemTypes.Variable:
+      case 'Variable':
         return variableList.value.some(item => item.name === newName);
       default:
         return false;
@@ -217,21 +209,21 @@ export const useImportForm = (importedData: EMRALD_Model, fromTemplate?: boolean
    * @param type - The type of the item to check.
    * @returns True if the item exists, false otherwise.
    */
-  const checkIfRequiredItemExists = (name: string, type: MainItemTypes) => {
+  const checkIfRequiredItemExists = (name: string, type: MainItemType) => {
     switch(type) {
-      case MainItemTypes.Diagram:
+      case 'Diagram':
         return diagramList.value.some(item => item.name === name);
-      case MainItemTypes.LogicNode:
+      case 'LogicNode':
         return logicNodeList.value.some(item => item.name === name);
-      case MainItemTypes.ExtSim:
+      case 'ExtSim':
         return extSimList.value.some(item => item.name === name);
-      case MainItemTypes.Action:
+      case 'Action':
         return actionsList.value.some(item => item.name === name);
-      case MainItemTypes.Event:
+      case 'Event':
         return eventsList.value.some(item => item.name === name);
-      case MainItemTypes.State:
+      case 'State':
         return statesList.value.some(item => item.name === name);
-      case MainItemTypes.Variable:
+      case 'Variable':
         return variableList.value.some(item => item.name === name);
       default:
         return false;
@@ -264,7 +256,7 @@ export const useImportForm = (importedData: EMRALD_Model, fromTemplate?: boolean
     }
   }, [importedItems]);
 
-  function hasConflict(name: string, type: MainItemTypes, required?: boolean): boolean {
+  function hasConflict(name: string, type: MainItemType, required?: boolean): boolean {
     if (checkIfRequiredItemExists(name, type) && !required) {
       return true;
     } else if (required && !checkIfRequiredItemExists(name, type)) {
@@ -336,7 +328,7 @@ export const useImportForm = (importedData: EMRALD_Model, fromTemplate?: boolean
   const updateAllUnlocked = (action: string) => {
     const updatedItems = importedItems.map((item) => {
       if (!item.locked) {
-        if (item.type === MainItemTypes.State && importedData.DiagramList.length > 0) {
+        if (item.type === 'State' && importedData.DiagramList.length > 0) {
           return { ...item, action: 'rename' };
         }
         return { 
@@ -360,7 +352,7 @@ export const useImportForm = (importedData: EMRALD_Model, fromTemplate?: boolean
     const updatedItems = [...importedItems];
     updatedItems[index].action = action;
     if (action !== 'rename') {
-      if (updatedItems[index].type === MainItemTypes.State && importedData.DiagramList.length > 0) {
+      if (updatedItems[index].type === 'State' && importedData.DiagramList.length > 0) {
         updatedItems[index].action = 'rename';
       }
       updatedItems[index].conflict = false;

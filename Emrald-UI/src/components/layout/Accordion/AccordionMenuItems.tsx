@@ -15,23 +15,14 @@ import { AccordionMenuItemType } from './types/AccordionMenuItems';
 import ItemWithContextMenu from './ItemWithContextMenu';
 // import DiagramForm from '../../features/DiagramForm/DiagramForm';
 import Typography from '@mui/material/Typography';
-import { MainItemTypes } from '../../../types/ItemTypes';
-import { Diagram } from '../../../types/Diagram';
-import { LogicNode } from '../../../types/LogicNode';
-import { ExtSim } from '../../../types/ExtSim';
-import { Action } from '../../../types/Action';
-import { State } from '../../../types/State';
-import { Variable } from '../../../types/Variable';
-import { Event } from '../../../types/Event';
+import { Diagram } from '../../../types/EMRALD_Model';
+import { ModelItem } from '../../../types/ModelUtils';
 
 export interface AccordionMenuListProps {
   item: AccordionMenuItemType;
   bothAccordionsOpen: boolean;
   onDiagramChange: (diagram: Diagram) => void;
-  handleDelete?: (
-    itemToDelete: Diagram | LogicNode | ExtSim | Action | Event | State | Variable,
-    itemToDeleteType: MainItemTypes,
-  ) => void;
+  handleDelete?: (itemToDelete: ModelItem) => void;
 }
 
 const AccordionMenuItems: React.FC<AccordionMenuListProps> = ({
@@ -86,7 +77,7 @@ const AccordionMenuItems: React.FC<AccordionMenuListProps> = ({
                             <DraggableItem
                               key={diagram.id}
                               itemData={diagram}
-                              itemType={MainItemTypes.Diagram}
+                              itemType={'Diagram'}
                             >
                               <ListItemButton sx={{ p: '0 0 0 3rem', width: '100%' }}>
                                 <ItemWithContextMenu
@@ -127,7 +118,7 @@ const AccordionMenuItems: React.FC<AccordionMenuListProps> = ({
                     <DraggableItem
                       key={option.id}
                       itemData={option}
-                      itemType={MainItemTypes.LogicNode}
+                      itemType={'LogicNode'}
                     >
                       <ItemWithContextMenu
                         itemData={option}
@@ -150,7 +141,7 @@ const AccordionMenuItems: React.FC<AccordionMenuListProps> = ({
                     <DraggableItem
                       key={option.id}
                       itemData={option}
-                      itemType={MainItemTypes.Diagram}
+                      itemType={'Diagram'}
                     >
                       <ItemWithContextMenu
                         itemData={option}

@@ -1,10 +1,8 @@
 import React, { createContext, useContext, useState } from 'react';
-import { LogicNode } from '../types/LogicNode';
 import { EmraldContextWrapperProps } from './EmraldContextWrapper';
 import { appData, updateAppData } from '../hooks/useAppData';
-import { EMRALD_Model } from '../types/EMRALD_Model';
+import { EMRALD_Model, LogicNode } from '../types/EMRALD_Model';
 import { updateModelAndReferences } from '../utils/UpdateModel';
-import { MainItemTypes } from '../types/ItemTypes';
 import { effect, ReadonlySignal, useComputed } from '@preact/signals-react';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -63,7 +61,7 @@ const LogicNodeContextProvider: React.FC<EmraldContextWrapperProps> = ({ childre
   const createLogicNode = async (newLogicNode: LogicNode) => {
     var updatedModel: EMRALD_Model = await updateModelAndReferences(
       newLogicNode,
-      MainItemTypes.LogicNode,
+      'LogicNode',
     );
     updateAppData(updatedModel);
   };
@@ -71,7 +69,7 @@ const LogicNodeContextProvider: React.FC<EmraldContextWrapperProps> = ({ childre
   const updateLogicNode = async (updatedLogicNode: LogicNode) => {
     var updatedModel: EMRALD_Model = await updateModelAndReferences(
       updatedLogicNode,
-      MainItemTypes.LogicNode,
+      'LogicNode',
     );
     updateAppData(updatedModel);
   };

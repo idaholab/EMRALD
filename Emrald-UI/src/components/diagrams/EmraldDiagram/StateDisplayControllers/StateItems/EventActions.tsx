@@ -4,7 +4,7 @@ import { Typography, Box } from '@mui/material';
 import { BiExit } from 'react-icons/bi';
 import DropTargetComponent from '../../../../drag-and-drop/Droppable';
 import { ActionTypeIcon, EventTypeIcon } from '../../IconTypes';
-import { State } from '../../../../../types/State';
+import { State } from '../../../../../types/EMRALD_Model';
 import { FaLink } from 'react-icons/fa';
 import useEmraldDiagram from '../../useEmraldDiagram';
 import ContextMenu from '../../../../layout/ContextMenu/ContextMenu';

@@ -6,9 +6,7 @@ import { v4 as uuidv4 } from 'uuid';
 import getEventActionEdges from './Edges/EventActionEdge';
 import getImmediateActionEdges from './Edges/ImmediateActionEdge';
 // Types
-import { State } from '../../../types/State';
-import { Action } from '../../../types/Action';
-import { Event } from '../../../types/Event';
+import { State, Action, Event, Diagram } from '../../../types/EMRALD_Model';
 // Contexts
 import { emptyDiagram, useDiagramContext } from '../../../contexts/DiagramContext';
 import { useStateContext } from '../../../contexts/StateContext';
@@ -21,7 +19,6 @@ import EventForm from '../../forms/EventForm/EventForm';
 import ActionForm from '../../forms/ActionForm/ActionForm';
 import ActionFormContextProvider from '../../forms/ActionForm/ActionFormContext';
 import EventFormContextProvider from '../../forms/EventForm/EventFormContext';
-import { Diagram } from '../../../types/Diagram';
 
 const useEmraldDiagram = () => {
   const [nodes, setNodes, onNodesChange] = useNodesState([]);

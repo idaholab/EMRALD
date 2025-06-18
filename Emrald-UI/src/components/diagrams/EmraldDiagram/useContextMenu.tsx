@@ -1,8 +1,5 @@
 import { useState } from 'react';
 import { Edge, Node } from 'reactflow';
-import { Event } from '../../../types/Event';
-import { State } from '../../../types/State';
-import { Action } from '../../../types/Action';
 import { Option } from '../../layout/ContextMenu/ContextMenu';
 import { useStateContext } from '../../../contexts/StateContext';
 import { useEventContext } from '../../../contexts/EventContext';
@@ -15,9 +12,8 @@ import ActionForm from '../../forms/ActionForm/ActionForm';
 import DiagramForm from '../../forms/DiagramForm/DiagramForm';
 import ActionFormContextProvider from '../../forms/ActionForm/ActionFormContext';
 import EventFormContextProvider from '../../forms/EventForm/EventFormContext';
-import { EMRALD_Model } from '../../../types/EMRALD_Model';
+import { EMRALD_Model, Event, State, Action } from '../../../types/EMRALD_Model';
 import { updateModelAndReferences } from '../../../utils/UpdateModel';
-import { MainItemTypes } from '../../../types/ItemTypes';
 import { updateAppData } from '../../../hooks/useAppData';
 import { useDiagramContext } from '../../../contexts/DiagramContext';
 
@@ -176,7 +172,7 @@ const useContextMenu = (getStateNodes?: () => void, setEdges?: (edges: Edge[]) =
               updateState(state);
               var updatedModel: EMRALD_Model = await updateModelAndReferences(
                 state,
-                MainItemTypes.State,
+                'State',
               );
               updateAppData(updatedModel);
             } else {
@@ -211,7 +207,7 @@ const useContextMenu = (getStateNodes?: () => void, setEdges?: (edges: Edge[]) =
               updateState(state);
               var updatedModel: EMRALD_Model = await updateModelAndReferences(
                 state,
-                MainItemTypes.State,
+                'State',
               );
               updateAppData(updatedModel);
             } else {
@@ -320,7 +316,7 @@ const useContextMenu = (getStateNodes?: () => void, setEdges?: (edges: Edge[]) =
               updateState(state);
               var updatedModel: EMRALD_Model = await updateModelAndReferences(
                 state,
-                MainItemTypes.State,
+                'State',
               );
               updateAppData(updatedModel);
             }

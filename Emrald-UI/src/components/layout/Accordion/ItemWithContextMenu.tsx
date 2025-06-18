@@ -2,24 +2,15 @@ import React, { useState } from 'react';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import { Box } from '@mui/material';
-import { Diagram } from '../../../types/Diagram';
+import { Diagram , LogicNode, Action, Event, State, Variable, ExtSim } from '../../../types/EMRALD_Model';
 import { Option, useOptionsMapping } from './OptionMapping';
-import { LogicNode } from '../../../types/LogicNode';
-import { Action } from '../../../types/Action';
-import { Event } from '../../../types/Event';
-import { State } from '../../../types/State';
-import { Variable } from '../../../types/Variable';
-import { ExtSim } from '../../../types/ExtSim';
-import { MainItemTypes } from '../../../types/ItemTypes';
+import { ModelItem } from '../../../types/ModelUtils';
 
 interface ItemWithContextMenuProps {
   itemData: Diagram | LogicNode | Action | Event | State | Variable;
   optionType: string;
   onDiagramChange: (diagram: Diagram) => void;
-  handleDelete?: (
-    itemToDelete: Diagram | LogicNode | ExtSim | Action | Event | State | Variable,
-    itemToDeleteType: MainItemTypes,
-  ) => void;
+  handleDelete?: (itemToDelete: ModelItem) => void;
 }
 
 const isDiagram = (object: any): object is Diagram => {

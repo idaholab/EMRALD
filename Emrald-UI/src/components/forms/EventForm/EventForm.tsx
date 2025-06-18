@@ -5,12 +5,10 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import MainDetailsForm from '../MainDetailsForm';
 
-import { Event } from '../../../types/Event';
-import { MainItemTypes } from '../../../types/ItemTypes';
+import { Event, State } from '../../../types/EMRALD_Model';
 
 import { useEventFormContext } from './EventFormContext';
 import { Checkbox, FormControlLabel } from '@mui/material';
-import { State } from '../../../types/State';
 
 interface EventFormProps {
   eventData?: Event;
@@ -47,7 +45,7 @@ const EventForm: React.FC<EventFormProps> = ({ eventData, state }) => {
       </Typography>
       <form>
         <MainDetailsForm
-          itemType={MainItemTypes.Event}
+          itemType={'Event'}
           type={evType}
           setType={setEvType}
           handleTypeChange={handleChangeEventType}

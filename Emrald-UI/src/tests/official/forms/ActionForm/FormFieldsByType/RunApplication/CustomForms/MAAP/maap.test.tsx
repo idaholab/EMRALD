@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/prefer-for-of */
 import 'blob-polyfill';
 import { describe, expect, test } from 'vitest';
 import fs from 'fs/promises';
@@ -13,38 +14,45 @@ import ActionForm from '../../../../../../../../components/forms/ActionForm/Acti
 import userEvent from '@testing-library/user-event';
 import { screen } from '@testing-library/react';
 import expected from './maap.expected.json';
-import { Action } from '../../../../../../../../types/Action';
-import { MAAPFormData } from '../../../../../../../../components/forms/ActionForm/FormFieldsByType/RunApplication/CustomForms/MAAP/maap';
+import type { Action } from '../../../../../../../../types/EMRALD_Model';
 
 /**
  * Removes the dynamically assigned IDs from form data elements for expected comparison.
  */
 function removeIds(action: Action) {
-  const formData = action.formData as MAAPFormData;
-  if (formData) {
-    if (formData.initiators) {
-      for (let i = 0; i < formData.initiators.length; i += 1) {
-        delete formData.initiators[i].id;
+  if (action.formData) {
+    if (action.formData.initiators) {
+      for (let i = 0; i < action.formData.initiators.length; i += 1) {
+        delete action.formData.initiators[i].id;
       }
     }
-    if (formData.inputBlocks) {
-      for (let i = 0; i < formData.inputBlocks.length; i += 1) {
-        delete formData.inputBlocks[i].id;
+    if (action.formData.inputBlocks) {
+      for (let i = 0; i < action.formData.inputBlocks.length; i += 1) {
+        // Source elements could theoretically be assigned an ID by the form, but the property doesn't and shouldn't exist on the type
+        // The best approach to resolving this issue is to remove the IDs from the form entirely
+        // @ts-expect-error - See above
+        delete action.formData.inputBlocks[i].id;
       }
     }
-    if (formData.parameters) {
-      for (let i = 0; i < formData.parameters.length; i += 1) {
-        delete formData.parameters[i].id;
+    if (action.formData.parameters) {
+      for (let i = 0; i < action.formData.parameters.length; i += 1) {
+        // @ts-expect-error - See above
+        delete action.formData.parameters[i].id;
       }
     }
-    if (formData.sourceElements) {
-      for (let i = 0; i < formData.sourceElements.length; i += 1) {
-        // @ts-ignore
-        delete formData.sourceElements[i].id;
+    if (action.formData.sourceElements) {
+      for (let i = 0; i < action.formData.sourceElements.length; i += 1) {
+        // @ts-expect-error - See above
+        delete action.formData.sourceElements[i].id;
+      }
+    }
+    if (action.formData.possibleInitiators) {
+      for (let i = 0; i < action.formData.possibleInitiators.length; i += 1) {
+        // @ts-expect-error - See above
+        delete action.formData.possibleInitiators[i].id;
       }
     }
   }
-  action.formData = formData;
   return action;
 }
 

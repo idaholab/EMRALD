@@ -13,9 +13,8 @@ import { useEffect } from 'react';
 import { SelectComponent } from '../../../common';
 import { useEventFormContext } from '../EventFormContext';
 import { StyledTableCell, StyledTableRow } from '../../ActionForm/ActionToStateTable';
-import { DistributionType, TimeVariableUnit } from '../../../../types/ItemTypes';
 import { appData } from '../../../../hooks/useAppData';
-import { EventDistributionParameter } from '../../../../types/Event';
+import { EventDistributionParameter, DistributionType, TimeVariableUnit } from '../../../../types/EMRALD_Model';
 import VariableChangesPiece from './VariableChangesPiece';
 
 const Distribution = () => {

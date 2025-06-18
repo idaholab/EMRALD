@@ -29,7 +29,7 @@ const ExtSim = () => {
     <div>
       <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mb: 3 }}>
         <SelectComponent
-          value={extEventType ? extEventType : ''}
+          value={extEventType ? extEventType : undefined}
           setValue={setExtEventType}
           label="External Event Type"
           fullWidth

@@ -6,7 +6,6 @@
     "gateType": "gtOr",
     "gateChildren": [],
     "compChildren": [],
-    "isRoot": true,
-    "rootName": "creates a logic node"
+    "isRoot": true
   }
 }

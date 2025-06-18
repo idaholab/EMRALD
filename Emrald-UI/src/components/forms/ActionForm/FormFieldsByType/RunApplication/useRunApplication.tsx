@@ -4,7 +4,7 @@ import { useActionFormContext } from '../../ActionFormContext';
 const useRunApplication = () => {
   const { setMakeInputFileCode } = useActionFormContext();
   const [preCodeUsed, setPreCodeUsed] = useState(false);
-  const [results, setResults] = useState<{ [key: string]: Map<string, string> }>({});
+  const [results, setResults] = useState<Record<string, Map<string, string>>>({});
 
   const ReturnPreCode = (code: string) => {
     setMakeInputFileCode(code);

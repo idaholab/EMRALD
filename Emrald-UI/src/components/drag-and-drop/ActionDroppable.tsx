@@ -1,6 +1,6 @@
 import React from 'react';
 import { useDrop } from 'react-dnd';
-import { State } from '../../types/State';
+import { State } from '../../types/EMRALD_Model';
 import { Box } from '@mui/material';
 import ActionToStateTable from '../forms/ActionForm/ActionToStateTable';
 import { NewStateItem } from '../forms/ActionForm/ActionForm';

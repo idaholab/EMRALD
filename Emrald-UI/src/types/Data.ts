@@ -1,9 +1,4 @@
-import { Action} from './Action';
-import { Diagram } from './Diagram';
-import { Event } from './Event';
-import { LogicNode } from './LogicNode';
-import { State } from './State';
-import { Variable } from './Variable';
+import { Action, Diagram, Event, LogicNode, State, Variable } from './EMRALD_Model';
 
 export interface appData {
   id: number;

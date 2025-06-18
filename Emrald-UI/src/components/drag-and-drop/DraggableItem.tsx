@@ -1,16 +1,11 @@
 import { Box } from '@mui/material';
 import React, { PropsWithChildren } from 'react';
 import { useDrag } from 'react-dnd';
-import { Action } from '../../types/Action';
-import { Event as EventType } from '../../types/Event';
-import { LogicNode } from '../../types/LogicNode';
-import { Diagram } from '../../types/Diagram';
-import { MainItemTypes } from '../../types/ItemTypes';
-import { State } from '../../types/State';
+import { Action, Event as EventType, LogicNode, Diagram, State, MainItemType } from '../../types/EMRALD_Model';
 
 interface DraggableItemProps {
   itemData: Action | State | EventType | LogicNode | Diagram | any;
-  itemType: MainItemTypes | 'Gate';
+  itemType: MainItemType | 'Gate';
 }
 
 const DraggableItem: React.FC<PropsWithChildren<DraggableItemProps>> = ({

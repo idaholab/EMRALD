@@ -1,11 +1,5 @@
 import ItemTypeMenuResults from '../../layout/Header/SearchBar/ItemTypeMenuResults';
-import { Diagram } from '../../../types/Diagram';
-import { State } from '../../../types/State';
-import { Action } from '../../../types/Action';
-import { ExtSim } from '../../../types/ExtSim';
-import { LogicNode } from '../../../types/LogicNode';
-import { Variable } from '../../../types/Variable';
-import { Event } from '../../../types/Event';
+import { Diagram, State, Action, ExtSim, LogicNode, Variable, Event } from '../../../types/EMRALD_Model';
 import { ReactNode } from 'react';
 
 interface searchFormProps {

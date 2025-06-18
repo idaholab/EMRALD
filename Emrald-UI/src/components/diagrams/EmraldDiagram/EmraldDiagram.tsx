@@ -3,7 +3,7 @@ import ReactFlow, { MiniMap, Controls, Background, BackgroundVariant, ControlBut
 import 'reactflow/dist/style.css';
 import { Box, CircularProgress, Typography } from '@mui/material';
 import StateNode from '../EmraldDiagram/StateNodeComponent';
-import { Diagram } from '../../../types/Diagram';
+import { Diagram } from '../../../types/EMRALD_Model';
 import useEmraldDiagram from './useEmraldDiagram';
 import CustomConnectionLine from './Edges/ConnectionLineComponent';
 import ContextMenu from '../../layout/ContextMenu/ContextMenu';

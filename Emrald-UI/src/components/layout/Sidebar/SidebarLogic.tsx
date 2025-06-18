@@ -8,12 +8,7 @@ import { useVariableContext } from '../../../contexts/VariableContext';
 import { useExtSimContext } from '../../../contexts/ExtSimContext';
 import { currentDiagram } from '../../diagrams/EmraldDiagram/EmraldDiagram';
 import { GetModelItemsReferencedBy } from '../../../utils/ModelReferences';
-import { MainItemTypes } from '../../../types/ItemTypes';
-import { Diagram } from '../../../types/Diagram';
-import { State } from '../../../types/State';
-import { Action } from '../../../types/Action';
-import { Event } from '../../../types/Event';
-import { LogicNode } from '../../../types/LogicNode';
+import { Diagram, State, Action, Event, LogicNode, MainItemType } from '../../../types/EMRALD_Model';
 import { useWindowContext } from '../../../contexts/WindowContext';
 import useLogicNodeTreeDiagram from '../../diagrams/LogicTreeDiagram/useLogicTreeDiagram';
 import { useAlertContext } from '../../../contexts/AlertContext';
@@ -33,8 +28,8 @@ export function useSidebarLogic() {
   const [currDiagram, setCurrDiagram] = useState<Diagram>(currentDiagram.value);
   const [deleteConfirmation, setDeleteConfirmation] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<Event | State | Action | Diagram | undefined>();
-  const [itemToDeleteType, setItemToDeleteType] = useState<MainItemTypes>();
-  const { deleteState, getStateByStateName } = useStateContext();
+  const [itemToDeleteType, setItemToDeleteType] = useState<MainItemType>();
+  const { deleteState } = useStateContext();
   const { deleteDiagram, updateDiagram } = useDiagramContext();
   const { deleteLogicNode } = useLogicNodeContext();
   const { deleteExtSim } = useExtSimContext();
@@ -71,7 +66,7 @@ export function useSidebarLogic() {
       return states;
     } else if (componentGroup === 'local') {
       try {
-        const copyModel = GetModelItemsReferencedBy(currDiagram.name, MainItemTypes.Diagram, 1);
+        const copyModel = GetModelItemsReferencedBy(currDiagram.name, 'Diagram', 1);
         return copyModel.StateList;
       } catch(error) {
         console.error("Error Message:", error);
@@ -97,7 +92,7 @@ export function useSidebarLogic() {
       return actions.filter((item) => item.mainItem === true);
     } else if (componentGroup === 'local') {
       try {
-        const copyModel = GetModelItemsReferencedBy(currDiagram.name, MainItemTypes.Diagram, 2);
+        const copyModel = GetModelItemsReferencedBy(currDiagram.name, 'Diagram', 2);
         return copyModel.ActionList;
       } catch(error) {
         console.error("Error Message:", error);
@@ -115,7 +110,7 @@ export function useSidebarLogic() {
       return events.filter((item) => item.mainItem === true);
     } else if (componentGroup === 'local') {
       try {
-        const copyModel = GetModelItemsReferencedBy(currDiagram.name, MainItemTypes.Diagram, 2);
+        const copyModel = GetModelItemsReferencedBy(currDiagram.name, 'Diagram', 2);
         return copyModel.EventList;
       } catch(error) {
         console.error("Error Message:", error);
@@ -184,25 +179,25 @@ export function useSidebarLogic() {
   };
   const deleteItem = async () => {
     if (!itemToDelete) return;
-    if (itemToDeleteType === MainItemTypes.Diagram) {
+    if (itemToDeleteType === 'Diagram') {
       deleteDiagram(itemToDelete.id);
       closeDeleteConfirmation();
     }
-    if (itemToDeleteType === MainItemTypes.LogicNode) {
+    if (itemToDeleteType === 'LogicNode') {
       let nodeToDelete = itemToDelete as unknown as LogicNode;
       await recurseAndDeleteChildren(nodeToDelete);
       deleteLogicNode(nodeToDelete.id);
     }
-    if (itemToDeleteType === MainItemTypes.ExtSim) {
+    if (itemToDeleteType === 'ExtSim') {
       deleteExtSim(itemToDelete.id);
     }
-    if (itemToDeleteType === MainItemTypes.Action) {
+    if (itemToDeleteType === 'Action') {
       deleteAction(itemToDelete.id);
     }
-    if (itemToDeleteType === MainItemTypes.Event) {
+    if (itemToDeleteType === 'Event') {
       deleteEvent(itemToDelete.id);
     }
-    if (itemToDeleteType === MainItemTypes.State) {
+    if (itemToDeleteType === 'State') {
       //not sure why the next 4 lines are needed, but if not then the diagram containin ght state has a ghost state left in it when you open it
       let diagram = getDiagramByDiagramName((itemToDelete as State).diagramName);
       const updatedStates = diagram.states.filter((stateName) => stateName !== itemToDelete.name);
@@ -210,14 +205,14 @@ export function useSidebarLogic() {
       await updateDiagram(diagram);
       deleteState(itemToDelete.id);
     }
-    if (itemToDeleteType === MainItemTypes.Variable) {
+    if (itemToDeleteType === 'Variable') {
       deleteVariable(itemToDelete.id);
     }
     setDeleteConfirmation(false);
     closeAllWindows();
   };
 
-  const handleDelete = (itemToDelete: any, itemType: MainItemTypes) => {
+  const handleDelete = (itemToDelete: any, itemType: MainItemType) => {
     setDeleteConfirmation(true);
     setItemToDelete(itemToDelete);
     setItemToDeleteType(itemType);

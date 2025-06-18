@@ -1,8 +1,7 @@
 import React, { createContext, useContext, useState } from 'react';
 import { effect, ReadonlySignal, useComputed } from '@preact/signals-react';
-import { Diagram } from '../types/Diagram';
+import { Diagram } from '../types/EMRALD_Model';
 import { DeleteItemAndRefs, updateModelAndReferences } from '../utils/UpdateModel';
-import { MainItemTypes } from '../types/ItemTypes';
 import { EmraldContextWrapperProps } from './EmraldContextWrapper';
 import { EMRALD_Model } from '../types/EMRALD_Model';
 import { v4 as uuidv4 } from 'uuid';
@@ -28,7 +27,7 @@ export const emptyDiagram: Diagram = {
   diagramLabel: 'Component',
   states: [],
   required: false,
-  objType: MainItemTypes.Diagram,
+  objType: 'Diagram',
 };
 
 const DiagramContext = createContext<DiagramContextType | undefined>(undefined);
@@ -62,7 +61,7 @@ const DiagramContextProvider: React.FC<EmraldContextWrapperProps> = ({ children 
   const createDiagram = async (newDiagram: Diagram) => {
     var updatedModel: EMRALD_Model = await updateModelAndReferences(
       newDiagram,
-      MainItemTypes.Diagram,
+      'Diagram',
     );
     updateAppData(updatedModel);
   };
@@ -70,7 +69,7 @@ const DiagramContextProvider: React.FC<EmraldContextWrapperProps> = ({ children 
   const updateDiagram = async (updatedDiagram: Diagram) => {
     var updatedModel: EMRALD_Model = await updateModelAndReferences(
       updatedDiagram,
-      MainItemTypes.Diagram,
+      'Diagram',
     );
     updateAppData(updatedModel);
   };
