@@ -1,9 +1,9 @@
 import { MenuItem, TextField, Typography, Link, FormControlLabel, Checkbox } from '@mui/material';
 import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
-import Select, { SelectChangeEvent } from '@mui/material/Select';
-import React, { Dispatch, SetStateAction } from 'react';
-import { DocVarType, VariableType } from '../../../../types/EMRALD_Model';
+import Select, { type SelectChangeEvent } from '@mui/material/Select';
+import React, { type Dispatch, type SetStateAction } from 'react';
+import type { DocVarType, VariableType } from '../../../../types/EMRALD_Model';
 
 interface DocLinkFieldsProps {
   docType: string;
@@ -15,7 +15,7 @@ interface DocLinkFieldsProps {
   pathMustExist: boolean | undefined;
   setPathMustExist: (value: boolean) => void;
   value: number | string | boolean;
-  setValue: Function;
+  setValue: (e: React.ChangeEvent | SelectChangeEvent) => void;
   type: VariableType;
   regExpLine: number;
   setRegExpLine: Dispatch<SetStateAction<number | undefined>>;
@@ -57,11 +57,11 @@ const DocLinkFields: React.FC<DocLinkFieldsProps> = ({
       <FormControl variant="outlined" size="small" sx={{ minWidth: 120, width: '100%', my: 1 }}>
         <InputLabel id="doc-type-label">Doc Type</InputLabel>
         <Select
-          aria-labelledby='doc-type-label'
+          aria-labelledby="doc-type-label"
           value={docType}
-          onChange={(event: SelectChangeEvent<string>) =>
-            setDocType(event.target.value as DocVarType)
-          }
+          onChange={(event: SelectChangeEvent) => {
+            setDocType(event.target.value as DocVarType);
+          }}
           label="Doc Type"
         >
           <MenuItem value="dtXML">XML</MenuItem>
@@ -75,7 +75,9 @@ const DocLinkFields: React.FC<DocLinkFieldsProps> = ({
         variant="outlined"
         size="small"
         value={docPath}
-        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setDocPath(e.target.value)}
+        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+          setDocPath(e.target.value);
+        }}
         fullWidth
         sx={{ mb: 0 }}
       />
@@ -100,7 +102,9 @@ const DocLinkFields: React.FC<DocLinkFieldsProps> = ({
         variant="outlined"
         size="small"
         value={docLink}
-        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setDocLink(e.target.value)}
+        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+          setDocLink(e.target.value);
+        }}
         fullWidth
         sx={{ mb: 0 }}
       />
@@ -109,9 +113,9 @@ const DocLinkFields: React.FC<DocLinkFieldsProps> = ({
         control={
           <Checkbox
             checked={pathMustExist ? true : false}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-              setPathMustExist(e.target.checked)
-            }
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+              setPathMustExist(e.target.checked);
+            }}
           />
         }
       />
@@ -155,9 +159,9 @@ const DocLinkFields: React.FC<DocLinkFieldsProps> = ({
                 type="number"
                 size="small"
                 value={regExpLine}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                  setRegExpLine(parseInt(e.target.value))
-                }
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                  setRegExpLine(parseInt(e.target.value));
+                }}
                 fullWidth
                 sx={{ mb: 0 }}
               />
@@ -168,9 +172,9 @@ const DocLinkFields: React.FC<DocLinkFieldsProps> = ({
                 type="number"
                 size="small"
                 value={begPosition}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                  setBegPosition(parseInt(e.target.value))
-                }
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                  setBegPosition(parseInt(e.target.value));
+                }}
                 fullWidth
                 sx={{ mb: 0 }}
               />
@@ -182,9 +186,9 @@ const DocLinkFields: React.FC<DocLinkFieldsProps> = ({
                   type="number"
                   size="small"
                   value={numChars}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                    setNumChars(parseInt(e.target.value))
-                  }
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                    setNumChars(parseInt(e.target.value));
+                  }}
                   fullWidth
                   sx={{ mb: 0 }}
                 />
@@ -201,7 +205,9 @@ const DocLinkFields: React.FC<DocLinkFieldsProps> = ({
           type="number"
           size="small"
           value={value}
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setValue(e)}
+          onChange={(e) => {
+            setValue(e);
+          }}
           fullWidth
           sx={{ mb: 0 }}
         />
@@ -212,7 +218,9 @@ const DocLinkFields: React.FC<DocLinkFieldsProps> = ({
             labelId="value"
             id="value"
             value={value as string}
-            onChange={(event: SelectChangeEvent<string>) => setValue(event)}
+            onChange={(e) => {
+              setValue(e);
+            }}
             label="Default"
             fullWidth
           >
@@ -228,7 +236,9 @@ const DocLinkFields: React.FC<DocLinkFieldsProps> = ({
           type="text"
           size="small"
           value={value}
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setValue(e)}
+          onChange={(e) => {
+            setValue(e);
+          }}
           sx={{ mb: 0 }}
           fullWidth
         />

@@ -21,7 +21,7 @@ type MenuOption = keyof typeof projectOptions | keyof typeof downloadOptions;
 interface MenuButtonProps {
   id: number;
   title: string;
-  options?: typeof projectOptions | typeof downloadOptions,
+  options?: typeof projectOptions | typeof downloadOptions;
   handleClick?: () => void;
   sx?: SystemStyleObject;
 }
@@ -29,7 +29,7 @@ interface MenuButtonProps {
 const MenuButton: React.FC<MenuButtonProps> = ({ id, title, options, handleClick, sx }) => {
   const { newProject, mergeNewData, populateNewData } = useAssembledData();
   const { templatesList, mergeTemplateToList, clearTemplateList } = useTemplateContext();
-  const { updateFileName } = useModelDetailsContext();;
+  const { updateFileName } = useModelDetailsContext();
   const { addWindow } = useWindowContext();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [subAnchorEl, setSubAnchorEl] = useState<null | HTMLElement>(null);
@@ -184,66 +184,73 @@ const MenuButton: React.FC<MenuButtonProps> = ({ id, title, options, handleClick
         {title}
       </Button>
       <Menu
-          id={`menu-${id.toString()}`} // Use the id prop
-          anchorEl={anchorEl}
-          keepMounted
-          open={open}
-          onClose={handleMouseLeave}
-          slotProps={ { list: { onMouseLeave: handleMouseLeave } } }
-          sx={{
-            mt: 3,
-          }}
-          anchorOrigin={{
-            vertical: 'top',
-            horizontal: 'left',
-          }}
-          transformOrigin={{
-            vertical: 'top',
-            horizontal: 'left',
-          }}
-        >
-          {options && Object.keys(options).map((option) => option as MenuOption).map((option, index) => (
-            <MenuItem
-              key={index}
-              onClick={() => { void handleMenuItemClick(option); }}
-              onMouseEnter={(e) => { handleSubMenuMouseEnter(e, option); }}
-              onMouseLeave={handleSubMenuMouseLeave}
-            >
-              {option}
-              {option === 'Templates' && (
-                <Menu
-                  id={`menu-submenu`}
-                  anchorEl={subAnchorEl}
-                  keepMounted
-                  open={subMenuOpen}
-                  slotProps={ { list: { onMouseLeave: handleSubMenuMouseLeave } } }
-                  anchorOrigin={{
-                    vertical: 'top',
-                    horizontal: 'right',
-                  }}
-                  transformOrigin={{
-                    vertical: 'top',
-                    horizontal: 'left',
-                  }}
-                  title="Templates Menu"
-                  ref={subMenuRef}
-                >
-                  {Object.keys(templateSubMenuOptions).map((option, index) => (
-                    <MenuItem
-                      key={index}
-                      onClick={() => {
-                        handleSubMenuItemClick(option as keyof typeof templateSubMenuOptions);
-                        closeMenus();
-                      }}
-                    >
-                      {startCase(option)}
-                    </MenuItem>
-                  ))}
-                </Menu>
-              )}
-            </MenuItem>
-          ))}
-        </Menu>
+        id={`menu-${id.toString()}`} // Use the id prop
+        anchorEl={anchorEl}
+        keepMounted
+        open={open}
+        onClose={handleMouseLeave}
+        slotProps={{ list: { onMouseLeave: handleMouseLeave } }}
+        sx={{
+          mt: 3,
+        }}
+        anchorOrigin={{
+          vertical: 'top',
+          horizontal: 'left',
+        }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'left',
+        }}
+      >
+        {options &&
+          Object.keys(options)
+            .map((option) => option as MenuOption)
+            .map((option, index) => (
+              <MenuItem
+                key={index}
+                onClick={() => {
+                  void handleMenuItemClick(option);
+                }}
+                onMouseEnter={(e) => {
+                  handleSubMenuMouseEnter(e, option);
+                }}
+                onMouseLeave={handleSubMenuMouseLeave}
+              >
+                {option}
+                {option === 'Templates' && (
+                  <Menu
+                    id={`menu-submenu`}
+                    anchorEl={subAnchorEl}
+                    keepMounted
+                    open={subMenuOpen}
+                    slotProps={{ list: { onMouseLeave: handleSubMenuMouseLeave } }}
+                    anchorOrigin={{
+                      vertical: 'top',
+                      horizontal: 'right',
+                    }}
+                    transformOrigin={{
+                      vertical: 'top',
+                      horizontal: 'left',
+                    }}
+                    title="Templates Menu"
+                    ref={subMenuRef}
+                  >
+                    {Object.keys(templateSubMenuOptions).map((option, index) => (
+                      <MenuItem
+                        key={index}
+                        onClick={() => {
+                          handleSubMenuItemClick(option as keyof typeof templateSubMenuOptions);
+                          closeMenus();
+                        }}
+                      >
+                        {startCase(option)}
+                      </MenuItem>
+                    ))}
+                  </Menu>
+                )}
+              </MenuItem>
+            ))}
+      </Menu>
       <Alert
         severity="error"
         variant="filled"
@@ -264,9 +271,13 @@ const MenuButton: React.FC<MenuButtonProps> = ({ id, title, options, handleClick
           open={true}
           title="Create New Project?"
           submitText="Yes"
-          cancelText='No'
-          onSubmit={() => { createNewProject(); }}
-          onClose={() => { setShowNewProjectDialog(false); }}
+          cancelText="No"
+          onSubmit={() => {
+            createNewProject();
+          }}
+          onClose={() => {
+            setShowNewProjectDialog(false);
+          }}
         >
           <Typography>
             Are you sure you want to create a new project? Any unsaved changes will be lost.

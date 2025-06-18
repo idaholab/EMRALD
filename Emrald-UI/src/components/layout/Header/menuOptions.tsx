@@ -12,7 +12,10 @@ export const projectOptions = {
   New(newProject: () => void) {
     newProject();
   },
-  Open(populateNewData: (openedModel?: EMRALD_Model) => void, setFileName?: (name: string) => void) {
+  Open(
+    populateNewData: (openedModel?: EMRALD_Model) => void,
+    setFileName?: (name: string) => void,
+  ) {
     // Create a new file input element
     const fileInput = document.createElement('input');
     fileInput.type = 'file'; // Set input type to file
@@ -141,13 +144,15 @@ export const projectOptions = {
   //   label: 'Load Demo',
   //   onClick: () => {},
   // },
-  'Load Results': (addWindow: (
+  'Load Results': (
+    addWindow: (
       title: string,
       content: React.ReactNode,
       position?: WindowPosition,
       windowId?: string | null,
       closePrevWindowId?: string,
-    ) => void) => {
+    ) => void,
+  ) => {
     // Create a new file input element
     const fileInput = document.createElement('input');
     fileInput.type = 'file'; // Set input type to file

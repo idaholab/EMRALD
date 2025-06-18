@@ -22,8 +22,10 @@ const ComponentLogic = () => {
   return (
     <div>
       <RadioGroup
-        value={onSuccess || false}
-        onChange={(e) => setOnSuccess(e.target.value === 'true' ? true : false)}
+        value={onSuccess ?? false}
+        onChange={(e) => {
+          setOnSuccess(e.target.value === 'true' ? true : false);
+        }}
         sx={{ display: 'flex', flexDirection: 'row' }}
       >
         <FormControlLabel
@@ -40,8 +42,10 @@ const ComponentLogic = () => {
         />
       </RadioGroup>
       <RadioGroup
-        value={triggerOnFalse || false}
-        onChange={(e) => setTriggerOnFalse(e.target.value === 'true' ? true : false)}
+        value={triggerOnFalse ?? false}
+        onChange={(e) => {
+          setTriggerOnFalse(e.target.value === 'true' ? true : false);
+        }}
         sx={{ display: 'flex', flexDirection: 'row' }}
       >
         <FormControlLabel
@@ -58,7 +62,7 @@ const ComponentLogic = () => {
         />
       </RadioGroup>
       <SelectComponent
-        value={logicTop || ''}
+        value={logicTop ?? ''}
         label={'LogicTop'}
         setValue={(value) => {
           setLogicTop(value);

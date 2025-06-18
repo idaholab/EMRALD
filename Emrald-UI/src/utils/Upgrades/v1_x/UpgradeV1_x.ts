@@ -1,4 +1,4 @@
-import type { EMRALD_Model as EMRALD_ModelV0 } from "./AllModelInterfacesV0";
+import type { EMRALD_Model as EMRALD_ModelV0 } from './AllModelInterfacesV0';
 
 export interface UpgradeReturn {
   newModel: string;

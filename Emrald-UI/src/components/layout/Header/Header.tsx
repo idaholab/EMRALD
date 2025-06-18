@@ -40,15 +40,8 @@ export default function Header() {
   const theme = useTheme();
   const isMediumScreen = useMediaQuery(theme.breakpoints.between('sm', 'lg'));
 
-  const {
-    name,
-    desc,
-    fileName,
-    version,
-    updateVersion,
-    updateName,
-    updateDescription,
-  } = useModelDetailsContext();
+  const { name, desc, fileName, version, updateVersion, updateName, updateDescription } =
+    useModelDetailsContext();
   const [openDialog, setOpenDialog] = useState(false);
   const [updatedName, setUpdatedName] = useState<string>('');
   const [updatedDesc, setUpdatedDesc] = useState('');
@@ -128,7 +121,9 @@ export default function Header() {
             color="primary"
             fontWeight="bold"
             sx={{ cursor: 'pointer', fontSize: isMediumScreen ? '1em' : '1.2em' }}
-            onClick={() => { setOpenDialog(true); }}
+            onClick={() => {
+              setOpenDialog(true);
+            }}
           >
             {name ? name : 'Click Here to Name Project'}
           </Typography>
@@ -155,7 +150,9 @@ export default function Header() {
           variant="outlined"
           size="small"
           value={updatedName}
-          onChange={(e) => { setUpdatedName(e.target.value); }}
+          onChange={(e) => {
+            setUpdatedName(e.target.value);
+          }}
         />
         <TextField
           margin="dense"
@@ -166,7 +163,9 @@ export default function Header() {
           variant="outlined"
           size="small"
           value={updatedDesc}
-          onChange={(e) => { setUpdatedDesc(e.target.value); }}
+          onChange={(e) => {
+            setUpdatedDesc(e.target.value);
+          }}
         />
         <TextField
           margin="dense"
@@ -177,7 +176,9 @@ export default function Header() {
           variant="outlined"
           size="small"
           value={updatedVersion}
-          onChange={(e) => { handleChange(e.target.value); }}
+          onChange={(e) => {
+            handleChange(e.target.value);
+          }}
           error={!version}
           helperText={version !== undefined ? '' : 'must have a version number'}
         />

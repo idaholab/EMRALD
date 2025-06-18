@@ -23,7 +23,7 @@ import {
   Typography,
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { NewStateItem, useActionFormContext } from './ActionFormContext';
+import { type NewStateItem, useActionFormContext } from './ActionFormContext';
 import { scientificToNumeric } from '../../../utils/util-functions';
 
 export const StyledTableCell = styled(TableCell)(({ theme }) => ({
@@ -96,9 +96,9 @@ const ActionToStateTable: React.FC = () => {
       const sumOfProbs =
         convertedProbValues
           ?.filter((item) => item !== -1)
-          .reduce((acc: number, item) => acc + (item as number), 0) || 0;
+          .reduce((acc, item) => (item && acc ? acc + item : 0), 0) ?? 0;
 
-      let remainingProb = 1 - sumOfProbs;
+      const remainingProb = 1 - sumOfProbs;
       if (remainingProb > 1) {
         return 'Invalid Probability';
       }
@@ -106,7 +106,7 @@ const ActionToStateTable: React.FC = () => {
       const formattedProb = Number.isInteger(roundedProb)
         ? roundedProb.toFixed(0)
         : roundedProb.toFixed(10).replace(/\.?0+$/, '');
-      return `${formattedProb}`;
+      return formattedProb;
     }
   };
 
@@ -133,7 +133,9 @@ const ActionToStateTable: React.FC = () => {
                     aria-labelledby="prob type"
                     name="prob-type"
                     value={item.probType}
-                    onChange={(e) => handleProbTypeChange(e, item)}
+                    onChange={(e) => {
+                      handleProbTypeChange(e, item);
+                    }}
                   >
                     <FormControlLabel
                       value="fixed"
@@ -162,7 +164,9 @@ const ActionToStateTable: React.FC = () => {
                             <Checkbox
                               checked={item.prob === -1}
                               disabled={hasRemainingItem && !item.remaining}
-                              onChange={(e) => handleRemainingChange(e, item)}
+                              onChange={(e) => {
+                                handleRemainingChange(e, item);
+                              }}
                             />
                           }
                           label="Remaining"
@@ -180,11 +184,17 @@ const ActionToStateTable: React.FC = () => {
                           disabled={item.prob === -1}
                           id="prob value"
                           size="small"
-                          onChange={(e) => handleProbChange(e, item)}
-                          onBlur={() => handleProbBlur(item)}
-                          inputProps={{
-                            style: {
-                              WebkitTextFillColor: item.prob === -1 ? 'transparent' : 'black',
+                          onChange={(e) => {
+                            handleProbChange(e, item);
+                          }}
+                          onBlur={() => {
+                            handleProbBlur(item);
+                          }}
+                          slotProps={{
+                            htmlInput: {
+                              style: {
+                                WebkitTextFillColor: item.prob === -1 ? 'transparent' : 'black',
+                              },
                             },
                           }}
                           error={hasError && errorItemIds.has(item.id)}
@@ -195,12 +205,14 @@ const ActionToStateTable: React.FC = () => {
                   </>
                 ) : (
                   <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
-                    <InputLabel id={`variable-${i}-label`}>Select Variable</InputLabel>
+                    <InputLabel id={`variable-${i.toString()}-label`}>Select Variable</InputLabel>
                     <Select
-                      aria-labelledby={`variable-${i}-label`}
+                      aria-labelledby={`variable-${i.toString()}-label`}
                       label="Select Variable"
-                      value={item.varProb || ''}
-                      onChange={(e) => handleSelectChange(e, item)}
+                      value={item.varProb ?? ''}
+                      onChange={(e) => {
+                        handleSelectChange(e, item);
+                      }}
                       displayEmpty
                     >
                       {variableList.value.map((variable) => (
@@ -216,7 +228,9 @@ const ActionToStateTable: React.FC = () => {
                 <Tooltip title="Delete Row">
                   <DeleteIcon
                     sx={{ cursor: 'pointer', ml: 3 }}
-                    onClick={() => handleDeleteToStateItem(item.id)}
+                    onClick={() => {
+                      handleDeleteToStateItem(item.id);
+                    }}
                   />
                 </Tooltip>
               </StyledTableCell>

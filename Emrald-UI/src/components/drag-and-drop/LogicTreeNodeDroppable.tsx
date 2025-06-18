@@ -1,11 +1,11 @@
 // DropTargetComponent.tsx
 import { Box } from '@mui/material';
-import React, { PropsWithChildren } from 'react';
+import React, { type PropsWithChildren } from 'react';
 import { useDrop } from 'react-dnd';
 import useLogicNodeTreeDiagram, {
-  NodeType,
+  type NodeType,
 } from '../diagrams/LogicTreeDiagram/useLogicTreeDiagram';
-import { LogicNode, Diagram, GateType } from '../../types/EMRALD_Model';
+import type { LogicNode, Diagram, GateType } from '../../types/EMRALD_Model';
 import { emptyLogicNode, useLogicNodeContext } from '../../contexts/LogicNodeContext';
 import { useSignal } from '@preact/signals-react';
 import { v4 as uuidv4 } from 'uuid';
@@ -15,10 +15,6 @@ interface LogicNodeDroppableItemProps {
   children?: React.ReactNode;
   nodeType?: NodeType;
   node?: string;
-}
-
-function isDiagram(data: Diagram | LogicNode): data is Diagram {
-  return (data as Diagram).diagramType !== undefined;
 }
 
 const LogicTreeNodeDropTarget: React.FC<PropsWithChildren<LogicNodeDroppableItemProps>> = ({
@@ -38,15 +34,18 @@ const LogicTreeNodeDropTarget: React.FC<PropsWithChildren<LogicNodeDroppableItem
 
   const [{ isOver, canDrop }, drop] = useDrop({
     accept: type,
-    drop: async (item: LogicNode | Diagram) => {
+    drop: (item: LogicNode | Diagram | { objType: 'Gate'; gateType: GateType }) => {
       // If the item is a diagram, add its name to the compChildren of the dropped node
-      if (isDiagram(item as Diagram)) {
-        const { name } = item as Diagram;
+      if (item.objType === 'Diagram') {
+        const { name } = item;
         // setCompDiagram(diagramType === 'dtSingle');
         if (!node) {
           return;
         }
         const logicNode = getLogicNodeByName(node); // Get the info of the logic node to be updated
+        if (!logicNode) {
+          return;
+        }
         if (logicNode.compChildren.some((child) => child.diagramName === item.name)) {
           return; // If there is already a item with the name of the item being dropped, don't add it again
         }
@@ -60,7 +59,10 @@ const LogicTreeNodeDropTarget: React.FC<PropsWithChildren<LogicNodeDroppableItem
         updateLogicNode(logicNode); // Update the dropped node with the new compChildren
       } else if (item.objType === 'LogicNode') {
         const logicNode = getLogicNodeByName(node); // Get the info of the logic node to be updated
-        if (couldCreateInfiniteLoop(logicNode, item as LogicNode)) {
+        if (!logicNode) {
+          return;
+        }
+        if (couldCreateInfiniteLoop(logicNode, item)) {
           console.log('Alert: This node is already in the logic tree either as a child or parent');
           return;
         }
@@ -82,23 +84,27 @@ const LogicTreeNodeDropTarget: React.FC<PropsWithChildren<LogicNodeDroppableItem
         const newGateNumber = largestNumber + 1; // Increment the largest number to get the new gate number
 
         const logicNode = getLogicNodeByName(node); // Get the info of the logic node to be updated
-        await createLogicNode({
+        if (!logicNode) {
+          return;
+        }
+        createLogicNode({
           // Create a new logic node with the gate type being the type of the dropped item
           ...newGateNode.value,
           id: uuidv4(),
-          name: `Gate ${newGateNumber}`,
+          name: `Gate ${newGateNumber.toString()}`,
           gateType: gateType as GateType,
         });
-        logicNode.gateChildren = [...logicNode.gateChildren, `${`Gate ${newGateNumber}`}`]; // Add the new gate node's name to the gateChildren of the parent logic node
-        await updateLogicNode(logicNode); // Update the dropped node with the new gateChildren
+        logicNode.gateChildren = [...logicNode.gateChildren, `Gate ${newGateNumber.toString()}`]; // Add the new gate node's name to the gateChildren of the parent logic node
+        updateLogicNode(logicNode); // Update the dropped node with the new gateChildren
         resetNewNode(); // Reset the new gate node to its empty state
       }
     },
-    canDrop: (item: LogicNode | Diagram) => {
+    canDrop: (item: LogicNode | Diagram | { objType: 'Gate'; gateType: GateType }) => {
       // Prevent drop if nodeType is 'comp' and if diagramType is 'dtMulti'
       return (
         nodeType !== 'comp' &&
-        ((isDiagram(item) && item.diagramType === 'dtSingle') || isDiagram(item) === false)
+        ((item.objType === 'Diagram' && item.diagramType === 'dtSingle') ||
+          item.objType !== 'Diagram')
       );
     },
     collect: (monitor) => ({

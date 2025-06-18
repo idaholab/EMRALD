@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { Edge, Node } from 'reactflow';
-import { Option } from '../../layout/ContextMenu/ContextMenu';
+import type { Edge, Node } from 'reactflow';
+import type { Option } from '../../layout/ContextMenu/ContextMenu';
 import { useStateContext } from '../../../contexts/StateContext';
 import { useEventContext } from '../../../contexts/EventContext';
 import { useActionContext } from '../../../contexts/ActionContext';
@@ -12,10 +12,11 @@ import ActionForm from '../../forms/ActionForm/ActionForm';
 import DiagramForm from '../../forms/DiagramForm/DiagramForm';
 import ActionFormContextProvider from '../../forms/ActionForm/ActionFormContext';
 import EventFormContextProvider from '../../forms/EventForm/EventFormContext';
-import { EMRALD_Model, Event, State, Action } from '../../../types/EMRALD_Model';
+import type { Event, State, Action } from '../../../types/EMRALD_Model';
 import { updateModelAndReferences } from '../../../utils/UpdateModel';
 import { updateAppData } from '../../../hooks/useAppData';
 import { useDiagramContext } from '../../../contexts/DiagramContext';
+import type { ModelItem } from '../../../types/ModelUtils';
 
 const useContextMenu = (getStateNodes?: () => void, setEdges?: (edges: Edge[]) => void) => {
   // Get state nodes function is needed if deleting or removing a state, set edges function is needed if deleting or removing an edge
@@ -31,20 +32,9 @@ const useContextMenu = (getStateNodes?: () => void, setEdges?: (edges: Edge[]) =
   const { deleteEvent } = useEventContext();
   const { updateAction, deleteAction, getActionByActionId } = useActionContext();
 
-  // Type guards checks for State, Event, and Action
-  function isState(item: Event | State | Action): item is State {
-    return (item as State).stateType !== undefined;
-  }
-
-  function isEvent(item: Event | State | Action): item is Event {
-    return (item as Event).evType !== undefined;
-  }
-
-  function isAction(item: Event | State | Action): item is Action {
-    return (item as Action).actType !== undefined;
-  }
-
-  const closeContextMenu = () => setMenu(null); // Close the context menu
+  const closeContextMenu = () => {
+    setMenu(null);
+  }; // Close the context menu
 
   /**
    **** Context Menus for Emrald Diagram ****
@@ -80,7 +70,7 @@ const useContextMenu = (getStateNodes?: () => void, setEdges?: (edges: Edge[]) =
   };
 
   // * Context menu for state item
-  const onNodeContextMenu = (event: React.MouseEvent, node: Node) => {
+  const onNodeContextMenu = (event: React.MouseEvent, node: Node<{ state: State }>) => {
     const state = node.data.state;
     event.preventDefault(); // Prevent native context menu from showing
     setMenu({
@@ -137,13 +127,13 @@ const useContextMenu = (getStateNodes?: () => void, setEdges?: (edges: Edge[]) =
       mouseY: e.clientY,
     });
 
-    let validAction: boolean = false;
-    let validEvent: boolean = false;
+    let validAction = false;
+    let validEvent = false;
     try {
-      const pastedData = await navigator.clipboard.readText();
-      validAction = isAction(JSON.parse(pastedData));
-      validEvent = isEvent(JSON.parse(pastedData));
-    } catch (e) {
+      const pastedData = JSON.parse(await navigator.clipboard.readText()) as ModelItem;
+      validAction = pastedData.objType === 'Action';
+      validEvent = pastedData.objType === 'Event';
+    } catch {
       console.log('Not valid JSON');
     }
 
@@ -164,16 +154,13 @@ const useContextMenu = (getStateNodes?: () => void, setEdges?: (edges: Edge[]) =
       {
         label: 'Paste Event',
         action: async () => {
-          const pastedData = await navigator.clipboard.readText();
-          if (isEvent(JSON.parse(pastedData))) {
-            if (!state.events.includes(JSON.parse(pastedData).name)) {
-              state.events.push(JSON.parse(pastedData).name);
+          const pastedData = JSON.parse(await navigator.clipboard.readText()) as ModelItem;
+          if (pastedData.objType === 'Event') {
+            if (!state.events.includes(pastedData.name)) {
+              state.events.push(pastedData.name);
               state.eventActions.push({ moveFromCurrent: false, actions: [] });
               updateState(state);
-              var updatedModel: EMRALD_Model = await updateModelAndReferences(
-                state,
-                'State',
-              );
+              const updatedModel = updateModelAndReferences(state, 'State');
               updateAppData(updatedModel);
             } else {
               console.warn('Event already exists');
@@ -199,16 +186,13 @@ const useContextMenu = (getStateNodes?: () => void, setEdges?: (edges: Edge[]) =
       {
         label: 'Paste Action',
         action: async () => {
-          const pastedData = await navigator.clipboard.readText();
-          if (isAction(JSON.parse(pastedData))) {
-            const actionName = JSON.parse(pastedData).name;
+          const pastedData = JSON.parse(await navigator.clipboard.readText()) as ModelItem;
+          if (pastedData.objType === 'Action') {
+            const actionName = pastedData.name;
             if (!state.immediateActions.includes(actionName)) {
               state.immediateActions.push(actionName);
               updateState(state);
-              var updatedModel: EMRALD_Model = await updateModelAndReferences(
-                state,
-                'State',
-              );
+              const updatedModel = updateModelAndReferences(state, 'State');
               updateAppData(updatedModel);
             } else {
               console.warn('Action already exists');
@@ -247,11 +231,11 @@ const useContextMenu = (getStateNodes?: () => void, setEdges?: (edges: Edge[]) =
       mouseY: e.clientY,
     });
 
-    let validAction: boolean = false;
+    let validAction = false;
     try {
-      const pastedData = await navigator.clipboard.readText();
-      validAction = isAction(JSON.parse(pastedData));
-    } catch (e) {
+      const pastedData = JSON.parse(await navigator.clipboard.readText()) as ModelItem;
+      validAction = pastedData.objType === 'Action';
+    } catch {
       console.log('Not valid JSON');
     }
 
@@ -298,26 +282,23 @@ const useContextMenu = (getStateNodes?: () => void, setEdges?: (edges: Edge[]) =
       },
       {
         label: 'Copy Event',
-        action: () => {
-          navigator.clipboard.writeText(JSON.stringify(event, null, 2));
+        action: async () => {
+          await navigator.clipboard.writeText(JSON.stringify(event, null, 2));
           closeContextMenu();
         },
       },
       {
         label: 'Paste Action',
         action: async () => {
-          const pastedData = await navigator.clipboard.readText();
-          if (isAction(JSON.parse(pastedData))) {
+          const pastedData = JSON.parse(await navigator.clipboard.readText()) as ModelItem;
+          if (pastedData.objType === 'Action') {
             const eventIndex = state.events.indexOf(event.name);
-            const eventActions = state.eventActions[eventIndex]?.actions || [];
+            const eventActions = state.eventActions[eventIndex]?.actions;
 
-            if (!eventActions.includes(JSON.parse(pastedData).name)) {
-              eventActions.push(JSON.parse(pastedData).name);
+            if (!eventActions.includes(pastedData.name)) {
+              eventActions.push(pastedData.name);
               updateState(state);
-              var updatedModel: EMRALD_Model = await updateModelAndReferences(
-                state,
-                'State',
-              );
+              const updatedModel = updateModelAndReferences(state, 'State');
               updateAppData(updatedModel);
             }
           }
@@ -405,8 +386,8 @@ const useContextMenu = (getStateNodes?: () => void, setEdges?: (edges: Edge[]) =
       },
       {
         label: 'Copy Action',
-        action: () => {
-          navigator.clipboard.writeText(JSON.stringify(action, null, 2));
+        action: async () => {
+          await navigator.clipboard.writeText(JSON.stringify(action, null, 2));
           closeContextMenu();
         },
         isDivider: true,
@@ -470,7 +451,7 @@ const useContextMenu = (getStateNodes?: () => void, setEdges?: (edges: Edge[]) =
     if (!eventName) {
       return;
     }
-    const index = state.events?.indexOf(eventName);
+    const index = state.events.indexOf(eventName);
     if (direction === 'up') {
       if (index > 0) {
         // Moves event and matching eventAction item up
@@ -481,7 +462,7 @@ const useContextMenu = (getStateNodes?: () => void, setEdges?: (edges: Edge[]) =
         state.events[index - 1] = temp;
         state.eventActions[index - 1] = tempEventAction;
       }
-    } else if (direction === 'down') {
+    } else {
       if (index < state.events.length - 1) {
         // Moves event and matching eventAction item down
         const temp = state.events[index];
@@ -506,7 +487,7 @@ const useContextMenu = (getStateNodes?: () => void, setEdges?: (edges: Edge[]) =
         eventAction.actions.includes(actionName),
       );
       if (!eventActionToUpdate) return;
-      const index = eventActionToUpdate?.actions.indexOf(actionName);
+      const index = eventActionToUpdate.actions.indexOf(actionName);
       if (direction === 'up') {
         if (index > 0) {
           // Moves action if within eventActions up
@@ -514,7 +495,7 @@ const useContextMenu = (getStateNodes?: () => void, setEdges?: (edges: Edge[]) =
           eventActionToUpdate.actions[index] = eventActionToUpdate.actions[index - 1];
           eventActionToUpdate.actions[index - 1] = temp;
         }
-      } else if (direction === 'down') {
+      } else {
         if (index < eventActionToUpdate.actions.length - 1) {
           // Moves action if within eventActions down
           const temp = eventActionToUpdate.actions[index];
@@ -550,11 +531,11 @@ const useContextMenu = (getStateNodes?: () => void, setEdges?: (edges: Edge[]) =
    **** Delete and Remove functions ****
    **/
   // * Removes event from the diagram
-  const removeEventItem = (eventToRemove: Event, state: State) => {
+  const removeEventItem = (eventToRemove?: Event, state?: State) => {
     if (!eventToRemove) {
       return;
     }
-    if (eventToRemove && state) {
+    if (state) {
       const index = state.events.indexOf(eventToRemove.name);
       state.events = state.events.filter((event) => event !== eventToRemove.name);
       state.eventActions.splice(index, 1);
@@ -564,14 +545,14 @@ const useContextMenu = (getStateNodes?: () => void, setEdges?: (edges: Edge[]) =
 
   // * Removes action from the diagram
   const removeActionItem = (
-    actionToRemove: Action,
-    actionType: 'immediate' | 'event',
-    state: State,
+    actionToRemove?: Action,
+    actionType?: 'immediate' | 'event',
+    state?: State,
   ) => {
     if (!actionToRemove) {
       return;
     }
-    if (actionToRemove && actionType) {
+    if (actionType && state) {
       if (actionType === 'event') {
         state.eventActions.forEach((eventAction) => {
           if (eventAction.actions.includes(actionToRemove.name)) {
@@ -591,25 +572,30 @@ const useContextMenu = (getStateNodes?: () => void, setEdges?: (edges: Edge[]) =
   };
 
   // * Removes the item from the diagram and also deletes it from the project
-  const deleteItem = async () => {
+  const deleteItem = () => {
     if (!itemToDelete) {
       return;
     }
 
-    if (itemToDelete.id && isState(itemToDelete) && getStateNodes) {
+    if (itemToDelete.id && itemToDelete.objType === 'Action' && getStateNodes) {
       currentDiagram.value.states = currentDiagram.value.states.filter(
         (state) => state !== itemToDelete.name,
       );
-      await updateDiagram(currentDiagram.value);
-      await deleteState(itemToDelete.id);
+      updateDiagram(currentDiagram.value);
+      deleteState(itemToDelete.id);
       getStateNodes();
-    } else if (itemToDelete.id && stateToModify && isEvent(itemToDelete)) {
+    } else if (itemToDelete.id && stateToModify && itemToDelete.objType === 'Event') {
       const index = stateToModify.events.indexOf(itemToDelete.name);
       stateToModify.events = stateToModify.events.filter((event) => event !== itemToDelete.name);
       stateToModify.eventActions.splice(index, 1);
-      await updateState(stateToModify);
+      updateState(stateToModify);
       deleteEvent(itemToDelete.id);
-    } else if (itemToDelete.id && stateToModify && actionTypeToModify && isAction(itemToDelete)) {
+    } else if (
+      itemToDelete.id &&
+      stateToModify &&
+      actionTypeToModify &&
+      itemToDelete.objType === 'Action'
+    ) {
       if (actionTypeToModify === 'event') {
         stateToModify.eventActions.forEach((eventAction) => {
           if (eventAction.actions.includes(itemToDelete.name)) {
@@ -631,7 +617,7 @@ const useContextMenu = (getStateNodes?: () => void, setEdges?: (edges: Edge[]) =
   };
 
   // * Removes an edge connection
-  const deleteEdge = (edge: Edge, edges: Edge[]) => {
+  const deleteEdge = (edge?: Edge, edges?: Edge[]) => {
     if (edge && edges && setEdges) {
       const actionId = edge.sourceHandle?.split('*')[1];
       const actionToUpdate = actionId ? getActionByActionId(actionId) : undefined;
@@ -645,7 +631,7 @@ const useContextMenu = (getStateNodes?: () => void, setEdges?: (edges: Edge[]) =
       );
       // If only one newState remains make it so it is set to -1
       if (actionToUpdate.newStates.length === 1) {
-        actionToUpdate.newStates[0].prob = -1
+        actionToUpdate.newStates[0].prob = -1;
       }
       updateAction(actionToUpdate);
       const newEdges = edges.filter((edgeToRemove) => edgeToRemove.id !== edge.id);

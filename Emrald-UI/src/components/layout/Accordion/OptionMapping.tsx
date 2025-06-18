@@ -14,7 +14,16 @@ import { GetModelItemsReferencedBy } from '../../../utils/ModelReferences';
 import VariableFormContextProvider from '../../forms/VariableForm/VariableFormContext';
 import EventFormContextProvider from '../../forms/EventForm/EventFormContext';
 import TemplateForm from '../../forms/TemplateForm/TemplateForm';
-import { Diagram, Action, LogicNode, Variable, Event, State, ExtSim, MainItemType } from '../../../types/EMRALD_Model';
+import type {
+  Diagram,
+  Action,
+  LogicNode,
+  Variable,
+  Event,
+  State,
+  ExtSim,
+  MainItemType,
+} from '../../../types/EMRALD_Model';
 import { EMRALD_SchemaVersion } from '../../../types/ModelUtils';
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
@@ -24,12 +33,10 @@ import LogicNodeFormContextProvider from '../../forms/LogicNodeForm/LogicNodeFor
 // Define your Option and OptionsMapping types
 export interface Option {
   label: string;
-  action: (content: any, handleDelete?: any) => void; // Pass context values as parameters
+  action: (content: any, handleDelete?: any) => void | Promise<void>; // Pass context values as parameters
 }
 
-interface OptionsMapping {
-  [key: string]: Option[];
-}
+type OptionsMapping = Record<string, Option[]>;
 
 export const useOptionsMapping = () => {
   const theme = useTheme();
@@ -45,14 +52,15 @@ export const useOptionsMapping = () => {
             x: 75,
             y: 25,
             width: isMediumScreen ? 600 : 1000,
-            height: isMediumScreen ? 400 : 500
+            height: isMediumScreen ? 400 : 500,
           });
         },
       },
       {
         label: 'Edit Properties',
-        action: (diagram: Diagram) =>
-          addWindow(`Edit Properties: ${diagram.name}`, <DiagramForm diagramData={diagram} />),
+        action: (diagram: Diagram) => {
+          addWindow(`Edit Properties: ${diagram.name}`, <DiagramForm diagramData={diagram} />);
+        },
       },
       {
         label: 'Delete',
@@ -74,11 +82,14 @@ export const useOptionsMapping = () => {
               x: 75,
               y: 25,
               width: isMediumScreen ? 600 : 1000,
-              height: isMediumScreen ? 400 : 500
+              height: isMediumScreen ? 400 : 500,
             });
-          } catch(error) {
+          } catch (error) {
             console.error(error);
-            showAlert('Unable to make template, Please report the issue on the GitHub repo so we can address this problem.', 'error')
+            showAlert(
+              'Unable to make template, Please report the issue on the GitHub repo so we can address this problem.',
+              'error',
+            );
           }
         },
       },
@@ -89,57 +100,66 @@ export const useOptionsMapping = () => {
             const copiedModel = GetModelItemsReferencedBy(diagram.name, 'Diagram', 2);
             copiedModel.name = diagram.name;
             copiedModel.emraldVersion = EMRALD_SchemaVersion;
-  
+
             // Convert JSON data to a string
             const jsonString = JSON.stringify(copiedModel, null, 2);
-  
+
             // Create a Blob (Binary Large Object) with the JSON string
             const blob = new Blob([jsonString], { type: 'application/json' });
-  
+
             // Create a URL for the Blob
             const url = URL.createObjectURL(blob);
-  
+
             // Create an <a> element to trigger the download
             const a = document.createElement('a');
             a.href = url;
             a.download = `${copiedModel.name ? copiedModel.name : 'exported-diagram'}.json`;
-  
+
             // Trigger a click event on the <a> element to initiate the download
             a.click();
-  
+
             // Clean up by revoking the URL
             URL.revokeObjectURL(url);
-          } catch(error) {
+          } catch (error) {
             console.error(error);
-            showAlert(`Unable to export ${diagram.name}, Please report the issue on the GitHub repo so we can address this problem.`, 'error')
+            showAlert(
+              `Unable to export ${diagram.name}, Please report the issue on the GitHub repo so we can address this problem.`,
+              'error',
+            );
           }
         },
       },
       {
         label: 'Copy',
-        action: (diagram: Diagram) => {
+        action: async (diagram: Diagram) => {
           try {
             const copiedModel = GetModelItemsReferencedBy(diagram.name, 'Diagram', 2);
             copiedModel.name = diagram.name;
             copiedModel.emraldVersion = EMRALD_SchemaVersion;
-            navigator.clipboard.writeText(JSON.stringify(copiedModel, null, 2));
+            await navigator.clipboard.writeText(JSON.stringify(copiedModel, null, 2));
           } catch (error) {
             console.error('Error occurred:', error);
-            showAlert(`Unable to copy ${diagram.name}, Please report the issue on the GitHub repo so we can address this problem.`, 'error');
+            showAlert(
+              `Unable to copy ${diagram.name}, Please report the issue on the GitHub repo so we can address this problem.`,
+              'error',
+            );
           }
         },
       },
       {
         label: 'Copy Recursive',
-        action: (diagram: Diagram) => {
+        action: async (diagram: Diagram) => {
           try {
             const copiedModel = GetModelItemsReferencedBy(diagram.name, 'Diagram', 0);
             copiedModel.name = diagram.name;
             copiedModel.emraldVersion = EMRALD_SchemaVersion;
-            navigator.clipboard.writeText(JSON.stringify(copiedModel, null, 2));
-          } catch(error) {
+            await navigator.clipboard.writeText(JSON.stringify(copiedModel, null, 2));
+          } catch (error) {
             console.error(error);
-            showAlert(`Unable to copy recursive ${diagram.name}, Please report the issue on the GitHub repo so we can address this problem.`, 'error')
+            showAlert(
+              `Unable to copy recursive ${diagram.name}, Please report the issue on the GitHub repo so we can address this problem.`,
+              'error',
+            );
           }
         },
       },
@@ -153,10 +173,11 @@ export const useOptionsMapping = () => {
             <ReactFlowProvider>
               <LogicNodeTreeDiagram logicNode={logicNode} />
             </ReactFlowProvider>,
-            { x: 75, 
-              y: 25,  
+            {
+              x: 75,
+              y: 25,
               width: isMediumScreen ? 600 : 1000,
-              height: isMediumScreen ? 400 : 500 
+              height: isMediumScreen ? 400 : 500,
             },
           );
         },
@@ -177,21 +198,26 @@ export const useOptionsMapping = () => {
         action: (
           logicNode: LogicNode,
           handleDelete: (itemToDelete: LogicNode, itemToDeleteType: MainItemType) => void,
-        ) => handleDelete(logicNode, 'LogicNode'),
+        ) => {
+          handleDelete(logicNode, 'LogicNode');
+        },
       },
     ],
     'External Sims': [
       {
         label: 'Edit Properties',
-        action: (extSim: ExtSim) =>
-          addWindow(`Edit Properties: ${extSim.name}`, <ExtSimForm ExtSimData={extSim} />),
+        action: (extSim: ExtSim) => {
+          addWindow(`Edit Properties: ${extSim.name}`, <ExtSimForm ExtSimData={extSim} />);
+        },
       },
       {
         label: 'Delete',
         action: (
           extSim: ExtSim,
           handleDelete: (itemToDelete: ExtSim, itemToDeleteType: MainItemType) => void,
-        ) => handleDelete(extSim, 'ExtSim'),
+        ) => {
+          handleDelete(extSim, 'ExtSim');
+        },
       },
     ],
     Actions: [
@@ -211,7 +237,9 @@ export const useOptionsMapping = () => {
         action: (
           action: Action,
           handleDelete: (itemToDelete: Action, itemToDeleteType: MainItemType) => void,
-        ) => handleDelete(action, 'Action'),
+        ) => {
+          handleDelete(action, 'Action');
+        },
       },
     ],
     Events: [
@@ -232,40 +260,48 @@ export const useOptionsMapping = () => {
         action: (
           event: Event,
           handleDelete: (itemToDelete: Event, itemToDeleteType: MainItemType) => void,
-        ) => handleDelete(event, 'Event'),
+        ) => {
+          handleDelete(event, 'Event');
+        },
       },
     ],
     States: [
       {
         label: 'Edit Properties',
-        action: (state: State) =>
-          addWindow(`Edit Properties: ${state.name}`, <StateForm stateData={state} />),
+        action: (state: State) => {
+          addWindow(`Edit Properties: ${state.name}`, <StateForm stateData={state} />);
+        },
       },
       {
         label: 'Delete',
         action: (
           state: State,
           handleDelete: (itemToDelete: State, itemToDeleteType: MainItemType) => void,
-        ) => handleDelete(state, 'State'),
+        ) => {
+          handleDelete(state, 'State');
+        },
       },
     ],
     Variables: [
       {
         label: 'Edit Properties',
-        action: (variable: Variable) =>
+        action: (variable: Variable) => {
           addWindow(
             `Edit Properties: ${variable.name}`,
             <VariableFormContextProvider>
               <VariableForm variableData={variable} />
             </VariableFormContextProvider>,
-          ),
+          );
+        },
       },
       {
         label: 'Delete',
         action: (
           variable: Variable,
           handleDelete: (itemToDelete: Variable, itemToDeleteType: MainItemType) => void,
-        ) => handleDelete(variable, 'Variable'),
+        ) => {
+          handleDelete(variable, 'Variable');
+        },
       },
     ],
   };

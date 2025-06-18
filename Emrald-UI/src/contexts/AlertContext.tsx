@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState, type ReactNode } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import Alert from '@mui/material/Alert';
 import Snackbar from '@mui/material/Snackbar';
@@ -23,9 +23,16 @@ interface AlertProviderProps {
 }
 
 export const AlertProvider: React.FC<AlertProviderProps> = ({ children }) => {
-  const [alert, setAlert] = useState<{ id: string, message: string, severity: 'error' | 'warning' | 'info' | 'success' } | null>(null);
+  const [alert, setAlert] = useState<{
+    id: string;
+    message: string;
+    severity: 'error' | 'warning' | 'info' | 'success';
+  } | null>(null);
 
-  const showAlert = (message: string, severity: 'error' | 'warning' | 'info' | 'success' = 'error') => {
+  const showAlert = (
+    message: string,
+    severity: 'error' | 'warning' | 'info' | 'success' = 'error',
+  ) => {
     setAlert({ id: uuidv4(), message, severity });
   };
 
@@ -49,7 +56,12 @@ export const AlertProvider: React.FC<AlertProviderProps> = ({ children }) => {
           onClose={handleClose}
           autoHideDuration={6000}
         >
-          <Alert onClose={handleClose} severity={alert.severity} variant="filled" sx={{ width: '100%' }}>
+          <Alert
+            onClose={handleClose}
+            severity={alert.severity}
+            variant="filled"
+            sx={{ width: '100%' }}
+          >
             {alert.message}
           </Alert>
         </Snackbar>

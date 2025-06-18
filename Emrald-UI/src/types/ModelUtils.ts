@@ -1,4 +1,13 @@
-import type { Action, Diagram, EMRALD_Model, ExtSim, LogicNode, State, Variable, Event } from "./EMRALD_Model";
+import type {
+  Action,
+  Diagram,
+  EMRALD_Model,
+  ExtSim,
+  LogicNode,
+  State,
+  Variable,
+  Event,
+} from './EMRALD_Model';
 
 export const EMRALD_SchemaVersion = 3.1;
 

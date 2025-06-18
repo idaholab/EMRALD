@@ -134,7 +134,7 @@ const MAAP = () => {
           } else if (cblock.test.type === 'is_expression') {
             if (cblock.test.target.useVariable) {
               // TODO - If this is set to a variable, can the right value be anything other than a string?
-              if (typeof cblock.test.target.value === "string") {
+              if (typeof cblock.test.target.value === 'string') {
                 inpFile += `" + ${cblock.test.target.value} + @" IS `;
                 if (!variables.includes(cblock.test.target.value)) {
                   variables.push(cblock.test.target.value);
@@ -145,7 +145,7 @@ const MAAP = () => {
             }
             if (cblock.test.value.useVariable) {
               // TODO - If this is set to a variable, can the right value be anything other than a string?
-              if (typeof cblock.test.value.value === "string") {
+              if (typeof cblock.test.value.value === 'string') {
                 inpFile += `" + ${cblock.test.value.value} + @"`;
                 if (!variables.includes(cblock.test.value.value)) {
                   variables.push(cblock.test.value.value);
@@ -154,7 +154,10 @@ const MAAP = () => {
             } else {
               if (typeof cblock.test.value.value === 'string') {
                 inpFile += cblock.test.value.value;
-              } else if (typeof cblock.test.value.value === 'number' || typeof cblock.test.value.value === 'boolean') {
+              } else if (
+                typeof cblock.test.value.value === 'number' ||
+                typeof cblock.test.value.value === 'boolean'
+              ) {
                 inpFile += cblock.test.value.value.toString();
               } else if (cblock.test.value.type === 'is_expression') {
                 inpFile += isExpressionToString(cblock.test.value);

@@ -34,9 +34,7 @@ const EmraldContextWrapper: React.FC<EmraldContextWrapperProps> = ({ children })
                     <StateContextProvider>
                       <VariableContextProvider>
                         <ExtSimContextProvider>
-                          <TemplateContextProvider>
-                            {children}
-                          </TemplateContextProvider>
+                          <TemplateContextProvider>{children}</TemplateContextProvider>
                         </ExtSimContextProvider>
                       </VariableContextProvider>
                     </StateContextProvider>

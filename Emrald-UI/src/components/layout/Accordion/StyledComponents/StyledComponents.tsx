@@ -1,8 +1,6 @@
-import MuiAccordion, { AccordionProps } from '@mui/material/Accordion';
+import MuiAccordion, { type AccordionProps } from '@mui/material/Accordion';
 import { styled } from '@mui/material/styles';
-import MuiAccordionSummary, {
-  AccordionSummaryProps,
-} from '@mui/material/AccordionSummary';
+import MuiAccordionSummary, { type AccordionSummaryProps } from '@mui/material/AccordionSummary';
 import MuiAccordionDetails from '@mui/material/AccordionDetails';
 import ArrowForwardIosSharpIcon from '@mui/icons-material/ArrowForwardIosSharp';
 
@@ -19,9 +17,7 @@ export const Accordion = styled((props: AccordionProps) => (
 
 export const AccordionSummary = styled((props: AccordionSummaryProps) => (
   <MuiAccordionSummary
-    expandIcon={
-      <ArrowForwardIosSharpIcon sx={{ fontSize: '0.9rem', color: '#FFF' }} />
-    }
+    expandIcon={<ArrowForwardIosSharpIcon sx={{ fontSize: '0.9rem', color: '#FFF' }} />}
     {...props}
   />
 ))(({ theme }) => ({

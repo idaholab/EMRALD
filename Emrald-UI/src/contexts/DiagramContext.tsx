@@ -1,19 +1,19 @@
 import React, { createContext, useContext, useState } from 'react';
-import { effect, ReadonlySignal, useComputed } from '@preact/signals-react';
-import { Diagram } from '../types/EMRALD_Model';
+import { effect, type ReadonlySignal, useComputed } from '@preact/signals-react';
+import type { EMRALD_Model, Diagram } from '../types/EMRALD_Model';
 import { DeleteItemAndRefs, updateModelAndReferences } from '../utils/UpdateModel';
-import { EmraldContextWrapperProps } from './EmraldContextWrapper';
-import { EMRALD_Model } from '../types/EMRALD_Model';
+import type { EmraldContextWrapperProps } from './EmraldContextWrapper';
 import { v4 as uuidv4 } from 'uuid';
 import { appData, updateAppData } from '../hooks/useAppData';
+
 interface DiagramContextType {
   diagramList: ReadonlySignal<Diagram[]>;
   diagrams: Diagram[];
   createDiagram: (newDiagram: Diagram) => void;
-  updateDiagram: (updatedDiagram: Diagram) => Promise<void>;
+  updateDiagram: (updatedDiagram: Diagram) => void;
   deleteDiagram: (diagramId: string | undefined) => void;
-  getDiagramByDiagramName: (diagramName: string) => Diagram;
-  getDiagramById: (diagramId: string) => Diagram;
+  getDiagramByDiagramName: (diagramName: string) => Diagram | undefined;
+  getDiagramById: (diagramId: string) => Diagram | undefined;
   newDiagramList: (newDiagramList: Diagram[]) => void;
   mergeDiagramList: (newDiagramList: Diagram[]) => void;
   clearDiagramList: () => void;
@@ -58,40 +58,40 @@ const DiagramContextProvider: React.FC<EmraldContextWrapperProps> = ({ children 
   });
 
   // Create, Delete, Update individual diagrams
-  const createDiagram = async (newDiagram: Diagram) => {
-    var updatedModel: EMRALD_Model = await updateModelAndReferences(
+  const createDiagram = (newDiagram: Diagram) => {
+    const updatedModel = updateModelAndReferences(
       newDiagram,
       'Diagram',
     );
     updateAppData(updatedModel);
   };
 
-  const updateDiagram = async (updatedDiagram: Diagram) => {
-    var updatedModel: EMRALD_Model = await updateModelAndReferences(
+  const updateDiagram = (updatedDiagram: Diagram) => {
+    const updatedModel = updateModelAndReferences(
       updatedDiagram,
       'Diagram',
     );
     updateAppData(updatedModel);
   };
 
-  const deleteDiagram = async (diagramId: string | undefined) => {
+  const deleteDiagram = (diagramId: string | undefined) => {
     if (!diagramId) {
       return;
     }
     const diagramToDelete = getDiagramById(diagramId);
     if (diagramToDelete) {
-      var updatedModel: EMRALD_Model = await DeleteItemAndRefs(diagramToDelete);
+      const updatedModel = DeleteItemAndRefs(diagramToDelete);
       updateAppData(updatedModel);
     }
     //todo else error, not diagram to delete
   };
 
   const getDiagramByDiagramName = (diagramName: string) => {
-    return diagramList.value.find((diagram) => diagram.name === diagramName) || emptyDiagram;
+    return diagramList.value.find((diagram) => diagram.name === diagramName);
   };
 
   const getDiagramById = (diagramId: string) => {
-    return diagramList.value.find((diagram) => diagram.id === diagramId) || emptyDiagram;
+    return diagramList.value.find((diagram) => diagram.id === diagramId);
   };
 
   // Open New, Merge, and Clear Diagram List
@@ -104,7 +104,7 @@ const DiagramContextProvider: React.FC<EmraldContextWrapperProps> = ({ children 
   };
 
   const clearDiagramList = () => {
-    updateAppData(JSON.parse(JSON.stringify({ ...appData.value, DiagramList: [] })));
+    updateAppData(JSON.parse(JSON.stringify({ ...appData.value, DiagramList: [] })) as EMRALD_Model);
   };
 
   return (
