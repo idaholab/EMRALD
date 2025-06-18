@@ -10,11 +10,14 @@ import { useActionFormContext } from '../../../../ActionFormContext';
 import useRunApplication from '../../useRunApplication';
 import {
   callExpressionToString,
+  expressionBlockToString,
   expressionToString,
   expressionTypeToString,
   identifierToString,
+  isExpressionToString,
   MAAPToString,
   sourceElementToString,
+  variableToString,
 } from './Parser/maap-to-string';
 import type {
   MAAPParameter,
@@ -104,21 +107,69 @@ const MAAP = () => {
           const cblock = formData.inputBlocks[block];
           inpFile += `${cblock.blockType} `;
           if (cblock.test.type === 'expression') {
-            if (
-              cblock.test.value.right.useVariable &&
-              typeof cblock.test.value.right.value === 'string'
-            ) {
-              // TODO: This may not work for every possible case
-              inpFile += `${expressionTypeToString(cblock.test.value.left)} ${
-                cblock.test.value.op
-              } " + ${cblock.test.value.right.value} + @"\n`;
-              if (!variables.includes(cblock.test.value.right.value)) {
-                variables.push(cblock.test.value.right.value);
+            console.log(cblock);
+            if (cblock.test.value.left.useVariable) {
+              // TODO - If this is set to a variable, can the right value be anything other than a string?
+              if (typeof cblock.test.value.left.value === 'string') {
+                inpFile += `" + ${cblock.test.value.left.value} + @"`;
+                if (!variables.includes(cblock.test.value.left.value)) {
+                  variables.push(cblock.test.value.left.value);
+                }
               }
             } else {
-              inpFile += `${expressionToString(cblock.test)}\n`;
+              inpFile += `${expressionTypeToString(cblock.test.value.left)} ${cblock.test.value.op} `;
             }
+            if (cblock.test.value.right.useVariable) {
+              // TODO - If this is set to a variable, can the right value be anything other than a string?
+              if (typeof cblock.test.value.right.value === 'string') {
+                inpFile += cblock.test.value.right.value;
+                if (!variables.includes(cblock.test.value.right.value)) {
+                  variables.push(cblock.test.value.right.value);
+                }
+              }
+              inpFile += ' + @"\n';
+            } else {
+              inpFile += `${expressionToString(cblock.test.value.right)}\n`;
+            }
+          } else if (cblock.test.type === 'is_expression') {
+            if (cblock.test.target.useVariable) {
+              // TODO - If this is set to a variable, can the right value be anything other than a string?
+              if (typeof cblock.test.target.value === "string") {
+                inpFile += `" + ${cblock.test.target.value} + @" IS `;
+                if (!variables.includes(cblock.test.target.value)) {
+                  variables.push(cblock.test.target.value);
+                }
+              }
+            } else {
+              inpFile += `${variableToString(cblock.test.target)} IS `;
+            }
+            if (cblock.test.value.useVariable) {
+              // TODO - If this is set to a variable, can the right value be anything other than a string?
+              if (typeof cblock.test.value.value === "string") {
+                inpFile += `" + ${cblock.test.value.value} + @"`;
+                if (!variables.includes(cblock.test.value.value)) {
+                  variables.push(cblock.test.value.value);
+                }
+              }
+            } else {
+              if (typeof cblock.test.value.value === 'string') {
+                inpFile += cblock.test.value.value;
+              } else if (typeof cblock.test.value.value === 'number' || typeof cblock.test.value.value === 'boolean') {
+                inpFile += cblock.test.value.value.toString();
+              } else if (cblock.test.value.type === 'is_expression') {
+                inpFile += isExpressionToString(cblock.test.value);
+              } else if (cblock.test.value.type === 'call_expression') {
+                inpFile += callExpressionToString(cblock.test.value);
+              } else if (cblock.test.value.type === 'expression') {
+                inpFile += expressionToString(cblock.test.value);
+              } else {
+                inpFile += expressionBlockToString(cblock.test.value);
+              }
+            }
+            inpFile += '\n';
           }
+          // TODO: Looking at the other possible syntax object types that cblock.test can be, I don't think any of them are actually possible
+          // But if they are, add them in an else if statement here
           cblock.value.forEach((se) => {
             if (se.type === 'assignment' && se.value.useVariable) {
               if (se.target.type === 'call_expression') {
@@ -130,6 +181,7 @@ const MAAP = () => {
             } else {
               inpFile += sourceElementToString(se);
             }
+            inpFile += '\n';
           });
           inpFile += `\nEND\n`;
           block += 1;
@@ -138,6 +190,7 @@ const MAAP = () => {
         }
       });
       setCodeVariables(variables);
+      console.log(inpFile);
       return inpFile;
     }
     return '';
