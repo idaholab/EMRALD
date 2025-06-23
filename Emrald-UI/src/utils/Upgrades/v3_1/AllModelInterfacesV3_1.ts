@@ -263,7 +263,7 @@ export interface VersionHistory {
   /**
    * The version number
    */
-  version?: string
+  version?: number
   [k: string]: unknown
 }
 export interface Diagram {
