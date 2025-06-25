@@ -25,6 +25,7 @@ import type {
   MAAPSourceElement,
   MAAPComment,
   MAAPInitiator,
+  MAAPExpression,
 } from '../../../../../../../types/EMRALD_Model';
 
 const MAAP = () => {
@@ -57,10 +58,38 @@ const MAAP = () => {
   };
 
   function createMaapFile() {
+    const recurseMultiExpr = (op: string, value: MAAPExpression[]): string => {
+      return value
+        .map((expr) => {
+          if (expr.type === 'multi_expression') {
+            return recurseMultiExpr(expr.op, expr.value);
+          } else if (typeof expr.value === 'string') {
+            return expr.value;
+          } else if (typeof expr.value === 'number' || typeof expr.value === 'boolean') {
+            return expr.value.toString();
+          } else if (expr.type === 'is_expression') {
+            if (expr.useVariable && typeof expr.value.value === 'string') {
+              return `${variableToString(expr.target)} IS " + ${expr.value.value} + @"`;
+            }
+            return isExpressionToString(expr);
+          } else if (expr.type === 'call_expression') {
+            return callExpressionToString(expr);
+          } else if (expr.type === 'expression') {
+            if (expr.value.right.useVariable && typeof expr.value.right.value === 'string') {
+              return `${expressionTypeToString(expr.value.left)} ${expr.value.op} " + ${expr.value.right.value} + @"`;
+            }
+            return expressionToString(expr);
+          } else {
+            return expressionBlockToString(expr);
+          }
+        })
+        .join(`\n${op} `) + '\n';
+    };
     if (formData?.sourceElements) {
       let inpFile = '';
       let block = 0;
       const variables: string[] = [];
+      console.log(formData.sourceElements);
       formData.sourceElements.forEach((sourceElement) => {
         if (sourceElement.type === 'block') {
           if (sourceElement.blockType === 'PARAMETER CHANGE') {
@@ -106,8 +135,9 @@ const MAAP = () => {
         ) {
           const cblock = formData.inputBlocks[block];
           inpFile += `${cblock.blockType} `;
-          if (cblock.test.type === 'expression') {
-            console.log(cblock);
+          if (cblock.test.type === 'multi_expression') {
+            inpFile += recurseMultiExpr(cblock.test.op, cblock.test.value);
+          } else if (cblock.test.type === 'expression') {
             if (cblock.test.value.left.useVariable) {
               // TODO - If this is set to a variable, can the right value be anything other than a string?
               if (typeof cblock.test.value.left.value === 'string') {
@@ -122,19 +152,18 @@ const MAAP = () => {
             if (cblock.test.value.right.useVariable) {
               // TODO - If this is set to a variable, can the right value be anything other than a string?
               if (typeof cblock.test.value.right.value === 'string') {
-                inpFile += cblock.test.value.right.value;
+                inpFile += `" + ${cblock.test.value.right.value} + @"\n`;
                 if (!variables.includes(cblock.test.value.right.value)) {
                   variables.push(cblock.test.value.right.value);
                 }
               }
-              inpFile += ' + @"\n';
             } else {
               inpFile += `${expressionToString(cblock.test.value.right)}\n`;
             }
           } else if (cblock.test.type === 'is_expression') {
             if (cblock.test.target.useVariable) {
               // TODO - If this is set to a variable, can the right value be anything other than a string?
-              if (typeof cblock.test.target.value === "string") {
+              if (typeof cblock.test.target.value === 'string') {
                 inpFile += `" + ${cblock.test.target.value} + @" IS `;
                 if (!variables.includes(cblock.test.target.value)) {
                   variables.push(cblock.test.target.value);
@@ -143,9 +172,11 @@ const MAAP = () => {
             } else {
               inpFile += `${variableToString(cblock.test.target)} IS `;
             }
-            if (cblock.test.value.useVariable) {
+            if (cblock.test.value.type === 'multi_expression') {
+              inpFile += recurseMultiExpr(cblock.test.value.op, cblock.test.value.value);
+            } else if (cblock.test.value.useVariable) {
               // TODO - If this is set to a variable, can the right value be anything other than a string?
-              if (typeof cblock.test.value.value === "string") {
+              if (typeof cblock.test.value.value === 'string') {
                 inpFile += `" + ${cblock.test.value.value} + @"`;
                 if (!variables.includes(cblock.test.value.value)) {
                   variables.push(cblock.test.value.value);
@@ -154,7 +185,10 @@ const MAAP = () => {
             } else {
               if (typeof cblock.test.value.value === 'string') {
                 inpFile += cblock.test.value.value;
-              } else if (typeof cblock.test.value.value === 'number' || typeof cblock.test.value.value === 'boolean') {
+              } else if (
+                typeof cblock.test.value.value === 'number' ||
+                typeof cblock.test.value.value === 'boolean'
+              ) {
                 inpFile += cblock.test.value.value.toString();
               } else if (cblock.test.value.type === 'is_expression') {
                 inpFile += isExpressionToString(cblock.test.value);
@@ -170,19 +204,7 @@ const MAAP = () => {
           }
           // TODO: Looking at the other possible syntax object types that cblock.test can be, I don't think any of them are actually possible
           // But if they are, add them in an else if statement here
-          cblock.value.forEach((se) => {
-            if (se.type === 'assignment' && se.value.useVariable) {
-              if (se.target.type === 'call_expression') {
-                inpFile += callExpressionToString(se.target);
-              } else {
-                inpFile += identifierToString(se.target);
-              }
-              inpFile += ` = " + ${expressionToString(se.value)} + @"`;
-            } else {
-              inpFile += sourceElementToString(se);
-            }
-            inpFile += '\n';
-          });
+          inpFile += cblock.value.map((se) => sourceElementToString(se)).join('\n');
           inpFile += `\nEND\n`;
           block += 1;
         } else {
