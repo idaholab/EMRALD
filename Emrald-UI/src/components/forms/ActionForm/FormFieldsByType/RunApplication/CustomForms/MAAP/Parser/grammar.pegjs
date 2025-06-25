@@ -5,23 +5,11 @@
     function safeValue(value) {
     	return (value || [])[0] || [];
     }
-    function stripLocations(o) {
-      if (o) {
-        delete o.location;
-      }
-      if (typeof o === 'object') {
-        Object.values(o).forEach((v) => stripLocations(v));
-      }
-      return o;
-    }
 }
 
 Start = preamble:__ program:Program __ {
 	program.value = preamble.concat(program.value);
-    
-	// Switch the comments on the following lines to disable locations for debugging
 	return program;
-	//return stripLocations(program);
 }
 
 /* Lexical Grammar */
@@ -46,7 +34,7 @@ EnclosedComment = "****" v:[^*]+ "****" {
 }
 IdentifierStart = [a-zA-Z] / "$" / "_" / "\\"
 Literal = BooleanLiteral / NumericLiteral / TimerLiteral
-Units = first:[a-zA-Z0-9]+ rest:(("**" / "/") Units)? {
+Units = !(AND / OR) first:[a-zA-Z0-9]+ rest:(("**" / "/") Units)? {
 	let units = first.join('');
     if (rest) {
     	units += rest[0] + rest[1];
@@ -55,7 +43,6 @@ Units = first:[a-zA-Z0-9]+ rest:(("**" / "/") Units)? {
 }
 NumericLiteral = literal:DecimalLiteral !(IdentifierStart / DecimalDigit) units:(_ Units)? {
 	return {
-    	location: location(),
     	type: "number",
         units: (units || [])[1],
         value: literal,
@@ -79,15 +66,13 @@ SignedInteger = [+-]? DecimalDigit+
 BooleanLiteral = v:(TRUE / FALSE / T / F) ![a-zA-Z] {
 	let value = v === 'TRUE' || v === 'T';
 	return {
-    	location: location(),
     	type: "boolean",
         value,
     }
 }
-Reserved = (END / IS / AS) ![a-zA-Z]
-Identifier = !Reserved value:[a-zA-Z0-9]+ {
+Reserved = (END / IS / AS / AND / OR) ![a-zA-Z]
+Identifier = !Reserved value:[a-zA-Z0-9_]+ {
 	return {
-    	location: location(),
     	type: "identifier",
         value: value.join(''),
     }
@@ -99,7 +84,6 @@ ParameterName = !Reserved head:ParameterNameCharacter+ tail:(_ !Reserved Paramet
     	value += ' ' + extractList(tail, 2).map((item) => item.join('')).join(' ');
     }
 	return {
-    	location: location(),
         type: "parameter_name",
         value,
     }
@@ -107,7 +91,6 @@ ParameterName = !Reserved head:ParameterNameCharacter+ tail:(_ !Reserved Paramet
 Parameter = index:[0-9]+ _ flag:(BooleanLiteral _)? value:(Expr / ParameterName) {
 	return {
     	flag: (flag || [])[0],
-        location: location(),
         index: Number(index.join('')),
     	type: "parameter",
         value,
@@ -115,7 +98,6 @@ Parameter = index:[0-9]+ _ flag:(BooleanLiteral _)? value:(Expr / ParameterName)
 }
 TimerLiteral = TIMER _ "#"? n:[0-9]+ {
 	return {
-    	location: location(),
     	type: "timer",
         value: Number(n.join('')),
     }
@@ -123,6 +105,7 @@ TimerLiteral = TIMER _ "#"? n:[0-9]+ {
 
 ACTION = "ACTION"i
 ALIAS = "ALIAS"i
+AND = "AND"i
 AS = "AS"i
 END = "END"i !" TIME"i
 F = "F"i
@@ -137,6 +120,7 @@ IS = "IS"i
 LOOKUP_VARIABLE = "LOOKUP VARIABLE"i
 OFF = "OFF"i
 ON = "ON"i
+OR = "OR"i
 PARAMETER_CHANGE = "PARAMETER CHANGE"i
 PARAMETER_FILE = "PARAMETER FILE"i
 PLOTFIL = "PLOTFIL"i
@@ -169,15 +153,13 @@ Arguments = value:ExpressionType rest:(_ "," _ Arguments)? {
 CallExpression = value:Identifier _ "(" args:Arguments? ")" {
 	return {
     	arguments: args || [],
-        location: location(),
     	type: "call_expression",
         value,
     }
 }
-ExpressionOperator = "**" / "*" / "/" / ">=" / "<=" / ">" / "<" / "+" / "-" / "AND"
+ExpressionOperator = "**" / "*" / "/" / ">=" / "<=" / ">" / "<" / "+" / "-" / "!=" / "=="
 Expression = left:ExpressionType _ op:ExpressionOperator _ right:(Expression / ExpressionType) {
 	return {
-    	location: location(),
     	type: "expression",
         value: {
         	left,
@@ -186,17 +168,16 @@ Expression = left:ExpressionType _ op:ExpressionOperator _ right:(Expression / E
         },
     }
 }
-ExpressionBlock = "(" value:Expression ")" {
+ExpressionBlock = "(" value:Expression ")" _ units:Units? {
 	return {
-    	location: location(),
     	type: "expression_block",
         value,
+        units,
     }
 }
 ExpressionType = CallExpression / ExpressionBlock / Variable
 SpaceAssignment = target:(CallExpression / Identifier) WhiteSpace WhiteSpace+ value:Expr {
 	return {
-    	location: location(),
     	target,
     	type: "assignment",
         value,
@@ -204,7 +185,6 @@ SpaceAssignment = target:(CallExpression / Identifier) WhiteSpace WhiteSpace+ va
 }
 Assignment = target:(CallExpression / Identifier) _ "=" _ value:Expr {
 	return {
-    	location: location(),
     	target,
     	type: "assignment",
         value,
@@ -212,7 +192,6 @@ Assignment = target:(CallExpression / Identifier) _ "=" _ value:Expr {
 }
 IsExpression = target:Variable _ IS _ value:Expr {
 	return {
-    	location: location(),
     	target,
     	type: "is_expression",
         value,
@@ -220,13 +199,19 @@ IsExpression = target:Variable _ IS _ value:Expr {
 }
 AsExpression = target:Variable _ AS _ value:Variable {
 	return {
-    	location: location(),
     	target,
     	type: "as_expression",
         value,
     }
 }
-Expr = IsExpression / Expression / ExpressionType
+MultiPartExpression = first:(Expression / IsExpression) ___ op:(AND / OR) ___ rest:Expr  {
+	return {
+    	type: "multi_expression",
+        op,
+        value: [first, rest]
+    }
+}
+Expr = MultiPartExpression / IsExpression / Expression / ExpressionType
 Variable = CallExpression / Literal / ParameterName / Identifier
 
 /* Statements */
@@ -241,14 +226,10 @@ Statement = value:(SensitivityStatement
     / FunctionStatement
     / TimerStatement
     / LookupStatement) {
-    return {
-    	location: location(),
-        ...value,
-    }
+    return value
 }
 SensitivityStatement = SENSITIVITY ___ value:(ON / OFF) {
 	return {
-    	location: location(),
     	type: "sensitivity",
         value,
     }
@@ -331,7 +312,6 @@ UserEvtElement = Parameter / ActionStatement / SourceElement
 ActionStatement = ACTION _ "#" n:[0-9]+ ___ value:(UserEvtBody ___)? END {
 	return {
     	index: Number(n.join('')),
-        location: location(),
     	type: "action",
         value: safeValue(value),
     }

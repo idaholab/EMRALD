@@ -1,0 +1,10 @@
+IF A != 0
+AND B >= C
+TEST
+END
+
+IF A != 0
+AND B >= C
+OR A IS B
+TEST
+END

@@ -18,6 +18,7 @@ import type {
   MAAPIsExpression,
   MAAPLiteral,
   MAAPLookupStatement,
+  MAAPMultiPartExpression,
   MAAPNumericLiteral,
   MAAPParameter,
   MAAPParameterName,
@@ -212,7 +213,11 @@ function pureExpressionToString(pureExpression: MAAPPureExpression): string {
  * @returns The compiled code.
  */
 export function expressionBlockToString(expressionBlock: MAAPExpressionBlock): string {
-  return `(${pureExpressionToString(expressionBlock.value)})`;
+  let s = `(${pureExpressionToString(expressionBlock.value)})`;
+  if (expressionBlock.units) {
+    s += ` ${expressionBlock.units}`;
+  }
+  return s;
 }
 
 /**
@@ -254,6 +259,9 @@ function assignmentToString(assignment: MAAPAssignment): string {
  * @returns The compiled code.
  */
 export function isExpressionToString(isExpression: MAAPIsExpression): string {
+  if (typeof isExpression.value === 'string') {
+    return `${variableToString(isExpression.target)} IS ${isExpression.value}`;
+  }
   return `${variableToString(isExpression.target)} IS ${expressionToString(isExpression.value)}`;
 }
 
@@ -268,6 +276,14 @@ function asExpressionToString(asExpression: MAAPAsExpression): string {
 }
 
 /**
+ * Converts a multi part expression into code.
+ * @param multiExpression - The expression to convert.
+ */
+function multiExpressionToString(multiExpression: MAAPMultiPartExpression) {
+  return `${expressionToString(multiExpression.value[0])} ${multiExpression.op} ${expressionToString(multiExpression.value[1])}`;
+}
+
+/**
  * Compiles an Expression into code.
  *
  * @param expression - The object to compile.
@@ -279,6 +295,8 @@ export function expressionToString(expression: MAAPExpression): string {
       return isExpressionToString(expression);
     case 'expression':
       return pureExpressionToString(expression);
+    case 'multi_expression':
+      return multiExpressionToString(expression);
     default:
       return expressionTypeToString(expression);
   }

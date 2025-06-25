@@ -1,4 +1,3 @@
-/* eslint-disable sort-keys */
 import fs from 'fs/promises';
 import path from 'path';
 import maapInpParser from '../../../../../../../../components/forms/ActionForm/FormFieldsByType/RunApplication/CustomForms/MAAP/Parser/index';
@@ -13,7 +12,7 @@ async function readTestData(filename: string) {
   );
 }
 
-beforeAll(async () => {
+beforeAll(() => {
   // Turn safe mode off to make sure tests fail when expected
   maapInpParser.options.safeMode = false;
   // Turn of location (so I don't have to rewrite the expect outputs)
@@ -284,6 +283,119 @@ VARNAME IS Value
 START TIME IS 0
 END TIME IS 144000
 PRINT INTERVAL IS 5000`);
+  });
+
+  test('multi expression', async () => {
+    const program = maapInpParser.parse(await readTestData('multi-expression.INP')).output;
+    expect(program.value).toStrictEqual([
+      {
+        blockType: 'IF',
+        test: {
+          type: 'multi_expression',
+          op: 'AND',
+          value: [
+            {
+              type: 'expression',
+              value: {
+                left: {
+                  type: 'identifier',
+                  value: 'A',
+                },
+                op: '!=',
+                right: {
+                  type: 'number',
+                  units: undefined,
+                  value: 0,
+                },
+              },
+            },
+            {
+              type: 'expression',
+              value: {
+                left: {
+                  type: 'identifier',
+                  value: 'B',
+                },
+                op: '>=',
+                right: {
+                  type: 'identifier',
+                  value: 'C',
+                },
+              },
+            },
+          ],
+        },
+        type: 'conditional_block',
+        value: [
+          {
+            type: 'identifier',
+            value: 'TEST',
+          },
+        ],
+      },
+      {
+        blockType: 'IF',
+        test: {
+          type: 'multi_expression',
+          op: 'AND',
+          value: [
+            {
+              type: 'expression',
+              value: {
+                left: {
+                  type: 'identifier',
+                  value: 'A',
+                },
+                op: '!=',
+                right: {
+                  type: 'number',
+                  units: undefined,
+                  value: 0,
+                },
+              },
+            },
+            {
+              type: 'multi_expression',
+              op: 'OR',
+              value: [
+                {
+                  type: 'expression',
+                  value: {
+                    left: {
+                      type: 'identifier',
+                      value: 'B',
+                    },
+                    op: '>=',
+                    right: {
+                      type: 'identifier',
+                      value: 'C',
+                    },
+                  },
+                },
+                {
+                  target: {
+                    type: 'identifier',
+                    value: 'A',
+                  },
+                  type: 'is_expression',
+                  value: {
+                    type: 'identifier',
+                    value: 'B',
+                  },
+                },
+              ],
+            },
+          ],
+        },
+        type: 'conditional_block',
+        value: [
+          {
+            type: 'identifier',
+            value: 'TEST',
+          },
+        ],
+      },
+    ]);
   });
 });
 
@@ -1174,4 +1286,263 @@ describe('safeMode', () => {
       },
     ]);
   });
+});
+
+test('june 2025 bug fixes', async () => {
+  const program = maapInpParser.parse(
+    (await fs.readFile(path.join(__dirname, 'Test2.INP'))).toString(),
+  ).output;
+  expect(program.value).toStrictEqual([
+    {
+      type: 'sensitivity',
+      value: 'ON',
+    },
+    {
+      type: 'title',
+      value: 'Test 2',
+    },
+    {
+      type: 'file',
+      fileType: 'PARAMETER FILE',
+      value: 'Test2.PAR',
+    },
+    {
+      type: 'block',
+      blockType: 'PARAMETER CHANGE',
+      value: [
+        {
+          type: 'assignment',
+          target: {
+            type: 'identifier',
+            value: 'A',
+          },
+          value: {
+            type: 'number',
+            units: undefined,
+            value: 0,
+          },
+        },
+        {
+          type: 'assignment',
+          target: {
+            type: 'identifier',
+            value: 'B',
+          },
+          value: {
+            type: 'number',
+            units: undefined,
+            value: 0,
+          },
+        },
+        {
+          type: 'assignment',
+          target: {
+            type: 'identifier',
+            value: 'D',
+          },
+          value: {
+            type: 'number',
+            units: undefined,
+            value: 0,
+          },
+        },
+        {
+          type: 'assignment',
+          target: {
+            type: 'identifier',
+            value: 'E',
+          },
+          value: {
+            type: 'number',
+            units: undefined,
+            value: 0,
+          },
+        },
+        {
+          type: 'assignment',
+          target: {
+            type: 'identifier',
+            value: 'F',
+          },
+          value: {
+            type: 'number',
+            units: undefined,
+            value: 0,
+          },
+        },
+        {
+          type: 'assignment',
+          target: {
+            type: 'identifier',
+            value: 'G',
+          },
+          value: {
+            type: 'number',
+            units: 'W',
+            value: 2,
+          },
+        },
+      ],
+    },
+    {
+      type: 'is_expression',
+      target: {
+        type: 'parameter_name',
+        value: 'START TIME',
+      },
+      value: {
+        type: 'number',
+        units: 'HR',
+        value: 0,
+      },
+    },
+    {
+      type: 'is_expression',
+      target: {
+        type: 'parameter_name',
+        value: 'END TIME',
+      },
+      value: {
+        type: 'number',
+        units: 'HR',
+        value: 7,
+      },
+    },
+    {
+      type: 'is_expression',
+      target: {
+        type: 'parameter_name',
+        value: 'PRINT INTERVAL',
+      },
+      value: {
+        type: 'number',
+        units: 'HR',
+        value: 1,
+      },
+    },
+    {
+      type: 'block',
+      blockType: 'INITIATORS',
+      value: [
+        {
+          type: 'parameter_name',
+          value: 'LOSS OF AC POWER',
+        },
+      ],
+    },
+    {
+      type: 'conditional_block',
+      blockType: 'IF',
+      test: {
+        type: 'multi_expression',
+        op: 'AND',
+        value: [
+          {
+            type: 'expression',
+            value: {
+              left: {
+                type: 'identifier',
+                value: 'B',
+              },
+              op: '==',
+              right: {
+                type: 'number',
+                value: 1,
+                units: undefined,
+              },
+            },
+          },
+          {
+            type: 'expression',
+            value: {
+              left: {
+                type: 'identifier',
+                value: 'TIM',
+              },
+              op: '>=',
+              right: {
+                type: 'expression_block',
+                value: {
+                  type: 'expression',
+                  value: {
+                    left: {
+                      type: 'identifier',
+                      value: 'A',
+                    },
+                    op: '+',
+                    right: {
+                      type: 'number',
+                      value: 4,
+                      units: undefined,
+                    },
+                  },
+                },
+                units: 'HR',
+              },
+            },
+          },
+        ],
+      },
+      value: [],
+    },
+    {
+      type: 'conditional_block',
+      blockType: 'IF',
+      test: {
+        type: 'multi_expression',
+        op: 'AND',
+        value: [
+          {
+            type: 'expression',
+            value: {
+              left: {
+                type: 'identifier',
+                value: 'A',
+              },
+              op: '!=',
+              right: {
+                type: 'number',
+                value: 0,
+                units: undefined,
+              },
+            },
+          },
+          {
+            type: 'expression',
+            value: {
+              left: {
+                type: 'identifier',
+                value: 'TIM',
+              },
+              op: '>=',
+              right: {
+                type: 'parameter_name',
+                value: 'A HR',
+              },
+            },
+          },
+        ],
+      },
+      value: [],
+    },
+    {
+      type: 'conditional_block',
+      blockType: 'WHEN',
+      test: {
+        type: 'expression',
+        value: {
+          left: {
+            type: 'timer',
+            value: 1,
+          },
+          op: '==',
+          right: {
+            type: 'parameter_name',
+            value: 'D HR',
+          },
+        },
+      },
+      value: [],
+    },
+  ]);
 });
