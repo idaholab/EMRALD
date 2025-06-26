@@ -14,7 +14,7 @@ Start = preamble:__ program:Program __ {
 
 /* Lexical Grammar */
 SourceCharacter = .
-FreeCharacter = !LineTerminator SourceCharacter
+FreeCharacter = !LineTerminator SourceCharacter !Comment
 WhiteSpace = "\t" / "\v" / "\f" / " " / "\u00A0" / "\uFEFF"
 LineTerminator = [\n\r\u2028\u2029]
 LineTerminatorSequence = "\n" / "\r\n" / "\r" / "\u2028" / "\u2029"
