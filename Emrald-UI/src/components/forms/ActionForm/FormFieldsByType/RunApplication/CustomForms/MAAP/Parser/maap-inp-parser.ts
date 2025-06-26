@@ -353,7 +353,10 @@ function peg$parse(input, options) {
   const peg$e64 = peg$literalExpectation('=', false);
 
   function peg$f0(preamble, program) {
-    program.value = preamble.concat(program.value);
+    program.value = preamble
+      .concat(program.value)
+      // Filter out empty comment blocks
+      .filter((e) => e.type !== 'comment' || e.value.length > 0);
     return program;
   }
   function peg$f1(v) {

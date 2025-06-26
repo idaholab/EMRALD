@@ -21,7 +21,7 @@ export default function wrapper(
         ...maapInpParser.options,
         ...options,
       }),
-    toString: (input) => MAAPToString(input),
+    toString: (input) => new MAAPToString(input).output,
   };
   return maapInpParser;
 }

@@ -25,7 +25,7 @@ describe('literals', () => {
     expect(program.value).toEqual([
       {
         type: 'comment',
-        value: ' Tests boolean literals **',
+        value: ' Tests boolean literals',
       },
       {
         type: 'comment',
@@ -59,7 +59,7 @@ describe('literals', () => {
     expect(program.value).toEqual([
       {
         type: 'comment',
-        value: ' Tests numeric literals **',
+        value: ' Tests numeric literals',
       },
       {
         type: 'comment',
@@ -108,7 +108,7 @@ describe('expressions', () => {
     expect(program.value).toStrictEqual([
       {
         type: 'comment',
-        value: ' Tests call expressions **',
+        value: ' Tests call expressions',
       },
       {
         type: 'comment',
@@ -209,7 +209,7 @@ describe('expressions', () => {
       },
     ]);
     expect(maapInpParser.toString(program)).toBe(
-      '//  Tests call expressions **\n// No arguments\nName()\n// One argument\nName(1)\n// Many arguments\nName(1,2,3)\n// Nested calls\nName(Of(A(Function())))',
+      '//  Tests call expressions\n// No arguments\nName()\n// One argument\nName(1)\n// Many arguments\nName(1,2,3)\n// Nested calls\nName(Of(A(Function())))',
     );
   });
 
@@ -218,7 +218,7 @@ describe('expressions', () => {
     expect(program.value).toStrictEqual([
       {
         type: 'comment',
-        value: ' Tests IS expressions **',
+        value: ' Tests IS expressions',
       },
       {
         type: 'comment',
@@ -276,7 +276,7 @@ describe('expressions', () => {
         },
       },
     ]);
-    expect(maapInpParser.toString(program)).toBe(`//  Tests IS expressions **
+    expect(maapInpParser.toString(program)).toBe(`//  Tests IS expressions
 // Default
 VARNAME IS Value
 // Special IS expressions
@@ -405,7 +405,7 @@ describe('statements', () => {
     expect(program.value).toStrictEqual([
       {
         type: 'comment',
-        value: ' Tests sensitivity statements **',
+        value: ' Tests sensitivity statements',
       },
       {
         type: 'comment',
@@ -436,7 +436,7 @@ describe('statements', () => {
         value: 'SENSITIVITY',
       },
     ]);
-    expect(maapInpParser.toString(program)).toBe(`//  Tests sensitivity statements **
+    expect(maapInpParser.toString(program)).toBe(`//  Tests sensitivity statements
 // Default
 SENSITIVITY ON
 // Alternate value
@@ -451,7 +451,7 @@ SENSITIVITY`);
     expect(program.value).toStrictEqual([
       {
         type: 'comment',
-        value: ' Tests title statements **',
+        value: ' Tests title statements',
       },
       {
         type: 'comment',
@@ -480,7 +480,7 @@ multiple lines`,
         value: undefined,
       },
     ]);
-    expect(maapInpParser.toString(program)).toBe(`//  Tests title statements **
+    expect(maapInpParser.toString(program)).toBe(`//  Tests title statements
 // Default
 TITLE
 Valid Title
@@ -502,7 +502,7 @@ END`);
     expect(program.value).toStrictEqual([
       {
         type: 'comment',
-        value: ' Tests file statements **',
+        value: ' Tests file statements',
       },
       {
         type: 'comment',
@@ -539,7 +539,7 @@ END`);
         value: 'INCLUDE',
       },
     ]);
-    expect(maapInpParser.toString(program)).toBe(`//  Tests file statements **
+    expect(maapInpParser.toString(program)).toBe(`//  Tests file statements
 // Default
 PARAMETER FILE parameter_file.PAR
 // No file specified, should parse as an identifier
@@ -553,7 +553,7 @@ INCLUDE`);
   test('block statements', async () => {
     const program = maapInpParser.parse(await readTestData('block.INP')).output;
     expect(program.value).toStrictEqual([
-      { type: 'comment', value: ' Tests block statements **' },
+      { type: 'comment', value: ' Tests block statements' },
       { type: 'comment', value: 'Default' },
       {
         blockType: 'PARAMETER CHANGE',
@@ -724,7 +724,7 @@ INCLUDE`);
         ],
       },
     ]);
-    expect(maapInpParser.toString(program)).toBe(`//  Tests block statements **
+    expect(maapInpParser.toString(program)).toBe(`//  Tests block statements
 // Default
 PARAMETER CHANGE
 VarName(1) = 1
@@ -759,7 +759,7 @@ END`);
     expect(program.value).toStrictEqual([
       {
         type: 'comment',
-        value: ' Tests conditional block statements **',
+        value: ' Tests conditional block statements',
       },
       {
         type: 'comment',
@@ -868,7 +868,7 @@ END`);
         value: [],
       },
     ]);
-    expect(maapInpParser.toString(program)).toBe(`//  Tests conditional block statements **
+    expect(maapInpParser.toString(program)).toBe(`//  Tests conditional block statements
 // When default
 WHEN VARIABLE IS T
 VARNAME = 1000
@@ -892,7 +892,7 @@ END`);
     expect(program.value).toStrictEqual([
       {
         type: 'comment',
-        value: ' Tests alias statements **',
+        value: ' Tests alias statements',
       },
       {
         type: 'comment',
@@ -923,7 +923,7 @@ END`);
         value: [],
       },
     ]);
-    expect(maapInpParser.toString(program)).toBe(`//  Tests alias statements **
+    expect(maapInpParser.toString(program)).toBe(`//  Tests alias statements
 // Default
 ALIAS
 VARNAME AS Value
@@ -939,7 +939,7 @@ END`);
     expect(program.value).toStrictEqual([
       {
         type: 'comment',
-        value: ' Tests plotfil statements **',
+        value: ' Tests plotfil statements',
       },
       {
         type: 'comment',
@@ -1003,7 +1003,7 @@ END`);
         ],
       },
     ]);
-    expect(maapInpParser.toString(program)).toBe(`//  Tests plotfil statements **
+    expect(maapInpParser.toString(program)).toBe(`//  Tests plotfil statements
 // Default
 PLOTFIL 3
 A,B,C
@@ -1015,7 +1015,7 @@ END`);
   test('userevt statements', async () => {
     const program = maapInpParser.parse(await readTestData('userevt.INP')).output;
     expect(program.value).toEqual([
-      { type: 'comment', value: ' Tests userevt statements **' },
+      { type: 'comment', value: ' Tests userevt statements' },
       {
         type: 'comment',
         value: ' Also special blocks that appear only in USEREVT: Parameter, Action',
@@ -1084,7 +1084,7 @@ END`);
         ],
       },
     ]);
-    expect(maapInpParser.toString(program)).toBe(`//  Tests userevt statements **
+    expect(maapInpParser.toString(program)).toBe(`//  Tests userevt statements
 //  Also special blocks that appear only in USEREVT: Parameter, Action
 // Default
 USEREVT
@@ -1105,7 +1105,7 @@ END`);
   test('function statements', async () => {
     const program = maapInpParser.parse(await readTestData('function.INP')).output;
     expect(program.value).toStrictEqual([
-      { type: 'comment', value: ' Tests function statements **' },
+      { type: 'comment', value: ' Tests function statements' },
       { type: 'comment', value: 'Default' },
       {
         name: {
@@ -1131,7 +1131,7 @@ END`);
         },
       },
     ]);
-    expect(maapInpParser.toString(program)).toBe(`//  Tests function statements **
+    expect(maapInpParser.toString(program)).toBe(`//  Tests function statements
 // Default
 FUNCTION name = 1 + 1`);
   });
@@ -1139,7 +1139,7 @@ FUNCTION name = 1 + 1`);
   test('set timer statements', async () => {
     const program = maapInpParser.parse(await readTestData('timer.INP')).output;
     expect(program.value).toStrictEqual([
-      { type: 'comment', value: ' Tests set timer statements **' },
+      { type: 'comment', value: ' Tests set timer statements' },
       { type: 'comment', value: 'Default' },
       {
         type: 'set_timer',
@@ -1149,7 +1149,7 @@ FUNCTION name = 1 + 1`);
         },
       },
     ]);
-    expect(maapInpParser.toString(program)).toBe(`//  Tests set timer statements **
+    expect(maapInpParser.toString(program)).toBe(`//  Tests set timer statements
 // Default
 SET TIMER #1`);
   });
@@ -1157,7 +1157,7 @@ SET TIMER #1`);
   test('lookup variable statements', async () => {
     const program = maapInpParser.parse(await readTestData('lookup.INP')).output;
     expect(program.value).toStrictEqual([
-      { type: 'comment', value: ' Tests lookup statements **' },
+      { type: 'comment', value: ' Tests lookup statements' },
       { type: 'comment', value: 'Default' },
       {
         name: {
@@ -1168,7 +1168,7 @@ SET TIMER #1`);
         value: ['You can type anything in here for now', 'It just gets separated by row'],
       },
     ]);
-    expect(maapInpParser.toString(program)).toBe(`//  Tests lookup statements **
+    expect(maapInpParser.toString(program)).toBe(`//  Tests lookup statements
 // Default
 LOOKUP VARIABLE VariableName
 You can type anything in here for now
@@ -1181,7 +1181,7 @@ describe('program blocks', () => {
   test('source elements', async () => {
     const program = maapInpParser.parse(await readTestData('sourceElements.INP')).output;
     expect(program.value).toStrictEqual([
-      { type: 'comment', value: ' Tests SourceElements **' },
+      { type: 'comment', value: ' Tests SourceElements' },
       { type: 'comment', value: 'Statement' },
       {
         type: 'sensitivity',
@@ -1231,7 +1231,7 @@ describe('program blocks', () => {
         },
       },
     ]);
-    expect(maapInpParser.toString(program)).toBe(`//  Tests SourceElements **
+    expect(maapInpParser.toString(program)).toBe(`//  Tests SourceElements
 // Statement
 SENSITIVITY ON
 // Assignment

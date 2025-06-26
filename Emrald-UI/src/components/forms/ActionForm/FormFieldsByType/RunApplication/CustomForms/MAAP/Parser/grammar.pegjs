@@ -8,7 +8,10 @@
 }
 
 Start = preamble:__ program:Program __ {
-	program.value = preamble.concat(program.value);
+	program.value = preamble
+    	.concat(program.value)
+        // Filter out empty comment blocks
+        .filter((e) => e.type !== 'comment' || e.value.length > 0);
 	return program;
 }
 
