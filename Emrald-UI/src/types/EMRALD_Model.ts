@@ -70,6 +70,7 @@ export type MAAPStatement =
   | MAAPTimerStatement
   | MAAPLookupStatement
 export type MAAPExpression =
+  | MAAPMultiPartExpression
   | MAAPIsExpression
   | MAAPPureExpression
   | MAAPExpressionType
@@ -514,7 +515,7 @@ export interface MAAPFormData {
   /**
    * Source elements from the .inp file identified as parameters
    */
-  parameters?: MAAPParameter[]
+  parameters?: MAAPAssignment[]
   /**
    * Source elements from the .inp file identified as initiators
    */
@@ -579,6 +580,11 @@ export interface MAAPConditionalBlockStatement {
   value: MAAPSourceElement[]
   id: string
 }
+export interface MAAPMultiPartExpression {
+  type: "multi_expression"
+  op: string
+  value: (MAAPExpression | MAAPIsExpression | MAAPMultiPartExpression)[]
+}
 export interface MAAPIsExpression {
   target: MAAPVariable
   type: "is_expression"
@@ -593,6 +599,7 @@ export interface MAAPCallExpression {
 export interface MAAPExpressionBlock {
   type: "expression_block"
   value: MAAPPureExpression
+  units?: string
 }
 export interface MAAPPureExpression {
   type: "expression"
@@ -681,7 +688,7 @@ export interface MAAPLookupStatement {
 export interface MAAPAssignment {
   target: MAAPCallExpression | MAAPIdentifier
   type: "assignment"
-  value: MAAPExpression
+  value: MAAPExpression & Record<string, unknown>
   comment?: string
 }
 /**

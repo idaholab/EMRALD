@@ -16,7 +16,7 @@ import { useActionFormContext } from '../../../../../ActionFormContext';
 import { MAAPToString } from '../Parser/maap-to-string';
 
 const Parameters = () => {
-  const { formData } = useActionFormContext();
+  const { formData, setFormData } = useActionFormContext();
 
   // Variables used to control React's rendering state.
   const [useVariable, setUseVariable] = useState<boolean[]>([]);
@@ -44,6 +44,13 @@ const Parameters = () => {
     setLocalVarSelection(s);
     setLocalValue(l);
   }, []);
+
+  useEffect(() => {
+    setFormData({
+      ...formData,
+      caType: 'MAAP',
+    });
+  }, [useVariable, localVarSelection, localValue]);
 
   return (
     <Table sx={{ minWidth: 650 }} size="small">

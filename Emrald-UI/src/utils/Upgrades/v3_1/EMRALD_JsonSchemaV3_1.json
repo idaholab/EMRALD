@@ -1046,7 +1046,7 @@
         "parameters": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/MAAPParameter"
+            "$ref": "#/definitions/MAAPAssignment"
           },
           "description": "Source elements from the .inp file identified as parameters"
         },
@@ -1208,6 +1208,7 @@
     },
     "MAAPExpression": {
       "anyOf": [
+        { "$ref": "#/definitions/MAAPMultiPartExpression" },
         { "$ref": "#/definitions/MAAPIsExpression" },
         { "$ref": "#/definitions/MAAPPureExpression" },
         { "$ref": "#/definitions/MAAPExpressionType" }
@@ -1316,6 +1317,9 @@
         },
         "value": {
           "$ref": "#/definitions/MAAPPureExpression"
+        },
+        "units": {
+          "type": "string"
         }
       },
       "required": ["type", "value"],
@@ -1683,7 +1687,16 @@
           "const": "assignment"
         },
         "value": {
-          "$ref": "#/definitions/MAAPExpression"
+          "allOf": [
+            {
+              "$ref": "#/definitions/MAAPExpression"
+            },
+            {
+              "useVariable": {
+                "type": "boolean"
+              }
+            }
+          ]
         },
         "comment": {
           "type": "string"
@@ -1703,6 +1716,29 @@
         }
       },
       "required": ["type", "value"],
+      "additionalProperties": false
+    },
+    "MAAPMultiPartExpression": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "multi_expression"
+        },
+        "op": {
+          "type": "string"
+        },
+        "value": {
+          "type": "array",
+          "items": {
+            "anyOf": [
+              { "$ref": "#/definitions/MAAPExpression" },
+              { "$ref": "#/definitions/MAAPIsExpression" },
+              { "$ref": "#/definitions/MAAPMultiPartExpression" }
+            ]
+          }
+        }
+      },
+      "required": ["type", "op", "value"],
       "additionalProperties": false
     }
   }

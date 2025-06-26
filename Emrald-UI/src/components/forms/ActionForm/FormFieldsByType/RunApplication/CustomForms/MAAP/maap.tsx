@@ -50,9 +50,41 @@ const MAAP = () => {
   function createMaapFile() {
     if (formData?.sourceElements) {
       console.log(formData.sourceElements);
+      let newSource: MAAPSourceElement[] = [];
+      let cidx = -1;
+      formData.sourceElements.forEach((se, i) => {
+        if (se.type === 'block') {
+          if (se.blockType === 'PARAMETER CHANGE' && formData.parameters) {
+            // This is set up with the assumption we're only modifying assignment statements in the parameter change section
+            newSource.push({
+              type: 'block',
+              blockType: 'PARAMETER CHANGE',
+              value: [...formData.parameters, ...se.value.filter((v) => v.type !== 'assignment')],
+            });
+          } else if (formData.initiators) {
+            newSource.push({
+              type: 'block',
+              blockType: 'INITIATORS',
+              value: formData.initiators.map((initiator) => ({
+                type: 'parameter_name',
+                value: initiator.name,
+              })),
+            });
+          } else {
+            newSource.push(se);
+          }
+        } else if (se.type === 'conditional_block' && cidx < 0) {
+          cidx = i;
+        } else if (se.type !== 'conditional_block') {
+          newSource.push(se);
+        }
+      });
+      if (formData.inputBlocks) {
+        newSource = [...newSource.slice(0, cidx), ...formData.inputBlocks, ...newSource.slice(cidx)];
+      }
       const inpFile = new MAAPToString({
         type: 'program',
-        value: formData.sourceElements,
+        value: newSource,
       });
       console.log(inpFile.output);
       setCodeVariables(inpFile.variables);
@@ -257,10 +289,12 @@ const MAAP = () => {
               newParameters.push(param);
             } else {
               // Unhandled in the form UI
-              console.warn(`Unhandled parameter format: ${new MAAPToString().sourceElementToString(param)}`);
+              console.warn(
+                `Unhandled parameter format: ${new MAAPToString().sourceElementToString(param)}`,
+              );
             }
           });
-          
+
           const newInitiators: MAAPInitiator[] = [];
           initiators.forEach((init) => {
             if (init.type === 'comment') {

@@ -11,6 +11,8 @@ export const ExpressionType: React.FC<{
         <CallExpression args={value.arguments} value={value.value} />
       ) : value.type === 'expression_block' ? (
         <ExpressionBlock value={value.value} units={value.units} />
+      ) : value.type === 'timer' ? (
+        `TIMER #${value.value.toString()}`
       ) : (
         value.value
       )}

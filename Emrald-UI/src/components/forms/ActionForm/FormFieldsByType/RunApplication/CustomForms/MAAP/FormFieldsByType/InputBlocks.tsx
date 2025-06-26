@@ -6,18 +6,25 @@ import { ConditionalBlock } from './SyntaxComponents/ConditionalBlock';
 
 const InputBlocks = () => {
   const [inputBlocks, setInputBlocks] = useState<MAAPConditionalBlockStatement[]>([]);
-  const { formData } = useCustomForm();
+  const { formData, setFormData } = useCustomForm();
 
   useEffect(() => {
     setInputBlocks(formData?.inputBlocks ?? []);
   }, []);
+
+  useEffect(() => {
+    setFormData({
+      ...formData,
+      caType: 'MAAP'
+    });
+  }, [inputBlocks]);
 
   return (
     <>
       {inputBlocks.map((block) => {
         return (
           <Box key={block.id}>
-            <ConditionalBlock blockType={block.blockType} test={block.test} />
+            <ConditionalBlock blockType={block.blockType} test={block.test} value={block.value} />
           </Box>
         );
       })}
