@@ -13,7 +13,7 @@ import { useActionFormContext } from '../../../../../ActionFormContext';
 import { useEffect, useState } from 'react';
 import { v4 as uuid } from 'uuid';
 import type { MAAPInitiator } from '../../../../../../../../types/EMRALD_Model';
-import { expressionToString } from '../Parser/maap-to-string';
+import { MAAPToString } from '../Parser/maap-to-string';
 
 const Initiators = () => {
   const { formData, setFormData } = useActionFormContext();
@@ -40,7 +40,7 @@ const Initiators = () => {
       } else if (initiator.value.type === 'parameter_name') {
         value = initiator.value.value;
       } else {
-        value = expressionToString(initiator.value);
+        value = new MAAPToString().expressionToString(initiator.value);
       }
       const updatedInitiators = [
         ...initiators,

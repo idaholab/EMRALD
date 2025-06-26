@@ -35,13 +35,15 @@ import type {
   MAAPVariable,
 } from '../../../../../../../../types/EMRALD_Model';
 
+export class MAAPToString {
+
 /**
  * Checks if a type is a literal.
  *
  * @param type - The type to check.
  * @returns If the type is a statement.
  */
-function isLiteral(type: string) {
+private isLiteral(type: string) {
   return ['number', 'boolean', 'timer'].includes(type);
 }
 
@@ -51,7 +53,7 @@ function isLiteral(type: string) {
  * @param type - The type to check.
  * @returns If the type is a statement.
  */
-function isStatement(type: string) {
+private static isStatement(type: string) {
   return [
     'sensitivity',
     'title',
@@ -74,7 +76,7 @@ function isStatement(type: string) {
  * @param numericLiteral - The object to compile.
  * @returns The compiled code.
  */
-function numberToString(numericLiteral: MAAPNumericLiteral): string {
+private static numberToString(numericLiteral: MAAPNumericLiteral): string {
   let re = numericLiteral.value.toString();
   if (numericLiteral.units) {
     re += ` ${numericLiteral.units}`;
@@ -88,7 +90,7 @@ function numberToString(numericLiteral: MAAPNumericLiteral): string {
  * @param booleanLiteral - The object to compile.
  * @returns The compiled code.
  */
-function booleanToString(booleanLiteral: MAAPBooleanLiteral): string {
+private static booleanToString(booleanLiteral: MAAPBooleanLiteral): string {
   if (booleanLiteral.value) {
     return 'T';
   }
@@ -101,7 +103,7 @@ function booleanToString(booleanLiteral: MAAPBooleanLiteral): string {
  * @param timerLiteral - The object to compile.
  * @returns The compiled code.
  */
-function timerToString(timerLiteral: MAAPTimerLiteral): string {
+private static timerToString(timerLiteral: MAAPTimerLiteral): string {
   return `TIMER #${timerLiteral.value.toString()}`;
 }
 
@@ -111,15 +113,15 @@ function timerToString(timerLiteral: MAAPTimerLiteral): string {
  * @param literal - The object to compile.
  * @returns The compiled code.
  */
-function literalToString(literal: MAAPLiteral): string {
+private static literalToString(literal: MAAPLiteral): string {
   switch (literal.type) {
     case 'number':
-      return numberToString(literal);
+      return MAAPToString.numberToString(literal);
     case 'boolean':
-      return booleanToString(literal);
+      return MAAPToString.booleanToString(literal);
     case 'timer':
     default:
-      return timerToString(literal);
+      return MAAPToString.timerToString(literal);
   }
 }
 
@@ -129,7 +131,7 @@ function literalToString(literal: MAAPLiteral): string {
  * @param identifier - The object to compile.
  * @returns The compiled code.
  */
-export function identifierToString(identifier: MAAPIdentifier): string {
+public identifierToString(identifier: MAAPIdentifier): string {
   return identifier.value;
 }
 
@@ -139,7 +141,7 @@ export function identifierToString(identifier: MAAPIdentifier): string {
  * @param parameterName - The object to compile.
  * @returns The compiled code.
  */
-function parameterNameToString(parameterName: MAAPParameterName): string {
+private parameterNameToString(parameterName: MAAPParameterName): string {
   return parameterName.value;
 }
 
@@ -149,17 +151,17 @@ function parameterNameToString(parameterName: MAAPParameterName): string {
  * @param parameter - The object to compile.
  * @returns The compiled code.
  */
-function parameterToString(parameter: MAAPParameter): string {
+private parameterToString(parameter: MAAPParameter): string {
   let re = `${parameter.index?.toString() ?? ''} `;
   if (parameter.flag) {
-    re += `${booleanToString(parameter.flag)} `;
+    re += `${MAAPToString.booleanToString(parameter.flag)} `;
   }
   if (typeof parameter.value === 'string') {
     re += parameter.value;
   } else if (parameter.value.type === 'parameter_name') {
-    re += parameterNameToString(parameter.value);
+    re += this.parameterNameToString(parameter.value);
   } else {
-    re += expressionToString(parameter.value);
+    re += this.expressionToString(parameter.value);
   }
   return re;
 }
@@ -170,10 +172,10 @@ function parameterToString(parameter: MAAPParameter): string {
  * @param args - The object to compile.
  * @returns The compiled code.
  */
-function argumentsToString(args: Arguments): string {
+private argumentsToString(args: Arguments): string {
   let re = '';
   args.forEach((arg) => {
-    re += `${expressionTypeToString(arg)},`;
+    re += `${this.expressionTypeToString(arg)},`;
   });
   return re.substring(0, re.length - 1);
 }
@@ -184,8 +186,8 @@ function argumentsToString(args: Arguments): string {
  * @param callExpression - The object to compile.
  * @returns The compiled code.
  */
-export function callExpressionToString(callExpression: MAAPCallExpression): string {
-  return `${identifierToString(callExpression.value)}(${argumentsToString(
+public callExpressionToString(callExpression: MAAPCallExpression): string {
+  return `${this.identifierToString(callExpression.value)}(${this.argumentsToString(
     callExpression.arguments,
   )})`;
 }
@@ -196,12 +198,18 @@ export function callExpressionToString(callExpression: MAAPCallExpression): stri
  * @param pureExpression - The object to compile.
  * @returns The compiled code.
  */
-function pureExpressionToString(pureExpression: MAAPPureExpression): string {
-  let re = `${expressionTypeToString(pureExpression.value.left)} ${pureExpression.value.op} `;
-  if (pureExpression.value.right.type === 'expression') {
-    re += pureExpressionToString(pureExpression.value.right);
+private pureExpressionToString(pureExpression: MAAPPureExpression): string {
+  let re = `${this.expressionTypeToString(pureExpression.value.left)} ${pureExpression.value.op} `;
+  if (
+    pureExpression.value.right.useVariable &&
+    typeof pureExpression.value.right.value === 'string'
+  ) {
+    re += `" + ${pureExpression.value.right.value} + @"`;
+    this.addVariable(pureExpression.value.right.value);
+  } else if (pureExpression.value.right.type === 'expression') {
+    re += this.pureExpressionToString(pureExpression.value.right);
   } else {
-    re += expressionTypeToString(pureExpression.value.right);
+    re += this.expressionTypeToString(pureExpression.value.right);
   }
   return re;
 }
@@ -212,8 +220,8 @@ function pureExpressionToString(pureExpression: MAAPPureExpression): string {
  * @param expressionBlock - The object to compile.
  * @returns The compiled code.
  */
-export function expressionBlockToString(expressionBlock: MAAPExpressionBlock): string {
-  let s = `(${pureExpressionToString(expressionBlock.value)})`;
+public expressionBlockToString(expressionBlock: MAAPExpressionBlock): string {
+  let s = `(${this.pureExpressionToString(expressionBlock.value)})`;
   if (expressionBlock.units) {
     s += ` ${expressionBlock.units}`;
   }
@@ -226,14 +234,14 @@ export function expressionBlockToString(expressionBlock: MAAPExpressionBlock): s
  * @param expressionType - The object to compile.
  * @returns The compiled code.
  */
-export function expressionTypeToString(expressionType: MAAPExpressionType): string {
+public expressionTypeToString(expressionType: MAAPExpressionType): string {
   if (expressionType.type === 'call_expression') {
-    return callExpressionToString(expressionType);
+    return this.callExpressionToString(expressionType);
   }
   if (expressionType.type === 'expression_block') {
-    return expressionBlockToString(expressionType);
+    return this.expressionBlockToString(expressionType);
   }
-  return variableToString(expressionType);
+  return this.variableToString(expressionType);
 }
 
 /**
@@ -242,14 +250,18 @@ export function expressionTypeToString(expressionType: MAAPExpressionType): stri
  * @param assignment - The object to compile.
  * @returns The compiled code.
  */
-function assignmentToString(assignment: MAAPAssignment): string {
+private assignmentToString(assignment: MAAPAssignment): string {
   let target = '';
   if (assignment.target.type === 'call_expression') {
-    target = callExpressionToString(assignment.target);
+    target = this.callExpressionToString(assignment.target);
   } else {
-    target = identifierToString(assignment.target);
+    target = this.identifierToString(assignment.target);
   }
-  return `${target} = ${expressionToString(assignment.value)}`;
+  if (assignment.value.useVariable && typeof assignment.value.value === 'string') {
+    this.addVariable(assignment.value.value);
+    return `${target} = " + ${assignment.value.value} + @"`;
+  }
+  return `${target} = ${this.expressionToString(assignment.value)}`;
 }
 
 /**
@@ -258,11 +270,8 @@ function assignmentToString(assignment: MAAPAssignment): string {
  * @param isExpression - The object to compile.
  * @returns The compiled code.
  */
-export function isExpressionToString(isExpression: MAAPIsExpression): string {
-  if (typeof isExpression.value === 'string') {
-    return `${variableToString(isExpression.target)} IS ${isExpression.value}`;
-  }
-  return `${variableToString(isExpression.target)} IS ${expressionToString(isExpression.value)}`;
+public isExpressionToString(isExpression: MAAPIsExpression): string {
+  return `${this.variableToString(isExpression.target)} IS ${this.expressionToString(isExpression.value)}`;
 }
 
 /**
@@ -271,16 +280,16 @@ export function isExpressionToString(isExpression: MAAPIsExpression): string {
  * @param asExpression - The object to compile.
  * @returns The compiled code.
  */
-function asExpressionToString(asExpression: MAAPAsExpression): string {
-  return `${variableToString(asExpression.target)} AS ${identifierToString(asExpression.value)}`;
+private asExpressionToString(asExpression: MAAPAsExpression): string {
+  return `${this.variableToString(asExpression.target)} AS ${this.identifierToString(asExpression.value)}`;
 }
 
 /**
  * Converts a multi part expression into code.
  * @param multiExpression - The expression to convert.
  */
-function multiExpressionToString(multiExpression: MAAPMultiPartExpression) {
-  return `${expressionToString(multiExpression.value[0])} ${multiExpression.op} ${expressionToString(multiExpression.value[1])}`;
+private multiExpressionToString(multiExpression: MAAPMultiPartExpression) {
+  return `${this.expressionToString(multiExpression.value[0])} ${multiExpression.op} ${this.expressionToString(multiExpression.value[1])}`;
 }
 
 /**
@@ -289,16 +298,16 @@ function multiExpressionToString(multiExpression: MAAPMultiPartExpression) {
  * @param expression - The object to compile.
  * @returns The compiled code.
  */
-export function expressionToString(expression: MAAPExpression): string {
+public expressionToString(expression: MAAPExpression): string {
   switch (expression.type) {
     case 'is_expression':
-      return isExpressionToString(expression);
+      return this.isExpressionToString(expression);
     case 'expression':
-      return pureExpressionToString(expression);
+      return this.pureExpressionToString(expression);
     case 'multi_expression':
-      return multiExpressionToString(expression);
+      return this.multiExpressionToString(expression);
     default:
-      return expressionTypeToString(expression);
+      return this.expressionTypeToString(expression);
   }
 }
 
@@ -308,19 +317,19 @@ export function expressionToString(expression: MAAPExpression): string {
  * @param variable - The object to compile.
  * @returns The compiled code.
  */
-export function variableToString(variable: MAAPVariable) {
+public variableToString(variable: MAAPVariable) {
   if (variable.type === 'call_expression') {
-    return callExpressionToString(variable);
+    return this.callExpressionToString(variable);
   } else if (
     variable.type === 'number' ||
     variable.type === 'boolean' ||
     variable.type === 'timer'
   ) {
-    return literalToString(variable as MAAPLiteral);
+    return MAAPToString.literalToString(variable as MAAPLiteral);
   } else if (variable.type === 'parameter_name') {
-    return parameterNameToString(variable);
+    return this.parameterNameToString(variable);
   }
-  return identifierToString(variable);
+  return this.identifierToString(variable);
 }
 
 /**
@@ -329,31 +338,31 @@ export function variableToString(variable: MAAPVariable) {
  * @param statement - The object to compile.
  * @returns The compiled code.
  */
-function statementToString(statement: MAAPStatement): string {
+private statementToString(statement: MAAPStatement): string {
   switch (statement.type) {
     case 'sensitivity':
-      return sensitivityToString(statement);
+      return this.sensitivityToString(statement);
     case 'title':
-      return titleToString(statement);
+      return this.titleToString(statement);
     case 'file':
-      return fileToString(statement);
+      return this.fileToString(statement);
     case 'block':
-      return blockToString(statement);
+      return this.blockToString(statement);
     case 'conditional_block':
-      return conditionalBlockToString(statement);
+      return this.conditionalBlockToString(statement);
     case 'alias':
-      return aliasToString(statement);
+      return this.aliasToString(statement);
     case 'plotfil':
-      return plotfilToString(statement);
+      return this.plotfilToString(statement);
     case 'user_evt':
-      return userEvtToString(statement);
+      return this.userEvtToString(statement);
     case 'function':
-      return functionToString(statement);
+      return this.functionToString(statement);
     case 'set_timer':
-      return setTimerToString(statement);
+      return this.setTimerToString(statement);
     case 'lookup_variable':
     default:
-      return lookupToString(statement);
+      return this.lookupToString(statement);
   }
 }
 
@@ -363,7 +372,7 @@ function statementToString(statement: MAAPStatement): string {
  * @param sensitivityStatement - The object to compile.
  * @returns The compiled code.
  */
-function sensitivityToString(sensitivityStatement: MAAPSensitivityStatement): string {
+private sensitivityToString(sensitivityStatement: MAAPSensitivityStatement): string {
   return `SENSITIVITY ${sensitivityStatement.value}`;
 }
 
@@ -373,7 +382,7 @@ function sensitivityToString(sensitivityStatement: MAAPSensitivityStatement): st
  * @param titleStatement - The object to compile.
  * @returns The compiled code.
  */
-function titleToString(titleStatement: MAAPTitleStatement): string {
+private titleToString(titleStatement: MAAPTitleStatement): string {
   return `TITLE\n${titleStatement.value ?? ''}\nEND`;
 }
 
@@ -383,7 +392,7 @@ function titleToString(titleStatement: MAAPTitleStatement): string {
  * @param fileStatement - The object to compile.
  * @returns The compiled code.
  */
-function fileToString(fileStatement: MAAPFileStatement): string {
+private fileToString(fileStatement: MAAPFileStatement): string {
   return `${fileStatement.fileType} ${fileStatement.value}`;
 }
 
@@ -393,9 +402,9 @@ function fileToString(fileStatement: MAAPFileStatement): string {
  * @param blockStatement - The object to compile.
  * @returns The compiled code.
  */
-function blockToString(blockStatement: MAAPBlockStatement): string {
+private blockToString(blockStatement: MAAPBlockStatement): string {
   return `${blockStatement.blockType}\n${blockStatement.value
-    .map((sourceElement) => sourceElementToString(sourceElement))
+    .map((sourceElement) => this.sourceElementToString(sourceElement))
     .join('\n')}\nEND`;
 }
 
@@ -405,13 +414,13 @@ function blockToString(blockStatement: MAAPBlockStatement): string {
  * @param conditionalBlockStatement - The object to compile.
  * @returns The compiled code.
  */
-function conditionalBlockToString(
+private conditionalBlockToString(
   conditionalBlockStatement: MAAPConditionalBlockStatement,
 ): string {
-  return `${conditionalBlockStatement.blockType} ${expressionToString(
+  return `${conditionalBlockStatement.blockType} ${this.expressionToString(
     conditionalBlockStatement.test,
   )}\n${conditionalBlockStatement.value
-    .map((sourceElement) => sourceElementToString(sourceElement))
+    .map((sourceElement) => this.sourceElementToString(sourceElement))
     .join('\n')}\nEND`;
 }
 
@@ -421,9 +430,9 @@ function conditionalBlockToString(
  * @param aliasStatement - The object to compile.
  * @returns The compiled code.
  */
-function aliasToString(aliasStatement: MAAPAliasStatement): string {
+private aliasToString(aliasStatement: MAAPAliasStatement): string {
   return `ALIAS\n${aliasStatement.value
-    .map((aliasBody) => asExpressionToString(aliasBody))
+    .map((aliasBody) => this.asExpressionToString(aliasBody))
     .join('\n')}\nEND`;
 }
 
@@ -433,9 +442,9 @@ function aliasToString(aliasStatement: MAAPAliasStatement): string {
  * @param plotfilStatement - The object to compile.
  * @returns The compiled code.
  */
-function plotfilToString(plotfilStatement: MAAPPlotFilStatement): string {
+private plotfilToString(plotfilStatement: MAAPPlotFilStatement): string {
   return `PLOTFIL ${plotfilStatement.n.toString()}\n${plotfilStatement.value
-    .map((plotFilBody) => plotFilBody.map((plotFilList) => variableToString(plotFilList)).join(','))
+    .map((plotFilBody) => plotFilBody.map((plotFilList) => this.variableToString(plotFilList)).join(','))
     .join('\n')}\nEND`;
 }
 
@@ -445,8 +454,8 @@ function plotfilToString(plotfilStatement: MAAPPlotFilStatement): string {
  * @param userEvtStatement - The object to compile.
  * @returns The compiled code.
  */
-function userEvtToString(userEvtStatement: MAAPUserEvtStatement) {
-  return `USEREVT\n${userEvtBodyToString(userEvtStatement.value)}\nEND`;
+private userEvtToString(userEvtStatement: MAAPUserEvtStatement) {
+  return `USEREVT\n${this.userEvtBodyToString(userEvtStatement.value)}\nEND`;
 }
 
 /**
@@ -455,16 +464,16 @@ function userEvtToString(userEvtStatement: MAAPUserEvtStatement) {
  * @param userEvtBody - The object to compile.
  * @returns The compiled code.
  */
-function userEvtBodyToString(userEvtBody: MAAPUserEvtElement[]): string {
+private userEvtBodyToString(userEvtBody: MAAPUserEvtElement[]): string {
   return userEvtBody
     .map((userEvtElement) => {
       if (userEvtElement.type === 'parameter') {
-        return parameterToString(userEvtElement);
+        return this.parameterToString(userEvtElement);
       }
       if (userEvtElement.type === 'action') {
-        return actionToString(userEvtElement);
+        return this.actionToString(userEvtElement);
       }
-      return sourceElementToString(userEvtElement);
+      return this.sourceElementToString(userEvtElement);
     })
     .join('\n');
 }
@@ -475,8 +484,8 @@ function userEvtBodyToString(userEvtBody: MAAPUserEvtElement[]): string {
  * @param actionStatement - The object to compile.
  * @returns The compiled code.
  */
-function actionToString(actionStatement: MAAPActionStatement): string {
-  return `ACTION #${actionStatement.index.toString()}\n${userEvtBodyToString(actionStatement.value)}\nEND`;
+private actionToString(actionStatement: MAAPActionStatement): string {
+  return `ACTION #${actionStatement.index.toString()}\n${this.userEvtBodyToString(actionStatement.value)}\nEND`;
 }
 
 /**
@@ -485,10 +494,10 @@ function actionToString(actionStatement: MAAPActionStatement): string {
  * @param functionStatement - The object to compile.
  * @returns The compiled code.
  */
-function functionToString(functionStatement: MAAPFunctionStatement): string {
-  return `FUNCTION ${identifierToString(
+private functionToString(functionStatement: MAAPFunctionStatement): string {
+  return `FUNCTION ${this.identifierToString(
     functionStatement.name,
-  )} = ${expressionToString(functionStatement.value)}`;
+  )} = ${this.expressionToString(functionStatement.value)}`;
 }
 
 /**
@@ -497,8 +506,8 @@ function functionToString(functionStatement: MAAPFunctionStatement): string {
  * @param timerStatement - The object to compile.
  * @returns The compiled code.
  */
-function setTimerToString(timerStatement: MAAPTimerStatement): string {
-  return `SET ${timerToString(timerStatement.value)}`;
+private setTimerToString(timerStatement: MAAPTimerStatement): string {
+  return `SET ${MAAPToString.timerToString(timerStatement.value)}`;
 }
 
 /**
@@ -507,8 +516,8 @@ function setTimerToString(timerStatement: MAAPTimerStatement): string {
  * @param lookupStatement - The object to compile.
  * @returns The compiled code.
  */
-function lookupToString(lookupStatement: MAAPLookupStatement): string {
-  return `LOOKUP VARIABLE ${variableToString(
+private lookupToString(lookupStatement: MAAPLookupStatement): string {
+  return `LOOKUP VARIABLE ${this.variableToString(
     lookupStatement.name,
   )}\n${lookupStatement.value.join('\n')}\nEND`;
 }
@@ -519,21 +528,31 @@ function lookupToString(lookupStatement: MAAPLookupStatement): string {
  * @param sourceElement - The object to compile.
  * @returns The compiled code.
  */
-export function sourceElementToString(sourceElement: MAAPSourceElement | MAAPComment): string {
+public sourceElementToString(sourceElement: MAAPSourceElement | MAAPComment): string {
   if (sourceElement.type === 'comment') {
     return `// ${sourceElement.value}`;
   }
-  if (isStatement(sourceElement.type)) {
-    return statementToString(sourceElement as MAAPStatement);
+  if (MAAPToString.isStatement(sourceElement.type)) {
+    return this.statementToString(sourceElement as MAAPStatement);
   }
   if (sourceElement.type === 'assignment') {
-    return assignmentToString(sourceElement);
+    return this.assignmentToString(sourceElement);
   }
   if (sourceElement.type === 'as_expression') {
-    return asExpressionToString(sourceElement);
+    return this.asExpressionToString(sourceElement);
   }
-  return expressionToString(sourceElement as MAAPExpression);
+  return this.expressionToString(sourceElement as MAAPExpression);
 }
+
+/**
+ * The stringified MAAP code.
+ */
+public output = '';
+
+/**
+ * Variables detected in the program.
+ */
+public variables: string[] = [];
 
 /**
  * Converts the given object into code.
@@ -541,39 +560,58 @@ export function sourceElementToString(sourceElement: MAAPSourceElement | MAAPCom
  * @param input - The object to compile.
  * @returns The compiled program.
  */
-export function MAAPToString(
-  input: Program | MAAPUserEvtElement | MAAPLiteral | MAAPIdentifier,
-): string {
-  if (isStatement(input.type)) {
-    return statementToString(input as MAAPStatement);
+  public constructor(input?: Program | MAAPUserEvtElement | MAAPLiteral | MAAPIdentifier) {
+    if (!input) {
+      return;
+    }
+    if (MAAPToString.isStatement(input.type)) {
+      this.output = this.statementToString(input as MAAPStatement);
+    }
+    if (this.isLiteral(input.type)) {
+      this.output = MAAPToString.literalToString(input as MAAPLiteral);
+    }
+    switch (input.type) {
+      case 'program':
+        this.output = input.value.map((sourceElement) => this.sourceElementToString(sourceElement)).join('\n');
+        break;
+      case 'parameter':
+        this.output = this.parameterToString(input);
+        break;
+      case 'call_expression':
+        this.output = this.callExpressionToString(input);
+        break;
+      case 'expression':
+        this.output = this.pureExpressionToString(input);
+        break;
+      case 'expression_block':
+        this.output = this.expressionBlockToString(input);
+        break;
+      case 'assignment':
+        this.output = this.assignmentToString(input);
+        break;
+      case 'is_expression':
+        this.output = this.isExpressionToString(input);
+        break;
+      case 'as_expression':
+        this.output = this.asExpressionToString(input);
+        break;
+      case 'identifier':
+        this.output = this.identifierToString(input);
+        break;
+      case 'parameter_name':
+        this.output = this.parameterNameToString(input);
+        break;
+      case 'comment':
+        this.output = this.sourceElementToString(input);
+        break;
+      default:
+        throw new Error(`Unexpected input type: ${input.type}`);
+    }
   }
-  if (isLiteral(input.type)) {
-    return literalToString(input as MAAPLiteral);
-  }
-  switch (input.type) {
-    case 'program':
-      return input.value.map((sourceElement) => sourceElementToString(sourceElement)).join('\n');
-    case 'parameter':
-      return parameterToString(input);
-    case 'call_expression':
-      return callExpressionToString(input);
-    case 'expression':
-      return pureExpressionToString(input);
-    case 'expression_block':
-      return expressionBlockToString(input);
-    case 'assignment':
-      return assignmentToString(input);
-    case 'is_expression':
-      return isExpressionToString(input);
-    case 'as_expression':
-      return asExpressionToString(input);
-    case 'identifier':
-      return identifierToString(input);
-    case 'parameter_name':
-      return parameterNameToString(input);
-    case 'comment':
-      return sourceElementToString(input);
-    default:
-      throw new Error(`Unexpected input type: ${input.type}`);
+
+  private addVariable(varname: string) {
+    if (!this.variables.includes(varname)) {
+      this.variables.push(varname);
+    }
   }
 }

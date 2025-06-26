@@ -8,24 +8,14 @@ import { parse as parameterParser } from './Parser/maap-par-parser';
 import { v4 as uuid } from 'uuid';
 import { useActionFormContext } from '../../../../ActionFormContext';
 import useRunApplication from '../../useRunApplication';
-import {
-  callExpressionToString,
-  expressionBlockToString,
-  expressionToString,
-  expressionTypeToString,
-  identifierToString,
-  isExpressionToString,
-  MAAPToString,
-  sourceElementToString,
-  variableToString,
-} from './Parser/maap-to-string';
+import { MAAPToString } from './Parser/maap-to-string';
 import type {
   MAAPParameter,
   MAAPConditionalBlockStatement,
   MAAPSourceElement,
   MAAPComment,
   MAAPInitiator,
-  MAAPExpression,
+  MAAPAssignment,
 } from '../../../../../../../types/EMRALD_Model';
 
 const MAAP = () => {
@@ -50,170 +40,23 @@ const MAAP = () => {
   const getParameterName = (row: MAAPSourceElement) => {
     if (row.type === 'assignment') {
       if (row.target.type === 'call_expression') {
-        return callExpressionToString(row.target);
+        return new MAAPToString().callExpressionToString(row.target);
       }
-      return identifierToString(row.target);
+      return new MAAPToString().identifierToString(row.target);
     }
     return '';
   };
 
   function createMaapFile() {
-    const recurseMultiExpr = (op: string, value: MAAPExpression[]): string => {
-      return value
-        .map((expr) => {
-          if (expr.type === 'multi_expression') {
-            return recurseMultiExpr(expr.op, expr.value);
-          } else if (typeof expr.value === 'string') {
-            return expr.value;
-          } else if (typeof expr.value === 'number' || typeof expr.value === 'boolean') {
-            return expr.value.toString();
-          } else if (expr.type === 'is_expression') {
-            if (expr.useVariable && typeof expr.value.value === 'string') {
-              return `${variableToString(expr.target)} IS " + ${expr.value.value} + @"`;
-            }
-            return isExpressionToString(expr);
-          } else if (expr.type === 'call_expression') {
-            return callExpressionToString(expr);
-          } else if (expr.type === 'expression') {
-            if (expr.value.right.useVariable && typeof expr.value.right.value === 'string') {
-              return `${expressionTypeToString(expr.value.left)} ${expr.value.op} " + ${expr.value.right.value} + @"`;
-            }
-            return expressionToString(expr);
-          } else {
-            return expressionBlockToString(expr);
-          }
-        })
-        .join(`\n${op} `) + '\n';
-    };
     if (formData?.sourceElements) {
-      let inpFile = '';
-      let block = 0;
-      const variables: string[] = [];
       console.log(formData.sourceElements);
-      formData.sourceElements.forEach((sourceElement) => {
-        if (sourceElement.type === 'block') {
-          if (sourceElement.blockType === 'PARAMETER CHANGE') {
-            inpFile += 'PARAMETER CHANGE\n';
-            formData.parameters?.forEach((parameter) => {
-              inpFile += `${parameter.name ?? ''} = `;
-              if (parameter.useVariable && typeof parameter.variable === 'string') {
-                inpFile += `" + ${parameter.variable} + @"`;
-                if (!variables.includes(parameter.variable)) {
-                  variables.push(parameter.variable);
-                }
-              } else {
-                if (typeof parameter.value === 'string') {
-                  inpFile += parameter.value;
-                } else if (parameter.value.type === 'parameter_name') {
-                  inpFile += parameter.value.value;
-                } else {
-                  inpFile += expressionToString(parameter.value);
-                }
-                if (parameter.unit) {
-                  inpFile += ` ${parameter.unit}`;
-                }
-              }
-              inpFile += '\n';
-            });
-            inpFile += 'END\n';
-          } else {
-            inpFile += 'INITIATORS\n';
-            formData.initiators?.forEach((initiator) => {
-              inpFile += `${initiator.name} = `;
-              if (typeof initiator.value === 'boolean') {
-                inpFile += initiator.value ? 'T' : 'F';
-              } else {
-                inpFile += initiator.value.toString();
-              }
-              inpFile += '\n';
-            });
-            inpFile += 'END\n';
-          }
-        } else if (
-          sourceElement.type === 'conditional_block' &&
-          formData.inputBlocks !== undefined
-        ) {
-          const cblock = formData.inputBlocks[block];
-          inpFile += `${cblock.blockType} `;
-          if (cblock.test.type === 'multi_expression') {
-            inpFile += recurseMultiExpr(cblock.test.op, cblock.test.value);
-          } else if (cblock.test.type === 'expression') {
-            if (cblock.test.value.left.useVariable) {
-              // TODO - If this is set to a variable, can the right value be anything other than a string?
-              if (typeof cblock.test.value.left.value === 'string') {
-                inpFile += `" + ${cblock.test.value.left.value} + @"`;
-                if (!variables.includes(cblock.test.value.left.value)) {
-                  variables.push(cblock.test.value.left.value);
-                }
-              }
-            } else {
-              inpFile += `${expressionTypeToString(cblock.test.value.left)} ${cblock.test.value.op} `;
-            }
-            if (cblock.test.value.right.useVariable) {
-              // TODO - If this is set to a variable, can the right value be anything other than a string?
-              if (typeof cblock.test.value.right.value === 'string') {
-                inpFile += `" + ${cblock.test.value.right.value} + @"\n`;
-                if (!variables.includes(cblock.test.value.right.value)) {
-                  variables.push(cblock.test.value.right.value);
-                }
-              }
-            } else {
-              inpFile += `${expressionToString(cblock.test.value.right)}\n`;
-            }
-          } else if (cblock.test.type === 'is_expression') {
-            if (cblock.test.target.useVariable) {
-              // TODO - If this is set to a variable, can the right value be anything other than a string?
-              if (typeof cblock.test.target.value === 'string') {
-                inpFile += `" + ${cblock.test.target.value} + @" IS `;
-                if (!variables.includes(cblock.test.target.value)) {
-                  variables.push(cblock.test.target.value);
-                }
-              }
-            } else {
-              inpFile += `${variableToString(cblock.test.target)} IS `;
-            }
-            if (cblock.test.value.type === 'multi_expression') {
-              inpFile += recurseMultiExpr(cblock.test.value.op, cblock.test.value.value);
-            } else if (cblock.test.value.useVariable) {
-              // TODO - If this is set to a variable, can the right value be anything other than a string?
-              if (typeof cblock.test.value.value === 'string') {
-                inpFile += `" + ${cblock.test.value.value} + @"`;
-                if (!variables.includes(cblock.test.value.value)) {
-                  variables.push(cblock.test.value.value);
-                }
-              }
-            } else {
-              if (typeof cblock.test.value.value === 'string') {
-                inpFile += cblock.test.value.value;
-              } else if (
-                typeof cblock.test.value.value === 'number' ||
-                typeof cblock.test.value.value === 'boolean'
-              ) {
-                inpFile += cblock.test.value.value.toString();
-              } else if (cblock.test.value.type === 'is_expression') {
-                inpFile += isExpressionToString(cblock.test.value);
-              } else if (cblock.test.value.type === 'call_expression') {
-                inpFile += callExpressionToString(cblock.test.value);
-              } else if (cblock.test.value.type === 'expression') {
-                inpFile += expressionToString(cblock.test.value);
-              } else {
-                inpFile += expressionBlockToString(cblock.test.value);
-              }
-            }
-            inpFile += '\n';
-          }
-          // TODO: Looking at the other possible syntax object types that cblock.test can be, I don't think any of them are actually possible
-          // But if they are, add them in an else if statement here
-          inpFile += cblock.value.map((se) => sourceElementToString(se)).join('\n');
-          inpFile += `\nEND\n`;
-          block += 1;
-        } else {
-          inpFile += `${MAAPToString(sourceElement)}\n`;
-        }
+      const inpFile = new MAAPToString({
+        type: 'program',
+        value: formData.sourceElements,
       });
-      setCodeVariables(variables);
-      console.log(inpFile);
-      return inpFile;
+      console.log(inpFile.output);
+      setCodeVariables(inpFile.variables);
+      return inpFile.output;
     }
     return '';
   }
@@ -406,33 +249,18 @@ const MAAP = () => {
 
           // Set state variables or perform other actions with comments, sections, and parameters
           // setComments(comments);
-          const newParameters: MAAPParameter[] = [];
+          const newParameters: MAAPAssignment[] = [];
           parameters.forEach((param) => {
             if (param.type === 'comment') {
               newParameters[newParameters.length - 1].comment = param.value as unknown as string;
+            } else if (param.type === 'assignment') {
+              newParameters.push(param);
             } else {
-              let unit = '';
-              let value = '';
-              if (
-                typeof param.value === 'object' &&
-                !Array.isArray(param.value) &&
-                param.type === 'assignment'
-              ) {
-                if (param.value.type === 'number') {
-                  value = param.value.value.toString();
-                  unit = param.value.units ?? '';
-                }
-              }
-              newParameters.push({
-                name: getParameterName(param),
-                id: uuid(),
-                useVariable: false,
-                unit,
-                value,
-                type: 'parameter',
-              });
+              // Unhandled in the form UI
+              console.warn(`Unhandled parameter format: ${new MAAPToString().sourceElementToString(param)}`);
             }
           });
+          
           const newInitiators: MAAPInitiator[] = [];
           initiators.forEach((init) => {
             if (init.type === 'comment') {
@@ -444,7 +272,7 @@ const MAAP = () => {
               } else if (init.value.type === 'number') {
                 value = init.value.value;
               } else {
-                value = expressionToString(init.value);
+                value = new MAAPToString().expressionToString(init.value);
               }
               newInitiators.push({
                 name: getParameterName(init),

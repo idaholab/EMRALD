@@ -13,55 +13,37 @@ import { useEffect, useState } from 'react';
 import { SelectComponent } from '../../../../../../../common';
 import { appData } from '../../../../../../../../hooks/useAppData';
 import { useActionFormContext } from '../../../../../ActionFormContext';
-import type { MAAPParameter } from '../../../../../../../../types/EMRALD_Model';
+import { MAAPToString } from '../Parser/maap-to-string';
 
 const Parameters = () => {
-  const { formData, setFormData } = useActionFormContext();
-  const [useVariable, setUseVariable] = useState<Record<string, boolean>>({});
-  const [variable, setVariable] = useState<Record<string, string>>({});
-  const [parameters, setParameters] = useState<MAAPParameter[]>([]);
+  const { formData } = useActionFormContext();
+
+  // Variables used to control React's rendering state.
+  const [useVariable, setUseVariable] = useState<boolean[]>([]);
+  const [localVarSelection, setLocalVarSelection] = useState<string[]>([]);
+  const [localValue, setLocalValue] = useState<string[]>([]);
 
   useEffect(() => {
-    setUseVariable(
-      formData?.parameters?.reduce((accumulator: Record<string, boolean>, param) => {
-        accumulator[param.id] = param.useVariable === true;
-        return accumulator;
-      }, {}) ?? {},
-    );
-    setVariable(
-      formData?.parameters?.reduce((accumulator: Record<string, string>, param) => {
-        accumulator[param.id] = param.variable ?? '';
-        return accumulator;
-      }, {}) ?? {},
-    );
+    const v: boolean[] = [];
+    const s: string[] = [];
+    const l: string[] = [];
+    formData?.parameters?.forEach((parameter, i) => {
+      v[i] = parameter.value.useVariable === true;
+      if (v[i]) {
+        s[i] = parameter.value.value as string;
+      } else if (
+        typeof parameter.value.value === 'number' ||
+        typeof parameter.value.value === 'string'
+      ) {
+        l[i] = parameter.value.value.toString(); // TODO: There are other possible data types that can be here, but I'm not sure any of the practically exist
+      } else {
+        console.log(parameter.value);
+      }
+    });
+    setUseVariable(v);
+    setLocalVarSelection(s);
+    setLocalValue(l);
   }, []);
-
-  useEffect(() => {
-    setParameters(formData?.parameters ?? []);
-  }, [formData?.parameters]);
-
-  const handleSetVariable = (variableName: string, row: MAAPParameter) => {
-    setVariable((prev) => ({ ...prev, [row.id]: variableName }));
-    const updatedParameters = parameters.map((param) =>
-      param.id === row.id ? { ...param, variable: variableName } : param,
-    );
-    setParameters(updatedParameters);
-    setFormData((prevFormData) =>
-      prevFormData ? { ...prevFormData, parameters: updatedParameters } : undefined,
-    );
-  };
-
-  const handleCheckbox = (row: MAAPParameter) => {
-    const value = !useVariable[row.id];
-    setUseVariable((prev) => ({ ...prev, [row.id]: value }));
-    const updatedParameters = parameters.map((param) =>
-      param.id === row.id ? { ...param, useVariable: value } : param,
-    );
-    setParameters(updatedParameters);
-    setFormData((prevFormData) =>
-      prevFormData ? { ...prevFormData, parameters: updatedParameters } : undefined,
-    );
-  };
 
   return (
     <Table sx={{ minWidth: 650 }} size="small">
@@ -77,18 +59,25 @@ const Parameters = () => {
         </TableRow>
       </TableHead>
       <TableBody>
-        {parameters.map((row, idx) => (
+        {formData?.parameters?.map((row, idx) => (
           <TableRow key={idx} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
             <TableCell component="th" scope="row">
-              {row.name}
+              {/* TODO: Handle this case in the upgrade script */}
+              {row.target !== undefined
+                ? row.target.type === 'call_expression'
+                  ? new MAAPToString().callExpressionToString(row.target)
+                  : row.target.value
+                : 'Your project was created with an older version of the MAAP form. Please re-open your .inp file.'}
             </TableCell>
             <TableCell>
-              {useVariable[row.id] ? (
+              {useVariable[idx] ? (
                 <SelectComponent
-                  value={variable[row.id] || ''}
-                  label={'EMRALD Variable'}
-                  setValue={(e) => {
-                    handleSetVariable(e, row);
+                  value={localVarSelection[idx]}
+                  label="EMRALD Variable"
+                  setValue={(value) => {
+                    //row.value.useVariable = true;
+                    row.value.value = value;
+                    localVarSelection[idx] = value;
                   }}
                   sx={{ width: 223, mt: 0 }}
                 >
@@ -99,17 +88,34 @@ const Parameters = () => {
                   ))}
                 </SelectComponent>
               ) : (
-                <TextField size="small" value={row.value} />
+                <TextField
+                  size="small"
+                  value={localValue[idx]}
+                  onChange={(e) => {
+                    row.value.value = e.target.value;
+                    setLocalValue([
+                      ...localValue.slice(0, idx),
+                      e.target.value,
+                      ...localValue.slice(idx + 1),
+                    ]);
+                  }}
+                />
               )}
+              {row.value.units ?? ''}
             </TableCell>
             <TableCell align="center">
               <FormControlLabel
                 control={
                   <Checkbox
-                    checked={useVariable[row.id] || false}
-                    value={useVariable[row.id] || false}
-                    onChange={() => {
-                      handleCheckbox(row);
+                    checked={useVariable[idx]}
+                    value={useVariable[idx]}
+                    onChange={(e) => {
+                      row.value.useVariable = e.target.value === 'false';
+                      setUseVariable([
+                        ...useVariable.slice(0, idx),
+                        e.target.value === 'false',
+                        ...useVariable.slice(idx + 1),
+                      ]);
                     }}
                   />
                 }
