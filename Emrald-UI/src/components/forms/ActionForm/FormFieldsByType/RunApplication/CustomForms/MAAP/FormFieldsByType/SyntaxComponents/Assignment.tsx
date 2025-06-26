@@ -26,6 +26,7 @@ export const Assignment: React.FC<{
         disablePortal
         options={variables}
         value={localValue}
+        sx={{ width: 300 }}
         onChange={(_, newValue) => {
           value.value.value = newValue ?? '';
           value.value.useVariable = variables.includes(newValue ?? '');

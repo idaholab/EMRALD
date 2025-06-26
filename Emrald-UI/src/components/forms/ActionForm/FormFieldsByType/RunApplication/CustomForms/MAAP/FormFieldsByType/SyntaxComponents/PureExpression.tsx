@@ -27,6 +27,7 @@ export const PureExpression: React.FC<{
           disablePortal
           options={variables}
           value={localValue}
+          sx={{ width: 300 }}
           onChange={(_, newValue) => {
             value.value.right.value = newValue ?? '';
             value.value.right.useVariable = variables.includes(newValue ?? '');
