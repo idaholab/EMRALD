@@ -41,11 +41,11 @@ Units = !(AND / OR) first:[a-zA-Z0-9]+ rest:(("**" / "/") Units)? {
     }
     return units;
 }
-NumericLiteral = literal:DecimalLiteral !(IdentifierStart / DecimalDigit) units:(_ Units)? {
+NumericLiteral = negative:"-"? literal:DecimalLiteral !(IdentifierStart / DecimalDigit) units:(_ Units)? {
 	return {
     	type: "number",
         units: (units || [])[1],
-        value: literal,
+        value: negative !== null ? -literal : literal,
     }
 }
 DecimalLiteral = DecimalIntegerLiteral "." DecimalDigit* ExponentPart? {
@@ -107,6 +107,7 @@ ACTION = "ACTION"i
 ALIAS = "ALIAS"i
 AND = "AND"i
 AS = "AS"i
+DOSE_PARAMETER_FILE = "DOSE PARAMETER FILE"i
 END = "END"i !" TIME"i
 F = "F"i
 FALSE = "FALSE"i
@@ -247,7 +248,7 @@ TitleBlock = !END first:FreeCharacter+ rest:(___ TitleBlock)? {
     }
 	return title;
 }
-FileStatement = fileType:(PARAMETER_FILE / INCLUDE) _ v:FreeCharacter+ {
+FileStatement = fileType:(PARAMETER_FILE / DOSE_PARAMETER_FILE / INCLUDE) _ v:FreeCharacter+ {
 	return {
     	fileType,
     	type: "file",
