@@ -89,7 +89,7 @@ namespace SimulationEngine
     private bool _logFailedComps = false;
     public bool batchSuccess = false;
     private Progress _progress = null;
-    private int _pathResultsInterval = -1;
+    private int _pathResultsInterval = -1; //how often to save the path results to the file
     private Dictionary<string, List<double>> finalVarValueList = new Dictionary<string, List<double>>();
 
     //public Dictionary<string, double> variableVals { get { return _variableVals; } }
