@@ -1,8 +1,9 @@
-import { Autocomplete, Box, TextField } from '@mui/material';
+import { Autocomplete, Box, InputAdornment, TextField } from '@mui/material';
 import type { MAAPPureExpression } from '../../../../../../../../../types/EMRALD_Model';
 import { appData } from '../../../../../../../../../hooks/useAppData';
 import { ExpressionType } from './ExpressionType';
 import { useState } from 'react';
+import { FaLink } from 'react-icons/fa6';
 
 export const PureExpression: React.FC<{
   value: MAAPPureExpression;
@@ -26,7 +27,6 @@ export const PureExpression: React.FC<{
           disablePortal
           options={variables}
           value={localValue}
-          sx={{ width: 300 }}
           onChange={(_, newValue) => {
             value.value.right.value = newValue ?? '';
             value.value.right.useVariable = variables.includes(newValue ?? '');
@@ -35,6 +35,17 @@ export const PureExpression: React.FC<{
           renderInput={(params) => (
             <TextField
               {...params}
+              slotProps={{
+                input: {
+                  ...params.InputProps,
+                  startAdornment: value.value.right.useVariable ? (
+                    <InputAdornment position="start">
+                      <FaLink color="#008362" />
+                    </InputAdornment>
+                  ) : undefined,
+                },
+              }}
+              sx={{ input: { color: value.value.right.useVariable ? '#008362' : 'inherit' } }}
               onChange={(e) => {
                 value.value.right.value = e.target.value;
                 value.value.right.useVariable = variables.includes(e.target.value);

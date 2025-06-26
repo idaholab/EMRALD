@@ -1,6 +1,9 @@
 import { Expression } from './Expression';
-import type { MAAPExpression, MAAPSourceElement } from '../../../../../../../../../types/EMRALD_Model';
-import { Box, Paper, Typography } from '@mui/material';
+import type {
+  MAAPExpression,
+  MAAPSourceElement,
+} from '../../../../../../../../../types/EMRALD_Model';
+import { Box, Card, CardContent, Divider, Paper, Typography } from '@mui/material';
 import { SourceElement } from './SourceElement';
 
 export const ConditionalBlock: React.FC<{
@@ -9,12 +12,21 @@ export const ConditionalBlock: React.FC<{
   value: MAAPSourceElement[];
 }> = ({ blockType, test, value }) => {
   return (
-    <Paper>
-      <Box sx={{ margin: 1, display: 'flex' }}>
-        <Typography m={2}>{blockType}</Typography>
-        <Expression value={test} />
-      </Box>
-      <Box>{value.map((se) => <SourceElement value={se} />)}</Box>
-    </Paper>
+    <Card sx={{marginBottom: 2}}>
+      <CardContent>
+        <Box sx={{ display: 'flex', alignItems: 'baseline' }}>
+          <Typography m={2}>{blockType}</Typography>
+          <Box sx={{ marginLeft: 8 }}>
+            <Expression value={test} />
+          </Box>
+        </Box>
+        <Divider />
+        <Box sx={{marginTop: 2}}>
+          {value.map((se) => (
+            <SourceElement value={se} />
+          ))}
+        </Box>
+      </CardContent>
+    </Card>
   );
 };

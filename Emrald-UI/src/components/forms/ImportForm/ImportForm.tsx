@@ -53,7 +53,7 @@ const ImportForm: React.FC<ImportDiagramFormProps> = ({ importedData, fromTempla
   return (
     <Box mx={3} pb={3}>
       <Backdrop
-        sx={{ color: '#008080', zIndex: (theme) => theme.zIndex.drawer + 1, position: 'absolute', top: '35px' }}
+        sx={{ color: '#2FA770', zIndex: (theme) => theme.zIndex.drawer + 1, position: 'absolute', top: '35px' }}
         open={loading}
       >
         <CircularProgress color="inherit" />
