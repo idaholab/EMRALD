@@ -8,6 +8,9 @@ import { FaLink } from 'react-icons/fa6';
 export const Assignment: React.FC<{
   value: MAAPAssignment;
 }> = ({ value }) => {
+  // It doesn't matter if value.value.value.toString() returns "[object object]", because the conditional logic in the JSX elements
+  // will only show this value if it is configured to use a variable.
+  // eslint-disable-next-line @typescript-eslint/no-base-to-string
   const [localValue, setLocalValue] = useState<string>(value.value.value.toString());
   const variables = appData.value.VariableList.map(({ name }) => name);
 

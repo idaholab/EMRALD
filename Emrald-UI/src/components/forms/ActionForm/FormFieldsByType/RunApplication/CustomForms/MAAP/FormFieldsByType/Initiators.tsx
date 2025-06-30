@@ -11,13 +11,12 @@ import {
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useActionFormContext } from '../../../../../ActionFormContext';
 import { useEffect, useState } from 'react';
-import { v4 as uuid } from 'uuid';
-import type { MAAPInitiator } from '../../../../../../../../types/EMRALD_Model';
+import type { MAAPComment, MAAPInitiator } from '../../../../../../../../types/EMRALD_Model';
 import { MAAPToString } from '../Parser/maap-to-string';
 
 const Initiators = () => {
   const { formData, setFormData } = useActionFormContext();
-  const [initiators, setInitiators] = useState<MAAPInitiator[]>([]);
+  const [initiators, setInitiators] = useState<(MAAPInitiator | MAAPComment)[]>([]);
 
   useEffect(() => {
     setInitiators(formData?.initiators ?? []);
@@ -33,7 +32,10 @@ const Initiators = () => {
 
   const addInitiator = (desc: string) => {
     const initiator = formData?.possibleInitiators?.find((init) => init.desc === desc);
-    if (initiator && !initiators.find((init) => init.name === initiator.desc)) {
+    if (
+      initiator &&
+      !initiators.find((init) => init.type === 'initiator' && init.name === initiator.desc)
+    ) {
       let value = '';
       if (typeof initiator.value === 'string') {
         value = initiator.value;
@@ -42,15 +44,12 @@ const Initiators = () => {
       } else {
         value = new MAAPToString().expressionToString(initiator.value);
       }
-      const updatedInitiators = [
-        ...initiators,
-        {
-          name: initiator.desc ?? '',
-          comment: '',
-          id: uuid(),
-          value,
-        },
-      ];
+      const newInitiator: MAAPInitiator = {
+        name: initiator.desc ?? '',
+        value,
+        type: 'initiator',
+      };
+      const updatedInitiators = [...initiators, newInitiator];
       setInitiators(updatedInitiators);
       setFormData((prevFormData) =>
         prevFormData ? { ...prevFormData, initiators: updatedInitiators } : undefined,
@@ -85,19 +84,21 @@ const Initiators = () => {
           {initiators.map((row, idx) => (
             <TableRow key={idx} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
               <TableCell component="th" scope="row">
-                <div style={{ display: 'flex', flexDirection: 'column' }}>
-                  {row.name} {row.comment ? ` - ${row.comment}` : ''}
-                </div>
+                {row.type === 'comment' ? row.value : row.name}
               </TableCell>
               <TableCell align="center">
-                <Tooltip title="Remove Initiator">
-                  <DeleteIcon
-                    sx={{ cursor: 'pointer', ml: 3 }}
-                    onClick={() => {
-                      removeInitiator(row);
-                    }}
-                  />
-                </Tooltip>
+                {row.type === 'initiator' ? (
+                  <Tooltip title="Remove Initiator">
+                    <DeleteIcon
+                      sx={{ cursor: 'pointer', ml: 3 }}
+                      onClick={() => {
+                        removeInitiator(row);
+                      }}
+                    />
+                  </Tooltip>
+                ) : (
+                  <></>
+                )}
               </TableCell>
             </TableRow>
           ))}

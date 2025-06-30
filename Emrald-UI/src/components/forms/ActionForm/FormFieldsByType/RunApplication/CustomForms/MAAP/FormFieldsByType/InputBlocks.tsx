@@ -15,7 +15,7 @@ const InputBlocks = () => {
   useEffect(() => {
     setFormData({
       ...formData,
-      caType: 'MAAP'
+      caType: 'MAAP',
     });
   }, [inputBlocks]);
 
@@ -23,8 +23,13 @@ const InputBlocks = () => {
     <>
       {inputBlocks.map((block) => {
         return (
-          <Box key={block.id}>
-            <ConditionalBlock blockType={block.blockType} test={block.test} value={block.value} />
+          <Box>
+            <ConditionalBlock
+              blockType={block.blockType}
+              test={block.test}
+              value={block.value}
+              comment={block.comment.map((c) => c.value).join(', ')}
+            />
           </Box>
         );
       })}

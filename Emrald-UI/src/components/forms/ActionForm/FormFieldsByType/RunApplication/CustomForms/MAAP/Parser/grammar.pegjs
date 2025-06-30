@@ -7,9 +7,10 @@
     }
 }
 
-Start = preamble:__ program:Program __ {
+Start = preamble:__ program:Program comments:__ {
 	program.value = preamble
     	.concat(program.value)
+        .concat(comments)
         // Filter out empty comment blocks
         .filter((e) => e.type !== 'comment' || e.value.length > 0);
 	return program;
@@ -23,7 +24,7 @@ LineTerminator = [\n\r\u2028\u2029]
 LineTerminatorSequence = "\n" / "\r\n" / "\r" / "\u2028" / "\u2029"
 Comment = EnclosedComment / SingleLineComment
 CommentIndicator = "//" / "!" / "C " / "**"
-SingleLineComment = CommentIndicator v:FreeCharacter* {
+SingleLineComment = CommentIndicator v:(!LineTerminator SourceCharacter)* {
 	return {
     	type: "comment",
         value: extractList(v,1).join(''),
@@ -208,11 +209,12 @@ AsExpression = target:Variable _ AS _ value:Variable {
         value,
     }
 }
-MultiPartExpression = first:(Expression / IsExpression) ___ op:(AND / OR) ___ rest:Expr  {
+MultiPartExpression = first:(Expression / IsExpression) comment:___ op:(AND / OR) ___ rest:Expr  {
 	return {
     	type: "multi_expression",
         op,
-        value: [first, rest]
+        value: [first, rest],
+        comment,
     }
 }
 Expr = MultiPartExpression / IsExpression / Expression / ExpressionType
@@ -238,18 +240,19 @@ SensitivityStatement = SENSITIVITY ___ value:(ON / OFF) {
         value,
     }
 }
-TitleStatement = TITLE ___ value:(TitleBlock ___)? END {
+TitleStatement = TITLE comment:___ value:TitleBlock* END {
 	return {
     	type: "title",
-        value: (value || [])[0],
+        value,
+        comment,
     }
 }
-TitleBlock = !END first:FreeCharacter+ rest:(___ TitleBlock)? {
+TitleBlock = !END first:FreeCharacter+ comment:___ {
 	let title = extractList(first, 1).join('');
-    if (rest) {
-    	title += '\n' + rest[1];
-    }
-	return title;
+	return {
+    	title,
+        comment
+    };
 }
 FileStatement = fileType:(PARAMETER_FILE / DOSE_PARAMETER_FILE / INCLUDE) _ v:FreeCharacter+ {
 	return {
@@ -258,35 +261,40 @@ FileStatement = fileType:(PARAMETER_FILE / DOSE_PARAMETER_FILE / INCLUDE) _ v:Fr
         value: extractList(v, 1).join(''),
     }
 }
-BlockStatement = blockType:(PARAMETER_CHANGE / INITIATORS) ___ value:(SourceElements ___)? END {
+BlockStatement = blockType:(PARAMETER_CHANGE / INITIATORS) comment:___ value:(SourceElements ___)? END {
 	return {
     	blockType,
         type: "block",
-        value: safeValue(value),
+        value: value ? value[0].concat(value[1]) : [],
+        comment,
     }
 }
-ConditionalBlockStatement = blockType:(WHEN / IF) _ test:Expr ___ value:(SourceElements ___)? END {
+ConditionalBlockStatement = blockType:(WHEN / IF) _ test:Expr comment:___ value:(SourceElements ___)? END {
 	return {
     	blockType,
     	test,
     	type: "conditional_block",
-        value: safeValue(value),
+        value: value ? value[0].concat(value[1]) : [],
+        comment,
     }
 }
-AliasStatement = ALIAS ___ value:(AliasBody ___)? END {
+AliasStatement = ALIAS comment:___ value:(AliasBody ___)? END {
 	return {
     	type: "alias",
-        value: safeValue(value),
+        value: value ? value[0].concat(value[1]) : [],
+        comment,
     }
 }
 AliasBody = head:AsExpression tail:(___ AsExpression)* {
 	return [head].concat(extractList(tail, 1));
 }
-PlotFilStatement = PLOTFIL _ n:[0-9]+ ___ value:(PlotFilBody ___)? END {
+// TODO: Comments in the PLOTFIL section aren't returned, but aren't worth the time to add at the moment
+PlotFilStatement = PLOTFIL _ n:[0-9]+ comment:___ value:(PlotFilBody ___)? END {
 	return {
     	n: Number(n.join('')),
     	type: "plotfil",
-        value: safeValue(value),
+        value: value ? value[0] : [],
+        comment,
     }
 }
 PlotFilList = head:Variable tail:(_ "," _ PlotFilList)* {
@@ -303,21 +311,23 @@ PlotFilBody = head:PlotFilList tail:(___ PlotFilBody)* {
     }
 	return value;
 }
-UserEvtStatement = USEREVT ___ value:(UserEvtBody ___)? END {
+UserEvtStatement = USEREVT comment:___ value:(UserEvtBody ___)? END {
 	return {
     	type: "user_evt",
-        value: safeValue(value),
+        value: value ? value[0].concat(value[1]) : [],
+        comment,
     }
 }
 UserEvtBody = head:UserEvtElement tail:(___ UserEvtElement)* {
 	return [head].concat(extractList(tail, 1));
 }
 UserEvtElement = Parameter / ActionStatement / SourceElement
-ActionStatement = ACTION _ "#" n:[0-9]+ ___ value:(UserEvtBody ___)? END {
+ActionStatement = ACTION _ "#" n:[0-9]+ comment:___ value:(UserEvtBody ___)? END {
 	return {
     	index: Number(n.join('')),
     	type: "action",
-        value: safeValue(value),
+        value: value ? value[0].concat(value[1]) : [],
+        comment,
     }
 }
 FunctionStatement = FUNCTION _ name:Identifier _ "=" _ value:Expr {
@@ -333,11 +343,13 @@ TimerStatement = SET _ value:TimerLiteral {
         value,
     }
 }
-LookupStatement = LOOKUP_VARIABLE _ name:Variable ___ value:(LookupBody ___)? END {
+// TODO: Comments within the LOOKUP VARIABLE block are not returned, but are not worth adding at the moment
+LookupStatement = LOOKUP_VARIABLE _ name:Variable comment:___ value:(LookupBody ___)? END {
 	return {
 		name,
     	type: "lookup_variable",
         value: safeValue(value),
+        comment,
     }
 }
 LookupBody = !Reserved head:FreeCharacter+ tail:(___ LookupBody)* {

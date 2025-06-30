@@ -5,7 +5,6 @@ import { TextFieldComponent, FileUploadComponent, TabPanel } from '../../../../.
 import { Parameters, Initiators, InputBlocks, Outputs } from './FormFieldsByType';
 import InputParse from './Parser';
 import { parse as parameterParser } from './Parser/maap-par-parser';
-import { v4 as uuid } from 'uuid';
 import { useActionFormContext } from '../../../../ActionFormContext';
 import useRunApplication from '../../useRunApplication';
 import { MAAPToString } from './Parser/maap-to-string';
@@ -49,7 +48,6 @@ const MAAP = () => {
 
   function createMaapFile() {
     if (formData?.sourceElements) {
-      console.log(formData.sourceElements);
       let newSource: MAAPSourceElement[] = [];
       let cidx = -1;
       formData.sourceElements.forEach((se, i) => {
@@ -60,27 +58,35 @@ const MAAP = () => {
               type: 'block',
               blockType: 'PARAMETER CHANGE',
               value: [...formData.parameters, ...se.value.filter((v) => v.type !== 'assignment')],
+              comment: []
             });
           } else if (formData.initiators) {
             newSource.push({
               type: 'block',
               blockType: 'INITIATORS',
-              value: formData.initiators.map((initiator) => ({
-                type: 'parameter_name',
-                value: initiator.name,
-              })),
+              value: formData.initiators
+                .filter((initiator) => initiator.type !== 'comment')
+                .map((initiator) => ({
+                  type: 'parameter_name',
+                  value: initiator.name,
+                })),
+              comment: [],
             });
           } else {
             newSource.push(se);
           }
         } else if (se.type === 'conditional_block' && cidx < 0) {
           cidx = i;
-        } else if (se.type !== 'conditional_block') {
+        } else if (se.type !== 'conditional_block' && se.type !== 'comment') {
           newSource.push(se);
         }
       });
       if (formData.inputBlocks) {
-        newSource = [...newSource.slice(0, cidx), ...formData.inputBlocks, ...newSource.slice(cidx)];
+        newSource = [
+          ...newSource.slice(0, cidx),
+          ...formData.inputBlocks,
+          ...newSource.slice(cidx),
+        ];
       }
       const inpFile = new MAAPToString({
         type: 'program',
@@ -208,7 +214,6 @@ const MAAP = () => {
                   comment: data.comment ?? '',
                   value: data.value,
                   type: 'parameter',
-                  id: uuid(),
                 });
               }
             } catch (err) {
@@ -236,25 +241,12 @@ const MAAP = () => {
         try {
           const data = InputParse.parse(fileString, { locations: false }).output;
 
-          const docComments: Record<string, MAAPComment> = {};
           const parameters: MAAPSourceElement[] = [];
           let initiators: MAAPSourceElement[] = [];
           const inputBlocks: MAAPConditionalBlockStatement[] = [];
           const fileRefs: string[] = [];
 
-          data.value.forEach((sourceElement, i) => {
-            if (sourceElement.type === 'comment') {
-              // get following source element and see if it is a conditional block
-              const nextElement = data.value[i + 1] as MAAPComment | MAAPSourceElement | undefined;
-              if (nextElement && nextElement.type === 'conditional_block') {
-                if (!inputBlocks.includes(nextElement)) {
-                  nextElement.id = uuid();
-                  inputBlocks.push(nextElement);
-                }
-                docComments[nextElement.id] = sourceElement;
-              }
-            }
-
+          data.value.forEach((sourceElement) => {
             switch (sourceElement.type) {
               case 'file':
                 fileRefs.push(sourceElement.value);
@@ -270,7 +262,6 @@ const MAAP = () => {
                 break;
               case 'conditional_block':
                 if (!inputBlocks.includes(sourceElement)) {
-                  sourceElement.id = uuid();
                   inputBlocks.push(sourceElement);
                 }
                 break;
@@ -280,12 +271,9 @@ const MAAP = () => {
           });
 
           // Set state variables or perform other actions with comments, sections, and parameters
-          // setComments(comments);
-          const newParameters: MAAPAssignment[] = [];
+          const newParameters: (MAAPAssignment | MAAPComment)[] = [];
           parameters.forEach((param) => {
-            if (param.type === 'comment') {
-              newParameters[newParameters.length - 1].comment = param.value as unknown as string;
-            } else if (param.type === 'assignment') {
+            if (param.type === 'comment' || param.type === 'assignment') {
               newParameters.push(param);
             } else {
               // Unhandled in the form UI
@@ -295,10 +283,10 @@ const MAAP = () => {
             }
           });
 
-          const newInitiators: MAAPInitiator[] = [];
+          const newInitiators: (MAAPInitiator | MAAPComment)[] = [];
           initiators.forEach((init) => {
             if (init.type === 'comment') {
-              newInitiators[newInitiators.length - 1].comment = init.value;
+              newInitiators.push(init);
             } else if (init.type === 'assignment') {
               let value: string | number | boolean = '';
               if (init.value.type === 'boolean') {
@@ -310,19 +298,20 @@ const MAAP = () => {
               }
               newInitiators.push({
                 name: getParameterName(init),
-                id: uuid(),
-                comment: '',
                 value,
+                type: 'initiator',
               });
             }
           });
+
+          console.log(inputBlocks);
+
           setFormData((prevFormData) =>
             prevFormData
               ? {
                   ...prevFormData,
                   parameters: newParameters,
                   initiators: newInitiators,
-                  docComments,
                   inputBlocks,
                   fileRefs,
                   sourceElements: data.value,

@@ -42,9 +42,7 @@ export type ActionType =
   | "atCngVarVal"
   | "at3DSimMsg"
   | "atRunExtApp"
-export type MAAPSourceElement = {
-  comment?: string
-} & (
+export type MAAPSourceElement =
   | MAAPStatement
   | MAAPAssignment
   | MAAPAsExpression
@@ -56,7 +54,6 @@ export type MAAPSourceElement = {
   | MAAPLiteral
   | MAAPIdentifier
   | MAAPComment
-)
 export type MAAPStatement =
   | MAAPSensitivityStatement
   | MAAPTitleStatement
@@ -515,11 +512,11 @@ export interface MAAPFormData {
   /**
    * Source elements from the .inp file identified as parameters
    */
-  parameters?: MAAPAssignment[]
+  parameters?: (MAAPAssignment | MAAPComment)[]
   /**
    * Source elements from the .inp file identified as initiators
    */
-  initiators?: MAAPInitiator[]
+  initiators?: (MAAPInitiator | MAAPComment)[]
   /**
    * Source elements from the .inp file identified as input blocks (if blocks, when block, etc.)
    */
@@ -541,10 +538,6 @@ export interface MAAPFormData {
    */
   possibleInitiators?: MAAPParameter[]
   /**
-   * A list of doc comments extracted from the .inp file
-   */
-  docComments?: Record<string, MAAPComment>
-  /**
    * The doc link variable used to store the results
    */
   docLinkVariable?: string
@@ -561,7 +554,15 @@ export interface MAAPSensitivityStatement {
 }
 export interface MAAPTitleStatement {
   type: "title"
-  value?: string
+  value: {
+    title: string
+    comment: MAAPComment[]
+  }[]
+  comment: MAAPComment[]
+}
+export interface MAAPComment {
+  type: "comment"
+  value: string
 }
 export interface MAAPFileStatement {
   fileType: "PARAMETER FILE" | "INCLUDE"
@@ -572,18 +573,20 @@ export interface MAAPBlockStatement {
   blockType: "PARAMETER CHANGE" | "INITIATORS"
   type: "block"
   value: MAAPSourceElement[]
+  comment: MAAPComment[]
 }
 export interface MAAPConditionalBlockStatement {
   blockType: "IF" | "WHEN"
   test: MAAPExpression
   type: "conditional_block"
   value: MAAPSourceElement[]
-  id: string
+  comment: MAAPComment[]
 }
 export interface MAAPMultiPartExpression {
   type: "multi_expression"
   op: string
   value: (MAAPExpression | MAAPIsExpression | MAAPMultiPartExpression)[]
+  comment: MAAPComment[]
 }
 export interface MAAPIsExpression {
   target: MAAPVariable
@@ -635,6 +638,7 @@ export interface MAAPParameterName {
 export interface MAAPAliasStatement {
   type: "alias"
   value: MAAPAsExpression[]
+  comment: MAAPComment[]
 }
 export interface MAAPAsExpression {
   target: MAAPVariable
@@ -645,16 +649,14 @@ export interface MAAPPlotFilStatement {
   n: number
   type: "plotfil"
   value: MAAPVariable[][]
+  comment: MAAPComment[]
 }
 export interface MAAPUserEvtStatement {
   type: "user_evt"
   value: MAAPUserEvtElement[]
+  comment: MAAPComment[]
 }
 export interface MAAPParameter {
-  /**
-   * An ID assigned to the parameter by the form
-   */
-  id: string
   flag?: MAAPBooleanLiteral
   index?: number
   type: "parameter"
@@ -670,6 +672,7 @@ export interface MAAPActionStatement {
   index: number
   type: "action"
   value: MAAPUserEvtElement[]
+  comment: MAAPComment[]
 }
 export interface MAAPFunctionStatement {
   name: MAAPIdentifier
@@ -684,20 +687,14 @@ export interface MAAPLookupStatement {
   name: MAAPVariable
   type: "lookup_variable"
   value: string[]
+  comment: MAAPComment[]
 }
 export interface MAAPAssignment {
   target: MAAPCallExpression | MAAPIdentifier
   type: "assignment"
-  value: MAAPExpression & Record<string, unknown>
-  comment?: string
-}
-/**
- * This interface was referenced by `undefined`'s JSON-Schema definition
- * via the `patternProperty` "*".
- */
-export interface MAAPComment {
-  type: "comment"
-  value: string
+  value: MAAPExpression & {
+    useVariable?: boolean
+  }
 }
 export interface MAAPInitiator {
   /**
@@ -705,17 +702,10 @@ export interface MAAPInitiator {
    */
   name: string
   /**
-   * The doc comment describing the initiator
-   */
-  comment: string
-  /**
-   * An ID assigned to the initiator by the form
-   */
-  id?: string
-  /**
    * The value of the initiator
    */
   value: string | number | boolean
+  type: "initiator"
 }
 export interface Event {
   /**
