@@ -104,7 +104,7 @@ namespace SimulationEngine
     public int pathResultsInterval { get; set; } = -1;
     public string xmppPassword { get; set; } = "secret";
     public List<List<string>> xmppLinks = new List<List<string>>();
-    public int threads { get; set; } = 1;
+    public int? threads { get; set; } = null; //null is default no threading. Even 1 will use a tread and the temp folders so that you can run multiple instances using the same model, by just changing the name.
   }
 
   public class VarInitValue
@@ -117,12 +117,13 @@ namespace SimulationEngine
   {
     private string _optsJsonStr = "";
     private string _modelJsonStr = "";
-    TProgressCallBack _progressCallBack = null;
+    //TProgressCallBack _progressCallBack = null;
     private string _error = "";
     public Options_cur options = new Options_cur();
+    private bool _done = false;
 
     // Create attributes for objects
-    private ProcessSimBatch _simRuns = null;
+    private List<ProcessSimBatch> _simRuns = new List<ProcessSimBatch>();
     private EmraldModel _model = null;
     // Create attributes for options (things formerly input on the command line)
     //private string run_count;
@@ -140,7 +141,7 @@ namespace SimulationEngine
     {
       _optsJsonStr = optionsJsonStr;
       _modelJsonStr = modelJsonStr;
-      _progressCallBack = progressCallBack;
+      //_progressCallBack = progressCallBack;
     }
 
     public JSONRun(Options_cur ops, string modelJsonStr = "", TProgressCallBack progressCallBack = null)
@@ -148,10 +149,10 @@ namespace SimulationEngine
       this.options = ops;
       _optsJsonStr = JsonConvert.SerializeObject(ops);
       _modelJsonStr = modelJsonStr;
-      _progressCallBack = progressCallBack;
+      //_progressCallBack = progressCallBack;
     }
 
-    public string RunSim(Progress progress = null)
+    public string RunSim()
     {
       percentDone = 0;
 
@@ -222,51 +223,89 @@ namespace SimulationEngine
 
       // Create a new ProcessSimBatch object
       // This is where the maxTime and outfile_path attributes are used
-      bool done = false;
-      _simRuns = new ProcessSimBatch(_model, TimeSpan.Parse(options.runtime), options.resout, options.jsonRes, options.pathResultsInterval, 0);
-      _simRuns.SetupBatch(options.runct, true);
-      _simRuns.AssignProgress(progress);
-      foreach(var v in _model.allVariables.Values)
-      {
-        if(v.monitorInSim)
-          _simRuns.logVarVals.Add(v.name);
-      }
-      foreach (var varItem in this.options.variables)
-      {
-        _simRuns.logVarVals.Add(varItem.ToString());
-      }
+      List<bool> doneTracking = new List<bool>();
+      List<Thread> threads = new List<Thread>();
+      _simRuns.Clear();
 
-      foreach (var varItem in this.options.initVars)
+      for (int i = 0; i < (ConfigData.threads == null ? 1 : ConfigData.threads); i++) //if null just run once.
       {
-        _simRuns.initVarVals.Add(varItem.varName, varItem.value);
-      }
+        _simRuns.Add(new ProcessSimBatch(_model, TimeSpan.Parse(options.runtime), options.resout, options.jsonRes, options.pathResultsInterval, ConfigData.threads == null ? null : i));
+        doneTracking.Add(false);
+        _simRuns[i].SetupBatch(options.runct, true);
 
-      //ThreadStart tStarter = new ThreadStart();
-      //run this when the thread is done.
-      ThreadStart tStarter = () =>
-      {
-        _simRuns.RunBatch();
-        _simRuns.GetVarValues(_simRuns.logVarVals, true);
-        _error = _simRuns.error;
-        done = true;
-        if (progress != null)
+        foreach(var v in _model.allVariables.Values)
         {
-          progress.done = true;
+          if(v.monitorInSim)
+            _simRuns[i].logVarVals.Add(v.name);
         }
-      };
+        foreach (var varItem in this.options.variables)
+        {
+          _simRuns[i].logVarVals.Add(varItem.ToString());
+        }
 
-      Thread simThread = new Thread(tStarter);
-      simThread.Start();
+        foreach (var varItem in this.options.initVars)
+        {
+          _simRuns[i].initVarVals.Add(varItem.varName, varItem.value);
+        }
+
+        ThreadStart tStarter = new ThreadStart(_simRuns[i].RunBatch);
+        //run this when the thread is done.
+        int locIdx = i;
+        tStarter += () =>
+        {
+          _simRuns[locIdx].GetVarValues(_simRuns[i].logVarVals, true);
+          _error += _simRuns[locIdx].error + Environment.NewLine;
+          doneTracking[locIdx] = true;
+        };
+
+        Thread simThread = new Thread(tStarter);
+        simThread.Start();
+        threads.Add(simThread);
+
+        ////ThreadStart tStarter = new ThreadStart();
+        ////run this when the thread is done.
+        //ThreadStart tStarter = () =>
+        //{
+        //  _simRuns[i].RunBatch();
+        //  _simRuns[i].GetVarValues(_simRuns[i].logVarVals, true);
+        //  _error += _simRuns[i].error + Environment.NewLine;
+        //  doneTracking[i] = true;
+        //  //if (progress != null)
+        //  //{
+        //  //  progress.done = true;
+        //  //}
+        //};
+
+        //Thread simThread = new Thread(tStarter);
+        //simThread.Start();
+      }
+
+      Task.Run(() =>
+      {
+        // Wait for all threads to complete
+        foreach (var thread in threads)
+        {
+          thread.Join();
+        }
+
+        //compile results if needed
+        for (int i = 1; i < _simRuns.Count; i++)
+        {
+          _simRuns[0].AddOtherBatchResults(_simRuns[i]);
+        }
+        _simRuns[0].WriteFinalResults(true);
+      });
+
+      ////if (progress == null)
+      ////{
+      ////must wait until done to return
+      //bool done = false;
+      //while (!done)
+      //{
+      //  System.Threading.Thread.Sleep(100);
+      //  done = doneTracking.All(item => item);
       //}
-
-      if (progress == null)
-      {
-        //must wait until done to return
-        while (!done)
-        {
-          System.Threading.Thread.Sleep(100);
-        }
-      }
+     // }
       return error;
     }
 
@@ -424,11 +463,11 @@ namespace SimulationEngine
       return true;
     }
 
-    private void Progress(TimeSpan runTime, int runCnt, bool finalValOnly)
-    {
-      this.percentDone = runCnt / options.runct;
-      if (_progressCallBack != null)
-        _progressCallBack(runTime, runCnt, finalValOnly);
-    }
+    //private void Progress(TimeSpan runTime, int runCnt, bool finalValOnly)
+    //{
+    //  this.percentDone = runCnt / options.runct;
+    //  if (_progressCallBack != null)
+    //    _progressCallBack(runTime, runCnt, finalValOnly);//, 0); //no display thread for JSON runs.
+    //}
   }
 }

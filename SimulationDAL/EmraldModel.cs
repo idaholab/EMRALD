@@ -170,7 +170,7 @@ namespace SimulationDAL
       this.fileName = fileName;
       this._threadNumber = threadNum;
 
-      if (threadNum.HasValue) //assign thread info and copy data
+      if (threadNum != null) //assign thread info and copy data
       {
         // Deserialize multiThreadInfo if present
         if (jsonObj.multiThreadInfo != null)
@@ -401,8 +401,7 @@ namespace SimulationDAL
       foreach (var item in multiThreadInfo.ToCopyForRefs)
       {
         //update items so that they will work with multi threading.
-        var iType = item.GetEnumType();
-        switch (iType)
+        switch (item.ItemType)
         {
           case EnIDTypes.itVar:
             //only DocVariable
@@ -437,7 +436,7 @@ namespace SimulationDAL
             Console.WriteLine("Handling itExtSim");
             break;
           default:
-            throw new ArgumentOutOfRangeException(nameof(EnIDTypes), iType, null);
+            throw new ArgumentOutOfRangeException(nameof(EnIDTypes), item.ItemType, null);
         }
 
       }

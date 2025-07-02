@@ -2,19 +2,20 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Runtime.Intrinsics.X86;
 using System.Text;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
-using System.IO;
-using MathNet.Numerics.Statistics;
-using SimulationDAL;
 using System.Xml.Linq;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
+using MathNet.Numerics.Statistics;
 using Matrix.Xmpp.Disco;
-using Newtonsoft.Json.Schema;
-using System.Runtime.Intrinsics.X86;
+using Matrix.Xmpp.XHtmlIM;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Schema;
+using SimulationDAL;
 
 namespace SimulationEngine
 {
@@ -98,7 +99,7 @@ namespace SimulationEngine
 
     }
 
-    public static string CombineResultFiles(string mergePath1, string mergePath2, string destPath = "")
+    public static string CombineJsonResultFiles(string mergePath1, string mergePath2, string destPath = "")
     {
       if (!File.Exists(mergePath1) || !File.Exists(mergePath2))
       {
@@ -123,12 +124,12 @@ namespace SimulationEngine
         }
         File.WriteAllText(destPath, combinedResStr);
       }
-
       
       return combinedResStr;
     }
-
   }
+
+
 
   public class KeyStateResult : ResultStateBase
   {
@@ -184,7 +185,6 @@ namespace SimulationEngine
           merged.Add(state.Key);
         }
       }
-
       
       //remove the items merged
       foreach (var name in merged)
@@ -486,10 +486,19 @@ namespace SimulationEngine
       _count += other._count;
       _contributionCnt += other._contributionCnt;
 
-      //estimate the standard deviation for combination of 2 
-      double sum = (((_contributionCnt / this._rate)-1) * Math.Pow(((TimeSpan)_stdDev).TotalMinutes, 2));
-      sum += (((_contributionCnt / other._rate) - 1) * Math.Pow(((TimeSpan)other._stdDev).TotalMinutes, 2));
-      double res = Math.Sqrt(sum / ((_contributionCnt / this._rate) + (other._contributionCnt / other._rate) - 2));
+      if (other.times.Count == other._count)
+      {
+        _times.AddRange(other.times);
+        _stdDev = null; //reset so it is calculated again when asked for.
+      }
+      else //we loaded the results from a file then we don't have times needed complete Standard deviation 
+      { 
+        //estimate the standard deviation for combination of 2
+        double sum = (((_contributionCnt / this._rate) - 1) * Math.Pow(((TimeSpan)_stdDev).TotalMinutes, 2));
+        sum += (((_contributionCnt / other._rate) - 1) * Math.Pow(((TimeSpan)other._stdDev).TotalMinutes, 2));
+        double res = Math.Sqrt(sum / ((_contributionCnt / this._rate) + (other._contributionCnt / other._rate) - 2));
+        _stdDev = TimeSpan.FromMinutes(res);
+      }
 
 
       _rate = (double)_contributionCnt / totCnt;

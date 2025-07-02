@@ -2,27 +2,28 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
+using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using XmppMessageServer;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Schema;
-using Newtonsoft.Json.Linq;
-using MessageDefLib;
-using SimulationDAL;
-using System.IO;
-using System.Runtime.InteropServices;
-using NLog;
-using SimulationEngine;
-using System.Threading;
-using XmppServer;
-using Microsoft.Extensions.Options;
-using static EMRALD_Sim.UISettings;
 using Matrix.Xmpp.Bytestreams;
-using System.Diagnostics;
+using MessageDefLib;
+using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Schema;
+using NLog;
+using SimulationDAL;
+using SimulationEngine;
+using Windows.Devices.Geolocation;
+using XmppMessageServer;
+using XmppServer;
+using static EMRALD_Sim.UISettings;
 
 namespace EMRALD_Sim
 {
@@ -391,7 +392,7 @@ namespace EMRALD_Sim
 
             try
             {
-              if (SimulationEngine.OverallResults.CombineResultFiles(mergePath1, mergePath2, resPath) == "")
+              if (SimulationEngine.OverallResults.CombineJsonResultFiles(mergePath1, mergePath2, resPath) == "")
               {
                 Console.Write("Failed to load files, must have two valid file paths after -mergeresults.");
                 return false;
@@ -981,6 +982,7 @@ namespace EMRALD_Sim
         int runsDiv = int.Parse(tbRunCnt.Text) / (int)ConfigData.threads;
 
         List<Thread> threads = new List<Thread>();
+        simRuns.Clear();
 
         for (int i = 0; i < ConfigData.threads; i++)
         {
@@ -1009,17 +1011,7 @@ namespace EMRALD_Sim
           tStarter += () =>
           {
             simRuns[locIdx].GetVarValues(simRuns[locIdx].logVarVals, true);
-            //InvokeUIUpdate(ButtonEnableDelegate);
           };
-
-          //int locIdx = i;
-
-          //ThreadStart tStarter = () =>
-          //{
-          //  simRuns[locIdx].RunBatch(locIdx);
-          //  //run this when the runs are done.
-          //  simRuns[locIdx].GetVarValues(simRuns[locIdx].logVarVals, true);
-          //};
 
           Thread simThread = new Thread(tStarter);
           simThread.Start();
@@ -1034,8 +1026,16 @@ namespace EMRALD_Sim
             thread.Join();
           }
 
-          // Once all threads are done, update the UI
+          // Once all threads are done, update the UI and sum results
           InvokeUIUpdate(ButtonEnableDelegate);
+
+          //compile results if needed
+          for (int i=1; i<simRuns.Count; i++)
+          {
+            //SimulationEngine.OverallResults.CombineJsonResultFiles(simRuns[0].jsonResultsPaths, simRuns[i].jsonResultsPaths, simRuns[0].jsonResultsPaths);
+            simRuns[0].AddOtherBatchResults(simRuns[i]);
+          }
+          simRuns[0].WriteFinalResults(true);
         });
 
         //// Wait for all threads to complete
@@ -1255,7 +1255,7 @@ namespace EMRALD_Sim
       }
     }
 
-    private void DispResults(TimeSpan runTime, int runCnt, bool logFailedComps)
+    private void DispResults(TimeSpan runTime, int runCnt, bool logFailedComps, int? threadNum)
     {
       MethodInvoker methodInvokerDelegate = delegate ()
       {
@@ -1316,10 +1316,10 @@ namespace EMRALD_Sim
         this.Refresh();
         Application.DoEvents();
 
-        if (tbSavePath.Text != "")
-        {
-          simRuns[curT].LogResults(runTime, runCnt, logFailedComps);
-        }
+        //if (tbSavePath.Text != "")
+        //{
+        //  simRuns[curT].LogResults(runTime, runCnt, logFailedComps);
+        //}
 
       };
 

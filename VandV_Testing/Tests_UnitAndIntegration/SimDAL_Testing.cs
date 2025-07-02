@@ -914,7 +914,7 @@ namespace UnitAndIntegrationTesting
       //string pathRes1 = ""; // Notused
      
 
-      string combinedResStr = OverallResults.CombineResultFiles(fileLoc1, fileLoc2);
+      string combinedResStr = OverallResults.CombineJsonResultFiles(fileLoc1, fileLoc2);
 
       //Uncomment to update the validation files after they verified correct
       //CopyToValidated(compRes, combinedResStr);

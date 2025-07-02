@@ -93,7 +93,7 @@ namespace SimulationDAL
 
   public static class ConfigData
   {
-    static public int threads = 1;
+    static public int? threads = null;
     static public int? seed = null;
     static public LogLevel debugLev = LogLevel.Off;
     static public int? debugRunStart = null;
@@ -752,7 +752,7 @@ namespace SimulationDAL
   public class ToCopyForRef
   {
     public string ItemName { get; set; }
-    public string ItemType { get; set; }
+    public EnIDTypes ItemType { get; set; }
     public string RefPath { get; set; }
     public List<string> ToCopy { get; set; }
     public string RelPath { get; set; }
@@ -765,29 +765,29 @@ namespace SimulationDAL
     public ToCopyForRef(string itemName, EnIDTypes itemType, string refPath, List<string> toCopy, string relPath)
     {
       ItemName = itemName;
-      ItemType = itemType.ToString().Substring(2);
+      ItemType = itemType;
       RefPath = refPath;
-      
-      if(toCopy != null)
+
+      if (toCopy != null)
         ToCopy = toCopy;
-      else 
+      else
         ToCopy = new List<string>();
 
       RelPath = relPath;
     }
 
     //[JsonIgnore]
-    public EnIDTypes GetEnumType()
-    {
-      foreach (EnIDTypes type in Enum.GetValues(typeof(EnIDTypes)))
-      {
-        if (type.ToString().Substring(2).Equals(this.ItemType, StringComparison.OrdinalIgnoreCase))
-        {
-          return type;
-        }
-      }
-      throw new ArgumentException($"Invalid item type string: {this.ItemType}");
-    }
+    //public EnIDTypes GetEnumType()
+    //{
+    //  foreach (EnIDTypes type in Enum.GetValues(typeof(EnIDTypes)))
+    //  {
+    //    if (type.ToString().Substring(2).Equals(this.ItemType, StringComparison.OrdinalIgnoreCase))
+    //    {
+    //      return type;
+    //    }
+    //  }
+    //  throw new ArgumentException($"Invalid item type string: {this.ItemType}");
+    //}
   }
 
   public class ScanForReturnItem
