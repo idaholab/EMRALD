@@ -9,6 +9,7 @@ using System.Xml;
 using MathNet.Numerics.Distributions;
 using MathNet.Numerics.LinearAlgebra;
 using MessageDefLib;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using MyStuff.Collections;
 using Newtonsoft.Json;
 using ScriptEngineNS;
@@ -706,7 +707,7 @@ namespace SimulationDAL
       if (scanType == ScanForTypes.sfMultiThreadIssues)
       {
         //see if there are any file references in the code.         
-        var paths = CommonFunctions.FindFilePathReferences(compCode);
+        var paths = CommonFunctions.FindFilePathReferences(ref compCode);
         foreach (var path in paths)
         {
           itemList.Add(new ScanForRefsItem(this.id,
@@ -718,6 +719,16 @@ namespace SimulationDAL
       }
 
       return itemList;
+    }
+
+    public void UpdatePathRefs(string oldRef, string newRef)
+    {
+      //find the file references in the code and look for a match of the oldRef and replace.         
+      var paths = CommonFunctions.FindFilePathReferences(ref compCode, oldRef, newRef);
+
+      if (paths.Count >= 0)
+        throw new Exception("Failed to find string in the path " + oldRef + " in the source of the Evaluate Variable Event.");
+
     }
   }
 
@@ -878,6 +889,16 @@ namespace SimulationDAL
       }
 
       return itemList;
+    }
+
+    public void UpdatePathRefs(string oldRef, string newRef)
+    {
+      //find the file references in the code and look for a match of the oldRef and replace.         
+      var paths = CommonFunctions.FindFilePathReferences(ref compCode, oldRef, newRef);
+
+      if (paths.Count >= 0)
+        throw new Exception("Failed to find string in the path " + oldRef + " in the source of the External Simulation Event.");
+
     }
   }
 

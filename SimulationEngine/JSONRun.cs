@@ -269,23 +269,6 @@ namespace SimulationEngine
         Thread simThread = new Thread(tStarter);
         simThread.Start();
         threads.Add(simThread);
-
-        ////ThreadStart tStarter = new ThreadStart();
-        ////run this when the thread is done.
-        //ThreadStart tStarter = () =>
-        //{
-        //  _simRuns[i].RunBatch();
-        //  _simRuns[i].GetVarValues(_simRuns[i].logVarVals, true);
-        //  _error += _simRuns[i].error + Environment.NewLine;
-        //  doneTracking[i] = true;
-        //  //if (progress != null)
-        //  //{
-        //  //  progress.done = true;
-        //  //}
-        //};
-
-        //Thread simThread = new Thread(tStarter);
-        //simThread.Start();
       }
 
       Task.Run(() =>

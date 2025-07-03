@@ -740,7 +740,7 @@ namespace SimulationDAL
       if (scanType == ScanForTypes.sfMultiThreadIssues)
       {
         //see if there are any file references in the code.         
-        var paths = CommonFunctions.FindFilePathReferences(scriptCode);
+        var paths = CommonFunctions.FindFilePathReferences(ref scriptCode);
         foreach (var path in paths)
         {
           //if (!Path.IsPathRooted(path)) //todo, allow relative paths, but change to model path relative
@@ -755,6 +755,16 @@ namespace SimulationDAL
       }
 
       return listItems;
+    }
+
+    public void UpdatePathRefs(string oldRef, string newRef)
+    {
+      //find the file references in the code and look for a match of the oldRef and replace.         
+      var paths = CommonFunctions.FindFilePathReferences(ref scriptCode, oldRef, newRef);
+
+      if (paths.Count >= 0)
+        throw new Exception("Failed to find string in the path " + oldRef + " in the source of the External Simulation Event.");
+
     }
   }
 
@@ -1837,28 +1847,51 @@ namespace SimulationDAL
       if (scanType == ScanForTypes.sfMultiThreadIssues)
       {
         //see if there are any file references in the code.         
-        var paths = CommonFunctions.FindFilePathReferences(makeInputFileCode);
+        var paths = CommonFunctions.FindFilePathReferences(ref makeInputFileCode);
         foreach (var path in paths)
         {
           listItems.Add(new ScanForRefsItem(this.id,
                                           this.name,
                                           EnIDTypes.itAction,
-                                          "Run Exe Action[" + this.name + "] has a file path reference in the pre - process code: " + path + ".If there could be a multi thread issue, assign files to copy.",
+                                          "Run Exe Action[" + this.name + "] has a file path reference in the pre - process code: " + path + ". If there could be a multi thread issue, assign files to copy.",
                                           path));
           }
 
-        paths = CommonFunctions.FindFilePathReferences(processOutputFileCode);
+        paths = CommonFunctions.FindFilePathReferences(ref processOutputFileCode);
         foreach (var path in paths)
         {
           listItems.Add(new ScanForRefsItem(this.id,
                                           this.name,
                                           EnIDTypes.itAction,
-                                          "Run Exe Action [" + this.name + "] has a file path reference in the post-process code: " + path + ".If there could be a multi thread issue, assign files to copy.",
+                                          "Run Exe Action [" + this.name + "] has a file path reference in the post-process code: " + path + ". If there could be a multi thread issue, assign files to copy.",
                                           path));
         }
+
+        //get the reference to the exe
+        listItems.Add(new ScanForRefsItem(this.id,
+                                          this.name,
+                                          EnIDTypes.itAction,
+                                          "Run Exe Action [" + this.name + "] has a file path reference to the exe to run: " + this.exePath + ". Assign this Exe and its needed files to be copied.",
+                                          this.exePath));
       }
 
       return listItems;
+    }
+
+    public void UpdatePathRefs(string oldRef, string newRef)
+    {
+      bool inExe = false;
+      if (this.exePath == oldRef)
+      {
+        this.exePath = newRef;
+        inExe = true;
+      }
+      //find the file references in the code and look for a match of the oldRef and replace.         
+      var paths = CommonFunctions.FindFilePathReferences(ref makeInputFileCode, oldRef, newRef);
+      paths.AddRange(CommonFunctions.FindFilePathReferences(ref processOutputFileCode, oldRef, newRef));
+      if ((paths.Count >= 0) && !inExe)
+        throw new Exception("Failed to find string in the path " + oldRef + " in the source of the External Simulation Event and is not the exe path.");
+
     }
   }
 

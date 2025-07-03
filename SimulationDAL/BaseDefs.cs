@@ -622,7 +622,7 @@ namespace SimulationDAL
 
   public class CommonFunctions
   {
-    public static List<string> FindFilePathReferences(string code)
+    public static List<string> FindFilePathReferences(ref string code, string oldPath = null, string newPath = null)
     {
       // Define a regular expression pattern to match file paths
       string pattern = @"([a-zA-Z]:\\|\\|\/)(?:[\w\s\.-]+\\)*(?:[\w\s\.-]+)";
@@ -636,14 +636,34 @@ namespace SimulationDAL
       // Create a list to store the found file paths
       List<string> filePaths = new List<string>();
 
-      // Iterate through the matches and add them to the list
+      // Iterate through the matches
       foreach (Match match in matches)
       {
-        filePaths.Add(match.Value);
+        // If oldPath is provided, check for replacement
+        if (oldPath != null && match.Value.Equals(oldPath, StringComparison.OrdinalIgnoreCase))
+        {
+          // Replace oldPath with newPath in the code
+          code = code.Replace(oldPath, newPath);
+
+          // Add the newPath to the list
+          filePaths.Add(newPath);
+        }
+        else if (oldPath == null)
+        {
+          // If no replacement is needed, add the found paths to the list
+          filePaths.Add(match.Value);
+        }
+      }
+
+      // If replacements are made, print the modified code
+      if (oldPath != null)
+      {
+        Console.WriteLine("Modified code:\n" + code);
       }
 
       return filePaths;
     }
+
 
     public static void CopyDirectory(string sourceDir, string destinationDir, bool recursive)
     {

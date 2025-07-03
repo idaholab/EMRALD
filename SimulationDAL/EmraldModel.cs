@@ -405,35 +405,49 @@ namespace SimulationDAL
         {
           case EnIDTypes.itVar:
             //only DocVariable
-            var simItem = this.allVariables.FindByName(item.ItemName);
-            if (!(simItem is DocVariable))
+            var vItem = this.allVariables.FindByName(item.ItemName);
+            if (!(vItem is DocVariable))
               throw new Exception("Broken path reference edit " + item.ItemName + " is not a document variable.");
 
-            (simItem as DocVariable).UpdatePathRefs(item.RefPath, item.RelPath);
-            break;
-          case EnIDTypes.itComp:
-            Console.WriteLine("Handling itComp");
+            (vItem as DocVariable).UpdatePathRefs(item.RefPath, item.RelPath);
             break;
           case EnIDTypes.itState:
-            Console.WriteLine("Handling itState");
+            throw new Exception("Currently there are no state properties that need to be modified for multi threading, check the entry for - " + item.ItemName);
             break;
           case EnIDTypes.itEvent:
-            Console.WriteLine("Handling itEvent");
+            var eItem = this.allEvents.FindByName(item.ItemName);
+            if (!((eItem is EvalVarEvent) || (eItem is ExtSimEv)))
+              throw new Exception("Broken path reference edit " + item.ItemName + " is not an external Simulation or evaluate Variable event.");
+
+            if(eItem is EvalVarEvent)
+              (eItem as EvalVarEvent).UpdatePathRefs(item.RefPath, item.RelPath);
+
+            if (eItem is ExtSimEv)
+               (eItem as ExtSimEv).UpdatePathRefs(item.RefPath, item.RelPath);
             break;
           case EnIDTypes.itAction:
-            Console.WriteLine("Handling itAction");
+            var aItem = this.allActions.FindByName(item.ItemName);
+            if (!((aItem is ScriptAct) || (aItem is RunExtAppAct)))
+              throw new Exception("Broken path reference edit " + item.ItemName + " is not an Variable Value or Run Exe Action.");
+
+            if (aItem is ScriptAct)
+              (aItem as ScriptAct).UpdatePathRefs(item.RefPath, item.RelPath);
+
+            if (aItem is RunExtAppAct)
+              (aItem as RunExtAppAct).UpdatePathRefs(item.RefPath, item.RelPath);
+
             break;
           case EnIDTypes.itTreeNode:
-            Console.WriteLine("Handling itTreeNode");
+            throw new Exception("Currently there are no Logic Tree properties that need to be modified for multi threading, check the entry for - " + item.ItemName);
             break;
           case EnIDTypes.itTimer:
-            Console.WriteLine("Handling itTimer");
+            throw new Exception("Currently there are no Timer properties that need to be modified for multi threading, check the entry for - " + item.ItemName);
             break;
           case EnIDTypes.itDiagram:
-            Console.WriteLine("Handling itDiagram");
+            throw new Exception("Currently there are no Diagram properties that need to be modified for multi threading, check the entry for - " + item.ItemName);
             break;
           case EnIDTypes.itExtSim:
-            Console.WriteLine("Handling itExtSim");
+            throw new Exception("Currently there are no External Sim properties that need to be modified for multi threading, check the entry for - " + item.ItemName);
             break;
           default:
             throw new ArgumentOutOfRangeException(nameof(EnIDTypes), item.ItemType, null);
