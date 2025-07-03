@@ -517,6 +517,7 @@ namespace SimulationEngine
 
       LogResults(_totRunTime, _numRuns, _logFailedComps);
       MakePathResults(_numRuns, true);
+      GetVarValues(logVarVals, true);
 
       if (progressCallback != null)
         progressCallback(_totRunTime, _numRuns, _logFailedComps, _lists.threadNum);
@@ -791,7 +792,7 @@ namespace SimulationEngine
         else
         {
           KeyStateResult addToRes = this.keyPaths[keyPath.Key];
-          addToRes.Merge(keyPath.Value, this._numRuns + toAddBatch._numRuns);
+          addToRes.Merge(keyPath.Value, this._numRuns, this._numRuns + toAddBatch._numRuns);
         }
 
         this.keyPaths[keyPath.Key].AssignResults();
