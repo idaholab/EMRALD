@@ -536,10 +536,154 @@ namespace UserTesting
     }
 
 
-    //2.3.3 todo 
-    //2.3.4 todo 
-    //2.3.5 todo 
-    //2.3.6 todo 
+    //2.3.3
+    [Fact]
+    public void Two_Components_Active_And_Standby_Fail_And_Undergo_Repair()
+    {
+      //Description 
+      //Two Identical Components, One Active and One in Standby, Fail and Get Repaired, One Repairperson Available
+
+      //Validation Document
+      //in TestingFiles/UserValidationDocs see Numaricalcases.docx, 2.3.3	Two Identical Components, One Active and One in Standby, Fail and Get Repaired, One Repairperson Available
+
+      //////////////////////////////
+      ///Don't change the following
+      //////////////////////////////
+      string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
+      //Sets up directory for unit test 
+      string dir = SetupTestDir(testName);
+      //initial options, and optional results to save/test
+      JObject optionsJ = SetupJSON(dir, testName);
+      optionsJ["inpfile"] = MainTestDir() + ModelFolder() + testName + ".json";
+      /////////////////////////////////
+
+      /////////////
+      optionsJ["runct"] = 1000;
+      optionsJ["runtime"] = "2000.00:00:00";
+      JArray variablesArray = new JArray();
+      variablesArray.Add("TimeUnavail");
+      optionsJ["variables"] = variablesArray;
+
+      JSONRun testRun = new JSONRun(optionsJ.ToString());
+      Assert.True(TestRunSim(testRun));
+
+      //Uncomment to update the validation files after they verified correct
+      //CopyToValidated(dir, testName, optionsJ);
+
+      //compare the test result and optionally the paths and json if assigned
+      Compare(dir, testName, optionsJ);
+    }
+    //2.3.4
+    [Fact]
+    public void Two_Components_Active_And_Standby_Fail_And_Undergo_2Repair()
+    {
+      //Description 
+      //Two Identical Components, One Active and One in Standby, Fail and Get Repaired, Two Repairpersons Available
+
+      //Validation Document
+      //in TestingFiles/UserValidationDocs see Numaricalcases.docx, 2.3.4	Two Identical Components, One Active and One in Standby, Fail and Get Repaired, Two Repairpersons Available
+
+      //////////////////////////////
+      ///Don't change the following
+      //////////////////////////////
+      string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
+      //Sets up directory for unit test 
+      string dir = SetupTestDir(testName);
+      //initial options, and optional results to save/test
+      JObject optionsJ = SetupJSON(dir, testName);
+      optionsJ["inpfile"] = MainTestDir() + ModelFolder() + testName + ".json";
+      /////////////////////////////////
+
+      /////////////
+      optionsJ["runct"] = 1000;
+      optionsJ["runtime"] = "2000.00:00:00";
+      JArray variablesArray = new JArray();
+      variablesArray.Add("TimeUnavail");
+      optionsJ["variables"] = variablesArray;
+
+      JSONRun testRun = new JSONRun(optionsJ.ToString());
+      Assert.True(TestRunSim(testRun));
+
+      //Uncomment to update the validation files after they verified correct
+      //CopyToValidated(dir, testName, optionsJ);
+
+      //compare the test result and optionally the paths and json if assigned
+      Compare(dir, testName, optionsJ);
+    }
+    //2.3.5 
+    [Fact]
+    public void Two_Components_Series_Fail_And_Undergo_Repair()
+    {
+      //Description 
+      //Two Identical Components in Series Fail and Get Repaired, One Repairperson Available
+
+      //Validation Document
+      //in TestingFiles/UserValidationDocs see Numaricalcases.docx, 2.3.5	Two Identical Components in Series Fail and Get Repaired, One Repairperson Available
+
+      //////////////////////////////
+      ///Don't change the following
+      //////////////////////////////
+      string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
+      //Sets up directory for unit test 
+      string dir = SetupTestDir(testName);
+      //initial options, and optional results to save/test
+      JObject optionsJ = SetupJSON(dir, testName);
+      optionsJ["inpfile"] = MainTestDir() + ModelFolder() + testName + ".json";
+      /////////////////////////////////
+
+      /////////////
+      optionsJ["runct"] = 1000;
+      optionsJ["runtime"] = "2000.00:00:00";
+      JArray variablesArray = new JArray();
+      variablesArray.Add("TimeUnavail");
+      optionsJ["variables"] = variablesArray;
+
+      JSONRun testRun = new JSONRun(optionsJ.ToString());
+      Assert.True(TestRunSim(testRun));
+
+      //Uncomment to update the validation files after they verified correct
+      //CopyToValidated(dir, testName, optionsJ);
+
+      //compare the test result and optionally the paths and json if assigned
+      Compare(dir, testName, optionsJ);
+    }
+    //2.3.6
+    [Fact]
+    public void Two_Components_Series_Fail_And_Undergo_2Repair()
+    {
+      //Description 
+      //Two Identical Components in Series Fail and Get Repaired, Two Repairpersons Available
+
+      //Validation Document
+      //in TestingFiles/UserValidationDocs see Numaricalcases.docx, 2.3.6	Two Identical Components in Series Fail and Get Repaired, Two Repairpersons Available
+
+      //////////////////////////////
+      ///Don't change the following
+      //////////////////////////////
+      string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
+      //Sets up directory for unit test 
+      string dir = SetupTestDir(testName);
+      //initial options, and optional results to save/test
+      JObject optionsJ = SetupJSON(dir, testName);
+      optionsJ["inpfile"] = MainTestDir() + ModelFolder() + testName + ".json";
+      /////////////////////////////////
+
+      /////////////
+      optionsJ["runct"] = 1000;
+      optionsJ["runtime"] = "2000.00:00:00";
+      JArray variablesArray = new JArray();
+      variablesArray.Add("TimeUnavail");
+      optionsJ["variables"] = variablesArray;
+
+      JSONRun testRun = new JSONRun(optionsJ.ToString());
+      Assert.True(TestRunSim(testRun));
+
+      //Uncomment to update the validation files after they verified correct
+      //CopyToValidated(dir, testName, optionsJ);
+
+      //compare the test result and optionally the paths and json if assigned
+      Compare(dir, testName, optionsJ);
+    }
 
 
 
