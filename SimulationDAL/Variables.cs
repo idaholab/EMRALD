@@ -819,7 +819,7 @@ namespace SimulationDAL
 
       if (scanType == ScanForTypes.sfMultiThreadIssues)
       {
-        //see if there are any file references.  
+        //the docPath is a file references so return it.  
         itemList.Add(new ScanForRefsItem(this.id,
                                         this.name,
                                         EnIDTypes.itVar,
@@ -1437,6 +1437,8 @@ namespace SimulationDAL
         sim3dNameIDToID.Add(((Sim3DVariable)var).sim3DNameId, var.id);
       }
 
+      if (this.ContainsKey(var.id))
+        throw new Exception("Variable " + var.name + " has already been added to the variable list.");
       this.Add(var.id, var);
     }
 

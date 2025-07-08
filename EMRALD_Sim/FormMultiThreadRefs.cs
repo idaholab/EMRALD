@@ -10,13 +10,13 @@ namespace EMRALD_Sim
     public partial class FormMultiThreadRefs : Form
     {
         // Use the actual type if possible, but keep as dynamic if required by calling code
-        private dynamic _multiThreadInfo; // Your multiThreadInfo object
+        private MultiThreadInfo _multiThreadInfo; // Your multiThreadInfo object
         private List<string> _issueItems; // Items to highlight (strings matching ItemName)
         private int _currentItemIndex = -1;
 
-        public dynamic EditedMultiThreadInfo => _multiThreadInfo;
+        public MultiThreadInfo EditedMultiThreadInfo => _multiThreadInfo;
 
-        public FormMultiThreadRefs(dynamic multiThreadInfo, List<string> issueItems)
+        public FormMultiThreadRefs(MultiThreadInfo multiThreadInfo, List<string> issueItems)
         {
             InitializeComponent();
             _multiThreadInfo = multiThreadInfo;
@@ -105,6 +105,7 @@ namespace EMRALD_Sim
         private void btnOK_Click(object sender, EventArgs e)
         {
             DialogResult = DialogResult.OK;
+            _multiThreadInfo.AssignedTime = DateTime.Now;
             Close();
         }
 

@@ -1,0 +1,372 @@
+{
+  "id": "0",
+  "name": "ChangeVarTest",
+  "desc": "",
+  "version": 1,
+  "DiagramList": [
+    {
+      "id": "d5b13eb9-12fd-4e70-8aa2-90b8a170ac6c",
+      "name": "TestDist",
+      "desc": "",
+      "diagramType": "dtMulti",
+      "diagramLabel": "Plant",
+      "states": [
+        "Start",
+        "Distribute",
+        "2StDevAway",
+        "Restofit",
+        "End"
+      ],
+      "required": false,
+      "objType": "Diagram"
+    }
+  ],
+  "StateList": [
+    {
+      "id": "db61abf8-f1e9-418d-bfa5-f44d132bab38",
+      "name": "2StDevAway",
+      "desc": "",
+      "diagramName": "TestDist",
+      "stateType": "stKeyState",
+      "events": [
+        "Wait2"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": false,
+          "actions": [
+            "GoEnd"
+          ]
+        }
+      ],
+      "immediateActions": [
+        "ResetDist"
+      ],
+      "geometryInfo": {
+        "x": 665.7855665562813,
+        "y": -124.05942233967973,
+        "width": 0,
+        "height": 0
+      },
+      "required": false,
+      "objType": "State",
+      "defaultSingleStateValue": "Ignore"
+    },
+    {
+      "id": "38241f3d-31f3-41e9-ba2a-55f23839f28e",
+      "name": "Distribute",
+      "desc": "",
+      "diagramName": "TestDist",
+      "stateType": "stStandard",
+      "events": [
+        "Wait5"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": false,
+          "actions": [
+            "Go2Stdev"
+          ]
+        }
+      ],
+      "immediateActions": [
+        "SetNormalDistribution"
+      ],
+      "geometryInfo": {
+        "x": 297.5128739442322,
+        "y": 11.486983549970347,
+        "width": 0,
+        "height": 0
+      },
+      "required": false,
+      "objType": "State",
+      "defaultSingleStateValue": "Ignore"
+    },
+    {
+      "id": "c7f29963-5497-4c9f-88ce-e4548eb52cf0",
+      "name": "End",
+      "desc": "",
+      "diagramName": "TestDist",
+      "stateType": "stTerminal",
+      "events": [],
+      "eventActions": [],
+      "immediateActions": [],
+      "geometryInfo": {
+        "x": 1088.5538313748384,
+        "y": -23.7650978585539,
+        "width": 0,
+        "height": 0
+      },
+      "required": false,
+      "objType": "State",
+      "defaultSingleStateValue": "Ignore"
+    },
+    {
+      "id": "e62db2f8-4c39-4590-a78f-429e72571cca",
+      "name": "Restofit",
+      "desc": "",
+      "diagramName": "TestDist",
+      "stateType": "stKeyState",
+      "events": [
+        "Wait3"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": false,
+          "actions": [
+            "GoEnd"
+          ]
+        }
+      ],
+      "immediateActions": [
+        "ResetDist"
+      ],
+      "geometryInfo": {
+        "x": 681.178124513242,
+        "y": 145.88469108462346,
+        "width": 0,
+        "height": 0
+      },
+      "required": false,
+      "objType": "State",
+      "defaultSingleStateValue": "Ignore"
+    },
+    {
+      "id": "fb52e992-448f-4e33-bb0c-42759e8b2169",
+      "name": "Start",
+      "desc": "",
+      "diagramName": "TestDist",
+      "stateType": "stStart",
+      "events": [],
+      "eventActions": [],
+      "immediateActions": [
+        "GoDistribute"
+      ],
+      "geometryInfo": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0
+      },
+      "required": false,
+      "objType": "State",
+      "defaultSingleStateValue": "Ignore"
+    }
+  ],
+  "ActionList": [
+    {
+      "id": "96325114-4ba6-4084-bba1-ae405eeacb1c",
+      "name": "Go2Stdev",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": true,
+      "objType": "Action",
+      "required": false,
+      "newStates": [
+        {
+          "toState": "2StDevAway",
+          "prob": 0,
+          "failDesc": "",
+          "varProb": "DistributionPercent"
+        },
+        {
+          "toState": "Restofit",
+          "prob": -1,
+          "failDesc": "",
+          "varProb": null
+        }
+      ],
+      "mutExcl": true,
+      "codeVariables": [],
+      "variableName": "",
+      "scriptCode": "",
+      "sim3DMessage": "atCompModify",
+      "extSim": "",
+      "sim3DConfigData": "",
+      "sim3DModelRef": "",
+      "simEndTime": "",
+      "makeInputFileCode": "",
+      "exePath": "",
+      "processOutputFileCode": "",
+      "openSimVarParams": false,
+      "raType": "",
+      "returnProcess": "rtNone"
+    },
+    {
+      "id": "d52ddcee-754a-48cf-853e-4f127cc0695b",
+      "name": "GoDistribute",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": true,
+      "objType": "Action",
+      "required": false,
+      "newStates": [
+        {
+          "toState": "Distribute",
+          "prob": -1,
+          "varProb": null,
+          "failDesc": ""
+        }
+      ],
+      "mutExcl": true,
+      "codeVariables": [],
+      "variableName": "",
+      "scriptCode": "",
+      "sim3DMessage": "atCompModify",
+      "extSim": "",
+      "sim3DConfigData": "",
+      "sim3DModelRef": "",
+      "simEndTime": "",
+      "makeInputFileCode": "",
+      "exePath": "",
+      "processOutputFileCode": "",
+      "openSimVarParams": false,
+      "raType": "",
+      "returnProcess": "rtNone"
+    },
+    {
+      "id": "f4005d0a-6433-4359-b2e6-2d6439b1f88b",
+      "name": "GoEnd",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": true,
+      "objType": "Action",
+      "required": false,
+      "newStates": [
+        {
+          "toState": "End",
+          "prob": -1,
+          "varProb": null,
+          "failDesc": ""
+        }
+      ],
+      "mutExcl": true,
+      "codeVariables": [],
+      "variableName": "",
+      "scriptCode": "",
+      "sim3DMessage": "atCompModify",
+      "extSim": "",
+      "sim3DConfigData": "",
+      "sim3DModelRef": "",
+      "simEndTime": "",
+      "makeInputFileCode": "",
+      "exePath": "",
+      "processOutputFileCode": "",
+      "openSimVarParams": false,
+      "raType": "",
+      "returnProcess": "rtNone"
+    },
+    {
+      "id": "0aeb0694-8f68-4525-8d2f-d812f2c34070",
+      "name": "ResetDist",
+      "desc": "",
+      "actType": "atCngVarVal",
+      "mainItem": true,
+      "objType": "Action",
+      "required": false,
+      "newStates": [],
+      "mutExcl": true,
+      "codeVariables": [
+        "DistributionPercent"
+      ],
+      "variableName": "DistributionPercent",
+      "scriptCode": "return 1;",
+      "sim3DMessage": "atCompModify",
+      "extSim": "",
+      "sim3DConfigData": "",
+      "sim3DModelRef": "",
+      "simEndTime": "",
+      "makeInputFileCode": "",
+      "exePath": "",
+      "processOutputFileCode": "",
+      "openSimVarParams": false,
+      "raType": "",
+      "returnProcess": "rtNone"
+    },
+    {
+      "id": "196392fd-bfa1-47c1-8800-1a50251b822a",
+      "name": "SetNormalDistribution",
+      "desc": "",
+      "actType": "atCngVarVal",
+      "mainItem": true,
+      "objType": "Action",
+      "required": false,
+      "newStates": [],
+      "mutExcl": true,
+      "codeVariables": [
+        "DistributionPercent"
+      ],
+      "variableName": "DistributionPercent",
+      "scriptCode": "double mean = 0.0; // Parameters of the normal distribution    \r\ndouble stdDev = 1.0; // Create a normal distribution with the specified mean and standard deviation  \r\n \r\nvar normalDist = new MathNet.Numerics.Distributions.Normal(mean, stdDev); // Generate random numbers from the normal distribution\r\nint sampleSize = 1000;\r\ndouble[] samples = new double[sampleSize];\r\nnormalDist.Samples(samples); //Compute basic stats\r\ndouble computedStdDev = MathNet.Numerics.Statistics.Statistics.StandardDeviation(samples);\r\n \r\n// Calculate the percentage of values more than 2 standard deviations away from the mean\r\n        int count = 0;\r\n        foreach (var sample in samples)\r\n        {\r\n            if (Math.Abs(sample - mean) > 2 * computedStdDev)\r\n            {\r\n                count++;\r\n            }\r\n        }\r\n        double percentage = (double)count / sampleSize ;\r\n \r\n        // Assign the percentage to a variable\r\n        return percentage;",
+      "sim3DMessage": "atCompModify",
+      "extSim": "",
+      "sim3DConfigData": "",
+      "sim3DModelRef": "",
+      "simEndTime": "",
+      "makeInputFileCode": "",
+      "exePath": "",
+      "processOutputFileCode": "",
+      "openSimVarParams": false,
+      "raType": "",
+      "returnProcess": "rtNone"
+    }
+  ],
+  "EventList": [
+    {
+      "id": "4561beeb-7ba7-4766-926c-ff567645005a",
+      "name": "Wait2",
+      "desc": "",
+      "evType": "etTimer",
+      "mainItem": true,
+      "required": false,
+      "objType": "Event",
+      "triggerStates": [],
+      "allItems": true,
+      "time": "P0DT2S"
+    },
+    {
+      "id": "d03382bb-cea9-48e9-aba9-24d17f51e9f6",
+      "name": "Wait3",
+      "desc": "",
+      "evType": "etTimer",
+      "mainItem": true,
+      "required": false,
+      "objType": "Event",
+      "triggerStates": [],
+      "allItems": true,
+      "time": "P0DT3S"
+    },
+    {
+      "id": "dc4b4a4c-7ea0-45fc-bc47-2c56482a25ab",
+      "name": "Wait5",
+      "desc": "",
+      "evType": "etTimer",
+      "mainItem": true,
+      "required": false,
+      "objType": "Event",
+      "triggerStates": [],
+      "allItems": true,
+      "time": "P0DT5S"
+    }
+  ],
+  "LogicNodeList": [],
+  "VariableList": [
+    {
+      "name": "DistributionPercent",
+      "varScope": "gtGlobal",
+      "value": 1,
+      "type": "double",
+      "objType": "Variable",
+      "id": "6884d541-f479-48ae-bb1e-18387d290b68",
+      "desc": ""
+    }
+  ],
+  "ExtSimList": [],
+  "objType": "EMRALD_Model",
+  "emraldVersion": 3,
+  "templates": [],
+  "multiThreadInfo": {
+    "ToCopyForRefs": [],
+    "AssignedTime": "2025-07-08T10:50:08.1897978-06:00"
+  }
+}

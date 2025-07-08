@@ -113,6 +113,11 @@ namespace SimulationEngine
     private int _pathResultsInterval = -1; //how often to save the path results to the file
     private Dictionary<string, List<double>> finalVarValueList = new Dictionary<string, List<double>>();
     private int? _threadNum = 0;
+    protected string modelTxt = ""; //JSON text of the model
+    protected string origionalRootPath = ""; //Origonal path to the model file
+    protected string origionalFileName = ""; //origional file Name
+    
+
 
     //public Dictionary<string, double> variableVals { get { return _variableVals; } }
     public Dictionary<string, FailedItems> keyFailedItems = new Dictionary<string, FailedItems>(); //key = StateName, value = cut sets
@@ -134,9 +139,10 @@ namespace SimulationEngine
 
     public ProcessSimBatch(EmraldModel origModel, TimeSpan endtime, string resultFile, string jsonResPaths, int pathResultsInterval, int? threadNum = null)
     {
-      //make a new model so that we don't have issues if they run multiple batches or for mutli thraded 
-      this._lists = new EmraldModel();
-      this._lists.DeserializeJSON(origModel.modelTxt, origModel.rootPath, origModel.fileName, threadNum); //this will update any references automatically if the threadNum != null
+      //don't deserialize model here because the singletions for numbering are by thread and the tread has not been assigned yet if multitheading
+      modelTxt = origModel.modelTxt;
+      origionalRootPath = origModel.rootPath;
+      origionalFileName = origModel.fileName;
       this._threadNum = threadNum;
       this._endTime = endtime;
       this._pathResultsInterval = pathResultsInterval;
@@ -145,25 +151,8 @@ namespace SimulationEngine
       this._origionalResutsFile = resultFile;
 
 
-      //if this is mutithreaded then it needs a temp work area for the model and results.
-      if (threadNum != null)
-      {
-        try
-        {
-          // Set the file paths with the rootPath
-          this._resultFile = Path.Combine(this._lists.rootPath, Path.GetFileName(resultFile));
-          this._jsonResultPaths = Path.Combine(this._lists.rootPath, Path.GetFileName(jsonResPaths));
-        }
-        catch (Exception e)
-        { 
-          _error = "Failed to prep for Multi Threading: " + e.Message;
-        }
-      }
-      else
-      {
-        this._resultFile = resultFile;
-        this._jsonResultPaths = jsonResPaths;
-      }      
+      this._resultFile = resultFile;
+      this._jsonResultPaths = jsonResPaths;
     }
 
     //public void Add3DSimulationData(HoudiniSimClient sim3DHandler, double frameRate, string sim3DPath)//, HoudiniSimClient.TLogEvCallBack viewNotifications)
@@ -252,6 +241,25 @@ namespace SimulationEngine
 
     public void RunBatch()
     {
+      //make a new model so that we don't have issues if they run multiple batches or for mutli thraded must do in the thread function
+      this._lists = new EmraldModel();
+      this._lists.DeserializeJSON(modelTxt, origionalRootPath, origionalFileName, threadNum); //this will update any references automatically if the threadNum != null
+
+      //if this is mutithreaded then it needs a temp work area for the model and results.
+      if (threadNum != null)
+      {
+        try
+        {
+          // Set the file paths with the rootPath
+          this._resultFile = Path.Combine(this._lists.rootPath, Path.GetFileName(_resultFile));
+          this._jsonResultPaths = Path.Combine(this._lists.rootPath, Path.GetFileName(_jsonResultPaths));
+        }
+        catch (Exception e)
+        {
+          _error = "Failed to prep for Multi Threading: " + e.Message;
+        }
+      }
+      
 
       //if there were any xmpp connections specified in the perams not set by the user, connect here
       if (!AutoConnectExtSim())
@@ -506,7 +514,8 @@ namespace SimulationEngine
       }
     }
 
-    public void WriteFinalResults(bool ignoreThreadPath = false)
+    //if this is the final results of a mutli thread pass in ignoreThreadPath and the threadCnt 
+    public void WriteFinalResults(bool ignoreThreadPath = false, int threadCnt = 1)
     {
       if ((threadNum != null) && ignoreThreadPath)
       {
@@ -515,7 +524,7 @@ namespace SimulationEngine
         this._jsonResultPaths = _origionalJsonResutsFile;
       }
 
-      LogResults(_totRunTime, _numRuns, _logFailedComps);
+      LogResults(_totRunTime, _numRuns, _logFailedComps, threadCnt);
       MakePathResults(_numRuns, true);
       GetVarValues(logVarVals, true);
 
@@ -652,7 +661,9 @@ namespace SimulationEngine
     //  //depths[curRes.name] -= 1;
     //}
 
-    private void LogResults(TimeSpan runTime, int runCnt, bool logFailedComps)//, int displayThread)
+    
+
+    private void LogResults(TimeSpan runTime, int runCnt, bool logFailedComps, int threadCnt = 1) //set maxThreadNum if loging combined thread results
     {
       //if (_progress != null) //this updates .
       //{ 
@@ -701,23 +712,33 @@ namespace SimulationEngine
               string varNames = "Run Idx, " + string.Join(", ", varDict.Keys.ToList());
               streamwriter.WriteLine(varNames);
 
-              for (int row = 0; row < runCnt; row++)
+              for (int row = 1; row <= runCnt; row++) //start number at 1
               {
-                bool hasRunValue = false;
-                string varValues = (row + 1).ToString();
-                foreach (var varValItem in varDict.Values)
+                //look for added results from other threads in X.x or RunNum.thread syntax
+                for (int threadNum = 0; threadNum < threadCnt; threadNum++)
                 {
-                  //get the value for each variable in a row if has a value
-                  string key = (row + 1).ToString();
-                  if (varValItem.ContainsKey(key))
-                  { 
-                    varValues = varValues + ", " + varValItem[key];
-                    hasRunValue = true;
-                  }
                   
-                }
-                if(hasRunValue)
-                  streamwriter.WriteLine(varValues);
+                  string key = (row).ToString();
+
+                  //thread output is normal output of 1,2,3,4, other threads are 1.1, 2.1, 3.1 ... 1.2, 2.2, 3.2 ...
+                  if (threadNum > 0)
+                    key = key + "." + (threadNum).ToString();
+
+                  bool hasRunValue = false;
+                  string varValues = key;
+                  foreach (var varValItem in varDict.Values)
+                  {
+                    //get the value for each variable in a row if has a value
+                    if (varValItem.ContainsKey(key))
+                    {
+                      varValues = varValues + ", " + varValItem[key];
+                      hasRunValue = true;
+                    }
+                  }
+
+                  if (hasRunValue)
+                    streamwriter.WriteLine(varValues);
+                }              
               }
             }
           }
@@ -820,31 +841,32 @@ namespace SimulationEngine
         }
       }
 
-      //add in variable values
-      //private Dictionary<string, Dictionary<string, Dictionary<string, string>>> _variableVals = new Dictionary<string, Dictionary<string, Dictionary<string, string>>>();
-      foreach (var variableCategory in toAddBatch._variableVals)
-      {
-        if (!this._variableVals.ContainsKey(variableCategory.Key))
-          this._variableVals.Add(variableCategory.Key, new Dictionary<string, Dictionary<string, string>>(variableCategory.Value));
-        else
-        {
-          foreach (var variableSubCategory in variableCategory.Value)
-          {
-            if (!this._variableVals[variableCategory.Key].ContainsKey(variableSubCategory.Key))
-              this._variableVals[variableCategory.Key].Add(variableSubCategory.Key, new Dictionary<string, string>(variableSubCategory.Value));
-            else
-            {
-              foreach (var variable in variableSubCategory.Value)
-              {
-                if (!this._variableVals[variableCategory.Key][variableSubCategory.Key].ContainsKey(variable.Key))
-                  this._variableVals[variableCategory.Key][variableSubCategory.Key].Add(variable.Key, variable.Value);
-                else
-                  this._variableVals[variableCategory.Key][variableSubCategory.Key][variable.Key] = variable.Value; // Update with the new value
-              }
-            }
-          }
-        }
-      }
+      ////add in variable values //already done when doing addToRes.Merge 
+      ////private Dictionary<string, Dictionary<string, Dictionary<string, string>>> _variableVals = new Dictionary<string, Dictionary<string, Dictionary<string, string>>>();
+      //foreach (var variableCategory in toAddBatch._variableVals)
+      //{
+      //  if (!this._variableVals.ContainsKey(variableCategory.Key))
+      //    this._variableVals.Add(variableCategory.Key, new Dictionary<string, Dictionary<string, string>>(variableCategory.Value));
+      //  else
+      //  {
+      //    foreach (var variableSubCategory in variableCategory.Value)
+      //    {
+      //      if (!this._variableVals[variableCategory.Key].ContainsKey(variableSubCategory.Key))
+      //        this._variableVals[variableCategory.Key].Add(variableSubCategory.Key, new Dictionary<string, string>(variableSubCategory.Value));
+      //      else
+      //      {
+      //        foreach (var variable in variableSubCategory.Value)
+      //        {
+      //          //add to list not update???
+      //          if (!this._variableVals[variableCategory.Key][variableSubCategory.Key].ContainsKey(variable.Key))
+      //            this._variableVals[variableCategory.Key][variableSubCategory.Key].Add(variable.Key, variable.Value);
+      //          else
+      //            this._variableVals[variableCategory.Key][variableSubCategory.Key][variable.Key] = variable.Value; // Update with the new value
+      //        }
+      //      }
+      //    }
+      //  }
+      //}
 
       this._totRunTime += toAddBatch._totRunTime;
       this._numRuns += toAddBatch._numRuns;

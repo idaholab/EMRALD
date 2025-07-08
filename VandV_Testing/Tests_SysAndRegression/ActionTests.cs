@@ -85,7 +85,7 @@ namespace SysAndRegressionTesting
 
 
     [Fact]
-    [Description("Test changing of a variable value useing the math library MathNet.Numerics")]
+    [Description("Test changing of a variable value using the math library MathNet.Numerics")]
     public void ChangeVarTest()
     {
 
@@ -99,6 +99,33 @@ namespace SysAndRegressionTesting
       //Change the default settings as needed for the test seed default set to 0 for testing.
       optionsJ["inpfile"] = MainTestDir() + ModelFolder() + testName + ".json";
       optionsJ["runct"] = 100;
+      JSONRun testRun = new JSONRun(optionsJ.ToString());
+      Assert.True(TestRunSim(testRun));
+
+      //Uncomment to update the validation files after they verified correct
+      //CopyToValidated(dir, testName, optionsJ);
+
+      //compare the test result and optionally the paths and json if assigned
+      Compare(dir, testName, optionsJ);
+    }
+
+    [Fact]
+    [Description("Test changing of a variable value using the math library MathNet.Numerics and Multi threading")]
+    public void ChangeVarTestMulti()
+    {
+
+      string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
+
+      //Setup directory for unit test 
+      string dir = SetupTestDir(testName);
+      //initial options, and optional results to save/test
+      JObject optionsJ = SetupJSON(dir, testName, true);
+
+      //Change the default settings as needed for the test seed default set to 0 for testing.
+      optionsJ["inpfile"] = MainTestDir() + ModelFolder() + testName + ".emrald";
+      optionsJ["runct"] = 100;
+      optionsJ["threads"] = 2;
+
       JSONRun testRun = new JSONRun(optionsJ.ToString());
       Assert.True(TestRunSim(testRun));
 

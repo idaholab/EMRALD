@@ -223,15 +223,19 @@ namespace SimulationEngine
 
       // Create a new ProcessSimBatch object
       // This is where the maxTime and outfile_path attributes are used
-      List<bool> doneTracking = new List<bool>();
       List<Thread> threads = new List<Thread>();
       _simRuns.Clear();
+      int runsDiv = options.runct / (int)ConfigData.threads;
+      bool resDone = false; //results done
+      int threadCnt = ConfigData.threads == null ? 1 : (int)ConfigData.threads;
 
-      for (int i = 0; i < (ConfigData.threads == null ? 1 : ConfigData.threads); i++) //if null just run once.
+      for (int i = 0; i < threadCnt; i++) //if null just run once.
       {
         _simRuns.Add(new ProcessSimBatch(_model, TimeSpan.Parse(options.runtime), options.resout, options.jsonRes, options.pathResultsInterval, ConfigData.threads == null ? null : i));
-        doneTracking.Add(false);
-        _simRuns[i].SetupBatch(options.runct, true);
+        if (i == 0) //add extra runs on the first one
+          _simRuns[i].SetupBatch(runsDiv + (options.runct % threadCnt), true);
+        else
+          _simRuns[i].SetupBatch(runsDiv, true);
 
         foreach(var v in _model.allVariables.Values)
         {
@@ -257,7 +261,6 @@ namespace SimulationEngine
           {
             if(_simRuns[locIdx].error != "")
               _error += _simRuns[locIdx].error + Environment.NewLine;
-            doneTracking[locIdx] = true;
           }
           catch (Exception ex)
           {
@@ -284,15 +287,15 @@ namespace SimulationEngine
         {
           _simRuns[0].AddOtherBatchResults(_simRuns[i]);
         }
-        _simRuns[0].WriteFinalResults(true);
+        _simRuns[0].WriteFinalResults(true, threadCnt);
+        resDone = true;
       });
 
       //must wait until done to return
-      bool done = false;
-      while (!done)
+      
+      while (!resDone)
       {
         System.Threading.Thread.Sleep(100);
-        done = doneTracking.All(item => item);
       }
     
       return error;

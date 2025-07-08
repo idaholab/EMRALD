@@ -116,6 +116,34 @@ namespace SysAndRegressionTesting
     }
 
     [Fact]
+    [Description("Make sure the accrual variable stats are correct using multi threaded")]
+    public void StatVarTestMulti()
+    {
+      string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
+
+      //Setup directory for unit test 
+      string dir = SetupTestDir(testName);
+      //initial options, and optional results to save/test
+      JObject optionsJ = SetupJSON(dir, testName, true);
+
+      //Change the default settings as needed for the test seed default set to 0 for testing.
+      SimulationEngine.Options_cur options = optionsJ.ToObject<SimulationEngine.Options_cur>();
+      options.inpfile = MainTestDir() + ModelFolder() + testName + ".emrald";
+      options.runct = 100;
+      options.threads = 2;
+      //options.variables = new List<string>() { "SumCurTime", "Accrual_Save" };
+
+      JSONRun testRun = new JSONRun(options);
+      Assert.True(TestRunSim(testRun));
+
+      //Uncomment to update the validation files after they verified correct
+      CopyToValidated(dir, testName, optionsJ);
+
+      //compare the test result and optionally the paths and json if assigned
+      Compare(dir, testName, optionsJ);
+    }
+
+    [Fact]
     [Description("Simple accrual variable test with two accrual variables")]
     public void VarAccruTest()
     {

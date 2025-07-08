@@ -100,43 +100,45 @@ namespace EMRALD_Sim
 
       if (model != null)
       {
-        OpenModel(model);
-
-        tcMain.SelectedTab = tabSimulate;
-
-        //check the monitor values
-        for (int idx = 0; idx < lbMonitorVars.Items.Count; idx++)
+        if (OpenModel(model))
         {
-          if (monitor.Contains(lbMonitorVars.Items[idx].ToString()))
-          {
-            lbMonitorVars.SetItemChecked(idx, true);
-          }
-        }
 
-        //assign the xmpp connections if any
-        for (int idx = 0; idx < _xmppLink.Count; idx++)
-        {
-          AssignServer(); //make sure it has been assigned
-          var extSimLink = _sim.allExtSims.FindByName(_xmppLink[idx][0], false);
-          if (extSimLink == null)
+          tcMain.SelectedTab = tabSimulate;
+
+          //check the monitor values
+          for (int idx = 0; idx < lbMonitorVars.Items.Count; idx++)
           {
-            Console.Write("Bad -c first input. No external link in model named - " + _xmppLink[idx][0]);
+            if (monitor.Contains(lbMonitorVars.Items[idx].ToString()))
+            {
+              lbMonitorVars.SetItemChecked(idx, true);
+            }
           }
-          else
+
+          //assign the xmpp connections if any
+          for (int idx = 0; idx < _xmppLink.Count; idx++)
           {
-            extSimLink.resourceName = _xmppLink[idx][1] + " - " + _xmppLink[idx][2].ToLower();
-            extSimLink.verified = false;
-            extSimLink.timeout = int.Parse(_xmppLink[idx][3]);
-            //check the UI
-            var itemIdx = lbExtSimLinks.FindStringExact(_xmppLink[idx][0]);
-            lbExtSimLinks.SetItemChecked(itemIdx, true);
+            AssignServer(); //make sure it has been assigned
+            var extSimLink = _sim.allExtSims.FindByName(_xmppLink[idx][0], false);
+            if (extSimLink == null)
+            {
+              Console.Write("Bad -c first input. No external link in model named - " + _xmppLink[idx][0]);
+            }
+            else
+            {
+              extSimLink.resourceName = _xmppLink[idx][1] + " - " + _xmppLink[idx][2].ToLower();
+              extSimLink.verified = false;
+              extSimLink.timeout = int.Parse(_xmppLink[idx][3]);
+              //check the UI
+              var itemIdx = lbExtSimLinks.FindStringExact(_xmppLink[idx][0]);
+              lbExtSimLinks.SetItemChecked(itemIdx, true);
+            }
           }
-        }
 
 
-        if (execute)
-        {
-          btnStartSims_Click(this, null);
+          if (execute)
+          {
+            btnStartSims_Click(this, null);
+          }
         }
       }
     }
@@ -829,9 +831,11 @@ namespace EMRALD_Sim
         recentToolStripMenuItem.DropDownItems.Remove(toolStripMenuItem);
         recentToolStripMenuItem.DropDownItems.Insert(0, toolStripMenuItem);
 
-        OpenModel(toolStripMenuItem.Text);
-        PopulateSettingsFromJson();
-        SaveUISettings();
+        if (OpenModel(toolStripMenuItem.Text))
+        {
+          PopulateSettingsFromJson();
+          SaveUISettings();
+        }
       }
     }
 
@@ -983,6 +987,7 @@ namespace EMRALD_Sim
 
         List<Thread> threads = new List<Thread>();
         simRuns.Clear();
+        int threadCnt = ConfigData.threads == null ? 1 : (int)ConfigData.threads;
 
         for (int i = 0; i < ConfigData.threads; i++)
         {
@@ -1068,12 +1073,12 @@ namespace EMRALD_Sim
     {
       if (openModel.ShowDialog() == DialogResult.OK)
       {
-        OpenModel(openModel.FileName);
-        AddRecentlyOpenedFileToSettings();
+        if (OpenModel(openModel.FileName))
+          AddRecentlyOpenedFileToSettings();
       }
     }
 
-    private void OpenModel(string path)
+    private bool OpenModel(string path)
     {
       Cursor saveCurs = Cursor.Current;
       Cursor.Current = Cursors.WaitCursor;
@@ -1090,6 +1095,7 @@ namespace EMRALD_Sim
         txtMStatus.ForeColor = Color.Maroon;
         txtMStatus.Text = errorStr;
         Console.Write(errorStr);
+        return false;
       }
       else
       {
@@ -1097,6 +1103,7 @@ namespace EMRALD_Sim
       }
 
       Cursor.Current = saveCurs;
+      return true;
     }
 
     private void SaveUISettingsToJson()
@@ -1212,6 +1219,16 @@ namespace EMRALD_Sim
         txtMStatus.Text = "Model Loaded Successfully";
         txtMStatus.ForeColor = Color.Green;
         Console.Write(txtMStatus.Text);
+
+        if(_sim.updated)
+        {
+          DialogResult result = MessageBox.Show("Model was converted to the latest version, save?", "Save Changes", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
+
+          if (result == DialogResult.Yes)
+          {
+            saveStripMenuItem_Click(null, null);
+          }
+        }
       }
 
       InitSimTabInfo();
@@ -1528,7 +1545,17 @@ namespace EMRALD_Sim
       {
         try
         {
+          bool extUpdate = false;
+          if (Path.GetExtension(_modelPath) == ".json")
+          {
+            DialogResult result = MessageBox.Show("Update to .emrald extension?", "New Extension", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
+
+            extUpdate = result == DialogResult.Yes;
+          } 
+
           File.Delete(_modelPath);
+          if (extUpdate)
+            _modelPath = Path.ChangeExtension(_modelPath, ".emrald");
           File.WriteAllText(_modelPath, teModel.Text);
         }
         catch
@@ -1599,58 +1626,98 @@ namespace EMRALD_Sim
 
     private void cbMultiThreaded_CheckedChanged(object sender, EventArgs e)
     {
-      if (_sim == null)
+      Cursor.Current = Cursors.WaitCursor;
+      try
       {
-        MessageBox.Show("You must load a model before enabling multi-threaded mode.", "No Model Loaded", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-        cbMultiThreaded.Checked = false;
-        return;
-      }
-
-      if (_sim.multiThreadInfo == null)
-        _sim.multiThreadInfo = new MultiThreadInfo();
-
-      if (cbMultiThreaded.Checked == false)
-      {
-        tbThreads.Text = "1";
-      }
-      else
-      {
-        tbSeed.Text = "";
-
-        // Always get issues (if any) for highlighting, but always show the editor form (Option B)
-        List<string> issueItems = _sim.CanMutiThread();
-        if (issueItems.Count > 0)
+        if (_sim == null)
         {
-          using (var frm = new FormMultiThreadRefs(_sim.multiThreadInfo, issueItems))
+          MessageBox.Show("You must load a model before enabling multi-threaded mode.", "No Model Loaded", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+          cbMultiThreaded.Checked = false;
+          return;
+        }
+
+        if (_sim.multiThreadInfo == null)
+          _sim.multiThreadInfo = new MultiThreadInfo();
+
+        if (cbMultiThreaded.Checked == false)
+        {
+          tbThreads.Text = "0"; //0 indicates no threading, 1 will copy the model and run in a seperate thread as if multithreading but still just one thread.
+        }
+        else
+        {
+          tbSeed.Text = "";
+
+          //figure out recommended thread number
+          int recommendedThreads = 1;
+          // Get total number of logical processors
+          int totalProcessors = Environment.ProcessorCount;
+
+          // Use PerformanceCounter to get current CPU usage
+          PerformanceCounter cpuCounter = new PerformanceCounter("Processor", "% Processor Time", "_Total");
+
+          // Allow the counter to stabilize by waiting a bit
+          Thread.Sleep(100);
+
+          // Get the current CPU usage
+          float currentCpuUsage = cpuCounter.NextValue();
+
+          // Calculate the recommended number of threads
+          recommendedThreads = (int)((1 - currentCpuUsage) * totalProcessors);
+
+          // Ensure at least one thread is recommended
+          recommendedThreads = Math.Max(recommendedThreads, 1);
+
+          //don't use more than 75% of the threads by default
+          tbThreads.Text = Math.Min(recommendedThreads, (int)(totalProcessors * 0.75)).ToString();
+
+
+
+          // Always get issues (if any) for highlighting, but always show the editor form 
+          List<string> issueItems = _sim.CanMutiThread();
+          if (issueItems.Count > 0)
           {
-            var result = frm.ShowDialog();
-            if (result == DialogResult.OK)
+            using (var frm = new FormMultiThreadRefs(_sim.multiThreadInfo, issueItems))
             {
-              _sim.multiThreadInfo = frm.EditedMultiThreadInfo;
-              teModel.Text = _sim.modelTxt;
-              //save the multithread stuff.
-              saveStripMenuItem_Click(sender, e);
-            }
-            else
-            {
-              // User cancelled, revert checkbox and exit
-              cbMultiThreaded.Checked = false;
-              return;
+              var result = frm.ShowDialog();
+              if (result == DialogResult.OK)
+              {
+                _sim.multiThreadInfo = frm.EditedMultiThreadInfo;
+                teModel.Text = _sim.modelTxt;
+                //save the multithread stuff.
+                saveStripMenuItem_Click(sender, e);
+              }
+              else
+              {
+                // User cancelled, revert checkbox and exit
+                cbMultiThreaded.Checked = false;
+                return;
+              }
             }
           }
+          else //save the empty multiThreadInfo
+          {
+            _sim.multiThreadInfo = new MultiThreadInfo();
+            teModel.Text = _sim.modelTxt;
+            saveStripMenuItem_Click(sender, e);
+          }
         }
+
+        tbThreads.Visible = cbMultiThreaded.Checked;
+        lblThreads.Visible = cbMultiThreaded.Checked;
+        chkLog.Checked = !cbMultiThreaded.Checked;
+        chkLog.Enabled = !cbMultiThreaded.Checked;
+        tbSeed.Enabled = !cbMultiThreaded.Checked;
+        lbl_CurThread.Visible = cbMultiThreaded.Checked;
+        cbCurThread.Visible = cbMultiThreaded.Checked;
+        bttnPathRefs.Visible = cbMultiThreaded.Checked;
+
+        tbThreads_Leave(sender, e); // update cur thread stuff
       }
-
-      tbThreads.Visible = cbMultiThreaded.Checked;
-      lblThreads.Visible = cbMultiThreaded.Checked;
-      chkLog.Checked = !cbMultiThreaded.Checked;
-      chkLog.Enabled = !cbMultiThreaded.Checked;
-      tbSeed.Enabled = !cbMultiThreaded.Checked;
-      lbl_CurThread.Visible = cbMultiThreaded.Checked;
-      cbCurThread.Visible = cbMultiThreaded.Checked;
-      bttnPathRefs.Visible = cbMultiThreaded.Checked;
-
-      tbThreads_Leave(sender, e); // update cur thread stuff
+      finally
+      {
+        // Change cursor back to default
+        Cursor.Current = Cursors.Default;
+      }
     }
 
     private void tbThreads_Leave(object sender, EventArgs e)
@@ -1666,10 +1733,8 @@ namespace EMRALD_Sim
           cbCurThread.Items.Clear();
           for (int i = 0; i < ConfigData.threads; i++)
             cbCurThread.Items.Add($"{i}");
-          cbCurThread.SelectedIndex = 0;
-
-          if (cbCurThread.SelectedIndex < 1)
-            cbCurThread.SelectedIndex = 0;
+          if(cbMultiThreaded.Checked && (ConfigData.threads > 0))
+            cbCurThread.SelectedIndex = ((int)ConfigData.threads)-1;
 
           SaveUISettingsToJson();
         }

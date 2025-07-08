@@ -18,6 +18,11 @@ namespace EMRALD_Sim
     public static string LoadModel(ref EmraldModel sim, string path, ref string errorMsg)
     {
       string retStr = "";
+      if (!File.Exists(path))
+      {
+        errorMsg = "File does not exist anymore.";
+        return "";
+      }
       StreamReader srFileReader = new StreamReader(path);
 
       string modelStr = srFileReader.ReadToEnd();

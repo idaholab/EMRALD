@@ -4,15 +4,16 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
+using Matrix.Xmpp.XHtmlIM;
+using MessageDefLib;
+using MultiKeyDict;
 //using System.Windows.Forms;
 using MyStuff.Collections;
-using Sop.Collections.Generic.BTree;
-using MultiKeyDict;
-using SimulationDAL;
-using XmppMessageServer;
-using MessageDefLib;
-using Matrix.Xmpp.XHtmlIM;
 using Newtonsoft.Json;
+using SimulationDAL;
+using Sop.Collections.Generic.BTree;
+using XmppMessageServer;
 
 namespace SimulationTracking
 {
@@ -811,6 +812,7 @@ namespace SimulationTracking
     public List<int> StartTracker()
     {
       this.Reset();
+      
       terminated = false;
       this.allLists.curRunIdx++;
       List<int> retResults = null;

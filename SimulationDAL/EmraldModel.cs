@@ -43,7 +43,8 @@ namespace SimulationDAL
   {
     private Boolean _multiThreadReady = false;
     private int? _threadNumber = 0;
-    public const double SCHEMA_VERSION = 3.0;
+    private bool _updated = false;
+    public const double SCHEMA_VERSION = 3.0;    
     //public dSimulation _Sim = null;
     //protected Diagram _Diagram = null; //TODO remove was added for testing.
     public AllDiagrams allDiagrams = new AllDiagrams();
@@ -60,6 +61,7 @@ namespace SimulationDAL
     public string fileName { get; set; } = "";
     public string rootPath { get; set; } = "";
     public string modelTxt { get; set; } = "";
+    public bool updated { get { return _updated; } }
 
     //public int dbID = 0;
     public int curRunIdx = 0; //current run index.
@@ -146,6 +148,7 @@ namespace SimulationDAL
         try
         {
           string upgraded = UpgradeModel.UpgradeJSON(jsonModel);
+          _updated = true;
           return upgraded;
         }
         catch (Exception ex)

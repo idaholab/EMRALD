@@ -141,7 +141,7 @@ namespace ScriptEngineNS
               variables + preClassInfo + "\r\npublic " + typeStr + " Eval()\r\n{\r\n";
       int realLn0 = source.Count(c => c.Equals('\n')) + 1;
       source = source + code + "\r\n\r\n}\r\n}\r\n}";
-      File.WriteAllText("WriteText" + assemblyName + ".txt", source);
+      //File.WriteAllText("WriteText" + assemblyName + ".txt", source);
 
       SyntaxTree syntaxTree = CSharpSyntaxTree.ParseText(source);
       var references = new List<MetadataReference>();

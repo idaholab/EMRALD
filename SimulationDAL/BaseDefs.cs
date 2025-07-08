@@ -6,6 +6,7 @@ using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading;
 using MessageDefLib;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Newtonsoft.Json;
@@ -399,7 +400,7 @@ namespace SimulationDAL
     }
 
     private Stats() { }
-  } 
+  }
 
   //public class DBLoad : SimRunnerEntities
   //{
@@ -447,12 +448,12 @@ namespace SimulationDAL
   //            //localDB = true;
   //            throw ex;
   //          }
-         
+
 
   //        //_Instance = new DBLoad();
   //        _Instance = new DBLoad(connStr);
   //      } //      
-          
+
 
   //      if (_ordToStateType == null)
   //      {
@@ -485,25 +486,20 @@ namespace SimulationDAL
   public class SingleNextIDs
   {
     private int[] curMaxID;
-    static SingleNextIDs _Instance;
-    public static SingleNextIDs Instance
-    {
-      get
-      {
-        if (_Instance == null)
-        {
-          _Instance = new SingleNextIDs();
 
-          int aSize = 1 + Enum.GetValues(typeof(EnIDTypes)).Cast<int>().Max();
-          _Instance.curMaxID = new int[aSize];
-          for (int i = 0; i < aSize; ++i)
-          {
-            _Instance.curMaxID[i] = 1;
-          }
-        }
-        return _Instance;
+    private static ThreadLocal<SingleNextIDs> _Instance = new ThreadLocal<SingleNextIDs>(() =>
+    {
+      var instance = new SingleNextIDs();
+      int aSize = 1 + Enum.GetValues(typeof(EnIDTypes)).Cast<int>().Max();
+      instance.curMaxID = new int[aSize];
+      for (int i = 0; i < aSize; ++i)
+      {
+        instance.curMaxID[i] = 1;
       }
-    }
+      return instance;
+    });
+
+    public static SingleNextIDs Instance => _Instance.Value;
 
     private SingleNextIDs() { }
 
@@ -514,15 +510,14 @@ namespace SimulationDAL
       {
         ++curMaxID[(int)idType];
       }
-
       return retVal;
     }
 
     public void Reset()
     {
-      for (int i = 0; i < _Instance.curMaxID.Length; ++i)
+      for (int i = 0; i < curMaxID.Length; ++i)
       {
-        _Instance.curMaxID[i] = 1;
+        curMaxID[i] = 1;
       }
     }
 
@@ -539,7 +534,6 @@ namespace SimulationDAL
       }
     }
   }
-
 
 
 
@@ -625,7 +619,7 @@ namespace SimulationDAL
     public static List<string> FindFilePathReferences(ref string code, string oldPath = null, string newPath = null)
     {
       // Define a regular expression pattern to match file paths
-      string pattern = @"([a-zA-Z]:\\|\\|\/)(?:[\w\s\.-]+\\)*(?:[\w\s\.-]+)";
+      string pattern = @"(?<![:\/])((?:[a-zA-Z]:\\)|(?:\.\/)|(?:\.\.\/)|(?:\.\\)|(?:\.\.\\))(?:[\w\s\.-]+\\)*(?:[\w\s\.-]+)";
 
       // Create a regex object with the defined pattern
       Regex regex = new Regex(pattern, RegexOptions.IgnoreCase);
@@ -762,10 +756,12 @@ namespace SimulationDAL
   public class MultiThreadInfo
   {
     public List<ToCopyForRef> ToCopyForRefs { get; set; }
+    public DateTime AssignedTime { get; set; } //if assigned time is earlier than the model modified then we need to re-evaluate the ToCopyForRefs
 
     public MultiThreadInfo() 
     {
       ToCopyForRefs = new List<ToCopyForRef>();
+      AssignedTime = DateTime.Now;
     }
   }
 
