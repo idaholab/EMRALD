@@ -1,5 +1,5 @@
 import { SxProps } from '@mui/material/styles';
-import TextField from '@mui/material/TextField/TextField';
+import TextField from '@mui/material/TextField';
 import React from 'react';
 
 interface TextFieldComponentProps {

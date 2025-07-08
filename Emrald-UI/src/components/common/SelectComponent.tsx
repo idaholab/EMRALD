@@ -1,5 +1,5 @@
 import { InputLabel, Select } from '@mui/material';
-import FormControl from '@mui/material/FormControl/FormControl';
+import FormControl from '@mui/material/FormControl';
 import React, { PropsWithChildren } from 'react';
 
 interface SelectComponentProps<T> {
