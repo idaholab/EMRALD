@@ -74,7 +74,7 @@ namespace EMRALD_Sim
       }
 
       bool execute = false;
-      string model = null;
+      
       //SimulationDAL.Globals.simID = 1;
       if (args.Length > 0) // Loop through array
       {
@@ -98,9 +98,9 @@ namespace EMRALD_Sim
         }
       }
 
-      if (model != null)
+      if (_modelPath != null)
       {
-        if (OpenModel(model))
+        if (OpenModel(_modelPath))
         {
 
           tcMain.SelectedTab = tabSimulate;
@@ -153,7 +153,7 @@ namespace EMRALD_Sim
     {
       _populatingSettings = true;
       bool execute = false;
-      string model = null;
+      
       //SimulationDAL.Globals.simID = 1;
       for (int i = 0; i < args.Length; i++) // Loop through array
       {
@@ -177,7 +177,7 @@ namespace EMRALD_Sim
               }
               else
               {
-                model = filePath;
+                _modelPath = filePath;
               }
               ++i;
               break;
