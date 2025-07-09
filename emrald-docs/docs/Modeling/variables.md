@@ -18,7 +18,9 @@ Fill out the dialogue box and press "OK". Each field is described in detail belo
 - **Name:** The name of the variable, how it will be listed in the Left Navigation Frame and be used in code. Must be unique to other variable names.
 - **Description (Desc):** Optional description of the variable.
 - **Scope:** Click the field to define the variable as a Global variable or an External Simulation variable.
-- **Value:** The initial value of the variable. It can also accept values in the form: 0E+/-00.
+- **Value:** The initial value of the variable. It may also be initialized in the Options JSON file and can accept values in the form: 0E+/-00.
+<div><img src="/images/Modeling/variables/VariableInitial.png" style="width:300px;"><div>
+
 - **Reset to initial value for every simulation run:** Check the box to have the variable reset to the initial value at the beginning of every simulation run.
 
 It will be listed in the Left Navigation Frame.<br>
