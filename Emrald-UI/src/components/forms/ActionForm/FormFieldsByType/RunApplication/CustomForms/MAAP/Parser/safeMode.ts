@@ -17,24 +17,6 @@ export default function safeMode(
 ): MAAPInpParserOutput {
   try {
     const output = parser(input, options);
-    if (!options?.locations) {
-      /**
-       * Removes the location data returned by Peggy.
-       *
-       * @param o - The object to clean.
-       */
-      const stripLocations = (o?: object) => {
-        if (o) {
-          delete o.location;
-        }
-        if (typeof o === 'object') {
-          Object.values(o).forEach((v) => {
-            stripLocations(v);
-          });
-        }
-      };
-      stripLocations(output);
-    }
     return {
       errors,
       input,

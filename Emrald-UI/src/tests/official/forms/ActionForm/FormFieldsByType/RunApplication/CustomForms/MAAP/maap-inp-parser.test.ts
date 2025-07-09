@@ -2,6 +2,7 @@ import fs from 'fs/promises';
 import path from 'path';
 import maapInpParser from '../../../../../../../../components/forms/ActionForm/FormFieldsByType/RunApplication/CustomForms/MAAP/Parser/index';
 import { beforeAll, describe, expect, test } from 'vitest';
+import type { Program } from '../../../../../../../../components/forms/ActionForm/FormFieldsByType/RunApplication/CustomForms/MAAP/Parser/maap-parser-types';
 
 async function readTestData(filename: string) {
   return (
@@ -22,264 +23,239 @@ beforeAll(() => {
 describe('literals', () => {
   test('boolean literal', async () => {
     const program = maapInpParser.parse(await readTestData('boolean.INP')).output;
-    expect(program.value).toEqual([
-      {
-        type: 'comment',
-        value: ' Tests boolean literals **',
-      },
-      {
-        type: 'comment',
-        value: 'Main',
-      },
-      {
-        type: 'boolean',
-        value: true,
-      },
-      {
-        type: 'boolean',
-        value: false,
-      },
-      {
-        type: 'comment',
-        value: 'Shorthand',
-      },
-      {
-        type: 'boolean',
-        value: true,
-      },
-      {
-        type: 'boolean',
-        value: false,
-      },
-    ]);
+    const expected: Program = {
+      type: 'program',
+      comments: [['Tests boolean literals **', 'Main'], []],
+      value: [
+        {
+          type: 'boolean',
+          value: true,
+          comments: [[], []],
+        },
+        {
+          type: 'boolean',
+          value: false,
+          comments: [[], []],
+        },
+        {
+          type: 'boolean',
+          value: true,
+          comments: [['Shorthand'], []],
+        },
+        {
+          type: 'boolean',
+          value: false,
+          comments: [[], []],
+        },
+      ],
+    };
+    expect(program).toEqual(expected);
   });
 
   test('numerical literal', async () => {
     const program = maapInpParser.parse(await readTestData('numeric.INP')).output;
-    expect(program.value).toEqual([
-      {
-        type: 'comment',
-        value: ' Tests numeric literals **',
-      },
-      {
-        type: 'comment',
-        value: 'Basic number',
-      },
-      {
-        type: 'number',
-        value: 1,
-        units: undefined,
-      },
-      {
-        type: 'comment',
-        value: 'Decimal',
-      },
-      {
-        type: 'number',
-        value: 2,
-        units: undefined,
-      },
-      {
-        type: 'number',
-        value: 3,
-        units: undefined,
-      },
-      {
-        type: 'comment',
-        value: 'E notation',
-      },
-      {
-        type: 'number',
-        units: undefined,
-        value: 4,
-      },
-      {
-        type: 'number',
-        units: undefined,
-        value: 0.005,
-      },
-    ]);
+    const expected: Program = {
+      type: 'program',
+      value: [
+        {
+          type: 'number',
+          value: 1,
+          units: undefined,
+          comments: [[], []],
+        },
+        {
+          type: 'number',
+          value: 2,
+          units: undefined,
+          comments: [['Decimal'], []],
+        },
+        {
+          type: 'number',
+          value: 3,
+          units: undefined,
+          comments: [[], []],
+        },
+        {
+          type: 'number',
+          units: undefined,
+          value: 4,
+          comments: [['E notation'], []],
+        },
+        {
+          type: 'number',
+          units: undefined,
+          value: 0.005,
+          comments: [[], []],
+        },
+      ],
+      comments: [['Tests numeric literals **', 'Basic number'], []],
+    };
+    expect(program).toEqual(expected);
   });
 });
 
 describe('expressions', () => {
   test('call expression', async () => {
     const program = maapInpParser.parse(await readTestData('call.INP')).output;
-    expect(program.value).toStrictEqual([
-      {
-        type: 'comment',
-        value: ' Tests call expressions **',
-      },
-      {
-        type: 'comment',
-        value: 'No arguments',
-      },
-      {
-        arguments: [],
-        type: 'call_expression',
-        value: {
-          type: 'identifier',
-          value: 'Name',
+    const expected: Program = {
+      type: 'program',
+      comments: [['Tests call expressions **', 'No arguments'], []],
+      value: [
+        {
+          arguments: [],
+          type: 'call_expression',
+          value: {
+            type: 'identifier',
+            value: 'Name',
+          },
+          comments: [[], []],
         },
-      },
-      {
-        type: 'comment',
-        value: 'One argument',
-      },
-      {
-        arguments: [
-          {
-            type: 'number',
-            units: undefined,
-            value: 1,
-          },
-        ],
-        type: 'call_expression',
-        value: {
-          type: 'identifier',
-          value: 'Name',
-        },
-      },
-      {
-        type: 'comment',
-        value: 'Many arguments',
-      },
-      {
-        arguments: [
-          {
-            type: 'number',
-            units: undefined,
-            value: 1,
-          },
-          {
-            type: 'number',
-            units: undefined,
-            value: 2,
-          },
-          {
-            type: 'number',
-            units: undefined,
-            value: 3,
-          },
-        ],
-        type: 'call_expression',
-        value: {
-          type: 'identifier',
-          value: 'Name',
-        },
-      },
-      {
-        type: 'comment',
-        value: 'Nested calls',
-      },
-      {
-        arguments: [
-          {
-            arguments: [
-              {
-                arguments: [
-                  {
-                    arguments: [],
-                    type: 'call_expression',
-                    value: {
-                      type: 'identifier',
-                      value: 'Function',
-                    },
-                  },
-                ],
-                type: 'call_expression',
-                value: {
-                  type: 'identifier',
-                  value: 'A',
-                },
-              },
-            ],
-            type: 'call_expression',
-            value: {
-              type: 'identifier',
-              value: 'Of',
+        {
+          arguments: [
+            {
+              type: 'number',
+              units: undefined,
+              value: 1,
             },
+          ],
+          type: 'call_expression',
+          value: {
+            type: 'identifier',
+            value: 'Name',
           },
-        ],
-        type: 'call_expression',
-        value: {
-          type: 'identifier',
-          value: 'Name',
+          comments: [['One argument'], []],
         },
-      },
-    ]);
-    expect(maapInpParser.toString(program)).toBe(
-      '//  Tests call expressions **\n// No arguments\nName()\n// One argument\nName(1)\n// Many arguments\nName(1,2,3)\n// Nested calls\nName(Of(A(Function())))',
-    );
+        {
+          arguments: [
+            {
+              type: 'number',
+              units: undefined,
+              value: 1,
+            },
+            {
+              type: 'number',
+              units: undefined,
+              value: 2,
+            },
+            {
+              type: 'number',
+              units: undefined,
+              value: 3,
+            },
+          ],
+          type: 'call_expression',
+          value: {
+            type: 'identifier',
+            value: 'Name',
+          },
+          comments: [['Many arguments'], []],
+        },
+        {
+          arguments: [
+            {
+              arguments: [
+                {
+                  arguments: [
+                    {
+                      arguments: [],
+                      type: 'call_expression',
+                      value: {
+                        type: 'identifier',
+                        value: 'Function',
+                      },
+                    },
+                  ],
+                  type: 'call_expression',
+                  value: {
+                    type: 'identifier',
+                    value: 'A',
+                  },
+                },
+              ],
+              type: 'call_expression',
+              value: {
+                type: 'identifier',
+                value: 'Of',
+              },
+            },
+          ],
+          type: 'call_expression',
+          value: {
+            type: 'identifier',
+            value: 'Name',
+          },
+          comments: [['Nested calls'], []],
+        },
+      ],
+    };
+    expect(program).toStrictEqual(expected);
+    expect(maapInpParser.toString(program)).toBe(`Name()
+Name(1)
+Name(1,2,3)
+Name(Of(A(Function())))`);
   });
 
   test('is expression', async () => {
     const program = maapInpParser.parse(await readTestData('is.INP')).output;
-    expect(program.value).toStrictEqual([
-      {
-        type: 'comment',
-        value: ' Tests IS expressions **',
-      },
-      {
-        type: 'comment',
-        value: 'Default',
-      },
-      {
-        target: {
-          type: 'identifier',
-          value: 'VARNAME',
+    const expected: Program = {
+      type: 'program',
+      comments: [['Tests IS expressions **', 'Default'], []],
+      value: [
+        {
+          target: {
+            type: 'identifier',
+            value: 'VARNAME',
+          },
+          type: 'is_expression',
+          value: {
+            type: 'identifier',
+            value: 'Value',
+          },
+          comments: [[], []],
         },
-        type: 'is_expression',
-        value: {
-          type: 'identifier',
-          value: 'Value',
+        {
+          target: {
+            type: 'parameter_name',
+            value: 'START TIME',
+          },
+          type: 'is_expression',
+          value: {
+            type: 'number',
+            units: undefined,
+            value: 0,
+          },
+          comments: [['Special IS expressions'], []],
         },
-      },
-      {
-        type: 'comment',
-        value: 'Special IS expressions',
-      },
-      {
-        target: {
-          type: 'parameter_name',
-          value: 'START TIME',
+        {
+          target: {
+            type: 'parameter_name',
+            value: 'END TIME',
+          },
+          type: 'is_expression',
+          value: {
+            type: 'number',
+            units: undefined,
+            value: 144000,
+          },
+          comments: [[], []],
         },
-        type: 'is_expression',
-        value: {
-          type: 'number',
-          units: undefined,
-          value: 0,
+        {
+          target: {
+            type: 'parameter_name',
+            value: 'PRINT INTERVAL',
+          },
+          type: 'is_expression',
+          value: {
+            type: 'number',
+            units: undefined,
+            value: 5000,
+          },
+          comments: [[], []],
         },
-      },
-      {
-        target: {
-          type: 'parameter_name',
-          value: 'END TIME',
-        },
-        type: 'is_expression',
-        value: {
-          type: 'number',
-          units: undefined,
-          value: 144000,
-        },
-      },
-      {
-        target: {
-          type: 'parameter_name',
-          value: 'PRINT INTERVAL',
-        },
-        type: 'is_expression',
-        value: {
-          type: 'number',
-          units: undefined,
-          value: 5000,
-        },
-      },
-    ]);
-    expect(maapInpParser.toString(program)).toBe(`//  Tests IS expressions **
-// Default
-VARNAME IS Value
-// Special IS expressions
+      ],
+    };
+    expect(program).toStrictEqual(expected);
+    expect(maapInpParser.toString(program)).toBe(`VARNAME IS Value
 START TIME IS 0
 END TIME IS 144000
 PRINT INTERVAL IS 5000`);
@@ -287,63 +263,64 @@ PRINT INTERVAL IS 5000`);
 
   test('multi expression', async () => {
     const program = maapInpParser.parse(await readTestData('multi-expression.INP')).output;
-    expect(program.value).toStrictEqual([
-      {
-        blockType: 'IF',
-        test: {
-          type: 'multi_expression',
-          op: 'AND',
-          value: [
-            {
-              type: 'expression',
-              value: {
+    const expected: Program = {
+      type: 'program',
+      comments: [[], []],
+      value: [
+        {
+          type: 'conditional_block',
+          blockType: 'IF',
+          test: {
+            type: 'multi_expression',
+            op: 'AND',
+            value: [
+              {
+                type: 'expression',
+                op: '!=',
                 left: {
                   type: 'identifier',
                   value: 'A',
                 },
-                op: '!=',
                 right: {
                   type: 'number',
-                  units: undefined,
                   value: 0,
+                  units: undefined,
                 },
               },
-            },
-            {
-              type: 'expression',
-              value: {
+              {
+                type: 'expression',
+                op: '>=',
                 left: {
                   type: 'identifier',
                   value: 'B',
                 },
-                op: '>=',
                 right: {
                   type: 'identifier',
                   value: 'C',
                 },
               },
-            },
-          ],
-          comment: [],
-        },
-        type: 'conditional_block',
-        value: [
-          {
-            type: 'identifier',
-            value: 'TEST',
+            ],
+            comments: ['Comment 1', 'Comment 2', 'Comment 3'],
           },
-        ],
-        comment: [],
-      },
-      {
-        blockType: 'IF',
-        test: {
-          type: 'multi_expression',
-          op: 'AND',
           value: [
             {
-              type: 'expression',
-              value: {
+              type: 'identifier',
+              value: 'TEST',
+              comments: [['Comment 5', 'Comment 6'], ['Comment 7']],
+            },
+          ],
+          comments: [['Comment 4'], ['Comment 8', 'Comment 9', 'Comment 10']],
+        },
+        {
+          type: 'conditional_block',
+          blockType: 'IF',
+          test: {
+            type: 'multi_expression',
+            comments: [],
+            op: 'AND',
+            value: [
+              {
+                type: 'expression',
                 left: {
                   type: 'identifier',
                   value: 'A',
@@ -351,18 +328,17 @@ PRINT INTERVAL IS 5000`);
                 op: '!=',
                 right: {
                   type: 'number',
-                  units: undefined,
                   value: 0,
+                  units: undefined,
                 },
               },
-            },
-            {
-              type: 'multi_expression',
-              op: 'OR',
-              value: [
-                {
-                  type: 'expression',
-                  value: {
+              {
+                type: 'multi_expression',
+                comments: [],
+                op: 'OR',
+                value: [
+                  {
+                    type: 'expression',
                     left: {
                       type: 'identifier',
                       value: 'B',
@@ -373,542 +349,566 @@ PRINT INTERVAL IS 5000`);
                       value: 'C',
                     },
                   },
+                  {
+                    type: 'is_expression',
+                    target: {
+                      type: 'identifier',
+                      value: 'A',
+                    },
+                    value: {
+                      type: 'identifier',
+                      value: 'B',
+                    },
+                  },
+                ],
+              },
+            ],
+          },
+          value: [
+            {
+              comments: [[], []],
+              type: 'identifier',
+              value: 'TEST',
+            },
+          ],
+          comments: [[], []],
+        },
+        {
+          type: 'conditional_block',
+          blockType: 'IF',
+          test: {
+            type: 'multi_expression',
+            comments: [],
+            op: 'AND',
+            value: [
+              {
+                type: 'expression',
+                left: {
+                  type: 'identifier',
+                  value: 'A',
                 },
-                {
-                  target: {
+                op: '!=',
+                right: {
+                  type: 'number',
+                  value: 0,
+                  units: undefined,
+                },
+              },
+              {
+                type: 'expression',
+                left: {
+                  type: 'identifier',
+                  value: 'B',
+                },
+                op: '>=',
+                right: {
+                  type: 'identifier',
+                  value: 'C',
+                },
+              },
+            ],
+          },
+          value: [],
+          comments: [['Comment 1'], ['Comment 2', 'Comment 3']],
+        },
+        {
+          type: 'conditional_block',
+          blockType: 'IF',
+          comments: [[], []],
+          test: {
+            type: 'multi_expression',
+            comments: [],
+            op: 'AND',
+            value: [
+              {
+                type: 'expression_block',
+                value: {
+                  type: 'expression',
+                  left: {
                     type: 'identifier',
                     value: 'A',
                   },
-                  type: 'is_expression',
-                  value: {
+                  op: '>',
+                  right: {
                     type: 'identifier',
                     value: 'B',
                   },
                 },
-              ],
-              comment: [],
-            },
-          ],
-          comment: [],
-        },
-        type: 'conditional_block',
-        value: [
-          {
-            type: 'identifier',
-            value: 'TEST',
+                units: undefined,
+              },
+              {
+                type: 'expression_block',
+                value: {
+                  type: 'expression',
+                  left: {
+                    type: 'expression_block',
+                    value: {
+                      type: 'multi_expression',
+                      op: 'AND',
+                      value: [
+                        {
+                          type: 'expression',
+                          left: {
+                            type: 'number',
+                            units: undefined,
+                            value: 0,
+                          },
+                          op: '<',
+                          right: {
+                            type: 'number',
+                            units: undefined,
+                            value: 1,
+                          },
+                        },
+                        {
+                          type: 'boolean',
+                          value: true,
+                        },
+                      ],
+                      comments: [],
+                    },
+                    units: undefined,
+                  },
+                  op: '==',
+                  right: {
+                    type: 'expression_block',
+                    value: {
+                      type: 'multi_expression',
+                      op: 'AND',
+                      value: [
+                        {
+                          type: 'expression',
+                          left: {
+                            type: 'identifier',
+                            value: 'B',
+                          },
+                          op: '>',
+                          right: {
+                            type: 'number',
+                            units: undefined,
+                            value: 1,
+                          },
+                        },
+                        {
+                          type: 'boolean',
+                          value: false,
+                        },
+                      ],
+                      comments: [],
+                    },
+                    units: undefined,
+                  },
+                },
+                units: undefined,
+              },
+            ],
           },
-        ],
-        comment: [],
-      },
-    ]);
+          value: [],
+        },
+      ],
+    };
+    expect(program).toStrictEqual(expected);
+    expect(maapInpParser.toString(program)).toBe(`IF A != 0 AND B >= C
+TEST
+END
+IF A != 0 AND B >= C OR A IS B
+TEST
+END
+IF A != 0 AND B >= C
+
+END
+IF (A > B) AND ((0 < 1 AND T) == (B > 1 AND F))
+
+END`);
   });
 });
 
 describe('statements', () => {
   test('sensitivity statements', async () => {
     const program = maapInpParser.parse(await readTestData('sensitivity.INP')).output;
-    expect(program.value).toStrictEqual([
-      {
-        type: 'comment',
-        value: ' Tests sensitivity statements **',
-      },
-      {
-        type: 'comment',
-        value: 'Default',
-      },
-      {
-        type: 'sensitivity',
-        value: 'ON',
-      },
-      {
-        type: 'comment',
-        value: 'Alternate value',
-      },
-      {
-        type: 'sensitivity',
-        value: 'OFF',
-      },
-      {
-        type: 'comment',
-        value: 'No value',
-      },
-      {
-        type: 'comment',
-        value: 'Should parse as an identifier, not a sensitivity statement',
-      },
-      {
-        type: 'identifier',
-        value: 'SENSITIVITY',
-      },
-    ]);
-    expect(maapInpParser.toString(program)).toBe(`//  Tests sensitivity statements **
-// Default
-SENSITIVITY ON
-// Alternate value
+    const expected: Program = {
+      type: 'program',
+      comments: [['Tests sensitivity statements **', 'Default'], []],
+      value: [
+        {
+          type: 'sensitivity',
+          value: 'ON',
+          comments: [[], []],
+        },
+        {
+          type: 'sensitivity',
+          value: 'OFF',
+          comments: [['Alternate value'], []],
+        },
+        {
+          type: 'identifier',
+          value: 'SENSITIVITY',
+          comments: [
+            ['No value', 'Should parse as an identifier, not a sensitivity statement'],
+            [],
+          ],
+        },
+      ],
+    };
+    expect(program).toStrictEqual(expected);
+    expect(maapInpParser.toString(program)).toBe(`SENSITIVITY ON
 SENSITIVITY OFF
-// No value
-// Should parse as an identifier, not a sensitivity statement
 SENSITIVITY`);
   });
 
   test('title statements', async () => {
     const program = maapInpParser.parse(await readTestData('title.INP')).output;
-    expect(program.value).toStrictEqual([
-      {
-        type: 'comment',
-        value: ' Tests title statements **',
-      },
-      {
-        type: 'comment',
-        value: 'Default',
-      },
-      {
-        type: 'title',
-        value: [
-          {
-            title: 'Valid Title',
-            comment: [],
-          },
-        ],
-        comment: [],
-      },
-      {
-        type: 'comment',
-        value: 'Many lines',
-      },
-      {
-        type: 'title',
-        value: [
-          { title: 'A title that', comment: [] },
-          { title: 'extends onto', comment: [] },
-          { title: 'multiple lines', comment: [] },
-        ],
-        comment: [],
-      },
-      {
-        type: 'comment',
-        value: 'Empty title',
-      },
-      {
-        type: 'title',
-        value: [],
-        comment: [],
-      },
-    ]);
-    expect(maapInpParser.toString(program)).toBe(`//  Tests title statements **
-// Default
-TITLE
-Valid Title
+    const expected: Program = {
+      type: 'program',
+      comments: [['Tests title statements **', 'Default'], []],
+      value: [
+        {
+          type: 'title',
+          value: 'Valid Title ',
+          comments: [
+            ['Comment 1', 'Comment 2', 'Comment 3', 'Comment 4'],
+            ['Comment 5', 'Comment 6'],
+          ],
+        },
+        {
+          type: 'title',
+          value: 'A title that\nextends onto\nmultiple lines',
+          comments: [['Many lines'], []],
+        },
+        {
+          type: 'title',
+          value: '',
+          comments: [['Empty title'], []],
+        },
+      ],
+    };
+    expect(program).toStrictEqual(expected);
+    expect(maapInpParser.toString(program)).toBe(`TITLE
+Valid Title 
 END
-// Many lines
 TITLE
 A title that
 extends onto
 multiple lines
 END
-// Empty title
 TITLE
 
 END`);
   });
 
-  test('parameter file statements', async () => {
-    const program = maapInpParser.parse(await readTestData('file.INP')).output;
-    expect(program.value).toStrictEqual([
-      {
-        type: 'comment',
-        value: ' Tests file statements **',
-      },
-      {
-        type: 'comment',
-        value: 'Default',
-      },
-      {
-        fileType: 'PARAMETER FILE',
-        type: 'file',
-        value: 'parameter_file.PAR',
-      },
-      {
-        type: 'comment',
-        value: 'No file specified, should parse as an identifier',
-      },
-      {
-        type: 'parameter_name',
-        value: 'PARAMETER FILE',
-      },
-      {
-        type: 'comment',
-        value: 'Default',
-      },
-      {
-        fileType: 'INCLUDE',
-        type: 'file',
-        value: 'file.inc',
-      },
-      {
-        type: 'comment',
-        value: 'Empty, should be parsed as an identifier',
-      },
-      {
-        type: 'identifier',
-        value: 'INCLUDE',
-      },
-    ]);
-    expect(maapInpParser.toString(program)).toBe(`//  Tests file statements **
-// Default
-PARAMETER FILE parameter_file.PAR
-// No file specified, should parse as an identifier
-PARAMETER FILE
-// Default
-INCLUDE file.inc
-// Empty, should be parsed as an identifier
-INCLUDE`);
-  });
-
   test('block statements', async () => {
     const program = maapInpParser.parse(await readTestData('block.INP')).output;
-    expect(program.value).toStrictEqual([
-      { type: 'comment', value: ' Tests block statements **' },
-      { type: 'comment', value: 'Default' },
-      {
-        blockType: 'PARAMETER CHANGE',
-        type: 'block',
-        value: [
-          {
-            target: {
-              arguments: [
-                {
-                  type: 'number',
-                  units: undefined,
-                  value: 1,
-                },
-              ],
-              type: 'call_expression',
-              value: {
-                type: 'identifier',
-                value: 'VarName',
-              },
-            },
-            type: 'assignment',
-            value: {
-              type: 'number',
-              units: undefined,
-              value: 1,
-            },
-          },
-        ],
-        comment: [],
-      },
-      {
-        type: 'comment',
-        value: 'Empty',
-      },
-      {
-        blockType: 'PARAMETER CHANGE',
-        type: 'block',
-        value: [],
-        comment: [],
-      },
-      {
-        type: 'comment',
-        value: 'With nested source elements',
-      },
-      {
-        blockType: 'PARAMETER CHANGE',
-        type: 'block',
-        value: [
-          {
-            blockType: 'IF',
-            test: {
+    const expected: Program = {
+      type: 'program',
+      value: [
+        {
+          type: 'title',
+          value: 'Tests syntax for block statements',
+          comments: [[], []],
+        },
+        {
+          type: 'block',
+          blockType: 'PARAMETER CHANGE',
+          comments: [
+            ['Default', 'Comment 1', 'Comment 2', 'Comment 3'],
+            ['Comment 7', 'Comment 8', 'Comment 9'],
+          ],
+          value: [
+            {
+              type: 'assignment',
               target: {
-                arguments: [
-                  {
-                    type: 'number',
-                    units: undefined,
-                    value: 1,
-                  },
-                ],
                 type: 'call_expression',
                 value: {
                   type: 'identifier',
                   value: 'VarName',
                 },
-              },
-              type: 'is_expression',
-              value: {
-                type: 'number',
-                units: undefined,
-                value: 1,
-              },
-            },
-            type: 'conditional_block',
-            value: [
-              {
-                type: 'set_timer',
-                value: {
-                  type: 'timer',
-                  value: 1,
-                },
-              },
-            ],
-            comment: [],
-          },
-        ],
-        comment: [],
-      },
-      {
-        type: 'comment',
-        value: 'Default',
-      },
-      {
-        blockType: 'INITIATORS',
-        type: 'block',
-        value: [
-          {
-            target: {
-              arguments: [
-                {
-                  type: 'number',
-                  units: undefined,
-                  value: 1,
-                },
-              ],
-              type: 'call_expression',
-              value: {
-                type: 'identifier',
-                value: 'VarName',
-              },
-            },
-            type: 'assignment',
-            value: {
-              type: 'number',
-              units: undefined,
-              value: 1,
-            },
-          },
-        ],
-        comment: [],
-      },
-      {
-        type: 'comment',
-        value: 'Empty',
-      },
-      {
-        blockType: 'INITIATORS',
-        type: 'block',
-        value: [],
-        comment: [],
-      },
-      {
-        type: 'comment',
-        value: 'With nested source elements',
-      },
-      {
-        blockType: 'INITIATORS',
-        type: 'block',
-        value: [
-          {
-            blockType: 'IF',
-            test: {
-              target: {
                 arguments: [
                   {
                     type: 'number',
-                    units: undefined,
                     value: 1,
+                    units: undefined,
                   },
                 ],
-                type: 'call_expression',
-                value: {
+              },
+              value: {
+                type: 'number',
+                value: 1,
+                units: undefined,
+              },
+              comments: [['Comment 4', 'Comment 5'], ['Comment 6']],
+            },
+          ],
+        },
+        {
+          type: 'block',
+          blockType: 'PARAMETER CHANGE',
+          comments: [
+            ['Empty', 'Comment 1'],
+            ['Comment 2', 'Comment 3', 'Comment 4'],
+          ],
+          value: [],
+        },
+        {
+          type: 'block',
+          blockType: 'PARAMETER CHANGE',
+          comments: [['With nested source elements', 'Comment 1', 'Comment 2'], ['Comment 12']],
+          value: [
+            {
+              type: 'conditional_block',
+              blockType: 'IF',
+              test: {
+                type: 'is_expression',
+                target: {
                   type: 'identifier',
                   value: 'VarName',
                 },
-              },
-              type: 'is_expression',
-              value: {
-                type: 'number',
-                units: undefined,
-                value: 1,
-              },
-            },
-            type: 'conditional_block',
-            value: [
-              {
-                type: 'set_timer',
                 value: {
-                  type: 'timer',
+                  type: 'number',
                   value: 1,
+                  units: undefined,
                 },
               },
-            ],
-            comment: [],
-          },
-        ],
-        comment: [],
-      },
-    ]);
-    expect(maapInpParser.toString(program)).toBe(`//  Tests block statements **
-// Default
+              value: [
+                {
+                  type: 'set_timer',
+                  value: {
+                    type: 'timer',
+                    value: 1,
+                  },
+                  comments: [['Comment 6', 'Comment 7'], ['Comment 8']],
+                },
+              ],
+              comments: [
+                ['Comment 3', 'Comment 4', 'Comment 5'],
+                ['Comment 9', 'Comment 10', 'Comment 11'],
+              ],
+            },
+          ],
+        },
+        {
+          type: 'block',
+          blockType: 'INITIATORS',
+          comments: [
+            ['Default', 'Comment 1', 'Comment 2'],
+            ['Comment 9', 'Comment 10', 'Comment 11'],
+          ],
+          value: [
+            {
+              type: 'assignment',
+              target: {
+                type: 'identifier',
+                value: 'VarName',
+              },
+              value: {
+                type: 'number',
+                value: 1,
+                units: undefined,
+              },
+              comments: [['Comment 3', 'Comment 4'], ['Comment 5']],
+            },
+            {
+              type: 'assignment',
+              target: {
+                type: 'identifier',
+                value: 'INIT1',
+              },
+              value: {
+                type: 'boolean',
+                value: true,
+              },
+              comments: [['Comment 6', 'Comment 7'], ['Comment 8']],
+            },
+          ],
+        },
+        {
+          type: 'block',
+          blockType: 'INITIATORS',
+          value: [],
+          comments: [['Empty'], []],
+        },
+        {
+          type: 'block',
+          blockType: 'INITIATORS',
+          comments: [['With nested source elements', 'Comment 1', 'Comment 2'], ['Comment 12']],
+          value: [
+            {
+              type: 'conditional_block',
+              blockType: 'IF',
+              test: {
+                type: 'is_expression',
+                target: {
+                  type: 'identifier',
+                  value: 'VarName',
+                },
+                value: {
+                  type: 'number',
+                  value: 1,
+                  units: undefined,
+                },
+              },
+              comments: [
+                ['Comment 3', 'Comment 4', 'Comment 5'],
+                ['Comment 9', 'Comment 10', 'Comment 11'],
+              ],
+              value: [
+                {
+                  type: 'set_timer',
+                  value: {
+                    type: 'timer',
+                    value: 1,
+                  },
+                  comments: [['Comment 6', 'Comment 7'], ['Comment 8']],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+      comments: [['Block'], []],
+    };
+    expect(program).toStrictEqual(expected);
+    expect(maapInpParser.toString(program)).toBe(`TITLE
+Tests syntax for block statements
+END
 PARAMETER CHANGE
 VarName(1) = 1
 END
-// Empty
 PARAMETER CHANGE
 
 END
-// With nested source elements
 PARAMETER CHANGE
-IF VarName(1) IS 1
+IF VarName IS 1
 SET TIMER #1
 END
 END
-// Default
 INITIATORS
-VarName(1) = 1
+VarName = 1
+INIT1 = T
 END
-// Empty
 INITIATORS
 
 END
-// With nested source elements
 INITIATORS
-IF VarName(1) IS 1
+IF VarName IS 1
 SET TIMER #1
 END
 END`);
   });
+
   test('conditional block statements', async () => {
     const program = maapInpParser.parse(await readTestData('conditionalBlock.INP')).output;
-    expect(program.value).toStrictEqual([
-      {
-        type: 'comment',
-        value: ' Tests conditional block statements **',
-      },
-      {
-        type: 'comment',
-        value: 'When default',
-      },
-      {
-        blockType: 'WHEN',
-        test: {
-          target: {
-            type: 'identifier',
-            value: 'VARIABLE',
-          },
-          type: 'is_expression',
-          value: {
-            type: 'boolean',
-            value: true,
-          },
-        },
-        type: 'conditional_block',
-        value: [
-          {
+    const expected: Program = {
+      type: 'program',
+      comments: [['Tests conditional block statements **', 'When default', 'Comment 1'], []],
+      value: [
+        {
+          blockType: 'WHEN',
+          test: {
             target: {
               type: 'identifier',
-              value: 'VARNAME',
+              value: 'VARIABLE',
             },
-            type: 'assignment',
+            type: 'is_expression',
             value: {
-              type: 'number',
-              units: undefined,
-              value: 1000,
+              type: 'boolean',
+              value: true,
             },
           },
-        ],
-        comment: [],
-      },
-      {
-        type: 'comment',
-        value: 'When empty',
-      },
-      {
-        blockType: 'WHEN',
-        test: {
-          target: {
-            type: 'identifier',
-            value: 'VARIABLE',
-          },
-          type: 'is_expression',
-          value: {
-            type: 'boolean',
-            value: true,
-          },
+          type: 'conditional_block',
+          value: [
+            {
+              target: {
+                type: 'identifier',
+                value: 'VARNAME',
+              },
+              type: 'assignment',
+              value: {
+                type: 'number',
+                units: undefined,
+                value: 1000,
+              },
+              comments: [['Comment 3', 'Comment 4'], ['Comment 5']],
+            },
+          ],
+          comments: [['Comment 2'], ['Comment 6', 'Comment 7', 'Comment 8']],
         },
-        type: 'conditional_block',
-        value: [],
-        comment: [],
-      },
-      {
-        type: 'comment',
-        value: 'If default',
-      },
-      {
-        blockType: 'IF',
-        test: {
-          target: {
-            type: 'identifier',
-            value: 'VARIABLE',
-          },
-          type: 'is_expression',
-          value: {
-            type: 'boolean',
-            value: true,
-          },
-        },
-        type: 'conditional_block',
-        value: [
-          {
+        {
+          blockType: 'WHEN',
+          test: {
             target: {
               type: 'identifier',
-              value: 'VARNAME',
+              value: 'VARIABLE',
             },
-            type: 'assignment',
+            type: 'is_expression',
             value: {
-              type: 'number',
-              units: undefined,
-              value: 1000,
+              type: 'boolean',
+              value: true,
             },
           },
-        ],
-        comment: [],
-      },
-      {
-        type: 'comment',
-        value: 'If empty',
-      },
-      {
-        blockType: 'IF',
-        test: {
-          target: {
-            type: 'identifier',
-            value: 'VARIABLE',
-          },
-          type: 'is_expression',
-          value: {
-            type: 'boolean',
-            value: true,
-          },
+          type: 'conditional_block',
+          value: [],
+          comments: [['When empty'], []],
         },
-        type: 'conditional_block',
-        value: [],
-        comment: [],
-      },
-    ]);
-    expect(maapInpParser.toString(program)).toBe(`//  Tests conditional block statements **
-// When default
-WHEN VARIABLE IS T
+        {
+          blockType: 'IF',
+          test: {
+            target: {
+              type: 'identifier',
+              value: 'VARIABLE',
+            },
+            type: 'is_expression',
+            value: {
+              type: 'boolean',
+              value: true,
+            },
+          },
+          type: 'conditional_block',
+          value: [
+            {
+              target: {
+                type: 'identifier',
+                value: 'VARNAME',
+              },
+              type: 'assignment',
+              value: {
+                type: 'number',
+                units: undefined,
+                value: 1000,
+              },
+              comments: [[], []],
+            },
+          ],
+          comments: [['If default'], []],
+        },
+        {
+          blockType: 'IF',
+          test: {
+            target: {
+              type: 'identifier',
+              value: 'VARIABLE',
+            },
+            type: 'is_expression',
+            value: {
+              type: 'boolean',
+              value: true,
+            },
+          },
+          type: 'conditional_block',
+          value: [],
+          comments: [['If empty'], []],
+        },
+      ],
+    };
+    expect(program).toStrictEqual(expected);
+    expect(maapInpParser.toString(program)).toBe(`WHEN VARIABLE IS T
 VARNAME = 1000
 END
-// When empty
 WHEN VARIABLE IS T
 
 END
-// If default
 IF VARIABLE IS T
 VARNAME = 1000
 END
-// If empty
 IF VARIABLE IS T
 
 END`);
@@ -916,48 +916,66 @@ END`);
 
   test('alias statements', async () => {
     const program = maapInpParser.parse(await readTestData('alias.INP')).output;
-    expect(program.value).toStrictEqual([
-      {
-        type: 'comment',
-        value: ' Tests alias statements **',
-      },
-      {
-        type: 'comment',
-        value: 'Default',
-      },
-      {
-        type: 'alias',
-        value: [
-          {
-            target: {
-              type: 'identifier',
-              value: 'VARNAME',
+    const expected: Program = {
+      type: 'program',
+      comments: [['Alias'], ['End alias statements **']],
+      value: [
+        {
+          type: 'title',
+          value: 'Tests syntax for alias statements',
+          comments: [[], []],
+        },
+        {
+          type: 'alias',
+          comments: [
+            ['Default', 'Comment 1', 'Comment 2', 'Comment 3'],
+            ['Comment 10', 'Comment 11', 'Comment 12'],
+          ],
+          value: [
+            {
+              type: 'as_expression',
+              target: {
+                type: 'identifier',
+                value: 'VARNAME',
+              },
+              value: {
+                type: 'identifier',
+                value: 'Value',
+              },
+              comments: [['Comment 4', 'Comment 5'], ['Comment 6']],
             },
-            type: 'as_expression',
-            value: {
-              type: 'identifier',
-              value: 'Value',
+            {
+              type: 'as_expression',
+              target: {
+                type: 'identifier',
+                value: 'VARNAME2',
+              },
+              value: {
+                type: 'identifier',
+                value: 'Value2',
+              },
+              comments: [['Comment 7', 'Comment 8'], ['Comment 9']],
             },
-          },
-        ],
-        comment: [],
-      },
-      {
-        type: 'comment',
-        value: 'Empty',
-      },
-      {
-        type: 'alias',
-        value: [],
-        comment: [],
-      },
-    ]);
-    expect(maapInpParser.toString(program)).toBe(`//  Tests alias statements **
-// Default
+          ],
+        },
+        {
+          type: 'alias',
+          comments: [
+            ['Empty', 'Comment 1', 'Comment 2', 'Comment 3'],
+            ['Comment 4', 'Comment 5', 'Comment 12'],
+          ],
+          value: [],
+        },
+      ],
+    };
+    expect(program).toStrictEqual(expected);
+    expect(maapInpParser.toString(program)).toBe(`TITLE
+Tests syntax for alias statements
+END
 ALIAS
 VARNAME AS Value
+VARNAME2 AS Value2
 END
-// Empty
 ALIAS
 
 END`);
@@ -965,168 +983,188 @@ END`);
 
   test('plotfil statements', async () => {
     const program = maapInpParser.parse(await readTestData('plotfil.INP')).output;
-    expect(program.value).toStrictEqual([
-      {
-        type: 'comment',
-        value: ' Tests plotfil statements **',
-      },
-      {
-        type: 'comment',
-        value: 'Default',
-      },
-      {
-        n: 3,
-        type: 'plotfil',
-        value: [
-          [
+    const expected: Program = {
+      type: 'program',
+      value: [
+        {
+          n: 4,
+          type: 'plotfil',
+          value: [
             {
-              type: 'identifier',
-              value: 'A',
-            },
-            {
-              type: 'identifier',
-              value: 'B',
-            },
-            {
-              type: 'identifier',
-              value: 'C',
-            },
-          ],
-          [
-            {
-              type: 'identifier',
-              value: 'D',
-            },
-            {
-              type: 'identifier',
-              value: 'E',
-            },
-            {
-              type: 'boolean',
-              value: false,
-            },
-          ],
-          [
-            {
-              type: 'identifier',
-              value: 'G',
-            },
-            {
-              type: 'identifier',
-              value: 'H',
-            },
-            {
-              arguments: [
+              row: [
                 {
                   type: 'identifier',
-                  value: 'J',
+                  value: 'A',
+                },
+                {
+                  type: 'identifier',
+                  value: 'B',
+                },
+                {
+                  type: 'identifier',
+                  value: 'C',
                 },
               ],
-              type: 'call_expression',
-              value: {
-                type: 'identifier',
-                value: 'I',
-              },
+              comments: ['Comment 2', 'Comment 3'],
+            },
+            {
+              row: [
+                {
+                  type: 'identifier',
+                  value: 'D',
+                },
+                {
+                  type: 'identifier',
+                  value: 'E',
+                },
+                {
+                  type: 'boolean',
+                  value: false,
+                },
+              ],
+              comments: ['Comment 4', 'Comment 5'],
+            },
+            {
+              row: [
+                {
+                  type: 'identifier',
+                  value: 'G',
+                },
+                {
+                  type: 'identifier',
+                  value: 'H',
+                },
+                {
+                  arguments: [
+                    {
+                      type: 'identifier',
+                      value: 'J',
+                    },
+                  ],
+                  type: 'call_expression',
+                  value: {
+                    type: 'identifier',
+                    value: 'I',
+                  },
+                },
+              ],
+              comments: [],
             },
           ],
-        ],
-        comment: [],
-      },
-    ]);
-    expect(maapInpParser.toString(program)).toBe(`//  Tests plotfil statements **
-// Default
-PLOTFIL 3
+          comments: [['Comment 1'], []],
+        },
+        {
+          n: 3,
+          type: 'plotfil',
+          value: [],
+          comments: [
+            ['Empty', 'Comment 1'],
+            ['Comment 2', 'Comment 3', 'Comment 4'],
+          ],
+        },
+      ],
+      comments: [['Tests plotfil statements **', 'Default'], []],
+    };
+    expect(program).toStrictEqual(expected);
+    expect(maapInpParser.toString(program)).toBe(`PLOTFIL 4
 A,B,C
 D,E,F
 G,H,I(J)
+END
+PLOTFIL 3
+
 END`);
   });
 
   test('userevt statements', async () => {
     const program = maapInpParser.parse(await readTestData('userevt.INP')).output;
-    expect(program.value).toEqual([
-      { type: 'comment', value: ' Tests userevt statements **' },
-      {
-        type: 'comment',
-        value: ' Also special blocks that appear only in USEREVT: Parameter, Action',
-      },
-      { type: 'comment', value: 'Default' },
-      {
-        type: 'user_evt',
-        value: [
-          {
-            flag: {
-              type: 'boolean',
-              value: true,
-            },
-            index: 100,
-            type: 'parameter',
-            value: {
-              type: 'parameter_name',
-              value: 'Parameter Name',
-            },
-          },
-          {
-            flag: undefined,
-            index: 102,
-            type: 'parameter',
-            value: {
-              type: 'parameter_name',
-              value: 'Parameter 2',
-            },
-          },
-          {
-            index: 1,
-            type: 'action',
-            value: [
-              {
-                flag: undefined,
-                index: 103,
-                type: 'parameter',
-                value: {
-                  type: 'parameter_name',
-                  value: 'Parameter 3',
-                },
-              },
-              {
-                index: 2,
-                type: 'action',
-                value: [],
-                comment: [],
-              },
-            ],
-            comment: [],
-          },
-          {
-            blockType: 'IF',
-            test: {
-              target: {
-                type: 'identifier',
-                value: 'VALUE',
-              },
-              type: 'is_expression',
-              value: {
+    const expected: Program = {
+      type: 'program',
+      comments: [
+        [
+          'Tests userevt statements **',
+          'Also special blocks that appear only in USEREVT: Parameter, Action',
+          'Default',
+        ],
+        [],
+      ],
+      value: [
+        {
+          type: 'user_evt',
+          value: [
+            {
+              flag: {
                 type: 'boolean',
                 value: true,
               },
+              index: 100,
+              type: 'parameter',
+              value: {
+                type: 'parameter_name',
+                value: 'Parameter Name',
+              },
+              comments: [['Parameter with T/F value'], []],
             },
-            type: 'conditional_block',
-            value: [],
-            comment: [],
-          },
-        ],
-        comment: [
-          {
-            type: 'comment',
-            value: 'Parameter with T/F value',
-          },
-        ],
-      },
-    ]);
-    expect(maapInpParser.toString(program)).toBe(`//  Tests userevt statements **
-//  Also special blocks that appear only in USEREVT: Parameter, Action
-// Default
-USEREVT
+            {
+              flag: undefined,
+              index: 102,
+              type: 'parameter',
+              value: {
+                type: 'parameter_name',
+                value: 'Parameter 2',
+              },
+              comments: [['Parameter without T/F value'], []],
+            },
+            {
+              index: 1,
+              type: 'action',
+              value: [
+                {
+                  flag: undefined,
+                  index: 103,
+                  type: 'parameter',
+                  value: {
+                    type: 'parameter_name',
+                    value: 'Parameter 3',
+                  },
+                  comments: [['Comment 3', 'Comment 4'], ['Comment 5']],
+                },
+                {
+                  index: 2,
+                  type: 'action',
+                  value: [],
+                  comments: [
+                    ['Comment 6', 'Comment 7', 'Comment 8'],
+                    ['Comment 9', 'Comment 10', 'Comment 11'],
+                  ],
+                },
+              ],
+              comments: [['Comment 1', 'Action', 'Comment 2'], ['Comment 12']],
+            },
+            {
+              blockType: 'IF',
+              test: {
+                target: {
+                  type: 'identifier',
+                  value: 'VALUE',
+                },
+                type: 'is_expression',
+                value: {
+                  type: 'boolean',
+                  value: true,
+                },
+              },
+              type: 'conditional_block',
+              value: [],
+              comments: [['Any other source element'], []],
+            },
+          ],
+          comments: [['Comment 1'], []],
+        },
+      ],
+    };
+    expect(program).toEqual(expected);
+    expect(maapInpParser.toString(program)).toBe(`USEREVT
 100 T Parameter Name
 102 Parameter 2
 ACTION #1
@@ -1143,18 +1181,18 @@ END`);
 
   test('function statements', async () => {
     const program = maapInpParser.parse(await readTestData('function.INP')).output;
-    expect(program.value).toStrictEqual([
-      { type: 'comment', value: ' Tests function statements **' },
-      { type: 'comment', value: 'Default' },
-      {
-        name: {
-          type: 'identifier',
-          value: 'name',
-        },
-        type: 'function',
-        value: {
-          type: 'expression',
+    const expected: Program = {
+      type: 'program',
+      comments: [['Tests function statements **', 'Default'], []],
+      value: [
+        {
+          name: {
+            type: 'identifier',
+            value: 'name',
+          },
+          type: 'function',
           value: {
+            type: 'expression',
             left: {
               type: 'number',
               units: undefined,
@@ -1167,50 +1205,53 @@ END`);
               value: 1,
             },
           },
+          comments: [[], ['Comment']],
         },
-      },
-    ]);
-    expect(maapInpParser.toString(program)).toBe(`//  Tests function statements **
-// Default
-FUNCTION name = 1 + 1`);
+      ],
+    };
+    expect(program).toStrictEqual(expected);
+    expect(maapInpParser.toString(program)).toBe(`FUNCTION name = 1 + 1`);
   });
 
   test('set timer statements', async () => {
     const program = maapInpParser.parse(await readTestData('timer.INP')).output;
-    expect(program.value).toStrictEqual([
-      { type: 'comment', value: ' Tests set timer statements **' },
-      { type: 'comment', value: 'Default' },
-      {
-        type: 'set_timer',
-        value: {
-          type: 'timer',
-          value: 1,
+    const expected: Program = {
+      type: 'program',
+      comments: [['Tests set timer statements **', 'Default'], []],
+      value: [
+        {
+          type: 'set_timer',
+          value: {
+            type: 'timer',
+            value: 1,
+          },
+          comments: [[], []],
         },
-      },
-    ]);
-    expect(maapInpParser.toString(program)).toBe(`//  Tests set timer statements **
-// Default
-SET TIMER #1`);
+      ],
+    };
+    expect(program).toStrictEqual(expected);
+    expect(maapInpParser.toString(program)).toBe(`SET TIMER #1`);
   });
 
   test('lookup variable statements', async () => {
     const program = maapInpParser.parse(await readTestData('lookup.INP')).output;
-    expect(program.value).toStrictEqual([
-      { type: 'comment', value: ' Tests lookup statements **' },
-      { type: 'comment', value: 'Default' },
-      {
-        name: {
-          type: 'identifier',
-          value: 'VariableName',
+    const expected: Program = {
+      type: 'program',
+      comments: [['Tests lookup statements **', 'Default'], []],
+      value: [
+        {
+          name: {
+            type: 'identifier',
+            value: 'VariableName',
+          },
+          type: 'lookup_variable',
+          value: ['You can type anything in here for now', 'It just gets separated by row'],
+          comments: [['Comment 1'], ['Comment 2']],
         },
-        type: 'lookup_variable',
-        value: ['You can type anything in here for now', 'It just gets separated by row'],
-        comment: [],
-      },
-    ]);
-    expect(maapInpParser.toString(program)).toBe(`//  Tests lookup statements **
-// Default
-LOOKUP VARIABLE VariableName
+      ],
+    };
+    expect(program).toStrictEqual(expected);
+    expect(maapInpParser.toString(program)).toBe(`LOOKUP VARIABLE VariableName
 You can type anything in here for now
 It just gets separated by row
 END`);
@@ -1220,65 +1261,55 @@ END`);
 describe('program blocks', () => {
   test('source elements', async () => {
     const program = maapInpParser.parse(await readTestData('sourceElements.INP')).output;
-    expect(program.value).toStrictEqual([
-      { type: 'comment', value: ' Tests SourceElements **' },
-      { type: 'comment', value: 'Statement' },
-      {
-        type: 'sensitivity',
-        value: 'ON',
-      },
-      {
-        type: 'comment',
-        value: 'Assignment',
-      },
-      {
-        target: {
-          type: 'identifier',
-          value: 'Identifier',
+    const expected: Program = {
+      type: 'program',
+      comments: [['Tests SourceElements **', 'Statement'], []],
+      value: [
+        {
+          type: 'sensitivity',
+          value: 'ON',
+          comments: [[], []],
         },
-        type: 'assignment',
-        value: {
-          type: 'number',
-          units: 'HR',
-          value: 1,
+        {
+          target: {
+            type: 'identifier',
+            value: 'Identifier',
+          },
+          type: 'assignment',
+          value: {
+            type: 'number',
+            units: 'HR',
+            value: 1,
+          },
+          comments: [['Assignment'], []],
         },
-      },
-      {
-        type: 'comment',
-        value: 'Expression',
-      },
-      {
-        arguments: [],
-        type: 'call_expression',
-        value: {
-          type: 'identifier',
-          value: 'Function',
+        {
+          arguments: [],
+          type: 'call_expression',
+          value: {
+            type: 'identifier',
+            value: 'Function',
+          },
+          comments: [['Expression'], []],
         },
-      },
-      {
-        type: 'comment',
-        value: 'As Expression',
-      },
-      {
-        target: {
-          type: 'identifier',
-          value: 'Identifier',
+        {
+          target: {
+            type: 'identifier',
+            value: 'Identifier',
+          },
+          type: 'as_expression',
+          value: {
+            type: 'identifier',
+            value: 'Value',
+          },
+          comments: [['As Expression'], []],
         },
-        type: 'as_expression',
-        value: {
-          type: 'identifier',
-          value: 'Value',
-        },
-      },
-    ]);
-    expect(maapInpParser.toString(program)).toBe(`//  Tests SourceElements **
-// Statement
-SENSITIVITY ON
-// Assignment
+      ],
+    };
+    expect(program).toStrictEqual(expected);
+    expect(maapInpParser.toString(program)).toBe(`SENSITIVITY ON
 Identifier = 1 HR
-// Expression
 Function()
-// As Expression
 Identifier AS Value`);
   });
 });
@@ -1299,39 +1330,26 @@ describe('safeMode', () => {
     expect(safeParsed.errors.length).toBe(2);
     expect(safeParsed.output.value).toStrictEqual([
       {
-        type: 'comment',
-        value: ' Invalid item in block',
-      },
-      {
         blockType: 'INITIATORS',
         type: 'block',
         value: [
           {
             type: 'parameter_name',
             value: 'A VALID INITIATOR',
+            comments: [[], []],
           },
           {
             type: 'parameter_name',
             value: 'ANOTHER VALID INITIATOR',
-          },
-          {
-            type: 'comment',
-            value: ' IS NOT VALID',
+            comments: [[], []],
           },
         ],
-        comment: [],
-      },
-      {
-        type: 'comment',
-        value: ' Invalid block',
+        comments: [[], ['IS NOT VALID']],
       },
       {
         type: 'identifier',
         value: 'PLOTFIL',
-      },
-      {
-        type: 'comment',
-        value: ' END',
+        comments: [['Invalid block'], []],
       },
     ]);
   });
@@ -1341,157 +1359,171 @@ test('june 2025 bug fixes', async () => {
   const program = maapInpParser.parse(
     (await fs.readFile(path.join(__dirname, 'Test2.INP'))).toString(),
   ).output;
-  expect(program.value).toStrictEqual([
-    {
-      type: 'sensitivity',
-      value: 'ON',
-    },
-    {
-      type: 'title',
-      value: [{ title: 'Test 2', comment: [] }],
-      comment: [],
-    },
-    {
-      type: 'file',
-      fileType: 'PARAMETER FILE',
-      value: 'Test2.PAR',
-    },
-    {
-      type: 'block',
-      blockType: 'PARAMETER CHANGE',
-      value: [
-        {
-          type: 'assignment',
-          target: {
-            type: 'identifier',
-            value: 'A',
-          },
-          value: {
-            type: 'number',
-            units: undefined,
-            value: 0,
-          },
-        },
-        {
-          type: 'assignment',
-          target: {
-            type: 'identifier',
-            value: 'B',
-          },
-          value: {
-            type: 'number',
-            units: undefined,
-            value: 0,
-          },
-        },
-        {
-          type: 'assignment',
-          target: {
-            type: 'identifier',
-            value: 'D',
-          },
-          value: {
-            type: 'number',
-            units: undefined,
-            value: 0,
-          },
-        },
-        {
-          type: 'assignment',
-          target: {
-            type: 'identifier',
-            value: 'E',
-          },
-          value: {
-            type: 'number',
-            units: undefined,
-            value: 0,
-          },
-        },
-        {
-          type: 'assignment',
-          target: {
-            type: 'identifier',
-            value: 'F',
-          },
-          value: {
-            type: 'number',
-            units: undefined,
-            value: 0,
-          },
-        },
-        {
-          type: 'assignment',
-          target: {
-            type: 'identifier',
-            value: 'G',
-          },
-          value: {
-            type: 'number',
-            units: 'W',
-            value: 2,
-          },
-        },
-      ],
-      comment: [],
-    },
-    {
-      type: 'is_expression',
-      target: {
-        type: 'parameter_name',
-        value: 'START TIME',
+  const expected: Program = {
+    type: 'program',
+    comments: [[], []],
+    value: [
+      {
+        type: 'sensitivity',
+        value: 'ON',
+        comments: [[], []],
       },
-      value: {
-        type: 'number',
-        units: 'HR',
-        value: 0,
+      {
+        type: 'title',
+        value: 'Test 2',
+        comments: [[], []],
       },
-    },
-    {
-      type: 'is_expression',
-      target: {
-        type: 'parameter_name',
-        value: 'END TIME',
+      {
+        type: 'file',
+        fileType: 'PARAMETER FILE',
+        value: 'Test2.PAR',
+        comments: [[], []],
       },
-      value: {
-        type: 'number',
-        units: 'HR',
-        value: 7,
-      },
-    },
-    {
-      type: 'is_expression',
-      target: {
-        type: 'parameter_name',
-        value: 'PRINT INTERVAL',
-      },
-      value: {
-        type: 'number',
-        units: 'HR',
-        value: 1,
-      },
-    },
-    {
-      type: 'block',
-      blockType: 'INITIATORS',
-      value: [
-        {
-          type: 'parameter_name',
-          value: 'LOSS OF AC POWER',
-        },
-      ],
-      comment: [],
-    },
-    {
-      type: 'conditional_block',
-      blockType: 'IF',
-      test: {
-        type: 'multi_expression',
-        op: 'AND',
+      {
+        type: 'block',
+        blockType: 'PARAMETER CHANGE',
         value: [
           {
-            type: 'expression',
+            type: 'assignment',
+            target: {
+              type: 'identifier',
+              value: 'A',
+            },
             value: {
+              type: 'number',
+              units: undefined,
+              value: 0,
+            },
+            comments: [[], []],
+          },
+          {
+            type: 'assignment',
+            target: {
+              type: 'identifier',
+              value: 'B',
+            },
+            value: {
+              type: 'number',
+              units: undefined,
+              value: 0,
+            },
+            comments: [[], []],
+          },
+          {
+            type: 'assignment',
+            target: {
+              type: 'identifier',
+              value: 'D',
+            },
+            value: {
+              type: 'number',
+              units: undefined,
+              value: 0,
+            },
+            comments: [[], []],
+          },
+          {
+            type: 'assignment',
+            target: {
+              type: 'identifier',
+              value: 'E',
+            },
+            value: {
+              type: 'number',
+              units: undefined,
+              value: 0,
+            },
+            comments: [[], []],
+          },
+          {
+            type: 'assignment',
+            target: {
+              type: 'identifier',
+              value: 'F',
+            },
+            value: {
+              type: 'number',
+              units: undefined,
+              value: 0,
+            },
+            comments: [[], []],
+          },
+          {
+            type: 'assignment',
+            target: {
+              type: 'identifier',
+              value: 'G',
+            },
+            value: {
+              type: 'number',
+              units: 'W',
+              value: 2,
+            },
+            comments: [[], []],
+          },
+        ],
+        comments: [[], []],
+      },
+      {
+        type: 'is_expression',
+        target: {
+          type: 'parameter_name',
+          value: 'START TIME',
+        },
+        value: {
+          type: 'number',
+          units: 'HR',
+          value: 0,
+        },
+        comments: [[], []],
+      },
+      {
+        type: 'is_expression',
+        target: {
+          type: 'parameter_name',
+          value: 'END TIME',
+        },
+        value: {
+          type: 'number',
+          units: 'HR',
+          value: 7,
+        },
+        comments: [[], []],
+      },
+      {
+        type: 'is_expression',
+        target: {
+          type: 'parameter_name',
+          value: 'PRINT INTERVAL',
+        },
+        value: {
+          type: 'number',
+          units: 'HR',
+          value: 1,
+        },
+        comments: [[], []],
+      },
+      {
+        type: 'block',
+        blockType: 'INITIATORS',
+        value: [
+          {
+            type: 'parameter_name',
+            value: 'LOSS OF AC POWER',
+            comments: [[], []],
+          },
+        ],
+        comments: [[], []],
+      },
+      {
+        type: 'conditional_block',
+        blockType: 'IF',
+        test: {
+          type: 'multi_expression',
+          op: 'AND',
+          value: [
+            {
+              type: 'expression',
               left: {
                 type: 'identifier',
                 value: 'B',
@@ -1503,10 +1535,8 @@ test('june 2025 bug fixes', async () => {
                 units: undefined,
               },
             },
-          },
-          {
-            type: 'expression',
-            value: {
+            {
+              type: 'expression',
               left: {
                 type: 'identifier',
                 value: 'TIM',
@@ -1516,39 +1546,35 @@ test('june 2025 bug fixes', async () => {
                 type: 'expression_block',
                 value: {
                   type: 'expression',
-                  value: {
-                    left: {
-                      type: 'identifier',
-                      value: 'A',
-                    },
-                    op: '+',
-                    right: {
-                      type: 'number',
-                      value: 4,
-                      units: undefined,
-                    },
+                  left: {
+                    type: 'identifier',
+                    value: 'A',
+                  },
+                  op: '+',
+                  right: {
+                    type: 'number',
+                    value: 4,
+                    units: undefined,
                   },
                 },
                 units: 'HR',
               },
             },
-          },
-        ],
-        comment: [],
+          ],
+          comments: [],
+        },
+        value: [],
+        comments: [[], []],
       },
-      value: [],
-      comment: [],
-    },
-    {
-      type: 'conditional_block',
-      blockType: 'IF',
-      test: {
-        type: 'multi_expression',
-        op: 'AND',
-        value: [
-          {
-            type: 'expression',
-            value: {
+      {
+        type: 'conditional_block',
+        blockType: 'IF',
+        test: {
+          type: 'multi_expression',
+          op: 'AND',
+          value: [
+            {
+              type: 'expression',
               left: {
                 type: 'identifier',
                 value: 'A',
@@ -1560,10 +1586,8 @@ test('june 2025 bug fixes', async () => {
                 units: undefined,
               },
             },
-          },
-          {
-            type: 'expression',
-            value: {
+            {
+              type: 'expression',
               left: {
                 type: 'identifier',
                 value: 'TIM',
@@ -1574,19 +1598,17 @@ test('june 2025 bug fixes', async () => {
                 value: 'A HR',
               },
             },
-          },
-        ],
-        comment: [],
+          ],
+          comments: [],
+        },
+        value: [],
+        comments: [[], []],
       },
-      value: [],
-      comment: [],
-    },
-    {
-      type: 'conditional_block',
-      blockType: 'WHEN',
-      test: {
-        type: 'expression',
-        value: {
+      {
+        type: 'conditional_block',
+        blockType: 'WHEN',
+        test: {
+          type: 'expression',
           left: {
             type: 'timer',
             value: 1,
@@ -1597,9 +1619,10 @@ test('june 2025 bug fixes', async () => {
             value: 'D HR',
           },
         },
+        value: [],
+        comments: [[], []],
       },
-      value: [],
-      comment: [],
-    },
-  ]);
+    ],
+  };
+  expect(program).toStrictEqual(expected);
 });

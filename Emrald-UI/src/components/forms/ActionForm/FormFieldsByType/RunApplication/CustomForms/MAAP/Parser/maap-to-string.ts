@@ -198,17 +198,14 @@ export class MAAPToString {
    * @returns The compiled code.
    */
   private pureExpressionToString(pureExpression: MAAPPureExpression): string {
-    let re = `${this.expressionTypeToString(pureExpression.value.left)} ${pureExpression.value.op} `;
-    if (
-      pureExpression.value.right.useVariable &&
-      typeof pureExpression.value.right.value === 'string'
-    ) {
-      re += `" + ${pureExpression.value.right.value} + @"`;
-      this.addVariable(pureExpression.value.right.value);
-    } else if (pureExpression.value.right.type === 'expression') {
-      re += this.pureExpressionToString(pureExpression.value.right);
+    let re = `${this.expressionTypeToString(pureExpression.left)} ${pureExpression.op} `;
+    if (pureExpression.right.useVariable && pureExpression.right.type === 'identifier') {
+      re += `" + ${pureExpression.right.value} + @"`;
+      this.addVariable(pureExpression.right.value);
+    } else if (pureExpression.right.type === 'expression') {
+      re += this.pureExpressionToString(pureExpression.right);
     } else {
-      re += this.expressionTypeToString(pureExpression.value.right);
+      re += this.expressionTypeToString(pureExpression.right);
     }
     return re;
   }
@@ -220,7 +217,7 @@ export class MAAPToString {
    * @returns The compiled code.
    */
   public expressionBlockToString(expressionBlock: MAAPExpressionBlock): string {
-    let s = `(${this.pureExpressionToString(expressionBlock.value)})`;
+    let s = `(${this.expressionToString(expressionBlock.value)})`;
     if (expressionBlock.units) {
       s += ` ${expressionBlock.units}`;
     }
@@ -256,7 +253,7 @@ export class MAAPToString {
     } else {
       target = this.identifierToString(assignment.target);
     }
-    if (assignment.value.useVariable && typeof assignment.value.value === 'string') {
+    if (assignment.value.useVariable && assignment.value.type === 'identifier') {
       this.addVariable(assignment.value.value);
       return `${target} = " + ${assignment.value.value} + @"`;
     }
@@ -382,7 +379,7 @@ export class MAAPToString {
    * @returns The compiled code.
    */
   private titleToString(titleStatement: MAAPTitleStatement): string {
-    return `TITLE\n${titleStatement.value.map((v) => (v.comment.length > 0 ? `${v.title} // ${v.comment.map((c) => c.value).join(', ')}` : v.title)).join('\n')}\nEND`;
+    return `TITLE\n${titleStatement.value}\nEND`;
   }
 
   /**
@@ -444,7 +441,7 @@ export class MAAPToString {
   private plotfilToString(plotfilStatement: MAAPPlotFilStatement): string {
     return `PLOTFIL ${plotfilStatement.n.toString()}\n${plotfilStatement.value
       .map((plotFilBody) =>
-        plotFilBody.map((plotFilList) => this.variableToString(plotFilList)).join(','),
+        plotFilBody.row.map((plotFilList) => this.variableToString(plotFilList)).join(','),
       )
       .join('\n')}\nEND`;
   }

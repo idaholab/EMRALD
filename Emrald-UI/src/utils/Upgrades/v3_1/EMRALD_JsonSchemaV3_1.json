@@ -1057,7 +1057,7 @@
           "type": "array",
           "items": {
             "anyOf": [
-              { "$ref": "#/definitions/MAAPInitiator" },
+              { "$ref": "#/definitions/MAAPSourceElement" },
               { "$ref": "#/definitions/MAAPComment" }
             ]
           },
@@ -1106,25 +1106,6 @@
       },
       "required": ["caType"]
     },
-    "MAAPInitiator": {
-      "type": "object",
-      "title": "MAAPInitiator",
-      "properties": {
-        "name": {
-          "type": "string",
-          "description": "The name of the initiator"
-        },
-        "value": {
-          "type": ["string", "number", "boolean"],
-          "description": "The value of the initiator"
-        },
-        "type": {
-          "const": "initiator"
-        }
-      },
-      "required": ["name", "value", "type"],
-      "additionalProperties": false
-    },
     "MAAPParameter": {
       "type": "object",
       "title": "MAAPParameter",
@@ -1145,8 +1126,8 @@
             { "type": "string" }
           ]
         },
-        "comment": {
-          "type": "string"
+        "comments": {
+          "$ref": "#/definitions/MAAPCommentArray"
         },
         "name": {
           "type": "string"
@@ -1187,14 +1168,11 @@
             "$ref": "#/definitions/MAAPSourceElement"
           }
         },
-        "comment": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/MAAPComment"
-          }
+        "comments": {
+          "$ref": "#/definitions/MAAPCommentArray"
         }
       },
-      "required": ["blockType", "test", "type", "value", "comment"],
+      "required": ["blockType", "test", "type", "value", "comments"],
       "additionalProperties": false
     },
     "MAAPExpression": {
@@ -1219,6 +1197,9 @@
         },
         "useVariable": {
           "type": "boolean"
+        },
+        "comments": {
+          "$ref": "#/definitions/MAAPCommentArray"
         }
       },
       "required": ["target", "type", "value"],
@@ -1259,6 +1240,9 @@
         },
         "value": {
           "$ref": "#/definitions/MAAPIdentifier"
+        },
+        "comments": {
+          "$ref": "#/definitions/MAAPCommentArray"
         }
       },
       "required": ["arguments", "type", "value"],
@@ -1275,6 +1259,9 @@
         },
         "useVariable": {
           "type": "boolean"
+        },
+        "comments": {
+          "$ref": "#/definitions/MAAPCommentArray"
         }
       },
       "required": ["type", "value"],
@@ -1307,7 +1294,7 @@
           "const": "expression_block"
         },
         "value": {
-          "$ref": "#/definitions/MAAPPureExpression"
+          "$ref": "#/definitions/MAAPExpression"
         },
         "units": {
           "type": "string"
@@ -1322,35 +1309,28 @@
         "type": {
           "const": "expression"
         },
-        "value": {
-          "type": "object",
-          "properties": {
-            "left": {
-              "$ref": "#/definitions/MAAPExpressionType"
-            },
-            "op": {
-              "$ref": "#/definitions/MAAPExpressionOperator"
-            },
-            "right": {
-              "anyOf": [
-                { "$ref": "#/definitions/MAAPPureExpression" },
-                { "$ref": "#/definitions/MAAPExpressionType" }
-              ]
-            }
-          },
-          "required": ["left", "op", "right"],
-          "additionalProperties": false
+        "left": {
+          "$ref": "#/definitions/MAAPExpressionType"
+        },
+        "op": {
+          "$ref": "#/definitions/MAAPExpressionOperator"
+        },
+        "right": {
+          "anyOf": [
+            { "$ref": "#/definitions/MAAPPureExpression" },
+            { "$ref": "#/definitions/MAAPExpressionType" }
+          ]
         },
         "useVariable": {
           "type": "boolean"
         }
       },
-      "required": ["type", "value"],
+      "required": ["type", "value", "left", "op", "right"],
       "additionalProperties": false
     },
     "MAAPExpressionOperator": {
       "type": "string",
-      "enum": ["**", "*", "/", ">=", "<=", ">", "<", "+", "-"]
+      "enum": ["**", "*", "/", ">=", "<=", ">", "<", "+", "-", "!=", "=="]
     },
     "MAAPParameterName": {
       "type": "object",
@@ -1360,6 +1340,9 @@
         },
         "value": {
           "type": "string"
+        },
+        "comments": {
+          "$ref": "#/definitions/MAAPCommentArray"
         }
       },
       "required": ["type", "value"],
@@ -1380,6 +1363,9 @@
         },
         "value": {
           "type": "boolean"
+        },
+        "comments": {
+          "$ref": "#/definitions/MAAPCommentArray"
         }
       },
       "required": ["type", "value"],
@@ -1396,6 +1382,9 @@
         },
         "value": {
           "type": "number"
+        },
+        "comments": {
+          "$ref": "#/definitions/MAAPCommentArray"
         }
       },
       "required": ["type", "value"],
@@ -1453,9 +1442,12 @@
         "value": {
           "type": "string",
           "enum": ["ON", "OFF"]
+        },
+        "comments": {
+          "$ref": "#/definitions/MAAPCommentArray"
         }
       },
-      "required": ["type", "value"],
+      "required": ["type", "value", "comments"],
       "additionalProperties": false
     },
     "MAAPTitleStatement": {
@@ -1465,32 +1457,13 @@
           "const": "title"
         },
         "value": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "properties": {
-              "title": {
-                "type": "string"
-              },
-              "comment": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/definitions/MAAPComment"
-                }
-              }
-            },
-            "required": ["title", "comment"],
-            "additionalProperties": false
-          }
+          "type": "string"
         },
-        "comment": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/MAAPComment"
-          }
+        "comments": {
+          "$ref": "#/definitions/MAAPCommentArray"
         }
       },
-      "required": ["type", "value", "comment"],
+      "required": ["type", "value", "comments"],
       "additionalProperties": false
     },
     "MAAPFileStatement": {
@@ -1498,16 +1471,19 @@
       "properties": {
         "fileType": {
           "type": "string",
-          "enum": ["PARAMETER FILE", "INCLUDE"]
+          "enum": ["PARAMETER FILE", "INCLUDE", "DOSE PARAMETER FILE"]
         },
         "type": {
           "const": "file"
         },
         "value": {
           "type": "string"
+        },
+        "comments": {
+          "$ref": "#/definitions/MAAPCommentArray"
         }
       },
-      "required": ["fileType", "type", "value"],
+      "required": ["fileType", "type", "value", "comments"],
       "additionalProperties": false
     },
     "MAAPBlockStatement": {
@@ -1526,15 +1502,21 @@
             "$ref": "#/definitions/MAAPSourceElement"
           }
         },
-        "comment": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/MAAPComment"
-          }
+        "comments": {
+          "$ref": "#/definitions/MAAPCommentArray"
         }
       },
-      "required": ["blockType", "type", "value", "comment"],
+      "required": ["blockType", "type", "value", "comments"],
       "additionalProperties": false
+    },
+    "MAAPCommentArray": {
+      "type": "array",
+      "items": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      }
     },
     "MAAPAliasStatement": {
       "type": "object",
@@ -1548,11 +1530,8 @@
             "$ref": "#/definitions/MAAPAsExpression"
           }
         },
-        "comment": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/MAAPComment"
-          }
+        "comments": {
+          "$ref": "#/definitions/MAAPCommentArray"
         }
       },
       "required": ["blockType", "type", "value", "comment"],
@@ -1569,10 +1548,31 @@
         },
         "value": {
           "$ref": "#/definitions/MAAPIdentifier"
+        },
+        "comments": {
+          "$ref": "#/definitions/MAAPCommentArray"
         }
       },
-      "required": ["target", "type", "value"],
+      "required": ["target", "type", "value", "comments"],
       "additionalProperties": false
+    },
+    "MAAPPlotFilBody": {
+      "type": "object",
+      "properties": {
+        "row": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/MAAPVariable"
+          }
+        },
+        "comments": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": ["row", "comments"]
     },
     "MAAPPlotFilStatement": {
       "type": "object",
@@ -1586,20 +1586,14 @@
         "value": {
           "type": "array",
           "items": {
-            "type": "array",
-            "items": {
-              "$ref": "#/definitions/MAAPVariable"
-            }
+            "$ref": "#/definitions/MAAPPlotFilBody"
           }
         },
-        "comment": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/MAAPComment"
-          }
+        "comments": {
+          "$ref": "#/definitions/MAAPCommentArray"
         }
       },
-      "required": ["n", "type", "value", "comment"],
+      "required": ["n", "type", "value", "comments"],
       "additionalProperties": false
     },
     "MAAPUserEvtStatement": {
@@ -1614,14 +1608,11 @@
             "$ref": "#/definitions/MAAPUserEvtElement"
           }
         },
-        "comment": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/MAAPComment"
-          }
+        "comments": {
+          "$ref": "#/definitions/MAAPCommentArray"
         }
       },
-      "required": ["blockType", "type", "value", "comment"],
+      "required": ["blockType", "type", "value", "comments"],
       "additionalProperties": false
     },
     "MAAPUserEvtElement": {
@@ -1646,11 +1637,8 @@
             "$ref": "#/definitions/MAAPUserEvtElement"
           }
         },
-        "comment": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/MAAPComment"
-          }
+        "comments": {
+          "$ref": "#/definitions/MAAPCommentArray"
         }
       },
       "required": ["index", "type", "value", "comment"],
@@ -1667,9 +1655,12 @@
         },
         "value": {
           "$ref": "#/definitions/MAAPExpression"
+        },
+        "comments": {
+          "$ref": "#/definitions/MAAPCommentArray"
         }
       },
-      "required": ["name", "type", "value"],
+      "required": ["name", "type", "value", "comments"],
       "additionalProperties": false
     },
     "MAAPTimerStatement": {
@@ -1680,9 +1671,12 @@
         },
         "value": {
           "$ref": "#/definitions/MAAPTimerLiteral"
+        },
+        "comments": {
+          "$ref": "#/definitions/MAAPCommentArray"
         }
       },
-      "required": ["type", "value"],
+      "required": ["type", "value", "comments"],
       "additionalProperties": false
     },
     "MAAPLookupStatement": {
@@ -1700,14 +1694,11 @@
             "type": "string"
           }
         },
-        "comment": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/MAAPComment"
-          }
+        "comments": {
+          "$ref": "#/definitions/MAAPCommentArray"
         }
       },
-      "required": ["name", "type", "value", "comment"],
+      "required": ["name", "type", "value", "comments"],
       "additionalProperties": false
     },
     "MAAPAssignment": {
@@ -1737,9 +1728,12 @@
               "additionalProperties": false
             }
           ]
+        },
+        "comments": {
+          "$ref": "#/definitions/MAAPCommentArray"
         }
       },
-      "required": ["target", "type", "value"],
+      "required": ["target", "type", "value", "comments"],
       "additionalProperties": false
     },
     "MAAPComment": {
@@ -1774,14 +1768,14 @@
             ]
           }
         },
-        "comment": {
+        "comments": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/MAAPComment"
+            "type": "string"
           }
         }
       },
-      "required": ["type", "op", "value", "comment"],
+      "required": ["type", "op", "value", "comments"],
       "additionalProperties": false
     }
   }

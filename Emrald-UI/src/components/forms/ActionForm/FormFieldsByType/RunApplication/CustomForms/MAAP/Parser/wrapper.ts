@@ -13,7 +13,6 @@ export default function wrapper(
 ): MAAPInpParser {
   const maapInpParser: MAAPInpParser = {
     options: {
-      locations: false,
       safeMode: true,
     },
     parse: (input, options) =>

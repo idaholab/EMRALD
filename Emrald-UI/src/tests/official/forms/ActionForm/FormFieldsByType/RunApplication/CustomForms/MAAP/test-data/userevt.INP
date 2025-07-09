@@ -2,7 +2,7 @@
 ** Also special blocks that appear only in USEREVT: Parameter, Action
 
 C Default
-USEREVT
+USEREVT // Comment 1
 
 C Parameter with T/F value
 100 T Parameter Name
@@ -10,12 +10,19 @@ C Parameter with T/F value
 C Parameter without T/F value
 102 Parameter 2
 
+// Comment 1
 C Action
-ACTION #1
-103 Parameter 3
-ACTION #2
-END
-END
+ACTION #1 // Comment 2
+// Comment 3
+// Comment 4
+103 Parameter 3 // Comment 5
+// Comment 6
+// Comment 7
+ACTION #2 // Comment 8
+// Comment 9
+// Comment 10
+END // Comment 11
+END // Comment 12
 
 C Any other source element
 IF VALUE IS TRUE
