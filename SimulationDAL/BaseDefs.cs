@@ -356,27 +356,52 @@ namespace SimulationDAL
 
   public class SingleRandom : Random
   {
-    static SingleRandom _Instance;
-    public static SingleRandom Instance
+    //static SingleRandom _Instance;
+    //public static SingleRandom Instance
+    //{
+    //  get
+    //  {
+    //    if (_Instance == null)
+    //    {
+    //      if(ConfigData.seed == null)
+    //        _Instance = new SingleRandom();
+    //      else
+    //        _Instance = new SingleRandom((int)ConfigData.seed);
+    //    }
+    //    return _Instance;
+    //  }
+    //}
+
+    //private SingleRandom() : base() { }
+    //private SingleRandom(int seed) : base(seed) { }
+    //public static void Reset()
+    //{
+    //  _Instance = null;
+    //}
+    private static ThreadLocal<Random> _threadLocalRandom;
+
+    static SingleRandom()
+    {
+      Reset();
+    }
+
+    public static Random Instance
     {
       get
       {
-        if (_Instance == null)
-        {
-          if(ConfigData.seed == null)
-            _Instance = new SingleRandom();
-          else
-            _Instance = new SingleRandom((int)ConfigData.seed);
-        }
-        return _Instance;
+        return _threadLocalRandom.Value;
       }
     }
 
-    private SingleRandom() : base() { }
-    private SingleRandom(int seed) : base(seed) { }
     public static void Reset()
     {
-      _Instance = null;
+      _threadLocalRandom = new ThreadLocal<Random>(() =>
+      {
+        if (ConfigData.seed == null)
+          return new Random();
+        else
+          return new Random((int)ConfigData.seed);
+      });
     }
   }
 

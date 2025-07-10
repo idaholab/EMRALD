@@ -121,6 +121,8 @@ namespace EMRALD_Sim
       splitter6 = new System.Windows.Forms.Splitter();
       pnlSimulate = new System.Windows.Forms.Panel();
       chkDebug = new System.Windows.Forms.Panel();
+      cbClearTemps = new System.Windows.Forms.CheckBox();
+      bttnPathRefs = new System.Windows.Forms.Button();
       lblThreads = new System.Windows.Forms.Label();
       tbThreads = new System.Windows.Forms.TextBox();
       cbMultiThreaded = new System.Windows.Forms.CheckBox();
@@ -165,7 +167,6 @@ namespace EMRALD_Sim
       saveFileDialog2 = new System.Windows.Forms.SaveFileDialog();
       toolTip1 = new System.Windows.Forms.ToolTip(components);
       sdSaveModel = new System.Windows.Forms.SaveFileDialog();
-      bttnPathRefs = new System.Windows.Forms.Button();
       menuStrip1.SuspendLayout();
       tabXMPP.SuspendLayout();
       panel1.SuspendLayout();
@@ -200,11 +201,6 @@ namespace EMRALD_Sim
       panel10.SuspendLayout();
       tabLog.SuspendLayout();
       SuspendLayout();
-      //
-      // Def visibility for refs btn
-      //
-      bttnPathRefs.Visible = false;
-      //
       // 
       // menuStrip1
       // 
@@ -1080,15 +1076,15 @@ namespace EMRALD_Sim
       lbl_CurThread.Location = new System.Drawing.Point(15, 18);
       lbl_CurThread.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
       lbl_CurThread.Name = "lbl_CurThread";
-      lbl_CurThread.Size = new System.Drawing.Size(86, 15);
+      lbl_CurThread.Size = new System.Drawing.Size(92, 15);
       lbl_CurThread.TabIndex = 40;
-      lbl_CurThread.Text = "Current Thread";
+      lbl_CurThread.Text = "Showing Thread";
       lbl_CurThread.Visible = false;
       // 
       // cbCurThread
       // 
       cbCurThread.FormattingEnabled = true;
-      cbCurThread.Location = new System.Drawing.Point(108, 13);
+      cbCurThread.Location = new System.Drawing.Point(100, 13);
       cbCurThread.Name = "cbCurThread";
       cbCurThread.Size = new System.Drawing.Size(38, 23);
       cbCurThread.TabIndex = 12;
@@ -1156,6 +1152,7 @@ namespace EMRALD_Sim
       // 
       // chkDebug
       // 
+      chkDebug.Controls.Add(cbClearTemps);
       chkDebug.Controls.Add(bttnPathRefs);
       chkDebug.Controls.Add(lblThreads);
       chkDebug.Controls.Add(tbThreads);
@@ -1184,6 +1181,31 @@ namespace EMRALD_Sim
       chkDebug.Name = "chkDebug";
       chkDebug.Size = new System.Drawing.Size(847, 290);
       chkDebug.TabIndex = 3;
+      // 
+      // cbClearTemps
+      // 
+      cbClearTemps.AutoSize = true;
+      cbClearTemps.Checked = true;
+      cbClearTemps.CheckState = System.Windows.Forms.CheckState.Checked;
+      cbClearTemps.Location = new System.Drawing.Point(375, 121);
+      cbClearTemps.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+      cbClearTemps.Name = "cbClearTemps";
+      cbClearTemps.Size = new System.Drawing.Size(118, 19);
+      cbClearTemps.TabIndex = 41;
+      cbClearTemps.Text = "Clear Thread Files";
+      cbClearTemps.UseVisualStyleBackColor = true;
+      // 
+      // bttnPathRefs
+      // 
+      bttnPathRefs.Location = new System.Drawing.Point(228, 116);
+      bttnPathRefs.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+      bttnPathRefs.Name = "bttnPathRefs";
+      bttnPathRefs.Size = new System.Drawing.Size(132, 30);
+      bttnPathRefs.TabIndex = 40;
+      bttnPathRefs.Text = "Edit Path References";
+      bttnPathRefs.UseVisualStyleBackColor = true;
+      bttnPathRefs.Visible = false;
+      bttnPathRefs.Click += bttnPathRefs_Click;
       // 
       // lblThreads
       // 
@@ -1633,17 +1655,6 @@ namespace EMRALD_Sim
       sdSaveModel.Filter = "JSON Files (*.json)|*.json";
       sdSaveModel.FileOk += sdSaveModel_FileOk;
       // 
-      // bttnPathRefs
-      // 
-      bttnPathRefs.Location = new System.Drawing.Point(228, 116);
-      bttnPathRefs.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-      bttnPathRefs.Name = "bttnPathRefs";
-      bttnPathRefs.Size = new System.Drawing.Size(132, 30);
-      bttnPathRefs.TabIndex = 40;
-      bttnPathRefs.Text = "Edit Path References";
-      bttnPathRefs.UseVisualStyleBackColor = true;
-      bttnPathRefs.Click += bttnPathRefs_Click;
-      // 
       // FormMain
       // 
       AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -1846,5 +1857,6 @@ namespace EMRALD_Sim
     private System.Windows.Forms.Label lbl_CurThread;
     private System.Windows.Forms.ComboBox cbCurThread;
     private System.Windows.Forms.Button bttnPathRefs;
+    private System.Windows.Forms.CheckBox cbClearTemps;
   }
 }

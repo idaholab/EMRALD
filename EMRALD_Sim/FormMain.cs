@@ -46,6 +46,7 @@ namespace EMRALD_Sim
     private ModelSettings _currentModelSettings = null;
     private Options_cur jsonOptions = null; //if the user has passed in JSON options
     private bool _populatingSettings = false; //Flag that UI settings are being populated programatically, don't save on changes if true
+    private bool _running = false; //currently running simulations
 
     [DllImport("kernel32.dll")]
     static extern bool AttachConsole(int dwProcessId);
@@ -933,13 +934,24 @@ namespace EMRALD_Sim
         MessageBox.Show("You must select a client to send it to. Left of the Send Bttn.");
     }
 
+    //set when running item visibility 
+    private void SetRunningVis()
+    {
+      btnStartSims.Enabled = !_running;
+      lbl_CurThread.Visible = cbMultiThreaded.Checked && (_running);
+      cbCurThread.Visible = cbMultiThreaded.Checked && (_running);
+    }
+
     private void btnStartSims_Click(object sender, EventArgs e)
     {
+      _running = false;
       try
       {
         MethodInvoker ButtonEnableDelegate = delegate ()
         {
-          btnStartSims.Enabled = true;
+          //btnStartSims.Enabled = true;
+          SetRunningVis();
+
           foreach (var simBatch in simRuns)
           {
             if (simBatch.error != "")
@@ -948,7 +960,9 @@ namespace EMRALD_Sim
         };
 
 
-        btnStartSims.Enabled = false;
+        //btnStartSims.Enabled = false;
+        _running = true;
+        SetRunningVis();
         if (chkLog.Checked && ((int.Parse(tbLogRunStart.Text) - (int.Parse(tbLogRunEnd.Text)) > 100)))
         {
           DialogResult res = MessageBox.Show("Debug Warning", "Are you sure you want to debug that many runs ?", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
@@ -962,7 +976,9 @@ namespace EMRALD_Sim
           if (!lbExtSimLinks.CheckedItems.Contains(extSimLink))
           {
             MessageBox.Show("You must assign all the Links to External Simulations");
-            btnStartSims.Enabled = true;
+            //btnStartSims.Enabled = true;
+            _running = false;
+            SetRunningVis();
             return;
           }
         }
@@ -975,7 +991,9 @@ namespace EMRALD_Sim
         catch
         {
           MessageBox.Show("Invalid Max Simulation Time, please fix.");
-          btnStartSims.Enabled = true;
+          //btnStartSims.Enabled = true;
+          _running = false;
+          SetRunningVis();
           return;
         }
 
@@ -1019,7 +1037,22 @@ namespace EMRALD_Sim
           };
 
           Thread simThread = new Thread(tStarter);
-          simThread.Start();
+          if (i == 0)
+          {
+            // Start the first thread immediately so it can set up the files needed by the others
+            simThread.Start();
+          }
+          else
+          {
+            // Delay the start of all but first thread so that it has time to write so others have time to copy data
+            new Task(async () =>
+            {
+              //wait until first thread is done writing temp tread files.
+              while (!simRuns[0].tempThreadFilesWriten)
+                await Task.Delay(TimeSpan.FromMilliseconds(10)); // Adjust the delay as needed
+              simThread.Start();
+            }).Start();
+          }
           threads.Add(simThread);
         }
 
@@ -1030,27 +1063,25 @@ namespace EMRALD_Sim
           {
             thread.Join();
           }
-
           // Once all threads are done, update the UI and sum results
-          InvokeUIUpdate(ButtonEnableDelegate);
-
           //compile results if needed
-          for (int i=1; i<simRuns.Count; i++)
+          for (int i = 1; i < simRuns.Count; i++)
           {
             //SimulationEngine.OverallResults.CombineJsonResultFiles(simRuns[0].jsonResultsPaths, simRuns[i].jsonResultsPaths, simRuns[0].jsonResultsPaths);
             simRuns[0].AddOtherBatchResults(simRuns[i]);
+            if(cbClearTemps.Checked)
+              simRuns[i].ClearTempThreadData();
+
           }
+          _running = false;
+          
+          InvokeUIUpdate(ButtonEnableDelegate);
+          //Thread.Sleep(1000); //make sure thread writing is done before doing display results
           simRuns[0].WriteFinalResults(true);
+          if(cbClearTemps.Checked)
+            simRuns[0].ClearTempThreadData();
         });
 
-        //// Wait for all threads to complete
-        //foreach (var thread in threads)
-        //{
-        //  thread.Join();
-        //}
-
-        //InvokeUIUpdate(ButtonEnableDelegate);
-        ////todo combine the results and update the UI.
 
       }
       catch (Exception err)
@@ -1276,16 +1307,20 @@ namespace EMRALD_Sim
     {
       MethodInvoker methodInvokerDelegate = delegate ()
       {
-        int curT = 0;
-        if (cbMultiThreaded.Checked)
+        int curT = 0;                
+        if (_running && cbMultiThreaded.Checked)
           curT = cbCurThread.SelectedIndex;
 
         lbl_ResultHeader.Text = _sim.name + " " + runCnt.ToString() + " of " + tbRunCnt.Text + " runs.";// Time - " + runTime.ToString();
         lblRunTime.Text = runTime.ToString("g");
         lvResults.Items.Clear();
 
-        foreach (var item in simRuns[curT].keyPaths)
-        {
+        var keyPaths = simRuns[curT].keyPaths.ToList(); // Create a separate list of the keys because multithreading can cause a change while in loop
+        foreach (var item in keyPaths)
+        { 
+
+        //  foreach (var item in simRuns[curT].keyPaths)
+        //{
           string[] lvCols = new string[4];
           lvCols[0] = item.Key;
           lvCols[1] = item.Value.count.ToString();
@@ -1296,7 +1331,9 @@ namespace EMRALD_Sim
           //write the failed components and times.
           if (simRuns[curT].keyFailedItems.ContainsKey(item.Key))
           {
-            foreach (var cs in simRuns[curT].keyFailedItems[item.Key].compFailSets)
+            var compFailSets = simRuns[curT].keyFailedItems[item.Key].compFailSets.ToList(); //make a copy as could be modified in loop when multi threading
+            //foreach (var cs in simRuns[curT].keyFailedItems[item.Key].compFailSets)
+            foreach( var cs in compFailSets) 
             {
               string[] lvCols2 = new string[4];
 
@@ -1647,29 +1684,31 @@ namespace EMRALD_Sim
         {
           tbSeed.Text = "";
 
-          //figure out recommended thread number
-          int recommendedThreads = 1;
-          // Get total number of logical processors
-          int totalProcessors = Environment.ProcessorCount;
+          if ((tbThreads.Text == "") || (tbThreads.Text == "0"))
+          {
+            //figure out recommended thread number
+            int recommendedThreads = 1;
+            // Get total number of logical processors
+            int totalProcessors = Environment.ProcessorCount;
 
-          // Use PerformanceCounter to get current CPU usage
-          PerformanceCounter cpuCounter = new PerformanceCounter("Processor", "% Processor Time", "_Total");
+            // Use PerformanceCounter to get current CPU usage
+            PerformanceCounter cpuCounter = new PerformanceCounter("Processor", "% Processor Time", "_Total");
 
-          // Allow the counter to stabilize by waiting a bit
-          Thread.Sleep(100);
+            // Allow the counter to stabilize by waiting a bit
+            Thread.Sleep(100);
 
-          // Get the current CPU usage
-          float currentCpuUsage = cpuCounter.NextValue();
+            // Get the current CPU usage
+            float currentCpuUsage = cpuCounter.NextValue();
 
-          // Calculate the recommended number of threads
-          recommendedThreads = (int)((1 - currentCpuUsage) * totalProcessors);
+            // Calculate the recommended number of threads
+            recommendedThreads = (int)((1 - currentCpuUsage) * totalProcessors);
 
-          // Ensure at least one thread is recommended
-          recommendedThreads = Math.Max(recommendedThreads, 1);
+            // Ensure at least one thread is recommended
+            recommendedThreads = Math.Max(recommendedThreads, 1);
 
-          //don't use more than 75% of the threads by default
-          tbThreads.Text = Math.Min(recommendedThreads, (int)(totalProcessors * 0.75)).ToString();
-
+            //don't use more than 75% of the threads by default
+            tbThreads.Text = Math.Min(recommendedThreads, (int)(totalProcessors * 0.75)).ToString();
+          }
 
 
           // Always get issues (if any) for highlighting, but always show the editor form 
@@ -1707,7 +1746,7 @@ namespace EMRALD_Sim
         chkLog.Checked = !cbMultiThreaded.Checked;
         chkLog.Enabled = !cbMultiThreaded.Checked;
         tbSeed.Enabled = !cbMultiThreaded.Checked;
-        lbl_CurThread.Visible = cbMultiThreaded.Checked;
+        lbl_CurThread.Visible = cbMultiThreaded.Checked && (!_running);
         cbCurThread.Visible = cbMultiThreaded.Checked;
         bttnPathRefs.Visible = cbMultiThreaded.Checked;
 
