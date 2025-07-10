@@ -38,6 +38,7 @@ export default defineConfig({
           { text: 'External Simulators', link: '/Modeling/externalSims' },
           { text: 'Icons', link: '/Modeling/icons' },
           { text: 'Solver', link: '/Modeling/solver' },
+          {text: 'Multi-Thread Solving', link: '/Modeling/multiThread' },
           { text: 'XMPP Protocol', link: '/Modeling/xmppProtocol' },
           { text: 'Backend Info', link: '/Modeling/backendInfo' },
           { text: 'Command Line Options', link: '/Modeling/cmdLineOptions' }
