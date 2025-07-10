@@ -28,7 +28,6 @@ const InputBlocks = () => {
               blockType={block.blockType}
               test={block.test}
               value={block.value}
-              comment={block.comment.map((c) => c.value).join(', ')}
             />
           </Box>
         );

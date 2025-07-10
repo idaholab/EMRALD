@@ -13,7 +13,6 @@ import type {
   MAAPConditionalBlockStatement,
   MAAPSourceElement,
   MAAPComment,
-  MAAPInitiator,
   MAAPAssignment,
 } from '../../../../../../../types/EMRALD_Model';
 
@@ -36,16 +35,6 @@ const MAAP = () => {
     setCurrentTab(tabValue);
   };
 
-  const getParameterName = (row: MAAPSourceElement) => {
-    if (row.type === 'assignment') {
-      if (row.target.type === 'call_expression') {
-        return new MAAPToString().callExpressionToString(row.target);
-      }
-      return new MAAPToString().identifierToString(row.target);
-    }
-    return '';
-  };
-
   function createMaapFile() {
     if (formData?.sourceElements) {
       let newSource: MAAPSourceElement[] = [];
@@ -64,12 +53,7 @@ const MAAP = () => {
             newSource.push({
               type: 'block',
               blockType: 'INITIATORS',
-              value: formData.initiators
-                .filter((initiator) => initiator.type !== 'comment')
-                .map((initiator) => ({
-                  type: 'parameter_name',
-                  value: initiator.name,
-                })),
+              value: formData.initiators,
               comment: [],
             });
           } else {
@@ -283,35 +267,12 @@ const MAAP = () => {
             }
           });
 
-          const newInitiators: (MAAPInitiator | MAAPComment)[] = [];
-          initiators.forEach((init) => {
-            if (init.type === 'comment') {
-              newInitiators.push(init);
-            } else if (init.type === 'assignment') {
-              let value: string | number | boolean = '';
-              if (init.value.type === 'boolean') {
-                value = init.value.value;
-              } else if (init.value.type === 'number') {
-                value = init.value.value;
-              } else {
-                value = new MAAPToString().expressionToString(init.value);
-              }
-              newInitiators.push({
-                name: getParameterName(init),
-                value,
-                type: 'initiator',
-              });
-            }
-          });
-
-          console.log(inputBlocks);
-
           setFormData((prevFormData) =>
             prevFormData
               ? {
                   ...prevFormData,
                   parameters: newParameters,
-                  initiators: newInitiators,
+                  initiators,
                   inputBlocks,
                   fileRefs,
                   sourceElements: data.value,

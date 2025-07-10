@@ -1,13 +1,13 @@
-import type { MAAPPureExpression } from '../../../../../../../../../types/EMRALD_Model';
-import { PureExpression } from './PureExpression';
+import type { MAAPExpression } from '../../../../../../../../../types/EMRALD_Model';
+import { Expression } from './Expression';
 
 export const ExpressionBlock: React.FC<{
-  value: MAAPPureExpression;
+  value: MAAPExpression;
   units?: string;
 }> = ({ value, units }) => {
   return (
     <>
-      (<PureExpression value={value} />)
+      (<Expression value={value} />)
       {units ? <>&nbsp;{units}</> : ''}
     </>
   );

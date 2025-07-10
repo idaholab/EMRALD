@@ -23,7 +23,7 @@ const Parameters = () => {
   const [localVarSelection, setLocalVarSelection] = useState<string[]>([]);
   const [localValue, setLocalValue] = useState<string[]>([]);
 
-  useEffect(() => {
+  /*useEffect(() => {
     const v: boolean[] = [];
     const s: string[] = [];
     const l: string[] = [];
@@ -45,7 +45,7 @@ const Parameters = () => {
     setUseVariable(v);
     setLocalVarSelection(s);
     setLocalValue(l);
-  }, []);
+  }, []);*/
 
   useEffect(() => {
     setFormData({
@@ -96,12 +96,12 @@ const Parameters = () => {
                       label="EMRALD Variable"
                       setValue={(value) => {
                         //row.value.useVariable = true;
-                        row.value.value = value;
+                        /*row.value.value = value;
                         setLocalVarSelection([
                           ...localVarSelection.slice(0, idx),
                           value,
                           ...localVarSelection.slice(idx + 1),
-                        ]);
+                        ]);*/
                       }}
                       sx={{ width: 223, mt: 0 }}
                     >
@@ -116,7 +116,7 @@ const Parameters = () => {
                       size="small"
                       value={localValue[idx]}
                       onChange={(e) => {
-                        row.value.value = e.target.value;
+                        //row.value.value = e.target.value;
                         setLocalValue([
                           ...localValue.slice(0, idx),
                           e.target.value,
@@ -125,7 +125,6 @@ const Parameters = () => {
                       }}
                     />
                   )}
-                  {row.value.units ?? ''}
                 </TableCell>
                 <TableCell align="center">
                   <FormControlLabel

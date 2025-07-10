@@ -10,12 +10,10 @@ export const ConditionalBlock: React.FC<{
   blockType: string;
   test: MAAPExpression;
   value: MAAPSourceElement[];
-  comment: string;
-}> = ({ blockType, test, value, comment }) => {
+}> = ({ blockType, test, value }) => {
   return (
     <Card sx={{marginBottom: 2}}>
       <CardContent>
-        {comment}
         <Box sx={{ display: 'flex', alignItems: 'baseline' }}>
           <Typography m={2}>{blockType}</Typography>
           <Box sx={{ marginLeft: 8 }}>

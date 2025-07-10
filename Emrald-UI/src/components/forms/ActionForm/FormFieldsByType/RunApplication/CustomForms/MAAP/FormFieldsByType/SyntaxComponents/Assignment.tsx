@@ -4,14 +4,15 @@ import { MAAPToString } from '../../Parser/maap-to-string';
 import { useState } from 'react';
 import { appData } from '../../../../../../../../../hooks/useAppData';
 import { FaLink } from 'react-icons/fa6';
+import { MultiExpression } from './MultiExpression';
+import { IsExpression } from './IsExpression';
 
 export const Assignment: React.FC<{
   value: MAAPAssignment;
 }> = ({ value }) => {
-  // It doesn't matter if value.value.value.toString() returns "[object object]", because the conditional logic in the JSX elements
-  // will only show this value if it is configured to use a variable.
-  // eslint-disable-next-line @typescript-eslint/no-base-to-string
-  const [localValue, setLocalValue] = useState<string>(value.value.value.toString());
+  const [localValue, setLocalValue] = useState<string>(
+    new MAAPToString().expressionToString(value.value),
+  );
   const variables = appData.value.VariableList.map(({ name }) => name);
 
   return (
@@ -22,23 +23,34 @@ export const Assignment: React.FC<{
           : value.target.value}{' '}
         =&nbsp;
       </Typography>
-      <Autocomplete
-        freeSolo
-        aria-label="Use Variable"
-        size="small"
-        disablePortal
-        options={variables}
-        value={localValue}
-        sx={{ width: 300 }}
-        onChange={(_, newValue) => {
-          value.value.value = newValue ?? '';
-          value.value.useVariable = variables.includes(newValue ?? '');
-          setLocalValue(newValue ?? '');
-        }}
-        renderInput={(params) => (
-          <TextField
-            {...params}
-            slotProps={{
+      {value.value.type === 'multi_expression' ? (
+        <MultiExpression op={value.value.op} value={value.value.value}></MultiExpression>
+      ) : value.value.type === 'is_expression' ? (
+        <IsExpression target={value.value.target} value={value.value.value}></IsExpression>
+      ) : (
+        <Autocomplete
+          freeSolo
+          aria-label="Use Variable"
+          size="small"
+          disablePortal
+          options={variables}
+          value={localValue}
+          sx={{ width: 300 }}
+          onChange={(_, newValue) => {
+            // Other possible types should be handled by the conditional rendering
+            if (value.value.type === 'expression') {
+              value.value.right = {
+                type: 'identifier',
+                value: newValue ?? '',
+              };
+            }
+            value.value.useVariable = variables.includes(newValue ?? '');
+            setLocalValue(newValue ?? '');
+          }}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              slotProps={{
                 input: {
                   ...params.InputProps,
                   startAdornment: value.value.useVariable ? (
@@ -49,15 +61,22 @@ export const Assignment: React.FC<{
                 },
               }}
               sx={{ input: { color: value.value.useVariable ? '#008362' : 'inherit' } }}
-            onChange={(e) => {
-              value.value.value = e.target.value;
-              value.value.useVariable = variables.includes(e.target.value);
-              setLocalValue(e.target.value);
-            }}
-          />
-        )}
-        getOptionLabel={(option) => option.toString()}
-      />
+              onChange={(e) => {
+                // Other possible types should be handled by the conditional rendering
+                if (value.value.type === 'expression') {
+                  value.value.right = {
+                    type: 'identifier',
+                    value: e.target.value,
+                  };
+                }
+                value.value.useVariable = variables.includes(e.target.value);
+                setLocalValue(e.target.value);
+              }}
+            />
+          )}
+          getOptionLabel={(option) => option.toString()}
+        />
+      )}
     </Box>
   );
 };

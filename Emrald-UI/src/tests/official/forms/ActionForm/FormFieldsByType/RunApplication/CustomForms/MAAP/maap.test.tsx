@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/prefer-for-of */
 import 'blob-polyfill';
 import { describe, expect, test } from 'vitest';
 import fs from 'fs/promises';
@@ -14,47 +13,6 @@ import ActionForm from '../../../../../../../../components/forms/ActionForm/Acti
 import userEvent from '@testing-library/user-event';
 import { screen } from '@testing-library/react';
 import expected from './maap.expected.json';
-import type { Action } from '../../../../../../../../types/EMRALD_Model';
-
-/**
- * Removes the dynamically assigned IDs from form data elements for expected comparison.
- */
-function removeIds(action: Action) {
-  if (action.formData) {
-    if (action.formData.initiators) {
-      for (let i = 0; i < action.formData.initiators.length; i += 1) {
-        delete action.formData.initiators[i].id;
-      }
-    }
-    if (action.formData.inputBlocks) {
-      for (let i = 0; i < action.formData.inputBlocks.length; i += 1) {
-        // Source elements could theoretically be assigned an ID by the form, but the property doesn't and shouldn't exist on the type
-        // The best approach to resolving this issue is to remove the IDs from the form entirely
-        // @ts-expect-error - See above
-        delete action.formData.inputBlocks[i].id;
-      }
-    }
-    if (action.formData.parameters) {
-      for (let i = 0; i < action.formData.parameters.length; i += 1) {
-        // @ts-expect-error - See above
-        delete action.formData.parameters[i].id;
-      }
-    }
-    if (action.formData.sourceElements) {
-      for (let i = 0; i < action.formData.sourceElements.length; i += 1) {
-        // @ts-expect-error - See above
-        delete action.formData.sourceElements[i].id;
-      }
-    }
-    if (action.formData.possibleInitiators) {
-      for (let i = 0; i < action.formData.possibleInitiators.length; i += 1) {
-        // @ts-expect-error - See above
-        delete action.formData.possibleInitiators[i].id;
-      }
-    }
-  }
-  return action;
-}
 
 describe('MAAP Form', async () => {
   const TestPAR = new File([await fs.readFile(path.join(__dirname, 'Test.PAR'))], 'Test.PAR', {
@@ -145,7 +103,7 @@ describe('MAAP Form', async () => {
     await selectOption('Assignment Right Hand Side', 'Test Variable');
 
     await save();
-    expect(removeIds(getAction(name))).toEqual(expected[name]);
+    expect(getAction(name)).toEqual(expected[name]);
   });
 
   test('modifies initiators', async () => {
@@ -189,7 +147,7 @@ describe('MAAP Form', async () => {
     await user.click((await screen.findAllByLabelText('Remove Initiator'))[1]);
 
     await save();
-    expect(removeIds(getAction(name))).toEqual(expected[name]);
+    expect(getAction(name)).toEqual(expected[name]);
   });
 
   test('sets outputs', async () => {
@@ -237,6 +195,78 @@ describe('MAAP Form', async () => {
     await user.click(await screen.findByRole('option', { name: 'Core Uncovery' }));
 
     await save();
-    expect(removeIds(getAction(name))).toEqual(expected[name]);
+    expect(getAction(name)).toEqual(expected[name]);
+  });
+
+  test('june 2025 revision', async () => {
+    const name = 'june 2025 revision';
+    renderActionForm(
+      <ActionForm
+        actionData={{
+          name,
+          desc: '',
+          objType: 'Action',
+          mainItem: true,
+          actType: 'atRunExtApp',
+        }}
+      ></ActionForm>,
+    );
+    const user = userEvent.setup();
+
+    // Load the MAAP form
+    await user.click(await screen.findByLabelText('Use Custom Application'));
+    await selectOption('Custom Application Type', 'MAAP');
+
+    // Enter file paths
+    await user.type(await screen.findByLabelText('MAAP Executable Path'), 'C:\\MAAP.exe');
+    await user.type(await screen.findByLabelText('Full Parameter File Path'), 'C:\\Test.PAR');
+    await user.type(await screen.findByLabelText('Full Input File Path'), 'C:\\Test.INP');
+
+    // Upload parameter file
+    await user.upload(await screen.findByLabelText('Parameter File'), TestPAR);
+
+    // Upload INP file
+    await user.upload(
+      await screen.findByLabelText('Input File'),
+      new File([await fs.readFile(path.join(__dirname, 'Test2.INP'))], 'Test2.INP', {
+        type: 'text',
+      }),
+    );
+
+    // Add variables to the model
+    ensureVariable('LOSPTime');
+    ensureVariable('AC_RestorationTime');
+    ensureVariable('AFWS_TimeLeft');
+    ensureVariable('PORV_FailTime');
+    ensureVariable('SRV_FailTime');
+
+    // Select the variables for parameters
+    await user.click((await screen.findAllByLabelText('Use Variable'))[0]);
+    await selectOption('EMRALD Variable', 'LOSPTime');
+    await user.click((await screen.findAllByLabelText('Use Variable'))[1]);
+    await selectOption('EMRALD Variable', 'AC_RstorationTime');
+    await user.click((await screen.findAllByLabelText('Use Variable'))[2]);
+    await selectOption('EMRALD Variable', 'AFWS_TimeLeft');
+    await user.click((await screen.findAllByLabelText('Use Variable'))[3]);
+    await selectOption('EMRALD Variable', 'PORV_FailTime');
+    await user.click((await screen.findAllByLabelText('Use Variable'))[4]);
+    await selectOption('EMRALD Variable', 'SRV_FailTime');
+
+    // Switch to Initiators tab
+    await user.click(await screen.findByText('Initiators'));
+    await user.click((await screen.findByLabelText("Add Initiator")));
+    await selectOption('Add Initiator', 'LOSS OF AC POWER');
+
+    // Switch to input blocks tab
+    await user.click(await screen.findByText('Input Blocks'));
+
+    // Select the variable for the WHEN block condition
+    await selectOption('When Condition Right Hand Side', 'Test Variable');
+
+    // Select the variable in the WHEN block body
+    await selectOption('Assignment Right Hand Side', 'Test Variable');
+
+    await save();
+    //expect(removeIds(getAction(name))).toEqual(expected[name]);
   });
 });

@@ -288,7 +288,8 @@
     "makeInputFileCode": "string exeLoc = \"C:/MAAP.exe\";\n        string paramLoc = \"C:/Test.PAR\";\n        string inpLoc = \"C:/Test.INP\";\n        string newInp = @\"SENSITIVITY ON\nTITLE\nTESTINP\nEND\nPARAMETER FILE Test.PAR\nINCLUDE Test.INC\nPARAMETER CHANGE\nPARAM1 = 5\nPARAM2(1) = 6 FT\nEND\nALIAS\nPARAM1 AS ALIAS PARAM\nEND\nINITIATORS\nINIT1 = T\nINIT2 = 0\nEND\nWHEN TIM >= 0 S\nINIT1 = F\nEND\nPRINT INTERVAL IS 50\nSTART TIME IS 0 HR\nEND TIME IS 10 HR\nPLOTFIL 100\nTIME IN SECONDS\nALIAS PARAM\nEND\n\";\n        string fileRefs = \"Test.PAR,Test.INC\"; //example \"PVGS_502.par, test.txt\";\n        string[] fileRefsList = fileRefs.Split(',');\n        \n        if (!Path.IsPathRooted(exeLoc))\n        {\n          exeLoc = Path.Join(Directory.GetCurrentDirectory(), exeLoc);\n        }\n        if (!Path.IsPathRooted(paramLoc))\n        {\n          paramLoc = Path.Join(Directory.GetCurrentDirectory(), paramLoc);\n        }\n        if (!Path.IsPathRooted(inpLoc))\n        {\n          inpLoc = Path.Join(Directory.GetCurrentDirectory(), inpLoc);\n        }\n        \n        string tempLoc = Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), \"EMRALD_MAAP\");\n        try\n        {\n          if (Directory.Exists(tempLoc))\n          {\n            Directory.Delete(tempLoc, true);\n          }\n          Directory.CreateDirectory(tempLoc);\n        }\n        catch { }\n        if (File.Exists(paramLoc) && !File.Exists(Path.Join(tempLoc, Path.GetFileName(paramLoc))))\n        {\n          File.Copy(paramLoc, Path.Join(tempLoc, Path.GetFileName(paramLoc)));\n        }\n        \n        string paramFileName = Path.GetFileName(paramLoc);\n        string inpFileName = Path.GetFileName(inpLoc);\n        string inpLocPath = Path.GetDirectoryName(inpLoc);\n        foreach (string fileRef in fileRefsList)\n        {\n          string fileRefPath = Path.Join(inpLocPath, fileRef);\n          if (File.Exists(fileRefPath) && !File.Exists(Path.Join(tempLoc, fileRef)))\n          {\n            if (fileRef != paramFileName)\n            File.Copy(fileRefPath, Path.Join(tempLoc, fileRef));\n          }\n          else\n          {\n            Console.WriteLine(\"Missing MAAP referenced file - \" + Path.Join(inpLocPath, fileRef));\n          }\n        }\n        string exeName = Path.GetFileName(exeLoc);\n        if (File.Exists(exeLoc) && !File.Exists(Path.Join(tempLoc, exeName)))\n        {\n          File.Copy(exeLoc, Path.Join(tempLoc, exeName));\n        }\n        string dllPath = Path.Join(Path.GetDirectoryName(exeLoc), exeName[..^7] + \".dll\");\n        if (File.Exists(dllPath) && !File.Exists(Path.Join(tempLoc, Path.GetFileName(dllPath))))\n        {\n          File.Copy(dllPath, Path.Join(tempLoc, Path.GetFileName(dllPath)));\n        }\n        \n        string newInpLoc = Path.Join(tempLoc, inpFileName);\n        System.IO.File.WriteAllText(newInpLoc, newInp);\n        return $\"{Path.Join(tempLoc, exeName)} {inpFileName} {paramFileName}\";",
     "processOutputFileCode": "string inpLoc = @\"C:/Test.INP\";\n  if (!Path.IsPathRooted(inpLoc))\n        inpLoc = RootPath + inpLoc;\n    string docVarPath = @\"./MAAP/temp.log\";\n  if (!Path.IsPathRooted(docVarPath))\n        docVarPath = RootPath + docVarPath;\n  string resLoc = Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), \"EMRALD_MAAP\", Path.GetFileNameWithoutExtension(inpLoc) + \".log\");\n  Directory.CreateDirectory(Path.GetDirectoryName(docVarPath));\n  File.Copy(resLoc, docVarPath, true);",
     "raType": "custom",
-    "returnProcess": "rtNone"
+    "returnProcess": "rtNone",
+    "codeVariables": []
   },
   "uses variables": {
     "objType": "Action",
@@ -584,7 +585,8 @@
     "makeInputFileCode": "string exeLoc = \"C:/MAAP.exe\";\n        string paramLoc = \"C:/Test.PAR\";\n        string inpLoc = \"C:/Test.INP\";\n        string newInp = @\"SENSITIVITY ON\nTITLE\nTESTINP\nEND\nPARAMETER FILE Test.PAR\nINCLUDE Test.INC\nPARAMETER CHANGE\nPARAM1 = \" + Test Variable + @\"\nPARAM2(1) = 6 FT\nEND\nALIAS\nPARAM1 AS ALIAS PARAM\nEND\nINITIATORS\nINIT1 = T\nINIT2 = 0\nEND\nWHEN TIM >= \" + Test Variable + @\"\nINIT1 = \" + Test Variable + @\"\nEND\nPRINT INTERVAL IS 50\nSTART TIME IS 0 HR\nEND TIME IS 10 HR\nPLOTFIL 100\nTIME IN SECONDS\nALIAS PARAM\nEND\n\";\n        string fileRefs = \"Test.PAR,Test.INC\"; //example \"PVGS_502.par, test.txt\";\n        string[] fileRefsList = fileRefs.Split(',');\n        \n        if (!Path.IsPathRooted(exeLoc))\n        {\n          exeLoc = Path.Join(Directory.GetCurrentDirectory(), exeLoc);\n        }\n        if (!Path.IsPathRooted(paramLoc))\n        {\n          paramLoc = Path.Join(Directory.GetCurrentDirectory(), paramLoc);\n        }\n        if (!Path.IsPathRooted(inpLoc))\n        {\n          inpLoc = Path.Join(Directory.GetCurrentDirectory(), inpLoc);\n        }\n        \n        string tempLoc = Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), \"EMRALD_MAAP\");\n        try\n        {\n          if (Directory.Exists(tempLoc))\n          {\n            Directory.Delete(tempLoc, true);\n          }\n          Directory.CreateDirectory(tempLoc);\n        }\n        catch { }\n        if (File.Exists(paramLoc) && !File.Exists(Path.Join(tempLoc, Path.GetFileName(paramLoc))))\n        {\n          File.Copy(paramLoc, Path.Join(tempLoc, Path.GetFileName(paramLoc)));\n        }\n        \n        string paramFileName = Path.GetFileName(paramLoc);\n        string inpFileName = Path.GetFileName(inpLoc);\n        string inpLocPath = Path.GetDirectoryName(inpLoc);\n        foreach (string fileRef in fileRefsList)\n        {\n          string fileRefPath = Path.Join(inpLocPath, fileRef);\n          if (File.Exists(fileRefPath) && !File.Exists(Path.Join(tempLoc, fileRef)))\n          {\n            if (fileRef != paramFileName)\n            File.Copy(fileRefPath, Path.Join(tempLoc, fileRef));\n          }\n          else\n          {\n            Console.WriteLine(\"Missing MAAP referenced file - \" + Path.Join(inpLocPath, fileRef));\n          }\n        }\n        string exeName = Path.GetFileName(exeLoc);\n        if (File.Exists(exeLoc) && !File.Exists(Path.Join(tempLoc, exeName)))\n        {\n          File.Copy(exeLoc, Path.Join(tempLoc, exeName));\n        }\n        string dllPath = Path.Join(Path.GetDirectoryName(exeLoc), exeName[..^7] + \".dll\");\n        if (File.Exists(dllPath) && !File.Exists(Path.Join(tempLoc, Path.GetFileName(dllPath))))\n        {\n          File.Copy(dllPath, Path.Join(tempLoc, Path.GetFileName(dllPath)));\n        }\n        \n        string newInpLoc = Path.Join(tempLoc, inpFileName);\n        System.IO.File.WriteAllText(newInpLoc, newInp);\n        return $\"{Path.Join(tempLoc, exeName)} {inpFileName} {paramFileName}\";",
     "processOutputFileCode": "string inpLoc = @\"C:/Test.INP\";\n  if (!Path.IsPathRooted(inpLoc))\n        inpLoc = RootPath + inpLoc;\n    string docVarPath = @\"./MAAP/temp.log\";\n  if (!Path.IsPathRooted(docVarPath))\n        docVarPath = RootPath + docVarPath;\n  string resLoc = Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), \"EMRALD_MAAP\", Path.GetFileNameWithoutExtension(inpLoc) + \".log\");\n  Directory.CreateDirectory(Path.GetDirectoryName(docVarPath));\n  File.Copy(resLoc, docVarPath, true);",
     "raType": "custom",
-    "returnProcess": "rtNone"
+    "returnProcess": "rtNone",
+    "codeVariables": ["Test Variable"]
   },
   "modifies initiators": {
     "objType": "Action",
@@ -875,7 +877,8 @@
     "makeInputFileCode": "string exeLoc = \"C:/MAAP.exe\";\n        string paramLoc = \"C:/Test.PAR\";\n        string inpLoc = \"C:/Test.INP\";\n        string newInp = @\"SENSITIVITY ON\nTITLE\nTESTINP\nEND\nPARAMETER FILE Test.PAR\nINCLUDE Test.INC\nPARAMETER CHANGE\nPARAM1 = 5\nPARAM2(1) = 6 FT\nEND\nALIAS\nPARAM1 AS ALIAS PARAM\nEND\nINITIATORS\nINIT1 = T\nPARAM1 = T\nEND\nWHEN TIM >= 0 S\nINIT1 = F\nEND\nPRINT INTERVAL IS 50\nSTART TIME IS 0 HR\nEND TIME IS 10 HR\nPLOTFIL 100\nTIME IN SECONDS\nALIAS PARAM\nEND\n\";\n        string fileRefs = \"Test.PAR,Test.INC\"; //example \"PVGS_502.par, test.txt\";\n        string[] fileRefsList = fileRefs.Split(',');\n        \n        if (!Path.IsPathRooted(exeLoc))\n        {\n          exeLoc = Path.Join(Directory.GetCurrentDirectory(), exeLoc);\n        }\n        if (!Path.IsPathRooted(paramLoc))\n        {\n          paramLoc = Path.Join(Directory.GetCurrentDirectory(), paramLoc);\n        }\n        if (!Path.IsPathRooted(inpLoc))\n        {\n          inpLoc = Path.Join(Directory.GetCurrentDirectory(), inpLoc);\n        }\n        \n        string tempLoc = Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), \"EMRALD_MAAP\");\n        try\n        {\n          if (Directory.Exists(tempLoc))\n          {\n            Directory.Delete(tempLoc, true);\n          }\n          Directory.CreateDirectory(tempLoc);\n        }\n        catch { }\n        if (File.Exists(paramLoc) && !File.Exists(Path.Join(tempLoc, Path.GetFileName(paramLoc))))\n        {\n          File.Copy(paramLoc, Path.Join(tempLoc, Path.GetFileName(paramLoc)));\n        }\n        \n        string paramFileName = Path.GetFileName(paramLoc);\n        string inpFileName = Path.GetFileName(inpLoc);\n        string inpLocPath = Path.GetDirectoryName(inpLoc);\n        foreach (string fileRef in fileRefsList)\n        {\n          string fileRefPath = Path.Join(inpLocPath, fileRef);\n          if (File.Exists(fileRefPath) && !File.Exists(Path.Join(tempLoc, fileRef)))\n          {\n            if (fileRef != paramFileName)\n            File.Copy(fileRefPath, Path.Join(tempLoc, fileRef));\n          }\n          else\n          {\n            Console.WriteLine(\"Missing MAAP referenced file - \" + Path.Join(inpLocPath, fileRef));\n          }\n        }\n        string exeName = Path.GetFileName(exeLoc);\n        if (File.Exists(exeLoc) && !File.Exists(Path.Join(tempLoc, exeName)))\n        {\n          File.Copy(exeLoc, Path.Join(tempLoc, exeName));\n        }\n        string dllPath = Path.Join(Path.GetDirectoryName(exeLoc), exeName[..^7] + \".dll\");\n        if (File.Exists(dllPath) && !File.Exists(Path.Join(tempLoc, Path.GetFileName(dllPath))))\n        {\n          File.Copy(dllPath, Path.Join(tempLoc, Path.GetFileName(dllPath)));\n        }\n        \n        string newInpLoc = Path.Join(tempLoc, inpFileName);\n        System.IO.File.WriteAllText(newInpLoc, newInp);\n        return $\"{Path.Join(tempLoc, exeName)} {inpFileName} {paramFileName}\";",
     "processOutputFileCode": "string inpLoc = @\"C:/Test.INP\";\n  if (!Path.IsPathRooted(inpLoc))\n        inpLoc = RootPath + inpLoc;\n    string docVarPath = @\"./MAAP/temp.log\";\n  if (!Path.IsPathRooted(docVarPath))\n        docVarPath = RootPath + docVarPath;\n  string resLoc = Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), \"EMRALD_MAAP\", Path.GetFileNameWithoutExtension(inpLoc) + \".log\");\n  Directory.CreateDirectory(Path.GetDirectoryName(docVarPath));\n  File.Copy(resLoc, docVarPath, true);",
     "raType": "custom",
-    "returnProcess": "rtNone"
+    "returnProcess": "rtNone",
+    "codeVariables": []
   },
   "sets output": {
     "objType": "Action",
@@ -886,19 +889,22 @@
     "variableName": "Test DocLink Variable",
     "formData": {
       "caType": "MAAP",
-      "docComments": {},
       "docLinkVariable": "Test DocLink Variable",
       "output": "true",
       "exePath": "C:/MAAP.exe",
       "fileRefs": ["Test.PAR", "Test.INC"],
       "initiators": [
         {
-          "comment": " Doc comment",
+          "type": "initiator",
           "name": "INIT1",
           "value": true
         },
         {
-          "comment": "",
+          "type": "comment",
+          "value": " Doc comment"
+        },
+        {
+          "type": "initiator",
           "name": "INIT2",
           "value": 0
         }
@@ -934,7 +940,8 @@
                 "value": false
               }
             }
-          ]
+          ],
+          "comment": []
         }
       ],
       "inputFile": {},
@@ -943,18 +950,36 @@
       "parameterPath": "C:/Test.PAR",
       "parameters": [
         {
-          "name": "PARAM1",
-          "type": "parameter",
-          "useVariable": false,
-          "unit": "",
-          "value": "5"
+          "target": {
+            "type": "identifier",
+            "value": "PARAM1"
+          },
+          "type": "assignment",
+          "value": {
+            "type": "number",
+            "value": 5
+          }
         },
         {
-          "name": "PARAM2(1)",
-          "type": "parameter",
-          "useVariable": false,
-          "unit": "FT",
-          "value": "6"
+          "target": {
+            "type": "call_expression",
+            "arguments": [
+              {
+                "type": "number",
+                "value": 1
+              }
+            ],
+            "value": {
+              "type": "identifier",
+              "value": "PARAM2"
+            }
+          },
+          "type": "assignment",
+          "value": {
+            "type": "number",
+            "value": 6,
+            "units": "FT"
+          }
         }
       ],
       "possibleInitiators": [
@@ -980,7 +1005,8 @@
         },
         {
           "type": "title",
-          "value": "TESTINP"
+          "value": [{ "title": "TESTINP", "comment": []}],
+          "comment": []
         },
         {
           "fileType": "PARAMETER FILE",
@@ -1028,7 +1054,8 @@
                 "units": "FT"
               }
             }
-          ]
+          ],
+          "comment": []
         },
         {
           "type": "alias",
@@ -1044,7 +1071,8 @@
                 "value": "ALIAS PARAM"
               }
             }
-          ]
+          ],
+          "comment": []
         },
         {
           "type": "block",
@@ -1076,7 +1104,8 @@
                 "value": 0
               }
             }
-          ]
+          ],
+          "comment": []
         },
         {
           "blockType": "WHEN",
@@ -1108,7 +1137,8 @@
                 "value": false
               }
             }
-          ]
+          ],
+          "comment": []
         },
         {
           "target": {
@@ -1161,14 +1191,16 @@
                 "value": "ALIAS PARAM"
               }
             ]
-          ]
+          ],
+          "comment": []
         }
       ]
     },
     "mainItem": true,
-    "makeInputFileCode": "string exeLoc = \"C:/MAAP.exe\";\n        string paramLoc = \"C:/Test.PAR\";\n        string inpLoc = \"C:/Test.INP\";\n        string newInp = @\"SENSITIVITY ON\nTITLE\nTESTINP\nEND\nPARAMETER FILE Test.PAR\nINCLUDE Test.INC\nPARAMETER CHANGE\nPARAM1 = 5\nPARAM2(1) = 6 FT\nEND\nALIAS\nPARAM1 AS ALIAS PARAM\nEND\nINITIATORS\nINIT1 = T\nINIT2 = 0\nEND\nWHEN TIM >= 0 S\nINIT1 = F\nEND\nPRINT INTERVAL IS 50\nSTART TIME IS 0 HR\nEND TIME IS 10 HR\nPLOTFIL 100\nTIME IN SECONDS\nALIAS PARAM\nEND\n\";\n        string fileRefs = \"Test.PAR,Test.INC\"; //example \"PVGS_502.par, test.txt\";\n        string[] fileRefsList = fileRefs.Split(',');\n        \n        if (!Path.IsPathRooted(exeLoc))\n        {\n          exeLoc = Path.Join(Directory.GetCurrentDirectory(), exeLoc);\n        }\n        if (!Path.IsPathRooted(paramLoc))\n        {\n          paramLoc = Path.Join(Directory.GetCurrentDirectory(), paramLoc);\n        }\n        if (!Path.IsPathRooted(inpLoc))\n        {\n          inpLoc = Path.Join(Directory.GetCurrentDirectory(), inpLoc);\n        }\n        \n        string tempLoc = Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), \"EMRALD_MAAP\");\n        try\n        {\n          if (Directory.Exists(tempLoc))\n          {\n            Directory.Delete(tempLoc, true);\n          }\n          Directory.CreateDirectory(tempLoc);\n        }\n        catch { }\n        if (File.Exists(paramLoc) && !File.Exists(Path.Join(tempLoc, Path.GetFileName(paramLoc))))\n        {\n          File.Copy(paramLoc, Path.Join(tempLoc, Path.GetFileName(paramLoc)));\n        }\n        \n        string paramFileName = Path.GetFileName(paramLoc);\n        string inpFileName = Path.GetFileName(inpLoc);\n        string inpLocPath = Path.GetDirectoryName(inpLoc);\n        foreach (string fileRef in fileRefsList)\n        {\n          string fileRefPath = Path.Join(inpLocPath, fileRef);\n          if (File.Exists(fileRefPath) && !File.Exists(Path.Join(tempLoc, fileRef)))\n          {\n            if (fileRef != paramFileName)\n            File.Copy(fileRefPath, Path.Join(tempLoc, fileRef));\n          }\n          else\n          {\n            Console.WriteLine(\"Missing MAAP referenced file - \" + Path.Join(inpLocPath, fileRef));\n          }\n        }\n        string exeName = Path.GetFileName(exeLoc);\n        if (File.Exists(exeLoc) && !File.Exists(Path.Join(tempLoc, exeName)))\n        {\n          File.Copy(exeLoc, Path.Join(tempLoc, exeName));\n        }\n        string dllPath = Path.Join(Path.GetDirectoryName(exeLoc), exeName[..^7] + \".dll\");\n        if (File.Exists(dllPath) && !File.Exists(Path.Join(tempLoc, Path.GetFileName(dllPath))))\n        {\n          File.Copy(dllPath, Path.Join(tempLoc, Path.GetFileName(dllPath)));\n        }\n        \n        string newInpLoc = Path.Join(tempLoc, inpFileName);\n        System.IO.File.WriteAllText(newInpLoc, newInp);\n        return $\"{Path.Join(tempLoc, exeName)} {inpFileName} {paramFileName}\";",
+    "makeInputFileCode": "string exeLoc = \"C:/MAAP.exe\";\n        string paramLoc = \"C:/Test.PAR\";\n        string inpLoc = \"C:/Test.INP\";\n        string newInp = @\"SENSITIVITY ON\nTITLE\nTESTINP\nEND\nPARAMETER FILE Test.PAR\nINCLUDE Test.INC\nPARAMETER CHANGE\nPARAM1 = 5\nPARAM2(1) = 6 FT\nEND\nALIAS\nPARAM1 AS ALIAS PARAM\nEND\nINITIATORS\nINIT1 = T\nINIT2 = 0\nEND\nWHEN TIM >= 0 S\nINIT1 = F\nEND\nPRINT INTERVAL IS 50\nSTART TIME IS 0 HR\nEND TIME IS 10 HR\nPLOTFIL 100\nTIME IN SECONDS\nALIAS PARAM\nEND\";\n        string fileRefs = \"Test.PAR,Test.INC\"; //example \"PVGS_502.par, test.txt\";\n        string[] fileRefsList = fileRefs.Split(',');\n        \n        if (!Path.IsPathRooted(exeLoc))\n        {\n          exeLoc = Path.Join(Directory.GetCurrentDirectory(), exeLoc);\n        }\n        if (!Path.IsPathRooted(paramLoc))\n        {\n          paramLoc = Path.Join(Directory.GetCurrentDirectory(), paramLoc);\n        }\n        if (!Path.IsPathRooted(inpLoc))\n        {\n          inpLoc = Path.Join(Directory.GetCurrentDirectory(), inpLoc);\n        }\n        \n        string tempLoc = Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), \"EMRALD_MAAP\");\n        try\n        {\n          if (Directory.Exists(tempLoc))\n          {\n            Directory.Delete(tempLoc, true);\n          }\n          Directory.CreateDirectory(tempLoc);\n        }\n        catch { }\n        if (File.Exists(paramLoc) && !File.Exists(Path.Join(tempLoc, Path.GetFileName(paramLoc))))\n        {\n          File.Copy(paramLoc, Path.Join(tempLoc, Path.GetFileName(paramLoc)));\n        }\n        \n        string paramFileName = Path.GetFileName(paramLoc);\n        string inpFileName = Path.GetFileName(inpLoc);\n        string inpLocPath = Path.GetDirectoryName(inpLoc);\n        foreach (string fileRef in fileRefsList)\n        {\n          string fileRefPath = Path.Join(inpLocPath, fileRef);\n          if (File.Exists(fileRefPath) && !File.Exists(Path.Join(tempLoc, fileRef)))\n          {\n            if (fileRef != paramFileName)\n            File.Copy(fileRefPath, Path.Join(tempLoc, fileRef));\n          }\n          else\n          {\n            Console.WriteLine(\"Missing MAAP referenced file - \" + Path.Join(inpLocPath, fileRef));\n          }\n        }\n        string exeName = Path.GetFileName(exeLoc);\n        if (File.Exists(exeLoc) && !File.Exists(Path.Join(tempLoc, exeName)))\n        {\n          File.Copy(exeLoc, Path.Join(tempLoc, exeName));\n        }\n        string dllPath = Path.Join(Path.GetDirectoryName(exeLoc), exeName[..^7] + \".dll\");\n        if (File.Exists(dllPath) && !File.Exists(Path.Join(tempLoc, Path.GetFileName(dllPath))))\n        {\n          File.Copy(dllPath, Path.Join(tempLoc, Path.GetFileName(dllPath)));\n        }\n        \n        string newInpLoc = Path.Join(tempLoc, inpFileName);\n        System.IO.File.WriteAllText(newInpLoc, newInp);\n        return $\"{Path.Join(tempLoc, exeName)} {inpFileName} {paramFileName}\";",
     "processOutputFileCode": "string inpLoc = @\"C:/Test.INP\";\n  if (!Path.IsPathRooted(inpLoc))\n        inpLoc = RootPath + inpLoc;\n    string docVarPath = @\"./MAAP/temp.log\";\n  if (!Path.IsPathRooted(docVarPath))\n        docVarPath = RootPath + docVarPath;\n  string resLoc = Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), \"EMRALD_MAAP\", Path.GetFileNameWithoutExtension(inpLoc) + \".log\");\n  Directory.CreateDirectory(Path.GetDirectoryName(docVarPath));\n  File.Copy(resLoc, docVarPath, true);",
     "raType": "custom",
-    "returnProcess": "rtNone"
+    "returnProcess": "rtNone",
+    "codeVariables": []
   }
 }
