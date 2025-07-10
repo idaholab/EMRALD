@@ -1,4 +1,5 @@
-﻿// Copyright 2021 Battelle Energy Alliance
+﻿// Copyright 2021 Battelle Energy Alliance{
+
 
 using System;
 using System.Collections;
@@ -57,6 +58,8 @@ namespace SimulationDAL
     public LogicNodeList allLogicNodes = new LogicNodeList();
     public Dictionary<int, List<AccrualVariable>> AccrualVars = new Dictionary<int, List<AccrualVariable>>();
     public MultiThreadInfo multiThreadInfo = null;
+    private static readonly object deleteLock = new object(); // a static object for thread file locking
+    
 
     public string fileName { get; set; } = "";
     public string rootPath { get; set; } = "";
@@ -164,6 +167,13 @@ namespace SimulationDAL
       return jsonModel;
     }
 
+    private string GetTempThreadFilesPath(int threadID = -1)
+    {
+      if(threadID < 0)
+        threadID = (int)_threadNumber;
+      return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), @"EMRALD\" + this.fileName + "_T" + threadID.ToString());
+    }
+
     public bool DeserializeJSON(string jsonModel, string modelPath, string fileName, int? threadNum = null) 
     {
       SingleNextIDs.Instance.Reset();
@@ -185,7 +195,7 @@ namespace SimulationDAL
           this.multiThreadInfo = new MultiThreadInfo();
         }
 
-        this.rootPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), @"EMRALD\" + this.fileName + "_T" + ((int)_threadNumber).ToString());
+        this.rootPath = GetTempThreadFilesPath();
 
         // Ensure the directory exists and is empty
         if (Directory.Exists(this.rootPath))
@@ -196,7 +206,7 @@ namespace SimulationDAL
 
         if (threadNum != 0) //if not the first thread then just copy the first one's files.
         {
-          string firstRootPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), @"EMRALD\" + this.fileName + "_T0");
+          string firstRootPath = GetTempThreadFilesPath(0);
           if (!Directory.Exists(firstRootPath))
           {
             throw new Exception("Missing data to copy from first thread.");
@@ -396,6 +406,48 @@ namespace SimulationDAL
 
       _multiThreadReady = notAccountedFor.Count == 0;
       return notAccountedFor;
+    }
+
+    public void ClearMultiThreadData()
+    {
+      if (this._threadNumber != null)
+      {
+        if (Directory.Exists(this.rootPath))
+        {
+          Directory.Delete(this.rootPath, true);
+        }
+
+        //clear out any old tread files that could be lingering
+        // Get the parent directory info
+        DirectoryInfo parentDirInfo = new DirectoryInfo(this.rootPath).Parent;
+
+        // Get all subdirectories
+        DirectoryInfo[] subDirs = parentDirInfo.GetDirectories();
+
+        foreach (DirectoryInfo dir in subDirs)
+        {
+          // Get the creation time of the folder
+          DateTime creationTime = dir.CreationTime;
+
+          // Calculate the time difference
+          TimeSpan timeDifference = DateTime.Now - creationTime;
+
+          // Check if the folder was created more than a week ago
+          if (timeDifference.TotalDays > 1)
+          {
+            // Use a lock to ensure thread safety
+            lock (deleteLock)
+            {
+              try
+              {
+                // Delete the directory and its contents
+                dir.Delete(true);
+              }
+              catch (Exception ex) { }
+            }
+          }
+        }
+      }
     }
 
    
