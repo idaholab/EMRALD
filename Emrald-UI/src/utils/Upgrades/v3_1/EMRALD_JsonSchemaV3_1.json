@@ -127,7 +127,8 @@
         "ActionList",
         "EventList",
         "LogicNodeList",
-        "VariableList"
+        "VariableList",
+        "emraldVersion"
       ]
     },
     "Diagram": {

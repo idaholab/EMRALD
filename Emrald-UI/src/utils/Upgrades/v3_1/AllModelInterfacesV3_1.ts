@@ -215,7 +215,7 @@ export interface Main_Model {
   /**
    * Version of the EMRALD model schema
    */
-  emraldVersion?: number
+  emraldVersion: number
   /**
    * Version of the users model
    */

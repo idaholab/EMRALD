@@ -233,7 +233,7 @@ const MenuButton: React.FC<MenuButtonProps> = ({
                 }}
                 onMouseLeave={handleSubMenuMouseLeave}
               >
-                {option} {appData.value.version}
+                {option}
                 {option === 'Templates' && (
                   <Menu
                     id={`menu-submenu`}

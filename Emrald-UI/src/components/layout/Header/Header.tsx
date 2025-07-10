@@ -201,7 +201,9 @@ export default function Header() {
             </tr>
           </thead>
           <tbody>
-            {appData.value.versionHistory.map((h) => (
+            {/* This somehow tries to render before the model is upgraded, causing versionHistory to not exist */}
+            {/* eslint-disable-next-line @typescript-eslint/no-unnecessary-condition */}
+            {appData.value.versionHistory?.map((h) => (
               <tr style={{ textAlign: 'center' }}>
                 <td>{h.version}</td>
                 <td>{h.description}</td>
