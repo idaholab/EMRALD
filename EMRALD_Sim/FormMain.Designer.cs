@@ -1084,7 +1084,7 @@ namespace EMRALD_Sim
       // cbCurThread
       // 
       cbCurThread.FormattingEnabled = true;
-      cbCurThread.Location = new System.Drawing.Point(100, 13);
+      cbCurThread.Location = new System.Drawing.Point(107, 13);
       cbCurThread.Name = "cbCurThread";
       cbCurThread.Size = new System.Drawing.Size(38, 23);
       cbCurThread.TabIndex = 12;
