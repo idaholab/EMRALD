@@ -790,16 +790,16 @@
       "description": "position for the GUI",
       "properties": {
         "x": {
-          "type": "integer"
+          "type": "number"
         },
         "y": {
-          "type": "integer"
+          "type": "number"
         },
         "width": {
-          "type": "integer"
+          "type": "number"
         },
         "height": {
-          "type": "integer"
+          "type": "number"
         }
       }
     },

@@ -36,7 +36,7 @@ const MenuButton: React.FC<MenuButtonProps> = ({
   sx,
   openVersionDialog,
 }) => {
-  const { newProject, mergeNewData, populateNewData } = useAssembledData();
+  const { newProject, mergeNewData, populateNewData, compareData } = useAssembledData();
   const { templatesList, mergeTemplateToList, clearTemplateList } = useTemplateContext();
   const { updateFileName } = useModelDetailsContext();
   const { addWindow } = useWindowContext();
@@ -117,6 +117,9 @@ const MenuButton: React.FC<MenuButtonProps> = ({
       case 'Templates':
       case 'Clear Cached Data':
         projectOptions[option]();
+        break;
+      case 'Compare':
+        projectOptions.Compare(compareData);
         break;
       default:
         // The default case currently handles all download menu options which don't take any arguments

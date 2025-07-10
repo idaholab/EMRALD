@@ -221,7 +221,7 @@ export default function Header() {
         onSubmit={() => {
           const newVersion = Number(updatedVersion);
           // TODO: The existence of this array should be garuanteed by the upgrade script
-          const versionHistory = appData.value.versionHistory ?? [];
+          const versionHistory = appData.value.versionHistory;
           const existing = versionHistory.findIndex((v) => v.version === newVersion);
           if (existing >= 0) {
             // Update the existing entry if the version number was not increased
