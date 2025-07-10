@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { EMRALD_Model, Action, Event, State, Diagram, LogicNode, Variable, ExtSim, MainItemType } from '../../../types/EMRALD_Model';
+import type { EMRALD_Model, Action, Event, State, Diagram, LogicNode, Variable, ExtSim, MainItemType } from '../../../types/EMRALD_Model';
 import { v4 as uuidv4 } from 'uuid';
 import { useWindowContext } from '../../../contexts/WindowContext';
 import { useTemplateContext } from '../../../contexts/TemplateContext';
@@ -65,7 +65,7 @@ export const useImportForm = (importedData: EMRALD_Model, fromTemplate?: boolean
         newName: diagram.name,
         action: diagram.required ? 'ignore' : 'rename',
         conflict: hasConflict(diagram.name, 'Diagram', diagram.required),
-        required: diagram.required ? diagram.required : false,
+        required: diagram.required ?? false,
         emraldItem: diagram,
       });
     }
@@ -79,7 +79,7 @@ export const useImportForm = (importedData: EMRALD_Model, fromTemplate?: boolean
         newName: logicNode.name,
         action: 'rename',
         conflict: hasConflict(logicNode.name, 'LogicNode', logicNode.required),
-        required: logicNode.required ? logicNode.required : false,
+        required: logicNode.required ?? false,
         emraldItem: logicNode,
       });
     }
@@ -93,7 +93,7 @@ export const useImportForm = (importedData: EMRALD_Model, fromTemplate?: boolean
         newName: extSim.name,
         action: 'rename',
         conflict: hasConflict(extSim.name, 'ExtSim', extSim.required),
-        required: extSim.required ? extSim.required : false,
+        required: extSim.required ?? false,
         emraldItem: extSim,
       });
     }
@@ -107,7 +107,7 @@ export const useImportForm = (importedData: EMRALD_Model, fromTemplate?: boolean
         newName: action.name,
         action: action.required || actionsList.value.some(item => item.name === action.name) ? 'ignore' : 'rename',
         conflict: hasConflict(action.name, 'Action', action.required),
-        required: action.required ? action.required : false,
+        required: action.required ?? false,
         emraldItem: action,
       });
     }
@@ -121,7 +121,7 @@ export const useImportForm = (importedData: EMRALD_Model, fromTemplate?: boolean
         newName: event.name,
         action: event.required || eventsList.value.some(item => item.name === event.name) ? 'ignore' : 'rename',
         conflict: hasConflict(event.name, 'Event', event.required),
-        required: event.required ? event.required : false,
+        required: event.required ?? false,
         emraldItem: event,
       });
     }
@@ -135,7 +135,7 @@ export const useImportForm = (importedData: EMRALD_Model, fromTemplate?: boolean
         newName: state.name,
         action: state.required  ? 'ignore' : 'rename',
         conflict: hasConflict(state.name, 'State', state.required),
-        required: state.required ? state.required : false,
+        required: state.required ?? false,
         emraldItem: state,
       });
     }
@@ -149,7 +149,7 @@ export const useImportForm = (importedData: EMRALD_Model, fromTemplate?: boolean
         newName: variable.name,
         action: 'rename',
         conflict: hasConflict(variable.name, 'Variable', variable.required),
-        required: variable.required ? variable.required : false,
+        required: variable.required ?? false,
         emraldItem: variable,
       });
     }
@@ -384,20 +384,19 @@ export const useImportForm = (importedData: EMRALD_Model, fromTemplate?: boolean
    * If items are being renamed, update the model with the new names.
    * After any names are updated, update the model to include the new items.
    */
-  const handleSave = async () => {
+  const handleSave = () => {
     setLoading(true);
     // Go through all of the renamed items and update the pasted model
     let updatedModel: EMRALD_Model = { ...appData.value };
     const importedDataCopy = structuredClone(importedData); // Deep copy of importedData so it doesn't get changed
     
     // Rename loop
-    for (let i = 0; i < importedItems.length; i++) {
-      const item = importedItems[i];
+    for (const item of importedItems) {
       if (item.action === 'rename') {
         const itemCopy = structuredClone(GetItemByNameType(item.oldName, item.type, importedDataCopy)); //get the item from the importedDataCopy as it may be changed on other items being updated
         if (itemCopy) {
           itemCopy.name = item.newName;
-          await updateSpecifiedModel(itemCopy, item.type, importedDataCopy, false);
+          updateSpecifiedModel(itemCopy, item.type, importedDataCopy, false);
           itemCopy.id = uuidv4();
           item.emraldItem = itemCopy;
         }
@@ -405,16 +404,15 @@ export const useImportForm = (importedData: EMRALD_Model, fromTemplate?: boolean
     }
 
     // Update loop
-    for (let i = 0; i < importedItems.length; i++) {
-      const item = importedItems[i];
+    for (const item of importedItems) {
       if (item.action === 'replace') {
-        let currentEmraldItem = GetItemByNameType(item.oldName, item.type);
+        const currentEmraldItem = GetItemByNameType(item.oldName, item.type);
         item.emraldItem.id = currentEmraldItem?.id;
-        updatedModel = await updateModelAndReferences(item.emraldItem, item.type);
+        updatedModel = updateModelAndReferences(item.emraldItem, item.type);
         updateAppData(updatedModel);
         return;
       } else {
-        updatedModel = await updateModelAndReferences(item.emraldItem, item.type);
+        updatedModel = updateModelAndReferences(item.emraldItem, item.type);
         updateAppData(updatedModel);
       }
     }

@@ -5,7 +5,7 @@ function useErrorBoundary() {
   const [errorMessage, setErrorMessage] = useState('');
 
   useEffect(() => {
-    const handleWindowError = (event: any) => {
+    const handleWindowError = (event: ErrorEvent) => {
       setHasError(true);
       setErrorMessage(event.message);
     };

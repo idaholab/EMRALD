@@ -1,18 +1,40 @@
 import { useCallback, useEffect, useState } from 'react';
-import { useNodesState, useEdgesState, Edge, Node, Position, ReactFlowInstance } from 'reactflow';
+import {
+  useNodesState,
+  useEdgesState,
+  type Edge,
+  type Node,
+  Position,
+  type ReactFlowInstance,
+} from 'reactflow';
 import { useLogicNodeContext } from '../../../contexts/LogicNodeContext';
-import { CompChildItems, LogicNode } from '../../../types/EMRALD_Model';
+import type { CompChild, CompChildItems, GateType, LogicNode } from '../../../types/EMRALD_Model';
 import { v4 as uuidv4 } from 'uuid';
 import dagre from '@dagrejs/dagre';
 import EmraldDiagram from '../EmraldDiagram/EmraldDiagram';
 import { useWindowContext } from '../../../contexts/WindowContext';
 import { useDiagramContext } from '../../../contexts/DiagramContext';
-import { Option } from '../../layout/ContextMenu/ContextMenu';
+import type { Option } from '../../layout/ContextMenu/ContextMenu';
 import LogicNodeForm from '../../forms/LogicNodeForm/LogicNodeForm';
 import { GetModelItemsReferencing } from '../../../utils/ModelReferences';
 import LogicNodeFormContextProvider from '../../forms/LogicNodeForm/LogicNodeFormContext';
 
 export type NodeType = 'root' | 'gate' | 'comp';
+
+export type LNode = Node<{
+  label: string;
+  logicNode: LogicNode;
+  isRoot: boolean;
+  parent: string | null;
+  parentName: string;
+  type: string;
+  gateType: GateType;
+  description: string;
+  compChildren: CompChild;
+  gateChildren: string[];
+  expanded: boolean;
+  expandable?: boolean;
+}>;
 
 const useLogicNodeTreeDiagram = () => {
   // Contexts
@@ -22,7 +44,7 @@ const useLogicNodeTreeDiagram = () => {
   const { handleClose, addWindow, updateTitle } = useWindowContext();
   // States
   const [rootNode, setRootNode] = useState<LogicNode | null>(null);
-  const [nodes, setNodes, onNodesChange] = useNodesState([]);
+  const [nodes, setNodes, onNodesChange] = useNodesState<LNode['data']>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge[]>([]);
   const [loading, setLoading] = useState(true);
   const [editingDescription, setEditingDescription] = useState(false);
@@ -45,9 +67,9 @@ const useLogicNodeTreeDiagram = () => {
       const nodeMap = new Map<string, Node>(); // Map to store nodes by their IDs
       const edges: Edge[] = [];
       setRootNode(logicNode);
-      const rootNodeId = logicNode.id || 'root';
+      const rootNodeId = logicNode.id ?? 'root';
       // Create the root node with the logic node name as the label
-      const rootNode: Node = {
+      const rootNode: LNode = {
         id: rootNodeId,
         position: { x: 0, y: 0 },
         type: 'custom',
@@ -71,7 +93,7 @@ const useLogicNodeTreeDiagram = () => {
 
       // Recursive function to process nodes
       const processNode = (node: LogicNode, parentId: string, parentName: string) => {
-        const gateNode: Node = {
+        const gateNode: LNode = {
           id: uuidv4(),
           position: { x: 0, y: 0 },
           type: 'custom',
@@ -138,7 +160,7 @@ const useLogicNodeTreeDiagram = () => {
   );
   const setCompChildren = (
     child: CompChildItems,
-    gateNode: Node | LogicNode,
+    gateNode: Node<{ label: string }> | LogicNode,
     nodeMap: Map<string, Node>,
     edges: Edge[] = [],
   ) => {
@@ -150,11 +172,11 @@ const useLogicNodeTreeDiagram = () => {
         position: { x: 0, y: 0 },
         type: 'custom',
         data: {
-          label: `${childNode}`,
+          label: childNode,
           parent: gateNode.id,
           parentName: isNode(gateNode) ? gateNode.data.label : gateNode.name,
           type: 'comp',
-          description: diagram.desc,
+          description: diagram?.desc,
           diagram: diagram,
           defaultStateValues: child.stateValues && child.stateValues.length > 0 ? false : true,
         },
@@ -162,7 +184,7 @@ const useLogicNodeTreeDiagram = () => {
       nodeMap.set(compNode.id, compNode);
       edges.push({
         id: uuidv4(),
-        source: gateNode.id || '',
+        source: gateNode.id ?? '',
         target: compNode.id,
         ariaLabel: `${isNode(gateNode) ? gateNode.data.label : gateNode.name}-${childNode}`,
         type: 'smoothstep',
@@ -206,86 +228,85 @@ const useLogicNodeTreeDiagram = () => {
 
   const goToDiagram = (diagramName: string) => {
     const diagram = getDiagramByDiagramName(diagramName);
-    addWindow(diagramName, <EmraldDiagram diagram={diagram} />, {
-      x: 75,
-      y: 25,
-      width: 1300,
-      height: 700,
-    });
-  };
-  const removeNode = async (parentNode: string, nodeName: string, type: NodeType) => {
-    return new Promise<void>(async (resolve) => {
-      const parentLogicNode = getLogicNodeByName(parentNode);
-      const nodeToRemove = getLogicNodeByName(nodeName);
-      if (type === 'gate') {
-        if (nodeToRemove.gateChildren.length > 0) {
-          await recurseAndDeleteChildren(nodeToRemove);
-        }
-        if (canDeleteNode(nodeName)) {
-          deleteLogicNode(nodeToRemove.id);
-        }
-        if (parentNode) {
-          parentLogicNode.gateChildren = parentLogicNode.gateChildren.filter(
-            (child) => child !== nodeName,
-          );
-          if (parentLogicNode.gateChildren.length === 0) {
-            // Signal doesn't re-render because the references are the same. Having an emptied array doesn't create a new reference.
-            // This sets a temp value to trigger a re-render and then is updated to the correct value at the end of the function.
-            await updateLogicNode({ ...parentLogicNode, gateChildren: ['_TEMP_'] });
-          }
-        }
-      }
-      if (type === 'comp' && parentNode) {
-        parentLogicNode.compChildren = parentLogicNode.compChildren.filter(
-          (child) => child.diagramName !== nodeName,
-        );
-      }
-      await updateLogicNode({
-        ...parentLogicNode,
-        gateChildren: [...parentLogicNode.gateChildren],
+    if (diagram) {
+      addWindow(diagramName, <EmraldDiagram diagram={diagram} />, {
+        x: 75,
+        y: 25,
+        width: 1300,
+        height: 700,
       });
-      if (nodeToRemove === rootNode) {
-        handleClose();
+    }
+  };
+  const removeNode = (parentNode: string, nodeName: string, type: NodeType) => {
+    const parentLogicNode = getLogicNodeByName(parentNode);
+    const nodeToRemove = getLogicNodeByName(nodeName);
+    if (!parentLogicNode || !nodeToRemove) {
+      return;
+    }
+    if (type === 'gate') {
+      if (nodeToRemove.gateChildren.length > 0) {
+        recurseAndDeleteChildren(nodeToRemove);
       }
-      resolve();
+      if (canDeleteNode(nodeName)) {
+        deleteLogicNode(nodeToRemove.id);
+      }
+      if (parentNode) {
+        parentLogicNode.gateChildren = parentLogicNode.gateChildren.filter(
+          (child) => child !== nodeName,
+        );
+        if (parentLogicNode.gateChildren.length === 0) {
+          // Signal doesn't re-render because the references are the same. Having an emptied array doesn't create a new reference.
+          // This sets a temp value to trigger a re-render and then is updated to the correct value at the end of the function.
+          updateLogicNode({ ...parentLogicNode, gateChildren: ['_TEMP_'] });
+        }
+      }
+    }
+    if (type === 'comp' && parentNode) {
+      parentLogicNode.compChildren = parentLogicNode.compChildren.filter(
+        (child) => child.diagramName !== nodeName,
+      );
+    }
+    updateLogicNode({
+      ...parentLogicNode,
+      gateChildren: [...parentLogicNode.gateChildren],
     });
+    if (nodeToRemove === rootNode) {
+      handleClose();
+    }
   };
 
-  const removeChildNodes = async (nodesToRemove: { nodeName: string; parentName: string }[]) => {
+  const removeChildNodes = (nodesToRemove?: { nodeName: string; parentName: string }[]) => {
     if (nodesToRemove && nodesToRemove.length > 0) {
       for (const node of nodesToRemove) {
-        await removeNode(node.parentName, node.nodeName, 'gate');
+        removeNode(node.parentName, node.nodeName, 'gate');
       }
     }
   };
 
-  const deleteChildNodes = async (nodesToDelete: string[]) => {
+  const deleteChildNodes = (nodesToDelete?: string[]) => {
     if (nodesToDelete && nodesToDelete.length > 0) {
       for (const nodeID of nodesToDelete) {
-        await deleteLogicNode(nodeID);
+        deleteLogicNode(nodeID);
       }
     }
   };
 
-  const recurseAndDeleteChildren = async (node: LogicNode) => {
-    return new Promise<void>(async (resolve) => {
-      const result = recurseChildren(node);
-      if (result) {
-        const { nodesToDelete, nodesToRemove } = result;
-        await removeChildNodes(nodesToRemove);
-        await deleteChildNodes(nodesToDelete);
-      }
-      resolve();
-    });
+  const recurseAndDeleteChildren = (node: LogicNode) => {
+    const result = recurseChildren(node);
+    if (result) {
+      const { nodesToDelete, nodesToRemove } = result;
+      removeChildNodes(nodesToRemove);
+      deleteChildNodes(nodesToDelete);
+    }
   };
   const recurseChildren = (
-    node: LogicNode,
+    node?: LogicNode,
     nodesToRemove: { nodeName: string; parentName: string }[] = [],
     nodesToDelete: string[] = [],
   ) => {
     if (!node) return;
     if (!canDeleteNode(node.name)) return;
-    node.gateChildren.forEach(async (gateChildName) => {
+    node.gateChildren.forEach((gateChildName) => {
       const gateChildNode = getLogicNodeByName(gateChildName);
       if (gateChildNode) {
         if (!canDeleteNode(gateChildNode.name)) {
@@ -303,26 +324,29 @@ const useLogicNodeTreeDiagram = () => {
 
   const canDeleteNode = (nodeName: string) => {
     const nodeInQuestion = getLogicNodeByName(nodeName);
-    if (nodeInQuestion.isRoot && nodeInQuestion !== rootNode) {
+    if (nodeInQuestion && nodeInQuestion.isRoot && nodeInQuestion !== rootNode) {
       return false;
     }
     const currentReferences = GetModelItemsReferencing(nodeName, 'LogicNode', 1);
     return currentReferences.LogicNodeList.length > 1 ? false : true;
   };
 
-  const DeleteNode = async (parentNode: string, nodeName: string) => {
+  const DeleteNode = (parentNode: string, nodeName: string) => {
     const parentLogicNode = getLogicNodeByName(parentNode);
     const nodeToDelete = getLogicNodeByName(nodeName);
-    let gateChildren = getAllGateChildren(nodeToDelete);
-    await deleteChildNodes(
+    if (!nodeToDelete || !parentLogicNode) {
+      return;
+    }
+    const gateChildren = getAllGateChildren(nodeToDelete);
+    deleteChildNodes(
       gateChildren.map((node) => {
         if (canDeleteNode(node.name)) {
-          return node.id || '';
+          return node.id ?? '';
         }
         return '';
       }),
     );
-    await deleteLogicNode(nodeToDelete.id);
+    deleteLogicNode(nodeToDelete.id);
 
     if (parentNode) {
       parentLogicNode.gateChildren = parentLogicNode.gateChildren.filter(
@@ -337,8 +361,10 @@ const useLogicNodeTreeDiagram = () => {
 
   // * Context menu
 
-  const closeContextMenu = () => setMenu(null); // Close the context menu
-  const onNodeContextMenu = (e: React.MouseEvent, node: Node) => {
+  const closeContextMenu = () => {
+    setMenu(null);
+  }; // Close the context menu
+  const onNodeContextMenu = (e: React.MouseEvent, node: LNode) => {
     const { label, logicNode, parentName } = node.data;
     const parentNode = getLogicNodeByName(parentName);
     e.preventDefault();
@@ -356,28 +382,30 @@ const useLogicNodeTreeDiagram = () => {
         options = [
           {
             label: 'Add Gate',
-            action: () =>
+            action: () => {
               addWindow(
                 `New Node`,
                 <LogicNodeFormContextProvider>
                   <LogicNodeForm parentNodeName={logicNode.name} nodeType="gate" gateType="gtAnd" />
                 </LogicNodeFormContextProvider>,
-              ),
+              );
+            },
           },
           {
             label: 'Add Component',
-            action: () =>
+            action: () => {
               addWindow(
                 `New Node`,
                 <LogicNodeFormContextProvider>
                   <LogicNodeForm parentNodeName={logicNode.name} nodeType="comp" />
                 </LogicNodeFormContextProvider>,
-              ),
+              );
+            },
             isDivider: true,
           },
           {
             label: 'Edit Gate Node',
-            action: () =>
+            action: () => {
               addWindow(
                 `Edit Gate Node: ${label}`,
                 <LogicNodeFormContextProvider>
@@ -388,16 +416,17 @@ const useLogicNodeTreeDiagram = () => {
                     editing={true}
                   />
                 </LogicNodeFormContextProvider>,
-              ),
+              );
+            },
             isDivider: true,
           },
         ];
         options.push(
           {
             label: 'Copy',
-            action: () => {
+            action: async () => {
               const copiedNodeData = JSON.stringify(structuredClone(node.data.logicNode), null, 2);
-              navigator.clipboard.writeText(copiedNodeData);
+              await navigator.clipboard.writeText(copiedNodeData);
             },
           },
           { label: 'Paste', action: () => pasteNode(label) },
@@ -406,8 +435,18 @@ const useLogicNodeTreeDiagram = () => {
             action: () => pasteNode(label, 'new'),
             isDivider: true,
           },
-          { label: 'Remove Gate', action: () => removeNode(parentName, label, 'gate') },
-          { label: 'Delete Gate', action: () => DeleteNode(parentName, label) },
+          {
+            label: 'Remove Gate',
+            action: () => {
+              removeNode(parentName, label, 'gate');
+            },
+          },
+          {
+            label: 'Delete Gate',
+            action: () => {
+              DeleteNode(parentName, label);
+            },
+          },
         );
 
         break;
@@ -416,7 +455,7 @@ const useLogicNodeTreeDiagram = () => {
         options = [
           {
             label: 'Edit Component Node',
-            action: () =>
+            action: () => {
               addWindow(
                 `Edit Component Node: ${label}`,
                 <LogicNodeFormContextProvider>
@@ -427,10 +466,22 @@ const useLogicNodeTreeDiagram = () => {
                     editing={true}
                   />
                 </LogicNodeFormContextProvider>,
-              ),
+              );
+            },
           },
-          { label: 'Go to Diagram', action: () => goToDiagram(node.data.label), isDivider: true },
-          { label: 'Remove Component', action: () => removeNode(parentName, label, 'comp') },
+          {
+            label: 'Go to Diagram',
+            action: () => {
+              goToDiagram(node.data.label);
+            },
+            isDivider: true,
+          },
+          {
+            label: 'Remove Component',
+            action: () => {
+              removeNode(parentName, label, 'comp');
+            },
+          },
         ];
         break;
 
@@ -447,54 +498,56 @@ const useLogicNodeTreeDiagram = () => {
       return;
     }
     const pastedData = await navigator.clipboard.readText();
-    // Parse the pasted data
-    let pastedObject;
     try {
-      pastedObject = JSON.parse(pastedData);
+      // Parse the pasted data
+      const pastedObject = JSON.parse(pastedData) as LogicNode;
+      const node = getLogicNodeByName(nodeToUpdate);
+      if (node) {
+        // If the node was deleted after copying it this will handle the recreation of it.
+        if (
+          type === 'new' ||
+          !logicNodeList.value.some((node) => node.name === pastedObject.name)
+        ) {
+          const gateNodes = logicNodeList.value.filter((node) =>
+            new RegExp(`^Copy of ${pastedObject.name}`).test(node.name),
+          ); // Find all existing logic nodes with the name
+          let newGateNumber = 1;
+          if (gateNodes.length > 0) {
+            const existingNumbers = gateNodes.map((node) => {
+              const numberStr = /\((\d+)\)/.exec(node.name);
+              return numberStr ? parseInt(numberStr[1]) : 0;
+            });
+            newGateNumber = Math.max(...existingNumbers) + 1;
+          }
+          const newNode: LogicNode = {
+            ...pastedObject,
+            ...(type === 'new' && {
+              id: uuidv4(),
+              name: `Copy of ${pastedObject.name} (${newGateNumber.toString()})`,
+            }),
+          };
+
+          // make sure there is no circular references.
+          if (couldCreateInfiniteLoop(node, newNode)) {
+            setNodeExistsAlert(true);
+            return;
+          }
+          createLogicNode(newNode);
+          node.gateChildren = [...node.gateChildren, newNode.name];
+        } else {
+          // make sure there is no circular references.
+          if (couldCreateInfiniteLoop(node, pastedObject)) {
+            setNodeExistsAlert(true);
+            return;
+          }
+          const pastedNodeName = pastedObject.name;
+          node.gateChildren = [...node.gateChildren, pastedNodeName];
+        }
+        updateLogicNode(node);
+      }
     } catch (error) {
       console.error('Failed to parse pasted data:', error);
       return;
-    }
-    const node = getLogicNodeByName(nodeToUpdate);
-    if (node) {
-      // If the node was deleted after copying it this will handle the recreation of it.
-      if (type === 'new' || !logicNodeList.value.some((node) => node.name === pastedObject.name)) {
-        const gateNodes = logicNodeList.value.filter((node) =>
-          new RegExp(`^Copy of ${pastedObject.name}`).test(node.name),
-        ); // Find all existing logic nodes with the name
-        let newGateNumber = 1;
-        if (gateNodes.length > 0) {
-          const existingNumbers = gateNodes.map((node) => {
-            const numberStr = node.name.match(/\((\d+)\)/);
-            return numberStr ? parseInt(numberStr[1]) : 0;
-          });
-          newGateNumber = Math.max(...existingNumbers) + 1;
-        }
-        const newNode: LogicNode = {
-          ...pastedObject,
-          ...(type === 'new' && {
-            id: uuidv4(),
-            name: `Copy of ${pastedObject.name} (${newGateNumber})`,
-          }),
-        };
-
-        // make sure there is no circular references.
-        if (couldCreateInfiniteLoop(node, newNode)) {
-          setNodeExistsAlert(true);
-          return;
-        }
-        await createLogicNode(newNode);
-        node.gateChildren = [...node.gateChildren, newNode.name];
-      } else {
-        // make sure there is no circular references.
-        if (couldCreateInfiniteLoop(node, pastedObject)) {
-          setNodeExistsAlert(true);
-          return;
-        }
-        const pastedNodeName = pastedObject.name;
-        node.gateChildren = [...node.gateChildren, pastedNodeName];
-      }
-      updateLogicNode(node);
     }
   };
 
@@ -530,7 +583,7 @@ const useLogicNodeTreeDiagram = () => {
   };
 
   const getDescendants = (node: LogicNode, currentTreeNodes: LogicNode[]): string[] => {
-    let descendants: string[] = [];
+    const descendants: string[] = [];
 
     // Recursively get all descendants
     const collectDescendants = (currentNodeName: string) => {
@@ -560,7 +613,7 @@ const useLogicNodeTreeDiagram = () => {
     const processed = new Set<string>();
 
     // Initialize queue with the name of the input node
-    let queue: string[] = [node.name];
+    const queue: string[] = [node.name];
 
     // Loop until there are no more nodes to process in the search list
     while (queue.length > 0) {
@@ -594,8 +647,8 @@ const useLogicNodeTreeDiagram = () => {
   };
 
   const getAllGateChildren = (node: LogicNode): LogicNode[] => {
-    let gateChildren: LogicNode[] = [];
-    let queue: LogicNode[] = [node];
+    const gateChildren: LogicNode[] = [];
+    const queue: LogicNode[] = [node];
     while (queue.length > 0) {
       const currentNode = queue.pop();
       currentNode?.gateChildren.forEach((childName) => {
@@ -622,7 +675,7 @@ const useLogicNodeTreeDiagram = () => {
   const handleDescriptionBlur = useCallback(
     (type: string, label: string) => {
       setEditingDescription(false);
-      setTimeout(async () => {
+      setTimeout(() => {
         if (type === 'gate' || type === 'root') {
           const updatedLogicNode = getLogicNodeByName(label);
           if (updatedLogicNode) {
@@ -657,16 +710,16 @@ const useLogicNodeTreeDiagram = () => {
   );
 
   const handleTitleBlur = useCallback(
-    async (type: string, label: string) => {
+    (type: string, label: string) => {
       setEditingTitle(false);
-      setTimeout(async () => {
+      setTimeout(() => {
         if (type === 'gate' || type === 'root') {
           const LogicNodeToUpdate = getLogicNodeByName(label);
           if (type === 'root') {
-            await updateTitle(LogicNodeToUpdate.name, editedTitle);
+            updateTitle(LogicNodeToUpdate?.name ?? '', editedTitle);
           }
           if (LogicNodeToUpdate) {
-            await updateLogicNode({
+            updateLogicNode({
               ...LogicNodeToUpdate,
               name: editedTitle,
             });
@@ -676,7 +729,7 @@ const useLogicNodeTreeDiagram = () => {
         if (type === 'comp') {
           const diagramToUpdate = getDiagramByDiagramName(label);
           if (diagramToUpdate) {
-            await updateDiagram({
+            updateDiagram({
               ...diagramToUpdate,
               name: editedTitle,
             });
@@ -696,7 +749,7 @@ const useLogicNodeTreeDiagram = () => {
   );
 
   useEffect(() => {
-    if (nodes && !loading) {
+    if (!loading) {
       const { nodes: formattedNodes } = dagreFormatNodes(nodes, edges);
       setNodes(formattedNodes); // Update the nodes state with the dagre formatted nodes
     }
@@ -719,7 +772,9 @@ const useLogicNodeTreeDiagram = () => {
         setNodeExistsAlert(false);
       }, 5000); // 5 seconds
 
-      return () => clearTimeout(timer);
+      return () => {
+        clearTimeout(timer);
+      };
     }
   }, [nodeExistsAlert]);
 

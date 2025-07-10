@@ -1,5 +1,14 @@
-import { Button, IconButton, InputAdornment, Menu, MenuItem, TextField, useMediaQuery, useTheme } from '@mui/material';
-import { JSX, ReactNode, useState } from 'react';
+import {
+  Button,
+  IconButton,
+  InputAdornment,
+  Menu,
+  MenuItem,
+  TextField,
+  useMediaQuery,
+  useTheme,
+} from '@mui/material';
+import { type JSX, type ReactNode, useState } from 'react';
 import { appData } from '../../../../hooks/useAppData';
 import SearchIcon from '@mui/icons-material/Search';
 import {
@@ -8,7 +17,18 @@ import {
   GetModelItemsReferencing,
 } from '../../../../utils/ModelReferences';
 import ItemTypeMenuResults from './ItemTypeMenuResults';
-import { EMRALD_Model, Diagram, State, Action, Event, ExtSim, CompChildItems, LogicNode, Variable, MainItemType } from '../../../../types/EMRALD_Model';
+import type {
+  EMRALD_Model,
+  Diagram,
+  State,
+  Action,
+  Event,
+  ExtSim,
+  CompChildItems,
+  LogicNode,
+  Variable,
+  MainItemType,
+} from '../../../../types/EMRALD_Model';
 import { useWindowContext } from '../../../../contexts/WindowContext';
 import EventFormContextProvider from '../../../forms/EventForm/EventFormContext';
 import EventForm from '../../../forms/EventForm/EventForm';
@@ -28,12 +48,13 @@ import { ReactFlowProvider } from 'reactflow';
 import { emptyLogicNode } from '../../../../contexts/LogicNodeContext';
 import { useAlertContext } from '../../../../contexts/AlertContext';
 import LogicNodeFormContextProvider from '../../../forms/LogicNodeForm/LogicNodeFormContext';
+import type { ModelItem } from '../../../../types/ModelUtils';
 
 const SearchField = () => {
   const theme = useTheme();
   const isMediumScreen = useMediaQuery(theme.breakpoints.between('sm', 'lg'));
   const [value, setValue] = useState<string>('');
-  const [anchorEl, setAnchorEl] = useState<any>(null);
+  const [anchorEl, setAnchorEl] = useState<Element | null>(null);
   const [selectedItem, setSelectedItem] = useState<
     Diagram | State | Action | Event | ExtSim | LogicNode | Variable | null
   >(null);
@@ -42,22 +63,22 @@ const SearchField = () => {
   const { addWindow } = useWindowContext();
 
   const onSubmit = () => {
-    let tempAppData = structuredClone(appData.value);
+    const tempAppData = structuredClone(appData.value);
     // search through diagrams
-    let diagrams = getItemList(tempAppData.DiagramList);
+    const diagrams = getItemList(tempAppData.DiagramList);
 
     // search through states
-    let states = getItemList(tempAppData.StateList);
+    const states = getItemList(tempAppData.StateList);
     // search through actions
-    let actions = getItemList(tempAppData.ActionList);
+    const actions = getItemList(tempAppData.ActionList);
     // search through events
-    let events = getItemList(tempAppData.EventList);
+    const events = getItemList(tempAppData.EventList);
     // search through ext sims
-    let extSims = getItemList(tempAppData.ExtSimList);
+    const extSims = getItemList(tempAppData.ExtSimList);
     //search for logic nodes
-    let logicNodes = getItemList(tempAppData.LogicNodeList);
+    const logicNodes = getItemList(tempAppData.LogicNodeList);
     // search for variables
-    let variables = getItemList(tempAppData.VariableList);
+    const variables = getItemList(tempAppData.VariableList);
     // setOpenSearchDialog(true);
     addWindow(
       `Search Results for: ${value}`,
@@ -76,12 +97,16 @@ const SearchField = () => {
     handleClose();
   };
 
-  const getItemList = (list: any[]) => {
-    let items: any = [];
+  const getItemList = <T extends ModelItem>(list: T[]) => {
+    const items: T[] = [];
     list.forEach((item) => {
+      let desc = '';
+      if (item.objType !== 'ExtSim') {
+        desc = item.desc?.toLowerCase() ?? '';
+      }
       if (
         item.name.toLowerCase().includes(value.toLowerCase()) ||
-        item.desc?.toLowerCase().includes(value.toLowerCase())
+        desc.includes(value.toLowerCase())
       ) {
         items.push(structuredClone(item));
       }
@@ -132,8 +157,8 @@ const SearchField = () => {
         }
         tempModel = filterItemFromModel(tempModel, item);
         setNestedModel(tempModel);
-        setExpandedItem(item.id || null);
-      } catch(error) {
+        setExpandedItem(item.id ?? null);
+      } catch (error) {
         console.error('Error Message:', error);
         showAlert('An error occurred getting the search items', 'error');
       }
@@ -146,37 +171,37 @@ const SearchField = () => {
         case 'Diagram':
           return {
             ...model,
-            DiagramList: model.DiagramList?.filter((diagram) => diagram.id !== item.id),
+            DiagramList: model.DiagramList.filter((diagram) => diagram.id !== item.id),
           };
         case 'State':
           return {
             ...model,
-            StateList: model.StateList?.filter((state) => state.id !== item.id),
+            StateList: model.StateList.filter((state) => state.id !== item.id),
           };
         case 'Action':
           return {
             ...model,
-            ActionList: model.ActionList?.filter((action) => action.id !== item.id),
+            ActionList: model.ActionList.filter((action) => action.id !== item.id),
           };
         case 'Event':
           return {
             ...model,
-            EventList: model.EventList?.filter((event) => event.id !== item.id),
+            EventList: model.EventList.filter((event) => event.id !== item.id),
           };
         case 'ExtSim':
           return {
             ...model,
-            ExtSimList: model.ExtSimList?.filter((extSim) => extSim.id !== item.id),
+            ExtSimList: model.ExtSimList.filter((extSim) => extSim.id !== item.id),
           };
         case 'LogicNode':
           return {
             ...model,
-            LogicNodeList: model.LogicNodeList?.filter((logicNode) => logicNode.id !== item.id),
+            LogicNodeList: model.LogicNodeList.filter((logicNode) => logicNode.id !== item.id),
           };
         case 'Variable':
           return {
             ...model,
-            VariableList: model.VariableList?.filter((variable) => variable.id !== item.id),
+            VariableList: model.VariableList.filter((variable) => variable.id !== item.id),
           };
         default:
           return model;
@@ -185,7 +210,12 @@ const SearchField = () => {
 
     return (
       <>
-        <Button onClick={() => handleExpand(item)} variant="contained">
+        <Button
+          onClick={() => {
+            handleExpand(item);
+          }}
+          variant="contained"
+        >
           {expandedItem === item.id ? `Collapse ${buttonDirection}` : `Expand ${buttonDirection}`}
         </Button>
         {expandedItem === item.id && nestedModel && (
@@ -205,7 +235,7 @@ const SearchField = () => {
     );
   };
 
-  const handleItemClick = (event: any, item: any) => {
+  const handleItemClick = (event: React.MouseEvent, item: ModelItem) => {
     event.preventDefault();
     setAnchorEl(event.currentTarget);
     setSelectedItem(item);
@@ -228,10 +258,11 @@ const SearchField = () => {
         </EventFormContextProvider>
       ),
       ExtSim: (data) => <ExtSimForm ExtSimData={data as ExtSim} />,
-      LogicNode: (data) => 
-      <LogicNodeFormContextProvider>
-        <LogicNodeForm logicNodeData={data as LogicNode} editing />
-      </LogicNodeFormContextProvider>,
+      LogicNode: (data) => (
+        <LogicNodeFormContextProvider>
+          <LogicNodeForm logicNodeData={data as LogicNode} editing />
+        </LogicNodeFormContextProvider>
+      ),
       Variable: (data) => (
         <VariableFormContextProvider>
           <VariableForm variableData={data as Variable} />
@@ -240,21 +271,24 @@ const SearchField = () => {
       EMRALD_Model: () => <></>,
     };
 
-    if (selectedItem?.objType && componentMap[selectedItem.objType]) {
-      addWindow(`Edit ${selectedItem?.name}`, componentMap[selectedItem.objType](selectedItem));
+    if (selectedItem?.objType) {
+      addWindow(`Edit ${selectedItem.name}`, componentMap[selectedItem.objType](selectedItem));
     }
 
     handleMenuClose();
   };
   const goToDiagramStateorLogictree = () => {
-    let name = selectedItem?.name || '';
-    const componentMap: Record<Extract<MainItemType, 'LogicNode' | 'Diagram' | 'State'>, (data: Diagram | State | LogicNode) => JSX.Element> = {
+    let name = selectedItem?.name ?? '';
+    const componentMap: Record<
+      Extract<MainItemType, 'LogicNode' | 'Diagram' | 'State'>,
+      (data: Diagram | State | LogicNode) => JSX.Element
+    > = {
       Diagram: (data): JSX.Element => <EmraldDiagram diagram={data as Diagram} />,
       State: (data) => {
         const d = data as State;
         const stateDiagram = getDiagramByDiagramName(d.diagramName);
         name = stateDiagram.name;
-        return <EmraldDiagram diagram={stateDiagram as Diagram} />;
+        return <EmraldDiagram diagram={stateDiagram!} />;
       },
       LogicNode: (data) => {
         const logicNode = data as LogicNode;
@@ -286,14 +320,14 @@ const SearchField = () => {
     }
   };
   const findParentNode = (logicNode: LogicNode): LogicNode => {
-    let tempModel = GetModelItemsReferencing(logicNode.name, 'LogicNode', 1);
-    let nodes = tempModel.LogicNodeList;
+    const tempModel = GetModelItemsReferencing(logicNode.name, 'LogicNode', 1);
+    const nodes = tempModel.LogicNodeList;
     if (nodes.length === 0) return emptyLogicNode;
-    for (let i = 0; i < nodes.length; i++) {
-      if (nodes[i].isRoot) {
-        return nodes[i];
+    for (const node of nodes) {
+      if (node.isRoot) {
+        return node;
       } else {
-        return findParentNode(nodes[i]);
+        return findParentNode(node);
       }
     }
     return emptyLogicNode;
@@ -314,20 +348,25 @@ const SearchField = () => {
         variant="outlined"
         label="Search"
         value={value}
-        onChange={(e) => setValue(e.target.value)}
+        onChange={(e) => {
+          setValue(e.target.value);
+        }}
         size="small"
-        InputProps={{
-          endAdornment: (
-            <InputAdornment position="end">
-              <IconButton onClick={onSubmit}>
-                <SearchIcon />
-              </IconButton>
-            </InputAdornment>
-          ),
-          style: { 
-            marginRight: isMediumScreen ? '15px' : '50px', 
-            maxWidth: isMediumScreen ? '150px' : '200px',
-            borderRadius: '15px' },
+        slotProps={{
+          input: {
+            endAdornment: (
+              <InputAdornment position="end">
+                <IconButton onClick={onSubmit}>
+                  <SearchIcon />
+                </IconButton>
+              </InputAdornment>
+            ),
+            style: {
+              marginRight: isMediumScreen ? '15px' : '50px',
+              maxWidth: isMediumScreen ? '150px' : '200px',
+              borderRadius: '15px',
+            },
+          },
         }}
         onKeyDown={handleKeyDown}
       />
@@ -336,7 +375,7 @@ const SearchField = () => {
         {(selectedItem?.objType === 'Diagram' ||
           selectedItem?.objType === 'State' ||
           selectedItem?.objType === 'LogicNode') && (
-          <MenuItem onClick={goToDiagramStateorLogictree}>View: {selectedItem?.name}</MenuItem>
+          <MenuItem onClick={goToDiagramStateorLogictree}>View: {selectedItem.name}</MenuItem>
         )}
       </Menu>
     </>

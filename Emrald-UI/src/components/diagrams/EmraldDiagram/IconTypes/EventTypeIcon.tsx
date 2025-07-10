@@ -2,7 +2,7 @@ import { TbReplaceFilled, TbChartHistogram } from 'react-icons/tb';
 import { GiPerspectiveDiceSixFacesOne } from 'react-icons/gi';
 import { PiTimer, PiArrowsMergeBold, PiArrowSquareDownLeft } from 'react-icons/pi';
 import { HiOutlineVariable } from 'react-icons/hi';
-import { EventType } from '../../../../types/EMRALD_Model';
+import type { EventType } from '../../../../types/EMRALD_Model';
 
 const EventTypeIcon = ({ type }: { type: EventType }) => {
   switch (type) {

@@ -1,11 +1,11 @@
-import { Dispatch, SetStateAction, useEffect } from 'react';
+import { useEffect } from 'react';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
-import { LogicNode, GateType } from '../../../types/EMRALD_Model';
+import type { LogicNode, GateType } from '../../../types/EMRALD_Model';
 import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
-import Select, { SelectChangeEvent } from '@mui/material/Select';
+import Select, { type SelectChangeEvent } from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import Divider from '@mui/material/Divider';
 import FormControlLabel from '@mui/material/FormControlLabel';
@@ -85,9 +85,9 @@ const LogicNodeForm: React.FC<LogicNodeFormProps> = ({
                     labelId="node-type-select-label"
                     id="node-type-select"
                     value={leafNodeType}
-                    onChange={(event: SelectChangeEvent<string>) =>
-                      setLeafNodeType(event.target.value)
-                    }
+                    onChange={(event: SelectChangeEvent) => {
+                      setLeafNodeType(event.target.value);
+                    }}
                     label="Node Type"
                   >
                     <MenuItem key={'gate'} value="gate">
@@ -120,7 +120,7 @@ const LogicNodeForm: React.FC<LogicNodeFormProps> = ({
                 labelId="node-type-select-label"
                 id="node-type-select"
                 value={compDiagram}
-                onChange={(event: SelectChangeEvent<string>) => {
+                onChange={(event: SelectChangeEvent) => {
                   setCompDiagram(event.target.value);
                   if (!component) {
                     setNewCompChild({
@@ -153,7 +153,9 @@ const LogicNodeForm: React.FC<LogicNodeFormProps> = ({
                   <Checkbox
                     checked={defaultValues}
                     value={defaultValues}
-                    onChange={(e) => setDefaultValues(e.target.checked)}
+                    onChange={(e) => {
+                      setDefaultValues(e.target.checked);
+                    }}
                   />
                 }
                 label="Use default diagram values"
@@ -175,12 +177,20 @@ const LogicNodeForm: React.FC<LogicNodeFormProps> = ({
                 variant="contained"
                 color="primary"
                 sx={{ mr: 2 }}
-                onClick={() => handleSave()}
+                onClick={() => {
+                  handleSave();
+                }}
                 disabled={hasError}
               >
                 Save
               </Button>
-              <Button variant="contained" color="secondary" onClick={() => handleClose()}>
+              <Button
+                variant="contained"
+                color="secondary"
+                onClick={() => {
+                  handleClose();
+                }}
+              >
                 Cancel
               </Button>
             </Box>
@@ -189,7 +199,7 @@ const LogicNodeForm: React.FC<LogicNodeFormProps> = ({
           <MainDetailsForm
             itemType={'LogicNode'}
             type={gateTypeValue}
-            setType={setGateTypeValue as Dispatch<SetStateAction<GateType>>}
+            setType={setGateTypeValue}
             typeOptions={gateTypeOptions}
             name={name}
             handleNameChange={handleNameChange}
@@ -198,7 +208,9 @@ const LogicNodeForm: React.FC<LogicNodeFormProps> = ({
             nameError={checkForDuplicateNames()}
             error={hasError}
             errorMessage="An node with this name already exists, or includes an invalid character."
-            handleSave={() => handleSave()}
+            handleSave={() => {
+              handleSave();
+            }}
             reqPropsFilled={reqPropsFilled}
           >
             <FormControlLabel
@@ -207,7 +219,9 @@ const LogicNodeForm: React.FC<LogicNodeFormProps> = ({
               control={
                 <Checkbox
                   checked={isRoot ? true : false}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setIsRoot(e.target.checked)}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                    setIsRoot(e.target.checked);
+                  }}
                 />
               }
             />

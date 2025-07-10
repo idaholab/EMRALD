@@ -1,9 +1,15 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import ReactFlow, { MiniMap, Controls, Background, BackgroundVariant, ControlButton } from 'reactflow';
+import ReactFlow, {
+  MiniMap,
+  Controls,
+  Background,
+  BackgroundVariant,
+  ControlButton,
+} from 'reactflow';
 import 'reactflow/dist/style.css';
 import { Box, CircularProgress, Typography } from '@mui/material';
 import StateNode from '../EmraldDiagram/StateNodeComponent';
-import { Diagram } from '../../../types/EMRALD_Model';
+import type { Diagram } from '../../../types/EMRALD_Model';
 import useEmraldDiagram from './useEmraldDiagram';
 import CustomConnectionLine from './Edges/ConnectionLineComponent';
 import ContextMenu from '../../layout/ContextMenu/ContextMenu';
@@ -11,7 +17,7 @@ import DialogComponent from '../../common/DialogComponent/DialogComponent';
 import useContextMenu from './useContextMenu';
 import { signal } from '@preact/signals';
 import { emptyDiagram } from '../../../contexts/DiagramContext';
-import { TbMap } from "react-icons/tb";
+import { TbMap } from 'react-icons/tb';
 import { PiDotsNine } from 'react-icons/pi';
 import DownloadButton from '../DownloadButton';
 
@@ -64,7 +70,16 @@ const EmraldDiagram: React.FC<EmraldDiagramProps> = ({ diagram }) => {
   return (
     <Box sx={{ width: '100%', height: '100%' }}>
       {loading ? (
-        <Box sx={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+        <Box
+          sx={{
+            width: '100%',
+            height: '100%',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
+        >
           <CircularProgress />
           <h4>Loading Diagram</h4>
         </Box>
@@ -80,9 +95,14 @@ const EmraldDiagram: React.FC<EmraldDiagramProps> = ({ diagram }) => {
             onPaneContextMenu={onPaneContextMenu}
             onNodeContextMenu={onNodeContextMenu}
             onNodeDoubleClick={onNodeDoubleClick}
-            onEdgeContextMenu={(event, edge) => onEdgeContextMenu(event, edge, edges)}
+            onEdgeContextMenu={(event, edge) => {
+              onEdgeContextMenu(event, edge, edges);
+            }}
             onEdgeUpdate={onEdgeUpdate}
-            onPaneClick={(e) => { closeContextMenu(); onPaneClick(e); }}
+            onPaneClick={() => {
+              closeContextMenu();
+              onPaneClick();
+            }}
             connectionLineComponent={CustomConnectionLine}
             onNodeDragStop={onNodeDragStop}
             isValidConnection={isValidConnection}
@@ -91,19 +111,23 @@ const EmraldDiagram: React.FC<EmraldDiagramProps> = ({ diagram }) => {
             nodeTypes={nodeTypes}
           >
             <Controls>
-              <ControlButton onClick={() => setShowMap(!showMap)}>
+              <ControlButton
+                onClick={() => {
+                  setShowMap(!showMap);
+                }}
+              >
                 <TbMap />
-              </ControlButton> 
-              <ControlButton onClick={() => setShowBackgroundDots(!showBackgroundDots)}>
+              </ControlButton>
+              <ControlButton
+                onClick={() => {
+                  setShowBackgroundDots(!showBackgroundDots);
+                }}
+              >
                 <PiDotsNine />
-              </ControlButton>  
-              <DownloadButton diagramName={diagram.name}/>
+              </ControlButton>
+              <DownloadButton diagramName={diagram.name} />
             </Controls>
-            {
-              showMap && (
-                <MiniMap pannable />
-              )
-            }
+            {showMap && <MiniMap pannable />}
             {showBackgroundDots && (
               <Background variant={BackgroundVariant.Dots} gap={12} size={1} />
             )}
@@ -121,8 +145,10 @@ const EmraldDiagram: React.FC<EmraldDiagramProps> = ({ diagram }) => {
               open={true}
               title="Delete Confirmation"
               submitText="delete"
-              onSubmit={() => deleteItem()}
-              onClose={() => closeDeleteConfirmation()}
+              onSubmit={() => { deleteItem(); }}
+              onClose={() => {
+                closeDeleteConfirmation();
+              }}
             >
               <Typography>
                 Are you sure you want to delete {itemToDelete?.name}? It will be removed from all

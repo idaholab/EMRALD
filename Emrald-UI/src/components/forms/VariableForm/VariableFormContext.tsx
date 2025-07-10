@@ -1,10 +1,16 @@
-import { createContext, PropsWithChildren, useContext, useState } from 'react';
+import { createContext, type PropsWithChildren, useContext, useState } from 'react';
 import { useWindowContext } from '../../../contexts/WindowContext';
 import { v4 as uuidv4 } from 'uuid';
 import { emptyVariable, useVariableContext } from '../../../contexts/VariableContext';
 
-import { Variable, AccrualVarTableType, DocVarType, VariableType, VarScope } from '../../../types/EMRALD_Model';
-import { SelectChangeEvent } from '@mui/material';
+import type {
+  Variable,
+  AccrualVarTableType,
+  DocVarType,
+  VariableType,
+  VarScope,
+} from '../../../types/EMRALD_Model';
+import type { SelectChangeEvent } from '@mui/material';
 import { useSignal } from '@preact/signals-react';
 import { appData } from '../../../hooks/useAppData';
 
@@ -38,7 +44,7 @@ interface VariableFormContextType {
   numChars?: number;
   setAccrualStatesData: React.Dispatch<React.SetStateAction<AccrualStateItem[] | undefined>>;
   sortNewStates: (accrualStatesData: AccrualStateItem[]) => AccrualStateItem[];
-  InitializeForm: (variableData?: Variable | undefined) => void;
+  InitializeForm: (variableData?: Variable) => void;
   setNamePrefix: React.Dispatch<React.SetStateAction<string | undefined>>;
   setName: React.Dispatch<React.SetStateAction<string>>;
   handleClose: () => void;
@@ -56,7 +62,7 @@ interface VariableFormContextType {
   handleNameChange: (updatedName: string) => void;
   handleSave: (variableData?: Variable) => void;
   handleFloatValueChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  handleBoolValueChange: (e: SelectChangeEvent<string>) => void;
+  handleBoolValueChange: (e: SelectChangeEvent) => void;
   handleStringValueChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   setRegExpLine: React.Dispatch<React.SetStateAction<number | undefined>>;
   setBegPosition: React.Dispatch<React.SetStateAction<number | undefined>>;
@@ -111,7 +117,7 @@ const VariableFormContextProvider: React.FC<PropsWithChildren> = ({ children }) 
       return 0;
     });
   };
-  const InitializeForm = (variableData?: Variable | undefined) => {
+  const InitializeForm = (variableData?: Variable) => {
     if (!variableData) return;
     if (variableData.name) {
       setName(variableData.name);
@@ -123,26 +129,26 @@ const VariableFormContextProvider: React.FC<PropsWithChildren> = ({ children }) 
     } else {
       setNamePrefix('Int_');
     }
-    setDesc(variableData.desc || '');
-    setType(variableData.type || 'int');
-    setVarScope(variableData?.varScope || 'gtGlobal');
-    variableData?.value !== undefined && setValue(String(variableData.value));
-    variableData?.sim3DId && setSim3DId(variableData.sim3DId);
+    setDesc(variableData.desc ?? '');
+    setType(variableData.type);
+    setVarScope(variableData.varScope);
+    variableData.value && setValue(String(variableData.value));
+    variableData.sim3DId && setSim3DId(variableData.sim3DId);
     setResetOnRuns(variableData.resetOnRuns);
-    variableData?.docType && setDocType(variableData.docType);
-    variableData?.docPath && setDocPath(variableData.docPath);
-    variableData?.docLink && setDocLink(variableData.docLink);
-    variableData?.pathMustExist && setPathMustExist(variableData.pathMustExist);
-    variableData?.accrualStatesData && setAccrualStatesData(variableData.accrualStatesData);
-    if (variableData?.regExpLine !== undefined) {
+    variableData.docType && setDocType(variableData.docType);
+    variableData.docPath && setDocPath(variableData.docPath);
+    variableData.docLink && setDocLink(variableData.docLink);
+    variableData.pathMustExist && setPathMustExist(variableData.pathMustExist);
+    variableData.accrualStatesData && setAccrualStatesData(variableData.accrualStatesData);
+    if (variableData.regExpLine !== undefined) {
       setShowRegExFields(true);
       setRegExpLine(variableData.regExpLine);
     }
-    if (variableData?.begPosition) {
+    if (variableData.begPosition) {
       setShowRegExFields(true);
       setBegPosition(variableData.begPosition);
     }
-    if (variableData?.numChars) {
+    if (variableData.numChars) {
       setShowNumChars(true);
       setNumChars(variableData.numChars);
     }
@@ -157,7 +163,7 @@ const VariableFormContextProvider: React.FC<PropsWithChildren> = ({ children }) 
   };
 
   const handleTypeChange = (newType: VariableType) => {
-    if (!!name.split('_')[1]) {
+    if (name.split('_')[1]) {
       const updatedPrefix: string = PREFIXES[newType] || PREFIXES.default;
       setNamePrefix(updatedPrefix);
 
@@ -196,7 +202,7 @@ const VariableFormContextProvider: React.FC<PropsWithChildren> = ({ children }) 
   const handleSave = (variableData?: Variable) => {
     variable.value = {
       ...variable.value,
-      id: variableData?.id || uuidv4(),
+      id: variableData?.id ?? uuidv4(),
       type,
       name: name.trim(),
       desc,
@@ -208,7 +214,7 @@ const VariableFormContextProvider: React.FC<PropsWithChildren> = ({ children }) 
       pathMustExist,
       value,
       accrualStatesData,
-      resetOnRuns: resetOnRuns === undefined ? true : resetOnRuns,
+      resetOnRuns: resetOnRuns ?? true,
       regExpLine,
       begPosition,
       numChars,
@@ -233,7 +239,7 @@ const VariableFormContextProvider: React.FC<PropsWithChildren> = ({ children }) 
       setValue('');
     }
   };
-  const handleBoolValueChange = (e: SelectChangeEvent<string>) => {
+  const handleBoolValueChange = (e: SelectChangeEvent) => {
     const boolValue: boolean = e.target.value === 'true';
     setValue(boolValue);
   };

@@ -211,7 +211,7 @@ function pureExpressionToString(pureExpression: MAAPPureExpression): string {
  * @param expressionBlock - The object to compile.
  * @returns The compiled code.
  */
-function expressionBlockToString(expressionBlock: MAAPExpressionBlock): string {
+export function expressionBlockToString(expressionBlock: MAAPExpressionBlock): string {
   return `(${pureExpressionToString(expressionBlock.value)})`;
 }
 
@@ -290,7 +290,7 @@ export function expressionToString(expression: MAAPExpression): string {
  * @param variable - The object to compile.
  * @returns The compiled code.
  */
-function variableToString(variable: MAAPVariable) {
+export function variableToString(variable: MAAPVariable) {
   if (variable.type === 'call_expression') {
     return callExpressionToString(variable);
   } else if (

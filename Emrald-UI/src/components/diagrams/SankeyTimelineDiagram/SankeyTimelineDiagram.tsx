@@ -312,15 +312,11 @@ function render(
 
   // Set the title that displays when nodes and links are hovered over
   renderer.options.nodeTitle = (d: TimelineNode) =>
-    `Name: ${d.label}\nCount: ${d.data.count.toString()}\nRate 5th: ${
-      combined5th95th(d.data)[0].toString()
-    }\nRate 95th: ${combined5th95th(d.data)[1].toString()}\nContribution Rate: ${
-      d.data.contributionRate.toString()
-    }\nMin Time: ${d.data.timeMin?.toString() ?? ''}\nMax Time: ${d.data.timeMax?.toString() ?? ''}\nMean Time: ${secondsToTimestamp(
+    `Name: ${d.label}\nCount: ${d.data.count.toString()}\nRate 5th: ${combined5th95th(
+      d.data,
+    )[0].toString()}\nRate 95th: ${combined5th95th(d.data)[1].toString()}\nContribution Rate: ${d.data.contributionRate.toString()}\nMin Time: ${d.data.timeMin?.toString() ?? ''}\nMax Time: ${d.data.timeMax?.toString() ?? ''}\nMean Time: ${secondsToTimestamp(
       combinedMean(d.data),
-    )}\nStandard Deviation: ${secondsToTimestamp(combinedStd(d.data))}\nRow: ${d.layout.row.toString()},Col: ${
-      d.layout.column.toString()
-    }`;
+    )}\nStandard Deviation: ${secondsToTimestamp(combinedStd(d.data))}\nRow: ${d.layout.row.toString()},Col: ${d.layout.column.toString()}`;
   renderer.options.linkTitle = (d: TimelineLink) =>
     `${d.data.name}\n${d.data.desc}\nAction Description: ${d.data.actDesc}\nEvent Description: ${d.data.evDesc}\nCount: ${d.data.count.toString()}`;
 

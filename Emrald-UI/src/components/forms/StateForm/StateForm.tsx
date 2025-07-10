@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import Typography from '@mui/material/Typography';
 import React from 'react';
 import { useWindowContext } from '../../../contexts/WindowContext';
-import { State, DiagramType, StateEvalValue, StateType } from '../../../types/EMRALD_Model';
+import type { State, DiagramType, StateEvalValue, StateType } from '../../../types/EMRALD_Model';
 import { v4 as uuidv4 } from 'uuid';
 import MainDetailsForm from '../../forms/MainDetailsForm';
 import { emptyState, useStateContext } from '../../../contexts/StateContext';
@@ -18,17 +18,17 @@ interface StateFormProps {
 const StateForm: React.FC<StateFormProps> = ({ stateData }: StateFormProps) => {
   const { handleClose } = useWindowContext();
   const { statesList, updateState, createState } = useStateContext();
-  const { getDiagramByDiagramName, updateDiagram } = useDiagramContext();
-  const state = useSignal<State>(stateData || emptyState);
-  const [name, setName] = useState<string>(stateData?.name || '');
-  const [desc, setDesc] = useState<string>(stateData?.desc || '');
-  const [stateType, setStateType] = useState<StateType>(stateData?.stateType || 'stStandard');
+  const { updateDiagram } = useDiagramContext();
+  const state = useSignal<State>(stateData ?? emptyState);
+  const [name, setName] = useState<string>(stateData?.name ?? '');
+  const [desc, setDesc] = useState<string>(stateData?.desc ?? '');
+  const [stateType, setStateType] = useState<StateType>(stateData?.stateType ?? 'stStandard');
   const [diagramType, setDiagramType] = useState<DiagramType>('dtSingle');
   const [defaultSingleStateValue, setDefaultSingleStateValue] = useState<StateEvalValue>(
-    stateData?.defaultSingleStateValue || 'Ignore',
+    stateData?.defaultSingleStateValue ?? 'Ignore',
   );
   const [hasError, setHasError] = useState<boolean>(false);
-  const [originalName] = useState<string>(stateData?.name || '');
+  const [originalName] = useState<string>(stateData?.name ?? '');
 
   const stateTypeOptions = [
     { value: 'stStart', label: 'Start' },
@@ -47,9 +47,9 @@ const StateForm: React.FC<StateFormProps> = ({ stateData }: StateFormProps) => {
     setName(newName);
   };
 
-  const handleSave = async () => {
+  const handleSave = () => {
     if (stateData) {
-      await updateState({
+      updateState({
         ...state.value,
         stateType,
         name: name.trim(),
@@ -64,32 +64,26 @@ const StateForm: React.FC<StateFormProps> = ({ stateData }: StateFormProps) => {
         });
       }
     } else {
-      await createState({
+      createState({
         ...state.value,
         id: uuidv4(),
         name: name.trim(),
         desc,
         stateType,
         defaultSingleStateValue,
-        diagramName: currentDiagram.value?.name || '',
+        diagramName: currentDiagram.value.name || '',
       });
-      if (currentDiagram.value) {
-        const { states } = currentDiagram.value;
-        currentDiagram.value.states = [...states, name.trim()];
-        updateDiagram({
-          ...currentDiagram.value
-        });
-      }
+      const { states } = currentDiagram.value;
+      currentDiagram.value.states = [...states, name.trim()];
+      updateDiagram({
+        ...currentDiagram.value,
+      });
     }
     handleClose();
   };
 
   useEffect(() => {
-    if (currentDiagram.value?.diagramType) setDiagramType(currentDiagram.value.diagramType);
-    else if (stateData) {
-      const diagramType = getDiagramByDiagramName(stateData.diagramName).diagramType;
-      setDiagramType(diagramType);
-    }
+    setDiagramType(currentDiagram.value.diagramType);
   }, []);
   return (
     <Box mx={3} pb={3}>
@@ -110,7 +104,7 @@ const StateForm: React.FC<StateFormProps> = ({ stateData }: StateFormProps) => {
           error={hasError}
           errorMessage="A State with this name already exists, or the name contains an invalid character."
           handleSave={handleSave}
-          reqPropsFilled={name && stateType ? true : false}
+          reqPropsFilled={name ? true : false}
         >
           {diagramType === 'dtSingle' && (
             <FormControl
@@ -129,9 +123,9 @@ const StateForm: React.FC<StateFormProps> = ({ stateData }: StateFormProps) => {
                 aria-label="status-value"
                 name="status-value"
                 value={defaultSingleStateValue}
-                onChange={(event) =>
-                  setDefaultSingleStateValue(event.target.value as StateEvalValue)
-                }
+                onChange={(event) => {
+                  setDefaultSingleStateValue(event.target.value as StateEvalValue);
+                }}
                 row
               >
                 <FormControlLabel value="Ignore" control={<Radio />} label="Unknown" />

@@ -33,10 +33,14 @@ const DialogComponent: React.FC<DialogComponentProps> = ({
       <DialogActions sx={{ p: 3 }}>
         {onSubmit && (
           <Button onClick={onSubmit} variant="contained" disabled={disabled}>
-            {submitText ? submitText : 'Save'}
+            {submitText ?? 'Save'}
           </Button>
         )}
-        {onClose && <Button onClick={onClose} variant="contained" color="secondary">{cancelText ? cancelText : 'Cancel'}</Button>}
+        {onClose && (
+          <Button onClick={onClose} variant="contained" color="secondary">
+            {cancelText ?? 'Cancel'}
+          </Button>
+        )}
       </DialogActions>
     </Dialog>
   );

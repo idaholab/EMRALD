@@ -12,7 +12,7 @@ import {
 } from '@mui/material';
 import { useEventFormContext } from '../EventFormContext';
 import { useDrop } from 'react-dnd';
-import { State } from '../../../../types/EMRALD_Model';
+import type { State } from '../../../../types/EMRALD_Model';
 import { StyledTableCell, StyledTableRow } from '../../ActionForm/ActionToStateTable';
 import DeleteIcon from '@mui/icons-material/Delete';
 
@@ -35,7 +35,7 @@ const StateChange = () => {
   });
   const backgroundColor = isOver ? 'lightgreen' : 'white';
   const removeTriggerState = (name: string) => {
-    var newTriggerStates = triggerStates;
+    let newTriggerStates = triggerStates;
     if (newTriggerStates) {
       newTriggerStates = newTriggerStates.filter((state) => state !== name);
       setTriggerStates(newTriggerStates);
@@ -46,7 +46,9 @@ const StateChange = () => {
       <RadioGroup
         name="radio-buttons-group"
         value={ifInState}
-        onChange={(e) => setIfInState(e.target.value === 'true' ? true : false)}
+        onChange={(e) => {
+          setIfInState(e.target.value === 'true' ? true : false);
+        }}
         sx={{ display: 'flex', flexDirection: 'row' }}
       >
         <FormControlLabel
@@ -69,7 +71,9 @@ const StateChange = () => {
         control={
           <Checkbox
             checked={allItems ? true : false}
-            onChange={(e) => setAllItems(e.target.checked)}
+            onChange={(e) => {
+              setAllItems(e.target.checked);
+            }}
           />
         }
       />
@@ -98,7 +102,9 @@ const StateChange = () => {
                       <Tooltip title="Delete Row">
                         <DeleteIcon
                           sx={{ cursor: 'pointer', ml: 3 }}
-                          onClick={() => removeTriggerState(name)}
+                          onClick={() => {
+                            removeTriggerState(name);
+                          }}
                         />
                       </Tooltip>
                     </StyledTableCell>

@@ -1,20 +1,20 @@
 import React, { createContext, useContext, useState } from 'react';
-import { EmraldContextWrapperProps } from './EmraldContextWrapper';
+import type { EmraldContextWrapperProps } from './EmraldContextWrapper';
 import { appData, updateAppData } from '../hooks/useAppData';
-import { effect, ReadonlySignal, useComputed } from '@preact/signals-react';
-import { EMRALD_Model, State, Event, Action } from '../types/EMRALD_Model';
+import { effect, type ReadonlySignal, useComputed } from '@preact/signals-react';
+import type { EMRALD_Model, State, Event, Action } from '../types/EMRALD_Model';
 import { DeleteItemAndRefs, updateModelAndReferences } from '../utils/UpdateModel';
 
 interface StateContextType {
   states: State[];
   statesList: ReadonlySignal<State[]>;
-  createState: (newState: State) => Promise<void>;
-  updateState: (updatedState: State) => Promise<void>;
+  createState: (newState: State) => void;
+  updateState: (updatedState: State) => void;
   updateStateEvents: (stateName: string, event: Event) => void;
   updateStateEventActions: (stateName: string, eventName: string, action: Action) => void;
   updateStateImmediateActions: (stateName: string, action: Action) => void;
   updateStatePosition: (state: State, position: { x: number; y: number }) => void;
-  deleteState: (StateId: string | undefined) => Promise<void>;
+  deleteState: (StateId: string | undefined) => void;
   getEventsByStateName: (stateName: string) => {
     events: string[];
     type: string;
@@ -22,8 +22,8 @@ interface StateContextType {
     immediateActions: string[];
     geometryInfo: { x: number; y: number; width: number; height: number };
   };
-  getStateByStateName: (stateName: string) => State;
-  getStateByStateId: (stateId: string | null) => State;
+  getStateByStateName: (stateName: string) => State | undefined;
+  getStateByStateId: (stateId: string | null) => State | undefined;
   newStateList: (newStateList: State[]) => void;
   mergeStateList: (newStateList: State[]) => void;
   clearStateList: () => void;
@@ -62,7 +62,7 @@ const StateContextProvider: React.FC<EmraldContextWrapperProps> = ({ children })
   const [states, setStates] = useState<State[]>(
     JSON.parse(
       JSON.stringify(appData.value.StateList.sort((a, b) => a.name.localeCompare(b.name))),
-    ),
+    ) as State[],
   );
   const statesList = useComputed(() => appData.value.StateList);
   const defaultGeometryInfo = { x: 0, y: 0, width: 0, height: 0 };
@@ -79,16 +79,13 @@ const StateContextProvider: React.FC<EmraldContextWrapperProps> = ({ children })
   });
 
   // Create, Delete, Update individual States
-  const createState = async (newState: State) => {
-    var updatedModel: EMRALD_Model = await updateModelAndReferences(newState, 'State');
+  const createState = (newState: State) => {
+    const updatedModel = updateModelAndReferences(newState, 'State');
     updateAppData(updatedModel);
   };
 
-  const updateState = async (updatedState: State) => {
-    var updatedModel: EMRALD_Model = await updateModelAndReferences(
-      updatedState,
-      'State',
-    );
+  const updateState = (updatedState: State) => {
+    const updatedModel = updateModelAndReferences(updatedState, 'State');
     updateAppData(updatedModel);
   };
 
@@ -111,7 +108,7 @@ const StateContextProvider: React.FC<EmraldContextWrapperProps> = ({ children })
   const updateStateEventActions = (stateName: string, eventName: string, action: Action) => {
     const stateToUpdate = getStateByStateName(stateName);
     if (stateToUpdate) {
-      const eventIndex = stateToUpdate?.events.indexOf(eventName);
+      const eventIndex = stateToUpdate.events.indexOf(eventName);
       if (!stateToUpdate.eventActions[eventIndex]) {
         stateToUpdate.eventActions.push({
           moveFromCurrent: false,
@@ -139,7 +136,7 @@ const StateContextProvider: React.FC<EmraldContextWrapperProps> = ({ children })
     }
   };
 
-  const deleteState = async (stateId: string | undefined) => {
+  const deleteState = (stateId: string | undefined) => {
     if (!stateId) {
       throw new Error('No stateId provided');
     }
@@ -147,28 +144,26 @@ const StateContextProvider: React.FC<EmraldContextWrapperProps> = ({ children })
     if (!stateToDelete) {
       throw new Error('State not found');
     }
-    var updatedModel: EMRALD_Model = await DeleteItemAndRefs(stateToDelete);
+    const updatedModel = DeleteItemAndRefs(stateToDelete);
     updateAppData(updatedModel);
   };
 
-  const getStateByStateId = (stateId: string | null): State => {
-    const state = statesList.value.find((stateItem) => stateItem.id === stateId);
-    return state || emptyState;
+  const getStateByStateId = (stateId: string | null) => {
+    return statesList.value.find((stateItem) => stateItem.id === stateId);
   };
 
-  const getStateByStateName = (stateName: string): State => {
-    const state = statesList.value.find((stateItem) => stateItem.name === stateName);
-    return state || emptyState;
+  const getStateByStateName = (stateName: string) => {
+    return statesList.value.find((stateItem) => stateItem.name === stateName);
   };
 
   const getEventsByStateName = (stateName: string) => {
     const state = getStateByStateName(stateName);
     if (state) {
       return {
-        type: state.stateType || '',
-        events: state.events || [],
-        eventActions: state.eventActions || [],
-        immediateActions: state.immediateActions || [],
+        type: state.stateType,
+        events: state.events,
+        eventActions: state.eventActions,
+        immediateActions: state.immediateActions,
         geometryInfo: {
           x: state.geometryInfo?.x ?? defaultGeometryInfo.x,
           y: state.geometryInfo?.y ?? defaultGeometryInfo.y,
@@ -186,11 +181,11 @@ const StateContextProvider: React.FC<EmraldContextWrapperProps> = ({ children })
     };
   };
 
-  const updateStatePosition = (state: State, position: { x: number; y: number }) => {
+  const updateStatePosition = (state?: State, position?: { x: number; y: number }) => {
     if (state?.geometryInfo) {
       try {
-        state.geometryInfo.x = position.x;
-        state.geometryInfo.y = position.y;
+        state.geometryInfo.x = position?.x;
+        state.geometryInfo.y = position?.y;
         updateState(state);
       } catch (error) {
         console.error('Error updating geometryInfo:', error);
@@ -209,7 +204,7 @@ const StateContextProvider: React.FC<EmraldContextWrapperProps> = ({ children })
   };
 
   const clearStateList = () => {
-    updateAppData(JSON.parse(JSON.stringify({ ...appData.value, StateList: [] })));
+    updateAppData(JSON.parse(JSON.stringify({ ...appData.value, StateList: [] })) as EMRALD_Model);
   };
 
   return (

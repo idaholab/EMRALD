@@ -1,4 +1,4 @@
-import { SxProps } from '@mui/material/styles';
+import type { SystemStyleObject } from '@mui/system/styleFunctionSx';
 import TextField from '@mui/material/TextField';
 import React from 'react';
 
@@ -6,15 +6,10 @@ interface TextFieldComponentProps {
   value: string;
   label: string;
   setValue: (value: string) => void;
-  sx?: SxProps;
+  sx?: SystemStyleObject;
 }
-const TextFieldComponent: React.FC<TextFieldComponentProps> = ({
-  value,
-  label,
-  sx,
-  setValue
-}) => {
-  const defaultSxProps: SxProps = { mb: 0, mt: 2 };
+const TextFieldComponent: React.FC<TextFieldComponentProps> = ({ value, label, sx, setValue }) => {
+  const defaultSxProps: SystemStyleObject = { mb: 0, mt: 2 };
   return (
     <TextField
       id={label}
@@ -24,7 +19,9 @@ const TextFieldComponent: React.FC<TextFieldComponentProps> = ({
       size="small"
       sx={{ ...defaultSxProps, ...sx }}
       value={value}
-      onChange={(e) => setValue(e.target.value)}
+      onChange={(e) => {
+        setValue(e.target.value);
+      }}
       fullWidth
     />
   );

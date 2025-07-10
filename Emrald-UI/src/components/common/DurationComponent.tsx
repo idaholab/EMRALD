@@ -18,8 +18,8 @@ const DurationInput: React.FC<DurationInputProps> = ({ label, value, onChange, p
   const [editing, setEditing] = useState(false);
   const input = useRef<HTMLInputElement>(null);
 
-  const pad = padNum || 2;
-  const displayValue = `${value}`.padStart(pad, '0');
+  const pad = padNum ?? 2;
+  const displayValue = value.toString().padStart(pad, '0');
 
   return (
     <>
@@ -32,11 +32,20 @@ const DurationInput: React.FC<DurationInputProps> = ({ label, value, onChange, p
           value={value}
           onChange={onChange}
           ref={input}
-          onBlur={() => setEditing(false)}
-          style={{width: pad * 10}}
+          onBlur={() => {
+            setEditing(false);
+          }}
+          style={{ width: pad * 10 }}
         />
       ) : (
-        <b aria-labelledby={`${label}-label`} onClick={() => setEditing(true)}>{displayValue}</b>
+        <b
+          aria-labelledby={`${label}-label`}
+          onClick={() => {
+            setEditing(true);
+          }}
+        >
+          {displayValue}
+        </b>
       )}
     </>
   );
@@ -84,7 +93,7 @@ const DurationComponent: React.FC<DurationComponentProps> = ({
         borderRadius: 1,
         boxSizing: 'content-box',
         padding: '12px',
-        width: 'fit-content'
+        width: 'fit-content',
       }}
     >
       <span
@@ -92,32 +101,40 @@ const DurationComponent: React.FC<DurationComponentProps> = ({
           transformOrigin: 'top left',
           transform: 'translate(0px, -22px)',
           background: 'white',
-          position: 'absolute'
+          position: 'absolute',
         }}
       >
-        {label ? label : 'Duration'}
+        {label ?? 'Duration'}
       </span>
-      <div style={{transform: 'translate(-5px, 0px)'}}>
+      <div style={{ transform: 'translate(-5px, 0px)' }}>
         <DurationInput
           label="Days"
           value={days}
-          onChange={(e) => updateMs(Number(e.target.value), hours, minutes, seconds)}
+          onChange={(e) => {
+            updateMs(Number(e.target.value), hours, minutes, seconds);
+          }}
           padNum={4}
         ></DurationInput>
         <DurationInput
           label="Hours"
           value={hours}
-          onChange={(e) => updateMs(days, Number(e.target.value), minutes, seconds)}
+          onChange={(e) => {
+            updateMs(days, Number(e.target.value), minutes, seconds);
+          }}
         ></DurationInput>
         <DurationInput
           label="Minutes"
           value={minutes}
-          onChange={(e) => updateMs(days, hours, Number(e.target.value), seconds)}
+          onChange={(e) => {
+            updateMs(days, hours, Number(e.target.value), seconds);
+          }}
         ></DurationInput>
         <DurationInput
           label="Seconds"
           value={seconds}
-          onChange={(e) => updateMs(days, hours, minutes, Number(e.target.value))}
+          onChange={(e) => {
+            updateMs(days, hours, minutes, Number(e.target.value));
+          }}
         ></DurationInput>
       </div>
     </Box>

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-this-alias */
 import { Bezier } from 'bezier-js';
 import { color, type RGBColor } from 'd3-color';
 import { drag } from 'd3-drag';
@@ -9,7 +10,7 @@ import colors from './colors';
 import type SankeyTimeline from './SankeyTimeline';
 import type TimelineLink from './TimelineLink';
 import type TimelineNode from './TimelineNode';
-import type { Coordinate, TimelineGraph } from './types';
+import type { TimelineGraph } from './types';
 import { hasDist } from './util';
 
 /**
@@ -55,7 +56,7 @@ export default class Renderer extends EventEmitter<{
       borderWidth: 6,
     },
     layout: 'default',
-    linkTitle: (d: TimelineLink) => `${d.source.label} → ${d.target.label}\n${d.flow}`,
+    linkTitle: (d: TimelineLink) => `${d.source.label} → ${d.target.label}\n${d.flow.toString()}`,
     margin: 60,
     maxLinkWidth: 50,
     maxNodeHeight: 100,
@@ -207,11 +208,11 @@ export default class Renderer extends EventEmitter<{
         if (hasDist(node.times) && this.options.distributions) {
           node.layout.distribution = [
             {
-              x: this.getTimeX(node.times.meanTime - (node.times.stdDeviation || 0)),
+              x: this.getTimeX(node.times.meanTime - (node.times.stdDeviation ?? 0)),
               y: node.layout.y,
             },
             {
-              x: this.getTimeX(node.times.meanTime + (node.times.stdDeviation || 0)),
+              x: this.getTimeX(node.times.meanTime + (node.times.stdDeviation ?? 0)),
               y: node.layout.y,
             },
           ];
@@ -245,15 +246,15 @@ export default class Renderer extends EventEmitter<{
         if (hasDist(node.times) && this.options.distributions) {
           node.layout.distribution = [
             {
-              x: shift + this.getTimeX(node.times.meanTime - (node.times.stdDeviation || 0)),
+              x: shift + this.getTimeX(node.times.meanTime - (node.times.stdDeviation ?? 0)),
               y: node.layout.y,
             },
             {
-              x: shift + this.getTimeX(node.times.meanTime + (node.times.stdDeviation || 0)),
+              x: shift + this.getTimeX(node.times.meanTime + (node.times.stdDeviation ?? 0)),
               y: node.layout.y,
             },
           ];
-          right = (this.graph.nodes[n].layout.distribution as Coordinate[])[1].x;
+          right = this.graph.nodes[n].layout.distribution[1].x;
         }
         if (right > this.maxRight) {
           this.maxRight = node.layout.x + node.layout.width;
@@ -275,7 +276,7 @@ export default class Renderer extends EventEmitter<{
       }
       this.graph.nodes[n].layout = {
         baseRow: 0,
-        color: node.color || '',
+        color: node.color ?? '',
         column: -1,
         height,
         row: -1,
@@ -300,7 +301,7 @@ export default class Renderer extends EventEmitter<{
       .attr('text-anchor', 'middle')
       .attr('dominant-baseline', 'middle')
       .attr('x', '-1000')
-      .style('font-size', `${this.options.fontSize}px`)
+      .style('font-size', `${this.options.fontSize.toString()}px`)
       .text((d: TimelineNode) => d.label)
       .each(function (d: TimelineNode) {
         d.textHeight = this.getBBox().height;
@@ -426,7 +427,7 @@ export default class Renderer extends EventEmitter<{
       .on('mouseover', function (_event: DragEvent, d: TimelineNode) {
         const fade = transition()
           .duration(options.transitionSpeed)
-          .ease(easeCubicIn) as any as TransitionType;
+          .ease(easeCubicIn) as TransitionType;
         const target = select(this);
         target.selectAll('.distHandle').transition(fade).style('opacity', 1);
         let shortestPath: number[] = [];
@@ -438,7 +439,7 @@ export default class Renderer extends EventEmitter<{
         });
         selectAll('.node').each(function (n: unknown) {
           const node = n as TimelineNode;
-          if (paths.flat().indexOf(node.id) < 0) {
+          if (!paths.flat().includes(node.id)) {
             select(this).transition(fade).style('opacity', options.fadeOpacity);
           }
         });
@@ -448,7 +449,7 @@ export default class Renderer extends EventEmitter<{
         });
         selectAll('.link').each(function (l: unknown) {
           const link = l as TimelineLink;
-          if (pathLinks.indexOf(link.id) < 0) {
+          if (!pathLinks.includes(link.id)) {
             select(this).transition(fade).style('opacity', options.fadeOpacity);
           }
         });
@@ -456,24 +457,22 @@ export default class Renderer extends EventEmitter<{
       .on('mouseleave', function () {
         const fade = transition()
           .duration(options.transitionSpeed)
-          .ease(easeCubicIn) as any as TransitionType;
+          .ease(easeCubicIn) as TransitionType;
         selectAll('.node, .link').transition(fade).style('opacity', 1);
         selectAll('.distHandle').transition(fade).style('opacity', options.fadeOpacity);
       })
       .call(
         drag<any, TimelineNode>()
           .on('drag', (event: DragEvent, d: TimelineNode) => {
-            if (!d.persist) {
-              d.persist = {
-                default: {
-                  x: 0,
-                  y: 0,
-                },
-                timeline: {
-                  y: 0,
-                },
-              };
-            }
+            d.persist ??= {
+              default: {
+                x: 0,
+                y: 0,
+              },
+              timeline: {
+                y: 0,
+              },
+            };
             let x = event.x;
             let y = event.y;
             if (x < 0) {
@@ -684,7 +683,7 @@ export default class Renderer extends EventEmitter<{
       .attr('dominant-baseline', 'middle')
       .attr('class', 'label')
       .style('fill', this.options.fontColor)
-      .style('font-size', `${this.options.fontSize}px`)
+      .style('font-size', `${this.options.fontSize.toString()}px`)
       .text((d: TimelineNode) => d.label)
       .attr('x', (d: TimelineNode) => d.layout.x + d.layout.width / 2)
       .attr('y', (d: TimelineNode) => d.layout.y + d.layout.height / 2);
@@ -791,13 +790,11 @@ export default class Renderer extends EventEmitter<{
     // TODO: Have curveHeight option effect non-circular curve paths
     // TODO: If the curve width is larger than the nodes it connects to,
     // adjust the curve to be the size of the node at the connection point
-    let path = `M${curve[0][0]},${curve[0][1]}C${curve[1][0]},${curve[1][1]},${curve[2][0]},${curve[2][1]},${curve[3][0]},${curve[3][1]}`;
+    let path = `M${curve[0][0].toString()},${curve[0][1].toString()}C${curve[1][0].toString()},${curve[1][1].toString()},${curve[2][0].toString()},${curve[2][1].toString()},${curve[3][0].toString()},${curve[3][1].toString()}`;
     if (link.isSelfLinking) {
-      path = `M${curve[0][0] - 5},${curve[0][1]}C${curve[1][0]},${
+      path = `M${(curve[0][0] - 5).toString()},${curve[0][1].toString()}C${curve[1][0].toString()},${(
         curve[1][1] - this.options.curve.height
-      },${curve[2][0]},${curve[2][1] - this.options.curve.height},${curve[3][0] + 5},${
-        curve[3][1]
-      }`;
+      ).toString()},${curve[2][0].toString()},${(curve[2][1] - this.options.curve.height).toString()},${(curve[3][0] + 5).toString()},${curve[3][1].toString()}`;
     }
     return path;
   }
