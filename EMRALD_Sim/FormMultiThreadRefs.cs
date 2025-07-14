@@ -35,9 +35,9 @@ namespace EMRALD_Sim
             string displayText = $"{item.ItemType}: {item.ItemName}";
         
             // Highlight issue items with asterisk
-            bool isIssue = _issueItems.Contains((string)item.ItemName);
-            if (isIssue)
-              displayText += " *";
+            //bool isIssue = _issueItems.Contains((string)item.ItemName);
+            //if (isIssue)
+            //  displayText += " *";
             
             lstItems.Items.Add(displayText);
           }

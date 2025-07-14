@@ -75,7 +75,7 @@ namespace EMRALD_Sim
       }
 
       bool execute = false;
-      
+
       //SimulationDAL.Globals.simID = 1;
       if (args.Length > 0) // Loop through array
       {
@@ -154,7 +154,7 @@ namespace EMRALD_Sim
     {
       _populatingSettings = true;
       bool execute = false;
-      
+
       //SimulationDAL.Globals.simID = 1;
       for (int i = 0; i < args.Length; i++) // Loop through array
       {
@@ -1069,16 +1069,16 @@ namespace EMRALD_Sim
           {
             //SimulationEngine.OverallResults.CombineJsonResultFiles(simRuns[0].jsonResultsPaths, simRuns[i].jsonResultsPaths, simRuns[0].jsonResultsPaths);
             simRuns[0].AddOtherBatchResults(simRuns[i]);
-            if(cbClearTemps.Checked)
+            if (cbClearTemps.Checked)
               simRuns[i].ClearTempThreadData();
 
           }
           _running = false;
-          
+
           InvokeUIUpdate(ButtonEnableDelegate);
           //Thread.Sleep(1000); //make sure thread writing is done before doing display results
           simRuns[0].WriteFinalResults(true);
-          if(cbClearTemps.Checked)
+          if (cbClearTemps.Checked)
             simRuns[0].ClearTempThreadData();
         });
 
@@ -1251,7 +1251,7 @@ namespace EMRALD_Sim
         txtMStatus.ForeColor = Color.Green;
         Console.Write(txtMStatus.Text);
 
-        if(_sim.updated)
+        if (_sim.updated)
         {
           DialogResult result = MessageBox.Show("Model was converted to the latest version, save?", "Save Changes", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
 
@@ -1307,7 +1307,7 @@ namespace EMRALD_Sim
     {
       MethodInvoker methodInvokerDelegate = delegate ()
       {
-        int curT = 0;                
+        int curT = 0;
         if (_running && cbMultiThreaded.Checked)
           curT = cbCurThread.SelectedIndex;
 
@@ -1317,10 +1317,10 @@ namespace EMRALD_Sim
 
         var keyPaths = simRuns[curT].keyPaths.ToList(); // Create a separate list of the keys because multithreading can cause a change while in loop
         foreach (var item in keyPaths)
-        { 
+        {
 
-        //  foreach (var item in simRuns[curT].keyPaths)
-        //{
+          //  foreach (var item in simRuns[curT].keyPaths)
+          //{
           string[] lvCols = new string[4];
           lvCols[0] = item.Key;
           lvCols[1] = item.Value.count.ToString();
@@ -1333,7 +1333,7 @@ namespace EMRALD_Sim
           {
             var compFailSets = simRuns[curT].keyFailedItems[item.Key].compFailSets.ToList(); //make a copy as could be modified in loop when multi threading
             //foreach (var cs in simRuns[curT].keyFailedItems[item.Key].compFailSets)
-            foreach( var cs in compFailSets) 
+            foreach (var cs in compFailSets)
             {
               string[] lvCols2 = new string[4];
 
@@ -1588,7 +1588,7 @@ namespace EMRALD_Sim
             DialogResult result = MessageBox.Show("Update to .emrald extension?", "New Extension", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
 
             extUpdate = result == DialogResult.Yes;
-          } 
+          }
 
           File.Delete(_modelPath);
           if (extUpdate)
@@ -1772,8 +1772,8 @@ namespace EMRALD_Sim
           cbCurThread.Items.Clear();
           for (int i = 0; i < ConfigData.threads; i++)
             cbCurThread.Items.Add($"{i}");
-          if(cbMultiThreaded.Checked && (ConfigData.threads > 0))
-            cbCurThread.SelectedIndex = ((int)ConfigData.threads)-1;
+          if (cbMultiThreaded.Checked && (ConfigData.threads > 0))
+            cbCurThread.SelectedIndex = ((int)ConfigData.threads) - 1;
 
           SaveUISettingsToJson();
         }
@@ -1811,7 +1811,12 @@ namespace EMRALD_Sim
           // User cancelled, do not update anything or throw
           // (Optional: add code here if you want to revert UI or warn the user)
         }
-      }      
+      }
+    }
+
+    private void txtMStatus_TextChanged(object sender, EventArgs e)
+    {
+
     }
   }
 }
