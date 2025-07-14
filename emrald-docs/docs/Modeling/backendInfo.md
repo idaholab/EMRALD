@@ -43,8 +43,8 @@ Postprocess Code
 The "Var Condition" event, see Variable Condition under [Conditional Events](./events.md#conditional-events), also has the following:
 - **NextEvTime** type[double]: The simulation time for the next event in EMRALD.
 
+## Multi-Thread Solving
 
-
-
+//Insert Multi-Thread BackendInfo Here//
 
 <!--Copyright 2021 Battelle Energy Alliance-->
