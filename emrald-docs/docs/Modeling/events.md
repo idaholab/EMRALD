@@ -156,7 +156,7 @@ Listed as Var Condition in the dropdown menu. Monitors variable values with user
   - **Time Span:** Enter the amount of model time to pass after entering this state before the event actions are triggered. The first field is the variable value you would like to use. The second field is the time unit you would like to use. Click the field to reveal the dropdown menu of options then click your desired selection to set it.
 
 <h3>Failure Rate <img src="/images/Modeling/events/dice.png" alt="Failure Rate" width="25"/></h3>
-  Samples a given probability of failure [P(t) = 1-e^(-lambda*t)] to determine the time (t) of this event. The lambda or frequency value can be set to a static value or to a variable value. The lambda/frequency field will change form slightly depending on what type of value you are setting it to. Leave the checkbox next to "Use Variable Lambda/Frequency?" blank to set a static value or check it to use a variable value.<br>
+  Samples a given probability of failure [P(t) = 1-e^(-lambda*t)] to determine the time (t) of this event. The lambda or frequency value can be set to a static value or to a variable value. The lambda/frequency field will change form slightly depending on what type of value you are setting it to. Leave the checkbox next to "Use Variable Lambda/Frequency?" blank to set a static value or check it to use a variable value. Once sampled, this event will not sample again until the parent state is exited and re-entered. <br>
   
   #### Static Failure Rate
   <img src="/images/Modeling/events/FailureRateOptions1.png" alt="Failure Rate Options" width="500"/>
@@ -168,7 +168,7 @@ Listed as Var Condition in the dropdown menu. Monitors variable values with user
   - **Time Rate:** Enter the time rate that the frequency is sampled over. The first box is the number of days, the second is the number of hours, the third is the number of minutes, and the fourth is the number of seconds. For example, for an hourly failure rate, days=0, hours=1, minutes=0, and seconds=0. Values can only be integers.
 
 <h3>Distribution <img src="/images/Modeling/events/dist.png" alt="Normal Distribution" width="25"/></h3>
-Depending on the type of distribution selected, parameters are set to determine a variable, which in turn will determine when the event occurs. For each required parameter, there is a box for the time rate next to it. You can choose the time units for the parameter, or you can leave it on default, and use the default time unit. The default time rate is also changeable. 
+Depending on the type of distribution selected, parameters are set to determine a variable, which in turn will determine when the event occurs. For each required parameter, there is a box for the time rate next to it. You can choose the time units for the parameter, or you can leave it on default, and use the default time unit. The default time rate is also changeable. Once sampled, this event will not sample again until the parent state is exited and re-entered. 
 <h4>Normal Distribution </h4>
   Listed as Normal Distribution in the Distribution Type dropdown menu. Samples a normal distribution according to user specified parameters for when this event will occur from the time entering the state
   <br><br>
