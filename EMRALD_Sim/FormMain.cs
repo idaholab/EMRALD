@@ -1009,11 +1009,12 @@ namespace EMRALD_Sim
         lbl_ResultHeader.Visible = true;
 
         _statsFile = tbSavePath2.Text;
-        int runsDiv = int.Parse(tbRunCnt.Text) / (int)ConfigData.threads;
+        int threadCnt = ConfigData.threads == null ? 1 : (int)ConfigData.threads;
+        int runsDiv = int.Parse(tbRunCnt.Text) / threadCnt;
 
         List<Thread> threads = new List<Thread>();
         simRuns.Clear();
-        int threadCnt = ConfigData.threads == null ? 1 : (int)ConfigData.threads;
+        
 
         for (int i = 0; i < ConfigData.threads; i++)
         {

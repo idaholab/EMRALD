@@ -225,9 +225,10 @@ namespace SimulationEngine
       // This is where the maxTime and outfile_path attributes are used
       List<Thread> threads = new List<Thread>();
       _simRuns.Clear();
-      int runsDiv = options.runct / (int)ConfigData.threads;
-      bool resDone = false; //results done
       int threadCnt = ConfigData.threads == null ? 1 : (int)ConfigData.threads;
+      int runsDiv = options.runct / threadCnt;
+      bool resDone = false; //results 
+      
 
       for (int i = 0; i < threadCnt; i++) //if null just run once.
       {
@@ -257,21 +258,59 @@ namespace SimulationEngine
         int locIdx = i;
         tStarter += () =>
         {
-          try
-          {
-            if(_simRuns[locIdx].error != "")
-              _error += _simRuns[locIdx].error + Environment.NewLine;
-          }
-          catch (Exception ex)
-          {
-            // Log the exception
-            Console.WriteLine($"Exception in thread completion: {ex.Message}");
-          }
+          _simRuns[locIdx].GetVarValues(_simRuns[locIdx].logVarVals, true);
         };
 
         Thread simThread = new Thread(tStarter);
-        simThread.Start();
+        if (i == 0)
+        {
+          // Start the first thread immediately so it can set up the files needed by the others
+          tStarter += () =>
+          {
+            if (_simRuns[locIdx].error != "")
+              _error += _simRuns[locIdx].error + Environment.NewLine;
+          };
+          simThread.Start();
+        }
+        else
+        {
+          // Delay the start of all but first thread so that it has time to write so others have time to copy data
+          new Task(async () =>
+          {
+            //wait until first thread is done writing temp tread files.
+            while (!_simRuns[0].tempThreadFilesWriten)
+              await Task.Delay(TimeSpan.FromMilliseconds(10)); // Adjust the delay as needed
+            
+            if (_simRuns[locIdx].error != "")
+              _error += _simRuns[locIdx].error + Environment.NewLine;
+
+            simThread.Start();
+          }).Start();
+        }
         threads.Add(simThread);
+      
+
+        //ThreadStart tStarter = new ThreadStart(_simRuns[i].RunBatch);
+
+        ////run this when the thread is done.
+        //int locIdx = i;
+        //tStarter += () =>
+        //{
+        //  try
+        //  {
+        //    if(_simRuns[locIdx].error != "")
+        //      _error += _simRuns[locIdx].error + Environment.NewLine;
+        //  }
+        //  catch (Exception ex)
+        //  {
+        //    // Log the exception
+        //    Console.WriteLine($"Exception in thread completion: {ex.Message}");
+        //  }
+        //};
+
+        //Thread simThread = new Thread(tStarter);
+        //simThread.Start();
+        //threads.Add(simThread);
       }
 
       Task.Run(() =>
