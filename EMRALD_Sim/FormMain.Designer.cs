@@ -1044,7 +1044,7 @@ namespace EMRALD_Sim
       // 
       // colFailureCnt
       // 
-      colFailureCnt.Text = "Failure Cnt";
+      colFailureCnt.Text = "Count";
       colFailureCnt.Width = 80;
       // 
       // colRate
@@ -1053,7 +1053,7 @@ namespace EMRALD_Sim
       // 
       // colFailedItems
       // 
-      colFailedItems.Text = "Failed Items";
+      colFailedItems.Text = "Mean Time or Failed Components";
       colFailedItems.Width = 400;
       // 
       // panel13
@@ -1194,6 +1194,7 @@ namespace EMRALD_Sim
       cbClearTemps.TabIndex = 41;
       cbClearTemps.Text = "Clear Thread Files";
       cbClearTemps.UseVisualStyleBackColor = true;
+      cbClearTemps.Visible = false;
       // 
       // bttnPathRefs
       // 

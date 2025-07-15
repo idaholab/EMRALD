@@ -18,7 +18,7 @@ using System.Linq.Expressions;
 namespace SimulationDAL
 {
   public enum EnVarScope { gtLocal = 0, gtGlobal, gt3DSim, gtAccrual, gtDocLink };
-  public enum DocType { dtXML = 0, dtJSON, dtTextRegEx};
+  public enum DocType { dtXML = 0, dtJSON, dtTextRegEx };
 
   public abstract class SimVariable : BaseObjInfo
   {
@@ -26,7 +26,7 @@ namespace SimulationDAL
     private bool _monitor = false; //Default value to watch the variable in the solver UI
     private bool _cumulativeStats = false; //provide the statistical results for this variable at the end of the sim runs
     public EnVarScope varScope = EnVarScope.gtGlobal;
-    public Type dType; 
+    public Type dType;
     protected object _value = null;
     public bool resetOnRuns = false;
     protected object initValue = null;
@@ -45,7 +45,7 @@ namespace SimulationDAL
     public virtual void SetValue(object newValue)
     {
 
-      logger.Debug("Set variable Value : " + this.name + " = "  + newValue.ToString());
+      logger.Debug("Set variable Value : " + this.name + " = " + newValue.ToString());
       _value = newValue;
     }
 
@@ -93,7 +93,7 @@ namespace SimulationDAL
     /// <summary>
     /// Initialize to the original assigned value.
     /// </summary>
-    
+
 
     public abstract string GetDerivedJSON();
 
@@ -108,9 +108,9 @@ namespace SimulationDAL
 
       //add derived items
       retStr = retStr + "\"varScope\": \"" + this.varScope.ToString() + "\"," + Environment.NewLine;
-      
+
       if (this.varScope == EnVarScope.gtDocLink)//wait until GetDerivedJSON for doc variables to put in default value since default value not read until then
-      {}
+      { }
       else if (this.dType.Name.ToString() == "String")//need quotes around the string and string should be as is (not all lower case), no quotes around other variable types
       {
         retStr = retStr + "\"value\": \"" + this._value.ToString() + "\"," + Environment.NewLine;
@@ -208,7 +208,7 @@ namespace SimulationDAL
         throw new Exception("Variable \"" + this.name + "\"  missing type.");
       }
 
-      if(dynObj.monitorInSim != null)
+      if (dynObj.monitorInSim != null)
       {
         _monitor = Convert.ToBoolean(dynObj.monitorInSim);
       }
@@ -237,7 +237,7 @@ namespace SimulationDAL
 
       try
       {
-        if(dynObj.resetOnRuns != null)
+        if (dynObj.resetOnRuns != null)
           resetOnRuns = Convert.ToBoolean(dynObj.resetOnRuns);
       }
       catch
@@ -255,7 +255,7 @@ namespace SimulationDAL
       InitValue(dynObj.value);
 
       lists.allVariables.Add(this, false);
-      
+
       processed = true;
       return true;
     }
@@ -300,7 +300,7 @@ namespace SimulationDAL
     public Sim3DVariable(string inName, string inSim3DNameId, Type inDType, object inVal = null)
       : base(inName, EnVarScope.gt3DSim, inDType, inVal)
     {
-      this.sim3DNameId = inSim3DNameId; 
+      this.sim3DNameId = inSim3DNameId;
     }
 
     public override string GetDerivedJSON()
@@ -308,7 +308,7 @@ namespace SimulationDAL
       string retStr = "";
 
       //add derived items
-      retStr = retStr + "," + Environment.NewLine + "\"sim3DId\": \"" + this.sim3DNameId.ToString() +"\"";
+      retStr = retStr + "," + Environment.NewLine + "\"sim3DId\": \"" + this.sim3DNameId.ToString() + "\"";
 
       return retStr;
     }
@@ -344,7 +344,7 @@ namespace SimulationDAL
       : base() { this.varScope = EnVarScope.gtLocal; }
 
     public SimCompVariable(string inName, EvalDiagram inCompOwner, Type inDType, object inVal = null)
-      : base(inName, EnVarScope.gtLocal, inDType, inVal) 
+      : base(inName, EnVarScope.gtLocal, inDType, inVal)
     {
       this.simCompOwner = inCompOwner;
     }
@@ -396,7 +396,7 @@ namespace SimulationDAL
 
         dynObj = ((dynamic)obj).Variable;
       }
-      
+
       if (dynObj.simCompOwner != null)
       {
         lists.allVariables.Add(this, false);
@@ -433,7 +433,7 @@ namespace SimulationDAL
 
       public string stateName = "";
       public EnCumultiveType type = EnCumultiveType.ctTime;
-      public double accrualMult = 0.0;      
+      public double accrualMult = 0.0;
       public EnTimeRate multRate = EnTimeRate.trHours; //for ctTable or ctMultiplier type, rate of accrual in table
       public List<List<double>> accrualTable = new List<List<double>>();
 
@@ -448,9 +448,9 @@ namespace SimulationDAL
     protected Dictionary<int, AccrualVarData> _CumulativeParams = new Dictionary<int, AccrualVarData>();
 
     public AccrualVariable()
-      : base() 
-    { 
-      this.varScope = EnVarScope.gtAccrual; 
+      : base()
+    {
+      this.varScope = EnVarScope.gtAccrual;
       this.dType = typeof(double);
       this.resetOnRuns = true;
     }
@@ -471,7 +471,7 @@ namespace SimulationDAL
       }
       retStr = retStr.TrimEnd(new Char[] { ',' });
       retStr += "]" + Environment.NewLine;
-      
+
 
       return retStr;
     }
@@ -495,7 +495,7 @@ namespace SimulationDAL
         throw new Exception("Missing accrualStatesData for accrualVariable variable");
       }
 
-     
+
       //must load everything in LoadObjLinks because the states must be loaded first so we have the IDs.     
 
       processed = true;
@@ -540,7 +540,7 @@ namespace SimulationDAL
           }
 
           i++;
-        }        
+        }
       }
       catch (Exception e)
       {
@@ -558,7 +558,7 @@ namespace SimulationDAL
         return "missing type";
 
       if (aVarDataDyn.stateName == null)
-        return "missing \"stateName\"";      
+        return "missing \"stateName\"";
 
       foreach (var state in _StateList)
       {
@@ -601,12 +601,12 @@ namespace SimulationDAL
       if (inState == null)
         return false;
       AccrualVarData aData = _CumulativeParams[inStateID];
-      if(aData == null)
+      if (aData == null)
       {
         throw new Exception("Missing AccrualVarData for State - " + inState.name);
       }
 
-      switch(aData.type)
+      switch (aData.type)
       {
         case EnCumultiveType.ctTime:
           throw new Exception("not implemented time type placeholder");
@@ -641,7 +641,7 @@ namespace SimulationDAL
               totalTblTime += tblTimeConverted;
               break;
             }
-          }          
+          }
           break;
 
         default:
@@ -661,6 +661,7 @@ namespace SimulationDAL
     protected object _dfltValue = null;
     protected string _docFullPath = "";
     private VariableList _vars = null;
+    protected static readonly object _fileLock = new object();
 
     protected string linkStr()
     {
@@ -690,7 +691,7 @@ namespace SimulationDAL
         newStr += _linkStr.Substring(lastIdx, (index - lastIdx));
         newStr += replVar.value.ToString();
         index = index + end;
-        lastIdx = index;        
+        lastIdx = index;
       }
 
       return newStr;
@@ -718,8 +719,8 @@ namespace SimulationDAL
     {
       string retStr = "";
 
-      retStr +=  "," + Environment.NewLine + "\"value\": " + _dfltValue;
-      retStr = retStr + "," + Environment.NewLine + "\"docLink\": \"" + _linkStr.ToString() + "\"" ;
+      retStr += "," + Environment.NewLine + "\"value\": " + _dfltValue;
+      retStr = retStr + "," + Environment.NewLine + "\"docLink\": \"" + _linkStr.ToString() + "\"";
       retStr = retStr + "," + Environment.NewLine + "\"docType\": \"" + _docType.ToString() + "\"";
       retStr = retStr + "," + Environment.NewLine + "\"docPath\": \"" + _docPath.ToString() + "\"";
       retStr = retStr + "," + Environment.NewLine + "\"pathMustExist\": " + _pathMustExist.ToString().ToLower();
@@ -754,7 +755,7 @@ namespace SimulationDAL
 
       if (_docPath.Trim() == "")
         throw new Exception("No doc path assigned for document variable.");
-      
+
       if (!Path.IsPathRooted(_docPath) && (_docPath[0] == '.'))
       {
         _docFullPath = lists.rootPath;
@@ -780,12 +781,12 @@ namespace SimulationDAL
 
       bool retVal = base.DeserializeDerived((object)dynObj, false, lists, useGivenIDs);
       this._vars = lists.allVariables;
-      
+
       //must load everything in LoadObjLinks because the states must be loaded first so we have the IDs. 
       processed = true;
       return true;
     }
-   
+
     public override void InitValue(dynamic dynObj)
     {
       try
@@ -830,162 +831,216 @@ namespace SimulationDAL
       return itemList;
     }
 
-    
+
     public void UpdatePathRefs(string oldRef, string newRef)
     {
       if (_docPath == oldRef)
         _docPath = newRef;
       else
         throw new Exception("Current document reference does not match request to change.");
-           
+
     }
   }
 
   public class XmlDocVariable : DocVariable
   {
-   
+
 
     public XmlDocVariable()
-      : base(DocType.dtXML) { }    
-              
-    public override void SetValue(object newValue)
-    {            
-      _value = newValue;
-      try
-      {
-        XmlDocument xDoc = new XmlDocument();
-        using (XmlReader reader = XmlReader.Create(_docFullPath))
-        {
-          xDoc.Load(reader);
-        }
-        XmlElement pRoot = xDoc.DocumentElement;
-        XmlNodeList nodes = pRoot.SelectNodes(linkStr());
-        XmlNode replNode = null;
-        if ((nodes == null) || (nodes.Count == 0))
-          throw new Exception("Path string found no items.");
-        foreach (XmlNode i in nodes)
-        {
-          switch (i.NodeType)
-          {
-            case XmlNodeType.Attribute:
-              i.Value = _value.ToString();
-              break;
-            case XmlNodeType.Text:
-              i.InnerText = _value.ToString();
-              break;
-            default:
-              if (replNode == null)
-              {
-                XmlDocument repl = new XmlDocument();
-                repl.LoadXml(this.strValue);
-                replNode = xDoc.ImportNode(repl.DocumentElement, true);
-              }
-              var p = i.ParentNode;
-              var ret = p.ReplaceChild(replNode, i);
-              break;
-          }
-          
+      : base(DocType.dtXML) { }
 
-          xDoc.Save(_docFullPath);
-        }
-      }  
-      catch(Exception ex)
+    public override void SetValue(object newValue)
+    {
+      _value = newValue;
+      lock (_fileLock)
       {
-        throw new Exception("Failed to set the value for XML variable " + this.name + " check the XML syntax. " + this.linkStr);
+        bool fileUpdated = false;
+        int retryCount = 0;
+
+        while (!fileUpdated && retryCount < 5)
+        {
+          try
+          {
+            XmlDocument xDoc = new XmlDocument();
+            using (XmlReader reader = XmlReader.Create(_docFullPath))
+            {
+              xDoc.Load(reader);
+            }
+            XmlElement pRoot = xDoc.DocumentElement;
+            XmlNodeList nodes = pRoot.SelectNodes(linkStr());
+            XmlNode replNode = null;
+            if ((nodes == null) || (nodes.Count == 0))
+              throw new Exception("Path string found no items.");
+            foreach (XmlNode i in nodes)
+            {
+              switch (i.NodeType)
+              {
+                case XmlNodeType.Attribute:
+                  i.Value = _value.ToString();
+                  break;
+                case XmlNodeType.Text:
+                  i.InnerText = _value.ToString();
+                  break;
+                default:
+                  if (replNode == null)
+                  {
+                    XmlDocument repl = new XmlDocument();
+                    repl.LoadXml(this.strValue);
+                    replNode = xDoc.ImportNode(repl.DocumentElement, true);
+                  }
+                  var p = i.ParentNode;
+                  var ret = p.ReplaceChild(replNode, i);
+                  break;
+              }
+            }
+
+            xDoc.Save(_docFullPath);
+            fileUpdated = true;
+          }
+          catch (IOException ex)
+          {
+            retryCount++;
+            Console.WriteLine($"Error updating file (attempt {retryCount}): {ex.Message}");
+            System.Threading.Thread.Sleep(1000); // Wait for a second before retrying
+          }
+          catch (Exception ex)
+          {
+            throw new Exception("Failed to set the value for XML variable " + this.name + " check the XML syntax. " + this.linkStr, ex);
+          }
+        }
+
+        if (!fileUpdated)
+        {
+          throw new IOException("Unable to update the file after multiple attempts.");
+        }
       }
     }
 
     public override object GetValue()
     {
-      if (!File.Exists(_docFullPath) && !_pathMustExist)
+      lock (_fileLock)
       {
-        return this._dfltValue;
-      }
+        bool fileRead = false;
+        int retryCount = 0;
+        object result = null;
 
-      //if not changed return the previous value
-      DateTime curTimestamp = File.GetLastWriteTime(_docFullPath);
-      string curLinkStr = linkStr();
-      if ((curTimestamp == _timestamp) && (_oldLinkStr == curLinkStr) && (_value != null))
-        return this._value;
-
-      //value new so save timestamp and lookup new value
-      _timestamp = File.GetLastWriteTime(_docFullPath);
-      _oldLinkStr = curLinkStr;
-      using (Stream s = File.OpenRead(_docFullPath))
-      {
-        XmlDocument xDoc = new XmlDocument();
-        xDoc.Load(s);
-        XmlElement pRoot = xDoc.DocumentElement;
-        XmlNodeList nodes = pRoot.SelectNodes(curLinkStr);
-        if ((nodes == null) || (nodes.Count == 0))
+        while (!fileRead && retryCount < 5)
         {
-          if (_dfltValue == null)
-            throw new Exception("Path string found no items.");
-          else
+          try
           {
-            base.SetValue(Convert.ChangeType(_dfltValue, dType));
-            return _value;
-          }
-
-        }
-        if (nodes.Count == 1)
-        {
-          switch (nodes[0].NodeType)
-          {
-            case XmlNodeType.Attribute:
-              {
-                base.SetValue(Convert.ChangeType(nodes[0].Value, dType));
-                return _value;
-              }
-            case XmlNodeType.Text:
-              {
-                base.SetValue(Convert.ChangeType(nodes[0].InnerText, dType));
-                return _value;
-              }
-            default:
-              if (this.dType != typeof(string))
-              {
-                throw new Exception("Variable type to match to a XML object must be a String");
-              }
-
-              base.SetValue(nodes[0].OuterXml);
-              return _value;
-          }
-        }
-        else //more than one, only allow text
-        {
-          if (this.dType != typeof(string))
-          {
-            throw new Exception("Variable type to match to a XML object list must be a String");
-          }
-          base.SetValue("");
-
-          if (nodes.Count < 1)
-            throw new Exception("Missing match for or data for XPath - " + _linkStr);
-
-          foreach (XmlNode i in nodes)
-          {
-            switch (nodes[0].NodeType)
+            if (!File.Exists(_docFullPath) && !_pathMustExist)
             {
-              case XmlNodeType.Attribute:
-                base.SetValue(_value + Environment.NewLine + i.Value);
-                break;
-              case XmlNodeType.Text:
-                base.SetValue(_value + Environment.NewLine + i.InnerText);
-                break;
-              default:
-                base.SetValue(_value + Environment.NewLine + i.OuterXml);
-                break;
+              return this._dfltValue;
             }
-          }
 
-          base.SetValue(((string)_value).TrimStart());
-          return _value;
+            // If not changed, return the previous value
+            DateTime curTimestamp = File.GetLastWriteTime(_docFullPath);
+            string curLinkStr = linkStr();
+            if ((curTimestamp == _timestamp) && (_oldLinkStr == curLinkStr) && (_value != null))
+            {
+              return this._value;
+            }
+
+            // Value is new, so save the timestamp and look up the new value
+            _timestamp = File.GetLastWriteTime(_docFullPath);
+            _oldLinkStr = curLinkStr;
+
+            using (Stream s = File.OpenRead(_docFullPath))
+            {
+              XmlDocument xDoc = new XmlDocument();
+              xDoc.Load(s);
+              XmlElement pRoot = xDoc.DocumentElement;
+              XmlNodeList nodes = pRoot.SelectNodes(curLinkStr);
+              if ((nodes == null) || (nodes.Count == 0))
+              {
+                if (_dfltValue == null)
+                {
+                  throw new Exception("Path string found no items.");
+                }
+                else
+                {
+                  base.SetValue(Convert.ChangeType(_dfltValue, dType));
+                  result = _value;
+                }
+              }
+              else if (nodes.Count == 1)
+              {
+                switch (nodes[0].NodeType)
+                {
+                  case XmlNodeType.Attribute:
+                    base.SetValue(Convert.ChangeType(nodes[0].Value, dType));
+                    break;
+                  case XmlNodeType.Text:
+                    base.SetValue(Convert.ChangeType(nodes[0].InnerText, dType));
+                    break;
+                  default:
+                    if (this.dType != typeof(string))
+                    {
+                      throw new Exception("Variable type to match to a XML object must be a String");
+                    }
+                    base.SetValue(nodes[0].OuterXml);
+                    break;
+                }
+                result = _value;
+              }
+              else // More than one, only allow text
+              {
+                if (this.dType != typeof(string))
+                {
+                  throw new Exception("Variable type to match to a XML object list must be a String");
+                }
+                base.SetValue("");
+
+                if (nodes.Count < 1)
+                {
+                  throw new Exception("Missing match for or data for XPath - " + _linkStr);
+                }
+
+                foreach (XmlNode i in nodes)
+                {
+                  switch (nodes[0].NodeType)
+                  {
+                    case XmlNodeType.Attribute:
+                      base.SetValue(_value + Environment.NewLine + i.Value);
+                      break;
+                    case XmlNodeType.Text:
+                      base.SetValue(_value + Environment.NewLine + i.InnerText);
+                      break;
+                    default:
+                      base.SetValue(_value + Environment.NewLine + i.OuterXml);
+                      break;
+                  }
+                }
+
+                base.SetValue(((string)_value).TrimStart());
+                result = _value;
+              }
+            }
+
+            fileRead = true;
+          }
+          catch (IOException ex)
+          {
+            retryCount++;
+            Console.WriteLine($"Error reading file (attempt {retryCount}): {ex.Message}");
+            System.Threading.Thread.Sleep(1000); // Wait for a second before retrying
+          }
+          catch (Exception ex)
+          {
+            throw new Exception("Failed to get the value for XML variable " + this.name + ". Check the XML syntax. " + this.linkStr(), ex);
+          }
         }
+
+        if (!fileRead)
+        {
+          throw new IOException("Unable to read the file after multiple attempts.");
+        }
+
+        return result;
       }
     }
-  }
 
+  }
   public class JSONDocVariable : DocVariable
   {
     public JSONDocVariable()
@@ -993,82 +1048,143 @@ namespace SimulationDAL
 
     public override void SetValue(object newValue)
     {
-      //update the document
+      // Update the base value
       base.SetValue(newValue);
       NLog.Logger logger = NLog.LogManager.GetLogger("logfile");
       logger.Info("Assign Doc Var: " + this.name + "  = " + newValue.ToString());
 
-      try
+      lock (_fileLock)
       {
-        StreamReader sr = new StreamReader(_docFullPath);
-        string test = sr.ReadToEnd();
-        sr.Close();
-        //update the document
-        JObject fullObj = JObject.Parse(test);
-        var modItems = fullObj.SelectTokens(linkStr());
-        if (modItems == null)
-          throw new Exception("Failed to locate document reference - " + linkStr());
-        modItems = JsonExtensions.ReplacePath(fullObj, linkStr(), newValue);
+        bool fileUpdated = false;
+        int retryCount = 0;
 
-        //update the json file with the change
-        using (StreamWriter file = File.CreateText(_docFullPath))
-        using (JsonTextWriter writer = new JsonTextWriter(file))
+        while (!fileUpdated && retryCount < 5)
         {
-          fullObj.WriteTo(writer);
+          try
+          {
+            using (StreamReader sr = new StreamReader(_docFullPath))
+            {
+              string test = sr.ReadToEnd();
+              // Update the document
+              JObject fullObj = JObject.Parse(test);
+              var modItems = fullObj.SelectTokens(linkStr());
+              if (modItems == null)
+                throw new Exception("Failed to locate document reference - " + linkStr());
+
+              modItems = JsonExtensions.ReplacePath(fullObj, linkStr(), newValue);
+
+              // Update the JSON file with the change
+              using (StreamWriter file = File.CreateText(_docFullPath))
+              using (JsonTextWriter writer = new JsonTextWriter(file))
+              {
+                fullObj.WriteTo(writer);
+              }
+            }
+
+            fileUpdated = true;
+          }
+          catch (IOException ex)
+          {
+            retryCount++;
+            logger.Warn($"Error updating file (attempt {retryCount}): {ex.Message}");
+            System.Threading.Thread.Sleep(1000); // Wait for a second before retrying
+          }
+          catch (Exception e)
+          {
+            logger.Error("Assign Doc Var failed: " + this.name + "  = " + newValue.ToString() + " Error - " + e.Message);
+            throw new Exception("Failed to update the JSON document.", e);
+          }
         }
-      }
-      catch (Exception e)
-      {
-        logger.Error("Assign Doc Var failed: " + this.name + "  = " + newValue.ToString() + " Error - " + e.Message);
-        throw (e);
+
+        if (!fileUpdated)
+        {
+          throw new IOException("Unable to update the file after multiple attempts.");
+        }
       }
     }
 
     public override object GetValue()
     {
       _linkStr = _linkStr.Replace("\"", "'");
-      if (!File.Exists(_docFullPath) && !_pathMustExist)
+      lock (_fileLock)
       {
-        return this._dfltValue;
-      }
+        bool fileRead = false;
+        int retryCount = 0;
+        object result = null;
 
-      //if not changed return the previous value
-      DateTime curTimestamp = File.GetLastWriteTime(_docFullPath);
-      string curLinkStr = linkStr();
-      if ((curTimestamp == _timestamp) && (_oldLinkStr == curLinkStr) && (_value != null))
-        return this._value;
-
-
-      //value new so save timestamp and lookup new value
-      _timestamp = File.GetLastWriteTime(_docFullPath);
-      _oldLinkStr = curLinkStr;
-      string fileStr = File.ReadAllText(_docFullPath);
-      JObject fullObj = JObject.Parse(fileStr);
-      JToken modItem = fullObj.SelectToken(curLinkStr);
-      if(modItem == null)
-      {
-        if (_dfltValue == null)
-          throw new Exception("Path string found no items.");
-        else
+        while (!fileRead && retryCount < 5)
         {
-          base.SetValue(Convert.ChangeType(_dfltValue, dType));
-          return _value;
-        }
-      }
-      else if (modItem.Type == JTokenType.Object)
-      {
-        if (this.dType != typeof(string))
-        {
-          throw new Exception("Variable type to match to a JSON object must be a String");
+          try
+          {
+            if (!File.Exists(_docFullPath) && !_pathMustExist)
+            {
+              return this._dfltValue;
+            }
+
+            // If not changed, return the previous value
+            DateTime curTimestamp = File.GetLastWriteTime(_docFullPath);
+            string curLinkStr = linkStr();
+            if ((curTimestamp == _timestamp) && (_oldLinkStr == curLinkStr) && (_value != null))
+            {
+              return this._value;
+            }
+
+            // Value is new, so save the timestamp and look up the new value
+            _timestamp = File.GetLastWriteTime(_docFullPath);
+            _oldLinkStr = curLinkStr;
+
+            string fileStr = File.ReadAllText(_docFullPath);
+            JObject fullObj = JObject.Parse(fileStr);
+            JToken modItem = fullObj.SelectToken(curLinkStr);
+
+            if (modItem == null)
+            {
+              if (_dfltValue == null)
+              {
+                throw new Exception("Path string found no items.");
+              }
+              else
+              {
+                base.SetValue(Convert.ChangeType(_dfltValue, dType));
+                result = _value;
+              }
+            }
+            else if (modItem.Type == JTokenType.Object)
+            {
+              if (this.dType != typeof(string))
+              {
+                throw new Exception("Variable type to match to a JSON object must be a String");
+              }
+
+              base.SetValue(modItem.ToString());
+              result = _value;
+            }
+            else
+            {
+              base.SetValue(modItem.ToObject(dType));
+              result = _value;
+            }
+
+            fileRead = true;
+          }
+          catch (IOException ex)
+          {
+            retryCount++;
+            Console.WriteLine($"Error reading file (attempt {retryCount}): {ex.Message}");
+            System.Threading.Thread.Sleep(1000); // Wait for a second before retrying
+          }
+          catch (Exception ex)
+          {
+            throw new Exception("Failed to get the value for JSON variable " + this.name + ". Check the JSON syntax. " + this.linkStr(), ex);
+          }
         }
 
-        base.SetValue(modItem.ToString());
-        return _value; 
-      }
-      else
-      {
-        base.SetValue(modItem.ToObject(dType));
-        return _value;
+        if (!fileRead)
+        {
+          throw new IOException("Unable to read the file after multiple attempts.");
+        }
+
+        return result;
       }
     }
   }
@@ -1125,7 +1241,7 @@ namespace SimulationDAL
       }
 
       if (!base.DeserializeDerived((object)dynObj, false, lists, useGivenIDs))
-        return false;          
+        return false;
 
       //must load everything in LoadObjLinks because the states must be loaded first so we have the IDs. 
       processed = true;
@@ -1136,133 +1252,189 @@ namespace SimulationDAL
     {
       base.SetValue(newValue);
       Regex rx = new Regex(linkStr(), RegexOptions.Compiled | RegexOptions.IgnoreCase);
-      string docTxt = File.ReadAllText(_docFullPath);
-      // Find matches.
-      MatchCollection matches = rx.Matches(docTxt);
-
-      if (matches.Count < 0)
+      lock (_fileLock)
       {
-        throw new Exception("Failed to find RegEx - " + linkStr() + " in file - " + _docFullPath);
-      }
+        bool fileUpdated = false;
+        int retryCount = 0;
 
-      try
-      {
-        if (this._regExpLine == -1)//change functionality, unchecked, want to use RegEx itself as variable value and variable value to be changed
+        while (!fileUpdated && retryCount < 5)
         {
-          docTxt = rx.Replace(docTxt, newValue.ToString(), 1);
-          File.WriteAllText(_docFullPath, docTxt);
+          try
+          {
+            string docTxt = File.ReadAllText(_docFullPath);
+            // Find matches.
+            MatchCollection matches = rx.Matches(docTxt);
+
+            if (matches.Count < 0)
+            {
+              throw new Exception("Failed to find RegEx - " + linkStr() + " in file - " + _docFullPath);
+            }
+
+            if (this._regExpLine == -1) // Change functionality, unchecked, want to use RegEx itself as variable value and variable value to be changed
+            {
+              docTxt = rx.Replace(docTxt, newValue.ToString(), 1);
+              File.WriteAllText(_docFullPath, docTxt);
+            }
+            else
+            {
+              // Split text blob by that match.
+              string[] matchSplit = rx.Split(docTxt);
+              // Then count the number of line breaks before the match.
+              int lineMatch = new Regex(@"(\n(?!\r)|\r(?!\n)|\r\n?)").Matches(matchSplit[0]).Count;
+              string[] docLines = docTxt.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
+
+              if (_regExpLine >= 0)
+                lineMatch = lineMatch + _regExpLine;
+              string line = docLines[lineMatch];
+
+              if (_begPosition >= 0)
+              {
+                // Cut the correct section from the line
+                int cnt = this._numChars;
+                if (cnt == 0) // Go to the next space
+                  cnt = line.IndexOf(" ", _begPosition) - _begPosition;
+                if (cnt < 0)
+                  cnt = line.Length - _begPosition;
+
+                string begLine = "";
+                if (_begPosition > 0)
+                  begLine = line.Substring(0, _begPosition);
+
+                string endLine = "";
+                if ((_begPosition + cnt) < line.Length)
+                  endLine = line.Substring(_begPosition + cnt, (line.Length - (_begPosition + cnt)));
+
+                string newLine = begLine + newValue.ToString() + endLine;
+                docLines[lineMatch] = newLine;
+              }
+              else
+              {
+                docLines[lineMatch] = newValue.ToString();
+              }
+              File.WriteAllLines(_docFullPath, docLines);
+            }
+
+            fileUpdated = true;
+          }
+          catch (IOException ex)
+          {
+            retryCount++;
+            Console.WriteLine($"Error updating file (attempt {retryCount}): {ex.Message}");
+            System.Threading.Thread.Sleep(1000); // Wait for a second before retrying
+          }
+          catch (Exception ex)
+          {
+            throw new Exception("Failed to write new value in document - " + _docFullPath, ex);
+          }
         }
-        else
+
+        if (!fileUpdated)
         {
-
-          //Split text blob by that match.
-          string[] matchSplit = rx.Split(docTxt);
-          //Then count the number of line brakes before the match.
-          int lineMatch = new Regex(@"(\n(?!\r)|\r(?!\n)|\r\n?)").Matches(matchSplit[0]).Count;
-          string[] docLines = docTxt.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
-
-          if (_regExpLine >= 0)
-            lineMatch = lineMatch + _regExpLine;
-          string line = docLines[lineMatch];
-
-          if (_begPosition >= 0)
-          {
-            //cut the correct section from the line
-            int cnt = this._numChars;
-            if (cnt == 0) //go to the next space
-              cnt = line.IndexOf(" ", _begPosition) - _begPosition;
-            if (cnt < 0)
-              cnt = line.Length - _begPosition;
-
-            string begLine = "";
-            if (_begPosition > 0)
-              begLine = line.Substring(0, _begPosition);
-
-            string endLine = "";
-            if ((_begPosition + cnt) < line.Length)
-              endLine = line.Substring(_begPosition + cnt, (line.Length - (_begPosition + cnt)));
-
-            string newLine = begLine + newValue.ToString() + endLine;
-            docLines[lineMatch] = newLine;
-          }
-          else
-          {
-            docLines[lineMatch] = newValue.ToString();
-          }
-          File.WriteAllLines(_docFullPath, docLines);
+          throw new IOException("Unable to update the file after multiple attempts.");
         }
-
-
-      }
-      catch
-      {
-        throw new Exception("Failed to write new value in document - " + _docFullPath);
       }
     }
 
     public override object GetValue()
     {
       Regex rx = new Regex(linkStr(), RegexOptions.Compiled | RegexOptions.IgnoreCase);
-      if (!File.Exists(_docFullPath) && !_pathMustExist)
+      lock (_fileLock)
       {
-        return this._dfltValue;
-      }
+        bool fileRead = false;
+        int retryCount = 0;
+        object result = null;
 
-      //if not changed return the previous value
-      DateTime curTimestamp = File.GetLastWriteTime(_docFullPath);
-      string curLinkStr = linkStr();
-      if ((curTimestamp == _timestamp) && (_oldLinkStr == curLinkStr) && (_value != null))
-        return this._value;
-
-
-      //value new so save timestamp and lookup new value
-      _timestamp = File.GetLastWriteTime(_docFullPath);
-      _oldLinkStr = curLinkStr;
-      string docTxt = File.ReadAllText(_docFullPath);
-      // Find matches.
-      MatchCollection matches = rx.Matches(docTxt);
-
-      if (matches.Count <= 0)
-      {
-        if (_dfltValue == null)
-          throw new Exception("Failed to find RegEx - " + curLinkStr + " in file - " + _docFullPath);
-        else
+        while (!fileRead && retryCount < 5)
         {
-          base.SetValue(Convert.ChangeType(_dfltValue, dType));
-          return _value;
-        }
-      }
-      string foundTxt = matches[0].Value;
-      try
-      {
-        if (this._regExpLine >= 0)
-        {
-
-          //Split text blob by that match.
-          string[] matchSplit = rx.Split(docTxt);
-          //Then count the number of line brakes before the match.
-          int lineMatch = new Regex(@"(\n|\r\n?)").Matches(matchSplit[0]).Count;
-          string[] docLines = docTxt.Split(new[] { Environment.NewLine, "\r" }, StringSplitOptions.None);
-          foundTxt = docLines[lineMatch + _regExpLine];
-
-          if (_begPosition >= 0)
+          try
           {
-            //cut the correct section from the line
-            int cnt = this._numChars;
-            if (cnt == 0) //go to the next space
-              cnt = foundTxt.IndexOf(" ", _begPosition) - _begPosition;
-            if (cnt < 0)
-              cnt = foundTxt.Length - _begPosition;
-            foundTxt = foundTxt.Substring(_begPosition, cnt);
+            if (!File.Exists(_docFullPath) && !_pathMustExist)
+            {
+              return this._dfltValue;
+            }
+
+            // If not changed, return the previous value
+            DateTime curTimestamp = File.GetLastWriteTime(_docFullPath);
+            string curLinkStr = linkStr();
+            if ((curTimestamp == _timestamp) && (_oldLinkStr == curLinkStr) && (_value != null))
+            {
+              return this._value;
+            }
+
+            // Value is new, so save the timestamp and look up the new value
+            _timestamp = File.GetLastWriteTime(_docFullPath);
+            _oldLinkStr = curLinkStr;
+            string docTxt = File.ReadAllText(_docFullPath);
+            // Find matches.
+            MatchCollection matches = rx.Matches(docTxt);
+
+            if (matches.Count <= 0)
+            {
+              if (_dfltValue == null)
+              {
+                throw new Exception("Failed to find RegEx - " + curLinkStr + " in file - " + _docFullPath);
+              }
+              else
+              {
+                base.SetValue(Convert.ChangeType(_dfltValue, dType));
+                result = _value;
+              }
+            }
+            else
+            {
+              string foundTxt = matches[0].Value;
+              try
+              {
+                if (this._regExpLine >= 0)
+                {
+                  // Split text blob by that match.
+                  string[] matchSplit = rx.Split(docTxt);
+                  // Then count the number of line breaks before the match.
+                  int lineMatch = new Regex(@"(\n|\r\n?)").Matches(matchSplit[0]).Count;
+                  string[] docLines = docTxt.Split(new[] { Environment.NewLine, "\r" }, StringSplitOptions.None);
+                  foundTxt = docLines[lineMatch + _regExpLine];
+
+                  if (_begPosition >= 0)
+                  {
+                    // Cut the correct section from the line
+                    int cnt = this._numChars;
+                    if (cnt == 0) // Go to the next space
+                      cnt = foundTxt.IndexOf(" ", _begPosition) - _begPosition;
+                    if (cnt < 0)
+                      cnt = foundTxt.Length - _begPosition;
+                    foundTxt = foundTxt.Substring(_begPosition, cnt);
+                  }
+                }
+
+                base.SetValue(Convert.ChangeType(foundTxt, dType));
+                result = _value;
+              }
+              catch (Exception ex)
+              {
+                throw new Exception("Failed to convert - " + foundTxt + " into a " + this.dType.ToString(), ex);
+              }
+            }
+
+            fileRead = true;
+          }
+          catch (IOException ex)
+          {
+            retryCount++;
+            Console.WriteLine($"Error reading file (attempt {retryCount}): {ex.Message}");
+            System.Threading.Thread.Sleep(1000); // Wait for a second before retrying
+          }
+          catch (Exception ex)
+          {
+            throw new Exception("Failed to get the value for RegEx variable " + this.name + ". Check the RegEx syntax. " + this.linkStr(), ex);
           }
         }
 
-        base.SetValue(Convert.ChangeType(foundTxt, dType));
-        return _value;
-      }
-      catch
-      {
-        throw new Exception("Failed to convert - " + foundTxt + " into a " + this.dType.ToString());
+        if (!fileRead)
+        {
+          throw new IOException("Unable to read the file after multiple attempts.");
+        }
+
+        return result;
       }
     }
 
@@ -1682,7 +1854,7 @@ namespace SimulationDAL
     public List<ScanForReturnItem> ScanFor(ScanForTypes scanType, EmraldModel lists)
     {
       var foundList = new List<ScanForReturnItem>();
-      
+
       foreach (var curItem in this.Values)
       {
         foundList.AddRange(curItem.ScanFor(scanType));

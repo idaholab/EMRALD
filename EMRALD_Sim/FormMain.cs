@@ -58,8 +58,7 @@ namespace EMRALD_Sim
       _optionsAccessor = optionsAccessor;
       InitializeComponent();
       teModel.SetHighlighting("JSON");
-      lvResults.Columns[3].Text = "Mean Time or Failed Components";
-      lvResults.Columns[1].Text = "Count";
+      ResetResults();
 
       //System.IO.File.Wri
       curDir = System.IO.Path.GetDirectoryName(Application.ExecutablePath);
@@ -942,12 +941,21 @@ namespace EMRALD_Sim
       cbCurThread.Visible = cbMultiThreaded.Checked && (_running);
     }
 
+    private void ResetResults()
+    {
+      lblRunTime.Text = "00:00:00";
+      lbl_ResultHeader.Text = "0 of n runs";
+      lvResults.Items.Clear();
+      lvVarValues.Items.Clear();
+    }
+
     private void btnStartSims_Click(object sender, EventArgs e)
     {
       _running = false;
+      ResetResults();
       try
       {
-        MethodInvoker ButtonEnableDelegate = delegate ()
+        MethodInvoker ErrorAndVisUpdateDelegate = delegate ()
         {
           //btnStartSims.Enabled = true;
           SetRunningVis();
@@ -1069,16 +1077,16 @@ namespace EMRALD_Sim
           {
             //SimulationEngine.OverallResults.CombineJsonResultFiles(simRuns[0].jsonResultsPaths, simRuns[i].jsonResultsPaths, simRuns[0].jsonResultsPaths);
             simRuns[0].AddOtherBatchResults(simRuns[i]);
-            if(cbClearTemps.Checked)
+            if (cbClearTemps.Checked)
               simRuns[i].ClearTempThreadData();
 
           }
           _running = false;
-          
-          InvokeUIUpdate(ButtonEnableDelegate);
-          //Thread.Sleep(1000); //make sure thread writing is done before doing display results
-          simRuns[0].WriteFinalResults(true);
-          if(cbClearTemps.Checked)
+
+          //update the screen
+          InvokeUIUpdate(ErrorAndVisUpdateDelegate);
+          simRuns[0].WriteFinalResults(true, threadCnt);
+          if (cbClearTemps.Checked)
             simRuns[0].ClearTempThreadData();
         });
 
@@ -1134,6 +1142,7 @@ namespace EMRALD_Sim
       }
 
       Cursor.Current = saveCurs;
+      ResetResults();
       return true;
     }
 
@@ -1185,16 +1194,20 @@ namespace EMRALD_Sim
       tbSavePath2.Text = _currentModelSettings.PathResultsLocation;
       tbSeed.Text = _currentModelSettings.Seed;
       LoadLib.SetSeed(tbSeed.Text);
-      LoadLib.SetThreads(tbThreads.Text);
+      LoadLib.SetThreads(_currentModelSettings.Threads);
       tbLogRunStart.Text = _currentModelSettings.DebugFromRun.ToString();
       tbLogRunEnd.Text = _currentModelSettings.DebugToRun.ToString();
+      
+      tbThreads.Text = _currentModelSettings.Threads;
+      if ((_currentModelSettings.Threads != "") && (_currentModelSettings.Threads != "1"))
+        cbMultiThreaded.Checked = true;
 
-      if (_currentModelSettings.DebugLevel == "Basic")
+      if ((_currentModelSettings.DebugLevel == "Basic") && (!cbMultiThreaded.Checked))
       {
         chkLog.Checked = true;
         ConfigData.debugLev = LogLevel.Info;
       }
-      else if (_currentModelSettings.DebugLevel == "Detailed")
+      else if ((_currentModelSettings.DebugLevel == "Detailed") && (!cbMultiThreaded.Checked))
       {
         chkLog.Checked = true;
         rbDebugBasic.Checked = false;
@@ -1218,9 +1231,9 @@ namespace EMRALD_Sim
           lbMonitorVars.SetItemChecked(i, true);
         }
       }
-      tbThreads.Text = _currentModelSettings.Threads;
-      if ((_currentModelSettings.Threads != "") && (_currentModelSettings.Threads != "1"))
-        cbMultiThreaded.Checked = true;
+      
+
+      SetCurThreadCB();
 
       _populatingSettings = false;
 
@@ -1251,7 +1264,7 @@ namespace EMRALD_Sim
         txtMStatus.ForeColor = Color.Green;
         Console.Write(txtMStatus.Text);
 
-        if(_sim.updated)
+        if (_sim.updated)
         {
           DialogResult result = MessageBox.Show("Model was converted to the latest version, save?", "Save Changes", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
 
@@ -1307,68 +1320,73 @@ namespace EMRALD_Sim
     {
       MethodInvoker methodInvokerDelegate = delegate ()
       {
-        int curT = 0;                
+        int curT = 0;
         if (_running && cbMultiThreaded.Checked)
           curT = cbCurThread.SelectedIndex;
 
-        lbl_ResultHeader.Text = _sim.name + " " + runCnt.ToString() + " of " + tbRunCnt.Text + " runs.";// Time - " + runTime.ToString();
-        lblRunTime.Text = runTime.ToString("g");
-        lvResults.Items.Clear();
+        if ((threadNum == null) || (curT == (int)threadNum)) //only update for specified thread or if there is none specified
+        {
 
-        var keyPaths = simRuns[curT].keyPaths.ToList(); // Create a separate list of the keys because multithreading can cause a change while in loop
-        foreach (var item in keyPaths)
-        { 
+          lbl_ResultHeader.Text = _sim.name + " " + runCnt.ToString() + " of " + tbRunCnt.Text + " runs.";// Time - " + runTime.ToString();
+          lblRunTime.Text = runTime.ToString("g");
+          lvResults.Items.Clear();
 
-        //  foreach (var item in simRuns[curT].keyPaths)
-        //{
-          string[] lvCols = new string[4];
-          lvCols[0] = item.Key;
-          lvCols[1] = item.Value.count.ToString();
-          lvCols[2] = (item.Value.count / (double)runCnt).ToString();
-          lvCols[3] = item.Value.timeMean.ToString(@"dd\.hh\:mm\:ss") + " +/- " + item.Value.timeStdDeviation.ToString(@"dd\.hh\:mm\:ss");
-          lvResults.Items.Add(new ListViewItem(lvCols));
-
-          //write the failed components and times.
-          if (simRuns[curT].keyFailedItems.ContainsKey(item.Key))
+          var keyPaths = simRuns[curT].keyPaths.ToList(); // Create a separate list of the keys because multithreading can cause a change while in loop
+          foreach (var item in keyPaths)
           {
-            var compFailSets = simRuns[curT].keyFailedItems[item.Key].compFailSets.ToList(); //make a copy as could be modified in loop when multi threading
-            //foreach (var cs in simRuns[curT].keyFailedItems[item.Key].compFailSets)
-            foreach( var cs in compFailSets) 
+
+            //  foreach (var item in simRuns[curT].keyPaths)
+            //{
+            string[] lvCols = new string[4];
+            lvCols[0] = item.Key;
+            lvCols[1] = item.Value.count.ToString();
+            lvCols[2] = (item.Value.count / (double)runCnt).ToString();
+            lvCols[3] = item.Value.timeMean.ToString(@"dd\.hh\:mm\:ss") + " +/- " + item.Value.timeStdDeviation.ToString(@"dd\.hh\:mm\:ss");
+            lvResults.Items.Add(new ListViewItem(lvCols));
+
+            //write the failed components and times.
+            if (simRuns[curT].keyFailedItems.ContainsKey(item.Key))
             {
-              string[] lvCols2 = new string[4];
-
-              int[] ids = cs.Key.Get1sIndexArray();
-              List<string> names = new List<String>();
-              foreach (int id in ids)
+              var compFailSets = simRuns[curT].keyFailedItems[item.Key].compFailSets.ToList(); //make a copy as could be modified in loop when multi threading
+                                                                                               //foreach (var cs in simRuns[curT].keyFailedItems[item.Key].compFailSets)
+              foreach (var cs in compFailSets)
               {
-                names.Add(_sim.allStates[id].name);
-              }
-              names.Sort();
+                string[] lvCols2 = new string[4];
 
-              lvCols[0] = "";
-              lvCols[1] = ((Double)cs.Value).ToString();
-              lvCols[2] = String.Format("{0:0.00}", (((double)cs.Value / item.Value.count) * 100)) + "%";
-              lvCols[3] = string.Join(", ", names);
-              lvResults.Items.Add(new ListViewItem(lvCols));
+                int[] ids = cs.Key.Get1sIndexArray();
+                List<string> names = new List<String>();
+                foreach (int id in ids)
+                {
+                  names.Add(_sim.allStates[id].name);
+                }
+                names.Sort();
+
+                lvCols[0] = "";
+                lvCols[1] = ((Double)cs.Value).ToString();
+                lvCols[2] = String.Format("{0:0.00}", (((double)cs.Value / item.Value.count) * 100)) + "%";
+                lvCols[3] = string.Join(", ", names);
+                lvResults.Items.Add(new ListViewItem(lvCols));
+              }
             }
+
           }
 
-        }
 
-        lvVarValues.Items.Clear();
-        List<string> values = simRuns[curT].GetVarValues(simRuns[curT].logVarVals);
-        int i = 0;
-        foreach (var simVar in simRuns[curT].logVarVals)
-        {
-          string[] lvCols = new string[2];
-          lvCols[0] = simVar;
-          lvCols[1] = values[i];
-          lvVarValues.Items.Add(new ListViewItem(lvCols));
-          ++i;
-        }
+          lvVarValues.Items.Clear();
+          List<string> values = simRuns[curT].GetVarValues(simRuns[curT].logVarVals);
+          int i = 0;
+          foreach (var simVar in simRuns[curT].logVarVals)
+          {
+            string[] lvCols = new string[2];
+            lvCols[0] = simVar;
+            lvCols[1] = values[i];
+            lvVarValues.Items.Add(new ListViewItem(lvCols));
+            ++i;
+          }
 
-        this.Refresh();
-        Application.DoEvents();
+          this.Refresh();
+          Application.DoEvents();
+        }
 
         //if (tbSavePath.Text != "")
         //{
@@ -1588,7 +1606,7 @@ namespace EMRALD_Sim
             DialogResult result = MessageBox.Show("Update to .emrald extension?", "New Extension", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
 
             extUpdate = result == DialogResult.Yes;
-          } 
+          }
 
           File.Delete(_modelPath);
           if (extUpdate)
@@ -1743,6 +1761,7 @@ namespace EMRALD_Sim
 
         tbThreads.Visible = cbMultiThreaded.Checked;
         lblThreads.Visible = cbMultiThreaded.Checked;
+        cbClearTemps.Visible = cbMultiThreaded.Checked;
         chkLog.Checked = !cbMultiThreaded.Checked;
         chkLog.Enabled = !cbMultiThreaded.Checked;
         tbSeed.Enabled = !cbMultiThreaded.Checked;
@@ -1750,13 +1769,22 @@ namespace EMRALD_Sim
         cbCurThread.Visible = cbMultiThreaded.Checked;
         bttnPathRefs.Visible = cbMultiThreaded.Checked;
 
-        tbThreads_Leave(sender, e); // update cur thread stuff
+        SetCurThreadCB();
       }
       finally
       {
         // Change cursor back to default
         Cursor.Current = Cursors.Default;
       }
+    }
+
+    private void SetCurThreadCB()
+    {
+      cbCurThread.Items.Clear();
+      for (int i = 0; i < ConfigData.threads; i++)
+        cbCurThread.Items.Add($"{i}");
+      if (cbMultiThreaded.Checked && (ConfigData.threads > 0))
+        cbCurThread.SelectedIndex = ((int)ConfigData.threads) - 1;
     }
 
     private void tbThreads_Leave(object sender, EventArgs e)
@@ -1769,12 +1797,7 @@ namespace EMRALD_Sim
         }
         else
         {
-          cbCurThread.Items.Clear();
-          for (int i = 0; i < ConfigData.threads; i++)
-            cbCurThread.Items.Add($"{i}");
-          if(cbMultiThreaded.Checked && (ConfigData.threads > 0))
-            cbCurThread.SelectedIndex = ((int)ConfigData.threads)-1;
-
+          SetCurThreadCB();
           SaveUISettingsToJson();
         }
       }
@@ -1811,7 +1834,7 @@ namespace EMRALD_Sim
           // User cancelled, do not update anything or throw
           // (Optional: add code here if you want to revert UI or warn the user)
         }
-      }      
+      }
     }
   }
 }
