@@ -239,7 +239,7 @@ const EventFormContextProvider: React.FC<PropsWithChildren> = ({ children }) => 
   };
 
   // Map event types to their respective sub-components and props
-  const eventTypeToComponent: Record<EventType, { component: React.FC<any>; props: any }> = {
+  const eventTypeToComponent = {
     etVarCond: { component: VarCondition, props: {} },
     etStateCng: { component: StateChange, props: {} },
     etComponentLogic: { component: ComponentLogic, props: {} },
