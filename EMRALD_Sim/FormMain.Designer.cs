@@ -129,6 +129,7 @@ namespace EMRALD_Sim
       label18 = new System.Windows.Forms.Label();
       chkLog = new System.Windows.Forms.CheckBox();
       grpDebugOpts = new System.Windows.Forms.GroupBox();
+      btn_DebugOpen = new System.Windows.Forms.Button();
       label21 = new System.Windows.Forms.Label();
       label20 = new System.Windows.Forms.Label();
       tbLogRunEnd = new System.Windows.Forms.TextBox();
@@ -750,7 +751,7 @@ namespace EMRALD_Sim
       // 
       lblSendManualMsg.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
       lblSendManualMsg.AutoSize = true;
-      lblSendManualMsg.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+      lblSendManualMsg.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold);
       lblSendManualMsg.Location = new System.Drawing.Point(271, 1);
       lblSendManualMsg.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
       lblSendManualMsg.Name = "lblSendManualMsg";
@@ -1248,14 +1249,15 @@ namespace EMRALD_Sim
       chkLog.Location = new System.Drawing.Point(159, 187);
       chkLog.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
       chkLog.Name = "chkLog";
-      chkLog.Size = new System.Drawing.Size(226, 19);
+      chkLog.Size = new System.Drawing.Size(246, 19);
       chkLog.TabIndex = 33;
-      chkLog.Text = "Debug (file debug.txt in run directory)";
+      chkLog.Text = "Debug (file debugLog.txt in run directory)";
       chkLog.UseVisualStyleBackColor = true;
       chkLog.CheckedChanged += chkLog_CheckedChanged;
       // 
       // grpDebugOpts
       // 
+      grpDebugOpts.Controls.Add(btn_DebugOpen);
       grpDebugOpts.Controls.Add(label21);
       grpDebugOpts.Controls.Add(label20);
       grpDebugOpts.Controls.Add(tbLogRunEnd);
@@ -1270,6 +1272,16 @@ namespace EMRALD_Sim
       grpDebugOpts.Size = new System.Drawing.Size(429, 61);
       grpDebugOpts.TabIndex = 32;
       grpDebugOpts.TabStop = false;
+      // 
+      // btn_DebugOpen
+      // 
+      btn_DebugOpen.Location = new System.Drawing.Point(347, 31);
+      btn_DebugOpen.Name = "btn_DebugOpen";
+      btn_DebugOpen.Size = new System.Drawing.Size(75, 23);
+      btn_DebugOpen.TabIndex = 39;
+      btn_DebugOpen.Text = "View";
+      btn_DebugOpen.UseVisualStyleBackColor = true;
+      btn_DebugOpen.Click += btn_DebugOpen_Click;
       // 
       // label21
       // 
@@ -1479,6 +1491,7 @@ namespace EMRALD_Sim
       lbMonitorVars.Name = "lbMonitorVars";
       lbMonitorVars.Size = new System.Drawing.Size(198, 263);
       lbMonitorVars.TabIndex = 1;
+      lbMonitorVars.Leave += lbMonitorVars_Leave;
       // 
       // panel14
       // 
@@ -1564,7 +1577,7 @@ namespace EMRALD_Sim
       tabLog.Name = "tabLog";
       tabLog.Size = new System.Drawing.Size(1251, 793);
       tabLog.TabIndex = 2;
-      tabLog.Text = "Log";
+      tabLog.Text = "XMPP Msg Log";
       tabLog.UseVisualStyleBackColor = true;
       // 
       // rtbLog
@@ -1794,5 +1807,6 @@ namespace EMRALD_Sim
     private System.Windows.Forms.SaveFileDialog sdSaveModel;
     private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem1;
     private System.Windows.Forms.ToolStripMenuItem recentToolStripMenuItem;
+    private System.Windows.Forms.Button btn_DebugOpen;
   }
 }
