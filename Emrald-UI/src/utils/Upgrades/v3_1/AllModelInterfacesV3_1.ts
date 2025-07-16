@@ -39,30 +39,31 @@ export type StateEvalValue = 'True' | 'False' | 'Ignore';
  */
 export type ActionType = 'atTransition' | 'atCngVarVal' | 'at3DSimMsg' | 'atRunExtApp';
 export type MAAPSourceElement =
-  | MAAPStatement
-  | MAAPAssignment
-  | MAAPAsExpression
-  | MAAPIsExpression
-  | MAAPExpression
-  | MAAPCallExpression
-  | MAAPExpressionBlock
-  | MAAPParameterName
-  | MAAPLiteral
-  | MAAPIdentifier
-  | MAAPComment;
-export type MAAPStatement =
   | MAAPSensitivityStatement
   | MAAPTitleStatement
   | MAAPFileStatement
   | MAAPBlockStatement
+  | MAAPAssignment
+  | MAAPTimerStatement
   | MAAPConditionalBlockStatement
+  | MAAPAsExpression
+  | MAAPExpression
+  | MAAPIsExpression
   | MAAPAliasStatement
   | MAAPPlotFilStatement
   | MAAPUserEvtStatement
+  | MAAPActionStatement
   | MAAPFunctionStatement
-  | MAAPTimerStatement
-  | MAAPLookupStatement;
+  | MAAPLookupStatement
+  | MAAPParameter
+  | MAAPLiteral
+  | MAAPCallExpression
+  | MAAPParameterName
+  | MAAPIdentifier;
 export type MAAPCommentArray = string[][];
+export type MAAPExpressionType = {
+  useVariable?: boolean;
+} & (MAAPCallExpression | MAAPExpressionBlock | MAAPVariable);
 export type MAAPExpression =
   | MAAPMultiPartExpression
   | MAAPIsExpression
@@ -71,9 +72,6 @@ export type MAAPExpression =
 export type MAAPVariable = {
   useVariable?: boolean;
 } & (MAAPCallExpression | MAAPLiteral | MAAPParameterName | MAAPIdentifier);
-export type MAAPExpressionType = {
-  useVariable?: boolean;
-} & (MAAPCallExpression | MAAPExpressionBlock | MAAPVariable);
 export type MAAPLiteral = MAAPBooleanLiteral | MAAPNumericLiteral | MAAPTimerLiteral;
 export type MAAPExpressionOperator =
   | '**'
@@ -87,7 +85,6 @@ export type MAAPExpressionOperator =
   | '-'
   | '!='
   | '==';
-export type MAAPUserEvtElement = MAAPParameter | MAAPActionStatement | MAAPSourceElement;
 export type CustomFormType = 'MAAP';
 /**
  * Type of the event
@@ -200,7 +197,7 @@ export interface Main_Model {
   /**
    * Version of the EMRALD model schema
    */
-  emraldVersion: number
+  emraldVersion: number;
   /**
    * Version of the users model
    */
@@ -248,7 +245,7 @@ export interface VersionHistory {
   /**
    * The version number
    */
-  version?: string;
+  version?: number;
   [k: string]: unknown;
 }
 export interface Diagram {
@@ -447,7 +444,9 @@ export interface Action {
   /**
    * Optional. For action type atRunExtApp. It is used for custom app form.
    */
-  template?: Record<string, unknown>;
+  template?: {
+    [k: string]: unknown;
+  };
   /**
    * Optional. For action type atRunExtApp. It is flag to indicate the type of return from the processOutputFileCode. If rtNone then it has no return, othrwise the C# script must return a List of strings with +/-[StateName] to shift out or into a state.
    */
@@ -499,11 +498,11 @@ export interface MAAPFormData {
   /**
    * Source elements from the .inp file identified as parameters
    */
-  parameters?: (MAAPAssignment | MAAPComment)[];
+  parameters?: MAAPAssignment[];
   /**
    * Source elements from the .inp file identified as initiators
    */
-  initiators?: (MAAPSourceElement | MAAPComment)[];
+  initiators?: MAAPSourceElement[];
   /**
    * Source elements from the .inp file identified as input blocks (if blocks, when block, etc.)
    */
@@ -533,7 +532,7 @@ export interface MAAPFormData {
    */
   output?: string;
   caType: CustomFormType;
-  [k: string]: unknown;
+  needsUpgrade?: boolean;
 }
 export interface MAAPSensitivityStatement {
   type: 'sensitivity';
@@ -557,25 +556,13 @@ export interface MAAPBlockStatement {
   value: MAAPSourceElement[];
   comments: MAAPCommentArray;
 }
-export interface MAAPConditionalBlockStatement {
-  blockType: 'IF' | 'WHEN';
-  test: MAAPExpression;
-  type: 'conditional_block';
-  value: MAAPSourceElement[];
+export interface MAAPAssignment {
+  target: MAAPCallExpression | MAAPIdentifier;
+  type: 'assignment';
+  value: MAAPExpression & {
+    useVariable?: boolean;
+  };
   comments: MAAPCommentArray;
-}
-export interface MAAPMultiPartExpression {
-  type: 'multi_expression';
-  op: string;
-  value: (MAAPExpression | MAAPIsExpression | MAAPMultiPartExpression)[];
-  comments: string[];
-}
-export interface MAAPIsExpression {
-  target: MAAPVariable;
-  type: 'is_expression';
-  value: MAAPExpression;
-  useVariable?: boolean;
-  comments?: MAAPCommentArray;
 }
 export interface MAAPCallExpression {
   arguments: MAAPExpressionType[];
@@ -588,9 +575,16 @@ export interface MAAPExpressionBlock {
   value: MAAPExpression;
   units?: string;
 }
-export interface MAAPIdentifier {
-  type: 'identifier';
-  value: string;
+export interface MAAPMultiPartExpression {
+  type: 'multi_expression';
+  op: string;
+  value: (MAAPExpression | MAAPIsExpression | MAAPMultiPartExpression)[];
+  comments: string[];
+}
+export interface MAAPIsExpression {
+  target: MAAPVariable;
+  type: 'is_expression';
+  value: MAAPExpression;
   useVariable?: boolean;
   comments?: MAAPCommentArray;
 }
@@ -614,6 +608,12 @@ export interface MAAPParameterName {
   value: string;
   comments?: MAAPCommentArray;
 }
+export interface MAAPIdentifier {
+  type: 'identifier';
+  value: string;
+  useVariable?: boolean;
+  comments?: MAAPCommentArray;
+}
 export interface MAAPPureExpression {
   type: 'expression';
   left: MAAPExpressionType;
@@ -621,16 +621,28 @@ export interface MAAPPureExpression {
   right: MAAPPureExpression | MAAPExpressionType;
   useVariable?: boolean;
 }
-export interface MAAPAliasStatement {
-  type: 'alias';
-  value: MAAPAsExpression[];
-  comments?: MAAPCommentArray;
+export interface MAAPTimerStatement {
+  type: 'set_timer';
+  value: MAAPTimerLiteral;
+  comments: MAAPCommentArray;
+}
+export interface MAAPConditionalBlockStatement {
+  blockType: 'IF' | 'WHEN';
+  test: MAAPExpression;
+  type: 'conditional_block';
+  value: MAAPSourceElement[];
+  comments: MAAPCommentArray;
 }
 export interface MAAPAsExpression {
   target: MAAPVariable;
   type: 'as_expression';
   value: MAAPIdentifier;
   comments: MAAPCommentArray;
+}
+export interface MAAPAliasStatement {
+  type: 'alias';
+  value: MAAPSourceElement[];
+  comments?: MAAPCommentArray;
 }
 export interface MAAPPlotFilStatement {
   n: number;
@@ -645,7 +657,25 @@ export interface MAAPPlotFilBody {
 }
 export interface MAAPUserEvtStatement {
   type: 'user_evt';
-  value: MAAPUserEvtElement[];
+  value: MAAPSourceElement[];
+  comments: MAAPCommentArray;
+}
+export interface MAAPActionStatement {
+  index: number;
+  type: 'action';
+  value: MAAPSourceElement[];
+  comments?: MAAPCommentArray;
+}
+export interface MAAPFunctionStatement {
+  name: MAAPIdentifier;
+  type: 'function';
+  value: MAAPExpression;
+  comments: MAAPCommentArray;
+}
+export interface MAAPLookupStatement {
+  name: MAAPVariable;
+  type: 'lookup_variable';
+  value: string[];
   comments: MAAPCommentArray;
 }
 export interface MAAPParameter {
@@ -659,41 +689,6 @@ export interface MAAPParameter {
   unit?: string;
   variable?: string;
   desc?: string;
-}
-export interface MAAPActionStatement {
-  index: number;
-  type: 'action';
-  value: MAAPUserEvtElement[];
-  comments?: MAAPCommentArray;
-}
-export interface MAAPFunctionStatement {
-  name: MAAPIdentifier;
-  type: 'function';
-  value: MAAPExpression;
-  comments: MAAPCommentArray;
-}
-export interface MAAPTimerStatement {
-  type: 'set_timer';
-  value: MAAPTimerLiteral;
-  comments: MAAPCommentArray;
-}
-export interface MAAPLookupStatement {
-  name: MAAPVariable;
-  type: 'lookup_variable';
-  value: string[];
-  comments: MAAPCommentArray;
-}
-export interface MAAPAssignment {
-  target: MAAPCallExpression | MAAPIdentifier;
-  type: 'assignment';
-  value: MAAPExpression & {
-    useVariable?: boolean;
-  };
-  comments: MAAPCommentArray;
-}
-export interface MAAPComment {
-  type: 'comment';
-  value: string;
 }
 export interface Event {
   /**

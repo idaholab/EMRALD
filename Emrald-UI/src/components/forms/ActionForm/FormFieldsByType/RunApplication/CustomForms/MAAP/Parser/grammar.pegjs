@@ -331,6 +331,7 @@ SourceElement =
     / UserEvtStatement
     / ActionStatement
     / FunctionStatement
+    / Expression
     / IsExpression
     / LookupStatement
     / Parameter

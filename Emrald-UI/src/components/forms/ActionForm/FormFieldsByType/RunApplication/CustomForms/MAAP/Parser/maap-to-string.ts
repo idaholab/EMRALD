@@ -7,7 +7,6 @@ import type {
   MAAPBlockStatement,
   MAAPBooleanLiteral,
   MAAPCallExpression,
-  MAAPComment,
   MAAPConditionalBlockStatement,
   MAAPExpression,
   MAAPExpressionBlock,
@@ -26,49 +25,14 @@ import type {
   MAAPPureExpression,
   MAAPSensitivityStatement,
   MAAPSourceElement,
-  MAAPStatement,
   MAAPTimerLiteral,
   MAAPTimerStatement,
   MAAPTitleStatement,
-  MAAPUserEvtElement,
   MAAPUserEvtStatement,
   MAAPVariable,
 } from '../../../../../../../../types/EMRALD_Model';
 
 export class MAAPToString {
-  /**
-   * Checks if a type is a literal.
-   *
-   * @param type - The type to check.
-   * @returns If the type is a statement.
-   */
-  private isLiteral(type: string) {
-    return ['number', 'boolean', 'timer'].includes(type);
-  }
-
-  /**
-   * Checks if a type is a statement.
-   *
-   * @param type - The type to check.
-   * @returns If the type is a statement.
-   */
-  private static isStatement(type: string) {
-    return [
-      'sensitivity',
-      'title',
-      'file',
-      'block',
-      'conditional_block',
-      'alias',
-      'plotfil',
-      'user_evt',
-      'function',
-      'set_timer',
-      'lookup_variable',
-      'action',
-    ].includes(type);
-  }
-
   /**
    * Compiles a NumericLiteral into code.
    *
@@ -329,40 +293,6 @@ export class MAAPToString {
   }
 
   /**
-   * Compiles a Statement into code.
-   *
-   * @param statement - The object to compile.
-   * @returns The compiled code.
-   */
-  private statementToString(statement: MAAPStatement): string {
-    switch (statement.type) {
-      case 'sensitivity':
-        return this.sensitivityToString(statement);
-      case 'title':
-        return this.titleToString(statement);
-      case 'file':
-        return this.fileToString(statement);
-      case 'block':
-        return this.blockToString(statement);
-      case 'conditional_block':
-        return this.conditionalBlockToString(statement);
-      case 'alias':
-        return this.aliasToString(statement);
-      case 'plotfil':
-        return this.plotfilToString(statement);
-      case 'user_evt':
-        return this.userEvtToString(statement);
-      case 'function':
-        return this.functionToString(statement);
-      case 'set_timer':
-        return this.setTimerToString(statement);
-      case 'lookup_variable':
-      default:
-        return this.lookupToString(statement);
-    }
-  }
-
-  /**
    * Compiles an SensitivityStatement into code.
    *
    * @param sensitivityStatement - The object to compile.
@@ -428,7 +358,7 @@ export class MAAPToString {
    */
   private aliasToString(aliasStatement: MAAPAliasStatement): string {
     return `ALIAS\n${aliasStatement.value
-      .map((aliasBody) => this.asExpressionToString(aliasBody))
+      .map((aliasBody) => this.sourceElementToString(aliasBody))
       .join('\n')}\nEND`;
   }
 
@@ -462,7 +392,7 @@ export class MAAPToString {
    * @param userEvtBody - The object to compile.
    * @returns The compiled code.
    */
-  private userEvtBodyToString(userEvtBody: MAAPUserEvtElement[]): string {
+  private userEvtBodyToString(userEvtBody: MAAPSourceElement[]): string {
     return userEvtBody
       .map((userEvtElement) => {
         if (userEvtElement.type === 'parameter') {
@@ -526,20 +456,60 @@ export class MAAPToString {
    * @param sourceElement - The object to compile.
    * @returns The compiled code.
    */
-  public sourceElementToString(sourceElement: MAAPSourceElement | MAAPComment): string {
-    if (sourceElement.type === 'comment') {
-      return `// ${sourceElement.value}`;
+  public sourceElementToString(sourceElement: MAAPSourceElement): string {
+    console.log(sourceElement);
+    switch (sourceElement.type) {
+      case 'action':
+        return this.actionToString(sourceElement);
+      case 'alias':
+        return this.aliasToString(sourceElement);
+      case 'as_expression':
+        return this.asExpressionToString(sourceElement);
+      case 'assignment':
+        return this.assignmentToString(sourceElement);
+      case 'block':
+        return this.blockToString(sourceElement);
+      case 'boolean':
+        return MAAPToString.booleanToString(sourceElement);
+      case 'call_expression':
+        return this.callExpressionToString(sourceElement);
+      case 'conditional_block':
+        return this.conditionalBlockToString(sourceElement);
+      case 'expression':
+        return this.expressionToString(sourceElement);
+      case 'expression_block':
+        return this.expressionBlockToString(sourceElement);
+      case 'file':
+        return this.fileToString(sourceElement);
+      case 'function':
+        return this.functionToString(sourceElement);
+      case 'identifier':
+        return this.identifierToString(sourceElement);
+      case 'is_expression':
+        return this.isExpressionToString(sourceElement);
+      case 'lookup_variable':
+        return this.lookupToString(sourceElement);
+      case 'multi_expression':
+        return this.multiExpressionToString(sourceElement);
+      case 'number':
+        return MAAPToString.numberToString(sourceElement);
+      case 'parameter':
+        return this.parameterToString(sourceElement);
+      case 'parameter_name':
+        return this.parameterNameToString(sourceElement);
+      case 'plotfil':
+        return this.plotfilToString(sourceElement);
+      case 'sensitivity':
+        return this.sensitivityToString(sourceElement);
+      case 'set_timer':
+        return this.setTimerToString(sourceElement);
+      case 'timer':
+        return MAAPToString.timerToString(sourceElement);
+      case 'title':
+        return this.titleToString(sourceElement);
+      case 'user_evt':
+        return this.userEvtToString(sourceElement);
     }
-    if (MAAPToString.isStatement(sourceElement.type)) {
-      return this.statementToString(sourceElement as MAAPStatement);
-    }
-    if (sourceElement.type === 'assignment') {
-      return this.assignmentToString(sourceElement);
-    }
-    if (sourceElement.type === 'as_expression') {
-      return this.asExpressionToString(sourceElement);
-    }
-    return this.expressionToString(sourceElement as MAAPExpression);
   }
 
   /**
@@ -558,55 +528,13 @@ export class MAAPToString {
    * @param input - The object to compile.
    * @returns The compiled program.
    */
-  public constructor(input?: Program | MAAPUserEvtElement | MAAPLiteral | MAAPIdentifier) {
+  public constructor(input?: Program) {
     if (!input) {
       return;
     }
-    if (MAAPToString.isStatement(input.type)) {
-      this.output = this.statementToString(input as MAAPStatement);
-    }
-    if (this.isLiteral(input.type)) {
-      this.output = MAAPToString.literalToString(input as MAAPLiteral);
-    }
-    switch (input.type) {
-      case 'program':
-        this.output = input.value
-          .map((sourceElement) => this.sourceElementToString(sourceElement))
-          .join('\n');
-        break;
-      case 'parameter':
-        this.output = this.parameterToString(input);
-        break;
-      case 'call_expression':
-        this.output = this.callExpressionToString(input);
-        break;
-      case 'expression':
-        this.output = this.pureExpressionToString(input);
-        break;
-      case 'expression_block':
-        this.output = this.expressionBlockToString(input);
-        break;
-      case 'assignment':
-        this.output = this.assignmentToString(input);
-        break;
-      case 'is_expression':
-        this.output = this.isExpressionToString(input);
-        break;
-      case 'as_expression':
-        this.output = this.asExpressionToString(input);
-        break;
-      case 'identifier':
-        this.output = this.identifierToString(input);
-        break;
-      case 'parameter_name':
-        this.output = this.parameterNameToString(input);
-        break;
-      case 'comment':
-        this.output = this.sourceElementToString(input);
-        break;
-      default:
-        throw new Error(`Unexpected input type: ${input.type}`);
-    }
+    this.output = input.value
+      .map((sourceElement) => this.sourceElementToString(sourceElement))
+      .join('\n');
   }
 
   private addVariable(varname: string) {

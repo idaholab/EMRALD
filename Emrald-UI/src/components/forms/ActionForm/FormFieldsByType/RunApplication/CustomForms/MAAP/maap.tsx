@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useCustomForm } from '../useCustomForm';
-import { Box, Divider, Tab, Tabs } from '@mui/material';
+import { Box, Divider, Tab, Tabs, Typography } from '@mui/material';
 import { TextFieldComponent, FileUploadComponent, TabPanel } from '../../../../../../common';
 import { Parameters, Initiators, InputBlocks, Outputs } from './FormFieldsByType';
 import InputParse from './Parser';
@@ -12,7 +12,6 @@ import type {
   MAAPParameter,
   MAAPConditionalBlockStatement,
   MAAPSourceElement,
-  MAAPComment,
   MAAPAssignment,
 } from '../../../../../../../types/EMRALD_Model';
 
@@ -47,21 +46,21 @@ const MAAP = () => {
               type: 'block',
               blockType: 'PARAMETER CHANGE',
               value: [...formData.parameters, ...se.value.filter((v) => v.type !== 'assignment')],
-              comment: []
+              comments: [[], []],
             });
           } else if (formData.initiators) {
             newSource.push({
               type: 'block',
               blockType: 'INITIATORS',
               value: formData.initiators,
-              comment: [],
+              comments: [[], []],
             });
           } else {
             newSource.push(se);
           }
         } else if (se.type === 'conditional_block' && cidx < 0) {
           cidx = i;
-        } else if (se.type !== 'conditional_block' && se.type !== 'comment') {
+        } else if (se.type !== 'conditional_block') {
           newSource.push(se);
         }
       });
@@ -75,6 +74,7 @@ const MAAP = () => {
       const inpFile = new MAAPToString({
         type: 'program',
         value: newSource,
+        comments: [[], []],
       });
       console.log(inpFile.output);
       setCodeVariables(inpFile.variables);
@@ -171,9 +171,7 @@ const MAAP = () => {
         ? {
             ...formData,
             exePath: cleanExePath,
-            inputFile,
             inputPath: cleanInputPath,
-            parameterFile,
             parameterPath: cleanParameterPath,
           }
         : undefined,
@@ -195,7 +193,6 @@ const MAAP = () => {
                 possibleInitiators.push({
                   index: data.index,
                   desc: data.desc,
-                  comment: data.comment ?? '',
                   value: data.value,
                   type: 'parameter',
                 });
@@ -255,9 +252,9 @@ const MAAP = () => {
           });
 
           // Set state variables or perform other actions with comments, sections, and parameters
-          const newParameters: (MAAPAssignment | MAAPComment)[] = [];
+          const newParameters: MAAPAssignment[] = [];
           parameters.forEach((param) => {
-            if (param.type === 'comment' || param.type === 'assignment') {
+            if (param.type === 'assignment') {
               newParameters.push(param);
             } else {
               // Unhandled in the form UI
@@ -339,27 +336,36 @@ const MAAP = () => {
 
         <Divider sx={{ my: 3 }} />
 
-        <Box>
-          <Tabs value={currentTab} onChange={handleTabChange} aria-label="basic tabs example">
-            <Tab label="Parameters" />
-            <Tab label="Initiators" />
-            <Tab label="Input Blocks" />
-            <Tab label="Outputs" />
-          </Tabs>
-        </Box>
+        {formData?.needsUpgrade ? (
+          <Typography fontWeight="bold">
+            Your project was created in an older version of the MAAP form. Please re-open your .INP
+            file.
+          </Typography>
+        ) : (
+          <>
+            <Box>
+              <Tabs value={currentTab} onChange={handleTabChange} aria-label="basic tabs example">
+                <Tab label="Parameters" />
+                <Tab label="Initiators" />
+                <Tab label="Input Blocks" />
+                <Tab label="Outputs" />
+              </Tabs>
+            </Box>
 
-        <TabPanel value={currentTab} index={0}>
-          <Parameters />
-        </TabPanel>
-        <TabPanel value={currentTab} index={1}>
-          <Initiators />
-        </TabPanel>
-        <TabPanel value={currentTab} index={2}>
-          <InputBlocks />
-        </TabPanel>
-        <TabPanel value={currentTab} index={3}>
-          <Outputs />
-        </TabPanel>
+            <TabPanel value={currentTab} index={0}>
+              <Parameters />
+            </TabPanel>
+            <TabPanel value={currentTab} index={1}>
+              <Initiators />
+            </TabPanel>
+            <TabPanel value={currentTab} index={2}>
+              <InputBlocks />
+            </TabPanel>
+            <TabPanel value={currentTab} index={3}>
+              <Outputs />
+            </TabPanel>
+          </>
+        )}
       </Box>
     </>
   );

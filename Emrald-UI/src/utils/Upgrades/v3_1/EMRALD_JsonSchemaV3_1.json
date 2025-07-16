@@ -1047,20 +1047,14 @@
         "parameters": {
           "type": "array",
           "items": {
-            "anyOf": [
-              { "$ref": "#/definitions/MAAPAssignment" },
-              { "$ref": "#/definitions/MAAPComment" }
-            ]
+            "$ref": "#/definitions/MAAPAssignment"
           },
           "description": "Source elements from the .inp file identified as parameters"
         },
         "initiators": {
           "type": "array",
           "items": {
-            "anyOf": [
-              { "$ref": "#/definitions/MAAPSourceElement" },
-              { "$ref": "#/definitions/MAAPComment" }
-            ]
+            "$ref": "#/definitions/MAAPSourceElement"
           },
           "description": "Source elements from the .inp file identified as initiators"
         },
@@ -1103,9 +1097,13 @@
         },
         "caType": {
           "$ref": "#/definitions/CustomFormType"
+        },
+        "needsUpgrade": {
+          "type": "boolean"
         }
       },
-      "required": ["caType"]
+      "required": ["caType"],
+      "additionalProperties": false
     },
     "MAAPParameter": {
       "type": "object",
@@ -1406,32 +1404,27 @@
     },
     "MAAPSourceElement": {
       "anyOf": [
-        { "$ref": "#/definitions/MAAPStatement" },
-        { "$ref": "#/definitions/MAAPAssignment" },
-        { "$ref": "#/definitions/MAAPAsExpression" },
-        { "$ref": "#/definitions/MAAPIsExpression" },
-        { "$ref": "#/definitions/MAAPExpression" },
-        { "$ref": "#/definitions/MAAPCallExpression" },
-        { "$ref": "#/definitions/MAAPExpressionBlock" },
-        { "$ref": "#/definitions/MAAPParameterName" },
-        { "$ref": "#/definitions/MAAPLiteral" },
-        { "$ref": "#/definitions/MAAPIdentifier" },
-        { "$ref": "#/definitions/MAAPComment" }
-      ]
-    },
-    "MAAPStatement": {
-      "anyOf": [
         { "$ref": "#/definitions/MAAPSensitivityStatement" },
         { "$ref": "#/definitions/MAAPTitleStatement" },
         { "$ref": "#/definitions/MAAPFileStatement" },
         { "$ref": "#/definitions/MAAPBlockStatement" },
+        { "$ref": "#/definitions/MAAPAssignment" },
+        { "$ref": "#/definitions/MAAPTimerStatement" },
         { "$ref": "#/definitions/MAAPConditionalBlockStatement" },
+        { "$ref": "#/definitions/MAAPAsExpression" },
+        { "$ref": "#/definitions/MAAPExpression" },
+        { "$ref": "#/definitions/MAAPIsExpression" },
         { "$ref": "#/definitions/MAAPAliasStatement" },
         { "$ref": "#/definitions/MAAPPlotFilStatement" },
         { "$ref": "#/definitions/MAAPUserEvtStatement" },
+        { "$ref": "#/definitions/MAAPActionStatement" },
         { "$ref": "#/definitions/MAAPFunctionStatement" },
-        { "$ref": "#/definitions/MAAPTimerStatement" },
-        { "$ref": "#/definitions/MAAPLookupStatement" }
+        { "$ref": "#/definitions/MAAPLookupStatement" },
+        { "$ref": "#/definitions/MAAPParameter" },
+        { "$ref": "#/definitions/MAAPLiteral" },
+        { "$ref": "#/definitions/MAAPCallExpression" },
+        { "$ref": "#/definitions/MAAPParameterName" },
+        { "$ref": "#/definitions/MAAPIdentifier" }
       ]
     },
     "MAAPSensitivityStatement": {
@@ -1528,7 +1521,7 @@
         "value": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/MAAPAsExpression"
+            "$ref": "#/definitions/MAAPSourceElement"
           }
         },
         "comments": {
@@ -1606,7 +1599,7 @@
         "value": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/MAAPUserEvtElement"
+            "$ref": "#/definitions/MAAPSourceElement"
           }
         },
         "comments": {
@@ -1615,13 +1608,6 @@
       },
       "required": ["blockType", "type", "value", "comments"],
       "additionalProperties": false
-    },
-    "MAAPUserEvtElement": {
-      "anyOf": [
-        { "$ref": "#/definitions/MAAPParameter" },
-        { "$ref": "#/definitions/MAAPActionStatement" },
-        { "$ref": "#/definitions/MAAPSourceElement" }
-      ]
     },
     "MAAPActionStatement": {
       "type": "object",
@@ -1635,14 +1621,14 @@
         "value": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/MAAPUserEvtElement"
+            "$ref": "#/definitions/MAAPSourceElement"
           }
         },
         "comments": {
           "$ref": "#/definitions/MAAPCommentArray"
         }
       },
-      "required": ["index", "type", "value", "comment"],
+      "required": ["index", "type", "value"],
       "additionalProperties": false
     },
     "MAAPFunctionStatement": {
@@ -1735,19 +1721,6 @@
         }
       },
       "required": ["target", "type", "value", "comments"],
-      "additionalProperties": false
-    },
-    "MAAPComment": {
-      "type": "object",
-      "properties": {
-        "type": {
-          "const": "comment"
-        },
-        "value": {
-          "type": "string"
-        }
-      },
-      "required": ["type", "value"],
       "additionalProperties": false
     },
     "MAAPMultiPartExpression": {

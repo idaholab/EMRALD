@@ -23,29 +23,27 @@ const Parameters = () => {
   const [localVarSelection, setLocalVarSelection] = useState<string[]>([]);
   const [localValue, setLocalValue] = useState<string[]>([]);
 
-  /*useEffect(() => {
+  useEffect(() => {
     const v: boolean[] = [];
     const s: string[] = [];
     const l: string[] = [];
     formData?.parameters?.forEach((parameter, i) => {
-      if (parameter.type !== 'comment') {
-        v[i] = parameter.value.useVariable === true;
-        if (v[i]) {
-          s[i] = parameter.value.value as string;
-        } else if (
-          typeof parameter.value.value === 'number' ||
-          typeof parameter.value.value === 'string'
-        ) {
-          l[i] = parameter.value.value.toString(); // TODO: There are other possible data types that can be here, but I'm not sure any of them practically exist
-        } else {
-          console.log(parameter.value);
-        }
+      v[i] = parameter.value.useVariable === true;
+      if (v[i]) {
+        s[i] = parameter.value.value as string;
+      } else if (
+        typeof parameter.value.value === 'number' ||
+        typeof parameter.value.value === 'string'
+      ) {
+        l[i] = parameter.value.value.toString(); // TODO: There are other possible data types that can be here, but I'm not sure any of them practically exist
+      } else {
+        console.log(parameter.value);
       }
     });
     setUseVariable(v);
     setLocalVarSelection(s);
     setLocalValue(l);
-  }, []);*/
+  }, []);
 
   useEffect(() => {
     setFormData({
@@ -78,77 +76,66 @@ const Parameters = () => {
                 height: row.type === 'comment' ? 60 : 'inherit',
               }}
             >
-              {/* TODO: Handle the case where row.target is undefined in the upgrade script */}
-              {row.type === 'comment'
-                ? row.value
-                : row.target !== undefined
-                  ? row.target.type === 'call_expression'
-                    ? new MAAPToString().callExpressionToString(row.target)
-                    : row.target.value
-                  : 'Your project was created with an older version of the MAAP form. Please re-open your .inp file.'}
+              {row.target.type === 'call_expression'
+                ? new MAAPToString().callExpressionToString(row.target)
+                : row.target.value}
             </TableCell>
-            {row.type !== 'comment' ? (
-              <>
-                <TableCell>
-                  {useVariable[idx] ? (
-                    <SelectComponent
-                      value={localVarSelection[idx]}
-                      label="EMRALD Variable"
-                      setValue={(value) => {
-                        //row.value.useVariable = true;
-                        /*row.value.value = value;
-                        setLocalVarSelection([
-                          ...localVarSelection.slice(0, idx),
-                          value,
-                          ...localVarSelection.slice(idx + 1),
-                        ]);*/
-                      }}
-                      sx={{ width: 223, mt: 0 }}
-                    >
-                      {appData.value.VariableList.map((variable) => (
-                        <MenuItem key={variable.name} value={variable.name}>
-                          {variable.name}
-                        </MenuItem>
-                      ))}
-                    </SelectComponent>
-                  ) : (
-                    <TextField
-                      size="small"
-                      value={localValue[idx]}
-                      onChange={(e) => {
-                        //row.value.value = e.target.value;
-                        setLocalValue([
-                          ...localValue.slice(0, idx),
-                          e.target.value,
-                          ...localValue.slice(idx + 1),
-                        ]);
-                      }}
-                    />
-                  )}
-                </TableCell>
-                <TableCell align="center">
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        checked={useVariable[idx]}
-                        value={useVariable[idx]}
-                        onChange={(e) => {
-                          row.value.useVariable = e.target.value === 'false';
-                          setUseVariable([
-                            ...useVariable.slice(0, idx),
-                            e.target.value === 'false',
-                            ...useVariable.slice(idx + 1),
-                          ]);
-                        }}
-                      />
-                    }
-                    label="Use Variable"
+            <TableCell>
+              {useVariable[idx] ? (
+                <SelectComponent
+                  value={localVarSelection[idx]}
+                  label="EMRALD Variable"
+                  setValue={(value) => {
+                    row.value.useVariable = true;
+                    row.value.value = value;
+                    setLocalVarSelection([
+                      ...localVarSelection.slice(0, idx),
+                      value,
+                      ...localVarSelection.slice(idx + 1),
+                    ]);
+                  }}
+                  sx={{ width: 223, mt: 0 }}
+                >
+                  {appData.value.VariableList.map((variable) => (
+                    <MenuItem key={variable.name} value={variable.name}>
+                      {variable.name}
+                    </MenuItem>
+                  ))}
+                </SelectComponent>
+              ) : (
+                <TextField
+                  size="small"
+                  value={localValue[idx]}
+                  onChange={(e) => {
+                    //row.value.value = e.target.value;
+                    setLocalValue([
+                      ...localValue.slice(0, idx),
+                      e.target.value,
+                      ...localValue.slice(idx + 1),
+                    ]);
+                  }}
+                />
+              )}
+            </TableCell>
+            <TableCell align="center">
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={useVariable[idx]}
+                    value={useVariable[idx]}
+                    onChange={(e) => {
+                      row.value.useVariable = e.target.value === 'false';
+                      setUseVariable([
+                        ...useVariable.slice(0, idx),
+                        e.target.value === 'false',
+                        ...useVariable.slice(idx + 1),
+                      ]);
+                    }}
                   />
-                </TableCell>
-              </>
-            ) : (
-              ''
-            )}
+                }
+                label="Use Variable"
+              />
+            </TableCell>
           </TableRow>
         ))}
       </TableBody>

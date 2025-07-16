@@ -7,6 +7,7 @@ import {
 } from '../../diagrams/SankeyTimelineDiagram/SankeyTimelineDiagram';
 import type { EMRALD_Model } from '../../../types/EMRALD_Model';
 import type { WindowPosition } from '../../../contexts/WindowContext';
+import { EMRALD_SchemaVersion } from '../../../types/ModelUtils';
 
 export const projectOptions = {
   New(newProject: () => void) {
@@ -37,14 +38,16 @@ export const projectOptions = {
 
         try {
           const parsedContent = JSON.parse(content) as EMRALD_Model;
-          if (Object.prototype.hasOwnProperty.call(parsedContent, 'emraldVersion')) {
-            populateNewData(parsedContent);
-          } else {
+          if (!Object.prototype.hasOwnProperty.call(parsedContent, 'emraldVersion') || parsedContent.emraldVersion < EMRALD_SchemaVersion) {
+            console.log(`Upgrading from ${parsedContent.emraldVersion}`);
             const upgradedModel = upgradeModel(content);
             if (upgradedModel) {
               upgradedModel.id = uuidv4();
+              console.log(upgradedModel);
               populateNewData(upgradedModel);
             }
+          } else {
+            populateNewData(parsedContent);
           }
         } catch {
           console.error('Invalid JSON format');

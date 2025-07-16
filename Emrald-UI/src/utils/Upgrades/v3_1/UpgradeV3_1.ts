@@ -20,10 +20,7 @@ export function UpgradeV3_1(modelTxt: string): UpgradeReturn {
 }
 
 function UpgradeV3_1_Recursive(oldModel: EMRALD_ModelV3_0): EMRALD_Model {
-  // TODO: Possible MAAP upgrades
-
   // Note: The reassignment of the objType properties here is just to make TypeScript happy
-
   function upgradeModel(oldModel: EMRALD_ModelV3_0): Main_Model {
     return {
       ...oldModel,
@@ -54,7 +51,17 @@ function UpgradeV3_1_Recursive(oldModel: EMRALD_ModelV3_0): EMRALD_Model {
           objType: 'Action',
           // Forces the required caType property to exist
           // For this update, the only possible value is the MAAP form
-          formData: action.formData ? { ...action.formData, caType: 'MAAP' } : undefined,
+          formData: action.formData
+            ? {
+                ...action.formData,
+                sourceElements: [],
+                initiators: [],
+                parameters: [],
+                inputBlocks: [],
+                caType: 'MAAP',
+                needsUpgrade: true,
+              }
+            : undefined,
         };
         return newAction;
       }),

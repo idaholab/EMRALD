@@ -83,27 +83,21 @@ const Initiators = () => {
           {initiators.map((row, idx) => (
             <TableRow key={idx} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
               <TableCell component="th" scope="row">
-                {row.type === 'comment'
-                  ? row.value
-                  : row.type === 'assignment'
-                    ? row.target.type === 'call_expression'
-                      ? new MAAPToString().callExpressionToString(row.target)
-                      : row.target.value
-                    : ''}
+                {row.type === 'assignment'
+                  ? row.target.type === 'call_expression'
+                    ? new MAAPToString().callExpressionToString(row.target)
+                    : row.target.value
+                  : ''}
               </TableCell>
               <TableCell align="center">
-                {row.type !== 'comment' ? (
-                  <Tooltip title="Remove Initiator">
-                    <DeleteIcon
-                      sx={{ cursor: 'pointer', ml: 3 }}
-                      onClick={() => {
-                        removeInitiator(row);
-                      }}
-                    />
-                  </Tooltip>
-                ) : (
-                  <></>
-                )}
+                <Tooltip title="Remove Initiator">
+                  <DeleteIcon
+                    sx={{ cursor: 'pointer', ml: 3 }}
+                    onClick={() => {
+                      removeInitiator(row);
+                    }}
+                  />
+                </Tooltip>
               </TableCell>
             </TableRow>
           ))}

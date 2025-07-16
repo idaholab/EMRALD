@@ -1,5 +1,4 @@
 import type {
-  MAAPComment,
   MAAPExpressionType,
   MAAPIdentifier,
   MAAPLiteral,
@@ -25,7 +24,7 @@ export type Arguments = MAAPExpressionType[];
 
 export interface Program {
   type: 'program';
-  value: (MAAPSourceElement | MAAPComment)[];
+  value: MAAPSourceElement[];
   comments: [string[], string[]];
 }
 
