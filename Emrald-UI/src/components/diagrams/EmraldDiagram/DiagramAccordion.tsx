@@ -1,9 +1,7 @@
-import MuiAccordion, { AccordionProps } from '@mui/material/Accordion';
+import MuiAccordion, { type AccordionProps } from '@mui/material/Accordion';
 import { styled } from '@mui/material/styles';
-import MuiAccordionSummary, {
-  AccordionSummaryProps,
-} from '@mui/material/AccordionSummary';
-import MuiAccordionDetails, { AccordionDetailsProps } from '@mui/material/AccordionDetails';
+import MuiAccordionSummary, { type AccordionSummaryProps } from '@mui/material/AccordionSummary';
+import MuiAccordionDetails, { type AccordionDetailsProps } from '@mui/material/AccordionDetails';
 import ArrowForwardIosSharpIcon from '@mui/icons-material/ArrowForwardIosSharp';
 
 export const DiagramAccordion = styled((props: AccordionProps) => (
@@ -19,8 +17,7 @@ export const DiagramAccordion = styled((props: AccordionProps) => (
 
 export const DiagramAccordionSummary = styled((props: AccordionSummaryProps) => (
   <MuiAccordionSummary
-    expandIcon={
-    <ArrowForwardIosSharpIcon sx={{ fontSize: '0.9rem', color: '#000' }} />    }
+    expandIcon={<ArrowForwardIosSharpIcon sx={{ fontSize: '0.9rem', color: '#000' }} />}
     {...props}
   />
 ))(() => ({
@@ -38,7 +35,9 @@ export const DiagramAccordionSummary = styled((props: AccordionSummaryProps) => 
 
 export const DiagramAccordionDetails = styled((props: AccordionDetailsProps) => (
   <MuiAccordionDetails
-    onClick={(e) => e.stopPropagation()} // Stop the click event propagation
+    onClick={(e) => {
+      e.stopPropagation();
+    }} // Stop the click event propagation
     {...props}
   />
 ))({

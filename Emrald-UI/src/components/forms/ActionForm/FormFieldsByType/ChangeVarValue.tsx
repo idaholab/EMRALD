@@ -35,7 +35,7 @@ const ChangeVarValue = () => {
         scriptCode={scriptCode}
         setScriptCode={setScriptCode}
         variableList={variableList.value}
-        codeVariables={codeVariables as string[]}
+        codeVariables={codeVariables}
         addToUsedVariables={addToUsedVariables}
         heading={
           <span>

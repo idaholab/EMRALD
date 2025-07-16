@@ -127,7 +127,8 @@
         "ActionList",
         "EventList",
         "LogicNodeList",
-        "VariableList"
+        "VariableList",
+        "emraldVersion"
       ]
     },
     "Diagram": {
@@ -790,16 +791,16 @@
       "description": "position for the GUI",
       "properties": {
         "x": {
-          "type": "integer"
+          "type": "number"
         },
         "y": {
-          "type": "integer"
+          "type": "number"
         },
         "width": {
-          "type": "integer"
+          "type": "number"
         },
         "height": {
-          "type": "integer"
+          "type": "number"
         }
       }
     },
@@ -1018,7 +1019,7 @@
           "description": "A description of the changes made to the model in this version"
         },
         "version": {
-          "type": "string",
+          "type": "number",
           "description": "The version number"
         }
       }

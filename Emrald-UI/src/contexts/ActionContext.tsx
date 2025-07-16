@@ -1,8 +1,8 @@
 import React, { createContext, useContext, useState } from 'react';
-import { EmraldContextWrapperProps } from './EmraldContextWrapper';
+import type { EmraldContextWrapperProps } from './EmraldContextWrapper';
 import { appData, updateAppData } from '../hooks/useAppData';
-import { effect, ReadonlySignal, useComputed } from '@preact/signals-react';
-import { EMRALD_Model, Action, NewState, State, Event } from '../types/EMRALD_Model';
+import { effect, type ReadonlySignal, useComputed } from '@preact/signals-react';
+import type { EMRALD_Model, Action, NewState, State, Event } from '../types/EMRALD_Model';
 import { DeleteItemAndRefs, updateModelAndReferences } from '../utils/UpdateModel';
 
 interface ActionContextType {
@@ -11,10 +11,10 @@ interface ActionContextType {
   createAction: (action: Action, event?: Event, state?: State) => void;
   updateAction: (action: Action) => void;
   deleteAction: (actionId: string | undefined) => void;
-  getActionByActionName: (actionName: string) => Action;
-  getActionByActionId: (actionId: string | null) => Action;
+  getActionByActionName: (actionName: string) => Action | undefined;
+  getActionByActionId: (actionId: string | null) => Action | undefined;
   getNewStatesByActionName: (actionName: string) => NewState[];
-  addNewStateToAction: (action: Action, newState: NewState) => void;
+  addNewStateToAction: (action?: Action, newState?: NewState) => void;
   newActionList: (newActionList: Action[]) => void;
   clearActionList: () => void;
 }
@@ -43,7 +43,7 @@ const ActionContextProvider: React.FC<EmraldContextWrapperProps> = ({ children }
   const [actions, setActions] = useState<Action[]>(
     JSON.parse(
       JSON.stringify(appData.value.ActionList.sort((a, b) => a.name.localeCompare(b.name))),
-    ),
+    ) as Action[],
   );
   const actionsList = useComputed(() => appData.value.ActionList);
 
@@ -58,70 +58,64 @@ const ActionContextProvider: React.FC<EmraldContextWrapperProps> = ({ children }
     return;
   });
 
-  const createAction = async (newAction: Action, event?: Event, state?: State) => {
-    var updatedModel: EMRALD_Model = await updateModelAndReferences(
-      newAction,
-      'Action',
-    );
+  const createAction = (newAction: Action, event?: Event, state?: State) => {
+    const updatedModel: EMRALD_Model = updateModelAndReferences(newAction, 'Action');
     updateAppData(updatedModel);
     if (event && state) {
       const eventIndex = state.events.indexOf(event.name);
       state.eventActions[eventIndex].actions.push(newAction.name);
-      var updatedModel: EMRALD_Model = await updateModelAndReferences(state, 'State');
+      const updatedModel: EMRALD_Model = updateModelAndReferences(state, 'State');
       updateAppData(updatedModel);
     } else if (state) {
       state.immediateActions.push(newAction.name);
-      var updatedModel: EMRALD_Model = await updateModelAndReferences(state, 'State');
+      const updatedModel: EMRALD_Model = updateModelAndReferences(state, 'State');
       updateAppData(updatedModel);
     }
   };
 
-  const updateAction = async (updatedAction: Action) => {
+  const updateAction = (updatedAction: Action) => {
     // const updatedActionList = actionsList.value.map((item) =>
     //   item.id === updatedAction.id ? updatedAction : item,
     // );
 
-    var updatedModel: EMRALD_Model = await updateModelAndReferences(
-      updatedAction,
-      'Action',
-    );
-    updateAppData(JSON.parse(JSON.stringify(updatedModel)));
+    const updatedModel: EMRALD_Model = updateModelAndReferences(updatedAction, 'Action');
+    updateAppData(JSON.parse(JSON.stringify(updatedModel)) as EMRALD_Model);
   };
 
-  const deleteAction = async (actionId: string | undefined) => {
+  const deleteAction = (actionId: string | undefined) => {
     if (!actionId) {
       return;
     }
     const actionToDelete = actionsList.value.find((action) => action.id === actionId);
     if (actionToDelete) {
-      var updatedModel: EMRALD_Model = await DeleteItemAndRefs(actionToDelete);
+      const updatedModel: EMRALD_Model = DeleteItemAndRefs(actionToDelete);
       updateAppData(updatedModel);
     }
     //todo else error, no action to delete
   };
 
   const getActionByActionId = (actionId: string | null) => {
-    return actionsList.value.find((action) => action.id === actionId) || emptyAction;
+    return actionsList.value.find((action) => action.id === actionId);
   };
   const getActionByActionName = (actionName: string) => {
-    return actionsList.value.find((action) => action.name === actionName) || emptyAction;
+    return actionsList.value.find((action) => action.name === actionName);
   };
 
-  const addNewStateToAction = (action: Action, newState: NewState) => {
-    if (!action) {
+  const addNewStateToAction = (action?: Action, newState?: NewState) => {
+    if (!action || !newState) {
       return;
     } // If the action doesn't exist, do nothing
     if (action.newStates?.includes(newState)) {
       return;
     } // Don't add the state if it already exists
-    action.newStates = [...(action.newStates || []), newState];
+    action.newStates = [...(action.newStates ?? []), newState];
     updateAction(action);
   };
 
   const getNewStatesByActionName = (actionName: string) => {
     const action = actionsList.value.find((action) => action.name === actionName);
     if (action) {
-      return action.newStates || [];
+      return action.newStates ?? [];
     }
     return [];
   };
@@ -133,7 +127,7 @@ const ActionContextProvider: React.FC<EmraldContextWrapperProps> = ({ children }
 
   const clearActionList = () => {
     setActions([]);
-    updateAppData(JSON.parse(JSON.stringify({ ...appData.value, ActionList: [] })));
+    updateAppData(JSON.parse(JSON.stringify({ ...appData.value, ActionList: [] })) as EMRALD_Model);
   };
 
   return (

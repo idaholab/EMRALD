@@ -1,4 +1,4 @@
-import { Action, Diagram, Event, LogicNode, State, Variable } from './EMRALD_Model';
+import type { Action, Diagram, Event, LogicNode, State, Variable } from './EMRALD_Model';
 
 export interface appData {
   id: number;
@@ -12,6 +12,6 @@ export interface appData {
   ActionList: Action[];
   EventList: Event[];
   LogicNodeList: LogicNode[];
-  ExtSimList: []
+  ExtSimList: [];
   // Add other item types and their properties as needed
 }

@@ -102,6 +102,10 @@ export function useAssembledData() {
     );
   };
 
+  const compareData = (newModel: EMRALD_Model) => {
+    console.log(Object.keys(newModel));
+  };
+
   const assembleData = () => {
     if (version) {
       updateVersion(parseFloat((version + 0.1).toFixed(1)));
@@ -141,6 +145,7 @@ export function useAssembledData() {
     refreshWithNewData,
     populateNewData,
     mergeNewData,
+    compareData,
     assembleData,
     assembledData,
   };

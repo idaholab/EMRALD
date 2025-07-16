@@ -12,7 +12,10 @@ export const projectOptions = {
   New(newProject: () => void) {
     newProject();
   },
-  Open(populateNewData: (openedModel?: EMRALD_Model) => void, setFileName?: (name: string) => void) {
+  Open(
+    populateNewData: (openedModel?: EMRALD_Model) => void,
+    setFileName?: (name: string) => void,
+  ) {
     // Create a new file input element
     const fileInput = document.createElement('input');
     fileInput.type = 'file'; // Set input type to file
@@ -92,7 +95,6 @@ export const projectOptions = {
         } catch {
           console.error('Invalid JSON format');
         }
-        // You can now work with the JSON content here
       };
       reader.readAsText(selectedFile); // Read the file as text
     };
@@ -141,13 +143,15 @@ export const projectOptions = {
   //   label: 'Load Demo',
   //   onClick: () => {},
   // },
-  'Load Results': (addWindow: (
+  'Load Results': (
+    addWindow: (
       title: string,
       content: React.ReactNode,
       position?: WindowPosition,
       windowId?: string | null,
       closePrevWindowId?: string,
-    ) => void) => {
+    ) => void,
+  ) => {
     // Create a new file input element
     const fileInput = document.createElement('input');
     fileInput.type = 'file'; // Set input type to file
@@ -202,6 +206,52 @@ export const projectOptions = {
   'Clear Cached Data': () => {
     clearCacheData();
   },
+  Compare(compareData: (newModel: EMRALD_Model) => void) {
+    // Create a new file input element
+    const fileInput = document.createElement('input');
+    fileInput.type = 'file'; // Set input type to file
+    fileInput.accept = '.json,.emrald'; // Specify accepted file types as JSON
+    fileInput.style.display = 'none'; // Hide the file input element
+
+    // Function to handle file selection
+    const handleFileSelected = (event: Event) => {
+      const input = event.target as HTMLInputElement;
+      const selectedFile = input.files?.[0]; // Get the selected file
+
+      if (!selectedFile) return; // If no file is selected, exit
+
+      // Create a FileReader to read the file content
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const content = e.target?.result as string; // Get the file content as a string
+        //TODO: Make sure there is no duplicates when merging. If there are show the import form to resolve conflicts.
+        try {
+          const parsedContent = JSON.parse(content) as EMRALD_Model;
+          if (Object.prototype.hasOwnProperty.call(parsedContent, 'emraldVersion')) {
+            compareData(parsedContent);
+          } else {
+            const upgradedModel = upgradeModel(content);
+            if (upgradedModel) {
+              upgradedModel.id = uuidv4();
+              compareData(upgradedModel);
+            }
+          }
+        } catch {
+          console.error('Invalid JSON format');
+        }
+      };
+      reader.readAsText(selectedFile); // Read the file as text
+    };
+
+    // Add an event listener for when a file is selected
+    fileInput.addEventListener('change', handleFileSelected, false);
+
+    // Append the file input to the document body
+    document.body.appendChild(fileInput);
+
+    // Trigger a click on the file input to open the file dialog
+    fileInput.click();
+  }
 };
 
 export const templateSubMenuOptions = {

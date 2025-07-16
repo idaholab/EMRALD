@@ -21,8 +21,13 @@ const ListComponent: React.FC<ListComponentProps> = ({ items, handleClick }) => 
   >
     {items.length > 0 ? (
       items.map((item, index) => (
-        <ListItemButton key={item.id || index} sx={{ p: '0 0 0 2rem' }}>
-          <ListItemText primary={item.name} onClick={() => handleClick(item.name, <>{JSON.stringify(item)}</>)}/>
+        <ListItemButton key={item.id ?? index} sx={{ p: '0 0 0 2rem' }}>
+          <ListItemText
+            primary={item.name}
+            onClick={() => {
+              handleClick(item.name, <>{JSON.stringify(item)}</>);
+            }}
+          />
         </ListItemButton>
       ))
     ) : (

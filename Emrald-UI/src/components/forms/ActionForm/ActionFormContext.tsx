@@ -80,7 +80,7 @@ interface ActionFormContextType {
   setHasError: React.Dispatch<React.SetStateAction<boolean>>;
   checkForDuplicateNames: () => boolean;
   handleNameChange: (newName: string) => void;
-  handleSave: (event?: Event, state?: State) => Promise<void>;
+  handleSave: (event?: Event, state?: State) => void;
   handleSelectChange: (event: SelectChangeEvent, item: NewStateItem) => void;
   handleProbChange: (
     event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -244,7 +244,7 @@ const ActionFormContextProvider: React.FC<PropsWithChildren> = ({ children }) =>
     }
   };
 
-  const handleSave = async (event?: Event, state?: State) => {
+  const handleSave = (event?: Event, state?: State) => {
     action.value = {
       ...action.value,
       id: actionData?.id ?? uuidv4(),
@@ -279,13 +279,13 @@ const ActionFormContextProvider: React.FC<PropsWithChildren> = ({ children }) =>
       raType,
       returnProcess,
     };
-    await checkFormData();
+    checkFormData();
 
     actionData ? updateAction(action.value) : createAction(action.value, event, state);
     handleClose();
   };
 
-  const checkFormData = async () => {
+  const checkFormData = () => {
     if (formData?.docLinkVariable !== undefined) {
       const variableList = structuredClone(appData.value.VariableList);
       const docLinkVariables = variableList.filter(({ varScope }) => varScope === 'gtDocLink');
@@ -299,12 +299,12 @@ const ActionFormContextProvider: React.FC<PropsWithChildren> = ({ children }) =>
           variable.begPosition = 28;
           variable.regExpLine = 0;
           //update app data with the new variable information
-          await updateVariable(variable);
+          updateVariable(variable);
         }
       } else {
         //create a new variable with the new information
         if (!variableList.find(({ name }) => name === formData.docLinkVariable)) {
-          await createVariable({
+          createVariable({
             name: formData.docLinkVariable || 'maapDocLink',
             desc: 'Link to CoreUncoveryTime from MAAP (hours)',
             id: uuidv4(),

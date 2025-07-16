@@ -1,5 +1,5 @@
 import React from 'react';
-import { EMRALD_Model } from '../../../types/EMRALD_Model';
+import type { EMRALD_Model } from '../../../types/EMRALD_Model';
 import {
   Backdrop,
   Box,
@@ -47,7 +47,7 @@ const ImportForm: React.FC<ImportDiagramFormProps> = ({ importedData, fromTempla
     handleNewNameChange,
     handleApply,
     handleSave,
-    handleClose
+    handleClose,
   } = useImportForm(importedData, fromTemplate);
 
   return (
@@ -93,7 +93,13 @@ const ImportForm: React.FC<ImportDiagramFormProps> = ({ importedData, fromTempla
 
       <Box display={'flex'} alignItems={'center'}>
         <Box mt={2} mr={2}>
-          <Button color="secondary" variant="contained" onClick={() => updateAllUnlocked('ignore')}>
+          <Button
+            color="secondary"
+            variant="contained"
+            onClick={() => {
+              updateAllUnlocked('ignore');
+            }}
+          >
             Ignore Unlocked
           </Button>
         </Box>
@@ -101,13 +107,21 @@ const ImportForm: React.FC<ImportDiagramFormProps> = ({ importedData, fromTempla
           <Button
             variant="contained"
             color="secondary"
-            onClick={() => updateAllUnlocked('replace')}
+            onClick={() => {
+              updateAllUnlocked('replace');
+            }}
           >
             Replace Unlocked
           </Button>
         </Box>
         <Box mt={2}>
-          <Button variant="contained" color="secondary" onClick={() => updateAllUnlocked('rename')}>
+          <Button
+            variant="contained"
+            color="secondary"
+            onClick={() => {
+              updateAllUnlocked('rename');
+            }}
+          >
             Rename Unlocked
           </Button>
         </Box>
@@ -148,14 +162,18 @@ const ImportForm: React.FC<ImportDiagramFormProps> = ({ importedData, fromTempla
                     <IconButton
                       sx={{ color: '#1b8f55' }}
                       disabled={row.required}
-                      onClick={() => handleLockChange(index, false)}
+                      onClick={() => {
+                        handleLockChange(index, false);
+                      }}
                     >
                       <FaLock />
                     </IconButton>
                   ) : (
                     <Icon
                       style={{ color: '#d32c38' }}
-                      onClick={() => handleLockChange(index, true)}
+                      onClick={() => {
+                        handleLockChange(index, true);
+                      }}
                     >
                       <FaLockOpen />
                     </Icon>
@@ -168,7 +186,9 @@ const ImportForm: React.FC<ImportDiagramFormProps> = ({ importedData, fromTempla
                       row
                       name="row-radio-buttons-group"
                       value={row.action}
-                      onChange={(e) => handleActionChange(index, e.target.value)}
+                      onChange={(e) => {
+                        handleActionChange(index, e.target.value);
+                      }}
                     >
                       <FormControlLabel
                         value="ignore"
@@ -209,7 +229,9 @@ const ImportForm: React.FC<ImportDiagramFormProps> = ({ importedData, fromTempla
                     label="New Name"
                     value={row.action === 'rename' ? row.newName : ''}
                     disabled={row.locked || row.action !== 'rename'}
-                    onChange={(e) => handleNewNameChange(index, e.target.value)}
+                    onChange={(e) => {
+                      handleNewNameChange(index, e.target.value);
+                    }}
                     size="small"
                   />
                 </TableCell>
@@ -227,10 +249,21 @@ const ImportForm: React.FC<ImportDiagramFormProps> = ({ importedData, fromTempla
         </Table>
       </Box>
       <Box mt={3} textAlign={'right'}>
-        <Button variant="contained" sx={{ mr: 2 }} onClick={handleSave} disabled={hasConflicts || loading}>
+        <Button
+          variant="contained"
+          sx={{ mr: 2 }}
+          onClick={handleSave}
+          disabled={hasConflicts || loading}
+        >
           Create
         </Button>
-        <Button variant="contained" color="secondary" onClick={() => handleClose()}>
+        <Button
+          variant="contained"
+          color="secondary"
+          onClick={() => {
+            handleClose();
+          }}
+        >
           Cancel
         </Button>
       </Box>

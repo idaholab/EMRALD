@@ -5,14 +5,13 @@ import ReactFlow, {
   BackgroundVariant,
   Controls,
   Panel,
-  NodeMouseHandler,
+  type NodeMouseHandler,
   useReactFlow,
   ControlButton,
   MiniMap,
 } from 'reactflow';
-
 import 'reactflow/dist/style.css';
-import { LogicNode } from '../../../types/EMRALD_Model';
+import type { LogicNode } from '../../../types/EMRALD_Model';
 import useLogicNodeTreeDiagram from './useLogicTreeDiagram';
 import Box from '@mui/material/Box';
 import TreeNodeComponent from './TreeNodeComponent/TreeNodeComponent';
@@ -59,25 +58,22 @@ const LogicNodeTreeDiagram: React.FC<LogicNodeTreeDiagramProps> = ({ logicNode }
   });
 
   const onNodeClick: NodeMouseHandler = useCallback(
-    async (_, node) => {
-      await new Promise((resolve) => {
-        setNodes((nds) => {
-          const updatedNodes = nds.map((n) => {
-            if (n.id === node.id) {
-              return {
-                ...n,
-                data: { ...n.data, expanded: !n.data.expanded },
-              };
-            }
-            return n;
-          });
-          resolve(updatedNodes); // Resolve the promise after updating nodes
-          return updatedNodes;
+    (_, node) => {
+      setNodes((nds) => {
+        const updatedNodes = nds.map((n) => {
+          if (n.id === node.id) {
+            return {
+              ...n,
+              data: { ...n.data, expanded: !n.data.expanded },
+            };
+          }
+          return n;
         });
+        return updatedNodes;
       });
 
       // Fit view after node click
-      reactFlowInstance && reactFlowInstance.fitView({ nodes: nodes, padding: 0.75 });
+      reactFlowInstance.fitView({ nodes: nodes, padding: 0.75 });
     },
     [setNodes, reactFlowInstance, visibleNodes],
   );
@@ -115,29 +111,39 @@ const LogicNodeTreeDiagram: React.FC<LogicNodeTreeDiagramProps> = ({ logicNode }
                   Drag and Drop Gates
                 </Typography>
                 <Box sx={{ display: 'flex', padding: '10px' }}>
-                  <DraggableItem itemType="Gate" itemData={{ gateType: 'gtAnd' }}>
+                  <DraggableItem itemType="Gate" itemData={{ objType: 'Gate', gateType: 'gtAnd' }}>
                     <TbLogicAnd className="gate-icon" />
                   </DraggableItem>
-                  <DraggableItem itemType="Gate" itemData={{ gateType: 'gtOr' }}>
+                  <DraggableItem itemType="Gate" itemData={{ objType: 'Gate', gateType: 'gtOr' }}>
                     <TbLogicOr className="gate-icon" />
                   </DraggableItem>
-                  <DraggableItem itemType="Gate" itemData={{ gateType: 'gtNot' }}>
+                  <DraggableItem itemType="Gate" itemData={{ objType: 'Gate', gateType: 'gtNot' }}>
                     <TbLogicNot className="gate-icon" />
                   </DraggableItem>
                 </Box>
               </Box>
             </Panel>
             <Controls>
-              <ControlButton onClick={() => setShowMap(!showMap)}>
+              <ControlButton
+                onClick={() => {
+                  setShowMap(!showMap);
+                }}
+              >
                 <TbMap />
               </ControlButton>
-              <ControlButton onClick={() => setShowBackgroundDots(!showBackgroundDots)}>
+              <ControlButton
+                onClick={() => {
+                  setShowBackgroundDots(!showBackgroundDots);
+                }}
+              >
                 <PiDotsNine />
               </ControlButton>
-              <DownloadButton diagramName={logicNode.name}/>
+              <DownloadButton diagramName={logicNode.name} />
             </Controls>
             {showMap && <MiniMap pannable />}
-            {showBackgroundDots && <Background variant={BackgroundVariant.Dots} gap={12} size={1} />}
+            {showBackgroundDots && (
+              <Background variant={BackgroundVariant.Dots} gap={12} size={1} />
+            )}
           </ReactFlow>
           {menu && (
             <ContextMenu
@@ -157,7 +163,9 @@ const LogicNodeTreeDiagram: React.FC<LogicNodeTreeDiagramProps> = ({ logicNode }
               opacity: nodeExistsAlert ? 1 : 0,
               transition: 'opacity 0.4s ease-in-out',
             }}
-            onClose={() => setNodeExistsAlert(false)}
+            onClose={() => {
+              setNodeExistsAlert(false);
+            }}
           >
             Pasting this node will create a circular reference. Please review the node structure.
           </Alert>

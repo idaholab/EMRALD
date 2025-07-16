@@ -14,6 +14,7 @@ import SearchField from './SearchBar/SearchField';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
 import { appData, updateAppData } from '../../../hooks/useAppData';
+import { Table } from '@mui/material';
 
 const url: string = window.location.href;
 let emraldDocsUrl = 'https://emrald-docs.inl.gov/'; // Default URL
@@ -40,19 +41,14 @@ export default function Header() {
   const theme = useTheme();
   const isMediumScreen = useMediaQuery(theme.breakpoints.between('sm', 'lg'));
 
-  const {
-    name,
-    desc,
-    fileName,
-    version,
-    updateVersion,
-    updateName,
-    updateDescription,
-  } = useModelDetailsContext();
+  const { name, desc, fileName, version, updateVersion, updateName, updateDescription } =
+    useModelDetailsContext();
   const [openDialog, setOpenDialog] = useState(false);
   const [updatedName, setUpdatedName] = useState<string>('');
   const [updatedDesc, setUpdatedDesc] = useState('');
   const [updatedVersion, setUpdatedVersion] = useState<string>('');
+  const [versionDialog, setVersionDialog] = useState(false);
+  const [changeDesc, setChangeDesc] = useState('');
 
   useEffect(() => {
     setUpdatedName(name);
@@ -110,7 +106,14 @@ export default function Header() {
           Model Editor
         </Typography>
         <Box display="flex" alignItems="center" flexGrow={1} ml={5}>
-          <MenuButton id={1} title="Project" options={projectOptions} />
+          <MenuButton
+            id={1}
+            title="Project"
+            options={projectOptions}
+            openVersionDialog={() => {
+              setVersionDialog(true);
+            }}
+          />
           <MenuButton id={2} title="Download" options={downloadOptions} />
           <MenuButton id={3} title="Help" handleClick={() => window.open(emraldDocsUrl)} />
           <MenuButton
@@ -128,7 +131,9 @@ export default function Header() {
             color="primary"
             fontWeight="bold"
             sx={{ cursor: 'pointer', fontSize: isMediumScreen ? '1em' : '1.2em' }}
-            onClick={() => { setOpenDialog(true); }}
+            onClick={() => {
+              setOpenDialog(true);
+            }}
           >
             {name ? name : 'Click Here to Name Project'}
           </Typography>
@@ -155,7 +160,9 @@ export default function Header() {
           variant="outlined"
           size="small"
           value={updatedName}
-          onChange={(e) => { setUpdatedName(e.target.value); }}
+          onChange={(e) => {
+            setUpdatedName(e.target.value);
+          }}
         />
         <TextField
           margin="dense"
@@ -166,7 +173,9 @@ export default function Header() {
           variant="outlined"
           size="small"
           value={updatedDesc}
-          onChange={(e) => { setUpdatedDesc(e.target.value); }}
+          onChange={(e) => {
+            setUpdatedDesc(e.target.value);
+          }}
         />
         <TextField
           margin="dense"
@@ -177,9 +186,90 @@ export default function Header() {
           variant="outlined"
           size="small"
           value={updatedVersion}
-          onChange={(e) => { handleChange(e.target.value); }}
+          onChange={(e) => {
+            handleChange(e.target.value);
+          }}
           error={!version}
           helperText={version !== undefined ? '' : 'must have a version number'}
+        />
+        Version History
+        <Table>
+          <thead>
+            <tr>
+              <th>Version</th>
+              <th>Changes</th>
+            </tr>
+          </thead>
+          <tbody>
+            {/* This somehow tries to render before the model is upgraded, causing versionHistory to not exist */}
+            {/* eslint-disable-next-line @typescript-eslint/no-unnecessary-condition */}
+            {appData.value.versionHistory?.map((h) => (
+              <tr style={{ textAlign: 'center' }}>
+                <td>{h.version}</td>
+                <td>{h.description}</td>
+              </tr>
+            ))}
+          </tbody>
+        </Table>
+      </DialogComponent>
+
+      {/* Dialog for model version history */}
+      <DialogComponent
+        open={versionDialog}
+        title="Update Model Version"
+        onClose={() => {
+          setVersionDialog(false);
+        }}
+        onSubmit={() => {
+          const newVersion = Number(updatedVersion);
+          // TODO: The existence of this array should be garuanteed by the upgrade script
+          const versionHistory = appData.value.versionHistory;
+          const existing = versionHistory.findIndex((v) => v.version === newVersion);
+          if (existing >= 0) {
+            // Update the existing entry if the version number was not increased
+            versionHistory[existing].description = changeDesc;
+          } else {
+            versionHistory.push({
+              description: changeDesc,
+              version: newVersion,
+            });
+          }
+          updateAppData({
+            ...appData.value,
+            version: newVersion,
+            versionHistory,
+          });
+          void projectOptions.Save();
+          setVersionDialog(false);
+        }}
+      >
+        <TextField
+          margin="dense"
+          id="version"
+          label="Version"
+          type="text"
+          fullWidth
+          variant="outlined"
+          size="small"
+          value={updatedVersion}
+          onChange={(e) => {
+            handleChange(e.target.value);
+          }}
+          error={!version}
+          helperText={version !== undefined ? '' : 'must have a version number'}
+        />
+        <TextField
+          multiline
+          margin="dense"
+          id="changes"
+          label="Change Description"
+          type="text"
+          fullWidth
+          variant="outlined"
+          value={changeDesc}
+          onChange={(e) => {
+            setChangeDesc(e.target.value);
+          }}
         />
       </DialogComponent>
     </AppBar>

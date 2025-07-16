@@ -14,7 +14,7 @@ interface TemplateContextType {
   findGroupHierarchyByGroupName: (groups: Group[], groupName: string) => Group | undefined;
   findTemplatesByGroupName: (groupName: string) => EMRALD_Model[];
   setGroups: (groups: Group[]) => void;
-  addTemplateToModel: (newTemplate: EMRALD_Model) => Promise<void>;
+  addTemplateToModel: (newTemplate: EMRALD_Model) => void;
   createTemplate: (template: EMRALD_Model) => void;
   deleteTemplate: (templateId: string) => void;
   newTemplateList: (newTemplateList: Main_Model[]) => void;
@@ -42,7 +42,7 @@ const TemplateContextProvider: React.FC<EmraldContextWrapperProps> = ({ children
         ) as EMRALD_Model[])
       : [],
   );
-  
+
   const temporaryTemplates = useSignal<EMRALD_Model[]>(templates);
   const templatesList = useComputed(() => appData.value.templates ?? []);
 
@@ -56,7 +56,9 @@ const TemplateContextProvider: React.FC<EmraldContextWrapperProps> = ({ children
       return [];
     }, []);
 
-  const [groups, setGroups] = useState<Group[]>(convertNullSubgroupsToEmptyArray(hierarchicalGroups));
+  const [groups, setGroups] = useState<Group[]>(
+    convertNullSubgroupsToEmptyArray(hierarchicalGroups),
+  );
 
   /**
    * Merges two arrays of groups into one. If a group with the same name exists in both arrays,
@@ -111,7 +113,9 @@ const TemplateContextProvider: React.FC<EmraldContextWrapperProps> = ({ children
     const storedTemplates = JSON.parse(localStorage.getItem('templates') ?? '[]') as EMRALD_Model[];
 
     // Create a set of existing template IDs to avoid duplicates
-    const storedTemplateIds = new Set(storedTemplates.map((template: EMRALD_Model) => template.name));
+    const storedTemplateIds = new Set(
+      storedTemplates.map((template: EMRALD_Model) => template.name),
+    );
 
     // Filter out templates that are already in local storage
     const newTemplates = templates.filter((template) => !storedTemplateIds.has(template.name));
@@ -124,38 +128,38 @@ const TemplateContextProvider: React.FC<EmraldContextWrapperProps> = ({ children
     // Update the groups if templates are added or imported. Make sure to include groups from session storage.
     const groupsFromTemplates = convertNullSubgroupsToEmptyArray(hierarchicalGroups);
     const storedGroups = JSON.parse(localStorage.getItem('templateGroups') ?? '[]') as Group[];
-    const storedGroupNames = new Set(storedGroups.map(group => group.name));
-    
-    const newGroups = groupsFromTemplates.filter(group => !storedGroupNames.has(group.name));
+    const storedGroupNames = new Set(storedGroups.map((group) => group.name));
+
+    const newGroups = groupsFromTemplates.filter((group) => !storedGroupNames.has(group.name));
     const mergedGroups = [...storedGroups, ...newGroups];
     setGroups(mergedGroups);
-
   }, [templates]);
 
   // Load initial groups from local storage when the component mounts
   useEffect(() => {
     const storedGroups = JSON.parse(localStorage.getItem('templateGroups') ?? '[]') as Group[];
-    temporaryTemplates.value = JSON.parse(localStorage.getItem('templates') ?? '[]') as EMRALD_Model[];
+    temporaryTemplates.value = JSON.parse(
+      localStorage.getItem('templates') ?? '[]',
+    ) as EMRALD_Model[];
     setGroups(storedGroups);
   }, []);
 
   // Effect to store groups in local storage whenever groups state changes
   useEffect(() => {
     const storedGroups = JSON.parse(localStorage.getItem('templateGroups') ?? '[]') as Group[];
-    const storedGroupNames = new Set(storedGroups.map(group => group.name));
-    
-    const newGroups = groups.filter(group => !storedGroupNames.has(group.name));
+    const storedGroupNames = new Set(storedGroups.map((group) => group.name));
+
+    const newGroups = groups.filter((group) => !storedGroupNames.has(group.name));
     const mergedGroups = [...storedGroups, ...newGroups];
 
     localStorage.setItem('templateGroups', JSON.stringify(mergedGroups));
   }, [groups]);
 
-  const addTemplateToModel = async (newTemplate?: EMRALD_Model) => {
-    if (!newTemplate) { return; }
-    const updatedModel: EMRALD_Model = await updateModelAndReferences(
-      newTemplate,
-      'EMRALD_Model',
-    );
+  const addTemplateToModel = (newTemplate?: EMRALD_Model) => {
+    if (!newTemplate) {
+      return;
+    }
+    const updatedModel: EMRALD_Model = updateModelAndReferences(newTemplate, 'EMRALD_Model');
     updateAppData(updatedModel);
   };
 
@@ -194,11 +198,11 @@ const TemplateContextProvider: React.FC<EmraldContextWrapperProps> = ({ children
       }
     }
     return;
-  }
+  };
 
   const findTemplatesByGroupName = (groupName: string): EMRALD_Model[] => {
     const result: EMRALD_Model[] = [];
-  
+
     const searchGroup = (groups: Group[], groupName: string): boolean => {
       for (const group of groups) {
         if (group.name === groupName && (!group.subgroup || group.subgroup.length === 0)) {
@@ -212,7 +216,7 @@ const TemplateContextProvider: React.FC<EmraldContextWrapperProps> = ({ children
       }
       return false;
     };
-  
+
     for (const template of temporaryTemplates.value) {
       if (template.group && searchGroup([template.group], groupName)) {
         result.push(template);
@@ -227,7 +231,7 @@ const TemplateContextProvider: React.FC<EmraldContextWrapperProps> = ({ children
   // Open New, Merge, and Clear Diagram List
   /**
    * Merge a new list of templates into the temporaryTemplates list.
-   * 
+   *
    * @param newTemplateList - The new list of templates to merge into temporaryTemplates.
    */
   const newTemplateList = (newTemplateList: Main_Model[]): void => {
@@ -241,33 +245,35 @@ const TemplateContextProvider: React.FC<EmraldContextWrapperProps> = ({ children
    * Merge the new template into the temporaryTemplates list.
    * Update the groups list with the new template's group structure.
    * Save the updated temporaryTemplates to localStorage.
-   * 
+   *
    * @param newTemplate - The new template to merge into temporaryTemplates.
    */
   const mergeTemplateToList = (newTemplate: EMRALD_Model) => {
     // Check if the new template already exists in the temporaryTemplates
-    const templateExists = temporaryTemplates.value.some(template => template.name === newTemplate.name);
+    const templateExists = temporaryTemplates.value.some(
+      (template) => template.name === newTemplate.name,
+    );
 
     if (!templateExists) {
-    // Add the new template to temporaryTemplates
-    temporaryTemplates.value = [...temporaryTemplates.value, newTemplate];
+      // Add the new template to temporaryTemplates
+      temporaryTemplates.value = [...temporaryTemplates.value, newTemplate];
 
-    // Get the hierarchicalGroups of the new template
-    // by combining all the groups in temporaryTemplates
-    const hierarchicalGroups: Group[] = temporaryTemplates.value
-    .filter((template) => template.group !== undefined) // Filter out templates with null groups
-    .reduce<Group[]>((accumulatedGroups: Group[], template: EMRALD_Model) => {
-      if (template.group) {
-        return combineGroups(accumulatedGroups, [template.group]);
-      }
-      return [];
-    }, []);
+      // Get the hierarchicalGroups of the new template
+      // by combining all the groups in temporaryTemplates
+      const hierarchicalGroups: Group[] = temporaryTemplates.value
+        .filter((template) => template.group !== undefined) // Filter out templates with null groups
+        .reduce<Group[]>((accumulatedGroups: Group[], template: EMRALD_Model) => {
+          if (template.group) {
+            return combineGroups(accumulatedGroups, [template.group]);
+          }
+          return [];
+        }, []);
 
-    // Update the groups list with the new template's group structure
-    setGroups(convertNullSubgroupsToEmptyArray(hierarchicalGroups));
+      // Update the groups list with the new template's group structure
+      setGroups(convertNullSubgroupsToEmptyArray(hierarchicalGroups));
 
-    // Save the updated temporaryTemplates to localStorage
-    localStorage.setItem('templates', JSON.stringify(temporaryTemplates.value));
+      // Save the updated temporaryTemplates to localStorage
+      localStorage.setItem('templates', JSON.stringify(temporaryTemplates.value));
     }
   };
 

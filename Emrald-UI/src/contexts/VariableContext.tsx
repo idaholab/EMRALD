@@ -1,15 +1,15 @@
 import React, { createContext, useContext, useState } from 'react';
-import { EmraldContextWrapperProps } from './EmraldContextWrapper';
+import type { EmraldContextWrapperProps } from './EmraldContextWrapper';
 import { appData, updateAppData } from '../hooks/useAppData';
-import { effect, ReadonlySignal, useComputed } from '@preact/signals-react';
+import { effect, type ReadonlySignal, useComputed } from '@preact/signals-react';
 import { DeleteItemAndRefs, updateModelAndReferences } from '../utils/UpdateModel';
-import { EMRALD_Model, Variable } from '../types/EMRALD_Model';
+import type { EMRALD_Model, Variable } from '../types/EMRALD_Model';
 
 interface VariableContextType {
   variables: Variable[];
   variableList: ReadonlySignal<Variable[]>;
-  createVariable: (Variable: Variable) => Promise<void>;
-  updateVariable: (Variable: Variable) => Promise<void>;
+  createVariable: (Variable: Variable) => void;
+  updateVariable: (Variable: Variable) => void;
   deleteVariable: (VariableId: string | undefined) => void;
   newVariableList: (newVariableList: Variable[]) => void;
   clearVariableList: () => void;
@@ -37,7 +37,7 @@ const VariableContextProvider: React.FC<EmraldContextWrapperProps> = ({ children
   const [variables, setVariables] = useState<Variable[]>(
     JSON.parse(
       JSON.stringify(appData.value.VariableList.sort((a, b) => a.name.localeCompare(b.name))),
-    ),
+    ) as Variable[],
   );
   const variableList = useComputed(() => appData.value.VariableList);
 
@@ -52,29 +52,23 @@ const VariableContextProvider: React.FC<EmraldContextWrapperProps> = ({ children
     return;
   });
 
-  const createVariable = async (newVariable: Variable) => {
-    var updatedModel: EMRALD_Model = await updateModelAndReferences(
-      newVariable,
-      'Variable',
-    );
+  const createVariable = (newVariable: Variable) => {
+    const updatedModel = updateModelAndReferences(newVariable, 'Variable');
     updateAppData(updatedModel);
   };
 
-  const updateVariable = async (updatedVariable: Variable) => {
-    var updatedModel: EMRALD_Model = await updateModelAndReferences(
-      updatedVariable,
-      'Variable',
-    );
+  const updateVariable = (updatedVariable: Variable) => {
+    const updatedModel = updateModelAndReferences(updatedVariable, 'Variable');
     updateAppData(updatedModel);
   };
 
-  const deleteVariable = async (VariableId: string | undefined) => {
+  const deleteVariable = (VariableId: string | undefined) => {
     if (!VariableId) {
       return;
     }
     const variableToDelete = variables.find((variable) => variable.id === VariableId);
     if (variableToDelete) {
-      var updatedModel: EMRALD_Model = await DeleteItemAndRefs(variableToDelete);
+      const updatedModel = DeleteItemAndRefs(variableToDelete);
       updateAppData(updatedModel);
     }
   };
@@ -85,7 +79,9 @@ const VariableContextProvider: React.FC<EmraldContextWrapperProps> = ({ children
   };
 
   const clearVariableList = () => {
-    updateAppData(JSON.parse(JSON.stringify({ ...appData.value, VariableList: [] })));
+    updateAppData(
+      JSON.parse(JSON.stringify({ ...appData.value, VariableList: [] })) as EMRALD_Model,
+    );
   };
 
   return (

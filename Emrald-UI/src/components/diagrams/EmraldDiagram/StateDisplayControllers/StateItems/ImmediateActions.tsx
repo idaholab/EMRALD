@@ -5,22 +5,20 @@ import { FaLink } from 'react-icons/fa';
 import useEmraldDiagram from '../../useEmraldDiagram';
 import ContextMenu from '../../../../layout/ContextMenu/ContextMenu';
 import useContextMenu from '../../useContextMenu';
-import { State } from '../../../../../types/EMRALD_Model';
+import type { State } from '../../../../../types/EMRALD_Model';
 import DialogComponent from '../../../../common/DialogComponent/DialogComponent';
 
 interface ImmediateActionsProps {
   state: State;
 }
 
-const ImmediateActions: React.FC<ImmediateActionsProps> = ({
-  state,
-}) => {
+const ImmediateActions: React.FC<ImmediateActionsProps> = ({ state }) => {
   const { immediateActions } = state;
   const {
     openDiagramFromNewState,
     isStateInCurrentDiagram,
     getActionByActionName,
-    onActionDoubleClick
+    onActionDoubleClick,
   } = useEmraldDiagram();
 
   const {
@@ -31,8 +29,8 @@ const ImmediateActions: React.FC<ImmediateActionsProps> = ({
     deleteItem,
     closeContextMenu,
     closeDeleteConfirmation,
-    onActionContextMenu
-  } = useContextMenu()
+    onActionContextMenu,
+  } = useContextMenu();
 
   return (
     <List dense={true} sx={{ padding: 0 }}>
@@ -41,9 +39,13 @@ const ImmediateActions: React.FC<ImmediateActionsProps> = ({
 
         return (
           <ListItem
-            onDoubleClick={(e) => onActionDoubleClick(e, actionValue)}
+            onDoubleClick={(e) => {
+              onActionDoubleClick(e, actionValue);
+            }}
             onContextMenu={(e) => {
-              onActionContextMenu(e, state, actionValue, "immediate");
+              if (actionValue) {
+                onActionContextMenu(e, state, actionValue, 'immediate');
+              }
             }}
             key={index}
             sx={{
@@ -59,7 +61,7 @@ const ImmediateActions: React.FC<ImmediateActionsProps> = ({
                 className="state-node__handle-right source-handle"
                 type="source"
                 position={Position.Right}
-                id={`${actionValue.id}`}
+                id={actionValue.id ?? ''}
               />
             ) : (
               <></>
@@ -76,7 +78,11 @@ const ImmediateActions: React.FC<ImmediateActionsProps> = ({
               <Typography sx={{ fontSize: 10, ml: '5px' }}>{action}</Typography>
               {!isStateInCurrentDiagram(actionValue) ? (
                 <FaLink
-                  onClick={() => openDiagramFromNewState(actionValue)}
+                  onClick={() => {
+                    if (actionValue) {
+                      openDiagramFromNewState(actionValue);
+                    }
+                  }}
                   style={{ cursor: 'pointer', width: '20px' }}
                 />
               ) : (
@@ -94,19 +100,24 @@ const ImmediateActions: React.FC<ImmediateActionsProps> = ({
           options={menuOptions}
         />
       )}
-      {
-        deleteConfirmation && (
-          <DialogComponent 
-            open={true}
-            title="Delete Confirmation"
-            submitText="delete"
-            onSubmit={() => deleteItem()}
-            onClose={() => closeDeleteConfirmation()}
-          >
-            <Typography>Are you sure you want to delete {itemToDelete?.name}? It will be removed from all other places it is used.</Typography>
-          </DialogComponent>
-        )
-      }
+      {deleteConfirmation && (
+        <DialogComponent
+          open={true}
+          title="Delete Confirmation"
+          submitText="delete"
+          onSubmit={() => {
+            deleteItem();
+          }}
+          onClose={() => {
+            closeDeleteConfirmation();
+          }}
+        >
+          <Typography>
+            Are you sure you want to delete {itemToDelete?.name}? It will be removed from all other
+            places it is used.
+          </Typography>
+        </DialogComponent>
+      )}
     </List>
   );
 };
