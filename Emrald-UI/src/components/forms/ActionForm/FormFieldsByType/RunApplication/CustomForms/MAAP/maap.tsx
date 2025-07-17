@@ -273,6 +273,7 @@ const MAAP = () => {
                   inputBlocks,
                   fileRefs,
                   sourceElements: data.value,
+                  needsUpgrade: false
                 }
               : undefined,
           );

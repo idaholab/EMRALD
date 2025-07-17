@@ -29,15 +29,10 @@ const Parameters = () => {
     const l: string[] = [];
     formData?.parameters?.forEach((parameter, i) => {
       v[i] = parameter.value.useVariable === true;
-      if (v[i]) {
-        s[i] = parameter.value.value as string;
-      } else if (
-        typeof parameter.value.value === 'number' ||
-        typeof parameter.value.value === 'string'
-      ) {
-        l[i] = parameter.value.value.toString(); // TODO: There are other possible data types that can be here, but I'm not sure any of them practically exist
+      if (v[i] && parameter.value.type === 'identifier') {
+        s[i] = parameter.value.value;
       } else {
-        console.log(parameter.value);
+        l[i] = new MAAPToString().expressionToString(parameter.value);
       }
     });
     setUseVariable(v);
@@ -71,10 +66,6 @@ const Parameters = () => {
             <TableCell
               component="th"
               scope="row"
-              sx={{
-                fontStyle: row.type === 'comment' ? 'italic' : 'inherit',
-                height: row.type === 'comment' ? 60 : 'inherit',
-              }}
             >
               {row.target.type === 'call_expression'
                 ? new MAAPToString().callExpressionToString(row.target)
@@ -86,8 +77,11 @@ const Parameters = () => {
                   value={localVarSelection[idx]}
                   label="EMRALD Variable"
                   setValue={(value) => {
-                    row.value.useVariable = true;
-                    row.value.value = value;
+                    row.value = {
+                      type: 'identifier',
+                      value,
+                      useVariable: true
+                    };
                     setLocalVarSelection([
                       ...localVarSelection.slice(0, idx),
                       value,
@@ -107,7 +101,13 @@ const Parameters = () => {
                   size="small"
                   value={localValue[idx]}
                   onChange={(e) => {
-                    //row.value.value = e.target.value;
+                    // Setting whatever the user enters to be an identifier will cause the toString function to always print it exactly as the user enters
+                    // Assuming the user enters valid syntax, it will be subsequently parsed as whatever data type it's supposed to be.
+                    row.value = {
+                      type: 'identifier',
+                      value: e.target.value,
+                      useVariable: false,
+                    };
                     setLocalValue([
                       ...localValue.slice(0, idx),
                       e.target.value,
