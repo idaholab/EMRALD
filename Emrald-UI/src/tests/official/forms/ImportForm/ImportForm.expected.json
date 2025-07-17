@@ -4,8 +4,17 @@
     "name": "C-CKV-A2",
     "desc": "",
     "diagramLabel": "Component",
-    "diagramType": "dtSingle",
+    "diagramType": "dtMulti",
     "required": false,
     "states": ["C-CKV-A_Active2", "C-CKV-A_Failed2", "C-CKV-A_Standby2"]
+  },
+  "ignores conflicts": {
+    "name": "C-CKV-A",
+    "desc": "",
+    "diagramType": "dtSingle",
+    "states": ["C-CKV-A_Active", "C-CKV-A_Failed", "C-CKV-A_Standby"],
+    "diagramLabel": "Component",
+    "objType": "Diagram",
+    "required": false
   }
 }
