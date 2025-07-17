@@ -68,7 +68,7 @@ const Distribution = () => {
       getRowsForDistType(newDistType).forEach((row) => {
         if (
           !Object.prototype.hasOwnProperty.call(allRows, row) ||
-          typeof allRows[row].value !== 'number'
+          typeof allRows[row]?.value !== 'number'
         ) {
           newInvalidValues.add(row);
         }
@@ -171,12 +171,12 @@ const Distribution = () => {
                   {row} {getSuffix(row)}
                 </StyledTableCell>
                 <StyledTableCell>
-                  {allRows[row].useVariable ? (
+                  {allRows[row]?.useVariable ? (
                     <SelectComponent
                       label="Variable"
                       value={allRows[row].variable ?? ''}
                       setValue={(value) => {
-                        setParameterVariable(Number(value), row);
+                        setParameterVariable(value, row);
                         handleVariableChange(row);
                       }}
                     >
@@ -188,12 +188,12 @@ const Distribution = () => {
                     </SelectComponent>
                   ) : (
                     <TextField
-                      value={allRows[row].value ?? ''}
+                      value={allRows[row]?.value ?? ''}
                       onChange={(e) => {
-                        handleChange(row, Number(e.target.value));
+                        handleChange(row, e.target.value);
                       }}
                       onBlur={(e) => {
-                        handleBlur(row, Number(e.target.value));
+                        handleBlur(row, e.target.value);
                       }}
                       size="small"
                       label={row}
@@ -207,7 +207,7 @@ const Distribution = () => {
                   {!row.includes('Shape') && (
                     <SelectComponent
                       label="Time Rate"
-                      value={allRows[row].timeRate ?? ('default' as TimeVariableUnit)}
+                      value={allRows[row]?.timeRate ?? ('default' as TimeVariableUnit)}
                       setValue={(value) => {
                         handleRateChange(row, value);
                       }}
@@ -225,10 +225,10 @@ const Distribution = () => {
                 <StyledTableCell>
                   <FormControlLabel
                     label="Use Variable"
-                    value={allRows[row].useVariable ?? false}
+                    value={allRows[row]?.useVariable ?? false}
                     control={
                       <Checkbox
-                        checked={allRows[row].useVariable ?? false}
+                        checked={allRows[row]?.useVariable ?? false}
                         onChange={(e) => {
                           handleUseVariableChange(e.target.checked, row);
                         }}

@@ -45,7 +45,7 @@ const EventForm: React.FC<EventFormProps> = ({ eventData, state }) => {
       </Typography>
       <form>
         <MainDetailsForm
-          itemType={'Event'}
+          itemType='Event'
           type={evType}
           setType={setEvType}
           handleTypeChange={handleChangeEventType}
@@ -62,6 +62,7 @@ const EventForm: React.FC<EventFormProps> = ({ eventData, state }) => {
           error={hasError || invalidValues.size > 0}
           errorMessage="An event with this name already exists, or the name includes an invalid character."
           reqPropsFilled={name ? true : false}
+          invalidValues={invalidValues}
         >
           {state && (
             <FormControlLabel
