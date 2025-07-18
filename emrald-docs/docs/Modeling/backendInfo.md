@@ -25,7 +25,7 @@ Users can define scripts in the following locations:
 - **Event "Var Condition":** Field "Evaluate Code." See Variable Condition under [Conditional Events](./events.md#conditional-events) for more information.
 - **Event "Ext Simulation":** Field "Evaluate Code." See Variable Condition under [Conditional Events](./events.md#conditional-events) for more information.
 
-## Default Variales
+## Default Variables
 
 All custom user scripts can use the following default variables:
 - **CurTime** type[double]: The current time of the simulation in hours.
