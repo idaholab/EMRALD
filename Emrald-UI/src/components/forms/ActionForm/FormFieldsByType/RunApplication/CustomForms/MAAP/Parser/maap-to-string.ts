@@ -457,7 +457,6 @@ export class MAAPToString {
    * @returns The compiled code.
    */
   public sourceElementToString(sourceElement: MAAPSourceElement): string {
-    console.log(sourceElement);
     switch (sourceElement.type) {
       case 'action':
         return this.actionToString(sourceElement);

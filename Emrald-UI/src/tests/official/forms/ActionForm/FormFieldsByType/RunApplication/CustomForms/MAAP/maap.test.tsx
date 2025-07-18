@@ -53,7 +53,7 @@ describe('MAAP Form', async () => {
     await user.upload(await screen.findByLabelText('Input File'), TestINP);
 
     await save();
-    expect(removeIds(getAction(name))).toEqual(expected[name]);
+    expect(getAction(name)).toEqual(expected[name]);
   });
 
   test('uses variables', async () => {

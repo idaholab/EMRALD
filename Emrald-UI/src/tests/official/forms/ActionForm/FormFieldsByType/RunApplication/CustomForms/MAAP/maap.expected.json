@@ -7,42 +7,55 @@
     "exePath": "",
     "formData": {
       "caType": "MAAP",
-      "docComments": {},
       "exePath": "C:/MAAP.exe",
       "fileRefs": ["Test.PAR", "Test.INC"],
       "initiators": [
         {
-          "comment": " Doc comment",
-          "name": "INIT1",
-          "value": true
+          "comments": [[], ["Doc comment"]],
+          "target": {
+            "type": "identifier",
+            "value": "INIT1"
+          },
+          "type": "assignment",
+          "value": {
+            "type": "boolean",
+            "value": true
+          }
         },
         {
-          "comment": "",
-          "name": "INIT2",
-          "value": 0
+          "comments": [[], []],
+          "target": {
+            "type": "identifier",
+            "value": "INIT2"
+          },
+          "type": "assignment",
+          "value": {
+            "type": "number",
+            "value": 0
+          }
         }
       ],
       "inputBlocks": [
         {
           "type": "conditional_block",
           "blockType": "WHEN",
+          "comments": [[], []],
           "test": {
             "type": "expression",
-            "value": {
-              "left": {
-                "type": "identifier",
-                "value": "TIM"
-              },
-              "op": ">=",
-              "right": {
-                "type": "number",
-                "units": "S",
-                "value": 0
-              }
+            "left": {
+              "type": "identifier",
+              "value": "TIM"
+            },
+            "op": ">=",
+            "right": {
+              "type": "number",
+              "units": "S",
+              "value": 0
             }
           },
           "value": [
             {
+              "comments": [[], []],
               "target": {
                 "type": "identifier",
                 "value": "INIT1"
@@ -56,36 +69,53 @@
           ]
         }
       ],
-      "inputFile": {},
       "inputPath": "C:/Test.INP",
-      "parameterFile": {},
+      "needsUpgrade": false,
       "parameterPath": "C:/Test.PAR",
       "parameters": [
         {
-          "name": "PARAM1",
-          "type": "parameter",
-          "useVariable": false,
-          "unit": "",
-          "value": "5"
+          "comments": [[], []],
+          "target": {
+            "type": "identifier",
+            "value": "PARAM1"
+          },
+          "type": "assignment",
+          "value": {
+            "type": "number",
+            "value": 5
+          }
         },
         {
-          "name": "PARAM2(1)",
-          "type": "parameter",
-          "useVariable": false,
-          "unit": "FT",
-          "value": "6"
+          "comments": [[], []],
+          "target": {
+            "arguments": [
+              {
+                "type": "number",
+                "value": 1
+              }
+            ],
+            "type": "call_expression",
+            "value": {
+              "type": "identifier",
+              "value": "PARAM2"
+            }
+          },
+          "type": "assignment",
+          "value": {
+            "type": "number",
+            "value": 6,
+            "units": "FT"
+          }
         }
       ],
       "possibleInitiators": [
         {
-          "comment": "",
           "index": 100,
           "desc": "PARAM1",
           "value": "T",
           "type": "parameter"
         },
         {
-          "comment": "",
           "index": 101,
           "desc": "PARAM2",
           "value": "T",
@@ -94,28 +124,34 @@
       ],
       "sourceElements": [
         {
+          "comments": [[], []],
           "type": "sensitivity",
           "value": "ON"
         },
         {
+          "comments": [[], []],
           "type": "title",
           "value": "TESTINP"
         },
         {
+          "comments": [[], []],
           "fileType": "PARAMETER FILE",
           "type": "file",
           "value": "Test.PAR"
         },
         {
+          "comments": [[], []],
           "fileType": "INCLUDE",
           "type": "file",
           "value": "Test.INC"
         },
         {
+          "comments": [[], []],
           "type": "block",
           "blockType": "PARAMETER CHANGE",
           "value": [
             {
+              "comments": [[], []],
               "target": {
                 "type": "identifier",
                 "value": "PARAM1"
@@ -127,6 +163,7 @@
               }
             },
             {
+              "comments": [[], []],
               "target": {
                 "arguments": [
                   {
@@ -150,9 +187,11 @@
           ]
         },
         {
+          "comments": [[], []],
           "type": "alias",
           "value": [
             {
+              "comments": [[], []],
               "target": {
                 "type": "identifier",
                 "value": "PARAM1"
@@ -166,10 +205,12 @@
           ]
         },
         {
+          "comments": [[], []],
           "type": "block",
           "blockType": "INITIATORS",
           "value": [
             {
+              "comments": [[], ["Doc comment"]],
               "target": {
                 "type": "identifier",
                 "value": "INIT1"
@@ -181,10 +222,7 @@
               }
             },
             {
-              "type": "comment",
-              "value": " Doc comment"
-            },
-            {
+              "comments": [[], []],
               "target": {
                 "type": "identifier",
                 "value": "INIT2"
@@ -198,25 +236,25 @@
           ]
         },
         {
+          "comments": [[], []],
           "blockType": "WHEN",
           "test": {
             "type": "expression",
-            "value": {
-              "left": {
-                "type": "identifier",
-                "value": "TIM"
-              },
-              "op": ">=",
-              "right": {
-                "type": "number",
-                "units": "S",
-                "value": 0
-              }
+            "left": {
+              "type": "identifier",
+              "value": "TIM"
+            },
+            "op": ">=",
+            "right": {
+              "type": "number",
+              "units": "S",
+              "value": 0
             }
           },
           "type": "conditional_block",
           "value": [
             {
+              "comments": [[], []],
               "target": {
                 "type": "identifier",
                 "value": "INIT1"
@@ -230,6 +268,7 @@
           ]
         },
         {
+          "comments": [[], []],
           "target": {
             "type": "parameter_name",
             "value": "PRINT INTERVAL"
@@ -241,6 +280,7 @@
           }
         },
         {
+          "comments": [[], []],
           "target": {
             "type": "parameter_name",
             "value": "START TIME"
@@ -253,6 +293,7 @@
           }
         },
         {
+          "comments": [[], []],
           "target": {
             "type": "parameter_name",
             "value": "END TIME"
@@ -265,27 +306,34 @@
           }
         },
         {
+          "comments": [[], []],
           "type": "plotfil",
           "n": 100,
           "value": [
-            [
-              {
-                "type": "parameter_name",
-                "value": "TIME IN SECONDS"
-              }
-            ],
-            [
-              {
-                "type": "parameter_name",
-                "value": "ALIAS PARAM"
-              }
-            ]
+            {
+              "comments": [],
+              "row": [
+                {
+                  "type": "parameter_name",
+                  "value": "TIME IN SECONDS"
+                }
+              ]
+            },
+            {
+              "comments": [],
+              "row": [
+                {
+                  "type": "parameter_name",
+                  "value": "ALIAS PARAM"
+                }
+              ]
+            }
           ]
         }
       ]
     },
     "mainItem": true,
-    "makeInputFileCode": "string exeLoc = \"C:/MAAP.exe\";\n        string paramLoc = \"C:/Test.PAR\";\n        string inpLoc = \"C:/Test.INP\";\n        string newInp = @\"SENSITIVITY ON\nTITLE\nTESTINP\nEND\nPARAMETER FILE Test.PAR\nINCLUDE Test.INC\nPARAMETER CHANGE\nPARAM1 = 5\nPARAM2(1) = 6 FT\nEND\nALIAS\nPARAM1 AS ALIAS PARAM\nEND\nINITIATORS\nINIT1 = T\nINIT2 = 0\nEND\nWHEN TIM >= 0 S\nINIT1 = F\nEND\nPRINT INTERVAL IS 50\nSTART TIME IS 0 HR\nEND TIME IS 10 HR\nPLOTFIL 100\nTIME IN SECONDS\nALIAS PARAM\nEND\n\";\n        string fileRefs = \"Test.PAR,Test.INC\"; //example \"PVGS_502.par, test.txt\";\n        string[] fileRefsList = fileRefs.Split(',');\n        \n        if (!Path.IsPathRooted(exeLoc))\n        {\n          exeLoc = Path.Join(Directory.GetCurrentDirectory(), exeLoc);\n        }\n        if (!Path.IsPathRooted(paramLoc))\n        {\n          paramLoc = Path.Join(Directory.GetCurrentDirectory(), paramLoc);\n        }\n        if (!Path.IsPathRooted(inpLoc))\n        {\n          inpLoc = Path.Join(Directory.GetCurrentDirectory(), inpLoc);\n        }\n        \n        string tempLoc = Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), \"EMRALD_MAAP\");\n        try\n        {\n          if (Directory.Exists(tempLoc))\n          {\n            Directory.Delete(tempLoc, true);\n          }\n          Directory.CreateDirectory(tempLoc);\n        }\n        catch { }\n        if (File.Exists(paramLoc) && !File.Exists(Path.Join(tempLoc, Path.GetFileName(paramLoc))))\n        {\n          File.Copy(paramLoc, Path.Join(tempLoc, Path.GetFileName(paramLoc)));\n        }\n        \n        string paramFileName = Path.GetFileName(paramLoc);\n        string inpFileName = Path.GetFileName(inpLoc);\n        string inpLocPath = Path.GetDirectoryName(inpLoc);\n        foreach (string fileRef in fileRefsList)\n        {\n          string fileRefPath = Path.Join(inpLocPath, fileRef);\n          if (File.Exists(fileRefPath) && !File.Exists(Path.Join(tempLoc, fileRef)))\n          {\n            if (fileRef != paramFileName)\n            File.Copy(fileRefPath, Path.Join(tempLoc, fileRef));\n          }\n          else\n          {\n            Console.WriteLine(\"Missing MAAP referenced file - \" + Path.Join(inpLocPath, fileRef));\n          }\n        }\n        string exeName = Path.GetFileName(exeLoc);\n        if (File.Exists(exeLoc) && !File.Exists(Path.Join(tempLoc, exeName)))\n        {\n          File.Copy(exeLoc, Path.Join(tempLoc, exeName));\n        }\n        string dllPath = Path.Join(Path.GetDirectoryName(exeLoc), exeName[..^7] + \".dll\");\n        if (File.Exists(dllPath) && !File.Exists(Path.Join(tempLoc, Path.GetFileName(dllPath))))\n        {\n          File.Copy(dllPath, Path.Join(tempLoc, Path.GetFileName(dllPath)));\n        }\n        \n        string newInpLoc = Path.Join(tempLoc, inpFileName);\n        System.IO.File.WriteAllText(newInpLoc, newInp);\n        return $\"{Path.Join(tempLoc, exeName)} {inpFileName} {paramFileName}\";",
+    "makeInputFileCode": "string exeLoc = \"C:/MAAP.exe\";\n        string paramLoc = \"C:/Test.PAR\";\n        string inpLoc = \"C:/Test.INP\";\n        string newInp = @\"SENSITIVITY ON\nTITLE\nTESTINP\nEND\nPARAMETER FILE Test.PAR\nINCLUDE Test.INC\nPARAMETER CHANGE\nPARAM1 = 5\nPARAM2(1) = 6 FT\nEND\nALIAS\nPARAM1 AS ALIAS PARAM\nEND\nINITIATORS\nINIT1 = T\nINIT2 = 0\nEND\nWHEN TIM >= 0 S\nINIT1 = F\nEND\nPRINT INTERVAL IS 50\nSTART TIME IS 0 HR\nEND TIME IS 10 HR\nPLOTFIL 100\nTIME IN SECONDS\nALIAS PARAM\nEND\";\n        string fileRefs = \"Test.PAR,Test.INC\"; //example \"PVGS_502.par, test.txt\";\n        string[] fileRefsList = fileRefs.Split(',');\n        \n        if (!Path.IsPathRooted(exeLoc))\n        {\n          exeLoc = Path.Join(Directory.GetCurrentDirectory(), exeLoc);\n        }\n        if (!Path.IsPathRooted(paramLoc))\n        {\n          paramLoc = Path.Join(Directory.GetCurrentDirectory(), paramLoc);\n        }\n        if (!Path.IsPathRooted(inpLoc))\n        {\n          inpLoc = Path.Join(Directory.GetCurrentDirectory(), inpLoc);\n        }\n        \n        string tempLoc = Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), \"EMRALD_MAAP\");\n        try\n        {\n          if (Directory.Exists(tempLoc))\n          {\n            Directory.Delete(tempLoc, true);\n          }\n          Directory.CreateDirectory(tempLoc);\n        }\n        catch { }\n        if (File.Exists(paramLoc) && !File.Exists(Path.Join(tempLoc, Path.GetFileName(paramLoc))))\n        {\n          File.Copy(paramLoc, Path.Join(tempLoc, Path.GetFileName(paramLoc)));\n        }\n        \n        string paramFileName = Path.GetFileName(paramLoc);\n        string inpFileName = Path.GetFileName(inpLoc);\n        string inpLocPath = Path.GetDirectoryName(inpLoc);\n        foreach (string fileRef in fileRefsList)\n        {\n          string fileRefPath = Path.Join(inpLocPath, fileRef);\n          if (File.Exists(fileRefPath) && !File.Exists(Path.Join(tempLoc, fileRef)))\n          {\n            if (fileRef != paramFileName)\n            File.Copy(fileRefPath, Path.Join(tempLoc, fileRef));\n          }\n          else\n          {\n            Console.WriteLine(\"Missing MAAP referenced file - \" + Path.Join(inpLocPath, fileRef));\n          }\n        }\n        string exeName = Path.GetFileName(exeLoc);\n        if (File.Exists(exeLoc) && !File.Exists(Path.Join(tempLoc, exeName)))\n        {\n          File.Copy(exeLoc, Path.Join(tempLoc, exeName));\n        }\n        string dllPath = Path.Join(Path.GetDirectoryName(exeLoc), exeName[..^7] + \".dll\");\n        if (File.Exists(dllPath) && !File.Exists(Path.Join(tempLoc, Path.GetFileName(dllPath))))\n        {\n          File.Copy(dllPath, Path.Join(tempLoc, Path.GetFileName(dllPath)));\n        }\n        \n        string newInpLoc = Path.Join(tempLoc, inpFileName);\n        System.IO.File.WriteAllText(newInpLoc, newInp);\n        return $\"{Path.Join(tempLoc, exeName)} {inpFileName} {paramFileName}\";",
     "processOutputFileCode": "string inpLoc = @\"C:/Test.INP\";\n  if (!Path.IsPathRooted(inpLoc))\n        inpLoc = RootPath + inpLoc;\n    string docVarPath = @\"./MAAP/temp.log\";\n  if (!Path.IsPathRooted(docVarPath))\n        docVarPath = RootPath + docVarPath;\n  string resLoc = Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), \"EMRALD_MAAP\", Path.GetFileNameWithoutExtension(inpLoc) + \".log\");\n  Directory.CreateDirectory(Path.GetDirectoryName(docVarPath));\n  File.Copy(resLoc, docVarPath, true);",
     "raType": "custom",
     "returnProcess": "rtNone",
@@ -596,42 +644,55 @@
     "exePath": "",
     "formData": {
       "caType": "MAAP",
-      "docComments": {},
       "exePath": "C:/MAAP.exe",
       "fileRefs": ["Test.PAR", "Test.INC"],
       "initiators": [
         {
-          "comment": " Doc comment",
-          "name": "INIT1",
-          "value": true
+          "comments": [[], ["Doc comment"]],
+          "target": {
+            "type": "identifier",
+            "value": "INIT1"
+          },
+          "type": "assignment",
+          "value": {
+            "type": "boolean",
+            "value": true
+          }
         },
         {
-          "comment": "",
-          "name": "PARAM1",
-          "value": "T"
+          "comments": [[], []],
+          "target": {
+            "type": "identifier",
+            "value": "PARAM1"
+          },
+          "type": "assignment",
+          "value": {
+            "type": "identifier",
+            "value": "T"
+          }
         }
       ],
       "inputBlocks": [
         {
           "type": "conditional_block",
           "blockType": "WHEN",
+          "comments": [[], []],
           "test": {
             "type": "expression",
-            "value": {
-              "left": {
-                "type": "identifier",
-                "value": "TIM"
-              },
-              "op": ">=",
-              "right": {
-                "type": "number",
-                "units": "S",
-                "value": 0
-              }
+            "left": {
+              "type": "identifier",
+              "value": "TIM"
+            },
+            "op": ">=",
+            "right": {
+              "type": "number",
+              "units": "S",
+              "value": 0
             }
           },
           "value": [
             {
+              "comments": [[], []],
               "target": {
                 "type": "identifier",
                 "value": "INIT1"
@@ -645,36 +706,53 @@
           ]
         }
       ],
-      "inputFile": {},
       "inputPath": "C:/Test.INP",
-      "parameterFile": {},
       "parameterPath": "C:/Test.PAR",
+      "needsUpgrade": false,
       "parameters": [
         {
-          "name": "PARAM1",
-          "type": "parameter",
-          "useVariable": false,
-          "unit": "",
-          "value": "5"
+          "comments": [[], []],
+          "target": {
+            "type": "identifier",
+            "value": "PARAM1"
+          },
+          "type": "assignment",
+          "value": {
+            "type": "number",
+            "value": 5
+          }
         },
         {
-          "name": "PARAM2(1)",
-          "type": "parameter",
-          "useVariable": false,
-          "unit": "FT",
-          "value": "6"
+          "comments": [[], []],
+          "target": {
+            "arguments": [
+              {
+                "type": "number",
+                "value": 1
+              }
+            ],
+            "type": "call_expression",
+            "value": {
+              "type": "identifier",
+              "value": "PARAM2"
+            }
+          },
+          "type": "assignment",
+          "value": {
+            "type": "number",
+            "units": "FT",
+            "value": 6
+          }
         }
       ],
       "possibleInitiators": [
         {
-          "comment": "",
           "index": 100,
           "desc": "PARAM1",
           "value": "T",
           "type": "parameter"
         },
         {
-          "comment": "",
           "index": 101,
           "desc": "PARAM2",
           "value": "T",
@@ -683,28 +761,34 @@
       ],
       "sourceElements": [
         {
+          "comments": [[], []],
           "type": "sensitivity",
           "value": "ON"
         },
         {
+          "comments": [[], []],
           "type": "title",
           "value": "TESTINP"
         },
         {
+          "comments": [[], []],
           "fileType": "PARAMETER FILE",
           "type": "file",
           "value": "Test.PAR"
         },
         {
+          "comments": [[], []],
           "fileType": "INCLUDE",
           "type": "file",
           "value": "Test.INC"
         },
         {
+          "comments": [[], []],
           "type": "block",
           "blockType": "PARAMETER CHANGE",
           "value": [
             {
+              "comments": [[], []],
               "target": {
                 "type": "identifier",
                 "value": "PARAM1"
@@ -716,6 +800,7 @@
               }
             },
             {
+              "comments": [[], []],
               "target": {
                 "arguments": [
                   {
@@ -739,9 +824,11 @@
           ]
         },
         {
+          "comments": [[], []],
           "type": "alias",
           "value": [
             {
+              "comments": [[], []],
               "target": {
                 "type": "identifier",
                 "value": "PARAM1"
@@ -755,10 +842,12 @@
           ]
         },
         {
+          "comments": [[], []],
           "type": "block",
           "blockType": "INITIATORS",
           "value": [
             {
+              "comments": [[], ["Doc comment"]],
               "target": {
                 "type": "identifier",
                 "value": "INIT1"
@@ -770,10 +859,7 @@
               }
             },
             {
-              "type": "comment",
-              "value": " Doc comment"
-            },
-            {
+              "comments": [[], []],
               "target": {
                 "type": "identifier",
                 "value": "INIT2"
@@ -787,25 +873,25 @@
           ]
         },
         {
+          "comments": [[], []],
           "blockType": "WHEN",
           "test": {
             "type": "expression",
-            "value": {
-              "left": {
-                "type": "identifier",
-                "value": "TIM"
-              },
-              "op": ">=",
-              "right": {
-                "type": "number",
-                "units": "S",
-                "value": 0
-              }
+            "left": {
+              "type": "identifier",
+              "value": "TIM"
+            },
+            "op": ">=",
+            "right": {
+              "type": "number",
+              "units": "S",
+              "value": 0
             }
           },
           "type": "conditional_block",
           "value": [
             {
+              "comments": [[], []],
               "target": {
                 "type": "identifier",
                 "value": "INIT1"
@@ -819,6 +905,7 @@
           ]
         },
         {
+          "comments": [[], []],
           "target": {
             "type": "parameter_name",
             "value": "PRINT INTERVAL"
@@ -830,6 +917,7 @@
           }
         },
         {
+          "comments": [[], []],
           "target": {
             "type": "parameter_name",
             "value": "START TIME"
@@ -842,6 +930,7 @@
           }
         },
         {
+          "comments": [[], []],
           "target": {
             "type": "parameter_name",
             "value": "END TIME"
@@ -854,27 +943,34 @@
           }
         },
         {
+          "comments": [[], []],
           "type": "plotfil",
           "n": 100,
           "value": [
-            [
-              {
-                "type": "parameter_name",
-                "value": "TIME IN SECONDS"
-              }
-            ],
-            [
-              {
-                "type": "parameter_name",
-                "value": "ALIAS PARAM"
-              }
-            ]
+            {
+              "comments": [],
+              "row": [
+                {
+                  "type": "parameter_name",
+                  "value": "TIME IN SECONDS"
+                }
+              ]
+            },
+            {
+              "comments": [],
+              "row": [
+                {
+                  "type": "parameter_name",
+                  "value": "ALIAS PARAM"
+                }
+              ]
+            }
           ]
         }
       ]
     },
     "mainItem": true,
-    "makeInputFileCode": "string exeLoc = \"C:/MAAP.exe\";\n        string paramLoc = \"C:/Test.PAR\";\n        string inpLoc = \"C:/Test.INP\";\n        string newInp = @\"SENSITIVITY ON\nTITLE\nTESTINP\nEND\nPARAMETER FILE Test.PAR\nINCLUDE Test.INC\nPARAMETER CHANGE\nPARAM1 = 5\nPARAM2(1) = 6 FT\nEND\nALIAS\nPARAM1 AS ALIAS PARAM\nEND\nINITIATORS\nINIT1 = T\nPARAM1 = T\nEND\nWHEN TIM >= 0 S\nINIT1 = F\nEND\nPRINT INTERVAL IS 50\nSTART TIME IS 0 HR\nEND TIME IS 10 HR\nPLOTFIL 100\nTIME IN SECONDS\nALIAS PARAM\nEND\n\";\n        string fileRefs = \"Test.PAR,Test.INC\"; //example \"PVGS_502.par, test.txt\";\n        string[] fileRefsList = fileRefs.Split(',');\n        \n        if (!Path.IsPathRooted(exeLoc))\n        {\n          exeLoc = Path.Join(Directory.GetCurrentDirectory(), exeLoc);\n        }\n        if (!Path.IsPathRooted(paramLoc))\n        {\n          paramLoc = Path.Join(Directory.GetCurrentDirectory(), paramLoc);\n        }\n        if (!Path.IsPathRooted(inpLoc))\n        {\n          inpLoc = Path.Join(Directory.GetCurrentDirectory(), inpLoc);\n        }\n        \n        string tempLoc = Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), \"EMRALD_MAAP\");\n        try\n        {\n          if (Directory.Exists(tempLoc))\n          {\n            Directory.Delete(tempLoc, true);\n          }\n          Directory.CreateDirectory(tempLoc);\n        }\n        catch { }\n        if (File.Exists(paramLoc) && !File.Exists(Path.Join(tempLoc, Path.GetFileName(paramLoc))))\n        {\n          File.Copy(paramLoc, Path.Join(tempLoc, Path.GetFileName(paramLoc)));\n        }\n        \n        string paramFileName = Path.GetFileName(paramLoc);\n        string inpFileName = Path.GetFileName(inpLoc);\n        string inpLocPath = Path.GetDirectoryName(inpLoc);\n        foreach (string fileRef in fileRefsList)\n        {\n          string fileRefPath = Path.Join(inpLocPath, fileRef);\n          if (File.Exists(fileRefPath) && !File.Exists(Path.Join(tempLoc, fileRef)))\n          {\n            if (fileRef != paramFileName)\n            File.Copy(fileRefPath, Path.Join(tempLoc, fileRef));\n          }\n          else\n          {\n            Console.WriteLine(\"Missing MAAP referenced file - \" + Path.Join(inpLocPath, fileRef));\n          }\n        }\n        string exeName = Path.GetFileName(exeLoc);\n        if (File.Exists(exeLoc) && !File.Exists(Path.Join(tempLoc, exeName)))\n        {\n          File.Copy(exeLoc, Path.Join(tempLoc, exeName));\n        }\n        string dllPath = Path.Join(Path.GetDirectoryName(exeLoc), exeName[..^7] + \".dll\");\n        if (File.Exists(dllPath) && !File.Exists(Path.Join(tempLoc, Path.GetFileName(dllPath))))\n        {\n          File.Copy(dllPath, Path.Join(tempLoc, Path.GetFileName(dllPath)));\n        }\n        \n        string newInpLoc = Path.Join(tempLoc, inpFileName);\n        System.IO.File.WriteAllText(newInpLoc, newInp);\n        return $\"{Path.Join(tempLoc, exeName)} {inpFileName} {paramFileName}\";",
+    "makeInputFileCode": "string exeLoc = \"C:/MAAP.exe\";\n        string paramLoc = \"C:/Test.PAR\";\n        string inpLoc = \"C:/Test.INP\";\n        string newInp = @\"SENSITIVITY ON\nTITLE\nTESTINP\nEND\nPARAMETER FILE Test.PAR\nINCLUDE Test.INC\nPARAMETER CHANGE\nPARAM1 = 5\nPARAM2(1) = 6 FT\nEND\nALIAS\nPARAM1 AS ALIAS PARAM\nEND\nINITIATORS\nINIT1 = T\nPARAM1 = T\nEND\nWHEN TIM >= 0 S\nINIT1 = F\nEND\nPRINT INTERVAL IS 50\nSTART TIME IS 0 HR\nEND TIME IS 10 HR\nPLOTFIL 100\nTIME IN SECONDS\nALIAS PARAM\nEND\";\n        string fileRefs = \"Test.PAR,Test.INC\"; //example \"PVGS_502.par, test.txt\";\n        string[] fileRefsList = fileRefs.Split(',');\n        \n        if (!Path.IsPathRooted(exeLoc))\n        {\n          exeLoc = Path.Join(Directory.GetCurrentDirectory(), exeLoc);\n        }\n        if (!Path.IsPathRooted(paramLoc))\n        {\n          paramLoc = Path.Join(Directory.GetCurrentDirectory(), paramLoc);\n        }\n        if (!Path.IsPathRooted(inpLoc))\n        {\n          inpLoc = Path.Join(Directory.GetCurrentDirectory(), inpLoc);\n        }\n        \n        string tempLoc = Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), \"EMRALD_MAAP\");\n        try\n        {\n          if (Directory.Exists(tempLoc))\n          {\n            Directory.Delete(tempLoc, true);\n          }\n          Directory.CreateDirectory(tempLoc);\n        }\n        catch { }\n        if (File.Exists(paramLoc) && !File.Exists(Path.Join(tempLoc, Path.GetFileName(paramLoc))))\n        {\n          File.Copy(paramLoc, Path.Join(tempLoc, Path.GetFileName(paramLoc)));\n        }\n        \n        string paramFileName = Path.GetFileName(paramLoc);\n        string inpFileName = Path.GetFileName(inpLoc);\n        string inpLocPath = Path.GetDirectoryName(inpLoc);\n        foreach (string fileRef in fileRefsList)\n        {\n          string fileRefPath = Path.Join(inpLocPath, fileRef);\n          if (File.Exists(fileRefPath) && !File.Exists(Path.Join(tempLoc, fileRef)))\n          {\n            if (fileRef != paramFileName)\n            File.Copy(fileRefPath, Path.Join(tempLoc, fileRef));\n          }\n          else\n          {\n            Console.WriteLine(\"Missing MAAP referenced file - \" + Path.Join(inpLocPath, fileRef));\n          }\n        }\n        string exeName = Path.GetFileName(exeLoc);\n        if (File.Exists(exeLoc) && !File.Exists(Path.Join(tempLoc, exeName)))\n        {\n          File.Copy(exeLoc, Path.Join(tempLoc, exeName));\n        }\n        string dllPath = Path.Join(Path.GetDirectoryName(exeLoc), exeName[..^7] + \".dll\");\n        if (File.Exists(dllPath) && !File.Exists(Path.Join(tempLoc, Path.GetFileName(dllPath))))\n        {\n          File.Copy(dllPath, Path.Join(tempLoc, Path.GetFileName(dllPath)));\n        }\n        \n        string newInpLoc = Path.Join(tempLoc, inpFileName);\n        System.IO.File.WriteAllText(newInpLoc, newInp);\n        return $\"{Path.Join(tempLoc, exeName)} {inpFileName} {paramFileName}\";",
     "processOutputFileCode": "string inpLoc = @\"C:/Test.INP\";\n  if (!Path.IsPathRooted(inpLoc))\n        inpLoc = RootPath + inpLoc;\n    string docVarPath = @\"./MAAP/temp.log\";\n  if (!Path.IsPathRooted(docVarPath))\n        docVarPath = RootPath + docVarPath;\n  string resLoc = Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), \"EMRALD_MAAP\", Path.GetFileNameWithoutExtension(inpLoc) + \".log\");\n  Directory.CreateDirectory(Path.GetDirectoryName(docVarPath));\n  File.Copy(resLoc, docVarPath, true);",
     "raType": "custom",
     "returnProcess": "rtNone",
@@ -895,41 +991,51 @@
       "fileRefs": ["Test.PAR", "Test.INC"],
       "initiators": [
         {
-          "type": "initiator",
-          "name": "INIT1",
-          "value": true
+          "comments": [[], ["Doc comment"]],
+          "target": {
+            "type": "identifier",
+            "value": "INIT1"
+          },
+          "type": "assignment",
+          "value": {
+            "type": "boolean",
+            "value": true
+          }
         },
         {
-          "type": "comment",
-          "value": " Doc comment"
-        },
-        {
-          "type": "initiator",
-          "name": "INIT2",
-          "value": 0
+          "comments": [[], []],
+          "target": {
+            "type": "identifier",
+            "value": "INIT2"
+          },
+          "type": "assignment",
+          "value": {
+            "type": "number",
+            "value": 0
+          }
         }
       ],
       "inputBlocks": [
         {
+          "comments": [[], []],
           "type": "conditional_block",
           "blockType": "WHEN",
           "test": {
             "type": "expression",
-            "value": {
-              "left": {
-                "type": "identifier",
-                "value": "TIM"
-              },
-              "op": ">=",
-              "right": {
-                "type": "number",
-                "units": "S",
-                "value": 0
-              }
+            "left": {
+              "type": "identifier",
+              "value": "TIM"
+            },
+            "op": ">=",
+            "right": {
+              "type": "number",
+              "units": "S",
+              "value": 0
             }
           },
           "value": [
             {
+              "comments": [[], []],
               "target": {
                 "type": "identifier",
                 "value": "INIT1"
@@ -940,16 +1046,15 @@
                 "value": false
               }
             }
-          ],
-          "comment": []
+          ]
         }
       ],
-      "inputFile": {},
       "inputPath": "C:/Test.INP",
-      "parameterFile": {},
       "parameterPath": "C:/Test.PAR",
+      "needsUpgrade": false,
       "parameters": [
         {
+          "comments": [[], []],
           "target": {
             "type": "identifier",
             "value": "PARAM1"
@@ -961,6 +1066,7 @@
           }
         },
         {
+          "comments": [[], []],
           "target": {
             "type": "call_expression",
             "arguments": [
@@ -984,14 +1090,12 @@
       ],
       "possibleInitiators": [
         {
-          "comment": "",
           "desc": "PARAM1",
           "index": 100,
           "value": "T",
           "type": "parameter"
         },
         {
-          "comment": "",
           "desc": "PARAM2",
           "index": 101,
           "value": "T",
@@ -1000,29 +1104,34 @@
       ],
       "sourceElements": [
         {
+          "comments": [[], []],
           "type": "sensitivity",
           "value": "ON"
         },
         {
+          "comments": [[], []],
           "type": "title",
-          "value": [{ "title": "TESTINP", "comment": []}],
-          "comment": []
+          "value": "TESTINP"
         },
         {
+          "comments": [[], []],
           "fileType": "PARAMETER FILE",
           "type": "file",
           "value": "Test.PAR"
         },
         {
+          "comments": [[], []],
           "fileType": "INCLUDE",
           "type": "file",
           "value": "Test.INC"
         },
         {
+          "comments": [[], []],
           "type": "block",
           "blockType": "PARAMETER CHANGE",
           "value": [
             {
+              "comments": [[], []],
               "target": {
                 "type": "identifier",
                 "value": "PARAM1"
@@ -1034,6 +1143,7 @@
               }
             },
             {
+              "comments": [[], []],
               "target": {
                 "arguments": [
                   {
@@ -1054,13 +1164,14 @@
                 "units": "FT"
               }
             }
-          ],
-          "comment": []
+          ]
         },
         {
+          "comments": [[], []],
           "type": "alias",
           "value": [
             {
+              "comments": [[], []],
               "target": {
                 "type": "identifier",
                 "value": "PARAM1"
@@ -1071,14 +1182,15 @@
                 "value": "ALIAS PARAM"
               }
             }
-          ],
-          "comment": []
+          ]
         },
         {
+          "comments": [[], []],
           "type": "block",
           "blockType": "INITIATORS",
           "value": [
             {
+              "comments": [[], ["Doc comment"]],
               "target": {
                 "type": "identifier",
                 "value": "INIT1"
@@ -1090,10 +1202,7 @@
               }
             },
             {
-              "type": "comment",
-              "value": " Doc comment"
-            },
-            {
+              "comments": [[], []],
               "target": {
                 "type": "identifier",
                 "value": "INIT2"
@@ -1104,29 +1213,28 @@
                 "value": 0
               }
             }
-          ],
-          "comment": []
+          ]
         },
         {
+          "comments": [[], []],
           "blockType": "WHEN",
           "test": {
             "type": "expression",
-            "value": {
-              "left": {
-                "type": "identifier",
-                "value": "TIM"
-              },
-              "op": ">=",
-              "right": {
-                "type": "number",
-                "units": "S",
-                "value": 0
-              }
+            "left": {
+              "type": "identifier",
+              "value": "TIM"
+            },
+            "op": ">=",
+            "right": {
+              "type": "number",
+              "units": "S",
+              "value": 0
             }
           },
           "type": "conditional_block",
           "value": [
             {
+              "comments": [[], []],
               "target": {
                 "type": "identifier",
                 "value": "INIT1"
@@ -1137,10 +1245,10 @@
                 "value": false
               }
             }
-          ],
-          "comment": []
+          ]
         },
         {
+          "comments": [[], []],
           "target": {
             "type": "parameter_name",
             "value": "PRINT INTERVAL"
@@ -1152,6 +1260,7 @@
           }
         },
         {
+          "comments": [[], []],
           "target": {
             "type": "parameter_name",
             "value": "START TIME"
@@ -1164,6 +1273,7 @@
           }
         },
         {
+          "comments": [[], []],
           "target": {
             "type": "parameter_name",
             "value": "END TIME"
@@ -1176,23 +1286,29 @@
           }
         },
         {
+          "comments": [[], []],
           "type": "plotfil",
           "n": 100,
           "value": [
-            [
-              {
-                "type": "parameter_name",
-                "value": "TIME IN SECONDS"
-              }
-            ],
-            [
-              {
-                "type": "parameter_name",
-                "value": "ALIAS PARAM"
-              }
-            ]
-          ],
-          "comment": []
+            {
+              "comments": [],
+              "row": [
+                {
+                  "type": "parameter_name",
+                  "value": "TIME IN SECONDS"
+                }
+              ]
+            },
+            {
+              "comments": [],
+              "row": [
+                {
+                  "type": "parameter_name",
+                  "value": "ALIAS PARAM"
+                }
+              ]
+            }
+          ]
         }
       ]
     },

@@ -177,7 +177,7 @@ Variable = CallExpression / Literal / ParameterName / Identifier
 SensitivityStatement = SENSITIVITY _ value:(ON / OFF) {
 	return { type: "sensitivity", value }
 }
-TitleStatement = TITLE _ comment:Comment? ___ value:(TitleBlock ___)* epilogue:(CommentBlock ___)? END {
+TitleStatement = TITLE _ comment:Comment? __ value:(TitleBlock ___)* epilogue:(CommentBlock ___)? END {
 	let innerComments = [];
     if (value) {
     	innerComments = value.map(v => v[0].comments)[0] ?? [];
@@ -226,7 +226,7 @@ AliasStatement = ALIAS _ comment1:Comment? ___ value:(SourceElements ___)? comme
     return {
     	type: "alias",
         value: value ? value[0] : [],
-        comment: [[comment1], comment2[0]],
+        comment: [[comment1], comment2 ? comment2[0] : []],
     }
 }
 PlotFilStatement = PLOTFIL _ n:[0-9]+ comment1:(_ Comment)? value:(___ PlotFilBody)* comment2:(__ CommentBlock)? ___ END {
