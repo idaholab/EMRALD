@@ -265,7 +265,7 @@ namespace SimulationDAL
         {
           foreach(var val in _toStateProb)
           {
-            if((val > 1) || (val < 0))
+            if(((val > 1) || (val < 0)) && (val != -1))
             {
               throw new Exception("Non Mutually exclusive transition probabilities must be between 0 and 1 or a variable");
             }

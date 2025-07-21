@@ -2,18 +2,19 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.IO;
 using System.Linq;
-using Sop.Collections.Generic.BTree;
+using System.Linq.Expressions;
+using System.Reflection;
+using System.Text.RegularExpressions;
+using System.Xml;
 //using SimulationTracking;
 using MyStuff.Collections;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Converters;
-using System.IO;
-using System.Xml;
-using System.Text.RegularExpressions;
+using Newtonsoft.Json.Linq;
 using NLog;
-using System.Linq.Expressions;
 
 namespace SimulationDAL
 {
@@ -252,7 +253,7 @@ namespace SimulationDAL
       if (!base.DeserializeDerived((object)dynObj, false, lists, useGivenIDs))
         return false;
 
-      InitValue(dynObj.value);
+      InitValue(dynObj.value); //call derived function to init the variable value
 
       lists.allVariables.Add(this, false);
       
@@ -654,7 +655,7 @@ namespace SimulationDAL
     protected bool _pathMustExist = true;
     protected object _dfltValue = null;
     protected string _docFullPath = "";
-    private VariableList _vars = null;
+    protected VariableList _vars = null;
 
     protected string linkStr()
     {
@@ -667,14 +668,15 @@ namespace SimulationDAL
       int lastIdx = 0;
       for (int index = 0; ; index += 1)
       {
-        index = _linkStr.IndexOf('%', index);
+        index = _linkStr.Count() > index ? _linkStr.IndexOf('%', index) : -1; //get the next variable if not at the end of the string
         if (index == -1)
         {
           newStr += _linkStr.Substring(lastIdx, (_linkStr.Length - lastIdx));
           break;
         }
         int end = 1;
-        while (Char.IsDigit(_linkStr[end + index]) || Char.IsLetter(_linkStr[end + index]) || (_linkStr[end + index] == '_'))
+        while ((_linkStr.Count() > (end + index)) && 
+               (Char.IsDigit(_linkStr[end + index]) || Char.IsLetter(_linkStr[end + index]) || (_linkStr[end + index] == '_')))
           end++;
         string varName = _linkStr.Substring(index, end).Trim('%');
         SimVariable replVar = _vars.FindByName(varName, false);
@@ -771,9 +773,11 @@ namespace SimulationDAL
         throw new Exception("Missing docLink for document variable");
 
       this._linkStr = Convert.ToString(dynObj.docLink);
+      if (_linkStr.IndexOf('%', 0) > -1)
+        this._vars = lists.allVariables;
 
       bool retVal = base.DeserializeDerived((object)dynObj, false, lists, useGivenIDs);
-      this._vars = lists.allVariables;
+      
       
       //must load everything in LoadObjLinks because the states must be loaded first so we have the IDs. 
       processed = true;
@@ -793,7 +797,7 @@ namespace SimulationDAL
 
       try
       {
-        if (_pathMustExist)
+        if (_pathMustExist && (_vars == null)) //don't init if there is a variable used to get the 
         {
           //do this different for document items as the value is not set by the user data
           base.InitValue(GetValue());
