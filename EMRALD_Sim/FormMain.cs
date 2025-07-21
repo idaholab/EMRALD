@@ -44,6 +44,7 @@ namespace EMRALD_Sim
     private int _pathResultsInterval = -1;
     private ModelSettings _currentModelSettings = null;
     private Options_cur jsonOptions = null; //if the user has passed in JSON options
+    private bool _populatingSettings = false; //Flag that UI settings are being populated programatically, don't save on changes if true
 
     [DllImport("kernel32.dll")]
     static extern bool AttachConsole(int dwProcessId);
@@ -146,6 +147,7 @@ namespace EMRALD_Sim
     /// <returns>return if to execute the model</returns>
     private bool LoadFromArgs(string[] args)
     {
+      _populatingSettings = true;
       bool execute = false;
       string model = null;
       //SimulationDAL.Globals.simID = 1;
@@ -452,7 +454,7 @@ namespace EMRALD_Sim
 
         }
       }
-
+      _populatingSettings = false;
       return execute;
     }
 
