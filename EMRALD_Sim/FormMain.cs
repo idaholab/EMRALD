@@ -711,7 +711,8 @@ namespace EMRALD_Sim
     private void btnGenMsg_Click(object sender, EventArgs e)
     {
       TimeSpan time = TimeSpan.FromSeconds(0);
-      try { time = TimeSpan.Parse(lblSimTime.Text); } catch { };
+      try { time = TimeSpan.Parse(lblSimTime.Text); } catch { }
+      ;
 
       TMsgWrapper msgObj = new TMsgWrapper(MessageType.mtSimAction, tbDispName.Text, time, tbMsgDesc.Text);
 
@@ -726,7 +727,8 @@ namespace EMRALD_Sim
       {
         MessageBox.Show("Not a valid time for the action.");
         return;
-      };
+      }
+      ;
 
       switch ((SimActionType)cbMsgType.SelectedIndex)
       {
@@ -799,7 +801,7 @@ namespace EMRALD_Sim
           _optionsAccessor.Value.SettingsByModel.RemoveLast();
           recentToolStripMenuItem.DropDownItems.RemoveAt(recentToolStripMenuItem.DropDownItems.Count - 1);
         }
-        
+
         _optionsAccessor.Value.SettingsByModel.AddFirst(_currentModelSettings);
 
         // Might be hidden if there were no recent entries in the json file to start with
@@ -1062,7 +1064,7 @@ namespace EMRALD_Sim
 
     private void SaveUISettingsToJson()
     {
-      if (_currentModelSettings != null)
+      if (!_populatingSettings && (_currentModelSettings != null))
       {
         _currentModelSettings.RunCount = tbRunCnt.Text;
         _currentModelSettings.MaxRunTime = tbMaxSimTime.Text;
@@ -1071,6 +1073,12 @@ namespace EMRALD_Sim
         _currentModelSettings.Seed = tbSeed.Text;
         _currentModelSettings.DebugFromRun = tbLogRunStart.Text;
         _currentModelSettings.DebugToRun = tbLogRunEnd.Text;
+
+        _currentModelSettings.CheckedVars.Clear();
+        foreach (var item in lbMonitorVars.CheckedItems)
+        {
+          _currentModelSettings.CheckedVars.Add(item.ToString());
+        }
 
         if (chkLog.Checked)
         {
@@ -1087,12 +1095,14 @@ namespace EMRALD_Sim
       }
     }
 
-    private void SaveUISettings() {
+    private void SaveUISettings()
+    {
       File.WriteAllText("UISettings.json", JsonConvert.SerializeObject(_optionsAccessor.Value, Formatting.Indented));
     }
 
     private void PopulateSettingsFromJson()
     {
+      _populatingSettings = true;
       tbRunCnt.Text = _currentModelSettings.RunCount.ToString();
       tbMaxSimTime.Text = _currentModelSettings.MaxRunTime.ToString();
       tbSavePath.Text = _currentModelSettings.BasicResultsLocation;
@@ -1121,6 +1131,19 @@ namespace EMRALD_Sim
         rbDebugDetailed.Checked = false;
         ConfigData.debugLev = LogLevel.Off;
       }
+
+      for (int i = 0; i < lbMonitorVars.Items.Count; i++)
+      {
+        // Check if the item text is in the itemsToCheck list
+        if (_currentModelSettings.CheckedVars.Contains(lbMonitorVars.Items[i].ToString()))
+        {
+          // If it is, set the item as checked
+          lbMonitorVars.SetItemChecked(i, true);
+        }
+      }
+
+      _populatingSettings = false;
+
     }
 
     private void btnValidateModel_Click(object sender, EventArgs e)
@@ -1509,6 +1532,27 @@ namespace EMRALD_Sim
     {
       sdSaveModel.FileName = _modelPath;
       sdSaveModel.ShowDialog();
+    }
+
+    private void lbMonitorVars_Leave(object sender, EventArgs e)
+    {
+      SaveUISettingsToJson();
+    }
+    private void btn_DebugOpen_Click(object sender, EventArgs e)
+    {
+      string appDirectory = Application.StartupPath;
+      string filePath = Path.Combine(appDirectory, "debugLog.txt");
+
+      try
+      {
+        // Open the file in the default text viewer
+        Process.Start(new ProcessStartInfo(filePath) { UseShellExecute = true });
+      }
+      catch (Exception ex)
+      {
+        // Handle any errors that may occur
+        MessageBox.Show($"An error occurred while trying to open the file: {ex.Message}");
+      }
     }
   }
 }
