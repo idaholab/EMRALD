@@ -522,8 +522,6 @@ namespace EMRALD_Sim
       }
     }
 
-    
-
     public void Clear()
     {
       if (chkClearOnMsg.Checked)
