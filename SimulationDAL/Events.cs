@@ -466,6 +466,11 @@ namespace SimulationDAL
       //  logicTop.LookupRelatedItems(all, addToList);
       //}
     }
+
+    public override void Reset()
+    {
+      this.lastEvalVal.Clear();
+    }
   }
 
   public class EvalVarEvent : CondBasedEvent //etVarCond
