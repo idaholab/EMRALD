@@ -1014,7 +1014,7 @@ namespace EMRALD_Sim
 
         List<Thread> threads = new List<Thread>();
         simRuns.Clear();
-        
+
 
         for (int i = 0; i < ConfigData.threads; i++)
         {
@@ -1198,7 +1198,7 @@ namespace EMRALD_Sim
       LoadLib.SetThreads(_currentModelSettings.Threads);
       tbLogRunStart.Text = _currentModelSettings.DebugFromRun.ToString();
       tbLogRunEnd.Text = _currentModelSettings.DebugToRun.ToString();
-      
+
       tbThreads.Text = _currentModelSettings.Threads;
       if ((_currentModelSettings.Threads != "") && (_currentModelSettings.Threads != "1"))
         cbMultiThreaded.Checked = true;
@@ -1232,7 +1232,7 @@ namespace EMRALD_Sim
           lbMonitorVars.SetItemChecked(i, true);
         }
       }
-      
+
 
       SetCurThreadCB();
 
@@ -1754,7 +1754,8 @@ namespace EMRALD_Sim
           }
           else //save the empty multiThreadInfo
           {
-            _sim.multiThreadInfo = new MultiThreadInfo();
+            if(_sim.multiThreadInfo == null)
+              _sim.multiThreadInfo = new MultiThreadInfo();
             teModel.Text = _sim.modelTxt;
             saveStripMenuItem_Click(sender, e);
           }
@@ -1770,6 +1771,7 @@ namespace EMRALD_Sim
         cbCurThread.Visible = cbMultiThreaded.Checked;
         bttnPathRefs.Visible = cbMultiThreaded.Checked;
 
+        LoadLib.SetThreads(tbThreads.Text);
         SetCurThreadCB();
       }
       finally

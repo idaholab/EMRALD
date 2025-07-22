@@ -183,18 +183,18 @@ namespace SimulationDAL
       this.fileName = fileName;
       this._threadNumber = threadNum;
 
+      // Deserialize multiThreadInfo if present
+      if (jsonObj.multiThreadInfo != null)
+      {
+        this.multiThreadInfo = JsonConvert.DeserializeObject<MultiThreadInfo>(Convert.ToString(jsonObj.multiThreadInfo));
+      }
+      else
+      {
+        this.multiThreadInfo = new MultiThreadInfo();
+      }
+
       if (threadNum != null) //assign thread info and copy data
       {
-        // Deserialize multiThreadInfo if present
-        if (jsonObj.multiThreadInfo != null)
-        {
-          this.multiThreadInfo = JsonConvert.DeserializeObject<MultiThreadInfo>(Convert.ToString(jsonObj.multiThreadInfo));
-        }
-        else
-        {
-          this.multiThreadInfo = new MultiThreadInfo();
-        }
-
         this.rootPath = GetTempThreadFilesPath();
 
         // Ensure the directory exists and is empty
@@ -236,7 +236,6 @@ namespace SimulationDAL
       else
       {
         this.rootPath = modelPath;
-        this.multiThreadInfo = new MultiThreadInfo();
       }
       
       
