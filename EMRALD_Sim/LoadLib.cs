@@ -23,9 +23,13 @@ namespace EMRALD_Sim
         errorMsg = "File does not exist anymore.";
         return "";
       }
-      StreamReader srFileReader = new StreamReader(path);
 
-      string modelStr = srFileReader.ReadToEnd();
+      string modelStr;
+      using (StreamReader srFileReader = new StreamReader(path))
+      {
+        modelStr = srFileReader.ReadToEnd();
+      }
+
       try
       {
         if (sim == null)
