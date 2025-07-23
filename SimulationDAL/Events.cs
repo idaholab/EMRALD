@@ -56,7 +56,7 @@ namespace SimulationDAL
     {
       if (_relatedIDs.Count > 0)
       {
-        _relatedIDsBitSet = new MyBitArray(_relatedIDs.Max()+1);
+        _relatedIDsBitSet = new MyBitArray(_relatedIDs.Max() + 1);
         for (int i = 0; i < this.relatedIDs.Count(); ++i)
         {
           _relatedIDsBitSet[_relatedIDs[i]] = true;
@@ -205,7 +205,7 @@ namespace SimulationDAL
 
       this.ifInState = Convert.ToBoolean(dynObj.ifInState);
       this.allItems = Convert.ToBoolean(dynObj.allItems);
-      
+
       //Now Done in LoadOBjLinks()
       ////load the Trigger States.
       //if (dynObj.triggerStates != null)
@@ -316,7 +316,7 @@ namespace SimulationDAL
       //}
     }
 
-    public override  void Reset()
+    public override void Reset()
     {
       this.changed = null;
     }
@@ -421,9 +421,9 @@ namespace SimulationDAL
     {
       bool evalBool = true;
       int evalRes = logicTop.Evaluate(curStates, successSpace);
-      if((evalRes == 0) || (evalRes == -1)) //false or unknown so dont trigger.
+      if ((evalRes == 0) || (evalRes == -1)) //false or unknown so dont trigger.
       {
-        evalBool =  false;
+        evalBool = false;
       }
       //else should be 1 so value is true
 
@@ -470,7 +470,7 @@ namespace SimulationDAL
 
   public class EvalVarEvent : CondBasedEvent //etVarCond
   {
-    
+
     public string compCode = "";
     protected bool compiled;
     protected ScriptEngine compiledComp;
@@ -496,7 +496,7 @@ namespace SimulationDAL
           this.AddRelatedItem(curVar.Value.id);
         }
 
-      
+
 
       compiledComp = new ScriptEngine(ScriptEngine.Languages.CSharp);
     }
@@ -508,10 +508,10 @@ namespace SimulationDAL
       string compCodeStr = compCode.Replace("\n", "\\n").Replace("\r", "\\r");
       string codeHasVars = varList == null ? "False" : "True";
       string varNames = "";
-            
+
       if (varList != null)
       {
-        foreach(var i in varList.Values)
+        foreach (var i in varList.Values)
         {
           varNames += ", \"" + i.name + "\"";
         }
@@ -526,7 +526,7 @@ namespace SimulationDAL
       retStr = retStr + Environment.NewLine;
 
       retStr = retStr + "\"code\":\"" + compCodeStr + "\"";
-      
+
       return retStr;
     }
 
@@ -573,10 +573,10 @@ namespace SimulationDAL
       }
 
       if (varList == null)
-        varList = new VariableList(); 
+        varList = new VariableList();
 
       if (dynObj.varNames != null)
-      {     
+      {
         foreach (var varName in dynObj.varNames)
         {
           SimVariable curVar = lists.allVariables.FindByName((string)varName);
@@ -587,7 +587,7 @@ namespace SimulationDAL
           this.AddRelatedItem(curVar.id);
         }
       }
-      
+
       return true;
     }
 
@@ -655,9 +655,9 @@ namespace SimulationDAL
 
       try
       {
-         result = compiledComp.EvaluateBool();
+        result = compiledComp.EvaluateBool();
       }
-      catch(Exception e)
+      catch (Exception e)
       {
         throw new Exception("Event \"" + this.name + "\" - Failed to run code. error - " + e.Message);
       }
@@ -695,7 +695,7 @@ namespace SimulationDAL
 
 
     public ExtSimEv() : base() { }
-    
+
     public ExtSimEv(string inName, string inCompCode, VariableList inVarList, Sim3DVariable sim3dVar, SimEventType evType = SimEventType.etCompEv)
       : base(inName, inCompCode, inVarList)
     {
@@ -757,13 +757,13 @@ namespace SimulationDAL
 
         dynObj = ((dynamic)obj).Event;
       }
-      
+
       if (dynObj.extEventType != null)
       {
         this.extEventType = (SimEventType)Enum.Parse(typeof(SimEventType), (string)dynObj.extEventType, true);
 
         //if (dynObj.varNames == null)
-          //throw new Exception("External Sim Event, missing varNames value for the 3D SimVar ");
+        //throw new Exception("External Sim Event, missing varNames value for the 3D SimVar ");
       }
 
       //3D simulation var condition has a variable link
@@ -790,7 +790,7 @@ namespace SimulationDAL
         this.varList.Add(curVar);
         this.AddRelatedItem(curVar.id);
       }
-        
+
 
 
       processed = true;
@@ -814,12 +814,12 @@ namespace SimulationDAL
           return evTypes.ContainsValue(SimEventType.etPing);
           break;
 
-        default:          
+        default:
           NLog.Logger logger = NLog.LogManager.GetLogger("logfile");
           logger.Info("Error = externalSim event type not allowed " + extEventType.ToString());
           break;
       }
-      
+
       return false;
     }
 
@@ -832,15 +832,32 @@ namespace SimulationDAL
     }
   }
 
-  public enum EnOnChangeTask { ocIgnore, ocResample, ocAdjust}
+  public enum EnOnChangeTask { ocIgnore, ocResample, ocAdjust }
 
   public abstract class TimeBasedEvent : Event
   {
-    protected EnOnChangeTask onVarChange = EnOnChangeTask.ocIgnore;
+    private bool _persistent = false;
+    protected EnOnChangeTask _onVarChange = EnOnChangeTask.ocIgnore;
     protected override EnEventType GetEvType() { return EnEventType.etTimer; }
+    public bool persistent { get { return _persistent; } }
+    public EnOnChangeTask onVarChange { get { return _onVarChange; } }
 
     public TimeBasedEvent(string inName)
       : base(inName) { }
+
+    public override bool DeserializeDerived(object obj, bool wrapped, EmraldModel lists, bool useGivenIDs)
+    {
+      dynamic dynObj = (dynamic)obj;
+      
+      if (!base.DeserializeDerived((object)dynObj, false, lists, useGivenIDs))
+        return false;
+
+      if (dynObj.persistent != null)
+        _persistent = (Boolean)dynObj.persistent;
+
+      processed = true;
+      return true;
+    }
 
     public abstract TimeSpan NextTime(TimeSpan curTime);
 
@@ -853,7 +870,7 @@ namespace SimulationDAL
     /// <returns>returns the new time for the event</returns>
     public virtual TimeSpan RedoNextTime(TimeSpan sampledTime, TimeSpan curTime, TimeSpan oldOccurTime)
     {
-      switch (onVarChange)
+      switch (_onVarChange)
       {
         case EnOnChangeTask.ocIgnore:
           return oldOccurTime;
@@ -865,7 +882,7 @@ namespace SimulationDAL
           throw new Exception("RedoNextTime function not implemented for " + this.evType.ToString());
           break;
         default:
-          throw new Exception("RedoNextTime not implemented for " + onVarChange.ToString());
+          throw new Exception("RedoNextTime not implemented for " + _onVarChange.ToString());
       }
     }
 
@@ -906,7 +923,7 @@ namespace SimulationDAL
           "\"time\":\"" + timeVariable.name + "\"," + Environment.NewLine +
           "\"useVariable\": true, " + Environment.NewLine +
           "\"timeVariableUnit\":\"" + this.timerVariableUnit.ToString() + "\"," + Environment.NewLine +
-          "\"onVarChange\":\"" + this.onVarChange.ToString() + "\"," + Environment.NewLine ;
+          "\"_onVarChange\":\"" + this._onVarChange.ToString() + "\"," + Environment.NewLine ;
 
       }
 
@@ -949,11 +966,11 @@ namespace SimulationDAL
 
         try //may not exist in earlier versions so use a default
         {
-          onVarChange = (EnOnChangeTask)Enum.Parse(typeof(EnOnChangeTask), (string)dynObj.onVarChange, true);
+          _onVarChange = (EnOnChangeTask)Enum.Parse(typeof(EnOnChangeTask), (string)dynObj.onVarChange, true);
         }
         catch
         {
-          onVarChange = EnOnChangeTask.ocIgnore;
+          _onVarChange = EnOnChangeTask.ocIgnore;
         }
       }   
       else
@@ -1019,7 +1036,7 @@ namespace SimulationDAL
     public override TimeSpan RedoNextTime(TimeSpan sampledTime, TimeSpan curTime, TimeSpan oldOccurTime)
     {
       //A timer doesn't sample, but if a variable is used and we are to adjust then it is just the new variable time - what has already past
-      if (onVarChange == EnOnChangeTask.ocAdjust)
+      if (_onVarChange == EnOnChangeTask.ocAdjust)
       {
         TimeSpan time = NextTime(curTime) - (curTime - sampledTime);
         if (time < curTime)
@@ -1086,7 +1103,7 @@ namespace SimulationDAL
         retStr = retStr +
           "\"useVariable\": true, " + Environment.NewLine +
           "\"lambda\":\"" + this.lambdaVariable.name + "\"," + Environment.NewLine +
-          "\"onVarChange\":\"" + this.onVarChange.ToString() + "\"," + Environment.NewLine;
+          "\"_onVarChange\":\"" + this._onVarChange.ToString() + "\"," + Environment.NewLine;
       }
       else
       {
@@ -1130,11 +1147,11 @@ namespace SimulationDAL
 
         try //may not exist in earlier versions so use a default
         {
-          onVarChange = (EnOnChangeTask)Enum.Parse(typeof(EnOnChangeTask), (string)dynObj.onVarChange, true);
+          _onVarChange = (EnOnChangeTask)Enum.Parse(typeof(EnOnChangeTask), (string)dynObj.onVarChange, true);
         }
         catch
         {
-          onVarChange = EnOnChangeTask.ocIgnore;
+          _onVarChange = EnOnChangeTask.ocIgnore;
         }
       }
 
@@ -1222,7 +1239,7 @@ namespace SimulationDAL
 
     public override TimeSpan RedoNextTime(TimeSpan sampledTime, TimeSpan curTime, TimeSpan oldOccurTime)
     {
-      if (onVarChange == EnOnChangeTask.ocAdjust)
+      if (_onVarChange == EnOnChangeTask.ocAdjust)
       {
         //todo: how to adjust
         //Random rnd = new Random();
@@ -1272,7 +1289,7 @@ namespace SimulationDAL
 
       string retStr = "\"distType\": \"" + this._distType.ToString() + "\"";
       retStr += "," + Environment.NewLine + "\"dfltTimeRate\": \"" + dfltTimeRate.ToString() + "\"";
-      retStr += "," + Environment.NewLine + "\"onVarChange\": \"" + onVarChange.ToString() + "\"";
+      retStr += "," + Environment.NewLine + "\"_onVarChange\": \"" + _onVarChange.ToString() + "\"";
       retStr += "," + Environment.NewLine + "\"parameters\":" + JsonConvert.SerializeObject(_dParams);
 
 
@@ -1366,11 +1383,11 @@ namespace SimulationDAL
 
             dynObj = ((dynamic)obj).Event;
           }
-          onVarChange = (EnOnChangeTask)Enum.Parse(typeof(EnOnChangeTask), (string)dynObj.onVarChange, true);
+          _onVarChange = (EnOnChangeTask)Enum.Parse(typeof(EnOnChangeTask), (string)dynObj.onVarChange, true);
         }
         catch
         {
-          throw new Exception("parameter onVarChange missing and variables are used.");
+          throw new Exception("parameter _onVarChange missing and variables are used.");
         }
       }
       
@@ -1515,7 +1532,7 @@ namespace SimulationDAL
     /// <returns>returns the new time for the event</returns>
     public override TimeSpan RedoNextTime(TimeSpan sampledTime, TimeSpan curTime, TimeSpan oldOccurTime)
     {
-      if (onVarChange == EnOnChangeTask.ocAdjust)
+      if (_onVarChange == EnOnChangeTask.ocAdjust)
       {
 
         switch (this._distType)
