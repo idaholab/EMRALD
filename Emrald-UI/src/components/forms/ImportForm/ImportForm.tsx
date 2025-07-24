@@ -232,7 +232,7 @@ const ImportForm: React.FC<ImportDiagramFormProps> = ({ importedData, fromTempla
                 <TableCell align="left">
                   <TextField
                     label="New Name"
-                    value={row.action === 'rename' ? row.newName : ''}
+                    value={row.newName}
                     disabled={row.locked || row.action !== 'rename'}
                     onChange={(e) => {
                       handleNewNameChange(index, e.target.value);

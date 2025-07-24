@@ -434,20 +434,14 @@ export const useImportForm = (importedData: EMRALD_Model, fromTemplate?: boolean
           itemCopy.id = uuidv4();
           item.emraldItem = itemCopy;
         }
-      }
-    }
-
-    // Update loop
-    for (const item of importedItems) {
-      if (item.action === 'replace') {
+        updatedModel = updateModelAndReferences(item.emraldItem, item.type);
+        updateAppData(updatedModel);
+      } else if (item.action === 'replace') {
         const currentEmraldItem = GetItemByNameType(item.oldName, item.type);
         item.emraldItem.id = currentEmraldItem?.id;
         updatedModel = updateModelAndReferences(item.emraldItem, item.type);
         updateAppData(updatedModel);
         return;
-      } else {
-        updatedModel = updateModelAndReferences(item.emraldItem, item.type);
-        updateAppData(updatedModel);
       }
     }
 
@@ -460,18 +454,25 @@ export const useImportForm = (importedData: EMRALD_Model, fromTemplate?: boolean
     refreshWithNewData(updatedModel);
     setLoading(false);
     if (activeWindowId) {
-      addWindow(
-        importedDataCopy.DiagramList[0].name,
-        <EmraldDiagram diagram={importedDataCopy.DiagramList[0]} />,
-        {
-          x: 75,
-          y: 25,
-          width: 1300,
-          height: 700,
-        },
-        null,
-        activeWindowId,
+      const importedDiagrams = importedItems.filter(
+        (v) => v.type === 'Diagram' && v.action !== 'ignore',
       );
+      if (importedDiagrams.length === 0) {
+        handleClose(activeWindowId);
+      } else {
+        addWindow(
+          importedDataCopy.DiagramList[0].name,
+          <EmraldDiagram diagram={importedDataCopy.DiagramList[0]} />,
+          {
+            x: 75,
+            y: 25,
+            width: 1300,
+            height: 700,
+          },
+          null,
+          activeWindowId,
+        );
+      }
     }
   };
 
