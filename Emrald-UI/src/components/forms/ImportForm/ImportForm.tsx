@@ -170,6 +170,7 @@ const ImportForm: React.FC<ImportDiagramFormProps> = ({ importedData, fromTempla
                       onClick={() => {
                         handleLockChange(index, false);
                       }}
+                      aria-label="Unlock Row"
                     >
                       <FaLock />
                     </IconButton>
@@ -179,6 +180,7 @@ const ImportForm: React.FC<ImportDiagramFormProps> = ({ importedData, fromTempla
                       onClick={() => {
                         handleLockChange(index, true);
                       }}
+                      aria-label="Lock Row"
                     >
                       <FaLockOpen />
                     </Icon>

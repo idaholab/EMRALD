@@ -436,12 +436,20 @@ export const useImportForm = (importedData: EMRALD_Model, fromTemplate?: boolean
         }
         updatedModel = updateModelAndReferences(item.emraldItem, item.type);
         updateAppData(updatedModel);
-      } else if (item.action === 'replace') {
+      }
+    }
+
+    // Update loop
+    for (const item of importedItems) {
+      if (item.action === 'replace') {
         const currentEmraldItem = GetItemByNameType(item.oldName, item.type);
         item.emraldItem.id = currentEmraldItem?.id;
         updatedModel = updateModelAndReferences(item.emraldItem, item.type);
         updateAppData(updatedModel);
         return;
+      } else if (item.action !== 'ignore') {
+        updatedModel = updateModelAndReferences(item.emraldItem, item.type);
+        updateAppData(updatedModel);
       }
     }
 

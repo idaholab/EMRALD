@@ -16,5 +16,23 @@
     "diagramLabel": "Component",
     "objType": "Diagram",
     "required": false
+  },
+  "replaces conflicts": {
+    "objType": "Diagram",
+    "name": "C-CKV-A",
+    "desc": "",
+    "diagramLabel": "Component",
+    "diagramType": "dtMulti",
+    "required": false,
+    "states": ["C-CKV-A_Active", "C-CKV-A_Failed", "C-CKV-A_Standby"]
+  },
+  "finds & replaces names": {
+    "objType": "Diagram",
+    "name": "C-CKV-C",
+    "desc": "",
+    "diagramLabel": "Component",
+    "diagramType": "dtMulti",
+    "required": false,
+    "states": ["C-CKV-C_Active", "C-CKV-C_Failed", "C-CKV-C_Standby"]
   }
 }
