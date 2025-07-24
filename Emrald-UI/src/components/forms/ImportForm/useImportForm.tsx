@@ -83,7 +83,7 @@ export const useImportForm = (importedData: EMRALD_Model, fromTemplate?: boolean
       items.push({
         type: 'LogicNode',
         displayType: 'Logic Node',
-        locked: logicNodeList.value.some((item) => item.name === logicNode.name),
+        locked: !logicNodeList.value.some((item) => item.name === logicNode.name),
         oldName: logicNode.name,
         newName: logicNode.name,
         action: 'rename',
@@ -97,7 +97,7 @@ export const useImportForm = (importedData: EMRALD_Model, fromTemplate?: boolean
       items.push({
         type: 'ExtSim',
         displayType: 'External Sim',
-        locked: extSimList.value.some((item) => item.name === extSim.name),
+        locked: !extSimList.value.some((item) => item.name === extSim.name),
         oldName: extSim.name,
         newName: extSim.name,
         action: 'rename',
@@ -111,7 +111,7 @@ export const useImportForm = (importedData: EMRALD_Model, fromTemplate?: boolean
       items.push({
         type: 'Action',
         displayType: 'Action',
-        locked: actionsList.value.some((item) => item.name === action.name),
+        locked: !actionsList.value.some((item) => item.name === action.name),
         oldName: action.name,
         newName: action.name,
         action:
@@ -128,7 +128,7 @@ export const useImportForm = (importedData: EMRALD_Model, fromTemplate?: boolean
       items.push({
         type: 'Event',
         displayType: 'Event',
-        locked: eventsList.value.some((item) => item.name === event.name),
+        locked: !eventsList.value.some((item) => item.name === event.name),
         oldName: event.name,
         newName: event.name,
         action:
@@ -159,7 +159,7 @@ export const useImportForm = (importedData: EMRALD_Model, fromTemplate?: boolean
       items.push({
         type: 'Variable',
         displayType: 'Variable',
-        locked: variableList.value.some((item) => item.name === variable.name),
+        locked: !variableList.value.some((item) => item.name === variable.name),
         oldName: variable.name,
         newName: variable.name,
         action: 'rename',

@@ -119,7 +119,7 @@ export default function Header() {
           <MenuButton
             id={4}
             title="About"
-            handleClick={() => window.open('https://emrald.inl.gov/SitePages/Overview.aspx')}
+            handleClick={() => window.open('https://inl.gov/emrald/')}
             sx={{ mr: 3 }}
           />
         </Box>
