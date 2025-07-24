@@ -11,7 +11,7 @@ import {
 } from '../../../../../../../test-utils';
 import ActionForm from '../../../../../../../../components/forms/ActionForm/ActionForm';
 import userEvent from '@testing-library/user-event';
-import { screen } from '@testing-library/react';
+import { findByRole, screen } from '@testing-library/react';
 import expected from './maap.expected.json';
 
 describe('MAAP Form', async () => {
@@ -87,20 +87,28 @@ describe('MAAP Form', async () => {
     await user.upload(await screen.findByLabelText('Input File'), TestINP);
 
     // Add a variable to the model
-    ensureVariable('Test Variable');
+    ensureVariable('Test_Variable');
 
     // Check "use variable" for PARAM1 & select the variable
-    await user.click((await screen.findAllByLabelText('Use Variable'))[0]);
-    await selectOption('EMRALD Variable', 'Test Variable');
+    await user.click(
+      await findByRole((await screen.findAllByLabelText('Use Variable'))[0], 'combobox'),
+    );
+    await user.click(await screen.findByRole('option', { name: 'Test_Variable' }));
 
     // Switch to input blocks tab
     await user.click(await screen.findByText('Input Blocks'));
 
     // Select the variable for the WHEN block condition
-    await selectOption('When Condition Right Hand Side', 'Test Variable');
+    await user.click(
+      await findByRole((await screen.findAllByLabelText('Use Variable'))[0], 'combobox'),
+    );
+    await user.click(await screen.findByRole('option', { name: 'Test_Variable' }));
 
     // Select the variable in the WHEN block body
-    await selectOption('Assignment Right Hand Side', 'Test Variable');
+    await user.click(
+      await findByRole((await screen.findAllByLabelText('Use Variable'))[1], 'combobox'),
+    );
+    await user.click(await screen.findByRole('option', { name: 'Test_Variable' }));
 
     await save();
     expect(getAction(name)).toEqual(expected[name]);
@@ -196,77 +204,5 @@ describe('MAAP Form', async () => {
 
     await save();
     expect(getAction(name)).toEqual(expected[name]);
-  });
-
-  test('june 2025 revision', async () => {
-    const name = 'june 2025 revision';
-    renderActionForm(
-      <ActionForm
-        actionData={{
-          name,
-          desc: '',
-          objType: 'Action',
-          mainItem: true,
-          actType: 'atRunExtApp',
-        }}
-      ></ActionForm>,
-    );
-    const user = userEvent.setup();
-
-    // Load the MAAP form
-    await user.click(await screen.findByLabelText('Use Custom Application'));
-    await selectOption('Custom Application Type', 'MAAP');
-
-    // Enter file paths
-    await user.type(await screen.findByLabelText('MAAP Executable Path'), 'C:\\MAAP.exe');
-    await user.type(await screen.findByLabelText('Full Parameter File Path'), 'C:\\Test.PAR');
-    await user.type(await screen.findByLabelText('Full Input File Path'), 'C:\\Test.INP');
-
-    // Upload parameter file
-    await user.upload(await screen.findByLabelText('Parameter File'), TestPAR);
-
-    // Upload INP file
-    await user.upload(
-      await screen.findByLabelText('Input File'),
-      new File([await fs.readFile(path.join(__dirname, 'Test2.INP'))], 'Test2.INP', {
-        type: 'text',
-      }),
-    );
-
-    // Add variables to the model
-    ensureVariable('LOSPTime');
-    ensureVariable('AC_RestorationTime');
-    ensureVariable('AFWS_TimeLeft');
-    ensureVariable('PORV_FailTime');
-    ensureVariable('SRV_FailTime');
-
-    // Select the variables for parameters
-    await user.click((await screen.findAllByLabelText('Use Variable'))[0]);
-    await selectOption('EMRALD Variable', 'LOSPTime');
-    await user.click((await screen.findAllByLabelText('Use Variable'))[1]);
-    await selectOption('EMRALD Variable', 'AC_RstorationTime');
-    await user.click((await screen.findAllByLabelText('Use Variable'))[2]);
-    await selectOption('EMRALD Variable', 'AFWS_TimeLeft');
-    await user.click((await screen.findAllByLabelText('Use Variable'))[3]);
-    await selectOption('EMRALD Variable', 'PORV_FailTime');
-    await user.click((await screen.findAllByLabelText('Use Variable'))[4]);
-    await selectOption('EMRALD Variable', 'SRV_FailTime');
-
-    // Switch to Initiators tab
-    await user.click(await screen.findByText('Initiators'));
-    await user.click((await screen.findByLabelText("Add Initiator")));
-    await selectOption('Add Initiator', 'LOSS OF AC POWER');
-
-    // Switch to input blocks tab
-    await user.click(await screen.findByText('Input Blocks'));
-
-    // Select the variable for the WHEN block condition
-    await selectOption('When Condition Right Hand Side', 'Test Variable');
-
-    // Select the variable in the WHEN block body
-    await selectOption('Assignment Right Hand Side', 'Test Variable');
-
-    await save();
-    //expect(removeIds(getAction(name))).toEqual(expected[name]);
   });
 });

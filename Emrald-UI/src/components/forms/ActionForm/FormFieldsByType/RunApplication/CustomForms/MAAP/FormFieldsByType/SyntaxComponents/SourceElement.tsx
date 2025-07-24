@@ -10,10 +10,6 @@ export const SourceElement: React.FC<{
     <>
       {value.type === 'assignment' ? (
         <Assignment value={value} />
-      ) : value.type === 'comment' ? (
-        <Typography m={2} style={{ fontStyle: 'italic' }}>
-          {value.value}
-        </Typography>
       ) : (
         <Typography m={2}>{new MAAPToString().sourceElementToString(value)}</Typography>
       )}

@@ -38,12 +38,10 @@ export const Assignment: React.FC<{
           sx={{ width: 300 }}
           onChange={(_, newValue) => {
             // Other possible types should be handled by the conditional rendering
-            if (value.value.type === 'expression') {
-              value.value.right = {
-                type: 'identifier',
-                value: newValue ?? '',
-              };
-            }
+            value.value = {
+              type: 'identifier',
+              value: newValue ?? '',
+            };
             value.value.useVariable = variables.includes(newValue ?? '');
             setLocalValue(newValue ?? '');
           }}
@@ -63,12 +61,10 @@ export const Assignment: React.FC<{
               sx={{ input: { color: value.value.useVariable ? '#008362' : 'inherit' } }}
               onChange={(e) => {
                 // Other possible types should be handled by the conditional rendering
-                if (value.value.type === 'expression') {
-                  value.value.right = {
-                    type: 'identifier',
-                    value: e.target.value,
-                  };
-                }
+                value.value = {
+                  type: 'identifier',
+                  value: e.target.value,
+                };
                 value.value.useVariable = variables.includes(e.target.value);
                 setLocalValue(e.target.value);
               }}
