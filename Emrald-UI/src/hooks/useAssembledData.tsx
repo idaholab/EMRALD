@@ -8,9 +8,10 @@ import { useStateContext } from '../contexts/StateContext';
 import { useTemplateContext } from '../contexts/TemplateContext';
 import { useVariableContext } from '../contexts/VariableContext';
 import { useWindowContext } from '../contexts/WindowContext';
-import type { EMRALD_Model } from '../types/EMRALD_Model';
-import { updateAppData } from './useAppData';
+import type { Diagram, EMRALD_Model } from '../types/EMRALD_Model';
+import { updateAppData, appData } from './useAppData';
 import ImportForm from '../components/forms/ImportForm/ImportForm';
+import { CompareModels, type ModelDifference } from '../components/layout/CompareModels';
 
 export function useAssembledData() {
   // const { updateAppData } = useAppData();
@@ -103,7 +104,119 @@ export function useAssembledData() {
   };
 
   const compareData = (newModel: EMRALD_Model) => {
-    console.log(Object.keys(newModel));
+    const differences: ModelDifference[] = [];
+    const excludedKeys = ['id'];
+    const processItemList = (base: Diagram[], compare: Diagram[]) => {
+      const baseNames = base.map((item) => item.name);
+      compare.forEach((item) => {
+        const baseItem = base.find((i) => i.name === item.name);
+        if (baseItem) {
+          const baseKeys = Object.keys(baseItem);
+          Object.keys(item).forEach((k) => {
+            const key = k as keyof Diagram;
+            if (Object.prototype.hasOwnProperty.call(baseItem, key)) {
+              if (Array.isArray(item[key]) && Array.isArray(baseItem[key])) {
+                if (typeof item[key][0] === 'object') {
+                } else if (item[key].sort().join('') !== baseItem[key].sort().join('')) {
+                  differences.push({
+                    key: `${item.name} ${key[0].toUpperCase() + key.substring(1)}`,
+                    oldValue: baseItem[key].join(', '),
+                    newValue: item[key].join(', '),
+                  });
+                }
+              } else if (item[key] !== baseItem[key]) {
+                differences.push({
+                  key: `${item.name} ${key[0].toUpperCase() + key.substring(1)}`,
+                  oldValue: baseItem[key],
+                  newValue: item[key],
+                });
+              }
+              baseKeys.splice(baseKeys.indexOf(key), 1);
+            } else if (!excludedKeys.includes(key)) {
+              differences.push({
+                key: `${item.name} ${key[0].toUpperCase() + key.substring(1)}`,
+                oldValue: 'Does not exist',
+                newValue: item[key],
+              });
+            }
+          });
+          baseKeys.forEach((bkey) => {
+            if (!excludedKeys.includes(bkey)) {
+              differences.push({
+                key: `${item.name} ${bkey[0].toUpperCase() + bkey.substring(1)}`,
+                oldValue: baseItem[bkey],
+                newValue: 'Does not exist',
+              });
+            }
+          });
+          baseNames.splice(baseNames.indexOf(item.name), 1);
+        } else {
+          differences.push({
+            key: item.objType,
+            newValue: item.name,
+            oldValue: 'Does not exist',
+          });
+        }
+      });
+      baseNames.forEach((name) => {
+        differences.push({
+          key: base[0].objType,
+          newValue: 'Does not exist',
+          oldValue: name,
+        });
+      });
+    };
+    if (newModel.emraldVersion !== appData.value.emraldVersion) {
+      differences.push({
+        key: 'EMRALD Version',
+        newValue: newModel.emraldVersion,
+        oldValue: appData.value.emraldVersion,
+      });
+    }
+    if (newModel.name !== appData.value.name) {
+      differences.push({
+        key: 'Project Name',
+        newValue: newModel.name,
+        oldValue: appData.value.name,
+      });
+    }
+    if (newModel.desc !== appData.value.desc) {
+      differences.push({
+        key: 'Project Description',
+        newValue: newModel.desc,
+        oldValue: appData.value.desc,
+      });
+    }
+    if (newModel.version !== appData.value.version) {
+      differences.push({
+        key: 'Project Version',
+        newValue: newModel.version,
+        oldValue: appData.value.version,
+      });
+    }
+    processItemList(appData.value.DiagramList, newModel.DiagramList);
+    // Ignoring versionHistory differences for now
+    //
+    /*
+    newModel.ActionList
+    newModel.DiagramList
+    newModel.EventList
+    newModel.ExtSimList
+    newModel.LogicNodeList
+    newModel.StateList
+    newModel.VariableList
+    */
+    addWindow(
+      `Compare Model: ${newModel.name}`,
+      <CompareModels differences={differences} />,
+      {
+        x: 75,
+        y: 25,
+        width: 1000,
+        height: 350,
+      },
+      null,
+    );
   };
 
   const assembleData = () => {
