@@ -8,10 +8,11 @@ import { useStateContext } from '../contexts/StateContext';
 import { useTemplateContext } from '../contexts/TemplateContext';
 import { useVariableContext } from '../contexts/VariableContext';
 import { useWindowContext } from '../contexts/WindowContext';
-import type { Diagram, EMRALD_Model } from '../types/EMRALD_Model';
+import type { EMRALD_Model } from '../types/EMRALD_Model';
 import { updateAppData, appData } from './useAppData';
 import ImportForm from '../components/forms/ImportForm/ImportForm';
 import { CompareModels, type ModelDifference } from '../components/layout/CompareModels';
+import type { ModelItem } from '../types/ModelUtils';
 
 export function useAssembledData() {
   // const { updateAppData } = useAppData();
@@ -106,55 +107,60 @@ export function useAssembledData() {
   const compareData = (newModel: EMRALD_Model) => {
     const differences: ModelDifference[] = [];
     const excludedKeys = ['id'];
-    const processItemList = (base: Diagram[], compare: Diagram[]) => {
+    const formatKeyName = (key: string) => key[0].toUpperCase() + key.substring(1);
+    /**
+     * Recursively checks each property of the objects for equality.
+     * Makes the major assumption that the type associated with a given key is the same for both objects.
+     * @param base - The base object to compare against.
+     * @param compare - The object to compare to.
+     */
+    const checkObjDiff = (base: Record<string, any>, compare: Record<string, any>, path: string) => {
+      const baseKeys = Object.keys(base);
+      Object.keys(compare).forEach((key) => {
+        if (Object.prototype.hasOwnProperty.call(base, key)) {
+          if (Array.isArray(compare[key]) && Array.isArray(base[key])) {
+            if (typeof compare[key][0] === 'object') {
+              for (let i = 0; i < compare[key].length; i += 1) {
+                checkObjDiff(base[key][i], compare[key][i], `${path} ${formatKeyName(key)}[${i.toString()}]`);
+              }
+            } else if (compare[key].sort().join('') !== base[key].sort().join('')) {
+              differences.push({
+                key: `${path} ${formatKeyName(key)}`,
+                oldValue: base[key].join(', '),
+                newValue: compare[key].join(', '),
+              });
+            }
+          } else if (typeof compare[key] === 'object') {
+            checkObjDiff(base[key], compare[key], `${path} ${formatKeyName(key)}`);
+          } else if (compare[key] !== base[key]) {
+            differences.push({
+              key: `${path} ${formatKeyName(key)}`,
+              oldValue: base[key],
+              newValue: compare[key],
+            });
+          }
+          baseKeys.splice(baseKeys.indexOf(key), 1);
+        } else if (!excludedKeys.includes(key)) {
+          differences.push({
+            key: `${path} ${formatKeyName(key)}`,
+            oldValue: 'Does not exist',
+            newValue: compare[key],
+          });
+        }
+      });
+    };
+    const processItemList = (base: ModelItem[], compare: ModelItem[]) => {
       const baseNames = base.map((item) => item.name);
       compare.forEach((item) => {
         const baseItem = base.find((i) => i.name === item.name);
         if (baseItem) {
-          const baseKeys = Object.keys(baseItem);
-          Object.keys(item).forEach((k) => {
-            const key = k as keyof Diagram;
-            if (Object.prototype.hasOwnProperty.call(baseItem, key)) {
-              if (Array.isArray(item[key]) && Array.isArray(baseItem[key])) {
-                if (typeof item[key][0] === 'object') {
-                } else if (item[key].sort().join('') !== baseItem[key].sort().join('')) {
-                  differences.push({
-                    key: `${item.name} ${key[0].toUpperCase() + key.substring(1)}`,
-                    oldValue: baseItem[key].join(', '),
-                    newValue: item[key].join(', '),
-                  });
-                }
-              } else if (item[key] !== baseItem[key]) {
-                differences.push({
-                  key: `${item.name} ${key[0].toUpperCase() + key.substring(1)}`,
-                  oldValue: baseItem[key],
-                  newValue: item[key],
-                });
-              }
-              baseKeys.splice(baseKeys.indexOf(key), 1);
-            } else if (!excludedKeys.includes(key)) {
-              differences.push({
-                key: `${item.name} ${key[0].toUpperCase() + key.substring(1)}`,
-                oldValue: 'Does not exist',
-                newValue: item[key],
-              });
-            }
-          });
-          baseKeys.forEach((bkey) => {
-            if (!excludedKeys.includes(bkey)) {
-              differences.push({
-                key: `${item.name} ${bkey[0].toUpperCase() + bkey.substring(1)}`,
-                oldValue: baseItem[bkey],
-                newValue: 'Does not exist',
-              });
-            }
-          });
+          checkObjDiff(baseItem, item, item.name);
           baseNames.splice(baseNames.indexOf(item.name), 1);
         } else {
           differences.push({
             key: item.objType,
             newValue: item.name,
-            oldValue: 'Does not exist',
+            oldValue: 'Does not exist'
           });
         }
       });
@@ -195,17 +201,13 @@ export function useAssembledData() {
       });
     }
     processItemList(appData.value.DiagramList, newModel.DiagramList);
-    // Ignoring versionHistory differences for now
-    //
-    /*
-    newModel.ActionList
-    newModel.DiagramList
-    newModel.EventList
-    newModel.ExtSimList
-    newModel.LogicNodeList
-    newModel.StateList
-    newModel.VariableList
-    */
+    processItemList(appData.value.ActionList, newModel.ActionList);
+    processItemList(appData.value.EventList, newModel.EventList);
+    processItemList(appData.value.StateList, newModel.StateList);
+    processItemList(appData.value.VariableList, newModel.VariableList);
+    processItemList(appData.value.LogicNodeList, newModel.LogicNodeList);
+    processItemList(appData.value.ExtSimList, newModel.ExtSimList);
+    // Ignoring versionHistory and templates differences for now
     addWindow(
       `Compare Model: ${newModel.name}`,
       <CompareModels differences={differences} />,
