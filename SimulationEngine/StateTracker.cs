@@ -777,6 +777,7 @@ namespace SimulationTracking
       this.condEvList.Clear();
       this.stopped3DSims.Clear();
       this.curTime = new TimeSpan();
+      this.PersistentEvs.Clear();
 
       //TODO : 
       //this.sim3D.SendAction(Reset Sim
