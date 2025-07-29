@@ -1,0 +1,254 @@
+{
+  "id": "0",
+  "name": "MultiThread_EvalVar",
+  "desc": "",
+  "version": 1,
+  "DiagramList": [
+    {
+      "id": "5290ccb3-bed5-4403-b490-95fa7ef62aa3",
+      "name": "Main",
+      "desc": "",
+      "diagramType": "dtMulti",
+      "diagramLabel": "Plant",
+      "states": [
+        "Start",
+        "Term",
+        "VarEval",
+        "Key"
+      ],
+      "required": false,
+      "objType": "Diagram"
+    }
+  ],
+  "StateList": [
+    {
+      "id": "fe0f3f86-83a7-40b3-bc1e-188e118a0fa0",
+      "name": "Key",
+      "desc": "",
+      "diagramName": "Main",
+      "stateType": "stKeyState",
+      "events": [],
+      "eventActions": [],
+      "immediateActions": [
+        "GoTo_Term"
+      ],
+      "geometryInfo": {
+        "x": 955.8645184991436,
+        "y": 62.67964055732091,
+        "width": 0,
+        "height": 0
+      },
+      "required": false,
+      "objType": "State",
+      "defaultSingleStateValue": "Ignore"
+    },
+    {
+      "id": "ee60ff5d-7d47-4a00-9212-110359f95668",
+      "name": "Start",
+      "desc": "",
+      "diagramName": "Main",
+      "stateType": "stStart",
+      "events": [
+        "Timer"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "GoTo_VarEval"
+          ]
+        }
+      ],
+      "immediateActions": [],
+      "geometryInfo": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0
+      },
+      "required": false,
+      "objType": "State",
+      "defaultSingleStateValue": "Ignore"
+    },
+    {
+      "id": "c9cf34e7-af79-4475-bed3-9975cf27d101",
+      "name": "Term",
+      "desc": "",
+      "diagramName": "Main",
+      "stateType": "stTerminal",
+      "events": [],
+      "eventActions": [],
+      "immediateActions": [],
+      "geometryInfo": {
+        "x": 1314.0369403243617,
+        "y": 63.88969194146421,
+        "width": 0,
+        "height": 0
+      },
+      "required": false,
+      "objType": "State",
+      "defaultSingleStateValue": "Ignore"
+    },
+    {
+      "id": "67ea409d-cf0d-40a7-835b-be51f9bd3261",
+      "name": "VarEval",
+      "desc": "",
+      "diagramName": "Main",
+      "stateType": "stStandard",
+      "events": [
+        "Var_Check"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "GoTo_Key"
+          ]
+        }
+      ],
+      "immediateActions": [
+        "DirCheck"
+      ],
+      "geometryInfo": {
+        "x": 450.00000000000006,
+        "y": 35.99999999999997,
+        "width": 0,
+        "height": 0
+      },
+      "required": false,
+      "objType": "State",
+      "defaultSingleStateValue": "Ignore"
+    }
+  ],
+  "ActionList": [
+    {
+      "id": "40091d5e-403a-40e9-8e11-136caf886b16",
+      "name": "DirCheck",
+      "desc": "",
+      "actType": "atCngVarVal",
+      "mainItem": true,
+      "objType": "Action",
+      "required": false,
+      "codeVariables": [],
+      "variableName": "Dir",
+      "scriptCode": "return Directory.GetCurrentDirectory();"
+    },
+    {
+      "id": "66d23663-8429-43b6-98e7-b149699e96de",
+      "name": "GoTo_Key",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": true,
+      "objType": "Action",
+      "required": false,
+      "newStates": [
+        {
+          "toState": "Key",
+          "prob": -1,
+          "failDesc": ""
+        }
+      ],
+      "mutExcl": true
+    },
+    {
+      "id": "1ca56e8f-50d1-441e-9002-c8bbd2473aeb",
+      "name": "GoTo_Term",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": true,
+      "objType": "Action",
+      "required": false,
+      "newStates": [
+        {
+          "toState": "Term",
+          "prob": -1,
+          "failDesc": ""
+        }
+      ],
+      "mutExcl": true
+    },
+    {
+      "id": "0230e7e5-a33c-4f53-85a8-2d6f49eb3c73",
+      "name": "GoTo_VarEval",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": true,
+      "objType": "Action",
+      "required": false,
+      "newStates": [
+        {
+          "toState": "VarEval",
+          "prob": -1,
+          "failDesc": ""
+        }
+      ],
+      "mutExcl": true
+    }
+  ],
+  "EventList": [
+    {
+      "id": "33c65182-0a61-426c-b837-28a970746358",
+      "name": "Timer",
+      "desc": "",
+      "evType": "etTimer",
+      "mainItem": true,
+      "required": false,
+      "objType": "Event",
+      "time": "P0DT0S"
+    },
+    {
+      "id": "1b26b626-32d4-4b2c-92ee-7a17990c5c37",
+      "name": "Var_Check",
+      "desc": "",
+      "evType": "etVarCond",
+      "mainItem": true,
+      "required": false,
+      "objType": "Event",
+      "code": "string filePath = \"../../../VandV_Testing/TestingFiles/Other/Multithread.txt\";\r\nstring fileContent = File.ReadAllText(filePath);\r\nint number = int.Parse(fileContent);\r\nreturn (number == 10);",
+      "varNames": [
+        "Var"
+      ]
+    }
+  ],
+  "LogicNodeList": [],
+  "VariableList": [
+    {
+      "name": "Dir",
+      "varScope": "gtGlobal",
+      "value": "a",
+      "type": "string",
+      "objType": "Variable",
+      "id": "ffe71e19-678f-467a-80f3-656ef961213d",
+      "desc": "",
+      "resetOnRuns": true
+    },
+    {
+      "name": "Var",
+      "varScope": "gtGlobal",
+      "value": "13",
+      "type": "double",
+      "objType": "Variable",
+      "id": "e8eb327b-3a4f-4946-8ce2-3ab4a129cdbe",
+      "desc": "",
+      "resetOnRuns": true
+    }
+  ],
+  "ExtSimList": [],
+  "objType": "EMRALD_Model",
+  "emraldVersion": 3,
+  "templates": [],
+  "multiThreadInfo": {
+    "ToCopyForRefs": [
+      {
+        "ItemName": "Var_Check",
+        "ItemType": 3,
+        "RefPath": "../../../VandV_Testing/TestingFiles/Other/Multithread.txt",
+        "ToCopy": [
+          "C:\\VS_Projects\\EMRALD\\VandV_Testing\\TestingFiles\\Other\\Multithread.txt"
+        ],
+        "RelPath": ".\\Other\\Multithread.txt"
+      }
+    ],
+    "AssignedTime": "2025-07-29T08:37:21.0159555-06:00"
+  }
+}

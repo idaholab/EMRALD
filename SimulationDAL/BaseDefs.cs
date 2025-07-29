@@ -644,7 +644,7 @@ namespace SimulationDAL
     public static List<string> FindFilePathReferences(ref string code, string oldPath = null, string newPath = null)
     {
       // Define a regular expression pattern to match file paths
-      string pattern = @"(?<![:\/])((?:[a-zA-Z]:\\)|(?:\.\/)|(?:\.\.\/)|(?:\.\\)|(?:\.\.\\))(?:[\w\s\.-]+\\)*(?:[\w\s\.-]+)";
+      string pattern = @"(?<![:\/])((?:[a-zA-Z]:\\)|(?:\.\.\/)|(?:\.\.\\))(?:[\w\s\.-]+[\\\/])*[\w\s\.-]+";
 
       // Create a regex object with the defined pattern
       Regex regex = new Regex(pattern, RegexOptions.IgnoreCase);

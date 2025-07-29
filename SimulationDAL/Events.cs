@@ -726,7 +726,7 @@ namespace SimulationDAL
       //find the file references in the code and look for a match of the oldRef and replace.         
       var paths = CommonFunctions.FindFilePathReferences(ref compCode, oldRef, newRef);
 
-      if (paths.Count >= 0)
+      if (paths.Count <= 0)
         throw new Exception("Failed to find string in the path " + oldRef + " in the source of the Evaluate Variable Event.");
 
     }

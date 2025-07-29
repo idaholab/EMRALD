@@ -225,8 +225,15 @@ namespace SimulationDAL
               //copy the items needed
               if (File.Exists(copyItem))
               {
-                string remainingPath = CommonFunctions.GetRemainingPath(commonFolder, copyItem);
-                string copyTo = Path.GetFullPath(Path.Combine(rootPath, remainingPath));
+                string copyTo = Path.GetFullPath(Path.Combine(rootPath, item.RelPath));
+                
+                //make sure directory exists
+                string directory = Path.GetDirectoryName(copyTo);
+                if (directory != null && !Directory.Exists(directory))
+                {
+                  Directory.CreateDirectory(directory);
+                }
+
                 File.Copy(copyItem, copyTo);
               }
             }
@@ -331,7 +338,7 @@ namespace SimulationDAL
       ModelRefsList.AddRange(allVariables.ScanFor(ScanForTypes.sfMultiThreadIssues, this));
       ModelRefsList.AddRange(allLogicNodes.ScanFor(ScanForTypes.sfMultiThreadIssues, this));
       
-      //go through each of the found items and look for hem in the multiThreadInfo or put in a new list.
+      //go through each of the found items and look for them in the multiThreadInfo or put in a new list.
       var notAccountedFor = new List<String>();
       Dictionary<string, ToCopyForRef> curMutiThreadItems = new Dictionary<string, ToCopyForRef>();
       foreach (var item in multiThreadInfo.ToCopyForRefs)
@@ -360,17 +367,26 @@ namespace SimulationDAL
         }
         else //not in the saved items so add it 
         {
-          //var toCopyList = new List<string>();
-          //if (!string.IsNullOrEmpty(mPathRef.Path))
-          //  toCopyList.Add(mPathRef.Path);
-
           var addI = new ToCopyForRef(mPathRef.itemName, mPathRef.itemType, mPathRef.Path, null, "");
 
           //if it as a relative reference add it to the copy list
           if (!Path.IsPathRooted(mPathRef.Path) && (mPathRef.Path[0] == '.'))
           {
-            addI.RelPath = mPathRef.Path;
-            addI.ToCopy.Add(Path.GetFullPath(Path.Combine(rootPath, mPathRef.Path))); //combine and normalize the path.
+            string commonP = CommonFunctions.FindClosestParentFolder(new List<String> { mPathRef.Path, rootPath });
+            string actualPath = Path.GetFullPath(Path.Combine(rootPath, mPathRef.Path));
+
+            Uri commonParentUri = new Uri(commonP);
+            Uri targetUri = new Uri(actualPath);
+
+            // Get the relative path
+            Uri relativeUri = commonParentUri.MakeRelativeUri(targetUri);
+            var relativePathParts = Uri.UnescapeDataString(relativeUri.ToString()).Split(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+            relativePathParts[0] = "." + Path.DirectorySeparatorChar;
+
+            // combine path parts back to a dir path.
+            addI.RelPath = Path.Combine(relativePathParts);
+
+            addI.ToCopy.Add(actualPath); //combine and normalize the path.
           }
           else //it is a full path
           {
