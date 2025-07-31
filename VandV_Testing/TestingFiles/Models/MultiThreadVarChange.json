@@ -1,6 +1,6 @@
 {
   "id": "0",
-  "name": "MultiThread_EvalVar",
+  "name": "MultiThread_VarChange",
   "desc": "",
   "version": 1,
   "DiagramList": [
@@ -13,35 +13,13 @@
       "states": [
         "Start",
         "Term",
-        "VarEval",
-        "Key"
+        "VarChange"
       ],
       "required": false,
       "objType": "Diagram"
     }
   ],
   "StateList": [
-    {
-      "id": "fe0f3f86-83a7-40b3-bc1e-188e118a0fa0",
-      "name": "Key",
-      "desc": "",
-      "diagramName": "Main",
-      "stateType": "stKeyState",
-      "events": [],
-      "eventActions": [],
-      "immediateActions": [
-        "GoTo_Term"
-      ],
-      "geometryInfo": {
-        "x": 955.8645184991436,
-        "y": 62.67964055732091,
-        "width": 0,
-        "height": 0
-      },
-      "required": false,
-      "objType": "State",
-      "defaultSingleStateValue": "Ignore"
-    },
     {
       "id": "ee60ff5d-7d47-4a00-9212-110359f95668",
       "name": "Start",
@@ -55,7 +33,7 @@
         {
           "moveFromCurrent": true,
           "actions": [
-            "GoTo_VarEval"
+            "GoTo_VarChange"
           ]
         }
       ],
@@ -80,8 +58,8 @@
       "eventActions": [],
       "immediateActions": [],
       "geometryInfo": {
-        "x": 1314.0369403243617,
-        "y": 63.88969194146421,
+        "x": 941.9357094864058,
+        "y": 73.12624731687441,
         "width": 0,
         "height": 0
       },
@@ -91,23 +69,23 @@
     },
     {
       "id": "67ea409d-cf0d-40a7-835b-be51f9bd3261",
-      "name": "VarEval",
+      "name": "VarChange",
       "desc": "",
       "diagramName": "Main",
-      "stateType": "stStandard",
+      "stateType": "stKeyState",
       "events": [
-        "Var_Check"
+        "Timer"
       ],
       "eventActions": [
         {
           "moveFromCurrent": true,
           "actions": [
-            "GoTo_Key"
+            "GoTo_Term"
           ]
         }
       ],
       "immediateActions": [
-        "DirCheck"
+        "VarChangeRel"
       ],
       "geometryInfo": {
         "x": 450.00000000000006,
@@ -122,36 +100,7 @@
   ],
   "ActionList": [
     {
-      "id": "40091d5e-403a-40e9-8e11-136caf886b16",
-      "name": "DirCheck",
-      "desc": "",
-      "actType": "atCngVarVal",
-      "mainItem": true,
-      "objType": "Action",
-      "required": false,
-      "codeVariables": [],
-      "variableName": "Dir",
-      "scriptCode": "return Directory.GetCurrentDirectory();"
-    },
-    {
       "id": "66d23663-8429-43b6-98e7-b149699e96de",
-      "name": "GoTo_Key",
-      "desc": "",
-      "actType": "atTransition",
-      "mainItem": true,
-      "objType": "Action",
-      "required": false,
-      "newStates": [
-        {
-          "toState": "Key",
-          "prob": -1,
-          "failDesc": ""
-        }
-      ],
-      "mutExcl": true
-    },
-    {
-      "id": "1ca56e8f-50d1-441e-9002-c8bbd2473aeb",
       "name": "GoTo_Term",
       "desc": "",
       "actType": "atTransition",
@@ -169,7 +118,7 @@
     },
     {
       "id": "0230e7e5-a33c-4f53-85a8-2d6f49eb3c73",
-      "name": "GoTo_VarEval",
+      "name": "GoTo_VarChange",
       "desc": "",
       "actType": "atTransition",
       "mainItem": true,
@@ -177,12 +126,24 @@
       "required": false,
       "newStates": [
         {
-          "toState": "VarEval",
+          "toState": "VarChange",
           "prob": -1,
           "failDesc": ""
         }
       ],
       "mutExcl": true
+    },
+    {
+      "id": "d3d85292-5994-4c73-9156-f891d3bc0e0f",
+      "name": "VarChangeRel",
+      "desc": "",
+      "actType": "atCngVarVal",
+      "mainItem": true,
+      "objType": "Action",
+      "required": false,
+      "codeVariables": [],
+      "variableName": "Var",
+      "scriptCode": "string filePath = \"../../../VandV_Testing/TestingFiles/Other/MultithreadWrite.txt\";\r\nFile.WriteAllText(filePath, $\"{RunIdx}\");\r\nstring fileContent = File.ReadAllText(filePath);\r\nint number = int.Parse(fileContent);\r\nreturn number;"
     }
   ],
   "EventList": [
@@ -195,38 +156,15 @@
       "required": false,
       "objType": "Event",
       "time": "P0DT0S"
-    },
-    {
-      "id": "1b26b626-32d4-4b2c-92ee-7a17990c5c37",
-      "name": "Var_Check",
-      "desc": "",
-      "evType": "etVarCond",
-      "mainItem": true,
-      "required": false,
-      "objType": "Event",
-      "code": "string filePath = \"../../../VandV_Testing/TestingFiles/Other/Multithread.txt\";\r\nstring fileContent = File.ReadAllText(filePath);\r\nint number = int.Parse(fileContent);\r\nreturn (number == 10);",
-      "varNames": [
-        "Var"
-      ]
     }
   ],
   "LogicNodeList": [],
   "VariableList": [
     {
-      "name": "Dir",
-      "varScope": "gtGlobal",
-      "value": "a",
-      "type": "string",
-      "objType": "Variable",
-      "id": "ffe71e19-678f-467a-80f3-656ef961213d",
-      "desc": "",
-      "resetOnRuns": true
-    },
-    {
       "name": "Var",
       "varScope": "gtGlobal",
-      "value": "13",
-      "type": "double",
+      "value": 123,
+      "type": "int",
       "objType": "Variable",
       "id": "e8eb327b-3a4f-4946-8ce2-3ab4a129cdbe",
       "desc": "",
@@ -240,15 +178,15 @@
   "multiThreadInfo": {
     "ToCopyForRefs": [
       {
-        "ItemName": "Var_Check",
-        "ItemType": 3,
-        "RefPath": "../../../VandV_Testing/TestingFiles/Other/Multithread.txt",
+        "ItemName": "VarChangeRel",
+        "ItemType": "itAction",
+        "RefPath": "../../../VandV_Testing/TestingFiles/Other/MultithreadWrite.txt",
         "ToCopy": [
-          "C:\\VS_Projects\\EMRALD\\VandV_Testing\\TestingFiles\\Other\\Multithread.txt"
+          "../../../VandV_Testing/TestingFiles/Other/MultithreadWrite.txt"
         ],
-        "RelPath": ".\\Other\\Multithread.txt"
+        "RelPath": "..\\Other\\MultithreadWrite.txt"
       }
     ],
-    "AssignedTime": "2025-07-29T08:37:21.0159555-06:00"
+    "AssignedTime": "2025-07-10T15:12:36.7692964-06:00"
   }
 }

@@ -162,5 +162,63 @@ namespace SysAndRegressionTesting
       Compare(dir, testName, optionsJ);
     }
 
+
+    // THIS TEST CURRENTLY FAILS
+    // Expected : The global variable "Var" to be equal to the run id
+    // Current Result: An error, it cannot find the string in the path to MultithreadWrite.txt
+    [Fact]
+    [Description("Test pathing in the change variable action when running in multi thread")]
+    public void MultiThreadVarChange()
+    {
+
+      string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
+
+      //Setup directory for unit test 
+      string dir = SetupTestDir(testName);
+      //initial options, and optional results to save/test
+      JObject optionsJ = SetupJSON(dir, testName, true);
+
+      //Change the default settings as needed for the test seed default set to 0 for testing.
+      optionsJ["inpfile"] = MainTestDir() + ModelFolder() + testName + ".json";
+      optionsJ["runct"] = 100;
+      optionsJ["threads"] = 2;
+
+      JSONRun testRun = new JSONRun(optionsJ.ToString());
+      Assert.True(TestRunSim(testRun));
+
+      //Uncomment to update the validation files after they verified correct
+      //CopyToValidated(dir, testName, optionsJ);
+
+      //compare the test result and optionally the paths and json if assigned
+      Compare(dir, testName, optionsJ);
+    }
+    // THIS TEST CURRENTLY FAILS
+
+    [Fact]
+    [Description("Test pathing in the change variable action when running in multi thread")]
+    public void MultiThreadExeTest()
+    {
+
+      string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
+
+      //Setup directory for unit test 
+      string dir = SetupTestDir(testName);
+      //initial options, and optional results to save/test
+      JObject optionsJ = SetupJSON(dir, testName, true);
+
+      //Change the default settings as needed for the test seed default set to 0 for testing.
+      optionsJ["inpfile"] = MainTestDir() + ModelFolder() + testName + ".json";
+      optionsJ["runct"] = 100;
+      optionsJ["threads"] = 2;
+
+      JSONRun testRun = new JSONRun(optionsJ.ToString());
+      Assert.True(TestRunSim(testRun));
+
+      //Uncomment to update the validation files after they verified correct
+      //CopyToValidated(dir, testName, optionsJ);
+
+      //compare the test result and optionally the paths and json if assigned
+      Compare(dir, testName, optionsJ);
+    }
   }
 }
