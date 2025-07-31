@@ -1019,7 +1019,7 @@ namespace EMRALD_Sim
         for (int i = 0; i < ConfigData.threads; i++)
         {
           //set up the simBatch, only set threads if more than one.
-          simRuns.Add(new ProcessSimBatch(_sim, maxTime, tbSavePath.Text, _statsFile, _pathResultsInterval, ConfigData.threads <= 1 ? null : i));
+          simRuns.Add(new ProcessSimBatch(_sim, maxTime, tbSavePath.Text, _statsFile, _pathResultsInterval, ConfigData.threads == null ? null : i));
 
           simRuns[i].progressCallback = DispResults;
           if (_server != null)
@@ -1734,7 +1734,7 @@ namespace EMRALD_Sim
           List<string> issueItems = _sim.CanMutiThread();
           if (issueItems.Count > 0)
           {
-            using (var frm = new FormMultiThreadRefs(_sim.multiThreadInfo, issueItems))
+            using (var frm = new FormMultiThreadRefs(_sim.multiThreadInfo, issueItems, _sim.rootPath))
             {
               var result = frm.ShowDialog();
               if (result == DialogResult.OK)
@@ -1822,7 +1822,7 @@ namespace EMRALD_Sim
       List<string> issueItems = _sim.CanMutiThread();
 
       // Always show the form, regardless of issue count
-      using (var frm = new FormMultiThreadRefs(_sim.multiThreadInfo, issueItems))
+      using (var frm = new FormMultiThreadRefs(_sim.multiThreadInfo, issueItems, _sim.rootPath))
       {
         var result = frm.ShowDialog();
         if (result == DialogResult.OK)

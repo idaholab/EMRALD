@@ -757,7 +757,7 @@ namespace SimulationDAL
       return listItems;
     }
 
-    public void UpdatePathRefs(string oldRef, string newRef)
+    public void UpdatePathRefs(string oldRef, string newRef, string modelPath)
     {
       //find the file references in the code and look for a match of the oldRef and replace.         
       var paths = CommonFunctions.FindFilePathReferences(ref scriptCode, oldRef, newRef);
@@ -1878,7 +1878,7 @@ namespace SimulationDAL
       return listItems;
     }
 
-    public void UpdatePathRefs(string oldRef, string newRef)
+    public void UpdatePathRefs(string oldRef, string newRef, string modelPath)
     {
       bool inExe = false;
       if (this.exePath == oldRef)

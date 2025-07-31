@@ -1,19 +1,20 @@
 ﻿// Copyright 2021 Battelle Energy Alliance
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using Sop.Collections.Generic.BTree;
+using System.Linq.Expressions;
+using System.Text.RegularExpressions;
+using System.Xml;
 //using SimulationTracking;
 using MyStuff.Collections;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Converters;
-using System.IO;
-using System.Xml;
-using System.Text.RegularExpressions;
+using Newtonsoft.Json.Linq;
 using NLog;
-using System.Linq.Expressions;
+using Sop.Collections.Generic.BTree;
 
 namespace SimulationDAL
 {
@@ -699,6 +700,9 @@ namespace SimulationDAL
 
     public override void ReInit()
     {
+      if (initValue == null)
+        this.InitValue(GetValue());
+      
       this._value = this.initValue;
       this._oldLinkStr = ""; //reset so it tires to load as needed
     }
@@ -769,7 +773,8 @@ namespace SimulationDAL
         _docFullPath = this._docPath;
       }
 
-      if (_pathMustExist && !File.Exists(_docFullPath))
+      if (_pathMustExist && !File.Exists(_docFullPath) &&
+          !_docFullPath.Contains("AppData")) //If this is a multithread path then don't check!
       {
         throw new Exception("No file located at - " + _docFullPath + " for Document variable ");
       }
@@ -800,7 +805,7 @@ namespace SimulationDAL
 
       try
       {
-        if (_pathMustExist)
+        if (_pathMustExist && (File.Exists(_docFullPath) && _docFullPath.Contains("AppData"))) //if the file doesn't exist yet, load on reInit 
         {
           //do this different for document items as the value is not set by the user data
           base.InitValue(GetValue());
@@ -832,10 +837,24 @@ namespace SimulationDAL
     }
 
 
-    public void UpdatePathRefs(string oldRef, string newRef)
+    public void UpdatePathRefs(string oldRef, string newRef, string modelPath)
     {
       if (_docPath == oldRef)
+      {
         _docPath = newRef;
+        if (!Path.IsPathRooted(_docPath) && (_docPath[0] == '.'))
+        {
+          _docFullPath = modelPath;
+          if (!_docFullPath.EndsWith(@"\"))
+            _docFullPath += @"\";
+
+          _docFullPath = Path.GetFullPath(Path.Combine(_docFullPath, this._docPath));
+        }
+        else
+        {
+          _docFullPath = this._docPath;
+        }
+      }
       else
         throw new Exception("Current document reference does not match request to change.");
 
@@ -1370,15 +1389,15 @@ namespace SimulationDAL
 
             if (matches.Count <= 0)
             {
-              if (_dfltValue == null)
-              {
+              //if (_dfltValue == null)
+              //{
                 throw new Exception("Failed to find RegEx - " + curLinkStr + " in file - " + _docFullPath);
-              }
-              else
-              {
-                base.SetValue(Convert.ChangeType(_dfltValue, dType));
-                result = _value;
-              }
+              //}
+              //else
+              //{
+              //  base.SetValue(Convert.ChangeType(_dfltValue, dType));
+              //  result = _value;
+              //}
             }
             else
             {

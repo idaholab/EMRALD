@@ -55,6 +55,7 @@ namespace SimulationDAL
   [JsonConverter(typeof(StringEnumConverter))]
   public enum EnTimeRate { trYears, trDays, trHours, trMinutes, trSeconds}
 
+  [JsonConverter(typeof(StringEnumConverter))]
   public enum EnIDTypes { itVar = 0, itComp, itState, itEvent, itAction, itTreeNode, itTimer, itDiagram, itExtSim };
   public enum EnDistType { dtNormal, dtWeibull, dtExponential, dtLogNormal, dtUniform, dtTriangular, dtGamma, dtGompertz};
   //public class ModelTypesInfo
@@ -775,6 +776,22 @@ namespace SimulationDAL
       return remainingPath;
     }
 
+    public static string GetRelativePath(string rootPath, string actualPath)
+    {
+      Uri rootUri = new Uri(rootPath);
+      Uri targetUri = new Uri(actualPath);
+
+      // Ensure the rootUri ends with a directory separator
+      if (!rootUri.AbsolutePath.EndsWith("/"))
+      {
+        rootUri = new Uri(rootUri.AbsoluteUri + "/");
+      }
+
+      Uri relativeUri = rootUri.MakeRelativeUri(targetUri);
+      string relativePath = Uri.UnescapeDataString(relativeUri.ToString()).Replace('/', Path.DirectorySeparatorChar);
+
+      return relativePath;
+    }
 
   }
 
@@ -782,7 +799,6 @@ namespace SimulationDAL
   {
     public List<ToCopyForRef> ToCopyForRefs { get; set; }
     public DateTime AssignedTime { get; set; } //if assigned time is earlier than the model modified then we need to re-evaluate the ToCopyForRefs
-
     public MultiThreadInfo() 
     {
       ToCopyForRefs = new List<ToCopyForRef>();
@@ -793,10 +809,12 @@ namespace SimulationDAL
   public class ToCopyForRef
   {
     public string ItemName { get; set; }
+    [JsonConverter(typeof(StringEnumConverter))]
     public EnIDTypes ItemType { get; set; }
     public string RefPath { get; set; }
     public List<string> ToCopy { get; set; }
     public string RelPath { get; set; }
+
 
     //[JsonIgnore]
     // Constructor to initialize all properties

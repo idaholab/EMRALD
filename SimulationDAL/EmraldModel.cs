@@ -368,30 +368,16 @@ namespace SimulationDAL
         else //not in the saved items so add it 
         {
           var addI = new ToCopyForRef(mPathRef.itemName, mPathRef.itemType, mPathRef.Path, null, "");
-
-          //if it as a relative reference add it to the copy list
+          
+          string actualPath = mPathRef.Path;
+          //if it as a relative reference get to full path 
           if (!Path.IsPathRooted(mPathRef.Path) && (mPathRef.Path[0] == '.'))
           {
-            string commonP = CommonFunctions.FindClosestParentFolder(new List<String> { mPathRef.Path, rootPath });
-            string actualPath = Path.GetFullPath(Path.Combine(rootPath, mPathRef.Path));
-
-            Uri commonParentUri = new Uri(commonP);
-            Uri targetUri = new Uri(actualPath);
-
-            // Get the relative path
-            Uri relativeUri = commonParentUri.MakeRelativeUri(targetUri);
-            var relativePathParts = Uri.UnescapeDataString(relativeUri.ToString()).Split(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
-            relativePathParts[0] = "." + Path.DirectorySeparatorChar;
-
-            // combine path parts back to a dir path.
-            addI.RelPath = Path.Combine(relativePathParts);
-
-            addI.ToCopy.Add(actualPath); //combine and normalize the path.
+            actualPath = Path.GetFullPath(Path.Combine(rootPath, mPathRef.Path));
           }
-          else //it is a full path
-          {
-            addI.ToCopy.Add(mPathRef.Path);
-          }
+
+          addI.RelPath = CommonFunctions.GetRelativePath(rootPath, actualPath);
+          addI.ToCopy.Add(mPathRef.Path); //combine and normalize the path.
 
           multiThreadInfo.ToCopyForRefs.Add(addI);
           notAccountedFor.Add(addI.ItemName);
@@ -479,7 +465,7 @@ namespace SimulationDAL
             if (!(vItem is DocVariable))
               throw new Exception("Broken path reference edit " + item.ItemName + " is not a document variable.");
 
-            (vItem as DocVariable).UpdatePathRefs(item.RefPath, item.RelPath);
+            (vItem as DocVariable).UpdatePathRefs(item.RefPath, item.RelPath, this.rootPath);
             break;
           case EnIDTypes.itState:
             throw new Exception("Currently there are no state properties that need to be modified for multi threading, check the entry for - " + item.ItemName);
@@ -490,10 +476,10 @@ namespace SimulationDAL
               throw new Exception("Broken path reference edit " + item.ItemName + " is not an external Simulation or evaluate Variable event.");
 
             if(eItem is EvalVarEvent)
-              (eItem as EvalVarEvent).UpdatePathRefs(item.RefPath, item.RelPath);
+              (eItem as EvalVarEvent).UpdatePathRefs(item.RefPath, item.RelPath, this.rootPath);
 
             if (eItem is ExtSimEv)
-               (eItem as ExtSimEv).UpdatePathRefs(item.RefPath, item.RelPath);
+               (eItem as ExtSimEv).UpdatePathRefs(item.RefPath, item.RelPath, this.rootPath);
             break;
           case EnIDTypes.itAction:
             var aItem = this.allActions.FindByName(item.ItemName);
@@ -501,10 +487,10 @@ namespace SimulationDAL
               throw new Exception("Broken path reference edit " + item.ItemName + " is not an Variable Value or Run Exe Action.");
 
             if (aItem is ScriptAct)
-              (aItem as ScriptAct).UpdatePathRefs(item.RefPath, item.RelPath);
+              (aItem as ScriptAct).UpdatePathRefs(item.RefPath, item.RelPath, this.rootPath);
 
             if (aItem is RunExtAppAct)
-              (aItem as RunExtAppAct).UpdatePathRefs(item.RefPath, item.RelPath);
+              (aItem as RunExtAppAct).UpdatePathRefs(item.RefPath, item.RelPath, this.rootPath);
 
             break;
           case EnIDTypes.itTreeNode:
