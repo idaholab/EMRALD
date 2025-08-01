@@ -420,15 +420,14 @@ namespace SysAndRegressionTesting
       SimulationEngine.Options_cur options = optionsJ.ToObject<SimulationEngine.Options_cur>();
       //Change the default settings as needed for the test seed default set to 0 for testing.
       options.inpfile = MainTestDir() + ModelFolder() + testName + ".json";
-      options.runct = 1;
+      options.runct = 100;
       options.threads = 2;
-      //options.variables = new List<string>() { "Int_Cnt" };
+      options.variables = new List<string>() { "Var" };
       //optionsJ["variables"] = JsonConvert.SerializeObject(args);
       JSONRun testRun = new JSONRun(options);
       Assert.True(TestRunSim(testRun));
-
       //Uncomment to update the validation files after they verified correct
-      //CopyToValidated(dir, testName, optionsJ);
+      CopyToValidated(dir, testName, optionsJ);
 
       //compare the test result and optionally the paths and json if assigned
       Compare(dir, testName, optionsJ);
