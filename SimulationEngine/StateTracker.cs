@@ -1506,24 +1506,24 @@ namespace SimulationTracking
               }
 
               //see if there are any persistent not in the time event list to update
-              foreach (var ev in this.PersistentEvs.Values)
+              foreach (var persEvItem in this.PersistentEvs.Values)
               {
-                if (!timeEvList.HasEvent(ev.id))
-                {
-                  TimeBasedEvent curTimeEv = (TimeBasedEvent)ev.eventData;
+                TimeBasedEvent curTimeEv = (TimeBasedEvent)persEvItem.eventData;
+                if (!timeEvList.HasEvent(curTimeEv.id))                {
+                  
                   if (curTimeEv.relatedIDs.Contains(varItem.id))
                   { 
                     if (curTimeEv.onVarChange == EnOnChangeTask.ocResample)
                     {
-                      throw new Exception("Tried to adjust a Persistent Event not currently in a state. Don't use Persistent events with events that can be adjusted for variable changes!");
+                      throw new Exception("Tried to adjust Persistent Event [" + curTimeEv.name + "], not currently in a state. Don't use Persistent events with events that can be adjusted for variable changes!");
                     }
                     
-                    TimeSpan regotTime = curTimeEv.RedoNextTime(ev.whenCreated, curTime, ev.time);
+                    TimeSpan regotTime = curTimeEv.RedoNextTime(persEvItem.whenCreated, curTime, persEvItem.time);
                     if (regotTime < TimeSpan.Zero)
                       regotTime = TimeSpan.Zero;
 
                     //adjust the saved persistent event time 
-                    ev.time = regotTime;
+                    persEvItem.time = regotTime;
                   }
                 }
               }
