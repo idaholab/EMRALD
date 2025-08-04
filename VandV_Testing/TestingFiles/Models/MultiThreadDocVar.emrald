@@ -167,5 +167,18 @@
   "objType": "EMRALD_Model",
   "emraldVersion": 3,
   "templates": [],
-  "multiThreadInfo": {}
+  "multiThreadInfo": {
+    "ToCopyForRefs": [
+      {
+        "ItemName": "DocVar",
+        "ItemType": "itVar",
+        "RefPath": "../../../VandV_Testing/TestingFiles/Other/Multithread.txt",
+        "ToCopy": [
+          "../../../VandV_Testing/TestingFiles/Other/Multithread.txt"
+        ],
+        "RelPath": "..\\Other\\Multithread.txt"
+      }
+    ],
+    "AssignedTime": "2025-08-04T15:53:32.0630618-06:00"
+  }
 }

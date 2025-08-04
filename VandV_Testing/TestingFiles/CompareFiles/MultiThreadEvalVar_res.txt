@@ -1,6 +1,0 @@
-Simulation = MultiThread_EvalVar
-Runtime = 00.00:00:00
-Runs = 100 of 100
----------------------------
-- End Sim Variable Values -
----------------------------
