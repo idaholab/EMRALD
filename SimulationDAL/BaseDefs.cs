@@ -759,6 +759,14 @@ namespace SimulationDAL
       return closestParent;
     }
 
+    public static string FindClosestParentFolder(string filePath1, string filePath2)
+    {
+      var paths = new List<string>();
+      paths.Add(filePath1);
+      paths.Add(filePath2);
+      return FindClosestParentFolder(paths);
+    }
+
     public static string GetRemainingPath(string parentFolder, string filePath)
     {
       // Ensure the parent folder and file path are in a consistent format
@@ -789,6 +797,8 @@ namespace SimulationDAL
 
       Uri relativeUri = rootUri.MakeRelativeUri(targetUri);
       string relativePath = Uri.UnescapeDataString(relativeUri.ToString()).Replace('/', Path.DirectorySeparatorChar);
+      if ((relativePath[0] != '.') && (relativePath[0] != Path.DirectorySeparatorChar))
+        relativePath = "." + Path.DirectorySeparatorChar + relativePath;
 
       return relativePath;
     }

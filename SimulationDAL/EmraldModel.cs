@@ -376,7 +376,8 @@ namespace SimulationDAL
             actualPath = Path.GetFullPath(Path.Combine(rootPath, mPathRef.Path));
           }
 
-          addI.RelPath = CommonFunctions.GetRelativePath(rootPath, actualPath);
+          string commonParent = CommonFunctions.FindClosestParentFolder(rootPath, actualPath);
+          addI.RelPath = CommonFunctions.GetRelativePath(commonParent, actualPath);
           addI.ToCopy.Add(mPathRef.Path); //combine and normalize the path.
 
           multiThreadInfo.ToCopyForRefs.Add(addI);
