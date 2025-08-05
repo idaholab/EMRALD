@@ -264,7 +264,7 @@ namespace SysAndRegressionTesting
       Compare(dir, testName, optionsJ);
     }
 
-    //Is not printing out a compare file for some reason????
+
     [Fact]
     [Description("Tests pathing in JSON document Link variable during multithreading")]
     public void MultiThreadDocVar()
@@ -281,16 +281,15 @@ namespace SysAndRegressionTesting
 
       SimulationEngine.Options_cur options = optionsJ.ToObject<SimulationEngine.Options_cur>();
       //Change the default settings as needed for the test seed default set to 0 for testing.
-      options.inpfile = MainTestDir() + ModelFolder() + testName + ".json";
-      options.runct = 1;
-      options.runtime = "0.01:00:00";
+      options.inpfile = MainTestDir() + ModelFolder() + testName + ".emrald";
+      options.runct = 10;
       options.threads = 2;
       options.variables = new List<string>() { "DocVar" };
       JSONRun testRun = new JSONRun(options);
       Assert.True(TestRunSim(testRun));
 
       //Uncomment to update the validation files after they verified correct
-      CopyToValidated(dir, testName, optionsJ);
+      //CopyToValidated(dir, testName, optionsJ);
 
       //compare the test result and optionally the paths and json if assigned
       Compare(dir, testName, optionsJ);

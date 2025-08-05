@@ -156,7 +156,7 @@
       "desc": "",
       "docType": "dtTextRegEx",
       "docPath": "../../../VandV_Testing/TestingFiles/Other/Multithread.txt",
-      "docLink": "Var",
+      "docLink": "",
       "resetOnRuns": true,
       "regExpLine": 0,
       "begPosition": 0,

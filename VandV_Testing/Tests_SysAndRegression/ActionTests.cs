@@ -179,7 +179,7 @@ namespace SysAndRegressionTesting
       JObject optionsJ = SetupJSON(dir, testName, true);
 
       //Change the default settings as needed for the test seed default set to 0 for testing.
-      optionsJ["inpfile"] = MainTestDir() + ModelFolder() + testName + ".json";
+      optionsJ["inpfile"] = MainTestDir() + ModelFolder() + testName + ".emrald";
       optionsJ["runct"] = 100;
       optionsJ["threads"] = 2;
 
@@ -187,7 +187,7 @@ namespace SysAndRegressionTesting
       Assert.True(TestRunSim(testRun));
 
       //Uncomment to update the validation files after they verified correct
-      //CopyToValidated(dir, testName, optionsJ);
+      CopyToValidated(dir, testName, optionsJ);
 
       //compare the test result and optionally the paths and json if assigned
       Compare(dir, testName, optionsJ);
@@ -207,7 +207,7 @@ namespace SysAndRegressionTesting
       JObject optionsJ = SetupJSON(dir, testName, true);
 
       //Change the default settings as needed for the test seed default set to 0 for testing.
-      optionsJ["inpfile"] = MainTestDir() + ModelFolder() + testName + ".json";
+      optionsJ["inpfile"] = MainTestDir() + ModelFolder() + testName + ".emrald";
       optionsJ["runct"] = 100;
       optionsJ["threads"] = 2;
 
@@ -215,7 +215,7 @@ namespace SysAndRegressionTesting
       Assert.True(TestRunSim(testRun));
 
       //Uncomment to update the validation files after they verified correct
-      //CopyToValidated(dir, testName, optionsJ);
+      CopyToValidated(dir, testName, optionsJ);
 
       //compare the test result and optionally the paths and json if assigned
       Compare(dir, testName, optionsJ);
