@@ -139,8 +139,17 @@ Listed as Var Condition in the dropdown menu. Monitors variable values with user
   - **Evaluate Code (C#):** Type or copy and paste into this text field the C# code to evaluate to determine if this event is triggered. This must return a boolean true or false value.
   - **Variables used in code:** A list of other variables available in the model for use in evaluating the code. Pre-existing variables such as CurTime are auto checked and always available. See [Dynamic Scripts](./backendInfo.md#dynamic-scripts) for more information. It will include the all of the variables that you create and are listed in the "All" Tab of the Left Navigation Frame. Check box to identify which variables are used in the code.
 
-## Time Based Events
+## Time-based Events
+
+  <h3>Persistent Events</h3>
+  Time-based events have the option to be "persistent", meaning they will retain their time after the state is exited if the event wasn't triggered.<br>
   
+  For example, let's say a state has two timer events, Timer A for an hour and Timer B for a day, both of which trigger an exit. Once the state is entered, Timer A will trigger after an hour, causing the state to exit. If Timer B is not a persistent event, then it will start timing from 0 hours the next time it is in an active state. However, if Timer B is a persistent event, then it will start counting from 1 hour the next time it is in an active state.  
+
+  **insert picture here**
+
+  Note: If a persistent event is dependent on an user-defined variable, and the variable changes, then the event cannot adjust its timing, only resample and ignore based on the updated variable. Additionally, the event must be in an active state while the variable changes.
+
   <h3>Timer <img src="/images/Modeling/events/alarm.png" alt="Timer" width="25"/></h3>
   Monitors the time after entering the parent state against the user specified or sampled time. This can be set to a static value or to a variable value. The fields will change form depending on what type of value you are setting it to. Leave the checkbox next to "Use Variable?" blank to set a static value or check it to use a variable value.<br>
   
