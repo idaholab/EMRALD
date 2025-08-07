@@ -51,6 +51,7 @@ interface EventFormContextType {
   onSuccess: boolean | undefined;
   onVarChange: VarChangeOptions | undefined | '';
   parameters: EventDistributionParameter[] | undefined;
+  persistent: boolean | undefined;
   scriptCode: string | undefined;
   time: string | undefined;
   timeVariableUnit: TimeVariableUnit | undefined;
@@ -100,6 +101,7 @@ interface EventFormContextType {
   setOnSuccess: React.Dispatch<React.SetStateAction<boolean | undefined>>;
   setOnVarChange: React.Dispatch<React.SetStateAction<VarChangeOptions | undefined>>;
   setParameters: React.Dispatch<React.SetStateAction<EventDistributionParameter[] | undefined>>;
+  setPersistent: React.Dispatch<React.SetStateAction<boolean | undefined>>;
   setScriptCode: React.Dispatch<React.SetStateAction<string | undefined>>;
   setTime: React.Dispatch<React.SetStateAction<string | undefined>>;
   setTimerMilliseconds: React.Dispatch<React.SetStateAction<number>>;
@@ -151,6 +153,7 @@ const EventFormContextProvider: React.FC<PropsWithChildren> = ({ children }) => 
   const [onVarChange, setOnVarChange] = useState<VarChangeOptions | undefined>();
   const [distType, setDistType] = useState<DistributionType>();
   const [parameters, setParameters] = useState<EventDistributionParameter[]>();
+  const [persistent, setPersistent] = useState<boolean | undefined>();
   const [useDistVariable, setUseDistVariable] = useState<boolean[]>([]);
   const [dfltTimeRate, setDfltTimeRate] = useState<TimeVariableUnit>();
   const [allRows, setAllRows] = useState<RowType>({});
@@ -215,6 +218,7 @@ const EventFormContextProvider: React.FC<PropsWithChildren> = ({ children }) => 
       eventData.onVarChange && setOnVarChange(eventData.onVarChange);
       eventData.distType && setDistType(eventData.distType);
       eventData.parameters && setParameters(eventData.parameters);
+      eventData.persistent && setPersistent(eventData.persistent);
       eventData.dfltTimeRate && setDfltTimeRate(eventData.dfltTimeRate);
       eventData.timeVariableUnit && setTimeVariableUnit(eventData.timeVariableUnit);
       eventData.fromSimStart && setFromSimStart(eventData.fromSimStart);
@@ -435,6 +439,7 @@ const EventFormContextProvider: React.FC<PropsWithChildren> = ({ children }) => 
     setOnVarChange(undefined);
     setDistType(undefined);
     setParameters(undefined);
+    setPersistent(undefined);
     setUseDistVariable([]); // Default value for useDistVariable
     setDfltTimeRate(undefined);
     setAllRows({}); // Default value for allRows
@@ -507,12 +512,14 @@ const EventFormContextProvider: React.FC<PropsWithChildren> = ({ children }) => 
         event.value.onVarChange = onVarChange;
       }
     } else if (evType === 'etFailRate') {
+      console.log(persistent);
       event.value = {
         ...event.value,
         lambda,
         lambdaTimeRate,
         onVarChange,
         useVariable,
+        persistent,
       };
     } else if (evType === 'etComponentLogic') {
       event.value = {
@@ -558,6 +565,7 @@ const EventFormContextProvider: React.FC<PropsWithChildren> = ({ children }) => 
         onSuccess,
         onVarChange,
         parameters,
+        persistent,
         scriptCode,
         time,
         timeVariableUnit,
@@ -605,6 +613,7 @@ const EventFormContextProvider: React.FC<PropsWithChildren> = ({ children }) => 
         setOnSuccess,
         setOnVarChange,
         setParameters,
+        setPersistent,
         setScriptCode,
         setTime,
         setTimeVariableUnit,
