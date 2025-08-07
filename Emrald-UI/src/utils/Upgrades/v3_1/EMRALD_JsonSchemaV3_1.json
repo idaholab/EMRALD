@@ -534,6 +534,10 @@
             "required": []
           }
         },
+        "persistent": {
+          "type": "boolean",
+          "description": "Optional. For event type of etFailRate. Sets the event value as being persistent, keeping the initial sampled time between state movements and only re-samples after it occurs."
+        },
         "dfltTimeRate": {
           "$ref": "#/definitions/TimeVariableUnit"
         },

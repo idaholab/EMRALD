@@ -462,7 +462,9 @@ export interface Action {
   /**
    * Optional. For action type atRunExtApp. It is used for custom app form.
    */
-  template?: Record<string, unknown>
+  template?: {
+    [k: string]: unknown
+  }
   /**
    * Optional. For action type atRunExtApp. It is flag to indicate the type of return from the processOutputFileCode. If rtNone then it has no return, othrwise the C# script must return a List of strings with +/-[StateName] to shift out or into a state.
    */
@@ -542,7 +544,9 @@ export interface MAAPFormData {
   /**
    * A list of doc comments extracted from the .inp file
    */
-  docComments?: Record<string, MAAPComment>
+  docComments?: {
+    [k: string]: MAAPComment
+  }
   /**
    * The doc link variable used to store the results
    */
@@ -790,6 +794,10 @@ export interface Event {
   code?: string
   distType?: DistributionType
   parameters?: Parameters
+  /**
+   * Optional. For event type of etFailRate. Sets the event value as being persistent, keeping the initial sampled time between state movements and only re-samples after it occurs.
+   */
+  persistent?: boolean
   dfltTimeRate?: TimeVariableUnit
   changeLog?: ChangeLog
   /**

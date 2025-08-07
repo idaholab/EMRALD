@@ -509,7 +509,6 @@ const EventFormContextProvider: React.FC<PropsWithChildren> = ({ children }) => 
         event.value.onVarChange = onVarChange;
       }
     } else if (evType === 'etFailRate') {
-      console.log(persistent);
       event.value = {
         ...event.value,
         lambda,
