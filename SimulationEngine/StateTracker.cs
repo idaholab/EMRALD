@@ -729,8 +729,13 @@ namespace SimulationTracking
     private bool tempStateCngCheck = false; //see if there was a state change because of an external sim message 
     //public TLogEvCallBack logFunc = null;
     public bool keepExtSimEvs = true;
+
     //keep track of last external events so that we can trigger internal events if needed
     Dictionary<string, SimEventType> lastExtEvTypes = new Dictionary<string, SimEventType>();
+
+    //Save Persistent events so they only get resampled if past the sampled time. 
+    private Dictionary<string, TimeMoveEvent> PersistentEvs = new Dictionary<string, TimeMoveEvent>();
+
     //private bool debugLog = false;//todo remove
     //private TimeStateVariable toSave = null;
     //private TimeSpan sim3DStartTime;
@@ -772,6 +777,7 @@ namespace SimulationTracking
       this.condEvList.Clear();
       this.stopped3DSims.Clear();
       this.curTime = new TimeSpan();
+      this.PersistentEvs.Clear();
 
       //TODO : 
       //this.sim3D.SendAction(Reset Sim
@@ -1334,19 +1340,46 @@ namespace SimulationTracking
           else
           {
 
-            TimeSpan evTime = timeEv.NextTime(curTime);
+            TimeSpan evTime;
+            TimeSpan createTime;
+            bool savePersistent = false;
+            //if persistent and time not expired then reuse the saved TimeMoveEvent info
+            if (this.PersistentEvs.ContainsKey(curEv.name) && ((PersistentEvs[curEv.name].whenCreated + PersistentEvs[curEv.name].time) >= curTime))
+            {
+              evTime = (PersistentEvs[curEv.name].whenCreated + PersistentEvs[curEv.name].time) - curTime;
+              createTime = PersistentEvs[curEv.name].whenCreated;
+            }
+            else
+            {
+              evTime = timeEv.NextTime(curTime);
+              createTime = curTime;
+              savePersistent = true; //save if it is a persistent event
+            }
+
             if ((evTime < maxTime) || (timeEv.UsesVariables()))//if using variables we still need to add incase those variables change
             {
-              TimeMoveEvent addTimeEv = new TimeMoveEvent(curEv.name, new EventStatesAndActions(curEv.id, curState.id, curState.GetEvActionsIdx(idx)), curEv, evTime, curTime);
+              TimeMoveEvent addTimeEv = new TimeMoveEvent(curEv.name, new EventStatesAndActions(curEv.id, curState.id, curState.GetEvActionsIdx(idx)), curEv, evTime, createTime);
               if ((evTime == Globals.NowTimeSpan) && !this.emraldStopping3D)// || //add the event to be processed immediately
-                                                                         //todo : how to handle if next event is before the first timestep of a simulation 
-                                                                         //if only one simulation you just process the event as an immediate ((this.sim3DRunning || this.sim3DStarting) && ((evTime.TotalSeconds * sim3DFameRate) < 1)))
+                                                                            //todo : how to handle if next event is before the first timestep of a simulation 
+                                                                            //  if only one simulation you just process the event as an immediate ((this.sim3DRunning || this.sim3DStarting) && ((evTime.TotalSeconds * sim3DFameRate) < 1)))
               {
                 processEventList.Add(addTimeEv);
               }
               else //add it to the time list to occur in the correct order.
               {
                 timeEvList.AddTimedEvent(addTimeEv);
+              }
+
+              if (((TimeBasedEvent)curEv).persistent)
+              {
+                if (!this.PersistentEvs.ContainsKey(curEv.name))
+                {
+                  this.PersistentEvs.Add(curEv.name, new TimeMoveEvent(addTimeEv)); //copy it so that the time doesn't get adjusted as the simulation progresses
+                }
+                else if (savePersistent) //new sample so replace it
+                {
+                  this.PersistentEvs[curEv.name] = new TimeMoveEvent(addTimeEv);
+                }
               }
             }
           }
@@ -1458,18 +1491,40 @@ namespace SimulationTracking
                 if (curTimeEv.relatedIDs.Contains(varItem.id))
                 {
                   //get a new time for the event.
-
-                  TimeSpan lastSampledTime = ev.Key;
-                  //if (lastSampledTime < (TimeSpan.MaxValue - curTime))
-                  //{
-                  //  lastSampledTime = lastSampledTime + curTime;
-                  //}
+                  TimeSpan lastSampledTime = ev.Key;                  
 
                   TimeSpan regotTime = curTimeEv.RedoNextTime(ev.Value.whenCreated, curTime, lastSampledTime);
                   if (regotTime < TimeSpan.Zero) 
                     regotTime = TimeSpan.Zero;
 
                   timeEvList.ChangeEventTime(regotTime, ev.Value.eventStateActions.eventID);
+
+                  //adjust the saved persistent event time also if there is one
+                  if (this.PersistentEvs.ContainsKey(ev.Value.name))
+                    this.PersistentEvs[ev.Value.name].time = regotTime;
+                }
+              }
+
+              //see if there are any persistent not in the time event list to update
+              foreach (var persEvItem in this.PersistentEvs.Values)
+              {
+                TimeBasedEvent curTimeEv = (TimeBasedEvent)persEvItem.eventData;
+                if (!timeEvList.HasEvent(curTimeEv.id))                {
+                  
+                  if (curTimeEv.relatedIDs.Contains(varItem.id))
+                  { 
+                    if (curTimeEv.onVarChange == EnOnChangeTask.ocResample)
+                    {
+                      throw new Exception("Tried to adjust Persistent Event [" + curTimeEv.name + "], not currently in a state. Don't use Persistent events with events that can be adjusted for variable changes!");
+                    }
+                    
+                    TimeSpan regotTime = curTimeEv.RedoNextTime(persEvItem.whenCreated, curTime, persEvItem.time);
+                    if (regotTime < TimeSpan.Zero)
+                      regotTime = TimeSpan.Zero;
+
+                    //adjust the saved persistent event time 
+                    persEvItem.time = regotTime;
+                  }
                 }
               }
             }

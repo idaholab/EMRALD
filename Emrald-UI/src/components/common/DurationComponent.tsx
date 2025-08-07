@@ -101,7 +101,7 @@ const DurationComponent: React.FC<DurationComponentProps> = ({
           transformOrigin: 'top left',
           transform: 'translate(0px, -22px)',
           background: 'white',
-          position: 'absolute',
+          position: 'relative'
         }}
       >
         {label ?? 'Duration'}
