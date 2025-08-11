@@ -251,7 +251,7 @@ namespace SysAndRegressionTesting
 
       SimulationEngine.Options_cur options = optionsJ.ToObject<SimulationEngine.Options_cur>();
       //Change the default settings as needed for the test seed default set to 0 for testing.
-      options.inpfile = MainTestDir() + ModelFolder() + testName + ".json";
+      options.inpfile = MainTestDir() + ModelFolder() + testName + ".emrald";
       options.runct = 1;
       options.runtime = "0.01:00:00";
       options.threads = 2;
@@ -260,7 +260,7 @@ namespace SysAndRegressionTesting
       Assert.True(TestRunSim(testRun));
 
       //Uncomment to update the validation files after they verified correct
-      CopyToValidated(dir, testName, optionsJ);
+      //CopyToValidated(dir, testName, optionsJ);
 
       //compare the test result and optionally the paths and json if assigned
       Compare(dir, testName, optionsJ);
