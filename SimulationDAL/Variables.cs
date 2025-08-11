@@ -272,7 +272,7 @@ namespace SimulationDAL
     //  addToList.allVariables.Add(this);
     //}
 
-    public virtual List<ScanForReturnItem> ScanFor(ScanForTypes scanType)
+    public virtual List<ScanForReturnItem> ScanFor(ScanForTypes scanType, string modelRootPath)
     {
       //override in the different types if it is possible that the item has something for the scanType 
       return new List<ScanForReturnItem>();
@@ -819,7 +819,7 @@ namespace SimulationDAL
       }
     }
 
-    public override List<ScanForReturnItem> ScanFor(ScanForTypes scanType)
+    public override List<ScanForReturnItem> ScanFor(ScanForTypes scanType, string modelRootPath)
     {
       var itemList = new List<ScanForReturnItem>();
 
@@ -1081,24 +1081,25 @@ namespace SimulationDAL
         {
           try
           {
+            JObject fullObj = null;
             using (StreamReader sr = new StreamReader(_docFullPath))
             {
               string test = sr.ReadToEnd();
               // Update the document
-              JObject fullObj = JObject.Parse(test);
+              fullObj = JObject.Parse(test);
               var modItems = fullObj.SelectTokens(linkStr());
               if (modItems == null)
                 throw new Exception("Failed to locate document reference - " + linkStr());
 
               modItems = JsonExtensions.ReplacePath(fullObj, linkStr(), newValue);
-
-              // Update the JSON file with the change
-              using (StreamWriter file = File.CreateText(_docFullPath))
-              using (JsonTextWriter writer = new JsonTextWriter(file))
-              {
-                fullObj.WriteTo(writer);
-              }
             }
+            // Update the JSON file with the change
+            using (StreamWriter file = File.CreateText(_docFullPath))
+            using (JsonTextWriter writer = new JsonTextWriter(file))
+            {
+              fullObj.WriteTo(writer);
+            }
+            
 
             fileUpdated = true;
           }
@@ -1876,7 +1877,7 @@ namespace SimulationDAL
 
       foreach (var curItem in this.Values)
       {
-        foundList.AddRange(curItem.ScanFor(scanType));
+        foundList.AddRange(curItem.ScanFor(scanType, lists.rootPath));
       }
 
       return foundList;

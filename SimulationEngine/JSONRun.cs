@@ -219,6 +219,7 @@ namespace SimulationEngine
       ConfigData.debugRunEnd = options.debugEndIdx;
       ConfigData.seed = options.seed;
       ConfigData.threads = options.threads;
+      ConfigData.threads = ConfigData.threads > 0 ? ConfigData.threads : null; //don't allow 0 for threads.
 
 
       // Create a new ProcessSimBatch object

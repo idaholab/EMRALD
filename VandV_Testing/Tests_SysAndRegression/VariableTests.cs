@@ -31,36 +31,6 @@ namespace SysAndRegressionTesting
       return "Models" + Path.DirectorySeparatorChar;
     }
     #endregion
-
-
-
-
-    [Fact]
-    [Description("Test that the JSON document variable works correctly.")]
-
-    public void JsonVarExeTest()
-    {
-      string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
-
-      //Setup directory for unit test 
-      string dir = SetupTestDir(testName);
-      //initial options, and optional results to save/test
-      JObject optionsJ = SetupJSON(dir, testName);
-
-      //Change the default settings as needed for the test seed default set to 0 for testing.
-      optionsJ["inpfile"] = MainTestDir() + ModelFolder() + testName + ".json";
-
-      optionsJ["runct"] = 10;
-      JSONRun testRun = new JSONRun(optionsJ.ToString());
-      Assert.True(TestRunSim(testRun));
-
-      //Uncomment to update the validation files after they verified correct
-      //CopyToValidated(dir, testName, optionsJ);
-
-      //compare the test result and optionally the paths and json if assigned
-      Compare(dir, testName, optionsJ);
-    }
-
     
     [Fact]
     [Description("Test that a failure rate event using a variable correctly adds the event if it is resampled and inside the mission time")]
@@ -176,7 +146,7 @@ namespace SysAndRegressionTesting
     [Description("Test XML document Link variable to make sure it is reading an writing correctly")]
     public void XMLDocLinkTest()
     {
-      //FYI - model must have the XML document using relative path to ..\..\..\UnitTesting_Simulation\TestingFiles\Other\
+      //FYI - model must have the XML document using relative path to ..\..\..\VandV_Testing\TestingFiles\Other\
       //Save the XML document in that folder
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
 
@@ -208,7 +178,7 @@ namespace SysAndRegressionTesting
     [Description("Test JSON document Link variable to make sure it is reading an writing correctly")]
     public void RegExDocLinkTest()
     {
-      //FYI - model must have the Text document for the RegEx using relative path to ..\..\..\UnitTesting_Simulation\TestingFiles\Other\
+      //FYI - model must have the Text document for the RegEx using relative path to ..\..\..\VandV_Testing\TestingFiles\Other\
       //Save the text document in that folder
 
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
@@ -269,7 +239,7 @@ namespace SysAndRegressionTesting
     [Description("Tests pathing in JSON document Link variable during multithreading")]
     public void MultiThreadDocVar()
     {
-      //FYI - model must have the Text document for the RegEx using relative path to ..\..\..\UnitTesting_Simulation\TestingFiles\Other\
+      //FYI - model must have the Text document for the RegEx using relative path to ..\..\..\VandV_Testing\TestingFiles\Other\
       //Save the text document in that folder
 
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.

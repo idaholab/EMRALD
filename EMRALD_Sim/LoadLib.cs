@@ -109,7 +109,7 @@ namespace EMRALD_Sim
     {
       int inThreads = 0;
       if (threadCnt == "")
-        ConfigData.threads = 1;
+        ConfigData.threads = null;
       else
       {
         if (!Int32.TryParse(threadCnt, out inThreads))

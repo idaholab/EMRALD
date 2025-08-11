@@ -118,7 +118,9 @@
       "desc": "",
       "stateType": "stStart",
       "diagramName": "Main",
-      "immediateActions": [],
+      "immediateActions": [
+        "SetVar2"
+      ],
       "events": [
         "OneMin"
       ],
@@ -212,14 +214,26 @@
       "mainItem": false,
       "mutExcl": true,
       "newStates": [],
-      "makeInputFileCode": "return @\"..\\..\\..\\VandV_Testing\\TestingFiles\\Other\\TestVar1.json ..\\..\\..\\UnitTesting_Simulation\\TestingFiles\\Other\\TestVar2.json ..\\..\\..\\UnitTesting_Simulation\\TestingFiles\\CompareFiles\\VarCompRes.json\";",
-      "exePath": "..\\..\\..\\VandV_Testing\\TestingFiles\\Other\\JSON_GreaterThan.exe",
+      "makeInputFileCode": "return @\"..\\Other\\TestVar1.json ..\\Other\\TestVar2.json ..\\Other\\VarCompRes.json\";",
+      "exePath": "..\\Other\\JSON_GreaterThan.exe",
       "processOutputFileCode": "List<String> retStates = new List<String>();\nreturn retStates;",
       "codeVariables": [
         "CompRes"
       ],
       "id": "9b0c3691-4fb5-4901-b436-d79f158f2aac",
       "objType": "Action"
+    },
+    {
+      "id": "98b7542d-fd6f-46bb-9a77-b7deb86abc06",
+      "name": "SetVar2",
+      "desc": "",
+      "actType": "atCngVarVal",
+      "mainItem": true,
+      "objType": "Action",
+      "required": false,
+      "codeVariables": [],
+      "variableName": "TestVar2",
+      "scriptCode": "if ((RunIdx % 2) == 0)\r\n  return 10;\r\nelse\r\n  return 1;"
     }
   ],
   "EventList": [
@@ -273,11 +287,25 @@
       "value": true,
       "docLink": "$.['Result']",
       "docType": "dtJSON",
-      "docPath": "..\\..\\..\\VandV_Testing\\TestingFiles\\CompareFiles\\VarCompRes.json",
+      "docPath": "..\\Other\\VarCompRes.json",
       "type": "bool",
       "pathMustExist": false,
       "id": "2d89eea0-675e-4d1d-895a-ec689ca22156",
       "objType": "Variable"
+    },
+    {
+      "name": "TestVar2",
+      "varScope": "gtDocLink",
+      "value": 0,
+      "type": "double",
+      "objType": "Variable",
+      "id": "31e1693b-325b-4ee9-8fe6-aacb8d733900",
+      "desc": "",
+      "docType": "dtJSON",
+      "docPath": "..\\Other\\TestVar2.json",
+      "docLink": "$.['Value']",
+      "pathMustExist": true,
+      "resetOnRuns": true
     }
   ],
   "objType": "EMRALD_Model",
@@ -288,31 +316,65 @@
       {
         "ItemName": "RunCompExe",
         "ItemType": "itAction",
-        "RefPath": "..\\..\\..\\VandV_Testing\\TestingFiles\\Other\\TestVar1.json ..\\..\\..\\UnitTesting_Simulation\\TestingFiles\\Other\\TestVar2.json ..\\..\\..\\UnitTesting_Simulation\\TestingFiles\\CompareFiles\\VarCompRes.json",
+        "RefPath": "..\\Other\\JSON_GreaterThan.exe",
         "ToCopy": [
-          "..\\..\\..\\VandV_Testing\\TestingFiles\\Other\\TestVar1.json ..\\..\\..\\UnitTesting_Simulation\\TestingFiles\\Other\\TestVar2.json ..\\..\\..\\UnitTesting_Simulation\\TestingFiles\\CompareFiles\\VarCompRes.json"
+          "..\\Other\\JSON_GreaterThan.exe",
+          "..\\Other\\Newtonsoft.Json.dll"
         ],
-        "RelPath": "..\\UnitTesting_Simulation\\TestingFiles\\UnitTesting_Simulation\\TestingFiles\\CompareFiles\\VarCompRes.json"
+        "RelPath": ".\\Other\\JSON_GreaterThan.exe",
+        "AdjRelRoot": ""
       },
       {
         "ItemName": "RunCompExe",
         "ItemType": "itAction",
-        "RefPath": "..\\..\\..\\VandV_Testing\\TestingFiles\\Other\\JSON_GreaterThan.exe",
+        "RefPath": "..\\Other\\TestVar1.json",
         "ToCopy": [
-          "..\\..\\..\\VandV_Testing\\TestingFiles\\Other\\JSON_GreaterThan.exe"
+          "..\\Other\\TestVar1.json"
         ],
-        "RelPath": "..\\Other\\JSON_GreaterThan.exe"
+        "RelPath": ".\\TestVar1.json",
+        "AdjRelRoot": ".\\Other"
+      },
+      {
+        "ItemName": "RunCompExe",
+        "ItemType": "itAction",
+        "RefPath": "..\\Other\\TestVar2.json",
+        "ToCopy": [
+          "..\\Other\\TestVar2.json"
+        ],
+        "RelPath": ".\\TestVar2.json",
+        "AdjRelRoot": ".\\Other"
+      },
+      {
+        "ItemName": "RunCompExe",
+        "ItemType": "itAction",
+        "RefPath": "..\\Other\\VarCompRes.json\";",
+        "ToCopy": [
+          "..\\Other\\VarCompRes.json\";"
+        ],
+        "RelPath": ".\\VarCompRes.json\";",
+        "AdjRelRoot": ".\\Other"
       },
       {
         "ItemName": "CompRes",
         "ItemType": "itVar",
-        "RefPath": "..\\..\\..\\VandV_Testing\\TestingFiles\\CompareFiles\\VarCompRes.json",
+        "RefPath": "..\\Other\\VarCompRes.json",
         "ToCopy": [
-          "..\\..\\..\\VandV_Testing\\TestingFiles\\CompareFiles\\VarCompRes.json"
+          "..\\Other\\VarCompRes.json"
         ],
-        "RelPath": "..\\CompareFiles\\VarCompRes.json"
+        "RelPath": ".\\Other\\VarCompRes.json",
+        "AdjRelRoot": ""
+      },
+      {
+        "ItemName": "TestVar2",
+        "ItemType": "itVar",
+        "RefPath": "..\\Other\\TestVar2.json",
+        "ToCopy": [
+          "..\\Other\\TestVar2.json"
+        ],
+        "RelPath": ".\\Other\\TestVar2.json",
+        "AdjRelRoot": ""
       }
     ],
-    "AssignedTime": "2025-07-31T10:36:22.4708921-06:00"
+    "AssignedTime": "2025-08-11T07:57:53.5110701-06:00"
   }
 }

@@ -1,6 +1,7 @@
 ﻿// Copyright 2021 Battelle Energy Alliance
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -131,7 +132,7 @@ namespace SimulationDAL
     {
       //stub to do in classes if needed
     }
-    public virtual List<ScanForReturnItem> ScanFor(ScanForTypes scanType)
+    public virtual List<ScanForReturnItem> ScanFor(ScanForTypes scanType, string modelRootPath)
     {
       //override in the different types if it is possible that the item has something for the scanType 
       return new List<ScanForReturnItem>();
@@ -700,7 +701,7 @@ namespace SimulationDAL
       //varItem.LookupRelatedItems(all, addToList);
     }
 
-    public override List<ScanForReturnItem> ScanFor(ScanForTypes scanType)
+    public override List<ScanForReturnItem> ScanFor(ScanForTypes scanType, string modelRootPath)
     {
       var itemList = new List<ScanForReturnItem>();
 
@@ -723,12 +724,23 @@ namespace SimulationDAL
 
     public void UpdatePathRefs(string oldRef, string newRef, string modelPath)
     {
-      //find the file references in the code and look for a match of the oldRef and replace.         
-      var paths = CommonFunctions.FindFilePathReferences(ref compCode, oldRef, newRef);
+      //find the file references in the code and look for a match of the oldRef and replace.
+     if (!modelPath.EndsWith(@"\"))
+        modelPath += @"\";
+
+      newRef = Path.GetFullPath(Path.Combine(modelPath + newRef));
+
+      string newRefEscaped = newRef.Replace("\\", "\\\\").Replace("\"", "\\\"");
+      var paths = CommonFunctions.FindFilePathReferences(ref compCode, oldRef, newRefEscaped);
 
       if (paths.Count <= 0)
         throw new Exception("Failed to find string in the path " + oldRef + " in the source of the Evaluate Variable Event.");
-
+      else
+      {
+        compiledComp = new ScriptEngine(ScriptEngine.Languages.CSharp);
+        compiled = false;
+        CompileCompCode();
+      }
     }
   }
 
@@ -875,7 +887,7 @@ namespace SimulationDAL
         return true;
     }
 
-    public override List<ScanForReturnItem> ScanFor(ScanForTypes scanType)
+    public override List<ScanForReturnItem> ScanFor(ScanForTypes scanType, string modelRootPath)
     {
       var itemList = new List<ScanForReturnItem>();
 
@@ -1893,7 +1905,7 @@ namespace SimulationDAL
       foreach (var curItem in this.Values)
       {
         curItem.rootPath = lists.rootPath;
-        foundList.AddRange(curItem.ScanFor(scanType));
+        foundList.AddRange(curItem.ScanFor(scanType, lists.rootPath));
       }
 
       return foundList;

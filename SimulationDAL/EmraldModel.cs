@@ -14,18 +14,20 @@ using System.Text;
 using System.Text.Json.Nodes;
 using MathNet.Numerics.LinearAlgebra;
 using MessageDefLib;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.VisualBasic;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Schema;
+using NLog;
 using Sop.Collections.BTree;
 
 
 namespace SimulationDAL
 {
-  
+
   //public delegate int NewStateDecisionCallBack(StEvKey stEvKey);
- 
+
 
   //public static class GlobalVar
   //{
@@ -36,16 +38,17 @@ namespace SimulationDAL
   //}
 
 
-  
 
-    
+
+
   //[DataContract]
   public class EmraldModel : BaseObjInfo
   {
     private Boolean _multiThreadReady = false;
     private int? _threadNumber = 0;
     private bool _updated = false;
-    public const double SCHEMA_VERSION = 3.0;    
+    private MultiThreadInfo _MultiThreadInfo = null;
+    public const double SCHEMA_VERSION = 3.0;
     //public dSimulation _Sim = null;
     //protected Diagram _Diagram = null; //TODO remove was added for testing.
     public AllDiagrams allDiagrams = new AllDiagrams();
@@ -57,14 +60,17 @@ namespace SimulationDAL
     //public ComponentsList allComponents = new ComponentsList();
     public LogicNodeList allLogicNodes = new LogicNodeList();
     public Dictionary<int, List<AccrualVariable>> AccrualVars = new Dictionary<int, List<AccrualVariable>>();
-    public MultiThreadInfo multiThreadInfo = null;
     private static readonly object deleteLock = new object(); // a static object for thread file locking
-    
+
 
     public string fileName { get; set; } = "";
     public string rootPath { get; set; } = "";
     public string modelTxt { get; set; } = "";
     public bool updated { get { return _updated; } }
+    public MultiThreadInfo multiThreadInfo
+    {
+      get { if (_MultiThreadInfo == null) _MultiThreadInfo = new MultiThreadInfo(); return _MultiThreadInfo; }
+    }
 
     //public int dbID = 0;
     public int curRunIdx = 0; //current run index.
@@ -83,7 +89,24 @@ namespace SimulationDAL
       this.desc = desc;
       this._id = 0;
     }
-   
+
+    public void SetMultiThreadInfo (MultiThreadInfo value = null)
+    {
+      if (value != null)
+        this._MultiThreadInfo = value;
+
+      dynamic jsonObj = JsonConvert.DeserializeObject(this.modelTxt);
+      string multiThreadInfoJson = JsonConvert.SerializeObject(this._MultiThreadInfo);
+      JToken multiThreadInfoToken = JToken.Parse(multiThreadInfoJson);
+
+      // Modify the property if it exists, or add it if it does not
+      ((JObject)jsonObj)["multiThreadInfo"] = multiThreadInfoToken;
+
+      // Serialize the modified object back into a JSON string
+      this.modelTxt = JsonConvert.SerializeObject(jsonObj, Formatting.Indented);
+    }
+
+
     public void AddList(EmraldModel toAdd)
     {
       foreach (var i in toAdd.allDiagrams) { allDiagrams.Add(i.Value); }
@@ -186,11 +209,11 @@ namespace SimulationDAL
       // Deserialize multiThreadInfo if present
       if (jsonObj.multiThreadInfo != null)
       {
-        this.multiThreadInfo = JsonConvert.DeserializeObject<MultiThreadInfo>(Convert.ToString(jsonObj.multiThreadInfo));
+        this._MultiThreadInfo = JsonConvert.DeserializeObject<MultiThreadInfo>(Convert.ToString(jsonObj.multiThreadInfo));
       }
       else
       {
-        this.multiThreadInfo = new MultiThreadInfo();
+        this._MultiThreadInfo = new MultiThreadInfo();
       }
 
       if (threadNum != null) //assign thread info and copy data
@@ -213,32 +236,66 @@ namespace SimulationDAL
           }
           CommonFunctions.CopyDirectory(firstRootPath, this.rootPath, true);
         }
-
-        //copy all the data needed to run in its own thread
-        foreach (var item in multiThreadInfo.ToCopyForRefs)
+        else
         {
-          if ((threadNum == 0) && (item.ToCopy.Count > 0)) //if the first thread then make sure to figure out all the files needed.
-          {
-            string commonFolder = CommonFunctions.FindClosestParentFolder(item.ToCopy);
-            foreach (var copyItem in item.ToCopy)
-            {
-              //copy the items needed
-              if (File.Exists(copyItem))
-              {
-                string copyTo = Path.GetFullPath(Path.Combine(rootPath, item.RelPath));
-                
-                //make sure directory exists
-                string directory = Path.GetDirectoryName(copyTo);
-                if (directory != null && !Directory.Exists(directory))
-                {
-                  Directory.CreateDirectory(directory);
-                }
+          //copy all the data needed to run in its own thread
 
-                File.Copy(copyItem, copyTo);
+          File.WriteAllText(this.rootPath + Path.DirectorySeparatorChar + this.fileName + ".emrald", this.modelTxt); 
+          Dictionary<string, string> copied = new Dictionary<string, string>(); //files copied and where they came from
+          foreach (var item in multiThreadInfo.ToCopyForRefs)
+          {
+            if (threadNum == 0)// && (item.ToCopy.Count > 0)) //if the first thread then make sure to figure out all the files needed.
+            {
+              string commonFolder = CommonFunctions.FindClosestParentFolder(item.ToCopy);
+              for (int i = 0; i < item.ToCopy.Count; i++)
+              {
+                var copyItem = item.ToCopy[i];
+                
+                //copy the items needed
+                string copyFrom = Path.GetFullPath(Path.Combine(modelPath, copyItem));
+                if (File.Exists(copyFrom))
+                {
+                  string root = rootPath;
+                  //if this is not directly reletive to the model location adjust it
+                  if (item.AdjRelRoot != "")
+                    root = Path.GetFullPath(Path.Combine(rootPath, item.AdjRelRoot));
+                  string copyTo = Path.GetFullPath(Path.Combine(root, item.RelPath));
+                  if (i > 0) //not the main copy/replace item, so use the path of the [0] item for this copy
+                  {
+                    string subItemPath = Path.GetDirectoryName(item.RelPath);
+                    if (subItemPath == ".")
+                      subItemPath = "";
+                    else
+                      subItemPath += Path.DirectorySeparatorChar;
+
+                    copyTo = Path.GetFullPath(Path.Combine(root, subItemPath + Path.GetFileName(copyItem)));
+                  }
+
+                  if (copied.ContainsKey(copyTo))
+                  {
+                    if (copied[copyTo] != copyFrom)
+                    {
+                      throw new Exception("If run using multithreading, the model would have idenical relaive path references to two different files of the same name.");
+                    }
+                    //else it already coppied the file, dont copy again
+                  }
+                  else //not copied yet so copy for multithreading.
+                  {
+                    //make sure directory exists
+                    string directory = Path.GetDirectoryName(copyTo);
+                    if (directory != null && !Directory.Exists(directory))
+                    {
+                      Directory.CreateDirectory(directory);
+                    }
+
+                    File.Copy(copyFrom, copyTo);
+                    copied.Add(copyTo, copyFrom);
+                  }
+                }
               }
             }
           }
-        }          
+        }
       }
       else
       {
@@ -322,10 +379,10 @@ namespace SimulationDAL
       // Ensure multiThreadInfo and its ToCopyForRefs list are initialized before use.
       // This prevents NullReferenceExceptions if either the multiThreadInfo object or its ToCopyForRefs property
       // have not been set (such as after deserialization, or if not initialized elsewhere in the code).
-      if (multiThreadInfo == null)
-        multiThreadInfo = new MultiThreadInfo();
-      if (multiThreadInfo.ToCopyForRefs == null)
-        multiThreadInfo.ToCopyForRefs = new List<ToCopyForRef>();
+      if (_MultiThreadInfo == null)
+        _MultiThreadInfo = new MultiThreadInfo();
+      if (_MultiThreadInfo.ToCopyForRefs == null)
+        _MultiThreadInfo.ToCopyForRefs = new List<ToCopyForRef>();
       
       var ModelRefsList = new List<ScanForReturnItem>();
 
@@ -340,30 +397,40 @@ namespace SimulationDAL
       
       //go through each of the found items and look for them in the multiThreadInfo or put in a new list.
       var notAccountedFor = new List<String>();
-      Dictionary<string, ToCopyForRef> curMutiThreadItems = new Dictionary<string, ToCopyForRef>();
+      Dictionary<string, List<ToCopyForRef>> curMutiThreadItems = new Dictionary<string, List<ToCopyForRef>>();
       foreach (var item in multiThreadInfo.ToCopyForRefs)
       {
-        curMutiThreadItems.Add(item.ItemName, item);
+        //create list if doens't exist yet for key
+        if (!curMutiThreadItems.ContainsKey(item.ItemName))
+          curMutiThreadItems.Add(item.ItemName, new List<ToCopyForRef>());
+
+        curMutiThreadItems[item.ItemName].Add(item);          
       }
 
+      //add items to the multiThreadInfo if not there and keep track if items were not accounted for.
       foreach (var modelRef in ModelRefsList)
       {
         var mPathRef = (modelRef as ScanForRefsItem);
         //see if the item is in the saved JSON reference info
         if (curMutiThreadItems.ContainsKey(modelRef.itemName)) 
         {
-          var curI = curMutiThreadItems[modelRef.itemName];
-          if (string.IsNullOrEmpty(curI.RelPath))
+          bool found = false;
+          string issue = "";
+          foreach (var curI in curMutiThreadItems[modelRef.itemName])
           {
-            // Accumulate the issue, do not throw
+            issue = $"{modelRef.itemName} missing RelPath";
+            if (string.IsNullOrEmpty(curI.RelPath))
+            {
+              break;
+            }
+            if (curI.RefPath == mPathRef.Path)
+            {
+              found = true;
+              break;
+            }
+          }
+          if (!found)
             notAccountedFor.Add($"{modelRef.itemName} missing RelPath");
-            continue;
-          }
-          if (curI.RefPath != mPathRef.Path)
-          {
-            curI.RefPath = mPathRef.Path;
-            notAccountedFor.Add(curI.ItemName);
-          }
         }
         else //not in the saved items so add it 
         {
@@ -377,6 +444,13 @@ namespace SimulationDAL
           }
 
           string commonParent = CommonFunctions.FindClosestParentFolder(rootPath, actualPath);
+          //if item provided a different root location use that one instead
+          if (mPathRef.calcRelativeFrom != "")
+          {
+            string newRootPath = CommonFunctions.FindClosestParentFolder(mPathRef.calcRelativeFrom, actualPath);
+            addI.AdjRelRoot = CommonFunctions.GetRelativePath(commonParent, newRootPath);
+            commonParent = newRootPath;
+          }
           addI.RelPath = CommonFunctions.GetRelativePath(commonParent, actualPath);
           addI.ToCopy.Add(mPathRef.Path); //combine and normalize the path.
 
@@ -386,25 +460,26 @@ namespace SimulationDAL
         }
       }
 
-      //put the multiTheadInfo back onto the model JSON string
-      dynamic jsonObj = JsonConvert.DeserializeObject(this.modelTxt);
-      string multiThreadInfoJson = JsonConvert.SerializeObject(multiThreadInfo);
-      JToken multiThreadInfoToken = JToken.Parse(multiThreadInfoJson);
+      //put the multiTheadInfo back onto the model JSON string by assigning it;
+      SetMultiThreadInfo();
+      //dynamic jsonObj = JsonConvert.DeserializeObject(this.modelTxt);
+      //string multiThreadInfoJson = JsonConvert.SerializeObject(multiThreadInfo);
+      //JToken multiThreadInfoToken = JToken.Parse(multiThreadInfoJson);
 
-      // Check if the "multiThreadInfo" property exists
-      if (jsonObj.multiThreadInfo != null)
-      {
-        // Replace the existing value
-        jsonObj.multiThreadInfo = multiThreadInfoToken;
-      }
-      else
-      {
-        // Add the new property and value
-        ((JObject)jsonObj).Add("multiThreadInfo", multiThreadInfoToken);
-      }
+      //// Check if the "multiThreadInfo" property exists
+      //if (jsonObj.multiThreadInfo != null)
+      //{
+      //  // Replace the existing value
+      //  jsonObj.multiThreadInfo = multiThreadInfoToken;
+      //}
+      //else
+      //{
+      //  // Add the new property and value
+      //  ((JObject)jsonObj).Add("multiThreadInfo", multiThreadInfoToken);
+      //}
 
-      // Serialize the modified object back into a JSON string
-      this.modelTxt = JsonConvert.SerializeObject(jsonObj, Formatting.Indented);
+      //// Serialize the modified object back into a JSON string
+      //this.modelTxt = JsonConvert.SerializeObject(jsonObj, Formatting.Indented);
 
       _multiThreadReady = notAccountedFor.Count == 0;
       return notAccountedFor;
@@ -491,7 +566,7 @@ namespace SimulationDAL
               (aItem as ScriptAct).UpdatePathRefs(item.RefPath, item.RelPath, this.rootPath);
 
             if (aItem is RunExtAppAct)
-              (aItem as RunExtAppAct).UpdatePathRefs(item.RefPath, item.RelPath, this.rootPath);
+              (aItem as RunExtAppAct).UpdatePathRefs(item.RefPath, item.RelPath, this.rootPath, this);
 
             break;
           case EnIDTypes.itTreeNode:

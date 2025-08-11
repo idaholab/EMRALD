@@ -93,7 +93,7 @@ namespace EMRALD_Sim
               
             }
           }
-          UpdateRelPath();
+          //UpdateRelPath();
         }
       }
       UpdateOKButtonState();
@@ -108,7 +108,7 @@ namespace EMRALD_Sim
       {
         item.ToCopy.RemoveAt(idx);
         lstToCopy.Items.RemoveAt(idx);
-        UpdateRelPath();
+        //UpdateRelPath();
       }
       UpdateOKButtonState();
     }
@@ -126,17 +126,17 @@ namespace EMRALD_Sim
       Close();
     }
 
-    private void UpdateRelPath()
-    {
-      if (_currentItemIndex < 0) return;
-      var item = _multiThreadInfo.ToCopyForRefs[_currentItemIndex];
-      string refPath = item.RefPath ?? "";
-      List<string> toCopy = item.ToCopy != null
-          ? ((IEnumerable<string>)item.ToCopy).ToList()
-          : new List<string>();
-      item.RelPath = CalculateRelPath(refPath, toCopy);
-      txtRelPath.Text = item.RelPath;
-    }
+    //private void UpdateRelPath()
+    //{
+    //  if (_currentItemIndex < 0) return;
+    //  var item = _multiThreadInfo.ToCopyForRefs[_currentItemIndex];
+    //  string refPath = item.RefPath ?? "";
+    //  List<string> toCopy = item.ToCopy != null
+    //      ? ((IEnumerable<string>)item.ToCopy).ToList()
+    //      : new List<string>();
+    //  //item.RelPath = CalculateRelPath(refPath, toCopy);
+    //  txtRelPath.Text = item.RelPath;
+    //}
 
     private string CalculateRelPath(string refPath, List<string> toCopy)
     {

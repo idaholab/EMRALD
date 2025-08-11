@@ -1009,6 +1009,7 @@ namespace EMRALD_Sim
         lbl_ResultHeader.Visible = true;
 
         _statsFile = tbSavePath2.Text;
+        ConfigData.threads = ConfigData.threads > 0 ? ConfigData.threads : null; //don't allow 0 for threads. 
         int threadCnt = ConfigData.threads == null ? 1 : (int)ConfigData.threads;
         int runsDiv = int.Parse(tbRunCnt.Text) / threadCnt;
 
@@ -1016,7 +1017,7 @@ namespace EMRALD_Sim
         simRuns.Clear();
 
 
-        for (int i = 0; i < ConfigData.threads; i++)
+        for (int i = 0; i < threadCnt; i++)
         {
           //set up the simBatch, only set threads if more than one.
           simRuns.Add(new ProcessSimBatch(_sim, maxTime, tbSavePath.Text, _statsFile, _pathResultsInterval, ConfigData.threads == null ? null : i));
@@ -1033,7 +1034,7 @@ namespace EMRALD_Sim
           }
 
           if (i == 0) //add extra runs on the first one
-            simRuns[i].SetupBatch(runsDiv + (int.Parse(tbRunCnt.Text) % (int)ConfigData.threads), true);
+            simRuns[i].SetupBatch(runsDiv + (int.Parse(tbRunCnt.Text) % (int)threadCnt), true);
           else
             simRuns[i].SetupBatch(runsDiv, true);
 
@@ -1692,9 +1693,6 @@ namespace EMRALD_Sim
           return;
         }
 
-        if (_sim.multiThreadInfo == null)
-          _sim.multiThreadInfo = new MultiThreadInfo();
-
         if (cbMultiThreaded.Checked == false)
         {
           tbThreads.Text = "0"; //0 indicates no threading, 1 will copy the model and run in a seperate thread as if multithreading but still just one thread.
@@ -1739,7 +1737,7 @@ namespace EMRALD_Sim
               var result = frm.ShowDialog();
               if (result == DialogResult.OK)
               {
-                _sim.multiThreadInfo = frm.EditedMultiThreadInfo;
+                _sim.SetMultiThreadInfo(frm.EditedMultiThreadInfo);
                 teModel.Text = _sim.modelTxt;
                 //save the multithread stuff.
                 saveStripMenuItem_Click(sender, e);
@@ -1755,7 +1753,7 @@ namespace EMRALD_Sim
           else //save the empty multiThreadInfo
           {
             if(_sim.multiThreadInfo == null)
-              _sim.multiThreadInfo = new MultiThreadInfo();
+              _sim.SetMultiThreadInfo(new MultiThreadInfo());
             teModel.Text = _sim.modelTxt;
             saveStripMenuItem_Click(sender, e);
           }
@@ -1814,10 +1812,6 @@ namespace EMRALD_Sim
         return;
       }
 
-      // Ensure multiThreadInfo is initialized
-      if (_sim.multiThreadInfo == null)
-        _sim.multiThreadInfo = new MultiThreadInfo();
-
       // Get issues (if any) for multi-threading.
       List<string> issueItems = _sim.CanMutiThread();
 
@@ -1827,7 +1821,7 @@ namespace EMRALD_Sim
         var result = frm.ShowDialog();
         if (result == DialogResult.OK)
         {
-          _sim.multiThreadInfo = frm.EditedMultiThreadInfo;
+          _sim.SetMultiThreadInfo(frm.EditedMultiThreadInfo);
           teModel.Text = _sim.modelTxt;
           //save the multithread stuff.
           saveStripMenuItem_Click(sender, e);
