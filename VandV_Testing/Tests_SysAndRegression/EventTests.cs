@@ -423,7 +423,7 @@ namespace SysAndRegressionTesting
       options.runct = 100;
       options.threads = 2;
       options.variables = new List<string>() { "Var" };
-      //optionsJ["variables"] = JsonConvert.SerializeObject(args);
+      
       JSONRun testRun = new JSONRun(options);
       Assert.True(TestRunSim(testRun));
       //Uncomment to update the validation files after they verified correct

@@ -214,7 +214,7 @@
       "mainItem": false,
       "mutExcl": true,
       "newStates": [],
-      "makeInputFileCode": "return @\"..\\..\\..\\VandV_Testing\\TestingFiles\\Other\\TestVar1.json ..\\..\\..\\VandV_Testing\\TestingFiles\\Other\\TestVar2.json ..\\..\\..\\VandV_Testing\\TestingFiles\\CompareFiles\\VarCompRes.json\";",
+      "makeInputFileCode": "return @\"..\\..\\..\\VandV_Testing\\TestingFiles\\Other\\TestVar1.json ..\\..\\..\\VandV_Testing\\TestingFiles\\Other\\TestVar2.json ..\\..\\..\\VandV_Testing\\TestingFiles\\Other\\VarCompRes.json\";",
       "exePath": "..\\..\\..\\VandV_Testing\\TestingFiles\\Other\\JSON_GreaterThan.exe",
       "processOutputFileCode": "List<String> retStates = new List<String>();\nreturn retStates;",
       "codeVariables": [
@@ -287,7 +287,7 @@
       "value": true,
       "docLink": "$.['Result']",
       "docType": "dtJSON",
-      "docPath": "..\\..\\..\\VandV_Testing\\TestingFiles\\CompareFiles\\VarCompRes.json",
+      "docPath": "..\\..\\..\\VandV_Testing\\TestingFiles\\Other\\VarCompRes.json",
       "type": "bool",
       "pathMustExist": false,
       "id": "2d89eea0-675e-4d1d-895a-ec689ca22156",

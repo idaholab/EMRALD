@@ -645,15 +645,43 @@ namespace SimulationDAL
     public static List<string> FindFilePathReferences(ref string code, string oldPath = null, string newPath = null)
     {
       // Define a regular expression pattern to match file paths, including paths separated by spaces
-      //string pattern = @"(?<![:\/])((?:[a-zA-Z]:\\)|(?:\.\.\/)|(?:\.\.\\))(?:[\w\s\.-]+[\\\/])*[\w\s\.-]+";
-      //string pattern = @"(?<![:\/])((?:[a-zA-Z]:\\)|(?:\.\.\/)|(?:\.\.\\))(?:[\w\s\.-]+[\\\/])*[\w\s\.-]+(?=\s|$)";
-      //string pattern = @"(?<![:\/])((?:[a-zA-Z]:\\)|(?:\.\.\/)|(?:\.\.\\))(?:[\w\s\.-]+?[\\\/])*[\w\s\.-]+(?=\s|$)";
-      //string pattern = @"(?<![:\/])(?:""((?:[a-zA-Z]:\\|(?:\.\.\/)|(?:\.\.\\))(?:[\w\.-]+?[\\\/])*[\w\.-]+)""|((?:[a-zA-Z]:\\|(?:\.\.\/)|(?:\.\.\\))(?:[\w\.-]+?[\\\/])*[\w\.-]+))(?=\s|$)";
-      //string pattern = @"(?<![:\/])(?:""((?:[a-zA-Z]:\\|(?:\.\.\/)|(?:\.\.\\))(?:[\w\.-]+?[\\\/])*[\w\.-]+)""|((?:[a-zA-Z]:\\|(?:\.\.\/)|(?:\.\.\\))(?:[\w\.-]+?[\\\/])*[\w\.-]+))(?=\s|$|(?=""))";
-      string pattern = @"(?:(?:[a-zA-Z]:)?[\\/]|\.{1,2}[\\/])(?:[^\s\\/]+[\\/]?)+";
+      string pattern = @"(?<![:\/])(?:""((?:[a-zA-Z]:\\|(?:\.\.\/)|(?:\.\.\\))(?:[\w\.-]+?[\\\/])*[\w\.-]+)""|((?:[a-zA-Z]:\\|(?:\.\.\/)|(?:\.\.\\))(?:[\w\.-]+?[\\\/])*[\w\.-]+))(?=\s|$|(?=""))";
+      
+      //doesn't get items with a space in the string and adds extra stuff if is escaped for code in a script 
+      //string pattern = @"(?:(?:[a-zA-Z]:)?[\\/]|\.{1,2}[\\/])(?:[^\s\\/]+[\\/]?)+";
+            
+      //doesn't get multiple items in a script string because it has quotes
+//      string pattern = @"
+//(?:
+//    (?<="")                              # ---- quoted path ----
+//    (?:
+//        [A-Za-z]:[\\/]+ |                #   drive‑rooted     C:\ or C:/
+//        [\\/]+        |                  #   absolute         / or \
+//        \.{1,2}[\\/]+                    #   relative         ./ or ../
+//    )
+//    (?:[^""\\/\n]+[\\/]+)*               #   inner segments
+//    [^""\\/\n]+                          #   last segment
+//    (?="")                               #   up to, not incl. closing quote
+//  |                                      # ---- OR ----
+//    (?:
+//        [A-Za-z]:[\\/]+ |                #   drive‑rooted
+//        [\\/]+        |                  #   absolute
+//        \.{1,2}[\\/]+                    #   relative
+//    )
+//    (?:[^\s""\\/\n]+[\\/]+)*             #   inner segments (no spaces allowed)
+//    [^\s""\\/\n]+                        #   last segment
+//)";
+
+      var regex = new Regex(
+                  pattern,
+                  RegexOptions.IgnorePatternWhitespace |
+                  RegexOptions.Multiline |
+                  RegexOptions.Compiled,
+                  TimeSpan.FromSeconds(4)             // safety timeout
+              );
 
       // Create a regex object with the defined pattern
-      Regex regex = new Regex(pattern, RegexOptions.IgnoreCase);
+      //Regex regex = new Regex(pattern, RegexOptions.IgnoreCase);
 
       // Find matches in the provided code string
       MatchCollection matches = regex.Matches(code);

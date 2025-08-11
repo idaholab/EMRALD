@@ -525,7 +525,7 @@ namespace UnitAndIntegrationTesting
       act.DeserializeDerived(jsonObj, true, mainModel, false);
       act.LoadObjLinks(jsonObj, true, mainModel);
 
-      Assert.True(act.CompileCode(mainModel.allVariables));
+      Assert.True(act.CompileCode(mainModel.allVariables, mainModel.rootPath));
 
       //make sure the JSON returned for the item is good 
       string retJsonStr = act.GetJSON(true, mainModel);

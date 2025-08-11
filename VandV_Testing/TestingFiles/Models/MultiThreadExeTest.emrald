@@ -347,11 +347,11 @@
       {
         "ItemName": "RunCompExe",
         "ItemType": "itAction",
-        "RefPath": "..\\Other\\VarCompRes.json\";",
+        "RefPath": "..\\Other\\VarCompRes.json",
         "ToCopy": [
-          "..\\Other\\VarCompRes.json\";"
+          "..\\Other\\VarCompRes.json"
         ],
-        "RelPath": ".\\VarCompRes.json\";",
+        "RelPath": ".\\VarCompRes.json",
         "AdjRelRoot": ".\\Other"
       },
       {

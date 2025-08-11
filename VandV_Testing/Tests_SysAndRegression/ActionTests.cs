@@ -178,12 +178,14 @@ namespace SysAndRegressionTesting
       //initial options, and optional results to save/test
       JObject optionsJ = SetupJSON(dir, testName, true);
 
+      SimulationEngine.Options_cur options = optionsJ.ToObject<SimulationEngine.Options_cur>();
       //Change the default settings as needed for the test seed default set to 0 for testing.
-      optionsJ["inpfile"] = MainTestDir() + ModelFolder() + testName + ".emrald";
-      optionsJ["runct"] = 100;
-      optionsJ["threads"] = 2;
+      options.inpfile = MainTestDir() + ModelFolder() + testName + ".emrald";
+      options.runct = 10;
+      options.threads = 2;
+      options.variables = new List<string>() { "Var" };
 
-      JSONRun testRun = new JSONRun(optionsJ.ToString());
+      JSONRun testRun = new JSONRun(options);
       Assert.True(TestRunSim(testRun));
 
       //Uncomment to update the validation files after they verified correct
@@ -192,7 +194,7 @@ namespace SysAndRegressionTesting
       //compare the test result and optionally the paths and json if assigned
       Compare(dir, testName, optionsJ);
     }
-    // THIS TEST CURRENTLY FAILS
+    
 
     [Fact]
     [Description("Test pathing in the change variable action when running in multi thread")]

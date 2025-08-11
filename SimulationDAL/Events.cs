@@ -479,12 +479,12 @@ namespace SimulationDAL
   }
 
   public class EvalVarEvent : CondBasedEvent //etVarCond
-  {
-    
+  {    
     public string compCode = "";
     protected bool compiled;
     protected ScriptEngine compiledComp;
     protected VariableList varList = null;
+    protected string modelPath = ""; //save here because we cant get it from EventTriggered. 
     //protected override EnModifiableTypes GetModType() { return EnModifiableTypes.mtVar; }
 
     //protected override EnEventType GetEvType() { return (variable == "") ? EnEventType.etVarCond : EnEventType.et3dSimEv; }
@@ -518,6 +518,7 @@ namespace SimulationDAL
       string compCodeStr = compCode.Replace("\n", "\\n").Replace("\r", "\\r");
       string codeHasVars = varList == null ? "False" : "True";
       string varNames = "";
+      modelPath = lists.rootPath;
             
       if (varList != null)
       {
@@ -603,9 +604,10 @@ namespace SimulationDAL
 
 
 
-    public virtual bool CompileCompCode()
+    public virtual bool CompileCompCode(string modelPath)
     {
       compiledComp.Code = compCode;
+      compiledComp.curDir = modelPath;
 
       //add the Time and 3D Frame variables needed event if 
       compiledComp.AddVariable("CurTime", typeof(Double));
@@ -648,7 +650,7 @@ namespace SimulationDAL
     {
       if (!this.compiled)
       {
-        if (!CompileCompCode())
+        if (!CompileCompCode(modelPath))
           throw new Exception("Code failed compile, can not evaluate");
       }
 
@@ -739,7 +741,7 @@ namespace SimulationDAL
       {
         compiledComp = new ScriptEngine(ScriptEngine.Languages.CSharp);
         compiled = false;
-        CompileCompCode();
+        CompileCompCode(modelPath);
       }
     }
   }
@@ -882,7 +884,7 @@ namespace SimulationDAL
     public virtual bool CompileCompCode()
     {
       if (extEventType == SimEventType.etCompEv)
-        return base.CompileCompCode();
+        return base.CompileCompCode(modelPath);
       else
         return true;
     }
@@ -1880,7 +1882,7 @@ namespace SimulationDAL
         {
           try
           {
-            ((EvalVarEvent)item.Value).CompileCompCode();
+            ((EvalVarEvent)item.Value).CompileCompCode(lists.rootPath);
           }
           catch (Exception e)
           {
