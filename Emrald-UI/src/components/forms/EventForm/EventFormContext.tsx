@@ -523,6 +523,7 @@ const EventFormContextProvider: React.FC<PropsWithChildren> = ({ children }) => 
       };
     } else if (evType === 'etVarCond') {
       event.value.varNames = codeVariables;
+      event.value.code = scriptCode;
     }
     eventData
       ? updateEvent(event.value, state, moveFromCurrent)

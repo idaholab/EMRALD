@@ -213,6 +213,7 @@ namespace SimulationTracking
       {
         State inState = toState.diagram.HasAStateInCurrentStates(_bitMap);
         if (inState != null)
+        {
 #if DEBUG
           throw new Exception("Already in a state for the diagram " + toState.diagram.name + " can't add go into another one.");
         //return;
@@ -220,6 +221,7 @@ namespace SimulationTracking
           logger.Info("Already in a state for the diagram " + toState.diagram.name + " can't add go into another one.");
           return;
 #endif
+        }
       }
 
       List<int> addList = new List<int>();

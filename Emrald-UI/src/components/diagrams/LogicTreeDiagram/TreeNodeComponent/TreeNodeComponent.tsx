@@ -2,7 +2,7 @@ import { Handle, Position } from 'reactflow';
 import './TreeNode.scss';
 import { Box, IconButton, TextField } from '@mui/material';
 import { FaLink } from 'react-icons/fa';
-import { Close as DeleteIcon } from '@mui/icons-material';
+import DeleteIcon from '@mui/icons-material/Close';
 import { PiNotePencilDuotone } from 'react-icons/pi';
 import useLogicNodeTreeDiagram, { NodeType } from '../useLogicTreeDiagram';
 import React from 'react';
