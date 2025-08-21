@@ -144,11 +144,11 @@ Listed as Var Condition in the dropdown menu. Monitors variable values with user
   <h3>Persistent Events</h3>
   Time-based events have the option to be "persistent", meaning they will retain their time after the state is exited if the event wasn't triggered.<br>
   
-  For example, let's say a state has two timer events, Timer A for an hour and Timer B for a day, both of which trigger an exit. Once the state is entered, Timer A will trigger after an hour, causing the state to exit. If Timer B is not a persistent event, then it will start timing from 0 hours the next time it is in an active state. However, if Timer B is a persistent event, then it will start counting from 1 hour the next time it is in an active state.  
+  For example, let's say a state has two timer events, Timer A for an hour and Timer B for a day, both of which trigger an exit. Once the state is entered, Timer A will trigger after an hour, causing the state to exit. If Timer B is not a persistent event, then it will start timing again and trigger one day from time it enteres the state with the event. However, if Timer B is a persistent event, then it will use the origional sampled 1 hour from the time first state with event was entered.  
 
-  **insert picture here**
+  <h3>Persistent Option <img src="/images/Modeling/events/PersistentEvFlag.png" alt="Timer" width="500"/></h3>
 
-  Note: If a persistent event is dependent on an user-defined variable, and the variable changes, then the event cannot adjust its timing, only resample and ignore based on the updated variable. Additionally, the event must be in an active state while the variable changes.
+  Note: If a persistent event is dependent on an user-defined variable, and the variable changes, then the event cannot use the "adjust" option when the variable changes, only resample and ignore based on the updated variable. Additionally, the event must be in an active state when the variable changes or it will throw a runtime error.
 
   <h3>Timer <img src="/images/Modeling/events/alarm.png" alt="Timer" width="25"/></h3>
   Monitors the time after entering the parent state against the user specified or sampled time. This can be set to a static value or to a variable value. The fields will change form depending on what type of value you are setting it to. Leave the checkbox next to "Use Variable?" blank to set a static value or check it to use a variable value.<br>

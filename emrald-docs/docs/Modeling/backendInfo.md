@@ -1,10 +1,12 @@
 # EMRALD Backend Information
 
-## File References
+## File References and relative paths
 
 Files on a local machine or server can be referenced in the following model locations:
-- **Action "Run Application":** The field "Executable Location" is the path or command to the executable to be run. See Run Application under [Types of Actions](./actions.md#types-of-actions) for more information.
-- **Variable "Document Link":** The field "Doc Path" is the file path to a text document read from and/or written to by the variable. See [Document Link](./variables.md#xxx) for more information.
+- **Action "Run Application":** The field "Executable Location" is the path (full or relative to the model location) or command to the executable to be run. The pre and post processing script can also specify file paths and be relative, script relative paths for this action are from the exe location. See Run Application under [Types of Actions](./actions.md#types-of-actions) for more information.
+- **Variable "Document Link":** The field "Doc Path" is the file path to a text document read from and/or written to by the variable. Relative paths are from the model location. See [Document Link Variable](./variables.md#variable-scope) for more information.
+- **Event "Var Condition":** The script fields can have file or relative paths to a text document or other item. Relative paths are from the model location. See [Var Condition](./events.md#conditional-events) for more information.
+- **Action "Change Var Value":** The script field can have file or relative paths to a text document or other item. Relative paths are from the model location. See [Change Variable Value](./variables.md#types-of-actions) for more information.
 
 The other files EMRALD references or creates are done in the simulation engine through the GUI or the command line (See [EMRALD Solver](solver.md) and the [Command Line Options](cmdLineOptions.md) for more details):
 - **UI "Basic Run Loc":** Specifies the location for the basic results file, can also be passed in through the command line.
@@ -45,6 +47,6 @@ The "Var Condition" event, see Variable Condition under [Conditional Events](./e
 
 ## Multi-Thread Solving
 
-//Insert Multi-Thread BackendInfo Here//
+This option makes a copy of the model and nesessary files for each thread. Then EMRALD runs starts up multiple threads and runs the different copies of the model. Once all the treads are done, then it compiles the text and JSON path results back together and places them in location specified by the user for running the model. For most projects this should be fairly simple, but for projects that use and external executable than the user will have to make sure all the nessisary files are also coppied by using the UI when first specifying to run the model in multi-thread mode. All temporary files are saved in seprate folders in appdata/Roaming/EMRALD/. File paths are converted into relative and relative path rules are maintained as stated above. 
 
 <!--Copyright 2021 Battelle Energy Alliance-->
