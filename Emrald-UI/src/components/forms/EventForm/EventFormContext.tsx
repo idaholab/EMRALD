@@ -491,6 +491,7 @@ const EventFormContextProvider: React.FC<PropsWithChildren> = ({ children }) => 
         onVarChange,
         timeVariableUnit,
         useVariable,
+        persistent,
       };
     } else if (evType === 'etDistribution') {
       event.value = {
@@ -507,12 +508,12 @@ const EventFormContextProvider: React.FC<PropsWithChildren> = ({ children }) => 
           }
           return parameter;
         }),
+        persistent,
       };
       if (onVarChange !== undefined) {
         event.value.onVarChange = onVarChange;
       }
     } else if (evType === 'etFailRate') {
-      console.log(persistent);
       event.value = {
         ...event.value,
         lambda,
