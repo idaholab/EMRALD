@@ -8,7 +8,7 @@ Public Contribution - Users can add V&V tests that will be run before major rele
 	4. Push the branch and make a pull request.
 
 Developers Summary- (Follow the full process outlined in the Testing Plan)
-	If it is a unit test, add it to the UnitTEsting_Simulation code.
+	If it is a unit test, add it to the VandV_Testing code.
 	If it is a integration or system test, add it to IntegerationTsting_Simulation code.
 	If it is a manual test add to the MantualTests code and add a section to the applicable document in /TestingFiles/ManualTestInstructions/ or create a new one if none are applicable.	
 

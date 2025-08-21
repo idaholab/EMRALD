@@ -135,7 +135,7 @@ To add an Event, you can either...<br>
 **Option 1:** Right-click on the Event Actions header in the state to create a new event or <br>
 <img src="/images/Modeling/events/NewEvent1.png" alt="New Event Step 1"><br>
 
-**Option 2:** Drag and drop an existing event into the Immediate Action section.<br>
+**Option 2:** Drag and drop an existing event into the Event Actions section.<br>
 <img src="/images/Modeling/events/AddExistingEvent1.png" alt="Add an Existing Event 1"><br> 
 
 See [Creating a New Event](./events.md#creating-a-new-event) for detailed instructions for Option 1. See [Adding an Existing Event](./events.md#adding-an-existing-event) for detailed instructions for Option 2.

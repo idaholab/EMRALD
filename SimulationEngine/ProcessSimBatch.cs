@@ -2,39 +2,42 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
-using System.Diagnostics;
+using System.Xml.Linq;
+using MathNet.Numerics.Statistics;
+using Matrix.Xmpp.AdHocCommands;
+using Matrix.Xmpp.PubSub;
+using Matrix.Xmpp.StreamInitiation;
+using Matrix.Xmpp.XHtmlIM;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using MyStuff.Collections;
-using System.IO;
+using Newtonsoft.Json;
+using NLog;
+using SimulationDAL;
 using SimulationTracking;
 //using System.Windows.Forms;
 using XmppMessageServer;
-using NLog;
-using SimulationDAL;
-using Newtonsoft.Json;
-using MathNet.Numerics.Statistics;
-using System.Threading;
-using Matrix.Xmpp.XHtmlIM;
-using System.Xml.Linq;
 
 namespace SimulationEngine
 {
-  public class Progress
-  {
-    public int percentDone = 0;
-    public TimeSpan runTime = TimeSpan.Zero;
-    public int curRun = 0;
-    public bool done = false;
-  }
+  //public class Progress
+  //{
+  //  public int percentDone = 0;
+  //  public TimeSpan runTime = TimeSpan.Zero;
+  //  public int curRun = 0;
+  //  public bool done = false;
+  //}
 
-  public delegate void TProgressCallBack(TimeSpan runTime, int runCnt, bool finalValOnly);
+  public delegate void TProgressCallBack(TimeSpan runTime, int runCnt, bool finalValOnly, int? threadNum);
     
   public class FailedItems 
   {
     public Dictionary<MyBitArray, int> compFailSets = new Dictionary<MyBitArray, int>();
-    public List<TimeSpan> failTimes = new List<TimeSpan>();
 
 
     public FailedItems()
@@ -44,6 +47,11 @@ namespace SimulationEngine
     public void AddCompFailSet(int[] compList)
     {
       MyBitArray addSet = new MyBitArray(compList);
+      AddCompFailBitSet(addSet);
+    }
+
+    public void AddCompFailBitSet(MyBitArray addSet)
+    {
       int val;
       if (compFailSets.TryGetValue(addSet, out val))
       {
@@ -52,6 +60,17 @@ namespace SimulationEngine
       else
       {
         compFailSets.Add(addSet, 1);
+      }
+    }
+
+    public void CombineFailSet(FailedItems addSet)
+    {
+      foreach(var bs in addSet.compFailSets)
+      {
+        if(this.compFailSets.ContainsKey(bs.Key))
+          compFailSets[bs.Key] = compFailSets[bs.Key] + bs.Value;
+        else
+          compFailSets.Add(bs.Key, bs.Value);
       }
     }
 
@@ -82,15 +101,25 @@ namespace SimulationEngine
     private double _frameRate = 30;
     private string _sim3DPath = "";
     //private HoudiniSimClient.TLogEvCallBack _viewNotifications = null;
-    private string _resultFile;
+    private string _resultFile; //same as _origionalResutsFile unless multi threded then it is in the temp file path location
+    private static readonly object _fileLock = new object();
+    private string _origionalResutsFile; //user specified results location;
     private int _numRuns;
-    private string _jsonResultPaths;
+    private string _jsonResultPaths; //same as _origionalJsonResutsFile unless multi threded then it is in the temp file path location
+    private string _origionalJsonResutsFile; //user specified results location;
+    private TimeSpan _totRunTime = TimeSpan.Zero;
     private volatile bool _stop = false;
     private bool _logFailedComps = false;
     public bool batchSuccess = false;
-    private Progress _progress = null;
     private int _pathResultsInterval = -1; //how often to save the path results to the file
     private Dictionary<string, List<double>> finalVarValueList = new Dictionary<string, List<double>>();
+    private int? _threadNum = 0;
+    protected string modelTxt = ""; //JSON text of the model
+    protected string origionalRootPath = ""; //Origonal path to the model file
+    protected string origionalFileName = ""; //origional file Name
+    protected bool _tempThreadFilesWriten = false;
+    
+
 
     //public Dictionary<string, double> variableVals { get { return _variableVals; } }
     public Dictionary<string, FailedItems> keyFailedItems = new Dictionary<string, FailedItems>(); //key = StateName, value = cut sets
@@ -105,15 +134,29 @@ namespace SimulationEngine
     public TimeSpan runtime = TimeSpan.FromMilliseconds(0);
     private string _error = "";
     public string error { get { return _error; } }
+    public int? threadNum { get { return _threadNum; } }
+    public int numRuns { get { return _numRuns; } }
+    public bool tempThreadFilesWriten { get {  return _tempThreadFilesWriten; } }
+    //public string resultFile { get { return _resultFile; } }
+    //public string jsonResultsPaths { get { return _jsonResultPaths; } }
 
-    public ProcessSimBatch(EmraldModel lists, TimeSpan endtime, string resultFile, string jsonResPaths, int pathResultsInterval)
+    public ProcessSimBatch(EmraldModel origModel, TimeSpan endtime, string resultFile, string jsonResPaths, int pathResultsInterval, int? threadNum = null)
     {
-      this._lists = lists;
+      //don't deserialize model here because the singletions for numbering are by thread and the tread has not been assigned yet if multitheading
+      modelTxt = origModel.modelTxt;
+      origionalRootPath = origModel.rootPath;
+      origionalFileName = origModel.fileName;
+      this._threadNum = threadNum;
       this._endTime = endtime;
+      this._pathResultsInterval = pathResultsInterval;
+      this.progressCallback = null;
+      this._origionalJsonResutsFile = jsonResPaths;
+      this._origionalResutsFile = resultFile;
+
+
+
       this._resultFile = resultFile;
       this._jsonResultPaths = jsonResPaths;
-      this._pathResultsInterval = pathResultsInterval;
-      this.progressCallback = LogResults;
     }
 
     //public void Add3DSimulationData(HoudiniSimClient sim3DHandler, double frameRate, string sim3DPath)//, HoudiniSimClient.TLogEvCallBack viewNotifications)
@@ -195,11 +238,6 @@ namespace SimulationEngine
       _logFailedComps = logFailedComps;
     }
 
-    public void AssignProgress(Progress progress)
-    {
-      _progress = progress;
-    }
-
     public void StopSims()
     {
       _stop = true;
@@ -207,6 +245,31 @@ namespace SimulationEngine
 
     public void RunBatch()
     {
+      //make a new model so that we don't have issues if they run multiple batches or for mutli thraded must do in the thread function
+      _tempThreadFilesWriten = false;
+      this._lists = new EmraldModel();
+      this._lists.DeserializeJSON(modelTxt, origionalRootPath, origionalFileName, threadNum); //this will update any references automatically if the threadNum != null
+      _tempThreadFilesWriten = true;
+
+      //if this is mutithreaded then it needs a temp work area for the model and results.
+      if (threadNum != null)
+      {
+        try
+        {
+          // Set the file paths with the rootPath
+          lock (_fileLock)
+          {
+            this._resultFile = Path.Combine(this._lists.rootPath, Path.GetFileName(_resultFile));
+            this._jsonResultPaths = Path.Combine(this._lists.rootPath, Path.GetFileName(_jsonResultPaths));
+          }
+        }
+        catch (Exception e)
+        {
+          _error = "Failed to prep for Multi Threading: " + e.Message;
+        }
+      }
+      
+
       //if there were any xmpp connections specified in the perams not set by the user, connect here
       if (!AutoConnectExtSim())
       {
@@ -227,7 +290,12 @@ namespace SimulationEngine
 
         varItem.InitValue(v.Value);
       }
-      
+
+      keyFailedItems.Clear();
+      keyPaths.Clear();
+      otherPaths.Clear();
+      _variableVals.Clear();
+
 
 
       batchSuccess = false;
@@ -244,12 +312,7 @@ namespace SimulationEngine
       //if user defined the seed then reset random so that seed is used.
       if ((ConfigData.seed != null) && (ConfigData.seed >= 0))
         SingleRandom.Reset();
-
-      //make a list of result items for each key state.
-      //ResultState[] keyStates = _lists.allStates.Where(i => i.Value.stateType == EnStateType.stKeyState).Select(i => new ResultState(i.Value.name)).ToArray();
-      //Dictionary<string, ResultState> keyStateResMap = null;
      
-      //progressCallback(stopWatch.Elapsed, 0);
       try
       {
         _lists.allVariables.ReInitAll();
@@ -354,11 +417,13 @@ namespace SimulationEngine
           }
 
           
-
+          //When to write results so user gets and update every second. 
           if (((stopWatch.Elapsed - resTime) > TimeSpan.FromSeconds(1)) && (i > 0))
           {
             stopWatch.Stop();
-            progressCallback(stopWatch.Elapsed, i, _logFailedComps);
+            LogResults(stopWatch.Elapsed, i, _logFailedComps);
+            if(progressCallback != null)
+              progressCallback(stopWatch.Elapsed, i, _logFailedComps, _lists.threadNum);
             stopWatch.Start();
             resTime = stopWatch.Elapsed;
           }
@@ -393,14 +458,10 @@ namespace SimulationEngine
         retVal = false;
       }
 
-      stopWatch.Stop();      
-      
-      progressCallback(stopWatch.Elapsed, actRuns, _logFailedComps);
+      stopWatch.Stop();
+      this._totRunTime = stopWatch.Elapsed;
 
-      MakePathResults(curI, true);
-
-      
-      
+      WriteFinalResults();
 
       batchSuccess = retVal;
     }
@@ -462,6 +523,24 @@ namespace SimulationEngine
       }
     }
 
+    //if this is the final results of a mutli thread pass in ignoreThreadPath and the threadCnt 
+    public void WriteFinalResults(bool ignoreThreadPath = false, int threadCnt = 1)
+    {
+      if ((threadNum != null) && ignoreThreadPath)
+      {
+        // reset the file paths without the temp path info
+        this._resultFile = _origionalResutsFile;
+        this._jsonResultPaths = _origionalJsonResutsFile;
+      }
+
+      LogResults(_totRunTime, _numRuns, _logFailedComps, threadCnt);
+      MakePathResults(_numRuns, true);
+      GetVarValues(logVarVals, true);
+
+      if (progressCallback != null)
+        progressCallback(_totRunTime, _numRuns, _logFailedComps, _lists.threadNum);
+    }
+
     private bool MakePathResults(int curIdx, bool makeSankey)
     {
       try
@@ -501,8 +580,8 @@ namespace SimulationEngine
           //File.WriteAllText(_jsonResultPaths, output);
           WriteToFileThreadSafe(_jsonResultPaths, output);
 
-          //set up the sankey file to view results
-          if (makeSankey)
+          //set up the sankey file to view results if not a thread one.
+          if (!this._threadNum.HasValue && makeSankey)
           {
             string tempLoc = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\\EMRALD_SANKEY\\";
             try
@@ -591,73 +670,87 @@ namespace SimulationEngine
     //  //depths[curRes.name] -= 1;
     //}
 
-    public void LogResults(TimeSpan runTime, int runCnt, bool logFailedComps)
+    
+
+    private void LogResults(TimeSpan runTime, int runCnt, bool logFailedComps, int threadCnt = 1) //set maxThreadNum if loging combined thread results
     {
-        if (_progress != null)
-      { 
-        _progress.runTime = runTime;
-        _progress.percentDone = (runCnt * 100) / this._numRuns;
-        _progress.curRun = runCnt;
-      }
+      //if (_progress != null) //this updates .
+      //{ 
+      //  _progress.runTime = runTime;
+      //  _progress.percentDone = (runCnt * 100) / this._numRuns;
+      //  _progress.curRun = runCnt;
+      //}
 
       if (_resultFile == null)
         return;
 
       System.IO.File.WriteAllText(_resultFile, "Simulation = " + this._lists.name + Environment.NewLine);
-      using (StreamWriter streamwriter = File.AppendText(_resultFile))
+      lock (_fileLock)
       {
-        streamwriter.WriteLine("Runtime = " + runTime.ToString(@"dd\.hh\:mm\:ss") + Environment.NewLine + "Runs = " + runCnt.ToString() + " of " + _numRuns.ToString());
-        if (keyPaths.Count > 0)
+        using (StreamWriter streamwriter = File.AppendText(_resultFile))
         {
-          var lastItem = keyPaths.Last();
-          foreach (var item in keyPaths)
+          streamwriter.WriteLine("Runtime = " + runTime.ToString(@"dd\.hh\:mm\:ss") + Environment.NewLine + "Runs = " + runCnt.ToString() + " of " + _numRuns.ToString());
+          if (keyPaths.Count > 0)
           {
-            streamwriter.WriteLine(Environment.NewLine + item.Key + " Occurred " + item.Value.count.ToString() + " times, Probability =" + (item.Value.count / (double)runCnt).ToString() +
-              ", MeanTime = " + item.Value.timeMean.ToString(@"dd\.hh\:mm\:ss") + " +/- " + item.Value.timeStdDeviation.ToString(@"dd\.hh\:mm\:ss\.ff"));
-            //write the failed components and times.
-            if (logFailedComps && keyFailedItems.ContainsKey(item.Key))
+            foreach (var item in keyPaths)
             {
-              foreach (var cs in keyFailedItems[item.Key].compFailSets)
+              streamwriter.WriteLine(Environment.NewLine + item.Key + " Occurred " + item.Value.count.ToString() + " times, Probability =" + (item.Value.count / (double)runCnt).ToString() +
+                ", MeanTime = " + item.Value.timeMean.ToString(@"dd\.hh\:mm\:ss") + " +/- " + item.Value.timeStdDeviation.ToString(@"dd\.hh\:mm\:ss\.ff"));
+              //write the failed components and times.
+              if (logFailedComps && keyFailedItems.ContainsKey(item.Key))
               {
-                int[] ids = cs.Key.Get1sIndexArray();
-                List<string> names = new List<String>();
-                foreach (int id in ids)
+                foreach (var cs in keyFailedItems[item.Key].compFailSets)
                 {
-                  names.Add(_lists.allStates[id].name);
-                }
-                names.Sort();
-                double csPercent = ((double)cs.Value / item.Value.count) * 100;
-
-                string csLine = "(" + cs.Value.ToString() + ")[" + csPercent.ToString("N3") + "%]" + string.Join(", ", names);
-
-                streamwriter.WriteLine(csLine);
-              }
-            }
-            Dictionary<string, Dictionary<string, string>> varDict;
-            if (_variableVals.TryGetValue(item.Key, out varDict))
-            {
-              streamwriter.WriteLine("- Variable Values - ");
-              //write the name of each variable for header
-              string varNames = "Run Idx, " + string.Join(", ", varDict.Keys.ToList());
-              streamwriter.WriteLine(varNames);
-
-              for (int row = 0; row < runCnt; row++)
-              {
-                bool hasRunValue = false;
-                string varValues = (row + 1).ToString();
-                foreach (var varValItem in varDict.Values)
-                {
-                  //get the value for each variable in a row if has a value
-                  string key = (row + 1).ToString();
-                  if (varValItem.ContainsKey(key))
-                  { 
-                    varValues = varValues + ", " + varValItem[key];
-                    hasRunValue = true;
+                  int[] ids = cs.Key.Get1sIndexArray();
+                  List<string> names = new List<String>();
+                  foreach (int id in ids)
+                  {
+                    names.Add(_lists.allStates[id].name);
                   }
-                  
+                  names.Sort();
+                  double csPercent = ((double)cs.Value / item.Value.count) * 100;
+
+                  string csLine = "(" + cs.Value.ToString() + ")[" + csPercent.ToString("N3") + "%]" + string.Join(", ", names);
+
+                  streamwriter.WriteLine(csLine);
                 }
-                if(hasRunValue)
-                  streamwriter.WriteLine(varValues);
+              }
+              Dictionary<string, Dictionary<string, string>> varDict;
+              if (_variableVals.TryGetValue(item.Key, out varDict))
+              {
+                streamwriter.WriteLine("- Variable Values - ");
+                //write the name of each variable for header
+                string varNames = "Run Idx, " + string.Join(", ", varDict.Keys.ToList());
+                streamwriter.WriteLine(varNames);
+
+                for (int row = 1; row <= runCnt; row++) //start number at 1
+                {
+                  //look for added results from other threads in X.x or RunNum.thread syntax
+                  for (int threadNum = 0; threadNum < threadCnt; threadNum++)
+                  {
+
+                    string key = (row).ToString();
+
+                    //thread output is normal output of 1,2,3,4, other threads are 1.1, 2.1, 3.1 ... 1.2, 2.2, 3.2 ...
+                    if (threadNum > 0)
+                      key = key + "." + (threadNum).ToString();
+
+                    bool hasRunValue = false;
+                    string varValues = key;
+                    foreach (var varValItem in varDict.Values)
+                    {
+                      //get the value for each variable in a row if has a value
+                      if (varValItem.ContainsKey(key))
+                      {
+                        varValues = varValues + ", " + varValItem[key];
+                        hasRunValue = true;
+                      }
+                    }
+
+                    if (hasRunValue)
+                      streamwriter.WriteLine(varValues);
+                  }
+                }
               }
             }
           }
@@ -668,57 +761,133 @@ namespace SimulationEngine
     public List<string> GetVarValues(List<string> varNames, bool finalLog = false)
     {
       List<string> retVals = new List<string>();
-      if (finalLog)
+      lock (_fileLock) //lock for threading
       {
-        File.AppendAllText(_resultFile, "---------------------------" + Environment.NewLine, Encoding.UTF8);
-        File.AppendAllText(_resultFile, "- End Sim Variable Values -" + Environment.NewLine, Encoding.UTF8);
-        File.AppendAllText(_resultFile, "---------------------------" + Environment.NewLine, Encoding.UTF8);
-      }
-
-      foreach (string name in varNames)
-      {
-        SimVariable v = _lists.allVariables.FindByName(name);
         
-        string val = _lists.allVariables.FindByName(name).strValue;
-        retVals.Add(val);
-
         if (finalLog)
         {
-          
-          List<double> values;
-          if (finalVarValueList.TryGetValue(name, out values))
+          File.AppendAllText(_resultFile, "---------------------------" + Environment.NewLine, Encoding.UTF8);
+          File.AppendAllText(_resultFile, "- End Sim Variable Values -" + Environment.NewLine, Encoding.UTF8);
+          File.AppendAllText(_resultFile, "---------------------------" + Environment.NewLine, Encoding.UTF8);
+        }
+
+        foreach (string name in varNames)
+        {
+          SimVariable v = _lists.allVariables.FindByName(name);
+
+          string val = _lists.allVariables.FindByName(name).strValue;
+          retVals.Add(val);
+
+          if (finalLog)
           {
-            //get the sum, average and std dev of the variable.
-            double sum = values.Sum();
-            double mean = sum / values.Count;
-            double std = 0;
-            if (values.Count > 0)
+
+            List<double> values;
+            if (finalVarValueList.TryGetValue(name, out values))
             {
-              double sumDiffSq = 0; //sum of difference squared;
-              foreach (double t in values)
+              //get the sum, average and std dev of the variable.
+              double sum = values.Sum();
+              double mean = sum / values.Count;
+              double std = 0;
+              if (values.Count > 0)
               {
-                sumDiffSq += Math.Pow(((t) - mean), 2);
+                double sumDiffSq = 0; //sum of difference squared;
+                foreach (double t in values)
+                {
+                  sumDiffSq += Math.Pow(((t) - mean), 2);
+                }
+
+                //calc variance   
+                double variance = sumDiffSq / (values.Count - 1);
+                std = Math.Sqrt(variance); //return square root of variance
               }
 
-              //calc variance   
-              double variance = sumDiffSq / (values.Count - 1);
-              std = Math.Sqrt(variance); //return square root of variance
+              File.AppendAllText(_resultFile, name + " Total = " + sum.ToString() + Environment.NewLine, Encoding.UTF8);
+              File.AppendAllText(_resultFile, name + " Mean = " + mean.ToString() + Environment.NewLine, Encoding.UTF8);
+              File.AppendAllText(_resultFile, name + " Standard Deviation = +/- " + std.ToString() + Environment.NewLine, Encoding.UTF8);
             }
-
-            File.AppendAllText(_resultFile, name + " Total = " + sum.ToString() + Environment.NewLine, Encoding.UTF8);
-            File.AppendAllText(_resultFile, name + " Mean = " + mean.ToString() + Environment.NewLine, Encoding.UTF8);
-            File.AppendAllText(_resultFile, name + " Standard Deviation = +/- " + std.ToString() + Environment.NewLine, Encoding.UTF8);
-          }
-          else
-          {
-            File.AppendAllText(_resultFile, name + " = " + val.ToString() + Environment.NewLine, Encoding.UTF8);
+            else
+            {
+              File.AppendAllText(_resultFile, name + " = " + val.ToString() + Environment.NewLine, Encoding.UTF8);
+            }
           }
         }
       }
-
-
-
       return retVals;
+    }
+
+    public void AddOtherBatchResults(ProcessSimBatch toAddBatch)
+    {
+      //go through all the key paths and add them to the one in this batch.
+      //public Dictionary<string, KeyStateResult> keyPaths = new Dictionary<string, KeyStateResult>();
+      foreach (var keyPath in toAddBatch.keyPaths)
+      {
+        if (!this.keyPaths.ContainsKey(keyPath.Key))
+          this.keyPaths.Add(keyPath.Value.name, keyPath.Value);
+        else
+        {
+          KeyStateResult addToRes = this.keyPaths[keyPath.Key];
+          addToRes.Merge(keyPath.Value, this._numRuns, this._numRuns + toAddBatch._numRuns);
+        }
+
+        this.keyPaths[keyPath.Key].AssignResults();
+      }
+
+      //add in the other paths
+      //public Dictionary<string, ResultState> otherPaths = new Dictionary<string, ResultState>();
+      foreach (var otherPath in toAddBatch.otherPaths)
+      {
+        if (!this.otherPaths.ContainsKey(otherPath.Key))
+          this.otherPaths.Add(otherPath.Value.name, otherPath.Value);
+        else
+          this.otherPaths[otherPath.Value.name].Combine(otherPath.Value);
+      }
+
+      //add in keyFailedItems
+      //public Dictionary<string, FailedItems> keyFailedItems = new Dictionary<string, FailedItems>(); //key = StateName, value = cut sets
+      foreach (var failedItem in toAddBatch.keyFailedItems)
+      {
+        if (!this.keyFailedItems.ContainsKey(failedItem.Key))
+          this.keyFailedItems.Add(failedItem.Key, failedItem.Value);
+        else
+        {
+          this.keyFailedItems[failedItem.Key].CombineFailSet(failedItem.Value);
+        }
+      }
+
+      ////add in variable values //already done when doing addToRes.Merge 
+      ////private Dictionary<string, Dictionary<string, Dictionary<string, string>>> _variableVals = new Dictionary<string, Dictionary<string, Dictionary<string, string>>>();
+      //foreach (var variableCategory in toAddBatch._variableVals)
+      //{
+      //  if (!this._variableVals.ContainsKey(variableCategory.Key))
+      //    this._variableVals.Add(variableCategory.Key, new Dictionary<string, Dictionary<string, string>>(variableCategory.Value));
+      //  else
+      //  {
+      //    foreach (var variableSubCategory in variableCategory.Value)
+      //    {
+      //      if (!this._variableVals[variableCategory.Key].ContainsKey(variableSubCategory.Key))
+      //        this._variableVals[variableCategory.Key].Add(variableSubCategory.Key, new Dictionary<string, string>(variableSubCategory.Value));
+      //      else
+      //      {
+      //        foreach (var variable in variableSubCategory.Value)
+      //        {
+      //          //add to list not update???
+      //          if (!this._variableVals[variableCategory.Key][variableSubCategory.Key].ContainsKey(variable.Key))
+      //            this._variableVals[variableCategory.Key][variableSubCategory.Key].Add(variable.Key, variable.Value);
+      //          else
+      //            this._variableVals[variableCategory.Key][variableSubCategory.Key][variable.Key] = variable.Value; // Update with the new value
+      //        }
+      //      }
+      //    }
+      //  }
+      //}
+
+      this._totRunTime += toAddBatch._totRunTime;
+      this._numRuns += toAddBatch._numRuns;
+    }
+
+    public void ClearTempThreadData()
+    {
+      this._lists.ClearMultiThreadData();
     }
   }
 }
