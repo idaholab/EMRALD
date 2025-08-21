@@ -1,0 +1,7 @@
+Simulation = MultiThread_DocVar_read
+Runtime = 00.00:00:00
+Runs = 10 of 10
+---------------------------
+- End Sim Variable Values -
+---------------------------
+DocVar = 10

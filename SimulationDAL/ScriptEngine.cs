@@ -12,6 +12,7 @@ using System.Diagnostics;
 using Newtonsoft.Json.Linq;
 using System.IO;
 using System.Diagnostics.Tracing;
+using Newtonsoft.Json.Schema.Generation;
 
 namespace ScriptEngineNS
 {
@@ -33,13 +34,15 @@ namespace ScriptEngineNS
     public List<string> addAssemblies = new List<string>() { "MathNet.Numerics.dll" };
     public List<string> addUsing = new List<string>();
     public string preClassInfo = "";
+    public string curDir = "";
 
 
-    public ScriptEngine(Languages language, string code = "")
+    public ScriptEngine(Languages language, string code = "", string curDir = "")
     {
       this.language = language;
       this.code = code;
       this.variables = "";
+      this.curDir = curDir;
     }
     
     public string Code
@@ -140,8 +143,14 @@ namespace ScriptEngineNS
                "public class " + assemblyName + "\r\n{\r\n" +
               variables + preClassInfo + "\r\npublic " + typeStr + " Eval()\r\n{\r\n";
       int realLn0 = source.Count(c => c.Equals('\n')) + 1;
-      source = source + code + "\r\n\r\n}\r\n}\r\n}";
-      File.WriteAllText("WriteText" + assemblyName + ".txt", source);
+      if (curDir != "")
+      {
+        string escCurDir = curDir.Replace(@"\", @"\\"); // Escape backslashes
+        source = source + "Directory.SetCurrentDirectory(\"" + escCurDir + "\");\r\n"; //set the current path to the model directory if given
+      }
+      source = source + code;
+      source += "\r\n\r\n}\r\n}\r\n}";
+      //File.WriteAllText("WriteText" + assemblyName + ".txt", source);
 
       SyntaxTree syntaxTree = CSharpSyntaxTree.ParseText(source);
       var references = new List<MetadataReference>();
@@ -170,26 +179,12 @@ namespace ScriptEngineNS
       }
       foreach (var addLib in addAssemblies)
       {
+        string appPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
         if (!added.Contains(addLib))
         {
-          string appPath = System.IO.Directory.GetCurrentDirectory();
           references.Add(MetadataReference.CreateFromFile(appPath + Path.DirectorySeparatorChar + addLib));
         }      
-      }
-
-      ////or specify the libraries to load.
-
-      //var coreDir = Directory.GetParent(typeof(Enumerable).GetTypeInfo().Assembly.Location);
-      //var exeDir = Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName);
-      //references.Add(MetadataReference.CreateFromFile(typeof(Object).GetTypeInfo().Assembly.Location));
-      //references.Add(MetadataReference.CreateFromFile(typeof(Uri).GetTypeInfo().Assembly.Location));
-      //references.Add(MetadataReference.CreateFromFile(coreDir.FullName + Path.DirectorySeparatorChar + "mscorlib.dll"));
-      //references.Add(MetadataReference.CreateFromFile(coreDir.FullName + Path.DirectorySeparatorChar + "System.Runtime.dll"));
-      //if (File.Exists(exeDir + "\\Newtonsoft.Json.dll"))
-      //  references.Add(MetadataReference.CreateFromFile(exeDir + "\\Newtonsoft.Json.dll"));
-      //else
-      //  throw new Exception("Missing newtonsoft DLL");
-
+      }     
 
       compilation = CSharpCompilation.Create(
           assemblyName,

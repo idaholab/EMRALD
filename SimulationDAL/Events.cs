@@ -1,15 +1,19 @@
 ﻿// Copyright 2021 Battelle Energy Alliance
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
-using MyStuff.Collections;
-using ScriptEngineNS;
-using System.Xml;
 using System.Collections.ObjectModel;
-using MathNet.Numerics.Distributions;
-using MessageDefLib;
-using Newtonsoft.Json;
+using System.IO;
 using System.Linq;
+using System.Xml;
+using MathNet.Numerics.Distributions;
+using MathNet.Numerics.LinearAlgebra;
+using MessageDefLib;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using MyStuff.Collections;
+using Newtonsoft.Json;
+using ScriptEngineNS;
 
 namespace SimulationDAL
 {
@@ -19,6 +23,7 @@ namespace SimulationDAL
     protected List<int> _relatedIDs = new List<int>(); //IDs of items used to evaluate this event. 
     protected MyBitArray _relatedIDsBitSet = null;
     public bool mainItem = false;
+    public string rootPath = "";
     //protected virtual EnModifiableTypes GetModType() { return EnModifiableTypes.mtNone; }
 
     public ReadOnlyCollection<int> relatedIDs { get { return _relatedIDs.AsReadOnly(); } }
@@ -126,6 +131,11 @@ namespace SimulationDAL
     public virtual void Reset()
     {
       //stub to do in classes if needed
+    }
+    public virtual List<ScanForReturnItem> ScanFor(ScanForTypes scanType, string modelRootPath)
+    {
+      //override in the different types if it is possible that the item has something for the scanType 
+      return new List<ScanForReturnItem>();
     }
   }
 
@@ -466,15 +476,20 @@ namespace SimulationDAL
       //  logicTop.LookupRelatedItems(all, addToList);
       //}
     }
+
+    public override void Reset()
+    {
+      this.lastEvalVal.Clear();
+    }
   }
 
   public class EvalVarEvent : CondBasedEvent //etVarCond
-  {
-
+  {    
     public string compCode = "";
     protected bool compiled;
     protected ScriptEngine compiledComp;
     protected VariableList varList = null;
+    protected string modelPath = ""; //save here because we cant get it from EventTriggered. 
     //protected override EnModifiableTypes GetModType() { return EnModifiableTypes.mtVar; }
 
     //protected override EnEventType GetEvType() { return (variable == "") ? EnEventType.etVarCond : EnEventType.et3dSimEv; }
@@ -508,7 +523,7 @@ namespace SimulationDAL
       string compCodeStr = compCode.Replace("\n", "\\n").Replace("\r", "\\r");
       string codeHasVars = varList == null ? "False" : "True";
       string varNames = "";
-
+            
       if (varList != null)
       {
         foreach (var i in varList.Values)
@@ -593,15 +608,18 @@ namespace SimulationDAL
 
 
 
-    public virtual bool CompileCompCode()
+    public virtual bool CompileCompCode(string modelPath)
     {
       compiledComp.Code = compCode;
+      compiledComp.curDir = modelPath;
 
       //add the Time and 3D Frame variables needed event if 
       compiledComp.AddVariable("CurTime", typeof(Double));
       compiledComp.AddVariable("RunIdx", typeof(int));
       compiledComp.AddVariable("ExtSimStartTime", typeof(double));
       compiledComp.AddVariable("NextEvTime", typeof(double));
+      compiledComp.AddVariable("RootPath", typeof(string));
+      
 
       if (varList != null)
       {
@@ -611,7 +629,8 @@ namespace SimulationDAL
           if ((varItem.Value.name != "CurTime") &&
               (varItem.Value.name != "RunIdx") &&
               (varItem.Value.name != "ExtSimStartTime") &&
-              (varItem.Value.name != "NextEvTime"))
+              (varItem.Value.name != "NextEvTime") &&
+              (varItem.Value.name != "RootPath"))
           {
             compiledComp.AddVariable(varItem.Value.name, varItem.Value.dType);
           }
@@ -635,7 +654,7 @@ namespace SimulationDAL
     {
       if (!this.compiled)
       {
-        if (!CompileCompCode())
+        if (!CompileCompCode(modelPath))
           throw new Exception("Code failed compile, can not evaluate");
       }
 
@@ -643,6 +662,7 @@ namespace SimulationDAL
       compiledComp.SetVariable("RunIdx", typeof(int), runIdx);
       compiledComp.SetVariable("ExtSimStartTime", typeof(double), start3DTime.TotalHours);
       compiledComp.SetVariable("NextEvTime", typeof(double), nextEvTime.TotalHours);//NextEvTime
+      compiledComp.SetVariable("RootPath", typeof(string), rootPath);
 
       if (varList != null) //assign the values to the variables if assigned
       {
@@ -685,6 +705,48 @@ namespace SimulationDAL
 
       //SimVariable varItem = all.allVariables[this.relatedIDs[0]];
       //varItem.LookupRelatedItems(all, addToList);
+    }
+
+    public override List<ScanForReturnItem> ScanFor(ScanForTypes scanType, string modelRootPath)
+    {
+      var itemList = new List<ScanForReturnItem>();
+
+      if (scanType == ScanForTypes.sfMultiThreadIssues)
+      {
+        //see if there are any file references in the code.         
+        var paths = CommonFunctions.FindFilePathReferences(ref compCode);
+        foreach (var path in paths)
+        {
+          itemList.Add(new ScanForRefsItem(this.id,
+                                          this.name,
+                                          EnIDTypes.itEvent,
+                                          "Event [" + this.name + "] has a file path reference script: " + path + ". If there could be a multi thread issue, assign files to copy.",
+                                          path));
+        }
+      }
+
+      return itemList;
+    }
+
+    public void UpdatePathRefs(string oldRef, string newRef, string modelPath)
+    {
+      //find the file references in the code and look for a match of the oldRef and replace.
+     if (!modelPath.EndsWith(@"\"))
+        modelPath += @"\";
+
+      newRef = Path.GetFullPath(Path.Combine(modelPath + newRef));
+
+      string newRefEscaped = newRef.Replace("\\", "\\\\").Replace("\"", "\\\"");
+      var paths = CommonFunctions.FindFilePathReferences(ref compCode, oldRef, newRefEscaped);
+
+      if (paths.Count <= 0)
+        throw new Exception("Failed to find string in the path " + oldRef + " in the source of the Evaluate Variable Event.");
+      else
+      {
+        compiledComp = new ScriptEngine(ScriptEngine.Languages.CSharp);
+        compiled = false;
+        CompileCompCode(modelPath);
+      }
     }
   }
 
@@ -826,13 +888,39 @@ namespace SimulationDAL
     public virtual bool CompileCompCode()
     {
       if (extEventType == SimEventType.etCompEv)
-        return base.CompileCompCode();
+        return base.CompileCompCode(modelPath);
       else
         return true;
     }
+
+    public override List<ScanForReturnItem> ScanFor(ScanForTypes scanType, string modelRootPath)
+    {
+      var itemList = new List<ScanForReturnItem>();
+
+      if (scanType == ScanForTypes.sfMultiThreadIssues)
+      {
+        itemList.Add(new ScanForRefsItem(this.id,
+                                          this.name,
+                                          EnIDTypes.itEvent,
+                                          "External Simulation Events currently can't be used with multiThreading Event [" + this.name + "]",
+                                          ""));
+      }
+
+      return itemList;
+    }
+
+    public void UpdatePathRefs(string oldRef, string newRef, string modelPath)
+    {
+      //find the file references in the code and look for a match of the oldRef and replace.         
+      var paths = CommonFunctions.FindFilePathReferences(ref compCode, oldRef, newRef);
+
+      if (paths.Count >= 0)
+        throw new Exception("Failed to find string in the path " + oldRef + " in the source of the External Simulation Event.");
+
+    }
   }
 
-  public enum EnOnChangeTask { ocIgnore, ocResample, ocAdjust }
+  public enum EnOnChangeTask { ocIgnore, ocResample, ocAdjust}
 
   public abstract class TimeBasedEvent : Event
   {
@@ -1815,7 +1903,7 @@ namespace SimulationDAL
         {
           try
           {
-            ((EvalVarEvent)item.Value).CompileCompCode();
+            ((EvalVarEvent)item.Value).CompileCompCode(lists.rootPath);
           }
           catch (Exception e)
           {
@@ -1831,6 +1919,19 @@ namespace SimulationDAL
       {
         item.Reset();
       }
+    }
+
+    public List<ScanForReturnItem> ScanFor(ScanForTypes scanType, EmraldModel lists)
+    {
+      var foundList = new List<ScanForReturnItem>();
+      
+      foreach (var curItem in this.Values)
+      {
+        curItem.rootPath = lists.rootPath;
+        foundList.AddRange(curItem.ScanFor(scanType, lists.rootPath));
+      }
+
+      return foundList;
     }
 
     //void LoadIfNot()

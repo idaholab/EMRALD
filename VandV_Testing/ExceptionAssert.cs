@@ -6,7 +6,7 @@ using Xunit;
 //using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 //modified from https://github.com/bbraithwaite/MSTestExtensions/blob/master/src/MSTestExtensions/ExceptionInheritanceOptions.cs
-namespace UnitTesting_Simulation
+namespace VandV_Testing
 {
   public enum ExceptionMessageCompareOptions
   {
