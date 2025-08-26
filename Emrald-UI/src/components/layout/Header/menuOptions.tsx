@@ -7,7 +7,6 @@ import {
 } from '../../diagrams/SankeyTimelineDiagram/SankeyTimelineDiagram';
 import type { EMRALD_Model } from '../../../types/EMRALD_Model';
 import type { WindowPosition } from '../../../contexts/WindowContext';
-import { EMRALD_SchemaVersion } from '../../../types/ModelUtils';
 
 export const projectOptions = {
   New(newProject: () => void) {
@@ -38,16 +37,14 @@ export const projectOptions = {
 
         try {
           const parsedContent = JSON.parse(content) as EMRALD_Model;
-          if (!Object.prototype.hasOwnProperty.call(parsedContent, 'emraldVersion') || parsedContent.emraldVersion < EMRALD_SchemaVersion) {
-            console.log(`Upgrading from ${parsedContent.emraldVersion}`);
+          if (Object.prototype.hasOwnProperty.call(parsedContent, 'emraldVersion')) {
+            populateNewData(parsedContent);
+          } else {
             const upgradedModel = upgradeModel(content);
             if (upgradedModel) {
               upgradedModel.id = uuidv4();
-              console.log(upgradedModel);
               populateNewData(upgradedModel);
             }
-          } else {
-            populateNewData(parsedContent);
           }
         } catch {
           console.error('Invalid JSON format');
@@ -215,6 +212,11 @@ export const projectOptions = {
     fileInput.type = 'file'; // Set input type to file
     fileInput.accept = '.json,.emrald'; // Specify accepted file types as JSON
     fileInput.style.display = 'none'; // Hide the file input element
+    fileInput.id = 'compare-file-input';
+    // Add a label so the unit testing framework can interact with it
+    const inputLabel = document.createElement('label');
+    inputLabel.innerHTML = 'Upload Model To Compare';
+    inputLabel.setAttribute('for', 'compare-file-input');
 
     // Function to handle file selection
     const handleFileSelected = (event: Event) => {
@@ -242,6 +244,8 @@ export const projectOptions = {
         } catch {
           console.error('Invalid JSON format');
         }
+        document.body.removeChild(fileInput);
+        document.body.removeChild(inputLabel);
       };
       reader.readAsText(selectedFile); // Read the file as text
     };
@@ -251,6 +255,7 @@ export const projectOptions = {
 
     // Append the file input to the document body
     document.body.appendChild(fileInput);
+    document.body.appendChild(inputLabel);
 
     // Trigger a click on the file input to open the file dialog
     fileInput.click();

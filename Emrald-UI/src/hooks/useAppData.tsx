@@ -9,18 +9,16 @@ const storedData = sessionStorage.getItem('appData');
 export const appData = signal<EMRALD_Model>(CreateEmptyEMRALDModel());
 
 // Try to parse & upgrade the stored model
-try {
-  if (storedData !== null) {
-    const upgraded = upgradeModel(storedData);
-    if (upgraded === null) {
-      // The user has a model in their local storage, but it failed to upgrade
-      // TODO: This needs an actual notification in the UI
-      console.error('Could not upgrade local model');
-    } else {
-      appData.value = upgraded;
-    }
+if (storedData !== null) {
+  const upgraded = upgradeModel(storedData);
+  if (upgraded === null) {
+    // The user has a model in their local storage, but it failed to upgrade
+    // TODO: This needs an actual notification in the UI
+    console.error('Could not upgrade local model');
+  } else {
+    appData.value = upgraded;
   }
-} catch {
+} else {
   // Load & upgrades the default model
   const upgraded = upgradeModel(JSON.stringify(emraldData));
   if (upgraded) {
@@ -30,7 +28,7 @@ try {
     // TODO: This needs an actual notification in the UI
     console.error('Could not upgrade default model!');
   }
-}
+} 
 
 export const updateAppData = (newData: EMRALD_Model, undoData?: EMRALD_Model) => {
   let updatedData;

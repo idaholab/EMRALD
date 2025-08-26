@@ -291,3 +291,9 @@ instrumented
 /emrald-docs/yarn.lock
 /Emrald-UI/src/utils/out
 /VandV_Testing/TestingFiles/UserValidationRuns/Template_ValidationCase_Test
+
+# JetBrains IDEs
+.idea/
+*.iml
+*.ipr
+*.iws

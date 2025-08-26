@@ -53,7 +53,12 @@ const ImportForm: React.FC<ImportDiagramFormProps> = ({ importedData, fromTempla
   return (
     <Box mx={3} pb={3}>
       <Backdrop
-        sx={{ color: '#2FA770', zIndex: (theme) => theme.zIndex.drawer + 1, position: 'absolute', top: '35px' }}
+        sx={{
+          color: '#008080',
+          zIndex: (theme) => theme.zIndex.drawer + 1,
+          position: 'absolute',
+          top: '35px',
+        }}
         open={loading}
       >
         <CircularProgress color="inherit" />
@@ -165,6 +170,7 @@ const ImportForm: React.FC<ImportDiagramFormProps> = ({ importedData, fromTempla
                       onClick={() => {
                         handleLockChange(index, false);
                       }}
+                      aria-label="Unlock Row"
                     >
                       <FaLock />
                     </IconButton>
@@ -174,6 +180,7 @@ const ImportForm: React.FC<ImportDiagramFormProps> = ({ importedData, fromTempla
                       onClick={() => {
                         handleLockChange(index, true);
                       }}
+                      aria-label="Lock Row"
                     >
                       <FaLockOpen />
                     </Icon>
@@ -227,7 +234,7 @@ const ImportForm: React.FC<ImportDiagramFormProps> = ({ importedData, fromTempla
                 <TableCell align="left">
                   <TextField
                     label="New Name"
-                    value={row.action === 'rename' ? row.newName : ''}
+                    value={row.newName}
                     disabled={row.locked || row.action !== 'rename'}
                     onChange={(e) => {
                       handleNewNameChange(index, e.target.value);

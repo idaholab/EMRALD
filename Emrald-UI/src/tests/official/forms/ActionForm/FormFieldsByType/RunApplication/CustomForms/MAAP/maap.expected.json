@@ -110,12 +110,14 @@
       ],
       "possibleInitiators": [
         {
+          "comment": "",
           "index": 100,
           "desc": "PARAM1",
           "value": "T",
           "type": "parameter"
         },
         {
+          "comment": "",
           "index": 101,
           "desc": "PARAM2",
           "value": "T",
@@ -452,12 +454,14 @@
       ],
       "possibleInitiators": [
         {
+          "comment": "",
           "index": 100,
           "desc": "PARAM1",
           "value": "T",
           "type": "parameter"
         },
         {
+          "comment": "",
           "index": 101,
           "desc": "PARAM2",
           "value": "T",
@@ -794,12 +798,14 @@
       ],
       "possibleInitiators": [
         {
+          "comment": "",
           "index": 100,
           "desc": "PARAM1",
           "value": "T",
           "type": "parameter"
         },
         {
+          "comment": "",
           "index": 101,
           "desc": "PARAM2",
           "value": "T",
@@ -1137,12 +1143,14 @@
       ],
       "possibleInitiators": [
         {
+          "comment": "",
           "desc": "PARAM1",
           "index": 100,
           "value": "T",
           "type": "parameter"
         },
         {
+          "comment": "",
           "desc": "PARAM2",
           "index": 101,
           "value": "T",

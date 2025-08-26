@@ -16,7 +16,7 @@ import type {
 } from '../../../../../../../types/EMRALD_Model';
 
 const MAAP = () => {
-  const { formData, setFormData, setReturnProcess, ReturnPostCode, ReturnExePath } =
+  const { formData, setFormData, setReturnProcess, ReturnPreCode, ReturnPostCode, ReturnExePath } =
     useCustomForm();
   const { setReqPropsFilled, setCodeVariables } = useActionFormContext();
   const [parameterFile, setParameterFile] = useState<File | null>(null);
@@ -24,12 +24,6 @@ const MAAP = () => {
   const [currentTab, setCurrentTab] = useState(0);
   const [parameterPath, setParameterPath] = useState(formData?.parameterPath ?? '');
   const [inputPath, setInputPath] = useState(formData?.inputPath ?? '');
-  const { ReturnPreCode } = useRunApplication();
-
-  useEffect(() => {
-    setReqPropsFilled(!!formData?.exePath && !!parameterPath && !!inputPath);
-  }, [formData?.exePath, parameterPath, inputPath]);
-
   const handleTabChange = (_event: React.SyntheticEvent, tabValue: number) => {
     setCurrentTab(tabValue);
   };

@@ -113,6 +113,32 @@ namespace SysAndRegressionTesting
       Compare(dir, testName, optionsJ);
     }
 
+    [Fact]
+    [Description("Test that an if the initial evaluation of a logic tree is a success it triggers the event on entering the state for multiple runs.")]
+    public void InitialTrueCompLogic()
+    {
+      //note the result will be 1 off because the event is triggered on startup for the Logic tree evaluation.
+      string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
+
+      //Setup directory for unit test 
+      string dir = SetupTestDir(testName);
+      //initial options, and optional results to save/test
+      JObject optionsJ = SetupJSON(dir, testName, true);
+
+      SimulationEngine.Options_cur options = optionsJ.ToObject<SimulationEngine.Options_cur>();
+      //Change the default settings as needed for the test seed default set to 0 for testing.
+      options.inpfile = MainTestDir() + ModelFolder() + testName + ".emrald";      
+      options.runct = 5;
+      JSONRun testRun = new JSONRun(options);
+      Assert.True(TestRunSim(testRun));
+
+      //Uncomment to update the validation files after they verified correct
+      //CopyToValidated(dir, testName, optionsJ);
+
+      //compare the test result and optionally the paths and json if assigned
+      Compare(dir, testName, optionsJ);
+    }
+
 
   }
 }

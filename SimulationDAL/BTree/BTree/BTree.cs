@@ -945,7 +945,7 @@ namespace Sop.Collections.BTree
 		/// Use this constructor if you want to clone or shallow copy your BTree instance.
 		/// </summary>
 		/// <param name="BTree">BTree instance you want to shallow copy its tree graph</param>
-		/// <param name="itemType">Type of Item the new BTree instance will hold. Normally, ItemType.Default is used, internally, BTreeGold uses Key and Value types for reusing BTree to enumerate Keys and Values respectively.</param>
+		/// <param name="itemType">Type of Item the new BTree instance will hold. Normally, itemType.Default is used, internally, BTreeGold uses Key and Value types for reusing BTree to enumerate Keys and Values respectively.</param>
 		internal BTree(BTree BTree, ItemType itemType)
 		{
 			btree = new BTreeAlgorithm(BTree.btree);

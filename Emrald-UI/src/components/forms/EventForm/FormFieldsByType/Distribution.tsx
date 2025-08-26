@@ -57,6 +57,8 @@ const Distribution = () => {
     setParameters,
     setParameterVariable,
     setInvalidValues,
+    persistent,
+    setPersistent,
   } = useEventFormContext();
 
   const rowsToDisplay = getRowsForDistType(distType ?? 'dtNormal');
@@ -68,7 +70,7 @@ const Distribution = () => {
       getRowsForDistType(newDistType).forEach((row) => {
         if (
           !Object.prototype.hasOwnProperty.call(allRows, row) ||
-          typeof allRows[row].value !== 'number'
+          typeof allRows[row]?.value !== 'number'
         ) {
           newInvalidValues.add(row);
         }
@@ -132,6 +134,16 @@ const Distribution = () => {
 
   return (
     <>
+      <FormControlLabel
+        label="Persistent - Keeps initial time between state movement and only re-samples after it occurs."
+        control={
+          <Checkbox
+            checked={persistent}
+            value={persistent}
+            onChange={(e) => setPersistent(e.target.checked)}
+          ></Checkbox>
+        }
+      ></FormControlLabel>
       <Box sx={{ display: 'flex', alignItems: 'center', my: 2 }}>
         <SelectComponent
           value={distType ?? 'dtNormal'}
@@ -188,12 +200,12 @@ const Distribution = () => {
                     </SelectComponent>
                   ) : (
                     <TextField
-                      value={allRows[row].value ?? ''}
+                      value={allRows[row]?.value ?? ''}
                       onChange={(e) => {
-                        handleChange(row, Number(e.target.value));
+                        handleChange(row, e.target.value);
                       }}
                       onBlur={(e) => {
-                        handleBlur(row, Number(e.target.value));
+                        handleBlur(row, e.target.value);
                       }}
                       size="small"
                       label={row}
@@ -207,7 +219,7 @@ const Distribution = () => {
                   {!row.includes('Shape') && (
                     <SelectComponent
                       label="Time Rate"
-                      value={allRows[row].timeRate ?? ('default' as TimeVariableUnit)}
+                      value={allRows[row]?.timeRate ?? ('default' as TimeVariableUnit)}
                       setValue={(value) => {
                         handleRateChange(row, value);
                       }}
@@ -225,10 +237,10 @@ const Distribution = () => {
                 <StyledTableCell>
                   <FormControlLabel
                     label="Use Variable"
-                    value={allRows[row].useVariable ?? false}
+                    value={allRows[row]?.useVariable ?? false}
                     control={
                       <Checkbox
-                        checked={allRows[row].useVariable ?? false}
+                        checked={allRows[row]?.useVariable ?? false}
                         onChange={(e) => {
                           handleUseVariableChange(e.target.checked, row);
                         }}

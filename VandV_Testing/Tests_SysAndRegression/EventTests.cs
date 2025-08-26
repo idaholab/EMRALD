@@ -405,7 +405,132 @@ namespace SysAndRegressionTesting
       //compare the test result and optionally the paths and json if assigned
       Compare(dir, testName, optionsJ);
     }
+    [Fact]
+    [Description("Test persistent distribution events.")]
+    public void PersistentDistTest()
+    {
+      string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
 
+      //Setup directory for unit test 
+      string dir = SetupTestDir(testName);
+      //initial options, and optional results to save/test
+      JObject optionsJ = SetupJSON(dir, testName, true);
+
+      SimulationEngine.Options_cur options = optionsJ.ToObject<SimulationEngine.Options_cur>();
+      //Change the default settings as needed for the test seed default set to 0 for testing.
+      options.inpfile = MainTestDir() + ModelFolder() + testName + ".json";
+      options.runct = 1;
+      //options.variables = new List<string>() { "Int_Cnt" };
+      //optionsJ["variables"] = JsonConvert.SerializeObject(args);
+      JSONRun testRun = new JSONRun(options);
+      Assert.True(TestRunSim(testRun));
+
+      //Uncomment to update the validation files after they verified correct
+      //CopyToValidated(dir, testName, optionsJ);
+
+      //compare the test result and optionally the paths and json if assigned
+      Compare(dir, testName, optionsJ);
+    }
+    [Fact]
+    [Description("Test persistent failure rate events.")]
+    public void PersistentFailRateTest()
+    {
+      string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
+
+      //Setup directory for unit test 
+      string dir = SetupTestDir(testName);
+      //initial options, and optional results to save/test
+      JObject optionsJ = SetupJSON(dir, testName, true);
+
+      SimulationEngine.Options_cur options = optionsJ.ToObject<SimulationEngine.Options_cur>();
+      //Change the default settings as needed for the test seed default set to 0 for testing.
+      options.inpfile = MainTestDir() + ModelFolder() + testName + ".json";
+      options.runct = 1;
+      //options.variables = new List<string>() { "Int_Cnt" };
+      //optionsJ["variables"] = JsonConvert.SerializeObject(args);
+      JSONRun testRun = new JSONRun(options);
+      Assert.True(TestRunSim(testRun));
+
+      //Uncomment to update the validation files after they verified correct
+      //CopyToValidated(dir, testName, optionsJ);
+
+      //compare the test result and optionally the paths and json if assigned
+      Compare(dir, testName, optionsJ);
+    }
+    [Fact]
+    [Description("Test persistent timer events.")]
+    public void PersistentTimerTest()
+    {
+      string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
+
+      //Setup directory for unit test 
+      string dir = SetupTestDir(testName);
+      //initial options, and optional results to save/test
+      JObject optionsJ = SetupJSON(dir, testName, true);
+
+      SimulationEngine.Options_cur options = optionsJ.ToObject<SimulationEngine.Options_cur>();
+      //Change the default settings as needed for the test seed default set to 0 for testing.
+      options.inpfile = MainTestDir() + ModelFolder() + testName + ".json";
+      options.runct = 1;
+      //options.variables = new List<string>() { "Int_Cnt" };
+      //optionsJ["variables"] = JsonConvert.SerializeObject(args);
+      JSONRun testRun = new JSONRun(options);
+      Assert.True(TestRunSim(testRun));
+
+      //Uncomment to update the validation files after they verified correct
+      //CopyToValidated(dir, testName, optionsJ);
+
+      //compare the test result and optionally the paths and json if assigned
+      Compare(dir, testName, optionsJ);
+    }
+    [Fact]
+    [Description("Test persistent events with variables being resampled when the variable changes while the event is NOT in an active state.")]
+    public void PersistentEventVarChange_EventInactive()
+    {
+      string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
+
+      //Setup directory for unit test 
+      string dir = SetupTestDir(testName);
+      //initial options, and optional results to save/test
+      JObject optionsJ = SetupJSON(dir, testName, true);
+
+      SimulationEngine.Options_cur options = optionsJ.ToObject<SimulationEngine.Options_cur>();
+      //Change the default settings as needed for the test seed default set to 0 for testing.
+      options.inpfile = MainTestDir() + ModelFolder() + testName + ".emrald";
+      options.runct = 1;
+      //options.variables = new List<string>() { "Int_Cnt" };
+      //optionsJ["variables"] = JsonConvert.SerializeObject(args);
+      JSONRun testRun = new JSONRun(options);
+      Assert.False(TestRunSim(testRun));
+
+    }
+    [Fact]
+    [Description("Test persistent events with variables being resampled when the variable changes while the event is in an active state.")]
+    public void PersistentEventVarChange()
+    {
+      string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
+
+      //Setup directory for unit test 
+      string dir = SetupTestDir(testName);
+      //initial options, and optional results to save/test
+      JObject optionsJ = SetupJSON(dir, testName, true);
+
+      SimulationEngine.Options_cur options = optionsJ.ToObject<SimulationEngine.Options_cur>();
+      //Change the default settings as needed for the test seed default set to 0 for testing.
+      options.inpfile = MainTestDir() + ModelFolder() + testName + ".emrald";
+      options.runct = 10;
+      //options.variables = new List<string>() { "Int_Cnt" };
+      //optionsJ["variables"] = JsonConvert.SerializeObject(args);
+      JSONRun testRun = new JSONRun(options);
+      Assert.True(TestRunSim(testRun));
+
+      //Uncomment to update the validation files after they verified correct
+      //CopyToValidated(dir, testName, optionsJ);
+
+      //compare the test result and optionally the paths and json if assigned
+      Compare(dir, testName, optionsJ);
+    }
     //TODO add other actiontests.
   }
+
 }

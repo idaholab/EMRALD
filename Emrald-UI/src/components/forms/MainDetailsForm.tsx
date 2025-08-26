@@ -51,6 +51,7 @@ interface MainDetailsFormProps<T extends MainItemType> {
   setDesc: (desc: string) => void;
   setType: Dispatch<SetStateAction<ValueTypes<T>>>;
   reqPropsFilled: boolean;
+  invalidValues?: Set<string>;
 }
 
 const MainDetailsForm = <T extends MainItemType>({
@@ -73,6 +74,7 @@ const MainDetailsForm = <T extends MainItemType>({
   handleNameChange,
   handleTypeChange,
   reset,
+  invalidValues,
 }: MainDetailsFormProps<T>) => {
   const { handleClose } = useWindowContext();
   return (
@@ -136,6 +138,9 @@ const MainDetailsForm = <T extends MainItemType>({
             handleSave();
           }}
           disabled={error ?? !reqPropsFilled}
+          data-error={error}
+          data-req-props-filled={reqPropsFilled}
+          data-invalid-vals={invalidValues?.entries().toArray().join(',')}
         >
           Save
         </Button>

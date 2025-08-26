@@ -9,7 +9,7 @@
       "cRate95th": 0.88161772,
       "count": 20,
       "timeMean": "00:29:14.1974195",
-      "timeStdDeviation": "00:03:56.2455903",
+      "timeStdDeviation": "00:03:47.4325234",
       "timeMin": "00:25:47.3136704",
       "timeMax": "00:37:45.5437215",
       "watchVariables": {
@@ -2073,7 +2073,7 @@
       "cRate95th": 0.0,
       "count": 21,
       "timeMean": "00:02:13.6190107",
-      "timeStdDeviation": "00:00:00.5693892",
+      "timeStdDeviation": "00:00:00.4026189",
       "timeMin": "00:01:38.5896840",
       "timeMax": "00:02:17.4070680",
       "watchVariables": {
@@ -2305,7 +2305,7 @@
       "cRate95th": 0.0,
       "count": 21,
       "timeMean": "00:02:27.1405940",
-      "timeStdDeviation": "00:00:02.2443912",
+      "timeStdDeviation": "00:00:01.5870242",
       "timeMin": "00:01:55.8784920",
       "timeMax": "00:02:31.4796720",
       "watchVariables": {
