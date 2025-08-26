@@ -925,10 +925,10 @@ namespace SimulationDAL
   public abstract class TimeBasedEvent : Event
   {
     private bool _persistent = false;
-    protected EnOnChangeTask _onVarChange = EnOnChangeTask.ocIgnore;
+    protected EnOnChangeTask onVarChange = EnOnChangeTask.ocIgnore;
     protected override EnEventType GetEvType() { return EnEventType.etTimer; }
     public bool persistent { get { return _persistent; } }
-    public EnOnChangeTask onVarChange { get { return _onVarChange; } }
+    public EnOnChangeTask onVarChangeEnum { get { return onVarChange; } }
 
     public TimeBasedEvent(string inName)
       : base(inName) { }
@@ -958,7 +958,7 @@ namespace SimulationDAL
     /// <returns>returns the new time for the event</returns>
     public virtual TimeSpan RedoNextTime(TimeSpan sampledTime, TimeSpan curTime, TimeSpan oldOccurTime)
     {
-      switch (_onVarChange)
+      switch (onVarChange)
       {
         case EnOnChangeTask.ocIgnore:
           return oldOccurTime;
@@ -970,7 +970,7 @@ namespace SimulationDAL
           throw new Exception("RedoNextTime function not implemented for " + this.evType.ToString());
           break;
         default:
-          throw new Exception("RedoNextTime not implemented for " + _onVarChange.ToString());
+          throw new Exception("RedoNextTime not implemented for " + onVarChange.ToString());
       }
     }
 
@@ -1011,7 +1011,7 @@ namespace SimulationDAL
           "\"time\":\"" + timeVariable.name + "\"," + Environment.NewLine +
           "\"useVariable\": true, " + Environment.NewLine +
           "\"timeVariableUnit\":\"" + this.timerVariableUnit.ToString() + "\"," + Environment.NewLine +
-          "\"_onVarChange\":\"" + this._onVarChange.ToString() + "\"," + Environment.NewLine ;
+          "\"onVarChange\":\"" + this.onVarChange.ToString() + "\"," + Environment.NewLine ;
 
       }
 
@@ -1054,11 +1054,11 @@ namespace SimulationDAL
 
         try //may not exist in earlier versions so use a default
         {
-          _onVarChange = (EnOnChangeTask)Enum.Parse(typeof(EnOnChangeTask), (string)dynObj.onVarChange, true);
+          onVarChange = (EnOnChangeTask)Enum.Parse(typeof(EnOnChangeTask), (string)dynObj.onVarChange, true);
         }
         catch
         {
-          _onVarChange = EnOnChangeTask.ocIgnore;
+          onVarChange = EnOnChangeTask.ocIgnore;
         }
       }   
       else
@@ -1124,7 +1124,7 @@ namespace SimulationDAL
     public override TimeSpan RedoNextTime(TimeSpan sampledTime, TimeSpan curTime, TimeSpan oldOccurTime)
     {
       //A timer doesn't sample, but if a variable is used and we are to adjust then it is just the new variable time - what has already past
-      if (_onVarChange == EnOnChangeTask.ocAdjust)
+      if (onVarChange == EnOnChangeTask.ocAdjust)
       {
         TimeSpan time = NextTime(curTime) - (curTime - sampledTime);
         if (time < curTime)
@@ -1191,7 +1191,7 @@ namespace SimulationDAL
         retStr = retStr +
           "\"useVariable\": true, " + Environment.NewLine +
           "\"lambda\":\"" + this.lambdaVariable.name + "\"," + Environment.NewLine +
-          "\"_onVarChange\":\"" + this._onVarChange.ToString() + "\"," + Environment.NewLine;
+          "\"onVarChange\":\"" + this.onVarChange.ToString() + "\"," + Environment.NewLine;
       }
       else
       {
@@ -1235,11 +1235,11 @@ namespace SimulationDAL
 
         try //may not exist in earlier versions so use a default
         {
-          _onVarChange = (EnOnChangeTask)Enum.Parse(typeof(EnOnChangeTask), (string)dynObj.onVarChange, true);
+          onVarChange = (EnOnChangeTask)Enum.Parse(typeof(EnOnChangeTask), (string)dynObj.onVarChange, true);
         }
         catch
         {
-          _onVarChange = EnOnChangeTask.ocIgnore;
+          onVarChange = EnOnChangeTask.ocIgnore;
         }
       }
 
@@ -1327,7 +1327,7 @@ namespace SimulationDAL
 
     public override TimeSpan RedoNextTime(TimeSpan sampledTime, TimeSpan curTime, TimeSpan oldOccurTime)
     {
-      if (_onVarChange == EnOnChangeTask.ocAdjust)
+      if (onVarChange == EnOnChangeTask.ocAdjust)
       {
         //todo: how to adjust
         //Random rnd = new Random();
@@ -1377,7 +1377,7 @@ namespace SimulationDAL
 
       string retStr = "\"distType\": \"" + this._distType.ToString() + "\"";
       retStr += "," + Environment.NewLine + "\"dfltTimeRate\": \"" + dfltTimeRate.ToString() + "\"";
-      retStr += "," + Environment.NewLine + "\"_onVarChange\": \"" + _onVarChange.ToString() + "\"";
+      retStr += "," + Environment.NewLine + "\"onVarChange\": \"" + onVarChange.ToString() + "\"";
       retStr += "," + Environment.NewLine + "\"parameters\":" + JsonConvert.SerializeObject(_dParams);
 
 
@@ -1471,11 +1471,11 @@ namespace SimulationDAL
 
             dynObj = ((dynamic)obj).Event;
           }
-          _onVarChange = (EnOnChangeTask)Enum.Parse(typeof(EnOnChangeTask), (string)dynObj.onVarChange, true);
+          onVarChange = (EnOnChangeTask)Enum.Parse(typeof(EnOnChangeTask), (string)dynObj.onVarChange, true);
         }
         catch
         {
-          throw new Exception("parameter _onVarChange missing and variables are used.");
+          throw new Exception("parameter onVarChange missing and variables are used.");
         }
       }
       
@@ -1620,7 +1620,7 @@ namespace SimulationDAL
     /// <returns>returns the new time for the event</returns>
     public override TimeSpan RedoNextTime(TimeSpan sampledTime, TimeSpan curTime, TimeSpan oldOccurTime)
     {
-      if (_onVarChange == EnOnChangeTask.ocAdjust)
+      if (onVarChange == EnOnChangeTask.ocAdjust)
       {
 
         switch (this._distType)
