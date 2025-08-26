@@ -1,14 +1,15 @@
-﻿using Newtonsoft.Json.Linq;
-using NLog.Config;
-using NLog;
-using SimulationEngine;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
+using NLog;
+using NLog.Config;
+using SimulationEngine;
 using Xunit;
 
 [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
@@ -68,7 +69,23 @@ namespace Testing
 
     protected string RootDir()
     {
-      return Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName;
+      string currentPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+
+      while (true)
+      {
+        if (Path.GetFileName(currentPath) == "VandV_Testing")
+        {
+          return currentPath;
+        }
+        else if (Directory.GetParent(currentPath) == null) // Root directory reached
+        {
+          throw new DirectoryNotFoundException("Folder 'VandV_Testing' not found in the directory tree.");
+        }
+        else
+        {
+          currentPath = Directory.GetParent(currentPath).FullName;
+        }
+      }
     }
     protected string MainTestDir()
     {

@@ -2,11 +2,13 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using MessageDefLib;
 using System.Xml;
+using MessageDefLib;
+using NLog;
 
 namespace SimulationDAL
 {
@@ -113,6 +115,12 @@ namespace SimulationDAL
     public virtual void LookupRelatedItems(EmraldModel all, EmraldModel addToList)
     {
       //none
+    }
+
+    public virtual List<ScanForReturnItem> ScanFor(ScanForTypes scanType, string modelRootPath)
+    {
+      //override in the different types if it is possible that the item has something for the scanType 
+      return new List<ScanForReturnItem>();
     }
   }
 
@@ -284,6 +292,28 @@ namespace SimulationDAL
     public bool LoadLinks(object obj, EmraldModel lists)
     {      
       return true;
+    }
+
+    public List<ScanForReturnItem> ScanFor(ScanForTypes scanType, EmraldModel lists)
+    {
+      var foundList = new List<ScanForReturnItem>();
+
+      if ((scanType == ScanForTypes.sfMultiThreadIssues) && (this.Count > 0)) //shortcircuit
+      {
+        foundList.Add(new ScanForRefsItem(this[0].id,
+                                          this[0].name,
+                                          EnIDTypes.itAction,
+                                          "Currently External Sim communication is not supported in multithreading.",
+                                          ""));
+        return foundList;
+      }
+
+      foreach (var curItem in this.Values)
+      {
+        foundList.AddRange(curItem.ScanFor(scanType, lists.rootPath));
+      }
+
+      return foundList;
     }
 
   }

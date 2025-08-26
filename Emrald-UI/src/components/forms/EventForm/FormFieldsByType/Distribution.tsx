@@ -57,6 +57,8 @@ const Distribution = () => {
     setParameters,
     setParameterVariable,
     setInvalidValues,
+    persistent,
+    setPersistent,
   } = useEventFormContext();
 
   const rowsToDisplay = getRowsForDistType(distType ?? 'dtNormal');
@@ -132,6 +134,16 @@ const Distribution = () => {
 
   return (
     <>
+      <FormControlLabel
+        label="Persistent - Keeps initial time between state movement and only re-samples after it occurs."
+        control={
+          <Checkbox
+            checked={persistent}
+            value={persistent}
+            onChange={(e) => setPersistent(e.target.checked)}
+          ></Checkbox>
+        }
+      ></FormControlLabel>
       <Box sx={{ display: 'flex', alignItems: 'center', my: 2 }}>
         <SelectComponent
           value={distType ?? 'dtNormal'}

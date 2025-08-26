@@ -242,6 +242,12 @@ namespace SimulationDAL
 
       return null;
     }
+
+    public virtual List<ScanForReturnItem> ScanFor(ScanForTypes scanType, string modelRootPath)
+    {
+      //override in the different types if it is possible that the item has something for the scanType 
+      return new List<ScanForReturnItem>();
+    }
   }
 
 
@@ -588,5 +594,21 @@ namespace SimulationDAL
       return true;
     }
 
+    public List<ScanForReturnItem> ScanFor(ScanForTypes scanType, EmraldModel lists)
+    {
+      var foundItems = new List<ScanForReturnItem>();
+      if (scanType == ScanForTypes.sfMultiThreadIssues) //shortcircuit
+      {
+        //currently there are no references to file or possible common data here.
+        return foundItems;
+      }
+
+      foreach (var curItem in this.Values)
+      {
+        foundItems.AddRange(curItem.ScanFor(scanType, lists.rootPath));
+      }
+
+      return foundItems;
+    }
   }
 }

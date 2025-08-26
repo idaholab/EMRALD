@@ -113,22 +113,27 @@ namespace EMRALD_Sim
       colRate = new System.Windows.Forms.ColumnHeader();
       colFailedItems = new System.Windows.Forms.ColumnHeader();
       panel13 = new System.Windows.Forms.Panel();
+      lbl_CurThread = new System.Windows.Forms.Label();
+      cbCurThread = new System.Windows.Forms.ComboBox();
       lblRunTime = new System.Windows.Forms.Label();
       btn_Stop = new System.Windows.Forms.Button();
       lbl_ResultHeader = new System.Windows.Forms.Label();
       splitter6 = new System.Windows.Forms.Splitter();
       pnlSimulate = new System.Windows.Forms.Panel();
       chkDebug = new System.Windows.Forms.Panel();
+      cbClearTemps = new System.Windows.Forms.CheckBox();
+      bttnPathRefs = new System.Windows.Forms.Button();
+      lblThreads = new System.Windows.Forms.Label();
+      tbThreads = new System.Windows.Forms.TextBox();
+      cbMultiThreaded = new System.Windows.Forms.CheckBox();
       tbSavePath2 = new System.Windows.Forms.TextBox();
       button2 = new System.Windows.Forms.Button();
-      gbPathResults = new System.Windows.Forms.GroupBox();
-      rbJsonPaths = new System.Windows.Forms.RadioButton();
-      rbSimplePath = new System.Windows.Forms.RadioButton();
       label19 = new System.Windows.Forms.Label();
       tbSeed = new System.Windows.Forms.TextBox();
       label18 = new System.Windows.Forms.Label();
       chkLog = new System.Windows.Forms.CheckBox();
       grpDebugOpts = new System.Windows.Forms.GroupBox();
+      btn_DebugOpen = new System.Windows.Forms.Button();
       label21 = new System.Windows.Forms.Label();
       label20 = new System.Windows.Forms.Label();
       tbLogRunEnd = new System.Windows.Forms.TextBox();
@@ -189,7 +194,6 @@ namespace EMRALD_Sim
       panel13.SuspendLayout();
       pnlSimulate.SuspendLayout();
       chkDebug.SuspendLayout();
-      gbPathResults.SuspendLayout();
       grpDebugOpts.SuspendLayout();
       panel12.SuspendLayout();
       panel14.SuspendLayout();
@@ -614,7 +618,7 @@ namespace EMRALD_Sim
       label11.Name = "label11";
       label11.Size = new System.Drawing.Size(98, 15);
       label11.TabIndex = 1;
-      label11.Text = "Action Msg Type:";
+      label11.Text = "Action msg Type:";
       // 
       // cbMsgType
       // 
@@ -750,7 +754,7 @@ namespace EMRALD_Sim
       // 
       lblSendManualMsg.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
       lblSendManualMsg.AutoSize = true;
-      lblSendManualMsg.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+      lblSendManualMsg.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold);
       lblSendManualMsg.Location = new System.Drawing.Point(271, 1);
       lblSendManualMsg.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
       lblSendManualMsg.Name = "lblSendManualMsg";
@@ -1040,7 +1044,7 @@ namespace EMRALD_Sim
       // 
       // colFailureCnt
       // 
-      colFailureCnt.Text = "Failure Cnt";
+      colFailureCnt.Text = "Count";
       colFailureCnt.Width = 80;
       // 
       // colRate
@@ -1049,11 +1053,13 @@ namespace EMRALD_Sim
       // 
       // colFailedItems
       // 
-      colFailedItems.Text = "Failed Items";
+      colFailedItems.Text = "Mean Time or Failed Components";
       colFailedItems.Width = 400;
       // 
       // panel13
       // 
+      panel13.Controls.Add(lbl_CurThread);
+      panel13.Controls.Add(cbCurThread);
       panel13.Controls.Add(lblRunTime);
       panel13.Controls.Add(btn_Stop);
       panel13.Controls.Add(lbl_ResultHeader);
@@ -1063,6 +1069,26 @@ namespace EMRALD_Sim
       panel13.Name = "panel13";
       panel13.Size = new System.Drawing.Size(1251, 39);
       panel13.TabIndex = 0;
+      // 
+      // lbl_CurThread
+      // 
+      lbl_CurThread.AutoSize = true;
+      lbl_CurThread.Location = new System.Drawing.Point(15, 18);
+      lbl_CurThread.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+      lbl_CurThread.Name = "lbl_CurThread";
+      lbl_CurThread.Size = new System.Drawing.Size(92, 15);
+      lbl_CurThread.TabIndex = 40;
+      lbl_CurThread.Text = "Showing Thread";
+      lbl_CurThread.Visible = false;
+      // 
+      // cbCurThread
+      // 
+      cbCurThread.FormattingEnabled = true;
+      cbCurThread.Location = new System.Drawing.Point(107, 13);
+      cbCurThread.Name = "cbCurThread";
+      cbCurThread.Size = new System.Drawing.Size(38, 23);
+      cbCurThread.TabIndex = 12;
+      cbCurThread.Visible = false;
       // 
       // lblRunTime
       // 
@@ -1126,9 +1152,13 @@ namespace EMRALD_Sim
       // 
       // chkDebug
       // 
+      chkDebug.Controls.Add(cbClearTemps);
+      chkDebug.Controls.Add(bttnPathRefs);
+      chkDebug.Controls.Add(lblThreads);
+      chkDebug.Controls.Add(tbThreads);
+      chkDebug.Controls.Add(cbMultiThreaded);
       chkDebug.Controls.Add(tbSavePath2);
       chkDebug.Controls.Add(button2);
-      chkDebug.Controls.Add(gbPathResults);
       chkDebug.Controls.Add(label19);
       chkDebug.Controls.Add(tbSeed);
       chkDebug.Controls.Add(label18);
@@ -1152,6 +1182,65 @@ namespace EMRALD_Sim
       chkDebug.Size = new System.Drawing.Size(847, 290);
       chkDebug.TabIndex = 3;
       // 
+      // cbClearTemps
+      // 
+      cbClearTemps.AutoSize = true;
+      cbClearTemps.Checked = true;
+      cbClearTemps.CheckState = System.Windows.Forms.CheckState.Checked;
+      cbClearTemps.Location = new System.Drawing.Point(375, 121);
+      cbClearTemps.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+      cbClearTemps.Name = "cbClearTemps";
+      cbClearTemps.Size = new System.Drawing.Size(118, 19);
+      cbClearTemps.TabIndex = 41;
+      cbClearTemps.Text = "Clear Thread Files";
+      cbClearTemps.UseVisualStyleBackColor = true;
+      cbClearTemps.Visible = false;
+      // 
+      // bttnPathRefs
+      // 
+      bttnPathRefs.Location = new System.Drawing.Point(228, 116);
+      bttnPathRefs.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+      bttnPathRefs.Name = "bttnPathRefs";
+      bttnPathRefs.Size = new System.Drawing.Size(132, 30);
+      bttnPathRefs.TabIndex = 40;
+      bttnPathRefs.Text = "Edit Path References";
+      bttnPathRefs.UseVisualStyleBackColor = true;
+      bttnPathRefs.Visible = false;
+      bttnPathRefs.Click += bttnPathRefs_Click;
+      // 
+      // lblThreads
+      // 
+      lblThreads.AutoSize = true;
+      lblThreads.Location = new System.Drawing.Point(159, 125);
+      lblThreads.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+      lblThreads.Name = "lblThreads";
+      lblThreads.Size = new System.Drawing.Size(48, 15);
+      lblThreads.TabIndex = 39;
+      lblThreads.Text = "Threads";
+      lblThreads.Visible = false;
+      // 
+      // tbThreads
+      // 
+      tbThreads.Location = new System.Drawing.Point(132, 119);
+      tbThreads.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+      tbThreads.Name = "tbThreads";
+      tbThreads.Size = new System.Drawing.Size(26, 23);
+      tbThreads.TabIndex = 38;
+      tbThreads.Visible = false;
+      tbThreads.Leave += tbThreads_Leave;
+      // 
+      // cbMultiThreaded
+      // 
+      cbMultiThreaded.AutoSize = true;
+      cbMultiThreaded.Location = new System.Drawing.Point(18, 121);
+      cbMultiThreaded.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+      cbMultiThreaded.Name = "cbMultiThreaded";
+      cbMultiThreaded.Size = new System.Drawing.Size(106, 19);
+      cbMultiThreaded.TabIndex = 37;
+      cbMultiThreaded.Text = "Multi Threaded";
+      cbMultiThreaded.UseVisualStyleBackColor = true;
+      cbMultiThreaded.CheckedChanged += cbMultiThreaded_CheckedChanged;
+      // 
       // tbSavePath2
       // 
       tbSavePath2.Location = new System.Drawing.Point(131, 90);
@@ -1172,46 +1261,6 @@ namespace EMRALD_Sim
       button2.Text = "Open";
       button2.UseVisualStyleBackColor = true;
       button2.Click += button2_Click_1;
-      // 
-      // gbPathResults
-      // 
-      gbPathResults.Controls.Add(rbJsonPaths);
-      gbPathResults.Controls.Add(rbSimplePath);
-      gbPathResults.Location = new System.Drawing.Point(131, 110);
-      gbPathResults.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-      gbPathResults.Name = "gbPathResults";
-      gbPathResults.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
-      gbPathResults.Size = new System.Drawing.Size(537, 36);
-      gbPathResults.TabIndex = 39;
-      gbPathResults.TabStop = false;
-      gbPathResults.Visible = false;
-      // 
-      // rbJsonPaths
-      // 
-      rbJsonPaths.AutoSize = true;
-      rbJsonPaths.Checked = true;
-      rbJsonPaths.Location = new System.Drawing.Point(107, 10);
-      rbJsonPaths.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-      rbJsonPaths.Name = "rbJsonPaths";
-      rbJsonPaths.Size = new System.Drawing.Size(135, 19);
-      rbJsonPaths.TabIndex = 32;
-      rbJsonPaths.TabStop = true;
-      rbJsonPaths.Text = "Detailed Stats (JSON)";
-      rbJsonPaths.UseVisualStyleBackColor = true;
-      rbJsonPaths.Visible = false;
-      // 
-      // rbSimplePath
-      // 
-      rbSimplePath.AutoSize = true;
-      rbSimplePath.Location = new System.Drawing.Point(7, 10);
-      rbSimplePath.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-      rbSimplePath.Name = "rbSimplePath";
-      rbSimplePath.Size = new System.Drawing.Size(85, 19);
-      rbSimplePath.TabIndex = 31;
-      rbSimplePath.Text = "Simple Text";
-      rbSimplePath.UseVisualStyleBackColor = true;
-      rbSimplePath.Visible = false;
-      rbSimplePath.CheckedChanged += rbSimplePath_CheckedChanged;
       // 
       // label19
       // 
@@ -1248,14 +1297,15 @@ namespace EMRALD_Sim
       chkLog.Location = new System.Drawing.Point(159, 187);
       chkLog.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
       chkLog.Name = "chkLog";
-      chkLog.Size = new System.Drawing.Size(226, 19);
+      chkLog.Size = new System.Drawing.Size(246, 19);
       chkLog.TabIndex = 33;
-      chkLog.Text = "Debug (file debug.txt in run directory)";
+      chkLog.Text = "Debug (file debugLog.txt in run directory)";
       chkLog.UseVisualStyleBackColor = true;
       chkLog.CheckedChanged += chkLog_CheckedChanged;
       // 
       // grpDebugOpts
       // 
+      grpDebugOpts.Controls.Add(btn_DebugOpen);
       grpDebugOpts.Controls.Add(label21);
       grpDebugOpts.Controls.Add(label20);
       grpDebugOpts.Controls.Add(tbLogRunEnd);
@@ -1270,6 +1320,16 @@ namespace EMRALD_Sim
       grpDebugOpts.Size = new System.Drawing.Size(429, 61);
       grpDebugOpts.TabIndex = 32;
       grpDebugOpts.TabStop = false;
+      // 
+      // btn_DebugOpen
+      // 
+      btn_DebugOpen.Location = new System.Drawing.Point(347, 31);
+      btn_DebugOpen.Name = "btn_DebugOpen";
+      btn_DebugOpen.Size = new System.Drawing.Size(75, 23);
+      btn_DebugOpen.TabIndex = 39;
+      btn_DebugOpen.Text = "View";
+      btn_DebugOpen.UseVisualStyleBackColor = true;
+      btn_DebugOpen.Click += btn_DebugOpen_Click;
       // 
       // label21
       // 
@@ -1479,6 +1539,7 @@ namespace EMRALD_Sim
       lbMonitorVars.Name = "lbMonitorVars";
       lbMonitorVars.Size = new System.Drawing.Size(198, 263);
       lbMonitorVars.TabIndex = 1;
+      lbMonitorVars.Leave += lbMonitorVars_Leave;
       // 
       // panel14
       // 
@@ -1564,7 +1625,7 @@ namespace EMRALD_Sim
       tabLog.Name = "tabLog";
       tabLog.Size = new System.Drawing.Size(1251, 793);
       tabLog.TabIndex = 2;
-      tabLog.Text = "Log";
+      tabLog.Text = "XMPP msg Log";
       tabLog.UseVisualStyleBackColor = true;
       // 
       // rtbLog
@@ -1642,11 +1703,10 @@ namespace EMRALD_Sim
       tabSimulate.ResumeLayout(false);
       pnlSimResults.ResumeLayout(false);
       panel13.ResumeLayout(false);
+      panel13.PerformLayout();
       pnlSimulate.ResumeLayout(false);
       chkDebug.ResumeLayout(false);
       chkDebug.PerformLayout();
-      gbPathResults.ResumeLayout(false);
-      gbPathResults.PerformLayout();
       grpDebugOpts.ResumeLayout(false);
       grpDebugOpts.PerformLayout();
       panel12.ResumeLayout(false);
@@ -1785,14 +1845,19 @@ namespace EMRALD_Sim
     private System.Windows.Forms.Label label20;
     private System.Windows.Forms.TextBox tbLogRunEnd;
     private System.Windows.Forms.TextBox tbLogRunStart;
-    private System.Windows.Forms.GroupBox gbPathResults;
-    private System.Windows.Forms.RadioButton rbJsonPaths;
-    private System.Windows.Forms.RadioButton rbSimplePath;
     private System.Windows.Forms.ToolTip toolTip1;
     private ICSharpCode.TextEditor.TextEditorControl teModel;
     private System.Windows.Forms.ToolStripMenuItem saveStripMenuItem;
     private System.Windows.Forms.SaveFileDialog sdSaveModel;
     private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem1;
     private System.Windows.Forms.ToolStripMenuItem recentToolStripMenuItem;
+    private System.Windows.Forms.Button btn_DebugOpen;
+    private System.Windows.Forms.Label lblThreads;
+    private System.Windows.Forms.TextBox tbThreads;
+    private System.Windows.Forms.CheckBox cbMultiThreaded;
+    private System.Windows.Forms.Label lbl_CurThread;
+    private System.Windows.Forms.ComboBox cbCurThread;
+    private System.Windows.Forms.Button bttnPathRefs;
+    private System.Windows.Forms.CheckBox cbClearTemps;
   }
 }

@@ -1,0 +1,193 @@
+{
+  "id": "0",
+  "name": "MultiThread_VarChange",
+  "desc": "",
+  "version": 1,
+  "DiagramList": [
+    {
+      "id": "5290ccb3-bed5-4403-b490-95fa7ef62aa3",
+      "name": "Main",
+      "desc": "",
+      "diagramType": "dtMulti",
+      "diagramLabel": "Plant",
+      "states": [
+        "Start",
+        "Term",
+        "VarChange"
+      ],
+      "required": false,
+      "objType": "Diagram"
+    }
+  ],
+  "StateList": [
+    {
+      "id": "ee60ff5d-7d47-4a00-9212-110359f95668",
+      "name": "Start",
+      "desc": "",
+      "diagramName": "Main",
+      "stateType": "stStart",
+      "events": [
+        "Timer"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "GoTo_VarChange"
+          ]
+        }
+      ],
+      "immediateActions": [],
+      "geometryInfo": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0
+      },
+      "required": false,
+      "objType": "State",
+      "defaultSingleStateValue": "Ignore"
+    },
+    {
+      "id": "c9cf34e7-af79-4475-bed3-9975cf27d101",
+      "name": "Term",
+      "desc": "",
+      "diagramName": "Main",
+      "stateType": "stTerminal",
+      "events": [],
+      "eventActions": [],
+      "immediateActions": [],
+      "geometryInfo": {
+        "x": 941.9357094864058,
+        "y": 73.12624731687441,
+        "width": 0,
+        "height": 0
+      },
+      "required": false,
+      "objType": "State",
+      "defaultSingleStateValue": "Ignore"
+    },
+    {
+      "id": "67ea409d-cf0d-40a7-835b-be51f9bd3261",
+      "name": "VarChange",
+      "desc": "",
+      "diagramName": "Main",
+      "stateType": "stKeyState",
+      "events": [
+        "Timer"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "GoTo_Term"
+          ]
+        }
+      ],
+      "immediateActions": [
+        "VarChangeRel"
+      ],
+      "geometryInfo": {
+        "x": 450.00000000000006,
+        "y": 35.99999999999997,
+        "width": 0,
+        "height": 0
+      },
+      "required": false,
+      "objType": "State",
+      "defaultSingleStateValue": "Ignore"
+    }
+  ],
+  "ActionList": [
+    {
+      "id": "66d23663-8429-43b6-98e7-b149699e96de",
+      "name": "GoTo_Term",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": true,
+      "objType": "Action",
+      "required": false,
+      "newStates": [
+        {
+          "toState": "Term",
+          "prob": -1,
+          "failDesc": ""
+        }
+      ],
+      "mutExcl": true
+    },
+    {
+      "id": "0230e7e5-a33c-4f53-85a8-2d6f49eb3c73",
+      "name": "GoTo_VarChange",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": true,
+      "objType": "Action",
+      "required": false,
+      "newStates": [
+        {
+          "toState": "VarChange",
+          "prob": -1,
+          "failDesc": ""
+        }
+      ],
+      "mutExcl": true
+    },
+    {
+      "id": "d3d85292-5994-4c73-9156-f891d3bc0e0f",
+      "name": "VarChangeRel",
+      "desc": "",
+      "actType": "atCngVarVal",
+      "mainItem": true,
+      "objType": "Action",
+      "required": false,
+      "codeVariables": [],
+      "variableName": "Var",
+      "scriptCode": "string filePath = \"../../../VandV_Testing/TestingFiles/Other/MultithreadWrite.txt\";\r\nFile.WriteAllText(filePath, $\"{RunIdx}\");\r\nstring fileContent = File.ReadAllText(filePath);\r\nint number = int.Parse(fileContent);\r\nreturn number;"
+    }
+  ],
+  "EventList": [
+    {
+      "id": "33c65182-0a61-426c-b837-28a970746358",
+      "name": "Timer",
+      "desc": "",
+      "evType": "etTimer",
+      "mainItem": true,
+      "required": false,
+      "objType": "Event",
+      "time": "P0DT0S"
+    }
+  ],
+  "LogicNodeList": [],
+  "VariableList": [
+    {
+      "name": "Var",
+      "varScope": "gtGlobal",
+      "value": 123,
+      "type": "int",
+      "objType": "Variable",
+      "id": "e8eb327b-3a4f-4946-8ce2-3ab4a129cdbe",
+      "desc": "",
+      "resetOnRuns": true
+    }
+  ],
+  "ExtSimList": [],
+  "objType": "EMRALD_Model",
+  "emraldVersion": 3,
+  "templates": [],
+  "multiThreadInfo": {
+    "ToCopyForRefs": [
+      {
+        "ItemName": "VarChangeRel",
+        "ItemType": "itAction",
+        "RefPath": "../../../VandV_Testing/TestingFiles/Other/MultithreadWrite.txt",
+        "ToCopy": [
+          "../../../VandV_Testing/TestingFiles/Other/MultithreadWrite.txt"
+        ],
+        "RelPath": ".\\Other\\MultithreadWrite.txt",
+        "AdjRelRoot": ""
+      }
+    ],
+    "AssignedTime": "2025-08-11T11:17:54.8285503-06:00"
+  }
+}
