@@ -25,6 +25,8 @@ const FailureRate = () => {
     setUseVariable,
     onVarChange,
     setOnVarChange,
+    persistent,
+    setPersistent,
   } = useEventFormContext();
 
   const handleUseVariableChange = (checked: boolean) => {
@@ -76,6 +78,16 @@ const FailureRate = () => {
 
   return (
     <>
+      <FormControlLabel
+        label="Persistent - Keeps initial time between state movement and only re-samples after it occurs."
+        control={
+          <Checkbox
+            checked={persistent}
+            value={persistent}
+            onChange={(e) => setPersistent(e.target.checked)}
+          ></Checkbox>
+        }
+      ></FormControlLabel>
       <FormControlLabel
         label="Use Variable Lambda/Frequency?"
         value={useVariable}

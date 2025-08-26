@@ -18,6 +18,8 @@ const Timer = () => {
     setTime,
     setTimeVariableUnit,
     setUseVariable,
+    persistent,
+    setPersistent,
   } = useEventFormContext();
 
   const handleSetUseVariable = (checked: boolean) => {
@@ -31,6 +33,16 @@ const Timer = () => {
 
   return (
     <div>
+      <FormControlLabel
+        label="Persistent - Keeps initial time between state movement and only re-samples after it occurs."
+        control={
+          <Checkbox
+            checked={persistent}
+            value={persistent}
+            onChange={(e) => setPersistent(e.target.checked)}
+          ></Checkbox>
+        }
+      ></FormControlLabel>
       {useVariable ? (
         <>
           <SelectComponent
