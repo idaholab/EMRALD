@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/prefer-for-of */
 import 'blob-polyfill';
 import { describe, expect, test } from 'vitest';
 import fs from 'fs/promises';
