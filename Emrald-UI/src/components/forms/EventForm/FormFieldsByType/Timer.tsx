@@ -55,7 +55,7 @@ const Timer = () => {
             }
             setValue={setTime}
             label="Time Span"
-            sx={{ mr: 2}}
+            sx={{ mr: 2 }}
           >
             {appData.value.VariableList.filter((item) => item.type !== 'bool').map(
               (variable, index) => (
@@ -66,10 +66,10 @@ const Timer = () => {
             )}
           </SelectComponent>
           <SelectComponent
-            value={timeVariableUnit || ''}
+            value={timeVariableUnit ?? ''}
             setValue={setTimeVariableUnit}
             label="Time Variable Unit"
-            sx={{ minWidth: 200}}
+            sx={{ minWidth: 200 }}
           >
             <MenuItem value="trSeconds">Second</MenuItem>
             <MenuItem value="trMinutes">Minute</MenuItem>
@@ -80,7 +80,7 @@ const Timer = () => {
         </>
       ) : (
         <DurationComponent
-          milliseconds={timerMilliseconds || 0}
+          milliseconds={timerMilliseconds ?? 0}
           handleDurationChange={handleTimerDurationChange}
         />
       )}
@@ -91,7 +91,9 @@ const Timer = () => {
           control={
             <Checkbox
               checked={useVariable ? true : false}
-              onChange={(e) => handleSetUseVariable(e.target.checked)}
+              onChange={(e) => {
+                handleSetUseVariable(e.target.checked);
+              }}
             />
           }
         />
@@ -103,7 +105,9 @@ const Timer = () => {
         control={
           <Checkbox
             checked={fromSimStart ? true : false}
-            onChange={(e) => setFromSimStart(e.target.checked)}
+            onChange={(e) => {
+              setFromSimStart(e.target.checked);
+            }}
           />
         }
       />

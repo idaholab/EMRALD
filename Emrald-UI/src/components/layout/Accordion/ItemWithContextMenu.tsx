@@ -2,29 +2,25 @@ import React, { useState } from 'react';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import { Box } from '@mui/material';
-import { Diagram } from '../../../types/Diagram';
-import { Option, useOptionsMapping } from './OptionMapping';
-import { LogicNode } from '../../../types/LogicNode';
-import { Action } from '../../../types/Action';
-import { Event } from '../../../types/Event';
-import { State } from '../../../types/State';
-import { Variable } from '../../../types/Variable';
-import { ExtSim } from '../../../types/ExtSim';
-import { MainItemTypes } from '../../../types/ItemTypes';
+import type {
+  Diagram,
+  LogicNode,
+  Action,
+  Event,
+  State,
+  Variable,
+  ExtSim,
+  MainItemType,
+} from '../../../types/EMRALD_Model';
+import { type Option, useOptionsMapping } from './OptionMapping';
+import type { ModelItem } from '../../../types/ModelUtils';
 
 interface ItemWithContextMenuProps {
   itemData: Diagram | LogicNode | Action | Event | State | Variable;
   optionType: string;
   onDiagramChange: (diagram: Diagram) => void;
-  handleDelete?: (
-    itemToDelete: Diagram | LogicNode | ExtSim | Action | Event | State | Variable,
-    itemToDeleteType: MainItemTypes,
-  ) => void;
+  handleDelete?: (itemToDelete: ModelItem, itemType: MainItemType) => void;
 }
-
-const isDiagram = (object: any): object is Diagram => {
-  return 'diagramLabel' in object;
-};
 
 const ItemWithContextMenu: React.FC<ItemWithContextMenuProps> = ({
   itemData,
@@ -37,7 +33,7 @@ const ItemWithContextMenu: React.FC<ItemWithContextMenuProps> = ({
   const optionsMapping = useOptionsMapping();
   const options = optionsMapping[optionType];
 
-  const handleContextMenu = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+  const handleContextMenu = (event: React.MouseEvent<HTMLDivElement>) => {
     event.preventDefault();
     setAnchorEl(event.currentTarget);
     setContextMenuOpen(true); // Set the context menu to open
@@ -48,43 +44,49 @@ const ItemWithContextMenu: React.FC<ItemWithContextMenuProps> = ({
     setContextMenuOpen(false); // Set the context menu to closed
   };
 
-  const handleRegularClick = (
+  const handleRegularClick = async (
     itemData: Diagram | LogicNode | Action | Event | State | Variable | ExtSim,
   ) => {
     if (!isContextMenuOpen) {
       // Double click functionality here
-      options[0].action(itemData);
-      if (isDiagram(itemData)) {
+      await options[0].action(itemData);
+      if (itemData.objType === 'Diagram') {
         onDiagramChange(itemData);
       }
     }
   };
 
-  const handleMenuItemClick = (
+  const handleMenuItemClick = async (
     option: Option,
     itemData: Diagram | LogicNode | Action | Event | State | Variable | ExtSim,
   ) => {
     // Implement functionality based on the selected option
-    if (option.label === 'Delete') option.action(itemData, handleDelete);
-    else option.action(itemData);
+    if (option.label === 'Delete') await option.action(itemData, handleDelete);
+    else await option.action(itemData);
     handleClose();
   };
 
   return (
     <Box
       onContextMenu={handleContextMenu}
-      onDoubleClick={() => handleRegularClick(itemData)}
+      onDoubleClick={() => {
+        void handleRegularClick(itemData);
+      }}
       sx={{ width: '100%' }}
     >
       <Box>{itemData.name}</Box>
 
       <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
-        {options &&
-          options.map((option, index) => (
-            <MenuItem key={index} onClick={() => handleMenuItemClick(option, itemData)}>
-              {option.label}
-            </MenuItem>
-          ))}
+        {options.map((option, index) => (
+          <MenuItem
+            key={index}
+            onClick={() => {
+              void handleMenuItemClick(option, itemData);
+            }}
+          >
+            {option.label}
+          </MenuItem>
+        ))}
       </Menu>
     </Box>
   );

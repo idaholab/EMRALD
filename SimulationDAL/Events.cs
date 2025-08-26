@@ -523,7 +523,7 @@ namespace SimulationDAL
       string compCodeStr = compCode.Replace("\n", "\\n").Replace("\r", "\\r");
       string codeHasVars = varList == null ? "False" : "True";
       string varNames = "";
-            
+
       if (varList != null)
       {
         foreach (var i in varList.Values)
@@ -920,7 +920,7 @@ namespace SimulationDAL
     }
   }
 
-  public enum EnOnChangeTask { ocIgnore, ocResample, ocAdjust}
+  public enum EnOnChangeTask { ocIgnore, ocResample, ocAdjust }
 
   public abstract class TimeBasedEvent : Event
   {

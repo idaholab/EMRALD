@@ -1,4 +1,4 @@
-import { ConnectionLineComponentProps } from 'reactflow';
+import type { ConnectionLineComponentProps } from 'reactflow';
 
 const CustomConnectionLine: React.FC<ConnectionLineComponentProps> = ({
   fromX,
@@ -8,7 +8,6 @@ const CustomConnectionLine: React.FC<ConnectionLineComponentProps> = ({
   connectionLineStyle,
   connectionStatus,
 }) => {
-
   // Define default style for the connection line
   const defaultStyle: React.CSSProperties = {
     stroke: connectionStatus === 'valid' ? 'green' : 'red',
@@ -18,16 +17,10 @@ const CustomConnectionLine: React.FC<ConnectionLineComponentProps> = ({
 
   // Render the SVG line
   return (
-    <svg className='state-node__connection-svg'>
-      <line 
-        x1={fromX} 
-        y1={fromY} 
-        x2={toX} 
-        y2={toY} 
-        style={defaultStyle} 
-      />
+    <svg className="state-node__connection-svg">
+      <line x1={fromX} y1={fromY} x2={toX} y2={toY} style={defaultStyle} />
     </svg>
   );
 };
 
-export default CustomConnectionLine
+export default CustomConnectionLine;

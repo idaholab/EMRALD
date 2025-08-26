@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Event-Modeled Risk Assessment using Linked Diagrams (EMRALD)",
   "main": "EMRALD_Site/app.js",
+  "module": "esnext",
   "private": true,
   "scripts": {
     "dev": "cd Emrald-UI && npm run dev",
@@ -22,10 +23,16 @@
   },
   "homepage": "https://github.com/idaholab/EMRALD#readme",
   "devDependencies": {
+    "@eslint/js": "^9.27.0",
     "@types/node": "^22.15.3",
+    "@typescript-eslint/eslint-plugin": "^8.32.2-alpha.11",
+    "@typescript-eslint/parser": "^8.32.2-alpha.11",
     "css-loader": "^7.1.2",
+    "eslint": "^9.27.0",
     "style-loader": "^4.0.0",
     "ts-loader": "^9.5.1",
+    "typescript": "^5.8.3",
+    "typescript-eslint": "^8.32.1",
     "webpack": "^5.97.1",
     "webpack-cli": "^6.0.1"
   },

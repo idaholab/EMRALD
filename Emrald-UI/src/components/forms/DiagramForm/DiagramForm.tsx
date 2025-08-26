@@ -4,8 +4,6 @@ import { useSignal } from '@preact/signals-react';
 import Typography from '@mui/material/Typography';
 import MainDetailsForm from '../../forms/MainDetailsForm';
 import { v4 as uuidv4 } from 'uuid';
-import { Diagram } from '../../../types/Diagram';
-import { DiagramType, MainItemTypes } from '../../../types/ItemTypes';
 import { emptyDiagram, useDiagramContext } from '../../../contexts/DiagramContext';
 import { useWindowContext } from '../../../contexts/WindowContext';
 import {
@@ -22,7 +20,7 @@ import {
   TextField,
 } from '@mui/material';
 import GroupListItems from '../../common/GroupListItems';
-import { EMRALD_Model } from '../../../types/EMRALD_Model';
+import type { EMRALD_Model, Diagram, DiagramType } from '../../../types/EMRALD_Model';
 import { useTemplateContext } from '../../../contexts/TemplateContext';
 import { FileUploadComponent, TabPanel } from '../../common';
 import CloseIcon from '@mui/icons-material/Close';
@@ -38,12 +36,12 @@ const DiagramForm: React.FC<DiagramFormProps> = ({ diagramData }) => {
   const { activeWindowId, handleClose, updateTitle, addWindow } = useWindowContext();
   const { updateDiagram, createDiagram } = useDiagramContext();
   const { findTemplatesByGroupName } = useTemplateContext();
-  const diagram = useSignal<Diagram>(diagramData || emptyDiagram);
-  const [name, setName] = useState<string>(diagramData?.name || '');
+  const diagram = useSignal<Diagram>(diagramData ?? emptyDiagram);
+  const [name, setName] = useState<string>(diagramData?.name ?? '');
   const [originalName] = useState(diagramData?.name);
-  const [desc, setDesc] = useState<string>(diagramData?.desc || '');
+  const [desc, setDesc] = useState<string>(diagramData?.desc ?? '');
   const [diagramType, setDiagramType] = useState<DiagramType>(
-    diagramData?.diagramType || 'dtMulti',
+    diagramData?.diagramType ?? 'dtMulti',
   );
   const [hasError, setHasError] = useState<boolean>(false);
   const [alertMessage, setAlertMessage] = useState<string>('');
@@ -52,7 +50,7 @@ const DiagramForm: React.FC<DiagramFormProps> = ({ diagramData }) => {
     { value: 'dtSingle', label: 'Single State (Evaluation)' },
     { value: 'dtMulti', label: 'Multi State' },
   ];
-  const [diagramLabel, setDiagramLabel] = useState<string>(diagramData?.diagramLabel || '');
+  const [diagramLabel, setDiagramLabel] = useState<string>(diagramData?.diagramLabel ?? '');
   const diagrams = appData.value.DiagramList;
   const diagramLabelsSet = new Set(diagrams.map((d) => d.diagramLabel));
   const diagramLabels = Array.from(diagramLabelsSet);
@@ -63,7 +61,7 @@ const DiagramForm: React.FC<DiagramFormProps> = ({ diagramData }) => {
   const [currentTab, setCurrentTab] = React.useState(0);
   const [formWindowId] = useState<string | null>(activeWindowId);
 
-  const handleSave = async () => {
+  const handleSave = () => {
     if (selectedTemplate && formWindowId) {
       addWindow(
         `Import Diagram: ${selectedTemplate.name}`,
@@ -91,7 +89,7 @@ const DiagramForm: React.FC<DiagramFormProps> = ({ diagramData }) => {
         formWindowId,
       );
     } else {
-      await updateTitle(diagramData?.name || '', name);
+      updateTitle(diagramData?.name ?? '', name);
 
       if (diagramData) {
         updateDiagram({
@@ -116,10 +114,10 @@ const DiagramForm: React.FC<DiagramFormProps> = ({ diagramData }) => {
   };
 
   const reset = () => {
-    setName(diagramData?.name || '');
-    setDesc(diagramData?.desc || '');
-    setDiagramType(diagramData?.diagramType || 'dtSingle');
-    setDiagramLabel(diagramData?.diagramLabel || '');
+    setName(diagramData?.name ?? '');
+    setDesc(diagramData?.desc ?? '');
+    setDiagramType(diagramData?.diagramType ?? 'dtSingle');
+    setDiagramLabel(diagramData?.diagramLabel ?? '');
   };
 
   const handleImport = (model: File | null) => {
@@ -130,10 +128,8 @@ const DiagramForm: React.FC<DiagramFormProps> = ({ diagramData }) => {
       reader.onload = (e) => {
         const content = e.target?.result as string;
         try {
-          const parsedContent = JSON.parse(content);
-          const importedModel = parsedContent?.emraldVersion
-            ? parsedContent
-            : upgradeModel(content);
+          const parsedContent = JSON.parse(content) as EMRALD_Model;
+          const importedModel = parsedContent.emraldVersion ? parsedContent : upgradeModel(content);
           if (importedModel && importedModel.DiagramList.length === 1 && formWindowId) {
             importedModel.id = uuidv4();
             importedModel.name = importedModel.DiagramList[0].name;
@@ -145,7 +141,7 @@ const DiagramForm: React.FC<DiagramFormProps> = ({ diagramData }) => {
             );
             setImportDiagram(undefined);
           }
-        } catch (error) {
+        } catch {
           console.error('Invalid JSON format');
         }
       };
@@ -184,11 +180,11 @@ const DiagramForm: React.FC<DiagramFormProps> = ({ diagramData }) => {
       <Box mt={3}>
         {diagramData ? (
           <Tabs value={currentTab} onChange={handleTabChange}>
-            <Tab label={`${diagramData ? 'Edit' : 'Create'} Diagram`} />
+            <Tab label="Edit Diagram" />
           </Tabs>
         ) : (
           <Tabs value={currentTab} onChange={handleTabChange}>
-            <Tab label={`${diagramData ? 'Edit' : 'Create'} Diagram`} />
+            <Tab label="Create Diagram" />
             <Tab label="Import Diagram" />
             <Tab label="From Template" />
           </Tabs>
@@ -206,7 +202,7 @@ const DiagramForm: React.FC<DiagramFormProps> = ({ diagramData }) => {
         )}
         <form>
           <MainDetailsForm
-            itemType={MainItemTypes.Diagram}
+            itemType={'Diagram'}
             type={diagramType}
             setType={setDiagramType}
             typeOptions={diagramTypeOptions}
@@ -230,8 +226,12 @@ const DiagramForm: React.FC<DiagramFormProps> = ({ diagramData }) => {
               disabled={!!selectedTemplate || !!importDiagram}
               options={diagramLabels}
               renderInput={(params) => <TextField {...params} label="Diagram Group Label" />}
-              onChange={(_event, newValue) => setDiagramLabel(newValue as string)}
-              onInputChange={(_event, newInputValue) => setDiagramLabel(newInputValue)}
+              onChange={(_event, newValue) => {
+                setDiagramLabel(newValue ?? '');
+              }}
+              onInputChange={(_event, newInputValue) => {
+                setDiagramLabel(newInputValue);
+              }}
               value={diagramLabel}
               fullWidth
               size="small"
@@ -257,7 +257,9 @@ const DiagramForm: React.FC<DiagramFormProps> = ({ diagramData }) => {
               setFile={handleImport}
               fileName={importDiagram ? importDiagram.name : undefined}
               accept=".json, .emrald"
-              clearFile={() => setImportDiagram(undefined)}
+              clearFile={() => {
+                setImportDiagram(undefined);
+              }}
             />
           </Box>
           <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 5 }}>
@@ -266,11 +268,19 @@ const DiagramForm: React.FC<DiagramFormProps> = ({ diagramData }) => {
               color="primary"
               sx={{ mr: 2 }}
               disabled={hasError || !importDiagram}
-              onClick={() => handleSave()}
+              onClick={() => {
+                handleSave();
+              }}
             >
               Save
             </Button>
-            <Button variant="contained" color="secondary" onClick={() => handleClose()}>
+            <Button
+              variant="contained"
+              color="secondary"
+              onClick={() => {
+                handleClose();
+              }}
+            >
               Cancel
             </Button>
           </Box>
@@ -291,7 +301,9 @@ const DiagramForm: React.FC<DiagramFormProps> = ({ diagramData }) => {
               {selectedGroup ? (
                 <IconButton
                   aria-label="close"
-                  onClick={() => setSelectedGroup('')}
+                  onClick={() => {
+                    setSelectedGroup('');
+                  }}
                   sx={{
                     color: (theme) => theme.palette.grey[500],
                     ml: 6,
@@ -308,7 +320,9 @@ const DiagramForm: React.FC<DiagramFormProps> = ({ diagramData }) => {
               {selectedTemplate ? (
                 <IconButton
                   aria-label="close"
-                  onClick={() => setSelectedTemplate(undefined)}
+                  onClick={() => {
+                    setSelectedTemplate(undefined);
+                  }}
                   sx={{
                     color: (theme) => theme.palette.grey[500],
                     ml: 6,
@@ -337,23 +351,22 @@ const DiagramForm: React.FC<DiagramFormProps> = ({ diagramData }) => {
                 sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}
                 aria-label="contacts"
               >
-                {groupTemplates &&
-                  groupTemplates.map((template) => (
-                    <ListItem disablePadding key={template.name}>
-                      <ListItemButton
-                        sx={{
-                          backgroundColor:
-                            template.name === selectedTemplate?.name ? 'lightgreen' : 'white',
-                        }}
-                        onClick={() => {
-                          setSelectedTemplate(template);
-                          reset();
-                        }}
-                      >
-                        {template.name}
-                      </ListItemButton>
-                    </ListItem>
-                  ))}
+                {groupTemplates.map((template) => (
+                  <ListItem disablePadding key={template.name}>
+                    <ListItemButton
+                      sx={{
+                        backgroundColor:
+                          template.name === selectedTemplate?.name ? 'lightgreen' : 'white',
+                      }}
+                      onClick={() => {
+                        setSelectedTemplate(template);
+                        reset();
+                      }}
+                    >
+                      {template.name}
+                    </ListItemButton>
+                  </ListItem>
+                ))}
               </List>
             </Box>
           </Box>
@@ -363,11 +376,19 @@ const DiagramForm: React.FC<DiagramFormProps> = ({ diagramData }) => {
               color="primary"
               sx={{ mr: 2 }}
               disabled={!selectedTemplate}
-              onClick={() => handleSave()}
+              onClick={() => {
+                handleSave();
+              }}
             >
               Save
             </Button>
-            <Button variant="contained" color="secondary" onClick={() => handleClose()}>
+            <Button
+              variant="contained"
+              color="secondary"
+              onClick={() => {
+                handleClose();
+              }}
+            >
               Cancel
             </Button>
           </Box>

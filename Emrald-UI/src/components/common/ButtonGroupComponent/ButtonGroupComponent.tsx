@@ -1,6 +1,6 @@
 import Button from '@mui/material/Button';
 import ButtonGroup from '@mui/material/ButtonGroup';
-import React, { PropsWithChildren } from 'react';
+import React, { type PropsWithChildren } from 'react';
 import { styled, useTheme } from '@mui/material/styles';
 
 const GroupButton = styled(Button, {
@@ -27,11 +27,7 @@ const ButtonItem: React.FC<PropsWithChildren<ButtonItemProps>> = ({
   handleClick,
 }) => {
   return (
-    <GroupButton
-      value={value}
-      onClick={handleClick}
-      itemSelected={itemSelected}
-    >
+    <GroupButton value={value} onClick={handleClick} itemSelected={itemSelected}>
       {children}
     </GroupButton>
   );
@@ -56,7 +52,9 @@ const ButtonGroupComponent: React.FC<ButtonGroupProps> = ({
       <ButtonItem
         key="all"
         value="all"
-        handleClick={() => setComponentGroup('all')}
+        handleClick={() => {
+          setComponentGroup('all');
+        }}
         itemSelected={componentGroup === 'all'}
       >
         All
@@ -64,7 +62,9 @@ const ButtonGroupComponent: React.FC<ButtonGroupProps> = ({
       <ButtonItem
         key="global"
         value="global"
-        handleClick={() => setComponentGroup('global')}
+        handleClick={() => {
+          setComponentGroup('global');
+        }}
         itemSelected={componentGroup === 'global'}
       >
         Global
@@ -72,7 +72,9 @@ const ButtonGroupComponent: React.FC<ButtonGroupProps> = ({
       <ButtonItem
         key="local"
         value="local"
-        handleClick={() => setComponentGroup('local')}
+        handleClick={() => {
+          setComponentGroup('local');
+        }}
         itemSelected={componentGroup === 'local'}
       >
         Local

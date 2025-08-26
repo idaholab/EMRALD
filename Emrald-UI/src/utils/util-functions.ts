@@ -1,4 +1,4 @@
-import dayjs from "dayjs";
+import dayjs from 'dayjs';
 
 /**
  * Converts a string in scientific notation to a numeric value rounded to 10 decimal places.
@@ -9,13 +9,13 @@ import dayjs from "dayjs";
 export const scientificToNumeric = (value: string | undefined): number | undefined => {
   try {
     // Regular expression to match a string in scientific notation
-    const validInputRegex = /^[+\-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[Ee][+\-]?\d+)?$/;
+    const validInputRegex = /^[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[Ee][+-]?\d+)?$/;
     if (value && validInputRegex.test(value)) {
       // Convert scientific notation to numeric value
       const numericValue = parseFloat(value);
       return numericValue;
     }
-  } catch (error) {
+  } catch {
     // Handle any errors (e.g., invalid input)
     console.error('Error converting scientific notation'); // Log error to console
     return undefined; // Return undefined to indicate that there was an error
@@ -38,16 +38,16 @@ export const convertToISOString = (value: number): string => {
     const remainingMinutes = remainingTime.minutes();
     const remainingSeconds = remainingTime.seconds();
 
-    let isoString = `P${totalDays}D`;
+    let isoString = `P${totalDays.toString()}D`;
 
     if (remainingHours || remainingMinutes || remainingSeconds) {
       isoString += 'T';
-      if (remainingHours) isoString += `${remainingHours}H`;
-      if (remainingMinutes) isoString += `${remainingMinutes}M`;
-      if (remainingSeconds) isoString += `${remainingSeconds}S`;
+      if (remainingHours) isoString += `${remainingHours.toString()}H`;
+      if (remainingMinutes) isoString += `${remainingMinutes.toString()}M`;
+      if (remainingSeconds) isoString += `${remainingSeconds.toString()}S`;
     }
     return isoString;
-  } catch (error) {
+  } catch {
     // Handle any errors (e.g., invalid input)
     console.error('Error converting duration to ISO string'); // Log error to console
     return ''; // Return undefined to indicate that there was an error
@@ -55,9 +55,9 @@ export const convertToISOString = (value: number): string => {
 };
 
 function isNumeric(stringOrNumber: string | number): boolean {
-  return typeof stringOrNumber === 'number' 
+  return typeof stringOrNumber === 'number'
     ? !isNaN(stringOrNumber)
-    : !isNaN(parseFloat(stringOrNumber as string)) && isFinite(parseFloat(stringOrNumber as string));
+    : !isNaN(parseFloat(stringOrNumber)) && isFinite(parseFloat(stringOrNumber));
 }
 
 /**
@@ -72,42 +72,44 @@ function isNumeric(stringOrNumber: string | number): boolean {
  * @param {string | null} tpStr - The time span string to convert. If null, defaults to 'P0DT0H0M0S'.
  * @return {{ days: number; hours: number; minutes: number; seconds: number; }} An object containing the number of days, hours, minutes, and seconds.
  */
-export const fromTimeSpanConverter = (tpStr: string | null): { days: number; hours: number; minutes: number; seconds: number; } => {
+export const fromTimeSpanConverter = (
+  tpStr: string | null,
+): { days: number; hours: number; minutes: number; seconds: number } => {
+  /**
+   * Regular expression to match a time span string. Matches and captures the following:
+   *   - 'P' for the start of the string
+   *   - 'Y' for years
+   *   - 'M' for months
+   *   - 'W' for weeks
+   *   - 'D' for days
+   *   - 'T' for the start of the time component (if it exists)
+   *   - 'H' for hours
+   *   - 'M' for minutes
+   *   - 'S' for seconds
+   * If the time component is missing, the regex will still match and there will be missing matches.
+   */
+  const regex =
+    /P((([0-9]*\.?[0-9]*)Y)?(([0-9]*\.?[0-9]*)M)?(([0-9]*\.?[0-9]*)W)?(([0-9]*\.?[0-9]*)D)?)?(T(([0-9]*\.?[0-9]*)H)?(([0-9]*\.?[0-9]*)M)?(([0-9]*\.?[0-9]*)S)?)?/;
+  const newTpStr = tpStr ?? 'P0DT0H0M0S'; // Set default if tpStr is null
 
-    /**
-     * Regular expression to match a time span string. Matches and captures the following:
-     *   - 'P' for the start of the string
-     *   - 'Y' for years
-     *   - 'M' for months
-     *   - 'W' for weeks
-     *   - 'D' for days
-     *   - 'T' for the start of the time component (if it exists)
-     *   - 'H' for hours
-     *   - 'M' for minutes
-     *   - 'S' for seconds
-     * If the time component is missing, the regex will still match and there will be missing matches.
-     */
-    const regex = /P((([0-9]*\.?[0-9]*)Y)?(([0-9]*\.?[0-9]*)M)?(([0-9]*\.?[0-9]*)W)?(([0-9]*\.?[0-9]*)D)?)?(T(([0-9]*\.?[0-9]*)H)?(([0-9]*\.?[0-9]*)M)?(([0-9]*\.?[0-9]*)S)?)?/;
-    let newTpStr = tpStr || 'P0DT0H0M0S'; // Set default if tpStr is null
+  const matches = regex.exec(newTpStr); // Match the time span string
 
-    const matches = newTpStr.match(regex); // Match the time span string
-
-    if (matches === null) { // If the match failed
-        return {
-            days: 0,
-            hours: 0,
-            minutes: 0,
-            seconds: 0
-        }; // Return an object with all zeros
-    }
-
+  if (matches === null) {
+    // If the match failed
     return {
-        days: +parseFloat(matches[9]), // Parse and cast each match to a number
-        hours: +parseFloat(matches[12]),
-        minutes: +parseFloat(matches[14]),
-        seconds: +parseFloat(matches[16])
-    };
+      days: 0,
+      hours: 0,
+      minutes: 0,
+      seconds: 0,
+    }; // Return an object with all zeros
+  }
 
+  return {
+    days: +parseFloat(matches[9]), // Parse and cast each match to a number
+    hours: +parseFloat(matches[12]),
+    minutes: +parseFloat(matches[14]),
+    seconds: +parseFloat(matches[16]),
+  };
 };
 
 interface TimeSpanProps {
@@ -124,31 +126,28 @@ interface TimeSpanProps {
  * @return {string} The string representation of the time span duration.
  */
 export const toTimeSpanConverter = (
-  ts: Required<Pick<TimeSpanProps, 'days' | 'hours' | 'minutes' | 'seconds'>>
+  ts?: Required<Pick<TimeSpanProps, 'days' | 'hours' | 'minutes' | 'seconds'>>,
 ): string => {
   // If null or undefined, return a default time span duration of 'P0DT0H0M0S'
-  if (!ts) { return 'P0DT0H0M0S'; }
+  if (!ts) {
+    return 'P0DT0H0M0S';
+  }
 
   /**
    * Builds the time span string. If the value of a property is numeric, it will be included in the time span string.
    * The format of the time span string is: 'P'[number of days]'D'[number of hours]'H'[number of minutes]'M'[number of seconds]'S'
    */
-  const duration = 'P'
-      + (isNumeric(ts.days) ? ts.days + 'D' : '') // Add the number of days
-      + ((isNumeric(ts.hours) || isNumeric(ts.minutes) || isNumeric(ts.seconds)) ? 'T' : '') // Add 'T' if there are any time values
-      + (isNumeric(ts.hours) ? ts.hours + 'H' : '') // Add the number of hours
-      + (isNumeric(ts.minutes) ? ts.minutes + 'M' : '') // Add the number of minutes
-      + (isNumeric(ts.seconds) ? ts.seconds + 'S' : ''); // Add the number of seconds
+  const duration =
+    'P' +
+    (isNumeric(ts.days) ? ts.days.toString() + 'D' : '') + // Add the number of days
+    (isNumeric(ts.hours) || isNumeric(ts.minutes) || isNumeric(ts.seconds) ? 'T' : '') + // Add 'T' if there are any time values
+    (isNumeric(ts.hours) ? ts.hours.toString() + 'H' : '') + // Add the number of hours
+    (isNumeric(ts.minutes) ? ts.minutes.toString() + 'M' : '') + // Add the number of minutes
+    (isNumeric(ts.seconds) ? ts.seconds.toString() + 'S' : ''); // Add the number of seconds
 
   // If there are no time values, return the default time span duration of 'P0DT0H0M0S'
   return duration === 'P' ? 'P0DT0H0M0S' : duration;
 };
-
-
-
-
-
-
 
 // Old UI Time Span Converters
 /* 

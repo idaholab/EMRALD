@@ -2,12 +2,17 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import { useWindowContext } from '../../../contexts/WindowContext';
 import { emptyLogicNode, useLogicNodeContext } from '../../../contexts/LogicNodeContext';
 import { useSignal } from '@preact/signals-react';
-import { CompChild, CompChildItems, LogicNode } from '../../../types/LogicNode';
-import { GateType, MainItemTypes, StateEvalValue } from '../../../types/ItemTypes';
+import type {
+  CompChild,
+  CompChildItems,
+  LogicNode,
+  Diagram,
+  GateType,
+  StateEvalValue,
+} from '../../../types/EMRALD_Model';
 import { v4 as uuidv4 } from 'uuid';
-import { ComponentStateValue } from './StateValuesTable';
+import type { ComponentStateValue } from './StateValuesTable';
 import { useDiagramContext } from '../../../contexts/DiagramContext';
-import { Diagram } from '../../../types/Diagram';
 import { GetModelItemsReferencing } from '../../../utils/ModelReferences';
 
 interface LogicNodeFormContextType {
@@ -125,13 +130,13 @@ const LogicNodeFormContextProvider: React.FC<{ children: React.ReactNode }> = ({
     }
 
     //Main info
-    setName(logicNodeInfo?.name || '');
+    setName(logicNodeInfo?.name ?? '');
     setOriginalName(logicNodeInfo?.name);
-    setDesc(logicNodeInfo?.desc || '');
-    setGateTypeValue(logicNodeInfo?.gateType || ('gtAnd' as GateType));
-    setIsRoot(logicNodeInfo?.isRoot || false);
+    setDesc(logicNodeInfo?.desc ?? '');
+    setGateTypeValue(logicNodeInfo?.gateType ?? ('gtAnd' as GateType));
+    setIsRoot(logicNodeInfo?.isRoot ?? false);
 
-    compChildren.value = logicNodeInfo?.compChildren || [];
+    compChildren.value = logicNodeInfo?.compChildren ?? [];
     setComponentDiagrams(
       editing && component
         ? diagrams.filter(
@@ -150,19 +155,15 @@ const LogicNodeFormContextProvider: React.FC<{ children: React.ReactNode }> = ({
     setParentNode(parent);
     const current = logicNode.value.compChildren.find((child) => child.diagramName === component);
     setCurrentNode(current);
-    setCurrentNodeStateValues(current?.stateValues || []);
+    setCurrentNodeStateValues(current?.stateValues ?? []);
     setLeafNodeType(nodeType);
-    setCompDiagram(component || '');
+    setCompDiagram(component ?? '');
     setDefaultValues(current?.stateValues && current.stateValues.length > 0 ? false : true);
-    setGateTypeValue(gateType || ('gtAnd' as GateType));
+    setGateTypeValue(gateType ?? ('gtAnd' as GateType));
   };
 
   const availableAsTopOrSubtree = () => {
-    const currentReferences = GetModelItemsReferencing(
-      logicNode.value.name,
-      MainItemTypes.LogicNode,
-      1,
-    );
+    const currentReferences = GetModelItemsReferencing(logicNode.value.name, 'LogicNode', 1);
     if (currentReferences.LogicNodeList.length >= 1) {
       return false;
     }
@@ -174,7 +175,7 @@ const LogicNodeFormContextProvider: React.FC<{ children: React.ReactNode }> = ({
   // Add new comp child
   const handleAddNewCompChild = () => {
     if (newCompChild) {
-      let newCompChildren = [...logicNode.value.compChildren, newCompChild];
+      const newCompChildren = [...logicNode.value.compChildren, newCompChild];
       compChildren.value = newCompChildren;
       setNewCompChild(undefined);
     }
@@ -198,42 +199,41 @@ const LogicNodeFormContextProvider: React.FC<{ children: React.ReactNode }> = ({
   };
 
   // Save logic node
-  const handleSave = async () => {
+  const handleSave = () => {
     handleAddNewCompChild();
     logicNode.value.isRoot = isRoot || false;
     // Reset the stateValues if the defaultValues checkbox is checked
-    if (defaultValues === true && currentNode) {
+    if (defaultValues && currentNode) {
       currentNode.stateValues = [];
-    } else if (currentNode && currentNode.stateValues && defaultValues === false) {
+    } else if (currentNode?.stateValues && !defaultValues) {
       currentNode.stateValues = currentNodeStateValues;
     }
 
     logicNode.value = {
       ...logicNode.value,
       ...(leafNodeType !== 'comp' && {
-        id: logicNodeData?.id || uuidv4(),
+        id: logicNodeData?.id ?? uuidv4(),
         name: name.trim(),
         desc,
-        gateType: gateTypeValue || 'gtAnd',
-        rootName: isRoot ? name.trim() : parentNode?.rootName
+        gateType: gateTypeValue,
       }),
       compChildren: compChildren.value,
     };
 
     if (logicNodeData?.isRoot) {
-      await updateTitle(logicNodeData?.name || '', name)
+      updateTitle(logicNodeData.name, name);
     }
 
     if (editing || leafNodeType === 'comp') {
-      await updateLogicNode(logicNode.value);
-    } else if (!editing && leafNodeType === 'gate' && parentNode?.name) {
-      await createLogicNode(logicNode.value);
+      updateLogicNode(logicNode.value);
+    } else if (leafNodeType === 'gate' && parentNode?.name) {
+      createLogicNode(logicNode.value);
       parentNode.gateChildren = [...parentNode.gateChildren, logicNode.value.name];
-      await updateLogicNode(parentNode);
+      updateLogicNode(parentNode);
     } else {
       createLogicNode(logicNode.value);
     }
-    await handleClose();
+    handleClose();
   };
 
   return (

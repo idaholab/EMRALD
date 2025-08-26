@@ -1,12 +1,15 @@
 import { Accordion, AccordionDetails, AccordionSummary, Box } from '@mui/material';
-import { Diagram } from '../../../../types/Diagram';
-import { State } from '../../../../types/State';
-import { Action } from '../../../../types/Action';
-import { Event } from '../../../../types/Event';
-import { ReactNode } from 'react';
-import { ExtSim } from '../../../../types/ExtSim';
-import { LogicNode } from '../../../../types/LogicNode';
-import { Variable } from '../../../../types/Variable';
+import type {
+  Diagram,
+  State,
+  Action,
+  Event,
+  ExtSim,
+  LogicNode,
+  Variable,
+} from '../../../../types/EMRALD_Model';
+import type { ReactNode } from 'react';
+import type { ModelItem } from '../../../../types/ModelUtils';
 
 interface ItemTypeMenuResultsProps {
   diagrams: Diagram[];
@@ -17,8 +20,8 @@ interface ItemTypeMenuResultsProps {
   extSims: ExtSim[];
   logicNodes: LogicNode[];
   variables: Variable[];
-  handleItemClick: (event: any, item: any) => void;
-  getModel: (item: Diagram | State | Action | Event, direction: any) => ReactNode;
+  handleItemClick: (event: React.MouseEvent, item: ModelItem) => void;
+  getModel: (item: ModelItem, direction: string) => ReactNode;
 }
 
 const ItemTypeMenuResults: React.FC<React.PropsWithChildren<ItemTypeMenuResultsProps>> = ({
@@ -33,7 +36,7 @@ const ItemTypeMenuResults: React.FC<React.PropsWithChildren<ItemTypeMenuResultsP
   handleItemClick,
   getModel,
 }) => {
-  const DisplayButtonOrModel = (item: Diagram | State | Action | Event): ReactNode => {
+  const DisplayButtonOrModel = (item: ModelItem): ReactNode => {
     return (
       <Box>
         <div>{getModel(item, 'Used By')}</div>
@@ -41,7 +44,7 @@ const ItemTypeMenuResults: React.FC<React.PropsWithChildren<ItemTypeMenuResultsP
       </Box>
     );
   };
-  const DisplayItemTypeCard = (title: string, items: any[]) => {
+  const DisplayItemTypeCard = (title: string, items: ModelItem[]) => {
     return (
       <Accordion defaultExpanded={isNested ? false : true}>
         <AccordionSummary sx={{ fontWeight: 'bold' }}>
@@ -50,7 +53,11 @@ const ItemTypeMenuResults: React.FC<React.PropsWithChildren<ItemTypeMenuResultsP
         <AccordionDetails>
           {items.map((item) => (
             <Accordion key={item.id}>
-              <AccordionSummary onContextMenu={(e) => handleItemClick(e, item)}>
+              <AccordionSummary
+                onContextMenu={(e) => {
+                  handleItemClick(e, item);
+                }}
+              >
                 {item.name}
               </AccordionSummary>
               <AccordionDetails>{DisplayButtonOrModel(item)}</AccordionDetails>

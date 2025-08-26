@@ -187,15 +187,11 @@ export interface Diagram {
   /**
    * Should not be here GUI mistake.
    */
-  diagramList?: {
-    [k: string]: unknown
-  }
+  diagramList?: Record<string, unknown>
   /**
    * Temporary for GUI should have been deleted.
    */
-  forceMerge?: {
-    [k: string]: unknown
-  }
+  forceMerge?: Record<string, unknown>
 }
 export interface ExtSim {
   /**
@@ -213,57 +209,39 @@ export interface ExtSim {
   /**
    * Depricated
    */
-  modelRef?: {
-    [k: string]: unknown
-  }
+  modelRef?: Record<string, unknown>
   /**
    * Depricated
    */
-  states?: {
-    [k: string]: unknown
-  }
+  states?: Record<string, unknown>
   /**
    * Depricated
    */
-  configData?: {
-    [k: string]: unknown
-  }
+  configData?: Record<string, unknown>
   /**
    * Depricated
    */
-  simMaxTime?: {
-    [k: string]: unknown
-  }
+  simMaxTime?: Record<string, unknown>
   /**
    * Depricated
    */
-  varScope?: {
-    [k: string]: unknown
-  }
+  varScope?: Record<string, unknown>
   /**
    * Depricated
    */
-  value?: {
-    [k: string]: unknown
-  }
+  value?: Record<string, unknown>
   /**
    * Depricated
    */
-  resetOnRuns?: {
-    [k: string]: unknown
-  }
+  resetOnRuns?: Record<string, unknown>
   /**
    * Depricated
    */
-  type?: {
-    [k: string]: unknown
-  }
+  type?: Record<string, unknown>
   /**
    * Depricated
    */
-  sim3DId?: {
-    [k: string]: unknown
-  }
+  sim3DId?: Record<string, unknown>
 }
 export interface State {
   id?: number
@@ -401,11 +379,11 @@ export interface Action {
   /**
    * Used for executing applications with custom form data. This can be anything needed by the custom form, but in the end only the standard atRunExtApp fields are used to do the action.
    */
-  formData?: {}
+  formData?: Record<string, unknown>
   /**
    * Optional. For action type atRunExtApp. It is used for custom app form.
    */
-  template?: {}
+  template?: Record<string, unknown>
   /**
    * Optional. For action type atRunExtApp. It is flag to indicate the type of return from the processOutputFileCode. If rtNone then it has no return, othrwise the C# script must return a List<string> with +/-[StateName] to shift out or into a state.
    */
@@ -421,9 +399,7 @@ export interface Action {
   /**
    * UI item only? should not be here
    */
-  itemId?: {
-    [k: string]: unknown
-  }
+  itemId?: Record<string, unknown>
 }
 export interface Event {
   /**
@@ -610,7 +586,7 @@ export interface LogicNode {
   /**
    * Flag indicating that this is to be displayed as a tree top in the UI and can be used in an evaluate logic tree event.
    */
-  isRoot: boolean
+  isRoot?: boolean
 }
 export interface Variable {
   /**
@@ -668,9 +644,7 @@ export interface Variable {
     /**
      * Part of UI should not be here.
      */
-    $$hashKey?: {
-      [k: string]: unknown
-    }
+    $$hashKey?: Record<string, unknown>
   }[]
   /**
    * Optional. For variable varScope of gtDocLink, docType dtTxtRegExp, this is the regular expression string.
@@ -699,33 +673,23 @@ export interface Variable {
   /**
    * Depricated
    */
-  modelRef?: {
-    [k: string]: unknown
-  }
+  modelRef?: Record<string, unknown>
   /**
    * Depricated
    */
-  states?: {
-    [k: string]: unknown
-  }
+  states?: Record<string, unknown>
   /**
    * Depricated
    */
-  configData?: {
-    [k: string]: unknown
-  }
+  configData?: Record<string, unknown>
   /**
    * Depricated
    */
-  simMaxTime?: {
-    [k: string]: unknown
-  }
+  simMaxTime?: Record<string, unknown>
   /**
    * Part of UI should not be here.
    */
-  $$hashKey?: {
-    [k: string]: unknown
-  }
+  $$hashKey?: Record<string, unknown>
 }
 /**
  * What catagory grouping this item belongs to. Used to indicate a group for and EMRALD model template

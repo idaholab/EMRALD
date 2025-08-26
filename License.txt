@@ -12,57 +12,6 @@ The above copyright notice and this permission notice shall be included in all c
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
-
-
-
-
-ZTree 
-/* 
- * JQuery zTree core v3.5.17
- * http://zTree.me/
- *
- * Copyright (c) 2010 Hunter.z
- *
- * Licensed same as jquery - MIT License
- * http://www.opensource.org/licenses/mit-license.php
- *
- * email: hunter.z@263.net
- * Date: 2015-02-15
- */
-
-JGraph or mxGraph - BSD 
-
-Jquery
-/*! 
- * jQuery JavaScript Library v2.1.4
- * http://jquery.com/
- *
- * Includes Sizzle.js
- * http://sizzlejs.com/
- *
- * Copyright 2005, 2014 jQuery Foundation, Inc. and other contributors
- * Released under the MIT license
- * http://jquery.org/license
- *
- * Date: 2015-04-28T16:01Z
- */
-
-Angular.js 
-/** 
- * @license AngularJS v1.2.26
- * (c) 2010-2014 Google, Inc. http://angularjs.org
- * License: MIT
- */
-
-ng-grid
-/*********************************************** 
-* ng-grid JavaScript Library
-* Authors: https://github.com/angular-ui/ng-grid/blob/master/README.md 
-* License: MIT (http://www.opensource.org/licenses/mit-license.php)
-* Compiled At: 09/02/2014 10:22
-***********************************************/
-
-
 BitArray 
 
 // Authors: 
@@ -113,39 +62,3 @@ MultiKeyDictionary
 // Possible deadlock and race conditions resolved by swapping out the two lock objects for a ReaderWriterLockSlim. 
 // Performance takes a very small hit, but correctness is guaranteed.
 // *************************************************
-
-
-Angular Treeview
-/*
- * 	@license Angular Treeview version 0.1.6
- *	ⓒ 2013 AHN JAE-HA http://github.com/eu81273/angular.treeview
- *	License: MIT
- */
- 
- Blob.js
- /* Blob.js
-* A Blob implementation.
-* 2014-05-31
-* 
-* By Eli Grey, http://eligrey.com
-* By Devin Samarin, https://github.com/eboyjr
-* License: X11/MIT
-*   See https://github.com/eligrey/Blob.js/blob/master/LICENSE.md
-*/
-
-FileSaver.js
-/* FileSaver.js
-*  A saveAs() FileSaver implementation.
-*  2014-05-27
-*
-*  By Eli Grey, http://eligrey.com
-*  License: X11/MIT
-*    See https://github.com/eligrey/FileSaver.js/blob/master/LICENSE.md
-*/
-
-Bootstrap
-/*!
- * Bootstrap v3.1.1 (http://getbootstrap.com)
- * Copyright 2011-2014 Twitter, Inc.
- * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
- */

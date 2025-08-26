@@ -1,12 +1,13 @@
 import type SankeyTimeline from './SankeyTimeline';
+import type { Link } from './SankeyTimelineDiagram';
 import type TimelineNode from './TimelineNode';
-import { LinkLayout } from './types';
+import type { LinkLayout } from './types';
 
 /**
  * Represents a link between two nodes in the graph.
  */
 export default class TimelineLink {
-  public data: any;
+  public data!: Link;
 
   public flow: number;
 

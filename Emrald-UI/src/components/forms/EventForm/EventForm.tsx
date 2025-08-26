@@ -5,12 +5,10 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import MainDetailsForm from '../MainDetailsForm';
 
-import { Event } from '../../../types/Event';
-import { MainItemTypes } from '../../../types/ItemTypes';
+import type { Event, State } from '../../../types/EMRALD_Model';
 
 import { useEventFormContext } from './EventFormContext';
 import { Checkbox, FormControlLabel } from '@mui/material';
-import { State } from '../../../types/State';
 
 interface EventFormProps {
   eventData?: Event;
@@ -47,7 +45,7 @@ const EventForm: React.FC<EventFormProps> = ({ eventData, state }) => {
       </Typography>
       <form>
         <MainDetailsForm
-          itemType={MainItemTypes.Event}
+          itemType='Event'
           type={evType}
           setType={setEvType}
           handleTypeChange={handleChangeEventType}
@@ -55,13 +53,16 @@ const EventForm: React.FC<EventFormProps> = ({ eventData, state }) => {
           name={name}
           desc={desc}
           setDesc={setDesc}
-          handleSave={() => handleSave(eventData, state)}
+          handleSave={() => {
+            handleSave(eventData, state);
+          }}
           reset={reset}
           handleNameChange={handleNameChange}
           nameError={hasError}
           error={hasError || invalidValues.size > 0}
           errorMessage="An event with this name already exists, or the name includes an invalid character."
-          reqPropsFilled={name && evType ? true : false}
+          reqPropsFilled={name ? true : false}
+          invalidValues={invalidValues}
         >
           {state && (
             <FormControlLabel
@@ -70,18 +71,19 @@ const EventForm: React.FC<EventFormProps> = ({ eventData, state }) => {
               control={
                 <Checkbox
                   checked={moveFromCurrent ? true : false}
-                  onChange={(e) => setMoveFromCurrent(e.target.checked)}
+                  onChange={(e) => {
+                    setMoveFromCurrent(e.target.checked);
+                  }}
                 />
               }
             />
           )}
 
           {/* Render the appropriate sub-component based on selected event type */}
-          {evType &&
-            React.createElement(
-              eventTypeToComponent[evType].component,
-              eventTypeToComponent[evType].props,
-            )}
+          {React.createElement(
+            eventTypeToComponent[evType].component,
+            eventTypeToComponent[evType].props,
+          )}
         </MainDetailsForm>
       </form>
     </Box>

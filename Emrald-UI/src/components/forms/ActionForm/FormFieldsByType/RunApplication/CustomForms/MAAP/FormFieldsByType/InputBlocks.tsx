@@ -3,43 +3,52 @@ import { useEffect, useState } from 'react';
 import { useCustomForm } from '../../useCustomForm';
 import useRunApplication from '../../../useRunApplication';
 import { appData } from '../../../../../../../../hooks/useAppData';
-import { MAAPFormData } from '../maap';
-import { Assignment, ConditionalBlockStatement, Identifier } from 'maap-inp-parser';
+import type {
+  MAAPConditionalBlockStatement,
+  MAAPAssignment,
+  MAAPIdentifier,
+  MAAPSourceElement,
+  MAAPExpressionType,
+} from '../../../../../../../../types/EMRALD_Model';
+import {
+  callExpressionToString,
+  expressionToString,
+  expressionTypeToString,
+  identifierToString,
+  isExpressionToString,
+  sourceElementToString,
+} from '../Parser/maap-to-string';
 
 const InputBlocks = () => {
-  const [inputBlocks, setInputBlocks] = useState<ConditionalBlockStatement[]>([]);
-  const [numBooleanExpressions, setNumBooleanExpressions] = useState<{ [key: string]: number }>({});
+  const [inputBlocks, setInputBlocks] = useState<MAAPConditionalBlockStatement[]>([]);
+  const [numBooleanExpressions, setNumBooleanExpressions] = useState<Record<string, number>>({});
   const [leftExpressionNames, setLeftExpressionNames] = useState<string[][]>([]);
   const [rightExpressionNames, setRightExpressionNames] = useState<string[][]>([]);
-  const [operators, setOperators] = useState<{ [key: string]: string[] }>({});
+  const [operators, setOperators] = useState<Record<string, string[]>>({});
   const { formData, setFormData } = useCustomForm();
   const { results, setResults } = useRunApplication();
 
-  const maapForm = formData as MAAPFormData;
   const variables = appData.value.VariableList.map(({ name }) => name);
 
-  const getResults = (block: ConditionalBlockStatement, forCode?: boolean) => {
+  const getResults = (block: MAAPConditionalBlockStatement) => {
     // Get the existing Map or initialize a new one for the block.id
-    let items = results[block.id as string] || new Map<string, string>();
+    const items = results[block.id] ?? new Map<string, string>();
 
     block.value.forEach((result, i) => {
       if (result.type === 'comment') {
         // Handle comments here if necessary
-        let previousResult = block.value[i - 1];
-        previousResult.comment = result.value as string;
+        const previousResult = block.value[i - 1];
+        previousResult.comment = result.value;
       } else if (result.type === 'assignment') {
-        const target = result.target.type === 'identifier' ? result.target : result.target.value;
-        const name = target.value;
-        const useVariable = target.useVariable;
-        const args =
-          result.target.type === 'call_expression' ? result.target.arguments[0].value : '';
-        let fullName = args ? `${name}(${String(args)})` : String(name);
-        if (forCode && useVariable) {
-          fullName = `" + ${fullName} + @"`;
+        let fullName = '';
+        if (result.target.type === 'call_expression') {
+          fullName = callExpressionToString(result.target);
+        } else {
+          fullName = identifierToString(result.target);
         }
 
         // Get the value associated with the result
-        const value = getResultValue(result, forCode);
+        const value = getResultValue(result);
 
         // Add the key-value pair to the Map if it doesn't already exist
         if (!items.has(fullName) || items.get(fullName) !== value) {
@@ -49,25 +58,24 @@ const InputBlocks = () => {
     });
 
     // Update the state with the new Map
-    setResults((prev) => ({ ...prev, [block.id as string]: new Map(items) }));
+    setResults((prev) => ({ ...prev, [block.id]: new Map(items) }));
     return items;
   };
 
-  const getResultValue = (result: Assignment, forCode?: boolean): string => {
+  const getResultValue = (result: MAAPAssignment): string => {
     if (result.value.type === 'expression') {
-      return `${result.value.value.left.value} ${result.value.value.op} ${result.value.value.right.value}`;
+      return expressionToString(result.value);
     }
-    let toReturn = result.value.value as string;
-    if (forCode && result.value.useVariable) {
-      toReturn = `" + ${toReturn} + @"`;
+    if (result.value.type === 'is_expression') {
+      return isExpressionToString(result.value);
     }
-    return toReturn;
+    return expressionTypeToString(result.value);
   };
 
   /** goes through the test portion of a conditional block and returns an array of each name in the block test */
-  const getAllItems = (block: ConditionalBlockStatement, returnType = 'items'): any[] => {
-    let allItems = [];
-    let operators = [];
+  const getAllItems = (block: MAAPConditionalBlockStatement, returnType = 'items') => {
+    const allItems: MAAPExpressionType[] = [];
+    const operators = [];
     let iterator = block.test;
     while (iterator.type === 'expression') {
       allItems.push(iterator.value.left);
@@ -82,26 +90,18 @@ const InputBlocks = () => {
     return returnType === 'items' ? allItems : operators;
   };
 
-  const returnInputBlockItemNameInTest = (item: any, forCode?: boolean): string => {
+  const returnInputBlockItemNameInTest = (item?: MAAPSourceElement): string => {
     if (item === undefined) {
       return '';
     }
-    if (item.type === 'call_expression') {
-      const value = item.value.value;
-      const args = item.arguments;
-      return args ? `${value}(${String(args[0].value)})` : String(value);
-    }
-    if (forCode && item.useVariable) {
-      return `" + ${String(item.value)} + @"`;
-    }
-    return String(item.value);
+    return sourceElementToString(item);
   };
 
   useEffect(() => {
-    maapForm?.inputBlocks?.forEach((block) => {
-      if (!numBooleanExpressions[block.id as string]) {
+    formData?.inputBlocks?.forEach((block) => {
+      if (!numBooleanExpressions[block.id]) {
         const count = getNumBooleanCount(block);
-        setNumBooleanExpressions((prev) => ({ ...prev, [block.id as string]: count }));
+        setNumBooleanExpressions((prev) => ({ ...prev, [block.id]: count }));
 
         const leftNames: string[] = [];
         const rightNames: string[] = [];
@@ -116,32 +116,36 @@ const InputBlocks = () => {
         setLeftExpressionNames((prev) => [...prev, leftNames]);
         setRightExpressionNames((prev) => [...prev, rightNames]);
       }
-      let blockOperators = getAllItems(block, 'operators');
-      setOperators((prev) => ({ ...prev, [block.id as string]: blockOperators }));
-      getResults(block);
+      const blockOperators = getAllItems(block, 'operators');
+      if (typeof blockOperators[0] === 'string') {
+        setOperators((prev) => ({ ...prev, [block.id]: blockOperators as string[] }));
+        getResults(block);
+      }
     });
-    setInputBlocks(maapForm?.inputBlocks || []);
+    setInputBlocks(formData?.inputBlocks ?? []);
   }, []);
 
-  const getNumBooleanCount = (block: ConditionalBlockStatement): number => {
+  const getNumBooleanCount = (block: MAAPConditionalBlockStatement): number => {
     const allItems = getAllItems(block);
     return allItems.length / 2;
   };
 
   const getLeftOrRightName = (
-    block: ConditionalBlockStatement,
+    block: MAAPConditionalBlockStatement,
     isLeft: boolean,
     count = 0,
   ): string => {
     const targetIndex = 2 * count + (isLeft ? 0 : 1);
-    let allItems = getAllItems(block);
+    const allItems = getAllItems(block);
     const item = allItems[targetIndex];
-
+    if (typeof item === 'string') {
+      return item;
+    }
     return returnInputBlockItemNameInTest(item);
   };
 
   const handleAutocompleteChange = (
-    block: any,
+    block: MAAPConditionalBlockStatement,
     newValue: string,
     isLeft: boolean,
     isProperty = false,
@@ -153,8 +157,8 @@ const InputBlocks = () => {
         const updatedBlock = { ...b };
 
         if (isProperty) {
-          let properties = updatedBlock.value.filter((item: any) => item.type !== 'comment');
-          let property = properties[propertyIndex];
+          const properties = updatedBlock.value.filter((item) => item.type !== 'comment');
+          const property = properties[propertyIndex];
           if (isLeft && property.type === 'assignment') {
             if (property.target.type === 'identifier') {
               property.target.value = newValue;
@@ -164,7 +168,7 @@ const InputBlocks = () => {
               property.target.value.useVariable = useVariable;
             }
           } else {
-            const value: Identifier = {
+            const value: MAAPIdentifier = {
               type: 'identifier',
               value: newValue,
               useVariable: useVariable,
@@ -173,18 +177,26 @@ const InputBlocks = () => {
           }
         } else {
           // handle left or right side property change here based on propertyIndex
-          let current: any = updatedBlock.test.value;
-          for (let i = 0; i < propertyIndex; i++) {
-            current = current.right.value.right.value;
-          }
-          if (isLeft) {
-            current.left.value = newValue;
-            current.left.type = 'identifier';
-            current.left.useVariable = useVariable;
-          } else {
-            current.right.value = newValue;
-            current.right.type = 'identifier';
-            current.right.useVariable = useVariable;
+          // TODO: This code is set up to handle a very specific situation and does not account for all possible syntaxes
+          if (updatedBlock.test.type === 'expression') {
+            let current = updatedBlock.test.value;
+            for (let i = 0; i < propertyIndex; i++) {
+              if (
+                current.right.type === 'expression' &&
+                current.right.value.right.type === 'expression'
+              ) {
+                current = current.right.value.right.value;
+              }
+            }
+            if (isLeft) {
+              current.left.value = newValue;
+              current.left.type = 'identifier';
+              current.left.useVariable = useVariable;
+            } else {
+              current.right.value = newValue;
+              current.right.type = 'identifier';
+              current.right.useVariable = useVariable;
+            }
           }
         }
         return updatedBlock;
@@ -193,14 +205,17 @@ const InputBlocks = () => {
     });
 
     setInputBlocks(updatedBlocks);
-    setFormData((prevFormData: MAAPFormData) => {
-      const data: MAAPFormData = { ...prevFormData, inputBlocks: updatedBlocks };
-      return data;
-    });
+    setFormData((prevFormData) =>
+      prevFormData ? { ...prevFormData, inputBlocks: updatedBlocks } : undefined,
+    );
   };
 
-  const getOperator = (block: ConditionalBlockStatement, isBoolean: boolean, count = 0): string => {
-    let tempOperators = operators[block.id as string];
+  const getOperator = (
+    block: MAAPConditionalBlockStatement,
+    isBoolean: boolean,
+    count = 0,
+  ): string => {
+    let tempOperators = operators[block.id];
     tempOperators = isBoolean
       ? tempOperators.filter((op) => op === 'AND' || op === 'OR')
       : tempOperators.filter((op) => op !== 'AND' && op !== 'OR');
@@ -210,15 +225,18 @@ const InputBlocks = () => {
   return (
     <>
       {inputBlocks.map((block, blockInd) => {
-        const count = numBooleanExpressions[block.id as string] || 0;
-        let itemIndexes = [];
+        const count = numBooleanExpressions[block.id] || 0;
+        const itemIndexes = [];
         for (let i = 0; i < count; i++) {
           itemIndexes.push(i);
         }
         return (
           <Box key={block.id}>
             <Typography m={2}>
-              {maapForm?.docComments ? maapForm?.docComments[block.id as string]?.value : ''}
+              {formData?.docComments &&
+              Object.prototype.hasOwnProperty.call(formData.docComments, block.id)
+                ? formData.docComments[block.id].value
+                : ''}
             </Typography>
             {itemIndexes.map((index) => {
               const leftName = leftExpressionNames[blockInd][index];
@@ -301,111 +319,89 @@ const InputBlocks = () => {
                   ) : (
                     <>
                       <Box sx={{ backgroundColor: '#f5f5f5', m: 3 }}>
-                        {results[block.id as string] &&
-                          Array.from(results[block.id as string].entries()).map(
-                            ([key, value], idx) => (
-                              <Box key={idx} m={4}>
-                                <div key={key} style={{ display: 'flex', flexDirection: 'row' }}>
-                                  <Autocomplete
-                                    aria-label="Assignment Left Hand Side"
-                                    defaultValue={String(key)}
-                                    size="small"
-                                    options={
-                                      variables.includes(String(key))
-                                        ? [
-                                            String(key),
-                                            ...variables.filter((v) => v !== String(key)),
-                                          ]
-                                        : [String(key), ...variables]
-                                    }
-                                    renderInput={(params) => (
-                                      <TextField {...params} value={params} />
-                                    )}
-                                    sx={{ width: 200, m: 2 }}
-                                    onChange={(_, newValue) =>
-                                      handleAutocompleteChange(
-                                        block,
-                                        newValue || '',
-                                        true,
-                                        true,
-                                        idx,
-                                      )
-                                    }
-                                    renderOption={(props, option) => (
+                        {Array.from(results[block.id].entries()).map(([key, value], idx) => (
+                          <Box key={idx} m={4}>
+                            <div key={key} style={{ display: 'flex', flexDirection: 'row' }}>
+                              <Autocomplete
+                                aria-label="Assignment Left Hand Side"
+                                defaultValue={String(key)}
+                                size="small"
+                                options={
+                                  variables.includes(String(key))
+                                    ? [String(key), ...variables.filter((v) => v !== String(key))]
+                                    : [String(key), ...variables]
+                                }
+                                renderInput={(params) => <TextField {...params} value={params} />}
+                                sx={{ width: 200, m: 2 }}
+                                onChange={(_, newValue) => {
+                                  handleAutocompleteChange(block, newValue ?? '', true, true, idx);
+                                }}
+                                renderOption={(props, option) => (
+                                  <>
+                                    {option === String(key) ? (
                                       <>
-                                        {option === String(key) ? (
-                                          <>
-                                            <Box component="li" {...props}>
-                                              {option}
-                                            </Box>
-                                            <Divider />
-                                          </>
-                                        ) : (
-                                          <Box component="li" {...props}>
-                                            {option}
-                                          </Box>
-                                        )}
+                                        <Box component="li" {...props}>
+                                          {option}
+                                        </Box>
+                                        <Divider />
                                       </>
+                                    ) : (
+                                      <Box component="li" {...props}>
+                                        {option}
+                                      </Box>
                                     )}
-                                  />{' '}
-                                  <Typography sx={{ margin: 3, fontWeight: 'bold' }}>=</Typography>{' '}
-                                  <Autocomplete
-                                    aria-label="Assignment Right Hand Side"
-                                    defaultValue={String(value)}
-                                    size="small"
-                                    sx={{ width: 200, m: 2 }}
-                                    options={
-                                      variables.includes(String(value))
-                                        ? [
-                                            String(value),
-                                            ...variables.filter((v) => v !== String(value)),
-                                          ]
-                                        : [String(value), ...variables]
-                                    }
-                                    renderInput={(params) => (
-                                      <TextField {...params} value={params} />
-                                    )}
-                                    onChange={(_, newValue) =>
-                                      handleAutocompleteChange(
-                                        block,
-                                        newValue || '',
-                                        false,
-                                        true,
-                                        idx,
-                                      )
-                                    }
-                                    renderOption={(props, option) => (
+                                  </>
+                                )}
+                              />{' '}
+                              <Typography sx={{ margin: 3, fontWeight: 'bold' }}>=</Typography>{' '}
+                              <Autocomplete
+                                aria-label="Assignment Right Hand Side"
+                                defaultValue={String(value)}
+                                size="small"
+                                sx={{ width: 200, m: 2 }}
+                                options={
+                                  variables.includes(String(value))
+                                    ? [
+                                        String(value),
+                                        ...variables.filter((v) => v !== String(value)),
+                                      ]
+                                    : [String(value), ...variables]
+                                }
+                                renderInput={(params) => <TextField {...params} value={params} />}
+                                onChange={(_, newValue) => {
+                                  handleAutocompleteChange(block, newValue ?? '', false, true, idx);
+                                }}
+                                renderOption={(props, option) => (
+                                  <>
+                                    {option === String(value) ? (
                                       <>
-                                        {option === String(value) ? (
-                                          <>
-                                            <Box component="li" {...props}>
-                                              {option}
-                                            </Box>
-                                            <Divider />
-                                          </>
-                                        ) : (
-                                          <Box component="li" {...props}>
-                                            {option}
-                                          </Box>
-                                        )}
+                                        <Box component="li" {...props}>
+                                          {option}
+                                        </Box>
+                                        <Divider />
                                       </>
+                                    ) : (
+                                      <Box component="li" {...props}>
+                                        {option}
+                                      </Box>
                                     )}
-                                  />
-                                  {block.value[idx].comment && (
-                                    <Box
-                                      sx={{
-                                        flex: '1 1 40%',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                      }}
-                                    >
-                                      <Typography m={2}>{block.value[idx].comment}</Typography>
-                                    </Box>
-                                  )}
-                                </div>
-                              </Box>
-                            ),
-                          )}
+                                  </>
+                                )}
+                              />
+                              {block.value[idx].comment && (
+                                <Box
+                                  sx={{
+                                    flex: '1 1 40%',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                  }}
+                                >
+                                  <Typography m={2}>{block.value[idx].comment}</Typography>
+                                </Box>
+                              )}
+                            </div>
+                          </Box>
+                        ))}
                       </Box>
                       <Divider sx={{ my: 2 }} />
                     </>

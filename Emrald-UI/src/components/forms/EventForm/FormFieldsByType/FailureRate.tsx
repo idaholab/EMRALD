@@ -43,7 +43,7 @@ const FailureRate = () => {
     setLambda(value);
   };
 
-  const validInputRegex = /^[+\-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[Ee][+\-]?\d+)?$/;
+  const validInputRegex = /^[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[Ee][+-]?\d+)?$/;
 
   const handleLambdaValueBlur = (value: string) => {
     if (value && validInputRegex.test(value)) {
@@ -57,7 +57,7 @@ const FailureRate = () => {
       let numericValue;
       if (isScientificNotation) {
         numericValue = parseFloat(value);
-        const [_, exponentPart] = value.split(/[Ee]/);
+        const exponentPart = value.split(/[Ee]/)[1];
         const exponent = Math.abs(Number(exponentPart));
         if (exponent >= 4) {
           // If it has 4 or more decimal places, keep it in scientific notation
@@ -94,7 +94,9 @@ const FailureRate = () => {
         control={
           <Checkbox
             checked={useVariable ? true : false}
-            onChange={(e) => handleUseVariableChange(e.target.checked)}
+            onChange={(e) => {
+              handleUseVariableChange(e.target.checked);
+            }}
           />
         }
       />
@@ -109,8 +111,12 @@ const FailureRate = () => {
                     label="Lambda"
                     value={lambda}
                     type="text"
-                    onChange={(e) => handleLambdaValueChange(e.target.value)}
-                    onBlur={() => handleLambdaValueBlur(String(lambda))}
+                    onChange={(e) => {
+                      handleLambdaValueChange(e.target.value);
+                    }}
+                    onBlur={() => {
+                      handleLambdaValueBlur(String(lambda));
+                    }}
                     size="small"
                     error={invalidValues.has('Lambda')}
                     helperText={invalidValues.has('Lambda') ? 'Invalid value' : ''}
@@ -142,7 +148,7 @@ const FailureRate = () => {
               <StyledTableCell>Time Rate: </StyledTableCell>
               <StyledTableCell>
                 <DurationComponent
-                  milliseconds={failureRateMilliseconds || 0}
+                  milliseconds={failureRateMilliseconds ?? 0}
                   handleDurationChange={handleFailureRateDurationChange}
                 />
               </StyledTableCell>
@@ -150,6 +156,16 @@ const FailureRate = () => {
           </TableBody>
         </Table>
       </TableContainer>
+      <FormControlLabel
+        label="Persistent - Keeps initial time between state movement and only re-samples after it occurs."
+        control={
+          <Checkbox
+            checked={persistent}
+            value={persistent}
+            onChange={(e) => setPersistent(e.target.checked)}
+          ></Checkbox>
+        }
+      ></FormControlLabel>
       {useVariable && <VariableChangesPiece />}
     </>
   );
