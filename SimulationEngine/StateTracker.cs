@@ -1506,12 +1506,17 @@ namespace SimulationTracking
                     this.PersistentEvs[ev.Value.name].time = regotTime;
                 }
               }
+            }
+            catch (Exception e)
+            {
+              throw new Exception("Failed to adjust event time for changes to " + curAct.name, e);
+            }
 
-              //see if there are any persistent not in the time event list to update
-              foreach (var persEvItem in this.PersistentEvs.Values)
-              {
-                TimeBasedEvent curTimeEv = (TimeBasedEvent)persEvItem.eventData;
-                if (!timeEvList.HasEvent(curTimeEv.id))                {
+            //see if there are any persistent not in the time event list to update
+            foreach (var persEvItem in this.PersistentEvs.Values)
+            {
+              TimeBasedEvent curTimeEv = (TimeBasedEvent)persEvItem.eventData;
+              if (!timeEvList.HasEvent(curTimeEv.id))                {
                   
                   if (curTimeEv.relatedIDs.Contains(varItem.id))
                   { 
@@ -1520,20 +1525,16 @@ namespace SimulationTracking
                       throw new Exception("Tried to adjust Persistent Event [" + curTimeEv.name + "], not currently in a state. Don't use Persistent events with events that can be adjusted for variable changes!");
                     }
                     
-                    TimeSpan regotTime = curTimeEv.RedoNextTime(persEvItem.whenCreated, curTime, persEvItem.time);
-                    if (regotTime < TimeSpan.Zero)
-                      regotTime = TimeSpan.Zero;
+                  TimeSpan regotTime = curTimeEv.RedoNextTime(persEvItem.whenCreated, curTime, persEvItem.time);
+                  if (regotTime < TimeSpan.Zero)
+                    regotTime = TimeSpan.Zero;
 
-                    //adjust the saved persistent event time 
-                    persEvItem.time = regotTime;
-                  }
+                  //adjust the saved persistent event time 
+                  persEvItem.time = regotTime;
                 }
               }
             }
-            catch (Exception e)
-            {
-              throw new Exception("Failed to adjust event time for changes to " + curAct.name, e);
-            }
+            
 
             
 

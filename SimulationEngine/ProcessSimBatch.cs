@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -260,7 +261,10 @@ namespace SimulationEngine
           lock (_fileLock)
           {
             this._resultFile = Path.Combine(this._lists.rootPath, Path.GetFileName(_resultFile));
-            this._jsonResultPaths = Path.Combine(this._lists.rootPath, Path.GetFileName(_jsonResultPaths));
+            if (_jsonResultPaths != "")
+            {
+              this._jsonResultPaths = Path.Combine(this._lists.rootPath, Path.GetFileName(_jsonResultPaths));
+            }
           }
         }
         catch (Exception e)
@@ -554,36 +558,21 @@ namespace SimulationEngine
           resultObj.numRuns = curIdx;
           resultObj.CalcStats();
           Dictionary<string, int> inStateCnts = new Dictionary<string, int>();
-          //foreach (var keyS in resultObj.keyStates)
-          //{
-          //  Dictionary<string, int> depth = new Dictionary<string, int>();
-          //  StateCounts(keyS, inStateCnts, depth);
-          //}
+          
           foreach (var keyS in resultObj.keyStates)
           {
-            // Dictionary<string, int> depth = new Dictionary<string, int>();
-            //SetResultStatsRec(keyS, inStateCnts, curI);//, depth);
-
             if (_variableVals.Count > 0) //if there are any being tracked, they should have a value for each key state.
               keyS.watchVariables = _variableVals[keyS.name];
           }
 
           string output = JsonConvert.SerializeObject(resultObj, Formatting.Indented);
-          //if (File.Exists(_jsonResultPaths))
-          //{
-          //  bool locked = true;
-          //  while (locked)
-          //  { 
-          //    locked = IsFileLocked(new FileInfo(_jsonResultPaths));
-          //  }
-          //}
-          //File.WriteAllText(_jsonResultPaths, output);
+          
           WriteToFileThreadSafe(_jsonResultPaths, output);
 
           //set up the sankey file to view results if not a thread one.
           if (!this._threadNum.HasValue && makeSankey)
           {
-            string tempLoc = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\\EMRALD_SANKEY\\";
+            string tempLoc = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\EMRALD_SANKEY\";
             try
             {
               if (Directory.Exists(tempLoc))
@@ -599,8 +588,10 @@ namespace SimulationEngine
               File.WriteAllText(Path.Combine(tempLoc, @"data.js"), @"window.data= ");
             }
 
-            File.Copy(@"./sankey/emrald-sankey-timeline.html", Path.Combine(tempLoc, @"emrald-sankey-timeline.html"));
-            File.Copy(@"./sankey/emrald-sankey-timeline.js", Path.Combine(tempLoc, @"emrald-sankey-timeline.js"));
+            string exeLoc = Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName;
+
+            File.Copy(Path.Combine( exeLoc, @"./sankey/emrald-sankey-timeline.html"), Path.Combine(tempLoc, @"emrald-sankey-timeline.html"));
+            File.Copy(Path.Combine(exeLoc, @"./sankey/emrald-sankey-timeline.js"), Path.Combine(tempLoc, @"emrald-sankey-timeline.js"));
           }
         }
       }
