@@ -946,7 +946,6 @@ namespace EMRALD_Sim
       txtMStatus.Name = "txtMStatus";
       txtMStatus.Size = new System.Drawing.Size(1243, 100);
       txtMStatus.TabIndex = 2;
-      txtMStatus.TextChanged += txtMStatus_TextChanged;
       // 
       // tcMain
       // 

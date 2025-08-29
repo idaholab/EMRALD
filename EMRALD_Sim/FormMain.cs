@@ -74,86 +74,7 @@ namespace EMRALD_Sim
       }
 
       bool execute = false;
-
-      //SimulationDAL.Globals.simID = 1;
-      if (args.Length > 0) // Loop through array
-      {
-        string argument = args[0].ToLower();
-        bool isJSON = false;
-        try
-        {
-          isJSON = Path.GetExtension(argument).Equals(".json", StringComparison.OrdinalIgnoreCase);
-        }
-        catch { }
-        ;
-
-        if (isJSON)
-        {
-          //jsonOptions =  LoadFromJSON(args[0]);
-          OptionsRunWithNotify(args[0]);
-        }
-        else
-        {
-          execute = LoadFromArgs(args);
-        }
-      }
-
-      if (_modelPath != null)
-      {
-        if (OpenModel(_modelPath))
-        {
-
-          tcMain.SelectedTab = tabSimulate;
-
-          //check the monitor values
-          for (int idx = 0; idx < lbMonitorVars.Items.Count; idx++)
-          {
-            if (monitor.Contains(lbMonitorVars.Items[idx].ToString()))
-            {
-              lbMonitorVars.SetItemChecked(idx, true);
-            }
-          }
-
-          //assign the xmpp connections if any
-          for (int idx = 0; idx < _xmppLink.Count; idx++)
-          {
-            AssignServer(); //make sure it has been assigned
-            var extSimLink = _sim.allExtSims.FindByName(_xmppLink[idx][0], false);
-            if (extSimLink == null)
-            {
-              Console.Write("Bad -c first input. No external link in model named - " + _xmppLink[idx][0]);
-            }
-            else
-            {
-              extSimLink.resourceName = _xmppLink[idx][1] + " - " + _xmppLink[idx][2].ToLower();
-              extSimLink.verified = false;
-              extSimLink.timeout = int.Parse(_xmppLink[idx][3]);
-              //check the UI
-              var itemIdx = lbExtSimLinks.FindStringExact(_xmppLink[idx][0]);
-              lbExtSimLinks.SetItemChecked(itemIdx, true);
-            }
-          }
-
-
-          if (execute)
-          {
-            btnStartSims_Click(this, null);
-          }
-        }
-      }
-    }
-
-
-    /// <summary>
-    /// Load the settings from the arguments passed in
-    /// </summary>
-    /// <param name="args"></param>
-    /// <returns>return if to execute the model</returns>
-    private bool LoadFromArgs(string[] args)
-    {
-      _populatingSettings = true;
-      bool execute = false;
-
+      string model = null;
       //SimulationDAL.Globals.simID = 1;
       if (args.Length > 0) // Loop through array
       {
@@ -256,7 +177,7 @@ namespace EMRALD_Sim
               }
               else
               {
-                _modelPath = filePath;
+                model = filePath;
               }
               ++i;
               break;
@@ -1095,9 +1016,6 @@ namespace EMRALD_Sim
         List<Thread> threads = new List<Thread>();
         simRuns.Clear();
 
-        List<Thread> threads = new List<Thread>();
-        simRuns.Clear();
-        int threadCnt = ConfigData.threads == null ? 1 : (int)ConfigData.threads;
 
         for (int i = 0; i < threadCnt; i++)
         {
@@ -1834,7 +1752,7 @@ namespace EMRALD_Sim
           }
           else //save the empty multiThreadInfo
           {
-            if(_sim.multiThreadInfo == null)
+            if (_sim.multiThreadInfo == null)
               _sim.SetMultiThreadInfo(new MultiThreadInfo());
             teModel.Text = _sim.modelTxt;
             saveStripMenuItem_Click(sender, e);
