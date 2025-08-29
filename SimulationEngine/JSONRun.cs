@@ -259,7 +259,10 @@ namespace SimulationEngine
         int locIdx = i;
         tStarter += () =>
         {
-          _simRuns[locIdx].GetVarValues(_simRuns[locIdx].logVarVals, true);
+          if (_simRuns[locIdx].error != "")
+            _error += _simRuns[locIdx].error + Environment.NewLine;
+          else
+            _simRuns[locIdx].GetVarValues(_simRuns[locIdx].logVarVals, true);
         };
 
         Thread simThread = new Thread(tStarter);
@@ -289,29 +292,6 @@ namespace SimulationEngine
           }).Start();
         }
         threads.Add(simThread);
-      
-
-        //ThreadStart tStarter = new ThreadStart(_simRuns[i].RunBatch);
-
-        ////run this when the thread is done.
-        //int locIdx = i;
-        //tStarter += () =>
-        //{
-        //  try
-        //  {
-        //    if(_simRuns[locIdx].error != "")
-        //      _error += _simRuns[locIdx].error + Environment.NewLine;
-        //  }
-        //  catch (Exception ex)
-        //  {
-        //    // Log the exception
-        //    Console.WriteLine($"Exception in thread completion: {ex.Message}");
-        //  }
-        //};
-
-        //Thread simThread = new Thread(tStarter);
-        //simThread.Start();
-        //threads.Add(simThread);
       }
 
       Task.Run(() =>
