@@ -1,11 +1,9 @@
 import React, { createContext, useContext, useState } from 'react';
-import { EmraldContextWrapperProps } from './EmraldContextWrapper';
+import type { EmraldContextWrapperProps } from './EmraldContextWrapper';
 import { appData, updateAppData } from '../hooks/useAppData';
-import { effect, ReadonlySignal, useComputed } from '@preact/signals-react';
-import { ExtSim } from '../types/ExtSim';
-import { EMRALD_Model } from '../types/EMRALD_Model';
+import { effect, type ReadonlySignal, useComputed } from '@preact/signals-react';
+import type { ExtSim } from '../types/EMRALD_Model';
 import { DeleteItemAndRefs, updateModelAndReferences } from '../utils/UpdateModel';
-import { MainItemTypes } from '../types/ItemTypes';
 
 interface ExtSimContextType {
   extSims: ExtSim[];
@@ -38,7 +36,7 @@ const ExtSimContextProvider: React.FC<EmraldContextWrapperProps> = ({ children }
   const [extSims, setExtSims] = useState<ExtSim[]>(
     JSON.parse(
       JSON.stringify(appData.value.ExtSimList.sort((a, b) => a.name.localeCompare(b.name))),
-    ),
+    ) as ExtSim[],
   );
   const extSimList = useComputed(() => appData.value.ExtSimList);
 
@@ -52,29 +50,29 @@ const ExtSimContextProvider: React.FC<EmraldContextWrapperProps> = ({ children }
     return;
   });
 
-  const createExtSim = async (newExtSim: ExtSim) => {
-    var updatedModel: EMRALD_Model = await updateModelAndReferences(
+  const createExtSim = (newExtSim: ExtSim) => {
+    const updatedModel = updateModelAndReferences(
       newExtSim,
-      MainItemTypes.ExtSim,
+      'ExtSim',
     );
     updateAppData(updatedModel);
   };
 
-  const updateExtSim = async (updatedExtSim: ExtSim) => {
-    var updatedModel: EMRALD_Model = await updateModelAndReferences(
+  const updateExtSim = (updatedExtSim: ExtSim) => {
+    const updatedModel = updateModelAndReferences(
       updatedExtSim,
-      MainItemTypes.ExtSim,
+      'ExtSim',
     );
     updateAppData(updatedModel);
   };
 
-  const deleteExtSim = async (extSimId: string | undefined) => {
+  const deleteExtSim = (extSimId: string | undefined) => {
     if (!extSimId) {
       return;
     }
     const extSimToDelete = extSims.find((extSim) => extSim.id === extSimId);
     if (extSimToDelete) {
-      var updatedModel: EMRALD_Model = await DeleteItemAndRefs(extSimToDelete);
+      const updatedModel = DeleteItemAndRefs(extSimToDelete);
       updateAppData(updatedModel);
     }
     //todo else error, no event to delete

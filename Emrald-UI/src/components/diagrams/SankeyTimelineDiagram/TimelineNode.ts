@@ -1,7 +1,7 @@
 import type SankeyTimeline from './SankeyTimeline';
+import type { Node } from './SankeyTimelineDiagram';
 import type TimelineLink from './TimelineLink';
-import { NodeLayout, NodeTimes } from './types';
-import { sum } from './util';
+import type { NodeLayout, NodeTimes } from './types';
 
 /**
  * Represents a node in the timeline.
@@ -9,7 +9,7 @@ import { sum } from './util';
 export default class TimelineNode {
   public color?: string;
 
-  public data: any;
+  public data!: Node;
 
   public graph: SankeyTimeline;
 
@@ -77,7 +77,7 @@ export default class TimelineNode {
    * @param link - The incoming link.
    * @returns This.
    */
-  public addIncomingLink(link: TimelineLink): TimelineNode {
+  public addIncomingLink(link: TimelineLink) {
     this.incomingLinks.push(link);
     return this;
   }
@@ -88,7 +88,7 @@ export default class TimelineNode {
    * @param link - The outgoing link.
    * @returns This.
    */
-  public addOutgoingLink(link: TimelineLink): TimelineNode {
+  public addOutgoingLink(link: TimelineLink) {
     this.outgoingLinks.push(link);
     return this;
   }

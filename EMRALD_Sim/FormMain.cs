@@ -58,8 +58,7 @@ namespace EMRALD_Sim
       _optionsAccessor = optionsAccessor;
       InitializeComponent();
       teModel.SetHighlighting("JSON");
-      lvResults.Columns[3].Text = "Mean Time or Failed Components";
-      lvResults.Columns[1].Text = "Count";
+      ResetResults();
 
       //System.IO.File.Wri
       curDir = System.IO.Path.GetDirectoryName(Application.ExecutablePath);
@@ -155,6 +154,85 @@ namespace EMRALD_Sim
       _populatingSettings = true;
       bool execute = false;
 
+      //SimulationDAL.Globals.simID = 1;
+      if (args.Length > 0) // Loop through array
+      {
+        string argument = args[0].ToLower();
+        bool isJSON = false;
+        try
+        {
+          isJSON = Path.GetExtension(argument).Equals(".json", StringComparison.OrdinalIgnoreCase);
+        }
+        catch { }
+        ;
+
+        if (isJSON)
+        {
+          //jsonOptions =  LoadFromJSON(args[0]);
+          OptionsRunWithNotify(args[0]);
+        }
+        else
+        {
+          execute = LoadFromArgs(args);
+        }
+      }
+
+      if (model != null)
+      {
+        if (OpenModel(model))
+        {
+
+          tcMain.SelectedTab = tabSimulate;
+
+          //check the monitor values
+          for (int idx = 0; idx < lbMonitorVars.Items.Count; idx++)
+          {
+            if (monitor.Contains(lbMonitorVars.Items[idx].ToString()))
+            {
+              lbMonitorVars.SetItemChecked(idx, true);
+            }
+          }
+
+          //assign the xmpp connections if any
+          for (int idx = 0; idx < _xmppLink.Count; idx++)
+          {
+            AssignServer(); //make sure it has been assigned
+            var extSimLink = _sim.allExtSims.FindByName(_xmppLink[idx][0], false);
+            if (extSimLink == null)
+            {
+              Console.Write("Bad -c first input. No external link in model named - " + _xmppLink[idx][0]);
+            }
+            else
+            {
+              extSimLink.resourceName = _xmppLink[idx][1] + " - " + _xmppLink[idx][2].ToLower();
+              extSimLink.verified = false;
+              extSimLink.timeout = int.Parse(_xmppLink[idx][3]);
+              //check the UI
+              var itemIdx = lbExtSimLinks.FindStringExact(_xmppLink[idx][0]);
+              lbExtSimLinks.SetItemChecked(itemIdx, true);
+            }
+          }
+
+
+          if (execute)
+          {
+            btnStartSims_Click(this, null);
+          }
+        }
+      }
+    }
+
+
+    /// <summary>
+    /// Load the settings from the arguments passed in
+    /// </summary>
+    /// <param name="args"></param>
+    /// <returns>return if to execute the model</returns>
+    private bool LoadFromArgs(string[] args)
+    {
+      _populatingSettings = true;
+      bool execute = false;
+      string model = null;
       //SimulationDAL.Globals.simID = 1;
       for (int i = 0; i < args.Length; i++) // Loop through array
       {
@@ -942,12 +1020,21 @@ namespace EMRALD_Sim
       cbCurThread.Visible = cbMultiThreaded.Checked && (_running);
     }
 
+    private void ResetResults()
+    {
+      lblRunTime.Text = "00:00:00";
+      lbl_ResultHeader.Text = "0 of n runs";
+      lvResults.Items.Clear();
+      lvVarValues.Items.Clear();
+    }
+
     private void btnStartSims_Click(object sender, EventArgs e)
     {
       _running = false;
+      ResetResults();
       try
       {
-        MethodInvoker ButtonEnableDelegate = delegate ()
+        MethodInvoker ErrorAndVisUpdateDelegate = delegate ()
         {
           //btnStartSims.Enabled = true;
           SetRunningVis();
@@ -1001,16 +1088,21 @@ namespace EMRALD_Sim
         lbl_ResultHeader.Visible = true;
 
         _statsFile = tbSavePath2.Text;
-        int runsDiv = int.Parse(tbRunCnt.Text) / (int)ConfigData.threads;
+        ConfigData.threads = ConfigData.threads > 0 ? ConfigData.threads : null; //don't allow 0 for threads. 
+        int threadCnt = ConfigData.threads == null ? 1 : (int)ConfigData.threads;
+        int runsDiv = int.Parse(tbRunCnt.Text) / threadCnt;
+
+        List<Thread> threads = new List<Thread>();
+        simRuns.Clear();
 
         List<Thread> threads = new List<Thread>();
         simRuns.Clear();
         int threadCnt = ConfigData.threads == null ? 1 : (int)ConfigData.threads;
 
-        for (int i = 0; i < ConfigData.threads; i++)
+        for (int i = 0; i < threadCnt; i++)
         {
           //set up the simBatch, only set threads if more than one.
-          simRuns.Add(new ProcessSimBatch(_sim, maxTime, tbSavePath.Text, _statsFile, _pathResultsInterval, ConfigData.threads <= 1 ? null : i));
+          simRuns.Add(new ProcessSimBatch(_sim, maxTime, tbSavePath.Text, _statsFile, _pathResultsInterval, ConfigData.threads == null ? null : i));
 
           simRuns[i].progressCallback = DispResults;
           if (_server != null)
@@ -1024,7 +1116,7 @@ namespace EMRALD_Sim
           }
 
           if (i == 0) //add extra runs on the first one
-            simRuns[i].SetupBatch(runsDiv + (int.Parse(tbRunCnt.Text) % (int)ConfigData.threads), true);
+            simRuns[i].SetupBatch(runsDiv + (int.Parse(tbRunCnt.Text) % (int)threadCnt), true);
           else
             simRuns[i].SetupBatch(runsDiv, true);
 
@@ -1075,9 +1167,9 @@ namespace EMRALD_Sim
           }
           _running = false;
 
-          InvokeUIUpdate(ButtonEnableDelegate);
-          //Thread.Sleep(1000); //make sure thread writing is done before doing display results
-          simRuns[0].WriteFinalResults(true);
+          //update the screen
+          InvokeUIUpdate(ErrorAndVisUpdateDelegate);
+          simRuns[0].WriteFinalResults(true, threadCnt);
           if (cbClearTemps.Checked)
             simRuns[0].ClearTempThreadData();
         });
@@ -1134,6 +1226,7 @@ namespace EMRALD_Sim
       }
 
       Cursor.Current = saveCurs;
+      ResetResults();
       return true;
     }
 
@@ -1185,16 +1278,20 @@ namespace EMRALD_Sim
       tbSavePath2.Text = _currentModelSettings.PathResultsLocation;
       tbSeed.Text = _currentModelSettings.Seed;
       LoadLib.SetSeed(tbSeed.Text);
-      LoadLib.SetThreads(tbThreads.Text);
+      LoadLib.SetThreads(_currentModelSettings.Threads);
       tbLogRunStart.Text = _currentModelSettings.DebugFromRun.ToString();
       tbLogRunEnd.Text = _currentModelSettings.DebugToRun.ToString();
 
-      if (_currentModelSettings.DebugLevel == "Basic")
+      tbThreads.Text = _currentModelSettings.Threads;
+      if ((_currentModelSettings.Threads != "") && (_currentModelSettings.Threads != "1"))
+        cbMultiThreaded.Checked = true;
+
+      if ((_currentModelSettings.DebugLevel == "Basic") && (!cbMultiThreaded.Checked))
       {
         chkLog.Checked = true;
         ConfigData.debugLev = LogLevel.Info;
       }
-      else if (_currentModelSettings.DebugLevel == "Detailed")
+      else if ((_currentModelSettings.DebugLevel == "Detailed") && (!cbMultiThreaded.Checked))
       {
         chkLog.Checked = true;
         rbDebugBasic.Checked = false;
@@ -1218,9 +1315,9 @@ namespace EMRALD_Sim
           lbMonitorVars.SetItemChecked(i, true);
         }
       }
-      tbThreads.Text = _currentModelSettings.Threads;
-      if ((_currentModelSettings.Threads != "") && (_currentModelSettings.Threads != "1"))
-        cbMultiThreaded.Checked = true;
+
+
+      SetCurThreadCB();
 
       _populatingSettings = false;
 
@@ -1311,64 +1408,69 @@ namespace EMRALD_Sim
         if (_running && cbMultiThreaded.Checked)
           curT = cbCurThread.SelectedIndex;
 
-        lbl_ResultHeader.Text = _sim.name + " " + runCnt.ToString() + " of " + tbRunCnt.Text + " runs.";// Time - " + runTime.ToString();
-        lblRunTime.Text = runTime.ToString("g");
-        lvResults.Items.Clear();
-
-        var keyPaths = simRuns[curT].keyPaths.ToList(); // Create a separate list of the keys because multithreading can cause a change while in loop
-        foreach (var item in keyPaths)
+        if ((threadNum == null) || (curT == (int)threadNum)) //only update for specified thread or if there is none specified
         {
 
-          //  foreach (var item in simRuns[curT].keyPaths)
-          //{
-          string[] lvCols = new string[4];
-          lvCols[0] = item.Key;
-          lvCols[1] = item.Value.count.ToString();
-          lvCols[2] = (item.Value.count / (double)runCnt).ToString();
-          lvCols[3] = item.Value.timeMean.ToString(@"dd\.hh\:mm\:ss") + " +/- " + item.Value.timeStdDeviation.ToString(@"dd\.hh\:mm\:ss");
-          lvResults.Items.Add(new ListViewItem(lvCols));
+          lbl_ResultHeader.Text = _sim.name + " " + runCnt.ToString() + " of " + tbRunCnt.Text + " runs.";// Time - " + runTime.ToString();
+          lblRunTime.Text = runTime.ToString("g");
+          lvResults.Items.Clear();
 
-          //write the failed components and times.
-          if (simRuns[curT].keyFailedItems.ContainsKey(item.Key))
+          var keyPaths = simRuns[curT].keyPaths.ToList(); // Create a separate list of the keys because multithreading can cause a change while in loop
+          foreach (var item in keyPaths)
           {
-            var compFailSets = simRuns[curT].keyFailedItems[item.Key].compFailSets.ToList(); //make a copy as could be modified in loop when multi threading
-            //foreach (var cs in simRuns[curT].keyFailedItems[item.Key].compFailSets)
-            foreach (var cs in compFailSets)
+
+            //  foreach (var item in simRuns[curT].keyPaths)
+            //{
+            string[] lvCols = new string[4];
+            lvCols[0] = item.Key;
+            lvCols[1] = item.Value.count.ToString();
+            lvCols[2] = (item.Value.count / (double)runCnt).ToString();
+            lvCols[3] = item.Value.timeMean.ToString(@"dd\.hh\:mm\:ss") + " +/- " + item.Value.timeStdDeviation.ToString(@"dd\.hh\:mm\:ss");
+            lvResults.Items.Add(new ListViewItem(lvCols));
+
+            //write the failed components and times.
+            if (simRuns[curT].keyFailedItems.ContainsKey(item.Key))
             {
-              string[] lvCols2 = new string[4];
-
-              int[] ids = cs.Key.Get1sIndexArray();
-              List<string> names = new List<String>();
-              foreach (int id in ids)
+              var compFailSets = simRuns[curT].keyFailedItems[item.Key].compFailSets.ToList(); //make a copy as could be modified in loop when multi threading
+                                                                                               //foreach (var cs in simRuns[curT].keyFailedItems[item.Key].compFailSets)
+              foreach (var cs in compFailSets)
               {
-                names.Add(_sim.allStates[id].name);
-              }
-              names.Sort();
+                string[] lvCols2 = new string[4];
 
-              lvCols[0] = "";
-              lvCols[1] = ((Double)cs.Value).ToString();
-              lvCols[2] = String.Format("{0:0.00}", (((double)cs.Value / item.Value.count) * 100)) + "%";
-              lvCols[3] = string.Join(", ", names);
-              lvResults.Items.Add(new ListViewItem(lvCols));
+                int[] ids = cs.Key.Get1sIndexArray();
+                List<string> names = new List<String>();
+                foreach (int id in ids)
+                {
+                  names.Add(_sim.allStates[id].name);
+                }
+                names.Sort();
+
+                lvCols[0] = "";
+                lvCols[1] = ((Double)cs.Value).ToString();
+                lvCols[2] = String.Format("{0:0.00}", (((double)cs.Value / item.Value.count) * 100)) + "%";
+                lvCols[3] = string.Join(", ", names);
+                lvResults.Items.Add(new ListViewItem(lvCols));
+              }
             }
+
           }
 
-        }
 
-        lvVarValues.Items.Clear();
-        List<string> values = simRuns[curT].GetVarValues(simRuns[curT].logVarVals);
-        int i = 0;
-        foreach (var simVar in simRuns[curT].logVarVals)
-        {
-          string[] lvCols = new string[2];
-          lvCols[0] = simVar;
-          lvCols[1] = values[i];
-          lvVarValues.Items.Add(new ListViewItem(lvCols));
-          ++i;
-        }
+          lvVarValues.Items.Clear();
+          List<string> values = simRuns[curT].GetVarValues(simRuns[curT].logVarVals);
+          int i = 0;
+          foreach (var simVar in simRuns[curT].logVarVals)
+          {
+            string[] lvCols = new string[2];
+            lvCols[0] = simVar;
+            lvCols[1] = values[i];
+            lvVarValues.Items.Add(new ListViewItem(lvCols));
+            ++i;
+          }
 
-        this.Refresh();
-        Application.DoEvents();
+          this.Refresh();
+          Application.DoEvents();
+        }
 
         //if (tbSavePath.Text != "")
         //{
@@ -1673,9 +1775,6 @@ namespace EMRALD_Sim
           return;
         }
 
-        if (_sim.multiThreadInfo == null)
-          _sim.multiThreadInfo = new MultiThreadInfo();
-
         if (cbMultiThreaded.Checked == false)
         {
           tbThreads.Text = "0"; //0 indicates no threading, 1 will copy the model and run in a seperate thread as if multithreading but still just one thread.
@@ -1715,12 +1814,12 @@ namespace EMRALD_Sim
           List<string> issueItems = _sim.CanMutiThread();
           if (issueItems.Count > 0)
           {
-            using (var frm = new FormMultiThreadRefs(_sim.multiThreadInfo, issueItems))
+            using (var frm = new FormMultiThreadRefs(_sim.multiThreadInfo, issueItems, _sim.rootPath))
             {
               var result = frm.ShowDialog();
               if (result == DialogResult.OK)
               {
-                _sim.multiThreadInfo = frm.EditedMultiThreadInfo;
+                _sim.SetMultiThreadInfo(frm.EditedMultiThreadInfo);
                 teModel.Text = _sim.modelTxt;
                 //save the multithread stuff.
                 saveStripMenuItem_Click(sender, e);
@@ -1735,7 +1834,8 @@ namespace EMRALD_Sim
           }
           else //save the empty multiThreadInfo
           {
-            _sim.multiThreadInfo = new MultiThreadInfo();
+            if(_sim.multiThreadInfo == null)
+              _sim.SetMultiThreadInfo(new MultiThreadInfo());
             teModel.Text = _sim.modelTxt;
             saveStripMenuItem_Click(sender, e);
           }
@@ -1743,6 +1843,7 @@ namespace EMRALD_Sim
 
         tbThreads.Visible = cbMultiThreaded.Checked;
         lblThreads.Visible = cbMultiThreaded.Checked;
+        cbClearTemps.Visible = cbMultiThreaded.Checked;
         chkLog.Checked = !cbMultiThreaded.Checked;
         chkLog.Enabled = !cbMultiThreaded.Checked;
         tbSeed.Enabled = !cbMultiThreaded.Checked;
@@ -1750,13 +1851,23 @@ namespace EMRALD_Sim
         cbCurThread.Visible = cbMultiThreaded.Checked;
         bttnPathRefs.Visible = cbMultiThreaded.Checked;
 
-        tbThreads_Leave(sender, e); // update cur thread stuff
+        LoadLib.SetThreads(tbThreads.Text);
+        SetCurThreadCB();
       }
       finally
       {
         // Change cursor back to default
         Cursor.Current = Cursors.Default;
       }
+    }
+
+    private void SetCurThreadCB()
+    {
+      cbCurThread.Items.Clear();
+      for (int i = 0; i < ConfigData.threads; i++)
+        cbCurThread.Items.Add($"{i}");
+      if (cbMultiThreaded.Checked && (ConfigData.threads > 0))
+        cbCurThread.SelectedIndex = ((int)ConfigData.threads) - 1;
     }
 
     private void tbThreads_Leave(object sender, EventArgs e)
@@ -1769,12 +1880,7 @@ namespace EMRALD_Sim
         }
         else
         {
-          cbCurThread.Items.Clear();
-          for (int i = 0; i < ConfigData.threads; i++)
-            cbCurThread.Items.Add($"{i}");
-          if (cbMultiThreaded.Checked && (ConfigData.threads > 0))
-            cbCurThread.SelectedIndex = ((int)ConfigData.threads) - 1;
-
+          SetCurThreadCB();
           SaveUISettingsToJson();
         }
       }
@@ -1788,20 +1894,16 @@ namespace EMRALD_Sim
         return;
       }
 
-      // Ensure multiThreadInfo is initialized
-      if (_sim.multiThreadInfo == null)
-        _sim.multiThreadInfo = new MultiThreadInfo();
-
       // Get issues (if any) for multi-threading.
       List<string> issueItems = _sim.CanMutiThread();
 
       // Always show the form, regardless of issue count
-      using (var frm = new FormMultiThreadRefs(_sim.multiThreadInfo, issueItems))
+      using (var frm = new FormMultiThreadRefs(_sim.multiThreadInfo, issueItems, _sim.rootPath))
       {
         var result = frm.ShowDialog();
         if (result == DialogResult.OK)
         {
-          _sim.multiThreadInfo = frm.EditedMultiThreadInfo;
+          _sim.SetMultiThreadInfo(frm.EditedMultiThreadInfo);
           teModel.Text = _sim.modelTxt;
           //save the multithread stuff.
           saveStripMenuItem_Click(sender, e);
@@ -1812,11 +1914,6 @@ namespace EMRALD_Sim
           // (Optional: add code here if you want to revert UI or warn the user)
         }
       }
-    }
-
-    private void txtMStatus_TextChanged(object sender, EventArgs e)
-    {
-
     }
   }
 }

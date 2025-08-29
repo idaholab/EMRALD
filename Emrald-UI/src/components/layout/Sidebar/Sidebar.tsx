@@ -53,7 +53,11 @@ const Sidebar = () => {
       }}
     >
       <Toolbar />
-      <ResizeHandle onMouseDown={(_event: React.MouseEvent<HTMLElement>) => handleMouseDown()} />
+      <ResizeHandle
+        onMouseDown={() => {
+          handleMouseDown();
+        }}
+      />
       <Box sx={{ overflow: 'auto' }}>
         <MenuAccordion
           panels={diagramPanels}
@@ -86,8 +90,12 @@ const Sidebar = () => {
           open={true}
           title="Delete Confirmation"
           submitText="delete"
-          onSubmit={() => deleteItem()}
-          onClose={() => closeDeleteConfirmation()}
+          onSubmit={() => {
+            deleteItem();
+          }}
+          onClose={() => {
+            closeDeleteConfirmation();
+          }}
         >
           <Typography>
             Are you sure you want to delete {itemToDelete?.name}? It will be removed from all other

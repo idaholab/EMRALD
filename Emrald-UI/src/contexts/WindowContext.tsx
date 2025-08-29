@@ -1,9 +1,9 @@
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState, type ReactNode } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 
-interface WindowPosition {
+export interface WindowPosition {
   x: number;
   y: number;
   width: number;
@@ -29,9 +29,9 @@ interface WindowContextType {
     windowId?: string | null,
     closePrevWindowId?: string,
   ) => void;
-  updateTitle: (currentTitle: string, newTitle: string) => Promise<void>;
+  updateTitle: (currentTitle: string, newTitle: string) => void;
   bringToFront: (window: Window) => void;
-  handleClose: (id?: string) => Promise<void>;
+  handleClose: (id?: string) => void;
   getWindowTitleById: (id: string | null) => string | undefined;
   toggleMaximize: (windowToToggle: Window) => void;
   toggleMinimize: (windowToToggle: Window) => void;
@@ -75,8 +75,8 @@ export const WindowProvider: React.FC<WindowProviderProps> = ({ children }) => {
     }
   };
 
-  const handleClose = async (id?: string) => {
-    const windowIdToClose = id || activeWindowId; // Use activeWindowId if id is not provided
+  const handleClose = (id?: string) => {
+    const windowIdToClose = id ?? activeWindowId; // Use activeWindowId if id is not provided
     if (windowIdToClose) {
       const filteredWindows = windows.filter((window) => window.id !== windowIdToClose);
       setWindows(filteredWindows);
@@ -111,7 +111,7 @@ export const WindowProvider: React.FC<WindowProviderProps> = ({ children }) => {
       id: uuidv4(),
       title,
       isOpen: true,
-      initialPosition: position || {
+      initialPosition: position ?? {
         x: 100,
         y: 50,
         width: isMediumScreen ? 700 : 900,
@@ -136,7 +136,7 @@ export const WindowProvider: React.FC<WindowProviderProps> = ({ children }) => {
     return windows.find((window) => window.id === id)?.title;
   };
 
-  const updateTitle = async (currentTitle: string, newTitle: string): Promise<void> => {
+  const updateTitle = (currentTitle: string, newTitle: string) => {
     const windowToUpdate = windows.find((window) => window.title === currentTitle);
     if (windowToUpdate) {
       addWindow(

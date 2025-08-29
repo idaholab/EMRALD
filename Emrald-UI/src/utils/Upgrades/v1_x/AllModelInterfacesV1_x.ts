@@ -185,6 +185,14 @@ export interface Diagram {
      */
     okState: "True" | "False"
   }[]
+  /**
+   * Deprecated
+   */
+  required?: boolean
+  /**
+   * Deprecated
+   */
+  diagramLabels?: string[]
 }
 export interface ExtSim {
   /**
@@ -237,6 +245,10 @@ export interface State {
    * possition for the GUI
    */
   geometry: string
+  /**
+   * Deprecated
+   */
+  required?: boolean
 }
 export interface Action {
   /**
@@ -259,7 +271,7 @@ export interface Action {
   /**
    * Optional. Only one action may be taken so the probability determines if this action is taken vs another in the EventAction list. If false then the probability is used to sample if this action occured and multiple or no actions could happen when the event is triggered.
    */
-  mutExcl?: boolean
+  mutExcl?: boolean | string
   /**
    * Optional. If this is a transition action then these are the states that it could be transitioned to.
    */
@@ -332,16 +344,19 @@ export interface Action {
   /**
    * Used for executing applications with custom form data. This can be anything needed by the custom form, but in the end only the standard atRunExtApp fields are used to do the action.
    */
-  formData?: {}
+  formData?: Record<string, unknown>
   /**
    * Optional. For action type atRunExtApp. It is used for custom app form.
    */
-  template?: {}
+  template?: Record<string, unknown>
   /**
    * Optional. For action type atRunExtApp. It is flag to indicate the type of return from the processOutputFileCode. If rtNone then it has no return, othrwise the C# script must return a List<string> with +/-[StateName] to shift out or into a state.
    */
   returnProcess?: string
-  NewProperty?: unknown
+  /**
+   * Deprecated
+   */
+  required?: boolean
 }
 export interface Event {
   /**
@@ -359,8 +374,8 @@ export interface Event {
   /**
    * Is this a global item to show up in the global list, If false it showes up in local or all list.
    */
-  mainItem: boolean
-  evType: EventType
+  mainItem?: boolean
+  evType?: EventType
   /**
    * Optional. For event type etStateCng. Flag to indicate if all the items in the triggerStates need to occure as specified or just one of them.
    */
@@ -467,6 +482,61 @@ export interface Event {
   stdTimeRate?: TimeVariableUnit
   minTimeRate?: TimeVariableUnit
   maxTimeRate?: TimeVariableUnit
+  /**
+   * Deprecated
+   */
+  Code?: string
+  /**
+   * Deprecated
+   */
+  sim3dID?: string
+  /**
+   * Deprecated
+   */
+  ndMean?: number
+  /**
+   * Deprecated
+   */
+  ndStdDev?: number
+  /**
+   * Deprecated
+   */
+  ndMin?: number
+  /**
+   * Deprecated
+   */
+  ndMax?: number
+  /**
+   * Deprecated
+   */
+  evalCurOnInitial?: boolean
+  /**
+   * Deprecated
+   */
+  required?: boolean
+  /**
+   * Deprecated
+   */
+  missionTime?: number
+  /**
+   * Type of the event
+   */
+  evtType?:
+    | "etStateCng"
+    | "etComponentLogic"
+    | "etFailRate"
+    | "etTimer"
+    | "et3dSimEv"
+    | "etDistribution"
+    | "etVarCond"
+    | "etNormalDist"
+    | "etLogNormalDist"
+    | "etExponentialDist"
+    | "etWeibullDist"
+  /**
+   * Deprecated
+   */
+  stdv?: number
 }
 export interface LogicNode {
   /**
@@ -577,6 +647,10 @@ export interface Variable {
    * Optional. For variables of varScope gt3DSim, this is the external simulations name of the variable. It is used in sending a message to the external simulation.
    */
   sim3DId?: string
+  /**
+   * Deprecated
+   */
+  required?: boolean
 }
 /**
  * What catagory grouping this item belongs to. Used to indicate a group for and EMRALD model template

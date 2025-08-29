@@ -23,7 +23,7 @@ interface FileUploadComponentProps {
   setFile: (value: File | null) => void;
   clearFile?: () => void;
   fileName?: string;
-  accept?: string; 
+  accept?: string;
 }
 
 const FileUploadComponent: React.FC<FileUploadComponentProps> = ({
@@ -65,11 +65,17 @@ const FileUploadComponent: React.FC<FileUploadComponentProps> = ({
         startIcon={<FileUploadIcon />}
       >
         {label}
-        <VisuallyHiddenInput aria-label={label} ref={inputRef} type="file" accept={accept} onChange={handleFileChange} />
+        <VisuallyHiddenInput
+          aria-label={label}
+          ref={inputRef}
+          type="file"
+          accept={accept}
+          onChange={handleFileChange}
+        />
       </Button>
 
       <Typography sx={{ ml: 3, fontSize: 18 }}>
-        {uploadedContent?.name || fileName || ''}
+        {uploadedContent?.name ?? fileName ?? ''}
       </Typography>
 
       {uploadedContent && (

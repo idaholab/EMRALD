@@ -213,6 +213,17 @@
                             "okState"
                         ]
                     }
+                },
+                "required": {
+                    "type": "boolean",
+                    "description": "Deprecated"
+                },
+                "diagramLabels": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "description": "Deprecated"
                 }
             },
             "additionalProperties": false,
@@ -308,6 +319,10 @@
                 "geometry": {
                     "type": "string",
                     "description": "possition for the GUI"
+                },
+                "required": {
+                    "type": "boolean",
+                    "description": "Deprecated"
                 }
             },
             "additionalProperties": false,
@@ -345,7 +360,7 @@
                     "description": "Is this a global item to show up in the global list, If false it showes up in local or all list."
                 },
                 "mutExcl": {
-                    "type": "boolean",
+                    "type": ["boolean", "string"],
                     "description": "Optional. Only one action may be taken so the probability determines if this action is taken vs another in the EventAction list. If false then the probability is used to sample if this action occured and multiple or no actions could happen when the event is triggered."
                 },
                 "newStates": {
@@ -444,7 +459,10 @@
                     "type": "string",
                     "description": "Optional. For action type atRunExtApp. It is flag to indicate the type of return from the processOutputFileCode. If rtNone then it has no return, othrwise the C# script must return a List<string> with +/-[StateName] to shift out or into a state."
                 },
-                "NewProperty": {}
+                "required": {
+                    "type": "boolean",
+                    "description": "Deprecated"
+                }
             },
             "additionalProperties": false,
             "required": [
@@ -638,14 +656,56 @@
                 },
                 "maxTimeRate": {
                     "$ref": "#/definitions/TimeVariableUnit"
+                },
+                "Code": {
+                    "type": "string",
+                    "description": "Deprecated"
+                },
+                "sim3dID": {
+                    "type": "string",
+                    "description": "Deprecated"
+                },
+                "ndMean": {
+                    "type": "number",
+                    "description": "Deprecated"
+                },
+                "ndStdDev": {
+                    "type": "number",
+                    "description": "Deprecated"
+                },
+                "ndMin": {
+                    "type": "number",
+                    "description": "Deprecated"
+                },
+                "ndMax": {
+                    "type": "number",
+                    "description": "Deprecated"
+                },
+                "evalCurOnInitial": {
+                    "type": "boolean",
+                    "description": "Deprecated"
+                },
+                "required": {
+                    "type": "boolean",
+                    "description": "Deprecated"
+                },
+                "missionTime": {
+                    "type": "number",
+                    "description": "Deprecated"
+                },
+                "evtType": {
+                    "$ref": "#/definitions/EventType",
+                    "description": "Deprecated"
+                },
+                "stdv": {
+                    "type": "number",
+                    "description": "Deprecated"
                 }
             },
             "additionalProperties": false,
             "required": [
                 "name",
-                "desc",
-                "mainItem",
-                "evType"
+                "desc"
             ]
         },
         "LogicNode": {
@@ -810,6 +870,10 @@
                 "sim3DId": {
                     "type": "string",
                     "description": "Optional. For variables of varScope gt3DSim, this is the external simulations name of the variable. It is used in sending a message to the external simulation."
+                },
+                "required": {
+                    "type": "boolean",
+                    "description": "Deprecated"
                 }
             },
             "additionalProperties": false,

@@ -11,9 +11,8 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import FormControl from '@mui/material/FormControl';
 import Paper from '@mui/material/Paper';
 import { useDiagramContext } from '../../../contexts/DiagramContext';
-import { StateEvalValue } from '../../../types/ItemTypes';
 import { useStateContext } from '../../../contexts/StateContext';
-import { CompChildItems } from '../../../types/LogicNode';
+import type { CompChildItems, StateEvalValue } from '../../../types/EMRALD_Model';
 
 export interface ComponentStateValue {
   stateName: string;
@@ -21,28 +20,31 @@ export interface ComponentStateValue {
 }
 interface StateValuesTableProps {
   componentNode: CompChildItems | undefined;
-  setCurrentNodeStateValues?: React.Dispatch<React.SetStateAction<ComponentStateValue[]>>
+  setCurrentNodeStateValues?: React.Dispatch<React.SetStateAction<ComponentStateValue[]>>;
 }
 
-const StateValuesTable: React.FC<StateValuesTableProps> = ({ componentNode, setCurrentNodeStateValues }) => {
+const StateValuesTable: React.FC<StateValuesTableProps> = ({
+  componentNode,
+  setCurrentNodeStateValues,
+}) => {
   const { getDiagramByDiagramName } = useDiagramContext();
   const [stateValues, setStateValues] = useState<ComponentStateValue[]>([]);
   const { getStateByStateName } = useStateContext();
 
   useEffect(() => {
-    const diagramStates = getDiagramByDiagramName(componentNode?.diagramName || '')?.states;
+    const diagramStates = getDiagramByDiagramName(componentNode?.diagramName ?? '')?.states;
     if (diagramStates && componentNode?.stateValues && componentNode.stateValues.length === 0) {
       setStateValues(
         diagramStates.map((stateName) => {
           const state = getStateByStateName(stateName);
           return {
-            stateName: state.name,
-            stateValue: state.defaultSingleStateValue || 'False',
+            stateName: state?.name ?? '',
+            stateValue: state?.defaultSingleStateValue ?? 'False',
           };
         }),
       );
     } else {
-      setStateValues(componentNode?.stateValues || []);
+      setStateValues(componentNode?.stateValues ?? []);
     }
   }, [componentNode, getDiagramByDiagramName]);
 
@@ -87,7 +89,9 @@ const StateValuesTable: React.FC<StateValuesTableProps> = ({ componentNode, setC
                     aria-labelledby="eval-values"
                     name="eval-buttons-group"
                     value={stateValue.stateValue}
-                    onChange={(e) => handleChange(e, stateValue)}
+                    onChange={(e) => {
+                      handleChange(e, stateValue);
+                    }}
                   >
                     <FormControlLabel value="False" control={<Radio />} label="False" />
                     <FormControlLabel value="True" control={<Radio />} label="True" />

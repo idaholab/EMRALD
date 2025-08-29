@@ -2,7 +2,7 @@ import { Handle, Position } from 'reactflow';
 import './StateNode.scss';
 import { NodeTypeIcon } from './IconTypes';
 import StateControllerComponent from './StateDisplayControllers/StateControllerComponent';
-import { State } from '../../../types/State';
+import type { State } from '../../../types/EMRALD_Model';
 import Box from '@mui/material/Box';
 import { useState } from 'react';
 import { PiResizeFill } from 'react-icons/pi';
@@ -20,8 +20,8 @@ const StateNode: React.FC<StateNodeComponentProps> = ({ id, data }) => {
   const handleMouseDown = (e: React.MouseEvent) => {
     const startX = e.clientX;
     const startY = e.clientY;
-    const startWidth = size?.width || 225;
-    const startHeight = size?.height || 200;
+    const startWidth = size?.width ?? 225;
+    const startHeight = size?.height ?? 200;
 
     const onMouseMove = (moveEvent: MouseEvent) => {
       const newWidth = startWidth + moveEvent.clientX - startX;
@@ -44,24 +44,26 @@ const StateNode: React.FC<StateNodeComponentProps> = ({ id, data }) => {
 
   return (
     <Box
-      className={`${
+      className={
         state.defaultSingleStateValue === 'False'
           ? 'failed-state'
           : state.defaultSingleStateValue === 'True'
-          ? 'success-state'
-          : ''
-      }`}
+            ? 'success-state'
+            : ''
+      }
       style={{
-        width: size?.width || 225,
-        height: size?.height || 'max-content',
+        width: size?.width ?? 225,
+        height: size?.height ?? 'max-content',
         position: 'relative',
       }}
     >
       <div>
         <div className="state-node__header" id={id}>
-          <Box sx={{direction: 'flex', flexDirection: 'column'}} mr={1}>
-            <Box><strong>{state.name}</strong> </Box>
-            {state.desc && (<Box sx={{fontSize: '10px'}}>{state.desc}</Box>)}
+          <Box sx={{ direction: 'flex', flexDirection: 'column' }} mr={1}>
+            <Box>
+              <strong>{state.name}</strong>{' '}
+            </Box>
+            {state.desc && <Box sx={{ fontSize: '10px' }}>{state.desc}</Box>}
           </Box>
           <NodeTypeIcon type={state.stateType} />
         </div>

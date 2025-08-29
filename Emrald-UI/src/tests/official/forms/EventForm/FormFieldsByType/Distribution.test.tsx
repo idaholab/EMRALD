@@ -2,7 +2,13 @@ import { findByRole, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, test } from 'vitest';
 import EventForm from '../../../../../components/forms/EventForm/EventForm';
-import { ensureVariable, getEvent, renderEventForm, save, selectOption } from '../../../../test-utils';
+import {
+  ensureVariable,
+  getEvent,
+  renderEventForm,
+  save,
+  selectOption,
+} from '../../../../test-utils';
 import expected from './Distribution.expected.json';
 
 describe('Distribution Events', () => {
@@ -235,5 +241,34 @@ describe('Distribution Events', () => {
 
     await save();
     expect(getEvent(name)).toEqual(expected[name]);
+  });
+
+  test('disallows invalid values', async () => {
+    const name = 'changes distribution type';
+    renderEventForm(
+      <EventForm
+        eventData={{
+          objType: 'Event',
+          name,
+          desc: '',
+          mainItem: false,
+          evType: 'etDistribution',
+          distType: 'dtNormal',
+          parameters: [],
+        }}
+      />,
+    );
+    const user = userEvent.setup();
+
+    // Enter values for distribution parameters
+    await user.type(await screen.findByLabelText('Mean'), 'abc');
+    await user.type(await screen.findByLabelText('Standard Deviation'), '5');
+    await user.type(await screen.findByLabelText('Minimum'), '0');
+    await user.type(await screen.findByLabelText('Maximum'), '100');
+
+    // The save button should not be clickable because the "user" entered an invalid number for Mean
+    await expect(async () => {
+      await user.click(await screen.findByText('Save'));
+    }).rejects.toThrowError();
   });
 });

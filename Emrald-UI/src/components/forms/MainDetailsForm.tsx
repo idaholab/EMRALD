@@ -1,36 +1,36 @@
 import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
-import Select, { SelectChangeEvent } from '@mui/material/Select';
+import Select, { type SelectChangeEvent } from '@mui/material/Select';
 import TextField from '@mui/material/TextField';
-import React, { Dispatch, SetStateAction } from 'react';
-import {
+import React, { type Dispatch, type SetStateAction } from 'react';
+import type {
   ActionType,
   DiagramType,
   EventType,
   GateType,
-  MainItemTypes,
+  MainItemType,
   StateType,
   VariableType,
-} from '../../types/ItemTypes';
+} from '../../types/EMRALD_Model';
 import { Box, Button } from '@mui/material';
 import { useWindowContext } from '../../contexts/WindowContext';
 
-type ValueTypes<T extends MainItemTypes> = T extends 'Diagram'
+type ValueTypes<T extends MainItemType> = T extends 'Diagram'
   ? DiagramType
   : T extends 'LogicNode'
-  ? GateType
-  : T extends 'State'
-  ? StateType
-  : T extends 'Event'
-  ? EventType
-  : T extends 'Action'
-  ? ActionType
-  : T extends 'Variable'
-  ? VariableType
-  : never;
+    ? GateType
+    : T extends 'State'
+      ? StateType
+      : T extends 'Event'
+        ? EventType
+        : T extends 'Action'
+          ? ActionType
+          : T extends 'Variable'
+            ? VariableType
+            : never;
 
-interface MainDetailsFormProps<T extends MainItemTypes> {
+interface MainDetailsFormProps<T extends MainItemType> {
   children: React.ReactNode;
   itemType: T;
   typeLabel?: string;
@@ -51,9 +51,10 @@ interface MainDetailsFormProps<T extends MainItemTypes> {
   setDesc: (desc: string) => void;
   setType: Dispatch<SetStateAction<ValueTypes<T>>>;
   reqPropsFilled: boolean;
+  invalidValues?: Set<string>;
 }
 
-const MainDetailsForm = <T extends MainItemTypes>({
+const MainDetailsForm = <T extends MainItemType>({
   children,
   name,
   type,
@@ -73,23 +74,24 @@ const MainDetailsForm = <T extends MainItemTypes>({
   handleNameChange,
   handleTypeChange,
   reset,
+  invalidValues,
 }: MainDetailsFormProps<T>) => {
   const { handleClose } = useWindowContext();
   return (
     <>
       <FormControl variant="outlined" size="small" sx={{ minWidth: 120, width: '100%' }}>
-        <InputLabel id="type-select-label">{typeLabel ? typeLabel : 'Type'}</InputLabel>
+        <InputLabel id="type-select-label">{typeLabel ?? 'Type'}</InputLabel>
         <Select
           labelId="type-select-label"
           id="type-select"
-          value={type as ValueTypes<T>}
+          value={type}
           disabled={typeDisabled}
           onChange={(event: SelectChangeEvent<ValueTypes<T>>) => {
             setType(event.target.value as ValueTypes<T>);
             handleTypeChange && handleTypeChange(event.target.value as ValueTypes<T>);
             reset && reset();
           }}
-          label={typeLabel ? typeLabel : 'Type'}
+          label={typeLabel ?? 'Type'}
         >
           {typeOptions.map((option) => (
             <MenuItem key={option.value} value={option.value}>
@@ -106,7 +108,9 @@ const MainDetailsForm = <T extends MainItemTypes>({
         disabled={nameDisabled}
         sx={{ mb: 0 }}
         value={name}
-        onChange={(e) => handleNameChange(e.target.value)}
+        onChange={(e) => {
+          handleNameChange(e.target.value);
+        }}
         fullWidth
         error={nameError}
         helperText={nameError ? errorMessage : ''}
@@ -120,7 +124,9 @@ const MainDetailsForm = <T extends MainItemTypes>({
         multiline
         margin="normal"
         value={desc}
-        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setDesc(e.target.value)}
+        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+          setDesc(e.target.value);
+        }}
       />
       {children}
       <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 5 }}>
@@ -128,12 +134,23 @@ const MainDetailsForm = <T extends MainItemTypes>({
           variant="contained"
           color="primary"
           sx={{ mr: 2 }}
-          onClick={() => handleSave()}
-          disabled={error || !reqPropsFilled}
+          onClick={() => {
+            handleSave();
+          }}
+          disabled={error ?? !reqPropsFilled}
+          data-error={error}
+          data-req-props-filled={reqPropsFilled}
+          data-invalid-vals={invalidValues?.entries().toArray().join(',')}
         >
           Save
         </Button>
-        <Button variant="contained" color="secondary" onClick={() => handleClose()}>
+        <Button
+          variant="contained"
+          color="secondary"
+          onClick={() => {
+            handleClose();
+          }}
+        >
           Cancel
         </Button>
       </Box>

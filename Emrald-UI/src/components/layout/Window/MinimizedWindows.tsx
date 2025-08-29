@@ -38,11 +38,19 @@ export default function MinimizedWindows() {
       {minimizedWindows.length !== 0 ? (
         <>
           <Typography variant="h6">Minimized Windows</Typography>
-          <Stack direction="row" spacing={2} sx={{ width: '80vw', alignItems: 'center' }} useFlexGap flexWrap="wrap">
+          <Stack
+            direction="row"
+            spacing={2}
+            sx={{ width: '80vw', alignItems: 'center' }}
+            useFlexGap
+            flexWrap="wrap"
+          >
             {minimizedWindows.map((window) => (
               <Item
                 key={window.id}
-                onClick={() => toggleMinimize(window)}
+                onClick={() => {
+                  toggleMinimize(window);
+                }}
               >
                 <Typography sx={{ flex: 1 }}>{window.title}</Typography>{' '}
                 <OpenInFullIcon sx={{ ml: 3 }} />

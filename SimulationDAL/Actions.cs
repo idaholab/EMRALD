@@ -111,7 +111,7 @@ namespace SimulationDAL
       addToList.allActions.Add(this, false);
     }
 
-    public virtual List<ScanForReturnItem> ScanFor(ScanForTypes scanType)
+    public virtual List<ScanForReturnItem> ScanFor(ScanForTypes scanType, string modelRootPath)
     {
       //override in the different types if it is possible that the item has something for the scanType 
       return new List<ScanForReturnItem>();
@@ -685,7 +685,7 @@ namespace SimulationDAL
       return true;
     }
 
-    public virtual bool CompileCode(VariableList allVars)
+    public virtual bool CompileCode(VariableList allVars, string curDir)
     {
       if (scriptCode == "")
       {
@@ -694,6 +694,7 @@ namespace SimulationDAL
 
       this.compiled = false;
       scriptRunner.Code = scriptCode;
+      scriptRunner.curDir = curDir;
 
       //add the Time and 3D Frame variables
       scriptRunner.AddVariable("CurTime", typeof(double));
@@ -733,7 +734,7 @@ namespace SimulationDAL
       return this.compiled;
     }
 
-    public override List<ScanForReturnItem> ScanFor(ScanForTypes scanType)
+    public override List<ScanForReturnItem> ScanFor(ScanForTypes scanType, string modelRootPath)
     {
       var listItems = new List<ScanForReturnItem>();
 
@@ -757,13 +758,26 @@ namespace SimulationDAL
       return listItems;
     }
 
-    public void UpdatePathRefs(string oldRef, string newRef)
+    public void UpdatePathRefs(string oldRef, string newRef, string modelPath)
     {
-      //find the file references in the code and look for a match of the oldRef and replace.         
-      var paths = CommonFunctions.FindFilePathReferences(ref scriptCode, oldRef, newRef);
+      //find the file references in the code and look for a match of the oldRef and replace.
+      string newRefEscaped = newRef.Replace("\\", "\\\\").Replace("\"", "\\\"");
+      var paths = CommonFunctions.FindFilePathReferences(ref scriptCode, oldRef, newRefEscaped);
 
-      if (paths.Count >= 0)
+      if (paths.Count <= 0)
         throw new Exception("Failed to find string in the path " + oldRef + " in the source of the External Simulation Event.");
+      
+      scriptRunner.Code = scriptCode;
+      scriptRunner.curDir = modelPath;
+      this.compiled = false;
+      if (!scriptRunner.Compile(this._retType))
+      {
+        throw new Exception("failed to compile code - " + String.Join(Environment.NewLine, scriptRunner.messages.ToArray()) + Environment.NewLine + scriptCode);
+      }
+      else
+      {
+        this.compiled = true;
+      }
 
     }
   }
@@ -869,7 +883,7 @@ namespace SimulationDAL
           throw new Exception("No code for " + this.name);
         }
 
-        if (!CompileCode(lists.allVariables))
+        if (!CompileCode(lists.allVariables, lists.rootPath))
           throw new Exception("Code failed compile, can not evaluate");
       }
 
@@ -889,7 +903,6 @@ namespace SimulationDAL
       }
 
       toSetVar.SetValue(scriptRunner.EvaluateGeneric());
-
       //if (this.retType == typeof(double))
       //{
       //  toSet = scriptRunner.Evaluate();
@@ -1138,7 +1151,7 @@ namespace SimulationDAL
           throw new Exception("No code for " + this.name);
         }
 
-        if (!CompileCode(lists.allVariables))
+        if (!CompileCode(lists.allVariables, lists.rootPath))
           throw new Exception("Code failed compile, can not evaluate");
       }
 
@@ -1172,7 +1185,7 @@ namespace SimulationDAL
       : base(inName, inScriptCode, inCodeVars, EnActionType.atCngVarVal) { }
 
 
-    public bool CompileCode(EmraldModel lists)
+    public bool CompileCode(EmraldModel lists, string modelPath)
     {
       if (scriptCode == "")
       {
@@ -1182,6 +1195,7 @@ namespace SimulationDAL
       this.compiled = false;
       scriptRunner = new ScriptEngine(ScriptEngine.Languages.CSharp);
       scriptRunner.Code = scriptCode; // "Result = var1+3;";
+      scriptRunner.curDir = modelPath;
 
       //add the Time and 3D Frame variables
       scriptRunner.AddVariable("CurTime", typeof(Double));
@@ -1227,7 +1241,7 @@ namespace SimulationDAL
     {
       if (!this.compiled)
       {
-        if (!CompileCode(lists))
+        if (!CompileCode(lists, lists.rootPath))
           throw new Exception("Code for - " + this.name + " failed to compile, can not evaluate");
       }
 
@@ -1408,7 +1422,8 @@ namespace SimulationDAL
             fullExePath += @"\";
 
           fullExePath = Path.GetFullPath(Path.Combine(fullExePath + exePath));
-          if (!File.Exists(fullExePath))
+          if (!fullExePath.Contains("AppData") &&  //If this is a multithread path then don't check!
+              !File.Exists(fullExePath))
             throw new Exception("Executable path for the \"RunApplication\" action does not exist ! - " + exePath);
         }
       }
@@ -1464,6 +1479,7 @@ namespace SimulationDAL
       this.compiled = false;
       makeInputFileCompEval = new ScriptEngine(ScriptEngine.Languages.CSharp);
       makeInputFileCompEval.Code = makeInputFileCode; // "Result = var1+3;";
+      makeInputFileCompEval.curDir = lists.rootPath;
 
       //add the Time and 3D Frame variables
       makeInputFileCompEval.AddVariable("CurTime", typeof(double));
@@ -1531,6 +1547,7 @@ namespace SimulationDAL
       this.compiled = false;
       processOutputFileCompEval = new ScriptEngine(ScriptEngine.Languages.CSharp);
       processOutputFileCompEval.Code = processOutputFileCode; // "Result = var1+3;";
+      processOutputFileCompEval.curDir = lists.rootPath;
 
       //add the Time and 3D Frame variables
       processOutputFileCompEval.AddVariable("CurTime", typeof(Double));
@@ -1840,21 +1857,32 @@ namespace SimulationDAL
       }
     }
 
-    public override List<ScanForReturnItem> ScanFor(ScanForTypes scanType)
+    public override List<ScanForReturnItem> ScanFor(ScanForTypes scanType, string modelRootPath)
     {
       var listItems = new List<ScanForReturnItem>();
+
+      //get the full path of the exe if it is reletive
+      string fullExePath = Path.GetFullPath(Path.Combine(modelRootPath, this.exePath)); 
 
       if (scanType == ScanForTypes.sfMultiThreadIssues)
       {
         //see if there are any file references in the code.         
         var paths = CommonFunctions.FindFilePathReferences(ref makeInputFileCode);
+        //get the reference to the exe, this must be first
+        listItems.Add(new ScanForRefsItem(this.id,
+                                          this.name,
+                                          EnIDTypes.itAction,
+                                          "Run Exe Action [" + this.name + "] has a file path reference to the exe to run: " + this.exePath + ". Assign this Exe and its needed files to be copied.",
+                                          this.exePath));
+
         foreach (var path in paths)
         {
           listItems.Add(new ScanForRefsItem(this.id,
                                           this.name,
                                           EnIDTypes.itAction,
                                           "Run Exe Action[" + this.name + "] has a file path reference in the pre - process code: " + path + ". If there could be a multi thread issue, assign files to copy.",
-                                          path));
+                                          path,
+                                          fullExePath));
           }
 
         paths = CommonFunctions.FindFilePathReferences(ref processOutputFileCode);
@@ -1864,34 +1892,49 @@ namespace SimulationDAL
                                           this.name,
                                           EnIDTypes.itAction,
                                           "Run Exe Action [" + this.name + "] has a file path reference in the post-process code: " + path + ". If there could be a multi thread issue, assign files to copy.",
-                                          path));
+                                          path,
+                                          fullExePath));
         }
-
-        //get the reference to the exe
-        listItems.Add(new ScanForRefsItem(this.id,
-                                          this.name,
-                                          EnIDTypes.itAction,
-                                          "Run Exe Action [" + this.name + "] has a file path reference to the exe to run: " + this.exePath + ". Assign this Exe and its needed files to be copied.",
-                                          this.exePath));
       }
 
       return listItems;
     }
 
-    public void UpdatePathRefs(string oldRef, string newRef)
+    public void UpdatePathRefs(string oldRef, string newRef, string modelPath, EmraldModel lists)
     {
       bool inExe = false;
       if (this.exePath == oldRef)
       {
         this.exePath = newRef;
         inExe = true;
+
+        //make sure the exe path exists
+        string fullExePath = modelPath;
+        if (!fullExePath.EndsWith(@"\"))
+          fullExePath += @"\";
+        if (Path.IsPathRooted(exePath))
+        {
+          fullExePath = exePath;
+        }
+        else
+        {
+          fullExePath = Path.GetFullPath(Path.Combine(fullExePath + exePath));
+        }
+
+        if (!Path.Exists(fullExePath))
+          throw new Exception("Executable path for the \"RunApplication\" action does not exist for the tread! - " + exePath);
       }
       //find the file references in the code and look for a match of the oldRef and replace.         
       var paths = CommonFunctions.FindFilePathReferences(ref makeInputFileCode, oldRef, newRef);
       paths.AddRange(CommonFunctions.FindFilePathReferences(ref processOutputFileCode, oldRef, newRef));
-      if ((paths.Count >= 0) && !inExe)
+      if ((paths.Count <= 0) && !inExe)
         throw new Exception("Failed to find string in the path " + oldRef + " in the source of the External Simulation Event and is not the exe path.");
 
+      //recompile the source
+      this.compiled = false;
+      CompileMakeInputFileCode(lists);
+      CompileProcessOutputFileCode(lists);
+      this.exeOutputPath = Path.GetDirectoryName(modelPath);
     }
   }
 
@@ -2366,7 +2409,7 @@ namespace SimulationDAL
         {
           try
           {
-            ((VarValueAct)item.Value).CompileCode(lists.allVariables);
+            ((VarValueAct)item.Value).CompileCode(lists.allVariables, lists.rootPath);
           }
           catch (Exception e)
           {
@@ -2407,7 +2450,7 @@ namespace SimulationDAL
 
       foreach (var curItem in this.Values)
       {
-        foundList.AddRange(curItem.ScanFor(scanType));        
+        foundList.AddRange(curItem.ScanFor(scanType, lists.rootPath));        
       }
 
       return foundList;

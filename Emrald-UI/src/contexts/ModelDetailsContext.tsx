@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState } from 'react';
-import { EmraldContextWrapperProps } from './EmraldContextWrapper';
+import type { EmraldContextWrapperProps } from './EmraldContextWrapper';
 import { appData } from '../hooks/useAppData';
 
 interface ModelDetailsContextType {
@@ -7,7 +7,7 @@ interface ModelDetailsContextType {
   name: string;
   desc: string;
   emraldVersion: number;
-  version: number;
+  version?: number;
   fileName: string;
   updateFileName: (fileName: string) => void;
   updateName: (name: string) => void;
@@ -32,8 +32,8 @@ const ModelDetailsContextProvider: React.FC<EmraldContextWrapperProps> = ({ chil
   const id = appData.value.id;
   const [name, setName] = useState(appData.value.name);
   const [desc, setDesc] = useState(appData.value.desc);
-  const [emraldVersion, setEmraldVersion] = useState(appData.value.emraldVersion || 0);
-  const [version, setVersion] = useState(appData.value.version);
+  const [emraldVersion, setEmraldVersion] = useState(appData.value.emraldVersion ?? 0);
+  const [version, setVersion] = useState<number | undefined>(appData.value.version);
   const [fileName, setFileName] = useState<string>('');
 
   const updateName = (updatedName: string) => {

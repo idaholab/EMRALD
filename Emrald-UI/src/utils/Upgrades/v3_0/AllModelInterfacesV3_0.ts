@@ -390,15 +390,11 @@ export interface Action {
   /**
    * Used for executing applications with custom form data. This can be anything needed by the custom form, but in the end only the standard atRunExtApp fields are used to do the action.
    */
-  formData?: {
-    [k: string]: unknown
-  }
+  formData?: Record<string, unknown>
   /**
    * Optional. For action type atRunExtApp. It is used for custom app form.
    */
-  template?: {
-    [k: string]: unknown
-  }
+  template?: Record<string, unknown>
   /**
    * Optional. For action type atRunExtApp. It is flag to indicate the type of return from the processOutputFileCode. If rtNone then it has no return, othrwise the C# script must return a List<string/> with +/-[StateName] to shift out or into a state.
    */

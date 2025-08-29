@@ -1,6 +1,6 @@
 import { InputLabel, Select } from '@mui/material';
 import FormControl from '@mui/material/FormControl';
-import React, { PropsWithChildren } from 'react';
+import React, { type PropsWithChildren } from 'react';
 
 interface SelectComponentProps<T> {
   value: T;
@@ -26,7 +26,9 @@ const SelectComponent = <T,>({
       <Select
         aria-labelledby={labelId}
         value={value || ''}
-        onChange={(e) => setValue(e.target.value as T)}
+        onChange={(e) => {
+          setValue(e.target.value as T);
+        }}
         label={label}
         inputProps={{ 'aria-label': 'Without label' }}
       >

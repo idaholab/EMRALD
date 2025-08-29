@@ -1,14 +1,14 @@
 {
   "objType": "EMRALD_Model",
   "name": "C-CKV-A",
-  "desc": "",
+  "desc": "Test Diagram",
   "version": 1,
   "emraldVersion": 3,
   "DiagramList": [
     {
       "name": "C-CKV-A",
       "desc": "",
-      "diagramType": "dtSingle",
+      "diagramType": "dtMulti",
       "states": ["C-CKV-A_Active", "C-CKV-A_Failed", "C-CKV-A_Standby"],
       "diagramLabel": "Component",
       "id": "a61593a6-a673-4a18-9c72-a34420581c56",

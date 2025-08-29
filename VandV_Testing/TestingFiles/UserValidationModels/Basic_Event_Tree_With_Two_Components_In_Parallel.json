@@ -1,0 +1,1747 @@
+{
+  "id": 0,
+  "name": "Basic Event Tree",
+  "desc": "",
+  "version": 1.3,
+  "DiagramList": [
+    {
+      "Diagram": {
+        "id": 1,
+        "name": "Event Tree",
+        "desc": "",
+        "diagramType": "dtPlant",
+        "diagramTemplate": "",
+        "diagramList": [],
+        "diagramLabel": "Plant",
+        "forceMerge": false,
+        "states": [
+          "Normal Operations",
+          "ESF Actuated",
+          "Core Damage ",
+          "Terminate"
+        ]
+      }
+    },
+    {
+      "Diagram": {
+        "id": 2,
+        "name": "C1",
+        "desc": "",
+        "diagramType": "dtComponent",
+        "diagramTemplate": "",
+        "diagramList": [
+          {
+            "id": 1,
+            "name": "C1_Template",
+            "desc": "",
+            "DiagramList": [
+              {
+                "Diagram": {
+                  "id": 1,
+                  "name": "C1",
+                  "desc": "",
+                  "diagramType": "dtComponent",
+                  "diagramTemplate": "",
+                  "diagramLabel": "Component",
+                  "forceMerge": false,
+                  "states": [
+                    "C1 Running",
+                    "C1 Failed"
+                  ],
+                  "singleStates": [
+                    {
+                      "stateName": "C1 Running",
+                      "okState": "True"
+                    },
+                    {
+                      "stateName": "C1 Failed",
+                      "okState": "False"
+                    }
+                  ],
+                  "required": false
+                }
+              }
+            ],
+            "ExtSimList": [],
+            "StateList": [
+              {
+                "State": {
+                  "id": 1,
+                  "name": "C1 Running",
+                  "desc": "",
+                  "stateType": "stStart",
+                  "diagramName": "C1",
+                  "immediateActions": [],
+                  "events": [
+                    "C1 Fails"
+                  ],
+                  "eventActions": [
+                    {
+                      "actions": [
+                        "Goto_C1_Fails"
+                      ],
+                      "moveFromCurrent": true
+                    }
+                  ],
+                  "geometry": "{ x: 335.8000183105469, y: 177.40000915527344, width: 200, height: 130}",
+                  "required": false
+                }
+              },
+              {
+                "State": {
+                  "id": 2,
+                  "name": "C1 Failed",
+                  "desc": "",
+                  "stateType": "stKeyState",
+                  "diagramName": "C1",
+                  "immediateActions": [],
+                  "events": [],
+                  "eventActions": [],
+                  "geometry": "{ x: 614.2000122070312, y: 195, width: 200, height: 80}",
+                  "required": false
+                }
+              }
+            ],
+            "ActionList": [
+              {
+                "Action": {
+                  "id": 1,
+                  "name": "Goto_C1_Fails",
+                  "desc": "",
+                  "actType": "atTransition",
+                  "mainItem": false,
+                  "mutExcl": true,
+                  "newStates": [
+                    {
+                      "toState": "C1 Failed",
+                      "prob": -1,
+                      "failDesc": ""
+                    }
+                  ],
+                  "itemId": 2,
+                  "required": false
+                }
+              }
+            ],
+            "EventList": [
+              {
+                "Event": {
+                  "id": 1,
+                  "name": "C1 Fails",
+                  "desc": "",
+                  "mainItem": false,
+                  "evType": "etFailRate",
+                  "allItems": true,
+                  "triggerStates": [],
+                  "moveFromCurrent": true,
+                  "varNames": [],
+                  "lambda": 1,
+                  "lambdaTimeRate": "P10D",
+                  "useVariable": false,
+                  "required": false
+                }
+              }
+            ],
+            "LogicNodeList": [],
+            "VariableList": [],
+            "group": null,
+            "disabledReasons": []
+          },
+          {
+            "id": 2,
+            "name": "C2_Template",
+            "desc": "",
+            "DiagramList": [
+              {
+                "Diagram": {
+                  "id": 2,
+                  "name": "C2",
+                  "desc": "",
+                  "diagramType": "dtComponent",
+                  "diagramTemplate": "",
+                  "diagramLabel": "Component",
+                  "forceMerge": false,
+                  "states": [
+                    "C2 Running",
+                    "C2 Failed"
+                  ],
+                  "singleStates": [
+                    {
+                      "stateName": "C2 Running",
+                      "okState": "True"
+                    },
+                    {
+                      "stateName": "C2 Failed",
+                      "okState": "False"
+                    }
+                  ],
+                  "required": false
+                }
+              }
+            ],
+            "ExtSimList": [],
+            "StateList": [
+              {
+                "State": {
+                  "id": 3,
+                  "name": "C2 Running",
+                  "desc": "",
+                  "stateType": "stStart",
+                  "diagramName": "C2",
+                  "immediateActions": [],
+                  "events": [
+                    "C2 Fails"
+                  ],
+                  "eventActions": [
+                    {
+                      "actions": [
+                        "Goto_C2_Fails"
+                      ],
+                      "moveFromCurrent": true
+                    }
+                  ],
+                  "geometry": "{ x: 335.8000183105469, y: 177.40000915527344, width: 200, height: 130}",
+                  "required": false
+                }
+              },
+              {
+                "State": {
+                  "id": 4,
+                  "name": "C2 Failed",
+                  "desc": "",
+                  "stateType": "stKeyState",
+                  "diagramName": "C2",
+                  "immediateActions": [],
+                  "events": [],
+                  "eventActions": [],
+                  "geometry": "{ x: 614.2000122070312, y: 195, width: 200, height: 80}",
+                  "required": false
+                }
+              }
+            ],
+            "ActionList": [
+              {
+                "Action": {
+                  "id": 2,
+                  "name": "Goto_C2_Fails",
+                  "desc": "",
+                  "actType": "atTransition",
+                  "mainItem": false,
+                  "mutExcl": true,
+                  "newStates": [
+                    {
+                      "toState": "C2 Failed",
+                      "prob": -1,
+                      "failDesc": ""
+                    }
+                  ],
+                  "itemId": 2,
+                  "required": false
+                }
+              }
+            ],
+            "EventList": [
+              {
+                "Event": {
+                  "id": 2,
+                  "name": "C2 Fails",
+                  "desc": "",
+                  "mainItem": false,
+                  "evType": "etFailRate",
+                  "allItems": true,
+                  "triggerStates": [],
+                  "moveFromCurrent": true,
+                  "varNames": [],
+                  "lambda": 1,
+                  "lambdaTimeRate": "P10D",
+                  "useVariable": false,
+                  "required": false
+                }
+              }
+            ],
+            "LogicNodeList": [],
+            "VariableList": [],
+            "group": null,
+            "disabledReasons": []
+          },
+          {
+            "id": 2,
+            "name": "Fail_and_Repair_Template",
+            "desc": "",
+            "DiagramList": [
+              {
+                "Diagram": {
+                  "id": 2,
+                  "name": "C",
+                  "desc": "",
+                  "diagramType": "dtComponent",
+                  "diagramTemplate": "",
+                  "diagramList": [
+                    {
+                      "id": 1,
+                      "name": "C1_Template",
+                      "desc": "",
+                      "DiagramList": [
+                        {
+                          "Diagram": {
+                            "id": 1,
+                            "name": "C1",
+                            "desc": "",
+                            "diagramType": "dtComponent",
+                            "diagramTemplate": "",
+                            "diagramLabel": "Component",
+                            "forceMerge": false,
+                            "states": [
+                              "C1 Running",
+                              "C1 Failed"
+                            ],
+                            "singleStates": [
+                              {
+                                "stateName": "C1 Running",
+                                "okState": "True"
+                              },
+                              {
+                                "stateName": "C1 Failed",
+                                "okState": "False"
+                              }
+                            ],
+                            "required": false
+                          }
+                        }
+                      ],
+                      "ExtSimList": [],
+                      "StateList": [
+                        {
+                          "State": {
+                            "id": 1,
+                            "name": "C1 Running",
+                            "desc": "",
+                            "stateType": "stStart",
+                            "diagramName": "C1",
+                            "immediateActions": [],
+                            "events": [
+                              "C1 Fails"
+                            ],
+                            "eventActions": [
+                              {
+                                "actions": [
+                                  "Goto_C1_Fails"
+                                ],
+                                "moveFromCurrent": true
+                              }
+                            ],
+                            "geometry": "{ x: 335.8000183105469, y: 177.40000915527344, width: 200, height: 130}",
+                            "required": false
+                          }
+                        },
+                        {
+                          "State": {
+                            "id": 2,
+                            "name": "C1 Failed",
+                            "desc": "",
+                            "stateType": "stKeyState",
+                            "diagramName": "C1",
+                            "immediateActions": [],
+                            "events": [],
+                            "eventActions": [],
+                            "geometry": "{ x: 614.2000122070312, y: 195, width: 200, height: 80}",
+                            "required": false
+                          }
+                        }
+                      ],
+                      "ActionList": [
+                        {
+                          "Action": {
+                            "id": 1,
+                            "name": "Goto_C1_Fails",
+                            "desc": "",
+                            "actType": "atTransition",
+                            "mainItem": false,
+                            "mutExcl": true,
+                            "newStates": [
+                              {
+                                "toState": "C1 Failed",
+                                "prob": -1,
+                                "failDesc": ""
+                              }
+                            ],
+                            "itemId": 2,
+                            "required": false
+                          }
+                        }
+                      ],
+                      "EventList": [
+                        {
+                          "Event": {
+                            "id": 1,
+                            "name": "C1 Fails",
+                            "desc": "",
+                            "mainItem": false,
+                            "evType": "etFailRate",
+                            "allItems": true,
+                            "triggerStates": [],
+                            "moveFromCurrent": true,
+                            "varNames": [],
+                            "lambda": 1,
+                            "lambdaTimeRate": "P10D",
+                            "useVariable": false,
+                            "required": false
+                          }
+                        }
+                      ],
+                      "LogicNodeList": [],
+                      "VariableList": [],
+                      "group": null,
+                      "disabledReasons": []
+                    },
+                    {
+                      "id": 2,
+                      "name": "C2_Template",
+                      "desc": "",
+                      "DiagramList": [
+                        {
+                          "Diagram": {
+                            "id": 2,
+                            "name": "C2",
+                            "desc": "",
+                            "diagramType": "dtComponent",
+                            "diagramTemplate": "",
+                            "diagramLabel": "Component",
+                            "forceMerge": false,
+                            "states": [
+                              "C2 Running",
+                              "C2 Failed"
+                            ],
+                            "singleStates": [
+                              {
+                                "stateName": "C2 Running",
+                                "okState": "True"
+                              },
+                              {
+                                "stateName": "C2 Failed",
+                                "okState": "False"
+                              }
+                            ],
+                            "required": false
+                          }
+                        }
+                      ],
+                      "ExtSimList": [],
+                      "StateList": [
+                        {
+                          "State": {
+                            "id": 3,
+                            "name": "C2 Running",
+                            "desc": "",
+                            "stateType": "stStart",
+                            "diagramName": "C2",
+                            "immediateActions": [],
+                            "events": [
+                              "C2 Fails"
+                            ],
+                            "eventActions": [
+                              {
+                                "actions": [
+                                  "Goto_C2_Fails"
+                                ],
+                                "moveFromCurrent": true
+                              }
+                            ],
+                            "geometry": "{ x: 335.8000183105469, y: 177.40000915527344, width: 200, height: 130}",
+                            "required": false
+                          }
+                        },
+                        {
+                          "State": {
+                            "id": 4,
+                            "name": "C2 Failed",
+                            "desc": "",
+                            "stateType": "stKeyState",
+                            "diagramName": "C2",
+                            "immediateActions": [],
+                            "events": [],
+                            "eventActions": [],
+                            "geometry": "{ x: 614.2000122070312, y: 195, width: 200, height: 80}",
+                            "required": false
+                          }
+                        }
+                      ],
+                      "ActionList": [
+                        {
+                          "Action": {
+                            "id": 2,
+                            "name": "Goto_C2_Fails",
+                            "desc": "",
+                            "actType": "atTransition",
+                            "mainItem": false,
+                            "mutExcl": true,
+                            "newStates": [
+                              {
+                                "toState": "C2 Failed",
+                                "prob": -1,
+                                "failDesc": ""
+                              }
+                            ],
+                            "itemId": 2,
+                            "required": false
+                          }
+                        }
+                      ],
+                      "EventList": [
+                        {
+                          "Event": {
+                            "id": 2,
+                            "name": "C2 Fails",
+                            "desc": "",
+                            "mainItem": false,
+                            "evType": "etFailRate",
+                            "allItems": true,
+                            "triggerStates": [],
+                            "moveFromCurrent": true,
+                            "varNames": [],
+                            "lambda": 1,
+                            "lambdaTimeRate": "P10D",
+                            "useVariable": false,
+                            "required": false
+                          }
+                        }
+                      ],
+                      "LogicNodeList": [],
+                      "VariableList": [],
+                      "group": null,
+                      "disabledReasons": []
+                    }
+                  ],
+                  "diagramLabel": "Component",
+                  "forceMerge": false,
+                  "states": [
+                    "C Running",
+                    "C Failed"
+                  ],
+                  "required": false
+                }
+              }
+            ],
+            "ExtSimList": [],
+            "StateList": [
+              {
+                "State": {
+                  "id": 2,
+                  "name": "C Running",
+                  "desc": "",
+                  "stateType": "stStandard",
+                  "diagramName": "C",
+                  "immediateActions": [],
+                  "events": [
+                    "C_Failure_Rate"
+                  ],
+                  "eventActions": [
+                    {
+                      "actions": [
+                        "Goto_C_Failed"
+                      ],
+                      "moveFromCurrent": true
+                    }
+                  ],
+                  "geometry": "{ x: 360, y: 160, width: 283, height: 130}",
+                  "required": false
+                }
+              },
+              {
+                "State": {
+                  "id": 3,
+                  "name": "C Failed",
+                  "desc": "",
+                  "stateType": "stStandard",
+                  "diagramName": "C",
+                  "immediateActions": [],
+                  "events": [
+                    "C_Repair_Rate"
+                  ],
+                  "eventActions": [
+                    {
+                      "actions": [
+                        "Goto_C_Running"
+                      ],
+                      "moveFromCurrent": true
+                    }
+                  ],
+                  "geometry": "{ x: 844, y: 233, width: 316, height: 130}",
+                  "required": false
+                }
+              }
+            ],
+            "ActionList": [
+              {
+                "Action": {
+                  "id": 1,
+                  "name": "Goto_C_Failed",
+                  "desc": "",
+                  "actType": "atTransition",
+                  "mainItem": false,
+                  "mutExcl": true,
+                  "newStates": [
+                    {
+                      "toState": "C Failed",
+                      "prob": -1,
+                      "failDesc": ""
+                    }
+                  ],
+                  "itemId": 2,
+                  "required": false
+                }
+              },
+              {
+                "Action": {
+                  "id": 2,
+                  "name": "Goto_C_Running",
+                  "desc": "",
+                  "actType": "atTransition",
+                  "mainItem": false,
+                  "mutExcl": true,
+                  "newStates": [
+                    {
+                      "toState": "C Running",
+                      "prob": -1,
+                      "failDesc": ""
+                    }
+                  ],
+                  "itemId": 0,
+                  "required": false
+                }
+              }
+            ],
+            "EventList": [
+              {
+                "Event": {
+                  "id": 3,
+                  "name": "C_Repair_Rate",
+                  "desc": "",
+                  "mainItem": false,
+                  "evType": "etDistribution",
+                  "allItems": true,
+                  "triggerStates": [],
+                  "moveFromCurrent": true,
+                  "varNames": [],
+                  "distType": "dtNormal",
+                  "parameters": [
+                    {
+                      "name": "Mean",
+                      "value": 24,
+                      "timeRate": "trHours",
+                      "useVariable": false
+                    },
+                    {
+                      "name": "Standard Deviation",
+                      "value": 1,
+                      "timeRate": "trHours",
+                      "useVariable": false
+                    },
+                    {
+                      "name": "Minimum",
+                      "value": 0,
+                      "timeRate": "trHours",
+                      "useVariable": false
+                    },
+                    {
+                      "name": "Maximum",
+                      "value": 1000,
+                      "timeRate": "trYears",
+                      "useVariable": false
+                    }
+                  ],
+                  "dfltTimeRate": "trHours",
+                  "required": false
+                }
+              },
+              {
+                "Event": {
+                  "id": 3,
+                  "name": "C_Failure_Rate",
+                  "desc": "",
+                  "mainItem": false,
+                  "evType": "etDistribution",
+                  "allItems": true,
+                  "triggerStates": [],
+                  "moveFromCurrent": true,
+                  "varNames": [],
+                  "distType": "dtNormal",
+                  "parameters": [
+                    {
+                      "name": "Mean",
+                      "value": 24,
+                      "timeRate": "trHours",
+                      "useVariable": false
+                    },
+                    {
+                      "name": "Standard Deviation",
+                      "value": 1,
+                      "timeRate": "trHours",
+                      "useVariable": false
+                    },
+                    {
+                      "name": "Minimum",
+                      "value": 0,
+                      "timeRate": "trHours",
+                      "useVariable": false
+                    },
+                    {
+                      "name": "Maximum",
+                      "value": 1000,
+                      "timeRate": "trYears",
+                      "useVariable": false
+                    }
+                  ],
+                  "dfltTimeRate": "trHours",
+                  "required": false
+                }
+              }
+            ],
+            "LogicNodeList": [],
+            "VariableList": [],
+            "group": null,
+            "disabledReasons": []
+          }
+        ],
+        "diagramLabel": "Component",
+        "forceMerge": false,
+        "states": [
+          "C1 Running",
+          "C1 Failed"
+        ],
+        "singleStates": [
+          {
+            "stateName": "C1 Running",
+            "okState": "True"
+          },
+          {
+            "stateName": "C1 Failed",
+            "okState": "False"
+          }
+        ]
+      }
+    },
+    {
+      "Diagram": {
+        "id": 3,
+        "name": "C2",
+        "desc": "",
+        "diagramType": "dtComponent",
+        "diagramTemplate": "",
+        "diagramList": [
+          {
+            "id": 1,
+            "name": "C1_Template",
+            "desc": "",
+            "DiagramList": [
+              {
+                "Diagram": {
+                  "id": 1,
+                  "name": "C1",
+                  "desc": "",
+                  "diagramType": "dtComponent",
+                  "diagramTemplate": "",
+                  "diagramLabel": "Component",
+                  "forceMerge": false,
+                  "states": [
+                    "C1 Running",
+                    "C1 Failed"
+                  ],
+                  "singleStates": [
+                    {
+                      "stateName": "C1 Running",
+                      "okState": "True"
+                    },
+                    {
+                      "stateName": "C1 Failed",
+                      "okState": "False"
+                    }
+                  ],
+                  "required": false
+                }
+              }
+            ],
+            "ExtSimList": [],
+            "StateList": [
+              {
+                "State": {
+                  "id": 1,
+                  "name": "C1 Running",
+                  "desc": "",
+                  "stateType": "stStart",
+                  "diagramName": "C1",
+                  "immediateActions": [],
+                  "events": [
+                    "C1 Fails"
+                  ],
+                  "eventActions": [
+                    {
+                      "actions": [
+                        "Goto_C1_Fails"
+                      ],
+                      "moveFromCurrent": true
+                    }
+                  ],
+                  "geometry": "{ x: 335.8000183105469, y: 177.40000915527344, width: 200, height: 130}",
+                  "required": false
+                }
+              },
+              {
+                "State": {
+                  "id": 2,
+                  "name": "C1 Failed",
+                  "desc": "",
+                  "stateType": "stKeyState",
+                  "diagramName": "C1",
+                  "immediateActions": [],
+                  "events": [],
+                  "eventActions": [],
+                  "geometry": "{ x: 614.2000122070312, y: 195, width: 200, height: 80}",
+                  "required": false
+                }
+              }
+            ],
+            "ActionList": [
+              {
+                "Action": {
+                  "id": 1,
+                  "name": "Goto_C1_Fails",
+                  "desc": "",
+                  "actType": "atTransition",
+                  "mainItem": false,
+                  "mutExcl": true,
+                  "newStates": [
+                    {
+                      "toState": "C1 Failed",
+                      "prob": -1,
+                      "failDesc": ""
+                    }
+                  ],
+                  "itemId": 2,
+                  "required": false
+                }
+              }
+            ],
+            "EventList": [
+              {
+                "Event": {
+                  "id": 1,
+                  "name": "C1 Fails",
+                  "desc": "",
+                  "mainItem": false,
+                  "evType": "etFailRate",
+                  "allItems": true,
+                  "triggerStates": [],
+                  "moveFromCurrent": true,
+                  "varNames": [],
+                  "lambda": 1,
+                  "lambdaTimeRate": "P10D",
+                  "useVariable": false,
+                  "required": false
+                }
+              }
+            ],
+            "LogicNodeList": [],
+            "VariableList": [],
+            "group": null,
+            "disabledReasons": []
+          },
+          {
+            "id": 2,
+            "name": "C2_Template",
+            "desc": "",
+            "DiagramList": [
+              {
+                "Diagram": {
+                  "id": 2,
+                  "name": "C2",
+                  "desc": "",
+                  "diagramType": "dtComponent",
+                  "diagramTemplate": "",
+                  "diagramLabel": "Component",
+                  "forceMerge": false,
+                  "states": [
+                    "C2 Running",
+                    "C2 Failed"
+                  ],
+                  "singleStates": [
+                    {
+                      "stateName": "C2 Running",
+                      "okState": "True"
+                    },
+                    {
+                      "stateName": "C2 Failed",
+                      "okState": "False"
+                    }
+                  ],
+                  "required": false
+                }
+              }
+            ],
+            "ExtSimList": [],
+            "StateList": [
+              {
+                "State": {
+                  "id": 3,
+                  "name": "C2 Running",
+                  "desc": "",
+                  "stateType": "stStart",
+                  "diagramName": "C2",
+                  "immediateActions": [],
+                  "events": [
+                    "C2 Fails"
+                  ],
+                  "eventActions": [
+                    {
+                      "actions": [
+                        "Goto_C2_Fails"
+                      ],
+                      "moveFromCurrent": true
+                    }
+                  ],
+                  "geometry": "{ x: 335.8000183105469, y: 177.40000915527344, width: 200, height: 130}",
+                  "required": false
+                }
+              },
+              {
+                "State": {
+                  "id": 4,
+                  "name": "C2 Failed",
+                  "desc": "",
+                  "stateType": "stKeyState",
+                  "diagramName": "C2",
+                  "immediateActions": [],
+                  "events": [],
+                  "eventActions": [],
+                  "geometry": "{ x: 614.2000122070312, y: 195, width: 200, height: 80}",
+                  "required": false
+                }
+              }
+            ],
+            "ActionList": [
+              {
+                "Action": {
+                  "id": 2,
+                  "name": "Goto_C2_Fails",
+                  "desc": "",
+                  "actType": "atTransition",
+                  "mainItem": false,
+                  "mutExcl": true,
+                  "newStates": [
+                    {
+                      "toState": "C2 Failed",
+                      "prob": -1,
+                      "failDesc": ""
+                    }
+                  ],
+                  "itemId": 2,
+                  "required": false
+                }
+              }
+            ],
+            "EventList": [
+              {
+                "Event": {
+                  "id": 2,
+                  "name": "C2 Fails",
+                  "desc": "",
+                  "mainItem": false,
+                  "evType": "etFailRate",
+                  "allItems": true,
+                  "triggerStates": [],
+                  "moveFromCurrent": true,
+                  "varNames": [],
+                  "lambda": 1,
+                  "lambdaTimeRate": "P10D",
+                  "useVariable": false,
+                  "required": false
+                }
+              }
+            ],
+            "LogicNodeList": [],
+            "VariableList": [],
+            "group": null,
+            "disabledReasons": []
+          },
+          {
+            "id": 2,
+            "name": "Fail_and_Repair_Template",
+            "desc": "",
+            "DiagramList": [
+              {
+                "Diagram": {
+                  "id": 2,
+                  "name": "C",
+                  "desc": "",
+                  "diagramType": "dtComponent",
+                  "diagramTemplate": "",
+                  "diagramList": [
+                    {
+                      "id": 1,
+                      "name": "C1_Template",
+                      "desc": "",
+                      "DiagramList": [
+                        {
+                          "Diagram": {
+                            "id": 1,
+                            "name": "C1",
+                            "desc": "",
+                            "diagramType": "dtComponent",
+                            "diagramTemplate": "",
+                            "diagramLabel": "Component",
+                            "forceMerge": false,
+                            "states": [
+                              "C1 Running",
+                              "C1 Failed"
+                            ],
+                            "singleStates": [
+                              {
+                                "stateName": "C1 Running",
+                                "okState": "True"
+                              },
+                              {
+                                "stateName": "C1 Failed",
+                                "okState": "False"
+                              }
+                            ],
+                            "required": false
+                          }
+                        }
+                      ],
+                      "ExtSimList": [],
+                      "StateList": [
+                        {
+                          "State": {
+                            "id": 1,
+                            "name": "C1 Running",
+                            "desc": "",
+                            "stateType": "stStart",
+                            "diagramName": "C1",
+                            "immediateActions": [],
+                            "events": [
+                              "C1 Fails"
+                            ],
+                            "eventActions": [
+                              {
+                                "actions": [
+                                  "Goto_C1_Fails"
+                                ],
+                                "moveFromCurrent": true
+                              }
+                            ],
+                            "geometry": "{ x: 335.8000183105469, y: 177.40000915527344, width: 200, height: 130}",
+                            "required": false
+                          }
+                        },
+                        {
+                          "State": {
+                            "id": 2,
+                            "name": "C1 Failed",
+                            "desc": "",
+                            "stateType": "stKeyState",
+                            "diagramName": "C1",
+                            "immediateActions": [],
+                            "events": [],
+                            "eventActions": [],
+                            "geometry": "{ x: 614.2000122070312, y: 195, width: 200, height: 80}",
+                            "required": false
+                          }
+                        }
+                      ],
+                      "ActionList": [
+                        {
+                          "Action": {
+                            "id": 1,
+                            "name": "Goto_C1_Fails",
+                            "desc": "",
+                            "actType": "atTransition",
+                            "mainItem": false,
+                            "mutExcl": true,
+                            "newStates": [
+                              {
+                                "toState": "C1 Failed",
+                                "prob": -1,
+                                "failDesc": ""
+                              }
+                            ],
+                            "itemId": 2,
+                            "required": false
+                          }
+                        }
+                      ],
+                      "EventList": [
+                        {
+                          "Event": {
+                            "id": 1,
+                            "name": "C1 Fails",
+                            "desc": "",
+                            "mainItem": false,
+                            "evType": "etFailRate",
+                            "allItems": true,
+                            "triggerStates": [],
+                            "moveFromCurrent": true,
+                            "varNames": [],
+                            "lambda": 1,
+                            "lambdaTimeRate": "P10D",
+                            "useVariable": false,
+                            "required": false
+                          }
+                        }
+                      ],
+                      "LogicNodeList": [],
+                      "VariableList": [],
+                      "group": null,
+                      "disabledReasons": []
+                    },
+                    {
+                      "id": 2,
+                      "name": "C2_Template",
+                      "desc": "",
+                      "DiagramList": [
+                        {
+                          "Diagram": {
+                            "id": 2,
+                            "name": "C2",
+                            "desc": "",
+                            "diagramType": "dtComponent",
+                            "diagramTemplate": "",
+                            "diagramLabel": "Component",
+                            "forceMerge": false,
+                            "states": [
+                              "C2 Running",
+                              "C2 Failed"
+                            ],
+                            "singleStates": [
+                              {
+                                "stateName": "C2 Running",
+                                "okState": "True"
+                              },
+                              {
+                                "stateName": "C2 Failed",
+                                "okState": "False"
+                              }
+                            ],
+                            "required": false
+                          }
+                        }
+                      ],
+                      "ExtSimList": [],
+                      "StateList": [
+                        {
+                          "State": {
+                            "id": 3,
+                            "name": "C2 Running",
+                            "desc": "",
+                            "stateType": "stStart",
+                            "diagramName": "C2",
+                            "immediateActions": [],
+                            "events": [
+                              "C2 Fails"
+                            ],
+                            "eventActions": [
+                              {
+                                "actions": [
+                                  "Goto_C2_Fails"
+                                ],
+                                "moveFromCurrent": true
+                              }
+                            ],
+                            "geometry": "{ x: 335.8000183105469, y: 177.40000915527344, width: 200, height: 130}",
+                            "required": false
+                          }
+                        },
+                        {
+                          "State": {
+                            "id": 4,
+                            "name": "C2 Failed",
+                            "desc": "",
+                            "stateType": "stKeyState",
+                            "diagramName": "C2",
+                            "immediateActions": [],
+                            "events": [],
+                            "eventActions": [],
+                            "geometry": "{ x: 614.2000122070312, y: 195, width: 200, height: 80}",
+                            "required": false
+                          }
+                        }
+                      ],
+                      "ActionList": [
+                        {
+                          "Action": {
+                            "id": 2,
+                            "name": "Goto_C2_Fails",
+                            "desc": "",
+                            "actType": "atTransition",
+                            "mainItem": false,
+                            "mutExcl": true,
+                            "newStates": [
+                              {
+                                "toState": "C2 Failed",
+                                "prob": -1,
+                                "failDesc": ""
+                              }
+                            ],
+                            "itemId": 2,
+                            "required": false
+                          }
+                        }
+                      ],
+                      "EventList": [
+                        {
+                          "Event": {
+                            "id": 2,
+                            "name": "C2 Fails",
+                            "desc": "",
+                            "mainItem": false,
+                            "evType": "etFailRate",
+                            "allItems": true,
+                            "triggerStates": [],
+                            "moveFromCurrent": true,
+                            "varNames": [],
+                            "lambda": 1,
+                            "lambdaTimeRate": "P10D",
+                            "useVariable": false,
+                            "required": false
+                          }
+                        }
+                      ],
+                      "LogicNodeList": [],
+                      "VariableList": [],
+                      "group": null,
+                      "disabledReasons": []
+                    }
+                  ],
+                  "diagramLabel": "Component",
+                  "forceMerge": false,
+                  "states": [
+                    "C Running",
+                    "C Failed"
+                  ],
+                  "required": false
+                }
+              }
+            ],
+            "ExtSimList": [],
+            "StateList": [
+              {
+                "State": {
+                  "id": 2,
+                  "name": "C Running",
+                  "desc": "",
+                  "stateType": "stStandard",
+                  "diagramName": "C",
+                  "immediateActions": [],
+                  "events": [
+                    "C_Failure_Rate"
+                  ],
+                  "eventActions": [
+                    {
+                      "actions": [
+                        "Goto_C_Failed"
+                      ],
+                      "moveFromCurrent": true
+                    }
+                  ],
+                  "geometry": "{ x: 360, y: 160, width: 283, height: 130}",
+                  "required": false
+                }
+              },
+              {
+                "State": {
+                  "id": 3,
+                  "name": "C Failed",
+                  "desc": "",
+                  "stateType": "stStandard",
+                  "diagramName": "C",
+                  "immediateActions": [],
+                  "events": [
+                    "C_Repair_Rate"
+                  ],
+                  "eventActions": [
+                    {
+                      "actions": [
+                        "Goto_C_Running"
+                      ],
+                      "moveFromCurrent": true
+                    }
+                  ],
+                  "geometry": "{ x: 844, y: 233, width: 316, height: 130}",
+                  "required": false
+                }
+              }
+            ],
+            "ActionList": [
+              {
+                "Action": {
+                  "id": 1,
+                  "name": "Goto_C_Failed",
+                  "desc": "",
+                  "actType": "atTransition",
+                  "mainItem": false,
+                  "mutExcl": true,
+                  "newStates": [
+                    {
+                      "toState": "C Failed",
+                      "prob": -1,
+                      "failDesc": ""
+                    }
+                  ],
+                  "itemId": 2,
+                  "required": false
+                }
+              },
+              {
+                "Action": {
+                  "id": 2,
+                  "name": "Goto_C_Running",
+                  "desc": "",
+                  "actType": "atTransition",
+                  "mainItem": false,
+                  "mutExcl": true,
+                  "newStates": [
+                    {
+                      "toState": "C Running",
+                      "prob": -1,
+                      "failDesc": ""
+                    }
+                  ],
+                  "itemId": 0,
+                  "required": false
+                }
+              }
+            ],
+            "EventList": [
+              {
+                "Event": {
+                  "id": 3,
+                  "name": "C_Repair_Rate",
+                  "desc": "",
+                  "mainItem": false,
+                  "evType": "etDistribution",
+                  "allItems": true,
+                  "triggerStates": [],
+                  "moveFromCurrent": true,
+                  "varNames": [],
+                  "distType": "dtNormal",
+                  "parameters": [
+                    {
+                      "name": "Mean",
+                      "value": 24,
+                      "timeRate": "trHours",
+                      "useVariable": false
+                    },
+                    {
+                      "name": "Standard Deviation",
+                      "value": 1,
+                      "timeRate": "trHours",
+                      "useVariable": false
+                    },
+                    {
+                      "name": "Minimum",
+                      "value": 0,
+                      "timeRate": "trHours",
+                      "useVariable": false
+                    },
+                    {
+                      "name": "Maximum",
+                      "value": 1000,
+                      "timeRate": "trYears",
+                      "useVariable": false
+                    }
+                  ],
+                  "dfltTimeRate": "trHours",
+                  "required": false
+                }
+              },
+              {
+                "Event": {
+                  "id": 3,
+                  "name": "C_Failure_Rate",
+                  "desc": "",
+                  "mainItem": false,
+                  "evType": "etDistribution",
+                  "allItems": true,
+                  "triggerStates": [],
+                  "moveFromCurrent": true,
+                  "varNames": [],
+                  "distType": "dtNormal",
+                  "parameters": [
+                    {
+                      "name": "Mean",
+                      "value": 24,
+                      "timeRate": "trHours",
+                      "useVariable": false
+                    },
+                    {
+                      "name": "Standard Deviation",
+                      "value": 1,
+                      "timeRate": "trHours",
+                      "useVariable": false
+                    },
+                    {
+                      "name": "Minimum",
+                      "value": 0,
+                      "timeRate": "trHours",
+                      "useVariable": false
+                    },
+                    {
+                      "name": "Maximum",
+                      "value": 1000,
+                      "timeRate": "trYears",
+                      "useVariable": false
+                    }
+                  ],
+                  "dfltTimeRate": "trHours",
+                  "required": false
+                }
+              }
+            ],
+            "LogicNodeList": [],
+            "VariableList": [],
+            "group": null,
+            "disabledReasons": []
+          }
+        ],
+        "diagramLabel": "Component",
+        "forceMerge": false,
+        "states": [
+          "C2 Running",
+          "C2 Failed"
+        ],
+        "singleStates": [
+          {
+            "stateName": "C2 Running",
+            "okState": "True"
+          },
+          {
+            "stateName": "C2 Failed",
+            "okState": "False"
+          }
+        ]
+      }
+    }
+  ],
+  "StateList": [
+    {
+      "State": {
+        "id": 1,
+        "name": "Normal Operations",
+        "desc": "",
+        "stateType": "stStart",
+        "diagramName": "Event Tree",
+        "immediateActions": [],
+        "events": [
+          "Initiating Event"
+        ],
+        "eventActions": [
+          {
+            "actions": [
+              "Goto_ESF"
+            ],
+            "moveFromCurrent": true
+          }
+        ],
+        "geometry": "{ x: 447, y: 185, width: 200, height: 130}"
+      }
+    },
+    {
+      "State": {
+        "id": 2,
+        "name": "ESF Actuated",
+        "desc": "",
+        "stateType": "stKeyState",
+        "diagramName": "Event Tree",
+        "immediateActions": [],
+        "events": [
+          "Failure"
+        ],
+        "eventActions": [
+          {
+            "actions": [
+              "Goto_Core_Damage"
+            ],
+            "moveFromCurrent": true
+          }
+        ],
+        "geometry": "{ x: 810, y: 210, width: 200, height: 130}"
+      }
+    },
+    {
+      "State": {
+        "id": 3,
+        "name": "Core Damage ",
+        "desc": "",
+        "stateType": "stKeyState",
+        "diagramName": "Event Tree",
+        "immediateActions": [
+          "Goto_Terminate"
+        ],
+        "events": [],
+        "eventActions": [],
+        "geometry": "{ x: 1130, y: 130, width: 200, height: 100}"
+      }
+    },
+    {
+      "State": {
+        "id": 5,
+        "name": "Terminate",
+        "desc": "",
+        "stateType": "stTerminal",
+        "diagramName": "Event Tree",
+        "immediateActions": [],
+        "events": [],
+        "eventActions": [],
+        "geometry": "{ x: 1422, y: 292, width: 200, height: 80}"
+      }
+    },
+    {
+      "State": {
+        "id": 5,
+        "name": "C1 Running",
+        "desc": "",
+        "stateType": "stStart",
+        "diagramName": "C1",
+        "immediateActions": [],
+        "events": [
+          "Failure Rate"
+        ],
+        "eventActions": [
+          {
+            "actions": [
+              "Goto_C1_Failed"
+            ],
+            "moveFromCurrent": true
+          }
+        ],
+        "geometry": "{ x: 532.0833740234375, y: 114.34028625488281, width: 200, height: 130}"
+      }
+    },
+    {
+      "State": {
+        "id": 6,
+        "name": "C1 Failed",
+        "desc": "",
+        "stateType": "stKeyState",
+        "diagramName": "C1",
+        "immediateActions": [],
+        "events": [],
+        "eventActions": [],
+        "geometry": "{ x: 905.4166870117188, y: 205.45140075683594, width: 200, height: 80}"
+      }
+    },
+    {
+      "State": {
+        "id": 7,
+        "name": "C2 Running",
+        "desc": "",
+        "stateType": "stStart",
+        "diagramName": "C2",
+        "immediateActions": [],
+        "events": [
+          "C2 Failure Rate"
+        ],
+        "eventActions": [
+          {
+            "actions": [
+              "Goto_C2_Failed"
+            ],
+            "moveFromCurrent": true
+          }
+        ],
+        "geometry": "{ x: 532.0833740234375, y: 114.34028625488281, width: 200, height: 130}"
+      }
+    },
+    {
+      "State": {
+        "id": 8,
+        "name": "C2 Failed",
+        "desc": "",
+        "stateType": "stKeyState",
+        "diagramName": "C2",
+        "immediateActions": [],
+        "events": [],
+        "eventActions": [],
+        "geometry": "{ x: 905.4166870117188, y: 205.45140075683594, width: 200, height: 80}"
+      }
+    }
+  ],
+  "ActionList": [
+    {
+      "Action": {
+        "id": 1,
+        "name": "Goto_ESF",
+        "desc": "",
+        "actType": "atTransition",
+        "mainItem": false,
+        "mutExcl": true,
+        "newStates": [
+          {
+            "toState": "ESF Actuated",
+            "prob": -1,
+            "failDesc": ""
+          }
+        ],
+        "itemId": 2
+      }
+    },
+    {
+      "Action": {
+        "id": 2,
+        "name": "Goto_Core_Damage",
+        "desc": "",
+        "actType": "atTransition",
+        "mainItem": false,
+        "mutExcl": true,
+        "newStates": [
+          {
+            "toState": "Core Damage ",
+            "prob": -1,
+            "failDesc": ""
+          }
+        ],
+        "itemId": 3
+      }
+    },
+    {
+      "Action": {
+        "id": 4,
+        "name": "Goto_Terminate",
+        "desc": "",
+        "actType": "atTransition",
+        "mainItem": false,
+        "mutExcl": true,
+        "newStates": [
+          {
+            "toState": "Terminate",
+            "prob": -1,
+            "failDesc": ""
+          }
+        ],
+        "itemId": 0
+      }
+    },
+    {
+      "Action": {
+        "id": 5,
+        "name": "Goto_C1_Failed",
+        "desc": "",
+        "actType": "atTransition",
+        "mainItem": false,
+        "mutExcl": true,
+        "newStates": [
+          {
+            "toState": "C1 Failed",
+            "prob": -1,
+            "failDesc": ""
+          }
+        ],
+        "itemId": 6,
+        "moveFromCurrent": false
+      }
+    },
+    {
+      "Action": {
+        "id": 6,
+        "name": "Goto_C2_Failed",
+        "desc": "",
+        "actType": "atTransition",
+        "mainItem": false,
+        "mutExcl": true,
+        "newStates": [
+          {
+            "toState": "C2 Failed",
+            "prob": -1,
+            "failDesc": ""
+          }
+        ],
+        "itemId": 6,
+        "moveFromCurrent": false
+      }
+    }
+  ],
+  "EventList": [
+    {
+      "Event": {
+        "id": 1,
+        "name": "Initiating Event",
+        "desc": "",
+        "mainItem": false,
+        "evType": "etFailRate",
+        "allItems": true,
+        "triggerStates": [],
+        "moveFromCurrent": true,
+        "varNames": [],
+        "lambda": 0.005,
+        "lambdaTimeRate": "P365D",
+        "useVariable": false
+      }
+    },
+    {
+      "Event": {
+        "id": 3,
+        "name": "Failure Rate",
+        "desc": "",
+        "mainItem": false,
+        "evType": "etFailRate",
+        "allItems": true,
+        "triggerStates": [],
+        "moveFromCurrent": true,
+        "varNames": [],
+        "lambda": 1,
+        "lambdaTimeRate": "P365D",
+        "useVariable": false
+      }
+    },
+    {
+      "Event": {
+        "id": 4,
+        "name": "C2 Failure Rate",
+        "desc": "",
+        "mainItem": false,
+        "evType": "etFailRate",
+        "allItems": true,
+        "triggerStates": [],
+        "moveFromCurrent": true,
+        "varNames": [],
+        "lambda": 1,
+        "lambdaTimeRate": "P365D",
+        "useVariable": false
+      }
+    },
+    {
+      "Event": {
+        "id": 4,
+        "name": "Failure",
+        "desc": "",
+        "mainItem": false,
+        "evType": "etComponentLogic",
+        "allItems": true,
+        "triggerStates": [],
+        "moveFromCurrent": true,
+        "varNames": [],
+        "onSuccess": false,
+        "triggerOnFalse": false,
+        "logicTop": "Tree"
+      }
+    }
+  ],
+  "LogicNodeList": [
+    {
+      "LogicNode": {
+        "id": 1,
+        "name": "Tree",
+        "desc": "",
+        "gateType": "gtAnd",
+        "rootName": "",
+        "compChildren": [
+          "C1",
+          "C2"
+        ],
+        "gateChildren": [],
+        "isRoot": true
+      }
+    }
+  ],
+  "VariableList": [],
+  "templates": []
+}

@@ -832,14 +832,14 @@ namespace SimulationEngine
         this.keyPaths[keyPath.Key].AssignResults();
       }
 
-      //todo add in the other paths
+      //add in the other paths
       //public Dictionary<string, ResultState> otherPaths = new Dictionary<string, ResultState>();
       foreach (var otherPath in toAddBatch.otherPaths)
       {
         if (!this.otherPaths.ContainsKey(otherPath.Key))
           this.otherPaths.Add(otherPath.Value.name, otherPath.Value);
         else
-          otherPath.Value.Combine(otherPath.Value);
+          this.otherPaths[otherPath.Value.name].Combine(otherPath.Value);
       }
 
       //add in keyFailedItems

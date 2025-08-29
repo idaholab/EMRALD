@@ -1,12 +1,9 @@
 import React, { createContext, useContext, useState } from 'react';
-import { Event } from '../types/Event';
-import { EmraldContextWrapperProps } from './EmraldContextWrapper';
+import type { EmraldContextWrapperProps } from './EmraldContextWrapper';
 import { appData, updateAppData } from '../hooks/useAppData';
-import { effect, ReadonlySignal, useComputed } from '@preact/signals-react';
-import { EMRALD_Model } from '../types/EMRALD_Model';
+import { effect, type ReadonlySignal, useComputed } from '@preact/signals-react';
+import type { EMRALD_Model, Event, State } from '../types/EMRALD_Model';
 import { DeleteItemAndRefs, updateModelAndReferences } from '../utils/UpdateModel';
-import { MainItemTypes } from '../types/ItemTypes';
-import { State } from '../types/State';
 
 interface EventContextType {
   events: Event[];
@@ -26,7 +23,7 @@ export const emptyEvent: Event = {
   evType: 'etStateCng',
   mainItem: false,
   required: false,
-  objType: MainItemTypes.Event,
+  objType: 'Event',
 };
 
 const EventContext = createContext<EventContextType | undefined>(undefined);
@@ -43,7 +40,7 @@ const EventContextProvider: React.FC<EmraldContextWrapperProps> = ({ children })
   const [events, setEvents] = useState<Event[]>(
     JSON.parse(
       JSON.stringify(appData.value.EventList.sort((a, b) => a.name.localeCompare(b.name))),
-    ),
+    ) as Event[],
   );
   const eventsList = useComputed(() => appData.value.EventList);
 
@@ -58,44 +55,37 @@ const EventContextProvider: React.FC<EmraldContextWrapperProps> = ({ children })
     return;
   });
 
-  const createEvent = async (newEvent: Event, state?: State, moveFromCurrent: boolean = false) => {
-    var updatedModel: EMRALD_Model = await updateModelAndReferences(newEvent, MainItemTypes.Event);
+  const createEvent = (newEvent: Event, state?: State, moveFromCurrent = false) => {
+    const updatedModel = updateModelAndReferences(newEvent, 'Event');
     updateAppData(updatedModel);
     if (state) {
       state.events.push(newEvent.name);
       state.eventActions.push({ moveFromCurrent, actions: [] });
-      var updatedModel: EMRALD_Model = await updateModelAndReferences(state, MainItemTypes.State);
+      const updatedModel = updateModelAndReferences(state, 'State');
       updateAppData(updatedModel);
     }
   };
 
-  const updateEvent = async (
-    updatedEvent: Event,
-    state?: State,
-    moveFromCurrent: boolean = false,
-  ) => {
-    var updatedModel: EMRALD_Model = await updateModelAndReferences(
-      updatedEvent,
-      MainItemTypes.Event,
-    );
+  const updateEvent = (updatedEvent: Event, state?: State, moveFromCurrent = false) => {
+    const updatedModel = updateModelAndReferences(updatedEvent, 'Event');
     updateAppData(updatedModel);
 
     //update the state "moveFromCurrent" boolean
     if (state) {
       const eventStateIndex = state.events.indexOf(updatedEvent.name);
       state.eventActions[eventStateIndex].moveFromCurrent = moveFromCurrent;
-      var updatedModel: EMRALD_Model = await updateModelAndReferences(state, MainItemTypes.State);
+      const updatedModel = updateModelAndReferences(state, 'State');
       updateAppData(updatedModel);
     }
   };
 
-  const deleteEvent = async (eventId: string | undefined) => {
+  const deleteEvent = (eventId: string | undefined) => {
     if (!eventId) {
       return;
     }
     const eventToDelete = eventsList.value.find((eventItem) => eventItem.id === eventId);
     if (eventToDelete) {
-      var updatedModel: EMRALD_Model = await DeleteItemAndRefs(eventToDelete);
+      const updatedModel = DeleteItemAndRefs(eventToDelete);
       updateAppData(updatedModel);
     }
     //todo else error, no event to delete
@@ -111,7 +101,7 @@ const EventContextProvider: React.FC<EmraldContextWrapperProps> = ({ children })
   };
 
   const clearEventList = () => {
-    updateAppData(JSON.parse(JSON.stringify({ ...appData.value, EventList: [] })));
+    updateAppData(JSON.parse(JSON.stringify({ ...appData.value, EventList: [] })) as EMRALD_Model);
   };
 
   return (

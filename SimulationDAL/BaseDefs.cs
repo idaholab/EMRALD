@@ -55,6 +55,7 @@ namespace SimulationDAL
   [JsonConverter(typeof(StringEnumConverter))]
   public enum EnTimeRate { trYears, trDays, trHours, trMinutes, trSeconds}
 
+  [JsonConverter(typeof(StringEnumConverter))]
   public enum EnIDTypes { itVar = 0, itComp, itState, itEvent, itAction, itTreeNode, itTimer, itDiagram, itExtSim };
   public enum EnDistType { dtNormal, dtWeibull, dtExponential, dtLogNormal, dtUniform, dtTriangular, dtGamma, dtGompertz};
   //public class ModelTypesInfo
@@ -643,11 +644,44 @@ namespace SimulationDAL
   {
     public static List<string> FindFilePathReferences(ref string code, string oldPath = null, string newPath = null)
     {
-      // Define a regular expression pattern to match file paths
-      string pattern = @"(?<![:\/])((?:[a-zA-Z]:\\)|(?:\.\/)|(?:\.\.\/)|(?:\.\\)|(?:\.\.\\))(?:[\w\s\.-]+\\)*(?:[\w\s\.-]+)";
+      // Define a regular expression pattern to match file paths, including paths separated by spaces
+      string pattern = @"(?<![:\/])(?:""((?:[a-zA-Z]:\\|(?:\.\.\/)|(?:\.\.\\))(?:[\w\.-]+?[\\\/])*[\w\.-]+)""|((?:[a-zA-Z]:\\|(?:\.\.\/)|(?:\.\.\\))(?:[\w\.-]+?[\\\/])*[\w\.-]+))(?=\s|$|(?=""))";
+      
+      //doesn't get items with a space in the string and adds extra stuff if is escaped for code in a script 
+      //string pattern = @"(?:(?:[a-zA-Z]:)?[\\/]|\.{1,2}[\\/])(?:[^\s\\/]+[\\/]?)+";
+            
+      //doesn't get multiple items in a script string because it has quotes
+//      string pattern = @"
+//(?:
+//    (?<="")                              # ---- quoted path ----
+//    (?:
+//        [A-Za-z]:[\\/]+ |                #   drive‑rooted     C:\ or C:/
+//        [\\/]+        |                  #   absolute         / or \
+//        \.{1,2}[\\/]+                    #   relative         ./ or ../
+//    )
+//    (?:[^""\\/\n]+[\\/]+)*               #   inner segments
+//    [^""\\/\n]+                          #   last segment
+//    (?="")                               #   up to, not incl. closing quote
+//  |                                      # ---- OR ----
+//    (?:
+//        [A-Za-z]:[\\/]+ |                #   drive‑rooted
+//        [\\/]+        |                  #   absolute
+//        \.{1,2}[\\/]+                    #   relative
+//    )
+//    (?:[^\s""\\/\n]+[\\/]+)*             #   inner segments (no spaces allowed)
+//    [^\s""\\/\n]+                        #   last segment
+//)";
+
+      var regex = new Regex(
+                  pattern,
+                  RegexOptions.IgnorePatternWhitespace |
+                  RegexOptions.Multiline |
+                  RegexOptions.Compiled,
+                  TimeSpan.FromSeconds(4)             // safety timeout
+              );
 
       // Create a regex object with the defined pattern
-      Regex regex = new Regex(pattern, RegexOptions.IgnoreCase);
+      //Regex regex = new Regex(pattern, RegexOptions.IgnoreCase);
 
       // Find matches in the provided code string
       MatchCollection matches = regex.Matches(code);
@@ -758,6 +792,14 @@ namespace SimulationDAL
       return closestParent;
     }
 
+    public static string FindClosestParentFolder(string filePath1, string filePath2)
+    {
+      var paths = new List<string>();
+      paths.Add(filePath1);
+      paths.Add(filePath2);
+      return FindClosestParentFolder(paths);
+    }
+
     public static string GetRemainingPath(string parentFolder, string filePath)
     {
       // Ensure the parent folder and file path are in a consistent format
@@ -775,6 +817,24 @@ namespace SimulationDAL
       return remainingPath;
     }
 
+    public static string GetRelativePath(string rootPath, string actualPath)
+    {
+      Uri rootUri = new Uri(rootPath);
+      Uri targetUri = new Uri(actualPath);
+
+      // Ensure the rootUri ends with a directory separator
+      if (!rootUri.AbsolutePath.EndsWith("/"))
+      {
+        rootUri = new Uri(rootUri.AbsoluteUri + "/");
+      }
+
+      Uri relativeUri = rootUri.MakeRelativeUri(targetUri);
+      string relativePath = Uri.UnescapeDataString(relativeUri.ToString()).Replace('/', Path.DirectorySeparatorChar);
+      if ((relativePath[0] != '.') && (relativePath[0] != Path.DirectorySeparatorChar))
+        relativePath = "." + Path.DirectorySeparatorChar + relativePath;
+
+      return relativePath;
+    }
 
   }
 
@@ -782,7 +842,6 @@ namespace SimulationDAL
   {
     public List<ToCopyForRef> ToCopyForRefs { get; set; }
     public DateTime AssignedTime { get; set; } //if assigned time is earlier than the model modified then we need to re-evaluate the ToCopyForRefs
-
     public MultiThreadInfo() 
     {
       ToCopyForRefs = new List<ToCopyForRef>();
@@ -793,10 +852,13 @@ namespace SimulationDAL
   public class ToCopyForRef
   {
     public string ItemName { get; set; }
-    public EnIDTypes ItemType { get; set; }
-    public string RefPath { get; set; }
-    public List<string> ToCopy { get; set; }
-    public string RelPath { get; set; }
+    [JsonConverter(typeof(StringEnumConverter))]
+    public EnIDTypes ItemType { get; set; }  //type of item reference is in
+    public string RefPath { get; set; } //reference string in the item
+    public List<string> ToCopy { get; set; } //list if items to copy, path is relative to the EMRALD model 
+    public string RelPath { get; set; } //relative path to replace RefPath in the model
+    public string AdjRelRoot { get; set; } = ""; //if the relative path (RelPath) is not relative to the model location but another loc this is the adjustment. example would be an RunExe where the paths are relative to the exe location. 
+    
 
     //[JsonIgnore]
     // Constructor to initialize all properties
@@ -837,6 +899,7 @@ namespace SimulationDAL
     public string itemName { get; set; }
     public EnIDTypes itemType { get; set; }
     public string msg { get; set; }
+    
 
     // Constructor
     public ScanForReturnItem(int itemId, string itemName, EnIDTypes itemType, string msg)
@@ -852,12 +915,15 @@ namespace SimulationDAL
   public class ScanForRefsItem : ScanForReturnItem
   {
     public string Path { get; set; }
+    public string calcRelativeFrom { get; set; } = ""; //where the relative calc needs to come from if not from the new model location
+
 
     // ConstructorI t
-    public ScanForRefsItem(int itemId, string itemName, EnIDTypes itemType, string msg, string path)
+    public ScanForRefsItem(int itemId, string itemName, EnIDTypes itemType, string msg, string path, string diffRootPath = "")
         : base(itemId, itemName, itemType, msg)
     {
       this.Path = path;
+      this.calcRelativeFrom = diffRootPath;
     }
   }
 

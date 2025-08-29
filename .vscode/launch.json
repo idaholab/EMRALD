@@ -5,14 +5,10 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Debug Nested Vite React App",
-      "type": "pwa-chrome",
+      "command": "npm.cmd run dev",
+      "name": "Run npm dev",
       "request": "launch",
-      "url": "http://localhost:3000",
-      "webRoot": "${workspaceFolder}/Emrald-UI/src",
-      "sourceMapPathOverrides": {
-        "webpack:///./src/*": "${workspaceFolder}/Emrald-UI/src/*"
-      }
+      "type": "node-terminal"
     }
   ]
 }

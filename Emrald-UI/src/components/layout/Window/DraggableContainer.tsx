@@ -1,7 +1,7 @@
 import Box from '@mui/material/Box';
 import React, { useRef, useState } from 'react';
 import { Rnd } from 'react-rnd';
-import { DraggableContainerProps } from './types/draggableContainer';
+import type { DraggableContainerProps } from './types/draggableContainer';
 
 const CustomResizeHandle: React.FC = () => {
   return (
@@ -38,11 +38,11 @@ const DraggableContainer: React.FC<DraggableContainerProps> = ({
     height: initialPosition.height,
     width: initialPosition.width,
   });
-  const containerRef = useRef<any>(null);
+  const containerRef = useRef<Rnd | null>(null);
 
   const updateSize = () => {
-    const { resizable } = containerRef.current;
-    if (!fullScreen) {
+    const resizable = containerRef.current?.resizable;
+    if (!fullScreen && resizable) {
       setSize({
         height: resizable.state.height,
         width: resizable.state.width,
@@ -51,8 +51,8 @@ const DraggableContainer: React.FC<DraggableContainerProps> = ({
   };
 
   const updatePosition = () => {
-    const { draggable } = containerRef.current;
-    if (!fullScreen) {
+    const draggable = containerRef.current?.draggable;
+    if (!fullScreen && draggable) {
       setPosition({
         x: draggable.state.x,
         y: draggable.state.y,
@@ -72,8 +72,12 @@ const DraggableContainer: React.FC<DraggableContainerProps> = ({
         bottomRight: <CustomResizeHandle />,
       }}
       dragHandleClassName={`title-bar-${id}`}
-      onResizeStop={() => updateSize()}
-      onDragStop={() => updatePosition()}
+      onResizeStop={() => {
+        updateSize();
+      }}
+      onDragStop={() => {
+        updatePosition();
+      }}
       bounds="parent"
       disableDragging={fullScreen}
     >
