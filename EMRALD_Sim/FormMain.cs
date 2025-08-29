@@ -1752,7 +1752,7 @@ namespace EMRALD_Sim
           }
           else //save the empty multiThreadInfo
           {
-            if(_sim.multiThreadInfo == null)
+            if (_sim.multiThreadInfo == null)
               _sim.SetMultiThreadInfo(new MultiThreadInfo());
             teModel.Text = _sim.modelTxt;
             saveStripMenuItem_Click(sender, e);

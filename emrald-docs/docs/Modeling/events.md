@@ -139,8 +139,17 @@ Listed as Var Condition in the dropdown menu. Monitors variable values with user
   - **Evaluate Code (C#):** Type or copy and paste into this text field the C# code to evaluate to determine if this event is triggered. This must return a boolean true or false value.
   - **Variables used in code:** A list of other variables available in the model for use in evaluating the code. Pre-existing variables such as CurTime are auto checked and always available. See [Dynamic Scripts](./backendInfo.md#dynamic-scripts) for more information. It will include the all of the variables that you create and are listed in the "All" Tab of the Left Navigation Frame. Check box to identify which variables are used in the code.
 
-## Time Based Events
+## Time-based Events
+
+  <h3>Persistent Events</h3>
+  Time-based events have the option to be "persistent", meaning they will retain their time after the state is exited if the event wasn't triggered.<br>
   
+  For example, let's say a state has two timer events, Timer A for an hour and Timer B for a day, both of which trigger an exit. Once the state is entered, Timer A will trigger after an hour, causing the state to exit. If Timer B is not a persistent event, then it will start timing again and trigger one day from time it enteres the state with the event. However, if Timer B is a persistent event, then it will use the origional sampled 1 hour from the time first state with event was entered.  
+
+  <h3>Persistent Option <img src="/images/Modeling/events/PersistentEvFlag.png" alt="Timer" width="500"/></h3>
+
+  Note: If a persistent event is dependent on an user-defined variable, and the variable changes, then the event cannot use the "adjust" option when the variable changes, only resample and ignore based on the updated variable. Additionally, the event must be in an active state when the variable changes or it will throw a runtime error.
+
   <h3>Timer <img src="/images/Modeling/events/alarm.png" alt="Timer" width="25"/></h3>
   Monitors the time after entering the parent state against the user specified or sampled time. This can be set to a static value or to a variable value. The fields will change form depending on what type of value you are setting it to. Leave the checkbox next to "Use Variable?" blank to set a static value or check it to use a variable value.<br>
   
@@ -156,7 +165,7 @@ Listed as Var Condition in the dropdown menu. Monitors variable values with user
   - **Time Span:** Enter the amount of model time to pass after entering this state before the event actions are triggered. The first field is the variable value you would like to use. The second field is the time unit you would like to use. Click the field to reveal the dropdown menu of options then click your desired selection to set it.
 
 <h3>Failure Rate <img src="/images/Modeling/events/dice.png" alt="Failure Rate" width="25"/></h3>
-  Samples a given probability of failure [P(t) = 1-e^(-lambda*t)] to determine the time (t) of this event. The lambda or frequency value can be set to a static value or to a variable value. The lambda/frequency field will change form slightly depending on what type of value you are setting it to. Leave the checkbox next to "Use Variable Lambda/Frequency?" blank to set a static value or check it to use a variable value.<br>
+  Samples a given probability of failure [P(t) = 1-e^(-lambda*t)] to determine the time (t) of this event. The lambda or frequency value can be set to a static value or to a variable value. The lambda/frequency field will change form slightly depending on what type of value you are setting it to. Leave the checkbox next to "Use Variable Lambda/Frequency?" blank to set a static value or check it to use a variable value. Once sampled, this event will not sample again until the parent state is exited and re-entered. <br>
   
   #### Static Failure Rate
   <img src="/images/Modeling/events/FailureRateOptions1.png" alt="Failure Rate Options" width="500"/>
@@ -168,7 +177,7 @@ Listed as Var Condition in the dropdown menu. Monitors variable values with user
   - **Time Rate:** Enter the time rate that the frequency is sampled over. The first box is the number of days, the second is the number of hours, the third is the number of minutes, and the fourth is the number of seconds. For example, for an hourly failure rate, days=0, hours=1, minutes=0, and seconds=0. Values can only be integers.
 
 <h3>Distribution <img src="/images/Modeling/events/dist.png" alt="Normal Distribution" width="25"/></h3>
-Depending on the type of distribution selected, parameters are set to determine a variable, which in turn will determine when the event occurs. For each required parameter, there is a box for the time rate next to it. You can choose the time units for the parameter, or you can leave it on default, and use the default time unit. The default time rate is also changeable. 
+Depending on the type of distribution selected, parameters are set to determine a variable, which in turn will determine when the event occurs. For each required parameter, there is a box for the time rate next to it. You can choose the time units for the parameter, or you can leave it on default, and use the default time unit. The default time rate is also changeable. Once sampled, this event will not sample again until the parent state is exited and re-entered. 
 <h4>Normal Distribution </h4>
   Listed as Normal Distribution in the Distribution Type dropdown menu. Samples a normal distribution according to user specified parameters for when this event will occur from the time entering the state
   <br><br>
