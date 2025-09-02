@@ -1,0 +1,16 @@
+Simulation = Two Components Fail in Series
+Runtime = 00.00:00:03
+Runs = 100000 of 100000
+
+C1 Failed Occurred 50036 times, Probability =0.50036, MeanTime = 182.16:57:54 +/- 182.23:31:10.39
+(50036)[100.000%]C1 Failed
+
+Failed Occurred 100000 times, Probability =1, MeanTime = 182.04:29:38 +/- 181.23:36:56.16
+(50036)[50.036%]C1 Failed
+(49964)[49.964%]C2 Failed
+
+C2 Failed Occurred 49964 times, Probability =0.49964, MeanTime = 181.16:00:17 +/- 180.23:33:12.36
+(49964)[100.000%]C2 Failed
+---------------------------
+- End Sim Variable Values -
+---------------------------
