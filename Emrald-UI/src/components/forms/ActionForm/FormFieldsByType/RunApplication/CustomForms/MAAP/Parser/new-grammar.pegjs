@@ -6,14 +6,10 @@ Start = __ preamble:(CommentBlock __)? value:SourceElements epilogue:(___ Commen
 	}
 }
 
-/* Common character types and literals */
 FreeCharacter = !LineTerminator !CommentIndicator c:. { return c }
 WhiteSpace = "\t" / "\v" / "\f" / " " / "\u00A0" / "\uFEFF"
 LineTerminator = [\n\r\u2028\u2029]
 LineTerminatorSequence = "\n" / "\r\n" / "\r" / "\u2028" / "\u2029"
-Comment = CommentIndicator _ value:(!LineTerminator .)* {
-	return value.map(v => v[1]).join('');
-}
 CommentIndicator = "//" / "!" / "C " / "**"
 IdentifierStart = [a-zA-Z] / "$" / "_" / "\\"
 Literal = BooleanLiteral / NumericLiteral / TimerLiteral
@@ -82,9 +78,7 @@ FALSE = "FALSE"i
 FUNCTION = "FUNCTION"i
 IF = "IF"i
 INCLUDE = "INCLUDE"i
-INITIATORS = "INITIATOR"i "S"i? {
-	return "INITIATORS";
-}
+INITIATORS = "INITIATORS"i
 IS = "IS"i
 LOOKUP_VARIABLE = "LOOKUP VARIABLE"i
 OFF = "OFF"i
@@ -102,6 +96,10 @@ TRUE = "TRUE"i
 USEREVT = "USEREVT"i
 WHEN = "WHEN"i
 
+Comment = CommentIndicator _ value:(!LineTerminator .)* {
+	return value.map(v => v[1]).join('');
+}
+
 ___ = v:(WhiteSpace / LineTerminatorSequence)+ {
 	return v.filter((x) => x.type === "comment");
 }
@@ -110,7 +108,6 @@ __ = v:(WhiteSpace / LineTerminatorSequence)* {
 }
 _ = WhiteSpace*
 
-/* Expressions */
 Arguments = value:ExpressionType rest:(_ "," _ Arguments)? {
 	return [value].concat(rest ? rest[3] : []);
 }
@@ -130,14 +127,6 @@ Expression = left:ExpressionType _ op:ExpressionOperator _ right:(Expression / E
         right,
     }
 }
-ExpressionBlock = "(" value:Expr ")" _ units:Units? {
-	return {
-    	type: "expression_block",
-        value,
-        units: units ?? undefined,
-    }
-}
-ExpressionType = CallExpression / ExpressionBlock / Variable
 Assignment = target:(CallExpression / Identifier) _ "=" _ value:Expr {
 	return {
     	target,
@@ -155,6 +144,14 @@ IsExpression = target:(Variable / END_TIME) _ IS _ value:Expr {
         value,
     }
 }
+ExpressionBlock = "(" value:Expr ")" _ units:Units? {
+	return {
+    	type: "expression_block",
+        value,
+        units: units ?? undefined,
+    }
+}
+ExpressionType = CallExpression / ExpressionBlock / Variable
 AsExpression = target:Variable _ AS _ value:Variable {
 	return {
     	target,
@@ -173,11 +170,10 @@ MultiPartExpression = first:(Expression / IsExpression / ExpressionBlock) commen
 Expr = MultiPartExpression / IsExpression / Expression / ExpressionType
 Variable = CallExpression / Literal / ParameterName / Identifier
 
-/* Statements */
 SensitivityStatement = SENSITIVITY _ value:(ON / OFF) {
 	return { type: "sensitivity", value }
 }
-TitleStatement = TITLE _ comment:Comment? __ value:(TitleBlock ___)* epilogue:(CommentBlock ___)? END {
+TitleStatement = TITLE _ comment:Comment? ___ value:(TitleBlock ___)* epilogue:(CommentBlock ___)? END {
 	let innerComments = [];
     if (value) {
     	innerComments = value.map(v => v[0].comments)[0] ?? [];
@@ -226,7 +222,7 @@ AliasStatement = ALIAS _ comment1:Comment? ___ value:(SourceElements ___)? comme
     return {
     	type: "alias",
         value: value ? value[0] : [],
-        comment: [[comment1], comment2 ? comment2[0] : []],
+        comment: [[comment1], comment2[0]],
     }
 }
 PlotFilStatement = PLOTFIL _ n:[0-9]+ comment1:(_ Comment)? value:(___ PlotFilBody)* comment2:(__ CommentBlock)? ___ END {
@@ -331,7 +327,6 @@ SourceElement =
     / UserEvtStatement
     / ActionStatement
     / FunctionStatement
-    / Expression
     / IsExpression
     / LookupStatement
     / Parameter

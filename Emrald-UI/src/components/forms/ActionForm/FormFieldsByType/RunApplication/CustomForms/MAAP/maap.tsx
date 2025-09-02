@@ -1,34 +1,22 @@
 import React, { useEffect, useState } from 'react';
 import { useCustomForm } from '../useCustomForm';
-import { Box, Divider, Tab, Tabs } from '@mui/material';
+import { Box, Divider, Tab, Tabs, Typography } from '@mui/material';
 import { TextFieldComponent, FileUploadComponent, TabPanel } from '../../../../../../common';
 import { Parameters, Initiators, InputBlocks, Outputs } from './FormFieldsByType';
 import InputParse from './Parser';
 import { parse as parameterParser } from './Parser/maap-par-parser';
-import { v4 as uuid } from 'uuid';
 import { useActionFormContext } from '../../../../ActionFormContext';
 import useRunApplication from '../../useRunApplication';
-import {
-  callExpressionToString,
-  expressionBlockToString,
-  expressionToString,
-  expressionTypeToString,
-  identifierToString,
-  isExpressionToString,
-  MAAPToString,
-  sourceElementToString,
-  variableToString,
-} from './Parser/maap-to-string';
+import { MAAPToString } from './Parser/maap-to-string';
 import type {
   MAAPParameter,
   MAAPConditionalBlockStatement,
   MAAPSourceElement,
-  MAAPComment,
-  MAAPInitiator,
+  MAAPAssignment,
 } from '../../../../../../../types/EMRALD_Model';
 
 const MAAP = () => {
-  const { formData, setFormData, setReturnProcess, ReturnPostCode, ReturnExePath } =
+  const { formData, setFormData, setReturnProcess, ReturnPreCode, ReturnPostCode, ReturnExePath } =
     useCustomForm();
   const { setReqPropsFilled, setCodeVariables } = useActionFormContext();
   const [parameterFile, setParameterFile] = useState<File | null>(null);
@@ -36,165 +24,57 @@ const MAAP = () => {
   const [currentTab, setCurrentTab] = useState(0);
   const [parameterPath, setParameterPath] = useState(formData?.parameterPath ?? '');
   const [inputPath, setInputPath] = useState(formData?.inputPath ?? '');
-  const { ReturnPreCode } = useRunApplication();
-
-  useEffect(() => {
-    setReqPropsFilled(!!formData?.exePath && !!parameterPath && !!inputPath);
-  }, [formData?.exePath, parameterPath, inputPath]);
-
   const handleTabChange = (_event: React.SyntheticEvent, tabValue: number) => {
     setCurrentTab(tabValue);
   };
 
-  const getParameterName = (row: MAAPSourceElement) => {
-    if (row.type === 'assignment') {
-      if (row.target.type === 'call_expression') {
-        return callExpressionToString(row.target);
-      }
-      return identifierToString(row.target);
-    }
-    return '';
-  };
-
   function createMaapFile() {
     if (formData?.sourceElements) {
-      let inpFile = '';
-      let block = 0;
-      const variables: string[] = [];
-      formData.sourceElements.forEach((sourceElement) => {
-        if (sourceElement.type === 'block') {
-          if (sourceElement.blockType === 'PARAMETER CHANGE') {
-            inpFile += 'PARAMETER CHANGE\n';
-            formData.parameters?.forEach((parameter) => {
-              inpFile += `${parameter.name ?? ''} = `;
-              if (parameter.useVariable && typeof parameter.variable === 'string') {
-                inpFile += `" + ${parameter.variable} + @"`;
-                if (!variables.includes(parameter.variable)) {
-                  variables.push(parameter.variable);
-                }
-              } else {
-                if (typeof parameter.value === 'string') {
-                  inpFile += parameter.value;
-                } else if (parameter.value.type === 'parameter_name') {
-                  inpFile += parameter.value.value;
-                } else {
-                  inpFile += expressionToString(parameter.value);
-                }
-                if (parameter.unit) {
-                  inpFile += ` ${parameter.unit}`;
-                }
-              }
-              inpFile += '\n';
+      let newSource: MAAPSourceElement[] = [];
+      let cidx = -1;
+      formData.sourceElements.forEach((se, i) => {
+        if (se.type === 'block') {
+          if (se.blockType === 'PARAMETER CHANGE' && formData.parameters) {
+            // This is set up with the assumption we're only modifying assignment statements in the parameter change section
+            newSource.push({
+              type: 'block',
+              blockType: 'PARAMETER CHANGE',
+              value: [...formData.parameters, ...se.value.filter((v) => v.type !== 'assignment')],
+              comments: [[], []],
             });
-            inpFile += 'END\n';
+          } else if (formData.initiators) {
+            newSource.push({
+              type: 'block',
+              blockType: 'INITIATORS',
+              value: formData.initiators,
+              comments: [[], []],
+            });
           } else {
-            inpFile += 'INITIATORS\n';
-            formData.initiators?.forEach((initiator) => {
-              inpFile += `${initiator.name} = `;
-              if (typeof initiator.value === 'boolean') {
-                inpFile += initiator.value ? 'T' : 'F';
-              } else {
-                inpFile += initiator.value.toString();
-              }
-              inpFile += '\n';
-            });
-            inpFile += 'END\n';
+            newSource.push(se);
           }
-        } else if (
-          sourceElement.type === 'conditional_block' &&
-          formData.inputBlocks !== undefined
-        ) {
-          const cblock = formData.inputBlocks[block];
-          inpFile += `${cblock.blockType} `;
-          if (cblock.test.type === 'expression') {
-            console.log(cblock);
-            if (cblock.test.value.left.useVariable) {
-              // TODO - If this is set to a variable, can the right value be anything other than a string?
-              if (typeof cblock.test.value.left.value === 'string') {
-                inpFile += `" + ${cblock.test.value.left.value} + @"`;
-                if (!variables.includes(cblock.test.value.left.value)) {
-                  variables.push(cblock.test.value.left.value);
-                }
-              }
-            } else {
-              inpFile += `${expressionTypeToString(cblock.test.value.left)} ${cblock.test.value.op} `;
-            }
-            if (cblock.test.value.right.useVariable) {
-              // TODO - If this is set to a variable, can the right value be anything other than a string?
-              if (typeof cblock.test.value.right.value === 'string') {
-                inpFile += cblock.test.value.right.value;
-                if (!variables.includes(cblock.test.value.right.value)) {
-                  variables.push(cblock.test.value.right.value);
-                }
-              }
-              inpFile += ' + @"\n';
-            } else {
-              inpFile += `${expressionToString(cblock.test.value.right)}\n`;
-            }
-          } else if (cblock.test.type === 'is_expression') {
-            if (cblock.test.target.useVariable) {
-              // TODO - If this is set to a variable, can the right value be anything other than a string?
-              if (typeof cblock.test.target.value === 'string') {
-                inpFile += `" + ${cblock.test.target.value} + @" IS `;
-                if (!variables.includes(cblock.test.target.value)) {
-                  variables.push(cblock.test.target.value);
-                }
-              }
-            } else {
-              inpFile += `${variableToString(cblock.test.target)} IS `;
-            }
-            if (cblock.test.value.useVariable) {
-              // TODO - If this is set to a variable, can the right value be anything other than a string?
-              if (typeof cblock.test.value.value === 'string') {
-                inpFile += `" + ${cblock.test.value.value} + @"`;
-                if (!variables.includes(cblock.test.value.value)) {
-                  variables.push(cblock.test.value.value);
-                }
-              }
-            } else {
-              if (typeof cblock.test.value.value === 'string') {
-                inpFile += cblock.test.value.value;
-              } else if (
-                typeof cblock.test.value.value === 'number' ||
-                typeof cblock.test.value.value === 'boolean'
-              ) {
-                inpFile += cblock.test.value.value.toString();
-              } else if (cblock.test.value.type === 'is_expression') {
-                inpFile += isExpressionToString(cblock.test.value);
-              } else if (cblock.test.value.type === 'call_expression') {
-                inpFile += callExpressionToString(cblock.test.value);
-              } else if (cblock.test.value.type === 'expression') {
-                inpFile += expressionToString(cblock.test.value);
-              } else {
-                inpFile += expressionBlockToString(cblock.test.value);
-              }
-            }
-            inpFile += '\n';
-          }
-          // TODO: Looking at the other possible syntax object types that cblock.test can be, I don't think any of them are actually possible
-          // But if they are, add them in an else if statement here
-          cblock.value.forEach((se) => {
-            if (se.type === 'assignment' && se.value.useVariable) {
-              if (se.target.type === 'call_expression') {
-                inpFile += callExpressionToString(se.target);
-              } else {
-                inpFile += identifierToString(se.target);
-              }
-              inpFile += ` = " + ${expressionToString(se.value)} + @"`;
-            } else {
-              inpFile += sourceElementToString(se);
-            }
-            inpFile += '\n';
-          });
-          inpFile += `\nEND\n`;
-          block += 1;
-        } else {
-          inpFile += `${MAAPToString(sourceElement)}\n`;
+        } else if (se.type === 'conditional_block' && cidx < 0) {
+          cidx = i;
+        } else if (se.type !== 'conditional_block') {
+          newSource.push(se);
         }
       });
-      setCodeVariables(variables);
-      console.log(inpFile);
-      return inpFile;
+      if (formData.inputBlocks) {
+        newSource = [
+          ...newSource.slice(0, cidx),
+          ...formData.inputBlocks,
+          ...newSource.slice(cidx),
+        ];
+      }
+      const inpFile = new MAAPToString({
+        type: 'program',
+        value: newSource,
+        comments: [[], []],
+      });
+      // Ensures that variable selections are locked in
+      formData.sourceElements = newSource;
+      console.log(inpFile.output);
+      setCodeVariables(inpFile.variables);
+      return inpFile.output;
     }
     return '';
   }
@@ -287,9 +167,7 @@ const MAAP = () => {
         ? {
             ...formData,
             exePath: cleanExePath,
-            inputFile,
             inputPath: cleanInputPath,
-            parameterFile,
             parameterPath: cleanParameterPath,
           }
         : undefined,
@@ -311,10 +189,8 @@ const MAAP = () => {
                 possibleInitiators.push({
                   index: data.index,
                   desc: data.desc,
-                  comment: data.comment ?? '',
                   value: data.value,
                   type: 'parameter',
-                  id: uuid(),
                 });
               }
             } catch (err) {
@@ -342,25 +218,12 @@ const MAAP = () => {
         try {
           const data = InputParse.parse(fileString, { locations: false }).output;
 
-          const docComments: Record<string, MAAPComment> = {};
           const parameters: MAAPSourceElement[] = [];
           let initiators: MAAPSourceElement[] = [];
           const inputBlocks: MAAPConditionalBlockStatement[] = [];
           const fileRefs: string[] = [];
 
-          data.value.forEach((sourceElement, i) => {
-            if (sourceElement.type === 'comment') {
-              // get following source element and see if it is a conditional block
-              const nextElement = data.value[i + 1] as MAAPComment | MAAPSourceElement | undefined;
-              if (nextElement && nextElement.type === 'conditional_block') {
-                if (!inputBlocks.includes(nextElement)) {
-                  nextElement.id = uuid();
-                  inputBlocks.push(nextElement);
-                }
-                docComments[nextElement.id] = sourceElement;
-              }
-            }
-
+          data.value.forEach((sourceElement) => {
             switch (sourceElement.type) {
               case 'file':
                 fileRefs.push(sourceElement.value);
@@ -376,7 +239,6 @@ const MAAP = () => {
                 break;
               case 'conditional_block':
                 if (!inputBlocks.includes(sourceElement)) {
-                  sourceElement.id = uuid();
                   inputBlocks.push(sourceElement);
                 }
                 break;
@@ -386,65 +248,28 @@ const MAAP = () => {
           });
 
           // Set state variables or perform other actions with comments, sections, and parameters
-          // setComments(comments);
-          const newParameters: MAAPParameter[] = [];
+          const newParameters: MAAPAssignment[] = [];
           parameters.forEach((param) => {
-            if (param.type === 'comment') {
-              newParameters[newParameters.length - 1].comment = param.value as unknown as string;
+            if (param.type === 'assignment') {
+              newParameters.push(param);
             } else {
-              let unit = '';
-              let value = '';
-              if (
-                typeof param.value === 'object' &&
-                !Array.isArray(param.value) &&
-                param.type === 'assignment'
-              ) {
-                if (param.value.type === 'number') {
-                  value = param.value.value.toString();
-                  unit = param.value.units ?? '';
-                }
-              }
-              newParameters.push({
-                name: getParameterName(param),
-                id: uuid(),
-                useVariable: false,
-                unit,
-                value,
-                type: 'parameter',
-              });
+              // Unhandled in the form UI
+              console.warn(
+                `Unhandled parameter format: ${new MAAPToString().sourceElementToString(param)}`,
+              );
             }
           });
-          const newInitiators: MAAPInitiator[] = [];
-          initiators.forEach((init) => {
-            if (init.type === 'comment') {
-              newInitiators[newInitiators.length - 1].comment = init.value;
-            } else if (init.type === 'assignment') {
-              let value: string | number | boolean = '';
-              if (init.value.type === 'boolean') {
-                value = init.value.value;
-              } else if (init.value.type === 'number') {
-                value = init.value.value;
-              } else {
-                value = expressionToString(init.value);
-              }
-              newInitiators.push({
-                name: getParameterName(init),
-                id: uuid(),
-                comment: '',
-                value,
-              });
-            }
-          });
+
           setFormData((prevFormData) =>
             prevFormData
               ? {
                   ...prevFormData,
                   parameters: newParameters,
-                  initiators: newInitiators,
-                  docComments,
+                  initiators,
                   inputBlocks,
                   fileRefs,
                   sourceElements: data.value,
+                  needsUpgrade: false
                 }
               : undefined,
           );
@@ -508,27 +333,36 @@ const MAAP = () => {
 
         <Divider sx={{ my: 3 }} />
 
-        <Box>
-          <Tabs value={currentTab} onChange={handleTabChange} aria-label="basic tabs example">
-            <Tab label="Parameters" />
-            <Tab label="Initiators" />
-            <Tab label="Input Blocks" />
-            <Tab label="Outputs" />
-          </Tabs>
-        </Box>
+        {formData?.needsUpgrade ? (
+          <Typography fontWeight="bold">
+            Your project was created in an older version of the MAAP form. Please re-open your .INP
+            file.
+          </Typography>
+        ) : (
+          <>
+            <Box>
+              <Tabs value={currentTab} onChange={handleTabChange} aria-label="basic tabs example">
+                <Tab label="Parameters" />
+                <Tab label="Initiators" />
+                <Tab label="Input Blocks" />
+                <Tab label="Outputs" />
+              </Tabs>
+            </Box>
 
-        <TabPanel value={currentTab} index={0}>
-          <Parameters />
-        </TabPanel>
-        <TabPanel value={currentTab} index={1}>
-          <Initiators />
-        </TabPanel>
-        <TabPanel value={currentTab} index={2}>
-          <InputBlocks />
-        </TabPanel>
-        <TabPanel value={currentTab} index={3}>
-          <Outputs />
-        </TabPanel>
+            <TabPanel value={currentTab} index={0}>
+              <Parameters />
+            </TabPanel>
+            <TabPanel value={currentTab} index={1}>
+              <Initiators />
+            </TabPanel>
+            <TabPanel value={currentTab} index={2}>
+              <InputBlocks />
+            </TabPanel>
+            <TabPanel value={currentTab} index={3}>
+              <Outputs />
+            </TabPanel>
+          </>
+        )}
       </Box>
     </>
   );
