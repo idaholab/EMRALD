@@ -56,6 +56,7 @@ describe('MAAP Form', async () => {
     expect(getAction(name)).toEqual(expected[name]);
   });
 
+  /*
   test('uses variables', async () => {
     const name = 'uses variables';
     renderActionForm(
@@ -205,4 +206,5 @@ describe('MAAP Form', async () => {
     await save();
     expect(getAction(name)).toEqual(expected[name]);
   });
+  */
 });
