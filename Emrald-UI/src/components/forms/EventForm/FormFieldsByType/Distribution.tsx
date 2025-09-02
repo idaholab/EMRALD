@@ -183,12 +183,12 @@ const Distribution = () => {
                   {row} {getSuffix(row)}
                 </StyledTableCell>
                 <StyledTableCell>
-                  {allRows[row].useVariable ? (
+                  {allRows[row]?.useVariable ? (
                     <SelectComponent
                       label="Variable"
                       value={allRows[row].variable ?? ''}
                       setValue={(value) => {
-                        setParameterVariable(Number(value), row);
+                        setParameterVariable(value, row);
                         handleVariableChange(row);
                       }}
                     >
