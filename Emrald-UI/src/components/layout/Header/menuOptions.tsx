@@ -346,7 +346,7 @@ export const downloadOptions = {
     const link = document.createElement('a');
     link.target = '_blank';
     link.href =
-      'https://github.com/idaholab/EMRALD/releases/latest/download/EMRALD_SimEngine.3_0.zip'; //The file to download.
+      'https://github.com/idaholab/EMRALD/releases/latest/download/EMRALD_SimEngine.zip'; //The file to download.
     link.click();
   },
   'Client Tester': () => {
