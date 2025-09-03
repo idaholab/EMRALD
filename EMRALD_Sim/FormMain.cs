@@ -520,7 +520,7 @@ namespace EMRALD_Sim
         string res = simRun.RunSim();
         if (res != "")
         {
-          Console.Write("Invalid path for JSON options load.");
+          Console.Write($"Failed to load from JSON options: ${res}");
         }
       }
     }
