@@ -3,7 +3,7 @@ import type { EmraldContextWrapperProps } from './EmraldContextWrapper';
 import { appData, updateAppData } from '../hooks/useAppData';
 import { effect, type ReadonlySignal, useComputed } from '@preact/signals-react';
 import type { EMRALD_Model, Event, State } from '../types/EMRALD_Model';
-import { DeleteItemAndRefs, updateModelAndReferences } from '../utils/UpdateModel';
+import { DeleteItemAndRefs, updateModelAndReferences, updateSpecifiedModel } from '../utils/UpdateModel';
 
 interface EventContextType {
   events: Event[];
@@ -67,16 +67,18 @@ const EventContextProvider: React.FC<EmraldContextWrapperProps> = ({ children })
   };
 
   const updateEvent = (updatedEvent: Event, state?: State, moveFromCurrent = false) => {
-    const updatedModel = updateModelAndReferences(updatedEvent, 'Event');
-    updateAppData(updatedModel);
+    let updatedModel = updateModelAndReferences(updatedEvent, 'Event');
 
     //update the state "moveFromCurrent" boolean
     if (state) {
-      const eventStateIndex = state.events.indexOf(updatedEvent.name);
-      state.eventActions[eventStateIndex].moveFromCurrent = moveFromCurrent;
-      const updatedModel = updateModelAndReferences(state, 'State');
-      updateAppData(updatedModel);
+      const updatedState = updatedModel.StateList.find(s => s.id === state.id);
+      const eventStateIndex = updatedState?.events.indexOf(updatedEvent.name);
+      if (updatedState && eventStateIndex !== undefined && eventStateIndex >= 0) {
+        updatedState.eventActions[eventStateIndex].moveFromCurrent = moveFromCurrent;
+        updatedModel = updateSpecifiedModel(updatedState, 'State', updatedModel, false);
+      }
     }
+    updateAppData(updatedModel);
   };
 
   const deleteEvent = (eventId: string | undefined) => {
