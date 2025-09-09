@@ -118,6 +118,7 @@ const VariableFormContextProvider: React.FC<PropsWithChildren> = ({ children }) 
     });
   };
   const InitializeForm = (variableData?: Variable) => {
+    console.log(variableData);
     if (!variableData) return;
     if (variableData.name) {
       setName(variableData.name);
@@ -132,7 +133,7 @@ const VariableFormContextProvider: React.FC<PropsWithChildren> = ({ children }) 
     setDesc(variableData.desc ?? '');
     setType(variableData.type);
     setVarScope(variableData.varScope);
-    variableData.value && setValue(String(variableData.value));
+    variableData.value !== undefined && setValue(String(variableData.value));
     variableData.sim3DId && setSim3DId(variableData.sim3DId);
     setResetOnRuns(variableData.resetOnRuns);
     variableData.docType && setDocType(variableData.docType);
