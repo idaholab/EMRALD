@@ -85,7 +85,6 @@ const ActionToStateTable: React.FC = () => {
           return item.prob;
         }
       });
-
       const allProbValuesAreNumbers = convertedProbValues?.every(
         (item) => typeof item === 'number' && !isNaN(item),
       );
@@ -96,7 +95,7 @@ const ActionToStateTable: React.FC = () => {
       const sumOfProbs =
         convertedProbValues
           ?.filter((item) => item !== -1)
-          .reduce((acc, item) => (item && acc ? acc + item : 0), 0) ?? 0;
+          .reduce((acc, item) => (typeof item === 'number' && typeof acc === 'number' ? acc + item : 0), 0) ?? 0;
 
       const remainingProb = 1 - sumOfProbs;
       if (remainingProb > 1) {
