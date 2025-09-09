@@ -39,16 +39,6 @@ export const updateAppData = (newData: EMRALD_Model, undoData?: EMRALD_Model) =>
   } else {
     updatedData = {
       ...newData,
-      name: newData.name,
-      desc: newData.desc,
-      version: newData.version,
-      DiagramList: newData.DiagramList,
-      StateList: newData.StateList,
-      VariableList: newData.VariableList,
-      ActionList: newData.ActionList,
-      EventList: newData.EventList,
-      LogicNodeList: newData.LogicNodeList,
-      ExtSimList: newData.ExtSimList,
     };
 
     const newHistory = [...dataHistory, updatedData];
