@@ -107,8 +107,9 @@ const AccordionMenuItems: React.FC<AccordionMenuListProps> = ({
           sx={{
             width: '100%',
             bgcolor: 'background.paper',
-            maxHeight: bothAccordionsOpen || window.innerHeight < 765 ? '160px' : '340px',
-            overflow: 'auto',
+            maxHeight: `${window.innerHeight - (bothAccordionsOpen ? 665 : 374)}px`,
+            overflowY: 'auto',
+            overflowX: 'hidden'
           }}
         >
           {item.type === 'Logic Tree' && item.data && item.data.length > 0 ? (
