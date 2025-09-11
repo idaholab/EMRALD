@@ -6,8 +6,10 @@ function useErrorBoundary() {
 
   useEffect(() => {
     const handleWindowError = (event: ErrorEvent) => {
-      setHasError(true);
-      setErrorMessage(event.message);
+      if (event.message !== 'ResizeObserver loop completed with undelivered notifications.') {
+        setHasError(true);
+        setErrorMessage(event.message);
+      }
     };
 
     window.addEventListener('error', handleWindowError);
