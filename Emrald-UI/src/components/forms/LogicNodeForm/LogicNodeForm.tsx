@@ -13,6 +13,7 @@ import Checkbox from '@mui/material/Checkbox';
 import StateValuesTable from './StateValuesTable';
 import { useLogicNodeFormContext } from './LogicNodeFormContext';
 import MainDetailsForm from '../MainDetailsForm';
+import { useWindowContext } from '../../../contexts/WindowContext';
 
 interface LogicNodeFormProps {
   logicNodeData?: LogicNode;
@@ -55,15 +56,24 @@ const LogicNodeForm: React.FC<LogicNodeFormProps> = ({
     setIsRoot,
     handleNameChange,
     handleSave,
+    savePosition,
     handleClose,
     availableAsTopOrSubtree,
     checkForDuplicateNames,
     initializeForm,
   } = useLogicNodeFormContext();
 
+  const { resizeListener, activeWindowId } = useWindowContext();
+
   useEffect(() => {
     initializeForm(logicNodeData, editing, component, parentNodeName, nodeType, gateType);
   }, []);
+
+  resizeListener.on('resize', (window, position) => {
+    if (window === activeWindowId) {
+      savePosition(position);
+    }
+  });
 
   return (
     <Box mx={3} pb={3}>

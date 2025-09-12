@@ -12,7 +12,8 @@ import DraggableContainer from './DraggableContainer';
 import { Typography } from '@mui/material';
 
 const WindowComponent: React.FC = () => {
-  const { windows, bringToFront, handleClose, toggleMaximize, toggleMinimize } = useWindowContext();
+  const { windows, bringToFront, handleClose, toggleMaximize, toggleMinimize, resizeListener } =
+    useWindowContext();
 
   const openWindows = useMemo(() => windows.filter((window) => !window.minimized), [windows]);
 
@@ -24,6 +25,9 @@ const WindowComponent: React.FC = () => {
           id={window.id}
           initialPosition={window.initialPosition}
           fullScreen={window.maximized}
+          onResize={(position) => {
+            resizeListener.emit('resize', window.id, position);
+          }}
         >
           <Card
             onMouseDown={() => {

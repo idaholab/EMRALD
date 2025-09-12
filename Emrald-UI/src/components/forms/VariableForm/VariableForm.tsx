@@ -15,6 +15,7 @@ import DocLinkFields from './FormFieldsByType/DocLinkFields';
 import ExtSimFields from './FormFieldsByType/ExtSimFields';
 import AccrualFields from './FormFieldsByType/AccrualFields';
 import { useVariableFormContext } from './VariableFormContext';
+import { useWindowContext } from '../../../contexts/WindowContext';
 
 interface VariableFormProps {
   variableData?: Variable;
@@ -61,11 +62,20 @@ const VariableForm: React.FC<VariableFormProps> = ({ variableData }) => {
     setShowRegExFields,
     setShowNumChars,
     setNumChars,
+    savePosition,
   } = useVariableFormContext();
+
+  const { resizeListener, activeWindowId } = useWindowContext();
 
   useEffect(() => {
     InitializeForm(variableData);
   }, []);
+
+  resizeListener.on('resize', (window, position) => {
+    if (window === activeWindowId) {
+      savePosition(position);
+    }
+  });
 
   return (
     <Box mx={3} pb={3}>

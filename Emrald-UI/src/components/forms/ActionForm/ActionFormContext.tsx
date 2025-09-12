@@ -6,7 +6,15 @@ import {
   useEffect,
   useState,
 } from 'react';
-import type { Action, NewState, State, Event, ActionType, MAAPFormData } from '../../../types/EMRALD_Model';
+import type {
+  Action,
+  NewState,
+  State,
+  Event,
+  ActionType,
+  MAAPFormData,
+  WindowPosition,
+} from '../../../types/EMRALD_Model';
 import { useWindowContext } from '../../../contexts/WindowContext';
 import { emptyAction, useActionContext } from '../../../contexts/ActionContext';
 import { useSignal } from '@preact/signals-react';
@@ -56,6 +64,7 @@ interface ActionFormContextType {
   returnProcess?: ReturnProcessType;
   reqPropsFilled: boolean;
   errorItemIds: Set<string>;
+  window?: WindowPosition;
   setReqPropsFilled: React.Dispatch<React.SetStateAction<boolean>>;
   setName: React.Dispatch<React.SetStateAction<string>>;
   setDesc: React.Dispatch<React.SetStateAction<string>>;
@@ -81,6 +90,7 @@ interface ActionFormContextType {
   checkForDuplicateNames: () => boolean;
   handleNameChange: (newName: string) => void;
   handleSave: (event?: Event, state?: State) => void;
+  savePosition: (position: WindowPosition) => void;
   handleSelectChange: (event: SelectChangeEvent, item: NewStateItem) => void;
   handleProbChange: (
     event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -146,6 +156,7 @@ const ActionFormContextProvider: React.FC<PropsWithChildren> = ({ children }) =>
   const [returnProcess, setReturnProcess] = useState<ReturnProcessType | undefined>();
   // const [errorItemIds, setErrorIds] = useState<string[]>([]);
   const [errorItemIds, setErrorIds] = useState<Set<string>>(new Set());
+  const [windowPosition, setWindowPosition] = useState<WindowPosition | undefined>();
 
   const actionTypeOptions = [
     { value: 'atTransition', label: 'Transition' },
@@ -278,11 +289,22 @@ const ActionFormContextProvider: React.FC<PropsWithChildren> = ({ children }) =>
       formData,
       raType,
       returnProcess,
+      window: windowPosition,
     };
     checkFormData();
 
     actionData ? updateAction(action.value) : createAction(action.value, event, state);
     handleClose();
+  };
+
+  const savePosition = (position: WindowPosition) => {
+    setWindowPosition(position);
+    if (actionData) {
+      updateAction({
+        ...action.value,
+        window: windowPosition,
+      });
+    }
   };
 
   const checkFormData = () => {
@@ -531,6 +553,7 @@ const ActionFormContextProvider: React.FC<PropsWithChildren> = ({ children }) =>
     setRaType(actionData?.raType);
     setReturnProcess(actionData?.returnProcess as ReturnProcessType);
     action.value = actionData ?? emptyAction;
+    setWindowPosition(actionData?.window);
   };
 
   return (
@@ -588,6 +611,7 @@ const ActionFormContextProvider: React.FC<PropsWithChildren> = ({ children }) =>
         checkForDuplicateNames,
         handleNameChange,
         handleSave,
+        savePosition,
         handleSelectChange,
         handleProbChange,
         handleProbBlur,

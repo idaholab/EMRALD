@@ -10,6 +10,7 @@ import type {
   ExtEventMsgType,
   TimeVariableUnit,
   VarChangeOptions,
+  WindowPosition,
 } from '../../../types/EMRALD_Model';
 import { useWindowContext } from '../../../contexts/WindowContext';
 import { emptyEvent, useEventContext } from '../../../contexts/EventContext';
@@ -65,6 +66,7 @@ interface EventFormContextType {
   variable: string | undefined;
   variableChecked: boolean;
   variableName: string;
+  window?: WindowPosition;
   addToUsedVariables: (variableName: string) => void;
   handleChange: (row: string, value: string) => void;
   handleBlur: (row: string, value: string) => void;
@@ -74,6 +76,7 @@ interface EventFormContextType {
   handleNameChange: (value: string) => void;
   handleRateChange: (row: string, value: TimeVariableUnit | undefined) => void;
   handleSave: (eventData?: Event, state?: State) => void;
+  savePosition: (position: WindowPosition) => void;
   handleSetParameters: (
     row: string,
     value: 'default' | number | boolean | TimeVariableUnit | undefined,
@@ -166,6 +169,7 @@ const EventFormContextProvider: React.FC<PropsWithChildren> = ({ children }) => 
   const [hasError, setHasError] = useState<boolean>(false);
   const [originalName, setOriginalName] = useState<string>();
   const [invalidValues, setInvalidValues] = useState<Set<string>>(() => new Set());
+  const [windowPosition, setWindowPosition] = useState<WindowPosition | undefined>();
 
   const event = useSignal<Event>(emptyEvent);
 
@@ -187,6 +191,7 @@ const EventFormContextProvider: React.FC<PropsWithChildren> = ({ children }) => 
 
   const InitializeForm = (eventData?: Event, state?: State) => {
     if (eventData) {
+      event.value = eventData;
       setName(eventData.name);
       setOriginalName(eventData.name);
       setDesc(eventData.desc);
@@ -227,6 +232,7 @@ const EventFormContextProvider: React.FC<PropsWithChildren> = ({ children }) => 
       }
       eventData.extEventType && setExtEventType(eventData.extEventType);
       eventData.variable && setVariable(eventData.variable);
+      eventData.window && setWindowPosition(eventData.window);
     }
   };
 
@@ -461,6 +467,7 @@ const EventFormContextProvider: React.FC<PropsWithChildren> = ({ children }) => 
       name: name.trim(),
       desc,
       mainItem: true,
+      window: windowPosition,
     };
     if (evType === 'et3dSimEv') {
       event.value.extEventType = extEventType;
@@ -536,6 +543,16 @@ const EventFormContextProvider: React.FC<PropsWithChildren> = ({ children }) => 
     handleClose();
   };
 
+  const savePosition = (position: WindowPosition) => {
+    setWindowPosition(position);
+    if (event.value.id !== undefined && event.value.id.length > 0) {
+      updateEvent({
+        ...event.value,
+        window: position,
+      });
+    }
+  };
+
   return (
     <EventFormContext.Provider
       value={{
@@ -584,6 +601,7 @@ const EventFormContextProvider: React.FC<PropsWithChildren> = ({ children }) => 
         handleNameChange,
         handleRateChange,
         handleSave,
+        savePosition,
         handleSetParameters,
         handleUseVariableChange,
         handleVariableChange,

@@ -6,6 +6,7 @@ import MainDetailsForm from '../MainDetailsForm';
 import type { Action, State, Event, ActionType } from '../../../types/EMRALD_Model';
 import { useActionFormContext } from './ActionFormContext';
 import { Transition, ChangeVarValue, ExtSimulation, RunApplication } from './FormFieldsByType';
+import { useWindowContext } from '../../../contexts/WindowContext';
 interface ActionFormProps {
   actionData?: Action;
   event?: Event;
@@ -37,7 +38,9 @@ const ActionForm: React.FC<ActionFormProps> = ({ actionData, event, state }) => 
     handleSave,
     initializeForm,
     reset,
+    savePosition,
   } = useActionFormContext();
+  const { resizeListener, activeWindowId } = useWindowContext();
 
   useEffect(() => {
     initializeForm(actionData);
@@ -50,6 +53,12 @@ const ActionForm: React.FC<ActionFormProps> = ({ actionData, event, state }) => 
     at3DSimMsg: { component: ExtSimulation, props: {} },
     atRunExtApp: { component: RunApplication, props: {} },
   };
+
+  resizeListener.on('resize', (window, position) => {
+    if (window === activeWindowId) {
+      savePosition(position);
+    }
+  });
 
   return (
     <Box mx={3} pb={3}>
@@ -70,7 +79,9 @@ const ActionForm: React.FC<ActionFormProps> = ({ actionData, event, state }) => 
           error={hasError}
           errorMessage="An action with this name already exists, or includes an invalid character."
           reset={reset}
-          handleSave={() => { handleSave(event, state); }}
+          handleSave={() => {
+            handleSave(event, state);
+          }}
           reqPropsFilled={reqPropsFilled}
         >
           {/* Render the appropriate sub-component based on selected action type */}

@@ -293,6 +293,7 @@ export interface Diagram {
    * If this is a template then it indicates the item must exist in the current model before using the template.
    */
   required?: boolean
+  window?: WindowPosition
 }
 export interface ChangeLogItems {
   /**
@@ -304,6 +305,12 @@ export interface ChangeLogItems {
    */
   dateTime: string
   cngID?: string
+}
+export interface WindowPosition {
+  x: number
+  y: number
+  width: number
+  height: number
 }
 export interface ExtSim {
   /**
@@ -323,6 +330,7 @@ export interface ExtSim {
    * If this is a template then it indicates the item must exist in the current model before using the template.
    */
   required?: boolean
+  window?: WindowPosition
 }
 export interface State {
   id?: string
@@ -356,6 +364,7 @@ export interface State {
    * If this is a template then it indicates the item must exist in the current model before using the template.
    */
   required?: boolean
+  window?: WindowPosition
 }
 export interface EventActionItems {
   /**
@@ -477,6 +486,7 @@ export interface Action {
    * If this is a template then it indicates the item must exist in the current model before using the template.
    */
   required?: boolean
+  window?: WindowPosition
 }
 export interface NewState {
   /**
@@ -793,6 +803,7 @@ export interface Event {
    * If this is a template then it indicates the item must exist in the current model before using the template.
    */
   required?: boolean
+  window?: WindowPosition
 }
 export interface EventDistributionParameter {
   name?: EventDistributionParameterName
@@ -839,6 +850,7 @@ export interface LogicNode {
    * If this is a template then it indicates the item must exist in the current model before using the template.
    */
   required?: boolean
+  window?: WindowPosition
 }
 export interface CompChildItems {
   stateValues?: StateValues
@@ -929,6 +941,7 @@ export interface Variable {
    * If this is a template then it indicates the item must exist in the current model before using the template.
    */
   required?: boolean
+  window?: WindowPosition
 }
 export interface AccrualStatesDataItems {
   /**

@@ -9,6 +9,7 @@ import type {
   Diagram,
   GateType,
   StateEvalValue,
+  WindowPosition,
 } from '../../../types/EMRALD_Model';
 import { v4 as uuidv4 } from 'uuid';
 import type { ComponentStateValue } from './StateValuesTable';
@@ -31,6 +32,7 @@ interface LogicNodeFormContextType {
   }[];
   hasError: boolean;
   reqPropsFilled: boolean;
+  window?: WindowPosition;
   setDesc: React.Dispatch<React.SetStateAction<string>>;
   setGateTypeValue: React.Dispatch<React.SetStateAction<GateType>>;
   setIsRoot: React.Dispatch<React.SetStateAction<boolean>>;
@@ -48,6 +50,7 @@ interface LogicNodeFormContextType {
   setDefaultValues: React.Dispatch<React.SetStateAction<boolean>>;
   setCurrentNodeStateValues: React.Dispatch<React.SetStateAction<ComponentStateValue[]>>;
   handleSave: () => void;
+  savePosition: (position: WindowPosition) => void;
   handleClose: () => void;
   handleNameChange: (newName: string) => void;
   checkForDuplicateNames: () => boolean;
@@ -103,6 +106,7 @@ const LogicNodeFormContextProvider: React.FC<{ children: React.ReactNode }> = ({
   const [originalName, setOriginalName] = useState<string | undefined>();
   const [isRoot, setIsRoot] = useState<boolean>(false);
   const [reqPropsFilled, setReqPropsFilled] = useState<boolean>(false);
+  const [windowPosition, setWindowPosition] = useState<WindowPosition | undefined>();
 
   useEffect(() => {
     setReqPropsFilled(!!name && !!gateTypeValue);
@@ -160,6 +164,7 @@ const LogicNodeFormContextProvider: React.FC<{ children: React.ReactNode }> = ({
     setCompDiagram(component ?? '');
     setDefaultValues(current?.stateValues && current.stateValues.length > 0 ? false : true);
     setGateTypeValue(gateType ?? ('gtAnd' as GateType));
+    setWindowPosition(logicNodeInfo?.window);
   };
 
   const availableAsTopOrSubtree = () => {
@@ -218,6 +223,7 @@ const LogicNodeFormContextProvider: React.FC<{ children: React.ReactNode }> = ({
         gateType: gateTypeValue,
       }),
       compChildren: compChildren.value,
+      window: windowPosition,
     };
 
     if (logicNodeData?.isRoot) {
@@ -234,6 +240,16 @@ const LogicNodeFormContextProvider: React.FC<{ children: React.ReactNode }> = ({
       createLogicNode(logicNode.value);
     }
     handleClose();
+  };
+
+  const savePosition = (position: WindowPosition) => {
+    setWindowPosition(position);
+    if (logicNode.value) {
+      updateLogicNode({
+        ...logicNode.value,
+        window: position,
+      });
+    }
   };
 
   return (
@@ -261,6 +277,7 @@ const LogicNodeFormContextProvider: React.FC<{ children: React.ReactNode }> = ({
         setIsRoot,
         handleNameChange,
         handleSave,
+        savePosition,
         handleClose,
         checkForDuplicateNames,
         availableAsTopOrSubtree,

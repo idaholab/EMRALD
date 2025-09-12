@@ -5,7 +5,7 @@ import React, { useState } from 'react';
 import { useWindowContext } from '../../../contexts/WindowContext';
 import { v4 as uuidv4 } from 'uuid';
 import { useSignal } from '@preact/signals-react';
-import type { ExtSim } from '../../../types/EMRALD_Model';
+import type { ExtSim, WindowPosition } from '../../../types/EMRALD_Model';
 import { emptyExtSim, useExtSimContext } from '../../../contexts/ExtSimContext';
 import TextField from '@mui/material/TextField';
 
@@ -21,7 +21,11 @@ const ExtSimForm: React.FC<ExtSimFormProps> = ({ ExtSimData }) => {
   const [originalName] = useState<string | undefined>(ExtSimData?.name);
   const [resourceName, setResourceName] = useState<string>(ExtSimData?.resourceName ?? '');
   const [hasError, setHasError] = useState<boolean>(false);
+  const [windowPosition, setWindowPosition] = useState<WindowPosition | undefined>(
+    ExtSimData?.window,
+  );
   const { extSimList } = useExtSimContext();
+  const { resizeListener, activeWindowId } = useWindowContext();
 
   const handleNameChange = (newName: string) => {
     const trimmedName = newName.trim();
@@ -39,15 +43,33 @@ const ExtSimForm: React.FC<ExtSimFormProps> = ({ ExtSimData }) => {
           ...ExtSim.value,
           name: name.trim(),
           resourceName,
+          window: windowPosition,
         })
       : createExtSim({
           ...ExtSim.value,
           id: uuidv4(),
           name: name.trim(),
           resourceName,
+          window: windowPosition,
         });
     handleClose();
   };
+
+  const savePosition = (position: WindowPosition) => {
+    setWindowPosition(position);
+    if (ExtSimData) {
+      updateExtSim({
+        ...ExtSim.value,
+        window: position,
+      });
+    }
+  };
+
+  resizeListener.on('resize', (window, position) => {
+    if (window === activeWindowId) {
+      savePosition(position);
+    }
+  });
 
   return (
     <Box mx={3} pb={3}>

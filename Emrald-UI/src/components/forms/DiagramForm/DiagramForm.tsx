@@ -20,7 +20,12 @@ import {
   TextField,
 } from '@mui/material';
 import GroupListItems from '../../common/GroupListItems';
-import type { EMRALD_Model, Diagram, DiagramType } from '../../../types/EMRALD_Model';
+import type {
+  EMRALD_Model,
+  Diagram,
+  DiagramType,
+  WindowPosition,
+} from '../../../types/EMRALD_Model';
 import { useTemplateContext } from '../../../contexts/TemplateContext';
 import { FileUploadComponent, TabPanel } from '../../common';
 import CloseIcon from '@mui/icons-material/Close';
@@ -33,7 +38,8 @@ interface DiagramFormProps {
 }
 
 const DiagramForm: React.FC<DiagramFormProps> = ({ diagramData }) => {
-  const { activeWindowId, handleClose, updateTitle, addWindow } = useWindowContext();
+  const { activeWindowId, handleClose, updateTitle, addWindow, resizeListener } =
+    useWindowContext();
   const { updateDiagram, createDiagram } = useDiagramContext();
   const { findTemplatesByGroupName } = useTemplateContext();
   const diagram = useSignal<Diagram>(diagramData ?? emptyDiagram);
@@ -60,6 +66,9 @@ const DiagramForm: React.FC<DiagramFormProps> = ({ diagramData }) => {
   const groupTemplates = useMemo(() => findTemplatesByGroupName(selectedGroup), [selectedGroup]);
   const [currentTab, setCurrentTab] = React.useState(0);
   const [formWindowId] = useState<string | null>(activeWindowId);
+  const [windowPosition, setWindowPosition] = useState<WindowPosition | undefined>(
+    diagramData?.window,
+  );
 
   const handleSave = () => {
     if (selectedTemplate && formWindowId) {
@@ -98,6 +107,7 @@ const DiagramForm: React.FC<DiagramFormProps> = ({ diagramData }) => {
           desc,
           diagramType,
           diagramLabel,
+          window: windowPosition,
         });
       } else {
         createDiagram({
@@ -107,6 +117,7 @@ const DiagramForm: React.FC<DiagramFormProps> = ({ diagramData }) => {
           desc,
           diagramType,
           diagramLabel: diagramLabel || 'Component',
+          window: windowPosition,
         });
       }
       handleClose();
@@ -174,6 +185,18 @@ const DiagramForm: React.FC<DiagramFormProps> = ({ diagramData }) => {
   const handleTabChange = (_event: React.SyntheticEvent, tabValue: number) => {
     setCurrentTab(tabValue);
   };
+
+  resizeListener.on('resize', (window, position) => {
+    if (window === activeWindowId) {
+      setWindowPosition(position);
+      if (diagramData) {
+        updateDiagram({
+          ...diagram.value,
+          window: windowPosition,
+        });
+      }
+    }
+  });
 
   return (
     <Box mx={3} pb={3} height={'100%'}>

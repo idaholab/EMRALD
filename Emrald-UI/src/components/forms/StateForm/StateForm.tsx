@@ -2,7 +2,13 @@ import { useEffect, useState } from 'react';
 import Typography from '@mui/material/Typography';
 import React from 'react';
 import { useWindowContext } from '../../../contexts/WindowContext';
-import type { State, DiagramType, StateEvalValue, StateType } from '../../../types/EMRALD_Model';
+import type {
+  State,
+  DiagramType,
+  StateEvalValue,
+  StateType,
+  WindowPosition,
+} from '../../../types/EMRALD_Model';
 import { v4 as uuidv4 } from 'uuid';
 import MainDetailsForm from '../../forms/MainDetailsForm';
 import { emptyState, useStateContext } from '../../../contexts/StateContext';
@@ -29,6 +35,11 @@ const StateForm: React.FC<StateFormProps> = ({ stateData }: StateFormProps) => {
   );
   const [hasError, setHasError] = useState<boolean>(false);
   const [originalName] = useState<string>(stateData?.name ?? '');
+  const [windowPosition, setWindowPosition] = useState<WindowPosition | undefined>(
+    stateData?.window,
+  );
+
+  const { resizeListener, activeWindowId } = useWindowContext();
 
   const stateTypeOptions = [
     { value: 'stStart', label: 'Start' },
@@ -55,6 +66,7 @@ const StateForm: React.FC<StateFormProps> = ({ stateData }: StateFormProps) => {
         name: name.trim(),
         desc,
         defaultSingleStateValue,
+        window: windowPosition,
       });
       if (name !== originalName) {
         const newList = currentDiagram.value.states.filter((state) => state !== originalName);
@@ -72,6 +84,7 @@ const StateForm: React.FC<StateFormProps> = ({ stateData }: StateFormProps) => {
         stateType,
         defaultSingleStateValue,
         diagramName: currentDiagram.value.name || '',
+        window: windowPosition,
       });
       const { states } = currentDiagram.value;
       currentDiagram.value.states = [...states, name.trim()];
@@ -82,9 +95,26 @@ const StateForm: React.FC<StateFormProps> = ({ stateData }: StateFormProps) => {
     handleClose();
   };
 
+  const savePosition = (position: WindowPosition) => {
+    setWindowPosition(position);
+    if (stateData) {
+      updateState({
+        ...stateData,
+        window: position,
+      });
+    }
+  };
+
   useEffect(() => {
     setDiagramType(currentDiagram.value.diagramType);
   }, []);
+
+  resizeListener.on('resize', (window, position) => {
+    if (window === activeWindowId) {
+      savePosition(position);
+    }
+  });
+
   return (
     <Box mx={3} pb={3}>
       <Typography variant="h5" my={3}>

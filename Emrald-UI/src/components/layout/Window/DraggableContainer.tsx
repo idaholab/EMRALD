@@ -1,7 +1,15 @@
 import Box from '@mui/material/Box';
 import React, { useRef, useState } from 'react';
 import { Rnd } from 'react-rnd';
-import type { DraggableContainerProps } from './types/draggableContainer';
+import { WindowPosition } from '../../../types/EMRALD_Model';
+
+type DraggableContainerProps = {
+  id: string;
+  initialPosition: WindowPosition;
+  fullScreen: boolean;
+  children: React.ReactNode;
+  onResize?: (position: WindowPosition) => void;
+};
 
 const CustomResizeHandle: React.FC = () => {
   return (
@@ -29,6 +37,7 @@ const DraggableContainer: React.FC<DraggableContainerProps> = ({
   initialPosition,
   fullScreen,
   children,
+  onResize,
 }) => {
   const [position, setPosition] = useState({
     x: initialPosition.x,
@@ -44,9 +53,17 @@ const DraggableContainer: React.FC<DraggableContainerProps> = ({
     const resizable = containerRef.current?.resizable;
     if (!fullScreen && resizable) {
       setSize({
-        height: resizable.state.height,
-        width: resizable.state.width,
+        height: Number(resizable.state.height),
+        width: Number(resizable.state.width),
       });
+      if (onResize) {
+        onResize({
+          x: position.x,
+          y: position.y,
+          width: Number(resizable.state.height),
+          height: Number(resizable.state.width),
+        });
+      }
     }
   };
 
@@ -57,6 +74,14 @@ const DraggableContainer: React.FC<DraggableContainerProps> = ({
         x: draggable.state.x,
         y: draggable.state.y,
       });
+      if (onResize) {
+        onResize({
+          x: draggable.state.x,
+          y: draggable.state.y,
+          width: size.width,
+          height: size.height,
+        });
+      }
     }
   };
 
@@ -66,8 +91,6 @@ const DraggableContainer: React.FC<DraggableContainerProps> = ({
       default={initialPosition}
       size={fullScreen ? { height: '99.2%', width: '99.2%' } : size}
       position={fullScreen ? { x: 0, y: 0 } : position}
-      minHeight={35}
-      minWidth={350}
       resizeHandleComponent={{
         bottomRight: <CustomResizeHandle />,
       }}

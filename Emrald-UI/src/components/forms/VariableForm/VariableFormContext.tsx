@@ -9,6 +9,7 @@ import type {
   DocVarType,
   VariableType,
   VarScope,
+  WindowPosition,
 } from '../../../types/EMRALD_Model';
 import type { SelectChangeEvent } from '@mui/material';
 import { useSignal } from '@preact/signals-react';
@@ -42,6 +43,7 @@ interface VariableFormContextType {
   showRegExFields?: boolean;
   showNumChars?: boolean;
   numChars?: number;
+  window?: WindowPosition;
   setAccrualStatesData: React.Dispatch<React.SetStateAction<AccrualStateItem[] | undefined>>;
   sortNewStates: (accrualStatesData: AccrualStateItem[]) => AccrualStateItem[];
   InitializeForm: (variableData?: Variable) => void;
@@ -61,6 +63,7 @@ interface VariableFormContextType {
   handleTypeChange: (newType: VariableType) => void;
   handleNameChange: (updatedName: string) => void;
   handleSave: (variableData?: Variable) => void;
+  savePosition: (position: WindowPosition) => void;
   handleFloatValueChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleBoolValueChange: (e: SelectChangeEvent) => void;
   handleStringValueChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
@@ -106,6 +109,8 @@ const VariableFormContextProvider: React.FC<PropsWithChildren> = ({ children }) 
   const [showRegExFields, setShowRegExFields] = useState<boolean>();
   const [showNumChars, setShowNumChars] = useState<boolean>();
   const [numChars, setNumChars] = useState<number>();
+  const [windowPosition, setWindowPosition] = useState<WindowPosition | undefined>();
+
   const sortNewStates = (newStateItems: AccrualStateItem[]) => {
     return newStateItems.sort((a, b) => {
       if (a.stateName && !b.stateName) {
@@ -118,7 +123,6 @@ const VariableFormContextProvider: React.FC<PropsWithChildren> = ({ children }) 
     });
   };
   const InitializeForm = (variableData?: Variable) => {
-    console.log(variableData);
     if (!variableData) return;
     if (variableData.name) {
       setName(variableData.name);
@@ -130,6 +134,8 @@ const VariableFormContextProvider: React.FC<PropsWithChildren> = ({ children }) 
     } else {
       setNamePrefix('Int_');
     }
+    variable.value = variableData;
+    setWindowPosition(variableData.window);
     setDesc(variableData.desc ?? '');
     setType(variableData.type);
     setVarScope(variableData.varScope);
@@ -219,6 +225,7 @@ const VariableFormContextProvider: React.FC<PropsWithChildren> = ({ children }) 
       regExpLine,
       begPosition,
       numChars,
+      window: windowPosition,
     };
     // Remove undefined properties from the JSON
     Object.keys(variable.value).forEach((key) =>
@@ -229,6 +236,16 @@ const VariableFormContextProvider: React.FC<PropsWithChildren> = ({ children }) 
 
     variableData ? updateVariable(variable.value) : createVariable(variable.value);
     handleClose();
+  };
+
+  const savePosition = (position: WindowPosition) => {
+    setWindowPosition(position);
+    if (variable.value.id && variable.value.id.length > 0) {
+      updateVariable({
+        ...variable.value,
+        window: position,
+      });
+    }
   };
 
   const handleFloatValueChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -289,6 +306,7 @@ const VariableFormContextProvider: React.FC<PropsWithChildren> = ({ children }) 
         handleTypeChange,
         handleNameChange,
         handleSave,
+        savePosition,
         handleFloatValueChange,
         handleBoolValueChange,
         handleStringValueChange,

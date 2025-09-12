@@ -9,6 +9,7 @@ import type { Event, State } from '../../../types/EMRALD_Model';
 
 import { useEventFormContext } from './EventFormContext';
 import { Checkbox, FormControlLabel } from '@mui/material';
+import { useWindowContext } from '../../../contexts/WindowContext';
 
 interface EventFormProps {
   eventData?: Event;
@@ -33,10 +34,20 @@ const EventForm: React.FC<EventFormProps> = ({ eventData, state }) => {
     setDesc,
     setEvType,
     setMoveFromCurrent,
+    savePosition,
   } = useEventFormContext();
+
+  const { resizeListener, activeWindowId } = useWindowContext();
+
   useEffect(() => {
     InitializeForm(eventData, state);
   }, []);
+
+  resizeListener.on('resize', (window, position) => {
+    if (window === activeWindowId) {
+      savePosition(position);
+    }
+  });
 
   return (
     <Box mx={3} pb={3}>
@@ -45,7 +56,7 @@ const EventForm: React.FC<EventFormProps> = ({ eventData, state }) => {
       </Typography>
       <form>
         <MainDetailsForm
-          itemType='Event'
+          itemType="Event"
           type={evType}
           setType={setEvType}
           handleTypeChange={handleChangeEventType}

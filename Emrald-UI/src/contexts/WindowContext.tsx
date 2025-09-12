@@ -1,15 +1,11 @@
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
+import { EventEmitter } from 'ee-ts';
 import React, { createContext, useContext, useState, type ReactNode } from 'react';
 import { v4 as uuidv4 } from 'uuid';
+import { WindowPosition } from '../types/EMRALD_Model';
 
-export interface WindowPosition {
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-}
-interface Window {
+type Window = {
   id: string;
   title: string;
   isOpen: boolean;
@@ -17,7 +13,11 @@ interface Window {
   minimized: boolean;
   maximized: boolean;
   content: React.ReactNode;
-}
+};
+
+class WindowResizeListener extends EventEmitter<{
+  resize: (windowId: string, position: WindowPosition) => void;
+}> {}
 
 interface WindowContextType {
   windows: Window[];
@@ -36,6 +36,7 @@ interface WindowContextType {
   toggleMaximize: (windowToToggle: Window) => void;
   toggleMinimize: (windowToToggle: Window) => void;
   closeAllWindows: () => void;
+  resizeListener: WindowResizeListener;
 }
 
 // Create a context for window management
@@ -107,6 +108,7 @@ export const WindowProvider: React.FC<WindowProviderProps> = ({ children }) => {
       return;
     }
 
+    console.log(position);
     const newWindow: Window = {
       id: uuidv4(),
       title,
@@ -177,6 +179,8 @@ export const WindowProvider: React.FC<WindowProviderProps> = ({ children }) => {
     setActiveWindowId(null);
   };
 
+  const resizeListener = new WindowResizeListener();
+
   // Context value to be provided
   const contextValue: WindowContextType = {
     windows,
@@ -189,6 +193,7 @@ export const WindowProvider: React.FC<WindowProviderProps> = ({ children }) => {
     toggleMaximize,
     toggleMinimize,
     closeAllWindows,
+    resizeListener,
   };
 
   // Provide the context to the children
