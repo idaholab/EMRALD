@@ -1,0 +1,23 @@
+IF A != 0 // Comment 1
+// Comment 2
+// Comment 3
+AND B >= C // Comment 4
+// Comment 5
+// Comment 6
+TEST // Comment 7
+// Comment 8
+// Comment 9
+END // Comment 10
+
+IF A != 0
+AND B >= C
+OR A IS B
+TEST
+END
+
+IF A != 0 AND B >= C // Comment 1
+// Comment 2
+END // Comment 3
+
+IF (A > B) AND ((0 < 1 AND T) == (B > 1 AND F))
+END

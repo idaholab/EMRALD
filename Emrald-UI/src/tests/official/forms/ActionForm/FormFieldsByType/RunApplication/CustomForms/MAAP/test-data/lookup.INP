@@ -1,0 +1,7 @@
+** Tests lookup statements **
+
+C Default
+LOOKUP VARIABLE VariableName // Comment 1
+You can type anything in here for now
+It just gets separated by row
+END // Comment 2

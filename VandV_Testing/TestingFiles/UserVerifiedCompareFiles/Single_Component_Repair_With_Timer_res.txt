@@ -1,0 +1,8 @@
+Simulation = Single Component Repair
+Runtime = 00.00:00:01
+Runs = 100000 of 100000
+
+Failed Occurred 270 times, Probability =0.0027, MeanTime = 301.12:31:13 +/- 63.16:59:54.71
+---------------------------
+- End Sim Variable Values -
+---------------------------

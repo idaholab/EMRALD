@@ -10,29 +10,30 @@ using MyStuff.Collections;
 
 namespace SimulationDAL
 {
-  public class Diagram : BaseObjInfo
+  public class Diagram : BaseObjInfo //multiState
   {
     //protected dSimulation _Sim = null;
-    protected List<State> _States = null;
-    public EnDiagramType diagType = EnDiagramType.dtOther;
+    protected Dictionary<int, State> _States = null;
+    public EnDiagramType2 diagType = EnDiagramType2.dtMulti;
 
    
 
-    public Diagram()
+    public Diagram(EnDiagramType2 inDiagType = EnDiagramType2.dtSingle)
     {
       this._id = SingleNextIDs.Instance.NextID(EnIDTypes.itDiagram);
-      this._States = new List<State>();
+      this.diagType = inDiagType;
+      this._States = new Dictionary<int, State>();
       //_Sim = inSim;
     }
 
-    public Diagram(string inName, EnDiagramType inDiagType)
+    public Diagram(string inName, EnDiagramType2 inDiagType)
     {
       this._id = SingleNextIDs.Instance.NextID(EnIDTypes.itDiagram);
 
       //this._Sim = inSim;
       this.diagType = inDiagType;
       this.name = inName;
-      this._States = new List<State>();
+      this._States = new Dictionary<int, State>();
     }
 
     public void Clear()
@@ -43,7 +44,7 @@ namespace SimulationDAL
     public void AddState(State addState)
     {
       bool found = false;
-      foreach (State curState in this._States)
+      foreach (State curState in this._States.Values)
       {
         if (curState.name == addState.name)
         {
@@ -53,7 +54,7 @@ namespace SimulationDAL
       }
 
       if (!found)
-        this._States.Add(addState);
+        this._States.Add(addState.id, addState);
     }
 
     public virtual string GetDerivedJSON(EmraldModel lists)
@@ -76,13 +77,14 @@ namespace SimulationDAL
       retStr = retStr + "," + Environment.NewLine + "\"states\": [";
 
       StateSort sorter = new StateSort();
-      _States.Sort(sorter);
+      List<State> sortedStates = _States.Values.ToList();
+      sortedStates.Sort(sorter);
       //foreach (State curSt in this._States)
-      for (int i = 0; i < this._States.Count; ++i)
+      for (int i = 0; i < sortedStates.Count; ++i)
       {
-        retStr = retStr + Environment.NewLine + "\""+ this._States[i].name + "\"";
+        retStr = retStr + Environment.NewLine + "\""+ sortedStates[i].name + "\"";
 
-        if (i < this._States.Count - 1)
+        if (i < sortedStates.Count - 1)
         {
           retStr = retStr + "," + Environment.NewLine;
         }
@@ -149,10 +151,8 @@ namespace SimulationDAL
       if (!base.DeserializeDerived((object)dynObj, false, lists, useGivenIDs))
         return false;
 
-      var jsonDiagType = (EnDiagramType)Enum.Parse(typeof(EnDiagramType), (string)dynObj.diagramType, true);
-      if (this.diagType == EnDiagramType.dtOther)
-        this.diagType = jsonDiagType;
-
+      var jsonDiagType = (EnDiagramType2)Enum.Parse(typeof(EnDiagramType2), (string)dynObj.diagramType, true);
+      
       if (this.diagType != jsonDiagType)
         throw new Exception("Diagram types do not match, cannot change the type once an item is created!");
 
@@ -224,7 +224,7 @@ namespace SimulationDAL
 
       addToList.allDiagrams.Add(this);
 
-      foreach(State curState in this._States)
+      foreach(State curState in this._States.Values)
       {
         curState.LookupRelatedItems(all, addToList);
       }
@@ -232,7 +232,7 @@ namespace SimulationDAL
 
     public State HasAStateInCurrentStates(MyBitArray currentStates) //return true if a diagrams state is in the current state list.
     {
-      foreach (State curSt in _States)
+      foreach (State curSt in _States.Values)
       {
         if ((curSt.id < currentStates.Count) && (currentStates[curSt.id]))
         {
@@ -242,13 +242,19 @@ namespace SimulationDAL
 
       return null;
     }
+
+    public virtual List<ScanForReturnItem> ScanFor(ScanForTypes scanType, string modelRootPath)
+    {
+      //override in the different types if it is possible that the item has something for the scanType 
+      return new List<ScanForReturnItem>();
+    }
   }
 
 
-  public abstract class EvalDiagram : Diagram // dtComponent or dtSystem
+  public class EvalDiagram : Diagram // dtSingle
   {
     //TODO may be faster to add a bitset for success, failed and unknown states
-    private Dictionary<int, bool> _singleStateGroup = new Dictionary<int, bool>(); 
+    //private Dictionary<int, bool> _singleStateGroup = new Dictionary<int, bool>(); 
 
 
     /// <summary>
@@ -257,70 +263,11 @@ namespace SimulationDAL
     /// <param name="compStates">Value states for this component can only be in one at a time </param>
     /// <param name="onStates">Which states will be a one or true value for the state </param>
 
-    public EvalDiagram(EnDiagramType inDiagType)
-      : base("", inDiagType) { }
+    public EvalDiagram()
+      : base("", EnDiagramType2.dtSingle) { }
 
-    public EvalDiagram(string inName, EnDiagramType inDiagType)
-      : base(inName, inDiagType) { }
-    
-
-    public override string GetDerivedJSON(EmraldModel lists)
-    {
-      string retStr = "," + Environment.NewLine + "\"singleStates\": [";
-      int i = 0;
-      foreach(var item in this._singleStateGroup)
-      {
-        retStr = retStr + Environment.NewLine + "{\"stateName\": \"" + lists.allStates[item.Key].name + "\"," +
-                                                 "\"okState\":\"" + item.Value.ToString() + "\"}";
-        if (i < this._singleStateGroup.Count - 1)
-        {
-          retStr = retStr + "," + Environment.NewLine;
-        }
-        ++i;
-      }
-
-      retStr = retStr + "]";
-
-      return retStr;
-    }
-
-    public override bool DeserializeDerived(object obj, bool wrapped, EmraldModel lists, bool useGivenIDs)
-    {
-      dynamic dynObj = (dynamic)obj;
-      if (wrapped)
-      {
-        if (dynObj.Diagram == null)
-          return false;
-
-        dynObj = ((dynamic)obj).Diagram;
-      }
-
-      if (!base.DeserializeDerived((object)dynObj, false, lists, useGivenIDs))
-        return false;
-
-      //Now done in LoadObjLinks()
-      ////load the transition list
-      //if (dynObj.okStates != null)
-      //{
-      //  _okStates.Clear();
-      //  _singleStateGroup.Clear();
-
-      //  foreach (dynamic curToObj in dynObj.okStates)
-      //  {
-      //    State curState = lists.allStates.FindByName((string)curToObj.stateName);
-      //    if (curState == null)
-      //      throw new Exception("Failed to locate ok state " + (string)curToObj.stateName + " in state list");
-
-      //    _okStates.Add(curState.id);
-
-      //    if (curToObj.inSingleStateGroup == true)
-      //      _singleStateGroup.Add(curState.id);
-      //  }
-      //}
-
-      processed = true;
-      return true;
-    }
+    public EvalDiagram(string inName)
+      : base(inName, EnDiagramType2.dtSingle) { }
 
     public override bool LoadObjLinks(object obj, bool wrapped, EmraldModel lists)
     {
@@ -336,39 +283,41 @@ namespace SimulationDAL
       if (!base.LoadObjLinks((object)dynObj, false, lists))
         return false;
 
-      //load the transition list
-      
-      if (dynObj.singleStates != null)
+      //make sure there are values for the states used
+      bool hasTrue = false;
+      bool hasFalse = false;
+      foreach (var s in _States.Values)
       {
-        _singleStateGroup.Clear();
-        
-        foreach (dynamic curToObj in dynObj.singleStates)
+        if(s.dfltStateValue == 1)
         {
-          State curState = lists.allStates.FindByName((string)curToObj.stateName);
-          if (curState == null)
-            throw new Exception("Failed to locate ok state " + (string)curToObj.stateName + " in state list");
+          hasTrue = true;
+        }
+        else if(s.dfltStateValue == 0)
+        {
+          hasFalse = true;
+        }
 
-          _singleStateGroup.Add(curState.id, Convert.ToBoolean((string)curToObj.okState));
+        if(hasTrue && hasFalse)
+        {
+          break;
         }
       }
 
-      if(!_singleStateGroup.Where(i=> i.Value == true).Any())
+      if(!hasTrue || !hasFalse)
       {
-        throw new Exception("Diagram named - " + this.name + " can not be evaluated, there are no states with a true value.");
+        throw new Exception("Diagram named - " + this.name + " has a logic error, to be an evaluation diagram, there must be atleast one state with a true and a state with a false value.");
       }
 
-      if (!_singleStateGroup.Where(i => i.Value == false).Any())
-      {
-        throw new Exception("Diagram named - " + this.name + " can not be evaluated, there are no states with a false value.");
-      }
-      
       return true;
     }
 
     public bool IsFailedState(int stateID)
-    {   
-      if(_singleStateGroup.ContainsKey(stateID))
-        return (this._singleStateGroup[stateID] == false);
+    {
+      if (_States.ContainsKey(stateID))
+      {
+        //return true for value of 1, and false for 0 or -1;
+        return (this._States[stateID].dfltStateValue == 0 ? true : false);
+      }
       else
         return false;
     }
@@ -378,62 +327,49 @@ namespace SimulationDAL
     /// depending on if evaluating for success or fail return the correct value 1 or 0.
     /// return -1 for ignore cases.
     /// </summary>
-    public int Evaluate(MyBitArray curStates, bool onSuccess)
-    {      
-      foreach (var s in _singleStateGroup)
+    public int Evaluate(MyBitArray curStates, bool onSuccess, Dictionary<int, int> changedStateValues)
+    {
+      int retValue = -1;
+      bool found = false;
+      foreach (var s in _States.Values)
       {
-        if (curStates[s.Key])
+        // See if the user has specified a different value for the state than the default
+        if (!changedStateValues.TryGetValue(s.id, out retValue))
         {
-          bool eval = s.Value;
-          if (!onSuccess) //do inverse for on failure evaluateion
-            eval = !s.Value;
-          
-          return eval == true ? 1 : 0;
+          // No specified value so use the default one or ignore
+          if (curStates[s.id])
+          {
+            found = true;
+            retValue = s.dfltStateValue;
+            break;
+          }
         }
       }
 
-      //item not found so it is unknown. //So return -1 so it basicly ignore this entry
-      return -1;
-    }
-
-    public void AddEvalVal(int stateID, bool inIsSuccessState)
-    {
-      _singleStateGroup.Add(stateID, inIsSuccessState);
-    }
-
-    public void Remove(int stateID)
-    {
-      if (_singleStateGroup.ContainsKey(stateID))
+      if(!found)
       {
-        _singleStateGroup.Remove(stateID);
+        NLog.Logger logger = NLog.LogManager.GetLogger("logfile");
+        logger.Error("Logic Error - Did not evaluate " + this.name + " as the simulation is not in any of the diagrams states at this time of the simulation. This node is ignored in the logic tree evaluation.");
+        retValue = -1;
       }
+
+      // Check if retValue needs to be inverted for onFailure evaluation
+      if (!onSuccess && retValue >= 0)
+      {
+        retValue = retValue == 0 ? 1 : 0; // Invert retValue
+      }
+
+      // Return the final retValue
+      return retValue;
     }
 
     public List<int> stateIDs
     {
       get
       {
-        return this._singleStateGroup.Keys.ToList();
+        return this._States.Keys.ToList();
       }
     }
-  }
-
-  public class CompDiagram : EvalDiagram // dtComponent 
-  {
-    public CompDiagram()
-      : base(EnDiagramType.dtComponent) { }
-
-    public CompDiagram(string inName)
-      : base(inName, EnDiagramType.dtComponent) { }
-  }
-
-  public class SysDiagram : EvalDiagram // dtComponent 
-  {
-    public SysDiagram()
-      : base(EnDiagramType.dtSystem) { }
-
-    public SysDiagram(string inName)
-      : base(inName, EnDiagramType.dtSystem) { }
   }
 
   public class AllDiagrams : Dictionary<int, Diagram>, ModelItemLists
@@ -465,14 +401,12 @@ namespace SimulationDAL
       return retStr;
     }
 
-    public static Diagram CreateNewDiagram(EnDiagramType diagType)
+    public static Diagram CreateNewDiagram(EnDiagramType2 diagType)
     {
       switch (diagType)
       {
-        case EnDiagramType.dtComponent: return new CompDiagram();
-        case EnDiagramType.dtOther: return new Diagram();
-        case EnDiagramType.dtPlant: return new Diagram();
-        case EnDiagramType.dtSystem: return new SysDiagram();
+        case EnDiagramType2.dtMulti: return new Diagram(EnDiagramType2.dtMulti); 
+        case EnDiagramType2.dtSingle: return new EvalDiagram();
         default: return null;
       }
     }
@@ -598,7 +532,7 @@ namespace SimulationDAL
       {
         foreach (var wrapper in dynamicObj)
         {
-          var item = wrapper.Diagram;
+          var item = wrapper;
           Diagram curItem = null;
           curName = (string)item.name;
 
@@ -617,7 +551,7 @@ namespace SimulationDAL
 
           if (curItem == null)
           {
-            curItem = AllDiagrams.CreateNewDiagram((EnDiagramType)Enum.Parse(typeof(EnDiagramType), (string)item.diagramType, true));
+            curItem = AllDiagrams.CreateNewDiagram((EnDiagramType2)Enum.Parse(typeof(EnDiagramType2), (string)item.diagramType, true));
             //done in deserialize - lists.allActions.Add(curAct);
           }
 
@@ -637,7 +571,7 @@ namespace SimulationDAL
 
       foreach (var wrapper in dynamicObj)
       {
-        var item = wrapper.Diagram;
+        var item = wrapper;
 
         Diagram curItem = this.FindByName((string)item.name);
         try
@@ -660,5 +594,21 @@ namespace SimulationDAL
       return true;
     }
 
+    public List<ScanForReturnItem> ScanFor(ScanForTypes scanType, EmraldModel lists)
+    {
+      var foundItems = new List<ScanForReturnItem>();
+      if (scanType == ScanForTypes.sfMultiThreadIssues) //shortcircuit
+      {
+        //currently there are no references to file or possible common data here.
+        return foundItems;
+      }
+
+      foreach (var curItem in this.Values)
+      {
+        foundItems.AddRange(curItem.ScanFor(scanType, lists.rootPath));
+      }
+
+      return foundItems;
+    }
   }
 }

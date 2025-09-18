@@ -1,0 +1,28 @@
+/* Apply styles to the entire page */
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+
+  font-family: Arial, sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+
+  #root {
+    height: 100vh;
+  }
+}
+
+// react-duration-input style overrides
+.custom-duration-control.focused >.react-duration-control-fieldset {
+  border-color: #2FA770 !important;
+}
+
+.custom-duration-control.focused >.react-duration-control-fieldset>.react-duration-control-label {
+  color: #2FA770 !important;
+}
+
+.react-duration-control-unit-text {
+  margin-right: 5px;
+}

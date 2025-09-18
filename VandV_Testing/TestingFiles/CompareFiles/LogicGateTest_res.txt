@@ -1,0 +1,9 @@
+Simulation = SampleSimpleLogTree
+Runtime = 00.00:00:00
+Runs = 1 of 1
+
+Small_Release Occurred 1 times, Probability =1, MeanTime = 04.17:29:13 +/- 00.00:00:00.00
+(1)[100.000%]Logic_Sys_Failed, Logic-B_Failed
+---------------------------
+- End Sim Variable Values -
+---------------------------

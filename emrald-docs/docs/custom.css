@@ -1,0 +1,6 @@
+/* .vitepress/custom.css */
+:root {
+    --vp-c-brand-1: #5dd86b; /* Primary green color */
+    --vp-c-brand-2: #008080;    
+    --vp-c-brand-3: #5dd86b;
+  }

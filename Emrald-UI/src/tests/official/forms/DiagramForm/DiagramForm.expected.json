@@ -1,0 +1,27 @@
+{
+  "creates a diagram": {
+    "objType": "Diagram",
+    "name": "creates a diagram",
+    "desc": "Desc",
+    "required": false,
+    "diagramType": "dtMulti",
+    "diagramLabel": "Component",
+    "states": []
+  },
+  "edits existing diagram": {
+    "objType": "Diagram",
+    "name": "edited diagram name",
+    "desc": "",
+    "diagramType": "dtSingle",
+    "diagramLabel": "Component",
+    "states": []
+  },
+  "uses a template": {
+    "objType": "Diagram",
+    "name": "uses a template",
+    "desc": "",
+    "diagramType": "dtSingle",
+    "diagramLabel": "Component",
+    "states": []
+  }
+}

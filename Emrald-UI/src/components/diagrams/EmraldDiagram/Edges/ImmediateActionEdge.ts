@@ -1,0 +1,53 @@
+import type React from 'react';
+import { type Edge, type Node, MarkerType } from 'reactflow';
+import type { Action } from '../../../../types/EMRALD_Model';
+import { v4 as uuidv4 } from 'uuid';
+import { showRemainingValues } from './EventActionEdge';
+
+const getImmediateActionEdges = (
+  stateId: string,
+  nodes: Node<{ label: string }>[],
+  immediateActions: string[],
+  setEdges: React.Dispatch<React.SetStateAction<Edge[]>>,
+  getActionByActionName: (actionName: string) => Action | undefined,
+  getNewStatesByActionName: (actionName: string) => { toState: string; prob: number }[],
+) => {
+  immediateActions.forEach((action: string) => {
+    if (action) {
+      const currentAction = getActionByActionName(action);
+      const newStates = getNewStatesByActionName(action);
+      if (!currentAction) {
+        return;
+      }
+      newStates.forEach((newState) => {
+        const moveToState = nodes.find((node) => node.data.label === newState.toState);
+        if (moveToState) {
+          setEdges((prevEdges: Edge[]) => [
+            ...prevEdges,
+            {
+              id: uuidv4(),
+              source: stateId,
+              target: moveToState.id,
+              label: showRemainingValues(currentAction, newState),
+              targetHandle: 'immediate-action-target',
+              sourceHandle: currentAction.id ?? '',
+              updatable: 'target',
+              style: {
+                stroke: 'green',
+                strokeDasharray: 5,
+              },
+              markerEnd: {
+                type: MarkerType.ArrowClosed,
+                width: 25,
+                height: 25,
+                color: 'green',
+              },
+            },
+          ]);
+        }
+      });
+    }
+  });
+};
+
+export default getImmediateActionEdges;

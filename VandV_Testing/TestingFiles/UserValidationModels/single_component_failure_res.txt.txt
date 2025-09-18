@@ -1,0 +1,1 @@
+The expected rate of the failed state for the single component failure model, with failure rate 1 in 365 days for a mission time of 365 days, is 0.632.

@@ -1,0 +1,160 @@
+{
+  "id": 0,
+  "name": "",
+  "desc": "",
+  "version": 1.1,
+  "DiagramList": [
+    {
+      "Diagram": {
+        "id": 1,
+        "name": "Test Diagram",
+        "desc": "",
+        "diagramType": "dtPlant",
+        "states": [
+          "Large_Release",
+          "LOSP",
+          "Mission_Time_Up",
+          "Normal_Operations",
+          "Small_Release",
+          "Start_Systems",
+          "Stop_Systems",
+          "Terminate"
+        ],
+        "diagramLabel": "Plant"
+      }
+    },
+    {
+      "Diagram": {
+        "id": 4,
+        "name": "C-MOV-1",
+        "desc": "",
+        "diagramType": "dtComponent",
+        "states": ["C-MOV-1_Active", "C-MOV-1_Failed", "C-MOV-1_Standby"],
+        "singleStates": [
+          {
+            "stateName": "C-MOV-1_Active",
+            "okState": "True"
+          },
+          {
+            "stateName": "C-MOV-1_Failed",
+            "okState": "False"
+          }
+        ],
+        "diagramLabel": "Component"
+      }
+    },
+    {
+      "Diagram": {
+        "id": 5,
+        "name": "C-MOV-A",
+        "desc": "",
+        "diagramType": "dtComponent",
+        "states": ["C-MOV-A_Active", "C-MOV-A_Failed", "C-MOV-A_Standby"],
+        "singleStates": [
+          {
+            "stateName": "C-MOV-A_Active",
+            "okState": "True"
+          },
+          {
+            "stateName": "C-MOV-A_Failed",
+            "okState": "False"
+          }
+        ],
+        "diagramLabel": "Component"
+      }
+    }
+  ],
+  "StateList": [
+    {
+      "State": {
+        "id": 9,
+        "name": "C-MOV-1_Standby",
+        "desc": "",
+        "stateType": "stStart",
+        "diagramName": "C-MOV-1",
+        "geometry": "{ x: 20, y: 90, width: 200, height: 130}",
+        "immediateActions": [],
+        "events": ["C-MOV-1_Demand"],
+        "eventActions": [
+          {
+            "moveFromCurrent": true,
+            "actions": ["Goto_C-MOV-1_ActOrFail"]
+          }
+        ]
+      }
+    },
+    {
+      "State": {
+        "id": 10,
+        "name": "C-MOV-1_Active",
+        "desc": "",
+        "stateType": "stStandard",
+        "diagramName": "C-MOV-1",
+        "geometry": "{ x: 320, y: 20, width: 200, height: 130}",
+        "immediateActions": [],
+        "events": ["C-MOV-1_Stop"],
+        "eventActions": [
+          {
+            "moveFromCurrent": true,
+            "actions": ["Goto_C-MOV-1_Off"]
+          }
+        ]
+      }
+    }
+  ],
+  "ActionList": [
+    {
+      "Action": {
+        "id": 7,
+        "name": "Goto_C-MOV-A_ActOrFail",
+        "desc": "",
+        "actType": "atTransition",
+        "mainItem": false,
+        "mutExcl": "True",
+        "newStates": [
+          {
+            "toState": "C-MOV-A_Failed",
+            "prob": 0.0002,
+            "varProb": "null",
+            "failDesc": ""
+          },
+          {
+            "toState": "C-MOV-A_Active",
+            "prob": -1,
+            "varProb": "null",
+            "failDesc": ""
+          }
+        ]
+      }
+    }
+  ],
+  "EventList": [
+    {
+      "Event": {
+        "id": 8,
+        "name": "C-MOV-A_Demand",
+        "desc": "",
+        "mainItem": false,
+        "evType": "etStateCng",
+        "ifInState": "true",
+        "allItems": "false",
+        "triggerStates": ["Start_Systems"]
+      }
+    }
+  ],
+  "LogicNodeList": [
+    {
+      "LogicNode": {
+        "id": 3,
+        "name": "CCS-Train-A",
+        "desc": "",
+        "gateType": "gtOr",
+        "rootName": "CCS_TOP",
+        "compChildren": ["C-PMP-A", "S-DGN-A", "C-CKV-A", "C-MOV-A"],
+        "gateChildren": []
+      }
+    }
+  ],
+  "VariableList": [],
+  "ExtSimList": []
+}

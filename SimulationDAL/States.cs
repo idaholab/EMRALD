@@ -20,6 +20,8 @@ namespace SimulationDAL
     protected List<Event> _events;
     protected List<ActionList> _evActions;
     protected Diagram _Diagram;
+    protected int _dfltStateValue; //[-1 = unknow, 0 = false, 1 = true]
+    public int dfltStateValue { get { return _dfltStateValue; } }
 
     //public readonly EnStateType stateType;
     public int eventCnt { get { return _events.Count; } }
@@ -34,7 +36,7 @@ namespace SimulationDAL
       this._immediateActions = new ActionList();
     }
 
-    public State(string inName, EnStateType inStateType, Diagram inDiagram)
+    public State(string inName, EnStateType inStateType, Diagram inDiagram, int dfltValue)
     {
       _Diagram = inDiagram;
       geometry = "";
@@ -45,6 +47,7 @@ namespace SimulationDAL
       this._events = new List<Event>();
       this._evActions = new List<ActionList>();
       this._immediateActions = new ActionList();
+      this._dfltStateValue = dfltValue;
 
       _Diagram.AddState(this);      
     }
@@ -211,8 +214,7 @@ namespace SimulationDAL
 
       this._Diagram = lists.allDiagrams.FindByName((string)dynObj.diagramName);
       if (this._Diagram == null)
-        //Instead of throwing exception, create a new diagram to add state to?
-        //this._Diagram = new Diagram(null);
+        //Diagram should already be created by this point, if not this should be moved to LoadObjectLinks
         throw new Exception("State must have a valid diagram ");
 
       this._Diagram.AddState(this);
@@ -223,6 +225,25 @@ namespace SimulationDAL
       {
         throw new Exception("Deserialize State, missing immediateActions, events, or eventActions.");
       }
+
+      if (dynObj.defaultSingleStateValue != null)
+      {
+
+        switch ((string)dynObj.defaultSingleStateValue)
+        {
+          case "True":
+            this._dfltStateValue = 1;
+            break;
+          case "False":
+            this._dfltStateValue = 0;
+            break;
+          case "Unknown":
+          case "Ignore":
+            this._dfltStateValue = -1;
+            break;
+        }
+      }
+      
 
       //Now done in LoadObjLinks()
       ////load the Immediate Actions
@@ -350,6 +371,12 @@ namespace SimulationDAL
       {
         e.Reset();
       }
+    }
+
+    public virtual List<ScanForReturnItem> ScanFor(ScanForTypes scanType, string modelRootPath)
+    {
+      //override in the different types if it is possible that the item has something for the scanType 
+      return new List<ScanForReturnItem>();
     }
   }
 
@@ -494,7 +521,7 @@ namespace SimulationDAL
       {
         foreach (var wrapper in dynamicObj)
         {
-          var item = wrapper.State;
+          var item = wrapper;
           State curItem = null;
           curName = (string)item.name;
 
@@ -527,13 +554,13 @@ namespace SimulationDAL
       }
     }
 
-  public bool LoadLinks(object obj, EmraldModel lists)
+    public bool LoadLinks(object obj, EmraldModel lists)
     {
       var dynamicObj = (dynamic)obj;
 
       foreach (var wrapper in dynamicObj)
       {
-        var item = wrapper.State;
+        var item = wrapper;
 
         State curItem = this.FindByName((string)item.name, false);
         try
@@ -555,6 +582,21 @@ namespace SimulationDAL
       return true;
     }
 
+    public List<ScanForReturnItem> ScanFor(ScanForTypes scanType, EmraldModel lists)
+    {
+      var foundList = new List<ScanForReturnItem>();
+      if (scanType == ScanForTypes.sfMultiThreadIssues) //shortcircuit
+      {
+        //currently there are no references to file or possible common data here.
+        return foundList;
+      }
 
+      foreach (var curItem in this.Values)
+      {
+        foundList.AddRange(curItem.ScanFor(scanType, lists.rootPath));
+      }
+
+      return foundList;
+    }
   }
 }

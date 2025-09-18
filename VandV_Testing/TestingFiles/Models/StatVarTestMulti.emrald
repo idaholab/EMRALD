@@ -1,0 +1,227 @@
+{
+  "id": "0",
+  "name": "StatVarTest",
+  "desc": "",
+  "version": 1,
+  "DiagramList": [
+    {
+      "name": "Main",
+      "desc": "",
+      "diagramType": "dtMulti",
+      "diagramTemplate": "",
+      "diagramLabel": "Plant",
+      "states": [
+        "Start",
+        "Done",
+        "Terminate"
+      ],
+      "id": "1",
+      "objType": "Diagram",
+      "required": false
+    }
+  ],
+  "StateList": [
+    {
+      "name": "Start",
+      "desc": "",
+      "stateType": "stStart",
+      "diagramName": "Main",
+      "immediateActions": [],
+      "events": [
+        "Dist24H"
+      ],
+      "eventActions": [
+        {
+          "actions": [
+            "Goto_Done"
+          ],
+          "moveFromCurrent": true
+        }
+      ],
+      "id": "1",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 227,
+        "y": 165,
+        "width": 200,
+        "height": 130
+      }
+    },
+    {
+      "name": "Done",
+      "desc": "",
+      "stateType": "stKeyState",
+      "diagramName": "Main",
+      "immediateActions": [
+        "Set_SumCurTime",
+        "Goto_Terminate"
+      ],
+      "events": [],
+      "eventActions": [],
+      "id": "2",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 530,
+        "y": 180,
+        "width": 200,
+        "height": 110
+      }
+    },
+    {
+      "name": "Terminate",
+      "desc": "",
+      "stateType": "stTerminal",
+      "diagramName": "Main",
+      "immediateActions": [],
+      "events": [],
+      "eventActions": [],
+      "id": "3",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 865,
+        "y": 257,
+        "width": 200,
+        "height": 80
+      }
+    }
+  ],
+  "ActionList": [
+    {
+      "name": "Goto_Done",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "Done",
+          "prob": -1,
+          "failDesc": ""
+        }
+      ],
+      "id": "1",
+      "objType": "Action"
+    },
+    {
+      "name": "Set_SumCurTime",
+      "desc": "",
+      "actType": "atCngVarVal",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [],
+      "scriptCode": "return CurTime;",
+      "variableName": "SumCurTime",
+      "codeVariables": [],
+      "id": "2",
+      "objType": "Action"
+    },
+    {
+      "name": "Goto_Terminate",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "Terminate",
+          "prob": -1,
+          "failDesc": ""
+        }
+      ],
+      "id": "3",
+      "objType": "Action"
+    }
+  ],
+  "EventList": [
+    {
+      "name": "Dist24H",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etDistribution",
+      "allItems": true,
+      "triggerStates": [],
+      "varNames": [],
+      "distType": "dtNormal",
+      "parameters": [
+        {
+          "name": "Mean",
+          "value": 24,
+          "timeRate": "trHours",
+          "useVariable": false
+        },
+        {
+          "name": "Standard Deviation",
+          "value": 1,
+          "timeRate": "trHours",
+          "useVariable": false
+        },
+        {
+          "name": "Minimum",
+          "value": 0,
+          "timeRate": "trHours",
+          "useVariable": false
+        },
+        {
+          "name": "Maximum",
+          "value": 1000,
+          "timeRate": "trYears",
+          "useVariable": false
+        }
+      ],
+      "dfltTimeRate": "trHours",
+      "id": "1",
+      "objType": "Event"
+    }
+  ],
+  "LogicNodeList": [],
+  "VariableList": [
+    {
+      "name": "Accrual_Save",
+      "desc": "",
+      "varScope": "gtAccrual",
+      "value": 0,
+      "resetOnRuns": true,
+      "type": "double",
+      "accrualStatesData": [
+        {
+          "stateName": "Start",
+          "type": "ctMultiplier",
+          "accrualMult": 1,
+          "multRate": "trHours",
+          "accrualTable": []
+        }
+      ],
+      "cumulativeStats": true,
+      "monitorInSim": true,
+      "id": "2",
+      "objType": "Variable"
+    },
+    {
+      "name": "SumCurTime",
+      "desc": "",
+      "varScope": "gtGlobal",
+      "value": 0,
+      "resetOnRuns": true,
+      "type": "double",
+      "cumulativeStats": true,
+      "monitorInSim": true,
+      "id": "1",
+      "objType": "Variable"
+    },
+    {
+      "name": "DontShow",
+      "desc": "",
+      "varScope": "gtGlobal",
+      "value": 0,
+      "resetOnRuns": true,
+      "type": "double",
+      "canMonitor": false,
+      "id": "1",
+      "objType": "Variable"
+    }
+  ],
+  "templates": [],
+  "objType": "EMRALD_Model",
+  "ExtSimList": [],
+  "emraldVersion": 3
+}

@@ -1,0 +1,15 @@
+** Tests file statements **
+
+C Default
+PARAMETER FILE parameter_file.PAR
+
+C No file specified, should parse as an identifier
+PARAMETER FILE
+
+C Default
+INCLUDE file.inc
+
+C Empty, should be parsed as an identifier
+INCLUDE
+
+DOSE PARAMETER FILE filename.PAR

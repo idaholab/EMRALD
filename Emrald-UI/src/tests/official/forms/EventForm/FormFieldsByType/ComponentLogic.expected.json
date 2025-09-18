@@ -1,0 +1,43 @@
+{
+  "sets default values": {
+    "objType": "Event",
+    "name": "sets default values",
+    "desc": "",
+    "mainItem": true,
+    "evType": "etComponentLogic",
+    "required": false,
+    "onSuccess": false,
+    "triggerOnFalse": false
+  },
+  "sets on success": {
+    "objType": "Event",
+    "name": "sets on success",
+    "desc": "",
+    "mainItem": true,
+    "evType": "etComponentLogic",
+    "required": false,
+    "onSuccess": true,
+    "triggerOnFalse": false
+  },
+  "sets trigger on false": {
+    "objType": "Event",
+    "name": "sets trigger on false",
+    "desc": "",
+    "mainItem": true,
+    "evType": "etComponentLogic",
+    "required": false,
+    "onSuccess": false,
+    "triggerOnFalse": true
+  },
+  "sets logic top": {
+    "objType": "Event",
+    "name": "sets logic top",
+    "desc": "",
+    "mainItem": true,
+    "evType": "etComponentLogic",
+    "required": false,
+    "onSuccess": false,
+    "triggerOnFalse": false,
+    "logicTop": "Test Logic Node"
+  }
+}

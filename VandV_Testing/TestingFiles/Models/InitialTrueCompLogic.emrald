@@ -1,0 +1,382 @@
+{
+  "id": "0",
+  "name": "CompLogicTest",
+  "desc": "",
+  "version": 1,
+  "DiagramList": [
+    {
+      "id": "af41bc68-fe3c-44a2-80cb-7c801b85f8be",
+      "name": "C1",
+      "desc": "",
+      "diagramType": "dtSingle",
+      "diagramLabel": "Component",
+      "states": [
+        "T1",
+        "F1"
+      ],
+      "required": false,
+      "objType": "Diagram"
+    },
+    {
+      "id": "4c23c423-7fab-42e9-a941-d1865fe16fcb",
+      "name": "C2",
+      "desc": "",
+      "diagramType": "dtSingle",
+      "diagramLabel": "Component",
+      "states": [
+        "F2",
+        "T2"
+      ],
+      "required": false,
+      "objType": "Diagram"
+    },
+    {
+      "id": "ae786dee-8f0a-49cd-8bc8-a111d62d1474",
+      "name": "Main",
+      "desc": "",
+      "diagramType": "dtMulti",
+      "diagramLabel": "Plant",
+      "states": [
+        "Start",
+        "Eval",
+        "EvalSuccess",
+        "EvalFail",
+        "Term"
+      ],
+      "required": false,
+      "objType": "Diagram"
+    }
+  ],
+  "StateList": [
+    {
+      "id": "4581dbbf-1d67-4a31-89cd-5d6e7d9df489",
+      "name": "Eval",
+      "desc": "",
+      "diagramName": "Main",
+      "stateType": "stStandard",
+      "events": [
+        "TImer",
+        "EvalLogic"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "GoToFail"
+          ]
+        },
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "GoToSuccess"
+          ]
+        }
+      ],
+      "immediateActions": [],
+      "geometryInfo": {
+        "x": 121.25732532083191,
+        "y": -69.7229620594783,
+        "width": 0,
+        "height": 0
+      },
+      "required": false,
+      "objType": "State",
+      "defaultSingleStateValue": "Ignore"
+    },
+    {
+      "id": "3018a340-5a82-4681-9ae3-74e7fcefc4a3",
+      "name": "EvalFail",
+      "desc": "",
+      "diagramName": "Main",
+      "stateType": "stKeyState",
+      "events": [],
+      "eventActions": [],
+      "immediateActions": [
+        "GoToTerm"
+      ],
+      "geometryInfo": {
+        "x": 515.3436326135355,
+        "y": 127.32019158687348,
+        "width": 0,
+        "height": 0
+      },
+      "required": false,
+      "objType": "State",
+      "defaultSingleStateValue": "Ignore"
+    },
+    {
+      "id": "04549b03-93b5-4e34-98f9-f51715b2626e",
+      "name": "EvalSuccess",
+      "desc": "",
+      "diagramName": "Main",
+      "stateType": "stKeyState",
+      "events": [],
+      "eventActions": [],
+      "immediateActions": [
+        "GoToTerm"
+      ],
+      "geometryInfo": {
+        "x": 486.5450178498379,
+        "y": -209.168886178435,
+        "width": 0,
+        "height": 0
+      },
+      "required": false,
+      "objType": "State",
+      "defaultSingleStateValue": "Ignore"
+    },
+    {
+      "id": "ff31623a-cbc8-4640-9a7f-710e86b65349",
+      "name": "F1",
+      "desc": "",
+      "diagramName": "C1",
+      "stateType": "stStandard",
+      "events": [],
+      "eventActions": [],
+      "immediateActions": [],
+      "geometryInfo": {
+        "x": 8.705505632961206,
+        "y": -202.8382812479969,
+        "width": 0,
+        "height": 0
+      },
+      "required": false,
+      "objType": "State",
+      "defaultSingleStateValue": "False"
+    },
+    {
+      "id": "36f8a01a-dbfa-4ee5-9caa-702c3825baca",
+      "name": "F2",
+      "desc": "",
+      "diagramName": "C2",
+      "stateType": "stStandard",
+      "events": [],
+      "eventActions": [],
+      "immediateActions": [],
+      "geometryInfo": {
+        "x": -15,
+        "y": -143.00000000000003,
+        "width": 0,
+        "height": 0
+      },
+      "required": false,
+      "objType": "State",
+      "defaultSingleStateValue": "False"
+    },
+    {
+      "id": "ce409576-00ba-4196-90a7-8ef048a2ae87",
+      "name": "Start",
+      "desc": "",
+      "diagramName": "Main",
+      "stateType": "stStart",
+      "events": [
+        "Wait"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "GoToEval"
+          ]
+        }
+      ],
+      "immediateActions": [],
+      "geometryInfo": {
+        "x": -179.33341603900158,
+        "y": -87.05505632961241,
+        "width": 0,
+        "height": 0
+      },
+      "required": false,
+      "objType": "State",
+      "defaultSingleStateValue": "Ignore"
+    },
+    {
+      "id": "c72ac805-9ba7-477d-805d-941922206048",
+      "name": "T1",
+      "desc": "",
+      "diagramName": "C1",
+      "stateType": "stStart",
+      "events": [],
+      "eventActions": [],
+      "immediateActions": [],
+      "geometryInfo": {
+        "x": 1.5,
+        "y": -29,
+        "width": 0,
+        "height": 0
+      },
+      "required": false,
+      "objType": "State",
+      "defaultSingleStateValue": "True"
+    },
+    {
+      "id": "c9ab756c-431c-4c67-9baa-995c2701ca6d",
+      "name": "T2",
+      "desc": "",
+      "diagramName": "C2",
+      "stateType": "stStart",
+      "events": [],
+      "eventActions": [],
+      "immediateActions": [],
+      "geometryInfo": {
+        "x": -13.19507910772893,
+        "y": 0,
+        "width": 0,
+        "height": 0
+      },
+      "required": false,
+      "objType": "State",
+      "defaultSingleStateValue": "True"
+    },
+    {
+      "id": "0b27aac3-3058-4805-87f7-ae26a1dbadcd",
+      "name": "Term",
+      "desc": "",
+      "diagramName": "Main",
+      "stateType": "stTerminal",
+      "events": [],
+      "eventActions": [],
+      "immediateActions": [],
+      "geometryInfo": {
+        "x": 986,
+        "y": -22,
+        "width": 0,
+        "height": 0
+      },
+      "required": false,
+      "objType": "State",
+      "defaultSingleStateValue": "Ignore"
+    }
+  ],
+  "ActionList": [
+    {
+      "id": "a037bc95-7aac-411d-8921-44d4ea6aa230",
+      "name": "GoToEval",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": true,
+      "objType": "Action",
+      "required": false,
+      "newStates": [
+        {
+          "toState": "Eval",
+          "prob": -1,
+          "failDesc": ""
+        }
+      ],
+      "mutExcl": true
+    },
+    {
+      "id": "9bf12614-8273-416d-a57e-d8314b44e8bc",
+      "name": "GoToFail",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": true,
+      "objType": "Action",
+      "required": false,
+      "newStates": [
+        {
+          "toState": "EvalFail",
+          "prob": -1,
+          "failDesc": ""
+        }
+      ],
+      "mutExcl": true
+    },
+    {
+      "id": "9fd4ca87-9535-499e-a436-246b57225ae9",
+      "name": "GoToSuccess",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": true,
+      "objType": "Action",
+      "required": false,
+      "newStates": [
+        {
+          "toState": "EvalSuccess",
+          "prob": -1,
+          "failDesc": ""
+        }
+      ],
+      "mutExcl": true
+    },
+    {
+      "id": "59e517dd-465a-46fc-bccd-09fae975da26",
+      "name": "GoToTerm",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": true,
+      "objType": "Action",
+      "required": false,
+      "newStates": [
+        {
+          "toState": "Term",
+          "prob": -1,
+          "failDesc": ""
+        }
+      ],
+      "mutExcl": true
+    }
+  ],
+  "EventList": [
+    {
+      "id": "f0d25ba1-b391-433f-8141-81f31760ba41",
+      "name": "EvalLogic",
+      "desc": "",
+      "evType": "etComponentLogic",
+      "mainItem": true,
+      "required": false,
+      "objType": "Event",
+      "logicTop": "EvalLogic",
+      "triggerOnFalse": false,
+      "onSuccess": true
+    },
+    {
+      "id": "eaf3ae70-85b5-47df-8dbf-1a4ec178ccd5",
+      "name": "TImer",
+      "desc": "",
+      "evType": "etTimer",
+      "mainItem": true,
+      "required": false,
+      "objType": "Event",
+      "time": "P0DT12H"
+    },
+    {
+      "id": "b5504bc2-3914-4b4d-9f5f-99ac91d1194b",
+      "name": "Wait",
+      "desc": "",
+      "evType": "etTimer",
+      "mainItem": true,
+      "required": false,
+      "objType": "Event",
+      "time": "P0DT1H"
+    }
+  ],
+  "LogicNodeList": [
+    {
+      "id": "ddf051dd-118f-4330-a201-3c8ee2905bc5",
+      "name": "EvalLogic",
+      "desc": "",
+      "isRoot": true,
+      "gateType": "gtAnd",
+      "compChildren": [
+        {
+          "diagramName": "C1",
+          "stateValues": []
+        },
+        {
+          "diagramName": "C2",
+          "stateValues": []
+        }
+      ],
+      "gateChildren": [],
+      "objType": "LogicNode"
+    }
+  ],
+  "VariableList": [],
+  "ExtSimList": [],
+  "objType": "EMRALD_Model",
+  "emraldVersion": 3,
+  "templates": []
+}

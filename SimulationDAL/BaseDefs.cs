@@ -3,12 +3,16 @@
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
+using System.IO;
+using System.Linq;
+using System.Text.RegularExpressions;
+using System.Threading;
+using MessageDefLib;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Newtonsoft.Json;
 //using System.Data.EntityClient;
 using Newtonsoft.Json.Converters;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using MessageDefLib;
-using System.Linq;
 using NLog;
 
 namespace SimulationDAL
@@ -38,9 +42,10 @@ namespace SimulationDAL
     etExponentialDist,
     etLogNormalDist,
     etDistribution
-    };
+  };
 
-  public enum EnDiagramType { dtComponent = 0, dtSystem, dtPlant, dtOther }; 
+  //public enum EnDiagramType { dtComponent = 0, dtSystem, dtPlant, dtOther };
+  public enum EnDiagramType2 { dtSingle = 0, dtMulti };
 
   public enum EnStateType { stStart = 0, stStandard, stKeyState, stTerminal };
   public enum EnActionType { atTransition = 0, atCngVarVal, at3DSimMsg, atRunExtApp, atCustomStateShift, atJumpToTime, atCngVarDll };
@@ -50,7 +55,8 @@ namespace SimulationDAL
   [JsonConverter(typeof(StringEnumConverter))]
   public enum EnTimeRate { trYears, trDays, trHours, trMinutes, trSeconds}
 
-  public enum EnIDTypes { itVar = 0, itComp, itState, itEvent, itAction, itTreeNode, itTimer, itPacket, itDiagram, itExtSim };
+  [JsonConverter(typeof(StringEnumConverter))]
+  public enum EnIDTypes { itVar = 0, itComp, itState, itEvent, itAction, itTreeNode, itTimer, itDiagram, itExtSim };
   public enum EnDistType { dtNormal, dtWeibull, dtExponential, dtLogNormal, dtUniform, dtTriangular, dtGamma, dtGompertz};
   //public class ModelTypesInfo
   //{
@@ -61,7 +67,7 @@ namespace SimulationDAL
   //  //  "Models sequences and scenarios of concern with key end states. (multiple active states)" ,
   //  //  "Other" };
 
-  //  //private static readonly string[] EnActionTypeName = { "Transition", "Change Var Value", "External Sim Msg"};
+  //  //private static readonly string[] EnActionTypeName = { "Transition", "Change Var Value", "External Sim msg"};
   //  //private static readonly string[] EnActionTypeDesc = {
   //  //  "Move from the current state to new one or add a new state to the active ones.",
   //  //  "Evaluate a script and change the value of a the assigned variable to the result.",
@@ -85,9 +91,11 @@ namespace SimulationDAL
   //  //public static string EventTypeName(EnEventType dType) { return EnActionTypeName[(int)dType]; }
   //  //public static string EventTypeDesc(EnEventType dType) { return EnActionTypeName[(int)dType]; }
   //}
+  public enum ScanForTypes { sfMultiThreadIssues = 0};
 
   public static class ConfigData
   {
+    static public int? threads = null;
     static public int? seed = null;
     static public LogLevel debugLev = LogLevel.Off;
     static public int? debugRunStart = null;
@@ -205,6 +213,14 @@ namespace SimulationDAL
     bool LoadLinks(object obj, EmraldModel lists); //load any links to other objects after initial lists are loaded.
     void SetProcessed(bool value);
 
+    /// <summary>
+    /// Look for issues or anything else that might be in the different item lists. Add a new scanType and implement ScanFor in each derived item type
+    /// </summary>
+    /// <param name="scanType">What is being looked for</param>
+    /// <returns></returns>
+    List<ScanForReturnItem> ScanFor(ScanForTypes scanType, EmraldModel model);
+    
+
     //void LoadIfNot();
   }
 
@@ -237,8 +253,6 @@ namespace SimulationDAL
         return EnEventType.etFailRate;
       else if (evItem is TimerEvent)
         return EnEventType.etTimer;
-      else if (evItem is NormalDistEvent)
-        return EnEventType.etNormalDist;
 
       else
         throw new Exception("Missing conversion to EnEventType from class object");
@@ -343,27 +357,52 @@ namespace SimulationDAL
 
   public class SingleRandom : Random
   {
-    static SingleRandom _Instance;
-    public static SingleRandom Instance
+    //static SingleRandom _Instance;
+    //public static SingleRandom Instance
+    //{
+    //  get
+    //  {
+    //    if (_Instance == null)
+    //    {
+    //      if(ConfigData.seed == null)
+    //        _Instance = new SingleRandom();
+    //      else
+    //        _Instance = new SingleRandom((int)ConfigData.seed);
+    //    }
+    //    return _Instance;
+    //  }
+    //}
+
+    //private SingleRandom() : base() { }
+    //private SingleRandom(int seed) : base(seed) { }
+    //public static void Reset()
+    //{
+    //  _Instance = null;
+    //}
+    private static ThreadLocal<Random> _threadLocalRandom;
+
+    static SingleRandom()
+    {
+      Reset();
+    }
+
+    public static Random Instance
     {
       get
       {
-        if (_Instance == null)
-        {
-          if(ConfigData.seed == null)
-            _Instance = new SingleRandom();
-          else
-            _Instance = new SingleRandom((int)ConfigData.seed);
-        }
-        return _Instance;
+        return _threadLocalRandom.Value;
       }
     }
 
-    private SingleRandom() : base() { }
-    private SingleRandom(int seed) : base(seed) { }
     public static void Reset()
     {
-      _Instance = null;
+      _threadLocalRandom = new ThreadLocal<Random>(() =>
+      {
+        if (ConfigData.seed == null)
+          return new Random();
+        else
+          return new Random((int)ConfigData.seed);
+      });
     }
   }
 
@@ -387,7 +426,7 @@ namespace SimulationDAL
     }
 
     private Stats() { }
-  } 
+  }
 
   //public class DBLoad : SimRunnerEntities
   //{
@@ -435,12 +474,12 @@ namespace SimulationDAL
   //            //localDB = true;
   //            throw ex;
   //          }
-         
+
 
   //        //_Instance = new DBLoad();
   //        _Instance = new DBLoad(connStr);
   //      } //      
-          
+
 
   //      if (_ordToStateType == null)
   //      {
@@ -473,25 +512,20 @@ namespace SimulationDAL
   public class SingleNextIDs
   {
     private int[] curMaxID;
-    static SingleNextIDs _Instance;
-    public static SingleNextIDs Instance
-    {
-      get
-      {
-        if (_Instance == null)
-        {
-          _Instance = new SingleNextIDs();
 
-          int aSize = 1 + Enum.GetValues(typeof(EnIDTypes)).Cast<int>().Max();
-          _Instance.curMaxID = new int[aSize];
-          for (int i = 0; i < aSize; ++i)
-          {
-            _Instance.curMaxID[i] = 1;
-          }
-        }
-        return _Instance;
+    private static ThreadLocal<SingleNextIDs> _Instance = new ThreadLocal<SingleNextIDs>(() =>
+    {
+      var instance = new SingleNextIDs();
+      int aSize = 1 + Enum.GetValues(typeof(EnIDTypes)).Cast<int>().Max();
+      instance.curMaxID = new int[aSize];
+      for (int i = 0; i < aSize; ++i)
+      {
+        instance.curMaxID[i] = 1;
       }
-    }
+      return instance;
+    });
+
+    public static SingleNextIDs Instance => _Instance.Value;
 
     private SingleNextIDs() { }
 
@@ -502,15 +536,14 @@ namespace SimulationDAL
       {
         ++curMaxID[(int)idType];
       }
-
       return retVal;
     }
 
     public void Reset()
     {
-      for (int i = 0; i < _Instance.curMaxID.Length; ++i)
+      for (int i = 0; i < curMaxID.Length; ++i)
       {
-        _Instance.curMaxID[i] = 1;
+        curMaxID[i] = 1;
       }
     }
 
@@ -527,7 +560,6 @@ namespace SimulationDAL
       }
     }
   }
-
 
 
 
@@ -605,6 +637,293 @@ namespace SimulationDAL
       }
 
       return (JObject)root;
+    }
+  }
+
+  public class CommonFunctions
+  {
+    public static List<string> FindFilePathReferences(ref string code, string oldPath = null, string newPath = null)
+    {
+      // Define a regular expression pattern to match file paths, including paths separated by spaces
+      string pattern = @"(?<![:\/])(?:""((?:[a-zA-Z]:\\|(?:\.\.\/)|(?:\.\.\\))(?:[\w\.-]+?[\\\/])*[\w\.-]+)""|((?:[a-zA-Z]:\\|(?:\.\.\/)|(?:\.\.\\))(?:[\w\.-]+?[\\\/])*[\w\.-]+))(?=\s|$|(?=""))";
+      
+      //doesn't get items with a space in the string and adds extra stuff if is escaped for code in a script 
+      //string pattern = @"(?:(?:[a-zA-Z]:)?[\\/]|\.{1,2}[\\/])(?:[^\s\\/]+[\\/]?)+";
+            
+      //doesn't get multiple items in a script string because it has quotes
+//      string pattern = @"
+//(?:
+//    (?<="")                              # ---- quoted path ----
+//    (?:
+//        [A-Za-z]:[\\/]+ |                #   drive‑rooted     C:\ or C:/
+//        [\\/]+        |                  #   absolute         / or \
+//        \.{1,2}[\\/]+                    #   relative         ./ or ../
+//    )
+//    (?:[^""\\/\n]+[\\/]+)*               #   inner segments
+//    [^""\\/\n]+                          #   last segment
+//    (?="")                               #   up to, not incl. closing quote
+//  |                                      # ---- OR ----
+//    (?:
+//        [A-Za-z]:[\\/]+ |                #   drive‑rooted
+//        [\\/]+        |                  #   absolute
+//        \.{1,2}[\\/]+                    #   relative
+//    )
+//    (?:[^\s""\\/\n]+[\\/]+)*             #   inner segments (no spaces allowed)
+//    [^\s""\\/\n]+                        #   last segment
+//)";
+
+      var regex = new Regex(
+                  pattern,
+                  RegexOptions.IgnorePatternWhitespace |
+                  RegexOptions.Multiline |
+                  RegexOptions.Compiled,
+                  TimeSpan.FromSeconds(4)             // safety timeout
+              );
+
+      // Create a regex object with the defined pattern
+      //Regex regex = new Regex(pattern, RegexOptions.IgnoreCase);
+
+      // Find matches in the provided code string
+      MatchCollection matches = regex.Matches(code);
+
+      // Create a list to store the found file paths
+      List<string> filePaths = new List<string>();
+
+      // Iterate through the matches
+      foreach (Match match in matches)
+      {
+        // If oldPath is provided, check for replacement
+        if (oldPath != null && match.Value.Equals(oldPath, StringComparison.OrdinalIgnoreCase))
+        {
+          // Replace oldPath with newPath in the code
+          code = code.Replace(oldPath, newPath);
+
+          // Add the newPath to the list
+          filePaths.Add(newPath);
+        }
+        else if (oldPath == null)
+        {
+          // If no replacement is needed, add the found paths to the list
+          filePaths.Add(match.Value);
+        }
+      }
+
+      // If replacements are made, print the modified code
+      if (oldPath != null)
+      {
+        Console.WriteLine("Modified code:\n" + code);
+      }
+
+      return filePaths;
+    }
+
+
+    public static void CopyDirectory(string sourceDir, string destinationDir, bool recursive)
+    {
+      // Get information about the source directory
+      var dir = new DirectoryInfo(sourceDir);
+
+      // Check if the source directory exists
+      if (!dir.Exists)
+        throw new DirectoryNotFoundException($"Source directory not found: {dir.FullName}");
+
+      // Cache directories before we start copying
+      DirectoryInfo[] dirs = dir.GetDirectories();
+
+      // Create the destination directory
+      Directory.CreateDirectory(destinationDir);
+
+      // Get the files in the source directory and copy to the destination directory
+      foreach (FileInfo file in dir.GetFiles())
+      {
+        string targetFilePath = Path.Combine(destinationDir, file.Name);
+        file.CopyTo(targetFilePath);
+      }
+
+      // If recursive and copying subdirectories, recursively call this method
+      if (recursive)
+      {
+        foreach (DirectoryInfo subDir in dirs)
+        {
+          string newDestinationDir = Path.Combine(destinationDir, subDir.Name);
+          CopyDirectory(subDir.FullName, newDestinationDir, true);
+        }
+      }
+    }
+
+    public static string FindClosestParentFolder(List<string> filePaths)
+    {
+      if (filePaths == null || filePaths.Count == 0)
+      {
+        throw new ArgumentException("File paths list cannot be null or empty");
+      }
+
+      if (filePaths.Count == 1)
+      {
+        // If there is only one file path, return its parent directory
+        return Path.GetDirectoryName(Path.GetFullPath(filePaths[0])).Replace('\\', '/');
+      }
+
+      // Split the file paths into directory parts
+      List<string[]> pathParts = filePaths
+          .Select(path => Path.GetFullPath(path).Replace('\\', '/').Split(new char[] { '/' }, StringSplitOptions.RemoveEmptyEntries))
+          .ToList();
+
+      // Find the minimum length of the path parts
+      int minLength = pathParts.Min(parts => parts.Length);
+
+      // Find the common parts among all file paths
+      List<string> commonParts = new List<string>();
+      for (int i = 0; i < minLength; i++)
+      {
+        string currentPart = pathParts[0][i];
+        if (pathParts.All(parts => parts[i] == currentPart))
+        {
+          commonParts.Add(currentPart);
+        }
+        else
+        {
+          break;
+        }
+      }
+
+      // Combine the common parts into the closest parent directory
+      string closestParent = string.Join("/", commonParts);
+      return closestParent;
+    }
+
+    public static string FindClosestParentFolder(string filePath1, string filePath2)
+    {
+      var paths = new List<string>();
+      paths.Add(filePath1);
+      paths.Add(filePath2);
+      return FindClosestParentFolder(paths);
+    }
+
+    public static string GetRemainingPath(string parentFolder, string filePath)
+    {
+      // Ensure the parent folder and file path are in a consistent format
+      string normalizedParentFolder = Path.GetFullPath(parentFolder).Replace('\\', '/');
+      string normalizedFilePath = Path.GetFullPath(filePath).Replace('\\', '/');
+
+      // Check if the file path starts with the parent folder path
+      if (!normalizedFilePath.StartsWith(normalizedParentFolder, StringComparison.OrdinalIgnoreCase))
+      {
+        throw new ArgumentException("The file path does not start with the provided parent folder path.");
+      }
+
+      // Get the remaining path after the parent folder
+      string remainingPath = normalizedFilePath.Substring(normalizedParentFolder.Length).TrimStart('/');
+      return remainingPath;
+    }
+
+    public static string GetRelativePath(string rootPath, string actualPath)
+    {
+      Uri rootUri = new Uri(rootPath);
+      Uri targetUri = new Uri(actualPath);
+
+      // Ensure the rootUri ends with a directory separator
+      if (!rootUri.AbsolutePath.EndsWith("/"))
+      {
+        rootUri = new Uri(rootUri.AbsoluteUri + "/");
+      }
+
+      Uri relativeUri = rootUri.MakeRelativeUri(targetUri);
+      string relativePath = Uri.UnescapeDataString(relativeUri.ToString()).Replace('/', Path.DirectorySeparatorChar);
+      if ((relativePath[0] != '.') && (relativePath[0] != Path.DirectorySeparatorChar))
+        relativePath = "." + Path.DirectorySeparatorChar + relativePath;
+
+      return relativePath;
+    }
+
+  }
+
+  public class MultiThreadInfo
+  {
+    public List<ToCopyForRef> ToCopyForRefs { get; set; }
+    public DateTime AssignedTime { get; set; } //if assigned time is earlier than the model modified then we need to re-evaluate the ToCopyForRefs
+    public MultiThreadInfo() 
+    {
+      ToCopyForRefs = new List<ToCopyForRef>();
+      AssignedTime = DateTime.Now;
+    }
+  }
+
+  public class ToCopyForRef
+  {
+    public string ItemName { get; set; }
+    [JsonConverter(typeof(StringEnumConverter))]
+    public EnIDTypes ItemType { get; set; }  //type of item reference is in
+    public string RefPath { get; set; } //reference string in the item
+    public List<string> ToCopy { get; set; } //list if items to copy, path is relative to the EMRALD model 
+    public string RelPath { get; set; } //relative path to replace RefPath in the model
+    public string AdjRelRoot { get; set; } = ""; //if the relative path (RelPath) is not relative to the model location but another loc this is the adjustment. example would be an RunExe where the paths are relative to the exe location. 
+    
+
+    //[JsonIgnore]
+    // Constructor to initialize all properties
+
+    public ToCopyForRef() { }
+
+    public ToCopyForRef(string itemName, EnIDTypes itemType, string refPath, List<string> toCopy, string relPath)
+    {
+      ItemName = itemName;
+      ItemType = itemType;
+      RefPath = refPath;
+
+      if (toCopy != null)
+        ToCopy = toCopy;
+      else
+        ToCopy = new List<string>();
+
+      RelPath = relPath;
+    }
+
+    //[JsonIgnore]
+    //public EnIDTypes GetEnumType()
+    //{
+    //  foreach (EnIDTypes type in Enum.GetValues(typeof(EnIDTypes)))
+    //  {
+    //    if (type.ToString().Substring(2).Equals(this.ItemType, StringComparison.OrdinalIgnoreCase))
+    //    {
+    //      return type;
+    //    }
+    //  }
+    //  throw new ArgumentException($"Invalid item type string: {this.ItemType}");
+    //}
+  }
+
+  public class ScanForReturnItem
+  {
+    public int itemID { get; set; }
+    public string itemName { get; set; }
+    public EnIDTypes itemType { get; set; }
+    public string msg { get; set; }
+    
+
+    // Constructor
+    public ScanForReturnItem(int itemId, string itemName, EnIDTypes itemType, string msg)
+    {
+      this.itemID = itemId;
+      this.itemName = itemName;
+      this.itemType = itemType;
+      this.msg = msg;
+    }
+
+  }
+
+  public class ScanForRefsItem : ScanForReturnItem
+  {
+    public string Path { get; set; }
+    public string calcRelativeFrom { get; set; } = ""; //where the relative calc needs to come from if not from the new model location
+
+
+    // ConstructorI t
+    public ScanForRefsItem(int itemId, string itemName, EnIDTypes itemType, string msg, string path, string diffRootPath = "")
+        : base(itemId, itemName, itemType, msg)
+    {
+      this.Path = path;
+      this.calcRelativeFrom = diffRootPath;
     }
   }
 

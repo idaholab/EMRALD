@@ -1,0 +1,66 @@
+// Block
+TITLE
+Tests syntax for block statements
+END
+
+C Default
+// Comment 1
+// Comment 2
+PARAMETER CHANGE // Comment 3
+// Comment 4
+// Comment 5
+VarName(1) = 1 // Comment 6
+// Comment 7
+// Comment 8
+END // Comment 9
+
+C Empty
+PARAMETER CHANGE // Comment 1
+// Comment 2
+// Comment 3
+END // Comment 4
+
+C With nested source elements
+// Comment 1
+PARAMETER CHANGE // Comment 2
+// Comment 3
+// Comment 4
+IF VarName IS 1 // Comment 5
+// Comment 6
+// Comment 7
+SET TIMER #1 // Comment 8
+// Comment 9
+// Comment 10
+END // Comment 11
+END // Comment 12
+
+C Default
+// Comment 1
+INITIATORS // Comment 2
+// Comment 3
+// Comment 4
+VarName = 1 // Comment 5
+// Comment 6
+// Comment 7
+INIT1 = T // Comment 8
+// Comment 9
+// Comment 10
+END // Comment 11
+
+C Empty
+INITIATORS
+END
+
+C With nested source elements
+// Comment 1
+INITIATORS // Comment 2
+// Comment 3
+// Comment 4
+IF VarName IS 1 // Comment 5
+// Comment 6
+// Comment 7
+SET TIMER #1 // Comment 8
+// Comment 9
+// Comment 10
+END // Comment 11
+END // Comment 12

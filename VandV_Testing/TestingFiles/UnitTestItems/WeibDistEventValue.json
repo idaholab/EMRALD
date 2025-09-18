@@ -1,0 +1,35 @@
+{
+
+  "Event": {
+    "id": 1,
+    "name": "WeibullDist",
+    "desc": "",
+    "mainItem": false,
+    "evType": "etDistribution",
+    "allItems": true,
+    "triggerStates": [],
+    "moveFromCurrent": true,
+    "varNames": [],
+    "distType": "dtWeibull",
+    "parameters": [
+      {
+        "name": "Shape",
+        "value": "2"
+      },
+      {
+        "name": "Scale",
+        "value": 1
+      },
+      {
+        "value": "0",
+        "timeRate": "trHours"
+      },
+      {
+        "value": "5000",
+        "timeRate": "trHours"
+      }
+    ],
+    "dfltTimeRate": "trHours",
+    "onVarChange": "ocResample"
+  }
+}

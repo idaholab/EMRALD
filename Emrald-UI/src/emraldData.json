@@ -1,0 +1,4041 @@
+{
+  "id": "0",
+  "name": "",
+  "desc": "",
+  "version": 1,
+  "DiagramList": [
+    {
+      "name": "C-CKV-A",
+      "desc": "",
+      "diagramType": "dtSingle",
+      "states": [
+        "C-CKV-A_Active",
+        "C-CKV-A_Failed",
+        "C-CKV-A_Standby"
+      ],
+      "diagramLabel": "Component",
+      "id": "1aa23155-7dbb-48e7-a148-baacf8e0c270",
+      "objType": "Diagram",
+      "required": false
+    },
+    {
+      "name": "C-CKV-B",
+      "desc": "",
+      "diagramType": "dtSingle",
+      "states": [
+        "C-CKV-B_Active",
+        "C-CKV-B_Failed",
+        "C-CKV-B_Standby"
+      ],
+      "diagramLabel": "Component",
+      "id": "dd3e2731-6702-4600-9c5f-9e046f90ab2c",
+      "objType": "Diagram",
+      "required": false
+    },
+    {
+      "name": "C-MOV-1",
+      "desc": "",
+      "diagramType": "dtSingle",
+      "states": [
+        "C-MOV-1_Active",
+        "C-MOV-1_Failed",
+        "C-MOV-1_Standby"
+      ],
+      "diagramLabel": "Component",
+      "id": "1493c097-7355-45e9-82ef-75a27b5c0170",
+      "objType": "Diagram",
+      "required": false
+    },
+    {
+      "name": "C-MOV-A",
+      "desc": "",
+      "diagramType": "dtSingle",
+      "states": [
+        "C-MOV-A_Active",
+        "C-MOV-A_Failed",
+        "C-MOV-A_Standby"
+      ],
+      "diagramLabel": "Component",
+      "id": "5e642c2b-b4f0-4914-a1e2-0624dd53c585",
+      "objType": "Diagram",
+      "required": false
+    },
+    {
+      "name": "C-MOV-B",
+      "desc": "",
+      "diagramType": "dtSingle",
+      "states": [
+        "C-MOV-B_Active",
+        "C-MOV-B_Failed",
+        "C-MOV-B_Standby"
+      ],
+      "diagramLabel": "Component",
+      "id": "aed9a727-7bbd-4bb8-8b78-ea10708ec491",
+      "objType": "Diagram",
+      "required": false
+    },
+    {
+      "name": "C-PMP-A",
+      "desc": "",
+      "diagramType": "dtSingle",
+      "states": [
+        "C-PMP-A_Active",
+        "C-PMP-A_Failed",
+        "C-PMP-A_Standby"
+      ],
+      "diagramLabel": "Component",
+      "id": "4cd9c139-4243-406c-80cc-c2aa6bc308c3",
+      "objType": "Diagram",
+      "required": false
+    },
+    {
+      "name": "C-PMP-B",
+      "desc": "",
+      "diagramType": "dtSingle",
+      "states": [
+        "C-PMP-B_Active",
+        "C-PMP-B_Failed",
+        "C-PMP-B_Standby"
+      ],
+      "diagramLabel": "Component",
+      "id": "2cd9de32-9972-46c5-9c6f-c8f3cc200f26",
+      "objType": "Diagram",
+      "required": false
+    },
+    {
+      "name": "CCS_Sys",
+      "desc": "CCS",
+      "diagramType": "dtSingle",
+      "states": [
+        "CCS_Sys_Active",
+        "CCS_Sys_Failed"
+      ],
+      "diagramLabel": "System",
+      "id": "0a918c62-cf5a-4cbe-97ad-f6b49c99f004",
+      "objType": "Diagram",
+      "required": false
+    },
+    {
+      "name": "E-CKV-A",
+      "desc": "",
+      "diagramType": "dtSingle",
+      "states": [
+        "E-CKV-A_Active",
+        "E-CKV-A_Failed",
+        "E-CKV-A_Standby"
+      ],
+      "diagramLabel": "Component",
+      "id": "35809d77-e6ec-4e22-b320-b56af8905d29",
+      "objType": "Diagram",
+      "required": false
+    },
+    {
+      "name": "E-CKV-B",
+      "desc": "",
+      "diagramType": "dtSingle",
+      "states": [
+        "E-CKV-B_Active",
+        "E-CKV-B_Failed",
+        "E-CKV-B_Standby"
+      ],
+      "diagramLabel": "Component",
+      "id": "eb348e39-65fd-4f88-8062-767cc53c36df",
+      "objType": "Diagram",
+      "required": false
+    },
+    {
+      "name": "E-MOV-1",
+      "desc": "",
+      "diagramType": "dtSingle",
+      "states": [
+        "E-MOV-1_Active",
+        "E-MOV-1_Failed",
+        "E-MOV-1_Standby"
+      ],
+      "diagramLabel": "Component",
+      "id": "7360cb51-cc93-4b7a-9ef7-9967423767f5",
+      "objType": "Diagram",
+      "required": false
+    },
+    {
+      "name": "E-MOV-A",
+      "desc": "",
+      "diagramType": "dtSingle",
+      "states": [
+        "E-MOV-A_Active",
+        "E-MOV-A_Failed",
+        "E-MOV-A_Standby"
+      ],
+      "diagramLabel": "Component",
+      "id": "c2c321ca-6205-4af9-8521-13f5342ba6d5",
+      "objType": "Diagram",
+      "required": false
+    },
+    {
+      "name": "E-MOV-B",
+      "desc": "",
+      "diagramType": "dtSingle",
+      "states": [
+        "E-MOV-B_Active",
+        "E-MOV-B_Failed",
+        "E-MOV-B_Standby"
+      ],
+      "diagramLabel": "Component",
+      "id": "e3786d59-23de-4dcb-9589-85fad0548436",
+      "objType": "Diagram",
+      "required": false
+    },
+    {
+      "name": "E-PMP-A",
+      "desc": "",
+      "diagramType": "dtSingle",
+      "states": [
+        "E-PMP-A_Active",
+        "E-PMP-A_Failed",
+        "E-PMP-A_Standby"
+      ],
+      "diagramLabel": "Component",
+      "id": "f2a66f07-4d4d-4412-b1d2-f9221ae55dff",
+      "objType": "Diagram",
+      "required": false
+    },
+    {
+      "name": "E-PMP-B",
+      "desc": "",
+      "diagramType": "dtSingle",
+      "states": [
+        "E-PMP-B_Active",
+        "E-PMP-B_Failed",
+        "E-PMP-B_Standby"
+      ],
+      "diagramLabel": "Component",
+      "id": "ebfe39a1-7f3c-4141-94bd-760d1c441c7b",
+      "objType": "Diagram",
+      "required": false
+    },
+    {
+      "name": "ECS_Sys",
+      "desc": "ECS",
+      "diagramType": "dtSingle",
+      "states": [
+        "ECS_Sys_Active",
+        "ECS_Sys_Failed"
+      ],
+      "diagramLabel": "System",
+      "id": "ddbc4b19-fa26-4b2d-8a77-ae925fefdce9",
+      "objType": "Diagram",
+      "required": false
+    },
+    {
+      "name": "S-DGN-A",
+      "desc": "",
+      "diagramType": "dtSingle",
+      "states": [
+        "S-DGN-A_Active",
+        "S-DGN-A_Failed",
+        "S-DGN-A_Standby"
+      ],
+      "diagramLabel": "Component",
+      "id": "ccfb9074-8fa8-4d0c-a877-acdb438d684a",
+      "objType": "Diagram",
+      "required": false
+    },
+    {
+      "name": "S-DGN-B",
+      "desc": "",
+      "diagramType": "dtSingle",
+      "states": [
+        "S-DGN-B_Active",
+        "S-DGN-B_Failed",
+        "S-DGN-B_Standby"
+      ],
+      "diagramLabel": "Component",
+      "id": "749d779a-d9db-438f-920e-f23a27cce773",
+      "objType": "Diagram",
+      "required": false
+    },
+    {
+      "name": "S-TNK-T1",
+      "desc": "",
+      "diagramType": "dtSingle",
+      "states": [
+        "S-TNK-T1_Active",
+        "S-TNK-T1_Failed",
+        "S-TNK-T1_Standby"
+      ],
+      "diagramLabel": "Component",
+      "id": "95a45cc0-b84f-43c8-81f7-4e40c08bc9ae",
+      "objType": "Diagram",
+      "required": false
+    },
+    {
+      "name": "Test Diagram",
+      "desc": "",
+      "diagramType": "dtMulti",
+      "states": [
+        "Large_Release",
+        "LOSP",
+        "Mission_Time_Up",
+        "Normal_Operations",
+        "Small_Release",
+        "Start_Systems",
+        "Stop_Systems",
+        "Terminate"
+      ],
+      "diagramLabel": "Plant",
+      "id": "815b5fc8-25be-4633-a902-cd8386a7ab9a",
+      "objType": "Diagram",
+      "required": false
+    }
+  ],
+  "StateList": [
+    {
+      "name": "C-CKV-A_Active",
+      "desc": "",
+      "stateType": "stStandard",
+      "diagramName": "C-CKV-A",
+      "immediateActions": [],
+      "events": [
+        "C-CKV-A_Stop"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "Goto_C-CKV-A_Off"
+          ]
+        }
+      ],
+      "id": "22b15d0b-22ad-4cc7-b965-7633129c4ab1",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 330,
+        "y": 170,
+        "width": 200,
+        "height": 130
+      },
+      "defaultSingleStateValue": "True"
+    },
+    {
+      "name": "C-CKV-A_Failed",
+      "desc": "",
+      "stateType": "stStandard",
+      "diagramName": "C-CKV-A",
+      "immediateActions": [],
+      "events": [
+        "C-CKV-A_Stop"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "Goto_C-CKV-A_Off"
+          ]
+        }
+      ],
+      "id": "25624a0e-4b95-49a3-84f1-089a697ee9ec",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 30,
+        "y": 20,
+        "width": 200,
+        "height": 130
+      },
+      "defaultSingleStateValue": "False"
+    },
+    {
+      "name": "C-CKV-A_Standby",
+      "desc": "",
+      "stateType": "stStart",
+      "diagramName": "C-CKV-A",
+      "immediateActions": [],
+      "events": [
+        "C-CKV-A_Demand"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "Goto_C-CKV-A_ActOrFail"
+          ]
+        }
+      ],
+      "id": "88d4b0a5-f2d9-4dfc-ae67-c5a244968625",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 20,
+        "y": 200,
+        "width": 200,
+        "height": 130
+      },
+      "defaultSingleStateValue": "Ignore"
+    },
+    {
+      "name": "C-CKV-B_Active",
+      "desc": "",
+      "stateType": "stStandard",
+      "diagramName": "C-CKV-B",
+      "immediateActions": [],
+      "events": [
+        "C-CKV-B_Stop"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "Goto_C-CKV-B_Off"
+          ]
+        }
+      ],
+      "id": "96cc6314-df28-4dc9-afb3-da56399fd8d2",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 310,
+        "y": 20,
+        "width": 200,
+        "height": 130
+      },
+      "defaultSingleStateValue": "True"
+    },
+    {
+      "name": "C-CKV-B_Failed",
+      "desc": "",
+      "stateType": "stStandard",
+      "diagramName": "C-CKV-B",
+      "immediateActions": [],
+      "events": [
+        "C-CKV-B_Stop"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "Goto_C-CKV-B_Off"
+          ]
+        }
+      ],
+      "id": "93de1671-fa1f-4765-bd37-c00360d34b34",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 320,
+        "y": 190,
+        "width": 200,
+        "height": 130
+      },
+      "defaultSingleStateValue": "False"
+    },
+    {
+      "name": "C-CKV-B_Standby",
+      "desc": "",
+      "stateType": "stStart",
+      "diagramName": "C-CKV-B",
+      "immediateActions": [],
+      "events": [
+        "C-CKV-B_Demand"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "Goto_C-CKV-B_ActOrFail"
+          ]
+        }
+      ],
+      "id": "b42e5b3c-f9f0-4598-8563-628c6e66263c",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 10,
+        "y": 80,
+        "width": 200,
+        "height": 130
+      },
+      "defaultSingleStateValue": "Ignore"
+    },
+    {
+      "name": "C-MOV-1_Active",
+      "desc": "",
+      "stateType": "stStandard",
+      "diagramName": "C-MOV-1",
+      "immediateActions": [],
+      "events": [
+        "C-MOV-1_Stop"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "Goto_C-MOV-1_Off"
+          ]
+        }
+      ],
+      "id": "06f6ef7f-fe4b-4b80-9e77-aef581fd4f02",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 320,
+        "y": 20,
+        "width": 200,
+        "height": 130
+      },
+      "defaultSingleStateValue": "True"
+    },
+    {
+      "name": "C-MOV-1_Failed",
+      "desc": "",
+      "stateType": "stStandard",
+      "diagramName": "C-MOV-1",
+      "immediateActions": [],
+      "events": [
+        "C-MOV-1_Stop"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "Goto_C-MOV-1_Off"
+          ]
+        }
+      ],
+      "id": "f1d56ab6-418f-48e3-ba07-0b4456c52b69",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 320,
+        "y": 180,
+        "width": 200,
+        "height": 130
+      },
+      "defaultSingleStateValue": "False"
+    },
+    {
+      "name": "C-MOV-1_Standby",
+      "desc": "",
+      "stateType": "stStart",
+      "diagramName": "C-MOV-1",
+      "immediateActions": [],
+      "events": [
+        "C-MOV-1_Demand"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "Goto_C-MOV-1_ActOrFail"
+          ]
+        }
+      ],
+      "id": "4b48d5b0-0b04-4afd-8b8c-fa3ba5f63e35",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 20,
+        "y": 90,
+        "width": 200,
+        "height": 130
+      },
+      "defaultSingleStateValue": "Ignore"
+    },
+    {
+      "name": "C-MOV-A_Active",
+      "desc": "",
+      "stateType": "stStandard",
+      "diagramName": "C-MOV-A",
+      "immediateActions": [],
+      "events": [
+        "C-MOV-A_Stop"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "Goto_C-MOV-A_Off"
+          ]
+        }
+      ],
+      "id": "9f8b8bc6-7bdb-49a3-aecf-8102fa3396aa",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 330,
+        "y": 20,
+        "width": 200,
+        "height": 130
+      },
+      "defaultSingleStateValue": "True"
+    },
+    {
+      "name": "C-MOV-A_Failed",
+      "desc": "",
+      "stateType": "stStandard",
+      "diagramName": "C-MOV-A",
+      "immediateActions": [],
+      "events": [
+        "C-MOV-A_Stop"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "Goto_C-MOV-A_Off"
+          ]
+        }
+      ],
+      "id": "5f9a5123-7d4b-49d7-b6a1-ce82509fec80",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 330,
+        "y": 190,
+        "width": 200,
+        "height": 130
+      },
+      "defaultSingleStateValue": "False"
+    },
+    {
+      "name": "C-MOV-A_Standby",
+      "desc": "",
+      "stateType": "stStart",
+      "diagramName": "C-MOV-A",
+      "immediateActions": [],
+      "events": [
+        "C-MOV-A_Demand"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "Goto_C-MOV-A_ActOrFail"
+          ]
+        }
+      ],
+      "id": "52a51235-624d-4ffd-86aa-6c04f73856d0",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 20,
+        "y": 50,
+        "width": 200,
+        "height": 130
+      },
+      "defaultSingleStateValue": "Ignore"
+    },
+    {
+      "name": "C-MOV-B_Active",
+      "desc": "",
+      "stateType": "stStandard",
+      "diagramName": "C-MOV-B",
+      "immediateActions": [],
+      "events": [
+        "C-MOV-B_Stop"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "Goto_C-MOV-B_Off"
+          ]
+        }
+      ],
+      "id": "74012ff4-b066-44e2-a438-805a2600d787",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 320,
+        "y": 20,
+        "width": 200,
+        "height": 130
+      },
+      "defaultSingleStateValue": "True"
+    },
+    {
+      "name": "C-MOV-B_Failed",
+      "desc": "",
+      "stateType": "stStandard",
+      "diagramName": "C-MOV-B",
+      "immediateActions": [],
+      "events": [
+        "C-MOV-B_Stop"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "Goto_C-MOV-B_Off"
+          ]
+        }
+      ],
+      "id": "9e69d260-9e99-473a-bff5-dcfaf19ca182",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 320,
+        "y": 180,
+        "width": 200,
+        "height": 130
+      },
+      "defaultSingleStateValue": "False"
+    },
+    {
+      "name": "C-MOV-B_Standby",
+      "desc": "",
+      "stateType": "stStart",
+      "diagramName": "C-MOV-B",
+      "immediateActions": [],
+      "events": [
+        "C-MOV-B_Demand"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "Goto_C-MOV-B_ActOrFail"
+          ]
+        }
+      ],
+      "id": "0bc3e153-4349-4ed3-990c-18861d1f84b8",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 20,
+        "y": 70,
+        "width": 200,
+        "height": 130
+      },
+      "defaultSingleStateValue": "Ignore"
+    },
+    {
+      "name": "C-PMP-A_Active",
+      "desc": "",
+      "stateType": "stStandard",
+      "diagramName": "C-PMP-A",
+      "immediateActions": [],
+      "events": [
+        "C-PMP-A_Stop",
+        "C-PMP-A_FR"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "Goto_C-PMP-A_Off"
+          ]
+        },
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "Goto_C-PMP-A_Failed"
+          ]
+        }
+      ],
+      "id": "c975dfb2-71ef-42f2-87c1-38714caec4e6",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 320,
+        "y": 20,
+        "width": 200,
+        "height": 170
+      },
+      "defaultSingleStateValue": "True"
+    },
+    {
+      "name": "C-PMP-A_Failed",
+      "desc": "",
+      "stateType": "stStandard",
+      "diagramName": "C-PMP-A",
+      "immediateActions": [],
+      "events": [
+        "C-PMP-A_Stop"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "Goto_C-PMP-A_Off"
+          ]
+        }
+      ],
+      "id": "1ebd42c8-f9d5-431f-b536-8608e8cbc48a",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 320,
+        "y": 210,
+        "width": 200,
+        "height": 130
+      },
+      "defaultSingleStateValue": "False"
+    },
+    {
+      "name": "C-PMP-A_Standby",
+      "desc": "",
+      "stateType": "stStart",
+      "diagramName": "C-PMP-A",
+      "immediateActions": [],
+      "events": [
+        "C-PMP-A_Demand"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "Goto_C-PMP-A_ActOrFail"
+          ]
+        }
+      ],
+      "id": "e2d2c00e-0fdc-492d-80cd-e7b4c5698703",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 20,
+        "y": 90,
+        "width": 200,
+        "height": 130
+      },
+      "defaultSingleStateValue": "Ignore"
+    },
+    {
+      "name": "C-PMP-B_Active",
+      "desc": "",
+      "stateType": "stStandard",
+      "diagramName": "C-PMP-B",
+      "immediateActions": [],
+      "events": [
+        "C-PMP-B_Stop",
+        "C-PMP-B_FR"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "Goto_C-PMP-B_Off"
+          ]
+        },
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "Goto_C-PMP-B_Failed"
+          ]
+        }
+      ],
+      "id": "f3a5e6e2-09c3-4296-825c-461405c7d0b1",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 340,
+        "y": 20,
+        "width": 200,
+        "height": 170
+      },
+      "defaultSingleStateValue": "True"
+    },
+    {
+      "name": "C-PMP-B_Failed",
+      "desc": "",
+      "stateType": "stStandard",
+      "diagramName": "C-PMP-B",
+      "immediateActions": [],
+      "events": [
+        "C-PMP-B_Stop"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "Goto_C-PMP-B_Off"
+          ]
+        }
+      ],
+      "id": "869e9274-14c1-4786-b2c8-d941ceaadc62",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 340,
+        "y": 210,
+        "width": 200,
+        "height": 130
+      },
+      "defaultSingleStateValue": "False"
+    },
+    {
+      "name": "C-PMP-B_Standby",
+      "desc": "",
+      "stateType": "stStart",
+      "diagramName": "C-PMP-B",
+      "immediateActions": [],
+      "events": [
+        "C-PMP-B_Demand"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "Goto_C-PMP-B_ActOrFail"
+          ]
+        }
+      ],
+      "id": "5eb2b89a-8083-4c40-b778-79865eb8f0a0",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 40,
+        "y": 110,
+        "width": 200,
+        "height": 130
+      },
+      "defaultSingleStateValue": "Ignore"
+    },
+    {
+      "name": "CCS_Sys_Active",
+      "desc": "",
+      "stateType": "stStandard",
+      "diagramName": "CCS_Sys",
+      "immediateActions": [],
+      "events": [
+        "CCS_Sys_Eval",
+        "CCS_Sys_Stop"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "_Goto_CCS_Sys_Failed"
+          ]
+        },
+        {
+          "moveFromCurrent": true,
+          "actions": []
+        }
+      ],
+      "id": "aa1a5821-31aa-4d42-b611-95096801881f",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 30,
+        "y": 40,
+        "width": 200,
+        "height": 160
+      },
+      "defaultSingleStateValue": "True"
+    },
+    {
+      "name": "CCS_Sys_Failed",
+      "desc": "",
+      "stateType": "stStandard",
+      "diagramName": "CCS_Sys",
+      "immediateActions": [],
+      "events": [
+        "CCS_Sys_Stop"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": []
+        }
+      ],
+      "id": "5ab90f8f-9994-4fff-a3bb-0f87552184ce",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 310,
+        "y": 40,
+        "width": 200,
+        "height": 110
+      },
+      "defaultSingleStateValue": "False"
+    },
+    {
+      "name": "E-CKV-A_Active",
+      "desc": "",
+      "stateType": "stStandard",
+      "diagramName": "E-CKV-A",
+      "immediateActions": [],
+      "events": [
+        "E-CKV-A_Stop"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "Goto_E-CKV-A_Off"
+          ]
+        }
+      ],
+      "id": "305f6600-8057-4b45-be42-0b6610249304",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 330,
+        "y": 20,
+        "width": 200,
+        "height": 130
+      },
+      "defaultSingleStateValue": "True"
+    },
+    {
+      "name": "E-CKV-A_Failed",
+      "desc": "",
+      "stateType": "stStandard",
+      "diagramName": "E-CKV-A",
+      "immediateActions": [],
+      "events": [
+        "E-CKV-A_Stop"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "Goto_E-CKV-A_Off"
+          ]
+        }
+      ],
+      "id": "b728ea9d-c6a7-42c3-bf9b-b3fdf399226c",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 330,
+        "y": 170,
+        "width": 200,
+        "height": 130
+      },
+      "defaultSingleStateValue": "False"
+    },
+    {
+      "name": "E-CKV-A_Standby",
+      "desc": "",
+      "stateType": "stStart",
+      "diagramName": "E-CKV-A",
+      "immediateActions": [],
+      "events": [
+        "E-CKV-A_Demand"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "Goto_E-CKV-A_ActOrFail"
+          ]
+        }
+      ],
+      "id": "02b2e3bc-1f91-4c2b-9baf-dda9677d8f84",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 20,
+        "y": 60,
+        "width": 200,
+        "height": 130
+      },
+      "defaultSingleStateValue": "Ignore"
+    },
+    {
+      "name": "E-CKV-B_Active",
+      "desc": "",
+      "stateType": "stStandard",
+      "diagramName": "E-CKV-B",
+      "immediateActions": [],
+      "events": [
+        "E-CKV-B_Stop"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "Goto_E-CKV-B_Off"
+          ]
+        }
+      ],
+      "id": "ca919006-6d1e-4382-9caa-71b719f64945",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 310,
+        "y": 20,
+        "width": 200,
+        "height": 130
+      },
+      "defaultSingleStateValue": "True"
+    },
+    {
+      "name": "E-CKV-B_Failed",
+      "desc": "",
+      "stateType": "stStandard",
+      "diagramName": "E-CKV-B",
+      "immediateActions": [],
+      "events": [
+        "E-CKV-B_Stop"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "Goto_E-CKV-B_Off"
+          ]
+        }
+      ],
+      "id": "1710a7b6-2823-4a6f-82f8-de423ab3d706",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 310,
+        "y": 180,
+        "width": 200,
+        "height": 130
+      },
+      "defaultSingleStateValue": "False"
+    },
+    {
+      "name": "E-CKV-B_Standby",
+      "desc": "",
+      "stateType": "stStart",
+      "diagramName": "E-CKV-B",
+      "immediateActions": [],
+      "events": [
+        "E-CKV-B_Demand"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "Goto_E-CKV-B_ActOrFail"
+          ]
+        }
+      ],
+      "id": "0bb27b28-d0a6-495a-9a85-c6ee7942ebd3",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 20,
+        "y": 70,
+        "width": 200,
+        "height": 130
+      },
+      "defaultSingleStateValue": "Ignore"
+    },
+    {
+      "name": "E-MOV-1_Active",
+      "desc": "",
+      "stateType": "stStandard",
+      "diagramName": "E-MOV-1",
+      "immediateActions": [],
+      "events": [
+        "E-MOV-1_Stop"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "Goto_E-MOV-1_Off"
+          ]
+        }
+      ],
+      "id": "f54b0d4e-23ab-4b7a-8c90-c3c8afd23f91",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 300,
+        "y": 20,
+        "width": 200,
+        "height": 130
+      },
+      "defaultSingleStateValue": "True"
+    },
+    {
+      "name": "E-MOV-1_Failed",
+      "desc": "",
+      "stateType": "stStandard",
+      "diagramName": "E-MOV-1",
+      "immediateActions": [],
+      "events": [
+        "E-MOV-1_Stop"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "Goto_E-MOV-1_Off"
+          ]
+        }
+      ],
+      "id": "5abcd658-5ab4-466c-a1ea-9975d75fc22c",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 300,
+        "y": 170,
+        "width": 200,
+        "height": 130
+      },
+      "defaultSingleStateValue": "False"
+    },
+    {
+      "name": "E-MOV-1_Standby",
+      "desc": "",
+      "stateType": "stStart",
+      "diagramName": "E-MOV-1",
+      "immediateActions": [],
+      "events": [
+        "E-MOV-1_Demand"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "Goto_E-MOV-1_ActOrFail"
+          ]
+        }
+      ],
+      "id": "eaaf6a8a-5eaf-4e28-ab32-30b0d374e0de",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 20,
+        "y": 80,
+        "width": 200,
+        "height": 130
+      },
+      "defaultSingleStateValue": "Ignore"
+    },
+    {
+      "name": "E-MOV-A_Active",
+      "desc": "",
+      "stateType": "stStandard",
+      "diagramName": "E-MOV-A",
+      "immediateActions": [],
+      "events": [
+        "E-MOV-A_Stop"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "Goto_E-MOV-A_Off"
+          ]
+        }
+      ],
+      "id": "440ec339-6e33-4d85-86e6-4966aa423196",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 320,
+        "y": 20,
+        "width": 200,
+        "height": 130
+      },
+      "defaultSingleStateValue": "True"
+    },
+    {
+      "name": "E-MOV-A_Failed",
+      "desc": "",
+      "stateType": "stStandard",
+      "diagramName": "E-MOV-A",
+      "immediateActions": [],
+      "events": [
+        "E-MOV-A_Stop"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "Goto_E-MOV-A_Off"
+          ]
+        }
+      ],
+      "id": "3d39ca17-b1ac-4086-b271-eead288b2f17",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 320,
+        "y": 170,
+        "width": 200,
+        "height": 130
+      },
+      "defaultSingleStateValue": "False"
+    },
+    {
+      "name": "E-MOV-A_Standby",
+      "desc": "",
+      "stateType": "stStart",
+      "diagramName": "E-MOV-A",
+      "immediateActions": [],
+      "events": [
+        "E-MOV-A_Demand"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "Goto_E-MOV-A_ActOrFail"
+          ]
+        }
+      ],
+      "id": "20a9c255-9a9e-4ee1-b925-bcacd5e5c8df",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 20,
+        "y": 80,
+        "width": 200,
+        "height": 130
+      },
+      "defaultSingleStateValue": "Ignore"
+    },
+    {
+      "name": "E-MOV-B_Active",
+      "desc": "",
+      "stateType": "stStandard",
+      "diagramName": "E-MOV-B",
+      "immediateActions": [],
+      "events": [
+        "E-MOV-B_Stop"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "Goto_E-MOV-B_Off"
+          ]
+        }
+      ],
+      "id": "6d441a59-faa1-4d00-b077-7c238ebfd3b9",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 310,
+        "y": 20,
+        "width": 200,
+        "height": 130
+      },
+      "defaultSingleStateValue": "True"
+    },
+    {
+      "name": "E-MOV-B_Failed",
+      "desc": "",
+      "stateType": "stStandard",
+      "diagramName": "E-MOV-B",
+      "immediateActions": [],
+      "events": [
+        "E-MOV-B_Stop"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "Goto_E-MOV-B_Off"
+          ]
+        }
+      ],
+      "id": "c807c542-2d19-4793-9e15-7b7c9d3a3f1b",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 310,
+        "y": 180,
+        "width": 200,
+        "height": 130
+      },
+      "defaultSingleStateValue": "False"
+    },
+    {
+      "name": "E-MOV-B_Standby",
+      "desc": "",
+      "stateType": "stStart",
+      "diagramName": "E-MOV-B",
+      "immediateActions": [],
+      "events": [
+        "E-MOV-B_Demand"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "Goto_E-MOV-B_ActOrFail"
+          ]
+        }
+      ],
+      "id": "1d371e48-8d3e-48d2-8f6b-ad5ee942ba11",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 30,
+        "y": 100,
+        "width": 200,
+        "height": 130
+      },
+      "defaultSingleStateValue": "Ignore"
+    },
+    {
+      "name": "E-PMP-A_Active",
+      "desc": "",
+      "stateType": "stStandard",
+      "diagramName": "E-PMP-A",
+      "immediateActions": [],
+      "events": [
+        "E-PMP-A_Stop",
+        "E-PMP-A_FR"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "Goto_E-PMP-A_Off"
+          ]
+        },
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "Goto_E-PMP-A_Failed"
+          ]
+        }
+      ],
+      "id": "3137b4f4-8321-448f-b496-6ede30cc91cc",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 310,
+        "y": 20,
+        "width": 200,
+        "height": 170
+      },
+      "defaultSingleStateValue": "True"
+    },
+    {
+      "name": "E-PMP-A_Failed",
+      "desc": "",
+      "stateType": "stStandard",
+      "diagramName": "E-PMP-A",
+      "immediateActions": [],
+      "events": [
+        "E-PMP-A_Stop"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "Goto_E-PMP-A_Off"
+          ]
+        }
+      ],
+      "id": "b5853d30-9bc9-4fce-8a6c-cc82178817ec",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 310,
+        "y": 210,
+        "width": 200,
+        "height": 130
+      },
+      "defaultSingleStateValue": "False"
+    },
+    {
+      "name": "E-PMP-A_Standby",
+      "desc": "",
+      "stateType": "stStart",
+      "diagramName": "E-PMP-A",
+      "immediateActions": [],
+      "events": [
+        "E-PMP-A_Demand"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "Goto_E-PMP-A_ActOrFail"
+          ]
+        }
+      ],
+      "id": "90468ab3-6d38-4c54-9c17-cef97e7b27de",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 20,
+        "y": 70,
+        "width": 200,
+        "height": 130
+      },
+      "defaultSingleStateValue": "Ignore"
+    },
+    {
+      "name": "E-PMP-B_Active",
+      "desc": "",
+      "stateType": "stStandard",
+      "diagramName": "E-PMP-B",
+      "immediateActions": [],
+      "events": [
+        "E-PMP-B_Stop",
+        "E-PMP-B_FR"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "Goto_E-PMP-B_Off"
+          ]
+        },
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "Goto_E-PMP-B_Failed"
+          ]
+        }
+      ],
+      "id": "184befc1-3019-4e91-9c61-50da86ac82ac",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 320,
+        "y": 20,
+        "width": 200,
+        "height": 170
+      },
+      "defaultSingleStateValue": "True"
+    },
+    {
+      "name": "E-PMP-B_Failed",
+      "desc": "",
+      "stateType": "stStandard",
+      "diagramName": "E-PMP-B",
+      "immediateActions": [],
+      "events": [
+        "E-PMP-B_Stop"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "Goto_E-PMP-B_Off"
+          ]
+        }
+      ],
+      "id": "feada018-35c0-4d4a-bda9-4abba6e82244",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 320,
+        "y": 210,
+        "width": 200,
+        "height": 130
+      },
+      "defaultSingleStateValue": "False"
+    },
+    {
+      "name": "E-PMP-B_Standby",
+      "desc": "",
+      "stateType": "stStart",
+      "diagramName": "E-PMP-B",
+      "immediateActions": [],
+      "events": [
+        "E-PMP-B_Demand"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "Goto_E-PMP-B_ActOrFail"
+          ]
+        }
+      ],
+      "id": "80ee7d58-78cc-4cec-a410-a17d8b87e988",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 20,
+        "y": 80,
+        "width": 200,
+        "height": 130
+      },
+      "defaultSingleStateValue": "Ignore"
+    },
+    {
+      "name": "ECS_Sys_Active",
+      "desc": "",
+      "stateType": "stStandard",
+      "diagramName": "ECS_Sys",
+      "immediateActions": [],
+      "events": [
+        "ECS_Sys_Eval",
+        "ECS_Sys_Stop"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "_Goto_ECS_Sys_Failed"
+          ]
+        },
+        {
+          "moveFromCurrent": true,
+          "actions": []
+        }
+      ],
+      "id": "65fb075b-98f0-43d8-aeb1-2ae4f8c625af",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 20,
+        "y": 20,
+        "width": 200,
+        "height": 160
+      },
+      "defaultSingleStateValue": "True"
+    },
+    {
+      "name": "ECS_Sys_Failed",
+      "desc": "",
+      "stateType": "stStandard",
+      "diagramName": "ECS_Sys",
+      "immediateActions": [],
+      "events": [
+        "ECS_Sys_Stop"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": []
+        }
+      ],
+      "id": "4c985c3e-30ee-4085-afd0-a8715a5985e5",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 300,
+        "y": 40,
+        "width": 200,
+        "height": 110
+      },
+      "defaultSingleStateValue": "False"
+    },
+    {
+      "name": "Large_Release",
+      "desc": "",
+      "stateType": "stKeyState",
+      "diagramName": "Test Diagram",
+      "immediateActions": [
+        "Goto_Terminate"
+      ],
+      "events": [],
+      "eventActions": [],
+      "id": "ede51c22-6bae-471a-b18e-c9cef863d96b",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 770,
+        "y": 410,
+        "width": 200,
+        "height": 100
+      }
+    },
+    {
+      "name": "LOSP",
+      "desc": "",
+      "stateType": "stStandard",
+      "diagramName": "Test Diagram",
+      "immediateActions": [
+        "Goto_StartSystems"
+      ],
+      "events": [
+        "ECS_Failed",
+        "CCS_and_ECS_Failed",
+        "24H_Mission_Time"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": false,
+          "actions": [
+            "Goto_Small_Release"
+          ]
+        },
+        {
+          "moveFromCurrent": false,
+          "actions": [
+            "Goto_Large_Release"
+          ]
+        },
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "Goto_Mission_Time_Up"
+          ]
+        }
+      ],
+      "id": "316f3a76-6f38-4864-ac63-13d59aecbe37",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 500,
+        "y": 180,
+        "width": 200,
+        "height": 240
+      }
+    },
+    {
+      "name": "Mission_Time_Up",
+      "desc": "",
+      "stateType": "stStandard",
+      "diagramName": "Test Diagram",
+      "immediateActions": [],
+      "events": [
+        "No_Sm_Rel",
+        "Had_Sm_Rel"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "Goto_Normal_Operations"
+          ]
+        },
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "Goto_Terminate"
+          ]
+        }
+      ],
+      "id": "0478ecaf-966e-4e5e-9887-2cf253d7e4b9",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 170,
+        "y": 340,
+        "width": 200,
+        "height": 170
+      }
+    },
+    {
+      "name": "Normal_Operations",
+      "desc": "",
+      "stateType": "stStart",
+      "diagramName": "Test Diagram",
+      "immediateActions": [
+        "Goto_StopSystems"
+      ],
+      "events": [
+        "LOSP"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "Goto_LOSP"
+          ]
+        }
+      ],
+      "id": "2b42840f-6757-484b-9e86-a7e98fce025d",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 170,
+        "y": 130,
+        "width": 200,
+        "height": 150
+      }
+    },
+    {
+      "name": "S-DGN-A_Active",
+      "desc": "",
+      "stateType": "stStandard",
+      "diagramName": "S-DGN-A",
+      "immediateActions": [],
+      "events": [
+        "S-DGN-A_Stop",
+        "S-DGN-A_FR"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "Goto_S-DGN-A_Off"
+          ]
+        },
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "Goto_S-DGN-A_Failed"
+          ]
+        }
+      ],
+      "id": "e8b2c36a-a28d-4842-a23d-75013faed816",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 320,
+        "y": 20,
+        "width": 200,
+        "height": 170
+      },
+      "defaultSingleStateValue": "True"
+    },
+    {
+      "name": "S-DGN-A_Failed",
+      "desc": "",
+      "stateType": "stStandard",
+      "diagramName": "S-DGN-A",
+      "immediateActions": [],
+      "events": [
+        "S-DGN-A_Stop"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "Goto_S-DGN-A_Off"
+          ]
+        }
+      ],
+      "id": "b44d591a-a0b1-4435-8367-4dc43ba5da2a",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 320,
+        "y": 210,
+        "width": 200,
+        "height": 130
+      },
+      "defaultSingleStateValue": "False"
+    },
+    {
+      "name": "S-DGN-A_Standby",
+      "desc": "",
+      "stateType": "stStart",
+      "diagramName": "S-DGN-A",
+      "immediateActions": [],
+      "events": [
+        "S-DGN-A_Demand"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "Goto_S-DGN-A_ActOrFail"
+          ]
+        }
+      ],
+      "id": "a63c1f6b-1202-4037-b888-b2af3e7fff56",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 20,
+        "y": 70,
+        "width": 200,
+        "height": 130
+      },
+      "defaultSingleStateValue": "Ignore"
+    },
+    {
+      "name": "S-DGN-B_Active",
+      "desc": "",
+      "stateType": "stStandard",
+      "diagramName": "S-DGN-B",
+      "immediateActions": [],
+      "events": [
+        "S-DGN-B_Stop",
+        "S-DGN-B_FR"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "Goto_S-DGN-B_Off"
+          ]
+        },
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "Goto_S-DGN-B_Failed"
+          ]
+        }
+      ],
+      "id": "7682f3f9-cc2f-41b9-81c6-70ee9293b6c9",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 340,
+        "y": 20,
+        "width": 200,
+        "height": 170
+      },
+      "defaultSingleStateValue": "True"
+    },
+    {
+      "name": "S-DGN-B_Failed",
+      "desc": "",
+      "stateType": "stStandard",
+      "diagramName": "S-DGN-B",
+      "immediateActions": [],
+      "events": [
+        "S-DGN-B_Stop"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "Goto_S-DGN-B_Off"
+          ]
+        }
+      ],
+      "id": "5742934d-e87c-46da-a2f0-55535bdbfa99",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 340,
+        "y": 210,
+        "width": 200,
+        "height": 130
+      },
+      "defaultSingleStateValue": "False"
+    },
+    {
+      "name": "S-DGN-B_Standby",
+      "desc": "",
+      "stateType": "stStart",
+      "diagramName": "S-DGN-B",
+      "immediateActions": [],
+      "events": [
+        "S-DGN-B_Demand"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "Goto_S-DGN-B_ActOrFail"
+          ]
+        }
+      ],
+      "id": "c853e631-7609-4ec1-bfcc-94fb7d72ab2f",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 20,
+        "y": 90,
+        "width": 200,
+        "height": 130
+      },
+      "defaultSingleStateValue": "Ignore"
+    },
+    {
+      "name": "S-TNK-T1_Active",
+      "desc": "",
+      "stateType": "stStandard",
+      "diagramName": "S-TNK-T1",
+      "immediateActions": [],
+      "events": [
+        "S-TNK-T1_Stop",
+        "S-TNK-T1_FR"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "Goto_S-TNK-T1_Off"
+          ]
+        },
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "Goto_S-TNK-T1_Failed"
+          ]
+        }
+      ],
+      "id": "5bc5b555-c2ac-4d33-a9e9-244c79ff1dd1",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 330,
+        "y": 20,
+        "width": 200,
+        "height": 170
+      },
+      "defaultSingleStateValue": "True"
+    },
+    {
+      "name": "S-TNK-T1_Failed",
+      "desc": "",
+      "stateType": "stStandard",
+      "diagramName": "S-TNK-T1",
+      "immediateActions": [],
+      "events": [
+        "S-TNK-T1_Stop"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "Goto_S-TNK-T1_Off"
+          ]
+        }
+      ],
+      "id": "e5a8c4ce-1671-47e3-a8e4-d5db9a63e3f3",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 330,
+        "y": 210,
+        "width": 200,
+        "height": 130
+      },
+      "defaultSingleStateValue": "False"
+    },
+    {
+      "name": "S-TNK-T1_Standby",
+      "desc": "",
+      "stateType": "stStart",
+      "diagramName": "S-TNK-T1",
+      "immediateActions": [],
+      "events": [
+        "S-TNK-T1_Demand"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "Goto_S-TNK-T1_Active"
+          ]
+        }
+      ],
+      "id": "c0980465-d543-4f73-8864-8ac6d15665f3",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 30,
+        "y": 90,
+        "width": 200,
+        "height": 130
+      },
+      "defaultSingleStateValue": "Ignore"
+    },
+    {
+      "name": "Small_Release",
+      "desc": "",
+      "stateType": "stKeyState",
+      "diagramName": "Test Diagram",
+      "immediateActions": [],
+      "events": [
+        "Had_Lg_Rel"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": []
+        }
+      ],
+      "id": "0bb67d80-cd30-4ba4-9f8e-d90de0c27db9",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 770,
+        "y": 260,
+        "width": 200,
+        "height": 110
+      }
+    },
+    {
+      "name": "Start_Systems",
+      "desc": "",
+      "stateType": "stStandard",
+      "diagramName": "Test Diagram",
+      "immediateActions": [
+        "_Goto_ECS_Sys_Active",
+        "_Goto_CCS_Sys_Active"
+      ],
+      "events": [
+        "TempStateExit"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": []
+        }
+      ],
+      "id": "c930300f-170f-4fcb-95e7-4ea73159ef2b",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 770,
+        "y": 50,
+        "width": 200,
+        "height": 140
+      }
+    },
+    {
+      "name": "Stop_Systems",
+      "desc": "",
+      "stateType": "stStandard",
+      "diagramName": "Test Diagram",
+      "immediateActions": [],
+      "events": [
+        "TempStateExit"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": []
+        }
+      ],
+      "id": "fa8bbc51-5a26-44a1-a3f1-871f4446e51d",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 500,
+        "y": 40,
+        "width": 200,
+        "height": 110
+      }
+    },
+    {
+      "name": "Terminate",
+      "desc": "",
+      "stateType": "stTerminal",
+      "diagramName": "Test Diagram",
+      "immediateActions": [],
+      "events": [],
+      "eventActions": [],
+      "id": "f6d39436-3fb9-4b1e-a9eb-84ad8e8140ee",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 500,
+        "y": 450,
+        "width": 200,
+        "height": 80
+      }
+    }
+  ],
+  "ActionList": [
+    {
+      "name": "_Goto_CCS_Sys_Active",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "CCS_Sys_Active",
+          "prob": -1,
+          "failDesc": ""
+        }
+      ],
+      "id": "270a6906-e049-4851-8a1d-fca0c7e00cff",
+      "objType": "Action"
+    },
+    {
+      "name": "_Goto_CCS_Sys_Failed",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "CCS_Sys_Failed",
+          "prob": -1,
+          "varProb": null,
+          "failDesc": ""
+        }
+      ],
+      "id": "6f099019-9957-440a-bad7-1e88f6c53447",
+      "objType": "Action"
+    },
+    {
+      "name": "_Goto_ECS_Sys_Active",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "ECS_Sys_Active",
+          "prob": -1,
+          "varProb": null,
+          "failDesc": ""
+        }
+      ],
+      "id": "062d6fee-07ef-4574-a0e4-ced4b487de2a",
+      "objType": "Action"
+    },
+    {
+      "name": "_Goto_ECS_Sys_Failed",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "ECS_Sys_Failed",
+          "prob": -1,
+          "varProb": null,
+          "failDesc": ""
+        }
+      ],
+      "id": "2d1c3773-3d2c-400f-88f5-cc20ca6b9ea7",
+      "objType": "Action"
+    },
+    {
+      "name": "Goto_C-CKV-A_ActOrFail",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "C-CKV-A_Failed",
+          "prob": 0.0001,
+          "varProb": null,
+          "failDesc": ""
+        },
+        {
+          "toState": "C-CKV-A_Active",
+          "prob": -1,
+          "varProb": null,
+          "failDesc": ""
+        }
+      ],
+      "id": "4e50cfeb-211b-4504-8d90-22c06db624cf",
+      "objType": "Action"
+    },
+    {
+      "name": "Goto_C-CKV-A_Off",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "C-CKV-A_Standby",
+          "prob": -1,
+          "varProb": null,
+          "failDesc": ""
+        }
+      ],
+      "id": "84618b87-7906-4990-98a7-8323fb5258e1",
+      "objType": "Action"
+    },
+    {
+      "name": "Goto_C-CKV-B_ActOrFail",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "C-CKV-B_Failed",
+          "prob": 0.0001,
+          "varProb": null,
+          "failDesc": ""
+        },
+        {
+          "toState": "C-CKV-B_Active",
+          "prob": -1,
+          "varProb": null,
+          "failDesc": ""
+        }
+      ],
+      "id": "ab3ed6ae-02f4-492f-8c64-0af2e6265ed8",
+      "objType": "Action"
+    },
+    {
+      "name": "Goto_C-CKV-B_Off",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "C-CKV-B_Standby",
+          "prob": -1,
+          "varProb": null,
+          "failDesc": ""
+        }
+      ],
+      "id": "c4946b46-8d10-43b5-a72b-619123decadb",
+      "objType": "Action"
+    },
+    {
+      "name": "Goto_C-MOV-1_ActOrFail",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "C-MOV-1_Failed",
+          "prob": 0.001,
+          "varProb": null,
+          "failDesc": ""
+        },
+        {
+          "toState": "C-MOV-1_Active",
+          "prob": -1,
+          "varProb": null,
+          "failDesc": ""
+        }
+      ],
+      "id": "a8ba5787-2aa8-4f17-bb95-b3980506413c",
+      "objType": "Action"
+    },
+    {
+      "name": "Goto_C-MOV-1_Off",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "C-MOV-1_Standby",
+          "prob": -1,
+          "varProb": null,
+          "failDesc": ""
+        }
+      ],
+      "id": "5af7ef79-9c7d-4a0e-b113-8a7971c2797b",
+      "objType": "Action"
+    },
+    {
+      "name": "Goto_C-MOV-A_ActOrFail",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "C-MOV-A_Failed",
+          "prob": 0.0002,
+          "varProb": null,
+          "failDesc": ""
+        },
+        {
+          "toState": "C-MOV-A_Active",
+          "prob": -1,
+          "varProb": null,
+          "failDesc": ""
+        }
+      ],
+      "id": "bc4d9f6a-a67d-4701-a974-359256bd2c74",
+      "objType": "Action"
+    },
+    {
+      "name": "Goto_C-MOV-A_Off",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "C-MOV-A_Standby",
+          "prob": -1,
+          "varProb": null,
+          "failDesc": ""
+        }
+      ],
+      "id": "b8ede058-e257-4531-b970-6a1cfdda53d8",
+      "objType": "Action"
+    },
+    {
+      "name": "Goto_C-MOV-B_ActOrFail",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "C-MOV-B_Failed",
+          "prob": 0.0002,
+          "varProb": null,
+          "failDesc": ""
+        },
+        {
+          "toState": "C-MOV-B_Active",
+          "prob": -1,
+          "varProb": null,
+          "failDesc": ""
+        }
+      ],
+      "id": "a69744f0-e59c-4a81-ac1a-997f62f3e118",
+      "objType": "Action"
+    },
+    {
+      "name": "Goto_C-MOV-B_Off",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "C-MOV-B_Standby",
+          "prob": -1,
+          "varProb": null,
+          "failDesc": ""
+        }
+      ],
+      "id": "a06c86be-dd7d-47b5-a71a-05f8a489693a",
+      "objType": "Action"
+    },
+    {
+      "name": "Goto_C-PMP-A_ActOrFail",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "C-PMP-A_Failed",
+          "prob": 0.0012,
+          "varProb": null,
+          "failDesc": ""
+        },
+        {
+          "toState": "C-PMP-A_Active",
+          "prob": -1,
+          "varProb": null,
+          "failDesc": ""
+        }
+      ],
+      "id": "f962b308-b256-4b48-9ec4-5278c4974117",
+      "objType": "Action"
+    },
+    {
+      "name": "Goto_C-PMP-A_Failed",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "C-PMP-A_Failed",
+          "prob": -1,
+          "varProb": null,
+          "failDesc": ""
+        }
+      ],
+      "id": "650a2c86-9834-4c74-8ae4-dee92a02dfdf",
+      "objType": "Action"
+    },
+    {
+      "name": "Goto_C-PMP-A_Off",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "C-PMP-A_Standby",
+          "prob": -1,
+          "varProb": null,
+          "failDesc": ""
+        }
+      ],
+      "id": "7d23be29-acf0-4302-bff3-dbcf12b0de75",
+      "objType": "Action"
+    },
+    {
+      "name": "Goto_C-PMP-B_ActOrFail",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "C-PMP-B_Failed",
+          "prob": 0.0012,
+          "varProb": null,
+          "failDesc": ""
+        },
+        {
+          "toState": "C-PMP-B_Active",
+          "prob": -1,
+          "varProb": null,
+          "failDesc": ""
+        }
+      ],
+      "id": "68e58155-d85f-4c47-bb56-7b4bb727d4b1",
+      "objType": "Action"
+    },
+    {
+      "name": "Goto_C-PMP-B_Failed",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "C-PMP-B_Failed",
+          "prob": -1,
+          "varProb": null,
+          "failDesc": ""
+        }
+      ],
+      "id": "b1a1d70e-9306-447c-8f26-926183e1c28f",
+      "objType": "Action"
+    },
+    {
+      "name": "Goto_C-PMP-B_Off",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "C-PMP-B_Standby",
+          "prob": -1,
+          "varProb": null,
+          "failDesc": ""
+        }
+      ],
+      "id": "b4d0cf93-4cc4-4eb8-bc58-eed658cbdea4",
+      "objType": "Action"
+    },
+    {
+      "name": "Goto_E-CKV-A_ActOrFail",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "E-CKV-A_Failed",
+          "prob": 0.0001,
+          "varProb": null,
+          "failDesc": ""
+        },
+        {
+          "toState": "E-CKV-A_Active",
+          "prob": -1,
+          "varProb": null,
+          "failDesc": ""
+        }
+      ],
+      "id": "7c61d23a-fca9-472a-83d2-7870984935f9",
+      "objType": "Action"
+    },
+    {
+      "name": "Goto_E-CKV-A_Off",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "E-CKV-A_Standby",
+          "prob": -1,
+          "varProb": null,
+          "failDesc": ""
+        }
+      ],
+      "id": "f37e52b6-c56f-49fa-b5af-5b495ab0be85",
+      "objType": "Action"
+    },
+    {
+      "name": "Goto_E-CKV-B_ActOrFail",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "E-CKV-B_Failed",
+          "prob": 0.0001,
+          "varProb": null,
+          "failDesc": ""
+        },
+        {
+          "toState": "E-CKV-B_Active",
+          "prob": -1,
+          "varProb": null,
+          "failDesc": ""
+        }
+      ],
+      "id": "42dca664-5c62-4659-bcf7-be67f251b404",
+      "objType": "Action"
+    },
+    {
+      "name": "Goto_E-CKV-B_Off",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "E-CKV-B_Standby",
+          "prob": -1,
+          "varProb": null,
+          "failDesc": ""
+        }
+      ],
+      "id": "4e54c0c2-3f56-4dac-823d-ac564080f5a9",
+      "objType": "Action"
+    },
+    {
+      "name": "Goto_E-MOV-1_ActOrFail",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "E-MOV-1_Failed",
+          "prob": 0.001,
+          "varProb": null,
+          "failDesc": ""
+        },
+        {
+          "toState": "E-MOV-1_Active",
+          "prob": -1,
+          "varProb": null,
+          "failDesc": ""
+        }
+      ],
+      "id": "000bd64c-43c4-43fe-affb-1d4b59041827",
+      "objType": "Action"
+    },
+    {
+      "name": "Goto_E-MOV-1_Off",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "E-MOV-1_Standby",
+          "prob": -1,
+          "varProb": null,
+          "failDesc": ""
+        }
+      ],
+      "id": "cff1ebae-a996-4fd9-a934-8b80d80922e2",
+      "objType": "Action"
+    },
+    {
+      "name": "Goto_E-MOV-A_ActOrFail",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "E-MOV-A_Failed",
+          "prob": 0.0002,
+          "varProb": null,
+          "failDesc": ""
+        },
+        {
+          "toState": "E-MOV-A_Active",
+          "prob": -1,
+          "varProb": null,
+          "failDesc": ""
+        }
+      ],
+      "id": "aa236eae-7ac7-47a3-a520-89a747adf294",
+      "objType": "Action"
+    },
+    {
+      "name": "Goto_E-MOV-A_Off",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "E-MOV-A_Standby",
+          "prob": -1,
+          "varProb": null,
+          "failDesc": ""
+        }
+      ],
+      "id": "99781eb4-e403-44e6-9d67-da9199fb917a",
+      "objType": "Action"
+    },
+    {
+      "name": "Goto_E-MOV-B_ActOrFail",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "E-MOV-B_Failed",
+          "prob": 0.0002,
+          "varProb": null,
+          "failDesc": ""
+        },
+        {
+          "toState": "E-MOV-B_Active",
+          "prob": -1,
+          "varProb": null,
+          "failDesc": ""
+        }
+      ],
+      "id": "e44ef593-cb59-4043-9a53-e14a445931c5",
+      "objType": "Action"
+    },
+    {
+      "name": "Goto_E-MOV-B_Off",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "E-MOV-B_Standby",
+          "prob": -1,
+          "varProb": null,
+          "failDesc": ""
+        }
+      ],
+      "id": "63671bab-103a-4bab-8bd6-1aee1af05438",
+      "objType": "Action"
+    },
+    {
+      "name": "Goto_E-PMP-A_ActOrFail",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "E-PMP-A_Failed",
+          "prob": 0.0012,
+          "varProb": null,
+          "failDesc": ""
+        },
+        {
+          "toState": "E-PMP-A_Active",
+          "prob": -1,
+          "varProb": null,
+          "failDesc": ""
+        }
+      ],
+      "id": "0fd4f080-6b3d-4bfe-b457-fe03f44b1f9c",
+      "objType": "Action"
+    },
+    {
+      "name": "Goto_E-PMP-A_Failed",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "E-PMP-A_Failed",
+          "prob": -1,
+          "varProb": null,
+          "failDesc": ""
+        }
+      ],
+      "id": "7c8f337d-6785-4373-ac39-304c8764999d",
+      "objType": "Action"
+    },
+    {
+      "name": "Goto_E-PMP-A_Off",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "E-PMP-A_Standby",
+          "prob": -1,
+          "varProb": null,
+          "failDesc": ""
+        }
+      ],
+      "id": "abeb0e18-2cb6-4a21-8ede-ebe535723670",
+      "objType": "Action"
+    },
+    {
+      "name": "Goto_E-PMP-B_ActOrFail",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "E-PMP-B_Failed",
+          "prob": 0.0012,
+          "varProb": null,
+          "failDesc": ""
+        },
+        {
+          "toState": "E-PMP-B_Active",
+          "prob": -1,
+          "varProb": null,
+          "failDesc": ""
+        }
+      ],
+      "id": "334fed48-bc66-4db9-aeb2-d87325b6bb17",
+      "objType": "Action"
+    },
+    {
+      "name": "Goto_E-PMP-B_Failed",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "E-PMP-B_Failed",
+          "prob": -1,
+          "varProb": null,
+          "failDesc": ""
+        }
+      ],
+      "id": "e07c413f-833c-45fd-b327-d2d3546e094b",
+      "objType": "Action"
+    },
+    {
+      "name": "Goto_E-PMP-B_Off",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "E-PMP-B_Standby",
+          "prob": -1,
+          "varProb": null,
+          "failDesc": ""
+        }
+      ],
+      "id": "229d1af0-fc79-41d7-9fe6-7a7d20cdb2db",
+      "objType": "Action"
+    },
+    {
+      "name": "Goto_Large_Release",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "Large_Release",
+          "prob": -1,
+          "failDesc": ""
+        }
+      ],
+      "id": "1d4fd177-cb9c-4d01-bd53-b6f63f3b8fcf",
+      "objType": "Action"
+    },
+    {
+      "name": "Goto_LOSP",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "LOSP",
+          "prob": -1,
+          "varProb": null,
+          "failDesc": ""
+        }
+      ],
+      "id": "0c75979b-e686-41b7-98f0-81e5e2a98b7c",
+      "objType": "Action"
+    },
+    {
+      "name": "Goto_Mission_Time_Up",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "Mission_Time_Up",
+          "prob": -1,
+          "varProb": null,
+          "failDesc": ""
+        }
+      ],
+      "id": "375db120-a46e-4691-8344-cbc00b75129c",
+      "objType": "Action"
+    },
+    {
+      "name": "Goto_Normal_Operations",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "Normal_Operations",
+          "prob": -1,
+          "varProb": null,
+          "failDesc": ""
+        }
+      ],
+      "id": "d6ecef36-807d-4dc8-b5d5-622eddc5461a",
+      "objType": "Action"
+    },
+    {
+      "name": "Goto_S-DGN-A_ActOrFail",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "S-DGN-A_Failed",
+          "prob": 0.004,
+          "varProb": null,
+          "failDesc": ""
+        },
+        {
+          "toState": "S-DGN-A_Active",
+          "prob": -1,
+          "varProb": null,
+          "failDesc": ""
+        }
+      ],
+      "id": "d6e162f1-3109-4892-bdb5-43e3ee502c7e",
+      "objType": "Action"
+    },
+    {
+      "name": "Goto_S-DGN-A_Failed",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "S-DGN-A_Failed",
+          "prob": -1,
+          "varProb": null,
+          "failDesc": ""
+        }
+      ],
+      "id": "2359cd9d-2fee-4211-898b-d8dbb7023e63",
+      "objType": "Action"
+    },
+    {
+      "name": "Goto_S-DGN-A_Off",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "S-DGN-A_Standby",
+          "prob": -1,
+          "varProb": null,
+          "failDesc": ""
+        }
+      ],
+      "id": "e77f1bb6-2fe4-4cb1-aa8d-c3be2e937ef3",
+      "objType": "Action"
+    },
+    {
+      "name": "Goto_S-DGN-B_ActOrFail",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "S-DGN-B_Failed",
+          "prob": 0.004,
+          "varProb": null,
+          "failDesc": ""
+        },
+        {
+          "toState": "S-DGN-B_Active",
+          "prob": -1,
+          "varProb": null,
+          "failDesc": ""
+        }
+      ],
+      "id": "cd9fb462-ccd0-436f-8e52-ec48b4dd3a7e",
+      "objType": "Action"
+    },
+    {
+      "name": "Goto_S-DGN-B_Failed",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "S-DGN-B_Failed",
+          "prob": -1,
+          "varProb": null,
+          "failDesc": ""
+        }
+      ],
+      "id": "23097fe1-80ed-4700-8615-2d4ddf65373f",
+      "objType": "Action"
+    },
+    {
+      "name": "Goto_S-DGN-B_Off",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "S-DGN-B_Standby",
+          "prob": -1,
+          "varProb": null,
+          "failDesc": ""
+        }
+      ],
+      "id": "d9291e6c-1691-4009-bfca-0a419ab60dd2",
+      "objType": "Action"
+    },
+    {
+      "name": "Goto_S-TNK-T1_Active",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "S-TNK-T1_Active",
+          "prob": -1,
+          "varProb": null,
+          "failDesc": ""
+        }
+      ],
+      "id": "4c590cce-75dd-4466-9712-2ce15c195203",
+      "objType": "Action"
+    },
+    {
+      "name": "Goto_S-TNK-T1_Failed",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "S-TNK-T1_Failed",
+          "prob": -1,
+          "varProb": null,
+          "failDesc": ""
+        }
+      ],
+      "id": "54ae625e-7ea9-4801-abb8-22bf909a71c2",
+      "objType": "Action"
+    },
+    {
+      "name": "Goto_S-TNK-T1_Off",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "S-TNK-T1_Standby",
+          "prob": -1,
+          "varProb": null,
+          "failDesc": ""
+        }
+      ],
+      "id": "c16d6663-ef33-4b0c-809e-bd6da9e63409",
+      "objType": "Action"
+    },
+    {
+      "name": "Goto_Small_Release",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "Small_Release",
+          "prob": -1,
+          "varProb": null,
+          "failDesc": ""
+        }
+      ],
+      "id": "32035f03-ce60-4156-b436-4f797bbdab6b",
+      "objType": "Action"
+    },
+    {
+      "name": "Goto_StartSystems",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "Start_Systems",
+          "prob": -1,
+          "varProb": null,
+          "failDesc": ""
+        }
+      ],
+      "id": "b73bc55c-1a6f-4dcd-b4e7-95799d484847",
+      "objType": "Action"
+    },
+    {
+      "name": "Goto_StopSystems",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "Stop_Systems",
+          "prob": -1,
+          "varProb": null,
+          "failDesc": ""
+        }
+      ],
+      "id": "55072dbc-bba9-4016-9e56-c318313a9ef6",
+      "objType": "Action"
+    },
+    {
+      "name": "Goto_Terminate",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "Terminate",
+          "prob": -1,
+          "varProb": null,
+          "failDesc": ""
+        }
+      ],
+      "id": "752c0101-50a2-4796-b804-26faa9cce61e",
+      "objType": "Action"
+    }
+  ],
+  "EventList": [
+    {
+      "name": "24H_Mission_Time",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etTimer",
+      "time": "P1D",
+      "id": "0f6545ae-e99f-41f0-935d-c8c2e8394dcb",
+      "objType": "Event"
+    },
+    {
+      "name": "C-CKV-A_Demand",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etStateCng",
+      "ifInState": true,
+      "allItems": false,
+      "triggerStates": [
+        "Start_Systems"
+      ],
+      "id": "ed8c1e31-001b-4ce1-8bfd-2f8e9e24f50a",
+      "objType": "Event"
+    },
+    {
+      "name": "C-CKV-A_Stop",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etStateCng",
+      "ifInState": false,
+      "allItems": true,
+      "triggerStates": [
+        "Stop_Systems"
+      ],
+      "id": "e6f971dd-7ebb-4201-8d36-6392281298bf",
+      "objType": "Event"
+    },
+    {
+      "name": "C-CKV-B_Demand",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etStateCng",
+      "ifInState": true,
+      "allItems": false,
+      "triggerStates": [
+        "Start_Systems"
+      ],
+      "id": "9742524f-e5d8-43dc-8556-8ebc2addd741",
+      "objType": "Event"
+    },
+    {
+      "name": "C-CKV-B_Stop",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etStateCng",
+      "ifInState": false,
+      "allItems": true,
+      "triggerStates": [
+        "Stop_Systems"
+      ],
+      "id": "e958b4ad-9b98-49bf-bac6-4e5876682286",
+      "objType": "Event"
+    },
+    {
+      "name": "C-MOV-1_Demand",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etStateCng",
+      "ifInState": true,
+      "allItems": false,
+      "triggerStates": [
+        "Start_Systems"
+      ],
+      "id": "6cd82bc6-fe62-4391-a5b2-fe299b9e2ffb",
+      "objType": "Event"
+    },
+    {
+      "name": "C-MOV-1_Stop",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etStateCng",
+      "ifInState": false,
+      "allItems": true,
+      "triggerStates": [
+        "Stop_Systems"
+      ],
+      "id": "4670ea73-f7e9-4397-b851-dc61e799fd2e",
+      "objType": "Event"
+    },
+    {
+      "name": "C-MOV-A_Demand",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etStateCng",
+      "ifInState": true,
+      "allItems": false,
+      "triggerStates": [
+        "Start_Systems"
+      ],
+      "id": "8265e5f6-61ec-49f0-a7e3-11b4b3ec5a0e",
+      "objType": "Event"
+    },
+    {
+      "name": "C-MOV-A_Stop",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etStateCng",
+      "ifInState": false,
+      "allItems": true,
+      "triggerStates": [
+        "Stop_Systems"
+      ],
+      "id": "6787b6e2-9ae8-4728-b7c6-a931c183ee08",
+      "objType": "Event"
+    },
+    {
+      "name": "C-MOV-B_Demand",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etStateCng",
+      "ifInState": true,
+      "allItems": false,
+      "triggerStates": [
+        "Start_Systems"
+      ],
+      "id": "1e4cf8ba-2b2a-4f61-b072-2dfe8ff7eac6",
+      "objType": "Event"
+    },
+    {
+      "name": "C-MOV-B_Stop",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etStateCng",
+      "ifInState": false,
+      "allItems": true,
+      "triggerStates": [
+        "Stop_Systems"
+      ],
+      "id": "de69808a-efdc-4af1-8cb7-4878671d396e",
+      "objType": "Event"
+    },
+    {
+      "name": "C-PMP-A_Demand",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etStateCng",
+      "ifInState": true,
+      "allItems": false,
+      "triggerStates": [
+        "Start_Systems"
+      ],
+      "id": "2b0df06e-9dca-4765-920b-a1219f3f2679",
+      "objType": "Event"
+    },
+    {
+      "name": "C-PMP-A_FR",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etFailRate",
+      "lambda": 0.000021,
+      "lambdaTimeRate": "PT1H",
+      "id": "02c9e9e9-fcd9-46c4-ace6-6f72fc195e9c",
+      "objType": "Event"
+    },
+    {
+      "name": "C-PMP-A_Stop",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etStateCng",
+      "ifInState": false,
+      "allItems": true,
+      "triggerStates": [
+        "Stop_Systems"
+      ],
+      "logicError": "missing state for something",
+      "id": "0b949b91-b1b2-432c-914a-712cd4641300",
+      "objType": "Event"
+    },
+    {
+      "name": "C-PMP-B_Demand",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etStateCng",
+      "ifInState": true,
+      "allItems": false,
+      "triggerStates": [
+        "Start_Systems"
+      ],
+      "id": "e5a1f418-3b38-40b0-b2e7-937c7c540dac",
+      "objType": "Event"
+    },
+    {
+      "name": "C-PMP-B_FR",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etFailRate",
+      "lambda": 0.000021,
+      "lambdaTimeRate": "PT1H",
+      "id": "d3b8679a-627f-46ec-a056-8bcb40eb9019",
+      "objType": "Event"
+    },
+    {
+      "name": "C-PMP-B_Stop",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etStateCng",
+      "ifInState": false,
+      "allItems": true,
+      "triggerStates": [
+        "Stop_Systems"
+      ],
+      "id": "e8b7fb0d-fb85-4322-ba95-7bdd72400b48",
+      "objType": "Event"
+    },
+    {
+      "name": "CCS_and_ECS_Failed",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etStateCng",
+      "ifInState": true,
+      "allItems": true,
+      "triggerStates": [
+        "CCS_Sys_Failed",
+        "ECS_Sys_Failed"
+      ],
+      "id": "3fd90ad0-06e1-44f6-bb53-0f7c5dcccff7",
+      "objType": "Event"
+    },
+    {
+      "name": "CCS_Sys_Eval",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etComponentLogic",
+      "onSuccess": false,
+      "logicTop": "CCS_TOP",
+      "id": "cf7f4b35-932e-4662-818c-c9e02e78f07c",
+      "objType": "Event"
+    },
+    {
+      "name": "CCS_Sys_Stop",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etStateCng",
+      "ifInState": true,
+      "allItems": false,
+      "triggerStates": [
+        "Stop_Systems"
+      ],
+      "id": "8276a3df-10bb-47d2-a463-cd97e7e1a3a0",
+      "objType": "Event"
+    },
+    {
+      "name": "CrewReady",
+      "desc": "",
+      "allItems": true,
+      "triggerStates": [],
+      "evType": "etDistribution",
+      "mainItem": false,
+      "distType": "dtNormal",
+      "parameters": [
+        {
+          "name": "Mean",
+          "useVariable": false,
+          "value": 24
+        },
+        {
+          "name": "Standard Deviation",
+          "useVariable": false,
+          "value": 1
+        },
+        {
+          "name": "Minimum",
+          "useVariable": false,
+          "value": 0
+        },
+        {
+          "name": "Maximum",
+          "useVariable": false,
+          "value": 24
+        }
+      ],
+      "dfltTimeRate": "trHours",
+      "id": "c48aaa6d-e5ea-48c2-a78b-124da12edb29",
+      "objType": "Event"
+    },
+    {
+      "name": "Do_Soon",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etTimer",
+      "time": "PT1S",
+      "id": "6c41e3ed-ce24-4a70-9bc9-8ca53e036f5c",
+      "objType": "Event"
+    },
+    {
+      "name": "Done",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etTimer",
+      "time": "PT0S",
+      "id": "144abafe-020e-436f-921d-cd2c5cc5e2ef",
+      "objType": "Event"
+    },
+    {
+      "name": "E-CKV-A_Demand",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etStateCng",
+      "ifInState": true,
+      "allItems": false,
+      "triggerStates": [
+        "Start_Systems"
+      ],
+      "id": "b5456d2b-2078-4561-a1ec-7af4c9ba5367",
+      "objType": "Event"
+    },
+    {
+      "name": "E-CKV-A_Stop",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etStateCng",
+      "ifInState": false,
+      "allItems": true,
+      "triggerStates": [
+        "Stop_Systems"
+      ],
+      "id": "fccc193f-c5a9-44a5-872c-a336a7d317cb",
+      "objType": "Event"
+    },
+    {
+      "name": "E-CKV-B_Demand",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etStateCng",
+      "ifInState": true,
+      "allItems": false,
+      "triggerStates": [
+        "Start_Systems"
+      ],
+      "id": "bb7ec723-68d1-468f-aec4-41cea6a733ae",
+      "objType": "Event"
+    },
+    {
+      "name": "E-CKV-B_Stop",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etStateCng",
+      "ifInState": false,
+      "allItems": true,
+      "triggerStates": [
+        "Stop_Systems"
+      ],
+      "id": "64921c4a-6082-4130-84d3-296eaa42d117",
+      "objType": "Event"
+    },
+    {
+      "name": "E-MOV-1_Demand",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etStateCng",
+      "ifInState": true,
+      "allItems": false,
+      "triggerStates": [
+        "Start_Systems"
+      ],
+      "id": "644d1c96-8aba-4398-b7c1-11215c2600d7",
+      "objType": "Event"
+    },
+    {
+      "name": "E-MOV-1_Stop",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etStateCng",
+      "ifInState": false,
+      "allItems": true,
+      "triggerStates": [
+        "Stop_Systems"
+      ],
+      "id": "619c1634-ce5b-48ab-8c2f-b3cfc3edf681",
+      "objType": "Event"
+    },
+    {
+      "name": "E-MOV-A_Demand",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etStateCng",
+      "ifInState": true,
+      "allItems": false,
+      "triggerStates": [
+        "Start_Systems"
+      ],
+      "id": "2b985c4d-c3b7-4a1c-ba68-a234d39e66d5",
+      "objType": "Event"
+    },
+    {
+      "name": "E-MOV-A_Stop",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etStateCng",
+      "ifInState": false,
+      "allItems": true,
+      "triggerStates": [
+        "Stop_Systems"
+      ],
+      "id": "9460e880-cacb-4493-9ee2-c934dff35a36",
+      "objType": "Event"
+    },
+    {
+      "name": "E-MOV-B_Demand",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etStateCng",
+      "ifInState": true,
+      "allItems": false,
+      "triggerStates": [
+        "Start_Systems"
+      ],
+      "id": "c118c60b-f243-4fc2-9d0b-c6787f1a83fb",
+      "objType": "Event"
+    },
+    {
+      "name": "E-MOV-B_Stop",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etStateCng",
+      "ifInState": false,
+      "allItems": true,
+      "triggerStates": [
+        "Stop_Systems"
+      ],
+      "id": "f371d0aa-c93f-47a6-8952-931f2fc4299f",
+      "objType": "Event"
+    },
+    {
+      "name": "E-PMP-A_Demand",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etStateCng",
+      "ifInState": true,
+      "allItems": false,
+      "triggerStates": [
+        "Start_Systems"
+      ],
+      "id": "65b05c2e-d958-4ba8-ad0e-635b7cc1c08a",
+      "objType": "Event"
+    },
+    {
+      "name": "E-PMP-A_FR",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etFailRate",
+      "lambda": 0.000021,
+      "lambdaTimeRate": "PT1H",
+      "id": "67b10db4-670d-431a-b39a-0428ad71e6be",
+      "objType": "Event"
+    },
+    {
+      "name": "E-PMP-A_Stop",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etStateCng",
+      "ifInState": false,
+      "allItems": true,
+      "triggerStates": [
+        "Stop_Systems"
+      ],
+      "id": "4f3dd98f-e9d8-4c93-b1d3-47bbcf1b14d3",
+      "objType": "Event"
+    },
+    {
+      "name": "E-PMP-B_Demand",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etStateCng",
+      "ifInState": true,
+      "allItems": false,
+      "triggerStates": [
+        "Start_Systems"
+      ],
+      "id": "5a120aa0-557e-4911-8b0d-1e92e9620508",
+      "objType": "Event"
+    },
+    {
+      "name": "E-PMP-B_FR",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etFailRate",
+      "lambda": 0.000021,
+      "lambdaTimeRate": "PT1H",
+      "id": "6ba3bb11-6064-41f1-80ce-f29b57002428",
+      "objType": "Event"
+    },
+    {
+      "name": "E-PMP-B_Stop",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etStateCng",
+      "ifInState": false,
+      "allItems": true,
+      "triggerStates": [
+        "Stop_Systems"
+      ],
+      "id": "e107f2ff-88fd-4976-a695-6a060e2feb02",
+      "objType": "Event"
+    },
+    {
+      "name": "ECS_Failed",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etStateCng",
+      "ifInState": true,
+      "allItems": true,
+      "triggerStates": [
+        "ECS_Sys_Failed"
+      ],
+      "id": "6549868b-f930-4129-99bb-efb7514c299c",
+      "objType": "Event"
+    },
+    {
+      "name": "ECS_Sys_Eval",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etComponentLogic",
+      "onSuccess": false,
+      "logicTop": "ECS_TOP",
+      "id": "c49793c2-88b2-444e-8ea9-b63eb9cd8557",
+      "objType": "Event"
+    },
+    {
+      "name": "ECS_Sys_Stop",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etStateCng",
+      "ifInState": true,
+      "allItems": false,
+      "triggerStates": [
+        "Stop_Systems"
+      ],
+      "id": "1d785eb4-b7dd-4ddd-80c9-ed023d9bc04f",
+      "objType": "Event"
+    },
+    {
+      "name": "Had_Lg_Rel",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etStateCng",
+      "ifInState": true,
+      "allItems": false,
+      "triggerStates": [
+        "Large_Release"
+      ],
+      "id": "0a670ff6-d889-464c-900d-68a1999b5865",
+      "objType": "Event"
+    },
+    {
+      "name": "Had_Sm_Rel",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etStateCng",
+      "ifInState": true,
+      "allItems": true,
+      "triggerStates": [
+        "Small_Release"
+      ],
+      "id": "1e0805ed-dbc2-4806-ab2d-6d3831380acc",
+      "objType": "Event"
+    },
+    {
+      "name": "LOSP",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etFailRate",
+      "lambda": 2.3,
+      "lambdaTimeRate": "P365D",
+      "id": "14603710-1c49-4dc5-ae87-93d4851e2473",
+      "objType": "Event"
+    },
+    {
+      "name": "No_Sm_Rel",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etStateCng",
+      "ifInState": false,
+      "allItems": true,
+      "triggerStates": [
+        "Small_Release"
+      ],
+      "id": "c896d001-e1b8-4bc1-977d-dac330d18c60",
+      "objType": "Event"
+    },
+    {
+      "name": "S-DGN-A_Demand",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etStateCng",
+      "ifInState": true,
+      "allItems": false,
+      "triggerStates": [
+        "Start_Systems"
+      ],
+      "id": "225916ac-08f6-4b65-b961-21d55d59e254",
+      "objType": "Event"
+    },
+    {
+      "name": "S-DGN-A_FR",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etFailRate",
+      "lambda": 0.00089,
+      "lambdaTimeRate": "PT1H",
+      "id": "63f940e0-7f12-4d23-bc05-90c523d92a33",
+      "objType": "Event"
+    },
+    {
+      "name": "S-DGN-A_Stop",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etStateCng",
+      "ifInState": false,
+      "allItems": true,
+      "triggerStates": [
+        "Stop_Systems"
+      ],
+      "id": "3cac19b7-6836-43db-9563-1f54f4a5a98f",
+      "objType": "Event"
+    },
+    {
+      "name": "S-DGN-B_Demand",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etStateCng",
+      "ifInState": true,
+      "allItems": false,
+      "triggerStates": [
+        "Start_Systems"
+      ],
+      "id": "740d2db1-4875-4767-a869-2444be69fd76",
+      "objType": "Event"
+    },
+    {
+      "name": "S-DGN-B_FR",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etFailRate",
+      "lambda": 0.00089,
+      "lambdaTimeRate": "PT1H",
+      "id": "59bce0b1-f12f-4d74-a19f-d6b7d7d04b1c",
+      "objType": "Event"
+    },
+    {
+      "name": "S-DGN-B_Stop",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etStateCng",
+      "ifInState": false,
+      "allItems": true,
+      "triggerStates": [
+        "Stop_Systems"
+      ],
+      "id": "159040d4-830e-49f8-8570-eb55b75e27e6",
+      "objType": "Event"
+    },
+    {
+      "name": "S-TNK-T1_Demand",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etStateCng",
+      "ifInState": true,
+      "allItems": false,
+      "triggerStates": [
+        "Start_Systems"
+      ],
+      "id": "77544138-eab3-4f4b-901e-a04e080f1213",
+      "objType": "Event"
+    },
+    {
+      "name": "S-TNK-T1_FR",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etFailRate",
+      "lambda": 1e-7,
+      "lambdaTimeRate": "PT1H",
+      "id": "6c9583f2-ecc6-4193-b8f5-bc20750c3a38",
+      "objType": "Event"
+    },
+    {
+      "name": "S-TNK-T1_Stop",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etStateCng",
+      "ifInState": false,
+      "allItems": true,
+      "triggerStates": [
+        "Stop_Systems"
+      ],
+      "id": "544fd470-f44d-4efc-96ab-6fa7f845ca03",
+      "objType": "Event"
+    },
+    {
+      "name": "Task1_Done",
+      "desc": "",
+      "allItems": true,
+      "triggerStates": [],
+      "evType": "etDistribution",
+      "mainItem": false,
+      "distType": "dtNormal",
+      "parameters": [
+        {
+          "name": "Mean",
+          "useVariable": false,
+          "value": 24
+        },
+        {
+          "name": "Standard Deviation",
+          "useVariable": false,
+          "value": 1
+        },
+        {
+          "name": "Minimum",
+          "useVariable": false,
+          "value": 0
+        },
+        {
+          "name": "Maximum",
+          "useVariable": false,
+          "value": 24
+        }
+      ],
+      "dfltTimeRate": "trHours",
+      "id": "6a5c1044-0e58-4dcd-9352-ae2942cc478f",
+      "objType": "Event"
+    },
+    {
+      "name": "Task2_Done",
+      "desc": "",
+      "allItems": true,
+      "triggerStates": [],
+      "evType": "etDistribution",
+      "mainItem": false,
+      "distType": "dtNormal",
+      "parameters": [
+        {
+          "name": "Mean",
+          "useVariable": false,
+          "value": 24
+        },
+        {
+          "name": "Standard Deviation",
+          "useVariable": false,
+          "value": 1
+        },
+        {
+          "name": "Minimum",
+          "useVariable": false,
+          "value": 0
+        },
+        {
+          "name": "Maximum",
+          "useVariable": false,
+          "value": 24
+        }
+      ],
+      "dfltTimeRate": "trHours",
+      "id": "4dcfca50-039f-46e8-9d8e-0df29946e9db",
+      "objType": "Event"
+    },
+    {
+      "name": "TempStateExit",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etTimer",
+      "time": "PT0S",
+      "id": "664d31fc-2e79-463d-a3aa-0a943fe28b9b",
+      "objType": "Event"
+    }
+  ],
+  "LogicNodeList": [
+    {
+      "id": "bfda619a-1af4-4c27-870b-cfee835c16d4",
+      "name": "CCS_TOP",
+      "desc": "",
+      "gateType": "gtOr",
+      "rootName": "CCS_TOP",
+      "compChildren": [],
+      "gateChildren": [
+        "CCS-Trains",
+        "CCS-Supply"
+      ],
+      "objType": "LogicNode",
+      "isRoot": true
+    },
+    {
+      "id": "177876c3-33da-4396-a2ef-26bec503b7f5",
+      "name": "CCS-Supply",
+      "desc": "",
+      "gateType": "gtOr",
+      "rootName": "CCS_TOP",
+      "compChildren": [
+        {
+          "diagramName": "S-DGN-B",
+          "stateValues": []
+        },
+        {
+          "diagramName": "C-MOV-1",
+          "stateValues": []
+        },
+        {
+          "diagramName": "S-TNK-T1",
+          "stateValues": []
+        }
+      ],
+      "gateChildren": [],
+      "objType": "LogicNode",
+      "isRoot": false
+    },
+    {
+      "id": "4e8655d6-0e90-4e63-aaf0-577e627cebe8",
+      "name": "CCS-Train-A",
+      "desc": "",
+      "gateType": "gtOr",
+      "rootName": "CCS_TOP",
+      "compChildren": [
+        {
+          "diagramName": "C-PMP-A",
+          "stateValues": []
+        },
+        {
+          "diagramName": "S-DGN-A",
+          "stateValues": []
+        },
+        {
+          "diagramName": "C-CKV-A",
+          "stateValues": []
+        },
+        {
+          "diagramName": "C-MOV-A",
+          "stateValues": []
+        }
+      ],
+      "gateChildren": [],
+      "objType": "LogicNode",
+      "isRoot": false
+    },
+    {
+      "id": "f2f62fda-367a-4a64-87ce-5bcb70a168fd",
+      "name": "CCS-Train-B",
+      "desc": "",
+      "gateType": "gtOr",
+      "rootName": "CCS_TOP",
+      "compChildren": [
+        {
+          "diagramName": "C-PMP-B",
+          "stateValues": []
+        },
+        {
+          "diagramName": "S-DGN-B",
+          "stateValues": []
+        },
+        {
+          "diagramName": "C-CKV-B",
+          "stateValues": []
+        },
+        {
+          "diagramName": "C-MOV-B",
+          "stateValues": []
+        }
+      ],
+      "gateChildren": [],
+      "objType": "LogicNode",
+      "isRoot": false
+    },
+    {
+      "id": "6c94298e-e12e-413a-a96b-a5c248178bbb",
+      "name": "CCS-Trains",
+      "desc": "",
+      "gateType": "gtAnd",
+      "rootName": "CCS_TOP",
+      "compChildren": [],
+      "gateChildren": [
+        "CCS-Train-A",
+        "CCS-Train-B"
+      ],
+      "objType": "LogicNode",
+      "isRoot": false
+    },
+    {
+      "id": "cc024b90-f90a-4a48-a6a4-63168e285f8f",
+      "name": "ECS_TOP",
+      "desc": "",
+      "gateType": "gtOr",
+      "rootName": "ECS_TOP",
+      "compChildren": [],
+      "gateChildren": [
+        "ECS-Trains",
+        "ECS-Supply"
+      ],
+      "objType": "LogicNode",
+      "isRoot": true
+    },
+    {
+      "id": "f2fde34d-0247-4807-8551-75ac6622fb3b",
+      "name": "ECS-Supply",
+      "desc": "",
+      "gateType": "gtOr",
+      "rootName": "ECS_TOP",
+      "compChildren": [
+        {
+          "diagramName": "S-DGN-A",
+          "stateValues": []
+        },
+        {
+          "diagramName": "E-MOV-1",
+          "stateValues": []
+        },
+        {
+          "diagramName": "S-TNK-T1",
+          "stateValues": []
+        }
+      ],
+      "gateChildren": [],
+      "objType": "LogicNode",
+      "isRoot": false
+    },
+    {
+      "id": "d5e75f1d-e2b8-493f-8fa6-b948718ef247",
+      "name": "ECS-Train-A",
+      "desc": "",
+      "gateType": "gtOr",
+      "rootName": "ECS_TOP",
+      "compChildren": [
+        {
+          "diagramName": "E-PMP-A",
+          "stateValues": []
+        },
+        {
+          "diagramName": "S-DGN-A",
+          "stateValues": []
+        },
+        {
+          "diagramName": "E-CKV-A",
+          "stateValues": []
+        },
+        {
+          "diagramName": "E-MOV-A",
+          "stateValues": []
+        }
+      ],
+      "gateChildren": [],
+      "objType": "LogicNode",
+      "isRoot": false
+    },
+    {
+      "id": "ed97374c-9e1f-417f-872a-91414070ba6a",
+      "name": "ECS-Train-B",
+      "desc": "",
+      "gateType": "gtOr",
+      "rootName": "ECS_TOP",
+      "compChildren": [
+        {
+          "diagramName": "E-PMP-B",
+          "stateValues": []
+        },
+        {
+          "diagramName": "S-DGN-B",
+          "stateValues": []
+        },
+        {
+          "diagramName": "E-CKV-B",
+          "stateValues": []
+        },
+        {
+          "diagramName": "E-MOV-B",
+          "stateValues": []
+        }
+      ],
+      "gateChildren": [],
+      "objType": "LogicNode",
+      "isRoot": false
+    },
+    {
+      "id": "70ef9903-c1c5-4381-94a2-59b146a0beb9",
+      "name": "ECS-Trains",
+      "desc": "",
+      "gateType": "gtAnd",
+      "rootName": "ECS_TOP",
+      "compChildren": [],
+      "gateChildren": [
+        "ECS-Train-A",
+        "ECS-Train-B"
+      ],
+      "objType": "LogicNode",
+      "isRoot": false
+    }
+  ],
+  "VariableList": [],
+  "ExtSimList": [],
+  "objType": "EMRALD_Model",
+  "emraldVersion": 3
+}

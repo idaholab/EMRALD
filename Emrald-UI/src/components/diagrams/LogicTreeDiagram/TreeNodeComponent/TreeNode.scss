@@ -1,0 +1,101 @@
+@use "sass:color";
+
+$shadow-color: rgba(0, 0, 0, 0.1);
+$font-color: #222;
+$header-bottom-border-color: #e2e8f0;
+
+.tree-diagram .react-flow__node-custom {
+  font-size: 10px;
+  min-width: 165px;
+  color: $font-color;
+  box-shadow: 0 4px 6px -1px $shadow-color, 0 2px 4px -1px color.scale($shadow-color, $lightness: -10%);
+  border-radius: 2px;
+
+  .react-flow__handle {
+    visibility: hidden;
+  }
+
+  .react-flow__handle-bottom {
+    top: 45px !important;
+  }
+
+  .logic-icon {
+    position: absolute;
+    transform: rotate(270deg);
+    font-size: 31px;
+    color: #b1b1b7;
+    top: -1px;
+  }
+
+  .expanded-icon {
+    position: absolute;
+    font-size: 25px;
+    color: #b1b1b7;
+    top: 27px;
+    cursor: pointer;
+  }
+
+  .tree-node {
+    height: auto;
+    display: flex; /* Use flex layout */
+    flex-direction: column; /* Stack children vertically */
+    border-radius: 8px;
+    box-shadow: 1px 1px 1px 1px $shadow-color;
+    margin: -4px 0;
+  }
+  
+  .tree-node__gate {
+    background: #699ac0;
+  }
+  
+  .tree-node__comp {
+    background: #ddc462;
+  }
+
+  .non-default {
+    background: #c09340;
+    .modified-icon {
+      height: 12px;
+      width: 12px;
+    }
+  }
+  
+  .tree-node__header {
+    width: 100%; /* Make the header full width */
+    font-size: 12px;
+    display: flex;
+    justify-content: center;
+  }
+  
+  .tree-node__body {
+    padding: 10px;
+    flex-grow: 1;
+  }
+  
+  .tree-node__immediate-actions {
+    position: relative;
+    margin-bottom: 10px;
+  }
+  
+  .tree-node__event-actions {
+    position: relative;
+    margin-bottom: 10px;
+  }
+  
+  .tree-node__connection-svg { 
+    overflow: visible;
+    position: absolute;
+    left: 0; 
+    right: 0;
+    top: 0; 
+    bottom: 0;
+  }
+}
+
+.gate-icon {
+  font-size: 30px;
+  color: #b1b1b7;
+  transform: rotate(270deg);
+  margin: 0 10px;
+}
+

@@ -1,8 +1,0 @@
-Simulation = Sim1
-Runtime = 00.00:00:00
-Runs = 100 of 100
-C1Failed Occurred 100 times, Rate =1, MeanTime = 00.00:05:00 +/- 00.00:00:00.00
-(100)[100]C1Failed
----------------------------
-- End Sim Variable Values -
----------------------------

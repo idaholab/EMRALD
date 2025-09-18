@@ -1,0 +1,14 @@
+Simulation = KeyStatePathTest
+Runtime = 00.00:00:00
+Runs = 100 of 100
+
+Key25 Occurred 29 times, Probability =0.29, MeanTime = 00.00:00:11 +/- 00.00:00:00.00
+
+Key62andaHalf Occurred 57 times, Probability =0.57, MeanTime = 00.00:00:14 +/- 00.00:00:02.18
+
+Key75 Occurred 71 times, Probability =0.71, MeanTime = 00.00:00:07 +/- 00.00:00:02.85
+
+Key37andahalf Occurred 28 times, Probability =0.28, MeanTime = 00.00:00:14 +/- 00.00:00:02.98
+---------------------------
+- End Sim Variable Values -
+---------------------------

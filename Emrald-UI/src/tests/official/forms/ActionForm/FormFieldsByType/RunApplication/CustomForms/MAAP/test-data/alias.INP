@@ -1,0 +1,29 @@
+// Alias
+TITLE
+Tests syntax for alias statements
+END
+
+C Default
+// Comment 1
+// Comment 2
+ALIAS // Comment 3
+// Comment 4
+// Comment 5
+VARNAME as Value // Comment 6
+// Comment 7
+// Comment 8
+VARNAME2 as Value2 // Comment 9
+// Comment 10
+// Comment 11
+END // Comment 12
+
+
+C Empty
+// Comment 1
+// Comment 2
+ALIAS // Comment 3
+// Comment 4
+// Comment 5
+END // Comment 12
+
+** End alias statements **

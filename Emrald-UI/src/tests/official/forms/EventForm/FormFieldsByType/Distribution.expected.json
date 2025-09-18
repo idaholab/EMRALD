@@ -1,0 +1,230 @@
+{
+  "sets parameters": {
+    "objType": "Event",
+    "name": "sets parameters",
+    "desc": "",
+    "mainItem": true,
+    "evType": "etDistribution",
+    "distType": "dtNormal",
+    "dfltTimeRate": "trHours",
+    "required": false,
+    "parameters": [
+      {
+        "name": "Mean",
+        "value": 1,
+        "useVariable": false
+      },
+      {
+        "name": "Standard Deviation",
+        "value": 5,
+        "useVariable": false
+      },
+      {
+        "name": "Minimum",
+        "value": 0,
+        "useVariable": false
+      },
+      {
+        "name": "Maximum",
+        "value": 100,
+        "useVariable": false
+      }
+    ]
+  },
+  "uses scientific notation": {
+    "objType": "Event",
+    "name": "uses scientific notation",
+    "desc": "",
+    "mainItem": true,
+    "evType": "etDistribution",
+    "distType": "dtNormal",
+    "dfltTimeRate": "trHours",
+    "required": false,
+    "parameters": [
+      {
+        "name": "Mean",
+        "value": 10,
+        "useVariable": false
+      },
+      {
+        "name": "Standard Deviation",
+        "value": 500,
+        "useVariable": false
+      },
+      {
+        "name": "Minimum",
+        "value": 1000,
+        "useVariable": false
+      },
+      {
+        "name": "Maximum",
+        "value": "1e4",
+        "useVariable": false
+      }
+    ]
+  },
+  "sets default time rate": {
+    "objType": "Event",
+    "name": "sets default time rate",
+    "desc": "",
+    "mainItem": true,
+    "evType": "etDistribution",
+    "distType": "dtNormal",
+    "dfltTimeRate": "trSeconds",
+    "required": false,
+    "parameters": [
+      {
+        "name": "Mean",
+        "value": 1,
+        "useVariable": false
+      },
+      {
+        "name": "Standard Deviation",
+        "value": 5,
+        "useVariable": false
+      },
+      {
+        "name": "Minimum",
+        "value": 0,
+        "useVariable": false
+      },
+      {
+        "name": "Maximum",
+        "value": 100,
+        "useVariable": false
+      }
+    ]
+  },
+  "sets individual time rates": {
+    "objType": "Event",
+    "name": "sets individual time rates",
+    "desc": "",
+    "mainItem": true,
+    "evType": "etDistribution",
+    "distType": "dtNormal",
+    "dfltTimeRate": "trHours",
+    "required": false,
+    "parameters": [
+      {
+        "name": "Mean",
+        "value": 1,
+        "useVariable": false
+      },
+      {
+        "name": "Standard Deviation",
+        "timeRate": "trSeconds",
+        "value": 5,
+        "useVariable": false
+      },
+      {
+        "name": "Minimum",
+        "value": 0,
+        "useVariable": false
+      },
+      {
+        "name": "Maximum",
+        "timeRate": "trDays",
+        "value": 100,
+        "useVariable": false
+      }
+    ]
+  },
+  "clears time rate property": {
+    "objType": "Event",
+    "name": "clears time rate property",
+    "desc": "",
+    "mainItem": true,
+    "evType": "etDistribution",
+    "distType": "dtNormal",
+    "dfltTimeRate": "trHours",
+    "required": false,
+    "parameters": [
+      {
+        "name": "Mean",
+        "value": 1,
+        "useVariable": false
+      },
+      {
+        "name": "Standard Deviation",
+        "value": 5,
+        "useVariable": false
+      },
+      {
+        "name": "Minimum",
+        "value": 0,
+        "useVariable": false
+      },
+      {
+        "name": "Maximum",
+        "value": 100,
+        "useVariable": false
+      }
+    ]
+  },
+  "uses variables": {
+    "objType": "Event",
+    "name": "uses variables",
+    "desc": "",
+    "mainItem": true,
+    "evType": "etDistribution",
+    "distType": "dtNormal",
+    "dfltTimeRate": "trHours",
+    "required": false,
+    "onVarChange": "ocResample",
+    "parameters": [
+      {
+        "name": "Mean",
+        "value": 1,
+        "useVariable": false
+      },
+      {
+        "name": "Standard Deviation",
+        "value": 5,
+        "useVariable": false
+      },
+      {
+        "name": "Maximum",
+        "value": 100,
+        "useVariable": false
+      },
+      {
+        "name": "Minimum",
+        "value": "",
+        "useVariable": true,
+        "variable": "Test Variable"
+      }
+    ]
+  },
+  "changes distribution type": {
+    "objType": "Event",
+    "name": "changes distribution type",
+    "desc": "",
+    "mainItem": true,
+    "evType": "etDistribution",
+    "distType": "dtWeibull",
+    "dfltTimeRate": "trHours",
+    "required": false,
+    "parameters": [
+      {
+        "name": "Shape",
+        "value": 1,
+        "useVariable": false
+      },
+      {
+        "name": "Scale",
+        "value": 5,
+        "useVariable": false
+      },
+      {
+        "name": "Minimum",
+        "value": 0,
+        "useVariable": false
+      },
+      {
+        "name": "Maximum",
+        "value": 100,
+        "useVariable": false
+      }
+    ]
+  }
+}

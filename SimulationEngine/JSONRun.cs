@@ -14,8 +14,70 @@ using System.Threading;
 
 namespace SimulationEngine
 {
-  public class Options
+
+  
+  //public class Options_v1
+  //{
+  //  // Total number of runs
+  //  public int runct { get; set; } = 100;
+  //  // Input file path
+  //  public string inpfile { get; set; } = "";
+  //  // Results output file path
+  //  public string resout { get; set; } = "BasicResults.txt";
+  //  // Result paths JSON output file path
+  //  public string jsonRes { get; set; } = "";
+  //  //variables to output in the results
+  //  public List<string> variables { get; set; } = null;
+  //  // Path output file path
+  //  public string pathout { get; set; } = null;
+  //  // Maximum simulation time
+  //  public string runtime { get; set; } = "365.00:00:00";
+  //  // Seed for random number generation
+  //  public int seed { get; set; } = 0;
+  //  // debug level [basic, detailed, off]
+  //  public string debug { get; set; } = "off";
+  //  // start index for debug if null then from beginning
+  //  public int? debugStartIdx { get; set; } = null;
+  //  // start index for debug if null then to end
+  //  public int? debugEndIdx { get; set; } = null;
+  //  // external application XMPP connection
+  //  public int pathResultsInterval { get; set; } = -1;
+  //  public string xmppPassword { get; set; } = "secret";
+  //  public List<List<string>> xmppLinks = new List<List<string>>();
+  //}
+
+  public class Options_cur
   {
+    //Example JSON for passing in the run options 
+    public static string CmdJSON_OptionsExample = "{\n" +
+    "  \"opsVer\": 1.01, //version of this options file\n" +
+    "  \"runct\": 100, // Total number of runs\n" +
+    "  \"inpfile\": \"\", // Input model path\n" +
+    "  \"resout\": \"BasicResults.txt\", // Results output file path\n" +
+    "  \"jsonRes\": \"c:\\\\temp\\\\PathResults.txt\", // Result paths JSON output file path\n" +
+    "  \"variables\": [ // Variables to output in the results\n" +
+    "    \"var1\",\n" +
+    "    \"var2\"\n" +
+    "  ],\n" +
+    "  \"initVars\": [ //initialize these variables with new values (if they have the property to reset on every run, it will get this value on each run otherwise behavior is the same)\n" +
+    "    {\n" +
+    "      \"varName\": \"var1\", //name of the variable\n" +
+    "      \"value\": \"5\" //value for the variable, use a string for all the types.\n" +
+    "    }\n" +
+    "  ],\n" +
+    "  \"runtime\": \"365.00:00:00\", // Maximum simulation time\n" +
+    "  \"seed\": 0, // Seed for random number generation\n" +
+    "  \"debug\": \"off\", // Debug level [basic, detailed, off]\n" +
+    "  \"debugStartIdx\": null, // Start index for debug if null then from beginning\n" +
+    "  \"debugEndIdx\": null, // End index for debug if null then to end\n" +
+    "  \"pathResultsInterval\": -1, // External application XMPP connection path results interval\n" +
+    "  \"xmppPassword\": \"secret\", // XMPP password for external application connection\n" +
+    "  \"xmppLinks\": [] // List of XMPP links\n" +
+    "}";
+
+    //version of the options json
+    public double opsVer { get; set; } = 1.01;
+    
     // Total number of runs
     public int runct { get; set; } = 100;
     // Input file path
@@ -26,8 +88,8 @@ namespace SimulationEngine
     public string jsonRes { get; set; } = "";
     //variables to output in the results
     public List<string> variables { get; set; } = null;
-    // Path output file path
-    public string pathout { get; set; } = null;
+    // //initialize these variables with new values (if they have the property to reset on every run, it will get this value on each run othrwise behavior is the same)
+    public List<VarInitValue> initVars { get; set; } = new List<VarInitValue>();
     // Maximum simulation time
     public string runtime { get; set; } = "365.00:00:00";
     // Seed for random number generation
@@ -42,25 +104,32 @@ namespace SimulationEngine
     public int pathResultsInterval { get; set; } = -1;
     public string xmppPassword { get; set; } = "secret";
     public List<List<string>> xmppLinks = new List<List<string>>();
+    public int? threads { get; set; } = null; //null is default no threading. Even 1 will use a tread and the temp folders so that you can run multiple instances using the same model, by just changing the name.
+  }
+
+  public class VarInitValue
+  {
+    public string varName { get; set; }
+    public string value { get; set; }
   }
 
   public class JSONRun
   {
     private string _optsJsonStr = "";
     private string _modelJsonStr = "";
-    TProgressCallBack _progressCallBack = null;
+    //TProgressCallBack _progressCallBack = null;
     private string _error = "";
-    public Options options = new Options();
+    public Options_cur options = new Options_cur();
+    private bool _done = false;
 
     // Create attributes for objects
-    private ProcessSimBatch _simRuns = null;
+    private List<ProcessSimBatch> _simRuns = new List<ProcessSimBatch>();
     private EmraldModel _model = null;
     // Create attributes for options (things formerly input on the command line)
     //private string run_count;
     //private TimeSpan maxTime;
     //private string inpfile_path = "";
     //private string outfile_path = "";
-    //private string pathout_path = "";
     //private int nseed = 0;
     // Create other attributes
     public bool cancel = false;
@@ -72,24 +141,25 @@ namespace SimulationEngine
     {
       _optsJsonStr = optionsJsonStr;
       _modelJsonStr = modelJsonStr;
-      _progressCallBack = progressCallBack;
+      //_progressCallBack = progressCallBack;
     }
 
-    public JSONRun(Options ops, string modelJsonStr = "", TProgressCallBack progressCallBack = null)
+    public JSONRun(Options_cur ops, string modelJsonStr = "", TProgressCallBack progressCallBack = null)
     {
       this.options = ops;
       _optsJsonStr = JsonConvert.SerializeObject(ops);
       _modelJsonStr = modelJsonStr;
-      _progressCallBack = progressCallBack;
+      //_progressCallBack = progressCallBack;
     }
 
-    public string RunSim(Progress progress = null)
+    public string RunSim()
     {
       percentDone = 0;
 
       //Load JSON options 
       if (_optsJsonStr != "")
-        if(!LoadJson(_optsJsonStr))
+        _error = LoadJson(_optsJsonStr, ref options);
+        if (_error != "")
           return "Error Loading JSON run options - " + error;
 
       if (_modelJsonStr != "")
@@ -148,190 +218,204 @@ namespace SimulationEngine
       ConfigData.debugRunStart = options.debugStartIdx;
       ConfigData.debugRunEnd = options.debugEndIdx;
       ConfigData.seed = options.seed;
+      ConfigData.threads = options.threads;
+      ConfigData.threads = ConfigData.threads > 0 ? ConfigData.threads : null; //don't allow 0 for threads.
 
 
-      //TODO put this back with thread.
-      //// Create a new ProcessSimBatch object
-      //// This is where the maxTime and outfile_path attributes are used
-      //_simRuns = new ProcessSimBatch(_model, TimeSpan.Parse(_options.runtime), _options.resout, _options.jsonRes);
-      //if(_options.variables != null)
-      //  _simRuns.logVarVals.AddRange(_options.variables);
-      //// Submit the runs
-      //// This is where the runct and pathout attributes are used
-      //if (!_simRuns.RunBatch(_options.runct, ref cancel, true, _options.pathout))
-      //{
-      //  _error = _simRuns.error;
-      bool done = false;
-      _simRuns = new ProcessSimBatch(_model, TimeSpan.Parse(options.runtime), options.resout, options.jsonRes, options.pathResultsInterval);
-      _simRuns.SetupBatch(options.runct, true, options.pathout);
-      _simRuns.AssignProgress(progress);
-      foreach(var v in _model.allVariables.Values)
+      // Create a new ProcessSimBatch object
+      // This is where the maxTime and outfile_path attributes are used
+      List<Thread> threads = new List<Thread>();
+      _simRuns.Clear();
+      int threadCnt = ConfigData.threads == null ? 1 : (int)ConfigData.threads;
+      int runsDiv = options.runct / threadCnt;
+      bool resDone = false; //results 
+      
+
+      for (int i = 0; i < threadCnt; i++) //if null just run once.
       {
-        if(v.monitorInSim)
-          _simRuns.logVarVals.Add(v.name);
-      }
-      foreach (var varItem in this.options.variables)
-      {
-        _simRuns.logVarVals.Add(varItem.ToString());
-      }
-      ThreadStart tStarter = new ThreadStart(_simRuns.RunBatch);
-      //run this when the thread is done.
-      tStarter += () =>
-      {
-        _simRuns.GetVarValues(_simRuns.logVarVals, true);
-        _error = _simRuns.error;
-        done = true;
-        if (progress != null)
+        _simRuns.Add(new ProcessSimBatch(_model, TimeSpan.Parse(options.runtime), options.resout, options.jsonRes, options.pathResultsInterval, ConfigData.threads == null ? null : i));
+        if (i == 0) //add extra runs on the first one
+          _simRuns[i].SetupBatch(runsDiv + (options.runct % threadCnt), true);
+        else
+          _simRuns[i].SetupBatch(runsDiv, true);
+
+        foreach(var v in _model.allVariables.Values)
         {
-          progress.done = true;
+          if(v.monitorInSim)
+            _simRuns[i].logVarVals.Add(v.name);
         }
-      };
-
-      Thread simThread = new Thread(tStarter);
-      simThread.Start();
-      //}
-
-      if (progress == null)
-      {
-        //must wait until done to return
-        while (!done)
+        foreach (var varItem in this.options.variables)
         {
-          System.Threading.Thread.Sleep(100);
+          _simRuns[i].logVarVals.Add(varItem.ToString());
         }
+
+        foreach (var varItem in this.options.initVars)
+        {
+          _simRuns[i].initVarVals.Add(varItem.varName, varItem.value);
+        }
+
+        ThreadStart tStarter = new ThreadStart(_simRuns[i].RunBatch);
+        //run this when the thread is done.
+        int locIdx = i;
+        tStarter += () =>
+        {
+          if (_simRuns[locIdx].error != "")
+            _error += _simRuns[locIdx].error + Environment.NewLine;
+          else
+            _simRuns[locIdx].GetVarValues(_simRuns[locIdx].logVarVals, true);
+        };
+
+        Thread simThread = new Thread(tStarter);
+        if (i == 0)
+        {
+          // Start the first thread immediately so it can set up the files needed by the others
+          tStarter += () =>
+          {
+            if (_simRuns[locIdx].error != "")
+              _error += _simRuns[locIdx].error + Environment.NewLine;
+          };
+          simThread.Start();
+        }
+        else
+        {
+          // Delay the start of all but first thread so that it has time to write so others have time to copy data
+          new Task(async () =>
+          {
+            //wait until first thread is done writing temp tread files.
+            while (!_simRuns[0].tempThreadFilesWriten)
+              await Task.Delay(TimeSpan.FromMilliseconds(10)); // Adjust the delay as needed
+            
+            if (_simRuns[locIdx].error != "")
+              _error += _simRuns[locIdx].error + Environment.NewLine;
+
+            simThread.Start();
+          }).Start();
+        }
+        threads.Add(simThread);
       }
+
+      Task.Run(() =>
+      {
+        // Wait for all threads to complete
+        foreach (var thread in threads)
+        {
+          thread.Join();
+        }
+
+        //compile results if needed
+        for (int i = 1; i < _simRuns.Count; i++)
+        {
+          _simRuns[0].AddOtherBatchResults(_simRuns[i]);
+        }
+        _simRuns[0].WriteFinalResults(true, threadCnt);
+        resDone = true;
+      });
+
+      //must wait until done to return
+      
+      while (!resDone)
+      {
+        System.Threading.Thread.Sleep(100);
+      }
+    
       return error;
     }
 
-    private bool LoadJson(string optionsJsonStr)
+    public static string LoadJson(string optionsJsonStr, ref Options_cur optionsOut)
     {
       // Create an Options object named options1 by deserializing the json string options_json, this depends on the Newtonsoft.Json package
       try
       {
-        options = JsonConvert.DeserializeObject<Options>(optionsJsonStr);
+        optionsOut = JsonConvert.DeserializeObject<Options_cur>(optionsJsonStr);
       }
       catch
       {
-        _error = "Invalid JSON run options, please fix.";
-        return false;
+        return "Invalid JSON run options, please fix.";
       }
 
 
       // Initialize a new TimeSpan object named maxTime, with a value based on the "runtime" json input
       try
       {
-        var time = TimeSpan.Parse(options.runtime);
+        var time = TimeSpan.Parse(optionsOut.runtime);
       }
       catch
       {
-        _error = "Invalid Max Simulation Time, please fix.";
-        return false;
+        return "Invalid Max Simulation Time, please fix.";
       }
       // Save the inpfile_path string based on the "inpfile" json input
       try
       {
-        if (options.inpfile != null) //can be null then must be passed into the run command
+        if (optionsOut.inpfile != null) //can be null then must be passed into the run command
         {
           //see if it is a relative path.
-          if (!Path.IsPathRooted(options.inpfile))
+          if (!Path.IsPathRooted(optionsOut.inpfile))
           {
-            options.inpfile = System.IO.Directory.GetCurrentDirectory() + options.inpfile;
+            optionsOut.inpfile = System.IO.Directory.GetCurrentDirectory() + optionsOut.inpfile;
           }
 
-          if (!File.Exists(options.inpfile))
+          if (!File.Exists(optionsOut.inpfile))
           {
-            _error = "Invalid input file path, please fix.";
+            return "Invalid input file path, please fix.";
           }
         }
       }
       catch
       {
-        _error = "Invalid input file path, please fix.";
-        return false;
+        return "Invalid input file path, please fix.";
       }
 
       // Save the outfile_path string based on the "resout" json input
       try
       {
-        if (options.resout != "")
+        if (optionsOut.resout != "")
         {
           //see if it is a relative path.
-          if (!Path.IsPathRooted(options.resout))
+          if (!Path.IsPathRooted(optionsOut.resout))
           {
-            options.resout = System.IO.Directory.GetCurrentDirectory() + options.resout;
+            optionsOut.resout = System.IO.Directory.GetCurrentDirectory() + optionsOut.resout;
           }
 
-          if (!Directory.Exists(Path.GetDirectoryName(options.resout)))
+          if (!Directory.Exists(Path.GetDirectoryName(optionsOut.resout)))
           {
-            _error = "Invalid output file path, directory does not exist.";
-            return false;
+            return "Invalid output file path, directory does not exist.";
           }
         }
       }
       catch
       {
-        _error = "Invalid results output file path, please fix.";
-        return false;
+        return "Invalid results output file path, please fix.";
       }
 
       try
       {
-        if (options.jsonRes != "")
+        if (optionsOut.jsonRes != "")
         {
 
           //see if it is a relative path.
-          if (!Path.IsPathRooted(options.jsonRes))
+          if (!Path.IsPathRooted(optionsOut.jsonRes))
           {
-            options.jsonRes = System.IO.Directory.GetCurrentDirectory() + options.jsonRes;
+            optionsOut.jsonRes = System.IO.Directory.GetCurrentDirectory() + optionsOut.jsonRes;
           }
 
-          if (!Directory.Exists(Path.GetDirectoryName(options.jsonRes)))
+          if (!Directory.Exists(Path.GetDirectoryName(optionsOut.jsonRes)))
           {
-            _error = "Invalid json path results file path, directory does not exist.";
-            return false;
+            return "Invalid json path results file path, directory does not exist.";
           }
         }
       }
       catch
       {
-        _error = "Invalid json pat results file path, please fix.";
-        return false;
+        return "Invalid json pat results file path, please fix.";
       }
 
-      if (options.variables == null)
+      if (optionsOut.variables == null)
       {
-        options.variables = new List<string>();
+        optionsOut.variables = new List<string>();
       }
-      // Save the pathout_path string based on the "pathout" json input
-      try
-      {
-        if (options.pathout == null)
-        {
-          options.pathout = "";
-        }
-
-        if (options.pathout != "")
-        {
-          //see if it is a relative path.
-          if (!Path.IsPathRooted(options.pathout))
-          {
-            options.pathout = System.IO.Directory.GetCurrentDirectory() + options.pathout;
-          }
-
-          if (!Directory.Exists(Path.GetDirectoryName(options.pathout)))
-          {
-            _error = "Invalid paths output file path, directory does not exist.";
-            return false;
-          }
-        }
-      }
-      catch
-      {
-        _error = "Invalid path output file path, please fix.";
-        return false;
-      }
-
+      
       //debug info      
-      switch (options.debug.ToUpper())
+      switch (optionsOut.debug.ToUpper())
       {
         case "BASIC":
           break;
@@ -340,33 +424,30 @@ namespace SimulationEngine
         case "OFF":
           break;
         default:
-          _error = "Invalid debug options, must be one of the following: \"basic\", \"detailed\", \"off\".";
-          return false;
+          return "Invalid debug options, must be one of the following: \"basic\", \"detailed\", \"off\".";
       }
 
-      if((options.debugStartIdx == null) || (options.debugStartIdx < 1) )
+      if((optionsOut.debugStartIdx == null) || (optionsOut.debugStartIdx < 1) )
       {
-        options.debugStartIdx = 1;
+        optionsOut.debugStartIdx = 1;
       }
 
-      if (options.debugStartIdx > (options.runct))
+      if (optionsOut.debugStartIdx > (optionsOut.runct))
       {
-        _error = "debugStartIdx must be less than the # of runs";
-        return false;
+        return "debugStartIdx must be less than the # of runs";
       }
 
-      if ((options.debugEndIdx == null) || (options.debugEndIdx > (options.runct)))
+      if ((optionsOut.debugEndIdx == null) || (optionsOut.debugEndIdx > (optionsOut.runct)))
       {
-        options.debugEndIdx = options.runct;
+        optionsOut.debugEndIdx = optionsOut.runct;
       }
 
-      if (options.debugEndIdx < options.debugStartIdx)
+      if (optionsOut.debugEndIdx < optionsOut.debugStartIdx)
       {
-        _error = "debugEndIdx must be greater than debugStartIdx";
-        return false;
+        return "debugEndIdx must be greater than debugStartIdx";
       }
 
-      return true;
+      return "";
     }
 
    
@@ -378,7 +459,7 @@ namespace SimulationEngine
         // Create a new EmraldModel object called sim
         _model = new EmraldModel();
         // Deserialize the json string into sim
-        _model.DeserializeJSON(_modelJsonStr, Path.GetDirectoryName(options.inpfile));
+        _model.DeserializeJSON(_modelJsonStr, Path.GetDirectoryName(options.inpfile), Path.GetFileNameWithoutExtension(options.inpfile));
       }
       // If there is an error in deserialization, create an error message
       catch (Exception error)
@@ -394,11 +475,11 @@ namespace SimulationEngine
       return true;
     }
 
-    private void Progress(TimeSpan runTime, int runCnt, bool finalValOnly)
-    {
-      this.percentDone = runCnt / options.runct;
-      if (_progressCallBack != null)
-        _progressCallBack(runTime, runCnt, finalValOnly);
-    }
+    //private void Progress(TimeSpan runTime, int runCnt, bool finalValOnly)
+    //{
+    //  this.percentDone = runCnt / options.runct;
+    //  if (_progressCallBack != null)
+    //    _progressCallBack(runTime, runCnt, finalValOnly);//, 0); //no display thread for JSON runs.
+    //}
   }
 }

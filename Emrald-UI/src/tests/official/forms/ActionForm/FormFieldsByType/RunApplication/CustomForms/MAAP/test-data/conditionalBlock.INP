@@ -1,0 +1,24 @@
+** Tests conditional block statements **
+
+C When default
+// Comment 1
+WHEN VARIABLE IS TRUE // Comment 2
+// Comment 3
+// Comment 4
+VARNAME = 1000 // Comment 5
+// Comment 6
+// Comment 7
+END // Comment 8
+
+C When empty
+WHEN VARIABLE IS TRUE
+END
+
+C If default
+IF VARIABLE IS TRUE
+VARNAME = 1000
+END
+
+C If empty
+IF VARIABLE IS TRUE
+END

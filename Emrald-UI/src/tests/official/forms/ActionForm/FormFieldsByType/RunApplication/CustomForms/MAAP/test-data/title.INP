@@ -1,0 +1,21 @@
+** Tests title statements **
+
+C Default
+TITLE // Comment 1
+// Comment 2
+// Comment 3
+Valid Title // Comment 4
+// Comment 5
+// Comment 6
+END
+
+C Many lines
+TITLE
+A title that
+extends onto
+multiple lines
+END
+
+C Empty title
+TITLE
+END

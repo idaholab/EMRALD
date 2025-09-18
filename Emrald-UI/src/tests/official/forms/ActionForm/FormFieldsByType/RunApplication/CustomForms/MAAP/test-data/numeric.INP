@@ -1,0 +1,12 @@
+** Tests numeric literals **
+
+C Basic number
+1
+
+C Decimal
+2.0
+3.
+
+C E notation
+4E0
+5E-3

@@ -2,19 +2,20 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Runtime.Intrinsics.X86;
 using System.Text;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
-using System.IO;
-using MathNet.Numerics.Statistics;
-using SimulationDAL;
 using System.Xml.Linq;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
+using MathNet.Numerics.Statistics;
 using Matrix.Xmpp.Disco;
-using Newtonsoft.Json.Schema;
-using System.Runtime.Intrinsics.X86;
+using Matrix.Xmpp.XHtmlIM;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Schema;
+using SimulationDAL;
 
 namespace SimulationEngine
 {
@@ -30,7 +31,7 @@ namespace SimulationEngine
     public List<ResultState> otherStatePaths = null;
     public void CalcStats()
     {
-      foreach(var i in keyStates)
+      foreach (var i in keyStates)
       {
         i.CalcAllStats(numRuns);
       }
@@ -39,30 +40,30 @@ namespace SimulationEngine
     public void MergeResults(OverallResults inclThese)
     {
       int totRuns = this.numRuns + inclThese.numRuns;
-      
+
       //make dictionary for lookup
       Dictionary<string, KeyStateResult> inclDict = inclThese.keyStates.ToDictionary(row => row.name, row => row);
-      
+
       //Matched items merged in from the incl
       List<string> merged = new List<string>();
 
       foreach (var keyState in this.keyStates)
       {
-        if(inclDict.ContainsKey(keyState.name))
+        if (inclDict.ContainsKey(keyState.name))
         {
-          keyState.Merge(inclDict[keyState.name], totRuns);
+          keyState.Merge(inclDict[keyState.name], this.numRuns, totRuns);
           merged.Add(keyState.name);
         }
       }
 
       //remove the items merged
-      foreach(var name in merged)
+      foreach (var name in merged)
       {
         inclDict.Remove(name);
       }
 
       //add all incl items that didn't exist in the current results
-      foreach(var item in inclDict.Values)
+      foreach (var item in inclDict.Values)
       {
         this.keyStates.Add(item);
       }
@@ -79,7 +80,7 @@ namespace SimulationEngine
       {
         if (otherInclDict.ContainsKey(s.name))
         {
-          s.Merge(otherInclDict[s.name], totRuns);
+          s.Merge(otherInclDict[s.name], this.numRuns, totRuns);
           merged.Add(s.name);
         }
       }
@@ -98,7 +99,7 @@ namespace SimulationEngine
 
     }
 
-    public static string CombineResultFiles(string mergePath1, string mergePath2, string destPath = "")
+    public static string CombineJsonResultFiles(string mergePath1, string mergePath2, string destPath = "")
     {
       if (!File.Exists(mergePath1) || !File.Exists(mergePath2))
       {
@@ -111,7 +112,7 @@ namespace SimulationEngine
 
       OverallResults r2 = JsonConvert.DeserializeObject<OverallResults>(File.ReadAllText(mergePath2));
       r2.CalcStats();
-      
+
       r1.MergeResults(r2);
       string combinedResStr = JsonConvert.SerializeObject(r1, Formatting.Indented);
 
@@ -124,11 +125,11 @@ namespace SimulationEngine
         File.WriteAllText(destPath, combinedResStr);
       }
 
-      
       return combinedResStr;
     }
-
   }
+
+
 
   public class KeyStateResult : ResultStateBase
   {
@@ -137,17 +138,20 @@ namespace SimulationEngine
 
     [JsonProperty(Order = 9999)] //last
     //[JsonConverter(typeof(PathsConverter))]
-    public List<ResultState> paths { get { return pathsLookup.Values.ToList(); } 
-                                     set { pathsLookup = value.ToDictionary(x => x.name, x => x); } }
+    public List<ResultState> paths
+    {
+      get { return pathsLookup.Values.ToList(); }
+      set { pathsLookup = value.ToDictionary(x => x.name, x => x); }
+    }
 
     public KeyStateResult(string name) : base(name, true) { }
     public void CalcAllStats(int keyStateCnt)
     {
-      foreach(var i in this.paths)
+      foreach (var i in this.paths)
       {
         i.CalcStats(this.count);
 
-        if(i.name == this.name)
+        if (i.name == this.name)
         {
           this._contributionCnt = i.contributionCnt;
         }
@@ -167,12 +171,12 @@ namespace SimulationEngine
       }
     }
 
-    public override void Merge(ResultStateBase other, int totCnt)
+    public override void Merge(ResultStateBase other, int curBatchCnt, int totCnt)
     {
-      base.Merge(other, totCnt);
+      base.Merge(other, curBatchCnt, totCnt);
       KeyStateResult otherKeyState = (KeyStateResult)other;
-      Dictionary<string, ResultState> inclDict = otherKeyState.pathsLookup.ToDictionary(x=>x.Key, x=>x.Value);
-      
+      Dictionary<string, ResultState> inclDict = otherKeyState.pathsLookup.ToDictionary(x => x.Key, x => x.Value);
+
       //merge all the path items
       List<string> merged = new List<string>();
 
@@ -180,12 +184,11 @@ namespace SimulationEngine
       {
         if (inclDict.ContainsKey(state.Key))
         {
-          state.Value.Merge(inclDict[state.Key], this.count);
+          state.Value.Merge(inclDict[state.Key], curBatchCnt, this.count);
           merged.Add(state.Key);
         }
       }
 
-      
       //remove the items merged
       foreach (var name in merged)
       {
@@ -248,20 +251,20 @@ namespace SimulationEngine
   public class ResultState : ResultStateBase
   {
     [JsonProperty(Order = 9998)] //on the end
-    public EnterExitCause[] entries 
-    { 
+    public EnterExitCause[] entries
+    {
       get { return enterDict.Values.ToArray(); }
       set { enterDict = value.ToDictionary(x => x.otherState + "->" + x.name, x => x); }
     }
     [JsonProperty(Order = 9999)] //on the end
-    public EnterExitCause[] exits 
-    { 
+    public EnterExitCause[] exits
+    {
       get { return exitDict.Values.ToArray(); }
       set { exitDict = value.ToDictionary(x => x.name + "->" + x.otherState, x => x); }
     }
 
     public ResultState(string name, bool inKeyPath) : base(name, inKeyPath) { }
-    
+
   }
 
   public class ResultStateBase
@@ -277,19 +280,20 @@ namespace SimulationEngine
     [JsonProperty(Order = 5)]
     public int count { get { return _count; } set { _count = value; } }
     [JsonIgnore]
-    public int contributionCnt { get { return _contributionCnt; }}
+    public int contributionCnt { get { return _contributionCnt; } }
 
     [JsonIgnore]
     public List<TimeSpan> times { get { return _times; } set { _times = value; } }
     [JsonProperty(Order = 6)]
-    public TimeSpan timeMean { 
+    public TimeSpan timeMean
+    {
       get { return (_totalTime / count) + TimeSpan.FromDays(_extraDays / count); }
       set { _extraDays = value.TotalDays * count; } //just put all in extra days, easier.
     }
     [JsonProperty(Order = 7)]
-    public TimeSpan timeStdDeviation 
-    { 
-      get { return GetTimeStdDev(); } 
+    public TimeSpan timeStdDeviation
+    {
+      get { return GetTimeStdDev(); }
       set { _stdDev = value; }
     }
     [JsonProperty(Order = 8)]
@@ -298,8 +302,8 @@ namespace SimulationEngine
     public TimeSpan timeMax { get { return _timeMax; } set { _timeMax = value; } }
 
     [JsonProperty(Order = 10)]
-
-    public Dictionary<string, List<string>> watchVariables = new Dictionary<string, List<string>>();
+    [JsonConverter(typeof(ResultsDictionaryConverter))]
+    public Dictionary<string, Dictionary<string, string>> watchVariables = new Dictionary<string, Dictionary<string, string>>();
     [JsonIgnore]
     public Dictionary<string, EnterExitCause> enterDict { get; set; } = new Dictionary<string, EnterExitCause>(); //key will be from state, event, and action 
     [JsonIgnore]
@@ -326,15 +330,15 @@ namespace SimulationEngine
     }
 
     public TimeSpan GetTimeStdDev()
-    { 
-      if(_stdDev == null)
+    {
+      if (_stdDev == null)
       {
         if (_count <= 1)
           return TimeSpan.Zero;
 
-        double mean = timeMean.TotalMinutes;
-        double sumDiffSq = 0; //sum of difference squared;
-        foreach (var t in this._times)
+        double mean = timeMean.TotalMinutes; //total time divided by number of times and convert to minutes
+        double sumDiffSq = 0; //sum of difference squared for all the times;
+        foreach (var t in this._times) //for each time subtract the mean and square it add it to the sumDiffSq
         {
           sumDiffSq += Math.Pow(((t.TotalMinutes) - mean), 2);
         }
@@ -343,7 +347,7 @@ namespace SimulationEngine
         double variance = sumDiffSq / (count - 1);
         _stdDev = TimeSpan.FromMinutes(Math.Sqrt(variance)); //return square root of variance
       }
-          
+
       return (TimeSpan)_stdDev;
     }
 
@@ -376,7 +380,7 @@ namespace SimulationEngine
 
     public void CalcStats(int totCnt)
     {
-      if((_rate != 0) && (_contributionCnt == 0)) //this was loaded through JSON object and we need to determine the contributionCnt
+      if ((_rate != 0) && (_contributionCnt == 0)) //this was loaded through JSON object and we need to determine the contributionCnt
       {
         _contributionCnt = (int)Math.Round(totCnt * _rate);
       }
@@ -401,6 +405,7 @@ namespace SimulationEngine
       this._totalTime = TimeSpan.FromSeconds(0);
       this._timeMin = TimeSpan.FromSeconds(0);
       this._timeMax = TimeSpan.FromSeconds(0);
+      this._stdDev = null;
 
       this.AddTime(newTime);
     }
@@ -436,7 +441,26 @@ namespace SimulationEngine
       //add the variables
       foreach (var v in include.watchVariables)
       {
-        this.watchVariables[v.Key].Add(v.Value[0]);
+        if (!this.watchVariables.ContainsKey(v.Key))
+          this.watchVariables.Add(v.Key, new Dictionary<string, string>());
+
+        var curWatchVar = this.watchVariables[v.Key];
+        //add all the run values for the variables 
+        foreach (var vVal in v.Value)
+        {
+          string runIdKey = vVal.Key;
+          //if we are 
+          if (curWatchVar.ContainsKey(runIdKey))
+          {
+            int sub = 1;
+            while (curWatchVar.ContainsKey(runIdKey + "." + sub.ToString()))
+              sub++;
+
+            runIdKey += "." + sub.ToString();
+          }
+
+          curWatchVar.Add(runIdKey, vVal.Value);
+        }
       }
     }
 
@@ -455,9 +479,11 @@ namespace SimulationEngine
       _rate95th = toCopy._rate95th;
       _timeMin = toCopy._timeMin;
       _timeMax = toCopy._timeMax;
+      _stdDev = null;
     }
 
-    public virtual void Merge(ResultStateBase other, int totCnt)
+    //public virtual void Merge(ResultStateBase other, int curBatchCnt, int totCnt)
+    public virtual void Merge(ResultStateBase other, int curBatchCnt, int totCnt)
     {
       _mergedResults = true;
       _totalTime += other._totalTime;
@@ -465,10 +491,22 @@ namespace SimulationEngine
       _count += other._count;
       _contributionCnt += other._contributionCnt;
 
-      //estimate the standard deviation for combination of 2 
-      double sum = (((_contributionCnt / this._rate)-1) * Math.Pow(((TimeSpan)_stdDev).TotalMinutes, 2));
-      sum += (((_contributionCnt / other._rate) - 1) * Math.Pow(((TimeSpan)other._stdDev).TotalMinutes, 2));
-      double res = Math.Sqrt(sum / ((_contributionCnt / this._rate) + (other._contributionCnt / other._rate) - 2));
+      if (other.times.Count == other._count)
+      {
+        _times.AddRange(other.times);
+        _stdDev = null; //reset so it is calculated again when asked for.
+      }
+      else //we loaded the results from a file then we don't have times needed complete Standard deviation 
+      {
+        //estimate the standard deviation for combination of 2
+        double cur_percent = this._rate != 0 ? this._rate : (double)this._count/curBatchCnt; //_rate can be 0 for other paths not part of key paths so calc %
+        double other_percent = other._rate != 0 ? other._rate : (double)other._count / curBatchCnt; //_rate can be 0 for other paths not part of key paths so calc %
+
+        double sum = (((_contributionCnt / cur_percent) - 1) * Math.Pow(((TimeSpan)_stdDev).TotalMinutes, 2));
+        sum += (((_contributionCnt / other_percent) - 1) * Math.Pow(((TimeSpan)other._stdDev).TotalMinutes, 2));
+        double res = Math.Sqrt(sum / ((_contributionCnt / cur_percent) + (other._contributionCnt / other_percent) - 2));
+        _stdDev = TimeSpan.FromMinutes(res);
+      }
 
 
       _rate = (double)_contributionCnt / totCnt;
@@ -478,15 +516,28 @@ namespace SimulationEngine
       _timeMin = _timeMin <= other._timeMin ? _timeMin : other._timeMin;
       _timeMax = _timeMax >= other._timeMax ? _timeMax : other._timeMax;
 
-      foreach(var i in other.watchVariables)
+      //add the variables
+      foreach (var v in other.watchVariables)
       {
-        if (this.watchVariables.ContainsKey(i.Key))
+        if (!this.watchVariables.ContainsKey(v.Key))
+          this.watchVariables.Add(v.Key, new Dictionary<string, string>());
+
+        var curWatchVar = this.watchVariables[v.Key];
+        //add all the run values for the variables 
+        foreach (var vVal in v.Value)
         {
-          this.watchVariables[i.Key].AddRange(i.Value);
-        }
-        else
-        {
-          this.watchVariables.Add(i.Key, i.Value);
+          string runIdKey = vVal.Key;
+          //if we are 
+          if (curWatchVar.ContainsKey(runIdKey))
+          {
+            int sub = 1;
+            while (curWatchVar.ContainsKey(runIdKey + "." + sub.ToString()))
+              sub++;
+
+            runIdKey += "." + sub.ToString();
+          }
+
+          curWatchVar.Add(runIdKey, vVal.Value);
         }
       }
 
@@ -513,38 +564,90 @@ namespace SimulationEngine
   }
 
   public class EnterExitCause
-  {
-    [JsonIgnore]
-    public string key = "";
-    public string desc = ""; //Enter key of -  prevState.name + ", " + eventName + ", " + actionName;
-                             //Enter key of -  eventName + ", " + actionName + ", " + nextState.name;
-    public string name = ""; //eventName + " -> " + actionName
-    public string evDesc = "";
-    public string actDesc = "";
-    public string otherState = ""; //too or from state 
-    public int cnt = 0; //number of times this cause leads to parent state.
+{
+  [JsonIgnore]
+  public string key = "";
+  public string desc = ""; //Enter key of -  prevState.name + ", " + eventName + ", " + actionName;
+                           //Enter key of -  eventName + ", " + actionName + ", " + nextState.name;
+  public string name = ""; //eventName + " -> " + actionName
+  public string evDesc = "";
+  public string actDesc = "";
+  public string otherState = ""; //too or from state 
+  public int cnt = 0; //number of times this cause leads to parent state.
 
-    public EnterExitCause() { }
-    public EnterExitCause(string otherState, SimulationDAL.Event ev, SimulationDAL.Action act, bool from)
+  public EnterExitCause() { }
+  public EnterExitCause(string otherState, SimulationDAL.Event ev, SimulationDAL.Action act, bool from)
+  {
+    string evName = "Immediate Action";
+    if (ev != null)
     {
-      string evName = "Immediate Action";
-      if (ev!=null)
-      {
-        evName = ev.name;
-        this.evDesc = ev.desc;
-      }
-      
-      this.name = evName + " & " + act.name;
-      this.desc = "Event [" + evName + "] occured and caused the action - " + act.name;
-      
-      this.actDesc = act.desc;
-      this.otherState = otherState;
-      if(from)
-        this.key = otherState + "->" + this.name;
-      else
-        this.key = this.name + "->" + otherState;
+      evName = ev.name;
+      this.evDesc = ev.desc;
     }
+
+    this.name = evName + " & " + act.name;
+    this.desc = "Event [" + evName + "] occured and caused the action - " + act.name;
+
+    this.actDesc = act.desc;
+    this.otherState = otherState;
+    if (from)
+      this.key = otherState + "->" + this.name;
+    else
+      this.key = this.name + "->" + otherState;
   }
-  
+}
+
+
+
+public class ResultsDictionaryConverter : JsonConverter<Dictionary<string, Dictionary<string, string>>>
+{
+  public override void WriteJson(JsonWriter writer, Dictionary<string, Dictionary<string, string>> value, JsonSerializer serializer)
+  {
+    JObject jObject = new JObject();
+
+    foreach (var outerKvp in value)
+    {
+      var sortedInnerDict = outerKvp.Value.OrderBy(kvp => ParseKey(kvp.Key))
+                                          .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+
+      JObject innerObject = new JObject();
+      foreach (var innerKvp in sortedInnerDict)
+      {
+        innerObject.Add(innerKvp.Key, JToken.FromObject(innerKvp.Value, serializer));
+      }
+
+      jObject.Add(outerKvp.Key, innerObject);
+    }
+
+    jObject.WriteTo(writer);
+  }
+
+  public override Dictionary<string, Dictionary<string, string>> ReadJson(JsonReader reader, Type objectType, Dictionary<string, Dictionary<string, string>> existingValue, bool hasExistingValue, JsonSerializer serializer)
+  {
+    JObject jObject = JObject.Load(reader);
+    var dictionary = jObject.ToObject<Dictionary<string, Dictionary<string, string>>>();
+    return dictionary;
+  }
+
+  private double ParseKey(string key)
+  {
+    double result;
+    if (double.TryParse(key, out result))
+    {
+      return result;
+    }
+    // Handle keys with multiple dots (e.g., "1.1.1")
+    var parts = key.Split('.').Select(part => double.TryParse(part, out result) ? result : 0).ToArray();
+    double factor = 1;
+    double sum = 0;
+    for (int i = parts.Length - 1; i >= 0; i--)
+    {
+      sum += parts[i] * factor;
+      factor /= 1000;
+    }
+    return sum;
+  }
+}
+
 
 }

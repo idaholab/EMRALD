@@ -1,0 +1,167 @@
+{
+  "id": "0",
+  "name": "",
+  "desc": "",
+  "version": 1,
+  "DiagramList": [
+    {
+      "id": "ddacdc8e-52fe-42e9-a476-d2e52470cd7e",
+      "name": "Main",
+      "desc": "",
+      "diagramType": "dtMulti",
+      "diagramLabel": "Plant",
+      "states": [
+        "Start",
+        "Good"
+      ],
+      "required": false,
+      "objType": "Diagram"
+    }
+  ],
+  "StateList": [
+    {
+      "id": "b3f33b7e-07c5-47e9-b75d-3ea373caea21",
+      "name": "Good",
+      "desc": "",
+      "diagramName": "Main",
+      "stateType": "stKeyState",
+      "events": [],
+      "eventActions": [],
+      "immediateActions": [],
+      "geometryInfo": {
+        "x": 54.84468548765585,
+        "y": -99.24276421575817,
+        "width": 0,
+        "height": 0
+      },
+      "required": false,
+      "objType": "State",
+      "defaultSingleStateValue": "Ignore"
+    },
+    {
+      "id": "d71cc2e6-e930-4aba-989d-294d7d39e5b0",
+      "name": "Start",
+      "desc": "",
+      "diagramName": "Main",
+      "stateType": "stStart",
+      "events": [
+        "VarCorrect"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "GoToGood"
+          ]
+        }
+      ],
+      "immediateActions": [
+        "ChangeVarVal"
+      ],
+      "geometryInfo": {
+        "x": -272.9224047730791,
+        "y": -95.86734844346667,
+        "width": 0,
+        "height": 0
+      },
+      "required": false,
+      "objType": "State",
+      "defaultSingleStateValue": "Ignore"
+    }
+  ],
+  "ActionList": [
+    {
+      "id": "23bfc52f-8847-4289-9fcc-470931b3ae43",
+      "name": "ChangeVarVal",
+      "desc": "",
+      "actType": "atCngVarVal",
+      "mainItem": true,
+      "objType": "Action",
+      "required": false,
+      "newStates": [],
+      "mutExcl": true,
+      "codeVariables": [
+        "Int_TestV"
+      ],
+      "variableName": "Int_TestV",
+      "scriptCode": "return Int_TestV * 2;",
+      "sim3DMessage": "atCompModify",
+      "extSim": "",
+      "sim3DConfigData": "",
+      "sim3DModelRef": "",
+      "simEndTime": "",
+      "makeInputFileCode": "",
+      "exePath": "",
+      "processOutputFileCode": "",
+      "openSimVarParams": false,
+      "raType": "",
+      "returnProcess": "rtNone"
+    },
+    {
+      "id": "ee3b38a3-541a-41e7-bc49-5c5763d2954d",
+      "name": "GoToGood",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": true,
+      "objType": "Action",
+      "required": false,
+      "newStates": [
+        {
+          "toState": "Good",
+          "prob": -1,
+          "varProb": null,
+          "failDesc": ""
+        }
+      ],
+      "mutExcl": true,
+      "codeVariables": [],
+      "variableName": "",
+      "scriptCode": "",
+      "sim3DMessage": "atCompModify",
+      "extSim": "",
+      "sim3DConfigData": "",
+      "sim3DModelRef": "",
+      "simEndTime": "",
+      "makeInputFileCode": "",
+      "exePath": "",
+      "processOutputFileCode": "",
+      "openSimVarParams": false,
+      "raType": "",
+      "returnProcess": "rtNone"
+    }
+  ],
+  "EventList": [
+    {
+      "id": "63e69732-b20d-4470-bb94-25523351675e",
+      "name": "VarCorrect",
+      "desc": "",
+      "evType": "etVarCond",
+      "mainItem": true,
+      "required": false,
+      "objType": "Event",
+      "code": "return Int_TestV > 0;",
+      "varNames": [
+        "Int_TestV"
+      ],
+      "triggerStates": [],
+      "allItems": true
+    }
+  ],
+  "LogicNodeList": [],
+  "VariableList": [
+    {
+      "name": "Int_TestV",
+      "varScope": "gtGlobal",
+      "value": 0,
+      "type": "int",
+      "objType": "Variable",
+      "id": "b46882b3-7ee5-427e-ba9e-ef790b7ac443",
+      "desc": "",
+      "resetOnRuns": true
+    }
+  ],
+  "ExtSimList": [],
+  "objType": "EMRALD_Model",
+  "emraldVersion": 3,
+  "templates": []
+}

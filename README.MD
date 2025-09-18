@@ -8,7 +8,7 @@ Event Modeling Risk Assessment using Linked Diagrams (EMRALD) is a software tool
  - Providing the sequence and timing of events that lead to the specified outcomes when calculating results.
  - Traditional aspects of components with basic events, fault trees, and event trees are all captured in a dynamic framework of state diagrams, which are displayed.
 
-## SETUP
+## SETUP FOR WINDOWS
 1. Clone this repository to your machine using `git clone https://github.com/idaholab/EMRALD.git`
 	- To avoid unexpected problems during setup, it is strongly recommended to NOT use Visual Studio to clone the repository
 2. When the cloning is complete, open "EMRALD.sln" in Visual Studio.
@@ -16,13 +16,15 @@ Event Modeling Risk Assessment using Linked Diagrams (EMRALD) is a software tool
 	- If needed, a .NET 5 version of EMRALD exists on the [legacy/dotnet5](https://github.com/idaholab/EMRALD/tree/legacy/dotnet5) branch. 
 3. In Visual Studio's Solution Explorer, there will be several projects listed.  These are shown in the [EMRALD Projects](#emrald-projects) section below.  The three primary projects are the website used for building models, the desktop application used for running simulations, and the documentation project for getting started with EMRALD and learning how to use it.
 	- To run (debug) the Website project:
-		1. After loading the solution in Visual Studio and all packages have been restored, run the `RunFirst.bat` file in the `Emrald_Site` folder. After doing this step one time, it only needs to be done when NuGet packages have been changed or updated (if the site fails to load properly, this may be an indicator that this script needs to be run again).
-			1. To run this file from Visual Studio, right-click on the `Emrald_Site` project and select `Open in Terminal`.  
-			2. In the terminal window that appears, type `.\RunFirst.bat` and hit enter.
-			3. This will copy the needed dependencies for the Emrald_Site project that could not be restored by Visual Studio
-			4. Upon completion, a success message should appear.
-		2. Right-click on "Emrald_Site" in the Solution Explorer
-		3. Select "View in Browser"
+		- First-time setup:
+			1. Download and install Node.js from [https://nodejs.org/en/](https://nodejs.org/en/)
+			2. Open the Emrald-UI folder in a terminal window
+			3. Run the command `npm install` to install the project's dependencies
+			4. Run the command `npm run build` to compile the project
+			5. Run the command `npm run preview`. A link to "localhost" will appear in the terminal. Hold the ctrl key and click this link to open EMRALD in your browser.
+		- After first-time setup:
+			1. Open the Emrald-UI folder in a terminal window
+			2. Run the command `npm run preview`. A link to "localhost" will appear in the terminal. Hold the ctrl key and click this link to open EMRALD in your browser.
 	- To run (debug) the Simulator Project:
 		1. Right-click on "EMRALD_Sim" in the Solution Explorer
 		2. Under "Debug," select "Start New Instance"
@@ -31,8 +33,7 @@ Event Modeling Risk Assessment using Linked Diagrams (EMRALD) is a software tool
         2. Once Node.js is installed, navigate to the "emrald-docs" directory (i.e. \EMRALD\emrald-docs) in a terminal window (such as Command Prompt)
         3. Run the commmand `npm install` to install the project's dependencies
         4. Start the local dev server by running the command `npm run dev`
-        5. Once the server is running, this message should appear: `VuePress dev server listening at http://localhost:8080/`
-        6. Navigate to [http://localhost:8080/](http://localhost:8080/) to view the EMRALD Documentation.
+        5. Once the server is running, a message will appear with a link to "localhost". Hold the ctrl key and click this link to open the documentation in your browser.
 	- To build the offline executable:
 		1. Install C++ Build Tools, from within Visual Studio or from [https://visualstudio.microsoft.com/visual-cpp-build-tools/](https://visualstudio.microsoft.com/visual-cpp-build-tools/)
 		2. Install WebView2 by downloading the Evergreen Standalone Installer from [https://developer.microsoft.com/en-us/microsoft-edge/webview2/#download-section](https://developer.microsoft.com/en-us/microsoft-edge/webview2/#download-section)
@@ -40,33 +41,46 @@ Event Modeling Risk Assessment using Linked Diagrams (EMRALD) is a software tool
 		4. Install Node.js & NPM from [https://nodejs.org/en/](https://nodejs.org/en/)
 		5. Build dependencies by running `npm install` in the root directory
 		6. Build the executable by running `npm run build` in the root directory
-    - To run JavaScript unit tests:
-		1. Install Node.js & NPM from [https://nodejs.org/en/](https://nodejs.org/en/)
-		2. Build dependencies by running `npm install` in the root directory
-		3. Start the testing app by running `npm test` in the root directory
-		4. Visit [https://localhost:8080/](http://localhost:8080) to view the test results
-	- To generate a JavaScript coverage report:
-		1. Install Node.js & NPM from [https://nodejs.org/en/](https://nodejs.org/en/)
-		2. Build dependencies by running `npm install` in the root directory
-		3. Generate files required for coverage by running `npm run coverage` in the root directory
-		4. Visit [https://localhost:8080/](http://localhost:8080) to view the test results and generate the coverage data
-		5. Run `npx nyx report --reporter=html` to generate the HTML coverage report
-		6. Visit [./coverage/index.html](./coverage/index.html) to view the coverage results
+		- If you are behind a firewall, the tauri build may fail to fetch some requirements. If this happens, the requirements can be manually downloaded.
+			1.	Create a folder called “tauri” in AppData/Local
+			2.	Download wix314-binaries.zip from https://github.com/wixtoolset/wix3/releases
+			3.	Create a folder called “WixTools314” in AppData/Local/tauri
+			4.	Extract the contents of wix314-binaries.zip into the WixTools314 folder
+			5.	Download https://github.com/tauri-apps/binary-releases/releases/download/nsis-3/nsis-3.zip
+			6.	Create a folder called “NSIS” in AppData/Local/tauri
+			7.	Extract the contents of the folder in nsis-3.zip into the NSIS folder, so that the
+			NSIS folder contains the nsis.exe file at the top level.
+			8.	Download https://github.com/tauri-apps/nsis-tauri-utils/releases/download/nsis_tauri_utils-v0.4.1/nsis_tauri_utils.dll
+			9.	Move nsis_tauri_utils.dll into AppData/Local/tauri/NSIS/Plugins/x86-unicode 
 	- To compile the Sankey diagrams:
 		1. Install Node.js & NPM from [https://nodejs.org/en/](https://nodejs.org/en/)
 		2. Install Yarn by running `corepack enable` in the root directory
 		3. In the d3-sankey-timeline directory, run `yarn build` to compile the project
 
+##LINUX BUILD in Visual Studio
+1. From the solution explorer, right-click the project you want to build and select "Publish..."
+2. Choose the target as Folder
+3. Choose the Folder Location
+4. Click Finish
+	1. This will create a FolderProfile.pubxml which can be used again later
+5. Close the window and now you should have a new window with publish options available.
+6. Click the "Show all settings" text
+7. A new window should pop up with "Profile settings"
+	1. Change the "Target runtime" to the desired value
+		1. Depending on the "Target runtime" you may have additional "File publish options" available, such as "Produce single file"
+	2. You can change other options as needed.
+	3. Click "Save"
+8. Click "Publish"
 
 
 ## EMRALD Projects
  - EMRALD_Sim
  - Emrald_Site
+ - Emrald-UI
  - emrald-docs
  - MessageDefLib
  - SimulationDAL
  - SimulationEngine
- - src-tauri
  - Testing
  - XmppClient
  - XmppServerController

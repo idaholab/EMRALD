@@ -13,33 +13,34 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimulationEngine", "Simulat
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EMRALD_Sim", "EMRALD_Sim\EMRALD_Sim.csproj", "{B6F47973-B227-4825-BB2D-B995F5FE2E9C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Testing", "UnitTesting_Simulation\Testing.csproj", "{43990779-63AB-4896-8AEE-7B06F7BC6B0B}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "XmppClient", "XmppClient\XmppClient.csproj", "{8846DEF8-E1EB-408E-9316-D85E273E7E09}"
 EndProject
-Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "Emrald_Site", "Emrald_Site\", "{6A02BDBB-CBDA-4ADF-81DA-4499666F7C2B}"
+Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "Emrald-UI", "Emrald-UI\", "{DBFECD62-5F5A-4A30-BCC9-63FA05E10638}"
 	ProjectSection(WebsiteProperties) = preProject
-		SccProjectName = "SAK"
-		SccAuxPath = "SAK"
-		SccLocalPath = "SAK"
-		SccProvider = "SAK"
 		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.8"
-		Debug.AspNetCompiler.VirtualPath = "/localhost_56455"
-		Debug.AspNetCompiler.PhysicalPath = "Emrald_Site\"
-		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_56455\"
+		Debug.AspNetCompiler.VirtualPath = "/localhost_56867"
+		Debug.AspNetCompiler.PhysicalPath = "Emrald-UI\"
+		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_56867\"
 		Debug.AspNetCompiler.Updateable = "true"
 		Debug.AspNetCompiler.ForceOverwrite = "true"
 		Debug.AspNetCompiler.FixedNames = "false"
 		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.VirtualPath = "/localhost_56455"
-		Release.AspNetCompiler.PhysicalPath = "Emrald_Site\"
-		Release.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_56455\"
+		Release.AspNetCompiler.VirtualPath = "/localhost_56867"
+		Release.AspNetCompiler.PhysicalPath = "Emrald-UI\"
+		Release.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_56867\"
 		Release.AspNetCompiler.Updateable = "true"
 		Release.AspNetCompiler.ForceOverwrite = "true"
 		Release.AspNetCompiler.FixedNames = "false"
 		Release.AspNetCompiler.Debug = "False"
-		VWDPort = "56455"
-		SlnRelativePath = "Emrald_Site\"
+		VWDPort = "56867"
+		SlnRelativePath = "Emrald-UI\"
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testing", "VandV_Testing\Testing.csproj", "{AD1C0DC0-E23B-AA72-3FB8-B3241476958B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{8EC462FD-D22E-90A8-E5CE-7E832BA40C5D}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
 	EndProjectSection
 EndProject
 Global
@@ -68,18 +69,18 @@ Global
 		{B6F47973-B227-4825-BB2D-B995F5FE2E9C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B6F47973-B227-4825-BB2D-B995F5FE2E9C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B6F47973-B227-4825-BB2D-B995F5FE2E9C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{43990779-63AB-4896-8AEE-7B06F7BC6B0B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{43990779-63AB-4896-8AEE-7B06F7BC6B0B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{43990779-63AB-4896-8AEE-7B06F7BC6B0B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{43990779-63AB-4896-8AEE-7B06F7BC6B0B}.Release|Any CPU.Build.0 = Release|Any CPU
 		{8846DEF8-E1EB-408E-9316-D85E273E7E09}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{8846DEF8-E1EB-408E-9316-D85E273E7E09}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8846DEF8-E1EB-408E-9316-D85E273E7E09}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8846DEF8-E1EB-408E-9316-D85E273E7E09}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6A02BDBB-CBDA-4ADF-81DA-4499666F7C2B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6A02BDBB-CBDA-4ADF-81DA-4499666F7C2B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6A02BDBB-CBDA-4ADF-81DA-4499666F7C2B}.Release|Any CPU.ActiveCfg = Debug|Any CPU
-		{6A02BDBB-CBDA-4ADF-81DA-4499666F7C2B}.Release|Any CPU.Build.0 = Debug|Any CPU
+		{DBFECD62-5F5A-4A30-BCC9-63FA05E10638}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DBFECD62-5F5A-4A30-BCC9-63FA05E10638}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DBFECD62-5F5A-4A30-BCC9-63FA05E10638}.Release|Any CPU.ActiveCfg = Debug|Any CPU
+		{DBFECD62-5F5A-4A30-BCC9-63FA05E10638}.Release|Any CPU.Build.0 = Debug|Any CPU
+		{AD1C0DC0-E23B-AA72-3FB8-B3241476958B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AD1C0DC0-E23B-AA72-3FB8-B3241476958B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AD1C0DC0-E23B-AA72-3FB8-B3241476958B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AD1C0DC0-E23B-AA72-3FB8-B3241476958B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -8,12 +8,16 @@
     "email": ""
   },
   "repository": "/template",
-  "scripts": {
-    "dev": "vuepress dev src",
-    "build": "vuepress build src"
-  },
   "license": "MIT",
+  "scripts": {
+    "dev": "vitepress dev docs",
+    "build": "vitepress build docs",
+    "postbuild": "shx mv docs/.vitepress/dist ./dist",
+    "preview": "vitepress preview docs"
+  },
   "devDependencies": {
-    "vuepress": "^1.5.3"
+    "@adobe/jsonschema2md": "^8.0.0",
+    "shx": "^0.4.0",
+    "vitepress": "^2.0.0-alpha.12"
   }
 }

@@ -1,0 +1,10 @@
+Simulation = JsonVarExeTest
+Runtime = 00.00:00:05
+Runs = 20 of 20
+
+GT Occurred 10 times, Probability =0.5, MeanTime = 00.00:01:00 +/- 00.00:00:00.00
+
+LT Occurred 10 times, Probability =0.5, MeanTime = 00.00:01:00 +/- 00.00:00:00.00
+---------------------------
+- End Sim Variable Values -
+---------------------------

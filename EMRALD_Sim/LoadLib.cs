@@ -15,14 +15,28 @@ namespace EMRALD_Sim
 {
   public class LoadLib
   {
-    public static string LoadModel(string path, ref string errorMsg)
+    public static string LoadModel(ref EmraldModel sim, string path, ref string errorMsg)
     {
       string retStr = "";
-      StreamReader srFileReader = new StreamReader(path);
+      if (!File.Exists(path))
+      {
+        errorMsg = "File does not exist anymore.";
+        return "";
+      }
 
-      string modelStr = srFileReader.ReadToEnd();
+      string modelStr;
+      using (StreamReader srFileReader = new StreamReader(path))
+      {
+        modelStr = srFileReader.ReadToEnd();
+      }
+
       try
       {
+        if (sim == null)
+        {
+          sim = new EmraldModel();
+        }
+        modelStr  = sim.UpdateModel(modelStr);
         JToken modelJson = JToken.Parse(modelStr);
         retStr = modelJson.ToString(Formatting.Indented);
       }
@@ -40,8 +54,11 @@ namespace EMRALD_Sim
     {
       try
       {
-        sim = new EmraldModel();
-        sim.DeserializeJSON(modelText, modelDir); //throws and exception of failed
+        if (sim == null)
+        {
+          sim = new EmraldModel();
+        }
+        sim.DeserializeJSON(modelText, Path.GetDirectoryName(modelDir), Path.GetFileNameWithoutExtension(modelDir)); //throws and exception of failed
         return "";
       }
       catch (Exception error)
@@ -82,6 +99,27 @@ namespace EMRALD_Sim
         else
         {
           ConfigData.seed = inSeed;
+        }
+      }
+
+      return true;
+    }
+
+    public static bool SetThreads(string threadCnt)
+    {
+      int inThreads = 0;
+      if (threadCnt == "")
+        ConfigData.threads = null;
+      else
+      {
+        if (!Int32.TryParse(threadCnt, out inThreads))
+        {
+          Console.Write("invalid data for random number seed, must be an integer - " + threadCnt);
+          return false;
+        }
+        else
+        {
+          ConfigData.threads = inThreads;
         }
       }
 

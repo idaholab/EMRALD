@@ -1,0 +1,1760 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "EMRALD_Model",
+  "type": "object",
+  "title": "EMRALD_Model",
+  "description": "EMRALD model schema version 3.1",
+  "allOf": [
+    {
+      "$ref": "#/definitions/MainModel"
+    },
+    {
+      "title": "Templates",
+      "properties": {
+        "templates": {
+          "type": "array",
+          "description": "Templates available to make new diagrams in the model. These are basically small models all on their own.",
+          "items": {
+            "$ref": "#/definitions/MainModel"
+          }
+        }
+      },
+      "additionalProperties": false
+    }
+  ],
+  "definitions": {
+    "MainModel": {
+      "type": "object",
+      "title": "Main_Model",
+      "description": "EMRALD model schema version 3.1",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Temporary, only used internally for some identification or uniqueness needs"
+        },
+        "objType": {
+          "$ref": "#/definitions/MainItemType"
+        },
+        "name": {
+          "type": "string",
+          "description": "Name of the EMRALD model"
+        },
+        "desc": {
+          "type": "string",
+          "description": "description of the EMRALD model"
+        },
+        "emraldVersion": {
+          "type": "number",
+          "description": "Version of the EMRALD model schema"
+        },
+        "version": {
+          "type": "number",
+          "description": "Version of the users model"
+        },
+        "versionHistory": {
+          "type": "array",
+          "description": "The user's model version history and change descriptions",
+          "items": {
+            "$ref": "#/definitions/VersionHistory"
+          }
+        },
+        "DiagramList": {
+          "type": "array",
+          "description": "All the diagrams for the model",
+          "items": {
+            "$ref": "#/definitions/Diagram"
+          }
+        },
+        "ExtSimList": {
+          "type": "array",
+          "description": "All the external simulation links for the mdoel",
+          "items": {
+            "$ref": "#/definitions/ExtSim"
+          }
+        },
+        "StateList": {
+          "type": "array",
+          "description": "All of the states for the different diagrams of the model",
+          "items": {
+            "$ref": "#/definitions/State"
+          }
+        },
+        "ActionList": {
+          "type": "array",
+          "description": "All the actions that can be used in the model",
+          "items": {
+            "$ref": "#/definitions/Action"
+          }
+        },
+        "EventList": {
+          "type": "array",
+          "description": "All the events that are used in the model.",
+          "items": {
+            "$ref": "#/definitions/Event"
+          }
+        },
+        "LogicNodeList": {
+          "type": "array",
+          "description": "All the logic nodes to make the logic trees in the model",
+          "items": {
+            "$ref": "#/definitions/LogicNode"
+          }
+        },
+        "VariableList": {
+          "type": "array",
+          "description": "All the variables used in the model",
+          "items": {
+            "$ref": "#/definitions/Variable"
+          }
+        },
+        "changeLog": {
+          "$ref": "#/definitions/ChangeLog"
+        },
+        "group": {
+          "$ref": "#/definitions/Group"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "objType",
+        "desc",
+        "version",
+        "versionHistory",
+        "DiagramList",
+        "ExtSimList",
+        "StateList",
+        "ActionList",
+        "EventList",
+        "LogicNodeList",
+        "VariableList",
+        "emraldVersion"
+      ]
+    },
+    "Diagram": {
+      "type": "object",
+      "title": "Diagram",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Optional. Only used for internal processing needs."
+        },
+        "objType": {
+          "const": "Diagram"
+        },
+        "name": {
+          "type": "string",
+          "description": "Name of the diagram"
+        },
+        "desc": {
+          "type": "string",
+          "description": "description of the diagram"
+        },
+        "diagramType": {
+          "$ref": "#/definitions/DiagramType"
+        },
+        "diagramTemplate": {
+          "type": "string",
+          "description": "name of template used to make this diagram"
+        },
+        "diagramLabel": {
+          "type": "string",
+          "description": "Name of grouping in the UI for this diagram"
+        },
+        "states": {
+          "type": "array",
+          "description": "Names of the states used in this diagram",
+          "items": {
+            "type": "string"
+          }
+        },
+        "changeLog": {
+          "$ref": "#/definitions/ChangeLog"
+        },
+        "required": {
+          "type": "boolean",
+          "description": "If this is a template then it indicates the item must exist in the current model before using the template."
+        }
+      },
+      "additionalProperties": false,
+      "required": ["name", "objType", "desc", "diagramType", "diagramLabel", "states"]
+    },
+    "ExtSim": {
+      "type": "object",
+      "title": "ExtSim",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Optional, internal use only."
+        },
+        "objType": {
+          "const": "ExtSim"
+        },
+        "name": {
+          "type": "string",
+          "description": "referenace name in the model for the external simulation"
+        },
+        "resourceName": {
+          "type": "string",
+          "description": "name of resource type to connect to in MsgServer, not unique if more than one simulation of the same tool"
+        },
+        "required": {
+          "type": "boolean",
+          "description": "If this is a template then it indicates the item must exist in the current model before using the template."
+        }
+      },
+      "additionalProperties": false,
+      "required": ["name", "objType", "resourceName"]
+    },
+    "State": {
+      "type": "object",
+      "title": "State",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "objType": {
+          "const": "State"
+        },
+        "name": {
+          "type": "string",
+          "description": "referenace name in the model for state"
+        },
+        "desc": {
+          "type": "string",
+          "description": "User entered description of the state"
+        },
+        "stateType": {
+          "$ref": "#/definitions/StateType"
+        },
+        "diagramName": {
+          "type": "string",
+          "description": "Diagram the state belongs to, A state can only be in one diagram."
+        },
+        "immediateActions": {
+          "type": "array",
+          "description": "Array of name references for the immediate actions to be run when entering the state",
+          "items": {
+            "type": "string"
+          }
+        },
+        "events": {
+          "type": "array",
+          "description": "Array of name references to events. These event will be monitored for when in this state.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "eventActions": {
+          "type": "array",
+          "title": "eventActions",
+          "description": "actions for the events in sibling \"events\" array. One to one relationship.",
+          "items": {
+            "type": "object",
+            "title": "EventActionItems",
+            "properties": {
+              "actions": {
+                "type": "array",
+                "description": "array of referenace names for actions of the associated event.",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "moveFromCurrent": {
+                "type": "boolean"
+              }
+            },
+            "additionalProperties": false,
+            "required": ["actions", "moveFromCurrent"]
+          }
+        },
+        "geometryInfo": {
+          "$ref": "#/definitions/GeometryInfo"
+        },
+        "changeLog": {
+          "$ref": "#/definitions/ChangeLog"
+        },
+        "defaultSingleStateValue": {
+          "$ref": "#/definitions/StateEvalValue"
+        },
+        "required": {
+          "type": "boolean",
+          "description": "If this is a template then it indicates the item must exist in the current model before using the template."
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "objType",
+        "desc",
+        "stateType",
+        "diagramName",
+        "immediateActions",
+        "events",
+        "eventActions"
+      ]
+    },
+    "Action": {
+      "type": "object",
+      "title": "Action",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Optional, internal use only."
+        },
+        "objType": {
+          "const": "Action"
+        },
+        "name": {
+          "type": "string",
+          "description": "referenace name in the model for the action"
+        },
+        "desc": {
+          "type": "string",
+          "description": "User entered description of the action"
+        },
+        "actType": {
+          "$ref": "#/definitions/ActionType"
+        },
+        "mainItem": {
+          "type": "boolean",
+          "description": "Is this a global item to show up in the global list, If false it showes up in local or all list."
+        },
+        "mutExcl": {
+          "type": "boolean",
+          "description": "Optional. Only one action may be taken so the probability determines if this action is taken vs another in the EventAction list. If false then the probability is used to sample if this action occured and multiple or no actions could happen when the event is triggered."
+        },
+        "newStates": {
+          "type": "array",
+          "description": "Optional. If this is a transition action then these are the states that it could be transitioned to.",
+          "items": {
+            "$ref": "#/definitions/NewState"
+          }
+        },
+        "scriptCode": {
+          "type": "string",
+          "description": "Optionsl. Script code to be executed if the action type has a script"
+        },
+        "variableName": {
+          "type": "string",
+          "description": "Optional. For change var value actions, the result of the script is assigned to this variable name reference."
+        },
+        "codeVariables": {
+          "type": "array",
+          "description": "Optional. If action has a script, these are the variable name references for variables used in the script. All variables used in script must be in this list.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "sim3DMessage": {
+          "type": "string",
+          "description": "Optional. For action type at3DSimMsg, this is the message to be sent to the coupled external simulation."
+        },
+        "extSim": {
+          "type": "string",
+          "description": "Optional. For action type at3DSimMsg, this is the name of the coupled external sim to send the message to."
+        },
+        "sim3DVariable": {
+          "type": "string",
+          "description": "Optional. For action type at3DSimMsg and a sim3DMessage of atCompModify, this is the name of the variable in the external simulation to be modified by the message."
+        },
+        "openSimVarParams": {
+          "type": "boolean",
+          "description": "Optional. For action type at3DSimMsg with a sim3DMessage of type atOpenSim, this flag indicates that the JSON has the properties for sim3DModelRef, sim3DConfigData, and simEndTime."
+        },
+        "sim3DModelRef": {
+          "type": "string",
+          "description": "Optional. For action type at3DSimMsg with a sim3DMessage of type atOpenSim, this is the data defined by the user that is used by the external simulation on startup. Typically a path to a model it need to open."
+        },
+        "sim3DConfigData": {
+          "type": "string",
+          "description": "Optional. For action type at3DSimMsg with a sim3DMessage of type atOpenSim, this is the data defined by the user that is used by the external simulation on startup."
+        },
+        "simEndTime": {
+          "type": "string",
+          "description": "Optional. For action type at3DSimMsg with a sim3DMessage of type atOpenSim, this is the end simulation time defined by the user that is used by the external simulation on startup."
+        },
+        "makeInputFileCode": {
+          "type": "string",
+          "description": "Optional. For action type atRunExtApp. It is the C# script to be executed and the result strig  passed as a parameter to the executable to be run."
+        },
+        "exePath": {
+          "type": "string",
+          "description": "Optional. For action type atRunExtApp. It is the path of the exe to be run. It can be relative to the location of the EMRALD model."
+        },
+        "processOutputFileCode": {
+          "type": "string",
+          "description": "Optional. For action type atRunExtApp. It is the C# script to be executed after the accociated exe is ran. Typically it reads a result file and script typically returns a string list with +/-[StateName] to shift out or into a state because of the results.."
+        },
+        "formData": {
+          "$ref": "#/definitions/MAAPFormData",
+          "description": "Used for executing applications with custom form data. This can be anything needed by the custom form, but in the end only the standard atRunExtApp fields are used to do the action. TODO: This type definition is set up for only the MAAP form. If other forms are added in the future, this definition will need to be adjusted for their form data formats."
+        },
+        "template": {
+          "type": "object",
+          "description": "Optional. For action type atRunExtApp. It is used for custom app form."
+        },
+        "returnProcess": {
+          "type": "string",
+          "description": "Optional. For action type atRunExtApp. It is flag to indicate the type of return from the processOutputFileCode. If rtNone then it has no return, othrwise the C# script must return a List of strings with +/-[StateName] to shift out or into a state."
+        },
+        "changeLog": {
+          "$ref": "#/definitions/ChangeLog"
+        },
+        "raType": {
+          "type": "string",
+          "description": "String for the run application action, only for UI used. Options depend on the custom UI forms made. \"code\" means default user defined pre and post execution code is used."
+        },
+        "updateVariables": {
+          "type": "array",
+          "description": "Used for custom form, variables used in the form."
+        },
+        "required": {
+          "type": "boolean",
+          "description": "If this is a template then it indicates the item must exist in the current model before using the template."
+        }
+      },
+      "additionalProperties": false,
+      "required": ["name", "objType", "desc", "actType", "mainItem"]
+    },
+    "Event": {
+      "type": "object",
+      "title": "Event",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Optional, internal use only."
+        },
+        "objType": {
+          "const": "Event"
+        },
+        "name": {
+          "type": "string",
+          "description": "referenace name in the event in the model."
+        },
+        "desc": {
+          "type": "string",
+          "description": "User entered description of the event."
+        },
+        "mainItem": {
+          "type": "boolean",
+          "description": "Is this a global item to show up in the global list, If false it showes up in local or all list."
+        },
+        "evType": {
+          "$ref": "#/definitions/EventType"
+        },
+        "allItems": {
+          "type": "boolean",
+          "description": "Optional. For event type etStateCng. Flag to indicate if all the items in the triggerStates need to occure as specified or just one of them."
+        },
+        "triggerStates": {
+          "type": "array",
+          "description": "Optional. For event type etStateCng. List of state name references as part of the criteria needed to trigger the event. These are the states that need to be entered or exited to tirgger the event.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "varNames": {
+          "type": "array",
+          "description": "Optional, Name references for all variables used in scripts if the event type uses scripts.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "ifInState": {
+          "type": "boolean",
+          "description": "Optional. For event type etStateCng, flag to indicate that event is triggired when entering or exiting states listed in triggerStates array. On Enter State/s or On Exit State/s"
+        },
+        "onSuccess": {
+          "type": "boolean",
+          "description": "Optional. For event type etStateCng, flag to indicate that event is triggering needs all the items or just one or rmore from the states listed in triggerStates array. checkbox - All Items"
+        },
+        "triggerOnFalse": {
+          "type": "boolean",
+          "description": "Optional. For event type etComponentLogic, flag to indicate that event is triggered if logic tree evaluates to a False, otherwise it triggeres on true."
+        },
+        "logicTop": {
+          "type": "string",
+          "description": "Optional. For event type etComponentLogic, this is the logic tree name to be evaluated for triggering the event."
+        },
+        "lambda": {
+          "description": "Optional. Parameter for a event with type of etFailRate. It is either a number or the name of a variable if useVariable is true",
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "number"
+            }
+          ]
+        },
+        "lambdaTimeRate": {
+          "type": "string",
+          "description": "Optional. arameter for a event with type of etFailRate. It is the lambda value time frequency."
+        },
+        "useVariable": {
+          "type": "boolean",
+          "description": "Optional. Indicates that variables can be used for the fields"
+        },
+        "onVarChange": {
+          "$ref": "#/definitions/VarChangeOptions"
+        },
+        "time": {
+          "type": "string",
+          "description": "Optional, For events of type etTimer. This is a time or variable that indicates the time for the event."
+        },
+        "timeVariableUnit": {
+          "$ref": "#/definitions/TimeVariableUnit"
+        },
+        "fromSimStart": {
+          "type": "boolean",
+          "description": "Optional, For time based events, is the time from the beginning of the simulation [true] or from when the state was entered."
+        },
+        "extEventType": {
+          "$ref": "#/definitions/ExtEventMsgType"
+        },
+        "variable": {
+          "type": "string",
+          "description": "Optional. For event type et3dSimEv and extEventType etCompEv. It is the reference name for the variable. If that variable is modified by the external code, then the script is executed to determine if the event is triggered."
+        },
+        "code": {
+          "type": "string",
+          "description": "Optional. For event type et3dSimEv and extEventType etCompEv. It is the reference name for the variable. If that variable is modified by the external code, then this code script is executed to determine if the event is triggered."
+        },
+        "distType": {
+          "$ref": "#/definitions/DistributionType"
+        },
+        "parameters": {
+          "type": "array",
+          "title": "parameters",
+          "description": "Optional. For event type of etDistribution this is an array of properties for the distribution calculation.",
+          "items": {
+            "$ref": "#/definitions/EventDistributionParameter",
+            "additionalProperties": false,
+            "required": []
+          }
+        },
+        "persistent": {
+          "type": "boolean",
+          "description": "Optional. For event type of etFailRate, etDistribution, and etTimer. Sets the event value as being persistent, keeping the initial sampled time between state movements and only re-samples after it occurs."
+        },
+        "dfltTimeRate": {
+          "$ref": "#/definitions/TimeVariableUnit"
+        },
+        "changeLog": {
+          "$ref": "#/definitions/ChangeLog"
+        },
+        "required": {
+          "type": "boolean",
+          "description": "If this is a template then it indicates the item must exist in the current model before using the template."
+        }
+      },
+      "additionalProperties": false,
+      "required": ["name", "objType", "desc", "mainItem", "evType"]
+    },
+    "LogicNode": {
+      "type": "object",
+      "title": "LogicNode",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Optional, internal use only."
+        },
+        "objType": {
+          "const": "LogicNode"
+        },
+        "name": {
+          "type": "string",
+          "description": "referenace name in the logic node"
+        },
+        "desc": {
+          "type": "string",
+          "description": "User entered description of the logic node"
+        },
+        "gateType": {
+          "$ref": "#/definitions/GateType"
+        },
+        "compChildren": {
+          "$ref": "#/definitions/CompChild"
+        },
+        "gateChildren": {
+          "type": "array",
+          "description": "Array of logic node names that are children of this gate.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "isRoot": {
+          "type": "boolean",
+          "description": "Flag indicating that this is to be displayed as a tree top in the UI and can be used in an evaluate logic tree event."
+        },
+        "changeLog": {
+          "$ref": "#/definitions/ChangeLog"
+        },
+        "required": {
+          "type": "boolean",
+          "description": "If this is a template then it indicates the item must exist in the current model before using the template."
+        }
+      },
+      "additionalProperties": false,
+      "required": ["name", "objType", "desc", "gateType", "compChildren", "gateChildren", "isRoot"]
+    },
+    "Variable": {
+      "type": "object",
+      "title": "Variable",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Optional, internal use only."
+        },
+        "objType": {
+          "const": "Variable"
+        },
+        "name": {
+          "type": "string",
+          "description": "referenace name in the model for the variable"
+        },
+        "desc": {
+          "type": "string",
+          "description": "User entered description of the variable"
+        },
+        "varScope": {
+          "$ref": "#/definitions/VarScope"
+        },
+        "value": {
+          "description": "The default value for the variable.",
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "string"
+            },
+            {
+              "type": "boolean"
+            }
+          ]
+        },
+        "docLink": {
+          "type": "string",
+          "description": "If the varScope is gtDocLink then this is the expression defining path in the document to the variable is linked to. XPath for XML, JSONPath for JSON, or a RegularExpression for txt"
+        },
+        "docType": {
+          "$ref": "#/definitions/DocVarType"
+        },
+        "docPath": {
+          "type": "string",
+          "description": "If the varScope is gtDocLink then this is the path to the document the variable is linked to."
+        },
+        "pathMustExist": {
+          "type": "boolean",
+          "description": "Flag, if true then the file in the docPath must exist when the simulation starts running. This is helpful to minimize errors."
+        },
+        "type": {
+          "$ref": "#/definitions/VariableType"
+        },
+        "accrualStatesData": {
+          "type": "array",
+          "title": "accrualStatesData",
+          "description": "Optional. If the variable varScope is gtAccrual, then these are the states used for calculating the variables value over time.",
+          "items": {
+            "type": "object",
+            "title": "accrualStatesDataItems",
+            "properties": {
+              "stateName": {
+                "type": "string",
+                "description": "Reference name to the state contributiong to the accrual calculation."
+              },
+              "type": {
+                "$ref": "#/definitions/AccrualVarTableType"
+              },
+              "accrualMult": {
+                "type": "number",
+                "description": "Optional. If type is ctMultiplier then this is the multiplier value for every time increment, specified by the multRate, spent in the state."
+              },
+              "multRate": {
+                "type": "string",
+                "description": "This is the time rate for the accrualMult in calculating the value for the variable."
+              },
+              "accrualTable": {
+                "type": "array",
+                "title": "accrualTable",
+                "description": "Optional. If the type is ctTable then this is the array of values used in calculating this states contribution to the variable value. Example for the first hour the accrual multiplier is 0.5, for the second hour the accrual multiplier is 0.1",
+                "items": {
+                  "type": "array",
+                  "description": "Each row has the rate the time specified. First value is rate, second value is time.",
+                  "items": {
+                    "type": "integer",
+                    "description": "First value is rate, send value is for how much time"
+                  }
+                }
+              }
+            },
+            "additionalProperties": false,
+            "required": ["stateName", "type", "accrualMult", "multRate", "accrualTable"]
+          }
+        },
+        "regExpLine": {
+          "type": "integer",
+          "description": "Optional. For variable varScope of gtDocLink, docType dtTxtRegExp, this is the regular expression string."
+        },
+        "begPosition": {
+          "type": "integer",
+          "description": "Optional. For variable varScope of gtDocLink, docType dtTxtRegExp, this the start possition after the regular expression finds its match for reading or writing the value of the variable."
+        },
+        "numChars": {
+          "type": "integer",
+          "description": "Optional. For variable varScope of gtDocLink, docType dtTxtRegExp, this how many characters to read for the value of the variable"
+        },
+        "resetOnRuns": {
+          "type": "boolean",
+          "description": "Optional, this specifies if the value of the variable is to be reset to the default value on each run or retain the value from the last run."
+        },
+        "resourceName": {
+          "type": "string",
+          "description": "Optional. If the variable varScope is gt3DSim, this is the name reference to the external simulation to link to for the value."
+        },
+        "sim3DId": {
+          "type": "string",
+          "description": "Optional. For variables of varScope gt3DSim, this is the external simulations name of the variable. It is used in sending a message to the external simulation."
+        },
+        "changeLog": {
+          "$ref": "#/definitions/ChangeLog"
+        },
+        "cumulativeStats": {
+          "type": "boolean",
+          "description": "Flag to indicate the user want to do cumulative statistics in the results."
+        },
+        "monitorInSim": {
+          "type": "boolean",
+          "description": "Flag to have the monitor variable check box checked in the solver by default. "
+        },
+        "canMonitor": {
+          "type": "boolean",
+          "description": "Flag to indicate if the variable can be monitored in the solver. This removes it from the solver UI if false. Must be true if monitorInSim is true."
+        },
+        "required": {
+          "type": "boolean",
+          "description": "If this is a template then it indicates the item must exist in the current model before using the template."
+        }
+      },
+      "additionalProperties": false,
+      "required": ["name", "objType", "varScope", "value", "type"]
+    },
+    "NewState": {
+      "type": "object",
+      "title": "NewState",
+      "properties": {
+        "toState": {
+          "type": "string",
+          "description": "reference name of the state to transtion to."
+        },
+        "prob": {
+          "type": "number",
+          "description": "probability that this state will be transtioned to."
+        },
+        "failDesc": {
+          "type": "string",
+          "description": "The description from the user for output if tthis transition takes place."
+        },
+        "varProb": {
+          "type": ["null", "string"],
+          "description": "Optional, if used  then the a variable is used for the probability. This is the name of that variable"
+        }
+      },
+      "additionalProperties": false,
+      "required": ["toState", "prob", "failDesc"]
+    },
+    "ChangeLog": {
+      "type": "array",
+      "title": "ChangeLog",
+      "description": "Type of the diagram.",
+      "items": {
+        "type": "object",
+        "title": "ChangeLogItems",
+        "properties": {
+          "cngDesc": {
+            "type": "string",
+            "description": "Description of the change."
+          },
+          "dateTime": {
+            "type": "string",
+            "description": "ISO 8601 date time format for the change"
+          },
+          "cngID": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false,
+        "required": ["cngDesc", "dateTime"]
+      }
+    },
+    "GeometryInfo": {
+      "type": "object",
+      "title": "GeometryInfo",
+      "description": "position for the GUI",
+      "properties": {
+        "x": {
+          "type": "number"
+        },
+        "y": {
+          "type": "number"
+        },
+        "width": {
+          "type": "number"
+        },
+        "height": {
+          "type": "number"
+        }
+      }
+    },
+    "CompChild": {
+      "type": "array",
+      "title": "CompChild",
+      "description": "Array of component diagram names and state values to use in evaluating if not using the default value.",
+      "items": {
+        "type": "object",
+        "title": "CompChildItems",
+        "properties": {
+          "stateValues": {
+            "type": "array",
+            "title": "stateValues",
+            "description": "Evaluate value if not the states default.",
+            "items": {
+              "type": "object",
+              "title": "StateValuesItems",
+              "properties": {
+                "stateName": {
+                  "type": "string",
+                  "description": "State name for the value."
+                },
+                "stateValue": {
+                  "$ref": "#/definitions/StateEvalValue"
+                }
+              },
+              "additionalProperties": false,
+              "required": ["stateName", "stateValue"]
+            }
+          },
+          "diagramName": {
+            "type": "string",
+            "description": "Name of the diagram to be evaluated"
+          }
+        },
+        "additionalProperties": false,
+        "required": ["diagramName"]
+      }
+    },
+    "Group": {
+      "type": "object",
+      "description": "What catagory grouping this item belongs to. Used to indicate a group for and EMRALD model template.",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Name of the group"
+        },
+        "subgroup": {
+          "type": "array",
+          "description": "Sub group tree path",
+          "devNote": "make this an any type when building the documentation to get rid of the recursive error",
+          "items": {
+            "$ref": "#/definitions/Group"
+          }
+        }
+      },
+      "additionalProperties": false,
+      "required": ["name"]
+    },
+    "DiagramType": {
+      "type": "string",
+      "description": "Type of the diagram. dtSingle - means you can only be in one state of the diagram at a time and states evaluate to a value. dtMulti - means you can be in multiple states at a time, but cant evaluate the diagram",
+      "enum": ["dtSingle", "dtMulti"]
+    },
+    "StateType": {
+      "type": "string",
+      "description": "Type of the state",
+      "enum": ["stStart", "stKeyState", "stStandard", "stTerminal"]
+    },
+    "ActionType": {
+      "type": "string",
+      "description": "The type of action",
+      "enum": ["atTransition", "atCngVarVal", "at3DSimMsg", "atRunExtApp"]
+    },
+    "EventType": {
+      "type": "string",
+      "description": "Type of the event",
+      "enum": [
+        "etStateCng",
+        "etComponentLogic",
+        "etFailRate",
+        "etTimer",
+        "et3dSimEv",
+        "etDistribution",
+        "etVarCond"
+      ]
+    },
+    "EventDistributionParameter": {
+      "type": "object",
+      "title": "EventDistributionParameter",
+      "properties": {
+        "name": {
+          "$ref": "#/definitions/EventDistributionParameterName"
+        },
+        "value": {
+          "description": "Optional. The value of the parameter if the useVariable flag is false. Can be a number or a string if in scientific notation.",
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "string"
+            }
+          ]
+        },
+        "timeRate": {
+          "$ref": "#/definitions/TimeVariableUnit"
+        },
+        "useVariable": {
+          "type": "boolean",
+          "description": "Flag to use the variable string vs the value item for the property"
+        },
+        "variable": {
+          "type": "string",
+          "description": "Optional. The reference name of the variable to use as the value of the parameter if the useVariable flag is true."
+        }
+      }
+    },
+    "VarChangeOptions": {
+      "type": "string",
+      "description": "Optional. When an event uses a variable and that variable changes, this tells the code how to update the event.",
+      "enum": ["ocIgnore", "ocResample", "ocAdjust"]
+    },
+    "TimeVariableUnit": {
+      "type": "string",
+      "description": "Optional, For events of type etTimer. This is a time unit if a variable is used for the time. Example X min.",
+      "enum": ["", "trYears", "trDays", "trHours", "trMinutes", "trSeconds"]
+    },
+    "ExtEventMsgType": {
+      "type": "string",
+      "description": "Optional. For events of type et3dSimEv. This the type of message being sent to the external simulation. See the external messeage JSON schema.",
+      "enum": ["etCompEv", "etEndSim", "etStatus"]
+    },
+    "DistributionType": {
+      "type": "string",
+      "description": "Optional. For event type of etDistribution this is the type of distribution the user selected.",
+      "enum": [
+        "dtNormal",
+        "dtExponential",
+        "dtWeibull",
+        "dtLogNormal",
+        "dtTriangular",
+        "dtGamma",
+        "dtGompertz",
+        "dtUniform",
+        "dtBeta"
+      ]
+    },
+    "GateType": {
+      "type": "string",
+      "description": "Gate type for the logic node",
+      "enum": ["gtAnd", "gtOr", "gtNot"]
+    },
+    "VarScope": {
+      "type": "string",
+      "description": "Context of use for the variable in the model.",
+      "enum": ["gtDocLink", "gtAccrual", "gtGlobal", "gt3DSim"]
+    },
+    "DocVarType": {
+      "type": "string",
+      "description": "If the varScope is gtDocLink then this the type of document the variable can be linked to. XML, JSON or PlainText using a regular expression",
+      "enum": ["dtXML", "dtJSON", "dtTextRegEx"]
+    },
+    "VariableType": {
+      "type": "string",
+      "description": "This is the type of the variable, Bool, double, int, string",
+      "enum": ["bool", "double", "int", "string"]
+    },
+    "AccrualVarTableType": {
+      "type": "string",
+      "description": "Type of accrual for the specified state.",
+      "enum": ["ctMultiplier", "ctTable"]
+    },
+    "StateEvalValue": {
+      "type": "string",
+      "description": "For single state diagrams. Boolean value for the diagram when evaluated in a logic tree. Ignore - removes that item from the logic calculation. ",
+      "enum": ["True", "False", "Ignore"]
+    },
+    "EventDistributionParameterName": {
+      "type": "string",
+      "description": "For event type of etDistribution this is the name of the distribution parameter.",
+      "enum": [
+        "Mean",
+        "Standard Deviation",
+        "Minimum",
+        "Maximum",
+        "Rate",
+        "Shape",
+        "Scale",
+        "Peak",
+        "Alpha",
+        "Beta"
+      ]
+    },
+    "MainItemType": {
+      "type": "string",
+      "description": "For event type of etDistribution this is the name of the distribution parameter.",
+      "enum": [
+        "Diagram",
+        "State",
+        "Action",
+        "Event",
+        "ExtSim",
+        "LogicNode",
+        "Variable",
+        "EMRALD_Model"
+      ]
+    },
+    "VersionHistory": {
+      "type": "object",
+      "title": "VersionHistory",
+      "properties": {
+        "description": {
+          "type": "string",
+          "description": "A description of the changes made to the model in this version"
+        },
+        "version": {
+          "type": "number",
+          "description": "The version number"
+        }
+      }
+    },
+    "CustomFormType": {
+      "title": "CustomFormType",
+      "enum": ["MAAP"]
+    },
+    "MAAPFormData": {
+      "type": "object",
+      "title": "MAAPFormData",
+      "description": "Form data used by the MAAP form",
+      "properties": {
+        "exePath": {
+          "type": "string",
+          "description": "The path to the MAAP executable on the user's machine"
+        },
+        "sourceElements": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/MAAPSourceElement"
+          },
+          "description": "The contents of original .inp file parsed into JSON"
+        },
+        "parameters": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/MAAPAssignment"
+          },
+          "description": "Source elements from the .inp file identified as parameters"
+        },
+        "initiators": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/MAAPSourceElement"
+          },
+          "description": "Source elements from the .inp file identified as initiators"
+        },
+        "inputBlocks": {
+          "type": "array",
+          "description": "Source elements from the .inp file identified as input blocks (if blocks, when block, etc.)",
+          "items": {
+            "$ref": "#/definitions/MAAPConditionalBlockStatement"
+          }
+        },
+        "fileRefs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "The paths to other files referenced by the .inp and .par files"
+        },
+        "inputPath": {
+          "type": "string",
+          "description": "The full path to the .inp file on the user's machine"
+        },
+        "parameterPath": {
+          "type": "string",
+          "description": "The full path to the .par file on the user's machine"
+        },
+        "possibleInitiators": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/MAAPParameter"
+          },
+          "description": "A list of possible initiators extracted from the .par file"
+        },
+        "docLinkVariable": {
+          "type": "string",
+          "description": "The doc link variable used to store the results"
+        },
+        "output": {
+          "type": "string",
+          "description": "The MAAP output variable to store in the doc link variable"
+        },
+        "caType": {
+          "$ref": "#/definitions/CustomFormType"
+        },
+        "needsUpgrade": {
+          "type": "boolean"
+        }
+      },
+      "required": ["caType"],
+      "additionalProperties": false
+    },
+    "MAAPParameter": {
+      "type": "object",
+      "title": "MAAPParameter",
+      "properties": {
+        "flag": {
+          "$ref": "#/definitions/MAAPBooleanLiteral"
+        },
+        "index": {
+          "type": "number"
+        },
+        "type": {
+          "const": "parameter"
+        },
+        "value": {
+          "anyOf": [
+            { "$ref": "#/definitions/MAAPExpression" },
+            { "$ref": "#/definitions/MAAPParameterName" },
+            { "type": "string" }
+          ]
+        },
+        "comments": {
+          "$ref": "#/definitions/MAAPCommentArray"
+        },
+        "name": {
+          "type": "string"
+        },
+        "useVariable": {
+          "type": "boolean"
+        },
+        "unit": {
+          "type": "string"
+        },
+        "variable": {
+          "type": "string"
+        },
+        "desc": {
+          "type": "string"
+        }
+      },
+      "required": ["value", "type"],
+      "additionalProperties": false
+    },
+    "MAAPConditionalBlockStatement": {
+      "type": "object",
+      "title": "MAAPConditionalBlockStatement",
+      "properties": {
+        "blockType": {
+          "type": "string",
+          "enum": ["IF", "WHEN"]
+        },
+        "test": {
+          "$ref": "#/definitions/MAAPExpression"
+        },
+        "type": {
+          "const": "conditional_block"
+        },
+        "value": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/MAAPSourceElement"
+          }
+        },
+        "comments": {
+          "$ref": "#/definitions/MAAPCommentArray"
+        }
+      },
+      "required": ["blockType", "test", "type", "value", "comments"],
+      "additionalProperties": false
+    },
+    "MAAPExpression": {
+      "anyOf": [
+        { "$ref": "#/definitions/MAAPMultiPartExpression" },
+        { "$ref": "#/definitions/MAAPIsExpression" },
+        { "$ref": "#/definitions/MAAPPureExpression" },
+        { "$ref": "#/definitions/MAAPExpressionType" }
+      ]
+    },
+    "MAAPIsExpression": {
+      "type": "object",
+      "properties": {
+        "target": {
+          "$ref": "#/definitions/MAAPVariable"
+        },
+        "type": {
+          "const": "is_expression"
+        },
+        "value": {
+          "$ref": "#/definitions/MAAPExpression"
+        },
+        "useVariable": {
+          "type": "boolean"
+        },
+        "comments": {
+          "$ref": "#/definitions/MAAPCommentArray"
+        }
+      },
+      "required": ["target", "type", "value"],
+      "additionalProperties": false
+    },
+    "MAAPVariable": {
+      "allOf": [
+        {
+          "type": "object",
+          "properties": {
+            "useVariable": {
+              "type": "boolean"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "anyOf": [
+            { "$ref": "#/definitions/MAAPCallExpression" },
+            { "$ref": "#/definitions/MAAPLiteral" },
+            { "$ref": "#/definitions/MAAPParameterName" },
+            { "$ref": "#/definitions/MAAPIdentifier" }
+          ]
+        }
+      ]
+    },
+    "MAAPCallExpression": {
+      "type": "object",
+      "properties": {
+        "arguments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/MAAPExpressionType"
+          }
+        },
+        "type": {
+          "const": "call_expression"
+        },
+        "value": {
+          "$ref": "#/definitions/MAAPIdentifier"
+        },
+        "comments": {
+          "$ref": "#/definitions/MAAPCommentArray"
+        }
+      },
+      "required": ["arguments", "type", "value"],
+      "additionalProperties": false
+    },
+    "MAAPIdentifier": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "identifier"
+        },
+        "value": {
+          "type": "string"
+        },
+        "useVariable": {
+          "type": "boolean"
+        },
+        "comments": {
+          "$ref": "#/definitions/MAAPCommentArray"
+        }
+      },
+      "required": ["type", "value"],
+      "additionalProperties": false
+    },
+    "MAAPExpressionType": {
+      "allOf": [
+        {
+          "type": "object",
+          "properties": {
+            "useVariable": {
+              "type": "boolean"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "anyOf": [
+            { "$ref": "#/definitions/MAAPCallExpression" },
+            { "$ref": "#/definitions/MAAPExpressionBlock" },
+            { "$ref": "#/definitions/MAAPVariable" }
+          ]
+        }
+      ]
+    },
+    "MAAPExpressionBlock": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "expression_block"
+        },
+        "value": {
+          "$ref": "#/definitions/MAAPExpression"
+        },
+        "units": {
+          "type": "string"
+        }
+      },
+      "required": ["type", "value"],
+      "additionalProperties": false
+    },
+    "MAAPPureExpression": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "expression"
+        },
+        "left": {
+          "$ref": "#/definitions/MAAPExpressionType"
+        },
+        "op": {
+          "$ref": "#/definitions/MAAPExpressionOperator"
+        },
+        "right": {
+          "anyOf": [
+            { "$ref": "#/definitions/MAAPPureExpression" },
+            { "$ref": "#/definitions/MAAPExpressionType" }
+          ]
+        },
+        "useVariable": {
+          "type": "boolean"
+        }
+      },
+      "required": ["type", "value", "left", "op", "right"],
+      "additionalProperties": false
+    },
+    "MAAPExpressionOperator": {
+      "type": "string",
+      "enum": ["**", "*", "/", ">=", "<=", ">", "<", "+", "-", "!=", "=="]
+    },
+    "MAAPParameterName": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "parameter_name"
+        },
+        "value": {
+          "type": "string"
+        },
+        "comments": {
+          "$ref": "#/definitions/MAAPCommentArray"
+        }
+      },
+      "required": ["type", "value"],
+      "additionalProperties": false
+    },
+    "MAAPLiteral": {
+      "anyOf": [
+        { "$ref": "#/definitions/MAAPBooleanLiteral" },
+        { "$ref": "#/definitions/MAAPNumericLiteral" },
+        { "$ref": "#/definitions/MAAPTimerLiteral" }
+      ]
+    },
+    "MAAPBooleanLiteral": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "boolean"
+        },
+        "value": {
+          "type": "boolean"
+        },
+        "comments": {
+          "$ref": "#/definitions/MAAPCommentArray"
+        }
+      },
+      "required": ["type", "value"],
+      "additionalProperties": false
+    },
+    "MAAPNumericLiteral": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "number"
+        },
+        "units": {
+          "type": "string"
+        },
+        "value": {
+          "type": "number"
+        },
+        "comments": {
+          "$ref": "#/definitions/MAAPCommentArray"
+        }
+      },
+      "required": ["type", "value"],
+      "additionalProperties": false
+    },
+    "MAAPTimerLiteral": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "timer"
+        },
+        "value": {
+          "type": "number"
+        }
+      },
+      "required": ["type", "value"],
+      "additionalProperties": false
+    },
+    "MAAPSourceElement": {
+      "anyOf": [
+        { "$ref": "#/definitions/MAAPSensitivityStatement" },
+        { "$ref": "#/definitions/MAAPTitleStatement" },
+        { "$ref": "#/definitions/MAAPFileStatement" },
+        { "$ref": "#/definitions/MAAPBlockStatement" },
+        { "$ref": "#/definitions/MAAPAssignment" },
+        { "$ref": "#/definitions/MAAPTimerStatement" },
+        { "$ref": "#/definitions/MAAPConditionalBlockStatement" },
+        { "$ref": "#/definitions/MAAPAsExpression" },
+        { "$ref": "#/definitions/MAAPExpression" },
+        { "$ref": "#/definitions/MAAPIsExpression" },
+        { "$ref": "#/definitions/MAAPAliasStatement" },
+        { "$ref": "#/definitions/MAAPPlotFilStatement" },
+        { "$ref": "#/definitions/MAAPUserEvtStatement" },
+        { "$ref": "#/definitions/MAAPActionStatement" },
+        { "$ref": "#/definitions/MAAPFunctionStatement" },
+        { "$ref": "#/definitions/MAAPLookupStatement" },
+        { "$ref": "#/definitions/MAAPParameter" },
+        { "$ref": "#/definitions/MAAPLiteral" },
+        { "$ref": "#/definitions/MAAPCallExpression" },
+        { "$ref": "#/definitions/MAAPParameterName" },
+        { "$ref": "#/definitions/MAAPIdentifier" }
+      ]
+    },
+    "MAAPSensitivityStatement": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "sensitivity"
+        },
+        "value": {
+          "type": "string",
+          "enum": ["ON", "OFF"]
+        },
+        "comments": {
+          "$ref": "#/definitions/MAAPCommentArray"
+        }
+      },
+      "required": ["type", "value", "comments"],
+      "additionalProperties": false
+    },
+    "MAAPTitleStatement": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "title"
+        },
+        "value": {
+          "type": "string"
+        },
+        "comments": {
+          "$ref": "#/definitions/MAAPCommentArray"
+        }
+      },
+      "required": ["type", "value", "comments"],
+      "additionalProperties": false
+    },
+    "MAAPFileStatement": {
+      "type": "object",
+      "properties": {
+        "fileType": {
+          "type": "string",
+          "enum": ["PARAMETER FILE", "INCLUDE", "DOSE PARAMETER FILE"]
+        },
+        "type": {
+          "const": "file"
+        },
+        "value": {
+          "type": "string"
+        },
+        "comments": {
+          "$ref": "#/definitions/MAAPCommentArray"
+        }
+      },
+      "required": ["fileType", "type", "value", "comments"],
+      "additionalProperties": false
+    },
+    "MAAPBlockStatement": {
+      "type": "object",
+      "properties": {
+        "blockType": {
+          "type": "string",
+          "enum": ["PARAMETER CHANGE", "INITIATORS"]
+        },
+        "type": {
+          "const": "block"
+        },
+        "value": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/MAAPSourceElement"
+          }
+        },
+        "comments": {
+          "$ref": "#/definitions/MAAPCommentArray"
+        }
+      },
+      "required": ["blockType", "type", "value", "comments"],
+      "additionalProperties": false
+    },
+    "MAAPCommentArray": {
+      "type": "array",
+      "items": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      }
+    },
+    "MAAPAliasStatement": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "alias"
+        },
+        "value": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/MAAPSourceElement"
+          }
+        },
+        "comments": {
+          "$ref": "#/definitions/MAAPCommentArray"
+        }
+      },
+      "required": ["blockType", "type", "value", "comment"],
+      "additionalProperties": false
+    },
+    "MAAPAsExpression": {
+      "type": "object",
+      "properties": {
+        "target": {
+          "$ref": "#/definitions/MAAPVariable"
+        },
+        "type": {
+          "const": "as_expression"
+        },
+        "value": {
+          "$ref": "#/definitions/MAAPIdentifier"
+        },
+        "comments": {
+          "$ref": "#/definitions/MAAPCommentArray"
+        }
+      },
+      "required": ["target", "type", "value", "comments"],
+      "additionalProperties": false
+    },
+    "MAAPPlotFilBody": {
+      "type": "object",
+      "properties": {
+        "row": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/MAAPVariable"
+          }
+        },
+        "comments": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": ["row", "comments"]
+    },
+    "MAAPPlotFilStatement": {
+      "type": "object",
+      "properties": {
+        "n": {
+          "type": "number"
+        },
+        "type": {
+          "const": "plotfil"
+        },
+        "value": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/MAAPPlotFilBody"
+          }
+        },
+        "comments": {
+          "$ref": "#/definitions/MAAPCommentArray"
+        }
+      },
+      "required": ["n", "type", "value", "comments"],
+      "additionalProperties": false
+    },
+    "MAAPUserEvtStatement": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "user_evt"
+        },
+        "value": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/MAAPSourceElement"
+          }
+        },
+        "comments": {
+          "$ref": "#/definitions/MAAPCommentArray"
+        }
+      },
+      "required": ["blockType", "type", "value", "comments"],
+      "additionalProperties": false
+    },
+    "MAAPActionStatement": {
+      "type": "object",
+      "properties": {
+        "index": {
+          "type": "number"
+        },
+        "type": {
+          "const": "action"
+        },
+        "value": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/MAAPSourceElement"
+          }
+        },
+        "comments": {
+          "$ref": "#/definitions/MAAPCommentArray"
+        }
+      },
+      "required": ["index", "type", "value"],
+      "additionalProperties": false
+    },
+    "MAAPFunctionStatement": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "$ref": "#/definitions/MAAPIdentifier"
+        },
+        "type": {
+          "const": "function"
+        },
+        "value": {
+          "$ref": "#/definitions/MAAPExpression"
+        },
+        "comments": {
+          "$ref": "#/definitions/MAAPCommentArray"
+        }
+      },
+      "required": ["name", "type", "value", "comments"],
+      "additionalProperties": false
+    },
+    "MAAPTimerStatement": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "set_timer"
+        },
+        "value": {
+          "$ref": "#/definitions/MAAPTimerLiteral"
+        },
+        "comments": {
+          "$ref": "#/definitions/MAAPCommentArray"
+        }
+      },
+      "required": ["type", "value", "comments"],
+      "additionalProperties": false
+    },
+    "MAAPLookupStatement": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "$ref": "#/definitions/MAAPVariable"
+        },
+        "type": {
+          "const": "lookup_variable"
+        },
+        "value": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "comments": {
+          "$ref": "#/definitions/MAAPCommentArray"
+        }
+      },
+      "required": ["name", "type", "value", "comments"],
+      "additionalProperties": false
+    },
+    "MAAPAssignment": {
+      "type": "object",
+      "properties": {
+        "target": {
+          "anyOf": [
+            { "$ref": "#/definitions/MAAPCallExpression" },
+            { "$ref": "#/definitions/MAAPIdentifier" }
+          ]
+        },
+        "type": {
+          "const": "assignment"
+        },
+        "value": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/MAAPExpression"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "useVariable": {
+                  "type": "boolean"
+                }
+              },
+              "additionalProperties": false
+            }
+          ]
+        },
+        "comments": {
+          "$ref": "#/definitions/MAAPCommentArray"
+        }
+      },
+      "required": ["target", "type", "value", "comments"],
+      "additionalProperties": false
+    },
+    "MAAPMultiPartExpression": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "multi_expression"
+        },
+        "op": {
+          "type": "string"
+        },
+        "value": {
+          "type": "array",
+          "items": {
+            "anyOf": [
+              { "$ref": "#/definitions/MAAPExpression" },
+              { "$ref": "#/definitions/MAAPIsExpression" },
+              { "$ref": "#/definitions/MAAPMultiPartExpression" }
+            ]
+          }
+        },
+        "comments": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": ["type", "op", "value", "comments"],
+      "additionalProperties": false
+    }
+  }
+}
