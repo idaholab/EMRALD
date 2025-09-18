@@ -10,7 +10,10 @@ import LogicNodeForm from '../../forms/LogicNodeForm/LogicNodeForm';
 import { ReactFlowProvider } from 'reactflow';
 import ActionFormContextProvider from '../../forms/ActionForm/ActionFormContext';
 import ExtSimForm from '../../forms/ExtSimForm/ExtSimForm';
-import { GetModelItemsReferencedBy } from '../../../utils/ModelReferences';
+import {
+  GetModelItemsReferencedBy,
+  GetModelItemsReferencing,
+} from '../../../utils/ModelReferences';
 import VariableFormContextProvider from '../../forms/VariableForm/VariableFormContext';
 import EventFormContextProvider from '../../forms/EventForm/EventFormContext';
 import TemplateForm from '../../forms/TemplateForm/TemplateForm';
@@ -29,6 +32,7 @@ import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useAlertContext } from '../../../contexts/AlertContext';
 import LogicNodeFormContextProvider from '../../forms/LogicNodeForm/LogicNodeFormContext';
+import SearchResultForm from '../../forms/SearchResultForm/SearchResultForm';
 
 // Define your Option and OptionsMapping types
 export interface Option {
@@ -163,6 +167,19 @@ export const useOptionsMapping = () => {
           }
         },
       },
+      {
+        label: 'Find References',
+        action: (diagram: Diagram) => {
+          addWindow(
+            `Items Referencing ${diagram.name}`,
+            <SearchResultForm
+              model={GetModelItemsReferencing(diagram.name, 'Diagram', 1)}
+              getModel={() => <></>}
+              expandable={false}
+            />,
+          );
+        },
+      },
     ],
     'Logic Tree': [
       {
@@ -202,6 +219,19 @@ export const useOptionsMapping = () => {
           handleDelete(logicNode, 'LogicNode');
         },
       },
+      {
+        label: 'Find References',
+        action: (tree: LogicNode) => {
+          addWindow(
+            `Items Referencing ${tree.name}`,
+            <SearchResultForm
+              model={GetModelItemsReferencing(tree.name, 'LogicNode', 1)}
+              getModel={() => <></>}
+              expandable={false}
+            />,
+          );
+        },
+      },
     ],
     'External Sims': [
       {
@@ -217,6 +247,19 @@ export const useOptionsMapping = () => {
           handleDelete: (itemToDelete: ExtSim, itemToDeleteType: MainItemType) => void,
         ) => {
           handleDelete(extSim, 'ExtSim');
+        },
+      },
+      {
+        label: 'Find References',
+        action: (ext: ExtSim) => {
+          addWindow(
+            `Items Referencing ${ext.name}`,
+            <SearchResultForm
+              model={GetModelItemsReferencing(ext.name, 'ExtSim', 1)}
+              getModel={() => <></>}
+              expandable={false}
+            />,
+          );
         },
       },
     ],
@@ -239,6 +282,19 @@ export const useOptionsMapping = () => {
           handleDelete: (itemToDelete: Action, itemToDeleteType: MainItemType) => void,
         ) => {
           handleDelete(action, 'Action');
+        },
+      },
+      {
+        label: 'Find References',
+        action: (action: Action) => {
+          addWindow(
+            `Items Referencing ${action.name}`,
+            <SearchResultForm
+              model={GetModelItemsReferencing(action.name, 'Action', 1)}
+              getModel={() => <></>}
+              expandable={false}
+            />,
+          );
         },
       },
     ],
@@ -264,6 +320,19 @@ export const useOptionsMapping = () => {
           handleDelete(event, 'Event');
         },
       },
+      {
+        label: 'Find References',
+        action: (event: Event) => {
+          addWindow(
+            `Items Referencing ${event.name}`,
+            <SearchResultForm
+              model={GetModelItemsReferencing(event.name, 'Event', 1)}
+              getModel={() => <></>}
+              expandable={false}
+            />,
+          );
+        },
+      },
     ],
     States: [
       {
@@ -279,6 +348,19 @@ export const useOptionsMapping = () => {
           handleDelete: (itemToDelete: State, itemToDeleteType: MainItemType) => void,
         ) => {
           handleDelete(state, 'State');
+        },
+      },
+      {
+        label: 'Find References',
+        action: (state: State) => {
+          addWindow(
+            `Items Referencing ${state.name}`,
+            <SearchResultForm
+              model={GetModelItemsReferencing(state.name, 'State', 1)}
+              getModel={() => <></>}
+              expandable={false}
+            />,
+          );
         },
       },
     ],
@@ -301,6 +383,19 @@ export const useOptionsMapping = () => {
           handleDelete: (itemToDelete: Variable, itemToDeleteType: MainItemType) => void,
         ) => {
           handleDelete(variable, 'Variable');
+        },
+      },
+      {
+        label: 'Find References',
+        action: (v: Variable) => {
+          addWindow(
+            `Items Referencing ${v.name}`,
+            <SearchResultForm
+              model={GetModelItemsReferencing(v.name, 'Variable', 1)}
+              getModel={() => <></>}
+              expandable={false}
+            />,
+          );
         },
       },
     ],
