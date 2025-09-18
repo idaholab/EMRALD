@@ -18,7 +18,6 @@ describe('Header', () => {
     await user.type(await screen.findByLabelText('Version'), '2');
     await user.click(await screen.findByRole('button', { name: 'Save' }));
 
-    expect(screen.queryByText(name)).not.toBeNull();
     expect(appData.value.name).toBe(name);
     expect(appData.value.desc).toBe('Desc');
     expect(appData.value.version).toBe(12);

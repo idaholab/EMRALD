@@ -1,40 +1,29 @@
-import { Accordion, AccordionDetails, AccordionSummary, Box } from '@mui/material';
-import type {
-  Diagram,
-  State,
-  Action,
-  Event,
-  ExtSim,
-  LogicNode,
-  Variable,
-} from '../../../../types/EMRALD_Model';
-import type { ReactNode } from 'react';
+import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
+  Box,
+  Card,
+  CardContent,
+  Typography,
+} from '@mui/material';
+import type { EMRALD_Model } from '../../../../types/EMRALD_Model';
+import { type ReactNode } from 'react';
 import type { ModelItem } from '../../../../types/ModelUtils';
+import { SearchContextMenu } from './SearchContextMenu';
 
 interface ItemTypeMenuResultsProps {
-  diagrams: Diagram[];
+  model: EMRALD_Model;
   isNested?: boolean;
-  states: State[];
-  actions: Action[];
-  events: Event[];
-  extSims: ExtSim[];
-  logicNodes: LogicNode[];
-  variables: Variable[];
-  handleItemClick: (event: React.MouseEvent, item: ModelItem) => void;
   getModel: (item: ModelItem, direction: string) => ReactNode;
+  expandable?: boolean;
 }
 
 const ItemTypeMenuResults: React.FC<React.PropsWithChildren<ItemTypeMenuResultsProps>> = ({
-  diagrams,
+  model,
   isNested,
-  states,
-  actions,
-  events,
-  extSims,
-  logicNodes,
-  variables,
-  handleItemClick,
   getModel,
+  expandable,
 }) => {
   const DisplayButtonOrModel = (item: ModelItem): ReactNode => {
     return (
@@ -44,8 +33,28 @@ const ItemTypeMenuResults: React.FC<React.PropsWithChildren<ItemTypeMenuResultsP
       </Box>
     );
   };
+
   const DisplayItemTypeCard = (title: string, items: ModelItem[]) => {
-    return (
+    return expandable === false ? (
+      <>
+        <Card>
+          <CardContent>
+            <Typography fontWeight="bold">
+              {title} ({items.length})
+            </Typography>
+            {items.map((item) => (
+              <Card sx={{ margin: '8px' }}>
+                <CardContent>
+                  <SearchContextMenu targetItem={item}>
+                    <Typography>{item.name}</Typography>
+                  </SearchContextMenu>
+                </CardContent>
+              </Card>
+            ))}
+          </CardContent>
+        </Card>
+      </>
+    ) : (
       <Accordion defaultExpanded={isNested ? false : true}>
         <AccordionSummary sx={{ fontWeight: 'bold' }}>
           {title} ({items.length})
@@ -53,14 +62,10 @@ const ItemTypeMenuResults: React.FC<React.PropsWithChildren<ItemTypeMenuResultsP
         <AccordionDetails>
           {items.map((item) => (
             <Accordion key={item.id}>
-              <AccordionSummary
-                onContextMenu={(e) => {
-                  handleItemClick(e, item);
-                }}
-              >
-                {item.name}
-              </AccordionSummary>
-              <AccordionDetails>{DisplayButtonOrModel(item)}</AccordionDetails>
+              <SearchContextMenu targetItem={item}>
+                <AccordionSummary>{item.name}</AccordionSummary>
+                <AccordionDetails>{DisplayButtonOrModel(item)}</AccordionDetails>
+              </SearchContextMenu>
             </Accordion>
           ))}
         </AccordionDetails>
@@ -70,13 +75,13 @@ const ItemTypeMenuResults: React.FC<React.PropsWithChildren<ItemTypeMenuResultsP
 
   return (
     <Box id="itemTypeMenuResults">
-      {diagrams.length > 0 && DisplayItemTypeCard('Diagrams', diagrams)}
-      {states.length > 0 && DisplayItemTypeCard('States', states)}
-      {actions.length > 0 && DisplayItemTypeCard('Actions', actions)}
-      {events.length > 0 && DisplayItemTypeCard('Events', events)}
-      {extSims.length > 0 && DisplayItemTypeCard('ExtSims', extSims)}
-      {logicNodes.length > 0 && DisplayItemTypeCard('LogicNodes', logicNodes)}
-      {variables.length > 0 && DisplayItemTypeCard('Variables', variables)}
+      {model.DiagramList.length > 0 && DisplayItemTypeCard('Diagrams', model.DiagramList)}
+      {model.StateList.length > 0 && DisplayItemTypeCard('States', model.StateList)}
+      {model.ActionList.length > 0 && DisplayItemTypeCard('Actions', model.ActionList)}
+      {model.EventList.length > 0 && DisplayItemTypeCard('Events', model.EventList)}
+      {model.ExtSimList.length > 0 && DisplayItemTypeCard('ExtSims', model.ExtSimList)}
+      {model.LogicNodeList.length > 0 && DisplayItemTypeCard('LogicNodes', model.LogicNodeList)}
+      {model.VariableList.length > 0 && DisplayItemTypeCard('Variables', model.VariableList)}
     </Box>
   );
 };

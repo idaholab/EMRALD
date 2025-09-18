@@ -67,7 +67,6 @@ export const updateSpecifiedModel = (
       //error not a valid type
       console.log('Error: Invalid type for updateModelAndReferences');
       return updatedEMRALDModel;
-      break;
   }
 
   //find the index of the item in the array

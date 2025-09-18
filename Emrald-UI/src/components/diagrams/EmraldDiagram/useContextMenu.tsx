@@ -577,7 +577,7 @@ const useContextMenu = (getStateNodes?: () => void, setEdges?: (edges: Edge[]) =
       return;
     }
 
-    if (itemToDelete.id && itemToDelete.objType === 'Action' && getStateNodes) {
+    if (itemToDelete.id && itemToDelete.objType === 'State' && getStateNodes) {
       currentDiagram.value.states = currentDiagram.value.states.filter(
         (state) => state !== itemToDelete.name,
       );

@@ -135,7 +135,7 @@ export default function Header() {
               setOpenDialog(true);
             }}
           >
-            {name ? name : 'Click Here to Name Project'}
+            {name ? name : 'Click Here to Name Project'} {version && version > 1 ? `v${version}` : ''}
           </Typography>
           <Typography sx={{ fontSize: isMediumScreen ? '0.625em' : '0.75em' }}>
             {fileName ? fileName : ''}

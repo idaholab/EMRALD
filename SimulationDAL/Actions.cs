@@ -261,7 +261,7 @@ namespace SimulationDAL
 
         if ((_newStateIDs.Count < 1) || (_newStateIDs.Count != _toStateProb.Count))
         {
-          throw new Exception("Either no to State for this Transition or missing one." );
+          throw new Exception("Either no \"to State\" for this Transition or missing one." );
         }
 
         double probSum = _toStateProb.Sum();
@@ -512,9 +512,9 @@ namespace SimulationDAL
       else if ((_newStateIDs.Count < 1) || (_newStateIDs.Count != _toStateProb.Count))
       {
 #if DEBUG
-        throw new Exception("Either no to State for this Transition or miss. " + this.name);
+        throw new Exception("Either no \"to State\" for this Transition or miss. " + this.name);
 #else
-        System.Diagnostics.Debug.Write("No to State for this Transition is an error. " + this.name);
+        System.Diagnostics.Debug.Write("No \"to State\" for this Transition is an error. " + this.name);
         return retStateIDs;
 #endif
       }

@@ -1,8 +1,16 @@
 ** Tests plotfil statements **
 
 C Default
-PLOTFIL 3
-A,B,C
-D,E,F
+PLOTFIL 4 // Comment 1
+// Comment 2
+A,B,C // Comment 3
+// Comment 4
+D,E,F // Comment 5
 G,H,I(J)
 END
+
+C Empty
+PLOTFIL 3 // Comment 1
+// Comment 2
+// Comment 3
+END // Comment 4

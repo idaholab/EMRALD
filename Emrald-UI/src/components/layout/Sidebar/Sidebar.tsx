@@ -48,7 +48,7 @@ const Sidebar = () => {
         [`& .MuiDrawer-paper`]: {
           width: drawerWidth,
           boxSizing: 'border-box',
-          backgroundColor: '#008080',
+          backgroundColor: '#2FA770',
         },
       }}
     >

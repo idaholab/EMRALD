@@ -1,8 +1,12 @@
 ** Tests title statements **
 
 C Default
-TITLE
-Valid Title
+TITLE // Comment 1
+// Comment 2
+// Comment 3
+Valid Title // Comment 4
+// Comment 5
+// Comment 6
 END
 
 C Many lines

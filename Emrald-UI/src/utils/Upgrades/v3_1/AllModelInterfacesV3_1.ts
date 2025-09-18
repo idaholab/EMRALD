@@ -42,43 +42,44 @@ export type ActionType =
   | "atCngVarVal"
   | "at3DSimMsg"
   | "atRunExtApp"
-export type MAAPSourceElement = {
-  comment?: string
-} & (
-  | MAAPStatement
-  | MAAPAssignment
-  | MAAPAsExpression
-  | MAAPIsExpression
-  | MAAPExpression
-  | MAAPCallExpression
-  | MAAPExpressionBlock
-  | MAAPParameterName
-  | MAAPLiteral
-  | MAAPIdentifier
-  | MAAPComment
-)
-export type MAAPStatement =
+export type MAAPSourceElement =
   | MAAPSensitivityStatement
   | MAAPTitleStatement
   | MAAPFileStatement
   | MAAPBlockStatement
+  | MAAPAssignment
+  | MAAPTimerStatement
   | MAAPConditionalBlockStatement
+  | MAAPAsExpression
+  | MAAPExpression
+  | MAAPIsExpression
   | MAAPAliasStatement
   | MAAPPlotFilStatement
   | MAAPUserEvtStatement
+  | MAAPActionStatement
   | MAAPFunctionStatement
-  | MAAPTimerStatement
   | MAAPLookupStatement
+  | MAAPParameter
+  | MAAPLiteral
+  | MAAPCallExpression
+  | MAAPParameterName
+  | MAAPIdentifier
+export type MAAPCommentArray = string[][]
+export type MAAPExpressionType = {
+  useVariable?: boolean
+} & (MAAPCallExpression | MAAPExpressionBlock | MAAPVariable)
 export type MAAPExpression =
+  | MAAPMultiPartExpression
   | MAAPIsExpression
   | MAAPPureExpression
   | MAAPExpressionType
 export type MAAPVariable = {
   useVariable?: boolean
 } & (MAAPCallExpression | MAAPLiteral | MAAPParameterName | MAAPIdentifier)
-export type MAAPExpressionType = {
-  useVariable?: boolean
-} & (MAAPCallExpression | MAAPExpressionBlock | MAAPVariable)
+export type MAAPLiteral =
+  | MAAPBooleanLiteral
+  | MAAPNumericLiteral
+  | MAAPTimerLiteral
 export type MAAPExpressionOperator =
   | "**"
   | "*"
@@ -89,14 +90,8 @@ export type MAAPExpressionOperator =
   | "<"
   | "+"
   | "-"
-export type MAAPLiteral =
-  | MAAPBooleanLiteral
-  | MAAPNumericLiteral
-  | MAAPTimerLiteral
-export type MAAPUserEvtElement =
-  | MAAPParameter
-  | MAAPActionStatement
-  | MAAPSourceElement
+  | "!="
+  | "=="
 export type CustomFormType = "MAAP"
 /**
  * Type of the event
@@ -516,11 +511,11 @@ export interface MAAPFormData {
   /**
    * Source elements from the .inp file identified as parameters
    */
-  parameters?: MAAPParameter[]
+  parameters?: MAAPAssignment[]
   /**
    * Source elements from the .inp file identified as initiators
    */
-  initiators?: MAAPInitiator[]
+  initiators?: MAAPSourceElement[]
   /**
    * Source elements from the .inp file identified as input blocks (if blocks, when block, etc.)
    */
@@ -542,12 +537,6 @@ export interface MAAPFormData {
    */
   possibleInitiators?: MAAPParameter[]
   /**
-   * A list of doc comments extracted from the .inp file
-   */
-  docComments?: {
-    [k: string]: MAAPComment
-  }
-  /**
    * The doc link variable used to store the results
    */
   docLinkVariable?: string
@@ -556,70 +545,72 @@ export interface MAAPFormData {
    */
   output?: string
   caType: CustomFormType
-  [k: string]: unknown
+  needsUpgrade?: boolean
 }
 export interface MAAPSensitivityStatement {
   type: "sensitivity"
   value: "ON" | "OFF"
+  comments: MAAPCommentArray
 }
 export interface MAAPTitleStatement {
   type: "title"
-  value?: string
+  value: string
+  comments: MAAPCommentArray
 }
 export interface MAAPFileStatement {
-  fileType: "PARAMETER FILE" | "INCLUDE"
+  fileType: "PARAMETER FILE" | "INCLUDE" | "DOSE PARAMETER FILE"
   type: "file"
   value: string
+  comments: MAAPCommentArray
 }
 export interface MAAPBlockStatement {
   blockType: "PARAMETER CHANGE" | "INITIATORS"
   type: "block"
   value: MAAPSourceElement[]
+  comments: MAAPCommentArray
 }
-export interface MAAPConditionalBlockStatement {
-  blockType: "IF" | "WHEN"
-  test: MAAPExpression
-  type: "conditional_block"
-  value: MAAPSourceElement[]
-  id: string
+export interface MAAPAssignment {
+  target: MAAPCallExpression | MAAPIdentifier
+  type: "assignment"
+  value: MAAPExpression & {
+    useVariable?: boolean
+  }
+  comments: MAAPCommentArray
+}
+export interface MAAPCallExpression {
+  arguments: MAAPExpressionType[]
+  type: "call_expression"
+  value: MAAPIdentifier
+  comments?: MAAPCommentArray
+}
+export interface MAAPExpressionBlock {
+  type: "expression_block"
+  value: MAAPExpression
+  units?: string
+}
+export interface MAAPMultiPartExpression {
+  type: "multi_expression"
+  op: string
+  value: (MAAPExpression | MAAPIsExpression | MAAPMultiPartExpression)[]
+  comments: string[]
 }
 export interface MAAPIsExpression {
   target: MAAPVariable
   type: "is_expression"
   value: MAAPExpression
   useVariable?: boolean
-}
-export interface MAAPCallExpression {
-  arguments: MAAPExpressionType[]
-  type: "call_expression"
-  value: MAAPIdentifier
-}
-export interface MAAPExpressionBlock {
-  type: "expression_block"
-  value: MAAPPureExpression
-}
-export interface MAAPPureExpression {
-  type: "expression"
-  value: {
-    left: MAAPExpressionType
-    op: MAAPExpressionOperator
-    right: MAAPPureExpression | MAAPExpressionType
-  }
-  useVariable?: boolean
-}
-export interface MAAPIdentifier {
-  type: "identifier"
-  value: string
-  useVariable?: boolean
+  comments?: MAAPCommentArray
 }
 export interface MAAPBooleanLiteral {
   type: "boolean"
   value: boolean
+  comments?: MAAPCommentArray
 }
 export interface MAAPNumericLiteral {
   type: "number"
   units?: string
   value: number
+  comments?: MAAPCommentArray
 }
 export interface MAAPTimerLiteral {
   type: "timer"
@@ -628,91 +619,89 @@ export interface MAAPTimerLiteral {
 export interface MAAPParameterName {
   type: "parameter_name"
   value: string
+  comments?: MAAPCommentArray
 }
-export interface MAAPAliasStatement {
-  type: "alias"
-  value: MAAPAsExpression[]
+export interface MAAPIdentifier {
+  type: "identifier"
+  value: string
+  useVariable?: boolean
+  comments?: MAAPCommentArray
+}
+export interface MAAPPureExpression {
+  type: "expression"
+  left: MAAPExpressionType
+  op: MAAPExpressionOperator
+  right: MAAPPureExpression | MAAPExpressionType
+  useVariable?: boolean
+}
+export interface MAAPTimerStatement {
+  type: "set_timer"
+  value: MAAPTimerLiteral
+  comments: MAAPCommentArray
+}
+export interface MAAPConditionalBlockStatement {
+  blockType: "IF" | "WHEN"
+  test: MAAPExpression
+  type: "conditional_block"
+  value: MAAPSourceElement[]
+  comments: MAAPCommentArray
 }
 export interface MAAPAsExpression {
   target: MAAPVariable
   type: "as_expression"
   value: MAAPIdentifier
+  comments: MAAPCommentArray
+}
+export interface MAAPAliasStatement {
+  type: "alias"
+  value: MAAPSourceElement[]
+  comments?: MAAPCommentArray
 }
 export interface MAAPPlotFilStatement {
   n: number
   type: "plotfil"
-  value: MAAPVariable[][]
+  value: MAAPPlotFilBody[]
+  comments: MAAPCommentArray
+}
+export interface MAAPPlotFilBody {
+  row: MAAPVariable[]
+  comments: string[]
+  [k: string]: unknown
 }
 export interface MAAPUserEvtStatement {
   type: "user_evt"
-  value: MAAPUserEvtElement[]
-}
-export interface MAAPParameter {
-  /**
-   * An ID assigned to the parameter by the form
-   */
-  id: string
-  flag?: MAAPBooleanLiteral
-  index?: number
-  type: "parameter"
-  value: MAAPExpression | MAAPParameterName | string
-  comment?: string
-  name?: string
-  useVariable?: boolean
-  unit?: string
-  variable?: string
-  desc?: string
+  value: MAAPSourceElement[]
+  comments: MAAPCommentArray
 }
 export interface MAAPActionStatement {
   index: number
   type: "action"
-  value: MAAPUserEvtElement[]
+  value: MAAPSourceElement[]
+  comments?: MAAPCommentArray
 }
 export interface MAAPFunctionStatement {
   name: MAAPIdentifier
   type: "function"
   value: MAAPExpression
-}
-export interface MAAPTimerStatement {
-  type: "set_timer"
-  value: MAAPTimerLiteral
+  comments: MAAPCommentArray
 }
 export interface MAAPLookupStatement {
   name: MAAPVariable
   type: "lookup_variable"
   value: string[]
+  comments: MAAPCommentArray
 }
-export interface MAAPAssignment {
-  target: MAAPCallExpression | MAAPIdentifier
-  type: "assignment"
-  value: MAAPExpression
-  comment?: string
-}
-/**
- * This interface was referenced by `undefined`'s JSON-Schema definition
- * via the `patternProperty` "*".
- */
-export interface MAAPComment {
-  type: "comment"
-  value: string
-}
-export interface MAAPInitiator {
-  /**
-   * The name of the initiator
-   */
-  name: string
-  /**
-   * The doc comment describing the initiator
-   */
-  comment: string
-  /**
-   * An ID assigned to the initiator by the form
-   */
-  id?: string
-  /**
-   * The value of the initiator
-   */
-  value: string | number | boolean
+export interface MAAPParameter {
+  flag?: MAAPBooleanLiteral
+  index?: number
+  type: "parameter"
+  value: MAAPExpression | MAAPParameterName | string
+  comments?: MAAPCommentArray
+  name?: string
+  useVariable?: boolean
+  unit?: string
+  variable?: string
+  desc?: string
 }
 export interface Event {
   /**
@@ -795,7 +784,7 @@ export interface Event {
   distType?: DistributionType
   parameters?: Parameters
   /**
-   * Optional. For event type of etFailRate. Sets the event value as being persistent, keeping the initial sampled time between state movements and only re-samples after it occurs.
+   * Optional. For event type of etFailRate, etDistribution, and etTimer. Sets the event value as being persistent, keeping the initial sampled time between state movements and only re-samples after it occurs.
    */
   persistent?: boolean
   dfltTimeRate?: TimeVariableUnit

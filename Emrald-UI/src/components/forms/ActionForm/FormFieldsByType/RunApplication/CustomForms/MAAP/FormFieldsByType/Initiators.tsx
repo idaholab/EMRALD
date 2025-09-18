@@ -11,19 +11,18 @@ import {
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useActionFormContext } from '../../../../../ActionFormContext';
 import { useEffect, useState } from 'react';
-import { v4 as uuid } from 'uuid';
-import type { MAAPInitiator } from '../../../../../../../../types/EMRALD_Model';
-import { expressionToString } from '../Parser/maap-to-string';
+import type { MAAPAssignment, MAAPSourceElement } from '../../../../../../../../types/EMRALD_Model';
+import { MAAPToString } from '../Parser/maap-to-string';
 
 const Initiators = () => {
   const { formData, setFormData } = useActionFormContext();
-  const [initiators, setInitiators] = useState<MAAPInitiator[]>([]);
+  const [initiators, setInitiators] = useState<MAAPSourceElement[]>([]);
 
   useEffect(() => {
     setInitiators(formData?.initiators ?? []);
   }, [formData]);
 
-  const removeInitiator = (row: MAAPInitiator) => {
+  const removeInitiator = (row: MAAPSourceElement) => {
     const updatedInitiators = initiators.filter((initiator) => initiator !== row);
     setInitiators(updatedInitiators);
     setFormData((prevFormData) =>
@@ -33,24 +32,23 @@ const Initiators = () => {
 
   const addInitiator = (desc: string) => {
     const initiator = formData?.possibleInitiators?.find((init) => init.desc === desc);
-    if (initiator && !initiators.find((init) => init.name === initiator.desc)) {
-      let value = '';
-      if (typeof initiator.value === 'string') {
-        value = initiator.value;
-      } else if (initiator.value.type === 'parameter_name') {
-        value = initiator.value.value;
-      } else {
-        value = expressionToString(initiator.value);
-      }
-      const updatedInitiators = [
-        ...initiators,
-        {
-          name: initiator.desc ?? '',
-          comment: '',
-          id: uuid(),
-          value,
+    if (initiator) {
+      const newInitiator: MAAPAssignment = {
+        type: 'assignment',
+        target: {
+          type: 'identifier',
+          value: initiator.desc ?? '',
         },
-      ];
+        value:
+          typeof initiator.value === 'string'
+            ? {
+                type: 'identifier',
+                value: initiator.value,
+              }
+            : initiator.value,
+        comments: [[], []],
+      };
+      const updatedInitiators = [...initiators, newInitiator];
       setInitiators(updatedInitiators);
       setFormData((prevFormData) =>
         prevFormData ? { ...prevFormData, initiators: updatedInitiators } : undefined,
@@ -85,9 +83,11 @@ const Initiators = () => {
           {initiators.map((row, idx) => (
             <TableRow key={idx} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
               <TableCell component="th" scope="row">
-                <div style={{ display: 'flex', flexDirection: 'column' }}>
-                  {row.name} {row.comment ? ` - ${row.comment}` : ''}
-                </div>
+                {row.type === 'assignment'
+                  ? row.target.type === 'call_expression'
+                    ? new MAAPToString().callExpressionToString(row.target)
+                    : row.target.value
+                  : ''}
               </TableCell>
               <TableCell align="center">
                 <Tooltip title="Remove Initiator">

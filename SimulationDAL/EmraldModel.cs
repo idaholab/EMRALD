@@ -48,7 +48,7 @@ namespace SimulationDAL
     private int? _threadNumber = 0;
     private bool _updated = false;
     private MultiThreadInfo _MultiThreadInfo = null;
-    public const double SCHEMA_VERSION = 3.0;
+    public const double SCHEMA_VERSION = 3.1;
     //public dSimulation _Sim = null;
     //protected Diagram _Diagram = null; //TODO remove was added for testing.
     public AllDiagrams allDiagrams = new AllDiagrams();
@@ -184,7 +184,7 @@ namespace SimulationDAL
       }
       else if(jsonObj.emraldVersion > SCHEMA_VERSION)
       {
-        throw new Exception("EMRALD solver version to old to solve this model. Upgrade to v" + jsonObj.emraldVersion);
+        throw new Exception("EMRALD solver version too old to solve this model. Upgrade to v" + jsonObj.emraldVersion);
       }
      
       return jsonModel;

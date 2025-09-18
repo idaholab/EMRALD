@@ -10,7 +10,7 @@
     "coverage": "cd Emrald-UI && npm run coverage",
     "tauri": "tauri",
     "test": "cd Emrald-UI && npm run test",
-    "build": "npm run tauri build",
+    "build": "cargo tauri build",
     "build:dev": "npm run tauri dev"
   },
   "repository": {

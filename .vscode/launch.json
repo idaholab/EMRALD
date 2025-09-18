@@ -6,9 +6,10 @@
   "configurations": [
     {
       "command": "npm.cmd run dev",
-      "name": "Run npm dev",
+      "name": "Run npm start",
       "request": "launch",
-      "type": "node-terminal"
+      "type": "node-terminal",
+      "localRoot": "Emrald-UI/src"
     }
   ]
 }

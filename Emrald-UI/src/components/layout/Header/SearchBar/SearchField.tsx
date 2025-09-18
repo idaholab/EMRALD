@@ -2,13 +2,11 @@ import {
   Button,
   IconButton,
   InputAdornment,
-  Menu,
-  MenuItem,
   TextField,
   useMediaQuery,
   useTheme,
 } from '@mui/material';
-import { type JSX, type ReactNode, useState } from 'react';
+import { type ReactNode, useState } from 'react';
 import { appData } from '../../../../hooks/useAppData';
 import SearchIcon from '@mui/icons-material/Search';
 import {
@@ -30,69 +28,32 @@ import type {
   MainItemType,
 } from '../../../../types/EMRALD_Model';
 import { useWindowContext } from '../../../../contexts/WindowContext';
-import EventFormContextProvider from '../../../forms/EventForm/EventFormContext';
-import EventForm from '../../../forms/EventForm/EventForm';
-import StateForm from '../../../forms/StateForm/StateForm';
-import ActionFormContextProvider from '../../../forms/ActionForm/ActionFormContext';
-import ActionForm from '../../../forms/ActionForm/ActionForm';
-import DiagramForm from '../../../forms/DiagramForm/DiagramForm';
-import ExtSimForm from '../../../forms/ExtSimForm/ExtSimForm';
-import LogicNodeForm from '../../../forms/LogicNodeForm/LogicNodeForm';
-import VariableFormContextProvider from '../../../forms/VariableForm/VariableFormContext';
-import VariableForm from '../../../forms/VariableForm/VariableForm';
-import EmraldDiagram from '../../../diagrams/EmraldDiagram/EmraldDiagram';
-import { useDiagramContext } from '../../../../contexts/DiagramContext';
-import LogicNodeTreeDiagram from '../../../diagrams/LogicTreeDiagram/LogicTreeDiagram';
 import SearchResultForm from '../../../forms/SearchResultForm/SearchResultForm';
-import { ReactFlowProvider } from 'reactflow';
-import { emptyLogicNode } from '../../../../contexts/LogicNodeContext';
 import { useAlertContext } from '../../../../contexts/AlertContext';
-import LogicNodeFormContextProvider from '../../../forms/LogicNodeForm/LogicNodeFormContext';
 import type { ModelItem } from '../../../../types/ModelUtils';
 
 const SearchField = () => {
   const theme = useTheme();
   const isMediumScreen = useMediaQuery(theme.breakpoints.between('sm', 'lg'));
   const [value, setValue] = useState<string>('');
-  const [anchorEl, setAnchorEl] = useState<Element | null>(null);
-  const [selectedItem, setSelectedItem] = useState<
-    Diagram | State | Action | Event | ExtSim | LogicNode | Variable | null
-  >(null);
-  const { getDiagramByDiagramName } = useDiagramContext();
-
+  
   const { addWindow } = useWindowContext();
 
   const onSubmit = () => {
-    const tempAppData = structuredClone(appData.value);
-    // search through diagrams
-    const diagrams = getItemList(tempAppData.DiagramList);
-
-    // search through states
-    const states = getItemList(tempAppData.StateList);
-    // search through actions
-    const actions = getItemList(tempAppData.ActionList);
-    // search through events
-    const events = getItemList(tempAppData.EventList);
-    // search through ext sims
-    const extSims = getItemList(tempAppData.ExtSimList);
-    //search for logic nodes
-    const logicNodes = getItemList(tempAppData.LogicNodeList);
-    // search for variables
-    const variables = getItemList(tempAppData.VariableList);
-    // setOpenSearchDialog(true);
+    let tempAppData = structuredClone(appData.value);
+    tempAppData = {
+      ...tempAppData,
+      DiagramList: getItemList(tempAppData.DiagramList),
+      StateList: getItemList(tempAppData.StateList),
+      ActionList: getItemList(tempAppData.ActionList),
+      EventList: getItemList(tempAppData.EventList),
+      ExtSimList: getItemList(tempAppData.ExtSimList),
+      LogicNodeList: getItemList(tempAppData.LogicNodeList),
+      VariableList: getItemList(tempAppData.VariableList),
+    };
     addWindow(
       `Search Results for: ${value}`,
-      <SearchResultForm
-        diagrams={diagrams}
-        states={states}
-        actions={actions}
-        events={events}
-        extSims={extSims}
-        logicNodes={logicNodes}
-        variables={variables}
-        handleItemClick={handleItemClick}
-        getModel={getModel}
-      />,
+      <SearchResultForm model={tempAppData} getModel={getModel} />,
     );
     handleClose();
   };
@@ -219,166 +180,44 @@ const SearchField = () => {
           {expandedItem === item.id ? `Collapse ${buttonDirection}` : `Expand ${buttonDirection}`}
         </Button>
         {expandedItem === item.id && nestedModel && (
-          <ItemTypeMenuResults
-            diagrams={nestedModel.DiagramList}
-            states={nestedModel.StateList}
-            actions={nestedModel.ActionList}
-            events={nestedModel.EventList}
-            handleItemClick={handleItemClick}
-            getModel={getModel}
-            extSims={nestedModel.ExtSimList}
-            logicNodes={nestedModel.LogicNodeList}
-            variables={nestedModel.VariableList}
-          />
+          <ItemTypeMenuResults model={nestedModel} getModel={getModel} />
         )}
       </>
     );
   };
 
-  const handleItemClick = (event: React.MouseEvent, item: ModelItem) => {
-    event.preventDefault();
-    setAnchorEl(event.currentTarget);
-    setSelectedItem(item);
-  };
-  const goToEditProperties = () => {
-    const componentMap: Record<
-      MainItemType,
-      (data: Diagram | State | Action | Event | ExtSim | LogicNode | Variable) => JSX.Element
-    > = {
-      Diagram: (data) => <DiagramForm diagramData={data as Diagram} />,
-      State: (data) => <StateForm stateData={data as State} />,
-      Action: (data) => (
-        <ActionFormContextProvider>
-          <ActionForm actionData={data as Action} />
-        </ActionFormContextProvider>
-      ),
-      Event: (data) => (
-        <EventFormContextProvider>
-          <EventForm eventData={data as Event} />
-        </EventFormContextProvider>
-      ),
-      ExtSim: (data) => <ExtSimForm ExtSimData={data as ExtSim} />,
-      LogicNode: (data) => (
-        <LogicNodeFormContextProvider>
-          <LogicNodeForm logicNodeData={data as LogicNode} editing />
-        </LogicNodeFormContextProvider>
-      ),
-      Variable: (data) => (
-        <VariableFormContextProvider>
-          <VariableForm variableData={data as Variable} />
-        </VariableFormContextProvider>
-      ),
-      EMRALD_Model: () => <></>,
-    };
-
-    if (selectedItem?.objType) {
-      addWindow(`Edit ${selectedItem.name}`, componentMap[selectedItem.objType](selectedItem));
-    }
-
-    handleMenuClose();
-  };
-  const goToDiagramStateorLogictree = () => {
-    let name = selectedItem?.name ?? '';
-    const componentMap: Record<
-      Extract<MainItemType, 'LogicNode' | 'Diagram' | 'State'>,
-      (data: Diagram | State | LogicNode) => JSX.Element
-    > = {
-      Diagram: (data): JSX.Element => <EmraldDiagram diagram={data as Diagram} />,
-      State: (data) => {
-        const d = data as State;
-        const stateDiagram = getDiagramByDiagramName(d.diagramName);
-        name = stateDiagram.name;
-        return <EmraldDiagram diagram={stateDiagram!} />;
-      },
-      LogicNode: (data) => {
-        const logicNode = data as LogicNode;
-        let parentNode = logicNode;
-        if (!logicNode.isRoot) {
-          parentNode = findParentNode(logicNode);
-          name = parentNode.name;
-        }
-        return (
-          <ReactFlowProvider>
-            <LogicNodeTreeDiagram logicNode={parentNode} />
-          </ReactFlowProvider>
-        );
-      },
-    };
-
-    if (selectedItem?.objType) {
-      const component = componentMap[selectedItem.objType as 'Diagram' | 'State' | 'LogicNode'](
-        selectedItem as Diagram | State | LogicNode,
-      );
-
-      addWindow(name, component, {
-        x: 75,
-        y: 25,
-        width: 1300,
-        height: 700,
-      });
-      handleMenuClose();
-    }
-  };
-  const findParentNode = (logicNode: LogicNode): LogicNode => {
-    const tempModel = GetModelItemsReferencing(logicNode.name, 'LogicNode', 1);
-    const nodes = tempModel.LogicNodeList;
-    if (nodes.length === 0) return emptyLogicNode;
-    for (const node of nodes) {
-      if (node.isRoot) {
-        return node;
-      } else {
-        return findParentNode(node);
-      }
-    }
-    return emptyLogicNode;
-  };
-
-  const handleMenuClose = () => {
-    setAnchorEl(null);
-    setSelectedItem(null);
-  };
   const handleClose = () => {
     setValue('');
   };
 
   return (
-    <>
-      <TextField
-        id="search-field"
-        variant="outlined"
-        label="Search"
-        value={value}
-        onChange={(e) => {
-          setValue(e.target.value);
-        }}
-        size="small"
-        slotProps={{
-          input: {
-            endAdornment: (
-              <InputAdornment position="end">
-                <IconButton onClick={onSubmit}>
-                  <SearchIcon />
-                </IconButton>
-              </InputAdornment>
-            ),
-            style: {
-              marginRight: isMediumScreen ? '15px' : '50px',
-              maxWidth: isMediumScreen ? '150px' : '200px',
-              borderRadius: '15px',
-            },
+    <TextField
+      id="search-field"
+      variant="outlined"
+      label="Search"
+      value={value}
+      onChange={(e) => {
+        setValue(e.target.value);
+      }}
+      size="small"
+      slotProps={{
+        input: {
+          endAdornment: (
+            <InputAdornment position="end">
+              <IconButton onClick={onSubmit}>
+                <SearchIcon />
+              </IconButton>
+            </InputAdornment>
+          ),
+          style: {
+            marginRight: isMediumScreen ? '15px' : '50px',
+            maxWidth: isMediumScreen ? '150px' : '200px',
+            borderRadius: '15px',
           },
-        }}
-        onKeyDown={handleKeyDown}
-      />
-      <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleMenuClose}>
-        <MenuItem onClick={goToEditProperties}>Edit Properties</MenuItem>
-        {(selectedItem?.objType === 'Diagram' ||
-          selectedItem?.objType === 'State' ||
-          selectedItem?.objType === 'LogicNode') && (
-          <MenuItem onClick={goToDiagramStateorLogictree}>View: {selectedItem.name}</MenuItem>
-        )}
-      </Menu>
-    </>
+        },
+      }}
+      onKeyDown={handleKeyDown}
+    />
   );
 };
 
