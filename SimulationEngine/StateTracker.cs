@@ -244,12 +244,12 @@ namespace SimulationTracking
                 //only evaluate these event types when initially entering a state
                 case EnModifiableTypes.mtExtEv:
                 case EnModifiableTypes.mtVar: //don't check if there are related IDs for these
-                  if ((item.eventData as CondBasedEvent).EventTriggered(curStatesBS, otherData, curTime, start3DTime, nextEvTime, runIdx)) //see if the code is triggered)
+                  if ((item.eventData as CondBasedEvent).EventTriggered(curStatesBS, otherData, curTime, start3DTime, nextEvTime, true, runIdx)) //see if the code is triggered)
                     retList.Add(item);
                   break;
                 case EnModifiableTypes.mtState:
                   if ((curStatesBS.HasCommonBits(item.eventData.relatedIDsBitSet) || ((item.eventData is StateCngEvent) && !(item.eventData as StateCngEvent).ifInState)) && //in cur states or not wanting in current states
-                      (item.eventData as CondBasedEvent).EventTriggered(curStatesBS, otherData, curTime, start3DTime, nextEvTime, runIdx))
+                      (item.eventData as CondBasedEvent).EventTriggered(curStatesBS, otherData, curTime, start3DTime, nextEvTime, true, runIdx))
                     retList.Add(item);
                   break;
                 default:
@@ -264,7 +264,7 @@ namespace SimulationTracking
                 //only evaluate these event types when initially entering a state
                 case EnModifiableTypes.mtExtEv:
                   if((changedItems.HasApplicableItems(curIDType, item.eventData.relatedIDsBitSet)) && 
-                     ((item.eventData as CondBasedEvent).EventTriggered(curStatesBS, otherData, curTime, start3DTime, nextEvTime, runIdx)))
+                     ((item.eventData as CondBasedEvent).EventTriggered(curStatesBS, otherData, curTime, start3DTime, nextEvTime, false, runIdx)))
                     retList.Add(item);
                   break;
 
@@ -273,7 +273,7 @@ namespace SimulationTracking
                   if ((item.eventData.evType != EnEventType.etComponentLogic) || (item.eventData.relatedIDsBitSet.And(toStates).BitCount() == 0)) 
                   {
                     if ((item.eventData.relatedIDsBitSet != null) && (changedItems.HasApplicableItems(curIDType, item.eventData.relatedIDsBitSet)) &&
-                          ((item.eventData as CondBasedEvent).EventTriggered(curStatesBS, otherData, curTime, start3DTime, nextEvTime, runIdx)))
+                          ((item.eventData as CondBasedEvent).EventTriggered(curStatesBS, otherData, curTime, start3DTime, nextEvTime, false, runIdx)))
                       retList.Add(item);
                   }
                   

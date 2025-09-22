@@ -47,6 +47,7 @@ namespace EMRALD_Sim
     private Options_cur jsonOptions = null; //if the user has passed in JSON options
     private bool _populatingSettings = false; //Flag that UI settings are being populated programatically, don't save on changes if true
     private bool _running = false; //currently running simulations
+    private string _lastError = "";
 
     [DllImport("kernel32.dll")]
     static extern bool AttachConsole(int dwProcessId);
@@ -953,6 +954,7 @@ namespace EMRALD_Sim
     {
       _running = false;
       ResetResults();
+      _lastError = "";
       try
       {
         MethodInvoker ErrorAndVisUpdateDelegate = delegate ()
@@ -963,7 +965,11 @@ namespace EMRALD_Sim
           foreach (var simBatch in simRuns)
           {
             if (simBatch.error != "")
-              lbl_ResultHeader.Text = "Thread-" + simBatch.threadNum.ToString() + " " + simBatch.error;
+            {
+              _lastError = "Thread-" + simBatch.threadNum.ToString() + " " + simBatch.error;
+              lbl_ResultHeader.Text = _lastError;
+            
+            }
           }
         };
 
@@ -1326,7 +1332,7 @@ namespace EMRALD_Sim
         if (_running && cbMultiThreaded.Checked)
           curT = cbCurThread.SelectedIndex;
 
-        if ((threadNum == null) || (curT == (int)threadNum)) //only update for specified thread or if there is none specified
+        if ((_lastError == "") && ((threadNum == null) || (curT == (int)threadNum))) //only update for specified thread or if there is none specified
         {
 
           lbl_ResultHeader.Text = _sim.name + " " + runCnt.ToString() + " of " + tbRunCnt.Text + " runs.";// Time - " + runTime.ToString();
