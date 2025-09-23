@@ -13,6 +13,7 @@ using MessageDefLib;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using MyStuff.Collections;
 using Newtonsoft.Json;
+using NLog;
 using ScriptEngineNS;
 
 namespace SimulationDAL
@@ -154,6 +155,7 @@ namespace SimulationDAL
     //protected override EnModifiableTypes GetModType() { return EnModifiableTypes.mtState; }
     public bool ifInState = true;
     public bool allItems = false;
+    public bool evalEvOnStateEntry = true;
     private MyBitArray changed = null; //all changed items for an EventTriggered call on this event
 
     protected override EnEventType GetEvType() { return EnEventType.etStateCng; }
@@ -215,25 +217,31 @@ namespace SimulationDAL
 
       this.ifInState = Convert.ToBoolean(dynObj.ifInState);
       this.allItems = Convert.ToBoolean(dynObj.allItems);
+      if (dynObj.evalEvOnStateEntry != null)
+        this.evalEvOnStateEntry = Convert.ToBoolean(dynObj.evalEvOnStateEntry);
+      else
+      {
+        this.evalEvOnStateEntry = this.ifInState; //default to true if using ifInState flag.
+      }
 
-      //Now Done in LoadOBjLinks()
-      ////load the Trigger States.
-      //if (dynObj.triggerStates != null)
-      //{
-      //  this.relatedIDs.Clear();
-      //  foreach (dynamic stateName in dynObj.triggerStates)
-      //  {
-      //    State trigState = lists.allStates.FindByName(stateName);
-      //    if (trigState == null)
-      //    {
-      //      throw new Exception("Could not find State - " + stateName + ", to add as a trigger state");
-      //    }
+        //Now Done in LoadOBjLinks()
+        ////load the Trigger States.
+        //if (dynObj.triggerStates != null)
+        //{
+        //  this.relatedIDs.Clear();
+        //  foreach (dynamic stateName in dynObj.triggerStates)
+        //  {
+        //    State trigState = lists.allStates.FindByName(stateName);
+        //    if (trigState == null)
+        //    {
+        //      throw new Exception("Could not find State - " + stateName + ", to add as a trigger state");
+        //    }
 
-      //    this.relatedIDs.Add(trigState.id);
-      //  }
-      //}
+        //    this.relatedIDs.Add(trigState.id);
+        //  }
+        //}
 
-      processed = true;
+        processed = true;
       return true;
     }
 
@@ -282,7 +290,7 @@ namespace SimulationDAL
       changed = ((ChangedIDs)otherData).stateIDs_BS;
 
       // If initial evaluation, evaluate all current states
-      if (initialEval)
+      if (initialEval && this.evalEvOnStateEntry)
       {
         // Consider all current states that are in the related IDs
         if (ifInState)
