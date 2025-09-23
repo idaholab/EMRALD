@@ -1,0 +1,188 @@
+{
+  "id": "5ba95b67-d865-46ca-983a-293e0a9290e3",
+  "name": "Test",
+  "desc": "",
+  "version": 1,
+  "DiagramList": [
+    {
+      "name": "Test Component",
+      "desc": "",
+      "diagramType": "dtSingle",
+      "diagramTemplate": "",
+      "diagramLabel": "System",
+      "states": [
+        "State1",
+        "State2"
+      ],
+      "id": "4a04f7f9-b73d-4eb2-b594-ea9b82e3e4ac",
+      "objType": "Diagram",
+      "required": false
+    }
+  ],
+  "StateList": [
+    {
+      "name": "State1",
+      "desc": "",
+      "stateType": "stStart",
+      "diagramName": "Test Component",
+      "immediateActions": [],
+      "events": [
+        "time spent in state 1"
+      ],
+      "eventActions": [
+        {
+          "actions": [
+            "Goto_state_2"
+          ],
+          "moveFromCurrent": true
+        }
+      ],
+      "id": "8d551e22-d17f-48a5-ac90-de9cfbb5bb75",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 317.3999938964844,
+        "y": 206.1999969482422,
+        "width": 200,
+        "height": 130
+      },
+      "defaultSingleStateValue": "False"
+    },
+    {
+      "name": "State2",
+      "desc": "",
+      "stateType": "stStandard",
+      "diagramName": "Test Component",
+      "immediateActions": [],
+      "events": [
+        "time spent in state two"
+      ],
+      "eventActions": [
+        {
+          "actions": [
+            "Goto_state_1"
+          ],
+          "moveFromCurrent": true
+        }
+      ],
+      "id": "8f9381af-dacc-4286-b0cd-ecab694babef",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 629.7999877929688,
+        "y": 149.8000030517578,
+        "width": 200,
+        "height": 130
+      },
+      "defaultSingleStateValue": "True"
+    }
+  ],
+  "ActionList": [
+    {
+      "name": "Goto_state_1",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "State1",
+          "prob": -1,
+          "failDesc": ""
+        }
+      ],
+      "id": "73a81f83-80a3-482c-b5a7-90026ae3d49f",
+      "objType": "Action"
+    },
+    {
+      "name": "Goto_state_2",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "State2",
+          "prob": -1,
+          "failDesc": ""
+        }
+      ],
+      "id": "59598cca-9814-4ae5-8991-bac5daf02c68",
+      "objType": "Action"
+    }
+  ],
+  "EventList": [
+    {
+      "name": "time spent in state 1",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etTimer",
+      "allItems": true,
+      "triggerStates": [],
+      "varNames": [],
+      "useVariable": false,
+      "time": "PT5M",
+      "timeVariableUnit": "",
+      "fromSimStart": false,
+      "id": "65e18261-a5e6-4a58-bc21-4c69387e32c9",
+      "objType": "Event"
+    },
+    {
+      "name": "time spent in state two",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etTimer",
+      "allItems": true,
+      "triggerStates": [],
+      "varNames": [],
+      "useVariable": false,
+      "time": "PT5M",
+      "timeVariableUnit": "",
+      "fromSimStart": false,
+      "id": "e035b343-fd38-4653-90fd-14550a4efd47",
+      "objType": "Event"
+    }
+  ],
+  "LogicNodeList": [],
+  "VariableList": [
+    {
+      "name": "State1",
+      "desc": "",
+      "varScope": "gtAccrual",
+      "value": 0,
+      "accrualStatesData": [
+        {
+          "stateName": "State1",
+          "type": "ctMultiplier",
+          "accrualMult": 1,
+          "multRate": "trHours",
+          "accrualTable": []
+        }
+      ],
+      "type": "double",
+      "id": "b5a556d4-7a51-44ce-902b-432a92586873",
+      "objType": "Variable"
+    },
+    {
+      "name": "state2",
+      "desc": "",
+      "varScope": "gtAccrual",
+      "value": 0,
+      "accrualStatesData": [
+        {
+          "stateName": "State2",
+          "type": "ctMultiplier",
+          "accrualMult": 1,
+          "multRate": "trHours",
+          "accrualTable": []
+        }
+      ],
+      "type": "double",
+      "id": "81e29c93-c749-40dd-b5e6-f0c39f438a50",
+      "objType": "Variable"
+    }
+  ],
+  "templates": [],
+  "ExtSimList": [],
+  "objType": "EMRALD_Model",
+  "emraldVersion": 3.1,
+  "versionHistory": []
+}

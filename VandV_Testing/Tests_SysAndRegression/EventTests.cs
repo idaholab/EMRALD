@@ -72,7 +72,7 @@ namespace SysAndRegressionTesting
       JObject optionsJ = SetupJSON(dir, testName, true);
 
       //Change the default settings as needed for the test seed default set to 0 for testing.
-      optionsJ["inpfile"] = MainTestDir() + ModelFolder() + testName + ".json";
+      optionsJ["inpfile"] = MainTestDir() + ModelFolder() + testName + ".emrald";
       optionsJ["runct"] = 100000;
       JSONRun testRun = new JSONRun(optionsJ.ToString());
       Assert.True(TestRunSim(testRun));
@@ -97,7 +97,7 @@ namespace SysAndRegressionTesting
       JObject optionsJ = SetupJSON(dir, testName, true);
 
       //Change the default settings as needed for the test seed default set to 0 for testing.
-      optionsJ["inpfile"] = MainTestDir() + ModelFolder() + testName + ".json";
+      optionsJ["inpfile"] = MainTestDir() + ModelFolder() + testName + ".emrald";
       optionsJ["runct"] = 100000;
       JSONRun testRun = new JSONRun(optionsJ.ToString());
       Assert.True(TestRunSim(testRun));
@@ -121,7 +121,7 @@ namespace SysAndRegressionTesting
       JObject optionsJ = SetupJSON(dir, testName, true);
 
       //Change the default settings as needed for the test seed default set to 0 for testing.
-      optionsJ["inpfile"] = MainTestDir() + ModelFolder() + testName + ".json";
+      optionsJ["inpfile"] = MainTestDir() + ModelFolder() + testName + ".emrald";
       optionsJ["runct"] = 100000;
       JSONRun testRun = new JSONRun(optionsJ.ToString());
       Assert.True(TestRunSim(testRun));
@@ -145,7 +145,7 @@ namespace SysAndRegressionTesting
       JObject optionsJ = SetupJSON(dir, testName, true);
 
       //Change the default settings as needed for the test seed default set to 0 for testing.
-      optionsJ["inpfile"] = MainTestDir() + ModelFolder() + testName + ".json";
+      optionsJ["inpfile"] = MainTestDir() + ModelFolder() + testName + ".emrald";
       optionsJ["runct"] = 100000;
       JSONRun testRun = new JSONRun(optionsJ.ToString());
       Assert.True(TestRunSim(testRun));
@@ -169,7 +169,7 @@ namespace SysAndRegressionTesting
       JObject optionsJ = SetupJSON(dir, testName);
 
       //Change the default settings as needed for the test seed default set to 0 for testing.
-      optionsJ["inpfile"] = MainTestDir() + ModelFolder() + testName + ".json";
+      optionsJ["inpfile"] = MainTestDir() + ModelFolder() + testName + ".emrald";
       optionsJ["runct"] = 100000;
       JSONRun testRun = new JSONRun(optionsJ.ToString());
       Assert.True(TestRunSim(testRun));
@@ -193,7 +193,7 @@ namespace SysAndRegressionTesting
       JObject optionsJ = SetupJSON(dir, testName);
 
       //Change the default settings as needed for the test seed default set to 0 for testing.
-      optionsJ["inpfile"] = MainTestDir() + ModelFolder() + testName + ".json";
+      optionsJ["inpfile"] = MainTestDir() + ModelFolder() + testName + ".emrald";
       optionsJ["runct"] = 100000;
       JSONRun testRun = new JSONRun(optionsJ.ToString());
       Assert.True(TestRunSim(testRun));
@@ -217,7 +217,7 @@ namespace SysAndRegressionTesting
       JObject optionsJ = SetupJSON(dir, testName, true);
 
       //Change the default settings as needed for the test seed default set to 0 for testing.
-      optionsJ["inpfile"] = MainTestDir() + ModelFolder() + testName + ".json";
+      optionsJ["inpfile"] = MainTestDir() + ModelFolder() + testName + ".emrald";
       optionsJ["runct"] = 100000;
       JSONRun testRun = new JSONRun(optionsJ.ToString());
       Assert.True(TestRunSim(testRun));
@@ -242,7 +242,7 @@ namespace SysAndRegressionTesting
       JObject optionsJ = SetupJSON(dir, testName, true);
 
       //Change the default settings as needed for the test seed default set to 0 for testing.
-      optionsJ["inpfile"] = MainTestDir() + ModelFolder() + testName + ".json";
+      optionsJ["inpfile"] = MainTestDir() + ModelFolder() + testName + ".emrald";
       optionsJ["runct"] = 100000;
       JSONRun testRun = new JSONRun(optionsJ.ToString());
       Assert.True(TestRunSim(testRun));
@@ -268,7 +268,7 @@ namespace SysAndRegressionTesting
       JObject optionsJ = SetupJSON(dir, testName, true);
 
       //Change the default settings as needed for the test seed default set to 0 for testing.
-      optionsJ["inpfile"] = MainTestDir() + ModelFolder() + testName + ".json";
+      optionsJ["inpfile"] = MainTestDir() + ModelFolder() + testName + ".emrald";
       optionsJ["runct"] = 10;
       JSONRun testRun = new JSONRun(optionsJ.ToString());
       Assert.True(TestRunSim(testRun));
@@ -293,7 +293,7 @@ namespace SysAndRegressionTesting
 
       SimulationEngine.Options_cur options = optionsJ.ToObject<SimulationEngine.Options_cur>();
       //Change the default settings as needed for the test seed default set to 0 for testing.
-      options.inpfile = MainTestDir() + ModelFolder() + testName + ".json";
+      options.inpfile = MainTestDir() + ModelFolder() + testName + ".emrald";
       options.runct = 100;
       options.seed = 1;
       //optionsJ["variables"] = JsonConvert.SerializeObject(args);
@@ -319,7 +319,7 @@ namespace SysAndRegressionTesting
       JObject optionsJ = SetupJSON(dir, testName, true);
 
       //Change the default settings as needed for the test seed default set to 0 for testing.
-      optionsJ["inpfile"] = MainTestDir() + ModelFolder() + testName + ".json";
+      optionsJ["inpfile"] = MainTestDir() + ModelFolder() + testName + ".emrald";
       optionsJ["runct"] = 1;
       JSONRun testRun = new JSONRun(optionsJ.ToString());
       Assert.True(TestRunSim(testRun));
@@ -343,7 +343,7 @@ namespace SysAndRegressionTesting
       JObject optionsJ = SetupJSON(dir, testName);
 
       //Change the default settings as needed for the test seed default set to 0 for testing.
-      optionsJ["inpfile"] = MainTestDir() + ModelFolder() + testName + ".json";
+      optionsJ["inpfile"] = MainTestDir() + ModelFolder() + testName + ".emrald";
       optionsJ["runct"] = 10000;
       JSONRun testRun = new JSONRun(optionsJ.ToString());
       Assert.True(TestRunSim(testRun));
@@ -367,7 +367,7 @@ namespace SysAndRegressionTesting
       JObject optionsJ = SetupJSON(dir, testName);
 
       //Change the default settings as needed for the test seed default set to 0 for testing.
-      optionsJ["inpfile"] = MainTestDir() + ModelFolder() + testName + ".json";
+      optionsJ["inpfile"] = MainTestDir() + ModelFolder() + testName + ".emrald";
       optionsJ["runct"] = 1000;
       JSONRun testRun = new JSONRun(optionsJ.ToString());
       Assert.True(TestRunSim(testRun));

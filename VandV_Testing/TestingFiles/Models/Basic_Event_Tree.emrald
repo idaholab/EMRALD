@@ -1,0 +1,201 @@
+{
+  "id": "567daa57-ce2e-4dac-ae6f-8275b90a2556",
+  "name": "Basic Event Tree",
+  "desc": "",
+  "version": 1,
+  "DiagramList": [
+    {
+      "name": "Event Tree",
+      "desc": "",
+      "diagramType": "dtMulti",
+      "diagramTemplate": "",
+      "diagramLabel": "Plant",
+      "states": [
+        "Normal Operations",
+        "ESF Actuated",
+        "Core Damage ",
+        "Terminate"
+      ],
+      "id": "05460e4e-8bd0-48ca-a331-123c772bf828",
+      "objType": "Diagram",
+      "required": false
+    }
+  ],
+  "StateList": [
+    {
+      "name": "Core Damage ",
+      "desc": "",
+      "stateType": "stKeyState",
+      "diagramName": "Event Tree",
+      "immediateActions": [
+        "Goto_Terminate"
+      ],
+      "events": [],
+      "eventActions": [],
+      "id": "7cd4084c-f389-479f-b634-830f1d5d3c99",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 1130,
+        "y": 130,
+        "width": 200,
+        "height": 100
+      }
+    },
+    {
+      "name": "ESF Actuated",
+      "desc": "",
+      "stateType": "stKeyState",
+      "diagramName": "Event Tree",
+      "immediateActions": [],
+      "events": [
+        "Failure"
+      ],
+      "eventActions": [
+        {
+          "actions": [
+            "Goto_Core_Damage"
+          ],
+          "moveFromCurrent": true
+        }
+      ],
+      "id": "7ba6e72c-81f3-4614-a103-8c525f1f5b31",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 810,
+        "y": 210,
+        "width": 200,
+        "height": 130
+      }
+    },
+    {
+      "name": "Normal Operations",
+      "desc": "",
+      "stateType": "stStart",
+      "diagramName": "Event Tree",
+      "immediateActions": [],
+      "events": [
+        "Initiating Event"
+      ],
+      "eventActions": [
+        {
+          "actions": [
+            "Goto_ESF"
+          ],
+          "moveFromCurrent": true
+        }
+      ],
+      "id": "13117678-e6b6-4770-9416-6f3516e55b49",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 447,
+        "y": 185,
+        "width": 200,
+        "height": 130
+      }
+    },
+    {
+      "name": "Terminate",
+      "desc": "",
+      "stateType": "stTerminal",
+      "diagramName": "Event Tree",
+      "immediateActions": [],
+      "events": [],
+      "eventActions": [],
+      "id": "ba2fa458-bade-4498-9196-cf6e31963e8b",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 1422,
+        "y": 292,
+        "width": 200,
+        "height": 80
+      }
+    }
+  ],
+  "ActionList": [
+    {
+      "name": "Goto_Core_Damage",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "Core Damage ",
+          "prob": -1,
+          "failDesc": ""
+        }
+      ],
+      "id": "449ba83f-3129-45fc-baee-df37edf4a980",
+      "objType": "Action"
+    },
+    {
+      "name": "Goto_ESF",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "ESF Actuated",
+          "prob": -1,
+          "failDesc": ""
+        }
+      ],
+      "id": "beac8a19-7b4a-446a-8364-845c3704d27c",
+      "objType": "Action"
+    },
+    {
+      "name": "Goto_Terminate",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "Terminate",
+          "prob": -1,
+          "failDesc": ""
+        }
+      ],
+      "id": "8e3d4490-b61d-4e67-b136-955a3a345563",
+      "objType": "Action"
+    }
+  ],
+  "EventList": [
+    {
+      "name": "Failure",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etFailRate",
+      "allItems": true,
+      "triggerStates": [],
+      "varNames": [],
+      "lambda": 1,
+      "lambdaTimeRate": "P365D",
+      "useVariable": false,
+      "id": "19a94b3b-5f1b-4ef3-933f-cebc1366cfae",
+      "objType": "Event"
+    },
+    {
+      "name": "Initiating Event",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etFailRate",
+      "allItems": true,
+      "triggerStates": [],
+      "varNames": [],
+      "lambda": 0.005,
+      "lambdaTimeRate": "P365D",
+      "useVariable": false,
+      "id": "7e2e2aef-2059-4949-8b69-8e425a0c4c5f",
+      "objType": "Event"
+    }
+  ],
+  "LogicNodeList": [],
+  "VariableList": [],
+  "templates": [],
+  "ExtSimList": [],
+  "objType": "EMRALD_Model",
+  "emraldVersion": 3.1,
+  "versionHistory": []
+}

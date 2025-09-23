@@ -46,7 +46,7 @@ namespace SysAndRegressionTesting
 
       SimulationEngine.Options_cur options = optionsJ.ToObject<SimulationEngine.Options_cur>();
       //Change the default settings as needed for the test seed default set to 0 for testing.
-      options.inpfile = MainTestDir() + ModelFolder() + testName + ".json";
+      options.inpfile = MainTestDir() + ModelFolder() + testName + ".emrald";
       options.runct = 1;
       options.variables = new List<string>() { "Int_Cnt" };
       //optionsJ["variables"] = JsonConvert.SerializeObject(args);

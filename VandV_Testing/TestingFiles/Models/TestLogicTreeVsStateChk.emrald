@@ -1,0 +1,1088 @@
+{
+  "id": "638a9c97-92a4-493d-a09e-2b74d7fbcf64",
+  "name": "McCormick Reliability and Risk Analysis Example 6-4",
+  "desc": "Problem 6-4 out of McCormick's textbook",
+  "version": 1,
+  "DiagramList": [
+    {
+      "name": "Comp_A",
+      "desc": "Component A",
+      "diagramType": "dtSingle",
+      "diagramTemplate": "",
+      "diagramLabel": "Component",
+      "states": [
+        "A_Working",
+        "A_Failed"
+      ],
+      "id": "4e4fdedb-fac8-4909-8d7f-5a408e92e113",
+      "objType": "Diagram",
+      "required": false
+    },
+    {
+      "name": "Comp_B",
+      "desc": "Component A",
+      "diagramType": "dtSingle",
+      "diagramTemplate": "",
+      "diagramLabel": "Component",
+      "states": [
+        "B_Working",
+        "B_Failed"
+      ],
+      "id": "debc8689-131d-435c-8724-033b7d9db2ef",
+      "objType": "Diagram",
+      "required": false
+    },
+    {
+      "name": "Comp_C",
+      "desc": "Component A",
+      "diagramType": "dtSingle",
+      "diagramTemplate": "",
+      "diagramLabel": "Component",
+      "states": [
+        "C_Working",
+        "C_Failed"
+      ],
+      "id": "d2c5446b-f0e0-415d-b440-54b16fc5ab36",
+      "objType": "Diagram",
+      "required": false
+    },
+    {
+      "name": "Comp_D",
+      "desc": "Component A",
+      "diagramType": "dtSingle",
+      "diagramTemplate": "",
+      "diagramLabel": "Component",
+      "states": [
+        "D_Working",
+        "D_Failed"
+      ],
+      "id": "a3200919-5be2-414f-92c5-167e9ca556dd",
+      "objType": "Diagram",
+      "required": false
+    },
+    {
+      "name": "Comp_E",
+      "desc": "Component A",
+      "diagramType": "dtSingle",
+      "diagramTemplate": "",
+      "diagramLabel": "Component",
+      "states": [
+        "E_Working",
+        "E_Failed"
+      ],
+      "id": "18ce9099-d7f9-42f8-8745-90f7e225d1bb",
+      "objType": "Diagram",
+      "required": false
+    },
+    {
+      "name": "Comp_F",
+      "desc": "Component A",
+      "diagramType": "dtSingle",
+      "diagramTemplate": "",
+      "diagramLabel": "Component",
+      "states": [
+        "F_Working",
+        "F_Failed"
+      ],
+      "id": "9a8fe37a-6406-4554-b7a6-cbf89f1379d6",
+      "objType": "Diagram",
+      "required": false
+    },
+    {
+      "name": "Example_6_4",
+      "desc": "Example 6-4",
+      "diagramType": "dtMulti",
+      "diagramTemplate": "",
+      "diagramLabel": "Plant",
+      "states": [
+        "MissionTime",
+        "EndMission"
+      ],
+      "id": "0318f70c-2989-4be1-ac51-53089bd24124",
+      "objType": "Diagram",
+      "required": false
+    },
+    {
+      "name": "SYS",
+      "desc": "Failure",
+      "diagramType": "dtSingle",
+      "diagramTemplate": "",
+      "diagramLabel": "System",
+      "states": [
+        "SYS_WORKS",
+        "SYS_FAILS"
+      ],
+      "id": "4a5499c8-a58b-4e14-a8c8-d551aea7a3c0",
+      "objType": "Diagram",
+      "required": false
+    },
+    {
+      "name": "SYSFT",
+      "desc": "Failure",
+      "diagramType": "dtSingle",
+      "diagramTemplate": "",
+      "diagramLabel": "System",
+      "states": [
+        "SYSFT_WORKS",
+        "SYS_FAILS_FT"
+      ],
+      "id": "668f027e-bde2-4c6b-8ce6-6fb4a58170d1",
+      "objType": "Diagram",
+      "required": false
+    }
+  ],
+  "StateList": [
+    {
+      "name": "A_Failed",
+      "desc": "",
+      "stateType": "stKeyState",
+      "diagramName": "Comp_A",
+      "immediateActions": [],
+      "events": [],
+      "eventActions": [],
+      "id": "6192fb66-5775-428b-8976-55f8cb0d9c84",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 330.5,
+        "y": 30.5,
+        "width": 200,
+        "height": 80
+      },
+      "defaultSingleStateValue": "False"
+    },
+    {
+      "name": "A_Working",
+      "desc": "",
+      "stateType": "stStart",
+      "diagramName": "Comp_A",
+      "immediateActions": [],
+      "events": [
+        "A_FTR"
+      ],
+      "eventActions": [
+        {
+          "actions": [
+            "Goto_A_Failed"
+          ],
+          "moveFromCurrent": true
+        }
+      ],
+      "id": "dcd134ed-4063-4136-a686-9645715e18d9",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 40.5,
+        "y": 30.5,
+        "width": 200,
+        "height": 130
+      },
+      "defaultSingleStateValue": "True"
+    },
+    {
+      "name": "B_Failed",
+      "desc": "",
+      "stateType": "stKeyState",
+      "diagramName": "Comp_B",
+      "immediateActions": [],
+      "events": [],
+      "eventActions": [],
+      "id": "3f1b4431-aafd-4845-b5c2-1047afaf355f",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 330.5,
+        "y": 30.5,
+        "width": 200,
+        "height": 80
+      },
+      "defaultSingleStateValue": "False"
+    },
+    {
+      "name": "B_Working",
+      "desc": "",
+      "stateType": "stStart",
+      "diagramName": "Comp_B",
+      "immediateActions": [],
+      "events": [
+        "B_FTR"
+      ],
+      "eventActions": [
+        {
+          "actions": [
+            "Goto_B_Failed"
+          ],
+          "moveFromCurrent": true
+        }
+      ],
+      "id": "87da0cb8-e595-4a29-91e6-01dee240ceb9",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 40.5,
+        "y": 30.5,
+        "width": 200,
+        "height": 130
+      },
+      "defaultSingleStateValue": "True"
+    },
+    {
+      "name": "C_Failed",
+      "desc": "",
+      "stateType": "stKeyState",
+      "diagramName": "Comp_C",
+      "immediateActions": [],
+      "events": [],
+      "eventActions": [],
+      "id": "0a36e75a-ed4e-4895-9f53-4d4d536c4458",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 330.5,
+        "y": 30.5,
+        "width": 200,
+        "height": 80
+      },
+      "defaultSingleStateValue": "False"
+    },
+    {
+      "name": "C_Working",
+      "desc": "",
+      "stateType": "stStart",
+      "diagramName": "Comp_C",
+      "immediateActions": [],
+      "events": [
+        "C_FTR"
+      ],
+      "eventActions": [
+        {
+          "actions": [
+            "Goto_C_Failed"
+          ],
+          "moveFromCurrent": true
+        }
+      ],
+      "id": "631de0c0-a249-47f1-8d9e-3aa0fbbd8e4f",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 40.5,
+        "y": 30.5,
+        "width": 200,
+        "height": 130
+      },
+      "defaultSingleStateValue": "True"
+    },
+    {
+      "name": "D_Failed",
+      "desc": "",
+      "stateType": "stKeyState",
+      "diagramName": "Comp_D",
+      "immediateActions": [],
+      "events": [],
+      "eventActions": [],
+      "id": "3ef705c7-a281-42e5-9b9a-5b2a4e214633",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 330.5,
+        "y": 30.5,
+        "width": 200,
+        "height": 80
+      },
+      "defaultSingleStateValue": "False"
+    },
+    {
+      "name": "D_Working",
+      "desc": "",
+      "stateType": "stStart",
+      "diagramName": "Comp_D",
+      "immediateActions": [],
+      "events": [
+        "D_FTR"
+      ],
+      "eventActions": [
+        {
+          "actions": [
+            "Goto_D_Failed"
+          ],
+          "moveFromCurrent": true
+        }
+      ],
+      "id": "5c8975fc-30dd-4b4a-9a52-4fc306cff435",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 40.5,
+        "y": 30.5,
+        "width": 200,
+        "height": 130
+      },
+      "defaultSingleStateValue": "True"
+    },
+    {
+      "name": "E_Failed",
+      "desc": "",
+      "stateType": "stKeyState",
+      "diagramName": "Comp_E",
+      "immediateActions": [],
+      "events": [],
+      "eventActions": [],
+      "id": "023fd949-13df-4cd8-b15e-e1427509830f",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 330.5,
+        "y": 30.5,
+        "width": 200,
+        "height": 80
+      },
+      "defaultSingleStateValue": "False"
+    },
+    {
+      "name": "E_Working",
+      "desc": "",
+      "stateType": "stStart",
+      "diagramName": "Comp_E",
+      "immediateActions": [],
+      "events": [
+        "E_FTR"
+      ],
+      "eventActions": [
+        {
+          "actions": [
+            "Goto_E_Failed"
+          ],
+          "moveFromCurrent": true
+        }
+      ],
+      "id": "45bd5dc5-33a6-4031-9f7b-fad662a72ac7",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 40.5,
+        "y": 30.5,
+        "width": 200,
+        "height": 130
+      },
+      "defaultSingleStateValue": "True"
+    },
+    {
+      "name": "EndMission",
+      "desc": "",
+      "stateType": "stTerminal",
+      "diagramName": "Example_6_4",
+      "immediateActions": [],
+      "events": [],
+      "eventActions": [],
+      "id": "bd132128-e7e5-445d-9249-53b4aa363050",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 340.5,
+        "y": 70.5,
+        "width": 200,
+        "height": 80
+      }
+    },
+    {
+      "name": "F_Failed",
+      "desc": "",
+      "stateType": "stKeyState",
+      "diagramName": "Comp_F",
+      "immediateActions": [],
+      "events": [],
+      "eventActions": [],
+      "id": "f789cfb1-5a53-48e0-b4dd-e7369ae323f6",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 330.5,
+        "y": 30.5,
+        "width": 200,
+        "height": 80
+      },
+      "defaultSingleStateValue": "False"
+    },
+    {
+      "name": "F_Working",
+      "desc": "",
+      "stateType": "stStart",
+      "diagramName": "Comp_F",
+      "immediateActions": [],
+      "events": [
+        "F_FTR"
+      ],
+      "eventActions": [
+        {
+          "actions": [
+            "Goto_F_Failed"
+          ],
+          "moveFromCurrent": true
+        }
+      ],
+      "id": "ec28fb2c-9b33-44a2-89b4-3d955536c70a",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 40.5,
+        "y": 30.5,
+        "width": 200,
+        "height": 130
+      },
+      "defaultSingleStateValue": "True"
+    },
+    {
+      "name": "MissionTime",
+      "desc": "The mission time for the problem",
+      "stateType": "stStart",
+      "diagramName": "Example_6_4",
+      "immediateActions": [],
+      "events": [
+        "TIMER_Mission_Over"
+      ],
+      "eventActions": [
+        {
+          "actions": [
+            "TRANS_End_Mission"
+          ],
+          "moveFromCurrent": true
+        }
+      ],
+      "id": "35df2326-edb0-4f8a-94ba-627b7ffc87a2",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 50.5,
+        "y": 30.5,
+        "width": 200,
+        "height": 130
+      }
+    },
+    {
+      "name": "SYS_FAILS",
+      "desc": "",
+      "stateType": "stKeyState",
+      "diagramName": "SYS",
+      "immediateActions": [],
+      "events": [],
+      "eventActions": [],
+      "id": "ead82e44-0261-4f24-a024-e0d5839ceae7",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 350.5,
+        "y": 60.5,
+        "width": 200,
+        "height": 80
+      },
+      "defaultSingleStateValue": "False"
+    },
+    {
+      "name": "SYS_FAILS_FT",
+      "desc": "",
+      "stateType": "stKeyState",
+      "diagramName": "SYSFT",
+      "immediateActions": [],
+      "events": [],
+      "eventActions": [],
+      "id": "95b535bc-70f3-4d30-86c0-a7045de7de68",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 310.5,
+        "y": 60,
+        "width": 200,
+        "height": 80
+      },
+      "defaultSingleStateValue": "False"
+    },
+    {
+      "name": "SYS_WORKS",
+      "desc": "",
+      "stateType": "stStart",
+      "diagramName": "SYS",
+      "immediateActions": [],
+      "events": [
+        "Check_A_B",
+        "Check_D_C",
+        "Check_F_E",
+        "Check_B_C",
+        "Check_B_E",
+        "Check_D_E"
+      ],
+      "eventActions": [
+        {
+          "actions": [
+            "Goto_SYSFailed"
+          ],
+          "moveFromCurrent": true
+        },
+        {
+          "actions": [
+            "Goto_SYSFailed"
+          ],
+          "moveFromCurrent": true
+        },
+        {
+          "actions": [
+            "Goto_SYSFailed"
+          ],
+          "moveFromCurrent": true
+        },
+        {
+          "actions": [
+            "Goto_SYSFailed"
+          ],
+          "moveFromCurrent": true
+        },
+        {
+          "actions": [
+            "Goto_SYSFailed"
+          ],
+          "moveFromCurrent": true
+        },
+        {
+          "actions": [
+            "Goto_SYSFailed"
+          ],
+          "moveFromCurrent": true
+        }
+      ],
+      "id": "ff75e4b4-1286-4f30-a92f-c0b5ce04852e",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 30.5,
+        "y": 30.5,
+        "width": 200,
+        "height": 300
+      },
+      "defaultSingleStateValue": "True"
+    },
+    {
+      "name": "SYSFT_WORKS",
+      "desc": "",
+      "stateType": "stStart",
+      "diagramName": "SYSFT",
+      "immediateActions": [],
+      "events": [
+        "Goto_FTFailed"
+      ],
+      "eventActions": [
+        {
+          "actions": [
+            "Goto_SYSFTFailed_FT"
+          ],
+          "moveFromCurrent": true
+        }
+      ],
+      "id": "b088af56-4572-4202-b6c5-5208237b6b5b",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 30.5,
+        "y": 30.5,
+        "width": 200,
+        "height": 130
+      },
+      "defaultSingleStateValue": "True"
+    }
+  ],
+  "ActionList": [
+    {
+      "name": "Goto_A_Failed",
+      "desc": "A has failed",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "A_Failed",
+          "prob": -1,
+          "failDesc": ""
+        }
+      ],
+      "id": "24ff5747-3550-461e-b8ee-66b14ca204e1",
+      "objType": "Action"
+    },
+    {
+      "name": "Goto_B_Failed",
+      "desc": "A has failed",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "B_Failed",
+          "prob": -1,
+          "failDesc": ""
+        }
+      ],
+      "id": "57ffb33d-6a24-40a5-b961-96168b8286ba",
+      "objType": "Action"
+    },
+    {
+      "name": "Goto_C_Failed",
+      "desc": "A has failed",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "C_Failed",
+          "prob": -1,
+          "failDesc": ""
+        }
+      ],
+      "id": "424ce1fe-5fa9-4dd0-9fa2-2d06504969aa",
+      "objType": "Action"
+    },
+    {
+      "name": "Goto_D_Failed",
+      "desc": "A has failed",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "D_Failed",
+          "prob": -1,
+          "failDesc": ""
+        }
+      ],
+      "id": "cd3d9ce7-3840-437a-b38e-ba225633fa86",
+      "objType": "Action"
+    },
+    {
+      "name": "Goto_E_Failed",
+      "desc": "A has failed",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "E_Failed",
+          "prob": -1,
+          "failDesc": ""
+        }
+      ],
+      "id": "c7bfdfb7-0c2f-4278-9dbb-a0190545ed12",
+      "objType": "Action"
+    },
+    {
+      "name": "Goto_F_Failed",
+      "desc": "A has failed",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "F_Failed",
+          "prob": -1,
+          "failDesc": ""
+        }
+      ],
+      "id": "6f941c8e-6b95-4b5e-9d6a-6663cee65090",
+      "objType": "Action"
+    },
+    {
+      "name": "Goto_SYSFailed",
+      "desc": "Transition to the failed state.",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "SYS_FAILS",
+          "prob": 1,
+          "failDesc": ""
+        }
+      ],
+      "id": "122ceeb4-36e3-4845-a076-32bcbe8a57e2",
+      "objType": "Action"
+    },
+    {
+      "name": "Goto_SYSFTFailed_FT",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "SYS_FAILS_FT",
+          "prob": -1,
+          "failDesc": ""
+        }
+      ],
+      "id": "b88c92c2-15a5-4fb4-aeee-af1f538a2f2f",
+      "objType": "Action"
+    },
+    {
+      "name": "TRANS_End_Mission",
+      "desc": "Move to the end of mission state.",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "EndMission",
+          "prob": -1,
+          "failDesc": ""
+        }
+      ],
+      "id": "09a4eafa-0878-485b-88f4-1226c4350fcc",
+      "objType": "Action"
+    }
+  ],
+  "EventList": [
+    {
+      "name": "A_FTR",
+      "desc": "A fails to run",
+      "mainItem": false,
+      "evType": "etFailRate",
+      "allItems": true,
+      "triggerStates": [],
+      "varNames": [],
+      "lambda": 0.01,
+      "lambdaTimeRate": "PT1H",
+      "useVariable": false,
+      "id": "819c6141-ecf3-44a4-9748-7a2b115f392f",
+      "objType": "Event"
+    },
+    {
+      "name": "B_FTR",
+      "desc": "A fails to run",
+      "mainItem": false,
+      "evType": "etFailRate",
+      "allItems": true,
+      "triggerStates": [],
+      "varNames": [],
+      "lambda": 0.01,
+      "lambdaTimeRate": "PT1H",
+      "useVariable": false,
+      "id": "ccc1d0e8-c1be-4879-af4c-415b8f1b44e3",
+      "objType": "Event"
+    },
+    {
+      "name": "C_FTR",
+      "desc": "A fails to run",
+      "mainItem": false,
+      "evType": "etFailRate",
+      "allItems": true,
+      "triggerStates": [],
+      "varNames": [],
+      "lambda": 0.01,
+      "lambdaTimeRate": "PT1H",
+      "useVariable": false,
+      "id": "517fe7f8-1137-4291-b4fe-32444d4a1102",
+      "objType": "Event"
+    },
+    {
+      "name": "Check_A_B",
+      "desc": "See if pump A and pump B are failed",
+      "mainItem": false,
+      "evType": "etStateCng",
+      "allItems": true,
+      "triggerStates": [
+        "B_Failed",
+        "A_Failed"
+      ],
+      "varNames": [],
+      "ifInState": true,
+      "id": "1f6e1a93-d87a-417e-8727-8b2dc38608fe",
+      "objType": "Event"
+    },
+    {
+      "name": "Check_B_C",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etStateCng",
+      "allItems": true,
+      "triggerStates": [
+        "B_Failed",
+        "C_Failed"
+      ],
+      "varNames": [],
+      "ifInState": true,
+      "id": "0a98817d-8692-4fa1-8394-65e96eec66b5",
+      "objType": "Event"
+    },
+    {
+      "name": "Check_B_E",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etStateCng",
+      "allItems": true,
+      "triggerStates": [
+        "B_Failed",
+        "E_Failed"
+      ],
+      "varNames": [],
+      "ifInState": true,
+      "id": "87f24f5c-90d2-4832-ad45-a88003eb5250",
+      "objType": "Event"
+    },
+    {
+      "name": "Check_D_C",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etStateCng",
+      "allItems": true,
+      "triggerStates": [
+        "C_Failed",
+        "D_Failed"
+      ],
+      "varNames": [],
+      "ifInState": true,
+      "id": "acdec39e-aabf-4a81-91af-3bb11d2b6bdc",
+      "objType": "Event"
+    },
+    {
+      "name": "Check_D_E",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etStateCng",
+      "allItems": true,
+      "triggerStates": [
+        "D_Failed",
+        "E_Failed"
+      ],
+      "varNames": [],
+      "ifInState": true,
+      "id": "4023b70c-3647-4606-a44e-df3e8fddfbbc",
+      "objType": "Event"
+    },
+    {
+      "name": "Check_F_E",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etStateCng",
+      "allItems": true,
+      "triggerStates": [
+        "E_Failed",
+        "F_Failed"
+      ],
+      "varNames": [],
+      "ifInState": true,
+      "id": "0980d8cb-e143-4185-ba4d-437d12b9fc88",
+      "objType": "Event"
+    },
+    {
+      "name": "D_FTR",
+      "desc": "A fails to run",
+      "mainItem": false,
+      "evType": "etFailRate",
+      "allItems": true,
+      "triggerStates": [],
+      "varNames": [],
+      "lambda": 0.01,
+      "lambdaTimeRate": "PT1H",
+      "useVariable": false,
+      "id": "ac1511e2-36e2-4622-a451-d4b7ec465488",
+      "objType": "Event"
+    },
+    {
+      "name": "E_FTR",
+      "desc": "A fails to run",
+      "mainItem": false,
+      "evType": "etFailRate",
+      "allItems": true,
+      "triggerStates": [],
+      "varNames": [],
+      "lambda": 0.01,
+      "lambdaTimeRate": "PT1H",
+      "useVariable": false,
+      "id": "0a0f8b74-8c52-454c-85cc-e09b486420d1",
+      "objType": "Event"
+    },
+    {
+      "name": "F_FTR",
+      "desc": "A fails to run",
+      "mainItem": false,
+      "evType": "etFailRate",
+      "allItems": true,
+      "triggerStates": [],
+      "varNames": [],
+      "lambda": 0.01,
+      "lambdaTimeRate": "PT1H",
+      "useVariable": false,
+      "id": "36ce27da-9015-4222-bcd6-27792290594a",
+      "objType": "Event"
+    },
+    {
+      "name": "Goto_FTFailed",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etComponentLogic",
+      "allItems": true,
+      "triggerStates": [],
+      "varNames": [],
+      "onSuccess": false,
+      "logicTop": "SYSTEM",
+      "id": "bfb2050e-0485-45a5-b46d-bb86ef72a191",
+      "objType": "Event"
+    },
+    {
+      "name": "TIMER_Mission_Over",
+      "desc": "The time period of interest is over",
+      "mainItem": false,
+      "evType": "etTimer",
+      "allItems": true,
+      "triggerStates": [],
+      "varNames": [],
+      "useVariable": false,
+      "time": "PT100H",
+      "timeVariableUnit": "",
+      "fromSimStart": true,
+      "id": "f52c75ca-83d0-483f-b873-8fdf63e5931a",
+      "objType": "Event"
+    }
+  ],
+  "LogicNodeList": [
+    {
+      "id": "029bd348-7803-4226-ae9f-c3abfd87ae33",
+      "name": "Path1",
+      "desc": "",
+      "gateType": "gtAnd",
+      "rootName": "SYSTEM",
+      "compChildren": [
+        {
+          "diagramName": "Comp_A",
+          "stateValues": []
+        },
+        {
+          "diagramName": "Comp_B",
+          "stateValues": []
+        }
+      ],
+      "gateChildren": [],
+      "objType": "LogicNode",
+      "isRoot": false
+    },
+    {
+      "id": "c5a123ca-dffc-496e-b8da-44464010ab2f",
+      "name": "Path2",
+      "desc": "",
+      "gateType": "gtAnd",
+      "rootName": "SYSTEM",
+      "compChildren": [
+        {
+          "diagramName": "Comp_D",
+          "stateValues": []
+        },
+        {
+          "diagramName": "Comp_C",
+          "stateValues": []
+        }
+      ],
+      "gateChildren": [],
+      "objType": "LogicNode",
+      "isRoot": false
+    },
+    {
+      "id": "80038c9e-f8e7-4ff8-a9e6-1b597d3823d2",
+      "name": "Path3",
+      "desc": "",
+      "gateType": "gtAnd",
+      "rootName": "SYSTEM",
+      "compChildren": [
+        {
+          "diagramName": "Comp_F",
+          "stateValues": []
+        },
+        {
+          "diagramName": "Comp_E",
+          "stateValues": []
+        }
+      ],
+      "gateChildren": [],
+      "objType": "LogicNode",
+      "isRoot": false
+    },
+    {
+      "id": "883579d2-c869-4336-af0d-ef929f6114c4",
+      "name": "Path4",
+      "desc": "",
+      "gateType": "gtAnd",
+      "rootName": "SYSTEM",
+      "compChildren": [
+        {
+          "diagramName": "Comp_B",
+          "stateValues": []
+        },
+        {
+          "diagramName": "Comp_C",
+          "stateValues": []
+        }
+      ],
+      "gateChildren": [],
+      "objType": "LogicNode",
+      "isRoot": false
+    },
+    {
+      "id": "aa9fe38c-7bb3-4591-ab0e-1697091ae257",
+      "name": "Path5",
+      "desc": "",
+      "gateType": "gtAnd",
+      "rootName": "SYSTEM",
+      "compChildren": [
+        {
+          "diagramName": "Comp_B",
+          "stateValues": []
+        },
+        {
+          "diagramName": "Comp_E",
+          "stateValues": []
+        }
+      ],
+      "gateChildren": [],
+      "objType": "LogicNode",
+      "isRoot": false
+    },
+    {
+      "id": "d2830510-e574-4de3-94cb-ce78d76df7aa",
+      "name": "Path6",
+      "desc": "",
+      "gateType": "gtAnd",
+      "rootName": "SYSTEM",
+      "compChildren": [
+        {
+          "diagramName": "Comp_D",
+          "stateValues": []
+        },
+        {
+          "diagramName": "Comp_E",
+          "stateValues": []
+        }
+      ],
+      "gateChildren": [],
+      "objType": "LogicNode",
+      "isRoot": false
+    },
+    {
+      "id": "50741ab5-6a1f-4ef7-a406-a71ca47c65d2",
+      "name": "SYSTEM",
+      "desc": "",
+      "gateType": "gtOr",
+      "rootName": "SYSTEM",
+      "compChildren": [],
+      "gateChildren": [
+        "Path1",
+        "Path2",
+        "Path3",
+        "Path4",
+        "Path5",
+        "Path6"
+      ],
+      "objType": "LogicNode",
+      "isRoot": true
+    },
+    {
+      "id": "8d1e2136-2ed1-4646-a2ca-3ae27000d94c",
+      "name": "SYSTEMFT",
+      "desc": "",
+      "gateType": "gtOr",
+      "rootName": "SYSTEMFT",
+      "compChildren": [],
+      "gateChildren": [
+        "Path1",
+        "Path2",
+        "Path3",
+        "Path4",
+        "Path5",
+        "Path6"
+      ],
+      "objType": "LogicNode",
+      "isRoot": true
+    }
+  ],
+  "VariableList": [],
+  "templates": [],
+  "ExtSimList": [],
+  "objType": "EMRALD_Model",
+  "emraldVersion": 3.1,
+  "versionHistory": []
+}

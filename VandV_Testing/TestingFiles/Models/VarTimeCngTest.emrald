@@ -1,0 +1,255 @@
+{
+  "id": "15719c35-f86d-4124-8a12-7f6af2fc7200",
+  "name": "VarTimeCngTest",
+  "desc": "",
+  "version": 1,
+  "DiagramList": [
+    {
+      "name": "Main",
+      "desc": "",
+      "diagramType": "dtMulti",
+      "diagramTemplate": "",
+      "diagramLabel": "Plant",
+      "states": [
+        "Start",
+        "SomeEvent",
+        "Failed",
+        "Terminate"
+      ],
+      "id": "73c6f793-24a3-42bd-9adc-80e0f4034cd5",
+      "objType": "Diagram",
+      "required": false
+    }
+  ],
+  "StateList": [
+    {
+      "name": "Failed",
+      "desc": "",
+      "stateType": "stKeyState",
+      "diagramName": "Main",
+      "immediateActions": [
+        "Goto_Terminate"
+      ],
+      "events": [],
+      "eventActions": [],
+      "id": "9b9edeee-3cd8-499f-b8c3-e1cec1e9664a",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 499.5,
+        "y": 387.5,
+        "width": 200,
+        "height": 100
+      }
+    },
+    {
+      "name": "SomeEvent",
+      "desc": "",
+      "stateType": "stStandard",
+      "diagramName": "Main",
+      "immediateActions": [
+        "TimeVarTo1"
+      ],
+      "events": [],
+      "eventActions": [],
+      "id": "df6fdc4f-1d9d-46da-9b9f-2d855cdbbf11",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 390.5,
+        "y": 60.5,
+        "width": 200,
+        "height": 100
+      }
+    },
+    {
+      "name": "Start",
+      "desc": "",
+      "stateType": "stStart",
+      "diagramName": "Main",
+      "immediateActions": [],
+      "events": [
+        "VarTimeFail",
+        "FiveMin"
+      ],
+      "eventActions": [
+        {
+          "actions": [
+            "Goto_Failed"
+          ],
+          "moveFromCurrent": true
+        },
+        {
+          "actions": [
+            "Goto_SomeEvent"
+          ],
+          "moveFromCurrent": false
+        }
+      ],
+      "id": "c268c32c-80fb-4422-80c7-0de4dce3aeee",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 103.5,
+        "y": 58.5,
+        "width": 200,
+        "height": 170
+      }
+    },
+    {
+      "name": "Terminate",
+      "desc": "",
+      "stateType": "stTerminal",
+      "diagramName": "Main",
+      "immediateActions": [],
+      "events": [],
+      "eventActions": [],
+      "id": "4b0ff18e-65bf-4e4d-99c1-2da79e1a0b23",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 796.5,
+        "y": 324.5,
+        "width": 200,
+        "height": 80
+      }
+    }
+  ],
+  "ActionList": [
+    {
+      "name": "Goto_Failed",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "Failed",
+          "prob": -1,
+          "failDesc": ""
+        }
+      ],
+      "id": "2366a28f-18b3-4616-b634-16dae6384c00",
+      "objType": "Action"
+    },
+    {
+      "name": "Goto_SomeEvent",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "SomeEvent",
+          "prob": -1,
+          "failDesc": ""
+        }
+      ],
+      "id": "bef37460-43fb-4e2a-941a-f2af4fc6ff10",
+      "objType": "Action"
+    },
+    {
+      "name": "Goto_Terminate",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "Terminate",
+          "prob": -1,
+          "failDesc": ""
+        }
+      ],
+      "id": "d68081b2-709d-4ca7-97a6-071b381760a2",
+      "objType": "Action"
+    },
+    {
+      "name": "TimeVarTo1",
+      "desc": "",
+      "actType": "atCngVarVal",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [],
+      "scriptCode": "return 1;",
+      "variableName": "Dbl_Time",
+      "codeVariables": [],
+      "id": "81fd2346-28f0-4b30-9fa2-5082869d6f64",
+      "objType": "Action"
+    }
+  ],
+  "EventList": [
+    {
+      "name": "FiveMin",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etTimer",
+      "allItems": true,
+      "triggerStates": [],
+      "varNames": [],
+      "useVariable": false,
+      "time": "PT5M",
+      "timeVariableUnit": "",
+      "fromSimStart": false,
+      "id": "16c2b87f-195b-4fee-ad2d-909f0680271e",
+      "objType": "Event"
+    },
+    {
+      "name": "VarTimeFail",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etDistribution",
+      "allItems": true,
+      "triggerStates": [],
+      "varNames": [
+        "Dbl_Time"
+      ],
+      "distType": "dtNormal",
+      "parameters": [
+        {
+          "name": "Mean",
+          "value": 24,
+          "timeRate": "trDays",
+          "useVariable": true,
+          "variable": "Dbl_Time"
+        },
+        {
+          "name": "Standard Deviation",
+          "value": 1,
+          "timeRate": "trHours",
+          "useVariable": false
+        },
+        {
+          "name": "Minimum",
+          "value": 0,
+          "timeRate": "trHours",
+          "useVariable": false
+        },
+        {
+          "name": "Maximum",
+          "value": 1000,
+          "timeRate": "trYears",
+          "useVariable": false
+        }
+      ],
+      "dfltTimeRate": "trHours",
+      "onVarChange": "ocResample",
+      "id": "eaca6914-9438-489b-860f-a88bb3c5dddc",
+      "objType": "Event"
+    }
+  ],
+  "LogicNodeList": [],
+  "VariableList": [
+    {
+      "name": "Dbl_Time",
+      "desc": "",
+      "varScope": "gtGlobal",
+      "value": 400,
+      "resetOnRuns": true,
+      "type": "double",
+      "id": "37c5c536-f62c-481b-8375-1b7692fb0ec2",
+      "objType": "Variable"
+    }
+  ],
+  "templates": [],
+  "ExtSimList": [],
+  "objType": "EMRALD_Model",
+  "emraldVersion": 3.1,
+  "versionHistory": []
+}

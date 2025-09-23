@@ -11,25 +11,29 @@
         "parameters": [
             {
                 "name": "Mean",
-                "timeRate": "trHours",
+                "timeRate": "trHours",				
+                "useVariable": null,
                 "value": 3.3,
                 "variable": null
             },
             {
                 "name": "Standard Dev",
                 "timeRate": "trHours",
+                "useVariable": null,
                 "value": null,
                 "variable": "FailProb"
             },
             {
                 "name": "Min Time",
                 "timeRate": "trHours",
+                "useVariable": null,
                 "value": 0.0,
                 "variable": null
             },
             {
                 "name": "Max Time",
                 "timeRate": "trHours",
+                "useVariable": null,
                 "value": null,
                 "variable": null
             }

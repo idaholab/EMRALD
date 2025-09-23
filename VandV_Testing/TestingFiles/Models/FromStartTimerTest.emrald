@@ -1,0 +1,266 @@
+{
+  "id": "f6ccf743-367e-46df-b3fe-a663dcb792a6",
+  "name": "TestTimers",
+  "desc": "",
+  "version": 1,
+  "DiagramList": [
+    {
+      "name": "Main",
+      "desc": "",
+      "diagramType": "dtMulti",
+      "diagramTemplate": "",
+      "diagramLabel": "Plant",
+      "states": [
+        "State1",
+        "State2",
+        "Update",
+        "Key",
+        "terminate"
+      ],
+      "id": "ac28f351-235f-4e63-bae2-90a59bee3c94",
+      "objType": "Diagram",
+      "required": false
+    }
+  ],
+  "StateList": [
+    {
+      "name": "Key",
+      "desc": "",
+      "stateType": "stKeyState",
+      "diagramName": "Main",
+      "immediateActions": [
+        "Goto_Terminate"
+      ],
+      "events": [],
+      "eventActions": [],
+      "id": "3a467c9f-8604-4557-8a00-dd35b1ef698e",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 728,
+        "y": 442,
+        "width": 200,
+        "height": 100
+      }
+    },
+    {
+      "name": "State1",
+      "desc": "",
+      "stateType": "stStart",
+      "diagramName": "Main",
+      "immediateActions": [],
+      "events": [
+        "T1"
+      ],
+      "eventActions": [
+        {
+          "actions": [
+            "Goto_State2"
+          ],
+          "moveFromCurrent": true
+        }
+      ],
+      "id": "45b90c30-d7d9-472c-b90f-80ca0c14e10b",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 80,
+        "y": 120,
+        "width": 200,
+        "height": 130
+      }
+    },
+    {
+      "name": "State2",
+      "desc": "",
+      "stateType": "stStandard",
+      "diagramName": "Main",
+      "immediateActions": [
+        "Goto_Update"
+      ],
+      "events": [
+        "T2"
+      ],
+      "eventActions": [
+        {
+          "actions": [
+            "Goto_Key"
+          ],
+          "moveFromCurrent": true
+        }
+      ],
+      "id": "57ad14ba-53a7-412b-8cb4-d71fcb3d352c",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 380,
+        "y": 130,
+        "width": 200,
+        "height": 150
+      }
+    },
+    {
+      "name": "terminate",
+      "desc": "",
+      "stateType": "stTerminal",
+      "diagramName": "Main",
+      "immediateActions": [],
+      "events": [],
+      "eventActions": [],
+      "id": "a55daaf7-43df-4559-8382-7883e68fe29d",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 778,
+        "y": 638,
+        "width": 200,
+        "height": 80
+      }
+    },
+    {
+      "name": "Update",
+      "desc": "",
+      "stateType": "stStandard",
+      "diagramName": "Main",
+      "immediateActions": [
+        "ChangeTime"
+      ],
+      "events": [],
+      "eventActions": [],
+      "id": "4e33f196-44fd-4595-97b5-0256786ef6bc",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 671,
+        "y": 138,
+        "width": 200,
+        "height": 100
+      }
+    }
+  ],
+  "ActionList": [
+    {
+      "name": "ChangeTime",
+      "desc": "",
+      "actType": "atCngVarVal",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [],
+      "scriptCode": "return 7;",
+      "variableName": "VarTime",
+      "codeVariables": [],
+      "id": "39220b8f-3eed-4254-b8e3-cf410ee207e7",
+      "objType": "Action"
+    },
+    {
+      "name": "Goto_Key",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "Key",
+          "prob": -1,
+          "failDesc": ""
+        }
+      ],
+      "id": "2056bd0a-9ff6-4558-9be1-9aca5b4eaede",
+      "objType": "Action"
+    },
+    {
+      "name": "Goto_State2",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "State2",
+          "prob": -1,
+          "failDesc": ""
+        }
+      ],
+      "id": "fa5569e0-9ff8-48ba-809a-b579908fc2fc",
+      "objType": "Action"
+    },
+    {
+      "name": "Goto_Terminate",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "terminate",
+          "prob": -1,
+          "failDesc": ""
+        }
+      ],
+      "id": "ca4f5916-8915-41bc-a631-c80856aea22b",
+      "objType": "Action"
+    },
+    {
+      "name": "Goto_Update",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "Update",
+          "prob": -1,
+          "failDesc": ""
+        }
+      ],
+      "id": "e038e70e-2968-48d7-9290-236cff618075",
+      "objType": "Action"
+    }
+  ],
+  "EventList": [
+    {
+      "name": "T1",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etTimer",
+      "allItems": true,
+      "triggerStates": [],
+      "varNames": [],
+      "useVariable": false,
+      "time": "PT5M",
+      "timeVariableUnit": "",
+      "fromSimStart": false,
+      "id": "cdbc9574-963d-485d-b9e2-b5e294e880b1",
+      "objType": "Event"
+    },
+    {
+      "name": "T2",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etTimer",
+      "allItems": true,
+      "triggerStates": [],
+      "varNames": [],
+      "useVariable": true,
+      "time": "VarTime",
+      "timeVariableUnit": "trMinutes",
+      "fromSimStart": true,
+      "onVarChange": "ocResample",
+      "id": "f73a80ac-5997-4621-a0fb-345862d978bc",
+      "objType": "Event"
+    }
+  ],
+  "LogicNodeList": [],
+  "VariableList": [
+    {
+      "name": "VarTime",
+      "desc": "",
+      "varScope": "gtGlobal",
+      "value": 10,
+      "resetOnRuns": true,
+      "type": "double",
+      "id": "9717b85a-9502-4c2f-9a66-5e442e70455b",
+      "objType": "Variable"
+    }
+  ],
+  "templates": [],
+  "ExtSimList": [],
+  "objType": "EMRALD_Model",
+  "emraldVersion": 3.1,
+  "versionHistory": []
+}
