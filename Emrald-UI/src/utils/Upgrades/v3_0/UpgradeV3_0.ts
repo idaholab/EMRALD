@@ -187,11 +187,19 @@ function UpgradeV3_0_Recursive(oldModel: EMRALD_ModelV2_4): EMRALD_Model {
     const { name, subgroup } = groupV2_4;
 
     // Recursively convert subgroup if it exists
-    const convertedSubgroup = subgroup ? convertGroupV2_4ToGroup(subgroup) : undefined;
+    const convertedSubgroups = [];
+    if (subgroup) {
+      for (const s of subgroup) {
+        const converted = convertGroupV2_4ToGroup(s);
+        if (converted) {
+          convertedSubgroups.push(converted);
+        }
+      }
+    }
 
     return {
       name,
-      subgroup: convertedSubgroup ? [convertedSubgroup] : undefined,
+      subgroup: convertedSubgroups.length > 0 ? convertedSubgroups : undefined,
     };
   }
 

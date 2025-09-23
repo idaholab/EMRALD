@@ -136,6 +136,7 @@ export function UpgradeV2_4(modelTxt: string): UpgradeReturn {
         allItems,
         onSuccess,
         ifInState,
+        mainItem: rest.mainItem ?? true,
       };
 
       switch (oldEv.evType) {
@@ -253,6 +254,7 @@ export function UpgradeV2_4(modelTxt: string): UpgradeReturn {
         allItems,
         onSuccess,
         ifInState,
+        mainItem: rest.mainItem ?? true,
       };
     }
   }
