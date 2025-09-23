@@ -116,6 +116,8 @@ interface EventFormContextType {
   setVariable: React.Dispatch<React.SetStateAction<string | undefined>>;
   setVariableName: React.Dispatch<React.SetStateAction<string>>;
   setInvalidValues: React.Dispatch<React.SetStateAction<Set<string>>>;
+  evalEvOnStateEntry: boolean | undefined;
+  setEvalEvOnStateEntry: React.Dispatch<React.SetStateAction<boolean | undefined>>;
 }
 
 const EventFormContext = createContext<EventFormContextType | undefined>(undefined);
@@ -166,6 +168,7 @@ const EventFormContextProvider: React.FC<PropsWithChildren> = ({ children }) => 
   const [hasError, setHasError] = useState<boolean>(false);
   const [originalName, setOriginalName] = useState<string>();
   const [invalidValues, setInvalidValues] = useState<Set<string>>(() => new Set());
+  const [evalEvOnStateEntry, setEvalEvOnStateEntry] = useState<boolean | undefined>(undefined);
 
   const event = useSignal<Event>(emptyEvent);
 
@@ -227,6 +230,7 @@ const EventFormContextProvider: React.FC<PropsWithChildren> = ({ children }) => 
       }
       eventData.extEventType && setExtEventType(eventData.extEventType);
       eventData.variable && setVariable(eventData.variable);
+      setEvalEvOnStateEntry(eventData.evalEvOnStateEntry);
     }
   };
 
@@ -447,6 +451,7 @@ const EventFormContextProvider: React.FC<PropsWithChildren> = ({ children }) => 
     setExtEventType(undefined);
     setVariable(undefined);
     setHasError(false);
+    setEvalEvOnStateEntry(undefined);
     if (evType === 'etStateCng') {
       setAllItems(true); // Default value for allItems
       setIfInState(false);
@@ -478,6 +483,7 @@ const EventFormContextProvider: React.FC<PropsWithChildren> = ({ children }) => 
         ifInState: ifInState ?? false,
         allItems: allItems ?? true,
         triggerStates,
+        evalEvOnStateEntry: evalEvOnStateEntry
       };
     } else if (evType === 'etTimer') {
       event.value = {
@@ -622,6 +628,8 @@ const EventFormContextProvider: React.FC<PropsWithChildren> = ({ children }) => 
         setVariable,
         setVariableName,
         setInvalidValues,
+        evalEvOnStateEntry,
+        setEvalEvOnStateEntry,
       }}
     >
       {children}

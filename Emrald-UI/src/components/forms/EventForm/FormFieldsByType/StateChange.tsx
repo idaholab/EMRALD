@@ -17,8 +17,16 @@ import { StyledTableCell, StyledTableRow } from '../../ActionForm/ActionToStateT
 import DeleteIcon from '@mui/icons-material/Delete';
 
 const StateChange = () => {
-  const { allItems, ifInState, setAllItems, setIfInState, triggerStates, setTriggerStates } =
-    useEventFormContext();
+  const {
+    allItems,
+    ifInState,
+    setAllItems,
+    setIfInState,
+    triggerStates,
+    setTriggerStates,
+    evalEvOnStateEntry,
+    setEvalEvOnStateEntry,
+  } = useEventFormContext();
 
   const [{ isOver }, drop] = useDrop({
     accept: 'State',
@@ -43,28 +51,41 @@ const StateChange = () => {
   };
   return (
     <div>
-      <RadioGroup
-        name="radio-buttons-group"
-        value={ifInState}
-        onChange={(e) => {
-          setIfInState(e.target.value === 'true' ? true : false);
-        }}
-        sx={{ display: 'flex', flexDirection: 'row' }}
-      >
+      <div style={{ display: 'flex', alignItems: ifInState ? 'flex-start' : 'flex-end' }}>
+        <RadioGroup
+          name="radio-buttons-group"
+          value={ifInState}
+          onChange={(e) => {
+            setIfInState(e.target.value === 'true');
+            setEvalEvOnStateEntry(e.target.value === 'true');
+          }}
+          sx={{ display: 'flex', flexDirection: 'column' }}
+        >
+          <FormControlLabel
+            value="true"
+            control={<Radio />}
+            label="On Enter State/s"
+            checked={ifInState}
+          />
+          <FormControlLabel
+            value="false"
+            control={<Radio />}
+            label="On Exit State/s"
+            checked={!ifInState}
+          />
+        </RadioGroup>
         <FormControlLabel
-          value="true"
-          control={<Radio />}
-          label="On Enter State/s"
-          checked={ifInState}
+          label={ifInState ? 'Or already in state' : 'Or already out of state'}
+          control={
+            <Checkbox
+              checked={evalEvOnStateEntry ? true : false}
+              onChange={(e) => {
+                setEvalEvOnStateEntry(e.target.checked);
+              }}
+            />
+          }
         />
-        <FormControlLabel
-          value="false"
-          control={<Radio />}
-          label="On Exit State/s"
-          checked={!ifInState}
-        />
-      </RadioGroup>
-
+      </div>
       <FormControlLabel
         label="All Items"
         value={allItems}
