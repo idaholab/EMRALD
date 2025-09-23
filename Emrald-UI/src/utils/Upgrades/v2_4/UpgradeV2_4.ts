@@ -67,6 +67,7 @@ export function UpgradeV2_4(modelTxt: string): UpgradeReturn {
       delete event.required;
       return { Event: mapEvent(event) };
     }),
+    ExtSimList: oldModel.ExtSimList ?? [],
   };
 
   function mapEvent(oldEv: EventV1_1): Event {

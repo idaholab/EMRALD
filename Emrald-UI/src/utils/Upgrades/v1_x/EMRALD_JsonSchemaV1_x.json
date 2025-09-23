@@ -147,7 +147,6 @@
         "desc",
         "version",
         "DiagramList",
-        "ExtSimList",
         "StateList",
         "ActionList",
         "EventList",
