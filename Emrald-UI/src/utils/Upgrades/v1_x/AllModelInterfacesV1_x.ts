@@ -107,7 +107,7 @@ export interface EMRALD_Model {
   /**
    * All the external simulation links for the mdoel
    */
-  ExtSimList: {
+  ExtSimList?: {
     ExtSim: ExtSim
   }[]
   /**
