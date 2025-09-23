@@ -1,3 +1,4 @@
+import { EMRALD_SchemaVersion } from '../types/ModelUtils';
 import { Upgrade } from './Upgrades/upgradeGiveID';
 import { EMRALD_SchemaVersion } from '../types/ModelUtils';
 
