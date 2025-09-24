@@ -231,6 +231,9 @@ const EventFormContextProvider: React.FC<PropsWithChildren> = ({ children }) => 
       eventData.extEventType && setExtEventType(eventData.extEventType);
       eventData.variable && setVariable(eventData.variable);
       setEvalEvOnStateEntry(eventData.evalEvOnStateEntry);
+      if (typeof eventData.evalEvOnStateEntry !== 'boolean' && eventData.ifInState === true) {
+        setEvalEvOnStateEntry(true);
+      }
     }
   };
 
