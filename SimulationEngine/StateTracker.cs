@@ -1520,7 +1520,7 @@ namespace SimulationTracking
                   
                   if (curTimeEv.relatedIDs.Contains(varItem.id))
                   { 
-                    if (curTimeEv.onVarChangeEnum == EnOnChangeTask.ocResample)
+                    if (curTimeEv.onVarChangeEnum == EnOnChangeTask.ocAdjust)
                     {
                       throw new Exception("Tried to adjust Persistent Event [" + curTimeEv.name + "], not currently in a state. Don't use Persistent events with events that can be adjusted for variable changes!");
                     }
