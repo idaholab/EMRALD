@@ -1,0 +1,228 @@
+{
+  "id": "13925e05-3c0f-4c44-bd11-ff02d4122097",
+  "name": "SelfLoopTest",
+  "desc": "",
+  "version": 1,
+  "DiagramList": [
+    {
+      "name": "Main",
+      "desc": "",
+      "diagramType": "dtMulti",
+      "diagramTemplate": "",
+      "diagramLabel": "Plant",
+      "states": [
+        "Start",
+        "Terminate",
+        "MadeCnt",
+        "Increment"
+      ],
+      "id": "c43193b0-f8da-46bb-ac9b-3ab27958d0e9",
+      "objType": "Diagram",
+      "required": false
+    }
+  ],
+  "StateList": [
+    {
+      "name": "Increment",
+      "desc": "",
+      "stateType": "stStandard",
+      "diagramName": "Main",
+      "immediateActions": [
+        "Inc"
+      ],
+      "events": [
+        "GreaterThanEq10",
+        "OneHr"
+      ],
+      "eventActions": [
+        {
+          "actions": [
+            "Goto_MadeCnt"
+          ],
+          "moveFromCurrent": true
+        },
+        {
+          "actions": [
+            "Goto_Increment"
+          ],
+          "moveFromCurrent": true
+        }
+      ],
+      "id": "f44c537b-6caf-4c2f-b495-a23d439ab352",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 280.5,
+        "y": 210.5,
+        "width": 200,
+        "height": 190
+      }
+    },
+    {
+      "name": "MadeCnt",
+      "desc": "",
+      "stateType": "stKeyState",
+      "diagramName": "Main",
+      "immediateActions": [
+        "Goto_Terminate"
+      ],
+      "events": [],
+      "eventActions": [],
+      "id": "bceade71-16fc-4ecc-85d9-ad6820f6496e",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 580.5,
+        "y": 40.5,
+        "width": 200,
+        "height": 100
+      }
+    },
+    {
+      "name": "Start",
+      "desc": "",
+      "stateType": "stStart",
+      "diagramName": "Main",
+      "immediateActions": [
+        "Goto_Increment"
+      ],
+      "events": [],
+      "eventActions": [],
+      "id": "567b3d44-f400-4ad7-9499-ee2fcc6e7f08",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 40.5,
+        "y": 40.5,
+        "width": 200,
+        "height": 100
+      }
+    },
+    {
+      "name": "Terminate",
+      "desc": "",
+      "stateType": "stTerminal",
+      "diagramName": "Main",
+      "immediateActions": [],
+      "events": [],
+      "eventActions": [],
+      "id": "2c26bb7d-15bd-4e5e-abad-e7251399082d",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 560.5,
+        "y": 230.5,
+        "width": 200,
+        "height": 80
+      }
+    }
+  ],
+  "ActionList": [
+    {
+      "name": "Goto_Increment",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "Increment",
+          "prob": -1,
+          "failDesc": ""
+        }
+      ],
+      "id": "897e012a-3194-4b58-a0e9-e398b1dd0c5b",
+      "objType": "Action"
+    },
+    {
+      "name": "Goto_MadeCnt",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "MadeCnt",
+          "prob": -1,
+          "failDesc": ""
+        }
+      ],
+      "id": "91ac665e-09ef-4d3c-a106-6bd9c4d0cf3b",
+      "objType": "Action"
+    },
+    {
+      "name": "Goto_Terminate",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "Terminate",
+          "prob": -1,
+          "failDesc": ""
+        }
+      ],
+      "id": "fda329e2-602d-49e8-a97a-b38528c7f963",
+      "objType": "Action"
+    },
+    {
+      "name": "Inc",
+      "desc": "",
+      "actType": "atCngVarVal",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [],
+      "scriptCode": "return Int_Cnt +1;",
+      "variableName": "Int_Cnt",
+      "codeVariables": [],
+      "id": "d7b80c39-14e5-49f3-9b2e-ed6e7f5e737b",
+      "objType": "Action"
+    }
+  ],
+  "EventList": [
+    {
+      "name": "GreaterThanEq10",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etVarCond",
+      "allItems": true,
+      "triggerStates": [],
+      "varNames": [
+        "Int_Cnt"
+      ],
+      "code": "return (Int_Cnt >= 10);",
+      "id": "7310eb20-1567-4ccb-b8b6-0f9e920ad001",
+      "objType": "Event"
+    },
+    {
+      "name": "OneHr",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etTimer",
+      "allItems": true,
+      "triggerStates": [],
+      "varNames": [],
+      "useVariable": false,
+      "time": "PT1H",
+      "timeVariableUnit": "",
+      "fromSimStart": false,
+      "id": "0a91f29c-b4c3-46cb-a79f-febc061f006e",
+      "objType": "Event"
+    }
+  ],
+  "LogicNodeList": [],
+  "VariableList": [
+    {
+      "name": "Int_Cnt",
+      "desc": "",
+      "varScope": "gtGlobal",
+      "value": 0,
+      "resetOnRuns": true,
+      "type": "int",
+      "id": "597b9bca-37ce-4cda-a394-7a20ebbc4762",
+      "objType": "Variable"
+    }
+  ],
+  "templates": [],
+  "ExtSimList": [],
+  "objType": "EMRALD_Model",
+  "emraldVersion": 3.1,
+  "versionHistory": []
+}

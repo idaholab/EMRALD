@@ -1,5 +1,5 @@
 {
-  "id": "eb147c21-6fc0-4827-a5dc-1070c3d36342",
+  "id": "286e15ab-e3be-4dc3-8e78-a580071f9253",
   "name": "DistEvTest1",
   "desc": "",
   "version": 1,
@@ -15,7 +15,7 @@
         "Event",
         "Done"
       ],
-      "id": "ee207720-091b-4b3c-b9f1-4db5ddf7cfd2",
+      "id": "f0c348a7-e63d-4e0d-af34-d42a34b7b03c",
       "objType": "Diagram",
       "required": false
     }
@@ -29,7 +29,7 @@
       "immediateActions": [],
       "events": [],
       "eventActions": [],
-      "id": "daab2746-d854-4469-83a1-f16e62d4605c",
+      "id": "0359ac6e-8af1-4c5a-88fb-f8cbc79d4c07",
       "objType": "State",
       "geometryInfo": {
         "x": 640,
@@ -48,7 +48,7 @@
       ],
       "events": [],
       "eventActions": [],
-      "id": "f2016922-54d6-4fc4-9193-eef58e603d8a",
+      "id": "47c31279-5b06-4c99-81c2-1cac366d5f17",
       "objType": "State",
       "geometryInfo": {
         "x": 330,
@@ -64,7 +64,7 @@
       "diagramName": "Main",
       "immediateActions": [],
       "events": [
-        "WeibullDist"
+        "ExponentialDist"
       ],
       "eventActions": [
         {
@@ -74,7 +74,7 @@
           "moveFromCurrent": true
         }
       ],
-      "id": "2a854ad1-d1eb-4257-805e-4962e8104496",
+      "id": "a32b8b82-bcbb-43b9-85bb-4fa63435f9f3",
       "objType": "State",
       "geometryInfo": {
         "x": 20,
@@ -98,7 +98,7 @@
           "failDesc": ""
         }
       ],
-      "id": "b7c0c5bb-46d1-4192-865b-2544ec7a556e",
+      "id": "30ab7dd9-279a-49ac-802e-46624990dee6",
       "objType": "Action"
     },
     {
@@ -114,43 +114,40 @@
           "failDesc": ""
         }
       ],
-      "id": "c0a209a8-7565-44d6-8f9c-146d0accfe94",
+      "id": "e8592cf8-673b-48bf-bc1d-5170e8b5d4cb",
       "objType": "Action"
     }
   ],
   "EventList": [
     {
-      "name": "WeibullDist",
+      "name": "ExponentialDist",
       "desc": "",
       "mainItem": false,
       "evType": "etDistribution",
       "allItems": true,
       "triggerStates": [],
       "varNames": [],
-      "distType": "dtWeibull",
+      "distType": "dtExponential",
       "parameters": [
         {
-          "name": "Shape",
-          "value": "2",
-          "useVariable": false
-        },
-        {
-          "name": "Scale",
-          "value": 1,
-          "useVariable": false
+          "name": "Rate",
+          "value": "0.1",
+          "timeRate": "trDays",
+          "useVariable": true,
+          "variable": "Dbl_Rate"
         },
         {
           "value": "0",
-          "timeRate": "trHours"
+          "timeRate": "trDays"
         },
         {
           "value": "5000",
-          "timeRate": "trHours"
+          "timeRate": "trDays"
         }
       ],
       "dfltTimeRate": "trHours",
       "onVarChange": "ocResample",
-      "id": "41eea5b3-bbda-41a7-9945-a392b48c7fbe",
+      "id": "c8b63058-89fe-4760-9bae-13115f35bbb2",
       "objType": "Event"
     }
   ],
@@ -163,7 +160,7 @@
       "value": 12,
       "resetOnRuns": true,
       "type": "double",
-      "id": "90901646-76ae-4c2e-bfab-9bbafca38d1c",
+      "id": "6ee43bda-bae3-401f-b002-c318ea1714c3",
       "objType": "Variable"
     },
     {
@@ -173,7 +170,7 @@
       "value": 0.1,
       "resetOnRuns": true,
       "type": "double",
-      "id": "b1c811cc-c7c9-469e-91cd-661f297b7926",
+      "id": "4f262a7d-037f-41e0-adc5-ba8b382d9945",
       "objType": "Variable"
     },
     {
@@ -183,7 +180,7 @@
       "value": 1,
       "resetOnRuns": true,
       "type": "double",
-      "id": "313780f2-41d1-4b15-9373-d8fce26e1977",
+      "id": "c8f98d73-dffb-4688-a5e3-336d4bf52915",
       "objType": "Variable"
     }
   ],

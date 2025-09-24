@@ -1,6 +1,6 @@
 {
-  "id": "eb147c21-6fc0-4827-a5dc-1070c3d36342",
-  "name": "DistEvTest1",
+  "id": "ccb67d63-c9cc-498e-a8be-613aaf356a13",
+  "name": "Sim1",
   "desc": "",
   "version": 1,
   "DiagramList": [
@@ -12,47 +12,47 @@
       "diagramLabel": "Plant",
       "states": [
         "Start",
-        "Event",
-        "Done"
+        "End",
+        "Occured"
       ],
-      "id": "ee207720-091b-4b3c-b9f1-4db5ddf7cfd2",
+      "id": "995f465e-3d64-4773-b7fc-c428a0f3dd71",
       "objType": "Diagram",
       "required": false
     }
   ],
   "StateList": [
     {
-      "name": "Done",
+      "name": "End",
       "desc": "",
       "stateType": "stTerminal",
       "diagramName": "Main",
       "immediateActions": [],
       "events": [],
       "eventActions": [],
-      "id": "daab2746-d854-4469-83a1-f16e62d4605c",
+      "id": "118de967-0977-4614-8ed4-1fd2dc200db9",
       "objType": "State",
       "geometryInfo": {
-        "x": 640,
-        "y": 340.5,
+        "x": 449.7272644042969,
+        "y": 280.18748474121094,
         "width": 200,
         "height": 80
       }
     },
     {
-      "name": "Event",
+      "name": "Occured",
       "desc": "",
       "stateType": "stKeyState",
       "diagramName": "Main",
       "immediateActions": [
-        "Goto_Done"
+        "Goto_End"
       ],
       "events": [],
       "eventActions": [],
-      "id": "f2016922-54d6-4fc4-9193-eef58e603d8a",
+      "id": "567e10bc-8792-46e1-bcab-fa547983a5fa",
       "objType": "State",
       "geometryInfo": {
-        "x": 330,
-        "y": 160.5,
+        "x": 439.81817626953125,
+        "y": 79.73295593261719,
         "width": 200,
         "height": 100
       }
@@ -62,128 +62,123 @@
       "desc": "",
       "stateType": "stStart",
       "diagramName": "Main",
-      "immediateActions": [],
+      "immediateActions": [
+        "Set_t1"
+      ],
       "events": [
-        "WeibullDist"
+        "timer1"
       ],
       "eventActions": [
         {
           "actions": [
-            "Goto_Event"
+            "Goto_Occured"
           ],
           "moveFromCurrent": true
         }
       ],
-      "id": "2a854ad1-d1eb-4257-805e-4962e8104496",
+      "id": "d898a8a9-40a6-41e4-a46c-a06f6ffb2672",
       "objType": "State",
       "geometryInfo": {
-        "x": 20,
-        "y": 20.5,
+        "x": 128.1818084716797,
+        "y": 66.27840423583984,
         "width": 200,
-        "height": 130
+        "height": 150
       }
     }
   ],
   "ActionList": [
     {
-      "name": "Goto_Done",
+      "name": "Goto_End",
       "desc": "",
       "actType": "atTransition",
       "mainItem": false,
       "mutExcl": true,
       "newStates": [
         {
-          "toState": "Done",
+          "toState": "End",
           "prob": -1,
           "failDesc": ""
         }
       ],
-      "id": "b7c0c5bb-46d1-4192-865b-2544ec7a556e",
+      "id": "fbfb451e-ea15-42b4-af8e-0bd864573182",
       "objType": "Action"
     },
     {
-      "name": "Goto_Event",
+      "name": "Goto_Occured",
       "desc": "",
       "actType": "atTransition",
       "mainItem": false,
       "mutExcl": true,
       "newStates": [
         {
-          "toState": "Event",
+          "toState": "Occured",
           "prob": -1,
           "failDesc": ""
         }
       ],
-      "id": "c0a209a8-7565-44d6-8f9c-146d0accfe94",
+      "id": "d8ac8381-bc44-4a51-aaf4-921ae68690e4",
+      "objType": "Action"
+    },
+    {
+      "name": "Set_t1",
+      "desc": "",
+      "actType": "atCngVarVal",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [],
+      "scriptCode": "return 30;",
+      "variableName": "t1",
+      "codeVariables": [],
+      "id": "4c36a1aa-eddc-4c64-ba7c-49fd375ed8a3",
       "objType": "Action"
     }
   ],
   "EventList": [
     {
-      "name": "WeibullDist",
+      "name": "timer1",
       "desc": "",
-      "mainItem": false,
-      "evType": "etDistribution",
-      "allItems": true,
-      "triggerStates": [],
+      "mainItem": true,
+      "evType": "etTimer",
       "varNames": [],
-      "distType": "dtWeibull",
-      "parameters": [
-        {
-          "name": "Shape",
-          "value": "2",
-          "useVariable": false
-        },
-        {
-          "name": "Scale",
-          "value": 1,
-          "useVariable": false
-        },
-        {
-          "value": "0",
-          "timeRate": "trHours"
-        },
-        {
-          "value": "5000",
-          "timeRate": "trHours"
-        }
-      ],
-      "dfltTimeRate": "trHours",
-      "onVarChange": "ocResample",
-      "id": "41eea5b3-bbda-41a7-9945-a392b48c7fbe",
+      "useVariable": true,
+      "time": "t1",
+      "timeVariableUnit": "trHours",
+      "id": "063aea05-f335-41ca-8990-ebb7660641fc",
+      "objType": "Event"
+    },
+    {
+      "name": "TimerStd",
+      "desc": "",
+      "mainItem": true,
+      "evType": "etTimer",
+      "varNames": [],
+      "useVariable": false,
+      "time": "P1DT2H3M4S",
+      "timeVariableUnit": "",
+      "id": "3211d6c6-c815-4007-bd54-c12b8623f8b2",
       "objType": "Event"
     }
   ],
   "LogicNodeList": [],
   "VariableList": [
     {
-      "name": "Dbl_Mean",
+      "name": "FailProb",
       "desc": "",
       "varScope": "gtGlobal",
-      "value": 12,
+      "value": 0.003,
       "resetOnRuns": true,
       "type": "double",
-      "id": "90901646-76ae-4c2e-bfab-9bbafca38d1c",
+      "id": "fc41b9fe-75bd-4099-b452-a9831365a6e8",
       "objType": "Variable"
     },
     {
-      "name": "Dbl_Rate",
+      "name": "t1",
       "desc": "",
       "varScope": "gtGlobal",
-      "value": 0.1,
+      "value": 3.5,
       "resetOnRuns": true,
       "type": "double",
-      "id": "b1c811cc-c7c9-469e-91cd-661f297b7926",
-      "objType": "Variable"
-    },
-    {
-      "name": "Dbl_STD",
-      "desc": "",
-      "varScope": "gtGlobal",
-      "value": 1,
-      "resetOnRuns": true,
-      "type": "double",
-      "id": "313780f2-41d1-4b15-9373-d8fce26e1977",
+      "id": "97fe20f5-8a81-4910-9b77-a2850977bb9c",
       "objType": "Variable"
     }
   ],

@@ -310,7 +310,7 @@
   ],
   "objType": "EMRALD_Model",
   "ExtSimList": [],
-  "emraldVersion": 3,
+  "emraldVersion": 3.1,
   "multiThreadInfo": {
     "ToCopyForRefs": [
       {
@@ -376,5 +376,6 @@
       }
     ],
     "AssignedTime": "2025-08-11T07:57:53.5110701-06:00"
-  }
+  },
+  "versionHistory": []
 }

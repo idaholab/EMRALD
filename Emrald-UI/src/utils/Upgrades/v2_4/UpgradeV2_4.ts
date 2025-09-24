@@ -67,6 +67,7 @@ export function UpgradeV2_4(modelTxt: string): UpgradeReturn {
       delete event.required;
       return { Event: mapEvent(event) };
     }),
+    ExtSimList: oldModel.ExtSimList ?? [],
   };
 
   function mapEvent(oldEv: EventV1_1): Event {
@@ -136,6 +137,7 @@ export function UpgradeV2_4(modelTxt: string): UpgradeReturn {
         allItems,
         onSuccess,
         ifInState,
+        mainItem: rest.mainItem ?? true,
       };
 
       switch (oldEv.evType) {
@@ -253,6 +255,7 @@ export function UpgradeV2_4(modelTxt: string): UpgradeReturn {
         allItems,
         onSuccess,
         ifInState,
+        mainItem: rest.mainItem ?? true,
       };
     }
   }

@@ -244,12 +244,12 @@ namespace SimulationTracking
                 //only evaluate these event types when initially entering a state
                 case EnModifiableTypes.mtExtEv:
                 case EnModifiableTypes.mtVar: //don't check if there are related IDs for these
-                  if ((item.eventData as CondBasedEvent).EventTriggered(curStatesBS, otherData, curTime, start3DTime, nextEvTime, runIdx)) //see if the code is triggered)
+                  if ((item.eventData as CondBasedEvent).EventTriggered(curStatesBS, otherData, curTime, start3DTime, nextEvTime, true, runIdx)) //see if the code is triggered)
                     retList.Add(item);
                   break;
                 case EnModifiableTypes.mtState:
                   if ((curStatesBS.HasCommonBits(item.eventData.relatedIDsBitSet) || ((item.eventData is StateCngEvent) && !(item.eventData as StateCngEvent).ifInState)) && //in cur states or not wanting in current states
-                      (item.eventData as CondBasedEvent).EventTriggered(curStatesBS, otherData, curTime, start3DTime, nextEvTime, runIdx))
+                      (item.eventData as CondBasedEvent).EventTriggered(curStatesBS, otherData, curTime, start3DTime, nextEvTime, true, runIdx))
                     retList.Add(item);
                   break;
                 default:
@@ -264,7 +264,7 @@ namespace SimulationTracking
                 //only evaluate these event types when initially entering a state
                 case EnModifiableTypes.mtExtEv:
                   if((changedItems.HasApplicableItems(curIDType, item.eventData.relatedIDsBitSet)) && 
-                     ((item.eventData as CondBasedEvent).EventTriggered(curStatesBS, otherData, curTime, start3DTime, nextEvTime, runIdx)))
+                     ((item.eventData as CondBasedEvent).EventTriggered(curStatesBS, otherData, curTime, start3DTime, nextEvTime, false, runIdx)))
                     retList.Add(item);
                   break;
 
@@ -273,7 +273,7 @@ namespace SimulationTracking
                   if ((item.eventData.evType != EnEventType.etComponentLogic) || (item.eventData.relatedIDsBitSet.And(toStates).BitCount() == 0)) 
                   {
                     if ((item.eventData.relatedIDsBitSet != null) && (changedItems.HasApplicableItems(curIDType, item.eventData.relatedIDsBitSet)) &&
-                          ((item.eventData as CondBasedEvent).EventTriggered(curStatesBS, otherData, curTime, start3DTime, nextEvTime, runIdx)))
+                          ((item.eventData as CondBasedEvent).EventTriggered(curStatesBS, otherData, curTime, start3DTime, nextEvTime, false, runIdx)))
                       retList.Add(item);
                   }
                   
@@ -1344,19 +1344,33 @@ namespace SimulationTracking
 
             TimeSpan evTime;
             TimeSpan createTime;
-            bool savePersistent = false;
+
+            //default get a new time if persistent and not expired then it will be fixed 
+            bool savePersistent = true;
+            evTime = timeEv.NextTime(curTime);
+            createTime = curTime;
+            
             //if persistent and time not expired then reuse the saved TimeMoveEvent info
-            if (this.PersistentEvs.ContainsKey(curEv.name) && ((PersistentEvs[curEv.name].whenCreated + PersistentEvs[curEv.name].time) >= curTime))
+            if (this.PersistentEvs.ContainsKey(curEv.name))
             {
-              evTime = (PersistentEvs[curEv.name].whenCreated + PersistentEvs[curEv.name].time) - curTime;
-              createTime = PersistentEvs[curEv.name].whenCreated;
+              //get the added time if not over max
+              bool overMaxTime = (PersistentEvs[curEv.name].whenCreated.TotalDays + PersistentEvs[curEv.name].time.TotalDays) > TimeSpan.MaxValue.TotalDays;
+              TimeSpan combiedTime = overMaxTime
+                ? TimeSpan.MaxValue
+                : (PersistentEvs[curEv.name].whenCreated + PersistentEvs[curEv.name].time);
+              
+              if (combiedTime >= curTime)
+              {
+                savePersistent = false; //saved here so dont do the save later.
+                if (!overMaxTime)
+                  evTime = (PersistentEvs[curEv.name].whenCreated + PersistentEvs[curEv.name].time) - curTime;
+                else //over max time so keep the max time.
+                  evTime = TimeSpan.MaxValue;
+
+                createTime = PersistentEvs[curEv.name].whenCreated;
+              }
             }
-            else
-            {
-              evTime = timeEv.NextTime(curTime);
-              createTime = curTime;
-              savePersistent = true; //save if it is a persistent event
-            }
+
 
             if ((evTime < maxTime) || (timeEv.UsesVariables()))//if using variables we still need to add incase those variables change
             {
@@ -1520,7 +1534,7 @@ namespace SimulationTracking
                   
                   if (curTimeEv.relatedIDs.Contains(varItem.id))
                   { 
-                    if (curTimeEv.onVarChangeEnum == EnOnChangeTask.ocResample)
+                    if (curTimeEv.onVarChangeEnum == EnOnChangeTask.ocAdjust)
                     {
                       throw new Exception("Tried to adjust Persistent Event [" + curTimeEv.name + "], not currently in a state. Don't use Persistent events with events that can be adjusted for variable changes!");
                     }

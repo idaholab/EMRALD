@@ -465,10 +465,6 @@
           "type": "boolean",
           "description": "Optional. For event type etStateCng, flag to indicate that event is triggired when entering or exiting states listed in triggerStates array. On Enter State/s or On Exit State/s"
         },
-        "evalEvOnStateEntry": {
-          "type": "boolean",
-          "description": "Optional. For event type etStateCng, flag to indicate that the event should be evaluated when entering the state so that it is triggered without something changing. Enter State/s or On Exit State/s becomes Enter State/s or already in and On Exit State/s or not in"
-        },
         "onSuccess": {
           "type": "boolean",
           "description": "Optional. For event type etStateCng, flag to indicate that event is triggering needs all the items or just one or rmore from the states listed in triggerStates array. checkbox - All Items"

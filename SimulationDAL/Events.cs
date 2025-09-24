@@ -13,6 +13,7 @@ using MessageDefLib;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using MyStuff.Collections;
 using Newtonsoft.Json;
+using NLog;
 using ScriptEngineNS;
 
 namespace SimulationDAL
@@ -144,7 +145,7 @@ namespace SimulationDAL
     public CondBasedEvent(string inName)
       : base(inName) { }
 
-    public abstract bool EventTriggered(MyBitArray curStates, object otherData, TimeSpan curSimTime, TimeSpan start3DTime, TimeSpan nextEvTime, int runIdx);
+    public abstract bool EventTriggered(MyBitArray curStates, object otherData, TimeSpan curSimTime, TimeSpan start3DTime, TimeSpan nextEvTime, bool initialEval, int runIdx);
 
     //public override bool DeleteFromDB(LookupLists lists) { return base.DeleteFromDB(lists); }
   }
@@ -154,6 +155,7 @@ namespace SimulationDAL
     //protected override EnModifiableTypes GetModType() { return EnModifiableTypes.mtState; }
     public bool ifInState = true;
     public bool allItems = false;
+    public bool evalEvOnStateEntry = true;
     private MyBitArray changed = null; //all changed items for an EventTriggered call on this event
 
     protected override EnEventType GetEvType() { return EnEventType.etStateCng; }
@@ -215,25 +217,31 @@ namespace SimulationDAL
 
       this.ifInState = Convert.ToBoolean(dynObj.ifInState);
       this.allItems = Convert.ToBoolean(dynObj.allItems);
+      if (dynObj.evalEvOnStateEntry != null)
+        this.evalEvOnStateEntry = Convert.ToBoolean(dynObj.evalEvOnStateEntry);
+      else
+      {
+        this.evalEvOnStateEntry = this.ifInState; //default to true if using ifInState flag.
+      }
 
-      //Now Done in LoadOBjLinks()
-      ////load the Trigger States.
-      //if (dynObj.triggerStates != null)
-      //{
-      //  this.relatedIDs.Clear();
-      //  foreach (dynamic stateName in dynObj.triggerStates)
-      //  {
-      //    State trigState = lists.allStates.FindByName(stateName);
-      //    if (trigState == null)
-      //    {
-      //      throw new Exception("Could not find State - " + stateName + ", to add as a trigger state");
-      //    }
+        //Now Done in LoadOBjLinks()
+        ////load the Trigger States.
+        //if (dynObj.triggerStates != null)
+        //{
+        //  this.relatedIDs.Clear();
+        //  foreach (dynamic stateName in dynObj.triggerStates)
+        //  {
+        //    State trigState = lists.allStates.FindByName(stateName);
+        //    if (trigState == null)
+        //    {
+        //      throw new Exception("Could not find State - " + stateName + ", to add as a trigger state");
+        //    }
 
-      //    this.relatedIDs.Add(trigState.id);
-      //  }
-      //}
+        //    this.relatedIDs.Add(trigState.id);
+        //  }
+        //}
 
-      processed = true;
+        processed = true;
       return true;
     }
 
@@ -269,9 +277,9 @@ namespace SimulationDAL
       return true;
     }
 
-    public override bool EventTriggered(MyBitArray curStates, object otherData, TimeSpan curSimTime, TimeSpan start3DTime, TimeSpan nextEvTime, int runIdx)
+    public override bool EventTriggered(MyBitArray curStates, object otherData, TimeSpan curSimTime, TimeSpan start3DTime, TimeSpan nextEvTime, bool initialEval, int runIdx)
     {
-      //make a bitset for the changed item and do operations that are needed for a match
+      // Make a bitset for the changed item and do operations that are needed for a match
       if (changed == null)
       {
         changed = new MyBitArray(curStates.Length);
@@ -281,29 +289,47 @@ namespace SimulationDAL
 
       changed = ((ChangedIDs)otherData).stateIDs_BS;
 
-      //are there related items that have changed
-      if (changed.And(_relatedIDsBitSet).BitCount() == 0)
-        return false;
-
-      //find the items that are appicable for entry or exit
-      if (ifInState) //in the specified state/s
+      // If initial evaluation, evaluate all current states
+      if (initialEval && this.evalEvOnStateEntry)
       {
-        //get all the states we are current in and are in the realted IDS.
-        if (!this.allItems) //can only use ones we just entered
-          changed = _relatedIDsBitSet.And(curStates.And(changed));
-        else
+        // Consider all current states that are in the related IDs
+        if (ifInState)
+        {
+          // Get all the states we are currently in and are in the related IDs
           changed = _relatedIDsBitSet.And(curStates);
-      }
-      else //exiting the specified state/s
-      {
-        //get all the states we are not in current states and are in the realted IDS.
-        if (!this.allItems) //can only use ones we just exited
-          changed = _relatedIDsBitSet.And(curStates.Not().And(changed));
+        }
         else
+        {
+          // Get all the states we are not in current states and are in the related IDs
           changed = _relatedIDsBitSet.And(curStates.Not());
+        }
+      }
+      else
+      {
+        // Are there related items that have changed
+        if (changed.And(_relatedIDsBitSet).BitCount() == 0)
+          return false;
+
+        // Find the items that are applicable for entry or exit
+        if (ifInState) // In the specified state/s
+        {
+          // Get all the states we are currently in and are in the related IDs
+          if (!this.allItems) // Can only use ones we just entered
+            changed = _relatedIDsBitSet.And(curStates.And(changed));
+          else
+            changed = _relatedIDsBitSet.And(curStates);
+        }
+        else // Exiting the specified state/s
+        {
+          // Get all the states we are not in current states and are in the related IDs
+          if (!this.allItems) // Can only use ones we just exited
+            changed = _relatedIDsBitSet.And(curStates.Not().And(changed));
+          else
+            changed = _relatedIDsBitSet.And(curStates.Not());
+        }
       }
 
-      //return if in one of or all the states as specified
+      // Return if in one of or all the states as specified
       if (this.allItems)
         return (changed.BitCount() == relatedIDs.Count());
       else
@@ -427,7 +453,7 @@ namespace SimulationDAL
       return true;
     }
 
-    public override bool EventTriggered(MyBitArray curStates, object otherData, TimeSpan curSimTime, TimeSpan start3DTime, TimeSpan nextEvTime, int runIdx)
+    public override bool EventTriggered(MyBitArray curStates, object otherData, TimeSpan curSimTime, TimeSpan start3DTime, TimeSpan nextEvTime, bool initialEval, int runIdx)
     {
       bool evalBool = true;
       int evalRes = logicTop.Evaluate(curStates, successSpace);
@@ -650,7 +676,7 @@ namespace SimulationDAL
       return this.compiled;
     }
 
-    public override bool EventTriggered(MyBitArray curStates, object otherData, TimeSpan curSimTime, TimeSpan start3DTime, TimeSpan nextEvTime, int runIdx)
+    public override bool EventTriggered(MyBitArray curStates, object otherData, TimeSpan curSimTime, TimeSpan start3DTime, TimeSpan nextEvTime, bool initialEval, int runIdx)
     {
       if (!this.compiled)
       {
@@ -859,13 +885,13 @@ namespace SimulationDAL
       return true;
     }
 
-    public override bool EventTriggered(MyBitArray curStates, object otherData, TimeSpan curSimTime, TimeSpan start3DTime, TimeSpan nextEvTime, int runIdx)
+    public override bool EventTriggered(MyBitArray curStates, object otherData, TimeSpan curSimTime, TimeSpan start3DTime, TimeSpan nextEvTime, bool initialEval, int runIdx)
     {
       Dictionary<string, SimEventType> evTypes = (Dictionary<string, SimEventType>)otherData;
       switch (extEventType)
       {
         case SimEventType.etCompEv: //works just like a eval var event
-          return (evTypes.ContainsValue(SimEventType.etCompEv) && base.EventTriggered(curStates, otherData, curSimTime, start3DTime, nextEvTime, runIdx));
+          return (evTypes.ContainsValue(SimEventType.etCompEv) && base.EventTriggered(curStates, otherData, curSimTime, start3DTime, nextEvTime, initialEval, runIdx));
           break;
 
         case SimEventType.etEndSim:
@@ -1359,6 +1385,7 @@ namespace SimulationDAL
       public string name { get; set; }
       public string? variable { get; set; }
       public double? value { get; set; }
+      public bool? useVariable { get; set; }
       public EnTimeRate timeRate { get; set; }
 
     }
@@ -1491,7 +1518,7 @@ namespace SimulationDAL
       {
         foreach (DistribParams p in this._dParams)
         {
-          if (p.variable != null)
+          if (((p.useVariable == null) || (bool)p.useVariable) && p.variable != null)
           {
             var v = vars.FindByName(p.variable);
             valuePs.Add(Convert.ToDouble(v.value));

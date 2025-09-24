@@ -1,0 +1,352 @@
+{
+  "id": "c107d932-897f-43fb-96ab-5048115def6f",
+  "name": "Sim1",
+  "desc": "",
+  "version": 1,
+  "DiagramList": [
+    {
+      "name": "Main",
+      "desc": "",
+      "diagramType": "dtMulti",
+      "diagramTemplate": "",
+      "diagramLabel": "Plant",
+      "states": [
+        "Start",
+        "Terminate"
+      ],
+      "id": "74ecfea3-899e-41be-a3eb-21d567e1ac76",
+      "objType": "Diagram",
+      "required": false
+    },
+    {
+      "name": "TestComp",
+      "desc": "",
+      "diagramType": "dtSingle",
+      "diagramTemplate": "",
+      "diagramLabel": "Component",
+      "states": [
+        "C1Normal",
+        "C1Running",
+        "C1Failed"
+      ],
+      "id": "6f97c2ec-0aa8-4026-9716-656e4c2376f7",
+      "objType": "Diagram",
+      "required": false
+    }
+  ],
+  "StateList": [
+    {
+      "name": "C1Failed",
+      "desc": "",
+      "stateType": "stKeyState",
+      "diagramName": "TestComp",
+      "immediateActions": [],
+      "events": [],
+      "eventActions": [],
+      "id": "fd9a5133-b0e9-4ea6-908b-8660a8990b6c",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 370.5,
+        "y": 380,
+        "width": 200,
+        "height": 80
+      },
+      "defaultSingleStateValue": "False"
+    },
+    {
+      "name": "C1Normal",
+      "desc": "",
+      "stateType": "stStandard",
+      "diagramName": "TestComp",
+      "immediateActions": [],
+      "events": [
+        "FiveMinNorm",
+        "timer1"
+      ],
+      "eventActions": [
+        {
+          "actions": [
+            "Goto_C1Running"
+          ],
+          "moveFromCurrent": true
+        },
+        {
+          "actions": [
+            "Goto_C1Failed"
+          ],
+          "moveFromCurrent": true
+        }
+      ],
+      "id": "e92a0dbd-4b21-4317-8679-b746a70e469a",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 100.5,
+        "y": 75,
+        "width": 200,
+        "height": 170
+      },
+      "defaultSingleStateValue": "True"
+    },
+    {
+      "name": "C1Running",
+      "desc": "",
+      "stateType": "stStandard",
+      "diagramName": "TestComp",
+      "immediateActions": [],
+      "events": [
+        "timer1"
+      ],
+      "eventActions": [
+        {
+          "actions": [
+            "Goto_C1Failed"
+          ],
+          "moveFromCurrent": true
+        }
+      ],
+      "id": "a6e0c88a-f056-43a8-886d-d0a17534638d",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 520.5,
+        "y": 90,
+        "width": 200,
+        "height": 130
+      },
+      "defaultSingleStateValue": "True"
+    },
+    {
+      "name": "Start",
+      "desc": "",
+      "stateType": "stStart",
+      "diagramName": "Main",
+      "immediateActions": [
+        "Set_t1",
+        "Goto_c1Normal"
+      ],
+      "events": [
+        "CompFailed"
+      ],
+      "eventActions": [
+        {
+          "actions": [
+            "Goto_Terminate"
+          ],
+          "moveFromCurrent": true
+        }
+      ],
+      "id": "1bf9e737-102f-48c0-99fe-65737fa3ad0a",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 128.1818084716797,
+        "y": 66.27840423583984,
+        "width": 200,
+        "height": 160
+      }
+    },
+    {
+      "name": "Terminate",
+      "desc": "",
+      "stateType": "stTerminal",
+      "diagramName": "Main",
+      "immediateActions": [],
+      "events": [],
+      "eventActions": [],
+      "id": "3029de61-c30b-4105-b7f7-d1cb24b2dbec",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 323.5,
+        "y": 304.5,
+        "width": 200,
+        "height": 80
+      }
+    }
+  ],
+  "ActionList": [
+    {
+      "name": "Goto_C1Failed",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "C1Failed",
+          "prob": -1,
+          "failDesc": ""
+        }
+      ],
+      "id": "b5b051eb-7dbb-4a20-8565-5d626ef4958b",
+      "objType": "Action"
+    },
+    {
+      "name": "Goto_c1Normal",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "C1Normal",
+          "prob": 1,
+          "failDesc": ""
+        }
+      ],
+      "id": "b25ac61c-c05f-417a-a964-081aed9b2650",
+      "objType": "Action"
+    },
+    {
+      "name": "Goto_C1Running",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "C1Running",
+          "prob": -1,
+          "failDesc": ""
+        }
+      ],
+      "id": "f5afdd0d-271b-4f8b-87bb-85fe05e85277",
+      "objType": "Action"
+    },
+    {
+      "name": "Goto_Terminate",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "Terminate",
+          "prob": -1,
+          "failDesc": ""
+        }
+      ],
+      "id": "14c93950-7a46-4e99-b71f-268482c9e3c2",
+      "objType": "Action"
+    },
+    {
+      "name": "Set_t1",
+      "desc": "",
+      "actType": "atCngVarVal",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [],
+      "scriptCode": "return 5;",
+      "variableName": "t1",
+      "codeVariables": [],
+      "id": "5f6dc1d1-ba87-4986-839b-3776d9c4179a",
+      "objType": "Action"
+    }
+  ],
+  "EventList": [
+    {
+      "name": "CompFailed",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etStateCng",
+      "allItems": true,
+      "triggerStates": [
+        "C1Failed"
+      ],
+      "varNames": [],
+      "ifInState": true,
+      "id": "b5c14645-4c37-4b65-9384-a46014c426f4",
+      "objType": "Event"
+    },
+    {
+      "name": "FiveMinNorm",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etDistribution",
+      "allItems": true,
+      "triggerStates": [],
+      "varNames": [],
+      "distType": "dtNormal",
+      "parameters": [
+        {
+          "name": "Mean",
+          "value": "5",
+          "timeRate": "trMinutes",
+          "useVariable": false
+        },
+        {
+          "name": "Standard Deviation",
+          "value": 1,
+          "timeRate": "trMinutes",
+          "useVariable": false
+        },
+        {
+          "name": "Minimum",
+          "value": 0,
+          "timeRate": "trHours",
+          "useVariable": false
+        },
+        {
+          "name": "Maximum",
+          "value": 1000,
+          "timeRate": "trYears",
+          "useVariable": false
+        }
+      ],
+      "dfltTimeRate": "trHours",
+      "id": "e2295f07-d85a-4597-936e-cbcc49910e4e",
+      "objType": "Event"
+    },
+    {
+      "name": "timer1",
+      "desc": "",
+      "mainItem": true,
+      "evType": "etTimer",
+      "varNames": [],
+      "useVariable": true,
+      "time": "t1",
+      "timeVariableUnit": "trMinutes",
+      "onVarChange": "ocIgnore",
+      "fromSimStart": true,
+      "id": "cc33dd73-387e-4914-a1c3-9a16f3f0d2f0",
+      "objType": "Event"
+    },
+    {
+      "name": "TimerStd",
+      "desc": "",
+      "mainItem": true,
+      "evType": "etTimer",
+      "varNames": [],
+      "useVariable": false,
+      "time": "P1DT2H3M4S",
+      "timeVariableUnit": "",
+      "id": "e3d61b9f-6e6a-4b8e-8e7e-6608e6b81069",
+      "objType": "Event"
+    }
+  ],
+  "LogicNodeList": [],
+  "VariableList": [
+    {
+      "name": "FailProb",
+      "desc": "",
+      "varScope": "gtGlobal",
+      "value": 0.003,
+      "resetOnRuns": true,
+      "type": "double",
+      "id": "ef5b361e-90e2-46e8-a546-100c2e92ffeb",
+      "objType": "Variable"
+    },
+    {
+      "name": "t1",
+      "desc": "",
+      "varScope": "gtGlobal",
+      "value": 3.5,
+      "resetOnRuns": true,
+      "type": "double",
+      "id": "b63bf4a5-2860-48e6-bd8c-be3cbb52c048",
+      "objType": "Variable"
+    }
+  ],
+  "templates": [],
+  "ExtSimList": [],
+  "objType": "EMRALD_Model",
+  "emraldVersion": 3.1,
+  "versionHistory": []
+}

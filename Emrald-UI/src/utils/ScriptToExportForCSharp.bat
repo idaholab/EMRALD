@@ -4,7 +4,7 @@ rem this .bat is called from c# project SimulationDAL on build, to bundle all th
 cd /d "%~dp0" >nul
 set "exportJS_File=.\out\dist\cSharpBundle.js"
 
-call npx rollup .\ExportForCSharp.ts --file %exportJS_File% --format cjs --plugin @rollup/plugin-node-resolve --plugin @rollup/plugin-typescript >nul
+call npx.cmd rollup .\out\utils\ExportForCSharp.js --file %exportJS_File% --format cjs >nul
 
 rem remove the last line that has the "exports.UpgradeEMRALDModel = UpgradeEMRALDModel;" as that is not allowed in the c# call
 type "%exportJS_File%" | findstr /v /c:"exports.UpgradeEMRALDModel = UpgradeEMRALDModel;" > "%exportJS_File%.tmp" 

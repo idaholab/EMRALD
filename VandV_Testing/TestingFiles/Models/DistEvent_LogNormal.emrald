@@ -1,5 +1,5 @@
 {
-  "id": "eb147c21-6fc0-4827-a5dc-1070c3d36342",
+  "id": "bab3b264-da67-4a2c-b22f-da7688045fd9",
   "name": "DistEvTest1",
   "desc": "",
   "version": 1,
@@ -15,7 +15,7 @@
         "Event",
         "Done"
       ],
-      "id": "ee207720-091b-4b3c-b9f1-4db5ddf7cfd2",
+      "id": "3d12da6c-c7d7-48dd-8997-791680888dcd",
       "objType": "Diagram",
       "required": false
     }
@@ -29,7 +29,7 @@
       "immediateActions": [],
       "events": [],
       "eventActions": [],
-      "id": "daab2746-d854-4469-83a1-f16e62d4605c",
+      "id": "7d91ebb5-1d62-4642-aa07-c2e7b64eae06",
       "objType": "State",
       "geometryInfo": {
         "x": 640,
@@ -48,7 +48,7 @@
       ],
       "events": [],
       "eventActions": [],
-      "id": "f2016922-54d6-4fc4-9193-eef58e603d8a",
+      "id": "99d7c0f1-bed1-4758-baeb-25376e402650",
       "objType": "State",
       "geometryInfo": {
         "x": 330,
@@ -64,7 +64,7 @@
       "diagramName": "Main",
       "immediateActions": [],
       "events": [
-        "WeibullDist"
+        "LogNorm"
       ],
       "eventActions": [
         {
@@ -74,7 +74,7 @@
           "moveFromCurrent": true
         }
       ],
-      "id": "2a854ad1-d1eb-4257-805e-4962e8104496",
+      "id": "8e89db38-cc8a-4b1a-9fa5-b1d42765901e",
       "objType": "State",
       "geometryInfo": {
         "x": 20,
@@ -98,7 +98,7 @@
           "failDesc": ""
         }
       ],
-      "id": "b7c0c5bb-46d1-4192-865b-2544ec7a556e",
+      "id": "7aa12909-516b-48ae-912b-dcdffa77e9e5",
       "objType": "Action"
     },
     {
@@ -114,43 +114,49 @@
           "failDesc": ""
         }
       ],
-      "id": "c0a209a8-7565-44d6-8f9c-146d0accfe94",
+      "id": "3b033965-b7d8-4457-90e4-39cf1f72fd40",
       "objType": "Action"
     }
   ],
   "EventList": [
     {
-      "name": "WeibullDist",
+      "name": "LogNorm",
       "desc": "",
       "mainItem": false,
       "evType": "etDistribution",
       "allItems": true,
       "triggerStates": [],
       "varNames": [],
-      "distType": "dtWeibull",
+      "distType": "dtLogNormal",
       "parameters": [
         {
-          "name": "Shape",
-          "value": "2",
+          "name": "Mean",
+          "value": "6",
+          "timeRate": "trHours",
           "useVariable": false
         },
         {
-          "name": "Scale",
+          "name": "Standard Deviation",
           "value": 1,
+          "timeRate": "trHours",
           "useVariable": false
         },
         {
-          "value": "0",
-          "timeRate": "trHours"
+          "name": "Minimum",
+          "value": 0,
+          "timeRate": "trHours",
+          "useVariable": false
         },
         {
-          "value": "5000",
-          "timeRate": "trHours"
+          "name": "Maximum",
+          "value": 10000,
+          "timeRate": "trHours",
+          "useVariable": false
         }
       ],
       "dfltTimeRate": "trHours",
       "onVarChange": "ocResample",
-      "id": "41eea5b3-bbda-41a7-9945-a392b48c7fbe",
+      "id": "1c0d6e9b-f5ec-467a-913d-c9de739824da",
       "objType": "Event"
     }
   ],
@@ -163,7 +169,7 @@
       "value": 12,
       "resetOnRuns": true,
       "type": "double",
-      "id": "90901646-76ae-4c2e-bfab-9bbafca38d1c",
+      "id": "ffdc8d79-7af4-41bd-9c09-df4c142c31bf",
       "objType": "Variable"
     },
     {
@@ -173,7 +179,7 @@
       "value": 0.1,
       "resetOnRuns": true,
       "type": "double",
-      "id": "b1c811cc-c7c9-469e-91cd-661f297b7926",
+      "id": "603e24a7-e938-44b7-b712-c829b1c563c0",
       "objType": "Variable"
     },
     {
@@ -183,7 +189,7 @@
       "value": 1,
       "resetOnRuns": true,
       "type": "double",
-      "id": "313780f2-41d1-4b15-9373-d8fce26e1977",
+      "id": "20a681c8-994d-45c4-b783-272b11651b46",
       "objType": "Variable"
     }
   ],

@@ -116,6 +116,8 @@ interface EventFormContextType {
   setVariable: React.Dispatch<React.SetStateAction<string | undefined>>;
   setVariableName: React.Dispatch<React.SetStateAction<string>>;
   setInvalidValues: React.Dispatch<React.SetStateAction<Set<string>>>;
+  evalEvOnStateEntry: boolean | undefined;
+  setEvalEvOnStateEntry: React.Dispatch<React.SetStateAction<boolean | undefined>>;
 }
 
 const EventFormContext = createContext<EventFormContextType | undefined>(undefined);
@@ -138,11 +140,11 @@ const EventFormContextProvider: React.FC<PropsWithChildren> = ({ children }) => 
   const [name, setName] = useState<string>('');
   const [desc, setDesc] = useState<string>('');
   const [evType, setEvType] = useState<EventType>('etStateCng');
-  const [ifInState, setIfInState] = useState<boolean | undefined>(false);
+  const [ifInState, setIfInState] = useState<boolean | undefined>(true);
   const [triggerStates, setTriggerStates] = useState<string[] | undefined>();
   const [moveFromCurrent, setMoveFromCurrent] = useState<boolean>(false);
   const [eventStateIndex, setEventStateIndex] = useState<number>(0);
-  const [allItems, setAllItems] = useState<boolean | undefined>();
+  const [allItems, setAllItems] = useState<boolean | undefined>(true);
   const [onSuccess, setOnSuccess] = useState<boolean>();
   const [triggerOnFalse, setTriggerOnFalse] = useState<boolean>();
   const [logicTop, setLogicTop] = useState<string>();
@@ -166,6 +168,7 @@ const EventFormContextProvider: React.FC<PropsWithChildren> = ({ children }) => 
   const [hasError, setHasError] = useState<boolean>(false);
   const [originalName, setOriginalName] = useState<string>();
   const [invalidValues, setInvalidValues] = useState<Set<string>>(() => new Set());
+  const [evalEvOnStateEntry, setEvalEvOnStateEntry] = useState<boolean | undefined>(true);
 
   const event = useSignal<Event>(emptyEvent);
 
@@ -227,6 +230,11 @@ const EventFormContextProvider: React.FC<PropsWithChildren> = ({ children }) => 
       }
       eventData.extEventType && setExtEventType(eventData.extEventType);
       eventData.variable && setVariable(eventData.variable);
+      if (typeof eventData.evalEvOnStateEntry !== 'boolean' && eventData.ifInState === true) {
+        setEvalEvOnStateEntry(true);
+      } else {
+        setEvalEvOnStateEntry(eventData.evalEvOnStateEntry);
+      }
     }
   };
 
@@ -449,7 +457,8 @@ const EventFormContextProvider: React.FC<PropsWithChildren> = ({ children }) => 
     setHasError(false);
     if (evType === 'etStateCng') {
       setAllItems(true); // Default value for allItems
-      setIfInState(false);
+      setIfInState(true);
+      setEvalEvOnStateEntry(true);
     }
   };
 
@@ -478,6 +487,7 @@ const EventFormContextProvider: React.FC<PropsWithChildren> = ({ children }) => 
         ifInState: ifInState ?? false,
         allItems: allItems ?? true,
         triggerStates,
+        evalEvOnStateEntry: evalEvOnStateEntry
       };
     } else if (evType === 'etTimer') {
       event.value = {
@@ -622,6 +632,8 @@ const EventFormContextProvider: React.FC<PropsWithChildren> = ({ children }) => 
         setVariable,
         setVariableName,
         setInvalidValues,
+        evalEvOnStateEntry,
+        setEvalEvOnStateEntry,
       }}
     >
       {children}

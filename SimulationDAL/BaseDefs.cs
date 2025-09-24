@@ -265,7 +265,10 @@ namespace SimulationDAL
         switch (timeRate)
         {
           case EnTimeRate.trYears:
-            return TimeSpan.FromDays(number * 365);
+            if((number * 365) > TimeSpan.MaxValue.TotalDays)
+              return TimeSpan.MaxValue;
+            else
+              return TimeSpan.FromDays(number * 365);
           case EnTimeRate.trDays:
             return TimeSpan.FromDays(number);
           case EnTimeRate.trHours:

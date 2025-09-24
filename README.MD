@@ -20,6 +20,7 @@ Event Modeling Risk Assessment using Linked Diagrams (EMRALD) is a software tool
 			1. Download and install Node.js from [https://nodejs.org/en/](https://nodejs.org/en/)
 			2. Open the Emrald-UI folder in a terminal window
 			3. Run the command `npm install` to install the project's dependencies
+				3.1 Make sure rollup/plugin-typescript is installed - npm.cmd install --save-dev @rollup/plugin-node-resolve @rollup/plugin-typescript
 			4. Run the command `npm run build` to compile the project
 			5. Run the command `npm run preview`. A link to "localhost" will appear in the terminal. Hold the ctrl key and click this link to open EMRALD in your browser.
 		- After first-time setup:
