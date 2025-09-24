@@ -144,7 +144,7 @@ const EventFormContextProvider: React.FC<PropsWithChildren> = ({ children }) => 
   const [triggerStates, setTriggerStates] = useState<string[] | undefined>();
   const [moveFromCurrent, setMoveFromCurrent] = useState<boolean>(false);
   const [eventStateIndex, setEventStateIndex] = useState<number>(0);
-  const [allItems, setAllItems] = useState<boolean | undefined>();
+  const [allItems, setAllItems] = useState<boolean | undefined>(true);
   const [onSuccess, setOnSuccess] = useState<boolean>();
   const [triggerOnFalse, setTriggerOnFalse] = useState<boolean>();
   const [logicTop, setLogicTop] = useState<string>();
@@ -455,10 +455,10 @@ const EventFormContextProvider: React.FC<PropsWithChildren> = ({ children }) => 
     setExtEventType(undefined);
     setVariable(undefined);
     setHasError(false);
-    setEvalEvOnStateEntry(undefined);
     if (evType === 'etStateCng') {
       setAllItems(true); // Default value for allItems
-      setIfInState(false);
+      setIfInState(true);
+      setEvalEvOnStateEntry(true);
     }
   };
 
