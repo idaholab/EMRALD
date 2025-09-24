@@ -1344,19 +1344,33 @@ namespace SimulationTracking
 
             TimeSpan evTime;
             TimeSpan createTime;
-            bool savePersistent = false;
+
+            //default get a new time if persistent and not expired then it will be fixed 
+            bool savePersistent = true;
+            evTime = timeEv.NextTime(curTime);
+            createTime = curTime;
+            
             //if persistent and time not expired then reuse the saved TimeMoveEvent info
-            if (this.PersistentEvs.ContainsKey(curEv.name) && ((PersistentEvs[curEv.name].whenCreated + PersistentEvs[curEv.name].time) >= curTime))
+            if (this.PersistentEvs.ContainsKey(curEv.name))
             {
-              evTime = (PersistentEvs[curEv.name].whenCreated + PersistentEvs[curEv.name].time) - curTime;
-              createTime = PersistentEvs[curEv.name].whenCreated;
+              //get the added time if not over max
+              bool overMaxTime = (PersistentEvs[curEv.name].whenCreated.TotalDays + PersistentEvs[curEv.name].time.TotalDays) > TimeSpan.MaxValue.TotalDays;
+              TimeSpan combiedTime = overMaxTime
+                ? TimeSpan.MaxValue
+                : (PersistentEvs[curEv.name].whenCreated + PersistentEvs[curEv.name].time);
+              
+              if (combiedTime >= curTime)
+              {
+                savePersistent = false; //saved here so dont do the save later.
+                if (!overMaxTime)
+                  evTime = (PersistentEvs[curEv.name].whenCreated + PersistentEvs[curEv.name].time) - curTime;
+                else //over max time so keep the max time.
+                  evTime = TimeSpan.MaxValue;
+
+                createTime = PersistentEvs[curEv.name].whenCreated;
+              }
             }
-            else
-            {
-              evTime = timeEv.NextTime(curTime);
-              createTime = curTime;
-              savePersistent = true; //save if it is a persistent event
-            }
+
 
             if ((evTime < maxTime) || (timeEv.UsesVariables()))//if using variables we still need to add incase those variables change
             {
