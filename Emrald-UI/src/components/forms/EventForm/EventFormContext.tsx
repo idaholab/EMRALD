@@ -140,7 +140,7 @@ const EventFormContextProvider: React.FC<PropsWithChildren> = ({ children }) => 
   const [name, setName] = useState<string>('');
   const [desc, setDesc] = useState<string>('');
   const [evType, setEvType] = useState<EventType>('etStateCng');
-  const [ifInState, setIfInState] = useState<boolean | undefined>(false);
+  const [ifInState, setIfInState] = useState<boolean | undefined>(true);
   const [triggerStates, setTriggerStates] = useState<string[] | undefined>();
   const [moveFromCurrent, setMoveFromCurrent] = useState<boolean>(false);
   const [eventStateIndex, setEventStateIndex] = useState<number>(0);
@@ -168,7 +168,7 @@ const EventFormContextProvider: React.FC<PropsWithChildren> = ({ children }) => 
   const [hasError, setHasError] = useState<boolean>(false);
   const [originalName, setOriginalName] = useState<string>();
   const [invalidValues, setInvalidValues] = useState<Set<string>>(() => new Set());
-  const [evalEvOnStateEntry, setEvalEvOnStateEntry] = useState<boolean | undefined>(undefined);
+  const [evalEvOnStateEntry, setEvalEvOnStateEntry] = useState<boolean | undefined>(true);
 
   const event = useSignal<Event>(emptyEvent);
 
@@ -230,9 +230,10 @@ const EventFormContextProvider: React.FC<PropsWithChildren> = ({ children }) => 
       }
       eventData.extEventType && setExtEventType(eventData.extEventType);
       eventData.variable && setVariable(eventData.variable);
-      setEvalEvOnStateEntry(eventData.evalEvOnStateEntry);
       if (typeof eventData.evalEvOnStateEntry !== 'boolean' && eventData.ifInState === true) {
         setEvalEvOnStateEntry(true);
+      } else {
+        setEvalEvOnStateEntry(eventData.evalEvOnStateEntry);
       }
     }
   };
