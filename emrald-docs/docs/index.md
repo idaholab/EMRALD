@@ -15,7 +15,7 @@ hero:
 
 features:
   - title: Simple
-    details: Simplifying the modeling process by providing a structure that corresponds to traditional PRA modeling methods.
+    details: Simplifying dynamic modeling process by providing a structure similar to traditional PRA modeling methods.
   - title: Intuitive
     details: Providing a user interface (UI) that makes it easy for the user to model and visualize complex interactions.
   - title: Powerful
