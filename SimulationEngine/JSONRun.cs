@@ -229,7 +229,6 @@ namespace SimulationEngine
       int threadCnt = ConfigData.threads == null ? 1 : (int)ConfigData.threads;
       int runsDiv = options.runct / threadCnt;
       bool resDone = false; //results 
-      
 
       for (int i = 0; i < threadCnt; i++) //if null just run once.
       {
@@ -244,9 +243,12 @@ namespace SimulationEngine
           if(v.monitorInSim)
             _simRuns[i].logVarVals.Add(v.name);
         }
-        foreach (var varItem in this.options.variables)
+        if (this.options.variables is not null)
         {
-          _simRuns[i].logVarVals.Add(varItem.ToString());
+          foreach (var varItem in this.options.variables)
+          {
+            _simRuns[i].logVarVals.Add(varItem.ToString());
+          }
         }
 
         foreach (var varItem in this.options.initVars)

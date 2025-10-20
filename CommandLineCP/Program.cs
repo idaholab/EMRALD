@@ -258,9 +258,11 @@ namespace CommandLineCP
       }
 
       Console.WriteLine(modelRun.options.runct + " runs of - " + modelRun.options.inpfile);
-
+#if WINDOWS
       string res = modelRun.RunSim(progress);
-
+#else
+      string res = modelRun.RunSim();
+#endif
       if (res != "")
       {
         Console.WriteLine(res);

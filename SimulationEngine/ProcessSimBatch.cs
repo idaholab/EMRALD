@@ -26,14 +26,16 @@ using XmppMessageServer;
 
 namespace SimulationEngine
 {
-  //public class Progress
-  //{
-  //  public int percentDone = 0;
-  //  public TimeSpan runTime = TimeSpan.Zero;
-  //  public int curRun = 0;
-  //  public bool done = false;
-  //}
-
+#if WINDOWS
+#else
+  public class Progress
+  {
+    public int percentDone = 0;
+    public TimeSpan runTime = TimeSpan.Zero;
+    public int curRun = 0;
+    public bool done = false;
+  }
+#endif
   public delegate void TProgressCallBack(TimeSpan runTime, int runCnt, bool finalValOnly, int? threadNum);
     
   public class FailedItems 
