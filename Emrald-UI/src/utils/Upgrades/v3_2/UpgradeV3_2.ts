@@ -13,7 +13,8 @@ function UpgradeV3_2_Recursive(oldModel: EMRALD_ModelV3_1): EMRALD_Model {
     return {
       ...oldModel,
       StateList: oldModel.StateList.map((state) => {
-        const { geometryInfo } = state;
+        // eslint-disable-next-line prefer-const
+        let { geometryInfo } = state;
         if (typeof state.geometryInfo === 'undefined' && typeof state.geometry === 'string') {
           eval(`geometryInfo = ${state.geometry}`); // TODO: This is really bad practice, but the geometry property isn't stored as proper JSON somehow
         }
