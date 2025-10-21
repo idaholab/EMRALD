@@ -117,7 +117,7 @@ namespace SimulationEngine
   {
     private string _optsJsonStr = "";
     private string _modelJsonStr = "";
-    //TProgressCallBack _progressCallBack = null;
+    TProgressCallBack _progressCallBack = null;
     private string _error = "";
     public Options_cur options = new Options_cur();
     private bool _done = false;
@@ -141,7 +141,7 @@ namespace SimulationEngine
     {
       _optsJsonStr = optionsJsonStr;
       _modelJsonStr = modelJsonStr;
-      //_progressCallBack = progressCallBack;
+      _progressCallBack = progressCallBack;
     }
 
     public JSONRun(Options_cur ops, string modelJsonStr = "", TProgressCallBack progressCallBack = null)
@@ -149,10 +149,10 @@ namespace SimulationEngine
       this.options = ops;
       _optsJsonStr = JsonConvert.SerializeObject(ops);
       _modelJsonStr = modelJsonStr;
-      //_progressCallBack = progressCallBack;
+      _progressCallBack = progressCallBack;
     }
 
-    public string RunSim()
+    public string RunSim(Progress progress)
     {
       percentDone = 0;
 
@@ -311,6 +311,8 @@ namespace SimulationEngine
         }
         _simRuns[0].WriteFinalResults(true, threadCnt);
         resDone = true;
+        progress.done = true;
+        progress.percentDone = 100;
       });
 
       //must wait until done to return
@@ -477,11 +479,11 @@ namespace SimulationEngine
       return true;
     }
 
-    //private void Progress(TimeSpan runTime, int runCnt, bool finalValOnly)
-    //{
-    //  this.percentDone = runCnt / options.runct;
-    //  if (_progressCallBack != null)
-    //    _progressCallBack(runTime, runCnt, finalValOnly);//, 0); //no display thread for JSON runs.
-    //}
+    private void Progress(TimeSpan runTime, int runCnt, bool finalValOnly)
+    {
+      this.percentDone = runCnt / options.runct;
+      if (_progressCallBack != null)
+        _progressCallBack(runTime, runCnt, finalValOnly, 0); //no display thread for JSON runs.
+    }
   }
 }
