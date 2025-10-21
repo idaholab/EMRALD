@@ -356,6 +356,10 @@ export interface State {
    * If this is a template then it indicates the item must exist in the current model before using the template.
    */
   required?: boolean
+  /**
+   * Deprecated / error
+   */
+  geometry?: string
 }
 export interface EventActionItems {
   /**
@@ -738,6 +742,10 @@ export interface Event {
    * Optional. For event type etStateCng, flag to indicate that event is triggired when entering or exiting states listed in triggerStates array. On Enter State/s or On Exit State/s
    */
   ifInState?: boolean
+  /**
+   * Optional. For event type etStateCng, flag to indicate that the event should be evaluated when entering the state so that it is triggered without something changing. Enter State/s or On Exit State/s becomes Enter State/s or already in and On Exit State/s or not in
+   */
+  evalEvOnStateEntry?: boolean
   /**
    * Optional. For event type etStateCng, flag to indicate that event is triggering needs all the items or just one or rmore from the states listed in triggerStates array. checkbox - All Items
    */

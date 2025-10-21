@@ -48,7 +48,7 @@ namespace SimulationDAL
     private int? _threadNumber = 0;
     private bool _updated = false;
     private MultiThreadInfo _MultiThreadInfo = null;
-    public const double SCHEMA_VERSION = 3.1;
+    public const double SCHEMA_VERSION = 3.2;
     //public dSimulation _Sim = null;
     //protected Diagram _Diagram = null; //TODO remove was added for testing.
     public AllDiagrams allDiagrams = new AllDiagrams();

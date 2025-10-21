@@ -46,8 +46,9 @@ export const projectOptions = {
               populateNewData(upgradedModel);
             }
           }
-        } catch {
+        } catch (err) {
           console.error('Invalid JSON format');
+          console.error(err);
         }
       };
       reader.readAsText(selectedFile); // Read the file as text

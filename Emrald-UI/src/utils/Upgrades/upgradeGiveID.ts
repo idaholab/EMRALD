@@ -3,6 +3,7 @@ import { UpgradeV1_x, type UpgradeReturn } from './v1_x/UpgradeV1_x';
 import { UpgradeV2_4 } from './v2_4/UpgradeV2_4';
 import { UpgradeV3_0 } from './v3_0/UpgradeV3_0';
 import { UpgradeV3_1 } from './v3_1/UpgradeV3_1';
+import { UpgradeV3_2 } from './v3_2/UpgradeV3_2';
 
 interface ModelVersionFix {
     emraldVersion?: number;
@@ -50,6 +51,7 @@ export class Upgrade {
       { emraldVersion: 2.4, upgradeFunction: UpgradeV2_4 },
       { emraldVersion: 3.0, upgradeFunction: UpgradeV3_0 },
       { emraldVersion: 3.1, upgradeFunction: UpgradeV3_1 },
+      { emraldVersion: 3.2, upgradeFunction: UpgradeV3_2 },
     ];
 
     // Apply upgrades
