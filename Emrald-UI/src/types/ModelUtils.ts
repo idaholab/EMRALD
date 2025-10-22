@@ -9,7 +9,7 @@ import type {
   Event,
 } from './EMRALD_Model';
 
-export const EMRALD_SchemaVersion = 3.1;
+export const EMRALD_SchemaVersion = 3.2;
 
 export function CreateEmptyEMRALDModel(): EMRALD_Model {
   return {

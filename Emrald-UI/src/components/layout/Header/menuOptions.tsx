@@ -7,6 +7,7 @@ import {
 } from '../../diagrams/SankeyTimelineDiagram/SankeyTimelineDiagram';
 import type { EMRALD_Model } from '../../../types/EMRALD_Model';
 import type { WindowPosition } from '../../../contexts/WindowContext';
+import { EMRALD_SchemaVersion } from '../../../types/ModelUtils';
 
 export const projectOptions = {
   New(newProject: () => void) {
@@ -37,17 +38,21 @@ export const projectOptions = {
 
         try {
           const parsedContent = JSON.parse(content) as EMRALD_Model;
-          if (Object.prototype.hasOwnProperty.call(parsedContent, 'emraldVersion')) {
-            populateNewData(parsedContent);
-          } else {
+          if (
+            !Object.prototype.hasOwnProperty.call(parsedContent, 'emraldVersion') ||
+            parsedContent.emraldVersion < EMRALD_SchemaVersion
+          ) {
             const upgradedModel = upgradeModel(content);
             if (upgradedModel) {
               upgradedModel.id = uuidv4();
               populateNewData(upgradedModel);
             }
+          } else {
+            populateNewData(parsedContent);
           }
-        } catch {
+        } catch (err) {
           console.error('Invalid JSON format');
+          console.error(err);
         }
       };
       reader.readAsText(selectedFile); // Read the file as text
@@ -259,7 +264,7 @@ export const projectOptions = {
 
     // Trigger a click on the file input to open the file dialog
     fileInput.click();
-  }
+  },
 };
 
 export const templateSubMenuOptions = {
@@ -345,8 +350,7 @@ export const downloadOptions = {
   'Solve Engine': () => {
     const link = document.createElement('a');
     link.target = '_blank';
-    link.href =
-      'https://github.com/idaholab/EMRALD/releases/latest/download/EMRALD_SimEngine.zip'; //The file to download.
+    link.href = 'https://github.com/idaholab/EMRALD/releases/latest/download/EMRALD_SimEngine.zip'; //The file to download.
     link.click();
   },
   'Client Tester': () => {

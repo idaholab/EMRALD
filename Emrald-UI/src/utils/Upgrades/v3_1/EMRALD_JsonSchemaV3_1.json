@@ -280,6 +280,10 @@
         "required": {
           "type": "boolean",
           "description": "If this is a template then it indicates the item must exist in the current model before using the template."
+        },
+        "geometry": {
+          "type": "string",
+          "description": "Deprecated / error"
         }
       },
       "additionalProperties": false,
