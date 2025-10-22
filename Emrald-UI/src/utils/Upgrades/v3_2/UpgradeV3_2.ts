@@ -1,5 +1,5 @@
 import type { EMRALD_Model as EMRALD_ModelV3_1 } from '../v3_1/AllModelInterfacesV3_1';
-import type { EMRALD_Model, Main_Model } from './AllModelInterfacesV3_2';
+import type { EMRALD_Model, GeometryInfo, Main_Model } from './AllModelInterfacesV3_2';
 
 export function UpgradeV3_2(modelTxt: string) {
   return {
@@ -16,7 +16,7 @@ function UpgradeV3_2_Recursive(oldModel: EMRALD_ModelV3_1): EMRALD_Model {
         // eslint-disable-next-line prefer-const
         let { geometryInfo } = state;
         if (typeof state.geometryInfo === 'undefined' && typeof state.geometry === 'string') {
-          eval(`geometryInfo = ${state.geometry}`); // TODO: This is really bad practice, but the geometry property isn't stored as proper JSON somehow
+          geometryInfo = JSON.parse(state.geometry.replace(/([A-z]+):\s/g, '"$1": ')) as GeometryInfo;
         }
         return {
           ...state,
