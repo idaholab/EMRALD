@@ -13,6 +13,7 @@ import {
   TextRun,
   TextWrappingSide,
   TextWrappingType,
+  UnderlineType,
   VerticalPositionRelativeFrom,
 } from 'docx';
 import { imageSize } from 'image-size';
@@ -71,8 +72,202 @@ async function createImage(path, width = 500) {
   });
 }
 
+// Word documents don't support named colors, so put any named colors used in element styles here
+const colorToHex = {
+  red: 'FF0000',
+  green: '00FF00',
+  blue: '0000FF',
+  orange: 'FFA500',
+  gray: '808080',
+};
+
+/**
+ * Reads style information out of a style property.
+ * @param {string} style - The style property.
+ */
+function readStyle(style) {
+  let color = undefined;
+  const setColor = style.indexOf('color:');
+  if (setColor !== -1) {
+    color = style.substring(setColor + 6);
+    if (Object.prototype.hasOwnProperty.call(colorToHex, color)) {
+      /** @type {keyof typeof colorToHex} */
+      const key = color;
+      color = colorToHex[key];
+    }
+  }
+  return { color };
+}
+
+/**
+ * Helper function for creating a header with a bookmark anchor.
+ * @param {string} text - The markdown text of the header.
+ * @param {(typeof HeadingLevel)[keyof typeof HeadingLevel]} headingLevel - The heading level.
+ * @returns
+ */
+function createHeading(text, headingLevel) {
+  return new Paragraph({
+    children: [
+      new Bookmark({
+        id: text
+          .toLocaleLowerCase()
+          .replace(/\s/g, '-')
+          .replace(/^[A-z]/, ''),
+        children: parseInnerText(text),
+      }),
+    ],
+    heading: headingLevel,
+  });
+}
+
 /**
  * Parses a line of Markdown text.
+ * @param {string} line - The line of raw markdown.
+ * @param {{ color?: string; underline?: { type: (typeof UnderlineType)[keyof typeof UnderlineType] }, bold?: boolean } | undefined} styles - Inherited styles from parents.
+ */
+function parseInnerText(line, styles = undefined) {
+  let color = styles?.color;
+  let underline = styles?.underline;
+  let bold = styles?.bold;
+  /** @type {(TextRun | ExternalHyperlink)[]} */
+  const section = [];
+  let lastSymbol = 0;
+  const findNextSymbol = () => {
+    let matches = [];
+    for (const test of [
+      /<a href/,
+      /\[[^[]+\]\([^(]+\)/,
+      /\*\*[^*]+\*\*/,
+      /<span/,
+      /<div/,
+    ]) {
+      const res = test.exec(line.substring(lastSymbol));
+      if (res !== null) {
+        matches.push(res.index + lastSymbol);
+      }
+    }
+    return matches.length === 0 ? -1 : Math.min(...matches);
+  };
+  let nextSymbol = findNextSymbol();
+  if (nextSymbol === -1) {
+    section.push(new TextRun({ text: line, color, underline, bold }));
+  } else {
+    while (nextSymbol !== -1) {
+      if (line.substring(nextSymbol, nextSymbol + 9) === '<a href="') {
+        const urlEnd = line.indexOf('"', nextSymbol + 9);
+        const linkEnd = line.indexOf('</a>', urlEnd + 2);
+        section.push(
+          new ExternalHyperlink({
+            children: parseInnerText(
+              trim(line.substring(urlEnd + 2, linkEnd)),
+              {
+                color: '5dd86b',
+                underline: {
+                  type: 'single',
+                },
+                bold,
+              },
+            ),
+            link: line.substring(nextSymbol + 9, urlEnd),
+          }),
+        );
+        lastSymbol = linkEnd + 4;
+      } else if (line.substring(nextSymbol, nextSymbol + 1) === '[') {
+        const bracketEnd = line.indexOf(']', nextSymbol + 1);
+        const parenEnd = line.indexOf(')', bracketEnd + 2);
+        section.push(
+          new ExternalHyperlink({
+            children: parseInnerText(
+              trim(line.substring(nextSymbol + 1, bracketEnd)),
+              {
+                color: '5dd86b',
+                underline: {
+                  type: 'single',
+                },
+                bold,
+              },
+            ),
+            link: line.substring(bracketEnd + 2, parenEnd),
+          }),
+        );
+        lastSymbol = parenEnd + 1;
+      } else if (line.substring(nextSymbol, nextSymbol + 2) === '**') {
+        const boldEnd = line.indexOf('**', nextSymbol + 2);
+        section.push(
+          ...parseInnerText(trim(line.substring(nextSymbol + 2, boldEnd)), {
+            color,
+            underline,
+            bold: true,
+          }),
+        );
+        lastSymbol = boldEnd + 2;
+      } else if (line.substring(nextSymbol, nextSymbol + 4) === '<div') {
+        const openElEnd = line.indexOf('>', nextSymbol + 4) + 1;
+        const closeElStart = line.indexOf('<', openElEnd);
+        const styleIdx = line.indexOf('style=', nextSymbol + 4);
+        let newColor;
+        if (styleIdx !== -1) {
+          const style = readStyle(
+            line.substring(styleIdx + 7, line.indexOf('"', styleIdx + 7)),
+          );
+          newColor = style.color;
+        }
+        section.push(
+          ...parseInnerText(line.substring(openElEnd, closeElStart), {
+            color: newColor ?? color,
+            underline,
+            bold,
+          }),
+        );
+        lastSymbol = closeElStart + 6;
+      } else if (line.substring(nextSymbol, nextSymbol + 5) === '<span') {
+        const openElEnd = line.indexOf('>', nextSymbol + 5) + 1;
+        const closeElStart = line.indexOf('<', openElEnd);
+        const styleIdx = line.indexOf('style=', nextSymbol + 5);
+        let newColor;
+        if (styleIdx !== -1) {
+          const style = readStyle(
+            line.substring(styleIdx + 7, line.indexOf('"', styleIdx + 7)),
+          );
+          newColor = style.color;
+        }
+        section.push(
+          ...parseInnerText(line.substring(openElEnd, closeElStart), {
+            color: newColor ?? color,
+            underline,
+            bold,
+          }),
+        );
+        lastSymbol = closeElStart + 7;
+      }
+      nextSymbol = findNextSymbol();
+      if (nextSymbol !== -1) {
+        section.push(
+          new TextRun({
+            text: trim(line.substring(lastSymbol, nextSymbol)),
+            color,
+            underline,
+            bold,
+          }),
+        );
+      }
+    }
+    if (line.substring(lastSymbol).length > 0) {
+      section.push(
+        new TextRun({
+          text: trim(line.substring(lastSymbol)),
+          color,
+          underline,
+          bold,
+        }),
+      );
+    }
+  }
+  return section;
+}
+
+/**
+ * Parses a line of Markdown.
  * @param {string} line - The line of raw markdown.
  */
 async function parseMarkdown(line) {
@@ -80,68 +275,39 @@ async function parseMarkdown(line) {
   const section = [];
   if (line.startsWith('###')) {
     section.push(
-      new Paragraph({
-        text: line.substring(3).trim(),
-        heading: HeadingLevel.HEADING_3,
-      }),
+      createHeading(line.substring(3).trim(), HeadingLevel.HEADING_3),
     );
   } else if (line.startsWith('##')) {
-    const text = line.substring(2).trim();
     section.push(
-      new Paragraph({
-        children: [
-          new Bookmark({
-            id: text.toLocaleLowerCase().replace(/\s/g, '-'),
-            children: [new TextRun({ text })],
-          }),
-        ],
-        heading: HeadingLevel.HEADING_2,
-      }),
+      createHeading(line.substring(2).trim(), HeadingLevel.HEADING_2),
     );
   } else if (line.startsWith('#')) {
     section.push(
-      new Paragraph({
-        text: line.substring(1).trim(),
-        heading: HeadingLevel.HEADING_1,
-      }),
+      createHeading(line.substring(1).trim(), HeadingLevel.HEADING_1),
     );
   } else {
     let lastSymbol = 0;
     const findNextSymbol = () => {
       let matches = [];
       for (const test of [
-        /<a href/,
-        /\[[^[]+\]\([^(]+\)/,
+        /!\[[^[]+\]\([^(]+\)/,
         /<img src/,
-        /\*\*[^*]+\*\*/,
         /<details>/,
         /<\/details>/,
         /<summary>/,
       ]) {
         const res = test.exec(line.substring(lastSymbol));
         if (res !== null) {
-          let idx = res.index + lastSymbol;
-          // Images that start with ![ get picked up by the same regex as links, so this moves the index back to avoid extra exclamation points in the document
-          if (line.substring(idx - 1, idx + 1) === '![') {
-            idx -= 1;
-          }
-          matches.push(idx);
+          matches.push(res.index + lastSymbol);
         }
       }
       return matches.length === 0 ? -1 : Math.min(...matches);
     };
     let nextSymbol = findNextSymbol();
-    /** @type {(TextRun | ExternalHyperlink | ImageRun)[]} */
-    const paragraph = [
-      new TextRun({
-        text: trim(line.substring(lastSymbol, nextSymbol)),
-      }),
-    ];
     if (nextSymbol === -1) {
-      section.push(new Paragraph({ text: trim(line) }));
+      section.push(new Paragraph({ children: parseInnerText(line) }));
     } else {
       while (nextSymbol !== -1) {
-        // console.log(lastSymbol, nextSymbol, line);
         if (
           ['<details>', '</details>'].includes(
             line.substring(nextSymbol).trim(),
@@ -151,51 +317,27 @@ async function parseMarkdown(line) {
           lastSymbol = nextSymbol + line.substring(nextSymbol).trim().length;
         } else if (line.substring(nextSymbol, nextSymbol + 9) === '<summary>') {
           const summaryEnd = line.indexOf('<', nextSymbol + 9);
-          paragraph.push(
-            new TextRun({
-              text: line.substring(nextSymbol + 9, summaryEnd),
+          section.push(
+            new Paragraph({
+              children: parseInnerText(
+                line.substring(nextSymbol + 9, summaryEnd),
+              ),
             }),
           );
           lastSymbol = summaryEnd + 10;
-        } else if (line.substring(nextSymbol, nextSymbol + 9) === '<a href="') {
-          const urlEnd = line.indexOf('"', nextSymbol + 9);
-          const linkEnd = line.indexOf('</a>', urlEnd + 2);
-          paragraph.push(
-            new ExternalHyperlink({
-              children: [
-                new TextRun({
-                  text: trim(line.substring(urlEnd + 2, linkEnd)),
-                  style: 'Hyperlink',
-                }),
-              ],
-              link: line.substring(nextSymbol + 9, urlEnd),
-            }),
-          );
-          lastSymbol = linkEnd + 4;
         } else if (line.substring(nextSymbol, nextSymbol + 2) === '![') {
           const startPath = line.indexOf('(', nextSymbol + 2) + 1;
           const endPath = line.indexOf(')', startPath);
-          paragraph.push(
-            await createImage(
-              path.join('docs', line.substring(startPath, endPath)),
-            ),
-          );
-          lastSymbol = endPath + 1;
-        } else if (line.substring(nextSymbol, nextSymbol + 1) === '[') {
-          const bracketEnd = line.indexOf(']', nextSymbol + 1);
-          const parenEnd = line.indexOf(')', bracketEnd + 2);
-          paragraph.push(
-            new ExternalHyperlink({
+          section.push(
+            new Paragraph({
               children: [
-                new TextRun({
-                  text: trim(line.substring(nextSymbol + 1, bracketEnd)),
-                  style: 'Hyperlink',
-                }),
+                await createImage(
+                  path.join('docs', line.substring(startPath, endPath)),
+                ),
               ],
-              link: line.substring(bracketEnd + 2, parenEnd),
             }),
           );
-          lastSymbol = parenEnd + 1;
+          lastSymbol = endPath + 1;
         } else if (
           line.substring(nextSymbol, nextSymbol + 10) === '<img src="'
         ) {
@@ -206,42 +348,40 @@ async function parseMarkdown(line) {
               line.substring(widthSpec + 7, line.indexOf('"', widthSpec + 7)),
             );
           }
-          paragraph.push(
-            await createImage(
-              path.join(
-                'docs',
-                line.substring(
-                  nextSymbol + 11,
-                  line.indexOf('"', nextSymbol + 11),
+          section.push(
+            new Paragraph({
+              children: [
+                await createImage(
+                  path.join(
+                    'docs',
+                    line.substring(
+                      nextSymbol + 11,
+                      line.indexOf('"', nextSymbol + 11),
+                    ),
+                  ),
+                  width,
                 ),
-              ),
-              width,
-            ),
-          );
-          lastSymbol = line.indexOf('>', nextSymbol + 11) + 1;
-        } else if (line.substring(nextSymbol, nextSymbol + 2) === '**') {
-          const boldEnd = line.indexOf('**', nextSymbol + 2);
-          paragraph.push(
-            new TextRun({
-              text: trim(line.substring(nextSymbol + 2, boldEnd)),
-              bold: true,
+              ],
             }),
           );
-          lastSymbol = boldEnd + 2;
+          lastSymbol = line.indexOf('>', nextSymbol + 11) + 1;
         }
         nextSymbol = findNextSymbol();
         if (nextSymbol !== -1) {
-          paragraph.push(
-            new TextRun({
-              text: trim(line.substring(lastSymbol, nextSymbol)),
+          section.push(
+            new Paragraph({
+              children: parseInnerText(line.substring(lastSymbol, nextSymbol)),
             }),
           );
         }
       }
       if (line.substring(lastSymbol).length > 0) {
-        paragraph.push(new TextRun({ text: trim(line.substring(lastSymbol)) }));
+        section.push(
+          new Paragraph({
+            children: parseInnerText(line.substring(lastSymbol)),
+          }),
+        );
       }
-      section.push(new Paragraph({ children: paragraph }));
     }
   }
   return section;
@@ -266,7 +406,8 @@ async function generateDocx() {
         let inTable = false;
         for (const line of (await fs.readFile(fullPath))
           .toString()
-          .split('\n')) {
+          .split('\n')
+          .map((l) => l.trimStart())) {
           if (line.startsWith('<!--')) {
             continue;
           } else if (line.startsWith('|')) {
@@ -324,14 +465,6 @@ async function generateDocx() {
               run: {
                 font: 'Sans Serif Collection',
                 color: '3c3c43',
-              },
-            },
-            hyperlink: {
-              run: {
-                color: '5dd86b',
-                underline: {
-                  type: 'single',
-                },
               },
             },
           },
