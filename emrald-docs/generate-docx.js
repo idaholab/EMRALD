@@ -20,6 +20,15 @@ const ignore = [
   /.*\.css/,
 ];
 
+/**
+ * Trims HTML line breaks from text.
+ * @param {string} text - The text to trim.
+ * @returns The trimmed text.
+ */
+function trim(text) {
+  return text.replace('<br>', '');
+}
+
 async function generateDocx() {
   console.log('Generating documentation document...');
   const sections = [];
@@ -53,99 +62,133 @@ async function generateDocx() {
             );
           } else {
             let lastSymbol = 0;
-            const nextSymbol = Math.max(
-              line.indexOf('<a href'),
-              /^!\[[^[]+\]\([^(]+\)/.exec(line)?.index ?? -1,
-              line.indexOf('<img src'),
-              /!\[[^[]+\]\([^(]+\)/.exec(line)?.index ?? -1,
-              /\*\*[^*]+\*\*/.exec(line)?.index ?? -1,
-            );
+            const findNextSymbol = () => {
+              let matches = [];
+              for (const test of [
+                /<a href/,
+                /^!\[[^[]+\]\([^(]+\)/,
+                /<img src/,
+                /!\[[^[]+\]\([^(]+\)/,
+                /\*\*[^*]+\*\*/,
+              ]) {
+                const res = test.exec(line.substring(lastSymbol));
+                if (res !== null) {
+                  matches.push(res.index + lastSymbol);
+                }
+              }
+              return matches.length === 0 ? -1 : Math.min(...matches);
+            };
+            let nextSymbol = findNextSymbol();
+            /** @type {(TextRun | ExternalHyperlink | ImageRun)[]} */
+            const paragraph = [
+              new TextRun({
+                text: trim(line.substring(lastSymbol, nextSymbol)),
+              }),
+            ];
             if (nextSymbol === -1) {
-              section.push(new Paragraph({ text: line }));
+              section.push(new Paragraph({ text: trim(line) }));
             } else {
-              /** @type {(TextRun | ExternalHyperlink | ImageRun)[]} */
-              const paragraph = [
-                new TextRun({ text: line.substring(0, nextSymbol) }),
-              ];
-              if (line.substring(nextSymbol, nextSymbol + 9) === '<a href="') {
-                const urlEnd = line.indexOf('"', nextSymbol + 9);
-                const linkEnd = line.indexOf('</a>', urlEnd + 2);
-                paragraph.push(
-                  new ExternalHyperlink({
-                    children: [
-                      new TextRun({
-                        text: line.substring(urlEnd + 2, linkEnd),
-                        style: 'Hyperlink',
-                      }),
-                    ],
-                    link: line.substring(nextSymbol + 9, urlEnd),
-                  }),
-                );
-                lastSymbol = linkEnd + 4;
-              } else if (line.substring(nextSymbol, nextSymbol + 2) === '![') {
-                const startPath = line.indexOf('(', nextSymbol + 2) + 1;
-                const endPath = line.indexOf(')', startPath);
-                paragraph.push(
-                  new ImageRun({
-                    type: 'png',
-                    data: await fs.readFile(
-                      path.join('docs', line.substring(startPath, endPath)),
-                    ),
-                    transformation: {
-                      height: 250,
-                      width: 250,
-                    },
-                  }),
-                );
-                lastSymbol = endPath + 1;
-              } else if (line.substring(nextSymbol, nextSymbol + 1) === '[') {
-                const bracketEnd = line.indexOf(']', nextSymbol + 1);
-                const parenEnd = line.indexOf(')', bracketEnd + 2);
-                paragraph.push(
-                  new ExternalHyperlink({
-                    children: [
-                      new TextRun({
-                        text: line.substring(nextSymbol + 1, bracketEnd),
-                        style: 'Hyperlink',
-                      }),
-                    ],
-                    link: line.substring(bracketEnd + 2, parenEnd),
-                  }),
-                );
-                lastSymbol = parenEnd + 1;
-              } else if (
-                line.substring(nextSymbol, nextSymbol + 10) === '<img src="'
-              ) {
-                paragraph.push(
-                  new ImageRun({
-                    type: 'png',
-                    data: await fs.readFile(
-                      path.join(
-                        'docs',
-                        line.substring(
-                          nextSymbol + 11,
-                          line.indexOf('"', nextSymbol + 11),
+              while (nextSymbol !== -1) {
+                if (
+                  line.substring(nextSymbol, nextSymbol + 9) === '<a href="'
+                ) {
+                  const urlEnd = line.indexOf('"', nextSymbol + 9);
+                  const linkEnd = line.indexOf('</a>', urlEnd + 2);
+                  paragraph.push(
+                    new ExternalHyperlink({
+                      children: [
+                        new TextRun({
+                          text: trim(line.substring(urlEnd + 2, linkEnd)),
+                          style: 'Hyperlink',
+                        }),
+                      ],
+                      link: line.substring(nextSymbol + 9, urlEnd),
+                    }),
+                  );
+                  lastSymbol = linkEnd + 4;
+                } else if (
+                  line.substring(nextSymbol, nextSymbol + 2) === '!['
+                ) {
+                  const startPath = line.indexOf('(', nextSymbol + 2) + 1;
+                  const endPath = line.indexOf(')', startPath);
+                  paragraph.push(
+                    new ImageRun({
+                      type: 'png',
+                      data: await fs.readFile(
+                        path.join('docs', line.substring(startPath, endPath)),
+                      ),
+                      transformation: {
+                        height: 250,
+                        width: 250,
+                      },
+                    }),
+                  );
+                  lastSymbol = endPath + 1;
+                } else if (line.substring(nextSymbol, nextSymbol + 1) === '[') {
+                  const bracketEnd = line.indexOf(']', nextSymbol + 1);
+                  const parenEnd = line.indexOf(')', bracketEnd + 2);
+                  paragraph.push(
+                    new ExternalHyperlink({
+                      children: [
+                        new TextRun({
+                          text: trim(
+                            line.substring(nextSymbol + 1, bracketEnd),
+                          ),
+                          style: 'Hyperlink',
+                        }),
+                      ],
+                      link: line.substring(bracketEnd + 2, parenEnd),
+                    }),
+                  );
+                  lastSymbol = parenEnd + 1;
+                } else if (
+                  line.substring(nextSymbol, nextSymbol + 10) === '<img src="'
+                ) {
+                  paragraph.push(
+                    new ImageRun({
+                      type: 'png',
+                      data: await fs.readFile(
+                        path.join(
+                          'docs',
+                          line.substring(
+                            nextSymbol + 11,
+                            line.indexOf('"', nextSymbol + 11),
+                          ),
                         ),
                       ),
-                    ),
-                    transformation: {
-                      height: 250,
-                      width: 250,
-                    },
-                  }),
-                );
-                lastSymbol = line.indexOf('/>', nextSymbol + 11);
-              } else if (line.substring(nextSymbol, nextSymbol + 2) === '**') {
-                const boldEnd = line.indexOf('**', nextSymbol + 2);
-                paragraph.push(
-                  new TextRun({
-                    text: line.substring(nextSymbol + 2, boldEnd),
-                    bold: true,
-                  }),
-                );
-                lastSymbol = boldEnd + 2;
+                      transformation: {
+                        height: 250,
+                        width: 250,
+                      },
+                    }),
+                  );
+                  lastSymbol = line.indexOf('>', nextSymbol + 11);
+                } else if (
+                  line.substring(nextSymbol, nextSymbol + 2) === '**'
+                ) {
+                  const boldEnd = line.indexOf('**', nextSymbol + 2);
+                  paragraph.push(
+                    new TextRun({
+                      text: trim(line.substring(nextSymbol + 2, boldEnd)),
+                      bold: true,
+                    }),
+                  );
+                  lastSymbol = boldEnd + 2;
+                }
+                nextSymbol = findNextSymbol();
+                if (nextSymbol !== -1) {
+                  paragraph.push(
+                    new TextRun({
+                      text: trim(line.substring(lastSymbol, nextSymbol)),
+                    }),
+                  );
+                }
               }
-              paragraph.push(new TextRun({ text: line.substring(lastSymbol) }));
+              if (line.substring(lastSymbol).length > 0) {
+                paragraph.push(
+                  new TextRun({ text: trim(line.substring(lastSymbol)) }),
+                );
+              }
               section.push(new Paragraph({ children: paragraph }));
             }
           }
