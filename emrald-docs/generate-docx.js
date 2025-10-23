@@ -7,6 +7,7 @@ import {
   Paragraph,
   TextRun,
 } from 'docx';
+import { imageSize } from 'image-size';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 
@@ -27,6 +28,24 @@ const ignore = [
  */
 function trim(text) {
   return text.replace('<br>', '');
+}
+
+/**
+ * Helper function to create an ImageRun from a path to an image.
+ * @param {string} path - The path to the image.
+ * @returns An ImageRun representing the image.
+ */
+async function createImage(path) {
+  const image = await fs.readFile(path);
+  const dimensions = imageSize(image);
+  return new ImageRun({
+    type: 'png',
+    data: image,
+    transformation: {
+      height: 500 * (dimensions.height / dimensions.width),
+      width: 500,
+    },
+  });
 }
 
 async function generateDocx() {
@@ -112,16 +131,9 @@ async function generateDocx() {
                   const startPath = line.indexOf('(', nextSymbol + 2) + 1;
                   const endPath = line.indexOf(')', startPath);
                   paragraph.push(
-                    new ImageRun({
-                      type: 'png',
-                      data: await fs.readFile(
-                        path.join('docs', line.substring(startPath, endPath)),
-                      ),
-                      transformation: {
-                        height: 250,
-                        width: 250,
-                      },
-                    }),
+                    await createImage(
+                      path.join('docs', line.substring(startPath, endPath)),
+                    ),
                   );
                   lastSymbol = endPath + 1;
                 } else if (line.substring(nextSymbol, nextSymbol + 1) === '[') {
@@ -145,22 +157,15 @@ async function generateDocx() {
                   line.substring(nextSymbol, nextSymbol + 10) === '<img src="'
                 ) {
                   paragraph.push(
-                    new ImageRun({
-                      type: 'png',
-                      data: await fs.readFile(
-                        path.join(
-                          'docs',
-                          line.substring(
-                            nextSymbol + 11,
-                            line.indexOf('"', nextSymbol + 11),
-                          ),
+                    await createImage(
+                      path.join(
+                        'docs',
+                        line.substring(
+                          nextSymbol + 11,
+                          line.indexOf('"', nextSymbol + 11),
                         ),
                       ),
-                      transformation: {
-                        height: 250,
-                        width: 250,
-                      },
-                    }),
+                    ),
                   );
                   lastSymbol = line.indexOf('>', nextSymbol + 11);
                 } else if (
@@ -207,6 +212,21 @@ async function generateDocx() {
         description: 'The official documentation for the EMRALD application',
         sections,
         styles: {
+          default: {
+            document: {
+              run: {
+                font: 'Sans Serif Collection',
+              },
+            },
+            hyperlink: {
+              run: {
+                color: '5dd86b',
+                underline: {
+                  type: 'single',
+                }
+              },
+            },
+          },
           paragraphStyles: [
             {
               id: 'Heading1',

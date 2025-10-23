@@ -19,6 +19,7 @@
   "devDependencies": {
     "@adobe/jsonschema2md": "^8.0.0",
     "docx": "^9.5.1",
+    "image-size": "^2.0.2",
     "shx": "^0.4.0",
     "vitepress": "^1.6.4"
   }
