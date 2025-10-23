@@ -1,4 +1,5 @@
 import {
+  Bookmark,
   Document,
   ExternalHyperlink,
   HeadingLevel,
@@ -37,17 +38,18 @@ function trim(text) {
 /**
  * Helper function to create an ImageRun from a path to an image.
  * @param {string} path - The path to the image.
+ * @param {number} width - The width to display the image as (defaults to 500).
  * @returns An ImageRun representing the image.
  */
-async function createImage(path) {
+async function createImage(path, width = 500) {
   const image = await fs.readFile(path);
   const dimensions = imageSize(image);
   return new ImageRun({
     type: 'png',
     data: image,
     transformation: {
-      height: 500 * (dimensions.height / dimensions.width),
-      width: 500,
+      height: width * (dimensions.height / dimensions.width),
+      width,
     },
     floating: {
       horizontalPosition: {
@@ -82,10 +84,23 @@ async function generateDocx() {
         for (const line of (await fs.readFile(fullPath))
           .toString()
           .split('\n')) {
-          if (line.startsWith('##')) {
+          if (line.startsWith('###')) {
             section.push(
               new Paragraph({
-                text: line.substring(2).trim(),
+                text: line.substring(3).trim(),
+                heading: HeadingLevel.HEADING_3,
+              }),
+            );
+          } else if (line.startsWith('##')) {
+            const text = line.substring(2).trim();
+            section.push(
+              new Paragraph({
+                children: [
+                  new Bookmark({
+                    id: text.toLocaleLowerCase().replace(/\s/g, '-'),
+                    children: [new TextRun({ text })],
+                  }),
+                ],
                 heading: HeadingLevel.HEADING_2,
               }),
             );
@@ -198,6 +213,16 @@ async function generateDocx() {
                 } else if (
                   line.substring(nextSymbol, nextSymbol + 10) === '<img src="'
                 ) {
+                  let width = undefined;
+                  const widthSpec = line.indexOf('width=', nextSymbol + 10);
+                  if (widthSpec !== -1) {
+                    width = Number(
+                      line.substring(
+                        widthSpec + 7,
+                        line.indexOf('"', widthSpec + 7),
+                      ),
+                    );
+                  }
                   paragraph.push(
                     await createImage(
                       path.join(
@@ -207,6 +232,7 @@ async function generateDocx() {
                           line.indexOf('"', nextSymbol + 11),
                         ),
                       ),
+                      width,
                     ),
                   );
                   lastSymbol = line.indexOf('>', nextSymbol + 11) + 1;
@@ -258,6 +284,7 @@ async function generateDocx() {
             document: {
               run: {
                 font: 'Sans Serif Collection',
+                color: '3c3c43',
               },
             },
             hyperlink: {
@@ -278,8 +305,6 @@ async function generateDocx() {
               quickFormat: true,
               run: {
                 size: 32,
-                bold: false,
-                color: '3c3c43',
               },
               paragraph: {
                 spacing: {
@@ -296,8 +321,22 @@ async function generateDocx() {
               quickFormat: true,
               run: {
                 size: 24,
-                bold: false,
-                color: '3c3c43',
+              },
+              paragraph: {
+                spacing: {
+                  before: 120,
+                  after: 120,
+                },
+              },
+            },
+            {
+              id: 'Heading3',
+              name: 'Heading 3',
+              basedOn: 'Normal',
+              next: 'Normal',
+              quickFormat: true,
+              run: {
+                size: 20,
               },
               paragraph: {
                 spacing: {
