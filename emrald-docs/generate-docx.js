@@ -2,10 +2,14 @@ import {
   Document,
   ExternalHyperlink,
   HeadingLevel,
+  HorizontalPositionRelativeFrom,
   ImageRun,
   Packer,
   Paragraph,
   TextRun,
+  TextWrappingSide,
+  TextWrappingType,
+  VerticalPositionRelativeFrom,
 } from 'docx';
 import { imageSize } from 'image-size';
 import fs from 'node:fs/promises';
@@ -45,11 +49,24 @@ async function createImage(path) {
       height: 500 * (dimensions.height / dimensions.width),
       width: 500,
     },
+    floating: {
+      horizontalPosition: {
+        relative: HorizontalPositionRelativeFrom.LEFT_MARGIN,
+        offset: 1014400,
+      },
+      verticalPosition: {
+        relative: VerticalPositionRelativeFrom.LINE,
+        offset: 0,
+      },
+      wrap: {
+        type: TextWrappingType.TOP_AND_BOTTOM,
+        side: TextWrappingSide.BOTH_SIDES,
+      },
+    },
   });
 }
 
 async function generateDocx() {
-  console.log('Generating documentation document...');
   const sections = [];
   for (const file of await fs.readdir('docs', { recursive: true })) {
     const fullPath = path.join('docs', file);
@@ -85,14 +102,21 @@ async function generateDocx() {
               let matches = [];
               for (const test of [
                 /<a href/,
-                /^!\[[^[]+\]\([^(]+\)/,
+                /\[[^[]+\]\([^(]+\)/,
                 /<img src/,
-                /!\[[^[]+\]\([^(]+\)/,
                 /\*\*[^*]+\*\*/,
+                /<details>/,
+                /<\/details>/,
+                /<summary>/,
               ]) {
                 const res = test.exec(line.substring(lastSymbol));
                 if (res !== null) {
-                  matches.push(res.index + lastSymbol);
+                  let idx = res.index + lastSymbol;
+                  // Images that start with ![ get picked up by the same regex as links, so this moves the index back to avoid extra exclamation points in the document
+                  if (line.substring(idx - 1, idx + 1) === '![') {
+                    idx -= 1;
+                  }
+                  matches.push(idx);
                 }
               }
               return matches.length === 0 ? -1 : Math.min(...matches);
@@ -109,6 +133,24 @@ async function generateDocx() {
             } else {
               while (nextSymbol !== -1) {
                 if (
+                  ['<details>', '</details>'].includes(
+                    line.substring(nextSymbol).trim(),
+                  )
+                ) {
+                  // Omit these
+                  lastSymbol =
+                    nextSymbol + line.substring(nextSymbol).trim().length;
+                } else if (
+                  line.substring(nextSymbol, nextSymbol + 9) === '<summary>'
+                ) {
+                  const summaryEnd = line.indexOf('<', nextSymbol + 9);
+                  paragraph.push(
+                    new TextRun({
+                      text: line.substring(nextSymbol + 9, summaryEnd),
+                    }),
+                  );
+                  lastSymbol = summaryEnd + 10;
+                } else if (
                   line.substring(nextSymbol, nextSymbol + 9) === '<a href="'
                 ) {
                   const urlEnd = line.indexOf('"', nextSymbol + 9);
@@ -167,7 +209,7 @@ async function generateDocx() {
                       ),
                     ),
                   );
-                  lastSymbol = line.indexOf('>', nextSymbol + 11);
+                  lastSymbol = line.indexOf('>', nextSymbol + 11) + 1;
                 } else if (
                   line.substring(nextSymbol, nextSymbol + 2) === '**'
                 ) {
@@ -223,7 +265,7 @@ async function generateDocx() {
                 color: '5dd86b',
                 underline: {
                   type: 'single',
-                }
+                },
               },
             },
           },
