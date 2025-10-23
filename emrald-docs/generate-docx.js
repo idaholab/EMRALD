@@ -2,6 +2,7 @@ import {
   Document,
   ExternalHyperlink,
   HeadingLevel,
+  ImageRun,
   Packer,
   Paragraph,
   TextRun,
@@ -20,7 +21,7 @@ const ignore = [
 ];
 
 async function generateDocx() {
-  console.log('Generate documentation document...');
+  console.log('Generating documentation document...');
   const sections = [];
   for (const file of await fs.readdir('docs', { recursive: true })) {
     const fullPath = path.join('docs', file);
@@ -54,12 +55,15 @@ async function generateDocx() {
             let lastSymbol = 0;
             const nextSymbol = Math.max(
               line.indexOf('<a href'),
-              /\[[^[]+\]\([^(]+\)/.exec(line)?.index ?? -1,
+              /^!\[[^[]+\]\([^(]+\)/.exec(line)?.index ?? -1,
+              line.indexOf('<img src'),
+              /!\[[^[]+\]\([^(]+\)/.exec(line)?.index ?? -1,
+              /\*\*[^*]+\*\*/.exec(line)?.index ?? -1,
             );
             if (nextSymbol === -1) {
               section.push(new Paragraph({ text: line }));
             } else {
-              /** @type {(TextRun | ExternalHyperlink)[]} */
+              /** @type {(TextRun | ExternalHyperlink | ImageRun)[]} */
               const paragraph = [
                 new TextRun({ text: line.substring(0, nextSymbol) }),
               ];
@@ -78,6 +82,22 @@ async function generateDocx() {
                   }),
                 );
                 lastSymbol = linkEnd + 4;
+              } else if (line.substring(nextSymbol, nextSymbol + 2) === '![') {
+                const startPath = line.indexOf('(', nextSymbol + 2) + 1;
+                const endPath = line.indexOf(')', startPath);
+                paragraph.push(
+                  new ImageRun({
+                    type: 'png',
+                    data: await fs.readFile(
+                      path.join('docs', line.substring(startPath, endPath)),
+                    ),
+                    transformation: {
+                      height: 250,
+                      width: 250,
+                    },
+                  }),
+                );
+                lastSymbol = endPath + 1;
               } else if (line.substring(nextSymbol, nextSymbol + 1) === '[') {
                 const bracketEnd = line.indexOf(']', nextSymbol + 1);
                 const parenEnd = line.indexOf(')', bracketEnd + 2);
@@ -93,6 +113,37 @@ async function generateDocx() {
                   }),
                 );
                 lastSymbol = parenEnd + 1;
+              } else if (
+                line.substring(nextSymbol, nextSymbol + 10) === '<img src="'
+              ) {
+                paragraph.push(
+                  new ImageRun({
+                    type: 'png',
+                    data: await fs.readFile(
+                      path.join(
+                        'docs',
+                        line.substring(
+                          nextSymbol + 11,
+                          line.indexOf('"', nextSymbol + 11),
+                        ),
+                      ),
+                    ),
+                    transformation: {
+                      height: 250,
+                      width: 250,
+                    },
+                  }),
+                );
+                lastSymbol = line.indexOf('/>', nextSymbol + 11);
+              } else if (line.substring(nextSymbol, nextSymbol + 2) === '**') {
+                const boldEnd = line.indexOf('**', nextSymbol + 2);
+                paragraph.push(
+                  new TextRun({
+                    text: line.substring(nextSymbol + 2, boldEnd),
+                    bold: true,
+                  }),
+                );
+                lastSymbol = boldEnd + 2;
               }
               paragraph.push(new TextRun({ text: line.substring(lastSymbol) }));
               section.push(new Paragraph({ children: paragraph }));

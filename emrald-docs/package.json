@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "description": "this is just a template",
   "main": "index.js",
+  "type": "module",
   "authors": {
     "name": "",
     "email": ""
