@@ -1,4 +1,11 @@
-import { Document, HeadingLevel, Packer, Paragraph } from 'docx';
+import {
+  Document,
+  ExternalHyperlink,
+  HeadingLevel,
+  Packer,
+  Paragraph,
+  TextRun,
+} from 'docx';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 
@@ -32,19 +39,64 @@ async function generateDocx() {
           if (line.startsWith('##')) {
             section.push(
               new Paragraph({
-                text: line.substring(2),
+                text: line.substring(2).trim(),
                 heading: HeadingLevel.HEADING_2,
               }),
             );
           } else if (line.startsWith('#')) {
             section.push(
               new Paragraph({
-                text: line.substring(1),
+                text: line.substring(1).trim(),
                 heading: HeadingLevel.HEADING_1,
               }),
             );
           } else {
-            section.push(new Paragraph({ text: line }));
+            let lastSymbol = 0;
+            const nextSymbol = Math.max(
+              line.indexOf('<a href'),
+              /\[[^[]+\]\([^(]+\)/.exec(line)?.index ?? -1,
+            );
+            if (nextSymbol === -1) {
+              section.push(new Paragraph({ text: line }));
+            } else {
+              /** @type {(TextRun | ExternalHyperlink)[]} */
+              const paragraph = [
+                new TextRun({ text: line.substring(0, nextSymbol) }),
+              ];
+              if (line.substring(nextSymbol, nextSymbol + 9) === '<a href="') {
+                const urlEnd = line.indexOf('"', nextSymbol + 9);
+                const linkEnd = line.indexOf('</a>', urlEnd + 2);
+                paragraph.push(
+                  new ExternalHyperlink({
+                    children: [
+                      new TextRun({
+                        text: line.substring(urlEnd + 2, linkEnd),
+                        style: 'Hyperlink',
+                      }),
+                    ],
+                    link: line.substring(nextSymbol + 9, urlEnd),
+                  }),
+                );
+                lastSymbol = linkEnd + 4;
+              } else if (line.substring(nextSymbol, nextSymbol + 1) === '[') {
+                const bracketEnd = line.indexOf(']', nextSymbol + 1);
+                const parenEnd = line.indexOf(')', bracketEnd + 2);
+                paragraph.push(
+                  new ExternalHyperlink({
+                    children: [
+                      new TextRun({
+                        text: line.substring(nextSymbol + 1, bracketEnd),
+                        style: 'Hyperlink',
+                      }),
+                    ],
+                    link: line.substring(bracketEnd + 2, parenEnd),
+                  }),
+                );
+                lastSymbol = parenEnd + 1;
+              }
+              paragraph.push(new TextRun({ text: line.substring(lastSymbol) }));
+              section.push(new Paragraph({ children: paragraph }));
+            }
           }
         }
         sections.push({
@@ -93,7 +145,7 @@ async function generateDocx() {
               },
               paragraph: {
                 spacing: {
-                  before: 240,
+                  before: 120,
                   after: 120,
                 },
               },
