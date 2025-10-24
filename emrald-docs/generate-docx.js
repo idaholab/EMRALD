@@ -28,6 +28,7 @@ const ignore = [
   /images[/\\].*/,
   /public[/\\].*/,
   /.*\.css/,
+  /Modeling[/\\]schema-md[/\\].*/,
 ];
 
 /**
@@ -140,6 +141,8 @@ function parseInnerText(line, styles = undefined) {
       /\*\*[^*]+\*\*/,
       /<span/,
       /<div/,
+      /:::/,
+      /<ins/,
     ]) {
       const res = test.exec(line.substring(lastSymbol));
       if (res !== null) {
@@ -150,8 +153,18 @@ function parseInnerText(line, styles = undefined) {
   };
   let nextSymbol = findNextSymbol();
   if (nextSymbol === -1) {
-    section.push(new TextRun({ text: line, color, underline, bold }));
+    section.push(new TextRun({ text: trim(line), color, underline, bold }));
   } else {
+    if (nextSymbol > 0) {
+      section.push(
+        new TextRun({
+          text: trim(line.substring(0, nextSymbol)),
+          color,
+          underline,
+          bold,
+        }),
+      );
+    }
     while (nextSymbol !== -1) {
       if (line.substring(nextSymbol, nextSymbol + 9) === '<a href="') {
         const urlEnd = line.indexOf('"', nextSymbol + 9);
@@ -239,6 +252,30 @@ function parseInnerText(line, styles = undefined) {
           }),
         );
         lastSymbol = closeElStart + 7;
+      } else if (line.substring(nextSymbol, nextSymbol + 3) === ':::') {
+        const title = line.substring(nextSymbol + 3).trim();
+        if (title.length > 0) {
+          section.push(
+            ...parseInnerText(title.substring(3).trim(), {
+              color,
+              underline,
+              bold,
+            }),
+          );
+          lastSymbol = nextSymbol + 4 + title.length;
+        } else {
+          lastSymbol = nextSymbol + 4;
+        }
+      } else if (line.substring(nextSymbol, nextSymbol + 4) === '<ins') {
+        const closeStart = line.indexOf('<', nextSymbol + 5);
+        section.push(
+          ...parseInnerText(line.substring(nextSymbol + 5, closeStart), {
+            color,
+            underline: { type: 'single' },
+            bold,
+          }),
+        );
+        lastSymbol = closeStart + 6;
       }
       nextSymbol = findNextSymbol();
       if (nextSymbol !== -1) {
@@ -273,7 +310,11 @@ function parseInnerText(line, styles = undefined) {
 async function parseMarkdown(line) {
   /** @type {Paragraph[]} */
   const section = [];
-  if (line.startsWith('###')) {
+  if (line.startsWith('####')) {
+    section.push(
+      createHeading(line.substring(4).trim(), HeadingLevel.HEADING_4),
+    );
+  } else if (line.startsWith('###')) {
     section.push(
       createHeading(line.substring(3).trim(), HeadingLevel.HEADING_3),
     );
@@ -515,6 +556,16 @@ async function generateDocx() {
                   before: 120,
                   after: 120,
                 },
+              },
+            },
+            {
+              id: 'Heading4',
+              name: 'Heading 4',
+              basedOn: 'Normal',
+              next: 'Normal',
+              quickFormat: true,
+              run: {
+                size: 18,
               },
             },
           ],
