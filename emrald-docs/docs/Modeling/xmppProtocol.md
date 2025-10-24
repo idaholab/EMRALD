@@ -1,12 +1,11 @@
-# External Couping using XMPP
-
-!<div style="width:300px">![logo](/images/Modeling/XMPPProtocol/XMPP_logo.png)</div><br>
+# External Coupling using XMPP
+<img src="/images/Modeling/XMPPProtocol/XMPP_logo.png" width="300" />
 # Overview
 The XMPP message passing protocol in EMRALD makes it possible to do two-way coupling where the events in another simulation affect what happens in the EMRALD model and the events in the EMRALD model can change the other simulation, all in real time. To do this, you must either have access to the source of the coupling simulation or write a wrapper for an API of the other application. This section covers the message structure and minimum requirements. 
 Notice - This is feature is still in beta development and subject to change.
 
 ## XMPP Protocol
-For XMPP message passing a server is used to send messages from one client to another. The server handles a the message authentication and send/receive verification. EMRALD has a built in XMPP Server and automatically runs it if the model contains a reference to and external application. See [External Simulations](/Modeling/externalSims.md). To couple with another application requires some software development, you must add an XMPP package suitable for the source code of the application or write a wrapper that is able to handle the message requirements and call the applications API.
+For XMPP message passing a server is used to send messages from one client to another. The server handles the message authentication and send/receive verification. EMRALD has a built in XMPP Server and automatically runs it if the model contains a reference to an external application. See [External Simulations](/Modeling/externalSims.md). To couple with another application requires some software development, you must add an XMPP package suitable for the source code of the application or write a wrapper that is able to handle the message requirements and call the applications API.
 
 ## Linking Process
 When opening an EMRALD model with containing a reference to and external application, you must establish a connection to that application before you can run the model, see [Linking Process](#linking-process). Every message specified in EMRALD for that reference will be sent to the assigned XMPP connection and for each event received from that application EMRALD will see if the name matches a linked variable specified for it. If there is a match, that variable will be updated with the value from the event. 
@@ -14,16 +13,16 @@ When opening an EMRALD model with containing a reference to and external applica
 # Message Requirements
 The following outlines what is used to connect, the messages passed between EMRALD and the simulation client, and a recommendation on the structure for processing and sending messages. 
 ## Connecting
-The connection parameters for linking to the XMPP server are as following:
+The connection parameters for linking to the XMPP server are as follows:
 User - unique identifier for the external application. If more than one application is linked to EMRALD each must have a different user.
-Domain - the domain location where EMRALD is running from typically this will stay as "localhost" when running on a single machine. If on EMRALD is on a different machine then this is the IP address of the machine running EMRALD. 
+Domain - the domain location where EMRALD is running from typically this will stay as "localhost" when running on a single machine. If EMRALD is on a different machine, then this is the IP address of the machine running EMRALD. 
 Host - currently a constant set to "localhost"
-Resource - This is the connection group for the messaging. When EMRALD feature allows multiprocessing, there will need to be multiple instances of the external application with incremental values for each thread.
+Resource - This is the connection group for the messaging. When EMRALD features allow multiprocessing, there will need to be multiple instances of the external application with incremental values for each thread.
 Password - Default is "secret" this can be assigned in EMRALD when starting up through command line. Run -help after the EXE to see command line options.
 
 
 ## Message Format
-The messages are in JSON format and there are two types of messages: Action Messages - messages from EMRALD for the client to do something with. Event Messages - messages from the client that EMRALD needs to respond to. The message format can be found in c# format under the MessageDeffLib project in MsgWrapper.cs a schema to test against is found in MessageProtocol.json. The following sections go over the different varibles and types for the messages.
+The messages are in JSON format and there are two types of messages: Action Messages - messages from EMRALD for the client to do something with. Event Messages - messages from the client that EMRALD needs to respond to. The message format can be found in c# format under the MessageDeffLib project in MsgWrapper.cs a schema to test against is found in MessageProtocol.json. The following sections go over the different variables and types for the messages.
 
 **Action Message Example**
 
@@ -37,7 +36,7 @@ The messages are in JSON format and there are two types of messages: Action Mess
 ## Action Message Types - From EMRALD
 The following are the messages that EMRALD may send to the coupled simulation client. The type will be sent as text in the JSON but can be used as an enumerated type (prefixed with "at" meaning Action Type)
 
-- **atCompModify** - This message is specifying that a particular item is to be modified in the coupled simulation. Modified can also mean created or deleted depending on predetermined agreement between the coupled simulation design and the modeler. on what data in the message means. The data in the message is specified by the coupled simulation specifications and the user making the EMRALD model must follow those specifications.
+- **atCompModify** - This message specifies that a particular item is to be modified in the coupled simulation. Modified can also mean created or deleted depending on predetermined agreement between the coupled simulation design and the modeler. on what data in the message means. The data in the message is specified by the coupled simulation specifications and the user making the EMRALD model must follow those specifications.
 
 - **atTimer** - Informs the coupled simulation of the next time that a change needs to occur in EMRALD. This is a callback timer that the coupled application must respond with an etTimer message and wait for a response when its simulation reaches this global time. 
 
@@ -73,12 +72,12 @@ The following messages are what can come from the coupled application. The type 
 - **etStatus** - This message can be sent at any time by the coupled simulation. It must be sent in response to a atStatus message. A message type of stError will cause EMRALD to end its simulation.
 
 ## Status States
-Status message return types is to be sent to EMRALD whenever an atStatus message is received. These should also be used to maintain the current state of the connected application, see the next section.
+Status message return types are to be sent to EMRALD whenever an atStatus message is received. These should also be used to maintain the current state of the connected application, see the next section.
 - **stWaiting** - coupled simulation is waiting for what to do next from EMRALD.
 - **stLoading** - loading after an atOpenSim.
 - **stRunning** - executing the coupled simulation code, should also have info on what it is doing to help debug.
 - **stIdle** - initial startup condition or after done running a simulation.
-- **stError** - an error on the coupled side, that makes it unable to continue. Should contain additional detail on the cause of the error.
+- **stError** - an error on the coupled side, that makes it unable to continue. It should contain additional detail on the cause of the error.
 
 ## Suggested Execution Flow
 
@@ -96,7 +95,7 @@ The client application needs to maintain the following variables:
 
 **Status** - indicates the state of coupled interaction with EMRALD.
 
-It is suggested to use the following flow method for processing and replying to messages. The coupled application should shift through a the status states depending on what messages it receives and what happens in its simulation. This outlines the messages that the application will get given the different states it is in, what it should do and the response messages that should be sent. It is recommended that a status message be sent to EMRALD for each change in status state, to assist in debugging. Also any message received that is not in line with what was expected should also be sent as an error when in a debug version of the code. 
+It is suggested to use the following flow method for processing and replying to messages. The coupled application should shift through the status states depending on what messages it receives and what happens in its simulation. This outlines the messages that the application will get given the different states it is in, what it should do and the response messages that should be sent. It is recommended that a status message be sent to EMRALD for each change in status state, to assist in debugging. Also, any message received that is not in line with what was expected should also be sent as an error when in a debug version of the code. 
 
 ### [In any Status state]
 Note - A stStatus message can be sent from the coupled application at any time. If an Error message is sent EMRALD will stop operations as soon as it can.
@@ -130,7 +129,7 @@ Coupled application is loading after an atSimOpen status state.
 * If the model loaded correctly, shift to stWaiting.
 
 ### stWaiting
-In this status state the coupled application is poised to simulate, but is waiting to allow EMRALD to alter the conditions that affect its simulation. This status state is entered from stLoaded, or stRunning once complete.
+In this status state the coupled application is poised to simulate but is waiting to allow EMRALD to alter the conditions that affect its simulation. This status state is entered from stLoaded, or stRunning once complete.
 
 **atCompModify**
 * Make or save the change in the model to the parameter and global time specified in the message.
@@ -182,10 +181,10 @@ This state diagram shows the recommended design flow for reacting to EMRALD mess
 
 ### Sequence Diagram
 ![Messaging Sequence Digram](/images/Modeling/XMPPProtocol/SequenceDiagram.png)<br>
-This sequence diagram show the flow of messages between the two applicaitons.
+This sequence diagram shows the flow of messages between the two applications.
 
 # Testing
-The EMRALD simulation engine UI has a tab for testing the XMPP messaging. There also a demo client project in the source written in c#. 
+The EMRALD simulation engine UI has a tab for testing the XMPP messaging. There also a demo client project in the source written in C#. 
 
 ## EMRALD UI
 To couple with an external application first load a model. If it loads with no errors, then go to the simulate tab.
@@ -209,7 +208,7 @@ The right side allows the user to manually construct a message to send to the co
 <img src="/images/Modeling/XMPPProtocol/SolveEngineMsgBuilder.png" style="width:500px">
 <br>
 
-If the user knows or has the JSON message to be sent they can type or paste it in the bottom right section.
+If the user knows or has the JSON message to be sent, they can type or paste it in the bottom right section.
 <img src="/images/Modeling/XMPPProtocol/SolveEngineMsgBuilderBtm.png" style="width:500px">
 <br>
 
@@ -219,7 +218,7 @@ By selecting and filling out the top options, a message can be automatically con
 
 
 ## Client Demo
-The source code contains demo code for a client in c# using the MatriX package. (The XmppClient project in the EMRALD code repository [EMRALD Source](https://github.com/idaholab/EMRALD))
+The source code contains demo code for a client in C# using the MatriX package. (The XmppClient project in the EMRALD code repository [EMRALD Source](https://github.com/idaholab/EMRALD))
 This project allows you to see the messages coming from the EMRALD simulation and respond to them manually. This allows you to independently test and verify the EMRALD model before connecting to the external application.
 
 **Connections/Send Tab**<br>
@@ -227,13 +226,13 @@ After EMRALD is running define the user, domain and resource. (See above section
 <img src="/images/Modeling/XMPPProtocol/ClentTesterMain.png" style="width:300px">
 <br>
 
-After connecting this tab allows you to manually send messages to the connected EMRALD simulation or other clients connected. This can be done by pasting the message in the bottom text area and selecting the client in the bottom dropdown, and clicking "Send".
-For assistance in constructing a message options can be selected in the center area. The items DispName, Occur time and Event Msg Type need to be assigned for every message. When selecting the Event Msg Type, the sub options will very as needed. Refer to Messaging requirements above to determine what values to set for each message. After assigning the values click the "Generate Message" button and correctly syntax-ed JSON will be generated in the text area below. Then click send.
+After connecting this tab allows you to manually send messages to the connected EMRALD simulation or other clients connected. This can be done by pasting the message in the bottom text area and selecting the client in the bottom dropdown and clicking "Send".
+For assistance in constructing a message options can be selected in the center area. The items DispName, Occur time and Event Msg Type need to be assigned for every message. When selecting the Event Msg Type, the sub options will vary as needed. Refer to Messaging requirements above to determine what values to set for each message. After assigning the values click the "Generate Message" button and correctly syntax-ed JSON will be generated in the text area below. Then click send.
 <img src="/images/Modeling/XMPPProtocol/ClentTesterMsgArea.png" style="width:300px">
 <br>
 
 **Received Messages**<br>
-Each message received is posted in this tabs list.
+Each message received is posted in the tabs list.
 <img src="/images/Modeling/XMPPProtocol/ClientMsglog.png" style="width:300px">
 <br>
 
