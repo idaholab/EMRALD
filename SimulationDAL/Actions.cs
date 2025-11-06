@@ -784,6 +784,8 @@ namespace SimulationDAL
 
   public class VarValueAct : ScriptAct //atCngVarVal
   {
+    private readonly object _executionLock = new object();
+
     public SimVariable simVar = null;
     //public int varID { get { return simVar.id; } }
     public int varID { get { return (simVar != null) ? simVar.id : 0; } }
@@ -875,57 +877,37 @@ namespace SimulationDAL
       //{
       //  throw new Exception("SetVal this should not be called for a TimeStateVariable");
       //}
-
-      if (!this.compiled)
+      lock (_executionLock)
       {
-        if (scriptCode == "")
+        if (!this.compiled)
         {
-          throw new Exception("No code for " + this.name);
+          if (scriptCode == "")
+          {
+            throw new Exception("No code for " + this.name);
+          }
+
+          if (!CompileCode(lists.allVariables, lists.rootPath))
+            throw new Exception("Code failed compile, can not evaluate");
         }
 
-        if (!CompileCode(lists.allVariables, lists.rootPath))
-          throw new Exception("Code failed compile, can not evaluate");
-      }
+        scriptRunner.SetVariable("CurTime", typeof(double), curSimTime.TotalHours);
+        scriptRunner.SetVariable("RunIdx", typeof(int), runIdx);
+        scriptRunner.SetVariable("ExtSimStartTime", typeof(double), start3DTime.TotalHours);
 
-      scriptRunner.SetVariable("CurTime", typeof(double), curSimTime.TotalHours);
-      scriptRunner.SetVariable("RunIdx", typeof(int), runIdx);
-      scriptRunner.SetVariable("ExtSimStartTime", typeof(double), start3DTime.TotalHours);
-
-      if (codeVariables != null)
-      {
-        foreach (string varName in codeVariables)
+        if (codeVariables != null)
         {
-          SimVariable simVar = lists.allVariables.FindByName(varName);
-          if (simVar == null)
-            throw new Exception("Failed to find variable named " + varName);
-          scriptRunner.SetVariable(varName, simVar.dType, simVar.value);
+          foreach (string varName in codeVariables)
+          {
+            SimVariable simVar = lists.allVariables.FindByName(varName);
+            if (simVar == null)
+              throw new Exception("Failed to find variable named " + varName);
+            scriptRunner.SetVariable(varName, simVar.dType, simVar.value);
+          }
         }
+      
+        toSetVar.SetValue(scriptRunner.EvaluateGeneric());
       }
-
-      toSetVar.SetValue(scriptRunner.EvaluateGeneric());
-      //if (this.retType == typeof(double))
-      //{
-      //  toSet = scriptRunner.Evaluate();
-      //  if ((retVal < 0) || double.IsNaN(retVal))
-      //  {
-      //    System.Diagnostics.Debug.Write("Invalid Return Value");
-      //  }
-      //  return retVal;
-      //}
-
-      //if (this.retType == typeof(string))
-      //{
-      //  string retVal = scriptRunner.EvaluateString();
-      //  if ((retVal < 0) || double.IsNaN(retVal))
-      //  {
-      //    System.Diagnostics.Debug.Write("Invalid Return Value");
-      //  }
-      //  return retVal;
-      //}
-
-
-
-
+      
     }
   }
 

@@ -117,7 +117,7 @@ namespace SimulationEngine
   {
     private string _optsJsonStr = "";
     private string _modelJsonStr = "";
-    //TProgressCallBack _progressCallBack = null;
+    TProgressCallBack _progressCallBack = null;
     private string _error = "";
     public Options_cur options = new Options_cur();
     private bool _done = false;
@@ -141,7 +141,7 @@ namespace SimulationEngine
     {
       _optsJsonStr = optionsJsonStr;
       _modelJsonStr = modelJsonStr;
-      //_progressCallBack = progressCallBack;
+      _progressCallBack = progressCallBack;
     }
 
     public JSONRun(Options_cur ops, string modelJsonStr = "", TProgressCallBack progressCallBack = null)
@@ -149,7 +149,7 @@ namespace SimulationEngine
       this.options = ops;
       _optsJsonStr = JsonConvert.SerializeObject(ops);
       _modelJsonStr = modelJsonStr;
-      //_progressCallBack = progressCallBack;
+      _progressCallBack = progressCallBack;
     }
 
     public string RunSim()
@@ -159,8 +159,8 @@ namespace SimulationEngine
       //Load JSON options 
       if (_optsJsonStr != "")
         _error = LoadJson(_optsJsonStr, ref options);
-        if (_error != "")
-          return "Error Loading JSON run options - " + error;
+      if (_error != "")
+        return "Error Loading JSON run options - " + error;
 
       if (_modelJsonStr != "")
       {
@@ -181,7 +181,7 @@ namespace SimulationEngine
         _error = "Invalid model file - " + options.inpfile;
         return _error;
       };
-      
+
 
       // Check that the json string syntax is acceptable, validate model uses a dynamic object, so it doesn't check the json syntax right away.
       try
@@ -194,7 +194,7 @@ namespace SimulationEngine
         _error = "Bad model JSON syntax - " + ex.Message;
         return _error;
       };
-           
+
 
       if (!ValidateModel())
       {
@@ -202,7 +202,7 @@ namespace SimulationEngine
       }
 
       //setup debug options
-      switch(options.debug.ToUpper())
+      switch (options.debug.ToUpper())
       {
         case "BASIC":
           ConfigData.debugLev = LogLevel.Info;
@@ -229,19 +229,23 @@ namespace SimulationEngine
       int threadCnt = ConfigData.threads == null ? 1 : (int)ConfigData.threads;
       int runsDiv = options.runct / threadCnt;
       bool resDone = false; //results 
-      
+
 
       for (int i = 0; i < threadCnt; i++) //if null just run once.
       {
         _simRuns.Add(new ProcessSimBatch(_model, TimeSpan.Parse(options.runtime), options.resout, options.jsonRes, options.pathResultsInterval, ConfigData.threads == null ? null : i));
+
+        if (_progressCallBack != null)
+          _simRuns[i].progressCallback = _progressCallBack;
+
         if (i == 0) //add extra runs on the first one
           _simRuns[i].SetupBatch(runsDiv + (options.runct % threadCnt), true);
         else
           _simRuns[i].SetupBatch(runsDiv, true);
 
-        foreach(var v in _model.allVariables.Values)
+        foreach (var v in _model.allVariables.Values)
         {
-          if(v.monitorInSim)
+          if (v.monitorInSim)
             _simRuns[i].logVarVals.Add(v.name);
         }
         foreach (var varItem in this.options.variables)
@@ -284,7 +288,7 @@ namespace SimulationEngine
             //wait until first thread is done writing temp tread files.
             while (!_simRuns[0].tempThreadFilesWriten)
               await Task.Delay(TimeSpan.FromMilliseconds(10)); // Adjust the delay as needed
-            
+
             if (_simRuns[locIdx].error != "")
               _error += _simRuns[locIdx].error + Environment.NewLine;
 
@@ -312,12 +316,12 @@ namespace SimulationEngine
       });
 
       //must wait until done to return
-      
+
       while (!resDone)
       {
         System.Threading.Thread.Sleep(100);
       }
-    
+
       return error;
     }
 
@@ -413,7 +417,7 @@ namespace SimulationEngine
       {
         optionsOut.variables = new List<string>();
       }
-      
+
       //debug info      
       switch (optionsOut.debug.ToUpper())
       {
@@ -427,7 +431,7 @@ namespace SimulationEngine
           return "Invalid debug options, must be one of the following: \"basic\", \"detailed\", \"off\".";
       }
 
-      if((optionsOut.debugStartIdx == null) || (optionsOut.debugStartIdx < 1) )
+      if ((optionsOut.debugStartIdx == null) || (optionsOut.debugStartIdx < 1))
       {
         optionsOut.debugStartIdx = 1;
       }
@@ -450,7 +454,7 @@ namespace SimulationEngine
       return "";
     }
 
-   
+
     private bool ValidateModel()
     {
       // Attempt to deserialize the json string
@@ -474,12 +478,5 @@ namespace SimulationEngine
       }
       return true;
     }
-
-    //private void Progress(TimeSpan runTime, int runCnt, bool finalValOnly)
-    //{
-    //  this.percentDone = runCnt / options.runct;
-    //  if (_progressCallBack != null)
-    //    _progressCallBack(runTime, runCnt, finalValOnly);//, 0); //no display thread for JSON runs.
-    //}
   }
 }
