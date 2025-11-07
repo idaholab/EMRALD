@@ -248,9 +248,12 @@ namespace SimulationEngine
           if (v.monitorInSim)
             _simRuns[i].logVarVals.Add(v.name);
         }
-        foreach (var varItem in this.options.variables)
+        if (this.options.variables is not null)
         {
-          _simRuns[i].logVarVals.Add(varItem.ToString());
+          foreach (var varItem in this.options.variables)
+          {
+            _simRuns[i].logVarVals.Add(varItem.ToString());
+          }
         }
 
         foreach (var varItem in this.options.initVars)
