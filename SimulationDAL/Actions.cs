@@ -4,11 +4,8 @@ using System;
 using System.CodeDom.Compiler;
 using System.Collections;
 using System.Collections.Generic;
-//using System.Windows.Forms;
 using System.Data;
-//using System.Web.Helpers;
 using System.Diagnostics;
-//using SimulationTracking;
 using System.IO;
 using System.Linq;
 using System.Reflection.Emit;
@@ -26,16 +23,11 @@ using ScriptEngineNS;
 
 namespace SimulationDAL
 {
-  //using HoudiniSimRunner;
-
   public abstract class Action : BaseObjInfo
   {
     protected EnActionType _actType = EnActionType.atTransition;
     public EnActionType actType { get { return _actType; } }
     public bool mainItem = false;
-
-    //public EnActionType actType;
-
 
     public Action(string inName, EnActionType inActType, bool inMainItem = false)
     {
@@ -132,8 +124,6 @@ namespace SimulationDAL
 
     public bool mutuallyExclusive { get { return this.mutExcl; } set { this.mutExcl = value; } }
 
-    //double[] bounds = null;
-
     public TransitionAct()
       : base("", EnActionType.atTransition)
     { }
@@ -186,31 +176,6 @@ namespace SimulationDAL
       mutExcl = Convert.ToBoolean(dynObj.mutExcl);
 
       lists.allActions.Add(this, false);
-
-      //Done in LoadObjLinks()
-      ////load the transition list
-      //if (dynObj.newStates != null)
-      //{
-      //  _newStateIDs.Clear();
-      //  _toStateProb.Clear();
-
-      //  foreach (dynamic curToObj in dynObj.newStates)
-      //  {
-      //    State curState = lists.allStates.FindByName((string)curToObj.toState);
-
-      //    if (curState == null)
-      //    {
-      //      //create a place holder for the state until the rest of the data is filled in.
-      //      curState = new State();
-      //      curState.name = (string)curToObj.toState;
-      //      lists.allStates.Add(curState);
-      //    }
-
-      //    _newStateIDs.Add(curState);
-      //    _toStateProb.Add((double)curToObj.prob);
-      //    _failDesc.Add((string)curToObj.failDesc);
-      //  }
-      //}
 
       processed = true;
       return true;
@@ -280,8 +245,6 @@ namespace SimulationDAL
             }
           }
         }
-
-        //RecalcBoundBoxes();
       }
 
       return true;
@@ -1763,20 +1726,17 @@ namespace SimulationDAL
         // Run the external process & wait for it to finish
         using (proc = Process.Start(extApp))
         {
-          //Thread stdOutThread = new Thread(new ThreadStart(WriteStandardOutput));
-          //stdOutThread.IsBackground = true;
-          //stdOutThread.Name = "StandardOutput";
-          //stdOutThread.Start();
-
           proc.WaitForExit();
-          //stdOutThread.Join();
 
           // Retrieve the app's exit code
           exitCode = proc.ExitCode;
           proc.Close();
-          //if (exitCode > 0) //don't quit on bad exit code, add it as a variable and allow the user to define what to do
-          //  throw new Exception("Failed to run external code - " + exePath + ".   exit code - " + exitCode.ToString());
         }
+
+        //make sure file folder is released
+        GC.Collect();
+        GC.WaitForPendingFinalizers();
+        System.Threading.Thread.Sleep(100);
       }
       else 
         exitCode = -1;
