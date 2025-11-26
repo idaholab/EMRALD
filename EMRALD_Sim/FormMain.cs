@@ -1079,6 +1079,10 @@ namespace EMRALD_Sim
           {
             thread.Join();
           }
+
+          // IMPORTANT: Give threads time to fully release all handles after Join()
+          System.Threading.Thread.Sleep(200); // Small delay after Join()
+
           // Once all threads are done, update the UI and sum results
           //compile results if needed
           for (int i = 1; i < simRuns.Count; i++)
@@ -1086,7 +1090,9 @@ namespace EMRALD_Sim
             //SimulationEngine.OverallResults.CombineJsonResultFiles(simRuns[0].jsonResultsPaths, simRuns[i].jsonResultsPaths, simRuns[0].jsonResultsPaths);
             simRuns[0].AddOtherBatchResults(simRuns[i]);
             if (cbClearTemps.Checked)
+            {
               simRuns[i].ClearTempThreadData();
+            }
 
           }
           _running = false;
