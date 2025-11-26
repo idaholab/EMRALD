@@ -23,6 +23,86 @@ namespace CommandLineCP
       string model = null;
       JSONRun modelRun = new JSONRun("", "", DispResults);
 
+      // Check if first argument is a JSON file
+      if (args.Length > 0)
+      {
+        string firstArg = args[0];
+        bool isJSON = false;
+        try
+        {
+          isJSON = Path.GetExtension(firstArg).Equals(".json", StringComparison.OrdinalIgnoreCase);
+        }
+        catch { }
+
+        if (isJSON)
+        {
+          if (!File.Exists(firstArg))
+          {
+            Console.WriteLine("Invalid path for JSON options file: " + firstArg);
+            return;
+          }
+
+          string optionsJsonStr = File.ReadAllText(firstArg);
+          JSONRun simRun = new JSONRun(optionsJsonStr);
+          if (simRun.error != "")
+          {
+            Console.Write(simRun.error);
+          }
+          else
+          {
+            string jsonResult = simRun.RunSim();
+            if (jsonResult != "")
+            {
+              Console.WriteLine(jsonResult);
+              Console.WriteLine("run -Help for instructions");
+              return;
+            }
+          }         
+
+          // Initialize thread tracking from JSON options
+          numRuns = modelRun.options.runct;
+          numThreads = modelRun.options.threads.HasValue && modelRun.options.threads.Value > 0
+                       ? modelRun.options.threads.Value
+                       : 1;
+          threadRunCnt = new int[numThreads];
+
+          for (int i = 0; i < numThreads; i++)
+          {
+            threadRunCnt[i] = 0;
+          }
+
+          if (modelRun.options.threads > 0)
+          {
+            Console.WriteLine("Using " + modelRun.options.threads + " threads.");
+          }
+
+          Console.WriteLine(modelRun.options.runct + " runs of - " + modelRun.options.inpfile);
+
+          // Wait for completion
+          while (!done)
+          {
+            System.Threading.Thread.Sleep(300);
+          }
+
+          if (modelRun.error == "")
+          {
+            Console.Write("\r{0}%   ", 100);
+            Console.WriteLine("");
+          }
+          else
+          {
+            Console.WriteLine("");
+            Console.WriteLine(modelRun.error);
+            Console.WriteLine("run -Help for instructions");
+            return;
+          }
+
+          Console.WriteLine("done");
+          return;
+        }
+      }
+
+      // Process command-line arguments
       for (int i = 0; i < args.Length; i++)
       {
         string argument = args[i].ToLower();
@@ -52,7 +132,7 @@ namespace CommandLineCP
             Environment.Exit(0);
             break;
 
-          case "-JSON-Help":
+          case "-json-help":
             Console.WriteLine("Syntax for running from a JSON file :" + Environment.NewLine +
                               "{" + Environment.NewLine +
                               "  \"runct\": [integer - Total number of runs]," + Environment.NewLine +
@@ -72,6 +152,7 @@ namespace CommandLineCP
                               "    \"[string - last variable watch name]\"" + Environment.NewLine +
                               "  ] " + Environment.NewLine +
                               "}");
+            Environment.Exit(0);
             break;
 
           case "-n": // run count            
