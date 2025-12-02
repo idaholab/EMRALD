@@ -15,6 +15,7 @@ using Matrix.Xmpp.AdHocCommands;
 using Matrix.Xmpp.PubSub;
 using Matrix.Xmpp.StreamInitiation;
 using Matrix.Xmpp.XHtmlIM;
+using MessageDefLib;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using MyStuff.Collections;
 using Newtonsoft.Json;
@@ -98,7 +99,7 @@ namespace SimulationEngine
     private EmraldModel _lists;
     private TimeSpan _endTime;
     //private HoudiniSimClient _sim3DHandler = null;
-    private EMRALDMsgServer _msgServer;
+    private ISimMessaging _msgServer;
     private double _frameRate = 30;
     private string _sim3DPath = "";
     //private HoudiniSimClient.TLogEvCallBack _viewNotifications = null;
@@ -161,7 +162,7 @@ namespace SimulationEngine
     }
 
     //public void Add3DSimulationData(HoudiniSimClient sim3DHandler, double frameRate, string sim3DPath)//, HoudiniSimClient.TLogEvCallBack viewNotifications)
-    public void AddExtSimulationData(EMRALDMsgServer msgServer, double frameRate, string sim3DPath, string password)//, HoudiniSimClient.TLogEvCallBack viewNotifications)
+    public void AddExtSimulationData(ISimMessaging msgServer, double frameRate, string sim3DPath, string password)//, HoudiniSimClient.TLogEvCallBack viewNotifications)
     {
       _msgServer = msgServer;
       _frameRate = frameRate;

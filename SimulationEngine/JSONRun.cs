@@ -2,111 +2,23 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
+using System.Threading;
 using System.Threading.Tasks;
+using MessageDefLib;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using System.IO;
 using NLog;
 using SimulationDAL;
-using System.Threading;
+using XmppMessageServer;
+using CouplingWebSocket;
+using XmppServer;
 
 namespace SimulationEngine
 {
-
-  
-  //public class Options_v1
-  //{
-  //  // Total number of runs
-  //  public int runct { get; set; } = 100;
-  //  // Input file path
-  //  public string inpfile { get; set; } = "";
-  //  // Results output file path
-  //  public string resout { get; set; } = "BasicResults.txt";
-  //  // Result paths JSON output file path
-  //  public string jsonRes { get; set; } = "";
-  //  //variables to output in the results
-  //  public List<string> variables { get; set; } = null;
-  //  // Path output file path
-  //  public string pathout { get; set; } = null;
-  //  // Maximum simulation time
-  //  public string runtime { get; set; } = "365.00:00:00";
-  //  // Seed for random number generation
-  //  public int seed { get; set; } = 0;
-  //  // debug level [basic, detailed, off]
-  //  public string debug { get; set; } = "off";
-  //  // start index for debug if null then from beginning
-  //  public int? debugStartIdx { get; set; } = null;
-  //  // start index for debug if null then to end
-  //  public int? debugEndIdx { get; set; } = null;
-  //  // external application XMPP connection
-  //  public int pathResultsInterval { get; set; } = -1;
-  //  public string xmppPassword { get; set; } = "secret";
-  //  public List<List<string>> xmppLinks = new List<List<string>>();
-  //}
-
-  public class Options_cur
-  {
-    //Example JSON for passing in the run options 
-    public static string CmdJSON_OptionsExample = "{\n" +
-    "  \"opsVer\": 1.01, //version of this options file\n" +
-    "  \"runct\": 100, // Total number of runs\n" +
-    "  \"inpfile\": \"\", // Input model path\n" +
-    "  \"resout\": \"BasicResults.txt\", // Results output file path\n" +
-    "  \"jsonRes\": \"c:\\\\temp\\\\PathResults.txt\", // Result paths JSON output file path\n" +
-    "  \"variables\": [ // Variables to output in the results\n" +
-    "    \"var1\",\n" +
-    "    \"var2\"\n" +
-    "  ],\n" +
-    "  \"initVars\": [ //initialize these variables with new values (if they have the property to reset on every run, it will get this value on each run otherwise behavior is the same)\n" +
-    "    {\n" +
-    "      \"varName\": \"var1\", //name of the variable\n" +
-    "      \"value\": \"5\" //value for the variable, use a string for all the types.\n" +
-    "    }\n" +
-    "  ],\n" +
-    "  \"runtime\": \"365.00:00:00\", // Maximum simulation time\n" +
-    "  \"seed\": 0, // Seed for random number generation\n" +
-    "  \"debug\": \"off\", // Debug level [basic, detailed, off]\n" +
-    "  \"debugStartIdx\": null, // Start index for debug if null then from beginning\n" +
-    "  \"debugEndIdx\": null, // End index for debug if null then to end\n" +
-    "  \"pathResultsInterval\": -1, // External application XMPP connection path results interval\n" +
-    "  \"xmppPassword\": \"secret\", // XMPP password for external application connection\n" +
-    "  \"xmppLinks\": [] // List of XMPP links\n" +
-    "}";
-
-    //version of the options json
-    public double opsVer { get; set; } = 1.01;
-    
-    // Total number of runs
-    public int runct { get; set; } = 100;
-    // Input file path
-    public string inpfile { get; set; } = "";
-    // Results output file path
-    public string resout { get; set; } = "BasicResults.txt";
-    // Result paths JSON output file path
-    public string jsonRes { get; set; } = "";
-    //variables to output in the results
-    public List<string> variables { get; set; } = null;
-    // //initialize these variables with new values (if they have the property to reset on every run, it will get this value on each run othrwise behavior is the same)
-    public List<VarInitValue> initVars { get; set; } = new List<VarInitValue>();
-    // Maximum simulation time
-    public string runtime { get; set; } = "365.00:00:00";
-    // Seed for random number generation
-    public int seed { get; set; } = 0;
-    // debug level [basic, detailed, off]
-    public string debug { get; set; } = "off";
-    // start index for debug if null then from beginning
-    public int? debugStartIdx { get; set; } = null;
-    // start index for debug if null then to end
-    public int? debugEndIdx { get; set; } = null;
-    // external application XMPP connection
-    public int pathResultsInterval { get; set; } = -1;
-    public string xmppPassword { get; set; } = "secret";
-    public List<List<string>> xmppLinks = new List<List<string>>();
-    public int? threads { get; set; } = null; //null is default no threading. Even 1 will use a tread and the temp folders so that you can run multiple instances using the same model, by just changing the name.
-  }
-
   public class VarInitValue
   {
     public string varName { get; set; }
@@ -121,6 +33,8 @@ namespace SimulationEngine
     private string _error = "";
     public Options_cur options = new Options_cur();
     private bool _done = false;
+    private ISimMessaging _msgCoupler = null;
+    private readonly IAppSettingsService _appSettingsService;
 
     // Create attributes for objects
     private List<ProcessSimBatch> _simRuns = new List<ProcessSimBatch>();
@@ -328,16 +242,35 @@ namespace SimulationEngine
       return error;
     }
 
-    public static string LoadJson(string optionsJsonStr, ref Options_cur optionsOut)
+    public string LoadJson(string optionsJsonStr, ref Options_cur optionsOut)
     {
-      // Create an Options object named options1 by deserializing the json string options_json, this depends on the Newtonsoft.Json package
+
+      //upgrade from 1.01 to 1.02 if older
+
       try
       {
+        // Parse JSON to check version
+        var jsonObject = JObject.Parse(optionsJsonStr);
+        double version = jsonObject.Value<double?>("opsVer") ?? 1.0;
+
+        // Upgrade from 1.01 (or older) to 1.02 if needed
+        if (version < 1.02)
+        {
+          optionsJsonStr = Options_cur.ConvertOptionsJsonTo1_02(optionsJsonStr);
+        }
+
+        // Deserialize the (possibly upgraded) JSON
         optionsOut = JsonConvert.DeserializeObject<Options_cur>(optionsJsonStr);
+
+        return ""; // Success
       }
-      catch
+      catch (JsonException)
       {
         return "Invalid JSON run options, please fix.";
+      }
+      catch (Exception ex)
+      {
+        return $"Error loading options: {ex.Message}";
       }
 
 
@@ -452,6 +385,39 @@ namespace SimulationEngine
       if (optionsOut.debugEndIdx < optionsOut.debugStartIdx)
       {
         return "debugEndIdx must be greater than debugStartIdx";
+      }
+
+      if ((optionsOut.couplingType == CouplingType.WebSocket) &&
+          (optionsOut.couplingURL == null))
+      {
+        return "If using WebSocket coupling, a couplingURL must be provided.";
+      }
+
+      
+
+      if (optionsOut.couplingLinks.Count > 0)
+      {
+        switch (optionsOut.couplingType)
+        {
+          case CouplingType.WebSocket:
+            _msgCoupler = new WebApiCoupling(optionsOut.couplingURL);
+            break;
+          case CouplingType.XMPP:
+            _msgCoupler = new EMRALDMsgServer(optionsOut.couplingPassword, _appSettingsService);
+            break;
+          default:
+            throw new Exception("Coupling Type not implemeted");
+            break;
+        }
+
+        foreach (var couplingData in optionsOut.couplingLinks)
+        {
+          if (!_msgCoupler.HasResource(couplingData[0]))
+          {
+            throw new Exception("Coupling applicaton not avaliable - " + couplingData[0]);
+            break;
+          }
+        }
       }
 
       return "";

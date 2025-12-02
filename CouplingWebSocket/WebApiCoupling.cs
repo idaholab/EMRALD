@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using CouplingWebSocket;
@@ -12,21 +13,19 @@ namespace CouplingWebSocket
     private WebSocketClient _client;
     private TEventCallBack _evCallBackFunc = null;
     private IMessageForm _form = null;
-    private List<string> _resourceNames = new List<string>();
+    private List<string> _resourceOptions = new List<string>();
+    private Dictionary<Guid, string> _connectedApps = new Dictionary<Guid, string>(); //GUID ids to current connected app names added durring StartupApp
     private string _serverUrl;
-    private string _clientName;
-    private Guid _connectionId;
-    private bool _isConnected = false;
+    private bool _isConnected;
 
     /// <summary>
     /// Create a new WebApiCoupling instance
     /// </summary>
     /// <param name="serverUrl">WebSocket server URL</param>
     /// <param name="clientName">Name of this client</param>
-    public WebApiCoupling(string serverUrl, string clientName)
+    public WebApiCoupling(string serverUrl)
     {
       _serverUrl = serverUrl;
-      _clientName = clientName;
       _client = new WebSocketClient();
 
       // Subscribe to client events
@@ -47,14 +46,7 @@ namespace CouplingWebSocket
         await _client.ConnectAsync(_serverUrl);
 
         // Get resources (app options)
-        _resourceNames = await _client.GetAppOptions();
-
-        // Create connection with the client name
-        if (_resourceNames.Count > 0)
-        {
-          _connectionId = await _client.CreateConnection(_clientName);
-          _isConnected = true;
-        }
+        _resourceOptions = await _client.GetAppOptions();
       }
       catch (Exception ex)
       {
@@ -69,6 +61,29 @@ namespace CouplingWebSocket
     public TEventCallBack evCallBackFunc
     {
       set { _evCallBackFunc = value; }
+    }
+
+    /// <summary>
+    /// Start up a specific application by name
+    /// </summary>
+    /// <param name="appName">Name of the application to start</param>
+    /// <returns>GUID of the created connection</returns>
+    public async Task<Guid> StartupApp(string appName, List<string> watchItems)
+    {
+      Guid retGuid;
+
+      // Create connection with the app name
+      if (_resourceOptions.Contains(appName))
+      {
+        retGuid = await _client.CreateConnection(appName, watchItems);
+        _connectedApps.Add(retGuid, appName);
+        _isConnected = true;
+        return retGuid;
+      }
+      else
+      {
+        throw new Exception("Invalid app name or unavailable to couple with");
+      }
     }
 
     /// <summary>
@@ -105,7 +120,7 @@ namespace CouplingWebSocket
     /// </summary>
     public int ResourceCnt()
     {
-      return _resourceNames?.Count ?? 0;
+      return _resourceOptions?.Count ?? 0;
     }
 
     /// <summary>
@@ -113,7 +128,7 @@ namespace CouplingWebSocket
     /// </summary>
     public List<string> GetResources()
     {
-      return new List<string>(_resourceNames);
+      return new List<string>(_resourceOptions);
     }
 
     /// <summary>
@@ -121,12 +136,12 @@ namespace CouplingWebSocket
     /// </summary>
     public bool HasResource(string name)
     {
-      if (_resourceNames == null || string.IsNullOrEmpty(name))
+      if (_resourceOptions == null || string.IsNullOrEmpty(name))
       {
         return false;
       }
 
-      return _resourceNames.Contains(name);
+      return _resourceOptions.Contains(name);
     }
 
     /// <summary>
@@ -152,13 +167,13 @@ namespace CouplingWebSocket
           // Successfully deserialized - call the event callback
           if (_evCallBackFunc != null)
           {
-            _evCallBackFunc(_clientName, msg);
+            _evCallBackFunc(_connectedApps[msg.pID], msg);
           }
 
           // Call the form's incoming EMERALD message handler if set
           if (_form != null)
           {
-            _form.IncomingEMRALDMsg(_clientName, msg);
+            _form.IncomingEMRALDMsg(_connectedApps[msg.pID], msg);
           }
         }
       }
@@ -168,7 +183,7 @@ namespace CouplingWebSocket
         // Call the form's incoming other message handler if set
         if (_form != null)
         {
-          _form.IncomingOtherMsg(_clientName, rawMessage);
+          _form.IncomingOtherMsg("", rawMessage);
         }
       }
       catch (Exception ex)
@@ -176,7 +191,7 @@ namespace CouplingWebSocket
         // Other errors
         if (_form != null)
         {
-          _form.IncomingOtherMsg(_clientName, $"Error processing message: {ex.Message}");
+          _form.IncomingOtherMsg("", $"Error processing message: {ex.Message}");
         }
       }
     }
@@ -186,7 +201,7 @@ namespace CouplingWebSocket
       // Notify form of errors if set
       if (_form != null)
       {
-        _form.IncomingOtherMsg(_clientName, $"Error: {error}");
+        _form.IncomingOtherMsg("", $"Error: {error}");
       }
     }
 

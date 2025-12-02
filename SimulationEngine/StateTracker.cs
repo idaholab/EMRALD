@@ -706,7 +706,7 @@ namespace SimulationTracking
     /// <summary>
     /// external simulation server to process external events
     /// </summary>
-    private EMRALDMsgServer sim3DServer;
+    private ISimMessaging sim3DServer;
     //todo store these in ExternalSim object and adjust code for multiple simulations
     private bool extSimRunning = false;
     private bool emraldStopping3D = false;
@@ -754,7 +754,7 @@ namespace SimulationTracking
       EmraldModel inLists,
       TimeSpan endTime, //max time allowed for events to occur
       double in3dFrameRate,//todo remove obsolete
-      EMRALDMsgServer inSim3DServer,
+      ISimMessaging inSim3DServer,
       int desiredRuns
       )
     {

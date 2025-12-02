@@ -75,14 +75,15 @@ namespace CouplingWebSocket
     /// Create a connection for a specific app
     /// Returns GUID for the created connection
     /// </summary>
-    public async Task<Guid> CreateConnection(string appName)
+    public async Task<Guid> CreateConnection(string appName, List<string> watchItems)
     {
       EnsureConnected();
 
       var request = new
       {
         command = "CreateConnection",
-        appName = appName
+        appName = appName,
+        watchItems = watchItems
       };
 
       string response = await SendRequestAsync(request);

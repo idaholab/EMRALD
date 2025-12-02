@@ -17,6 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\CouplingWebSocket\CouplingWebSocket.csproj" />
     <ProjectReference Include="..\SimulationDAL\SimulationDAL.csproj" />
     <ProjectReference Include="..\XmppServer\XmppServerController.csproj" />
   </ItemGroup>
