@@ -2,28 +2,24 @@
 
 using Matrix;
 using Matrix.Xmpp.Base;
+using Matrix.Xmpp.Roster;
+using MessageDefLib;
+//using System.Web.Script.Serialization;
+using Newtonsoft.Json;
+//using Newtonsoft.Json.Converters;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-//using System.Web.Script.Serialization;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-using Matrix.Xmpp.Roster;
-using MessageDefLib;
 using XmppServer;
 
 namespace XmppMessageServer
 {
- 
-  
 
-
-  public class EMRALDMsgServer : IMessageServer
+  public class EMRALDMsgServer : IMessageServer, ISimMessaging
   {
     private NLog.Logger logger = NLog.LogManager.GetLogger("logfile");
-    public delegate void TEventCallBack(string clientName, MessageDefLib.TMsgWrapper evData);
-
+    
 
     private XmppMessageServer _xmppMsgServer;
     private IMessageForm _form;
