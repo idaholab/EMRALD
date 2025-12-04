@@ -345,7 +345,7 @@ namespace SimulationEngine
 
           if (!File.Exists(optionsOut.inpfile))
           {
-            return "Invalid input file path, please fix.";
+            return "Invalid input EMRALD file path, please fix.";
           }
         }
       }

@@ -53,28 +53,28 @@ namespace CouplingWebSocket
       _client.Connected += OnConnected;
       _client.Disconnected += OnDisconnected;
 
-      InitializeAsync();
-    }
-
-    /// <summary>
-    /// Initialize the connection and get resources
-    /// </summary>
-    public async Task InitializeAsync()
-    {
       try
       {
-        // Connect to server
-        await _client.ConnectAsync(_serverUrl);
+        // Block until connection completes
+        _client.ConnectAsync(_serverUrl)
+               .GetAwaiter()
+               .GetResult();
 
-        // Get resources (app options)
-        _resourceOptions = await _client.GetAppOptions();
+        // Block until app options come back
+        _resourceOptions = _client.GetAppOptions()
+                                  .GetAwaiter()
+                                  .GetResult();
+
+        _isConnected = true;
       }
       catch (Exception ex)
       {
         _isConnected = false;
-        throw new InvalidOperationException($"Failed to initialize WebApiCoupling: {ex.Message}", ex);
+        throw new InvalidOperationException(
+            $"Failed to initialize WebApiCoupling: {ex.Message}", ex);
       }
     }
+
 
     /// <summary>
     /// Set the event callback function
@@ -179,8 +179,30 @@ namespace CouplingWebSocket
     /// <summary>
     /// Handle incoming raw messages and deserialize
     /// </summary>
-    private void OnMessageReceived(object sender, (Guid conID, string message) e)
+    private async void OnMessageReceived(object sender, (Guid conID, string message) e)
     {
+      // Wait for the connection to be registered in _connectedApps
+      const int maxWaitMs = 5000; // 5 second timeout
+      const int checkIntervalMs = 50; // Check every 50ms
+      int elapsedMs = 0;
+
+      while (!_connectedApps.ContainsKey(e.conID) && elapsedMs < maxWaitMs)
+      {
+        await Task.Delay(checkIntervalMs);
+        elapsedMs += checkIntervalMs;
+      }
+
+      // If still not found, handle the error
+      if (!_connectedApps.ContainsKey(e.conID))
+      {
+        string errorMsg = $"Connection ID {e.conID} not found after {maxWaitMs}ms timeout";
+        if (_form != null)
+        {
+          _form.IncomingOtherMsg("", $"Error: {errorMsg}");
+        }
+        return; // Exit early
+      }
+
       try
       {
         // First parse the wrapper that contains conID and message
