@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Threading.Tasks;
 using CouplingWebSocket;
 using MessageDefLib;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace CouplingWebSocket
 {
@@ -12,11 +14,28 @@ namespace CouplingWebSocket
   {
     private WebSocketClient _client;
     private TEventCallBack _evCallBackFunc = null;
-    private IMessageForm _form = null;
+    private IMessageDispHandling _form = null;
     private List<string> _resourceOptions = new List<string>();
-    private Dictionary<Guid, string> _connectedApps = new Dictionary<Guid, string>(); //GUID ids to current connected app names added durring StartupApp
+    private Dictionary<Guid, string> _connectedApps = new Dictionary<Guid, string>(); //connectionID to current connected app name in EMRALD
+    private Dictionary<string, Guid> _connectedIDs = new Dictionary<string, Guid>(); //current connected app names in EMRALD to connectionID
     private string _serverUrl;
     private bool _isConnected;
+    private string _connectionPassword;
+    private int _frameRate;
+
+    // Interface property implementations
+    public string connectionPassword
+    {
+      get { return _connectionPassword; }
+      set { _connectionPassword = value; }
+    }
+
+    public int simFrameRate
+    {
+      get { return _frameRate; }
+      set { _frameRate = value; }
+    }
+
 
     /// <summary>
     /// Create a new WebApiCoupling instance
@@ -33,6 +52,8 @@ namespace CouplingWebSocket
       _client.ErrorOccurred += OnErrorOccurred;
       _client.Connected += OnConnected;
       _client.Disconnected += OnDisconnected;
+
+      InitializeAsync();
     }
 
     /// <summary>
@@ -77,6 +98,7 @@ namespace CouplingWebSocket
       {
         retGuid = await _client.CreateConnection(appName, watchItems);
         _connectedApps.Add(retGuid, appName);
+        _connectedIDs.Add(appName, retGuid);
         _isConnected = true;
         return retGuid;
       }
@@ -89,7 +111,7 @@ namespace CouplingWebSocket
     /// <summary>
     /// Send a message to a specific resource and client
     /// </summary>
-    public bool SendMessage(TMsgWrapper msg, string resAndClient)
+    public bool SendMessage(TMsgWrapper msg, string appInfo)
     {
       if (!_isConnected)
       {
@@ -101,10 +123,12 @@ namespace CouplingWebSocket
         // Serialize the message to JSON
         string jsonMessage = JsonConvert.SerializeObject(msg);
 
+        //if it is a atOpenSim message then do a CreateConnection 
+
         // Send the message asynchronously
         Task.Run(async () =>
         {
-          await _client.SendActionMsg(jsonMessage);
+          await _client.SendActionMsg(_connectedIDs[appInfo], jsonMessage);
         }).Wait();
 
         return true;
@@ -147,7 +171,7 @@ namespace CouplingWebSocket
     /// <summary>
     /// Set the message form for UI updates
     /// </summary>
-    public void SetForm(IMessageForm form)
+    public void SetUICallbacks(IMessageDispHandling form)
     {
       _form = form;
     }
@@ -155,25 +179,41 @@ namespace CouplingWebSocket
     /// <summary>
     /// Handle incoming raw messages and deserialize
     /// </summary>
-    private void OnMessageReceived(object sender, string rawMessage)
+    private void OnMessageReceived(object sender, (Guid conID, string message) e)
     {
       try
       {
-        // Try to deserialize as TMsgWrapper
-        var msg = JsonConvert.DeserializeObject<TMsgWrapper>(rawMessage);
+        // First parse the wrapper that contains conID and message
+        var jsonObj = JObject.Parse(e.message);
 
-        if (msg != null)
+        // Extract just the "message" property which contains the TMsgWrapper
+        var messageJson = jsonObj["message"]?.ToString();
+
+        if (messageJson != null)
         {
-          // Successfully deserialized - call the event callback
-          if (_evCallBackFunc != null)
-          {
-            _evCallBackFunc(_connectedApps[msg.pID], msg);
-          }
+          // Now deserialize the actual TMsgWrapper
+          var msg = JsonConvert.DeserializeObject<TMsgWrapper>(messageJson);
 
-          // Call the form's incoming EMERALD message handler if set
+          if (msg != null)
+          {
+            // Successfully deserialized - call the event callback
+            if (_evCallBackFunc != null)
+            {
+              _evCallBackFunc(_connectedApps[e.conID], msg);
+            }
+            // Call the form's incoming EMERALD message handler if set
+            if (_form != null)
+            {
+              _form.IncomingEMRALDMsg(_connectedApps[e.conID], msg);
+            }
+          }
+        }
+        else
+        {
+          // No "message" property found - treat as other message
           if (_form != null)
           {
-            _form.IncomingEMRALDMsg(_connectedApps[msg.pID], msg);
+            _form.IncomingOtherMsg(_connectedApps[e.conID], e.message);
           }
         }
       }
@@ -183,7 +223,7 @@ namespace CouplingWebSocket
         // Call the form's incoming other message handler if set
         if (_form != null)
         {
-          _form.IncomingOtherMsg("", rawMessage);
+          _form.IncomingOtherMsg(_connectedApps[e.conID], e.message);
         }
       }
       catch (Exception ex)
@@ -191,7 +231,7 @@ namespace CouplingWebSocket
         // Other errors
         if (_form != null)
         {
-          _form.IncomingOtherMsg("", $"Error processing message: {ex.Message}");
+          _form.IncomingOtherMsg(_connectedApps[e.conID], $"Error processing message: {ex.Message}");
         }
       }
     }

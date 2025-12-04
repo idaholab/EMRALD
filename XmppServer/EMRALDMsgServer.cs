@@ -22,7 +22,7 @@ namespace XmppMessageServer
     
 
     private XmppMessageServer _xmppMsgServer;
-    private IMessageForm _form;
+    private IMessageDispHandling _form;
     private int _nextMsgId = 0;
     //private string _passwd = "secret";
     private TEventCallBack _evCallBackFunc = null;
@@ -38,6 +38,22 @@ namespace XmppMessageServer
     // TODO - The server should save these as properties
     private int m_port = 5222;
 
+    private string _connectionPassword;
+    private int _frameRate;
+
+    // Interface property implementations
+    public string connectionPassword
+    {
+      get { return _connectionPassword; }
+      set { _connectionPassword = value; }
+    }
+
+    public int simFrameRate
+    {
+      get { return _frameRate; }
+      set { _frameRate = value; }
+    }
+
     public TEventCallBack evCallBackFunc { set { _evCallBackFunc = value; } }
 
     public EMRALDMsgServer(string passwd, IAppSettingsService appSettingsService)
@@ -51,7 +67,7 @@ namespace XmppMessageServer
       _form?.Clear();
     }
 
-    public void SetForm(IMessageForm form)
+    public void SetUICallbacks(IMessageDispHandling form)
     {
       _form = form;
     }

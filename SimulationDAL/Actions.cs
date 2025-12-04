@@ -2012,7 +2012,7 @@ namespace SimulationDAL
       }
 
       //if the parameters are variable verify they exist
-      if (dynObj.openSimVarParams != null)
+      if ((dynObj.openSimVarParams != null)  && ((bool)dynObj.openSimVarParams == true))
       {
         if ((_extSim.modelRef != "") && (lists.allVariables.FindByName(_extSim.modelRef) == null))
         {

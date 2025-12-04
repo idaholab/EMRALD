@@ -100,8 +100,8 @@ namespace SimulationEngine
     private TimeSpan _endTime;
     //private HoudiniSimClient _sim3DHandler = null;
     private ISimMessaging _msgServer;
-    private double _frameRate = 30;
-    private string _sim3DPath = "";
+    //private double _frameRate = 30;
+    //private string _sim3DPath = "";
     //private HoudiniSimClient.TLogEvCallBack _viewNotifications = null;
     private string _resultFile; //same as _origionalResutsFile unless multi threded then it is in the temp file path location
     private static readonly object _fileLock = new object();
@@ -162,12 +162,9 @@ namespace SimulationEngine
     }
 
     //public void Add3DSimulationData(HoudiniSimClient sim3DHandler, double frameRate, string sim3DPath)//, HoudiniSimClient.TLogEvCallBack viewNotifications)
-    public void AddExtSimulationData(ISimMessaging msgServer, double frameRate, string sim3DPath, string password)//, HoudiniSimClient.TLogEvCallBack viewNotifications)
+    public void AddExtSimulationData(ISimMessaging msgServer)//, HoudiniSimClient.TLogEvCallBack viewNotifications)
     {
       _msgServer = msgServer;
-      _frameRate = frameRate;
-      _sim3DPath = sim3DPath;
-      //_viewNotifications = viewNotifications;
     }
 
     public bool AutoConnectExtSim()
@@ -325,9 +322,9 @@ namespace SimulationEngine
 
         SimulationTracking.StateTracker trackSim;
         if (_msgServer == null)
-          trackSim = new SimulationTracking.StateTracker(_lists, _endTime, 0, null, _numRuns);
+          trackSim = new SimulationTracking.StateTracker(_lists, _endTime, null, _numRuns);
         else
-          trackSim = new SimulationTracking.StateTracker(_lists, _endTime, _frameRate, _msgServer, _numRuns);
+          trackSim = new SimulationTracking.StateTracker(_lists, _endTime, _msgServer, _numRuns);
 
         for (int i = 1; i <= _numRuns; ++i)
         {

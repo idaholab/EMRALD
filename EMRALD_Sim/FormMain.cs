@@ -27,7 +27,7 @@ using static EMRALD_Sim.UISettings;
 
 namespace EMRALD_Sim
 {
-  public partial class FormMain : Form, IMessageForm //XmppMessageServer.MessageForm
+  public partial class FormMain : Form, IMessageDispHandling //XmppMessageServer.MessageForm
   {
     private readonly IAppSettingsService _appSettingsService;
     private readonly IOptions<UISettings> _optionsAccessor;
@@ -288,7 +288,7 @@ namespace EMRALD_Sim
               }
               catch
               {
-                Console.Write("invalid data for coupling external simulation, specify the password and the external sim name, XMPP connection resource, XMPP user name, and timeout in seconds. For multiple, encase in \"[]\"" + Environment.NewLine +
+                Console.Write("invalid data for coupling external simulation, specify the password and the external sim name, XMPP connection resource, XMPP user name, and Connection timeout in seconds. For multiple, encase in \"[]\"" + Environment.NewLine +
                                 "Example: -d xmppServerPassword [LinkedProgram MyApp User1 60] [LinkedProgram2 MyApp2 User2 60]");
               }
 
@@ -1032,7 +1032,7 @@ namespace EMRALD_Sim
           simRuns[i].progressCallback = DispResults;
           if (_server != null)
           {
-            simRuns[i].AddExtSimulationData(_server, 100, "", _XMPP_Password);
+            simRuns[i].AddExtSimulationData(_server);
           }
 
           foreach (var varItem in lbMonitorVars.CheckedItems)
@@ -1500,7 +1500,7 @@ namespace EMRALD_Sim
       if (_server == null)
       {
         _server = new EMRALDMsgServer(_XMPP_Password, _appSettingsService);
-        _server.SetForm(this);
+        _server.SetUICallbacks(this);
       }
     }
 

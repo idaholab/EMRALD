@@ -753,7 +753,6 @@ namespace SimulationTracking
     public StateTracker(
       EmraldModel inLists,
       TimeSpan endTime, //max time allowed for events to occur
-      double in3dFrameRate,//todo remove obsolete
       ISimMessaging inSim3DServer,
       int desiredRuns
       )
@@ -1730,7 +1729,7 @@ namespace SimulationTracking
                 //startup.time = (int)(sim3DFameRate * 1500); 
                 //startup.itemName = sim3dPath;// "C:\\Program Files2\\INL_FUSimServer\\houdini\\hip\\fu_sim_testRoom_v12.hipnc";
                 //if (sim3DServer.SendAction(new TActionPacketData(startup)))  //initialize it
-                if (sim3DServer.SendMessage(msg, cur3DAct.resourceName))
+                if (sim3DServer.SendMessage(msg, cur3DAct.resourceName)) 
                 {
                   extSimStarting = true;
                   emraldStopping3D = false;

@@ -2,6 +2,8 @@
 using System.IO;
 using System.Threading;
 using Matrix.Xmpp.PubSub;
+using MessageDefLib;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NLog;
 using SimulationDAL;
@@ -9,6 +11,66 @@ using SimulationEngine;
 
 namespace CommandLineCP
 {
+  public class ConsoleMessageOutput : IMessageDispHandling
+  {
+    private readonly object _consoleLock = new object();
+    private bool _clearOnMsg = false; // equivalent to chkClearOnMsg.Checked
+
+    // Optional: allow configuration
+    public bool ClearOnMessage
+    {
+      get { return _clearOnMsg; }
+      set { _clearOnMsg = value; }
+    }
+
+    public void IncomingEMRALDMsg(string sender, TMsgWrapper msg)
+    {
+      lock (_consoleLock)
+      {
+        if (_clearOnMsg)
+        {
+          Console.Clear();
+        }
+
+        Console.WriteLine("From : " + sender);
+        Console.WriteLine("JSON String:");
+        Console.WriteLine(JsonConvert.SerializeObject(msg, Formatting.Indented));
+        Console.WriteLine();
+      }
+    }
+
+    public void IncomingOtherMsg(string sender, string msg)
+    {
+      lock (_consoleLock)
+      {
+        Console.WriteLine("Unidentified Message");
+        Console.WriteLine("From : " + sender);
+        Console.WriteLine("Raw String:");
+        Console.WriteLine(msg);
+        Console.WriteLine();
+      }
+    }
+
+    public void OnConnectCng()
+    {
+      lock (_consoleLock)
+      {
+        Console.WriteLine("Connection status changed");
+        Console.WriteLine();
+        // In console, we can't maintain a list UI, but we could optionally
+        // request and display resources if needed
+      }
+    }
+
+    public void Clear()
+    {
+      if (_clearOnMsg)
+      {
+        Console.Clear();
+      }
+    }
+  }
+
   class Program
   {
     static int[] threadRunCnt; // runs each thread has done

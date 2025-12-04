@@ -2,17 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Text.Json.Serialization;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace SimulationEngine
 {
-  public enum CouplingType
-  {
-    XMPP,
-    WebSocket
-  }
+
 
   //public class Options_v1.02
   //{
@@ -44,8 +40,25 @@ namespace SimulationEngine
   //  public List<List<string>> xmppLinks = new List<List<string>>();
   //}
 
+  public enum CouplingType
+  {
+    XMPP,
+    WebSocket
+  }
+
+  public class CouplingData
+  {
+    [JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
+    public CouplingType couplingType { get; set; } = CouplingType.XMPP;
+    public string couplingPassword { get; set; } = "secret"; //EMRALD client user password for XMPP password needed
+    public string user { get; set; } = "user"; //user, currently for XMPP user name if needed
+    public string couplingURL { get; set; } = null;
+    public int timeout { get; set; } = 30; //timeout in seconds
+  }
+
   public class Options_cur
   {
+
     //Example JSON for passing in the run options 
     public static string CmdJSON_OptionsExample = "{\n" +
     "  \"opsVer\": 1.02, //version of this options file\n" +
@@ -68,11 +81,14 @@ namespace SimulationEngine
     "  \"debug\": \"off\", // Debug level [basic, detailed, off]\n" +
     "  \"debugStartIdx\": null, // Start index for debug if null then from beginning\n" +
     "  \"debugEndIdx\": null, // End index for debug if null then to end\n" +
-    "  \"pathResultsInterval\": -1, // External application XMPP connection path results interval\n" +
-    "  \"couplingPassword\": \"secret\", // XMPP or outher coupling password for external application connection\n" +
-    "  \"couplingType\": \"XMPP\", // XMPP or WebSocket\n" +
-    "  \"couplingLinks\": [[]], // List of XMPP links or applications on coupling connection to use. [[external sim name, if XMPP - connection resource, if XMPP - user name, and timeout in seconds]]\n" +
-    "  \"couplingURL\": [] // If WebSocket then this is the URL to connect to\n" +
+    "  \"pathResultsInterval\": 1000, // how often to write the path results, every X runs (-1 to disable and write at end)\n" +
+    "  \"couplingInfo\": { // External application coupling information\n" +
+    "    \"couplingType\": \"XMPP\", // XMPP or WebSocket\n" +
+    "    \"couplingPassword\": \"secret\", // Password for external application connection\n" +
+    "    \"user\": \"user\", // User name for coupling connection (e.g., XMPP user)\n" +
+    "    \"couplingURL\": null, // If WebSocket, this is the URL to connect to; can be null for XMPP\n" +
+    "    \"timeout\": 30 // Timeout in seconds\n" +
+    "  }\n" +
     "}";
 
     //version of the options json
@@ -101,14 +117,14 @@ namespace SimulationEngine
     // start index for debug if null then to end
     public int? debugEndIdx { get; set; } = null;
     // external application XMPP or other connection
-    public int pathResultsInterval { get; set; } = -1;
+    public int pathResultsInterval { get; set; } = 1000;
+    [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+    public CouplingData couplingInfo { get; set; } = null;
 
-    [Newtonsoft.Json.JsonConverter(typeof(JsonStringEnumConverter))]
-    public CouplingType couplingType { get; set; } = CouplingType.XMPP;
-    public string couplingPassword { get; set; } = "secret";
-    public List<List<string>> couplingLinks = new List<List<string>>();
-    public int? threads { get; set; } = null; //null is default no threading. Even 1 will use a tread and the temp folders so that you can run multiple instances using the same model, by just changing the name.
-    public string couplingURL { get; set; } = null;
+    
+    
+
+   public int? threads { get; set; } = null; //null is default no threading. Even 1 will use a tread and the temp folders so that you can run multiple instances using the same model, by just changing the name.
 
     /// <summary>
     /// Converts an old version options JSON string to the new version (1.02)
@@ -131,7 +147,7 @@ namespace SimulationEngine
         // Set new version
         newOptions["opsVer"] = 1.02;
 
-        // Copy existing fields
+        // Copy existing fields that still map 1:1
         CopyIfExists(oldOptions, newOptions, "runct");
         CopyIfExists(oldOptions, newOptions, "inpfile");
         CopyIfExists(oldOptions, newOptions, "resout");
@@ -146,44 +162,87 @@ namespace SimulationEngine
         CopyIfExists(oldOptions, newOptions, "pathResultsInterval");
         CopyIfExists(oldOptions, newOptions, "threads");
 
-        // Handle renamed/new fields
-        // Convert xmppPassword to couplingPassword
-        if (oldOptions.ContainsKey("xmppPassword"))
+        // ---------- Coupling migration ----------
+
+        // Determine coupling type (default XMPP)
+        string couplingType =
+          (string?)oldOptions["couplingType"] ??
+          // If we see XMPP-specific fields, assume XMPP
+          (oldOptions.ContainsKey("xmppPassword") || oldOptions.ContainsKey("xmppLinks") ? "XMPP" : "XMPP");
+
+        // Determine coupling password (xmppPassword and old couplingPassword are both accepted)
+        JToken couplingPasswordToken =
+          oldOptions.ContainsKey("couplingPassword") ? oldOptions["couplingPassword"] :
+          oldOptions.ContainsKey("xmppPassword") ? oldOptions["xmppPassword"] :
+          new JValue("secret");
+
+        // User name for coupling (if not present, default matches CouplingData default)
+        string user =
+          (string?)oldOptions["user"] ?? "user";
+
+        // Coupling URL:
+        // In older JSON this may have been an array (for WebSocket) or missing. New schema expects a string or null.
+        JToken? couplingUrlToken = null;
+        if (oldOptions.ContainsKey("couplingURL"))
         {
-          newOptions["couplingPassword"] = oldOptions["xmppPassword"];
-        }
-        else if (oldOptions.ContainsKey("couplingPassword"))
-        {
-          newOptions["couplingPassword"] = oldOptions["couplingPassword"];
-        }
-        else
-        {
-          newOptions["couplingPassword"] = "secret";
+          var urlToken = oldOptions["couplingURL"];
+          if (urlToken != null)
+          {
+            if (urlToken.Type == JTokenType.String)
+            {
+              couplingUrlToken = urlToken; // already a string
+            }
+            else if (urlToken.Type == JTokenType.Array && urlToken.Any())
+            {
+              // If old format used an array, grab the first entry as a best-effort migration
+              couplingUrlToken = urlToken.First!;
+            }
+          }
         }
 
-        // Set couplingType (default to XMPP if not present)
-        if (oldOptions.ContainsKey("couplingType"))
+        // Timeout (new field) – default to 30 if not provided
+        int timeout =
+          oldOptions.Value<int?>("timeout") ?? 30;
+
+        // Decide if we actually need to emit couplingInfo at all
+        bool hasAnyCouplingInfo =
+          oldOptions.ContainsKey("xmppPassword") ||
+          oldOptions.ContainsKey("xmppLinks") ||
+          oldOptions.ContainsKey("couplingPassword") ||
+          oldOptions.ContainsKey("couplingType") ||
+          oldOptions.ContainsKey("couplingURL") ||
+          oldOptions.ContainsKey("timeout");
+
+        if (hasAnyCouplingInfo)
         {
-          newOptions["couplingType"] = oldOptions["couplingType"];
+          var couplingInfo = new JObject
+          {
+            ["couplingType"] = couplingType,
+            ["couplingPassword"] = couplingPasswordToken,
+            ["user"] = user,
+            ["timeout"] = timeout
+          };
+
+          // Only include couplingURL if we managed to resolve something meaningful
+          if (couplingUrlToken != null && couplingUrlToken.Type != JTokenType.Null)
+          {
+            couplingInfo["couplingURL"] = couplingUrlToken;
+          }
+          else
+          {
+            couplingInfo["couplingURL"] = null; // explicit null is fine; serializer will ignore if configured
+          }
+
+          newOptions["couplingInfo"] = couplingInfo;
         }
         else
         {
-          newOptions["couplingType"] = "XMPP";
+          // Leave couplingInfo absent; when deserialized into Options_cur,
+          // couplingInfo will be null and ignored on re-serialize.
         }
 
-        // Convert xmppLinks to couplingLinks
-        if (oldOptions.ContainsKey("xmppLinks"))
-        {
-          newOptions["couplingLinks"] = oldOptions["xmppLinks"];
-        }
-        else if (oldOptions.ContainsKey("couplingLinks"))
-        {
-          newOptions["couplingLinks"] = oldOptions["couplingLinks"];
-        }
-        else
-        {
-          newOptions["couplingLinks"] = new JArray();
-        }
+        // Note: xmppLinks / couplingLinks from older versions are intentionally not
+        // carried over since the new schema moved to CouplingData without links.
 
         // Return formatted JSON string
         return newOptions.ToString(Newtonsoft.Json.Formatting.Indented);
@@ -193,6 +252,7 @@ namespace SimulationEngine
         throw new ArgumentException($"Invalid JSON format: {ex.Message}", ex);
       }
     }
+
 
     /// <summary>
     /// Helper method to copy a property from old to new JObject if it exists

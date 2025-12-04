@@ -90,9 +90,9 @@ namespace SimulationEngine
         _modelJsonStr = File.ReadAllText(options.inpfile);
       }
       // If it is not acceptable, fill in the error message
-      catch
+      catch (Exception ex)
       {
-        _error = "Invalid model file - " + options.inpfile;
+        _error = "Invalid model file " + ex.Message + " - " + options.inpfile;
         return _error;
       };
 
@@ -136,6 +136,52 @@ namespace SimulationEngine
       ConfigData.threads = ConfigData.threads != 0 ? ConfigData.threads : null; //don't allow 0 for threads.
 
 
+      //Assign any coupling data from JSON file
+      //start connectons needed
+      if (options.couplingInfo != null)
+      {
+        //Set coupling connection stuff
+        if (options.couplingInfo.couplingPassword != null)
+          _msgCoupler.connectionPassword = options.couplingInfo.couplingPassword;
+        //if (options.couplingInfo. != null)
+        //  _msgCoupler.
+
+
+        if (options.couplingInfo.couplingType == CouplingType.WebSocket)
+        {
+          Dictionary<string, List<String>> appVars = new Dictionary<string, List<String>>();
+          foreach (var v in _model.allVariables.Values)
+          {
+            if (v is Sim3DVariable)
+            {
+              string appName = (v as Sim3DVariable).resourceName;
+              if (!appVars.ContainsKey(appName))
+                appVars[appName] = new List<string>();
+
+              appVars[appName].Add((v as Sim3DVariable).sim3DNameId);
+            }
+          }
+          foreach (var extSim in _model.allExtSims.Values)
+          {
+            Guid conID;
+            if (appVars.ContainsKey(extSim.resourceName))
+              conID = (_msgCoupler as WebApiCoupling).StartupApp(extSim.resourceName, appVars[extSim.resourceName]).Result;
+            else
+              conID = (_msgCoupler as WebApiCoupling).StartupApp(extSim.resourceName, new List<string>()).Result;
+
+            extSim.connectionID = conID.ToString();
+          }
+        }
+      }
+      //set the time limits for any ext Apps
+      foreach (var extSim in _model.allExtSims.Values)
+      {
+        extSim.simMaxTime = TimeSpan.Parse(options.runtime);
+      }
+      
+
+
+
       // Create a new ProcessSimBatch object
       // This is where the maxTime and outfile_path attributes are used
       List<Thread> threads = new List<Thread>();
@@ -148,6 +194,11 @@ namespace SimulationEngine
       for (int i = 0; i < threadCnt; i++) //if null just run once.
       {
         _simRuns.Add(new ProcessSimBatch(_model, TimeSpan.Parse(options.runtime), options.resout, options.jsonRes, options.pathResultsInterval, ConfigData.threads == null ? null : i));
+
+        if (_msgCoupler != null)
+        {
+          _simRuns[i].AddExtSimulationData(_msgCoupler);
+        }
 
         if (_progressCallBack != null)
           _simRuns[i].progressCallback = _progressCallBack;
@@ -261,8 +312,6 @@ namespace SimulationEngine
 
         // Deserialize the (possibly upgraded) JSON
         optionsOut = JsonConvert.DeserializeObject<Options_cur>(optionsJsonStr);
-
-        return ""; // Success
       }
       catch (JsonException)
       {
@@ -387,36 +436,27 @@ namespace SimulationEngine
         return "debugEndIdx must be greater than debugStartIdx";
       }
 
-      if ((optionsOut.couplingType == CouplingType.WebSocket) &&
-          (optionsOut.couplingURL == null))
+      if ((optionsOut.couplingInfo.couplingType == CouplingType.WebSocket) &&
+          (optionsOut.couplingInfo.couplingURL == null))
       {
         return "If using WebSocket coupling, a couplingURL must be provided.";
       }
 
       
 
-      if (optionsOut.couplingLinks.Count > 0)
+      if (optionsOut.couplingInfo != null)
       {
-        switch (optionsOut.couplingType)
+        switch (optionsOut.couplingInfo.couplingType)
         {
           case CouplingType.WebSocket:
-            _msgCoupler = new WebApiCoupling(optionsOut.couplingURL);
+            _msgCoupler = new WebApiCoupling(optionsOut.couplingInfo.couplingURL);
             break;
           case CouplingType.XMPP:
-            _msgCoupler = new EMRALDMsgServer(optionsOut.couplingPassword, _appSettingsService);
+            _msgCoupler = new EMRALDMsgServer(optionsOut.couplingInfo.couplingPassword, _appSettingsService);
             break;
           default:
             throw new Exception("Coupling Type not implemeted");
             break;
-        }
-
-        foreach (var couplingData in optionsOut.couplingLinks)
-        {
-          if (!_msgCoupler.HasResource(couplingData[0]))
-          {
-            throw new Exception("Coupling applicaton not avaliable - " + couplingData[0]);
-            break;
-          }
         }
       }
 

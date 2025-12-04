@@ -17,8 +17,8 @@ namespace CouplingWebSocket
     private CancellationTokenSource _cancellationTokenSource;
     private Task _receiveTask;
 
-    // Event for incoming messages - now just raw strings
-    public event EventHandler<string> MessageReceived;
+    // Event for incoming messages - now includes the GUID
+    public event EventHandler<(Guid conID, string message)> MessageReceived;
     public event EventHandler<string> ErrorOccurred;
     public event EventHandler Connected;
     public event EventHandler Disconnected;
@@ -102,29 +102,21 @@ namespace CouplingWebSocket
     }
 
     /// <summary>
-    /// Send an action message (as JSON string)
+    /// Send an action message (as JSON string) for a specific connection
     /// </summary>
-    public async Task SendActionMsg(string actionJson)
+    public async Task SendActionMsg(Guid conID, string actionJson)
     {
       EnsureConnected();
 
       var request = new
       {
         command = "SendActionMsg",
+        conID = conID,
         action = JObject.Parse(actionJson)
       };
 
       var jsonRequest = JsonConvert.SerializeObject(request);
       await SendMessageAsync(jsonRequest);
-    }
-
-    /// <summary>
-    /// Send a raw JSON message directly
-    /// </summary>
-    public async Task SendMessage(string jsonMessage)
-    {
-      EnsureConnected();
-      await SendMessageAsync(jsonMessage);
     }
 
     /// <summary>
@@ -243,11 +235,11 @@ namespace CouplingWebSocket
     {
       try
       {
+        var jsonObj = JObject.Parse(message);
+
         // Check if this is a command response (for GetAppOptions, CreateConnection)
         if (_responseWaiter != null && !_responseWaiter.Task.IsCompleted)
         {
-          var jsonObj = JObject.Parse(message);
-
           // If it has "names" or "conID", it's a command response
           if (jsonObj.ContainsKey("names") || jsonObj.ContainsKey("conID"))
           {
@@ -256,8 +248,17 @@ namespace CouplingWebSocket
           }
         }
 
-        // All other messages go to the MessageReceived event as raw strings
-        MessageReceived?.Invoke(this, message);
+        // All other messages should have a conID and go to MessageReceived event
+        if (jsonObj.ContainsKey("conID"))
+        {
+          Guid conID = Guid.Parse(jsonObj["conID"].ToString());
+          MessageReceived?.Invoke(this, (conID, message));
+        }
+        else
+        {
+          // Message without conID - still invoke event with empty GUID
+          MessageReceived?.Invoke(this, (Guid.Empty, message));
+        }
       }
       catch (Exception ex)
       {

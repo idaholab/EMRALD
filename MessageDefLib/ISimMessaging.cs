@@ -12,17 +12,21 @@ namespace MessageDefLib
 {
   public delegate void TEventCallBack(string clientName, MessageDefLib.TMsgWrapper evData);
 
+
   public interface ISimMessaging
   {
-    bool SendMessage(TMsgWrapper msg, string resAndClient);
+    bool SendMessage(TMsgWrapper msg, string appInfo);
     int ResourceCnt();
     List<string> GetResources();
     bool HasResource(string name);
-    void SetForm(IMessageForm form);
+    void SetUICallbacks(IMessageDispHandling form);
     TEventCallBack evCallBackFunc { set; }
+
+    string connectionPassword { get; set; }
+    int simFrameRate { get; set; }
   }
 
-  public interface IMessageForm
+  public interface IMessageDispHandling
   {
     void IncomingEMRALDMsg(string sender, TMsgWrapper msg);
     void IncomingOtherMsg(string sender, String msg);
