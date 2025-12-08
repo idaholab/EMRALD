@@ -292,6 +292,7 @@ instrumented
 /emrald-docs/dist
 /emrald-docs/docs/.vitepress/cache
 /emrald-docs/docs/.vitepress/dist
+/emrald-docs/EMRALD Documentation.docx
 /Emrald-UI/src/utils/out
 /VandV_Testing/TestingFiles/UserValidationRuns/Template_ValidationCase_Test
 
