@@ -207,6 +207,7 @@ namespace CouplingWebSocket
       {
         // First parse the wrapper that contains conID and message
         var jsonObj = JObject.Parse(e.message);
+        Console.WriteLine("Recieved : " + e.message);
 
         // Extract just the "message" property which contains the TMsgWrapper
         var messageJson = jsonObj["message"]?.ToString();

@@ -105,13 +105,33 @@ namespace CommandLineCP
           }
 
           string optionsJsonStr = File.ReadAllText(firstArg);
-          JSONRun simRun = new JSONRun(optionsJsonStr);
+          JSONRun simRun = new JSONRun(optionsJsonStr, "", DispResults); //will read the model from the json param
           if (simRun.error != "")
           {
             Console.Write(simRun.error);
           }
           else
           {
+            // Initialize thread tracking before running simulation
+            numRuns = simRun.options.runct;
+            numThreads = simRun.options.threads.HasValue && simRun.options.threads.Value > 0
+                         ? simRun.options.threads.Value
+                         : 1;
+            threadRunCnt = new int[numThreads];
+
+            // Initialize all thread counts to 0
+            for (int i = 0; i < numThreads; i++)
+            {
+              threadRunCnt[i] = 0;
+            }
+
+            if (simRun.options.threads > 0)
+            {
+              Console.WriteLine("Using " + simRun.options.threads + " threads.");
+            }
+
+            Console.WriteLine(simRun.options.runct + " runs of - " + simRun.options.inpfile);
+
             string jsonResult = simRun.RunSim();
             if (jsonResult != "")
             {
@@ -119,44 +139,25 @@ namespace CommandLineCP
               Console.WriteLine("run -Help for instructions");
               return;
             }
-          }         
 
-          // Initialize thread tracking from JSON options
-          numRuns = modelRun.options.runct;
-          numThreads = modelRun.options.threads.HasValue && modelRun.options.threads.Value > 0
-                       ? modelRun.options.threads.Value
-                       : 1;
-          threadRunCnt = new int[numThreads];
+            // Wait for completion
+            while (!done)
+            {
+              System.Threading.Thread.Sleep(300);
+            }
 
-          for (int i = 0; i < numThreads; i++)
-          {
-            threadRunCnt[i] = 0;
-          }
-
-          if (modelRun.options.threads > 0)
-          {
-            Console.WriteLine("Using " + modelRun.options.threads + " threads.");
-          }
-
-          Console.WriteLine(modelRun.options.runct + " runs of - " + modelRun.options.inpfile);
-
-          // Wait for completion
-          while (!done)
-          {
-            System.Threading.Thread.Sleep(300);
-          }
-
-          if (modelRun.error == "")
-          {
-            Console.Write("\r{0}%   ", 100);
-            Console.WriteLine("");
-          }
-          else
-          {
-            Console.WriteLine("");
-            Console.WriteLine(modelRun.error);
-            Console.WriteLine("run -Help for instructions");
-            return;
+            if (simRun.error == "")
+            {
+              Console.Write("\r{0}%   ", 100);
+              Console.WriteLine("");
+            }
+            else
+            {
+              Console.WriteLine("");
+              Console.WriteLine(simRun.error);
+              Console.WriteLine("run -Help for instructions");
+              return;
+            }
           }
 
           Console.WriteLine("done");
@@ -481,7 +482,7 @@ namespace CommandLineCP
       {
         // Assign the runs done for this thread
         int tNum = threadNum ?? 0; // Use 0 if threadNum is null
-        if (tNum < threadRunCnt.Length)
+        if ((threadRunCnt != null) && (tNum < threadRunCnt.Length))
         {
           threadRunCnt[tNum] = runCnt;
         }
@@ -497,7 +498,7 @@ namespace CommandLineCP
         double percentComplete = numRuns > 0 ? (totDoneRuns * 100.0 / numRuns) : 0;
 
         // Rewrite console line with progress
-        Console.Write("\rProgress: {0:F1}% ({1}/{2} runs) - Runtime: {3:hh\\:mm\\:ss}   ",
+        Console.WriteLine("\rProgress: {0:F1}% ({1}/{2} runs) - Runtime: {3:hh\\:mm\\:ss}   ",
                       percentComplete, totDoneRuns, numRuns, runTime);
 
         // Check if all runs are complete

@@ -160,6 +160,7 @@ namespace CouplingWebSocket
 
     private async Task SendMessageAsync(string message)
     {
+      Console.WriteLine("Sent : " + message);
       byte[] messageBytes = Encoding.UTF8.GetBytes(message);
       await _client.SendAsync(
           new ArraySegment<byte>(messageBytes),

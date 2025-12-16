@@ -258,10 +258,10 @@ namespace SimulationEngine
           // Set the file paths with the rootPath
           lock (_fileLock)
           {
-            this._resultFile = Path.Combine(this._lists.rootPath, Path.GetFileName(_resultFile));
+            this._resultFile = Path.GetFullPath(Path.Combine(this._lists.rootPath, Path.GetFileName(_resultFile)));
             if (_jsonResultPaths != "")
             {
-              this._jsonResultPaths = Path.Combine(this._lists.rootPath, Path.GetFileName(_jsonResultPaths));
+              this._jsonResultPaths = Path.GetFullPath(Path.Combine(this._lists.rootPath, Path.GetFileName(_jsonResultPaths)));
             }
           }
         }
@@ -588,8 +588,8 @@ namespace SimulationEngine
 
             string exeLoc = Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName;
 
-            File.Copy(Path.Combine( exeLoc, @"./sankey/emrald-sankey-timeline.html"), Path.Combine(tempLoc, @"emrald-sankey-timeline.html"));
-            File.Copy(Path.Combine(exeLoc, @"./sankey/emrald-sankey-timeline.js"), Path.Combine(tempLoc, @"emrald-sankey-timeline.js"));
+            File.Copy(Path.GetFullPath(Path.Combine( exeLoc, @"./sankey/emrald-sankey-timeline.html")), Path.Combine(tempLoc, @"emrald-sankey-timeline.html"));
+            File.Copy(Path.GetFullPath(Path.Combine(exeLoc, @"./sankey/emrald-sankey-timeline.js")), Path.Combine(tempLoc, @"emrald-sankey-timeline.js"));
           }
         }
       }

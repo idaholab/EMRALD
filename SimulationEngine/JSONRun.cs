@@ -54,6 +54,11 @@ namespace SimulationEngine
     public JSONRun(string optionsJsonStr, string modelJsonStr = "", TProgressCallBack progressCallBack = null)
     {
       _optsJsonStr = optionsJsonStr;
+      //Load JSON options 
+      if (_optsJsonStr != "")
+        _error = LoadJson(_optsJsonStr, ref options);
+      if (_error != "")
+        throw new Exception("Error Loading JSON run options - " + error);
       _modelJsonStr = modelJsonStr;
       _progressCallBack = progressCallBack;
     }
@@ -70,11 +75,7 @@ namespace SimulationEngine
     {
       percentDone = 0;
 
-      //Load JSON options 
-      if (_optsJsonStr != "")
-        _error = LoadJson(_optsJsonStr, ref options);
-      if (_error != "")
-        return "Error Loading JSON run options - " + error;
+      
 
       if (_modelJsonStr != "")
       {
@@ -340,7 +341,7 @@ namespace SimulationEngine
           //see if it is a relative path.
           if (!Path.IsPathRooted(optionsOut.inpfile))
           {
-            optionsOut.inpfile = System.IO.Directory.GetCurrentDirectory() + optionsOut.inpfile;
+            optionsOut.inpfile = Path.GetFullPath(Path.Combine(System.IO.Directory.GetCurrentDirectory(),  optionsOut.inpfile));
           }
 
           if (!File.Exists(optionsOut.inpfile))
@@ -362,7 +363,7 @@ namespace SimulationEngine
           //see if it is a relative path.
           if (!Path.IsPathRooted(optionsOut.resout))
           {
-            optionsOut.resout = System.IO.Directory.GetCurrentDirectory() + optionsOut.resout;
+            optionsOut.resout = Path.GetFullPath(Path.Combine(System.IO.Directory.GetCurrentDirectory(), optionsOut.resout));
           }
 
           if (!Directory.Exists(Path.GetDirectoryName(optionsOut.resout)))
@@ -384,7 +385,7 @@ namespace SimulationEngine
           //see if it is a relative path.
           if (!Path.IsPathRooted(optionsOut.jsonRes))
           {
-            optionsOut.jsonRes = System.IO.Directory.GetCurrentDirectory() + optionsOut.jsonRes;
+            optionsOut.jsonRes = Path.GetFullPath(Path.Combine(System.IO.Directory.GetCurrentDirectory(), optionsOut.jsonRes));
           }
 
           if (!Directory.Exists(Path.GetDirectoryName(optionsOut.jsonRes)))
@@ -436,7 +437,8 @@ namespace SimulationEngine
         return "debugEndIdx must be greater than debugStartIdx";
       }
 
-      if ((optionsOut.couplingInfo.couplingType == CouplingType.WebSocket) &&
+      if ((optionsOut.couplingInfo != null) &&
+          (optionsOut.couplingInfo.couplingType == CouplingType.WebSocket) &&
           (optionsOut.couplingInfo.couplingURL == null))
       {
         return "If using WebSocket coupling, a couplingURL must be provided.";

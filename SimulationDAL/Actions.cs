@@ -1446,7 +1446,7 @@ namespace SimulationDAL
 
           if ((varName != "CurTime") &&
               (varName != "RunIdx") &&
-              (varName != "ExtSimStartTime") &&
+              (varName != "ExePath") &&
               (varName != "RootPath"))
           {
             makeInputFileCompEval.AddVariable(varName, var.dType);
@@ -1498,8 +1498,9 @@ namespace SimulationDAL
       processOutputFileCompEval.AddVariable("CurTime", typeof(Double));
       processOutputFileCompEval.AddVariable("RunIdx", typeof(int));
       processOutputFileCompEval.AddVariable("ExeExitCode", typeof(int));
-      processOutputFileCompEval.AddVariable("OutputFile", typeof(string));
+      //processOutputFileCompEval.AddVariable("OutputFile", typeof(string));
       processOutputFileCompEval.AddVariable("RootPath", typeof(string));
+      processOutputFileCompEval.AddVariable("ExePath", typeof(string));
 
       //add all the variables needed
       if (codeVariables != null)
@@ -1514,6 +1515,8 @@ namespace SimulationDAL
           if ((varName != "CurTime") &&
               (varName != "RunIdx") &&
               (varName != "ExeExitCode") &&
+              (varName != "ExePath") &&
+              //(varName != "OutputFile") &&
               (varName != "RootPath"))
           {
             processOutputFileCompEval.AddVariable(varName, var.dType);
@@ -1606,6 +1609,25 @@ namespace SimulationDAL
         }
       }
 
+      string runParams = makeInputFileCompEval.EvaluateString();
+      var locExePath = exePath;
+      if (locExePath == "")
+      {
+        int idx = runParams.IndexOf(' ');
+        locExePath = runParams.Substring(0, idx);
+        runParams = runParams.Substring(idx, runParams.Length - idx);
+      }
+
+      string fullExePath = locExePath;
+      if ((locExePath[0] == '.') && (!Path.IsPathRooted(locExePath)))
+      {
+        fullExePath = lists.rootPath;
+        if (!fullExePath.EndsWith(@"\"))
+          fullExePath += @"\";
+
+        fullExePath = Path.GetFullPath(Path.Combine(fullExePath + locExePath));
+      }
+
       //Set all the variable values
       if (codeVariables != null)
       {
@@ -1620,7 +1642,7 @@ namespace SimulationDAL
 
         makeInputFileCompEval.SetVariable("CurTime", typeof(double), curTime.TotalHours);
         makeInputFileCompEval.SetVariable("RunIdx", typeof(int), lists.curRunIdx);
-        makeInputFileCompEval.SetVariable("ExePath", typeof(string), Path.GetDirectoryName(exePath));
+        makeInputFileCompEval.SetVariable("ExePath", typeof(string), Path.GetDirectoryName(fullExePath));
         makeInputFileCompEval.SetVariable("RootPath", typeof(string), lists.rootPath);
       }
 
@@ -1658,24 +1680,7 @@ namespace SimulationDAL
         }
       }
 
-      string runParams = makeInputFileCompEval.EvaluateString();
-      var locExePath = exePath;
-      if(locExePath == "")
-      {
-        int idx = runParams.IndexOf(' ');
-        locExePath = runParams.Substring(0, idx);
-        runParams = runParams.Substring(idx, runParams.Length - idx);
-      }
-
-      string fullExePath = locExePath;
-      if ((locExePath[0] == '.')&&(!Path.IsPathRooted(locExePath)))
-      {
-        fullExePath = lists.rootPath;
-        if (!fullExePath.EndsWith(@"\"))
-          fullExePath += @"\";
-
-        fullExePath = Path.GetFullPath(Path.Combine(fullExePath + locExePath));
-      }
+            
 
       NLog.Logger logger = NLog.LogManager.GetLogger("logfile");
       logger.Info("Executing - " + fullExePath + " " + runParams);
@@ -1729,6 +1734,7 @@ namespace SimulationDAL
         processOutputFileCompEval.SetVariable("CurTime", typeof(double), curTime.TotalHours);
         processOutputFileCompEval.SetVariable("RunIdx", typeof(int), lists.curRunIdx);
         processOutputFileCompEval.SetVariable("ExeExitCode", typeof(int), exitCode);
+        processOutputFileCompEval.SetVariable("ExePath", typeof(string), Path.GetDirectoryName(exePath));
         processOutputFileCompEval.SetVariable("RootPath", typeof(string), lists.rootPath);
         //processOutputFileCompEval.SetVariable("OutputFile", typeof(string), exeOutputPath + "\\_out.txt");
         //Set all the variable values

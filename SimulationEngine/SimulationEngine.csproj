@@ -22,4 +22,13 @@
     <ProjectReference Include="..\XmppServer\XmppServerController.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="Sankey\emrald-sankey-timeline.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Sankey\emrald-sankey-timeline.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
