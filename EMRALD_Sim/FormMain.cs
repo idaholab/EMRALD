@@ -53,6 +53,7 @@ namespace EMRALD_Sim
     static extern bool AttachConsole(int dwProcessId);
     private const int ATTACH_PARENT_PROCESS = -1;
 
+
     public FormMain(string[] args, IAppSettingsService appSettingsService, IOptions<UISettings> optionsAccessor)
     {
       _appSettingsService = appSettingsService;
@@ -506,7 +507,7 @@ namespace EMRALD_Sim
         notificationForm.Invoke(new System.Action(() => notificationForm.Close()));
 
         // Exit the application
-        Environment.Exit(0);
+        this.BeginInvoke(new System.Action(() => this.Close()));
       });
     }
 
@@ -527,7 +528,12 @@ namespace EMRALD_Sim
       }
     }
 
-
+    private void WriteError(string error)
+    {
+      txtMStatus.ForeColor = Color.Maroon;
+      txtMStatus.Text = error + Environment.NewLine;
+      Console.Write(error);
+    }
 
     public void Clear()
     {
@@ -676,7 +682,7 @@ namespace EMRALD_Sim
 
     private void FormMain_FormClosed(object sender, FormClosedEventArgs e)
     {
-      Environment.Exit(0);
+      //Environment.Exit(0);
     }
 
     private void button1_Click_1(object sender, EventArgs e)
@@ -733,7 +739,6 @@ namespace EMRALD_Sim
         MessageBox.Show("Not a valid time for the action.");
         return;
       }
-      ;
 
       switch ((SimActionType)cbMsgType.SelectedIndex)
       {
@@ -969,7 +974,6 @@ namespace EMRALD_Sim
             {
               _lastError = "Thread-" + simBatch.threadNum.ToString() + " " + simBatch.error;
               lbl_ResultHeader.Text = _lastError;
-            
             }
           }
         };
@@ -982,7 +986,11 @@ namespace EMRALD_Sim
         {
           DialogResult res = MessageBox.Show("Debug Warning", "Are you sure you want to debug that many runs ?", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
           if (res == DialogResult.No)
+          {
+            _running = false;
+            SetRunningVis();
             return;
+          }
         }
 
         //make sure that all the Ext Sim links are assigned.
@@ -1003,10 +1011,10 @@ namespace EMRALD_Sim
         {
           maxTime = TimeSpan.Parse(tbMaxSimTime.Text);
         }
-        catch
+        catch (Exception ex)
         {
-          MessageBox.Show("Invalid Max Simulation Time, please fix.");
-          //btnStartSims.Enabled = true;
+          MessageBox.Show($"Invalid Max Simulation Time: {ex.Message}\nPlease fix.");
+          LogError($"Invalid MaxSimTime format: {tbMaxSimTime.Text}", ex);
           _running = false;
           SetRunningVis();
           return;
@@ -1023,99 +1031,248 @@ namespace EMRALD_Sim
         List<Thread> threads = new List<Thread>();
         simRuns.Clear();
 
+        LogError($"Starting simulation with {threadCnt} threads, {tbRunCnt.Text} total runs", null);
 
         for (int i = 0; i < threadCnt; i++)
         {
-          //set up the simBatch, only set threads if more than one.
-          simRuns.Add(new ProcessSimBatch(_sim, maxTime, tbSavePath.Text, _statsFile, _pathResultsInterval, ConfigData.threads == null ? null : i));
+          int threadIndex = i;  // <-- CAPTURE i's current value immediately
 
-          simRuns[i].progressCallback = DispResults;
-          if (_server != null)
+          try
           {
-            simRuns[i].AddExtSimulationData(_server);
-          }
+            // Now use threadIndex everywhere instead of i
+            simRuns.Add(new ProcessSimBatch(_sim, maxTime, tbSavePath.Text, _statsFile,
+                        _pathResultsInterval, ConfigData.threads == null ? null : threadIndex));
 
-          foreach (var varItem in lbMonitorVars.CheckedItems)
-          {
-            simRuns[i].logVarVals.Add(varItem.ToString());
-          }
+            simRuns[threadIndex].progressCallback = DispResults;
 
-          if (i == 0) //add extra runs on the first one
-            simRuns[i].SetupBatch(runsDiv + (int.Parse(tbRunCnt.Text) % (int)threadCnt), true);
-          else
-            simRuns[i].SetupBatch(runsDiv, true);
-
-          ThreadStart tStarter = new ThreadStart(simRuns[i].RunBatch);
-          //run this when the thread is done.
-          int locIdx = i;
-          tStarter += () =>
-          {
-            simRuns[locIdx].GetVarValues(simRuns[locIdx].logVarVals, true);
-          };
-
-          Thread simThread = new Thread(tStarter);
-          if (i == 0)
-          {
-            // Start the first thread immediately so it can set up the files needed by the others
-            simThread.Start();
-          }
-          else
-          {
-            // Delay the start of all but first thread so that it has time to write so others have time to copy data
-            new Task(async () =>
+            if (_server != null)
             {
-              //wait until first thread is done writing temp tread files.
-              while (!simRuns[0].tempThreadFilesWriten)
-                await Task.Delay(TimeSpan.FromMilliseconds(10)); // Adjust the delay as needed
-              simThread.Start();
-            }).Start();
-          }
-          threads.Add(simThread);
-        }
-
-        Task.Run(() =>
-        {
-          // Wait for all threads to complete
-          foreach (var thread in threads)
-          {
-            thread.Join();
-          }
-
-          // IMPORTANT: Give threads time to fully release all handles after Join()
-          System.Threading.Thread.Sleep(200); // Small delay after Join()
-
-          // Once all threads are done, update the UI and sum results
-          //compile results if needed
-          for (int i = 1; i < simRuns.Count; i++)
-          {
-            //SimulationEngine.OverallResults.CombineJsonResultFiles(simRuns[0].jsonResultsPaths, simRuns[i].jsonResultsPaths, simRuns[0].jsonResultsPaths);
-            simRuns[0].AddOtherBatchResults(simRuns[i]);
-            if (cbClearTemps.Checked)
-            {
-              simRuns[i].ClearTempThreadData();
+              simRuns[threadIndex].AddExtSimulationData(_server);
             }
 
+            foreach (var varItem in lbMonitorVars.CheckedItems)
+            {
+              simRuns[threadIndex].logVarVals.Add(varItem.ToString());
+            }
+
+            if (threadIndex == 0)
+              simRuns[threadIndex].SetupBatch(runsDiv + (int.Parse(tbRunCnt.Text) % (int)threadCnt), true);
+            else
+              simRuns[threadIndex].SetupBatch(runsDiv, true);
+
+            ThreadStart tStarter = new ThreadStart(() =>
+            {
+              try
+              {
+                LogError($"Thread {threadIndex} starting RunBatch(), simRuns.count = " + simRuns.Count, null);
+                simRuns[threadIndex].RunBatch();  // threadIndex is captured and won't change
+                LogError($"Thread {threadIndex} completed RunBatch()", null);
+
+                LogError($"Thread {threadIndex} starting GetVarValues()", null);
+                simRuns[threadIndex].GetVarValues(simRuns[threadIndex].logVarVals, true);
+                LogError($"Thread {threadIndex} completed GetVarValues()", null);
+              }
+              catch (Exception threadEx)
+              {
+                simRuns[threadIndex].error = $"Thread {threadIndex} error: {threadEx.Message}";
+                LogError($"EXCEPTION in simulation thread {threadIndex}", threadEx);
+
+                try
+                {
+                  string threadErrorFile = Path.Combine(Application.StartupPath, $"Thread_{threadIndex}_Error.txt");
+                  File.WriteAllText(threadErrorFile,
+                    $"Thread {threadIndex} Exception Details:\n" +
+                    $"Type: {threadEx.GetType().FullName}\n" +
+                    $"Message: {threadEx.Message}\n" +
+                    $"Source: {threadEx.Source}\n" +
+                    $"Stack Trace:\n{threadEx.StackTrace}\n" +
+                    $"Inner Exception: {threadEx.InnerException?.ToString() ?? "None"}");
+                }
+                catch { }
+              }
+            });
+
+            Thread simThread = new Thread(tStarter);
+            simThread.Name = $"SimThread_{threadIndex}";
+            simThread.IsBackground = false;
+
+            if (threadIndex == 0)
+            {
+              simThread.Start();
+              LogError($"Started thread 0", null);
+            }
+            else
+            {
+              new Task(async () =>
+              {
+                try
+                {
+                  int waitCount = 0;
+                  while (!simRuns[0].tempThreadFilesWriten)
+                  {
+                    await Task.Delay(TimeSpan.FromMilliseconds(10));
+                    waitCount++;
+                    if (waitCount > 6000)
+                    {
+                      LogError($"Timeout waiting for thread 0 to write files for thread {threadIndex}", null);
+                      break;
+                    }
+                  }
+                  simThread.Start();
+                  LogError($"Started thread {threadIndex}", null);
+                }
+                catch (Exception taskEx)
+                {
+                  LogError($"Error starting delayed thread {threadIndex}", taskEx);
+                }
+              }).Start();
+            }
+            threads.Add(simThread);
           }
-          _running = false;
+          catch (Exception setupEx)
+          {
+            LogError($"Error setting up thread {threadIndex}", setupEx);
+            MessageBox.Show($"Error setting up simulation thread {threadIndex}:\n{setupEx.Message}\n\nCheck error log for details.",
+              "Setup Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            _running = false;
+            SetRunningVis();
+            return;
+          }
+        }
 
-          //update the screen
-          InvokeUIUpdate(ErrorAndVisUpdateDelegate);
-          simRuns[0].WriteFinalResults(true, threadCnt);
-          if (cbClearTemps.Checked)
-            simRuns[0].ClearTempThreadData();
-        });
+        // CRITICAL FIX: Wrap Task.Run in try-catch
+        Task.Run(() =>
+        {
+          try
+          {
+            LogError("Waiting for all threads to complete...", null);
 
+            // Wait for all threads to complete
+            for (int i = 0; i < threads.Count; i++)
+            {
+              try
+              {
+                threads[i].Join();
+                LogError($"Thread {i} completed", null);
+              }
+              catch (Exception joinEx)
+              {
+                LogError($"Error joining thread {i}", joinEx);
+              }
+            }
+
+            // IMPORTANT: Give threads time to fully release all handles after Join()
+            System.Threading.Thread.Sleep(200); // Small delay after Join()
+
+            LogError("All threads completed, combining results...", null);
+
+            // Once all threads are done, update the UI and sum results
+            //compile results if needed
+            for (int i = 1; i < simRuns.Count; i++)
+            {
+              try
+              {
+                simRuns[0].AddOtherBatchResults(simRuns[i]);
+                if (cbClearTemps.Checked)
+                {
+                  simRuns[i].ClearTempThreadData();
+                }
+              }
+              catch (Exception combineEx)
+              {
+                LogError($"Error combining results from thread {i}", combineEx);
+                // Continue with other threads
+              }
+            }
+
+            _running = false;
+
+            //update the screen
+            InvokeUIUpdate(ErrorAndVisUpdateDelegate);
+
+            try
+            {
+              simRuns[0].WriteFinalResults(true, threadCnt);
+              if (cbClearTemps.Checked)
+                simRuns[0].ClearTempThreadData();
+
+              LogError("Simulation completed successfully", null);
+            }
+            catch (Exception writeEx)
+            {
+              LogError("Error writing final results", writeEx);
+              InvokeUIUpdate(() =>
+              {
+                MessageBox.Show($"Error writing final results:\n{writeEx.Message}\n\nPartial results may be available.",
+                  "Write Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+              });
+            }
+          }
+          catch (Exception taskEx)
+          {
+            LogError("CRITICAL: Unhandled exception in Task.Run", taskEx);
+            _running = false;
+            InvokeUIUpdate(() =>
+            {
+              SetRunningVis();
+              MessageBox.Show($"A critical error occurred during simulation:\n\n{taskEx.Message}\n\nStack Trace:\n{taskEx.StackTrace}",
+                "Critical Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            });
+          }
+        })
+        .ContinueWith(task =>
+        {
+          // This catches exceptions that escaped the Task.Run
+          if (task.IsFaulted)
+          {
+            var ex = task.Exception?.GetBaseException();
+            LogError("CRITICAL: Task failed", ex);
+            InvokeUIUpdate(() =>
+            {
+              _running = false;
+              SetRunningVis();
+              MessageBox.Show($"Simulation task failed:\n{ex?.Message ?? "Unknown error"}",
+                "Task Failure", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            });
+          }
+        }, TaskScheduler.FromCurrentSynchronizationContext());
 
       }
       catch (Exception err)
       {
-        throw (err);
+        LogError("Error in btnStartSims_Click", err);
+        MessageBox.Show($"Error starting simulation:\n{err.Message}\n\nStack Trace:\n{err.StackTrace}",
+          "Startup Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        _running = false;
+        SetRunningVis();
       }
+    }
 
-      //Thread simThread = new Thread(new ThreadStart(simRuns.RunBatch));
-      //simRuns.RunBatch(int.Parse(tbRunCnt.Text), ref _cancel, true, simplePathRes);
+    // Add this helper method to your FormMain class
+    private static void LogError(string message, Exception ex)
+    {
+      try
+      {
+        string logFile = Path.Combine(Application.StartupPath, "EMRALD_ErrorLog.txt");
+        string logEntry = $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] {message}\n";
+        if (ex != null)
+        {
+          logEntry += $"Exception Type: {ex.GetType().FullName}\n";
+          logEntry += $"Message: {ex.Message}\n";
+          logEntry += $"Stack Trace:\n{ex.StackTrace}\n";
+          if (ex.InnerException != null)
+          {
+            logEntry += $"Inner Exception: {ex.InnerException.GetType().FullName}\n";
+            logEntry += $"Inner Message: {ex.InnerException.Message}\n";
+          }
+        }
 
-      //simRuns.GetVarValues(simRuns.logVarVals, true);
+        File.AppendAllText(logFile, logEntry);
+      }
+      catch
+      {
+        // If logging fails, don't crash
+      }
     }
 
     private void tabXMPP_Enter(object sender, EventArgs e)
@@ -1146,9 +1303,7 @@ namespace EMRALD_Sim
       _modelPath = path;
       if (errorStr != "")
       {
-        txtMStatus.ForeColor = Color.Maroon;
-        txtMStatus.Text = errorStr;
-        Console.Write(errorStr);
+        WriteError(errorStr);
         return false;
       }
       else
@@ -1266,16 +1421,15 @@ namespace EMRALD_Sim
 
     private void ValidateModelAndUpdateUI()
     {
-      txtMStatus.Text = LoadLib.ValidateModel(ref _sim, teModel.Text, _modelPath);
-      _validSim = txtMStatus.Text == "";
+      string errorStr = LoadLib.ValidateModel(ref _sim, teModel.Text, _modelPath);
+      _validSim = errorStr == "";
       if (txtMStatus.Text != "")
       {
-        txtMStatus.ForeColor = Color.Maroon;
-        Console.Write(txtMStatus.Text);
+        this.WriteError(errorStr);
       }
       else
       {
-        txtMStatus.Text = "Model Loaded Successfully";
+        txtMStatus.Text = "Model Loaded Successfully" + Environment.NewLine;
         txtMStatus.ForeColor = Color.Green;
         Console.Write(txtMStatus.Text);
 
@@ -1630,9 +1784,7 @@ namespace EMRALD_Sim
         }
         catch
         {
-          txtMStatus.ForeColor = Color.Maroon;
-          txtMStatus.Text = "Failed to save model";
-          Console.Write("Failed to save model");
+          this.WriteError("Failed to save model");
           return;
         }
       }
@@ -1649,9 +1801,7 @@ namespace EMRALD_Sim
       {
         if (File.Exists(saveLoc))
         {
-          txtMStatus.ForeColor = Color.Maroon;
-          txtMStatus.Text = "Failed to save, File Already Exists";
-          Console.Write("Failed to save, File Already Exists");
+          this.WriteError("Failed to save, File Already Exists");
         }
 
         File.Delete(saveLoc);
@@ -1660,9 +1810,7 @@ namespace EMRALD_Sim
       }
       catch
       {
-        txtMStatus.ForeColor = Color.Maroon;
-        txtMStatus.Text = "Failed to save model";
-        Console.Write("Failed to save model");
+        this.WriteError("Failed to save model");
         return;
       }
     }
@@ -1742,33 +1890,44 @@ namespace EMRALD_Sim
 
 
           // Always get issues (if any) for highlighting, but always show the editor form 
-          List<string> issueItems = _sim.CanMutiThread();
-          if (issueItems.Count > 0)
+          try
           {
-            using (var frm = new FormMultiThreadRefs(_sim.multiThreadInfo, issueItems, _sim.rootPath))
+            List<string> issueItems = _sim.CanMutiThread();
+            if (issueItems.Count > 0)
             {
-              var result = frm.ShowDialog();
-              if (result == DialogResult.OK)
+              using (var frm = new FormMultiThreadRefs(_sim.multiThreadInfo, issueItems, _sim.rootPath))
               {
-                _sim.SetMultiThreadInfo(frm.EditedMultiThreadInfo);
-                teModel.Text = _sim.modelTxt;
-                //save the multithread stuff.
-                saveStripMenuItem_Click(sender, e);
-              }
-              else
-              {
-                // User cancelled, revert checkbox and exit
-                cbMultiThreaded.Checked = false;
-                return;
+                var result = frm.ShowDialog();
+                if (result == DialogResult.OK)
+                {
+                  _sim.SetMultiThreadInfo(frm.EditedMultiThreadInfo);
+                  teModel.Text = _sim.modelTxt;
+                  //save the multithread stuff.
+                  saveStripMenuItem_Click(sender, e);
+                }
+                else
+                {
+                  // User cancelled, revert checkbox and exit
+                  cbMultiThreaded.Checked = false;
+                  return;
+                }
               }
             }
+            else //save the empty multiThreadInfo
+            {
+              if (_sim.multiThreadInfo == null)
+                _sim.SetMultiThreadInfo(new MultiThreadInfo());
+              teModel.Text = _sim.modelTxt;
+              saveStripMenuItem_Click(sender, e);
+            }
           }
-          else //save the empty multiThreadInfo
+          catch (Exception ex)
           {
-            if (_sim.multiThreadInfo == null)
-              _sim.SetMultiThreadInfo(new MultiThreadInfo());
-            teModel.Text = _sim.modelTxt;
-            saveStripMenuItem_Click(sender, e);
+            rtbJSONErrors.Visible = true;
+            this._lastError = "Multithread Issue: " + ex.Message;
+            this.WriteError(_lastError);
+            lbl_ResultHeader.Visible = true;
+            lbl_ResultHeader.Text = _lastError;
           }
         }
 

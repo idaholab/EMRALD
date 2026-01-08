@@ -435,28 +435,36 @@ namespace SimulationDAL
         }
         else //not in the saved items so add it 
         {
-          var addI = new ToCopyForRef(mPathRef.itemName, mPathRef.itemType, mPathRef.Path, null, "");
-          
-          string actualPath = mPathRef.Path;
-          //if it as a relative reference get to full path 
-          if (!Path.IsPathRooted(mPathRef.Path) && (mPathRef.Path[0] == '.'))
+          try
           {
-            actualPath = Path.GetFullPath(Path.Combine(rootPath, mPathRef.Path));
-          }
+            var addI = new ToCopyForRef(mPathRef.itemName, mPathRef.itemType, mPathRef.Path, null, "");
 
-          string commonParent = CommonFunctions.FindClosestParentFolder(rootPath, actualPath);
-          //if item provided a different root location use that one instead
-          if (mPathRef.calcRelativeFrom != "")
+            string actualPath = mPathRef.Path;
+
+            //if it as a relative reference get to full path 
+            if (!Path.IsPathRooted(mPathRef.Path) && (mPathRef.Path[0] == '.'))
+            {
+              actualPath = Path.GetFullPath(Path.Combine(rootPath, mPathRef.Path));
+            }
+
+            string commonParent = CommonFunctions.FindClosestParentFolder(rootPath, actualPath);
+            //if item provided a different root location use that one instead
+            if (mPathRef.calcRelativeFrom != "")
+            {
+              string newRootPath = CommonFunctions.FindClosestParentFolder(mPathRef.calcRelativeFrom, actualPath);
+              addI.AdjRelRoot = CommonFunctions.GetRelativePath(commonParent, newRootPath);
+              commonParent = newRootPath;
+            }
+            addI.RelPath = CommonFunctions.GetRelativePath(commonParent, actualPath);
+            addI.ToCopy.Add(mPathRef.Path); //combine and normalize the path.
+
+            multiThreadInfo.ToCopyForRefs.Add(addI);
+            notAccountedFor.Add(addI.ItemName);
+          }
+          catch (Exception ex)
           {
-            string newRootPath = CommonFunctions.FindClosestParentFolder(mPathRef.calcRelativeFrom, actualPath);
-            addI.AdjRelRoot = CommonFunctions.GetRelativePath(commonParent, newRootPath);
-            commonParent = newRootPath;
+            throw new Exception("Invalid path data for " + mPathRef.itemName + " - " + ex.Message);
           }
-          addI.RelPath = CommonFunctions.GetRelativePath(commonParent, actualPath);
-          addI.ToCopy.Add(mPathRef.Path); //combine and normalize the path.
-
-          multiThreadInfo.ToCopyForRefs.Add(addI);
-          notAccountedFor.Add(addI.ItemName);
 
         }
       }

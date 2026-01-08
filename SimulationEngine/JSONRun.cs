@@ -194,42 +194,43 @@ namespace SimulationEngine
 
       for (int i = 0; i < threadCnt; i++) //if null just run once.
       {
+        int threadIndex = i;  // <-- CAPTURE i's current value immediately
         _simRuns.Add(new ProcessSimBatch(_model, TimeSpan.Parse(options.runtime), options.resout, options.jsonRes, options.pathResultsInterval, ConfigData.threads == null ? null : i));
 
         if (_msgCoupler != null)
         {
-          _simRuns[i].AddExtSimulationData(_msgCoupler);
+          _simRuns[threadIndex].AddExtSimulationData(_msgCoupler);
         }
 
         if (_progressCallBack != null)
-          _simRuns[i].progressCallback = _progressCallBack;
+          _simRuns[threadIndex].progressCallback = _progressCallBack;
 
-        if (i == 0) //add extra runs on the first one
-          _simRuns[i].SetupBatch(runsDiv + (options.runct % threadCnt), true);
+        if (threadIndex == 0) //add extra runs on the first one
+          _simRuns[threadIndex].SetupBatch(runsDiv + (options.runct % threadCnt), true);
         else
-          _simRuns[i].SetupBatch(runsDiv, true);
+          _simRuns[threadIndex].SetupBatch(runsDiv, true);
 
         foreach (var v in _model.allVariables.Values)
         {
           if (v.monitorInSim)
-            _simRuns[i].logVarVals.Add(v.name);
+            _simRuns[threadIndex].logVarVals.Add(v.name);
         }
         if (this.options.variables is not null)
         {
           foreach (var varItem in this.options.variables)
           {
-            _simRuns[i].logVarVals.Add(varItem.ToString());
+            _simRuns[threadIndex].logVarVals.Add(varItem.ToString());
           }
         }
 
         foreach (var varItem in this.options.initVars)
         {
-          _simRuns[i].initVarVals.Add(varItem.varName, varItem.value);
+          _simRuns[threadIndex].initVarVals.Add(varItem.varName, varItem.value);
         }
 
-        ThreadStart tStarter = new ThreadStart(_simRuns[i].RunBatch);
+        ThreadStart tStarter = new ThreadStart(_simRuns[threadIndex].RunBatch);
         //run this when the thread is done.
-        int locIdx = i;
+        int locIdx = threadIndex;
         tStarter += () =>
         {
           if (_simRuns[locIdx].error != "")
@@ -239,7 +240,7 @@ namespace SimulationEngine
         };
 
         Thread simThread = new Thread(tStarter);
-        if (i == 0)
+        if (threadIndex == 0)
         {
           // Start the first thread immediately so it can set up the files needed by the others
           tStarter += () =>

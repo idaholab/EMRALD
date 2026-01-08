@@ -804,38 +804,51 @@ namespace SimulationDAL
       return FindClosestParentFolder(paths);
     }
 
-    public static string GetRemainingPath(string parentFolder, string filePath)
-    {
-      // Ensure the parent folder and file path are in a consistent format
-      string normalizedParentFolder = Path.GetFullPath(parentFolder).Replace('\\', '/');
-      string normalizedFilePath = Path.GetFullPath(filePath).Replace('\\', '/');
-
-      // Check if the file path starts with the parent folder path
-      if (!normalizedFilePath.StartsWith(normalizedParentFolder, StringComparison.OrdinalIgnoreCase))
-      {
-        throw new ArgumentException("The file path does not start with the provided parent folder path.");
-      }
-
-      // Get the remaining path after the parent folder
-      string remainingPath = normalizedFilePath.Substring(normalizedParentFolder.Length).TrimStart('/');
-      return remainingPath;
-    }
-
     public static string GetRelativePath(string rootPath, string actualPath)
     {
-      Uri rootUri = new Uri(rootPath);
-      Uri targetUri = new Uri(actualPath);
+      // Normalize the root path - handle "C:" case
+      string fullRootPath = rootPath;
 
-      // Ensure the rootUri ends with a directory separator
-      if (!rootUri.AbsolutePath.EndsWith("/"))
+      // If rootPath is just a drive letter (e.g., "C:" or "C:"), convert to root
+      if (rootPath.Length == 2 && rootPath[1] == ':')
       {
-        rootUri = new Uri(rootUri.AbsoluteUri + "/");
+        fullRootPath = rootPath + Path.DirectorySeparatorChar;
       }
+      else if (rootPath.Length == 3 && rootPath[1] == ':' &&
+               (rootPath[2] == '/' || rootPath[2] == '\\'))
+      {
+        // Already a root path like "C:\" or "C:/"
+        fullRootPath = rootPath;
+      }
+      else
+      {
+        // For other paths, get the full path
+        fullRootPath = Path.GetFullPath(rootPath);
+      }
+
+      string fullActualPath = Path.GetFullPath(actualPath);
+
+      // Ensure the root path ends with a directory separator
+      if (!fullRootPath.EndsWith(Path.DirectorySeparatorChar.ToString()) &&
+          !fullRootPath.EndsWith(Path.AltDirectorySeparatorChar.ToString()))
+      {
+        fullRootPath += Path.DirectorySeparatorChar;
+      }
+
+      // Create URIs - must be absolute file URIs
+      Uri rootUri = new Uri(fullRootPath);
+      Uri targetUri = new Uri(fullActualPath);
 
       Uri relativeUri = rootUri.MakeRelativeUri(targetUri);
       string relativePath = Uri.UnescapeDataString(relativeUri.ToString()).Replace('/', Path.DirectorySeparatorChar);
-      if ((relativePath[0] != '.') && (relativePath[0] != Path.DirectorySeparatorChar))
+
+      // Add .\ prefix if the path doesn't start with . or a separator
+      if ((relativePath.Length > 0) &&
+          (relativePath[0] != '.') &&
+          (relativePath[0] != Path.DirectorySeparatorChar))
+      {
         relativePath = "." + Path.DirectorySeparatorChar + relativePath;
+      }
 
       return relativePath;
     }
