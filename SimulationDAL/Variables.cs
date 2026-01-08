@@ -34,14 +34,14 @@ namespace SimulationDAL
     protected object initValue = null;
     NLog.Logger logger = NLog.LogManager.GetLogger("logfile");
 
-    public double dblValue { get { return Convert.ToDouble(GetValue()); } }
-    public string strValue { get { return Convert.ToString(GetValue()); } }
-    public bool boolValue { get { return Convert.ToBoolean(GetValue()); } }
+    public double dblValue { get { return Convert.ToDouble(GetValue(false)); } }
+    public string strValue { get { return Convert.ToString(GetValue(false)); } }
+    public bool boolValue { get { return Convert.ToBoolean(GetValue(false)); } }
     public bool monitorInSim { get { return _monitor; } }
     public bool canMonitorSim { get { return _canMonitor; } }
     public bool cumulativeStats { get { return _cumulativeStats; } }
 
-    public virtual object value { get { return GetValue(); } }
+    public virtual object value { get { return GetValue(false); } }
     // public DateTime timeValue { get { return Convert.ToDateTime(value); } }
 
     public virtual void SetValue(object newValue)
@@ -51,7 +51,7 @@ namespace SimulationDAL
       _value = newValue;
     }
 
-    public virtual object GetValue()
+    public virtual object GetValue(bool dfltOnError)
     {
       return _value;
     }
@@ -736,7 +736,9 @@ namespace SimulationDAL
     public override void ReInit()
     {
       if (initValue == null)
-        this.InitValue(GetValue());
+      {
+        this.InitValue(GetValue(true));
+      }
       
       this._value = this.initValue;
       this._oldLinkStr = ""; //reset so it tires to load as needed
@@ -843,7 +845,7 @@ namespace SimulationDAL
         if (_pathMustExist && (File.Exists(_docFullPath) && _docFullPath.Contains("AppData"))) //if the file doesn't exist yet, load on reInit 
         {
           //do this different for document items as the value is not set by the user data
-          base.InitValue(GetValue());
+          base.InitValue(GetValue(true));
           //save initial value for initValue if resetting
           initValue = _value;
         }
@@ -970,7 +972,7 @@ namespace SimulationDAL
       }
     }
 
-    public override object GetValue()
+    public override object GetValue(bool dfltOnError)
     {
       lock (_fileLock)
       {
@@ -1081,7 +1083,10 @@ namespace SimulationDAL
           }
           catch (Exception ex)
           {
-            throw new Exception("Failed to get the value for XML variable " + this.name + ". Check the XML syntax. " + this.linkStr(), ex);
+            if(dfltOnError && !this._pathMustExist)
+              return this._dfltValue;
+            else
+              throw new Exception("Failed to get the value for XML variable " + this.name + ". Check the XML syntax. " + this.linkStr(), ex);
           }
         }
 
@@ -1158,7 +1163,7 @@ namespace SimulationDAL
       }
     }
 
-    public override object GetValue()
+    public override object GetValue(bool dfltOnError)
     {
       _linkStr = _linkStr.Replace("\"", "'");
       lock (_fileLock)
@@ -1230,7 +1235,10 @@ namespace SimulationDAL
           }
           catch (Exception ex)
           {
-            throw new Exception("Failed to get the value for JSON variable " + this.name + ". Check the JSON syntax. " + this.linkStr(), ex);
+            if (dfltOnError && !this._pathMustExist)
+              return this._dfltValue;
+            else
+              throw new Exception("Failed to get the value for JSON variable " + this.name + ". Check the JSON syntax. " + this.linkStr(), ex);
           }
         }
 
@@ -1400,7 +1408,7 @@ namespace SimulationDAL
       }
     }
 
-    public override object GetValue()
+    public override object GetValue(bool dfltOnError)
     {
       Regex rx = new Regex(linkStr(), RegexOptions.Compiled | RegexOptions.IgnoreCase);
       lock (_fileLock)
@@ -1435,15 +1443,14 @@ namespace SimulationDAL
 
             if (matches.Count <= 0)
             {
-              //if (_dfltValue == null)
-              //{
+              if (dfltOnError && !this._pathMustExist)
+              {
+                result = _dfltValue;
+              }
+              else
+              {
                 throw new Exception("Failed to find RegEx - " + curLinkStr + " in file - " + _docFullPath);
-              //}
-              //else
-              //{
-              //  base.SetValue(Convert.ChangeType(_dfltValue, dType));
-              //  result = _value;
-              //}
+              }
             }
             else
             {
@@ -1490,7 +1497,14 @@ namespace SimulationDAL
           }
           catch (Exception ex)
           {
-            throw new Exception("Failed to get the value for RegEx variable " + this.name + ". Check the RegEx syntax. " + this.linkStr(), ex);
+            if (dfltOnError && !this._pathMustExist)
+            {
+              return this._dfltValue;
+            }
+            else
+            {
+              throw new Exception("Failed to get the value for RegEx variable " + this.name + ". Check the RegEx syntax. " + this.linkStr(), ex); ;
+            }
           }
         }
 

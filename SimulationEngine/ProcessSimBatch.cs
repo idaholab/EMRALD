@@ -135,8 +135,8 @@ namespace SimulationEngine
     //public List<Tuple<string, double>> 
     public TimeSpan runtime = TimeSpan.FromMilliseconds(0);
     private string _error = "";
-    public string error { get { return _error; } }
-    public int? threadNum { get { return _threadNum; } }
+    public string error { get { return _error; } set { _error = value; } }
+    public int? threadNum { get { return _threadNum; }  }
     public int numRuns { get { return _numRuns; } }
     public bool tempThreadFilesWriten { get {  return _tempThreadFilesWriten; } }
     //public string resultFile { get { return _resultFile; } }
