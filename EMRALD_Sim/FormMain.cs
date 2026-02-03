@@ -27,7 +27,26 @@ using static EMRALD_Sim.UISettings;
 
 namespace EMRALD_Sim
 {
-  public partial class FormMain : Form, IMessageDispHandling //XmppMessageServer.MessageForm
+  class ConsoleHelper
+  {
+    [DllImport("kernel32.dll")]
+    private static extern bool AllocConsole();
+
+    [DllImport("kernel32.dll")]
+    private static extern bool FreeConsole();
+
+    public static void Show()
+    {
+      AllocConsole();
+    }
+
+    public static void Hide()
+    {
+      FreeConsole();
+    }
+  }
+
+  public partial class FormMain : Form, IMessageDispHandling
   {
     private readonly IAppSettingsService _appSettingsService;
     private readonly IOptions<UISettings> _optionsAccessor;
@@ -35,24 +54,19 @@ namespace EMRALD_Sim
     private EmraldModel _sim = null;
     private bool _validSim = false;
     private string _modelPath = "";
-    //private bool _cancel = false;
-    private string _statsFile = "";
-    private List<ProcessSimBatch> simRuns = new List<ProcessSimBatch>();
     private string curDir = "c:\\temp";
-    private List<string> monitor = new List<string>();
-    private List<List<string>> _xmppLink = new List<List<string>>();
-    private string _XMPP_Password = "secret";
-    private int _pathResultsInterval = -1;
     private ModelSettings _currentModelSettings = null;
-    private Options_cur jsonOptions = null; //if the user has passed in JSON options
-    private bool _populatingSettings = false; //Flag that UI settings are being populated programatically, don't save on changes if true
-    private bool _running = false; //currently running simulations
+    private bool _populatingSettings = false;
+    private bool _running = false;
     private string _lastError = "";
+    private JSONRun _jsonRunner = null;
+    private CancellationTokenSource _cancellationTokenSource = null;
+    private List<string> _monitorVarsFromArgs = new List<string>();
+    private int _pathResultsInterval = -1;
 
     [DllImport("kernel32.dll")]
     static extern bool AttachConsole(int dwProcessId);
     private const int ATTACH_PARENT_PROCESS = -1;
-
 
     public FormMain(string[] args, IAppSettingsService appSettingsService, IOptions<UISettings> optionsAccessor)
     {
@@ -62,11 +76,11 @@ namespace EMRALD_Sim
       teModel.SetHighlighting("JSON");
       ResetResults();
 
-      //System.IO.File.Wri
-      curDir = System.IO.Path.GetDirectoryName(Application.ExecutablePath);
+#if DEBUG
+      ConsoleHelper.Show();
+#endif
 
-      //System.IO.File.WriteAllLines(curDir + "\\simRunLog.txt", args);
-      //System.IO.File.AppendAllText(curDir + "\\simRunLog.txt", "Cur Dir = " + Directory.GetCurrentDirectory() + Environment.NewLine);
+      curDir = System.IO.Path.GetDirectoryName(Application.ExecutablePath);
 
       if (args.Length > 0)
       {
@@ -77,8 +91,8 @@ namespace EMRALD_Sim
 
       bool execute = false;
       string model = null;
-      //SimulationDAL.Globals.simID = 1;
-      if (args.Length > 0) // Loop through array
+
+      if (args.Length > 0)
       {
         string argument = args[0].ToLower();
         bool isJSON = false;
@@ -87,16 +101,14 @@ namespace EMRALD_Sim
           isJSON = Path.GetExtension(argument).Equals(".json", StringComparison.OrdinalIgnoreCase);
         }
         catch { }
-        ;
 
         if (isJSON)
         {
-          //jsonOptions =  LoadFromJSON(args[0]);
           OptionsRunWithNotify(args[0]);
         }
         else
         {
-          execute = LoadFromArgs(args);
+          execute = LoadFromArgs(args, out model);
         }
       }
 
@@ -104,38 +116,19 @@ namespace EMRALD_Sim
       {
         if (OpenModel(model))
         {
-
           tcMain.SelectedTab = tabSimulate;
 
-          //check the monitor values
-          for (int idx = 0; idx < lbMonitorVars.Items.Count; idx++)
+          // Apply monitor variables from command-line args
+          if (_monitorVarsFromArgs.Count > 0)
           {
-            if (monitor.Contains(lbMonitorVars.Items[idx].ToString()))
+            for (int idx = 0; idx < lbMonitorVars.Items.Count; idx++)
             {
-              lbMonitorVars.SetItemChecked(idx, true);
+              if (_monitorVarsFromArgs.Contains(lbMonitorVars.Items[idx].ToString()))
+              {
+                lbMonitorVars.SetItemChecked(idx, true);
+              }
             }
           }
-
-          //assign the xmpp connections if any
-          for (int idx = 0; idx < _xmppLink.Count; idx++)
-          {
-            AssignServer(); //make sure it has been assigned
-            var extSimLink = _sim.allExtSims.FindByName(_xmppLink[idx][0], false);
-            if (extSimLink == null)
-            {
-              Console.Write("Bad -c first input. No external link in model named - " + _xmppLink[idx][0]);
-            }
-            else
-            {
-              extSimLink.resourceName = _xmppLink[idx][1] + " - " + _xmppLink[idx][2].ToLower();
-              extSimLink.verified = false;
-              extSimLink.timeout = int.Parse(_xmppLink[idx][3]);
-              //check the UI
-              var itemIdx = lbExtSimLinks.FindStringExact(_xmppLink[idx][0]);
-              lbExtSimLinks.SetItemChecked(itemIdx, true);
-            }
-          }
-
 
           if (execute)
           {
@@ -145,245 +138,109 @@ namespace EMRALD_Sim
       }
     }
 
-
     /// <summary>
     /// Load the settings from the arguments passed in
     /// </summary>
     /// <param name="args"></param>
+    /// <param name="modelPath">Output parameter for model path</param>
     /// <returns>return if to execute the model</returns>
-    private bool LoadFromArgs(string[] args)
+    private bool LoadFromArgs(string[] args, out string modelPath)
     {
       _populatingSettings = true;
       bool execute = false;
-      string model = null;
-      //SimulationDAL.Globals.simID = 1;
-      for (int i = 0; i < args.Length; i++) // Loop through array
+      modelPath = null;
+      List<string> monitor = new List<string>();
+      int pathResultsInterval = -1;
+
+      for (int i = 0; i < args.Length; i++)
       {
         string argument = args[i].ToLower();
         switch (argument)
         {
-          case "-n": //run count
+          case "-n":
+            tbRunCnt.Text = args[i + 1];
+            ++i;
+            break;
+
+          case "-i":
+            string filePath = args[i + 1];
+            if (!File.Exists(filePath))
             {
-              tbRunCnt.Text = args[i + 1];
-              ++i;
-              break;
+              Console.Write("invalid input file path - " + filePath);
+              return false;
             }
-
-          case "-i": //path to input file
+            else
             {
-              string filePath = args[i + 1];
-              if (!File.Exists(filePath))
-              {
-                Console.Write("invalid input file path - " + filePath);
-                return false;
-              }
-              else
-              {
-                model = filePath;
-              }
-              ++i;
-              break;
+              modelPath = filePath;
             }
+            ++i;
+            break;
 
-          case "-r": //path to output file
+          case "-r":
+            tbSavePath.Text = args[i + 1];
+            ++i;
+            break;
+
+          case "-o":
+            tbSavePath2.Text = args[i + 1];
+            ++i;
+            break;
+
+          case "-t":
+            tbMaxSimTime.Text = args[i + 1];
+            ++i;
+            break;
+
+          case "-e":
+            execute = true;
+            break;
+
+          case "-m":
+            try
             {
-              tbSavePath.Text = args[i + 1];
-              ++i;
-              break;
-            }
-
-          case "-o": //path to paths and timing output file
-            {
-              tbSavePath2.Text = args[i + 1];
-              ++i;
-              break;
-            }
-
-          case "-t": //max run time
-            {
-              tbMaxSimTime.Text = args[i + 1];
-              ++i;
-              break;
-            }
-
-          case "-e": //execute
-            {
-              execute = true;
-              break;
-            }
-
-          case "-m": //monitor
-            {
-              try
-              {
-                string arg = args[i + 1];
-                if (arg[0] == '[')
-                {
-                  arg = arg.TrimStart('[');
-                  while (arg[arg.Length - 1] != ']')
-                  {
-                    monitor.Add(arg);
-                    ++i;
-                    arg = args[i + 1];
-                  }
-
-                  arg = arg.TrimEnd(']');
-                  monitor.Add(arg);
-                  ++i;
-                }
-                else
-                {
-                  monitor.Add(args[i + 1]);
-                  ++i;
-                }
-              }
-              catch
-              {
-                Console.Write("invalid data for monitor parameters, must be a single string or multiple encased in \"[]\", example - [x y z] ");
-              }
-
-              break;
-            }
-
-          case "-c": //coupled XMPP application
-            {
-              try
-              {
-                //Example: -c xmppServerPassword [LinkedProgram MyApp User1 60] [LinkedProgram2 MyApp2 User2 60]")
-                //read the password
-                _XMPP_Password = args[i + 1];
-                ++i;
-                string arg = args[i + 1];
-                if (arg[0] == '[')
-                {
-                  arg = arg.TrimStart('[');
-                  while (arg[arg.Length - 1] != ']')
-                  {
-                    string linkName = arg;
-                    ++i;
-                    string xmppResouce = args[i + 1];
-                    ++i;
-                    string xmppUser = args[i + 1];
-                    ++i;
-                    int timeout = int.Parse(args[i + 1].TrimEnd(']')); //verify it is a number
-
-                    _xmppLink.Add(new List<string>() { linkName, xmppResouce, xmppUser, timeout.ToString() });
-                  }
-
-                  arg = args[i + 1];
-                  ++i;
-                }
-                else
-                {
-                  string linkName = arg;
-                  ++i;
-                  string xmppResouce = args[i + 1];
-                  ++i;
-                  string xmppUser = args[i + 1];
-                  ++i;
-                  int timeout = int.Parse(args[i + 1]); //verify it is a number
-
-                  _xmppLink.Add(new List<string>() { linkName, xmppResouce, xmppUser, timeout.ToString() });
-                  ++i;
-                }
-              }
-              catch
-              {
-                Console.Write("invalid data for coupling external simulation, specify the password and the external sim name, XMPP connection resource, XMPP user name, and Connection timeout in seconds. For multiple, encase in \"[]\"" + Environment.NewLine +
-                                "Example: -d xmppServerPassword [LinkedProgram MyApp User1 60] [LinkedProgram2 MyApp2 User2 60]");
-              }
-
-              break;
-            }
-
-          case "-s":
-            {
-              if (LoadLib.SetSeed(args[i + 1]))
-                tbSeed.Text = args[i + 1];
-              break;
-            }
-
-          case "-jsonstats":
-            {
-              _statsFile = args[i + 1];
-              break;
-            }
-
-          case "-rintrv":
-            {
-              try
-              {
-                _pathResultsInterval = int.Parse(args[i + 1]);
-              }
-              catch
-              {
-                Console.WriteLine("-rIntrv option must be a valid integer number");
-              }
-              break;
-            }
-
-          case "-d": //debug the runs
-            {
-              string strLev = args[i + 1];
-
-              switch (strLev)
-              {
-                case "basic":
-                case "Basic":
-                  chkLog.Checked = true;
-                  ConfigData.debugLev = LogLevel.Info;
-                  break;
-
-                case "detailed":
-                case "Detailed":
-                  chkLog.Checked = true;
-                  rbDebugBasic.Checked = false;
-                  rbDebugDetailed.Checked = true;
-                  ConfigData.debugLev = LogLevel.Debug;
-                  break;
-
-                default:
-                  Console.Write("invalid option for debug must be \"basic\" or \"detailed\". ");
-                  break;
-              }
-              ++i;
-
               string arg = args[i + 1];
               if (arg[0] == '[')
               {
-                try
+                arg = arg.TrimStart('[');
+                while (arg[arg.Length - 1] != ']')
                 {
-                  //get the start index
-                  arg = arg.TrimStart('[');
-                  if (arg.EndsWith(","))
-                    arg = arg.TrimEnd(',');
-                  ConfigData.debugRunStart = int.Parse(arg);
-                  tbLogRunStart.Text = arg;
+                  monitor.Add(arg);
                   ++i;
-
-                  //get the end index
                   arg = args[i + 1];
-                  if (!arg.EndsWith("]"))
-                  {
-                    Console.Write("invalid option for debug range. Use [startIndex endIndex]");
-                    return false;
-                  }
-                  arg = arg.TrimEnd(']');
-                  ConfigData.debugRunEnd = int.Parse(arg);
-                  tbLogRunEnd.Text = arg;
-                  ++i;
                 }
-                catch
-                {
-                  Console.Write("invalid option for debug range. Use [startIndex endIndex]");
-                }
-
+                arg = arg.TrimEnd(']');
+                monitor.Add(arg);
                 ++i;
               }
-
-
-              break;
+              else
+              {
+                monitor.Add(args[i + 1]);
+                ++i;
+              }
             }
+            catch
+            {
+              Console.Write("invalid data for monitor parameters, must be a single string or multiple encased in \"[]\", example - [x y z] ");
+            }
+            break;
+
+          case "-s":
+            if (LoadLib.SetSeed(args[i + 1]))
+              tbSeed.Text = args[i + 1];
+            ++i;
+            break;
+
+          case "-rintrv":
+            try
+            {
+              pathResultsInterval = int.Parse(args[i + 1]);
+            }
+            catch
+            {
+              Console.WriteLine("-rIntrv option must be a valid integer number");
+            }
+            ++i;
+            break;
 
           case "-mergeresults":
             if (args.Length < (i + 4))
@@ -391,9 +248,9 @@ namespace EMRALD_Sim
               Console.Write("Invalid option, must have two result file paths and a destination file path after -mergeresults.");
               return false;
             }
-            string mergePath1 = _statsFile = args[i + 1];
-            string mergePath2 = _statsFile = args[i + 2];
-            string resPath = _statsFile = args[i + 3];
+            string mergePath1 = args[i + 1];
+            string mergePath2 = args[i + 2];
+            string resPath = args[i + 3];
 
             try
             {
@@ -402,12 +259,67 @@ namespace EMRALD_Sim
                 Console.Write("Failed to load files, must have two valid file paths after -mergeresults.");
                 return false;
               }
-
-              //all went well so be done
+              Console.WriteLine("Successfully merged results to: " + resPath);
+              Environment.Exit(0);
             }
             catch
             {
               Console.Write("Failed to merge result files, verify they are valid EMRALD path result JSON files.");
+              Environment.Exit(1);
+            }
+            break;
+
+          case "-d":
+            string strLev = args[i + 1];
+            switch (strLev)
+            {
+              case "basic":
+              case "Basic":
+                chkLog.Checked = true;
+                ConfigData.debugLev = LogLevel.Info;
+                break;
+
+              case "detailed":
+              case "Detailed":
+                chkLog.Checked = true;
+                rbDebugBasic.Checked = false;
+                rbDebugDetailed.Checked = true;
+                ConfigData.debugLev = LogLevel.Debug;
+                break;
+
+              default:
+                Console.Write("invalid option for debug must be \"basic\" or \"detailed\". ");
+                break;
+            }
+            ++i;
+
+            if (i + 1 < args.Length && args[i + 1][0] == '[')
+            {
+              string arg = args[i + 1];
+              try
+              {
+                arg = arg.TrimStart('[');
+                if (arg.EndsWith(","))
+                  arg = arg.TrimEnd(',');
+                ConfigData.debugRunStart = int.Parse(arg);
+                tbLogRunStart.Text = arg;
+                ++i;
+
+                arg = args[i + 1];
+                if (!arg.EndsWith("]"))
+                {
+                  Console.Write("invalid option for debug range. Use [startIndex endIndex]");
+                  return false;
+                }
+                arg = arg.TrimEnd(']');
+                ConfigData.debugRunEnd = int.Parse(arg);
+                tbLogRunEnd.Text = arg;
+                ++i;
+              }
+              catch
+              {
+                Console.Write("invalid option for debug range. Use [startIndex endIndex]");
+              }
             }
             break;
 
@@ -415,54 +327,46 @@ namespace EMRALD_Sim
           case "-h":
           case "-H":
           case "-HELP":
-            {
-              Console.WriteLine("Pass in a Options JSON file or use the following command line options.");
-              Console.WriteLine("-n \"run count\"");
-              Console.WriteLine("-i \"input model path\"");
-              Console.WriteLine("-r \"results output file\"");
-              Console.WriteLine("-o \"paths output file\"");
-              Console.WriteLine("-jsonStats \"write path statistics to json output file at specified directory\"");
-              Console.WriteLine("-t \"max run time\"");
-              Console.WriteLine("-e \"execute\"");
-              Console.WriteLine("-c \"coupled external simulation using XMPP, specify the password and the external sim name, XMPP connection resource, XMPP user name and timeout in seconds. If there is more than one put each in brackets\"" + Environment.NewLine +
-                                "    Example: -c xmppServerPassword [LinkedProgram MyApp User1 60] [LinkedProgram2 MyApp2 User2 60]");
-              Console.WriteLine("-m \"parameter to monitor, use []'s to do multiples, example - [x y z] \"");
-              Console.WriteLine("-s \"initial random number seed\"");
-              Console.WriteLine("-d \"debug level \"basic\" or \"detailed\", (optional) range [start end]. " + Environment.NewLine +
-                                "    Basic - state movement only. Detailed - state movement, actions and events. " + Environment.NewLine +
-                                "    Example: -d basic [10 20]");
-              Console.WriteLine("-rIntrv \"how often to save the path results, every X number of runs. No value or <1 will result in saving only after all runs are complete.\"");
-              Console.WriteLine("-mergeResults \"merge two json path result files into one. Estimates the 5th and 95th. Example: -mergeResults c:/temp/PathResultsBatch1.json c:/temp/PathResultsBatch2.json c:/temp/PathResultsCombined.json\"");
-              Console.WriteLine("Options JSON file - ");
-              Console.WriteLine(Options_cur.CmdJSON_OptionsExample);
-              Environment.Exit(0);
-              break;
-            }
-
-
-            //case "-x": //path to Extternal Sims TODO
-            //  {
-            //    if (File.Exists(args[i+1]))
-            //    {
-            //      extSims.Add(args[i + 1]);
-            //    }
-            //    else
-            //    {
-            //      Console.Write("invalid input external sim path - " + args[i + 1]);
-            //      return;
-            //    }
-
-            //    string model3DPath = args[i + 1]; 
-            //    //cbNeutrino.Checked = true;
-            //    ++i;
-            //    break;
-            //  }
-
-
+            ShowHelpAndExit();
+            break;
         }
       }
+
+      // Store values for later use after model is loaded
+      if (monitor.Count > 0)
+      {
+        // Store monitor list to apply after model loads
+        _monitorVarsFromArgs = monitor;
+      }
+
+      if (pathResultsInterval > 0)
+      {
+        _pathResultsInterval = pathResultsInterval;
+      }
+
       _populatingSettings = false;
       return execute;
+    }
+
+    private void ShowHelpAndExit()
+    {
+      Console.WriteLine("Pass in a Options JSON file or use the following command line options.");
+      Console.WriteLine("-n \"run count\"");
+      Console.WriteLine("-i \"input model path\"");
+      Console.WriteLine("-r \"results output file\"");
+      Console.WriteLine("-o \"paths output file\"");
+      Console.WriteLine("-t \"max run time\"");
+      Console.WriteLine("-e \"execute\"");
+      Console.WriteLine("-m \"parameter to monitor, use []'s to do multiples, example - [x y z] \"");
+      Console.WriteLine("-s \"initial random number seed\"");
+      Console.WriteLine("-d \"debug level \"basic\" or \"detailed\", (optional) range [start end].");
+      Console.WriteLine("    Basic - state movement only. Detailed - state movement, actions and events.");
+      Console.WriteLine("    Example: -d basic [10 20]");
+      Console.WriteLine("-rIntrv \"how often to save the path results, every X number of runs. No value or <1 will result in saving only after all runs are complete.\"");
+      Console.WriteLine("-mergeResults \"merge two json path result files into one. Estimates the 5th and 95th. Example: -mergeResults c:/temp/PathResultsBatch1.json c:/temp/PathResultsBatch2.json c:/temp/PathResultsCombined.json\"");
+      Console.WriteLine("Options JSON file - ");
+      Console.WriteLine(Options_cur.CmdJSON_OptionsExample);
+      Environment.Exit(0);
     }
 
     private void OptionsRunWithNotify(string jsonPath)
@@ -474,7 +378,6 @@ namespace EMRALD_Sim
       }
       string optionsJsonStr = File.ReadAllText(jsonPath);
 
-      // Create a new form to act as a notification
       Form notificationForm = new Form
       {
         Text = "Processing",
@@ -482,7 +385,6 @@ namespace EMRALD_Sim
         StartPosition = FormStartPosition.CenterScreen
       };
 
-      // Add a label to the form to display the message
       Label label = new Label
       {
         Text = "Processing, please wait...",
@@ -492,26 +394,20 @@ namespace EMRALD_Sim
       };
       notificationForm.Controls.Add(label);
 
-      // Show the notification form
       Task.Run(() =>
       {
         notificationForm.ShowDialog();
       });
 
-      // Handle the arguments asynchronously
       Task.Run(() =>
       {
         OptionsRun(optionsJsonStr);
-
-        // Close the notification form once processing is complete
         notificationForm.Invoke(new System.Action(() => notificationForm.Close()));
-
-        // Exit the application
-        this.BeginInvoke(new System.Action(() => this.Close()));
+        Environment.Exit(0);
       });
     }
 
-    private void OptionsRun(string optionsJsonStr)
+    private async void OptionsRun(string optionsJsonStr)
     {
       JSONRun simRun = new JSONRun(optionsJsonStr);
       if (simRun.error != "")
@@ -520,19 +416,12 @@ namespace EMRALD_Sim
       }
       else
       {
-        string res = simRun.RunSim();
+        string res = await simRun.RunSim();
         if (res != "")
         {
-          Console.Write($"Failed to load from JSON options: ${res}");
+          Console.Write($"Failed to load from JSON options: {res}");
         }
       }
-    }
-
-    private void WriteError(string error)
-    {
-      txtMStatus.ForeColor = Color.Maroon;
-      txtMStatus.Text = error + Environment.NewLine;
-      Console.Write(error);
     }
 
     public void Clear()
@@ -559,11 +448,9 @@ namespace EMRALD_Sim
     {
       MethodInvoker methodInvokerDelegate = delegate ()
       {
-        //rtfReceived.Text = msg;
         rtfReceived.AppendText("From : " + sender + Environment.NewLine);
         rtfReceived.AppendText("JSON String: \n");
         rtfReceived.AppendText(JsonConvert.SerializeObject(msg, Formatting.Indented));
-
       };
 
       InvokeUIUpdate(methodInvokerDelegate);
@@ -582,21 +469,18 @@ namespace EMRALD_Sim
       InvokeUIUpdate(methodInvokerDelegate);
     }
 
-
     public void OnConnectCng()
     {
       MethodInvoker methodInvokerDelegate = delegate ()
       {
         string sel1 = listBoxClients.GetItemText(listBoxClients.SelectedItem);
         string sel2 = cbRegisteredClients.GetItemText(cbRegisteredClients.SelectedItem);
-        //reload the client lists
         listBoxClients.Items.Clear();
         cbRegisteredClients.Items.Clear();
-        AssignServer(); //make sure it has been assigned
+        AssignServer();
         List<string> resources = _server.GetResources();
         foreach (string item in resources)
         {
-          //string userName = server.UserFromConnection(item.Item1).ToUpper();
           listBoxClients.Items.Add(item);
           cbRegisteredClients.Items.Add(item);
         }
@@ -620,113 +504,18 @@ namespace EMRALD_Sim
       InvokeUIUpdate(methodInvokerDelegate);
     }
 
-
-    private void btnSendMsg_Click(object sender, EventArgs e)
-    {
-      if (cbRegisteredClients.SelectedIndex >= 0)
-      {
-        //see if json is valid
-        string schemaStr = System.IO.File.ReadAllText(System.Reflection.Assembly.GetEntryAssembly().Location + "\\MessageProtocol.JSON");
-        JSchema schemaChk = JSchema.Parse(schemaStr);
-        try
-        {
-          JToken json = JToken.Parse(rtbJSONMsg.Text);
-          IList<ValidationError> errors;
-          bool valid = json.IsValid(schemaChk, out errors);
-          if (!valid)
-          {
-            rtbJSONErrors.Visible = true;
-            rtbJSONErrors.Clear();
-            foreach (var error in errors)
-            {
-              rtbJSONErrors.AppendText(error.Message + Environment.NewLine);
-              foreach (var child in error.ChildErrors)
-              {
-                rtbJSONErrors.AppendText("Error - Line : " + child.LineNumber + " Pos : " + child.LinePosition + " - " + child.Message + Environment.NewLine);
-              }
-            }
-          }
-          else
-          {
-            TMsgWrapper msg = JsonConvert.DeserializeObject<TMsgWrapper>(rtbJSONMsg.Text);
-            if (msg != null)
-            {
-              rtbJSONErrors.Visible = false;
-              AssignServer(); //make sure it has been assigned
-              if (!_server.SendMessage(msg, cbRegisteredClients.GetItemText(cbRegisteredClients.SelectedItem)))
-              {
-                rtbJSONErrors.Visible = true;
-                rtbJSONErrors.Text = "Failed to send message";
-              }
-            }
-            else
-            {
-              rtbJSONErrors.Visible = true;
-              rtbJSONErrors.Text = "Error creating message from JSON text.";
-            }
-          }
-        }
-        catch (Exception er)
-        {
-          rtbJSONErrors.Visible = true;
-          if (er is JsonReaderException)
-            rtbJSONErrors.Text = "Error - Line : " + ((JsonReaderException)er).LineNumber + " Pos : " + ((JsonReaderException)er).LinePosition + Environment.NewLine;
-          else
-            rtbJSONErrors.Text = "Text is not a valid JSON Message Object :" + Environment.NewLine;
-          rtbJSONErrors.AppendText(er.Message);
-        }
-      }
-      else
-        MessageBox.Show("You must select a client to send it to. Left of the Send Bttn.");
-    }
-
     private void FormMain_FormClosed(object sender, FormClosedEventArgs e)
     {
-      //Environment.Exit(0);
+      _cancellationTokenSource?.Cancel();
+      Environment.Exit(0);
     }
-
-    private void button1_Click_1(object sender, EventArgs e)
-    {
-
-      //System.IO.File.WriteAllText("c:\\temp\\ActJSON.JSON", jsonString + Environment.NewLine);
-    }
-
-    //private void rbCompModFV_CheckedChanged(object sender, EventArgs e)
-    //{
-    //  this.grpboxCompMod1.Enabled = rbCompModFV.Checked;
-    //  if(rbCompModFV.Checked)
-    //  {
-    //    rbCompModInfo.Checked = false;
-    //  }
-    //  else
-    //  {
-    //    tbCompModField.Clear();
-    //    tbCompModValue.Clear();
-    //  }
-
-    //}
-
-    //private void rbCompModInfo_CheckedChanged(object sender, EventArgs e)
-    //{
-    //  this.grpboxCompMod2.Enabled = rbCompModInfo.Checked;
-    //  if (rbCompModInfo.Checked)
-    //  {
-    //    rbCompModFV.Checked = false;
-    //  }
-    //  else
-    //  {
-    //    rtbCompMsgInfo.Clear();
-    //  }
-    //}
 
     private void btnGenMsg_Click(object sender, EventArgs e)
     {
       TimeSpan time = TimeSpan.FromSeconds(0);
       try { time = TimeSpan.Parse(lblSimTime.Text); } catch { }
-      ;
 
       TMsgWrapper msgObj = new TMsgWrapper(MessageType.mtSimAction, tbDispName.Text, time, tbMsgDesc.Text);
-
 
       TimeSpan actTime = TimeSpan.FromSeconds(0);
       try
@@ -786,7 +575,6 @@ namespace EMRALD_Sim
           ToolStripMenuItem fileRecent = new ToolStripMenuItem(modelSettings.Filename, null, RecentFile_click) { Tag = modelSettings };
           recentToolStripMenuItem.DropDownItems.Add(fileRecent);
         }
-
       }
       else
       {
@@ -805,7 +593,6 @@ namespace EMRALD_Sim
           Filename = _modelPath
         };
 
-        // Limit the size of the list
         if (_optionsAccessor.Value.SettingsByModel.Count == 10)
         {
           _optionsAccessor.Value.SettingsByModel.RemoveLast();
@@ -814,7 +601,6 @@ namespace EMRALD_Sim
 
         _optionsAccessor.Value.SettingsByModel.AddFirst(_currentModelSettings);
 
-        // Might be hidden if there were no recent entries in the json file to start with
         recentToolStripMenuItem.Visible = true;
         ToolStripMenuItem fileRecent = new ToolStripMenuItem(_modelPath, null, RecentFile_click) { Tag = _currentModelSettings };
         recentToolStripMenuItem.DropDownItems.Insert(0, fileRecent);
@@ -832,7 +618,6 @@ namespace EMRALD_Sim
       {
         _currentModelSettings = toolStripMenuItem.Tag as ModelSettings;
 
-        // Move item to top of list
         _optionsAccessor.Value.SettingsByModel.Remove(_currentModelSettings);
         _optionsAccessor.Value.SettingsByModel.AddFirst(_currentModelSettings);
         recentToolStripMenuItem.DropDownItems.Remove(toolStripMenuItem);
@@ -874,7 +659,6 @@ namespace EMRALD_Sim
       else
       {
         tabCtrlMsgTypes.Visible = false;
-        tabCtrlMsgTypes.Visible = false;
         pnlTimePicking.Visible = false;
       }
 
@@ -913,7 +697,7 @@ namespace EMRALD_Sim
             {
               rtbJSONErrors.Visible = false;
               AssignServer(); //make sure it has been assigned
-              if (_server.SendMessage(msg, (string)cbRegisteredClients.Items[cbRegisteredClients.SelectedIndex]))
+              if (!_server.SendMessage(msg, (string)cbRegisteredClients.Items[cbRegisteredClients.SelectedIndex]))
               {
                 rtbJSONErrors.Visible = true;
                 rtbJSONErrors.Text = "Failed to send message";
@@ -940,12 +724,12 @@ namespace EMRALD_Sim
         MessageBox.Show("You must select a client to send it to. Left of the Send Bttn.");
     }
 
-    //set when running item visibility 
     private void SetRunningVis()
     {
       btnStartSims.Enabled = !_running;
-      lbl_CurThread.Visible = cbMultiThreaded.Checked && (_running);
-      cbCurThread.Visible = cbMultiThreaded.Checked && (_running);
+      btn_Stop.Enabled = _running;
+      lbl_CurThread.Visible = cbMultiThreaded.Checked && _running;
+      cbCurThread.Visible = cbMultiThreaded.Checked && _running;
     }
 
     private void ResetResults()
@@ -961,30 +745,15 @@ namespace EMRALD_Sim
       _running = false;
       ResetResults();
       _lastError = "";
+
       try
       {
-        MethodInvoker ErrorAndVisUpdateDelegate = delegate ()
-        {
-          //btnStartSims.Enabled = true;
-          SetRunningVis();
-
-          foreach (var simBatch in simRuns)
-          {
-            if (simBatch.error != "")
-            {
-              _lastError = "Thread-" + simBatch.threadNum.ToString() + " " + simBatch.error;
-              lbl_ResultHeader.Text = _lastError;
-            }
-          }
-        };
-
-
-        //btnStartSims.Enabled = false;
         _running = true;
         SetRunningVis();
-        if (chkLog.Checked && ((int.Parse(tbLogRunStart.Text) - (int.Parse(tbLogRunEnd.Text)) > 100)))
+
+        if (chkLog.Checked && ((int.Parse(tbLogRunStart.Text) - int.Parse(tbLogRunEnd.Text)) > 100))
         {
-          DialogResult res = MessageBox.Show("Debug Warning", "Are you sure you want to debug that many runs ?", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+          DialogResult res = MessageBox.Show("Are you sure you want to debug that many runs?", "Debug Warning", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
           if (res == DialogResult.No)
           {
             _running = false;
@@ -993,28 +762,15 @@ namespace EMRALD_Sim
           }
         }
 
-        //make sure that all the Ext Sim links are assigned.
-        foreach (var extSimLink in lbExtSimLinks.Items)
-        {
-          if (!lbExtSimLinks.CheckedItems.Contains(extSimLink))
-          {
-            MessageBox.Show("You must assign all the Links to External Simulations");
-            //btnStartSims.Enabled = true;
-            _running = false;
-            SetRunningVis();
-            return;
-          }
-        }
-
-        TimeSpan maxTime = TimeSpan.FromSeconds(0);
+        // Validate max time
+        TimeSpan maxTime;
         try
         {
           maxTime = TimeSpan.Parse(tbMaxSimTime.Text);
         }
-        catch (Exception ex)
+        catch
         {
-          MessageBox.Show($"Invalid Max Simulation Time: {ex.Message}\nPlease fix.");
-          LogError($"Invalid MaxSimTime format: {tbMaxSimTime.Text}", ex);
+          MessageBox.Show("Invalid Max Simulation Time, please fix.");
           _running = false;
           SetRunningVis();
           return;
@@ -1023,256 +779,211 @@ namespace EMRALD_Sim
         lblRunTime.Visible = true;
         lbl_ResultHeader.Visible = true;
 
-        _statsFile = tbSavePath2.Text;
-        ConfigData.threads = ConfigData.threads > 0 ? ConfigData.threads : null; //don't allow 0 for threads. 
-        int threadCnt = ConfigData.threads == null ? 1 : (int)ConfigData.threads;
-        int runsDiv = int.Parse(tbRunCnt.Text) / threadCnt;
+        // Create Options_cur from UI settings
+        Options_cur options = CreateOptionsFromUI();
 
-        List<Thread> threads = new List<Thread>();
-        simRuns.Clear();
+        // Read model JSON
+        string modelJson = teModel.Text;
 
-        LogError($"Starting simulation with {threadCnt} threads, {tbRunCnt.Text} total runs", null);
+        // Create JSONRun instance
+        _jsonRunner = new JSONRun(options, modelJson, UIProgressCallback);
 
-        for (int i = 0; i < threadCnt; i++)
+        // Create cancellation token
+        _cancellationTokenSource = new CancellationTokenSource();
+
+        // Run simulation asynchronously
+        Task.Run(async () =>  // Add async here
         {
-          int threadIndex = i;  // <-- CAPTURE i's current value immediately
+          string result = await _jsonRunner.RunSim();  // Add await here
 
-          try
+          InvokeUIUpdate(() =>
           {
-            // Now use threadIndex everywhere instead of i
-            simRuns.Add(new ProcessSimBatch(_sim, maxTime, tbSavePath.Text, _statsFile,
-                        _pathResultsInterval, ConfigData.threads == null ? null : threadIndex));
-
-            simRuns[threadIndex].progressCallback = DispResults;
-
-            if (_server != null)
-            {
-              simRuns[threadIndex].AddExtSimulationData(_server);
-            }
-
-            foreach (var varItem in lbMonitorVars.CheckedItems)
-            {
-              simRuns[threadIndex].logVarVals.Add(varItem.ToString());
-            }
-
-            if (threadIndex == 0)
-              simRuns[threadIndex].SetupBatch(runsDiv + (int.Parse(tbRunCnt.Text) % (int)threadCnt), true);
-            else
-              simRuns[threadIndex].SetupBatch(runsDiv, true);
-
-            ThreadStart tStarter = new ThreadStart(() =>
-            {
-              try
-              {
-                LogError($"Thread {threadIndex} starting RunBatch(), simRuns.count = " + simRuns.Count, null);
-                simRuns[threadIndex].RunBatch();  // threadIndex is captured and won't change
-                LogError($"Thread {threadIndex} completed RunBatch()", null);
-
-                LogError($"Thread {threadIndex} starting GetVarValues()", null);
-                simRuns[threadIndex].GetVarValues(simRuns[threadIndex].logVarVals, true);
-                LogError($"Thread {threadIndex} completed GetVarValues()", null);
-              }
-              catch (Exception threadEx)
-              {
-                simRuns[threadIndex].error = $"Thread {threadIndex} error: {threadEx.Message}";
-                LogError($"EXCEPTION in simulation thread {threadIndex}", threadEx);
-
-                try
-                {
-                  string threadErrorFile = Path.Combine(Application.StartupPath, $"Thread_{threadIndex}_Error.txt");
-                  File.WriteAllText(threadErrorFile,
-                    $"Thread {threadIndex} Exception Details:\n" +
-                    $"Type: {threadEx.GetType().FullName}\n" +
-                    $"Message: {threadEx.Message}\n" +
-                    $"Source: {threadEx.Source}\n" +
-                    $"Stack Trace:\n{threadEx.StackTrace}\n" +
-                    $"Inner Exception: {threadEx.InnerException?.ToString() ?? "None"}");
-                }
-                catch { }
-              }
-            });
-
-            Thread simThread = new Thread(tStarter);
-            simThread.Name = $"SimThread_{threadIndex}";
-            simThread.IsBackground = false;
-
-            if (threadIndex == 0)
-            {
-              simThread.Start();
-              LogError($"Started thread 0", null);
-            }
-            else
-            {
-              new Task(async () =>
-              {
-                try
-                {
-                  int waitCount = 0;
-                  while (!simRuns[0].tempThreadFilesWriten)
-                  {
-                    await Task.Delay(TimeSpan.FromMilliseconds(10));
-                    waitCount++;
-                    if (waitCount > 6000)
-                    {
-                      LogError($"Timeout waiting for thread 0 to write files for thread {threadIndex}", null);
-                      break;
-                    }
-                  }
-                  simThread.Start();
-                  LogError($"Started thread {threadIndex}", null);
-                }
-                catch (Exception taskEx)
-                {
-                  LogError($"Error starting delayed thread {threadIndex}", taskEx);
-                }
-              }).Start();
-            }
-            threads.Add(simThread);
-          }
-          catch (Exception setupEx)
-          {
-            LogError($"Error setting up thread {threadIndex}", setupEx);
-            MessageBox.Show($"Error setting up simulation thread {threadIndex}:\n{setupEx.Message}\n\nCheck error log for details.",
-              "Setup Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             _running = false;
             SetRunningVis();
-            return;
-          }
-        }
 
-        // CRITICAL FIX: Wrap Task.Run in try-catch
-        Task.Run(() =>
-        {
-          try
-          {
-            LogError("Waiting for all threads to complete...", null);
-
-            // Wait for all threads to complete
-            for (int i = 0; i < threads.Count; i++)
+            if (result != "")
             {
-              try
-              {
-                threads[i].Join();
-                LogError($"Thread {i} completed", null);
-              }
-              catch (Exception joinEx)
-              {
-                LogError($"Error joining thread {i}", joinEx);
-              }
+              _lastError = result;
+              lbl_ResultHeader.Text = _lastError;
+              MessageBox.Show(_lastError, "Simulation Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-
-            // IMPORTANT: Give threads time to fully release all handles after Join()
-            System.Threading.Thread.Sleep(200); // Small delay after Join()
-
-            LogError("All threads completed, combining results...", null);
-
-            // Once all threads are done, update the UI and sum results
-            //compile results if needed
-            for (int i = 1; i < simRuns.Count; i++)
+            else
             {
-              try
+              lbl_ResultHeader.Text = "Simulation completed successfully";
+
+              // Clear temp thread files if checkbox is checked and multi-threaded
+              if (cbClearTemps.Checked && cbMultiThreaded.Checked && _jsonRunner.simRuns.Count > 0)
               {
-                simRuns[0].AddOtherBatchResults(simRuns[i]);
-                if (cbClearTemps.Checked)
+                // Clear temp files for all threads
+                foreach (var simRun in _jsonRunner.simRuns)
                 {
-                  simRuns[i].ClearTempThreadData();
+                  simRun.ClearTempThreadData();
                 }
               }
-              catch (Exception combineEx)
-              {
-                LogError($"Error combining results from thread {i}", combineEx);
-                // Continue with other threads
-              }
             }
-
-            _running = false;
-
-            //update the screen
-            InvokeUIUpdate(ErrorAndVisUpdateDelegate);
-
-            try
-            {
-              simRuns[0].WriteFinalResults(true, threadCnt);
-              if (cbClearTemps.Checked)
-                simRuns[0].ClearTempThreadData();
-
-              LogError("Simulation completed successfully", null);
-            }
-            catch (Exception writeEx)
-            {
-              LogError("Error writing final results", writeEx);
-              InvokeUIUpdate(() =>
-              {
-                MessageBox.Show($"Error writing final results:\n{writeEx.Message}\n\nPartial results may be available.",
-                  "Write Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-              });
-            }
-          }
-          catch (Exception taskEx)
-          {
-            LogError("CRITICAL: Unhandled exception in Task.Run", taskEx);
-            _running = false;
-            InvokeUIUpdate(() =>
-            {
-              SetRunningVis();
-              MessageBox.Show($"A critical error occurred during simulation:\n\n{taskEx.Message}\n\nStack Trace:\n{taskEx.StackTrace}",
-                "Critical Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            });
-          }
-        })
-        .ContinueWith(task =>
-        {
-          // This catches exceptions that escaped the Task.Run
-          if (task.IsFaulted)
-          {
-            var ex = task.Exception?.GetBaseException();
-            LogError("CRITICAL: Task failed", ex);
-            InvokeUIUpdate(() =>
-            {
-              _running = false;
-              SetRunningVis();
-              MessageBox.Show($"Simulation task failed:\n{ex?.Message ?? "Unknown error"}",
-                "Task Failure", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            });
-          }
-        }, TaskScheduler.FromCurrentSynchronizationContext());
-
+          });
+        }, _cancellationTokenSource.Token);
       }
       catch (Exception err)
       {
-        LogError("Error in btnStartSims_Click", err);
-        MessageBox.Show($"Error starting simulation:\n{err.Message}\n\nStack Trace:\n{err.StackTrace}",
-          "Startup Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
         _running = false;
         SetRunningVis();
+        MessageBox.Show($"Error starting simulation: {err.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
       }
     }
 
-    // Add this helper method to your FormMain class
-    private static void LogError(string message, Exception ex)
+    private Options_cur CreateOptionsFromUI()
     {
-      try
+      Options_cur options = new Options_cur();
+
+      // Basic settings
+      options.runct = int.Parse(tbRunCnt.Text);
+      options.runtime = tbMaxSimTime.Text;
+      options.inpfile = _modelPath;
+      options.resout = tbSavePath.Text;
+      options.jsonRes = tbSavePath2.Text;
+
+      // Path results interval
+      options.pathResultsInterval = _pathResultsInterval;
+
+      // Seed
+      if (!string.IsNullOrEmpty(tbSeed.Text))
       {
-        string logFile = Path.Combine(Application.StartupPath, "EMRALD_ErrorLog.txt");
-        string logEntry = $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] {message}\n";
-        if (ex != null)
+        options.seed = int.Parse(tbSeed.Text);
+      }
+
+      // Thread settings
+      if (cbMultiThreaded.Checked && !string.IsNullOrEmpty(tbThreads.Text))
+      {
+        options.threads = int.Parse(tbThreads.Text);
+      }
+      else
+      {
+        options.threads = 0; // Single threaded
+      }
+
+      // Debug settings
+      if (chkLog.Checked)
+      {
+        if (rbDebugDetailed.Checked)
+          options.debug = "DETAILED";
+        else
+          options.debug = "BASIC";
+
+        options.debugStartIdx = int.Parse(tbLogRunStart.Text);
+        options.debugEndIdx = int.Parse(tbLogRunEnd.Text);
+      }
+      else
+      {
+        options.debug = "OFF";
+      }
+
+      // Variables to monitor
+      options.variables = new List<string>();
+      foreach (var item in lbMonitorVars.CheckedItems)
+      {
+        options.variables.Add(item.ToString());
+      }
+
+      // Initialize variable values (if any)
+      options.initVars = new List<VarInitValue>();
+
+      return options;
+    }
+
+    private void UIProgressCallback(TimeSpan runTime, int runCnt, bool logFailedComps, int? threadNum)
+    {
+      InvokeUIUpdate(() =>
+      {
+        DispResults(runTime, runCnt, logFailedComps, threadNum);
+      });
+    }
+
+    private void DispResults(TimeSpan runTime, int runCnt, bool logFailedComps, int? threadNum)
+    {
+      int curT = 0;
+      if (_running && cbMultiThreaded.Checked && cbCurThread.Visible)
+        curT = cbCurThread.SelectedIndex;
+
+      if ((_lastError == "") && ((threadNum == null) || (curT == (int)threadNum))) //only update for specified thread or if there is none specified
+      {
+        lbl_ResultHeader.Text = _sim.name + " " + runCnt.ToString() + " of " + tbRunCnt.Text + " runs.";
+        lblRunTime.Text = runTime.ToString("g");
+        lvResults.Items.Clear();
+
+        // Get the simRuns from JSONRun
+        if (_jsonRunner != null && _jsonRunner.simRuns.Count > 0)
         {
-          logEntry += $"Exception Type: {ex.GetType().FullName}\n";
-          logEntry += $"Message: {ex.Message}\n";
-          logEntry += $"Stack Trace:\n{ex.StackTrace}\n";
-          if (ex.InnerException != null)
+          var keyPaths = _jsonRunner.simRuns[curT].keyPaths.ToList(); // Create a separate list of the keys because multithreading can cause a change while in loop
+          foreach (var item in keyPaths)
           {
-            logEntry += $"Inner Exception: {ex.InnerException.GetType().FullName}\n";
-            logEntry += $"Inner Message: {ex.InnerException.Message}\n";
+            string[] lvCols = new string[4];
+            lvCols[0] = item.Key;
+            lvCols[1] = item.Value.count.ToString();
+            lvCols[2] = (item.Value.count / (double)runCnt).ToString();
+            lvCols[3] = item.Value.timeMean.ToString(@"dd\.hh\:mm\:ss") + " +/- " + item.Value.timeStdDeviation.ToString(@"dd\.hh\:mm\:ss");
+            lvResults.Items.Add(new ListViewItem(lvCols));
+
+            //write the failed components and times.
+            if (_jsonRunner.simRuns[curT].keyFailedItems.ContainsKey(item.Key))
+            {
+              var compFailSets = _jsonRunner.simRuns[curT].keyFailedItems[item.Key].compFailSets.ToList(); //make a copy as could be modified in loop when multi threading
+              foreach (var cs in compFailSets)
+              {
+                string[] lvCols2 = new string[4];
+
+                int[] ids = cs.Key.Get1sIndexArray();
+                List<string> names = new List<String>();
+                foreach (int id in ids)
+                {
+                  names.Add(_sim.allStates[id].name);
+                }
+                names.Sort();
+
+                lvCols[0] = "";
+                lvCols[1] = ((Double)cs.Value).ToString();
+                lvCols[2] = String.Format("{0:0.00}", (((double)cs.Value / item.Value.count) * 100)) + "%";
+                lvCols[3] = string.Join(", ", names);
+                lvResults.Items.Add(new ListViewItem(lvCols));
+              }
+            }
+          }
+
+          lvVarValues.Items.Clear();
+          List<string> values = _jsonRunner.simRuns[curT].GetVarValues(_jsonRunner.simRuns[curT].logVarVals);
+          int i = 0;
+          foreach (var simVar in _jsonRunner.simRuns[curT].logVarVals)
+          {
+            string[] lvCols = new string[2];
+            lvCols[0] = simVar;
+            lvCols[1] = values[i];
+            lvVarValues.Items.Add(new ListViewItem(lvCols));
+            ++i;
           }
         }
 
-        File.AppendAllText(logFile, logEntry);
+        this.Refresh();
+        Application.DoEvents();
       }
-      catch
+    }
+
+    private void UpdateResultsDisplay(int runCnt)
+    {
+      // This method is no longer needed as DispResults handles everything
+      // Kept for compatibility but does nothing
+    }
+
+    private void btn_Stop_Click(object sender, EventArgs e)
+    {
+      if (_jsonRunner != null)
       {
-        // If logging fails, don't crash
+        _jsonRunner.StopSims();
       }
+
+      _cancellationTokenSource?.Cancel();
+      _running = false;
+      SetRunningVis();
+      lbl_ResultHeader.Text = "Simulation stopped by user";
     }
 
     private void tabXMPP_Enter(object sender, EventArgs e)
@@ -1294,16 +1005,20 @@ namespace EMRALD_Sim
       Cursor saveCurs = Cursor.Current;
       Cursor.Current = Cursors.WaitCursor;
 
-      this.Text = "EMRALD (" + path + ");";
+      this.Text = "EMRALD (" + path + ")";
 
       string errorStr = "";
-      //clear the existing model
       _sim = null;
       teModel.Text = LoadLib.LoadModel(ref _sim, path, ref errorStr);
       _modelPath = path;
+
       if (errorStr != "")
       {
-        WriteError(errorStr);
+        txtMStatus.ForeColor = Color.Maroon;
+        txtMStatus.Text = errorStr;
+        Console.Write(errorStr);
+        Cursor.Current = saveCurs;
+        _validSim = false;
         return false;
       }
       else
@@ -1313,7 +1028,7 @@ namespace EMRALD_Sim
 
       Cursor.Current = saveCurs;
       ResetResults();
-      return true;
+      return _validSim;
     }
 
     private void SaveUISettingsToJson()
@@ -1369,8 +1084,12 @@ namespace EMRALD_Sim
       tbLogRunEnd.Text = _currentModelSettings.DebugToRun.ToString();
 
       tbThreads.Text = _currentModelSettings.Threads;
-      if ((_currentModelSettings.Threads != "") && (_currentModelSettings.Threads != "1"))
+      if (!string.IsNullOrEmpty(_currentModelSettings.Threads) &&
+          int.TryParse(_currentModelSettings.Threads, out int threadCount) &&
+          threadCount > 0)
+      {
         cbMultiThreaded.Checked = true;
+      }
 
       if ((_currentModelSettings.DebugLevel == "Basic") && (!cbMultiThreaded.Checked))
       {
@@ -1394,26 +1113,21 @@ namespace EMRALD_Sim
 
       for (int i = 0; i < lbMonitorVars.Items.Count; i++)
       {
-        // Check if the item text is in the itemsToCheck list
         if (_currentModelSettings.CheckedVars.Contains(lbMonitorVars.Items[i].ToString()))
         {
-          // If it is, set the item as checked
           lbMonitorVars.SetItemChecked(i, true);
         }
       }
 
-
       SetCurThreadCB();
 
       _populatingSettings = false;
-
     }
 
     private void btnValidateModel_Click(object sender, EventArgs e)
     {
       Cursor saveCurs = Cursor.Current;
       Cursor.Current = Cursors.WaitCursor;
-      //clear the current model
       _sim = null;
       ValidateModelAndUpdateUI();
       Cursor.Current = saveCurs;
@@ -1421,15 +1135,18 @@ namespace EMRALD_Sim
 
     private void ValidateModelAndUpdateUI()
     {
-      string errorStr = LoadLib.ValidateModel(ref _sim, teModel.Text, _modelPath);
-      _validSim = errorStr == "";
-      if (txtMStatus.Text != "")
+      string validationError = LoadLib.ValidateModel(ref _sim, teModel.Text, _modelPath);
+      _validSim = validationError == "";
+
+      if (validationError != "")
       {
-        this.WriteError(errorStr);
+        txtMStatus.ForeColor = Color.Maroon;
+        txtMStatus.Text = validationError;
+        Console.Write(validationError);
       }
       else
       {
-        txtMStatus.Text = "Model Loaded Successfully" + Environment.NewLine;
+        txtMStatus.Text = "Model Loaded Successfully";
         txtMStatus.ForeColor = Color.Green;
         Console.Write(txtMStatus.Text);
 
@@ -1447,20 +1164,18 @@ namespace EMRALD_Sim
       InitSimTabInfo();
     }
 
-
     private void InitSimTabInfo()
     {
       pnlSimulate.Enabled = _validSim;
       pnlSimResults.Enabled = _validSim;
 
-      //load the external Sim links
       lbExtSimLinks.Items.Clear();
       if (_validSim)
       {
         foreach (var sim in _sim.allExtSims)
         {
           int idx = lbExtSimLinks.Items.Add(sim.Value.name);
-          AssignServer(); //make sure it has been assigned
+          AssignServer();
           if (_server != null)
           {
             bool chk = sim.Value.resourceName == "" ? false : _server.HasResource(sim.Value.resourceName);
@@ -1469,7 +1184,6 @@ namespace EMRALD_Sim
         }
       }
 
-      //load all the variables for user to adjust what to monitor
       lbMonitorVars.Items.Clear();
       if (_validSim)
       {
@@ -1485,108 +1199,16 @@ namespace EMRALD_Sim
       }
     }
 
-    private void DispResults(TimeSpan runTime, int runCnt, bool logFailedComps, int? threadNum)
-    {
-      MethodInvoker methodInvokerDelegate = delegate ()
-      {
-        int curT = 0;
-        if (_running && cbMultiThreaded.Checked)
-          curT = cbCurThread.SelectedIndex;
-
-        if ((_lastError == "") && ((threadNum == null) || (curT == (int)threadNum))) //only update for specified thread or if there is none specified
-        {
-
-          lbl_ResultHeader.Text = _sim.name + " " + runCnt.ToString() + " of " + tbRunCnt.Text + " runs.";// Time - " + runTime.ToString();
-          lblRunTime.Text = runTime.ToString("g");
-          lvResults.Items.Clear();
-
-          var keyPaths = simRuns[curT].keyPaths.ToList(); // Create a separate list of the keys because multithreading can cause a change while in loop
-          foreach (var item in keyPaths)
-          {
-
-            //  foreach (var item in simRuns[curT].keyPaths)
-            //{
-            string[] lvCols = new string[4];
-            lvCols[0] = item.Key;
-            lvCols[1] = item.Value.count.ToString();
-            lvCols[2] = (item.Value.count / (double)runCnt).ToString();
-            lvCols[3] = item.Value.timeMean.ToString(@"dd\.hh\:mm\:ss") + " +/- " + item.Value.timeStdDeviation.ToString(@"dd\.hh\:mm\:ss");
-            lvResults.Items.Add(new ListViewItem(lvCols));
-
-            //write the failed components and times.
-            if (simRuns[curT].keyFailedItems.ContainsKey(item.Key))
-            {
-              var compFailSets = simRuns[curT].keyFailedItems[item.Key].compFailSets.ToList(); //make a copy as could be modified in loop when multi threading
-                                                                                               //foreach (var cs in simRuns[curT].keyFailedItems[item.Key].compFailSets)
-              foreach (var cs in compFailSets)
-              {
-                string[] lvCols2 = new string[4];
-
-                int[] ids = cs.Key.Get1sIndexArray();
-                List<string> names = new List<String>();
-                foreach (int id in ids)
-                {
-                  names.Add(_sim.allStates[id].name);
-                }
-                names.Sort();
-
-                lvCols[0] = "";
-                lvCols[1] = ((Double)cs.Value).ToString();
-                lvCols[2] = String.Format("{0:0.00}", (((double)cs.Value / item.Value.count) * 100)) + "%";
-                lvCols[3] = string.Join(", ", names);
-                lvResults.Items.Add(new ListViewItem(lvCols));
-              }
-            }
-
-          }
-
-
-          lvVarValues.Items.Clear();
-          List<string> values = simRuns[curT].GetVarValues(simRuns[curT].logVarVals);
-          int i = 0;
-          foreach (var simVar in simRuns[curT].logVarVals)
-          {
-            string[] lvCols = new string[2];
-            lvCols[0] = simVar;
-            lvCols[1] = values[i];
-            lvVarValues.Items.Add(new ListViewItem(lvCols));
-            ++i;
-          }
-
-          this.Refresh();
-          Application.DoEvents();
-        }
-
-        //if (tbSavePath.Text != "")
-        //{
-        //  simRuns[curT].LogResults(runTime, runCnt, logFailedComps);
-        //}
-
-      };
-
-      InvokeUIUpdate(methodInvokerDelegate);
-    }
-
-    private void btn_Stop_Click(object sender, EventArgs e)
-    {
-      int curT = 0;
-      if (cbMultiThreaded.Checked)
-        curT = cbCurThread.SelectedIndex;
-
-      simRuns[curT].StopSims();
-    }
-
     private void lbExtSimLinks_Click(object sender, EventArgs e)
     {
       CheckState ck = CheckState.Unchecked;
-      AssignServer(); //make sure it has been assigned
+      AssignServer();
       var f = new FormSelExtSim(_server.GetResources());
       if (f.ShowDialog(this) == DialogResult.OK && lbExtSimLinks.SelectedItem != null)
       {
         if (f.resourceName != "")
         {
           var extSimLink = _sim.allExtSims.FindByName(lbExtSimLinks.SelectedItem.ToString());
-          //  f.resourceName);
           extSimLink.resourceName = f.resourceName;
           extSimLink.verified = true;
           ck = CheckState.Checked;
@@ -1599,39 +1221,20 @@ namespace EMRALD_Sim
       }
     }
 
-    private void defaultLoadToolStripMenuItem_Click(object sender, EventArgs e)
+    private void button1_Click_1(object sender, EventArgs e)
     {
-      //Cursor saveCurs = Cursor.Current;
-      //Cursor.Current = Cursors.WaitCursor;
-
-      //try
-      //{
-      //  _sim = CodeModels.LoadDemoWithTsunamiIE();// LoadDemo();
-
-      //  txtModel.Text = _sim.GetJSON(true, _sim);
-      //  txtMStatus.ForeColor = Color.Green;
-      //  txtMStatus.Text = "Model loaded succesfully.";
-      //  _validSim = true;
-
-      //  this.Text = "EMRALD (CodedDemo);";
-      //}
-      //catch (Exception error)
-      //{
-      //  txtMStatus.ForeColor = Color.Maroon;
-      //  txtMStatus.Text = "Failed to load model :" + error.Message;
-      //}
-    }
-
-
-    private void button3_Click(object sender, EventArgs e)
-    {
-      saveFileDialog1.ShowDialog();
+      // Test button - currently not used
     }
 
     private void button4_Click(object sender, EventArgs e)
     {
       string tempLoc = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\\EMRALD_SANKEY\\";
       System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(Path.Combine(tempLoc, @"emrald-sankey-timeline.html")) { UseShellExecute = true });
+    }
+
+    private void button3_Click(object sender, EventArgs e)
+    {
+      saveFileDialog1.ShowDialog();
     }
 
     private void saveFileDialog1_FileOk(object sender, CancelEventArgs e)
@@ -1653,7 +1256,7 @@ namespace EMRALD_Sim
     {
       if (_server == null)
       {
-        _server = new EMRALDMsgServer(_XMPP_Password, _appSettingsService);
+        _server = new EMRALDMsgServer("secret", _appSettingsService);
         _server.SetUICallbacks(this);
       }
     }
@@ -1670,7 +1273,6 @@ namespace EMRALD_Sim
 
     private void chkLog_CheckedChanged(object sender, EventArgs e)
     {
-
       if (chkLog.Checked)
       {
         rbDebugBasic.Checked = true;
@@ -1773,7 +1375,6 @@ namespace EMRALD_Sim
           if (Path.GetExtension(_modelPath) == ".json")
           {
             DialogResult result = MessageBox.Show("Update to .emrald extension?", "New Extension", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
-
             extUpdate = result == DialogResult.Yes;
           }
 
@@ -1784,7 +1385,9 @@ namespace EMRALD_Sim
         }
         catch
         {
-          this.WriteError("Failed to save model");
+          txtMStatus.ForeColor = Color.Maroon;
+          txtMStatus.Text = "Failed to save model";
+          Console.Write("Failed to save model");
           return;
         }
       }
@@ -1801,7 +1404,9 @@ namespace EMRALD_Sim
       {
         if (File.Exists(saveLoc))
         {
-          this.WriteError("Failed to save, File Already Exists");
+          txtMStatus.ForeColor = Color.Maroon;
+          txtMStatus.Text = "Failed to save, File Already Exists";
+          Console.Write("Failed to save, File Already Exists");
         }
 
         File.Delete(saveLoc);
@@ -1810,7 +1415,9 @@ namespace EMRALD_Sim
       }
       catch
       {
-        this.WriteError("Failed to save model");
+        txtMStatus.ForeColor = Color.Maroon;
+        txtMStatus.Text = "Failed to save model";
+        Console.Write("Failed to save model");
         return;
       }
     }
@@ -1825,6 +1432,7 @@ namespace EMRALD_Sim
     {
       SaveUISettingsToJson();
     }
+
     private void btn_DebugOpen_Click(object sender, EventArgs e)
     {
       string appDirectory = Application.StartupPath;
@@ -1832,12 +1440,10 @@ namespace EMRALD_Sim
 
       try
       {
-        // Open the file in the default text viewer
         Process.Start(new ProcessStartInfo(filePath) { UseShellExecute = true });
       }
       catch (Exception ex)
       {
-        // Handle any errors that may occur
         MessageBox.Show($"An error occurred while trying to open the file: {ex.Message}");
       }
     }
@@ -1856,7 +1462,7 @@ namespace EMRALD_Sim
 
         if (cbMultiThreaded.Checked == false)
         {
-          tbThreads.Text = "0"; //0 indicates no threading, 1 will copy the model and run in a seperate thread as if multithreading but still just one thread.
+          tbThreads.Text = "0";
         }
         else
         {
@@ -1864,79 +1470,53 @@ namespace EMRALD_Sim
 
           if ((tbThreads.Text == "") || (tbThreads.Text == "0"))
           {
-            //figure out recommended thread number
             int recommendedThreads = 1;
-            // Get total number of logical processors
             int totalProcessors = Environment.ProcessorCount;
 
-            // Use PerformanceCounter to get current CPU usage
             PerformanceCounter cpuCounter = new PerformanceCounter("Processor", "% Processor Time", "_Total");
-
-            // Allow the counter to stabilize by waiting a bit
             Thread.Sleep(100);
-
-            // Get the current CPU usage
             float currentCpuUsage = cpuCounter.NextValue();
-
-            // Calculate the recommended number of threads
             recommendedThreads = (int)((1 - currentCpuUsage) * totalProcessors);
-
-            // Ensure at least one thread is recommended
             recommendedThreads = Math.Max(recommendedThreads, 1);
 
-            //don't use more than 75% of the threads by default
             tbThreads.Text = Math.Min(recommendedThreads, (int)(totalProcessors * 0.75)).ToString();
           }
 
-
-          // Always get issues (if any) for highlighting, but always show the editor form 
-          try
+          List<string> issueItems = _sim.CanMutiThread();
+          if (issueItems.Count > 0)
           {
-            List<string> issueItems = _sim.CanMutiThread();
-            if (issueItems.Count > 0)
+            using (var frm = new FormMultiThreadRefs(_sim.multiThreadInfo, issueItems, _sim.rootPath))
             {
-              using (var frm = new FormMultiThreadRefs(_sim.multiThreadInfo, issueItems, _sim.rootPath))
+              var result = frm.ShowDialog();
+              if (result == DialogResult.OK)
               {
-                var result = frm.ShowDialog();
-                if (result == DialogResult.OK)
-                {
-                  _sim.SetMultiThreadInfo(frm.EditedMultiThreadInfo);
-                  teModel.Text = _sim.modelTxt;
-                  //save the multithread stuff.
-                  saveStripMenuItem_Click(sender, e);
-                }
-                else
-                {
-                  // User cancelled, revert checkbox and exit
-                  cbMultiThreaded.Checked = false;
-                  return;
-                }
+                _sim.SetMultiThreadInfo(frm.EditedMultiThreadInfo);
+                teModel.Text = _sim.modelTxt;
+                saveStripMenuItem_Click(sender, e);
+              }
+              else
+              {
+                cbMultiThreaded.Checked = false;
+                return;
               }
             }
-            else //save the empty multiThreadInfo
-            {
-              if (_sim.multiThreadInfo == null)
-                _sim.SetMultiThreadInfo(new MultiThreadInfo());
-              teModel.Text = _sim.modelTxt;
-              saveStripMenuItem_Click(sender, e);
-            }
           }
-          catch (Exception ex)
+          else
           {
-            rtbJSONErrors.Visible = true;
-            this._lastError = "Multithread Issue: " + ex.Message;
-            this.WriteError(_lastError);
-            lbl_ResultHeader.Visible = true;
-            lbl_ResultHeader.Text = _lastError;
+            if (_sim.multiThreadInfo == null)
+              _sim.SetMultiThreadInfo(new MultiThreadInfo());
+            teModel.Text = _sim.modelTxt;
+            saveStripMenuItem_Click(sender, e);
           }
+
+          chkLog.Checked = false;
+          chkLog.Enabled = false;
+          tbSeed.Enabled = false;
         }
 
         tbThreads.Visible = cbMultiThreaded.Checked;
         lblThreads.Visible = cbMultiThreaded.Checked;
         cbClearTemps.Visible = cbMultiThreaded.Checked;
-        chkLog.Checked = !cbMultiThreaded.Checked;
-        chkLog.Enabled = !cbMultiThreaded.Checked;
-        tbSeed.Enabled = !cbMultiThreaded.Checked;
         lbl_CurThread.Visible = cbMultiThreaded.Checked && (!_running);
         cbCurThread.Visible = cbMultiThreaded.Checked;
         bttnPathRefs.Visible = cbMultiThreaded.Checked;
@@ -1946,7 +1526,6 @@ namespace EMRALD_Sim
       }
       finally
       {
-        // Change cursor back to default
         Cursor.Current = Cursors.Default;
       }
     }
@@ -1954,25 +1533,31 @@ namespace EMRALD_Sim
     private void SetCurThreadCB()
     {
       cbCurThread.Items.Clear();
-      for (int i = 0; i < ConfigData.threads; i++)
-        cbCurThread.Items.Add($"{i}");
-      if (cbMultiThreaded.Checked && (ConfigData.threads > 0))
-        cbCurThread.SelectedIndex = ((int)ConfigData.threads) - 1;
+      if (cbMultiThreaded.Checked && !string.IsNullOrEmpty(tbThreads.Text))
+      {
+        int threadCount = 0;
+        if (int.TryParse(tbThreads.Text, out threadCount) && threadCount > 0)
+        {
+          for (int i = 0; i < threadCount; i++)
+            cbCurThread.Items.Add($"{i}");
+
+          if (cbCurThread.Items.Count > 0)
+            cbCurThread.SelectedIndex = 0;
+        }
+      }
     }
 
     private void tbThreads_Leave(object sender, EventArgs e)
     {
+      if (!LoadLib.SetThreads(tbThreads.Text))
       {
-        if (!LoadLib.SetThreads(tbThreads.Text))
-        {
-          MessageBox.Show("Invalid Thread Cnt, must be a number");
-          tbSeed.Text = "1";
-        }
-        else
-        {
-          SetCurThreadCB();
-          SaveUISettingsToJson();
-        }
+        MessageBox.Show("Invalid Thread Cnt, must be a number");
+        tbThreads.Text = "1";
+      }
+      else
+      {
+        SetCurThreadCB();
+        SaveUISettingsToJson();
       }
     }
 
@@ -1984,10 +1569,8 @@ namespace EMRALD_Sim
         return;
       }
 
-      // Get issues (if any) for multi-threading.
       List<string> issueItems = _sim.CanMutiThread();
 
-      // Always show the form, regardless of issue count
       using (var frm = new FormMultiThreadRefs(_sim.multiThreadInfo, issueItems, _sim.rootPath))
       {
         var result = frm.ShowDialog();
@@ -1995,13 +1578,7 @@ namespace EMRALD_Sim
         {
           _sim.SetMultiThreadInfo(frm.EditedMultiThreadInfo);
           teModel.Text = _sim.modelTxt;
-          //save the multithread stuff.
           saveStripMenuItem_Click(sender, e);
-        }
-        else
-        {
-          // User cancelled, do not update anything or throw
-          // (Optional: add code here if you want to revert UI or warn the user)
         }
       }
     }

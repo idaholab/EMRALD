@@ -24,7 +24,7 @@ namespace EMRALD_Sim
       _issueItems = issueItems ?? new List<string>();
       _origModelPath = origModelPath;
       if (Path.HasExtension(_origModelPath))
-        _origModelPath = Path.GetDirectoryName(_origModelPath);
+        _origModelPath = CommonFunctions.NormalizeGetDirectoryName(_origModelPath);
     }
 
     private void FormMultiThreadRefs_Load(object sender, EventArgs e)
@@ -63,7 +63,7 @@ namespace EMRALD_Sim
         foreach (var path in item.ToCopy)
         {
           //show it not as a relative path
-          string notRelPath = Path.GetFullPath(Path.Combine(_origModelPath, path));
+          string notRelPath = CommonFunctions.NormalizeGetFullPath(Path.Combine(_origModelPath, path));
           lstToCopy.Items.Add(notRelPath);
         }
       }
@@ -84,11 +84,12 @@ namespace EMRALD_Sim
           if (item.ToCopy == null) item.ToCopy = new List<string>();
           foreach (var file in ofd.FileNames)
           {
-            if (!item.ToCopy.Contains(file))
+            string filePath = CommonFunctions.NormalizeGetFullPath(file);
+            if (!item.ToCopy.Contains(filePath))
             {
-              lstToCopy.Items.Add(file);
+              lstToCopy.Items.Add(filePath);
               //get the relative path
-              string relPath = CommonFunctions.GetRelativePath(_origModelPath, file);
+              string relPath = CommonFunctions.GetRelativePath(_origModelPath, filePath);
               item.ToCopy.Add(relPath);
               
             }
@@ -148,12 +149,12 @@ namespace EMRALD_Sim
       if (string.IsNullOrEmpty(commonParent))
         return "";
 
-      string absCommonParent = Path.GetFullPath(commonParent);
+      string absCommonParent = CommonFunctions.NormalizeGetFullPath(commonParent);
 
       // RefPath might be relative or absolute
       string absRefPath = Path.IsPathRooted(refPath)
-        ? Path.GetFullPath(refPath)
-        : Path.GetFullPath(Path.Combine(absCommonParent, refPath));
+        ? CommonFunctions.NormalizeGetFullPath(refPath)
+        : CommonFunctions.NormalizeGetFullPath(Path.Combine(absCommonParent, refPath));
 
       // Always show ref path relative to the common parent
       string relPath = Path.GetRelativePath(absCommonParent, absRefPath);

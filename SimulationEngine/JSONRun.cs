@@ -50,6 +50,9 @@ namespace SimulationEngine
     public double percentDone = 0;
 
     public string error { get { return _error; } }
+    public List<ProcessSimBatch> simRuns { get {return _simRuns;} }
+    public EmraldModel model { get { return _model; } }
+
 
     public JSONRun(string optionsJsonStr, string modelJsonStr = "", TProgressCallBack progressCallBack = null)
     {
@@ -71,11 +74,9 @@ namespace SimulationEngine
       _progressCallBack = progressCallBack;
     }
 
-    public string RunSim()
+    public async Task<string> RunSim()
     {
       percentDone = 0;
-
-      
 
       if (_modelJsonStr != "")
       {
@@ -95,8 +96,8 @@ namespace SimulationEngine
       {
         _error = "Invalid model file " + ex.Message + " - " + options.inpfile;
         return _error;
-      };
-
+      }
+      ;
 
       // Check that the json string syntax is acceptable, validate model uses a dynamic object, so it doesn't check the json syntax right away.
       try
@@ -108,8 +109,8 @@ namespace SimulationEngine
       {
         _error = "Bad model JSON syntax - " + ex.Message;
         return _error;
-      };
-
+      }
+      ;
 
       if (!ValidateModel())
       {
@@ -135,6 +136,12 @@ namespace SimulationEngine
       ConfigData.seed = options.seed;
       ConfigData.threads = options.threads;
       ConfigData.threads = ConfigData.threads != 0 ? ConfigData.threads : null; //don't allow 0 for threads.
+      if((ConfigData.threads != null) && (ConfigData.threads > 1))
+        ConfigData.seed = 0;
+
+      // Reset RNG once up front so all worker threads get seeded thread-local instances without fighting over Reset()
+      if ((ConfigData.seed != null) && (ConfigData.seed >= 0))
+        SingleRandom.Reset();
 
 
       //Assign any coupling data from JSON file
@@ -146,7 +153,6 @@ namespace SimulationEngine
           _msgCoupler.connectionPassword = options.couplingInfo.couplingPassword;
         //if (options.couplingInfo. != null)
         //  _msgCoupler.
-
 
         if (options.couplingInfo.couplingType == CouplingType.WebSocket)
         {
@@ -179,18 +185,13 @@ namespace SimulationEngine
       {
         extSim.simMaxTime = TimeSpan.Parse(options.runtime);
       }
-      
-
-
 
       // Create a new ProcessSimBatch object
       // This is where the maxTime and outfile_path attributes are used
-      List<Thread> threads = new List<Thread>();
+      List<Task> tasks = new List<Task>();
       _simRuns.Clear();
       int threadCnt = ConfigData.threads == null ? 1 : (int)ConfigData.threads;
       int runsDiv = options.runct / threadCnt;
-      bool resDone = false; //results 
-
 
       for (int i = 0; i < threadCnt; i++) //if null just run once.
       {
@@ -228,71 +229,57 @@ namespace SimulationEngine
           _simRuns[threadIndex].initVarVals.Add(varItem.varName, varItem.value);
         }
 
-        ThreadStart tStarter = new ThreadStart(_simRuns[threadIndex].RunBatch);
-        //run this when the thread is done.
-        int locIdx = threadIndex;
-        tStarter += () =>
-        {
-          if (_simRuns[locIdx].error != "")
-            _error += _simRuns[locIdx].error + Environment.NewLine;
-          else
-            _simRuns[locIdx].GetVarValues(_simRuns[locIdx].logVarVals, true);
-        };
-
-        Thread simThread = new Thread(tStarter);
         if (threadIndex == 0)
         {
           // Start the first thread immediately so it can set up the files needed by the others
-          tStarter += () =>
+          var task = Task.Factory.StartNew(() =>
           {
-            if (_simRuns[locIdx].error != "")
-              _error += _simRuns[locIdx].error + Environment.NewLine;
-          };
-          simThread.Start();
+            _simRuns[threadIndex].RunBatch();
+            if (_simRuns[threadIndex].error != "")
+              _error += _simRuns[threadIndex].error + Environment.NewLine;
+            else
+              _simRuns[threadIndex].GetVarValues(_simRuns[threadIndex].logVarVals, true);
+          }, CancellationToken.None, TaskCreationOptions.LongRunning, TaskScheduler.Default);
+          tasks.Add(task);
         }
         else
         {
           // Delay the start of all but first thread so that it has time to write so others have time to copy data
-          new Task(async () =>
+          var task = Task.Factory.StartNew(() =>
           {
             //wait until first thread is done writing temp tread files.
             while (!_simRuns[0].tempThreadFilesWriten)
-              await Task.Delay(TimeSpan.FromMilliseconds(10)); // Adjust the delay as needed
+              Thread.Sleep(10);  // Adjust the delay as needed
 
-            if (_simRuns[locIdx].error != "")
-              _error += _simRuns[locIdx].error + Environment.NewLine;
-
-            simThread.Start();
-          }).Start();
+            _simRuns[threadIndex].RunBatch();
+            if (_simRuns[threadIndex].error != "")
+              _error += _simRuns[threadIndex].error + Environment.NewLine;
+            else
+              _simRuns[threadIndex].GetVarValues(_simRuns[threadIndex].logVarVals, true);
+          }, CancellationToken.None, TaskCreationOptions.LongRunning, TaskScheduler.Default);
+          tasks.Add(task);
         }
-        threads.Add(simThread);
       }
 
-      Task.Run(() =>
+      // Wait for all tasks to complete asynchronously
+      await Task.WhenAll(tasks);
+
+      //compile results if needed
+      for (int i = 1; i < _simRuns.Count; i++)
       {
-        // Wait for all threads to complete
-        foreach (var thread in threads)
-        {
-          thread.Join();
-        }
-
-        //compile results if needed
-        for (int i = 1; i < _simRuns.Count; i++)
-        {
-          _simRuns[0].AddOtherBatchResults(_simRuns[i]);
-        }
-        _simRuns[0].WriteFinalResults(true, threadCnt);
-        resDone = true;
-      });
-
-      //must wait until done to return
-
-      while (!resDone)
-      {
-        System.Threading.Thread.Sleep(100);
+        _simRuns[0].AddOtherBatchResults(_simRuns[i]);
       }
+      _simRuns[0].WriteFinalResults(true, threadCnt);
 
       return error;
+    }
+
+    public void StopSims()
+    {
+      foreach (var simRun in _simRuns)
+      {
+        simRun.StopSims();
+      }
     }
 
     public string LoadJson(string optionsJsonStr, ref Options_cur optionsOut)
@@ -342,7 +329,7 @@ namespace SimulationEngine
           //see if it is a relative path.
           if (!Path.IsPathRooted(optionsOut.inpfile))
           {
-            optionsOut.inpfile = Path.GetFullPath(Path.Combine(System.IO.Directory.GetCurrentDirectory(),  optionsOut.inpfile));
+            optionsOut.inpfile = CommonFunctions.NormalizeGetFullPath(Path.Combine(CommonFunctions.NormalizeGetCurrentDirectory(),  optionsOut.inpfile));
           }
 
           if (!File.Exists(optionsOut.inpfile))
@@ -364,7 +351,7 @@ namespace SimulationEngine
           //see if it is a relative path.
           if (!Path.IsPathRooted(optionsOut.resout))
           {
-            optionsOut.resout = Path.GetFullPath(Path.Combine(System.IO.Directory.GetCurrentDirectory(), optionsOut.resout));
+            optionsOut.resout = CommonFunctions.NormalizeGetFullPath(Path.Combine(System.IO.Directory.GetCurrentDirectory(), optionsOut.resout));
           }
 
           if (!Directory.Exists(Path.GetDirectoryName(optionsOut.resout)))
@@ -386,7 +373,7 @@ namespace SimulationEngine
           //see if it is a relative path.
           if (!Path.IsPathRooted(optionsOut.jsonRes))
           {
-            optionsOut.jsonRes = Path.GetFullPath(Path.Combine(System.IO.Directory.GetCurrentDirectory(), optionsOut.jsonRes));
+            optionsOut.jsonRes = CommonFunctions.NormalizeGetFullPath(Path.Combine(System.IO.Directory.GetCurrentDirectory(), optionsOut.jsonRes));
           }
 
           if (!Directory.Exists(Path.GetDirectoryName(optionsOut.jsonRes)))
@@ -475,7 +462,7 @@ namespace SimulationEngine
         // Create a new EmraldModel object called sim
         _model = new EmraldModel();
         // Deserialize the json string into sim
-        _model.DeserializeJSON(_modelJsonStr, Path.GetDirectoryName(options.inpfile), Path.GetFileNameWithoutExtension(options.inpfile));
+        _model.DeserializeJSON(_modelJsonStr, CommonFunctions.NormalizeGetDirectoryName(options.inpfile), Path.GetFileNameWithoutExtension(options.inpfile));
       }
       // If there is an error in deserialization, create an error message
       catch (Exception error)

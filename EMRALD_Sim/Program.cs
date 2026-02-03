@@ -1,6 +1,4 @@
 ﻿// Copyright 2021 Battelle Energy Alliance
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -8,6 +6,9 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using SimulationDAL;
 using XmppServer;
 
 namespace EMRALD_Sim
@@ -23,7 +24,7 @@ namespace EMRALD_Sim
     static void Main(string[] args)
     {
       // Set up log file path
-      _logFilePath = Path.Combine(Application.StartupPath, "EMRALD_ErrorLog.txt");
+      _logFilePath = CommonFunctions.NormalizeCombine(Application.StartupPath, "EMRALD_ErrorLog.txt");
 
       // Clear the error log on application start
       try
@@ -176,7 +177,7 @@ namespace EMRALD_Sim
         // Last resort - try to write to temp directory
         try
         {
-          string emergencyLog = Path.Combine(Path.GetTempPath(), "EMRALD_Emergency_Log.txt");
+          string emergencyLog = CommonFunctions.NormalizeCombine(Path.GetTempPath(), "EMRALD_Errors_Log.txt");
           File.AppendAllText(emergencyLog,
             $"{DateTime.Now}: LOGGING FAILED\n" +
             $"Original Exception: {ex}\n" +

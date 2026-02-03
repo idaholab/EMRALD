@@ -18,17 +18,17 @@ namespace SysAndRegressionTesting
     #region Validation Cases Setup Code
     protected override string CompareFilesDir()
     {
-      return MainTestDir() + "CompareFiles" + Path.DirectorySeparatorChar;
+      return MainTestDir() + "CompareFiles" + Path.AltDirectorySeparatorChar;
     }
 
     protected override string TestFolder()
     {
-      return "EMRALDTests" + Path.DirectorySeparatorChar;
+      return "EMRALDTests" + Path.AltDirectorySeparatorChar;
     }
 
     protected override string ModelFolder()
     {
-      return "Models" + Path.DirectorySeparatorChar;
+      return "Models" + Path.AltDirectorySeparatorChar;
     }
     #endregion
 
@@ -36,7 +36,7 @@ namespace SysAndRegressionTesting
     [Fact]
     [Description("Test that the state change event sucessfully detects moving in and out of the states they are monitoring.")]
 
-    public void Event_1TransitionInOutTest()
+    public async void Event_1TransitionInOutTest()
     {
       //note the result will be 1 off because the event is triggered on startup for the Logic tree evaluation.
 
@@ -51,7 +51,7 @@ namespace SysAndRegressionTesting
       optionsJ["inpfile"] = MainTestDir() + ModelFolder() + testName + ".json";
       optionsJ["runct"] = 100;
       JSONRun testRun = new JSONRun(optionsJ.ToString());
-      Assert.True(TestRunSim(testRun));
+      Assert.True(await TestRunSim(testRun));
 
       //Uncomment to update the validation files after they verified correct
       //CopyToValidated(dir, testName, optionsJ);
@@ -62,7 +62,7 @@ namespace SysAndRegressionTesting
 
     [Fact]
     [Description("Test that the normal distribution event gives the correct statistics with multiple runs of the model.")]
-    public void DistEvent_Normal()
+    public async void DistEvent_Normal()
     {
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
 
@@ -75,7 +75,7 @@ namespace SysAndRegressionTesting
       optionsJ["inpfile"] = MainTestDir() + ModelFolder() + testName + ".emrald";
       optionsJ["runct"] = 100000;
       JSONRun testRun = new JSONRun(optionsJ.ToString());
-      Assert.True(TestRunSim(testRun));
+      Assert.True(await TestRunSim(testRun));
 
       //Uncomment to update the validation files after they verified correct
       //CopyToValidated(dir, testName, optionsJ);
@@ -87,7 +87,7 @@ namespace SysAndRegressionTesting
     [Fact]
     [Description("Test that the normal distribution event using variables gives the correct statistics with multiple runs of the model.")]
 
-    public void DistEvent_Normal_Vars()
+    public async void DistEvent_Normal_Vars()
     {
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
 
@@ -100,7 +100,7 @@ namespace SysAndRegressionTesting
       optionsJ["inpfile"] = MainTestDir() + ModelFolder() + testName + ".emrald";
       optionsJ["runct"] = 100000;
       JSONRun testRun = new JSONRun(optionsJ.ToString());
-      Assert.True(TestRunSim(testRun));
+      Assert.True(await TestRunSim(testRun));
 
       //Uncomment to update the validation files after they verified correct
       //CopyToValidated(dir, testName, optionsJ);
@@ -111,7 +111,7 @@ namespace SysAndRegressionTesting
 
     [Fact]
     [Description("Test that the log normal distribution event gives the correct statistics with multiple runs of the model.")]
-    public void DistEvent_LogNormal()
+    public async void DistEvent_LogNormal()
     {
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
 
@@ -124,7 +124,7 @@ namespace SysAndRegressionTesting
       optionsJ["inpfile"] = MainTestDir() + ModelFolder() + testName + ".emrald";
       optionsJ["runct"] = 100000;
       JSONRun testRun = new JSONRun(optionsJ.ToString());
-      Assert.True(TestRunSim(testRun));
+      Assert.True(await TestRunSim(testRun));
 
       //Uncomment to update the validation files after they verified correct
       //CopyToValidated(dir, testName, optionsJ);
@@ -135,7 +135,7 @@ namespace SysAndRegressionTesting
 
     [Fact]
     [Description("Test that the normal distribution event using variables gives the correct statistics with multiple runs of the model.")]
-    public void DistEvent_LogNormal_Vars()
+    public async void DistEvent_LogNormal_Vars()
     {
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
 
@@ -148,7 +148,7 @@ namespace SysAndRegressionTesting
       optionsJ["inpfile"] = MainTestDir() + ModelFolder() + testName + ".emrald";
       optionsJ["runct"] = 100000;
       JSONRun testRun = new JSONRun(optionsJ.ToString());
-      Assert.True(TestRunSim(testRun));
+      Assert.True(await TestRunSim(testRun));
 
       //Uncomment to update the validation files after they verified correct
       //CopyToValidated(dir, testName, optionsJ);
@@ -159,7 +159,7 @@ namespace SysAndRegressionTesting
 
     [Fact]
     [Description("Test that the Weibull distribution event gives the correct statistics with multiple runs of the model.")]
-    public void DistEvent_Weibull()
+    public async void DistEvent_Weibull()
     {
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
 
@@ -172,7 +172,7 @@ namespace SysAndRegressionTesting
       optionsJ["inpfile"] = MainTestDir() + ModelFolder() + testName + ".emrald";
       optionsJ["runct"] = 100000;
       JSONRun testRun = new JSONRun(optionsJ.ToString());
-      Assert.True(TestRunSim(testRun));
+      Assert.True(await TestRunSim(testRun));
 
       //Uncomment to update the validation files after they verified correct
       //CopyToValidated(dir, testName, optionsJ);
@@ -183,7 +183,7 @@ namespace SysAndRegressionTesting
 
     [Fact]
     [Description("Test that the Weibull distribution using variables event gives the correct statistics with multiple runs of the model.")]
-    public void DistEvent_Weibull_Vars()
+    public async void DistEvent_Weibull_Vars()
     {
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
 
@@ -196,7 +196,7 @@ namespace SysAndRegressionTesting
       optionsJ["inpfile"] = MainTestDir() + ModelFolder() + testName + ".emrald";
       optionsJ["runct"] = 100000;
       JSONRun testRun = new JSONRun(optionsJ.ToString());
-      Assert.True(TestRunSim(testRun));
+      Assert.True(await TestRunSim(testRun));
 
       //Uncomment to update the validation files after they verified correct
       //CopyToValidated(dir, testName, optionsJ);
@@ -207,7 +207,7 @@ namespace SysAndRegressionTesting
 
     [Fact]
     [Description("Test that the Exponential distribution event gives the correct statistics with multiple runs of the model.")]
-    public void DistEvent_Exponential()
+    public async void DistEvent_Exponential()
     {
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
 
@@ -220,7 +220,7 @@ namespace SysAndRegressionTesting
       optionsJ["inpfile"] = MainTestDir() + ModelFolder() + testName + ".emrald";
       optionsJ["runct"] = 100000;
       JSONRun testRun = new JSONRun(optionsJ.ToString());
-      Assert.True(TestRunSim(testRun));
+      Assert.True(await TestRunSim(testRun));
 
       //Uncomment to update the validation files after they verified correct
       //CopyToValidated(dir, testName, optionsJ);
@@ -232,7 +232,7 @@ namespace SysAndRegressionTesting
     [Fact]
     [Description("Test that the Exponential distribution with a variable event gives the correct statistics with multiple runs of the model.")]
 
-    public void DistEvent_Exponential_Vars()
+    public async void DistEvent_Exponential_Vars()
     {
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
 
@@ -245,7 +245,7 @@ namespace SysAndRegressionTesting
       optionsJ["inpfile"] = MainTestDir() + ModelFolder() + testName + ".emrald";
       optionsJ["runct"] = 100000;
       JSONRun testRun = new JSONRun(optionsJ.ToString());
-      Assert.True(TestRunSim(testRun));
+      Assert.True(await TestRunSim(testRun));
 
       //Uncomment to update the validation files after they verified correct
       //CopyToValidated(dir, testName, optionsJ);
@@ -258,7 +258,7 @@ namespace SysAndRegressionTesting
     [Description("Test that the timer event gives the correct time with multiple runs of the model.")]
 
     //Test the timer event using a variable
-    public void TestTimerEvVar()
+    public async void TestTimerEvVar()
     {
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
 
@@ -271,7 +271,7 @@ namespace SysAndRegressionTesting
       optionsJ["inpfile"] = MainTestDir() + ModelFolder() + testName + ".emrald";
       optionsJ["runct"] = 10;
       JSONRun testRun = new JSONRun(optionsJ.ToString());
-      Assert.True(TestRunSim(testRun));
+      Assert.True(await TestRunSim(testRun));
 
       //Uncomment to update the validation files after they verified correct
       //CopyToValidated(dir, testName, optionsJ);
@@ -282,7 +282,7 @@ namespace SysAndRegressionTesting
 
     [Fact]
     [Description("Test timer event in a later state that goes off the time from the start.")]
-    public void Test2Timers()
+    public async void Test2Timers()
     {
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
 
@@ -298,7 +298,7 @@ namespace SysAndRegressionTesting
       options.seed = 1;
       //optionsJ["variables"] = JsonConvert.SerializeObject(args);
       JSONRun testRun = new JSONRun(options);
-      Assert.True(TestRunSim(testRun));
+      Assert.True(await TestRunSim(testRun));
 
       //Uncomment to update the validation files after they verified correct
       //CopyToValidated(dir, testName, optionsJ);
@@ -309,7 +309,7 @@ namespace SysAndRegressionTesting
 
     [Fact]
     [Description("Verify a timer from the start of the simulation work properly.")]
-    public void FromStartTimerTest()
+    public async void FromStartTimerTest()
     {
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
 
@@ -322,7 +322,7 @@ namespace SysAndRegressionTesting
       optionsJ["inpfile"] = MainTestDir() + ModelFolder() + testName + ".emrald";
       optionsJ["runct"] = 1;
       JSONRun testRun = new JSONRun(optionsJ.ToString());
-      Assert.True(TestRunSim(testRun));
+      Assert.True(await TestRunSim(testRun));
 
       //Uncomment to update the validation files after they verified correct
       //CopyToValidated(dir, testName, optionsJ);
@@ -333,7 +333,7 @@ namespace SysAndRegressionTesting
 
     [Fact]
     [Description("Test using state change event of multiple items matches logic tree evaluation event of the same states.")]
-    public void TestLogicTreeVsStateChk()
+    public async void TestLogicTreeVsStateChk()
     {
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
 
@@ -346,7 +346,7 @@ namespace SysAndRegressionTesting
       optionsJ["inpfile"] = MainTestDir() + ModelFolder() + testName + ".emrald";
       optionsJ["runct"] = 10000;
       JSONRun testRun = new JSONRun(optionsJ.ToString());
-      Assert.True(TestRunSim(testRun));
+      Assert.True(await TestRunSim(testRun));
 
       //Uncomment to update the validation files after they verified correct
       //CopyToValidated(dir, testName, optionsJ);
@@ -357,7 +357,7 @@ namespace SysAndRegressionTesting
 
     [Fact]
     [Description("Test that the failure rate event using a variable works correctly.")]
-    public void TestProbEvVar()
+    public async void TestProbEvVar()
     {
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
 
@@ -370,7 +370,7 @@ namespace SysAndRegressionTesting
       optionsJ["inpfile"] = MainTestDir() + ModelFolder() + testName + ".emrald";
       optionsJ["runct"] = 1000;
       JSONRun testRun = new JSONRun(optionsJ.ToString());
-      Assert.True(TestRunSim(testRun));
+      Assert.True(await TestRunSim(testRun));
 
       //Uncomment to update the validation files after they verified correct
       //CopyToValidated(dir, testName, optionsJ);
@@ -381,7 +381,7 @@ namespace SysAndRegressionTesting
 
     [Fact]
     [Description("Test events correctly evaluate the variable value for varConditions.")]
-    public void VarConditionTest()
+    public async void VarConditionTest()
     {
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
 
@@ -397,7 +397,7 @@ namespace SysAndRegressionTesting
       //options.variables = new List<string>() { "Int_Cnt" };
       //optionsJ["variables"] = JsonConvert.SerializeObject(args);
       JSONRun testRun = new JSONRun(options);
-      Assert.True(TestRunSim(testRun));
+      Assert.True(await TestRunSim(testRun));
 
       //Uncomment to update the validation files after they verified correct
       //CopyToValidated(dir, testName, optionsJ);
@@ -407,7 +407,7 @@ namespace SysAndRegressionTesting
     }
     [Fact]
     [Description("Test persistent distribution events.")]
-    public void PersistentDistTest()
+    public async void PersistentDistTest()
     {
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
 
@@ -423,7 +423,7 @@ namespace SysAndRegressionTesting
       //options.variables = new List<string>() { "Int_Cnt" };
       //optionsJ["variables"] = JsonConvert.SerializeObject(args);
       JSONRun testRun = new JSONRun(options);
-      Assert.True(TestRunSim(testRun));
+      Assert.True(await TestRunSim(testRun));
 
       //Uncomment to update the validation files after they verified correct
       //CopyToValidated(dir, testName, optionsJ);
@@ -433,7 +433,7 @@ namespace SysAndRegressionTesting
     }
     [Fact]
     [Description("Test persistent failure rate events.")]
-    public void PersistentFailRateTest()
+    public async void PersistentFailRateTest()
     {
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
 
@@ -449,7 +449,7 @@ namespace SysAndRegressionTesting
       //options.variables = new List<string>() { "Int_Cnt" };
       //optionsJ["variables"] = JsonConvert.SerializeObject(args);
       JSONRun testRun = new JSONRun(options);
-      Assert.True(TestRunSim(testRun));
+      Assert.True(await TestRunSim(testRun));
 
       //Uncomment to update the validation files after they verified correct
       //CopyToValidated(dir, testName, optionsJ);
@@ -459,7 +459,7 @@ namespace SysAndRegressionTesting
     }
     [Fact]
     [Description("Test persistent timer events.")]
-    public void PersistentTimerTest()
+    public async void PersistentTimerTest()
     {
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
 
@@ -475,7 +475,7 @@ namespace SysAndRegressionTesting
       //options.variables = new List<string>() { "Int_Cnt" };
       //optionsJ["variables"] = JsonConvert.SerializeObject(args);
       JSONRun testRun = new JSONRun(options);
-      Assert.True(TestRunSim(testRun));
+      Assert.True(await TestRunSim(testRun));
 
       //Uncomment to update the validation files after they verified correct
       //CopyToValidated(dir, testName, optionsJ);
@@ -485,7 +485,7 @@ namespace SysAndRegressionTesting
     }
     [Fact]
     [Description("Test persistent events with variables being resampled when the variable changes while the event is NOT in an active state.")]
-    public void PersistentEventVarChange_EventInactive()
+    public async void PersistentEventVarChange_EventInactive()
     {
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
 
@@ -501,12 +501,12 @@ namespace SysAndRegressionTesting
       //options.variables = new List<string>() { "Int_Cnt" };
       //optionsJ["variables"] = JsonConvert.SerializeObject(args);
       JSONRun testRun = new JSONRun(options);
-      Assert.False(TestRunSim(testRun));
+      Assert.False(await TestRunSim(testRun));
 
     }
     [Fact]
     [Description("Test persistent events with variables being resampled when the variable changes while the event is in an active state.")]
-    public void PersistentEventVarChange()
+    public async void PersistentEventVarChange()
     {
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
 
@@ -522,7 +522,7 @@ namespace SysAndRegressionTesting
       //options.variables = new List<string>() { "Int_Cnt" };
       //optionsJ["variables"] = JsonConvert.SerializeObject(args);
       JSONRun testRun = new JSONRun(options);
-      Assert.True(TestRunSim(testRun));
+      Assert.True(await TestRunSim(testRun));
 
       //Uncomment to update the validation files after they verified correct
       //CopyToValidated(dir, testName, optionsJ);

@@ -225,15 +225,7 @@ namespace EMRALD_Sim
       openToolStripMenuItem.Name = "openToolStripMenuItem";
       openToolStripMenuItem.Size = new System.Drawing.Size(138, 22);
       openToolStripMenuItem.Text = "Open";
-      openToolStripMenuItem.Click += openToolStripMenuItem_Click;
-      // 
-      // defaultLoadToolStripMenuItem
-      // 
-      defaultLoadToolStripMenuItem.Name = "defaultLoadToolStripMenuItem";
-      defaultLoadToolStripMenuItem.Size = new System.Drawing.Size(138, 22);
-      defaultLoadToolStripMenuItem.Text = "DefaultLoad";
-      defaultLoadToolStripMenuItem.Visible = false;
-      defaultLoadToolStripMenuItem.Click += defaultLoadToolStripMenuItem_Click;
+      openToolStripMenuItem.Click += openToolStripMenuItem_Click;      
       // 
       // saveStripMenuItem
       // 

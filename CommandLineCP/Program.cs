@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Threading;
+using System.Threading.Tasks;
 using Matrix.Xmpp.PubSub;
 using MessageDefLib;
 using Newtonsoft.Json;
@@ -79,11 +80,12 @@ namespace CommandLineCP
     static int numThreads = 1; // number of threads being used
     static object lockObj = new object(); // for thread-safe console updates
 
-    static void Main(string[] args)
+    // Changed to async Task Main
+    static async Task Main(string[] args)
     {
       bool execute = false;
       string model = null;
-      JSONRun modelRun = new JSONRun("", "", DispResults);
+      JSONRun modelRun = null; // create if not JSON new JSONRun("", "", DispResults);
 
       // Check if first argument is a JSON file
       if (args.Length > 0)
@@ -132,18 +134,14 @@ namespace CommandLineCP
 
             Console.WriteLine(simRun.options.runct + " runs of - " + simRun.options.inpfile);
 
-            string jsonResult = simRun.RunSim();
+            // Await the async RunSim method
+            string jsonResult = await simRun.RunSim();
+
             if (jsonResult != "")
             {
               Console.WriteLine(jsonResult);
               Console.WriteLine("run -Help for instructions");
               return;
-            }
-
-            // Wait for completion
-            while (!done)
-            {
-              System.Threading.Thread.Sleep(300);
             }
 
             if (simRun.error == "")
@@ -162,6 +160,10 @@ namespace CommandLineCP
 
           Console.WriteLine("done");
           return;
+        }
+        else
+        {
+          modelRun = new JSONRun("", "", DispResults);
         }
       }
 
@@ -446,18 +448,14 @@ namespace CommandLineCP
 
       Console.WriteLine(modelRun.options.runct + " runs of - " + modelRun.options.inpfile);
 
-      string res = modelRun.RunSim();
+      // Await the async RunSim method
+      string res = await modelRun.RunSim();
 
       if (res != "")
       {
         Console.WriteLine(res);
         Console.WriteLine("run -Help for instructions");
         return;
-      }
-
-      while (!done)
-      {
-        System.Threading.Thread.Sleep(300);
       }
 
       if (modelRun.error == "")
@@ -498,7 +496,7 @@ namespace CommandLineCP
         double percentComplete = numRuns > 0 ? (totDoneRuns * 100.0 / numRuns) : 0;
 
         // Rewrite console line with progress
-        Console.WriteLine("\rProgress: {0:F1}% ({1}/{2} runs) - Runtime: {3:hh\\:mm\\:ss}   ",
+        Console.Write("\rProgress: {0:F1}% ({1}/{2} runs) - Runtime: {3:hh\\:mm\\:ss}   ",
                       percentComplete, totDoneRuns, numRuns, runTime);
 
         // Check if all runs are complete
